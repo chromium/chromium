@@ -19,6 +19,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/paint/paint_flags.h"
@@ -786,7 +787,9 @@ SkBitmap GetBadgedWinIconBitmapForAvatar(const SkBitmap& app_icon_bitmap,
   DCHECK_GE(sk_icon.width(), sk_icon.height());
 
   // Overlay the avatar on the icon, anchoring it to the bottom-right of the
-  // icon.
+  // icon on Win 10 and earlier, and the top right on Win 11. Win 11 moved the
+  // taskbar icon badge to the top right from the bottom right, so profile
+  // badging needs to move as well, to avoid double badging.
   SkBitmap badged_bitmap;
   badged_bitmap.allocN32Pixels(app_icon_bitmap.width(),
                                app_icon_bitmap.height());
@@ -798,8 +801,11 @@ SkBitmap GetBadgedWinIconBitmapForAvatar(const SkBitmap& app_icon_bitmap,
   // it in the circle but favor pushing it further down.
   const int cutout_size = avatar_badge_width;
   const int cutout_left = app_icon_bitmap.width() - cutout_size;
-  const int cutout_top = app_icon_bitmap.height() - cutout_size;
+  const int cutout_top = base::win::GetVersion() >= base::win::Version::WIN11
+                             ? 0
+                             : app_icon_bitmap.height() - cutout_size;
   const int icon_left = cutout_left;
+
   const int icon_top =
       cutout_top + base::ClampCeil((cutout_size - avatar_badge_height) / 2.0f);
   const SkRRect clip_circle = SkRRect::MakeOval(

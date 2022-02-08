@@ -77,7 +77,7 @@ const int kMaxProfileShortcutFileNameLength = 64;
 // Incrementing this number will cause profile icons to be regenerated on
 // profile startup (it should be incremented whenever the product/avatar icons
 // change, etc).
-const int kCurrentProfileIconVersion = 7;
+const int kCurrentProfileIconVersion = 8;
 
 bool disabled_for_unit_tests = false;
 bool disable_unpinning_for_unit_tests = false;
