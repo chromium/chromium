@@ -97,7 +97,7 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
   // Processes playout audio. |audio_bus| must contain |sample_rate/100| samples
   // per channel.
   // Must be called on the playout thread.
-  void OnPlayoutData(media::AudioBus* audio_bus,
+  void OnPlayoutData(const media::AudioBus& audio_bus,
                      int sample_rate,
                      base::TimeDelta audio_delay);
 

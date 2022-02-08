@@ -155,7 +155,8 @@ void MediaStreamAudioProcessor::OnPlayoutData(media::AudioBus* audio_bus,
                                               int sample_rate,
                                               base::TimeDelta audio_delay) {
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
-  audio_processor_.OnPlayoutData(audio_bus, sample_rate, audio_delay);
+  DCHECK(audio_bus);
+  audio_processor_.OnPlayoutData(*audio_bus, sample_rate, audio_delay);
 }
 
 void MediaStreamAudioProcessor::OnPlayoutDataSourceChanged() {

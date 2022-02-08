@@ -128,7 +128,7 @@ class AudioProcessorTest : public ::testing::Test {
           (*audio_processor.GetAudioProcessingModuleConfigForTesting())
               .echo_canceller.enabled;
       if (is_aec_enabled) {
-        audio_processor.OnPlayoutData(data_bus.get(), params.sample_rate(),
+        audio_processor.OnPlayoutData(*data_bus, params.sample_rate(),
                                       base::Milliseconds(10));
       }
 
