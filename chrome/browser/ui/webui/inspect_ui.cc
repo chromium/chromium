@@ -177,21 +177,21 @@ class InspectMessageHandler : public WebUIMessageHandler {
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
 
-  void HandleInitUICommand(const base::ListValue* args);
-  void HandleInspectCommand(const base::ListValue* args);
-  void HandleInspectFallbackCommand(const base::ListValue* args);
-  void HandleActivateCommand(const base::ListValue* args);
-  void HandleCloseCommand(const base::ListValue* args);
-  void HandleReloadCommand(const base::ListValue* args);
-  void HandleOpenCommand(const base::ListValue* args);
-  void HandlePauseCommand(const base::ListValue* args);
-  void HandleInspectBrowserCommand(const base::ListValue* args);
+  void HandleInitUICommand(base::Value::ConstListView args);
+  void HandleInspectCommand(base::Value::ConstListView args);
+  void HandleInspectFallbackCommand(base::Value::ConstListView args);
+  void HandleActivateCommand(base::Value::ConstListView args);
+  void HandleCloseCommand(base::Value::ConstListView args);
+  void HandleReloadCommand(base::Value::ConstListView args);
+  void HandleOpenCommand(base::Value::ConstListView args);
+  void HandlePauseCommand(base::Value::ConstListView args);
+  void HandleInspectBrowserCommand(base::Value::ConstListView args);
   void HandleBooleanPrefChanged(const char* pref_name,
-                                const base::ListValue* args);
-  void HandlePortForwardingConfigCommand(const base::ListValue* args);
-  void HandleTCPDiscoveryConfigCommand(const base::ListValue* args);
-  void HandleOpenNodeFrontendCommand(const base::ListValue* args);
-  void HandleLaunchUIDevToolsCommand(const base::ListValue* args);
+                                base::Value::ConstListView args);
+  void HandlePortForwardingConfigCommand(base::Value::ConstListView args);
+  void HandleTCPDiscoveryConfigCommand(base::Value::ConstListView args);
+  void HandleOpenNodeFrontendCommand(base::Value::ConstListView args);
+  void HandleLaunchUIDevToolsCommand(base::Value::ConstListView args);
 
   void CreateNativeUIInspectionSession(const std::string& url);
   void OnFrontEndFinished();
@@ -202,108 +202,109 @@ class InspectMessageHandler : public WebUIMessageHandler {
 };
 
 void InspectMessageHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kInspectUiInitUICommand,
       base::BindRepeating(&InspectMessageHandler::HandleInitUICommand,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kInspectUiInspectCommand,
       base::BindRepeating(&InspectMessageHandler::HandleInspectCommand,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kInspectUiInspectFallbackCommand,
       base::BindRepeating(&InspectMessageHandler::HandleInspectFallbackCommand,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kInspectUiActivateCommand,
       base::BindRepeating(&InspectMessageHandler::HandleActivateCommand,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kInspectUiCloseCommand,
       base::BindRepeating(&InspectMessageHandler::HandleCloseCommand,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kInspectUiPauseCommand,
       base::BindRepeating(&InspectMessageHandler::HandlePauseCommand,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kInspectUiDiscoverUsbDevicesEnabledCommand,
       base::BindRepeating(&InspectMessageHandler::HandleBooleanPrefChanged,
                           base::Unretained(this),
                           &prefs::kDevToolsDiscoverUsbDevicesEnabled[0]));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kInspectUiPortForwardingEnabledCommand,
       base::BindRepeating(&InspectMessageHandler::HandleBooleanPrefChanged,
                           base::Unretained(this),
                           &prefs::kDevToolsPortForwardingEnabled[0]));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kInspectUiPortForwardingConfigCommand,
       base::BindRepeating(
           &InspectMessageHandler::HandlePortForwardingConfigCommand,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kInspectUiDiscoverTCPTargetsEnabledCommand,
       base::BindRepeating(&InspectMessageHandler::HandleBooleanPrefChanged,
                           base::Unretained(this),
                           &prefs::kDevToolsDiscoverTCPTargetsEnabled[0]));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kInspectUiLaunchUIDevToolsCommand,
       base::BindRepeating(&InspectMessageHandler::HandleLaunchUIDevToolsCommand,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kInspectUiTCPDiscoveryConfigCommand,
       base::BindRepeating(
           &InspectMessageHandler::HandleTCPDiscoveryConfigCommand,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kInspectUiOpenNodeFrontendCommand,
       base::BindRepeating(&InspectMessageHandler::HandleOpenNodeFrontendCommand,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kInspectUiReloadCommand,
       base::BindRepeating(&InspectMessageHandler::HandleReloadCommand,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kInspectUiOpenCommand,
       base::BindRepeating(&InspectMessageHandler::HandleOpenCommand,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       kInspectUiInspectBrowser,
       base::BindRepeating(&InspectMessageHandler::HandleInspectBrowserCommand,
                           base::Unretained(this)));
 }
 
-void InspectMessageHandler::HandleInitUICommand(const base::ListValue*) {
+void InspectMessageHandler::HandleInitUICommand(base::Value::ConstListView) {
   inspect_ui_->InitUI();
 }
 
-static bool ParseStringArgs(const base::ListValue* args,
+static bool ParseStringArgs(base::Value::ConstListView args,
                             std::string* arg0,
                             std::string* arg1,
                             std::string* arg2 = 0) {
-  int arg_size = args->GetListDeprecated().size();
+  int arg_size = args.size();
   if (arg0) {
-    if (arg_size < 1 || !args->GetListDeprecated()[0].is_string()) {
+    if (arg_size < 1 || !args[0].is_string()) {
       return false;
     }
-    *arg0 = args->GetListDeprecated()[0].GetString();
+    *arg0 = args[0].GetString();
   }
   if (arg1) {
-    if (arg_size < 2 || !args->GetListDeprecated()[1].is_string()) {
+    if (arg_size < 2 || !args[1].is_string()) {
       return false;
     }
-    *arg1 = args->GetListDeprecated()[1].GetString();
+    *arg1 = args[1].GetString();
   }
   if (arg2) {
-    if (arg_size < 3 || !args->GetListDeprecated()[2].is_string()) {
+    if (arg_size < 3 || !args[2].is_string()) {
       return false;
     }
-    *arg2 = args->GetListDeprecated()[2].GetString();
+    *arg2 = args[2].GetString();
   }
   return true;
 }
 
-void InspectMessageHandler::HandleInspectCommand(const base::ListValue* args) {
+void InspectMessageHandler::HandleInspectCommand(
+    base::Value::ConstListView args) {
   std::string source;
   std::string id;
   if (ParseStringArgs(args, &source, &id))
@@ -311,35 +312,38 @@ void InspectMessageHandler::HandleInspectCommand(const base::ListValue* args) {
 }
 
 void InspectMessageHandler::HandleInspectFallbackCommand(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   std::string source;
   std::string id;
   if (ParseStringArgs(args, &source, &id))
     inspect_ui_->InspectFallback(source, id);
 }
 
-void InspectMessageHandler::HandleActivateCommand(const base::ListValue* args) {
+void InspectMessageHandler::HandleActivateCommand(
+    base::Value::ConstListView args) {
   std::string source;
   std::string id;
   if (ParseStringArgs(args, &source, &id))
     inspect_ui_->Activate(source, id);
 }
 
-void InspectMessageHandler::HandleCloseCommand(const base::ListValue* args) {
+void InspectMessageHandler::HandleCloseCommand(
+    base::Value::ConstListView args) {
   std::string source;
   std::string id;
   if (ParseStringArgs(args, &source, &id))
     inspect_ui_->Close(source, id);
 }
 
-void InspectMessageHandler::HandleReloadCommand(const base::ListValue* args) {
+void InspectMessageHandler::HandleReloadCommand(
+    base::Value::ConstListView args) {
   std::string source;
   std::string id;
   if (ParseStringArgs(args, &source, &id))
     inspect_ui_->Reload(source, id);
 }
 
-void InspectMessageHandler::HandleOpenCommand(const base::ListValue* args) {
+void InspectMessageHandler::HandleOpenCommand(base::Value::ConstListView args) {
   std::string source_id;
   std::string browser_id;
   std::string url;
@@ -347,7 +351,8 @@ void InspectMessageHandler::HandleOpenCommand(const base::ListValue* args) {
     inspect_ui_->Open(source_id, browser_id, url);
 }
 
-void InspectMessageHandler::HandlePauseCommand(const base::ListValue* args) {
+void InspectMessageHandler::HandlePauseCommand(
+    base::Value::ConstListView args) {
   std::string source;
   std::string id;
   if (ParseStringArgs(args, &source, &id))
@@ -355,7 +360,7 @@ void InspectMessageHandler::HandlePauseCommand(const base::ListValue* args) {
 }
 
 void InspectMessageHandler::HandleInspectBrowserCommand(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   std::string source_id;
   std::string browser_id;
   std::string front_end;
@@ -367,42 +372,40 @@ void InspectMessageHandler::HandleInspectBrowserCommand(
 
 void InspectMessageHandler::HandleBooleanPrefChanged(
     const char* pref_name,
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   Profile* profile = Profile::FromWebUI(web_ui());
   if (!profile)
     return;
 
-  const auto& list = args->GetListDeprecated();
-  if (list.size() == 1 && list[0].is_bool())
-    profile->GetPrefs()->SetBoolean(pref_name, list[0].GetBool());
+  if (args.size() == 1 && args[0].is_bool())
+    profile->GetPrefs()->SetBoolean(pref_name, args[0].GetBool());
 }
 
 void InspectMessageHandler::HandlePortForwardingConfigCommand(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   Profile* profile = Profile::FromWebUI(web_ui());
   if (!profile)
     return;
 
-  if (args->GetListDeprecated().size() == 1) {
-    const base::Value& src = args->GetListDeprecated()[0];
+  if (args.size() == 1) {
+    const base::Value& src = args[0];
     if (src.is_dict())
       profile->GetPrefs()->Set(prefs::kDevToolsPortForwardingConfig, src);
   }
 }
 
 void InspectMessageHandler::HandleTCPDiscoveryConfigCommand(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   Profile* profile = Profile::FromWebUI(web_ui());
   if (!profile)
     return;
 
-  base::Value::ConstListView args_list = args->GetListDeprecated();
-  if (args_list.size() == 1u && args_list[0].is_list())
-    profile->GetPrefs()->Set(prefs::kDevToolsTCPDiscoveryConfig, args_list[0]);
+  if (args.size() == 1u && args[0].is_list())
+    profile->GetPrefs()->Set(prefs::kDevToolsTCPDiscoveryConfig, args[0]);
 }
 
 void InspectMessageHandler::HandleOpenNodeFrontendCommand(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   Profile* profile = Profile::FromWebUI(web_ui());
   if (!profile)
     return;
@@ -410,7 +413,7 @@ void InspectMessageHandler::HandleOpenNodeFrontendCommand(
 }
 
 void InspectMessageHandler::HandleLaunchUIDevToolsCommand(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   // Start the UI DevTools server if needed and launch the front-end.
   if (!ChromeBrowserMainExtraPartsViews::Get()->GetUiDevToolsServerInstance()) {
     ChromeBrowserMainExtraPartsViews::Get()->CreateUiDevTools();
