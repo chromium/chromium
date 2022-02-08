@@ -15,7 +15,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CurrentWallpaper, WallpaperImage, WallpaperLayout, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
+import {CurrentWallpaper, GooglePhotosPhoto, WallpaperImage, WallpaperLayout, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getWallpaperLayoutEnum} from '../utils.js';
 import {isFilePath} from '../utils.js';
@@ -66,7 +66,8 @@ export class WallpaperFullscreen extends WithPersonalizationStore {
   private visible_: boolean = false;
   private showLayoutOptions_: boolean = false;
   private currentSelected_: CurrentWallpaper|null = null;
-  private pendingSelected_: FilePath|WallpaperImage|null = null;
+  private pendingSelected_: FilePath|GooglePhotosPhoto|WallpaperImage|null =
+      null;
   private selectedLayout_: WallpaperLayout|null = null;
 
   private wallpaperProvider_: WallpaperProviderInterface;

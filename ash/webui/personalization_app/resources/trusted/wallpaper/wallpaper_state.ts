@@ -82,7 +82,7 @@ export interface WallpaperState {
   loading: LoadingState;
   local: LocalState;
   currentSelected: CurrentWallpaper|null;
-  pendingSelected: WallpaperImage|FilePath|null;
+  pendingSelected: WallpaperImage|FilePath|GooglePhotosPhoto|null;
   dailyRefresh: DailyRefreshState;
   fullscreen: boolean;
   googlePhotos: GooglePhotosState;

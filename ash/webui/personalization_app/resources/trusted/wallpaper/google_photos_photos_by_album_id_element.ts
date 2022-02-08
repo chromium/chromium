@@ -10,14 +10,15 @@
 import './styles.js';
 import '/common/styles.js';
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isNonEmptyArray} from '../../common/utils.js';
+import {isNonEmptyArray, isSelectionEvent} from '../../common/utils.js';
 import {GooglePhotosPhoto, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore, WithPersonalizationStore} from '../personalization_store.js';
 
-import {fetchGooglePhotosAlbum} from './wallpaper_controller.js';
+import {fetchGooglePhotosAlbum, selectWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 export interface GooglePhotosPhotosByAlbumId {
@@ -99,6 +100,14 @@ export class GooglePhotosPhotosByAlbumId extends WithPersonalizationStore {
     // iron-list will render incorrectly. Force relayout by invalidating the
     // iron-list when this element becomes visible.
     afterNextRender(this, () => this.$.grid.fire('iron-resize'));
+  }
+
+  /** Invoked on selection of a photo. */
+  private onPhotoSelected_(e: Event&{model: {photo: GooglePhotosPhoto}}) {
+    assert(e.model.photo);
+    if (isSelectionEvent(e)) {
+      selectWallpaper(e.model.photo, this.wallpaperProvider_, this.getStore());
+    }
   }
 
   /** Invoked to compute |album_|. */

@@ -8,7 +8,7 @@
 
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
-import {WallpaperImage, WallpaperLayout} from '../trusted/personalization_app.mojom-webui.js';
+import {GooglePhotosPhoto, WallpaperImage, WallpaperLayout} from '../trusted/personalization_app.mojom-webui.js';
 
 export function isWallpaperImage(obj: any): obj is WallpaperImage {
   return typeof obj?.assetId === 'bigint';
@@ -16,6 +16,11 @@ export function isWallpaperImage(obj: any): obj is WallpaperImage {
 
 export function isFilePath(obj: any): obj is FilePath {
   return typeof obj?.path === 'string' && obj.path;
+}
+
+/** Checks whether |obj| is an instance of |GooglePhotosPhoto|. */
+export function isGooglePhotosPhoto(obj: any): obj is GooglePhotosPhoto {
+  return typeof obj?.id === 'string';
 }
 
 /**

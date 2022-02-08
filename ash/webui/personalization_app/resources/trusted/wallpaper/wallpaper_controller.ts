@@ -9,7 +9,7 @@ import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path
 import {isNonEmptyArray} from '../../common/utils.js';
 import {FetchGooglePhotosAlbumsResponse, FetchGooglePhotosPhotosResponse, GooglePhotosAlbum, GooglePhotosPhoto, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
-import {isFilePath, isWallpaperImage} from '../utils.js';
+import {isFilePath, isGooglePhotosPhoto, isWallpaperImage} from '../utils.js';
 
 import * as action from './wallpaper_actions.js';
 
@@ -212,8 +212,8 @@ async function getMissingLocalImageThumbnails(
 }
 
 export async function selectWallpaper(
-    image: WallpaperImage|FilePath, provider: WallpaperProviderInterface,
-    store: PersonalizationStore,
+    image: WallpaperImage|FilePath|GooglePhotosPhoto,
+    provider: WallpaperProviderInterface, store: PersonalizationStore,
     layout: WallpaperLayout = WallpaperLayout.kCenterCropped): Promise<void> {
   // Batch these changes together to reduce polymer churn as multiple state
   // fields change quickly.
@@ -231,6 +231,9 @@ export async function selectWallpaper(
     } else if (isFilePath(image)) {
       return provider.selectLocalImage(
           image, layout, /*preview_mode=*/ shouldPreview);
+    } else if (isGooglePhotosPhoto(image)) {
+      // TODO(b/218331763): Replace with mojo interface call.
+      return {success: false};
     } else {
       console.warn('Image must be a local image or a WallpaperImage');
       return {success: false};

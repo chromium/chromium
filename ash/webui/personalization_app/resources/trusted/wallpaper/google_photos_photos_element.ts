@@ -15,8 +15,11 @@ import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-li
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getNumberOfGridItemsPerRow, isNonEmptyArray, isSelectionEvent, normalizeKeyForRTL} from '../../common/utils.js';
-import {GooglePhotosPhoto} from '../personalization_app.mojom-webui.js';
+import {GooglePhotosPhoto, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
+
+import {selectWallpaper} from './wallpaper_controller.js';
+import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
 export interface GooglePhotosPhotos {
   $: {grid: IronListElement;};
@@ -83,6 +86,10 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
 
   /** The number of photos to render per row in a grid. */
   private photosPerRow_: number;
+
+  /** The singleton wallpaper provider interface. */
+  private wallpaperProvider_: WallpaperProviderInterface =
+      getWallpaperProvider();
 
   connectedCallback() {
     super.connectedCallback();
@@ -156,6 +163,14 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
         focusable.setAttribute('tabindex', '-1');
         afterNextRender(this, () => focusable.setAttribute('tabindex', '0'));
         return;
+    }
+  }
+
+  /** Invoked on selection of a photo. */
+  private onPhotoSelected_(e: Event&{model: {photo: GooglePhotosPhoto}}) {
+    assert(e.model.photo);
+    if (isSelectionEvent(e)) {
+      selectWallpaper(e.model.photo, this.wallpaperProvider_, this.getStore());
     }
   }
 

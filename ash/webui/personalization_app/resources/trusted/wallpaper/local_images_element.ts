@@ -21,7 +21,7 @@ import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/pol
 
 import {getLoadingPlaceholderAnimationDelay} from '../../common/utils.js';
 import {isSelectionEvent} from '../../common/utils.js';
-import {CurrentWallpaper, WallpaperImage, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
+import {CurrentWallpaper, GooglePhotosPhoto, WallpaperImage, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isFilePath} from '../utils.js';
 
@@ -80,7 +80,7 @@ export class LocalImages extends WithPersonalizationStore {
   private imageData_: Record<FilePath['path'], string>;
   private imageDataLoading_: Record<FilePath['path'], boolean>;
   private currentSelected_: CurrentWallpaper|null;
-  private pendingSelected_: FilePath|WallpaperImage|null;
+  private pendingSelected_: FilePath|GooglePhotosPhoto|WallpaperImage|null;
   private imagesToDisplay_: FilePath[];
 
   constructor() {
