@@ -768,6 +768,619 @@ bool AXPlatformNodeWin::IsValidUiaRelationTarget(
   return true;
 }
 
+AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
+  // If this is a web area for a presentational iframe, give it a role of
+  // something other than document so that the fact that it's a separate doc
+  // is not exposed to AT.
+  if (GetDelegate()->IsWebAreaForPresentationalIframe())
+    return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"group"};
+
+  // See UIARoleProperties for descriptions of the properties.
+  switch (GetRole()) {
+    case ax::mojom::Role::kAlert:
+      return {LocalizationStrategy::kDefer, UIA_TextControlTypeId, L"alert"};
+    case ax::mojom::Role::kAlertDialog:
+      // Our MSAA implementation suggests the use of
+      // "alert", not "alertdialog" because some
+      // Windows screen readers are not compatible with
+      // |ax::mojom::Role::kAlertDialog| yet.
+      return {LocalizationStrategy::kSupply, UIA_WindowControlTypeId, L"alert"};
+
+    case ax::mojom::Role::kComment:
+    case ax::mojom::Role::kSuggestion:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"group"};
+
+    case ax::mojom::Role::kApplication:
+      return {LocalizationStrategy::kDefer, UIA_PaneControlTypeId,
+              L"application"};
+
+    case ax::mojom::Role::kArticle:
+      return {LocalizationStrategy::kDefer, UIA_GroupControlTypeId, L"article"};
+
+    case ax::mojom::Role::kAudio:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"group"};
+
+    case ax::mojom::Role::kBanner:
+    case ax::mojom::Role::kHeader:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"banner"};
+
+    case ax::mojom::Role::kBlockquote:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"group"};
+
+    case ax::mojom::Role::kButton:
+      return {LocalizationStrategy::kDefer, UIA_ButtonControlTypeId, L"button"};
+
+    case ax::mojom::Role::kCanvas:
+      return {LocalizationStrategy::kSupply, UIA_ImageControlTypeId, L"img"};
+
+    case ax::mojom::Role::kCaption:
+      return {LocalizationStrategy::kSupply, UIA_TextControlTypeId,
+              L"description"};
+
+    case ax::mojom::Role::kCaret:
+      return {LocalizationStrategy::kSupply, UIA_PaneControlTypeId, L"region"};
+
+    case ax::mojom::Role::kCell:
+      return {LocalizationStrategy::kDefer, UIA_DataItemControlTypeId,
+              L"gridcell"};
+
+    case ax::mojom::Role::kCode:
+      return {LocalizationStrategy::kSupply, UIA_TextControlTypeId, L"code"};
+
+    case ax::mojom::Role::kCheckBox:
+      return {LocalizationStrategy::kDefer, UIA_CheckBoxControlTypeId,
+              L"checkbox"};
+
+    case ax::mojom::Role::kClient:
+      return {LocalizationStrategy::kSupply, UIA_PaneControlTypeId, L"region"};
+
+    case ax::mojom::Role::kColorWell:
+      return {LocalizationStrategy::kSupply, UIA_ButtonControlTypeId,
+              L"textbox"};
+
+    case ax::mojom::Role::kColumn:
+      return {LocalizationStrategy::kSupply, UIA_PaneControlTypeId, L"region"};
+
+    case ax::mojom::Role::kColumnHeader:
+      return {LocalizationStrategy::kDefer, UIA_DataItemControlTypeId,
+              L"columnheader"};
+
+    case ax::mojom::Role::kComboBoxGrouping:
+    case ax::mojom::Role::kComboBoxMenuButton:
+      return {LocalizationStrategy::kSupply, UIA_ComboBoxControlTypeId,
+              L"combobox"};
+
+    case ax::mojom::Role::kComplementary:
+      return {LocalizationStrategy::kDefer, UIA_GroupControlTypeId,
+              L"complementary"};
+
+    case ax::mojom::Role::kContentDeletion:
+    case ax::mojom::Role::kContentInsertion:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"group"};
+
+    case ax::mojom::Role::kContentInfo:
+    case ax::mojom::Role::kFooter:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId,
+              L"contentinfo"};
+
+    case ax::mojom::Role::kDate:
+    case ax::mojom::Role::kDateTime:
+      return {LocalizationStrategy::kSupply, UIA_EditControlTypeId, L"textbox"};
+
+    case ax::mojom::Role::kDefinition:
+      return {LocalizationStrategy::kDefer, UIA_GroupControlTypeId,
+              L"definition"};
+
+    case ax::mojom::Role::kDescriptionListDetail:
+      return {LocalizationStrategy::kDefer, UIA_TextControlTypeId,
+              L"description"};
+
+    case ax::mojom::Role::kDescriptionList:
+      return {LocalizationStrategy::kDefer, UIA_ListControlTypeId, L"list"};
+
+    case ax::mojom::Role::kDescriptionListTerm:
+      return {LocalizationStrategy::kDefer, UIA_ListItemControlTypeId,
+              L"listitem"};
+
+    case ax::mojom::Role::kDesktop:
+      return {LocalizationStrategy::kSupply, UIA_DocumentControlTypeId,
+              L"document"};
+
+    case ax::mojom::Role::kDetails:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"group"};
+
+    case ax::mojom::Role::kDialog:
+      return {LocalizationStrategy::kDefer, UIA_WindowControlTypeId, L"dialog"};
+
+    case ax::mojom::Role::kDisclosureTriangle:
+      return {LocalizationStrategy::kSupply, UIA_ButtonControlTypeId,
+              L"button"};
+
+    case ax::mojom::Role::kDirectory:
+      return {LocalizationStrategy::kDefer, UIA_ListControlTypeId,
+              L"directory"};
+
+    case ax::mojom::Role::kDocCover:
+      return {LocalizationStrategy::kSupply, UIA_ImageControlTypeId, L"img"};
+
+    case ax::mojom::Role::kDocBackLink:
+    case ax::mojom::Role::kDocBiblioRef:
+    case ax::mojom::Role::kDocGlossRef:
+    case ax::mojom::Role::kDocNoteRef:
+      return {LocalizationStrategy::kSupply, UIA_HyperlinkControlTypeId,
+              L"link"};
+
+    case ax::mojom::Role::kDocBiblioEntry:
+    case ax::mojom::Role::kDocEndnote:
+    case ax::mojom::Role::kDocFootnote:
+      return {LocalizationStrategy::kSupply, UIA_ListItemControlTypeId,
+              L"listitem"};
+
+    case ax::mojom::Role::kDocPageBreak:
+      return {LocalizationStrategy::kSupply, UIA_SeparatorControlTypeId,
+              L"separator"};
+
+    case ax::mojom::Role::kDocAbstract:
+    case ax::mojom::Role::kDocAcknowledgments:
+    case ax::mojom::Role::kDocAfterword:
+    case ax::mojom::Role::kDocAppendix:
+    case ax::mojom::Role::kDocBibliography:
+    case ax::mojom::Role::kDocChapter:
+    case ax::mojom::Role::kDocColophon:
+    case ax::mojom::Role::kDocConclusion:
+    case ax::mojom::Role::kDocCredit:
+    case ax::mojom::Role::kDocCredits:
+    case ax::mojom::Role::kDocDedication:
+    case ax::mojom::Role::kDocEndnotes:
+    case ax::mojom::Role::kDocEpigraph:
+    case ax::mojom::Role::kDocEpilogue:
+    case ax::mojom::Role::kDocErrata:
+    case ax::mojom::Role::kDocExample:
+    case ax::mojom::Role::kDocForeword:
+    case ax::mojom::Role::kDocGlossary:
+    case ax::mojom::Role::kDocIndex:
+    case ax::mojom::Role::kDocIntroduction:
+    case ax::mojom::Role::kDocNotice:
+    case ax::mojom::Role::kDocPageFooter:
+    case ax::mojom::Role::kDocPageHeader:
+    case ax::mojom::Role::kDocPageList:
+    case ax::mojom::Role::kDocPart:
+    case ax::mojom::Role::kDocPreface:
+    case ax::mojom::Role::kDocPrologue:
+    case ax::mojom::Role::kDocPullquote:
+    case ax::mojom::Role::kDocQna:
+    case ax::mojom::Role::kDocSubtitle:
+    case ax::mojom::Role::kDocTip:
+    case ax::mojom::Role::kDocToc:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"group"};
+
+    case ax::mojom::Role::kDocument:
+      return {LocalizationStrategy::kSupply, UIA_DocumentControlTypeId,
+              L"document"};
+    case ax::mojom::Role::kPdfRoot:
+    case ax::mojom::Role::kRootWebArea:
+      return {LocalizationStrategy::kSupply, UIA_DocumentControlTypeId,
+              L"document"};
+
+    case ax::mojom::Role::kEmbeddedObject:
+      if (GetDelegate()->GetChildCount()) {
+        return {LocalizationStrategy::kSupply, UIA_PaneControlTypeId, L"group"};
+      }
+      return {LocalizationStrategy::kSupply, UIA_PaneControlTypeId,
+              L"document"};
+
+    case ax::mojom::Role::kEmphasis:
+      return {LocalizationStrategy::kSupply, UIA_TextControlTypeId,
+              L"emphasis"};
+
+    case ax::mojom::Role::kFeed:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"group"};
+
+    case ax::mojom::Role::kFigcaption:
+      return {LocalizationStrategy::kSupply, UIA_TextControlTypeId,
+              L"description"};
+
+    case ax::mojom::Role::kFigure:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"group"};
+
+    case ax::mojom::Role::kFooterAsNonLandmark:
+    case ax::mojom::Role::kHeaderAsNonLandmark:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"group"};
+
+    case ax::mojom::Role::kForm:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"form"};
+
+    case ax::mojom::Role::kGenericContainer:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"group"};
+
+    case ax::mojom::Role::kGraphicsDocument:
+      return {LocalizationStrategy::kSupply, UIA_DocumentControlTypeId,
+              L"document"};
+
+    case ax::mojom::Role::kGraphicsObject:
+      return {LocalizationStrategy::kSupply, UIA_PaneControlTypeId, L"region"};
+
+    case ax::mojom::Role::kGraphicsSymbol:
+      return {LocalizationStrategy::kSupply, UIA_ImageControlTypeId, L"img"};
+
+    case ax::mojom::Role::kGrid:
+      return {LocalizationStrategy::kDefer, UIA_DataGridControlTypeId, L"grid"};
+
+    case ax::mojom::Role::kGroup:
+      return {LocalizationStrategy::kDefer, UIA_GroupControlTypeId, L"group"};
+
+    case ax::mojom::Role::kHeading:
+      return {LocalizationStrategy::kDefer, UIA_TextControlTypeId, L"heading"};
+
+    case ax::mojom::Role::kIframe:
+      return {LocalizationStrategy::kSupply, UIA_DocumentControlTypeId,
+              L"document"};
+
+    case ax::mojom::Role::kIframePresentational:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"group"};
+
+    case ax::mojom::Role::kImage:
+      // We may want to expose additional details in the localized string such
+      // as 'Unlabeled'
+      if (IsImageWithMap()) {
+        return {LocalizationStrategy::kSupply, UIA_DocumentControlTypeId,
+                L"img"};
+      }
+      return {LocalizationStrategy::kSupply, UIA_ImageControlTypeId, L"img"};
+
+    case ax::mojom::Role::kInputTime:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"group"};
+
+    case ax::mojom::Role::kInlineTextBox:
+      return {LocalizationStrategy::kSupply, UIA_DocumentControlTypeId,
+              L"textbox"};
+
+    case ax::mojom::Role::kLabelText:
+    case ax::mojom::Role::kLegend:
+      return {LocalizationStrategy::kSupply, UIA_TextControlTypeId,
+              L"description"};
+
+    case ax::mojom::Role::kLayoutTable:
+      return {LocalizationStrategy::kDefer, UIA_TableControlTypeId, L"grid"};
+
+    case ax::mojom::Role::kLayoutTableCell:
+      return {LocalizationStrategy::kDefer, UIA_DataItemControlTypeId,
+              L"gridcell"};
+
+    case ax::mojom::Role::kLayoutTableRow:
+      return {LocalizationStrategy::kDefer, UIA_DataItemControlTypeId, L"row"};
+
+    case ax::mojom::Role::kLink:
+      return {LocalizationStrategy::kDefer, UIA_HyperlinkControlTypeId,
+              L"link"};
+
+    case ax::mojom::Role::kList:
+      return {LocalizationStrategy::kDefer, UIA_ListControlTypeId, L"list"};
+
+    case ax::mojom::Role::kListBox:
+      return {LocalizationStrategy::kDefer, UIA_ListControlTypeId, L"listbox"};
+
+    case ax::mojom::Role::kListBoxOption:
+      return {LocalizationStrategy::kDefer, UIA_ListItemControlTypeId,
+              L"option"};
+
+    case ax::mojom::Role::kListGrid:
+      return {LocalizationStrategy::kDefer, UIA_DataGridControlTypeId,
+              L"listview"};
+
+    case ax::mojom::Role::kListItem:
+      return {LocalizationStrategy::kSupply, UIA_ListItemControlTypeId,
+              L"listitem"};
+
+    case ax::mojom::Role::kListMarker:
+      // Regular list markers only expose their alternative text, but do not
+      // expose their descendants; and the descendants should be ignored. This
+      // is because the alternative text depends on the counter style and can be
+      // different from the actual (visual) marker text, and hence, inconsistent
+      // with the descendants. We treat a list marker as non-text only if it
+      // still has non-ignored descendants, which happens only when:
+      // - The list marker itself is ignored but the descendants are not
+      // - Or the list marker contains images
+      if (!GetDelegate()->GetChildCount()) {
+        return {LocalizationStrategy::kSupply, UIA_TextControlTypeId,
+                L"description"};
+      }
+      return {LocalizationStrategy::kSupply, UIA_TextControlTypeId, L"group"};
+
+    case ax::mojom::Role::kLog:
+      return {LocalizationStrategy::kDefer, UIA_GroupControlTypeId, L"log"};
+
+    case ax::mojom::Role::kMain:
+      return {LocalizationStrategy::kDefer, UIA_GroupControlTypeId, L"main"};
+
+    case ax::mojom::Role::kMark:
+      return {LocalizationStrategy::kSupply, UIA_TextControlTypeId,
+              L"description"};
+
+    case ax::mojom::Role::kMarquee:
+      return {LocalizationStrategy::kDefer, UIA_TextControlTypeId, L"marquee"};
+
+    case ax::mojom::Role::kMath:
+    case ax::mojom::Role::kMathMLMath:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"group"};
+
+    // TODO(http://crbug.com/1260585): Refine this if/when a UIA API exists for
+    // properly exposing MathML content.
+    case ax::mojom::Role::kMathMLFraction:
+    case ax::mojom::Role::kMathMLIdentifier:
+    case ax::mojom::Role::kMathMLMultiscripts:
+    case ax::mojom::Role::kMathMLNoneScript:
+    case ax::mojom::Role::kMathMLNumber:
+    case ax::mojom::Role::kMathMLOperator:
+    case ax::mojom::Role::kMathMLOver:
+    case ax::mojom::Role::kMathMLPrescriptDelimiter:
+    case ax::mojom::Role::kMathMLRoot:
+    case ax::mojom::Role::kMathMLRow:
+    case ax::mojom::Role::kMathMLSquareRoot:
+    case ax::mojom::Role::kMathMLStringLiteral:
+    case ax::mojom::Role::kMathMLSub:
+    case ax::mojom::Role::kMathMLSubSup:
+    case ax::mojom::Role::kMathMLSup:
+    case ax::mojom::Role::kMathMLTable:
+    case ax::mojom::Role::kMathMLTableCell:
+    case ax::mojom::Role::kMathMLTableRow:
+    case ax::mojom::Role::kMathMLText:
+    case ax::mojom::Role::kMathMLUnder:
+    case ax::mojom::Role::kMathMLUnderOver:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"group"};
+
+    case ax::mojom::Role::kMenu:
+      return {LocalizationStrategy::kDefer, UIA_MenuControlTypeId, L"menu"};
+
+    case ax::mojom::Role::kMenuBar:
+      return {LocalizationStrategy::kDefer, UIA_MenuBarControlTypeId,
+              L"menubar"};
+
+    case ax::mojom::Role::kMenuItem:
+      return {LocalizationStrategy::kDefer, UIA_MenuItemControlTypeId,
+              L"menuitem"};
+
+    case ax::mojom::Role::kMenuItemCheckBox:
+      return {LocalizationStrategy::kDefer, UIA_CheckBoxControlTypeId,
+              L"menuitemcheckbox"};
+
+    case ax::mojom::Role::kMenuItemRadio:
+      return {LocalizationStrategy::kDefer, UIA_RadioButtonControlTypeId,
+              L"menuitemradio"};
+
+    case ax::mojom::Role::kMenuListPopup:
+      return {LocalizationStrategy::kSupply, UIA_ListControlTypeId, L"list"};
+
+    case ax::mojom::Role::kMenuListOption:
+      return {LocalizationStrategy::kSupply, UIA_ListItemControlTypeId,
+              L"listitem"};
+
+    case ax::mojom::Role::kMeter:
+      return {LocalizationStrategy::kSupply, UIA_ProgressBarControlTypeId,
+              L"progressbar"};
+
+    case ax::mojom::Role::kNavigation:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId,
+              L"navigation"};
+
+    case ax::mojom::Role::kNote:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"note"};
+
+    case ax::mojom::Role::kParagraph:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"group"};
+
+    case ax::mojom::Role::kPdfActionableHighlight:
+      return {LocalizationStrategy::kSupply, UIA_CustomControlTypeId,
+              L"button"};
+
+    case ax::mojom::Role::kPluginObject:
+      // UIA_DocumentControlTypeId
+      if (GetDelegate()->GetChildCount()) {
+        return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId,
+                L"group"};
+      }
+      return {LocalizationStrategy::kSupply, UIA_DocumentControlTypeId,
+              L"document"};
+
+    case ax::mojom::Role::kPopUpButton: {
+      const std::string html_tag =
+          GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
+      if (html_tag == "select") {
+        return {LocalizationStrategy::kDefer, UIA_ComboBoxControlTypeId,
+                L"combobox"};
+      }
+      return {LocalizationStrategy::kDefer, UIA_ButtonControlTypeId, L"button"};
+    }
+
+    case ax::mojom::Role::kPortal:
+      return {LocalizationStrategy::kSupply, UIA_ButtonControlTypeId,
+              L"button"};
+
+    case ax::mojom::Role::kPre:
+      return {LocalizationStrategy::kSupply, UIA_PaneControlTypeId, L"region"};
+
+    case ax::mojom::Role::kProgressIndicator:
+      return {LocalizationStrategy::kSupply, UIA_ProgressBarControlTypeId,
+              L"progressbar"};
+
+    case ax::mojom::Role::kRadioButton:
+      return {LocalizationStrategy::kDefer, UIA_RadioButtonControlTypeId,
+              L"radio"};
+
+    case ax::mojom::Role::kRadioGroup:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId,
+              L"radiogroup"};
+
+    case ax::mojom::Role::kRegion:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"region"};
+
+    case ax::mojom::Role::kRow:
+      // Role changes depending on whether row is inside a treegrid
+      // https://www.w3.org/TR/core-aam-1.1/#role-map-row
+      if (IsInTreeGrid()) {
+        return {LocalizationStrategy::kDefer, UIA_TreeItemControlTypeId,
+                L"treeitem"};
+      }
+      return {LocalizationStrategy::kDefer, UIA_DataItemControlTypeId, L"row"};
+
+    case ax::mojom::Role::kRowGroup:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId,
+              L"rowgroup"};
+
+    case ax::mojom::Role::kRowHeader:
+      return {LocalizationStrategy::kSupply, UIA_DataItemControlTypeId,
+              L"rowheader"};
+
+    case ax::mojom::Role::kRuby:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"group"};
+
+    case ax::mojom::Role::kRubyAnnotation:
+      // Generally exposed as description on <ruby> (Role::kRuby) element, not
+      // as its own object in the tree.
+      // However, it's possible to make a kRubyAnnotation element show up in the
+      // AX tree, for example by adding tabindex="0" to the source <rp> or <rt>
+      // element or making the source element the target of an aria-owns.
+      // Therefore, browser side needs to gracefully handle it if it actually
+      // shows up in the tree.
+      return {LocalizationStrategy::kSupply, UIA_TextControlTypeId,
+              L"description"};
+
+    case ax::mojom::Role::kSection:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"group"};
+
+    case ax::mojom::Role::kScrollBar:
+      return {LocalizationStrategy::kDefer, UIA_ScrollBarControlTypeId,
+              L"scrollbar"};
+
+    case ax::mojom::Role::kScrollView:
+      return {LocalizationStrategy::kSupply, UIA_PaneControlTypeId, L"region"};
+
+    case ax::mojom::Role::kSearch:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"search"};
+
+    case ax::mojom::Role::kSlider:
+      return {LocalizationStrategy::kDefer, UIA_SliderControlTypeId, L"slider"};
+
+    case ax::mojom::Role::kSpinButton:
+      return {LocalizationStrategy::kDefer, UIA_SpinnerControlTypeId,
+              L"spinbutton"};
+
+    case ax::mojom::Role::kStrong:
+      return {LocalizationStrategy::kSupply, UIA_TextControlTypeId, L"strong"};
+
+    case ax::mojom::Role::kSwitch:
+      return {LocalizationStrategy::kSupply, UIA_ButtonControlTypeId,
+              L"switch"};
+
+    case ax::mojom::Role::kStaticText:
+      return {LocalizationStrategy::kDefer, UIA_TextControlTypeId,
+              L"description"};
+
+    case ax::mojom::Role::kStatus:
+      return {LocalizationStrategy::kDefer, UIA_StatusBarControlTypeId,
+              L"status"};
+
+    case ax::mojom::Role::kSplitter:
+      return {LocalizationStrategy::kDefer, UIA_SeparatorControlTypeId,
+              L"separator"};
+
+    case ax::mojom::Role::kSubscript:
+    case ax::mojom::Role::kSuperscript:
+      return {LocalizationStrategy::kSupply, UIA_TextControlTypeId, L"group"};
+
+    case ax::mojom::Role::kSvgRoot:
+      return {LocalizationStrategy::kSupply, UIA_ImageControlTypeId, L"img"};
+
+    case ax::mojom::Role::kTab:
+      return {LocalizationStrategy::kDefer, UIA_TabItemControlTypeId, L"tab"};
+
+    case ax::mojom::Role::kTable:
+      return {LocalizationStrategy::kDefer, UIA_TableControlTypeId, L"grid"};
+
+    case ax::mojom::Role::kTableHeaderContainer:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"group"};
+
+    case ax::mojom::Role::kTabList:
+      return {LocalizationStrategy::kDefer, UIA_TabControlTypeId, L"tablist"};
+
+    case ax::mojom::Role::kTabPanel:
+      return {LocalizationStrategy::kDefer, UIA_PaneControlTypeId, L"tabpanel"};
+
+    case ax::mojom::Role::kTerm:
+      return {LocalizationStrategy::kSupply, UIA_ListItemControlTypeId,
+              L"listitem"};
+
+    case ax::mojom::Role::kTitleBar:
+      return {LocalizationStrategy::kSupply, UIA_TitleBarControlTypeId,
+              L"group"};
+
+    case ax::mojom::Role::kToggleButton:
+      return {LocalizationStrategy::kSupply, UIA_ButtonControlTypeId,
+              L"button"};
+
+    case ax::mojom::Role::kTextField:
+      return {LocalizationStrategy::kSupply, UIA_EditControlTypeId, L"textbox"};
+
+    case ax::mojom::Role::kSearchBox:
+      return {LocalizationStrategy::kSupply, UIA_EditControlTypeId,
+              L"searchbox"};
+
+    case ax::mojom::Role::kTextFieldWithComboBox:
+      return {LocalizationStrategy::kSupply, UIA_ComboBoxControlTypeId,
+              L"combobox"};
+
+    case ax::mojom::Role::kAbbr:
+      return {LocalizationStrategy::kSupply, UIA_TextControlTypeId,
+              L"description"};
+
+    case ax::mojom::Role::kTime:
+      return {LocalizationStrategy::kSupply, UIA_TextControlTypeId, L"time"};
+
+    case ax::mojom::Role::kTimer:
+      return {LocalizationStrategy::kDefer, UIA_PaneControlTypeId, L"timer"};
+
+    case ax::mojom::Role::kToolbar:
+      return {LocalizationStrategy::kDefer, UIA_ToolBarControlTypeId,
+              L"toolbar"};
+
+    case ax::mojom::Role::kTooltip:
+      return {LocalizationStrategy::kDefer, UIA_ToolTipControlTypeId,
+              L"tooltip"};
+
+    case ax::mojom::Role::kTree:
+      return {LocalizationStrategy::kDefer, UIA_TreeControlTypeId, L"tree"};
+
+    case ax::mojom::Role::kTreeGrid:
+      return {LocalizationStrategy::kDefer, UIA_DataGridControlTypeId,
+              L"treegrid"};
+
+    case ax::mojom::Role::kTreeItem:
+      return {LocalizationStrategy::kDefer, UIA_TreeItemControlTypeId,
+              L"treeitem"};
+
+    case ax::mojom::Role::kLineBreak:
+      return {LocalizationStrategy::kDefer, UIA_SeparatorControlTypeId,
+              L"separator"};
+
+    case ax::mojom::Role::kVideo:
+      return {LocalizationStrategy::kSupply, UIA_GroupControlTypeId, L"group"};
+
+    case ax::mojom::Role::kWebView:
+      return {LocalizationStrategy::kSupply, UIA_DocumentControlTypeId,
+              L"document"};
+
+    case ax::mojom::Role::kImeCandidate:  // Internal role, not used on Windows.
+      return {LocalizationStrategy::kDefer, UIA_PaneControlTypeId, L"group"};
+
+    case ax::mojom::Role::kPane:
+    case ax::mojom::Role::kWindow:
+    case ax::mojom::Role::kKeyboard:
+    case ax::mojom::Role::kNone:
+    case ax::mojom::Role::kUnknown:
+      return {LocalizationStrategy::kSupply, UIA_PaneControlTypeId, L"region"};
+  }
+}
+
 //
 // IAccessible implementation.
 //
@@ -4238,7 +4851,7 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
 
     case UIA_AriaRolePropertyId:
       result->vt = VT_BSTR;
-      result->bstrVal = SysAllocString(UIAAriaRole().c_str());
+      result->bstrVal = SysAllocString(GetUIARoleProperties().aria_role);
       break;
 
     case UIA_AutomationIdPropertyId:
@@ -4265,7 +4878,7 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
 
     case UIA_ControlTypePropertyId:
       result->vt = VT_I4;
-      result->lVal = ComputeUIAControlType();
+      result->lVal = GetUIARoleProperties().control_type;
       break;
 
     case UIA_CulturePropertyId: {
@@ -4410,24 +5023,32 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
       break;
 
     case UIA_LocalizedControlTypePropertyId: {
-      // According to the HTML-AAM, UIA expects <output> to have a Localized
-      // Control Type of "output" whereas the Core-AAM states the Localized
-      // Control Type of the ARIA status role should be "status".
-      std::string html_tag =
-          GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
-      std::u16string localized_control_type =
-          html_tag == "output" ? l10n_util::GetStringUTF16(IDS_AX_ROLE_OUTPUT)
-                               : GetRoleDescription();
-
-      if (!localized_control_type.empty()) {
-        result->vt = VT_BSTR;
-        result->bstrVal =
-            SysAllocString(base::as_wcstr(localized_control_type));
-      }
-      // If a role description has not been provided, leave as VT_EMPTY.
       // UIA core handles Localized Control type for some built-in types and
       // also has a mapping for ARIA roles. To get these defaults, we need to
       // have returned VT_EMPTY.
+      // With this in mind, we should return VT_EMPTY if the internal role is
+      // accurately described by its UIA Control Type or aria role. Conversely,
+      // if the internal role cannot be accurately described by its UIA Control
+      // Type or aria role, we should instead provide our own localized
+      // description.
+      if (GetUIARoleProperties().localization_strategy ==
+          LocalizationStrategy::kSupply) {
+        // According to the HTML-AAM, UIA expects <output> to have a Localized
+        // Control Type of "output" whereas the Core-AAM states the Localized
+        // Control Type of the ARIA status role should be "status".
+        const std::string html_tag =
+            GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
+        std::u16string localized_control_type =
+            html_tag == "output" ? l10n_util::GetStringUTF16(IDS_AX_ROLE_OUTPUT)
+                                 : GetRoleDescription();
+
+        if (!localized_control_type.empty()) {
+          result->vt = VT_BSTR;
+          result->bstrVal =
+              SysAllocString(base::as_wcstr(localized_control_type));
+        }
+        // If a role description has not been provided, leave as VT_EMPTY.
+      }
     } break;
 
     case UIA_NamePropertyId:
@@ -6132,544 +6753,6 @@ std::vector<std::wstring> AXPlatformNodeWin::ComputeIA2Attributes() {
   return attribute_list;
 }
 
-std::wstring AXPlatformNodeWin::UIAAriaRole() {
-  // If this is a web area for a presentational iframe, give it a role of
-  // something other than document so that the fact that it's a separate doc
-  // is not exposed to AT.
-  if (GetDelegate()->IsWebAreaForPresentationalIframe())
-    return L"group";
-
-  switch (GetRole()) {
-    case ax::mojom::Role::kAlert:
-      return L"alert";
-
-    case ax::mojom::Role::kAlertDialog:
-      // Our MSAA implementation suggests the use of
-      // "alert", not "alertdialog" because some
-      // Windows screen readers are not compatible with
-      // |ax::mojom::Role::kAlertDialog| yet.
-      return L"alert";
-
-    case ax::mojom::Role::kComment:
-    case ax::mojom::Role::kSuggestion:
-      return L"group";
-
-    case ax::mojom::Role::kApplication:
-      return L"application";
-
-    case ax::mojom::Role::kArticle:
-      return L"article";
-
-    case ax::mojom::Role::kAudio:
-      return L"group";
-
-    case ax::mojom::Role::kBanner:
-    case ax::mojom::Role::kHeader:
-      return L"banner";
-
-    case ax::mojom::Role::kBlockquote:
-      return L"group";
-
-    case ax::mojom::Role::kButton:
-      return L"button";
-
-    case ax::mojom::Role::kCanvas:
-      return L"img";
-
-    case ax::mojom::Role::kCaption:
-      return L"description";
-
-    case ax::mojom::Role::kCaret:
-      return L"region";
-
-    case ax::mojom::Role::kCell:
-      return L"gridcell";
-
-    case ax::mojom::Role::kCode:
-      return L"code";
-
-    case ax::mojom::Role::kCheckBox:
-      return L"checkbox";
-
-    case ax::mojom::Role::kClient:
-      return L"region";
-
-    case ax::mojom::Role::kColorWell:
-      return L"textbox";
-
-    case ax::mojom::Role::kColumn:
-      return L"region";
-
-    case ax::mojom::Role::kColumnHeader:
-      return L"columnheader";
-
-    case ax::mojom::Role::kComboBoxGrouping:
-    case ax::mojom::Role::kComboBoxMenuButton:
-      return L"combobox";
-
-    case ax::mojom::Role::kComplementary:
-      return L"complementary";
-
-    case ax::mojom::Role::kContentDeletion:
-    case ax::mojom::Role::kContentInsertion:
-      return L"group";
-
-    case ax::mojom::Role::kContentInfo:
-    case ax::mojom::Role::kFooter:
-      return L"contentinfo";
-
-    case ax::mojom::Role::kDate:
-    case ax::mojom::Role::kDateTime:
-      return L"textbox";
-
-    case ax::mojom::Role::kDefinition:
-      return L"definition";
-
-    case ax::mojom::Role::kDescriptionListDetail:
-      return L"description";
-
-    case ax::mojom::Role::kDescriptionList:
-      return L"list";
-
-    case ax::mojom::Role::kDescriptionListTerm:
-      return L"listitem";
-
-    case ax::mojom::Role::kDesktop:
-      return L"document";
-
-    case ax::mojom::Role::kDetails:
-      return L"group";
-
-    case ax::mojom::Role::kDialog:
-      return L"dialog";
-
-    case ax::mojom::Role::kDisclosureTriangle:
-      return L"button";
-
-    case ax::mojom::Role::kDirectory:
-      return L"directory";
-
-    case ax::mojom::Role::kDocCover:
-      return L"img";
-
-    case ax::mojom::Role::kDocBackLink:
-    case ax::mojom::Role::kDocBiblioRef:
-    case ax::mojom::Role::kDocGlossRef:
-    case ax::mojom::Role::kDocNoteRef:
-      return L"link";
-
-    case ax::mojom::Role::kDocBiblioEntry:
-    case ax::mojom::Role::kDocEndnote:
-    case ax::mojom::Role::kDocFootnote:
-      return L"listitem";
-
-    case ax::mojom::Role::kDocPageBreak:
-      return L"separator";
-
-    case ax::mojom::Role::kDocAbstract:
-    case ax::mojom::Role::kDocAcknowledgments:
-    case ax::mojom::Role::kDocAfterword:
-    case ax::mojom::Role::kDocAppendix:
-    case ax::mojom::Role::kDocBibliography:
-    case ax::mojom::Role::kDocChapter:
-    case ax::mojom::Role::kDocColophon:
-    case ax::mojom::Role::kDocConclusion:
-    case ax::mojom::Role::kDocCredit:
-    case ax::mojom::Role::kDocCredits:
-    case ax::mojom::Role::kDocDedication:
-    case ax::mojom::Role::kDocEndnotes:
-    case ax::mojom::Role::kDocEpigraph:
-    case ax::mojom::Role::kDocEpilogue:
-    case ax::mojom::Role::kDocErrata:
-    case ax::mojom::Role::kDocExample:
-    case ax::mojom::Role::kDocForeword:
-    case ax::mojom::Role::kDocGlossary:
-    case ax::mojom::Role::kDocIndex:
-    case ax::mojom::Role::kDocIntroduction:
-    case ax::mojom::Role::kDocNotice:
-    case ax::mojom::Role::kDocPageFooter:
-    case ax::mojom::Role::kDocPageHeader:
-    case ax::mojom::Role::kDocPageList:
-    case ax::mojom::Role::kDocPart:
-    case ax::mojom::Role::kDocPreface:
-    case ax::mojom::Role::kDocPrologue:
-    case ax::mojom::Role::kDocPullquote:
-    case ax::mojom::Role::kDocQna:
-    case ax::mojom::Role::kDocSubtitle:
-    case ax::mojom::Role::kDocTip:
-    case ax::mojom::Role::kDocToc:
-      return L"group";
-
-    case ax::mojom::Role::kDocument:
-    case ax::mojom::Role::kPdfRoot:
-    case ax::mojom::Role::kRootWebArea:
-      return L"document";
-
-    case ax::mojom::Role::kEmbeddedObject:
-      if (GetDelegate()->GetChildCount()) {
-        return L"group";
-      } else {
-        return L"document";
-      }
-
-    case ax::mojom::Role::kEmphasis:
-      return L"emphasis";
-
-    case ax::mojom::Role::kFeed:
-      return L"group";
-
-    case ax::mojom::Role::kFigcaption:
-      return L"description";
-
-    case ax::mojom::Role::kFigure:
-      return L"group";
-
-    case ax::mojom::Role::kFooterAsNonLandmark:
-    case ax::mojom::Role::kHeaderAsNonLandmark:
-      return L"group";
-
-    case ax::mojom::Role::kForm:
-      return L"form";
-
-    case ax::mojom::Role::kGenericContainer:
-      return L"group";
-
-    case ax::mojom::Role::kGraphicsDocument:
-      return L"document";
-
-    case ax::mojom::Role::kGraphicsObject:
-      return L"region";
-
-    case ax::mojom::Role::kGraphicsSymbol:
-      return L"img";
-
-    case ax::mojom::Role::kGrid:
-      return L"grid";
-
-    case ax::mojom::Role::kGroup:
-      return L"group";
-
-    case ax::mojom::Role::kHeading:
-      return L"heading";
-
-    case ax::mojom::Role::kIframe:
-      return L"document";
-
-    case ax::mojom::Role::kIframePresentational:
-      return L"group";
-
-    case ax::mojom::Role::kImage:
-      return L"img";
-
-    case ax::mojom::Role::kImeCandidate:
-      // Internal role, not used on Windows.
-      return L"group";
-
-    case ax::mojom::Role::kInputTime:
-      return L"group";
-
-    case ax::mojom::Role::kInlineTextBox:
-      return L"textbox";
-
-    case ax::mojom::Role::kKeyboard:
-      return L"group";
-
-    case ax::mojom::Role::kLabelText:
-    case ax::mojom::Role::kLegend:
-      return L"description";
-
-    case ax::mojom::Role::kLayoutTable:
-      return L"grid";
-
-    case ax::mojom::Role::kLayoutTableCell:
-      return L"gridcell";
-
-    case ax::mojom::Role::kLayoutTableRow:
-      return L"row";
-
-    case ax::mojom::Role::kLink:
-      return L"link";
-
-    case ax::mojom::Role::kList:
-      return L"list";
-
-    case ax::mojom::Role::kListBox:
-      return L"listbox";
-
-    case ax::mojom::Role::kListBoxOption:
-      return L"option";
-
-    case ax::mojom::Role::kListGrid:
-      return L"listview";
-
-    case ax::mojom::Role::kListItem:
-      return L"listitem";
-
-    case ax::mojom::Role::kListMarker:
-      // Regular list markers only expose their alternative text, but do not
-      // expose their descendants; and the descendants should be ignored. This
-      // is because the alternative text depends on the counter style and can be
-      // different from the actual (visual) marker text, and hence, inconsistent
-      // with the descendants. We treat a list marker as non-text only if it
-      // still has non-ignored descendants, which happens only when:
-      // - The list marker itself is ignored but the descendants are not
-      // - Or the list marker contains images
-      if (!GetDelegate()->GetChildCount())
-        return L"description";
-      return L"group";
-
-    case ax::mojom::Role::kLog:
-      return L"log";
-
-    case ax::mojom::Role::kMain:
-      return L"main";
-
-    case ax::mojom::Role::kMark:
-      return L"description";
-
-    case ax::mojom::Role::kMarquee:
-      return L"marquee";
-
-    case ax::mojom::Role::kMath:
-    case ax::mojom::Role::kMathMLMath:
-      return L"group";
-
-    // TODO(http://crbug.com/1260585): Refine this if/when a UIA API exists for
-    // properly exposing MathML content.
-    case ax::mojom::Role::kMathMLFraction:
-    case ax::mojom::Role::kMathMLIdentifier:
-    case ax::mojom::Role::kMathMLMultiscripts:
-    case ax::mojom::Role::kMathMLNoneScript:
-    case ax::mojom::Role::kMathMLNumber:
-    case ax::mojom::Role::kMathMLOperator:
-    case ax::mojom::Role::kMathMLOver:
-    case ax::mojom::Role::kMathMLPrescriptDelimiter:
-    case ax::mojom::Role::kMathMLRoot:
-    case ax::mojom::Role::kMathMLRow:
-    case ax::mojom::Role::kMathMLSquareRoot:
-    case ax::mojom::Role::kMathMLStringLiteral:
-    case ax::mojom::Role::kMathMLSub:
-    case ax::mojom::Role::kMathMLSubSup:
-    case ax::mojom::Role::kMathMLSup:
-    case ax::mojom::Role::kMathMLTable:
-    case ax::mojom::Role::kMathMLTableCell:
-    case ax::mojom::Role::kMathMLTableRow:
-    case ax::mojom::Role::kMathMLText:
-    case ax::mojom::Role::kMathMLUnder:
-    case ax::mojom::Role::kMathMLUnderOver:
-      return L"group";
-
-    case ax::mojom::Role::kMenu:
-      return L"menu";
-
-    case ax::mojom::Role::kMenuBar:
-      return L"menubar";
-
-    case ax::mojom::Role::kMenuItem:
-      return L"menuitem";
-
-    case ax::mojom::Role::kMenuItemCheckBox:
-      return L"menuitemcheckbox";
-
-    case ax::mojom::Role::kMenuItemRadio:
-      return L"menuitemradio";
-
-    case ax::mojom::Role::kMenuListPopup:
-      return L"list";
-
-    case ax::mojom::Role::kMenuListOption:
-      return L"listitem";
-
-    case ax::mojom::Role::kMeter:
-      return L"progressbar";
-
-    case ax::mojom::Role::kNavigation:
-      return L"navigation";
-
-    case ax::mojom::Role::kNote:
-      return L"note";
-
-    case ax::mojom::Role::kParagraph:
-      return L"group";
-
-    case ax::mojom::Role::kPdfActionableHighlight:
-      return L"button";
-
-    case ax::mojom::Role::kPluginObject:
-      if (GetDelegate()->GetChildCount()) {
-        return L"group";
-      } else {
-        return L"document";
-      }
-
-    case ax::mojom::Role::kPopUpButton: {
-      std::string html_tag =
-          GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
-      if (html_tag == "select")
-        return L"combobox";
-      return L"button";
-    }
-
-    case ax::mojom::Role::kPortal:
-      return L"button";
-
-    case ax::mojom::Role::kPre:
-      return L"region";
-
-    case ax::mojom::Role::kProgressIndicator:
-      return L"progressbar";
-
-    case ax::mojom::Role::kRadioButton:
-      return L"radio";
-
-    case ax::mojom::Role::kRadioGroup:
-      return L"radiogroup";
-
-    case ax::mojom::Role::kRegion:
-      return L"region";
-
-    case ax::mojom::Role::kRow: {
-      // Role changes depending on whether row is inside a treegrid
-      // https://www.w3.org/TR/core-aam-1.1/#role-map-row
-      return IsInTreeGrid() ? L"treeitem" : L"row";
-    }
-
-    case ax::mojom::Role::kRowGroup:
-      return L"rowgroup";
-
-    case ax::mojom::Role::kRowHeader:
-      return L"rowheader";
-
-    case ax::mojom::Role::kRuby:
-      return L"group";
-
-    case ax::mojom::Role::kRubyAnnotation:
-      // Generally exposed as description on <ruby> (Role::kRuby) element, not
-      // as its own object in the tree.
-      // However, it's possible to make a kRubyAnnotation element show up in the
-      // AX tree, for example by adding tabindex="0" to the source <rp> or <rt>
-      // element or making the source element the target of an aria-owns.
-      // Therefore, browser side needs to gracefully handle it if it actually
-      // shows up in the tree.
-      return L"description";
-
-    case ax::mojom::Role::kSection:
-      return L"group";
-
-    case ax::mojom::Role::kScrollBar:
-      return L"scrollbar";
-
-    case ax::mojom::Role::kScrollView:
-      return L"region";
-
-    case ax::mojom::Role::kSearch:
-      return L"search";
-
-    case ax::mojom::Role::kSlider:
-      return L"slider";
-
-    case ax::mojom::Role::kSpinButton:
-      return L"spinbutton";
-
-    case ax::mojom::Role::kStrong:
-      return L"strong";
-
-    case ax::mojom::Role::kSwitch:
-      return L"switch";
-
-    case ax::mojom::Role::kStaticText:
-      return L"description";
-
-    case ax::mojom::Role::kStatus:
-      return L"status";
-
-    case ax::mojom::Role::kSplitter:
-      return L"separator";
-
-    case ax::mojom::Role::kSubscript:
-    case ax::mojom::Role::kSuperscript:
-      return L"group";
-
-    case ax::mojom::Role::kSvgRoot:
-      return L"img";
-
-    case ax::mojom::Role::kTab:
-      return L"tab";
-
-    case ax::mojom::Role::kTable:
-      return L"grid";
-
-    case ax::mojom::Role::kTableHeaderContainer:
-      return L"group";
-
-    case ax::mojom::Role::kTabList:
-      return L"tablist";
-
-    case ax::mojom::Role::kTabPanel:
-      return L"tabpanel";
-
-    case ax::mojom::Role::kTerm:
-      return L"listitem";
-
-    case ax::mojom::Role::kTitleBar:
-      return L"group";
-
-    case ax::mojom::Role::kToggleButton:
-      return L"button";
-
-    case ax::mojom::Role::kTextField:
-      return L"textbox";
-
-    case ax::mojom::Role::kSearchBox:
-      return L"searchbox";
-
-    case ax::mojom::Role::kTextFieldWithComboBox:
-      return L"combobox";
-
-    case ax::mojom::Role::kAbbr:
-      return L"description";
-
-    case ax::mojom::Role::kTime:
-      return L"time";
-
-    case ax::mojom::Role::kTimer:
-      return L"timer";
-
-    case ax::mojom::Role::kToolbar:
-      return L"toolbar";
-
-    case ax::mojom::Role::kTooltip:
-      return L"tooltip";
-
-    case ax::mojom::Role::kTree:
-      return L"tree";
-
-    case ax::mojom::Role::kTreeGrid:
-      return L"treegrid";
-
-    case ax::mojom::Role::kTreeItem:
-      return L"treeitem";
-
-    case ax::mojom::Role::kLineBreak:
-      return L"separator";
-
-    case ax::mojom::Role::kVideo:
-      return L"group";
-
-    case ax::mojom::Role::kWebView:
-      return L"document";
-
-    case ax::mojom::Role::kPane:
-    case ax::mojom::Role::kWindow:
-    case ax::mojom::Role::kNone:
-    case ax::mojom::Role::kUnknown:
-      return L"region";
-  }
-
-  NOTREACHED();
-  return L"document";
-}
-
 std::wstring AXPlatformNodeWin::ComputeUIAProperties() {
   std::vector<std::wstring> properties;
   BoolAttributeToUIAAriaProperty(
@@ -6847,530 +6930,6 @@ std::wstring AXPlatformNodeWin::ComputeUIAProperties() {
   return result;
 }
 
-LONG AXPlatformNodeWin::ComputeUIAControlType() {  // NOLINT(runtime/int)
-  // If this is a web area for a presentational iframe, give it a role of
-  // something other than document so that the fact that it's a separate doc
-  // is not exposed to AT.
-  if (GetDelegate()->IsWebAreaForPresentationalIframe())
-    return UIA_GroupControlTypeId;
-
-  switch (GetRole()) {
-    case ax::mojom::Role::kAlert:
-      return UIA_TextControlTypeId;
-
-    case ax::mojom::Role::kAlertDialog:
-      // In UIA, all dialogs (including alert dialogs) should return the
-      // UIA_WindowControlTypeId for ATs to be able to "trap" the AT's focus
-      // withing that dialog element.
-      return UIA_WindowControlTypeId;
-
-    case ax::mojom::Role::kComment:
-    case ax::mojom::Role::kSuggestion:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kApplication:
-      return UIA_PaneControlTypeId;
-
-    case ax::mojom::Role::kArticle:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kAudio:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kBanner:
-    case ax::mojom::Role::kHeader:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kBlockquote:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kButton:
-      return UIA_ButtonControlTypeId;
-
-    case ax::mojom::Role::kCanvas:
-      return UIA_ImageControlTypeId;
-
-    case ax::mojom::Role::kCaption:
-      return UIA_TextControlTypeId;
-
-    case ax::mojom::Role::kCaret:
-      return UIA_PaneControlTypeId;
-
-    case ax::mojom::Role::kCell:
-      return UIA_DataItemControlTypeId;
-
-    case ax::mojom::Role::kCheckBox:
-      return UIA_CheckBoxControlTypeId;
-
-    case ax::mojom::Role::kClient:
-      return UIA_PaneControlTypeId;
-
-    case ax::mojom::Role::kCode:
-      return UIA_TextControlTypeId;
-
-    case ax::mojom::Role::kColorWell:
-      return UIA_ButtonControlTypeId;
-
-    case ax::mojom::Role::kColumn:
-      return UIA_PaneControlTypeId;
-
-    case ax::mojom::Role::kColumnHeader:
-      return UIA_DataItemControlTypeId;
-
-    case ax::mojom::Role::kComboBoxGrouping:
-    case ax::mojom::Role::kComboBoxMenuButton:
-      return UIA_ComboBoxControlTypeId;
-
-    case ax::mojom::Role::kComplementary:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kContentDeletion:
-    case ax::mojom::Role::kContentInsertion:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kContentInfo:
-    case ax::mojom::Role::kFooter:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kDate:
-    case ax::mojom::Role::kDateTime:
-      return UIA_EditControlTypeId;
-
-    case ax::mojom::Role::kDefinition:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kDescriptionListDetail:
-      return UIA_TextControlTypeId;
-
-    case ax::mojom::Role::kDescriptionList:
-      return UIA_ListControlTypeId;
-
-    case ax::mojom::Role::kDescriptionListTerm:
-      return UIA_ListItemControlTypeId;
-
-    case ax::mojom::Role::kDesktop:
-      return UIA_DocumentControlTypeId;
-
-    case ax::mojom::Role::kDetails:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kDialog:
-      return UIA_WindowControlTypeId;
-
-    case ax::mojom::Role::kDisclosureTriangle:
-      return UIA_ButtonControlTypeId;
-
-    case ax::mojom::Role::kDirectory:
-      return UIA_ListControlTypeId;
-
-    case ax::mojom::Role::kDocCover:
-      return UIA_ImageControlTypeId;
-
-    case ax::mojom::Role::kDocBackLink:
-    case ax::mojom::Role::kDocBiblioRef:
-    case ax::mojom::Role::kDocGlossRef:
-    case ax::mojom::Role::kDocNoteRef:
-      return UIA_HyperlinkControlTypeId;
-
-    case ax::mojom::Role::kDocBiblioEntry:
-    case ax::mojom::Role::kDocEndnote:
-    case ax::mojom::Role::kDocFootnote:
-      return UIA_ListItemControlTypeId;
-
-    case ax::mojom::Role::kDocPageBreak:
-      return UIA_SeparatorControlTypeId;
-
-    case ax::mojom::Role::kDocAbstract:
-    case ax::mojom::Role::kDocAcknowledgments:
-    case ax::mojom::Role::kDocAfterword:
-    case ax::mojom::Role::kDocAppendix:
-    case ax::mojom::Role::kDocBibliography:
-    case ax::mojom::Role::kDocChapter:
-    case ax::mojom::Role::kDocColophon:
-    case ax::mojom::Role::kDocConclusion:
-    case ax::mojom::Role::kDocCredit:
-    case ax::mojom::Role::kDocCredits:
-    case ax::mojom::Role::kDocDedication:
-    case ax::mojom::Role::kDocEndnotes:
-    case ax::mojom::Role::kDocEpigraph:
-    case ax::mojom::Role::kDocEpilogue:
-    case ax::mojom::Role::kDocErrata:
-    case ax::mojom::Role::kDocExample:
-    case ax::mojom::Role::kDocForeword:
-    case ax::mojom::Role::kDocGlossary:
-    case ax::mojom::Role::kDocIndex:
-    case ax::mojom::Role::kDocIntroduction:
-    case ax::mojom::Role::kDocNotice:
-    case ax::mojom::Role::kDocPageFooter:
-    case ax::mojom::Role::kDocPageHeader:
-    case ax::mojom::Role::kDocPageList:
-    case ax::mojom::Role::kDocPart:
-    case ax::mojom::Role::kDocPreface:
-    case ax::mojom::Role::kDocPrologue:
-    case ax::mojom::Role::kDocPullquote:
-    case ax::mojom::Role::kDocQna:
-    case ax::mojom::Role::kDocSubtitle:
-    case ax::mojom::Role::kDocTip:
-    case ax::mojom::Role::kDocToc:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kDocument:
-    case ax::mojom::Role::kPdfRoot:
-    case ax::mojom::Role::kRootWebArea:
-      return UIA_DocumentControlTypeId;
-
-    case ax::mojom::Role::kEmbeddedObject:
-      return UIA_PaneControlTypeId;
-
-    case ax::mojom::Role::kEmphasis:
-      return UIA_TextControlTypeId;
-
-    case ax::mojom::Role::kFeed:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kFigcaption:
-      return UIA_TextControlTypeId;
-
-    case ax::mojom::Role::kFigure:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kFooterAsNonLandmark:
-    case ax::mojom::Role::kHeaderAsNonLandmark:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kForm:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kGenericContainer:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kGraphicsDocument:
-      return UIA_DocumentControlTypeId;
-
-    case ax::mojom::Role::kGraphicsObject:
-      return UIA_PaneControlTypeId;
-
-    case ax::mojom::Role::kGraphicsSymbol:
-      return UIA_ImageControlTypeId;
-
-    case ax::mojom::Role::kGrid:
-      return UIA_DataGridControlTypeId;
-
-    case ax::mojom::Role::kGroup:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kHeading:
-      return UIA_TextControlTypeId;
-
-    case ax::mojom::Role::kIframe:
-      return UIA_DocumentControlTypeId;
-
-    case ax::mojom::Role::kIframePresentational:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kImage:
-      return IsImageWithMap() ? UIA_DocumentControlTypeId
-                              : UIA_ImageControlTypeId;
-
-    case ax::mojom::Role::kInputTime:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kInlineTextBox:
-      return UIA_DocumentControlTypeId;
-
-    case ax::mojom::Role::kLabelText:
-    case ax::mojom::Role::kLegend:
-      return UIA_TextControlTypeId;
-
-    case ax::mojom::Role::kLayoutTable:
-      return UIA_TableControlTypeId;
-
-    case ax::mojom::Role::kLayoutTableCell:
-      return UIA_DataItemControlTypeId;
-
-    case ax::mojom::Role::kLayoutTableRow:
-      return UIA_DataItemControlTypeId;
-
-    case ax::mojom::Role::kLink:
-      return UIA_HyperlinkControlTypeId;
-
-    case ax::mojom::Role::kList:
-      return UIA_ListControlTypeId;
-
-    case ax::mojom::Role::kListBox:
-      return UIA_ListControlTypeId;
-
-    case ax::mojom::Role::kListBoxOption:
-      return UIA_ListItemControlTypeId;
-
-    case ax::mojom::Role::kListGrid:
-      return UIA_DataGridControlTypeId;
-
-    case ax::mojom::Role::kListItem:
-      return UIA_ListItemControlTypeId;
-
-    case ax::mojom::Role::kListMarker:
-      // Regular list markers only expose their alternative text, but do not
-      // expose their descendants; and the descendants should be ignored. This
-      // is because the alternative text depends on the counter style and can be
-      // different from the actual (visual) marker text, and hence, inconsistent
-      // with the descendants. We treat a list marker as non-text only if it
-      // still has non-ignored descendants, which happens only when:
-      // - The list marker itself is ignored but the descendants are not
-      // - Or the list marker contains images
-      if (!GetDelegate()->GetChildCount())
-        return UIA_TextControlTypeId;
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kLog:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kMain:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kMark:
-      return UIA_TextControlTypeId;
-
-    case ax::mojom::Role::kMarquee:
-      return UIA_TextControlTypeId;
-
-    case ax::mojom::Role::kMath:
-    case ax::mojom::Role::kMathMLMath:
-      return UIA_GroupControlTypeId;
-
-    // TODO(http://crbug.com/1260585): Refine this if/when a UIA API exists for
-    // properly exposing MathML content.
-    case ax::mojom::Role::kMathMLFraction:
-    case ax::mojom::Role::kMathMLIdentifier:
-    case ax::mojom::Role::kMathMLMultiscripts:
-    case ax::mojom::Role::kMathMLNoneScript:
-    case ax::mojom::Role::kMathMLNumber:
-    case ax::mojom::Role::kMathMLOperator:
-    case ax::mojom::Role::kMathMLOver:
-    case ax::mojom::Role::kMathMLPrescriptDelimiter:
-    case ax::mojom::Role::kMathMLRoot:
-    case ax::mojom::Role::kMathMLRow:
-    case ax::mojom::Role::kMathMLSquareRoot:
-    case ax::mojom::Role::kMathMLStringLiteral:
-    case ax::mojom::Role::kMathMLSub:
-    case ax::mojom::Role::kMathMLSubSup:
-    case ax::mojom::Role::kMathMLSup:
-    case ax::mojom::Role::kMathMLTable:
-    case ax::mojom::Role::kMathMLTableCell:
-    case ax::mojom::Role::kMathMLTableRow:
-    case ax::mojom::Role::kMathMLText:
-    case ax::mojom::Role::kMathMLUnder:
-    case ax::mojom::Role::kMathMLUnderOver:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kMenu:
-      return UIA_MenuControlTypeId;
-
-    case ax::mojom::Role::kMenuBar:
-      return UIA_MenuBarControlTypeId;
-
-    case ax::mojom::Role::kMenuItem:
-      return UIA_MenuItemControlTypeId;
-
-    case ax::mojom::Role::kMenuItemCheckBox:
-      return UIA_CheckBoxControlTypeId;
-
-    case ax::mojom::Role::kMenuItemRadio:
-      return UIA_RadioButtonControlTypeId;
-
-    case ax::mojom::Role::kMenuListPopup:
-      return UIA_ListControlTypeId;
-
-    case ax::mojom::Role::kMenuListOption:
-      return UIA_ListItemControlTypeId;
-
-    case ax::mojom::Role::kMeter:
-      return UIA_ProgressBarControlTypeId;
-
-    case ax::mojom::Role::kNavigation:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kNote:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kParagraph:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kPdfActionableHighlight:
-      return UIA_CustomControlTypeId;
-
-    case ax::mojom::Role::kPluginObject:
-      if (GetDelegate()->GetChildCount()) {
-        return UIA_GroupControlTypeId;
-      } else {
-        return UIA_DocumentControlTypeId;
-      }
-
-    case ax::mojom::Role::kPopUpButton: {
-      std::string html_tag =
-          GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
-      if (html_tag == "select")
-        return UIA_ComboBoxControlTypeId;
-      return UIA_ButtonControlTypeId;
-    }
-
-    case ax::mojom::Role::kPortal:
-      return UIA_ButtonControlTypeId;
-
-    case ax::mojom::Role::kPre:
-      return UIA_PaneControlTypeId;
-
-    case ax::mojom::Role::kProgressIndicator:
-      return UIA_ProgressBarControlTypeId;
-
-    case ax::mojom::Role::kRadioButton:
-      return UIA_RadioButtonControlTypeId;
-
-    case ax::mojom::Role::kRadioGroup:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kRegion:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kRow: {
-      // Role changes depending on whether row is inside a treegrid
-      // https://www.w3.org/TR/core-aam-1.1/#role-map-row
-      return IsInTreeGrid() ? UIA_TreeItemControlTypeId
-                            : UIA_DataItemControlTypeId;
-    }
-
-    case ax::mojom::Role::kRowGroup:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kRowHeader:
-      return UIA_DataItemControlTypeId;
-
-    case ax::mojom::Role::kRuby:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kRubyAnnotation:
-      // Generally exposed as description on <ruby> (Role::kRuby) element, not
-      // as its own object in the tree.
-      // However, it's possible to make a kRubyAnnotation element show up in the
-      // AX tree, for example by adding tabindex="0" to the source <rp> or <rt>
-      // element or making the source element the target of an aria-owns.
-      // Therefore, browser side needs to gracefully handle it if it actually
-      // shows up in the tree.
-      return UIA_TextControlTypeId;
-
-    case ax::mojom::Role::kSection:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kScrollBar:
-      return UIA_ScrollBarControlTypeId;
-
-    case ax::mojom::Role::kScrollView:
-      return UIA_PaneControlTypeId;
-
-    case ax::mojom::Role::kSearch:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kSlider:
-      return UIA_SliderControlTypeId;
-
-    case ax::mojom::Role::kSpinButton:
-      return UIA_SpinnerControlTypeId;
-
-    case ax::mojom::Role::kSwitch:
-      return UIA_ButtonControlTypeId;
-
-    case ax::mojom::Role::kStaticText:
-      return UIA_TextControlTypeId;
-
-    case ax::mojom::Role::kStatus:
-      return UIA_StatusBarControlTypeId;
-
-    case ax::mojom::Role::kStrong:
-    case ax::mojom::Role::kSubscript:
-    case ax::mojom::Role::kSuperscript:
-      return UIA_TextControlTypeId;
-
-    case ax::mojom::Role::kSplitter:
-      return UIA_SeparatorControlTypeId;
-
-    case ax::mojom::Role::kSvgRoot:
-      return UIA_ImageControlTypeId;
-
-    case ax::mojom::Role::kTab:
-      return UIA_TabItemControlTypeId;
-
-    case ax::mojom::Role::kTable:
-      return UIA_TableControlTypeId;
-
-    case ax::mojom::Role::kTableHeaderContainer:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kTabList:
-      return UIA_TabControlTypeId;
-
-    case ax::mojom::Role::kTabPanel:
-      return UIA_PaneControlTypeId;
-
-    case ax::mojom::Role::kTerm:
-      return UIA_ListItemControlTypeId;
-
-    case ax::mojom::Role::kTitleBar:
-      return UIA_TitleBarControlTypeId;
-
-    case ax::mojom::Role::kToggleButton:
-      return UIA_ButtonControlTypeId;
-
-    case ax::mojom::Role::kTextField:
-    case ax::mojom::Role::kSearchBox:
-      return UIA_EditControlTypeId;
-
-    case ax::mojom::Role::kTextFieldWithComboBox:
-      return UIA_ComboBoxControlTypeId;
-
-    case ax::mojom::Role::kAbbr:
-    case ax::mojom::Role::kTime:
-      return UIA_TextControlTypeId;
-
-    case ax::mojom::Role::kTimer:
-      return UIA_PaneControlTypeId;
-
-    case ax::mojom::Role::kToolbar:
-      return UIA_ToolBarControlTypeId;
-
-    case ax::mojom::Role::kTooltip:
-      return UIA_ToolTipControlTypeId;
-
-    case ax::mojom::Role::kTree:
-      return UIA_TreeControlTypeId;
-
-    case ax::mojom::Role::kTreeGrid:
-      return UIA_DataGridControlTypeId;
-
-    case ax::mojom::Role::kTreeItem:
-      return UIA_TreeItemControlTypeId;
-
-    case ax::mojom::Role::kLineBreak:
-      return UIA_SeparatorControlTypeId;
-
-    case ax::mojom::Role::kVideo:
-      return UIA_GroupControlTypeId;
-
-    case ax::mojom::Role::kWebView:
-      return UIA_DocumentControlTypeId;
-
-    case ax::mojom::Role::kPane:
-    case ax::mojom::Role::kWindow:
-    case ax::mojom::Role::kImeCandidate:
-    case ax::mojom::Role::kKeyboard:
-    case ax::mojom::Role::kNone:
-    case ax::mojom::Role::kUnknown:
-      return UIA_PaneControlTypeId;
-  }
-
-  NOTREACHED();
-  return UIA_DocumentControlTypeId;
-}
-
 AXPlatformNodeWin* AXPlatformNodeWin::ComputeUIALabeledBy() {
   // Not all control types expect a value for this property.
   if (!CanHaveUIALabeledBy())
@@ -7412,7 +6971,7 @@ bool AXPlatformNodeWin::CanHaveUIALabeledBy() {
   // https://docs.microsoft.com/en-us/windows/win32/winauto/uiauto-supportinguiautocontroltypes
   // for a complete list of control types. Each one of them has specific
   // expectations regarding the UIA_LabeledByPropertyId.
-  switch (ComputeUIAControlType()) {
+  switch (GetUIARoleProperties().control_type) {
     case UIA_ButtonControlTypeId:
     case UIA_CheckBoxControlTypeId:
     case UIA_DataItemControlTypeId:

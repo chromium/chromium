@@ -4762,7 +4762,7 @@ TEST_F(AXPlatformNodeWinTest, GetPropertyValue_LocalizedControlType) {
 
   AXNodeData child2;
   child2.id = 3;
-  child2.role = ax::mojom::Role::kSearchBox;
+  child2.role = ax::mojom::Role::kButton;
   root.child_ids.push_back(3);
 
   Init(root, child1, child2);
@@ -4775,9 +4775,9 @@ TEST_F(AXPlatformNodeWinTest, GetPropertyValue_LocalizedControlType) {
                          GetRootAsAXNode()->children()[0]),
                      UIA_LocalizedControlTypePropertyId,
                      L"child1 role description");
-  EXPECT_UIA_BSTR_EQ(QueryInterfaceFromNode<IRawElementProviderSimple>(
-                         GetRootAsAXNode()->children()[1]),
-                     UIA_LocalizedControlTypePropertyId, L"search box");
+  EXPECT_UIA_EMPTY(QueryInterfaceFromNode<IRawElementProviderSimple>(
+                       GetRootAsAXNode()->children()[1]),
+                   UIA_LocalizedControlTypePropertyId);
 }
 
 TEST_F(AXPlatformNodeWinTest, GetPropertyValue_IsControlElement) {
