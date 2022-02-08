@@ -145,7 +145,7 @@ void ZeroStateFileProvider::SetSearchResults(
     const auto& filepath = valid_results[i].first;
     double score = valid_results[i].second;
     auto result = std::make_unique<FileResult>(
-        kSchema, filepath, GetJustificationString(filepath),
+        kSchema, filepath, std::u16string(),
         ash::AppListSearchResultType::kZeroStateFile, GetDisplayType(), score,
         std::u16string(), FileResult::Type::kFile, profile_);
     // TODO(crbug.com/1258415): Only generate thumbnails if the old launcher is

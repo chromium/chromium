@@ -302,7 +302,7 @@ std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeListResult(
     const float relevance) {
   const auto reparented_path = ReparentToDriveMount(filepath, drive_service_);
   auto result = std::make_unique<FileResult>(
-      kSchema, reparented_path, GetJustificationString(reparented_path),
+      kSchema, reparented_path, std::u16string(),
       ash::AppListSearchResultType::kZeroStateDrive, GetDisplayType(),
       relevance, std::u16string(), FileResult::Type::kFile, profile_);
   // If it exists, override the details text with the prediction reason in the
