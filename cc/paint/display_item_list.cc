@@ -342,114 +342,98 @@ bool DisplayItemList::GetColorIfSolidInRect(const gfx::Rect& rect,
   return false;
 }
 
+namespace {
+
 absl::optional<DisplayItemList::DirectlyCompositedImageResult>
-DisplayItemList::GetDirectlyCompositedImageResult(
-    gfx::Size containing_layer_bounds) const {
-  const PaintOpBuffer* op_buffer = nullptr;
-  if (paint_op_buffer_.size() == 1) {
-    // The actual ops are wrapped in DrawRecord if they were previously
-    // recorded.
-    if (paint_op_buffer_.GetFirstOp()->GetType() == PaintOpType::DrawRecord) {
-      const DrawRecordOp* draw_record =
-          static_cast<const DrawRecordOp*>(paint_op_buffer_.GetFirstOp());
-      op_buffer = draw_record->record.get();
-    } else {
-      op_buffer = &paint_op_buffer_;
-    }
-  } else {
+DirectlyCompositedImageResultForPaintOpBuffer(const PaintOpBuffer& op_buffer) {
+  // A PaintOpBuffer for an image may have 1 (a DrawImageRect or a DrawRecord
+  // that recursively contains a PaintOpBuffer for an image) or 4 paint
+  // operations:
+  //  (1) Save
+  //  (2) Translate which applies an offset of the image in the layer
+  //   or Concat with a transformation rotating the image by +/-90 degrees for
+  //      image orientation
+  //  (3) DrawImageRect or DrawRecord (see the 1 operation case above)
+  //  (4) Restore
+  // The following algorithm also supports Translate and Concat in the same
+  // PaintOpBuffer (i.e. 5 operations).
+  constexpr size_t kMaxDrawImageOps = 5;
+  if (op_buffer.size() > kMaxDrawImageOps)
     return absl::nullopt;
-  }
 
-  const DrawImageRectOp* draw_image_rect_op = nullptr;
   bool transpose_image_size = false;
-  constexpr size_t kNumDrawImageForOrientationOps = 10;
-  if (op_buffer->size() == 1 &&
-      op_buffer->GetFirstOp()->GetType() == PaintOpType::DrawImageRect) {
-    draw_image_rect_op =
-        static_cast<const DrawImageRectOp*>(op_buffer->GetFirstOp());
-  } else if (op_buffer->size() < kNumDrawImageForOrientationOps) {
-    // Images that respect orientation will have 5 paint operations:
-    //  (1) Save
-    //  (2) Translate
-    //  (3) Concat (with a transformation that preserves axis alignment)
-    //  (4) DrawImageRect
-    //  (5) Restore
-    // Detect these the paint op buffer and disqualify the layer as a directly
-    // composited image if any other paint op is detected.
-    for (auto* op : PaintOpBuffer::Iterator(op_buffer)) {
-      switch (op->GetType()) {
-        case PaintOpType::Save:
-        case PaintOpType::Restore:
-          break;
-        case PaintOpType::Translate: {
-          const TranslateOp* translate = static_cast<const TranslateOp*>(op);
-          if (translate->dx != 0 || translate->dy != 0)
-            return absl::nullopt;
-          break;
-        }
-        case PaintOpType::Concat: {
-          // We only expect a single transformation. If we see another one, then
-          // this image won't be eligible for directly compositing.
-          if (transpose_image_size)
-            return absl::nullopt;
-
-          const ConcatOp* concat_op = static_cast<const ConcatOp*>(op);
-          if (!MathUtil::SkM44Preserves2DAxisAlignment(concat_op->matrix))
-            return absl::nullopt;
-
-          // If the image has been rotated +/-90 degrees we'll need to transpose
-          // the width and height dimensions to account for the same transform
-          // applying when the layer bounds were calculated. Since we already
-          // know that the transformation preserves axis alignment, we only
-          // need to confirm that this is not a scaling operation.
-          transpose_image_size = (concat_op->matrix.rc(0, 0) == 0);
-          break;
-        }
-        case PaintOpType::DrawImageRect:
-          if (draw_image_rect_op)
-            return absl::nullopt;
-          draw_image_rect_op = static_cast<const DrawImageRectOp*>(op);
-          break;
-        default:
+  absl::optional<DisplayItemList::DirectlyCompositedImageResult> result;
+  for (auto* op : PaintOpBuffer::Iterator(&op_buffer)) {
+    switch (op->GetType()) {
+      case PaintOpType::Save:
+      case PaintOpType::Restore:
+      case PaintOpType::Translate:
+        break;
+      case PaintOpType::Concat: {
+        // We only expect a single transformation. If we see another one, then
+        // this image won't be eligible for directly compositing.
+        if (transpose_image_size)
           return absl::nullopt;
+        // The transformation must be before the DrawImageRect operation.
+        if (result)
+          return absl::nullopt;
+
+        const ConcatOp* concat_op = static_cast<const ConcatOp*>(op);
+        if (!MathUtil::SkM44Preserves2DAxisAlignment(concat_op->matrix))
+          return absl::nullopt;
+
+        // If the image has been rotated +/-90 degrees we'll need to transpose
+        // the width and height dimensions to account for the same transform
+        // applying when the layer bounds were calculated. Since we already
+        // know that the transformation preserves axis alignment, we only
+        // need to confirm that this is not a scaling operation.
+        transpose_image_size = (concat_op->matrix.rc(0, 0) == 0);
+        break;
       }
+      case PaintOpType::DrawImageRect: {
+        if (result)
+          return absl::nullopt;
+        const auto* draw_image_rect_op =
+            static_cast<const DrawImageRectOp*>(op);
+        const SkRect& src = draw_image_rect_op->src;
+        const SkRect& dst = draw_image_rect_op->dst;
+        if (src.isEmpty() || dst.isEmpty())
+          return absl::nullopt;
+        result.emplace();
+        result->default_raster_scale = gfx::Vector2dF(
+            src.width() / dst.width(), src.height() / dst.height());
+        // Ensure the layer will use nearest neighbor when drawn by the display
+        // compositor, if required.
+        result->nearest_neighbor =
+            draw_image_rect_op->flags.getFilterQuality() ==
+            PaintFlags::FilterQuality::kNone;
+        break;
+      }
+      case PaintOpType::DrawRecord:
+        if (result)
+          return absl::nullopt;
+        result = DirectlyCompositedImageResultForPaintOpBuffer(
+            *static_cast<const DrawRecordOp*>(op)->record);
+        if (!result)
+          return absl::nullopt;
+        break;
+      default:
+        // Disqualify the layer as a directly composited image if any other
+        // paint op is detected.
+        return absl::nullopt;
     }
   }
 
-  if (!draw_image_rect_op)
-    return absl::nullopt;
-
-  // The src rect must match the image size exactly, i.e. the entire image
-  // must be drawn.
-  const SkRect& src = draw_image_rect_op->src;
-  if (src.fLeft != 0 || src.fTop != 0 ||
-      src.fRight != draw_image_rect_op->image.width() ||
-      src.fBottom != draw_image_rect_op->image.height())
-    return absl::nullopt;
-
-  // The DrawImageRect op's destination rect must match the layer bounds
-  // exactly. Note that the layer bounds have already taken into account image
-  // orientation so transpose the dst width/height before comparing, if
-  // appropriate.
-  const SkRect& dst = draw_image_rect_op->dst;
-  int dst_width = transpose_image_size ? dst.fBottom : dst.fRight;
-  int dst_height = transpose_image_size ? dst.fRight : dst.fBottom;
-  if (dst.fLeft != 0 || dst.fTop != 0 ||
-      dst_width != containing_layer_bounds.width() ||
-      dst_height != containing_layer_bounds.height())
-    return absl::nullopt;
-
-  int width = transpose_image_size ? draw_image_rect_op->image.height()
-                                   : draw_image_rect_op->image.width();
-  int height = transpose_image_size ? draw_image_rect_op->image.width()
-                                    : draw_image_rect_op->image.height();
-  DirectlyCompositedImageResult result;
-  result.intrinsic_image_size = gfx::Size(width, height);
-  // Ensure the layer will use nearest neighbor when drawn by the display
-  // compositor, if required.
-  result.nearest_neighbor = draw_image_rect_op->flags.getFilterQuality() ==
-                            PaintFlags::FilterQuality::kNone;
+  if (result && transpose_image_size)
+    result->default_raster_scale.Transpose();
   return result;
+}
+
+}  // anonymous namespace
+
+absl::optional<DisplayItemList::DirectlyCompositedImageResult>
+DisplayItemList::GetDirectlyCompositedImageResult() const {
+  return DirectlyCompositedImageResultForPaintOpBuffer(paint_op_buffer_);
 }
 
 }  // namespace cc

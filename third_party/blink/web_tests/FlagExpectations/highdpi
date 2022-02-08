@@ -108,7 +108,6 @@ compositing/gestures/gesture-tapHighlight-block-in-multicol.html [ Pass ]
 compositing/gestures/gesture-tapHighlight-composited-img.html [ Pass ]
 compositing/gestures/gesture-tapHighlight-display-contents.html [ Pass ]
 compositing/gestures/gesture-tapHighlight-form-input-text.html [ Pass ]
-compositing/gestures/gesture-tapHighlight-imagemap.html [ Pass ]
 compositing/gestures/gesture-tapHighlight-nested-cursor.html [ Pass ]
 compositing/gestures/gesture-tapHighlight-simple-div-boxshadow-fixed.html [ Pass ]
 compositing/gestures/gesture-tapHighlight-simple-div-boxshadow-static.html [ Pass ]
@@ -792,3 +791,5 @@ crbug.com/1266821 virtual/backface-visibility-interop/paint/invalidation/table/c
 crbug.com/1266821 virtual/backface-visibility-interop/transforms/3d/point-mapping/3d-point-mapping-3.html [ Failure ]
 crbug.com/1266821 virtual/backface-visibility-interop/transforms/3d/point-mapping/3d-point-mapping-preserve-3d.html [ Failure ]
 crbug.com/1266821 virtual/backface-visibility-interop/transforms/3d/point-mapping/3d-point-mapping.html [ Failure ]
+
+crbug.com/1196414 compositing/gestures/gesture-tapHighlight-imagemap.html [ Failure ]
