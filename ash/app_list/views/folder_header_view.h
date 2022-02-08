@@ -53,7 +53,7 @@ class ASH_EXPORT FolderHeaderView : public views::View,
  private:
   class FolderNameView;
   friend class test::FolderHeaderViewTest;
-  friend class PopulatedAppListTest;
+  friend class PopulatedAppListTestBase;
 
   // Updates UI.
   void Update();

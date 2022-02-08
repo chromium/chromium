@@ -544,11 +544,15 @@ class AppListBubbleAndTabletTest
   AppsGridView* apps_grid_view_ = nullptr;
 };
 
-// Used to test app_list behavior with a populated apps_grid
-class PopulatedAppListTest : public AshTestBase {
+// Used to test app_list behavior with a populated apps_grid.
+class PopulatedAppListTestBase : public AshTestBase {
  public:
-  PopulatedAppListTest() = default;
-  ~PopulatedAppListTest() override = default;
+  explicit PopulatedAppListTestBase(bool productivity_launcher_enabled)
+      : productivity_launcher_enabled_(productivity_launcher_enabled) {
+    scoped_feature_list_.InitWithFeatureState(features::kProductivityLauncher,
+                                              productivity_launcher_enabled);
+  }
+  ~PopulatedAppListTestBase() override = default;
 
   void SetUp() override {
     AppListConfigProvider::Get().ResetForTesting();
@@ -561,6 +565,10 @@ class PopulatedAppListTest : public AshTestBase {
     search_model_ = std::make_unique<SearchModel>();
     Shell::Get()->app_list_controller()->SetActiveModel(
         /*profile_id=*/1, app_list_test_model_.get(), search_model_.get());
+    // With productivity launcher, fullscreen launcher is used only in tablet
+    // mode, so enable tablet mode.
+    if (productivity_launcher_enabled_)
+      EnableTabletMode(true);
   }
 
  protected:
@@ -631,6 +639,8 @@ class PopulatedAppListTest : public AshTestBase {
     folder_view()->folder_header_view()->ItemNameChanged();
   }
 
+  const bool productivity_launcher_enabled_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<test::AppListTestModel> app_list_test_model_;
   std::unique_ptr<SearchModel> search_model_;
   std::unique_ptr<test::AppsGridViewTestApi> apps_grid_test_api_;
@@ -638,16 +648,41 @@ class PopulatedAppListTest : public AshTestBase {
   PagedAppsGridView* apps_grid_view_ = nullptr;  // Owned by |app_list_view_|.
 };
 
-// Subclass of PopuplatedAppListTest which enables the virtual keyboard.
-class PopulatedAppListWithVKEnabledTest : public PopulatedAppListTest {
+// Parameterized by whether productivity launcher is enabled - when the feature
+// is enabled, the test run in tablet mode by default.
+class PopulatedAppListTest : public PopulatedAppListTestBase,
+                             public testing::WithParamInterface<bool> {
  public:
-  PopulatedAppListWithVKEnabledTest() = default;
+  PopulatedAppListTest()
+      : PopulatedAppListTestBase(/*productivity_launcher_enabled=*/GetParam()) {
+  }
+  ~PopulatedAppListTest() override = default;
+
+  bool IsProductivityLauncherEnabled() const { return GetParam(); }
+};
+
+// Instantiated by whether productivity launcher is enabled.
+INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
+                         PopulatedAppListTest,
+                         testing::Bool());
+
+class LegacyPopulatedAppListTest : public PopulatedAppListTestBase {
+ public:
+  LegacyPopulatedAppListTest()
+      : PopulatedAppListTestBase(/*productivity_launcher_enabled=*/false) {}
+  ~LegacyPopulatedAppListTest() override = default;
+};
+
+// Subclass of PopulatedAppListTest which enables the virtual keyboard.
+class PopulatedAppListWithVKEnabledTest : public PopulatedAppListTestBase {
+ public:
+  PopulatedAppListWithVKEnabledTest() : PopulatedAppListTestBase(false) {}
   ~PopulatedAppListWithVKEnabledTest() override = default;
 
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         keyboard::switches::kEnableVirtualKeyboard);
-    PopulatedAppListTest::SetUp();
+    PopulatedAppListTestBase::SetUp();
   }
 };
 
@@ -1284,7 +1319,7 @@ TEST_P(AppListBubbleAndTabletTest,
 
 // Verifies that the downward mouse drag on AppsGridView's first page should
 // be handled by AppList.
-TEST_F(PopulatedAppListTest, MouseDragAppsGridViewHandledByAppList) {
+TEST_F(LegacyPopulatedAppListTest, MouseDragAppsGridViewHandledByAppList) {
   InitializeAppsGrid();
   PopulateApps(2);
 
@@ -1308,7 +1343,7 @@ TEST_F(PopulatedAppListTest, MouseDragAppsGridViewHandledByAppList) {
 
 // Verifies that the upward mouse drag on AppsGridView's first page should
 // be handled by PaginationController.
-TEST_F(PopulatedAppListTest,
+TEST_F(LegacyPopulatedAppListTest,
        MouseDragAppsGridViewHandledByPaginationController) {
   InitializeAppsGrid();
   PopulateApps(apps_grid_test_api_->TilesPerPage(0) + 1);
@@ -1341,7 +1376,7 @@ TEST_F(PopulatedAppListTest,
 
 // Tests that mouse app list item drag is cancelled when mouse capture is lost
 // (e.g. on screen rotation).
-TEST_F(PopulatedAppListTest, CancelItemDragOnMouseCaptureLoss) {
+TEST_P(PopulatedAppListTest, CancelItemDragOnMouseCaptureLoss) {
   InitializeAppsGrid();
   PopulateApps(apps_grid_test_api_->TilesPerPage(0) + 1);
 
@@ -1356,10 +1391,7 @@ TEST_F(PopulatedAppListTest, CancelItemDragOnMouseCaptureLoss) {
       apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().left_center());
   EXPECT_TRUE(apps_grid_view_->IsDragging());
 
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
-  display_manager()->SetDisplayRotation(
-      display.id(), display::Display::ROTATE_270,
-      display::Display::RotationSource::ACTIVE);
+  UpdateDisplay("600x1200");
   // AppListView is usually notified of display bounds changes by
   // AppListPresenter, though the test delegate implementation does not
   // track display metrics changes, so OnParentWindowBoundsChanged() has to be
@@ -1375,7 +1407,7 @@ TEST_F(PopulatedAppListTest, CancelItemDragOnMouseCaptureLoss) {
 
 // Tests that app list item drag gets canceled if the dragged app list item gets
 // deleted.
-TEST_F(PopulatedAppListTest, CancelItemDragOnDragItemDeletion) {
+TEST_P(PopulatedAppListTest, CancelItemDragOnDragItemDeletion) {
   InitializeAppsGrid();
   PopulateApps(4);
 
@@ -1410,7 +1442,7 @@ TEST_F(PopulatedAppListTest, CancelItemDragOnDragItemDeletion) {
 
 // Tests that app list item drag in folder gets canceled if the dragged app list
 // item gets deleted.
-TEST_F(PopulatedAppListTest, CancelFolderItemDragOnDragItemDeletion) {
+TEST_P(PopulatedAppListTest, CancelFolderItemDragOnDragItemDeletion) {
   InitializeAppsGrid();
   PopulateApps(2);
   AppListFolderItem* folder = CreateAndPopulateFolderWithApps(3);
@@ -1455,7 +1487,7 @@ TEST_F(PopulatedAppListTest, CancelFolderItemDragOnDragItemDeletion) {
 
 // Tests that app list item drag from folder to root apps grid gets canceled if
 // the dragged app list item gets deleted.
-TEST_F(PopulatedAppListTest, CancelFolderItemReparentDragOnDragItemDeletion) {
+TEST_P(PopulatedAppListTest, CancelFolderItemReparentDragOnDragItemDeletion) {
   InitializeAppsGrid();
   PopulateApps(2);
   AppListFolderItem* folder = CreateAndPopulateFolderWithApps(3);
@@ -1512,7 +1544,7 @@ TEST_F(PopulatedAppListTest, CancelFolderItemReparentDragOnDragItemDeletion) {
   helper->DismissAndRunLoop();
 }
 
-TEST_F(PopulatedAppListTest,
+TEST_P(PopulatedAppListTest,
        CancelFolderItemReparentDragOnDragItemAndFolderDeletion) {
   InitializeAppsGrid();
   PopulateApps(2);
@@ -1575,7 +1607,7 @@ TEST_F(PopulatedAppListTest,
 
 // Tests that apps grid item layers are not destroyed immediately after item
 // drag ends.
-TEST_F(PopulatedAppListTest,
+TEST_P(PopulatedAppListTest,
        ItemLayersNotDestroyedDuringBoundsAnimationAfterDrag) {
   InitializeAppsGrid();
   const int kItemCount = 5;
@@ -1621,7 +1653,7 @@ TEST_F(PopulatedAppListTest,
 
 // Tests that apps grid item drag operation can continue normally after display
 // rotation (and app list config change).
-TEST_F(PopulatedAppListTest, ScreenRotationDuringAppsGridItemDrag) {
+TEST_P(PopulatedAppListTest, ScreenRotationDuringAppsGridItemDrag) {
   // Set the display dimensions so rotation also changes the app list config.
   UpdateDisplay("1200x600");
 
@@ -1639,40 +1671,37 @@ TEST_F(PopulatedAppListTest, ScreenRotationDuringAppsGridItemDrag) {
   event_generator->MoveTouch(
       apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().CenterPoint());
 
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
-  display_manager()->SetDisplayRotation(
-      display.id(), display::Display::ROTATE_270,
-      display::Display::RotationSource::ACTIVE);
+  UpdateDisplay("600x1200");
   // AppListView is usually notified of display bounds changes by
   // AppListPresenter, though the test delegate implementation does not
   // track display metrics changes, so OnParentWindowBoundsChanged() has to be
   // explicitly called here.
   app_list_view_->OnParentWindowBoundsChanged();
 
-  gfx::Point target =
-      apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().left_center();
-  Shell::GetPrimaryRootWindow()->GetHost()->ConvertPixelsToDIP(&target);
-
   // End drag at the in between items 1 and 2 - note that these have been
   // translated one slot left to fill in space left by the dragged view, so the
   // expected drop slot is actually slot 1.
+  gfx::Point target =
+      apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().left_center();
   event_generator->MoveTouch(target);
   event_generator->ReleaseTouch();
 
   EXPECT_EQ("Item 1", apps_grid_view_->GetItemViewAt(0)->item()->id());
   EXPECT_EQ("Item 0", apps_grid_view_->GetItemViewAt(1)->item()->id());
+  EXPECT_EQ("Item 2", apps_grid_view_->GetItemViewAt(2)->item()->id());
 }
 
 // Tests screen rotation during apps grid item drag where the drag item ends up
 // in page-scroll area. Tests that the apps grid page scrolls without a crash,
 // and that releasing drag does not change the item position in the model.
-TEST_F(PopulatedAppListTest,
+TEST_P(PopulatedAppListTest,
        ScreenRotationDuringAppsGridItemDragWithPageScroll) {
   // Set the display dimensions so rotation also changes the app list config.
   UpdateDisplay("1200x600");
 
   InitializeAppsGrid();
-  PopulateApps(apps_grid_test_api_->TilesPerPage(0) + 1);
+  PopulateApps(apps_grid_test_api_->TilesPerPage(0) +
+               apps_grid_test_api_->TilesPerPage(1));
 
   AppListItemView* const dragged_view = apps_grid_view_->GetItemViewAt(0);
 
@@ -1685,7 +1714,7 @@ TEST_F(PopulatedAppListTest,
   // Move the item close to screen edge, so it ends up in area that triggers
   // page scroll after rotation.
   event_generator->MoveTouch(app_list_view_->GetBoundsInScreen().left_center() +
-                             gfx::Vector2d(100, 0));
+                             gfx::Vector2d(64, 0));
 
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
   display_manager()->SetDisplayRotation(
@@ -1697,8 +1726,15 @@ TEST_F(PopulatedAppListTest,
   // explicitly called here.
   app_list_view_->OnParentWindowBoundsChanged();
 
+  ASSERT_EQ(2, apps_grid_view_->pagination_model()->total_pages());
   event_generator->MoveTouchBy(0, 10);
   EXPECT_TRUE(apps_grid_view_->FirePageFlipTimerForTest());
+  // Move the pointer away from the grid horizontally for it to get out ouf apps
+  // grid drag buffer, so the release results in a canceled drag - for
+  // productivity launcher, the grid is spread out vertically so there is no
+  // area under the grid that's: in page flip area, outside of apps grid drag
+  // buffer, and outside of shelf bounds.
+  event_generator->MoveTouchBy(0, 270);
   event_generator->ReleaseTouch();
 
   // The model state should not have been changed.
@@ -1709,7 +1745,7 @@ TEST_F(PopulatedAppListTest,
 
 // Tests screen rotation while app list folder item is in progress, and the item
 // remains in the folder bounds during the drag.
-TEST_F(PopulatedAppListTest, ScreenRotationDuringFolderItemDrag) {
+TEST_P(PopulatedAppListTest, ScreenRotationDuringFolderItemDrag) {
   // Set the display dimensions so rotation also changes the app list config.
   UpdateDisplay("1200x600");
 
@@ -1734,10 +1770,7 @@ TEST_F(PopulatedAppListTest, ScreenRotationDuringFolderItemDrag) {
   event_generator->MoveTouch(
       apps_grid_view_->GetItemViewAt(2)->GetBoundsInScreen().CenterPoint());
 
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
-  display_manager()->SetDisplayRotation(
-      display.id(), display::Display::ROTATE_270,
-      display::Display::RotationSource::ACTIVE);
+  UpdateDisplay("600x1200");
   // AppListView is usually notified of display bounds changes by
   // AppListPresenter, though the test delegate implementation does not
   // track display metrics changes, so OnParentWindowBoundsChanged() has to be
@@ -1759,7 +1792,7 @@ TEST_F(PopulatedAppListTest, ScreenRotationDuringFolderItemDrag) {
 // Tests that app list folder item reparenting drag (where a folder item is
 // dragged outside the folder bounds, and dropped within the apps grid) can
 // continue normally after screen rotation.
-TEST_F(PopulatedAppListTest, ScreenRotationDuringAppsGridItemReparentDrag) {
+TEST_P(PopulatedAppListTest, ScreenRotationDuringAppsGridItemReparentDrag) {
   UpdateDisplay("1200x600");
 
   InitializeAppsGrid();
@@ -1789,10 +1822,8 @@ TEST_F(PopulatedAppListTest, ScreenRotationDuringAppsGridItemReparentDrag) {
   EXPECT_TRUE(
       folder_view()->items_grid_view()->FireFolderItemReparentTimerForTest());
   EXPECT_FALSE(AppListIsInFolderView());
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
-  display_manager()->SetDisplayRotation(
-      display.id(), display::Display::ROTATE_270,
-      display::Display::RotationSource::ACTIVE);
+
+  UpdateDisplay("600x1200");
   // AppListView is usually notified of display bounds changes by
   // AppListPresenter, though the test delegate implementation does not
   // track display metrics changes, so OnParentWindowBoundsChanged() has to be
@@ -1801,7 +1832,6 @@ TEST_F(PopulatedAppListTest, ScreenRotationDuringAppsGridItemReparentDrag) {
 
   gfx::Point target =
       apps_grid_view_->GetItemViewAt(1)->GetBoundsInScreen().right_center();
-  Shell::GetPrimaryRootWindow()->GetHost()->ConvertPixelsToDIP(&target);
   // End drag at the in between items 1 and 2.
   event_generator->MoveTouch(target);
   event_generator->ReleaseTouch();
@@ -1881,7 +1911,7 @@ TEST_P(AppListBubbleAndTabletTest, AppsGridItemReparentToFolderDrag) {
 
 // Tests that an item can be removed just after creating a folder that contains
 // that item. See https://crbug.com/1083942
-TEST_F(PopulatedAppListTest, RemoveFolderItemAfterFolderCreation) {
+TEST_P(PopulatedAppListTest, RemoveFolderItemAfterFolderCreation) {
   InitializeAppsGrid();
   const int kItemCount = 6;
   PopulateApps(kItemCount);
@@ -1917,8 +1947,10 @@ TEST_F(PopulatedAppListTest, RemoveFolderItemAfterFolderCreation) {
     EXPECT_FALSE(item_view->layer()) << "at " << i;
   }
 
-  // Open the newly created folder.
-  LeftClickOn(apps_grid_view_->GetItemViewAt(3));
+  // Open the newly created folder - when productivity launcher is enabled this
+  // happens automatically.
+  if (!IsProductivityLauncherEnabled())
+    LeftClickOn(apps_grid_view_->GetItemViewAt(3));
 
   // Verify that item views have no layers after the folder has been opened.
   apps_grid_test_api_->WaitForItemMoveAnimationDone();
@@ -1949,7 +1981,7 @@ TEST_F(PopulatedAppListTest, RemoveFolderItemAfterFolderCreation) {
   apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
 }
 
-TEST_F(PopulatedAppListTest, ReparentLastFolderItemAfterFolderCreation) {
+TEST_P(PopulatedAppListTest, ReparentLastFolderItemAfterFolderCreation) {
   InitializeAppsGrid();
   const int kItemCount = 5;
   PopulateApps(kItemCount);
@@ -1985,11 +2017,14 @@ TEST_F(PopulatedAppListTest, ReparentLastFolderItemAfterFolderCreation) {
     EXPECT_FALSE(item_view->layer()) << "at " << i;
   }
 
-  // Open the newly created folder.
-  event_generator->MoveMouseTo(
-      apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen().CenterPoint());
-  event_generator->ClickLeftButton();
-  event_generator->ReleaseLeftButton();
+  // Open the newly created folder - with productivity launcher, the folder
+  // should already be open.
+  if (!IsProductivityLauncherEnabled()) {
+    event_generator->MoveMouseTo(
+        apps_grid_view_->GetItemViewAt(3)->GetBoundsInScreen().CenterPoint());
+    event_generator->ClickLeftButton();
+    event_generator->ReleaseLeftButton();
+  }
 
   // Verify that item views have no layers after the folder has been opened.
   apps_grid_test_api_->WaitForItemMoveAnimationDone();
@@ -2061,7 +2096,9 @@ TEST_F(PopulatedAppListWithVKEnabledTest,
 // Tests that a folder item that is dragged to the page flip area and released
 // will discard empty pages in the apps grid. If an empty page is not discarded,
 // the apps grid crashes (See http://crbug.com/1100011).
-TEST_F(PopulatedAppListTest, FolderItemDroppedRemovesBlankPage) {
+// NOTE: Productivity launcher does not create empty pages during drag, so this
+// test is not relevant.
+TEST_F(LegacyPopulatedAppListTest, FolderItemDroppedRemovesBlankPage) {
   InitializeAppsGrid();
   AppListFolderItem* folder_item = CreateAndPopulateFolderWithApps(3);
   PopulateApps(2);
@@ -4105,7 +4142,7 @@ TEST_F(AppListPresenterNonBubbleTest,
 
 // Tests that the touch selection menu created when tapping an open folder's
 // folder name view be interacted with.
-TEST_F(PopulatedAppListTest, TouchSelectionMenu) {
+TEST_P(PopulatedAppListTest, TouchSelectionMenu) {
   InitializeAppsGrid();
 
   AppListFolderItem* folder_item = CreateAndPopulateFolderWithApps(4);
