@@ -541,7 +541,7 @@ if (is_win) {
 
     outputs = []
 
-    foreach(locale, locales) {
+    foreach(locale, platform_pak_locales) {
       if (is_chrome_branded) {
         _strings_file = "google_chrome_strings"
       } else {
@@ -569,7 +569,7 @@ if (is_win) {
           rebase_path("$target_gen_dir/app_infoplist_strings", root_build_dir),
           "-t",
           "main",
-        ] + locales
+        ] + platform_pak_locales
 
     if (is_chrome_branded) {
       deps = [ "//chrome/app:google_chrome_strings" ]

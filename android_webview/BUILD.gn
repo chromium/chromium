@@ -848,8 +848,8 @@ if (enable_resource_allowlist_generation) {
 }
 
 webview_repack_locales("repack_locales") {
-  input_locales = locales
-  output_locales = locales
+  input_locales = platform_pak_locales
+  output_locales = platform_pak_locales
 
   if (enable_resource_allowlist_generation) {
     repack_allowlist = system_webview_pak_allowlist
@@ -861,7 +861,7 @@ android_assets("locale_pak_assets") {
   disable_compression = true
   renaming_sources = []
   renaming_destinations = []
-  foreach(_locale, locales) {
+  foreach(_locale, platform_pak_locales) {
     renaming_sources += [ "$root_out_dir/android_webview/locales/$_locale.pak" ]
     renaming_destinations += [ "stored-locales/$_locale.pak" ]
   }

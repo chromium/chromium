@@ -80,8 +80,8 @@ if (is_android) {
   }
 
   repack_locales("weblayer_locales") {
-    input_locales = locales
-    output_locales = locales
+    input_locales = platform_pak_locales
+    output_locales = platform_pak_locales
     source_patterns = [
       "${root_gen_dir}/components/strings/components_locale_settings_",
       "${root_gen_dir}/device/bluetooth/strings/bluetooth_strings_",
@@ -109,7 +109,7 @@ if (is_android) {
     disable_compression = true
     renaming_sources = []
     renaming_destinations = []
-    foreach(_locale, locales) {
+    foreach(_locale, platform_pak_locales) {
       renaming_sources += [ "$root_out_dir/weblayer/locales/$_locale.pak" ]
       renaming_destinations += [ "locales/$_locale.pak" ]
     }

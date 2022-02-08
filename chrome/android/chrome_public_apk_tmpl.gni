@@ -219,7 +219,7 @@ template("chrome_public_common_apk_or_module_tmpl") {
 
     if (!defined(aapt_locale_allowlist)) {
       # Include resource strings files only for supported locales.
-      aapt_locale_allowlist = locales
+      aapt_locale_allowlist = platform_pak_locales
     }
 
     if (!defined(use_chromium_linker)) {

@@ -208,7 +208,7 @@ template("system_webview_apk_or_module_tmpl") {
       deps += [ "//third_party/arcore-android-sdk-client:com_google_ar_core_J__unpack_aar" ]
     }
 
-    aapt_locale_allowlist = locales
+    aapt_locale_allowlist = platform_pak_locales
 
     resource_exclusion_regex = common_resource_exclusion_regex
     resource_exclusion_exceptions = common_resource_exclusion_exceptions

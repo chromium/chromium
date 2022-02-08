@@ -57,7 +57,7 @@ template("system_webview_bundle") {
       if (defined(invoker.weblayer_deps)) {
         deps += invoker.weblayer_deps
       }
-      aapt_locale_allowlist = locales
+      aapt_locale_allowlist = platform_pak_locales
       proguard_enabled = !is_java_debug
       package_name = "weblayer"
       package_id = 126
@@ -77,7 +77,7 @@ template("system_webview_bundle") {
     if (webview_includes_weblayer && weblayer_in_split) {
       extra_modules = [ _weblayer_module_desc ]
     }
-    system_image_locale_allowlist = locales
+    system_image_locale_allowlist = platform_pak_locales
     is_multi_abi =
         android_64bit_target_cpu && (!defined(invoker.include_64_bit_webview) ||
                                      invoker.include_64_bit_webview) &&

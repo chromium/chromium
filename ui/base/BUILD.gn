@@ -1254,7 +1254,7 @@ fuzzer_test("file_info_fuzzer") {
 # "en-US" in the list as the |ResourceBundle::GetLocaleFilePath| implementations
 # in ui/base/resource/resource_bundle_{mac,ios}.mm return a valid path for
 # "en-US" (as they internally rewrite it as "en" instead).
-locales_for_platform_list = locales
+locales_for_platform_list = platform_pak_locales
 if (is_apple) {
   locales_for_platform_list += [ "en" ]
 }

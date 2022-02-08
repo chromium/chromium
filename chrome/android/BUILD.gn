@@ -157,7 +157,7 @@ if (android_64bit_target_cpu) {
 }
 
 generate_ui_locale_resources("ui_locale_string_resources") {
-  ui_locales = locales
+  ui_locales = platform_pak_locales
 }
 
 # Resources which are needed in the base module manifest's application tag
@@ -2175,7 +2175,7 @@ if (current_toolchain == default_toolchain) {
       renaming_sources = []
       renaming_destinations = []
 
-      foreach(_locale, locales) {
+      foreach(_locale, platform_pak_locales) {
         renaming_sources +=
             [ "$target_gen_dir/${_variant}_paks/locales/$_locale.pak" ]
         renaming_destinations += [ "locales/$_locale.pak" ]
@@ -2724,7 +2724,7 @@ template("monochrome_public_apk_or_module_tmpl") {
 
       # Ensure the localized resources for all locales are used, even when
       # a smaller set is specified through aapt_locale_allowlist.
-      shared_resources_allowlist_locales = locales
+      shared_resources_allowlist_locales = platform_pak_locales
     }
 
     deps = []
