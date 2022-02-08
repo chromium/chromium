@@ -51189,6 +51189,8 @@ from previous Chrome versions.
   <int value="-2058762785"
       label="AllowDownloadResumptionWithoutStrongValidators:disabled"/>
   <int value="-2058656447" label="ContextualSearchUrlActions:enabled"/>
+  <int value="-2057927571"
+      label="AutofillEnableSendingBcnInGetUploadDetails:enabled"/>
   <int value="-2056351013" label="AutofillUpdatedCardUnmaskPromptUi:enabled"/>
   <int value="-2056198604" label="InterestFeedV2Hearts:disabled"/>
   <int value="-2054871630"
@@ -51941,6 +51943,8 @@ from previous Chrome versions.
   <int value="-1541187160" label="UsernameFirstFlow:disabled"/>
   <int value="-1539513973" label="ContentSettingsRedesign:disabled"/>
   <int value="-1538752676" label="IncognitoBrandConsistencyForAndroid:enabled"/>
+  <int value="-1538734579"
+      label="AutofillEnableSendingBcnInGetUploadDetails:disabled"/>
   <int value="-1538492024" label="OmniboxReverseAnswers:enabled"/>
   <int value="-1537773844"
       label="ContextualSuggestionsAlternateCardLayout:disabled"/>

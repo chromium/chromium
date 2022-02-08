@@ -148,8 +148,11 @@ class PaymentsClientTest : public testing::Test {
     test_personal_data_.SetAccountInfoForPayments(
         identity_test_env_.MakePrimaryAccountAvailable(
             "example@gmail.com", signin::ConsentLevel::kSync));
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutofillEnableVirtualCardsRiskBasedAuthentication);
+    scoped_feature_list_.InitWithFeatures(
+        /* enabled_features */
+        {features::kAutofillEnableVirtualCardsRiskBasedAuthentication,
+         features::kAutofillEnableSendingBcnInGetUploadDetails},
+        /* disabled_features */ {});
   }
 
   void TearDown() override { client_.reset(); }
@@ -293,13 +296,15 @@ class PaymentsClientTest : public testing::Test {
   // Issue a GetUploadDetails request.
   void StartGettingUploadDetails(
       PaymentsClient::UploadCardSource upload_card_source =
-          PaymentsClient::UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE) {
+          PaymentsClient::UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE,
+      long long billing_customer_number = 111222333444L) {
     client_->GetUploadDetails(
         BuildTestProfiles(), kAllDetectableValues, std::vector<const char*>(),
         "language-LOCALE",
         base::BindOnce(&PaymentsClientTest::OnDidGetUploadDetails,
                        weak_ptr_factory_.GetWeakPtr()),
-        /*billable_service_number=*/12345, upload_card_source);
+        /*billable_service_number=*/12345, billing_customer_number,
+        upload_card_source);
   }
 
   // Issue an UploadCard request. This requires an OAuth token before starting
@@ -1057,6 +1062,51 @@ TEST_F(PaymentsClientTest, GetDetailsIncludeBillableServiceNumber) {
 
   // Verify that billable service number was included in the request.
   EXPECT_TRUE(GetUploadData().find("\"billable_service\":12345") !=
+              std::string::npos);
+}
+
+TEST_F(PaymentsClientTest, GetDetailsIncludeBillingCustomerNumber) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableSendingBcnInGetUploadDetails);
+
+  StartGettingUploadDetails();
+
+  // Verify that the billing customer number is included in the request if flag
+  // is enabled.
+  EXPECT_TRUE(
+      GetUploadData().find("\"external_customer_id\":\"111222333444\"") !=
+      std::string::npos);
+}
+
+TEST_F(PaymentsClientTest,
+       GetDetailsExcludesBillingCustomerNumberIfNoBcnExists) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableSendingBcnInGetUploadDetails);
+
+  StartGettingUploadDetails(
+      PaymentsClient::UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE, 0L);
+  // Verify that the billing customer number is not included in the request if
+  // billing customer number is 0.
+  EXPECT_TRUE(GetUploadData().find("\"external_customer_id\"") ==
+              std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("\"customer_context\"") ==
+              std::string::npos);
+}
+
+TEST_F(PaymentsClientTest,
+       GetDetailsExcludesBillingCustomerNumberIfFlagDisabled) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kAutofillEnableSendingBcnInGetUploadDetails);
+
+  StartGettingUploadDetails();
+  // Verify that the billing customer number is not included in the request if
+  // flag is disabled.
+  EXPECT_TRUE(GetUploadData().find("\"external_customer_id\"") ==
+              std::string::npos);
+  EXPECT_TRUE(GetUploadData().find("\"customer_context\"") ==
               std::string::npos);
 }
 

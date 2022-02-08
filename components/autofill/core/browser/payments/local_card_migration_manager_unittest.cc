@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
+#include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_client.h"
@@ -603,6 +604,21 @@ TEST_F(LocalCardMigrationManagerTest,
   // kMigrateCardsBillableServiceNumber in the request.
   EXPECT_EQ(payments::kMigrateCardsBillableServiceNumber,
             payments_client_->billable_service_number_in_request());
+}
+
+TEST_F(LocalCardMigrationManagerTest,
+       MigrateCreditCard_ShouldAddMigrateCardsBillingCustomerNumberInRequest) {
+  // Set the billing_customer_number to designate existence of a Payments
+  // account.
+  personal_data_.SetPaymentsCustomerData(
+      std::make_unique<PaymentsCustomerData>(/*customer_id=*/"123456"));
+
+  // Use one local card with more valid local cards available.
+  UseLocalCardWithOtherLocalCardsOnFile();
+
+  // Confirm that the preflight request contained
+  // billing customer number in the request.
+  EXPECT_EQ(123456L, payments_client_->billing_customer_number_in_request());
 }
 
 TEST_F(LocalCardMigrationManagerTest,

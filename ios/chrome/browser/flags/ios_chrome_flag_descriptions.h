@@ -24,6 +24,11 @@ extern const char kAutofillCreditCardUploadDescription[];
 extern const char kAutofillEnableOffersInDownstreamName[];
 extern const char kAutofillEnableOffersInDownstreamDescription[];
 
+// Title and description for the flag enable sending billing customer number in
+// GetUploadDetails preflight call.
+extern const char kAutofillEnableSendingBcnInGetUploadDetailsName[];
+extern const char kAutofillEnableSendingBcnInGetUploadDetailsDescription[];
+
 // Title and description for the flag to fill promo code fields with Autofill.
 extern const char kAutofillFillMerchantPromoCodeFieldsName[];
 extern const char kAutofillFillMerchantPromoCodeFieldsDescription[];

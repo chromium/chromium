@@ -7949,6 +7949,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          policy::features::kEnableUserCloudSigninRestrictionPolicyFetcher)},
 #endif
+
+    {"autofill-enable-sending-bcn-in-get-upload-details",
+     flag_descriptions::kAutofillEnableSendingBcnInGetUploadDetailsName,
+     flag_descriptions::kAutofillEnableSendingBcnInGetUploadDetailsDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableSendingBcnInGetUploadDetails)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

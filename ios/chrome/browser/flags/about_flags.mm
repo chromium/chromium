@@ -794,6 +794,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          password_manager::features::kLeakDetectionUnauthenticated)},
+    {"autofill-enable-sending-bcn-in-get-upload-details",
+     flag_descriptions::kAutofillEnableSendingBcnInGetUploadDetailsName,
+     flag_descriptions::kAutofillEnableSendingBcnInGetUploadDetailsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableSendingBcnInGetUploadDetails)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

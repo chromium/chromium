@@ -339,6 +339,12 @@ const char kAutofillEnableOffersInDownstreamDescription[] =
     "When enabled, offer data will be retrieved during downstream and shown in "
     "the dropdown list.";
 
+const char kAutofillEnableSendingBcnInGetUploadDetailsName[] =
+    "Enable sending billing customer number in GetUploadDetails";
+const char kAutofillEnableSendingBcnInGetUploadDetailsDescription[] =
+    "When enabled the billing customer number will be sent in the "
+    "GetUploadDetails preflight calls.";
+
 const char kAutofillEnableStickyManualFallbackForCardsName[] =
     "Make manual fallback sticky for credit cards";
 const char kAutofillEnableStickyManualFallbackForCardsDescription[] =

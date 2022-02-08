@@ -142,6 +142,7 @@ void LocalCardMigrationManager::AttemptToOfferLocalCardMigration(
       base::BindOnce(&LocalCardMigrationManager::OnDidGetUploadDetails,
                      weak_ptr_factory_.GetWeakPtr(), is_from_settings_page),
       payments::kMigrateCardsBillableServiceNumber,
+      payments::GetBillingCustomerId(personal_data_manager_),
       is_from_settings_page ? payments::PaymentsClient::UploadCardSource::
                                   LOCAL_CARD_MIGRATION_SETTINGS_PAGE
                             : payments::PaymentsClient::UploadCardSource::

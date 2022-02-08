@@ -54,6 +54,7 @@ class TestPaymentsClient : public payments::PaymentsClient {
                               std::unique_ptr<base::Value>,
                               std::vector<std::pair<int, int>>)> callback,
       const int billable_service_number,
+      const int64_t billing_customer_number,
       UploadCardSource upload_card_source =
           UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE) override;
 
@@ -136,6 +137,9 @@ class TestPaymentsClient : public payments::PaymentsClient {
   int billable_service_number_in_request() const {
     return billable_service_number_;
   }
+  int64_t billing_customer_number_in_request() const {
+    return billing_customer_number_;
+  }
   PaymentsClient::UploadCardSource upload_card_source_in_request() const {
     return upload_card_source_;
   }
@@ -167,6 +171,7 @@ class TestPaymentsClient : public payments::PaymentsClient {
   std::string pan_first_six_;
   std::vector<const char*> active_experiments_;
   int billable_service_number_;
+  int64_t billing_customer_number_;
   PaymentsClient::UploadCardSource upload_card_source_;
   std::unique_ptr<std::unordered_map<std::string, std::string>> save_result_;
   bool use_invalid_legal_message_ = false;

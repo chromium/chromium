@@ -433,16 +433,17 @@ class PaymentsClient {
 
   // Determine if the user meets the Payments service's conditions for upload.
   // The service uses |addresses| (from which names and phone numbers are
-  // removed) and |app_locale| to determine which legal message to display.
-  // |detected_values| is a bitmask of CreditCardSaveManager::DetectedValue
-  // values that relays what data is actually available for upload in order to
-  // make more informed upload decisions. |callback| is the callback function
-  // when get response from server. |billable_service_number| is used to set the
-  // billable service number in the GetUploadDetails request. If the conditions
-  // are met, the legal message will be returned via |callback|.
-  // |active_experiments| is used by Payments server to track requests that were
-  // triggered by enabled features. |upload_card_source| is used by Payments
-  // server metrics to track the source of the request.
+  // removed) and |app_locale| and |billing_customer_number| to determine which
+  // legal message to display. |detected_values| is a bitmask of
+  // CreditCardSaveManager::DetectedValue values that relays what data is
+  // actually available for upload in order to make more informed upload
+  // decisions. |callback| is the callback function when get response from
+  // server. |billable_service_number| is used to set the billable service
+  // number in the GetUploadDetails request. If the conditions are met, the
+  // legal message will be returned via |callback|. |active_experiments| is used
+  // by Payments server to track requests that were triggered by enabled
+  // features. |upload_card_source| is used by Payments server metrics to track
+  // the source of the request.
   virtual void GetUploadDetails(
       const std::vector<AutofillProfile>& addresses,
       const int detected_values,
@@ -453,6 +454,7 @@ class PaymentsClient {
                               std::unique_ptr<base::Value>,
                               std::vector<std::pair<int, int>>)> callback,
       const int billable_service_number,
+      const int64_t billing_customer_number,
       UploadCardSource upload_card_source =
           UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE);
 

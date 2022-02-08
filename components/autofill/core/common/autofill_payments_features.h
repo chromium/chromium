@@ -27,6 +27,7 @@ extern const base::Feature kAutofillEnableOfferNotificationCrossTabTracking;
 extern const base::Feature kAutofillEnableOfferNotificationForPromoCodes;
 extern const base::Feature kAutofillEnableOffersInClankKeyboardAccessory;
 extern const base::Feature kAutofillEnableOffersInDownstream;
+extern const base::Feature kAutofillEnableSendingBcnInGetUploadDetails;
 extern const base::Feature kAutofillEnableStickyManualFallbackForCards;
 extern const base::Feature kAutofillEnableToolbarStatusChip;
 extern const base::Feature kAutofillEnableUpdateVirtualCardEnrollment;

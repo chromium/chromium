@@ -60,11 +60,13 @@ void TestPaymentsClient::GetUploadDetails(
                             std::unique_ptr<base::Value>,
                             std::vector<std::pair<int, int>>)> callback,
     const int billable_service_number,
+    const int64_t billing_customer_number,
     PaymentsClient::UploadCardSource upload_card_source) {
   upload_details_addresses_ = addresses;
   detected_values_ = detected_values;
   active_experiments_ = active_experiments;
   billable_service_number_ = billable_service_number;
+  billing_customer_number_ = billing_customer_number;
   upload_card_source_ = upload_card_source;
   std::move(callback).Run(
       app_locale == "en-US"

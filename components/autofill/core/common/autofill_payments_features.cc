@@ -87,6 +87,12 @@ const base::Feature kAutofillEnableOffersInClankKeyboardAccessory{
 const base::Feature kAutofillEnableOffersInDownstream{
     "kAutofillEnableOffersInDownstream", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Controls whether we send billing customer number in GetUploadDetails
+// preflight call.
+const base::Feature kAutofillEnableSendingBcnInGetUploadDetails{
+    "AutofillEnableSendingBcnInGetUploadDetails",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, if the user interacts with the manual fallback bottom sheet
 // on Android, it'll remain sticky until the user dismisses it.
 const base::Feature kAutofillEnableStickyManualFallbackForCards{

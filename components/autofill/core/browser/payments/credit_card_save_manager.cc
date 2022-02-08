@@ -92,8 +92,7 @@ CreditCardSaveManager::CreditCardSaveManager(
     : client_(client),
       payments_client_(payments_client),
       app_locale_(app_locale),
-      personal_data_manager_(personal_data_manager) {
-}
+      personal_data_manager_(personal_data_manager) {}
 
 CreditCardSaveManager::~CreditCardSaveManager() = default;
 
@@ -289,6 +288,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
       base::BindOnce(&CreditCardSaveManager::OnDidGetUploadDetails,
                      weak_ptr_factory_.GetWeakPtr()),
       payments::kUploadCardBillableServiceNumber,
+      payments::GetBillingCustomerId(personal_data_manager_),
       payments::PaymentsClient::UploadCardSource::UPSTREAM_CHECKOUT_FLOW);
 }
 

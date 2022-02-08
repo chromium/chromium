@@ -199,6 +199,9 @@ extern const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[];
 extern const char kAutofillEnableOffersInDownstreamName[];
 extern const char kAutofillEnableOffersInDownstreamDescription[];
 
+extern const char kAutofillEnableSendingBcnInGetUploadDetailsName[];
+extern const char kAutofillEnableSendingBcnInGetUploadDetailsDescription[];
+
 extern const char kAutofillEnableStickyManualFallbackForCardsName[];
 extern const char kAutofillEnableStickyManualFallbackForCardsDescription[];
 
