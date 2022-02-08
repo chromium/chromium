@@ -121,15 +121,17 @@ std::vector<std::string> GetRecoveryInstallArguments(
   if (is_deferred_run)
     arguments.push_back("/deferredrun");
 
-  std::string recovery_args;
-  if (manifest.GetStringASCII("x-recovery-args", &recovery_args))
-    arguments.push_back(recovery_args);
-  std::string recovery_add_version;
-  if (manifest.GetStringASCII("x-recovery-add-version",
-                              &recovery_add_version) &&
-      recovery_add_version == "yes") {
-    arguments.push_back("/version");
-    arguments.push_back(version.GetString());
+  if (const std::string* recovery_args =
+          manifest.FindStringKey("x-recovery-args")) {
+    if (base::IsStringASCII(*recovery_args))
+      arguments.push_back(*recovery_args);
+  }
+  if (const std::string* recovery_add_version =
+          manifest.FindStringKey("x-recovery-add-version")) {
+    if (*recovery_add_version == "yes") {
+      arguments.push_back("/version");
+      arguments.push_back(version.GetString());
+    }
   }
 
   return arguments;
@@ -179,12 +181,14 @@ void DoElevatedInstallRecoveryComponent(const base::FilePath& path) {
     return;
 
   std::unique_ptr<base::DictionaryValue> manifest(ReadManifest(manifest_file));
-  std::string name;
-  manifest->GetStringASCII("name", &name);
-  if (name != kRecoveryManifestName)
+  const std::string* name = manifest->FindStringKey("name");
+  if (!name || *name != kRecoveryManifestName)
     return;
   std::string proposed_version;
-  manifest->GetStringASCII("version", &proposed_version);
+  if (const std::string* ptr = manifest->FindStringKey("version")) {
+    if (base::IsStringASCII(*ptr))
+      proposed_version = *ptr;
+  }
   const base::Version version(proposed_version);
   if (!version.IsValid())
     return;
