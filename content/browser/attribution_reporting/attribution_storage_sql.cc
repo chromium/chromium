@@ -37,18 +37,6 @@
 
 namespace content {
 
-namespace {
-
-using CreateReportResult = ::content::AttributionStorage::CreateReportResult;
-using CreateReportStatus =
-    ::content::AttributionStorage::CreateReportResult::Status;
-using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
-
-const base::FilePath::CharType kInMemoryPath[] = FILE_PATH_LITERAL(":memory");
-
-const base::FilePath::CharType kDatabasePath[] =
-    FILE_PATH_LITERAL("Conversions");
-
 // Version number of the database.
 //
 // Version 1 - 2020/01/27 - https://crrev.com/c/1965450
@@ -135,11 +123,11 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 19 - 2022/02/07 - https://crrev.com/c/3421868
 //
 // Version 19 adds the impressions.debug_key and conversions.debug_key columns.
-const int kCurrentVersionNumber = 19;
+const int AttributionStorageSql::kCurrentVersionNumber = 19;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int kCompatibleVersionNumber = 19;
+const int AttributionStorageSql::kCompatibleVersionNumber = 19;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -153,7 +141,19 @@ const int kCompatibleVersionNumber = 19;
 // Version 17 was deprecated by https://crrev.com/c/3425176.
 //
 // Version 18 was deprecated by https://crrev.com/c/3421868.
-const int kDeprecatedVersionNumber = 18;
+const int AttributionStorageSql::kDeprecatedVersionNumber = 18;
+
+namespace {
+
+using CreateReportResult = ::content::AttributionStorage::CreateReportResult;
+using CreateReportStatus =
+    ::content::AttributionStorage::CreateReportResult::Status;
+using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
+
+const base::FilePath::CharType kInMemoryPath[] = FILE_PATH_LITERAL(":memory");
+
+const base::FilePath::CharType kDatabasePath[] =
+    FILE_PATH_LITERAL("Conversions");
 
 void RecordInitializationStatus(
     const AttributionStorageSql::InitStatus status) {

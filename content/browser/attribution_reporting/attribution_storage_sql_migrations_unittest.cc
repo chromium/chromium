@@ -10,6 +10,7 @@
 #include "base/guid.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
@@ -28,8 +29,6 @@ std::string RemoveQuotes(std::string input) {
   base::RemoveChars(input, "\"", &output);
   return output;
 }
-
-const int kCurrentVersionNumber = 19;
 
 }  // namespace
 
@@ -54,10 +53,19 @@ class AttributionStorageSqlMigrationsTest : public testing::Test {
     return temp_directory_.GetPath().Append(FILE_PATH_LITERAL("Conversions"));
   }
 
+  static base::FilePath GetVersionFilePath(int version_id) {
+    // Should be safe cross platform because StringPrintf has overloads for wide
+    // strings.
+    return base::FilePath(
+        base::StringPrintf(FILE_PATH_LITERAL("version_%d.sql"), version_id));
+  }
+
   std::string GetCurrentSchema() {
     base::FilePath current_version_path = temp_directory_.GetPath().Append(
         FILE_PATH_LITERAL("TestCurrentVersion.db"));
-    LoadDatabase(FILE_PATH_LITERAL("version_19.sql"), current_version_path);
+    LoadDatabase(
+        GetVersionFilePath(AttributionStorageSql::kCurrentVersionNumber),
+        current_version_path);
     sql::Database db;
     EXPECT_TRUE(db.Open(current_version_path));
     return db.GetSchema();
@@ -87,10 +95,9 @@ class AttributionStorageSqlMigrationsTest : public testing::Test {
     return s.ColumnInt(0);
   }
 
-  void LoadDatabase(const base::FilePath::StringType& file,
-                    const base::FilePath& db_path) {
+  void LoadDatabase(const base::FilePath& file, const base::FilePath& db_path) {
     std::string contents;
-    ASSERT_TRUE(GetDatabaseData(base::FilePath(file), &contents));
+    ASSERT_TRUE(GetDatabaseData(file, &contents));
 
     sql::Database db;
     ASSERT_TRUE(db.Open(db_path));
@@ -119,7 +126,8 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateEmptyToCurrent) {
     ASSERT_TRUE(db.Open(DbPath()));
 
     // Check version.
-    EXPECT_EQ(kCurrentVersionNumber, VersionFromDatabase(&db));
+    EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
+              VersionFromDatabase(&db));
 
     // Check that expected tables are present.
     EXPECT_TRUE(db.DoesTableExist("conversions"));
@@ -136,7 +144,9 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateEmptyToCurrent) {
 
 TEST_F(AttributionStorageSqlMigrationsTest, MigrateLatestDeprecatedToCurrent) {
   base::HistogramTester histograms;
-  LoadDatabase(FILE_PATH_LITERAL("version_18.sql"), DbPath());
+  LoadDatabase(
+      GetVersionFilePath(AttributionStorageSql::kDeprecatedVersionNumber),
+      DbPath());
 
   // Verify pre-conditions.
   {
@@ -157,7 +167,8 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateLatestDeprecatedToCurrent) {
     ASSERT_TRUE(db.Open(DbPath()));
 
     // Check version.
-    EXPECT_EQ(kCurrentVersionNumber, VersionFromDatabase(&db));
+    EXPECT_EQ(AttributionStorageSql::kCurrentVersionNumber,
+              VersionFromDatabase(&db));
 
     // Compare without quotes as sometimes migrations cause table names to be
     // string literals.

@@ -37,6 +37,11 @@ class AttributionStorageDelegate;
 // destroyed on the same sequence. The sequence must outlive |this|.
 class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
  public:
+  // Exposed for testing.
+  static const int kCurrentVersionNumber;
+  static const int kCompatibleVersionNumber;
+  static const int kDeprecatedVersionNumber;
+
   static void RunInMemoryForTesting();
 
   AttributionStorageSql(const base::FilePath& path_to_database,
