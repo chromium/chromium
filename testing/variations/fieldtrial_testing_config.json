@@ -1939,8 +1939,12 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "CreateCompositorWorkerContext": "true"
+                    },
                     "enable_features": [
                         "EarlyCodeCache",
+                        "EarlyEstablishGpuChannel",
                         "FontManagerEarlyInit",
                         "NavigationThreadingOptimizations",
                         "OptimizeLookalikeUrlNavigationThrottle",
@@ -1962,8 +1966,12 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "CreateCompositorWorkerContext": "true"
+                    },
                     "enable_features": [
                         "EarlyCodeCache",
+                        "EarlyEstablishGpuChannel",
                         "NavigationThreadingOptimizations",
                         "OptimizeLookalikeUrlNavigationThrottle",
                         "URLLoaderSyncClient"
@@ -2852,31 +2860,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EarlyBodyLoad"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EarlyEstablishGpuChannel": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "CreateCompositorWorkerContext": "true"
-                    },
-                    "enable_features": [
-                        "EarlyEstablishGpuChannel"
                     ]
                 }
             ]
