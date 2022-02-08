@@ -299,7 +299,8 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
   int token_id = 0;
   for (const auto& token_value : dictionary) {
     std::u16string token;
-    token_value.GetAsString(&token);
+    if (token_value.is_string())
+      token = base::UTF8ToUTF16(token_value.GetString());
     dictionary_.insert({token, token_id});
     ++token_id;
   }

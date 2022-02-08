@@ -252,13 +252,16 @@ void OmniboxPedal::SetLabelStrings(const base::Value& ui_strings) {
   DCHECK(ui_strings.is_dict());
   // The pedal_processor tool ensures that this dictionary is either omitted,
   //  or else included with all these keys populated.
-  ui_strings.FindKey("button_text")->GetAsString(&strings_.hint);
-  ui_strings.FindKey("description_text")
-      ->GetAsString(&strings_.suggestion_contents);
-  ui_strings.FindKey("spoken_button_focus_announcement")
-      ->GetAsString(&strings_.accessibility_hint);
-  ui_strings.FindKey("spoken_suggestion_description_suffix")
-      ->GetAsString(&strings_.accessibility_suffix);
+  if (const std::string* string = ui_strings.FindStringKey("button_text"))
+    strings_.hint = base::UTF8ToUTF16(*string);
+  if (const std::string* string = ui_strings.FindStringKey("description_text"))
+    strings_.suggestion_contents = base::UTF8ToUTF16(*string);
+  if (const std::string* string =
+          ui_strings.FindStringKey("spoken_button_focus_announcement"))
+    strings_.accessibility_hint = base::UTF8ToUTF16(*string);
+  if (const std::string* string =
+          ui_strings.FindStringKey("spoken_suggestion_description_suffix"))
+    strings_.accessibility_suffix = base::UTF8ToUTF16(*string);
 #if BUILDFLAG(IS_ANDROID)
   CreateOrUpdateJavaObject();
 #endif
