@@ -204,10 +204,12 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
                           ObjectPathCallback callback,
                           ErrorCallback error_callback) = 0;
 
+  // Force a fresh WiFi scan if a WiFi device is available as a way of
+  // ensuring that recently configured networks can be found.
   // For each technology present, connects to the "best" service available.
   // Called once the user is logged in and certificates are loaded.
-  virtual void ConnectToBestServices(base::OnceClosure callback,
-                                     ErrorCallback error_callback) = 0;
+  virtual void ScanAndConnectToBestServices(base::OnceClosure callback,
+                                            ErrorCallback error_callback) = 0;
 
   // Enable or disable network bandwidth throttling, on all interfaces on the
   // system.

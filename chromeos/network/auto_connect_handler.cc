@@ -104,7 +104,6 @@ AutoConnectHandler::AutoConnectHandler()
       client_certs_resolved_(false),
       applied_autoconnect_policy_on_wifi(false),
       applied_autoconnect_policy_on_cellular(false),
-      connect_to_best_services_after_scan_(false),
       auto_connect_reasons_(0) {}
 
 AutoConnectHandler::~AutoConnectHandler() {
@@ -184,17 +183,9 @@ void AutoConnectHandler::PoliciesApplied(const std::string& userhash) {
   }
 }
 
-void AutoConnectHandler::ScanStarted(const DeviceState* device) {
-  if (device->type() != shill::kTypeWifi)
-    return;
-  hidden_hex_ssids_at_scan_start_ = GetConfiguredHiddenHexSsids();
-}
-
 void AutoConnectHandler::ScanCompleted(const DeviceState* device) {
   if (device->type() != shill::kTypeWifi)
     return;
-  std::set<std::string> hidden_hex_ssids_at_scan_start;
-  std::swap(hidden_hex_ssids_at_scan_start_, hidden_hex_ssids_at_scan_start);
 
   // Enforce AllowOnlyPolicyWiFiToConnectIfAvailable policy if enabled.
   const NetworkState* managed_network =
@@ -213,33 +204,6 @@ void AutoConnectHandler::ScanCompleted(const DeviceState* device) {
       return;
     }
   }
-
-  if (!connect_to_best_services_after_scan_)
-    return;
-
-  if (GetConfiguredHiddenHexSsids() != hidden_hex_ssids_at_scan_start &&
-      !rescan_triggered_due_to_hidden_ssids_) {
-    // For ConnectToBestServices to consider hidden SSIDs, they must have been
-    // discovered in a scan. This means that they must have been configured in
-    // shill before the scan started (the set of hidden SSIDs the device is
-    // trying to discover is broadcasted during the scan). If the set of hidden
-    // SSIDs has changed since the scan has started (e.g. because user policy
-    // configuring a hidden SSID has been applied), it is possible that shill is
-    // not aware that a hidden SSID would be available for AutoConnect because
-    // it was not configured at scan start time. Re-scan once before calling
-    // ConnectToBestServices.
-    rescan_triggered_due_to_hidden_ssids_ = true;
-    NET_LOG(EVENT) << "Set of hidden SSIDs changed, re-triggering scan.";
-    network_state_handler_->RequestScan(NetworkTypePattern::WiFi());
-    return;
-  }
-
-  connect_to_best_services_after_scan_ = false;
-  // Request ConnectToBestServices after processing any pending DBus calls.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AutoConnectHandler::CallShillConnectToBestServices,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AutoConnectHandler::ResolveRequestCompleted(
@@ -314,15 +278,12 @@ void AutoConnectHandler::CheckBestConnection() {
 
   request_best_connection_pending_ = false;
 
-  // Trigger a ConnectToBestNetwork request after the next scan completion.
-  if (connect_to_best_services_after_scan_)
-    return;
-  connect_to_best_services_after_scan_ = true;
-  rescan_triggered_due_to_hidden_ssids_ = false;
-  if (!network_state_handler_->GetScanningByType(
-          NetworkTypePattern::Primitive(shill::kTypeWifi))) {
-    network_state_handler_->RequestScan(NetworkTypePattern::WiFi());
-  }
+  // Request ScanAndConnectToBestServices after processing any pending DBus
+  // calls.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AutoConnectHandler::CallShillScanAndConnectToBestServices,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AutoConnectHandler::DisconnectWiFiIfPolicyRequires() {
@@ -474,33 +435,16 @@ void AutoConnectHandler::DisableAutoconnectForNetwork(
       base::BindOnce(&SetPropertiesErrorCallback));
 }
 
-void AutoConnectHandler::CallShillConnectToBestServices() {
-  NET_LOG(EVENT) << "ConnectToBestServices ["
+void AutoConnectHandler::CallShillScanAndConnectToBestServices() {
+  NET_LOG(EVENT) << "ScanAndConnectToBestServices ["
                  << AutoConnectReasonsToString(auto_connect_reasons_) << "]";
 
-  ShillManagerClient::Get()->ConnectToBestServices(
+  ShillManagerClient::Get()->ScanAndConnectToBestServices(
       base::BindOnce(&AutoConnectHandler::NotifyAutoConnectInitiated,
                      weak_ptr_factory_.GetWeakPtr(), auto_connect_reasons_),
       base::BindOnce(&network_handler::ShillErrorCallbackFunction,
                      "ConnectToBestServices Failed", "",
                      network_handler::ErrorCallback()));
-}
-
-std::set<std::string> AutoConnectHandler::GetConfiguredHiddenHexSsids() {
-  std::set<std::string> hidden_hex_ssids;
-
-  NetworkStateHandler::NetworkStateList networks;
-  network_state_handler_->GetNetworkListByType(
-      NetworkTypePattern::WiFi(), /*configured_only=*/true,
-      /*visible_only=*/false, /*limit=*/0, &networks);
-  for (const NetworkState* network : networks) {
-    // Also check 'connectable' to only return networks that are fully
-    // configured, i.e. contain all configuration details to be able to connect.
-    if (network->hidden_ssid() && network->connectable()) {
-      hidden_hex_ssids.insert(network->GetHexSsid());
-    }
-  }
-  return hidden_hex_ssids;
 }
 
 }  // namespace chromeos

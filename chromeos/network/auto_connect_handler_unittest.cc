@@ -40,7 +40,6 @@ namespace chromeos {
 
 namespace {
 
-constexpr char kWifiDevicePath[] = "/device/wifi1";
 constexpr char kESimDisconnectByPolicyHistogram[] =
     "Network.Cellular.ESim.DisconnectByPolicy.Result";
 constexpr char kPSimDisconnectByPolicyHistogram[] =
@@ -64,30 +63,6 @@ class TestAutoConnectHandlerObserver : public AutoConnectHandler::Observer {
  private:
   int num_auto_connect_events_ = 0;
   int auto_connect_reasons_ = 0;
-};
-
-class ScanRequestWaiter final : public NetworkStateHandlerObserver {
- public:
-  ScanRequestWaiter(NetworkStateHandler* network_state_handler)
-      : network_state_handler_(network_state_handler) {
-    network_state_handler_->AddObserver(this, FROM_HERE);
-  }
-  ~ScanRequestWaiter() override {
-    network_state_handler_->RemoveObserver(this, FROM_HERE);
-  }
-
-  ScanRequestWaiter(const ScanRequestWaiter& other) = delete;
-  ScanRequestWaiter& operator=(const ScanRequestWaiter& other) = delete;
-
-  void ScanRequested(const NetworkTypePattern& type) override {
-    run_loop_.Quit();
-  }
-
-  void Wait() { run_loop_.Run(); }
-
- private:
-  NetworkStateHandler* network_state_handler_;
-  base::RunLoop run_loop_;
 };
 
 class TestCertResolveObserver : public ClientCertResolver::Observer {
@@ -340,11 +315,6 @@ const char* kConfigWifi1ManagedSharedConnectable = R"(
     "Connectable": true, "Security": "wpa", "Profile":
   "/profile/default" })";
 
-const char* kConfigWifi2ManagedSharedConnectable = R"(
-  { "GUID": "wifi2", "Type": "wifi", "State": "idle",
-    "Connectable": true, "Security": "wpa", "Profile":
-  "/profile/default" })";
-
 // HexSSID 7769666931 is "wifi1".
 const char* kPolicy = R"(
   [ { "GUID": "wifi1",
@@ -376,45 +346,6 @@ const char* kPolicyCertPattern = R"(
         }
       }
   } ])";
-
-// HexSSID 7769666931 is "wifi1".
-const char* kPolicyHiddenSsid = R"(
-  [ { "GUID": "wifi1",
-      "Name": "wifi1",
-      "Type": "WiFi",
-      "WiFi": {
-        "Security": "WPA-PSK",
-        "HexSSID": "7769666931",
-        "HiddenSSID": true,
-        "Passphrase": "passphrase"
-      }
-  } ])";
-
-// HexSSID 7769666931 is "wifi1".
-// HexSSID 7769666932 is "wifi2".
-const char* kPolicyTwoHiddenSsids = R"(
-  [
-    { "GUID": "wifi1",
-      "Name": "wifi1",
-      "Type": "WiFi",
-      "WiFi": {
-        "Security": "WPA-PSK",
-        "HexSSID": "7769666931",
-        "HiddenSSID": true,
-        "Passphrase": "passphrase"
-      }
-    },
-    { "GUID": "wifi2",
-      "Name": "wifi2",
-      "Type": "WiFi",
-      "WiFi": {
-        "Security": "WPA-PSK",
-        "HexSSID": "7769666932",
-        "HiddenSSID": true,
-        "Passphrase": "passphrase"
-      }
-    }
-  ])";
 
 const char* kCellularPolicy = R"(
     [
@@ -635,157 +566,6 @@ TEST_F(AutoConnectHandlerTest, AutoConnectOnUserPolicyApplied) {
   SetupUserPolicy(kPolicy);
   EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi0_service_path));
   EXPECT_EQ(shill::kStateOnline, GetServiceState(wifi1_service_path));
-  EXPECT_EQ(1, test_observer_->num_auto_connect_events());
-}
-
-TEST_F(AutoConnectHandlerTest, AutoConnectOnUserPolicyAfterScanComplete) {
-  // Initial state: wifi0 is online, wifi1 is idle.
-  std::string wifi0_service_path =
-      ConfigureService(kConfigWifi0UnmanagedSharedConnected);
-  ASSERT_FALSE(wifi0_service_path.empty());
-  std::string wifi1_service_path =
-      ConfigureService(kConfigWifi1ManagedSharedConnectable);
-  ASSERT_FALSE(wifi1_service_path.empty());
-  // Device policy has already been applied.
-  SetupDevicePolicy(std::string(), /*global_config=*/base::Value(
-                        base::Value::Type::DICTIONARY));
-  StartNetworkCertLoader();
-  LoginToRegularUser();
-  // When shill's ConnectToBestServices is called, wifi1 should be come online.
-  helper().manager_test()->SetBestServiceToConnect(wifi1_service_path);
-
-  EXPECT_EQ(shill::kStateOnline, GetServiceState(wifi0_service_path));
-  EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi1_service_path));
-
-  // Apply user policy while the device is scanning.
-  // Nothing happens because ConnectToBestServices is deferred.
-  helper().device_test()->SetDeviceProperty(
-      kWifiDevicePath, shill::kScanningProperty, base::Value(true),
-      /*notify_changed=*/true);
-  SetupUserPolicy(kPolicy);
-  EXPECT_EQ(shill::kStateOnline, GetServiceState(wifi0_service_path));
-  EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi1_service_path));
-
-  // Complete the scan. Now ConnectToBestService should happen.
-  helper().device_test()->SetDeviceProperty(
-      kWifiDevicePath, shill::kScanningProperty, base::Value(false),
-      /*notify_changed=*/true);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi0_service_path));
-  EXPECT_EQ(shill::kStateOnline, GetServiceState(wifi1_service_path));
-  EXPECT_EQ(1, test_observer_->num_auto_connect_events());
-}
-
-TEST_F(AutoConnectHandlerTest, AutoConnectOnUserPolicyRescanDueToHiddenSsids) {
-  const base::TimeDelta kScanDelay = base::Seconds(30);
-  // Initial state: wifi0 is online, wifi1 is idle.
-  std::string wifi0_service_path =
-      ConfigureService(kConfigWifi0UnmanagedSharedConnected);
-  ASSERT_FALSE(wifi0_service_path.empty());
-  std::string wifi1_service_path =
-      ConfigureService(kConfigWifi1ManagedSharedConnectable);
-  ASSERT_FALSE(wifi1_service_path.empty());
-  // Device policy has already been applied.
-  SetupDevicePolicy(std::string(), /*global_config=*/base::Value(
-                        base::Value::Type::DICTIONARY));
-  StartNetworkCertLoader();
-  LoginToRegularUser();
-  // When shill's ConnectToBestServices is called, wifi1 should be come online.
-  helper().manager_test()->SetBestServiceToConnect(wifi1_service_path);
-  helper().manager_test()->SetInteractiveDelay(kScanDelay);
-
-  EXPECT_EQ(shill::kStateOnline, GetServiceState(wifi0_service_path));
-  EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi1_service_path));
-
-  // Apply device policy with HiddenSSIDs while the device is scanning.
-  // Nothing happens because ConnectToBestServices is deferred.
-  helper().device_test()->SetDeviceProperty(
-      kWifiDevicePath, shill::kScanningProperty, base::Value(true),
-      /*notify_changed=*/true);
-  SetupUserPolicy(kPolicyHiddenSsid);
-  EXPECT_EQ(shill::kStateOnline, GetServiceState(wifi0_service_path));
-  EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi1_service_path));
-
-  // Complete the scan. A new scan should be requested because the set of
-  // HiddenSSIDs changed.
-  ScanRequestWaiter scan_request_waiter(helper().network_state_handler());
-  helper().device_test()->SetDeviceProperty(
-      kWifiDevicePath, shill::kScanningProperty, base::Value(false),
-      /*notify_changed=*/true);
-  scan_request_waiter.Wait();
-
-  EXPECT_EQ(shill::kStateOnline, GetServiceState(wifi0_service_path));
-  EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi1_service_path));
-
-  // Now finish the scan by waiting for the delay configured in
-  // FakeShillManagerClient.
-  task_environment_.FastForwardBy(kScanDelay);
-
-  // Note that wifi1 will be 'associating' because the FakeShillManagerClient
-  // interactive delay also applies to the simulated connection process.
-  EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi0_service_path));
-  EXPECT_EQ(shill::kStateAssociation, GetServiceState(wifi1_service_path));
-  EXPECT_EQ(1, test_observer_->num_auto_connect_events());
-}
-
-TEST_F(AutoConnectHandlerTest, AutoConnectOnUserPolicyRescanOnlyOnce) {
-  const base::TimeDelta kScanDelay = base::Seconds(30);
-  // Initial state: wifi0 is online, wifi1 is idle.
-  std::string wifi0_service_path =
-      ConfigureService(kConfigWifi0UnmanagedSharedConnected);
-  ASSERT_FALSE(wifi0_service_path.empty());
-  std::string wifi1_service_path =
-      ConfigureService(kConfigWifi1ManagedSharedConnectable);
-  ASSERT_FALSE(wifi1_service_path.empty());
-  std::string wifi2_service_path =
-      ConfigureService(kConfigWifi2ManagedSharedConnectable);
-  ASSERT_FALSE(wifi2_service_path.empty());
-  // Device policy has already been applied.
-  SetupDevicePolicy(std::string(), /*global_config=*/base::Value(
-                        base::Value::Type::DICTIONARY));
-  StartNetworkCertLoader();
-  LoginToRegularUser();
-  // When shill's ConnectToBestServices is called, wifi1 should be come online.
-  helper().manager_test()->SetBestServiceToConnect(wifi1_service_path);
-  helper().manager_test()->SetInteractiveDelay(kScanDelay);
-
-  EXPECT_EQ(shill::kStateOnline, GetServiceState(wifi0_service_path));
-  EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi1_service_path));
-
-  // Apply device policy with HiddenSSIDs while the device is scanning.
-  // Nothing happens because ConnectToBestServices is deferred.
-  helper().device_test()->SetDeviceProperty(
-      kWifiDevicePath, shill::kScanningProperty, base::Value(true),
-      /*notify_changed=*/true);
-  SetupUserPolicy(kPolicyHiddenSsid);
-  EXPECT_EQ(shill::kStateOnline, GetServiceState(wifi0_service_path));
-  EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi1_service_path));
-
-  // Complete the scan. A new scan should be requested because the set of
-  // HiddenSSIDs changed.
-  ScanRequestWaiter scan_request_waiter(helper().network_state_handler());
-  helper().device_test()->SetDeviceProperty(
-      kWifiDevicePath, shill::kScanningProperty, base::Value(false),
-      /*notify_changed=*/true);
-  scan_request_waiter.Wait();
-
-  EXPECT_EQ(shill::kStateOnline, GetServiceState(wifi0_service_path));
-  EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi1_service_path));
-
-  // While scanning, apply another policy that changes the set of hidden SSIDs
-  // again. This will not trigger another re-scan because AutoConnectHandler
-  // limits to once re-scan.
-  SetupUserPolicy(kPolicyTwoHiddenSsids);
-
-  // Now finish the scan by waiting for the delay configured in
-  // FakeShillManagerClient.
-  task_environment_.FastForwardBy(kScanDelay);
-
-  // Note that wifi1 will be 'associating' because the FakeShillManagerClient
-  // interactive delay also applies to the simulated connection process.
-  EXPECT_EQ(shill::kStateIdle, GetServiceState(wifi0_service_path));
-  EXPECT_EQ(shill::kStateAssociation, GetServiceState(wifi1_service_path));
   EXPECT_EQ(1, test_observer_->num_auto_connect_events());
 }
 

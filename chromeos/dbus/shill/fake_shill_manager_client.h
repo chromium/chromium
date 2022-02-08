@@ -61,8 +61,8 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   void GetService(const base::Value& properties,
                   ObjectPathCallback callback,
                   ErrorCallback error_callback) override;
-  void ConnectToBestServices(base::OnceClosure callback,
-                             ErrorCallback error_callback) override;
+  void ScanAndConnectToBestServices(base::OnceClosure callback,
+                                    ErrorCallback error_callback) override;
   void SetNetworkThrottlingStatus(const NetworkThrottlingStatus& status,
                                   base::OnceClosure callback,
                                   ErrorCallback error_callback) override;

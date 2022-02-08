@@ -475,7 +475,7 @@ void FakeShillManagerClient::GetService(const base::Value& properties,
       FROM_HERE, base::BindOnce(std::move(callback), dbus::ObjectPath()));
 }
 
-void FakeShillManagerClient::ConnectToBestServices(
+void FakeShillManagerClient::ScanAndConnectToBestServices(
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   if (best_service_.empty()) {

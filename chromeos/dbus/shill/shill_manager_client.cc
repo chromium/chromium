@@ -167,10 +167,10 @@ class ShillManagerClientImpl : public ShillManagerClient {
         &method_call, std::move(callback), std::move(error_callback));
   }
 
-  void ConnectToBestServices(base::OnceClosure callback,
-                             ErrorCallback error_callback) override {
+  void ScanAndConnectToBestServices(base::OnceClosure callback,
+                                    ErrorCallback error_callback) override {
     dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
-                                 shill::kConnectToBestServicesFunction);
+                                 shill::kScanAndConnectToBestServicesFunction);
     helper_->CallVoidMethodWithErrorCallback(&method_call, std::move(callback),
                                              std::move(error_callback));
   }
