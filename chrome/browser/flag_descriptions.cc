@@ -578,11 +578,6 @@ const char kContextMenuTranslateWithGoogleLensName[] =
 const char kContextMenuTranslateWithGoogleLensDescription[] =
     "Enable a chip for a Translate intent into Google Lens when supported.";
 
-const char kClipboardCustomFormatsName[] = "Clipboard Custom Formats";
-const char kClipboardCustomFormatsDescription[] =
-    "Allows read/write of custom formats with unsanitized clipboard content. "
-    "See crbug.com/106449";
-
 const char kClientStorageAccessContextAuditingName[] =
     "Access contexts for client-side storage";
 const char kClientStorageAccessContextAuditingDescription[] =

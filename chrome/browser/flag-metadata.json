@@ -780,11 +780,6 @@
     "expiry_milestone": 92
   },
   {
-    "name": "clipboard-custom-formats",
-    "owners": ["mek", "snianu@microsoft.com"],
-    "expiry_milestone": 98
-  },
-  {
     "name": "close-all-tabs-modal-dialog",
     "owners": [ "ckitagawa", "fredmello" ],
     "expiry_milestone": 103
