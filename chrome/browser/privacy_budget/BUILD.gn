@@ -94,6 +94,7 @@ source_set("browser_tests") {
 
   deps = [
     ":headers",
+    "//build:branding_buildflags",
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/metrics:test_support",

@@ -18,6 +18,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
@@ -464,7 +465,12 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetGroupConfigBrowserTest, LoadsAGroup) {
   ASSERT_TRUE(settings->IsActive());
 }
 
-#if BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
+// The following test requires that the testing config defined in
+// testing/variations/fieldtrial_testing_config.json is applied. The testing
+// config is only applied by default if 1) the
+// "disable_fieldtrial_testing_config" GN flag is set to false, and 2) the build
+// is a non-Chrome branded build.
+#if BUILDFLAG(FIELDTRIAL_TESTING_ENABLED) && !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace {
 class PrivacyBudgetFieldtrialConfigTest : public PrivacyBudgetBrowserTestBase {
@@ -518,4 +524,5 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetFieldtrialConfigTest,
       blink::IdentifiableSurface::Type::kMediaCapabilities_DecodingInfo));
 }
 
-#endif
+#endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED) &&
+        // !BUILDFLAG(GOOGLE_CHROME_BRANDING)

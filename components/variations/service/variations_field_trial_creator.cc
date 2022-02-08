@@ -24,6 +24,7 @@
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
 #include "base/version.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/language/core/browser/locale_util.h"
@@ -146,6 +147,32 @@ Study::CpuArchitecture GetCurrentCpuArchitecture() {
   return Study::X86_64;
 }
 
+// Determines whether the field trial testing config defined in
+// testing/variations/fieldtrial_testing_config.json should be applied. If the
+// "disable_fieldtrial_testing_config" GN flag is set to true, then the testing
+// config should never be applied. Otherwise, if the build is a Chrome-branded
+// build, then the testing config should only be applied if the
+// "--enable-field-trial-config" switch is passed. For non-Chrome branded
+// builds, by default, the testing config is applied, unless the
+// "--disable-field-trial-config", "--force-fieldtrials", and/or
+// "--variations-server-url" switches are passed. It is however possible to
+// apply the testing config as well as specify additional field trials (using
+// "--force-fieldtrials") by using the "--enable-field-trial-config" switch.
+bool ShouldUseFieldTrialTestingConfig(const base::CommandLine* command_line) {
+#if BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return command_line->HasSwitch(switches::kEnableFieldTrialTestingConfig);
+#else
+  return command_line->HasSwitch(switches::kEnableFieldTrialTestingConfig) ||
+         (!command_line->HasSwitch(switches::kDisableFieldTrialTestingConfig) &&
+          !command_line->HasSwitch(::switches::kForceFieldTrials) &&
+          !command_line->HasSwitch(switches::kVariationsServerURL));
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#else
+  return false;
+#endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
+}
+
 }  // namespace
 
 const base::Feature kForceFieldTrialSetupCrashForTesting{
@@ -247,19 +274,11 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
   feature_list->RegisterExtraFeatureOverrides(extra_overrides);
 
   bool used_testing_config = false;
-#if BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
-  if (!command_line->HasSwitch(switches::kDisableFieldTrialTestingConfig) &&
-      !command_line->HasSwitch(::switches::kForceFieldTrials) &&
-      !command_line->HasSwitch(switches::kVariationsServerURL)) {
-    // Note that passing base::Unretained(this) below is safe because the
-    // callback is executed synchronously.
-    AssociateDefaultFieldTrialConfig(
-        base::BindRepeating(&VariationsFieldTrialCreator::OverrideUIString,
-                            base::Unretained(this)),
-        GetPlatform(), client_->GetCurrentFormFactor(), feature_list.get());
+  if (ShouldUseFieldTrialTestingConfig(command_line)) {
+    ApplyFieldTrialTestingConfig(feature_list.get());
     used_testing_config = true;
   }
-#endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
+
   bool used_seed = false;
   if (!used_testing_config) {
     used_seed = CreateTrialsFromSeed(low_entropy_provider.get(),
@@ -300,7 +319,7 @@ VariationsFieldTrialCreator::GetClientFilterableStateForVersion(
   state->os_version = ClientFilterableState::GetOSVersion();
   state->channel =
       ConvertProductChannelToStudyChannel(client_->GetChannelForVariations());
-  state->form_factor = client_->GetCurrentFormFactor();
+  state->form_factor = GetCurrentFormFactor();
   state->cpu_architecture = GetCurrentCpuArchitecture();
   state->platform = GetPlatform();
   // TODO(crbug/1111131): Expand to other platforms.
@@ -469,6 +488,43 @@ void VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode(
       /*write_synchronously=*/true);
 }
 
+Study::Platform VariationsFieldTrialCreator::GetPlatform() {
+  if (has_platform_override_)
+    return platform_override_;
+  return ClientFilterableState::GetCurrentPlatform();
+}
+
+void VariationsFieldTrialCreator::OverrideUIString(uint32_t resource_hash,
+                                                   const std::u16string& str) {
+  int resource_id = ui_string_overrider_.GetResourceIndex(resource_hash);
+  if (resource_id == -1)
+    return;
+
+  // This function may be called before the resource bundle is initialized. So
+  // we cache the UI strings and override them after the full browser starts.
+  if (!ui::ResourceBundle::HasSharedInstance()) {
+    overridden_strings_map_[resource_id] = str;
+    return;
+  }
+
+  ui::ResourceBundle::GetSharedInstance().OverrideLocaleStringResource(
+      resource_id, str);
+}
+
+Study::FormFactor VariationsFieldTrialCreator::GetCurrentFormFactor() {
+  return client_->GetCurrentFormFactor();
+}
+
+void VariationsFieldTrialCreator::ApplyFieldTrialTestingConfig(
+    base::FeatureList* feature_list) {
+  // Note that passing base::Unretained(this) below is safe because the callback
+  // is executed synchronously.
+  AssociateDefaultFieldTrialConfig(
+      base::BindRepeating(&VariationsFieldTrialCreator::OverrideUIString,
+                          base::Unretained(this)),
+      GetPlatform(), GetCurrentFormFactor(), feature_list);
+}
+
 bool VariationsFieldTrialCreator::HasSeedExpired(bool is_safe_seed) {
   const base::Time fetch_time = is_safe_seed
                                     ? GetSeedStore()->GetSafeSeedFetchTime()
@@ -613,35 +669,12 @@ bool VariationsFieldTrialCreator::CreateTrialsFromSeed(
   return true;
 }
 
-void VariationsFieldTrialCreator::OverrideUIString(uint32_t resource_hash,
-                                                   const std::u16string& str) {
-  int resource_id = ui_string_overrider_.GetResourceIndex(resource_hash);
-  if (resource_id == -1)
-    return;
-
-  // This function may be called before the resource bundle is initialized. So
-  // we cache the UI strings and override them after the full browser starts.
-  if (!ui::ResourceBundle::HasSharedInstance()) {
-    overridden_strings_map_[resource_id] = str;
-    return;
-  }
-
-  ui::ResourceBundle::GetSharedInstance().OverrideLocaleStringResource(
-      resource_id, str);
-}
-
 VariationsSeedStore* VariationsFieldTrialCreator::GetSeedStore() {
   return seed_store_.get();
 }
 
 base::Time VariationsFieldTrialCreator::GetBuildTime() const {
   return base::GetBuildTime();
-}
-
-Study::Platform VariationsFieldTrialCreator::GetPlatform() {
-  if (has_platform_override_)
-    return platform_override_;
-  return ClientFilterableState::GetCurrentPlatform();
 }
 
 }  // namespace variations

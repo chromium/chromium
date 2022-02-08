@@ -10,6 +10,7 @@
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/field_trial_config/fieldtrial_testing_config.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/client_variations.pb.h"
 #include "components/variations/service/variations_safe_mode_constants.h"
@@ -60,6 +61,83 @@ const char kCrashingSeed_Base64Signature[] =
     "MEQCIEn1+VsBfNA93dxzpk+BLhdO91kMQnofxfTK5Uo8vDi8AiAnTCFCIPgEGWNOKzuKfNWn6"
     "emB6pnGWjSTbI/pvfxHnw==";
 
+// Create mock testing config equivalent to:
+// {
+//   "UnitTest": [
+//       {
+//           "platforms": [
+//               "android",
+//               "android_weblayer",
+//               "android_webview",
+//               "chromeos",
+//               "chromeos_lacros",
+//               "fuchsia",
+//               "ios",
+//               "linux",
+//               "mac",
+//               "windows"
+//           ],
+//           "experiments": [
+//               {
+//                   "name": "Enabled",
+//                   "params": {
+//                       "x": "1"
+//                   },
+//                   "enable_features": [
+//                       "UnitTestEnabled"
+//                   ]
+//               }
+//           ]
+//       }
+//   ]
+// }
+
+const Study::Platform array_kFieldTrialConfig_platforms_0[] = {
+    Study::PLATFORM_ANDROID,
+    Study::PLATFORM_ANDROID_WEBLAYER,
+    Study::PLATFORM_ANDROID_WEBVIEW,
+    Study::PLATFORM_CHROMEOS,
+    Study::PLATFORM_CHROMEOS_LACROS,
+    Study::PLATFORM_FUCHSIA,
+    Study::PLATFORM_IOS,
+    Study::PLATFORM_LINUX,
+    Study::PLATFORM_MAC,
+    Study::PLATFORM_WINDOWS,
+};
+
+const char* enable_features_0[] = {"UnitTestEnabled"};
+const FieldTrialTestingExperimentParams array_kFieldTrialConfig_params_0[] = {
+    {
+        "x",
+        "1",
+    },
+};
+
+const FieldTrialTestingExperiment array_kFieldTrialConfig_experiments_0[] = {
+    {/*name=*/"Enabled",
+     /*platforms=*/array_kFieldTrialConfig_platforms_0,
+     /*platforms_size=*/10,
+     /*form_factors=*/{},
+     /*form_factors_size=*/0,
+     /*is_low_end_device=*/absl::nullopt,
+     /*min_os_version=*/nullptr,
+     /*params=*/array_kFieldTrialConfig_params_0,
+     /*params_size=*/1,
+     /*enable_features=*/enable_features_0,
+     /*enable_features_size=*/1,
+     /*disable_features=*/nullptr,
+     /*disable_features_size=*/0,
+     /*forcing_flag=*/nullptr,
+     /*override_ui_string=*/nullptr,
+     /*override_ui_string_size=*/0},
+};
+
+const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] = {
+    {/*name=*/"UnitTest",
+     /*experiments=*/array_kFieldTrialConfig_experiments_0,
+     /*experiments_size=*/1},
+};
+
 }  // namespace
 
 const SignedSeedData kTestSeedData{
@@ -95,6 +173,11 @@ SignedSeedData& SignedSeedData::operator=(SignedSeedData&&) = default;
 void DisableTestingConfig() {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kDisableFieldTrialTestingConfig);
+}
+
+void EnableTestingConfig() {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableFieldTrialTestingConfig);
 }
 
 bool ExtractVariationIds(const std::string& variations,
@@ -166,5 +249,15 @@ bool FieldTrialListHasAllStudiesFrom(const SignedSeedData& seed_data) {
     return base::FieldTrialList::TrialExists(study);
   });
 }
+
+void ResetVariations() {
+  testing::ClearAllVariationIDs();
+  testing::ClearAllVariationParams();
+}
+
+const FieldTrialTestingConfig kTestingConfig = {
+    array_kFieldTrialConfig_studies,
+    1,
+};
 
 }  // namespace variations

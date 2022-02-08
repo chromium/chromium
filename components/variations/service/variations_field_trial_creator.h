@@ -182,6 +182,22 @@ class VariationsFieldTrialCreator {
   virtual void MaybeExtendVariationsSafeMode(
       metrics::MetricsStateManager* metrics_state_manager);
 
+  // Get the platform we're running on, respecting OverrideVariationsPlatform().
+  // Protected for testing.
+  Study::Platform GetPlatform();
+
+  // Overrides the string resource specified by |hash| with |str| in the
+  // resource bundle. Protected for testing.
+  void OverrideUIString(uint32_t hash, const std::u16string& str);
+
+  // Get the client's current form factor. Protected for testing.
+  Study::FormFactor GetCurrentFormFactor();
+
+  // Applies the field trial testing config defined in
+  // testing/variations/fieldtrial_testing_config.json to the current session.
+  // Protected and virtual for testing.
+  virtual void ApplyFieldTrialTestingConfig(base::FeatureList* feature_list);
+
  private:
   // Returns true if the loaded VariationsSeed has expired. An expired seed is
   // one that (a) was fetched over |kMaxVariationsSeedAgeDays| ago and (b) is
@@ -208,18 +224,11 @@ class VariationsFieldTrialCreator {
       base::FeatureList* feature_list,
       SafeSeedManager* safe_seed_manager);
 
-  // Overrides the string resource specified by |hash| with |str| in the
-  // resource bundle.
-  void OverrideUIString(uint32_t hash, const std::u16string& str);
-
   // Returns the seed store. Virtual for testing.
   virtual VariationsSeedStore* GetSeedStore();
 
   // Returns the time at which the binary was built. Virtual for testing.
   virtual base::Time GetBuildTime() const;
-
-  // Get the platform we're running on, respecting OverrideVariationsPlatform().
-  Study::Platform GetPlatform();
 
   PrefService* local_state() { return seed_store_->local_state(); }
   const PrefService* local_state() const { return seed_store_->local_state(); }

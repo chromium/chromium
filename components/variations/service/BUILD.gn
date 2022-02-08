@@ -8,12 +8,10 @@ import("//build/config/chrome_build.gni")
 declare_args() {
   # Set to true make a build that disables activation of field trial tests
   # specified in testing/variations/fieldtrial_testing_config.json.
-  # Note: this setting is ignored if is_chrome_branded.
   disable_fieldtrial_testing_config = false
 }
 
-fieldtrial_testing_enabled =
-    !disable_fieldtrial_testing_config && !is_chrome_branded
+fieldtrial_testing_enabled = !disable_fieldtrial_testing_config
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
@@ -67,15 +65,18 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":buildflags",
     ":constants",
     ":service",
     "//base",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//components/metrics",
     "//components/metrics:test_support",
     "//components/prefs:test_support",
     "//components/variations",
     "//components/variations:test_support",
+    "//components/variations/field_trial_config",
     "//components/variations/proto",
     "//components/version_info",
     "//components/web_resource:test_support",
