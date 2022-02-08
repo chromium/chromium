@@ -12,9 +12,11 @@ USE_PYTHON3 = True
 
 def GetPrettyPrintErrors(input_api, output_api, cwd, rel_path, results):
   """Runs pretty-print command for specified file."""
-  exit_code = input_api.subprocess.call(
-      [input_api.python_executable, 'pretty_print.py', rel_path, '--presubmit',
-       '--non-interactive'], cwd=cwd)
+  args = [
+      input_api.python3_executable, 'pretty_print.py', rel_path, '--presubmit',
+      '--non-interactive'
+  ]
+  exit_code = input_api.subprocess.call(args, cwd=cwd)
 
   if exit_code != 0:
     error_msg = (
@@ -25,7 +27,7 @@ def GetPrettyPrintErrors(input_api, output_api, cwd, rel_path, results):
 def GetPrefixErrors(input_api, output_api, cwd, rel_path, results):
   """Validates histogram prefixes in specified file."""
   exit_code = input_api.subprocess.call(
-      [input_api.python_executable, 'validate_prefix.py', rel_path], cwd=cwd)
+      [input_api.python3_executable, 'validate_prefix.py', rel_path], cwd=cwd)
 
   if exit_code != 0:
     error_msg = ('%s contains histogram(s) with disallowed prefix, please run '
@@ -36,7 +38,8 @@ def GetPrefixErrors(input_api, output_api, cwd, rel_path, results):
 def GetObsoleteXmlErrors(input_api, output_api, cwd, results):
   """Validates all histograms in the file are obsolete."""
   exit_code = input_api.subprocess.call(
-      [input_api.python_executable, 'validate_obsolete_histograms.py'], cwd=cwd)
+      [input_api.python3_executable, 'validate_obsolete_histograms.py'],
+      cwd=cwd)
 
   if exit_code != 0:
     error_msg = (
@@ -48,7 +51,7 @@ def GetObsoleteXmlErrors(input_api, output_api, cwd, results):
 def GetValidateHistogramsError(input_api, output_api, cwd, results):
   """Validates histograms format and index file."""
   exit_code = input_api.subprocess.call(
-      [input_api.python_executable, 'validate_format.py'], cwd=cwd)
+      [input_api.python3_executable, 'validate_format.py'], cwd=cwd)
 
   if exit_code != 0:
     error_msg = (
@@ -57,7 +60,7 @@ def GetValidateHistogramsError(input_api, output_api, cwd, results):
     results.append(output_api.PresubmitError(error_msg))
 
   exit_code = input_api.subprocess.call(
-      [input_api.python_executable, 'validate_histograms_index.py'], cwd=cwd)
+      [input_api.python3_executable, 'validate_histograms_index.py'], cwd=cwd)
 
   if exit_code != 0:
     error_msg = (
