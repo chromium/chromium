@@ -36,7 +36,7 @@ AuthenticationServiceFake::AuthenticationServiceFake(
 
 AuthenticationServiceFake::~AuthenticationServiceFake() {}
 
-void AuthenticationServiceFake::SignIn(ChromeIdentity* identity) {
+void AuthenticationServiceFake::SignInInternal(ChromeIdentity* identity) {
   // Needs to call PrepareForFirstSyncSetup to behave like
   // AuthenticationService.
   DCHECK(identity);

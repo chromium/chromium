@@ -134,7 +134,7 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
   self.signingIdentity = identity;
   // Reset dismissal count if the user wants to sign-in.
   self.userPrefService->SetInteger(prefs::kSigninWebSignDismissalCount, 0);
-  self.authenticationService->SignIn(identity);
+  self.authenticationService->SignIn(identity, nil);
   [self.delegate consistencyPromoSigninMediatorSigninStarted:self];
   DCHECK(self.authenticationService->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));

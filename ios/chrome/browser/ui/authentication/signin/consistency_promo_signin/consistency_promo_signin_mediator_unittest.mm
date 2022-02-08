@@ -103,7 +103,7 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
   // Signs in and simulates cookies being added on the web.
   void SigninAndSimulateCookies(ConsistencyPromoSigninMediator* mediator,
                                 ChromeIdentity* identity) {
-    GetAuthenticationService()->SignIn(identity);
+    GetAuthenticationService()->SignIn(identity, nil);
     OCMExpect([mediator_delegate_mock_
         consistencyPromoSigninMediatorSignInDone:mediator
                                     withIdentity:identity]);
@@ -123,7 +123,7 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
   // Signs in and simulates a cookie error.
   void SigninAndSimulateError(ConsistencyPromoSigninMediator* mediator,
                               ChromeIdentity* identity) {
-    GetAuthenticationService()->SignIn(identity);
+    GetAuthenticationService()->SignIn(identity, nil);
     OCMExpect([mediator_delegate_mock_
         consistencyPromoSigninMediator:mediator
                         errorDidHappen:
