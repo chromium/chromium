@@ -16,7 +16,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "remoting/host/mojom/webauthn_proxy.mojom.h"
-#include "remoting/host/webauthn/remote_webauthn_extension_notifier.h"
 #include "remoting/protocol/named_message_pipe_handler.h"
 
 namespace remoting {
@@ -27,6 +26,8 @@ class RemoteWebAuthn_CreateResponse;
 class RemoteWebAuthn_GetResponse;
 class RemoteWebAuthn_IsUvpaaResponse;
 }  // namespace protocol
+
+class RemoteWebAuthnStateChangeNotifier;
 
 class RemoteWebAuthnMessageHandler final
     : public mojom::WebAuthnProxy,
@@ -73,6 +74,13 @@ class RemoteWebAuthnMessageHandler final
   template <typename CallbackType>
   using CallbackMap = base::flat_map<uint64_t, CallbackType>;
 
+  friend class RemoteWebAuthnMessageHandlerTest;
+
+  RemoteWebAuthnMessageHandler(
+      const std::string& name,
+      std::unique_ptr<protocol::MessagePipe> pipe,
+      std::unique_ptr<RemoteWebAuthnStateChangeNotifier> state_change_notifier);
+
   void OnReceiverDisconnected();
   void OnIsUvpaaResponse(
       uint64_t id,
@@ -96,7 +104,7 @@ class RemoteWebAuthnMessageHandler final
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  RemoteWebAuthnExtensionNotifier extension_notifier_;
+  std::unique_ptr<RemoteWebAuthnStateChangeNotifier> state_change_notifier_;
   mojo::ReceiverSet<mojom::WebAuthnProxy> receiver_set_;
 
   // message ID => mojo callback mappings.

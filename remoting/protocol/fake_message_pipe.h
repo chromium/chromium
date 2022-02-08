@@ -45,6 +45,10 @@ class FakeMessagePipe final : public MessagePipe {
   // Forwards |message| to EventHandler.
   void Receive(std::unique_ptr<CompoundBuffer> message);
 
+  // Similar to Receive(), but takes a protobuf and serializes it before sending
+  // it to EventHandler.
+  void ReceiveProtobufMessage(const google::protobuf::MessageLite& message);
+
   // Simulates the operation to open the pipe.
   void OpenPipe();
 

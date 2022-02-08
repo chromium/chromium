@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -14,6 +15,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "remoting/host/mojom/webauthn_proxy.mojom.h"
+#include "remoting/host/webauthn/remote_webauthn_extension_notifier.h"
 #include "remoting/proto/remote_webauthn.pb.h"
 #include "remoting/protocol/message_serialization.h"
 
@@ -54,7 +56,17 @@ mojom::WebAuthnExceptionDetailsPtr CreateMojoAbortError() {
 RemoteWebAuthnMessageHandler::RemoteWebAuthnMessageHandler(
     const std::string& name,
     std::unique_ptr<protocol::MessagePipe> pipe)
+    : RemoteWebAuthnMessageHandler(
+          name,
+          std::move(pipe),
+          std::make_unique<RemoteWebAuthnExtensionNotifier>()) {}
+
+RemoteWebAuthnMessageHandler::RemoteWebAuthnMessageHandler(
+    const std::string& name,
+    std::unique_ptr<protocol::MessagePipe> pipe,
+    std::unique_ptr<RemoteWebAuthnStateChangeNotifier> state_change_notifier)
     : protocol::NamedMessagePipeHandler(name, std::move(pipe)) {
+  state_change_notifier_ = std::move(state_change_notifier);
   receiver_set_.set_disconnect_handler(
       base::BindRepeating(&RemoteWebAuthnMessageHandler::OnReceiverDisconnected,
                           base::Unretained(this)));
@@ -216,7 +228,7 @@ void RemoteWebAuthnMessageHandler::ClearReceivers() {
 void RemoteWebAuthnMessageHandler::NotifyWebAuthnStateChange() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  extension_notifier_.NotifyStateChange();
+  state_change_notifier_->NotifyStateChange();
 }
 
 base::WeakPtr<RemoteWebAuthnMessageHandler>

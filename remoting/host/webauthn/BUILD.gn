@@ -14,6 +14,7 @@ source_set("webauthn") {
     "remote_webauthn_message_handler.h",
     "remote_webauthn_native_messaging_host.cc",
     "remote_webauthn_native_messaging_host.h",
+    "remote_webauthn_state_change_notifier.h",
   ]
 
   deps = [
@@ -50,7 +51,10 @@ source_set("main") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "remote_webauthn_native_messaging_host_unittest.cc" ]
+  sources = [
+    "remote_webauthn_message_handler_unittest.cc",
+    "remote_webauthn_native_messaging_host_unittest.cc",
+  ]
 
   deps = [
     ":webauthn",
@@ -63,6 +67,7 @@ source_set("unit_tests") {
     "//remoting/host:test_support",
     "//remoting/host/mojom",
     "//remoting/host/native_messaging:native_messaging",
+    "//remoting/protocol:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

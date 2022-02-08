@@ -17,7 +17,6 @@
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "remoting/base/compound_buffer.h"
 #include "remoting/host/mojom/remote_url_opener.mojom.h"
 #include "remoting/proto/remote_open_url.pb.h"
 #include "remoting/protocol/fake_message_pipe.h"
@@ -33,15 +32,6 @@ protocol::RemoteOpenUrl ParseMessage(const std::string& data) {
   protocol::RemoteOpenUrl message;
   message.ParseFromString(data);
   return message;
-}
-
-std::unique_ptr<CompoundBuffer> MessageToBuffer(
-    const protocol::RemoteOpenUrl& message) {
-  auto buffer = std::make_unique<CompoundBuffer>();
-  std::string data = message.SerializeAsString();
-  buffer->AppendCopyOf(data.data(), data.size());
-
-  return buffer;
 }
 
 inline auto QuitRunLoop(base::RunLoop& run_loop) {
@@ -118,7 +108,7 @@ TEST_F(RemoteOpenUrlMessageHandlerTest, OpenUrl) {
   response.mutable_open_url_response()->set_id(receiver_id);
   response.mutable_open_url_response()->set_result(
       protocol::RemoteOpenUrl::OpenUrlResponse::SUCCESS);
-  fake_pipe_.Receive(MessageToBuffer(response));
+  fake_pipe_.ReceiveProtobufMessage(response);
   run_loop.Run();
 
   protocol::RemoteOpenUrl request_message =
@@ -163,12 +153,12 @@ TEST_F(RemoteOpenUrlMessageHandlerTest, OpenMultipleUrls) {
   response.mutable_open_url_response()->set_id(receiver_id_1);
   response.mutable_open_url_response()->set_result(
       protocol::RemoteOpenUrl::OpenUrlResponse::SUCCESS);
-  fake_pipe_.Receive(MessageToBuffer(response));
+  fake_pipe_.ReceiveProtobufMessage(response);
 
   response.mutable_open_url_response()->set_id(receiver_id_2);
   response.mutable_open_url_response()->set_result(
       protocol::RemoteOpenUrl::OpenUrlResponse::FAILURE);
-  fake_pipe_.Receive(MessageToBuffer(response));
+  fake_pipe_.ReceiveProtobufMessage(response);
 
   run_loop_1.Run();
   run_loop_2.Run();

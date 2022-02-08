@@ -5,23 +5,24 @@
 #ifndef REMOTING_HOST_WEBAUTHN_REMOTE_WEBAUTHN_EXTENSION_NOTIFIER_H_
 #define REMOTING_HOST_WEBAUTHN_REMOTE_WEBAUTHN_EXTENSION_NOTIFIER_H_
 
+#include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
+
 namespace remoting {
 
 // Class to notify the remote WebAuthn proxy extension of possible changes in
 // the state of whether WebAuthn proxying is allowed in the current desktop
 // session.
-class RemoteWebAuthnExtensionNotifier final {
+class RemoteWebAuthnExtensionNotifier final
+    : public RemoteWebAuthnStateChangeNotifier {
  public:
   RemoteWebAuthnExtensionNotifier();
   RemoteWebAuthnExtensionNotifier(const RemoteWebAuthnExtensionNotifier&) =
       delete;
   RemoteWebAuthnExtensionNotifier& operator=(
       const RemoteWebAuthnExtensionNotifier&) = delete;
-  ~RemoteWebAuthnExtensionNotifier();
+  ~RemoteWebAuthnExtensionNotifier() override;
 
-  // Notifies the extension that the remote WebAuthn state has possibly changed.
-  // Safe to call this method when the state has not changed.
-  void NotifyStateChange();
+  void NotifyStateChange() override;
 };
 
 }  // namespace remoting
