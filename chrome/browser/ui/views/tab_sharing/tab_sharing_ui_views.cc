@@ -473,33 +473,31 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
   }
 
   // Determine if we are currently allowed to share this tab by policy.
-  const bool is_sharing_allowed_by_policy =
+  bool is_sharing_allowed_by_policy =
       !capturer_restricted_to_same_origin_ ||
       capturer_origin_.IsSameOriginWith(
           contents->GetMainFrame()->GetLastCommittedOrigin());
 
-  // Never show the [share this tab instead] if sharing is not possible or is
-  // blocked by policy.
-  const bool can_show_share_instead_button =
-      is_share_instead_button_possible && is_sharing_allowed_by_policy;
-
-  TabSharingInfoBarDelegate::ButtonState share_this_tab_instead_button_state =
-      can_show_share_instead_button
-          ? TabSharingInfoBarDelegate::ButtonState::ENABLED
-          : TabSharingInfoBarDelegate::ButtonState::NOT_SHOWN;
-
 #if BUILDFLAG(IS_CHROMEOS)
-  const bool dlp_enabled =
-      g_apply_dlp_for_all_users_for_testing_ ||
-      policy::DlpRulesManagerFactory::GetForPrimaryProfile();
-  const bool screenshare_allowed_by_dlp =
-      !dlp_enabled ||
-      !policy::DlpContentManager::Get()->IsScreenShareBlocked(contents);
-  if (!screenshare_allowed_by_dlp && can_show_share_instead_button) {
-    share_this_tab_instead_button_state =
-        TabSharingInfoBarDelegate::ButtonState::DISABLED;
+  // Check if dlp policies allow sharing.
+  // This check is skipped if sharing is already forbidden.
+  if (is_sharing_allowed_by_policy) {
+    const bool dlp_enabled =
+        g_apply_dlp_for_all_users_for_testing_ ||
+        policy::DlpRulesManagerFactory::GetForPrimaryProfile();
+    if (dlp_enabled &&
+        policy::DlpContentManager::Get()->IsScreenShareBlocked(contents)) {
+      is_sharing_allowed_by_policy = false;
+    }
   }
 #endif
+
+  TabSharingInfoBarDelegate::ButtonState share_this_tab_instead_button_state =
+      !is_share_instead_button_possible
+          ? TabSharingInfoBarDelegate::ButtonState::NOT_SHOWN
+          : is_sharing_allowed_by_policy
+                ? TabSharingInfoBarDelegate::ButtonState::ENABLED
+                : TabSharingInfoBarDelegate::ButtonState::DISABLED;
 
   infobars_[contents] = TabSharingInfoBarDelegate::Create(
       infobar_manager, shared_tab_name_, app_name_,
