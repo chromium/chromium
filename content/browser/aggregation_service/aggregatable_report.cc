@@ -248,13 +248,13 @@ std::string AggregatableReportSharedInfo::SerializeAsJson() const {
 
   value.SetStringKey("privacy_budget_key", privacy_budget_key);
 
-  // TODO(crbug.com/1251648): Update timestamp to use seconds.
-  // Encoded as the number of milliseconds since the Unix epoch, ignoring leap
-  // seconds.
+  // Encoded as the number of seconds since the Unix epoch, ignoring leap
+  // seconds and rounded down.
   DCHECK(!scheduled_report_time.is_null());
   DCHECK(!scheduled_report_time.is_inf());
   value.SetStringKey("scheduled_report_time",
-                     base::NumberToString(scheduled_report_time.ToJavaTime()));
+                     base::NumberToString(scheduled_report_time.ToJavaTime() /
+                                          base::Time::kMillisecondsPerSecond));
 
   // TODO(alexmt): Replace with a real version once a version string is decided.
   value.SetStringKey("version", "");

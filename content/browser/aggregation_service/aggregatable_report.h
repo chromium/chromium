@@ -155,11 +155,10 @@ class CONTENT_EXPORT AggregatableReport {
   }
   const std::string& shared_info() const { return shared_info_; }
 
-  // TODO(crbug.com/1251648): Update timestamp to use seconds.
   // Returns the JSON representation of this report of the form
   // {
   //   "shared_info": "{\"scheduled_report_time\":\"[timestamp in
-  //   msec]\",\"privacy_budget_key\":\"[string]\",\"version\":\"[api
+  //   seconds]\",\"privacy_budget_key\":\"[string]\",\"version\":\"[api
   //   version]\"}",
   //   "aggregation_service_payloads": [
   //     {

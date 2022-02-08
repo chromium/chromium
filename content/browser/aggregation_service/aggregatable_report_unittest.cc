@@ -521,7 +521,7 @@ TEST(AggregatableReportTest, SharedInfoSerializeAsJson_ReturnsExpectedString) {
 
   const char kExpectedString[] = R"({)"
                                  R"("privacy_budget_key":"example_pbk",)"
-                                 R"("scheduled_report_time":"1234567890123",)"
+                                 R"("scheduled_report_time":"1234567890",)"
                                  R"("version":"")"
                                  R"(})";
 
