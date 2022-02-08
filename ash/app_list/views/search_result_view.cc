@@ -385,7 +385,7 @@ SearchResultView::SetupContainerViewForTextVector(
         label_tags.push_back(LabelAndTag(label, span.GetTextTags()));
       } break;
       case SearchResultTextItemType::kIconCode:
-      case SearchResultTextItemType::kCustomIcon:
+      case SearchResultTextItemType::kCustomImage:
         // TODO(crbug/1216097): Add icon support for search result view.
         break;
     }

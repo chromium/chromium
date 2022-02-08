@@ -58,9 +58,9 @@ enum class AppListConfigType {
 
 // Item types supported by SearchResultTextItem.
 enum class SearchResultTextItemType {
-  kString,      // Styled text.
-  kIconCode,    // Built in vector icons.
-  kCustomIcon,  // Vector icons provided by the search model.
+  kString,       // Styled text.
+  kIconCode,     // Built in vector icons.
+  kCustomImage,  // Vector icons provided by the search model.
 };
 
 // A structure holding an item icon' color information.
@@ -430,6 +430,25 @@ using SearchResultActions = std::vector<SearchResultAction>;
 // A structure holding a search result's text with support for embedded icon.
 class ASH_PUBLIC_EXPORT SearchResultTextItem {
  public:
+  enum IconCode {
+    kKeyboardShortcutBrowserBack,
+    kKeyboardShortcutBrowserForward,
+    kKeyboardShortcutBrowserRefresh,
+    kKeyboardShortcutZoom,
+    kKeyboardShortcutMediaLaunchApp1,
+    kKeyboardShortcutBrightnessDown,
+    kKeyboardShortcutBrightnessUp,
+    kKeyboardShortcutVolumeMute,
+    kKeyboardShortcutVolumeDown,
+    kKeyboardShortcutVolumeUp,
+    kKeyboardShortcutUp,
+    kKeyboardShortcutDown,
+    kKeyboardShortcutLeft,
+    kKeyboardShortcutRight,
+    kKeyboardShortcutPrivacyScreenToggle,
+    kKeyboardShortcutSnapshot,
+  };
+
   SearchResultTextItem(SearchResultTextItemType type);
   SearchResultTextItem(const SearchResultTextItem&);
   SearchResultTextItem& operator=(const SearchResultTextItem&);
@@ -444,11 +463,11 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
   SearchResultTags& GetTextTags();
   SearchResultTextItem& SetTextTags(SearchResultTags tags);
 
-  gfx::ImageSkia GetIconFromCode() const;
-  SearchResultTextItem& SetIconCode(int icon_code);
+  const gfx::VectorIcon* GetIconFromCode() const;
+  SearchResultTextItem& SetIconCode(IconCode icon_code);
 
-  gfx::ImageSkia GetIcon() const;
-  SearchResultTextItem& SetIcon(gfx::ImageSkia icon);
+  gfx::ImageSkia GetImage() const;
+  SearchResultTextItem& SetImage(gfx::ImageSkia icon);
 
  private:
   SearchResultTextItemType item_type;
@@ -456,9 +475,9 @@ class ASH_PUBLIC_EXPORT SearchResultTextItem {
   absl::optional<std::u16string> raw_text;
   absl::optional<SearchResultTags> text_tags;
   // used for type SearchResultTextItemType::kIconCode.
-  absl::optional<int> icon_code;
+  absl::optional<IconCode> icon_code;
   // used for type SearchResultTextItemType::kCustomIcon.
-  absl::optional<gfx::ImageSkia> raw_icon;
+  absl::optional<gfx::ImageSkia> raw_image;
 };
 
 // A structure holding the common information which is sent from chrome to ash,

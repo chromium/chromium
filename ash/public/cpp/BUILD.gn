@@ -357,6 +357,7 @@ component("cpp") {
     "//ash/components/audio",
     "//ash/constants",
     "//ash/public/cpp/ambient/proto",
+    "//ash/resources/vector_icons",
     "//ash/strings",
     "//base",
     "//chromeos/dbus/power:power_manager_proto",

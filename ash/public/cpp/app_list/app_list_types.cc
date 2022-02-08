@@ -4,6 +4,8 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 
+#include "ash/resources/vector_icons/vector_icons.h"
+
 namespace ash {
 
 const char kOemFolderId[] = "ddb1da55-d478-4243-8642-56d3041f0263";
@@ -220,7 +222,7 @@ SearchResultTextItem::SearchResultTextItem(const SearchResultTextItem& other) {
   raw_text = other.raw_text;
   text_tags = other.text_tags;
   icon_code = other.icon_code;
-  raw_icon = other.raw_icon;
+  raw_image = other.raw_image;
 }
 
 SearchResultTextItem& SearchResultTextItem::operator=(
@@ -229,7 +231,7 @@ SearchResultTextItem& SearchResultTextItem::operator=(
   raw_text = other.raw_text;
   text_tags = other.text_tags;
   icon_code = other.icon_code;
-  raw_icon = other.raw_icon;
+  raw_image = other.raw_image;
   return *this;
 }
 
@@ -266,25 +268,61 @@ SearchResultTextItem& SearchResultTextItem::SetTextTags(SearchResultTags tags) {
   return *this;
 }
 
-gfx::ImageSkia SearchResultTextItem::GetIconFromCode() const {
+const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
   DCHECK_EQ(item_type, SearchResultTextItemType::kIconCode);
-  return gfx::ImageSkia();
+  DCHECK(icon_code.has_value());
+  switch (icon_code.value()) {
+    case kKeyboardShortcutBrowserBack:
+      return &kKsvBrowserBackIcon;
+    case kKeyboardShortcutBrowserForward:
+      return &kKsvBrowserForwardIcon;
+    case kKeyboardShortcutBrowserRefresh:
+      return &kKsvReloadIcon;
+    case kKeyboardShortcutZoom:
+      return &kKsvFullscreenIcon;
+    case kKeyboardShortcutMediaLaunchApp1:
+      return &kKsvOverviewIcon;
+    case kKeyboardShortcutBrightnessDown:
+      return &kKsvBrightnessDownIcon;
+    case kKeyboardShortcutBrightnessUp:
+      return &kKsvBrightnessUpIcon;
+    case kKeyboardShortcutVolumeMute:
+      return &kKsvMuteIcon;
+    case kKeyboardShortcutVolumeDown:
+      return &kKsvVolumeDownIcon;
+    case kKeyboardShortcutVolumeUp:
+      return &kKsvVolumeUpIcon;
+    case kKeyboardShortcutUp:
+      return &kKsvArrowUpIcon;
+    case kKeyboardShortcutDown:
+      return &kKsvArrowDownIcon;
+    case kKeyboardShortcutLeft:
+      return &kKsvArrowLeftIcon;
+    case kKeyboardShortcutRight:
+      return &kKsvArrowRightIcon;
+    case kKeyboardShortcutPrivacyScreenToggle:
+      return &kKsvPrivacyScreenToggleIcon;
+    case kKeyboardShortcutSnapshot:
+      return &kKsvSnapshotIcon;
+    default:
+      return nullptr;
+  }
 }
 
-SearchResultTextItem& SearchResultTextItem::SetIconCode(int code) {
+SearchResultTextItem& SearchResultTextItem::SetIconCode(IconCode code) {
   DCHECK_EQ(item_type, SearchResultTextItemType::kIconCode);
   icon_code = code;
   return *this;
 }
 
-gfx::ImageSkia SearchResultTextItem::GetIcon() const {
-  DCHECK_EQ(item_type, SearchResultTextItemType::kCustomIcon);
-  return raw_icon.value();
+gfx::ImageSkia SearchResultTextItem::GetImage() const {
+  DCHECK_EQ(item_type, SearchResultTextItemType::kCustomImage);
+  return raw_image.value();
 }
 
-SearchResultTextItem& SearchResultTextItem::SetIcon(gfx::ImageSkia icon) {
-  DCHECK_EQ(item_type, SearchResultTextItemType::kCustomIcon);
-  raw_icon = icon;
+SearchResultTextItem& SearchResultTextItem::SetImage(gfx::ImageSkia icon) {
+  DCHECK_EQ(item_type, SearchResultTextItemType::kCustomImage);
+  raw_image = icon;
   return *this;
 }
 ////////////////////////////////////////////////////////////////////////////////
