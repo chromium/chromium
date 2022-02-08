@@ -542,7 +542,7 @@
 // Returns whether the NewOverflowMenu feature is enabled.
 + (BOOL)isNewOverflowMenuEnabled;
 
-#pragma mark - Popup Blocking
+#pragma mark - ContentSettings
 
 // Gets the current value of the popup content setting preference for the
 // original browser state.
@@ -551,6 +551,9 @@
 // Sets the popup content setting preference to the given value for the original
 // browser state.
 + (void)setPopupPrefValue:(ContentSetting)value;
+
+// Resets the desktop content setting to its default value.
++ (void)resetDesktopContentSetting;
 
 #pragma mark - Pref Utilities (EG2)
 

@@ -1262,7 +1262,7 @@ UIWindow* GetAnyKeyWindow() {
   return [ChromeEarlGreyAppInterface isNewOverflowMenuEnabled];
 }
 
-#pragma mark - ScopedBlockPopupsPref
+#pragma mark - ContentSettings
 
 - (ContentSetting)popupPrefValue {
   return [ChromeEarlGreyAppInterface popupPrefValue];
@@ -1271,6 +1271,12 @@ UIWindow* GetAnyKeyWindow() {
 - (void)setPopupPrefValue:(ContentSetting)value {
   return [ChromeEarlGreyAppInterface setPopupPrefValue:value];
 }
+
+- (void)resetDesktopContentSetting {
+  [ChromeEarlGreyAppInterface resetDesktopContentSetting];
+}
+
+#pragma mark - Keyboard utilities
 
 - (NSInteger)registeredKeyCommandCount {
   return [ChromeEarlGreyAppInterface registeredKeyCommandCount];

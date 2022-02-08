@@ -1107,7 +1107,7 @@ NSString* SerializedValue(const base::Value* value) {
   return IsNewOverflowMenuEnabled();
 }
 
-#pragma mark - ScopedBlockPopupsPref
+#pragma mark - ContentSettings
 
 + (ContentSetting)popupPrefValue {
   return ios::HostContentSettingsMapFactory::GetForBrowserState(
@@ -1120,6 +1120,13 @@ NSString* SerializedValue(const base::Value* value) {
   ios::HostContentSettingsMapFactory::GetForBrowserState(
       chrome_test_util::GetOriginalBrowserState())
       ->SetDefaultContentSetting(ContentSettingsType::POPUPS, value);
+}
+
++ (void)resetDesktopContentSetting {
+  ios::HostContentSettingsMapFactory::GetForBrowserState(
+      chrome_test_util::GetOriginalBrowserState())
+      ->SetDefaultContentSetting(ContentSettingsType::REQUEST_DESKTOP_SITE,
+                                 CONTENT_SETTING_BLOCK);
 }
 
 #pragma mark - Pref Utilities (EG2)

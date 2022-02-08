@@ -216,6 +216,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       l10n_util::GetNSString(IDS_IOS_DEFAULT_PAGE_MODE_LABEL);
   _defaultSiteMode.detailText = [self defaultModeDescription];
   _defaultSiteMode.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  _defaultSiteMode.accessibilityIdentifier = kSettingsDefaultSiteModeCellId;
   return _defaultSiteMode;
 }
 

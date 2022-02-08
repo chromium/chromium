@@ -476,6 +476,8 @@ void ResetAuthentication() {
   [[self class] disableMockAuthentication];
   [[self class] enableMockAuthentication];
 
+  [ChromeEarlGrey resetDesktopContentSetting];
+
   gIsMockAuthenticationDisabled = NO;
   _tearDownHandler = nil;
   _originalOrientation =
