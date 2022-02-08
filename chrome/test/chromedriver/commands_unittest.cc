@@ -210,7 +210,7 @@ Status ExecuteSimpleCommand(const std::string& expected_id,
                             std::unique_ptr<base::Value>* return_value) {
   EXPECT_TRUE(expected_params->is_dict());
   EXPECT_EQ(expected_id, session->id);
-  EXPECT_TRUE(expected_params->Equals(&params));
+  EXPECT_EQ(*expected_params, params);
   *return_value = base::Value::ToUniquePtrValue(value->Clone());
   session->quit = true;
   return Status(kOk);
@@ -224,7 +224,7 @@ void OnSimpleCommand(base::RunLoop* run_loop,
                      const std::string& session_id,
                      bool w3c_compliant) {
   ASSERT_EQ(kOk, status.code());
-  ASSERT_TRUE(expected_value->Equals(value.get()));
+  ASSERT_EQ(*expected_value, *value);
   ASSERT_EQ(expected_session_id, session_id);
   run_loop->Quit();
 }
@@ -392,9 +392,9 @@ class FindElementWebView : public StubWebView {
       function = webdriver::atoms::asString(webdriver::atoms::FIND_ELEMENTS);
     EXPECT_EQ(function, function_);
     ASSERT_TRUE(args_.get());
-    EXPECT_TRUE(expected_args->Equals(args_.get()));
+    EXPECT_EQ(*expected_args, *args_);
     ASSERT_TRUE(actual_result);
-    EXPECT_TRUE(result_->Equals(actual_result));
+    EXPECT_EQ(*result_, *actual_result);
   }
 
   // Overridden from WebView:
