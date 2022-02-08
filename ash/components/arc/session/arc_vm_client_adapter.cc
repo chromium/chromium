@@ -105,6 +105,8 @@ constexpr base::TimeDelta kConnectTimeoutLimit = base::Seconds(20);
 constexpr base::TimeDelta kConnectSleepDurationInitial =
     base::Milliseconds(100);
 
+constexpr const char kEmptyDiskPath[] = "/dev/null";
+
 absl::optional<base::TimeDelta> g_connect_timeout_limit_for_testing;
 absl::optional<base::TimeDelta> g_connect_sleep_duration_initial_for_testing;
 absl::optional<int> g_boot_notification_server_fd;
@@ -401,15 +403,36 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     disk_image->set_block_size(kBlockSize);
 
   // Add /run/imageloader/.../android_demo_apps.squash as /dev/block/vdc if
-  // needed.
+  // needed. If it's not needed we pass /dev/null so that /dev/block/vdc
+  // always corresponds to the demo image.
+  disk_image = request.add_disks();
+  disk_image->set_image_type(vm_tools::concierge::DISK_IMAGE_AUTO);
+  disk_image->set_writable(false);
+  disk_image->set_do_mount(true);
   if (!demo_session_apps_path.empty()) {
-    disk_image = request.add_disks();
     disk_image->set_path(demo_session_apps_path.value());
-    disk_image->set_image_type(vm_tools::concierge::DISK_IMAGE_AUTO);
-    disk_image->set_writable(false);
-    disk_image->set_do_mount(true);
     if (should_set_blocksize)
       disk_image->set_block_size(kBlockSize);
+  } else {
+    // This should never be mounted as it's only mounted if
+    // ro.boot.arc_demo_mode is set.
+    disk_image->set_path(kEmptyDiskPath);
+  }
+
+  // Add /opt/google/vms/android/apex/payload.img as /dev/block/vdd if
+  // needed. If it's not needed we pass /dev/null so that /dev/block/vdd
+  // always corresponds to the block apex composite disk.
+  disk_image = request.add_disks();
+  disk_image->set_image_type(vm_tools::concierge::DISK_IMAGE_AUTO);
+  disk_image->set_writable(false);
+  disk_image->set_do_mount(true);
+  if (!file_system_status.block_apex_path().empty()) {
+    disk_image->set_path(file_system_status.block_apex_path().value());
+  } else {
+    // Android will not mount this is the system property
+    // apexd.payload_metadata.path is not set, and it should
+    // always be set if the block apex payload exists.
+    disk_image->set_path(kEmptyDiskPath);
   }
 
   // Add Android fstab.
