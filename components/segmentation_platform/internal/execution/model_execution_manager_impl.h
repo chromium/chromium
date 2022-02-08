@@ -30,6 +30,7 @@ class Clock;
 
 namespace segmentation_platform {
 class FeatureAggregator;
+class FeatureListQueryProcessor;
 class SignalDatabase;
 
 namespace proto {
@@ -79,7 +80,6 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
   FRIEND_TEST_ALL_PREFIXES(SegmentationPlatformServiceImplTest,
                            InitializationFlow);
   struct ExecutionState;
-  struct FeatureState;
   struct ModelExecutionTraceEvent;
 
   // Callback method for when the SegmentInfo (segment metadata) has been
@@ -88,29 +88,19 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
       std::unique_ptr<ExecutionState> state,
       absl::optional<proto::SegmentInfo> segment_info);
 
-  // ProcessInputFeatures is the core function for processing all the required
-  // ML input features in the correct order. It fetches samples for one input at
-  // a time, makes sure the data is processed, and then is invoked again to
-  // process the next input.
-  void ProcessInputFeatures(std::unique_ptr<ExecutionState> state);
+  // Callback method for when the processing of the model metadata's feature
+  // list has completed, which either result in an error or a valid input tensor
+  // for executing the model.
+  void OnProcessingFeatureListComplete(std::unique_ptr<ExecutionState> state,
+                                       bool error,
+                                       const std::vector<float>& input_tensor);
 
-  // Function for processing the next UMAFeature type of input for ML model.
-  void ProcessNextUmaFeature(proto::UMAFeature feature,
-                             std::unique_ptr<ExecutionState> state);
-
-  // Callback method for when all relevant samples for a particular feature has
-  // been loaded. Processes the samples, and inserts them into the input tensor
-  // that is later given to the ML execution.
-  void OnGetSamplesForFeature(std::unique_ptr<ExecutionState> state,
-                              std::unique_ptr<FeatureState> feature_state,
-                              std::vector<SignalDatabase::Sample> samples);
-
-  // ExecuteModel takes the current input tensor and passes it to the ML model
-  // for execution.
+  // ExecuteModel takes the current input tensor and passes it to the ML
+  // model for execution.
   void ExecuteModel(std::unique_ptr<ExecutionState> state);
 
-  // Callback method for when the model execution has completed which gives the
-  // end result to the initial ModelExecutionCallback passed to
+  // Callback method for when the model execution has completed which gives
+  // the end result to the initial ModelExecutionCallback passed to
   // ExecuteModel(...).
   void OnModelExecutionComplete(std::unique_ptr<ExecutionState> state,
                                 const absl::optional<float>& result);
@@ -131,15 +121,15 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
   // Callback after fetching the current SegmentInfo from the
   // SegmentInfoDatabase. This is part of the flow for informing the
   // SegmentationModelUpdatedCallback about a changed model.
-  // Merges the PredictionResult from the previously stored SegmentInfo with the
-  // newly updated one, and stores the new version in the DB.
+  // Merges the PredictionResult from the previously stored SegmentInfo with
+  // the newly updated one, and stores the new version in the DB.
   void OnSegmentInfoFetchedForModelUpdate(
       optimization_guide::proto::OptimizationTarget segment_id,
       proto::SegmentationModelMetadata metadata,
       absl::optional<proto::SegmentInfo> segment_info);
 
-  // Callback after storing the updated version of the SegmentInfo. Responsible
-  // for invoking the SegmentationModelUpdatedCallback.
+  // Callback after storing the updated version of the SegmentInfo.
+  // Responsible for invoking the SegmentationModelUpdatedCallback.
   void OnUpdatedSegmentInfoStored(proto::SegmentInfo segment_info,
                                   bool success);
 
@@ -156,8 +146,8 @@ class ModelExecutionManagerImpl : public ModelExecutionManager {
   // Main signal database for user actions and histograms.
   raw_ptr<SignalDatabase> signal_database_;
 
-  // The FeatureAggregator aggregates all the data based on metadata and input.
-  std::unique_ptr<FeatureAggregator> feature_aggregator_;
+  // Feature list processor for processing a model metadata's feature list.
+  std::unique_ptr<FeatureListQueryProcessor> feature_list_query_processor_;
 
   // Invoked whenever there is an update to any of the relevant ML models.
   SegmentationModelUpdatedCallback model_updated_callback_;
