@@ -22,6 +22,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustSignalsCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
@@ -56,7 +57,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class StatusMediator implements PermissionDialogController.Observer,
                                        TemplateUrlServiceObserver,
                                        MerchantTrustSignalsCoordinator.OmniboxIconController {
-    private static final int PERMISSION_ICON_DISPLAY_TIMEOUT_MS = 8500;
+    private static final int PERMISSION_ICON_DEFAULT_DISPLAY_TIMEOUT_MS = 8500;
+    public static final String PERMISSION_ICON_TIMEOUT_MS_PARAM = "PermissionIconTimeoutMs";
 
     private final PropertyModel mModel;
     private final SearchEngineLogoUtils mSearchEngineLogoUtils;
@@ -115,6 +117,7 @@ public class StatusMediator implements PermissionDialogController.Observer,
     private final float mTextOffsetThreshold;
     // The denominator for the above formula, which will adjust the scale for the alpha.
     private final float mTextOffsetAdjustedScale;
+    private int mPermissionIconDisplayTimeoutMs = PERMISSION_ICON_DEFAULT_DISPLAY_TIMEOUT_MS;
 
     /**
      * @param model The {@link PropertyModel} for this mediator.
@@ -657,10 +660,9 @@ public class StatusMediator implements PermissionDialogController.Observer,
         // Set the timer to switch the icon back afterwards.
         mPermissionTaskHandler.removeCallbacksAndMessages(null);
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, permissionIconResource);
-        mPermissionTaskHandler.postDelayed(
-                ()
-                        -> updateLocationBarIcon(IconTransitionType.ROTATE),
-                PERMISSION_ICON_DISPLAY_TIMEOUT_MS);
+        Runnable finishIconAnimation = () -> updateLocationBarIcon(IconTransitionType.ROTATE);
+        mPermissionTaskHandler.postDelayed(finishIconAnimation, mPermissionIconDisplayTimeoutMs);
+
         mDiscoverabilityMetrics.recordDiscoverabilityAction(
                 DiscoverabilityAction.PERMISSION_ICON_SHOWN);
     }
@@ -697,7 +699,7 @@ public class StatusMediator implements PermissionDialogController.Observer,
         mModel.set(StatusProperties.STATUS_ICON_RESOURCE, storeIconResource);
         mStoreIconHandler.postDelayed(() -> {
             updateLocationBarIcon(IconTransitionType.ROTATE);
-        }, PERMISSION_ICON_DISPLAY_TIMEOUT_MS);
+        }, mPermissionIconDisplayTimeoutMs);
         mIsStoreIconShowing = true;
         mDiscoverabilityMetrics.recordDiscoverabilityAction(DiscoverabilityAction.STORE_ICON_SHOWN);
     }
@@ -715,8 +717,8 @@ public class StatusMediator implements PermissionDialogController.Observer,
      * @return A timeout for the IPH bubble. The bubble is shown after the permission icon animation
      * finishes and should disappear when it animates out.
      */
-    private static int getIPHTimeout() {
-        return PERMISSION_ICON_DISPLAY_TIMEOUT_MS - (2 * StatusView.ICON_ROTATION_DURATION_MS);
+    private int getIPHTimeout() {
+        return mPermissionIconDisplayTimeoutMs - (2 * StatusView.ICON_ROTATION_DURATION_MS);
     }
 
     /** Notifies that the page info was opened. */
@@ -757,5 +759,11 @@ public class StatusMediator implements PermissionDialogController.Observer,
     @Override
     public void onTemplateURLServiceChanged() {
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
+    }
+
+    public void readFeatureListParams() {
+        mPermissionIconDisplayTimeoutMs = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.PAGE_INFO_DISCOVERABILITY, PERMISSION_ICON_TIMEOUT_MS_PARAM,
+                PERMISSION_ICON_DEFAULT_DISPLAY_TIMEOUT_MS);
     }
 }

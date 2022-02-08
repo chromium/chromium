@@ -19,6 +19,10 @@ namespace page_info {
 extern const base::Feature kPageInfoHistory;
 // Enables the store info row for Page Info.
 extern const base::Feature kPageInfoStoreInfo;
+
+// Used to experiment with different permission timeouts. The underlying feature
+// itself is already launched.
+extern const base::Feature kPageInfoDiscoverability;
 #endif
 
 // Enables the "About this site" section in Page Info.

@@ -15,6 +15,9 @@ const base::Feature kPageInfoHistory{"PageInfoHistory",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kPageInfoStoreInfo{"PageInfoStoreInfo",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kPageInfoDiscoverability{"PageInfoDiscoverability",
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 const base::Feature kPageInfoAboutThisSite{"PageInfoAboutThisSite",
