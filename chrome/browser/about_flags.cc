@@ -7131,12 +7131,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsWin | kOsMac | kOsLinux | kOsCrOS | kOsAndroid | kOsFuchsia,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillAddressProfileSavePrompt)},
 
-    {"detected-source-language-option",
-     flag_descriptions::kDetectedSourceLanguageOptionName,
-     flag_descriptions::kDetectedSourceLanguageOptionDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(language::kDetectedSourceLanguageOption)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"content-languages-in-language-picker",
      flag_descriptions::kContentLanguagesInLanguagePickerName,

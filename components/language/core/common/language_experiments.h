@@ -52,10 +52,6 @@ extern const base::Feature kTranslateAssistContent;
 // This feature enables an intent that starts translating the foreground tab.
 extern const base::Feature kTranslateIntent;
 
-// This feature renames the "Unknown" source language option to "Detected
-// Language" and enables translation of unknown source language pages on
-// Android.
-extern const base::Feature kDetectedSourceLanguageOption;
 // This feature enables an intent that starts translating the foreground tab.
 extern const base::Feature kContentLanguagesInLanguagePicker;
 

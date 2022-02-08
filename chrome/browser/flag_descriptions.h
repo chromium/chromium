@@ -94,9 +94,6 @@ extern const char kDefaultChromeAppsMigrationDescription[];
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 
-extern const char kDetectedSourceLanguageOptionName[];
-extern const char kDetectedSourceLanguageOptionDescription[];
-
 extern const char kLauncherAppSortName[];
 extern const char kLauncherAppSortDescription[];
 

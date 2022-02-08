@@ -20,7 +20,6 @@ namespace {
 // components/language/core/common/language_experiments.h.
 const base::Feature* const kFeaturesExposedToJava[] = {
     &language::kContentLanguagesInLanguagePicker,
-    &language::kDetectedSourceLanguageOption,
 };
 
 // TODO(crbug.com/1060097): Remove/update this once a generalized FeatureList

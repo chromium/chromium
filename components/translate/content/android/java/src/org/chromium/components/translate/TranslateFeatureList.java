@@ -19,7 +19,6 @@ public class TranslateFeatureList {
     public static final String CONTENT_LANGUAGES_IN_LANGUAGE_PICKER =
             "ContentLanguagesInLanguagePicker";
     public static final String CONTENT_LANGUAGES_DISABLE_OBSERVERS_PARAM = "disable_observers";
-    public static final String DETECTED_SOURCE_LANGUAGE_OPTION = "DetectedSourceLanguageOption";
 
     // Do not instantiate this class.
     private TranslateFeatureList() {}
