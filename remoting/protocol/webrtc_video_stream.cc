@@ -89,7 +89,7 @@ void WebrtcVideoStream::Start(
                                         base::Unretained(this)));
 }
 
-void WebrtcVideoStream::SelectSource(int id) {
+void WebrtcVideoStream::SelectSource(webrtc::ScreenId id) {
   capturer_->SelectSource(id);
 }
 

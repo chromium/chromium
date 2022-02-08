@@ -62,7 +62,7 @@ class WebrtcVideoStream : public VideoStream,
   void SetLosslessEncode(bool want_lossless) override;
   void SetLosslessColor(bool want_lossless) override;
   void SetObserver(Observer* observer) override;
-  void SelectSource(int id) override;
+  void SelectSource(webrtc::ScreenId id) override;
 
   // VideoChannelStateObserver interface.
   void OnKeyFrameRequested() override;

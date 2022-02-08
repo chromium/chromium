@@ -6,6 +6,7 @@
 #define REMOTING_PROTOCOL_VIDEO_STREAM_H_
 
 #include "remoting/protocol/input_event_timestamps.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace webrtc {
 class DesktopSize;
@@ -46,7 +47,7 @@ class VideoStream {
   virtual void SetObserver(Observer* observer) = 0;
 
   // Selects the current desktop display (if multiple displays).
-  virtual void SelectSource(int id) = 0;
+  virtual void SelectSource(webrtc::ScreenId id) = 0;
 };
 
 }  // namespace protocol

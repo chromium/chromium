@@ -32,7 +32,7 @@ void FakeVideoStream::SetObserver(Observer* observer) {
   observer_ = observer;
 }
 
-void FakeVideoStream::SelectSource(int id) {}
+void FakeVideoStream::SelectSource(webrtc::ScreenId id) {}
 
 base::WeakPtr<FakeVideoStream> FakeVideoStream::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
