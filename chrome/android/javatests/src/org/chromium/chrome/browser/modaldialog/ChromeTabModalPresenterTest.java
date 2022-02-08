@@ -342,7 +342,7 @@ public class ChromeTabModalPresenterTest {
         checkCurrentPresenter(mManager, null);
 
         // Show a new tab modal dialog, and it should be suspended in tab switcher.
-        showDialog(mManager, dialog2, ModalDialogType.TAB);
+        showDialog(mManager, dialog2, ModalDialogType.TAB, false);
         checkPendingSize(mManager, ModalDialogType.APP, 0);
         checkPendingSize(mManager, ModalDialogType.TAB, 1);
         ChromeModalDialogTestUtils.checkBrowserControls(mActivity, false);
