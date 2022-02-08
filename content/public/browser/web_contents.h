@@ -710,6 +710,9 @@ class WebContents : public PageNavigator,
   // Indicates whether a video is in Picture-in-Picture for |this|.
   virtual bool HasPictureInPictureVideo() = 0;
 
+  // Indicates whether a document is in Picture-in-Picture for |this|.
+  virtual bool HasPictureInPictureDocument() = 0;
+
   // Indicates whether this tab should be considered crashed. This becomes false
   // again when the renderer process is recreated after a crash in order to
   // recreate the main frame.

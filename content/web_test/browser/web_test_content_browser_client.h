@@ -68,8 +68,8 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
   std::unique_ptr<BrowserMainParts> CreateBrowserMainParts(
       MainFunctionParams parameters) override;
   std::vector<url::Origin> GetOriginsRequiringDedicatedProcess() override;
-  std::unique_ptr<OverlayWindow> CreateWindowForPictureInPicture(
-      PictureInPictureWindowController* controller) override;
+  std::unique_ptr<VideoOverlayWindow> CreateWindowForVideoPictureInPicture(
+      VideoPictureInPictureWindowController* controller) override;
   bool CanCreateWindow(content::RenderFrameHost* opener,
                        const GURL& opener_url,
                        const GURL& opener_top_level_frame_url,

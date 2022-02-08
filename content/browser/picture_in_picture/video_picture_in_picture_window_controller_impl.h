@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_WINDOW_CONTROLLER_IMPL_H_
-#define CONTENT_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_WINDOW_CONTROLLER_IMPL_H_
+#ifndef CONTENT_BROWSER_PICTURE_IN_PICTURE_VIDEO_PICTURE_IN_PICTURE_WINDOW_CONTROLLER_IMPL_H_
+#define CONTENT_BROWSER_PICTURE_IN_PICTURE_VIDEO_PICTURE_IN_PICTURE_WINDOW_CONTROLLER_IMPL_H_
 
 #include <map>
 #include <set>
@@ -12,7 +12,7 @@
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/media_player_id.h"
-#include "content/public/browser/picture_in_picture_window_controller.h"
+#include "content/public/browser/video_picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "media/mojo/mojom/media_player.mojom.h"
@@ -29,35 +29,35 @@ class WebContents;
 class WebContentsImpl;
 enum class PictureInPictureResult;
 
-// PictureInPictureWindowControllerImpl is the corner stone of the
+// VideoPictureInPictureWindowControllerImpl is the corner stone of the video
 // Picture-in-Picture feature in the //content layer. It handles the session
 // creation requests (sent by the PictureInPictureServiceImpl), owns the session
 // object and therefore handles its lifetime, and communicate with the rest of
 // the browser. Requests to the WebContents are sent by the controller and it
 // gets notified when the browser needs it to update the Picture-in-Picture
 // session.
-// The PictureInPictureWindowControllerImpl is managing Picture-in-Picture at a
-// WebContents level. If multiple calls request a Picture-in-Picture session
-// either in the same frame or in different frames, the controller will handle
-// creating the new session, stopping the current one and making sure the window
-// is kept around when possible.
-class CONTENT_EXPORT PictureInPictureWindowControllerImpl
-    : public PictureInPictureWindowController,
-      public WebContentsUserData<PictureInPictureWindowControllerImpl>,
+// The VideoPictureInPictureWindowControllerImpl is managing Picture-in-Picture
+// at a WebContents level. If multiple calls request a Picture-in-Picture
+// session either in the same frame or in different frames, the controller will
+// handle creating the new session, stopping the current one and making sure the
+// window is kept around when possible.
+class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
+    : public VideoPictureInPictureWindowController,
+      public WebContentsUserData<VideoPictureInPictureWindowControllerImpl>,
       public WebContentsObserver {
  public:
   // Gets a reference to the controller associated with |web_contents| and
   // creates one if it does not exist. The returned pointer is guaranteed to be
   // non-null.
-  static PictureInPictureWindowControllerImpl* GetOrCreateForWebContents(
+  static VideoPictureInPictureWindowControllerImpl* GetOrCreateForWebContents(
       WebContents* web_contents);
 
-  PictureInPictureWindowControllerImpl(
-      const PictureInPictureWindowControllerImpl&) = delete;
-  PictureInPictureWindowControllerImpl& operator=(
-      const PictureInPictureWindowControllerImpl&) = delete;
+  VideoPictureInPictureWindowControllerImpl(
+      const VideoPictureInPictureWindowControllerImpl&) = delete;
+  VideoPictureInPictureWindowControllerImpl& operator=(
+      const VideoPictureInPictureWindowControllerImpl&) = delete;
 
-  ~PictureInPictureWindowControllerImpl() override;
+  ~VideoPictureInPictureWindowControllerImpl() override;
 
   using PlayerSet = std::set<int>;
 
@@ -67,7 +67,7 @@ class CONTENT_EXPORT PictureInPictureWindowControllerImpl
   void Close(bool should_pause_video) override;
   void CloseAndFocusInitiator() override;
   void OnWindowDestroyed(bool should_pause_video) override;
-  OverlayWindow* GetWindowForTesting() override;
+  VideoOverlayWindow* GetWindowForTesting() override;
   void UpdateLayerBounds() override;
   bool IsPlayerActive() override;
   WebContents* GetWebContents() override;
@@ -132,11 +132,11 @@ class CONTENT_EXPORT PictureInPictureWindowControllerImpl
   }
 
  private:
-  friend class WebContentsUserData<PictureInPictureWindowControllerImpl>;
+  friend class WebContentsUserData<VideoPictureInPictureWindowControllerImpl>;
 
-  // Use PictureInPictureWindowControllerImpl::GetOrCreateForWebContents() to
-  // create an instance.
-  explicit PictureInPictureWindowControllerImpl(WebContents* web_contents);
+  // Use VideoPictureInPictureWindowControllerImpl::GetOrCreateForWebContents()
+  // to create an instance.
+  explicit VideoPictureInPictureWindowControllerImpl(WebContents* web_contents);
 
   // Recompute the playback state and update the window accordingly.
   void UpdatePlaybackState();
@@ -145,7 +145,7 @@ class CONTENT_EXPORT PictureInPictureWindowControllerImpl
   void OnLeavingPictureInPicture(bool should_pause_video);
 
   // Internal method to set the states after the window was closed, whether via
-  // the system or Chromium.
+  // the system or by the browser.
   void CloseInternal(bool should_pause_video);
 
   // Creates a new window if the previous one was destroyed. It can happen
@@ -160,7 +160,7 @@ class CONTENT_EXPORT PictureInPictureWindowControllerImpl
   // Returns the web_contents() as a WebContentsImpl*.
   WebContentsImpl* GetWebContentsImpl();
 
-  std::unique_ptr<OverlayWindow> window_;
+  std::unique_ptr<VideoOverlayWindow> window_;
 
   viz::SurfaceId surface_id_;
 
@@ -200,4 +200,4 @@ class CONTENT_EXPORT PictureInPictureWindowControllerImpl
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_PICTURE_IN_PICTURE_PICTURE_IN_PICTURE_WINDOW_CONTROLLER_IMPL_H_
+#endif  // CONTENT_BROWSER_PICTURE_IN_PICTURE_VIDEO_PICTURE_IN_PICTURE_WINDOW_CONTROLLER_IMPL_H_

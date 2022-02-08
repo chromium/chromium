@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "content/browser/picture_in_picture/picture_in_picture_session.h"
-#include "content/browser/picture_in_picture/picture_in_picture_window_controller_impl.h"
+#include "content/browser/picture_in_picture/video_picture_in_picture_window_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/web_contents_delegate.h"
 
@@ -69,9 +69,9 @@ PictureInPictureServiceImpl::~PictureInPictureServiceImpl() {
   GetController().OnServiceDeleted(this);
 }
 
-PictureInPictureWindowControllerImpl&
+VideoPictureInPictureWindowControllerImpl&
 PictureInPictureServiceImpl::GetController() {
-  return *PictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
+  return *VideoPictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
       WebContents::FromRenderFrameHost(render_frame_host()));
 }
 

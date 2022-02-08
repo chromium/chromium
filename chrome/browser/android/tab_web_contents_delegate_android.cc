@@ -437,8 +437,8 @@ void TabWebContentsDelegateAndroid::OnDidBlockNavigation(
 content::PictureInPictureResult
 TabWebContentsDelegateAndroid::EnterPictureInPicture(
     content::WebContents* web_contents) {
-  return PictureInPictureWindowManager::GetInstance()->EnterPictureInPicture(
-      web_contents);
+  return PictureInPictureWindowManager::GetInstance()
+      ->EnterVideoPictureInPicture(web_contents);
 }
 
 void TabWebContentsDelegateAndroid::ExitPictureInPicture() {

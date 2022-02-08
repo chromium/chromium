@@ -23,11 +23,11 @@ class CompositorView;
 }  // namespace android
 }  // namespace thin_webview
 
-class OverlayWindowAndroid : public content::OverlayWindow,
+class OverlayWindowAndroid : public content::VideoOverlayWindow,
                              public ui::WindowAndroidObserver {
  public:
   explicit OverlayWindowAndroid(
-      content::PictureInPictureWindowController* controller);
+      content::VideoPictureInPictureWindowController* controller);
   ~OverlayWindowAndroid() override;
 
   void OnActivityStart(
@@ -58,7 +58,9 @@ class OverlayWindowAndroid : public content::OverlayWindow,
   bool IsVisible() override;
   bool IsAlwaysOnTop() override;
   gfx::Rect GetBounds() override;
-  void UpdateVideoSize(const gfx::Size& natural_size) override;
+  void UpdateNaturalSize(const gfx::Size& natural_size) override;
+
+  // VideoOverlayWindow implementation
   void SetPlaybackState(PlaybackState playback_state) override {}
   void SetPlayPauseButtonVisibility(bool is_visible) override;
   void SetSkipAdButtonVisibility(bool is_visible) override {}
@@ -85,7 +87,7 @@ class OverlayWindowAndroid : public content::OverlayWindow,
 
   bool is_play_pause_button_visible_ = false;
 
-  raw_ptr<content::PictureInPictureWindowController> controller_;
+  raw_ptr<content::VideoPictureInPictureWindowController> controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_OVERLAY_OVERLAY_WINDOW_ANDROID_H_

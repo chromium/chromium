@@ -18,6 +18,7 @@
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 #include "chrome/browser/browser_about_handler.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -46,10 +47,12 @@
 #include "content/public/browser/browser_url_handler.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "extensions/buildflags/buildflags.h"
 #include "url/url_constants.h"
 
@@ -247,6 +250,14 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
       // Find a compatible window and re-execute this command in it. Otherwise
       // re-run with NEW_WINDOW.
       return {GetOrCreateBrowser(profile, params.user_gesture), -1};
+    case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
+      // Out of paranoia, check that the PictureInPictureV2 feature is actually
+      // enabled as a browser feature before allowing the browser to create an
+      // always-on-top window.  This helps protect against a compromised
+      // renderer. TODO(https://crbug.com/1285144): Remove this check once
+      // the feature is no longer experimental.
+      CHECK(base::FeatureList::IsEnabled(features::kPictureInPictureV2));
+      return {params.browser, -1};
     case WindowOpenDisposition::NEW_POPUP: {
       // Make a new popup window.
       // Coerce app-style if |source| represents an app.
@@ -324,6 +335,11 @@ void NormalizeDisposition(NavigateParams* params) {
       params->tabstrip_add_types &= ~TabStripModel::ADD_ACTIVE;
       break;
 
+    case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
+      // Do nothing for a document PiP popup, it's handled via
+      // PictureInPictureController.
+      params->window_action = NavigateParams::NO_ACTION;
+      break;
     case WindowOpenDisposition::NEW_WINDOW:
     case WindowOpenDisposition::NEW_POPUP: {
       // Code that wants to open a new window typically expects it to be shown
@@ -417,10 +433,13 @@ class ScopedBrowserShower {
   ScopedBrowserShower& operator=(const ScopedBrowserShower&) = delete;
 
   ~ScopedBrowserShower() {
-    if (params_->window_action == NavigateParams::SHOW_WINDOW_INACTIVE) {
-      params_->browser->window()->ShowInactive();
+    BrowserWindow* window = params_->browser->window();
+    if (params_->disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
+      // Don't activate or focus the window, PictureInPictureManager
+      // takes care of that for a DocumentPictureInPictureWindowControllerImpl.
+    } else if (params_->window_action == NavigateParams::SHOW_WINDOW_INACTIVE) {
+      window->ShowInactive();
     } else if (params_->window_action == NavigateParams::SHOW_WINDOW) {
-      BrowserWindow* window = params_->browser->window();
       window->Show();
       // If a user gesture opened a popup window, focus the contents.
       if (params_->user_gesture &&
@@ -717,7 +736,11 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
       (params->tabstrip_add_types & TabStripModel::ADD_INHERIT_OPENER))
     params->source_contents->Focus();
 
-  if (params->source_contents == contents_to_navigate_or_insert) {
+  if (params->disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
+    auto* mgr = PictureInPictureWindowManager::GetInstance();
+    mgr->EnterDocumentPictureInPicture(params->source_contents,
+                                       std::move(contents_to_insert));
+  } else if (params->source_contents == contents_to_navigate_or_insert) {
     // The navigation occurred in the source tab.
     params->browser->UpdateUIForNavigationInTab(
         contents_to_navigate_or_insert, params->transition,

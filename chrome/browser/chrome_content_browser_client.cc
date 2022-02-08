@@ -5554,16 +5554,28 @@ bool ChromeContentBrowserClient::HandleExternalProtocol(
   return true;
 }
 
-std::unique_ptr<content::OverlayWindow>
-ChromeContentBrowserClient::CreateWindowForPictureInPicture(
-    content::PictureInPictureWindowController* controller) {
-  // Note: content::OverlayWindow::Create() is defined by platform-specific
+std::unique_ptr<content::VideoOverlayWindow>
+ChromeContentBrowserClient::CreateWindowForVideoPictureInPicture(
+    content::VideoPictureInPictureWindowController* controller) {
+  // Note: content::VideoOverlayWindow::Create() is defined by platform-specific
   // implementation in chrome/browser/ui/views. This layering hack, which goes
   // through //content and ContentBrowserClient, allows us to work around the
   // dependency constraints that disallow directly calling
   // chrome/browser/ui/views code either from here or from other code in
   // chrome/browser.
-  return content::OverlayWindow::Create(controller);
+  return content::VideoOverlayWindow::Create(controller);
+}
+
+std::unique_ptr<content::DocumentOverlayWindow>
+ChromeContentBrowserClient::CreateWindowForDocumentPictureInPicture(
+    content::DocumentPictureInPictureWindowController* controller) {
+  // Note: content::DocumentOverlayWindow::Create() is defined by
+  // platform-specific implementation in chrome/browser/ui/views. This layering
+  // hack, which goes through //content and ContentBrowserClient, allows us to
+  // work around the dependency constraints that disallow directly calling
+  // chrome/browser/ui/views code either from here or from other code in
+  // chrome/browser.
+  return content::DocumentOverlayWindow::Create(controller);
 }
 
 void ChromeContentBrowserClient::RegisterRendererPreferenceWatcher(

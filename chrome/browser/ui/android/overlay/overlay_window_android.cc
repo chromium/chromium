@@ -11,17 +11,25 @@
 #include "chrome/browser/android/tab_android.h"
 #include "components/thin_webview/compositor_view.h"
 #include "content/public/browser/overlay_window.h"
-#include "content/public/browser/picture_in_picture_window_controller.h"
+#include "content/public/browser/video_picture_in_picture_window_controller.h"
 #include "ui/android/window_android_compositor.h"
 
 // static
-std::unique_ptr<content::OverlayWindow> content::OverlayWindow::Create(
-    PictureInPictureWindowController* controller) {
+std::unique_ptr<content::VideoOverlayWindow>
+content::VideoOverlayWindow::Create(
+    VideoPictureInPictureWindowController* controller) {
   return std::make_unique<OverlayWindowAndroid>(controller);
 }
 
+// static
+std::unique_ptr<content::DocumentOverlayWindow>
+content::DocumentOverlayWindow::Create(
+    DocumentPictureInPictureWindowController* controller) {
+  return nullptr;
+}
+
 OverlayWindowAndroid::OverlayWindowAndroid(
-    content::PictureInPictureWindowController* controller)
+    content::VideoPictureInPictureWindowController* controller)
     : window_android_(nullptr),
       compositor_view_(nullptr),
       surface_layer_(cc::SurfaceLayer::Create()),
@@ -152,7 +160,7 @@ gfx::Rect OverlayWindowAndroid::GetBounds() {
   return bounds_;
 }
 
-void OverlayWindowAndroid::UpdateVideoSize(const gfx::Size& natural_size) {
+void OverlayWindowAndroid::UpdateNaturalSize(const gfx::Size& natural_size) {
   if (java_ref_.is_uninitialized()) {
     video_size_ = natural_size;
     return;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/picture_in_picture/picture_in_picture_window_controller_impl.h"
+#include "content/browser/picture_in_picture/video_picture_in_picture_window_controller_impl.h"
 
 #include <set>
 #include <utility>
@@ -10,6 +10,7 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/browser/media/media_web_contents_observer.h"
 #include "content/browser/media/session/media_session_impl.h"
+#include "content/browser/picture_in_picture/document_picture_in_picture_window_controller_impl.h"
 #include "content/browser/picture_in_picture/picture_in_picture_session.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/content_browser_client.h"
@@ -22,16 +23,16 @@
 namespace content {
 
 // static
-PictureInPictureWindowController*
-PictureInPictureWindowController::GetOrCreateForWebContents(
+VideoPictureInPictureWindowController*
+PictureInPictureWindowController::GetOrCreateVideoPictureInPictureController(
     WebContents* web_contents) {
-  return PictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
+  return VideoPictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
       web_contents);
 }
 
 // static
-PictureInPictureWindowControllerImpl*
-PictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
+VideoPictureInPictureWindowControllerImpl*
+VideoPictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
     WebContents* web_contents) {
   DCHECK(web_contents);
 
@@ -40,18 +41,19 @@ PictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
   return FromWebContents(web_contents);
 }
 
-PictureInPictureWindowControllerImpl::~PictureInPictureWindowControllerImpl() =
-    default;
+VideoPictureInPictureWindowControllerImpl::
+    ~VideoPictureInPictureWindowControllerImpl() = default;
 
-PictureInPictureWindowControllerImpl::PictureInPictureWindowControllerImpl(
-    WebContents* web_contents)
-    : WebContentsUserData<PictureInPictureWindowControllerImpl>(*web_contents),
+VideoPictureInPictureWindowControllerImpl::
+    VideoPictureInPictureWindowControllerImpl(WebContents* web_contents)
+    : WebContentsUserData<VideoPictureInPictureWindowControllerImpl>(
+          *web_contents),
       WebContentsObserver(web_contents) {
   EnsureWindow();
   DCHECK(window_) << "Picture in Picture requires a valid window.";
 }
 
-void PictureInPictureWindowControllerImpl::Show() {
+void VideoPictureInPictureWindowControllerImpl::Show() {
   DCHECK(window_);
   DCHECK(surface_id_.is_valid());
 
@@ -93,11 +95,11 @@ void PictureInPictureWindowControllerImpl::Show() {
   GetWebContentsImpl()->SetHasPictureInPictureVideo(true);
 }
 
-void PictureInPictureWindowControllerImpl::FocusInitiator() {
+void VideoPictureInPictureWindowControllerImpl::FocusInitiator() {
   GetWebContentsImpl()->Activate();
 }
 
-void PictureInPictureWindowControllerImpl::Close(bool should_pause_video) {
+void VideoPictureInPictureWindowControllerImpl::Close(bool should_pause_video) {
   if (!window_ || !window_->IsVisible())
     return;
 
@@ -105,18 +107,18 @@ void PictureInPictureWindowControllerImpl::Close(bool should_pause_video) {
   CloseInternal(should_pause_video);
 }
 
-void PictureInPictureWindowControllerImpl::CloseAndFocusInitiator() {
+void VideoPictureInPictureWindowControllerImpl::CloseAndFocusInitiator() {
   Close(false /* should_pause_video */);
   FocusInitiator();
 }
 
-void PictureInPictureWindowControllerImpl::OnWindowDestroyed(
+void VideoPictureInPictureWindowControllerImpl::OnWindowDestroyed(
     bool should_pause_video) {
   window_ = nullptr;
   CloseInternal(should_pause_video);
 }
 
-void PictureInPictureWindowControllerImpl::EmbedSurface(
+void VideoPictureInPictureWindowControllerImpl::EmbedSurface(
     const viz::SurfaceId& surface_id,
     const gfx::Size& natural_size) {
   EnsureWindow();
@@ -133,20 +135,21 @@ void PictureInPictureWindowControllerImpl::EmbedSurface(
   // enters Picture-in-Picture mode.
   UpdatePlaybackState();
 
-  window_->UpdateVideoSize(natural_size);
+  window_->UpdateNaturalSize(natural_size);
   window_->SetSurfaceId(surface_id_);
 }
 
-OverlayWindow* PictureInPictureWindowControllerImpl::GetWindowForTesting() {
+VideoOverlayWindow*
+VideoPictureInPictureWindowControllerImpl::GetWindowForTesting() {
   return window_.get();
 }
 
-void PictureInPictureWindowControllerImpl::UpdateLayerBounds() {
+void VideoPictureInPictureWindowControllerImpl::UpdateLayerBounds() {
   if (active_session_ && window_ && window_->IsVisible())
     active_session_->NotifyWindowResized(window_->GetBounds().size());
 }
 
-bool PictureInPictureWindowControllerImpl::IsPlayerActive() {
+bool VideoPictureInPictureWindowControllerImpl::IsPlayerActive() {
   if (!active_session_ || !active_session_->player_id().has_value())
     return false;
 
@@ -154,25 +157,25 @@ bool PictureInPictureWindowControllerImpl::IsPlayerActive() {
       active_session_->player_id().value());
 }
 
-WebContents* PictureInPictureWindowControllerImpl::GetWebContents() {
+WebContents* VideoPictureInPictureWindowControllerImpl::GetWebContents() {
   return web_contents();
 }
 
-void PictureInPictureWindowControllerImpl::UpdatePlaybackState() {
+void VideoPictureInPictureWindowControllerImpl::UpdatePlaybackState() {
   if (!window_)
     return;
 
-  auto playback_state = OverlayWindow::PlaybackState::kPaused;
+  auto playback_state = VideoOverlayWindow::PlaybackState::kPaused;
   if (IsPlayerActive()) {
-    playback_state = OverlayWindow::PlaybackState::kPlaying;
+    playback_state = VideoOverlayWindow::PlaybackState::kPlaying;
   } else if (media_position_ && media_position_->end_of_media()) {
-    playback_state = OverlayWindow::PlaybackState::kEndOfVideo;
+    playback_state = VideoOverlayWindow::PlaybackState::kEndOfVideo;
   }
 
   window_->SetPlaybackState(playback_state);
 }
 
-bool PictureInPictureWindowControllerImpl::TogglePlayPause() {
+bool VideoPictureInPictureWindowControllerImpl::TogglePlayPause() {
   DCHECK(window_);
   DCHECK(active_session_);
 
@@ -198,7 +201,7 @@ bool PictureInPictureWindowControllerImpl::TogglePlayPause() {
   return true /* playing */;
 }
 
-PictureInPictureResult PictureInPictureWindowControllerImpl::StartSession(
+PictureInPictureResult VideoPictureInPictureWindowControllerImpl::StartSession(
     PictureInPictureServiceImpl* service,
     const MediaPlayerId& player_id,
     mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> player_remote,
@@ -230,7 +233,7 @@ PictureInPictureResult PictureInPictureWindowControllerImpl::StartSession(
   return result;
 }
 
-void PictureInPictureWindowControllerImpl::OnServiceDeleted(
+void VideoPictureInPictureWindowControllerImpl::OnServiceDeleted(
     PictureInPictureServiceImpl* service) {
   if (!active_session_ || active_session_->service() != service)
     return;
@@ -239,47 +242,47 @@ void PictureInPictureWindowControllerImpl::OnServiceDeleted(
   active_session_ = nullptr;
 }
 
-void PictureInPictureWindowControllerImpl::SetShowPlayPauseButton(
+void VideoPictureInPictureWindowControllerImpl::SetShowPlayPauseButton(
     bool show_play_pause_button) {
   always_show_play_pause_button_ = show_play_pause_button;
   UpdatePlayPauseButtonVisibility();
 }
 
-void PictureInPictureWindowControllerImpl::SkipAd() {
+void VideoPictureInPictureWindowControllerImpl::SkipAd() {
   if (media_session_action_skip_ad_handled_)
     MediaSession::Get(web_contents())->SkipAd();
 }
 
-void PictureInPictureWindowControllerImpl::NextTrack() {
+void VideoPictureInPictureWindowControllerImpl::NextTrack() {
   if (media_session_action_next_track_handled_)
     MediaSession::Get(web_contents())->NextTrack();
 }
 
-void PictureInPictureWindowControllerImpl::PreviousTrack() {
+void VideoPictureInPictureWindowControllerImpl::PreviousTrack() {
   if (media_session_action_previous_track_handled_)
     MediaSession::Get(web_contents())->PreviousTrack();
 }
 
-void PictureInPictureWindowControllerImpl::ToggleMicrophone() {
+void VideoPictureInPictureWindowControllerImpl::ToggleMicrophone() {
   if (!media_session_action_toggle_microphone_handled_)
     return;
 
   MediaSession::Get(web_contents())->ToggleMicrophone();
 }
 
-void PictureInPictureWindowControllerImpl::ToggleCamera() {
+void VideoPictureInPictureWindowControllerImpl::ToggleCamera() {
   if (!media_session_action_toggle_camera_handled_)
     return;
 
   MediaSession::Get(web_contents())->ToggleCamera();
 }
 
-void PictureInPictureWindowControllerImpl::HangUp() {
+void VideoPictureInPictureWindowControllerImpl::HangUp() {
   if (media_session_action_hang_up_handled_)
     MediaSession::Get(web_contents())->HangUp();
 }
 
-void PictureInPictureWindowControllerImpl::MediaSessionInfoChanged(
+void VideoPictureInPictureWindowControllerImpl::MediaSessionInfoChanged(
     const media_session::mojom::MediaSessionInfoPtr& info) {
   if (!info)
     return;
@@ -296,7 +299,7 @@ void PictureInPictureWindowControllerImpl::MediaSessionInfoChanged(
   window_->SetCameraState(camera_turned_on_);
 }
 
-void PictureInPictureWindowControllerImpl::MediaSessionActionsChanged(
+void VideoPictureInPictureWindowControllerImpl::MediaSessionActionsChanged(
     const std::set<media_session::mojom::MediaSessionAction>& actions) {
   // TODO(crbug.com/919842): Currently, the first Media Session to be created
   // (independently of the frame) will be used. This means, we could show a
@@ -345,17 +348,17 @@ void PictureInPictureWindowControllerImpl::MediaSessionActionsChanged(
   window_->SetHangUpButtonVisibility(media_session_action_hang_up_handled_);
 }
 
-void PictureInPictureWindowControllerImpl::MediaSessionPositionChanged(
+void VideoPictureInPictureWindowControllerImpl::MediaSessionPositionChanged(
     const absl::optional<media_session::MediaPosition>& media_position) {
   media_position_ = media_position;
   UpdatePlaybackState();
 }
 
-gfx::Size PictureInPictureWindowControllerImpl::GetSize() {
+gfx::Size VideoPictureInPictureWindowControllerImpl::GetSize() {
   return window_->GetBounds().size();
 }
 
-void PictureInPictureWindowControllerImpl::MediaStartedPlaying(
+void VideoPictureInPictureWindowControllerImpl::MediaStartedPlaying(
     const MediaPlayerInfo&,
     const MediaPlayerId& media_player_id) {
   if (web_contents()->IsBeingDestroyed())
@@ -367,7 +370,7 @@ void PictureInPictureWindowControllerImpl::MediaStartedPlaying(
   UpdatePlaybackState();
 }
 
-void PictureInPictureWindowControllerImpl::MediaStoppedPlaying(
+void VideoPictureInPictureWindowControllerImpl::MediaStoppedPlaying(
     const MediaPlayerInfo&,
     const MediaPlayerId& media_player_id,
     WebContentsObserver::MediaStoppedReason) {
@@ -380,12 +383,12 @@ void PictureInPictureWindowControllerImpl::MediaStoppedPlaying(
   UpdatePlaybackState();
 }
 
-void PictureInPictureWindowControllerImpl::WebContentsDestroyed() {
+void VideoPictureInPictureWindowControllerImpl::WebContentsDestroyed() {
   if (window_)
     window_->Close();
 }
 
-void PictureInPictureWindowControllerImpl::OnLeavingPictureInPicture(
+void VideoPictureInPictureWindowControllerImpl::OnLeavingPictureInPicture(
     bool should_pause_video) {
   DCHECK(active_session_);
 
@@ -399,7 +402,7 @@ void PictureInPictureWindowControllerImpl::OnLeavingPictureInPicture(
   active_session_ = nullptr;
 }
 
-void PictureInPictureWindowControllerImpl::CloseInternal(
+void VideoPictureInPictureWindowControllerImpl::CloseInternal(
     bool should_pause_video) {
   // We shouldn't have an empty active_session_ in this case but (at least for
   // there tests), extensions seem to be closing the window before the
@@ -414,15 +417,16 @@ void PictureInPictureWindowControllerImpl::CloseInternal(
   surface_id_ = viz::SurfaceId();
 }
 
-void PictureInPictureWindowControllerImpl::EnsureWindow() {
+void VideoPictureInPictureWindowControllerImpl::EnsureWindow() {
   if (window_)
     return;
 
   window_ =
-      GetContentClient()->browser()->CreateWindowForPictureInPicture(this);
+      GetContentClient()->browser()->CreateWindowForVideoPictureInPicture(this);
 }
 
-void PictureInPictureWindowControllerImpl::UpdatePlayPauseButtonVisibility() {
+void VideoPictureInPictureWindowControllerImpl::
+    UpdatePlayPauseButtonVisibility() {
   if (!window_)
     return;
 
@@ -431,10 +435,11 @@ void PictureInPictureWindowControllerImpl::UpdatePlayPauseButtonVisibility() {
                                         always_show_play_pause_button_);
 }
 
-WebContentsImpl* PictureInPictureWindowControllerImpl::GetWebContentsImpl() {
+WebContentsImpl*
+VideoPictureInPictureWindowControllerImpl::GetWebContentsImpl() {
   return static_cast<WebContentsImpl*>(web_contents());
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PictureInPictureWindowControllerImpl);
+WEB_CONTENTS_USER_DATA_KEY_IMPL(VideoPictureInPictureWindowControllerImpl);
 
 }  // namespace content

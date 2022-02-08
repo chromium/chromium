@@ -77,23 +77,23 @@ using ::testing::_;
 
 namespace {
 
-class MockPictureInPictureWindowController
-    : public content::PictureInPictureWindowController {
+class MockVideoPictureInPictureWindowController
+    : public content::VideoPictureInPictureWindowController {
  public:
-  MockPictureInPictureWindowController() = default;
+  MockVideoPictureInPictureWindowController() = default;
 
-  MockPictureInPictureWindowController(
-      const MockPictureInPictureWindowController&) = delete;
-  MockPictureInPictureWindowController& operator=(
-      const MockPictureInPictureWindowController&) = delete;
+  MockVideoPictureInPictureWindowController(
+      const MockVideoPictureInPictureWindowController&) = delete;
+  MockVideoPictureInPictureWindowController& operator=(
+      const MockVideoPictureInPictureWindowController&) = delete;
 
-  // PictureInPictureWindowController:
+  // VideoPictureInPictureWindowController:
   MOCK_METHOD0(Show, void());
   MOCK_METHOD0(FocusInitiator, void());
   MOCK_METHOD1(Close, void(bool));
   MOCK_METHOD0(CloseAndFocusInitiator, void());
   MOCK_METHOD1(OnWindowDestroyed, void(bool));
-  MOCK_METHOD0(GetWindowForTesting, content::OverlayWindow*());
+  MOCK_METHOD0(GetWindowForTesting, content::VideoOverlayWindow*());
   MOCK_METHOD0(UpdateLayerBounds, void());
   MOCK_METHOD0(IsPlayerActive, bool());
   MOCK_METHOD0(GetWebContents, content::WebContents*());
@@ -198,15 +198,15 @@ void WaitForTitle(content::WebContents* web_contents,
 
 }  // namespace
 
-class PictureInPictureWindowControllerBrowserTest
+class VideoPictureInPictureWindowControllerBrowserTest
     : public InProcessBrowserTest {
  public:
-  PictureInPictureWindowControllerBrowserTest() = default;
+  VideoPictureInPictureWindowControllerBrowserTest() = default;
 
-  PictureInPictureWindowControllerBrowserTest(
-      const PictureInPictureWindowControllerBrowserTest&) = delete;
-  PictureInPictureWindowControllerBrowserTest& operator=(
-      const PictureInPictureWindowControllerBrowserTest&) = delete;
+  VideoPictureInPictureWindowControllerBrowserTest(
+      const VideoPictureInPictureWindowControllerBrowserTest&) = delete;
+  VideoPictureInPictureWindowControllerBrowserTest& operator=(
+      const VideoPictureInPictureWindowControllerBrowserTest&) = delete;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -215,21 +215,20 @@ class PictureInPictureWindowControllerBrowserTest
   }
 
   void SetUpWindowController(content::WebContents* web_contents) {
-    pip_window_controller_ =
-        content::PictureInPictureWindowController::GetOrCreateForWebContents(
-            web_contents);
+    pip_window_controller_ = content::PictureInPictureWindowController::
+        GetOrCreateVideoPictureInPictureController(web_contents);
   }
 
-  content::PictureInPictureWindowController* window_controller() {
+  content::VideoPictureInPictureWindowController* window_controller() {
     return pip_window_controller_;
   }
 
-  MockPictureInPictureWindowController& mock_controller() {
+  MockVideoPictureInPictureWindowController& mock_controller() {
     return mock_controller_;
   }
 
-  OverlayWindowViews* GetOverlayWindow() {
-    return static_cast<OverlayWindowViews*>(
+  VideoOverlayWindowViews* GetOverlayWindow() {
+    return static_cast<VideoOverlayWindowViews*>(
         window_controller()->GetWindowForTesting());
   }
 
@@ -259,13 +258,14 @@ class PictureInPictureWindowControllerBrowserTest
     EXPECT_EQ(false, EvalJs(web_contents, "isInPictureInPicture();"));
   }
 
-  void WaitForPlaybackState(content::WebContents* web_contents,
-                            OverlayWindowViews::PlaybackState playback_state) {
+  void WaitForPlaybackState(
+      content::WebContents* web_contents,
+      VideoOverlayWindowViews::PlaybackState playback_state) {
     // Make sure to wait if not yet in the |playback_state| state.
     if (GetOverlayWindow()->playback_state_for_testing() != playback_state) {
       content::MediaStartStopObserver observer(
           web_contents,
-          playback_state == OverlayWindowViews::PlaybackState::kPlaying
+          playback_state == VideoOverlayWindowViews::PlaybackState::kPlaying
               ? content::MediaStartStopObserver::Type::kStart
               : content::MediaStartStopObserver::Type::kStop);
       observer.Wait();
@@ -305,14 +305,14 @@ class PictureInPictureWindowControllerBrowserTest
   }
 
  private:
-  raw_ptr<content::PictureInPictureWindowController> pip_window_controller_ =
-      nullptr;
-  MockPictureInPictureWindowController mock_controller_;
+  raw_ptr<content::VideoPictureInPictureWindowController>
+      pip_window_controller_ = nullptr;
+  MockVideoPictureInPictureWindowController mock_controller_;
 };
 
 // Checks the creation of the window controller, as well as basic window
 // creation, visibility and activation.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        CreationAndVisibilityAndActivation) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   EXPECT_FALSE(platform_util::IsWindowActive(native_window));
 }
 
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        ControlsVisibility) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
@@ -348,10 +348,11 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 class PictureInPicturePixelComparisonBrowserTest
-    : public PictureInPictureWindowControllerBrowserTest {
+    : public VideoPictureInPictureWindowControllerBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    PictureInPictureWindowControllerBrowserTest::SetUpCommandLine(command_line);
+    VideoPictureInPictureWindowControllerBrowserTest::SetUpCommandLine(
+        command_line);
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
     command_line->AppendSwitch(switches::kDisableGpu);
@@ -519,7 +520,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPicturePixelComparisonBrowserTest,
   ASSERT_EQ(true, EvalJs(active_web_contents, "play();"));
 
   WaitForPlaybackState(active_web_contents,
-                       OverlayWindowViews::PlaybackState::kPlaying);
+                       VideoOverlayWindowViews::PlaybackState::kPlaying);
 
   constexpr gfx::Size kSize = {402, 268};
   TakeOverlayWindowScreenshot(kSize, /*controls_visible=*/true);
@@ -549,7 +550,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPicturePixelComparisonBrowserTest,
 
   ASSERT_TRUE(ExecJs(active_web_contents, "video.pause();"));
   WaitForPlaybackState(active_web_contents,
-                       OverlayWindowViews::PlaybackState::kPaused);
+                       VideoOverlayWindowViews::PlaybackState::kPaused);
   TakeOverlayWindowScreenshot(kSize, /*controls_visible=*/true);
   ASSERT_TRUE(ReadImageFile(expected_play_image_path, &expected_image));
   EXPECT_TRUE(CompareImages(GetResultBitmap(), expected_image));
@@ -558,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPicturePixelComparisonBrowserTest,
 
 // Tests that when an active WebContents accurately tracks whether a video
 // is in Picture-in-Picture.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        TabIconUpdated) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -591,7 +592,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
 // Tests that when creating a Picture-in-Picture window a size is sent to the
 // caller and if the window is resized, the caller is also notified.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        ResizeEventFired) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -617,7 +618,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
 // Tests that when closing a Picture-in-Picture window, the video element is
 // reflected as no longer in Picture-in-Picture.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        CloseWindowWhilePlaying) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -642,7 +643,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 }
 
 // Ditto, when the video isn't playing.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        CloseWindowWithoutPlaying) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -665,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
 // Tests that when closing a Picture-in-Picture window, the video element
 // no longer in Picture-in-Picture can't enter Picture-in-Picture right away.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        CloseWindowCantEnterPictureInPictureAgain) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -695,7 +696,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
 // Tests that when closing a Picture-in-Picture window from the Web API, the
 // video element is not paused.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        CloseWindowFromWebAPIWhilePlaying) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -719,7 +720,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
 // Tests that when starting a new Picture-in-Picture session from the same
 // video, the video stays in Picture-in-Picture mode.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        RequestPictureInPictureTwiceFromSameVideo) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -748,7 +749,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
 // Tests that when starting a new Picture-in-Picture session from the same tab,
 // the previous video is no longer in Picture-in-Picture mode.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        OpenSecondPictureInPictureStopsFirst) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -775,12 +776,12 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   EXPECT_TRUE(GetOverlayWindow()->IsVisible());
 
   EXPECT_EQ(GetOverlayWindow()->playback_state_for_testing(),
-            OverlayWindowViews::PlaybackState::kPaused);
+            VideoOverlayWindowViews::PlaybackState::kPaused);
 }
 
 // Tests that resetting video src when video is in Picture-in-Picture session
 // keep Picture-in-Picture window opened.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        ResetVideoSrcKeepsPictureInPictureWindowOpened) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
@@ -801,7 +802,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
 // Tests that updating video src when video is in Picture-in-Picture session
 // keep Picture-in-Picture window opened.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        UpdateVideoSrcKeepsPictureInPictureWindowOpened) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
@@ -830,7 +831,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 // Tests that changing video src to media stream when video is in
 // Picture-in-Picture session keep Picture-in-Picture window opened.
 IN_PROC_BROWSER_TEST_F(
-    PictureInPictureWindowControllerBrowserTest,
+    VideoPictureInPictureWindowControllerBrowserTest,
     MAYBE_ChangeVideoSrcToMediaStreamKeepsPictureInPictureWindowOpened) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
@@ -858,7 +859,7 @@ IN_PROC_BROWSER_TEST_F(
 // Tests that we can enter Picture-in-Picture when a video is not preloaded,
 // using the metadata optimizations. This test is checking that there are no
 // crashes.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        EnterMetadataPosterOptimisation) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -877,7 +878,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
 // Tests that calling PictureInPictureWindowController::Close() twice has no
 // side effect.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        CloseTwiceSideEffects) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -912,7 +913,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
 // Checks entering Picture-in-Picture on multiple tabs, where the initial tab
 // has been closed.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        PictureInPictureAfterClosingTab) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -949,7 +950,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
 // Closing a tab that lost Picture-in-Picture because a new tab entered it
 // should not close the current Picture-in-Picture window.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        PictureInPictureDoNotCloseAfterClosingTab) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -973,9 +974,9 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(new_web_contents != nullptr);
 
-  content::PictureInPictureWindowController* pip_window_controller =
-      content::PictureInPictureWindowController::GetOrCreateForWebContents(
-          new_web_contents);
+  content::VideoPictureInPictureWindowController* pip_window_controller =
+      content::PictureInPictureWindowController::
+          GetOrCreateVideoPictureInPictureController(new_web_contents);
   ASSERT_EQ(true, EvalJs(new_web_contents, "enterPictureInPicture();"));
   EXPECT_TRUE(pip_window_controller->GetWindowForTesting()->IsVisible());
 
@@ -994,7 +995,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
 // Killing an iframe that lost Picture-in-Picture because the main frame entered
 // it should not close the current Picture-in-Picture window.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        PictureInPictureDoNotCloseAfterKillingFrame) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -1042,7 +1043,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
 // Checks setting disablePictureInPicture on video just after requesting
 // Picture-in-Picture doesn't result in a window opened.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        RequestPictureInPictureAfterDisablePictureInPicture) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -1062,7 +1063,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 }
 
 // Checks that a video in Picture-in-Picture stops if its iframe is removed.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        FrameEnterLeaveClosesWindow) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -1094,7 +1095,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   EXPECT_FALSE(window_controller()->GetWindowForTesting()->IsVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        CrossOriginFrameEnterLeaveCloseWindow) {
   GURL embed_url = embedded_test_server()->GetURL(
       "a.com", "/media/picture-in-picture/iframe-content.html");
@@ -1128,12 +1129,12 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   EXPECT_FALSE(window_controller()->GetWindowForTesting()->IsVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        MultipleBrowserWindowOnePIPWindow) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
 
-  content::PictureInPictureWindowController* first_controller =
+  content::VideoPictureInPictureWindowController* first_controller =
       window_controller();
   EXPECT_TRUE(first_controller->GetWindowForTesting()->IsVisible());
 
@@ -1141,13 +1142,13 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   LoadTabAndEnterPictureInPicture(
       second_browser, base::FilePath(kPictureInPictureWindowSizePage));
 
-  content::PictureInPictureWindowController* second_controller =
+  content::VideoPictureInPictureWindowController* second_controller =
       window_controller();
   EXPECT_FALSE(first_controller->GetWindowForTesting()->IsVisible());
   EXPECT_TRUE(second_controller->GetWindowForTesting()->IsVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        EnterPictureInPictureThenNavigateAwayCloseWindow) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -1180,7 +1181,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
 // Tests that the Picture-in-Picture state is properly updated when the window
 // is closed at a system level.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        CloseWindowNotifiesController) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
@@ -1198,7 +1199,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
 // Tests that the play/pause icon state is properly updated when a
 // Picture-in-Picture is created after a reload.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        PlayPauseStateAtCreation) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
@@ -1212,7 +1213,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 
   EXPECT_EQ(GetOverlayWindow()->playback_state_for_testing(),
-            OverlayWindowViews::PlaybackState::kPlaying);
+            VideoOverlayWindowViews::PlaybackState::kPlaying);
 
   EXPECT_TRUE(GetOverlayWindow()->video_layer_for_testing()->visible());
 
@@ -1228,10 +1229,10 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
   EXPECT_EQ(true, EvalJs(active_web_contents, "isPaused();"));
   EXPECT_EQ(GetOverlayWindow()->playback_state_for_testing(),
-            OverlayWindowViews::PlaybackState::kPaused);
+            VideoOverlayWindowViews::PlaybackState::kPaused);
 }
 
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        EnterUsingControllerShowsWindow) {
   auto* pip_window_manager = PictureInPictureWindowManager::GetInstance();
   ASSERT_NE(nullptr, pip_window_manager);
@@ -1241,7 +1242,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   pip_window_manager->EnterPictureInPictureWithController(&mock_controller());
 }
 
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        EnterUsingWebContentsThenUsingController) {
   // Enter using WebContents.
   LoadTabAndEnterPictureInPicture(
@@ -1262,7 +1263,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents());
 }
 
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        EnterUsingControllerThenEnterUsingWebContents) {
   auto* pip_window_manager = PictureInPictureWindowManager::GetInstance();
   ASSERT_NE(nullptr, pip_window_manager);
@@ -1287,7 +1288,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 // changing source willproperly update the associated media player id. This is
 // checked by closing the window because the test it at a too high level to be
 // able to check the actual media player id being used.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        PreloadNoneSrcChangeThenLoad) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -1312,7 +1313,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
 // Tests that opening a Picture-in-Picture window from a video in an iframe
 // will not lead to a crash when the tab is closed while devtools is open.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        OpenInFrameWithDevToolsDoesNotCrash) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -1363,7 +1364,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Tests that the back-to-tab, close, and resize controls move properly as
 // the window changes quadrants.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        MovingQuadrantsMovesBackToTabAndResizeControls) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -1461,7 +1462,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
 // Tests that the Play/Pause button is displayed appropriately in the
 // Picture-in-Picture window.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        PlayPauseButtonVisibility) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
@@ -1490,7 +1491,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
 // Check that page visibility API events are fired when tab is hidden, shown,
 // and even occluded.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        PageVisibilityEventsFired) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -1519,7 +1520,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
 // Check that page visibility API events are fired even when video is in
 // Picture-in-Picture and video playback is not disrupted.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        PageVisibilityEventsFiredWhenPictureInPicture) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
@@ -1562,7 +1563,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 }
 
 class PictureInPictureWindowControllerPrerenderBrowserTest
-    : public PictureInPictureWindowControllerBrowserTest {
+    : public VideoPictureInPictureWindowControllerBrowserTest {
  public:
   PictureInPictureWindowControllerPrerenderBrowserTest()
       : prerender_helper_(base::BindRepeating(
@@ -1609,7 +1610,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerPrerenderBrowserTest,
 }
 
 class PictureInPictureWindowControllerFencedFrameBrowserTest
-    : public PictureInPictureWindowControllerBrowserTest {
+    : public VideoPictureInPictureWindowControllerBrowserTest {
  public:
   content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
     return fenced_frame_helper_;
@@ -1646,11 +1647,12 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerFencedFrameBrowserTest,
   EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
 }
 
-class MediaSessionPictureInPictureWindowControllerBrowserTest
-    : public PictureInPictureWindowControllerBrowserTest {
+class MediaSessionVideoPictureInPictureWindowControllerBrowserTest
+    : public VideoPictureInPictureWindowControllerBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    PictureInPictureWindowControllerBrowserTest::SetUpCommandLine(command_line);
+    VideoPictureInPictureWindowControllerBrowserTest::SetUpCommandLine(
+        command_line);
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                     "MediaSession,SkipAd");
     scoped_feature_list_.InitWithFeatures(
@@ -1663,8 +1665,9 @@ class MediaSessionPictureInPictureWindowControllerBrowserTest
 
 // Tests that a Skip Ad button is displayed in the Picture-in-Picture window
 // when Media Session Action "skipad" is handled by the website.
-IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
-                       SkipAdButtonVisibility) {
+IN_PROC_BROWSER_TEST_F(
+    MediaSessionVideoPictureInPictureWindowControllerBrowserTest,
+    SkipAdButtonVisibility) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   ASSERT_NE(GetOverlayWindow(), nullptr);
@@ -1692,8 +1695,9 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
 // Tests that the Play/Plause button is displayed in the Picture-in-Picture
 // window when Media Session actions "play" and "pause" are handled by the
 // website even if video is a media stream.
-IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
-                       PlayPauseButtonVisibility) {
+IN_PROC_BROWSER_TEST_F(
+    MediaSessionVideoPictureInPictureWindowControllerBrowserTest,
+    PlayPauseButtonVisibility) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
 
@@ -1742,8 +1746,9 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
 
 // Tests that a Next Track button is displayed in the Picture-in-Picture window
 // when Media Session Action "nexttrack" is handled by the website.
-IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
-                       NextTrackButtonVisibility) {
+IN_PROC_BROWSER_TEST_F(
+    MediaSessionVideoPictureInPictureWindowControllerBrowserTest,
+    NextTrackButtonVisibility) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   ASSERT_NE(GetOverlayWindow(), nullptr);
@@ -1771,8 +1776,9 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
 
 // Tests that a Previous Track button is displayed in the Picture-in-Picture
 // window when Media Session Action "previoustrack" is handled by the website.
-IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
-                       PreviousTrackButtonVisibility) {
+IN_PROC_BROWSER_TEST_F(
+    MediaSessionVideoPictureInPictureWindowControllerBrowserTest,
+    PreviousTrackButtonVisibility) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
 
@@ -1799,8 +1805,9 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
 
 // Tests that clicking the Skip Ad button in the Picture-in-Picture window
 // calls the Media Session Action "skipad" handler function.
-IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
-                       SkipAdHandlerCalled) {
+IN_PROC_BROWSER_TEST_F(
+    MediaSessionVideoPictureInPictureWindowControllerBrowserTest,
+    SkipAdHandlerCalled) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   content::WebContents* active_web_contents =
@@ -1809,7 +1816,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
       ExecJs(active_web_contents, "setMediaSessionActionHandler('skipad');"));
   ASSERT_EQ(true, EvalJs(active_web_contents, "ensureVideoIsPlaying();"));
   WaitForPlaybackState(active_web_contents,
-                       OverlayWindowViews::PlaybackState::kPlaying);
+                       VideoOverlayWindowViews::PlaybackState::kPlaying);
 
   // Make sure the action handler is set before trying to invoke the action.
   EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
@@ -1822,8 +1829,9 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
 
 // Tests that clicking the Play/Pause button in the Picture-in-Picture window
 // calls the Media Session actions "play" and "pause" handler functions.
-IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
-                       PlayPauseHandlersCalled) {
+IN_PROC_BROWSER_TEST_F(
+    MediaSessionVideoPictureInPictureWindowControllerBrowserTest,
+    PlayPauseHandlersCalled) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   content::WebContents* active_web_contents =
@@ -1850,7 +1858,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
   // when paused, so no more Media Session action handling there).
   ASSERT_EQ(true, EvalJs(active_web_contents, "changeVideoSrc();"));
   WaitForPlaybackState(active_web_contents,
-                       OverlayWindowViews::PlaybackState::kPlaying);
+                       VideoOverlayWindowViews::PlaybackState::kPlaying);
 
   // Simulates user clicking "Play/Pause" and check that the "pause" handler
   // function is called.
@@ -1859,7 +1867,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
 
   ASSERT_TRUE(ExecJs(active_web_contents, "video.pause();"));
   WaitForPlaybackState(active_web_contents,
-                       OverlayWindowViews::PlaybackState::kPaused);
+                       VideoOverlayWindowViews::PlaybackState::kPaused);
 
   // Simulates user clicking "Play/Pause" and check that the "play" handler
   // function is called.
@@ -1869,8 +1877,9 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
 
 // Tests that clicking the Next Track button in the Picture-in-Picture window
 // calls the Media Session Action "nexttrack" handler function.
-IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
-                       NextTrackHandlerCalled) {
+IN_PROC_BROWSER_TEST_F(
+    MediaSessionVideoPictureInPictureWindowControllerBrowserTest,
+    NextTrackHandlerCalled) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   content::WebContents* active_web_contents =
@@ -1879,7 +1888,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
                      "setMediaSessionActionHandler('nexttrack');"));
   ASSERT_EQ(true, EvalJs(active_web_contents, "ensureVideoIsPlaying();"));
   WaitForPlaybackState(active_web_contents,
-                       OverlayWindowViews::PlaybackState::kPlaying);
+                       VideoOverlayWindowViews::PlaybackState::kPlaying);
 
   // Make sure the action handler is set before trying to invoke the action.
   EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
@@ -1893,8 +1902,9 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
 
 // Tests that clicking the Previous Track button in the Picture-in-Picture
 // window calls the Media Session Action "previoustrack" handler function.
-IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
-                       PreviousTrackHandlerCalled) {
+IN_PROC_BROWSER_TEST_F(
+    MediaSessionVideoPictureInPictureWindowControllerBrowserTest,
+    PreviousTrackHandlerCalled) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   content::WebContents* active_web_contents =
@@ -1903,7 +1913,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
                      "setMediaSessionActionHandler('previoustrack');"));
   ASSERT_EQ(true, EvalJs(active_web_contents, "ensureVideoIsPlaying();"));
   WaitForPlaybackState(active_web_contents,
-                       OverlayWindowViews::PlaybackState::kPlaying);
+                       VideoOverlayWindowViews::PlaybackState::kPlaying);
 
   // Make sure the action handler is set before trying to invoke the action.
   EXPECT_NO_FATAL_FAILURE(AssertControlsVisible(
@@ -1916,26 +1926,28 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
 }
 
 // Tests that stopping Media Sessions closes the Picture-in-Picture window.
-IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
-                       StopMediaSessionClosesPictureInPictureWindow) {
+IN_PROC_BROWSER_TEST_F(
+    MediaSessionVideoPictureInPictureWindowControllerBrowserTest,
+    StopMediaSessionClosesPictureInPictureWindow) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_EQ(true, EvalJs(active_web_contents, "ensureVideoIsPlaying();"));
   WaitForPlaybackState(active_web_contents,
-                       OverlayWindowViews::PlaybackState::kPlaying);
+                       VideoOverlayWindowViews::PlaybackState::kPlaying);
 
   content::MediaSession::Get(active_web_contents)
       ->Stop(content::MediaSession::SuspendType::kUI);
   WaitForTitle(active_web_contents, u"leavepictureinpicture");
 }
 
-class AutoPictureInPictureWindowControllerBrowserTest
-    : public PictureInPictureWindowControllerBrowserTest {
+class AutoVideoPictureInPictureWindowControllerBrowserTest
+    : public VideoPictureInPictureWindowControllerBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    PictureInPictureWindowControllerBrowserTest::SetUpCommandLine(command_line);
+    VideoPictureInPictureWindowControllerBrowserTest::SetUpCommandLine(
+        command_line);
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
                                     "AutoPictureInPicture");
   }
@@ -1944,7 +1956,7 @@ class AutoPictureInPictureWindowControllerBrowserTest
 // Hide page and check that entering Auto Picture-in-Picture is not triggered.
 // This test is most likely going to be flaky the day the tested thing fails.
 // Do NOT disable test. Ping /chrome/browser/picture_in_picture/OWNERS instead.
-IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(AutoVideoPictureInPictureWindowControllerBrowserTest,
                        AutoEnterPictureInPictureIsNotTriggeredInRegularWebApp) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -1972,7 +1984,7 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWindowControllerBrowserTest,
 // Show page and check that exiting Auto Picture-in-Picture is triggered.
 // This test is most likely going to be flaky the day the tested thing fails.
 // Do NOT disable test. Ping /chrome/browser/picture_in_picture/OWNERS instead.
-IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(AutoVideoPictureInPictureWindowControllerBrowserTest,
                        AutoExitPictureInPictureIsTriggeredInRegularWebApp) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -2025,17 +2037,17 @@ class ChromeContentBrowserClientOverrideWebAppScope
 
 }  // namespace
 
-class WebAppPictureInPictureWindowControllerBrowserTest
+class WebAppVideoPictureInPictureWindowControllerBrowserTest
     : public web_app::WebAppControllerBrowserTest {
  public:
-  WebAppPictureInPictureWindowControllerBrowserTest() = default;
+  WebAppVideoPictureInPictureWindowControllerBrowserTest() = default;
 
-  WebAppPictureInPictureWindowControllerBrowserTest(
-      const WebAppPictureInPictureWindowControllerBrowserTest&) = delete;
-  WebAppPictureInPictureWindowControllerBrowserTest& operator=(
-      const WebAppPictureInPictureWindowControllerBrowserTest&) = delete;
+  WebAppVideoPictureInPictureWindowControllerBrowserTest(
+      const WebAppVideoPictureInPictureWindowControllerBrowserTest&) = delete;
+  WebAppVideoPictureInPictureWindowControllerBrowserTest& operator=(
+      const WebAppVideoPictureInPictureWindowControllerBrowserTest&) = delete;
 
-  ~WebAppPictureInPictureWindowControllerBrowserTest() override = default;
+  ~WebAppVideoPictureInPictureWindowControllerBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(
@@ -2068,7 +2080,7 @@ class WebAppPictureInPictureWindowControllerBrowserTest
 };
 
 // Hide pwa page and check that Picture-in-Picture is entered automatically.
-IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppVideoPictureInPictureWindowControllerBrowserTest,
                        AutoEnterPictureInPicture) {
   InstallAndLaunchPWA(main_url());
   ASSERT_EQ(true, EvalJs(web_contents(), "playVideo();"));
@@ -2080,7 +2092,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
 }
 
 // Show pwa page and check that Auto Picture-in-Picture is exited automatically.
-IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppVideoPictureInPictureWindowControllerBrowserTest,
                        AutoExitPictureInPicture) {
   InstallAndLaunchPWA(main_url());
   ASSERT_EQ(true, EvalJs(web_contents(), "playVideo();"));
@@ -2097,7 +2109,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
 // Show pwa page and check that Auto Picture-in-Picture is not triggered if
 // document is not inside the scope specified in the Web App Manifest.
 IN_PROC_BROWSER_TEST_F(
-    WebAppPictureInPictureWindowControllerBrowserTest,
+    WebAppVideoPictureInPictureWindowControllerBrowserTest,
     AutoPictureInPictureNotTriggeredIfDocumentNotInWebAppScope) {
   // We open a web app with a different scope
   // Then go to our usual test page.
@@ -2119,7 +2131,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Show pwa page and check that Auto Picture-in-Picture is not triggered if
 // video is not playing.
-IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppVideoPictureInPictureWindowControllerBrowserTest,
                        AutoPictureInPictureNotTriggeredIfVideoNotPlaying) {
   InstallAndLaunchPWA(main_url());
   ASSERT_TRUE(ExecJs(web_contents(), "video.autoPictureInPicture = true;"));
@@ -2136,7 +2148,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
 // Check that Auto Picture-in-Picture is not triggered if there's already a
 // video in Picture-in-Picture.
 IN_PROC_BROWSER_TEST_F(
-    WebAppPictureInPictureWindowControllerBrowserTest,
+    WebAppVideoPictureInPictureWindowControllerBrowserTest,
     AutoPictureInPictureWhenPictureInPictureWindowAlreadyVisible) {
   InstallAndLaunchPWA(main_url());
 
@@ -2160,7 +2172,7 @@ IN_PROC_BROWSER_TEST_F(
 // Check that video does not leave Picture-in-Picture automatically when it
 // doesn't have the Auto Picture-in-Picture attribute set.
 IN_PROC_BROWSER_TEST_F(
-    WebAppPictureInPictureWindowControllerBrowserTest,
+    WebAppVideoPictureInPictureWindowControllerBrowserTest,
     AutoPictureInPictureNotTriggeredOnPageShownIfNoAttribute) {
   InstallAndLaunchPWA(main_url());
   ASSERT_TRUE(ExecJs(web_contents(), "video.autoPictureInPicture = false;"));
@@ -2182,7 +2194,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Check that Auto Picture-in-Picture applies only to the video element whose
 // autoPictureInPicture attribute was set most recently.
-IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppVideoPictureInPictureWindowControllerBrowserTest,
                        AutoPictureInPictureAttributeAppliesToLastElement) {
   InstallAndLaunchPWA(main_url());
   ASSERT_TRUE(ExecJs(web_contents(),
@@ -2197,7 +2209,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
   WaitForTitle(web_contents(), u"secondVideo.enterpictureinpicture");
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppVideoPictureInPictureWindowControllerBrowserTest,
                        AutoPictureInPictureAttributeAppliesToInsertedElement) {
   InstallAndLaunchPWA(main_url());
   ASSERT_TRUE(ExecJs(web_contents(), "video.autoPictureInPicture = true;"));
@@ -2211,7 +2223,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
   WaitForTitle(web_contents(), u"htmlVideo.enterpictureinpicture");
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppVideoPictureInPictureWindowControllerBrowserTest,
                        AutoPictureInPictureCanBeUnset) {
   InstallAndLaunchPWA(main_url());
   ASSERT_TRUE(ExecJs(web_contents(), "video.autoPictureInPicture = true;"));
@@ -2229,7 +2241,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
   EXPECT_EQ(false, EvalJs(web_contents(), "isInPictureInPicture();"));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppVideoPictureInPictureWindowControllerBrowserTest,
                        AutoPictureInPictureAppliesAfterUnsetOnAnotherVideo) {
   InstallAndLaunchPWA(main_url());
   ASSERT_TRUE(ExecJs(web_contents(),
@@ -2254,7 +2266,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPictureInPictureWindowControllerBrowserTest,
 // Check that video does not leave Picture-in-Picture automatically when it is
 // not the most recent element with the Auto Picture-in-Picture attribute set.
 IN_PROC_BROWSER_TEST_F(
-    WebAppPictureInPictureWindowControllerBrowserTest,
+    WebAppVideoPictureInPictureWindowControllerBrowserTest,
     AutoPictureInPictureNotTriggeredOnPageShownIfNotEnteredAutoPictureInPicture) {
   InstallAndLaunchPWA(main_url());
   ASSERT_TRUE(ExecJs(web_contents(),
@@ -2279,7 +2291,7 @@ IN_PROC_BROWSER_TEST_F(
 // Check that video with no audio that is paused when hidden is still eligible
 // to enter Auto Picture-in-Picture and resumes playback.
 IN_PROC_BROWSER_TEST_F(
-    WebAppPictureInPictureWindowControllerBrowserTest,
+    WebAppVideoPictureInPictureWindowControllerBrowserTest,
     AutoPictureInPictureTriggeredOnPageHiddenIfVideoPausedWhenHidden) {
   InstallAndLaunchPWA(main_url());
 
@@ -2298,7 +2310,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Check that video with no audio that is paused when hidden resumes playback
 // when it enters Picture-in-Picture.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        VideoWithNoAudioPausedWhenHiddenResumesPlayback) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
@@ -2329,7 +2341,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 
 // Tests that exiting Picture-in-Picture when the video has no source fires the
 // event and resolves the callback.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        ExitFireEventAndCallbackWhenNoSource) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
@@ -2345,7 +2357,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 // Tests that play/pause video playback is toggled if there are no focus
 // afforfances on the Picture-in-Picture window buttons when user hits space
 // keyboard key.
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
                        SpaceKeyTogglePlayPause) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
@@ -2365,12 +2377,13 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
   WaitForTitle(active_web_contents, u"pause");
 }
 
-class VideoConferencingPictureInPictureWindowControllerBrowserTest
-    : public PictureInPictureWindowControllerBrowserTest {
+class VideoConferencingVideoPictureInPictureWindowControllerBrowserTest
+    : public VideoPictureInPictureWindowControllerBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     feature_list_.InitAndEnableFeature(media::kMediaSessionWebRTC);
-    PictureInPictureWindowControllerBrowserTest::SetUpCommandLine(command_line);
+    VideoPictureInPictureWindowControllerBrowserTest::SetUpCommandLine(
+        command_line);
   }
 
  private:
@@ -2379,7 +2392,7 @@ class VideoConferencingPictureInPictureWindowControllerBrowserTest
 
 // Test that video conferencing action buttons function correctly.
 IN_PROC_BROWSER_TEST_F(
-    VideoConferencingPictureInPictureWindowControllerBrowserTest,
+    VideoConferencingVideoPictureInPictureWindowControllerBrowserTest,
     VideoConferencingActions) {
   // Enter PiP.
   LoadTabAndEnterPictureInPicture(

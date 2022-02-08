@@ -81,8 +81,8 @@ bool ChromeExtensionHostDelegate::CheckMediaAccessPermission(
 content::PictureInPictureResult
 ChromeExtensionHostDelegate::EnterPictureInPicture(
     content::WebContents* web_contents) {
-  return PictureInPictureWindowManager::GetInstance()->EnterPictureInPicture(
-      web_contents);
+  return PictureInPictureWindowManager::GetInstance()
+      ->EnterVideoPictureInPicture(web_contents);
 }
 
 void ChromeExtensionHostDelegate::ExitPictureInPicture() {

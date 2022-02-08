@@ -34,7 +34,7 @@ void PlaybackImageButton::OnBoundsChanged(const gfx::Rect& rect) {
 }
 
 void PlaybackImageButton::SetPlaybackState(
-    const OverlayWindowViews::PlaybackState playback_state) {
+    const VideoOverlayWindowViews::PlaybackState playback_state) {
   if (playback_state_ == playback_state)
     return;
 
@@ -44,17 +44,17 @@ void PlaybackImageButton::SetPlaybackState(
 
 void PlaybackImageButton::UpdateImageAndTooltipText() {
   switch (playback_state_) {
-    case OverlayWindowViews::kPlaying:
+    case VideoOverlayWindowViews::kPlaying:
       SetImage(views::Button::STATE_NORMAL, pause_image_);
       SetTooltipText(
           l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_PAUSE_CONTROL_TEXT));
       break;
-    case OverlayWindowViews::kPaused:
+    case VideoOverlayWindowViews::kPaused:
       SetImage(views::Button::STATE_NORMAL, play_image_);
       SetTooltipText(
           l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_PLAY_CONTROL_TEXT));
       break;
-    case OverlayWindowViews::kEndOfVideo:
+    case VideoOverlayWindowViews::kEndOfVideo:
       SetImage(views::Button::STATE_NORMAL, replay_image_);
       SetTooltipText(l10n_util::GetStringUTF16(
           IDS_PICTURE_IN_PICTURE_REPLAY_CONTROL_TEXT));

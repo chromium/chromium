@@ -615,6 +615,15 @@ const base::Feature kPepper3DImageChromium{"Pepper3DImageChromium",
 const base::Feature kPepperCrossOriginRedirectRestriction{
     "PepperCrossOriginRedirectRestriction", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// A browser-side equivalent of the Blink feature "PictureInPictureV2". This is
+// used for sanity checks to ensure that the feature can't be enabled by a
+// compromised renderer despite the Blink flag not being enabled.
+//
+// Tracking bug: https://crbug.com/1269059
+// Removal bug (when no longer experimental): https://crbug.com/1285144
+const base::Feature kPictureInPictureV2{"PictureInPictureV2",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables process sharing for sites that do not require a dedicated process
 // by using a default SiteInstance. Default SiteInstances will only be used
 // on platforms that do not use full site isolation.

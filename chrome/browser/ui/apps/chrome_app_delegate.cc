@@ -399,8 +399,8 @@ bool ChromeAppDelegate::TakeFocus(content::WebContents* web_contents,
 
 content::PictureInPictureResult ChromeAppDelegate::EnterPictureInPicture(
     content::WebContents* web_contents) {
-  return PictureInPictureWindowManager::GetInstance()->EnterPictureInPicture(
-      web_contents);
+  return PictureInPictureWindowManager::GetInstance()
+      ->EnterVideoPictureInPicture(web_contents);
 }
 
 void ChromeAppDelegate::ExitPictureInPicture() {

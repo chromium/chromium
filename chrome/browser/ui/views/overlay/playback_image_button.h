@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_OVERLAY_PLAYBACK_IMAGE_BUTTON_H_
 
 #include "chrome/browser/ui/views/overlay/overlay_window_image_button.h"
-#include "chrome/browser/ui/views/overlay/overlay_window_views.h"
+#include "chrome/browser/ui/views/overlay/video_overlay_window_views.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 // A resizable playback button with 3 states: play/pause/replay.
@@ -20,7 +20,8 @@ class PlaybackImageButton : public OverlayWindowImageButton {
   ~PlaybackImageButton() override = default;
 
   // Show appropriate images based on playback state.
-  void SetPlaybackState(const OverlayWindowViews::PlaybackState playback_state);
+  void SetPlaybackState(
+      const VideoOverlayWindowViews::PlaybackState playback_state);
 
  protected:
   // Overridden from views::View.
@@ -29,8 +30,8 @@ class PlaybackImageButton : public OverlayWindowImageButton {
  private:
   void UpdateImageAndTooltipText();
 
-  OverlayWindowViews::PlaybackState playback_state_ =
-      OverlayWindowViews::PlaybackState::kEndOfVideo;
+  VideoOverlayWindowViews::PlaybackState playback_state_ =
+      VideoOverlayWindowViews::PlaybackState::kEndOfVideo;
 
   gfx::ImageSkia play_image_;
   gfx::ImageSkia pause_image_;

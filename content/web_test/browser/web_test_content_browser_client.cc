@@ -93,7 +93,7 @@ void BindWebTestHelper(
 
 // An OverlayWindow that returns the last given video natural size as the
 // window's bounds.
-class BoundsMatchVideoSizeOverlayWindow : public OverlayWindow {
+class BoundsMatchVideoSizeOverlayWindow : public VideoOverlayWindow {
  public:
   BoundsMatchVideoSizeOverlayWindow() = default;
   ~BoundsMatchVideoSizeOverlayWindow() override = default;
@@ -110,7 +110,7 @@ class BoundsMatchVideoSizeOverlayWindow : public OverlayWindow {
   bool IsVisible() override { return false; }
   bool IsAlwaysOnTop() override { return false; }
   gfx::Rect GetBounds() override { return gfx::Rect(size_); }
-  void UpdateVideoSize(const gfx::Size& natural_size) override {
+  void UpdateNaturalSize(const gfx::Size& natural_size) override {
     size_ = natural_size;
   }
   void SetPlaybackState(PlaybackState playback_state) override {}
@@ -366,9 +366,9 @@ WebTestContentBrowserClient::CreateBrowserMainParts(
   return browser_main_parts;
 }
 
-std::unique_ptr<OverlayWindow>
-WebTestContentBrowserClient::CreateWindowForPictureInPicture(
-    PictureInPictureWindowController* controller) {
+std::unique_ptr<VideoOverlayWindow>
+WebTestContentBrowserClient::CreateWindowForVideoPictureInPicture(
+    VideoPictureInPictureWindowController* controller) {
   return std::make_unique<BoundsMatchVideoSizeOverlayWindow>();
 }
 

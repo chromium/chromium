@@ -20,7 +20,7 @@
 #include "content/browser/media/session/media_session_controller.h"
 #include "content/browser/media/session/media_session_player_observer.h"
 #include "content/browser/media/session/media_session_service_impl.h"
-#include "content/browser/picture_in_picture/picture_in_picture_window_controller_impl.h"
+#include "content/browser/picture_in_picture/video_picture_in_picture_window_controller_impl.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -637,7 +637,7 @@ void MediaSessionImpl::RebuildAndNotifyMediaPositionChanged() {
   position_ = position;
 
   if (auto* pip_window_controller_ =
-          PictureInPictureWindowControllerImpl::FromWebContents(
+          VideoPictureInPictureWindowControllerImpl::FromWebContents(
               web_contents())) {
     pip_window_controller_->MediaSessionPositionChanged(position_);
   }
@@ -719,7 +719,7 @@ void MediaSessionImpl::Stop(SuspendType suspend_type) {
   }
 
   if (auto* pip_window_controller_ =
-          PictureInPictureWindowControllerImpl::FromWebContents(
+          VideoPictureInPictureWindowControllerImpl::FromWebContents(
               web_contents())) {
     pip_window_controller_->Close(false /* should_pause_video */);
   }
@@ -1362,7 +1362,7 @@ void MediaSessionImpl::RebuildAndNotifyMediaSessionInfoChanged() {
   // Picture-in-Picture window controller needs to be updated on current media
   // session info.
   if (auto* pip_window_controller_ =
-          PictureInPictureWindowControllerImpl::FromWebContents(
+          VideoPictureInPictureWindowControllerImpl::FromWebContents(
               web_contents())) {
     pip_window_controller_->MediaSessionInfoChanged(current_info);
   }
@@ -1636,7 +1636,7 @@ void MediaSessionImpl::RebuildAndNotifyActionsChanged() {
   // Picture-in-Picture window controller needs to know only actions that are
   // handled by the website.
   if (auto* pip_window_controller_ =
-          PictureInPictureWindowControllerImpl::FromWebContents(
+          VideoPictureInPictureWindowControllerImpl::FromWebContents(
               web_contents())) {
     pip_window_controller_->MediaSessionActionsChanged(actions);
   }
