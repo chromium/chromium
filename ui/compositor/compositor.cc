@@ -400,6 +400,18 @@ void Compositor::SetRootLayer(Layer* root_layer) {
     root_layer_->SetCompositor(this, root_web_layer_);
 }
 
+void Compositor::DisableAnimations() {
+  DCHECK(animations_are_enabled_);
+  animations_are_enabled_ = false;
+  root_layer_->ResetCompositorForAnimatorsInTree(this);
+}
+
+void Compositor::EnableAnimations() {
+  DCHECK(!animations_are_enabled_);
+  animations_are_enabled_ = true;
+  root_layer_->SetCompositorForAnimatorsInTree(this);
+}
+
 cc::AnimationTimeline* Compositor::GetAnimationTimeline() const {
   return animation_timeline_.get();
 }

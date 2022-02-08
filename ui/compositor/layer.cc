@@ -385,7 +385,7 @@ void Layer::Add(Layer* child) {
   cc_layer_->AddChild(child->cc_layer_.get());
   child->OnDeviceScaleFactorChanged(device_scale_factor_);
   Compositor* compositor = GetCompositor();
-  if (compositor)
+  if (compositor && compositor->animations_are_enabled())
     child->SetCompositorForAnimatorsInTree(compositor);
 }
 
@@ -405,7 +405,7 @@ void Layer::Remove(Layer* child) {
     return;
 
   Compositor* compositor = GetCompositor();
-  if (compositor)
+  if (compositor && compositor->animations_are_enabled())
     child->ResetCompositorForAnimatorsInTree(compositor);
 
   auto i = std::find(children_.begin(), children_.end(), child);
@@ -450,7 +450,8 @@ void Layer::SetAnimator(LayerAnimator* animator) {
   Compositor* compositor = GetCompositor();
 
   if (animator_) {
-    if (compositor && !layer_mask_back_link())
+    if (compositor && compositor->animations_are_enabled() &&
+        !layer_mask_back_link())
       animator_->DetachLayerAndTimeline(compositor);
     animator_->SetDelegate(nullptr);
   }
@@ -459,7 +460,8 @@ void Layer::SetAnimator(LayerAnimator* animator) {
 
   if (animator_) {
     animator_->SetDelegate(this);
-    if (compositor && !layer_mask_back_link())
+    if (compositor && compositor->animations_are_enabled() &&
+        !layer_mask_back_link())
       animator_->AttachLayerAndTimeline(compositor);
   }
 }

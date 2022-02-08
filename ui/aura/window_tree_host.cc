@@ -122,11 +122,12 @@ class WindowTreeHost::HideHelper {
     // SetRootLayer() were used, it would mean the existing layer hierarchy
     // would no longer think it is in a compositor. As this state is temporary,
     // and purely to release resources, SetRootLayer() is not used.
-    // We do need to call ResetCompositorForAnimatorsInTree since the
-    // animation code expects that its callers ensure that any ticking
-    // animations reference element IDs for layers that are currently in the
-    // layer tree.
-    host_window_layer->ResetCompositorForAnimatorsInTree(compositor);
+
+    // We do need to disable ticking of animations since the animation code
+    // expects that its callers ensure that any ticking animations reference
+    // element IDs for layers that are currently in the layer tree.
+    DCHECK_EQ(host_window_layer, compositor->root_layer());
+    compositor->DisableAnimations();
     ccLayerFromUiLayer(host_window_layer)->RemoveFromParent();
     layer_for_transition_->SetBounds(host_window->bounds());
     compositor_root_layer_->AddChild(
@@ -144,7 +145,8 @@ class WindowTreeHost::HideHelper {
     compositor_root_layer_->AddChild(ccLayerFromUiLayer(host_window_layer));
     host_window_layer->OnDeviceScaleFactorChanged(
         layer_for_transition_->device_scale_factor());
-    host_window_layer->SetCompositorForAnimatorsInTree(host_->compositor());
+    DCHECK_EQ(host_window_layer, host_->compositor()->root_layer());
+    host_->compositor()->EnableAnimations();
   }
 
  private:

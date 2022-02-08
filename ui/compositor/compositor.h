@@ -186,6 +186,16 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   Layer* root_layer() { return root_layer_; }
   void SetRootLayer(Layer* root_layer);
 
+  // HideHelper temporarily hides the root layer and replaces it with a
+  // temporary layer, without calling SetRootLayer (but doing much of the work
+  // that SetRootLayer does).  During that time we must disable ticking
+  // of animations, since animations that animate layers that are not in
+  // cc's layer tree must not tick.  These methods make those changes
+  // and record/reflect that state.
+  void DisableAnimations();
+  void EnableAnimations();
+  bool animations_are_enabled() const { return animations_are_enabled_; }
+
   cc::AnimationTimeline* GetAnimationTimeline() const;
 
   // The scale factor of the device that this compositor is
@@ -517,6 +527,8 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
 
   // Set in DisableSwapUntilResize and reset when a resize happens.
   bool disabled_swap_until_resize_ = false;
+
+  bool animations_are_enabled_ = true;
 
   TrackerId next_throughput_tracker_id_ = 1u;
   struct TrackerState {
