@@ -232,6 +232,10 @@ void AppListBubbleAppsPage::AnimateShowLauncher(bool is_side_shelf) {
     // The separator is not offset; it animates next to the view above it.
     SlideViewIntoPosition(separator_, vertical_offset, slide_duration);
   }
+  if (toast_container_ && toast_container_->is_toast_visible()) {
+    vertical_offset += section_offset;
+    SlideViewIntoPosition(toast_container_, vertical_offset, slide_duration);
+  }
 
   // The apps grid is always visible.
   vertical_offset += section_offset;
@@ -351,6 +355,8 @@ void AppListBubbleAppsPage::AbortAllAnimations() {
   abort_animations(continue_section_);
   abort_animations(recent_apps_);
   abort_animations(separator_);
+  if (toast_container_)
+    abort_animations(toast_container_);
   abort_animations(scrollable_apps_grid_view_);
 }
 

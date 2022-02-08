@@ -20,6 +20,7 @@
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_search_page.h"
 #include "ash/app_list/views/app_list_folder_view.h"
+#include "ash/app_list/views/app_list_toast_container_view.h"
 #include "ash/app_list/views/assistant/app_list_bubble_assistant_page.h"
 #include "ash/app_list/views/continue_section_view.h"
 #include "ash/app_list/views/continue_task_view.h"
@@ -154,6 +155,10 @@ class AppListBubbleViewTest : public AshTestBase {
     return GetAppListTestHelper()->GetBubbleRecentAppsView();
   }
 
+  AppListToastContainerView* GetToastContainerView() {
+    return GetAppsPage()->toast_container_for_test();
+  }
+
   ScrollableAppsGridView* GetAppsGridView() {
     return GetAppListTestHelper()->GetScrollableAppsGridView();
   }
@@ -252,6 +257,9 @@ TEST_F(AppListBubbleViewTest, OpeningBubbleTriggersAnimations) {
   ui::ScopedAnimationDurationScaleMode duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
+  // Enable app list nudge to test the animation.
+  GetAppListTestHelper()->DisableAppListNudge(false);
+
   // Show an app list with all sections.
   AddContinueSuggestionResult(4);
   AddRecentApps(5);
@@ -280,16 +288,24 @@ TEST_F(AppListBubbleViewTest, OpeningBubbleTriggersAnimations) {
       view->layer(), ui::LayerAnimationElement::AnimatableProperty::TRANSFORM));
   EXPECT_FLOAT_EQ(view->layer()->transform().To2dTranslation().y(), 40.f);
 
-  view = GetAppsGridView();
+  view = GetToastContainerView();
   EXPECT_TRUE(IsAnimatingProperty(
       view->layer(), ui::LayerAnimationElement::AnimatableProperty::TRANSFORM));
   EXPECT_FLOAT_EQ(view->layer()->transform().To2dTranslation().y(), 60.f);
+
+  view = GetAppsGridView();
+  EXPECT_TRUE(IsAnimatingProperty(
+      view->layer(), ui::LayerAnimationElement::AnimatableProperty::TRANSFORM));
+  EXPECT_FLOAT_EQ(view->layer()->transform().To2dTranslation().y(), 80.f);
 }
 
 TEST_F(AppListBubbleViewTest, OpeningBubbleWithSideShelfTriggersAnimations) {
   // Enable animations.
   ui::ScopedAnimationDurationScaleMode duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Enable app list nudge to test the animation.
+  GetAppListTestHelper()->DisableAppListNudge(false);
 
   // Enable side shelf.
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kRight);
@@ -322,16 +338,24 @@ TEST_F(AppListBubbleViewTest, OpeningBubbleWithSideShelfTriggersAnimations) {
       view->layer(), ui::LayerAnimationElement::AnimatableProperty::TRANSFORM));
   EXPECT_FLOAT_EQ(view->layer()->transform().To2dTranslation().y(), -40.f);
 
-  view = GetAppsGridView();
+  view = GetToastContainerView();
   EXPECT_TRUE(IsAnimatingProperty(
       view->layer(), ui::LayerAnimationElement::AnimatableProperty::TRANSFORM));
   EXPECT_FLOAT_EQ(view->layer()->transform().To2dTranslation().y(), -60.f);
+
+  view = GetAppsGridView();
+  EXPECT_TRUE(IsAnimatingProperty(
+      view->layer(), ui::LayerAnimationElement::AnimatableProperty::TRANSFORM));
+  EXPECT_FLOAT_EQ(view->layer()->transform().To2dTranslation().y(), -80.f);
 }
 
 TEST_F(AppListBubbleViewTest, ShowAnimationCreatesAndDestroysLayers) {
   // Enable animations.
   ui::ScopedAnimationDurationScaleMode duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Enable app list nudge to test the animation.
+  GetAppListTestHelper()->DisableAppListNudge(false);
 
   // Show an app list with all sections.
   AddContinueSuggestionResult(4);
@@ -347,6 +371,8 @@ TEST_F(AppListBubbleViewTest, ShowAnimationCreatesAndDestroysLayers) {
   EXPECT_TRUE(recent_apps->layer());
   auto* separator = GetAppsPage()->separator_for_test();
   EXPECT_TRUE(separator->layer());
+  auto* toast_container = GetToastContainerView();
+  EXPECT_TRUE(toast_container->layer());
   auto* apps_grid_view = GetAppsGridView();
   EXPECT_TRUE(apps_grid_view->layer());
 
@@ -357,6 +383,7 @@ TEST_F(AppListBubbleViewTest, ShowAnimationCreatesAndDestroysLayers) {
   EXPECT_FALSE(continue_section->layer());
   EXPECT_FALSE(recent_apps->layer());
   EXPECT_FALSE(separator->layer());
+  EXPECT_FALSE(toast_container->layer());
 
   // The apps grid view always has a layer, it still exists.
   EXPECT_TRUE(apps_grid_view->layer());
