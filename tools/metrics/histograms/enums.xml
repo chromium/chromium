@@ -15017,6 +15017,13 @@ Called by update_net_error_codes.py.-->
   <int value="505" label="505: HTTP Version Not Supported"/>
 </enum>
 
+<enum name="CommerceSubscriptionValidationResult">
+  <int value="0" label="No fixes needed"/>
+  <int value="1" label="Bookmarks were fixed"/>
+  <int value="2" label="Subscriptions were fixed"/>
+  <int value="3" label="Bookmarks and Subscriptions were fixed"/>
+</enum>
+
 <enum name="CommittedLoadEvent">
   <obsolete>
     Deprecated in favor of PageLoad.Timing2.NavigationToCommit and

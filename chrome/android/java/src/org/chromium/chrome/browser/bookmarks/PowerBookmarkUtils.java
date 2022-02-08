@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.bookmarks;
 
 import android.content.res.Resources;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.common.primitives.UnsignedLongs;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.shopping_list.ShoppingDataProviderBridge;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
@@ -28,12 +30,31 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
 /** Utilities for use in power bookmarks. */
 public class PowerBookmarkUtils {
+    /**
+     * Possible results for the validation of client and server-side subscriptions. These need to
+     * stay in sync with CommerceSubscriptionValidationResult in enums.xml.
+     */
+    @IntDef({ValidationResult.CLEAN, ValidationResult.BOOKMARKS_FIXED,
+            ValidationResult.SUBSCRIPTIONS_FIXED,
+            ValidationResult.BOOKMARKS_AND_SUBSCRIPTIONS_FIXED})
+    @Retention(RetentionPolicy.SOURCE)
+    private @interface ValidationResult {
+        int CLEAN = 0;
+        int BOOKMARKS_FIXED = 1;
+        int SUBSCRIPTIONS_FIXED = 2;
+        int BOOKMARKS_AND_SUBSCRIPTIONS_FIXED = 3;
+
+        int MAX = BOOKMARKS_AND_SUBSCRIPTIONS_FIXED;
+    }
+
     private static Boolean sPriceTrackingEligibleForTesting;
     private static PowerBookmarkMeta sPowerBookmarkMetaForTesting;
 
@@ -394,6 +415,9 @@ public class PowerBookmarkUtils {
             }
         }
 
+        int bookmarkFixCount = 0;
+        int subscriptionFixCount = 0;
+
         // Iterate over all the bookmarked products and ensure the ones that are tracked agree
         // with the ones that the subscription manager thinks are tracked.
         for (BookmarkId product : products) {
@@ -416,6 +440,7 @@ public class PowerBookmarkUtils {
                     ShoppingSpecifics.newBuilder(specifics).setIsPriceTracked(false).build();
             bookmarkBridge.setPowerBookmarkMeta(product,
                     PowerBookmarkMeta.newBuilder(meta).setShoppingSpecifics(newSpecifics).build());
+            bookmarkFixCount++;
         }
 
         // Finally, unsubscribe from active subscriptions if the bookmark either didn't exist or the
@@ -428,6 +453,31 @@ public class PowerBookmarkUtils {
                             SubscriptionManagementType.USER_MANAGED,
                             TrackingIdType.PRODUCT_CLUSTER_ID),
                     (id) -> {});
+            subscriptionFixCount++;
         }
+
+        recordValidationResult(bookmarkFixCount, subscriptionFixCount);
+    }
+
+    /**
+     * Record the result of the subscriptions validation.
+     * @param bookmarkFixCount The number of bookmarks that needed updating.
+     * @param subscriptionFixCount The number of subscriptions that needed updating on the backend.
+     */
+    private static void recordValidationResult(int bookmarkFixCount, int subscriptionFixCount) {
+        @ValidationResult
+        int result = ValidationResult.CLEAN;
+
+        if (bookmarkFixCount > 0 && subscriptionFixCount > 0) {
+            result = ValidationResult.BOOKMARKS_AND_SUBSCRIPTIONS_FIXED;
+        } else if (bookmarkFixCount > 0) {
+            result = ValidationResult.BOOKMARKS_FIXED;
+        } else if (subscriptionFixCount > 0) {
+            result = ValidationResult.SUBSCRIPTIONS_FIXED;
+        }
+
+        RecordHistogram.recordEnumeratedHistogram(
+                "Commerce.PowerBookmarks.SubscriptionValidationResult", result,
+                ValidationResult.MAX);
     }
 }
