@@ -1,0 +1,15 @@
+{
+  "$build/chromium_orchestrator": {
+    "compilator": "linux_chromium_tsan_rel_ng-compilator",
+    "compilator_watcher_git_revision": "d5bee0e7798a40c3c6261c3dbc14becf1fbb693f"
+  },
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "builder_group": "tryserver.chromium.linux",
+  "recipe": "chromium/orchestrator"
+}
