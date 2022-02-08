@@ -86,7 +86,7 @@ void RecordDictAndRunCallback(std::string* result,
 void ExpectValueAndRunCallback(const base::Value* expected_value,
                                base::OnceClosure callback,
                                const base::DictionaryValue& value) {
-  EXPECT_TRUE(value.Equals(expected_value));
+  EXPECT_EQ(value, *expected_value);
   if (!callback.is_null())
     std::move(callback).Run();
 }

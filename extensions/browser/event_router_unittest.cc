@@ -241,7 +241,7 @@ class EventRouterFilterTest : public ExtensionsTest,
         ADD_FAILURE();
         return false;
       }
-      if (filter.Equals(&to_check))
+      if (filter == to_check)
         return true;
     }
     return false;

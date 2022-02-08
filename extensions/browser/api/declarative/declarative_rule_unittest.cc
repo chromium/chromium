@@ -92,8 +92,8 @@ TEST(DeclarativeConditionTest, CreateConditionSet) {
   EXPECT_EQ(2u, result->conditions().size());
 
   EXPECT_EQ(matcher.condition_factory(), result->conditions()[0]->factory);
-  EXPECT_TRUE(ParseJsonDeprecated("{\"key\": 1}")
-                  ->Equals(result->conditions()[0]->value.get()));
+  EXPECT_EQ(*ParseJsonDeprecated("{\"key\": 1}"),
+            *result->conditions()[0]->value);
 }
 
 struct FulfillableCondition {

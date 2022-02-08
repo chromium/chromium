@@ -235,7 +235,7 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
       EXPECT_TRUE(actual_value) << field.first + " is missing" + paths_details;
       if (!actual_value)
         continue;
-      if (!actual_value->Equals(&expected_value)) {
+      if (*actual_value != expected_value) {
         base::JSONWriter::Write(expected_value, &expected_string);
         base::JSONWriter::Write(*actual_value, &actual_string);
         EXPECT_EQ(expected_string, actual_string)

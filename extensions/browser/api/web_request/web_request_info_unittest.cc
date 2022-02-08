@@ -44,7 +44,7 @@ TEST(WebRequestInfoTest, CreateRequestBodyDataFromFile) {
   dict->SetString(extension_web_request_api_constants::kRequestBodyRawFileKey,
                   kFilePath);
   expected_value.Append(std::move(dict));
-  EXPECT_TRUE(value->Equals(&expected_value));
+  EXPECT_EQ(*value, expected_value);
 }
 
 }  // namespace extensions

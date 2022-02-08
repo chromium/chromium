@@ -41,7 +41,7 @@ TEST(WebRequestUploadDataPresenterTest, ParsedData) {
   std::unique_ptr<base::Value> result = parsed_data_presenter->Result();
   ASSERT_TRUE(result.get() != NULL);
 
-  EXPECT_TRUE(result->Equals(&expected_form));
+  EXPECT_EQ(*result, expected_form);
 }
 
 TEST(WebRequestUploadDataPresenterTest, RawData) {

@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAppAPITest, IsInstalled) {
   // extension->manifest() does not contain the id.
   app_details->RemoveKey("id");
   EXPECT_TRUE(app_details.get());
-  EXPECT_TRUE(app_details->Equals(extension->manifest()->value()));
+  EXPECT_EQ(*app_details, *extension->manifest()->value());
 
   // Try to change app.isInstalled.  Should silently fail, so
   // that isInstalled should have the initial value.

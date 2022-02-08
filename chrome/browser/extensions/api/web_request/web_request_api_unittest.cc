@@ -254,7 +254,7 @@ TEST(ExtensionWebRequestHelpersTest, TestStringToCharList) {
   std::string string_value(reinterpret_cast<char *>(char_value), 5);
 
   base::Value converted_list(StringToCharList(string_value));
-  EXPECT_TRUE(list_value.Equals(&converted_list));
+  EXPECT_EQ(list_value, converted_list);
 
   std::string converted_string;
   EXPECT_TRUE(

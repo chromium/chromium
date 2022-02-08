@@ -175,8 +175,7 @@ void ArgumentSpecUnitTest::RunTest(RunTestParams& params) {
     if (params.should_convert_to_base) {
       ASSERT_TRUE(out_value);
       if (params.expected_value) {
-        EXPECT_TRUE(params.expected_value->Equals(out_value.get()))
-            << params.script_source;
+        EXPECT_EQ(*params.expected_value, *out_value) << params.script_source;
       } else {
         EXPECT_EQ(params.expected_json, ValueToString(*out_value));
       }

@@ -356,7 +356,7 @@ TEST_F(EventListenerMapTest, HostSuffixFilterEquality) {
       CreateHostSuffixFilter("google.com"));
   std::unique_ptr<DictionaryValue> filter2(
       CreateHostSuffixFilter("google.com"));
-  ASSERT_TRUE(filter1->Equals(filter2.get()));
+  ASSERT_EQ(*filter1, *filter2);
 }
 
 TEST_F(EventListenerMapTest, RemoveListenersForExtension) {

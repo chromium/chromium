@@ -31,7 +31,7 @@ TEST_F(DeclarativeManifestTest, Valid) {
       "    \"instanceType\" : \"condition_type\""
       "  }]"
       "}");
-  EXPECT_TRUE(expected_rule->Equals(rules[0].ToValue().get()));
+  EXPECT_EQ(*expected_rule, *rules[0].ToValue());
 }
 
 TEST_F(DeclarativeManifestTest, ConditionMissingType) {
