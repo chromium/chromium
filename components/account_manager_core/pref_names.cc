@@ -21,5 +21,10 @@ const char kAccountAppsAvailability[] =
 // Keys for `kAccountAppsAvailability`.
 const char kIsAvailableInArcKey[] = "is_available_in_arc";
 
+// Decides whether a Enterprise account can be added to a session as a Secondary
+// Account at OS level.
+const char kSecondaryGoogleAccountUsage[] =
+    "account_manager.secondary_google_account_usage";
+
 }  // namespace prefs
 }  // namespace account_manager

@@ -51,6 +51,9 @@ constexpr int kTokensFileMaxSizeInBytes = 100000;  // ~100 KB.
 constexpr char kNumAccountsMetricName[] = "AccountManager.NumAccounts";
 constexpr int kMaxNumAccountsMetric = 10;
 
+// The value `all` means that all usages of managed accounts are allowed.
+constexpr char kDefaultSecondaryGoogleAccountUsage[] = "all";
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // Note: Enums labels are at |AccountManagerTokenLoadStatus|.
@@ -275,7 +278,9 @@ AccountManager::AccountManager() = default;
 void AccountManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed,
-      true /* default_value */);
+      /*default_value=*/true);
+  registry->RegisterStringPref(prefs::kSecondaryGoogleAccountUsage,
+                               kDefaultSecondaryGoogleAccountUsage);
 }
 
 void AccountManager::SetPrefService(PrefService* pref_service) {

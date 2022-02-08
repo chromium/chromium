@@ -28514,6 +28514,7 @@ Called by update_document_policy_enum.py.-->
   <int value="953" label="WebHidAllowAllDevicesForUrls"/>
   <int value="954" label="WebHidAllowDevicesForUrls"/>
   <int value="955" label="WebHidAllowDevicesWithHidUsagesForUrls"/>
+  <int value="956" label="SecondaryGoogleAccountUsage"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">
