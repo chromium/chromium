@@ -287,6 +287,7 @@ java_group("delegate_public_impl_java") {
     "//chrome/browser/password_manager/android:backend_interface_public_impl_java",
     "//chrome/browser/password_manager/android:settings_interface_public_impl_java",
     "//chrome/browser/policy/android:delegate_public_impl_java",
+    "//chrome/browser/touch_to_fill/android/internal:resource_provider_public_impl_java",
     "//chrome/browser/ui/android/theme:delegate_public_impl_java",
     "//components/externalauth/android:google_delegate_public_impl_java",
     "//components/language/android:ulp_delegate_public_java",

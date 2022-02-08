@@ -82,6 +82,12 @@ appearance. The controller consists of two parts:
     the model accordingly. Interactions with the view are typically handled here
     and either affect the model or notify callers of the component API.
 
+Additional **TouchToFillResourceProvider** is used to select resources with any
+non-trivial logic that determines actual resource file/ID. It also allows overriding
+the selection logic by providing a different downstream implementation.
+Upstream implementation is defined in `TouchToFillResourceProviderImpl`.
+To support downstream overrides, corresponding build target is listed as dependency
+in `//chrome/android/BUILD.gn`, but have no any usages outside of this package.
 
 ## View
 
