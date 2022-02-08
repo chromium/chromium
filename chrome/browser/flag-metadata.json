@@ -1305,7 +1305,7 @@
   {
     "name": "dns-proxy-enable-doh",
     "owners": [ "garrick", "jasongustaman" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 104
   },
    {
     "name": "document-transition",
@@ -1918,7 +1918,7 @@
   {
     "name": "enable-dns-proxy",
     "owners": [ "garrick", "jasongustaman", "cros-networking@google.com" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 104
   },
   {
     "name": "enable-docked-magnifier-resizing",
