@@ -1756,6 +1756,16 @@
     },
 
     'fuchsia_experimental_gtests': {
+      'browser_tests': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.browser_tests.filter',
+          '--',
+          '--test-launcher-timeout=60000',
+        ],
+        'swarming': {
+          'shards': 40,
+        },
+      },
       'content_browsertests': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_browsertests.filter',

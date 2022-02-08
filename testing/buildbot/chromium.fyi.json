@@ -21695,6 +21695,31 @@
     "gtest_tests": [
       {
         "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.browser_tests.filter",
+          "--",
+          "--test-launcher-timeout=60000"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "inside_docker": "1",
+              "os": "Ubuntu-20.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 40
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
+        "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_browsertests.filter",
           "--",
           "--disable-gpu",
@@ -24313,6 +24338,30 @@
     "gtest_tests": [
       {
         "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.browser_tests.filter",
+          "--",
+          "--test-launcher-timeout=60000"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "kvm": "1",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 40
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
+        "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_browsertests.filter",
           "--",
           "--disable-gpu",
@@ -24769,6 +24818,31 @@
   },
   "fuchsia-fyi-x64-wst": {
     "gtest_tests": [
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.browser_tests.filter",
+          "--",
+          "--test-launcher-timeout=60000",
+          "--custom-image=workstation.qemu-x64-release"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "kvm": "1",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 40
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_browsertests.filter",
