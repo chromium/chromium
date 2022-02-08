@@ -62,7 +62,7 @@ power_metrics::CoalitionResourceUsageRate GetFakeResourceUsageRate() {
   rate.power_nw = 1000000;
 
   for (int i = 0; i < COALITION_NUM_THREAD_QOS_TYPES; ++i)
-    rate.qos_time_per_second[i] = i * 0.1;
+    rate.qos_time_per_second[i] = 0.1 * i;
 
   return rate;
 }
@@ -592,18 +592,29 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_ZeroWindow) {
   PowerMetricsReporterAccess::ReportHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
+      BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
+#if BUILDFLAG(IS_MAC)
+      ,
+      GetFakeResourceUsageRate()
+#endif  // BUILDFLAG(IS_MAC)
+  );
 
   const std::vector<const char*> suffixes({"", ".ZeroWindow"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"Power.BatteryDischargeRate2", 2500},
-       {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
-                                          BatteryDischargeMode::kDischarging)},
-       {"PerformanceMonitor.AverageCPU2.Total", 500}});
+  ExpectHistogramSamples(&histogram_tester_, suffixes, {
+    {"Power.BatteryDischargeRate2", 2500},
+        {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
+                                           BatteryDischargeMode::kDischarging)},
+    {
+      "PerformanceMonitor.AverageCPU2.Total", 500
+    }
+#if BUILDFLAG(IS_MAC)
+    , { "PerformanceMonitor.ResourceCoalition.CPUTime2", 5000 }
+#endif  // BUILDFLAG(IS_MAC)
+  });
 
   // Note: For simplicity, this test only verifies that one of the
-  // PerformanceMonitor.* histograms is recorded correctly.
+  // PerformanceMonitor.* and ResourceCoalition.* histograms is recorded
+  // correctly.
 }
 
 TEST_F(PowerMetricsReporterUnitTest,
@@ -623,15 +634,25 @@ TEST_F(PowerMetricsReporterUnitTest,
   PowerMetricsReporterAccess::ReportHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
+      BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
+#if BUILDFLAG(IS_MAC)
+      ,
+      GetFakeResourceUsageRate()
+#endif  // BUILDFLAG(IS_MAC)
+  );
 
   const std::vector<const char*> suffixes({"", ".AllTabsHidden_VideoCapture"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"Power.BatteryDischargeRate2", 2500},
-       {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
-                                          BatteryDischargeMode::kDischarging)},
-       {"PerformanceMonitor.AverageCPU2.Total", 500}});
+  ExpectHistogramSamples(&histogram_tester_, suffixes, {
+    {"Power.BatteryDischargeRate2", 2500},
+        {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
+                                           BatteryDischargeMode::kDischarging)},
+    {
+      "PerformanceMonitor.AverageCPU2.Total", 500
+    }
+#if BUILDFLAG(IS_MAC)
+    , { "PerformanceMonitor.ResourceCoalition.CPUTime2", 5000 }
+#endif  // BUILDFLAG(IS_MAC)
+  });
 
   // Note: For simplicity, this test only verifies that one of the
   // PerformanceMonitor.* histograms is recorded correctly.
@@ -653,15 +674,25 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_AllTabsHidden_Audio) {
   PowerMetricsReporterAccess::ReportHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
+      BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
+#if BUILDFLAG(IS_MAC)
+      ,
+      GetFakeResourceUsageRate()
+#endif  // BUILDFLAG(IS_MAC)
+  );
 
   const std::vector<const char*> suffixes({"", ".AllTabsHidden_Audio"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"Power.BatteryDischargeRate2", 2500},
-       {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
-                                          BatteryDischargeMode::kDischarging)},
-       {"PerformanceMonitor.AverageCPU2.Total", 500}});
+  ExpectHistogramSamples(&histogram_tester_, suffixes, {
+    {"Power.BatteryDischargeRate2", 2500},
+        {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
+                                           BatteryDischargeMode::kDischarging)},
+    {
+      "PerformanceMonitor.AverageCPU2.Total", 500
+    }
+#if BUILDFLAG(IS_MAC)
+    , { "PerformanceMonitor.ResourceCoalition.CPUTime2", 5000 }
+#endif  // BUILDFLAG(IS_MAC)
+  });
 
   // Note: For simplicity, this test only verifies that one of the
   // PerformanceMonitor.* histograms is recorded correctly.
@@ -684,19 +715,30 @@ TEST_F(PowerMetricsReporterUnitTest,
   PowerMetricsReporterAccess::ReportHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
+      BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
+#if BUILDFLAG(IS_MAC)
+      ,
+      GetFakeResourceUsageRate()
+#endif  // BUILDFLAG(IS_MAC)
+  );
 
   const std::vector<const char*> suffixes(
       {"", ".AllTabsHidden_NoVideoCaptureOrAudio"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"Power.BatteryDischargeRate2", 2500},
-       {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
-                                          BatteryDischargeMode::kDischarging)},
-       {"PerformanceMonitor.AverageCPU2.Total", 500}});
+  ExpectHistogramSamples(&histogram_tester_, suffixes, {
+    {"Power.BatteryDischargeRate2", 2500},
+        {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
+                                           BatteryDischargeMode::kDischarging)},
+    {
+      "PerformanceMonitor.AverageCPU2.Total", 500
+    }
+#if BUILDFLAG(IS_MAC)
+    , { "PerformanceMonitor.ResourceCoalition.CPUTime2", 5000 }
+#endif  // BUILDFLAG(IS_MAC)
+  });
 
   // Note: For simplicity, this test only verifies that one of the
-  // PerformanceMonitor.* histograms is recorded correctly.
+  // PerformanceMonitor.* and ResourceCoalition.* histograms is recorded
+  // correctly.
 }
 
 TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_VideoCapture) {
@@ -715,18 +757,29 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_VideoCapture) {
   PowerMetricsReporterAccess::ReportHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
+      BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
+#if BUILDFLAG(IS_MAC)
+      ,
+      GetFakeResourceUsageRate()
+#endif  // BUILDFLAG(IS_MAC)
+  );
 
   const std::vector<const char*> suffixes({"", ".VideoCapture"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"Power.BatteryDischargeRate2", 2500},
-       {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
-                                          BatteryDischargeMode::kDischarging)},
-       {"PerformanceMonitor.AverageCPU2.Total", 500}});
+  ExpectHistogramSamples(&histogram_tester_, suffixes, {
+    {"Power.BatteryDischargeRate2", 2500},
+        {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
+                                           BatteryDischargeMode::kDischarging)},
+    {
+      "PerformanceMonitor.AverageCPU2.Total", 500
+    }
+#if BUILDFLAG(IS_MAC)
+    , { "PerformanceMonitor.ResourceCoalition.CPUTime2", 5000 }
+#endif  // BUILDFLAG(IS_MAC)
+  });
 
   // Note: For simplicity, this test only verifies that one of the
-  // PerformanceMonitor.* histograms is recorded correctly.
+  // PerformanceMonitor.* and ResourceCoalition.* histograms is recorded
+  // correctly.
 }
 
 TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_FullscreenVideo) {
@@ -745,18 +798,29 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_FullscreenVideo) {
   PowerMetricsReporterAccess::ReportHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
+      BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
+#if BUILDFLAG(IS_MAC)
+      ,
+      GetFakeResourceUsageRate()
+#endif  // BUILDFLAG(IS_MAC)
+  );
 
   const std::vector<const char*> suffixes({"", ".FullscreenVideo"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"Power.BatteryDischargeRate2", 2500},
-       {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
-                                          BatteryDischargeMode::kDischarging)},
-       {"PerformanceMonitor.AverageCPU2.Total", 500}});
+  ExpectHistogramSamples(&histogram_tester_, suffixes, {
+    {"Power.BatteryDischargeRate2", 2500},
+        {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
+                                           BatteryDischargeMode::kDischarging)},
+    {
+      "PerformanceMonitor.AverageCPU2.Total", 500
+    }
+#if BUILDFLAG(IS_MAC)
+    , { "PerformanceMonitor.ResourceCoalition.CPUTime2", 5000 }
+#endif  // BUILDFLAG(IS_MAC)
+  });
 
   // Note: For simplicity, this test only verifies that one of the
-  // PerformanceMonitor.* histograms is recorded correctly.
+  // PerformanceMonitor.* and ResourceCoalition.* histograms is recorded
+  // correctly.
 }
 
 TEST_F(PowerMetricsReporterUnitTest,
@@ -776,18 +840,29 @@ TEST_F(PowerMetricsReporterUnitTest,
   PowerMetricsReporterAccess::ReportHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
+      BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
+#if BUILDFLAG(IS_MAC)
+      ,
+      GetFakeResourceUsageRate()
+#endif  // BUILDFLAG(IS_MAC)
+  );
 
   const std::vector<const char*> suffixes({"", ".EmbeddedVideo_NoNavigation"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"Power.BatteryDischargeRate2", 2500},
-       {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
-                                          BatteryDischargeMode::kDischarging)},
-       {"PerformanceMonitor.AverageCPU2.Total", 500}});
+  ExpectHistogramSamples(&histogram_tester_, suffixes, {
+    {"Power.BatteryDischargeRate2", 2500},
+        {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
+                                           BatteryDischargeMode::kDischarging)},
+    {
+      "PerformanceMonitor.AverageCPU2.Total", 500
+    }
+#if BUILDFLAG(IS_MAC)
+    , { "PerformanceMonitor.ResourceCoalition.CPUTime2", 5000 }
+#endif  // BUILDFLAG(IS_MAC)
+  });
 
   // Note: For simplicity, this test only verifies that one of the
-  // PerformanceMonitor.* histograms is recorded correctly.
+  // PerformanceMonitor.* and ResourceCoalition.* histograms is recorded
+  // correctly.
 }
 
 TEST_F(PowerMetricsReporterUnitTest,
@@ -807,19 +882,30 @@ TEST_F(PowerMetricsReporterUnitTest,
   PowerMetricsReporterAccess::ReportHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
+      BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
+#if BUILDFLAG(IS_MAC)
+      ,
+      GetFakeResourceUsageRate()
+#endif  // BUILDFLAG(IS_MAC)
+  );
 
   const std::vector<const char*> suffixes(
       {"", ".EmbeddedVideo_WithNavigation"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"Power.BatteryDischargeRate2", 2500},
-       {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
-                                          BatteryDischargeMode::kDischarging)},
-       {"PerformanceMonitor.AverageCPU2.Total", 500}});
+  ExpectHistogramSamples(&histogram_tester_, suffixes, {
+    {"Power.BatteryDischargeRate2", 2500},
+        {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
+                                           BatteryDischargeMode::kDischarging)},
+    {
+      "PerformanceMonitor.AverageCPU2.Total", 500
+    }
+#if BUILDFLAG(IS_MAC)
+    , { "PerformanceMonitor.ResourceCoalition.CPUTime2", 5000 }
+#endif  // BUILDFLAG(IS_MAC)
+  });
 
   // Note: For simplicity, this test only verifies that one of the
-  // PerformanceMonitor.* histograms is recorded correctly.
+  // PerformanceMonitor.* and ResourceCoalition.* histograms is recorded
+  // correctly.
 }
 
 TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Audio) {
@@ -838,18 +924,29 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Audio) {
   PowerMetricsReporterAccess::ReportHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
+      BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
+#if BUILDFLAG(IS_MAC)
+      ,
+      GetFakeResourceUsageRate()
+#endif  // BUILDFLAG(IS_MAC)
+  );
 
   const std::vector<const char*> suffixes({"", ".Audio"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"Power.BatteryDischargeRate2", 2500},
-       {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
-                                          BatteryDischargeMode::kDischarging)},
-       {"PerformanceMonitor.AverageCPU2.Total", 500}});
+  ExpectHistogramSamples(&histogram_tester_, suffixes, {
+    {"Power.BatteryDischargeRate2", 2500},
+        {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
+                                           BatteryDischargeMode::kDischarging)},
+    {
+      "PerformanceMonitor.AverageCPU2.Total", 500
+    }
+#if BUILDFLAG(IS_MAC)
+    , { "PerformanceMonitor.ResourceCoalition.CPUTime2", 5000 }
+#endif  // BUILDFLAG(IS_MAC)
+  });
 
   // Note: For simplicity, this test only verifies that one of the
-  // PerformanceMonitor.* histograms is recorded correctly.
+  // PerformanceMonitor.* and ResourceCoalition.* histograms is recorded
+  // correctly.
 }
 
 TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Navigation) {
@@ -868,18 +965,29 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Navigation) {
   PowerMetricsReporterAccess::ReportHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
+      BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
+#if BUILDFLAG(IS_MAC)
+      ,
+      GetFakeResourceUsageRate()
+#endif  // BUILDFLAG(IS_MAC)
+  );
 
   const std::vector<const char*> suffixes({"", ".Navigation"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"Power.BatteryDischargeRate2", 2500},
-       {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
-                                          BatteryDischargeMode::kDischarging)},
-       {"PerformanceMonitor.AverageCPU2.Total", 500}});
+  ExpectHistogramSamples(&histogram_tester_, suffixes, {
+    {"Power.BatteryDischargeRate2", 2500},
+        {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
+                                           BatteryDischargeMode::kDischarging)},
+    {
+      "PerformanceMonitor.AverageCPU2.Total", 500
+    }
+#if BUILDFLAG(IS_MAC)
+    , { "PerformanceMonitor.ResourceCoalition.CPUTime2", 5000 }
+#endif  // BUILDFLAG(IS_MAC)
+  });
 
   // Note: For simplicity, this test only verifies that one of the
-  // PerformanceMonitor.* histograms is recorded correctly.
+  // PerformanceMonitor.* and ResourceCoalition.* histograms is recorded
+  // correctly.
 }
 
 TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Interaction) {
@@ -897,18 +1005,29 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Interaction) {
   PowerMetricsReporterAccess::ReportHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
+      BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
+#if BUILDFLAG(IS_MAC)
+      ,
+      GetFakeResourceUsageRate()
+#endif  // BUILDFLAG(IS_MAC)
+  );
 
   const std::vector<const char*> suffixes({"", ".Interaction"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"Power.BatteryDischargeRate2", 2500},
-       {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
-                                          BatteryDischargeMode::kDischarging)},
-       {"PerformanceMonitor.AverageCPU2.Total", 500}});
+  ExpectHistogramSamples(&histogram_tester_, suffixes, {
+    {"Power.BatteryDischargeRate2", 2500},
+        {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
+                                           BatteryDischargeMode::kDischarging)},
+    {
+      "PerformanceMonitor.AverageCPU2.Total", 500
+    }
+#if BUILDFLAG(IS_MAC)
+    , { "PerformanceMonitor.ResourceCoalition.CPUTime2", 5000 }
+#endif  // BUILDFLAG(IS_MAC)
+  });
 
   // Note: For simplicity, this test only verifies that one of the
-  // PerformanceMonitor.* histograms is recorded correctly.
+  // PerformanceMonitor.* and ResourceCoalition.* histograms is recorded
+  // correctly.
 }
 
 TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Passive) {
@@ -926,18 +1045,29 @@ TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Passive) {
   PowerMetricsReporterAccess::ReportHistograms(
       interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      BatteryDischarge{BatteryDischargeMode::kDischarging, 2500});
+      BatteryDischarge { BatteryDischargeMode::kDischarging, 2500 }
+#if BUILDFLAG(IS_MAC)
+      ,
+      GetFakeResourceUsageRate()
+#endif  // BUILDFLAG(IS_MAC)
+  );
 
   const std::vector<const char*> suffixes({"", ".Passive"});
-  ExpectHistogramSamples(
-      &histogram_tester_, suffixes,
-      {{"Power.BatteryDischargeRate2", 2500},
-       {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
-                                          BatteryDischargeMode::kDischarging)},
-       {"PerformanceMonitor.AverageCPU2.Total", 500}});
+  ExpectHistogramSamples(&histogram_tester_, suffixes, {
+    {"Power.BatteryDischargeRate2", 2500},
+        {"Power.BatteryDischargeMode", static_cast<base::Histogram::Sample>(
+                                           BatteryDischargeMode::kDischarging)},
+    {
+      "PerformanceMonitor.AverageCPU2.Total", 500
+    }
+#if BUILDFLAG(IS_MAC)
+    , { "PerformanceMonitor.ResourceCoalition.CPUTime2", 5000 }
+#endif  // BUILDFLAG(IS_MAC)
+  });
 
   // Note: For simplicity, this test only verifies that one of the
-  // PerformanceMonitor.* histograms is recorded correctly.
+  // PerformanceMonitor.* and ResourceCoalition.* histograms is recorded
+  // correctly.
 }
 
 TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsTooEarly) {
