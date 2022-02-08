@@ -85,7 +85,7 @@ class ChromeShelfPrefsFake : public ChromeShelfPrefs {
   ChromeShelfPrefsFake(const ChromeShelfPrefsFake&) = delete;
   ChromeShelfPrefsFake& operator=(const ChromeShelfPrefsFake&) = delete;
 
-  app_list::AppListSyncableService* const GetSyncableService() override {
+  app_list::AppListSyncableService* GetSyncableService() override {
     return syncable_service_;
   }
 

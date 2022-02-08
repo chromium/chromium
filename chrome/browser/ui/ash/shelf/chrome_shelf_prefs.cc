@@ -615,7 +615,7 @@ bool ChromeShelfPrefs::ShouldPerformConsistencyMigrations() {
   return needs_consistency_migrations_;
 }
 
-app_list::AppListSyncableService* const ChromeShelfPrefs::GetSyncableService() {
+app_list::AppListSyncableService* ChromeShelfPrefs::GetSyncableService() {
   return app_list::AppListSyncableServiceFactory::GetForProfile(profile_);
 }
 

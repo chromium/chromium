@@ -145,7 +145,7 @@ class ChromeShelfPrefs : public app_list::AppListSyncableService::Observer {
  protected:
   // Virtual for testing. Returns the syncable service associated with the
   // current profile.
-  virtual app_list::AppListSyncableService* const GetSyncableService();
+  virtual app_list::AppListSyncableService* GetSyncableService();
 
   // Virtual for testing. Returns the pref service associated with the current
   // profile.
