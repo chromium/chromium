@@ -969,10 +969,8 @@ void PopulateChromeWebUIFrameBinders(
         map);
   }
 
-  if (base::FeatureList::IsEnabled(chromeos::features::kImeSystemEmojiPicker)) {
-    RegisterWebUIControllerInterfaceBinder<
-        emoji_picker::mojom::PageHandlerFactory, chromeos::EmojiUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      emoji_picker::mojom::PageHandlerFactory, chromeos::EmojiUI>(map);
 
   if (chromeos::features::IsWallpaperWebUIEnabled()) {
     RegisterWebUIControllerInterfaceBinder<

@@ -573,9 +573,6 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
       "borderedkey", base::FeatureList::IsEnabled(
                          chromeos::features::kVirtualKeyboardBorderedKey)));
   features.Append(GenerateFeatureFlag(
-      "assistiveAutoCorrect",
-      base::FeatureList::IsEnabled(chromeos::features::kAssistAutoCorrect)));
-  features.Append(GenerateFeatureFlag(
       "systemchinesephysicaltyping",
       chromeos::features::IsSystemChinesePhysicalTypingEnabled()));
   features.Append(GenerateFeatureFlag(
@@ -585,9 +582,6 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   features.Append(GenerateFeatureFlag(
       "multilingualtyping",
       base::FeatureList::IsEnabled(chromeos::features::kMultilingualTyping)));
-  features.Append(GenerateFeatureFlag(
-      "imeoptionsinsettings",
-      base::FeatureList::IsEnabled(chromeos::features::kImeOptionsInSettings)));
 
   results->SetKey("features", std::move(features));
 

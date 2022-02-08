@@ -1042,10 +1042,8 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
       ProfileHelper::GetSigninProfile();
     }
 
-    if (base::FeatureList::IsEnabled(features::kImeSystemEmojiPicker)) {
-      ui::SetShowEmojiKeyboardCallback(
-          base::BindRepeating(&EmojiUI::Show, base::Unretained(profile)));
-    }
+    ui::SetShowEmojiKeyboardCallback(
+        base::BindRepeating(&EmojiUI::Show, base::Unretained(profile)));
 
     BootTimesRecorder::Get()->OnChromeProcessStart();
 

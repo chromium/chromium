@@ -121,10 +121,6 @@ const base::Feature kArcInputOverlay{"ArcInputOverlay",
 const base::Feature kArcManagedAdbSideloadingSupport{
     "ArcManagedAdbSideloadingSupport", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether to enable assistive autocorrect.
-const base::Feature kAssistAutoCorrect{"AssistAutoCorrect",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Controls whether to enable enhanced assistive emoji suggestions.
 const base::Feature kAssistEmojiEnhanced{"AssistEmojiEnhanced",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
@@ -772,19 +768,10 @@ const base::Feature kSnoopingProtection{"SnoopingProtection",
 const base::Feature kVirtualKeyboardDarkMode{"VirtualKeyboardDarkMode",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
-// If enabled, options page for each input method will be opened in ChromeOS
-// settings. Otherwise it will be opened in a new web page in Chrome browser.
-const base::Feature kImeOptionsInSettings{"ImeOptionsInSettings",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
-
 // If enabled, used to configure the heuristic rules for some advanced IME
 // features (e.g. auto-correct).
 const base::Feature kImeRuleConfig{"ImeRuleConfig",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enable or disable system emoji picker.
-const base::Feature kImeSystemEmojiPicker{"SystemEmojiPicker",
-                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable or disable system emoji picker falling back to clipboard.
 const base::Feature kImeSystemEmojiPickerClipboard{
