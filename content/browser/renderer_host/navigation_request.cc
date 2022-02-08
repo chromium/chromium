@@ -709,7 +709,7 @@ network::mojom::RequestDestination GetDestinationFromFrameTreeNode(
     return network::mojom::RequestDestination::kFencedframe;
 
   if (frame_tree_node->IsMainFrame()) {
-    if (frame_tree_node->current_frame_host()->InsidePortal()) {
+    if (frame_tree_node->frame_tree()->IsPortal()) {
       return network::mojom::RequestDestination::kIframe;
     }
     return network::mojom::RequestDestination::kDocument;
@@ -4857,7 +4857,7 @@ net::Error NavigationRequest::CheckContentSecurityPolicy(
   DCHECK(!parent == !parent_policies);
   bool set_parent_for_nested_frame_tree =
       !parent &&
-      (frame_tree_node()->current_frame_host()->InsidePortal() ||
+      (frame_tree_node()->frame_tree()->IsPortal() ||
        frame_tree_node()->IsFencedFrameRoot()) &&
       frame_tree_node()->render_manager()->GetOuterDelegateNode();
   if (set_parent_for_nested_frame_tree) {

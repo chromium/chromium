@@ -222,6 +222,12 @@ class CONTENT_EXPORT FrameTree {
 
   bool is_prerendering() const { return type_ == FrameTree::Type::kPrerender; }
 
+  // Returns true if this frame tree is a portal.
+  //
+  // TODO(crbug.com/1254770): Once portals are migrated to MPArch, portals will
+  // have their own FrameTree::Type.
+  bool IsPortal();
+
   Delegate* delegate() { return delegate_; }
 
   // Delegates for various objects.  These can be kept centrally on the

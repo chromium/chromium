@@ -1510,9 +1510,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void ForwardMessageFromHost(blink::TransferableMessage message,
                               const url::Origin& source_origin);
 
-  // Returns true if the frame is embedded in a Portal.
-  bool InsidePortal();
-
   void NotifyVirtualKeyboardOverlayRect(const gfx::Rect& keyboard_rect);
 
   // Returns the keyboard layout mapping.

@@ -18,6 +18,7 @@
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/portal/portal_activated_observer.h"
 #include "content/test/portal/portal_created_observer.h"
 #include "net/base/escape.h"
@@ -423,10 +424,14 @@ IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleFencedFrameBrowserTest,
   // Create a fenced frame.
   GURL fenced_frame_url = embedded_test_server()->GetURL(
       "fencedframe.test", "/fenced_frames/title1.html");
-  content::RenderFrameHost* fenced_frame_host =
+  RenderFrameHostImplWrapper fenced_frame_host(
       fenced_frame_test_helper().CreateFencedFrame(
-          portal->GetPortalContents()->GetMainFrame(), fenced_frame_url);
-  EXPECT_NE(nullptr, fenced_frame_host);
+          portal->GetPortalContents()->GetMainFrame(), fenced_frame_url));
+
+  // A fenced frame's FrameTree embedded inside a portal is not considered to be
+  // portal frame tree.
+  FrameTreeNode* fenced_frame_root_node = fenced_frame_host->frame_tree_node();
+  EXPECT_FALSE(fenced_frame_root_node->frame_tree()->IsPortal());
 }
 
 }  // namespace

@@ -6124,10 +6124,6 @@ bool RenderFrameHostImpl::UnloadHandlerExistsInSameSiteInstanceSubtree() {
   return result;
 }
 
-bool RenderFrameHostImpl::InsidePortal() {
-  return frame_tree()->delegate()->IsPortal();
-}
-
 void RenderFrameHostImpl::DidDispatchDOMContentLoadedEvent() {
   document_associated_data_->dom_content_loaded = true;
 

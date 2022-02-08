@@ -725,11 +725,15 @@ void FrameTree::ReplicatePageFocus(bool is_focused) {
     SetPageFocus(instance, is_focused);
 }
 
+bool FrameTree::IsPortal() {
+  return delegate_->IsPortal();
+}
+
 void FrameTree::SetPageFocus(SiteInstance* instance, bool is_focused) {
   RenderFrameHostManager* root_manager = root_->render_manager();
 
   // Portal frame tree should not get page focus.
-  DCHECK(!GetMainFrame()->InsidePortal() || !is_focused);
+  DCHECK(!IsPortal() || !is_focused);
 
   // This is only used to set page-level focus in cross-process subframes, and
   // requests to set focus in main frame's SiteInstance are ignored.

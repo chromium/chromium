@@ -750,8 +750,9 @@ void RenderFrameProxyHost::DidChangeOpener(
 void RenderFrameProxyHost::AdvanceFocus(
     blink::mojom::FocusType focus_type,
     const blink::LocalFrameToken& source_frame_token) {
-  RenderFrameHostImpl* target_rfh = frame_tree_node_->current_frame_host();
-  if (target_rfh->InsidePortal()) {
+  // TODO(crbug.com/1292671): Correctly attribute to a fenced frame embedded
+  // inside a portal to avoid focusing.
+  if (frame_tree_node_->frame_tree()->IsPortal()) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::RFPH_ADVANCE_FOCUS_INTO_PORTAL);
     return;
@@ -763,6 +764,7 @@ void RenderFrameProxyHost::AdvanceFocus(
   // one of its child frames finishes its traversal.
   RenderFrameHostImpl* source_rfh = RenderFrameHostImpl::FromFrameToken(
       GetProcess()->GetID(), source_frame_token);
+  RenderFrameHostImpl* target_rfh = frame_tree_node_->current_frame_host();
   RenderFrameProxyHost* source_proxy =
       source_rfh
           ? source_rfh->browsing_context_state()->GetRenderFrameProxyHost(
@@ -770,8 +772,7 @@ void RenderFrameProxyHost::AdvanceFocus(
           : nullptr;
 
   target_rfh->AdvanceFocus(focus_type, source_proxy);
-  frame_tree_node_->current_frame_host()->delegate()->OnAdvanceFocus(
-      source_rfh);
+  target_rfh->delegate()->OnAdvanceFocus(source_rfh);
 }
 
 bool RenderFrameProxyHost::IsInertForTesting() {
