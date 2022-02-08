@@ -235,24 +235,24 @@ class PrintBackendServiceManager {
                            X data);
 
   // Local callback wrappers for mojom calls.
-  void EnumeratePrintersDone(const CallbackContext& context,
-                             mojom::PrinterListResultPtr printer_list);
-  void FetchCapabilitiesDone(
+  void OnDidEnumeratePrinters(const CallbackContext& context,
+                              mojom::PrinterListResultPtr printer_list);
+  void OnDidFetchCapabilities(
       const CallbackContext& context,
       mojom::PrinterCapsAndInfoResultPtr printer_caps_and_info);
-  void GetDefaultPrinterNameDone(
+  void OnDidGetDefaultPrinterName(
       const CallbackContext& context,
       mojom::DefaultPrinterNameResultPtr printer_name);
-  void GetPrinterSemanticCapsAndDefaultsDone(
+  void OnDidGetPrinterSemanticCapsAndDefaults(
       const CallbackContext& context,
       mojom::PrinterSemanticCapsAndDefaultsResultPtr printer_caps);
-  void UpdatePrintSettingsDone(const CallbackContext& context,
-                               mojom::PrintSettingsResultPtr printer_caps);
-  void StartPrintingDone(const CallbackContext& context,
-                         mojom::ResultCode result);
+  void OnDidUpdatePrintSettings(const CallbackContext& context,
+                                mojom::PrintSettingsResultPtr printer_caps);
+  void OnDidStartPrinting(const CallbackContext& context,
+                          mojom::ResultCode result);
 #if BUILDFLAG(IS_WIN)
-  void RenderPrintedPageDone(const CallbackContext& context,
-                             mojom::ResultCode result);
+  void OnDidRenderPrintedPage(const CallbackContext& context,
+                              mojom::ResultCode result);
 #endif
 
   // Helper functions to run outstanding callbacks when a remote has become

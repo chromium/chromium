@@ -177,7 +177,7 @@ void PrintBackendServiceManager::EnumeratePrinters(
 
   LogCallToRemote("EnumeratePrinters", context);
   service->EnumeratePrinters(
-      base::BindOnce(&PrintBackendServiceManager::EnumeratePrintersDone,
+      base::BindOnce(&PrintBackendServiceManager::OnDidEnumeratePrinters,
                      base::Unretained(this), context));
 }
 
@@ -196,7 +196,7 @@ void PrintBackendServiceManager::FetchCapabilities(
   LogCallToRemote("FetchCapabilities", context);
   service->FetchCapabilities(
       printer_name,
-      base::BindOnce(&PrintBackendServiceManager::FetchCapabilitiesDone,
+      base::BindOnce(&PrintBackendServiceManager::OnDidFetchCapabilities,
                      base::Unretained(this), context));
 }
 
@@ -211,7 +211,7 @@ void PrintBackendServiceManager::GetDefaultPrinterName(
 
   LogCallToRemote("GetDefaultPrinterName", context);
   service->GetDefaultPrinterName(
-      base::BindOnce(&PrintBackendServiceManager::GetDefaultPrinterNameDone,
+      base::BindOnce(&PrintBackendServiceManager::OnDidGetDefaultPrinterName,
                      base::Unretained(this), context));
 }
 
@@ -233,7 +233,7 @@ void PrintBackendServiceManager::GetPrinterSemanticCapsAndDefaults(
   service->GetPrinterSemanticCapsAndDefaults(
       printer_name,
       base::BindOnce(
-          &PrintBackendServiceManager::GetPrinterSemanticCapsAndDefaultsDone,
+          &PrintBackendServiceManager::OnDidGetPrinterSemanticCapsAndDefaults,
           base::Unretained(this), context));
 }
 
@@ -253,7 +253,7 @@ void PrintBackendServiceManager::UpdatePrintSettings(
   LogCallToRemote("UpdatePrintSettings", context);
   service->UpdatePrintSettings(
       std::move(job_settings),
-      base::BindOnce(&PrintBackendServiceManager::UpdatePrintSettingsDone,
+      base::BindOnce(&PrintBackendServiceManager::OnDidUpdatePrintSettings,
                      base::Unretained(this), context));
 }
 
@@ -276,7 +276,7 @@ void PrintBackendServiceManager::StartPrinting(
   LogCallToRemote("StartPrinting", context);
   service->StartPrinting(
       document_cookie, document_name, target_type, settings,
-      base::BindOnce(&PrintBackendServiceManager::StartPrintingDone,
+      base::BindOnce(&PrintBackendServiceManager::OnDidStartPrinting,
                      base::Unretained(this), context));
 }
 
@@ -305,7 +305,7 @@ void PrintBackendServiceManager::RenderPrintedPage(
       document_cookie, page_index, page_data_type,
       std::move(serialized_page_data), page.page_size(),
       page.page_content_rect(), page.shrink_factor(),
-      base::BindOnce(&PrintBackendServiceManager::RenderPrintedPageDone,
+      base::BindOnce(&PrintBackendServiceManager::OnDidRenderPrintedPage,
                      base::Unretained(this), context));
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -631,7 +631,7 @@ void PrintBackendServiceManager::ServiceCallbackDone(
   std::move(callback).Run(std::move(data));
 }
 
-void PrintBackendServiceManager::EnumeratePrintersDone(
+void PrintBackendServiceManager::OnDidEnumeratePrinters(
     const CallbackContext& context,
     mojom::PrinterListResultPtr printer_list) {
   LogCallbackFromRemote("EnumeratePrinters", context);
@@ -640,7 +640,7 @@ void PrintBackendServiceManager::EnumeratePrintersDone(
       context.remote_id, context.saved_callback_id, std::move(printer_list));
 }
 
-void PrintBackendServiceManager::FetchCapabilitiesDone(
+void PrintBackendServiceManager::OnDidFetchCapabilities(
     const CallbackContext& context,
     mojom::PrinterCapsAndInfoResultPtr printer_caps_and_info) {
   LogCallbackFromRemote("FetchCapabilities", context);
@@ -650,7 +650,7 @@ void PrintBackendServiceManager::FetchCapabilitiesDone(
       std::move(printer_caps_and_info));
 }
 
-void PrintBackendServiceManager::GetDefaultPrinterNameDone(
+void PrintBackendServiceManager::OnDidGetDefaultPrinterName(
     const CallbackContext& context,
     mojom::DefaultPrinterNameResultPtr printer_name) {
   LogCallbackFromRemote("GetDefaultPrinterName", context);
@@ -659,7 +659,7 @@ void PrintBackendServiceManager::GetDefaultPrinterNameDone(
       context.remote_id, context.saved_callback_id, std::move(printer_name));
 }
 
-void PrintBackendServiceManager::GetPrinterSemanticCapsAndDefaultsDone(
+void PrintBackendServiceManager::OnDidGetPrinterSemanticCapsAndDefaults(
     const CallbackContext& context,
     mojom::PrinterSemanticCapsAndDefaultsResultPtr printer_caps) {
   LogCallbackFromRemote("GetPrinterSemanticCapsAndDefaults", context);
@@ -669,7 +669,7 @@ void PrintBackendServiceManager::GetPrinterSemanticCapsAndDefaultsDone(
                       std::move(printer_caps));
 }
 
-void PrintBackendServiceManager::UpdatePrintSettingsDone(
+void PrintBackendServiceManager::OnDidUpdatePrintSettings(
     const CallbackContext& context,
     mojom::PrintSettingsResultPtr settings) {
   LogCallbackFromRemote("UpdatePrintSettings", context);
@@ -678,7 +678,7 @@ void PrintBackendServiceManager::UpdatePrintSettingsDone(
       context.remote_id, context.saved_callback_id, std::move(settings));
 }
 
-void PrintBackendServiceManager::StartPrintingDone(
+void PrintBackendServiceManager::OnDidStartPrinting(
     const CallbackContext& context,
     mojom::ResultCode result) {
   LogCallbackFromRemote("StartPrinting", context);
@@ -688,7 +688,7 @@ void PrintBackendServiceManager::StartPrintingDone(
 }
 
 #if BUILDFLAG(IS_WIN)
-void PrintBackendServiceManager::RenderPrintedPageDone(
+void PrintBackendServiceManager::OnDidRenderPrintedPage(
     const CallbackContext& context,
     mojom::ResultCode result) {
   LogCallbackFromRemote("RenderPrintedPage", context);
