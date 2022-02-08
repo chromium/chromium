@@ -62,7 +62,8 @@ if (current_cpu == "arm" || v8_current_cpu == "arm") {
 
   if (arm_version == 6) {
     if (arm_arch == "") {
-      arm_arch = "armv6"
+      # v8 can still with version 6 but only with the armv6k extension.
+      arm_arch = "armv6k"
     }
     if (arm_tune != "") {
       arm_tune = ""
