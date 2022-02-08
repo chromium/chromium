@@ -97,6 +97,8 @@ ci.builder(
     executable = "recipe:android/avd_packager",
     properties = {
         "avd_configs": [
+            "tools/android/avd/proto/creation/generic_android19.textpb",
+            "tools/android/avd/proto/creation/generic_android22.textpb",
             "tools/android/avd/proto/creation/generic_android23.textpb",
             "tools/android/avd/proto/creation/generic_android27.textpb",
             "tools/android/avd/proto/creation/generic_android28.textpb",
