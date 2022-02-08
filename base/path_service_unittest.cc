@@ -114,7 +114,7 @@ TEST_F(PathServiceTest, Get) {
   // crbug.com/1257402). Current implementation is described before each key.
   // TODO(crbug.com/1257402): Remove the definition of these keys on Android
   // or at least fix the behavior of DIR_HOME.
-  constexpr std::array<int, 2> kUnsupportedKeys = {
+  constexpr std::array kUnsupportedKeys = {
       // Though DIR_HOME is not intended to be supported, PathProviderPosix
       // handles it and returns true. Thus, it is NOT included in the array.
       /* DIR_HOME, */
@@ -123,16 +123,16 @@ TEST_F(PathServiceTest, Get) {
       // PathProviderPosix handles it but fails at some point.
       DIR_USER_DESKTOP};
 #elif BUILDFLAG(IS_IOS)
-  constexpr std::array<int, 1> kUnsupportedKeys = {
+  constexpr std::array kUnsupportedKeys = {
       // DIR_USER_DESKTOP is not implemented on iOS. See crbug.com/1257402.
       DIR_USER_DESKTOP};
 
 #elif BUILDFLAG(IS_FUCHSIA)
-  constexpr std::array<int, 3> kUnsupportedKeys = {
+  constexpr std::array kUnsupportedKeys = {
       // TODO(crbug.com/1231928): Implement DIR_USER_DESKTOP.
       DIR_USER_DESKTOP};
 #else
-  constexpr std::array<int, 0> kUnsupportedKeys = {};
+  constexpr std::array<BasePathKey, 0> kUnsupportedKeys = {};
 #endif  // BUILDFLAG(IS_ANDROID)
   for (int key = PATH_START + 1; key < PATH_END; ++key) {
     if (std::find(kUnsupportedKeys.begin(), kUnsupportedKeys.end(), key) ==
