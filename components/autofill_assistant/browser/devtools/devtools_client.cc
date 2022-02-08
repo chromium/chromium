@@ -154,7 +154,7 @@ void DevtoolsClient::DispatchProtocolMessage(
   bool success = message->GetAsDictionary(&message_dict);
   DCHECK(success);
 
-  success = message_dict->HasKey("id")
+  success = message_dict->FindKey("id")
                 ? DispatchMessageReply(std::move(message), *message_dict)
                 : DispatchEvent(std::move(message), *message_dict);
   if (!success)
