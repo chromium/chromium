@@ -18,7 +18,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -55,8 +54,10 @@ using ::testing::UnorderedElementsAreArray;
 namespace {
 
 constexpr char kDefaultPrinterName[] = "default-test-printer";
+constexpr char16_t kDefaultPrinterName16[] = u"default-test-printer";
 constexpr char kAnotherPrinterName[] = "another-test-printer";
 constexpr char kInvalidPrinterName[] = "invalid-test-printer";
+constexpr char16_t kInvalidPrinterName16[] = u"invalid-test-printer";
 constexpr char kAccessDeniedPrinterName[] = "access-denied-test-printer";
 
 const PrinterBasicInfoOptions kDefaultPrintInfoOptions{{"opt1", "123"},
@@ -198,6 +199,19 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
         /*page_size=*/gfx::Size(200, 200),
         /*page_content_rect=*/gfx::Rect(0, 0, 200, 200),
         /*shrink_factor=*/1.0f,
+        base::BindOnce(&PrintBackendBrowserTest::CaptureResult,
+                       base::Unretained(this), std::ref(result)));
+    WaitUntilCallbackReceived();
+    return result;
+  }
+
+  mojom::ResultCode DocumentDoneAndWait() {
+    mojom::ResultCode result;
+
+    // Safe to use base::Unretained(this) since waiting locally on the callback
+    // forces a shorter lifetime than `this`.
+    GetPrintBackendService()->DocumentDone(
+        /*document_cookie=*/1,
         base::BindOnce(&PrintBackendBrowserTest::CaptureResult,
                        base::Unretained(this), std::ref(result)));
     WaitUntilCallbackReceived();
@@ -479,8 +493,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, UpdatePrintSettings) {
   mojom::PrintSettingsResultPtr settings;
 
   PrintSettings print_settings;
-  print_settings.set_device_name(
-      base::ASCIIToUTF16(base::StringPiece(kDefaultPrinterName)));
+  print_settings.set_device_name(kDefaultPrinterName16);
   print_settings.set_dpi(kPrintSettingsOverrideDpi);
   base::Value job_settings = PrintSettingsToJobSettingsDebug(print_settings);
   job_settings.SetIntKey(kSettingPrinterType,
@@ -508,8 +521,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, UpdatePrintSettings) {
 #endif  // BUILDFLAG(IS_LINUX) && defined(USE_CUPS)
 
   // Updating for an invalid printer should not return print settings.
-  print_settings.set_device_name(
-      base::ASCIIToUTF16(base::StringPiece(kInvalidPrinterName)));
+  print_settings.set_device_name(kInvalidPrinterName16);
   job_settings = PrintSettingsToJobSettingsDebug(print_settings);
   job_settings.SetIntKey(kSettingPrinterType,
                          static_cast<int>(mojom::PrinterType::kLocal));
@@ -528,8 +540,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, StartPrintingValidPrinter) {
   SetPrinterNameForSubsequentContexts(kDefaultPrinterName);
 
   PrintSettings print_settings;
-  print_settings.set_device_name(
-      base::ASCIIToUTF16(base::StringPiece(kDefaultPrinterName)));
+  print_settings.set_device_name(kDefaultPrinterName16);
 
   EXPECT_EQ(StartPrintingAndWait(print_settings), mojom::ResultCode::kSuccess);
 }
@@ -540,8 +551,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, StartPrintingInvalidPrinter) {
   SetPrinterNameForSubsequentContexts(kDefaultPrinterName);
 
   PrintSettings print_settings;
-  print_settings.set_device_name(
-      base::ASCIIToUTF16(base::StringPiece(kInvalidPrinterName)));
+  print_settings.set_device_name(kInvalidPrinterName16);
 
   EXPECT_EQ(StartPrintingAndWait(print_settings), mojom::ResultCode::kFailed);
 }
@@ -553,14 +563,32 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, RenderPrintedPage) {
   SetPrinterNameForSubsequentContexts(kDefaultPrinterName);
 
   PrintSettings print_settings;
-  print_settings.set_device_name(
-      base::ASCIIToUTF16(base::StringPiece(kDefaultPrinterName)));
+  print_settings.set_device_name(kDefaultPrinterName16);
 
   EXPECT_EQ(StartPrintingAndWait(print_settings), mojom::ResultCode::kSuccess);
 
   absl::optional<mojom::ResultCode> result = RenderPageAndWait();
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result.value(), mojom::ResultCode::kSuccess);
+}
+
+// TODO(crbug.com/809738)  Support tests for platforms other than Windows, once
+// OOP support for RenderPrintedDocument() is added.
+IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, DocumentDone) {
+  LaunchService();
+  AddDefaultPrinter();
+  SetPrinterNameForSubsequentContexts(kDefaultPrinterName);
+
+  PrintSettings print_settings;
+  print_settings.set_device_name(kDefaultPrinterName16);
+
+  EXPECT_EQ(StartPrintingAndWait(print_settings), mojom::ResultCode::kSuccess);
+
+  absl::optional<mojom::ResultCode> result = RenderPageAndWait();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value(), mojom::ResultCode::kSuccess);
+
+  EXPECT_EQ(DocumentDoneAndWait(), mojom::ResultCode::kSuccess);
 }
 #endif  // BUILDFLAG(IS_WIN)
 

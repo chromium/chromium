@@ -111,6 +111,7 @@ class DocumentContainer {
       gfx::Rect page_content_rect,
       float shrink_factor);
 #endif
+  mojom::ResultCode DoDocumentDone();
 
  private:
   PrintingContext::Delegate* context_delegate_;
@@ -216,6 +217,13 @@ mojom::ResultCode DocumentContainer::DoRenderPrintedPage(
                                       context_.get());
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+mojom::ResultCode DocumentContainer::DoDocumentDone() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DVLOG(1) << "Document done for document " << document_->cookie();
+  return context_->DocumentDone();
+}
 
 }  // namespace
 
@@ -604,6 +612,33 @@ void PrintBackendServiceImpl::RenderPrintedPage(
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+void PrintBackendServiceImpl::DocumentDone(
+    int document_cookie,
+    mojom::PrintBackendService::DocumentDoneCallback callback) {
+  if (!print_backend_) {
+    DLOG(ERROR)
+        << "Print backend instance has not been initialized for locale.";
+    std::move(callback).Run(mojom::ResultCode::kFailed);
+    return;
+  }
+
+  DocumentHelper* document_helper = GetDocumentHelper(document_cookie);
+  if (!document_helper) {
+    DLOG(ERROR) << "Unrecognized document " << document_cookie << " to be done";
+    std::move(callback).Run(mojom::ResultCode::kFailed);
+    return;
+  }
+
+  // Safe to use `base::Unretained(this)` because `this` outlives the async
+  // call and callback.  The entire service process goes away when `this`
+  // lifetime expires.
+  document_helper->document_container()
+      .AsyncCall(&DocumentContainer::DoDocumentDone)
+      .Then(base::BindOnce(&PrintBackendServiceImpl::OnDidDocumentDone,
+                           base::Unretained(this), std::ref(*document_helper),
+                           std::move(callback)));
+}
+
 void PrintBackendServiceImpl::OnDidStartPrintingReadyDocument(
     DocumentHelper& document_helper,
     mojom::ResultCode result) {
@@ -629,6 +664,16 @@ void PrintBackendServiceImpl::OnDidRenderPrintedPage(
   RemoveDocumentHelper(document_helper);
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+void PrintBackendServiceImpl::OnDidDocumentDone(
+    DocumentHelper& document_helper,
+    mojom::PrintBackendService::DocumentDoneCallback callback,
+    mojom::ResultCode result) {
+  std::move(callback).Run(result);
+
+  // All complete for this document.
+  RemoveDocumentHelper(document_helper);
+}
 
 PrintBackendServiceImpl::DocumentHelper*
 PrintBackendServiceImpl::GetDocumentHelper(int document_cookie) {
