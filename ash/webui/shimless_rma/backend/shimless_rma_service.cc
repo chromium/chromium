@@ -1103,9 +1103,7 @@ void ShimlessRmaService::OnAbortRmaResponse(
               : "Rebooting after user cancelled RMA.");
     } else {
       VLOG(1) << "Restarting Chrome to bypass RMA after cancel request.";
-      // TODO(gavindodd): Append switches::kNoShimlessRma when autolaunch is
-      // implemented.
-      shimless_rma_delegate_->RestartChrome();
+      shimless_rma_delegate_->ExitRmaThenRestartChrome();
     }
   }
 }

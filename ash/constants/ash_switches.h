@@ -206,6 +206,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLacrosChromeAdditionalArgs[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLacrosChromeAdditionalEnv[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLacrosChromePath[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLacrosMojoSocketForTesting[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLaunchRma[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLoginManager[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLoginProfile[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLoginUser[];
@@ -235,6 +236,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kPublicAccountsSamlAclUrl[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRegulatoryLabelDir[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRevenBranding[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRlzPingDelay[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kRmaNotAllowed[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSafeMode[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSamlLockScreenReauthenticationEnabledOverrideForTesting[];

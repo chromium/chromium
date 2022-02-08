@@ -9,6 +9,7 @@
 #include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/webui/shimless_rma/shimless_rma.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/logging.h"
@@ -45,8 +46,10 @@
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/webui/chromeos/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/lacros_data_migration_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/shimless_rma_dialog.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/dbus/rmad/rmad_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -164,6 +167,17 @@ void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
   UserSessionManager::GetInstance()->MaybeLaunchSettings(user_profile);
 }
 
+void LaunchShimlessRma() {
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::RMA);
+
+  chromeos::ShimlessRmaDialog::ShowDialog();
+  // Login screen is skipped but 'login-prompt-visible' signal is still
+  // needed.
+  VLOG(1) << "Shimless RMA app auto launch >> login-prompt-visible";
+  SessionManagerClient::Get()->EmitLoginPromptVisible();
+}
+
 }  // namespace
 
 ChromeSessionManager::ChromeSessionManager()
@@ -186,6 +200,16 @@ void ChromeSessionManager::Initialize(
   if (g_browser_process->local_state()->GetBoolean(prefs::kForceFactoryReset)) {
     SessionManagerClient::Get()->StartDeviceWipe();
     return;
+  }
+
+  if (ash::shimless_rma::IsShimlessRmaAllowed()) {
+    // If we should be in Shimless RMA, start it and skip the rest of
+    // initialization.
+    if (ash::shimless_rma::HasLaunchRmaSwitchAndIsAllowed() ||
+        chromeos::RmadClient::Get()->WasRmaStateDetected()) {
+      LaunchShimlessRma();
+      return;
+    }
   }
 
   // Tests should be able to tune login manager before showing it. Thus only

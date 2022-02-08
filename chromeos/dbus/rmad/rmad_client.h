@@ -62,16 +62,14 @@ class COMPONENT_EXPORT(RMAD) RmadClient {
   // Creates and initializes a global instance. |bus| must not be null.
   static void Initialize(dbus::Bus* bus);
 
-  // Creates and initializes a fake global instance if not already created.
-  static void InitializeFake();
-
   // Destroys the global instance.
   static void Shutdown();
 
   // Returns the global instance which may be null if not initialized.
   static RmadClient* Get();
 
-  virtual void CheckInRma(DBusMethodCallback<bool> callback) = 0;
+  // Returns true if RMA is supported and the RMA state files were detected.
+  virtual bool WasRmaStateDetected() = 0;
 
   // Asynchronously gets the current RMA state.
   // The response contains an error code and the current state of the RMA
@@ -104,6 +102,9 @@ class COMPONENT_EXPORT(RMAD) RmadClient {
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
   virtual bool HasObserver(const Observer* observer) const = 0;
+
+  // Creates and initializes a fake global instance if not already created.
+  static void InitializeFake();
 
  protected:
   // Initialize/Shutdown should be used instead.

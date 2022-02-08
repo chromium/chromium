@@ -109,7 +109,7 @@ rmad::GetStateReply CreateStateReply(rmad::RmadState::StateCase state,
 }  // namespace
 
 /* static */
-void FakeRmadClient::CreateWithState() {
+FakeRmadClient* FakeRmadClient::CreateWithState() {
   FakeRmadClient* fake = new FakeRmadClient();
   if (use_fake_state) {
     // Set up fake component repair state.
@@ -207,6 +207,7 @@ void FakeRmadClient::CreateWithState() {
     fake->SetFakeStateReplies(fake_states);
     fake->SetAbortable(true);
   }
+  return fake;
 }
 
 FakeRmadClient::FakeRmadClient() {
@@ -214,11 +215,6 @@ FakeRmadClient::FakeRmadClient() {
   SetAbortable(true);
 }
 FakeRmadClient::~FakeRmadClient() = default;
-
-void FakeRmadClient::CheckInRma(DBusMethodCallback<bool> callback) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), NumStates() > 0));
-}
 
 void FakeRmadClient::GetCurrentState(
     DBusMethodCallback<rmad::GetStateReply> callback) {
@@ -335,6 +331,10 @@ void FakeRmadClient::SetFakeStateReplies(
     std::vector<rmad::GetStateReply> fake_states) {
   state_replies_ = std::move(fake_states);
   state_index_ = 0;
+}
+
+bool FakeRmadClient::WasRmaStateDetected() {
+  return NumStates() > 0;
 }
 
 void FakeRmadClient::SetAbortable(bool abortable) {

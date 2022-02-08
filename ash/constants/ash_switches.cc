@@ -642,6 +642,10 @@ const char kLacrosChromePath[] = "lacros-chrome-path";
 // 2. A terminal to start lacros-chrome with a debugger.
 const char kLacrosMojoSocketForTesting[] = "lacros-mojo-socket-for-testing";
 
+// Start Chrome in RMA mode. Launches RMA app automatically.
+// kRmaNotAllowed switch takes priority over this one.
+const char kLaunchRma[] = "launch-rma";
+
 // Enables Chrome-as-a-login-manager behavior.
 const char kLoginManager[] = "login-manager";
 
@@ -731,6 +735,9 @@ const char kRevenBranding[] = "reven-branding";
 
 // The rlz ping delay (in seconds) that overwrites the default value.
 const char kRlzPingDelay[] = "rlz-ping-delay";
+
+// Start Chrome without opening RMA or checking the current RMA state.
+const char kRmaNotAllowed[] = "rma-not-allowed";
 
 // The switch added by session_manager daemon when chrome crashes 3 times or
 // more within the first 60 seconds on start.

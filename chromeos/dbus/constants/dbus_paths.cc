@@ -23,6 +23,12 @@ constexpr base::FilePath::CharType kOwnerKeyFileName[] =
 constexpr base::FilePath::CharType kInstallAttributesFileName[] =
     FILE_PATH_LITERAL("/run/lockbox/install_attributes.pb");
 
+const base::FilePath::CharType kDeviceRmadServiceExecutable[] =
+    FILE_PATH_LITERAL("/usr/sbin/rmad");
+
+const base::FilePath::CharType kDeviceRmadServiceState[] =
+    FILE_PATH_LITERAL("/mnt/stateful_partition/unencrypted/rma-data/state");
+
 bool PathProvider(int key, base::FilePath* result) {
   switch (key) {
     case DIR_USER_POLICY_KEYS:
@@ -33,6 +39,12 @@ bool PathProvider(int key, base::FilePath* result) {
       break;
     case FILE_INSTALL_ATTRIBUTES:
       *result = base::FilePath(kInstallAttributesFileName);
+      break;
+    case FILE_RMAD_SERVICE_EXECUTABLE:
+      *result = base::FilePath(kDeviceRmadServiceExecutable);
+      break;
+    case FILE_RMAD_SERVICE_STATE:
+      *result = base::FilePath(kDeviceRmadServiceState);
       break;
     default:
       return false;

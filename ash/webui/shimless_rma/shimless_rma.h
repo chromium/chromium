@@ -21,6 +21,12 @@ namespace ash {
 
 namespace shimless_rma {
 class ShimlessRmaDelegate;
+
+// Returns true if RMA is allowed on the device.
+bool IsShimlessRmaAllowed();
+
+// Returns true if the kLaunchRma switch is detected and RMA is allowed.
+bool HasLaunchRmaSwitchAndIsAllowed();
 }  // namespace shimless_rma
 
 // The WebUI for ShimlessRMA or chrome://shimless-rma.

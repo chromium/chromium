@@ -5,25 +5,33 @@
 #include "chromeos/dbus/rmad/rmad_client.h"
 
 #include "base/bind.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
+#include "base/path_service.h"
+#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
+#include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/rmad/fake_rmad_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
 namespace {
+
 RmadClient* g_instance = nullptr;
+
 }  // namespace
 
 class RmadClientImpl : public RmadClient {
  public:
   void Init(dbus::Bus* bus);
 
-  void CheckInRma(DBusMethodCallback<bool> callback) override;
-
+  bool WasRmaStateDetected() override;
   void GetCurrentState(
       DBusMethodCallback<rmad::GetStateReply> callback) override;
   void TransitionNextState(
@@ -46,8 +54,8 @@ class RmadClientImpl : public RmadClient {
   ~RmadClientImpl() override = default;
 
  private:
-  void OnCheckInRma(DBusMethodCallback<bool> callback,
-                    dbus::Response* response);
+  void CheckIfRmaIsRequired();
+  void OnCheckIfRmaIsRequired(dbus::Response* response);
 
   template <class T>
   void OnProtoReply(DBusMethodCallback<T> callback, dbus::Response* response);
@@ -69,9 +77,27 @@ class RmadClientImpl : public RmadClient {
                        const std::string& signal_name,
                        bool success);
 
+  // Saves the response from base::PathExists().
+  void OnFetchRmadExecutableExists(bool exists);
+
+  // Saves the response from base::PathExists().
+  void OnFetchRmadStateFileExists(bool exists);
+
+  // Sends out the requests to verify if RMAD files exist on device.
+  void StartCheckForRmadFiles();
+
   dbus::ObjectProxy* rmad_proxy_ = nullptr;
   base::ObserverList<Observer, /*check_empty=*/true, /*allow_reentrancy=*/false>
       observers_;
+
+  // True if the RMAD executable exists.
+  absl::optional<bool> rma_executable_exists_;
+
+  // True if the RMAD state file exists.
+  absl::optional<bool> rma_state_file_exists_;
+
+  // Set from the response to the RMA daemon D-Bus call.
+  bool is_rma_required_ = false;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
@@ -79,6 +105,7 @@ class RmadClientImpl : public RmadClient {
 };
 
 void RmadClientImpl::Init(dbus::Bus* bus) {
+  StartCheckForRmadFiles();
   rmad_proxy_ = bus->GetObjectProxy(rmad::kRmadServiceName,
                                     dbus::ObjectPath(rmad::kRmadServicePath));
   // Listen to D-Bus signals emitted by rmad.
@@ -109,35 +136,31 @@ void RmadClientImpl::Init(dbus::Bus* bus) {
         base::BindRepeating(p.second, weak_ptr_factory_.GetWeakPtr()),
         on_connected_callback);
   }
+  CheckIfRmaIsRequired();
 }
 
-void RmadClientImpl::CheckInRma(DBusMethodCallback<bool> callback) {
+void RmadClientImpl::CheckIfRmaIsRequired() {
   dbus::MethodCall method_call(rmad::kRmadInterfaceName,
                                rmad::kIsRmaRequiredMethod);
   dbus::MessageWriter writer(&method_call);
   rmad_proxy_->CallMethod(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindOnce(&RmadClientImpl::OnCheckInRma,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      base::BindOnce(&RmadClientImpl::OnCheckIfRmaIsRequired,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void RmadClientImpl::OnCheckInRma(DBusMethodCallback<bool> callback,
-                                  dbus::Response* response) {
+void RmadClientImpl::OnCheckIfRmaIsRequired(dbus::Response* response) {
   if (!response) {
-    LOG(ERROR) << "Error calling rmad function for OnCheckInRma";
-    std::move(callback).Run(false);
+    LOG(ERROR) << "Error calling rmad function for OnCheckIfRmaIsRequired";
     return;
   }
 
   dbus::MessageReader reader(response);
-  bool is_rma_required = false;
-  if (!reader.PopBool(&is_rma_required)) {
+  if (!reader.PopBool(&is_rma_required_)) {
     LOG(ERROR) << "Unable to decode response for " << response->GetMember();
-    std::move(callback).Run(false);
     return;
   }
   DCHECK(!reader.HasMoreData());
-  std::move(callback).Run(is_rma_required);
 }
 
 // Called when a dbus signal is initially connected.
@@ -446,6 +469,61 @@ void RmadClientImpl::OnGetLogReply(DBusMethodCallback<std::string> callback,
   std::move(callback).Run(std::move(log_path));
 }
 
+void RmadClientImpl::StartCheckForRmadFiles() {
+  base::FilePath rmad_executable_path;
+  if (!base::PathService::Get(
+          chromeos::dbus_paths::FILE_RMAD_SERVICE_EXECUTABLE,
+          &rmad_executable_path)) {
+    LOG(ERROR)
+        << "Could not get rmad executable path. RMA will not be available";
+    return;
+  }
+  base::FilePath rmad_state_file_path;
+  if (!base::PathService::Get(chromeos::dbus_paths::FILE_RMAD_SERVICE_STATE,
+                              &rmad_state_file_path)) {
+    LOG(ERROR)
+        << "Could not get rmad state file path. RMA will not be available";
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&base::PathExists, rmad_executable_path),
+      base::BindOnce(&RmadClientImpl::OnFetchRmadExecutableExists,
+                     weak_ptr_factory_.GetWeakPtr()));
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&base::PathExists, rmad_state_file_path),
+      base::BindOnce(&RmadClientImpl::OnFetchRmadStateFileExists,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void RmadClientImpl::OnFetchRmadExecutableExists(bool exists) {
+  rma_executable_exists_ = exists;
+}
+
+void RmadClientImpl::OnFetchRmadStateFileExists(bool exists) {
+  rma_state_file_exists_ = exists;
+}
+
+bool RmadClientImpl::WasRmaStateDetected() {
+  if (!rma_executable_exists_.has_value()) {
+    LOG(WARNING) << "Checking if RMA executable exists not completed before "
+                    "WasRmaStateDetected() called.";
+  }
+  if (!rma_state_file_exists_.has_value()) {
+    LOG(WARNING) << "Checking if RMA state file exists not completed before "
+                    "WasRmaStateDetected() called.";
+  }
+
+  return rma_executable_exists_.value_or(false) &&
+         (is_rma_required_ || rma_state_file_exists_.value_or(false));
+}
+
 RmadClient::RmadClient() {
   CHECK(!g_instance);
   g_instance = this;
@@ -463,11 +541,6 @@ void RmadClient::Initialize(dbus::Bus* bus) {
 }
 
 // static
-void RmadClient::InitializeFake() {
-  FakeRmadClient::CreateWithState();
-}
-
-// static
 void RmadClient::Shutdown() {
   CHECK(g_instance);
   delete g_instance;
@@ -476,6 +549,11 @@ void RmadClient::Shutdown() {
 // static
 RmadClient* RmadClient::Get() {
   return g_instance;
+}
+
+// static
+void RmadClient::InitializeFake() {
+  FakeRmadClient::CreateWithState();
 }
 
 }  // namespace chromeos

@@ -14,8 +14,8 @@ class ShimlessRmaDelegate {
  public:
   virtual ~ShimlessRmaDelegate() = default;
 
-  // Restarts the Chrome session.
-  virtual void RestartChrome() = 0;
+  // Exits the current RMA session then restarts the Chrome session without RMA.
+  virtual void ExitRmaThenRestartChrome() = 0;
 
   // Starts the post-boot diagnostics app.
   virtual void ShowDiagnosticsDialog() = 0;

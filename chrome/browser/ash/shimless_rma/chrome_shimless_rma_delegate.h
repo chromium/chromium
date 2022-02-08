@@ -21,7 +21,7 @@ class ChromeShimlessRmaDelegate : public ShimlessRmaDelegate {
   ~ChromeShimlessRmaDelegate() override;
 
   // ShimlessRmaDelegate:
-  void RestartChrome() override;
+  void ExitRmaThenRestartChrome() override;
   void ShowDiagnosticsDialog() override;
 };
 
