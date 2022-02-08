@@ -47,7 +47,18 @@ Status FlattenStringArray(const base::ListValue* src, std::u16string* dest) {
   for (const base::Value& i : src->GetListDeprecated()) {
     if (!i.is_string())
       return Status(kUnknownError, "keys should be a string");
+
     std::u16string keys_list_part = base::UTF8ToUTF16(i.GetString());
+
+    for (char16_t ch : keys_list_part) {
+      if (CBU16_IS_SURROGATE(ch)) {
+        return Status(
+            kUnknownError,
+            base::StringPrintf("%s only supports characters in the BMP",
+                              kChromeDriverProductShortName));
+      }
+    }
+
     keys.append(keys_list_part);
   }
   *dest = keys;
