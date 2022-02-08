@@ -57,11 +57,6 @@ $ export PATH="$PATH:/path/to/depot_tools"
 
 ## Get the code
 
-In System Preferences, check that "Energy Saver" -> "Power Adapter" ->
-"Prevent computer from sleeping automatically when the display is off" is
-checked so that your laptop doesn't go to sleep and interrupt the long network
-connection needed here.
-
 Create a `chromium` directory for the checkout and change to it (you can call
 this whatever you like and put it wherever you like, as long as the full path
 has no spaces):
@@ -74,8 +69,12 @@ Run the `fetch` tool from `depot_tools` to check out the code and its
 dependencies.
 
 ```shell
-$ fetch chromium
+$ caffeinate fetch chromium
 ```
+
+Running the `fetch` with `caffeinate` is optional, but it will prevent the
+system from sleeping for the duration of the `fetch` command, which may run for
+a considerable amount of time.
 
 If you don't need the full repo history, you can save time by using
 `fetch --no-history chromium`. You can call `git fetch --unshallow` to retrieve
