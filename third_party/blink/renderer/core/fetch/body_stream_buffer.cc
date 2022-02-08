@@ -227,6 +227,7 @@ void BodyStreamBuffer::StartLoading(FetchDataLoader* loader,
                                     FetchDataLoader::Client* client,
                                     ExceptionState& exception_state) {
   DCHECK(!loader_);
+  DCHECK(!keep_alive_);
   DCHECK(script_state_->ContextIsValid());
   if (signal_) {
     if (signal_->aborted()) {
@@ -240,6 +241,7 @@ void BodyStreamBuffer::StartLoading(FetchDataLoader* loader,
   auto* handle = ReleaseHandle(exception_state);
   if (exception_state.HadException())
     return;
+  keep_alive_ = this;
   loader->Start(handle,
                 MakeGarbageCollected<LoaderClient>(
                     ExecutionContext::From(script_state_), this, client));
@@ -338,13 +340,10 @@ void BodyStreamBuffer::OnStateChange() {
   ProcessData();
 }
 
-bool BodyStreamBuffer::HasPendingActivity() const {
-  return loader_;
-}
-
 void BodyStreamBuffer::ContextDestroyed() {
   CancelConsumer();
   UnderlyingSourceBase::ContextDestroyed();
+  keep_alive_.Clear();
 }
 
 bool BodyStreamBuffer::IsStreamReadable() const {
@@ -499,14 +498,17 @@ void BodyStreamBuffer::ProcessData() {
 
 void BodyStreamBuffer::EndLoading() {
   DCHECK(loader_);
+  keep_alive_.Clear();
   loader_ = nullptr;
 }
 
 void BodyStreamBuffer::StopLoading() {
-  if (!loader_)
+  if (!loader_) {
+    DCHECK(!keep_alive_);
     return;
+  }
   loader_->Cancel();
-  loader_ = nullptr;
+  EndLoading();
 }
 
 BytesConsumer* BodyStreamBuffer::ReleaseHandle(
