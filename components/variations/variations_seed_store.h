@@ -89,18 +89,16 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
                                    VariationsSeed* parsed_seed);
 
   // Loads the safe variations seed data from local state into |seed| and
-  // updates any relevant fields in |client_state|. Returns
-  // LoadSeedResult::kSuccess iff the safe seed was read successfully from
-  // prefs. If the safe seed could not be loaded, it is guaranteed that no
-  // fields in |client_state| are modified.
+  // updates any relevant fields in |client_state|. Returns true iff the safe
+  // seed was read successfully from prefs. If the safe seed could not be
+  // loaded, it is guaranteed that no fields in |client_state| are modified.
   //
   // Side effect: Upon failing to read or validate the safe seed, clears all
   // of the safe seed pref values.
   //
   // Virtual for testing.
-  [[nodiscard]] virtual LoadSeedResult LoadSafeSeed(
-      VariationsSeed* seed,
-      ClientFilterableState* client_state);
+  [[nodiscard]] virtual bool LoadSafeSeed(VariationsSeed* seed,
+                                          ClientFilterableState* client_state);
 
   // Stores the given |seed_data| (a serialized protobuf) to local state as a
   // safe seed, along with a base64-encoded digital signature for seed and any

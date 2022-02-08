@@ -37,16 +37,18 @@ namespace variations {
 enum class SeedUsage {
   kRegularSeedUsed = 0,
   kExpiredRegularSeedNotUsed = 1,
-  kCorruptedSeedNotUsed = 2,
+  kUnloadableRegularSeedNotUsed = 2,
   kSafeSeedUsed = 3,
   kExpiredSafeSeedNotUsed = 4,
-  kCorruptedSafeSeedNotUsed = 5,
-  kRegularSeedUsedAfterEmptySafeSeedLoaded = 6,
-  kExpiredRegularSeedNotUsedAfterEmptySafeSeedLoaded = 7,
-  kCorruptedRegularSeedNotUsedAfterEmptySafeSeedLoaded = 8,
+  // The below three enumerators were deprecated in M100.
+  // kCorruptedSafeSeedNotUsed = 5,
+  // kRegularSeedUsedAfterEmptySafeSeedLoaded = 6,
+  // kExpiredRegularSeedNotUsedAfterEmptySafeSeedLoaded = 7,
+  // kCorruptedRegularSeedNotUsedAfterEmptySafeSeedLoaded = 8,
   kRegularSeedForFutureMilestoneNotUsed = 9,
   kSafeSeedForFutureMilestoneNotUsed = 10,
-  kMaxValue = kSafeSeedForFutureMilestoneNotUsed,
+  kUnloadableSafeSeedNotUsed = 11,
+  kMaxValue = kUnloadableSafeSeedNotUsed,
 };
 
 // Denotes a variations seed's expiry state. Exposed for testing.

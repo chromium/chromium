@@ -91081,19 +91081,21 @@ Full version information for the fingerprint enum values:
 <enum name="VariationsSeedUsage">
   <int value="0" label="Regular seed used"/>
   <int value="1" label="Expired regular seed">No seed used</int>
-  <int value="2" label="Corrupted regular seed">No seed used</int>
+  <int value="2" label="Unloadable regular seed">No seed used</int>
   <int value="3" label="Safe seed used"/>
   <int value="4" label="Expired safe seed">No seed used</int>
-  <int value="5" label="Corrupted safe seed">No seed used</int>
-  <int value="6" label="Regular seed used after loading empty safe seed"/>
-  <int value="7" label="Expired regular seed after loading empty safe seed">
-    No seed used
-  </int>
-  <int value="8" label="Corrupted regular seed after loading empty safe seed">
-    No seed used
-  </int>
+  <int value="5" label="(Obsolete M100) Corrupted safe seed">No seed used</int>
+  <int value="6"
+      label="(Obsolete M100) Regular seed used after loading empty safe seed"/>
+  <int value="7"
+      label="(Obsolete M100) Expired regular seed after loading empty safe
+             seed">No seed used</int>
+  <int value="8"
+      label="(Obsolete M100) Corrupted regular seed after loading empty safe
+             seed">No seed used</int>
   <int value="9" label="Regular seed for future milestone">No seed used</int>
   <int value="10" label="Safe seed for future milestone">No seed used</int>
+  <int value="11" label="Unloadable safe seed">No seed used</int>
 </enum>
 
 <enum name="VaryType">

@@ -202,16 +202,15 @@ bool VariationsSeedStore::StoreSeedData(
   return true;
 }
 
-LoadSeedResult VariationsSeedStore::LoadSafeSeed(
-    VariationsSeed* seed,
-    ClientFilterableState* client_state) {
+bool VariationsSeedStore::LoadSafeSeed(VariationsSeed* seed,
+                                       ClientFilterableState* client_state) {
   std::string unused_seed_data;
   std::string unused_base64_seed_signature;
   LoadSeedResult result = LoadSeedImpl(SeedType::SAFE, seed, &unused_seed_data,
                                        &unused_base64_seed_signature);
   RecordLoadSafeSeedResult(result);
   if (result != LoadSeedResult::kSuccess)
-    return result;
+    return false;
 
   // TODO(crbug/1261685): While it's not immediately obvious, |client_state| is
   // not used for successfully loaded safe seeds that are rejected after
@@ -224,7 +223,7 @@ LoadSeedResult VariationsSeedStore::LoadSafeSeed(
       prefs::kVariationsSafeSeedPermanentConsistencyCountry);
   client_state->session_consistency_country = local_state_->GetString(
       prefs::kVariationsSafeSeedSessionConsistencyCountry);
-  return result;
+  return true;
 }
 
 bool VariationsSeedStore::StoreSafeSeed(

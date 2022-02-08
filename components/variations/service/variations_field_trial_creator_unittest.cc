@@ -235,32 +235,23 @@ class TestVariationsSeedStore : public VariationsSeedStore {
     return true;
   }
 
-  LoadSeedResult LoadSafeSeed(VariationsSeed* seed,
-                              ClientFilterableState* client_state) override {
-    if (has_corrupted_safe_seed_)
-      return LoadSeedResult::kCorruptBase64;
-
-    if (has_empty_safe_seed_)
-      return LoadSeedResult::kEmpty;
+  bool LoadSafeSeed(VariationsSeed* seed,
+                    ClientFilterableState* client_state) override {
+    if (has_unloadable_safe_seed_)
+      return false;
 
     *seed = CreateTestSafeSeed();
-    return LoadSeedResult::kSuccess;
+    return true;
   }
 
-  void set_has_corrupted_safe_seed(bool is_corrupted) {
-    has_corrupted_safe_seed_ = is_corrupted;
-  }
-
-  void set_has_empty_safe_seed(bool is_empty) {
-    has_empty_safe_seed_ = is_empty;
+  void set_has_unloadable_safe_seed(bool is_unloadable) {
+    has_unloadable_safe_seed_ = is_unloadable;
   }
 
  private:
-  // Whether to simulate having a corrupted safe seed.
-  bool has_corrupted_safe_seed_ = false;
-
-  // Whether to simulate having an empty safe seed.
-  bool has_empty_safe_seed_ = false;
+  // Whether to simulate having an unloadable (e.g. corrupted, empty, etc.) safe
+  // seed.
+  bool has_unloadable_safe_seed_ = false;
 };
 
 class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
@@ -681,49 +672,9 @@ TEST_F(FieldTrialCreatorTest,
   }
 }
 
-// Verify that Chrome applies the regular variations seed when Chrome should run
-// in Variations Safe Mode but the safe seed is empty.
-TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_EmptySafeSeed_UsesRegularSeed) {
-  DisableTestingConfig();
-
-  NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
-  ON_CALL(safe_seed_manager, ShouldRunInSafeMode()).WillByDefault(Return(true));
-
-  const base::Time recent_time = base::Time::Now() - base::Minutes(17);
-  local_state()->SetTime(prefs::kVariationsLastFetchTime, recent_time);
-  // When using the regular seed, the safe seed manager should be informed of
-  // the active seed state.
-  EXPECT_CALL(safe_seed_manager,
-              DoSetActiveSeedState(kTestSeedSerializedData, kTestSeedSignature,
-                                   _, _, recent_time))
-      .Times(1);
-
-  TestVariationsServiceClient variations_service_client;
-  TestVariationsFieldTrialCreator field_trial_creator(
-      local_state(), &variations_service_client, &safe_seed_manager);
-  field_trial_creator.seed_store()->set_has_empty_safe_seed(true);
-
-  // Check that field trials are created from the regular seed. Since the test
-  // study has only one experiment with 100% probability weight, we must be part
-  // of it.
-  base::HistogramTester histogram_tester;
-  EXPECT_TRUE(field_trial_creator.SetUpFieldTrials());
-  EXPECT_EQ(kTestSeedExperimentName,
-            base::FieldTrialList::FindFullName(kTestSeedStudyName));
-
-  // Verify metrics.
-  histogram_tester.ExpectUniqueSample("Variations.CreateTrials.SeedExpiry",
-                                      VariationsSeedExpiry::kNotExpired, 1);
-  histogram_tester.ExpectUniqueSample("Variations.SeedFreshness", 17, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Variations.SeedUsage",
-      SeedUsage::kRegularSeedUsedAfterEmptySafeSeedLoaded, 1);
-}
-
 // Verify that Chrome does not apply a variations seed when Chrome should run in
-// Variations Safe Mode and a safe seed cannot be loaded.
-TEST_F(FieldTrialCreatorTest,
-       SetUpFieldTrials_CorruptedSafeSeed_DoesNotUseSeed) {
+// Variations Safe Mode but the safe seed is unloadable.
+TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_UnloadableSafeSeedNotUsed) {
   DisableTestingConfig();
 
   NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
@@ -736,7 +687,7 @@ TEST_F(FieldTrialCreatorTest,
   TestVariationsServiceClient variations_service_client;
   TestVariationsFieldTrialCreator field_trial_creator(
       local_state(), &variations_service_client, &safe_seed_manager);
-  field_trial_creator.seed_store()->set_has_corrupted_safe_seed(true);
+  field_trial_creator.seed_store()->set_has_unloadable_safe_seed(true);
 
   base::HistogramTester histogram_tester;
 
@@ -746,7 +697,7 @@ TEST_F(FieldTrialCreatorTest,
 
   // Verify that Chrome did not apply the safe seed.
   histogram_tester.ExpectUniqueSample("Variations.SeedUsage",
-                                      SeedUsage::kCorruptedSafeSeedNotUsed, 1);
+                                      SeedUsage::kUnloadableSafeSeedNotUsed, 1);
 }
 
 // Verify that valid safe seeds with missing download times are applied.
