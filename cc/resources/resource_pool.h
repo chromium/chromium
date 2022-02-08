@@ -95,6 +95,9 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     // ResourcePool needs to wait on this token if it exists, before using a
     // resource handed out by the ResourcePool.
     gpu::SyncToken returned_sync_token;
+
+    // True if the backing is using raw draw.
+    bool is_using_raw_draw = false;
   };
 
   // A base class to hold ownership of software backed PoolResources. Allows the
@@ -175,6 +178,11 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     void set_software_backing(std::unique_ptr<SoftwareBacking> software) const {
       DCHECK(!is_gpu_);
       resource_->set_software_backing(std::move(software));
+    }
+
+    size_t memory_usage() const {
+      DCHECK(resource_);
+      return resource_->memory_usage();
     }
 
     // Production code should not be built around these ids, but tests use them
@@ -367,7 +375,19 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     size_t memory_usage() const {
       if (!gpu_backing_ && !software_backing_)
         return 0;
-      return viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size(), format());
+
+      size_t memory_usage =
+          viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size(), format());
+
+      // Early research found with raw draw, GPU memory usage is reduced to
+      // 50%, so we consider a raw draw backing uses 50% of a normal backing
+      // in average.
+      // TODO(crbug.com/1295443): use accurate size for raw draw backings.
+      if (gpu_backing_ && gpu_backing_->is_using_raw_draw) {
+        memory_usage = memory_usage / 2;
+      }
+
+      return memory_usage;
     }
 
    private:

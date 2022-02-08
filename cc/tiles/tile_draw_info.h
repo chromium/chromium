@@ -77,7 +77,7 @@ class CC_EXPORT TileDrawInfo {
 
   inline bool has_resource() const { return !!resource_; }
 
-  const ResourcePool::InUsePoolResource& GetResource();
+  const ResourcePool::InUsePoolResource& GetResource() const;
 
   bool is_checker_imaged() const {
     DCHECK(!resource_is_checker_imaged_ || resource_);

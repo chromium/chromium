@@ -1900,8 +1900,7 @@ TileManager::MemoryUsage TileManager::MemoryUsage::FromConfig(
 TileManager::MemoryUsage TileManager::MemoryUsage::FromTile(const Tile* tile) {
   const TileDrawInfo& draw_info = tile->draw_info();
   if (draw_info.has_resource()) {
-    return MemoryUsage::FromConfig(draw_info.resource_size(),
-                                   draw_info.resource_format());
+    return MemoryUsage(draw_info.GetResource().memory_usage(), 1);
   }
   return MemoryUsage();
 }

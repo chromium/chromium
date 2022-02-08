@@ -181,6 +181,8 @@ std::unique_ptr<RasterBuffer> GpuRasterBufferProvider::AcquireBufferForRaster(
     backing->InitOverlayCandidateAndTextureTarget(
         resource.format(), compositor_context_provider_->ContextCapabilities(),
         use_gpu_memory_buffer_resources_);
+    backing->is_using_raw_draw =
+        !backing->overlay_candidate && is_using_raw_draw_;
     resource.set_gpu_backing(std::move(backing));
   }
   GpuRasterBacking* backing =
