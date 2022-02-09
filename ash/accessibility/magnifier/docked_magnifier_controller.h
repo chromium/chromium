@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ui/base/cursor/cursor_size.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -121,6 +122,10 @@ class ASH_EXPORT DockedMagnifierController
   float GetMinimumPointOfInterestHeightForTesting() const;
 
  private:
+  // If user has large cursor enabled, don't change the cursor size.
+  // Otherwise, set the cursor to be the specified size.
+  void MaybeSetCursorSize(ui::CursorSize cursor_size);
+
   // If user is starting or continuing to drag the separator, move the
   // separator and resize the viewport.
   void MaybePerformViewportResizing(ui::MouseEvent* event);
@@ -165,7 +170,7 @@ class ASH_EXPORT DockedMagnifierController
   void OnMoveMagnifierTimer();
 
   // Whether or not user has started resizing the Docked Magnifier.
-  bool has_started_resize_ = false;
+  bool is_resizing_ = false;
 
   // Vertical offset from user's mouse cursor to the top of separator. Stored to
   // later compute how far offset the new separator position should be based on

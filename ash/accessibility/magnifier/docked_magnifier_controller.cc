@@ -326,7 +326,7 @@ void DockedMagnifierController::OnDisplayConfigurationChanged() {
     // the mouse cursor inside the root window. We want to make sure the cursor
     // is confined properly outside the viewport. But don't confine mouse if
     // resizing.
-    if (!has_started_resize_)
+    if (!is_resizing_)
       ConfineMouseCursorOutsideViewport();
   }
 
@@ -389,6 +389,12 @@ float DockedMagnifierController::GetMinimumPointOfInterestHeightForTesting()
   return minimum_point_of_interest_height_;
 }
 
+void DockedMagnifierController::MaybeSetCursorSize(ui::CursorSize cursor_size) {
+  if (Shell::Get()->accessibility_controller()->large_cursor().enabled())
+    return;
+  Shell::Get()->cursor_manager()->SetCursorSize(cursor_size);
+}
+
 void DockedMagnifierController::MaybePerformViewportResizing(
     ui::MouseEvent* event) {
   DCHECK(current_source_root_window_);
@@ -403,10 +409,12 @@ void DockedMagnifierController::MaybePerformViewportResizing(
 
   // If the mouse is over the divider, change cursor to north/south resize.
   if (cursor_is_over_resizer && !is_cursor_locked_) {
+    MaybeSetCursorSize(ui::CursorSize::kLarge);
     cursor_manager->SetCursor(ui::mojom::CursorType::kNorthSouthResize);
     cursor_manager->LockCursor();
     is_cursor_locked_ = true;
-  } else if (!cursor_is_over_resizer && is_cursor_locked_) {
+  } else if (!cursor_is_over_resizer && is_cursor_locked_ && !is_resizing_) {
+    MaybeSetCursorSize(ui::CursorSize::kNormal);
     cursor_manager->UnlockCursor();
     is_cursor_locked_ = false;
   }
@@ -415,22 +423,22 @@ void DockedMagnifierController::MaybePerformViewportResizing(
   // ignore and stop resizing.
   if (!event->IsOnlyLeftMouseButton() ||
       event->type() == ui::ET_MOUSE_RELEASED) {
-    if (has_started_resize_) {
-      has_started_resize_ = false;
+    if (is_resizing_) {
+      is_resizing_ = false;
       ConfineMouseCursorOutsideViewport();
     }
     return;
   }
   float new_screen_height_divisor =
-      root_bounds.height() / (root_y + resize_offset_);
+      root_bounds.height() / std::max(1.0f, root_y + resize_offset_);
 
   switch (event->type()) {
     case ui::ET_MOUSE_PRESSED:
       // User clicks within separator to start resizing Docked Magnifier.
       // Subtracting one is needed to capture when mouse is at the very top.
-      if (!has_started_resize_ && cursor_is_over_resizer) {
+      if (!is_resizing_ && cursor_is_over_resizer) {
         resize_offset_ = magnifier_height - root_y;
-        has_started_resize_ = true;
+        is_resizing_ = true;
         RootWindowController::ForWindow(current_source_root_window_)
             ->ash_host()
             ->ConfineCursorToRootWindow();
@@ -438,7 +446,7 @@ void DockedMagnifierController::MaybePerformViewportResizing(
       break;
     case ui::ET_MOUSE_DRAGGED:
       // User continues holding and drags separator to resize Docked Magnifier.
-      if (has_started_resize_) {
+      if (is_resizing_) {
         screen_height_divisor_ =
             base::clamp(new_screen_height_divisor, kMinScreenHeightDivisor,
                         kMaxScreenHeightDivisor);
