@@ -581,7 +581,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.Update" enum="ProfileType" expires_after="2022-02-06">
+<histogram name="Profile.Update" enum="ProfileType" expires_after="2023-02-09">
   <owner>msarda@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
