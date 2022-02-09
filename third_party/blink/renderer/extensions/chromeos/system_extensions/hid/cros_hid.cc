@@ -18,16 +18,6 @@ namespace blink {
 
 namespace {
 
-void OnAccessDevicesResponse(
-    ScriptPromiseResolver* resolver,
-    WTF::Vector<device::mojom::blink::HidDeviceInfoPtr> device_infos) {
-  HeapVector<Member<HIDDevice>> devices;
-  // TODO(b/214330822) Implement new HIDDevice constructor to work with HID
-  // System Extension.
-
-  resolver->Resolve(devices);
-}
-
 void RejectWithTypeError(const String& message,
                          ScriptPromiseResolver* resolver) {
   ScriptState::Scope scope(resolver->GetScriptState());
@@ -42,6 +32,7 @@ CrosHID::CrosHID(ExecutionContext* execution_context)
 
 void CrosHID::Trace(Visitor* visitor) const {
   visitor->Trace(cros_hid_);
+  visitor->Trace(device_cache_);
   ExecutionContextClient::Trace(visitor);
   ScriptWrappable::Trace(visitor);
 }
@@ -83,11 +74,53 @@ ScriptPromise CrosHID::accessDevice(ScriptState* script_state,
 
       cros_hid->AccessDevices(
           std::move(mojo_filters),
-          WTF::Bind(&OnAccessDevicesResponse, WrapPersistent(resolver)));
+          WTF::Bind(&CrosHID::OnAccessDevicesResponse, WrapPersistent(this),
+                    WrapPersistent(resolver)));
     }
   }
 
   return resolver->Promise();
+}
+
+void CrosHID::Connect(
+    const String& device_guid,
+    mojo::PendingRemote<device::mojom::blink::HidConnectionClient>
+        connection_client,
+    device::mojom::blink::HidManager::ConnectCallback callback) {
+  // TODO(b/214330925): Add necessary code to enable HIDDevice.open().
+}
+
+void CrosHID::Forget(device::mojom::blink::HidDeviceInfoPtr device_info,
+                     mojom::blink::HidService::ForgetCallback callback) {
+  // CrosHID::Forget is a no-op method, as System Extension does not control
+  // HID devices behind a permission system at the moment. This method is
+  // implemented because it is need to override
+  // HIDDevice::ServiceInterface::Forget, which is in turn needed by
+  // HIDDevice::forget.
+}
+
+void CrosHID::OnAccessDevicesResponse(
+    ScriptPromiseResolver* resolver,
+    WTF::Vector<device::mojom::blink::HidDeviceInfoPtr> device_infos) {
+  HeapVector<Member<HIDDevice>> devices;
+  for (auto& device_info : device_infos)
+    devices.push_back(GetOrCreateDevice(std::move(device_info)));
+
+  resolver->Resolve(devices);
+}
+
+HIDDevice* CrosHID::GetOrCreateDevice(
+    device::mojom::blink::HidDeviceInfoPtr info) {
+  auto it = device_cache_.find(info->guid);
+  if (it != device_cache_.end()) {
+    return it->value;
+  }
+
+  const String guid = info->guid;
+  HIDDevice* device = MakeGarbageCollected<HIDDevice>(this, std::move(info),
+                                                      GetExecutionContext());
+  device_cache_.insert(guid, device);
+  return device;
 }
 
 }  // namespace blink

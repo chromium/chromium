@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
-#include "third_party/blink/renderer/modules/hid/hid.h"
 #include "third_party/blink/renderer/modules/hid/hid_input_report_event.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -197,7 +196,7 @@ HIDCollectionInfo* ToHIDCollectionInfo(
 
 }  // namespace
 
-HIDDevice::HIDDevice(HID* parent,
+HIDDevice::HIDDevice(ServiceInterface* parent,
                      device::mojom::blink::HidDeviceInfoPtr info,
                      ExecutionContext* context)
     : ExecutionContextLifecycleObserver(context),
