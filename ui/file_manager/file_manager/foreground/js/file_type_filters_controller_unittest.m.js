@@ -217,7 +217,7 @@ export function testContainerIsShownOnlyInRecents() {
 }
 
 /**
- * Tests that button's active state won't change when the user leaves
+ * Tests that button's active state is reset when the user leaves
  * Recents view and go back again.
  */
 export function testActiveButtonIsResetOnLeavingRecents() {
@@ -232,15 +232,22 @@ export function testActiveButtonIsResetOnLeavingRecents() {
   assertFalse(buttons[2].classList.contains('active'));
   assertFalse(buttons[3].classList.contains('active'));
 
-  directoryModel.changeDirectoryEntry(myFilesEntry);
+  // Changing directory to the same Recent doesn't reset states.
+  directoryModel.changeDirectoryEntry(recentEntry);
   assertFalse(buttons[0].classList.contains('active'));
   assertTrue(buttons[1].classList.contains('active'));
   assertFalse(buttons[2].classList.contains('active'));
   assertFalse(buttons[3].classList.contains('active'));
 
+  directoryModel.changeDirectoryEntry(myFilesEntry);
+  assertTrue(buttons[0].classList.contains('active'));
+  assertFalse(buttons[1].classList.contains('active'));
+  assertFalse(buttons[2].classList.contains('active'));
+  assertFalse(buttons[3].classList.contains('active'));
+
   directoryModel.changeDirectoryEntry(recentEntry);
-  assertFalse(buttons[0].classList.contains('active'));
-  assertTrue(buttons[1].classList.contains('active'));
+  assertTrue(buttons[0].classList.contains('active'));
+  assertFalse(buttons[1].classList.contains('active'));
   assertFalse(buttons[2].classList.contains('active'));
   assertFalse(buttons[3].classList.contains('active'));
 }

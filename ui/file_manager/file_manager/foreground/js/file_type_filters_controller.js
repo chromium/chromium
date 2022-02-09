@@ -126,9 +126,19 @@ export class FileTypeFiltersController {
    */
   onCurrentDirectoryChanged_(event) {
     const directoryChangeEvent = /** @type {!DirectoryChangeEvent} */ (event);
+    const isEnteringRecentEntry =
+        util.isSameEntry(directoryChangeEvent.newDirEntry, this.recentEntry_);
+    const isLeavingRecentEntry = !isEnteringRecentEntry &&
+        util.isSameEntry(
+            directoryChangeEvent.previousDirEntry, this.recentEntry_);
     // We show filter buttons only in Recents view at this moment.
-    this.container_.hidden =
-        !(directoryChangeEvent.newDirEntry == this.recentEntry_);
+    this.container_.hidden = !isEnteringRecentEntry;
+    // Reset the filter back to "All" on leaving Recents view.
+    if (isLeavingRecentEntry) {
+      this.recentEntry_.recentFileType =
+          chrome.fileManagerPrivate.RecentFileType.ALL;
+      this.updateButtonActiveStates_();
+    }
   }
 
   /**
