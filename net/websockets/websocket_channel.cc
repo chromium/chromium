@@ -998,6 +998,8 @@ void WebSocketChannel::DoDropChannel(bool was_clean,
 }
 
 void WebSocketChannel::CloseTimeout() {
+  stream_->GetNetLogWithSource().AddEvent(
+      net::NetLogEventType::WEBSOCKET_CLOSE_TIMEOUT);
   stream_->Close();
   SetState(CLOSED);
   DoDropChannel(false, kWebSocketErrorAbnormalClosure, "");

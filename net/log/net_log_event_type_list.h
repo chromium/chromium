@@ -4149,3 +4149,7 @@ EVENT_TYPE(WEBSOCKET_RECV_FRAME_HEADER)
 //    "payload_length": <Payload length in the frame header>,
 // }
 EVENT_TYPE(WEBSOCKET_SENT_FRAME_HEADER)
+
+// This event is logged when the browser closes the connection instead of the
+// server.
+EVENT_TYPE(WEBSOCKET_CLOSE_TIMEOUT)
