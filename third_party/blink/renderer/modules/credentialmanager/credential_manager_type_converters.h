@@ -19,7 +19,7 @@ class AuthenticatorSelectionCriteria;
 class CableAuthenticationData;
 class CableRegistrationData;
 class Credential;
-class FederatedCredentialLogoutRequest;
+class FederatedCredentialLogoutRpsRequest;
 class PublicKeyCredentialCreationOptions;
 class PublicKeyCredentialDescriptor;
 class PublicKeyCredentialParameters;
@@ -118,10 +118,10 @@ struct TypeConverter<blink::mojom::blink::AuthenticatorSelectionCriteriaPtr,
 };
 
 template <>
-struct TypeConverter<blink::mojom::blink::LogoutRequestPtr,
-                     blink::FederatedCredentialLogoutRequest> {
-  static blink::mojom::blink::LogoutRequestPtr Convert(
-      const blink::FederatedCredentialLogoutRequest&);
+struct TypeConverter<blink::mojom::blink::LogoutRpsRequestPtr,
+                     blink::FederatedCredentialLogoutRpsRequest> {
+  static blink::mojom::blink::LogoutRpsRequestPtr Convert(
+      const blink::FederatedCredentialLogoutRpsRequest&);
 };
 
 template <>

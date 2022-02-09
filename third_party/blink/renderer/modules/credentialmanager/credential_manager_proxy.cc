@@ -92,7 +92,7 @@ mojom::blink::FederatedAuthRequest* CredentialManagerProxy::FedCmGetRequest() {
 }
 
 mojom::blink::FederatedAuthRequest*
-CredentialManagerProxy::FedCmLogoutRequest() {
+CredentialManagerProxy::FedCmLogoutRpsRequest() {
   BindRemoteForFedCm(
       fedcm_logout_request_,
       WTF::Bind(&CredentialManagerProxy::OnFedCmLogoutConnectionError,

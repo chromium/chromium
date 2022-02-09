@@ -66,10 +66,10 @@ void FederatedAuthRequestService::Revoke(const GURL& provider,
   impl_->Revoke(provider, client_id, account_id, std::move(callback));
 }
 
-void FederatedAuthRequestService::Logout(
-    std::vector<blink::mojom::LogoutRequestPtr> logout_requests,
-    LogoutCallback callback) {
-  impl_->Logout(std::move(logout_requests), std::move(callback));
+void FederatedAuthRequestService::LogoutRps(
+    std::vector<blink::mojom::LogoutRpsRequestPtr> logout_requests,
+    LogoutRpsCallback callback) {
+  impl_->LogoutRps(std::move(logout_requests), std::move(callback));
 }
 
 }  // namespace content

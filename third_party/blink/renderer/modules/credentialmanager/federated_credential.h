@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGER_FEDERATED_CREDENTIAL_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_federated_credential_logout_request.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_federated_credential_logout_rps_request.h"
 #include "third_party/blink/renderer/modules/credentialmanager/credential.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -67,9 +67,9 @@ class MODULES_EXPORT FederatedCredential final : public Credential {
     return g_empty_string;
   }
 
-  static ScriptPromise logout(
+  static ScriptPromise logoutRps(
       ScriptState*,
-      const HeapVector<Member<FederatedCredentialLogoutRequest>>&);
+      const HeapVector<Member<FederatedCredentialLogoutRpsRequest>>&);
   static ScriptPromise revoke(ScriptState*,
                               const String&,
                               FederatedIdentityProvider*,
