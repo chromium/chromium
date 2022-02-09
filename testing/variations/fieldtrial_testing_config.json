@@ -2273,6 +2273,21 @@
             ]
         }
     ],
+    "CrosLazyLoginWebUI": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableLazyLoginWebUILoading"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrosSchedulerCore": [
         {
             "platforms": [
