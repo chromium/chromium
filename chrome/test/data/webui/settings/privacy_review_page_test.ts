@@ -5,7 +5,7 @@
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CookiePrimarySetting, PrivacyReviewHistorySyncFragmentElement, PrivacyReviewStep, PrivacyReviewWelcomeFragmentElement, SafeBrowsingSetting, SettingsPrivacyReviewPageElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
+import {CookiePrimarySetting, PrivacyReviewCompletionFragmentElement, PrivacyReviewHistorySyncFragmentElement, PrivacyReviewStep, PrivacyReviewWelcomeFragmentElement, SafeBrowsingSetting, SettingsPrivacyReviewPageElement, SettingsRadioGroupElement} from 'chrome://settings/lazy_load.js';
 import {MetricsBrowserProxyImpl, PrivacyGuideInteractions, PrivacyGuideSettingsStates, Router, routes, StatusAction, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes, SyncStatus} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, flushTasks, isChildVisible} from 'chrome://webui-test/test_util.js';
@@ -29,6 +29,17 @@ function navigateToStep(step: PrivacyReviewStep) {
   Router.getInstance().navigateTo(
       routes.PRIVACY_REVIEW,
       /* opt_dynamicParameters */ new URLSearchParams('step=' + step));
+  flush();
+}
+
+/**
+ * Fire a sign in status change event and flush the UI.
+ */
+function setSignInState(signedIn: boolean) {
+  const event = {
+    signedIn: signedIn,
+  };
+  webUIListenerCallback('update-sync-state', event);
   flush();
 }
 
@@ -173,17 +184,6 @@ suite('PrivacyReviewPage', function() {
     });
     shouldShowSafeBrowsingCard = setting === SafeBrowsingSetting.ENHANCED ||
         setting === SafeBrowsingSetting.STANDARD;
-    flush();
-  }
-
-  /**
-   * Fire a sign in status change event and flush the UI.
-   */
-  function setSignInState(signedIn: boolean) {
-    const event = {
-      signedIn: signedIn,
-    };
-    webUIListenerCallback('update-sync-state', event);
     flush();
   }
 
@@ -1015,58 +1015,6 @@ suite('PrivacyReviewPage', function() {
         });
   });
 
-  test('completionCardSWAALinkClick', async function() {
-    navigateToStep(PrivacyReviewStep.COMPLETION);
-    setSignInState(true);
-    assertCompletionCardVisible();
-
-    const completionFragment =
-        page.shadowRoot!.querySelector('#' + PrivacyReviewStep.COMPLETION)!;
-
-    assertTrue(isChildVisible(completionFragment, '#waaRow'));
-    completionFragment.shadowRoot!.querySelector<HTMLElement>(
-                                      '#waaRow')!.click();
-
-    flush();
-
-    const result = await testMetricsBrowserProxy.whenCalled(
-        'recordPrivacyGuideEntryExitHistogram');
-    assertEquals(PrivacyGuideInteractions.SWAA_COMPLETION_LINK, result);
-  });
-
-  test('completionCardPrivacySandboxLinkClick', async function() {
-    navigateToStep(PrivacyReviewStep.COMPLETION);
-    assertCompletionCardVisible();
-
-    const completionFragment =
-        page.shadowRoot!.querySelector('#' + PrivacyReviewStep.COMPLETION)!;
-    completionFragment.shadowRoot!
-        .querySelector<HTMLElement>('#privacySandboxRow')!.click();
-
-    flush();
-
-    const result = await testMetricsBrowserProxy.whenCalled(
-        'recordPrivacyGuideEntryExitHistogram');
-    assertEquals(
-        PrivacyGuideInteractions.PRIVACY_SANDBOX_COMPLETION_LINK, result);
-  });
-
-  test('completionCardGetsUpdated', function() {
-    navigateToStep(PrivacyReviewStep.COMPLETION);
-    setSignInState(true);
-    assertCompletionCardVisible();
-
-    const completionFragment =
-        page.shadowRoot!.querySelector('#' + PrivacyReviewStep.COMPLETION)!;
-    assertTrue(isChildVisible(completionFragment, '#privacySandboxRow'));
-    assertTrue(isChildVisible(completionFragment, '#waaRow'));
-
-    // Sign the user out and expect the waa row to no longer be visible.
-    setSignInState(false);
-    assertTrue(isChildVisible(completionFragment, '#privacySandboxRow'));
-    assertFalse(isChildVisible(completionFragment, '#waaRow'));
-  });
-
   test('privacyReviewVisibilityChildAccount', function() {
     // Set the user to have a non-child account.
     const syncStatus:
@@ -1282,5 +1230,53 @@ suite('HistorySyncFragment', function() {
       syncAllDatatypesExpected: false,
       typedUrlsSyncedExpected: true,
     });
+  });
+});
+
+suite('CompletionFragment', function() {
+  let page: PrivacyReviewCompletionFragmentElement;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+
+  setup(function() {
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+
+    document.body.innerHTML = '';
+    page = document.createElement('privacy-review-completion-fragment');
+    document.body.appendChild(page);
+    return flushTasks();
+  });
+
+  test('SWAALinkClick', async function() {
+    setSignInState(true);
+
+    assertTrue(isChildVisible(page, '#waaRow'));
+    page.shadowRoot!.querySelector<HTMLElement>('#waaRow')!.click();
+    flush();
+
+    const result = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideEntryExitHistogram');
+    assertEquals(PrivacyGuideInteractions.SWAA_COMPLETION_LINK, result);
+  });
+
+  test('privacySandboxLinkClick', async function() {
+    page.shadowRoot!.querySelector<HTMLElement>('#privacySandboxRow')!.click();
+    flush();
+
+    const result = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideEntryExitHistogram');
+    assertEquals(
+        PrivacyGuideInteractions.PRIVACY_SANDBOX_COMPLETION_LINK, result);
+  });
+
+  test('updateFragmentFromSignIn', function() {
+    setSignInState(true);
+    assertTrue(isChildVisible(page, '#privacySandboxRow'));
+    assertTrue(isChildVisible(page, '#waaRow'));
+
+    // Sign the user out and expect the waa row to no longer be visible.
+    setSignInState(false);
+    assertTrue(isChildVisible(page, '#privacySandboxRow'));
+    assertFalse(isChildVisible(page, '#waaRow'));
   });
 });

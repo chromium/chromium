@@ -506,10 +506,14 @@ TEST_F(
       runMochaSuite('PrivacyReviewPage');
     });
 
-
 TEST_F(
     'CrSettingsPrivacyReviewPageTest', 'HistorySyncFragmentTests', function() {
       runMochaSuite('HistorySyncFragment');
+    });
+
+TEST_F(
+    'CrSettingsPrivacyReviewPageTest', 'CompletionFragmentTests', function() {
+      runMochaSuite('CompletionFragment');
     });
 
 var CrSettingsRouteTest = class extends CrSettingsBrowserTest {

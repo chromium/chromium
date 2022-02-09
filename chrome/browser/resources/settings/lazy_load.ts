@@ -137,6 +137,7 @@ export {SettingsDoNotTrackToggleElement} from './privacy_page/do_not_track_toggl
 export {SettingsPersonalizationOptionsElement} from './privacy_page/personalization_options.js';
 export {PrivacyReviewStep} from './privacy_page/privacy_review/constants.js';
 export {PrivacyReviewClearOnExitFragmentElement} from './privacy_page/privacy_review/privacy_review_clear_on_exit_fragment.js';
+export {PrivacyReviewCompletionFragmentElement} from './privacy_page/privacy_review/privacy_review_completion_fragment.js';
 export {PrivacyReviewDescriptionItemElement} from './privacy_page/privacy_review/privacy_review_description_item.js';
 export {PrivacyReviewHistorySyncFragmentElement} from './privacy_page/privacy_review/privacy_review_history_sync_fragment.js';
 export {PrivacyReviewMsbbFragmentElement} from './privacy_page/privacy_review/privacy_review_msbb_fragment.js';

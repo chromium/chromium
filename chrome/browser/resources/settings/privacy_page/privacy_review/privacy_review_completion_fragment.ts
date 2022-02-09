@@ -100,6 +100,13 @@ export class PrivacyReviewCompletionFragmentElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'privacy-review-completion-fragment':
+        PrivacyReviewCompletionFragmentElement;
+  }
+}
+
 customElements.define(
     PrivacyReviewCompletionFragmentElement.is,
     PrivacyReviewCompletionFragmentElement);
