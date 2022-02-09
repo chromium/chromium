@@ -19,6 +19,11 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
                              bool high_contrast,
                              bool high_elevation) {
   ColorMixer& mixer = provider->AddMixer();
+  mixer[kColorAshSystemUIMenuBackground] = {kColorMenuBackground};
+  mixer[kColorAshSystemUIMenuIcon] = {kColorMenuIcon};
+  mixer[kColorAshSystemUIMenuItemBackgroundSelected] = {
+      kColorMenuItemBackgroundSelected};
+  mixer[kColorAshSystemUIMenuSeparator] = {kColorMenuSeparator};
   if (dark_window) {
     const SkColor base_color =
         high_elevation
