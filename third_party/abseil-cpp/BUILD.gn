@@ -199,8 +199,6 @@ if (build_with_chromium) {
         "absl/strings:cord_rep_btree_navigator_test",
         "absl/strings:cord_rep_btree_reader_test",
         "absl/strings:cord_rep_btree_test",
-        "absl/strings:cord_rep_concat_test",
-        "absl/strings:cord_rep_consume_test",
         "absl/strings:cord_rep_crc_test",
         "absl/strings:cordz_functions_test",
         "absl/strings:cordz_info_statistics_test",

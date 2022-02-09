@@ -96,10 +96,7 @@ static constexpr uint64_t min_length[] = {
 
 static const int kMinLengthSize = ABSL_ARRAYSIZE(min_length);
 
-static inline bool btree_enabled() {
-  return cord_internal::cord_btree_enabled.load(
-      std::memory_order_relaxed);
-}
+static inline constexpr bool btree_enabled() { return true; }
 
 static inline bool IsRootBalanced(CordRep* node) {
   if (!node->IsConcat()) {

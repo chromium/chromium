@@ -231,15 +231,7 @@ ABSL_NAMESPACE_END
 // and with our without expected CRCs being set on the subject Cords.
 class CordTest : public testing::TestWithParam<int> {
  public:
-  CordTest() : was_btree_(absl::cord_internal::cord_btree_enabled.load()) {
-    absl::cord_internal::cord_btree_enabled.store(UseBtree());
-  }
-  ~CordTest() override {
-    absl::cord_internal::cord_btree_enabled.store(was_btree_);
-  }
-
   // Returns true if test is running with btree enabled.
-  bool UseBtree() const { return GetParam() == 1 || GetParam() == 3; }
   bool UseCrc() const { return GetParam() == 2 || GetParam() == 3; }
   void MaybeHarden(absl::Cord& c) {
     if (UseCrc()) {
@@ -255,26 +247,18 @@ class CordTest : public testing::TestWithParam<int> {
   static std::string ToString(testing::TestParamInfo<int> param) {
     switch (param.param) {
       case 0:
-        return "Concat";
-      case 1:
         return "Btree";
-      case 2:
-        return "ConcatHardened";
-      case 3:
+      case 1:
         return "BtreeHardened";
       default:
         assert(false);
         return "???";
     }
   }
-
- private:
-  const bool was_btree_;
 };
 
-INSTANTIATE_TEST_SUITE_P(WithParam, CordTest, testing::Values(0, 1, 2, 3),
+INSTANTIATE_TEST_SUITE_P(WithParam, CordTest, testing::Values(0, 1),
                          CordTest::ToString);
-
 
 TEST(CordRepFlat, AllFlatCapacities) {
   // Explicitly and redundantly assert built-in min/max limits
@@ -1561,8 +1545,6 @@ TEST(CordTest, CordMemoryUsageFlatHardenedAndShared) {
 }
 
 TEST(CordTest, CordMemoryUsageBTree) {
-  absl::cord_internal::enable_cord_btree(true);
-
   absl::Cord cord1;
   size_t flats1_size = 0;
   absl::Cord flats1[4] = {MakeCord(1000, 'a'), MakeCord(1100, 'a'),
@@ -1608,57 +1590,6 @@ TEST(CordTest, CordMemoryUsageBTree) {
             sizeof(absl::Cord) + sizeof(CordRepBtree) + rep1_size + rep2_size);
   EXPECT_EQ(cord.EstimatedMemoryUsage(kFairShare),
             sizeof(absl::Cord) + sizeof(CordRepBtree) + rep1_shared_size / 2 +
-                rep2_size);
-}
-
-TEST(CordTest, CordMemoryUsageConcat) {
-  absl::cord_internal::enable_cord_btree(false);
-
-  absl::Cord cord1;
-  size_t flats1_size = 0;
-  absl::Cord flats1[4] = {MakeCord(1000, 'a'), MakeCord(1100, 'a'),
-                          MakeCord(1200, 'a'), MakeCord(1300, 'a')};
-  for (absl::Cord flat : flats1) {
-    flats1_size += absl::CordTestPeer::Tree(flat)->flat()->AllocatedSize();
-    cord1.Append(std::move(flat));
-  }
-
-  // Make sure the created cord is a CONCAT tree. Under some builds such as
-  // windows DLL, we may have ODR like effects on the flag, meaning the DLL
-  // code will run with the picked up default.
-  if (!absl::CordTestPeer::Tree(cord1)->IsConcat()) {
-    ABSL_RAW_LOG(WARNING, "Cord library code not respecting btree flag");
-    return;
-  }
-
-  size_t rep1_size = sizeof(CordRepConcat) * 3 + flats1_size;
-  size_t rep1_shared_size = sizeof(CordRepConcat) * 3 + flats1_size / 2;
-
-  EXPECT_EQ(cord1.EstimatedMemoryUsage(), sizeof(absl::Cord) + rep1_size);
-  EXPECT_EQ(cord1.EstimatedMemoryUsage(kFairShare),
-            sizeof(absl::Cord) + rep1_shared_size);
-
-  absl::Cord cord2;
-  size_t flats2_size = 0;
-  absl::Cord flats2[4] = {MakeCord(600, 'a'), MakeCord(700, 'a'),
-                          MakeCord(800, 'a'), MakeCord(900, 'a')};
-  for (absl::Cord& flat : flats2) {
-    flats2_size += absl::CordTestPeer::Tree(flat)->flat()->AllocatedSize();
-    cord2.Append(std::move(flat));
-  }
-
-  size_t rep2_size = sizeof(CordRepConcat) * 3 + flats2_size;
-
-  EXPECT_EQ(cord2.EstimatedMemoryUsage(), sizeof(absl::Cord) + rep2_size);
-  EXPECT_EQ(cord2.EstimatedMemoryUsage(kFairShare),
-            sizeof(absl::Cord) + rep2_size);
-
-  absl::Cord cord(cord1);
-  cord.Append(std::move(cord2));
-  EXPECT_EQ(cord.EstimatedMemoryUsage(),
-            sizeof(absl::Cord) + sizeof(CordRepConcat) + rep1_size + rep2_size);
-  EXPECT_EQ(cord.EstimatedMemoryUsage(kFairShare),
-            sizeof(absl::Cord) + sizeof(CordRepConcat) + rep1_shared_size / 2 +
                 rep2_size);
 }
 

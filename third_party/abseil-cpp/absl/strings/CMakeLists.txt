@@ -935,40 +935,6 @@ absl_cc_test(
 
 absl_cc_test(
   NAME
-    cord_rep_consume_test
-  SRCS
-    "internal/cord_rep_consume_test.cc"
-  COPTS
-    ${ABSL_TEST_COPTS}
-  DEPS
-    absl::base
-    absl::config
-    absl::cord_internal
-    absl::core_headers
-    absl::function_ref
-    absl::raw_logging_internal
-    absl::strings
-    GTest::gmock_main
-)
-
-absl_cc_test(
-  NAME
-    cord_rep_concat_test
-  SRCS
-    "internal/cord_rep_concat_test.cc"
-  COPTS
-    ${ABSL_TEST_COPTS}
-  DEPS
-    absl::base
-    absl::config
-    absl::cord_internal
-    absl::cord_rep_test_util
-    absl::core_headers
-    GTest::gmock_main
-)
-
-absl_cc_test(
-  NAME
     cord_rep_btree_test
   SRCS
     "internal/cord_rep_btree_test.cc"

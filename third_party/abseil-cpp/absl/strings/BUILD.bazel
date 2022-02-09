@@ -309,20 +309,6 @@ cc_library(
 )
 
 cc_test(
-    name = "cord_rep_concat_test",
-    size = "small",
-    srcs = ["internal/cord_rep_concat_test.cc"],
-    copts = ABSL_TEST_COPTS,
-    visibility = ["//visibility:private"],
-    deps = [
-        ":cord_internal",
-        ":cord_rep_test_util",
-        "//absl/base:config",
-        "@com_google_googletest//:gtest_main",
-    ],
-)
-
-cc_test(
     name = "cord_rep_btree_test",
     size = "medium",
     srcs = ["internal/cord_rep_btree_test.cc"],
@@ -754,22 +740,6 @@ cc_test(
         "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/base:raw_logging_internal",
-        "@com_google_googletest//:gtest_main",
-    ],
-)
-
-cc_test(
-    name = "cord_rep_consume_test",
-    size = "medium",
-    srcs = ["internal/cord_rep_consume_test.cc"],
-    copts = ABSL_TEST_COPTS,
-    visibility = ["//visibility:private"],
-    deps = [
-        ":cord_internal",
-        ":strings",
-        "//absl/base:config",
-        "//absl/base:core_headers",
-        "//absl/debugging:leak_check",
         "@com_google_googletest//:gtest_main",
     ],
 )

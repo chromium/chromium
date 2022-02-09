@@ -211,7 +211,7 @@ size_t GetEstimatedUsage(const CordRep* rep) {
     AnalyzeDataEdge(repref, raw_usage);
   } else if (repref.rep->tag == BTREE) {
     AnalyzeBtree(repref, raw_usage);
-  } else if (repref.rep->tag == CONCAT) {
+  } else if (repref.rep->IsConcat()) {
     AnalyzeConcat(repref, raw_usage);
   } else if (repref.rep->tag == RING) {
     AnalyzeRing(repref, raw_usage);

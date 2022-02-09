@@ -120,7 +120,7 @@ using EnableIfFloat =
 
 // Duration
 //
-// The `absl::Duration` class represents a signed, fixed-length span of time.
+// The `absl::Duration` class represents a signed, fixed-length amount of time.
 // A `Duration` is generated using a unit-specific factory function, or is
 // the result of subtracting one `absl::Time` from another. Durations behave
 // like unit-safe integers and they support all the natural integer-like

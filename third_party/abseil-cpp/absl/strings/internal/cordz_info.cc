@@ -98,7 +98,7 @@ class CordRepAnalyzer {
         AnalyzeRing(repref);
       } else if (repref.rep->tag == BTREE) {
         AnalyzeBtree(repref);
-      } else if (repref.rep->tag == CONCAT) {
+      } else if (repref.rep->IsConcat()) {
         AnalyzeConcat(repref);
       } else {
         // We should have either a concat, btree, or ring node if not null.
@@ -145,8 +145,8 @@ class CordRepAnalyzer {
   // Asserts that `rr.rep` is a concat node or null.
   static RepRef AssertConcat(RepRef repref) {
     const CordRep* rep = repref.rep;
-    assert(rep == nullptr || rep->tag == CONCAT);
-    return (rep != nullptr && rep->tag == CONCAT) ? repref : RepRef{nullptr, 0};
+    assert(rep == nullptr || rep->IsConcat());
+    return (rep != nullptr && rep->IsConcat()) ? repref : RepRef{nullptr, 0};
   }
 
   // Counts a flat of the provide allocated size

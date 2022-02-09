@@ -49,6 +49,7 @@ inline CordRep* Substring(CordRep* rep, size_t offset, size_t n) {
     rep = rep->substring()->child;
   }
 
+  assert(rep->IsExternal() || rep->IsFlat());
   CordRepSubstring* substring = new CordRepSubstring();
   substring->length = n;
   substring->tag = SUBSTRING;

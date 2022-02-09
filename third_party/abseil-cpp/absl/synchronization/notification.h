@@ -52,6 +52,7 @@
 
 #include <atomic>
 
+#include "absl/base/attributes.h"
 #include "absl/base/macros.h"
 #include "absl/synchronization/mutex.h"
 #include "absl/time/time.h"
@@ -74,7 +75,7 @@ class Notification {
   // Notification::HasBeenNotified()
   //
   // Returns the value of the notification's internal "notified" state.
-  bool HasBeenNotified() const {
+  ABSL_MUST_USE_RESULT bool HasBeenNotified() const {
     return HasBeenNotifiedInternal(&this->notified_yet_);
   }
 

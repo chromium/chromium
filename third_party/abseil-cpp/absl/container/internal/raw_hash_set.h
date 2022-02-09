@@ -535,15 +535,19 @@ size_t SelectBucketCountForIterRange(InputIter first, InputIter last,
 }
 
 inline void AssertIsFull(ctrl_t* ctrl) {
-  ABSL_HARDENING_ASSERT((ctrl != nullptr && IsFull(*ctrl)) &&
-                        "Invalid operation on iterator. The element might have "
-                        "been erased, or the table might have rehashed.");
+  ABSL_HARDENING_ASSERT(
+      (ctrl != nullptr && IsFull(*ctrl)) &&
+      "Invalid operation on iterator. The element might have "
+      "been erased, the table might have rehashed, or this may "
+      "be an end() iterator.");
 }
 
 inline void AssertIsValid(ctrl_t* ctrl) {
-  ABSL_HARDENING_ASSERT((ctrl == nullptr || IsFull(*ctrl)) &&
-                        "Invalid operation on iterator. The element might have "
-                        "been erased, or the table might have rehashed.");
+  ABSL_HARDENING_ASSERT(
+      (ctrl == nullptr || IsFull(*ctrl)) &&
+      "Invalid operation on iterator. The element might have "
+      "been erased, the table might have rehashed, or this may "
+      "be an end() iterator.");
 }
 
 struct FindInfo {

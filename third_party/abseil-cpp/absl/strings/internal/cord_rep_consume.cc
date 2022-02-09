@@ -66,7 +66,7 @@ void Consume(bool forward, CordRep* rep, ConsumeFn consume_fn) {
   absl::InlinedVector<Entry, 40> stack;
 
   for (;;) {
-    if (rep->tag == CONCAT) {
+    if (rep->IsConcat()) {
       std::array<CordRep*, 2> res = ClipConcat(rep->concat());
       CordRep* left = res[0];
       CordRep* right = res[1];

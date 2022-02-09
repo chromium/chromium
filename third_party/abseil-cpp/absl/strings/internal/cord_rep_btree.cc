@@ -119,6 +119,7 @@ CordRepSubstring* CreateSubstring(CordRep* rep, size_t offset, size_t n) {
     rep = CordRep::Ref(substring->child);
     CordRep::Unref(substring);
   }
+  assert(rep->IsExternal() || rep->IsFlat());
   CordRepSubstring* substring = new CordRepSubstring();
   substring->length = n;
   substring->tag = SUBSTRING;

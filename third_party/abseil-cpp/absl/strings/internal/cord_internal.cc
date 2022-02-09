@@ -27,7 +27,6 @@ namespace absl {
 ABSL_NAMESPACE_BEGIN
 namespace cord_internal {
 
-ABSL_CONST_INIT std::atomic<bool> cord_btree_enabled(kCordEnableBtreeDefault);
 ABSL_CONST_INIT std::atomic<bool> cord_ring_buffer_enabled(
     kCordEnableRingBufferDefault);
 ABSL_CONST_INIT std::atomic<bool> shallow_subcords_enabled(
@@ -40,7 +39,7 @@ void CordRep::Destroy(CordRep* rep) {
   absl::InlinedVector<CordRep*, Constants::kInlinedVectorSize> pending;
   while (true) {
     assert(!rep->refcount.IsImmortal());
-    if (rep->tag == CONCAT) {
+    if (rep->IsConcat()) {
       CordRepConcat* rep_concat = rep->concat();
       CordRep* right = rep_concat->right;
       if (!right->refcount.Decrement()) {
