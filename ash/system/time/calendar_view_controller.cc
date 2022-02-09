@@ -79,8 +79,6 @@ void CalendarViewController::UpdateMonth(
       base::TimeFormatWithPattern(current_month_first_date, "MMM YYYY")) {
     return;
   }
-
-  was_on_later_month_ = current_date_ > current_month_first_date;
   current_date_ = current_month_first_date;
   for (auto& observer : observers_) {
     observer.OnMonthChanged(

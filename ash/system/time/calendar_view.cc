@@ -670,8 +670,7 @@ void CalendarView::OnMonthChanged(const base::Time::Exploded current_month) {
 
   const int header_height = header_->GetPreferredSize().height();
   gfx::Vector2dF moving_location = gfx::Vector2dF(
-      0, calendar_view_controller_->was_on_later_month() ? -header_height / 2
-                                                         : header_height / 2);
+      0, is_scrolling_up_ ? -header_height / 2 : header_height / 2);
   gfx::Transform initial_state;
   initial_state.Translate(moving_location);
   set_should_header_animate(false);
@@ -938,17 +937,25 @@ void CalendarView::ScrollDownOneMonthAndAutoScroll() {
 }
 
 void CalendarView::ScrollOneMonthWithAnimation(bool is_scrolling_up) {
+  is_scrolling_up_ = is_scrolling_up;
   if (is_resetting_scroll_)
     return;
 
   if (event_list_container_) {
+    // If it is animating to open this `event_list_container`, disable the
+    // up/down buttons.
+    if (!should_months_animate_ || !should_header_animate_)
+      return;
     ScrollOneRowWithAnimation(is_scrolling_up);
     return;
   }
 
   // If there's already an existing animation, restores each layer's visibility
   // and position.
-  if (!should_months_animate_) {
+  if (!should_months_animate_ || !should_header_animate_) {
+    RestoreHeadersStatus();
+    set_should_months_animate(false);
+    set_should_header_animate(false);
     if (is_scrolling_up) {
       ScrollUpOneMonthAndAutoScroll();
       return;
@@ -958,6 +965,7 @@ void CalendarView::ScrollOneMonthWithAnimation(bool is_scrolling_up) {
   }
 
   set_should_months_animate(false);
+  set_should_header_animate(false);
   gfx::Vector2dF moving_up_location = gfx::Vector2dF(
       0, previous_month_->GetPreferredSize().height() +
              current_label_->GetPreferredSize().height() +
@@ -973,8 +981,7 @@ void CalendarView::ScrollOneMonthWithAnimation(bool is_scrolling_up) {
 
   const int header_height = header_->GetPreferredSize().height();
   const gfx::Vector2dF header_moving_location = gfx::Vector2dF(
-      0, calendar_view_controller_->was_on_later_month() ? header_height / 2
-                                                         : -header_height / 2);
+      0, is_scrolling_up_ ? header_height / 2 : -header_height / 2);
   gfx::Transform header_moving;
   header_moving.Translate(header_moving_location);
 
@@ -985,7 +992,7 @@ void CalendarView::ScrollOneMonthWithAnimation(bool is_scrolling_up) {
           [](base::WeakPtr<CalendarView> calendar_view, bool is_scrolling_up) {
             if (!calendar_view)
               return;
-            calendar_view->set_should_months_animate(true);
+            calendar_view->set_should_header_animate(true);
             is_scrolling_up ? calendar_view->ScrollUpOneMonthAndAutoScroll()
                             : calendar_view->ScrollDownOneMonthAndAutoScroll();
           },
@@ -1017,6 +1024,7 @@ void CalendarView::ScrollOneMonthWithAnimation(bool is_scrolling_up) {
 }
 
 void CalendarView::ScrollOneRowWithAnimation(bool is_scrolling_up) {
+  is_scrolling_up_ = is_scrolling_up;
   scroll_view_->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
   base::AutoReset<bool> is_resetting_scrolling(&is_resetting_scroll_, true);

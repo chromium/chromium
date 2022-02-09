@@ -357,6 +357,27 @@ TEST_F(CalendarViewTest, ButtonFunctions) {
   EXPECT_EQ(u"November", GetNextLabelText());
   EXPECT_EQ(u"October", month_header()->GetText());
   EXPECT_EQ(u"2021", header_year()->GetText());
+
+  // Multiple clicking on the up/down buttons.
+  ScrollUpOneMonth();
+  ScrollUpOneMonth();
+  ScrollUpOneMonth();
+  ScrollUpOneMonth();
+  EXPECT_EQ(u"May", GetPreviousLabelText());
+  EXPECT_EQ(u"June", GetCurrentLabelText());
+  EXPECT_EQ(u"July", GetNextLabelText());
+  EXPECT_EQ(u"June", month_header()->GetText());
+  EXPECT_EQ(u"2021", header_year()->GetText());
+
+  ScrollDownOneMonth();
+  ScrollDownOneMonth();
+  ScrollDownOneMonth();
+  ScrollDownOneMonth();
+  EXPECT_EQ(u"September", GetPreviousLabelText());
+  EXPECT_EQ(u"October", GetCurrentLabelText());
+  EXPECT_EQ(u"November", GetNextLabelText());
+  EXPECT_EQ(u"October", month_header()->GetText());
+  EXPECT_EQ(u"2021", header_year()->GetText());
 }
 
 // For all the Focusing tests below, Jun, 2021 is used.
@@ -684,6 +705,7 @@ class CalendarViewAnimationTest : public AshTestBase {
   views::View* previous_label() { return calendar_view_->previous_label_; }
   views::View* current_label() { return calendar_view_->current_label_; }
   views::View* next_label() { return calendar_view_->next_label_; }
+  bool is_scrolling_up() { return calendar_view_->is_scrolling_up_; }
 
   void ScrollUpOneMonth() {
     calendar_view_->ScrollOneMonthWithAnimation(/*is_scrolling_up=*/true);
@@ -778,6 +800,8 @@ TEST_F(CalendarViewAnimationTest, MonthAndHeaderAnimation) {
   // Scrolls to the next month.
   ScrollDownOneMonth();
 
+  EXPECT_FALSE(is_scrolling_up());
+
   // If scrolls down, the month views and labels will be animating.
   EXPECT_EQ(1.0f, header()->layer()->opacity());
   task_environment()->FastForwardBy(
@@ -831,6 +855,8 @@ TEST_F(CalendarViewAnimationTest, MonthAndHeaderAnimation) {
   // Scrolls to the previous month.
   ScrollUpOneMonth();
 
+  EXPECT_TRUE(is_scrolling_up());
+
   // If scrolls up, the month views and labels will be animating.
   EXPECT_EQ(1.0f, header()->layer()->opacity());
   task_environment()->FastForwardBy(
@@ -855,6 +881,29 @@ TEST_F(CalendarViewAnimationTest, MonthAndHeaderAnimation) {
       calendar_test_utils::kAnimationSettleDownDuration);
 
   EXPECT_EQ(u"October", month_header()->GetText());
+  EXPECT_EQ(u"2021", header_year()->GetText());
+
+  // Multiple clicking on the up/down buttons. Here only checks the label since
+  // if it scrolls too fast some scroll actions might be skipped due to
+  // `is_resetting_scroll_` == true.
+  ScrollUpOneMonth();
+  ScrollUpOneMonth();
+  ScrollUpOneMonth();
+  ScrollUpOneMonth();
+  ScrollUpOneMonth();
+  ScrollUpOneMonth();
+  task_environment()->FastForwardBy(
+      calendar_test_utils::kAnimationSettleDownDuration);
+  EXPECT_EQ(u"2021", header_year()->GetText());
+
+  ScrollDownOneMonth();
+  ScrollDownOneMonth();
+  ScrollDownOneMonth();
+  ScrollDownOneMonth();
+  ScrollDownOneMonth();
+  ScrollDownOneMonth();
+  task_environment()->FastForwardBy(
+      calendar_test_utils::kAnimationSettleDownDuration);
   EXPECT_EQ(u"2021", header_year()->GetText());
 }
 

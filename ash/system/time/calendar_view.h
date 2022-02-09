@@ -258,6 +258,10 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   // animating, or cooling down from the last animation.
   bool should_months_animate_ = true;
 
+  // This is used to define the animation directions for updating the header and
+  // month views.
+  bool is_scrolling_up_ = true;
+
   // Timer that fires when we've "settled" on, i.e. finished scrolling to, a
   // currently-visible month
   base::RetainingOneShotTimer scrolling_settled_timer_;

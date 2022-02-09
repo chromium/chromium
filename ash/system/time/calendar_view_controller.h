@@ -103,11 +103,6 @@ class ASH_EXPORT CalendarViewController {
   // month if current month is not today's month.
   base::Time current_date() { return current_date_; }
 
-  // Returns true if before getting to the on-screen-month, it was showing a
-  // later month; returns false if it was showing an earlier month. This is used
-  // to define the animation directions for updating the header and month views.
-  bool was_on_later_month() { return was_on_later_month_; }
-
   // The currently selected date to show the event list.
   absl::optional<base::Time> selected_date() { return selected_date_; }
 
@@ -251,9 +246,6 @@ class ASH_EXPORT CalendarViewController {
   // The expanded area available height, which will be used to set the expanded
   // event list min height.
   int expanded_area_available_height_ = 0;
-
-  // If before getting to the on-screen-month, it was showing a later month.
-  bool was_on_later_month_ = false;
 
   // If the event list is expanded.
   bool is_event_list_showing_ = false;
