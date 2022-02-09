@@ -326,11 +326,6 @@
     "args": ["--renderer-process-limit=1"]
   },
   {
-    "prefix": "reporting-api",
-    "bases": ["external/wpt/content-security-policy/reporting-api"],
-    "args": ["--enable-features=Reporting"]
-  },
-  {
     "prefix": "compositor_threaded_scrollbar_scrolling",
     "bases": ["fast/scrolling/scrollbars",
               "paint/invalidation/scroll/sticky"],

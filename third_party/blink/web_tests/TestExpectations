@@ -7150,7 +7150,6 @@ crbug.com/1250457 [ Mac ] virtual/not-site-per-process/external/wpt/html/browser
 crbug.com/1250457 [ Mac ] virtual/portals/http/tests/devtools/portals/portals-console.js [ Skip Timeout ]
 crbug.com/1250457 [ Mac ] virtual/prefer_compositing_to_lcd_text/scrollbars/custom-scrollbar-inactive-pseudo.html [ Timeout ]
 crbug.com/1250457 [ Mac ] virtual/prerender/wpt_internal/prerender/csp-prefetch-src-allow.html [ Skip Timeout ]
-crbug.com/1250457 [ Mac ] virtual/reporting-api/external/wpt/content-security-policy/reporting-api/reporting-api-report-to-only-sends-reports-to-first-endpoint.https.sub.html [ Timeout ]
 crbug.com/1250457 [ Mac ] virtual/scalefactor200/css3/filters/filter-animation-multi-hw.html [ Timeout ]
 crbug.com/1250457 [ Mac ] virtual/scroll-unification/fast/events/space-scroll-textinput-canceled.html [ Timeout ]
 crbug.com/1250457 [ Mac ] virtual/shared_array_buffer_on_desktop/fast/css/text-overflow-ellipsis-bidi.html [ Timeout ]
