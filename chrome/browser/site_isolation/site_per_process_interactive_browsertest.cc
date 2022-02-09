@@ -257,8 +257,14 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
 //
 // The test then presses <tab> six times to cycle through focused elements 1-6.
 // The test then repeats this with <shift-tab> to cycle in reverse order.
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1295296): Fails on Mac 10.11.
+#define MAYBE_SequentialFocusNavigation DISABLED_SequentialFocusNavigation
+#else
+#define MAYBE_SequentialFocusNavigation SequentialFocusNavigation
+#endif
 IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
-                       SequentialFocusNavigation) {
+                       MAYBE_SequentialFocusNavigation) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b,c)"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
