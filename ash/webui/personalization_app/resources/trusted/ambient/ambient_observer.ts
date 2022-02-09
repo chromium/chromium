@@ -4,7 +4,7 @@
 
 import {AmbientObserverInterface, AmbientObserverReceiver, AmbientProviderInterface, TopicSource} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
-import {setAmbientModeEnabledAction} from './ambient_actions.js';
+import {setAmbientModeEnabledAction, setTopicSourceAction} from './ambient_actions.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 
 /** @fileoverview listens for updates on color mode changes. */
@@ -43,9 +43,7 @@ export class AmbientObserver implements AmbientObserverInterface {
   }
 
   onTopicSourceChanged(topicSource: TopicSource) {
-    // TODO: Handled in a chained follow up cl.
-    console.log('Received topicSource:', topicSource);
-    // const store = PersonalizationStore.getInstance();
-    // store.dispatch(setTopicSourceAction(topicSource));
+    const store = PersonalizationStore.getInstance();
+    store.dispatch(setTopicSourceAction(topicSource));
   }
 }

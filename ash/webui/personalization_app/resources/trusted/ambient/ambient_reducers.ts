@@ -20,7 +20,19 @@ export function ambientModeEnabledReducer(
   }
 }
 
+export function topicSourceReducer(
+    state: AmbientState['topicSource'], action: Actions,
+    _: PersonalizationState): AmbientState['topicSource'] {
+  switch (action.name) {
+    case AmbientActionName.SET_TOPIC_SOURCE:
+      return action.topicSource;
+    default:
+      return state;
+  }
+}
+
 export const ambientReducers:
     {[K in keyof AmbientState]: ReducerFunction<AmbientState[K]>} = {
       ambientModeEnabled: ambientModeEnabledReducer,
+      topicSource: topicSourceReducer,
     };

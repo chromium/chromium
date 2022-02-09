@@ -30,6 +30,11 @@ export class TestAmbientProvider extends TestBrowserProxy implements
       this.ambientObserverRemote!.onAmbientModeEnabledChanged(
           /*ambientModeEnabled=*/ true);
     }, 0);
+
+    // Add an arbitrary delay for simulation.
+    window.setTimeout(() => {
+      this.ambientObserverRemote!.onTopicSourceChanged(TopicSource.kArtGallery);
+    }, 10);
   }
 
   setAmbientModeEnabled(ambientModeEnabled: boolean) {

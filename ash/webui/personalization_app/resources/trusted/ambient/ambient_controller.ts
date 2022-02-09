@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AmbientProviderInterface} from '../personalization_app.mojom-webui.js';
+import {AmbientProviderInterface, TopicSource} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
-import {setAmbientModeEnabledAction} from './ambient_actions.js';
+import {setAmbientModeEnabledAction, setTopicSourceAction} from './ambient_actions.js';
 
 /**
  * @fileoverview contains all of the functions to interact with ambient mode
@@ -21,4 +21,14 @@ export function setAmbientModeEnabled(
   // Dispatch action to toggle the button to indicate if the ambient mode is
   // enabled.
   store.dispatch(setAmbientModeEnabledAction(ambientModeEnabled));
+}
+
+// Set ambient mode topic source.
+export function setTopicSource(
+    topicSource: TopicSource, provider: AmbientProviderInterface,
+    store: PersonalizationStore): void {
+  provider.setTopicSource(topicSource);
+
+  // Dispatch action to select topic source.
+  store.dispatch(setTopicSourceAction(topicSource));
 }

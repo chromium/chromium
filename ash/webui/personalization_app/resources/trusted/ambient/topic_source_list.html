@@ -24,6 +24,8 @@
 
 <iron-list id="topicSourceList" items="[[topicSources]]">
   <template>
-    <topic-source-item></topic-source-item>
+    <topic-source-item topic-source="[[item]]"
+        checked="[[isSelected_(item, selectedTopicSource)]]">
+    </topic-source-item>
   </template>
 </iron-list>

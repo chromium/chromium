@@ -13,12 +13,14 @@ import 'chrome://personalization/trusted/ambient/topic_source_list.js';
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {TopicSource} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {setAmbientModeEnabled} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 import {AmbientObserver} from './ambient_observer.js';
 import {ToggleRowElement} from './toggle_row.js';
+import {TopicSourceListElement} from './topic_source_list.js';
 
 export class AmbientSubpage extends WithPersonalizationStore {
   static get is() {
@@ -37,17 +39,21 @@ export class AmbientSubpage extends WithPersonalizationStore {
         value:
             'When your screen is idle, show photos, time, weather, and media info'
       },
+      topicSource_: Number,
     };
   }
 
-  ambientModeEnabled_: boolean;
+  private ambientModeEnabled_: boolean;
   private description_: string;
+  private topicSource_: TopicSource|null = null;
 
   connectedCallback() {
     super.connectedCallback();
     AmbientObserver.initAmbientObserverIfNeeded();
     this.watch<AmbientSubpage['ambientModeEnabled_']>(
         'ambientModeEnabled_', state => state.ambient.ambientModeEnabled);
+    this.watch<AmbientSubpage['topicSource_']>(
+        'topicSource_', state => state.ambient.topicSource);
     this.updateFromStore();
   }
 

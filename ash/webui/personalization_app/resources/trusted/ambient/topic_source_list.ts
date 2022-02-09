@@ -7,9 +7,12 @@
  * behaviors similar to a radio button group, e.g. single selection.
  */
 
+import 'chrome://personalization/trusted/ambient/topic_source_item.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {TopicSource} from '../personalization_app.mojom-webui.js';
 
 export class TopicSourceListElement extends PolymerElement {
   static get is() {
@@ -24,9 +27,16 @@ export class TopicSourceListElement extends PolymerElement {
     return {
       topicSources: {
         type: Array,
-        value: ['art', 'photos'],
+        value: [TopicSource.kGooglePhotos, TopicSource.kArtGallery],
       },
+
+      selectedTopicSource: TopicSource,
     };
+  }
+
+  private isSelected_(
+      topicSource: TopicSource, selectedTopicSource: TopicSource) {
+    return selectedTopicSource === topicSource;
   }
 }
 

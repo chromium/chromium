@@ -11,9 +11,15 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-export class TopicSourceItemElement extends PolymerElement {
+import {TopicSource} from '../personalization_app.mojom-webui.js';
+import {WithPersonalizationStore} from '../personalization_store.js';
+
+import {setTopicSource} from './ambient_controller.js';
+import {getAmbientProvider} from './ambient_interface_provider.js';
+
+export class TopicSourceItemElement extends WithPersonalizationStore {
   static get is() {
     return 'topic-source-item';
   }
@@ -30,10 +36,26 @@ export class TopicSourceItemElement extends PolymerElement {
        */
       checked: {
         type: Boolean,
-        value: true,
+        value: false,
         reflectToAttribute: true,
       },
+
+      topicSource: TopicSource,
     };
+  }
+
+  checked: boolean;
+  topicSource: TopicSource;
+
+  ready() {
+    super.ready();
+
+    this.addEventListener('click', this.onItemSelected_);
+  }
+
+  private onItemSelected_(event: Event) {
+    event.stopPropagation();
+    setTopicSource(this.topicSource, getAmbientProvider(), this.getStore());
   }
 }
 
