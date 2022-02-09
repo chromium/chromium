@@ -174,6 +174,7 @@ void StabilityMetricsHelper::BrowserUtilityProcessLaunched(
     const std::string& metrics_name) {
   uint32_t hash = variations::HashName(metrics_name);
   base::UmaHistogramSparse("ChildProcess.Launched.UtilityProcessHash", hash);
+  RecordStabilityEvent(StabilityEventType::kUtilityLaunch);
 }
 
 void StabilityMetricsHelper::BrowserUtilityProcessCrashed(

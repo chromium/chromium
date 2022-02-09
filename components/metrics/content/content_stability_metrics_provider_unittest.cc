@@ -95,13 +95,15 @@ TEST_F(ContentStabilityMetricsProviderTest,
   histogram_tester.ExpectUniqueSample(
       "ChildProcess.Launched.UtilityProcessHash",
       variations::HashName(kTestUtilityProcessName), 1);
+  histogram_tester.ExpectBucketCount("Stability.Counts2",
+                                     StabilityEventType::kUtilityLaunch, 1);
   histogram_tester.ExpectUniqueSample(
       "ChildProcess.Crashed.UtilityProcessHash",
       variations::HashName(kTestUtilityProcessName), 2);
   histogram_tester.ExpectUniqueSample(
       "ChildProcess.Crashed.UtilityProcessExitCode", kExitCode, 2);
-  histogram_tester.ExpectUniqueSample("Stability.Counts2",
-                                      StabilityEventType::kUtilityCrash, 2);
+  histogram_tester.ExpectBucketCount("Stability.Counts2",
+                                     StabilityEventType::kUtilityCrash, 2);
 }
 
 TEST_F(ContentStabilityMetricsProviderTest, NotificationObserver) {
