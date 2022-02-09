@@ -140,6 +140,10 @@ void BreadcrumbManager::RemoveObserver(BreadcrumbManagerObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
+bool BreadcrumbManager::HasObserver(BreadcrumbManagerObserver* observer) {
+  return observers_.HasObserver(observer);
+}
+
 BreadcrumbManager::EventBucket::EventBucket(int minutes_elapsed)
     : minutes_elapsed(minutes_elapsed) {}
 BreadcrumbManager::EventBucket::EventBucket(const EventBucket&) = default;
