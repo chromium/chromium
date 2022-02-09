@@ -101,15 +101,16 @@ export class ScanOptions implements CameraUI {
   async onUpdateConfig(): Promise<void> {
     assert(!this.previewAvailable());
 
-    this.video = this.cameraManager.getPreviewVideo();
-    this.barcodeScanner = new BarcodeScanner(this.video.video, (value) => {
+    const video = this.cameraManager.getPreviewVideo();
+    this.video = video;
+    this.barcodeScanner = new BarcodeScanner(video.video, (value) => {
       barcodeChip.show(value);
     });
-    const {deviceId} = this.video.getVideoSettings();
+    const {deviceId} = video.getVideoSettings();
     this.documentCornerOverylay.attach(deviceId);
     const scanType = state.get(Mode.SCAN) ? this.getToggledScanOption() : null;
     (async () => {
-      await this.video.onExpired;
+      await video.onExpired;
       this.detachPreview();
     })();
     await this.updateOption(scanType);
@@ -159,6 +160,7 @@ export class ScanOptions implements CameraUI {
   }
 
   private stopBarcodeScanner() {
+    assert(this.barcodeScanner !== null);
     this.barcodeScanner.stop();
     barcodeChip.dismiss();
     state.set(state.State.ENABLE_SCAN_BARCODE, false);
