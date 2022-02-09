@@ -2,4 +2,4 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-photos_test_files = [ "modules/photos/module_test.js" ]
+photos_test_files = [ "modules/photos/module_test.ts" ]

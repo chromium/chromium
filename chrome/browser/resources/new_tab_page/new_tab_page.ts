@@ -12,6 +12,7 @@
 
 export {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 export {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
+export {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 export {NtpElement} from './app.js';
 export {BackgroundManager} from './background_manager.js';
 export {CustomizeDialogPage} from './customize_dialog_types.js';
@@ -32,10 +33,10 @@ export {ModuleHeaderElement} from './modules/module_header.js';
 export {ModuleRegistry} from './modules/module_registry.js';
 export {ModuleWrapperElement} from './modules/module_wrapper.js';
 export {DisableModuleEvent, DismissModuleEvent, ModulesElement} from './modules/modules.js';
-export {photosDescriptor} from './modules/photos/module.js';
+export {photosDescriptor, PhotosModuleElement} from './modules/photos/module.js';
 export {PhotosProxy} from './modules/photos/photos_module_proxy.js';
 export {RecipeModuleElement, recipeTasksDescriptor as recipeTasksV2Descriptor} from './modules/recipes_v2/module.js';
-export {recipeTasksDescriptor, shoppingTasksDescriptor} from './modules/task_module/module.js';
+export {recipeTasksDescriptor, shoppingTasksDescriptor, TaskModuleElement} from './modules/task_module/module.js';
 export {TaskModuleHandlerProxy} from './modules/task_module/task_module_handler_proxy.js';
 export {NewTabPageProxy} from './new_tab_page_proxy.js';
 export {RealboxElement} from './realbox/realbox.js';

@@ -4,9 +4,8 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {$$, shoppingTasksDescriptor, TaskModuleHandlerProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, CrAutoImgElement, DismissModuleEvent, shoppingTasksDescriptor, TaskModuleElement, TaskModuleHandlerProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {TaskModuleHandlerRemote, TaskModuleType} from 'chrome://new-tab-page/task_module.mojom-webui.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
@@ -14,8 +13,7 @@ import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
 import {installMock} from '../../test_support.js';
 
 suite('NewTabPageModulesTaskModuleTest', () => {
-  /** @type {!TestBrowserProxy} */
-  let handler;
+  let handler: TestBrowserProxy;
 
   setup(() => {
     document.body.innerHTML = '';
@@ -29,7 +27,8 @@ suite('NewTabPageModulesTaskModuleTest', () => {
     handler.setResultFor('getPrimaryTask', Promise.resolve({task: null}));
 
     // Act.
-    const moduleElement = await shoppingTasksDescriptor.initialize(0);
+    const moduleElement =
+        await shoppingTasksDescriptor.initialize(0) as TaskModuleElement;
 
     // Assert.
     assertEquals(1, handler.getCallCount('getPrimaryTask'));
@@ -70,43 +69,61 @@ suite('NewTabPageModulesTaskModuleTest', () => {
     handler.setResultFor('getPrimaryTask', Promise.resolve({task}));
 
     // Act.
-    const moduleElement = assert(await shoppingTasksDescriptor.initialize(0));
+    const moduleElement =
+        await shoppingTasksDescriptor.initialize(0) as TaskModuleElement;
+    assertTrue(!!moduleElement);
     document.body.append(moduleElement);
-    $$(moduleElement, '#taskItemsRepeat').render();
-    $$(moduleElement, '#relatedSearchesRepeat').render();
+    moduleElement.$.taskItemsRepeat.render();
+    moduleElement.$.relatedSearchesRepeat.render();
 
     // Assert.
     const products =
-        Array.from(moduleElement.shadowRoot.querySelectorAll('.task-item'));
+        moduleElement.shadowRoot!.querySelectorAll<HTMLAnchorElement>(
+            '.task-item');
     const pills =
-        Array.from(moduleElement.shadowRoot.querySelectorAll('.pill'));
+        moduleElement.shadowRoot!.querySelectorAll<HTMLAnchorElement>('.pill');
     assertEquals(1, handler.getCallCount('getPrimaryTask'));
     assertEquals(2, products.length);
     assertEquals(2, pills.length);
-    assertEquals('https://foo.com/', products[0].href);
+    assertEquals('https://foo.com/', products[0]!.href);
     assertEquals(
-        'https://foo.com/img.png', products[0].querySelector('img').autoSrc);
+        'https://foo.com/img.png',
+        products[0]!.querySelector<CrAutoImgElement>('img')!.autoSrc);
     assertEquals(
-        '1 gazillion dollars', products[0].querySelector('.price').innerText);
-    assertEquals('foo', products[0].querySelector('.name').innerText);
-    assertEquals('foo', products[0].querySelector('.name').title);
-    assertEquals('foo info', products[0].querySelector('.secondary').innerText);
-    assertEquals('https://bar.com/', products[1].href);
+        '1 gazillion dollars',
+        products[0]!.querySelector<HTMLElement>('.price')!.innerText);
     assertEquals(
-        'https://bar.com/img.png', products[1].querySelector('img').autoSrc);
+        'foo', products[0]!.querySelector<HTMLElement>('.name')!.innerText);
     assertEquals(
-        '2 gazillion dollars', products[1].querySelector('.price').innerText);
-    assertEquals('bar', products[1].querySelector('.name').innerText);
-    assertEquals('bar', products[1].querySelector('.name').title);
-    assertEquals('bar info', products[1].querySelector('.secondary').innerText);
-    assertEquals('https://baz.com/', pills[0].href);
-    assertEquals('baz', pills[0].querySelector('.search-text').innerText);
-    assertEquals('https://blub.com/', pills[1].href);
-    assertEquals('blub', pills[1].querySelector('.search-text').innerText);
+        'foo', products[0]!.querySelector<HTMLElement>('.name')!.title);
+    assertEquals(
+        'foo info',
+        products[0]!.querySelector<HTMLElement>('.secondary')!.innerText);
+    assertEquals('https://bar.com/', products[1]!.href);
+    assertEquals(
+        'https://bar.com/img.png',
+        products[1]!.querySelector<CrAutoImgElement>('img')!.autoSrc);
+    assertEquals(
+        '2 gazillion dollars',
+        products[1]!.querySelector<HTMLElement>('.price')!.innerText);
+    assertEquals(
+        'bar', products[1]!.querySelector<HTMLElement>('.name')!.innerText);
+    assertEquals(
+        'bar', products[1]!.querySelector<HTMLElement>('.name')!.title);
+    assertEquals(
+        'bar info',
+        products[1]!.querySelector<HTMLElement>('.secondary')!.innerText);
+    assertEquals('https://baz.com/', pills[0]!.href);
+    assertEquals(
+        'baz', pills[0]!.querySelector<HTMLElement>('.search-text')!.innerText);
+    assertEquals('https://blub.com/', pills[1]!.href);
+    assertEquals(
+        'blub',
+        pills[1]!.querySelector<HTMLElement>('.search-text')!.innerText);
   });
 
   test('products and pills are hidden when cutoff', async () => {
-    const repeat = (n, fn) => Array(n).fill(0).map(fn);
+    const repeat = (n: number, fn: () => any) => Array(n).fill(0).map(fn);
     handler.setResultFor('getPrimaryTask', Promise.resolve({
       task: {
         title: 'Hello world',
@@ -123,16 +140,19 @@ suite('NewTabPageModulesTaskModuleTest', () => {
                                     })),
       }
     }));
-    const moduleElement = assert(await shoppingTasksDescriptor.initialize(0));
+    const moduleElement =
+        await shoppingTasksDescriptor.initialize(0) as TaskModuleElement;
+    assertTrue(!!moduleElement);
     document.body.append(moduleElement);
-    $$(moduleElement, '#taskItemsRepeat').render();
-    $$(moduleElement, '#relatedSearchesRepeat').render();
+    moduleElement.$.taskItemsRepeat.render();
+    moduleElement.$.relatedSearchesRepeat.render();
     const getElements = () => Array.from(
-        moduleElement.shadowRoot.querySelectorAll('.task-item, .pill'));
+        moduleElement.shadowRoot!.querySelectorAll<HTMLAnchorElement>(
+            '.task-item, .pill'));
     assertEquals(40, getElements().length);
     const hiddenCount = () =>
         getElements().filter(el => el.style.visibility === 'hidden').length;
-    const checkHidden = async (width, count) => {
+    const checkHidden = async (width: string, count: number) => {
       const waitForVisibilityUpdate =
           eventToPromise('visibility-update', moduleElement);
       moduleElement.style.width = width;
@@ -180,17 +200,19 @@ suite('NewTabPageModulesTaskModuleTest', () => {
     handler.setResultFor('getPrimaryTask', Promise.resolve({task}));
 
     // Arrange.
-    const moduleElement = assert(await shoppingTasksDescriptor.initialize(0));
+    const moduleElement =
+        await shoppingTasksDescriptor.initialize(0) as TaskModuleElement;
+    assertTrue(!!moduleElement);
     document.body.append(moduleElement);
     await flushTasks();
 
     // Act.
     const waitForDismissEvent = eventToPromise('dismiss-module', moduleElement);
     const dismissButton =
-        moduleElement.shadowRoot.querySelector('ntp-module-header')
-            .shadowRoot.querySelector('#dismissButton');
+        moduleElement.shadowRoot!.querySelector('ntp-module-header')!
+            .shadowRoot!.querySelector<HTMLElement>('#dismissButton')!;
     dismissButton.click();
-    const dismissEvent = await waitForDismissEvent;
+    const dismissEvent: DismissModuleEvent = await waitForDismissEvent;
     const toastMessage = dismissEvent.detail.message;
     const restoreCallback = dismissEvent.detail.restoreCallback;
 
@@ -217,12 +239,14 @@ suite('NewTabPageModulesTaskModuleTest', () => {
       relatedSearches: [],
     };
     handler.setResultFor('getPrimaryTask', Promise.resolve({task}));
-    const moduleElement = assert(await shoppingTasksDescriptor.initialize(0));
+    const moduleElement =
+        await shoppingTasksDescriptor.initialize(0) as TaskModuleElement;
+    assertTrue(!!moduleElement);
     document.body.append(moduleElement);
 
     // Act.
-    $$(moduleElement, 'ntp-module-header')
-        .dispatchEvent(new Event('info-button-click'));
+    ($$(moduleElement, 'ntp-module-header')!
+     ).dispatchEvent(new Event('info-button-click'));
 
     // Assert.
     assertTrue(!!$$(moduleElement, 'ntp-info-dialog'));

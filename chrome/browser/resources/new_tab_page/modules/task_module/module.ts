@@ -8,7 +8,7 @@ import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
-import {DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeat, DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
 import {RelatedSearch, Task, TaskItem, TaskModuleType} from '../../task_module.mojom-webui.js';
@@ -18,9 +18,11 @@ import {ModuleDescriptor} from '../module_descriptor.js';
 import {getTemplate} from './module.html.js';
 import {TaskModuleHandlerProxy} from './task_module_handler_proxy.js';
 
-interface TaskModuleElement {
+export interface TaskModuleElement {
   $: {
     infoDialogRender: CrLazyRenderElement<InfoDialogElement>,
+    relatedSearchesRepeat: DomRepeat,
+    taskItemsRepeat: DomRepeat,
   };
 }
 
@@ -29,7 +31,7 @@ interface TaskModuleElement {
  * search journey and provides a way for the user to continue that search
  * journey.
  */
-class TaskModuleElement extends I18nMixin
+export class TaskModuleElement extends I18nMixin
 (PolymerElement) {
   static get is() {
     return 'ntp-task-module';
