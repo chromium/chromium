@@ -1142,6 +1142,9 @@ bool IsHeuristicEnabledForHostname(
     const std::string& lookalike_etld_plus_one,
     version_info::Channel channel) {
   DCHECK(!lookalike_etld_plus_one.empty());
+  if (!config_proto) {
+    return false;
+  }
   const unsigned char* bytes =
       reinterpret_cast<const unsigned char*>(lookalike_etld_plus_one.c_str());
   unsigned char data[base::kSHA1Length];
