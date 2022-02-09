@@ -3,6 +3,7 @@
   "compilerOptions": {
     "typeRoots": [
        "./../../../../../third_party/node/node_modules/@types"
-    ]
+    ],
+    "types": ["mocha"]
   }
 }
