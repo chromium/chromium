@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
@@ -463,7 +464,8 @@ void WifiLanMedium::FinishConnectAttempt(base::WaitableEvent* event,
   if (it == pending_connect_waitable_events_.end())
     return;
 
-  // TODO(https://crbug.com/1261238): Log ConnectResult metric.
+  base::UmaHistogramEnumeration("Nearby.Connections.WifiLan.ConnectResult",
+                                result);
 
   base::WaitableEvent* event_copy = *it;
   pending_connect_waitable_events_.erase(it);
@@ -477,7 +479,8 @@ void WifiLanMedium::FinishListenAttempt(base::WaitableEvent* event,
   if (it == pending_listen_waitable_events_.end())
     return;
 
-  // TODO(https://crbug.com/1261238): Log ListenResult metric.
+  base::UmaHistogramEnumeration("Nearby.Connections.WifiLan.ListenResult",
+                                result);
 
   base::WaitableEvent* event_copy = *it;
   pending_listen_waitable_events_.erase(it);

@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -126,7 +127,9 @@ void WifiLanServerSocket::OnAccepted(
     mojo::ScopedDataPipeProducerHandle send_stream) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  // TODO(https://crbug.com/1261238): Log metric.
+  base::UmaHistogramSparse("Nearby.Connections.WifiLan.Socket.AcceptResult",
+                           -net_error);
+
   if (net_error == net::OK) {
     DCHECK(remote_addr);
     VLOG(1) << "WifiLanServerSocket::" << __func__

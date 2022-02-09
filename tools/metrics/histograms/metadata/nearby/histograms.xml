@@ -231,6 +231,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Connections.WifiLan.ConnectResult"
+    enum="NearbyConnectionsWifiLanConnectResult" expires_after="2023-02-01">
+  <owner>nohle@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the result of trying to connect to another device's TCP server
+    socket. Emitted after a cross-device connection attempts to be established
+    over TCP sockets. Note: One device listens for incoming connections while
+    the other device tries to connect. This metric is logged by the connecting
+    device.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Connections.WifiLan.ListenResult"
+    enum="NearbyConnectionsWifiLanListenResult" expires_after="2023-02-01">
+  <owner>nohle@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the result of listening for and accepting incoming TCP socket
+    connections. Emitted after a cross-device connection attempts to be
+    established over TCP sockets. Note: One device listens for incoming
+    connections while the other device tries to connect. This metric is logged
+    by the listening device.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Connections.WifiLan.Socket.AcceptResult"
+    enum="NetErrorCodes" expires_after="2023-02-01">
+  <owner>nohle@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records the result of a TCP server socket accepting incoming connections.
+    This is a lower-level metric that tracks the result code from the TCP server
+    socket accept call made in the networking layer. Emitted after a
+    cross-device connection attempts to be established over TCP sockets. Note:
+    Only one device opens a server socket, which the other device attempts to
+    connect to.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Connections.{Medium}.Socket.{Operation}.Result"
     enum="BooleanSuccess" expires_after="2023-02-01">
   <owner>hansenmichael@google.com</owner>

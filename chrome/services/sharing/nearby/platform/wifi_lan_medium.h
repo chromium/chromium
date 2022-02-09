@@ -74,23 +74,29 @@ class WifiLanMedium : public api::WifiLanMedium {
       override;
 
  private:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class ConnectResult {
-    kSuccess,
-    kCanceled,
-    kErrorFailedToCreateTcpSocket,
+    kSuccess = 0,
+    kCanceled = 1,
+    kErrorFailedToCreateTcpSocket = 2,
+    kMaxValue = kErrorFailedToCreateTcpSocket,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class ListenResult {
-    kSuccess,
-    kCanceled,
-    kErrorInvalidPort,
-    kErrorFetchIpFailedToGetNetworkStateList,
-    kErrorFetchIpFailedToGetManagedProperties,
-    kErrorFetchIpMissingIpConfigs,
-    kErrorFetchIpNoValidLocalIpAddress,
-    kErrorFailedToCreateTcpServerSocket,
-    kErrorUnexpectedTcpServerSocketIpEndpoint,
-    kErrorFailedToCreateFirewallHole,
+    kSuccess = 0,
+    kCanceled = 1,
+    kErrorInvalidPort = 2,
+    kErrorFetchIpFailedToGetNetworkStateList = 3,
+    kErrorFetchIpFailedToGetManagedProperties = 4,
+    kErrorFetchIpMissingIpConfigs = 5,
+    kErrorFetchIpNoValidLocalIpAddress = 6,
+    kErrorFailedToCreateTcpServerSocket = 7,
+    kErrorUnexpectedTcpServerSocketIpEndpoint = 8,
+    kErrorFailedToCreateFirewallHole = 9,
+    kMaxValue = kErrorFailedToCreateFirewallHole,
   };
 
   /*==========================================================================*/

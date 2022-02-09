@@ -61887,6 +61887,25 @@ Called by update_use_counter_css.py.-->
   <int value="4" label="Utility process disconnected Connections mojo pipe"/>
 </enum>
 
+<enum name="NearbyConnectionsWifiLanConnectResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Canceled"/>
+  <int value="2" label="Error: Failed to create TCP socket"/>
+</enum>
+
+<enum name="NearbyConnectionsWifiLanListenResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Canceled"/>
+  <int value="2" label="Error: Invalid port"/>
+  <int value="3" label="Error fetching IP: Failed to get network state list"/>
+  <int value="4" label="Error fetching IP: Failed to get managed properties"/>
+  <int value="5" label="Error fetching IP: Missing IP configs"/>
+  <int value="6" label="Error fetching IP: No valid local IP address"/>
+  <int value="7" label="Error: Failed to create TCP server socket"/>
+  <int value="8" label="Error: Unexpected TCP server socket IP endpoint"/>
+  <int value="9" label="Error: Failed to create firewall hole"/>
+</enum>
+
 <enum name="NearbyShareArcBridgeFailResult">
   <int value="0" label="Instance is null."/>
   <int value="1" label="Instance already exists."/>
