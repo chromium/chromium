@@ -1267,7 +1267,7 @@ input::-webkit-datetime-edit-hour-field[disabled],
 input::-webkit-datetime-edit-millisecond-field[disabled],
 input::-webkit-datetime-edit-minute-field[disabled],
 input::-webkit-datetime-edit-second-field[disabled] {
-    color: -internal-light-dark(GrayText, #000000);
+    color: -internal-light-dark(GrayText, rgb(165, 165, 165));
 }
 
 a:-webkit-any-link {
