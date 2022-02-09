@@ -7,13 +7,12 @@ import {
   assert,
   assertInstanceof,
 } from '../assert.js';
-import {CameraManager} from '../device/index.js';
 import {
+  CameraManager,
   CameraViewUI,
   getDefaultScanCorners,
   GifResult,
   PhotoResult,
-  PortraitResult,
   setAvc1Parameters,
   VideoResult,
 } from '../device/index.js';
@@ -433,8 +432,8 @@ export class Camera extends View implements CameraViewUI {
     }
   }
 
-  async handleVideoSnapshot({resolution, blob, timestamp}: PhotoResult):
-      Promise<void> {
+  async handleVideoSnapshot({resolution, blob, timestamp, metadata}:
+                                PhotoResult): Promise<void> {
     metrics.sendCaptureEvent({
       facing: this.facing,
       resolution,
@@ -443,7 +442,7 @@ export class Camera extends View implements CameraViewUI {
     });
     try {
       const name = (new Filenamer(timestamp)).newImageName();
-      await this.resultSaver.savePhoto(blob, name, /* metadata */ null);
+      await this.resultSaver.savePhoto(blob, name, metadata);
     } catch (e) {
       toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
       throw e;
@@ -489,16 +488,14 @@ export class Camera extends View implements CameraViewUI {
     }
   }
 
-  async onPortraitCaptureDone(pendingPortraitResult: Promise<PortraitResult>):
-      Promise<void> {
+  async onPortraitCaptureDone(
+      pendingReference: Promise<PhotoResult>,
+      pendingPortrait: Promise<PhotoResult|null>): Promise<void> {
     state.set(PerfEvent.PORTRAIT_MODE_CAPTURE_POST_PROCESSING, true);
     let hasError = false;
     try {
-      const {timestamp, resolution, blob, metadata, pendingPortrait} =
-          await this.checkPhotoResult(pendingPortraitResult);
-      assert(pendingPortrait !== null);
-      const portraitBlobAndMetadata =
-          await this.checkPhotoResult(pendingPortrait);
+      const {timestamp, resolution, blob, metadata} =
+          await this.checkPhotoResult(pendingReference);
 
       metrics.sendCaptureEvent({
         facing: this.facing,
@@ -513,13 +510,15 @@ export class Camera extends View implements CameraViewUI {
         const name = filenamer.newBurstName(false);
         await this.resultSaver.savePhoto(blob, name, metadata);
 
-        // Save portrait.
-        if (portraitBlobAndMetadata !== null) {
-          const {blob, metadata} = portraitBlobAndMetadata;
-          const name = filenamer.newBurstName(true);
-          await this.resultSaver.savePhoto(blob, name, metadata);
-        } else {
+        const portrait = await pendingPortrait;
+        if (portrait === null) {
           toast.show(I18nString.ERROR_MSG_TAKE_PORTRAIT_BOKEH_PHOTO_FAILED);
+        } else {
+          // Save portrait.
+          const {blob: portraitBlob, metadata: portraitMetadata} = portrait;
+          const name = filenamer.newBurstName(true);
+          await this.resultSaver.savePhoto(
+              portraitBlob, name, portraitMetadata);
         }
       } catch (e) {
         toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);

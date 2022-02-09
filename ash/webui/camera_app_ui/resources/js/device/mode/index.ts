@@ -45,7 +45,6 @@ import {
 } from './video.js';
 
 export {PhotoHandler, PhotoResult} from './photo.js';
-export {PortraitResult} from './portrait.js';
 export {getDefaultScanCorners, ScanHandler} from './scan.js';
 export {
   GifResult,

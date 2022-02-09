@@ -2,18 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from '../../assert.js';
-import {DeviceOperator, parseMetadata} from '../../mojo/device_operator.js';
-import {CrosImageCapture} from '../../mojo/image_capture.js';
-import {
-  CameraMetadata,
-  CameraMetadataTag,
-  StreamType,
-} from '../../mojo/type.js';
-import {
-  closeEndpoint,
-  MojoEndpoint,
-} from '../../mojo/util.js';
 import * as state from '../../state.js';
 import {
   CanceledError,
@@ -62,22 +50,6 @@ export interface PhotoHandler {
  */
 export class Photo extends ModeBase {
   /**
-   * CrosImageCapture object to capture still photos.
-   */
-  protected crosImageCapture: CrosImageCapture;
-
-  /**
-   * The observer endpoint for saving metadata.
-   */
-  protected metadataObserver: MojoEndpoint|null = null;
-
-  /**
-   * Pending |PhotoResult| waiting for arrival of their corresponding
-   * metadata.
-   */
-  protected pendingResultForMetadata: Array<WaitableEvent<Metadata>> = [];
-
-  /**
    * @param captureResolution Capture resolution. May be null on device not
    *     support of setting resolution.
    */
@@ -86,22 +58,15 @@ export class Photo extends ModeBase {
       protected readonly captureResolution: Resolution,
       protected readonly handler: PhotoHandler) {
     super(video, facing);
-
-    this.crosImageCapture = new CrosImageCapture(this.video.getVideoTrack());
-  }
-
-  updatePreview(previewVideo: PreviewVideo): void {
-    this.video = previewVideo;
-    this.crosImageCapture = new CrosImageCapture(this.video.getVideoTrack());
   }
 
   async start(): Promise<() => Promise<void>> {
     const timestamp = Date.now();
     state.set(PerfEvent.PHOTO_CAPTURE_SHUTTER, true);
-    const {blob, pendingMetadata} = await (async () => {
+    const {blob, metadata} = await (async () => {
       let hasError = false;
       try {
-        return await this.takePhoto();
+        return this.takePhoto();
       } catch (e) {
         hasError = true;
         this.handler.onPhotoError();
@@ -116,7 +81,7 @@ export class Photo extends ModeBase {
     const pendingPhotoResult = (async () => {
       const image = await util.blobToImage(blob);
       const resolution = new Resolution(image.width, image.height);
-      return {resolution, blob, timestamp, metadata: await pendingMetadata};
+      return {resolution, blob, timestamp, metadata};
     })();
 
     return async () => this.handler.onPhotoCaptureDone(pendingPhotoResult);
@@ -150,14 +115,13 @@ export class Photo extends ModeBase {
     } while (track.muted);
   }
 
-  private async takePhoto():
-      Promise<{blob: Blob, pendingMetadata: Promise<Metadata>|null}> {
+  private async takePhoto(): Promise<{blob: Blob, metadata: Metadata|null}> {
     if (state.get(state.State.ENABLE_PTZ)) {
       // Workaround for b/184089334 on PTZ camera to use preview frame as
       // photo result.
       return {
-        blob: await this.crosImageCapture.grabJpegFrame(),
-        pendingMetadata: null,
+        blob: await this.getImageCapture().grabJpegFrame(),
+        metadata: null,
       };
     }
     let photoSettings: PhotoSettings;
@@ -167,89 +131,19 @@ export class Photo extends ModeBase {
         imageHeight: this.captureResolution.height,
       };
     } else {
-      const caps = await this.crosImageCapture.getPhotoCapabilities();
+      const caps = await this.getImageCapture().getPhotoCapabilities();
       photoSettings = {
         imageWidth: caps.imageWidth.max,
         imageHeight: caps.imageHeight.max,
       };
     }
-
-    let waitForMetadata: WaitableEvent<Metadata>|null = null;
-    if (this.metadataObserver !== null) {
-      waitForMetadata = new WaitableEvent();
-      this.pendingResultForMetadata.push(waitForMetadata);
-    }
     await this.waitPreviewReady();
-    const results = await this.crosImageCapture.takePhoto(photoSettings);
+    const results = await this.getImageCapture().takePhoto(photoSettings);
     this.handler.playShutterEffect();
     return {
-      blob: await results[0],
-      pendingMetadata: waitForMetadata?.wait() ?? null,
+      blob: await results[0].pendingBlob,
+      metadata: await results[0].pendingMetadata,
     };
-  }
-
-  /**
-   * Adds an observer to save metadata.
-   * @return Promise for the operation.
-   */
-  async addMetadataObserver(): Promise<void> {
-    if (this.video.isExpired()) {
-      return;
-    }
-
-    const deviceOperator = await DeviceOperator.getInstance();
-    if (!deviceOperator) {
-      return;
-    }
-
-    const cameraMetadataTagInverseLookup: Record<number, string> = {};
-    Object.entries(CameraMetadataTag).forEach(([key, value]) => {
-      if (key === 'MIN_VALUE' || key === 'MAX_VALUE') {
-        return;
-      }
-      cameraMetadataTagInverseLookup[value] = key;
-    });
-
-    const callback = (metadata: CameraMetadata) => {
-      const parsedMetadata: Record<string, unknown> = {};
-      // TODO(b/215648588): Make CameraMetadata.entries mandatory.
-      assert(metadata.entries !== undefined);
-      for (const entry of metadata.entries) {
-        const key = cameraMetadataTagInverseLookup[entry.tag];
-        if (key === undefined) {
-          // TODO(kaihsien): Add support for vendor tags.
-          continue;
-        }
-
-        const val = parseMetadata(entry);
-        parsedMetadata[key] = val;
-      }
-
-      this.pendingResultForMetadata.shift()?.signal(parsedMetadata);
-    };
-
-    const {deviceId} = this.video.getVideoSettings();
-    assert(deviceId !== undefined);
-    this.metadataObserver = await deviceOperator.addMetadataObserver(
-        deviceId, callback, StreamType.JPEG_OUTPUT);
-  }
-
-  /**
-   * Removes the observer that saves metadata.
-   * @return Promise for the operation.
-   */
-  async removeMetadataObserver(): Promise<void> {
-    if (!this.video.isExpired || this.metadataObserver === null) {
-      return;
-    }
-
-    const deviceOperator = await DeviceOperator.getInstance();
-    if (!deviceOperator) {
-      return;
-    }
-
-    closeEndpoint(this.metadataObserver);
-    this.metadataObserver = null;
   }
 }
 

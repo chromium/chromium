@@ -28,6 +28,7 @@ import {
   ErrorType,
   Facing,
   getVideoTrackSettings,
+  Metadata,
   NoChunkError,
   PreviewVideo,
   Resolution,
@@ -35,11 +36,10 @@ import {
 } from '../../type.js';
 import {WaitableEvent} from '../../waitable_event.js';
 import {StreamConstraints} from '../stream_constraints.js';
-import {
-  StreamManager,
-} from '../stream_manager.js';
+import {StreamManager} from '../stream_manager.js';
 
 import {ModeBase, ModeFactory} from './mode_base.js';
+import {PhotoResult} from './photo.js';
 import {GifRecordTime, RecordTime} from './record_time.js';
 
 /**
@@ -104,12 +104,6 @@ function beforeUnloadListener(event: BeforeUnloadEvent) {
   event.returnValue = '';
 }
 
-export interface VideoSnapshotResult {
-  blob: Blob;
-  resolution: Resolution;
-  timestamp: number;
-}
-
 export interface VideoResult {
   resolution: Resolution;
   duration: number;
@@ -137,7 +131,7 @@ export interface VideoHandler {
   /**
    * Handles the result video snapshot.
    */
-  handleVideoSnapshot(videoSnapshotResult: VideoSnapshotResult): Promise<void>;
+  handleVideoSnapshot(videoSnapshotResult: PhotoResult): Promise<void>;
 
   /**
    * Plays UI effect when doing video snapshot.
@@ -168,7 +162,11 @@ export class Video extends ModeBase {
    */
   private mediaRecorder: MediaRecorder|null = null;
 
-  private crosImageCapture: CrosImageCapture|null = null;
+  /**
+   * CrosImageCapture object which is used to grab video snapshot from the
+   * recording stream.
+   */
+  private recordingImageCapture: CrosImageCapture|null = null;
 
   /**
    * Record-time for the elapsed recording time.
@@ -234,12 +232,6 @@ export class Video extends ModeBase {
     }
   }
 
-  updatePreview(video: PreviewVideo): void {
-    assert(!state.get(state.State.RECORDING));
-    this.video = video;
-    this.crosImageCapture = new CrosImageCapture(this.getVideoTrack());
-  }
-
   /**
    * @return Returns record type of checked radio buttons in record type option
    *     groups.
@@ -275,16 +267,19 @@ export class Video extends ModeBase {
       try {
         const timestamp = Date.now();
         let blob: Blob;
-        assert(this.crosImageCapture !== null);
+        let metadata: Metadata|null = null;
         if (await this.isBlobVideoSnapshotEnabled()) {
           const photoSettings: PhotoSettings = {
             imageWidth: this.snapshotResolution.width,
             imageHeight: this.snapshotResolution.height,
           };
-          const results = await this.crosImageCapture.takePhoto(photoSettings);
-          blob = await results[0];
+          const results = await this.getImageCapture().takePhoto(photoSettings);
+          blob = await results[0].pendingBlob;
+          metadata = await results[0].pendingMetadata;
         } else {
-          blob = await this.crosImageCapture.grabJpegFrame();
+          blob = await assertInstanceof(
+                     this.recordingImageCapture, CrosImageCapture)
+                     .grabJpegFrame();
         }
 
         this.handler.playShutterEffect();
@@ -292,6 +287,7 @@ export class Video extends ModeBase {
           blob,
           resolution: this.captureResolution,
           timestamp,
+          metadata,
         });
       } finally {
         state.set(state.State.SNAPSHOTTING, false);
@@ -400,15 +396,8 @@ export class Video extends ModeBase {
       this.captureStream = await StreamManager.getInstance().openCaptureStream(
           this.captureConstraints);
     }
-    if (this.crosImageCapture === null) {
-      if (await this.isBlobVideoSnapshotEnabled()) {
-        // Blob stream is configured on the original device rather than the
-        // virtual one when multi-stream is enabled.
-        this.crosImageCapture =
-            new CrosImageCapture(this.video.getVideoTrack());
-      } else {
-        this.crosImageCapture = new CrosImageCapture(this.getVideoTrack());
-      }
+    if (this.recordingImageCapture === null) {
+      this.recordingImageCapture = new CrosImageCapture(this.getVideoTrack());
     }
 
     try {

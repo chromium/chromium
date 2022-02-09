@@ -8,7 +8,6 @@ export {
   getDefaultScanCorners,
   GifResult,
   PhotoResult,
-  PortraitResult,
   setAvc1Parameters,
   VideoResult,
 } from './mode/index.js';

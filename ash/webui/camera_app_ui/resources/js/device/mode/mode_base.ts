@@ -4,6 +4,7 @@
 
 import {assertInstanceof} from '../../assert.js';
 import * as error from '../../error.js';
+import {CrosImageCapture} from '../../mojo/image_capture.js';
 import {
   CanceledError,
   ErrorLevel,
@@ -24,11 +25,18 @@ export abstract class ModeBase {
   private capture: Promise<() => Promise<void>>|null = null;
 
   /**
+   * CrosImageCapture object to capture still photos.
+   */
+  protected crosImageCapture: CrosImageCapture;
+
+  /**
    * @param video Preview video.
    * @param facing Camera facing of current mode.
    */
   constructor(
-      protected video: PreviewVideo, protected readonly facing: Facing) {}
+      protected video: PreviewVideo, protected readonly facing: Facing) {
+    this.crosImageCapture = new CrosImageCapture(video.getVideoTrack());
+  }
 
   /**
    * Initiates video/photo capture operation.
@@ -66,12 +74,19 @@ export abstract class ModeBase {
     }
   }
 
+  getImageCapture(): CrosImageCapture {
+    return this.crosImageCapture;
+  }
+
   /**
    * Adds an observer to save image metadata.
    * @return Promise for the operation.
    */
   async addMetadataObserver(): Promise<void> {
-    // To be overridden by subclass.
+    if (this.video.isExpired()) {
+      return;
+    }
+    this.crosImageCapture.addMetadataObserver();
   }
 
   /**
@@ -79,7 +94,10 @@ export abstract class ModeBase {
    * @return Promise for the operation.
    */
   async removeMetadataObserver(): Promise<void> {
-    // To be overridden by subclass.
+    if (!this.video.isExpired) {
+      return;
+    }
+    this.crosImageCapture.removeMetadataObserver();
   }
 
   /**
