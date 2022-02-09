@@ -112,6 +112,7 @@ class TestSelectionSource : public ServerObject {
   struct Delegate {
     virtual void SendSend(const std::string& mime_type,
                           base::ScopedFD write_fd) = 0;
+    virtual void SendFinished() = 0;
     virtual void SendCancelled() = 0;
     virtual void OnDestroying() = 0;
 
@@ -125,6 +126,7 @@ class TestSelectionSource : public ServerObject {
   using ReadDataCallback = base::OnceCallback<void(std::vector<uint8_t>&&)>;
   void ReadData(const std::string& mime_type, ReadDataCallback callback);
 
+  void OnFinished();
   void OnCancelled();
 
   const std::vector<std::string>& mime_types() const { return mime_types_; }

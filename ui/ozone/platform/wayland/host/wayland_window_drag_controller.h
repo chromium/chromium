@@ -51,6 +51,7 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
     kAttached,   // DnD session ongoing but no drag loop running.
     kDetached,   // Drag loop running. ie: blocked in a Drag() call.
     kDropped,    // Drop event was just received.
+    kCancelled,  // Drag cancel event was just received.
     kAttaching,  // About to transition back to |kAttached|.
   };
   enum class DragSource {

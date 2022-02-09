@@ -161,14 +161,17 @@ bool WaylandWindowDragController::Drag(WaylandToplevelWindow* window,
   RunLoop();
   SetDraggedWindow(nullptr, {});
 
-  DCHECK(state_ == State::kAttaching || state_ == State::kDropped);
+  DCHECK(state_ == State::kAttaching || state_ == State::kDropped ||
+         state_ == State::kCancelled);
   if (state_ == State::kAttaching) {
     state_ = State::kAttached;
     return false;
   }
 
+  auto state = state_;
   HandleDropAndResetState();
-  return true;
+
+  return state != State::kCancelled;
 }
 
 void WaylandWindowDragController::StopDragging() {
@@ -365,7 +368,8 @@ void WaylandWindowDragController::OnDataSourceFinish(bool completed) {
   // Transition to |kDropped| state and determine the next action to take. If
   // drop happened while the move loop was running (i.e: kDetached), ask to quit
   // the loop, otherwise notify session end and reset state right away.
-  State state_when_dropped = std::exchange(state_, State::kDropped);
+  State state_when_dropped =
+      std::exchange(state_, completed ? State::kDropped : State::kCancelled);
   if (state_when_dropped == State::kDetached)
     QuitLoop();
   else
@@ -456,7 +460,7 @@ void WaylandWindowDragController::HandleMotionEvent(LocatedEvent* event) {
 // clear focus and reset internal state. Must be called when the session is
 // about to finish.
 void WaylandWindowDragController::HandleDropAndResetState() {
-  DCHECK_EQ(state_, State::kDropped);
+  DCHECK(state_ == State::kDropped || state_ == State::kCancelled);
   DVLOG(1) << "Notifying drop. window=" << pointer_grab_owner_;
 
   // StopDragging() may get called in response to bogus input events, eg:

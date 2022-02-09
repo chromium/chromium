@@ -111,6 +111,11 @@ void TestSelectionSource::ReadData(const std::string& mime_type,
       std::move(callback));
 }
 
+void TestSelectionSource::OnFinished() {
+  delegate_->SendFinished();
+  mime_types_.clear();
+}
+
 void TestSelectionSource::OnCancelled() {
   delegate_->SendCancelled();
   mime_types_.clear();

@@ -47,6 +47,11 @@ void WaylandDragDropTest::SendDndMotion(const gfx::Point& location) {
   data_device_manager_->data_device()->OnMotion(NextTime(), x, y);
 }
 
+void WaylandDragDropTest::SendDndDrop() {
+  EXPECT_TRUE(data_source_);
+  data_source_->OnFinished();
+}
+
 void WaylandDragDropTest::SendDndCancelled() {
   EXPECT_TRUE(data_source_);
   data_source_->OnCancelled();

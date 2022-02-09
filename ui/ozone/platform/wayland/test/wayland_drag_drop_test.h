@@ -42,6 +42,7 @@ class WaylandDragDropTest : public WaylandTest,
   void SendDndEnter(WaylandWindow* window, const gfx::Point& location);
   void SendDndLeave();
   void SendDndMotion(const gfx::Point& location);
+  void SendDndDrop();
   void SendDndCancelled();
   void ReadData(const std::string& mime_type,
                 wl::TestDataSource::ReadDataCallback callback);

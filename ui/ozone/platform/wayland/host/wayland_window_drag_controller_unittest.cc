@@ -118,12 +118,7 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
               screen_->GetLocalProcessWidgetAtPoint(location, {}));
   }
 
-  // For the context of window drag, "drop" is detected through
-  // wl_data_source::cancelled in the regular case. Unless extended-drag
-  // protocol is available.
-  //
   // TODO(crbug.com/1116431): Support extended-drag in test compositor.
-  void SendDndDrop() { SendDndCancelled(); }
 
   void SendTouchDown(WaylandWindow* window,
                      MockPlatformWindowDelegate* delegate,

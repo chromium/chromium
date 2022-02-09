@@ -39,6 +39,10 @@ struct WlDataSourceImpl : public TestSelectionSource::Delegate {
     wl_client_flush(wl_resource_get_client(source_->resource()));
   }
 
+  void SendFinished() override {
+    wl_data_source_send_dnd_finished(source_->resource());
+  }
+
   void SendCancelled() override {
     wl_data_source_send_cancelled(source_->resource());
   }
