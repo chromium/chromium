@@ -23,10 +23,10 @@ export function start(): Promise<void> {
     return Promise.resolve();
   }
   return new Promise((resolve, reject) => {
-    let tickTimeout = null;
+    let tickTimeout: number|null = null;
     const tickMsg = dom.get('#timer-tick-msg', HTMLElement);
     doCancel = () => {
-      if (tickTimeout) {
+      if (tickTimeout !== null) {
         clearTimeout(tickTimeout);
         tickTimeout = null;
       }
