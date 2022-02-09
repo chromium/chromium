@@ -9,12 +9,11 @@
 #include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
 #include "content/browser/isolation_context.h"
 #include "content/browser/site_info.h"
+#include "content/browser/site_instance_group.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
@@ -32,35 +31,14 @@ class SiteInstance;
 
 namespace content {
 
-class AgentSchedulingGroupHost;
 class BrowsingInstance;
 class SiteInstanceGroup;
 class StoragePartitionConfig;
 class StoragePartitionImpl;
 struct UrlInfo;
 
-class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
-                                              public RenderProcessHostObserver {
+class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
  public:
-  class CONTENT_EXPORT Observer {
-   public:
-    // Called when this SiteInstance transitions to having no active frames,
-    // as measured by active_frame_count().
-    virtual void ActiveFrameCountIsZero(SiteInstanceImpl* site_instance) {}
-
-    // Called when the renderer process of this SiteInstance has exited. Note
-    // that GetProcess() still returns the same RenderProcessHost instance. You
-    // can reinitialize it by a call to GetProcess()->Init().
-    virtual void RenderProcessGone(SiteInstanceImpl* site_instance,
-                                   const ChildProcessTerminationInfo& info) {}
-
-    // Called when the RenderProcessHost for this SiteInstance has been
-    // destructed. After this, the underlying `process_` is cleared, and calling
-    // GetProcess() would assign a different RenderProcessHost to this
-    // SiteInstance.
-    virtual void RenderProcessHostDestroyed() {}
-  };
-
   SiteInstanceImpl(const SiteInstanceImpl&) = delete;
   SiteInstanceImpl& operator=(const SiteInstanceImpl&) = delete;
 
@@ -139,7 +117,11 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
       const UrlInfo& url_info);
   bool IsSameSiteWithURLInfo(const UrlInfo& url_info);
 
-  // SiteInstance interface overrides.
+  // Returns an AgentSchedulingGroupHost, or creates one if
+  // `site_instance_group_` doesn't have one.
+  AgentSchedulingGroupHost& GetOrCreateAgentSchedulingGroup();
+
+  // SiteInstance implementation.
   SiteInstanceId GetId() override;
   BrowsingInstanceId GetBrowsingInstanceId() override;
   bool HasProcess() override;
@@ -332,20 +314,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // navigating to the URL in |url_info|.
   bool IsSuitableForUrlInfo(const UrlInfo& url_info);
 
-  // Increase the number of active frames in this SiteInstance. This is
-  // increased when a frame is created.
-  void IncrementActiveFrameCount();
-
-  // Decrease the number of active frames in this SiteInstance. This is
-  // decreased when a frame is destroyed. Decrementing this to zero will notify
-  // observers, and may trigger deletion of proxies.
-  void DecrementActiveFrameCount();
-
-  // Get the number of active frames which belong to this SiteInstance.  If
-  // there are no active frames left, all frames in this SiteInstance can be
-  // safely discarded.
-  size_t active_frame_count() { return active_frame_count_; }
-
   // Increase the number of active WebContentses using this SiteInstance. Note
   // that, unlike active_frame_count, this does not count pending RFHs.
   void IncrementRelatedActiveContentsCount();
@@ -353,9 +321,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // Decrease the number of active WebContentses using this SiteInstance. Note
   // that, unlike active_frame_count, this does not count pending RFHs.
   void DecrementRelatedActiveContentsCount();
-
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
 
   // Whether GetProcess() method (when it needs to find a new process to
   // associate with the current SiteInstanceImpl) can return a spare process.
@@ -420,13 +385,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   void PreventOptInOriginIsolation(
       const url::Origin& previously_visited_origin);
 
-  // Returns the current AgentSchedulingGroupHost this SiteInstance is
-  // associated with. Since the AgentSchedulingGroupHost *must* be assigned (and
-  // cleared) together with the RenderProcessHost, calling this method when no
-  // AgentSchedulingGroupHost is set will trigger the creation of a new
-  // RenderProcessHost (with a new ID).
-  AgentSchedulingGroupHost& GetAgentSchedulingGroup();
-
   // Returns the web-exposed isolation status of the BrowsingInstance this
   // SiteInstance is part of.
   const WebExposedIsolationInfo& GetWebExposedIsolationInfo() const;
@@ -447,11 +405,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   explicit SiteInstanceImpl(BrowsingInstance* browsing_instance);
 
   ~SiteInstanceImpl() override;
-
-  // RenderProcessHostObserver implementation.
-  void RenderProcessHostDestroyed(RenderProcessHost* host) override;
-  void RenderProcessExited(RenderProcessHost* host,
-                           const ChildProcessTerminationInfo& info) override;
 
   // Used to restrict a process' origin access rights. This method gets called
   // when a process gets assigned to this SiteInstance and when the
@@ -537,26 +490,15 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   SiteInstanceId id_;
 
   // Determines which RenderViewHosts, RenderWidgetHosts, and
-  // RenderFrameProxyHosts it uses. See the class-level comment of
-  // SiteInstanceGroup for more details.
+  // RenderFrameProxyHosts it uses.
+  // `site_instance_group_` is set when a RenderProcessHost is set for this
+  // SiteInstance, and will be how `this` gets its RenderProcessHost and
+  // AgentSchedulingGroup.
+  // See the class-level comment of SiteInstanceGroup for more details.
   scoped_refptr<SiteInstanceGroup> site_instance_group_;
-
-  // The number of active frames in this SiteInstance.
-  size_t active_frame_count_;
 
   // BrowsingInstance to which this SiteInstance belongs.
   scoped_refptr<BrowsingInstance> browsing_instance_;
-
-  // Current RenderProcessHost that is rendering pages for this SiteInstance,
-  // and AgentSchedulingGroupHost (within the process) this SiteInstance belongs
-  // to. Since AgentSchedulingGroupHost is associated with a specific
-  // RenderProcessHost, these *must be* changed together to avoid UAF!
-  // The |process_| pointer (and hence the |agent_scheduling_group_| pointer as
-  // well) will only change once the RenderProcessHost is destructed. They will
-  // still remain the same even if the process crashes, since in that scenario
-  // the RenderProcessHost remains the same.
-  raw_ptr<RenderProcessHost> process_;
-  raw_ptr<AgentSchedulingGroupHost> agent_scheduling_group_;
 
   // Describes the desired behavior when GetProcess() method needs to find a new
   // process to associate with the current SiteInstanceImpl.  If |false|, then
@@ -582,8 +524,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
 
   // How |this| was last assigned to a renderer process.
   SiteInstanceProcessAssignment process_assignment_;
-
-  base::ObserverList<Observer, true>::Unchecked observers_;
 
   // Contains the state that is only required for default SiteInstances.
   class DefaultSiteInstanceState;

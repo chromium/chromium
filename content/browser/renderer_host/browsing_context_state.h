@@ -60,7 +60,7 @@ namespace content {
 // once the functionality gated behind kSwapForCrossBrowsingInstanceNavigations
 // is implemented.
 class BrowsingContextState : public base::RefCounted<BrowsingContextState>,
-                             public SiteInstanceImpl::Observer {
+                             public SiteInstanceGroup::Observer {
  public:
   using RenderFrameProxyHostMap =
       std::unordered_map<SiteInstanceGroupId,
@@ -141,11 +141,11 @@ class BrowsingContextState : public base::RefCounted<BrowsingContextState>,
   void SetIsAdSubframe(bool is_ad_subframe);
 
   // Delete a RenderFrameProxyHost owned by this object.
-  void DeleteRenderFrameProxyHost(SiteInstance* site_instance);
+  void DeleteRenderFrameProxyHost(SiteInstanceGroup* site_instance_group);
 
-  // SiteInstanceImpl::Observer
-  void ActiveFrameCountIsZero(SiteInstanceImpl* site_instance) override;
-  void RenderProcessGone(SiteInstanceImpl* site_instance,
+  // SiteInstanceGroup::Observer
+  void ActiveFrameCountIsZero(SiteInstanceGroup* site_instance_group) override;
+  void RenderProcessGone(SiteInstanceGroup* site_instance_group,
                          const ChildProcessTerminationInfo& info) override;
 
   // Set the frame_policy provided in function parameter as active frame policy,

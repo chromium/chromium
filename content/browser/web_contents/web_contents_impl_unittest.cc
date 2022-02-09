@@ -593,9 +593,9 @@ TEST_F(WebContentsImplTest, CrossSiteBoundaries) {
   const GURL url("http://www.google.com");
   NavigationSimulator::NavigateAndCommitFromBrowser(contents(), url);
 
-  // Keep the number of active frames in orig_rfh's SiteInstance non-zero so
-  // that orig_rfh doesn't get deleted when it gets swapped out.
-  orig_rfh->GetSiteInstance()->IncrementActiveFrameCount();
+  // Keep the number of active frames in orig_rfh's SiteInstanceGroup non-zero
+  // so that orig_rfh doesn't get deleted when it gets swapped out.
+  orig_rfh->GetSiteInstance()->group()->IncrementActiveFrameCount();
 
   EXPECT_FALSE(contents()->CrossProcessNavigationPending());
   EXPECT_EQ(orig_rfh->GetRenderViewHost(), contents()->GetRenderViewHost());
@@ -621,10 +621,10 @@ TEST_F(WebContentsImplTest, CrossSiteBoundaries) {
   new_site_navigation->Commit();
   SiteInstanceImpl* instance2 = contents()->GetSiteInstance();
 
-  // Keep the number of active frames in pending_rfh's SiteInstance
+  // Keep the number of active frames in pending_rfh's SiteInstanceGroup
   // non-zero so that orig_rfh doesn't get deleted when it gets
   // swapped out.
-  pending_rfh->GetSiteInstance()->IncrementActiveFrameCount();
+  pending_rfh->GetSiteInstance()->group()->IncrementActiveFrameCount();
 
   EXPECT_FALSE(contents()->CrossProcessNavigationPending());
   EXPECT_EQ(pending_rfh, main_test_rfh());
@@ -827,10 +827,10 @@ TEST_F(WebContentsImplTest, NavigateFromSitelessUrl) {
                                               ->root_node()
                                               ->frame_entry->site_instance();
   EXPECT_EQ(curr_entry_instance, orig_instance);
-  // Keep the number of active frames in orig_rfh's SiteInstance
+  // Keep the number of active frames in orig_rfh's SiteInstanceGroup
   // non-zero so that orig_rfh doesn't get deleted when it gets
   // swapped out.
-  orig_rfh->GetSiteInstance()->IncrementActiveFrameCount();
+  orig_rfh->GetSiteInstance()->group()->IncrementActiveFrameCount();
 
   EXPECT_EQ(orig_instance, contents()->GetSiteInstance());
   if (AreDefaultSiteInstancesEnabled()) {
@@ -3041,7 +3041,7 @@ TEST_F(WebContentsImplTest,
   // Navigate to the first site.
   NavigationSimulator::NavigateAndCommitFromBrowser(
       contents(), GURL("http://www.google.com/a.html"));
-  orig_rfh->GetSiteInstance()->IncrementActiveFrameCount();
+  orig_rfh->GetSiteInstance()->group()->IncrementActiveFrameCount();
 
   // Set a capture handle.
   auto config = blink::mojom::CaptureHandleConfig::New();
@@ -3070,7 +3070,7 @@ TEST_F(WebContentsImplTest,
   // Navigate to the first site.
   NavigationSimulator::NavigateAndCommitFromBrowser(
       contents(), GURL("http://www.google.com/index.html"));
-  orig_rfh->GetSiteInstance()->IncrementActiveFrameCount();
+  orig_rfh->GetSiteInstance()->group()->IncrementActiveFrameCount();
 
   // Set a capture handle.
   auto config = blink::mojom::CaptureHandleConfig::New();
@@ -3100,7 +3100,7 @@ TEST_F(WebContentsImplTest,
 
   TestRenderFrameHost* subframe = orig_rfh->AppendChild("subframe");
   ASSERT_NE(subframe, subframe->GetMainFrame());
-  subframe->GetSiteInstance()->IncrementActiveFrameCount();
+  subframe->GetSiteInstance()->group()->IncrementActiveFrameCount();
   NavigationSimulator::NavigateAndCommitFromDocument(
       GURL("http://www.google.com/b.html"), subframe);
 

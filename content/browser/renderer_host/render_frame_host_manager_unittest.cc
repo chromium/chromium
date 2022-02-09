@@ -33,6 +33,7 @@
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/site_info.h"
+#include "content/browser/site_instance_group.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/common/content_navigation_policy.h"
@@ -368,9 +369,9 @@ class RenderFrameHostManagerTest
     EXPECT_TRUE(contents()->CrossProcessNavigationPending());
 
     // Manually increase the number of active frames in the
-    // SiteInstance that ntp_rfh belongs to, to prevent the SiteInstance from
-    // being destroyed when ntp_rfh goes away.
-    ntp_rfh->GetSiteInstance()->IncrementActiveFrameCount();
+    // SiteInstanceGroup that ntp_rfh belongs to, to prevent the
+    // SiteInstanceGroup from being destroyed when ntp_rfh goes away.
+    ntp_rfh->GetSiteInstance()->group()->IncrementActiveFrameCount();
 
     TestRenderFrameHost* dest_rfh =
         contents()->GetSpeculativePrimaryMainFrame();
@@ -547,10 +548,10 @@ TEST_P(RenderFrameHostManagerTest, FilterMessagesWhileSwappedOut) {
     ntp_rfh->UpdateFaviconURL(std::move(icons));
     EXPECT_TRUE(observer.favicon_received());
   }
-  // Create one more frame in the same SiteInstance where ntp_rfh
+  // Create one more frame in the same SiteInstanceGroup where ntp_rfh
   // exists so that it doesn't get deleted on navigation to another
   // site.
-  ntp_rfh->GetSiteInstance()->IncrementActiveFrameCount();
+  ntp_rfh->GetSiteInstance()->group()->IncrementActiveFrameCount();
 
   // Navigate to a cross-site URL (don't unload to keep |ntp_rfh| alive).
   auto navigation =
@@ -597,9 +598,9 @@ TEST_P(RenderFrameHostManagerTest, UpdateFaviconURLWhilePendingUnload) {
     EXPECT_TRUE(observer.favicon_received());
   }
 
-  // Create one more frame in the same SiteInstance where |ntp_rfh| exists so
-  // that it doesn't get deleted on navigation to another site.
-  ntp_rfh->GetSiteInstance()->IncrementActiveFrameCount();
+  // Create one more frame in the same SiteInstanceGroup where |ntp_rfh| exists
+  // so that it doesn't get deleted on navigation to another site.
+  ntp_rfh->GetSiteInstance()->group()->IncrementActiveFrameCount();
 
   // Navigate to a cross-site URL and commit the new page.
   auto navigation =
@@ -677,7 +678,7 @@ TEST_P(RenderFrameHostManagerTest, ActiveFrameCountWhileSwappingInAndOut) {
   TestRenderFrameHost* rfh1 = main_test_rfh();
 
   SiteInstanceImpl* instance1 = rfh1->GetSiteInstance();
-  EXPECT_EQ(instance1->active_frame_count(), 1U);
+  EXPECT_EQ(instance1->group()->active_frame_count(), 1U);
 
   // Create 2 new tabs and simulate them being the opener chain for the main
   // tab.  They should be in the same SiteInstance.
@@ -689,7 +690,7 @@ TEST_P(RenderFrameHostManagerTest, ActiveFrameCountWhileSwappingInAndOut) {
       TestWebContents::Create(browser_context(), instance1));
   opener1->SetOpener(opener2.get());
 
-  EXPECT_EQ(instance1->active_frame_count(), 3U);
+  EXPECT_EQ(instance1->group()->active_frame_count(), 3U);
 
   // Navigate to a cross-site URL (different SiteInstance but same
   // BrowsingInstance).
@@ -699,21 +700,21 @@ TEST_P(RenderFrameHostManagerTest, ActiveFrameCountWhileSwappingInAndOut) {
 
   if (AreDefaultSiteInstancesEnabled()) {
     EXPECT_TRUE(instance1->IsDefaultSiteInstance());
-    EXPECT_EQ(instance1->active_frame_count(), 3U);
+    EXPECT_EQ(instance1->group()->active_frame_count(), 3U);
     EXPECT_EQ(instance1, instance2);
   } else {
     // rvh2 is on chromium.org which is different from google.com on
     // which other tabs are.
-    EXPECT_EQ(instance2->active_frame_count(), 1U);
+    EXPECT_EQ(instance2->group()->active_frame_count(), 1U);
 
     // There are two active views on google.com now.
-    EXPECT_EQ(instance1->active_frame_count(), 2U);
+    EXPECT_EQ(instance1->group()->active_frame_count(), 2U);
   }
 
   // Navigate to the original origin (google.com).
   contents()->NavigateAndCommit(kUrl1);
 
-  EXPECT_EQ(instance1->active_frame_count(), 3U);
+  EXPECT_EQ(instance1->group()->active_frame_count(), 3U);
 }
 
 // This deletes a WebContents when the given RVH is deleted. This is
@@ -1144,12 +1145,12 @@ TEST_P(RenderFrameHostManagerTest, NavigateAfterMissingUnloadACK) {
   TestRenderFrameHost* rfh1 = main_test_rfh();
 
   // Keep active_frame_count nonzero so that no unloaded frames in this
-  // SiteInstance get forcefully deleted.
-  rfh1->GetSiteInstance()->IncrementActiveFrameCount();
+  // SiteInstanceGroup get forcefully deleted.
+  rfh1->GetSiteInstance()->group()->IncrementActiveFrameCount();
 
   contents()->NavigateAndCommit(kUrl2);
   TestRenderFrameHost* rfh2 = main_test_rfh();
-  rfh2->GetSiteInstance()->IncrementActiveFrameCount();
+  rfh2->GetSiteInstance()->group()->IncrementActiveFrameCount();
 
   // Now go back, but suppose the
   // mojo::AgentSchedulingGroupHost::DidUnloadRenderFrame isn't received.  This
@@ -1691,9 +1692,9 @@ TEST_P(RenderFrameHostManagerTest, UnloadFrameAfterUnloadACK) {
   RenderFrameDeletedObserver rfh_deleted_observer(rfh1);
   EXPECT_TRUE(rfh1->IsActive());
 
-  // Increment the number of active frames in SiteInstanceImpl so that rfh1 is
+  // Increment the number of active frames in SiteInstanceGroup so that rfh1 is
   // not deleted on unload.
-  rfh1->GetSiteInstance()->IncrementActiveFrameCount();
+  rfh1->GetSiteInstance()->group()->IncrementActiveFrameCount();
 
   // Navigate to new site, simulating onbeforeunload approval.
   auto navigation =
@@ -1739,10 +1740,11 @@ TEST_P(RenderFrameHostManagerTest, CommitNewNavigationBeforeSendingUnload) {
   RenderFrameDeletedObserver rfh_deleted_observer(rfh1);
   EXPECT_TRUE(rfh1->IsActive());
 
-  // Increment the number of active frames in rfh1's SiteInstance so that the
-  // SiteInstance is not deleted on unload.
-  scoped_refptr<SiteInstanceImpl> site_instance = rfh1->GetSiteInstance();
-  site_instance->IncrementActiveFrameCount();
+  // Increment the number of active frames in rfh1's SiteInstanceGroup so that
+  // the SiteInstanceGroup is not deleted on unload.
+  scoped_refptr<SiteInstanceGroup> site_instance_group =
+      rfh1->GetSiteInstance()->group();
+  site_instance_group->IncrementActiveFrameCount();
 
   // Navigate to new site, simulating onbeforeunload approval.
   auto navigation =
@@ -1770,7 +1772,7 @@ TEST_P(RenderFrameHostManagerTest, CommitNewNavigationBeforeSendingUnload) {
                   ->GetPrimaryFrameTree()
                   .root()
                   ->render_manager()
-                  ->GetRenderFrameProxyHost(site_instance->group()));
+                  ->GetRenderFrameProxyHost(site_instance_group.get()));
 }
 
 // Test that a RenderFrameHost is properly deleted when a cross-site navigation
@@ -1808,12 +1810,12 @@ TEST_P(RenderFrameHostManagerTest, CancelPendingProperlyDeletesOrSwaps) {
     pending_rfh = contents()->GetSpeculativePrimaryMainFrame();
     RenderFrameDeletedObserver rfh_deleted_observer(pending_rfh);
 
-    // Increment the number of active frames in the new SiteInstance, which will
-    // cause the pending RFH to be deleted and a RenderFrameProxyHost to be
+    // Increment the number of active frames in the new SiteInstanceGroup, which
+    // will cause the pending RFH to be deleted and a RenderFrameProxyHost to be
     // created.
-    scoped_refptr<SiteInstanceImpl> site_instance =
-        pending_rfh->GetSiteInstance();
-    site_instance->IncrementActiveFrameCount();
+    scoped_refptr<SiteInstanceGroup> site_instance_group =
+        pending_rfh->GetSiteInstance()->group();
+    site_instance_group->IncrementActiveFrameCount();
 
     contents()->GetMainFrame()->SimulateBeforeUnloadCompleted(false);
     EXPECT_FALSE(contents()->CrossProcessNavigationPending());
@@ -1823,7 +1825,7 @@ TEST_P(RenderFrameHostManagerTest, CancelPendingProperlyDeletesOrSwaps) {
                     ->GetPrimaryFrameTree()
                     .root()
                     ->render_manager()
-                    ->GetRenderFrameProxyHost(site_instance->group()));
+                    ->GetRenderFrameProxyHost(site_instance_group.get()));
   }
 }
 
@@ -1924,7 +1926,7 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation, DetachPendingChild) {
       GetPendingFrameHost(iframe1)->GetSiteInstance();
   EXPECT_TRUE(site_instance->HasSite());
   EXPECT_NE(site_instance, contents()->GetSiteInstance());
-  EXPECT_EQ(2U, site_instance->active_frame_count());
+  EXPECT_EQ(2U, site_instance->group()->active_frame_count());
 
   // Proxies should exist.
   EXPECT_NE(nullptr,
@@ -1939,7 +1941,7 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation, DetachPendingChild) {
 
   EXPECT_TRUE(delete_watcher1.deleted());
   EXPECT_FALSE(delete_watcher2.deleted());
-  EXPECT_EQ(1U, site_instance->active_frame_count());
+  EXPECT_EQ(1U, site_instance->group()->active_frame_count());
 
   // Proxies should still exist.
   EXPECT_NE(nullptr,
@@ -1954,7 +1956,7 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation, DetachPendingChild) {
   EXPECT_TRUE(delete_watcher1.deleted());
   EXPECT_TRUE(delete_watcher2.deleted());
 
-  EXPECT_EQ(0U, site_instance->active_frame_count());
+  EXPECT_EQ(0U, site_instance->group()->active_frame_count());
   EXPECT_EQ(nullptr,
             root_manager->GetRenderFrameProxyHost(site_instance->group()))
       << "Proxies should have been cleaned up";

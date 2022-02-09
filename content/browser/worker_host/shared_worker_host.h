@@ -17,7 +17,7 @@
 #include "base/unguessable_token.h"
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
-#include "content/browser/site_instance_impl.h"
+#include "content/browser/site_instance_group.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host.h"
@@ -61,13 +61,14 @@ class ServiceWorkerMainResourceHandle;
 class ServiceWorkerObjectHost;
 class SharedWorkerContentSettingsProxyImpl;
 class SharedWorkerServiceImpl;
+class SiteInstanceImpl;
 class ContentBrowserClient;
 
 // SharedWorkerHost is the browser-side host of a single shared worker running
 // in the renderer. This class is owned by the SharedWorkerServiceImpl of the
 // current BrowserContext.
 class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
-                                        public SiteInstanceImpl::Observer {
+                                        public SiteInstanceGroup::Observer {
  public:
   SharedWorkerHost(
       SharedWorkerServiceImpl* service,
@@ -239,7 +240,7 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   void OnScriptLoadFailed(const std::string& error_message) override;
   void OnFeatureUsed(blink::mojom::WebFeature feature) override;
 
-  // Implements SiteInstanceImpl::Observer:
+  // Implements SiteInstanceGroup::Observer:
   void RenderProcessHostDestroyed() override;
 
   // Returns the frame ids of this worker's clients.

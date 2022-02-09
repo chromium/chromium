@@ -52,6 +52,7 @@
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/browser/site_instance_group.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/buildflags.h"
@@ -253,7 +254,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       public mojom::DomAutomationControllerHost,
       public BrowserAccessibilityDelegate,
       public RenderProcessHostObserver,
-      public SiteInstanceImpl::Observer,
+      public SiteInstanceGroup::Observer,
       public blink::mojom::BackForwardCacheControllerHost,
       public blink::mojom::LocalFrameHost,
       public blink::mojom::LocalMainFrameHost,
@@ -533,8 +534,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void RenderProcessExited(RenderProcessHost* host,
                            const ChildProcessTerminationInfo& info) override;
 
-  // SiteInstanceImpl::Observer
-  void RenderProcessGone(SiteInstanceImpl* site_instance,
+  // SiteInstanceGroup::Observer
+  void RenderProcessGone(SiteInstanceGroup* site_instance_group,
                          const ChildProcessTerminationInfo& info) override;
 
   // ui::AXActionHandlerBase:
@@ -3298,11 +3299,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   const scoped_refptr<SiteInstanceImpl> site_instance_;
 
   // The agent scheduling group this RenderFrameHost is associated with. It is
-  // initialized through a call to site_instance_->GetAgentSchedulingGroupHost()
-  // at creation time. This cached pointer is used to avoid recreating the
-  // renderer process if it has crashed, since using
-  // SiteInstance::GetProcess()/GetAgentSchedulingGroupHost() has the side
-  // effect of creating the process again if it is gone.
+  // initialized through a call to
+  // site_instance_->GetOrCreateAgentSchedulingGroupHost() at RenderFrameHost
+  // creation time.
+  // This ref is used to avoid recreating the renderer process if it has
+  // crashed, since using
+  // SiteInstance::GetProcess()/GetOrCreateAgentSchedulingGroupHost() has the
+  // side effect of creating the process again if it is gone.
   AgentSchedulingGroupHost& agent_scheduling_group_;
 
   // Reference to the whole frame tree that this RenderFrameHost belongs to.

@@ -18,9 +18,7 @@
 #include "content/browser/isolated_origin_util.h"
 #include "content/browser/isolation_context.h"
 #include "content/browser/process_lock.h"
-#include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
-#include "content/browser/site_instance_group.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_or_resource_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -92,11 +90,7 @@ class SiteInstanceImpl::DefaultSiteInstanceState {
 
 SiteInstanceImpl::SiteInstanceImpl(BrowsingInstance* browsing_instance)
     : id_(g_site_instance_id_generator.GenerateNextId()),
-      site_instance_group_(base::WrapRefCounted(new SiteInstanceGroup())),
-      active_frame_count_(0),
       browsing_instance_(browsing_instance),
-      process_(nullptr),
-      agent_scheduling_group_(nullptr),
       can_associate_with_spare_process_(true),
       site_info_(browsing_instance->isolation_context()
                      .browser_or_resource_context()
@@ -110,14 +104,6 @@ SiteInstanceImpl::SiteInstanceImpl(BrowsingInstance* browsing_instance)
 
 SiteInstanceImpl::~SiteInstanceImpl() {
   GetContentClient()->browser()->SiteInstanceDeleting(this);
-
-  if (process_) {
-    process_->RemoveObserver(this);
-
-    // Ensure the RenderProcessHost gets deleted if this SiteInstance created a
-    // process which was never used by any listeners.
-    process_->Cleanup();
-  }
 
   // Now that no one is referencing us, we can safely remove ourselves from
   // the BrowsingInstance.  Any future visits to a page from this site
@@ -301,7 +287,7 @@ BrowsingInstanceId SiteInstanceImpl::NextBrowsingInstanceId() {
 }
 
 bool SiteInstanceImpl::HasProcess() {
-  if (process_ != nullptr)
+  if (site_instance_group_ && site_instance_group_->has_process())
     return true;
 
   // If we would use process-per-site for this site, also check if there is an
@@ -316,36 +302,29 @@ bool SiteInstanceImpl::HasProcess() {
 }
 
 RenderProcessHost* SiteInstanceImpl::GetProcess() {
-  // Create a new process if ours went away or was reused.
-  if (!process_) {
+  // Create a new process if our group's went away or was reused.
+  // All SiteInstances within a SiteInstanceGroup share a process and
+  // AgentSchedulingGroupHost. The process and AgentSchedulingGroupHost may go
+  // away if the SiteInstanceGroup outlives all of its documents and workers. If
+  // needed, make sure the SiteInstanceGroup, process, and
+  // AgentSchedulingGroupHost exist.
+  // TODO(crbug.com/1294045): Update checks and comments when a
+  // SiteInstanceGroup must have a RenderProcessHost and AgentSchedulingGroup.
+  if (!site_instance_group_ || !site_instance_group_->has_process()) {
     // Check if the ProcessReusePolicy should be updated.
     if (ShouldUseProcessPerSite()) {
       process_reuse_policy_ = ProcessReusePolicy::PROCESS_PER_SITE;
     } else if (process_reuse_policy_ == ProcessReusePolicy::PROCESS_PER_SITE) {
       process_reuse_policy_ = ProcessReusePolicy::DEFAULT;
     }
-
     SetProcessInternal(
         RenderProcessHostImpl::GetProcessHostForSiteInstance(this));
   }
-  DCHECK(process_);
+  DCHECK(site_instance_group_);
+  DCHECK(site_instance_group_->has_process());
+  DCHECK(site_instance_group_->has_agent_scheduling_group());
 
-  return process_;
-}
-
-AgentSchedulingGroupHost& SiteInstanceImpl::GetAgentSchedulingGroup() {
-  if (!agent_scheduling_group_) {
-    // If an AgentSchedulingGroup has not yet been assigned, we need to have it
-    // assigned (along with a RenderProcessHost). To preserve the invariant that
-    // |process_| and |agent_scheduling_group_| are always changed together, we
-    // call GetProcess(), and assume that it will set both members.
-    GetProcess();
-  }
-
-  DCHECK(agent_scheduling_group_);
-  DCHECK_EQ(agent_scheduling_group_->GetProcess(), process_);
-
-  return *agent_scheduling_group_;
+  return site_instance_group_->process();
 }
 
 bool SiteInstanceImpl::ShouldUseProcessPerSite() const {
@@ -374,23 +353,24 @@ void SiteInstanceImpl::ReuseCurrentProcessIfPossible(
   if (!RenderProcessHostImpl::MayReuseAndIsSuitable(current_process, this))
     return;
 
-  // TODO(crbug.com/1055779 ): Don't try to reuse process if either of the
+  // TODO(crbug.com/1055779): Don't try to reuse process if either of the
   // SiteInstances are cross-origin isolated (uses COOP/COEP).
   SetProcessInternal(current_process);
 }
 
 void SiteInstanceImpl::SetProcessInternal(RenderProcessHost* process) {
-  //  It is never safe to change |process_| without going through
-  //  RenderProcessHostDestroyed first to set it to null. Otherwise, same-site
-  //  frames will end up in different processes and everything will get
-  //  confused.
-  CHECK(!process_);
-  CHECK(process);
-  process_ = process;
-  process_->AddObserver(this);
-  CHECK(!agent_scheduling_group_);
-  agent_scheduling_group_ =
-      AgentSchedulingGroupHost::GetOrCreate(*group(), *process_);
+  if (!site_instance_group_) {
+    site_instance_group_ =
+        browsing_instance_->site_instance_group_manager()
+            .GetOrCreateGroupForNewSiteInstance(this, process);
+  } else if (!site_instance_group_->process()) {
+    // TODO(crbug.com/1261963): Remove this clause once the lifetime of
+    // SiteInstanceGroup  is tied to that of `process`.
+    site_instance_group_->SetProcessAndAgentSchedulingGroup(process);
+  }
+
+  DCHECK(site_instance_group_->has_process());
+  DCHECK(site_instance_group_->has_agent_scheduling_group());
 
   LockProcessIfNeeded();
 
@@ -399,11 +379,13 @@ void SiteInstanceImpl::SetProcessInternal(RenderProcessHost* process) {
   // at this time, we will register it in SetSite().)
   if (process_reuse_policy_ == ProcessReusePolicy::PROCESS_PER_SITE &&
       has_site_) {
-    RenderProcessHostImpl::RegisterSoleProcessHostForSite(process_, this);
+    RenderProcessHostImpl::RegisterSoleProcessHostForSite(
+        site_instance_group_->process(), this);
   }
 
   TRACE_EVENT2("navigation", "SiteInstanceImpl::SetProcessInternal", "site id",
-               id_.value(), "process id", process_->GetID());
+               id_.value(), "process id",
+               site_instance_group_->process()->GetID());
   GetContentClient()->browser()->SiteInstanceGotProcess(this);
 
   // Notify SiteInstanceGroupManager that the process was set on this
@@ -521,19 +503,23 @@ void SiteInstanceImpl::SetSiteInfoInternal(const SiteInfo& site_info) {
   if (should_use_process_per_site)
     process_reuse_policy_ = ProcessReusePolicy::PROCESS_PER_SITE;
 
-  if (process_) {
+  bool has_process =
+      site_instance_group_ && site_instance_group_->has_process();
+  if (has_process) {
     LockProcessIfNeeded();
 
     // Ensure the process is registered for this site if necessary.
-    if (should_use_process_per_site)
-      RenderProcessHostImpl::RegisterSoleProcessHostForSite(process_, this);
+    if (should_use_process_per_site) {
+      RenderProcessHostImpl::RegisterSoleProcessHostForSite(
+          site_instance_group_->process(), this);
+    }
   }
 
   // Notify SiteInstanceGroupManager that the SiteInfo was set on this
   // SiteInstance. This must be called after LockProcessIfNeeded() because
   // the SiteInstanceGroupManager does suitability checks that use the lock.
-  browsing_instance_->site_instance_group_manager().OnSiteInfoSet(
-      this, process_ != nullptr);
+  browsing_instance_->site_instance_group_manager().OnSiteInfoSet(this,
+                                                                  has_process);
 }
 
 void SiteInstanceImpl::ConvertToDefaultOrSetSite(const UrlInfo& url_info) {
@@ -644,6 +630,15 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::GetRelatedSiteInstanceImpl(
       url_info, /* allow_default_instance */ true);
 }
 
+AgentSchedulingGroupHost& SiteInstanceImpl::GetOrCreateAgentSchedulingGroup() {
+  if (!site_instance_group_ ||
+      !site_instance_group_->has_agent_scheduling_group()) {
+    GetProcess();
+  }
+
+  return site_instance_group_->agent_scheduling_group();
+}
+
 bool SiteInstanceImpl::IsRelatedSiteInstance(const SiteInstance* instance) {
   return browsing_instance_.get() ==
          static_cast<const SiteInstanceImpl*>(instance)
@@ -695,9 +690,9 @@ bool SiteInstanceImpl::IsSuitableForUrlInfo(const UrlInfo& url_info) {
   if (IsDefaultSiteInstance() && site_info != site_info_)
     return false;
 
-  // Note that HasProcess() may return true if process_ is null, in
-  // process-per-site cases where there's an existing process available.
-  // We want to use such a process in the IsSuitableHost check, so we
+  // Note that HasProcess() may return true if site_instance_group_->process_ is
+  // null, in process-per-site cases where there's an existing process
+  // available. We want to use such a process in the IsSuitableHost check, so we
   // may end up assigning process_ in the GetProcess() call below.
   if (!HasProcess()) {
     // If there is no process or site, then this is a new SiteInstance that can
@@ -739,31 +734,12 @@ bool SiteInstanceImpl::RequiresDedicatedProcess() {
   return site_info_.RequiresDedicatedProcess(GetIsolationContext());
 }
 
-void SiteInstanceImpl::IncrementActiveFrameCount() {
-  active_frame_count_++;
-}
-
-void SiteInstanceImpl::DecrementActiveFrameCount() {
-  if (--active_frame_count_ == 0) {
-    for (auto& observer : observers_)
-      observer.ActiveFrameCountIsZero(this);
-  }
-}
-
 void SiteInstanceImpl::IncrementRelatedActiveContentsCount() {
   browsing_instance_->increment_active_contents_count();
 }
 
 void SiteInstanceImpl::DecrementRelatedActiveContentsCount() {
   browsing_instance_->decrement_active_contents_count();
-}
-
-void SiteInstanceImpl::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void SiteInstanceImpl::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
 }
 
 BrowserContext* SiteInstanceImpl::GetBrowserContext() {
@@ -1174,32 +1150,13 @@ bool SiteInstanceImpl::HasEffectiveURL(BrowserContext* browser_context,
   return GetEffectiveURL(browser_context, url) != url;
 }
 
-void SiteInstanceImpl::RenderProcessHostDestroyed(RenderProcessHost* host) {
-  DCHECK_EQ(process_, host);
-  process_->RemoveObserver(this);
-  process_ = nullptr;
-  agent_scheduling_group_ = nullptr;
-
-  // Protect this from being deleted inside of the observers.
-  scoped_refptr<SiteInstanceImpl> protect(this);
-
-  for (auto& observer : observers_)
-    observer.RenderProcessHostDestroyed();
-}
-
-void SiteInstanceImpl::RenderProcessExited(
-    RenderProcessHost* host,
-    const ChildProcessTerminationInfo& info) {
-  for (auto& observer : observers_)
-    observer.RenderProcessGone(this, info);
-}
-
 void SiteInstanceImpl::LockProcessIfNeeded() {
+  RenderProcessHost* process = site_instance_group_->process();
   ChildProcessSecurityPolicyImpl* policy =
       ChildProcessSecurityPolicyImpl::GetInstance();
-  ProcessLock process_lock = process_->GetProcessLock();
+  ProcessLock process_lock = process->GetProcessLock();
   StoragePartitionImpl* storage_partition =
-      static_cast<StoragePartitionImpl*>(process_->GetStoragePartition());
+      static_cast<StoragePartitionImpl*>(process->GetStoragePartition());
   if (!has_site_) {
     CHECK(!process_lock.is_locked_to_site())
         << "A process that's already locked to " << process_lock.ToString()
@@ -1214,11 +1171,11 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
     if (process_lock.is_invalid()) {
       auto new_process_lock = ProcessLock::CreateAllowAnySite(
           storage_partition->GetConfig(), GetWebExposedIsolationInfo());
-      process_->SetProcessLock(GetIsolationContext(), new_process_lock);
+      process->SetProcessLock(GetIsolationContext(), new_process_lock);
     } else {
       CHECK(process_lock.allows_any_site())
           << "Unexpected process lock " << process_lock.ToString();
-      policy->IncludeIsolationContext(process_->GetID(), GetIsolationContext());
+      policy->IncludeIsolationContext(process->GetID(), GetIsolationContext());
     }
     return;
   }
@@ -1237,13 +1194,13 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
   // We can get here either when we commit a URL into a SiteInstance that does
   // not yet have a site, or when we create a process for a SiteInstance with a
   // preassigned site.
-  process_->SetIsUsed();
+  process->SetIsUsed();
 
   if (site_info_.ShouldLockProcessToSite(GetIsolationContext())) {
     // Sanity check that this won't try to assign an origin lock to a
     // non-site-isolated <webview> process, which can't be locked.
     if (!SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled())
-      CHECK(!process_->IsForGuestsOnly());
+      CHECK(!process->IsForGuestsOnly());
 
     ProcessLock lock_to_set = ProcessLock::FromSiteInfo(GetSiteInfo());
     if (!process_lock.is_locked_to_site()) {
@@ -1253,13 +1210,13 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
       // resources for isolated sites. https://crbug.com/509125
       TRACE_EVENT2("navigation", "RenderProcessHost::SetProcessLock", "site id",
                    id_.value(), "lock", lock_to_set.ToString());
-      process_->SetProcessLock(GetIsolationContext(), lock_to_set);
+      process->SetProcessLock(GetIsolationContext(), lock_to_set);
     } else if (process_lock != lock_to_set) {
       // We should never attempt to reassign a different origin lock to a
       // process.
       base::debug::SetCrashKeyString(bad_message::GetRequestedSiteInfoKey(),
                                      site_info_.GetDebugString());
-      policy->LogKilledProcessOriginLock(process_->GetID());
+      policy->LogKilledProcessOriginLock(process->GetID());
       CHECK(false) << "Trying to lock a process to " << lock_to_set.ToString()
                    << " but the process is already locked to "
                    << process_lock.ToString();
@@ -1273,7 +1230,7 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
       // process, but it has been put in a process for a site that does.
       base::debug::SetCrashKeyString(bad_message::GetRequestedSiteInfoKey(),
                                      site_info_.GetDebugString());
-      policy->LogKilledProcessOriginLock(process_->GetID());
+      policy->LogKilledProcessOriginLock(process->GetID());
       CHECK(false) << "Trying to commit non-isolated site " << site_info_
                    << " in process locked to " << process_lock.ToString();
     } else if (process_lock.is_invalid()) {
@@ -1281,7 +1238,7 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
       // associated with a SiteInstance that is not locked to a site yet.
       auto new_process_lock = ProcessLock::CreateAllowAnySite(
           storage_partition->GetConfig(), GetWebExposedIsolationInfo());
-      process_->SetProcessLock(GetIsolationContext(), new_process_lock);
+      process->SetProcessLock(GetIsolationContext(), new_process_lock);
     } else {
       CHECK(process_lock.allows_any_site())
           << "Unexpected process lock " << process_lock.ToString();
@@ -1292,7 +1249,7 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
   // ChildProcessSecurityPolicyImpl (e.g. CanAccessDataForOrigin) determine
   // whether a given URL should require a lock or not (a dynamically isolated
   // origin may require a lock in some isolation contexts but not in others).
-  policy->IncludeIsolationContext(process_->GetID(), GetIsolationContext());
+  policy->IncludeIsolationContext(process->GetID(), GetIsolationContext());
 }
 
 const WebExposedIsolationInfo& SiteInstanceImpl::GetWebExposedIsolationInfo()
@@ -1345,7 +1302,8 @@ void SiteInstanceImpl::WriteIntoTrace(perfetto::TracedValue context) {
   dict.Add("browsing_instance_id", GetBrowsingInstanceId().value());
   dict.Add("is_default", IsDefaultSiteInstance());
   dict.Add("site_info", site_info_);
-  dict.Add("active_rfh_count", active_frame_count_);
+  if (site_instance_group_)
+    dict.Add("active_rfh_count", site_instance_group_->active_frame_count());
 }
 
 void SiteInstanceImpl::WriteIntoTrace(
@@ -1355,7 +1313,8 @@ void SiteInstanceImpl::WriteIntoTrace(
   proto->set_is_default(IsDefaultSiteInstance());
   proto->set_has_process(HasProcess());
   proto->set_related_active_contents_count(GetRelatedActiveContentsCount());
-  proto->set_active_rfh_count(active_frame_count_);
+  if (site_instance_group_)
+    proto->set_active_rfh_count(site_instance_group_->active_frame_count());
 }
 
 int SiteInstanceImpl::EstimateOriginAgentClusterOverheadForMetrics() {

@@ -139,7 +139,7 @@ SharedWorkerHost::SharedWorkerHost(
   DCHECK(GetProcessHost());
   DCHECK(GetProcessHost()->IsInitializedAndNotDead());
 
-  site_instance_->AddObserver(this);
+  site_instance_->group()->AddObserver(this);
 
   // Set up the worker pending receiver. This is needed first in either
   // AddClient() or Start(). AddClient() can sometimes be called before Start()
@@ -151,7 +151,7 @@ SharedWorkerHost::SharedWorkerHost(
 }
 
 SharedWorkerHost::~SharedWorkerHost() {
-  site_instance_->RemoveObserver(this);
+  site_instance_->group()->RemoveObserver(this);
 
   if (started_) {
     // Attempt to notify the worker before disconnecting.

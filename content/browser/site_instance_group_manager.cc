@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/site_instance_group.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
@@ -32,6 +33,19 @@ RenderProcessHost* SiteInstanceGroupManager::GetExistingGroupProcess(
   }
 
   return default_process_;
+}
+
+scoped_refptr<SiteInstanceGroup>
+SiteInstanceGroupManager::GetOrCreateGroupForNewSiteInstance(
+    SiteInstanceImpl* site_instance,
+    RenderProcessHost* process) {
+  DCHECK(!site_instance->group());
+
+  // TODO(crbug.com/1291351, yangsharon): For now, each SiteInstance gets its
+  // own SiteInstanceGroup, and we can always create a new group for each new
+  // SiteInstance here. When grouping policies are introduced, this function may
+  // return an existing SiteInstanceGroup for a new SiteInstance.
+  return base::WrapRefCounted(new SiteInstanceGroup(process));
 }
 
 void SiteInstanceGroupManager::OnSiteInfoSet(SiteInstanceImpl* site_instance,

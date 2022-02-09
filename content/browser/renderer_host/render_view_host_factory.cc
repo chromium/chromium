@@ -32,6 +32,8 @@ RenderViewHost* RenderViewHostFactory::Create(
     bool renderer_initiated_creation) {
   int32_t routing_id = instance->GetProcess()->GetNextRoutingID();
   int32_t widget_routing_id = instance->GetProcess()->GetNextRoutingID();
+  DCHECK(static_cast<SiteInstanceImpl*>(instance)->group());
+
   if (factory_) {
     return factory_->CreateRenderViewHost(
         frame_tree, instance, delegate, widget_delegate, routing_id,
@@ -40,11 +42,13 @@ RenderViewHost* RenderViewHostFactory::Create(
 
   RenderViewHostImpl* view_host = new RenderViewHostImpl(
       frame_tree, instance,
-      RenderWidgetHostFactory::Create(
-          frame_tree, widget_delegate,
-          static_cast<SiteInstanceImpl*>(instance)->GetAgentSchedulingGroup(),
-          widget_routing_id,
-          /*hidden=*/true, renderer_initiated_creation),
+      RenderWidgetHostFactory::Create(frame_tree, widget_delegate,
+                                      static_cast<SiteInstanceImpl*>(instance)
+                                          ->group()
+                                          ->agent_scheduling_group(),
+                                      widget_routing_id,
+                                      /*hidden=*/true,
+                                      renderer_initiated_creation),
       delegate, routing_id, main_frame_routing_id, swapped_out,
       true /* has_initialized_audio_host */);
   return view_host;

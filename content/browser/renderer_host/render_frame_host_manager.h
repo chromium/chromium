@@ -616,7 +616,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
       scoped_refptr<RenderViewHostImpl> rvh);
 
   // Delete a RenderFrameProxyHost owned by this object.
-  void DeleteRenderFrameProxyHost(SiteInstance* site_instance);
+  void DeleteRenderFrameProxyHost(SiteInstanceGroup* site_instance_group);
 
   // Returns kYes_* if for the navigation from `current_effective_url` to
   // `destination_url_info`, a new SiteInstance and BrowsingInstance should be

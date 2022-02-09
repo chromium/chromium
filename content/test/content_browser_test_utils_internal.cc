@@ -387,7 +387,7 @@ std::string FrameTreeVisualizer::DepictFrameTree(FrameTreeNode* root) {
     base::StringAppendF(&result, "\n%s%s = %s", prefix,
                         legend_entry.first.c_str(), description.c_str());
     // Highlight some exceptionable conditions.
-    if (site_instance->active_frame_count() == 0)
+    if (site_instance->group()->active_frame_count() == 0)
       result.append(" (active_frame_count == 0)");
     if (!site_instance->GetProcess()->IsInitializedAndNotDead())
       result.append(" (no process)");

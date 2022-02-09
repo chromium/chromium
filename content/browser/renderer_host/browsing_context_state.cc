@@ -169,26 +169,26 @@ void BrowsingContextState::SetIsAdSubframe(bool is_ad_subframe) {
 }
 
 void BrowsingContextState::ActiveFrameCountIsZero(
-    SiteInstanceImpl* site_instance) {
-  // |site_instance| no longer contains any active RenderFrameHosts, so we don't
-  // need to maintain a proxy there anymore.
-  RenderFrameProxyHost* proxy = GetRenderFrameProxyHost(site_instance->group());
+    SiteInstanceGroup* site_instance_group) {
+  // |site_instance_group| no longer contains any active RenderFrameHosts, so we
+  // don't need to maintain a proxy there anymore.
+  RenderFrameProxyHost* proxy = GetRenderFrameProxyHost(site_instance_group);
   CHECK(proxy);
 
-  DeleteRenderFrameProxyHost(site_instance);
+  DeleteRenderFrameProxyHost(site_instance_group);
 }
 
 void BrowsingContextState::RenderProcessGone(
-    SiteInstanceImpl* instance,
+    SiteInstanceGroup* site_instance_group,
     const ChildProcessTerminationInfo& info) {
-  GetRenderFrameProxyHost(instance->group())->SetRenderFrameProxyCreated(false);
+  GetRenderFrameProxyHost(site_instance_group)
+      ->SetRenderFrameProxyCreated(false);
 }
 
 void BrowsingContextState::DeleteRenderFrameProxyHost(
-    SiteInstance* site_instance) {
-  static_cast<SiteInstanceImpl*>(site_instance)->RemoveObserver(this);
-  proxy_hosts_.erase(
-      static_cast<SiteInstanceImpl*>(site_instance)->group()->GetId());
+    SiteInstanceGroup* site_instance_group) {
+  site_instance_group->RemoveObserver(this);
+  proxy_hosts_.erase(site_instance_group->GetId());
 }
 
 void BrowsingContextState::SendFramePolicyUpdatesToProxies(

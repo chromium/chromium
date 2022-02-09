@@ -613,12 +613,12 @@ void RenderFrameHostManager::PrepareForCollectingPage(
       (*proxy_hosts)[it.first] = std::move(it.second);
     }
   }
-  // Remove the previously extracted proxies from the
-  // RenderFrameHostManager, which also removes their respective
-  // SiteInstanceImpl::Observer.
-  for (auto& it : *proxy_hosts)
+  // Remove the previously extracted proxies from the RenderFrameHostManager,
+  // which also removes their respective SiteInstanceGroup::Observer.
+  for (auto& it : *proxy_hosts) {
     browsing_context_state_->DeleteRenderFrameProxyHost(
-        it.second->GetSiteInstance());
+        it.second->site_instance_group());
+  }
 }
 
 std::unique_ptr<StoredPage> RenderFrameHostManager::CollectPage(
@@ -752,12 +752,13 @@ void RenderFrameHostManager::DiscardUnusedFrame(
   // TODO(carlosk): this code is very similar to what can be found in
   // UnloadOldFrame and we should see that these are unified at some point.
 
-  // If the SiteInstance for the pending RFH is being used by others, ensure
-  // that it is replaced by a RenderFrameProxyHost to allow other frames to
-  // communicate to this frame.
+  // If the SiteInstanceGroup for the pending RFH is being used by others,
+  // ensure that the pending RenderFrameHost is replaced by a
+  // RenderFrameProxyHost to allow other frames to communicate to this frame.
   SiteInstanceImpl* site_instance = render_frame_host->GetSiteInstance();
   RenderFrameProxyHost* proxy = nullptr;
-  if (site_instance->HasSite() && site_instance->active_frame_count() > 1) {
+  if (site_instance->HasSite() &&
+      site_instance->group()->active_frame_count() > 1) {
     // A proxy already exists for the SiteInstanceGroup that |site_instance|
     // belongs to, so just reuse it. There is no need to call Unload() on the
     // |render_frame_host|, as this method is only called to discard a pending
@@ -838,8 +839,8 @@ void RenderFrameHostManager::RestorePage(
 // cross-BCG navigations.
 void RenderFrameHostManager::ResetProxyHosts() {
   for (const auto& pair : browsing_context_state_->proxy_hosts()) {
-    static_cast<SiteInstanceImpl*>(pair.second->GetSiteInstance())
-        ->RemoveObserver(browsing_context_state_.get());
+    pair.second->site_instance_group()->RemoveObserver(
+        browsing_context_state_.get());
   }
   browsing_context_state_->proxy_hosts().clear();
 }
@@ -1461,6 +1462,7 @@ RenderFrameProxyHost* RenderFrameHostManager::CreateRenderFrameProxyHost(
   browsing_context_state_->proxy_hosts()[site_instance_group_id] =
       base::WrapUnique(proxy_host);
   static_cast<SiteInstanceImpl*>(site_instance)
+      ->group()
       ->AddObserver(browsing_context_state_.get());
 
   TRACE_EVENT_INSTANT("navigation",
@@ -1470,8 +1472,8 @@ RenderFrameProxyHost* RenderFrameHostManager::CreateRenderFrameProxyHost(
 }
 
 void RenderFrameHostManager::DeleteRenderFrameProxyHost(
-    SiteInstance* site_instance) {
-  browsing_context_state_->DeleteRenderFrameProxyHost(site_instance);
+    SiteInstanceGroup* site_instance_group) {
+  browsing_context_state_->DeleteRenderFrameProxyHost(site_instance_group);
 }
 
 ShouldSwapBrowsingInstance
@@ -2914,7 +2916,8 @@ RenderFrameProxyHost* RenderFrameHostManager::CreateOuterDelegateProxy(
 
 void RenderFrameHostManager::DeleteOuterDelegateProxy(
     SiteInstance* outer_contents_site_instance) {
-  DeleteRenderFrameProxyHost(outer_contents_site_instance);
+  DeleteRenderFrameProxyHost(
+      static_cast<SiteInstanceImpl*>(outer_contents_site_instance)->group());
 }
 
 void RenderFrameHostManager::SwapOuterDelegateFrame(
@@ -3302,8 +3305,8 @@ void RenderFrameHostManager::CommitPending(
         // never be reusing SiteInstanceGroups.
         CHECK(!base::Contains(browsing_context_state_->proxy_hosts(),
                               proxy.second->site_instance_group()->GetId()));
-        static_cast<SiteInstanceImpl*>(proxy.second->GetSiteInstance())
-            ->AddObserver(browsing_context_state_.get());
+        proxy.second->site_instance_group()->AddObserver(
+            browsing_context_state_.get());
         TRACE_EVENT_INSTANT(
             "navigation", "RenderFrameHostManager::CommitPending_RestoreProxy",
             ChromeTrackEvent::kRenderFrameProxyHost, *proxy.second);
@@ -3464,8 +3467,8 @@ void RenderFrameHostManager::CommitPending(
   UnloadOldFrame(std::move(old_render_frame_host));
 
   // Since the new RenderFrameHost is now committed, there must be no proxies
-  // for its SiteInstance. Delete any existing ones.
-  DeleteRenderFrameProxyHost(render_frame_host_->GetSiteInstance());
+  // for its SiteInstanceGroup. Delete any existing ones.
+  DeleteRenderFrameProxyHost(render_frame_host_->GetSiteInstance()->group());
 
   // If this is a top-level frame, and COOP triggered a BrowsingInstance swap,
   // make sure all relationships with the previous BrowsingInstance are severed
@@ -3493,7 +3496,7 @@ void RenderFrameHostManager::CommitPending(
     }
 
     for (auto* proxy : removed_proxies)
-      DeleteRenderFrameProxyHost(proxy->GetSiteInstance());
+      DeleteRenderFrameProxyHost(proxy->site_instance_group());
   }
 
   // If this is a subframe or inner frame tree, it should have a

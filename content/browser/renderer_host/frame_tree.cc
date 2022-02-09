@@ -646,8 +646,14 @@ scoped_refptr<RenderViewHostImpl> FrameTree::CreateRenderViewHost(
 
 scoped_refptr<RenderViewHostImpl> FrameTree::GetRenderViewHost(
     SiteInstance* site_instance) {
-  auto it = render_view_host_map_.find(GetRenderViewHostMapId(
-      static_cast<SiteInstanceImpl*>(site_instance)->group()));
+  // When called from RenderFrameHostManager::CreateRenderFrameHost, it's
+  // possible that a RenderProcessHost hasn't yet been created, which means
+  // `site_instance` won't have gotten a group yet.
+  auto* group = static_cast<SiteInstanceImpl*>(site_instance)->group();
+  if (!group)
+    return nullptr;
+
+  auto it = render_view_host_map_.find(GetRenderViewHostMapId(group));
   if (it == render_view_host_map_.end())
     return nullptr;
 

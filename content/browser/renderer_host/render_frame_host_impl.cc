@@ -1319,7 +1319,8 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     : render_view_host_(std::move(render_view_host)),
       delegate_(delegate),
       site_instance_(static_cast<SiteInstanceImpl*>(site_instance)),
-      agent_scheduling_group_(site_instance_->GetAgentSchedulingGroup()),
+      agent_scheduling_group_(
+          site_instance_->GetOrCreateAgentSchedulingGroup()),
       frame_tree_(frame_tree),
       frame_tree_node_(frame_tree_node),
       browsing_context_state_(std::move(browsing_context_state)),
@@ -1361,10 +1362,10 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   g_routing_id_frame_map.Get().emplace(
       GlobalRenderFrameHostId(GetProcess()->GetID(), routing_id_), this);
   g_token_frame_map.Get().insert(std::make_pair(frame_token_, this));
-  site_instance_->AddObserver(this);
+  site_instance_->group()->AddObserver(this);
   auto* process = GetProcess();
   process->RegisterRenderFrameHost(GetGlobalId());
-  GetSiteInstance()->IncrementActiveFrameCount();
+  GetSiteInstance()->group()->IncrementActiveFrameCount();
 
   if (parent_) {
     // All frames in a frame tree should use the same storage partition.
@@ -1495,7 +1496,7 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   g_token_frame_map.Get().erase(frame_token_);
 
   auto* process = GetProcess();
-  site_instance_->RemoveObserver(this);
+  site_instance_->group()->RemoveObserver(this);
   process->UnregisterRenderFrameHost(GetGlobalId());
 
   const bool was_created = is_render_frame_created();
@@ -1518,10 +1519,10 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   if (is_audible_)
     OnAudibleStateChanged(false);
 
-  // If this was the last active frame in the SiteInstance, the
+  // If this was the last active frame in the SiteInstanceGroup, the
   // DecrementActiveFrameCount call will trigger the deletion of the
-  // SiteInstance's proxies.
-  GetSiteInstance()->DecrementActiveFrameCount();
+  // SiteInstanceGroup's proxies.
+  GetSiteInstance()->group()->DecrementActiveFrameCount();
 
   // Once a RenderFrame is created in the renderer, there are three possible
   // clean-up paths:
@@ -2818,9 +2819,9 @@ void RenderFrameHostImpl::RenderProcessExited(
 }
 
 void RenderFrameHostImpl::RenderProcessGone(
-    SiteInstanceImpl* site_instance,
+    SiteInstanceGroup* site_instance_group,
     const ChildProcessTerminationInfo& info) {
-  DCHECK_EQ(site_instance_.get(), site_instance);
+  DCHECK_EQ(site_instance_.get()->group(), site_instance_group);
 
   if (IsInBackForwardCache()) {
     EvictFromBackForwardCacheWithReason(
@@ -2849,7 +2850,7 @@ void RenderFrameHostImpl::RenderProcessGone(
   if (is_audible_)
     OnAudibleStateChanged(false);
 
-  RenderProcessExited(site_instance->GetProcess(), info);
+  RenderProcessExited(site_instance_group->process(), info);
 }
 
 void RenderFrameHostImpl::PerformAction(const ui::AXActionData& data) {
