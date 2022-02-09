@@ -314,6 +314,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXURL) {
   RunTypedTest<kMacAttributes>("ax-url.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXVisited) {
+  RunTypedTest<kMacAttributes>("ax-visited.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, SelectAllTextarea) {
   RunTypedTest<kMacSelection>("selectall-textarea.html");
 }

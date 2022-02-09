@@ -690,6 +690,7 @@ bool IsAXSetter(SEL selector) {
     NSAccessibilityFocusedAttribute,
     NSAccessibilityHelpAttribute,
     NSAccessibilityTopLevelUIElementAttribute,
+    NSAccessibilityVisitedAttribute,
     NSAccessibilityWindowAttribute,
   ];
   // Attributes required for user-editable controls.
@@ -1260,6 +1261,13 @@ bool IsAXSetter(SEL selector) {
 
 - (NSURL*)AXURL {
   return [self accessibilityURL];
+}
+
+- (NSNumber*)AXVisited {
+  if (![self instanceActive])
+    return nil;
+
+  return _node->HasState(ax::mojom::State::kVisited) ? @1 : @0;
 }
 
 - (NSString*)AXHelp {

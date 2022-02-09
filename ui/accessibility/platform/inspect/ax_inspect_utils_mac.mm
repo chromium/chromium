@@ -73,7 +73,8 @@ bool IsValidAXAttribute(const std::string& attribute) {
        NSAccessibilityPopupValueAttribute,
        NSAccessibilityRequiredAttributeChrome,
        NSAccessibilityRoleDescriptionAttribute,
-       NSAccessibilityURLAttribute},
+       NSAccessibilityURLAttribute,
+       NSAccessibilityVisitedAttribute},
       NSStringComparator());
 
   return kValidAttributes.contains(base::SysUTF8ToNSString(attribute));

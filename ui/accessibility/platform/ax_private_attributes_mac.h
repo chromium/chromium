@@ -89,6 +89,8 @@ AX_EXPORT constexpr NSString* const NSAccessibilityMathPrescriptsAttribute =
 AX_EXPORT constexpr NSString* const NSAccessibilityOwnsAttribute = @"AXOwns";
 AX_EXPORT constexpr NSString* const NSAccessibilityPopupValueAttribute =
     @"AXPopupValue";
+AX_EXPORT constexpr NSString* const NSAccessibilityVisitedAttribute =
+    @"AXVisited";
 
 #if defined(MAC_OS_X_VERSION_10_12) && \
     (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_12)

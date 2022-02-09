@@ -75,7 +75,6 @@ NSString* const
 NSString* const
     NSAccessibilityUIElementsForSearchPredicateParameterizedAttribute =
         @"AXUIElementsForSearchPredicate";
-NSString* const NSAccessibilityVisitedAttribute = @"AXVisited";
 NSString* const NSAccessibilityKeyShortcutsValueAttribute =
     @"AXKeyShortcutsValue";
 
@@ -674,7 +673,6 @@ bool content::IsNSRange(id value) {
       {NSAccessibilityVisibleChildrenAttribute, @"visibleChildren"},
       {NSAccessibilityVisibleColumnsAttribute, @"visibleColumns"},
       {NSAccessibilityVisibleRowsAttribute, @"visibleRows"},
-      {NSAccessibilityVisitedAttribute, @"visited"},
       {NSAccessibilityWindowAttribute, @"window"},
       {@"AXLoaded", @"loaded"},
   };
@@ -1942,12 +1940,6 @@ bool content::IsNSRange(id value) {
   return [self rows];
 }
 
-- (NSNumber*)visited {
-  if (![self instanceActive])
-    return nil;
-  return @(GetState(_owner, ax::mojom::State::kVisited));
-}
-
 - (id)window {
   if (![self instanceActive])
     return nil;
@@ -2734,7 +2726,6 @@ bool content::IsNSRange(id value) {
                        NSAccessibilityTitleUIElementAttribute,
                        NSAccessibilityTopLevelUIElementAttribute,
                        NSAccessibilityValueAttribute,
-                       NSAccessibilityVisitedAttribute,
                        NSAccessibilityWindowAttribute, nil];
 
   // Specific role attributes.

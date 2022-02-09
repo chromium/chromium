@@ -179,7 +179,6 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 @property(nonatomic, readonly) NSArray* visibleChildren;
 @property(nonatomic, readonly) NSArray* visibleColumns;
 @property(nonatomic, readonly) NSArray* visibleRows;
-@property(nonatomic, readonly) NSNumber* visited;
 @property(nonatomic, readonly) id window;
 @end
 
