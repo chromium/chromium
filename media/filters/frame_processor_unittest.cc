@@ -161,9 +161,16 @@ class FrameProcessorTest : public ::testing::TestWithParam<bool> {
       return kInfiniteDuration;
     }
 
+    // Handle large integers precisely without converting through a double.
+    if (ts_string.find('.') == std::string::npos) {
+      int64_t milliseconds;
+      CHECK(base::StringToInt64(ts_string, &milliseconds));
+      return Milliseconds(milliseconds);
+    }
+
     double ts_double;
     CHECK(base::StringToDouble(ts_string, &ts_double));
-    return base::Milliseconds(ts_double);
+    return Milliseconds(ts_double);
   }
 
   BufferQueue StringToBufferQueue(const std::string& buffers_to_append,
@@ -2451,6 +2458,109 @@ TEST_P(FrameProcessorTest, Segments_InfiniteTimestampOffset_Fails) {
   SetTimestampOffset(kInfiniteDuration);
   EXPECT_MEDIA_LOG(OffsetOutOfRange());
   EXPECT_FALSE(ProcessFrames("0K", ""));
+}
+
+TEST_P(FrameProcessorTest, Pts_AfterTimestampOffsetApplied_kNoTimestamp_Fails) {
+  InSequence s;
+  AddTestTracks(HAS_VIDEO);
+  frame_processor_->SetSequenceMode(use_sequence_mode_);
+
+  // Note, SetTimestampOffset(kNoTimestamp) hits DCHECK. This test instead
+  // checks that the result of offset application to PTS gives parse error if
+  // the result is <= kNoTimestamp. Getting such a result requires different
+  // test logic for segments vs sequence append modes.
+  if (use_sequence_mode_) {
+    // Use an extremely out-of-order DTS/PTS GOP to get the resulting
+    // timestampOffset needed for application to a nonkeyframe PTS (continuous
+    // in DTS time with its GOP's keyframe), resulting with kNoTimestamp PTS.
+    // First, calculate (-kNoTimestamp - 10ms), truncated down to nearest
+    // millisecond, for use as keyframe PTS and DTS.
+    frame_duration_ = Milliseconds(1);
+    base::TimeDelta ts =
+        Milliseconds(((kNoTimestamp + Milliseconds(10)) * -1).InMilliseconds());
+    std::string ts_str = base::NumberToString(ts.InMilliseconds());
+
+    // Append the keyframe and expect success for this step.
+    EXPECT_CALL(callbacks_, PossibleDurationIncrease(frame_duration_));
+    EXPECT_TRUE(ProcessFrames("", ts_str + "|" + ts_str + "K"));
+    EXPECT_EQ(timestamp_offset_.InMicroseconds(), (-1 * ts).InMicroseconds());
+
+    // A nonkeyframe with the same DTS as previous frame does not cause any
+    // discontinuity. Append such a frame, with PTS before offset applied that
+    // saturates to kNoTimestamp when the offset is applied.
+    EXPECT_MEDIA_LOG(FrameTimeOutOfRange("After adjusting by timestampOffset",
+                                         "PTS", "video"));
+    EXPECT_FALSE(ProcessFrames("", "-20|" + ts_str));
+  } else {
+    // Set the offset to be just above kNoTimestamp, and append a frame with a
+    // PTS that is negative by at least that small amount. The result should
+    // saturate to kNoTimestamp for PTS.
+    SetTimestampOffset(kNoTimestamp + Milliseconds(1));
+    EXPECT_MEDIA_LOG(FrameTimeOutOfRange("After adjusting by timestampOffset",
+                                         "PTS", "video"));
+    EXPECT_FALSE(ProcessFrames("", "-2K"));
+  }
+}
+
+TEST_P(FrameProcessorTest,
+       Pts_AfterTimestampOffsetApplied_kInfiniteDuration_Fails) {
+  InSequence s;
+
+  AddTestTracks(HAS_VIDEO);
+  frame_processor_->SetSequenceMode(use_sequence_mode_);
+
+  // Use a video GOP with a nonkeyframe PTS that jumps forward far enough to
+  // saturate to kInfiniteDuration after timestampOffset is applied. Take care
+  // to avoid saturating the (earlier) keyframe's frame_end_timestamp to
+  // kInfiniteDuration, avoiding a different parse error case.
+  // First, calculate (kInfiniteDuration - 2ms), truncated down to nearest
+  // millisecond for use as keyframe PTS (after timestamp offset application).
+  // It's also used for start of DTS sequence.
+  frame_duration_ = Milliseconds(1);
+  base::TimeDelta ts =
+      Milliseconds((kInfiniteDuration - Milliseconds(2)).InMilliseconds());
+
+  // Append the keyframe and expect success for this step.
+  SetTimestampOffset(ts);
+  EXPECT_CALL(callbacks_, PossibleDurationIncrease(ts + frame_duration_));
+  EXPECT_TRUE(ProcessFrames("", "0K"));
+
+  // Sequence mode might adjust the offset. This test's logic should ensure the
+  // offset is the same as in segments mode at this point.
+  EXPECT_EQ(timestamp_offset_.InMicroseconds(), ts.InMicroseconds());
+
+  // A nonkeyframe with same DTS as previous frame does not cause any
+  // discontinuity. Append such a frame, with PTS jumped 3ms forwards such that
+  // it saturates to kInfiniteDuration when offset is applied.
+  EXPECT_MEDIA_LOG(FrameTimeOutOfRange("After adjusting by timestampOffset",
+                                       "PTS", "video"));
+  EXPECT_FALSE(ProcessFrames("", "3|0"));
+}
+
+TEST_P(FrameProcessorTest,
+       Dts_AfterTimestampOffsetApplied_kNoDecodeTimestamp_Fails) {
+  InSequence s;
+
+  AddTestTracks(HAS_AUDIO);
+  frame_processor_->SetSequenceMode(use_sequence_mode_);
+
+  SetTimestampOffset(kNoTimestamp + Milliseconds(5));
+  EXPECT_MEDIA_LOG(FrameTimeOutOfRange("After adjusting by timestampOffset",
+                                       "DTS", "audio"));
+  EXPECT_FALSE(ProcessFrames("0|-10K", ""));
+}
+
+TEST_P(FrameProcessorTest,
+       Dts_AfterTimestampOffsetApplied_kMaxDecodeTimestamp_Fails) {
+  InSequence s;
+
+  AddTestTracks(HAS_AUDIO);
+  frame_processor_->SetSequenceMode(use_sequence_mode_);
+
+  SetTimestampOffset(kInfiniteDuration - Milliseconds(5));
+  EXPECT_MEDIA_LOG(FrameTimeOutOfRange("After adjusting by timestampOffset",
+                                       "DTS", "audio"));
+  EXPECT_FALSE(ProcessFrames("0|10K", ""));
 }
 
 INSTANTIATE_TEST_SUITE_P(SequenceMode, FrameProcessorTest, Values(true));
