@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_CAPABILITIES_SERVICE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_CAPABILITIES_SERVICE_H_
 
+#include <set>
 #include <vector>
 
 #include "base/callback.h"
@@ -16,7 +17,7 @@ namespace password_manager {
 class CapabilitiesService {
  public:
   using ResponseCallback =
-      base::OnceCallback<void(const std::vector<url::Origin>&)>;
+      base::OnceCallback<void(const std::set<url::Origin>&)>;
 
   virtual ~CapabilitiesService() = default;
 

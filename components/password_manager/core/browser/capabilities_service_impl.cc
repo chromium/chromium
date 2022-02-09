@@ -8,6 +8,7 @@
 #include "base/hash/legacy_hash.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
+#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -79,25 +80,23 @@ void CapabilitiesServiceImpl::OnGetCapabilitiesResult(
     ResponseCallback callback,
     int http_status,
     const std::vector<CapabilitiesInfo>& infos) {
-  base::flat_set<url::Origin> origins_set(origins.begin(), origins.end());
-
-  std::vector<url::Origin> response;
   if (http_status != net::HTTP_OK) {
     // TODO(b/209429727) Record network failure metrics.
-    std::move(callback).Run(response);
+    std::move(callback).Run(std::set<url::Origin>());
     return;
   }
 
+  std::set<url::Origin> infos_origin_set;
   for (const CapabilitiesInfo& info : infos) {
     // Checks if the script is visible to the client.
     if (password_manager::features::kPasswordChangeLiveExperimentParam.Get() ||
         !ScriptInLiveExperiment(info.script_parameters)) {
-      const auto cap_info_origin = url::Origin::Create(GURL(info.url));
-      if (origins_set.contains(cap_info_origin)) {
-        response.push_back(cap_info_origin);
-      }
+      infos_origin_set.insert(url::Origin::Create(GURL(info.url)));
     }
   }
-
+  std::set<url::Origin> origins_set(origins.begin(), origins.end());
+  std::set<url::Origin> response =
+      base::STLSetIntersection<std::set<url::Origin>>(origins_set,
+                                                      infos_origin_set);
   std::move(callback).Run(response);
 }

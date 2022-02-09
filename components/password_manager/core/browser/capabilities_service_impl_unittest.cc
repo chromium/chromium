@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/capabilities_service_impl.h"
 
+#include <set>
 #include <vector>
 
 #include "base/callback.h"
@@ -78,7 +79,7 @@ TEST_F(CapabilitiesServiceImplTest, FetchCapabilitiesEmptyResponse) {
 
   base::MockCallback<password_manager::CapabilitiesService::ResponseCallback>
       mock_response_callback;
-  EXPECT_CALL(mock_response_callback, Run(std::vector<url::Origin>()));
+  EXPECT_CALL(mock_response_callback, Run(std::set<url::Origin>()));
 
   service_->QueryPasswordChangeScriptAvailability(origins,
                                                   mock_response_callback.Get());
@@ -91,7 +92,7 @@ TEST_F(CapabilitiesServiceImplTest, BackendRequestFailed) {
 
   base::MockCallback<password_manager::CapabilitiesService::ResponseCallback>
       mock_response_callback;
-  EXPECT_CALL(mock_response_callback, Run(std::vector<url::Origin>()));
+  EXPECT_CALL(mock_response_callback, Run(std::set<url::Origin>()));
 
   std::vector<url::Origin> origins = {
       url::Origin::Create(GURL("https://example.com")),
@@ -123,7 +124,7 @@ TEST_F(CapabilitiesServiceImplTest, FetchCapabilitiesSuccess) {
       mock_response_callback;
 
   EXPECT_CALL(mock_response_callback,
-              Run(std::vector<url::Origin>{
+              Run(std::set<url::Origin>{
                   url::Origin::Create(GURL("https://example.com")),
                   url::Origin::Create(GURL("https://test.com")),
               }));
@@ -164,7 +165,7 @@ TEST_F(CapabilitiesServiceImplTest, FetchCapabilitiesClientInLiveExperiment) {
   base::MockCallback<password_manager::CapabilitiesService::ResponseCallback>
       mock_response_callback;
   EXPECT_CALL(mock_response_callback,
-              Run(std::vector<url::Origin>{
+              Run(std::set<url::Origin>{
                   url::Origin::Create(GURL("https://example.com")),
                   url::Origin::Create(GURL("https://test.com")),
                   url::Origin::Create(GURL("https://dummyurl.com")),
