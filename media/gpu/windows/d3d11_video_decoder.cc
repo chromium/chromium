@@ -29,6 +29,9 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
 #include "media/gpu/windows/d3d11_av1_accelerator.h"
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#include "media/gpu/windows/d3d11_h265_accelerator.h"
+#endif
 #include "media/gpu/windows/d3d11_picture_buffer.h"
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_video_context_wrapper.h"
@@ -186,6 +189,16 @@ HRESULT D3D11VideoDecoder::InitializeAcceleratedDecoder(
         std::make_unique<D3D11AV1Accelerator>(
             this, media_log_.get(), video_device_, std::move(video_context)),
         profile_, config.color_space_info());
+  } else if (config.codec() == VideoCodec::kHEVC) {
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+    DCHECK(base::FeatureList::IsEnabled(kD3D11HEVCDecoding));
+    accelerated_video_decoder_ = std::make_unique<H265Decoder>(
+        std::make_unique<D3D11H265Accelerator>(
+            this, media_log_.get(), video_device_, std::move(video_context)),
+        profile_, config.color_space_info());
+#else
+    return E_FAIL;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
   } else {
     return E_FAIL;
   }
@@ -264,10 +277,12 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
       return HresultToStatus(hr, D3D11Status::Codes::kGetDecoderConfigFailed);
     }
 
-    if ((config_.codec() == VideoCodec::kVP9 ||
-         config_.codec() == VideoCodec::kAV1) &&
-        dec_config.ConfigBitstreamRaw == 1) {
-      // DXVA VP9 and AV1 specifications say ConfigBitstreamRaw "shall be 1".
+    if (dec_config.ConfigBitstreamRaw == 1 &&
+        (config_.codec() == VideoCodec::kVP9 ||
+         config_.codec() == VideoCodec::kAV1 ||
+         config_.codec() == VideoCodec::kHEVC)) {
+      // DXVA HEVC, VP9, and AV1 specifications say ConfigBitstreamRaw
+      // "shall be 1".
       found = true;
       break;
     }
