@@ -31,7 +31,7 @@
 #include "content/browser/attribution_reporting/attribution_network_sender.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
-#include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
+#include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -104,24 +104,6 @@ constexpr base::TimeDelta kFirstReportingWindow = base::Days(2);
 
 // Give impressions a sufficiently long expiry.
 constexpr base::TimeDelta kImpressionExpiry = base::Days(30);
-
-// Uses the behavior of the real delegate other than disabling randomized
-// responses, in order to prevent test flakiness.
-class OverrideRandomizedResponseStorageDelegate
-    : public AttributionStorageDelegateImpl {
- public:
-  RandomizedResponse GetRandomizedResponse(
-      const CommonSourceInfo& source) const override {
-    return randomized_response_;
-  }
-
-  void set_randomized_response(RandomizedResponse response) {
-    randomized_response_ = std::move(response);
-  }
-
- private:
-  RandomizedResponse randomized_response_ = absl::nullopt;
-};
 
 class MockNetworkSender : public AttributionNetworkSender {
  public:
@@ -220,8 +202,16 @@ class AttributionManagerImplTest : public testing::Test {
   }
 
   void CreateManager() {
-    auto storage_delegate =
-        std::make_unique<OverrideRandomizedResponseStorageDelegate>();
+    auto storage_delegate = std::make_unique<ConfigurableStorageDelegate>();
+
+    storage_delegate->set_report_delay(kFirstReportingWindow);
+    storage_delegate->set_max_attributions_per_source(3);
+    storage_delegate->set_offline_report_delay_config(
+        AttributionStorageDelegate::OfflineReportDelayConfig{
+            .min = base::Minutes(0),
+            .max = base::Minutes(1),
+        });
+
     storage_delegate_ = storage_delegate.get();
 
     attribution_manager_ = AttributionManagerImpl::CreateForTesting(
@@ -284,7 +274,7 @@ class AttributionManagerImplTest : public testing::Test {
   scoped_refptr<storage::MockSpecialStoragePolicy> mock_storage_policy_;
   const raw_ptr<MockCookieChecker> cookie_checker_;
   const raw_ptr<MockNetworkSender> network_sender_;
-  raw_ptr<OverrideRandomizedResponseStorageDelegate> storage_delegate_;
+  raw_ptr<ConfigurableStorageDelegate> storage_delegate_;
 
   std::unique_ptr<AttributionManagerImpl> attribution_manager_;
 };
@@ -599,10 +589,10 @@ TEST_F(AttributionManagerImplTest, ReportExpiredAtStartup_Sent) {
 
   // Simulate startup and ensure the report is sent before being expired.
   // Advance by the max offline report delay, per
-  // `AttributionStorageDelegateImpl::GetOfflineReportDelayConfig()`.
+  // `AttributionStorageDelegate::GetOfflineReportDelayConfig()`.
   CreateManager();
   task_environment_.FastForwardBy(
-      AttributionStorageDelegateImpl().GetOfflineReportDelayConfig()->max);
+      storage_delegate_->GetOfflineReportDelayConfig()->max);
   EXPECT_THAT(network_sender_->calls(), SizeIs(1));
 }
 
@@ -841,9 +831,9 @@ TEST_F(AttributionManagerImplTest, ExpiredReportsAtStartup_Delayed) {
 
   // Ensure that the expired report is delayed based on the time the browser
   // started and the min and max offline report delays, per
-  // `AttributionStorageDelegateImpl::GetOfflineReportDelayConfig()`.
+  // `AttributionStorageDelegate::GetOfflineReportDelayConfig()`.
   base::Time min_new_time = base::Time::Now();
-  auto delay = AttributionStorageDelegateImpl().GetOfflineReportDelayConfig();
+  auto delay = storage_delegate_->GetOfflineReportDelayConfig();
   EXPECT_THAT(StoredReports(),
               ElementsAre(ReportTimeIs(AllOf(Ge(min_new_time + delay->min),
                                              Le(min_new_time + delay->max)))));
@@ -1196,7 +1186,7 @@ TEST_F(AttributionManagerImplTest, SendReport_RecordsExtraReportDelay2) {
 
   SetOfflineAndWaitForObserversToBeNotified(false);
 
-  auto delay = AttributionStorageDelegateImpl().GetOfflineReportDelayConfig();
+  auto delay = storage_delegate_->GetOfflineReportDelayConfig();
   task_environment_.FastForwardBy(delay->max);
   EXPECT_THAT(network_sender_->calls(), SizeIs(1));
 
