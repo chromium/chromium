@@ -12307,6 +12307,90 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Game Control
       </message>
     </if>
+
+    <!-- Privacy Sandbox Dialog strings -->
+    <!-- TODO(crbug.com/1286276) These strings are not final yet and therefore marked as translateable="false" -->
+    <message name="IDS_PRIVACY_SANDBOX_DIALOG_TITLE" translateable="false" desc="Title of the Privacy Sandbox Dialog.">
+      Nullam mollis, enim pellentesque
+    </message>
+    <message name="IDS_PRIVACY_SANDBOX_DIALOG_SUBTITLE" translateable="false" desc="Subtitle of the Privacy Sandbox Dialog.">
+      Integer tristique vitae dolor quis imperdiet. Nunc facilisis dolor id
+      tempus sollicitudin. Cras interdum eros tincidunt ornare mattis.
+    </message>
+    <message name="IDS_PRIVACY_SANDBOX_DIALOG_BODY_HEADER_1" translateable="false" desc="Header of the first section in the body of the Privacy Sandbox Dialog.">
+      Sub subtitle 1
+    </message>
+    <message name="IDS_PRIVACY_SANDBOX_DIALOG_BODY_DESCRIPTION_1" translateable="false" desc="Description of the first section in the body of the Privacy Sandbox Dialog.">
+      Nunc a odio sodales, tincidunt purus tempus,
+    sodales mauris. Aliquam ultricies lorem
+    sed auctor tristique.
+    </message>
+    <message name="IDS_PRIVACY_SANDBOX_DIALOG_BODY_HEADER_2" translateable="false" desc="Header of the second section in the body of the Privacy Sandbox Dialog.">
+      Sub subtitle 2
+    </message>
+    <message name="IDS_PRIVACY_SANDBOX_DIALOG_BODY_DESCRIPTION_2" translateable="false" desc="Description of the second section in the body of the Privacy Sandbox Dialog.">
+      Suspendisse suscipit pulvinar varius.
+      Vestibulum bibendum, nisi non facilisis euismod, dui urna viverra diam,
+      euismod interdum ipsum nulla id felis. Cras suscipit dolor justo, id
+      pellentesque ipsum finibus in. Ut accumsan
+      suscipit eros quis sodales.
+    </message>
+    <message name="IDS_PRIVACY_SANDBOX_DIALOG_LEARN_MORE_LABEL" translateable="false" desc="Learn more label of the collapsable section in the body of the Privacy Sandbox Dialog.">
+      Learn more nisi non facilisis euismod
+    </message>
+    <message name="IDS_PRIVACY_SANDBOX_DIALOG_BOTTOM_SUMMARY" translateable="false" desc="Summary text in the bottom of the Privacy Sandbox Dialog.">
+      Donec consectetur id eros sed
+      placerat. Maecenas tincidunt diam eros, a tempus lectus consequat ac.
+      Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac
+      turpis egestas. Sed gravida vitae mauris non vulputate.
+    </message>
+    <message name="IDS_PRIVACY_SANDBOX_DIALOG_LEARN_MORE_SECTION_1_HEADER" translateable="false" desc="Header of the first section in the collapsable section of the Privacy Sandbox Dialog.">
+      Pellentesque habitant morbi tristique senectus
+    </message>
+    <message name="IDS_PRIVACY_SANDBOX_DIALOG_LEARN_MORE_SECTION_1_BULLET_POINT_1" translateable="false" desc="First bullet point of the first section in the collapsable section of the Privacy Sandbox Dialog.">
+      <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Maecenas tincidunt diam eros:<ph name="END_BOLD">&lt;/b&gt;</ph> A tempus lectus consequat ac.
+      Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac
+      turpis egestas.
+    </message>
+    <message name="IDS_PRIVACY_SANDBOX_DIALOG_LEARN_MORE_SECTION_1_BULLET_POINT_2" translateable="false" desc="Second bullet point of the first section in the collapsable section of the Privacy Sandbox Dialog.">
+      <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Donec consectetur eros:<ph name="END_BOLD">&lt;/b&gt;</ph> A tempus lectus consequat ac.
+      Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac
+      turpis egestas. Sed gravida vitae mauris non vulputate.
+    </message>
+    <message name="IDS_PRIVACY_SANDBOX_DIALOG_LEARN_MORE_SECTION_1_BULLET_POINT_3" translateable="false" desc="Third bullet point of the first section in the collapsable section of the Privacy Sandbox Dialog.">
+      <ph name="BEGIN_BOLD">&lt;b&gt;</ph> Acturpis egestas sed gravida:<ph name="END_BOLD">&lt;/b&gt;</ph> A tempus lectus consequat ac.
+      Pellentesque habitant morbi tristique senectus et netus et malesuada fames
+    </message>
+    <message name="IDS_PRIVACY_SANDBOX_DIALOG_LEARN_MORE_SECTION_2_HEADER" translateable="false" desc="Header of the second section in the collapsable section of the Privacy Sandbox Dialog.">
+      Cras suscipit dolor justo, id pellentesque ipsum
+    </message>
+    <message name="IDS_PRIVACY_SANDBOX_DIALOG_LEARN_MORE_SECTION_2_BULLET_POINT_1" translateable="false" desc="First bullet point of the second section in the collapsable section of the Privacy Sandbox Dialog.">
+      <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Senectus et netus et malesuada:<ph name="END_BOLD">&lt;/b&gt;</ph> A tempus lectus consequat ac.
+      Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac
+      turpis egestas.
+    </message>
+    <message name="IDS_PRIVACY_SANDBOX_DIALOG_LEARN_MORE_SECTION_2_BULLET_POINT_2" translateable="false" desc="Second bullet point of the second section in the collapsable section of the Privacy Sandbox Dialog.">
+      <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Pellentesque habitant morbi tristique:<ph name="END_BOLD">&lt;/b&gt;</ph> A tempus lectus consequat ac.
+      Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac
+      turpis egestas. Sed gravida vitae mauris non vulputate. Pellentesque habitant morbi tristique senectus.
+    </message>
+    <message name="IDS_PRIVACY_SANDBOX_DIALOG_LEARN_MORE_SECTION_2_BULLET_POINT_3" translateable="false" desc="Third bullet point of the second section in the collapsable section of the Privacy Sandbox Dialog.">
+      <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Morbi tristique senectus et netus:<ph name="END_BOLD">&lt;/b&gt;</ph> A tempus lectus consequat ac.
+      Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac
+      turpis egestas. Sed gravida vitae mauris non vulputate.
+    </message>
+    <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_ACCEPT_BUTTON" translateable="false" desc="Label of the button that accepts the consent in the Privacy Sandbox Dialog.">
+      Accept
+    </message>
+    <message name="IDS_PRIVACY_SANDBOX_DIALOG_CONSENT_DECLINE_BUTTON" translateable="false" desc="Label of the button that declines the consent in the Privacy Sandbox Dialog.">
+      Decline
+    </message>
+    <message name="IDS_PRIVACY_SANDBOX_DIALOG_NOTICE_ACKNOWLEDGE_BUTTON" translateable="false" desc="Label of the button that acknowledges the notice in the Privacy Sandbox Dialog.">
+      Ack
+    </message>
+    <message name="IDS_PRIVACY_SANDBOX_DIALOG_NOTICE_OPEN_SETTINGS_BUTTON" translateable="false" desc="Label of the button that opens settings in the Privacy Sandbox Dialog.">
+      Settings
+    </message>
   </messages>
 </release>
 </grit>
