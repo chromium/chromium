@@ -250,7 +250,6 @@ class ShillPropertyHandlerTest : public testing::Test {
     std::vector<std::string> profiles;
     profile_test_->GetProfilePaths(&profiles);
     ASSERT_TRUE(profiles.size() > 0);
-    base::DictionaryValue properties;  // Empty entry
     profile_test_->AddService(profiles[0], id);
   }
 
@@ -490,7 +489,7 @@ TEST_F(ShillPropertyHandlerTest, ShillPropertyHandlerIPConfigPropertyChanged) {
   ShillIPConfigClient::Get()->SetProperty(dbus::ObjectPath(kTestIPConfigPath),
                                           shill::kAddressProperty, ip_address,
                                           base::DoNothing());
-  base::ListValue dns_servers;
+  base::Value dns_servers(base::Value::Type::LIST);
   dns_servers.Append("192.168.1.100");
   dns_servers.Append("192.168.1.101");
   ShillIPConfigClient::Get()->SetProperty(dbus::ObjectPath(kTestIPConfigPath),

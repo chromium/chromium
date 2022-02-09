@@ -24,6 +24,7 @@
 
 namespace base {
 class Clock;
+class Value;
 }
 
 namespace chromeos {

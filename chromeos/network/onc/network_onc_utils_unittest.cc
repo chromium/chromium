@@ -78,48 +78,48 @@ TEST(ONCUtils, ProxyConfigToOncProxySettings) {
 }
 
 TEST(ONCPasswordVariable, PasswordAvailable) {
-  const auto wifi_onc = test_utils::ReadTestDictionary(
+  const auto wifi_onc = test_utils::ReadTestDictionaryValue(
       "wifi_eap_ttls_with_password_variable.onc");
 
   EXPECT_TRUE(HasUserPasswordSubsitutionVariable(kNetworkConfigurationSignature,
-                                                 wifi_onc.get()));
+                                                 &wifi_onc));
 }
 
 TEST(ONCPasswordVariable, PasswordNotAvailable) {
-  const auto wifi_onc = test_utils::ReadTestDictionary("wifi_eap_ttls.onc");
+  const auto wifi_onc =
+      test_utils::ReadTestDictionaryValue("wifi_eap_ttls.onc");
 
   EXPECT_FALSE(HasUserPasswordSubsitutionVariable(
-      kNetworkConfigurationSignature, wifi_onc.get()));
+      kNetworkConfigurationSignature, &wifi_onc));
 }
 
 TEST(ONCPasswordVariable, PasswordHarcdoded) {
-  const auto wifi_onc = test_utils::ReadTestDictionary(
+  const auto wifi_onc = test_utils::ReadTestDictionaryValue(
       "wifi_eap_ttls_with_hardcoded_password.onc");
 
   EXPECT_FALSE(HasUserPasswordSubsitutionVariable(
-      kNetworkConfigurationSignature, wifi_onc.get()));
+      kNetworkConfigurationSignature, &wifi_onc));
 }
 
 TEST(ONCPasswordVariable, MultipleNetworksPasswordAvailable) {
-  const auto network_dictionary = test_utils::ReadTestDictionary(
+  const auto network_dictionary = test_utils::ReadTestDictionaryValue(
       "managed_toplevel_with_password_variable.onc");
+  const base::Value* network_list =
+      network_dictionary.FindListKey("NetworkConfigurations");
+  ASSERT_TRUE(network_list);
 
-  const auto network_list = std::make_unique<base::ListValue>(
-      base::ListValue(network_dictionary->FindKey("NetworkConfigurations")
-                          ->GetListDeprecated()));
-
-  EXPECT_TRUE(HasUserPasswordSubsitutionVariable(network_list.get()));
+  EXPECT_TRUE(HasUserPasswordSubsitutionVariable(network_list));
 }
 
 TEST(ONCPasswordVariable, MultipleNetworksPasswordNotAvailable) {
-  const auto network_dictionary = test_utils::ReadTestDictionary(
+  const auto network_dictionary = test_utils::ReadTestDictionaryValue(
       "managed_toplevel_with_no_password_variable.onc");
 
-  const auto network_list = std::make_unique<base::ListValue>(
-      base::ListValue(network_dictionary->FindKey("NetworkConfigurations")
-                          ->GetListDeprecated()));
+  const base::Value* network_list =
+      network_dictionary.FindListKey("NetworkConfigurations");
+  ASSERT_TRUE(network_list);
 
-  EXPECT_FALSE(HasUserPasswordSubsitutionVariable(network_list.get()));
+  EXPECT_FALSE(HasUserPasswordSubsitutionVariable(network_list));
 }
 
 }  // namespace onc

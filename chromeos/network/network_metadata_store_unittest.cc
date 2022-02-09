@@ -296,7 +296,7 @@ TEST_F(NetworkMetadataStoreTest, ConfigurationUpdated) {
   ASSERT_TRUE(metadata_store()->GetIsConfiguredBySync(kGuid));
   ASSERT_EQ(0, metadata_observer()->GetNumberOfUpdates(kGuid));
 
-  base::DictionaryValue properties;
+  base::Value properties(base::Value::Type::DICTIONARY);
   properties.SetKey(shill::kSecurityProperty, base::Value(shill::kSecurityPsk));
   properties.SetKey(shill::kPassphraseProperty, base::Value("secret"));
 
@@ -319,7 +319,7 @@ TEST_F(NetworkMetadataStoreTest, SharedConfigurationUpdatedByOtherUser) {
 
   LoginUser(secondary_user_);
 
-  base::DictionaryValue other_properties;
+  base::Value other_properties(base::Value::Type::DICTIONARY);
   other_properties.SetKey(shill::kAutoConnectProperty, base::Value(true));
   other_properties.SetKey(shill::kProxyConfigProperty,
                           base::Value("proxy_details"));
@@ -332,7 +332,7 @@ TEST_F(NetworkMetadataStoreTest, SharedConfigurationUpdatedByOtherUser) {
       kGuid, shill::kProxyConfigProperty));
 
   LoginUser(primary_user_);
-  base::DictionaryValue owner_properties;
+  base::Value owner_properties(base::Value::Type::DICTIONARY);
   owner_properties.SetKey(shill::kProxyConfigProperty,
                           base::Value("new_proxy_details"));
 
@@ -356,7 +356,7 @@ TEST_F(NetworkMetadataStoreTest, SharedConfigurationUpdated_NewPassword) {
 
   ASSERT_FALSE(metadata_store()->GetIsCreatedByUser(kGuid));
 
-  base::DictionaryValue other_properties;
+  base::Value other_properties(base::Value::Type::DICTIONARY);
   other_properties.SetKey(shill::kPassphraseProperty, base::Value("pass2"));
 
   network_configuration_handler()->SetShillProperties(

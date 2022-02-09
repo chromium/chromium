@@ -150,8 +150,7 @@ class CellularPolicyHandlerTest : public testing::Test {
                          const std::string& activation_code,
                          bool expect_install_success) {
     base::Value policy = onc::ReadDictionaryFromJson(onc_json);
-    cellular_policy_handler_->InstallESim(
-        activation_code, base::Value::AsDictionaryValue(policy));
+    cellular_policy_handler_->InstallESim(activation_code, policy);
     FastForwardProfileRefreshDelay();
     base::RunLoop().RunUntilIdle();
 

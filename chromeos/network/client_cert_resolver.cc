@@ -20,6 +20,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/clock.h"
+#include "base/values.h"
 #include "chromeos/components/onc/variable_expander.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/certificate_helper.h"

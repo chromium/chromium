@@ -49,7 +49,7 @@ base::Value CreateOrCloneListValue(const base::Value* list) {
   if (list)
     return list->Clone();
 
-  return base::ListValue();
+  return base::Value(base::Value::Type::LIST);
 }
 
 bool ListContains(const base::Value* list, const std::string& value) {
@@ -183,8 +183,7 @@ void NetworkMetadataStore::FixSyncedHiddenNetworks() {
     base::Value dict(base::Value::Type::DICTIONARY);
     dict.SetBoolKey(shill::kWifiHiddenSsid, false);
     network_configuration_handler_->SetShillProperties(
-        network->path(), base::Value::AsDictionaryValue(dict),
-        base::DoNothing(),
+        network->path(), dict, base::DoNothing(),
         base::BindOnce(&NetworkMetadataStore::OnDisableHiddenError,
                        weak_ptr_factory_.GetWeakPtr()));
   }

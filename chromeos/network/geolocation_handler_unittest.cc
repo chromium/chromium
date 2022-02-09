@@ -56,7 +56,7 @@ class GeolocationHandlerTest : public testing::Test {
   // This should remain in sync with the format of shill (chromeos) dict entries
   // Shill provides us Cell ID and LAC in hex, but all other fields in decimal.
   void AddAccessPoint(int idx) {
-    base::DictionaryValue properties;
+    base::Value properties(base::Value::Type::DICTIONARY);
     std::string mac_address =
         base::StringPrintf("%02X:%02X:%02X:%02X:%02X:%02X",
                            idx, 0, 0, 0, 0, 0);
@@ -72,7 +72,7 @@ class GeolocationHandlerTest : public testing::Test {
 
   // This should remain in sync with the format of shill (chromeos) dict entries
   void AddCellTower(int idx) {
-    base::DictionaryValue properties;
+    base::Value properties(base::Value::Type::DICTIONARY);
     // Multiplications, additions, and string concatenations
     // are intended solely to differentiate the various fields
     // in a predictable way, while preserving 3 digits for MCC and MNC.

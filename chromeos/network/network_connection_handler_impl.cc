@@ -16,6 +16,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -688,8 +689,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
 
   client_cert::ClientCertConfig cert_config_from_policy;
   if (policy) {
-    client_cert::OncToClientCertConfig(onc_source,
-                                       base::Value::AsDictionaryValue(*policy),
+    client_cert::OncToClientCertConfig(onc_source, *policy,
                                        &cert_config_from_policy);
   }
 
@@ -722,7 +722,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
       client_cert_type = client_cert::ConfigType::kEap;
   }
 
-  base::DictionaryValue config_properties;
+  base::Value config_properties(base::Value::Type::DICTIONARY);
   if (client_cert_type != client_cert::ConfigType::kNone) {
     // Note: if we get here then a certificate *may* be required, so we want
     // to ensure that certificates have loaded successfully before attempting

@@ -89,12 +89,12 @@ bool HasPolicyForNetwork(const PrefService* profile_prefs,
 // variable set as the password.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 bool HasUserPasswordSubsitutionVariable(const OncValueSignature& signature,
-                                        base::Value* onc_object);
+                                        const base::Value* onc_object);
 
 // Checks whether a list of network objects has at least one network with the
 // ${PASSWORD} substitution variable set as the password.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-bool HasUserPasswordSubsitutionVariable(base::Value* network_configs);
+bool HasUserPasswordSubsitutionVariable(const base::Value* network_configs);
 
 }  // namespace onc
 }  // namespace chromeos

@@ -332,24 +332,36 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
     return client_cert;
   }
 
-  void SetupPolicy(const std::string& network_configs_json,
-                   const base::DictionaryValue& global_config,
-                   bool user_policy) {
-    base::JSONReader::ValueWithError parsed_json =
-        base::JSONReader::ReadAndReturnValueWithError(
-            network_configs_json, base::JSON_ALLOW_TRAILING_COMMAS);
-    ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
-    ASSERT_TRUE(parsed_json.value->is_list());
-
-    if (user_policy) {
-      managed_config_handler_->SetPolicy(::onc::ONC_SOURCE_USER_POLICY,
-                                         helper_.UserHash(), *parsed_json.value,
-                                         global_config);
-    } else {
-      managed_config_handler_->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY,
-                                         std::string(),  // no username hash
-                                         *parsed_json.value, global_config);
+  void SetupUserPolicy(const std::string& network_configs_json) {
+    base::Value network_configs(base::Value::Type::LIST);
+    if (!network_configs_json.empty()) {
+      base::JSONReader::ValueWithError parsed_json =
+          base::JSONReader::ReadAndReturnValueWithError(
+              network_configs_json, base::JSON_ALLOW_TRAILING_COMMAS);
+      ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
+      ASSERT_TRUE(parsed_json.value->is_list());
+      network_configs = std::move(*parsed_json.value);
     }
+    managed_config_handler_->SetPolicy(
+        ::onc::ONC_SOURCE_USER_POLICY, helper_.UserHash(), network_configs,
+        /*global_config=*/base::Value(base::Value::Type::DICTIONARY));
+    task_environment_.RunUntilIdle();
+  }
+
+  void SetupDevicePolicy(const std::string& network_configs_json,
+                         const base::Value& global_config) {
+    base::Value network_configs(base::Value::Type::LIST);
+    if (!network_configs_json.empty()) {
+      base::JSONReader::ValueWithError parsed_json =
+          base::JSONReader::ReadAndReturnValueWithError(
+              network_configs_json, base::JSON_ALLOW_TRAILING_COMMAS);
+      ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
+      ASSERT_TRUE(parsed_json.value->is_list());
+      network_configs = std::move(*parsed_json.value);
+    }
+    managed_config_handler_->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY,
+                                       std::string(),  // no username hash
+                                       network_configs, global_config);
     task_environment_.RunUntilIdle();
   }
 
@@ -583,18 +595,18 @@ TEST_F(NetworkConnectionHandlerImplTest,
 
   std::string wifi0_service_path = ConfigureService(kConfigWifi0Connectable);
   ASSERT_FALSE(wifi0_service_path.empty());
-  base::DictionaryValue global_config;
+  base::Value global_config(base::Value::Type::DICTIONARY);
   global_config.SetKey(
       ::onc::global_network_config::kAllowOnlyPolicyWiFiToConnect,
       base::Value(true));
-  SetupPolicy("[]", global_config, false /* load as device policy */);
-  SetupPolicy("[]", base::DictionaryValue(), true /* load as user policy */);
+  SetupDevicePolicy("[]", global_config);
+  SetupUserPolicy("[]");
   LoginToRegularUser();
   Connect(wifi0_service_path);
   EXPECT_EQ(NetworkConnectionHandler::kErrorBlockedByPolicy,
             GetResultAndReset());
 
-  SetupPolicy(kPolicyWifi0, global_config, false /* load as device policy */);
+  SetupDevicePolicy(kPolicyWifi0, global_config);
   Connect(wifi0_service_path);
   EXPECT_EQ(kSuccessResult, GetResultAndReset());
 }
@@ -609,11 +621,11 @@ TEST_F(NetworkConnectionHandlerImplTest,
   // Set a device policy which blocks wifi0.
   base::Value::ListStorage blocked;
   blocked.push_back(base::Value("7769666930"));  // hex(wifi0) = 7769666930
-  base::DictionaryValue global_config;
+  base::Value global_config(base::Value::Type::DICTIONARY);
   global_config.SetKey(::onc::global_network_config::kBlockedHexSSIDs,
                        base::Value(blocked));
-  SetupPolicy("[]", global_config, false /* load as device policy */);
-  SetupPolicy("[]", base::DictionaryValue(), true /* load as user policy */);
+  SetupDevicePolicy("[]", global_config);
+  SetupUserPolicy("[]");
 
   LoginToRegularUser();
 
@@ -622,8 +634,7 @@ TEST_F(NetworkConnectionHandlerImplTest,
             GetResultAndReset());
 
   // Set a user policy, which configures wifi0 (==allowed).
-  SetupPolicy(kPolicyWifi0, base::DictionaryValue(),
-              true /* load as user policy */);
+  SetupUserPolicy(kPolicyWifi0);
   Connect(wifi0_service_path);
   EXPECT_EQ(kSuccessResult, GetResultAndReset());
 }
@@ -738,9 +749,8 @@ TEST_F(NetworkConnectionHandlerImplTest, ConnectCertificateMissing) {
   Init();
 
   StartNetworkCertLoader();
-  SetupPolicy(base::StringPrintf(kPolicyWithCertPatternTemplate, "unknown"),
-              base::DictionaryValue(),  // no global config
-              true);                    // load as user policy
+  SetupUserPolicy(
+      base::StringPrintf(kPolicyWithCertPatternTemplate, "unknown"));
 
   Connect(ServicePathFromGuid("wifi4"));
   EXPECT_EQ(NetworkConnectionHandler::kErrorCertificateRequired,
@@ -754,10 +764,8 @@ TEST_F(NetworkConnectionHandlerImplTest, ConnectWithCertificateSuccess) {
   scoped_refptr<net::X509Certificate> cert = ImportTestClientCert();
   ASSERT_TRUE(cert.get());
 
-  SetupPolicy(base::StringPrintf(kPolicyWithCertPatternTemplate,
-                                 cert->subject().common_name.c_str()),
-              base::DictionaryValue(),  // no global config
-              true);                    // load as user policy
+  SetupUserPolicy(base::StringPrintf(kPolicyWithCertPatternTemplate,
+                                     cert->subject().common_name.c_str()));
 
   Connect(ServicePathFromGuid("wifi4"));
   EXPECT_EQ(kSuccessResult, GetResultAndReset());
@@ -770,10 +778,8 @@ TEST_F(NetworkConnectionHandlerImplTest,
   scoped_refptr<net::X509Certificate> cert = ImportTestClientCert();
   ASSERT_TRUE(cert.get());
 
-  SetupPolicy(base::StringPrintf(kPolicyWithCertPatternTemplate,
-                                 cert->subject().common_name.c_str()),
-              base::DictionaryValue(),  // no global config
-              true);                    // load as user policy
+  SetupUserPolicy(base::StringPrintf(kPolicyWithCertPatternTemplate,
+                                     cert->subject().common_name.c_str()));
 
   Connect(ServicePathFromGuid("wifi4"));
 
@@ -791,10 +797,8 @@ TEST_F(NetworkConnectionHandlerImplTest,
   scoped_refptr<net::X509Certificate> cert = ImportTestClientCert();
   ASSERT_TRUE(cert.get());
 
-  SetupPolicy(base::StringPrintf(kPolicyWithCertPatternTemplate,
-                                 cert->subject().common_name.c_str()),
-              base::DictionaryValue(),  // no global config
-              true);                    // load as user policy
+  SetupUserPolicy(base::StringPrintf(kPolicyWithCertPatternTemplate,
+                                     cert->subject().common_name.c_str()));
 
   // Mark that a user slot NSSCertDatabase is being initialized so that
   // NetworkConnectionHandler attempts to wait for certificates to be loaded.
@@ -824,10 +828,8 @@ TEST_F(NetworkConnectionHandlerImplTest,
   scoped_refptr<net::X509Certificate> cert = ImportTestClientCert();
   ASSERT_TRUE(cert.get());
 
-  SetupPolicy(base::StringPrintf(kPolicyWithCertPatternTemplate,
-                                 cert->subject().common_name.c_str()),
-              base::DictionaryValue(),  // no global config
-              true);                    // load as user policy
+  SetupUserPolicy(base::StringPrintf(kPolicyWithCertPatternTemplate,
+                                     cert->subject().common_name.c_str()));
 
   // Mark that a user slot NSSCertDatabase is being initialized so that
   // NetworkConnectionHandler attempts to wait for certificates to be loaded.

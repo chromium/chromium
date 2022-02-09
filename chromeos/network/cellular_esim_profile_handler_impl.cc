@@ -81,16 +81,15 @@ CellularESimProfileHandlerImpl::GetESimProfiles() {
 
   std::vector<CellularESimProfile> profiles;
   for (const base::Value& value : profiles_list->GetListDeprecated()) {
-    const base::DictionaryValue* dict;
-    if (!value.GetAsDictionary(&dict)) {
+    if (!value.is_dict()) {
       NET_LOG(ERROR) << "List item from eSIM profiles pref is not a dictionary";
       continue;
     }
 
     absl::optional<CellularESimProfile> profile =
-        CellularESimProfile::FromDictionaryValue(*dict);
+        CellularESimProfile::FromDictionaryValue(value);
     if (!profile) {
-      NET_LOG(ERROR) << "Unable to deserialize eSIM profile: " << *dict;
+      NET_LOG(ERROR) << "Unable to deserialize eSIM profile: " << value;
       continue;
     }
 

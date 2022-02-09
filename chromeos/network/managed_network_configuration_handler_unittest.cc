@@ -1168,10 +1168,8 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, ActiveProxySettingsPreference) {
   ASSERT_EQ(policy_before_pref, "PAC");
 
   // Set pref not to use proxy.
-  base::Value policy_prefs_config = ProxyConfigDictionary::CreateDirect();
-  user_prefs_.SetManagedPref(
-      proxy_config::prefs::kProxy,
-      base::Value::ToUniquePtrValue(std::move(policy_prefs_config)));
+  user_prefs_.SetManagedPref(proxy_config::prefs::kProxy,
+                             ProxyConfigDictionary::CreateDirect());
 
   base::RunLoop get_merged_properties_run_loop;
   // Fetch managed properties after preference is set.

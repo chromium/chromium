@@ -10,20 +10,20 @@
 namespace chromeos {
 
 TEST(NetworkUIDataTest, ONCSource) {
-  base::DictionaryValue ui_data_dict;
+  base::Value ui_data_dict(base::Value::Type::DICTIONARY);
 
-  ui_data_dict.SetString("onc_source", "user_import");
+  ui_data_dict.SetStringKey("onc_source", "user_import");
   {
     NetworkUIData ui_data(ui_data_dict);
     EXPECT_EQ(::onc::ONC_SOURCE_USER_IMPORT, ui_data.onc_source());
   }
 
-  ui_data_dict.SetString("onc_source", "device_policy");
+  ui_data_dict.SetStringKey("onc_source", "device_policy");
   {
     NetworkUIData ui_data(ui_data_dict);
     EXPECT_EQ(::onc::ONC_SOURCE_DEVICE_POLICY, ui_data.onc_source());
   }
-  ui_data_dict.SetString("onc_source", "user_policy");
+  ui_data_dict.SetStringKey("onc_source", "user_policy");
   {
     NetworkUIData ui_data(ui_data_dict);
     EXPECT_EQ(::onc::ONC_SOURCE_USER_POLICY, ui_data.onc_source());

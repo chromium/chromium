@@ -23,7 +23,6 @@
 #include "chromeos/network/shill_property_handler.h"
 
 namespace base {
-class ListValue;
 class Location;
 class Value;
 }  // namespace base

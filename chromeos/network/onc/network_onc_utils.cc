@@ -596,10 +596,10 @@ bool HasPolicyForNetwork(const PrefService* profile_prefs,
 }
 
 bool HasUserPasswordSubsitutionVariable(const OncValueSignature& signature,
-                                        base::Value* onc_object) {
+                                        const base::Value* onc_object) {
   DCHECK(onc_object->is_dict());
   if (&signature == &kEAPSignature) {
-    std::string* password_field =
+    const std::string* password_field =
         onc_object->FindStringKey(::onc::eap::kPassword);
     if (!password_field)
       return false;
@@ -626,7 +626,7 @@ bool HasUserPasswordSubsitutionVariable(const OncValueSignature& signature,
   return false;
 }
 
-bool HasUserPasswordSubsitutionVariable(base::Value* network_configs) {
+bool HasUserPasswordSubsitutionVariable(const base::Value* network_configs) {
   for (auto& network : network_configs->GetListDeprecated()) {
     DCHECK(network.is_dict());
     bool result = HasUserPasswordSubsitutionVariable(
