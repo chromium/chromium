@@ -345,7 +345,7 @@
 <translation id="334252345105450327">截屏</translation>
 <translation id="3351879221545518001">您目前正在投射屏幕。</translation>
 <translation id="3364721542077212959">触控笔工具</translation>
-<translation id="3365977133351922112">您的手机太远了。请将它移近些。</translation>
+<translation id="3365977133351922112">您的手机太远了，请移近些。</translation>
 <translation id="3368922792935385530">已连接</translation>
 <translation id="3371140690572404006">USB-C 设备（右侧前端端口）</translation>
 <translation id="3375634426936648815">已连接</translation>
@@ -657,7 +657,7 @@
 <translation id="5322611492012084517">找不到您的手机</translation>
 <translation id="5327248766486351172">名称</translation>
 <translation id="5329548388331921293">正在连接…</translation>
-<translation id="5330201449517439522">点按或点击即可输入</translation>
+<translation id="5330201449517439522">点按或点击即可继续使用</translation>
 <translation id="5331975486040154427">USB-C 设备（左侧后端端口）</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />%（右侧）</translation>
 <translation id="5352250171825660495">深色主题已开启</translation>
@@ -1050,7 +1050,7 @@
 <translation id="8061464966246066292">高对比度</translation>
 <translation id="8098591350844501178">停止将屏幕投射到“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="8113423164597455979">开启，所有应用</translation>
-<translation id="8120151603115102514">您的手机未设置锁定屏幕。若要解锁 Chromebook，请输入密码。</translation>
+<translation id="8120151603115102514">您的手机未设置锁屏。若要解锁 Chromebook，请输入密码。</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">确认</translation>
 <translation id="8132487352815776550">停用字幕</translation>
