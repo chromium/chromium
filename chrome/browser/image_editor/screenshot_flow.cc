@@ -192,11 +192,11 @@ void ScreenshotFlow::OnMouseEvent(ui::MouseEvent* event) {
     return;
 
   gfx::Point location = located_event->location();
+  gfx::Rect web_contents_bounds = web_contents_->GetViewBounds();
 #if BUILDFLAG(IS_MAC)
   // Offset |location| be relative to the WebContents widget, vs the parent
   // window, recomputed rather than cached in case e.g. user disables
   // bookmarks bar from another window.
-  gfx::Rect web_contents_bounds = web_contents_->GetViewBounds();
   const gfx::NativeView web_contents_view =
       web_contents_->GetContentNativeView();
   views::Widget* widget =
@@ -204,12 +204,6 @@ void ScreenshotFlow::OnMouseEvent(ui::MouseEvent* event) {
   const gfx::Rect widget_bounds = widget->GetWindowBoundsInScreen();
   location.set_x(location.x() + (widget_bounds.x() - web_contents_bounds.x()));
   location.set_y(location.y() + (widget_bounds.y() - web_contents_bounds.y()));
-  // Don't capture clicks on browser ui outside the webcontents.
-  if (location.x() < 0 || location.y() < 0 ||
-      location.x() > web_contents_bounds.width() ||
-      location.y() > web_contents_bounds.height()) {
-    return;
-  }
 #endif
 
   switch (event->type()) {
@@ -219,6 +213,15 @@ void ScreenshotFlow::OnMouseEvent(ui::MouseEvent* event) {
       break;
     case ui::ET_MOUSE_PRESSED:
       if (event->IsLeftMouseButton()) {
+#if BUILDFLAG(IS_MAC)
+        // Don't capture initial clicks on browser ui outside the webcontents.
+        if (location.x() < 0 || location.y() < 0 ||
+            location.x() > web_contents_bounds.width() ||
+            location.y() > web_contents_bounds.height()) {
+          event->SetHandled();
+          break;
+        }
+#endif  // BUILDFLAG(IS_MAC)
         drag_start_ = location;
         drag_end_ = location;
         event->SetHandled();
@@ -234,20 +237,37 @@ void ScreenshotFlow::OnMouseEvent(ui::MouseEvent* event) {
     case ui::ET_MOUSE_RELEASED:
       if (capture_mode_ == CaptureMode::SELECTION_RECTANGLE ||
           capture_mode_ == CaptureMode::SELECTION_ELEMENT) {
+        AttemptRegionCapture(web_contents_bounds);
         event->SetHandled();
-        gfx::Rect selection = gfx::BoundingRect(drag_start_, drag_end_);
-        drag_start_.SetPoint(0, 0);
-        drag_end_.SetPoint(0, 0);
-        if (selection.width() >= kMinimumValidSelectionEdgePixels &&
-            selection.height() >= kMinimumValidSelectionEdgePixels) {
-          CompleteCapture(ScreenshotCaptureResultCode::SUCCESS, selection);
-        } else {
-          RequestRepaint(gfx::Rect());
-        }
+      }
+      break;
+    // This event type is never called on Mac.
+    case ui::ET_MOUSEWHEEL:
+      if ((capture_mode_ == CaptureMode::SELECTION_RECTANGLE ||
+           capture_mode_ == CaptureMode::SELECTION_ELEMENT) &&
+          event->AsMouseWheelEvent()->y_offset() > 0) {
+        AttemptRegionCapture(web_contents_bounds);
+        event->SetHandled();
       }
       break;
     default:
       break;
+  }
+}
+
+void ScreenshotFlow::OnScrollEvent(ui::ScrollEvent* event) {
+  // A single tap can create a scroll event, so ignore scroll starts and
+  // cancels but complete capture when scrolls actually occur.
+  if (event->type() == ui::EventType::ET_SCROLL_FLING_START ||
+      event->type() == ui::EventType::ET_SCROLL_FLING_CANCEL)
+    return;
+
+  gfx::Rect web_contents_bounds = web_contents_->GetViewBounds();
+  if ((capture_mode_ == CaptureMode::SELECTION_RECTANGLE ||
+       capture_mode_ == CaptureMode::SELECTION_ELEMENT) &&
+      event->y_offset() > 0) {
+    AttemptRegionCapture(web_contents_bounds);
+    event->SetHandled();
   }
 }
 
@@ -375,6 +395,24 @@ void ScreenshotFlow::WebContentsDestroyed() {
 void ScreenshotFlow::OnVisibilityChanged(content::Visibility visibility) {
   if (IsCaptureModeActive()) {
     CancelCapture();
+  }
+}
+
+void ScreenshotFlow::AttemptRegionCapture(gfx::Rect view_bounds) {
+  // On Mac, it is possible for drag_end_ to end up outside of the
+  // Browser UI. This causes an error when completing the region
+  // capture. Update drag_end_ to be within the web content bounds.
+  drag_end_.SetToMin(gfx::Point(view_bounds.width(), view_bounds.height()));
+  drag_end_.SetToMax(gfx::Point(0, 0));
+
+  gfx::Rect selection = gfx::BoundingRect(drag_start_, drag_end_);
+  drag_start_.SetPoint(0, 0);
+  drag_end_.SetPoint(0, 0);
+  if (selection.width() >= kMinimumValidSelectionEdgePixels &&
+      selection.height() >= kMinimumValidSelectionEdgePixels) {
+    CompleteCapture(ScreenshotCaptureResultCode::SUCCESS, selection);
+  } else {
+    RequestRepaint(gfx::Rect());
   }
 }
 
