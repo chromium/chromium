@@ -49,9 +49,14 @@ void ScopedProfileKeepAlive::RemoveKeepAliveOnUIThread(
   // e.g. in tests.
   if (!g_browser_process)
     return;
-  // |profile_manager| could be nullptr if this is called during shutdown, e.g.
-  // for system/guest profiles or in tests.
+  // If the BrowserProcess is shutting down, then |profile| may be deleted
+  // already. Doing anything here would be dangerous, and |profile| will be
+  // deleted very soon in any case.
+  if (g_browser_process->IsShuttingDown())
+    return;
+  // |profile_manager| can also be null in tests.
   auto* profile_manager = g_browser_process->profile_manager();
-  if (profile_manager)
-    profile_manager->RemoveKeepAlive(profile, origin);
+  if (!profile_manager)
+    return;
+  profile_manager->RemoveKeepAlive(profile, origin);
 }
