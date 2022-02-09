@@ -92,7 +92,7 @@ class SearchTabHelper : public content::WebContentsObserver,
   void OnUndoAllMostVisitedDeletions() override;
 
   // Overridden from InstantServiceObserver:
-  void NtpThemeChanged(const NtpTheme& theme) override;
+  void NtpThemeChanged(NtpTheme theme) override;
   void MostVisitedInfoChanged(
       const InstantMostVisitedInfo& most_visited_info) override;
 
