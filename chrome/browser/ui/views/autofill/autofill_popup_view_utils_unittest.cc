@@ -255,10 +255,9 @@ TEST(AutofillPopupViewUtilsTest, GetOptimalPopupArrowSide) {
   };
 
   for (TestCase& test_case : test_cases) {
-    EXPECT_EQ(
-        GetOptimalBubbleArrowSide(content_area_bounds, test_case.element_bounds,
+    EXPECT_EQ(GetOptimalArrowSide(content_area_bounds, test_case.element_bounds,
                                   preferred_popup_size),
-        test_case.expected_arrow_side);
+              test_case.expected_arrow_side);
   }
 }
 

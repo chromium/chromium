@@ -102,7 +102,7 @@ bool IsPopupPlaceableOnSideOfElement(const gfx::Rect& content_area_bounds,
 // which which the popup with a |popup_preferred_size| fits on the side of the
 // |element_bounds| in the |content_area_bounds| taking the arrow length into
 // account. If neither side bits, the function returns kBottom.
-views::BubbleArrowSide GetOptimalBubbleArrowSide(
+views::BubbleArrowSide GetOptimalArrowSide(
     const gfx::Rect& content_area_bounds,
     const gfx::Rect& element_bounds,
     const gfx::Size& popup_preferred_size);
