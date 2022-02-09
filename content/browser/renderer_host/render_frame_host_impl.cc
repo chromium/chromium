@@ -1734,8 +1734,8 @@ void RenderFrameHostImpl::ClearDisableBackForwardCache(
 }
 
 void RenderFrameHostImpl::DisableProactiveBrowsingInstanceSwapForTesting() {
-  // This should only be called on main frames.
-  DCHECK(!GetParent());
+  // This should only be called on primary main frames.
+  DCHECK(IsInPrimaryMainFrame());
   has_test_disabled_proactive_browsing_instance_swap_ = true;
 }
 
