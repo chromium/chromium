@@ -646,19 +646,12 @@ public class BottomSheetControllerTest {
     /**
      * Set the tab switcher state and wait for that state to be settled.
      * @param shown Whether the tab switcher should be shown.
-     * @throws TimeoutException
      */
-    private void setTabSwitcherState(boolean shown) throws TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            if (shown) {
-                mActivity.getLayoutManager().showOverview(false);
-            } else {
-                mActivity.getLayoutManager().hideOverview(false);
-            }
-        });
-
-        LayoutTestUtils.waitForLayout(mActivity.getLayoutManager(),
-                shown ? LayoutType.TAB_SWITCHER : LayoutType.BROWSING);
+    private void setTabSwitcherState(boolean shown) {
+        @LayoutType
+        int targetLayout = shown ? LayoutType.TAB_SWITCHER : LayoutType.BROWSING;
+        LayoutTestUtils.startShowingAndWaitForLayout(
+                mActivity.getLayoutManager(), targetLayout, false);
         TestThreadUtils.runOnUiThreadBlocking(mTestSupport::endAllAnimations);
     }
 

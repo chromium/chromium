@@ -99,6 +99,7 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -2242,7 +2243,9 @@ public class StartSurfaceLayoutTest {
         // TODO(wychen): use TabUiTestHelper.enterTabSwitcher() instead.
         //  Might increase flakiness though. See crbug.com/1024742.
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mActivityTestRule.getActivity().getLayoutManager().showOverview(true));
+                ()
+                        -> mActivityTestRule.getActivity().getLayoutManager().showLayout(
+                                LayoutType.TAB_SWITCHER, true));
         assertTrue(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
 
         // Make sure the fading animation is done.
@@ -2278,7 +2281,9 @@ public class StartSurfaceLayoutTest {
             // If the last thumbnail is missing, try without animation.
             Espresso.pressBack();
             TestThreadUtils.runOnUiThreadBlocking(
-                    () -> mActivityTestRule.getActivity().getLayoutManager().showOverview(false));
+                    ()
+                            -> mActivityTestRule.getActivity().getLayoutManager().showLayout(
+                                    LayoutType.TAB_SWITCHER, false));
             TabUiTestHelper.verifyAllTabsHaveThumbnail(
                     mActivityTestRule.getActivity().getCurrentTabModel());
         }

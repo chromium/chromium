@@ -77,7 +77,6 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromePhone;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromeTablet;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeController;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityComponent;
@@ -106,6 +105,7 @@ import org.chromium.chrome.browser.incognito.IncognitoTabSnapshotController;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.infobar.SyncErrorInfoBar;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.metrics.AndroidSessionDurationsServiceState;
@@ -354,7 +354,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     // TODO(crbug.com/1108496): Removed after all usages has been migrated to LayoutStateProvider.
     private final OneshotSupplierImpl<OverviewModeBehavior> mOverviewModeBehaviorSupplier =
             new OneshotSupplierImpl<>();
-    private OverviewModeController mOverviewModeController;
+    private OverviewModeBehavior mOverviewModeController;
 
     private ObservableSupplierImpl<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier =
             new ObservableSupplierImpl<>();
@@ -632,7 +632,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     //   1. If the very last tab is closed.
                     //   2. If normal tab model is selected and no normal tabs.
                     if (gridTabSwitcherEnabled && overviewVisible && !hasNextTab && isTablet()) {
-                        mOverviewModeController.hideOverview(true);
+                        mLayoutManager.showLayout(LayoutType.BROWSING, true);
                     }
                 }
 
@@ -1339,7 +1339,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             != StartSurfaceState.SHOWN_HOMEPAGE
                     || !ReturnToChromeExperimentsUtil.shouldShowStartSurfaceHomeAsNTP(
                             this, getCurrentTabModel().isIncognito(), isTablet())) {
-                mOverviewModeController.hideOverview(true);
+                mLayoutManager.showLayout(LayoutType.BROWSING, true);
                 if (getTabModelSelector().getCurrentModel().getCount() == 0) {
                     getCurrentTabCreator().launchNTP();
                 }
@@ -1544,7 +1544,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
             if (tabModel.getCount() > 0 && isInOverviewMode() && !isTablet()
                     && !shouldShowOverviewPageOnStart()) {
-                mOverviewModeController.hideOverview(true);
+                mLayoutManager.showLayout(LayoutType.BROWSING, true);
             }
         }
 
@@ -1920,8 +1920,27 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     ChromeTabbedActivity.this, MessageDispatcherProvider.from(getWindowAndroid()));
 
             if (mStartSurfaceSupplier.get() != null) {
-                mStartSurfaceSupplier.get().onOverviewShownAtLaunch(
-                        mOverviewShownOnStart, getOnCreateTimestampMs());
+                // The tab switcher is not the layout shown on startup, so wait until it is shown
+                // before notifying the start surface that is was.
+                // TODO(1292661): We should allow the tab switcher to be the layout that the browser
+                //                starts on to avoid logic like this.
+                if (getLayoutManager().getActiveLayoutType() == LayoutType.TAB_SWITCHER
+                        || getLayoutManager().getNextLayoutType() != LayoutType.TAB_SWITCHER) {
+                    mStartSurfaceSupplier.get().onOverviewShownAtLaunch(
+                            mOverviewShownOnStart, getOnCreateTimestampMs());
+                } else if (getLayoutManager().getNextLayoutType() == LayoutType.TAB_SWITCHER) {
+                    getLayoutManager().addObserver(new LayoutStateProvider.LayoutStateObserver() {
+                        @Override
+                        public void onStartedShowing(int layoutType, boolean showToolbar) {
+                            if (layoutType != LayoutType.TAB_SWITCHER) return;
+
+                            mStartSurfaceSupplier.get().onOverviewShownAtLaunch(
+                                    mOverviewShownOnStart, getOnCreateTimestampMs());
+
+                            getLayoutManager().removeObserver(this);
+                        }
+                    });
+                }
             }
         });
     }
@@ -2045,7 +2064,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         .createNewTab(params, TabLaunchType.FROM_CHROME_UI, null);
             }
             if (isInOverviewMode) {
-                mOverviewModeController.hideOverview(true);
+                mLayoutManager.showLayout(LayoutType.BROWSING, true);
             }
 
             if (currentTabIsNtp) {
@@ -2147,7 +2166,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 && (mStartSurfaceSupplier.get() == null
                         || mStartSurfaceSupplier.get().getController().getStartSurfaceState()
                                 == StartSurfaceState.SHOWN_TABSWITCHER)) {
-            mOverviewModeController.hideOverview(true);
+            mLayoutManager.showLayout(LayoutType.BROWSING, true);
             return true;
         }
 
@@ -2303,7 +2322,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private Tab launchIntent(
             LoadUrlParams loadUrlParams, String externalAppId, boolean forceNewTab, Intent intent) {
         if (mUIWithNativeInitialized && !UrlUtilities.isNTPUrl(loadUrlParams.getUrl())) {
-            mOverviewModeController.hideOverview(false);
+            getLayoutManager().showLayout(LayoutType.BROWSING, false);
             getToolbarManager().finishAnimations();
         }
         if (IntentHandler.wasIntentSenderChrome(intent)) {
@@ -2368,7 +2387,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             //                is completely launched. The "start surface" is now created regardless
             //                of the state of accessibility, so we check that mode first and try
             //                showing the overview list before going to the start surface.
-            mOverviewModeController.showOverview(false);
+            mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, false);
         } else if (mStartSurfaceSupplier.get() != null) {
             if (ReturnToChromeExperimentsUtil.shouldHideStartSurfaceWithAccessibilityOn(this)
                     || !HomepageManager.isHomepageEnabled()) {
@@ -2389,10 +2408,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         Tab currentTab = getActivityTab();
         // If we don't have a current tab, show the overview mode.
         if (currentTab == null) {
-            mOverviewModeController.showOverview(false);
+            mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, false);
         } else {
             getCompositorViewHolderSupplier().get().hideKeyboard(
-                    () -> mOverviewModeController.showOverview(true));
+                    () -> mLayoutManager.showLayout(LayoutType.TAB_SWITCHER, true));
             updateAccessibilityState(false);
             TasksUma.recordTabLaunchType(getCurrentTabModel());
         }
@@ -2402,7 +2421,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         assert (mOverviewModeController.overviewVisible());
         if (getCurrentTabModel().getCount() != 0) {
             // Don't hide overview if current tab stack is empty()
-            mOverviewModeController.hideOverview(true);
+            mLayoutManager.showLayout(LayoutType.BROWSING, false);
             updateAccessibilityState(true);
         }
     }

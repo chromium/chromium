@@ -326,7 +326,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/compositor/layouts/LayoutRenderHost.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/LayoutUpdateHost.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/OverviewModeBehavior.java",
-  "java/src/org/chromium/chrome/browser/compositor/layouts/OverviewModeController.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/SceneChangeObserver.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/StaticLayout.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/ToolbarSwipeLayout.java",

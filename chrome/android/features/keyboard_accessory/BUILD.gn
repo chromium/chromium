@@ -68,6 +68,8 @@ android_library("test_java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/layouts/test:java",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/test/android:chrome_java_test_support",
     "//components/autofill/android:autofill_java",

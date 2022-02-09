@@ -22,6 +22,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -138,14 +139,14 @@ public class ActivityTabProviderTest {
                 mActivityTab);
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.getLayoutManager().showOverview(false));
+                () -> mActivity.getLayoutManager().showLayout(LayoutType.TAB_SWITCHER, false));
         mActivityTabChangedHelper.waitForCallback(1);
         assertEquals("Entering the tab switcher should have triggered the event once.", 2,
                 mActivityTabChangedHelper.getCallCount());
         assertEquals("The activity tab should be null.", null, mActivityTab);
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.getLayoutManager().hideOverview(false));
+                () -> mActivity.getLayoutManager().showLayout(LayoutType.BROWSING, false));
         mActivityTabChangedHelper.waitForCallback(2);
         assertEquals("Exiting the tab switcher should have triggered the event once.", 3,
                 mActivityTabChangedHelper.getCallCount());
@@ -257,14 +258,10 @@ public class ActivityTabProviderTest {
      * Enter or exit the tab switcher with animations and wait for the scene to change.
      * @param inSwitcher Whether to enter or exit the tab switcher.
      */
-    private void setTabSwitcherModeAndWait(boolean inSwitcher) throws TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            if (inSwitcher) {
-                mActivity.getLayoutManager().showOverview(true);
-            } else {
-                mActivity.getLayoutManager().hideOverview(true);
-            }
-        });
-        LayoutTestUtils.waitForLayout(mActivity.getLayoutManager(), LayoutType.TAB_SWITCHER);
+    private void setTabSwitcherModeAndWait(boolean inSwitcher) {
+        LayoutManager layoutManager = mActivityTestRule.getActivity().getLayoutManager();
+        @LayoutType
+        int layout = inSwitcher ? LayoutType.TAB_SWITCHER : LayoutType.BROWSING;
+        LayoutTestUtils.startShowingAndWaitForLayout(layoutManager, layout, true);
     }
 }

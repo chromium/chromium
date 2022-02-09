@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.layouts;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -17,10 +18,8 @@ public class LayoutTestUtils {
      * immediately.
      * @param layoutManager The {@link LayoutManager} showing the layout.
      * @param type The type of layout to wait for.
-     * @throws TimeoutException
      */
-    public static void waitForLayout(LayoutManager layoutManager, @LayoutType int type)
-            throws TimeoutException {
+    public static void waitForLayout(LayoutManager layoutManager, @LayoutType int type) {
         CallbackHelper finishedShowingCallbackHelper = new CallbackHelper();
         LayoutStateObserver observer = new LayoutStateObserver() {
             @Override
@@ -31,12 +30,28 @@ public class LayoutTestUtils {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             if (layoutManager.isLayoutVisible(type)) {
                 finishedShowingCallbackHelper.notifyCalled();
-                return;
+            } else {
+                layoutManager.addObserver(observer);
             }
-            layoutManager.addObserver(observer);
         });
 
-        finishedShowingCallbackHelper.waitForFirst();
+        try {
+            finishedShowingCallbackHelper.waitForFirst();
+        } catch (TimeoutException e) {
+            assert false : "Timed out waiting for layout (@LayoutType " + type + ") to show!";
+        }
         TestThreadUtils.runOnUiThreadBlocking(() -> layoutManager.removeObserver(observer));
+    }
+
+    /**
+     * Start showing a layout and wait for it to finish showing.
+     * @param layoutManager A layout manager to show different layouts.
+     * @param type The type of layout to show.
+     * @param animate Whether to animate the transition.
+     */
+    public static void startShowingAndWaitForLayout(
+            LayoutManager layoutManager, @LayoutType int type, boolean animate) {
+        ThreadUtils.runOnUiThreadBlocking(() -> layoutManager.showLayout(type, animate));
+        waitForLayout(layoutManager, type);
     }
 }

@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -515,7 +516,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                 startedHidingCallback, finishedHidingCallback);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mManager.showOverview(true);
+            mManager.showLayout(LayoutType.TAB_SWITCHER, true);
 
             Assert.assertTrue(
                     "layoutManager is way too long to end motion", simulateTime(mManager, 1000));
@@ -537,7 +538,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
         Assert.assertEquals(LayoutType.TAB_SWITCHER, finishedShowingCallback.layoutType);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mManagerPhone.hideOverview(true);
+            mManager.showLayout(LayoutType.BROWSING, true);
             Assert.assertTrue(
                     "layoutManager is way too long to end motion", simulateTime(mManager, 1000));
 
@@ -684,14 +685,13 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                 }
             });
 
-            mManager.showOverview(true);
-
+            mManager.showLayout(LayoutType.TAB_SWITCHER, true);
             Assert.assertTrue(
                     "layoutManager is way too long to end motion", simulateTime(mManager, 1000));
             Assert.assertEquals(
                     LayoutType.TAB_SWITCHER, mManager.getActiveLayout().getLayoutType());
 
-            mManagerPhone.hideOverview(true);
+            mManager.showLayout(LayoutType.BROWSING, true);
             Assert.assertTrue(
                     "layoutManager is way too long to end motion", simulateTime(mManager, 1000));
 
@@ -752,8 +752,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                 mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
 
         LayoutManagerChrome layoutManager = mActivityTestRule.getActivity().getLayoutManager();
-        TestThreadUtils.runOnUiThreadBlocking(() -> layoutManager.showOverview(false));
-        CriteriaHelper.pollUiThread(layoutManager::overviewVisible);
+        LayoutTestUtils.startShowingAndWaitForLayout(layoutManager, LayoutType.TAB_SWITCHER, false);
     }
 
     private Layout getActiveLayout() {
