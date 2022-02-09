@@ -482,6 +482,8 @@ CSSValue* ConsumeBorderWidth(CSSParserTokenRange&,
 CSSValue* ConsumeSVGPaint(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ParseSpacing(CSSParserTokenRange&, const CSSParserContext&);
 
+CSSValue* ConsumeSingleContainerName(CSSParserTokenRange&,
+                                     const CSSParserContext&);
 CSSValue* ConsumeContainerName(CSSParserTokenRange&, const CSSParserContext&);
 CSSValue* ConsumeContainerType(CSSParserTokenRange&);
 

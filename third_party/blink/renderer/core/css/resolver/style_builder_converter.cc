@@ -2260,13 +2260,20 @@ ScrollbarGutter StyleBuilderConverter::ConvertScrollbarGutter(
   return flags;
 }
 
-AtomicString StyleBuilderConverter::ConvertContainerName(
+Vector<AtomicString> StyleBuilderConverter::ConvertContainerName(
     StyleResolverState& state,
     const CSSValue& value) {
-  if (auto* custom_ident_value = DynamicTo<CSSCustomIdentValue>(value))
-    return AtomicString(custom_ident_value->Value());
-  DCHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), CSSValueID::kNone);
-  return AtomicString();
+  Vector<AtomicString> names;
+
+  if (auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK_EQ(To<CSSIdentifierValue>(value).GetValueID(), CSSValueID::kNone);
+    return names;
+  }
+
+  for (const auto& item : To<CSSValueList>(value))
+    names.push_back(To<CSSCustomIdentValue>(item.Get())->Value());
+
+  return names;
 }
 
 absl::optional<StyleIntrinsicLength>

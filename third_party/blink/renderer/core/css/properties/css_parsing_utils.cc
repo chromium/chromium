@@ -5182,14 +5182,29 @@ CSSValue* ParseSpacing(CSSParserTokenRange& range,
                        UnitlessQuirk::kAllow);
 }
 
-CSSValue* ConsumeContainerName(CSSParserTokenRange& range,
-                               const CSSParserContext& context) {
-  if (CSSValue* value = ConsumeIdent<CSSValueID::kNone>(range))
-    return value;
+CSSValue* ConsumeSingleContainerName(CSSParserTokenRange& range,
+                                     const CSSParserContext& context) {
   // TODO(crbug.com/1066390): ConsumeCustomIdent should not allow "default".
   if (range.Peek().Id() == CSSValueID::kDefault)
     return nullptr;
   return ConsumeCustomIdent(range, context);
+}
+
+CSSValue* ConsumeContainerName(CSSParserTokenRange& range,
+                               const CSSParserContext& context) {
+  if (CSSValue* value = ConsumeIdent<CSSValueID::kNone>(range))
+    return value;
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+
+  while (!range.AtEnd()) {
+    CSSValue* value = ConsumeSingleContainerName(range, context);
+    if (!value)
+      return nullptr;
+    list->Append(*value);
+  }
+
+  return list->length() ? list : nullptr;
 }
 
 CSSValue* ConsumeContainerType(CSSParserTokenRange& range) {

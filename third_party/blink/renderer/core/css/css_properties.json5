@@ -2135,8 +2135,8 @@
     {
       name: "container-name",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      type_name: "AtomicString",
-      default_value: "AtomicString()",
+      type_name: "Vector<AtomicString>",
+      default_value: "Vector<AtomicString>()",
       field_group: "*",
       field_template: "external",
       converter: "ConvertContainerName",

@@ -2007,9 +2007,15 @@ const CSSValue* ContainerName::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
-  if (style.ContainerName().IsNull())
+  if (style.ContainerName().IsEmpty())
     return CSSIdentifierValue::Create(CSSValueID::kNone);
-  return MakeGarbageCollected<CSSCustomIdentValue>(style.ContainerName());
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+
+  for (const AtomicString& ident : style.ContainerName())
+    list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(ident));
+
+  return list;
 }
 
 const CSSValue* ContainerType::ParseSingleValue(

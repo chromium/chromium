@@ -33,7 +33,7 @@ PhysicalAxes ContainerTypeAxes(const ComputedStyle& style) {
 bool NameMatches(const ComputedStyle& style,
                  const ContainerSelector& container_selector) {
   const AtomicString& name = container_selector.Name();
-  return name.IsNull() || (style.ContainerName() == name);
+  return name.IsNull() || (style.ContainerName().Contains(name));
 }
 
 bool TypeMatches(const ComputedStyle& style,

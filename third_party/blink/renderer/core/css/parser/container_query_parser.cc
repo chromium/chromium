@@ -26,7 +26,8 @@ bool IsNone(const CSSValue& value) {
 
 AtomicString ConsumeContainerName(CSSParserTokenRange& range,
                                   const CSSParserContext& context) {
-  CSSValue* name = css_parsing_utils::ConsumeContainerName(range, context);
+  CSSValue* name =
+      css_parsing_utils::ConsumeSingleContainerName(range, context);
   if (auto* custom_ident = DynamicTo<CSSCustomIdentValue>(name))
     return custom_ident->Value();
   return g_null_atom;
