@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/existing_tab_group_sub_menu_model.h"
 
+#include "base/containers/contains.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -52,10 +53,14 @@ ExistingTabGroupSubMenuModel::ExistingTabGroupSubMenuModel(
         kTabGroupIcon, tp.GetColor(color_id), kIconSize);
     menu_item_infos.emplace_back(MenuItemInfo{displayed_title, image_model});
     menu_item_infos.back().may_have_mnemonics = false;
+
     menu_item_infos.back().target_index = static_cast<int>(i);
+    target_index_to_group_mapping_.emplace(i, group);
   }
   Build(IDS_TAB_CXMENU_SUBMENU_NEW_GROUP, menu_item_infos);
 }
+
+ExistingTabGroupSubMenuModel::~ExistingTabGroupSubMenuModel() = default;
 
 std::vector<tab_groups::TabGroupId>
 ExistingTabGroupSubMenuModel::GetOrderedTabGroupsInSubMenu() {
@@ -92,13 +97,16 @@ void ExistingTabGroupSubMenuModel::ExecuteNewCommand(int event_flags) {
 void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(int target_index) {
   base::RecordAction(base::UserMetricsAction("TabContextMenu_NewTabInGroup"));
 
-  if (static_cast<size_t>(target_index) >=
-      model()->group_model()->ListTabGroups().size())
-    return;
   if (!model()->ContainsIndex(GetContextIndex()))
     return;
+
+  if (!base::Contains(target_index_to_group_mapping_, target_index) ||
+      !model()->group_model()->ContainsTabGroup(
+          target_index_to_group_mapping_.at(target_index)))
+    return;
+
   model()->ExecuteAddToExistingGroupCommand(
-      GetContextIndex(), GetOrderedTabGroupsInSubMenu()[target_index]);
+      GetContextIndex(), target_index_to_group_mapping_.at(target_index));
 }
 
 // static
