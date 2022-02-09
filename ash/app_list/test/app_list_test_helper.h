@@ -155,6 +155,9 @@ class AppListTestHelper {
   TestAppListClient* app_list_client() { return app_list_client_.get(); }
 
  private:
+  // Helper function to set user prefs relative to the app_list in tests.
+  void ConfigureDefaultUserPrefs();
+
   test::AppListTestModel model_;
   SearchModel search_model_;
   AppListControllerImpl* app_list_controller_ = nullptr;

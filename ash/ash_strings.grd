@@ -4458,6 +4458,15 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_CONTEXT_MENU_REMOVE" desc="Context menu option title to remove a suggestion for a task in the launcher. Tasks display in the continue section located above the app list.">
         Remove Suggestion
       </message>
+      <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_PRIVACY_TEXT" desc="Text for the privacy notice of the continue section of the launcher in clamshell mode, which shows recent files and apps that the user can continue using.">
+        You’ll see recommendations so you can continue where you left off. You can right-click to remove recommendations.
+      </message>
+      <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_PRIVACY_TEXT_TABLET" desc="Text for the privacy notice of the continue section of the launcher in tablet mode, which shows recent files and apps that the user can continue using.">
+        You’ll see recommendations so you can continue where you left off.  You can touch &amp; hold to remove recommendations.
+      </message>
+      <message name="IDS_ASH_LAUNCHER_CONTINUE_SECTION_PRIVACY_BUTTON" desc="Text for the privacy notice accepting button in the continue section of the launcher, which shows recent files and apps that the user can continue using.">
+        OK
+      </message>
 
       <!-- Launcher / App List -->
       <message name="IDS_ASH_LAUNCHER_APPS_GRID_CONTEXT_MENU_REORDER_TITLE" desc="Title of the context menu in apps grid view in Productivity Launcher that allows users to sort their apps in the laucher. The context menu will have provide options to sort by name or color.">

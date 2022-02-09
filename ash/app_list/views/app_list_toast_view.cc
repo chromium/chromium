@@ -113,6 +113,7 @@ AppListToastView::AppListToastView(const std::u16string title) {
   title_label_ =
       label_container_->AddChildView(std::make_unique<views::Label>(title));
   title_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  title_label_->SetMultiLine(true);
 
   layout_manager->SetFlexForView(label_container_, 1);
 }

@@ -14,6 +14,7 @@
 #include "ash/app_list/model/search/search_model.h"
 #include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/app_list/views/app_list_toast_view.h"
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/continue_task_view.h"
@@ -21,7 +22,9 @@
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
@@ -30,6 +33,7 @@
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/animation/ink_drop.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
@@ -150,6 +154,12 @@ class ContinueSectionViewTestBase : public AshTestBase {
           GetAppListTestHelper()->GetScrollableAppsGridView());
     }
     ASSERT_TRUE(GetAppsGridView());
+  }
+
+  void HideLauncher() { Shell::Get()->app_list_controller()->DismissAppList(); }
+
+  void ResetPrivacyNoticePref() {
+    ContinueSectionView::SetPrivacyNoticeAcceptedForTest(false);
   }
 
   void SimulateRightClickOrLongPressOn(const views::View* view) {
@@ -764,6 +774,61 @@ TEST_P(ContinueSectionViewTest, TaskViewHidesRippleAfterMenuCloses) {
   EXPECT_EQ(views::InkDropState::HIDDEN, views::InkDrop::Get(continue_task_view)
                                              ->GetInkDrop()
                                              ->GetTargetInkDropState());
+}
+
+TEST_P(ContinueSectionViewTest, ShowPrivacyNotice) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  ResetPrivacyNoticePref();
+
+  EnsureLauncherShown();
+  VerifyResultViewsUpdated();
+
+  EXPECT_TRUE(
+      GetContinueSectionView()->GetPrivacyNoticeForTest()->GetVisible());
+}
+
+TEST_P(ContinueSectionViewTest, AcceptPrivacyNotice) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  ResetPrivacyNoticePref();
+
+  EnsureLauncherShown();
+  VerifyResultViewsUpdated();
+
+  EXPECT_TRUE(
+      GetContinueSectionView()->GetPrivacyNoticeForTest()->GetVisible());
+
+  GestureTapOn(
+      GetContinueSectionView()->GetPrivacyNoticeForTest()->toast_button());
+
+  EXPECT_FALSE(GetContinueSectionView()->ShouldShowPrivacyNotice());
+}
+
+TEST_P(ContinueSectionViewTest, TimeDismissPrivacyNotice) {
+  AddSearchResult("id1", AppListSearchResultType::kFileChip);
+  AddSearchResult("id2", AppListSearchResultType::kDriveChip);
+  AddSearchResult("id3", AppListSearchResultType::kDriveChip);
+  ResetPrivacyNoticePref();
+
+  EnsureLauncherShown();
+  VerifyResultViewsUpdated();
+
+  EXPECT_TRUE(
+      GetContinueSectionView()->GetPrivacyNoticeForTest()->GetVisible());
+
+  ASSERT_TRUE(GetContinueSectionView()->FirePrivacyNoticeShownTimerForTest());
+
+  EXPECT_TRUE(
+      GetContinueSectionView()->GetPrivacyNoticeForTest()->GetVisible());
+
+  HideLauncher();
+  EnsureLauncherShown();
+
+  EXPECT_FALSE(GetContinueSectionView()->ShouldShowPrivacyNotice());
+  EXPECT_FALSE(GetContinueSectionView()->GetPrivacyNoticeForTest());
 }
 
 }  // namespace

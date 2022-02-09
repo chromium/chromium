@@ -788,6 +788,11 @@ const char kSuggestedContentInfoShownInLauncher[] =
 // should show to the users.
 const char kAppListReorderNudge[] = "ash.launcher.app_list_reorder_nudge";
 
+// A dictionary pref that stores information related to the privacy notice in
+// the continue files section for the launcher.
+const char kLauncherFilesPrivacyNotice[] =
+    "ash.launcher.continue_section_privacy_notice";
+
 // A boolean pref that indicates whether the Suggested Content privacy info may
 // be displayed to user. A false value indicates that the info can be displayed
 // if the value of |kSuggestedContentInfoShownInLauncher| is smaller than the

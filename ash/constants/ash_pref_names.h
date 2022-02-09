@@ -361,6 +361,9 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAppListReorderNudge[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kLauncherFilesPrivacyNotice[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kLockScreenMediaControlsEnabled[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kXkbAutoRepeatDelay[];

@@ -22,6 +22,7 @@
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/contents_view.h"
+#include "ash/app_list/views/continue_section_view.h"
 #include "ash/app_list/views/productivity_launcher_search_view.h"
 #include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/app_list/views/search_result_page_view.h"
@@ -47,6 +48,7 @@ AppListTestHelper::AppListTestHelper() {
                                        &search_model_);
   // Disable app list nudge as default.
   DisableAppListNudge(true);
+  ContinueSectionView::SetPrivacyNoticeAcceptedForTest(true);
 }
 
 AppListTestHelper::~AppListTestHelper() {
