@@ -22,7 +22,8 @@ namespace {
 using chromeos::string_matching::TokenizedString;
 
 constexpr char kDriveSearchSchema[] = "drive_search://";
-constexpr int kMaxResults = 10;
+constexpr int kMaxResults = 50;
+constexpr size_t kMinQuerySizeForSharedFiles = 5u;
 
 // Outcome of a call to DriveSearchProvider::Start. These values persist
 // to logs. Entries should not be renumbered and numeric values should never be
@@ -88,6 +89,16 @@ void DriveSearchProvider::SetSearchResults(
   if (error != drive::FileError::FILE_ERROR_OK) {
     LogStatus(Status::kFileError);
     return;
+  }
+
+  // Filter out shared files if the query length is below a threshold.
+  if (last_query_.size() < kMinQuerySizeForSharedFiles) {
+    std::vector<drivefs::mojom::QueryItemPtr> filtered_items;
+    for (auto& item : items) {
+      if (!item->metadata->shared)
+        filtered_items.push_back(std::move(item));
+    }
+    items = std::move(filtered_items);
   }
 
   SearchProvider::Results results;
