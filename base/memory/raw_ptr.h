@@ -34,6 +34,10 @@
 #include "base/win/windows_types.h"
 #endif
 
+// Marks a field as excluded from the raw_ptr usage enforcement clang plugin.
+// Example: RAW_PTR_EXCLUSION Foo* foo_;
+#define RAW_PTR_EXCLUSION __attribute__((annotate("raw_ptr_exclusion")))
+
 namespace cc {
 class Scheduler;
 }

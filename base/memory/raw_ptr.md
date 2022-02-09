@@ -47,8 +47,7 @@ exclusions via:
       `third_party/blink/public/web/`)
     - Code that cannot depend on `//base`
     - Code in `//ppapi`
-- (to be introduced) `RAW_PTR_EXCLUSION` C++ attribute to exclude individual
-  fields.  Examples:
+- `RAW_PTR_EXCLUSION` C++ attribute to exclude individual fields.  Examples:
     - Cases where `raw_ptr<T>` won't compile (e.g. cases coverd in
       [the "Unsupported cases leading to compile errors" section](#Unsupported-cases-leading-to-compile-errors)).
       Make sure to also look at

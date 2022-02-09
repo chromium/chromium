@@ -484,6 +484,16 @@ AST_POLYMORPHIC_MATCHER(isInMacroLocation,
   return Node.getBeginLoc().isMacroID();
 }
 
+static bool IsAnnotated(const clang::Decl* decl,
+                        const std::string& expected_annotation) {
+  clang::AnnotateAttr* attr = decl->getAttr<clang::AnnotateAttr>();
+  return attr && (attr->getAnnotation() == expected_annotation);
+}
+
+AST_MATCHER(clang::Decl, IsExclusionAnnotated) {
+  return IsAnnotated(&Node, "raw_ptr_exclusion");
+}
+
 // If |field_decl| declares a field in an implicit template specialization, then
 // finds and returns the corresponding FieldDecl from the template definition.
 // Otherwise, just returns the original |field_decl| argument.
@@ -1029,6 +1039,7 @@ int main(int argc, const char* argv[]) {
                              isInThirdPartyLocation(), isInGeneratedLocation(),
                              isInLocationListedInFilterFile(&paths_to_exclude),
                              isFieldDeclListedInFilterFile(&fields_to_exclude),
+                             IsExclusionAnnotated(),
                              implicit_field_decl_matcher))))
           .bind("affectedFieldDecl");
   FieldDeclRewriter field_decl_rewriter(&output_helper);
