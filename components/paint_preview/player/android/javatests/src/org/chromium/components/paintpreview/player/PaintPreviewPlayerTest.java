@@ -31,7 +31,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -40,7 +40,7 @@ import java.util.List;
  * Instrumentation tests for the Paint Preview player.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-public class PaintPreviewPlayerTest extends DummyUiActivityTestCase {
+public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
     private static final long TIMEOUT_MS = 5000;
 
     private static final String TEST_DIRECTORY_KEY = "test_dir";

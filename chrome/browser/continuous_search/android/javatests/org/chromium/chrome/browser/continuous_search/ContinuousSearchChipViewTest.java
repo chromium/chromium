@@ -21,7 +21,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivity;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /**
  * Tests for {@link ContinuousSearchChipView}.
@@ -30,8 +30,8 @@ import org.chromium.ui.test.util.DummyUiActivity;
 @Batch(Batch.UNIT_TESTS)
 public class ContinuousSearchChipViewTest {
     @ClassRule
-    public static BaseActivityTestRule<DummyUiActivity> sActivityTestRule =
-            new BaseActivityTestRule<>(DummyUiActivity.class);
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     private static Activity sActivity;
     private ContinuousSearchChipView mChipView;

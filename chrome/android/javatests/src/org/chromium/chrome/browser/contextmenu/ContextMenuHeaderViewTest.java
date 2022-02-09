@@ -29,14 +29,14 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivity;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /**
  * Tests for ContextMenuHeader view and {@link ContextMenuHeaderViewBinder}
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class ContextMenuHeaderViewTest extends DummyUiActivityTestCase {
+public class ContextMenuHeaderViewTest extends BlankUiTestActivityTestCase {
     private static final String TITLE_STRING = "Some Very Cool Title";
     private static final String URL_STRING = "www.website.com";
 
@@ -53,7 +53,7 @@ public class ContextMenuHeaderViewTest extends DummyUiActivityTestCase {
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
-        DummyUiActivity.setTestLayout(R.layout.context_menu_header);
+        BlankUiTestActivity.setTestLayout(R.layout.context_menu_header);
     }
 
     @Override

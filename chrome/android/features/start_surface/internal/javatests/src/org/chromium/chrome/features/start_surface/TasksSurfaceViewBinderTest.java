@@ -28,11 +28,11 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /** Tests for {@link TasksSurfaceViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class TasksSurfaceViewBinderTest extends DummyUiActivityTestCase {
+public class TasksSurfaceViewBinderTest extends BlankUiTestActivityTestCase {
     private ViewGroup mParentView;
     private ViewGroup mTasksSurfaceView;
     private View mTopToolbarPlaceholderView;

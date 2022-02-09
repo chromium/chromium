@@ -51,7 +51,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,7 +62,7 @@ import java.util.Map;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class DownloadLocationDialogTest extends DummyUiActivityTestCase {
+public class DownloadLocationDialogTest extends BlankUiTestActivityTestCase {
     private static final long TOTAL_BYTES = 1024L;
     private static final String SUGGESTED_PATH = "download.png";
     private static final String PRIMARY_STORAGE_PATH = "/sdcard";

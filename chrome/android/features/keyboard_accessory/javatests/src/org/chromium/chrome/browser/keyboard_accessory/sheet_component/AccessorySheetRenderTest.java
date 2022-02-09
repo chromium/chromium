@@ -67,7 +67,7 @@ import org.chromium.ui.DeferredViewStubInflationProvider;
 import org.chromium.ui.modelutil.LazyConstructionPropertyMcp;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.DummyUiActivity;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -94,8 +94,8 @@ public class AccessorySheetRenderTest {
 
     // No @Rule since we only need the launching helpers. Adding the rule to the chain breaks with
     // any ParameterizedRunnerDelegate.
-    private BaseActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new BaseActivityTestRule<>(DummyUiActivity.class);
+    private BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -105,7 +105,7 @@ public class AccessorySheetRenderTest {
         FeatureList.setTestFeatures(
                 Collections.singletonMap(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY, true));
         setRtlForTesting(useRtlLayout);
-        NightModeTestUtils.setUpNightModeForDummyUiActivity(nightModeEnabled);
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
         mRenderTestRule.setVariantPrefix(useRtlLayout ? "RTL" : "LTR");
     }
@@ -144,7 +144,7 @@ public class AccessorySheetRenderTest {
 
     @After
     public void tearDown() {
-        NightModeTestUtils.tearDownNightModeForDummyUiActivity();
+        NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
         setRtlForTesting(false);
         try {
             ApplicationTestUtils.finishActivity(mActivityTestRule.getActivity());

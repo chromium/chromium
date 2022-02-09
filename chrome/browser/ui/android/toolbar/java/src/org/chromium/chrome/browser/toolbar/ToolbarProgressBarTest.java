@@ -29,7 +29,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.ProgressBarObserver;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.TimeoutException;
@@ -39,7 +39,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-public class ToolbarProgressBarTest extends DummyUiActivityTestCase {
+public class ToolbarProgressBarTest extends BlankUiTestActivityTestCase {
     private final CallbackHelper mProgressUpdateHelper = new CallbackHelper();
     private final CallbackHelper mProgressVisibilityHelper = new CallbackHelper();
     private ToolbarProgressBar mProgressBar;

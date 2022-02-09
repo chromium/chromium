@@ -25,7 +25,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.chrome.browser.settings.DummySettingsForTest;
+import org.chromium.chrome.browser.settings.PlaceholderSettingsForTest;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
@@ -38,8 +38,8 @@ public class IncognitoReauthSettingSwitchPreferenceTest {
     private static final String SUMMARY = "This is a summary.";
 
     @Rule
-    public SettingsActivityTestRule<DummySettingsForTest> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(DummySettingsForTest.class);
+    public SettingsActivityTestRule<PlaceholderSettingsForTest> mSettingsActivityTestRule =
+            new SettingsActivityTestRule<>(PlaceholderSettingsForTest.class);
 
     private IncognitoReauthSettingSwitchPreference mPreference;
     private Context mContext;

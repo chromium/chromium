@@ -35,8 +35,8 @@ import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton.PopupMe
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
-import org.chromium.ui.test.util.DummyUiActivity;
 
 /**
  * Instrumentation tests for MessageBannerView.
@@ -51,8 +51,8 @@ public class MessageBannerViewTest {
             new DisableAnimationsTestRule();
 
     @ClassRule
-    public static BaseActivityTestRule<DummyUiActivity> sActivityTestRule =
-            new BaseActivityTestRule<>(DummyUiActivity.class);
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     private static Activity sActivity;
     private static ViewGroup sContentView;

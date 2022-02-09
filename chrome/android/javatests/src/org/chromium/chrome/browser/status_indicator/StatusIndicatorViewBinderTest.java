@@ -35,14 +35,14 @@ import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawab
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivity;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /**
  * Tests for {@link StatusIndicatorViewBinder}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class StatusIndicatorViewBinderTest extends DummyUiActivityTestCase {
+public class StatusIndicatorViewBinderTest extends BlankUiTestActivityTestCase {
     private static final String STATUS_TEXT = "Offline";
 
     private ViewResourceFrameLayout mContainer;
@@ -54,7 +54,7 @@ public class StatusIndicatorViewBinderTest extends DummyUiActivityTestCase {
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
-        DummyUiActivity.setTestLayout(R.layout.status_indicator_container);
+        BlankUiTestActivity.setTestLayout(R.layout.status_indicator_container);
     }
 
     @Override

@@ -137,7 +137,7 @@ public class Features {
     }
 
     /**
-     * Feature processor intended to be used in Robolectric and {@link DummyUiActivityTestCase}
+     * Feature processor intended to be used in Robolectric and {@link BlankUiTestActivityTestCase}
      * tests. The collected feature states would be applied to {@link ChromeFeatureList}'s
      * internal test-only feature map.
      */

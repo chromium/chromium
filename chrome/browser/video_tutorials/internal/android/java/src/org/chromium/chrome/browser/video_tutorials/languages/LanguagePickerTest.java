@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.video_tutorials.VideoTutorialService;
 import org.chromium.chrome.browser.video_tutorials.test.TestVideoTutorialService;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivity;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /**
  * Tests for {@link LanguagePickerCoordinator}.
@@ -41,8 +41,8 @@ import org.chromium.ui.test.util.DummyUiActivity;
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class LanguagePickerTest {
     @Rule
-    public BaseActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new BaseActivityTestRule<>(DummyUiActivity.class);
+    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     private Activity mActivity;
     private View mContentView;

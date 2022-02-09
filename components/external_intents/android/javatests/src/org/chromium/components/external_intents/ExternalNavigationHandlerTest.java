@@ -56,7 +56,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.test.util.DummyUiActivity;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -1009,7 +1009,7 @@ public class ExternalNavigationHandlerTest {
         filter.addDataScheme("market");
         ActivityMonitor monitor = InstrumentationRegistry.getInstrumentation().addMonitor(
                 filter, new Instrumentation.ActivityResult(Activity.RESULT_OK, null), true);
-        Intent dummyIntent = new Intent(mApplicationContextToRestore, DummyUiActivity.class);
+        Intent dummyIntent = new Intent(mApplicationContextToRestore, BlankUiTestActivity.class);
         dummyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Activity activity =
                 InstrumentationRegistry.getInstrumentation().startActivitySync(dummyIntent);
@@ -1065,7 +1065,7 @@ public class ExternalNavigationHandlerTest {
     @MediumTest
     public void testFallbackUrl_ChromeCanHandle_Incognito() {
         mDelegate.add(new IntentActivity("https", "package"));
-        Intent dummyIntent = new Intent(mApplicationContextToRestore, DummyUiActivity.class);
+        Intent dummyIntent = new Intent(mApplicationContextToRestore, BlankUiTestActivity.class);
         dummyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Activity activity =
                 InstrumentationRegistry.getInstrumentation().startActivitySync(dummyIntent);
@@ -1119,7 +1119,7 @@ public class ExternalNavigationHandlerTest {
         filter.addDataScheme("market");
         ActivityMonitor monitor = InstrumentationRegistry.getInstrumentation().addMonitor(
                 filter, new Instrumentation.ActivityResult(Activity.RESULT_OK, null), true);
-        Intent dummyIntent = new Intent(mApplicationContextToRestore, DummyUiActivity.class);
+        Intent dummyIntent = new Intent(mApplicationContextToRestore, BlankUiTestActivity.class);
         dummyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Activity activity =
                 InstrumentationRegistry.getInstrumentation().startActivitySync(dummyIntent);
@@ -1185,7 +1185,7 @@ public class ExternalNavigationHandlerTest {
     @MediumTest
     public void testFallbackUrl_ChromeCanHandle_Incognito_DelegateHandleDialogPresentation() {
         mDelegate.add(new IntentActivity("https", "package"));
-        Intent dummyIntent = new Intent(mApplicationContextToRestore, DummyUiActivity.class);
+        Intent dummyIntent = new Intent(mApplicationContextToRestore, BlankUiTestActivity.class);
         dummyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Activity activity =
                 InstrumentationRegistry.getInstrumentation().startActivitySync(dummyIntent);

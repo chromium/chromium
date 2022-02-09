@@ -35,8 +35,8 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
-import org.chromium.ui.test.util.DummyUiActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 
 import java.io.IOException;
@@ -58,8 +58,8 @@ public class AdaptiveButtonActionMenuRenderTest {
     public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
 
     @Rule
-    public BaseActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new BaseActivityTestRule<>(DummyUiActivity.class);
+    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -68,7 +68,7 @@ public class AdaptiveButtonActionMenuRenderTest {
     private View mView;
 
     public AdaptiveButtonActionMenuRenderTest(boolean nightModeEnabled) {
-        NightModeTestUtils.setUpNightModeForDummyUiActivity(nightModeEnabled);
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
     }
 
@@ -97,7 +97,7 @@ public class AdaptiveButtonActionMenuRenderTest {
     @After
     public void tearDownTest() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> NightModeTestUtils.tearDownNightModeForDummyUiActivity());
+                () -> NightModeTestUtils.tearDownNightModeForBlankUiTestActivity());
     }
 
     @Test

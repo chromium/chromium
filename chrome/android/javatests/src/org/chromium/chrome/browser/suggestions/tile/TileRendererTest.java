@@ -25,7 +25,7 @@ import org.chromium.chrome.browser.suggestions.ImageFetcher;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig.TileStyle;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.ui.test.util.DummyUiActivity;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.GURL;
 
 /** A simple test for {@link TileRenderer} using real {@link android.view.View} objects. */
@@ -37,8 +37,8 @@ public class TileRendererTest {
     @Rule
     public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
     @Rule
-    public BaseActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new BaseActivityTestRule<>(DummyUiActivity.class);
+    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Mock
     private ImageFetcher mMockImageFetcher;

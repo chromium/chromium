@@ -17,14 +17,14 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 
 /**
- * Test case to instrument DummyUiActivity for UI testing scenarios.
+ * Test case to instrument BlankUiTestActivity for UI testing scenarios.
  * Recommend to use setUpTest() and tearDownTest() to setup and tear down instead of @Before and
  * @After.
  */
-public class DummyUiActivityTestCase {
-    private DummyUiActivity mActivity;
+public class BlankUiTestActivityTestCase {
+    private BlankUiTestActivity mActivity;
 
-    private final BaseActivityTestRule<? extends DummyUiActivity> mActivityTestRule;
+    private final BaseActivityTestRule<? extends BlankUiTestActivity> mActivityTestRule;
 
     // Disable animations to reduce flakiness.
     @ClassRule
@@ -34,17 +34,17 @@ public class DummyUiActivityTestCase {
     @Rule
     public final TestRule ruleChain;
 
-    /** Default constructor that creates a {@link DummyUiActivity} as expected. */
-    public DummyUiActivityTestCase() {
-        this(new BaseActivityTestRule<DummyUiActivity>(DummyUiActivity.class));
+    /** Default constructor that creates a {@link BlankUiTestActivity} as expected. */
+    public BlankUiTestActivityTestCase() {
+        this(new BaseActivityTestRule<BlankUiTestActivity>(BlankUiTestActivity.class));
     }
 
     /**
      * Constructor to allow subclasses to inject activity and rule subclasses.
      * @param activityTestRule Injected rule to use for activity interactions.
      */
-    protected DummyUiActivityTestCase(
-            BaseActivityTestRule<? extends DummyUiActivity> activityTestRule) {
+    protected BlankUiTestActivityTestCase(
+            BaseActivityTestRule<? extends BlankUiTestActivity> activityTestRule) {
         mActivityTestRule = activityTestRule;
         ruleChain = RuleChain.outerRule(mActivityTestRule).around(new TestDriverRule());
     }
@@ -83,7 +83,7 @@ public class DummyUiActivityTestCase {
     // Override this to tear down after test.
     public void tearDownTest() throws Exception {}
 
-    public DummyUiActivity getActivity() {
+    public BlankUiTestActivity getActivity() {
         return mActivity;
     }
 }

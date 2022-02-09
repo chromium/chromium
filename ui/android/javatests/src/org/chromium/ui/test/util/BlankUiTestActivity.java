@@ -18,8 +18,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
-/** Dummy activity to test UI components without Chrome browser initialization and natives. */
-public class DummyUiActivity extends AppCompatActivity implements ModalDialogManagerHolder {
+/** Simplified activity to test UI components without Chrome browser initialization and natives. */
+public class BlankUiTestActivity extends AppCompatActivity implements ModalDialogManagerHolder {
     private static int sTestTheme;
     private static int sTestLayout;
 

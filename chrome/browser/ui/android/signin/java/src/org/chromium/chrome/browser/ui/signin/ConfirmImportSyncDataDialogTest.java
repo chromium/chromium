@@ -53,8 +53,8 @@ import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
-import org.chromium.ui.test.util.DummyUiActivity;
 
 /**
  * Instrumentation tests for {@link ConfirmImportSyncDataDialogCoordinator}.
@@ -94,8 +94,8 @@ public class ConfirmImportSyncDataDialogTest {
             new DisableAnimationsTestRule();
 
     @ClassRule
-    public static final BaseActivityTestRule<DummyUiActivity> sActivityTestRule =
-            new BaseActivityTestRule<>(DummyUiActivity.class);
+    public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Mock
     private ConfirmImportSyncDataDialogCoordinator.Listener mListenerMock;

@@ -56,13 +56,13 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests for {@link TasksViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class TasksViewBinderTest extends DummyUiActivityTestCase {
+public class TasksViewBinderTest extends BlankUiTestActivityTestCase {
     private TasksView mTasksView;
     private PropertyModel mTasksViewPropertyModel;
     private AtomicBoolean mViewClicked = new AtomicBoolean();

@@ -71,9 +71,9 @@ public class ExploreSurfaceViewBinderTest {
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityFromLauncher();
 
-        // TODO(crbug.com/1025296): Investigate to use DummyUiActivityTestCase. We can not do that
-        // since mocked FeedSurfaceCoordinator does not work as expected in release build (works
-        // well in debug build).
+        // TODO(crbug.com/1025296): Investigate to use BlankUiTestActivityTestCase. We can not do
+        // that since mocked FeedSurfaceCoordinator does not work as expected in release build
+        // (works well in debug build).
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mPropertyModel = new PropertyModel(StartSurfaceProperties.ALL_KEYS);
             mExploreSurfaceCoordinatorFactory = new ExploreSurfaceCoordinatorFactory(

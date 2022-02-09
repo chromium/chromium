@@ -11,12 +11,12 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
 /**
- * A dummy {@link PreferenceFragmentCompat} for use in tests.
+ * A placeholder {@link PreferenceFragmentCompat} for use in tests.
  */
-public class DummySettingsForTest extends PreferenceFragmentCompat {
+public class PlaceholderSettingsForTest extends PreferenceFragmentCompat {
     @Override
     public void onCreatePreferences(Bundle bundle, String rootKey) {
-        getActivity().setTitle("Dummy Settings");
+        getActivity().setTitle("Placeholder Settings");
 
         Context context = getPreferenceManager().getContext();
         PreferenceScreen screen = getPreferenceManager().createPreferenceScreen(context);

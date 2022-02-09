@@ -413,9 +413,9 @@ android_library("ui_junit_test_support") {
 android_library("ui_java_test_support") {
   testonly = true
   sources = [
+    "javatests/src/org/chromium/ui/test/util/BlankUiTestActivity.java",
+    "javatests/src/org/chromium/ui/test/util/BlankUiTestActivityTestCase.java",
     "javatests/src/org/chromium/ui/test/util/DisableAnimationsTestRule.java",
-    "javatests/src/org/chromium/ui/test/util/DummyUiActivity.java",
-    "javatests/src/org/chromium/ui/test/util/DummyUiActivityTestCase.java",
     "javatests/src/org/chromium/ui/test/util/NightModeTestUtils.java",
     "javatests/src/org/chromium/ui/test/util/RenderTestRule.java",
     "javatests/src/org/chromium/ui/test/util/UiDisableIf.java",

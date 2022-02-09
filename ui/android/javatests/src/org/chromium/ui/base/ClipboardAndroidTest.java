@@ -27,7 +27,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 import java.util.concurrent.TimeoutException;
 
@@ -36,7 +36,7 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-public class ClipboardAndroidTest extends DummyUiActivityTestCase {
+public class ClipboardAndroidTest extends BlankUiTestActivityTestCase {
     private static final String TEXT_URL = "http://www.foo.com/";
     private static final String MIX_TEXT_URL = "test http://www.foo.com http://www.bar.com";
     private static final String MIX_TEXT_URL_NO_PROTOCOL = "test www.foo.com www.bar.com";

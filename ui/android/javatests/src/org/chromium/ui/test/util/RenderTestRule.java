@@ -46,7 +46,7 @@ import java.util.concurrent.Callable;
  * {@code
  *
  * @RunWith(BaseJUnit4ClassRunner.class)
- * public class MyTest extends DummyUiActivityTestCase {
+ * public class MyTest extends BlankUiTestActivityTestCase {
  *     @Rule
  *     public RenderTestRule mRenderTestRule = new RenderTestRule.Builder()
  *             // Required. If using ANDROID_RENDER_TESTS_PUBLIC, the Builder can be created with

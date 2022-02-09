@@ -36,7 +36,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -45,7 +45,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Integration tests for MessageCardProvider component.
  */
 @Features.DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-public class MessageCardProviderTest extends DummyUiActivityTestCase {
+public class MessageCardProviderTest extends BlankUiTestActivityTestCase {
     private static final int SUGGESTED_TAB_COUNT = 2;
 
     @Rule

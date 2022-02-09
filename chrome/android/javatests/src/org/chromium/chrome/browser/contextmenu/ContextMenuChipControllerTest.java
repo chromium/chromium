@@ -26,14 +26,14 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivity;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /**
  * Tests for ContextMenuHeader view and {@link ContextMenuHeaderViewBinder}
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class ContextMenuChipControllerTest extends DummyUiActivityTestCase {
+public class ContextMenuChipControllerTest extends BlankUiTestActivityTestCase {
     // This is the combination of the expected vertical margins and the chip height.
     private static final int EXPECTED_VERTICAL_DP = 80;
     // Computed by taking the 338dp max width and subtracting:
@@ -61,7 +61,7 @@ public class ContextMenuChipControllerTest extends DummyUiActivityTestCase {
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
-        DummyUiActivity.setTestLayout(R.layout.context_menu_fullscreen_container);
+        BlankUiTestActivity.setTestLayout(R.layout.context_menu_fullscreen_container);
     }
 
     @Override

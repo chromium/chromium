@@ -23,7 +23,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Tests for the {@link ScreenshotShareSheetView}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class ScreenshotShareSheetViewTest extends DummyUiActivityTestCase {
+public class ScreenshotShareSheetViewTest extends BlankUiTestActivityTestCase {
     private ScreenshotShareSheetView mScreenshotView;
     private PropertyModel mScreenshotModel;
     private PropertyModelChangeProcessor mScreenshotMCP;

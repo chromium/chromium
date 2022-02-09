@@ -19,7 +19,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.widget.R;
-import org.chromium.ui.test.util.DummyUiActivity;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /**
  * Unit tests for {@link ListMenuButton}.
@@ -28,8 +28,8 @@ import org.chromium.ui.test.util.DummyUiActivity;
 @Batch(Batch.UNIT_TESTS)
 public class ListMenuButtonTest {
     @ClassRule
-    public static BaseActivityTestRule<DummyUiActivity> activityTestRule =
-            new BaseActivityTestRule<>(DummyUiActivity.class);
+    public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
     private Context mContext;
 
     @Before

@@ -41,14 +41,14 @@ import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.UiRestriction;
 
 /**
  * Tests for {@link StatusView} and {@link StatusViewBinder}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class StatusViewTest extends DummyUiActivityTestCase {
+public class StatusViewTest extends BlankUiTestActivityTestCase {
     @Mock
     private SearchEngineLogoUtils mSearchEngineLogoUtils;
 

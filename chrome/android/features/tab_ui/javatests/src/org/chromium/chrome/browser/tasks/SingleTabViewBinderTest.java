@@ -35,11 +35,11 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /** Tests for {@link SingleTabViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class SingleTabViewBinderTest extends DummyUiActivityTestCase {
+public class SingleTabViewBinderTest extends BlankUiTestActivityTestCase {
     private SingleTabView mSingleTabView;
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private PropertyModel mPropertyModel;

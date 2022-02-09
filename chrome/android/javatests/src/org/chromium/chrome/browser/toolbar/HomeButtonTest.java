@@ -35,14 +35,14 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /**
  * Test related to {@link HomeButton}.
  * TODO: Add more test when features related has update.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class HomeButtonTest extends DummyUiActivityTestCase {
+public class HomeButtonTest extends BlankUiTestActivityTestCase {
     private static final String ASSERT_MSG_MENU_IS_CREATED =
             "ContextMenu is not created after long press.";
     private static final String ASSERT_MSG_MENU_SIZE =

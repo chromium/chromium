@@ -43,14 +43,14 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /**
  * Tests for ThemeSettingsFragment.
  */
 // clang-format off
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class ThemeSettingsFragmentTest extends DummyUiActivityTestCase {
+public class ThemeSettingsFragmentTest extends BlankUiTestActivityTestCase {
     // clang-format on
     @Rule
     public SettingsActivityTestRule<ThemeSettingsFragment> mSettingsActivityTestRule =

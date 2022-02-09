@@ -43,8 +43,8 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class ChromeBasePreferenceTest {
     @Rule
-    public SettingsActivityTestRule<DummySettingsForTest> mActivityRule =
-            new SettingsActivityTestRule<>(DummySettingsForTest.class);
+    public SettingsActivityTestRule<PlaceholderSettingsForTest> mActivityRule =
+            new SettingsActivityTestRule<>(PlaceholderSettingsForTest.class);
 
     private PreferenceScreen mPreferenceScreen;
     private Context mContext;

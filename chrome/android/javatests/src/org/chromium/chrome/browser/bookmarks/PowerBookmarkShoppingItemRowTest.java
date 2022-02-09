@@ -37,13 +37,13 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /**
  * Tests for the Shopping power bookmarks experience.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class PowerBookmarkShoppingItemRowTest extends DummyUiActivityTestCase {
+public class PowerBookmarkShoppingItemRowTest extends BlankUiTestActivityTestCase {
     private static final long CURRENCY_MUTLIPLIER = 1000000;
 
     @Rule

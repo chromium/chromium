@@ -47,7 +47,7 @@ import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.DummySettingsForTest;
+import org.chromium.chrome.browser.settings.PlaceholderSettingsForTest;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.sync.SyncService;
@@ -68,8 +68,9 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PasswordSettingsTest {
     @Rule
-    public SettingsActivityTestRule<DummySettingsForTest> mDummySettingsActivityTestRule =
-            new SettingsActivityTestRule<>(DummySettingsForTest.class);
+    public SettingsActivityTestRule<PlaceholderSettingsForTest>
+            mPlaceholderSettingsActivityTestRule =
+                    new SettingsActivityTestRule<>(PlaceholderSettingsForTest.class);
 
     @Rule
     public SettingsActivityTestRule<PasswordSettings> mPasswordSettingsActivityTestRule =
@@ -95,9 +96,9 @@ public class PasswordSettingsTest {
         // This initializes the browser, so some tests can do setup before PasswordSettings is
         // launched. ChromeTabbedActivityTestRule.startMainActivityOnBlankPage() is more commonly
         // used for this end, but using another settings activity instead makes these tests more
-        // isolated, i.e. avoids exercising unnecessary logic. DummyUiActivityTestCase also won't
-        // fit here, it doesn't initialize enough of the browser.
-        mDummySettingsActivityTestRule.startSettingsActivity(null);
+        // isolated, i.e. avoids exercising unnecessary logic. BlankUiTestActivityTestCase also
+        // won't fit here, it doesn't initialize enough of the browser.
+        mPlaceholderSettingsActivityTestRule.startSettingsActivity(null);
     }
 
     @After
