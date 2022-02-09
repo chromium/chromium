@@ -264,11 +264,9 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.plurals.accessibility_merchant_viewer_message_description` appears to be unused"/>
     <ignore regexp="The resource `R.string.accessibility_merchant_viewer_message_announcement` appears to be unused"/>
     <ignore regexp="The resource `R.string.merchant_viewer_message_rating_numerical` appears to be unused"/>
-    <!-- 4: Temporarily suppressed until impelmentation is ready, see https://crbug.com/1246562 -->
-    <ignore regexp="The resource `R.string.merchant_viewer_omnibox_icon_iph` appears to be unused"/>
-    <ignore regexp="The resource `R.string.page_info_store_info_title` appears to be unused"/>
-    <ignore regexp="The resource `R.string.page_info_store_info_description_with_no_review` appears to be unused"/>
-    <ignore regexp="The resource `R.string.page_info_store_info_description_with_no_rating` appears to be unused"/>
+    <!-- 2: Temporarily suppressed until impelmentation is ready, see https://crbug.com/1295484 -->
+    <ignore regexp="The resource `R.string.merchant_viewer_message_title_see_reviews` appears to be unused"/>
+    <ignore regexp="The resource `R.plurals.merchant_viewer_message_description_reviews_from_google` appears to be unused"/>
     <!-- 4: Temporarily suppressed until impelmentation is ready, see https://crbug.com/1251446 -->
     <ignore regexp="The resource `R.string.price_drop_notification_content_title` appears to be unused"/>
     <ignore regexp="The resource `R.string.price_drop_notification_content_text` appears to be unused"/>

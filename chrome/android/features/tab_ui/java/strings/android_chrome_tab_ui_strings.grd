@@ -443,6 +443,9 @@
       <message name="IDS_MERCHANT_VIEWER_MESSAGE_TITLE" desc="Message shown when merchant trust signals are available.">
         View store info?
       </message>
+      <message name="IDS_MERCHANT_VIEWER_MESSAGE_TITLE_SEE_REVIEWS" desc="Alternative title of the message shown when merchant trust signals are available.">
+        See store reviews?
+      </message>
       <message name="IDS_MERCHANT_VIEWER_MESSAGE_ACTION" desc="The label of the action button on the merchant viewer message.">
         View
       </message>
@@ -453,6 +456,11 @@
          {REVIEWS, plural,
             =1 {(<ph name="REVIEWS_COUNT_ONE">%1$s<ex>1</ex></ph> review)}
             other {(<ph name="REVIEWS_COUNT_MANY">%1$s<ex>8</ex></ph> reviews)}}
+      </message>
+      <message name="IDS_MERCHANT_VIEWER_MESSAGE_DESCRIPTION_REVIEWS_FROM_GOOGLE" desc="Alternative message description indicating that the reviews come from Google.">
+         {REVIEWS, plural,
+            =1 {<ph name="REVIEWS_COUNT_ONE">%1$s<ex>1</ex></ph> review from Google}
+            other {<ph name="REVIEWS_COUNT_MANY">%1$s<ex>8</ex></ph> reviews from Google}}
       </message>
       <message name="IDS_MERCHANT_VIEWER_MESSAGE_RATING_NUMERICAL" desc="The rating of the merchant in numerical form.">
         <ph name="CURRENT_RATING">%1$.1f<ex>4.5</ex></ph>/<ph name="RATING_BASELINE">%2$d<ex>5</ex></ph>
