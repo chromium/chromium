@@ -12,10 +12,14 @@
 #include "ash/public/cpp/app_list/app_list_notifier.h"
 #include "base/scoped_observation.h"
 
+class ChromeSearchResult;
+
 namespace app_list {
 
-// Records impression, abandonment, and launch UMA metrics reported by the
-// AppListNotifier.
+// Records launcher search backend metrics. This includes impression,
+// abandonment, and launch information reported by the AppListNotifier.
+//
+// TODO(crbug.com/1258415): Rename this SearchMetricsManager.
 class SearchMetricsObserver : ash::AppListNotifier::Observer {
  public:
   using Result = ash::AppListNotifier::Result;
@@ -41,6 +45,12 @@ class SearchMetricsObserver : ash::AppListNotifier::Observer {
   void OnIgnore(Location location,
                 const std::vector<Result>& results,
                 const std::u16string& query) override;
+
+  // Record metrics at the moment when zero-state results are first ready for
+  // display upon opening the launcher. This is called only once per launcher
+  // open, and will not be called on subsequent updates to the results.
+  void LogMetricsOnZeroStateDisplay(
+      const std::vector<ChromeSearchResult*>& results);
 
  private:
   base::ScopedObservation<ash::AppListNotifier, ash::AppListNotifier::Observer>

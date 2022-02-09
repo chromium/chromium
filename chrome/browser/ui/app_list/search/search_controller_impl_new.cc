@@ -444,6 +444,11 @@ void SearchControllerImplNew::Publish() {
       observer.OnResultsAdded(last_query_, observer_results);
   }
 
+  // Log metrics on the first display of zero-state for this search session.
+  if (on_zero_state_done_.has_value()) {
+    metrics_observer_->LogMetricsOnZeroStateDisplay(all_results);
+  }
+
   model_updater_->PublishSearchResults(all_results, category_enums);
 }
 

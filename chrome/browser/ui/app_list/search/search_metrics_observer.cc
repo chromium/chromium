@@ -10,6 +10,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/ranking/types.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -162,6 +163,29 @@ void SearchMetricsObserver::OnIgnore(Location location,
   // so it's safe to log an ignore for all result types here.
   LogTypeActions("Ignore", location, query, TypeSet(results));
   LogViewAction(location, query, Action::kIgnore);
+}
+
+void SearchMetricsObserver::LogMetricsOnZeroStateDisplay(
+    const std::vector<ChromeSearchResult*>& results) {
+  // Count the number of possible Continue results.
+  int total_count = 0;
+  int drive_count = 0;
+  int local_count = 0;
+  for (const auto* result : results) {
+    if (result->display_type() == DisplayType::kContinue)
+      ++total_count;
+    if (result->result_type() == ResultType::kZeroStateDrive)
+      ++drive_count;
+    if (result->result_type() == ResultType::kZeroStateFile)
+      ++local_count;
+  }
+
+  base::UmaHistogramExactLinear("Apps.AppList.ContinueResultCount.Total",
+                                total_count, 50);
+  base::UmaHistogramExactLinear("Apps.AppList.ContinueResultCount.Drive",
+                                drive_count, 50);
+  base::UmaHistogramExactLinear("Apps.AppList.ContinueResultCount.Local",
+                                local_count, 50);
 }
 
 }  // namespace app_list

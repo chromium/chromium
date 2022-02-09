@@ -344,6 +344,23 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Apps.AppList.ContinueResultCount.{Type}" units="count"
+    expires_after="2023-02-09">
+  <owner>amandadeacon@chromium.org</owner>
+  <owner>tby@chromium.org</owner>
+  <owner>thanhdng@chromium.org</owner>
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Recorded on the first publication of zero-state results when opening the
+    launcher. Records the number of {Type} results that are ready for display.
+  </summary>
+  <token key="Type">
+    <variant name="Drive" summary="Count of Drive results"/>
+    <variant name="Local" summary="Count of local file results"/>
+    <variant name="Total" summary="Count of all results"/>
+  </token>
+</histogram>
+
 <histogram name="Apps.AppList.DriveSearchProvider.Latency" units="ms"
     expires_after="2022-11-30">
   <owner>wrong@chromium.org</owner>
