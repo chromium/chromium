@@ -5128,19 +5128,9 @@
     "expiry_milestone": 99
   },
   {
-    "name": "send-tab-to-self-manage-devices-link",
-    "owners": ["victorvianna@google.com", "mastiz@chromium.org"],
-    "expiry_milestone": 98
-  },
-  {
     "name": "send-tab-to-self-v2",
     "owners": ["kmilka", "chrome-sharing-eng@google.com"],
     "expiry_milestone": 100
-  },
-  {
-    "name": "send-tab-to-self-when-signed-in",
-    "owners": ["victorvianna@google.com", "mastiz@chromium.org"],
-    "expiry_milestone": 98
   },
   {
     "name": "set-market-url-for-testing",
