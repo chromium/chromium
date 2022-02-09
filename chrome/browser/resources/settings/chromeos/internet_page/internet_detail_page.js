@@ -2243,6 +2243,22 @@ Polymer({
             'wifi.eap.identity', 'wifi.eap.anonymousIdentity',
             'wifi.frequency');
         break;
+      case chromeos.networkConfig.mojom.NetworkType.kVPN:
+        const vpnType = this.managedProperties_.typeProperties.vpn.type;
+        switch (vpnType) {
+          case chromeos.networkConfig.mojom.VpnType.kOpenVPN:
+            if (this.isManagedByPolicy_()) {
+              // TODO(b/215180522): Clean up the guard once this is launched.
+              if (this.isExtendedOpenVpnSettingsEnabled_) {
+                fields.push(
+                    'vpn.openVpn.auth', 'vpn.openVpn.cipher',
+                    'vpn.openVpn.compressionAlgorithm',
+                    'vpn.openVpn.tlsAuthContents', 'vpn.openVpn.keyDirection');
+              }
+            }
+            break;
+        }
+        break;
     }
     return fields;
   },
@@ -2538,5 +2554,15 @@ Polymer({
     }
 
     return '';
+  },
+
+  /**
+   * @returns {boolean}
+   * @private
+   */
+  isManagedByPolicy_() {
+    const OncSource = chromeos.networkConfig.mojom.OncSource;
+    return this.managedProperties_.source === OncSource.kUserPolicy ||
+        this.managedProperties_.source === OncSource.kDevicePolicy;
   }
 });

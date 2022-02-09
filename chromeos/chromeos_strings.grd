@@ -1305,8 +1305,23 @@ Try tapping the mic to ask me anything.
       <message name="IDS_ONC_VPN_THIRD_PARTY_VPN_PROVIDER_NAME" desc="ONC Property label for VPN.ThirdPartyVPN.ProviderName">
         Provider name
       </message>
+      <message name="IDS_ONC_VPN_OPENVPN_AUTH" desc="Settings > Network > OpenVPN Network Detail Page > label for the message digest algorithm used to authenticate data chanel packets.">
+        Authentication algorithm
+      </message>
+      <message name="IDS_ONC_VPN_OPENVPN_CIPHER" desc="Settings > Network > OpenVPN Network Detail Page > label for the cipher algorithm used to encrypt data chanel packets.">
+        Encryption algorithm
+      </message>
+      <message name="IDS_ONC_VPN_OPENVPN_COMPRESSION_ALGORITHM" desc="Settings > Network > OpenVPN Network Detail Page > label for the compression algorithm used to compress packets.">
+        Compression algorithm
+      </message>
+      <message name="IDS_ONC_VPN_OPENVPN_KEY_DIRECTION" desc="Settings > Network > OpenVPN Network Detail Page > label for the direction (server to client, or reverse) of the TLS authentication key.">
+        Key direction
+      </message>
       <message name="IDS_ONC_VPN_OPENVPN_OTP" desc="ONC Property label for VPN.OpenVPN.OTP">
         OTP
+      </message>
+      <message name="IDS_ONC_VPN_OPENVPN_TLS_AUTH_CONTENTS" desc="Settings > Network > OpenVPN Network Detail Page > label for the key used to sign TLS control channel packets.">
+        TLS authentication key
       </message>
       <message name="IDS_ONC_VPN_TYPE_L2TP_IPSEC" desc="ONC Property label for VPN.Type.L2TP-IPSec">
         L2TP/IPsec

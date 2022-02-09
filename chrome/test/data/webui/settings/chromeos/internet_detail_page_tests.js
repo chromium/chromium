@@ -144,6 +144,7 @@ suite('InternetDetailPage', function() {
   setup(function() {
     loadTimeData.overrideValues({
       esimPolicyEnabled: true,
+      extendedOpenVpnSettingsEnabled: true,
       internetAddConnection: 'internetAddConnection',
       internetAddConnectionExpandA11yLabel:
           'internetAddConnectionExpandA11yLabel',
@@ -457,6 +458,33 @@ suite('InternetDetailPage', function() {
       internetDetailPage.init('vpn1_guid', 'VPN', 'vpn1');
     }
 
+    /**
+     * @param {chromeos.networConfig.mojom.OncSource=} opt_oncSource If
+     *     provided, sets the source (user / device / policy) of the network.
+     */
+    function initAdvancedVpn(opt_oncSource) {
+      init();
+      const mojom = chromeos.networkConfig.mojom;
+      const vpn1 = OncMojo.getDefaultManagedProperties(
+          mojom.NetworkType.kVPN, 'vpn1_guid', 'vpn1');
+      vpn1.source = opt_oncSource;
+      vpn1.typeProperties.vpn.type = mojom.VpnType.kOpenVPN;
+      vpn1.typeProperties.vpn.openVpn = {
+        auth: 'MD5',
+        cipher: 'AES-192-CBC',
+        compressionAlgorithm: 'LZO',
+        tlsAuthContents: 'FAKE_CREDENTIAL_VPaJDV9x',
+        keyDirection: '1',
+      };
+      mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kVPN, true);
+      mojoApi_.resetForTest();
+      mojoApi_.addNetworksForTest([
+        OncMojo.managedPropertiesToNetworkState(vpn1),
+      ]);
+      mojoApi_.setManagedPropertiesForTest(vpn1);
+      internetDetailPage.init('vpn1_guid', 'VPN', 'vpn1');
+    }
+
     function initWireGuard() {
       init();
       const mojom = chromeos.networkConfig.mojom;
@@ -504,6 +532,20 @@ suite('InternetDetailPage', function() {
         assertTrue(disconnectButton.hasAttribute('enforced_'));
         assertTrue(!!disconnectButton.shadowRoot.querySelector(
             'cr-policy-pref-indicator'));
+      });
+    });
+
+    test('Managed VPN with advanced fields', function() {
+      initAdvancedVpn(chromeos.networkConfig.mojom.OncSource.kUserPolicy);
+      return flushAsync().then(() => {
+        assertTrue(!!internetDetailPage.$$('#advancedFields'));
+      });
+    });
+
+    test('Unmanaged VPN with advanced fields', function() {
+      initAdvancedVpn(chromeos.networkConfig.mojom.OncSource.kUser);
+      return flushAsync().then(() => {
+        assertFalse(!!internetDetailPage.$$('#advancedFields'));
       });
     });
 
