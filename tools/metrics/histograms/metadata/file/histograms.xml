@@ -754,6 +754,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Unzipper.DetectEncoding.Result" enum="ContentEncoding"
+    expires_after="M120">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    ZIP file path encoding, as detected by the Unzipper service.
+  </summary>
+</histogram>
+
+<histogram name="Unzipper.DetectEncoding.Time" units="ms" expires_after="M120">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>Time to detect ZIP file path encoding.</summary>
+</histogram>
+
 <histogram name="ZipFileCreator.Result" enum="ZipFileCreator.Result"
     expires_after="2022-04-17">
   <owner>simmonsjosh@google.com</owner>

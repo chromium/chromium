@@ -15483,6 +15483,84 @@ Called by update_net_error_codes.py.-->
   <int value="7" label="Names, Emails, and Telephone numbers requested"/>
 </enum>
 
+<enum name="ContentEncoding">
+  <int value="0" label="ISO_8859_1"/>
+  <int value="1" label="ISO_8859_2"/>
+  <int value="2" label="ISO_8859_3"/>
+  <int value="3" label="ISO_8859_4"/>
+  <int value="4" label="ISO_8859_5"/>
+  <int value="5" label="ISO_8859_6"/>
+  <int value="6" label="ISO_8859_7"/>
+  <int value="7" label="ISO_8859_8"/>
+  <int value="8" label="ISO_8859_9"/>
+  <int value="9" label="ISO_8859_10"/>
+  <int value="10" label="JAPANESE_EUC_JP"/>
+  <int value="11" label="JAPANESE_SHIFT_JIS"/>
+  <int value="12" label="JAPANESE_JIS"/>
+  <int value="13" label="CHINESE_BIG5"/>
+  <int value="14" label="CHINESE_GB"/>
+  <int value="15" label="CHINESE_EUC_CN"/>
+  <int value="16" label="KOREAN_EUC_KR"/>
+  <int value="17" label="UNICODE"/>
+  <int value="18" label="CHINESE_EUC_DEC"/>
+  <int value="19" label="CHINESE_CNS"/>
+  <int value="20" label="CHINESE_BIG5_CP950"/>
+  <int value="21" label="JAPANESE_CP932"/>
+  <int value="22" label="UTF8"/>
+  <int value="23" label="UNKNOWN_ENCODING"/>
+  <int value="24" label="ASCII_7BIT"/>
+  <int value="25" label="RUSSIAN_KOI8_R"/>
+  <int value="26" label="RUSSIAN_CP1251"/>
+  <int value="27" label="MSFT_CP1252"/>
+  <int value="28" label="RUSSIAN_KOI8_RU"/>
+  <int value="29" label="MSFT_CP1250"/>
+  <int value="30" label="ISO_8859_15"/>
+  <int value="31" label="MSFT_CP1254"/>
+  <int value="32" label="MSFT_CP1257"/>
+  <int value="33" label="ISO_8859_11"/>
+  <int value="34" label="MSFT_CP874"/>
+  <int value="35" label="MSFT_CP1256"/>
+  <int value="36" label="MSFT_CP1255"/>
+  <int value="37" label="ISO_8859_8_I"/>
+  <int value="38" label="HEBREW_VISUAL"/>
+  <int value="39" label="CZECH_CP852"/>
+  <int value="40" label="CZECH_CSN_369103"/>
+  <int value="41" label="MSFT_CP1253"/>
+  <int value="42" label="RUSSIAN_CP866"/>
+  <int value="43" label="ISO_8859_13"/>
+  <int value="44" label="ISO_2022_KR"/>
+  <int value="45" label="GBK"/>
+  <int value="46" label="GB18030"/>
+  <int value="47" label="BIG5_HKSCS"/>
+  <int value="48" label="ISO_2022_CN"/>
+  <int value="49" label="TSCII"/>
+  <int value="50" label="TAMIL_MONO"/>
+  <int value="51" label="TAMIL_BI"/>
+  <int value="52" label="JAGRAN"/>
+  <int value="53" label="MACINTOSH_ROMAN"/>
+  <int value="54" label="UTF7"/>
+  <int value="55" label="BHASKAR"/>
+  <int value="56" label="HTCHANAKYA"/>
+  <int value="57" label="UTF16BE"/>
+  <int value="58" label="UTF16LE"/>
+  <int value="59" label="UTF32BE"/>
+  <int value="60" label="UTF32LE"/>
+  <int value="61" label="BINARYENC"/>
+  <int value="62" label="HZ_GB_2312"/>
+  <int value="63" label="UTF8UTF8"/>
+  <int value="64" label="TAM_ELANGO"/>
+  <int value="65" label="TAM_LTTMBARANI"/>
+  <int value="66" label="TAM_SHREE"/>
+  <int value="67" label="TAM_TBOOMIS"/>
+  <int value="68" label="TAM_TMNEWS"/>
+  <int value="69" label="TAM_WEBTAMIL"/>
+  <int value="70" label="KDDI_SHIFT_JIS"/>
+  <int value="71" label="DOCOMO_SHIFT_JIS"/>
+  <int value="72" label="SOFTBANK_SHIFT_JIS"/>
+  <int value="73" label="KDDI_ISO_2022_JP"/>
+  <int value="74" label="SOFTBANK_ISO_2022_JP"/>
+</enum>
+
 <enum name="ContentIndexCategory">
   <summary>
     The type of a Content Index entry. Corresponds to

@@ -14,10 +14,12 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "components/services/filesystem/directory_impl.h"
 #include "components/services/filesystem/lock_table.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
@@ -117,6 +119,11 @@ class DetectEncodingParams : public base::RefCounted<DetectEncodingParams> {
 
   void InvokeCallback(int encoding) {
     if (callback_) {
+      base::UmaHistogramEnumeration("Unzipper.DetectEncoding.Result",
+                                    static_cast<Encoding>(encoding),
+                                    Encoding::NUM_ENCODINGS);
+      base::UmaHistogramTimes("Unzipper.DetectEncoding.Time",
+                              base::TimeTicks::Now() - start_time_);
       callback_task_runner_->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback_),
                                     static_cast<Encoding>(encoding)));
@@ -135,6 +142,7 @@ class DetectEncodingParams : public base::RefCounted<DetectEncodingParams> {
   DetectEncodingCallback callback_;
   scoped_refptr<base::SequencedTaskRunner> callback_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
+  const base::TimeTicks start_time_ = base::TimeTicks::Now();
 };
 
 void UnzipDone(scoped_refptr<UnzipParams> params, bool success) {
