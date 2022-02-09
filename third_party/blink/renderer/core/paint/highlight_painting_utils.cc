@@ -92,10 +92,11 @@ Color HighlightThemeForegroundColor(const Document& document,
       return LayoutTheme::GetTheme().PlatformTextSearchColor(
           false /* active match */, style.UsedColorScheme());
     case kPseudoIdHighlight:
-      // TODO(ffiori): not assigning any visual effects to custom highlights by
-      // default as the spec doesn't define it. See
-      // https://github.com/w3c/csswg-drafts/issues/6375.
-      return style.VisitedDependentColor(color_property);
+      // TODO(crbug.com/1147859): Unstyled custom highlights should not be
+      // painted, so here we make the color default to transparent. When the
+      // highlight painting code is updated to match the spec, this should
+      // instead return the equivalent of 'currentColor'.
+      return Color::kTransparent;
     default:
       NOTREACHED();
       return Color();
@@ -115,10 +116,7 @@ Color HighlightThemeBackgroundColor(const Document& document,
     case kPseudoIdTargetText:
       return Color(shared_highlighting::kFragmentTextBackgroundColorARGB);
     case kPseudoIdHighlight:
-      // TODO(ffiori): not assigning any visual effects to custom highlights by
-      // default as the spec doesn't define it. See
-      // https://github.com/w3c/csswg-drafts/issues/6375.
-      return style.VisitedDependentColor(GetCSSPropertyBackgroundColor());
+      return Color::kTransparent;
     default:
       NOTREACHED();
       return Color();
