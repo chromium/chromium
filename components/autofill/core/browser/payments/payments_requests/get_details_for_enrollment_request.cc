@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/payments/payments_requests/get_details_for_enrollment_request.h"
 
 #include "base/json/json_writer.h"
+#include "base/strings/string_number_conversions.h"
 
 namespace autofill::payments {
 

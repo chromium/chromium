@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/json/json_writer.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 
