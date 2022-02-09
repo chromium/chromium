@@ -25,19 +25,20 @@ namespace {
 struct LazyDirectoryListerCacher {
   LazyDirectoryListerCacher() {
     base::DictionaryValue value;
-    value.SetString("header",
-                    l10n_util::GetStringUTF16(IDS_DIRECTORY_LISTING_HEADER));
-    value.SetString("parentDirText",
-                    l10n_util::GetStringUTF16(IDS_DIRECTORY_LISTING_PARENT));
-    value.SetString("headerName",
-                    l10n_util::GetStringUTF16(IDS_DIRECTORY_LISTING_NAME));
-    value.SetString("headerSize",
-                    l10n_util::GetStringUTF16(IDS_DIRECTORY_LISTING_SIZE));
-    value.SetString("headerDateModified",
-        l10n_util::GetStringUTF16(IDS_DIRECTORY_LISTING_DATE_MODIFIED));
-    value.SetString("language",
-                    l10n_util::GetLanguage(base::i18n::GetConfiguredLocale()));
-    value.SetString("textdirection", base::i18n::IsRTL() ? "rtl" : "ltr");
+    value.SetStringKey("header",
+                       l10n_util::GetStringUTF8(IDS_DIRECTORY_LISTING_HEADER));
+    value.SetStringKey("parentDirText",
+                       l10n_util::GetStringUTF8(IDS_DIRECTORY_LISTING_PARENT));
+    value.SetStringKey("headerName",
+                       l10n_util::GetStringUTF8(IDS_DIRECTORY_LISTING_NAME));
+    value.SetStringKey("headerSize",
+                       l10n_util::GetStringUTF8(IDS_DIRECTORY_LISTING_SIZE));
+    value.SetStringKey(
+        "headerDateModified",
+        l10n_util::GetStringUTF8(IDS_DIRECTORY_LISTING_DATE_MODIFIED));
+    value.SetStringKey(
+        "language", l10n_util::GetLanguage(base::i18n::GetConfiguredLocale()));
+    value.SetStringKey("textdirection", base::i18n::IsRTL() ? "rtl" : "ltr");
     std::string str = webui::GetI18nTemplateHtml(
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
             IDR_DIR_HEADER_HTML),
