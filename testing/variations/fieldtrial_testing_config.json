@@ -5650,22 +5650,6 @@
             ]
         }
     ],
-    "SendTabToSelfWhenSignedIn": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SendTabToSelfManageDevicesLink",
-                        "SendTabToSelfWhenSignedIn"
-                    ]
-                }
-            ]
-        }
-    ],
     "ServiceWorkerClientForegroundPriority": [
         {
             "platforms": [

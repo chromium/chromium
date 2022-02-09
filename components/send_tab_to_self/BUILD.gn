@@ -26,7 +26,6 @@ static_library("send_tab_to_self") {
   ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/send_tab_to_self/proto:send_tab_to_self_proto",

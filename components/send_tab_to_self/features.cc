@@ -7,29 +7,16 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/user_selectable_type.h"
 
 namespace send_tab_to_self {
 
 const base::Feature kSendTabToSelfWhenSignedIn{
-  "SendTabToSelfWhenSignedIn",
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-      base::FEATURE_DISABLED_BY_DEFAULT
-#else
-      base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-};
+    "SendTabToSelfWhenSignedIn", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSendTabToSelfManageDevicesLink{
-  "SendTabToSelfManageDevicesLink",
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-      base::FEATURE_DISABLED_BY_DEFAULT
-#else
-      base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-};
+    "SendTabToSelfManageDevicesLink", base::FEATURE_ENABLED_BY_DEFAULT};
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 const base::Feature kSendTabToSelfV2{"SendTabToSelfV2",
