@@ -589,7 +589,7 @@ deps = {
       'packages': [
         {
           'package': 'chromium/third_party/updater/chromium_win_x86_64',
-          'version': 'tpakNFR82tZRgkWuRbgyNlc-O93aCKAm5S2zV26snOkC',
+          'version': '77COFCYoGCHrnvDJZFC8GoYea4B8GeTVWNKpUZBCwe4C',
         },
       ],
   },
