@@ -40,7 +40,13 @@
   <!-- App Toolbar -->
   <header class="appbar">
     <div class="appbar-inner">
-      <h1 class="headline">Super Size Tiger View</h1>
+      <div style="flex-grow: 1;">
+        <h1 class="headline">Super Size Tiger View</h1>
+        <div id="review-info" style="display: none;">
+          <span>Showing breakdown for:</span>
+          <a id="review-text" target="_blank"></a>
+        </div>
+      </div>
       <a title="Download the &quot;before&quot; .size file" id="before-anchor" download="before_size.size" style="display:none">
         <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" class="download-button">
           <path

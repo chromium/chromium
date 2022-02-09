@@ -72,12 +72,13 @@ body {
 }
 
 .headline {
-  margin: 0;
-  font-family: "Google Sans", Arial, sans-serif;
-  font-weight: normal;
   color: #202124;
-  font-size: 22px;
   flex: 1;
+  font-family: "Google Sans", Arial, sans-serif;
+  font-size: 22px;
+  font-weight: normal;
+  line-height: 34px;
+  margin: 0;
 }
 .subtitle {
   font-weight: 500;
@@ -280,4 +281,14 @@ ul {
 
 #metadata-content:not(.active) {
   display: none;
+}
+
+#review-info{
+  font-size: 13px;
+}
+
+#review-text {
+  color: #0000d1;
+  text-decoration: none;
+  white-space: pre;
 }

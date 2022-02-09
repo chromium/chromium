@@ -472,6 +472,29 @@ const newTreeElement = (() => {
     }
     setMetadataContent(metadata);
     _metadataView.classList.toggle('active', true);
+    setReviewInfo(metadata);
+  }
+
+  /**
+   * Sets the review URL and title from message to the HTML element.
+   * @param {MetadataType} metadata
+   */
+  function setReviewInfo(metadata) {
+    const processReviewInfo = (field) => {
+      const reviewTextElement = document.getElementById('review-text');
+      const reviewInfoElement = document.getElementById('review-info');
+      const urlExists = Boolean(
+          field?.hasOwnProperty('url') && field?.hasOwnProperty('title'));
+      if (urlExists) {
+        reviewTextElement.href = field['url'];
+        reviewTextElement.textContent = field['title'];
+      }
+      reviewInfoElement.style.display = urlExists ? '' : 'none';
+    };
+    const sizeFile = metadata['size_file'];
+    if (sizeFile?.hasOwnProperty('build_config')) {
+      processReviewInfo(sizeFile['build_config'])
+    }
   }
 
   /**
