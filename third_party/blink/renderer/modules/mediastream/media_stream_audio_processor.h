@@ -130,8 +130,6 @@ class MODULES_EXPORT MediaStreamAudioProcessor
   // TODO(webrtc:5298): |has_remote_tracks| is no longer used, remove it.
   AudioProcessorStatistics GetStats(bool has_remote_tracks) override;
 
-  void SendLogMessage(const std::string& message);
-
   // Handles audio processing, rebuffering, and input/output formatting.
   media::AudioProcessor audio_processor_;
 

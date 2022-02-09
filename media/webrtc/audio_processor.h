@@ -55,7 +55,7 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
                                    base::TimeTicks audio_capture_time,
                                    absl::optional<double> new_volume)>;
 
-  using LogCallback = base::RepeatingCallback<void(const std::string&)>;
+  using LogCallback = base::RepeatingCallback<void(base::StringPiece)>;
 
   // |deliver_processed_audio_callback| is used to deliver frames of processed
   // capture audio, from ProcessCapturedAudio(), and has to be valid for as long

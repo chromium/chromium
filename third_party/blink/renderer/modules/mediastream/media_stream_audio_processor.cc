@@ -16,9 +16,15 @@
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/aec_dump_agent_impl.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+namespace {
+void WebRtcLogStringPiece(base::StringPiece message) {
+  WebRtcLogMessage(std::string{message});
+}
+}  // namespace
+
 // Subscribes a sink to the playout data source for the duration of the
 // PlayoutListener lifetime.
 class MediaStreamAudioProcessor::PlayoutListener {
@@ -46,8 +52,7 @@ MediaStreamAudioProcessor::MediaStreamAudioProcessor(
     scoped_refptr<WebRtcAudioDeviceImpl> playout_data_source)
     : audio_processor_(std::move(deliver_processed_audio_callback),
                        /*log_callback=*/
-                       ConvertToBaseRepeatingCallback(
-                           CrossThreadBindRepeating(&WebRtcLogMessage)),
+                       WTF::BindRepeating(&WebRtcLogStringPiece),
                        settings,
                        capture_data_source_params,
                        media::AudioProcessor::GetDefaultOutputFormat(

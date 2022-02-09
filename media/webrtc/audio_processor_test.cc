@@ -55,7 +55,7 @@ using MockProcessedCaptureCallback =
 
 AudioProcessor::LogCallback LogCallbackForTesting() {
   return base::BindRepeating(
-      [](const std::string& message) { VLOG(1) << (message); });
+      [](base::StringPiece message) { VLOG(1) << (message); });
 }
 
 // The number of packets used for testing.
