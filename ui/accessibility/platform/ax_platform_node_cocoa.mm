@@ -880,6 +880,9 @@ bool IsAXSetter(SEL selector) {
     ]];
   }
 
+  if (_node->HasStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts))
+    [axAttributes addObject:NSAccessibilityKeyShortcutsValueAttribute];
+
   return axAttributes.autorelease();
 }
 
@@ -1190,6 +1193,12 @@ bool IsAXSetter(SEL selector) {
   if (![self instanceActive])
     return nil;
   return @(_node->HasState(ax::mojom::State::kMultiselectable));
+}
+
+- (NSString*)AXKeyShortcutsValue {
+  if (![self instanceActive])
+    return nil;
+  return [self getStringAttribute:ax::mojom::StringAttribute::kKeyShortcuts];
 }
 
 - (id)AXOwns {

@@ -246,12 +246,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXInvalid) {
   RunTypedTest<kMacAttributes>("ax-invalid.html");
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathBase) {
-  RunTypedTest<kMacAttributes>("ax-math-base.html");
-}
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXIsMultiSelectable) {
   RunTypedTest<kMacAttributes>("ax-is-multi-selectable.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXKeyShortcutsValue) {
+  RunTypedTest<kMacAttributes>("ax-key-shortcuts-value.html");
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathBase) {
+  RunTypedTest<kMacAttributes>("ax-math-base.html");
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXMathFractionDenominator) {

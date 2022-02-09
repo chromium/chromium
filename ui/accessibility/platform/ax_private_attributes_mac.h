@@ -63,6 +63,8 @@ AX_EXPORT constexpr NSString* const NSAccessibilityInvalidAttribute =
     @"AXInvalid";
 AX_EXPORT constexpr NSString* const NSAccessibilityIsMultiSelectable =
     @"AXIsMultiSelectable";
+AX_EXPORT constexpr NSString* const NSAccessibilityKeyShortcutsValueAttribute =
+    @"AXKeyShortcutsValue";
 AX_EXPORT constexpr NSString* const
     NSAccessibilityMathFractionNumeratorAttribute = @"AXMathFractionNumerator";
 AX_EXPORT constexpr NSString* const
