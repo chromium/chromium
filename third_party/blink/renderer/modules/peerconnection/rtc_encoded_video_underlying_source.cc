@@ -53,7 +53,7 @@ void RTCEncodedVideoUnderlyingSource::OnFrameFromSource(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // If the source is canceled or there are too many queued frames,
   // drop the new frame.
-  if (!disconnect_callback_ || !Controller()) {
+  if (!disconnect_callback_ || !GetExecutionContext()) {
     return;
   }
   if (Controller()->DesiredSize() <= kMinQueueDesiredSize) {

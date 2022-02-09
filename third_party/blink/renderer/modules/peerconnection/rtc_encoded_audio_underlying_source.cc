@@ -61,7 +61,7 @@ void RTCEncodedAudioUnderlyingSource::OnFrameFromSource(
   DCHECK(task_runner_->BelongsToCurrentThread());
   // If the source is canceled or there are too many queued frames,
   // drop the new frame.
-  if (!disconnect_callback_ || !Controller()) {
+  if (!disconnect_callback_ || !GetExecutionContext()) {
     return;
   }
   if (Controller()->DesiredSize() <= kMinQueueDesiredSize) {

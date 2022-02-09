@@ -402,8 +402,7 @@ void BodyStreamBuffer::Trace(Visitor* visitor) const {
 }
 
 void BodyStreamBuffer::Abort() {
-  if (!Controller()) {
-    DCHECK(!GetExecutionContext());
+  if (!GetExecutionContext()) {
     DCHECK(!consumer_);
     return;
   }
