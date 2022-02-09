@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/singleton.h"
 #include "components/exo/wm_helper.h"
+#include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -222,6 +223,10 @@ aura::Window* WMHelperChromeOS::GetRootWindowForNewWindows() const {
 
 aura::client::CursorClient* WMHelperChromeOS::GetCursorClient() {
   return aura::client::GetCursorClient(ash::Shell::GetPrimaryRootWindow());
+}
+
+aura::client::DragDropClient* WMHelperChromeOS::GetDragDropClient() {
+  return aura::client::GetDragDropClient(ash::Shell::GetPrimaryRootWindow());
 }
 
 void WMHelperChromeOS::AddPreTargetHandler(ui::EventHandler* handler) {

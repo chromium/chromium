@@ -70,6 +70,7 @@ class WMHelperTester : public WMHelper, public VSyncTimingManager::Delegate {
     return root_window_;
   }
   aura::client::CursorClient* GetCursorClient() override { return nullptr; }
+  aura::client::DragDropClient* GetDragDropClient() override { return nullptr; }
   void AddPreTargetHandler(ui::EventHandler* handler) override {}
   void PrependPreTargetHandler(ui::EventHandler* handler) override {}
   void RemovePreTargetHandler(ui::EventHandler* handler) override {}

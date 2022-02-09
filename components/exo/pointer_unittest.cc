@@ -45,10 +45,30 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "ash/drag_drop/drag_drop_controller.h"
+#include "base/test/bind.h"
+#include "ui/aura/client/drag_drop_client.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/events/test/events_test_utils.h"
 #endif
+
+using ::testing::_;
+using ::testing::AnyNumber;
 
 namespace exo {
 namespace {
+
+void DispatchGesture(ui::EventType gesture_type, gfx::Point location) {
+  ui::GestureEventDetails event_details(gesture_type);
+  ui::GestureEvent gesture_event(location.x(), location.y(), 0,
+                                 ui::EventTimeForNow(), event_details);
+  ui::EventSource* event_source =
+      ash::Shell::GetPrimaryRootWindow()->GetHost()->GetEventSource();
+  ui::EventSourceTestApi event_source_test(event_source);
+  ui::EventDispatchDetails details =
+      event_source_test.SendEventToSink(&gesture_event);
+  CHECK(!details.dispatcher_destroyed);
+}
 
 class MockPointerDelegate : public PointerDelegate {
  public:
@@ -1043,6 +1063,104 @@ TEST_F(PointerTest, DragDropAbort) {
   EXPECT_CALL(pointer_delegate, OnPointerDestroying(pointer.get()));
   pointer.reset();
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(PointerTest, DragDropAndPointerEnterLeaveEvents) {
+  Seat seat(std::make_unique<TestDataExchangeDelegate>());
+  MockPointerDelegate pointer_delegate;
+  std::unique_ptr<Pointer> pointer(new Pointer(&pointer_delegate, &seat));
+  TestDataSourceDelegate data_source_delegate;
+  DataSource source(&data_source_delegate);
+  Surface origin;
+
+  // Make origin into a real window so the pointer can click it
+  ShellSurface shell_surface(&origin);
+  Buffer buffer(exo_test_helper()->CreateGpuMemoryBuffer(gfx::Size(10, 10)));
+  origin.Attach(&buffer);
+  origin.Commit();
+
+  ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
+
+  EXPECT_CALL(pointer_delegate, CanAcceptPointerEventsForSurface(&origin))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(pointer_delegate, OnPointerFrame()).Times(AnyNumber());
+  EXPECT_CALL(pointer_delegate, OnPointerEnter(&origin, gfx::PointF(), 0));
+  generator.MoveMouseTo(origin.window()->GetBoundsInScreen().origin());
+
+  auto* drag_drop_controller = static_cast<ash::DragDropController*>(
+      aura::client::GetDragDropClient(ash::Shell::GetPrimaryRootWindow()));
+  ASSERT_TRUE(drag_drop_controller);
+
+  generator.PressLeftButton();
+  seat.StartDrag(&source, &origin, /*icon=*/nullptr,
+                 ui::mojom::DragEventSource::kMouse);
+  EXPECT_TRUE(seat.get_drag_drop_operation_for_testing());
+
+  // As soon as the runloop gets triggered, emit a mouse release event.
+  drag_drop_controller->SetLoopClosureForTesting(
+      base::BindLambdaForTesting([&]() {
+        EXPECT_CALL(pointer_delegate, OnPointerEnter(_, _, _));
+        generator.ReleaseLeftButton();
+      }),
+      base::DoNothing());
+
+  EXPECT_CALL(pointer_delegate, OnPointerLeave(_));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_CALL(pointer_delegate, OnPointerDestroying(pointer.get()));
+  pointer.reset();
+}
+
+TEST_F(PointerTest, DragDropAndPointerEnterLeaveEvents_NoOpOnTouchDrag) {
+  Seat seat(std::make_unique<TestDataExchangeDelegate>());
+  MockPointerDelegate pointer_delegate;
+  std::unique_ptr<Pointer> pointer(new Pointer(&pointer_delegate, &seat));
+  TestDataSourceDelegate data_source_delegate;
+  DataSource source(&data_source_delegate);
+  Surface origin;
+
+  // Make origin into a real window so the pointer can click it
+  ShellSurface shell_surface(&origin);
+  Buffer buffer(exo_test_helper()->CreateGpuMemoryBuffer(gfx::Size(10, 10)));
+  origin.Attach(&buffer);
+  origin.Commit();
+
+  ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
+
+  EXPECT_CALL(pointer_delegate, CanAcceptPointerEventsForSurface(&origin))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(pointer_delegate, OnPointerFrame()).Times(AnyNumber());
+  EXPECT_CALL(pointer_delegate, OnPointerEnter(&origin, gfx::PointF(), 0));
+  generator.MoveMouseTo(origin.window()->GetBoundsInScreen().origin());
+
+  auto* drag_drop_controller = static_cast<ash::DragDropController*>(
+      aura::client::GetDragDropClient(ash::Shell::GetPrimaryRootWindow()));
+  ASSERT_TRUE(drag_drop_controller);
+
+  seat.StartDrag(&source, &origin, /*icon=*/nullptr,
+                 ui::mojom::DragEventSource::kTouch);
+  EXPECT_TRUE(seat.get_drag_drop_operation_for_testing());
+
+  // Initiate the gesture sequence.
+  DispatchGesture(ui::ET_GESTURE_BEGIN, gfx::Point(10, 10));
+
+  // As soon as the runloop gets triggered, emit a mouse release event.
+  drag_drop_controller->SetLoopClosureForTesting(
+      base::BindLambdaForTesting([&]() {
+        EXPECT_CALL(pointer_delegate, OnPointerEnter(_, _, _)).Times(0);
+        // generator.ReleaseLeftButton();
+        generator.set_current_screen_location(gfx::Point(10, 10));
+        generator.PressMoveAndReleaseTouchBy(50, 50);
+      }),
+      base::DoNothing());
+
+  EXPECT_CALL(pointer_delegate, OnPointerLeave(_)).Times(0);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_CALL(pointer_delegate, OnPointerDestroying(pointer.get()));
+  pointer.reset();
+}
+#endif
 
 TEST_F(PointerTest, OnPointerRelativeMotion) {
   auto surface = std::make_unique<Surface>();

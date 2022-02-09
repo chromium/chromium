@@ -90,6 +90,7 @@ class CastWMHelper : public WMHelper, public VSyncTimingManager::Delegate {
   aura::Window* GetFocusedWindow() const override;
   aura::Window* GetRootWindowForNewWindows() const override;
   aura::client::CursorClient* GetCursorClient() override;
+  aura::client::DragDropClient* GetDragDropClient() override;
   void AddPreTargetHandler(ui::EventHandler* handler) override;
   void PrependPreTargetHandler(ui::EventHandler* handler) override;
   void RemovePreTargetHandler(ui::EventHandler* handler) override;

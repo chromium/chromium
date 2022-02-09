@@ -19,6 +19,7 @@ class Window;
 namespace client {
 class CaptureClient;
 class CursorClient;
+class DragDropClient;
 class FocusChangeObserver;
 }  // namespace client
 }  // namespace aura
@@ -153,6 +154,7 @@ class WMHelper : public aura::client::DragDropDelegate {
   virtual aura::Window* GetFocusedWindow() const = 0;
   virtual aura::Window* GetRootWindowForNewWindows() const = 0;
   virtual aura::client::CursorClient* GetCursorClient() = 0;
+  virtual aura::client::DragDropClient* GetDragDropClient() = 0;
   virtual void AddPreTargetHandler(ui::EventHandler* handler) = 0;
   virtual void PrependPreTargetHandler(ui::EventHandler* handler) = 0;
   virtual void RemovePreTargetHandler(ui::EventHandler* handler) = 0;

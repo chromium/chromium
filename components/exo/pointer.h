@@ -15,6 +15,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/client/cursor_client_observer.h"
+#include "ui/aura/client/drag_drop_client_observer.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
@@ -48,6 +49,7 @@ class SurfaceTreeHost;
 class Pointer : public SurfaceTreeHost,
                 public SurfaceObserver,
                 public ui::EventHandler,
+                public aura::client::DragDropClientObserver,
                 public aura::client::CursorClientObserver,
                 public aura::client::FocusChangeObserver {
  public:
@@ -84,6 +86,10 @@ class Pointer : public SurfaceTreeHost,
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnScrollEvent(ui::ScrollEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
+
+  // aura::client::DragDropClientObserver:
+  void OnDragStarted() override;
+  void OnDragCompleted(const ui::DropTargetEvent& event) override;
 
   // Overridden from aura::client::CursorClientObserver:
   void OnCursorSizeChanged(ui::CursorSize cursor_size) override;

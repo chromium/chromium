@@ -26,6 +26,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/cursor_client.h"
+#include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/cursor/cursor_util.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -46,8 +47,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/wm/window_util.h"
 #endif
 
 namespace exo {
@@ -126,6 +129,10 @@ Pointer::Pointer(PointerDelegate* delegate, Seat* seat)
   if (cursor_client)
     cursor_client->AddObserver(this);
   helper->AddFocusObserver(this);
+
+  auto* drag_drop_client = helper->GetDragDropClient();
+  if (drag_drop_client)
+    drag_drop_client->AddObserver(this);
 }
 
 Pointer::~Pointer() {
@@ -158,6 +165,10 @@ Pointer::~Pointer() {
   if (root_surface())
     root_surface()->RemoveSurfaceObserver(this);
   helper->RemoveFocusObserver(this);
+
+  auto* drag_drop_client = helper->GetDragDropClient();
+  if (drag_drop_client)
+    drag_drop_client->RemoveObserver(this);
 }
 
 void Pointer::SetCursor(Surface* surface, const gfx::Point& hotspot) {
@@ -687,6 +698,41 @@ void Pointer::OnGestureEvent(ui::GestureEvent* event) {
     event->SetHandled();
     event->StopPropagation();
   }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// aura::client::DragDropClientObserver overrides:
+void Pointer::OnDragStarted() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Drag 'n drop operations driven by sources different than pointer/mouse
+  // should have not effect here.
+  WMHelper* helper = WMHelper::GetInstance();
+  if (auto* drag_drop_client = helper->GetDragDropClient()) {
+    if (static_cast<ash::DragDropController*>(drag_drop_client)
+            ->event_source() != ui::mojom::DragEventSource::kMouse)
+      return;
+  }
+
+  SetFocus(nullptr, gfx::PointF(), 0);
+#endif
+}
+
+void Pointer::OnDragCompleted(const ui::DropTargetEvent& event) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Drag 'n drop operations driven by sources different than pointer/mouse
+  // should have not effect here.
+  WMHelper* helper = WMHelper::GetInstance();
+  if (auto* drag_drop_client = helper->GetDragDropClient()) {
+    if (static_cast<ash::DragDropController*>(drag_drop_client)
+            ->event_source() != ui::mojom::DragEventSource::kMouse)
+      return;
+  }
+
+  auto* target_window = ash::window_util::GetEventHandlerForEvent(event);
+  auto* surface = Surface::AsSurface(target_window);
+  if (surface)
+    SetFocus(surface, event.location_f(), /*button_flags=*/0);
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////

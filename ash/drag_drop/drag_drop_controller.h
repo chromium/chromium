@@ -82,6 +82,10 @@ class ASH_EXPORT DragDropController : public aura::client::DragDropClient,
   void SetDragImage(const gfx::ImageSkia& image,
                     const gfx::Vector2d& image_offset);
 
+  ui::mojom::DragEventSource event_source() {
+    return current_drag_event_source_;
+  }
+
   // Sets the `closure` that will be executed as a replacement of
   // inner event loop. A test can use this closure to generate events, or
   // take other actions that should happen during the drag and drop, and
