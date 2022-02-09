@@ -221,6 +221,23 @@ SupportedResolutionRangeMap GetSupportedD3D11VideoDecoderResolutions(
           DXGI_FORMAT_NV12, kMinVp8Resolution);
       continue;
     }
+
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+    if (!workarounds.disable_accelerated_hevc_decode &&
+        base::FeatureList::IsEnabled(kD3D11HEVCDecoding)) {
+      if (profile_id == D3D11_DECODER_PROFILE_HEVC_VLD_MAIN) {
+        supported_resolutions[HEVCPROFILE_MAIN] = GetResolutionsForGUID(
+            video_device.Get(), profile_id, kModernResolutions);
+        continue;
+      }
+      if (profile_id == D3D11_DECODER_PROFILE_HEVC_VLD_MAIN10) {
+        supported_resolutions[HEVCPROFILE_MAIN10] =
+            GetResolutionsForGUID(video_device.Get(), profile_id,
+                                  kModernResolutions, DXGI_FORMAT_P010);
+        continue;
+      }
+    }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
   }
 
   return supported_resolutions;
