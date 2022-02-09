@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
@@ -17,6 +18,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/proto/sct_audit_report.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -52,6 +54,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
   SCTAuditingReporter(
       net::HashValue reporter_key,
       std::unique_ptr<sct_auditing::SCTClientReport> report,
+      bool is_hashdance,
+      absl::optional<std::string> leaf_hash,
       mojom::URLLoaderFactory* url_loader_factory,
       const GURL& report_uri,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
@@ -70,6 +74,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
   net::HashValue key() { return reporter_key_; }
   sct_auditing::SCTClientReport* report() { return report_.get(); }
   net::BackoffEntry* backoff_entry() { return backoff_entry_.get(); }
+  absl::optional<std::string> leaf_hash() { return leaf_hash_; }
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -83,11 +88,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
   static void SetRetryDelayForTesting(absl::optional<base::TimeDelta> delay);
 
  private:
+  void ScheduleRequestWithBackoff(base::OnceClosure request);
+  void SendLookupQuery();
   void SendReport();
   void OnSendReportComplete(scoped_refptr<net::HttpResponseHeaders> headers);
 
   net::HashValue reporter_key_;
   std::unique_ptr<sct_auditing::SCTClientReport> report_;
+  bool is_hashdance_;
+  // If |is_hashdance_| is true, |leaf_hash_| will contain the Merkle tree leaf
+  // hash for a randomly selected SCT from the report.
+  absl::optional<std::string> leaf_hash_;
   mojo::Remote<mojom::URLLoaderFactory> url_loader_factory_remote_;
   std::unique_ptr<SimpleURLLoader> url_loader_;
   net::NetworkTrafficAnnotationTag traffic_annotation_;
