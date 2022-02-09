@@ -26,12 +26,11 @@ const STATUS_TEXT_KEY_MAP = {
 };
 
 /** @type {!Object<!UpdateRoFirmwareStatus, string>} */
-const STATUS_ICON_MAP = {
-  // TODO(gavinwill): Replace with actual illustrations.
-  [UpdateRoFirmwareStatus.kWaitUsb]: 'shimless:insert-firmware',
+const STATUS_IMG_MAP = {
+  [UpdateRoFirmwareStatus.kWaitUsb]: 'insert_usb',
   [UpdateRoFirmwareStatus.kFileNotFound]: '',
-  [UpdateRoFirmwareStatus.kRebooting]: 'shimless:shimless-placeholder',
-  [UpdateRoFirmwareStatus.kComplete]: 'shimless:shimless-placeholder',
+  [UpdateRoFirmwareStatus.kRebooting]: 'downloading',
+  [UpdateRoFirmwareStatus.kComplete]: 'downloading',
 };
 
 /**
@@ -142,8 +141,8 @@ export class UpdateRoFirmwarePage extends UpdateRoFirmwarePageBase {
    * @return {string}
    * @protected
    */
-  getIcon_() {
-    return STATUS_ICON_MAP[this.status_];
+  getImgSrc_() {
+    return `illustrations/${STATUS_IMG_MAP[this.status_]}.svg`;
   }
 }
 

@@ -54,6 +54,10 @@ generate_grd("build_grd") {
     "fake_shimless_rma_service.js",
     "index.html",
     "mojo_interface_provider.js",
+    "illustrations/downloading.svg",
+    "illustrations/insert_usb.svg",
+    "illustrations/repair_start.svg",
+    "illustrations/update_os.svg",
     "png/diagnostics_app_icon_192.png",
     "shimless_rma_types.js",
   ]
