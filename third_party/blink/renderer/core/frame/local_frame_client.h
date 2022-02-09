@@ -37,7 +37,6 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
-#include "services/network/public/mojom/ip_address_space.mojom-blink-forward.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
@@ -169,7 +168,6 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       base::TimeTicks input_start_time,
       const String& href_translate,
       const absl::optional<WebImpression>& impression,
-      network::mojom::IPAddressSpace,
       const LocalFrameToken* initiator_frame_token,
       std::unique_ptr<SourceLocation> source_location,
       mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>

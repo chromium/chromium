@@ -288,7 +288,6 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
       base::TimeTicks,
       const String&,
       const absl::optional<WebImpression>&,
-      network::mojom::IPAddressSpace,
       const LocalFrameToken* initiator_frame_token,
       std::unique_ptr<SourceLocation>,
       mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>)

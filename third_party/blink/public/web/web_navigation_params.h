@@ -151,10 +151,6 @@ struct BLINK_EXPORT WebNavigationInfo {
   // measurement attributes.
   absl::optional<WebImpression> impression;
 
-  // The navigation initiator's address space.
-  network::mojom::IPAddressSpace initiator_address_space =
-      network::mojom::IPAddressSpace::kUnknown;
-
   // The frame policy specified by the frame owner element.
   // For top-level window with no opener, this is the default lax FramePolicy.
   // This attribute is used for the synchronous re-navigation to about:blank

@@ -505,7 +505,6 @@ void LocalFrameClientImpl::BeginNavigation(
     base::TimeTicks input_start_time,
     const String& href_translate,
     const absl::optional<WebImpression>& impression,
-    network::mojom::IPAddressSpace initiator_address_space,
     const LocalFrameToken* initiator_frame_token,
     std::unique_ptr<SourceLocation> source_location,
     mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>
@@ -554,7 +553,6 @@ void LocalFrameClientImpl::BeginNavigation(
     // |initiator_policy_container_keep_alive_handle| if |origin_window| is not
     // set.
   }
-  navigation_info->initiator_address_space = initiator_address_space;
 
   navigation_info->impression = impression;
 

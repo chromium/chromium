@@ -805,10 +805,6 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
                                     request.GetNavigationPolicy());
   }
 
-  const network::mojom::IPAddressSpace initiator_address_space =
-      origin_window ? origin_window->AddressSpace()
-                    : network::mojom::IPAddressSpace::kUnknown;
-
   // TODO(crbug.com/896041): Instead of just bypassing the CSP for navigations
   // from isolated world, ideally we should enforce the isolated world CSP by
   // plumbing the correct CSP to the browser.
@@ -841,8 +837,8 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
       request.GetTriggeringEventInfo(), request.Form(),
       should_check_main_world_csp, request.GetBlobURLToken(),
       request.GetInputStartTime(), request.HrefTranslate().GetString(),
-      request.Impression(), initiator_address_space,
-      request.GetInitiatorFrameToken(), request.TakeSourceLocation(),
+      request.Impression(), request.GetInitiatorFrameToken(),
+      request.TakeSourceLocation(),
       request.TakeInitiatorPolicyContainerKeepAliveHandle());
 }
 
