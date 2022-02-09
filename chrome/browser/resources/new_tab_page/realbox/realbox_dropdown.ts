@@ -18,6 +18,7 @@ import {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerIn
 import {decodeString16} from '../utils.js';
 
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
+import {getTemplate} from './realbox_dropdown.html.js';
 
 export interface RealboxDropdownElement {
   $: {
@@ -31,6 +32,10 @@ export interface RealboxDropdownElement {
 export class RealboxDropdownElement extends PolymerElement {
   static get is() {
     return 'ntp-realbox-dropdown';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -357,10 +362,6 @@ export class RealboxDropdownElement extends PolymerElement {
             this.result.suggestionGroupsMap[groupId].hideGroupA11yLabel) :
         decodeString16(
             this.result.suggestionGroupsMap[groupId].showGroupA11yLabel);
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

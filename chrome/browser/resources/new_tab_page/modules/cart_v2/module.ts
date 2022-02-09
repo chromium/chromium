@@ -19,6 +19,8 @@ import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
 import {ChromeCartProxy} from '../cart/chrome_cart_proxy.js';
 import {ModuleDescriptorV2, ModuleHeight} from '../module_descriptor.js';
 
+import {getTemplate} from './module.html.js';
+
 interface ChromeCartModuleElement {
   $: {
     cartActionMenu: CrActionMenuElement,
@@ -37,6 +39,10 @@ class ChromeCartModuleElement extends I18nMixin
 (PolymerElement) {
   static get is() {
     return 'ntp-modules-redesigned';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -333,10 +339,6 @@ class ChromeCartModuleElement extends I18nMixin
 
   private onConfirmDiscountConsentClick_() {
     this.$.confirmDiscountConsentToast.hide();
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

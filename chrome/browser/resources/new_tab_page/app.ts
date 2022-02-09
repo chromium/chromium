@@ -16,6 +16,7 @@ import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_man
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './app.html.js';
 
 import {BackgroundManager} from './background_manager.js';
 import {CustomizeDialogPage} from './customize_dialog_types.js';
@@ -83,6 +84,10 @@ class AppElement extends I18nMixin
 (PolymerElement) {
   static get is() {
     return 'ntp-app';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -691,10 +696,6 @@ class AppElement extends I18nMixin
       }
     }
     recordClick(NtpElement.kOther);
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

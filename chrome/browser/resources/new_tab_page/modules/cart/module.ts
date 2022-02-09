@@ -20,6 +20,7 @@ import {recordOccurence} from '../../metrics_utils.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 
 import {ChromeCartProxy} from './chrome_cart_proxy.js';
+import {getTemplate} from './module.html.js';
 
 interface ChromeCartModuleElement {
   $: {
@@ -39,6 +40,10 @@ class ChromeCartModuleElement extends I18nMixin
 (PolymerElement) {
   static get is() {
     return 'ntp-chrome-cart-module';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -380,10 +385,6 @@ class ChromeCartModuleElement extends I18nMixin
     const index = e.model.index;
     ChromeCartProxy.getHandler().prepareForNavigation(
         this.cartItems[index].cartUrl, /*isNavigating=*/ false);
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

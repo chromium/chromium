@@ -6,14 +6,14 @@ import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 import("./new_tab_page.gni")
 
-html_to_js("web_components") {
-  js_files = web_component_files
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files
 }
 
 grd_prefix = "new_tab_page"
@@ -27,15 +27,15 @@ preprocess_if_expr("preprocess") {
   defines = [ "is_official_build=$is_official_build" ]
   in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = non_web_component_files
+  in_files = ts_files
 }
 
 preprocess_if_expr("preprocess_gen") {
-  deps = [ ":web_components" ]
+  deps = [ ":html_wrapper_files" ]
   defines = [ "is_official_build=$is_official_build" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = web_component_files
+  in_files = html_wrapper_files
 }
 
 # Copy all Mojom generated JS files used by the NTP to a common location so that
@@ -193,7 +193,7 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   composite = true
   tsconfig_base = "tsconfig_base.json"
-  in_files = web_component_files + non_web_component_files + mojo_js_files
+  in_files = ts_files + html_wrapper_files + mojo_js_files
 
   deps = [
     "//third_party/polymer/v3_0:library",

@@ -15,6 +15,7 @@ import {InfoDialogElement} from '../info_dialog.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 
 import {DriveProxy} from './drive_module_proxy.js';
+import {getTemplate} from './module.html.js';
 
 interface DriveModuleElement {
   $: {
@@ -30,6 +31,10 @@ class DriveModuleElement extends I18nMixin
 (PolymerElement) {
   static get is() {
     return 'ntp-drive-module';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -79,10 +84,6 @@ class DriveModuleElement extends I18nMixin
     this.dispatchEvent(new Event('usage', {bubbles: true, composed: true}));
     const index = e.model.index;
     chrome.metricsPrivate.recordSmallCount('NewTabPage.Drive.FileClick', index);
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

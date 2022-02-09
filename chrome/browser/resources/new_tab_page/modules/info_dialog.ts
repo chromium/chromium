@@ -10,6 +10,8 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {I18nMixin} from '../i18n_setup.js';
 
+import {getTemplate} from './info_dialog.html.js';
+
 export interface InfoDialogElement {
   $: {
     dialog: CrDialogElement,
@@ -23,16 +25,16 @@ export class InfoDialogElement extends I18nMixin
     return 'ntp-info-dialog';
   }
 
+  static get template() {
+    return getTemplate();
+  }
+
   showModal() {
     this.$.dialog.showModal();
   }
 
   private onCloseClick_() {
     this.$.dialog.close();
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

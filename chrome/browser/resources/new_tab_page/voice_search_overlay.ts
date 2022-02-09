@@ -12,6 +12,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {I18nMixin, loadTimeData} from './i18n_setup.js';
 import {PageHandlerRemote} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
+import {getTemplate} from './voice_search_overlay.html.js';
 import {WindowProxy} from './window_proxy.js';
 
 /**
@@ -183,6 +184,10 @@ class VoiceSearchOverlayElement extends I18nMixin
 (PolymerElement) {
   static get is() {
     return 'ntp-voice-search-overlay';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -539,10 +544,6 @@ class VoiceSearchOverlayElement extends I18nMixin
       default:
         return '';
     }
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

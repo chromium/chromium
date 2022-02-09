@@ -16,6 +16,7 @@ import {decodeString16, mojoTimeTicks} from '../utils.js';
 
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 import {RealboxIconElement} from './realbox_icon.js';
+import {getTemplate} from './realbox_match.html.js';
 // clang-format off
 
 /**
@@ -46,6 +47,10 @@ export interface RealboxMatchElement {
 export class RealboxMatchElement extends PolymerElement {
   static get is() {
     return 'ntp-realbox-match';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -358,10 +363,6 @@ export class RealboxMatchElement extends PolymerElement {
           container.appendChild(currentElement);
           return container;
         }, document.createElement('span'));
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

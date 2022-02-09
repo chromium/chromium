@@ -14,6 +14,7 @@ import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
 import {ModuleDescriptorV2, ModuleHeight} from '../module_descriptor.js';
 
 import {FooProxy} from './foo_proxy.js';
+import {getTemplate} from './module.html.js';
 
 /**
  * A dummy module, which serves as an example and a helper to build out the NTP
@@ -23,6 +24,10 @@ class DummyModuleElement extends I18nMixin
 (PolymerElement) {
   static get is() {
     return 'ntp-dummy-module';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -55,10 +60,6 @@ class DummyModuleElement extends I18nMixin
             loadTimeData.getString('modulesDummyLower')),
       },
     }));
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

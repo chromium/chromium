@@ -15,6 +15,7 @@ import {I18nMixin, loadTimeData} from '../i18n_setup.js';
 import {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface, SearchBoxTheme} from '../realbox.mojom-webui.js';
 import {decodeString16, mojoString16, mojoTimeDelta} from '../utils.js';
 
+import {getTemplate} from './realbox.html.js';
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 import {RealboxDropdownElement} from './realbox_dropdown.js';
 import {AutocompleteMatchWithImageData, RealboxIconElement} from './realbox_icon.js';
@@ -45,6 +46,10 @@ export class RealboxElement extends I18nMixin
 (PolymerElement) {
   static get is() {
     return 'ntp-realbox';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -718,10 +723,6 @@ export class RealboxElement extends I18nMixin
     this.isDeletingInput_ = lastInputValue.length > newInputValue.length &&
         lastInputValue.startsWith(newInputValue);
     this.lastInput_ = newInput;
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

@@ -17,6 +17,7 @@ import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 import {ModuleHeight} from './module_descriptor.js';
 import {ModuleRegistry} from './module_registry.js';
 import {ModuleWrapperElement} from './module_wrapper.js';
+import {getTemplate} from './modules.html.js';
 
 
 type DismissModuleEvent =
@@ -41,6 +42,10 @@ export class ModulesElement extends I18nMixin
 (PolymerElement) {
   static get is() {
     return 'ntp-modules';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -412,10 +417,6 @@ export class ModulesElement extends I18nMixin
               moduleWrapper => moduleWrapper.module.descriptor.id);
       NewTabPageProxy.getInstance().handler.setModulesOrder(moduleIds);
     }, {once: true});
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

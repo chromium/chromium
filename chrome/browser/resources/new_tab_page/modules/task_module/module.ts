@@ -15,6 +15,7 @@ import {RelatedSearch, Task, TaskItem, TaskModuleType} from '../../task_module.m
 import {InfoDialogElement} from '../info_dialog.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 
+import {getTemplate} from './module.html.js';
 import {TaskModuleHandlerProxy} from './task_module_handler_proxy.js';
 
 interface TaskModuleElement {
@@ -32,6 +33,10 @@ class TaskModuleElement extends I18nMixin
 (PolymerElement) {
   static get is() {
     return 'ntp-task-module';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -190,10 +195,6 @@ class TaskModuleElement extends I18nMixin
     }
     this.shadowRoot!.querySelectorAll('.task-item, .pill')
         .forEach(el => this.intersectionObserver_!.observe(el));
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

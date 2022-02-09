@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './mini_page.html.js';
 
 /** Element used to display a stylized NTP image. */
 class MiniPageElement extends PolymerElement {
@@ -11,7 +12,7 @@ class MiniPageElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 }
 

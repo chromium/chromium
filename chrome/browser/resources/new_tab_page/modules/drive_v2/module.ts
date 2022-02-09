@@ -14,6 +14,8 @@ import {DriveProxy} from '../drive/drive_module_proxy.js';
 import {InfoDialogElement} from '../info_dialog.js';
 import {ModuleDescriptorV2, ModuleHeight} from '../module_descriptor.js';
 
+import {getTemplate} from './module.html.js';
+
 interface DriveModuleElement {
   $: {
     infoDialogRender: CrLazyRenderElement<InfoDialogElement>,
@@ -28,6 +30,10 @@ class DriveModuleElement extends I18nMixin
 (PolymerElement) {
   static get is() {
     return 'ntp-drive-module-redesigned';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -64,10 +70,6 @@ class DriveModuleElement extends I18nMixin
 
   private onInfoButtonClick_() {
     this.$.infoDialogRender.get().showModal();
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

@@ -6,6 +6,8 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {AutocompleteMatch} from '../realbox.mojom-webui.js';
 
+import {getTemplate} from './realbox_icon.html.js';
+
 const DOCUMENT_MATCH_TYPE: string = 'document';
 
 export type AutocompleteMatchWithImageData =
@@ -24,6 +26,10 @@ export interface RealboxIconElement {
 export class RealboxIconElement extends PolymerElement {
   static get is() {
     return 'ntp-realbox-icon';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -162,10 +168,6 @@ export class RealboxIconElement extends PolymerElement {
         // .25 opacity matching c/b/u/views/omnibox/omnibox_match_cell_view.cc.
         `${imageDominantColor}40` :
         '';
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

@@ -11,6 +11,7 @@ import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialo
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './doodle_share_dialog.html.js';
 
 import {I18nMixin} from './i18n_setup.js';
 import {DoodleShareChannel} from './new_tab_page.mojom-webui.js';
@@ -33,6 +34,10 @@ class DoodleShareDialogElement extends I18nMixin
 (PolymerElement) {
   static get is() {
     return 'ntp-doodle-share-dialog';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -83,10 +88,6 @@ class DoodleShareDialogElement extends I18nMixin
 
   private notifyShare_(channel: DoodleShareChannel) {
     this.dispatchEvent(new CustomEvent('share', {detail: channel}));
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

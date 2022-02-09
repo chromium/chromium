@@ -11,10 +11,16 @@ import {TaskItem, TaskModuleType} from '../../task_module.mojom-webui.js';
 import {ModuleDescriptorV2, ModuleHeight} from '../module_descriptor.js';
 import {TaskModuleHandlerProxy} from '../task_module/task_module_handler_proxy.js';
 
+import {getTemplate} from './module.html.js';
+
 class RecipeModuleElement extends I18nMixin
 (PolymerElement) {
   static get is() {
     return 'ntp-recipes-module-redesigned';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -24,10 +30,6 @@ class RecipeModuleElement extends I18nMixin
   }
 
   recipes: TaskItem[];
-
-  static get template() {
-    return html`{__html_template__}`;
-  }
 }
 
 customElements.define(RecipeModuleElement.is, RecipeModuleElement);

@@ -9,6 +9,7 @@ import {recordLoadDuration, recordOccurence, recordPerdecage} from '../metrics_u
 import {WindowProxy} from '../window_proxy.js';
 
 import {Module, ModuleHeight} from './module_descriptor.js';
+import {getTemplate} from './module_wrapper.html.js';
 
 /** @fileoverview Element that implements the common module UI. */
 
@@ -22,6 +23,10 @@ export interface ModuleWrapperElement {
 export class ModuleWrapperElement extends PolymerElement {
   static get is() {
     return 'ntp-module-wrapper';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -94,10 +99,6 @@ export class ModuleWrapperElement extends PolymerElement {
       capture: true,  // So that modules cannot swallow event.
       once: true,     // Only one log per NTP load.
     });
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

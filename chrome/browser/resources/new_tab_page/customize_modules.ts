@@ -10,6 +10,7 @@ import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.m.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './customize_modules.html.js';
 
 import {I18nMixin, loadTimeData} from './i18n_setup.js';
 import {ChromeCartProxy} from './modules/cart/chrome_cart_proxy.js';
@@ -35,6 +36,10 @@ class CustomizeModulesElement extends I18nMixin
 (PolymerElement) {
   static get is() {
     return 'ntp-customize-modules';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -175,10 +180,6 @@ class CustomizeModulesElement extends I18nMixin
   private showDiscountToggle_(
       id: string, checked: boolean, eligible: boolean): boolean {
     return id === 'chrome_cart' && checked && eligible;
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

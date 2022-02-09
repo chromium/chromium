@@ -4,6 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './iframe.html.js';
 
 import {strictQuery} from './utils.js';
 import {WindowProxy} from './window_proxy.js';
@@ -16,6 +17,10 @@ import {WindowProxy} from './window_proxy.js';
 export class IframeElement extends PolymerElement {
   static get is() {
     return 'ntp-iframe';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -45,10 +50,6 @@ export class IframeElement extends PolymerElement {
 
   private computeSrc_(): string {
     return WindowProxy.getInstance().createIframeSrc(this.src);
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

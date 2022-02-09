@@ -16,6 +16,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {I18nMixin} from './i18n_setup.js';
 import {IframeElement} from './iframe.js';
+import {getTemplate} from './logo.html.js';
 import {Doodle, DoodleImageType, DoodleShareChannel, ImageDoodle, PageHandlerRemote} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {$$} from './utils.js';
@@ -28,6 +29,10 @@ class LogoElement extends I18nMixin
 (PolymerElement) {
   static get is() {
     return 'ntp-logo';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -400,10 +405,6 @@ class LogoElement extends I18nMixin
             (this.isCtaImageShown_() || this.doodle_.image.onClickUrl)) ?
         0 :
         -1;
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

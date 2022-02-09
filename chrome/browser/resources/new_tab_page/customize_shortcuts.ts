@@ -9,6 +9,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './customize_shortcuts.html.js';
 
 import {I18nMixin} from './i18n_setup.js';
 import {CustomizeDialogAction, PageHandlerRemote} from './new_tab_page.mojom-webui.js';
@@ -19,6 +20,10 @@ class CustomizeShortcutsElement extends I18nMixin
 (PolymerElement) {
   static get is() {
     return 'ntp-customize-shortcuts';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -96,10 +101,6 @@ class CustomizeShortcutsElement extends I18nMixin
     }
     this.customLinksEnabled_ = false;
     this.hide_ = false;
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

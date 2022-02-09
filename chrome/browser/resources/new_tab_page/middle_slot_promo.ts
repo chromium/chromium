@@ -9,6 +9,7 @@ import {Command} from 'chrome://resources/js/browser_command/browser_command.moj
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './middle_slot_promo.html.js';
 
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {WindowProxy} from './window_proxy.js';
@@ -121,6 +122,10 @@ class MiddleSlotPromoElement extends PolymerElement {
     return 'ntp-middle-slot-promo';
   }
 
+  static get template() {
+    return getTemplate();
+  }
+
   ready() {
     super.ready();
     renderPromo().then(container => {
@@ -130,10 +135,6 @@ class MiddleSlotPromoElement extends PolymerElement {
       this.dispatchEvent(new Event(
           'ntp-middle-slot-promo-loaded', {bubbles: true, composed: true}));
     });
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

@@ -14,6 +14,7 @@ import {Memory} from '../../photos.mojom-webui.js';
 import {InfoDialogElement} from '../info_dialog.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 
+import {getTemplate} from './module.html.js';
 import {PhotosProxy} from './photos_module_proxy.js';
 
 /**
@@ -44,6 +45,10 @@ class PhotosModuleElement extends I18nMixin
 (PolymerElement) {
   static get is() {
     return 'ntp-photos-module';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -162,10 +167,6 @@ class PhotosModuleElement extends I18nMixin
       imgSize = '=w255-h164-p-k-rw-no';
     }
     return url.replace('?', imgSize + '?');
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

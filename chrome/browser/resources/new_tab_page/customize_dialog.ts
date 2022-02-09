@@ -19,6 +19,7 @@ import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggl
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CustomizeBackgroundsElement} from './customize_backgrounds.js';
+import {getTemplate} from './customize_dialog.html.js';
 import {CustomizeDialogPage} from './customize_dialog_types.js';
 import {I18nMixin, loadTimeData} from './i18n_setup.js';
 import {BackgroundCollection, CustomizeDialogAction, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
@@ -47,6 +48,10 @@ class CustomizeDialogElement extends I18nMixin
 (PolymerElement) {
   static get is() {
     return 'ntp-customize-dialog';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -188,10 +193,6 @@ class CustomizeDialogElement extends I18nMixin
     }
     this.pageHandler_.onCustomizeDialogAction(
         CustomizeDialogAction.kBackgroundsRefreshToggleClicked);
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 
