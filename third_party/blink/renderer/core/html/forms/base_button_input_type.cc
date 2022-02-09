@@ -55,17 +55,13 @@ InputTypeView* BaseButtonInputType::CreateView() {
 
 void BaseButtonInputType::CreateShadowSubtree() {
   DCHECK(GetElement().UserAgentShadowRoot());
-  GetElement().UserAgentShadowRoot()->AppendChild(
-      Text::Create(GetElement().GetDocument(), DisplayValue()));
+  GetElement().UserAgentShadowRoot()->AppendChild(Text::Create(
+      GetElement().GetDocument(), GetElement().ValueOrDefaultLabel()));
 }
 
 void BaseButtonInputType::ValueAttributeChanged() {
   To<Text>(GetElement().UserAgentShadowRoot()->firstChild())
-      ->setData(DisplayValue());
-}
-
-String BaseButtonInputType::DisplayValue() const {
-  return GetElement().ValueOrDefaultLabel().RemoveCharacters(IsHTMLLineBreak);
+      ->setData(GetElement().ValueOrDefaultLabel());
 }
 
 bool BaseButtonInputType::ShouldSaveAndRestoreFormControlState() const {
