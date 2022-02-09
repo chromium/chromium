@@ -117,18 +117,21 @@ export class TabSearchItem extends TabSearchItemBase {
     if (!this.isOpenTabAndHasMediaAlert_(tabData)) {
       return '';
     }
-    for (const alert of (tabData.tab as Tab).alertStates) {
-      // Ordered in the same priority as GetTabAlertStatesForContents.
-      if (alert == TabAlertState.kMediaRecording) {
+    // GetTabAlertStatesForContents adds alert indicators in the order of their
+    // priority. Only relevant media alerts are sent over mojo so the first
+    // element in alertStates will be the highest priority media alert to
+    // display.
+    const alert = (tabData.tab as Tab).alertStates[0];
+    switch (alert) {
+      case TabAlertState.kMediaRecording:
         return 'media-recording';
-      } else if (alert == TabAlertState.kAudioPlaying) {
+      case TabAlertState.kAudioPlaying:
         return 'audio-playing';
-      } else if (alert == TabAlertState.kAudioMuting) {
+      case TabAlertState.kAudioMuting:
         return 'audio-muting';
-      }
+      default:
+        return '';
     }
-
-    return '';
   }
 
   private hasTabGroupWithTitle_(tabData: TabData): boolean {

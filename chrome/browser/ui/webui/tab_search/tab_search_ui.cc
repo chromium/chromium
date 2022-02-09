@@ -54,6 +54,10 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"recentlyClosed", IDS_TAB_SEARCH_RECENTLY_CLOSED},
       {"recentlyClosedExpandA11yLabel",
        IDS_TAB_SEARCH_EXPAND_RECENTLY_CLOSED_ITEMS},
+      {"mediaRecording", IDS_TAB_AX_LABEL_MEDIA_RECORDING_FORMAT},
+      {"audioMuting", IDS_TAB_AX_LABEL_AUDIO_MUTING_FORMAT},
+      {"audioPlaying", IDS_TAB_AX_LABEL_AUDIO_PLAYING_FORMAT},
+
   };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);

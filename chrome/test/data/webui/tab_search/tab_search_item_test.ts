@@ -145,24 +145,4 @@ suite('TabSearchItemTest', () => {
     assertEquals('media-recording', recordingMediaAlert!.getAttribute('class'));
   });
 
-  test('MediaAlertIndicatorPresenceWithUnsupportedAlert', async () => {
-    /* Since we currently don't consider DesktopCapturing, the AudioPlaying
-     * should be displayed */
-    const token = sampleToken(1n, 1n);
-    const tab: Tab = createTab({
-      active: true,
-      alertStates:
-          [TabAlertState.kDesktopCapturing, TabAlertState.kAudioPlaying],
-      isDefaultFavicon: true,
-      showIcon: true,
-      groupId: token,
-    });
-
-    await setupTest(new TabData(tab, TabItemType.OPEN_TAB, 'example'));
-
-    const audioMediaAlert =
-        tabSearchItem.shadowRoot!.querySelector<HTMLElement>('#mediaAlert');
-    assertNotEquals(null, audioMediaAlert);
-    assertEquals('audio-playing', audioMediaAlert!.getAttribute('class'));
-  });
 });
