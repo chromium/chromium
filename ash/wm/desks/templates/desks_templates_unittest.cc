@@ -1590,6 +1590,8 @@ TEST_F(DesksTemplatesTest, ShowTemplatesInAlphabeticalOrder) {
   AddEntry(base::GUID::GenerateRandomV4(), "B_template", base::Time::Now());
   AddEntry(base::GUID::GenerateRandomV4(), "1_template", base::Time::Now());
   AddEntry(base::GUID::GenerateRandomV4(), "A_template", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "a_template", base::Time::Now());
+  AddEntry(base::GUID::GenerateRandomV4(), "b_template", base::Time::Now());
 
   OpenOverviewAndShowTemplatesGrid();
 
@@ -1602,12 +1604,14 @@ TEST_F(DesksTemplatesTest, ShowTemplatesInAlphabeticalOrder) {
 
   const std::vector<DesksTemplatesItemView*> grid_items =
       templates_grid_view->grid_items();
-  ASSERT_EQ(3ul, grid_items.size());
+  ASSERT_EQ(5ul, grid_items.size());
 
   // Tests that templates are sorted in alphabetical order.
   EXPECT_EQ(u"1_template", grid_items[0]->GetAccessibleName());
-  EXPECT_EQ(u"A_template", grid_items[1]->GetAccessibleName());
-  EXPECT_EQ(u"B_template", grid_items[2]->GetAccessibleName());
+  EXPECT_EQ(u"a_template", grid_items[1]->GetAccessibleName());
+  EXPECT_EQ(u"A_template", grid_items[2]->GetAccessibleName());
+  EXPECT_EQ(u"b_template", grid_items[3]->GetAccessibleName());
+  EXPECT_EQ(u"B_template", grid_items[4]->GetAccessibleName());
 }
 
 // Tests that the color of the desks templates button border is as expected.

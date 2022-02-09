@@ -21,6 +21,9 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
 #include "ash/wm/overview/overview_session.h"
+#include "base/i18n/string_compare.h"
+#include "third_party/icu/source/common/unicode/uloc.h"
+#include "third_party/icu/source/i18n/unicode/coll.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -289,12 +292,18 @@ void DesksTemplatesGridView::AddTemplatesToGrid(
   // the vector. `Layout` is responsible for placing the views in the correct
   // locations in the grid and callers are expected to call `Layout` after this
   // function.
-  std::sort(
-      grid_items_.begin(), grid_items_.end(),
-      [](const DesksTemplatesItemView* a, const DesksTemplatesItemView* b) {
-        return a->name_view()->GetAccessibleName() <
-               b->name_view()->GetAccessibleName();
-      });
+  UErrorCode error_code = U_ZERO_ERROR;
+  std::unique_ptr<icu::Collator> collator(
+      icu::Collator::createInstance(error_code));  // Use current ICU locale.
+  DCHECK(U_SUCCESS(error_code));
+
+  std::sort(grid_items_.begin(), grid_items_.end(),
+            [&collator](const DesksTemplatesItemView* a,
+                        const DesksTemplatesItemView* b) {
+              return base::i18n::CompareString16WithCollator(
+                         *collator, a->name_view()->GetAccessibleName(),
+                         b->name_view()->GetAccessibleName()) < 0;
+            });
 }
 
 void DesksTemplatesGridView::OnLocatedEvent(ui::LocatedEvent* event,
