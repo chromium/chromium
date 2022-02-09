@@ -40,7 +40,8 @@ std::unique_ptr<PrefService> PrefServiceFactory::Create(
       std::move(delegate));
   return std::make_unique<PrefService>(
       std::move(pref_notifier), std::move(pref_value_store), user_prefs_.get(),
-      std::move(pref_registry), read_error_callback_, async_);
+      standalone_browser_prefs_.get(), std::move(pref_registry),
+      read_error_callback_, async_);
 }
 
 void PrefServiceFactory::ChangePrefValueStore(

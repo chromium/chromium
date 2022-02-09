@@ -35,6 +35,7 @@ TestingPrefServiceBase<sync_preferences::PrefServiceSyncable,
                                            pref_registry->defaults().get(),
                                            pref_notifier),
           user_prefs,
+          standalone_browser_prefs,
           pref_registry,
           /*pref_model_associator_client=*/nullptr,
           base::BindRepeating(

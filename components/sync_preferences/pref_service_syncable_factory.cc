@@ -57,8 +57,8 @@ std::unique_ptr<PrefServiceSyncable> PrefServiceSyncableFactory::CreateSyncable(
       /*delegate=*/nullptr);
   return std::make_unique<PrefServiceSyncable>(
       std::move(pref_notifier), std::move(pref_value_store), user_prefs_.get(),
-      std::move(pref_registry), pref_model_associator_client_,
-      read_error_callback_, async_);
+      standalone_browser_prefs_.get(), std::move(pref_registry),
+      pref_model_associator_client_, read_error_callback_, async_);
 }
 
 }  // namespace sync_preferences

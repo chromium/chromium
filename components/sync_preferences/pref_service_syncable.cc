@@ -36,6 +36,7 @@ PrefServiceSyncable::PrefServiceSyncable(
     std::unique_ptr<PrefNotifierImpl> pref_notifier,
     std::unique_ptr<PrefValueStore> pref_value_store,
     scoped_refptr<PersistentPrefStore> user_prefs,
+    scoped_refptr<PersistentPrefStore> standalone_browser_prefs,
     scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
     const PrefModelAssociatorClient* pref_model_associator_client,
     base::RepeatingCallback<void(PersistentPrefStore::PrefReadError)>
@@ -44,6 +45,7 @@ PrefServiceSyncable::PrefServiceSyncable(
     : PrefService(std::move(pref_notifier),
                   std::move(pref_value_store),
                   user_prefs,
+                  standalone_browser_prefs,
                   pref_registry,
                   std::move(read_error_callback),
                   async),
@@ -122,8 +124,10 @@ PrefServiceSyncable::CreateIncognitoPrefService(
       /*delegate=*/nullptr);
   return std::make_unique<PrefServiceSyncable>(
       std::move(pref_notifier), std::move(pref_value_store),
-      std::move(incognito_pref_store), std::move(forked_registry),
-      pref_sync_associator_.client(), read_error_callback_, false);
+      std::move(incognito_pref_store),
+      nullptr,  // standalone_browser_prefs
+      std::move(forked_registry), pref_sync_associator_.client(),
+      read_error_callback_, false);
 }
 
 bool PrefServiceSyncable::IsSyncing() {

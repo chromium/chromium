@@ -41,6 +41,7 @@ class PrefServiceSyncable : public PrefService {
       std::unique_ptr<PrefNotifierImpl> pref_notifier,
       std::unique_ptr<PrefValueStore> pref_value_store,
       scoped_refptr<PersistentPrefStore> user_prefs,
+      scoped_refptr<PersistentPrefStore> standalone_browser_prefs,
       scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
       const PrefModelAssociatorClient* pref_model_associator_client,
       base::RepeatingCallback<void(PersistentPrefStore::PrefReadError)>

@@ -36,6 +36,7 @@ TestingPrefServiceBase<PrefService, PrefRegistry>::TestingPrefServiceBase(
                                            pref_registry->defaults().get(),
                                            pref_notifier),
           user_prefs,
+          standalone_browser_prefs,
           pref_registry,
           base::BindRepeating(
               &TestingPrefServiceBase<PrefService,

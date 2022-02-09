@@ -239,7 +239,7 @@ class PowerPrefsTest : public NoSessionAshTestBase {
         pref_notifier.get());
     local_state_ = std::make_unique<PrefService>(
         std::move(pref_notifier), std::move(pref_value_store), user_pref_store_,
-        pref_registry_, base::DoNothing(), false);
+        nullptr, pref_registry_, base::DoNothing(), false);
 
     PowerPrefs::RegisterLocalStatePrefs(pref_registry_.get());
 

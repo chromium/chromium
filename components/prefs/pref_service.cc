@@ -89,10 +89,22 @@ void CheckForNewPrefChangesInPrefStore(
 
 }  // namespace
 
+PrefService::PersistentPrefStoreLoadingObserver::
+    PersistentPrefStoreLoadingObserver(PrefService* pref_service)
+    : pref_service_(pref_service) {
+  DCHECK(pref_service_);
+}
+
+void PrefService::PersistentPrefStoreLoadingObserver::OnInitializationCompleted(
+    bool succeeded) {
+  pref_service_->CheckPrefsLoaded();
+}
+
 PrefService::PrefService(
     std::unique_ptr<PrefNotifierImpl> pref_notifier,
     std::unique_ptr<PrefValueStore> pref_value_store,
     scoped_refptr<PersistentPrefStore> user_prefs,
+    scoped_refptr<PersistentPrefStore> standalone_browser_prefs,
     scoped_refptr<PrefRegistry> pref_registry,
     base::RepeatingCallback<void(PersistentPrefStore::PrefReadError)>
         read_error_callback,
@@ -100,8 +112,12 @@ PrefService::PrefService(
     : pref_notifier_(std::move(pref_notifier)),
       pref_value_store_(std::move(pref_value_store)),
       user_pref_store_(std::move(user_prefs)),
+      standalone_browser_pref_store_(std::move(standalone_browser_prefs)),
       read_error_callback_(std::move(read_error_callback)),
-      pref_registry_(std::move(pref_registry)) {
+      pref_registry_(std::move(pref_registry)),
+      pref_store_observer_(
+          std::make_unique<PrefService::PersistentPrefStoreLoadingObserver>(
+              this)) {
   pref_notifier_->SetPrefService(this);
 
   DCHECK(pref_registry_);
@@ -129,16 +145,71 @@ PrefService::~PrefService() {
 }
 
 void PrefService::InitFromStorage(bool async) {
-  if (user_pref_store_->IsInitializationComplete()) {
-    read_error_callback_.Run(user_pref_store_->GetReadError());
-  } else if (!async) {
-    read_error_callback_.Run(user_pref_store_->ReadPrefs());
+  if (!async) {
+    if (!user_pref_store_->IsInitializationComplete()) {
+      user_pref_store_->ReadPrefs();
+    }
+    if (standalone_browser_pref_store_ &&
+        !standalone_browser_pref_store_->IsInitializationComplete()) {
+      standalone_browser_pref_store_->ReadPrefs();
+    }
+    CheckPrefsLoaded();
+    return;
+  }
+
+  CheckPrefsLoaded();
+
+  if (!user_pref_store_->IsInitializationComplete()) {
+    user_pref_store_->AddObserver(pref_store_observer_.get());
+    user_pref_store_->ReadPrefsAsync(nullptr);
+  }
+
+  if (standalone_browser_pref_store_ &&
+      !standalone_browser_pref_store_->IsInitializationComplete()) {
+    standalone_browser_pref_store_->AddObserver(pref_store_observer_.get());
+    standalone_browser_pref_store_->ReadPrefsAsync(nullptr);
+  }
+}
+
+void PrefService::CheckPrefsLoaded() {
+  if (!(user_pref_store_->IsInitializationComplete() &&
+        (!standalone_browser_pref_store_ ||
+         standalone_browser_pref_store_->IsInitializationComplete()))) {
+    // Not done initializing both prefstores.
+    return;
+  }
+
+  user_pref_store_->RemoveObserver(pref_store_observer_.get());
+  if (standalone_browser_pref_store_) {
+    standalone_browser_pref_store_->RemoveObserver(pref_store_observer_.get());
+  }
+
+  // Both prefstores are initialized, get the read errors.
+  PersistentPrefStore::PrefReadError user_store_error =
+      user_pref_store_->GetReadError();
+  if (!standalone_browser_pref_store_) {
+    read_error_callback_.Run(user_store_error);
+    return;
+  }
+  PersistentPrefStore::PrefReadError standalone_browser_store_error =
+      standalone_browser_pref_store_->GetReadError();
+
+  // If both stores have the same error (or no error), run the callback with
+  // either one. This avoids double-reporting (either way prefs weren't
+  // successfully fully loaded)
+  if (user_store_error == standalone_browser_store_error) {
+    read_error_callback_.Run(user_store_error);
+  } else if (user_store_error == PersistentPrefStore::PREF_READ_ERROR_NONE ||
+             user_store_error == PersistentPrefStore::PREF_READ_ERROR_NO_FILE) {
+    // Prefer to report the standalone_browser_pref_store error if the
+    // user_pref_store error is not significant.
+    read_error_callback_.Run(standalone_browser_store_error);
   } else {
-    // Guarantee that initialization happens after this function returned.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&PersistentPrefStore::ReadPrefsAsync, user_pref_store_,
-                       new ReadErrorHandler(read_error_callback_)));
+    // Either the user_pref_store error is significant, or
+    // both stores failed to load but for different reasons.
+    // The user_store error is more significant in essentially all cases,
+    // so prefer to report that.
+    read_error_callback_.Run(user_store_error);
   }
 }
 

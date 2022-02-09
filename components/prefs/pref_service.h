@@ -176,6 +176,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   PrefService(std::unique_ptr<PrefNotifierImpl> pref_notifier,
               std::unique_ptr<PrefValueStore> pref_value_store,
               scoped_refptr<PersistentPrefStore> user_prefs,
+              scoped_refptr<PersistentPrefStore> standalone_browser_prefs,
               scoped_refptr<PrefRegistry> pref_registry,
               base::RepeatingCallback<void(PersistentPrefStore::PrefReadError)>
                   read_error_callback,
@@ -396,6 +397,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
 
   // Pref Stores and profile that we passed to the PrefValueStore.
   const scoped_refptr<PersistentPrefStore> user_pref_store_;
+  const scoped_refptr<PersistentPrefStore> standalone_browser_pref_store_;
 
   // Callback to call when a read error occurs. Always invoked on the sequence
   // this PrefService was created own.
@@ -435,6 +437,22 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   virtual void AddPrefObserver(const std::string& path, PrefObserver* obs);
   virtual void RemovePrefObserver(const std::string& path, PrefObserver* obs);
 
+  // A PrefStore::Observer which reports loading errors from
+  // PersistentPrefStores after they are loaded. Usually this is only user_prefs
+  // however in ash it additionally includes standalone_browser_prefs. Errors
+  // are only reported once even though multiple files may be loaded.
+  class PersistentPrefStoreLoadingObserver : public PrefStore::Observer {
+   public:
+    explicit PersistentPrefStoreLoadingObserver(PrefService* pref_service_);
+
+    // PrefStore::Observer implementation
+    void OnPrefValueChanged(const std::string& key) override {}
+    void OnInitializationCompleted(bool succeeded) override;
+
+   private:
+    PrefService* pref_service_ = nullptr;
+  };
+
   // Sends notification of a changed preference. This needs to be called by
   // a ScopedUserPrefUpdate or ScopedDictionaryPrefUpdate if a DictionaryValue
   // or ListValue is changed.
@@ -450,6 +468,11 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // Load preferences from storage, attempting to diagnose and handle errors.
   // This should only be called from the constructor.
   void InitFromStorage(bool async);
+
+  // Verifies that prefs are fully loaded from disk, handling errors. This
+  // method may be called multiple times, but no more than once after all prefs
+  // are loaded.
+  void CheckPrefsLoaded();
 
   // Used to set the value of dictionary or list values in the user pref store.
   // This will create a dictionary or list if one does not exist in the user
@@ -470,6 +493,9 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   const base::Value* GetPreferenceValueChecked(const std::string& path) const;
 
   const scoped_refptr<PrefRegistry> pref_registry_;
+
+  std::unique_ptr<PrefService::PersistentPrefStoreLoadingObserver>
+      pref_store_observer_;
 
   // Local cache of registered Preference objects. The pref_registry_
   // is authoritative with respect to what the types and default values
