@@ -8,9 +8,9 @@
 #include <cstring>
 
 #include "ash/capture_mode/capture_mode_camera_preview_view.h"
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/public/cpp/capture_mode/capture_mode_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
@@ -94,15 +94,25 @@ const CameraInfo* GetCameraInfoById(const CameraId& id,
   return iter == list.end() ? nullptr : &(*iter);
 }
 
+// Stacking the camera preview window on top of all children of its parent so
+// that it can show up in the recording above everything else.
+void StackingPreviewAtTop(views::Widget* preview_widget) {
+  DCHECK(preview_widget);
+  auto* preview_window = preview_widget->GetNativeWindow();
+  auto* parent = preview_window->parent();
+  DCHECK(parent);
+  parent->StackChildAtTop(preview_window);
+}
+
 std::unique_ptr<views::Widget> CreateCameraPreviewWidget(
     const gfx::Rect& bounds) {
   auto camera_preview_widget = std::make_unique<views::Widget>();
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
-  params.parent = Shell::GetPrimaryRootWindow()->GetChildById(
-      kShellWindowId_OverlayContainer);
+  params.parent = CaptureModeController::Get()->GetCameraPreviewParentWindow();
   params.bounds = bounds;
   params.name = "CameraPreviewWidget";
   camera_preview_widget->Init(std::move(params));
+  StackingPreviewAtTop(camera_preview_widget.get());
   return camera_preview_widget;
 }
 
@@ -182,6 +192,20 @@ void CaptureModeCameraController::SetSelectedCamera(CameraId camera_id) {
 void CaptureModeCameraController::SetShouldShowPreview(bool value) {
   should_show_preview_ = value;
   RefreshCameraPreview();
+}
+
+void CaptureModeCameraController::MaybeReparentPreviewWidget() {
+  if (!camera_preview_widget_)
+    return;
+
+  auto* parent = CaptureModeController::Get()->GetCameraPreviewParentWindow();
+  DCHECK(parent);
+  auto* native_window = camera_preview_widget_->GetNativeWindow();
+  if (parent == native_window->parent())
+    return;
+
+  views::Widget::ReparentNativeView(native_window, parent);
+  StackingPreviewAtTop(camera_preview_widget_.get());
 }
 
 void CaptureModeCameraController::OnDevicesChanged(

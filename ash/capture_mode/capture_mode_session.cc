@@ -10,6 +10,7 @@
 #include "ash/accessibility/magnifier/magnifier_glass.h"
 #include "ash/capture_mode/capture_label_view.h"
 #include "ash/capture_mode/capture_mode_bar_view.h"
+#include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_menu_group.h"
@@ -642,6 +643,10 @@ void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
 
   capture_mode_util::TriggerAccessibilityAlert(
       GetMessageIdForCaptureSource(new_source, /*for_toggle_alert=*/true));
+
+  auto* camera_controller = controller_->camera_controller();
+  if (camera_controller)
+    camera_controller->MaybeReparentPreviewWidget();
 }
 
 void CaptureModeSession::OnCaptureTypeChanged(CaptureModeType new_type) {
@@ -804,6 +809,20 @@ void CaptureModeSession::OnDefaultCaptureFolderSelectionChanged() {
 
   DCHECK(capture_mode_settings_view_);
   capture_mode_settings_view_->OnDefaultCaptureFolderSelectionChanged();
+}
+
+aura::Window* CaptureModeSession::GetCameraPreviewParentWindow() const {
+  auto* controller = CaptureModeController::Get();
+  switch (controller->source()) {
+    case CaptureModeSource::kFullscreen:
+    case CaptureModeSource::kRegion:
+      return current_root_->GetChildById(kShellWindowId_OverlayContainer);
+    case CaptureModeSource::kWindow:
+      aura::Window* selected_window = GetSelectedWindow();
+      return selected_window ? selected_window
+                             : current_root_->GetChildById(
+                                   kShellWindowId_UnparentedContainer);
+  }
 }
 
 void CaptureModeSession::OnPaintLayer(const ui::PaintContext& context) {
@@ -2123,6 +2142,10 @@ void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
   UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/false, /*by_user=*/false);
 
   UpdateRootWindowDimmers();
+
+  auto* camera_controller = controller_->camera_controller();
+  if (camera_controller)
+    camera_controller->MaybeReparentPreviewWidget();
 }
 
 void CaptureModeSession::UpdateRootWindowDimmers() {

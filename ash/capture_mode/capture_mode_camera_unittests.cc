@@ -5,6 +5,7 @@
 #include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_session_test_api.h"
 #include "ash/capture_mode/capture_mode_settings_test_api.h"
 #include "ash/capture_mode/capture_mode_settings_view.h"
@@ -14,11 +15,13 @@
 #include "ash/capture_mode/fake_video_source_provider.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/system_monitor.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -92,6 +95,30 @@ class CaptureModeCameraTest : public AshTestBase {
     AshTestBase::SetUp();
   }
 
+  void TearDown() override {
+    window_.reset();
+    AshTestBase::TearDown();
+  }
+
+  void StartRecordingFromSource(CaptureModeSource source) {
+    auto* controller = CaptureModeController::Get();
+    controller->SetSource(source);
+
+    switch (source) {
+      case CaptureModeSource::kFullscreen:
+      case CaptureModeSource::kRegion:
+        break;
+      case CaptureModeSource::kWindow:
+        window_ = CreateTestWindow(gfx::Rect(30, 40, 300, 200));
+        GetEventGenerator()->MoveMouseTo(
+            window_->GetBoundsInScreen().CenterPoint());
+        break;
+    }
+    CaptureModeTestApi().PerformCapture();
+    WaitForRecordingToStart();
+    EXPECT_TRUE(controller->is_recording_in_progress());
+  }
+
   void AddFakeCamera(const std::string& device_id,
                      const std::string& display_name,
                      const std::string& model_id) {
@@ -134,6 +161,7 @@ class CaptureModeCameraTest : public AshTestBase {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::SystemMonitor system_monitor_;
+  std::unique_ptr<aura::Window> window_;
 };
 
 TEST_F(CaptureModeCameraTest, CameraDevicesChanges) {
@@ -414,6 +442,110 @@ TEST_F(CaptureModeCameraTest, CameraSettingsView) {
   EXPECT_FALSE(camera_menu_group->IsOptionChecked(kCameraOff));
   EXPECT_TRUE(camera_menu_group->IsOptionChecked(kCameraDevicesBegin));
   EXPECT_TRUE(camera_controller->selected_camera().is_valid());
+}
+
+TEST_F(CaptureModeCameraTest, CameraPreviewWidgetStackingInFullscreen) {
+  auto* camera_controller = GetCameraController();
+  // TODO(https://crbug.com/1295797): Start the capture session instead of
+  // SetShouldShowPreview explicitly after crbug/1293467 is done.
+  camera_controller->SetShouldShowPreview(true);
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  const auto* camera_preview_widget =
+      camera_controller->camera_preview_widget();
+  EXPECT_TRUE(camera_preview_widget);
+
+  // TODO(https://crbug.com/1295797): Start the capture session from
+  // `kFullscreen` directly after crbug/1293467 is done, which will create and
+  // parent the preview widget correctly when start capture session.
+  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
+  CaptureModeController::Get()->SetSource(CaptureModeSource::kFullscreen);
+  auto* preview_window = camera_preview_widget->GetNativeWindow();
+  const auto* overlay_container = preview_window->GetRootWindow()->GetChildById(
+      kShellWindowId_OverlayContainer);
+  auto* parent = preview_window->parent();
+  // Parent of the preview should be the OverlayContainer when capture mode
+  // session is active with `kFullscreen` type. And the preview window should
+  // be the top-most child of it.
+  EXPECT_EQ(parent, overlay_container);
+  EXPECT_EQ(overlay_container->children().back(), preview_window);
+
+  StartRecordingFromSource(CaptureModeSource::kFullscreen);
+  // Parent of the preview should be the OverlayContainer when video recording
+  // in progress with `kFullscreen` type. And the preview window should be the
+  // top-most child of it.
+  preview_window = camera_preview_widget->GetNativeWindow();
+  parent = preview_window->parent();
+  EXPECT_EQ(parent, overlay_container);
+  EXPECT_EQ(overlay_container->children().back(), preview_window);
+}
+
+TEST_F(CaptureModeCameraTest, CameraPreviewWidgetStackingInRegion) {
+  auto* camera_controller = GetCameraController();
+  camera_controller->SetShouldShowPreview(true);
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  const auto* camera_preview_widget =
+      camera_controller->camera_preview_widget();
+  EXPECT_TRUE(camera_preview_widget);
+
+  // TODO(https://crbug.com/1295797): Start the capture session from `kRegion`
+  // directly after crbug/1293467 is done, which will create and parent the
+  // preview widget correctly when start capture session.
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  CaptureModeController::Get()->SetSource(CaptureModeSource::kRegion);
+  auto* preview_window = camera_preview_widget->GetNativeWindow();
+  const auto* overlay_container = preview_window->GetRootWindow()->GetChildById(
+      kShellWindowId_OverlayContainer);
+  auto* parent = preview_window->parent();
+  // Parent of the preview should be the OverlayContainer when capture mode
+  // session is active with `kRegion` type. And the preview window should
+  // be the top-most child of it.
+  EXPECT_EQ(parent, overlay_container);
+  EXPECT_EQ(overlay_container->children().back(), preview_window);
+
+  CaptureModeController::Get()->SetUserCaptureRegion(gfx::Rect(10, 20, 80, 60),
+                                                     /*by_user=*/true);
+  StartRecordingFromSource(CaptureModeSource::kRegion);
+  preview_window = camera_preview_widget->GetNativeWindow();
+  parent = preview_window->parent();
+  // Parent of the preview should be the OverlayContainer when video recording
+  // in progress with `kRegion` type. And the preview window should be the
+  // top-most child of it.
+  ASSERT_EQ(parent, overlay_container);
+  EXPECT_EQ(overlay_container->children().back(), preview_window);
+}
+
+TEST_F(CaptureModeCameraTest, CameraPreviewWidgetStackingInWindow) {
+  auto* camera_controller = GetCameraController();
+  camera_controller->SetShouldShowPreview(true);
+  AddDefaultCamera();
+  camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
+  const auto* camera_preview_widget =
+      camera_controller->camera_preview_widget();
+  EXPECT_TRUE(camera_preview_widget);
+
+  StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
+  // The parent of the preview widget should be nullptr when selected window is
+  // not set.
+  ASSERT_FALSE(CaptureModeController::Get()
+                   ->capture_mode_session()
+                   ->GetSelectedWindow());
+  EXPECT_FALSE(camera_preview_widget->parent());
+  EXPECT_FALSE(camera_preview_widget->IsVisible());
+
+  StartRecordingFromSource(CaptureModeSource::kWindow);
+  // Parent of the preview widget should be the window being recorded when video
+  // recording in progress with `kWindow` type. And the preview window should be
+  // the top-most child of it.
+  const auto* preview_window = camera_preview_widget->GetNativeWindow();
+  const auto* parent = preview_window->parent();
+  const auto* window_being_recorded =
+      CaptureModeController::Get()
+          ->video_recording_watcher_for_testing()
+          ->window_being_recorded();
+  ASSERT_EQ(parent, window_being_recorded);
+  EXPECT_EQ(window_being_recorded->children().back(), preview_window);
 }
 
 }  // namespace ash

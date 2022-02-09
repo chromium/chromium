@@ -146,6 +146,11 @@ class ASH_EXPORT CaptureModeSession
   // as the save folder.
   void OnDefaultCaptureFolderSelectionChanged();
 
+  // Returns the current parent window for
+  // `CaptureModeCameraController::camera_preview_widget_` when capture mode
+  // session is active.
+  aura::Window* GetCameraPreviewParentWindow() const;
+
   // ui::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override;
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,

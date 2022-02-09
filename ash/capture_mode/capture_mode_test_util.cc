@@ -5,6 +5,9 @@
 #include "ash/capture_mode/capture_mode_test_util.h"
 
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/test_capture_mode_delegate.h"
+#include "base/run_loop.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/view.h"
 
@@ -28,6 +31,19 @@ void ClickOnView(const views::View* view,
   const gfx::Point view_center = view->GetBoundsInScreen().CenterPoint();
   event_generator->MoveMouseTo(view_center);
   event_generator->ClickLeftButton();
+}
+
+void WaitForRecordingToStart() {
+  auto* controller = CaptureModeController::Get();
+  if (controller->is_recording_in_progress())
+    return;
+  auto* test_delegate =
+      static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
+  ASSERT_TRUE(test_delegate);
+  base::RunLoop run_loop;
+  test_delegate->set_on_recording_started_callback(run_loop.QuitClosure());
+  run_loop.Run();
+  ASSERT_TRUE(controller->is_recording_in_progress());
 }
 
 }  // namespace ash

@@ -275,6 +275,14 @@ void VideoRecordingWatcher::ShutDown() {
   display::Screen::GetScreen()->RemoveObserver(this);
 }
 
+aura::Window* VideoRecordingWatcher::GetCameraPreviewParentWindow() const {
+  DCHECK(window_being_recorded_);
+  return window_being_recorded_->IsRootWindow()
+             ? window_being_recorded_->GetChildById(
+                   kShellWindowId_OverlayContainer)
+             : window_being_recorded_;
+}
+
 void VideoRecordingWatcher::OnWindowParentChanged(aura::Window* window,
                                                   aura::Window* parent) {
   DCHECK_EQ(window, window_being_recorded_);

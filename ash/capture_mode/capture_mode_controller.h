@@ -207,6 +207,10 @@ class ASH_EXPORT CaptureModeController
   // path, false otherwise.
   bool IsAndroidFilesPath(const base::FilePath& path) const;
 
+  // Returns the current parent window for
+  // `CaptureModeCameraController::camera_preview_widget_`.
+  aura::Window* GetCameraPreviewParentWindow() const;
+
   // recording::mojom::RecordingServiceClient:
   void OnRecordingEnded(recording::mojom::RecordingStatus status,
                         const gfx::ImageSkia& thumbnail) override;

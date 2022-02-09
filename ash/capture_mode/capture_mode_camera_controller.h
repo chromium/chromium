@@ -141,6 +141,10 @@ class ASH_EXPORT CaptureModeCameraController
   // of the camera preview.
   void SetShouldShowPreview(bool value);
 
+  // Updates the parent of the `camera_preview_widget_` when necessary. E.g,
+  // capture source type changes, selected recording window changes etc.
+  void MaybeReparentPreviewWidget();
+
   // base::SystemMonitor::DevicesChangedObserver:
   void OnDevicesChanged(base::SystemMonitor::DeviceType device_type) override;
 

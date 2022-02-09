@@ -7,13 +7,16 @@
 
 #include "ash/capture_mode/capture_mode_types.h"
 
+namespace ui::test {
+class EventGenerator;
+}  // namespace ui::test
+
 namespace views {
 class View;
 }  // namespace views
 
-namespace ui::test {
-class EventGenerator;
-}  // namespace ui::test
+// Functions that are used by capture mode related unit tests and only meant to
+// be used in ash_unittests.
 
 namespace ash {
 
@@ -25,6 +28,9 @@ CaptureModeController* StartCaptureSession(CaptureModeSource source,
 
 void ClickOnView(const views::View* view,
                  ui::test::EventGenerator* event_generator);
+
+// Waits until the recording is in progress.
+void WaitForRecordingToStart();
 
 }  // namespace ash
 

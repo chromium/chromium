@@ -19,6 +19,7 @@
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -712,6 +713,21 @@ bool CaptureModeController::IsRootDriveFsPath(
 bool CaptureModeController::IsAndroidFilesPath(
     const base::FilePath& path) const {
   return path == delegate_->GetAndroidFilesPath();
+}
+
+aura::Window* CaptureModeController::GetCameraPreviewParentWindow() const {
+  if (IsActive())
+    return capture_mode_session_->GetCameraPreviewParentWindow();
+
+  if (is_recording_in_progress())
+    return video_recording_watcher_->GetCameraPreviewParentWindow();
+
+  // TODO(https://crbug.com/1295797): Return `nullptr` if it is neither in
+  // capture mode session nor video recording in progress when crbug/1293467 is
+  // completed. Return the unparented container here temporarily to make the
+  // tests happy.
+  return Shell::Get()->GetPrimaryRootWindow()->GetChildById(
+      kShellWindowId_UnparentedContainer);
 }
 
 void CaptureModeController::OnRecordingEnded(
