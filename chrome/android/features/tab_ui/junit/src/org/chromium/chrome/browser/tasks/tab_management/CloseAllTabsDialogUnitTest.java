@@ -140,18 +140,6 @@ public class CloseAllTabsDialogUnitTest {
 
     @Test
     @SmallTest
-    public void testDismissButton() {
-        CloseAllTabsDialog.show(
-                mContext, this::getModalDialogManager, () -> { mRunnableCalled = true; });
-        verifyModel();
-
-        mMockModalDialogManager.simulateButtonClick(ModalDialogProperties.ButtonType.NEGATIVE);
-        assertFalse(mRunnableCalled);
-        verifyDismissed(false);
-    }
-
-    @Test
-    @SmallTest
     public void testDismissNoButton() {
         CloseAllTabsDialog.show(
                 mContext, this::getModalDialogManager, () -> { mRunnableCalled = true; });
