@@ -8235,7 +8235,6 @@ interface Sanitizer
     method sanitizeFor
 interface Scheduler
     attribute @@toStringTag
-    getter currentTaskSignal
     method constructor
     method postTask
 interface Scheduling

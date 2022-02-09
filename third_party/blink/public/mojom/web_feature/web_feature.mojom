@@ -2508,7 +2508,7 @@ enum WebFeature {
   kV8Document_GetAnimations_Method = 3187,
   kV8ShadowRoot_GetAnimations_Method = 3188,
   kClientHintsUAFullVersion = 3189,
-  kSchedulerCurrentTaskSignal = 3190,
+  kOBSOLETE_SchedulerCurrentTaskSignal = 3190,
   kThirdPartyFileSystem = 3191,
   kThirdPartyIndexedDb = 3192,
   kThirdPartyCacheStorage = 3193,

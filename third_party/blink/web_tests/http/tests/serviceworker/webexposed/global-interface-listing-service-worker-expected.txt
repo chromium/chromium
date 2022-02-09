@@ -1379,7 +1379,6 @@ interface Response
     method text
 interface Scheduler
     attribute @@toStringTag
-    getter currentTaskSignal
     method constructor
     method postTask
 interface SecurityPolicyViolationEvent : Event

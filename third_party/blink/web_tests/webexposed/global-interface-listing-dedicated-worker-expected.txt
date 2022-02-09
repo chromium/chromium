@@ -1408,7 +1408,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method text
 [Worker] interface Scheduler
 [Worker]     attribute @@toStringTag
-[Worker]     getter currentTaskSignal
 [Worker]     method constructor
 [Worker]     method postTask
 [Worker] interface SecurityPolicyViolationEvent : Event

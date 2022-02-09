@@ -246,10 +246,6 @@ PASS oldChildWindow.performance.timing.secureConnectionStart is newChildWindow.p
 PASS oldChildWindow.performance.timing.unloadEventEnd is newChildWindow.performance.timing.unloadEventEnd
 PASS oldChildWindow.performance.timing.unloadEventStart is newChildWindow.performance.timing.unloadEventStart
 PASS oldChildWindow.personalbar.visible is newChildWindow.personalbar.visible
-PASS oldChildWindow.scheduler.currentTaskSignal.aborted is newChildWindow.scheduler.currentTaskSignal.aborted
-PASS oldChildWindow.scheduler.currentTaskSignal.onabort is newChildWindow.scheduler.currentTaskSignal.onabort
-PASS oldChildWindow.scheduler.currentTaskSignal.onprioritychange is newChildWindow.scheduler.currentTaskSignal.onprioritychange
-PASS oldChildWindow.scheduler.currentTaskSignal.priority is newChildWindow.scheduler.currentTaskSignal.priority
 PASS oldChildWindow.screen.availHeight is newChildWindow.screen.availHeight
 PASS oldChildWindow.screen.availLeft is newChildWindow.screen.availLeft
 PASS oldChildWindow.screen.availTop is newChildWindow.screen.availTop

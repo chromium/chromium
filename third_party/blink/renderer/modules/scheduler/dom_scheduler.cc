@@ -71,81 +71,43 @@ ScriptPromise DOMScheduler::postTask(
   }
 
   // Always honor the priority and the task signal if given.
-  DOMTaskSignal* task_signal = nullptr;
-  if (!options->hasPriority() && options->hasSignal() &&
-      IsA<DOMTaskSignal>(options->signal())) {
+  DOMTaskQueue* task_queue;
+  AbortSignal* signal = options->hasSignal() ? options->signal() : nullptr;
+  if (!options->hasPriority() && signal && IsA<DOMTaskSignal>(signal)) {
     // If only a signal is given, and it is a TaskSignal rather than an
     // basic AbortSignal, use it.
-    task_signal = To<DOMTaskSignal>(options->signal());
+    DOMTaskSignal* task_signal = To<DOMTaskSignal>(signal);
 
-    // If we haven't seen this TaskSignal before, then it was created by a
-    // TaskController and has modifiable priority.
+    // If we haven't seen this `TaskSignal` before, create a task queue for it.
     if (!signal_to_task_queue_map_.Contains(task_signal))
       CreateTaskQueueFor(task_signal);
+    task_queue = signal_to_task_queue_map_.at(task_signal);
   } else {
-    // Otherwise, construct an implicit TaskSignal. Have it follow the signal
-    // if it was given, so that it can still honor any aborts, but have it
-    // at the fixed given priority (or default if none was specified).
-    //
-    // An implicit TaskSignal, in addition to being read-only, won't own its
-    // own task queue. Instead, it will use the appropriate task queue from
+    // Otherwise, use the appropriate task queue from
     // |fixed_priority_task_queues_|.
     WebSchedulingPriority priority =
         options->hasPriority() ? WebSchedulingPriorityFromString(AtomicString(
                                      IDLEnumAsString(options->priority())))
                                : kDefaultPriority;
-    task_signal = CreateTaskSignalFor(priority);
-    if (options->hasSignal())
-      task_signal->Follow(script_state, options->signal());
+    task_queue = fixed_priority_task_queues_[static_cast<int>(priority)];
   }
 
-  DCHECK(task_signal);
-  DCHECK(signal_to_task_queue_map_.Contains(task_signal));
-  auto* task_runner = signal_to_task_queue_map_.at(task_signal)
-                          ->GetWebSchedulingTaskQueue()
-                          ->GetTaskRunner()
-                          .get();
+  DCHECK(task_queue);
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  MakeGarbageCollected<DOMTask>(resolver, callback_function, task_signal,
-                                task_runner,
+  MakeGarbageCollected<DOMTask>(resolver, callback_function, signal, task_queue,
                                 base::Milliseconds(options->delay()));
   return resolver->Promise();
-}
-
-DOMTaskSignal* DOMScheduler::currentTaskSignal(ScriptState* script_state) {
-  if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed())
-    return nullptr;
-
-  v8::Local<v8::Value> embedder_data =
-      script_state->GetContext()->GetContinuationPreservedEmbedderData();
-  if (V8TaskSignal::HasInstance(embedder_data, script_state->GetIsolate()))
-    return V8TaskSignal::ToImpl(v8::Local<v8::Object>::Cast(embedder_data));
-
-  // TODO(shaseley): consider returning nullptr to reduce memory churn and so we
-  // don't need to insert a mapping every time. This might also be beneficial
-  // from on the client side to determine if the task was scheduled or not.
-  return CreateTaskSignalFor(kDefaultPriority);
 }
 
 void DOMScheduler::CreateFixedPriorityTaskQueues(ExecutionContext* context) {
   FrameOrWorkerScheduler* scheduler = context->GetScheduler();
   for (size_t i = 0; i < kWebSchedulingPriorityCount; i++) {
+    auto priority = static_cast<WebSchedulingPriority>(i);
     std::unique_ptr<WebSchedulingTaskQueue> task_queue =
-        scheduler->CreateWebSchedulingTaskQueue(
-            static_cast<WebSchedulingPriority>(i));
+        scheduler->CreateWebSchedulingTaskQueue(priority);
     fixed_priority_task_queues_.push_back(
-        MakeGarbageCollected<DOMTaskQueue>(std::move(task_queue)));
+        MakeGarbageCollected<DOMTaskQueue>(std::move(task_queue), priority));
   }
-}
-
-DOMTaskSignal* DOMScheduler::CreateTaskSignalFor(
-    WebSchedulingPriority priority) {
-  DOMTaskSignal* signal = MakeGarbageCollected<DOMTaskSignal>(
-      GetSupplementable(), WebSchedulingPriorityToString(priority));
-  DOMTaskQueue* task_queue =
-      fixed_priority_task_queues_[static_cast<int>(priority)];
-  signal_to_task_queue_map_.insert(signal, task_queue);
-  return signal;
 }
 
 void DOMScheduler::CreateTaskQueueFor(DOMTaskSignal* signal) {
@@ -156,7 +118,8 @@ void DOMScheduler::CreateTaskQueueFor(DOMTaskSignal* signal) {
   std::unique_ptr<WebSchedulingTaskQueue> task_queue =
       scheduler->CreateWebSchedulingTaskQueue(priority);
   signal_to_task_queue_map_.insert(
-      signal, MakeGarbageCollected<DOMTaskQueue>(std::move(task_queue)));
+      signal,
+      MakeGarbageCollected<DOMTaskQueue>(std::move(task_queue), priority));
   signal->AddPriorityChangeAlgorithm(WTF::Bind(&DOMScheduler::OnPriorityChange,
                                                WrapWeakPersistent(this),
                                                WrapWeakPersistent(signal)));
@@ -168,13 +131,24 @@ void DOMScheduler::OnPriorityChange(DOMTaskSignal* signal) {
   DCHECK(signal);
   DCHECK(signal_to_task_queue_map_.Contains(signal));
   DOMTaskQueue* task_queue = signal_to_task_queue_map_.at(signal);
-  task_queue->GetWebSchedulingTaskQueue()->SetPriority(
-      WebSchedulingPriorityFromString(signal->priority()));
+  task_queue->SetPriority(WebSchedulingPriorityFromString(signal->priority()));
 }
 
 DOMScheduler::DOMTaskQueue::DOMTaskQueue(
-    std::unique_ptr<WebSchedulingTaskQueue> task_queue)
-    : web_scheduling_task_queue_(std::move(task_queue)) {}
+    std::unique_ptr<WebSchedulingTaskQueue> task_queue,
+    WebSchedulingPriority priority)
+    : web_scheduling_task_queue_(std::move(task_queue)),
+      task_runner_(web_scheduling_task_queue_->GetTaskRunner()),
+      priority_(priority) {
+  DCHECK(task_runner_);
+}
+
+void DOMScheduler::DOMTaskQueue::SetPriority(WebSchedulingPriority priority) {
+  if (priority_ == priority)
+    return;
+  web_scheduling_task_queue_->SetPriority(priority);
+  priority_ = priority;
+}
 
 DOMScheduler::DOMTaskQueue::~DOMTaskQueue() = default;
 

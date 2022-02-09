@@ -36128,7 +36128,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3187" label="V8Document_GetAnimations_Method"/>
   <int value="3188" label="V8ShadowRoot_GetAnimations_Method"/>
   <int value="3189" label="ClientHintsUAFullVersion"/>
-  <int value="3190" label="SchedulerCurrentTaskSignal"/>
+  <int value="3190" label="OBSOLETE_SchedulerCurrentTaskSignal"/>
   <int value="3191" label="ThirdPartyFileSystem"/>
   <int value="3192" label="ThirdPartyIndexedDb"/>
   <int value="3193" label="ThirdPartyCacheStorage"/>

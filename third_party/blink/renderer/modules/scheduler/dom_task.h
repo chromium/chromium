@@ -8,11 +8,12 @@
 #include "base/time/time.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
+#include "third_party/blink/renderer/modules/scheduler/dom_scheduler.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 
 namespace blink {
-class DOMTaskSignal;
+class AbortSignal;
 class ScriptState;
 class V8SchedulerPostTaskCallback;
 
@@ -23,8 +24,8 @@ class DOMTask final : public GarbageCollected<DOMTask> {
  public:
   DOMTask(ScriptPromiseResolver*,
           V8SchedulerPostTaskCallback*,
-          DOMTaskSignal*,
-          base::SingleThreadTaskRunner*,
+          AbortSignal*,
+          DOMScheduler::DOMTaskQueue*,
           base::TimeDelta delay);
 
   virtual void Trace(Visitor*) const;
@@ -43,10 +44,11 @@ class DOMTask final : public GarbageCollected<DOMTask> {
   Member<V8SchedulerPostTaskCallback> callback_;
   Member<ScriptPromiseResolver> resolver_;
   probe::AsyncTaskContext async_task_context_;
-  // Do not remove. For dynamic priority task queues, |signal_| ensures that the
-  // associated WebSchedulingTaskQueue stays alive until after this task runs,
-  // which is necessary to ensure throttling works correctly.
-  Member<DOMTaskSignal> signal_;
+  Member<AbortSignal> signal_;
+  // Do not remove. For dynamic priority task queues, |task_queue_| ensures that
+  // the associated WebSchedulingTaskQueue stays alive until after this task
+  // runs, which is necessary to ensure throttling works correctly.
+  Member<DOMScheduler::DOMTaskQueue> task_queue_;
   const base::TimeTicks queue_time_;
   const base::TimeDelta delay_;
 };
