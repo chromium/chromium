@@ -1,0 +1,1 @@
+report-to: { "group": "endpoint", "max_age": 10886400, "endpoints": [{ "url": "/reporting/resources/report.py?endpoint=wpt-internal-coep" }] }, { "group": "report-only-endpoint", "max_age": 10886400, "endpoints": [{ "url": "/reporting/resources/report.py?endpoint=wpt-internal-coep-report-only" }] }
