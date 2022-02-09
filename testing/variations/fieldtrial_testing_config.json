@@ -2050,8 +2050,9 @@
                     ]
                 },
                 {
-                    "name": "PriceDropIndicators_20211117",
+                    "name": "PriceDropIndicators_20220209",
                     "params": {
+                        "price_tracking_opt_out": "true",
                         "price_tracking_with_optimization_guide": "true"
                     },
                     "enable_features": [
