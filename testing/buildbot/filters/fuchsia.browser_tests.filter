@@ -531,7 +531,6 @@
 -HttpsOnlyModeBrowserTest.HttpsUpgradeWithBrokenSSL_ShouldTriggerSSLInterstitial
 -HttpsOnlyModeBrowserTest.UrlWithHttpsScheme_BrokenSSL_ShouldNotFallback
 -I18nProcessTest.All
--IconLoaderBrowserTest.LoadGroup
 -IconModuleTest.All
 -IdentityInternalsMultipleTokensWebUITest.getAllTokens
 -IdentityInternalsSingleTokenWebUITest.getAllTokens
