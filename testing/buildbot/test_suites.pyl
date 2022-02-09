@@ -1696,6 +1696,7 @@
       'latency_unittests': {},
       'media_unittests': {},
       'midi_unittests': {},
+      'mojo_core_unittests': {},
       'mojo_unittests': {},
       'native_theme_unittests': {},
       'net_unittests': {
@@ -1778,7 +1779,6 @@
           'shards': 6,
         },
       },
-      'mojo_core_unittests': {},
       'unit_tests': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.unit_tests.filter',
