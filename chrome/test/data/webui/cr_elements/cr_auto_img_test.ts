@@ -45,4 +45,36 @@ suite('CrAutoImgElementTest', () => {
           assertEquals(src, img.src);
         });
       });
+
+  test(
+      'setting withCookies creates a URL with autoSrc and withCookies as params',
+      () => {
+        const autoSrc = 'https://foo.com/img.png';
+
+        // Act.
+        img.withCookies = '';
+        img.autoSrc = autoSrc;
+
+        // Assert.
+        assertEquals(
+            `chrome://image/?url=${
+                encodeURIComponent(autoSrc)}&withCookies=true`,
+            img.src);
+      });
+
+  test(
+      'setting with-cookies creates a URL with autoSrc and withCookies as params',
+      () => {
+        const autoSrc = 'https://foo.com/img.png';
+
+        // Act.
+        img.setAttribute('with-cookies', '');
+        img.autoSrc = autoSrc;
+
+        // Assert.
+        assertEquals(
+            `chrome://image/?url=${
+                encodeURIComponent(autoSrc)}&withCookies=true`,
+            img.src);
+      });
 });
