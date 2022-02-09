@@ -216,7 +216,7 @@ class ASH_EXPORT CaptureModeCameraController
   base::OneShotTimer camera_reconnect_timer_;
 
   // Set to true when a preview of the currently selected camera (if any) should
-  // be shown. This happens when CaptureModeSession is started or switched to
+  // be shown. This happens when CaptureModeSession is started and switched to
   // a video recording mode before recording starts. It is reset back to false
   // when:
   // - Video recording ends.

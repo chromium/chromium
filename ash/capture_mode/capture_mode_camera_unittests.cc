@@ -391,6 +391,35 @@ TEST_F(CaptureModeCameraTest, SelectedCameraChangedObserver) {
   EXPECT_EQ(2, observer.selected_camera_change_event_count());
 }
 
+TEST_F(CaptureModeCameraTest, ShouldShowPreviewTest) {
+  auto* controller = CaptureModeController::Get();
+  auto* camera_controller = GetCameraController();
+  controller->SetSource(CaptureModeSource::kFullscreen);
+  controller->SetType(CaptureModeType::kVideo);
+  controller->Start(CaptureModeEntryType::kQuickSettings);
+  // should_show_preview() should return true when CaptureModeSession is started
+  // in video recording mode.
+  EXPECT_TRUE(camera_controller->should_show_preview());
+  // Switch to image capture mode, should_show_preview() should return false.
+  controller->SetType(CaptureModeType::kImage);
+  EXPECT_FALSE(camera_controller->should_show_preview());
+  // Stop an existing capture session, should_show_preview() should return
+  // false.
+  controller->Stop();
+  EXPECT_FALSE(camera_controller->should_show_preview());
+  EXPECT_FALSE(controller->IsActive());
+
+  // Start another capture session and start video recording,
+  // should_show_preview() should return false when video recording ends.
+  controller->SetType(CaptureModeType::kVideo);
+  controller->Start(CaptureModeEntryType::kQuickSettings);
+  EXPECT_TRUE(camera_controller->should_show_preview());
+  controller->StartVideoRecordingImmediatelyForTesting();
+  EXPECT_TRUE(camera_controller->should_show_preview());
+  controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+  EXPECT_FALSE(camera_controller->should_show_preview());
+}
+
 // Tests that the options on camera settings view are shown and checked
 // correctly when adding or removing cameras. Also tests that
 // `selected_camera_` is updated correspondently.

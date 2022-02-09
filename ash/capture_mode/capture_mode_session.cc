@@ -609,10 +609,17 @@ void CaptureModeSession::Shutdown() {
   }
   UpdateAutoclickMenuBoundsIfNeeded();
 
-  // Stopping the session for any reason other than starting video recording
-  // means a cancellation to an ongoing projector session (if any).
-  if (is_in_projector_mode_ && !is_stopping_to_start_video_recording_)
-    ProjectorControllerImpl::Get()->OnRecordingStartAborted();
+  if (!is_stopping_to_start_video_recording_) {
+    // Stopping the session for any reason other than starting video recording
+    // means a cancellation to an ongoing projector session (if any).
+    if (is_in_projector_mode_)
+      ProjectorControllerImpl::Get()->OnRecordingStartAborted();
+
+    // Kill the camera preview when the capture mode session ends without
+    // starting any recording.
+    if (controller_->camera_controller())
+      controller_->camera_controller()->SetShouldShowPreview(false);
+  }
 }
 
 aura::Window* CaptureModeSession::GetSelectedWindow() const {

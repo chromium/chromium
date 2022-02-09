@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
@@ -91,15 +92,22 @@ CaptureModeTypeView::CaptureModeTypeView(bool projector_mode)
 CaptureModeTypeView::~CaptureModeTypeView() = default;
 
 void CaptureModeTypeView::OnCaptureTypeChanged(CaptureModeType new_type) {
-  DCHECK(!CaptureModeController::Get()->is_recording_in_progress() ||
-      new_type == CaptureModeType::kImage);
+  auto* controller = CaptureModeController::Get();
+  const bool is_video = new_type == CaptureModeType::kVideo;
 
-  video_toggle_button_->SetToggled(new_type == CaptureModeType::kVideo);
+  DCHECK(!controller->is_recording_in_progress() || !is_video);
+
+  video_toggle_button_->SetToggled(is_video);
   if (image_toggle_button_) {
-    image_toggle_button_->SetToggled(new_type == CaptureModeType::kImage);
+    image_toggle_button_->SetToggled(!is_video);
     DCHECK_NE(image_toggle_button_->GetToggled(),
               video_toggle_button_->GetToggled());
   }
+  // Set the value to true for `SetShouldShowPreview` when the capture mode
+  // session is started and switched to a video recording mode before recording
+  // starts. False when it is switched to image capture mode.
+  if (controller->camera_controller())
+    controller->camera_controller()->SetShouldShowPreview(is_video);
 }
 
 void CaptureModeTypeView::OnImageToggle() {

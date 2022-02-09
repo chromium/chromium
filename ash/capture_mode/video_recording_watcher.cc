@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/accessibility/magnifier/docked_magnifier_controller.h"
+#include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
@@ -268,11 +269,14 @@ void VideoRecordingWatcher::ShutDown() {
         ->cursor_window_controller()
         ->RemoveObserver(this);
   }
-  // Move the |non_root_window_capture_request_| so that the
-  // |window_being_recorded_| is not capturable.
+  // Move the `non_root_window_capture_request_` so that the
+  // `window_being_recorded_` is not capturable.
   auto to_be_removed_request = std::move(non_root_window_capture_request_);
   window_being_recorded_->RemoveObserver(this);
   display::Screen::GetScreen()->RemoveObserver(this);
+  // Set the value for `SetShouldShowPreview` to false when recording ends.
+  if (controller_->camera_controller())
+    controller_->camera_controller()->SetShouldShowPreview(false);
 }
 
 aura::Window* VideoRecordingWatcher::GetCameraPreviewParentWindow() const {
