@@ -76,6 +76,10 @@ const base::Feature kWebViewMeasureScreenCoverage{
 const base::Feature kWebViewOriginTrials{"WebViewOriginTrials",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Whether WebView will send variations headers on URLs where applicable.
+const base::Feature kWebViewSendVariationsHeaders{
+    "WebViewSendVariationsHeaders", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables package name logging for the most popular WebView embedders that are
 // on a dynamically generated allowlist.
 const base::Feature kWebViewAppsPackageNamesAllowlist{

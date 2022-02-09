@@ -65,6 +65,10 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
     // treated as true, regardless of what is supplied. This is intended for
     // embedders (such as WebLayer) that do not have the notion of signed-in.
     kIgnoreSignedInState,
+
+    // Indicates the signed-in parameter supplied to GetClientDataHeaders() is
+    // treated as false, regardless of what is supplied.
+    kDontSendSignedInVariations,
   };
 
   // Creates the VariationsIdsProvider instance. This must be called before
