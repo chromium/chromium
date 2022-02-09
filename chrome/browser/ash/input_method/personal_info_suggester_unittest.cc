@@ -758,46 +758,6 @@ TEST_F(PersonalInfoSuggesterTest, ClicksSettingsWithUpEnter) {
       ui::ime::ButtonId::kSmartInputsSettingLink);
 }
 
-TEST_F(PersonalInfoSuggesterTest, RecordsTimeToAccept) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAssistPersonalInfoEmail},
-      /*disabled_features=*/{});
-
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount(
-      "InputMethod.Assistive.TimeToAccept.PersonalInfo", 0);
-
-  profile_->set_profile_name(base::UTF16ToUTF8(email_));
-
-  EXPECT_TRUE(suggester_->Suggest(u"my email is ", 12, 12));
-
-  // Press ui::DomCode::ARROW_DOWN to choose and accept the suggestion.
-  SendKeyboardEvent(ui::DomCode::ARROW_DOWN);
-  SendKeyboardEvent(ui::DomCode::ENTER);
-  histogram_tester.ExpectTotalCount(
-      "InputMethod.Assistive.TimeToAccept.PersonalInfo", 1);
-}
-
-TEST_F(PersonalInfoSuggesterTest, RecordsTimeToDismiss) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAssistPersonalInfoEmail},
-      /*disabled_features=*/{});
-
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount(
-      "InputMethod.Assistive.TimeToAccept.PersonalInfo", 0);
-
-  profile_->set_profile_name(base::UTF16ToUTF8(email_));
-
-  EXPECT_TRUE(suggester_->Suggest(u"my email is ", 12, 12));
-  // Press ui::DomCode::ESCAPE to dismiss.
-  SendKeyboardEvent(ui::DomCode::ESCAPE);
-  histogram_tester.ExpectTotalCount(
-      "InputMethod.Assistive.TimeToDismiss.PersonalInfo", 1);
-}
-
 TEST_F(PersonalInfoSuggesterTest,
        HasSuggestionsReturnsTrueWhenCandidatesAvailable) {
   base::test::ScopedFeatureList feature_list;

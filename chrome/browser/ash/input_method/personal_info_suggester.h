@@ -107,8 +107,6 @@ class PersonalInfoSuggester : public Suggester {
   int highlighted_index_;
   ui::ime::AssistiveWindowButton suggestion_button_;
   ui::ime::AssistiveWindowButton settings_button_;
-
-  base::TimeTicks session_start_;
 };
 
 }  // namespace input_method

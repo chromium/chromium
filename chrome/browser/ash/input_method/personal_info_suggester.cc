@@ -88,16 +88,6 @@ const std::vector<autofill::ServerFieldType>& GetHomeAddressTypes() {
   return *homeAddressTypes;
 }
 
-void RecordTimeToAccept(base::TimeDelta delta) {
-  base::UmaHistogramTimes("InputMethod.Assistive.TimeToAccept.PersonalInfo",
-                          delta);
-}
-
-void RecordTimeToDismiss(base::TimeDelta delta) {
-  base::UmaHistogramTimes("InputMethod.Assistive.TimeToDismiss.PersonalInfo",
-                          delta);
-}
-
 void RecordAssistiveInsufficientData(AssistiveType type) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.InsufficientData", type);
 }
@@ -380,7 +370,6 @@ void PersonalInfoSuggester::ShowSuggestion(const std::u16string& text,
   if (suggestion_shown_) {
     first_shown_ = false;
   } else {
-    session_start_ = base::TimeTicks::Now();
     first_shown_ = true;
     IncrementPrefValueTilCapped(kPersonalInfoSuggesterShowSettingCount,
                                 kMaxShowSettingCount);
@@ -437,7 +426,6 @@ bool PersonalInfoSuggester::AcceptSuggestion(size_t index) {
     return false;
   }
 
-  RecordTimeToAccept(base::TimeTicks::Now() - session_start_);
   IncrementPrefValueTilCapped(kPersonalInfoSuggesterAcceptanceCount,
                               kMaxAcceptanceCount);
   suggestion_shown_ = false;
@@ -454,7 +442,6 @@ void PersonalInfoSuggester::DismissSuggestion() {
     return;
   }
   suggestion_shown_ = false;
-  RecordTimeToDismiss(base::TimeTicks::Now() - session_start_);
   suggestion_handler_->Announce(kDismissPersonalInfoSuggestionMessage);
 }
 

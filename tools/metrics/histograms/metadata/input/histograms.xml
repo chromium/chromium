@@ -90,7 +90,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Coverage" enum="IMEAssistiveAction"
-    expires_after="2022-04-03">
+    expires_after="2022-09-30">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -100,7 +100,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Disabled" enum="IMEAssistiveAction"
-    expires_after="2022-03-27">
+    expires_after="2022-09-30">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -171,7 +171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Grammar.Actions"
-    enum="IMEGrammarActions" expires_after="2022-03-31">
+    enum="IMEGrammarActions" expires_after="2022-09-30">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -182,6 +182,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="InputMethod.Assistive.Grammar.CapitalizationCorrection"
     enum="IMEGrammarActions" expires_after="2022-03-31">
+  <obsolete>
+    Removed in M100.
+  </obsolete>
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -192,7 +195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.InsufficientData"
-    enum="IMEAssistiveAction" expires_after="2022-01-02">
+    enum="IMEAssistiveAction" expires_after="2022-09-30">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -203,7 +206,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Match" enum="IMEAssistiveAction"
-    expires_after="2022-04-03">
+    expires_after="2022-09-30">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -228,7 +231,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.NotAllowed" enum="IMEAssistiveAction"
-    expires_after="2022-03-19">
+    expires_after="2022-09-30">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -240,7 +243,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InputMethod.Assistive.Success" enum="IMEAssistiveAction"
-    expires_after="2022-04-03">
+    expires_after="2022-09-30">
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -251,6 +254,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="InputMethod.Assistive.TimeToAccept.Emoji" units="ms"
     expires_after="2021-09-12">
+  <obsolete>
+    Removed in M100.
+  </obsolete>
   <owner>myy@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -272,6 +278,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="InputMethod.Assistive.TimeToAccept.PersonalInfo" units="ms"
     expires_after="2021-10-04">
+  <obsolete>
+    Removed in M100.
+  </obsolete>
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -282,6 +291,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="InputMethod.Assistive.TimeToDismiss.Emoji" units="ms"
     expires_after="2021-01-01">
+  <obsolete>
+    Removed in M100.
+  </obsolete>
   <owner>myy@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>
@@ -303,6 +315,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="InputMethod.Assistive.TimeToDismiss.PersonalInfo" units="ms"
     expires_after="2021-09-12">
+  <obsolete>
+    Removed in M100.
+  </obsolete>
   <owner>jiwan@google.com</owner>
   <owner>essential-inputs-team@google.com</owner>
   <summary>

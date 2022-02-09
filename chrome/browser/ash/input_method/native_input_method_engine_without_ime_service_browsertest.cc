@@ -246,8 +246,6 @@ constexpr char kEngineIdUs[] = "xkb:us::eng";
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                        SuggestUserEmail) {
   base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount(
-      "InputMethod.Assistive.TimeToAccept.PersonalInfo", 0);
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfileIfExists(profile_);
@@ -270,8 +268,6 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                                       AssistiveType::kPersonalEmail, 1);
   histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Coverage",
                                       AssistiveType::kPersonalEmail, 1);
-  histogram_tester.ExpectTotalCount(
-      "InputMethod.Assistive.TimeToAccept.PersonalInfo", 0);
 
   DispatchKeyPress(ui::VKEY_DOWN, false);
   DispatchKeyPress(ui::VKEY_RETURN, false);
@@ -280,8 +276,6 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
   EXPECT_EQ(expected_result_text, helper.GetSurroundingText());
   histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Success",
                                       AssistiveType::kPersonalEmail, 1);
-  histogram_tester.ExpectTotalCount(
-      "InputMethod.Assistive.TimeToAccept.PersonalInfo", 1);
 
   SetFocus(nullptr);
 }
@@ -356,8 +350,6 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                        DismissPersonalInfoSuggestion) {
   base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount(
-      "InputMethod.Assistive.TimeToDismiss.PersonalInfo", 0);
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfileIfExists(profile_);
@@ -376,8 +368,6 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
       prefix_text,
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   helper.WaitForSurroundingTextChanged(prefix_text);
-  histogram_tester.ExpectTotalCount(
-      "InputMethod.Assistive.TimeToDismiss.PersonalInfo", 0);
 
   DispatchKeyPress(ui::VKEY_ESCAPE, false);
   // This down and enter should make no effect.
@@ -391,8 +381,6 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
   EXPECT_EQ(expected_result_text, helper.GetSurroundingText());
   histogram_tester.ExpectUniqueSample("InputMethod.Assistive.Success",
                                       AssistiveType::kPersonalEmail, 0);
-  histogram_tester.ExpectTotalCount(
-      "InputMethod.Assistive.TimeToDismiss.PersonalInfo", 1);
 
   SetFocus(nullptr);
 }
@@ -519,8 +507,6 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
 IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
                        DismissEmojiSuggestionWhenUsersContinueTyping) {
   base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount("InputMethod.Assistive.TimeToDismiss.Emoji",
-                                    0);
   engine_->Enable(kEngineIdUs);
   TextInputTestHelper helper(GetBrowserInputMethod());
   SetUpTextInput(helper);
@@ -536,9 +522,6 @@ IN_PROC_BROWSER_TEST_F(NativeInputMethodEngineWithoutImeServiceTest,
       u"a",
       ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
   helper.WaitForSurroundingTextChanged(expected_result_text);
-
-  histogram_tester.ExpectTotalCount("InputMethod.Assistive.TimeToDismiss.Emoji",
-                                    1);
 
   SetFocus(nullptr);
 }

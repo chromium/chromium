@@ -89,8 +89,6 @@ class EmojiSuggester : public Suggester {
   // The map holding one-word-mapping to emojis.
   std::map<std::string, std::vector<std::u16string>> emoji_map_;
 
-  base::TimeTicks session_start_;
-
   // Pointer for callback, must be the last declared in the file.
   base::WeakPtrFactory<EmojiSuggester> weak_factory_{this};
 };
