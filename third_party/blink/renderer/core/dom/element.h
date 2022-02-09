@@ -1098,6 +1098,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   void ClearTabIndexExplicitlyIfNeeded();
   void SetTabIndexExplicitly();
+  // Returns false if the style prevents focus. Returning true doesn't imply
+  // focusability, there may be other conditions like SupportsFocus().
   // Subclasses may override this method to affect focusability. This method
   // must be called on an up-to-date ComputedStyle, so it may use existence of
   // layoutObject and the LayoutObject::style() to reason about focusability.
@@ -1105,8 +1107,12 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // This method cannot be moved to LayoutObject because some focusable nodes
   // don't have layoutObjects. e.g., HTMLOptionElement.
   virtual bool IsFocusableStyle() const;
-  // Similar to above, except that it will ensure that any deferred work to
-  // create layout objects is completed (e.g. in display-locked trees).
+  // Contains the base logic for IsFocusableStyle. Doesn't require the node to
+  // have an up-to-date LayoutObject, it's up to the caller to pass the right
+  // one as an argument.
+  bool IsBaseElementFocusableStyle(const LayoutObject*) const;
+  // Similar to IsFocusableStyle, except that it will ensure that any deferred
+  // work to create layout objects is completed (e.g. in display-locked trees).
   bool IsFocusableStyleAfterUpdate() const;
 
   // ClassAttributeChanged() and UpdateClassList() exist to share code between

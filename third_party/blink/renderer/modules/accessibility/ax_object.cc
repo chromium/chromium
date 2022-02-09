@@ -3134,21 +3134,7 @@ bool AXObject::IsFocusableStyleUsingBestAvailableState() const {
 
   // The best available source of information is now the AX tree, so use that to
   // figure out whether we have focusable style.
-
-  // If we're in a canvas subtree, then use the canvas visibility instead of
-  // self visibility. The elements in a canvas subtree are fallback elements,
-  // which are not necessarily rendered but are allowed to be focusable.
-  if (element->IsInCanvasSubtree()) {
-    const HTMLCanvasElement* canvas =
-        Traversal<HTMLCanvasElement>::FirstAncestorOrSelf(*element);
-    DCHECK(canvas);
-    return canvas->GetLayoutObject() &&
-           canvas->GetLayoutObject()->Style()->Visibility() ==
-               EVisibility::kVisible;
-  }
-
-  return GetLayoutObject() &&
-         GetLayoutObject()->Style()->Visibility() == EVisibility::kVisible;
+  return element->IsBaseElementFocusableStyle(GetLayoutObject());
 }
 
 bool AXObject::CanSetFocusAttribute() const {

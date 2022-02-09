@@ -684,7 +684,11 @@ bool Element::IsFocusableStyle() const {
   DCHECK(
       !GetDocument().IsActive() || GetDocument().InStyleRecalc() ||
       !GetDocument().NeedsLayoutTreeUpdateForNodeIncludingDisplayLocked(*this));
+  return IsBaseElementFocusableStyle(GetLayoutObject());
+}
 
+bool Element::IsBaseElementFocusableStyle(
+    const LayoutObject* layout_object) const {
   if (LayoutObject* layout_object = GetLayoutObject())
     return layout_object->StyleRef().IsFocusable();
 
