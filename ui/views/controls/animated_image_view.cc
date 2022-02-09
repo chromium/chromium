@@ -82,7 +82,10 @@ void AnimatedImageView::OnPaint(gfx::Canvas* canvas) {
   if (!animated_image_)
     return;
   canvas->Save();
-  canvas->Translate(GetImageBounds().origin().OffsetFromOrigin());
+
+  gfx::Vector2d translation = GetImageBounds().origin().OffsetFromOrigin();
+  translation.Add(additional_translation_);
+  canvas->Translate(std::move(translation));
 
   if (!previous_timestamp_.is_null() && state_ != State::kStopped) {
     animated_image_->Paint(canvas, previous_timestamp_, GetImageSize());
