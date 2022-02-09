@@ -234,8 +234,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param snackbarManagerSupplier Supplies the {@link SnackbarManager}.
      * @param activityType The {@link ActivityType} for the activity.
      * @param isInOverviewModeSupplier Supplies whether the app is in overview mode.
-     * @param shouldShowOverviewPageOnStartSupplier Supplies whether the overview page should be
-     *         shown on start.
      * @param isWarmOnResumeSupplier Supplies whether the app was warm on resume.
      * @param appMenuDelegate The app menu delegate.
      * @param statusBarColorProvider Provides the status bar color.
@@ -277,7 +275,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
             @ActivityType int activityType, @NonNull Supplier<Boolean> isInOverviewModeSupplier,
-            @NonNull Supplier<Boolean> shouldShowOverviewPageOnStartSupplier,
             @NonNull Supplier<Boolean> isWarmOnResumeSupplier,
             @NonNull AppMenuDelegate appMenuDelegate,
             @NonNull StatusBarColorProvider statusBarColorProvider,
@@ -298,9 +295,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 supportsFindInPage, tabCreatorManagerSupplier, fullscreenManager,
                 compositorViewHolderSupplier, tabContentManagerSupplier,
                 overviewModeBehaviorSupplier, snackbarManagerSupplier, activityType,
-                isInOverviewModeSupplier, shouldShowOverviewPageOnStartSupplier,
-                isWarmOnResumeSupplier, appMenuDelegate, statusBarColorProvider,
-                intentRequestTracker, tabReparentingControllerSupplier,
+                isInOverviewModeSupplier, isWarmOnResumeSupplier, appMenuDelegate,
+                statusBarColorProvider, intentRequestTracker, tabReparentingControllerSupplier,
                 initializeUiWithIncognitoColors);
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mControlContainerHeightResource = controlContainerHeightResource;

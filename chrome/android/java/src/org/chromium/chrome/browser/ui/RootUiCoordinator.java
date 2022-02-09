@@ -242,7 +242,6 @@ public class RootUiCoordinator
     protected final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     protected final @ActivityType int mActivityType;
     protected final Supplier<Boolean> mIsInOverviewModeSupplier;
-    protected final Supplier<Boolean> mShouldShowOverviewPageOnStartSupplier;
     private final Supplier<Boolean> mIsWarmOnResumeSupplier;
     private final AppMenuDelegate mAppMenuDelegate;
     private final StatusBarColorProvider mStatusBarColorProvider;
@@ -285,8 +284,6 @@ public class RootUiCoordinator
      * @param snackbarManagerSupplier Supplies the {@link SnackbarManager}.
      * @param activityType The {@link ActivityType} for the activity.
      * @param isInOverviewModeSupplier Supplies whether the app is in overview mode.
-     * @param shouldShowOverviewPageOnStartSupplier Supplies whether the overview page should be
-     *         shown on start.
      * @param isWarmOnResumeSupplier Supplies whether the app was warm on resume.
      * @param appMenuDelegate The app menu delegate.
      * @param statusBarColorProvider Provides the status bar color.
@@ -323,7 +320,6 @@ public class RootUiCoordinator
             @NonNull OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
             @ActivityType int activityType, @NonNull Supplier<Boolean> isInOverviewModeSupplier,
-            @NonNull Supplier<Boolean> shouldShowOverviewPageOnStartSupplier,
             @NonNull Supplier<Boolean> isWarmOnResumeSupplier,
             @NonNull AppMenuDelegate appMenuDelegate,
             @NonNull StatusBarColorProvider statusBarColorProvider,
@@ -351,7 +347,6 @@ public class RootUiCoordinator
         mSnackbarManagerSupplier = snackbarManagerSupplier;
         mActivityType = activityType;
         mIsInOverviewModeSupplier = isInOverviewModeSupplier;
-        mShouldShowOverviewPageOnStartSupplier = shouldShowOverviewPageOnStartSupplier;
         mIsWarmOnResumeSupplier = isWarmOnResumeSupplier;
         mAppMenuDelegate = appMenuDelegate;
         mStatusBarColorProvider = statusBarColorProvider;
@@ -923,9 +918,6 @@ public class RootUiCoordinator
             mButtonDataProviders =
                     Arrays.asList(mIdentityDiscController, adaptiveToolbarButtonController);
 
-            // mShouldShowOverviewPageOnStartSupplier.get() should already be ready because
-            // ChromeTabbedActivity#mInactivityTracker and getTabModelSelector() have been set up by
-            // performPostInflationStartup before this method.
             mToolbarManager = new ToolbarManager(mActivity, mBrowserControlsManager,
                     mFullscreenManager, toolbarContainer, mCompositorViewHolderSupplier.get(),
                     urlFocusChangedCallback, mTopUiThemeColorProvider,
@@ -937,9 +929,9 @@ public class RootUiCoordinator
                     shouldShowMenuUpdateBadge(), mTabModelSelectorSupplier, mStartSurfaceSupplier,
                     mOmniboxFocusStateSupplier, mIntentMetadataOneshotSupplier,
                     mPromoShownOneshotSupplier, mWindowAndroid, mIsInOverviewModeSupplier,
-                    mShouldShowOverviewPageOnStartSupplier.get(), mModalDialogManagerSupplier,
-                    mStatusBarColorController, mAppMenuDelegate, mActivityLifecycleDispatcher,
-                    mStartSurfaceParentTabSupplier, mBottomSheetController, mIsWarmOnResumeSupplier,
+                    mModalDialogManagerSupplier, mStatusBarColorController, mAppMenuDelegate,
+                    mActivityLifecycleDispatcher, mStartSurfaceParentTabSupplier,
+                    mBottomSheetController, mIsWarmOnResumeSupplier,
                     mTabContentManagerSupplier.get(), mTabCreatorManagerSupplier.get(),
                     mOverviewModeBehaviorSupplier, mSnackbarManagerSupplier.get(), mJankTracker,
                     getMerchantTrustSignalsCoordinatorSupplier(), mTabReparentingControllerSupplier,
