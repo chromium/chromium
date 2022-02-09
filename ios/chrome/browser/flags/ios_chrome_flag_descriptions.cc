@@ -200,6 +200,10 @@ const char kEnableFREUIModuleIOSDescription[] =
     "switcher at the TOP or BOTTOM and using OLD or NEW strings set for the "
     "sign-in sync screen.";
 
+const char kEnableFullscreenAPIName[] = "Enable Fullscreen API";
+const char kEnableFullscreenAPIDescription[] =
+    "Enable the Fullscreen API for web content (iOS 15.4+).";
+
 const char kEnableLongMessageDurationName[] = "Enable long message duration";
 const char kEnableLongMessageDurationDescription[] =
     "Enables a long duration when an overlay message is shown.";

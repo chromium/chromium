@@ -800,6 +800,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableSendingBcnInGetUploadDetails)},
+    {"enable-fullscreen-api", flag_descriptions::kEnableFullscreenAPIName,
+     flag_descriptions::kEnableFullscreenAPIDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(web::features::kEnableFullscreenAPI)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

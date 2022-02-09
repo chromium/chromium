@@ -81,6 +81,10 @@ extern const base::Feature kEnableUnrealizedWebStates;
 // for its current site.
 extern const base::Feature kMediaPermissionsControl;
 
+// Enables the Fullscreen API in WebKit (supported on iOS 15.4+). This API
+// allows web sites to enter fullscreen mode, with all browser UI hidden.
+extern const base::Feature kEnableFullscreenAPI;
+
 // When true, the native context menu for the web content are used.
 bool UseWebViewNativeContextMenuWeb();
 

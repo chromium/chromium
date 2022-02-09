@@ -67,6 +67,9 @@ const base::Feature kEnableUnrealizedWebStates{
 const base::Feature kMediaPermissionsControl{"MediaPermissionsControl",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+extern const base::Feature kEnableFullscreenAPI{
+    "EnableFullscreenAPI", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool UseWebViewNativeContextMenuWeb() {
   return base::FeatureList::IsEnabled(kDefaultWebViewContextMenu);
 }
