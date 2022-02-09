@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertInstanceof} from '../assert.js';
+import {assert, assertExists, assertInstanceof} from '../assert.js';
 import {AsyncJobQueue} from '../async_job_queue.js';
 import * as dom from '../dom.js';
 import * as focusRing from '../focus_ring.js';
@@ -143,7 +143,7 @@ export class PTZPanel extends View {
           return;
         }
         const style = getComputedStyle(el, '::before');
-        const getStyleValue = (attr) => {
+        const getStyleValue = (attr: string) => {
           const px = style.getPropertyValue(attr);
           return Number(px.replace(/^([\d.]+)px$/, '$1'));
         };
@@ -166,9 +166,10 @@ export class PTZPanel extends View {
              of [this.panRight, this.panLeft, this.tiltUp, this.tiltDown]) {
       btn.addEventListener(tooltip.TOOLTIP_POSITION_EVENT_NAME, (e) => {
         const target = assertInstanceof(e.target, HTMLElement);
+        assert(target.offsetParent !== null);
         const pRect = target.offsetParent.getBoundingClientRect();
         const style = getComputedStyle(target, '::before');
-        const getStyleValue = (attr) => {
+        const getStyleValue = (attr: string) => {
           const px = style.getPropertyValue(attr);
           return Number(px.replace(/^([\d.]+)px$/, '$1'));
         };
@@ -207,10 +208,12 @@ export class PTZPanel extends View {
    * @param decBtn Button for decreasing the value.
    */
   private bind(
-      attr: string, incBtn: HTMLButtonElement,
+      attr: 'pan'|'tilt'|'zoom', incBtn: HTMLButtonElement,
       decBtn: HTMLButtonElement): AsyncJobQueue {
-    const {min, max, step} = this.track.getCapabilities()[attr];
-    const getCurrent = () => this.track.getSettings()[attr];
+    const track = this.track;
+    assert(track !== null);
+    const {min, max, step} = track.getCapabilities()[attr];
+    const getCurrent = () => assertExists(track.getSettings()[attr]);
     this.checkDisabled();
 
     const queue = new AsyncJobQueue();
@@ -230,7 +233,7 @@ export class PTZPanel extends View {
               step * direction;
           return () => {
             queue.push(async () => {
-              if (!this.track.enabled) {
+              if (!track.enabled) {
                 return;
               }
               const current = getCurrent();
@@ -241,7 +244,7 @@ export class PTZPanel extends View {
               if (current === next) {
                 return;
               }
-              await this.track.applyConstraints({advanced: [{[attr]: next}]});
+              await track.applyConstraints({advanced: [{[attr]: next}]});
               this.checkDisabled();
             });
           };
@@ -272,14 +275,17 @@ export class PTZPanel extends View {
   }
 
   private canPan(): boolean {
+    assert(this.track !== null);
     return this.track.getCapabilities().pan !== undefined;
   }
 
   private canTilt(): boolean {
+    assert(this.track !== null);
     return this.track.getCapabilities().tilt !== undefined;
   }
 
   private canZoom(): boolean {
+    assert(this.track !== null);
     return this.track.getCapabilities().zoom !== undefined;
   }
 
@@ -289,12 +295,15 @@ export class PTZPanel extends View {
     }
     const capabilities = this.track.getCapabilities();
     const settings = this.track.getSettings();
-    const updateDisable = (incBtn, decBtn, attr) => {
-      const current = settings[attr];
-      const {min, max, step} = capabilities[attr];
-      decBtn.disabled = current - step < min;
-      incBtn.disabled = current + step > max;
-    };
+    const updateDisable =
+        (incBtn: HTMLButtonElement, decBtn: HTMLButtonElement,
+         attr: 'pan'|'tilt'|'zoom') => {
+          const current = settings[attr];
+          const {min, max, step} = capabilities[attr];
+          assert(current !== undefined);
+          decBtn.disabled = current - step < min;
+          incBtn.disabled = current + step > max;
+        };
     if (capabilities.zoom !== undefined) {
       updateDisable(this.zoomIn, this.zoomOut, 'zoom');
     }
@@ -366,6 +375,7 @@ export class PTZPanel extends View {
         this.tiltQueues.clear(),
         this.zoomQueues.clear(),
       ]);
+      assert(this.resetPTZ !== null);
       await this.resetPTZ();
       this.checkDisabled();
     };
