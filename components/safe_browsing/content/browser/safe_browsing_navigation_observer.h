@@ -58,9 +58,6 @@ struct NavigationEvent {
   // Which tab this request url is targeting to.
   SessionID target_tab_id;
 
-  // Frame tree node ID of the frame where this navigation takes place.
-  int frame_id;
-
   // When this NavigationEvent was last updated.
   base::Time last_updated;
 
