@@ -1355,6 +1355,7 @@
     'multidevice': {
       'filepath': 'ash/components/proximity_auth/'\
                   '|ash/multi_device_setup/'\
+                  '|ash/resources/multidevice_resources.grdp'\
                   '|ash/services/secure_channel/'\
                   '|chrome/browser/ash/cryptauth/'\
                   '|chrome/browser/ash/device_sync/'\
@@ -1366,7 +1367,6 @@
                   '|chrome/browser/ui/webui/settings/chromeos/multidevice'\
                   '|chrome/test/data/webui/multidevice_setup/'\
                   '|chromeos/components/multidevice/'\
-                  '|chromeos/resources/multidevice_resources.grdp'\
                   '|chromeos/services/device_sync/'\
                   '|chromeos/services/multidevice_setup/'\
                   '|ui/webui/resources/cr_components/chromeos/multidevice_setup/'

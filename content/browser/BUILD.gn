@@ -2289,6 +2289,8 @@ source_set("browser") {
 
   if (is_chromeos_ash) {
     deps += [
+      "//ash/resources:resources",
+      "//chromeos/resources",
       "//ui/base/ime/ash",
       "//ui/chromeos/styles:cros_styles_views",
     ]
@@ -2357,7 +2359,6 @@ source_set("browser") {
       "tracing/cros_tracing_agent.h",
     ]
     deps += [
-      "//chromeos/resources",
       "//components/chromeos_camera:mojo_mjpeg_decode_accelerator",
       "//services/data_decoder/public/cpp",
       "//services/data_decoder/public/mojom",

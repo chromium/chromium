@@ -23,6 +23,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "ash/grit/ash_resources.h"
+#include "ash/grit/ash_resources_map.h"
 #include "base/feature_list.h"
 #include "chromeos/grit/chromeos_resources.h"
 #include "chromeos/grit/chromeos_resources_map.h"
@@ -68,12 +70,6 @@ const std::set<int> GetChromeosMojoResourceIds() {
       IDR_IP_ADDRESS_MOJOM_HTML,
       IDR_IP_ADDRESS_MOJOM_LITE_JS,
       IDR_IP_ADDRESS_MOJOM_WEBUI_JS,
-      IDR_MULTIDEVICE_DEVICE_SYNC_MOJOM_HTML,
-      IDR_MULTIDEVICE_DEVICE_SYNC_MOJOM_LITE_JS,
-      IDR_MULTIDEVICE_MULTIDEVICE_SETUP_MOJOM_HTML,
-      IDR_MULTIDEVICE_MULTIDEVICE_SETUP_MOJOM_LITE_JS,
-      IDR_MULTIDEVICE_MULTIDEVICE_TYPES_MOJOM_HTML,
-      IDR_MULTIDEVICE_MULTIDEVICE_TYPES_MOJOM_LITE_JS,
       IDR_NETWORK_CONFIG_CONSTANTS_MOJOM_WEBUI_JS,
       IDR_NETWORK_CONFIG_MOJOM_HTML,
       IDR_NETWORK_CONFIG_MOJOM_LITE_JS,
@@ -85,6 +81,17 @@ const std::set<int> GetChromeosMojoResourceIds() {
       IDR_NETWORK_DIAGNOSTICS_MOJOM_LITE_JS,
       IDR_NETWORK_HEALTH_MOJOM_HTML,
       IDR_NETWORK_HEALTH_MOJOM_LITE_JS,
+  };
+}
+
+const std::set<int> GetAshMojoResourceIds() {
+  return std::set<int>{
+      IDR_MULTIDEVICE_DEVICE_SYNC_MOJOM_HTML,
+      IDR_MULTIDEVICE_DEVICE_SYNC_MOJOM_LITE_JS,
+      IDR_MULTIDEVICE_MULTIDEVICE_SETUP_MOJOM_HTML,
+      IDR_MULTIDEVICE_MULTIDEVICE_SETUP_MOJOM_LITE_JS,
+      IDR_MULTIDEVICE_MULTIDEVICE_TYPES_MOJOM_HTML,
+      IDR_MULTIDEVICE_MULTIDEVICE_TYPES_MOJOM_LITE_JS,
   };
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -124,6 +131,8 @@ void PopulateSharedResourcesDataSource(WebUIDataSource* source) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   AddResources(GetChromeosMojoResourceIds(), kChromeosResources,
                kChromeosResourcesSize, source);
+  AddResources(GetAshMojoResourceIds(), kAshResources, kAshResourcesSize,
+               source);
 
   source->AddString(
       "crosColorsDebugOverrides",

@@ -2,10 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(https://crbug.com/1164001): When a directory which contains WebUIs grd
-# moves to ash, a target should be moved to //ash/webui/resources/BUILD.gn as
-# well.
-
 import("//chromeos/assistant/assistant.gni")
 import("//tools/grit/grit_rule.gni")
 
@@ -30,17 +26,14 @@ grit("resources") {
   ]
 
   deps = [
-    "//chromeos/components/multidevice/mojom:mojom_js",
     "//chromeos/language/public/mojom:mojom_js",
     "//chromeos/services/bluetooth_config/public/mojom:mojom_js",
     "//chromeos/services/cellular_setup/public/mojom:mojom_js",
-    "//chromeos/services/device_sync/public/mojom:mojom_js",
 
     # Generated ml service js bindings are required by external clients, the
     # clients are not found within Chromium. The clients pull the generated
     # js bindings as part of their build process.
     "//chromeos/services/machine_learning/public/mojom:mojom_js",
-    "//chromeos/services/multidevice_setup/public/mojom:mojom_js",
     "//chromeos/services/network_config/public/mojom:mojom_js",
     "//chromeos/services/network_health/public/mojom:mojom_js",
   ]
