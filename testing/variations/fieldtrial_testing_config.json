@@ -5370,6 +5370,22 @@
             ]
         }
     ],
+    "ReadLaterReminderNotification": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220208",
+                    "enable_features": [
+                        "NotificationScheduleService",
+                        "ReadLaterReminderNotification"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReadingListMessages": [
         {
             "platforms": [
