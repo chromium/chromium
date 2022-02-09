@@ -33,6 +33,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContentUriUtils;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.PackageManagerUtils;
@@ -92,6 +93,11 @@ public class OMADownloadHandler extends BroadcastReceiver {
     public interface TestObserver { void onDownloadEnqueued(long downloadId); }
 
     private static final String TAG = "OMADownloadHandler";
+
+    // Undocumented outside of Android source, but held by the Android Download Manager since at
+    // least Android M in order to send download completed broadcasts.
+    private static final String PERMISSION_SEND_DOWNLOAD_COMPLETED_INTENTS =
+            "android.permission.SEND_DOWNLOAD_COMPLETED_INTENTS";
 
     // Valid download descriptor attributes.
     protected static final String OMA_TYPE = "type";
@@ -800,8 +806,9 @@ public class OMADownloadHandler extends BroadcastReceiver {
         }
 
         if (mSystemDownloadIdMap.size() == 0) {
-            mContext.registerReceiver(
-                    this, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+            ContextUtils.registerExportedBroadcastReceiver(mContext, this,
+                    new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
+                    PERMISSION_SEND_DOWNLOAD_COMPLETED_INTENTS);
         }
         mSystemDownloadIdMap.put(response.downloadId, downloadItem);
 
