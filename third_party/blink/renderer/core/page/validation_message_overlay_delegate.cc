@@ -157,6 +157,19 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
   frame->View()->SetBaseBackgroundColor(Color::kTransparent);
   page_->GetVisualViewport().SetSize(view_size);
 
+  // Propagate dark mode settings from anchor document to allow CSS of
+  // overlay bubble to detect dark mode. See the comments in
+  // PagePopupClient::AdjustSettingsFromOwnerColorScheme for more information.
+  page_->GetSettings().SetForceDarkModeEnabled(false);
+  bool in_forced_colors_mode = anchor_->GetDocument().InForcedColorsMode();
+  LayoutObject* anchor_layout = anchor_->GetLayoutObject();
+  page_->GetSettings().SetPreferredColorScheme(
+      !in_forced_colors_mode && anchor_layout &&
+              anchor_layout->StyleRef().UsedColorScheme() ==
+                  mojom::blink::ColorScheme::kDark
+          ? mojom::blink::PreferredColorScheme::kDark
+          : mojom::blink::PreferredColorScheme::kLight);
+
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
   WriteDocument(data.get());
   float zoom_factor = anchor_->GetDocument().GetFrame()->PageZoomFactor();
@@ -195,7 +208,10 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
 
 void ValidationMessageOverlayDelegate::WriteDocument(SharedBuffer* data) {
   DCHECK(data);
-  PagePopupClient::AddString("<!DOCTYPE html><html><head><style>", data);
+  PagePopupClient::AddString(
+      "<!DOCTYPE html><head><meta charset='UTF-8'><meta name='color-scheme' "
+      "content='light dark'><style>",
+      data);
   data->Append(UncompressResourceAsBinary(IDR_VALIDATION_BUBBLE_CSS));
   PagePopupClient::AddString("</style></head>", data);
   PagePopupClient::AddString(
