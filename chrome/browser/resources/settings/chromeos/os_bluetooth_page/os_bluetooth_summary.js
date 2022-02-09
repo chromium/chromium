@@ -148,7 +148,6 @@ class SettingsBluetoothSummaryElement extends
       return;
     }
     getBluetoothConfig().setBluetoothEnabledState(this.isBluetoothToggleOn_);
-    this.annouceBluetoothStateChange_();
   }
 
   /**

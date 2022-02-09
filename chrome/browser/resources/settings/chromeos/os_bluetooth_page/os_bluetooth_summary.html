@@ -37,6 +37,7 @@
     <cr-toggle id="enableBluetoothToggle"
         class="margin-matches-padding"
         checked="{{isBluetoothToggleOn_}}"
+        on-change="annouceBluetoothStateChange_"
         disabled$="[[isToggleDisabled_(systemProperties.systemState)]]"
         aria-label="$i18n{bluetoothToggleA11yLabel}">
     </cr-toggle>
