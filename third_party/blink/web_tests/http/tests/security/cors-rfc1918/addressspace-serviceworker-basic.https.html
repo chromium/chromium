@@ -1,0 +1,60 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/serviceworker/resources/test-helpers.js"></script>
+<body>
+<script>
+
+async function receiveAddressSpaceMessageFromIFrame(frame) {
+    return new Promise((resolve) => {
+        window.addEventListener("message", e => {
+            // The iframe uses promise_test() and it sends messages which are
+            // related to test state. Ignore these messages.
+            if (e.data.messageType === "AddressSpaceMessage")
+                resolve(e.data);
+        });
+    });
+}
+
+async function addressSpaceServiceWorkerTest(t, origin, expected, workerType) {
+    const path = "/security/cors-rfc1918/resources/post-addressspace-from-serviceworker.html";
+    const url = origin + path + "?workerType=" + workerType;
+
+    const frame = await with_iframe(url);
+    t.add_cleanup(_ => frame.remove());
+
+    const message = await receiveAddressSpaceMessageFromIFrame(frame);
+    assert_equals(message.origin, origin, "origin");
+    assert_equals(message.addressSpace, expected, "addressSpace");
+}
+
+promise_test(async t => {
+    const origin = "https://localhost:8443";
+    const expected = "local";
+    const workerType = "classic";
+    await addressSpaceServiceWorkerTest(t, origin, expected, workerType);
+}, "addressspace: service worker classic script localhost");
+
+promise_test(async t => {
+    const origin = "https://127.0.0.1:8443";
+    const expected = "local";
+    const workerType = "classic";
+    await addressSpaceServiceWorkerTest(t, origin, expected, workerType);
+}, "addressspace: service worker 127.0.0.1");
+
+promise_test(async t => {
+    const origin = "https://localhost:8443";
+    const expected = "local";
+    const workerType = "module";
+    await addressSpaceServiceWorkerTest(t, origin, expected, workerType);
+}, "addressspace: service worker module script localhost");
+
+promise_test(async t => {
+    const origin = "https://127.0.0.1:8443";
+    const expected = "local";
+    const workerType = "module";
+    await addressSpaceServiceWorkerTest(t, origin, expected, workerType);
+}, "addressspace: service worker module script 127.0.0.1");
+
+</script>
+</body>

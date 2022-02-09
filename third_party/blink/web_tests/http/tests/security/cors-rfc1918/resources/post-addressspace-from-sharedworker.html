@@ -1,0 +1,13 @@
+<script>
+    const worker_options = location.search === "?module"
+        ? { name: "module", type: "module" }
+        : { name: "classic", type: "classic" };
+
+    const w = new SharedWorker(
+        "/security/cors-rfc1918/resources/post-addressspace-to-owner.js",
+        worker_options);
+    w.onerror = e => window.parent.postMessage({ "origin": e.name }, "*");
+    w.port.onmessage = e =>  window.parent.postMessage(e.data, "*");
+    w.port.start();
+    w.port.postMessage("go");
+</script>

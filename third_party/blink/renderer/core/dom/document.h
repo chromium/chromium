@@ -357,6 +357,8 @@ class CORE_EXPORT Document : public ContainerNode,
   bool DocumentPolicyFeatureObserved(
       mojom::blink::DocumentPolicyFeature feature);
 
+  String addressSpaceForBindings(ScriptState*) const;
+
   bool CanContainRangeEndPoint() const override { return true; }
 
   SelectorQueryCache& GetSelectorQueryCache();

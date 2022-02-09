@@ -1,0 +1,11 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="./resources/addressspace-test.js"></script>
+<script>
+    window.onload = function () {
+        addressSpaceTest("http://localhost:8000", "document+csp", "public");
+        addressSpaceTest("http://127.0.0.1:8000", "document+csp", "public");
+    };
+</script>
+

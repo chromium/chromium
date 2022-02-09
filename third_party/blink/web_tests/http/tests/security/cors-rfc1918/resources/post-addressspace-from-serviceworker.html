@@ -1,0 +1,32 @@
+<script src="/resources/testharness.js"></script>
+<script src="/serviceworker/resources/test-helpers.js"></script>
+<script>
+
+async function receiveMessageFromServiceWorker(worker) {
+    return new Promise((resolve) => {
+        // Use a dedicated message channel to avoid unexpected messages.
+        const channel = new MessageChannel();
+        channel.port1.onmessage = e => resolve(e.data);
+        worker.postMessage("Don't care", [channel.port2]);
+    });
+}
+
+promise_test(async t => {
+    const script = "/security/cors-rfc1918/resources/post-addressspace-to-owner-serviceworker.js";
+    const scope = "/security/cors-rfc1918/resources/post-addressspace-from-serviceworker.html";
+
+    const params = new URLSearchParams(location.search);
+    const workerType = params.get("workerType");
+    const options = { type: workerType };
+
+    const registration = await service_worker_unregister_and_register(
+        t, script, scope, options);
+    t.add_cleanup(_ => registration.unregister());
+
+    await wait_for_state(t, registration.installing, "activated");
+
+    const message = await receiveMessageFromServiceWorker(registration.active);
+    window.parent.postMessage(message, "*");
+}, "Address space tests for service worker");
+
+</script>

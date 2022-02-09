@@ -1773,6 +1773,7 @@ interface Document : Node
     attribute @@unscopables
     getter URL
     getter activeElement
+    getter addressSpace
     getter adoptedStyleSheets
     getter alinkColor
     getter all

@@ -53,6 +53,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -949,6 +950,13 @@ bool Document::DocumentPolicyFeatureObserved(
   }
   parsed_document_policies_[feature_index] = true;
   return false;
+}
+
+String Document::addressSpaceForBindings(ScriptState* script_state) const {
+  // "public" is the lowest-privilege value.
+  if (!script_state->ContextIsValid())
+    return "public";
+  return ExecutionContext::From(script_state)->addressSpaceForBindings();
 }
 
 void Document::ChildrenChanged(const ChildrenChange& change) {

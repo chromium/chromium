@@ -1,0 +1,12 @@
+<script>
+    const worker_options = { type: "classic" };
+    if (location.search === "?module") {
+        worker_options.type = "module";
+    }
+
+    const w = new Worker(
+        "/security/cors-rfc1918/resources/post-addressspace-to-owner.js",
+        worker_options);
+    w.onmessage = e => window.parent.postMessage(e.data, "*");
+    w.postMessage("go");
+</script>
