@@ -626,8 +626,13 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest,
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_ActivateAndMinimizeWindows DISABLED_ActivateAndMinimizeWindows
+#else
+#define MAYBE_ActivateAndMinimizeWindows ActivateAndMinimizeWindows
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest,
-                       ActivateAndMinimizeWindows) {
+                       MAYBE_ActivateAndMinimizeWindows) {
   if (!ash_starter_.HasLacrosArgument()) {
     return;
   }
