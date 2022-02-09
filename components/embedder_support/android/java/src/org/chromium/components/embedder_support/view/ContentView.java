@@ -117,7 +117,7 @@ public class ContentView extends FrameLayout
     }
 
     protected WebContentsAccessibility getWebContentsAccessibility() {
-        return hasValidWebContents() ? WebContentsAccessibility.fromWebContents(mWebContents)
+        return webContentsAttached() ? WebContentsAccessibility.fromWebContents(mWebContents)
                                      : null;
     }
 
