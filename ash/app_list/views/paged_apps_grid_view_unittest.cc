@@ -4,6 +4,8 @@
 
 #include "ash/app_list/views/paged_apps_grid_view.h"
 
+#include <utility>
+
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/model/app_list_item.h"
@@ -20,6 +22,8 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
 namespace ash {
 namespace {
@@ -76,6 +80,11 @@ class PagedAppsGridViewTestBase : public AshTestBase {
         ->GetAppsContainerView()
         ->GetWidget()
         ->LayoutRootViewIfNecessary();
+  }
+
+  void OnReorderAnimationDone(base::OnceClosure closure, bool aborted) {
+    EXPECT_FALSE(aborted);
+    std::move(closure).Run();
   }
 
   std::unique_ptr<test::AppsGridViewTestApi> grid_test_api_;
@@ -321,6 +330,72 @@ TEST_F(PagedAppsGridViewWithNudgeTest, GridDimensionsChangesWithDisplaySize) {
   EXPECT_EQ(5, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
   EXPECT_EQ(7, GetPagedAppsGridView()->GetRowsForTesting());
   EXPECT_EQ(5, GetPagedAppsGridView()->cols());
+}
+
+// Verify on the paged apps grid the undo toast should show after scrolling.
+TEST_F(PagedAppsGridViewTest, ScrollToShowUndoToastWhenSorting) {
+  ui::ScopedAnimationDurationScaleMode scope_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Show an app list with enough apps to create multiple pages.
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppItems(grid_test_api_->AppsOnPage(0) + 50);
+  helper->AddRecentApps(5);
+  helper->GetAppsContainerView()->ResetForShowApps();
+
+  PaginationModel* pagination_model =
+      helper->GetRootPagedAppsGridView()->pagination_model();
+  const int total_pages = pagination_model->total_pages();
+  EXPECT_GT(total_pages, 1);
+
+  AppsContainerView* container_view =
+      GetAppListTestHelper()->GetAppsContainerView();
+  AppListToastContainerView* reorder_undo_toast_container =
+      container_view->toast_container_for_test();
+  EXPECT_FALSE(reorder_undo_toast_container->is_toast_visible());
+
+  {
+    container_view->UpdateForNewSortingOrder(
+        AppListSortOrder::kNameAlphabetical,
+        /*animate=*/true, /*update_position_closure=*/base::DoNothing());
+
+    base::RunLoop run_loop;
+    container_view->apps_grid_view()->AddReorderDoneCallbackForTest(
+        base::BindRepeating(&PagedAppsGridViewTest::OnReorderAnimationDone,
+                            base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
+  // After sorting, the undo toast should be visible.
+  EXPECT_TRUE(reorder_undo_toast_container->is_toast_visible());
+
+  pagination_model->SelectPage(total_pages - 1, /*animate=*/false);
+
+  // After selecting the last page, the undo toast should be out of the apps
+  // container's view port.
+  const gfx::Rect apps_container_screen_bounds =
+      container_view->GetBoundsInScreen();
+  EXPECT_FALSE(apps_container_screen_bounds.Contains(
+      reorder_undo_toast_container->GetBoundsInScreen()));
+
+  {
+    container_view->UpdateForNewSortingOrder(
+        AppListSortOrder::kColor,
+        /*animate=*/true, /*update_position_closure=*/base::DoNothing());
+
+    base::RunLoop run_loop;
+    container_view->apps_grid_view()->AddReorderDoneCallbackForTest(
+        base::BindRepeating(&PagedAppsGridViewTest::OnReorderAnimationDone,
+                            base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
+  // After sorting, the undo toast should still be visible.
+  EXPECT_TRUE(reorder_undo_toast_container->is_toast_visible());
+
+  // The undo toast should be within the apps container's view port.
+  EXPECT_TRUE(apps_container_screen_bounds.Contains(
+      reorder_undo_toast_container->GetBoundsInScreen()));
 }
 
 }  // namespace

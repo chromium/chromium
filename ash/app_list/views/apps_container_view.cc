@@ -139,6 +139,10 @@ constexpr int kSeparatorWidth = 240;
 // `scrollable_container_`.
 constexpr int kDefaultFadeoutMaskHeight = 16;
 
+// The time duration of the children fade in animation triggered by reorder.
+constexpr base::TimeDelta kChildrenFadeInAnimationDuration =
+    base::Milliseconds(400);
+
 }  // namespace
 
 // A view that contains continue section, recent apps and a separator view,
@@ -1449,14 +1453,79 @@ void AppsContainerView::OnAppsGridViewFadeOutAnimationEneded(
   if (abort)
     return;
 
+  const bool target_toast_visible = toast_container_->is_toast_visible();
+  const bool toast_visibility_change =
+      (old_toast_visible != target_toast_visible);
+
   // When the undo toast's visibility changes, the apps grid's bounds should
   // change. Meanwhile, the fade in animation relies on the apps grid's bounds
   // (because of calculating the visible items). Therefore trigger layout before
   // starting the fade in animation.
-  if (old_toast_visible != toast_container_->is_toast_visible())
+  if (toast_visibility_change)
     Layout();
 
-  apps_grid_view_->FadeInVisibleItemsForReorder(base::NullCallback());
+  ash::PaginationModel* pagination_model = apps_grid_view_->pagination_model();
+  bool page_change = (pagination_model->selected_page() != 0);
+  if (page_change) {
+    // Ensure that the undo toast is within the view port after reorder.
+    pagination_model->SelectPage(0, /*animate=*/false);
+  }
+
+  apps_grid_view_->FadeInVisibleItemsForReorder(base::BindRepeating(
+      &AppsContainerView::OnAppsGridViewFadeInAnimationEnded,
+      weak_ptr_factory_.GetWeakPtr()));
+
+  // Fade in the undo toast when:
+  // (1) The toast's visibility becomes true from false, or
+  // (2) The apps page is scrolled to show the toast.
+  const bool should_fade_in_toast =
+      (target_toast_visible && (page_change || toast_visibility_change));
+
+  if (!should_fade_in_toast)
+    return;
+
+  // Hide the toast to prepare for the fade in animation,
+  toast_container_->layer()->SetOpacity(0.f);
+
+  views::AnimationBuilder animation_builder;
+  fade_in_abort_handle_ = animation_builder.GetAbortHandle();
+  views::AnimationSequenceBlock sequence_block =
+      animation_builder
+          .OnEnded(
+              base::BindOnce(&AppsContainerView::OnFadeInChildrenAnimationEnded,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             /*aborted=*/false))
+          .OnAborted(
+              base::BindOnce(&AppsContainerView::OnFadeInChildrenAnimationEnded,
+                             weak_ptr_factory_.GetWeakPtr(),
+                             /*aborted=*/true))
+          .Once();
+  sequence_block.SetDuration(kChildrenFadeInAnimationDuration)
+      .SetOpacity(toast_container_->layer(), 1.f);
+
+  // Continue section should be faded in only when the page changes.
+  if (page_change) {
+    continue_container_->layer()->SetOpacity(0.f);
+    sequence_block.SetOpacity(continue_container_->layer(), 1.f);
+  }
+}
+
+void AppsContainerView::OnAppsGridViewFadeInAnimationEnded(bool aborted) {
+  if (!aborted)
+    return;
+
+  // Abort the children fade in animation if the apps grid fade in animation is
+  // aborted.
+  fade_in_abort_handle_.reset();
+}
+
+void AppsContainerView::OnFadeInChildrenAnimationEnded(bool aborted) {
+  if (!aborted)
+    return;
+
+  // Ensure that children are visible when the fade in animation is aborted.
+  toast_container_->layer()->SetOpacity(1.f);
+  continue_container_->layer()->SetOpacity(1.f);
 }
 
 }  // namespace ash
