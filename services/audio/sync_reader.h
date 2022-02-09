@@ -21,10 +21,6 @@
 #include "media/base/audio_latency.h"
 #include "services/audio/output_controller.h"
 
-#if BUILDFLAG(IS_POSIX)
-#include "base/file_descriptor_posix.h"
-#endif
-
 namespace audio {
 
 // An OutputController::SyncReader implementation using SyncSocket. This is used

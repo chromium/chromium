@@ -5,7 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_DRM_HOST_GPU_THREAD_ADAPTER_H_
 #define UI_OZONE_PLATFORM_DRM_HOST_GPU_THREAD_ADAPTER_H_
 
-#include "base/file_descriptor_posix.h"
+#include "base/files/scoped_file.h"
 #include "ui/display/types/display_configuration_params.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"

@@ -21,10 +21,6 @@
 #include "media/base/audio_parameters.h"
 #include "services/audio/input_controller.h"
 
-#if BUILDFLAG(IS_POSIX)
-#include "base/file_descriptor_posix.h"
-#endif
-
 namespace audio {
 
 // A InputController::SyncWriter implementation using SyncSocket. This

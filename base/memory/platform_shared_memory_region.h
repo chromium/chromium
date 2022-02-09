@@ -5,6 +5,7 @@
 #ifndef BASE_MEMORY_PLATFORM_SHARED_MEMORY_REGION_H_
 #define BASE_MEMORY_PLATFORM_SHARED_MEMORY_REGION_H_
 
+#include "base/base_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -19,7 +20,6 @@
 #include "base/win/windows_types.h"
 #elif BUILDFLAG(IS_POSIX)
 #include <sys/types.h>
-#include "base/file_descriptor_posix.h"
 #include "base/files/scoped_file.h"
 #endif
 

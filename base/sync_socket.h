@@ -22,10 +22,6 @@
 #endif
 #include <sys/types.h>
 
-#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-#include "base/file_descriptor_posix.h"
-#endif
-
 namespace base {
 
 class BASE_EXPORT SyncSocket {

@@ -29,7 +29,6 @@
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <sys/stat.h>
 #include <unistd.h>
-#include "base/file_descriptor_posix.h"
 #include "base/posix/eintr_wrapper.h"
 #endif
 
