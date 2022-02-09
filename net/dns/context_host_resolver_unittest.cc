@@ -898,4 +898,25 @@ TEST_F(ContextHostResolverTest, NotExistingNetworkBoundLookup) {
               test::IsError(net::ERR_NETWORK_CHANGED));
 }
 
+// Test that the underlying HostCache does not receive invalidations when its
+// ResolveContext is bound to a network.
+TEST_F(ContextHostResolverTest, BoundResolveContextHostCacheInvalidation) {
+  // Set empty MockDnsClient rules to ensure DnsClient is mocked out.
+  MockDnsClientRuleList rules;
+  SetMockDnsRules(std::move(rules));
+
+  URLRequestContext context;
+  auto resolve_context = std::make_unique<NetworkBoundResolveContext>(
+      &context, true /* enable_caching */, 2 /* != kInvalidNetworkHandle */);
+  ResolveContext* resolve_context_ptr = resolve_context.get();
+  auto resolver = std::make_unique<ContextHostResolver>(
+      manager_.get(), std::move(resolve_context));
+
+  // There should be no invalidations before and after the call to
+  // InvalidateCachesForTesting.
+  ASSERT_EQ(resolve_context_ptr->host_cache()->network_changes(), 0);
+  manager_->InvalidateCachesForTesting();
+  EXPECT_EQ(resolve_context_ptr->host_cache()->network_changes(), 0);
+}
+
 }  // namespace net

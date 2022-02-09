@@ -331,6 +331,7 @@ void ResolveContext::UnregisterDohStatusObserver(
 void ResolveContext::InvalidateCachesAndPerSessionData(
     const DnsSession* new_session,
     bool network_change) {
+  DCHECK(MustRegisterForInvalidations());
   if (host_cache_)
     host_cache_->Invalidate();
 
@@ -380,6 +381,12 @@ NetworkChangeNotifier::NetworkHandle ResolveContext::GetTargetNetwork() const {
   // TODO(stefanoduo): Retrieve this from url_request_context_ once it can be
   // bound to a network.
   return NetworkChangeNotifier::kInvalidNetworkHandle;
+}
+
+bool ResolveContext::MustRegisterForInvalidations() const {
+  // Resolve contexts targeting a network shouldn't have their cache invalidated
+  // when an network (or DNS) change occurs. More context at crbug.com/1292548.
+  return GetTargetNetwork() == NetworkChangeNotifier::kInvalidNetworkHandle;
 }
 
 size_t ResolveContext::FirstServerIndex(bool doh_server,

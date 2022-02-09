@@ -405,10 +405,11 @@ class NET_EXPORT HostResolverManager
   // Removes Jobs for this context.
   void RemoveAllJobs(const ResolveContext* context);
 
-  // Aborts both scheduled and running jobs with ERR_NETWORK_CHANGED and
-  // notifies their requests. Aborts only running jobs if |in_progress_only| is
-  // true. Might start new jobs.
-  void AbortAllJobs(bool in_progress_only);
+  // Aborts all jobs (both scheduled and running) which are not targeting a
+  // specific network with ERR_NETWORK_CHANGED and notifies their requests.
+  // Aborts only running jobs if `in_progress_only` is true. Might start new
+  // jobs.
+  void AbortJobsWithoutTargetNetwork(bool in_progress_only);
 
   // Aborts all in progress insecure DnsTasks. In-progress jobs will fall back
   // to ProcTasks if able and otherwise abort with |error|. Might start new

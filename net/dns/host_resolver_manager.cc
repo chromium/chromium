@@ -2078,6 +2078,10 @@ struct HostResolverManager::JobKey {
     key.secure = secure;
     return key;
   }
+
+  NetworkChangeNotifier::NetworkHandle GetTargetNetwork() const {
+    return resolve_context->GetTargetNetwork();
+  }
 };
 
 // Aggregates all Requests for the same Key. Dispatched via
@@ -2231,8 +2235,9 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     }
   }
 
-  // Called from AbortAllJobs. Completes all requests and destroys
-  // the job. This currently assumes the abort is due to a network change.
+  // Called from AbortJobsWithoutTargetNetwork(). Completes all requests and
+  // destroys the job. This currently assumes the abort is due to a network
+  // change.
   // TODO This should not delete |this|.
   void Abort() {
     CompleteRequestsWithError(ERR_NETWORK_CHANGED);
@@ -2406,6 +2411,11 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
 
   bool is_running() const { return job_running_; }
 
+  bool HasTargetNetwork() const {
+    return key_.GetTargetNetwork() !=
+           NetworkChangeNotifier::kInvalidNetworkHandle;
+  }
+
  private:
   base::Value NetLogJobCreationParams(const NetLogSource& source) {
     base::Value dict(base::Value::Type::DICTIONARY);
@@ -2521,8 +2531,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
         key_.flags, resolver_->proc_params_,
         base::BindOnce(&Job::OnProcTaskComplete, base::Unretained(this),
                        tick_clock_->NowTicks()),
-        proc_task_runner_, net_log_, tick_clock_,
-        key_.resolve_context->GetTargetNetwork());
+        proc_task_runner_, net_log_, tick_clock_, key_.GetTargetNetwork());
 
     // Start() could be called from within Resolve(), hence it must NOT directly
     // call OnProcTaskComplete, for example, on synchronous failure.
@@ -3074,9 +3083,11 @@ HostResolverManager::CreateRequest(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!invalidation_in_progress_);
 
-  // ResolveContexts must register (via RegisterResolveContext()) before use to
-  // ensure cached data is invalidated on network and configuration changes.
-  DCHECK(registered_contexts_.HasObserver(resolve_context));
+  // If required, ResolveContexts must register (via RegisterResolveContext())
+  // before use to ensure cached data is invalidated on network and
+  // configuration changes.
+  DCHECK(!resolve_context->MustRegisterForInvalidations() ||
+         registered_contexts_.HasObserver(resolve_context));
 
   return std::make_unique<RequestImpl>(
       std::move(net_log), std::move(host), std::move(network_isolation_key),
@@ -3181,6 +3192,14 @@ void HostResolverManager::SetDnsConfigOverrides(DnsConfigOverrides overrides) {
 }
 
 void HostResolverManager::RegisterResolveContext(ResolveContext* context) {
+  // MustRegisterForInvalidations() == false for ResolveContext which have been
+  // bound to a network. This is currently implemented only for Android, where
+  // we receive DNS config changes only after a network change.
+  // If network binding is implemented for another platform where this is not
+  // the case, this will need to be revised.
+  if (!context->MustRegisterForInvalidations())
+    return;
+
   registered_contexts_.AddObserver(context);
   context->InvalidateCachesAndPerSessionData(
       dns_client_ ? dns_client_->GetCurrentSession() : nullptr,
@@ -3189,7 +3208,8 @@ void HostResolverManager::RegisterResolveContext(ResolveContext* context) {
 
 void HostResolverManager::DeregisterResolveContext(
     const ResolveContext* context) {
-  registered_contexts_.RemoveObserver(context);
+  if (context->MustRegisterForInvalidations())
+    registered_contexts_.RemoveObserver(context);
 
   // Destroy Jobs when their context is closed.
   RemoveAllJobs(context);
@@ -3998,13 +4018,13 @@ void HostResolverManager::RemoveAllJobs(const ResolveContext* context) {
   }
 }
 
-void HostResolverManager::AbortAllJobs(bool in_progress_only) {
+void HostResolverManager::AbortJobsWithoutTargetNetwork(bool in_progress_only) {
   // In Abort, a Request callback could spawn new Jobs with matching keys, so
-  // first collect and remove all running jobs from |jobs_|.
+  // first collect and remove all running jobs from `jobs_`.
   std::vector<std::unique_ptr<Job>> jobs_to_abort;
   for (auto it = jobs_.begin(); it != jobs_.end();) {
     Job* job = it->second.get();
-    if (!in_progress_only || job->is_running()) {
+    if (!job->HasTargetNetwork() && (!in_progress_only || job->is_running())) {
       jobs_to_abort.push_back(RemoveJob(it++));
     } else {
       ++it;
@@ -4013,13 +4033,13 @@ void HostResolverManager::AbortAllJobs(bool in_progress_only) {
 
   // Pause the dispatcher so it won't start any new dispatcher jobs while
   // aborting the old ones.  This is needed so that it won't start the second
-  // DnsTransaction for a job in |jobs_to_abort| if the DnsConfig just became
+  // DnsTransaction for a job in `jobs_to_abort` if the DnsConfig just became
   // invalid.
   PrioritizedDispatcher::Limits limits = dispatcher_->GetLimits();
   dispatcher_->SetLimits(
       PrioritizedDispatcher::Limits(limits.reserved_slots.size(), 0));
 
-  // Life check to bail once |this| is deleted.
+  // Life check to bail once `this` is deleted.
   base::WeakPtr<HostResolverManager> self = weak_ptr_factory_.GetWeakPtr();
 
   // Then Abort them.
@@ -4081,8 +4101,8 @@ void HostResolverManager::OnIPAddressChanged() {
     BUILDFLAG(IS_FUCHSIA)
   RunLoopbackProbeJob();
 #endif
-  AbortAllJobs(true /* in_progress_only */);
-  // |this| may be deleted inside AbortAllJobs().
+  AbortJobsWithoutTargetNetwork(true /* in_progress_only */);
+  // `this` may be deleted inside AbortJobsWithoutTargetNetwork().
 }
 
 void HostResolverManager::OnConnectionTypeChanged(
@@ -4124,14 +4144,15 @@ void HostResolverManager::OnSystemDnsConfigChanged(
 }
 
 void HostResolverManager::UpdateJobsForChangedConfig() {
-  // Life check to bail once |this| is deleted.
+  // Life check to bail once `this` is deleted.
   base::WeakPtr<HostResolverManager> self = weak_ptr_factory_.GetWeakPtr();
 
   // Existing jobs that were set up using the nameservers and secure dns mode
-  // from the original config need to be aborted.
-  AbortAllJobs(false /* in_progress_only */);
+  // from the original config need to be aborted (does not apply to jobs
+  // targeting a specific network).
+  AbortJobsWithoutTargetNetwork(false /* in_progress_only */);
 
-  // |this| may be deleted inside AbortAllJobs().
+  // `this` may be deleted inside AbortJobsWithoutTargetNetwork().
   if (self.get())
     TryServingAllJobsFromHosts();
 }
