@@ -47,6 +47,7 @@ web_component_files = [
   "autofill_page/payments_list.ts",
   "autofill_page/payments_section.ts",
   "autofill_page/upi_id_list_entry.ts",
+  "autofill_page/virtual_card_unenroll_dialog.ts",
   "basic_page/basic_page.ts",
   "clear_browsing_data_dialog/clear_browsing_data_dialog.ts",
   "clear_browsing_data_dialog/history_deletion_dialog.ts",

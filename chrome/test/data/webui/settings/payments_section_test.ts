@@ -5,7 +5,7 @@
 // clang-format off
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PaymentsManagerImpl, SettingsCreditCardEditDialogElement, SettingsPaymentsSectionElement} from 'chrome://settings/lazy_load.js';
+import {PaymentsManagerImpl, SettingsCreditCardEditDialogElement, SettingsPaymentsSectionElement, SettingsVirtualCardUnenrollDialogElement} from 'chrome://settings/lazy_load.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, whenAttributeIs} from 'chrome://webui-test/test_util.js';
@@ -78,6 +78,20 @@ suite('PaymentsSection', function() {
     document.body.appendChild(section);
     flush();
     return section;
+  }
+
+  /**
+   * Creates a virtual card unenroll dialog.
+   */
+  function createVirtualCardUnenrollDialog(
+      creditCardItem: chrome.autofillPrivate.CreditCardEntry):
+      SettingsVirtualCardUnenrollDialogElement {
+    const dialog =
+        document.createElement('settings-virtual-card-unenroll-dialog');
+    dialog.creditCard = creditCardItem;
+    document.body.appendChild(dialog);
+    flush();
+    return dialog;
   }
 
   // Fakes the existence of a platform authenticator.
@@ -289,8 +303,8 @@ suite('PaymentsSection', function() {
     const oldCreditCard = createCreditCardEntry();
     const oldCreditCardDialog = createCreditCardDialog(oldCreditCard);
 
-    function getTitle(dialog: SettingsCreditCardEditDialogElement) {
-      return dialog.shadowRoot!.querySelector('[slot=title]')!.textContent;
+    function getTitle(dialog: SettingsCreditCardEditDialogElement): string {
+      return dialog.shadowRoot!.querySelector('[slot=title]')!.textContent!;
     }
 
     const oldTitle = getTitle(oldCreditCardDialog);
@@ -745,5 +759,18 @@ suite('PaymentsSection', function() {
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
 
     assertEquals(PrivacyElementInteractions.PAYMENT_METHOD, result);
+  });
+
+  test('verifyVirtualCardUnenrollDialogContent', function() {
+    const creditCard = createCreditCardEntry();
+    const dialog = createVirtualCardUnenrollDialog(creditCard);
+
+    const title = dialog.shadowRoot!.querySelector('[slot=title]')!;
+    const body = dialog.shadowRoot!.querySelector('[slot=body]')!;
+    assertNotEquals('', title.textContent);
+    assertNotEquals('', body.textContent);
+
+    // Wait for dialogs to open before finishing test.
+    return whenAttributeIs(dialog.$.dialog, 'open', '');
   });
 });

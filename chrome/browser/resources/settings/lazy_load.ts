@@ -88,6 +88,7 @@ export {PasswordsExportDialogElement} from './autofill_page/passwords_export_dia
 export {PasswordsSectionElement} from './autofill_page/passwords_section.js';
 export {PaymentsManagerImpl, PaymentsManagerProxy} from './autofill_page/payments_manager_proxy.js';
 export {SettingsPaymentsSectionElement} from './autofill_page/payments_section.js';
+export {SettingsVirtualCardUnenrollDialogElement} from './autofill_page/virtual_card_unenroll_dialog.js';
 // <if expr="_google_chrome and is_win">
 export {ChromeCleanerScannerResults, ChromeCleanupFilePath, ChromeCleanupIdleReason, SettingsChromeCleanupPageElement} from './chrome_cleanup_page/chrome_cleanup_page.js';
 export {ChromeCleanupProxy, ChromeCleanupProxyImpl} from './chrome_cleanup_page/chrome_cleanup_proxy.js';
