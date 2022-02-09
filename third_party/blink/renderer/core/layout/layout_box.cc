@@ -2716,6 +2716,9 @@ static bool IsCandidateForOpaquenessTest(const LayoutBox& child_box) {
     return false;
   if (child_box.Size().IsZero())
     return false;
+  // A replaced element with border-radius always clips the content.
+  if (child_box.IsLayoutReplaced() && child_style.HasBorderRadius())
+    return false;
   return true;
 }
 
