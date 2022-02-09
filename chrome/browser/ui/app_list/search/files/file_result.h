@@ -54,10 +54,19 @@ class FileResult : public ChromeSearchResult {
   // the thumbnail.
   void RequestThumbnail(ash::ThumbnailLoader* thumbnail_loader);
 
+  // Asynchronously sets the details string for this result to a Drive-esque
+  // justification string, eg. "You opened yesterday".
+  void SetDetailsToJustificationString();
+
  private:
   // Callback for the result of MaybeRequestThumbnail's call to the
   // ThumbnailLoader.
   void OnThumbnailLoaded(const SkBitmap* bitmap, base::File::Error error);
+
+  // Callback for the result of SetDetailsToJustificationString to
+  // GetJustificationStringAsync.
+  void OnJustificationStringReturned(
+      absl::optional<std::u16string> justification);
 
   const base::FilePath filepath_;
   const Type type_;

@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/app_list/search/util/persistent_proto.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using file_manager::file_tasks::FileTasksObserver;
 
@@ -152,9 +153,10 @@ void ZeroStateFileProvider::SetSearchResults(
     const auto& filepath = valid_results[i].first;
     double score = valid_results[i].second;
     auto result = std::make_unique<FileResult>(
-        kSchema, filepath, std::u16string(),
+        kSchema, filepath, absl::nullopt,
         ash::AppListSearchResultType::kZeroStateFile, GetDisplayType(), score,
         std::u16string(), FileResult::Type::kFile, profile_);
+    result->SetDetailsToJustificationString();
     // TODO(crbug.com/1258415): Only generate thumbnails if the old launcher is
     // enabled. We should implement new thumbnail logic for Continue results if
     // necessary.

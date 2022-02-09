@@ -7,6 +7,9 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -57,11 +60,24 @@ absl::optional<std::u16string> GetOpenStringFromTime(const base::Time& time) {
 
 }  // namespace
 
+void GetJustificationStringAsync(
+    const base::FilePath& path,
+    base::OnceCallback<void(absl::optional<std::u16string>)> callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(&GetJustificationString, path), std::move(callback));
+}
+
 absl::optional<std::u16string> GetJustificationString(
     const base::FilePath& path) {
   base::File::Info info;
-  if (!base::GetFileInfo(path, &info)) {
-    return absl::nullopt;
+
+  {
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::MAY_BLOCK);
+    if (!base::GetFileInfo(path, &info)) {
+      return absl::nullopt;
+    }
   }
 
   // t1 > t2 means t1 is more recent. When there's a tie, choose modified.

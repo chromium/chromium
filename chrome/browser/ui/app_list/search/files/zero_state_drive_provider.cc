@@ -311,13 +311,10 @@ std::unique_ptr<FileResult> ZeroStateDriveProvider::MakeListResult(
     const float relevance) {
   const auto reparented_path = ReparentToDriveMount(filepath, drive_service_);
   auto result = std::make_unique<FileResult>(
-      kSchema, reparented_path, std::u16string(),
+      kSchema, reparented_path, absl::nullopt,
       ash::AppListSearchResultType::kZeroStateDrive, GetDisplayType(),
       relevance, std::u16string(), FileResult::Type::kFile, profile_);
-  // If it exists, override the details text with the prediction reason in the
-  // productivity launcher.
-  if (prediction_reason && ash::features::IsProductivityLauncherEnabled())
-    result->SetDetails(base::UTF8ToUTF16(prediction_reason.value()));
+  result->SetDetailsToJustificationString();
   return result;
 }
 

@@ -23,6 +23,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/app_list/search/common/icon_constants.h"
+#include "chrome/browser/ui/app_list/search/files/justifications.h"
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "chromeos/components/string_matching/tokenized_string_match.h"
@@ -212,6 +213,18 @@ void FileResult::RequestThumbnail(ash::ThumbnailLoader* thumbnail_loader) {
   thumbnail_loader->Load({filepath_, size},
                          base::BindOnce(&FileResult::OnThumbnailLoaded,
                                         weak_factory_.GetWeakPtr()));
+}
+
+void FileResult::SetDetailsToJustificationString() {
+  GetJustificationStringAsync(
+      filepath_, base::BindOnce(&FileResult::OnJustificationStringReturned,
+                                weak_factory_.GetWeakPtr()));
+}
+
+void FileResult::OnJustificationStringReturned(
+    absl::optional<std::u16string> justification) {
+  if (justification)
+    SetDetails(justification.value());
 }
 
 void FileResult::OnThumbnailLoaded(const SkBitmap* bitmap,

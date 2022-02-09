@@ -7,13 +7,20 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_list {
 
-// Returns an appropriate justification string for displaying |path| as a file
-// suggestion, for example "you opened yesterday".
+// Asynchronous wrapper for the function below, which does the filesystem IO at
+// USER_BLOCKING priority.
+void GetJustificationStringAsync(
+    const base::FilePath& path,
+    base::OnceCallback<void(absl::optional<std::u16string>)> callback);
+
+// Synchronously returns an appropriate justification string for displaying
+// |path| as a file suggestion, for example "Opened yesterday".
 //
 // This uses the most recent of the edited and opened times, and returns a
 // different message for times within the last few minutes, day, two days, week,
