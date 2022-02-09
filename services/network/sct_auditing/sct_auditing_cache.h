@@ -14,7 +14,6 @@
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/proto/sct_audit_report.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -53,16 +52,6 @@ class NetworkContext;
 // every session).
 class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
  public:
-  struct COMPONENT_EXPORT(NETWORK_SERVICE) ReportEntry {
-    ReportEntry();
-    ~ReportEntry();
-    ReportEntry(const ReportEntry&) = delete;
-    ReportEntry operator==(const ReportEntry&) = delete;
-    ReportEntry(ReportEntry&&);
-    net::HashValue key;
-    std::unique_ptr<sct_auditing::SCTClientReport> report;
-  };
-
   explicit SCTAuditingCache(size_t cache_size = 1024);
   ~SCTAuditingCache();
 
@@ -74,9 +63,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
   // cache. If the SCTs were not already in the cache, a random sample is drawn
   // to determine whether to send a report. This means we sample a subset of
   // *certificates* rather than a subset of *connections*.
-  // Returns the report entry if the report should be sent, and absl::nullopt
-  // otherwise.
-  absl::optional<ReportEntry> MaybeGenerateReportEntry(
+  void MaybeEnqueueReport(
+      NetworkContext* context,
       const net::HostPortPair& host_port_pair,
       const net::X509Certificate* validated_certificate_chain,
       const net::SignedCertificateTimestampAndStatusList&

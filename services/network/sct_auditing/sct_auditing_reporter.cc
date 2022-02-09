@@ -16,6 +16,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -77,8 +78,6 @@ constexpr int kMaxRetries = 15;
 SCTAuditingReporter::SCTAuditingReporter(
     net::HashValue reporter_key,
     std::unique_ptr<sct_auditing::SCTClientReport> report,
-    bool is_hashdance,
-    absl::optional<std::string> leaf_hash,
     mojom::URLLoaderFactory* url_loader_factory,
     const GURL& report_uri,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
@@ -87,8 +86,6 @@ SCTAuditingReporter::SCTAuditingReporter(
     std::unique_ptr<net::BackoffEntry> persisted_backoff_entry)
     : reporter_key_(reporter_key),
       report_(std::move(report)),
-      is_hashdance_(is_hashdance),
-      leaf_hash_(leaf_hash),
       traffic_annotation_(traffic_annotation),
       report_uri_(report_uri),
       update_callback_(std::move(update_callback)),
@@ -128,39 +125,23 @@ SCTAuditingReporter::SCTAuditingReporter(
 SCTAuditingReporter::~SCTAuditingReporter() = default;
 
 void SCTAuditingReporter::Start() {
-  if (!is_hashdance_) {
-    ScheduleRequestWithBackoff(base::BindOnce(&SCTAuditingReporter::SendReport,
-                                              weak_factory_.GetWeakPtr()));
-    return;
-  }
-
-  // TODO(nsatragno): If within the ingestion delay threshold, we should
-  // schedule the report after a long enough delay.
-  ScheduleRequestWithBackoff(base::BindOnce(
-      &SCTAuditingReporter::SendLookupQuery, weak_factory_.GetWeakPtr()));
-}
-
-void SCTAuditingReporter::ScheduleRequestWithBackoff(
-    base::OnceClosure request) {
   if (base::FeatureList::IsEnabled(features::kSCTAuditingRetryReports) &&
       backoff_entry_->ShouldRejectRequest()) {
     // TODO(crbug.com/1199827): Investigate if explicit task traits should be
     // used for these tasks (e.g., BEST_EFFORT and SKIP_ON_SHUTDOWN).
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, std::move(request), backoff_entry_->GetTimeUntilRelease());
+        FROM_HERE,
+        base::BindOnce(&SCTAuditingReporter::SendReport,
+                       weak_factory_.GetWeakPtr()),
+        backoff_entry_->GetTimeUntilRelease());
   } else {
-    std::move(request).Run();
+    SendReport();
   }
 }
 
 void SCTAuditingReporter::SetRetryDelayForTesting(
     absl::optional<base::TimeDelta> delay) {
   g_retry_delay_for_testing = delay;
-}
-
-void SCTAuditingReporter::SendLookupQuery() {
-  // TODO(nsatragno): fill this in.
-  NOTIMPLEMENTED();
 }
 
 void SCTAuditingReporter::SendReport() {

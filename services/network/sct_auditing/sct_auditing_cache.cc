@@ -59,17 +59,13 @@ void RecordSCTAuditingReportSizeMetrics(size_t report_size) {
 
 }  // namespace
 
-SCTAuditingCache::ReportEntry::ReportEntry() = default;
-SCTAuditingCache::ReportEntry::ReportEntry(ReportEntry&& other) = default;
-SCTAuditingCache::ReportEntry::~ReportEntry() = default;
-
 SCTAuditingCache::SCTAuditingCache(size_t cache_size)
     : dedupe_cache_(cache_size) {}
 
 SCTAuditingCache::~SCTAuditingCache() = default;
 
-absl::optional<SCTAuditingCache::ReportEntry>
-SCTAuditingCache::MaybeGenerateReportEntry(
+void SCTAuditingCache::MaybeEnqueueReport(
+    NetworkContext* context,
     const net::HostPortPair& host_port_pair,
     const net::X509Certificate* validated_certificate_chain,
     const net::SignedCertificateTimestampAndStatusList&
@@ -91,6 +87,12 @@ SCTAuditingCache::MaybeGenerateReportEntry(
   SHA256_CTX ctx;
   SHA256_Init(&ctx);
   for (const auto& sct : signed_certificate_timestamps) {
+    // Only audit valid SCTs. This ensures that they come from a known log, have
+    // a valid signature, and thus are expected to be public certificates. If
+    // there are no valid SCTs, there's no need to report anything.
+    if (sct.status != net::ct::SCT_STATUS_OK)
+      continue;
+
     auto* sct_source_and_status = tls_report->add_included_sct();
     // TODO(crbug.com/1082860): Update the proto to remove the status entirely
     // since only valid SCTs are reported now.
@@ -106,7 +108,7 @@ SCTAuditingCache::MaybeGenerateReportEntry(
   }
   // Don't handle reports if there were no valid SCTs.
   if (tls_report->included_sct().empty())
-    return absl::nullopt;
+    return;
 
   net::HashValue cache_key(net::HASH_VALUE_SHA256);
   SHA256_Final(reinterpret_cast<uint8_t*>(cache_key.data()), &ctx);
@@ -116,7 +118,7 @@ SCTAuditingCache::MaybeGenerateReportEntry(
   auto it = dedupe_cache_.Get(cache_key);
   if (it != dedupe_cache_.end()) {
     RecordSCTAuditingReportDeduplicatedMetrics(true);
-    return absl::nullopt;
+    return;
   }
   RecordSCTAuditingReportDeduplicatedMetrics(false);
 
@@ -127,7 +129,7 @@ SCTAuditingCache::MaybeGenerateReportEntry(
 
   if (base::RandDouble() > sampling_rate_) {
     RecordSCTAuditingReportSampledMetrics(false);
-    return absl::nullopt;
+    return;
   }
   RecordSCTAuditingReportSampledMetrics(true);
 
@@ -157,10 +159,7 @@ SCTAuditingCache::MaybeGenerateReportEntry(
   if (dedupe_cache_.size() > dedupe_cache_size_hwm_)
     dedupe_cache_size_hwm_ = dedupe_cache_.size();
 
-  ReportEntry report_entry;
-  report_entry.key = std::move(cache_key);
-  report_entry.report = std::move(report);
-  return report_entry;
+  context->sct_auditing_handler()->AddReporter(cache_key, std::move(report));
 }
 
 void SCTAuditingCache::ClearCache() {

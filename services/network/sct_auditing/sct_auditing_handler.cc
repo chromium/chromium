@@ -4,18 +4,13 @@
 
 #include "services/network/sct_auditing/sct_auditing_handler.h"
 
-#include <algorithm>
-
 #include "base/base64.h"
-#include "base/containers/cxx20_erase.h"
-#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/rand_util.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -26,7 +21,6 @@
 #include "net/base/backoff_entry.h"
 #include "net/base/backoff_entry_serializer.h"
 #include "net/base/hash_value.h"
-#include "net/cert/merkle_tree_leaf.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
@@ -54,7 +48,6 @@ std::string LoadReports(const base::FilePath& path) {
 const char kReporterKeyKey[] = "reporter_key";
 const char kBackoffEntryKey[] = "backoff_entry";
 const char kReportKey[] = "report";
-const char kLeafHashKey[] = "leaf_hash";
 
 }  // namespace
 
@@ -96,50 +89,6 @@ SCTAuditingHandler::~SCTAuditingHandler() {
   }
 }
 
-void SCTAuditingHandler::MaybeEnqueueReport(
-    const net::HostPortPair& host_port_pair,
-    const net::X509Certificate* validated_certificate_chain,
-    const net::SignedCertificateTimestampAndStatusList&
-        signed_certificate_timestamps) {
-  if (mode_ == mojom::SCTAuditingMode::kDisabled) {
-    return;
-  }
-
-  // Only audit valid SCTs. This ensures that they come from a known log, have
-  // a valid signature, and thus are expected to be public certificates. If
-  // there are no valid SCTs, there's no need to report anything.
-  net::SignedCertificateTimestampAndStatusList validated_scts;
-  std::copy_if(
-      signed_certificate_timestamps.begin(),
-      signed_certificate_timestamps.end(), std::back_inserter(validated_scts),
-      [](const auto& sct) { return sct.status == net::ct::SCT_STATUS_OK; });
-  if (validated_scts.empty()) {
-    return;
-  }
-
-  absl::optional<std::string> leaf_hash;
-  if (mode_ == mojom::SCTAuditingMode::kHashdance) {
-    // Randomly select a single entry and calculate its leaf hash for the
-    // hashdance lookup query.
-    size_t selected = base::RandInt(0, validated_scts.size() - 1);
-    net::ct::MerkleTreeLeaf tree_leaf;
-    DCHECK(net::ct::GetMerkleTreeLeaf(validated_certificate_chain,
-                                      validated_scts.at(selected).sct.get(),
-                                      &tree_leaf));
-    DCHECK(net::ct::HashMerkleTreeLeaf(tree_leaf, &leaf_hash.emplace()));
-  }
-  absl::optional<SCTAuditingCache::ReportEntry> report =
-      owner_network_context_->network_service()
-          ->sct_auditing_cache()
-          ->MaybeGenerateReportEntry(
-              host_port_pair, validated_certificate_chain, validated_scts);
-  if (!report) {
-    return;
-  }
-  AddReporter(std::move(report->key), std::move(report->report),
-              std::move(leaf_hash));
-}
-
 bool SCTAuditingHandler::SerializeData(std::string* output) {
   DCHECK(foreground_runner_->RunsTasksInCurrentSequence());
 
@@ -151,12 +100,6 @@ bool SCTAuditingHandler::SerializeData(std::string* output) {
     base::Value report_entry(base::Value::Type::DICTIONARY);
 
     report_entry.SetStringKey(kReporterKeyKey, reporter_key.ToString());
-
-    if (reporter->leaf_hash()) {
-      report_entry.SetStringKey(kLeafHashKey,
-                                base::Base64Encode(base::as_bytes(
-                                    base::make_span(*reporter->leaf_hash()))));
-    }
 
     base::Value backoff_entry_value =
         net::BackoffEntrySerializer::SerializeToValue(
@@ -183,7 +126,7 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
   }
 
   size_t num_reporters_deserialized = 0u;
-  for (base::Value& sct_entry : value->GetListDeprecated()) {
+  for (const base::Value& sct_entry : value->GetListDeprecated()) {
     if (!sct_entry.is_dict()) {
       continue;
     }
@@ -191,16 +134,10 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
     const std::string* reporter_key_string =
         sct_entry.FindStringKey(kReporterKeyKey);
     const std::string* report_string = sct_entry.FindStringKey(kReportKey);
-    const absl::optional<base::Value> leaf_hash_value =
-        sct_entry.ExtractKey(kLeafHashKey);
     const base::Value* backoff_entry_value =
         sct_entry.FindKey(kBackoffEntryKey);
 
     if (!reporter_key_string || !report_string || !backoff_entry_value) {
-      continue;
-    }
-
-    if (leaf_hash_value && !leaf_hash_value->is_string()) {
       continue;
     }
 
@@ -237,16 +174,7 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
       continue;
     }
 
-    absl::optional<std::string> leaf_hash;
-    if (leaf_hash_value) {
-      if (!base::Base64Decode(std::move(leaf_hash_value->GetString()),
-                              &leaf_hash.emplace())) {
-        continue;
-      }
-    }
-
-    AddReporter(cache_key, std::move(audit_report), std::move(leaf_hash),
-                std::move(backoff_entry));
+    AddReporter(cache_key, std::move(audit_report), std::move(backoff_entry));
     ++num_reporters_deserialized;
   }
   // TODO(crbug.com/1144205): Add metrics for number of reporters deserialized.
@@ -266,10 +194,10 @@ void SCTAuditingHandler::OnStartupFinished() {
 void SCTAuditingHandler::AddReporter(
     net::HashValue reporter_key,
     std::unique_ptr<sct_auditing::SCTClientReport> report,
-    absl::optional<std::string> leaf_hash,
     std::unique_ptr<net::BackoffEntry> backoff_entry) {
   DCHECK(foreground_runner_->RunsTasksInCurrentSequence());
-  if (mode_ == mojom::SCTAuditingMode::kDisabled) {
+  // For now, only report in ESBR mode.
+  if (mode_ != mojom::SCTAuditingMode::kEnhancedSafeBrowsingReporting) {
     return;
   }
 
@@ -283,9 +211,8 @@ void SCTAuditingHandler::AddReporter(
                                 ->traffic_annotation();
 
   auto reporter = std::make_unique<SCTAuditingReporter>(
-      reporter_key, std::move(report),
-      mode_ == mojom::SCTAuditingMode::kHashdance, std::move(leaf_hash),
-      GetURLLoaderFactory(), report_uri, traffic_annotation,
+      reporter_key, std::move(report), GetURLLoaderFactory(), report_uri,
+      traffic_annotation,
       base::BindRepeating(&SCTAuditingHandler::OnReporterStateUpdated,
                           GetWeakPtr()),
       base::BindOnce(&SCTAuditingHandler::OnReporterFinished, GetWeakPtr()),
@@ -313,7 +240,7 @@ void SCTAuditingHandler::OnReportsLoadedFromDisk(
   DeserializeData(serialized);
 }
 
-// TODO(crbug.com/1144205): This method should take a completion callback (for
+// TODOO(crbug.com/1144205): This method should take a completion callback (for
 // callers like NetworkContext::ClearNetworkingHistoryBetween() that want to be
 // able to wait for the write completing), and pass it through to the `writer_`,
 // like TransportSecurityState does.

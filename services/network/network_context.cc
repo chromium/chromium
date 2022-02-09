@@ -1469,9 +1469,11 @@ void NetworkContext::MaybeEnqueueSCTReport(
     const net::X509Certificate* validated_certificate_chain,
     const net::SignedCertificateTimestampAndStatusList&
         signed_certificate_timestamps) {
-  sct_auditing_handler()->MaybeEnqueueReport(host_port_pair,
-                                             validated_certificate_chain,
-                                             signed_certificate_timestamps);
+  if (!sct_auditing_handler()->is_enabled())
+    return;
+  network_service()->sct_auditing_cache()->MaybeEnqueueReport(
+      this, host_port_pair, validated_certificate_chain,
+      signed_certificate_timestamps);
 }
 
 void NetworkContext::SetSCTAuditingMode(mojom::SCTAuditingMode mode) {
