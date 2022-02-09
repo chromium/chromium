@@ -12884,15 +12884,6 @@
      ]
     ]
    },
-   "mediacapture-depth": {
-    "dictionary-manual.https.html": [
-     "0a5b824881509baee240f385a9eeaa380a579948",
-     [
-      null,
-      {}
-     ]
-    ]
-   },
    "mediacapture-streams": {
     "MediaStreamTrack-end-manual.https.html": [
      "58e484d48478adc04107bb723ce3bacb72cf4b99",
@@ -244910,15 +244901,11 @@
        []
       ],
       "container-computed-expected.txt": [
-       "262fe39522e0e251756616705d700a7ba77b0ca7",
-       []
-      ],
-      "container-name-parsing-expected.txt": [
-       "cda9550e7fa97b050f5aa2d435ad54a015e41fc1",
+       "018b51e61ce5d31bd0db9f6f689e26d875a9a6b2",
        []
       ],
       "container-parsing-expected.txt": [
-       "5ef42ae02313f4458444dd799f48de21028426ee",
+       "d52295fc224dbe3531be96cb325ea92e4038b831",
        []
       ],
       "container-type-parsing-expected.txt": [
@@ -305947,14 +305934,6 @@
     }
    },
    "mediacapture-depth": {
-    "META.yml": [
-     "434612091df41dcf66859c46c66ed8cdaa6ba316",
-     []
-    ],
-    "dictionary-helper.js": [
-     "46853525f08768617fa5102821e52f1f788caca4",
-     []
-    ],
     "dictionary-manual.https-expected.txt": [
      "f99d27a7bc153a8e9a8e2cc6086f3bbfe61680e2",
      []
@@ -361906,7 +361885,7 @@
        ]
       ],
       "container-computed.html": [
-       "1bd063ab78c88a01fa4bb49de115be06e942d1c3",
+       "2bebfa82207618feca557b2753e7a972926b2a2e",
        [
         null,
         {}
@@ -361927,7 +361906,7 @@
        ]
       ],
       "container-name-computed.html": [
-       "79361d73088faae3efd868ec165fd9ec1fb3d42e",
+       "a2796fa35fca08c3d12a9f60ecb85821434f2c8f",
        [
         null,
         {}
@@ -361948,14 +361927,14 @@
        ]
       ],
       "container-parsing.html": [
-       "e18b282e0280f51e3d8b15eb6b9b571c3affea37",
+       "6c7213ac4a5d41cf17c46cfab6ecd2b32d38f8b2",
        [
         null,
         {}
        ]
       ],
       "container-selection.html": [
-       "a797fe47470090e57a9c5ee561de01d95db5b288",
+       "8b2225c3529e7dab355754663a84ad52c984ad66",
        [
         null,
         {}
@@ -473483,15 +473462,6 @@
       ]
      }
     }
-   },
-   "mediacapture-depth": {
-    "idlharness.html": [
-     "963229aaca31dd8b92a07e1bb1da4c3eace7ad5b",
-     [
-      null,
-      {}
-     ]
-    ]
    },
    "mediacapture-fromelement": {
     "HTMLCanvasElement-getImageData-noframe.html": [
