@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.pagecontroller.utils.UiAutomatorUtils;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -128,6 +129,7 @@ public class SiteSettingsTest {
         LocationUtils.setFactory(null);
         LocationProviderOverrider.setLocationProviderImpl(null);
         NfcSystemLevelSetting.resetNfcForTesting();
+        IncognitoUtils.setEnabledForTesting(null);
 
         // Clean up cookies and permissions.
         CallbackHelper helper = new CallbackHelper();
@@ -1307,7 +1309,8 @@ public class SiteSettingsTest {
                     SiteChannelsManager.getInstance().getChannelIdForOrigin(
                             Origin.createOrThrow(url).toString()));
         });
-
+        // Close the OS notification settings UI.
+        UiAutomatorUtils.getInstance().pressBack();
         settingsActivity.finish();
     }
 
