@@ -2820,6 +2820,9 @@ extern const char kImeSystemEmojiPickerExtensionDescription[];
 extern const char kImeSystemEmojiPickerClipboardName[];
 extern const char kImeSystemEmojiPickerClipboardDescription[];
 
+extern const char kImeSystemEmojiPickerSearchExtensionName[];
+extern const char kImeSystemEmojiPickerSearchExtensionDescription[];
+
 extern const char kImeStylusHandwritingName[];
 extern const char kImeStylusHandwritingDescription[];
 

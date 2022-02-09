@@ -4891,6 +4891,12 @@ const char kImeSystemEmojiPickerExtensionDescription[] =
     "Emoji picker extension allows users to select emoticons and symbols to "
     "input.";
 
+const char kImeSystemEmojiPickerSearchExtensionName[] =
+    "System emoji picker search extension";
+const char kImeSystemEmojiPickerSearchExtensionDescription[] =
+    "Emoji picker search extension enhances current emoji search by "
+    "introducing multi-word prefix search.";
+
 const char kImeStylusHandwritingName[] = "Stylus Handwriting";
 const char kImeStylusHandwritingDescription[] =
     "Enable VK UI for stylus in text fields";

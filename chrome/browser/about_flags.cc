@@ -4265,6 +4265,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kImeSystemEmojiPickerExtensionName,
      flag_descriptions::kImeSystemEmojiPickerExtensionDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kImeSystemEmojiPickerExtension)},
+    {"enable-cros-ime-system-emoji-picker-search-extension",
+     flag_descriptions::kImeSystemEmojiPickerSearchExtensionName,
+     flag_descriptions::kImeSystemEmojiPickerSearchExtensionDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         chromeos::features::kImeSystemEmojiPickerSearchExtension)},
     {"enable-cros-ime-stylus-handwriting",
      flag_descriptions::kImeStylusHandwritingName,
      flag_descriptions::kImeStylusHandwritingDescription, kOsCrOS,
