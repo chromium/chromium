@@ -24,6 +24,36 @@ class AppListBubbleSearchPageTest : public AshTestBase {
   base::test::ScopedFeatureList features_{features::kProductivityLauncher};
 };
 
+TEST_F(AppListBubbleSearchPageTest, AnimateShowPage) {
+  // Open the app list without animation.
+  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppItems(5);
+  helper->ShowAppList();
+
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Type a key to switch to the search page.
+  PressAndReleaseKey(ui::VKEY_A);
+
+  // Both apps page and search page are visible during the transition animation.
+  auto* apps_page = helper->GetBubbleAppsPage();
+  EXPECT_TRUE(apps_page->GetVisible());
+  auto* search_page = helper->GetBubbleSearchPage();
+  EXPECT_TRUE(search_page->GetVisible());
+
+  // The entire search page fades in.
+  ui::Layer* layer = search_page->GetPageAnimationLayerForTest();
+  ASSERT_TRUE(layer);
+  auto* animator = layer->GetAnimator();
+  ASSERT_TRUE(animator);
+  EXPECT_TRUE(animator->IsAnimatingProperty(
+      ui::LayerAnimationElement::AnimatableProperty::OPACITY));
+}
+
 TEST_F(AppListBubbleSearchPageTest, AnimateHidePage) {
   // Open the app list without animation.
   ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),

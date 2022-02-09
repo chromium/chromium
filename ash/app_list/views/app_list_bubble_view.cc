@@ -393,6 +393,7 @@ void AppListBubbleView::StartHideAnimation(
 
 void AppListBubbleView::AbortAllAnimations() {
   apps_page_->AbortAllAnimations();
+  search_page_->AbortAllAnimations();
   layer()->GetAnimator()->AbortAllAnimations();
 }
 
@@ -443,11 +444,13 @@ void AppListBubbleView::ShowPage(AppListBubblePage page) {
       search_box_view_->search_box()->RequestFocus();
       break;
     case AppListBubblePage::kSearch:
-      if (previous_page == AppListBubblePage::kApps)
+      if (previous_page == AppListBubblePage::kApps) {
         apps_page_->AnimateHidePage();
-      else
+        search_page_->AnimateShowPage();
+      } else {
         apps_page_->SetVisible(false);
-      search_page_->SetVisible(true);
+        search_page_->SetVisible(true);
+      }
       search_box_view_->SetSearchBoxActive(true, /*event_type=*/ui::ET_UNKNOWN);
       // Explicitly request focus in case the search box was active before.
       search_box_view_->search_box()->RequestFocus();

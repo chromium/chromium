@@ -8,6 +8,7 @@
 
 #include "ash/app_list/views/productivity_launcher_search_view.h"
 #include "base/check_op.h"
+#include "base/time/time.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -36,6 +37,26 @@ AppListBubbleSearchPage::AppListBubbleSearchPage(
 }
 
 AppListBubbleSearchPage::~AppListBubbleSearchPage() = default;
+
+void AppListBubbleSearchPage::AnimateShowPage() {
+  SetVisible(true);
+
+  // If skipping animations, just update visibility.
+  if (ui::ScopedAnimationDurationScaleMode::is_zero())
+    return;
+
+  ui::Layer* layer = search_view_->GetPageAnimationLayer();
+  DCHECK_EQ(layer->type(), ui::LAYER_TEXTURED);
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetOpacity(layer, 0.f)
+      .At(base::Milliseconds(50))
+      .SetDuration(base::Milliseconds(100))
+      .SetOpacity(layer, 1.f);
+}
 
 void AppListBubbleSearchPage::AnimateHidePage() {
   // If skipping animations, just update visibility.
@@ -71,6 +92,10 @@ void AppListBubbleSearchPage::AnimateHidePage() {
       .SetDuration(kHideAnimationDuration)
       .SetOpacity(layer, 0.f)
       .SetTransform(layer, translate_up);
+}
+
+void AppListBubbleSearchPage::AbortAllAnimations() {
+  search_view_->GetPageAnimationLayer()->GetAnimator()->AbortAllAnimations();
 }
 
 ui::Layer* AppListBubbleSearchPage::GetPageAnimationLayerForTest() {
