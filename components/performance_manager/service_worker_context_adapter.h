@@ -60,6 +60,7 @@ class ServiceWorkerContextAdapter
                                ResultCallback callback) override;
   content::ServiceWorkerExternalRequestResult StartingExternalRequest(
       int64_t service_worker_version_id,
+      content::ServiceWorkerExternalRequestTimeoutType timeout_type,
       const std::string& request_uuid) override;
   content::ServiceWorkerExternalRequestResult FinishedExternalRequest(
       int64_t service_worker_version_id,

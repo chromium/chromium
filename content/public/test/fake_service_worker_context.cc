@@ -42,6 +42,7 @@ void FakeServiceWorkerContext::UnregisterServiceWorker(
 ServiceWorkerExternalRequestResult
 FakeServiceWorkerContext::StartingExternalRequest(
     int64_t service_worker_version_id,
+    ServiceWorkerExternalRequestTimeoutType timeout_type,
     const std::string& request_uuid) {
   NOTREACHED();
   return ServiceWorkerExternalRequestResult::kWorkerNotFound;

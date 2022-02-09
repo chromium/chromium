@@ -13,6 +13,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_worker_external_request_result.h"
+#include "content/public/browser/service_worker_external_request_timeout_type.h"
 #include "content/public/browser/service_worker_running_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
@@ -152,6 +153,7 @@ class CONTENT_EXPORT ServiceWorkerContext {
   // alive.
   virtual ServiceWorkerExternalRequestResult StartingExternalRequest(
       int64_t service_worker_version_id,
+      ServiceWorkerExternalRequestTimeoutType timeout_type,
       const std::string& request_uuid) = 0;
   virtual ServiceWorkerExternalRequestResult FinishedExternalRequest(
       int64_t service_worker_version_id,

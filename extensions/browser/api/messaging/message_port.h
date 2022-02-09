@@ -91,7 +91,7 @@ class MessagePort {
 
   // MessagePorts that target extensions will need to adjust their keepalive
   // counts for their lazy background page.
-  virtual void IncrementLazyKeepaliveCount();
+  virtual void IncrementLazyKeepaliveCount(bool is_for_native_message_connect);
   virtual void DecrementLazyKeepaliveCount();
 
  protected:

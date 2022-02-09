@@ -37,7 +37,8 @@ void MessagePort::ClosePort(int process_id,
                             int routing_id,
                             int worker_thread_id) {}
 
-void MessagePort::IncrementLazyKeepaliveCount() {}
+void MessagePort::IncrementLazyKeepaliveCount(
+    bool is_for_native_message_connect) {}
 
 void MessagePort::DecrementLazyKeepaliveCount() {}
 

@@ -168,6 +168,7 @@ class CONTENT_EXPORT ServiceWorkerContextWrapper
                                ResultCallback callback) override;
   ServiceWorkerExternalRequestResult StartingExternalRequest(
       int64_t service_worker_version_id,
+      ServiceWorkerExternalRequestTimeoutType timeout_type,
       const std::string& request_uuid) override;
   ServiceWorkerExternalRequestResult FinishedExternalRequest(
       int64_t service_worker_version_id,

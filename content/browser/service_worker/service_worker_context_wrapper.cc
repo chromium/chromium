@@ -514,6 +514,7 @@ void ServiceWorkerContextWrapper::UnregisterServiceWorker(
 ServiceWorkerExternalRequestResult
 ServiceWorkerContextWrapper::StartingExternalRequest(
     int64_t service_worker_version_id,
+    ServiceWorkerExternalRequestTimeoutType timeout_type,
     const std::string& request_uuid) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!context())
@@ -522,7 +523,7 @@ ServiceWorkerContextWrapper::StartingExternalRequest(
       context()->GetLiveVersion(service_worker_version_id);
   if (!version)
     return ServiceWorkerExternalRequestResult::kWorkerNotFound;
-  return version->StartExternalRequest(request_uuid);
+  return version->StartExternalRequest(request_uuid, timeout_type);
 }
 
 bool ServiceWorkerContextWrapper::ExecuteScriptForTest(

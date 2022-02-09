@@ -338,6 +338,7 @@ source_set("browser_sources") {
     "service_worker_context.h",
     "service_worker_context_observer.h",
     "service_worker_external_request_result.h",
+    "service_worker_external_request_timeout_type.h",
     "service_worker_running_info.cc",
     "service_worker_running_info.h",
     "service_worker_version_base_info.h",

@@ -121,6 +121,7 @@ void ServiceWorkerContextAdapter::UnregisterServiceWorker(
 content::ServiceWorkerExternalRequestResult
 ServiceWorkerContextAdapter::StartingExternalRequest(
     int64_t service_worker_version_id,
+    content::ServiceWorkerExternalRequestTimeoutType timeout_type,
     const std::string& request_uuid) {
   NOTIMPLEMENTED();
   return content::ServiceWorkerExternalRequestResult::kOk;

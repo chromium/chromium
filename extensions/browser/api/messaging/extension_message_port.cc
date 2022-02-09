@@ -303,7 +303,8 @@ void ExtensionMessagePort::DispatchOnMessage(const Message& message) {
                                  base::Unretained(this), message));
 }
 
-void ExtensionMessagePort::IncrementLazyKeepaliveCount() {
+void ExtensionMessagePort::IncrementLazyKeepaliveCount(
+    bool is_for_native_message_connect) {
   ProcessManager* pm = ProcessManager::Get(browser_context_);
   ExtensionHost* host = pm->GetBackgroundHostForExtension(extension_id_);
   if (host && BackgroundInfo::HasLazyBackgroundPage(host->extension())) {
@@ -313,7 +314,11 @@ void ExtensionMessagePort::IncrementLazyKeepaliveCount() {
 
   for (const auto& worker_id : service_workers_) {
     std::string request_uuid = pm->IncrementServiceWorkerKeepaliveCount(
-        worker_id, Activity::MESSAGE_PORT, PortIdToString(port_id_));
+        worker_id,
+        is_for_native_message_connect
+            ? content::ServiceWorkerExternalRequestTimeoutType::kDoesNotTimeout
+            : content::ServiceWorkerExternalRequestTimeoutType::kDefault,
+        Activity::MESSAGE_PORT, PortIdToString(port_id_));
     if (!request_uuid.empty())
       pending_keepalive_uuids_[worker_id].push_back(request_uuid);
   }

@@ -497,7 +497,8 @@ void MessageService::OpenChannelToNativeApp(
   channel->receiver = std::move(receiver);
 
   // Keep the opener alive until the channel is closed.
-  channel->opener->IncrementLazyKeepaliveCount();
+  channel->opener->IncrementLazyKeepaliveCount(
+      true /* is_for_native_message_connect */);
 
   AddChannel(std::move(channel), receiver_port_id);
 #else   // !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
@@ -676,8 +677,13 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
   }
 
   // Keep both ends of the channel alive until the channel is closed.
-  channel->opener->IncrementLazyKeepaliveCount();
-  channel->receiver->IncrementLazyKeepaliveCount();
+  channel->opener->IncrementLazyKeepaliveCount(
+      false /* is_for_native_message_connect */);
+  // Note: Though the receiver can be SW for native hosts connecting to it, we
+  // don't support long lived SW for this particular case yet and specify false
+  // below.
+  channel->receiver->IncrementLazyKeepaliveCount(
+      false /* is_for_native_message_connect */);
 }
 
 void MessageService::AddChannel(std::unique_ptr<MessageChannel> channel,

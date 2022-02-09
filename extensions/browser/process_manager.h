@@ -24,6 +24,7 @@
 #include "content/public/browser/devtools_agent_host_observer.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/browser/service_worker_external_request_timeout_type.h"
 #include "extensions/browser/activity.h"
 #include "extensions/browser/event_page_tracker.h"
 #include "extensions/browser/extension_host_observer.h"
@@ -161,8 +162,10 @@ class ProcessManager : public KeyedService,
   // worker with id |worker_id|.
   // The increment method returns the guid that needs to be passed to the
   // decrement method.
+  // |timeout_type| is the SW's timeout behavior.
   std::string IncrementServiceWorkerKeepaliveCount(
       const WorkerId& worker_id,
+      content::ServiceWorkerExternalRequestTimeoutType timeout_type,
       Activity::Type activity_type,
       const std::string& extra_data);
   // Decrements the ref-count of the specified worker with |worker_id| that

@@ -757,6 +757,7 @@ void ProcessManager::ReleaseLazyKeepaliveCountForFrame(
 
 std::string ProcessManager::IncrementServiceWorkerKeepaliveCount(
     const WorkerId& worker_id,
+    content::ServiceWorkerExternalRequestTimeoutType timeout_type,
     Activity::Type activity_type,
     const std::string& extra_data) {
   // TODO(lazyboy): Use |activity_type| and |extra_data|.
@@ -774,7 +775,7 @@ std::string ProcessManager::IncrementServiceWorkerKeepaliveCount(
           ->GetServiceWorkerContext();
 
   service_worker_context->StartingExternalRequest(service_worker_version_id,
-                                                  request_uuid);
+                                                  timeout_type, request_uuid);
   return request_uuid;
 }
 

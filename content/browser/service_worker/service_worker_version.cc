@@ -653,9 +653,11 @@ int ServiceWorkerVersion::StartRequestWithCustomTimeout(
 }
 
 ServiceWorkerExternalRequestResult ServiceWorkerVersion::StartExternalRequest(
-    const std::string& request_uuid) {
+    const std::string& request_uuid,
+    ServiceWorkerExternalRequestTimeoutType timeout_type) {
   if (running_status() == EmbeddedWorkerStatus::STARTING) {
-    return pending_external_requests_.insert(request_uuid).second
+    return pending_external_requests_.insert({request_uuid, timeout_type})
+                   .second
                ? ServiceWorkerExternalRequestResult::kOk
                : ServiceWorkerExternalRequestResult::kBadRequestId;
   }
@@ -668,10 +670,15 @@ ServiceWorkerExternalRequestResult ServiceWorkerVersion::StartExternalRequest(
   if (base::Contains(external_request_uuid_to_request_id_, request_uuid))
     return ServiceWorkerExternalRequestResult::kBadRequestId;
 
-  int request_id =
-      StartRequest(ServiceWorkerMetrics::EventType::EXTERNAL_REQUEST,
-                   base::BindOnce(&ServiceWorkerVersion::CleanUpExternalRequest,
-                                  this, request_uuid));
+  base::TimeDelta request_timeout =
+      timeout_type == ServiceWorkerExternalRequestTimeoutType::kDefault
+          ? kRequestTimeout
+          : base::TimeDelta::Max();
+  int request_id = StartRequestWithCustomTimeout(
+      ServiceWorkerMetrics::EventType::EXTERNAL_REQUEST,
+      base::BindOnce(&ServiceWorkerVersion::CleanUpExternalRequest, this,
+                     request_uuid),
+      request_timeout, KILL_ON_TIMEOUT);
   external_request_uuid_to_request_id_[request_uuid] = request_id;
   return ServiceWorkerExternalRequestResult::kOk;
 }
@@ -705,9 +712,11 @@ bool ServiceWorkerVersion::FinishRequestWithFetchCount(int request_id,
 ServiceWorkerExternalRequestResult ServiceWorkerVersion::FinishExternalRequest(
     const std::string& request_uuid) {
   if (running_status() == EmbeddedWorkerStatus::STARTING) {
-    return pending_external_requests_.erase(request_uuid) > 0u
-               ? ServiceWorkerExternalRequestResult::kOk
-               : ServiceWorkerExternalRequestResult::kBadRequestId;
+    auto iter = pending_external_requests_.find(request_uuid);
+    if (iter == pending_external_requests_.end())
+      return ServiceWorkerExternalRequestResult::kBadRequestId;
+    pending_external_requests_.erase(iter);
+    return ServiceWorkerExternalRequestResult::kOk;
   }
 
   // If it's STOPPED, there is no request to finish. We could just consider this
@@ -1201,10 +1210,11 @@ void ServiceWorkerVersion::OnStarted(
     observer.OnRunningStateChanged(this);
 
   if (!pending_external_requests_.empty()) {
-    std::set<std::string> pending_external_requests;
+    std::map<std::string, ServiceWorkerExternalRequestTimeoutType>
+        pending_external_requests;
     std::swap(pending_external_requests_, pending_external_requests);
-    for (const std::string& request_uuid : pending_external_requests)
-      StartExternalRequest(request_uuid);
+    for (const auto& [uuid, timeout_type] : pending_external_requests)
+      StartExternalRequest(uuid, timeout_type);
   }
 
   MaybeUpdateIdleDelayForTerminationOnNoControllee(

@@ -66,7 +66,10 @@ void EventAckData::IncrementInflightEvent(
   bool start_ok = true;
 
   content::ServiceWorkerExternalRequestResult result =
-      context->StartingExternalRequest(version_id, request_uuid);
+      context->StartingExternalRequest(
+          version_id,
+          content::ServiceWorkerExternalRequestTimeoutType::kDefault,
+          request_uuid);
   if (result != content::ServiceWorkerExternalRequestResult::kOk) {
     LOG(ERROR) << "StartExternalRequest failed: " << static_cast<int>(result);
     start_ok = false;

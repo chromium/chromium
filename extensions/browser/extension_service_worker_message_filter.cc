@@ -150,8 +150,9 @@ void ExtensionServiceWorkerMessageFilter::OnIncrementServiceWorkerActivity(
   // The worker might have already stopped before we got here, so the increment
   // below might fail legitimately. Therefore, we do not send bad_message to the
   // worker even if it fails.
-  service_worker_context_->StartingExternalRequest(service_worker_version_id,
-                                                   request_uuid);
+  service_worker_context_->StartingExternalRequest(
+      service_worker_version_id,
+      content::ServiceWorkerExternalRequestTimeoutType::kDefault, request_uuid);
 }
 
 void ExtensionServiceWorkerMessageFilter::OnDecrementServiceWorkerActivity(

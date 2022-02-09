@@ -83,6 +83,7 @@ class ServiceWorkerVersionTest;
 FORWARD_DECLARE_TEST(ServiceWorkerVersionTest, FailToStart_Timeout);
 FORWARD_DECLARE_TEST(ServiceWorkerVersionTest, IdleTimeout);
 FORWARD_DECLARE_TEST(ServiceWorkerVersionTest, MixedRequestTimeouts);
+FORWARD_DECLARE_TEST(ServiceWorkerVersionTest, PendingExternalRequest);
 FORWARD_DECLARE_TEST(ServiceWorkerVersionTest, RequestCustomizedTimeout);
 FORWARD_DECLARE_TEST(ServiceWorkerVersionTest, RequestNowTimeout);
 FORWARD_DECLARE_TEST(ServiceWorkerVersionTest, RequestTimeout);
@@ -98,6 +99,8 @@ FORWARD_DECLARE_TEST(ServiceWorkerVersionTest,
                      StallInStopping_DetachThenRestart);
 FORWARD_DECLARE_TEST(ServiceWorkerVersionTest, StallInStopping_DetachThenStart);
 FORWARD_DECLARE_TEST(ServiceWorkerVersionTest, StartRequestWithNullContext);
+FORWARD_DECLARE_TEST(ServiceWorkerVersionTest,
+                     WorkerLifetimeWithExternalRequest);
 }  // namespace service_worker_version_unittest
 
 FORWARD_DECLARE_TEST(ServiceWorkerRegistryTest, ScriptResponseTime);
@@ -328,9 +331,11 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // Starts a request of type EventType::EXTERNAL_REQUEST.
   // Provides a mechanism to external clients to keep the worker running.
   // |request_uuid| is a GUID for clients to identify the request.
+  // |timeout_type| is to specfiy request timeout behaviour of the worker.
   // Returns true if the request was successfully scheduled to starrt.
   ServiceWorkerExternalRequestResult StartExternalRequest(
-      const std::string& request_uuid);
+      const std::string& request_uuid,
+      ServiceWorkerExternalRequestTimeoutType timeout_type);
 
   // Informs ServiceWorkerVersion that an event has finished being dispatched.
   // Returns false if no inflight requests with the provided id exist, for
@@ -642,6 +647,9 @@ class CONTENT_EXPORT ServiceWorkerVersion
   FRIEND_TEST_ALL_PREFIXES(service_worker_controllee_request_handler_unittest::
                                ServiceWorkerControlleeRequestHandlerTest,
                            FallbackWithNoFetchHandler);
+  FRIEND_TEST_ALL_PREFIXES(
+      service_worker_version_unittest::ServiceWorkerVersionTest,
+      PendingExternalRequest);
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerJobTest, Register);
   FRIEND_TEST_ALL_PREFIXES(
       service_worker_version_unittest::ServiceWorkerVersionTest,
@@ -698,6 +706,9 @@ class CONTENT_EXPORT ServiceWorkerVersion
   FRIEND_TEST_ALL_PREFIXES(
       service_worker_version_unittest::ServiceWorkerVersionTest,
       MixedRequestTimeouts);
+  FRIEND_TEST_ALL_PREFIXES(
+      service_worker_version_unittest::ServiceWorkerVersionTest,
+      WorkerLifetimeWithExternalRequest);
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerRegistryTest, ScriptResponseTime);
 
   // Contains timeout info for InflightRequest.
@@ -959,9 +970,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
   using RequestUUIDToRequestIDMap = std::map<std::string, int>;
   RequestUUIDToRequestIDMap external_request_uuid_to_request_id_;
 
-  // List of UUIDs of external requests that were issued before this worker
-  // reached RUNNING.
-  std::set<std::string> pending_external_requests_;
+  // External request infos that were issued before this worker reached RUNNING.
+  // Info contains UUID and timeout type.
+  std::map<std::string, ServiceWorkerExternalRequestTimeoutType>
+      pending_external_requests_;
 
   // Connected to ServiceWorkerContextClient while the worker is running.
   mojo::Remote<blink::mojom::ServiceWorker> service_worker_remote_;
