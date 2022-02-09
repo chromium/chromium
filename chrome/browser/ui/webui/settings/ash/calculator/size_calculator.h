@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_CALCULATOR_SIZE_CALCULATOR_H_
-#define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_CALCULATOR_SIZE_CALCULATOR_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_CALCULATOR_SIZE_CALCULATOR_H_
+#define CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_CALCULATOR_SIZE_CALCULATOR_H_
 
 #include <array>
 #include <bitset>
@@ -328,4 +328,4 @@ class OtherUsersSizeCalculator : public SizeCalculator {
 }  // namespace settings
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_CALCULATOR_SIZE_CALCULATOR_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_ASH_CALCULATOR_SIZE_CALCULATOR_H_
