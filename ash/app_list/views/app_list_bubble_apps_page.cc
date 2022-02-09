@@ -75,6 +75,22 @@ constexpr gfx::Insets kSeparatorInsets(0, 12);
 constexpr gfx::Tween::Type kSlideAnimationTweenType =
     gfx::Tween::LINEAR_OUT_SLOW_IN;
 
+// Delay for the show page transform and opacity animations.
+constexpr base::TimeDelta kShowPageAnimationDelay = base::Milliseconds(50);
+
+// The spec says "Down 40 -> 0, duration 250ms" with no delay, but the opacity
+// animation has a 50ms delay that causes the first 50ms to be invisible. Just
+// animate the 200ms visible part, which is 32 dips. This ensures the search
+// page hide animation doesn't play at the same time as the apps page show
+// animation.
+constexpr int kShowPageAnimationVerticalOffset = 32;
+constexpr base::TimeDelta kShowPageAnimationTransformDuration =
+    base::Milliseconds(200);
+
+// Duration of the show page opacity animation.
+constexpr base::TimeDelta kShowPageAnimationOpacityDuration =
+    base::Milliseconds(100);
+
 }  // namespace
 
 AppListBubbleAppsPage::AppListBubbleAppsPage(
@@ -274,23 +290,20 @@ void AppListBubbleAppsPage::AnimateShowPage() {
       })));
 
   gfx::Transform translate_down;
-  constexpr int kVerticalOffset = 40;
-  translate_down.Translate(0, kVerticalOffset);
+  translate_down.Translate(0, kShowPageAnimationVerticalOffset);
 
-  // Position: Down 40 -> 0, duration 250ms, ease (0.00, 0.00, 0.20, 1.00)
-  // Opacity: 0% -> 100%, delay 50ms, duration 100ms
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .Once()
       .SetOpacity(scroll_contents, 0.f)
       .SetTransform(scroll_contents, translate_down)
-      .Then()
-      .SetDuration(base::Milliseconds(250))
+      .At(kShowPageAnimationDelay)
+      .SetDuration(kShowPageAnimationTransformDuration)
       .SetTransform(scroll_contents, gfx::Transform(),
                     gfx::Tween::LINEAR_OUT_SLOW_IN)
-      .At(base::Milliseconds(50))
-      .SetDuration(base::Milliseconds(100))
+      .At(kShowPageAnimationDelay)
+      .SetDuration(kShowPageAnimationOpacityDuration)
       .SetOpacity(scroll_contents, 1.f);
 }
 

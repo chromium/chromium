@@ -59,6 +59,10 @@ class ASH_EXPORT ProductivityLauncherSearchView
   // Sums the heights of all search_result_list_views_ owned by this view.
   int TabletModePreferredHeight();
 
+  // Returns a layer that can be used for launcher page animations. Which layer
+  // is an implementation detail.
+  ui::Layer* GetPageAnimationLayer() const;
+
   std::vector<SearchResultContainerView*> result_container_views_for_test() {
     return result_container_views_;
   }

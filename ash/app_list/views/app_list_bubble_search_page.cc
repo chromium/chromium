@@ -7,9 +7,24 @@
 #include <memory>
 
 #include "ash/app_list/views/productivity_launcher_search_view.h"
+#include "base/check_op.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/layout/fill_layout.h"
 
 namespace ash {
+namespace {
+
+// The animation spec says 40 dips up over 250ms, but the opacity animation
+// renders the view invisible after 50ms, so animate the visible fraction.
+constexpr int kHideAnimationVerticalOffset = -40 * 250 / 50;
+
+// Duration for the hide animation (both transform and opacity).
+constexpr base::TimeDelta kHideAnimationDuration = base::Milliseconds(50);
+
+}  // namespace
 
 AppListBubbleSearchPage::AppListBubbleSearchPage(
     AppListViewDelegate* view_delegate,
@@ -21,5 +36,45 @@ AppListBubbleSearchPage::AppListBubbleSearchPage(
 }
 
 AppListBubbleSearchPage::~AppListBubbleSearchPage() = default;
+
+void AppListBubbleSearchPage::AnimateHidePage() {
+  // If skipping animations, just update visibility.
+  if (ui::ScopedAnimationDurationScaleMode::is_zero()) {
+    SetVisible(false);
+    return;
+  }
+
+  // Update view visibility when the animation is done.
+  auto set_visible_false = base::BindRepeating(
+      [](base::WeakPtr<AppListBubbleSearchPage> self) {
+        if (!self)
+          return;
+        self->SetVisible(false);
+        ui::Layer* layer = self->search_view_->GetPageAnimationLayer();
+        layer->SetOpacity(1.f);
+        layer->SetTransform(gfx::Transform());
+      },
+      weak_factory_.GetWeakPtr());
+
+  ui::Layer* layer = search_view_->GetPageAnimationLayer();
+  DCHECK_EQ(layer->type(), ui::LAYER_TEXTURED);
+
+  gfx::Transform translate_up;
+  translate_up.Translate(0, kHideAnimationVerticalOffset);
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(set_visible_false)
+      .OnAborted(set_visible_false)
+      .Once()
+      .SetDuration(kHideAnimationDuration)
+      .SetOpacity(layer, 0.f)
+      .SetTransform(layer, translate_up);
+}
+
+ui::Layer* AppListBubbleSearchPage::GetPageAnimationLayerForTest() {
+  return search_view_->GetPageAnimationLayer();
+}
 
 }  // namespace ash

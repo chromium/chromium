@@ -5,6 +5,7 @@
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/app_list/views/app_list_bubble_search_page.h"
 #include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -104,9 +105,11 @@ TEST_F(AppListBubbleAppsPageTest, AnimateShowPage) {
   auto* apps_page = helper->GetBubbleAppsPage();
   ASSERT_FALSE(apps_page->GetVisible());
 
-  // Enable animations.
+  // Enable animations. NON_ZERO_DURATION does not work here. The animation
+  // end callback is not called, for reasons I don't understand. It works fine
+  // in production, and in tests with NORMAL_DURATION.
   ui::ScopedAnimationDurationScaleMode duration(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   base::HistogramTester histograms;
 
   // Press escape to trigger animation back to the apps page.

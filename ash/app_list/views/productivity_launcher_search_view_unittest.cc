@@ -226,6 +226,36 @@ TEST_P(ProductivityLauncherSearchViewTest, ResultContainerIsVisible) {
   EXPECT_TRUE(result_containers[0]->GetVisible());
 }
 
+TEST_P(ProductivityLauncherSearchViewTest,
+       SearchResultsAreVisibleDuringHidePageAnimation) {
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+
+  // Press a key to start a search.
+  PressAndReleaseKey(ui::VKEY_A);
+
+  // Populate answer card result.
+  auto* results = helper->GetSearchResults();
+  SetUpAnswerCardResult(results, 1, 1);
+  auto* search_view = GetProductivityLauncherSearchView();
+  search_view->OnSearchResultContainerResultsChanged();
+
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Press backspace to delete the query and switch back to the apps page.
+  PressAndReleaseKey(ui::VKEY_BACK);
+  search_view->OnSearchResultContainerResultsChanged();
+
+  // Result is visible during hide animation.
+  std::vector<SearchResultContainerView*> result_containers =
+      search_view->result_container_views_for_test();
+  ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
+  EXPECT_TRUE(result_containers[0]->GetVisible());
+  EXPECT_TRUE(result_containers[0]->GetResultViewAt(0)->GetVisible());
+}
+
 // Tests that key traversal correctly cycles between the list of results and
 // search box close button.
 TEST_P(ProductivityLauncherSearchViewTest, ResultSelectionCycle) {

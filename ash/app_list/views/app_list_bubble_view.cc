@@ -242,21 +242,31 @@ void AppListBubbleView::InitContentsView(
   // layer to visibly paint.
   separator_ = contents->AddChildView(std::make_unique<SeparatorWithLayer>());
 
+  auto* pages_container =
+      contents->AddChildView(std::make_unique<views::View>());
+
+  // Apps page and search page must both fill the page for page transition
+  // animations to look right.
+  pages_container->SetUseDefaultFillLayout(true);
+
+  // The apps page must fill the bubble so that the apps grid view can flex to
+  // include empty space below the visible icons. The search page doesn't care,
+  // so flex the entire container.
+  layout->SetFlexForView(pages_container, 1);
+
   // NOTE: Passing drag and drop host from a specific shelf instance assumes
   // that the `apps_page_` will not get reused for showing the app list in
   // another root window.
-  apps_page_ = contents->AddChildView(std::make_unique<AppListBubbleAppsPage>(
-      view_delegate_, drag_and_drop_host, GetAppListConfig(),
-      a11y_announcer_.get(),
-      /*folder_controller=*/this));
-  // The apps page must fill the bubble so that the apps grid view can flex to
-  // include empty space below the visible icons.
-  layout->SetFlexForView(apps_page_, 1);
+  apps_page_ =
+      pages_container->AddChildView(std::make_unique<AppListBubbleAppsPage>(
+          view_delegate_, drag_and_drop_host, GetAppListConfig(),
+          a11y_announcer_.get(),
+          /*folder_controller=*/this));
 
   search_page_dialog_controller_ =
       std::make_unique<SearchResultPageDialogController>(this);
   search_page_ =
-      contents->AddChildView(std::make_unique<AppListBubbleSearchPage>(
+      pages_container->AddChildView(std::make_unique<AppListBubbleSearchPage>(
           view_delegate_, search_page_dialog_controller_.get(),
           search_box_view_));
   search_page_->SetVisible(false);
@@ -411,7 +421,6 @@ void AppListBubbleView::ShowPage(AppListBubblePage page) {
   search_box_view_->SetVisible(page != AppListBubblePage::kAssistant);
   separator_->SetVisible(page != AppListBubblePage::kAssistant);
 
-  search_page_->SetVisible(page == AppListBubblePage::kSearch);
   search_page_dialog_controller_->SetEnabled(page ==
                                              AppListBubblePage::kSearch);
   assistant_page_->SetVisible(page == AppListBubblePage::kAssistant);
@@ -421,10 +430,14 @@ void AppListBubbleView::ShowPage(AppListBubblePage page) {
       break;
     case AppListBubblePage::kApps:
       apps_page_->ResetScrollPosition();
-      if (previous_page == AppListBubblePage::kSearch)
+      if (previous_page == AppListBubblePage::kSearch) {
+        // Trigger hiding first so animations don't overlap.
+        search_page_->AnimateHidePage();
         apps_page_->AnimateShowPage();
-      else
+      } else {
         apps_page_->SetVisible(true);
+        search_page_->SetVisible(false);
+      }
       search_box_view_->SetSearchBoxActive(true, /*event_type=*/ui::ET_UNKNOWN);
       // Explicitly request focus in case the search box was active before.
       search_box_view_->search_box()->RequestFocus();
@@ -434,6 +447,7 @@ void AppListBubbleView::ShowPage(AppListBubblePage page) {
         apps_page_->AnimateHidePage();
       else
         apps_page_->SetVisible(false);
+      search_page_->SetVisible(true);
       search_box_view_->SetSearchBoxActive(true, /*event_type=*/ui::ET_UNKNOWN);
       // Explicitly request focus in case the search box was active before.
       search_box_view_->search_box()->RequestFocus();
@@ -443,6 +457,7 @@ void AppListBubbleView::ShowPage(AppListBubblePage page) {
         apps_page_->AnimateHidePage();
       else
         apps_page_->SetVisible(false);
+      search_page_->SetVisible(false);
       // Explicitly set search box inactive so the next attempt to activate it
       // will succeed.
       search_box_view_->SetSearchBoxActive(false,
