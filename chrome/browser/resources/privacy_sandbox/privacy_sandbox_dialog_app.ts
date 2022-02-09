@@ -15,6 +15,18 @@ import {PrivacySandboxDialogAction, PrivacySandboxDialogBrowserProxy} from './pr
 
 const PrivacySandboxDialogAppElementBase = PolymerElement;
 
+document.addEventListener('DOMContentLoaded', () => {
+  const proxy = PrivacySandboxDialogBrowserProxy.getInstance();
+  // Prefer using |document.body.offsetHeight| instead of
+  // |document.body.scrollHeight| as it returns the correct height of the
+  // page even when the page zoom in Chrome is different than 100%.
+  proxy.resizeDialog(document.body.offsetHeight);
+  // The web dialog size has been initialized, so reset the body width to
+  // auto. This makes sure that the body only takes up the viewable width,
+  // e.g. when there is a scrollbar.
+  document.body.style.width = 'auto';
+});
+
 export class PrivacySandboxDialogAppElement extends
     PrivacySandboxDialogAppElementBase {
   static get is() {

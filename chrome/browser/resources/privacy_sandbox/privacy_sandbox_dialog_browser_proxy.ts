@@ -25,6 +25,10 @@ export class PrivacySandboxDialogBrowserProxy {
     chrome.send('dialogActionOccurred', [action]);
   }
 
+  resizeDialog(height: number) {
+    chrome.send('resizeDialog', [height]);
+  }
+
   static getInstance(): PrivacySandboxDialogBrowserProxy {
     return instance || (instance = new PrivacySandboxDialogBrowserProxy());
   }

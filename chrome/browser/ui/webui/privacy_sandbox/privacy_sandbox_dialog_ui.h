@@ -8,7 +8,6 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "content/public/browser/web_ui_controller.h"
 
-class Browser;
 class Profile;
 
 // WebUI which is shown to the user as part of the PrivacySandboxDialog.
@@ -19,8 +18,9 @@ class PrivacySandboxDialogUI : public content::WebUIController {
 
   void Initialize(Profile* profile,
                   base::OnceClosure close_callback,
-                  PrivacySandboxService::DialogType dialog_type,
-                  Browser* browser);
+                  base::OnceCallback<void(int)> resize_callback,
+                  base::OnceClosure open_settings_callback,
+                  PrivacySandboxService::DialogType dialog_type);
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();

@@ -33,8 +33,9 @@ PrivacySandboxDialogUI::~PrivacySandboxDialogUI() = default;
 void PrivacySandboxDialogUI::Initialize(
     Profile* profile,
     base::OnceClosure close_callback,
-    PrivacySandboxService::DialogType dialog_type,
-    Browser* browser) {
+    base::OnceCallback<void(int)> resize_callback,
+    base::OnceClosure open_settings_callback,
+    PrivacySandboxService::DialogType dialog_type) {
   std::unique_ptr<base::DictionaryValue> update =
       std::make_unique<base::DictionaryValue>();
   update->SetBoolean(
@@ -43,7 +44,8 @@ void PrivacySandboxDialogUI::Initialize(
       profile, chrome::kChromeUIPrivacySandboxDialogHost, std::move(update));
 
   auto handler = std::make_unique<PrivacySandboxDialogHandler>(
-      std::move(close_callback), browser);
+      std::move(close_callback), std::move(resize_callback),
+      std::move(open_settings_callback));
   web_ui()->AddMessageHandler(std::move(handler));
 }
 

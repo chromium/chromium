@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/privacy_sandbox/privacy_sandbox_dialog_view.h"
 
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_dialog.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -19,9 +21,9 @@
 
 namespace {
 
-// TODO(crbug.com/1286276) - Figure out the appropriate sizes.
-constexpr int kDialogWidth = 500;
-constexpr int kDialogHeight = 500;
+constexpr int kDialogWidth = 460;
+constexpr int kDefaultConsentDialogHeight = 569;
+constexpr int kDefaultNoticeDialogHeight = 494;
 
 }  // namespace
 
@@ -37,27 +39,35 @@ void ShowPrivacySandboxDialog(Browser* browser,
 
 PrivacySandboxDialogView::PrivacySandboxDialogView(
     Browser* browser,
-    PrivacySandboxService::DialogType dialog_type) {
+    PrivacySandboxService::DialogType dialog_type)
+    : browser_(browser) {
   // Create the web view in the native bubble.
-  auto* web_view =
+  web_view_ =
       AddChildView(std::make_unique<views::WebView>(browser->profile()));
-  web_view->LoadInitialURL(GURL(chrome::kChromeUIPrivacySandboxDialogURL));
+  web_view_->LoadInitialURL(GURL(chrome::kChromeUIPrivacySandboxDialogURL));
 
   auto width =
       views::LayoutProvider::Get()->GetSnappedDialogWidth(kDialogWidth);
-  web_view->SetPreferredSize({width, kDialogHeight});
+  auto height = dialog_type == PrivacySandboxService::DialogType::kConsent
+                    ? kDefaultConsentDialogHeight
+                    : kDefaultNoticeDialogHeight;
+  web_view_->SetPreferredSize({width, height});
 
-  PrivacySandboxDialogUI* web_ui = web_view->GetWebContents()
+  PrivacySandboxDialogUI* web_ui = web_view_->GetWebContents()
                                        ->GetWebUI()
                                        ->GetController()
                                        ->GetAs<PrivacySandboxDialogUI>();
-  SetInitiallyFocusedView(web_view);
+  SetInitiallyFocusedView(web_view_);
   DCHECK(web_ui);
   // Unretained is fine because this outlives the inner web UI.
   web_ui->Initialize(
       browser->profile(),
       base::BindOnce(&PrivacySandboxDialogView::Close, base::Unretained(this)),
-      dialog_type, browser);
+      base::BindOnce(&PrivacySandboxDialogView::ResizeNativeView,
+                     base::Unretained(this)),
+      base::BindOnce(&PrivacySandboxDialogView::OpenPrivacySandboxSettings,
+                     base::Unretained(this)),
+      dialog_type);
 
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetModalType(ui::MODAL_TYPE_WINDOW);
@@ -69,5 +79,20 @@ void PrivacySandboxDialogView::Close() {
   GetWidget()->Close();
 }
 
-BEGIN_METADATA(PrivacySandboxDialogView, views::DialogDelegateView)
+void PrivacySandboxDialogView::ResizeNativeView(int height) {
+  int max_height = browser_->window()
+                       ->GetWebContentsModalDialogHost()
+                       ->GetMaximumDialogSize()
+                       .height();
+  web_view_->SetPreferredSize(gfx::Size(web_view_->GetPreferredSize().width(),
+                                        std::min(height, max_height)));
+  SizeToContents();
+}
+
+void PrivacySandboxDialogView::OpenPrivacySandboxSettings() {
+  DCHECK(browser_);
+  chrome::ShowPrivacySandboxSettings(browser_);
+}
+
+BEGIN_METADATA(PrivacySandboxDialogView, views::BubbleDialogDelegateView)
 END_METADATA
