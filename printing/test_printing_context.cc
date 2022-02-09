@@ -149,6 +149,9 @@ mojom::ResultCode TestPrintingContext::DocumentDone() {
   DCHECK(in_print_job_);
   DVLOG(1) << "Document done";
 
+  if (document_done_blocked_by_permissions_)
+    return mojom::ResultCode::kAccessDenied;
+
   ResetSettings();
   return mojom::ResultCode::kSuccess;
 }

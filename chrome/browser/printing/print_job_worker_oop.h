@@ -47,6 +47,7 @@ class PrintJobWorkerOop : public PrintJobWorker {
   virtual void OnDidRenderPrintedPage(uint32_t page_index,
                                       mojom::ResultCode result);
 #endif
+  virtual void OnDidDocumentDone(int job_id, mojom::ResultCode result);
 
   // `PrintJobWorker` overrides.
 #if BUILDFLAG(IS_WIN)
@@ -85,6 +86,7 @@ class PrintJobWorkerOop : public PrintJobWorker {
       mojom::MetafileDataType page_data_type,
       base::ReadOnlySharedMemoryRegion serialized_page_data);
 #endif  // BUILDFLAG(IS_WIN)
+  void SendDocumentDone();
 
   // Client ID with the print backend service manager for this print job.
   // Used only from UI thread.

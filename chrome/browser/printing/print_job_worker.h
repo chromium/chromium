@@ -121,8 +121,14 @@ class PrintJobWorker {
   virtual void SpoolPage(PrintedPage* page);
 #endif
 
+  // Internal state verification that spooling of the document is complete.
+  void CheckDocumentSpoolingComplete();
+
   // Closes the job since spooling is done.
   virtual void OnDocumentDone();
+
+  // Helper function for document done processing.
+  void FinishDocumentDone(int job_id);
 
   // Reports settings back to `callback`.
   void GetSettingsDone(SettingsCallback callback, mojom::ResultCode result);

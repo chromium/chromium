@@ -95,6 +95,8 @@ using OnDidRenderPrintedPageCallback =
     base::RepeatingCallback<void(uint32_t page_number,
                                  mojom::ResultCode result)>;
 #endif
+using OnDidDocumentDoneCallback =
+    base::RepeatingCallback<void(mojom::ResultCode result)>;
 using OnDidShowErrorDialog = base::RepeatingCallback<void()>;
 using OnStopCallback = base::RepeatingCallback<void()>;
 
@@ -115,6 +117,7 @@ struct TestPrintCallbacks {
 #if BUILDFLAG(IS_WIN)
   OnDidRenderPrintedPageCallback did_render_printed_page_callback;
 #endif
+  OnDidDocumentDoneCallback did_document_done_callback;
 
   // The exceptions to the callback steps are `did_show_error_dialog` and
   // `did_stop_callback`.  For `did_stop_callback` there is no result code
@@ -1885,6 +1888,13 @@ class TestPrintJobWorker : public PrintJobWorkerOop {
   }
 #endif  // BUILDFLAG(IS_WIN)
 
+  void OnDidDocumentDone(int job_id, mojom::ResultCode result) override {
+    DVLOG(1) << "Observed: document done";
+    callbacks_->error_check_callback.Run(result);
+    PrintJobWorkerOop::OnDidDocumentDone(job_id, result);
+    callbacks_->did_document_done_callback.Run(result);
+  }
+
   void ShowErrorDialog() override {
     // Do not show real error dialog, it blocks the UI thread.
     DVLOG(1) << "Test: notify user of print error";
@@ -1930,6 +1940,9 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
               &PrintBackendPrintBrowserTestBase::OnDidRenderPrintedPage,
               base::Unretained(this));
 #endif
+      test_print_callbacks_.did_document_done_callback = base::BindRepeating(
+          &PrintBackendPrintBrowserTestBase::OnDidDocumentDone,
+          base::Unretained(this));
       test_print_callbacks_.did_show_error_dialog = base::BindRepeating(
           &PrintBackendPrintBrowserTestBase::OnDidShowErrorDialog,
           base::Unretained(this));
@@ -2039,6 +2052,11 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
   }
 #endif
 
+  void PrimeForAccessDeniedErrorsInDocumentDone() {
+    test_printing_context_factory_.SetAccessDeniedErrorOnDocumentDone(
+        /*cause_errors=*/true);
+  }
+
   mojom::ResultCode start_printing_result() const {
     return start_printing_result_;
   }
@@ -2049,6 +2067,10 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
   }
   int render_printed_page_count() const { return render_printed_pages_count_; }
 #endif  // BUILDFLAG(IS_WIN)
+
+  mojom::ResultCode document_done_result() const {
+    return document_done_result_;
+  }
 
   bool error_dialog_shown() const { return error_dialog_shown_; }
 
@@ -2077,6 +2099,8 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
       if (access_denied_errors_for_render_page_)
         context->SetOnRenderPageBlockedByPermissions();
 #endif
+      if (access_denied_errors_for_document_done_)
+        context->SetDocumentDoneBlockedByPermissions();
 
       return std::move(context);
     }
@@ -2095,12 +2119,17 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
     }
 #endif
 
+    void SetAccessDeniedErrorOnDocumentDone(bool cause_errors) {
+      access_denied_errors_for_document_done_ = cause_errors;
+    }
+
    private:
     std::string printer_name_;
     bool access_denied_errors_for_new_document_ = false;
 #if BUILDFLAG(IS_WIN)
     bool access_denied_errors_for_render_page_ = false;
 #endif
+    bool access_denied_errors_for_document_done_ = false;
   };
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -2133,6 +2162,11 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
   }
 #endif
 
+  void OnDidDocumentDone(mojom::ResultCode result) {
+    document_done_result_ = result;
+    CheckForQuit();
+  }
+
   void OnDidShowErrorDialog() {
     error_dialog_shown_ = true;
     CheckForQuit();
@@ -2154,6 +2188,8 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
     test_printing_context_factory_.SetAccessDeniedErrorOnRenderPage(
         /*cause_errors=*/false);
 #endif
+    test_printing_context_factory_.SetAccessDeniedErrorOnDocumentDone(
+        /*cause_errors=*/false);
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -2173,6 +2209,7 @@ class PrintBackendPrintBrowserTestBase : public PrintBrowserTest {
   mojom::ResultCode render_printed_page_result_ = mojom::ResultCode::kFailed;
   int render_printed_pages_count_ = 0;
 #endif
+  mojom::ResultCode document_done_result_ = mojom::ResultCode::kFailed;
   bool error_dialog_shown_ = false;
   bool stop_invoked_ = false;
 };
@@ -2259,10 +2296,11 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService, StartPrinting) {
   SetUpPrintViewManager(web_contents);
 
 #if BUILDFLAG(IS_WIN)
-  // The test will succeed to start the print job and render a page of content.
-  // Wait for a call to `Stop()` to ensure print job wrap-up finished cleanly
-  // before completing the test.  This results in a total of 3 expected calls.
-  SetNumExpectedMessages(/*num=*/3);
+  // The test will succeed to start the print job, render a page of content,
+  // and complete with document done.  Wait for a call to `Stop()` to ensure
+  // print job wrap-up finished cleanly before completing the test.  This
+  // results in a total of 4 expected calls.
+  SetNumExpectedMessages(/*num=*/4);
 #else
   // The test will succeed to start printing.  Wait for a call to `Stop()` to
   // ensure print job wrap-up finished cleanly before completing the test.
@@ -2275,6 +2313,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService, StartPrinting) {
 #if BUILDFLAG(IS_WIN)
   EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(render_printed_page_count(), 1);
+  EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
 #endif
   EXPECT_TRUE(stop_invoked());
 }
@@ -2296,11 +2335,10 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
 
 #if BUILDFLAG(IS_WIN)
   // The test will retry to print after getting an access-denied error when
-  // trying to start printing.  After that the printing will succeed to start
-  // and render a page of content.  Wait for a call to `Stop()` to ensure print
-  // job wrap-up finished cleanly before completing the test.  This results in
-  // a total of 4 expected calls.
-  SetNumExpectedMessages(/*num=*/4);
+  // trying to start printing.  After that the printing will succeed to start,
+  // render a page of content, and complete.  Wait for a call to `Stop()` to
+  // ensure print job wrap-up finished cleanly - resulting in 5 calls.
+  SetNumExpectedMessages(/*num=*/5);
 #else
   // The test will retry to print after getting an access-denied error when
   // trying to start printing.  After that the printing will succeed to start.
@@ -2314,6 +2352,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
 #if BUILDFLAG(IS_WIN)
   EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(render_printed_page_count(), 1);
+  EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
 #endif
   EXPECT_TRUE(stop_invoked());
 }
@@ -2377,6 +2416,43 @@ IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
   EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kAccessDenied);
   EXPECT_EQ(render_printed_page_count(), 0);
+  EXPECT_TRUE(error_dialog_shown());
+  EXPECT_TRUE(stop_invoked());
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+// TODO(crbug.com/809738)  Enable for other platforms once support is added
+// for `RenderPrintedDocument()`.
+#if BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_F(PrintBackendPrintBrowserTestService,
+                       StartPrintingDocumentDoneAccessDenied) {
+  AddPrinter("printer1");
+  SetPrinterNameForSubsequentContexts("printer1");
+  PrimeForAccessDeniedErrorsInDocumentDone();
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/test3.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  SetUpPrintViewManager(web_contents);
+
+  // No attempt to retry is made if an access-denied error occurs when trying
+  // do wrap-up a rendered document.  The test will fail after starting the
+  // print job, rendering a page of content, and calling for document done.
+  // This will cause a printing error dialog to be displayed.  Wait for a call
+  // to `Stop()` to ensure print job wrap-up finished cleanly before completing
+  // the test.  This results in a total of 5 expected calls.
+  SetNumExpectedMessages(/*num=*/5);
+
+  PrintAfterPreviewIsReadyAndLoaded();
+
+  EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
+  EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kSuccess);
+  EXPECT_EQ(render_printed_page_count(), 1);
+  EXPECT_EQ(document_done_result(), mojom::ResultCode::kAccessDenied);
   EXPECT_TRUE(error_dialog_shown());
   EXPECT_TRUE(stop_invoked());
 }

@@ -52,6 +52,9 @@ class TestPrintingContext : public PrintingContext {
     render_page_blocked_by_permissions_ = true;
   }
 #endif
+  void SetDocumentDoneBlockedByPermissions() {
+    document_done_blocked_by_permissions_ = true;
+  }
 
   // PrintingContext overrides:
   void AskUserForSettings(int max_pages,
@@ -85,6 +88,7 @@ class TestPrintingContext : public PrintingContext {
 #if BUILDFLAG(IS_WIN)
   bool render_page_blocked_by_permissions_ = false;
 #endif
+  bool document_done_blocked_by_permissions_ = false;
 };
 
 }  // namespace printing

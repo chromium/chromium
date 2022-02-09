@@ -4,6 +4,7 @@
 
 #include "chrome/browser/printing/print_job_worker_oop.h"
 
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -130,13 +131,30 @@ void PrintJobWorkerOop::OnDidRenderPrintedPage(uint32_t page_index,
   if (pages_printed_count_ == document()->page_count()) {
     // The last page has printed, can proceed to document done processing.
     VLOG(1) << "All pages printed for document";
-    // TODO(crbug.com/809738)  Proceed with `DocumentDone()` processing.
-    task_runner()->PostTask(FROM_HERE,
-                            base::BindOnce(&PrintJobWorkerOop::OnFailure,
-                                           worker_weak_factory_.GetWeakPtr()));
+    SendDocumentDone();
   }
 }
+#endif  // BUILDFLAG(IS_WIN)
 
+void PrintJobWorkerOop::OnDidDocumentDone(int job_id,
+                                          mojom::ResultCode result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+#if BUILDFLAG(IS_WIN)
+  DCHECK_EQ(pages_printed_count_, document()->page_count());
+#endif
+  if (result != mojom::ResultCode::kSuccess) {
+    VLOG(1) << "Error completing printing via service for document "
+            << document()->cookie() << ": " << result;
+    NotifyFailure(result);
+    return;
+  }
+  VLOG(1) << "Printing completed with service for document "
+          << document()->cookie();
+  UnregisterServiceManagerClient();
+  FinishDocumentDone(job_id);
+}
+
+#if BUILDFLAG(IS_WIN)
 void PrintJobWorkerOop::SpoolPage(PrintedPage* page) {
   DCHECK(task_runner()->RunsTasksInCurrentSequence());
   DCHECK_NE(page_number(), PageNumber::npos());
@@ -165,16 +183,13 @@ void PrintJobWorkerOop::SpoolPage(PrintedPage* page) {
 #endif  // BUILDFLAG(IS_WIN)
 
 void PrintJobWorkerOop::OnDocumentDone() {
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
-
   // Can do browser-side checks related to completeness for sending, but must
-  // wait to do OOP related checks until OnDidDocumentDone() is received.
-  DCHECK_EQ(page_number(), PageNumber::npos());
-  DCHECK(document());
-  // PrintJob must own this, because only PrintJob can send notifications.
-  DCHECK(print_job());
+  // wait to do OOP related work until OnDidDocumentDone() is received.
+  CheckDocumentSpoolingComplete();
 
-  // TODO(crbug.com/809738)  Further OOP logic pending.
+  // Since this call occurs due to all pages having been sent, do not just call
+  // `SendDocumentDone()`.  That should happen as a result of callbacks from
+  // PrintBackend service.
 }
 
 void PrintJobWorkerOop::UpdatePrintSettings(base::Value new_settings,
@@ -341,5 +356,20 @@ void PrintJobWorkerOop::SendRenderPrintedPage(
                      ui_weak_factory_.GetWeakPtr(), page_index));
 }
 #endif  // BUILDFLAG(IS_WIN)
+
+void PrintJobWorkerOop::SendDocumentDone() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  const int32_t document_cookie = document()->cookie();
+  VLOG(1) << "Sending document done for document " << document_cookie;
+
+  PrintBackendServiceManager& service_mgr =
+      PrintBackendServiceManager::GetInstance();
+
+  service_mgr.DocumentDone(device_name_, document_cookie,
+                           base::BindOnce(&PrintJobWorkerOop::OnDidDocumentDone,
+                                          ui_weak_factory_.GetWeakPtr(),
+                                          printing_context()->job_id()));
+}
 
 }  // namespace printing
