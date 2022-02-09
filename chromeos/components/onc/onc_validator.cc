@@ -850,8 +850,8 @@ bool Validator::ValidateVPN(base::Value* result) {
 }
 
 bool Validator::ValidateIPsec(base::Value* result) {
-  const std::vector<const char*> valid_authentications = {::onc::ipsec::kPSK,
-                                                          ::onc::ipsec::kCert};
+  const std::vector<const char*> valid_authentications = {
+      ::onc::ipsec::kPSK, ::onc::ipsec::kCert, ::onc::ipsec::kEAP};
   if (FieldExistsAndHasNoValidValue(*result, ::onc::ipsec::kAuthenticationType,
                                     valid_authentications) ||
       FieldExistsAndIsEmpty(*result, ::onc::ipsec::kServerCARefs)) {
@@ -1108,10 +1108,18 @@ bool Validator::ValidateEAP(base::Value* result) {
   const std::vector<const char*> valid_inner_values = {
       ::onc::eap::kAutomatic, ::onc::eap::kGTC, ::onc::eap::kMD5,
       ::onc::eap::kMSCHAPv2, ::onc::eap::kPAP};
-  const std::vector<const char*> valid_outer_values = {
+  std::vector<const char*> valid_outer_values = {
       ::onc::eap::kPEAP,   ::onc::eap::kEAP_TLS, ::onc::eap::kEAP_TTLS,
       ::onc::eap::kLEAP,   ::onc::eap::kEAP_SIM, ::onc::eap::kEAP_FAST,
       ::onc::eap::kEAP_AKA};
+
+  // If this EAP dict is in a IPsec dict (i.e., IPsec is the second-to-last
+  // element in its path), the only valid method is MSCHAPv2.
+  if (path_.size() >= 2) {
+    auto it = std::next(path_.rbegin());
+    if (*it == ::onc::vpn::kIPsec)
+      valid_outer_values = {::onc::eap::kMSCHAPv2};
+  }
 
   if (FieldExistsAndHasNoValidValue(*result, ::onc::eap::kInner,
                                     valid_inner_values) ||

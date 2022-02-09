@@ -365,6 +365,7 @@ const StringTranslationEntry kEAPOuterTable[] = {
     {::onc::eap::kEAP_TLS, shill::kEapMethodTLS},
     {::onc::eap::kEAP_TTLS, shill::kEapMethodTTLS},
     {::onc::eap::kLEAP, shill::kEapMethodLEAP},
+    {::onc::eap::kMSCHAPv2, shill::kEapMethodMSCHAPV2},
     {nullptr}};
 
 // Translation of the EAP.Inner field in case of EAP.Outer == PEAP

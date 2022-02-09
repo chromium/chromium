@@ -411,6 +411,24 @@ void ShillToONCTranslator::TranslateVPN() {
     TranslateAndAddNestedObject(::onc::vpn::kIPsec, *provider,
                                 kIPsecIKEv2Table);
     provider_type_dictionary = ::onc::vpn::kIPsec;
+
+    // Translate and nest the `eap` dictionary into `ipsec` if applicable. The
+    // fields for EAP in shill are not in the provider properties, and thus they
+    // cannot be processed in the above TranslateAndAddNestedObject() call for
+    // kIPsec, but the result dictionary should be nested in the `ipsec`
+    // dictionary, so we have to do the translation and nesting here.
+    const std::string* auth_type = onc_object_.FindStringPath(base::JoinString(
+        {::onc::vpn::kIPsec, ::onc::ipsec::kAuthenticationType}, "."));
+    if (auth_type && *auth_type == ::onc::ipsec::kEAP) {
+      ShillToONCTranslator eap_translator(*shill_dictionary_, onc_source_,
+                                          kEAPSignature, network_state_);
+      base::Value eap_object = eap_translator.CreateTranslatedONCObject();
+      if (!eap_object.DictEmpty()) {
+        onc_object_.SetPath(
+            base::JoinString({::onc::vpn::kIPsec, ::onc::ipsec::kEAP}, "."),
+            std::move(eap_object));
+      }
+    }
   } else {
     TranslateAndAddNestedObject(onc_provider_type, *provider);
     provider_type_dictionary = onc_provider_type;

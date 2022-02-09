@@ -94,8 +94,7 @@ const OncFieldSignature ipsec_fields[] = {
     {::onc::ipsec::kServerCARef, &kStringSignature},
     {::onc::ipsec::kServerCARefs, &kStringListSignature},
     {::onc::ipsec::kXAUTH, &kXAUTHSignature},
-    // Not yet supported.
-    //  { ipsec::kEAP, &kEAPSignature },
+    {::onc::ipsec::kEAP, &kEAPSignature},
     {nullptr}};
 
 const OncFieldSignature xauth_fields[] = {

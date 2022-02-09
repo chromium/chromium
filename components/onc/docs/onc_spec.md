@@ -606,9 +606,11 @@ field **VPN** must be set to an object of type [VPN](#VPN-type).
     * (required) - **string**
     * Allowed values are:
         * *Cert*
+        * *EAP*
         * *PSK*
     * If *Cert* is used, **ClientCertType** and *ServerCARefs* (or the
       deprecated *ServerCARef*) must be set.
+    * *EAP* is only valid if **IKEVersion** is 2.
 
 * **ClientCertProvisioningProfileId**
     * (required if **ClientCertType** is *ProvisioningProfileId*, otherwise
@@ -1308,6 +1310,7 @@ type exists to configure the authentication.
         * *EAP-TTLS*
         * *EAP-SIM*
         * *PEAP*
+        * *MSCHAPv2* (only valid for IPsec-IKEv2 VPNs)
 
 * **Password**
     * (optional) - **string**
