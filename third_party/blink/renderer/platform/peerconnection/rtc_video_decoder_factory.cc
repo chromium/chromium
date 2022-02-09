@@ -44,7 +44,7 @@ struct CodecConfig {
   media::VideoCodecProfile profile;
 };
 
-constexpr std::array<CodecConfig, 8> kCodecConfigs = {{
+constexpr std::array<CodecConfig, 9> kCodecConfigs = {{
     {media::VideoCodec::kVP8, media::VP8PROFILE_ANY},
     {media::VideoCodec::kVP9, media::VP9PROFILE_PROFILE0},
     {media::VideoCodec::kVP9, media::VP9PROFILE_PROFILE1},
@@ -52,6 +52,7 @@ constexpr std::array<CodecConfig, 8> kCodecConfigs = {{
     {media::VideoCodec::kH264, media::H264PROFILE_BASELINE},
     {media::VideoCodec::kH264, media::H264PROFILE_MAIN},
     {media::VideoCodec::kH264, media::H264PROFILE_HIGH},
+    {media::VideoCodec::kH264, media::H264PROFILE_HIGH444PREDICTIVEPROFILE},
     {media::VideoCodec::kAV1, media::AV1PROFILE_PROFILE_MAIN},
 }};
 
@@ -95,6 +96,9 @@ absl::optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
           break;
         case media::H264PROFILE_HIGH:
           h264_profile = webrtc::H264Profile::kProfileHigh;
+          break;
+        case media::H264PROFILE_HIGH444PREDICTIVEPROFILE:
+          h264_profile = webrtc::H264Profile::kProfilePredictiveHigh444;
           break;
         default:
           // Unsupported H264 profile in WebRTC.
