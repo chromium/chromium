@@ -64,7 +64,9 @@ you can package your Windows SDK installation into a zip file by running the fol
 
 where `<vs version>` and `<win version>` correspond respectively to the
 versions of Visual Studio (e.g. 2019) and of the Windows SDK (e.g.
-10.0.19041.0) installed on the Windows machine.
+10.0.19041.0) installed on the Windows machine. Note that if you didn't
+install the ARM64 components of the SDK as noted in the link above, you
+should add `--noarm` to the parameter list.
 
 These commands create a zip file named `<hash value>.zip`. Then, to use the
 generated file in a Linux or Mac host, the following environment variables
