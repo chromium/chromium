@@ -506,7 +506,7 @@ void WebTransport::StopSending(uint32_t stream, uint8_t code) {
 
 void WebTransport::SetOutgoingDatagramExpirationDuration(
     base::TimeDelta duration) {
-  if (torn_down_) {
+  if (torn_down_ || closing_) {
     return;
   }
 
@@ -515,7 +515,7 @@ void WebTransport::SetOutgoingDatagramExpirationDuration(
 }
 
 void WebTransport::Close(mojom::WebTransportCloseInfoPtr close_info) {
-  if (torn_down_) {
+  if (torn_down_ || closing_) {
     return;
   }
   closing_ = true;
@@ -546,7 +546,7 @@ void WebTransport::Close(mojom::WebTransportCloseInfoPtr close_info) {
 
 void WebTransport::OnConnected(
     scoped_refptr<net::HttpResponseHeaders> response_headers) {
-  if (torn_down_) {
+  if (torn_down_ || closing_) {
     return;
   }
 
@@ -565,7 +565,7 @@ void WebTransport::OnConnected(
 }
 
 void WebTransport::OnConnectionFailed(const net::WebTransportError& error) {
-  if (torn_down_) {
+  if (torn_down_ || closing_) {
     return;
   }
 
@@ -614,6 +614,10 @@ void WebTransport::OnError(const net::WebTransportError& error) {
 }
 
 void WebTransport::OnIncomingBidirectionalStreamAvailable() {
+  if (torn_down_ || closing_) {
+    return;
+  }
+
   DCHECK(!handshake_client_);
   DCHECK(client_);
 
@@ -656,6 +660,10 @@ void WebTransport::OnIncomingBidirectionalStreamAvailable() {
 }
 
 void WebTransport::OnIncomingUnidirectionalStreamAvailable() {
+  if (torn_down_ || closing_) {
+    return;
+  }
+
   DCHECK(!handshake_client_);
   DCHECK(client_);
 
@@ -690,7 +698,7 @@ void WebTransport::OnIncomingUnidirectionalStreamAvailable() {
 }
 
 void WebTransport::OnDatagramReceived(base::StringPiece datagram) {
-  if (torn_down_) {
+  if (torn_down_ || closing_) {
     return;
   }
 
