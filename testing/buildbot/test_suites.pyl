@@ -2618,11 +2618,12 @@
           '--enable-toggles=skip_validation',
         ],
         'linux_args': [ '--no-xvfb' ],
-        'test': 'dawn_end2end_tests',
+        'test': 'dawn_end2end_tests_temp',
       },
       'dawn_end2end_tests': {
         'mixins': ['dawn_end2end_gpu_test'],
         'linux_args': [ '--no-xvfb' ],
+        'test': 'dawn_end2end_tests_temp',
       },
       'dawn_end2end_wire_tests': {
         'mixins': ['dawn_end2end_gpu_test'],
@@ -2630,7 +2631,7 @@
           '--use-wire',
         ],
         'linux_args': [ '--no-xvfb' ],
-        'test': 'dawn_end2end_tests',
+        'test': 'dawn_end2end_tests_temp',
       },
     },
 
@@ -2643,7 +2644,7 @@
           '--enable-backend-validation=partial',
         ],
         'linux_args': [ '--no-xvfb' ],
-        'test': 'dawn_end2end_tests',
+        'test': 'dawn_end2end_tests_temp',
       },
     },
 
@@ -2655,12 +2656,12 @@
           '--enable-backend-validation',
         ],
         'linux_args': [ '--no-xvfb' ],
-        'test': 'dawn_end2end_tests',
+        'test': 'dawn_end2end_tests_temp',
       },
     },
 
     'gpu_dawn_perf_smoke_isolated_scripts': {
-      'dawn_perf_tests': {
+      'dawn_perf_tests_temp': {
         'args': [
           # Tell the tests to only run one step for faster iteration.
           '--override-steps=1',

@@ -4533,7 +4533,7 @@ template("performance_test_suite_template_base") {
     ]
 
     if (build_dawn_tests && !is_chromeos_lacros) {
-      data_deps += [ "//third_party/dawn/src/tests:dawn_perf_tests" ]
+      data_deps += [ "//third_party/dawn/src/tests:dawn_perf_tests_temp_group" ]
     }
 
     if (!is_chromeos_lacros) {
