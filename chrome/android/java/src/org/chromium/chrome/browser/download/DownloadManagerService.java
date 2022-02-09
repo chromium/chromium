@@ -284,7 +284,7 @@ public class DownloadManagerService implements DownloadController.Observer,
     }
 
     /** @return The {@link DownloadMessageUiController} controller associated with the profile. */
-    public DownloadMessageUiController getInfoBarController(OTRProfileID otrProfileID) {
+    public DownloadMessageUiController getMessageUiController(OTRProfileID otrProfileID) {
         return mMessageUiController;
     }
 
@@ -691,9 +691,9 @@ public class DownloadManagerService implements DownloadController.Observer,
             return;
         }
 
-        DownloadMessageUiController infoBarController =
-                getInfoBarController(downloadItem.getDownloadInfo().getOTRProfileId());
-        if (infoBarController != null) infoBarController.onDownloadStarted();
+        DownloadMessageUiController messageUiController =
+                getMessageUiController(downloadItem.getDownloadInfo().getOTRProfileId());
+        if (messageUiController != null) messageUiController.onDownloadStarted();
     }
 
     @Nullable
@@ -1107,14 +1107,14 @@ public class DownloadManagerService implements DownloadController.Observer,
                 handleAutoOpenAfterDownload(item);
             } else {
                 DownloadMessageUiController infobarController =
-                        getInfoBarController(info.getOTRProfileId());
+                        getMessageUiController(info.getOTRProfileId());
                 if (infobarController != null) {
                     infobarController.onNotificationShown(info.getContentId(), notificationId);
                 }
             }
         } else {
-            if (getInfoBarController(info.getOTRProfileId()) != null) {
-                getInfoBarController(info.getOTRProfileId())
+            if (getMessageUiController(info.getOTRProfileId()) != null) {
+                getMessageUiController(info.getOTRProfileId())
                         .onNotificationShown(info.getContentId(), notificationId);
             }
         }
@@ -1177,7 +1177,7 @@ public class DownloadManagerService implements DownloadController.Observer,
                                 handleAutoOpenAfterDownload(item);
                             } else {
                                 DownloadMessageUiController infoBarController =
-                                        getInfoBarController(
+                                        getMessageUiController(
                                                 item.getDownloadInfo().getOTRProfileId());
                                 if (infoBarController != null) {
                                     infoBarController.onItemUpdated(

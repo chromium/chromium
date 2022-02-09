@@ -4,19 +4,15 @@
 
 package org.chromium.chrome.browser.offlinepages.downloads;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DownloadInfo;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.DownloadNotifier;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.PendingState;
-import org.chromium.ui.widget.Toast;
 
 /**
  * Class for dispatching offline page/request related notifications to the
@@ -154,16 +150,10 @@ public class OfflinePageNotificationBridge {
      */
     @CalledByNative
     public static void showDownloadingToast() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_PROGRESS_INFOBAR)) {
-            intializeOfflineItemsCollection();
-            DownloadManagerService.getDownloadManagerService()
-                    .getInfoBarController(/*otrProfileID=*/null)
-                    .onDownloadStarted();
-        } else {
-            Toast.makeText(ContextUtils.getApplicationContext(), R.string.download_started,
-                         Toast.LENGTH_SHORT)
-                    .show();
-        }
+        intializeOfflineItemsCollection();
+        DownloadManagerService.getDownloadManagerService()
+                .getMessageUiController(/*otrProfileID=*/null)
+                .onDownloadStarted();
     }
 
     /**
