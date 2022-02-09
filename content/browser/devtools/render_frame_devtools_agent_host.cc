@@ -906,8 +906,8 @@ bool RenderFrameDevToolsAgentHost::ShouldAllowSession(
                                             frame_host_->web_ui())) {
     return false;
   }
-  auto* root = FrameTreeNode::From(frame_host_);
-  for (FrameTreeNode* node : root->frame_tree()->SubtreeNodes(root)) {
+
+  for (FrameTreeNode* node : FrameTree::SubtreeAndInnerTreeNodes(frame_host_)) {
     // Note this may be called before navigation is committed.
     RenderFrameHostImpl* rfh = node->current_frame_host();
     const GURL& url = rfh->GetSiteInstance()->GetSiteURL();

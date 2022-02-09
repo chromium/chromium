@@ -899,7 +899,7 @@ void OnNavigationRequestWillBeSent(
   // agent may navigate all of its subframes currently.
   for (RenderFrameHostImpl* rfh =
            navigation_request.frame_tree_node()->current_frame_host();
-       rfh; rfh = rfh->GetParent()) {
+       rfh; rfh = rfh->GetParentOrOuterDocument()) {
     // Only check frames that qualify as DevTools targets, i.e. (local)? roots.
     if (!RenderFrameDevToolsAgentHost::ShouldCreateDevToolsForHost(rfh))
       continue;
