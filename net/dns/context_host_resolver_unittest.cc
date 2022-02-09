@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -760,6 +761,141 @@ TEST_F(ContextHostResolverTest, HostCacheInvalidation) {
   // ContextHostResolver has been destroyed (and deregisters its ResolveContext)
   resolver = nullptr;
   manager_->InvalidateCachesForTesting();
+}
+
+class NetworkBoundResolveContext : public ResolveContext {
+ public:
+  NetworkBoundResolveContext(
+      URLRequestContext* url_request_context,
+      bool enable_caching,
+      NetworkChangeNotifier::NetworkHandle target_network)
+      : ResolveContext(url_request_context, enable_caching),
+        target_network_(target_network) {}
+
+  NetworkChangeNotifier::NetworkHandle GetTargetNetwork() const override {
+    return target_network_;
+  }
+
+ private:
+  const NetworkChangeNotifier::NetworkHandle target_network_;
+};
+
+// A mock HostResolverProc which returns different IP addresses based on the
+// `network` parameter received.
+class NetworkAwareHostResolverProc : public HostResolverProc {
+ public:
+  NetworkAwareHostResolverProc() : HostResolverProc(nullptr) {}
+
+  NetworkAwareHostResolverProc(const NetworkAwareHostResolverProc&) = delete;
+  NetworkAwareHostResolverProc& operator=(const NetworkAwareHostResolverProc&) =
+      delete;
+
+  int Resolve(const std::string& host,
+              AddressFamily address_family,
+              HostResolverFlags host_resolver_flags,
+              AddressList* addrlist,
+              int* os_error,
+              NetworkChangeNotifier::NetworkHandle network) override {
+    // Presume failure
+    *os_error = 1;
+    const auto* iter = kResults.find(network);
+    if (iter == kResults.end())
+      return ERR_NETWORK_CHANGED;
+
+    *os_error = 0;
+    *addrlist = AddressList();
+    addrlist->push_back(ToIPEndPoint(iter->second));
+
+    return OK;
+  }
+
+  int Resolve(const std::string& host,
+              AddressFamily address_family,
+              HostResolverFlags host_resolver_flags,
+              AddressList* addrlist,
+              int* os_error) override {
+    return Resolve(host, address_family, host_resolver_flags, addrlist,
+                   os_error, NetworkChangeNotifier::kInvalidNetworkHandle);
+  }
+
+  struct IPv4 {
+    uint8_t a;
+    uint8_t b;
+    uint8_t c;
+    uint8_t d;
+  };
+
+  static constexpr int kPort = 100;
+  static constexpr auto kResults =
+      base::MakeFixedFlatMap<NetworkChangeNotifier::NetworkHandle, IPv4>(
+          {{1, IPv4{1, 2, 3, 4}}, {2, IPv4{8, 8, 8, 8}}});
+
+  static IPEndPoint ToIPEndPoint(const IPv4& ipv4) {
+    return IPEndPoint(IPAddress(ipv4.a, ipv4.b, ipv4.c, ipv4.d), kPort);
+  }
+
+ protected:
+  ~NetworkAwareHostResolverProc() override = default;
+};
+
+TEST_F(ContextHostResolverTest, ExistingNetworkBoundLookup) {
+  const url::SchemeHostPort host(url::kHttpsScheme, "example.com",
+                                 NetworkAwareHostResolverProc::kPort);
+  scoped_refptr<NetworkAwareHostResolverProc> resolver_proc =
+      new NetworkAwareHostResolverProc();
+  ScopedDefaultHostResolverProc scoped_default_host_resolver;
+  scoped_default_host_resolver.Init(resolver_proc.get());
+
+  // ResolveContexts bound to a specific network should end up in a call to
+  // Resolve with `network` == context.GetTargetNetwork(). Confirm that we do
+  // indeed receive the IP address associated with that network.
+  for (const auto& iter : NetworkAwareHostResolverProc::kResults) {
+    URLRequestContext context;
+    auto resolve_context = std::make_unique<NetworkBoundResolveContext>(
+        &context, false /* enable_caching */, iter.first);
+    auto resolver = std::make_unique<ContextHostResolver>(
+        manager_.get(), std::move(resolve_context));
+    std::unique_ptr<HostResolver::ResolveHostRequest> request =
+        resolver->CreateRequest(host, NetworkIsolationKey(), NetLogWithSource(),
+                                absl::nullopt);
+
+    TestCompletionCallback callback;
+    int rv = request->Start(callback.callback());
+    EXPECT_THAT(callback.GetResult(rv), test::IsOk());
+    EXPECT_THAT(request->GetResolveErrorInfo().error, test::IsError(net::OK));
+    ASSERT_EQ(1u, request->GetAddressResults()->endpoints().size());
+    EXPECT_THAT(request->GetAddressResults()->endpoints(),
+                testing::ElementsAre(
+                    NetworkAwareHostResolverProc::ToIPEndPoint(iter.second)));
+  }
+}
+
+TEST_F(ContextHostResolverTest, NotExistingNetworkBoundLookup) {
+  const url::SchemeHostPort host(url::kHttpsScheme, "example.com",
+                                 NetworkAwareHostResolverProc::kPort);
+  scoped_refptr<NetworkAwareHostResolverProc> resolver_proc =
+      new NetworkAwareHostResolverProc();
+  ScopedDefaultHostResolverProc scoped_default_host_resolver;
+  scoped_default_host_resolver.Init(resolver_proc.get());
+
+  // Non-bound ResolveContexts should end up with a call to Resolve with
+  // `network` == kInvalidNetwork, which NetworkAwareHostResolverProc fails to
+  // resolve.
+  URLRequestContext context;
+  auto resolve_context =
+      std::make_unique<ResolveContext>(&context, false /* enable_caching */);
+  auto resolver = std::make_unique<ContextHostResolver>(
+      manager_.get(), std::move(resolve_context));
+  std::unique_ptr<HostResolver::ResolveHostRequest> request =
+      resolver->CreateRequest(host, NetworkIsolationKey(), NetLogWithSource(),
+                              absl::nullopt);
+
+  TestCompletionCallback callback;
+  int rv = request->Start(callback.callback());
+  EXPECT_THAT(callback.GetResult(rv),
+              test::IsError(net::ERR_NAME_NOT_RESOLVED));
+  EXPECT_THAT(request->GetResolveErrorInfo().error,
+              test::IsError(net::ERR_NETWORK_CHANGED));
 }
 
 }  // namespace net

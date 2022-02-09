@@ -180,11 +180,8 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
 
   // Network to perform the DNS lookups for. When equal to kInvalidNetworkHandle
   // the decision of which one to target is left to the resolver.
-  NetworkChangeNotifier::NetworkHandle target_network() const {
-    // TODO(stefanoduo): Retrieve this from url_request_context_ once it can be
-    // bound to a network.
-    return NetworkChangeNotifier::kInvalidNetworkHandle;
-  }
+  // Virtual for testing.
+  virtual NetworkChangeNotifier::NetworkHandle GetTargetNetwork() const;
 
   base::SafeRef<ResolveContext> AsSafeRef() {
     return weak_ptr_factory_.GetSafeRef();

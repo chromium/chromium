@@ -2522,7 +2522,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
         base::BindOnce(&Job::OnProcTaskComplete, base::Unretained(this),
                        tick_clock_->NowTicks()),
         proc_task_runner_, net_log_, tick_clock_,
-        key_.resolve_context->target_network());
+        key_.resolve_context->GetTargetNetwork());
 
     // Start() could be called from within Resolve(), hence it must NOT directly
     // call OnProcTaskComplete, for example, on synchronous failure.

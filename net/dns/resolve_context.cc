@@ -376,6 +376,12 @@ void ResolveContext::InvalidateCachesAndPerSessionData(
     NotifyDohStatusObserversOfUnavailable(network_change);
 }
 
+NetworkChangeNotifier::NetworkHandle ResolveContext::GetTargetNetwork() const {
+  // TODO(stefanoduo): Retrieve this from url_request_context_ once it can be
+  // bound to a network.
+  return NetworkChangeNotifier::kInvalidNetworkHandle;
+}
+
 size_t ResolveContext::FirstServerIndex(bool doh_server,
                                         const DnsSession* session) {
   if (!IsCurrentSession(session))
