@@ -803,8 +803,8 @@ static ax::mojom::blink::Role DecideRoleFromSiblings(Element* cell) {
       IsNonEmptyNonHeaderCell(previous_cell))
     return ax::mojom::blink::Role::kRowHeader;
 
-  const auto* row = To<Element>(cell->parentNode());
-  if (!row || !row->HasTagName(html_names::kTrTag))
+  const auto* row = DynamicTo<HTMLTableRowElement>(cell->parentNode());
+  if (!row)
     return ax::mojom::blink::Role::kColumnHeader;
 
   // If this row's first or last cell is a non-empty td, this is a row header.
@@ -1258,7 +1258,7 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   if (GetNode()->HasTagName(html_names::kBlockquoteTag))
     return ax::mojom::blink::Role::kBlockquote;
 
-  if (GetNode()->HasTagName(html_names::kCaptionTag))
+  if (IsA<HTMLTableCaptionElement>(GetNode()))
     return ax::mojom::blink::Role::kCaption;
 
   if (GetNode()->HasTagName(html_names::kFigcaptionTag))
@@ -1267,7 +1267,7 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   if (GetNode()->HasTagName(html_names::kFigureTag))
     return ax::mojom::blink::Role::kFigure;
 
-  if (GetNode()->HasTagName(html_names::kTimeTag))
+  if (IsA<HTMLTimeElement>(GetNode()))
     return ax::mojom::blink::Role::kTime;
 
   if (IsA<HTMLPlugInElement>(GetNode())) {
@@ -5455,8 +5455,7 @@ String AXNodeObject::Description(
     AXObject* ruby_annotation_ax_object = nullptr;
     for (const auto& child : children_) {
       if (child->RoleValue() == ax::mojom::blink::Role::kRubyAnnotation &&
-          child->GetNode() &&
-          child->GetNode()->HasTagName(html_names::kRtTag)) {
+          child->GetNode() && IsA<HTMLRTElement>(child->GetNode())) {
         ruby_annotation_ax_object = child;
         break;
       }
