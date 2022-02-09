@@ -216,8 +216,8 @@ TEST_F(ZipReaderTest, Open_ExistentButNonZipFile) {
   ASSERT_FALSE(reader.Open(data_dir_.AppendASCII("create_test_zip.sh")));
 }
 
-// Iterate through the contents in the test zip file, and compare that the
-// contents collected from the zip reader matches the expected contents.
+// Iterate through the contents in the test ZIP archive, and compare that the
+// contents collected from the ZipReader matches the expected contents.
 TEST_F(ZipReaderTest, Iteration) {
   Paths actual_contents;
   ZipReader reader;
@@ -233,8 +233,8 @@ TEST_F(ZipReaderTest, Iteration) {
   EXPECT_THAT(actual_contents, ElementsAreArray(test_zip_contents_));
 }
 
-// Open the test zip file from a file descriptor, iterate through its contents,
-// and compare that they match the expected contents.
+// Open the test ZIP archive from a file descriptor, iterate through its
+// contents, and compare that they match the expected contents.
 TEST_F(ZipReaderTest, PlatformFileIteration) {
   Paths actual_contents;
   ZipReader reader;
@@ -293,7 +293,7 @@ TEST_F(ZipReaderTest, current_entry_info_DotDotFile) {
 TEST_F(ZipReaderTest, current_entry_info_InvalidUTF8File) {
   ZipReader reader;
   ASSERT_TRUE(reader.Open(data_dir_.AppendASCII("evil_via_invalid_utf8.zip")));
-  // The evil file is the 2nd file in the zip file.
+  // The evil file is the 2nd file in the ZIP archive.
   // We cannot locate by the file name ".\x80.\\evil.txt",
   // as FilePath may internally convert the string.
   ASSERT_TRUE(reader.AdvanceToNextEntry());

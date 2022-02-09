@@ -115,48 +115,6 @@ void SetPosixFilePermissions(int fd, int mode) {
 
 }  // namespace
 
-ZipReader::EntryInfo::EntryInfo(base::FilePath file_path,
-                                std::string file_path_in_original_encoding,
-                                const unz_file_info& raw_file_info)
-    : file_path_(std::move(file_path)),
-      file_path_in_original_encoding_(
-          std::move(file_path_in_original_encoding)),
-      posix_mode_(0) {
-  original_size_ = raw_file_info.uncompressed_size;
-
-  // Directory entries in zip files end with "/".
-  is_directory_ = base::EndsWith(file_path_in_original_encoding_, "/");
-
-  // Check the file name here for directory traversal issues.
-  // We also consider that the file name is unsafe, if it's absolute.
-  // On Windows, IsAbsolute() returns false for paths starting with "/".
-  is_unsafe_ = file_path_.ReferencesParent() || file_path_.IsAbsolute() ||
-               base::StartsWith(file_path_in_original_encoding_, "/");
-
-  // Whether the file is encrypted is bit 0 of the flag.
-  is_encrypted_ = raw_file_info.flag & 1;
-
-  // Construct the last modified time. The timezone info is not present in
-  // zip files, so we construct the time as local time.
-  base::Time::Exploded exploded_time = {};  // Zero-clear.
-  exploded_time.year = raw_file_info.tmu_date.tm_year;
-  // The month in zip file is 0-based, whereas ours is 1-based.
-  exploded_time.month = raw_file_info.tmu_date.tm_mon + 1;
-  exploded_time.day_of_month = raw_file_info.tmu_date.tm_mday;
-  exploded_time.hour = raw_file_info.tmu_date.tm_hour;
-  exploded_time.minute = raw_file_info.tmu_date.tm_min;
-  exploded_time.second = raw_file_info.tmu_date.tm_sec;
-  exploded_time.millisecond = 0;
-
-  if (!base::Time::FromUTCExploded(exploded_time, &last_modified_))
-    last_modified_ = base::Time::UnixEpoch();
-
-#if defined(OS_POSIX)
-  posix_mode_ =
-      (raw_file_info.external_fa >> 16L) & (S_IRWXU | S_IRWXG | S_IRWXO);
-#endif
-}
-
 ZipReader::ZipReader() {
   Reset();
 }
@@ -165,12 +123,12 @@ ZipReader::~ZipReader() {
   Close();
 }
 
-bool ZipReader::Open(const base::FilePath& zip_file_path) {
+bool ZipReader::Open(const base::FilePath& zip_path) {
   DCHECK(!zip_file_);
 
   // Use of "Unsafe" function does not look good, but there is no way to do
   // this safely on Linux. See file_util.h for details.
-  zip_file_ = internal::OpenForUnzipping(zip_file_path.AsUTF8Unsafe());
+  zip_file_ = internal::OpenForUnzipping(zip_path.AsUTF8Unsafe());
   if (!zip_file_) {
     return false;
   }
@@ -223,7 +181,7 @@ bool ZipReader::AdvanceToNextEntry() {
     return false;
   const int current_entry_index = position.num_of_file;
   // If we are currently at the last entry, then the next position is the
-  // end of the zip file, so mark that we reached the end.
+  // end of the ZIP archive, so mark that we reached the end.
   if (current_entry_index + 1 == num_entries_) {
     reached_end_ = true;
   } else {
@@ -232,38 +190,75 @@ bool ZipReader::AdvanceToNextEntry() {
       return false;
     }
   }
-  current_entry_info_.reset();
+
+  entry_ = {};
+  current_entry_ = nullptr;
   return true;
 }
 
 bool ZipReader::OpenCurrentEntryInZip() {
   DCHECK(zip_file_);
 
-  unz_file_info raw_file_info = {};
-  char file_path_in_zip[internal::kZipMaxPath] = {};
-  const int result = unzGetCurrentFileInfo(
-      zip_file_, &raw_file_info, file_path_in_zip, sizeof(file_path_in_zip) - 1,
-      nullptr,  // extraField.
-      0,        // extraFieldBufferSize.
-      nullptr,  // szComment.
-      0);       // commentBufferSize.
-  if (result != UNZ_OK)
-    return false;
+  current_entry_ = nullptr;
 
-  // Convert file path from original encoding to Unicode.
-  const base::StringPiece file_path_in_original_encoding(file_path_in_zip);
-  std::u16string file_path_in_utf16;
-  const char* const encoding = encoding_.empty() ? "UTF-8" : encoding_.c_str();
-  if (!base::CodepageToUTF16(file_path_in_original_encoding, encoding,
-                             base::OnStringConversionError::SUBSTITUTE,
-                             &file_path_in_utf16)) {
-    LOG(ERROR) << "Cannot convert file path from encoding " << encoding;
+  // Get entry info.
+  unz_file_info info = {};
+  char path_in_zip[internal::kZipMaxPath] = {};
+  if (unzGetCurrentFileInfo(zip_file_, &info, path_in_zip,
+                            sizeof(path_in_zip) - 1, nullptr, 0, nullptr,
+                            0) != UNZ_OK) {
     return false;
   }
 
-  current_entry_info_.reset(new EntryInfo(
-      base::FilePath::FromUTF16Unsafe(file_path_in_utf16),
-      std::string(file_path_in_original_encoding), raw_file_info));
+  Entry& entry = entry_;
+  entry.path_in_original_encoding = path_in_zip;
+
+  // Convert path from original encoding to Unicode.
+  std::u16string path_in_utf16;
+  const char* const encoding = encoding_.empty() ? "UTF-8" : encoding_.c_str();
+  if (!base::CodepageToUTF16(entry.path_in_original_encoding, encoding,
+                             base::OnStringConversionError::SUBSTITUTE,
+                             &path_in_utf16)) {
+    LOG(ERROR) << "Cannot convert path from encoding " << encoding;
+    return false;
+  }
+
+  entry.path = base::FilePath::FromUTF16Unsafe(path_in_utf16);
+  entry.original_size = info.uncompressed_size;
+
+  // Directory entries in ZIP have a path ending with "/".
+  entry.is_directory = base::EndsWith(path_in_utf16, u"/");
+
+  // Check the entry path for directory traversal issues. We consider entry
+  // paths unsafe if they are absolute or if they contain "..". On Windows,
+  // IsAbsolute() returns false for paths starting with "/".
+  entry.is_unsafe = entry.path.ReferencesParent() || entry.path.IsAbsolute() ||
+                    base::StartsWith(path_in_utf16, u"/");
+
+  // The file content of this entry is encrypted if flag bit 0 is set.
+  entry.is_encrypted = info.flag & 1;
+
+  // Construct the last modified time. The timezone info is not present in ZIP
+  // archives, so we construct the time as UTC.
+  base::Time::Exploded exploded_time = {};
+  exploded_time.year = info.tmu_date.tm_year;
+  exploded_time.month = info.tmu_date.tm_mon + 1;  // 0-based vs 1-based
+  exploded_time.day_of_month = info.tmu_date.tm_mday;
+  exploded_time.hour = info.tmu_date.tm_hour;
+  exploded_time.minute = info.tmu_date.tm_min;
+  exploded_time.second = info.tmu_date.tm_sec;
+  exploded_time.millisecond = 0;
+
+  if (!base::Time::FromUTCExploded(exploded_time, &entry.last_modified))
+    entry.last_modified = base::Time::UnixEpoch();
+
+#if defined(OS_POSIX)
+  entry.posix_mode = (info.external_fa >> 16L) & (S_IRWXU | S_IRWXG | S_IRWXO);
+#else
+  entry.posix_mode = 0;
+#endif
+
+  current_entry_ = &entry_;
   return true;
 }
 
@@ -325,7 +320,7 @@ void ZipReader::ExtractCurrentEntryToFilePathAsync(
     FailureCallback failure_callback,
     const ProgressCallback& progress_callback) {
   DCHECK(zip_file_);
-  DCHECK(current_entry_info_.get());
+  DCHECK(current_entry_);
 
   // If this is a directory, just create it and return.
   if (current_entry_info()->is_directory()) {
@@ -427,7 +422,7 @@ bool ZipReader::OpenInternal() {
   if (num_entries_ < 0)
     return false;
 
-  // We are already at the end if the zip file is empty.
+  // We are already at the end if the ZIP archive is empty.
   reached_end_ = (num_entries_ == 0);
   return true;
 }
@@ -436,7 +431,8 @@ void ZipReader::Reset() {
   zip_file_ = nullptr;
   num_entries_ = 0;
   reached_end_ = false;
-  current_entry_info_.reset();
+  entry_ = {};
+  current_entry_ = nullptr;
 }
 
 void ZipReader::ExtractChunk(base::File output_file,
