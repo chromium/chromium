@@ -609,6 +609,9 @@ const char kNumRasterThreads[]              = "num-raster-threads";
 // contents.
 const char kOverrideLanguageDetection[] = "override-language-detection";
 
+// Renderer process that runs the non-PPAPI PDF plugin.
+const char kPdfRenderer[] = "pdf-renderer";
+
 // Runs PPAPI (Pepper) plugins in-process.
 const char kPpapiInProcess[]                = "ppapi-in-process";
 
@@ -1033,9 +1036,6 @@ const char kEnableWin7WebRtcHWH264Decoding[] =
 // DirectWrite FontCache is shared by browser to renderers using shared memory.
 // This switch allows us to pass the shared memory handle to the renderer.
 const char kFontCacheSharedHandle[] = "font-cache-shared-handle";
-
-// Renderer process that runs the non-PPAPI PDF plugin.
-const char kPdfRenderer[] = "pdf-renderer";
 
 // The boolean value (0/1) of FontRenderParams::antialiasing to be passed to
 // Ppapi processes.

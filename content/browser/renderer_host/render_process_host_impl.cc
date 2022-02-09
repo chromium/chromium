@@ -3229,10 +3229,8 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
   GetContentClient()->browser()->AppendExtraCommandLineSwitches(command_line,
                                                                 GetID());
 
-#if BUILDFLAG(IS_WIN)
   if (IsPdf())
     command_line->AppendSwitch(switches::kPdfRenderer);
-#endif
 
 #if BUILDFLAG(IS_WIN)
   command_line->AppendArg(switches::kPrefetchArgumentRenderer);
