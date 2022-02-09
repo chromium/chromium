@@ -89,12 +89,6 @@ void AddStringResources(content::WebUIDataSource* source) {
   source->AddString("offlineError",
                     l10n_util::GetStringFUTF8(
                         IDS_CROSTINI_INSTALLER_OFFLINE_ERROR, device_name));
-  source->AddString("precheckNoSpace",
-                    l10n_util::GetStringFUTF8(
-                        IDS_CROSTINI_UPGRADER_PRECHECKS_FAILED_SPACE,
-                        ui::FormatBytesWithUnits(
-                            crostini::CrostiniUpgrader::kDiskRequired,
-                            ui::DATA_UNITS_GIBIBYTE, /*show_units=*/true)));
 }
 
 CrostiniUpgraderUI::CrostiniUpgraderUI(content::WebUI* web_ui)

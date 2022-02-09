@@ -60,11 +60,6 @@ class CrostiniUpgrader : public KeyedService,
   // Return true if internal state allows starting upgrade.
   bool CanUpgrade();
 
-  // Require at least 1 GiB of free space. Experiments on an unmodified
-  // container suggest this is a bare minimum, anyone with a substantial amount
-  // of programs installed will likely require more.
-  static constexpr int64_t kDiskRequired = 1 << 30;
-
  private:
   // Write a vector of log messages to `current_log_file_` on the
   // `log_sequence_`, which allows blocking operations.
@@ -82,7 +77,6 @@ class CrostiniUpgrader : public KeyedService,
   void OnCancel(CrostiniResult result);
   void OnBackupProgress(int progress_percent);
   void OnUpgrade(CrostiniResult result);
-  void OnAvailableDiskSpace(int64_t bytes);
   void DoPrechecks();
   void OnRestorePathChecked(const ContainerId& container_id,
                             content::WebContents* web_contents,
@@ -117,9 +111,8 @@ class CrostiniUpgrader : public KeyedService,
   ContainerId container_id_;
   base::ObserverList<CrostiniUpgraderUIObserver>::Unchecked upgrader_observers_;
 
-  base::RepeatingClosure prechecks_callback_;
+  base::OnceClosure prechecks_callback_;
   bool power_status_good_ = false;
-  int64_t free_disk_space_ = -1;
 
   // A sequence for writing upgrade logs to the file system.
   scoped_refptr<base::SequencedTaskRunner> log_sequence_;

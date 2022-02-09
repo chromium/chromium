@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/crostini/crostini_upgrader.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/barrier_closure.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
@@ -215,20 +214,11 @@ void CrostiniUpgrader::StartPrechecks() {
     return;
   }
 
-  prechecks_callback_ =
-      base::BarrierClosure(2, /* Number of asynchronous prechecks to wait for */
-                           base::BindOnce(&CrostiniUpgrader::DoPrechecks,
-                                          weak_ptr_factory_.GetWeakPtr()));
+  prechecks_callback_ = base::BindOnce(&CrostiniUpgrader::DoPrechecks,
+                                       weak_ptr_factory_.GetWeakPtr());
 
   pmc_observation_.Observe(pmc);
   pmc->RequestStatusUpdate();
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace,
-                     base::FilePath(crostini::kHomeDirectory)),
-      base::BindOnce(&CrostiniUpgrader::OnAvailableDiskSpace,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void CrostiniUpgrader::PowerChanged(
@@ -247,21 +237,14 @@ void CrostiniUpgrader::PowerChanged(
   DCHECK(pmc_observation_.IsObservingSource(pmc));
   pmc_observation_.Reset();
 
-  prechecks_callback_.Run();
-}
-
-void CrostiniUpgrader::OnAvailableDiskSpace(int64_t bytes) {
-  free_disk_space_ = bytes;
-
-  prechecks_callback_.Run();
+  if (prechecks_callback_) {
+    std::move(prechecks_callback_).Run();
+  }
 }
 
 void CrostiniUpgrader::DoPrechecks() {
   chromeos::crostini_upgrader::mojom::UpgradePrecheckStatus status;
-  if (free_disk_space_ < kDiskRequired) {
-    status = chromeos::crostini_upgrader::mojom::UpgradePrecheckStatus::
-        INSUFFICIENT_SPACE;
-  } else if (content::GetNetworkConnectionTracker()->IsOffline()) {
+  if (content::GetNetworkConnectionTracker()->IsOffline()) {
     status = chromeos::crostini_upgrader::mojom::UpgradePrecheckStatus::
         NETWORK_FAILURE;
   } else if (!power_status_good_) {

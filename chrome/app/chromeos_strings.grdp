@@ -4609,9 +4609,6 @@
   <message name="IDS_CROSTINI_UPGRADER_PRECHECKS_FAILED_POWER" desc="Text shown by the Crostini upgrader when the upgrade did not start because there wasn't enough power.">
     Upgrading Linux can drain your battery significantly. Please connect your device to a charger and try again.
   </message>
-  <message name="IDS_CROSTINI_UPGRADER_PRECHECKS_FAILED_SPACE" desc="Text shown by the Crostini upgrader when the upgrade did not start because there wasn't enough free disk space.">
-    At least <ph name="REQUIRED_SPACE">$1<ex>1GB</ex></ph> of free disk space is required to upgrade Linux. Please free some space on your device and try again.
-  </message>
   <message name="IDS_CROSTINI_UPGRADER_UPGRADING_TITLE" desc="Title of the Crostini upgrader when the upgrade is in progress.">
     Upgrading Linux
   </message>

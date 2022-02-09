@@ -527,10 +527,6 @@ Polymer({
           case chromeos.crostiniUpgrader.mojom.UpgradePrecheckStatus.LOW_POWER:
             messageId = 'precheckNoPower';
             break;
-          case chromeos.crostiniUpgrader.mojom.UpgradePrecheckStatus
-              .INSUFFICIENT_SPACE:
-            messageId = 'precheckNoSpace';
-            break;
           default:
             assertNotReached();
         }
