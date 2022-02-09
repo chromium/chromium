@@ -175,7 +175,7 @@ bool OncParsedCertificates::ClientCertificate::operator!=(
 }
 
 OncParsedCertificates::OncParsedCertificates()
-    : OncParsedCertificates(base::ListValue()) {}
+    : OncParsedCertificates(base::Value(base::Value::Type::LIST)) {}
 
 OncParsedCertificates::OncParsedCertificates(
     const base::Value& onc_certificates) {

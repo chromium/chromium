@@ -129,7 +129,7 @@ TEST(VariableExpanderTest, EdgeCases) {
 
 TEST(VariableExpanderTest, ExpandValueSucceeds) {
   base::Value root(base::Value::Type::DICTIONARY);
-  base::ListValue list;
+  base::Value list(base::Value::Type::LIST);
   list.Append(base::Value(123));
   list.Append(base::Value("${machine_name}"));
   list.Append(base::Value(true));

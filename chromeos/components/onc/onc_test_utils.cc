@@ -58,36 +58,30 @@ std::string ReadTestData(const std::string& filename) {
   return result;
 }
 
-std::unique_ptr<base::Value> ReadTestJson(const std::string& filename) {
+base::Value ReadTestJson(const std::string& filename) {
   base::FilePath path;
-  std::unique_ptr<base::Value> result;
   if (!GetTestDataPath(filename, &path)) {
     LOG(FATAL) << "Unable to get test file path for: " << filename;
-    return result;
+    return {};
   }
   JSONFileValueDeserializer deserializer(
       path,
       base::JSON_PARSE_CHROMIUM_EXTENSIONS | base::JSON_ALLOW_TRAILING_COMMAS);
   std::string error_message;
-  result = deserializer.Deserialize(nullptr, &error_message);
+  std::unique_ptr<base::Value> result =
+      deserializer.Deserialize(nullptr, &error_message);
   CHECK(result != nullptr) << "Couldn't json-deserialize file: " << filename
                            << ": " << error_message;
-  return result;
-}
-
-std::unique_ptr<base::DictionaryValue> ReadTestDictionary(
-    const std::string& filename) {
-  return base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(ReadTestDictionaryValue(filename)));
+  return std::move(*result);
 }
 
 base::Value ReadTestDictionaryValue(const std::string& filename) {
-  std::unique_ptr<base::Value> content = ReadTestJson(filename);
-  CHECK(content->is_dict())
+  base::Value content = ReadTestJson(filename);
+  CHECK(content.is_dict())
       << "File '" << filename
       << "' does not contain a dictionary as expected, but type "
-      << content->type();
-  return std::move(*content);
+      << content.type();
+  return content;
 }
 
 ::testing::AssertionResult Equals(const base::Value* expected,
