@@ -213,7 +213,7 @@ void SetV8FlagsFormatted(const char* format, ...) {
     PLOG(ERROR) << "Invalid formatted V8 flag: " << format;
     return;
   }
-  v8::V8::SetFlagsFromString(buffer, length - 1);
+  v8::V8::SetFlagsFromString(buffer, length);
 }
 
 template <size_t N, size_t M>
