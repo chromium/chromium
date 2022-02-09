@@ -103,9 +103,18 @@ enum CookieSameSiteContextMetadataDowngradeType {
   kLaxToCross,
 };
 
+enum ContextRedirectTypeBug1221316 {
+  kUnset,
+  kNoRedirect,
+  kCrossSiteRedirect,
+  kPartialSameSiteRedirect,
+  kAllSameSiteRedirect,
+};
+
 // Keep defaults here in sync with net/cookies/cookie_options.h.
 struct CookieSameSiteContextMetadata {
   CookieSameSiteContextMetadataDowngradeType cross_site_redirect_downgrade = kNoDowngrade;
+  ContextRedirectTypeBug1221316 redirect_type_bug_1221316 = kUnset;
 };
 
 // Keep defaults here in sync with net/cookies/cookie_options.h.

@@ -60,6 +60,34 @@ class NET_EXPORT CookieOptions {
         kLaxToCross,
       };
 
+      // These values are persisted to logs. Entries should not be renumbered
+      // and numeric values should never be reused.
+      // This enum is to help collect metrics for https://crbug.com/1221316.
+      // Specifically it's to help indicate how many cookies are accessed with a
+      // given redirect type in order to provide a denominator for the
+      // Cookie.CrossSiteRedirectDowngradeChangesInclusion2.* metrics.
+      // Note: for this enum the notation A->B->C means that a navigation from
+      // A to B was redirected to C. I.e.: A is the initator of the navigation
+      // and C is the final url.
+      enum class ContextRedirectTypeBug1221316 {
+        kUnset =
+            0,  // Indicates this value was unused and shouldn't be read. E.x.:
+                // A javascript access means this value is meaningless.
+        kNoRedirect = 1,  // There weren't any redirects. E.x.: A->B, A->A
+        kCrossSiteRedirect =
+            2,  // There was a redirect but it didn't start and
+                // end at the same site or the redirect was to a different site
+                // than the site-for-cookies. E.x.: A->B->C or B->B->B when the
+                // site-for-cookies is A.
+        kPartialSameSiteRedirect =
+            3,  // There was a redirect and the start and
+                // end are the same site. E.x.: A->B->A. Only this one could
+                // potentially set cross_site_redirect_downgrade.
+        kAllSameSiteRedirect = 4,  // There was a redirect and all urls are the
+                                   // same site. E.x.:, A->A->A
+        kMaxValue = kAllSameSiteRedirect
+      };
+
       // Records the type of any context downgrade due to a cross-site redirect,
       // i.e. whether the spec change in
       // https://github.com/httpwg/http-extensions/pull/1348 changed the result
@@ -71,6 +99,9 @@ class NET_EXPORT CookieOptions {
       // cookie's inclusion result was changed.
       ContextDowngradeType cross_site_redirect_downgrade =
           ContextDowngradeType::kNoDowngrade;
+
+      ContextRedirectTypeBug1221316 redirect_type_bug_1221316 =
+          ContextRedirectTypeBug1221316::kUnset;
     };
 
     // The following three constructors apply default values for the metadata
@@ -131,9 +162,11 @@ class NET_EXPORT CookieOptions {
     // these getters, since that takes into account the applicable schemeful
     // mode.
     const ContextMetadata& metadata() const { return metadata_; }
+    ContextMetadata& metadata() { return metadata_; }
     const ContextMetadata& schemeful_metadata() const {
       return schemeful_metadata_;
     }
+    ContextMetadata& schemeful_metadata() { return schemeful_metadata_; }
 
     // Sets context types. Does not check for consistency between context and
     // schemeful context. Does not touch the metadata.
@@ -277,6 +310,8 @@ inline void PrintTo(
   *os << "{";
   *os << " cross_site_redirect_downgrade: "
       << static_cast<int>(m.cross_site_redirect_downgrade);
+  *os << ", redirect_type_bug_1221316: "
+      << static_cast<int>(m.redirect_type_bug_1221316);
   *os << " }";
 }
 

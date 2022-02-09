@@ -794,6 +794,10 @@ mojom("cookies_mojom") {
           cpp = "::net::CookieOptions::SameSiteCookieContext::ContextMetadata::ContextDowngradeType"
         },
         {
+          mojom = "network.mojom.ContextRedirectTypeBug1221316"
+          cpp = "::net::CookieOptions::SameSiteCookieContext::ContextMetadata::ContextRedirectTypeBug1221316"
+        },
+        {
           mojom = "network.mojom.CookieSameSiteContextMetadata"
           cpp = "::net::CookieOptions::SameSiteCookieContext::ContextMetadata"
         },

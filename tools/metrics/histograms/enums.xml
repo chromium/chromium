@@ -16172,6 +16172,14 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Released"/>
 </enum>
 
+<enum name="ContextRedirectTypeBug1221316">
+  <int value="0" label="Unset"/>
+  <int value="1" label="No Redirect"/>
+  <int value="2" label="Cross-Site Redirect"/>
+  <int value="3" label="Partially Same-Site Redirect"/>
+  <int value="4" label="Fully Same-Site Redirect"/>
+</enum>
+
 <enum name="ContextResult">
   <int value="0" label="Success"/>
   <int value="1" label="TransientFailure"/>

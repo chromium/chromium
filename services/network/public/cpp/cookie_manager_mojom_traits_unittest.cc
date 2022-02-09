@@ -299,6 +299,25 @@ TEST(CookieManagerTraitsTest,
   }
 }
 
+TEST(CookieManagerTraitsTest, Roundtrips_ContextRedirectTypeBug1221316) {
+  for (auto type : {net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+                        ContextRedirectTypeBug1221316::kUnset,
+                    net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+                        ContextRedirectTypeBug1221316::kNoRedirect,
+                    net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+                        ContextRedirectTypeBug1221316::kCrossSiteRedirect,
+                    net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+                        ContextRedirectTypeBug1221316::kPartialSameSiteRedirect,
+                    net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+                        ContextRedirectTypeBug1221316::kAllSameSiteRedirect}) {
+    net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+        ContextRedirectTypeBug1221316 roundtrip;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+                mojom::ContextRedirectTypeBug1221316>(type, roundtrip));
+    EXPECT_EQ(type, roundtrip);
+  }
+}
+
 TEST(CookieManagerTraitsTest, Roundtrips_CookieSameSiteContextMetadata) {
   net::CookieOptions::SameSiteCookieContext::ContextMetadata metadata,
       roundtrip;
@@ -309,9 +328,13 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieSameSiteContextMetadata) {
           metadata, roundtrip));
   EXPECT_EQ(metadata, roundtrip);
 
+  // Arbitrary values.
   metadata.cross_site_redirect_downgrade =
       net::CookieOptions::SameSiteCookieContext::ContextMetadata::
           ContextDowngradeType::kStrictToLax;
+  metadata.redirect_type_bug_1221316 =
+      net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+          ContextRedirectTypeBug1221316::kPartialSameSiteRedirect;
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<mojom::CookieSameSiteContextMetadata>(
           metadata, roundtrip));
@@ -330,9 +353,13 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieSameSiteContext) {
   ContextMetadata metadata1;
   metadata1.cross_site_redirect_downgrade =
       ContextMetadata::ContextDowngradeType::kStrictToLax;
+  metadata1.redirect_type_bug_1221316 =
+      ContextMetadata::ContextRedirectTypeBug1221316::kCrossSiteRedirect;
   ContextMetadata metadata2;
   metadata2.cross_site_redirect_downgrade =
       ContextMetadata::ContextDowngradeType::kLaxToCross;
+  metadata2.redirect_type_bug_1221316 =
+      ContextMetadata::ContextRedirectTypeBug1221316::kNoRedirect;
 
   const ContextMetadata metadatas[]{ContextMetadata(), metadata1, metadata2};
 

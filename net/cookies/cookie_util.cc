@@ -104,6 +104,25 @@ CookieOptions::SameSiteCookieContext MakeSameSiteCookieContext(
       schemeful_result.metadata);
 }
 
+ContextMetadata::ContextRedirectTypeBug1221316
+ComputeContextRedirectTypeBug1221316(bool url_chain_is_length_one,
+                                     bool same_site_initiator,
+                                     bool site_for_cookies_is_same_site,
+                                     bool same_site_redirect_chain) {
+  if (url_chain_is_length_one)
+    return ContextMetadata::ContextRedirectTypeBug1221316::kNoRedirect;
+
+  if (!same_site_initiator || !site_for_cookies_is_same_site)
+    return ContextMetadata::ContextRedirectTypeBug1221316::kCrossSiteRedirect;
+
+  if (!same_site_redirect_chain) {
+    return ContextMetadata::ContextRedirectTypeBug1221316::
+        kPartialSameSiteRedirect;
+  }
+
+  return ContextMetadata::ContextRedirectTypeBug1221316::kAllSameSiteRedirect;
+}
+
 // This function consolidates the common logic for computing SameSite cookie
 // access context in various situations (HTTP vs JS; get vs set).
 //
@@ -145,9 +164,6 @@ ComputeSameSiteContextResult ComputeSameSiteContext(
   // Defaults to a cross-site context type.
   ComputeSameSiteContextResult result;
 
-  if (!site_for_cookies_is_same_site)
-    return result;
-
   // Create a SiteForCookies object from the initiator so that we can reuse
   // IsFirstPartyWithSchemefulMode().
   bool same_site_initiator =
@@ -162,6 +178,16 @@ ComputeSameSiteContextResult ComputeSameSiteContext(
   bool same_site_redirect_chain =
       url_chain.size() == 1u ||
       base::ranges::all_of(url_chain, is_same_site_with_site_for_cookies);
+
+  // Record what type of redirect was experienced.
+
+  result.metadata.redirect_type_bug_1221316 =
+      ComputeContextRedirectTypeBug1221316(
+          url_chain.size() == 1u, same_site_initiator,
+          site_for_cookies_is_same_site, same_site_redirect_chain);
+
+  if (!site_for_cookies_is_same_site)
+    return result;
 
   // Whether the context would be SAME_SITE_STRICT if not considering redirect
   // chains, but is different after considering redirect chains.
@@ -686,7 +712,37 @@ CookieOptions::SameSiteCookieContext ComputeSameSiteContextForResponse(
     DCHECK(
         site_for_cookies.IsFirstPartyWithSchemefulMode(url_chain.back(), true));
     DCHECK(!url_chain.back().SchemeIsWSOrWSS());
-    return CookieOptions::SameSiteCookieContext::MakeInclusiveForSet();
+    CookieOptions::SameSiteCookieContext result =
+        CookieOptions::SameSiteCookieContext::MakeInclusiveForSet();
+
+    const GURL& request_url = url_chain.back();
+
+    for (bool compute_schemefully : {false, true}) {
+      bool same_site_initiator =
+          !initiator ||
+          SiteForCookies::FromOrigin(initiator.value())
+              .IsFirstPartyWithSchemefulMode(request_url, compute_schemefully);
+
+      const auto is_same_site_with_site_for_cookies =
+          [&site_for_cookies, compute_schemefully](const GURL& url) {
+            return site_for_cookies.IsFirstPartyWithSchemefulMode(
+                url, compute_schemefully);
+          };
+
+      bool same_site_redirect_chain =
+          url_chain.size() == 1u ||
+          base::ranges::all_of(url_chain, is_same_site_with_site_for_cookies);
+
+      CookieOptions::SameSiteCookieContext::ContextMetadata& result_metadata =
+          compute_schemefully ? result.schemeful_metadata() : result.metadata();
+
+      result_metadata.redirect_type_bug_1221316 =
+          ComputeContextRedirectTypeBug1221316(
+              url_chain.size() == 1u, same_site_initiator,
+              true /* site_for_cookies_is_same_site */,
+              same_site_redirect_chain);
+    }
+    return result;
   }
 
   return ComputeSameSiteContextForSet(url_chain, site_for_cookies, initiator,

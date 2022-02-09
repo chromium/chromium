@@ -360,6 +360,8 @@ TEST(CookieUtilTest, TestIsDomainMatch) {
 using ::testing::AllOf;
 using SameSiteCookieContext = CookieOptions::SameSiteCookieContext;
 using ContextType = CookieOptions::SameSiteCookieContext::ContextType;
+using ContextRedirectTypeBug1221316 = CookieOptions::SameSiteCookieContext::
+    ContextMetadata::ContextRedirectTypeBug1221316;
 
 MATCHER_P2(ContextTypeIsWithSchemefulMode, context_type, schemeful, "") {
   return context_type == (schemeful ? arg.schemeful_context() : arg.context());
@@ -367,15 +369,20 @@ MATCHER_P2(ContextTypeIsWithSchemefulMode, context_type, schemeful, "") {
 
 // Checks for the expected metadata related to context downgrades from
 // cross-site redirects.
-MATCHER_P3(CrossSiteRedirectMetadataCorrectWithSchemefulMode,
+MATCHER_P4(CrossSiteRedirectMetadataCorrectWithSchemefulMode,
            context_type_without_chain,
            context_type_with_chain,
+           redirect_type_with_chain,
            schemeful,
            "") {
   using ContextDowngradeType = CookieOptions::SameSiteCookieContext::
       ContextMetadata::ContextDowngradeType;
 
   const auto& metadata = schemeful ? arg.schemeful_metadata() : arg.metadata();
+
+  if (metadata.redirect_type_bug_1221316 != redirect_type_with_chain)
+    return false;
+
   switch (metadata.cross_site_redirect_downgrade) {
     case ContextDowngradeType::kNoDowngrade:
       return context_type_without_chain == context_type_with_chain;
@@ -435,9 +442,11 @@ class CookieUtilComputeSameSiteContextTest
 
   auto CrossSiteRedirectMetadataCorrect(
       ContextType context_type_without_chain,
-      ContextType context_type_with_chain) const {
+      ContextType context_type_with_chain,
+      ContextRedirectTypeBug1221316 redirect_type_with_chain) const {
     return CrossSiteRedirectMetadataCorrectWithSchemefulMode(
-        context_type_without_chain, context_type_with_chain, IsSchemeful());
+        context_type_without_chain, context_type_with_chain,
+        redirect_type_with_chain, IsSchemeful());
   }
 
   // The following methods return the sets of URLs/SiteForCookies/initiators/URL
@@ -985,63 +994,83 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest_Redirect) {
     // These are the expected context types not considering redirect chains:
     ContextType expected_context_type_without_chain;
     ContextType expected_context_type_for_main_frame_navigation_without_chain;
+    // The expected redirect type (only applicable for chains):
+    ContextRedirectTypeBug1221316 expected_redirect_type_with_chain;
   } kTestCases[] = {
       // If the url chain is same-site, then the result is the same with or
       // without considering the redirect chain.
       {"GET", true, true, true, ContextType::SAME_SITE_STRICT,
        ContextType::SAME_SITE_STRICT, ContextType::SAME_SITE_STRICT,
-       ContextType::SAME_SITE_STRICT},
+       ContextType::SAME_SITE_STRICT,
+       ContextRedirectTypeBug1221316::kAllSameSiteRedirect},
       {"GET", true, true, false, ContextType::CROSS_SITE,
        ContextType::SAME_SITE_LAX, ContextType::CROSS_SITE,
-       ContextType::SAME_SITE_LAX},
+       ContextType::SAME_SITE_LAX,
+       ContextRedirectTypeBug1221316::kCrossSiteRedirect},
       {"GET", true, false, true, ContextType::CROSS_SITE,
        ContextType::CROSS_SITE, ContextType::CROSS_SITE,
-       ContextType::CROSS_SITE},
+       ContextType::CROSS_SITE,
+       ContextRedirectTypeBug1221316::kCrossSiteRedirect},
       {"GET", true, false, false, ContextType::CROSS_SITE,
        ContextType::CROSS_SITE, ContextType::CROSS_SITE,
-       ContextType::CROSS_SITE},
+       ContextType::CROSS_SITE,
+       ContextRedirectTypeBug1221316::kCrossSiteRedirect},
       // If the url chain is cross-site, then the result will differ depending
       // on whether the redirect chain is considered, when the site-for-cookies
       // and initiator are both same-site.
       {"GET", false, true, true, ContextType::CROSS_SITE,
        ContextType::SAME_SITE_LAX, ContextType::SAME_SITE_STRICT,
-       ContextType::SAME_SITE_STRICT},
+       ContextType::SAME_SITE_STRICT,
+       ContextRedirectTypeBug1221316::kPartialSameSiteRedirect},
       {"GET", false, true, false, ContextType::CROSS_SITE,
        ContextType::SAME_SITE_LAX, ContextType::CROSS_SITE,
-       ContextType::SAME_SITE_LAX},
+       ContextType::SAME_SITE_LAX,
+       ContextRedirectTypeBug1221316::kCrossSiteRedirect},
       {"GET", false, false, true, ContextType::CROSS_SITE,
        ContextType::CROSS_SITE, ContextType::CROSS_SITE,
-       ContextType::CROSS_SITE},
+       ContextType::CROSS_SITE,
+       ContextRedirectTypeBug1221316::kCrossSiteRedirect},
       {"GET", false, false, false, ContextType::CROSS_SITE,
        ContextType::CROSS_SITE, ContextType::CROSS_SITE,
-       ContextType::CROSS_SITE},
+       ContextType::CROSS_SITE,
+       ContextRedirectTypeBug1221316::kCrossSiteRedirect},
       // If the url chain is same-site, then the result is the same with or
       // without considering the redirect chain.
       {"POST", true, true, true, ContextType::SAME_SITE_STRICT,
        ContextType::SAME_SITE_STRICT, ContextType::SAME_SITE_STRICT,
-       ContextType::SAME_SITE_STRICT},
+       ContextType::SAME_SITE_STRICT,
+       ContextRedirectTypeBug1221316::kAllSameSiteRedirect},
       {"POST", true, true, false, ContextType::CROSS_SITE,
        ContextType::SAME_SITE_LAX_METHOD_UNSAFE, ContextType::CROSS_SITE,
-       ContextType::SAME_SITE_LAX_METHOD_UNSAFE},
+       ContextType::SAME_SITE_LAX_METHOD_UNSAFE,
+       ContextRedirectTypeBug1221316::kCrossSiteRedirect},
       {"POST", true, false, true, ContextType::CROSS_SITE,
        ContextType::CROSS_SITE, ContextType::CROSS_SITE,
-       ContextType::CROSS_SITE},
+       ContextType::CROSS_SITE,
+       ContextRedirectTypeBug1221316::kCrossSiteRedirect},
       {"POST", true, false, false, ContextType::CROSS_SITE,
        ContextType::CROSS_SITE, ContextType::CROSS_SITE,
-       ContextType::CROSS_SITE},
+       ContextType::CROSS_SITE,
+       ContextRedirectTypeBug1221316::kCrossSiteRedirect},
       // If the url chain is cross-site, then the result will differ depending
       // on whether the redirect chain is considered, when the site-for-cookies
       // and initiator are both same-site.
       {"POST", false, true, true, ContextType::CROSS_SITE,
        ContextType::SAME_SITE_LAX_METHOD_UNSAFE, ContextType::SAME_SITE_STRICT,
-       ContextType::SAME_SITE_STRICT},
+       ContextType::SAME_SITE_STRICT,
+       ContextRedirectTypeBug1221316::kPartialSameSiteRedirect},
       {"POST", false, true, false, ContextType::CROSS_SITE,
        ContextType::SAME_SITE_LAX_METHOD_UNSAFE, ContextType::CROSS_SITE,
-       ContextType::SAME_SITE_LAX_METHOD_UNSAFE},
+       ContextType::SAME_SITE_LAX_METHOD_UNSAFE,
+       ContextRedirectTypeBug1221316::kCrossSiteRedirect},
       {"POST", false, false, true, ContextType::CROSS_SITE,
-       ContextType::CROSS_SITE, ContextType::CROSS_SITE},
+       ContextType::CROSS_SITE, ContextType::CROSS_SITE,
+       ContextType::CROSS_SITE,
+       ContextRedirectTypeBug1221316::kCrossSiteRedirect},
       {"POST", false, false, false, ContextType::CROSS_SITE,
-       ContextType::CROSS_SITE, ContextType::CROSS_SITE},
+       ContextType::CROSS_SITE, ContextType::CROSS_SITE,
+       ContextType::CROSS_SITE,
+       ContextRedirectTypeBug1221316::kCrossSiteRedirect},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -1073,7 +1102,8 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest_Redirect) {
                       AllOf(ContextTypeIs(expected_context_type),
                             CrossSiteRedirectMetadataCorrect(
                                 test_case.expected_context_type_without_chain,
-                                test_case.expected_context_type)))
+                                test_case.expected_context_type,
+                                test_case.expected_redirect_type_with_chain)))
               << UrlChainToString(url_chain) << " "
               << site_for_cookies.ToDebugString() << " "
               << (initiator ? initiator->Serialize() : "nullopt");
@@ -1090,8 +1120,8 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForRequest_Redirect) {
                   CrossSiteRedirectMetadataCorrect(
                       test_case
                           .expected_context_type_for_main_frame_navigation_without_chain,
-                      test_case
-                          .expected_context_type_for_main_frame_navigation)))
+                      test_case.expected_context_type_for_main_frame_navigation,
+                      test_case.expected_redirect_type_with_chain)))
               << UrlChainToString(url_chain) << " "
               << site_for_cookies.ToDebugString() << " "
               << (initiator ? initiator->Serialize() : "nullopt");
@@ -1273,28 +1303,38 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForResponse_Redirect) {
     // These are the expected context types not considering redirect chains:
     ContextType expected_context_type_without_chain;
     ContextType expected_context_type_for_main_frame_navigation_without_chain;
+    // The expected redirect type (only applicable for chains):
+    ContextRedirectTypeBug1221316 expected_redirect_type_with_chain;
   } kTestCases[] = {
       // If the url chain is same-site, then the result is the same with or
       // without considering the redirect chain.
       {true, true, true, ContextType::SAME_SITE_LAX, ContextType::SAME_SITE_LAX,
-       ContextType::SAME_SITE_LAX, ContextType::SAME_SITE_LAX},
+       ContextType::SAME_SITE_LAX, ContextType::SAME_SITE_LAX,
+       ContextRedirectTypeBug1221316::kAllSameSiteRedirect},
       {true, true, false, ContextType::CROSS_SITE, ContextType::SAME_SITE_LAX,
-       ContextType::CROSS_SITE, ContextType::SAME_SITE_LAX},
+       ContextType::CROSS_SITE, ContextType::SAME_SITE_LAX,
+       ContextRedirectTypeBug1221316::kCrossSiteRedirect},
       {true, false, true, ContextType::CROSS_SITE, ContextType::CROSS_SITE,
-       ContextType::CROSS_SITE, ContextType::CROSS_SITE},
+       ContextType::CROSS_SITE, ContextType::CROSS_SITE,
+       ContextRedirectTypeBug1221316::kCrossSiteRedirect},
       {true, false, false, ContextType::CROSS_SITE, ContextType::CROSS_SITE,
-       ContextType::CROSS_SITE, ContextType::CROSS_SITE},
+       ContextType::CROSS_SITE, ContextType::CROSS_SITE,
+       ContextRedirectTypeBug1221316::kCrossSiteRedirect},
       // If the url chain is cross-site, then the result will differ depending
       // on whether the redirect chain is considered, when the site-for-cookies
       // and initiator are both same-site.
       {false, true, true, ContextType::CROSS_SITE, ContextType::SAME_SITE_LAX,
-       ContextType::SAME_SITE_LAX, ContextType::SAME_SITE_LAX},
+       ContextType::SAME_SITE_LAX, ContextType::SAME_SITE_LAX,
+       ContextRedirectTypeBug1221316::kPartialSameSiteRedirect},
       {false, true, false, ContextType::CROSS_SITE, ContextType::SAME_SITE_LAX,
-       ContextType::CROSS_SITE, ContextType::SAME_SITE_LAX},
+       ContextType::CROSS_SITE, ContextType::SAME_SITE_LAX,
+       ContextRedirectTypeBug1221316::kCrossSiteRedirect},
       {false, false, true, ContextType::CROSS_SITE, ContextType::CROSS_SITE,
-       ContextType::CROSS_SITE, ContextType::CROSS_SITE},
+       ContextType::CROSS_SITE, ContextType::CROSS_SITE,
+       ContextRedirectTypeBug1221316::kCrossSiteRedirect},
       {false, false, false, ContextType::CROSS_SITE, ContextType::CROSS_SITE,
-       ContextType::CROSS_SITE, ContextType::CROSS_SITE},
+       ContextType::CROSS_SITE, ContextType::CROSS_SITE,
+       ContextRedirectTypeBug1221316::kCrossSiteRedirect},
   };
   for (const auto& test_case : kTestCases) {
     std::vector<std::vector<GURL>> url_chains =
@@ -1325,7 +1365,8 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForResponse_Redirect) {
                       AllOf(ContextTypeIs(expected_context_type),
                             CrossSiteRedirectMetadataCorrect(
                                 test_case.expected_context_type_without_chain,
-                                test_case.expected_context_type)))
+                                test_case.expected_context_type,
+                                test_case.expected_redirect_type_with_chain)))
               << UrlChainToString(url_chain) << " "
               << site_for_cookies.ToDebugString() << " "
               << (initiator ? initiator->Serialize() : "nullopt");
@@ -1342,8 +1383,8 @@ TEST_P(CookieUtilComputeSameSiteContextTest, ForResponse_Redirect) {
                   CrossSiteRedirectMetadataCorrect(
                       test_case
                           .expected_context_type_for_main_frame_navigation_without_chain,
-                      test_case
-                          .expected_context_type_for_main_frame_navigation)))
+                      test_case.expected_context_type_for_main_frame_navigation,
+                      test_case.expected_redirect_type_with_chain)))
               << UrlChainToString(url_chain) << " "
               << site_for_cookies.ToDebugString() << " "
               << (initiator ? initiator->Serialize() : "nullopt");

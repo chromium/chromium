@@ -123,6 +123,25 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Cookie.CrossSiteRedirectType.{AccessType}"
+    enum="ContextRedirectTypeBug1221316" expires_after="2022-07-15">
+  <owner>bingler@chromium.org</owner>
+  <owner>miketaylr@chromium.org</owner>
+  <summary>
+    The type of redirects a cookie experienced before ultimately being accessed.
+    This metric is triggered whenever a cookie is attempted to be accessed by an
+    HTTP request or response. It does not matter if the access succeeds, only
+    that one was attempted.
+
+    The metrics exists primarily to act as a denominator for
+    Cookie.CrossSiteRedirectDowngradeChangesInclusion2.{AccessType}.
+  </summary>
+  <token key="AccessType">
+    <variant name="Read" summary="read for a request"/>
+    <variant name="Write" summary="set by a response"/>
+  </token>
+</histogram>
+
 <histogram name="Cookie.DomainSet" enum="Boolean" expires_after="2022-06-19">
   <owner>bingler@chromium.org</owner>
   <owner>miketaylr@chromium.org</owner>
