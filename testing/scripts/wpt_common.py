@@ -254,6 +254,9 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             if "artifacts" not in root_node:
                 return
 
+            root_node["artifacts"].pop("wpt_actual_status", None)
+            root_node["artifacts"].pop("wpt_subtest_failure", None)
+
             actual_metadata = root_node["artifacts"].pop(
                 "wpt_actual_metadata", None)
             if actual_metadata:
@@ -321,8 +324,6 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         unexpected = result_node['actual'] not in result_node['expected']
 
         for artifact_name, paths in result_node.get('artifacts', {}).items():
-            if artifact_name in ["wpt_actual_status", "wpt_subtest_failure"]:
-                continue
             for path in paths:
                 artifacts.AddArtifact(artifact_name, path)
 
