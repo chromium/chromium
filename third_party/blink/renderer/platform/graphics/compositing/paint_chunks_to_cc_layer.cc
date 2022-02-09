@@ -964,20 +964,21 @@ static void UpdateRegionCaptureData(cc::Layer& layer,
   for (const PaintChunk& chunk : chunks) {
     if (!chunk.region_capture_data)
       continue;
+
     const PropertyTreeState chunk_state =
         chunk.properties.GetPropertyTreeState().Unalias();
     for (const std::pair<RegionCaptureCropId, gfx::Rect>& pair :
          *chunk.region_capture_data) {
-      auto rect = FloatClipRect(gfx::RectF(pair.second));
+      FloatClipRect rect(gfx::RectF(pair.second));
       if (!GeometryMapper::LocalToAncestorVisualRect(chunk_state, layer_state,
-                                                     rect)) {
+                                                     rect))
         continue;
-      }
+
       rect.Move(-layer_offset);
       capture_bounds.Set(pair.first.value(), gfx::ToEnclosingRect(rect.Rect()));
     }
-    break;
   }
+
   // At this point, the bounds are in the coordinate space of
   // the layer we are adding them to.
   layer.SetCaptureBounds(std::move(capture_bounds));
