@@ -26,6 +26,8 @@
       "fuchsia.sys.Loader",
       "fuchsia.sysmem.Allocator",
       "fuchsia.tracing.provider.Registry",
+      "fuchsia.ui.composition.Allocator",
+      "fuchsia.ui.composition.Flatland",
       "fuchsia.ui.policy.Presenter",
       "fuchsia.ui.scenic.Scenic",
       "fuchsia.vulkan.loader.Loader"
