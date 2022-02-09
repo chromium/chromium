@@ -7856,9 +7856,10 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-    {"drag-and-drop-android", flag_descriptions::kDragAndDropAndroidName,
-     flag_descriptions::kDragAndDropAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kDragAndDrop)},
+    {"touch-drag-and-context-menu",
+     flag_descriptions::kTouchDragAndContextMenuName,
+     flag_descriptions::kTouchDragAndContextMenuDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kTouchDragAndContextMenu)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"autofill-enable-update-virtual-card-enrollment",

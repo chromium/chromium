@@ -54,7 +54,8 @@ namespace {
 // intentional drag.
 float DragMovementThresholdDip() {
   static float radius = base::GetFieldTrialParamByFeatureAsDouble(
-      features::kDragAndDrop, features::kDragAndDropMovementThresholdDipParam,
+      features::kTouchDragAndContextMenu,
+      features::kDragAndDropMovementThresholdDipParam,
       /*default_value=*/gfx::ViewConfiguration::GetTouchSlopInDips());
   return radius;
 }
@@ -72,7 +73,7 @@ bool ShouldRequestUnbufferedDispatch() {
 bool IsDragAndDropEnabled() {
   // Cache the feature flag value so it isn't queried on every drag start.
   static const bool drag_feature_enabled =
-      base::FeatureList::IsEnabled(features::kDragAndDrop);
+      base::FeatureList::IsEnabled(features::kTouchDragAndContextMenu);
   return drag_feature_enabled;
 }
 

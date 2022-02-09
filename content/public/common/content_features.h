@@ -241,6 +241,7 @@ CONTENT_EXPORT extern const base::Feature
     kSuppressDifferentOriginSubframeJSDialogs;
 CONTENT_EXPORT extern const base::Feature kSyntheticPointerActions;
 CONTENT_EXPORT extern const base::Feature kThreadingOptimizationsOnIO;
+CONTENT_EXPORT extern const base::Feature kTouchDragAndContextMenu;
 CONTENT_EXPORT extern const base::Feature kTouchpadAsyncPinchEvents;
 CONTENT_EXPORT extern const base::Feature kTouchpadOverscrollHistoryNavigation;
 CONTENT_EXPORT extern const base::Feature kTrustedDOMTypes;
@@ -288,7 +289,6 @@ CONTENT_EXPORT extern const base::Feature
     kBackgroundMediaRendererHasModerateBinding;
 CONTENT_EXPORT extern const base::Feature kBigLittleScheduling;
 CONTENT_EXPORT extern const base::Feature kBindingManagementWaiveCpu;
-CONTENT_EXPORT extern const base::Feature kDragAndDrop;
 CONTENT_EXPORT extern const base::Feature kOnDemandAccessibilityEvents;
 CONTENT_EXPORT extern const base::Feature kRequestDesktopSiteExceptions;
 CONTENT_EXPORT extern const base::Feature kRequestDesktopSiteGlobal;

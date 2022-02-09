@@ -321,6 +321,10 @@ void WebRuntimeFeatures::EnableUserActivationSameOriginVisibility(bool enable) {
   RuntimeEnabledFeatures::SetUserActivationSameOriginVisibilityEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableTouchDragAndContextMenu(bool enable) {
+  RuntimeEnabledFeatures::SetTouchDragAndContextMenuEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableTouchEventFeatureDetection(bool enable) {
   RuntimeEnabledFeatures::SetTouchEventFeatureDetectionEnabled(enable);
 }

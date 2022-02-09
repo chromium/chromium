@@ -766,11 +766,6 @@ void MouseEventManager::UpdateSelectionForMouseDrag() {
 
 bool MouseEventManager::HandleDragDropIfPossible(
     const GestureEventWithHitTestResults& targeted_event) {
-  if (!frame_->GetSettings() ||
-      !frame_->GetSettings()->GetTouchDragDropEnabled() || !frame_->View()) {
-    return false;
-  }
-
   const WebGestureEvent& gesture_event = targeted_event.Event();
   unsigned modifiers = gesture_event.GetModifiers();
 

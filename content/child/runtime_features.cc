@@ -286,6 +286,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableSkipTouchEventFilter, blink::features::kSkipTouchEventFilter},
     {wf::EnableSubresourceWebBundles, features::kSubresourceWebBundles},
     {wf::EnableTextFragmentAnchor, blink::features::kTextFragmentAnchor},
+    {wf::EnableTouchDragAndContextMenu, features::kTouchDragAndContextMenu},
     {wf::EnableCSSSelectorFragmentAnchor,
      blink::features::kCssSelectorFragmentAnchor},
     {wf::EnableBackfaceVisibilityInterop,

@@ -59,7 +59,7 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
                        "enable-blink-features=TouchDragAndContextMenu"})
 @Features.EnableFeatures({ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE,
-                          ContentFeatures.DRAG_AND_DROP})
+                          ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
 @Batch(Batch.PER_CLASS)
 public class ContextMenuDragTest {
     // clang-format on

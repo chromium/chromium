@@ -1369,11 +1369,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "drag-and-drop-android",
-    "owners": [ "wenyufu", "clank-app-team@google.com" ],
-    "expiry_milestone": 104
-  },
-  {
     "name": "draw-predicted-ink-point",
     "owners": [ "joalmei@microsoft.com" ],
     "expiry_milestone": 98
@@ -5557,6 +5552,11 @@
     // exposed in chrome://flags to allow QA and UXers to verify touch-related
     // behavior without access to touch devices.
     "expiry_milestone": -1
+  },
+  {
+    "name": "touch-drag-and-context-menu",
+    "owners": [ "wenyufu", "clank-app-team@google.com" ],
+    "expiry_milestone": 104
   },
   {
     "name": "touch-selection-strategy",

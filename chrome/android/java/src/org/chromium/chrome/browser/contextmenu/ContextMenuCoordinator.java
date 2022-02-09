@@ -149,7 +149,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                 ? activity.getResources().getDimensionPixelSize(R.dimen.context_menu_small_width)
                 : null;
         View webContentView = webContents.getViewAndroidDelegate() != null
-                        && ContentFeatureList.isEnabled(ContentFeatures.DRAG_AND_DROP)
+                        && ContentFeatureList.isEnabled(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
                 ? webContents.getViewAndroidDelegate().getContainerView()
                 : null;
         mDialog = createContextMenuDialog(activity, layout, menu, isPopup, touchPointXPx,

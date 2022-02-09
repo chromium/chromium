@@ -54458,6 +54458,7 @@ from previous Chrome versions.
   <int value="209792775" label="TabGroupsAndroid:enabled"/>
   <int value="209805234" label="MessagesForAndroidAutoDarkWebContents:enabled"/>
   <int value="211313007" label="CrOSEnforceSystemAecNs:disabled"/>
+  <int value="211561930" label="TouchDragAndContextMenu:disabled"/>
   <int value="212489101" label="AutofillAssistantChromeEntry:enabled"/>
   <int value="212977039" label="MediaFoundationD3D11VideoCapture:disabled"/>
   <int value="214935999" label="UpdateHistoryEntryPointsInIncognito:enabled"/>
@@ -56627,6 +56628,7 @@ from previous Chrome versions.
   <int value="1762320532" label="AutofillKeyboardAccessory:enabled"/>
   <int value="1764618580" label="MojoLinuxChannelSharedMem:disabled"/>
   <int value="1766676896" label="affiliation-based-matching:disabled"/>
+  <int value="1767218791" label="TouchDragAndContextMenu:enabled"/>
   <int value="1767411597" label="DisallowUnsafeHttpDownloads:enabled"/>
   <int value="1768759000" label="AutofillProfileServerValidation:disabled"/>
   <int value="1769483213" label="AudioUrl:disabled"/>

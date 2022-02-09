@@ -1752,9 +1752,6 @@ extern const char kContextualTriggersSelectionSizeDescription[];
 extern const char kCpuAffinityRestrictToLittleCoresName[];
 extern const char kCpuAffinityRestrictToLittleCoresDescription[];
 
-extern const char kDragAndDropAndroidName[];
-extern const char kDragAndDropAndroidDescription[];
-
 extern const char kDynamicColorAndroidName[];
 extern const char kDynamicColorAndroidDescription[];
 
@@ -2020,6 +2017,9 @@ extern const char kThemeRefactorAndroidDescription[];
 
 extern const char kToolbarIphAndroidName[];
 extern const char kToolbarIphAndroidDescription[];
+
+extern const char kTouchDragAndContextMenuName[];
+extern const char kTouchDragAndContextMenuDescription[];
 
 extern const char kUpdateMenuBadgeName[];
 extern const char kUpdateMenuBadgeDescription[];
