@@ -14,16 +14,6 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 
-namespace {
-
-bool CanThemeSyncStart(syncer::SyncService* sync_service) {
-  return sync_service && sync_service->CanSyncFeatureStart() &&
-         sync_service->GetUserSettings()->GetSelectedTypes().Has(
-             syncer::UserSelectableType::kThemes);
-}
-
-}  // namespace
-
 ProfileCustomizationSyncedThemeWaiter::ProfileCustomizationSyncedThemeWaiter(
     syncer::SyncService* sync_service,
     ThemeService* theme_service,
@@ -38,6 +28,14 @@ ProfileCustomizationSyncedThemeWaiter::ProfileCustomizationSyncedThemeWaiter(
 
 ProfileCustomizationSyncedThemeWaiter::
     ~ProfileCustomizationSyncedThemeWaiter() = default;
+
+// static
+bool ProfileCustomizationSyncedThemeWaiter::CanThemeSyncStart(
+    syncer::SyncService* sync_service) {
+  return sync_service && sync_service->CanSyncFeatureStart() &&
+         sync_service->GetUserSettings()->GetSelectedTypes().Has(
+             syncer::UserSelectableType::kThemes);
+}
 
 void ProfileCustomizationSyncedThemeWaiter::Run() {
 #if DCHECK_IS_ON()

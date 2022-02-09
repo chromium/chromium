@@ -16,16 +16,6 @@
 
 namespace {
 
-bool CanSyncStart(syncer::SyncService* sync_service) {
-  if (!sync_service || !sync_service->CanSyncFeatureStart())
-    return false;
-  if (!sync_service->GetUserSettings()->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kThemes)) {
-    return false;
-  }
-  return true;
-}
-
 void ShowBubble(Profile* profile,
                 views::View* anchor_view,
                 ProfileCustomizationBubbleSyncController::Outcome outcome) {
@@ -92,7 +82,7 @@ bool ProfileCustomizationBubbleSyncController::CanThemeSyncStart(
     Profile* profile) {
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
-  return CanSyncStart(sync_service);
+  return ProfileCustomizationSyncedThemeWaiter::CanThemeSyncStart(sync_service);
 }
 
 ProfileCustomizationBubbleSyncController::
@@ -103,15 +93,22 @@ ProfileCustomizationBubbleSyncController::
         ThemeService* theme_service,
         ShowBubbleCallback show_bubble_callback,
         SkColor suggested_profile_color)
-    : sync_service_(sync_service),
-      theme_service_(theme_service),
+    : theme_service_(theme_service),
       show_bubble_callback_(std::move(show_bubble_callback)),
       suggested_profile_color_(suggested_profile_color) {
   CHECK(profile);
   CHECK(anchor_view);
-  CHECK(sync_service_);
+  CHECK(sync_service);
   CHECK(theme_service_);
   CHECK(show_bubble_callback_);
+
+  theme_waiter_ = std::make_unique<ProfileCustomizationSyncedThemeWaiter>(
+      sync_service, theme_service_,
+      base::BindOnce(
+          &ProfileCustomizationBubbleSyncController::OnSyncedThemeReady,
+          // base::Unretained() is fine here because `this` owns
+          // `theme_waiter_`.
+          base::Unretained(this)));
 
   profile_observation_.Observe(profile);
   view_observation_.Observe(anchor_view);
@@ -121,60 +118,31 @@ ProfileCustomizationBubbleSyncController::
     ~ProfileCustomizationBubbleSyncController() = default;
 
 void ProfileCustomizationBubbleSyncController::Init() {
-  if (!CanSyncStart(sync_service_)) {
-    ApplyDefaultColorAndShowBubble();
-    return;
-  }
-
-  absl::optional<ThemeSyncableService::ThemeSyncState> theme_state =
-      theme_service_->GetThemeSyncableService()->GetThemeSyncStartState();
-  if (theme_state) {
-    // There's enough information to decide whether to show the bubble right on
-    // init, finish the flow.
-    OnThemeSyncStarted(*theme_state);
-    return;
-  }
-
-  // Observe the sync service to abort waiting for theme sync if the user hits
-  // any error or if custom passphrase is needed.
-  sync_observation_.Observe(sync_service_.get());
-
-  theme_observation_.Observe(theme_service_->GetThemeSyncableService());
+  theme_waiter_->Run();
 }
 
-void ProfileCustomizationBubbleSyncController::OnStateChanged(
-    syncer::SyncService* sync) {
-  // If we figure out sync cannot start (soon), skip the check and show the
-  // bubble.
-  if (!CanSyncStart(sync)) {
-    ApplyDefaultColorAndShowBubble();
-    return;
+void ProfileCustomizationBubbleSyncController::OnSyncedThemeReady(
+    ProfileCustomizationSyncedThemeWaiter::Outcome outcome) {
+  theme_waiter_.reset();
+  switch (outcome) {
+    case ProfileCustomizationSyncedThemeWaiter::Outcome::kSyncSuccess: {
+      bool using_custom_theme = !theme_service_->UsingDefaultTheme() &&
+                                !theme_service_->UsingSystemTheme();
+      if (using_custom_theme)
+        SkipBubble();
+      else
+        ApplyDefaultColorAndShowBubble();
+      break;
+    }
+    case ProfileCustomizationSyncedThemeWaiter::Outcome::kSyncCannotStart:
+      ApplyDefaultColorAndShowBubble();
+      break;
+    case ProfileCustomizationSyncedThemeWaiter::Outcome::
+        kSyncPassphraseRequired:
+    case ProfileCustomizationSyncedThemeWaiter::Outcome::kTimeout:
+      SkipBubble();
+      break;
   }
-
-  if (sync->GetUserSettings()->IsPassphraseRequired()) {
-    // Keep the default color and do not show the bubble. The reason is that the
-    // custom passphrase user may have a color in their sync but Chrome will
-    // figure that out later (once the user enter their passphrase) so no prior
-    // customization makes sense.
-    SkipBubble();
-  }
-}
-
-void ProfileCustomizationBubbleSyncController::OnThemeSyncStarted(
-    ThemeSyncableService::ThemeSyncState state) {
-  // Skip the bubble (and not use the default color) if the user got a custom
-  // value from sync (that is either already applied as a custom theme or
-  // triggered a custom theme installation).
-  const bool using_custom_theme = !theme_service_->UsingDefaultTheme() &&
-                                  !theme_service_->UsingSystemTheme();
-  const bool installing_custom_theme =
-      state ==
-      ThemeSyncableService::ThemeSyncState::kWaitingForExtensionInstallation;
-  if (using_custom_theme || installing_custom_theme) {
-    SkipBubble();
-    return;
-  }
-  ApplyDefaultColorAndShowBubble();
 }
 
 void ProfileCustomizationBubbleSyncController::OnProfileWillBeDestroyed(

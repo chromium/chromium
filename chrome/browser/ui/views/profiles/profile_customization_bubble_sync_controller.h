@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
+#include "chrome/browser/ui/signin/profile_customization_synced_theme_waiter.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -25,13 +26,8 @@ class Profile;
 
 // Helper class for logic to show / delay showing the profile customization
 // bubble. Owns itself.
-// TODO(https://crbug.com/1282157): refactor this class to reuse
-// ProfileCustomizationSyncedThemeWaiter.
-class ProfileCustomizationBubbleSyncController
-    : public syncer::SyncServiceObserver,
-      public ThemeSyncableService::Observer,
-      public ProfileObserver,
-      public views::ViewObserver {
+class ProfileCustomizationBubbleSyncController : public ProfileObserver,
+                                                 public views::ViewObserver {
  public:
   enum class Outcome {
     kShowBubble,
@@ -83,12 +79,6 @@ class ProfileCustomizationBubbleSyncController
       ShowBubbleCallback show_bubble_callback,
       SkColor suggested_profile_color);
 
-  // SyncServiceObserver:
-  void OnStateChanged(syncer::SyncService* sync) override;
-
-  // ThemeSyncableService::Observer:
-  void OnThemeSyncStarted(ThemeSyncableService::ThemeSyncState state) override;
-
   // ProfileObserver:
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
@@ -98,24 +88,23 @@ class ProfileCustomizationBubbleSyncController
   // This function may delete the object.
   void Init();
 
+  void OnSyncedThemeReady(
+      ProfileCustomizationSyncedThemeWaiter::Outcome outcome);
+
   // Functions that finalize the control logic by either showing or skipping the
   // bubble (or aborting completely) and deleting itself.
   void ApplyDefaultColorAndShowBubble();
   void SkipBubble();
   void Abort();
 
-  const raw_ptr<syncer::SyncService> sync_service_;
   const raw_ptr<ThemeService> theme_service_;
+  std::unique_ptr<ProfileCustomizationSyncedThemeWaiter> theme_waiter_;
   ShowBubbleCallback show_bubble_callback_;
   SkColor const suggested_profile_color_;
 
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
   base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
       this};
-  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
-      sync_observation_{this};
-  base::ScopedObservation<ThemeSyncableService, ThemeSyncableService::Observer>
-      theme_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_CUSTOMIZATION_BUBBLE_SYNC_CONTROLLER_H_

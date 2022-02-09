@@ -42,6 +42,10 @@ class ProfileCustomizationSyncedThemeWaiter
       base::OnceCallback<void(Outcome)> callback);
   ~ProfileCustomizationSyncedThemeWaiter() override;
 
+  // Returns whether theme sync can start (i.e. is not disabled by policy,
+  // theme sync is enabled, ...).
+  static bool CanThemeSyncStart(syncer::SyncService* sync_service);
+
   // Notifies `callback_` after a synced theme has been applied or a timeout has
   // expired. Must not be called more than once.
   void Run();
