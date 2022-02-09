@@ -161,8 +161,9 @@ TypedNavigationUpgradeThrottle::WillRedirectRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 TypedNavigationUpgradeThrottle::WillProcessResponse() {
-  DCHECK_EQ(url::kHttpsScheme, navigation_handle()->GetURL().scheme());
-  // If we got here, HTTPS load succeeded. Stop the timer.
+  // If we got here, the HTTPS load succeeded. The final URL may be HTTPS or
+  // HTTP (if the upgrade attempt redirected to HTTP). In any case, we are done,
+  // so stop the timer.
   RecordUMA(Event::kHttpsLoadSucceeded);
   timer_.Stop();
   UmaHistogramTimes("TypedNavigationUpgradeThrottle.UpgradeSuccessTime",
