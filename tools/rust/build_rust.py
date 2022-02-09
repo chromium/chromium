@@ -64,8 +64,10 @@ RUST_GIT_URL = 'https://github.com/rust-lang/rust/'
 
 THIRD_PARTY_DIR = os.path.join(CHROMIUM_DIR, 'third_party')
 RUST_SRC_DIR = os.path.join(THIRD_PARTY_DIR, 'rust-src')
+RUST_SRC_VERSION_FILE_PATH = os.path.join(RUST_SRC_DIR, 'src', 'version')
 RUST_TOOLCHAIN_OUT_DIR = os.path.join(THIRD_PARTY_DIR, 'rust-toolchain')
 RUST_TOOLCHAIN_LIB_DIR = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'lib')
+VERSION_STAMP_PATH = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'VERSION')
 RUST_CONFIG_TEMPLATE_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), 'config.toml.template')
 
@@ -133,6 +135,7 @@ def Configure():
   subs = {}
   subs['INSTALL_DIR'] = RUST_TOOLCHAIN_OUT_DIR
   subs['LLVM_ROOT'] = LLVM_BUILD_DIR
+  subs['PACKAGE_VERSION'] = PACKAGE_VERSION
 
   # ...and apply substitutions, writing to config.toml in Rust tree.
   with open(os.path.join(RUST_SRC_DIR, 'config.toml'), 'w') as output:
@@ -148,7 +151,8 @@ def RunXPy(sub, args, gcc_toolchain_path, verbose):
   RUSTENV['CXX'] = os.path.join(LLVM_BUILD_DIR, 'bin', 'clang++')
   RUSTENV['LD'] = clang_path
   # We use these flags to avoid linking with the system libstdc++.
-  gcc_toolchain_flag = f'--gcc-toolchain={gcc_toolchain_path}' if gcc_toolchain_path else ''
+  gcc_toolchain_flag = (f'--gcc-toolchain={gcc_toolchain_path}'
+                        if gcc_toolchain_path else '')
   static_libstdcpp_flag = '-static-libstdc++'
   # These affect how C/C++ files are compiled, but not Rust libs/exes.
   RUSTENV['CFLAGS'] += f' {gcc_toolchain_flag}'
@@ -240,9 +244,19 @@ def main():
     ], args.gcc_toolchain, args.verbose)
 
   if not args.skip_install:
+    # Clean output directory.
+    shutil.rmtree(RUST_TOOLCHAIN_OUT_DIR)
+
     RunXPy('install',
            ['--stage', '1', '--keep-stage', '1'] + DISTRIBUTION_ARTIFACTS,
            args.gcc_toolchain, args.verbose)
+
+    # Write expected `rustc --version` string to our toolchain directory.
+    with open(RUST_SRC_VERSION_FILE_PATH) as version_file:
+      rust_version = version_file.readline().rstrip()
+    with open(VERSION_STAMP_PATH, 'w') as stamp:
+      stamp.write('rustc %s-dev (%s chromium)\n' %
+                  (rust_version, PACKAGE_VERSION))
 
 
 if __name__ == '__main__':

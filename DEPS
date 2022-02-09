@@ -219,6 +219,14 @@ vars = {
   # instead of downloading the prebuilt pinned revision.
   'llvm_force_head_revision': False,
 
+  # Build in-tree Rust toolchain. checkout_clang_libs must also be True. The
+  # corresponding GN arg use_chromium_rust_toolchain directs the build to use
+  # the in-tree toolchain instead of the Android toolchain.
+  #
+  # This is not intended for local development.
+  # Prefer using //tools/rust/build_rust.py directly.
+  'build_chromium_rust_toolchain': False,
+
   # See //docs/testing/regression-test-selection.md
   # for info on RTS
   'checkout_rts_model': False,
@@ -4038,6 +4046,14 @@ hooks = [
     'condition': 'checkout_clang_libs',
     'action': ['python3', 'src/tools/clang/scripts/update.py',
                '--package=clang-libs'],
+  },
+  {
+    # Build experimental in-tree Rust toolchain. Must run after clang_libs or
+    # clang_tot hook. This should only be run on bots.
+    'name': 'build_rust',
+    'pattern': '.',
+    'condition': 'build_chromium_rust_toolchain',
+    'action': ['python3', 'src/tools/rust/build_rust.py']
   },
   {
     # Should run after the clang hook. Used on mac, as well as for orderfile

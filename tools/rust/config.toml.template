@@ -15,7 +15,7 @@ static-libstdcpp = true
 [rust]
 download-rustc = false
 channel = "dev"
-description = "chromium"
+description = "$PACKAGE_VERSION chromium"
 
 [build]
 # Vendor crates.io dependencies to rust-src/vendor and check they match root
