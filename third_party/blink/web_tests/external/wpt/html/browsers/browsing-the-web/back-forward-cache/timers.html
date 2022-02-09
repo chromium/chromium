@@ -12,13 +12,15 @@
 // started before a page is stored into BFCache, staying for a while in BFCache,
 // and fired after the page is restored from BFCache.
 
-const delayMain = 8000;
-const delayBeforeForwardNavigation = 2000;
-const delayBeforeBackNavigation = 3000;
+const delayMain = 18000;
+const delayBeforeForwardNavigation = 6000;
+const delayBeforeBackNavigation = 5000;
 // `delayBeforeForwardNavigation` and `delayBeforeBackNavigation` are set
 // sufficiently large in order to distinguish the expected case from other
 // scenarios listed in `funcAfterAssertion()`, and to allow some delays outside
-// timers (e.g. due to communication between Windows).
+// timers (e.g. due to communication between Windows). The additional delays
+// can be large (e.g. ~4 seconds), so the delays above should be sufficiently
+// large.
 
 const startTime = performance.now();
 

@@ -119,7 +119,8 @@ async function navigateAndThenBack(pageA, pageB, urlB,
 
   await pageB.execute_script(waitForPageShow);
   if (funcBeforeBackNavigation) {
-    await pageB.execute_script(funcBeforeBackNavigation);
+    await pageB.execute_script(funcBeforeBackNavigation,
+                               argsBeforeBackNavigation);
   }
   await pageB.execute_script(
     () => {
