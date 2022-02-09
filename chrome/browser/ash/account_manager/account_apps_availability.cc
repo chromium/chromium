@@ -9,6 +9,7 @@
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/pref_names.h"
@@ -33,6 +34,9 @@
 namespace ash {
 
 namespace {
+
+constexpr int kMaxNumAccountsInArcMetric =
+    10;  // To match AccountManager.NumAccounts metrics.
 
 bool IsPrimaryGaiaAccount(const std::string& gaia_id) {
   const user_manager::User* user =
@@ -184,6 +188,14 @@ void UpdateAccountInPrefs(PrefService* prefs,
 
 }  // namespace
 
+// static
+const char AccountAppsAvailability::kNumAccountsInArcMetricName[] =
+    "Arc.Auth.NumAccounts";
+
+// static
+const char AccountAppsAvailability::kPercentAccountsInArcMetricName[] =
+    "Arc.Auth.PercentAccounts";
+
 AccountAppsAvailability::AccountAppsAvailability(
     account_manager::AccountManagerFacade* account_manager_facade,
     signin::IdentityManager* identity_manager,
@@ -200,6 +212,9 @@ AccountAppsAvailability::AccountAppsAvailability(
 
   if (IsPrefInitialized(prefs_)) {
     is_initialized_ = true;
+    // The metric is recorded once per session.
+    account_manager_facade_->GetAccounts(base::BindOnce(
+        &AccountAppsAvailability::ReportMetrics, weak_factory_.GetWeakPtr()));
     return;
   }
 
@@ -405,6 +420,21 @@ void AccountAppsAvailability::InitAccountsAvailableInArcPref(
   for (auto& callback : initialization_callbacks_)
     std::move(callback).Run();
   initialization_callbacks_.clear();
+}
+
+void AccountAppsAvailability::ReportMetrics(
+    const std::vector<account_manager::Account>& accounts) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const int num_total_accounts = accounts.size();
+  const int num_arc_accounts = GetGaiaIdsAvailableInArc(prefs_).size();
+  base::UmaHistogramExactLinear(kNumAccountsInArcMetricName, num_arc_accounts,
+                                kMaxNumAccountsInArcMetric + 1);
+
+  DCHECK_GE(num_total_accounts, num_arc_accounts);
+  const int percent_arc_accounts =
+      (num_arc_accounts * 100.0) / num_total_accounts;
+  base::UmaHistogramPercentage(kPercentAccountsInArcMetricName,
+                               percent_arc_accounts);
 }
 
 void AccountAppsAvailability::FindAccountByGaiaId(

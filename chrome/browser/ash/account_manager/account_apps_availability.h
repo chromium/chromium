@@ -29,6 +29,9 @@ class AccountAppsAvailability
       public account_manager::AccountManagerFacade::Observer,
       public signin::IdentityManager::Observer {
  public:
+  static const char kNumAccountsInArcMetricName[];
+  static const char kPercentAccountsInArcMetricName[];
+
   class Observer : public base::CheckedObserver {
    public:
     Observer() = default;
@@ -105,6 +108,9 @@ class AccountAppsAvailability
   // is_available_in_arc=true.
   void InitAccountsAvailableInArcPref(
       const std::vector<account_manager::Account>& accounts);
+
+  // Report metrics (e.g. number of accounts in ARC).
+  void ReportMetrics(const std::vector<account_manager::Account>& accounts);
 
   // Call `GetAccounts` and find the account by `gaia_id`. Call the `callback`
   // with the resulted account or with `nullopt` if requested account is not in

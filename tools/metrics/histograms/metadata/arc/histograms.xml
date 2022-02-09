@@ -332,6 +332,26 @@ chromium-metrics-reviews@google.com.
   <token key="ArcUserTypes" variants="ArcUserTypes"/>
 </histogram>
 
+<histogram name="Arc.Auth.NumAccounts" units="count" expires_after="2022-06-01">
+  <owner>anastasiian@google.com</owner>
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Tracks the number of accounts in ARC. This is recorded only once per
+    session, at login time.
+  </summary>
+</histogram>
+
+<histogram name="Arc.Auth.PercentAccounts" units="%" expires_after="2022-06-01">
+  <owner>anastasiian@google.com</owner>
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Tracks the percentage of the accounts in session that are also available in
+    ARC. This is recorded only once per session, at login time.
+  </summary>
+</histogram>
+
 <histogram name="Arc.Auth.RequestAccountInfoResult.Primary"
     enum="ArcAuthCodeStatus" expires_after="2022-08-01">
   <owner>anastasiian@google.com</owner>

@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/account_manager_core/account.h"
@@ -136,15 +137,33 @@ class AccountAppsAvailabilityTest : public testing::Test {
 };
 
 TEST_F(AccountAppsAvailabilityTest, InitializationPrefIsPersistedOnDisk) {
+  base::HistogramTester tester;
   auto account_apps_availability = CreateAccountAppsAvailability();
   EXPECT_FALSE(account_apps_availability->IsInitialized());
   // Wait for `GetAccounts` call to finish.
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(account_apps_availability->IsInitialized());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(
+      0,
+      tester.GetAllSamples(AccountAppsAvailability::kNumAccountsInArcMetricName)
+          .size());
+  EXPECT_EQ(0, tester
+                   .GetAllSamples(
+                       AccountAppsAvailability::kPercentAccountsInArcMetricName)
+                   .size());
   account_apps_availability.reset();
 
   account_apps_availability = CreateAccountAppsAvailability();
   EXPECT_TRUE(account_apps_availability->IsInitialized());
+  // Wait for `GetAccounts` call to finish.
+  base::RunLoop().RunUntilIdle();
+  tester.ExpectUniqueSample(
+      AccountAppsAvailability::kNumAccountsInArcMetricName,
+      /*sample=*/1, /*expected_bucket_count=*/1);
+  tester.ExpectUniqueSample(
+      AccountAppsAvailability::kPercentAccountsInArcMetricName,
+      /*sample=*/100, /*expected_bucket_count=*/1);
 }
 
 TEST_F(AccountAppsAvailabilityTest, CallsBeforeInitialization) {
