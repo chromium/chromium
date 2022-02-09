@@ -253,7 +253,7 @@ TEST(ChromeCommandLinePrefStoreTest, AcceptLanguage) {
 
   const base::Value* actual = nullptr;
   EXPECT_TRUE(store->GetValue(language::prefs::kSelectedLanguages, &actual));
-  std::string result;
-  EXPECT_TRUE(actual->GetAsString(&result));
-  EXPECT_EQ("de,en,fr,jp", result);
+  ASSERT_TRUE(actual);
+  ASSERT_TRUE(actual->is_string());
+  EXPECT_EQ("de,en,fr,jp", actual->GetString());
 }
