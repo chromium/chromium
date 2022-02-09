@@ -318,10 +318,22 @@ interface UserProvider {
   SelectProfileImage();
 };
 
+// The source of the screensaver images come from.
+enum TopicSource {
+  // Google Photos.
+  kGooglePhotos = 0,
+
+  // Art related sources in Backdrop server.
+  kArtGallery = 1,
+};
+
 // Receives information whenever there are ambient mode pref changes.
 interface AmbientObserver {
   // Retrieves information whether ambient mode is enabled.
   OnAmbientModeEnabledChanged(bool ambient_mode_enabled);
+
+  // Notifies the JS side about the current state of TopicSource.
+  OnTopicSourceChanged(TopicSource topic_source);
 };
 
 // Provides APIs to expose Ambient mode settings.
@@ -335,4 +347,7 @@ interface AmbientProvider {
 
   // Binds a listener to start receiving updates on ambient mode pref changes.
   SetAmbientObserver(pending_remote<AmbientObserver> observer);
+
+  // Sets the ambient mode topic source.
+  SetTopicSource(TopicSource topic_source);
 };

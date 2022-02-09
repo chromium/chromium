@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AmbientObserverInterface, AmbientObserverRemote, AmbientProviderInterface} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
+import {AmbientObserverInterface, AmbientObserverRemote, AmbientProviderInterface, TopicSource} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestAmbientProvider extends TestBrowserProxy implements
@@ -12,6 +12,7 @@ export class TestAmbientProvider extends TestBrowserProxy implements
       'isAmbientModeEnabled',
       'setAmbientObserver',
       'setAmbientModeEnabled',
+      'setTopicSource',
     ]);
   }
 
@@ -33,5 +34,9 @@ export class TestAmbientProvider extends TestBrowserProxy implements
 
   setAmbientModeEnabled(ambientModeEnabled: boolean) {
     this.methodCalled('setAmbientModeEnabled', ambientModeEnabled);
+  }
+
+  setTopicSource(topic_source: TopicSource) {
+    this.methodCalled('setTopicSource', topic_source);
   }
 }

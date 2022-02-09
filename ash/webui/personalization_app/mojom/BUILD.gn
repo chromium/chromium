@@ -49,6 +49,10 @@ mojom("mojom") {
           mojom = "ash.personalization_app.mojom.DefaultUserImage"
           cpp = "ash::default_user_image::DefaultUserImage"
         },
+        {
+          mojom = "ash.personalization_app.mojom.TopicSource"
+          cpp = "ash::AmbientModeTopicSource"
+        },
       ]
       traits_headers = [ "personalization_app_mojom_traits.h" ]
       traits_sources = [ "personalization_app_mojom_traits.cc" ]

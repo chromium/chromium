@@ -9,6 +9,7 @@
 
 #include <stdint.h>
 
+#include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -42,6 +43,7 @@ class FakePersonalizationAppAmbientProvider
       mojo::PendingRemote<ash::personalization_app::mojom::AmbientObserver>
           observer) override {}
   void SetAmbientModeEnabled(bool enabled) override {}
+  void SetTopicSource(ash::AmbientModeTopicSource topic_source) override {}
 
  private:
   mojo::Receiver<ash::personalization_app::mojom::AmbientProvider>

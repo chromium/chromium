@@ -14,6 +14,8 @@
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/public/cpp/image_downloader.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
+#include "ash/webui/personalization_app/mojom/personalization_app_mojom_traits.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -95,11 +97,7 @@ void PersonalizationAppAmbientProviderImpl::SetAmbientObserver(
   OnAmbientModeEnabledChanged(
       pref_service->GetBoolean(ash::ambient::prefs::kAmbientModeEnabled));
 
-  write_weak_factory_.InvalidateWeakPtrs();
-  read_weak_factory_.InvalidateWeakPtrs();
-  album_preview_weak_factory_.InvalidateWeakPtrs();
-  recent_highlights_previews_weak_factory_.InvalidateWeakPtrs();
-
+  ResetLocalSettings();
   // Will notify WebUI when fetches successfully.
   FetchSettingsAndAlbums();
 }
@@ -109,6 +107,25 @@ void PersonalizationAppAmbientProviderImpl::SetAmbientModeEnabled(
   PrefService* pref_service = profile_->GetPrefs();
   DCHECK(pref_service);
   pref_service->SetBoolean(ash::ambient::prefs::kAmbientModeEnabled, enabled);
+}
+
+void PersonalizationAppAmbientProviderImpl::SetTopicSource(
+    ash::AmbientModeTopicSource topic_source) {
+  // If this is an Art gallery album page, will select art gallery topic source.
+  if (topic_source == ash::AmbientModeTopicSource::kArtGallery) {
+    MaybeUpdateTopicSource(topic_source);
+    return;
+  }
+
+  // If this is a Google Photos album page, will
+  // 1. Select art gallery topic source if no albums or no album is selected.
+  if (settings_->selected_album_ids.empty()) {
+    MaybeUpdateTopicSource(ash::AmbientModeTopicSource::kArtGallery);
+    return;
+  }
+
+  // 2. Select Google Photos topic source if at least one album is selected.
+  MaybeUpdateTopicSource(ash::AmbientModeTopicSource::kGooglePhotos);
 }
 
 void PersonalizationAppAmbientProviderImpl::OnAmbientModeEnabledChanged(
@@ -122,7 +139,10 @@ void PersonalizationAppAmbientProviderImpl::OnTemperatureUnitChanged() {
 }
 
 void PersonalizationAppAmbientProviderImpl::OnTopicSourceChanged() {
-  NOTIMPLEMENTED();
+  if (!ambient_observer_remote_.is_bound())
+    return;
+
+  ambient_observer_remote_->OnTopicSourceChanged(settings_->topic_source);
 }
 
 void PersonalizationAppAmbientProviderImpl::OnAlbumsChanged() {
@@ -309,25 +329,6 @@ void PersonalizationAppAmbientProviderImpl::SyncSettingsAndAlbums() {
     MaybeUpdateTopicSource(ash::AmbientModeTopicSource::kArtGallery);
 }
 
-void PersonalizationAppAmbientProviderImpl::UpdateTopicSource(
-    ash::AmbientModeTopicSource topic_source) {
-  // If this is an Art gallery album page, will select art gallery topic source.
-  if (topic_source == ash::AmbientModeTopicSource::kArtGallery) {
-    MaybeUpdateTopicSource(topic_source);
-    return;
-  }
-
-  // If this is a Google Photos album page, will
-  // 1. Select art gallery topic source if no albums or no album is selected.
-  if (settings_->selected_album_ids.empty()) {
-    MaybeUpdateTopicSource(ash::AmbientModeTopicSource::kArtGallery);
-    return;
-  }
-
-  // 2. Select Google Photos topic source if at least one album is selected.
-  MaybeUpdateTopicSource(ash::AmbientModeTopicSource::kGooglePhotos);
-}
-
 void PersonalizationAppAmbientProviderImpl::MaybeUpdateTopicSource(
     ash::AmbientModeTopicSource topic_source) {
   // If the setting is the same, no need to update.
@@ -445,4 +446,18 @@ ash::ArtSetting* PersonalizationAppAmbientProviderImpl::FindArtAlbumById(
     return nullptr;
 
   return &(*it);
+}
+
+void PersonalizationAppAmbientProviderImpl::ResetLocalSettings() {
+  write_weak_factory_.InvalidateWeakPtrs();
+  read_weak_factory_.InvalidateWeakPtrs();
+  album_preview_weak_factory_.InvalidateWeakPtrs();
+  recent_highlights_previews_weak_factory_.InvalidateWeakPtrs();
+
+  settings_.reset();
+  cached_settings_.reset();
+  settings_sent_for_update_.reset();
+  has_pending_fetch_request_ = false;
+  is_updating_backend_ = false;
+  has_pending_updates_for_backend_ = false;
 }

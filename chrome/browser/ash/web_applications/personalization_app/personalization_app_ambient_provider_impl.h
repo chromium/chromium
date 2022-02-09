@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_AMBIENT_PROVIDER_IMPL_H_
 
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
+#include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_ambient_provider.h"
 #include "base/memory/weak_ptr.h"
@@ -16,10 +17,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/backoff_entry.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace ash {
-struct AmbientSettings;
-}  // namespace ash
 
 namespace gfx {
 class ImageSkia;
@@ -49,6 +46,7 @@ class PersonalizationAppAmbientProviderImpl
       mojo::PendingRemote<ash::personalization_app::mojom::AmbientObserver>
           observer) override;
   void SetAmbientModeEnabled(bool enabled) override;
+  void SetTopicSource(ash::AmbientModeTopicSource topic_source) override;
 
   // TODO(b/216307771): Will need to add observer for this.
   void OnAmbientModeEnabledChanged(bool ambient_mode_enabled);
@@ -92,7 +90,6 @@ class PersonalizationAppAmbientProviderImpl
   void SyncSettingsAndAlbums();
 
   // Update topic source if needed.
-  void UpdateTopicSource(ash::AmbientModeTopicSource topic_source);
   void MaybeUpdateTopicSource(ash::AmbientModeTopicSource topic_source);
 
   void DownloadAlbumPreviewImage();
@@ -106,6 +103,9 @@ class PersonalizationAppAmbientProviderImpl
 
   ash::ArtSetting* FindArtAlbumById(const std::string& album_id);
 
+  // Reset local settings to start a new session.
+  void ResetLocalSettings();
+
   mojo::Receiver<ash::personalization_app::mojom::AmbientProvider>
       ambient_receiver_{this};
 
@@ -113,6 +113,12 @@ class PersonalizationAppAmbientProviderImpl
       ambient_observer_remote_;
 
   raw_ptr<Profile> const profile_ = nullptr;
+
+  // Backoff retries for `FetchSettingsAndAlbums()`.
+  net::BackoffEntry fetch_settings_retry_backoff_;
+
+  // Backoff retries for `UpdateSettings()`.
+  net::BackoffEntry update_settings_retry_backoff_;
 
   // Local settings which may contain changes from WebUI but have not sent to
   // server. Only one `UpdateSettgings()` at a time.
@@ -129,9 +135,6 @@ class PersonalizationAppAmbientProviderImpl
 
   ash::PersonalAlbums personal_albums_;
 
-  // Backoff retries for `FetchSettingsAndAlbums()`.
-  net::BackoffEntry fetch_settings_retry_backoff_;
-
   // Whether to update UI when `UpdateSettings()` returns successfully.
   bool has_pending_fetch_request_ = false;
 
@@ -140,9 +143,6 @@ class PersonalizationAppAmbientProviderImpl
 
   // Whether there are pending updates.
   bool has_pending_updates_for_backend_ = false;
-
-  // Backoff retries for `UpdateSettings()`.
-  net::BackoffEntry update_settings_retry_backoff_;
 
   std::vector<gfx::ImageSkia> recent_highlights_preview_images_;
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AmbientObserverInterface, AmbientObserverReceiver, AmbientProviderInterface} from '../personalization_app.mojom-webui.js';
+import {AmbientObserverInterface, AmbientObserverReceiver, AmbientProviderInterface, TopicSource} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 import {setAmbientModeEnabledAction} from './ambient_actions.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
@@ -40,5 +40,12 @@ export class AmbientObserver implements AmbientObserverInterface {
   onAmbientModeEnabledChanged(ambientModeEnabled: boolean) {
     const store = PersonalizationStore.getInstance();
     store.dispatch(setAmbientModeEnabledAction(ambientModeEnabled));
+  }
+
+  onTopicSourceChanged(topicSource: TopicSource) {
+    // TODO: Handled in a chained follow up cl.
+    console.log('Received topicSource:', topicSource);
+    // const store = PersonalizationStore.getInstance();
+    // store.dispatch(setTopicSourceAction(topicSource));
   }
 }

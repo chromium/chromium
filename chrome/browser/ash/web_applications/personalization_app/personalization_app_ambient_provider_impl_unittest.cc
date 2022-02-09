@@ -94,6 +94,18 @@ class PersonalizationAppAmbientProviderImplTest : public testing::Test {
     ambient_provider_->UpdateSettings();
   }
 
+  void SetTopicSource(ash::AmbientModeTopicSource topic_source) {
+    ambient_provider_->SetTopicSource(topic_source);
+  }
+
+  ash::AmbientModeTopicSource TopicSource() {
+    return ambient_provider_->settings_->topic_source;
+  }
+
+  void SetSelectedAlbums(const std::vector<std::string>& ids) {
+    ambient_provider_->settings_->selected_album_ids = ids;
+  }
+
   bool HasPendingFetchRequestAtProvider() const {
     return ambient_provider_->has_pending_fetch_request_;
   }
@@ -195,6 +207,27 @@ TEST_F(PersonalizationAppAmbientProviderImplTest, SetAmbientModeEnabled) {
   ambient_provider_remote().FlushForTesting();
   EXPECT_FALSE(
       pref_service->GetBoolean(ash::ambient::prefs::kAmbientModeEnabled));
+}
+
+TEST_F(PersonalizationAppAmbientProviderImplTest, SetTopicSource) {
+  FetchSettings();
+  ReplyFetchSettingsAndAlbums(/*success=*/true);
+  EXPECT_EQ(ash::AmbientModeTopicSource::kGooglePhotos, TopicSource());
+
+  SetTopicSource(ash::AmbientModeTopicSource::kArtGallery);
+  EXPECT_EQ(ash::AmbientModeTopicSource::kArtGallery, TopicSource());
+
+  SetTopicSource(ash::AmbientModeTopicSource::kGooglePhotos);
+  EXPECT_EQ(ash::AmbientModeTopicSource::kGooglePhotos, TopicSource());
+
+  // If `settings_->selected_album_ids` is empty, will fallback to kArtGallery.
+  SetSelectedAlbums(/*ids=*/{});
+  SetTopicSource(ash::AmbientModeTopicSource::kGooglePhotos);
+  EXPECT_EQ(ash::AmbientModeTopicSource::kArtGallery, TopicSource());
+
+  SetSelectedAlbums(/*ids=*/{"1"});
+  SetTopicSource(ash::AmbientModeTopicSource::kGooglePhotos);
+  EXPECT_EQ(ash::AmbientModeTopicSource::kGooglePhotos, TopicSource());
 }
 
 TEST_F(PersonalizationAppAmbientProviderImplTest, TestFetchSettings) {
