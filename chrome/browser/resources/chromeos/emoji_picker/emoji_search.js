@@ -9,7 +9,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {EmojiButton} from './emoji_button.js';
 import {EmojiCategoryButton} from './emoji_category_button.js';
 import Fuse from './fuse.js';
-import {EmojiGroupData, EmojiVariants} from './types.js';
+import {CategoryEnum, EmojiGroupData, EmojiVariants} from './types.js';
 
 /**
  * @typedef {!Array<{item: !EmojiVariants}>} FuseResults
@@ -29,6 +29,8 @@ export class EmojiSearch extends PolymerElement {
     return {
       /** @type {EmojiGroupData} */
       emojiData: {type: Array, readonly: true},
+      /** @type {EmojiGroupData} */
+      emoticonData: {type: Array, readonly: true},
       /** @type {!string} */
       search: {type: String, notify: true},
       /** @private {!Array<!EmojiVariants>} */
@@ -37,9 +39,18 @@ export class EmojiSearch extends PolymerElement {
         computed: 'computeEmojiList(emojiData)',
         observer: 'onEmojiListChanged'
       },
+      /** @private {!Array<!EmojiVariants>} */
+      emoticonList: {
+        type: Array,
+        computed: 'computeEmojiList(emoticonData)',
+        observer: 'onEmoticonListChanged'
+      },
       /** @private {!FuseResults} */
-      results:
-          {type: Array, computed: 'computeSearchResults(search, emojiList)'},
+      emojiResults:
+          {type: Array, computed: 'computeSearchResults(search, \'emoji\')'},
+      /** @private {!FuseResults} */
+      emoticonResults:
+          {type: Array, computed: 'computeSearchResults(search, \'emoticon\')'},
       /** @private {!boolean} */
       v2Enabled: {
         type: Boolean,
@@ -52,14 +63,16 @@ export class EmojiSearch extends PolymerElement {
 
   constructor() {
     super();
-    this.fuse = new Fuse([], {
+    const fuseConfig = {
       threshold: 0.0,        // Exact match only.
       ignoreLocation: true,  // Match in all locations.
       keys: [
         {name: 'base.name', weight: 10},  // Increase scoring of emoji name.
         'base.keywords',
       ]
-    });
+    };
+    this.emojiFuse = new Fuse([], fuseConfig);
+    this.emoticonFuse = new Fuse([], fuseConfig);
     this.addEventListener('scroll', () => {
       this.onSearchScroll();
     });
@@ -128,7 +141,8 @@ export class EmojiSearch extends PolymerElement {
    */
   onSearchKeyDown(ev) {
     // if not searching or no results, do nothing.
-    if (!this.search || !this.results.length)
+    if (!this.search ||
+        (this.emojiResults.length === 0 && this.emoticonResults.length === 0))
       return;
 
     const isDown = ev.key === 'ArrowDown';
@@ -143,7 +157,7 @@ export class EmojiSearch extends PolymerElement {
       firstButton.focus();
 
       // if there is only one result, select it on enter.
-      if (isEnter && this.results.length === 1) {
+      if (isEnter && this.emojiResults.length === 1) {
         firstButton.querySelector('emoji-button').click();
       }
     }
@@ -187,18 +201,38 @@ export class EmojiSearch extends PolymerElement {
    */
   onEmojiListChanged(emojiList) {
     // suppressed property error due to Fuse being untyped.
-    this.fuse.setCollection(emojiList);
+    this.emojiFuse.setCollection(emojiList);
+  }
+
+  /**
+   *
+   * @param {!Array<!EmojiVariants>} emoticonList
+   * @suppress {missingProperties}
+   */
+  onEmoticonListChanged(emoticonList) {
+    this.emoticonFuse.setCollection(emoticonList);
   }
 
   /**
    * @param {?string} search
-   * @param {!Array<!EmojiVariants>} emojiList
+   * @param {CategoryEnum} category
    */
-  computeSearchResults(search, emojiList) {
+  computeSearchResults(search, category) {
     if (!search)
       return [];
     // Add an initial space to force prefix matching only.
-    return this.fuse.search(' ' + search);
+    const prefixSearchTerm = ` ${search}`;
+    if (!this.v2Enabled) {
+      return this.emojiFuse.search(prefixSearchTerm);
+    }
+    switch (category) {
+      case CategoryEnum.EMOJI:
+        return this.emojiFuse.search(prefixSearchTerm);
+      case CategoryEnum.EMOTICON:
+        return this.emoticonFuse.search(prefixSearchTerm);
+      default:
+        return;
+    }
   }
 
   onResultClick(ev) {

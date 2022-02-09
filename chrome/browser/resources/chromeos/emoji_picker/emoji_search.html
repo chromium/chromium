@@ -145,7 +145,7 @@
     <div class="sr-only" role="heading" aria-level="1">
       Emoji Search Results
     </div>
-    <template is="dom-repeat" items="[[results]]">
+    <template is="dom-repeat" items="[[emojiResults]]">
       <div class="result" tabindex="0" on-click="onResultClick">
         <emoji-button tabindex="-1"
             emoji="[[item.item.base.string]]"
@@ -154,7 +154,7 @@
         <div class="name">[[item.item.base.name]]</div>
       </div>
     </template>
-    <template is="dom-if" if="[[!results.length]]">
+    <template is="dom-if" if="[[!emojiResults.length]]">
       <div class="no-result">
         <picture>
           <source srcset="no_results_dark.svg"
