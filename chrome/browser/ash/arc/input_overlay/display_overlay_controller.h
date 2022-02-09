@@ -18,6 +18,8 @@ class Widget;
 
 namespace arc {
 namespace input_overlay {
+class TouchInjector;
+
 // DisplayOverlayController manages the input mapping view, view and edit mode,
 // menu, and educational dialog.
 class DisplayOverlayController {
@@ -28,6 +30,9 @@ class DisplayOverlayController {
   ~DisplayOverlayController();
 
   void OnWindowBoundsChanged();
+  void SetDisplayMode(DisplayMode mode);
+  // Get the bounds of |overlay_menu_anchor_| in contents view.
+  absl::optional<gfx::Rect> GetOverlayMenuAnchorBounds();
 
   // For test:
   gfx::Rect GetInputMappingViewBoundsForTesting();
@@ -40,22 +45,20 @@ class DisplayOverlayController {
 
   void AddOverlay();
   void RemoveOverlayIfAny();
-  void AddOverlayChildrenViews();
   void AddInputMappingView(views::Widget* overlay_widget);
-  void AddInputOverlayMenuView(views::Widget* overlay_widget);
-  void OnMenuAnchorPressed();
   void RemoveInputMappingView();
+  void AddMenuAnchor(views::Widget* overlay_widget);
+  void RemoveMenuAnchor();
+  void OnMenuAnchorPressed();
   views::Widget* GetOverlayWidget();
   gfx::Point CalculateMenuAnchorPosition();
-  gfx::Rect get_overlay_menu_anchor_bounds() const {
-    return overlay_menu_anchor_->bounds();
-  }
 
   TouchInjector* touch_injector_;
 
   // References to UI elements owned by the overlay widget.
   InputMappingView* input_mapping_view_ = nullptr;
   views::ImageButton* overlay_menu_anchor_ = nullptr;
+  DisplayMode display_mode_ = DisplayMode::kNone;
 };
 
 }  // namespace input_overlay

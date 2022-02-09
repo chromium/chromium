@@ -24,10 +24,6 @@ std::unique_ptr<Position> ParsePosition(const base::Value& value);
 // Log events for debugging.
 void LogEvent(const ui::Event& event);
 void LogTouchEvents(const std::list<ui::TouchEvent>& events);
-// TODO(cuicuiruan): Currently, it shows the dom_code.
-// Will replace it with showing the result of dom_key / keyboard key depending
-// on different keyboard layout.
-std::string GetDisplayText(const std::string& dom_code_string);
 // Json format:
 // {
 //    "key": "KeyA",
@@ -77,7 +73,6 @@ class Action {
   absl::optional<ui::TouchEvent> GetTouchCanceledEvent();
   absl::optional<ui::TouchEvent> GetTouchReleasedEvent();
   // TODO (b/200210666): Can remove this after the bug is fixed.
-  bool IsKeyAlreadyPressed(ui::DomCode code) const;
 
  protected:
   explicit Action(aura::Window* window);
@@ -85,8 +80,8 @@ class Action {
   absl::optional<gfx::PointF> CalculateTouchPosition(
       const gfx::RectF& content_bounds);
   bool IsRepeatedKeyEvent(const ui::KeyEvent& key_event);
-  virtual void OnTouchReleased();
-  virtual void OnTouchCancelled();
+  void OnTouchReleased();
+  void OnTouchCancelled();
 
   // name_ is basically for debugging and not visible to users.
   std::string name_;
@@ -101,7 +96,6 @@ class Action {
   aura::Window* target_window_;
   absl::optional<int> touch_id_;
   size_t current_position_index_ = 0;
-  bool registered_ = false;
 
   gfx::PointF last_touch_root_location_;
   base::flat_set<ui::DomCode> keys_pressed_;

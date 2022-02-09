@@ -10,6 +10,8 @@
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
+#include "chrome/browser/ash/arc/input_overlay/display_mode.h"
+#include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "ui/events/event_rewriter.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -19,6 +21,8 @@ class Window;
 
 namespace arc {
 namespace input_overlay {
+class DisplayOverlayController;
+
 // If the following touch move sent immediately, the touch move event is not
 // processed correctly by apps. This is a delayed time to send touch move
 // event.
@@ -42,8 +46,10 @@ class TouchInjector : public ui::EventRewriter {
     return actions_;
   }
   bool is_mouse_locked() const { return is_mouse_locked_; }
-
-  void FlipMouseLockFlag();
+  void set_display_mode(DisplayMode mode) { display_mode_ = mode; }
+  void set_display_overlay_controller(DisplayOverlayController* controller) {
+    display_overlay_controller_ = controller;
+  }
 
   // Parse Json to actions.
   // Json value format:
@@ -72,7 +78,7 @@ class TouchInjector : public ui::EventRewriter {
       const Continuation continuation) override;
 
  private:
-  class MouseLock;
+  class KeyCommand;
 
   // If the window is destroying or focusing out, releasing the active touch
   // event.
@@ -80,6 +86,7 @@ class TouchInjector : public ui::EventRewriter {
   void SendExtraEvent(const ui::EventRewriter::Continuation continuation,
                       const ui::Event& event);
   void DispatchTouchReleaseEventOnMouseUnLock();
+  void DispatchTouchReleaseEvent();
   // Json format:
   // "mouse_lock": {
   //   "key": "KeyA",
@@ -87,18 +94,29 @@ class TouchInjector : public ui::EventRewriter {
   // }
   void ParseMouseLock(const base::Value& value);
 
+  void FlipMouseLockFlag();
+  void FlipDisplayModeFlag();
+  // Check if the event located on menu icon.
+  bool MenuAnchorPressed(const ui::Event& event,
+                         const gfx::RectF& content_bounds);
+
   aura::Window* target_window_;
   base::WeakPtr<ui::EventRewriterContinuation> continuation_;
-  std::vector<std::unique_ptr<input_overlay::Action>> actions_;
+  std::vector<std::unique_ptr<Action>> actions_;
   base::ScopedObservation<ui::EventSource,
                           ui::EventRewriter,
                           &ui::EventSource::AddEventRewriter,
                           &ui::EventSource::RemoveEventRewriter>
       observation_{this};
-  std::unique_ptr<MouseLock> mouse_lock_;
+  std::unique_ptr<KeyCommand> mouse_lock_;
+  // It is used temporarily for switching view and edit mode.
+  // TODO(cuicuiruan): Remove this after the entry point is ready.
+  std::unique_ptr<KeyCommand> switch_mode_;
   bool text_input_active_ = false;
   // The mouse is unlocked by default.
   bool is_mouse_locked_ = false;
+  DisplayMode display_mode_ = DisplayMode::kView;
+  DisplayOverlayController* display_overlay_controller_ = nullptr;
 
   base::WeakPtrFactory<TouchInjector> weak_ptr_factory_{this};
 };

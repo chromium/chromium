@@ -22,7 +22,13 @@ namespace arc {
 namespace input_overlay {
 
 namespace {
-constexpr int kMinAnchorSide = 40;
+// UI specs.
+constexpr int kMenuAnchorSize = 56;
+constexpr int kMenuAnchorSideMargin = 24;
+constexpr SkColor kEditModeBgColor = SkColorSetA(SK_ColorGRAY, 0x99);
+constexpr SkColor kMenuAnchorBgColor = SkColorSetA(SK_ColorWHITE, 0x99);
+constexpr int kCornerRadius = 8;
+
 }  // namespace
 
 // TODO(djacobo): Evaluate to move this to its own class for readability.
@@ -44,15 +50,42 @@ class DisplayOverlayController::InputMappingView : public views::View {
   InputMappingView& operator=(const InputMappingView&) = delete;
   ~InputMappingView() override = default;
 
+  void SetDisplayMode(const DisplayMode mode) {
+    if (current_display_mode_ == mode)
+      return;
+    switch (mode) {
+      case DisplayMode::kMenu:
+      case DisplayMode::kView:
+        SetBackground(nullptr);
+        break;
+      case DisplayMode::kEdit:
+        SetBackground(views::CreateSolidBackground(kEditModeBgColor));
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+    for (auto* view : children()) {
+      auto* action_view = static_cast<ActionLabel*>(view);
+      action_view->SetDisplayMode(mode);
+    }
+    current_display_mode_ = mode;
+  }
+
  private:
   DisplayOverlayController* const owner_;
+  DisplayMode current_display_mode_ = DisplayMode::kNone;
 };
 
 DisplayOverlayController::DisplayOverlayController(
     TouchInjector* touch_injector)
     : touch_injector_(touch_injector) {
   AddOverlay();
-  AddOverlayChildrenViews();
+  touch_injector_->set_display_overlay_controller(this);
+  // TODO(cuicuiruan): Initially it should be in |kEducation| mode when
+  // launching and showing the educational dialog. Redo the logic here when the
+  // educational dialog is ready.
+  SetDisplayMode(DisplayMode::kView);
 }
 
 DisplayOverlayController::~DisplayOverlayController() {
@@ -61,7 +94,9 @@ DisplayOverlayController::~DisplayOverlayController() {
 
 void DisplayOverlayController::OnWindowBoundsChanged() {
   RemoveInputMappingView();
-  AddOverlayChildrenViews();
+  // TODO(cuicuiruan): Add support for window bounds change. Currently, it is
+  // reset to |kView| mode.
+  SetDisplayMode(DisplayMode::kView);
 }
 
 // For test:
@@ -76,17 +111,12 @@ void DisplayOverlayController::AddOverlay() {
   if (!shell_surface_base)
     return;
 
-  exo::ShellSurfaceBase::OverlayParams params(std::make_unique<views::View>());
+  auto view = std::make_unique<views::View>();
+  exo::ShellSurfaceBase::OverlayParams params(std::move(view));
   params.translucent = true;
   params.overlaps_frame = false;
+  params.focusable = true;
   shell_surface_base->AddOverlay(std::move(params));
-
-  views::Widget* overlay_widget =
-      static_cast<views::Widget*>(shell_surface_base->GetFocusTraversable());
-  // TODO(cuicuiruan): split below to the view mode. For the edit mode, display
-  // overlay should take the event.
-  overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
-      aura::EventTargetingPolicy::kNone);
 }
 
 void DisplayOverlayController::RemoveOverlayIfAny() {
@@ -94,18 +124,6 @@ void DisplayOverlayController::RemoveOverlayIfAny() {
       exo::GetShellSurfaceBaseForWindow(touch_injector_->target_window());
   if (shell_surface_base && shell_surface_base->HasOverlay())
     shell_surface_base->RemoveOverlay();
-}
-
-void DisplayOverlayController::AddOverlayChildrenViews() {
-  if (input_mapping_view_)
-    return;
-  auto* overlay_widget = GetOverlayWidget();
-  DCHECK(overlay_widget);
-  if (!overlay_widget)
-    return;
-
-  AddInputMappingView(overlay_widget);
-  AddInputOverlayMenuView(overlay_widget);
 }
 
 void DisplayOverlayController::AddInputMappingView(
@@ -120,8 +138,7 @@ void DisplayOverlayController::AddInputMappingView(
   input_mapping_view_->SetPosition(gfx::Point());
 }
 
-void DisplayOverlayController::AddInputOverlayMenuView(
-    views::Widget* overlay_widget) {
+void DisplayOverlayController::AddMenuAnchor(views::Widget* overlay_widget) {
   DCHECK(overlay_widget);
   auto game_icon = gfx::CreateVectorIcon(
       vector_icons::kVideogameAssetOutlineIcon, SK_ColorBLACK);
@@ -132,8 +149,8 @@ void DisplayOverlayController::AddInputOverlayMenuView(
                           base::Unretained(this)));
   overlay_menu_anchor->SetImage(views::Button::STATE_NORMAL, game_icon);
   overlay_menu_anchor->SetBackground(
-      views::CreateSolidBackground(SK_ColorWHITE));
-  overlay_menu_anchor->SetSize(gfx::Size(kMinAnchorSide, kMinAnchorSide));
+      views::CreateRoundedRectBackground(kMenuAnchorBgColor, kCornerRadius));
+  overlay_menu_anchor->SetSize(gfx::Size(kMenuAnchorSize, kMenuAnchorSize));
   overlay_menu_anchor->SetImageHorizontalAlignment(
       views::ImageButton::ALIGN_CENTER);
   overlay_menu_anchor->SetImageVerticalAlignment(
@@ -152,8 +169,17 @@ void DisplayOverlayController::AddInputOverlayMenuView(
       parent_view->AddChildView(std::move(overlay_menu_anchor));
 }
 
+void DisplayOverlayController::RemoveMenuAnchor() {
+  if (!overlay_menu_anchor_)
+    return;
+  overlay_menu_anchor_->parent()->RemoveChildViewT(overlay_menu_anchor_);
+  overlay_menu_anchor_ = nullptr;
+}
+
 void DisplayOverlayController::OnMenuAnchorPressed() {
+  RemoveMenuAnchor();
   // TODO(djacobo): Implement calling |InputOverlayMenuView|.
+  SetDisplayMode(DisplayMode::kMenu);
 }
 
 void DisplayOverlayController::RemoveInputMappingView() {
@@ -185,7 +211,67 @@ gfx::Point DisplayOverlayController::CalculateMenuAnchorPosition() {
   if (!view || view->bounds().IsEmpty())
     return gfx::Point();
 
-  return gfx::Point(view->width() - 2 * kMinAnchorSide, view->height() / 2);
+  return gfx::Point(
+      std::max(0, view->width() - kMenuAnchorSize - kMenuAnchorSideMargin),
+      std::max(0, view->height() / 2 - kMenuAnchorSize / 2));
+}
+
+void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
+  if (display_mode_ == mode)
+    return;
+
+  auto* overlay_widget = GetOverlayWidget();
+  DCHECK(overlay_widget);
+  if (!overlay_widget)
+    return;
+
+  switch (mode) {
+    case DisplayMode::kEducation:
+      // TODO(cuicuiruan): Add educational dialog.
+      overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
+          aura::EventTargetingPolicy::kTargetAndDescendants);
+      touch_injector_->set_display_mode(mode);
+      break;
+    case DisplayMode::kView:
+      if (!input_mapping_view_)
+        AddInputMappingView(overlay_widget);
+      DCHECK(!overlay_menu_anchor_);
+      if (!overlay_menu_anchor_)
+        AddMenuAnchor(overlay_widget);
+      overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
+          aura::EventTargetingPolicy::kNone);
+      touch_injector_->set_display_mode(mode);
+      break;
+    case DisplayMode::kEdit:
+      // TODO(cuicuiruan): |RemoveMenuAnchor()| can be removed after the entry
+      // point for |kEdit| is created from menu.
+      RemoveMenuAnchor();
+      overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
+          aura::EventTargetingPolicy::kTargetAndDescendants);
+      touch_injector_->set_display_mode(mode);
+      break;
+    case DisplayMode::kMenu:
+      overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
+          aura::EventTargetingPolicy::kTargetAndDescendants);
+      touch_injector_->set_display_mode(mode);
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
+  if (input_mapping_view_)
+    input_mapping_view_->SetDisplayMode(mode);
+
+  display_mode_ = mode;
+}
+
+absl::optional<gfx::Rect>
+DisplayOverlayController::GetOverlayMenuAnchorBounds() {
+  if (!overlay_menu_anchor_)
+    return absl::nullopt;
+
+  return absl::optional<gfx::Rect>(overlay_menu_anchor_->bounds());
 }
 
 }  // namespace input_overlay

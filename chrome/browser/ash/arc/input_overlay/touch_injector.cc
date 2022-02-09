@@ -30,6 +30,9 @@ constexpr char kMouseLock[] = "mouse_lock";
 // Mask for interesting modifiers.
 const int kInterestingFlagsMask =
     ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN;
+// It is used temporarily for switching view and edit mode.
+// TODO(cuicuiruan): Remove this after the entry point is ready.
+const ui::DomCode kSwitchModeKey = ui::DomCode::BACKSPACE;
 
 // Parse Json to different types of actions.
 std::vector<std::unique_ptr<Action>> ParseJsonToActions(
@@ -103,13 +106,15 @@ gfx::RectF CalculateWindowContentBounds(aura::Window* window) {
   return bounds;
 }
 
-class TouchInjector::MouseLock {
+class TouchInjector::KeyCommand {
  public:
-  MouseLock(TouchInjector* owner, ui::DomCode key, int modifiers)
-      : owner_(owner),
-        key_(key),
-        modifiers_(modifiers & kInterestingFlagsMask) {}
-  ~MouseLock() = default;
+  KeyCommand(const ui::DomCode key,
+             const int modifiers,
+             const base::RepeatingClosure callback)
+      : key_(key),
+        modifiers_(modifiers & kInterestingFlagsMask),
+        callback_(std::move(callback)) {}
+  ~KeyCommand() = default;
   bool Process(const ui::Event& event) {
     if (!event.IsKeyEvent())
       return false;
@@ -117,7 +122,7 @@ class TouchInjector::MouseLock {
     if (key_ == key_event->code() &&
         modifiers_ == (key_event->flags() & kInterestingFlagsMask)) {
       if (key_event->type() == ui::ET_KEY_PRESSED) {
-        owner_->FlipMouseLockFlag();
+        callback_.Run();
       }
       return true;
     }
@@ -125,9 +130,9 @@ class TouchInjector::MouseLock {
   }
 
  private:
-  TouchInjector* const owner_;
   ui::DomCode key_;
   int modifiers_;
+  base::RepeatingClosure callback_;
 };
 
 TouchInjector::TouchInjector(aura::Window* top_level_window)
@@ -156,6 +161,11 @@ void TouchInjector::RegisterEventRewriter() {
   if (observation_.IsObserving())
     return;
   observation_.Observe(target_window_->GetHost()->GetEventSource());
+  // TODO(cuicuiruan): temporarily entry point to change mode.
+  switch_mode_ = std::make_unique<KeyCommand>(
+      kSwitchModeKey, /*modifiers=*/0,
+      base::BindRepeating(&TouchInjector::FlipDisplayModeFlag,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TouchInjector::UnRegisterEventRewriter() {
@@ -192,6 +202,18 @@ void TouchInjector::DispatchTouchReleaseEventOnMouseUnLock() {
   }
 }
 
+void TouchInjector::DispatchTouchReleaseEvent() {
+  for (auto& action : actions_) {
+    auto release = action->GetTouchReleasedEvent();
+    if (!release)
+      continue;
+    if (SendEventFinally(continuation_, &*release).dispatcher_destroyed) {
+      VLOG(0) << "Undispatched event due to destroyed dispatcher for releasing "
+                 "touch event when unlocking mouse.";
+    }
+  }
+}
+
 void TouchInjector::SendExtraEvent(
     const ui::EventRewriter::Continuation continuation,
     const ui::Event& event) {
@@ -208,11 +230,65 @@ void TouchInjector::ParseMouseLock(const base::Value& value) {
   auto key = ParseKeyboardKey(*mouse_lock, kMouseLock);
   if (!key)
     return;
-  mouse_lock_ = std::make_unique<MouseLock>(this, key->first, key->second);
+  mouse_lock_ = std::make_unique<KeyCommand>(
+      key->first, key->second,
+      base::BindRepeating(&TouchInjector::FlipMouseLockFlag,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TouchInjector::FlipMouseLockFlag() {
   is_mouse_locked_ = !is_mouse_locked_;
+  if (!is_mouse_locked_)
+    DispatchTouchReleaseEventOnMouseUnLock();
+}
+
+void TouchInjector::FlipDisplayModeFlag() {
+  DCHECK(display_overlay_controller_);
+  if (display_mode_ == DisplayMode::kView) {
+    if (is_mouse_locked_)
+      FlipMouseLockFlag();
+    DispatchTouchReleaseEvent();
+    display_overlay_controller_->SetDisplayMode(DisplayMode::kEdit);
+  } else {
+    display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
+  }
+}
+
+bool TouchInjector::MenuAnchorPressed(const ui::Event& event,
+                                      const gfx::RectF& content_bounds) {
+  if (!event.IsMouseEvent() && !event.IsTouchEvent())
+    return false;
+
+  auto menu_anchor_bounds =
+      display_overlay_controller_->GetOverlayMenuAnchorBounds();
+  if (!menu_anchor_bounds) {
+    DCHECK(display_mode_ != DisplayMode::kView);
+    return false;
+  }
+
+  auto menu_anchor_bounds_in_root =
+      gfx::RectF(menu_anchor_bounds->x() + content_bounds.x(),
+                 menu_anchor_bounds->y() + content_bounds.y(),
+                 menu_anchor_bounds->width(), menu_anchor_bounds->height());
+
+  auto location = gfx::Point(event.AsLocatedEvent()->root_location());
+  target_window_->GetHost()->ConvertPixelsToDIP(&location);
+  auto location_f = gfx::PointF(location);
+
+  if (event.IsMouseEvent()) {
+    auto* mouse = event.AsMouseEvent();
+    if (mouse->type() == ui::ET_MOUSE_PRESSED &&
+        menu_anchor_bounds_in_root.Contains(location_f)) {
+      return true;
+    }
+  } else {
+    auto* touch = event.AsTouchEvent();
+    if (touch->type() == ui::ET_TOUCH_PRESSED &&
+        menu_anchor_bounds_in_root.Contains(location_f)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 ui::EventDispatchDetails TouchInjector::RewriteEvent(
@@ -222,13 +298,23 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
   if (text_input_active_)
     return SendEvent(continuation, &event);
 
-  if (mouse_lock_ && mouse_lock_->Process(event)) {
-    if (!is_mouse_locked_)
-      DispatchTouchReleaseEventOnMouseUnLock();
+  if (switch_mode_ && switch_mode_->Process(event))
     return DiscardEvent(continuation);
-  }
+
+  if (display_mode_ != DisplayMode::kView)
+    return SendEvent(continuation, &event);
 
   auto bounds = CalculateWindowContentBounds(target_window_);
+  // |display_overlay_controller_| is null for unittest.
+  if (display_overlay_controller_ && display_mode_ == DisplayMode::kView &&
+      MenuAnchorPressed(event, bounds)) {
+    display_overlay_controller_->SetDisplayMode(DisplayMode::kMenu);
+    return SendEvent(continuation, &event);
+  }
+
+  if (mouse_lock_ && mouse_lock_->Process(event))
+    return DiscardEvent(continuation);
+
   std::list<ui::TouchEvent> touch_events;
   for (auto& action : actions_) {
     bool keep_original_event = false;

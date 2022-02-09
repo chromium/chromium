@@ -888,6 +888,7 @@ source_set("chromeos") {
     "../ash/arc/input_overlay/actions/position.h",
     "../ash/arc/input_overlay/arc_input_overlay_manager.cc",
     "../ash/arc/input_overlay/arc_input_overlay_manager.h",
+    "../ash/arc/input_overlay/display_mode.h",
     "../ash/arc/input_overlay/display_overlay_controller.cc",
     "../ash/arc/input_overlay/display_overlay_controller.h",
     "../ash/arc/input_overlay/input_overlay_resources_util.cc",

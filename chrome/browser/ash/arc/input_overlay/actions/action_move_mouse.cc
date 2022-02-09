@@ -146,11 +146,10 @@ bool ActionMoveMouse::RewriteMouseEvent(
   if (!target_types_.contains(type) || target_flags_ != mouse_event->flags())
     return false;
 
-  // float scale = target_window_->GetHost()->device_scale_factor();
   auto mouse_location = gfx::Point(mouse_event->root_location());
   target_window_->GetHost()->ConvertPixelsToDIP(&mouse_location);
   auto mouse_location_f = gfx::PointF(mouse_location);
-  // DIscard mouse events outside of the app content bounds if the mouse is
+  // Discard mouse events outside of the app content bounds if the mouse is
   // locked.
   if (!content_bounds.Contains(mouse_location_f))
     return true;
@@ -209,7 +208,6 @@ gfx::PointF ActionMoveMouse::TransformLocationInPixels(
   auto target_area = CalculateApplyArea(content_bounds);
   auto new_pos = gfx::PointF();
   if (target_area) {
-    // auto content_bounds_pixels = gfx::RectF(content_bounds);
     auto orig_point = root_location - content_bounds.origin();
     float ratio = orig_point.x() / content_bounds.width();
     float x = ratio * target_area->width() + target_area->x();

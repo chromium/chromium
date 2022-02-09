@@ -97,25 +97,6 @@ void LogTouchEvents(const std::list<ui::TouchEvent>& events) {
     LogEvent(event);
 }
 
-std::string GetDisplayText(const std::string& dom_code_string) {
-  if (base::StartsWith(dom_code_string, "Key", base::CompareCase::SENSITIVE))
-    return dom_code_string.substr(3);
-  if (base::StartsWith(dom_code_string, "Digit", base::CompareCase::SENSITIVE))
-    return dom_code_string.substr(5);
-  auto lower = base::ToLowerASCII(dom_code_string);
-  if (lower == "escape")
-    return "esc";
-  if (lower == "shiftleft" || lower == "shiftright")
-    return "shift";
-  if (lower == "controlleft" || lower == "controlright")
-    return "ctrl";
-  if (lower == "altleft" || lower == "altright")
-    return "alt";
-  // TODO(cuicuiruan): adjust more display text according to UX design
-  // requirement.
-  return lower;
-}
-
 absl::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
     const base::Value& value,
     const base::StringPiece key_name) {
