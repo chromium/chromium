@@ -1552,7 +1552,10 @@ bool CanonicalCookie::IsCookiePartitionedValid(
     return true;
   if (partition_has_nonce)
     return true;
-  return prefix == CookiePrefix::COOKIE_PREFIX_HOST && !is_same_party;
+  bool result = prefix == CookiePrefix::COOKIE_PREFIX_HOST && !is_same_party;
+  DLOG_IF(WARNING, !result)
+      << "CanonicalCookie has invalid Partitioned attribute";
+  return result;
 }
 
 CookieAndLineWithAccessResult::CookieAndLineWithAccessResult() = default;
