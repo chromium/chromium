@@ -186,7 +186,7 @@ struct StatusData {
   StatusCode code@1;
   string message@2;
   array<mojo_base.mojom.Value> frames@3;
-  array<StatusData> causes@4;
+  StatusData? cause@4;
   mojo_base.mojom.Value data@5;
 };
 

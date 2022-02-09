@@ -72,6 +72,14 @@ mojom("stable_video_decoder") {
           move_only = true
         },
         {
+          mojom = "media.stable.mojom.StatusData"
+          cpp = "::media::internal::StatusData"
+        },
+        {
+          mojom = "media.stable.mojom.Status"
+          cpp = "::media::DecoderStatus"
+        },
+        {
           mojom = "media.stable.mojom.SubsampleEntry"
           cpp = "::media::SubsampleEntry"
         },

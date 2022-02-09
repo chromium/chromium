@@ -585,6 +585,38 @@ struct StructTraits<media::stable::mojom::NativeGpuMemoryBufferHandleDataView,
 };
 
 template <>
+struct StructTraits<media::stable::mojom::StatusDataDataView,
+                    media::internal::StatusData> {
+  static media::stable::mojom::StatusCode code(
+      const media::internal::StatusData& input);
+
+  static std::string group(const media::internal::StatusData& input);
+
+  static std::string message(const media::internal::StatusData& input);
+
+  static base::span<const base::Value> frames(
+      const media::internal::StatusData& input);
+
+  static absl::optional<media::internal::StatusData> cause(
+      const media::internal::StatusData& input);
+
+  static base::Value data(const media::internal::StatusData& input);
+
+  static bool Read(media::stable::mojom::StatusDataDataView data,
+                   media::internal::StatusData* output);
+};
+
+template <>
+struct StructTraits<media::stable::mojom::StatusDataView,
+                    media::DecoderStatus> {
+  static absl::optional<media::internal::StatusData> internal(
+      const media::DecoderStatus& input);
+
+  static bool Read(media::stable::mojom::StatusDataView data,
+                   media::DecoderStatus* output);
+};
+
+template <>
 struct StructTraits<media::stable::mojom::SupportedVideoDecoderConfigDataView,
                     media::SupportedVideoDecoderConfig> {
   static media::VideoCodecProfile profile_min(
