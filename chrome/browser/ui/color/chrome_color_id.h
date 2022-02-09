@@ -14,6 +14,8 @@
   /* Bookmark Bar output colors. */ \
   E(kColorBookmarkText, ThemeProperties::COLOR_BOOKMARK_TEXT, \
     kChromeColorsStart) \
+  E(kColorBookmarkFavicon, ThemeProperties::COLOR_BOOKMARK_FAVICON) \
+  E_CPONLY(kColorBookmarkFolderIcon) \
   /* Download Shelf output colors. */ \
   E(kColorDownloadShelf, ThemeProperties::COLOR_DOWNLOAD_SHELF) \
   E(kColorDownloadShelfButtonBackground, \
@@ -59,6 +61,10 @@
   E(kColorOmniboxText, ThemeProperties::COLOR_OMNIBOX_TEXT) \
   E(kColorOmniboxTextDimmed, ThemeProperties::COLOR_OMNIBOX_TEXT_DIMMED) \
   /* Tab output colors. */ \
+  E_CPONLY(kColorTabForegroundActiveFrameActive) \
+  E_CPONLY(kColorTabForegroundActiveFrameInactive) \
+  E_CPONLY(kColorTabForegroundInactiveFrameActive) \
+  E_CPONLY(kColorTabForegroundInactiveFrameInactive) \
   E(kColorTabBackgroundActiveFrameActive, \
     ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE) \
   E(kColorTabBackgroundActiveFrameInactive, \
@@ -92,17 +98,6 @@
   E(kColorTabGroupContextMenuOrange, \
     ThemeProperties::COLOR_TAB_GROUP_CONTEXT_MENU_ORANGE)
 
-#define UNTESTABLE_COLOR_IDS \
-  /* Tab output colors. */ \
-  E(kColorTabForegroundActiveFrameActive, \
-    ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE) \
-  E(kColorTabForegroundActiveFrameInactive, \
-    ThemeProperties::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_INACTIVE) \
-  E(kColorTabForegroundInactiveFrameActive, \
-    ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE) \
-  E(kColorTabForegroundInactiveFrameInactive, \
-    ThemeProperties::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE)
-
 #if BUILDFLAG(IS_WIN)
 #define CHROME_NATIVE_COLOR_IDS \
     /* The colors of the 1px border around the window on Windows 10. */ \
@@ -120,7 +115,6 @@ enum ChromeColorIds : ui::ColorId {
   kChromeColorsStart = ui::kUiColorsEnd,
 
   CHROME_COLOR_IDS
-  UNTESTABLE_COLOR_IDS
 
   kChromeColorsEnd,
 };

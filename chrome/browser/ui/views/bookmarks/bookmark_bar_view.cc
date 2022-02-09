@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
@@ -1762,17 +1763,11 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
         insets.set_top(0);
         insets.set_bottom(0);
         button->SetBorder(views::CreateEmptyBorder(insets));
-      } else if (tp->HasCustomColor(ThemeProperties::COLOR_BOOKMARK_TEXT)) {
-        button->SetImageModel(
-            views::Button::STATE_NORMAL,
-            chrome::GetBookmarkFolderIcon(
-                chrome::BookmarkFolderIconType::kNormal,
-                color_utils::DeriveDefaultIconColor(text_color)));
       } else {
-        button->SetImageModel(
-            views::Button::STATE_NORMAL,
-            chrome::GetBookmarkFolderIcon(
-                chrome::BookmarkFolderIconType::kNormal, ui::kColorIcon));
+        button->SetImageModel(views::Button::STATE_NORMAL,
+                              chrome::GetBookmarkFolderIcon(
+                                  chrome::BookmarkFolderIconType::kNormal,
+                                  kColorBookmarkFolderIcon));
       }
     }
 
@@ -1787,7 +1782,7 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
     bool themify_icon = node->url().SchemeIs(content::kChromeUIScheme);
     gfx::ImageSkia favicon = model_->GetFavicon(node).AsImageSkia();
     if (favicon.isNull()) {
-      if (ui::TouchUiController::Get()->touch_ui() && GetThemeProvider()) {
+      if (ui::TouchUiController::Get()->touch_ui() && tp) {
         // This favicon currently does not match the default favicon icon used
         // elsewhere in the codebase.
         // See https://crbug/814447
@@ -1802,10 +1797,9 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
       themify_icon = true;
     }
 
-    if (themify_icon && tp &&
-        tp->HasCustomColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON)) {
+    if (themify_icon && tp) {
       favicon = gfx::ImageSkiaOperations::CreateColorMask(
-          favicon, tp->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON));
+          favicon, tp->GetColor(ThemeProperties::COLOR_BOOKMARK_FAVICON));
     }
 
     button->SetImageModel(views::Button::STATE_NORMAL,
@@ -2141,26 +2135,14 @@ void BookmarkBarView::UpdateAppearanceForTheme() {
       theme_provider->GetColor(ThemeProperties::COLOR_BOOKMARK_TEXT);
   other_bookmarks_button_->SetEnabledTextColors(color);
   managed_bookmarks_button_->SetEnabledTextColors(color);
-  if (theme_provider->HasCustomColor(ThemeProperties::COLOR_BOOKMARK_TEXT)) {
-    SkColor folder_color = color_utils::DeriveDefaultIconColor(color);
-    other_bookmarks_button_->SetImageModel(
-        views::Button::STATE_NORMAL,
-        chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
-                                      folder_color));
-    managed_bookmarks_button_->SetImageModel(
-        views::Button::STATE_NORMAL,
-        chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kManaged,
-                                      folder_color));
-  } else {
-    other_bookmarks_button_->SetImageModel(
-        views::Button::STATE_NORMAL,
-        chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
-                                      ui::kColorIcon));
-    managed_bookmarks_button_->SetImageModel(
-        views::Button::STATE_NORMAL,
-        chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kManaged,
-                                      ui::kColorIcon));
-  }
+  other_bookmarks_button_->SetImageModel(
+      views::Button::STATE_NORMAL,
+      chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kNormal,
+                                    kColorBookmarkFolderIcon));
+  managed_bookmarks_button_->SetImageModel(
+      views::Button::STATE_NORMAL,
+      chrome::GetBookmarkFolderIcon(chrome::BookmarkFolderIconType::kManaged,
+                                    kColorBookmarkFolderIcon));
 
   if (apps_page_shortcut_->GetVisible())
     apps_page_shortcut_->SetEnabledTextColors(color);

@@ -327,6 +327,15 @@ SkColor ThemeHelper::GetDefaultColor(
                     incognito, theme_supplier);
   };
   switch (id) {
+    case TP::COLOR_BOOKMARK_FAVICON: {
+      SkColor color;
+      if (theme_supplier &&
+          theme_supplier->GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, &color)) {
+        return color;
+      } else {
+        return SK_ColorTRANSPARENT;
+      }
+    }
     case TP::COLOR_BOOKMARK_TEXT:
     case TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE:
     case TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_INACTIVE:

@@ -94,6 +94,7 @@ absl::optional<ui::ColorId> ThemeProviderColorIdToColorId(int color_id) {
       {TP::COLOR_ACCENT_BORDER_INACTIVE, kColorAccentBorderInactive},
 #endif  // BUILDFLAG(IS_WIN)
       {TP::COLOR_BOOKMARK_TEXT, kColorBookmarkText},
+      {TP::COLOR_BOOKMARK_FAVICON, kColorBookmarkFavicon},
       {TP::COLOR_DOWNLOAD_SHELF, kColorDownloadShelf},
       {TP::COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND,
        kColorDownloadShelfButtonBackground},
