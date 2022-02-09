@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "ui/accessibility/ax_mode.h"
 

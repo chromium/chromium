@@ -53,6 +53,7 @@ class UpdateLayout;
 class Resource;
 class Document;
 class DocumentLoader;
+enum class FrameDetachType;
 class InspectedFrames;
 class InspectorResourceContentLoader;
 class LocalFrame;
