@@ -36,10 +36,6 @@ bool TestThemeProvider::HasCustomImage(int id) const {
   return false;
 }
 
-bool TestThemeProvider::HasCustomColor(int id) const {
-  return colors_.find(id) != colors_.end();
-}
-
 base::RefCountedMemory* TestThemeProvider::GetRawData(
     int id,
     ui::ResourceScaleFactor scale_factor) const {

@@ -517,8 +517,6 @@ TEST_F(ThemeServiceTest, GetColorForToolbarButton) {
       ThemeService::GetThemeProviderForProfile(profile());
   SkColor default_toolbar_button_color =
       theme_provider.GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
-  EXPECT_FALSE(theme_provider.HasCustomColor(
-      ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON));
 
   ThemeScoper scoper1 = LoadUnpackedTheme(
       "extensions/theme_test_toolbar_button_color/manifest.json");
@@ -527,8 +525,6 @@ TEST_F(ThemeServiceTest, GetColorForToolbarButton) {
   SkColor toolbar_button_explicit_color =
       theme_provider.GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
   EXPECT_NE(toolbar_button_explicit_color, default_toolbar_button_color);
-  EXPECT_TRUE(theme_provider.HasCustomColor(
-      ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON));
 
   ThemeScoper scoper2 = LoadUnpackedTheme(
       "extensions/theme_test_toolbar_button_tint/manifest.json");
@@ -538,8 +534,6 @@ TEST_F(ThemeServiceTest, GetColorForToolbarButton) {
       theme_provider.GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
   EXPECT_NE(toolbar_button_tinted_color, default_toolbar_button_color);
   EXPECT_NE(toolbar_button_tinted_color, toolbar_button_explicit_color);
-  EXPECT_TRUE(theme_provider.HasCustomColor(
-      ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON));
 }
 
 TEST_F(ThemeServiceTest, NTPLogoAlternate) {
