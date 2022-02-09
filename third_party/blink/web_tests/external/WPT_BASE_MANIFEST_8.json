@@ -84298,7 +84298,7 @@
       ]
      ],
      "lab-005.html": [
-      "69285d583252a65de89e4078de511da0b6504d24",
+      "532d84f14b4426f712f2b8edfef823bff409807b",
       [
        null,
        [
@@ -244118,7 +244118,7 @@
       []
      ],
      "lab-005-ref.html": [
-      "7c6fd236d428e88df6cd91fe44f943a8dcc2bd9f",
+      "d7b01c4c867dab4d95fec506cd3b8318f26f7498",
       []
      ],
      "lab-006-ref.html": [
@@ -315147,7 +315147,7 @@
        []
       ],
       "window-move.html": [
-       "9b2a7f9ad9ed974a48f6e27bc73a7c8b79ad7f93",
+       "fdb12942b7488c917d1d428c9a4c96fa30303f51",
        []
       ],
       "window-open-during-prerendering.html": [
@@ -505413,7 +505413,7 @@
       ]
      ],
      "restriction-window-move.html": [
-      "30899ccca24f4ecb93fec519cf300398126710e3",
+      "fca3b537db4e6d1c8a85516e2727c57951ad7bef",
       [
        null,
        {
@@ -529238,7 +529238,7 @@
      ]
     ],
     "videoFrame-construction.any.js": [
-     "6f151f51f28eb1f0eaee5615ade256b994a86cb2",
+     "268b803ff4064dcaadda69356d7a60c22a03dd2e",
      [
       "webcodecs/videoFrame-construction.any.html",
       {
