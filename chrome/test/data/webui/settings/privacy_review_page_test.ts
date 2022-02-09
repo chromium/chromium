@@ -21,6 +21,52 @@ import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
  */
 const PRIVACY_REVIEW_STEPS = 4;
 
+/**
+ * Equivalent of the user manually navigating to the corresponding step via
+ * typing the URL and step parameter in the Omnibox.
+ */
+function navigateToStep(step: PrivacyReviewStep) {
+  Router.getInstance().navigateTo(
+      routes.PRIVACY_REVIEW,
+      /* opt_dynamicParameters */ new URLSearchParams('step=' + step));
+  flush();
+}
+
+/**
+ * Set all relevant sync status and fire a changed event and flush the UI.
+ */
+function setupSync({
+  syncBrowserProxy,
+  syncOn,
+  syncAllDataTypes,
+  typedUrlsSynced,
+}: {
+  syncBrowserProxy: TestSyncBrowserProxy,
+  syncAllDataTypes: boolean,
+  typedUrlsSynced: boolean,
+  syncOn: boolean,
+}) {
+  if (syncAllDataTypes) {
+    assertTrue(typedUrlsSynced);
+  }
+  if (typedUrlsSynced) {
+    assertTrue(syncOn);
+  }
+  syncBrowserProxy.testSyncStatus = {
+    signedIn: syncOn,
+    hasError: false,
+    statusAction: StatusAction.NO_ACTION,
+  };
+  webUIListenerCallback('sync-status-changed', syncBrowserProxy.testSyncStatus);
+
+  const event = getSyncAllPrefs();
+  // Overwrite datatypes needed in tests.
+  event.syncAllDataTypes = syncAllDataTypes;
+  event.typedUrlsSynced = typedUrlsSynced;
+  webUIListenerCallback('sync-prefs-changed', event);
+  flush();
+}
+
 suite('PrivacyReviewPage', function() {
   let page: SettingsPrivacyReviewPageElement;
   let syncBrowserProxy: TestSyncBrowserProxy;
@@ -94,53 +140,8 @@ suite('PrivacyReviewPage', function() {
     return promise;
   }
 
-  /**
-   * Equivalent of the user manually navigating to the corresponding step via
-   * typing the URL and step parameter in the Omnibox.
-   */
-  function navigateToStep(step: PrivacyReviewStep) {
-    Router.getInstance().navigateTo(
-        routes.PRIVACY_REVIEW,
-        /* opt_dynamicParameters */ new URLSearchParams('step=' + step));
-    flush();
-  }
-
   function assertQueryParameter(step: PrivacyReviewStep) {
     assertEquals(step, Router.getInstance().getQueryParameters().get('step'));
-  }
-
-  /**
-   * Set all relevant sync status and fire a changed event and flush the UI.
-   */
-  function setupSync({
-    syncOn,
-    syncAllDataTypes,
-    typedUrlsSynced,
-  }: {
-    syncAllDataTypes: boolean,
-    typedUrlsSynced: boolean,
-    syncOn: boolean,
-  }) {
-    if (syncAllDataTypes) {
-      assertTrue(typedUrlsSynced);
-    }
-    if (typedUrlsSynced) {
-      assertTrue(syncOn);
-    }
-    syncBrowserProxy.testSyncStatus = {
-      signedIn: syncOn,
-      hasError: false,
-      statusAction: StatusAction.NO_ACTION,
-    };
-    webUIListenerCallback(
-        'sync-status-changed', syncBrowserProxy.testSyncStatus);
-
-    const event = getSyncAllPrefs();
-    // Overwrite datatypes needed in tests.
-    event.syncAllDataTypes = syncAllDataTypes;
-    event.typedUrlsSynced = typedUrlsSynced;
-    webUIListenerCallback('sync-prefs-changed', event);
-    flush();
   }
 
   function shouldShowHistorySyncCard(): boolean {
@@ -373,6 +374,7 @@ suite('PrivacyReviewPage', function() {
     expectedMetric: PrivacyGuideSettingsStates,
   }) {
     setupSync({
+      syncBrowserProxy: syncBrowserProxy,
       syncOn: true,
       syncAllDataTypes: historySyncStartOn,
       typedUrlsSynced: historySyncStartOn,
@@ -516,6 +518,7 @@ suite('PrivacyReviewPage', function() {
     assertEquals(actionResult, 'Settings.PrivacyGuide.NextClickWelcome');
 
     setupSync({
+      syncBrowserProxy: syncBrowserProxy,
       syncOn: true,
       syncAllDataTypes: true,
       typedUrlsSynced: true,
@@ -571,6 +574,7 @@ suite('PrivacyReviewPage', function() {
   test('msbbForwardNavigationSyncOn', async function() {
     navigateToStep(PrivacyReviewStep.MSBB);
     setupSync({
+      syncBrowserProxy: syncBrowserProxy,
       syncOn: true,
       syncAllDataTypes: true,
       typedUrlsSynced: true,
@@ -592,6 +596,7 @@ suite('PrivacyReviewPage', function() {
   test('msbbForwardNavigationSyncOff', function() {
     navigateToStep(PrivacyReviewStep.MSBB);
     setupSync({
+      syncBrowserProxy: syncBrowserProxy,
       syncOn: false,
       syncAllDataTypes: false,
       typedUrlsSynced: false,
@@ -605,6 +610,7 @@ suite('PrivacyReviewPage', function() {
   test('historySyncBackNavigation', async function() {
     navigateToStep(PrivacyReviewStep.HISTORY_SYNC);
     setupSync({
+      syncBrowserProxy: syncBrowserProxy,
       syncOn: true,
       syncAllDataTypes: true,
       typedUrlsSynced: true,
@@ -654,6 +660,7 @@ suite('PrivacyReviewPage', function() {
   test('historySyncNavigatesAwayOnSyncOff', function() {
     navigateToStep(PrivacyReviewStep.HISTORY_SYNC);
     setupSync({
+      syncBrowserProxy: syncBrowserProxy,
       syncOn: true,
       syncAllDataTypes: true,
       typedUrlsSynced: true,
@@ -662,6 +669,7 @@ suite('PrivacyReviewPage', function() {
 
     // User disables sync while history sync card is shown.
     setupSync({
+      syncBrowserProxy: syncBrowserProxy,
       syncOn: false,
       syncAllDataTypes: false,
       typedUrlsSynced: false,
@@ -671,12 +679,14 @@ suite('PrivacyReviewPage', function() {
 
   test('historySyncNotReachableWhenSyncOff', function() {
     setupSync({
+      syncBrowserProxy: syncBrowserProxy,
       syncOn: true,
       syncAllDataTypes: true,
       typedUrlsSynced: true,
     });
     navigateToStep(PrivacyReviewStep.HISTORY_SYNC);
     setupSync({
+      syncBrowserProxy: syncBrowserProxy,
       syncOn: false,
       syncAllDataTypes: false,
       typedUrlsSynced: false,
@@ -689,6 +699,7 @@ suite('PrivacyReviewPage', function() {
       async function() {
         navigateToStep(PrivacyReviewStep.HISTORY_SYNC);
         setupSync({
+          syncBrowserProxy: syncBrowserProxy,
           syncOn: true,
           syncAllDataTypes: true,
           typedUrlsSynced: true,
@@ -714,6 +725,7 @@ suite('PrivacyReviewPage', function() {
       'historySyncCardForwardNavigationShouldHideSafeBrowsingCard', function() {
         navigateToStep(PrivacyReviewStep.HISTORY_SYNC);
         setupSync({
+          syncBrowserProxy: syncBrowserProxy,
           syncOn: true,
           syncAllDataTypes: true,
           typedUrlsSynced: true,
@@ -729,6 +741,7 @@ suite('PrivacyReviewPage', function() {
   test('safeBrowsingCardBackNavigationSyncOn', async function() {
     navigateToStep(PrivacyReviewStep.SAFE_BROWSING);
     setupSync({
+      syncBrowserProxy: syncBrowserProxy,
       syncOn: true,
       syncAllDataTypes: true,
       typedUrlsSynced: true,
@@ -782,6 +795,7 @@ suite('PrivacyReviewPage', function() {
   test('safeBrowsingCardBackNavigationSyncOff', async function() {
     navigateToStep(PrivacyReviewStep.SAFE_BROWSING);
     setupSync({
+      syncBrowserProxy: syncBrowserProxy,
       syncOn: false,
       syncAllDataTypes: false,
       typedUrlsSynced: false,
@@ -851,6 +865,7 @@ suite('PrivacyReviewPage', function() {
   test('cookiesCardBackNavigationShouldShowSafeBrowsingCard', async function() {
     navigateToStep(PrivacyReviewStep.COOKIES);
     setupSync({
+      syncBrowserProxy: syncBrowserProxy,
       syncOn: true,
       syncAllDataTypes: true,
       typedUrlsSynced: true,
@@ -903,6 +918,7 @@ suite('PrivacyReviewPage', function() {
   test('cookiesCardBackNavigationShouldHideSafeBrowsingCard', function() {
     navigateToStep(PrivacyReviewStep.COOKIES);
     setupSync({
+      syncBrowserProxy: syncBrowserProxy,
       syncOn: true,
       syncAllDataTypes: true,
       typedUrlsSynced: true,
