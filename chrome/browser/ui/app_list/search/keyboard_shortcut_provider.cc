@@ -88,7 +88,7 @@ void KeyboardShortcutProvider::OnSearchComplete(
   SearchProvider::Results results;
   for (size_t i = 0; i < std::min(candidates.size(), kMaxResults); ++i) {
     results.push_back(std::make_unique<KeyboardShortcutResult>(
-        candidates[i].first, candidates[i].second));
+        profile_, candidates[i].first, candidates[i].second));
   }
   SwapResults(&results);
 }
