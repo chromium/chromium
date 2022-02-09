@@ -53,7 +53,7 @@ AccessiblePaneView::AccessiblePaneView()
 
 AccessiblePaneView::~AccessiblePaneView() {
   if (pane_has_focus_) {
-    RemovePaneFocus();
+    focus_manager_->RemoveFocusChangeListener(this);
   }
 }
 
