@@ -3595,44 +3595,6 @@ TEST_F(ProcessAlternativeServicesTest, ProcessAltSvcClear) {
   EXPECT_TRUE(alternatives.empty());
 }
 
-TEST_F(ProcessAlternativeServicesTest, ProcessAltSvcQuicOldFormat) {
-  quic::ParsedQuicVersionVector versions_with_quic_handshake;
-  for (const auto& version : quic::AllSupportedVersions()) {
-    if (version.UsesQuicCrypto() && version.SupportsGoogleAltSvcFormat()) {
-      versions_with_quic_handshake.push_back(version);
-    }
-  }
-
-  quic_context_.params()->supported_versions = versions_with_quic_handshake;
-  session_ =
-      std::make_unique<HttpNetworkSession>(session_params_, session_context_);
-  url::SchemeHostPort origin(url::kHttpsScheme, "example.com", 443);
-
-  NetworkIsolationKey network_isolation_key(
-      SchemefulSite(GURL("https://example.com")),
-      SchemefulSite(GURL("https://example.com")));
-
-  scoped_refptr<HttpResponseHeaders> headers(
-      base::MakeRefCounted<HttpResponseHeaders>(""));
-  headers->AddHeader("alt-svc", "quic=\":443\"; v=\"46,43\"");
-
-  session_->http_stream_factory()->ProcessAlternativeServices(
-      session_.get(), network_isolation_key, headers.get(), origin);
-
-  AlternativeServiceInfoVector alternatives =
-      http_server_properties_.GetAlternativeServiceInfos(origin,
-                                                         network_isolation_key);
-  ASSERT_EQ(1u, alternatives.size());
-  EXPECT_EQ(kProtoQUIC, alternatives[0].protocol());
-  EXPECT_EQ(HostPortPair("example.com", 443), alternatives[0].host_port_pair());
-  EXPECT_EQ(versions_with_quic_handshake.size(),
-            alternatives[0].advertised_versions().size());
-  for (quic::ParsedQuicVersion version : versions_with_quic_handshake) {
-    EXPECT_TRUE(base::Contains(alternatives[0].advertised_versions(), version))
-        << version;
-  }
-}
-
 TEST_F(ProcessAlternativeServicesTest, ProcessAltSvcQuicIetf) {
   quic_context_.params()->supported_versions = quic::AllSupportedVersions();
   session_ =

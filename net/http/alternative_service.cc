@@ -159,17 +159,9 @@ AlternativeServiceInfoVector ProcessAlternativeServices(
 
     NextProto protocol =
         NextProtoFromString(alternative_service_entry.protocol_id);
-    // Check if QUIC version is supported. Filter supported QUIC versions.
     quic::ParsedQuicVersionVector advertised_versions;
     if (protocol == kProtoQUIC) {
-      if (!IsProtocolEnabled(protocol, is_http2_enabled, is_quic_enabled))
-        continue;
-      if (!alternative_service_entry.version.empty()) {
-        advertised_versions = FilterSupportedAltSvcVersions(
-            alternative_service_entry, supported_quic_versions);
-        if (advertised_versions.empty())
-          continue;
-      }
+      continue;  // Ignore legacy QUIC alt-svc advertisements.
     } else if (!IsAlternateProtocolValid(protocol)) {
       quic::ParsedQuicVersion version = ParsedQuicVersionFromAlpn(
           alternative_service_entry.protocol_id, supported_quic_versions);

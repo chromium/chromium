@@ -3478,38 +3478,24 @@ void HttpStreamFactoryJobControllerTest::TestAltSvcVersionSelection(
 }
 
 TEST_F(HttpStreamFactoryJobControllerTest,
-       AltSvcVersionSelectionWithOldFormatFirst) {
-  TestAltSvcVersionSelection(
-      "quic=\":443\"; ma=2592000; v=\"46,43\","
-      "h3-Q050=\":443\"; ma=2592000,"
-      "h3-Q049=\":443\"; ma=2592000,"
-      "h3-Q048=\":443\"; ma=2592000,"
-      "h3-Q046=\":443\"; ma=2592000,"
-      "h3-Q043=\":443\"; ma=2592000,"
-      "h3-T050=\":443\"; ma=2592000",
-      quic::ParsedQuicVersion::Q046(), quic::AllSupportedVersions());
-}
-
-TEST_F(HttpStreamFactoryJobControllerTest,
-       AltSvcVersionSelectionWithNewFormatFirst) {
+       AltSvcVersionSelectionFindsFirstMatch) {
   TestAltSvcVersionSelection(
       "h3-Q050=\":443\"; ma=2592000,"
       "h3-Q049=\":443\"; ma=2592000,"
       "h3-Q048=\":443\"; ma=2592000,"
       "h3-Q046=\":443\"; ma=2592000,"
-      "h3-Q043=\":443\"; ma=2592000,"
-      "h3-T050=\":443\"; ma=2592000,"
-      "quic=\":443\"; ma=2592000; v=\"46,43\"",
+      "h3-Q043=\":443\"; ma=2592000,",
       quic::ParsedQuicVersion::Q050(), quic::AllSupportedVersions());
 }
 
 TEST_F(HttpStreamFactoryJobControllerTest,
-       AltSvcVersionSelectionWithInverseOrderingOldFormat) {
-  // Server prefers Q043 but client prefers Q046.
+       AltSvcVersionSelectionFindsFirstMatchInverse) {
   TestAltSvcVersionSelection(
-      "quic=\":443\"; ma=2592000; v=\"43,46\"", quic::ParsedQuicVersion::Q043(),
-      quic::ParsedQuicVersionVector{quic::ParsedQuicVersion::Q046(),
-                                    quic::ParsedQuicVersion::Q043()});
+      "h3-Q043=\":443\"; ma=2592000,"
+      "h3-Q046=\":443\"; ma=2592000,"
+      "h3-Q048=\":443\"; ma=2592000,"
+      "h3-Q049=\":443\"; ma=2592000,",
+      quic::ParsedQuicVersion::Q043(), quic::AllSupportedVersions());
 }
 
 TEST_F(HttpStreamFactoryJobControllerTest,
@@ -3520,16 +3506,6 @@ TEST_F(HttpStreamFactoryJobControllerTest,
       "h3-Q046=\":443\"; ma=2592000",
       quic::ParsedQuicVersion::Q043(),
       quic::ParsedQuicVersionVector{quic::ParsedQuicVersion::Q046(),
-                                    quic::ParsedQuicVersion::Q043()});
-}
-
-TEST_F(HttpStreamFactoryJobControllerTest,
-       AltSvcVersionSelectionWithInvalidOldFormat) {
-  // Q043 can use the old format but Q050 cannot. Make sure the client ignores
-  // Q050 even though it is preferred.
-  TestAltSvcVersionSelection(
-      "quic=\":443\"; ma=2592000; v=\"50,43\"", quic::ParsedQuicVersion::Q043(),
-      quic::ParsedQuicVersionVector{quic::ParsedQuicVersion::Q050(),
                                     quic::ParsedQuicVersion::Q043()});
 }
 
