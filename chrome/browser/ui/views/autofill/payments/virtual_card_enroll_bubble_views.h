@@ -46,10 +46,6 @@ class VirtualCardEnrollBubbleViews : public AutofillBubbleBase,
   void OnWidgetClosing(views::Widget* widget) override;
 
  protected:
-  // Create the dialog's content view containing everything except for the
-  // footnote.
-  virtual std::unique_ptr<views::View> CreateMainContentView();
-
   VirtualCardEnrollBubbleController* controller() const { return controller_; }
 
   // LocationBarBubbleDelegateView:

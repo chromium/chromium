@@ -115,21 +115,18 @@ void VirtualCardEnrollBubbleViews::OnWidgetClosing(views::Widget* widget) {
 
 VirtualCardEnrollBubbleViews::~VirtualCardEnrollBubbleViews() = default;
 
-std::unique_ptr<views::View>
-VirtualCardEnrollBubbleViews::CreateMainContentView() {
+void VirtualCardEnrollBubbleViews::Init() {
   ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
-
-  auto view = std::make_unique<views::BoxLayoutView>();
-  view->SetOrientation(views::BoxLayout::Orientation::kVertical);
-  view->SetBetweenChildSpacing(
-      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL));
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
+      provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
 
   // If applicable, add the explanation label.  Appears above the card
   // info.
   std::u16string explanation = controller_->GetExplanatoryMessage();
   if (!explanation.empty()) {
     auto* const explanation_label =
-        view->AddChildView(std::make_unique<views::StyledLabel>());
+        AddChildView(std::make_unique<views::StyledLabel>());
     explanation_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     explanation_label->SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL);
     explanation_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
@@ -150,7 +147,7 @@ VirtualCardEnrollBubbleViews::CreateMainContentView() {
 
   // Add the card network icon, 'Virtual card', and obfuscated last four digits.
   auto* description_view =
-      view->AddChildView(std::make_unique<views::BoxLayoutView>());
+      AddChildView(std::make_unique<views::BoxLayoutView>());
   description_view->SetBetweenChildSpacing(
       provider->GetDistanceMetric(views::DISTANCE_RELATED_BUTTON_HORIZONTAL));
   description_view->SetMainAxisAlignment(
@@ -177,25 +174,22 @@ VirtualCardEnrollBubbleViews::CreateMainContentView() {
 
   auto* const card_identifier_label =
       description_view->AddChildView(std::make_unique<views::StyledLabel>());
-  card_identifier_label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
+  card_identifier_label->SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL);
   card_identifier_label->SetDefaultTextStyle(views::style::STYLE_PRIMARY);
   card_identifier_label->SetText(card_label_text);
 
   uint32_t length =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_VIRTUAL_CARD_ENTRY_PREFIX_TWO)
           .length() +
-      card_info.length();
+      card_info.length() +
+      1;  // one added for space between string and card info.
+
   uint32_t offset = card_label_text.length() - length;
 
   views::StyledLabel::RangeStyleInfo linked_styling;
   linked_styling.text_style = views::style::STYLE_SECONDARY;
   card_identifier_label->AddStyleRange(gfx::Range(offset, offset + length),
                                        linked_styling);
-  return view;
-}
-
-void VirtualCardEnrollBubbleViews::Init() {
-  AddChildView(CreateMainContentView());
 }
 
 std::unique_ptr<views::View>
