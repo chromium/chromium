@@ -1192,7 +1192,7 @@ const base::Feature kOriginAgentClusterDefaultEnabled{
     "OriginAgentClusterDefaultEnable", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kOriginAgentClusterDefaultWarning{
-    "OriginAgentClusterDefaultWarning", base::FEATURE_DISABLED_BY_DEFAULT};
+    "OriginAgentClusterDefaultWarning", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Allow third-party delegation of client hint information.
 const base::Feature kClientHintThirdPartyDelegation{
