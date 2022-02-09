@@ -589,6 +589,7 @@ template("apple_toolchain") {
 
         command =
             "$_env_vars $python_path $_tool -module-name {{module_name}} " +
+            "-root-dir " + rebase_path("//", root_build_dir) + " " +
             "-object-dir $_objects_dir -pch-output-dir $_pch_output_dir " +
             "-module-path {{target_gen_dir}}/{{module_name}}.swiftmodule " +
             "-header-path {{target_gen_dir}}/{{target_output_name}}.h " +
