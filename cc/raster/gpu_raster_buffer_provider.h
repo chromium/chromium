@@ -132,14 +132,6 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
     const bool depends_on_at_raster_decodes_;
     const bool depends_on_hardware_accelerated_jpeg_candidates_;
     const bool depends_on_hardware_accelerated_webp_candidates_;
-    const gpu::SyncToken before_raster_sync_token_;
-    const bool texture_is_overlay_candidate_;
-
-    gpu::Mailbox mailbox_;
-    // A SyncToken to be returned from the worker thread, and waited on before
-    // using the rastered resource.
-    gpu::SyncToken after_raster_sync_token_;
-
     base::TimeTicks creation_time_;
   };
 

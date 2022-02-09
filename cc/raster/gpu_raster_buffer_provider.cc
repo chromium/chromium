@@ -91,10 +91,7 @@ GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
       depends_on_hardware_accelerated_jpeg_candidates_(
           depends_on_hardware_accelerated_jpeg_candidates),
       depends_on_hardware_accelerated_webp_candidates_(
-          depends_on_hardware_accelerated_webp_candidates),
-      before_raster_sync_token_(backing->returned_sync_token),
-      texture_is_overlay_candidate_(backing->overlay_candidate),
-      mailbox_(backing->mailbox) {
+          depends_on_hardware_accelerated_webp_candidates) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Only do this in Chrome OS because:
   //   1) We will use this timestamp to measure raster scheduling delay and we
@@ -106,17 +103,7 @@ GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
 #endif
 }
 
-GpuRasterBufferProvider::RasterBufferImpl::~RasterBufferImpl() {
-  // This SyncToken was created on the worker context after rastering the
-  // texture content.
-  backing_->mailbox_sync_token = after_raster_sync_token_;
-  if (after_raster_sync_token_.HasData()) {
-    // The returned SyncToken was waited on in Playback. We know Playback
-    // happened if the |after_raster_sync_token_| was set.
-    backing_->returned_sync_token = gpu::SyncToken();
-  }
-  backing_->mailbox = mailbox_;
-}
+GpuRasterBufferProvider::RasterBufferImpl::~RasterBufferImpl() = default;
 
 void GpuRasterBufferProvider::RasterBufferImpl::Playback(
     const RasterSource* raster_source,
@@ -134,8 +121,10 @@ void GpuRasterBufferProvider::RasterBufferImpl::Playback(
       client_->worker_context_provider_->RasterInterface();
   PlaybackOnWorkerThread(raster_source, raster_full_rect, raster_dirty_rect,
                          new_content_id, transform, playback_settings, url);
-  after_raster_sync_token_ =
+
+  backing_->mailbox_sync_token =
       viz::ClientResourceProvider::GenerateSyncTokenHelper(ri);
+  backing_->returned_sync_token = gpu::SyncToken();
 }
 
 bool GpuRasterBufferProvider::RasterBufferImpl::
@@ -356,25 +345,25 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
   gpu::raster::RasterInterface* ri =
       client_->worker_context_provider_->RasterInterface();
   bool mailbox_needs_clear = false;
-  if (mailbox_.IsZero()) {
-    DCHECK(!before_raster_sync_token_.HasData());
+  if (backing_->mailbox.IsZero()) {
+    DCHECK(!backing_->returned_sync_token.HasData());
     auto* sii = client_->worker_context_provider_->SharedImageInterface();
     uint32_t flags = gpu::SHARED_IMAGE_USAGE_DISPLAY |
                      gpu::SHARED_IMAGE_USAGE_RASTER |
                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-    if (texture_is_overlay_candidate_) {
+    if (backing_->overlay_candidate) {
       flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     } else if (client_->is_using_raw_draw_) {
       flags |= gpu::SHARED_IMAGE_USAGE_RAW_DRAW;
     }
-    mailbox_ =
+    backing_->mailbox =
         sii->CreateSharedImage(resource_format_, resource_size_, color_space_,
                                kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
                                flags, gpu::kNullSurfaceHandle);
     mailbox_needs_clear = true;
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
   } else {
-    ri->WaitSyncTokenCHROMIUM(before_raster_sync_token_.GetConstData());
+    ri->WaitSyncTokenCHROMIUM(backing_->returned_sync_token.GetConstData());
   }
 
   // Assume legacy MSAA if sample count is positive.
@@ -386,12 +375,12 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
   // support LCD text, so disable LCD text for Raw Draw backings.
   // TODO(penghuang): remove it when GrSlug can be serialized.
   bool is_raw_draw_backing =
-      client_->is_using_raw_draw_ && !texture_is_overlay_candidate_;
+      client_->is_using_raw_draw_ && !backing_->overlay_candidate;
   bool use_lcd_text = playback_settings.use_lcd_text && !is_raw_draw_backing;
   ri->BeginRasterCHROMIUM(raster_source->background_color(),
                           mailbox_needs_clear,
                           playback_settings.msaa_sample_count, msaa_mode,
-                          use_lcd_text, color_space_, mailbox_.name);
+                          use_lcd_text, color_space_, backing_->mailbox.name);
   gfx::Vector2dF recording_to_raster_scale = transform.scale();
   recording_to_raster_scale.Scale(1 / raster_source->recording_scale_factor());
   gfx::Size content_size = raster_source->GetContentSize(transform.scale());
