@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/strings/string_split.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager.h"
 #include "chrome/browser/nearby_sharing/file_attachment.h"
 #include "chrome/browser/nearby_sharing/nearby_per_session_discovery_manager.h"
@@ -75,6 +76,9 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
 
+  html_source->AddBoolean(
+      "isOnePageOnboardingEnabled",
+      base::FeatureList::IsEnabled(features::kNearbySharingOnePageOnboarding));
   RegisterNearbySharedStrings(html_source);
   html_source->UseStringsJs();
 

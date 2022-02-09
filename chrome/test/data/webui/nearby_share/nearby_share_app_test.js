@@ -90,12 +90,28 @@ suite('ShareAppTest', function() {
 
     test('renders onboarding page when disabled', async function() {
       sharedSetup(/*enabled=*/ false, /*isOnboardingComplete=*/ false);
+      loadTimeData.overrideValues({
+        'isOnePageOnboardingEnabled': false,
+      });
       assertEquals('NEARBY-SHARE-APP', shareAppElement.tagName);
       assertEquals(null, shareAppElement.$$('.active'));
       // We have to wait for settings to return from the mojo after which
       // the app will route to the correct page.
       await waitAfterNextRender(shareAppElement);
       assertTrue(isPageActive('onboarding'));
+    });
+
+    test('renders one-page onboarding page when disabled', async function() {
+      sharedSetup(/*enabled=*/ false, /*isOnboardingComplete=*/ false);
+      loadTimeData.overrideValues({
+        'isOnePageOnboardingEnabled': true,
+      });
+      assertEquals('NEARBY-SHARE-APP', shareAppElement.tagName);
+      assertEquals(null, shareAppElement.$$('.active'));
+      // We have to wait for settings to return from the mojo after which
+      // the app will route to the correct page.
+      await waitAfterNextRender(shareAppElement);
+      assertTrue(isPageActive('onboarding-one'));
     });
 
     test('changes page on event', async function() {
@@ -105,13 +121,13 @@ suite('ShareAppTest', function() {
       // We have to wait for settings to return from the mojo after which
       // the app will route to the correct page.
       await waitAfterNextRender(shareAppElement);
-      assertTrue(isPageActive('onboarding'));
+      assertTrue(isPageActive('onboarding-one'));
 
       shareAppElement.fire('change-page', {page: 'discovery'});
 
       // Discovery page should now be active, other pages should not.
       assertTrue(isPageActive('discovery'));
-      assertFalse(isPageActive('onboarding'));
+      assertFalse(isPageActive('onboarding-one'));
     });
   });
 });

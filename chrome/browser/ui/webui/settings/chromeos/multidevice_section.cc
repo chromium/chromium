@@ -577,6 +577,9 @@ void MultiDeviceSection::AddLoadTimeData(
       SessionControllerClientImpl::ShouldLockScreenAutomatically();
   html_source->AddBoolean("isChromeosScreenLockEnabled",
                           is_screen_lock_enabled);
+  html_source->AddBoolean("isOnePageOnboardingEnabled",
+                          base::FeatureList::IsEnabled(
+                              ::features::kNearbySharingOnePageOnboarding));
 }
 
 void MultiDeviceSection::AddHandlers(content::WebUI* web_ui) {

@@ -8,6 +8,7 @@
  * of the ChromeOS share sheet.
  */
 
+import './shared/nearby_onboarding_one_page.m.js';
 import './shared/nearby_onboarding_page.m.js';
 import './shared/nearby_visibility_page.m.js';
 import './nearby_confirmation_page.js';
@@ -23,6 +24,7 @@ const Page = {
   CONFIRMATION: 'confirmation',
   DISCOVERY: 'discovery',
   ONBOARDING: 'onboarding',
+  ONEPAGE_ONBOARDING: 'onboarding-one',
   VISIBILITY: 'visibility',
 };
 
@@ -109,6 +111,15 @@ Polymer({
   },
 
   /**
+   * Determines if the feature flag for One-page onboarding workflow is enabled.
+   * @return {boolean} whether the one-page onboarding is enabled
+   * @private
+   */
+  isOnePageOnboardingEnabled_() {
+    return loadTimeData.getBoolean('isOnePageOnboardingEnabled');
+  },
+
+  /**
    * Called when component is attached and all settings values have been
    * retrieved.
    */
@@ -122,10 +133,15 @@ Polymer({
       }
       this.getViewManager_().switchView(Page.DISCOVERY);
       this.focusOnPageContainer_(Page.DISCOVERY);
-    } else {
-      this.getViewManager_().switchView(Page.ONBOARDING);
-      this.focusOnPageContainer_(Page.ONBOARDING);
+
+      return;
     }
+
+    const onboardingPage = this.isOnePageOnboardingEnabled_() ?
+        Page.ONEPAGE_ONBOARDING :
+        Page.ONBOARDING;
+    this.getViewManager_().switchView(onboardingPage);
+    this.focusOnPageContainer_(onboardingPage);
   },
 
   /**

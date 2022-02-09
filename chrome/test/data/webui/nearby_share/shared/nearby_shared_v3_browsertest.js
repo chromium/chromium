@@ -29,6 +29,7 @@ const NearbySharedV3Test = class extends PolymerTest {
 
 [['DeviceIcon', 'nearby_device_icon_test.m.js'],
  ['Device', 'nearby_device_test.m.js'],
+ ['OnboardingOnePage', 'nearby_onboarding_one_page_test.m.js'],
  ['OnboardingPage', 'nearby_onboarding_page_test.m.js'],
  ['PageTemplate', 'nearby_page_template_test.m.js'],
  ['Preview', 'nearby_preview_test.m.js'],

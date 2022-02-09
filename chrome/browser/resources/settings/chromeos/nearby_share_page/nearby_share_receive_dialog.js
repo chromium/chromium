@@ -24,6 +24,7 @@ const Page = {
   HIGH_VISIBILITY: 'high-visibility',
   CONFIRM: 'confirm',
   ONBOARDING: 'onboarding',
+  ONEPAGE_ONBOARDING: 'onboarding-one',
   VISIBILITY: 'visibility',
 };
 
@@ -164,6 +165,15 @@ Polymer({
   },
 
   /**
+   * Determines if the feature flag for One-page onboarding workflow is enabled.
+   * @return {boolean} whether the new one-page onboarding workflow is enabled
+   * @private
+   */
+  isOnePageOnboardingEnabled_() {
+    return loadTimeData.getBoolean('isOnePageOnboardingEnabled');
+  },
+
+  /**
    * Mojo callback when high visibility changes. If high visibility is false
    * due to a user cancel, we force this dialog to close as well.
    * @param {boolean} inHighVisibility
@@ -275,7 +285,11 @@ Polymer({
       // We need to show onboarding first if onboarding is not yet complete, but
       // we need to run the callback afterward.
       this.postOnboardingCallback = callback;
-      this.getViewManager_().switchView(Page.ONBOARDING);
+      if (this.isOnePageOnboardingEnabled_()) {
+        this.getViewManager_().switchView(Page.ONEPAGE_ONBOARDING);
+      } else {
+        this.getViewManager_().switchView(Page.ONBOARDING);
+      }
       return true;
     }
 
@@ -295,7 +309,11 @@ Polymer({
   showOnboarding() {
     // Setup the callback to close this dialog when onboarding is complete.
     this.postOnboardingCallback = this.close_.bind(this);
-    this.getViewManager_().switchView(Page.ONBOARDING);
+    if (this.isOnePageOnboardingEnabled_()) {
+      this.getViewManager_().switchView(Page.ONEPAGE_ONBOARDING);
+    } else {
+      this.getViewManager_().switchView(Page.ONBOARDING);
+    }
   },
 
   /**

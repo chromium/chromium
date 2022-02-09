@@ -7,6 +7,7 @@
 <link rel="import" href="../prefs_behavior.html">
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="../../i18n_setup.html">
+<link rel="import" href="../../shared/nearby_onboarding_one_page.html">
 <link rel="import" href="../../shared/nearby_onboarding_page.html">
 <link rel="import" href="../../shared/nearby_share_settings_behavior.html">
 <link rel="import" href="../../shared/nearby_visibility_page.html">
@@ -37,6 +38,9 @@
               connection-token="[[connectionToken]]"
               transfer-status="[[transferStatus_]]">
           </nearby-share-confirm-page>
+          <nearby-onboarding-one-page id="[[Page.ONEPAGE_ONBOARDING]]"
+              slot="view" settings="{{settings}}">
+          </nearby-onboarding-one-page>
           <nearby-onboarding-page id="[[Page.ONBOARDING]]" slot="view"
               settings="{{settings}}">
           </nearby-onboarding-page>

@@ -33,6 +33,7 @@ preprocess_if_expr("preprocess_v3") {
     "nearby_device_icon.m.js",
     "nearby_device.m.js",
     "nearby_metrics_logger.m.js",
+    "nearby_onboarding_one_page.m.js",
     "nearby_onboarding_page.m.js",
     "nearby_page_template.m.js",
     "nearby_preview.m.js",
@@ -54,6 +55,7 @@ js_type_check("closure_compile") {
     ":nearby_device",
     ":nearby_device_icon",
     ":nearby_metrics_logger",
+    ":nearby_onboarding_one_page",
     ":nearby_onboarding_page",
     ":nearby_page_template",
     ":nearby_preview",
@@ -134,6 +136,17 @@ js_library("nearby_progress") {
   ]
 }
 
+js_library("nearby_onboarding_one_page") {
+  deps = [
+    ":nearby_metrics_logger",
+    ":nearby_page_template",
+    ":nearby_share_settings_behavior",
+    "//third_party/polymer/v1_0/components-chromium/iron-icon:iron-icon-extracted",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input",
+    "//ui/webui/resources/js:i18n_behavior",
+  ]
+}
+
 js_library("nearby_onboarding_page") {
   deps = [
     ":nearby_metrics_logger",
@@ -186,6 +199,7 @@ js_type_check("closure_compile_module") {
     ":nearby_device.m",
     ":nearby_device_icon.m",
     ":nearby_metrics_logger.m",
+    ":nearby_onboarding_one_page.m",
     ":nearby_onboarding_page.m",
     ":nearby_page_template.m",
     ":nearby_preview.m",
@@ -203,6 +217,7 @@ group("polymer3_elements") {
     ":nearby_contact_visibility_module",
     ":nearby_device_icon_module",
     ":nearby_device_module",
+    ":nearby_onboarding_one_page_module",
     ":nearby_onboarding_page_module",
     ":nearby_page_template_module",
     ":nearby_preview_module",
@@ -260,6 +275,18 @@ js_library("nearby_device.m") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   extra_deps = [ ":nearby_device_module" ]
+}
+
+js_library("nearby_onboarding_one_page.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_onboarding_one_page.m.js" ]
+  deps = [
+    ":nearby_metrics_logger.m",
+    ":nearby_page_template.m",
+    ":nearby_share_settings_behavior.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+  extra_deps = [ ":nearby_onboarding_one_page_module" ]
 }
 
 js_library("nearby_onboarding_page.m") {
@@ -366,6 +393,14 @@ polymer_modulizer("nearby_device_icon") {
 polymer_modulizer("nearby_device") {
   js_file = "nearby_device.js"
   html_file = "nearby_device.html"
+  html_type = "dom-module"
+  auto_imports = nearby_shared_auto_imports
+  namespace_rewrites = nearby_shared_namespace_rewrites
+}
+
+polymer_modulizer("nearby_onboarding_one_page") {
+  js_file = "nearby_onboarding_one_page.js"
+  html_file = "nearby_onboarding_one_page.html"
   html_type = "dom-module"
   auto_imports = nearby_shared_auto_imports
   namespace_rewrites = nearby_shared_namespace_rewrites
