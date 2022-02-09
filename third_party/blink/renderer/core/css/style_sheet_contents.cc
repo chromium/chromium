@@ -560,6 +560,7 @@ static bool ChildRulesHaveFailedOrCanceledSubresources(
       case StyleRuleBase::kScrollTimeline:
       case StyleRuleBase::kSupports:
       case StyleRuleBase::kViewport:
+      case StyleRuleBase::kFontPaletteValues:
         break;
       case StyleRuleBase::kCounterStyle:
         if (To<StyleRuleCounterStyle>(rule)->HasFailedOrCanceledSubresources())

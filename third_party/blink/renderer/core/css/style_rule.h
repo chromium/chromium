@@ -46,6 +46,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kImport,
     kMedia,
     kFontFace,
+    kFontPaletteValues,
     kPage,
     kProperty,
     kKeyframes,
@@ -72,6 +73,9 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   bool IsContainerRule() const { return GetType() == kContainer; }
   bool IsCounterStyleRule() const { return GetType() == kCounterStyle; }
   bool IsFontFaceRule() const { return GetType() == kFontFace; }
+  bool IsFontPaletteValuesRule() const {
+    return GetType() == kFontPaletteValues;
+  }
   bool IsKeyframesRule() const { return GetType() == kKeyframes; }
   bool IsKeyframeRule() const { return GetType() == kKeyframe; }
   bool IsLayerBlockRule() const { return GetType() == kLayerBlock; }

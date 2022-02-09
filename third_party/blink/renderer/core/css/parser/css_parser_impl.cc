@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/property_registry.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
+#include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
 #include "third_party/blink/renderer/core/css/style_rule_namespace.h"
@@ -602,6 +603,8 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRule(CSSParserTokenStream& stream,
         return ConsumeViewportRule(stream);
       case kCSSAtRuleFontFace:
         return ConsumeFontFaceRule(stream);
+      case kCSSAtRuleFontPaletteValues:
+        return ConsumeFontPaletteValuesRule(stream);
       case kCSSAtRuleWebkitKeyframes:
         return ConsumeKeyframesRule(true, stream);
       case kCSSAtRuleKeyframes:
@@ -1026,6 +1029,38 @@ StyleRuleCounterStyle* CSSParserImpl::ConsumeCounterStyleRule(
       name, CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
 }
 
+StyleRuleFontPaletteValues* CSSParserImpl::ConsumeFontPaletteValuesRule(
+    CSSParserTokenStream& stream) {
+  DCHECK(RuntimeEnabledFeatures::FontPaletteEnabled());
+
+  wtf_size_t prelude_offset_start = stream.LookAheadOffset();
+  CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
+  wtf_size_t prelude_offset_end = stream.LookAheadOffset();
+  if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream))
+    return nullptr;
+  CSSParserTokenStream::BlockGuard guard(stream);
+
+  const CSSParserToken& name_token = prelude.ConsumeIncludingWhitespace();
+  if (!prelude.AtEnd())
+    return nullptr;
+
+  if (!css_parsing_utils::IsDashedIdent(name_token))
+    return nullptr;
+  AtomicString name = name_token.Value().ToAtomicString();
+  if (!name)
+    return nullptr;
+
+  if (observer_) {
+    observer_->StartRuleHeader(StyleRule::kFontPaletteValues,
+                               prelude_offset_start);
+    observer_->EndRuleHeader(prelude_offset_end);
+  }
+
+  ConsumeDeclarationList(stream, StyleRule::kFontPaletteValues);
+  return MakeGarbageCollected<StyleRuleFontPaletteValues>(
+      name, CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
+}
+
 StyleRuleScrollTimeline* CSSParserImpl::ConsumeScrollTimelineRule(
     CSSParserTokenStream& stream) {
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
@@ -1229,12 +1264,14 @@ void CSSParserImpl::ConsumeDeclarationList(CSSParserTokenStream& stream,
                                            StyleRule::RuleType rule_type) {
   DCHECK(parsed_properties_.IsEmpty());
 
-  bool use_observer = observer_ && (rule_type == StyleRule::kStyle ||
-                                    rule_type == StyleRule::kProperty ||
-                                    rule_type == StyleRule::kContainer ||
-                                    rule_type == StyleRule::kCounterStyle ||
-                                    rule_type == StyleRule::kScrollTimeline ||
-                                    rule_type == StyleRule::kKeyframe);
+  bool is_observer_rule_type = rule_type == StyleRule::kStyle ||
+                               rule_type == StyleRule::kProperty ||
+                               rule_type == StyleRule::kContainer ||
+                               rule_type == StyleRule::kCounterStyle ||
+                               rule_type == StyleRule::kFontPaletteValues ||
+                               rule_type == StyleRule::kScrollTimeline ||
+                               rule_type == StyleRule::kKeyframe;
+  bool use_observer = observer_ && is_observer_rule_type;
   if (use_observer) {
     observer_->StartRuleBody(stream.Offset());
   }
@@ -1310,7 +1347,9 @@ void CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
 
   CSSPropertyID unresolved_property = CSSPropertyID::kInvalid;
   AtRuleDescriptorID atrule_id = AtRuleDescriptorID::Invalid;
-  if (rule_type == StyleRule::kFontFace || rule_type == StyleRule::kProperty ||
+  if (rule_type == StyleRule::kFontFace ||
+      rule_type == StyleRule::kFontPaletteValues ||
+      rule_type == StyleRule::kProperty ||
       rule_type == StyleRule::kCounterStyle ||
       rule_type == StyleRule::kScrollTimeline) {
     if (important)  // Invalid

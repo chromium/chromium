@@ -37141,6 +37141,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4161" label="V8Document_Prerendering_AttributeGetter"/>
   <int value="4162" label="V8Document_Onprerenderingchange_AttributeGetter"/>
   <int value="4163" label="V8Document_Onprerenderingchange_AttributeSetter"/>
+  <int value="4164" label="CSSAtRuleFontPaletteValues"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -58791,6 +58792,8 @@ Called by update_use_counter_css.py.-->
   <int value="707" label="text-emphasis-position"/>
   <int value="708" label="text-emphasis-style"/>
   <int value="709" label="font-palette"/>
+  <int value="710" label="base-palette"/>
+  <int value="711" label="override-colors"/>
 </enum>
 
 <enum name="MappedEditingCommands">
