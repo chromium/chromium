@@ -3192,7 +3192,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.DarkMode.PrefersDarkFromTheme"
-    enum="BooleanYesNo" expires_after="2022-03-24">
+    enum="BooleanYesNo" expires_after="2022-07-24">
   <owner>michaelbai@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
