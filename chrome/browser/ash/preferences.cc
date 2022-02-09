@@ -322,7 +322,7 @@ void Preferences::RegisterProfilePrefs(
   // The following pref isn't synced since the user may desire a different value
   // depending on whether an external keyboard is attached to a particular
   // device.
-  registry->RegisterBooleanPref(::prefs::kLanguageSendFunctionKeys, false);
+  registry->RegisterBooleanPref(prefs::kSendFunctionKeys, false);
 
   // Don't sync the note-taking app; it may not be installed on other devices.
   registry->RegisterStringPref(::prefs::kNoteTakingAppId, std::string());

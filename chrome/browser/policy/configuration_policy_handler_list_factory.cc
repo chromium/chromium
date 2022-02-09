@@ -996,7 +996,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kMultiProfileUserBehavior,
     base::Value::Type::STRING },
   { key::kKeyboardDefaultToFunctionKeys,
-    prefs::kLanguageSendFunctionKeys,
+    ash::prefs::kSendFunctionKeys,
     base::Value::Type::BOOLEAN },
   { key::kTouchVirtualKeyboardEnabled,
     prefs::kTouchVirtualKeyboardEnabled,

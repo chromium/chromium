@@ -611,10 +611,6 @@ const char kLanguageInputMethodSpecificSettings[] =
 const char kLanguageShouldMergeInputMethods[] =
     "settings.language.merge_input_methods";
 
-// A boolean pref that causes top-row keys to be interpreted as function keys
-// instead of as media keys.
-const char kLanguageSendFunctionKeys[] = "settings.language.send_function_keys";
-
 // A boolean pref which turns on Advanced Filesystem
 // (USB support, SD card, etc).
 const char kLabsAdvancedFilesystemEnabled[] =

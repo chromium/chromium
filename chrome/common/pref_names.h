@@ -246,7 +246,6 @@ extern const char kLanguageEnabledImesSyncable[];
 extern const char kLanguageImeMenuActivated[];
 extern const char kLanguageInputMethodSpecificSettings[];
 extern const char kLanguageShouldMergeInputMethods[];
-extern const char kLanguageSendFunctionKeys[];
 
 extern const char kLabsAdvancedFilesystemEnabled[];
 extern const char kLabsMediaplayerEnabled[];

@@ -62,8 +62,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, DISABLED_TestGetAndSet) {
   ASSERT_FALSE(prefs->GetBoolean(ash::prefs::kAccessibilityAutoclickEnabled));
   ASSERT_FALSE(prefs->GetBoolean(ash::prefs::kAccessibilityCursorColorEnabled));
 
-  ASSERT_FALSE(
-      profile()->GetPrefs()->GetBoolean(prefs::kLanguageSendFunctionKeys));
+  ASSERT_FALSE(profile()->GetPrefs()->GetBoolean(ash::prefs::kSendFunctionKeys));
 
   ASSERT_TRUE(RunExtensionTest("chromeos_info_private/basic", {},
                                {.load_as_component = true}))
@@ -78,7 +77,7 @@ IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, DISABLED_TestGetAndSet) {
   ASSERT_TRUE(prefs->GetBoolean(ash::prefs::kAccessibilityAutoclickEnabled));
   ASSERT_TRUE(prefs->GetBoolean(ash::prefs::kAccessibilityCursorColorEnabled));
 
-  ASSERT_TRUE(prefs->GetBoolean(prefs::kLanguageSendFunctionKeys));
+  ASSERT_TRUE(prefs->GetBoolean(ash::prefs::kSendFunctionKeys));
 }
 
 // docked magnifier and screen magnifier are mutually exclusive. test each of

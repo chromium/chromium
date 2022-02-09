@@ -821,6 +821,10 @@ const char kXkbAutoRepeatInterval[] =
 // now user-configurable and syncable again, but we don't want to overwrite the
 // current values with the old synced values, so we continue to use this suffix.
 
+// A boolean pref that causes top-row keys to be interpreted as function keys
+// instead of as media keys.
+const char kSendFunctionKeys[] = "settings.language.send_function_keys";
+
 // A boolean pref which is true if touchpad reverse scroll is enabled.
 const char kNaturalScroll[] = "settings.touchpad.natural_scroll";
 // A boolean pref which is true if mouse reverse scroll is enabled.

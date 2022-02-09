@@ -229,7 +229,7 @@ const struct {
      ash::prefs::kAccessibilitySwitchAccessEnabled},
     {kPropertyCursorColorEnabled, ash::prefs::kAccessibilityCursorColorEnabled},
     {kPropertyDockedMagnifierEnabled, ash::prefs::kDockedMagnifierEnabled},
-    {kPropertySendFunctionsKeys, prefs::kLanguageSendFunctionKeys}};
+    {kPropertySendFunctionsKeys, ash::prefs::kSendFunctionKeys}};
 
 const char* GetBoolPrefNameForApiProperty(const char* api_name) {
   for (size_t i = 0;

@@ -370,6 +370,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kXkbAutoRepeatDelay[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kXkbAutoRepeatEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kXkbAutoRepeatInterval[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSendFunctionKeys[];
+
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kNaturalScroll[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kMouseReverseScroll[];
 
