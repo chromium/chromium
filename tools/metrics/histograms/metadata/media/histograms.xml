@@ -3103,6 +3103,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Media.MSE.DetectedShakaPackagerInMp4" enum="BooleanDetected"
     expires_after="2022-06-19">
+  <obsolete>
+    Removed 02/2022 due to lack of further need for this data.
+  </obsolete>
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
