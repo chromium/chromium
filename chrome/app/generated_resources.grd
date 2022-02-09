@@ -2538,6 +2538,17 @@ are declared in tools/grit/grit_rule.gni.
         </message>
       </if>
 
+      <!-- Download Bubble -->
+      <message name="IDS_DOWNLOAD_BUBBLE_HEADER_TEXT"
+               desc="Header text in the Download Bubble">
+        Recent Downloads
+      </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_FOOTER_LINK"
+               desc="Footer link in the Download Bubble">
+        Show all downloads
+      </message>
+      
+
       <!-- Desktop omnibox PWA install icon -->
       <if expr="not is_android">
         <message name="IDS_OMNIBOX_PWA_INSTALL_ICON_LABEL" desc="String for the omnibox icon label promoting an app installation">

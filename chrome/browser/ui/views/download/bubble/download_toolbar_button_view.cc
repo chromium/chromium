@@ -11,6 +11,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_controller.h"
+#include "chrome/browser/ui/views/download/bubble/download_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -18,6 +21,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
+#include "ui/views/layout/layout_provider.h"
 
 DownloadToolbarButtonView::DownloadToolbarButtonView(BrowserView* browser_view)
     : ToolbarButton(
@@ -36,14 +40,17 @@ DownloadToolbarButtonView::DownloadToolbarButtonView(BrowserView* browser_view)
   // should be.
   SetVisible(false);
   controller_ = std::make_unique<DownloadDisplayController>(this, manager);
+  bubble_controller_ = std::make_unique<DownloadBubbleUIController>(manager);
 }
 
 DownloadToolbarButtonView::~DownloadToolbarButtonView() {
   controller_.reset();
+  bubble_controller_.reset();
 }
 
 void DownloadToolbarButtonView::Show() {
   SetVisible(true);
+  ButtonPressed();
   PreferredSizeChanged();
 }
 
@@ -95,8 +102,46 @@ void DownloadToolbarButtonView::UpdateIcon() {
   // TODO(anise): Add progress ring animation.
 }
 
-// TODO(anise): Implement opening of full view.
-void DownloadToolbarButtonView::ButtonPressed() {}
+void DownloadToolbarButtonView::OnBubbleDelegateDeleted() {
+  bubble_delegate_ = nullptr;
+}
+
+std::unique_ptr<views::BubbleDialogDelegate>
+DownloadToolbarButtonView::CreateBubbleDialogDelegate() {
+  std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate =
+      std::make_unique<views::BubbleDialogDelegate>(
+          this, views::BubbleBorder::TOP_RIGHT);
+  bubble_delegate->SetShowTitle(false);
+  bubble_delegate->SetShowCloseButton(false);
+  bubble_delegate->SetButtons(ui::DIALOG_BUTTON_NONE);
+  // base::Unretained(this) is fine as DownloadToolbarButtonView is the anchor
+  // view, and owns the child view/widgets.
+  bubble_delegate->RegisterDeleteDelegateCallback(
+      base::BindOnce(&DownloadToolbarButtonView::OnBubbleDelegateDeleted,
+                     base::Unretained(this)));
+  bubble_delegate->SetContentsView(std::make_unique<DownloadDialogView>(
+      browser_, bubble_controller_->GetMainView()));
+
+  bubble_delegate->set_fixed_width(
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
+  bubble_delegate->set_margins(
+      gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
+          views::DISTANCE_RELATED_CONTROL_VERTICAL)));
+  return bubble_delegate;
+}
+
+// We do not need to hide the bubble if it is already showing, as it will be
+// destroyed because of loss of focus.
+void DownloadToolbarButtonView::ButtonPressed() {
+  if (!bubble_delegate_) {
+    std::unique_ptr<views::BubbleDialogDelegate> bubble_delegate =
+        CreateBubbleDialogDelegate();
+    bubble_delegate_ = bubble_delegate.get();
+    views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
+    bubble_delegate_->GetWidget()->Show();
+  }
+}
 
 BEGIN_METADATA(DownloadToolbarButtonView, ToolbarButton)
 END_METADATA

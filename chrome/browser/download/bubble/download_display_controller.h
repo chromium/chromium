@@ -57,10 +57,11 @@ class DownloadDisplayController
                          download::DownloadItem* item) override;
   void OnDownloadUpdated(content::DownloadManager* manager,
                          download::DownloadItem* item) override;
+  void OnManagerGoingDown(content::DownloadManager* manager) override;
 
   // The pointer is created in ToolbarView and owned by ToolbarView.
   DownloadDisplay* const display_;
-  content::DownloadManager* const download_manager_;
+  content::DownloadManager* download_manager_;
   download::AllDownloadItemNotifier download_notifier_;
   base::OneShotTimer icon_disappearance_timer_;
 };

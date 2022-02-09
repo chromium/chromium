@@ -40,6 +40,13 @@ void DownloadDisplayController::OnDownloadUpdated(
   UpdateToolbarButtonState();
 }
 
+void DownloadDisplayController::OnManagerGoingDown(
+    content::DownloadManager* manager) {
+  if (download_manager_ == manager) {
+    download_manager_ = nullptr;
+  }
+}
+
 void DownloadDisplayController::ShowToolbarButton() {
   if (!display_->IsShowing()) {
     display_->Enable();

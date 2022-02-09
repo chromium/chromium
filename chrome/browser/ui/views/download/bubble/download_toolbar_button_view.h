@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_TOOLBAR_BUTTON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_TOOLBAR_BUTTON_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/download/bubble/download_display.h"
 #include "chrome/browser/download/bubble/download_icon_state.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 class Browser;
 class BrowserView;
@@ -39,9 +42,16 @@ class DownloadToolbarButtonView : public ToolbarButton, public DownloadDisplay {
 
  private:
   void ButtonPressed();
-  const Browser* const browser_;
+  std::unique_ptr<views::BubbleDialogDelegate> CreateBubbleDialogDelegate();
+  void OnBubbleDelegateDeleted();
+
+  raw_ptr<Browser> browser_;
+  // Controller for the DownloadToolbarButton.
   std::unique_ptr<DownloadDisplayController> controller_;
+  // Controller for the DownloadBubbleUI, both main view and partial view.
+  std::unique_ptr<DownloadBubbleUIController> bubble_controller_;
   download::DownloadIconState icon_state_;
+  raw_ptr<views::BubbleDialogDelegate> bubble_delegate_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_TOOLBAR_BUTTON_VIEW_H_
