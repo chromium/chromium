@@ -3339,7 +3339,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    // Previously flaky and disabled 4/2021.  https://crbug.com/1192285
+    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1192285")
     public void testQuickActionIntent(@EnabledFeature int enabledFeature) throws Exception {
         // Add a new filter to the activity monitor that matches the intent that should be fired.
         IntentFilter quickActionFilter = new IntentFilter(Intent.ACTION_VIEW);
