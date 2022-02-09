@@ -17,7 +17,7 @@ android_library_factory("factory_java") {
   deps = [
     ":public_java",
     "//chrome/browser/share:java",
-    "//chrome/browser/tab:java",
     "//components/browser_ui/bottomsheet/android:java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }

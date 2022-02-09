@@ -20,12 +20,11 @@ import org.chromium.chrome.browser.content_creation.reactions.internal.R;
 import org.chromium.chrome.browser.content_creation.reactions.scene.SceneCoordinator;
 import org.chromium.chrome.browser.content_creation.reactions.toolbar.ToolbarControlsDelegate;
 import org.chromium.chrome.browser.content_creation.reactions.toolbar.ToolbarCoordinator;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.share.BaseScreenshotCoordinator;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.content_creation.reactions.ReactionMetadata;
@@ -33,6 +32,7 @@ import org.chromium.components.content_creation.reactions.ReactionService;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
@@ -55,6 +55,7 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
     private final LightweightReactionsMediator mMediator;
     private final LightweightReactionsDialog mDialog;
     private final SceneCoordinator mSceneCoordinator;
+    private final WindowAndroid mWindowAndroid;
 
     private List<ReactionMetadata> mAvailableReactions;
     private Bitmap[] mThumbnails;
@@ -74,24 +75,24 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
      * Lightweight Reactions scene.
      *
      * @param activity The parent activity.
-     * @param tab The Tab which contains the content to share.
+     * @param windowAndroid The {@link WindowAndroid} associated with the screenshot.
      * @param shareUrl The URL associated with the screenshot.
      * @param chromeOptionShareCallback An interface to share sheet APIs.
      * @param sheetController The {@link BottomSheetController} for the current activity.
      * @param reactionService The {@link ReactionService} to use for Reaction operations.
      */
-    public LightweightReactionsCoordinatorImpl(Activity activity, Tab tab, String shareUrl,
-            ChromeOptionShareCallback chromeOptionShareCallback,
+    public LightweightReactionsCoordinatorImpl(Activity activity, WindowAndroid windowAndroid,
+            String shareUrl, ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController, ReactionService reactionService) {
-        super(activity, tab, shareUrl, chromeOptionShareCallback, sheetController);
+        super(activity, shareUrl, chromeOptionShareCallback, sheetController);
+        mWindowAndroid = windowAndroid;
         mScreenshotReady = false;
         mAssetsFetched = false;
         mFragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
         mReactionService = reactionService;
 
-        Profile profile = Profile.fromWebContents(tab.getWebContents());
         ImageFetcher imageFetcher = ImageFetcherFactory.createImageFetcher(
-                ImageFetcherConfig.DISK_CACHE_ONLY, profile.getProfileKey());
+                ImageFetcherConfig.DISK_CACHE_ONLY, ProfileKey.getLastUsedRegularProfileKey());
         mMediator = new LightweightReactionsMediator(imageFetcher);
 
         mDialog = new LightweightReactionsDialog();
@@ -252,7 +253,7 @@ public class LightweightReactionsCoordinatorImpl extends BaseScreenshotCoordinat
                             imageUri != null, System.currentTimeMillis() - mGenerationStartTime);
                     final String sheetTitle = getShareSheetTitle();
                     ShareParams params =
-                            new ShareParams.Builder(mTab.getWindowAndroid(), sheetTitle, /*url=*/"")
+                            new ShareParams.Builder(mWindowAndroid, sheetTitle, /*url=*/"")
                                     .setFileUris(
                                             new ArrayList<>(Collections.singletonList(imageUri)))
                                     .setFileContentType(GIF_MIME_TYPE)

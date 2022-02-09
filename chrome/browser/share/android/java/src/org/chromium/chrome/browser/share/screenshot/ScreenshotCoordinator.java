@@ -26,6 +26,7 @@ public class ScreenshotCoordinator extends BaseScreenshotCoordinator {
     static final int MAX_INSTALL_ATTEMPTS = 5;
     private static int sInstallAttempts;
 
+    protected final Tab mTab;
     private final ScreenshotShareSheetDialog mDialog;
     private final ImageEditorModuleProvider mImageEditorModuleProvider;
 
@@ -43,7 +44,8 @@ public class ScreenshotCoordinator extends BaseScreenshotCoordinator {
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController,
             ImageEditorModuleProvider imageEditorModuleProvider) {
-        super(activity, tab, shareUrl, chromeOptionShareCallback, sheetController);
+        super(activity, shareUrl, chromeOptionShareCallback, sheetController);
+        mTab = tab;
         mDialog = new ScreenshotShareSheetDialog();
         mImageEditorModuleProvider = imageEditorModuleProvider;
     }
@@ -66,8 +68,8 @@ public class ScreenshotCoordinator extends BaseScreenshotCoordinator {
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController,
             ImageEditorModuleProvider imageEditorModuleProvider) {
-        super(activity, tab, shareUrl, chromeOptionShareCallback, sheetController,
-                screenshotSource);
+        super(activity, shareUrl, chromeOptionShareCallback, sheetController, screenshotSource);
+        mTab = tab;
         mDialog = dialog;
         mImageEditorModuleProvider = imageEditorModuleProvider;
     }

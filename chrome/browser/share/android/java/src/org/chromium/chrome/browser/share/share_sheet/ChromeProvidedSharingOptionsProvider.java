@@ -519,7 +519,7 @@ public class ChromeProvidedSharingOptionsProvider {
                 .setOnClickCallback((view) -> {
                     LightweightReactionsCoordinator coordinator =
                             LightweightReactionsCoordinatorFactory.create(mActivity,
-                                    mTabProvider.get(), mUrl, mChromeOptionShareCallback,
+                                    mShareParams.getWindow(), mUrl, mChromeOptionShareCallback,
                                     mBottomSheetController);
                     // Capture a screenshot once the bottom sheet is fully hidden. The
                     // observer will then remove itself.
