@@ -44,6 +44,13 @@ constexpr char kSinkId[] = "sink_id";
 constexpr char kSinkFriendlyName[] = "Nest Hub";
 constexpr char16_t kSinkFriendlyName16[] = u"Nest Hub";
 
+ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED,
+                             gfx::Point(),
+                             gfx::Point(),
+                             ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+
 UIMediaSink CreateMediaSink(
     UIMediaSinkState state = UIMediaSinkState::AVAILABLE) {
   UIMediaSink sink{media_router::mojom::MediaRouteProviderId::CAST};
@@ -175,8 +182,11 @@ class MediaItemUIDeviceSelectorViewTest : public ChromeViewsTestBase {
 
   void SimulateButtonClick(views::View* view) {
     views::test::ButtonTestApi(static_cast<views::Button*>(view))
-        .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
-                                    gfx::Point(), ui::EventTimeForNow(), 0, 0));
+        .NotifyClick(pressed_event);
+  }
+
+  void SimulateMouseClick(views::View* view) {
+    view->OnMousePressed(pressed_event);
   }
 
   std::string EntryLabelText(views::View* entry_view) {
@@ -262,9 +272,22 @@ TEST_F(MediaItemUIDeviceSelectorViewTest, ExpandButtonOpensEntryContainer) {
   AddAudioDevices(delegate);
   view_ = CreateDeviceSelectorView(&delegate);
 
+  // Clicking on the dropdown button should expand the device list.
   ASSERT_TRUE(view_->GetDropdownButtonForTesting());
   EXPECT_FALSE(view_->GetDeviceEntryViewVisibilityForTesting());
   SimulateButtonClick(view_->GetDropdownButtonForTesting());
+  EXPECT_TRUE(view_->GetDeviceEntryViewVisibilityForTesting());
+}
+
+TEST_F(MediaItemUIDeviceSelectorViewTest, ExpandLabelOpensEntryContainer) {
+  NiceMock<MockMediaItemUIDeviceSelectorDelegate> delegate;
+  AddAudioDevices(delegate);
+  view_ = CreateDeviceSelectorView(&delegate);
+
+  // Clicking on the device selector view should expand the device list.
+  ASSERT_TRUE(view_.get());
+  EXPECT_FALSE(view_->GetDeviceEntryViewVisibilityForTesting());
+  SimulateMouseClick(view_.get());
   EXPECT_TRUE(view_->GetDeviceEntryViewVisibilityForTesting());
 }
 

@@ -111,7 +111,7 @@ class MediaItemUIDeviceSelectorView
   void UpdateVisibility();
   bool ShouldBeVisible() const;
   void CreateExpandButtonStrip(bool show_expand_button);
-  void ExpandButtonPressed();
+  void ShowOrHideDeviceList();
   void ShowDevices();
   void HideDevices();
   void RemoveDevicesOfType(DeviceEntryUIType type);
