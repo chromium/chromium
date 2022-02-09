@@ -250021,7 +250021,7 @@
       []
      ],
      "idlharness-expected.txt": [
-      "2885179da4a9d847125c223b7957c70cabee9c03",
+      "4a491cdd38683f48f3e405951dc8b18064114d22",
       []
      ],
      "inheritance-expected.txt": [
@@ -250127,12 +250127,8 @@
        "2acc510d2d23c28a952753bdb54017eff2af8632",
        []
       ],
-      "font-palette-values-invalid-expected.txt": [
-       "37a55182405409757aca99c829f218b3749a9a0a",
-       []
-      ],
       "font-palette-values-valid-expected.txt": [
-       "0d122263fe10524fc377b8ea899df3ecc2fafb4f",
+       "acd524d7ef443286fcde7a94ffde45b3f0986102",
        []
       ],
       "font-size-adjust-computed-expected.txt": [
@@ -303857,6 +303853,10 @@
      "f7084dd60610420628f6b3468bf071b66e93dc14",
      []
     ],
+    "sub-apps.tentative.idl": [
+     "091dd6f1f46dfaee1a20dbc74586466ecd3e742b",
+     []
+    ],
     "svg-animations.idl": [
      "b57e1b9eb512919b501b7f96e260751aa5f108d3",
      []
@@ -304391,7 +304391,7 @@
     ]
    },
    "lint.ignore": [
-    "797e2b8c388fa9291547431b1545618dd601a497",
+    "052b566b65f0d88893541255a9cea08ceada43d3",
     []
    ],
    "loading": {
@@ -311068,6 +311068,10 @@
       "c9980e1285b7e14a85cba19f2c870f480e303946",
       []
      ],
+     "mock-subapps.js": [
+      "14b503ca20ffb38f270ecd653166b76b32114729",
+      []
+     ],
      "mock-textdetection.js": [
       "52ca987e28639a93363b5496a0f0c14a46e2bb50",
       []
@@ -315329,19 +315333,19 @@
     ],
     "readable-byte-streams": {
      "general.any-expected.txt": [
-      "2697c894df00d7517053ba003c1be7abda8d0c29",
+      "bc0a2aa041301e2a938d4a46e96da43961b9d1df",
       []
      ],
      "general.any.serviceworker-expected.txt": [
-      "2697c894df00d7517053ba003c1be7abda8d0c29",
+      "bc0a2aa041301e2a938d4a46e96da43961b9d1df",
       []
      ],
      "general.any.sharedworker-expected.txt": [
-      "2697c894df00d7517053ba003c1be7abda8d0c29",
+      "bc0a2aa041301e2a938d4a46e96da43961b9d1df",
       []
      ],
      "general.any.worker-expected.txt": [
-      "2697c894df00d7517053ba003c1be7abda8d0c29",
+      "bc0a2aa041301e2a938d4a46e96da43961b9d1df",
       []
      ],
      "tee.any-expected.txt": [
@@ -315538,6 +315542,14 @@
        []
       ]
      }
+    }
+   },
+   "subapps": {
+    "resources": {
+     "subapps-helpers.js": [
+      "52d121709c9deb90dfcb3a194d447f48c21f8f87",
+      []
+     ]
     }
    },
    "subresource-integrity": {
@@ -320512,7 +320524,7 @@
      []
     ],
     "RTCConfiguration-iceServers-expected.txt": [
-     "fc38ca810d0524cffaf1562f2c3c2ad47c5b5fef",
+     "806ca587252bd32487f4c6d27eaf30dd68656500",
      []
     ],
     "RTCConfiguration-iceTransportPolicy-expected.txt": [
@@ -358512,7 +358524,7 @@
        ]
       ],
       "mix-blend-mode-parsing.html": [
-       "25bb5aa3658b36d2a570b9c5828654f90345d007",
+       "1cf84dd826ab7d1f4c8a396d95f844d78ea99623",
        [
         null,
         {}
@@ -361782,6 +361794,13 @@
      ],
      "contain-flexbox-outline.html": [
       "39cf81688e0a294d542cf18a72ec1e808d7bc546",
+      [
+       null,
+       {}
+      ]
+     ],
+     "contain-paint-049.html": [
+      "49cdc9beca09c9dbf66607342ba8936c6a817225",
       [
        null,
        {}
@@ -507295,7 +507314,7 @@
     ],
     "readable-byte-streams": {
      "bad-buffers-and-views.any.js": [
-      "cc75dc46f9830c29534f9068b8f2173fc804e90b",
+      "121694fb168fa3210309d2a7fe5310892446a110",
       [
        null,
        {
@@ -507440,7 +507459,7 @@
       ]
      ],
      "general.any.js": [
-      "3b88e8dd9562204c3e1e9ea8fe47f683d72cc81e",
+      "1090e80786f5c057fc73cb795a8410caa077f6f5",
       [
        null,
        {
@@ -510752,6 +510771,47 @@
       ]
      ]
     }
+   },
+   "subapps": {
+    "add-error.tentative.https.html": [
+     "b7d339a90c38ef12cf0ef8794a66027a97116448",
+     [
+      null,
+      {}
+     ]
+    ],
+    "add-success.tentative.https.html": [
+     "2463d3c2fdf7b1b67e52a487186a8e8328df12a4",
+     [
+      null,
+      {}
+     ]
+    ],
+    "idlharness.tentative.https.window.js": [
+     "65a1156188b1f8d952d8a3dd0744af9232124157",
+     [
+      "subapps/idlharness.tentative.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/WebIDLParser.js"
+        ],
+        [
+         "script",
+         "/resources/idlharness.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "insecure-context-error.tentative.html": [
+     "ada4a846e896cf8c89d0e6db7b6bf3b9772624f8",
+     [
+      null,
+      {}
+     ]
+    ]
    },
    "subresource-integrity": {
     "subresource-integrity.html": [
@@ -531327,17 +531387,19 @@
      ]
     ],
     "RTCConfiguration-iceServers.html": [
-     "36f1277678ac3e402e60e1254c39bc0d4d84e851",
+     "0bbaf75f83e04cec05919f97108fcde38a435778",
      [
       null,
       {}
      ]
     ],
     "RTCConfiguration-iceTransportPolicy.html": [
-     "25d4511f48e32ef9568e750e74abe2df5c51e596",
+     "ebc79048a3ae390b229fc9c73fb2535f21b3ceda",
      [
       null,
-      {}
+      {
+       "timeout": "long"
+      }
      ]
     ],
     "RTCConfiguration-rtcpMuxPolicy.html": [

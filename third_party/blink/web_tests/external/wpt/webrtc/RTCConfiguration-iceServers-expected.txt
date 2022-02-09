@@ -1,12 +1,12 @@
 This is a testharness.js-based test.
-Found 65 tests; 33 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL new RTCPeerConnection() should have default configuration.iceServers of undefined assert_equals: expected (undefined) undefined but got (object) []
+Found 65 tests; 36 PASS, 29 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS new RTCPeerConnection() should have default configuration.iceServers of undefined
 PASS new RTCPeerConnection(config) - {} should succeed
 PASS setConfiguration(config) - {} should succeed
 PASS new RTCPeerConnection(config) - { iceServers: null } should throw TypeError
 PASS setConfiguration(config) - { iceServers: null } should throw TypeError
-FAIL new RTCPeerConnection(config) - { iceServers: undefined } should succeed assert_equals: expected (undefined) undefined but got (object) []
-FAIL setConfiguration(config) - { iceServers: undefined } should succeed assert_equals: expected (undefined) undefined but got (object) []
+PASS new RTCPeerConnection(config) - { iceServers: undefined } should succeed
+PASS setConfiguration(config) - { iceServers: undefined } should succeed
 PASS new RTCPeerConnection(config) - { iceServers: [] } should succeed
 PASS setConfiguration(config) - { iceServers: [] } should succeed
 PASS new RTCPeerConnection(config) - { iceServers: [null] } should throw TypeError

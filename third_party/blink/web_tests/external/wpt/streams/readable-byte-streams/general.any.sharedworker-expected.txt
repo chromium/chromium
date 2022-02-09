@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 98 tests; 83 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 99 tests; 84 PASS, 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS getReader({mode: "byob"}) throws on non-bytes streams
 PASS ReadableStream with byte source can be constructed with no errors
 PASS getReader({mode}) must perform ToString()
@@ -98,5 +98,6 @@ FAIL ReadableStream with byte source: autoAllocateChunkSize, releaseLock() with 
 FAIL ReadableStream with byte source: autoAllocateChunkSize, releaseLock() with pending read(), read(view) on second reader, enqueue() promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'releaseLock' on 'ReadableStreamDefaultReader': Cannot release a readable stream reader when it still has outstanding read() calls that have not yet settled"
 FAIL ReadableStream with byte source: read(view) with 1 element Uint16Array, respond(1), releaseLock(), read(view) on second reader with 1 element Uint16Array, respond(1) promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'releaseLock' on 'ReadableStreamBYOBReader': Cannot release a readable stream reader when it still has outstanding read() calls that have not yet settled"
 FAIL ReadableStream with byte source: read(view) with 1 element Uint16Array, respond(1), releaseLock(), read() on second reader, enqueue() promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'releaseLock' on 'ReadableStreamBYOBReader': Cannot release a readable stream reader when it still has outstanding read() calls that have not yet settled"
+PASS ReadableStream with byte source: autoAllocateChunkSize, read(), respondWithNewView()
 Harness: the test ran to completion.
 
