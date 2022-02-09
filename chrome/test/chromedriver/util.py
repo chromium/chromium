@@ -362,7 +362,7 @@ def TryUploadingResultToResultSink(results):
           # identify an artifact within the test result.
           'artifacts': {
                'stack_trace': {
-                    'contents': base64.b64encode(stack_trace),
+                    'contents': base64.b64encode(stack_trace.encode()).decode(),
                },
           },
       })
@@ -392,4 +392,3 @@ def TryUploadingResultToResultSink(results):
     data=json.dumps({'testResults': test_results})
   )
   res.raise_for_status()
-
