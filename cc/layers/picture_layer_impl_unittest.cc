@@ -5516,6 +5516,7 @@ TEST_F(TileSizeTest, RawDrawTileSizes) {
 
   host_impl()->CommitComplete();
 
+  constexpr int kMaxTextureSize = 2048;
   // Gpu-RawDraw-rasterization uses 100%
   // std::max({viewport-width, viewport-height, 2280}) tiles.
   EXPECT_EQ(host_impl()->gpu_rasterization_status(),
@@ -5527,7 +5528,7 @@ TEST_F(TileSizeTest, RawDrawTileSizes) {
 
   gfx::Size content_bounds(10000, 10000);
   result = layer->CalculateTileSize(content_bounds);
-  EXPECT_EQ(result, gfx::Size(2048, 2048));
+  EXPECT_EQ(result, gfx::Size(kMaxTextureSize, kMaxTextureSize));
 
   viewport_rect = gfx::Rect(1000, 1000);
   host_impl()->active_tree()->SetDeviceViewportRect(viewport_rect);
@@ -5537,6 +5538,16 @@ TEST_F(TileSizeTest, RawDrawTileSizes) {
 
   result = layer->CalculateTileSize(content_bounds);
   EXPECT_EQ(result, gfx::Size(1600, 128));
+
+  viewport_rect = gfx::Rect(1000, 1000);
+  host_impl()->active_tree()->SetDeviceViewportRect(viewport_rect);
+  layer->set_gpu_raster_max_texture_size(gfx::Size());
+  host_impl()->NotifyReadyToActivate();
+  content_bounds = gfx::Size(std::numeric_limits<int>::max(),
+                             std::numeric_limits<int>::max());
+
+  result = layer->CalculateTileSize(content_bounds);
+  EXPECT_EQ(result, gfx::Size(kMaxTextureSize, kMaxTextureSize));
 }
 
 class HalfWidthTileTest : public PictureLayerImplTest {};

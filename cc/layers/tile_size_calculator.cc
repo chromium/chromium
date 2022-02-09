@@ -103,7 +103,8 @@ gfx::Size CalculateGpuRawDrawTileSize(const gfx::Size& base_tile_size,
   // Sometime |content_bounds| is longer than |tile_size| in one direction, but
   // it is much shorter in the other direction. In that case, we don't want to
   // split the content into several very small tiles.
-  if (content_bounds.GetArea() <= tile_size * tile_size) {
+  if (content_bounds.Area64() <=
+      static_cast<uint64_t>(tile_size) * static_cast<uint64_t>(tile_size)) {
     return AdjustGpuTileSize(content_bounds.width(), content_bounds.height(),
                              max_tile_size, min_height_for_gpu_raster_tile);
   }
