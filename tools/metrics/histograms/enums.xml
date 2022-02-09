@@ -3603,7 +3603,7 @@ Unknown properties are collapsed to zero. -->
 
 <enum name="AppManagementUserAction">
   <int value="0" label="View opened"/>
-  <int value="1" label="Native settings opened"/>
+  <int value="1" label="More settings and permissions opened"/>
   <int value="2" label="Uninstall dialog launched"/>
   <int value="3" label="Pin to shelf turned on"/>
   <int value="4" label="Pin to shelf turned off"/>
@@ -3713,6 +3713,11 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="Current seed fresh"/>
   <int value="2" label="New seed requested from the service"/>
   <int value="3" label="Seed request to service throttled by client"/>
+</enum>
+
+<enum name="AppSettingsPageEntryPoints">
+  <int value="0" label="From page info view in app window/tab"/>
+  <int value="1" label="From chrome://apps page"/>
 </enum>
 
 <enum name="AppsPageDragSource">
@@ -94812,6 +94817,7 @@ Called by update_scheduler_enums.py.-->
   <int value="-12304525" label="chrome://tab-strip/"/>
   <int value="-2353438" label="chrome://sim-unlock/"/>
   <int value="1377205" label="chrome://history-frame/"/>
+  <int value="6575726" label="chrome://app-settings/"/>
   <int value="9727114" label="chrome://favicon/"/>
   <int value="14651785" label="chrome://download-internals/"/>
   <int value="34035361" label="chrome://apps/"/>

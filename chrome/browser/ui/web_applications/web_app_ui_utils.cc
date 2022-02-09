@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -96,7 +97,7 @@ bool HandleAppManagementLinkClickedInPageInfo(
   return false;
 #else
   chrome::ShowWebAppSettings(chrome::FindBrowserWithWebContents(web_contents),
-                             *app_id);
+                             *app_id, AppSettingsPageEntryPoint::kPageInfoView);
   return true;
 #endif
 }

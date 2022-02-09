@@ -63,6 +63,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -291,15 +292,12 @@ void AppLauncherHandler::CreateWebAppInfo(const web_app::AppId& app_id,
           : kRunOnOsLoginModeWindowed;
   value->SetString("runOnOsLoginMode", runOnOsLoginModeString);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_FUCHSIA)
   // Show settings instead of App info for locally installed web apps.
   if (base::FeatureList::IsEnabled(features::kDesktopPWAsWebAppSettingsPage) &&
       is_locally_installed) {
     value->SetString("settingsMenuItemOverrideText",
                      l10n_util::GetStringUTF16(IDS_WEB_APP_SETTINGS_LINK));
   }
-#endif
 }
 
 void AppLauncherHandler::CreateExtensionInfo(const Extension* extension,
@@ -1016,16 +1014,15 @@ void AppLauncherHandler::HandleShowAppInfo(const base::ListValue* args) {
 
   if (web_app_provider_->registrar().IsInstalled(extension_id) &&
       !IsYoutubeExtension(extension_id)) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_FUCHSIA)
     if (base::FeatureList::IsEnabled(
             features::kDesktopPWAsWebAppSettingsPage)) {
+      // This assumes the AppLauncherHandler is only used by chrome://apps page.
+      // It needs to be updated if it's also used by other surfaces.
       chrome::ShowWebAppSettings(
           chrome::FindBrowserWithWebContents(web_ui()->GetWebContents()),
-          extension_id);
+          extension_id, web_app::AppSettingsPageEntryPoint::kChromeAppsPage);
       return;
     }
-#endif
     chrome::ShowSiteSettings(
         chrome::FindBrowserWithWebContents(web_ui()->GetWebContents()),
         web_app_provider_->registrar().GetAppStartUrl(extension_id));

@@ -175,6 +175,19 @@ void EnableSystemWebAppsInLacrosForTesting();
 void SkipMainProfileCheckForTesting();
 #endif
 
+constexpr char kAppSettingsPageEntryPointsHistogramName[] =
+    "WebApp.AppSettingsPage.EntryPoints";
+
+// These are used in histograms, do not remove/renumber entries. If you're
+// adding to this enum with the intention that it will be logged, update the
+// AppSettingsPageEntryPoint enum listing in
+// tools/metrics/histograms/enums.xml.
+enum class AppSettingsPageEntryPoint {
+  kPageInfoView = 0,
+  kChromeAppsPage = 1,
+  kMaxValue = kChromeAppsPage,
+};
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_UTILS_H_

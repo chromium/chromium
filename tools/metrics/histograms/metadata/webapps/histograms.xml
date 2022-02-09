@@ -223,6 +223,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.AppSettingsPage.EntryPoints"
+    enum="AppSettingsPageEntryPoints" expires_after="2022-09-01">
+  <owner>phillis@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the source of certain navigations to chrome://app-settings.
+    Recording happens at the given entry point, and not during the loading of
+    chrome://app-settings, so direct visits to the URL are not recorded.
+  </summary>
+</histogram>
+
 <histogram name="Webapp.CheckServiceWorker.Status"
     enum="ServiceWorkerOfflineCapability" expires_after="2022-06-19">
   <owner>asamidoi@chromium.org</owner>

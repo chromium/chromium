@@ -148,9 +148,12 @@ chromium-metrics-reviews@google.com.
 
   <owner>jshikaram@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
+  <owner>desktop-pwas-team@google.com</owner>
   <summary>
     The actions taken by the user when they are viewing the app details of an
-    app in App Management (chrome://os-settings/app-management).
+    app in App Management (chrome://os-settings/app-management). On
+    Windows/Linux/MacOS AppManagement.AppDetailViews.WebApp is the view on
+    chrome://app-settings page.
   </summary>
 </histogram>
 

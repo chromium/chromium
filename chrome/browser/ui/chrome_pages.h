@@ -25,6 +25,11 @@
 #include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
+#include "chrome/browser/web_applications/web_app_utils.h"
+#endif
+
 namespace signin {
 enum class ConsentLevel;
 }  // namespace signin
@@ -198,7 +203,9 @@ void ShowBrowserSigninOrSettings(Browser* browser,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
 // Show chrome://app-settings/<app-id> page.
-void ShowWebAppSettings(Browser* browser, const std::string& app_id);
+void ShowWebAppSettings(Browser* browser,
+                        const std::string& app_id,
+                        web_app::AppSettingsPageEntryPoint entry_point);
 #endif
 
 }  // namespace chrome

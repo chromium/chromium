@@ -54,7 +54,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/webui/connectivity_diagnostics/url_constants.h"
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes_util.h"
@@ -63,6 +62,7 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -551,7 +551,12 @@ void ShowBrowserSigninOrSettings(Browser* browser,
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
-void ShowWebAppSettings(Browser* browser, const std::string& app_id) {
+void ShowWebAppSettings(Browser* browser,
+                        const std::string& app_id,
+                        web_app::AppSettingsPageEntryPoint entry_point) {
+  base::UmaHistogramEnumeration(
+      web_app::kAppSettingsPageEntryPointsHistogramName, entry_point);
+
   const GURL link_destination(chrome::kChromeUIWebAppSettingsURL + app_id);
   NavigateParams params(browser->profile(), link_destination,
                         ui::PAGE_TRANSITION_TYPED);
