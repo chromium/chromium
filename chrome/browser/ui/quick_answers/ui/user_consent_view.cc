@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/quick_answers/ui/user_consent_view.h"
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/common/content_switches.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
@@ -331,10 +333,15 @@ void UserConsentView::InitWidget() {
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
 
   // Parent the widget to the owner of the menu.
-  auto* active_menu_controller = views::MenuController::GetActiveInstance();
-  DCHECK(active_menu_controller && active_menu_controller->owner());
-  params.parent = active_menu_controller->owner()->GetNativeView();
-  params.child = true;
+  // Skip the logic for browser tests since the menu controller is not
+  // available.
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kBrowserTest)) {
+    auto* active_menu_controller = views::MenuController::GetActiveInstance();
+    DCHECK(active_menu_controller && active_menu_controller->owner());
+    params.parent = active_menu_controller->owner()->GetNativeView();
+    params.child = true;
+  }
 
   views::Widget* widget = new views::Widget();
   widget->Init(std::move(params));
