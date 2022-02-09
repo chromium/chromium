@@ -38,7 +38,6 @@ backgroundRepeat
 backgroundRepeatX
 backgroundRepeatY
 backgroundSize
-basePalette
 baselineShift
 blockSize
 border
@@ -303,7 +302,6 @@ overflowInline
 overflowWrap
 overflowX
 overflowY
-overrideColors
 overscrollBehavior
 overscrollBehaviorBlock
 overscrollBehaviorInline

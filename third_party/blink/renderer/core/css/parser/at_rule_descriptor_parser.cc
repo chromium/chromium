@@ -166,8 +166,6 @@ CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,
   switch (rule_type) {
     case StyleRule::kFontFace:
       return Parser::ParseFontFaceDescriptor(id, range, context);
-    case StyleRule::kFontPaletteValues:
-      return Parser::ParseAtFontPaletteValuesDescriptor(id, range, context);
     case StyleRule::kProperty:
       return Parser::ParseAtPropertyDescriptor(id, tokenized_value, context);
     case StyleRule::kCounterStyle:

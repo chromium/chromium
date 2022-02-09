@@ -15,11 +15,6 @@ CSSAtRuleID CssAtRuleID(StringView name) {
     return kCSSAtRuleCharset;
   if (EqualIgnoringASCIICase(name, "font-face"))
     return kCSSAtRuleFontFace;
-  if (EqualIgnoringASCIICase(name, "font-palette-values")) {
-    if (RuntimeEnabledFeatures::FontPaletteEnabled())
-      return kCSSAtRuleFontPaletteValues;
-    return kCSSAtRuleInvalid;
-  }
   if (EqualIgnoringASCIICase(name, "import"))
     return kCSSAtRuleImport;
   if (EqualIgnoringASCIICase(name, "keyframes"))
@@ -67,9 +62,6 @@ void CountAtRule(const CSSParserContext* context, CSSAtRuleID rule_id) {
       break;
     case kCSSAtRuleFontFace:
       feature = WebFeature::kCSSAtRuleFontFace;
-      break;
-    case kCSSAtRuleFontPaletteValues:
-      feature = WebFeature::kCSSAtRuleFontPaletteValues;
       break;
     case kCSSAtRuleImport:
       feature = WebFeature::kCSSAtRuleImport;

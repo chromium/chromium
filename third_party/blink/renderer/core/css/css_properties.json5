@@ -5839,18 +5839,6 @@
       is_property: false,
       runtime_flag: "CSSFontFaceSizeAdjust",
     },
-    {
-      name: "base-palette",
-      is_descriptor: true,
-      is_property: false,
-      runtime_flag: "FontPalette",
-    },
-    {
-      name: "override-colors",
-      is_descriptor: true,
-      is_property: false,
-      runtime_flag: "FontPalette",
-    },
 
     // Shorthands
     {

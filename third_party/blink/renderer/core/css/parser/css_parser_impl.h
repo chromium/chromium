@@ -29,7 +29,6 @@ class StyleRuleBase;
 class StyleRuleCharset;
 class StyleRuleCounterStyle;
 class StyleRuleFontFace;
-class StyleRuleFontPaletteValues;
 class StyleRuleImport;
 class StyleRuleKeyframe;
 class StyleRuleKeyframes;
@@ -168,8 +167,6 @@ class CORE_EXPORT CSSParserImpl {
   StyleRuleSupports* ConsumeSupportsRule(CSSParserTokenStream&);
   StyleRuleViewport* ConsumeViewportRule(CSSParserTokenStream&);
   StyleRuleFontFace* ConsumeFontFaceRule(CSSParserTokenStream&);
-  StyleRuleFontPaletteValues* ConsumeFontPaletteValuesRule(
-      CSSParserTokenStream&);
   StyleRuleKeyframes* ConsumeKeyframesRule(bool webkit_prefixed,
                                            CSSParserTokenStream&);
   StyleRulePage* ConsumePageRule(CSSParserTokenStream&);

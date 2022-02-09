@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_counter_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_face_rule.h"
-#include "third_party/blink/renderer/core/css/css_font_palette_values_rule.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
@@ -41,7 +40,6 @@
 #include "third_party/blink/renderer/core/css/parser/container_query_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
-#include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
 #include "third_party/blink/renderer/core/css/style_rule_namespace.h"
@@ -80,9 +78,6 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
       return;
     case kFontFace:
       To<StyleRuleFontFace>(this)->TraceAfterDispatch(visitor);
-      return;
-    case kFontPaletteValues:
-      To<StyleRuleFontPaletteValues>(this)->TraceAfterDispatch(visitor);
       return;
     case kMedia:
       To<StyleRuleMedia>(this)->TraceAfterDispatch(visitor);
@@ -141,9 +136,6 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
     case kFontFace:
       To<StyleRuleFontFace>(this)->~StyleRuleFontFace();
       return;
-    case kFontPaletteValues:
-      To<StyleRuleFontPaletteValues>(this)->~StyleRuleFontPaletteValues();
-      return;
     case kMedia:
       To<StyleRuleMedia>(this)->~StyleRuleMedia();
       return;
@@ -194,8 +186,6 @@ StyleRuleBase* StyleRuleBase::Copy() const {
       return To<StyleRuleProperty>(this)->Copy();
     case kFontFace:
       return To<StyleRuleFontFace>(this)->Copy();
-    case kFontPaletteValues:
-      return To<StyleRuleFontPaletteValues>(this)->Copy();
     case kMedia:
       return To<StyleRuleMedia>(this)->Copy();
     case kScrollTimeline:
@@ -249,10 +239,6 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(CSSStyleSheet* parent_sheet,
     case kFontFace:
       rule = MakeGarbageCollected<CSSFontFaceRule>(To<StyleRuleFontFace>(self),
                                                    parent_sheet);
-      break;
-    case kFontPaletteValues:
-      rule = MakeGarbageCollected<CSSFontPaletteValuesRule>(
-          To<StyleRuleFontPaletteValues>(self), parent_sheet);
       break;
     case kMedia:
       rule = MakeGarbageCollected<CSSMediaRule>(To<StyleRuleMedia>(self),
