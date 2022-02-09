@@ -3140,11 +3140,9 @@ Status IndexedDBBackingStore::MigrateToV3(LevelDBWriteBatch* write_batch) {
     INTERNAL_CONSISTENCY_ERROR(SET_UP_METADATA);
     return InternalInconsistencyStatus();
   }
-  indexed_db::ReportV2Schema(has_blobs, storage_key_);
   if (has_blobs) {
     INTERNAL_CONSISTENCY_ERROR(UPGRADING_SCHEMA_CORRUPTED_BLOBS);
-    if (storage_key_.origin().host() != "docs.google.com")
-      return InternalInconsistencyStatus();
+    return InternalInconsistencyStatus();
   } else {
     std::ignore = PutInt(write_batch, schema_version_key, db_schema_version);
   }

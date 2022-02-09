@@ -99,9 +99,6 @@ void ReportInternalError(const char* type,
 
 void ReportSchemaVersion(int version, const blink::StorageKey& storage_key);
 
-void ReportV2Schema(bool has_broken_blobs,
-                    const blink::StorageKey& storage_key);
-
 void ReportLevelDBError(const std::string& histogram_name,
                         const leveldb::Status& s);
 
