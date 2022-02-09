@@ -23,113 +23,74 @@ suite('CodeInputElementTest', () => {
   test('value set correctly', () => {
     const testValue = 'hello';
     c2cInput.setValue(testValue);
-    assertEquals(c2cInput.value, testValue.toUpperCase());
-    assertEquals(c2cInput.$.inputElement.value, testValue);
-    assertEquals(
-      c2cInput.getDisplayChar(0).innerHTML,
-      testValue[0].toUpperCase()
-    );
-    assertEquals(
-      c2cInput.getDisplayChar(1).innerHTML,
-      testValue[1].toUpperCase()
-    );
-    assertEquals(
-      c2cInput.getDisplayChar(2).innerHTML,
-      testValue[2].toUpperCase()
-    );
-    assertEquals(
-      c2cInput.getDisplayChar(3).innerHTML,
-      testValue[3].toUpperCase()
-    );
-    assertEquals(
-      c2cInput.getDisplayChar(4).innerHTML,
-      testValue[4].toUpperCase()
-    );
-    assertEquals(c2cInput.getDisplayChar(5).innerHTML, '');
+    assertEquals(c2cInput.value, testValue);
   });
 
-  test('focus is displayed properly', () => {
+  test('focus advances on input', () => {
     c2cInput.clearInput();
     c2cInput.focusInput();
 
-    assertTrue(c2cInput.getBox(0).classList.contains('focused'));
-    assertTrue(c2cInput.getBox(1).classList.contains('focused'));
-    assertTrue(c2cInput.getBox(2).classList.contains('focused'));
-    assertTrue(c2cInput.getBox(3).classList.contains('focused'));
-    assertTrue(c2cInput.getBox(4).classList.contains('focused'));
-    assertTrue(c2cInput.getBox(5).classList.contains('focused'));
+    assertEquals(c2cInput.getFocusedIndex(), 0);
+
+    c2cInput.getInput(0).value = 'a';
+    c2cInput.getInput(0).dispatchEvent(new InputEvent('input'));
+    assertEquals(c2cInput.getFocusedIndex(), 1);
+
+    c2cInput.getInput(1).value = 'b';
+    c2cInput.getInput(1).dispatchEvent(new InputEvent('input'));
+    assertEquals(c2cInput.getFocusedIndex(), 2);
+
+  });
+
+  test('focus does not advance if it is the last box', () => {
+    c2cInput.clearInput();
+
+    c2cInput.getInput(5).focusInput();
+    assertEquals(c2cInput.getFocusedIndex(), 5);
+    c2cInput.getInput(5).dispatchEvent(new InputEvent('input'));
+    assertEquals(c2cInput.getFocusedIndex(), 5);
+  });
+
+  test(
+    'backspace on an empty input erases and focuses the previous input',
+    () => {
+      c2cInput.clearInput();
+      const input1 = c2cInput.getInput(1);
+      const input2 = c2cInput.getInput(2);
+      input1.value = 'a';
+      input2.focusInput();
+
+      assertEquals(input1.value, 'a');
+      input2.dispatchEvent(new KeyboardEvent('keydown', {'key': 'Backspace'}));
+      assertEquals(c2cInput.getFocusedIndex(), 1);
+      assertEquals(input1.value, '');
+    }
+  );
+
+  test('backspace on filled input does not change focus', () => {
+    c2cInput.clearInput();
+    const input1 = c2cInput.getInput(1);
+    const input2 = c2cInput.getInput(2);
+    input1.value = 'a';
+    input2.value = 'b';
+    input2.focusInput();
+
+    assertEquals(input1.value, 'a');
+    input2.dispatchEvent(new KeyboardEvent('keydown', {'key': 'Backspace'}));
+    assertEquals(c2cInput.getFocusedIndex(), 2);
+    assertEquals(input1.value, 'a');
   });
 
   test('disabled state propogates correctly', () => {
     c2cInput.clearInput();
     c2cInput.disabled = false;
-    assertFalse(c2cInput.$.inputElement.disabled);
+    assertFalse(c2cInput.getInput(0).disabled);
+    assertFalse(c2cInput.getInput(1).disabled);
+    assertFalse(c2cInput.getInput(2).disabled);
 
     c2cInput.disabled = true;
-    assertTrue(c2cInput.$.inputElement.disabled);
-  });
-
-  test('selection is displayed properly', async () => {
-    c2cInput.setValue('qwerty');
-    c2cInput.$.inputElement.setSelectionRange(1, 3);
-    c2cInput.$.inputElement.dispatchEvent(new Event('select'));
-    await waitAfterNextRender();
-
-    assertFalse(c2cInput.getBox(0).classList.contains('selected'));
-    assertTrue(c2cInput.getBox(1).classList.contains('selected'));
-    assertTrue(c2cInput.getBox(2).classList.contains('selected'));
-    assertFalse(c2cInput.getBox(3).classList.contains('selected'));
-    assertFalse(c2cInput.getBox(4).classList.contains('selected'));
-    assertFalse(c2cInput.getBox(5).classList.contains('selected'));
-
-    c2cInput.$.inputElement.setSelectionRange(2, 5);
-    c2cInput.$.inputElement.dispatchEvent(new Event('select'));
-    await waitAfterNextRender();
-
-    assertFalse(c2cInput.getBox(0).classList.contains('selected'));
-    assertFalse(c2cInput.getBox(1).classList.contains('selected'));
-    assertTrue(c2cInput.getBox(2).classList.contains('selected'));
-    assertTrue(c2cInput.getBox(3).classList.contains('selected'));
-    assertTrue(c2cInput.getBox(4).classList.contains('selected'));
-    assertFalse(c2cInput.getBox(5).classList.contains('selected'));
-  });
-
-  test('cursor is displayed properly', async () => {
-    c2cInput.setValue('qwerty');
-    c2cInput.$.inputElement.setSelectionRange(1, 1);
-    c2cInput.$.inputElement.dispatchEvent(new Event('select'));
-    await waitAfterNextRender();
-
-    assertFalse(c2cInput.getBox(0).classList.contains('cursor-start'));
-    assertTrue(c2cInput.getBox(0).classList.contains('cursor'));
-    assertFalse(c2cInput.getBox(1).classList.contains('cursor'));
-    assertFalse(c2cInput.getBox(2).classList.contains('cursor'));
-    assertFalse(c2cInput.getBox(3).classList.contains('cursor'));
-    assertFalse(c2cInput.getBox(4).classList.contains('cursor'));
-    assertFalse(c2cInput.getBox(5).classList.contains('cursor'));
-
-    c2cInput.$.inputElement.setSelectionRange(0, 0);
-    c2cInput.$.inputElement.dispatchEvent(new Event('select'));
-    await waitAfterNextRender();
-
-    assertTrue(c2cInput.getBox(0).classList.contains('cursor-start'));
-    assertFalse(c2cInput.getBox(0).classList.contains('cursor'));
-    assertFalse(c2cInput.getBox(1).classList.contains('cursor'));
-    assertFalse(c2cInput.getBox(2).classList.contains('cursor'));
-    assertFalse(c2cInput.getBox(3).classList.contains('cursor'));
-    assertFalse(c2cInput.getBox(4).classList.contains('cursor'));
-    assertFalse(c2cInput.getBox(5).classList.contains('cursor'));
-
-    c2cInput.$.inputElement.setSelectionRange(4, 4);
-    c2cInput.$.inputElement.dispatchEvent(new Event('select'));
-    await waitAfterNextRender();
-
-    assertFalse(c2cInput.getBox(0).classList.contains('cursor-start'));
-    assertFalse(c2cInput.getBox(0).classList.contains('cursor'));
-    assertFalse(c2cInput.getBox(1).classList.contains('cursor'));
-    assertFalse(c2cInput.getBox(2).classList.contains('cursor'));
-    assertTrue(c2cInput.getBox(3).classList.contains('cursor'));
-    assertFalse(c2cInput.getBox(4).classList.contains('cursor'));
-    assertFalse(c2cInput.getBox(5).classList.contains('cursor'));
+    assertTrue(c2cInput.getInput(0).disabled);
+    assertTrue(c2cInput.getInput(1).disabled);
+    assertTrue(c2cInput.getInput(2).disabled);
   });
 });

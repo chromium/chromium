@@ -2,16 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-export interface CodeInputElement {
-  $: {
-    inputElement: HTMLInputElement;
-    container: HTMLDivElement;
-  }
-}
 
 export class CodeInputElement extends PolymerElement {
   static get is() {
@@ -24,10 +18,7 @@ export class CodeInputElement extends PolymerElement {
 
   static get properties() {
     return {
-      disabled: {
-        type: Boolean,
-        observer: 'disabledChange'
-      },
+      disabled: Boolean,
       length: Number,
       value: {
         type: String,
@@ -38,59 +29,91 @@ export class CodeInputElement extends PolymerElement {
 
   length: number;
   value: string;
-  focused: boolean;
-  disabled: boolean;
-  private charDisplayBoxes: string[];
-  private boxesLoaded: boolean;
+  private inputs: string[];
+  private inputElementsLoaded: boolean;
 
   constructor() {
     super();
-    this.boxesLoaded = false;
-    this.focused = false;
+    this.inputElementsLoaded = false;
 
     afterNextRender(this, () => {
-      this.boxesLoaded = true;
+      this.inputElementsLoaded = true;
+
+      for(let i = 0; i < this.length; i++) {
+        const index = i;
+        this.getInput(i).addEventListener('input', (e: Event) => {
+          const input = e.target as CrInputElement;
+          this.handleInput(input.value, index);
+        });
+        this.getInput(i).addEventListener('keydown', (k: KeyboardEvent) => {
+          if (k.key === 'Backspace') {
+            this.handleBackspace(index);
+          }
+        });
+      }
     });
   }
 
   ready() {
     super.ready();
-    this.charDisplayBoxes = Array(this.length).fill('');
-    this.$.container.style.width = (48 * this.length + 28) + 'px';
-    this.$.inputElement.style.width = (48 * this.length + 2) + 'px';
-    this.$.inputElement.maxLength = this.length;
+    this.inputs = Array(this.length).fill('');
   }
 
   clearInput() {
-    this.setValue('');
+    const clear = () => {
+      for (let i = 0; i < this.length; i++) {
+        this.getInput(i).value = '';
+      }
+    };
+
+    this.afterInputsLoaded(clear);
   }
 
   focusInput() {
-    this.afterBoxesLoaded(() => {
-      this.$.inputElement.focus();
-      this.showSelection();
-    });
+    const focus = () => {
+      for (let i = 0; i < this.length; i++) {
+        if (this.getInput(i).value === '') {
+          this.getInput(i).focusInput();
+          return;
+        }
+      }
+      this.getInput(this.length - 1).focusInput();
+    };
+    
+    this.afterInputsLoaded(focus);
   }
 
-  getBox(boxIndex: number) {
-    return this.shadowRoot!.querySelector('#box-' + boxIndex)!;
+  getFocusedIndex() {
+    for (let i = 0; i < this.length; i++) {
+      if (this.getInput(i) === this.shadowRoot!.activeElement) {
+        return i;
+      }
+    }
+
+    return -1;
   }
 
-  getDisplayChar(charIndex: number) {
-    return this.shadowRoot!.querySelector('#char-' + charIndex)!;
+  getInput(index: number): CrInputElement {
+    const el = this.shadowRoot!.querySelector('#input-' + index);
+    return el as CrInputElement;
   }
 
   setValue(value: string) {
-    if (value.length > this.length) return;
+    if (value.length > this.length) {
+      return;
+    }
 
-    this.afterBoxesLoaded(() => {
-      this.$.inputElement.value = value;
-      this.renderCharDisplay();
-    });
+    this.clearInput();
+
+    for (let i = 0 ; i < value.length; i++) {
+      this.getInput(i).value = value[i];
+    }
+
+    this.updateValue();
   }
 
-  private afterBoxesLoaded(callback: Function) {
-    if (this.boxesLoaded) {
+  private afterInputsLoaded(callback: Function) {
+    if (this.inputElementsLoaded) {
       callback();
     } else {
       afterNextRender(this, () => {
@@ -99,85 +122,46 @@ export class CodeInputElement extends PolymerElement {
     }
   }
 
-  private disabledChange() {
-    if (this.disabled) {
-      this.$.container.classList.add('disabled');
-    } else {
-      this.$.container.classList.remove('disabled');
+  private focusNext(index: number) {
+    if (index + 1 < this.length) {
+      this.getInput(index + 1).focusInput();
     }
   }
 
-  private selectAndRender() {
-    this.showSelection();
-    this.renderCharDisplay();
+  private focusPrev(index: number) {
+    if (index > 0) {
+      this.getInput(index - 1).focusInput();
+    }
   }
 
-  private hideFocus() {
-    this.focused = false;
+  private handleInput(value: string, index: number) {
+    if (value.length) {
+      this.focusNext(index);
+      this.getInput(index).value = value.trim().toUpperCase()[0];
+    }
+
+    this.updateValue();
+  }
+
+  private handleBackspace(index: number) {
+    if (index > 0 && !this.getInput(index).value.length) {
+      this.getInput(index - 1).value = '';
+      this.focusPrev(index);
+    } else if (this.getInput(index).inputElement.selectionStart === 0) {
+      this.focusPrev(index);
+    }
+
+    this.updateValue();
+  }
+
+  private updateValue() {
     for (let i = 0; i < this.length; i++) {
-      this.getBox(i).classList.remove('focused');
-      this.getBox(i).classList.remove('selected');
-      this.getBox(i).classList.remove('cursor');
-      this.getBox(i).classList.remove('cursor-start');
+      this.inputs[i] = this.getInput(i).value;
     }
-  }
-
-  private highlight(start: number, end: number) {
-    for (let i = 0; i < this.length; i++) {
-      this.getBox(i).classList.remove('cursor');
-      if (i >= start && i < end) {
-        this.getBox(i).classList.add('selected');
-      } else {
-        this.getBox(i).classList.remove('selected');
-      }
-    }
-  }
-
-  private placeCursor(cursorIndex: number) {
-    for (let i = 0; i < this.length; i++) {
-      this.getBox(i).classList.remove('selected');
-      this.getBox(i).classList.remove('cursor');
-    }
-    if (cursorIndex - 1 >= 0) {
-        this.getBox(cursorIndex - 1).classList.add('cursor');
-    }
-    if (cursorIndex === 0) {
-      this.getBox(0).classList.add('cursor-start');
-    } else {
-      this.getBox(0).classList.remove('cursor-start');
-    }
-  }
-
-  private renderCharDisplay() {
-    const input = this.$.inputElement;
-    this.value = input.value.toUpperCase();
+    this.value = ''.concat(...this.inputs);
     this.dispatchEvent(new CustomEvent('access-code-input', {
       detail: {value: this.value}
     }));
-    for (let i = 0; i < this.length; i++) {
-      if (i < this.value.length) {
-        this.getDisplayChar(i).innerHTML = this.value[i];
-      } else {
-        this.getDisplayChar(i).innerHTML = '';
-      }
-    }
-  }
-
-  private showFocus() {
-    this.focused = true;
-    for (let i = 0; i < this.length; i++) {
-        this.getBox(i).classList.add('focused');
-    }
-  }
-
-  private showSelection() {
-    const startIndex = this.$.inputElement.selectionStart!;
-    const endIndex = this.$.inputElement.selectionEnd!;
-    if (startIndex === endIndex) {
-        this.placeCursor(startIndex);
-    } else {
-        this.highlight(startIndex, endIndex);
-    }
   }
 }
 
