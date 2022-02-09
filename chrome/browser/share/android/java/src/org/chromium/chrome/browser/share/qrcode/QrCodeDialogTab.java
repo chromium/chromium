@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.share.qrcode;
 
 import android.view.View;
 
-import org.chromium.ui.base.AndroidPermissionDelegate;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 /**
  * Common interface for all the tab components in QrCodeDialog.

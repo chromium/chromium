@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.ui.base;
+package org.chromium.ui.permissions;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -26,6 +26,7 @@ import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowActivity.PermissionsRequest;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.ui.base.TestActivity;
 
 import java.lang.ref.WeakReference;
 

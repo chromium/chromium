@@ -19,7 +19,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.FileAccessPermissionHelper;
-import org.chromium.ui.base.AndroidPermissionDelegate;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 import java.text.DateFormat;
 import java.util.Date;

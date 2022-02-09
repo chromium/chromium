@@ -19,7 +19,7 @@ import com.google.android.material.tabs.TabLayout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.qrcode.scan_tab.QrCodeScanCoordinator;
 import org.chromium.chrome.browser.share.qrcode.share_tab.QrCodeShareCoordinator;
-import org.chromium.ui.base.AndroidPermissionDelegate;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.ArrayList;

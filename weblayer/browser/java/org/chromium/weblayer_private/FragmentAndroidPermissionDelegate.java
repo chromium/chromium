@@ -5,7 +5,7 @@
 package org.chromium.weblayer_private;
 
 import org.chromium.base.compat.ApiHelperForM;
-import org.chromium.ui.base.AndroidPermissionDelegateWithRequester;
+import org.chromium.ui.permissions.AndroidPermissionDelegateWithRequester;
 
 /**
  * AndroidPermissionDelegate implementation for BrowserFragment.

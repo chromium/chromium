@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.share.qrcode;
 import android.app.Activity;
 import android.app.FragmentManager;
 
-import org.chromium.ui.base.AndroidPermissionDelegate;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 /**
  * Creates and represents the QrCode main UI.

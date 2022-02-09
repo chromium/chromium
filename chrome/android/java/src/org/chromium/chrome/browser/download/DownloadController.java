@@ -12,8 +12,8 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.download.DownloadCollectionBridge;
 import org.chromium.content_public.browser.BrowserStartupController;
-import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.url.GURL;
 
 /**

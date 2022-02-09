@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.share.qrcode;
 
 import com.google.android.material.tabs.TabLayout;
 
-import org.chromium.ui.base.AndroidPermissionDelegate;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 import java.util.ArrayList;
 
