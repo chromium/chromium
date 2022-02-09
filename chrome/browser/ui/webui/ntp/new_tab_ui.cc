@@ -183,7 +183,7 @@ void NewTabUI::NewTabHTMLSource::StartDataRequest(
       NTPResourceCache::GetWindowType(profile_for_window_type);
   scoped_refptr<base::RefCountedMemory> html_bytes(
       NTPResourceCacheFactory::GetForProfile(profile_)->GetNewTabHTML(
-          win_type));
+          win_type, wc_getter));
 
   std::move(callback).Run(html_bytes.get());
 }

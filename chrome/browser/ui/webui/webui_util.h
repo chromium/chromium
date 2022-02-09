@@ -17,6 +17,7 @@ class WebUIDataSource;
 
 namespace ui {
 class NativeTheme;
+class ThemeProvider;
 }
 
 namespace webui {
@@ -40,10 +41,19 @@ void SetupWebUIDataSource(content::WebUIDataSource* source,
 bool IsEnterpriseManaged();
 
 #if defined(TOOLKIT_VIEWS)
+
 // Returns whether WebContents should use dark mode colors depending on the
 // theme.
 ui::NativeTheme* GetNativeTheme(content::WebContents* web_contents);
-#endif
+
+// Returns the ThemeProvider instance associated with the given web contents.
+const ui::ThemeProvider* GetThemeProvider(content::WebContents* web_contents);
+
+// Sets a global theme provider that will be returned when calling
+// webui::GetThemeProvider(). Used only for testing.
+void SetThemeProviderForTesting(const ui::ThemeProvider* theme_provider);
+
+#endif  // defined(TOOLKIT_VIEWS)
 
 }  // namespace webui
 

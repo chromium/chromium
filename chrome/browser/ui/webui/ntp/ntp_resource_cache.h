@@ -66,10 +66,12 @@ class NTPResourceCache : public ThemeServiceObserver,
   ~NTPResourceCache() override;
 
   base::RefCountedMemory* GetNewTabGuestHTML();
-  base::RefCountedMemory* GetNewTabHTML(WindowType win_type);
+  base::RefCountedMemory* GetNewTabHTML(
+      WindowType win_type,
+      const content::WebContents::Getter& wc_getter);
   base::RefCountedMemory* GetNewTabCSS(
       WindowType win_type,
-      const content::WebContents::Getter wc_getter);
+      const content::WebContents::Getter& wc_getter);
 
   // ThemeServiceObserver:
   void OnThemeChanged() override;
@@ -97,10 +99,10 @@ class NTPResourceCache : public ThemeServiceObserver,
   bool NewTabHTMLNeedsRefresh();
 
   void CreateNewTabHTML();
-  void CreateNewTabCSS(const content::WebContents::Getter wc_getter);
+  void CreateNewTabCSS(const content::WebContents::Getter& wc_getter);
 
-  void CreateNewTabIncognitoHTML();
-  void CreateNewTabIncognitoCSS(const content::WebContents::Getter wc_getter);
+  void CreateNewTabIncognitoHTML(const content::WebContents::Getter& wc_getter);
+  void CreateNewTabIncognitoCSS(const content::WebContents::Getter& wc_getter);
 
   void CreateNewTabGuestHTML();
 

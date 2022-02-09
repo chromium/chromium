@@ -67,6 +67,11 @@ bool IsEnterpriseManaged() {
 }
 
 #if defined(TOOLKIT_VIEWS)
+
+namespace {
+const ui::ThemeProvider* g_theme_provider_for_testing = nullptr;
+}  // namespace
+
 ui::NativeTheme* GetNativeTheme(content::WebContents* web_contents) {
   ui::NativeTheme* native_theme = nullptr;
 
@@ -97,6 +102,20 @@ ui::NativeTheme* GetNativeTheme(content::WebContents* web_contents) {
 
   return native_theme;
 }
-#endif  // !defined(TOOLKIT_VIEWS)
+
+const ui::ThemeProvider* GetThemeProvider(content::WebContents* web_contents) {
+  if (g_theme_provider_for_testing)
+    return g_theme_provider_for_testing;
+
+  auto* browser_window =
+      BrowserWindow::FindBrowserWindowWithWebContents(web_contents);
+  return browser_window ? browser_window->GetThemeProvider() : nullptr;
+}
+
+void SetThemeProviderForTesting(const ui::ThemeProvider* theme_provider) {
+  g_theme_provider_for_testing = theme_provider;
+}
+
+#endif  // defined(TOOLKIT_VIEWS)
 
 }  // namespace webui
