@@ -726,6 +726,9 @@ need to be translated for each locale.-->
         <message name="IDS_APP_FULLSCREEN_KEY" desc="This refers to the 'Fullscreen' media key on certain keyboards.">
           Fullscreen
         </message>
+        <message name="IDS_APP_OVERVIEW_KEY" desc="This refers to the 'Overview' or 'Show All Windows' media key on Chrome OS keyboards.">
+          Overview
+        </message>
       </if>
 
       <!-- Accelerator format -->

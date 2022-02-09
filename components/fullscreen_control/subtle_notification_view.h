@@ -7,10 +7,12 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -34,6 +36,14 @@ class SubtleNotificationView : public views::View {
   // Display the |instruction_text| to the user. If |instruction_text| is
   // empty hide the view.
   void UpdateContent(const std::u16string& instruction_text);
+
+  // Display the |instruction_text| to the user, with the |key_images| inside
+  // the rectangles that represent keys. |key_images| must either be empty, or
+  // the same length as the number of text segments inside pipe characters.
+  //
+  // If |instruction_text| is empty hide the view.
+  void UpdateContent(const std::u16string& instruction_text,
+                     std::vector<std::unique_ptr<views::View>> key_images);
 
   // Creates a Widget containing a SubtleNotificationView.
   static views::Widget* CreatePopupWidget(

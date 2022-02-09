@@ -6,6 +6,7 @@
 #define COMPONENTS_EXO_UI_LOCK_CONTROLLER_H_
 
 #include "ash/shell.h"
+#include "base/containers/flat_set.h"
 #include "base/timer/timer.h"
 #include "components/exo/seat_observer.h"
 #include "ui/events/event_handler.h"
@@ -14,18 +15,18 @@ class FullscreenControlPopup;
 
 namespace exo {
 
+class Pointer;
 class Seat;
 
 extern const base::TimeDelta kLongPressEscapeDuration;
 
-// Listens for long presses on the Escape key, which breaks out of various
-// kinds of "locks" that a window may hold.
+// Helps users to break out of various kinds of "locks" that a window may hold
+// (fullscreen, pointer lock).
 //
-// TODO(cpelling): For now this is just non-immersive fullscreen. Eventually
-// this should also break pointer lock.
-//
-// The "long keypress" design is inspired by Chromium's Keyboard Lock feature
-// (see https://chromestatus.com/feature/5642959835889664).
+// In some cases this is achieved by pressing and holding Escape, similar to
+// Chromium's Keyboard Lock feature
+// (see https://chromestatus.com/feature/5642959835889664). In other cases we
+// nudge the user to use Overview.
 class UILockController : public ui::EventHandler, public SeatObserver {
  public:
   explicit UILockController(Seat* seat);
@@ -40,8 +41,13 @@ class UILockController : public ui::EventHandler, public SeatObserver {
   void OnSurfaceFocused(Surface* gained_focus,
                         Surface* lost_focus,
                         bool has_focued_surface) override;
+  void OnPointerCaptureEnabled(Pointer* pointer,
+                               aura::Window* capture_window) override;
+  void OnPointerCaptureDisabled(Pointer* pointer,
+                                aura::Window* capture_window) override;
 
   views::Widget* GetEscNotificationForTesting(aura::Window* window);
+  views::Widget* GetPointerCaptureNotificationForTesting(aura::Window* window);
   FullscreenControlPopup* GetExitPopupForTesting(aura::Window* window);
 
  private:
@@ -57,6 +63,9 @@ class UILockController : public ui::EventHandler, public SeatObserver {
   // dangle if the Surface is destroyed while the timer is running. Valid only
   // for comparison purposes.
   Surface* focused_surface_to_unlock_ = nullptr;
+
+  // Pointers currently being captured.
+  base::flat_set<base::raw_ptr<Pointer>> captured_pointers_;
 };
 
 }  // namespace exo

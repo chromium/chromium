@@ -41,6 +41,9 @@ const int kKeyNameBorderPx = 1;
 const int kKeyNameCornerRadius = 2;
 const int kKeyNamePaddingPx = 5;
 
+// Spacing between the key name and image, if any.
+const int kKeyNameImageSpacingPx = 3;
+
 // The context used to obtain typography for the instruction text. It's not
 // really a dialog, but a dialog title is a good fit.
 constexpr int kInstructionTextContext = views::style::CONTEXT_DIALOG_TITLE;
@@ -65,12 +68,16 @@ class SubtleNotificationView::InstructionView : public views::View {
 
   std::u16string GetText() const;
   void SetText(const std::u16string& text);
+  void SetTextAndImages(const std::u16string& text,
+                        std::vector<std::unique_ptr<views::View>> key_images);
 
  private:
   // Adds a label to the end of the notification text. If |format_as_key|,
   // surrounds the label in a rounded-rect border to indicate that it is a
   // keyboard key.
-  void AddTextSegment(const std::u16string& text, bool format_as_key);
+  void AddTextSegment(const std::u16string& text,
+                      bool format_as_key,
+                      std::unique_ptr<views::View> key_image);
 
   std::u16string text_;
 };
@@ -91,8 +98,14 @@ std::u16string SubtleNotificationView::InstructionView::GetText() const {
 
 void SubtleNotificationView::InstructionView::SetText(
     const std::u16string& text) {
+  SetTextAndImages(text, std::vector<std::unique_ptr<views::View>>());
+}
+
+void SubtleNotificationView::InstructionView::SetTextAndImages(
+    const std::u16string& text,
+    std::vector<std::unique_ptr<views::View>> key_images) {
   // Avoid replacing the contents with the same text.
-  if (text == text_)
+  if (text == text_ && key_images.empty())
     return;
 
   RemoveAllChildViews();
@@ -106,11 +119,26 @@ void SubtleNotificationView::InstructionView::SetText(
   // list is also empty (rather than containing a single empty string).
   DCHECK(segments.empty() || segments.size() % 2 == 1);
 
+  // Every second segment is formatted as a key, so should have an image
+  // specified for it (even if that image is an empty unique_ptr).
+  // Or, we can have no key images at all.
+  //
+  // There should always be one non-key segment preceding each key segment
+  // (even if empty, as above) and one segment at the end, so the total number
+  // of segments should be double the number of key segments, plus one.
+  DCHECK(key_images.empty() || key_images.size() * 2 + 1 == segments.size());
+
   // Add text segment, alternating between non-key (no border) and key (border)
   // formatting.
   bool format_as_key = false;
+  int idx = 0;
   for (const auto& segment : segments) {
-    AddTextSegment(segment, format_as_key);
+    std::unique_ptr<views::View> key_image;
+    if (!key_images.empty() && format_as_key) {
+      key_image = std::move(key_images[idx]);
+      idx++;
+    }
+    AddTextSegment(segment, format_as_key, std::move(key_image));
     format_as_key = !format_as_key;
   }
 
@@ -119,7 +147,8 @@ void SubtleNotificationView::InstructionView::SetText(
 
 void SubtleNotificationView::InstructionView::AddTextSegment(
     const std::u16string& text,
-    bool format_as_key) {
+    bool format_as_key,
+    std::unique_ptr<views::View> key_image) {
   constexpr SkColor kForegroundColor = SK_ColorWHITE;
 
   views::Label* label = new views::Label(text, kInstructionTextContext);
@@ -127,6 +156,7 @@ void SubtleNotificationView::InstructionView::AddTextSegment(
   label->SetBackgroundColor(kSubtleNotificationBackgroundColor);
 
   if (!format_as_key) {
+    DCHECK(!key_image);
     AddChildView(label);
     return;
   }
@@ -134,10 +164,12 @@ void SubtleNotificationView::InstructionView::AddTextSegment(
   views::View* key = new views::View;
   auto key_name_layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(0, kKeyNamePaddingPx), 0);
+      gfx::Insets(0, kKeyNamePaddingPx), kKeyNameImageSpacingPx);
   key_name_layout->set_minimum_cross_axis_size(
       label->GetPreferredSize().height() + kKeyNamePaddingPx * 2);
   key->SetLayoutManager(std::move(key_name_layout));
+  if (key_image)
+    key->AddChildView(std::move(key_image));
   key->AddChildView(label);
   // The key name has a border around it.
   std::unique_ptr<views::Border> border(views::CreateRoundedRectBorder(
@@ -173,6 +205,14 @@ SubtleNotificationView::~SubtleNotificationView() {}
 void SubtleNotificationView::UpdateContent(
     const std::u16string& instruction_text) {
   instruction_view_->SetText(instruction_text);
+  instruction_view_->SetVisible(!instruction_text.empty());
+  Layout();
+}
+
+void SubtleNotificationView::UpdateContent(
+    const std::u16string& instruction_text,
+    std::vector<std::unique_ptr<views::View>> key_images) {
+  instruction_view_->SetTextAndImages(instruction_text, std::move(key_images));
   instruction_view_->SetVisible(!instruction_text.empty());
   Layout();
 }

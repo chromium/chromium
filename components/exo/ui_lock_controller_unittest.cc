@@ -12,12 +12,16 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "components/exo/buffer.h"
 #include "components/exo/display.h"
+#include "components/exo/pointer.h"
+#include "components/exo/pointer_constraint_delegate.h"
+#include "components/exo/pointer_delegate.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_helper.h"
 #include "components/exo/wm_helper.h"
 #include "components/fullscreen_control/fullscreen_control_popup.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/class_property.h"
 #include "ui/gfx/animation/animation_test_api.h"
@@ -28,7 +32,7 @@ namespace exo {
 namespace {
 
 constexpr char kNoEscHoldAppId[] = "no-esc-hold";
-constexpr char kEscToMinimizeAppId[] = "esc-to-minimize";
+constexpr char kOverviewToExitAppId[] = "overview-to-exit";
 
 struct SurfaceTriplet {
   std::unique_ptr<Surface> surface;
@@ -60,6 +64,58 @@ struct SurfaceTriplet {
   }
 };
 
+class MockPointerDelegate : public PointerDelegate {
+ public:
+  MockPointerDelegate(Surface* surface) {
+    EXPECT_CALL(*this, CanAcceptPointerEventsForSurface(surface))
+        .WillRepeatedly(testing::Return(true));
+  }
+
+  // Overridden from PointerDelegate:
+  MOCK_METHOD1(OnPointerDestroying, void(Pointer*));
+  MOCK_CONST_METHOD1(CanAcceptPointerEventsForSurface, bool(Surface*));
+  MOCK_METHOD3(OnPointerEnter, void(Surface*, const gfx::PointF&, int));
+  MOCK_METHOD1(OnPointerLeave, void(Surface*));
+  MOCK_METHOD2(OnPointerMotion, void(base::TimeTicks, const gfx::PointF&));
+  MOCK_METHOD3(OnPointerButton, void(base::TimeTicks, int, bool));
+  MOCK_METHOD3(OnPointerScroll,
+               void(base::TimeTicks, const gfx::Vector2dF&, bool));
+  MOCK_METHOD1(OnPointerScrollStop, void(base::TimeTicks));
+  MOCK_METHOD0(OnPointerFrame, void());
+};
+
+class MockPointerConstraintDelegate : public PointerConstraintDelegate {
+ public:
+  MockPointerConstraintDelegate(Pointer* pointer, Surface* surface)
+      : pointer_(pointer) {
+    EXPECT_CALL(*this, GetConstrainedSurface())
+        .WillRepeatedly(testing::Return(surface));
+    ON_CALL(*this, OnConstraintActivated).WillByDefault([this]() {
+      activated_count++;
+    });
+    ON_CALL(*this, OnConstraintBroken).WillByDefault([this]() {
+      broken_count++;
+    });
+  }
+
+  ~MockPointerConstraintDelegate() {
+    // Notifying destruction here removes some boilerplate from tests.
+    pointer_->OnPointerConstraintDelegateDestroying(this);
+  }
+
+  // Overridden from PointerConstraintDelegate:
+  MOCK_METHOD0(OnConstraintActivated, void());
+  MOCK_METHOD0(OnAlreadyConstrained, void());
+  MOCK_METHOD0(OnConstraintBroken, void());
+  MOCK_METHOD0(IsPersistent, bool());
+  MOCK_METHOD0(GetConstrainedSurface, Surface*());
+  MOCK_METHOD0(OnDefunct, void());
+
+  raw_ptr<Pointer> pointer_;
+  int activated_count = 0;
+  int broken_count = 0;
+};
+
 class UILockControllerTest : public test::ExoTestBase {
  public:
   UILockControllerTest()
@@ -77,11 +133,16 @@ class UILockControllerTest : public test::ExoTestBase {
     void PopulateProperties(
         const Params& params,
         ui::PropertyHandler& out_properties_container) override {
-      out_properties_container.SetProperty(chromeos::kEscHoldToExitFullscreen,
-                                           params.app_id != kNoEscHoldAppId);
       out_properties_container.SetProperty(
-          chromeos::kEscHoldExitFullscreenToMinimized,
-          params.app_id == kEscToMinimizeAppId);
+          chromeos::kEscHoldToExitFullscreen,
+          params.app_id != kNoEscHoldAppId &&
+              params.app_id != kOverviewToExitAppId);
+      out_properties_container.SetProperty(
+          chromeos::kUseOverviewToExitFullscreen,
+          params.app_id == kOverviewToExitAppId);
+      out_properties_container.SetProperty(
+          chromeos::kUseOverviewToExitPointerLock,
+          params.app_id == kOverviewToExitAppId);
     }
   };
 
@@ -89,8 +150,10 @@ class UILockControllerTest : public test::ExoTestBase {
   void SetUp() override {
     test::ExoTestBase::SetUp();
     seat_ = std::make_unique<Seat>();
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kExoLockNotification);
+    scoped_feature_list_.InitWithFeatures(
+        {chromeos::features::kExoLockNotification,
+         chromeos::features::kExoPointerLock},
+        {});
     WMHelper::GetInstance()->RegisterAppPropertyResolver(
         std::make_unique<TestPropertyResolver>());
   }
@@ -119,6 +182,11 @@ class UILockControllerTest : public test::ExoTestBase {
   views::Widget* GetEscNotification(SurfaceTriplet* surface) {
     return seat_->GetUILockControllerForTesting()->GetEscNotificationForTesting(
         surface->GetTopLevelWindow());
+  }
+
+  views::Widget* GetPointerCaptureNotification(SurfaceTriplet* surface) {
+    return seat_->GetUILockControllerForTesting()
+        ->GetPointerCaptureNotificationForTesting(surface->GetTopLevelWindow());
   }
 
   bool IsExitPopupVisible(aura::Window* window) {
@@ -262,39 +330,6 @@ TEST_F(UILockControllerTest, ShortHoldEscapeDoesNotExitFullscreen) {
   EXPECT_TRUE(window_state->IsFullscreen());
 }
 
-TEST_F(UILockControllerTest, HoldingEscapeMinimizesIfPropertySet) {
-  SurfaceTriplet test_surface = BuildSurface(1024, 768);
-  // Set chromeos::kEscHoldExitFullscreenToMinimized on TopLevelWindow.
-  test_surface.shell_surface->SetApplicationId(kEscToMinimizeAppId);
-  test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
-  test_surface.shell_surface->SetFullscreen(true);
-  test_surface.surface->Commit();
-  auto* window_state = test_surface.GetTopLevelWindowState();
-  EXPECT_TRUE(window_state->IsFullscreen());
-
-  GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
-  task_environment()->FastForwardBy(base::Seconds(1));
-  EXPECT_TRUE(window_state->IsFullscreen());  // no change yet
-
-  task_environment()->FastForwardBy(base::Seconds(1));
-  EXPECT_FALSE(window_state->IsFullscreen());
-  EXPECT_TRUE(window_state->IsMinimized());
-}
-
-TEST_F(UILockControllerTest, HoldingEscapeDoesNotMinimizeIfWindowed) {
-  SurfaceTriplet test_surface = BuildSurface(1024, 768);
-  // Set chromeos::kEscHoldExitFullscreenToMinimized on TopLevelWindow.
-  test_surface.shell_surface->SetApplicationId(kEscToMinimizeAppId);
-  test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
-  test_surface.surface->Commit();
-  auto* window_state = test_surface.GetTopLevelWindowState();
-
-  GetEventGenerator()->PressKey(ui::VKEY_ESCAPE, ui::EF_NONE);
-  task_environment()->FastForwardBy(base::Seconds(2));
-
-  EXPECT_FALSE(window_state->IsMinimized());
-}
-
 TEST_F(UILockControllerTest, FullScreenShowsEscNotification) {
   SurfaceTriplet test_surface = BuildSurface(1024, 768);
   test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
@@ -395,6 +430,85 @@ TEST_F(UILockControllerTest, EscNotificationShowsOnSecondaryDisplay) {
       esc_notification->GetWindowBoundsInScreen()));
 }
 
+TEST_F(UILockControllerTest, PointerLockShowsNotification) {
+  SurfaceTriplet test_surface = BuildSurface(1024, 768);
+  test_surface.shell_surface->SetApplicationId(kOverviewToExitAppId);
+  test_surface.surface->Commit();
+  testing::NiceMock<MockPointerDelegate> delegate(test_surface.surface.get());
+  Pointer pointer(&delegate, seat_.get());
+  testing::NiceMock<MockPointerConstraintDelegate> constraint(
+      &pointer, test_surface.surface.get());
+  EXPECT_FALSE(GetPointerCaptureNotification(&test_surface));
+
+  EXPECT_TRUE(pointer.ConstrainPointer(&constraint));
+
+  EXPECT_TRUE(GetPointerCaptureNotification(&test_surface));
+}
+
+TEST_F(UILockControllerTest, PointerLockNotificationObeysCooldown) {
+  // Arrange: Set up a pointer capture notification.
+  SurfaceTriplet test_surface = BuildSurface(1024, 768);
+  test_surface.shell_surface->SetApplicationId(kOverviewToExitAppId);
+  test_surface.surface->Commit();
+  testing::NiceMock<MockPointerDelegate> delegate(test_surface.surface.get());
+  Pointer pointer(&delegate, seat_.get());
+  testing::NiceMock<MockPointerConstraintDelegate> constraint(
+      &pointer, test_surface.surface.get());
+  EXPECT_TRUE(pointer.ConstrainPointer(&constraint));
+  EXPECT_TRUE(GetPointerCaptureNotification(&test_surface));
+
+  // Act: Wait for the notification to timeout.
+  task_environment()->FastForwardBy(base::Seconds(5));
+
+  // Assert: Notification has disappeared.
+  EXPECT_FALSE(GetPointerCaptureNotification(&test_surface));
+
+  // Act: Remove and re-apply the constraint.
+  pointer.OnPointerConstraintDelegateDestroying(&constraint);
+  EXPECT_TRUE(pointer.ConstrainPointer(&constraint));
+
+  // Assert: Notification not shown due to the cooldown.
+  EXPECT_FALSE(GetPointerCaptureNotification(&test_surface));
+
+  // Act: Wait for the cooldown, then re-apply again
+  pointer.OnPointerConstraintDelegateDestroying(&constraint);
+  task_environment()->FastForwardBy(base::Minutes(5));
+  EXPECT_TRUE(pointer.ConstrainPointer(&constraint));
+
+  // Assert: Cooldown has expired so notification is shown.
+  EXPECT_TRUE(GetPointerCaptureNotification(&test_surface));
+}
+
+TEST_F(UILockControllerTest, FullscreenNotificationHasPriority) {
+  // Arrange: Set up a pointer capture notification.
+  SurfaceTriplet test_surface = BuildSurface(1024, 768);
+  test_surface.shell_surface->SetApplicationId(kOverviewToExitAppId);
+  test_surface.surface->Commit();
+  testing::NiceMock<MockPointerDelegate> delegate(test_surface.surface.get());
+  Pointer pointer(&delegate, seat_.get());
+  testing::NiceMock<MockPointerConstraintDelegate> constraint(
+      &pointer, test_surface.surface.get());
+  EXPECT_TRUE(pointer.ConstrainPointer(&constraint));
+  EXPECT_TRUE(GetPointerCaptureNotification(&test_surface));
+
+  // Act: Go fullscreen.
+  test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
+  test_surface.shell_surface->SetFullscreen(true);
+  test_surface.surface->Commit();
+
+  // Assert: Fullscreen notification overrides pointer notification.
+  EXPECT_FALSE(GetPointerCaptureNotification(&test_surface));
+  EXPECT_TRUE(GetEscNotification(&test_surface));
+
+  // Act: Exit fullscreen.
+  test_surface.shell_surface->SetFullscreen(false);
+  test_surface.surface->Commit();
+
+  // Assert: Pointer notification returns, since it was interrupted.
+  EXPECT_TRUE(GetPointerCaptureNotification(&test_surface));
+  EXPECT_FALSE(GetEscNotification(&test_surface));
+}
+
 TEST_F(UILockControllerTest, ExitPopup) {
   SurfaceTriplet test_surface = BuildSurface(1024, 768);
   test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
@@ -449,10 +563,10 @@ TEST_F(UILockControllerTest, ExitPopup) {
   EXPECT_FALSE(IsExitPopupVisible(window));
 }
 
-TEST_F(UILockControllerTest, ExitPopupNotShownIfPropertySet) {
+TEST_F(UILockControllerTest, ExitPopupNotShownForOverviewCase) {
   SurfaceTriplet test_surface = BuildSurface(1024, 768);
-  // Set chromeos::kEscHoldExitFullscreenToMinimized on TopLevelWindow.
-  test_surface.shell_surface->SetApplicationId(kEscToMinimizeAppId);
+  // Set chromeos::kUseOverviewToExitFullscreen on TopLevelWindow.
+  test_surface.shell_surface->SetApplicationId(kOverviewToExitAppId);
   test_surface.shell_surface->SetUseImmersiveForFullscreen(false);
   test_surface.shell_surface->SetFullscreen(true);
   test_surface.surface->Commit();

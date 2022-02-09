@@ -144,6 +144,7 @@ static_library("exo") {
       "//ash/constants",
       "//ash/keyboard/ui",
       "//ash/public/cpp",
+      "//ash/resources/vector_icons",
       "//chromeos/crosapi/cpp",
       "//chromeos/ui/base",
       "//chromeos/ui/frame",

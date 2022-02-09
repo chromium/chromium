@@ -589,9 +589,8 @@ void AppServiceAppWindowShelfController::RegisterWindow(
     exo::SetShellUseImmersiveForFullscreen(window, false);
     window->SetProperty(chromeos::kEscHoldToExitFullscreen, true);
   } else if (borealis::BorealisWindowManager::IsBorealisWindow(window)) {
-    // Set fullscreen properties for Borealis.
-    window->SetProperty(chromeos::kEscHoldToExitFullscreen, true);
-    window->SetProperty(chromeos::kEscHoldExitFullscreenToMinimized, true);
+    window->SetProperty(chromeos::kUseOverviewToExitFullscreen, true);
+    window->SetProperty(chromeos::kUseOverviewToExitPointerLock, true);
   }
 
   AddWindowToShelf(window, shelf_id);

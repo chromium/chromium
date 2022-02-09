@@ -45,14 +45,20 @@ COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 extern const ui::ClassProperty<bool>* const
     kIsDeferredTabDraggingTargetWindowKey;
 
-// Whether holding esc should exit fullscreen. Used by Borealis and Plugin VM.
+// Whether holding esc should exit fullscreen. Used by Plugin VM.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 extern const ui::ClassProperty<bool>* const kEscHoldToExitFullscreen;
 
-// Whether screen should minimize when using esc hold to exit fullscreen.
+// Whether to promote users to use Overview to exit fullscreen.
 // Borealis apps set this since they do not handle window size changes.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
-extern const ui::ClassProperty<bool>* const kEscHoldExitFullscreenToMinimized;
+extern const ui::ClassProperty<bool>* const kUseOverviewToExitFullscreen;
+
+// Whether to promote users to use Overview to exit pointer lock.
+// Borealis apps set this since they permit pointer lock and
+// don't have other visible affordances to let the user break the lock.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+extern const ui::ClassProperty<bool>* const kUseOverviewToExitPointerLock;
 
 // A property key to store the active color on the window frame.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
