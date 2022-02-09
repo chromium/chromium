@@ -50,7 +50,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       const NGGridLayoutData& layout_data,
       const NGBoxStrut& borders,
       const LogicalSize& border_box_size,
-      const LayoutUnit block_size,
       GridItemData* out_of_flow_item);
 
   // Helper that computes tracks sizes in a given range.
@@ -224,7 +223,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       LayoutUnit* start_offset,
       LayoutUnit* size) const;
 
-  LogicalSize border_box_size_;
   LogicalSize grid_available_size_;
   LogicalSize grid_min_available_size_;
   LogicalSize grid_max_available_size_;

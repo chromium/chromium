@@ -23,8 +23,6 @@ NGGridLayoutAlgorithm::NGGridLayoutAlgorithm(
     : NGLayoutAlgorithm(params) {
   DCHECK(params.space.IsNewFormattingContext());
 
-  border_box_size_ = container_builder_.InitialBorderBoxSize();
-
   // At various stages of this algorithm we need to know if the grid
   // available-size. If it is initially indefinite, we need to know the min/max
   // sizes as well. Initialize all these to the same value.
@@ -43,7 +41,7 @@ NGGridLayoutAlgorithm::NGGridLayoutAlgorithm(
     // Resolve the block-size, and set the available sizes.
     const LayoutUnit block_size = ComputeBlockSizeForFragment(
         ConstraintSpace(), Style(), BorderPadding(),
-        *contain_intrinsic_block_size_, border_box_size_.inline_size);
+        *contain_intrinsic_block_size_, container_builder_.InlineSize());
 
     grid_available_size_.block_size = grid_min_available_size_.block_size =
         grid_max_available_size_.block_size =
@@ -418,12 +416,7 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::LayoutInternal() {
   const auto& constraint_space = ConstraintSpace();
   const LayoutUnit block_size = ComputeBlockSizeForFragment(
       constraint_space, Style(), border_padding, intrinsic_block_size,
-      border_box_size_.inline_size);
-
-  PlaceOutOfFlowItems(*layout_data, block_size);
-
-  // Store layout data for use in computed style and devtools.
-  container_builder_.TransferGridLayoutData(std::move(layout_data));
+      container_builder_.InlineSize());
 
   // For scrollable overflow purposes grid is unique in that the "inflow-bounds"
   // are the size of the grid, and *not* where the inflow grid-items are placed.
@@ -475,6 +468,11 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::LayoutInternal() {
     container_builder_.CheckNoBlockFragmentation();
 #endif
   }
+
+  PlaceOutOfFlowItems(*layout_data, block_size);
+
+  // Store layout data for use in computed style and devtools.
+  container_builder_.TransferGridLayoutData(std::move(layout_data));
 
   NGOutOfFlowLayoutPart(node, constraint_space, &container_builder_).Run();
   return container_builder_.ToBoxFragment();
@@ -893,7 +891,7 @@ NGGridGeometry NGGridLayoutAlgorithm::ComputeGridGeometry(
   if (grid_available_size_.block_size == kIndefiniteSize) {
     const LayoutUnit block_size = ComputeBlockSizeForFragment(
         ConstraintSpace(), container_style, BorderPadding(),
-        *intrinsic_block_size, border_box_size_.inline_size);
+        *intrinsic_block_size, container_builder_.InlineSize());
 
     grid_available_size_.block_size = grid_min_available_size_.block_size =
         grid_max_available_size_.block_size =
@@ -928,7 +926,7 @@ NGGridGeometry NGGridLayoutAlgorithm::ComputeGridGeometry(
           ComputeBlockSizeForFragment(
               ConstraintSpace(), container_style, BorderPadding(),
               /* intrinsic_block_size */ kIndefiniteSize,
-              border_box_size_.inline_size) != kIndefiniteSize;
+              container_builder_.InlineSize()) != kIndefiniteSize;
     }
 
     if (should_recompute_grid) {
@@ -3494,16 +3492,26 @@ void NGGridLayoutAlgorithm::PlaceGridItemsForFragmentation(
 void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
     const NGGridLayoutData& layout_data,
     const LayoutUnit block_size) {
+  // If fragmentation is present we place all the OOF candidates within the
+  // last fragment. The last fragment has the most up-to-date grid geometry
+  // information (e.g. any expanded rows, etc).
+  if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
+    if (container_builder_.DidBreakSelf() ||
+        container_builder_.HasChildBreakInside())
+      return;
+  }
+
   const auto& node = Node();
   const auto& container_style = Style();
-
-  LogicalSize fragment_size(container_builder_.InlineSize(), block_size);
+  const LayoutUnit previous_consumed_block_size =
+      BreakToken() ? BreakToken()->ConsumedBlockSize() : LayoutUnit();
+  const LogicalSize total_fragment_size = {container_builder_.InlineSize(),
+                                           block_size};
   const auto default_containing_block_size =
-      ShrinkLogicalSize(fragment_size, BorderScrollbarPadding());
+      ShrinkLogicalSize(total_fragment_size, BorderScrollbarPadding());
 
   NGGridPlacement grid_placement(container_style, node.CachedPlacementData());
 
-  // TODO(ikilpatrick): Only add candidates within this fragment.
   for (auto child = node.FirstChild(); child; child = child.NextSibling()) {
     if (!child.IsOutOfFlowPositioned())
       continue;
@@ -3515,7 +3523,7 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
     if (out_of_flow_item.IsGridContainingBlock()) {
       containing_block_rect = ComputeOutOfFlowItemContainingRect(
           grid_placement, layout_data, container_builder_.Borders(),
-          border_box_size_, block_size, &out_of_flow_item);
+          total_fragment_size, &out_of_flow_item);
     }
 
     auto child_offset = containing_block_rect
@@ -3532,6 +3540,9 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
                                 out_of_flow_item.BlockAxisAlignment(),
                                 containing_block_size, &inline_edge,
                                 &block_edge, &child_offset);
+
+    // Make the child offset relative to our fragment.
+    child_offset.block_offset -= previous_consumed_block_size;
 
     container_builder_.AddOutOfFlowChildCandidate(
         out_of_flow_item.node, child_offset, inline_edge, block_edge,
@@ -3705,7 +3716,6 @@ void ComputeOutOfFlowOffsetAndSize(
     const NGGridLayoutAlgorithmTrackCollection& track_collection,
     const NGBoxStrut& borders,
     const LogicalSize& border_box_size,
-    const LayoutUnit block_size,
     LayoutUnit* start_offset,
     LayoutUnit* size) {
   DCHECK(start_offset && size && out_of_flow_item.IsOutOfFlow());
@@ -3721,10 +3731,7 @@ void ComputeOutOfFlowOffsetAndSize(
   } else {
     item_placement = out_of_flow_item.row_placement;
     *start_offset = borders.block_start;
-    end_offset = ((border_box_size.block_size == kIndefiniteSize)
-                      ? block_size
-                      : border_box_size.block_size) -
-                 borders.block_end;
+    end_offset = border_box_size.block_size - borders.block_end;
   }
 
   // If the start line is defined, the size will be calculated by subtracting
@@ -3799,7 +3806,6 @@ LogicalRect NGGridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
     const NGGridLayoutData& layout_data,
     const NGBoxStrut& borders,
     const LogicalSize& border_box_size,
-    const LayoutUnit block_size,
     GridItemData* out_of_flow_item) {
   DCHECK(out_of_flow_item && out_of_flow_item->IsOutOfFlow());
 
@@ -3821,13 +3827,13 @@ LogicalRect NGGridLayoutAlgorithm::ComputeOutOfFlowItemContainingRect(
   LogicalRect containing_rect;
   ComputeOutOfFlowOffsetAndSize(
       *out_of_flow_item, column_geometry, column_track_collection, borders,
-      border_box_size, block_size, &containing_rect.offset.inline_offset,
+      border_box_size, &containing_rect.offset.inline_offset,
       &containing_rect.size.inline_size);
 
-  ComputeOutOfFlowOffsetAndSize(
-      *out_of_flow_item, row_geometry, row_track_collection, borders,
-      border_box_size, block_size, &containing_rect.offset.block_offset,
-      &containing_rect.size.block_size);
+  ComputeOutOfFlowOffsetAndSize(*out_of_flow_item, row_geometry,
+                                row_track_collection, borders, border_box_size,
+                                &containing_rect.offset.block_offset,
+                                &containing_rect.size.block_size);
 
   return containing_rect;
 }

@@ -384,8 +384,9 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
                   NGGridPlacement(container_style, placement_data),
                   container_builder_->GridLayoutData(),
                   container_builder_->Borders(),
-                  container_builder_->InitialBorderBoxSize(),
-                  container_builder_->FragmentsTotalBlockSize(), &grid_item)};
+                  {container_builder_->InlineSize(),
+                   container_builder_->FragmentsTotalBlockSize()},
+                  &grid_item)};
     }
   }
 
