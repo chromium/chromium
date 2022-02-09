@@ -74,8 +74,7 @@ bool DeviceState::PropertyChanged(const std::string& key,
     sim_slot_infos_.swap(parsed_results);
     return true;
   } else if (key == shill::kSIMLockStatusProperty) {
-    const base::DictionaryValue* dict = nullptr;
-    if (!value.GetAsDictionary(&dict))
+    if (!value.is_dict())
       return false;
 
     // Set default values for SIM properties.
@@ -84,16 +83,16 @@ bool DeviceState::PropertyChanged(const std::string& key,
     sim_lock_enabled_ = false;
 
     const base::Value* out_value = nullptr;
-    out_value = dict->FindKey(shill::kSIMLockTypeProperty);
+    out_value = value.FindKey(shill::kSIMLockTypeProperty);
     if (out_value) {
       GetStringValue(shill::kSIMLockTypeProperty, *out_value, &sim_lock_type_);
     }
-    out_value = dict->FindKey(shill::kSIMLockRetriesLeftProperty);
+    out_value = value.FindKey(shill::kSIMLockRetriesLeftProperty);
     if (out_value) {
       GetIntegerValue(shill::kSIMLockRetriesLeftProperty, *out_value,
                       &sim_retries_left_);
     }
-    out_value = dict->FindKey(shill::kSIMLockEnabledProperty);
+    out_value = value.FindKey(shill::kSIMLockEnabledProperty);
     if (out_value) {
       GetBooleanValue(shill::kSIMLockEnabledProperty, *out_value,
                       &sim_lock_enabled_);
@@ -176,21 +175,22 @@ DeviceState::CellularSIMSlotInfos DeviceState::GetSimSlotInfos() const {
 }
 
 std::string DeviceState::GetIpAddressByType(const std::string& type) const {
-  for (base::DictionaryValue::Iterator iter(ip_configs_); !iter.IsAtEnd();
-       iter.Advance()) {
-    const base::DictionaryValue* ip_config;
-    if (!iter.value().GetAsDictionary(&ip_config))
+  for (const auto iter : ip_configs_.DictItems()) {
+    if (!iter.second.is_dict())
       continue;
-    std::string ip_config_method;
-    if (!ip_config->GetString(shill::kMethodProperty, &ip_config_method))
+    const base::Value& ip_config = iter.second;
+    const std::string* ip_config_method =
+        ip_config.FindStringKey(shill::kMethodProperty);
+    if (!ip_config_method)
       continue;
-    if (type == ip_config_method ||
-        (type == shill::kTypeIPv4 && ip_config_method == shill::kTypeDHCP) ||
-        (type == shill::kTypeIPv6 && ip_config_method == shill::kTypeDHCP6)) {
-      std::string address;
-      if (!ip_config->GetString(shill::kAddressProperty, &address))
+    if (type == *ip_config_method ||
+        (type == shill::kTypeIPv4 && *ip_config_method == shill::kTypeDHCP) ||
+        (type == shill::kTypeIPv6 && *ip_config_method == shill::kTypeDHCP6)) {
+      const std::string* address =
+          ip_config.FindStringKey(shill::kAddressProperty);
+      if (!address)
         continue;
-      return address;
+      return *address;
     }
   }
   return std::string();
