@@ -10,12 +10,6 @@
 namespace chromeos {
 namespace {
 
-// Fake state is only used in local builds when the rmad d-bus service is
-// unavailable.
-// Enabling fake state will cause Chrome OS to always display the RMA wizard and
-// the device will be unusable for anything but testing Shimless RMA.
-constexpr bool use_fake_state = false;
-
 constexpr char rsu_challenge_code[] =
     "HRBXHV84NSTHT25WJECYQKB8SARWFTMSWNGFT2FVEEPX69VE99USV3QFBEANDVXGQVL93QK2M6"
     "P3DNV4";
@@ -108,113 +102,18 @@ rmad::GetStateReply CreateStateReply(rmad::RmadState::StateCase state,
 }
 }  // namespace
 
-/* static */
-FakeRmadClient* FakeRmadClient::CreateWithState() {
-  FakeRmadClient* fake = new FakeRmadClient();
-  if (use_fake_state) {
-    // Set up fake component repair state.
-    rmad::GetStateReply components_repair_state = CreateStateReply(
-        rmad::RmadState::kComponentsRepair, rmad::RMAD_ERROR_OK);
-    rmad::ComponentsRepairState::ComponentRepairStatus* component =
-        components_repair_state.mutable_state()
-            ->mutable_components_repair()
-            ->add_components();
-    component->set_component(rmad::RmadComponent::RMAD_COMPONENT_CAMERA);
-    component->set_repair_status(
-        rmad::ComponentsRepairState::ComponentRepairStatus::
-            RMAD_REPAIR_STATUS_UNKNOWN);
-    // Set up fake disable RSU state.
-    rmad::GetStateReply wp_disable_rsu_state =
-        CreateStateReply(rmad::RmadState::kWpDisableRsu, rmad::RMAD_ERROR_OK);
-    wp_disable_rsu_state.mutable_state()
-        ->mutable_wp_disable_rsu()
-        ->set_allocated_challenge_code(new std::string(rsu_challenge_code));
-    wp_disable_rsu_state.mutable_state()
-        ->mutable_wp_disable_rsu()
-        ->set_allocated_hwid(new std::string(rsu_hwid));
-    wp_disable_rsu_state.mutable_state()
-        ->mutable_wp_disable_rsu()
-        ->set_allocated_challenge_url(new std::string(rsu_challenge_url));
-    rmad::GetStateReply update_device_info = CreateStateReply(
-        rmad::RmadState::kUpdateDeviceInfo, rmad::RMAD_ERROR_OK);
-    update_device_info.mutable_state()
-        ->mutable_update_device_info()
-        ->add_region_list("EMEA");
-    update_device_info.mutable_state()
-        ->mutable_update_device_info()
-        ->add_region_list("APAC");
-    update_device_info.mutable_state()
-        ->mutable_update_device_info()
-        ->add_region_list("AMER");
-    update_device_info.mutable_state()
-        ->mutable_update_device_info()
-        ->add_sku_list(1UL);
-    update_device_info.mutable_state()
-        ->mutable_update_device_info()
-        ->add_sku_list(2UL);
-    update_device_info.mutable_state()
-        ->mutable_update_device_info()
-        ->add_sku_list(3UL);
-    update_device_info.mutable_state()
-        ->mutable_update_device_info()
-        ->add_whitelabel_list("White-label 1");
-    update_device_info.mutable_state()
-        ->mutable_update_device_info()
-        ->add_whitelabel_list("White-label 2");
-    update_device_info.mutable_state()
-        ->mutable_update_device_info()
-        ->add_whitelabel_list("White-label 3");
-    update_device_info.mutable_state()
-        ->mutable_update_device_info()
-        ->set_original_serial_number("serial 0001");
-    update_device_info.mutable_state()
-        ->mutable_update_device_info()
-        ->set_original_region_index(2);
-    update_device_info.mutable_state()
-        ->mutable_update_device_info()
-        ->set_original_sku_index(1);
-    update_device_info.mutable_state()
-        ->mutable_update_device_info()
-        ->set_original_whitelabel_index(0);
-
-    std::vector<rmad::GetStateReply> fake_states = {
-        CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK),
-        components_repair_state,
-        CreateStateReply(rmad::RmadState::kDeviceDestination,
-                         rmad::RMAD_ERROR_OK),
-        CreateStateReply(rmad::RmadState::kWpDisableMethod,
-                         rmad::RMAD_ERROR_OK),
-        wp_disable_rsu_state,
-        CreateStateReply(rmad::RmadState::kWpDisablePhysical,
-                         rmad::RMAD_ERROR_OK),
-        CreateStateReply(rmad::RmadState::kWpDisableComplete,
-                         rmad::RMAD_ERROR_OK),
-        CreateStateReply(rmad::RmadState::kUpdateRoFirmware,
-                         rmad::RMAD_ERROR_OK),
-        CreateStateReply(rmad::RmadState::kRestock, rmad::RMAD_ERROR_OK),
-        update_device_info,
-        // TODO(gavindodd): Add calibration states when implemented.
-        // rmad::RmadState::kCheckCalibration
-        // rmad::RmadState::kSetupCalibration
-        // rmad::RmadState::kRunCalibration
-        CreateStateReply(rmad::RmadState::kProvisionDevice,
-                         rmad::RMAD_ERROR_OK),
-        CreateStateReply(rmad::RmadState::kWpEnablePhysical,
-                         rmad::RMAD_ERROR_OK),
-        CreateStateReply(rmad::RmadState::kFinalize, rmad::RMAD_ERROR_OK),
-        CreateStateReply(rmad::RmadState::kRepairComplete, rmad::RMAD_ERROR_OK),
-    };
-    fake->SetFakeStateReplies(fake_states);
-    fake->SetAbortable(true);
-  }
-  return fake;
-}
-
 FakeRmadClient::FakeRmadClient() {
   // Default to abortable.
   SetAbortable(true);
 }
+
 FakeRmadClient::~FakeRmadClient() = default;
+
+// static
+FakeRmadClient* FakeRmadClient::Get() {
+  RmadClient* client = RmadClient::Get();
+  return static_cast<FakeRmadClient*>(client);
+}
 
 void FakeRmadClient::GetCurrentState(
     DBusMethodCallback<rmad::GetStateReply> callback) {
@@ -327,6 +226,99 @@ bool FakeRmadClient::HasObserver(const Observer* observer) const {
   return observers_.HasObserver(observer);
 }
 
+void FakeRmadClient::SetFakeStates() {
+  // Set up fake component repair state.
+  rmad::GetStateReply components_repair_state =
+      CreateStateReply(rmad::RmadState::kComponentsRepair, rmad::RMAD_ERROR_OK);
+  rmad::ComponentsRepairState::ComponentRepairStatus* component =
+      components_repair_state.mutable_state()
+          ->mutable_components_repair()
+          ->add_components();
+  component->set_component(rmad::RmadComponent::RMAD_COMPONENT_CAMERA);
+  component->set_repair_status(
+      rmad::ComponentsRepairState::ComponentRepairStatus::
+          RMAD_REPAIR_STATUS_UNKNOWN);
+  // Set up fake disable RSU state.
+  rmad::GetStateReply wp_disable_rsu_state =
+      CreateStateReply(rmad::RmadState::kWpDisableRsu, rmad::RMAD_ERROR_OK);
+  wp_disable_rsu_state.mutable_state()
+      ->mutable_wp_disable_rsu()
+      ->set_allocated_challenge_code(new std::string(rsu_challenge_code));
+  wp_disable_rsu_state.mutable_state()
+      ->mutable_wp_disable_rsu()
+      ->set_allocated_hwid(new std::string(rsu_hwid));
+  wp_disable_rsu_state.mutable_state()
+      ->mutable_wp_disable_rsu()
+      ->set_allocated_challenge_url(new std::string(rsu_challenge_url));
+  rmad::GetStateReply update_device_info =
+      CreateStateReply(rmad::RmadState::kUpdateDeviceInfo, rmad::RMAD_ERROR_OK);
+  update_device_info.mutable_state()
+      ->mutable_update_device_info()
+      ->add_region_list("EMEA");
+  update_device_info.mutable_state()
+      ->mutable_update_device_info()
+      ->add_region_list("APAC");
+  update_device_info.mutable_state()
+      ->mutable_update_device_info()
+      ->add_region_list("AMER");
+  update_device_info.mutable_state()
+      ->mutable_update_device_info()
+      ->add_sku_list(1UL);
+  update_device_info.mutable_state()
+      ->mutable_update_device_info()
+      ->add_sku_list(2UL);
+  update_device_info.mutable_state()
+      ->mutable_update_device_info()
+      ->add_sku_list(3UL);
+  update_device_info.mutable_state()
+      ->mutable_update_device_info()
+      ->add_whitelabel_list("White-label 1");
+  update_device_info.mutable_state()
+      ->mutable_update_device_info()
+      ->add_whitelabel_list("White-label 2");
+  update_device_info.mutable_state()
+      ->mutable_update_device_info()
+      ->add_whitelabel_list("White-label 3");
+  update_device_info.mutable_state()
+      ->mutable_update_device_info()
+      ->set_original_serial_number("serial 0001");
+  update_device_info.mutable_state()
+      ->mutable_update_device_info()
+      ->set_original_region_index(2);
+  update_device_info.mutable_state()
+      ->mutable_update_device_info()
+      ->set_original_sku_index(1);
+  update_device_info.mutable_state()
+      ->mutable_update_device_info()
+      ->set_original_whitelabel_index(0);
+
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK),
+      components_repair_state,
+      CreateStateReply(rmad::RmadState::kDeviceDestination,
+                       rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kWpDisableMethod, rmad::RMAD_ERROR_OK),
+      wp_disable_rsu_state,
+      CreateStateReply(rmad::RmadState::kWpDisablePhysical,
+                       rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kWpDisableComplete,
+                       rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kUpdateRoFirmware, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kRestock, rmad::RMAD_ERROR_OK),
+      update_device_info,
+      // TODO(gavindodd): Add calibration states when implemented.
+      // rmad::RmadState::kCheckCalibration
+      // rmad::RmadState::kSetupCalibration
+      // rmad::RmadState::kRunCalibration
+      CreateStateReply(rmad::RmadState::kProvisionDevice, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kWpEnablePhysical, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kFinalize, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kRepairComplete, rmad::RMAD_ERROR_OK),
+  };
+  SetFakeStateReplies(fake_states);
+  SetAbortable(true);
+}
+
 void FakeRmadClient::SetFakeStateReplies(
     std::vector<rmad::GetStateReply> fake_states) {
   state_replies_ = std::move(fake_states);
@@ -334,6 +326,11 @@ void FakeRmadClient::SetFakeStateReplies(
 }
 
 bool FakeRmadClient::WasRmaStateDetected() {
+  return NumStates() > 0;
+}
+
+bool FakeRmadClient::WasRmaStateDetectedForSessionManager(
+    base::OnceCallback<void()> session_manager_callback) {
   return NumStates() > 0;
 }
 

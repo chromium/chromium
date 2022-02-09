@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_DBUS_RMAD_RMAD_CLIENT_H_
 #define CHROMEOS_DBUS_RMAD_RMAD_CLIENT_H_
 
+#include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
@@ -70,6 +71,13 @@ class COMPONENT_EXPORT(RMAD) RmadClient {
 
   // Returns true if RMA is supported and the RMA state files were detected.
   virtual bool WasRmaStateDetected() = 0;
+
+  // Called by ChromeSessionManager, this returns true if RMA state is detected.
+  // Otherwise, return false meanings either RMA not required, or RMA check is
+  // pending. `session_manager_callback` is invoked when the pending RMA check
+  // is finished and RMA is required.
+  virtual bool WasRmaStateDetectedForSessionManager(
+      base::OnceClosure session_manager_callback) = 0;
 
   // Asynchronously gets the current RMA state.
   // The response contains an error code and the current state of the RMA

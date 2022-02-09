@@ -29,6 +29,8 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/common/chrome_switches.h"
+#include "chromeos/dbus/rmad/fake_rmad_client.h"
+#include "chromeos/dbus/rmad/rmad_client.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
 #include "chromeos/tpm/stub_install_attributes.h"
@@ -316,6 +318,42 @@ IN_PROC_BROWSER_TEST_F(ChromeSessionManagerRmaSafeModeTest, SafeModeBlocksRma) {
   session_manager::SessionManager* manager =
       session_manager::SessionManager::Get();
   EXPECT_EQ(session_manager::SessionState::OOBE, manager->session_state());
+  EXPECT_EQ(0u, manager->sessions().size());
+}
+
+class ChromeSessionManagerRmaStateDetectedTest
+    : public ChromeSessionManagerRmaTest {
+ public:
+  ChromeSessionManagerRmaStateDetectedTest() = default;
+
+  // LoginManagerTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ChromeSessionManagerRmaTest::SetUpCommandLine(command_line);
+    // Remove switch so ChromeSessionManager depends on the RmadClient response.
+    command_line->RemoveSwitch(switches::kLaunchRma);
+  }
+
+ private:
+  // LoginManagerTest:
+  void SetUpInProcessBrowserTestFixture() override {
+    chromeos::RmadClient::InitializeFake();
+    chromeos::FakeRmadClient* fake_rmad_client =
+        chromeos::FakeRmadClient::Get();
+    ASSERT_TRUE(fake_rmad_client);
+    // Set the fake states to make RMA detected.
+    fake_rmad_client->SetFakeStates();
+
+    ChromeSessionManagerTest::SetUpInProcessBrowserTestFixture();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ChromeSessionManagerRmaStateDetectedTest,
+                       RmadResponseSetsRma) {
+  // Verify that session state is in RMA, even though kLaunchRma switch was not
+  // passed.
+  session_manager::SessionManager* manager =
+      session_manager::SessionManager::Get();
+  EXPECT_EQ(session_manager::SessionState::RMA, manager->session_state());
   EXPECT_EQ(0u, manager->sessions().size());
 }
 

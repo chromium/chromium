@@ -3849,6 +3849,7 @@ if (!is_android) {
         "//chromeos/dbus/cryptohome:cryptohome_proto",
         "//chromeos/dbus/image_burner",
         "//chromeos/dbus/power",
+        "//chromeos/dbus/rmad:rmad",
         "//chromeos/dbus/services:test_support",
         "//chromeos/dbus/session_manager",
         "//chromeos/dbus/system_clock",

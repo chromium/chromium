@@ -17,14 +17,17 @@ namespace chromeos {
 
 class COMPONENT_EXPORT(RMAD) FakeRmadClient : public RmadClient {
  public:
-  static FakeRmadClient* CreateWithState();
-
   FakeRmadClient();
   FakeRmadClient(const FakeRmadClient&) = delete;
   FakeRmadClient& operator=(const FakeRmadClient&) = delete;
   ~FakeRmadClient() override;
 
+  // Returns the fake global instance if initialized. May return null.
+  static FakeRmadClient* Get();
+
   bool WasRmaStateDetected() override;
+  bool WasRmaStateDetectedForSessionManager(
+      base::OnceCallback<void()> session_manager_callback) override;
   void GetCurrentState(
       DBusMethodCallback<rmad::GetStateReply> callback) override;
   void TransitionNextState(
@@ -41,6 +44,7 @@ class COMPONENT_EXPORT(RMAD) FakeRmadClient : public RmadClient {
   void RemoveObserver(Observer* observer) override;
   bool HasObserver(const Observer* observer) const override;
 
+  void SetFakeStates();
   void SetFakeStateReplies(std::vector<rmad::GetStateReply> fake_states);
 
   void SetAbortable(bool abortable);

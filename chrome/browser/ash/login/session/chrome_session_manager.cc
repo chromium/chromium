@@ -11,6 +11,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/webui/shimless_rma/shimless_rma.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
@@ -22,8 +23,10 @@
 #include "chrome/browser/ash/child_accounts/screen_time_controller_factory.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
+#include "chrome/browser/ash/login/chrome_restart_request.h"
 #include "chrome/browser/ash/login/demo_mode/demo_resources.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/screens/arc_terms_of_service_screen.h"
 #include "chrome/browser/ash/login/screens/sync_consent_screen.h"
@@ -178,6 +181,46 @@ void LaunchShimlessRma() {
   SessionManagerClient::Get()->EmitLoginPromptVisible();
 }
 
+// The callback invoked when RmadClient determines that RMA is required.
+void OnRmaIsRequiredResponse() {
+  switch (session_manager::SessionManager::Get()->session_state()) {
+    case session_manager::SessionState::UNKNOWN:
+      LOG(ERROR) << "OnRmaIsRequiredResponse callback triggered unexpectedly";
+      break;
+    case session_manager::SessionState::RMA:
+      // Already in RMA, do nothing.
+      break;
+    case session_manager::SessionState::OOBE:
+    case session_manager::SessionState::LOGIN_PRIMARY: {
+      auto* existing_user_controller =
+          ash::ExistingUserController::current_controller();
+      if (!existing_user_controller ||
+          !existing_user_controller->IsSigninInProgress()) {
+        if (existing_user_controller) {
+          existing_user_controller->StopAutoLoginTimer();
+        }
+        // Append the kLaunchRma flag and restart Chrome to force launch RMA.
+        const base::CommandLine& browser_command_line =
+            *base::CommandLine::ForCurrentProcess();
+        base::CommandLine command_line(browser_command_line);
+        command_line.AppendSwitch(::ash::switches::kLaunchRma);
+        ash::RestartChrome(command_line, ash::RestartChromeReason::kUserless);
+        break;
+      }
+
+      // If signin in progress, don't launch RMA and fall through to the
+      // logged in state cases.
+      ABSL_FALLTHROUGH_INTENDED;
+    }
+    case session_manager::SessionState::LOGGED_IN_NOT_ACTIVE:
+    case session_manager::SessionState::ACTIVE:
+    case session_manager::SessionState::LOCKED:
+    case session_manager::SessionState::LOGIN_SECONDARY:
+      // TODO(gavinwill): Trigger a notification to open RMA app.
+      break;
+  }
+}
+
 }  // namespace
 
 ChromeSessionManager::ChromeSessionManager()
@@ -203,10 +246,17 @@ void ChromeSessionManager::Initialize(
   }
 
   if (ash::shimless_rma::IsShimlessRmaAllowed()) {
+    // If the RMA state is detected later, OnRmaIsRequiredResponse() is invoked
+    // to reboot the device in RMA mode.
+    const bool was_rma_state_detected_now =
+        chromeos::RmadClient::Get()->WasRmaStateDetectedForSessionManager(
+            base::BindOnce(&OnRmaIsRequiredResponse));
+    const bool has_launch_rma_switch =
+        ash::shimless_rma::HasLaunchRmaSwitchAndIsAllowed();
+
     // If we should be in Shimless RMA, start it and skip the rest of
     // initialization.
-    if (ash::shimless_rma::HasLaunchRmaSwitchAndIsAllowed() ||
-        chromeos::RmadClient::Get()->WasRmaStateDetected()) {
+    if (has_launch_rma_switch || was_rma_state_detected_now) {
       LaunchShimlessRma();
       return;
     }

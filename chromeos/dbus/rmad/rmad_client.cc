@@ -4,7 +4,10 @@
 
 #include "chromeos/dbus/rmad/rmad_client.h"
 
+#include <utility>
+
 #include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -32,6 +35,8 @@ class RmadClientImpl : public RmadClient {
   void Init(dbus::Bus* bus);
 
   bool WasRmaStateDetected() override;
+  bool WasRmaStateDetectedForSessionManager(
+      base::OnceClosure session_manager_callback) override;
   void GetCurrentState(
       DBusMethodCallback<rmad::GetStateReply> callback) override;
   void TransitionNextState(
@@ -99,6 +104,9 @@ class RmadClientImpl : public RmadClient {
   // Set from the response to the RMA daemon D-Bus call.
   bool is_rma_required_ = false;
 
+  // The ChromeSessionManager callback invoked when |is_rma_required_| is set.
+  base::OnceClosure session_manager_callback_;
+
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<RmadClientImpl> weak_ptr_factory_{this};
@@ -161,6 +169,16 @@ void RmadClientImpl::OnCheckIfRmaIsRequired(dbus::Response* response) {
     return;
   }
   DCHECK(!reader.HasMoreData());
+
+  if (!is_rma_required_) {
+    // If RMA isn't required, callback is no longer needed.
+    session_manager_callback_.Reset();
+    return;
+  }
+
+  if (session_manager_callback_) {
+    std::move(session_manager_callback_).Run();
+  }
 }
 
 // Called when a dbus signal is initially connected.
@@ -524,6 +542,15 @@ bool RmadClientImpl::WasRmaStateDetected() {
          (is_rma_required_ || rma_state_file_exists_.value_or(false));
 }
 
+bool RmadClientImpl::WasRmaStateDetectedForSessionManager(
+    base::OnceClosure session_manager_callback) {
+  const bool was_rma_state_detected = WasRmaStateDetected();
+  if (!was_rma_state_detected) {
+    session_manager_callback_ = std::move(session_manager_callback);
+  }
+  return was_rma_state_detected;
+}
+
 RmadClient::RmadClient() {
   CHECK(!g_instance);
   g_instance = this;
@@ -553,7 +580,11 @@ RmadClient* RmadClient::Get() {
 
 // static
 void RmadClient::InitializeFake() {
-  FakeRmadClient::CreateWithState();
+  // Do not create a new fake if it was initialized early in a browser test (for
+  // early setup calls dependent on RmadClient).
+  if (!FakeRmadClient::Get()) {
+    new FakeRmadClient();
+  }
 }
 
 }  // namespace chromeos
