@@ -206,7 +206,7 @@ TEST_F(ExternalProviderImplChromeOSTest, DISABLED_StandaloneChild) {
 // Normal mode, standalone app should be installed, because sync is disabled.
 // TODO(crbug.com/1181737): Flaky test
 TEST_F(ExternalProviderImplChromeOSTest, DISABLED_SyncDisabled) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kDisableSync);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(syncer::kDisableSync);
 
   InitServiceWithExternalProviders(true);
 

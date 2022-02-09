@@ -118,7 +118,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Returns an account item.
 - (TableViewItem*)accountItem {
-  DCHECK(switches::IsSyncAllowedByFlag());
+  DCHECK(syncer::IsSyncAllowedByFlag());
   NSString* text = l10n_util::GetNSString(IDS_SYNC_BASIC_ENCRYPTION_DATA);
   return [self itemWithType:ItemTypeAccount
                        text:text
@@ -128,7 +128,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 // Returns a passphrase item.
 - (TableViewItem*)passphraseItem {
-  DCHECK(switches::IsSyncAllowedByFlag());
+  DCHECK(syncer::IsSyncAllowedByFlag());
   NSString* text = l10n_util::GetNSString(IDS_SYNC_FULL_ENCRYPTION_DATA);
   return [self itemWithType:ItemTypePassphrase
                        text:text
@@ -176,7 +176,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
   switch (item.type) {
     case ItemTypePassphrase: {
-      DCHECK(switches::IsSyncAllowedByFlag());
+      DCHECK(syncer::IsSyncAllowedByFlag());
       ChromeBrowserState* browserState = self.browser->GetBrowserState();
       syncer::SyncService* service =
           SyncServiceFactory::GetForBrowserState(browserState);

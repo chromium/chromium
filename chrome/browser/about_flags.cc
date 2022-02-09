@@ -3871,7 +3871,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"use-sync-sandbox", flag_descriptions::kSyncSandboxName,
      flag_descriptions::kSyncSandboxDescription, kOsAll,
      SINGLE_VALUE_TYPE_AND_VALUE(
-         switches::kSyncServiceURL,
+         syncer::kSyncServiceURL,
          "https://chrome-sync.sandbox.google.com/chrome-sync/alpha")},
 #if !BUILDFLAG(IS_ANDROID)
     {"media-router-cast-allow-all-ips",
@@ -5987,7 +5987,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-sync-requires-policies-loaded",
      flag_descriptions::kEnableSyncRequiresPoliciesLoadedName,
      flag_descriptions::kEnableSyncRequiresPoliciesLoadedDescription, kOsAll,
-     FEATURE_VALUE_TYPE(switches::kSyncRequiresPoliciesLoaded)},
+     FEATURE_VALUE_TYPE(syncer::kSyncRequiresPoliciesLoaded)},
 
     {"enable-policy-blocklist-throttle-requires-policies-loaded",
      flag_descriptions::
@@ -6937,7 +6937,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"sync-autofill-wallet-offer-data",
      flag_descriptions::kSyncAutofillWalletOfferDataName,
      flag_descriptions::kSyncAutofillWalletOfferDataDescription, kOsAll,
-     FEATURE_VALUE_TYPE(switches::kSyncAutofillWalletOfferData)},
+     FEATURE_VALUE_TYPE(syncer::kSyncAutofillWalletOfferData)},
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     {"enable-oop-print-drivers", flag_descriptions::kEnableOopPrintDriversName,
@@ -7447,12 +7447,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"sync-trusted-vault-passphrase-promo",
      flag_descriptions::kSyncTrustedVaultPassphrasePromoName,
      flag_descriptions::kSyncTrustedVaultPassphrasePromoDescription, kOsAll,
-     FEATURE_VALUE_TYPE(::switches::kSyncTrustedVaultPassphrasePromo)},
+     FEATURE_VALUE_TYPE(::syncer::kSyncTrustedVaultPassphrasePromo)},
 
     {"sync-trusted-vault-passphrase-recovery",
      flag_descriptions::kSyncTrustedVaultPassphraseRecoveryName,
      flag_descriptions::kSyncTrustedVaultPassphraseRecoveryDescription, kOsAll,
-     FEATURE_VALUE_TYPE(::switches::kSyncTrustedVaultPassphraseRecovery)},
+     FEATURE_VALUE_TYPE(::syncer::kSyncTrustedVaultPassphraseRecovery)},
 
     {"debug-history-intervention-no-user-activation",
      flag_descriptions::kDebugHistoryInterventionNoUserActivationName,

@@ -91,7 +91,7 @@ inline constexpr char kSyncPasswordForTest[] = "sync-password-for-test";
 //
 // The list below shows some command line switches that can customize test
 // behavior. It may become non-exaustive over time.
-// switches::kSyncServiceURL - By default, tests use a fake_server::FakeServer
+// syncer::kSyncServiceURL - By default, tests use a fake_server::FakeServer
 //    to emulate the sync server. This switch causes them to run against an
 //    external server instead, pointed by the provided URL. This translates into
 //    the ServerType of the test being EXTERNAL_LIVE_SERVER.

@@ -38,7 +38,7 @@ constexpr char kDefaultTrustedVaultServiceURL[] =
 GURL ExtractTrustedVaultServiceURLFromCommandLine() {
   std::string string_url =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kTrustedVaultServiceURL);
+          kTrustedVaultServiceURL);
   if (string_url.empty()) {
     // Command line switch is not specified or is not a valid ASCII string.
     return GURL(kDefaultTrustedVaultServiceURL);
@@ -209,8 +209,7 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
   std::unique_ptr<TrustedVaultConnection> connection;
   GURL trusted_vault_service_gurl =
       ExtractTrustedVaultServiceURLFromCommandLine();
-  if (base::FeatureList::IsEnabled(
-          switches::kSyncTrustedVaultPassphraseRecovery) &&
+  if (base::FeatureList::IsEnabled(kSyncTrustedVaultPassphraseRecovery) &&
       trusted_vault_service_gurl.is_valid()) {
     connection = std::make_unique<TrustedVaultConnectionImpl>(
         trusted_vault_service_gurl, url_loader_factory->Clone(),

@@ -92,7 +92,7 @@ PersonalDataManagerFactory::BuildServiceInstanceFor(
       history_service, strike_database, /*image_fetcher=*/nullptr,
       chrome_browser_state->IsOffTheRecord());
 
-  if (!switches::IsSyncAllowedByFlag())
+  if (!syncer::IsSyncAllowedByFlag())
     service->OnSyncServiceInitialized(nullptr);
 
   return service;

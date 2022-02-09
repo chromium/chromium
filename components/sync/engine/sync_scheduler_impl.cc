@@ -201,7 +201,7 @@ base::Time SyncSchedulerImpl::ComputeLastPollOnStart(
     base::Time last_poll,
     base::TimeDelta poll_interval,
     base::Time now) {
-  if (base::FeatureList::IsEnabled(switches::kSyncResetPollIntervalOnStart)) {
+  if (base::FeatureList::IsEnabled(kSyncResetPollIntervalOnStart)) {
     return now;
   }
   // Handle immediate polls on start-up separately.

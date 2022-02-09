@@ -61,7 +61,7 @@ SyncServiceFactory* SyncServiceFactory::GetInstance() {
 // static
 syncer::SyncService* SyncServiceFactory::GetForBrowserState(
     ChromeBrowserState* browser_state) {
-  if (!switches::IsSyncAllowedByFlag())
+  if (!syncer::IsSyncAllowedByFlag())
     return nullptr;
 
   return static_cast<syncer::SyncService*>(
@@ -71,7 +71,7 @@ syncer::SyncService* SyncServiceFactory::GetForBrowserState(
 // static
 syncer::SyncService* SyncServiceFactory::GetForBrowserStateIfExists(
     ChromeBrowserState* browser_state) {
-  if (!switches::IsSyncAllowedByFlag())
+  if (!syncer::IsSyncAllowedByFlag())
     return nullptr;
 
   return static_cast<syncer::SyncService*>(

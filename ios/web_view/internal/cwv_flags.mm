@@ -48,7 +48,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {kUseSyncSandboxFlagName, /*visible_name=*/"", /*visible_description=*/"",
      flags_ui::kOsIos,
      SINGLE_VALUE_TYPE_AND_VALUE(
-         switches::kSyncServiceURL,
+         syncer::kSyncServiceURL,
          "https://chrome-sync.sandbox.google.com/chrome-sync/alpha")},
     // Controls if wallet connects to the sandbox server instead of production.
     {kUseWalletSandboxFlagName, /*visible_name=*/"", /*visible_description=*/"",

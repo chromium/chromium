@@ -135,7 +135,7 @@ WebDataServiceWrapper::WebDataServiceWrapper(
   profile_autofill_web_data_->GetAutofillBackend(
       base::BindOnce(&InitWalletSyncBridgesOnDBSequence, db_task_runner,
                      profile_autofill_web_data_, application_locale));
-  if (base::FeatureList::IsEnabled(switches::kSyncAutofillWalletOfferData)) {
+  if (base::FeatureList::IsEnabled(syncer::kSyncAutofillWalletOfferData)) {
     profile_autofill_web_data_->GetAutofillBackend(
         base::BindOnce(&InitWalletOfferSyncBridgeOnDBSequence, db_task_runner,
                        profile_autofill_web_data_));

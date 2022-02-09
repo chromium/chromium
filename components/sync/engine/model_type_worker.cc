@@ -184,8 +184,7 @@ ModelTypeWorker::ModelTypeWorker(ModelType type,
       model_type_state_(initial_state),
       encryption_enabled_(encryption_enabled),
       passphrase_type_(passphrase_type),
-      min_get_updates_to_ignore_key_(
-          switches::kMinGuResponsesToIgnoreKey.Get()) {
+      min_get_updates_to_ignore_key_(kMinGuResponsesToIgnoreKey.Get()) {
   DCHECK(cryptographer_);
   DCHECK(!AlwaysEncryptedUserTypes().Has(type_) || encryption_enabled_);
 
@@ -837,8 +836,7 @@ bool ModelTypeWorker::ShouldIgnoreUpdatesEncryptedWith(
       min_get_updates_to_ignore_key_) {
     return false;
   }
-  return base::FeatureList::IsEnabled(
-      switches::kIgnoreSyncEncryptionKeysLongMissing);
+  return base::FeatureList::IsEnabled(kIgnoreSyncEncryptionKeysLongMissing);
 }
 
 void ModelTypeWorker::MaybeDropPendingUpdatesEncryptedWith(

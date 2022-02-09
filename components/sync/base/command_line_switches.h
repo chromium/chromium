@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SYNC_BASE_COMMAND_LINE_SWITCHES_H_
 #define COMPONENTS_SYNC_BASE_COMMAND_LINE_SWITCHES_H_
 
-namespace switches {
+namespace syncer {
 
 // Disables syncing browser data to a Google Account.
 inline constexpr char kDisableSync[] = "disable-sync";
@@ -47,6 +47,6 @@ inline constexpr char kTrustedVaultServiceURL[] = "trusted-vault-service-url";
 // assume it's running on the UI thread.
 bool IsSyncAllowedByFlag();
 
-}  // namespace switches
+}  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_COMMAND_LINE_SWITCHES_H_

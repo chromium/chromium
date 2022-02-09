@@ -92,7 +92,7 @@ bool IsDriveAvailableForProfile(Profile* profile) {
 
   // Disable drive if sync is disabled by command line flag. Outside tests, this
   // only occurs in cases already handled by the gaia account check above.
-  if (!switches::IsSyncAllowedByFlag())
+  if (!syncer::IsSyncAllowedByFlag())
     return false;
 
   return true;

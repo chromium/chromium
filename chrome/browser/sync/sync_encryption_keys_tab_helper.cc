@@ -82,7 +82,7 @@ class EncryptionKeyApi : public chrome::mojom::SyncEncryptionKeysExtension,
       int method_type_hint,
       AddTrustedRecoveryMethodCallback callback) override {
     if (!base::FeatureList::IsEnabled(
-            switches::kSyncTrustedVaultPassphraseRecovery)) {
+            syncer::kSyncTrustedVaultPassphraseRecovery)) {
       return;
     }
 

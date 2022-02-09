@@ -92,7 +92,7 @@ class SyncServiceImplTest : public ::testing::Test {
 
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kSyncDeferredStartupTimeoutSeconds, "0");
+        kSyncDeferredStartupTimeoutSeconds, "0");
   }
 
   void TearDown() override {
@@ -258,8 +258,7 @@ class SyncServiceImplTestWithSyncInvalidationsServiceCreated
     : public SyncServiceImplTest {
  public:
   SyncServiceImplTestWithSyncInvalidationsServiceCreated() {
-    override_features_.InitAndEnableFeature(
-        switches::kSyncSendInterestedDataTypes);
+    override_features_.InitAndEnableFeature(kSyncSendInterestedDataTypes);
   }
 
   ~SyncServiceImplTestWithSyncInvalidationsServiceCreated() override = default;
@@ -362,7 +361,7 @@ TEST_F(SyncServiceImplTest, SetupInProgress) {
 // Verify that we wait for policies to load before starting the sync engine.
 TEST_F(SyncServiceImplTest, WaitForPoliciesToStart) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(switches::kSyncRequiresPoliciesLoaded);
+  feature_list.InitAndEnableFeature(kSyncRequiresPoliciesLoaded);
   std::unique_ptr<policy::PolicyServiceImpl> policy_service =
       policy::PolicyServiceImpl::CreateWithThrottledInitialization(
           policy::PolicyServiceImpl::Providers());
@@ -964,13 +963,13 @@ TEST_F(SyncServiceImplTest, CredentialErrorClearsOnNewToken) {
 
 // Verify that the disable sync flag disables sync.
 TEST_F(SyncServiceImplTest, DisableSyncFlag) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kDisableSync);
-  EXPECT_FALSE(switches::IsSyncAllowedByFlag());
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(kDisableSync);
+  EXPECT_FALSE(IsSyncAllowedByFlag());
 }
 
 // Verify that no disable sync flag enables sync.
 TEST_F(SyncServiceImplTest, NoDisableSyncFlag) {
-  EXPECT_TRUE(switches::IsSyncAllowedByFlag());
+  EXPECT_TRUE(IsSyncAllowedByFlag());
 }
 
 // Test that when SyncServiceImpl receives actionable error

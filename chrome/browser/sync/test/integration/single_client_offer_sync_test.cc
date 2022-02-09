@@ -29,7 +29,7 @@ using autofill::test::GetCardLinkedOfferData1;
 using autofill::test::GetCardLinkedOfferData2;
 using offer_helper::CreateDefaultSyncCardLinkedOffer;
 using offer_helper::CreateSyncCardLinkedOffer;
-using switches::kSyncAutofillWalletOfferData;
+using syncer::kSyncAutofillWalletOfferData;
 using wallet_helper::GetPersonalDataManager;
 using wallet_helper::GetWalletModelTypeState;
 

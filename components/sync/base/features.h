@@ -8,7 +8,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
-namespace switches {
+namespace syncer {
 
 // Allows device registration within trusted vault server without having trusted
 // vault key. Effectively disabled if kSyncTrustedVaultPassphraseRecovery
@@ -116,6 +116,6 @@ inline constexpr base::Feature kUseSyncInvalidationsForWalletAndOffer = {
 bool IsSyncTrustedVaultPassphraseiOSRPCEnabled();
 #endif  // BUILDFLAG(IS_IOS)
 
-}  // namespace switches
+}  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

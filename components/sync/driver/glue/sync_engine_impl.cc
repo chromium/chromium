@@ -176,10 +176,9 @@ void SyncEngineImpl::Initialize(InitParams params) {
   // enabled, then the SyncService doesn't need to communicate with the old
   // InvalidationService anymore.
   if (invalidator_ &&
-      base::FeatureList::IsEnabled(switches::kSyncSendInterestedDataTypes) &&
-      base::FeatureList::IsEnabled(switches::kUseSyncInvalidations) &&
-      base::FeatureList::IsEnabled(
-          switches::kUseSyncInvalidationsForWalletAndOffer)) {
+      base::FeatureList::IsEnabled(kSyncSendInterestedDataTypes) &&
+      base::FeatureList::IsEnabled(kUseSyncInvalidations) &&
+      base::FeatureList::IsEnabled(kUseSyncInvalidationsForWalletAndOffer)) {
     DCHECK(!invalidation_handler_registered_);
     invalidator_->RegisterInvalidationHandler(this);
     bool success = invalidator_->UpdateInterestedTopics(this, /*topics=*/{});
@@ -599,10 +598,10 @@ void SyncEngineImpl::SendInterestedTopicsToInvalidator() {
   if (!sessions_invalidation_enabled_) {
     invalidation_enabled_types.Remove(syncer::SESSIONS);
   }
-  // switches::kUseSyncInvalidations means that the new invalidations system is
+  // kUseSyncInvalidations means that the new invalidations system is
   // used for all data types except Wallet and Offer, so only keep these types.
-  if (base::FeatureList::IsEnabled(switches::kSyncSendInterestedDataTypes) &&
-      base::FeatureList::IsEnabled(switches::kUseSyncInvalidations)) {
+  if (base::FeatureList::IsEnabled(kSyncSendInterestedDataTypes) &&
+      base::FeatureList::IsEnabled(kUseSyncInvalidations)) {
     invalidation_enabled_types.RetainAll(
         {AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_OFFER});
   }

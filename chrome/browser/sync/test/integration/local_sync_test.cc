@@ -63,8 +63,8 @@ class LocalSyncTest : public InProcessBrowserTest {
     command_line->AppendSwitchASCII(switches::kLocalSyncBackendDir,
                                     file.MaybeAsASCII());
     command_line->AppendSwitch(switches::kEnableLocalSyncBackend);
-    command_line->AppendSwitchASCII(
-        switches::kSyncDeferredStartupTimeoutSeconds, "1");
+    command_line->AppendSwitchASCII(syncer::kSyncDeferredStartupTimeoutSeconds,
+                                    "1");
   }
 
  private:

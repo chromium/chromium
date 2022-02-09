@@ -234,7 +234,7 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
     // disabled.
     // TODO(crbug.com/1112095): Currently the offer data depends on Wallet data
     // sync, but revisit after other offer types are implemented.
-    if (base::FeatureList::IsEnabled(switches::kSyncAutofillWalletOfferData) &&
+    if (base::FeatureList::IsEnabled(syncer::kSyncAutofillWalletOfferData) &&
         !disabled_types.Has(syncer::AUTOFILL_WALLET_DATA) &&
         !disabled_types.Has(syncer::AUTOFILL_WALLET_OFFER)) {
       controllers.push_back(CreateWalletModelTypeController(

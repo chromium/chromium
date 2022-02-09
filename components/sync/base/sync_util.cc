@@ -79,9 +79,8 @@ GURL GetSyncServiceURL(const base::CommandLine& command_line,
 
   // 1. Get the sync server URL from the --sync-url command-line param, if
   // specified.
-  if (command_line.HasSwitch(switches::kSyncServiceURL)) {
-    std::string value(
-        command_line.GetSwitchValueASCII(switches::kSyncServiceURL));
+  if (command_line.HasSwitch(kSyncServiceURL)) {
+    std::string value(command_line.GetSwitchValueASCII(kSyncServiceURL));
     if (!value.empty()) {
       GURL custom_sync_url(value);
       if (custom_sync_url.is_valid()) {

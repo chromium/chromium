@@ -6,11 +6,10 @@
 
 #include "base/command_line.h"
 
-namespace switches {
+namespace syncer {
 
 bool IsSyncAllowedByFlag() {
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kDisableSync);
+  return !base::CommandLine::ForCurrentProcess()->HasSwitch(kDisableSync);
 }
 
-}  // namespace switches
+}  // namespace syncer

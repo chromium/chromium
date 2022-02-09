@@ -118,9 +118,8 @@ bool ShouldOfferTrustedVaultOptIn(const SyncService* service) {
         return false;
       }
       return base::FeatureList::IsEnabled(
-                 switches::kSyncTrustedVaultPassphraseRecovery) &&
-             base::FeatureList::IsEnabled(
-                 switches::kSyncTrustedVaultPassphrasePromo);
+                 kSyncTrustedVaultPassphraseRecovery) &&
+             base::FeatureList::IsEnabled(kSyncTrustedVaultPassphrasePromo);
   }
 }
 

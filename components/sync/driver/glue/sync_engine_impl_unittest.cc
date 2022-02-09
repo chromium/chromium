@@ -322,8 +322,8 @@ class SyncEngineImplWithSyncInvalidationsTest : public SyncEngineImplTest {
  public:
   SyncEngineImplWithSyncInvalidationsTest() {
     override_features_.InitWithFeatures(
-        /*enabled_features=*/{switches::kSyncSendInterestedDataTypes,
-                              switches::kUseSyncInvalidations},
+        /*enabled_features=*/{kSyncSendInterestedDataTypes,
+                              kUseSyncInvalidations},
         /*disabled_features=*/{});
   }
 
@@ -341,9 +341,9 @@ class SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest
  public:
   SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest() {
     override_features_.InitWithFeatures(
-        /*enabled_features=*/{switches::kSyncSendInterestedDataTypes,
-                              switches::kUseSyncInvalidations,
-                              switches::kUseSyncInvalidationsForWalletAndOffer},
+        /*enabled_features=*/{kSyncSendInterestedDataTypes,
+                              kUseSyncInvalidations,
+                              kUseSyncInvalidationsForWalletAndOffer},
         /*disabled_features=*/{});
   }
 

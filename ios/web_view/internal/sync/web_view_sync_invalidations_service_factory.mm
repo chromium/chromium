@@ -49,7 +49,7 @@ WebViewSyncInvalidationsServiceFactory::
 std::unique_ptr<KeyedService>
 WebViewSyncInvalidationsServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  if (!base::FeatureList::IsEnabled(switches::kSyncSendInterestedDataTypes)) {
+  if (!base::FeatureList::IsEnabled(syncer::kSyncSendInterestedDataTypes)) {
     return nullptr;
   }
 

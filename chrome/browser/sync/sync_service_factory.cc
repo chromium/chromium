@@ -181,7 +181,7 @@ SyncServiceFactory* SyncServiceFactory::GetInstance() {
 
 // static
 syncer::SyncService* SyncServiceFactory::GetForProfile(Profile* profile) {
-  if (!switches::IsSyncAllowedByFlag()) {
+  if (!syncer::IsSyncAllowedByFlag()) {
     return nullptr;
   }
 
@@ -275,7 +275,7 @@ bool SyncServiceFactory::IsSyncAllowed(Profile* profile) {
   // No SyncServiceImpl created yet - we don't want to create one, so just
   // infer the accessible state by looking at prefs/command line flags.
   syncer::SyncPrefs prefs(profile->GetPrefs());
-  return switches::IsSyncAllowedByFlag() &&
+  return syncer::IsSyncAllowedByFlag() &&
          (!prefs.IsManaged() || prefs.IsLocalSyncEnabled());
 }
 

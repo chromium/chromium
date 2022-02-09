@@ -55,7 +55,7 @@ class SingleClientUserEventsSyncTestWithEnabledThrottling
  public:
   SingleClientUserEventsSyncTestWithEnabledThrottling() {
     features_override_.InitAndEnableFeature(
-        switches::kSyncExtensionTypesThrottling);
+        syncer::kSyncExtensionTypesThrottling);
   }
 
  private:

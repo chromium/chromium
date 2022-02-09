@@ -256,7 +256,7 @@ class OAuth2Test : public OobeBaseTest {
 
     // Disable sync since we don't really need this for these tests and it also
     // makes OAuth2Test.MergeSession test flaky http://crbug.com/408867.
-    command_line->AppendSwitch(switches::kDisableSync);
+    command_line->AppendSwitch(syncer::kDisableSync);
   }
 
   void RegisterAdditionalRequestHandlers() override {

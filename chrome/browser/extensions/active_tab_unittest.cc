@@ -539,8 +539,7 @@ class ActiveTabManagedSessionTest : public ActiveTabTest {
 
     // Necessary to prevent instantiation of SyncService, which messes
     // with our signin state below.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kDisableSync);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(syncer::kDisableSync);
     // Necessary because no ProfileManager instance exists in this test.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ash::switches::kIgnoreUserProfileMappingForTests);

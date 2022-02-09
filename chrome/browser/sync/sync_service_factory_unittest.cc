@@ -126,7 +126,7 @@ class SyncServiceFactoryTest : public testing::Test {
       datatypes.Put(syncer::OS_PRIORITY_PREFERENCES);
     }
     datatypes.Put(syncer::PRINTERS);
-    if (base::FeatureList::IsEnabled(switches::kSyncWifiConfigurations)) {
+    if (base::FeatureList::IsEnabled(syncer::kSyncWifiConfigurations)) {
       datatypes.Put(syncer::WIFI_CONFIGURATIONS);
     }
     datatypes.Put(syncer::WORKSPACE_DESK);
@@ -171,7 +171,7 @@ class SyncServiceFactoryTest : public testing::Test {
 
 // Verify that the disable sync flag disables creation of the sync service.
 TEST_F(SyncServiceFactoryTest, DisableSyncFlag) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kDisableSync);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(syncer::kDisableSync);
   EXPECT_EQ(nullptr, SyncServiceFactory::GetForProfile(profile()));
 }
 

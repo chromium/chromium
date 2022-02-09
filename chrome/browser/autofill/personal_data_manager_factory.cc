@@ -89,7 +89,7 @@ KeyedService* PersonalDataManagerFactory::BuildPersonalDataManager(
                 IdentityManagerFactory::GetForProfile(profile), history_service,
                 strike_database, image_fetcher, profile->IsOffTheRecord());
 
-  if (!switches::IsSyncAllowedByFlag())
+  if (!syncer::IsSyncAllowedByFlag())
     service->OnSyncServiceInitialized(nullptr);
 
   return service;

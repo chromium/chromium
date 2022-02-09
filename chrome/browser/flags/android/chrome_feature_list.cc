@@ -367,7 +367,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kAllowSyncOffForChildAccounts,
     &switches::kForceStartupSigninPromo,
     &switches::kForceDisableExtendedSyncPromos,
-    &switches::kSyncTrustedVaultPassphraseRecovery,
+    &syncer::kSyncTrustedVaultPassphraseRecovery,
     &switches::kSyncUseSessionsUnregisterDelay,
     &subresource_filter::kSafeBrowsingSubresourceFilter,
     &video_tutorials::features::kVideoTutorials,

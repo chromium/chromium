@@ -32,7 +32,7 @@ namespace {
 // or not the corresponding command-line switch is set.
 bool GetIncludeSpecificsInitialState() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kSyncIncludeSpecificsInProtocolLog);
+      syncer::kSyncIncludeSpecificsInProtocolLog);
 }
 
 }  // namespace

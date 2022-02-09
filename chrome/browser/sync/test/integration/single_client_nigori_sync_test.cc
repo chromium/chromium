@@ -606,7 +606,7 @@ class SingleClientNigoriWithWebApiTest : public SyncTest {
     const GURL& base_url = embedded_test_server()->base_url();
     command_line->AppendSwitchASCII(switches::kGaiaUrl, base_url.spec());
     command_line->AppendSwitchASCII(
-        switches::kTrustedVaultServiceURL,
+        syncer::kTrustedVaultServiceURL,
         syncer::FakeSecurityDomainsServer::GetServerURL(
             embedded_test_server()->base_url())
             .spec());
@@ -1105,7 +1105,7 @@ class SingleClientNigoriWithRecoverySyncTest
  public:
   SingleClientNigoriWithRecoverySyncTest() {
     override_features_.InitAndEnableFeature(
-        switches::kSyncTrustedVaultPassphraseRecovery);
+        syncer::kSyncTrustedVaultPassphraseRecovery);
   }
 
   ~SingleClientNigoriWithRecoverySyncTest() override = default;

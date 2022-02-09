@@ -787,8 +787,7 @@ void SyncServiceCrypto::RefreshIsRecoverabilityDegraded() {
       break;
   }
 
-  if (!base::FeatureList::IsEnabled(
-          switches::kSyncTrustedVaultPassphraseRecovery)) {
+  if (!base::FeatureList::IsEnabled(kSyncTrustedVaultPassphraseRecovery)) {
     return;
   }
 

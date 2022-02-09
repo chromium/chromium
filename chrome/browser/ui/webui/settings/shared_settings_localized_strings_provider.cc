@@ -64,7 +64,7 @@ std::u16string GetHelpUrlWithBoard(const std::string& original_url) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool ShouldShowLacrosSideBySideWarningInAsh() {
   return base::FeatureList::IsEnabled(
-             switches::kSyncSettingsShowLacrosSideBySideWarning) &&
+             syncer::kSyncSettingsShowLacrosSideBySideWarning) &&
          crosapi::browser_util::IsAshWebBrowserEnabled() &&
          crosapi::browser_util::IsLacrosEnabled();
 }
@@ -73,7 +73,7 @@ bool ShouldShowLacrosSideBySideWarningInAsh() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 bool ShouldShowLacrosSideBySideWarningInLacros() {
   return base::FeatureList::IsEnabled(
-             switches::kSyncSettingsShowLacrosSideBySideWarning) &&
+             syncer::kSyncSettingsShowLacrosSideBySideWarning) &&
          !chromeos::LacrosService::Get()
               ->init_params()
               ->standalone_browser_is_only_browser;

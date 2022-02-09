@@ -790,7 +790,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   base::HistogramTester histogram_tester2;
   ResetBackend();
   EXPECT_CALL(*connection(), RegisterAuthenticationFactor(_, _, _, _, _, _, _));
-  clock()->Advance(switches::kTrustedVaultServiceThrottlingDuration.Get());
+  clock()->Advance(kTrustedVaultServiceThrottlingDuration.Get());
   backend()->ReadDataFromDisk();
   backend()->SetPrimaryAccount(account_info,
                                /*has_persistent_auth_error=*/false);
@@ -1010,7 +1010,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   Mock::VerifyAndClearExpectations(connection());
 
   // Advance time to pass the throttling duration and trigger another attempt.
-  clock()->Advance(switches::kTrustedVaultServiceThrottlingDuration.Get());
+  clock()->Advance(kTrustedVaultServiceThrottlingDuration.Get());
 
   EXPECT_CALL(*connection(), DownloadNewKeys(_, _, _, _));
   backend()->FetchKeys(account_info, /*callback=*/base::DoNothing());

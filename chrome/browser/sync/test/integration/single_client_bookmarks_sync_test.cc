@@ -165,7 +165,7 @@ class SingleClientBookmarksSyncTestWithEnabledThrottling : public SyncTest {
   SingleClientBookmarksSyncTestWithEnabledThrottling()
       : SyncTest(SINGLE_CLIENT) {
     features_override_.InitAndEnableFeature(
-        switches::kSyncExtensionTypesThrottling);
+        syncer::kSyncExtensionTypesThrottling);
   }
 
  private:

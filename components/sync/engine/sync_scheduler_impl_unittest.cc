@@ -2030,7 +2030,7 @@ TEST_F(SyncSchedulerImplTest, PollOnStartUpWithinBoundsAfterLongPause) {
 
 TEST_F(SyncSchedulerImplTest, TestResetPollIntervalOnStartFeatureFlag) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(switches::kSyncResetPollIntervalOnStart);
+  feature_list.InitAndEnableFeature(kSyncResetPollIntervalOnStart);
   base::Time now = base::Time::Now();
   EXPECT_THAT(ComputeLastPollOnStart(
                   /*last_poll=*/now - base::Days(1),

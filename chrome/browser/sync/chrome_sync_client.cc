@@ -455,7 +455,7 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
         syncer::PRINTERS,
         std::make_unique<ForwardingModelTypeControllerDelegate>(
             printers_delegate)));
-    if (base::FeatureList::IsEnabled(switches::kSyncWifiConfigurations) &&
+    if (base::FeatureList::IsEnabled(syncer::kSyncWifiConfigurations) &&
         WifiConfigurationSyncServiceFactory::ShouldRunInProfile(profile_)) {
       syncer::ModelTypeControllerDelegate* wifi_configurations_delegate =
           GetControllerDelegateForModelType(syncer::WIFI_CONFIGURATIONS).get();
@@ -472,7 +472,7 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
             workspace_desk_delegate)));
   } else {
     // SyncSettingsCategorization is disabled.
-    if (base::FeatureList::IsEnabled(switches::kSyncWifiConfigurations) &&
+    if (base::FeatureList::IsEnabled(syncer::kSyncWifiConfigurations) &&
         WifiConfigurationSyncServiceFactory::ShouldRunInProfile(profile_)) {
       syncer::ModelTypeControllerDelegate* wifi_configurations_delegate =
           GetControllerDelegateForModelType(syncer::WIFI_CONFIGURATIONS).get();

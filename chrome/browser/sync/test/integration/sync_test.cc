@@ -376,11 +376,11 @@ void SyncTest::AddTestSwitches(base::CommandLine* cl) {
   if (!cl->HasSwitch(switches::kDisableBackgroundNetworking))
     cl->AppendSwitch(switches::kDisableBackgroundNetworking);
 
-  if (!cl->HasSwitch(switches::kSyncShortInitialRetryOverride))
-    cl->AppendSwitch(switches::kSyncShortInitialRetryOverride);
+  if (!cl->HasSwitch(syncer::kSyncShortInitialRetryOverride))
+    cl->AppendSwitch(syncer::kSyncShortInitialRetryOverride);
 
-  if (!cl->HasSwitch(switches::kSyncShortNudgeDelayForTest))
-    cl->AppendSwitch(switches::kSyncShortNudgeDelayForTest);
+  if (!cl->HasSwitch(syncer::kSyncShortNudgeDelayForTest))
+    cl->AppendSwitch(syncer::kSyncShortNudgeDelayForTest);
 
   // TODO(crbug.com/1060366): This is a temporary switch to allow having two
   // profiles syncing the same account. Having a profile outside of the user
@@ -388,11 +388,11 @@ void SyncTest::AddTestSwitches(base::CommandLine* cl) {
   if (!cl->HasSwitch(switches::kAllowProfilesOutsideUserDir))
     cl->AppendSwitch(switches::kAllowProfilesOutsideUserDir);
 
-  if (cl->HasSwitch(switches::kSyncServiceURL)) {
+  if (cl->HasSwitch(syncer::kSyncServiceURL)) {
     // TODO(crbug.com/1243653): setup real SecurityDomainService if
     // UsingExternalServers().
     // Effectively disables kSyncTrustedVaultPassphraseRecovery for E2E tests.
-    cl->AppendSwitchASCII(switches::kTrustedVaultServiceURL, "broken_url");
+    cl->AppendSwitchASCII(syncer::kTrustedVaultServiceURL, "broken_url");
   }
 }
 
@@ -609,8 +609,8 @@ bool SyncTest::SetupClients() {
   fake_server_invalidation_observers_.resize(num_clients_);
 
   auto* cl = base::CommandLine::ForCurrentProcess();
-  if (!cl->HasSwitch(switches::kSyncDeferredStartupTimeoutSeconds)) {
-    cl->AppendSwitchASCII(switches::kSyncDeferredStartupTimeoutSeconds, "1");
+  if (!cl->HasSwitch(syncer::kSyncDeferredStartupTimeoutSeconds)) {
+    cl->AppendSwitchASCII(syncer::kSyncDeferredStartupTimeoutSeconds, "1");
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1075,7 +1075,7 @@ std::unique_ptr<KeyedService> SyncTest::CreateSyncInvalidationsService(
         profile_to_instance_id_driver_map,
     std::vector<syncer::FCMHandler*>* sync_invalidations_fcm_handlers,
     content::BrowserContext* context) {
-  if (!base::FeatureList::IsEnabled(switches::kSyncSendInterestedDataTypes)) {
+  if (!base::FeatureList::IsEnabled(syncer::kSyncSendInterestedDataTypes)) {
     return nullptr;
   }
 
@@ -1236,7 +1236,7 @@ void SyncTest::DecideServerType() {
   // tests to explicitly set this value in each test class if needed.
   if (server_type_ == SERVER_TYPE_UNDECIDED) {
     base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
-    if (!cl->HasSwitch(switches::kSyncServiceURL)) {
+    if (!cl->HasSwitch(syncer::kSyncServiceURL)) {
       // If no sync server URL is provided, start up a local sync test server
       // and point Chrome to its URL. This is the most common configuration,
       server_type_ = IN_PROCESS_FAKE_SERVER;

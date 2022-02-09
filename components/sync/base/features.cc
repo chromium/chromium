@@ -4,15 +4,13 @@
 
 #include "components/sync/base/features.h"
 
-namespace switches {
+namespace syncer {
 
 #if BUILDFLAG(IS_IOS)
 bool IsSyncTrustedVaultPassphraseiOSRPCEnabled() {
-  return base::FeatureList::IsEnabled(
-             switches::kSyncTrustedVaultPassphraseRecovery) &&
-         base::FeatureList::IsEnabled(
-             switches::kSyncTrustedVaultPassphraseiOSRPC);
+  return base::FeatureList::IsEnabled(kSyncTrustedVaultPassphraseRecovery) &&
+         base::FeatureList::IsEnabled(kSyncTrustedVaultPassphraseiOSRPC);
 }
 #endif  // BUILDFLAG(IS_IOS)
 
-}  // namespace switches
+}  // namespace syncer

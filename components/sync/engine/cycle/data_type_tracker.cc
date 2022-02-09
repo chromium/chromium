@@ -164,7 +164,7 @@ DataTypeTracker::DataTypeTracker(ModelType type)
   DCHECK_GE(local_change_nudge_delay_, kMinLocalChangeNudgeDelay);
 
   if (CanGetCommitsFromExtensions(type) &&
-      base::FeatureList::IsEnabled(switches::kSyncExtensionTypesThrottling)) {
+      base::FeatureList::IsEnabled(kSyncExtensionTypesThrottling)) {
     quota_ = std::make_unique<CommitQuota>(kInitialQuotaForExtensionTypes,
                                            kRefillIntervalForExtensionTypes);
   }

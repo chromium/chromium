@@ -60,7 +60,7 @@ class SyncServiceImplBundle {
   }
 
   MockSyncInvalidationsService* sync_invalidations_service() {
-    if (base::FeatureList::IsEnabled(switches::kSyncSendInterestedDataTypes)) {
+    if (base::FeatureList::IsEnabled(kSyncSendInterestedDataTypes)) {
       return &sync_invalidations_service_;
     } else {
       return nullptr;

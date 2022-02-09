@@ -38,7 +38,7 @@ SyncInvalidationsServiceFactory::~SyncInvalidationsServiceFactory() = default;
 
 KeyedService* SyncInvalidationsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(switches::kSyncSendInterestedDataTypes)) {
+  if (!base::FeatureList::IsEnabled(syncer::kSyncSendInterestedDataTypes)) {
     return nullptr;
   }
 

@@ -514,7 +514,7 @@ StandaloneTrustedVaultBackend::MaybeRegisterDevice(
 
   if (per_user_vault->vault_key().empty() &&
       !base::FeatureList::IsEnabled(
-          switches::kAllowSilentTrustedVaultDeviceRegistration)) {
+          kAllowSilentTrustedVaultDeviceRegistration)) {
     // Either vault key with known version should be available or registration
     // without it should be allowed through feature flag.
     return absl::nullopt;
@@ -782,7 +782,7 @@ bool StandaloneTrustedVaultBackend::AreConnectionRequestsThrottled() {
   }
 
   return last_failed_request_time +
-             switches::kTrustedVaultServiceThrottlingDuration.Get() >
+             kTrustedVaultServiceThrottlingDuration.Get() >
          current_time;
 }
 

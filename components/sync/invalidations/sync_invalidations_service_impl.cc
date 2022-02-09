@@ -29,7 +29,7 @@ SyncInvalidationsServiceImpl::SyncInvalidationsServiceImpl(
 SyncInvalidationsServiceImpl::~SyncInvalidationsServiceImpl() = default;
 
 void SyncInvalidationsServiceImpl::SetActive(bool active) {
-  if (!base::FeatureList::IsEnabled(switches::kUseSyncInvalidations) ||
+  if (!base::FeatureList::IsEnabled(kUseSyncInvalidations) ||
       fcm_handler_->IsListening() == active) {
     return;
   }

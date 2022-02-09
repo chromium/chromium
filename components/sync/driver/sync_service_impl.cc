@@ -101,11 +101,11 @@ EngineComponentsFactory::Switches EngineSwitchesFromCommandLine() {
       /*force_short_nudge_delay_for_test=*/false};
 
   base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
-  if (cl->HasSwitch(switches::kSyncShortInitialRetryOverride)) {
+  if (cl->HasSwitch(kSyncShortInitialRetryOverride)) {
     factory_switches.backoff_override =
         EngineComponentsFactory::BACKOFF_SHORT_INITIAL_RETRY_OVERRIDE;
   }
-  if (cl->HasSwitch(switches::kSyncShortNudgeDelayForTest)) {
+  if (cl->HasSwitch(kSyncShortNudgeDelayForTest)) {
     factory_switches.force_short_nudge_delay_for_test = true;
   }
   return factory_switches;
@@ -173,10 +173,10 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
 
   // If Sync is disabled via command line flag, then SyncServiceImpl
   // shouldn't be instantiated.
-  DCHECK(switches::IsSyncAllowedByFlag());
+  DCHECK(IsSyncAllowedByFlag());
 
   bool should_wait_for_policies =
-      base::FeatureList::IsEnabled(switches::kSyncRequiresPoliciesLoaded);
+      base::FeatureList::IsEnabled(kSyncRequiresPoliciesLoaded);
 
   startup_controller_ = std::make_unique<StartupController>(
       base::BindRepeating(&SyncServiceImpl::GetPreferredDataTypes,
@@ -592,7 +592,7 @@ SyncService::DisableReasonSet SyncServiceImpl::GetDisableReasons() const {
 
   // If Sync is disabled via command line flag, then SyncServiceImpl
   // shouldn't even be instantiated.
-  DCHECK(switches::IsSyncAllowedByFlag());
+  DCHECK(IsSyncAllowedByFlag());
   DisableReasonSet result;
 
   // If local sync is enabled, most disable reasons don't apply.
@@ -1236,9 +1236,8 @@ void SyncServiceImpl::UpdateDataTypesForInvalidations() {
   if (!sessions_invalidations_enabled_) {
     types.Remove(SESSIONS);
   }
-  if (!(base::FeatureList::IsEnabled(switches::kUseSyncInvalidations) &&
-        base::FeatureList::IsEnabled(
-            switches::kUseSyncInvalidationsForWalletAndOffer))) {
+  if (!(base::FeatureList::IsEnabled(kUseSyncInvalidations) &&
+        base::FeatureList::IsEnabled(kUseSyncInvalidationsForWalletAndOffer))) {
     types.RemoveAll({AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_OFFER});
   }
   invalidations_service->SetInterestedDataTypes(types);

@@ -99,7 +99,7 @@ bool AutofillWalletModelTypeController::ShouldRunInTransportOnlyMode() const {
   }
   if (sync_service_->GetUserSettings()->IsUsingExplicitPassphrase() &&
       !base::FeatureList::IsEnabled(
-          switches::kSyncAllowWalletDataInTransportModeWithCustomPassphrase)) {
+          syncer::kSyncAllowWalletDataInTransportModeWithCustomPassphrase)) {
     return false;
   }
   return true;

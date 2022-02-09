@@ -51,7 +51,7 @@ syncer::ModelTypeSet AllowedTypesInStandaloneTransportMode() {
                           syncer::OS_PRIORITY_PREFERENCES, syncer::WEB_APPS,
                           syncer::WORKSPACE_DESK});
   }
-  if (base::FeatureList::IsEnabled(switches::kSyncWifiConfigurations)) {
+  if (base::FeatureList::IsEnabled(syncer::kSyncWifiConfigurations)) {
     allowed_types.Put(syncer::WIFI_CONFIGURATIONS);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

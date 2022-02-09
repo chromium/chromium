@@ -615,7 +615,7 @@ class WebviewLoginTestWithSyncTrustedVaultEnabled : public WebviewLoginTest {
   WebviewLoginTestWithSyncTrustedVaultEnabled() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndEnableFeature(
-        ::switches::kSyncTrustedVaultPassphraseRecovery);
+        ::syncer::kSyncTrustedVaultPassphraseRecovery);
   }
 };
 

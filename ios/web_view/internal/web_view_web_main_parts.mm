@@ -60,8 +60,8 @@ void WebViewWebMainParts::PreCreateThreads() {
       {
           autofill::features::kAutofillUpstream.name,
           password_manager::features::kEnablePasswordsAccountStorage.name,
-          switches::kSyncTrustedVaultPassphraseiOSRPC.name,
-          switches::kSyncTrustedVaultPassphraseRecovery.name,
+          syncer::kSyncTrustedVaultPassphraseiOSRPC.name,
+          syncer::kSyncTrustedVaultPassphraseRecovery.name,
       },
       ",");
   std::string disabled_features = base::JoinString(

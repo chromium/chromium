@@ -9,4 +9,10 @@
 // includes it.
 #include "components/sync/base/command_line_switches.h"
 
+namespace switches {
+
+inline constexpr const char* kSyncServiceURL = syncer::kSyncServiceURL;
+
+}  // namespace switches
+
 #endif  // COMPONENTS_SYNC_BASE_SYNC_BASE_SWITCHES_H_

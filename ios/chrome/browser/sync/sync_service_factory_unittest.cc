@@ -92,7 +92,7 @@ class SyncServiceFactoryTest : public PlatformTest {
 
 // Verify that the disable sync flag disables creation of the sync service.
 TEST_F(SyncServiceFactoryTest, DisableSyncFlag) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kDisableSync);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(syncer::kDisableSync);
   EXPECT_FALSE(SyncServiceFactory::GetForBrowserState(chrome_browser_state()));
 }
 

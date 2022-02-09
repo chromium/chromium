@@ -1072,8 +1072,7 @@ TEST_F(
 
 TEST_F(SyncServiceCryptoTest, ShouldNotGetRecoverabilityIfFeatureDisabled) {
   base::test::ScopedFeatureList override_features;
-  override_features.InitAndDisableFeature(
-      switches::kSyncTrustedVaultPassphraseRecovery);
+  override_features.InitAndDisableFeature(kSyncTrustedVaultPassphraseRecovery);
 
   trusted_vault_client_.SetIsRecoverabilityDegraded(true);
   crypto_.OnPassphraseTypeChanged(PassphraseType::kTrustedVaultPassphrase,
@@ -1092,8 +1091,7 @@ TEST_F(SyncServiceCryptoTest, ShouldNotGetRecoverabilityIfFeatureDisabled) {
 TEST_F(SyncServiceCryptoTest,
        ShouldNotGetRecoverabilityIfKeystorePassphraseUsed) {
   base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(
-      switches::kSyncTrustedVaultPassphraseRecovery);
+  override_features.InitAndEnableFeature(kSyncTrustedVaultPassphraseRecovery);
 
   trusted_vault_client_.SetIsRecoverabilityDegraded(true);
   crypto_.OnPassphraseTypeChanged(PassphraseType::kKeystorePassphrase,
@@ -1112,8 +1110,7 @@ TEST_F(SyncServiceCryptoTest,
 TEST_F(SyncServiceCryptoTest,
        ShouldNotReportDegradedRecoverabilityUponInitialization) {
   base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(
-      switches::kSyncTrustedVaultPassphraseRecovery);
+  override_features.InitAndEnableFeature(kSyncTrustedVaultPassphraseRecovery);
 
   base::HistogramTester histogram_tester;
   trusted_vault_client_.SetIsRecoverabilityDegraded(false);
@@ -1134,8 +1131,7 @@ TEST_F(SyncServiceCryptoTest,
 TEST_F(SyncServiceCryptoTest,
        ShouldReportDegradedRecoverabilityUponInitialization) {
   base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(
-      switches::kSyncTrustedVaultPassphraseRecovery);
+  override_features.InitAndEnableFeature(kSyncTrustedVaultPassphraseRecovery);
 
   base::HistogramTester histogram_tester;
   trusted_vault_client_.SetIsRecoverabilityDegraded(true);
@@ -1155,8 +1151,7 @@ TEST_F(SyncServiceCryptoTest,
 
 TEST_F(SyncServiceCryptoTest, ShouldReportDegradedRecoverabilityUponChange) {
   base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(
-      switches::kSyncTrustedVaultPassphraseRecovery);
+  override_features.InitAndEnableFeature(kSyncTrustedVaultPassphraseRecovery);
 
   base::HistogramTester histogram_tester;
   trusted_vault_client_.SetIsRecoverabilityDegraded(false);
@@ -1184,8 +1179,7 @@ TEST_F(SyncServiceCryptoTest, ShouldReportDegradedRecoverabilityUponChange) {
 TEST_F(SyncServiceCryptoTest,
        ShouldStopReportingDegradedRecoverabilityUponChange) {
   base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(
-      switches::kSyncTrustedVaultPassphraseRecovery);
+  override_features.InitAndEnableFeature(kSyncTrustedVaultPassphraseRecovery);
 
   base::HistogramTester histogram_tester;
   trusted_vault_client_.SetIsRecoverabilityDegraded(true);
@@ -1212,8 +1206,7 @@ TEST_F(SyncServiceCryptoTest,
 
 TEST_F(SyncServiceCryptoTest, ShouldReportDegradedRecoverabilityUponRetrieval) {
   base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(
-      switches::kSyncTrustedVaultPassphraseRecovery);
+  override_features.InitAndEnableFeature(kSyncTrustedVaultPassphraseRecovery);
 
   base::HistogramTester histogram_tester;
   trusted_vault_client_.SetIsRecoverabilityDegraded(true);
@@ -1256,8 +1249,7 @@ TEST_F(SyncServiceCryptoTest,
   const std::string kTestPassphrase = "somepassphrase";
 
   base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(
-      switches::kSyncTrustedVaultPassphraseRecovery);
+  override_features.InitAndEnableFeature(kSyncTrustedVaultPassphraseRecovery);
 
   // Mimic a browser startup in |kTrustedVaultPassphrase| with no additional
   // keys required and degraded recoverability state.

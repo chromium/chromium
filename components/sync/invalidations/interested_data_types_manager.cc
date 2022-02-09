@@ -50,7 +50,7 @@ void InterestedDataTypesManager::
 
   // Do not send an additional GetUpdates request when invalidations are
   // disabled.
-  if (base::FeatureList::IsEnabled(switches::kUseSyncInvalidations)) {
+  if (base::FeatureList::IsEnabled(kUseSyncInvalidations)) {
     interested_data_types_handler_
         ->SetCommittedAdditionalInterestedDataTypesCallback(
             std::move(callback));

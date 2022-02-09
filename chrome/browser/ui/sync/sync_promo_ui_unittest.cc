@@ -33,8 +33,7 @@ class SyncPromoUITest : public testing::Test {
 
  protected:
   void DisableSync() {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kDisableSync);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(syncer::kDisableSync);
   }
 
   content::BrowserTaskEnvironment task_environment_;

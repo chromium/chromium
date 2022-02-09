@@ -456,8 +456,8 @@ void SyncEngineBackend::DoOnInvalidatorClientIdChange(
 
 void SyncEngineBackend::DoOnInvalidationReceived(const std::string& payload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(base::FeatureList::IsEnabled(switches::kSyncSendInterestedDataTypes) &&
-         base::FeatureList::IsEnabled(switches::kUseSyncInvalidations));
+  DCHECK(base::FeatureList::IsEnabled(kSyncSendInterestedDataTypes) &&
+         base::FeatureList::IsEnabled(kUseSyncInvalidations));
 
   sync_pb::SyncInvalidationsPayload payload_message;
   // TODO(crbug.com/1119804): Track parsing failures in a histogram.

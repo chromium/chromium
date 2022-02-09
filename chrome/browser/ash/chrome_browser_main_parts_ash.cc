@@ -573,7 +573,7 @@ int ChromeBrowserMainPartsAsh::PreEarlyInitialization() {
 
   if (parsed_command_line().HasSwitch(switches::kGuestSession)) {
     // Disable sync and extensions if we're in "browse without sign-in" mode.
-    singleton_command_line->AppendSwitch(::switches::kDisableSync);
+    singleton_command_line->AppendSwitch(::syncer::kDisableSync);
     singleton_command_line->AppendSwitch(::switches::kDisableExtensions);
     browser_defaults::bookmarks_enabled = false;
   }

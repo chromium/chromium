@@ -107,7 +107,7 @@ class SpellcheckServiceBrowserTest : public InProcessBrowserTest,
     // GetEnableSpellcheckState() after InitSpellcheck(), which will wait
     // forever if the service already existed). So disable sync of the custom
     // dictionary for these tests.
-    command_line->AppendSwitch(switches::kDisableSync);
+    command_line->AppendSwitch(syncer::kDisableSync);
     SpellcheckService::OverrideBinderForTesting(base::BindRepeating(
         &SpellcheckServiceBrowserTest::Bind, base::Unretained(this)));
   }
