@@ -17,22 +17,6 @@
 
 namespace invalidation {
 
-// Used by UMA histogram, so entries shouldn't be reordered or removed.
-enum class HandlerOwnerType {
-  kCloud = 0,
-  kFake = 1,
-  kRemoteCommands = 2,
-  kDrive = 3,
-  kSync = 4,
-  kTicl = 5,
-  kChildAccount = 6,
-  kNotificationPrinter = 7,
-  kInvalidatorShim = 8,
-  kSyncEngineImpl = 9,
-  kUnknown = 10,
-  kMaxValue = kUnknown,
-};
-
 class Invalidation;
 
 struct INVALIDATION_EXPORT InvalidationVersionLessThan {

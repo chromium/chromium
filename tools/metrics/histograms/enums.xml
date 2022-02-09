@@ -43445,20 +43445,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1" label="Had user input"/>
 </enum>
 
-<enum name="HandlerOwnerType">
-  <int value="0" label="Cloud"/>
-  <int value="1" label="Fake"/>
-  <int value="2" label="RemoteCommands"/>
-  <int value="3" label="Drive"/>
-  <int value="4" label="Sync"/>
-  <int value="5" label="Ticl"/>
-  <int value="6" label="ChildAccount"/>
-  <int value="7" label="NotificationPrinter"/>
-  <int value="8" label="InvalidatorShim"/>
-  <int value="9" label="SyncBackendHost"/>
-  <int value="10" label="Unknown"/>
-</enum>
-
 <enum name="HandleStateType">
   <int value="0" label="Launch"/>
   <int value="1" label="Checked launch"/>
