@@ -14,6 +14,7 @@
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
+#include "base/guid.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
@@ -161,6 +162,11 @@ testing::AssertionResult SharedInfoEqual(
            << "Expected privacy_budget_key " << expected.privacy_budget_key
            << ", actual: " << actual.privacy_budget_key;
   }
+  if (expected.report_id != actual.report_id) {
+    return testing::AssertionFailure()
+           << "Expected report_id " << expected.report_id
+           << ", actual: " << actual.report_id;
+  }
 
   return testing::AssertionSuccess();
 }
@@ -186,7 +192,9 @@ AggregatableReportRequest CreateExampleRequest(
                  url::Origin::Create(GURL("https://reporting.example"))),
              AggregatableReportSharedInfo(
                  /*scheduled_report_time=*/base::Time::Now(),
-                 /*privacy_budget_key=*/"example_budget_key"))
+                 /*privacy_budget_key=*/"example_budget_key",
+                 /*report_id=*/
+                 base::GUID::GenerateRandomV4()))
       .value();
 }
 

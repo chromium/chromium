@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/guid.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "content/browser/aggregation_service/public_key.h"
@@ -58,13 +59,17 @@ struct CONTENT_EXPORT AggregationServicePayloadContents {
 // and in the plaintext report.
 struct CONTENT_EXPORT AggregatableReportSharedInfo {
   AggregatableReportSharedInfo(base::Time scheduled_report_time,
-                               std::string privacy_budget_key);
+                               std::string privacy_budget_key,
+                               base::GUID report_id);
 
   // Serializes to a JSON dictionary, represented as a string.
   std::string SerializeAsJson() const;
 
   base::Time scheduled_report_time;
   std::string privacy_budget_key;
+
+  // Used to prevent double counting.
+  base::GUID report_id;
 };
 
 // An AggregatableReport contains all the information needed for sending the
@@ -159,7 +164,7 @@ class CONTENT_EXPORT AggregatableReport {
   // {
   //   "shared_info": "{\"scheduled_report_time\":\"[timestamp in
   //   seconds]\",\"privacy_budget_key\":\"[string]\",\"version\":\"[api
-  //   version]\"}",
+  //   version]\",\"report_id\":\"[UUID]\"}",
   //   "aggregation_service_payloads": [
   //     {
   //       "origin": "https://helper1.example",
@@ -202,7 +207,8 @@ class CONTENT_EXPORT AggregatableReportRequest {
   // Returns `absl::nullopt` if `payload_contents` has a negative bucket or
   // value. Also returns `absl::nullopt` if `processing_origins.size()` is not
   // valid for the `payload_contents.processing_type` (see
-  // `IsNumberOfProcessingOriginsValid` above).
+  // `IsNumberOfProcessingOriginsValid` above). Also returns `absl::nullopt`
+  // if `shared_info.report_id` is not valid.
   static absl::optional<AggregatableReportRequest> Create(
       std::vector<url::Origin> processing_origins,
       AggregationServicePayloadContents payload_contents,

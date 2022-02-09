@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/guid.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -134,7 +135,8 @@ void TestAggregationServiceImpl::AssembleReport(
 
   AggregatableReportSharedInfo shared_info(
       /*scheduled_report_time=*/base::Time::Now() + base::Seconds(30),
-      std::move(request.privacy_budget_key));
+      std::move(request.privacy_budget_key),
+      /*report_id=*/base::GUID::GenerateRandomV4());
 
   absl::optional<AggregatableReportRequest> report_request =
       AggregatableReportRequest::Create(std::move(request.processing_origins),

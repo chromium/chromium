@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/guid.h"
 #include "base/json/json_writer.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -466,6 +467,21 @@ TEST(AggregatableReportTest,
   EXPECT_FALSE(negative_value_request.has_value());
 }
 
+TEST(AggregatableReportTest, RequestCreatedWithInvalidReportId_Failed) {
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+  AggregatableReportSharedInfo shared_info = example_request.shared_info();
+  shared_info.report_id = base::GUID();
+
+  absl::optional<AggregatableReportRequest> request =
+      AggregatableReportRequest::Create(
+          {url::Origin::Create(GURL("http://a.example")),
+           url::Origin::Create(GURL("https://b.example"))},
+          example_request.payload_contents(), std::move(shared_info));
+
+  EXPECT_FALSE(request.has_value());
+}
+
 TEST(AggregatableReportTest, GetAsJsonOnePayload_ValidJsonReturned) {
   std::vector<AggregatableReport::AggregationServicePayload> payloads;
   payloads.emplace_back(url::Origin::Create(GURL("https://a.example")),
@@ -517,13 +533,17 @@ TEST(AggregatableReportTest, GetAsJsonTwoPayloads_ValidJsonReturned) {
 TEST(AggregatableReportTest, SharedInfoSerializeAsJson_ReturnsExpectedString) {
   AggregatableReportSharedInfo shared_info(
       base::Time::FromJavaTime(1234567890123),
-      /*privacy_budget_key=*/"example_pbk");
+      /*privacy_budget_key=*/"example_pbk",
+      /*report_id=*/
+      base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"));
 
-  const char kExpectedString[] = R"({)"
-                                 R"("privacy_budget_key":"example_pbk",)"
-                                 R"("scheduled_report_time":"1234567890",)"
-                                 R"("version":"")"
-                                 R"(})";
+  const char kExpectedString[] =
+      R"({)"
+      R"("privacy_budget_key":"example_pbk",)"
+      R"("report_id":"21abd97f-73e8-4b88-9389-a9fee6abda5e",)"
+      R"("scheduled_report_time":"1234567890",)"
+      R"("version":"")"
+      R"(})";
 
   EXPECT_EQ(shared_info.SerializeAsJson(), kExpectedString);
 }

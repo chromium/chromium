@@ -239,14 +239,19 @@ AggregationServicePayloadContents::AggregationServicePayloadContents(
 
 AggregatableReportSharedInfo::AggregatableReportSharedInfo(
     base::Time scheduled_report_time,
-    std::string privacy_budget_key)
+    std::string privacy_budget_key,
+    base::GUID report_id)
     : scheduled_report_time(std::move(scheduled_report_time)),
-      privacy_budget_key(std::move(privacy_budget_key)) {}
+      privacy_budget_key(std::move(privacy_budget_key)),
+      report_id(std::move(report_id)) {}
 
 std::string AggregatableReportSharedInfo::SerializeAsJson() const {
   base::Value value(base::Value::Type::DICTIONARY);
 
   value.SetStringKey("privacy_budget_key", privacy_budget_key);
+
+  DCHECK(report_id.is_valid());
+  value.SetStringKey("report_id", report_id.AsLowercaseString());
 
   // Encoded as the number of seconds since the Unix epoch, ignoring leap
   // seconds and rounded down.
@@ -283,6 +288,10 @@ absl::optional<AggregatableReportRequest> AggregatableReportRequest::Create(
   }
 
   if (payload_contents.bucket < 0 || payload_contents.value < 0) {
+    return absl::nullopt;
+  }
+
+  if (!shared_info.report_id.is_valid()) {
     return absl::nullopt;
   }
 
