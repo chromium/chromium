@@ -189,6 +189,15 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     virtual void OnRetryUserVerification(int attempts) = 0;
   };
 
+  // ScopedAlwaysAllowBLECalls allows BLE API calls to always be made, even if
+  // they would be disabled on macOS because Chromium was not launched with
+  // self-responsibility.
+  class COMPONENT_EXPORT(DEVICE_FIDO) ScopedAlwaysAllowBLECalls {
+   public:
+    ScopedAlwaysAllowBLECalls();
+    ~ScopedAlwaysAllowBLECalls();
+  };
+
   FidoRequestHandlerBase();
 
   // The |available_transports| should be the intersection of transports

@@ -1254,6 +1254,7 @@ mixed_component("base") {
       "process/port_provider_mac.cc",
       "process/port_provider_mac.h",
       "process/process_handle_mac.cc",
+      "process/process_info_mac.cc",
       "process/process_iterator_mac.cc",
       "process/process_mac.cc",
       "process/process_metrics_mac.cc",

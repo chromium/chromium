@@ -197,6 +197,7 @@ class FidoGetAssertionHandlerTest : public ::testing::Test {
   std::unique_ptr<BluetoothAdapterFactory::GlobalValuesForTesting>
       bluetooth_config_ =
           BluetoothAdapterFactory::Get()->InitGlobalValuesForTesting();
+  FidoRequestHandlerBase::ScopedAlwaysAllowBLECalls always_allow_ble_calls_;
 };
 
 TEST_F(FidoGetAssertionHandlerTest, TransportAvailabilityInfo) {

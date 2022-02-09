@@ -25,6 +25,10 @@
 #include "device/fido/win/authenticator.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "base/process/process_info.h"
+#endif
+
 namespace device {
 
 // TransportAvailabilityCallbackReadiness stores state that tracks whether
@@ -74,6 +78,21 @@ FidoRequestHandlerBase::TransportAvailabilityInfo::
 // FidoRequestHandlerBase::Observer -------------------------------------------
 
 FidoRequestHandlerBase::Observer::~Observer() = default;
+
+// FidoRequestHandlerBase::ScopedAlwaysAllowBLECalls --------------------------
+
+static bool g_always_allow_ble_calls = false;
+
+FidoRequestHandlerBase::ScopedAlwaysAllowBLECalls::ScopedAlwaysAllowBLECalls() {
+  CHECK(!g_always_allow_ble_calls);
+  g_always_allow_ble_calls = true;
+}
+
+FidoRequestHandlerBase::ScopedAlwaysAllowBLECalls::
+    ~ScopedAlwaysAllowBLECalls() {
+  CHECK(g_always_allow_ble_calls);
+  g_always_allow_ble_calls = false;
+}
 
 // FidoRequestHandlerBase -----------------------------------------------------
 
@@ -144,12 +163,37 @@ void FidoRequestHandlerBase::InitDiscoveries(
   transport_availability_callback_readiness_->num_discoveries_pending =
       discoveries_.size();
 
+#if BUILDFLAG(IS_MAC)
+  // On recent macOS a process must have listed Bluetooth metadata in its
+  // Info.plist in order to call Bluetooth APIs. Failure to do so results in
+  // the system killing with process with SIGABRT once Bluetooth calls are
+  // made.
+  //
+  // However, unless Chromium is started from the Finder, or with special
+  // posix_spawn flags, then the responsible process—the one that needs to have
+  // the right Info.plist—is one of the parent processes, often the terminal
+  // emulator. This can lead to Chromium getting killed when trying to do
+  // WebAuthn. This also affects layout tests.
+  //
+  // Thus, if the responsible process is not Chromium itself, then we do not
+  // make any Bluetooth API calls.
+  const bool can_call_ble_apis =
+      g_always_allow_ble_calls || base::IsProcessSelfResponsible();
+  if (!can_call_ble_apis) {
+    FIDO_LOG(ERROR) << "Cannot test Bluetooth power status because process is "
+                       "not self-responsible. Launch from Finder to fix.";
+  }
+#else
+  const bool can_call_ble_apis = true;
+#endif
+
   // Check if the platform supports BLE before trying to get a power manager.
   // CaBLE might be in |available_transports| without actual BLE support under
   // the virtual environment.
   // TODO(nsatragno): Move the BLE power manager logic to CableDiscoveryFactory
   // so we don't need this additional check.
-  if (device::BluetoothAdapterFactory::Get()->IsLowEnergySupported() &&
+  if (can_call_ble_apis &&
+      device::BluetoothAdapterFactory::Get()->IsLowEnergySupported() &&
       base::Contains(transport_availability_info_.available_transports,
                      FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy)) {
     transport_availability_callback_readiness_->ble_information_pending = true;

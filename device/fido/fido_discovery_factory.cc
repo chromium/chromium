@@ -7,6 +7,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/aoa/android_accessory_discovery.h"
 #include "device/fido/cable/fido_cable_discovery.h"
@@ -26,6 +27,7 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
+#include "base/process/process_info.h"
 #include "device/fido/mac/discovery.h"
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -47,6 +49,26 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
     case FidoTransportProtocol::kBluetoothLowEnergy:
       return {};
     case FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy:
+#if BUILDFLAG(IS_MAC)
+      if (!base::IsProcessSelfResponsible()) {
+        // On recent macOS a process must have listed Bluetooth metadata in
+        // its Info.plist in order to call Bluetooth APIs. Failure to do so
+        // results in the system killing with process with SIGABRT once
+        // Bluetooth calls are made.
+        //
+        // However, unless Chromium is started from the Finder, or with special
+        // posix_spawn flags, then the responsible process—the one that needs
+        // to have the right Info.plist—is one of the parent processes, often
+        // the terminal emulator. This can lead to Chromium getting killed when
+        // trying to do WebAuthn. This also affects layout tests.
+        //
+        // Thus, if the responsible process is not Chromium itself, then we
+        // disable caBLE (and thus avoid Bluetooth calls).
+        FIDO_LOG(ERROR) << "Cannot start caBLE because process is not "
+                           "self-responsible. Launch from Finder to fix.";
+        return {};
+      }
+#endif
       if (device::BluetoothAdapterFactory::Get()->IsLowEnergySupported() &&
           (cable_data_.has_value() || qr_generator_key_.has_value())) {
         auto v1_discovery = std::make_unique<FidoCableDiscovery>(
