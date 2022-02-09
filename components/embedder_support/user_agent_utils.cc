@@ -80,6 +80,36 @@ int GetPreRS5UniversalApiContractVersion() {
   NOTREACHED();
   return 0;
 }
+
+// Return the legacy windows platform version to match the spec description
+// https://wicg.github.io/ua-client-hints/#get-the-legacy-windows-version-number,
+// which is available for Windows versions between range WIN7 and WIN8_1.
+// Otherwise, returns 0.
+const std::string& GetLegacyWindowsPlatformVersion() {
+  static const base::NoDestructor<std::string> legacy_windows_platform_version(
+      [] {
+        int major_version = 0;
+        int minor_version = 0;
+        switch (base::win::GetVersion()) {
+          case base::win::Version::WIN7:
+            minor_version = 1;
+            break;
+          case base::win::Version::WIN8:
+            minor_version = 2;
+            break;
+          case base::win::Version::WIN8_1:
+            minor_version = 3;
+            break;
+          default:
+            minor_version = 0;
+            break;
+        }
+        return base::StrCat({base::NumberToString(major_version), ".",
+                             base::NumberToString(minor_version), ".0"});
+      }());
+  return *legacy_windows_platform_version;
+}
+
 // Returns the UniversalApiContract version number, which is available for
 // Windows versions greater than RS5. Otherwise, returns 0.
 const std::string& GetUniversalApiContractVersion() {
@@ -122,6 +152,12 @@ const std::string& GetUniversalApiContractVersion() {
   return *universal_api_contract_version;
 }
 
+const std::string& GetWindowsPlatformVersion() {
+  if (base::win::GetVersion() < base::win::Version::WIN10) {
+    return GetLegacyWindowsPlatformVersion();
+  }
+  return GetUniversalApiContractVersion();
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 // Returns true if the user agent string should force the major version into
@@ -492,7 +528,7 @@ blink::UserAgentMetadata GetUserAgentMetadata(PrefService* pref_service) {
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  metadata.platform_version = GetUniversalApiContractVersion();
+  metadata.platform_version = GetWindowsPlatformVersion();
 #else
   int32_t major, minor, bugfix = 0;
   base::SysInfo::OperatingSystemVersionNumbers(&major, &minor, &bugfix);

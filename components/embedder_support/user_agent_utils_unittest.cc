@@ -292,6 +292,23 @@ void VerifyWinPlatformVersion(std::string version) {
   EXPECT_FALSE(is_supported) << " expected major version " << major_version + 1
                              << " to not be supported.";
 }
+
+void VerifyLegacyWinPlatformVersion(const std::string& version) {
+  switch (base::win::GetVersion()) {
+    case base::win::Version::WIN7:
+      EXPECT_EQ("0.1.0", version);
+      break;
+    case base::win::Version::WIN8:
+      EXPECT_EQ("0.2.0", version);
+      break;
+    case base::win::Version::WIN8_1:
+      EXPECT_EQ("0.3.0", version);
+      break;
+    default:
+      EXPECT_EQ("0.0.0", version);
+      break;
+  }
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 bool ContainsBrandVersion(const blink::UserAgentBrandList& brand_list,
@@ -574,7 +591,7 @@ TEST_F(UserAgentUtilsTest, UserAgentMetadata) {
 
 #if BUILDFLAG(IS_WIN)
   if (base::win::GetVersion() < base::win::Version::WIN10) {
-    EXPECT_EQ(metadata.platform_version, "0.0.0");
+    VerifyLegacyWinPlatformVersion(metadata.platform_version);
   } else {
     VerifyWinPlatformVersion(metadata.platform_version);
   }
