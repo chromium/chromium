@@ -258,10 +258,9 @@ button.blue-button {
 /* Used for elements that are hidden but not ignored by screen reader. */
 .off-screen {
   height: 1px;
-  left: -10000px;
   overflow: hidden;
   position: absolute;
-  top: auto;
+  top: -1000px;
   width: 1px;
 }
 
