@@ -159,6 +159,11 @@ class CORE_EXPORT NGInlineNode : public NGLayoutInputNode {
                  const HeapVector<NGInlineItem>* previous_items = nullptr,
                  const Font* override_font = nullptr) const;
   void ShapeTextForFirstLineIfNeeded(NGInlineNodeData*) const;
+  void ShapeTextIncludingFirstLine(
+      NGInlineNodeData* data,
+      const String* previous_text,
+      const HeapVector<NGInlineItem>* previous_items) const;
+  void ShapeTextOrDefer(const NGConstraintSpace& space) const;
   void AssociateItemsWithInlines(NGInlineNodeData*) const;
 
   NGInlineNodeData* MutableData() const {

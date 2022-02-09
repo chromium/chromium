@@ -516,6 +516,15 @@ void NGInlineNode::PrepareLayoutIfNeeded() const {
   }
 }
 
+void NGInlineNode::ShapeTextOrDefer(const NGConstraintSpace& space) const {
+  if (Data().shaping_state_ != NGInlineNodeData::kShapingNone)
+    return;
+
+  // TODO(crbug.com/1259085): Check if this IFC is deferrable.
+
+  ShapeTextIncludingFirstLine(MutableData(), nullptr, nullptr);
+}
+
 void NGInlineNode::PrepareLayout(NGInlineNodeData* previous_data) const {
   // Scan list of siblings collecting all in-flow non-atomic inlines. A single
   // NGInlineNode represent a collection of adjacent non-atomic inlines.
@@ -523,17 +532,12 @@ void NGInlineNode::PrepareLayout(NGInlineNodeData* previous_data) const {
   DCHECK(data);
   CollectInlines(data, previous_data);
   SegmentText(data);
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  ShapeText(data, previous_data ? &previous_data->text_content : nullptr);
-  ShapeTextForFirstLineIfNeeded(data);
-#else
-  {
-    base::ElapsedTimer shaping_timer;
-    ShapeText(data, previous_data ? &previous_data->text_content : nullptr);
-    ShapeTextForFirstLineIfNeeded(data);
-    FontPerformance::AddShapingTime(shaping_timer.Elapsed());
+  if ((previous_data &&
+       previous_data->shaping_state_ == NGInlineNodeData::kShapingDone) ||
+      UNLIKELY(IsTextCombine())) {
+    ShapeTextIncludingFirstLine(
+        data, previous_data ? &previous_data->text_content : nullptr, nullptr);
   }
-#endif
   AssociateItemsWithInlines(data);
   DCHECK_EQ(data, MutableData());
 
@@ -941,17 +945,10 @@ bool NGInlineNode::SetTextWithOffset(LayoutText* layout_text,
   // Relocates |ShapeResult| in |previous_data| after |offset|+|length|
   editor.Run();
   node.SegmentText(data);
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  node.ShapeText(data, &previous_data->text_content, &previous_data->items);
-  node.ShapeTextForFirstLineIfNeeded(data);
-#else
-  {
-    base::ElapsedTimer shaping_timer;
-    node.ShapeText(data, &previous_data->text_content, &previous_data->items);
-    node.ShapeTextForFirstLineIfNeeded(data);
-    FontPerformance::AddShapingTime(shaping_timer.Elapsed());
+  if (previous_data->shaping_state_ == NGInlineNodeData::kShapingDone) {
+    node.ShapeTextIncludingFirstLine(data, &previous_data->text_content,
+                                     &previous_data->items);
   }
-#endif
   node.AssociateItemsWithInlines(data);
   return true;
 }
@@ -1522,6 +1519,22 @@ void NGInlineNode::ShapeTextForFirstLineIfNeeded(NGInlineNodeData* data) const {
   data->first_line_items_ = first_line_items;
 }
 
+void NGInlineNode::ShapeTextIncludingFirstLine(
+    NGInlineNodeData* data,
+    const String* previous_text,
+    const HeapVector<NGInlineItem>* previous_items) const {
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+  ShapeText(data, previous_text, previous_items);
+  ShapeTextForFirstLineIfNeeded(data);
+#else
+  base::ElapsedTimer shaping_timer;
+  ShapeText(data, previous_text, previous_items);
+  ShapeTextForFirstLineIfNeeded(data);
+  FontPerformance::AddShapingTime(shaping_timer.Elapsed());
+#endif
+  data->shaping_state_ = NGInlineNodeData::kShapingDone;
+}
+
 void NGInlineNode::AssociateItemsWithInlines(NGInlineNodeData* data) const {
 #if DCHECK_IS_ON()
   HeapHashSet<Member<LayoutObject>> associated_objects;
@@ -1559,6 +1572,7 @@ scoped_refptr<const NGLayoutResult> NGInlineNode::Layout(
     const NGBreakToken* break_token,
     NGInlineChildLayoutContext* context) const {
   PrepareLayoutIfNeeded();
+  ShapeTextOrDefer(constraint_space);
 
   const auto* inline_break_token = To<NGInlineBreakToken>(break_token);
   NGInlineLayoutAlgorithm algorithm(*this, constraint_space, inline_break_token,
@@ -1909,6 +1923,7 @@ MinMaxSizesResult NGInlineNode::ComputeMinMaxSizes(
     const NGConstraintSpace& space,
     const MinMaxSizesFloatInput& float_input) const {
   PrepareLayoutIfNeeded();
+  ShapeTextOrDefer(space);
 
   // Compute the max of inline sizes of all line boxes with 0 available inline
   // size. This gives the min-content, the width where lines wrap at every
