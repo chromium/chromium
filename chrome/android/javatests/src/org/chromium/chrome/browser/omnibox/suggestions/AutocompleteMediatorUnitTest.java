@@ -241,6 +241,8 @@ public class AutocompleteMediatorUnitTest {
 
         mSuggestionsList = buildDummySuggestionsList(10, "Suggestion");
         doReturn(true).when(mAutocompleteDelegate).isKeyboardActive();
+        setUpLocationBarDataProvider(
+                "chrome-native://newtab", "New Tab Page", PageClassification.NTP_VALUE);
     }
 
     /**

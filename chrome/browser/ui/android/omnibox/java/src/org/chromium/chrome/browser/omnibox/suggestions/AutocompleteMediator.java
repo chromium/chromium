@@ -131,6 +131,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     private boolean mOmniboxFocusResultedInNavigation;
     // Facilitate detection of Autocomplete actions being scheduled from an Autocomplete action.
     private boolean mIsExecutingAutocompleteAction;
+    // Whether user scrolled the suggestions list.
+    private boolean mSuggestionsListScrolled;
 
     /**
      * The text shown in the URL bar (user text + inline autocomplete) after the most recent set of
@@ -289,6 +291,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             dismissDeleteDialog(DialogDismissalCause.DISMISSED_BY_NATIVE);
             mRefineActionUsage = RefineActionUsage.NOT_USED;
             mOmniboxFocusResultedInNavigation = false;
+            mSuggestionsListScrolled = false;
             mUrlFocusTime = System.currentTimeMillis();
             mJankTracker.startTrackingScenario(JankScenario.OMNIBOX_FOCUS);
 
@@ -315,6 +318,9 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             SuggestionsMetrics.recordOmniboxFocusResultedInNavigation(
                     mOmniboxFocusResultedInNavigation);
             SuggestionsMetrics.recordRefineActionUsage(mRefineActionUsage);
+            SuggestionsMetrics.recordSuggestionsListScrolled(
+                    mDataProvider.getPageClassification(mDelegate.didFocusUrlFromFakebox()),
+                    mSuggestionsListScrolled);
 
             setSuggestionVisibilityState(SuggestionVisibilityState.DISALLOWED);
             mEditSessionState = EditSessionState.INACTIVE;
@@ -891,6 +897,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
     @Override
     public void onSuggestionDropdownScroll() {
         if (mDropdownViewInfoListBuilder.hasFullyConcealedElements()) {
+            mSuggestionsListScrolled = true;
             mDelegate.setKeyboardVisibility(false, false);
         }
     }

@@ -2028,6 +2028,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Omnibox.SuggestionsListScrolled.{PageClass}"
+    enum="Boolean" expires_after="2023-01-31">
+  <owner>ender@chromium.org</owner>
+  <owner>mpearson@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <summary>
+    For every interaction with the Omnibox, this metric records whether the user
+    scrolled the omnibox while exploring suggestions on {PageClass}.
+
+    This is recorded once per Omnibox interaction, regardless of whether the
+    User chooses to navigate somewhere or abandons the interaction.
+  </summary>
+  <token key="PageClass">
+    <variant name="NTP" summary="the New Tab Page"/>
+    <variant name="Other" summary="a website"/>
+    <variant name="SRP" summary="the Search Results Page"/>
+    <variant name="Widget" summary="the Widget Search Activity"/>
+  </token>
+</histogram>
+
 <histogram name="Android.Omnibox.SuggestionView.CreateTime"
     units="microseconds" expires_after="2022-06-19">
   <owner>ender@chromium.org</owner>
