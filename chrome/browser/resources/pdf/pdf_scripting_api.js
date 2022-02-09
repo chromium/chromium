@@ -39,7 +39,7 @@ export class PDFPlugin extends HTMLIFrameElement {
   setKeyEventCallback(callback) {}
 
   /**
-   * @param {function(success): void} callback
+   * @param {function(boolean): void} callback
    */
   setLoadCompleteCallback(callback) {}
 
