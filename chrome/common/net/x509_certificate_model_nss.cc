@@ -6,7 +6,6 @@
 
 #include <cert.h>
 #include <certt.h>
-#include <cms.h>
 #include <hasht.h>
 #include <keyhi.h>  // SECKEY_DestroyPrivateKey
 #include <keythi.h>  // SECKEYPrivateKey
@@ -94,25 +93,6 @@ std::string GetNickname(CERTCertificate* cert_handle) {
   }
   return name;
 }
-
-////////////////////////////////////////////////////////////////////////////////
-// NSS certificate export functions.
-
-struct NSSCMSMessageDeleter {
-  inline void operator()(NSSCMSMessage* x) const {
-    NSS_CMSMessage_Destroy(x);
-  }
-};
-typedef std::unique_ptr<NSSCMSMessage, NSSCMSMessageDeleter>
-    ScopedNSSCMSMessage;
-
-struct FreeNSSCMSSignedData {
-  inline void operator()(NSSCMSSignedData* x) const {
-    NSS_CMSSignedData_Destroy(x);
-  }
-};
-typedef std::unique_ptr<NSSCMSSignedData, FreeNSSCMSSignedData>
-    ScopedNSSCMSSignedData;
 
 }  // namespace
 
@@ -227,58 +207,6 @@ string HashCertSHA256(CERTCertificate* cert_handle) {
 
 string HashCertSHA1(CERTCertificate* cert_handle) {
   return HashCert(cert_handle, HASH_AlgSHA1, SHA1_LENGTH);
-}
-
-string GetCMSString(const net::ScopedCERTCertificateList& cert_chain,
-                    size_t start,
-                    size_t end) {
-  crypto::ScopedPLArenaPool arena(PORT_NewArena(1024));
-  DCHECK(arena.get());
-
-  ScopedNSSCMSMessage message(NSS_CMSMessage_Create(arena.get()));
-  DCHECK(message.get());
-
-  // First, create SignedData with the certificate only (no chain).
-  ScopedNSSCMSSignedData signed_data(NSS_CMSSignedData_CreateCertsOnly(
-      message.get(), cert_chain[start].get(), PR_FALSE));
-  if (!signed_data.get()) {
-    DLOG(ERROR) << "NSS_CMSSignedData_Create failed";
-    return std::string();
-  }
-  // Add the rest of the chain (if any).
-  for (size_t i = start + 1; i < end; ++i) {
-    if (NSS_CMSSignedData_AddCertificate(signed_data.get(),
-                                         cert_chain[i].get()) != SECSuccess) {
-      DLOG(ERROR) << "NSS_CMSSignedData_AddCertificate failed on " << i;
-      return std::string();
-    }
-  }
-
-  NSSCMSContentInfo *cinfo = NSS_CMSMessage_GetContentInfo(message.get());
-  if (NSS_CMSContentInfo_SetContent_SignedData(
-      message.get(), cinfo, signed_data.get()) == SECSuccess) {
-    std::ignore = signed_data.release();
-  } else {
-    DLOG(ERROR) << "NSS_CMSMessage_GetContentInfo failed";
-    return std::string();
-  }
-
-  SECItem cert_p7 = { siBuffer, NULL, 0 };
-  NSSCMSEncoderContext *ecx = NSS_CMSEncoder_Start(message.get(), NULL, NULL,
-                                                   &cert_p7, arena.get(), NULL,
-                                                   NULL, NULL, NULL, NULL,
-                                                   NULL);
-  if (!ecx) {
-    DLOG(ERROR) << "NSS_CMSEncoder_Start failed";
-    return std::string();
-  }
-
-  if (NSS_CMSEncoder_Finish(ecx) != SECSuccess) {
-    DLOG(ERROR) << "NSS_CMSEncoder_Finish failed";
-    return std::string();
-  }
-
-  return string(reinterpret_cast<const char*>(cert_p7.data), cert_p7.len);
 }
 
 string ProcessSecAlgorithmSignature(CERTCertificate* cert_handle) {

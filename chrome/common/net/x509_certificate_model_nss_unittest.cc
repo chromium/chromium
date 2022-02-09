@@ -264,49 +264,6 @@ TEST_F(X509CertificateModelTest, GetVersionOmitted) {
   EXPECT_EQ("1", x509_certificate_model::GetVersion(cert.get()));
 }
 
-TEST_F(X509CertificateModelTest, GetCMSString) {
-  net::ScopedCERTCertificateList certs = CreateCERTCertificateListFromFile(
-      net::GetTestCertsDirectory(), "multi-root-chain1.pem",
-      net::X509Certificate::FORMAT_AUTO);
-
-  {
-    // Write the full chain.
-    std::string pkcs7_string =
-        x509_certificate_model::GetCMSString(certs, 0, certs.size());
-
-    ASSERT_FALSE(pkcs7_string.empty());
-
-    net::ScopedCERTCertificateList decoded_certs =
-        net::x509_util::CreateCERTCertificateListFromBytes(
-            pkcs7_string.data(), pkcs7_string.size(),
-            net::X509Certificate::FORMAT_PKCS7);
-
-    ASSERT_EQ(certs.size(), decoded_certs.size());
-
-    // NSS sorts the certs before writing the file.
-    EXPECT_TRUE(net::x509_util::IsSameCertificate(certs[0].get(),
-                                                  decoded_certs.back().get()));
-    for (size_t i = 1; i < certs.size(); ++i)
-      EXPECT_TRUE(net::x509_util::IsSameCertificate(
-          certs[i].get(), decoded_certs[i - 1].get()));
-  }
-
-  {
-    // Write only the first cert.
-    std::string pkcs7_string =
-        x509_certificate_model::GetCMSString(certs, 0, 1);
-
-    net::ScopedCERTCertificateList decoded_certs =
-        net::x509_util::CreateCERTCertificateListFromBytes(
-            pkcs7_string.data(), pkcs7_string.size(),
-            net::X509Certificate::FORMAT_PKCS7);
-
-    ASSERT_EQ(1U, decoded_certs.size());
-    EXPECT_TRUE(net::x509_util::IsSameCertificate(certs[0].get(),
-                                                  decoded_certs[0].get()));
-  }
-}
-
 TEST_F(X509CertificateModelTest, ProcessSecAlgorithms) {
   {
     net::ScopedCERTCertificate cert(net::ImportCERTCertificateFromFile(

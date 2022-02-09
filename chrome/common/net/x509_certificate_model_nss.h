@@ -80,10 +80,6 @@ void GetExtensions(const std::string& critical_label,
 std::string HashCertSHA256(CERTCertificate* cert_handle);
 std::string HashCertSHA1(CERTCertificate* cert_handle);
 
-std::string GetCMSString(const net::ScopedCERTCertificateList& cert_chain,
-                         size_t start,
-                         size_t end);
-
 std::string ProcessSecAlgorithmSignature(CERTCertificate* cert_handle);
 std::string ProcessSecAlgorithmSubjectPublicKey(CERTCertificate* cert_handle);
 std::string ProcessSecAlgorithmSignatureWrap(CERTCertificate* cert_handle);
