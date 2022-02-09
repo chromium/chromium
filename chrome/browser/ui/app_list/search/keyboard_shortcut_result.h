@@ -33,9 +33,6 @@ class KeyboardShortcutResult : public ChromeSearchResult {
       const std::u16string& target);
 
   Profile* profile_;
-
-  // The description of the shortcut action e.g. "Dock a window on the right".
-  std::u16string description_;
 };
 
 }  // namespace app_list

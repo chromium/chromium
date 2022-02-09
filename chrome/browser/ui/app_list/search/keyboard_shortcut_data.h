@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/keyboard_shortcut_item.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 
 namespace app_list {
 
@@ -29,13 +30,24 @@ struct KeyboardShortcutData {
   explicit KeyboardShortcutData(const ash::KeyboardShortcutItem& item);
   // For testing purposes.
   explicit KeyboardShortcutData(const std::u16string description);
-  KeyboardShortcutData(const KeyboardShortcutData&) = default;
+  KeyboardShortcutData(const KeyboardShortcutData&);
   KeyboardShortcutData& operator=(const KeyboardShortcutData&) = default;
 
   ~KeyboardShortcutData();
 
-  // The description of the shortcut action e.g. "Dock a window on the right".
+  // ID of the message resource describing the action the shortcut performs.
+  int description_message_id;
+  // The description (corresponding to |description_message_id|) of the shortcut
+  // action e.g. "Dock a window on the right".
   std::u16string description;
+
+  // ID of the message template resource used to list the keys making up the
+  // shortcut.
+  absl::optional<int> shortcut_message_id;
+
+  // The VKEY codes of the key and each modifier comprising the shortcut. See
+  // ash/public/cpp/keyboard_shortcut_item.h for more detail.
+  std::vector<ui::KeyboardCode> shortcut_key_codes;
 };
 
 }  // namespace app_list

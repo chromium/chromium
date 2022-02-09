@@ -2926,6 +2926,7 @@ static_library("ui") {
       "//ash/quick_pair/ui",
       "//ash/services/recording/public/mojom",
       "//ash/shortcut_viewer",
+      "//ash/shortcut_viewer/strings:strings_grit",
       "//ash/webui/camera_app_ui",
       "//ash/webui/color_internals",
       "//ash/webui/connectivity_diagnostics",
