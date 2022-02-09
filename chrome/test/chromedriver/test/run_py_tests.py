@@ -1835,15 +1835,6 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     value = elem.GetProperty('value')
     self.assertEquals(input_value, value)
 
-  def testSendKeysNonBmp(self):
-    self._driver.Load(ChromeDriverTest.GetHttpUrlForFile(
-        '/chromedriver/two_inputs.html'))
-    elem = self._driver.FindElement('css selector', '#first')
-    expected = u'T\U0001f4a9XL\u0436'.encode('utf-8')
-    elem.SendKeys(expected)
-    actual = elem.GetProperty('value').encode('utf-8')
-    self.assertEquals(expected, actual)
-
   def testGetElementAttribute(self):
     self._driver.Load(self.GetHttpUrlForFile(
         '/chromedriver/attribute_colon_test.html'))
@@ -3954,25 +3945,6 @@ class ChromeDriverTestLegacy(ChromeDriverBaseTestWithWebServer):
         'return arguments[0].value;', first))
     self.assertEquals('prickly pete', self._driver.ExecuteScript(
         'return arguments[0].value;', second))
-
-  def testSendingTabKeyMovesToNextInputElementEscapedTab(self):
-    """This behavior is not specified by the WebDriver standard
-    but it is supported by us de facto.
-    According to this table https://www.w3.org/TR/webdriver/#keyboard-actions
-    the code point 0x09 (HT) must be sent to the browser via a CompositionEvent.
-    We however historically have been sending it as KeyEvent
-    with code = ui::VKEY_TAB which leads to focus change.
-    For the sake of contrast GeckoDriver and Firefox do not show this behavior.
-    If in the future it turns out that our current behavior is undesirable
-    we can remove this test.
-    """
-    self._driver.Load(self.GetHttpUrlForFile('/chromedriver/two_inputs.html'))
-    first = self._driver.FindElement('css selector', '#first')
-    second = self._driver.FindElement('css selector', '#second')
-    first.Click()
-    self._driver.SendKeys('snoopy\tprickly pete')
-    self.assertEquals('snoopy', first.GetProperty('value'))
-    self.assertEquals('prickly pete', second.GetProperty('value'))
 
   def testMobileEmulationDisabledByDefault(self):
     self.assertFalse(self._driver.capabilities['mobileEmulationEnabled'])
