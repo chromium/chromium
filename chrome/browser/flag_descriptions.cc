@@ -333,12 +333,6 @@ const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[] =
     "When enabled, offers will be displayed in the keyboard accessory when "
     "available.";
 
-const char kAutofillEnableOffersInDownstreamName[] =
-    "Enable Autofill offers in downstream";
-const char kAutofillEnableOffersInDownstreamDescription[] =
-    "When enabled, offer data will be retrieved during downstream and shown in "
-    "the dropdown list.";
-
 const char kAutofillEnableSendingBcnInGetUploadDetailsName[] =
     "Enable sending billing customer number in GetUploadDetails";
 const char kAutofillEnableSendingBcnInGetUploadDetailsDescription[] =

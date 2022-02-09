@@ -113,9 +113,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
   // the suggestion represents a credit card that has activated offers.
   AutofillOfferManager* offer_manager =
       autofill_client_->GetAutofillOfferManager();
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableOffersInDownstream) &&
-      offer_manager) {
+  if (offer_manager) {
     offer_manager->UpdateSuggestionsWithOffers(
         autofill_client_->GetLastCommittedURL(), suggestions);
   }

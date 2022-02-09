@@ -21,12 +21,6 @@ const char kAutofillCreditCardUploadDescription[] =
     "Offers uploading Autofilled credit cards to Google Payments after form "
     "submission.";
 
-const char kAutofillEnableOffersInDownstreamName[] =
-    "Enable Autofill offers in downstream";
-const char kAutofillEnableOffersInDownstreamDescription[] =
-    "When enabled, offer data will be retrieved during downstream and shown in "
-    "the dropdown list.";
-
 const char kAutofillEnableSendingBcnInGetUploadDetailsName[] =
     "Enable sending billing customer number in GetUploadDetails";
 const char kAutofillEnableSendingBcnInGetUploadDetailsDescription[] =

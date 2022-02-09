@@ -7362,9 +7362,6 @@ TEST_P(AutofillMetricsIFrameTest, CreditCardWillSubmitFormEvents) {
 
 // Test that we log form events for masked server card with offers.
 TEST_F(AutofillMetricsTest, LogServerOfferFormEvents) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillEnableOffersInDownstream);
-
   // Set up our form data.
   FormData form;
   form.name = u"TestForm";

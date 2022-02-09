@@ -104,11 +104,7 @@ void AutofillPopupViewAndroid::OnSuggestionsChanged() {
         suggestion.frontend_id == POPUP_ITEM_ID_MIXED_FORM_MESSAGE;
     // Set the offer title to display as the item tag.
     ScopedJavaLocalRef<jstring> item_tag =
-        base::android::ConvertUTF16ToJavaString(
-            env, base::FeatureList::IsEnabled(
-                     features::kAutofillEnableOffersInDownstream)
-                     ? suggestion.offer_label
-                     : std::u16string());
+        base::android::ConvertUTF16ToJavaString(env, suggestion.offer_label);
     Java_AutofillPopupBridge_addToAutofillSuggestionArray(
         env, data_array, i, value, label, item_tag, android_icon_id,
         /*icon_at_start=*/false, suggestion.frontend_id, is_deletable,

@@ -6728,11 +6728,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(apps::kAppDiscoveryRemoteUrlSearch)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"autofill-enable-offers-in-downstream",
-     flag_descriptions::kAutofillEnableOffersInDownstreamName,
-     flag_descriptions::kAutofillEnableOffersInDownstreamDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableOffersInDownstream)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"chromeos-sharing-hub", flag_descriptions::kChromeOSSharingHubName,
      flag_descriptions::kChromeOSSharingHubDescription, kOsCrOS,

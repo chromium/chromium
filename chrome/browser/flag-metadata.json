@@ -416,11 +416,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "autofill-enable-offers-in-downstream",
-    "owners": [ "siyua" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "autofill-enable-sending-bcn-in-get-upload-details",
     "owners": [ "chashivani", "jsaul", "payments-autofill-team@google.com" ],
     "expiry_milestone": 105
@@ -4027,7 +4022,7 @@
   {
     "name": "metrickit-crash-reports",
     "owners": [ "olivierrobin", "bling-flags@google.com" ],
-    "expiry_milestone": 103 
+    "expiry_milestone": 103
   },
   {
     "name": "metrics-settings-android",

@@ -14,7 +14,6 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service.h"
@@ -24,7 +23,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 using autofill::AutofillOfferData;
-using autofill::features::kAutofillEnableOffersInDownstream;
 using autofill::test::GetCardLinkedOfferData1;
 using autofill::test::GetCardLinkedOfferData2;
 using offer_helper::CreateDefaultSyncCardLinkedOffer;
@@ -47,10 +45,7 @@ const syncer::SyncFirstSetupCompleteSource kSetSourceFromTest =
 class SingleClientOfferSyncTest : public SyncTest {
  public:
   SingleClientOfferSyncTest() : SyncTest(SINGLE_CLIENT) {
-    features_.InitWithFeatures(
-        /*enabled_features=*/{kSyncAutofillWalletOfferData,
-                              kAutofillEnableOffersInDownstream},
-        /*disabled_features=*/{});
+    features_.InitAndEnableFeature(kSyncAutofillWalletOfferData);
   }
 
   ~SingleClientOfferSyncTest() override = default;
