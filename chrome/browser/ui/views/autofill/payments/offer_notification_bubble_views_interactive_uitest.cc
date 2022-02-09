@@ -15,10 +15,8 @@
 #include "chrome/browser/ui/views/autofill/payments/promo_code_label_button.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/payments/offer_notification_handler.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
@@ -26,7 +24,6 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/test/ui_controls.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/test/widget_test.h"
@@ -69,10 +66,9 @@ class OfferNotificationBubbleViewsInteractiveUiTest
     NavigateTo(chrome::kChromeUINewTabPageURL);
     // Set the initial origin that the bubble will be displayed on.
     SetUpCardLinkedOfferDataWithDomains(
-        {GURL("https://www.merchantsite1.com/"),
-         GURL("https://www.merchantsite2.com/")});
+        {GURL("https://www.example.com/"), GURL("https://www.test.com/")});
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-    NavigateTo("https://www.merchantsite1.com/first");
+    NavigateTo("https://www.example.com/first");
     WaitForObservedEvent();
     EXPECT_TRUE(IsIconVisible());
     EXPECT_TRUE(GetOfferNotificationBubbleViews());
@@ -82,10 +78,9 @@ class OfferNotificationBubbleViewsInteractiveUiTest
     NavigateTo(chrome::kChromeUINewTabPageURL);
     // Set the initial origin that the bubble will be displayed on.
     SetUpFreeListingCouponOfferDataWithDomains(
-        {GURL("https://www.merchantsite1.com/"),
-         GURL("https://www.merchantsite2.com/")});
+        {GURL("https://www.example.com/"), GURL("https://www.test.com/")});
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-    NavigateTo("https://www.merchantsite1.com/first");
+    NavigateTo("https://www.example.com/first");
     WaitForObservedEvent();
     EXPECT_TRUE(IsIconVisible());
     EXPECT_TRUE(GetOfferNotificationBubbleViews());
@@ -123,11 +118,6 @@ class OfferNotificationBubbleViewsInteractiveUiTest
     }
   }
 
-  void ClearNotificationActiveDomainsForTesting() {
-    GetOfferManager()
-        ->notification_handler_.ClearShownNotificationIdForTesting();
-  }
-
   const AutofillOfferData::OfferType test_offer_type_;
 };
 
@@ -153,28 +143,26 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
     bool bubble_should_be_visible;
   } test_cases[] = {
       // Different page on same domain keeps bubble.
-      {"https://www.merchantsite1.com/second/", true},
+      {"https://www.example.com/second/", true},
       // Different domain not in offer's list dismisses bubble.
       {"https://www.about.com/", false},
       // Subdomain not in offer's list dismisses bubble.
-      {"https://support.merchantsite1.com/first/", false},
+      {"https://support.example.com/first/", false},
       // http vs. https mismatch dismisses bubble.
-      {"http://www.merchantsite1.com/first/", false},
+      {"http://www.example.com/first/", false},
       // Different domain in the offer's list keeps bubble.
-      {"https://www.merchantsite2.com/first/", true},
+      {"https://www.test.com/first/", true},
   };
 
   // Set the initial origin that the bubble will be displayed on.
-  SetUpOfferDataWithDomains(test_offer_type_,
-                            {GURL("https://www.merchantsite1.com/"),
-                             GURL("https://www.merchantsite2.com/")});
+  SetUpOfferDataWithDomains(test_offer_type_, {GURL("https://www.example.com/"),
+                                               GURL("https://www.test.com/")});
 
   for (const auto& test_case : test_cases) {
-    ClearNotificationActiveDomainsForTesting();
     NavigateTo(chrome::kChromeUINewTabPageURL);
 
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-    NavigateTo("https://www.merchantsite1.com/first");
+    NavigateTo("https://www.example.com/first");
     WaitForObservedEvent();
 
     // Bubble should be visible.
@@ -197,81 +185,6 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   }
 }
 
-// Verifies the behavior of the offer notification bubble on different tabs.
-// The steps are:
-// 1. Creates the offer with two applicable merchant sites
-// 2. Creates the setup that foreground tab is a blank website, the first
-// background tab is merchant site 1, the second background tab is merchant
-// site 2.
-// 3. Checks that on the current blank site the offer notification bubble will
-// not be shown.
-// 4. Switches to the tab of merchant site 1. Makes sure the bubble and the icon
-// are both visible.
-// 5. Switches to the blank site. Makes sure the bubble and icon will be gone.
-// 6. Switches to merchant site 2. Makes sure the icon is visible but the bubble
-// is not, since we have shown the offer bubble in the tab of merchant site 1.
-IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       CrossTabTracking) {
-  SetUpOfferDataWithDomains(test_offer_type_,
-                            {GURL("https://www.merchantsite1.com/"),
-                             GURL("https://www.merchantsite2.com/")});
-
-  // Makes sure the foreground tab is a blank site.
-  NavigateTo("about:blank");
-
-  // Creates first background tab.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.merchantsite1.com/"),
-      WindowOpenDisposition::NEW_BACKGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  OfferNotificationBubbleControllerImpl* controller =
-      static_cast<OfferNotificationBubbleControllerImpl*>(
-          OfferNotificationBubbleController::GetOrCreate(
-              browser()->tab_strip_model()->GetWebContentsAt(1)));
-  ASSERT_TRUE(controller);
-  AddEventObserverToController(controller);
-
-  // Creates another merchant website in a second background tab.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("https://www.merchantsite2.com/"),
-      WindowOpenDisposition::NEW_BACKGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  controller = static_cast<OfferNotificationBubbleControllerImpl*>(
-      OfferNotificationBubbleController::GetOrCreate(
-          browser()->tab_strip_model()->GetWebContentsAt(2)));
-  ASSERT_TRUE(controller);
-  AddEventObserverToController(controller);
-
-  // On current page notification should not be active.
-  EXPECT_FALSE(IsIconVisible());
-  EXPECT_FALSE(GetOfferNotificationBubbleViews());
-
-  // Change to the first background tab.
-  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  browser()->tab_strip_model()->ActivateTabAt(1);
-  WaitForObservedEvent();
-  // Icon should always be visible, and the bubble should be visible too.
-  EXPECT_TRUE(IsIconVisible());
-  ASSERT_TRUE(GetOfferNotificationBubbleViews());
-
-  // Change back to the "original tab". The destroyed_waiter will wail until the
-  // bubble is successfully dismissed and destroyed before proceeding with the
-  // checks.
-  views::test::WidgetDestroyedWaiter destroyed_waiter(
-      GetOfferNotificationBubbleViews()->GetWidget());
-  browser()->tab_strip_model()->ActivateTabAt(0);
-  destroyed_waiter.Wait();
-  // The icon and the bubble should not be visible.
-  EXPECT_FALSE(IsIconVisible());
-  EXPECT_FALSE(GetOfferNotificationBubbleViews());
-
-  // Change to the second background tab.
-  browser()->tab_strip_model()->ActivateTabAt(2);
-  // Icon should be visible and the bubble should not be visible.
-  EXPECT_TRUE(IsIconVisible());
-  EXPECT_FALSE(GetOfferNotificationBubbleViews());
-}
-
 // Tests that bubble behaves correctly after user dismisses it.
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
                        DismissBubble) {
@@ -286,7 +199,7 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   CloseBubbleWithReason(views::Widget::ClosedReason::kAcceptButtonClicked);
 
   // Navigates to another valid domain will not reshow the bubble.
-  NavigateTo("https://www.merchantsite1.com/second");
+  NavigateTo("https://www.example.com/second");
   EXPECT_FALSE(GetOfferNotificationBubbleViews());
   EXPECT_TRUE(IsIconVisible());
 

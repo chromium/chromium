@@ -749,25 +749,31 @@ void ChromeAutofillClient::HideAutofillPopup(PopupHidingReason reason) {
     popup_controller_->Hide(reason);
 }
 
-void ChromeAutofillClient::UpdateOfferNotification(
-    const AutofillOfferData* offer,
-    bool notification_has_been_shown) {
-  DCHECK(offer);
+void ChromeAutofillClient::ShowOfferNotificationIfApplicable(
+    const AutofillOfferData* offer) {
+  if (!offer)
+    return;
+
+  // Ensure the card for a card-linked offer is successfully on the device.
   CreditCard* card =
       offer->eligible_instrument_id.empty()
           ? nullptr
           : GetPersonalDataManager()->GetCreditCardByInstrumentId(
                 offer->eligible_instrument_id[0]);
-
   if (offer->IsCardLinkedOffer() && !card)
     return;
 
-#if BUILDFLAG(IS_ANDROID)
-  if (notification_has_been_shown) {
-    // For Android, if notification has been shown on this merchant, don't show
-    // it again.
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableOfferNotificationForPromoCodes) &&
+      offer->IsPromoCodeOffer()) {
     return;
   }
+
+  // Malformed offers should not be displayed.
+  if (offer->GetOfferType() == AutofillOfferData::OfferType::UNKNOWN)
+    return;
+
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<OfferNotificationInfoBarControllerImpl> controller =
       std::make_unique<OfferNotificationInfoBarControllerImpl>(web_contents());
   controller->ShowIfNecessary(offer, card);
@@ -775,24 +781,7 @@ void ChromeAutofillClient::UpdateOfferNotification(
   OfferNotificationBubbleControllerImpl::CreateForWebContents(web_contents());
   OfferNotificationBubbleControllerImpl* controller =
       OfferNotificationBubbleControllerImpl::FromWebContents(web_contents());
-  controller->ShowOfferNotificationIfApplicable(
-      offer, card, /*should_show_icon_only_=*/notification_has_been_shown);
-#endif
-}
-
-void ChromeAutofillClient::DismissOfferNotification() {
-#if BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<OfferNotificationInfoBarControllerImpl> controller =
-      std::make_unique<OfferNotificationInfoBarControllerImpl>(web_contents());
-  DCHECK(controller);
-  controller->Dismiss();
-#else
-  OfferNotificationBubbleControllerImpl* controller =
-      OfferNotificationBubbleControllerImpl::FromWebContents(web_contents());
-  if (!controller)
-    return;
-
-  controller->DismissNotification();
+  controller->ShowOfferNotificationIfApplicable(offer, card);
 #endif
 }
 

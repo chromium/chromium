@@ -8,24 +8,21 @@
 #include <stdint.h>
 
 #include <map>
-#include <set>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "components/autofill/core/browser/payments/offer_notification_handler.h"
+#include "base/timer/timer.h"
+#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
 
 namespace autofill {
-
-class AutofillClient;
-struct AutofillOfferData;
-class OfferNotificationHandler;
-class PersonalDataManager;
-struct Suggestion;
 
 // A delegate class to expose relevant CouponService functionalities.
 class CouponServiceDelegate {
@@ -42,8 +39,8 @@ class CouponServiceDelegate {
   virtual ~CouponServiceDelegate() = default;
 };
 
-// Manages all Autofill related offers. One per browser context. Owned and
-// created by the AutofillOfferManagerFactory.
+// Manages all Autofill related offers. One per frame; owned by the
+// BrowserAutofillManager.
 class AutofillOfferManager : public KeyedService,
                              public PersonalDataManagerObserver {
  public:
@@ -58,9 +55,6 @@ class AutofillOfferManager : public KeyedService,
 
   // PersonalDataManagerObserver:
   void OnPersonalDataChanged() override;
-
-  // Invoked when the navigation happens.
-  void OnDidNavigateFrame(AutofillClient* client);
 
   // Modifies any suggestion in |suggestions| if it has related offer data.
   void UpdateSuggestionsWithOffers(const GURL& last_committed_url,
@@ -77,8 +71,6 @@ class AutofillOfferManager : public KeyedService,
       AutofillOfferManagerTest,
       CreateCardLinkedOffersMap_ReturnsOnlyCardLinkedOffers);
   FRIEND_TEST_ALL_PREFIXES(AutofillOfferManagerTest, IsUrlEligible);
-  friend class OfferNotificationBubbleViewsInteractiveUiTest;
-  friend class OfferNotificationInfoBarControllerImplBrowserTest;
 
   // Queries |personal_data_| to reset the elements of
   // |eligible_merchant_domains_|
@@ -91,15 +83,7 @@ class AutofillOfferManager : public KeyedService,
 
   raw_ptr<PersonalDataManager> personal_data_;
   raw_ptr<CouponServiceDelegate> coupon_service_delegate_;
-
-  // This set includes all the eligible domains where offers are applicable.
-  // This is used as a local cache and will be updated whenever the data in the
-  // database changes.
   std::set<GURL> eligible_merchant_domains_ = {};
-
-  // The handler for offer notification UI. It is a sub-level component of
-  // AutofillOfferManager to decide whether to show the offer notification.
-  OfferNotificationHandler notification_handler_{this};
 };
 
 }  // namespace autofill

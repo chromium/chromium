@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_icon_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
-#include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_event_waiter.h"
 
@@ -85,15 +84,12 @@ class OfferNotificationBubbleViewsTestBase
 
   content::WebContents* GetActiveWebContents();
 
-  void AddEventObserverToController(
-      OfferNotificationBubbleControllerImpl* controller);
+  void AddEventObserverToController();
 
   void ResetEventWaiterForSequence(std::list<DialogEvent> event_sequence);
 
   void UpdateFreeListingCouponDisplayTime(
       std::unique_ptr<AutofillOfferData> offer);
-
-  AutofillOfferManager* GetOfferManager();
 
   void WaitForObservedEvent() { event_waiter_->Wait(); }
 

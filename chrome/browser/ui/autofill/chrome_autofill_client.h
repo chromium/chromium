@@ -170,9 +170,8 @@ class ChromeAutofillClient
   void UpdatePopup(const std::vector<Suggestion>& suggestions,
                    PopupType popup_type) override;
   void HideAutofillPopup(PopupHidingReason reason) override;
-  void UpdateOfferNotification(const AutofillOfferData* offer,
-                               bool notification_has_been_shown) override;
-  void DismissOfferNotification() override;
+  void ShowOfferNotificationIfApplicable(
+      const AutofillOfferData* offer) override;
   void OnVirtualCardDataAvailable(
       const std::u16string& masked_card_identifier_string,
       const CreditCard* credit_card,

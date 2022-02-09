@@ -32,9 +32,6 @@ class OfferNotificationInfoBarControllerImpl {
   // origin.
   void ShowIfNecessary(const AutofillOfferData* offer, const CreditCard* card);
 
-  // Dismiss the infobar if it is visible.
-  void Dismiss();
-
  private:
   raw_ptr<content::WebContents> web_contents_;
 };

@@ -826,8 +826,6 @@ if (is_android) {
       "../browser/android/customtabs/custom_tabs_browsertest.cc",
       "../browser/android/webapk/webapk_icon_hasher_browsertest.cc",
       "../browser/autofill/android/save_update_address_profile_flow_manager_browsertest.cc",
-      "../browser/autofill/autofill_uitest_util.cc",
-      "../browser/autofill/autofill_uitest_util.h",
       "../browser/browsing_data/access_context_audit_browsertest.cc",
       "../browser/browsing_data/browsing_data_remover_browsertest_base.cc",
       "../browser/browsing_data/browsing_data_remover_browsertest_base.h",
@@ -4931,6 +4929,7 @@ test("unit_tests") {
     "../browser/security_events/security_event_recorder_impl_unittest.cc",
     "../browser/segmentation_platform/segmentation_platform_profile_observer_unittest.cc",
     "../browser/signin/e2e_tests/test_accounts_util_unittest.cc",
+    "../browser/ui/autofill/payments/offer_notification_helper_unittest.cc",
 
     # TODO(hashimoto): those tests should be componentized and moved to
     # //components:components_unittests, http://crbug.com/527882.
