@@ -72,14 +72,6 @@ const base::Feature kProactivelyThrottleLowPriorityRequests{
     "ProactivelyThrottleLowPriorityRequests",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables Cross-Origin-Embedder-Policy: credentialless.
-// https://github.com/mikewest/credentiallessness
-// TODO(https://crbug.com/1175099): Remove one week after M96: 2021-11-25
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kCrossOriginEmbedderPolicyCredentialless{
-    "CrossOriginEmbedderPolicyCredentialless",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables Cross-Origin Opener Policy (COOP).
 // https://gist.github.com/annevk/6f2dd8c79c77123f39797f6bdac43f3e
 // https://html.spec.whatwg.org/C/#cross-origin-opener-policy
