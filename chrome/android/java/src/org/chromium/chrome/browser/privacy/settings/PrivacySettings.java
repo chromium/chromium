@@ -122,10 +122,6 @@ public class PrivacySettings
                 (ChromeSwitchPreference) findPreference(PREF_CAN_MAKE_PAYMENT);
         canMakePaymentPref.setOnPreferenceChangeListener(this);
 
-        Preference preloadPagesPreference = findPreference(PREF_PRELOAD_PAGES);
-        preloadPagesPreference.setSummary(
-                PreloadPagesSettingsFragment.getPreloadPagesSummaryString(getContext()));
-
         ChromeSwitchPreference httpsFirstModePref =
                 (ChromeSwitchPreference) findPreference(PREF_HTTPS_FIRST_MODE);
         httpsFirstModePref.setVisible(
@@ -208,6 +204,12 @@ public class PrivacySettings
             doNotTrackPref.setSummary(prefService.getBoolean(Pref.ENABLE_DO_NOT_TRACK)
                             ? R.string.text_on
                             : R.string.text_off);
+        }
+
+        Preference preloadPagesPreference = findPreference(PREF_PRELOAD_PAGES);
+        if (preloadPagesPreference != null) {
+            preloadPagesPreference.setSummary(
+                    PreloadPagesSettingsFragment.getPreloadPagesSummaryString(getContext()));
         }
 
         Preference secureDnsPref = findPreference(PREF_SECURE_DNS);
