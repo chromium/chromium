@@ -82,6 +82,50 @@ static base::android::ScopedJavaLocalRef<jclass> Java_HashSet_getClass(JNIEnv* e
   return base::android::ScopedJavaLocalRef<jclass>(env, ret);
 }
 
+static std::atomic<jmethodID> g_java_util_HashSet_overloadWithVarargsV_LJLS(nullptr);
+[[maybe_unused]] static void Java_HashSet_overloadWithVarargsV_LJLS(JNIEnv* env, const
+    base::android::JavaRef<jobjectArray>& p0);
+static void Java_HashSet_overloadWithVarargsV_LJLS(JNIEnv* env, const
+    base::android::JavaRef<jobjectArray>& p0) {
+  jclass clazz = java_util_HashSet_clazz(env);
+  CHECK_CLAZZ(env, clazz,
+      java_util_HashSet_clazz(env));
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
+      base::android::MethodID::TYPE_STATIC>(
+          env,
+          clazz,
+          "overloadWithVarargs",
+          "([Ljava/lang/String;)V",
+          &g_java_util_HashSet_overloadWithVarargsV_LJLS);
+
+     env->CallStaticVoidMethod(clazz,
+          call_context.base.method_id, p0.obj());
+}
+
+static std::atomic<jmethodID> g_java_util_HashSet_overloadWithVarargsV_LAITDC(nullptr);
+[[maybe_unused]] static void Java_HashSet_overloadWithVarargsV_LAITDC(JNIEnv* env, const
+    base::android::JavaRef<jobjectArray>& p0);
+static void Java_HashSet_overloadWithVarargsV_LAITDC(JNIEnv* env, const
+    base::android::JavaRef<jobjectArray>& p0) {
+  jclass clazz = java_util_HashSet_clazz(env);
+  CHECK_CLAZZ(env, clazz,
+      java_util_HashSet_clazz(env));
+
+  jni_generator::JniJavaCallContextChecked call_context;
+  call_context.Init<
+      base::android::MethodID::TYPE_STATIC>(
+          env,
+          clazz,
+          "overloadWithVarargs",
+          "([Landroid/icu/text/DisplayContext;)V",
+          &g_java_util_HashSet_overloadWithVarargsV_LAITDC);
+
+     env->CallStaticVoidMethod(clazz,
+          call_context.base.method_id, p0.obj());
+}
+
 }  // namespace JNI_HashSet
 
 #endif  // java_util_HashSet_JNI

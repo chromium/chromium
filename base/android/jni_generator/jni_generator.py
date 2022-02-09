@@ -472,7 +472,7 @@ class JniParams(object):
     return '"%s"' % signature_line[index + len(prefix):]
 
   @staticmethod
-  def Parse(params, use_proxy_types=False):
+  def Parse(params, use_proxy_types=False, from_javap=False):
     """Parses the params into a list of Param objects."""
     if not params:
       return []
@@ -495,6 +495,12 @@ class JniParams(object):
           datatype=items[0],
           name=(items[1] if len(items) > 1 else 'p%s' % len(ret)),
       )
+      # Handle varargs.
+      if param.datatype.endswith('...'):
+        param.datatype = param.datatype[:-3] + '[]'
+
+      if from_javap:
+        param.datatype = param.datatype.replace('.', '/')
 
       if use_proxy_types:
         param.datatype = JavaTypeToProxyCast(param.datatype)
@@ -787,7 +793,7 @@ class JNIFromJavaP(object):
               java_class_name='',
               return_type=match.group('return_type').replace('.', '/'),
               name=match.group('name'),
-              params=JniParams.Parse(match.group('params').replace('.', '/')),
+              params=JniParams.Parse(match.group('params'), from_javap=True),
               signature=JniParams.ParseJavaPSignature(contents[lineno + 1]))
       ]
     re_constructor = re.compile('(.*?)public ' +
@@ -798,16 +804,17 @@ class JNIFromJavaP(object):
       if not match:
         continue
       self.called_by_natives += [
-          CalledByNative(
-              system_class=True,
-              unchecked=False,
-              static=False,
-              java_class_name='',
-              return_type=self.fully_qualified_class,
-              name='Constructor',
-              params=JniParams.Parse(match.group('params').replace('.', '/')),
-              signature=JniParams.ParseJavaPSignature(contents[lineno + 1]),
-              is_constructor=True)
+          CalledByNative(system_class=True,
+                         unchecked=False,
+                         static=False,
+                         java_class_name='',
+                         return_type=self.fully_qualified_class,
+                         name='Constructor',
+                         params=JniParams.Parse(match.group('params'),
+                                                from_javap=True),
+                         signature=JniParams.ParseJavaPSignature(
+                             contents[lineno + 1]),
+                         is_constructor=True)
       ]
     self.called_by_natives = MangleCalledByNatives(
         self.jni_params, self.called_by_natives, options.always_mangle)
