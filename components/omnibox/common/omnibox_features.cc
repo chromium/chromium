@@ -29,13 +29,6 @@ constexpr auto enabled_by_default_desktop_android =
     base::FEATURE_ENABLED_BY_DEFAULT;
 #endif
 
-constexpr auto enabled_by_default_desktop_ios =
-#if BUILDFLAG(IS_ANDROID)
-    base::FEATURE_DISABLED_BY_DEFAULT;
-#else
-    base::FEATURE_ENABLED_BY_DEFAULT;
-#endif
-
 // Comment out this macro since it is currently not being used in this file.
 // const auto enabled_by_default_android_ios =
 // #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -45,10 +38,10 @@ constexpr auto enabled_by_default_desktop_ios =
 // #endif
 
 // Feature that enables the tab-switch suggestions corresponding to an open
-// tab, for a button or dedicated suggestion. Enabled by default on Desktop
-// and iOS.
+// tab, for a button or dedicated suggestion. Enabled by default on Desktop, iOS
+// and Android.
 const base::Feature kOmniboxTabSwitchSuggestions{
-    "OmniboxTabSwitchSuggestions", enabled_by_default_desktop_ios};
+    "OmniboxTabSwitchSuggestions", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Feature used to enable various experiments on keyword mode, UI and
 // suggestions.
