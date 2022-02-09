@@ -6221,9 +6221,6 @@ crbug.com/1181857 external/wpt/webaudio/the-audio-api/the-analysernode-interface
 # Sheriff 2021-02-25
 crbug.com/1182682 [ Linux ] http/tests/devtools/service-workers/service-workers-view.js [ Failure Pass ]
 
-# Sheriff 2021-03-04
-crbug.com/1184745 [ Mac ] external/wpt/media-source/mediasource-changetype-play.html [ Failure Pass ]
-
 # Sheriff 2021-03-08
 crbug.com/1092462 [ Linux ] http/tests/media/media-source/mediasource-duration.html [ Failure Pass ]
 crbug.com/1092462 [ Linux ] media/video-seek-past-end-paused.html [ Failure Pass ]
