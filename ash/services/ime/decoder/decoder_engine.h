@@ -25,7 +25,8 @@ namespace ime {
 // implement its IMEs.
 class DecoderEngine : public mojom::InputChannel {
  public:
-  explicit DecoderEngine(ImeCrosPlatform* platform);
+  explicit DecoderEngine(ImeCrosPlatform* platform,
+                         absl::optional<ImeDecoder::EntryPoints> entry_points);
 
   DecoderEngine(const DecoderEngine&) = delete;
   DecoderEngine& operator=(const DecoderEngine&) = delete;

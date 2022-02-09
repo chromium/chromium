@@ -26,7 +26,9 @@ namespace ime {
 // shared library for handling key events.
 class SystemEngine : public InputEngine {
  public:
-  explicit SystemEngine(ImeCrosPlatform* platform);
+  explicit SystemEngine(ImeCrosPlatform* platform,
+                        absl::optional<ImeDecoder::EntryPoints> entry_points);
+
   SystemEngine(const SystemEngine&) = delete;
   SystemEngine& operator=(const SystemEngine&) = delete;
   ~SystemEngine() override;

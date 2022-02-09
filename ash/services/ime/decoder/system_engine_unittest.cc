@@ -14,6 +14,8 @@
 namespace chromeos {
 namespace ime {
 
+namespace {
+
 constexpr char kImeSpec[] = "xkb:us::eng";
 
 class TestDecoderState;
@@ -160,10 +162,12 @@ class SystemEngineTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment;
 };
 
+}  // namespace
+
 TEST_F(SystemEngineTest, BindRequestConnectsInputMethod) {
   TestDecoderState state;
-  FakeDecoderEntryPointsForTesting(CreateDecoderEntryPoints(&state));
-  SystemEngine engine(/*platform=*/nullptr);
+  ImeDecoder::EntryPoints entry_points = CreateDecoderEntryPoints(&state);
+  SystemEngine engine(/*platform=*/nullptr, entry_points);
 
   mojo::Remote<mojom::InputMethod> input_method;
   MockInputMethodHost mock_host;
@@ -178,8 +182,8 @@ TEST_F(SystemEngineTest, BindRequestConnectsInputMethod) {
 
 TEST_F(SystemEngineTest, CanSendMessagesAfterBinding) {
   TestDecoderState state;
-  FakeDecoderEntryPointsForTesting(CreateDecoderEntryPoints(&state));
-  SystemEngine engine(/*platform=*/nullptr);
+  ImeDecoder::EntryPoints entry_points = CreateDecoderEntryPoints(&state);
+  SystemEngine engine(/*platform=*/nullptr, entry_points);
 
   mojo::Remote<mojom::InputMethod> input_method;
   MockInputMethodHost mock_host;
@@ -197,8 +201,8 @@ TEST_F(SystemEngineTest, CanSendMessagesAfterBinding) {
 
 TEST_F(SystemEngineTest, CanReceiveMessagesAfterBinding) {
   TestDecoderState state;
-  FakeDecoderEntryPointsForTesting(CreateDecoderEntryPoints(&state));
-  SystemEngine engine(/*platform=*/nullptr);
+  ImeDecoder::EntryPoints entry_points = CreateDecoderEntryPoints(&state);
+  SystemEngine engine(/*platform=*/nullptr, entry_points);
 
   mojo::Remote<mojom::InputMethod> input_method;
   MockInputMethodHost mock_host;

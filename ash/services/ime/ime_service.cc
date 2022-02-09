@@ -90,7 +90,8 @@ void ImeService::ConnectToImeEngine(
   }
 
   input_engine_.reset();
-  decoder_engine_ = std::make_unique<DecoderEngine>(this);
+  decoder_engine_ = std::make_unique<DecoderEngine>(
+      this, ImeDecoder::GetInstance()->GetEntryPoints());
   bool bound = decoder_engine_->BindRequest(
       ime_spec, std::move(to_engine_request), std::move(from_engine), extra);
   std::move(callback).Run(bound);
@@ -123,7 +124,8 @@ void ImeService::InitializeConnectionFactory(
     return;
   }
 
-  auto system_engine = std::make_unique<SystemEngine>(this);
+  auto system_engine = std::make_unique<SystemEngine>(
+      this, ImeDecoder::GetInstance()->GetEntryPoints());
   bool bound =
       system_engine->BindConnectionFactory(std::move(connection_factory));
   input_engine_ = std::move(system_engine);
