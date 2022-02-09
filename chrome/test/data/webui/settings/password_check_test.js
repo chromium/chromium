@@ -721,6 +721,31 @@ suite('PasswordsCheckSection', function() {
     assertEquals(1, passwordManager.getCallCount('muteInsecureCredential'));
   });
 
+  // Test verifies that clicking restore button is calling proper proxy
+  // function.
+  test('unmutePasswordButtonCallsBackend', async function() {
+    loadTimeData.overrideValues({showDismissCompromisedPasswordOption: true});
+    passwordManager.data.leakedCredentials = [makeCompromisedCredential(
+        /*url*/ 'google.com', /*username*/ 'username', /*type*/ 'LEAKED',
+        /*id*/ 1, /*elapsedMinSinceCompromise*/ 1, /*isMuted*/ true)];
+    const checkPasswordSection = createCheckPasswordSection();
+
+    await passwordManager.whenCalled('getCompromisedCredentials');
+    flush();
+
+    const listElements = checkPasswordSection.$.mutedPasswordList;
+    const node = listElements.children[0];
+
+    // Open the more actions menu and click 'Dismiss password'.
+    node.$.more.click();
+    flush();
+    checkPasswordSection.shadowRoot
+        .querySelector('#menuUnmuteMutedCompromisedPassword')
+        .click();
+
+    assertEquals(1, passwordManager.getCallCount('unmuteInsecureCredential'));
+  });
+
   // Tests that a secure change password URL gets linkified in the remove
   // password confirmation dialog.
   test('secureChangePasswordUrlInRemovePasswordConfirmationDialog', () => {

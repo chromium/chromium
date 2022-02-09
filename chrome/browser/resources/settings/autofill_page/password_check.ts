@@ -443,7 +443,9 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
   }
 
   private onMenuUnmuteMutedCompromisedPasswordClick_() {
-    // TODO(https://crbug.com/1287170): implement this after API is implemented.
+    this.$.moreActionsMenu.close();
+    this.passwordManager!.unmuteInsecureCredential(
+        assert(this.activeListItem_!.item));
   }
 
   private onPasswordRemoveDialogClosed_() {
