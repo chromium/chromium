@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 60 tests; 33 PASS, 27 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 65 tests; 35 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface RTCRtpSender: original interface defined
@@ -8,7 +8,9 @@ PASS Partial interface RTCRtpReceiver: original interface defined
 PASS Partial interface RTCRtpReceiver: member names are unique
 PASS Partial interface DedicatedWorkerGlobalScope: original interface defined
 PASS Partial interface DedicatedWorkerGlobalScope: member names are unique
+PASS Partial interface RTCRtpSender[2]: original interface defined
 PASS Partial interface RTCRtpSender[2]: member names are unique
+PASS Partial interface RTCRtpSender[3]: member names are unique
 PASS SFrameTransform includes GenericTransformStream: member names are unique
 PASS WorkerGlobalScope includes WindowOrWorkerGlobalScope: member names are unique
 PASS DedicatedWorkerGlobalScope includes AnimationFrameProvider: member names are unique
@@ -57,7 +59,10 @@ FAIL RTCRtpScriptTransform interface: existence and properties of interface prot
 FAIL RTCRtpScriptTransform interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "RTCRtpScriptTransform" expected property "RTCRtpScriptTransform" missing
 FAIL RTCRtpScriptTransform interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "RTCRtpScriptTransform" expected property "RTCRtpScriptTransform" missing
 FAIL RTCRtpSender interface: attribute transform assert_true: The prototype object must have a property "transform" expected true got false
+FAIL RTCRtpSender interface: operation generateKeyFrame(optional sequence<DOMString>) assert_own_property: interface prototype object missing non-static operation expected property "generateKeyFrame" missing
 FAIL RTCRtpSender interface: new RTCPeerConnection().addTransceiver('audio').sender must inherit property "transform" with the proper type assert_inherits: property "transform" not found in prototype chain
+FAIL RTCRtpSender interface: new RTCPeerConnection().addTransceiver('audio').sender must inherit property "generateKeyFrame(optional sequence<DOMString>)" with the proper type assert_inherits: property "generateKeyFrame" not found in prototype chain
+FAIL RTCRtpSender interface: calling generateKeyFrame(optional sequence<DOMString>) on new RTCPeerConnection().addTransceiver('audio').sender with too few arguments must throw TypeError assert_inherits: property "generateKeyFrame" not found in prototype chain
 FAIL RTCRtpReceiver interface: attribute transform assert_true: The prototype object must have a property "transform" expected true got false
 FAIL RTCRtpReceiver interface: new RTCPeerConnection().addTransceiver('audio').receiver must inherit property "transform" with the proper type assert_inherits: property "transform" not found in prototype chain
 Harness: the test ran to completion.

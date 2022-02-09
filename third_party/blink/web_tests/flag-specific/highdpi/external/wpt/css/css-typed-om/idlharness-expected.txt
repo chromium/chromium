@@ -519,6 +519,6 @@ PASS CSS namespace: operation fr(double)
 FAIL SVGElement interface: attribute attributeStyleMap assert_own_property: expected property "attributeStyleMap" missing
 FAIL HTMLElement interface: attribute attributeStyleMap assert_own_property: expected property "attributeStyleMap" missing
 PASS Element interface: operation computedStyleMap()
-FAIL MathMLElement interface: attribute attributeStyleMap assert_own_property: expected property "attributeStyleMap" missing
+FAIL MathMLElement interface: attribute attributeStyleMap assert_own_property: self does not have own property "MathMLElement" expected property "MathMLElement" missing
 Harness: the test ran to completion.
 

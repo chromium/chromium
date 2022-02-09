@@ -58,6 +58,8 @@ dictionary WebTransportStats {
   unsigned long numIncomingStreamsCreated;
   unsigned long long bytesReceived;
   unsigned long long packetsReceived;
+  DOMHighResTimeStamp smoothedRtt;
+  DOMHighResTimeStamp rttVariation;
   DOMHighResTimeStamp minRtt;
   unsigned long numReceivedDatagramsDropped;
 };

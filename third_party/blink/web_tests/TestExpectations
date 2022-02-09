@@ -3211,6 +3211,7 @@ crbug.com/626703 [ Linux ] external/wpt/url/a-element-xhtml.xhtml [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/url/failure.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/parse-input-arguments-005.https.html [ Failure ]
 crbug.com/626703 external/wpt/webrtc/RTCConfiguration-iceTransportPolicy.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/geometry-with-float-size.https.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/html/cross-origin-embedder-policy/credentialless/reporting-subresource-corp.tentative.https.window.html [ Skip Timeout ]
@@ -7606,7 +7607,7 @@ crbug.com/1295317 [ Mac11-arm64 ] virtual/scalefactor200/css3/filters/effect-ref
 crbug.com/1295317 [ Mac11-arm64 ] virtual/scalefactor200/css3/filters/effect-reference-hw.html [ Failure ]
 
 # Sheriff 2022-02-09
-crbug.com/1295711 [ Win7 ] virtual/prerender/external/wpt/speculation-rules/prerender/restriction-window-resize.html [ Pass Failure ]
-crbug.com/1295707 [ Mac11 ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/elements/elements-treeoutline-copy.js [ Pass Failure ]
+crbug.com/1295711 [ Win7 ] virtual/prerender/external/wpt/speculation-rules/prerender/restriction-window-resize.html [ Failure Pass ]
+crbug.com/1295707 [ Mac11 ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/elements/elements-treeoutline-copy.js [ Failure Pass ]
 crbug.com/1295712 [ Mac10.13 ] fast/forms/color-scheme/datetimelocal-picker/datetimelocal-picker-appearance.html [ Failure ]
 crbug.com/1295733 [ Mac11-arm64 ] fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance-with-scroll-bar.html [ Failure ]

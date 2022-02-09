@@ -1460,12 +1460,12 @@ interface mixin CanvasTextDrawingStyles {
   attribute CanvasTextAlign textAlign; // (default: "start")
   attribute CanvasTextBaseline textBaseline; // (default: "alphabetic")
   attribute CanvasDirection direction; // (default: "inherit")
-  attribute double letterSpacing; // (default: 0)
+  attribute DOMString letterSpacing; // (default: "0px")
   attribute CanvasFontKerning fontKerning; // (default: "auto")
   attribute CanvasFontStretch fontStretch; // (default: "normal")
   attribute CanvasFontVariantCaps fontVariantCaps; // (default: "normal")
   attribute CanvasTextRendering textRendering; // (default: "auto")
-  attribute double wordSpacing; // (default: 0)
+  attribute DOMString wordSpacing; // (default: "0px")
 };
 
 interface mixin CanvasPath {
@@ -1847,7 +1847,7 @@ interface BeforeUnloadEvent : Event {
   attribute DOMString returnValue;
 };
 
-[Exposed=(Window,Worker)]
+[Exposed=*]
 interface ErrorEvent : Event {
   constructor(DOMString type, optional ErrorEventInit eventInitDict = {});
 
@@ -1866,7 +1866,7 @@ dictionary ErrorEventInit : EventInit {
   any error = null;
 };
 
-[Exposed=(Window,Worker)]
+[Exposed=*]
 interface PromiseRejectionEvent : Event {
   constructor(DOMString type, PromiseRejectionEventInit eventInitDict);
 

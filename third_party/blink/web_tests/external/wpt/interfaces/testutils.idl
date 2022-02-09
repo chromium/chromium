@@ -1,9 +1,9 @@
 // GENERATED CONTENT - DO NOT EDIT
 // Content was automatically extracted by Reffy into webref
 // (https://github.com/w3c/webref)
-// Source: uuid (https://wicg.github.io/uuid/)
+// Source: Test Utils Standard (https://testutils.spec.whatwg.org/)
 
 [Exposed=(Window,Worker)]
-partial interface Crypto {
-  [SecureContext] DOMString randomUUID();
+namespace TestUtils {
+  [NewObject] Promise<undefined> gc();
 };

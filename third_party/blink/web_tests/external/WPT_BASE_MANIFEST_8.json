@@ -77077,6 +77077,19 @@
        {}
       ]
      ],
+     "border-radius-013.html": [
+      "090f6a28b3bd35de408b13793eb4e44fa87280e0",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "border-radius-clip-001.html": [
       "008ca7367f20b51c55460f8cffa6f85be83d4988",
       [
@@ -250008,7 +250021,7 @@
       []
      ],
      "idlharness-expected.txt": [
-      "4a491cdd38683f48f3e405951dc8b18064114d22",
+      "2885179da4a9d847125c223b7957c70cabee9c03",
       []
      ],
      "inheritance-expected.txt": [
@@ -250114,8 +250127,12 @@
        "2acc510d2d23c28a952753bdb54017eff2af8632",
        []
       ],
+      "font-palette-values-invalid-expected.txt": [
+       "37a55182405409757aca99c829f218b3749a9a0a",
+       []
+      ],
       "font-palette-values-valid-expected.txt": [
-       "acd524d7ef443286fcde7a94ffde45b3f0986102",
+       "0d122263fe10524fc377b8ea899df3ecc2fafb4f",
        []
       ],
       "font-size-adjust-computed-expected.txt": [
@@ -271680,7 +271697,7 @@
       []
      ],
      "idlharness-expected.txt": [
-      "59c039ac45fdf0888afc1e30cc00342829121403",
+      "d44f50e2d83edfdc897b29ec54bb02d4c3ca2acd",
       []
      ],
      "resources": {
@@ -279585,7 +279602,7 @@
      []
     ],
     "idlharness.window_exclude=Node-expected.txt": [
-     "d224b4cba61ecf3402b62cfb3b0cb0d054a781fd",
+     "215a303b31574d866a32210584796bb488d4f5a7",
      []
     ],
     "lists": {
@@ -303177,7 +303194,7 @@
      []
     ],
     "WebCryptoAPI.idl": [
-     "e3a70894e830eeb9e09f950fec9d4eccacb53449",
+     "0e68ea82f594430fdccff7db045a978905367419",
      []
     ],
     "accelerometer.idl": [
@@ -303201,7 +303218,7 @@
      []
     ],
     "autoplay.idl": [
-     "f2be5bb3789b123b33a07a8e237a3c48a7ae1cc4",
+     "cd0884fe521f3af9385ec46f65d67b7d3045f4b0",
      []
     ],
     "background-fetch.idl": [
@@ -303217,7 +303234,7 @@
      []
     ],
     "battery-status.idl": [
-     "dc85bff19e82e3949ebd23dbc39461c7000cef6f",
+     "2d042db28a672f7ca2ac65217f1c7f65a97ffe4a",
      []
     ],
     "beacon.idl": [
@@ -303237,11 +303254,11 @@
      []
     ],
     "compression.idl": [
-     "d7236bf2a7f53927e54296fcdb9f983e8876c084",
+     "88be302a4a6c9a5074f744fba768d9a4984219b7",
      []
     ],
     "compute-pressure.idl": [
-     "0cf880b4503fede8f40b1c656834d806cd906d5e",
+     "57483d975bcfad54588502df53d5c7ea90c5d758",
      []
     ],
     "console.idl": [
@@ -303373,7 +303390,7 @@
      []
     ],
     "css-typed-om.idl": [
-     "3a0a6bd064ddf65930c7170c38f3f9b40e694879",
+     "fc93f25fbcc82e42a690a189e4e4e190a238de90",
      []
     ],
     "cssom-view.idl": [
@@ -303405,7 +303422,7 @@
      []
     ],
     "dom.idl": [
-     "762e7a5c3ef4c71237272c4451bc65aeb817efde",
+     "af75088c46ff63b4b2491646290caa7ee408852e",
      []
     ],
     "edit-context.idl": [
@@ -303417,7 +303434,7 @@
      []
     ],
     "encoding.idl": [
-     "7585cb3717c9aa666aa84d6ade72de4626ec6d22",
+     "a8cbe4431a2dc72ec0ee7c0ceb89fc9d7a71aee9",
      []
     ],
     "encrypted-media.idl": [
@@ -303429,7 +303446,7 @@
      []
     ],
     "event-timing.idl": [
-     "329570e44314278526ecf949ebc1a98e4d4dd840",
+     "ca41454c95ff7171b2390b5fc8f605b81e78a97f",
      []
     ],
     "eyedropper-api.idl": [
@@ -303493,7 +303510,7 @@
      []
     ],
     "hr-time.idl": [
-     "835ee8a65c84c0b45ba3beb9b0367cd12dd98f35",
+     "13aa109b6c764c84b1e8ac937a88dc2438c11b1e",
      []
     ],
     "html-media-capture.idl": [
@@ -303501,7 +303518,7 @@
      []
     ],
     "html.idl": [
-     "2eaf5d09e2c882588a3069b51fffa88802e4ed61",
+     "e42a4f3db874df817296e54271f7f074e946c3af",
      []
     ],
     "idle-detection.idl": [
@@ -303553,7 +303570,7 @@
      []
     ],
     "largest-contentful-paint.idl": [
-     "99de275cfd3e67bb5972c43bb1f320912d98fef4",
+     "872ba552b0d3b0398be533beb578fdedd260baea",
      []
     ],
     "layout-instability.idl": [
@@ -303561,11 +303578,11 @@
      []
     ],
     "local-font-access.idl": [
-     "e37b2c7d56f028c3bf9fe32352382697f2410f05",
+     "c516c4467151b030bdf2f40b494c4c715605e95a",
      []
     ],
     "longtasks.idl": [
-     "6ceb0e5d8f050f231211aae4056efd2762852971",
+     "c0aaa7a29797c0a829d58b3a4186323aa6effe07",
      []
     ],
     "magnetometer.idl": [
@@ -303596,12 +303613,12 @@
      "9fe2623d6466b5cfda7fb0b2390b0a3e5a3e4243",
      []
     ],
-    "mediacapture-depth.idl": [
-     "dcf3c3659d97b63bda5b53d64728b2e361e49bf2",
-     []
-    ],
     "mediacapture-fromelement.idl": [
      "b25f87018df5202950ac90da8bb140c6d2d5e7f9",
+     []
+    ],
+    "mediacapture-region.idl": [
+     "aab07aea131a0343fcad9c8cb6a130c81618737e",
      []
     ],
     "mediacapture-streams.idl": [
@@ -303673,7 +303690,7 @@
      []
     ],
     "performance-timeline.idl": [
-     "d3a5a278055eba415342f9958b6e228715dd9eb4",
+     "9f6cc5e2e902dcb13416bb30c3c4aabadbe78994",
      []
     ],
     "periodic-background-sync.idl": [
@@ -303837,7 +303854,7 @@
      []
     ],
     "streams.idl": [
-     "f7084dd60610420628f6b3468bf071b66e93dc14",
+     "278f1c53c2f1cddd32b3381c8e37b5f37c890c07",
      []
     ],
     "sub-apps.tentative.idl": [
@@ -303846,6 +303863,10 @@
     ],
     "svg-animations.idl": [
      "b57e1b9eb512919b501b7f96e260751aa5f108d3",
+     []
+    ],
+    "testutils.idl": [
+     "c5b7efd0c405488ae2e46415467b726a09d820bf",
      []
     ],
     "text-detection-api.idl": [
@@ -303861,7 +303882,7 @@
      []
     ],
     "ua-client-hints.idl": [
-     "27b54a2990c62b0ae5353f877dcffa8d51e0a797",
+     "f5070a0e0904f78531fece6f08ad19d591b39a55",
      []
     ],
     "uievents.idl": [
@@ -303869,19 +303890,15 @@
      []
     ],
     "url.idl": [
-     "b00ab4b83bc60bd6454fd9992ebdfd59264cd0e3",
+     "360c9adcfa1104ec5fd591869d7cc3ecdaf4395f",
      []
     ],
     "urlpattern.idl": [
-     "9e38ae13bc120c42a54dafabf066d5f165169f49",
+     "4faa1c935b0830d0a288f7138afdb617b42599e9",
      []
     ],
     "user-timing.idl": [
-     "28ee8aac2b19a669a249fdd88b9911b3832bb622",
-     []
-    ],
-    "uuid.idl": [
-     "92bed2973f5f427b13acd032e0a6638e762faf5e",
+     "a0b8f94710ec33b72b980f44ebc532bc3596cc3d",
      []
     ],
     "vibration.idl": [
@@ -303969,7 +303986,7 @@
      []
     ],
     "webgpu.idl": [
-     "6ded86e1d6389ab9f864272549d7cbf662043035",
+     "0a6ba7f55acc7962de460a0400f436072c0d36e3",
      []
     ],
     "webhid.idl": [
@@ -303989,7 +304006,7 @@
      []
     ],
     "webrtc-encoded-transform.idl": [
-     "0026232babeccf795a049cee417135292fd343e3",
+     "e417d1bfd31707b4ac933d70330b264abfca4cf6",
      []
     ],
     "webrtc-ice.idl": [
@@ -303997,7 +304014,7 @@
      []
     ],
     "webrtc-identity.idl": [
-     "3b8e264c39b8da15106a495249d0dff916e2eae8",
+     "108c3ad9b111acf08ce6593fbe95808ac3529a6d",
      []
     ],
     "webrtc-priority.idl": [
@@ -304017,7 +304034,7 @@
      []
     ],
     "webtransport.idl": [
-     "95ab9e05d498c9e5bf244e173bf8cd106a0d8c7f",
+     "18a0fadb88f9f90795f2a379f6dc1b31e97199f0",
      []
     ],
     "webusb.idl": [
@@ -307698,6 +307715,10 @@
    "permissions": {
     "META.yml": [
      "b055f50f636848ceb7b1750484cc12328a121398",
+     []
+    ],
+    "all-permissions-expected.txt": [
+     "afe441e54e4f6a8479cbd06a3d3c3dbc7b9c29d5",
      []
     ],
     "feature-policy-permissions-query.html": [
@@ -320801,7 +320822,7 @@
      []
     ],
     "idlharness.https.window-expected.txt": [
-     "09a7ba9b427715f2eb01aa5d844397c903b1c7de",
+     "58076a0da7854dff26cf7e91352c22934611f045",
      []
     ],
     "resources": {
@@ -481259,6 +481280,13 @@
     ]
    },
    "permissions": {
+    "all-permissions.html": [
+     "9ad014bc6e2c9785ce05bbeb364f286e07d168e3",
+     [
+      null,
+      {}
+     ]
+    ],
     "idlharness.any.js": [
      "ff0a969badace39c3c4466c4528e30c21355e132",
      [
@@ -481292,11 +481320,13 @@
       }
      ]
     ],
-    "nfc-permission.html": [
-     "eeec7251c1c18ff839f5e01d8d439a5e0630aa55",
+    "permissions-cg.https.html": [
+     "9a3d025346a64360de238e52da7903c4617e4a58",
      [
       null,
-      {}
+      {
+       "testdriver": true
+      }
      ]
     ],
     "permissions-query-feature-policy-attribute.https.sub.html": [
@@ -481308,27 +481338,6 @@
     ],
     "permissionsstatus-name.html": [
      "db1d1bb83eba9f55e68b1cc5a0f8224be98a36cf",
-     [
-      null,
-      {}
-     ]
-    ],
-    "screen-wake-lock-permission.html": [
-     "0fa69ff96a03b36d3fbd3de15a70f9b199074ebc",
-     [
-      null,
-      {}
-     ]
-    ],
-    "test-background-fetch-permission.html": [
-     "c824ecf1d2b47630f8ebcef3ed42c8c908c8e9eb",
-     [
-      null,
-      {}
-     ]
-    ],
-    "test-periodic-background-sync-permission.html": [
-     "c3b6a1d8b9e2ae2e0d1819959fb03d43fa058fbb",
      [
       null,
       {}
