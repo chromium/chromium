@@ -87,11 +87,14 @@ class Line {
   }
 
   private getTransform(): CSSTransformValue|null {
-    const trans = this.el.attributeStyleMap.get('transform');
-    if (trans === undefined) {
-      return null;
+    if (this.el.attributeStyleMap.has('transform')) {
+      // Note that Chrome returns null instead of undefined when the value is
+      // not found, which is different to the spec & TypeScript type. See
+      // crbug.com/1291286.
+      const trans = this.el.attributeStyleMap.get('transform');
+      return assertInstanceof(trans, CSSTransformValue);
     }
-    return assertInstanceof(trans, CSSTransformValue);
+    return null;
   }
 
   private angle(): number|null {
