@@ -69,6 +69,8 @@ const char* AutocompleteProvider::TypeToString(Type type) {
       return "VoiceSuggest";
     case TYPE_HISTORY_FUZZY:
       return "HistoryFuzzy";
+    case TYPE_OPEN_TAB:
+      return "OpenTab";
     default:
       NOTREACHED() << "Unhandled AutocompleteProvider::Type " << type;
       return "Unknown";

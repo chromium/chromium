@@ -43,6 +43,7 @@
 #include "components/omnibox/browser/most_visited_sites_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/on_device_head_provider.h"
+#include "components/omnibox/browser/open_tab_provider.h"
 #include "components/omnibox/browser/query_tile_provider.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/shortcuts_provider.h"
@@ -371,6 +372,9 @@ AutocompleteController::AutocompleteController(
   }
   if (provider_types & AutocompleteProvider::TYPE_HISTORY_FUZZY) {
     providers_.push_back(new HistoryFuzzyProvider(provider_client_.get()));
+  }
+  if (provider_types & AutocompleteProvider::TYPE_OPEN_TAB) {
+    providers_.push_back(new OpenTabProvider());
   }
 
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(

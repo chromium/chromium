@@ -1,0 +1,27 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_OMNIBOX_BROWSER_OPEN_TAB_PROVIDER_H_
+#define COMPONENTS_OMNIBOX_BROWSER_OPEN_TAB_PROVIDER_H_
+
+#include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/autocomplete_provider.h"
+
+// This provider matches user input against open tabs. It is *not* included as a
+// default provider.
+// TODO(crbug.com/1293702): This is WIP and still a skeleton.
+class OpenTabProvider : public AutocompleteProvider {
+ public:
+  OpenTabProvider();
+
+  OpenTabProvider(const OpenTabProvider&) = delete;
+  OpenTabProvider& operator=(const OpenTabProvider&) = delete;
+
+  void Start(const AutocompleteInput& input, bool minimal_changes) override;
+
+ private:
+  ~OpenTabProvider() override;
+};
+
+#endif  // COMPONENTS_OMNIBOX_BROWSER_OPEN_TAB_PROVIDER_H_
