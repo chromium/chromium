@@ -5,6 +5,7 @@
   "dependencies": {
     "@types/chai": "4.2.22",
     "@types/dom-mediacapture-record": "1.0.10",
+    "@types/dom-speech-recognition": "0.0.1",
     "@types/google.analytics": "0.0.42",
     "@types/mocha": "9.0.0",
     "@types/offscreencanvas": "2019.6.4",
