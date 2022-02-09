@@ -189065,6 +189065,19 @@
        {}
       ]
      ],
+     "negative-calc-to-non-negative-integer.html": [
+      "b76859b352d1082de22c6d81b62e07ca809c8ee8",
+      [
+       null,
+       [
+        [
+         "/css/css-values/negative-calc-to-non-negative-integer-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "percentage-rem-low.html": [
       "d06e7522a68e08f2b70cf9ccd71517bbf582b112",
       [
@@ -216053,6 +216066,32 @@
          {}
         ]
        ],
+       "input-type-button-newline-2.html": [
+        "6e21c9e98e5514bc7ebe8a650c83f3e770defce4",
+        [
+         null,
+         [
+          [
+           "/html/rendering/widgets/button-layout/input-type-button-newline-2-mismatch.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "input-type-button-newline.html": [
+        "139893ed425a0cf7d018960f62e126da9c3cefc7",
+        [
+         null,
+         [
+          [
+           "/html/rendering/widgets/button-layout/input-type-button-newline-mismatch.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
        "propagate-text-decoration.html": [
         "9bdbbef0c274fd09e25722c04edeb0cb40693d67",
         [
@@ -230432,7 +230471,7 @@
     },
     "resources": {
      "bluetooth-fake-devices.js": [
-      "bc142aa4de8e017580c07d03ad471b71a4eb3d92",
+      "7710d7f83f6e71e9953a3cd810d2c4de2ef78342",
       []
      ],
      "bluetooth-scanning-helpers.js": [
@@ -233056,39 +233095,39 @@
     },
     "reporting-api": {
      "report-to-directive-allowed-in-meta.https.sub.html.sub.headers": [
-      "56ebf374616995d496551f578c60ab2f43e74f75",
+      "6f3ff61a0358111bc6ea2d4d5144fbe757e391f3",
       []
      ],
      "reporting-api-doesnt-send-reports-without-violation.https.sub.html.sub.headers": [
-      "aa9c76cdb4733e0e88d84ad6f5237dd48e731b5e",
+      "65b5afc5c805a11b19b9f2bf45fe922b0e6af449",
       []
      ],
      "reporting-api-report-only-sends-reports-on-violation.https.sub.html.sub.headers": [
-      "10addf82bcc9aa881ff36a31baaab3f3357b3f4f",
+      "d1365ac3f7105382b81615cf01ab3c6ca2c39bc9",
       []
      ],
      "reporting-api-report-to-only-sends-reports-to-first-endpoint.https.sub.html.sub.headers": [
-      "98b376c176843089abfc80297e7b143c9a0b4c8e",
+      "4de556aeefe78d374192d8287bded37e0ad4a998",
       []
      ],
      "reporting-api-report-to-overrides-report-uri-1.https.sub.html.sub.headers": [
-      "0a06ef4f05642ca4d2438eb9521ede422b14a211",
+      "dfd3a4ed5ae706d9dd89ec77b91317f86b172eb0",
       []
      ],
      "reporting-api-report-to-overrides-report-uri-2.https.sub.html.sub.headers": [
-      "97a738fd4b399a153b2472ae8b7a641f321ecb68",
+      "87dfcf878955358752bf9e5e044072e800864c79",
       []
      ],
      "reporting-api-sends-reports-on-violation.https.sub.html.sub.headers": [
-      "b981ab46ac083e622861b403d3face041ba1b6a7",
+      "e6e488d4aa6b92f384a61bed865541b51f296128",
       []
      ],
      "reporting-api-works-on-frame-ancestors.https.sub.html.sub.headers": [
-      "cbc4ea7baf5e5fbea6affc2d7912606ea3c99838",
+      "bf4e24e77e43c589db0aaddec5e2594bbc7d5ceb",
       []
      ],
      "reporting-api-works-on-frame-src.https.sub.html.sub.headers": [
-      "37b1fea45b861c81b9edffed8c1497fb807ea6d3",
+      "f85c8d26e4e5a8f915257f8db8ef1564f71118f9",
       []
      ],
      "support": {
@@ -234162,7 +234201,7 @@
       []
      ],
      "fedcm-mock.js": [
-      "407ca8d7702adbf6d7dbc100323eb46267048631",
+      "6ab4cbfa2fab9fe0b65c86be40bd3c79cd5c8325",
       []
      ],
      "federatedcredential-get.html": [
@@ -273409,6 +273448,10 @@
       "1f361467f7f4540a25ed8120d4d8c3496180bb07",
       []
      ],
+     "negative-calc-to-non-negative-integer-ref.html": [
+      "446809160733b6881ec97157a35451de38e517d6",
+      []
+     ],
      "reference": {
       "200-200-green.html": [
        "f3da3ddb3b8d90df91aa60d88f0c13d28eccef09",
@@ -278069,10 +278112,6 @@
      ],
      "floating-first-letter-ref.html": [
       "3c3141a862df19ad62f343e00b37f248fbd845b1",
-      []
-     ],
-     "focus-visible-020-expected.txt": [
-      "92ea3352bbca8266ee1004ef12ddc98a35075594",
       []
      ],
      "focus-visible-024-expected.txt": [
@@ -286257,6 +286296,10 @@
         "6dad05534728dc6a05db46b5c112a2fd9546e8ce",
         []
        ],
+       "focus-expected.txt": [
+        "cdc11266f9ce546e0f23097e4b07d65f17bd546a",
+        []
+       ],
        "resources": {
         "echo-worker.js": [
          "3e3ecb52e9f13f83053e99e3871e950937ebce05",
@@ -286271,7 +286314,7 @@
          []
         ],
         "helper.sub.js": [
-         "731487b71820c239fea3c39da2673cae02996fc9",
+         "27a01830eac766f6f70221e1bc87e58fb3eafa72",
          []
         ],
         "inflight-fetch-helper.js": [
@@ -295877,6 +295920,14 @@
        ],
        "inline-level-ref.html": [
         "3784cc30dbee61cae594c92e59883c18142336ba",
+        []
+       ],
+       "input-type-button-newline-2-mismatch.html": [
+        "19930b947b92a3efd0c872d9495501798639cd51",
+        []
+       ],
+       "input-type-button-newline-mismatch.html": [
+        "3d6495de6623e782f7cf54231ebe0624ed6d15c4",
         []
        ],
        "propagate-text-decoration-ref.html": [
@@ -311217,15 +311268,7 @@
     "OWNERS": [
      "b2e83ff43cbd1ec9192337d7bd7cee3852375d44",
      []
-    ],
-    "tentative": {
-     "support": {
-      "empty.txt": [
-       "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
-       []
-      ]
-     }
-    }
+    ]
    },
    "screen-capture": {
     "DIR_METADATA": [
@@ -314651,14 +314694,6 @@
       "361c14d641c734975e7789d123d52868cae6abd5",
       []
      ],
-     "focus-pseudo-matches-on-shadow-host-expected.txt": [
-      "3eea1c306839b2199b2cdf861b4b7333b11f304f",
-      []
-     ],
-     "focus-selector-delegatesFocus-expected.txt": [
-      "0a9cd6ab175985bf5fe6b5d0b4cf11b146332627",
-      []
-     ],
      "resources": {
       "shadow-utils.js": [
        "8033ce0169f4aa83b54c3567c68c4cc4f5b7a490",
@@ -317602,11 +317637,11 @@
       []
      ],
      "urlpatterntestdata.json": [
-      "8992c95b59b9c53f16496591e6c91ec32adc9bd1",
+      "6773648da078247ab2c3414eb4aafcce6f057c2d",
       []
      ],
      "urlpatterntests.js": [
-      "40b3edc3da22b99a3e8176482024aae2fb15204a",
+      "f774699bff99c3b78e342bf4a8da9207aa8c84dd",
       []
      ]
     }
@@ -341735,6 +341770,32 @@
       ]
      ],
      "getDescriptor": {
+      "detachedIframe.https.window.js": [
+       "2722a153c8e6b72e1d7654fa8aadf62fa1e8f625",
+       [
+        "bluetooth/characteristic/getDescriptor/detachedIframe.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
+        }
+       ]
+      ],
       "gen-characteristic-is-removed.https.window.js": [
        "7789f4b7c4693a89c8f9a41e5d3c613ff43ba12a",
        [
@@ -341815,6 +341876,32 @@
       ]
      },
      "getDescriptors": {
+      "detachedIframe.https.window.js": [
+       "73c5f3c9a0f432f39f92ef7f36fa6eac291ae702",
+       [
+        "bluetooth/characteristic/getDescriptors/detachedIframe.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
+        }
+       ]
+      ],
       "gen-characteristic-is-removed-with-uuid.https.window.js": [
        "b924f052d37dc4ba1a91d41fa7605862543d2dc8",
        [
@@ -342053,6 +342140,32 @@
         }
        ]
       ],
+      "detachedIframe.https.window.js": [
+       "a47ce231112e58d28b9b86578da2d2fa834f89fe",
+       [
+        "bluetooth/characteristic/readValue/detachedIframe.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
+        }
+       ]
+      ],
       "event-is-fired.https.window.js": [
        "52b70e7a080e870c27bf86d9ba591292f0b273bb",
        [
@@ -342237,10 +342350,64 @@
       ]
      ],
      "startNotifications": {
+      "detachedIframe.https.window.js": [
+       "6cb33772d32b005b401e3ab45767c9066f74fef7",
+       [
+        "bluetooth/characteristic/startNotifications/detachedIframe.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
+        }
+       ]
+      ],
       "gen-characteristic-is-removed.https.window.js": [
        "62d0d15d10b57992bdf2f60c5582cdb06e8f1673",
        [
         "bluetooth/characteristic/startNotifications/gen-characteristic-is-removed.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
+        }
+       ]
+      ]
+     },
+     "stopNotifications": {
+      "detachedIframe.https.window.js": [
+       "1f3e616e01d2102e5f1970191691af4a8f7f9152",
+       [
+        "bluetooth/characteristic/stopNotifications/detachedIframe.https.window.html",
         {
          "script_metadata": [
           [
@@ -342295,6 +342462,32 @@
        "6e9da8802c7adf343d0dd9683c2b03afe11d28e2",
        [
         "bluetooth/characteristic/writeValue/characteristic-is-removed.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "detachedIframe.https.window.js": [
+       "7647a8734c873efda2db7f2d44bb827278b74c98",
+       [
+        "bluetooth/characteristic/writeValue/detachedIframe.https.window.html",
         {
          "script_metadata": [
           [
@@ -342663,6 +342856,32 @@
     },
     "descriptor": {
      "readValue": {
+      "detachedIframe.https.window.js": [
+       "17bdbf1f1ddc176f6613df7db459902409823205",
+       [
+        "bluetooth/descriptor/readValue/detachedIframe.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
+        }
+       ]
+      ],
       "gen-service-is-removed.https.window.js": [
        "2c46b99fd1de291992ca8f4d13364bfad9f43b02",
        [
@@ -342721,6 +342940,32 @@
        "49daf7cf86d16104536d7e50bc6401f81006da45",
        [
         "bluetooth/descriptor/writeValue/buffer-is-detached.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "detachedIframe.https.window.js": [
+       "c198177fa3704c4d270fd90f8e99dd2cd95a9328",
+       [
+        "bluetooth/descriptor/writeValue/detachedIframe.https.window.html",
         {
          "script_metadata": [
           [
@@ -343013,6 +343258,32 @@
        "cb6532be68ece2a04f5d70106f7b58869906b086",
        [
         "bluetooth/device/watchAdvertisements/concurrent-watchAdvertisements-calls.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "detachedIframe.https.window.js": [
+       "6bee7292e024de980778c1797b2e73e98fda36c3",
+       [
+        "bluetooth/device/watchAdvertisements/detachedIframe.https.window.html",
         {
          "script_metadata": [
           [
@@ -344896,6 +345167,32 @@
         }
        ]
       ],
+      "detachedIframe.https.window.js": [
+       "1acd1562228abd75225983df843c94d85ba1a635",
+       [
+        "bluetooth/server/connect/detachedIframe.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
+        }
+       ]
+      ],
       "garbage-collection-ran-during-success.https.window.js": [
        "1a4ad4711edc550038e01ddc942e0f69756d0165",
        [
@@ -345048,6 +345345,32 @@
            "script",
            "/resources/testharnessreport.js"
           ],
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "detachedIframe.https.window.js": [
+       "7a8f2aa0d727d06e8daeef4abe4006c101f476d1",
+       [
+        "bluetooth/server/disconnect/detachedIframe.https.window.html",
+        {
+         "script_metadata": [
           [
            "script",
            "/resources/testdriver.js"
@@ -346507,6 +346830,32 @@
      }
     },
     "service": {
+     "detachedIframe.https.window.js": [
+      "d83e03737dd726b07f4d129e0bcf449a5d0adca4",
+      [
+       "bluetooth/service/detachedIframe.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
+          "/bluetooth/resources/bluetooth-test.js"
+         ],
+         [
+          "script",
+          "/bluetooth/resources/bluetooth-fake-devices.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "device-same-from-2-services.https.window.js": [
       "4870105d5cf221c42c985a6015b17422aa6a0043",
       [
@@ -346590,6 +346939,32 @@
            "script",
            "/resources/testharnessreport.js"
           ],
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
+        }
+       ]
+      ],
+      "detachedIframe.https.window.js": [
+       "8bdf406273eda66bbba21272d2e26d517b261e74",
+       [
+        "bluetooth/service/getCharacteristic/detachedIframe.https.window.html",
+        {
+         "script_metadata": [
           [
            "script",
            "/resources/testdriver.js"
@@ -357708,8 +358083,8 @@
       {}
      ]
     ],
-    "fedcm-logout.https.html": [
-     "e4f83b0f90e1a684c254235e6222b299b8647cbc",
+    "fedcm-logout-rps.https.html": [
+     "dc3599272101ee6fdf0827dd441f63592c623c89",
      [
       null,
       {}
@@ -421345,8 +421720,17 @@
          }
         ]
        ],
+       "focus.html": [
+        "3901a5417ddc871d684045a710b345981a36831b",
+        [
+         null,
+         {
+          "timeout": "long"
+         }
+        ]
+       ],
        "timers.html": [
-        "f488855da20ecd84ebe6080c7f126650995cecb0",
+        "aab650f36e5f58d064f1dd8b08d98e1bf7b010e8",
         [
          null,
          {
@@ -483491,7 +483875,7 @@
      ]
     ],
     "subresource-integrity-partial-image.html": [
-     "3abc8399219688f075deec3bf1551188d29f07b9",
+     "108897c4d6531ad53921f67c294b9754e987bbc7",
      [
       null,
       {}
@@ -498294,387 +498678,7 @@
        ]
       }
      ]
-    ],
-    "tentative": {
-     "current-task-signal-abort-signal.any.js": [
-      "33527a8531476693091d6a0494c22368496fbe3a",
-      [
-       "scheduler/tentative/current-task-signal-abort-signal.any.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Scheduler: Signal inheritance"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ],
-      [
-       "scheduler/tentative/current-task-signal-abort-signal.any.serviceworker.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Scheduler: Signal inheritance"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ],
-      [
-       "scheduler/tentative/current-task-signal-abort-signal.any.sharedworker.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Scheduler: Signal inheritance"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ],
-      [
-       "scheduler/tentative/current-task-signal-abort-signal.any.worker.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Scheduler: Signal inheritance"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ]
-     ],
-     "current-task-signal-async-abort.any.js": [
-      "9b26e2397c2b53f8afe972d94c2a63298b6aed07",
-      [
-       "scheduler/tentative/current-task-signal-async-abort.any.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Scheduler: Signal inheritance"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ],
-      [
-       "scheduler/tentative/current-task-signal-async-abort.any.serviceworker.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Scheduler: Signal inheritance"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ],
-      [
-       "scheduler/tentative/current-task-signal-async-abort.any.sharedworker.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Scheduler: Signal inheritance"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ],
-      [
-       "scheduler/tentative/current-task-signal-async-abort.any.worker.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Scheduler: Signal inheritance"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ]
-     ],
-     "current-task-signal-async-priority.any.js": [
-      "c34b7883afc102f45797dd883bc74e4632aa2ee9",
-      [
-       "scheduler/tentative/current-task-signal-async-priority.any.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Scheduler: Signal inheritance"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ],
-      [
-       "scheduler/tentative/current-task-signal-async-priority.any.serviceworker.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Scheduler: Signal inheritance"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ],
-      [
-       "scheduler/tentative/current-task-signal-async-priority.any.sharedworker.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Scheduler: Signal inheritance"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ],
-      [
-       "scheduler/tentative/current-task-signal-async-priority.any.worker.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Scheduler: Signal inheritance"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ]
-     ],
-     "current-task-signal-inherit-priority.any.js": [
-      "6c4a6572a209e554d40445f46536a6f45b5fc9a1",
-      [
-       "scheduler/tentative/current-task-signal-inherit-priority.any.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Scheduler: Signal inheritance"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ],
-      [
-       "scheduler/tentative/current-task-signal-inherit-priority.any.serviceworker.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Scheduler: Signal inheritance"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ],
-      [
-       "scheduler/tentative/current-task-signal-inherit-priority.any.sharedworker.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Scheduler: Signal inheritance"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ],
-      [
-       "scheduler/tentative/current-task-signal-inherit-priority.any.worker.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Scheduler: Signal inheritance"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ]
-     ],
-     "current-task-signal-thru-fetch.any.js": [
-      "ca34f1fe01e8371849ee861d22814bd66c3a7855",
-      [
-       "scheduler/tentative/current-task-signal-thru-fetch.any.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Scheduler: Signal inheritance"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ],
-      [
-       "scheduler/tentative/current-task-signal-thru-fetch.any.serviceworker.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Scheduler: Signal inheritance"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ],
-      [
-       "scheduler/tentative/current-task-signal-thru-fetch.any.sharedworker.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Scheduler: Signal inheritance"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ],
-      [
-       "scheduler/tentative/current-task-signal-thru-fetch.any.worker.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Scheduler: Signal inheritance"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ]
-     ],
-     "current-task-signal.any.js": [
-      "2cf9fe5e5497cb49ea2344dd159497bb3a5194e9",
-      [
-       "scheduler/tentative/current-task-signal.any.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Scheduler: Signal inheritance"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ],
-      [
-       "scheduler/tentative/current-task-signal.any.serviceworker.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Scheduler: Signal inheritance"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ],
-      [
-       "scheduler/tentative/current-task-signal.any.sharedworker.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Scheduler: Signal inheritance"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ],
-      [
-       "scheduler/tentative/current-task-signal.any.worker.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "Scheduler: Signal inheritance"
-         ],
-         [
-          "global",
-          "window,worker"
-         ]
-        ]
-       }
-      ]
-     ]
-    }
+    ]
    },
    "screen-capture": {
     "getdisplaymedia-after-discard.https.html": [
@@ -503931,7 +503935,7 @@
       ]
      ],
      "focus-pseudo-matches-on-shadow-host.html": [
-      "33597b5065bcf608128f82863a45e4d4b2c50c8a",
+      "34f8c0129456b38fc46a10c9247ed304abfd9715",
       [
        null,
        {}
@@ -521881,7 +521885,7 @@
        ]
       ],
       "effect-composition.html": [
-       "02c2fe1b3b8c8b13158ab942f0d15143a6571a58",
+       "df33aae8c13fdaa9c602a029020e95f79ad2a89b",
        [
         null,
         {}
