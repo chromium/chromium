@@ -1,35 +1,35 @@
 This is a testharness.js-based test.
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values Cannot read properties of undefined (reading 'cssText')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 1 Cannot read properties of undefined (reading 'constructor')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 2 Cannot read properties of undefined (reading 'cssText')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 3 Cannot read properties of undefined (reading 'name')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 4 Cannot read properties of undefined (reading 'cssText')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 5 Cannot read properties of undefined (reading 'name')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 6 Cannot read properties of undefined (reading 'cssText')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 7 Cannot read properties of undefined (reading 'name')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 8 Cannot read properties of undefined (reading 'cssText')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 9 Cannot read properties of undefined (reading 'name')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 10 Cannot read properties of undefined (reading 'cssText')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 11 Cannot read properties of undefined (reading 'name')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 12 Cannot read properties of undefined (reading 'cssText')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 13 Cannot read properties of undefined (reading 'name')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 14 Cannot read properties of undefined (reading 'cssText')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 15 Cannot read properties of undefined (reading 'name')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 16 Cannot read properties of undefined (reading 'cssText')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 17 Cannot read properties of undefined (reading 'name')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 18 Cannot read properties of undefined (reading 'cssText')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 19 Cannot read properties of undefined (reading 'name')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 20 Cannot read properties of undefined (reading 'cssText')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 21 Cannot read properties of undefined (reading 'name')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 22 Cannot read properties of undefined (reading 'cssText')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 23 Cannot read properties of undefined (reading 'name')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 24 Cannot read properties of undefined (reading 'cssText')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 25 Cannot read properties of undefined (reading 'name')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 26 Cannot read properties of undefined (reading 'cssText')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 27 Cannot read properties of undefined (reading 'name')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 28 Cannot read properties of undefined (reading 'cssText')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 29 Cannot read properties of undefined (reading 'name')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 30 Cannot read properties of undefined (reading 'cssText')
-FAIL CSS Fonts Module Level 4: parsing @font-palette-values 31 Cannot read properties of undefined (reading 'name')
+PASS CSS Fonts Module Level 4: parsing @font-palette-values
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 1
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 2
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 3
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 4
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 5
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 6
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 7
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 8
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 9
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 10
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 11
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 12
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 13
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 14
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 15
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 16
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 17
+FAIL CSS Fonts Module Level 4: parsing @font-palette-values 18 assert_not_equals: got disallowed value -1
+FAIL CSS Fonts Module Level 4: parsing @font-palette-values 19 assert_not_equals: got disallowed value -1
+FAIL CSS Fonts Module Level 4: parsing @font-palette-values 20 assert_not_equals: got disallowed value -1
+FAIL CSS Fonts Module Level 4: parsing @font-palette-values 21 assert_not_equals: got disallowed value -1
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 22
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 23
+FAIL CSS Fonts Module Level 4: parsing @font-palette-values 24 assert_not_equals: got disallowed value -1
+FAIL CSS Fonts Module Level 4: parsing @font-palette-values 25 assert_not_equals: got disallowed value -1
+FAIL CSS Fonts Module Level 4: parsing @font-palette-values 26 assert_not_equals: got disallowed value -1
+FAIL CSS Fonts Module Level 4: parsing @font-palette-values 27 assert_not_equals: got disallowed value -1
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 28
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 29
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 30
+PASS CSS Fonts Module Level 4: parsing @font-palette-values 31
 Harness: the test ran to completion.
 

@@ -69,6 +69,7 @@ class CORE_EXPORT CSSRule : public ScriptWrappable {
     kContainerRule = 18,
     kLayerBlockRule = 19,
     kLayerStatementRule = 20,
+    kFontPaletteValuesRule = 21,
   };
 
   virtual Type GetType() const = 0;

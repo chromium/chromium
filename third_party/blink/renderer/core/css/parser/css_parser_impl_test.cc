@@ -6,10 +6,13 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
+#include "third_party/blink/renderer/core/css/css_font_family_value.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_observer.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -689,6 +692,40 @@ TEST(CSSParserImplTest, EmptyLayerStatementAfterRegularRule) {
   EXPECT_EQ(2u, sheet->ChildRules().size());
   EXPECT_TRUE(sheet->ChildRules()[0]->IsStyleRule());
   EXPECT_TRUE(sheet->ChildRules()[1]->IsLayerStatementRule());
+}
+
+TEST(CSSParserImplTest, FontPaletteValuesDisabled) {
+  ScopedFontPaletteForTest disabled_scope(false);
+
+  // @font-palette-values rules should be ignored when the feature is disabled.
+
+  using css_test_helpers::ParseRule;
+  Document* document = Document::CreateForTest();
+  EXPECT_FALSE(ParseRule(*document, "@font-palette-values foo;"));
+  EXPECT_FALSE(ParseRule(*document, "@font-palette-values foo { }"));
+  EXPECT_FALSE(ParseRule(*document, "@font-palette-values foo.bar { }"));
+  EXPECT_FALSE(ParseRule(*document, "@font-palette-values { }"));
+}
+
+TEST(CSSParserImplTest, FontPaletteValuesBasicRuleParsing) {
+  ScopedFontPaletteForTest enabled_scope(true);
+  using css_test_helpers::ParseRule;
+  Document* document = Document::CreateForTest();
+  String rule = R"CSS(@font-palette-values --myTestPalette {
+    font-family: testFamily;
+    base-palette: 0;
+    override-colors: 0 red, 1 blue;
+  })CSS";
+  auto* parsed =
+      DynamicTo<StyleRuleFontPaletteValues>(ParseRule(*document, rule));
+  ASSERT_TRUE(parsed);
+  ASSERT_EQ("--myTestPalette", parsed->GetName());
+  ASSERT_EQ("testFamily",
+            DynamicTo<CSSFontFamilyValue>(parsed->GetFontFamily())->Value());
+  ASSERT_EQ(
+      0, DynamicTo<CSSPrimitiveValue>(parsed->GetBasePalette())->GetIntValue());
+  ASSERT_TRUE(parsed->GetOverrideColors()->IsValueList());
+  ASSERT_EQ(2u, DynamicTo<CSSValueList>(parsed->GetOverrideColors())->length());
 }
 
 }  // namespace blink
