@@ -1540,9 +1540,6 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
           base::BindRepeating(&content::FrameMatchesName,
                               "iframe_with_embedded_extension"));
   ASSERT_TRUE(iframe_with_embedded_extension);
-  EXPECT_TRUE(iframe_with_embedded_extension->GetLastCommittedOrigin()
-                  .GetURL()
-                  .SchemeIs(extensions::kExtensionScheme));
 
   // Notifications are enabled by default if the Notifications permission is
   // declared in an extension's manifest.
@@ -1596,6 +1593,11 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
 
   // Only Camera and Microphone will show a prompt on permission request.
   EXPECT_EQ(2, bubble_factory->TotalRequestCount());
+  EXPECT_TRUE(bubble_factory->RequestOriginSeen(
+      iframe_with_embedded_extension->GetLastCommittedOrigin().GetURL()));
+  EXPECT_TRUE(iframe_with_embedded_extension->GetLastCommittedOrigin()
+                  .GetURL()
+                  .SchemeIs(extensions::kExtensionScheme));
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
@@ -1692,8 +1694,75 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
   EXPECT_EQ(3, bubble_factory->TotalRequestCount());
 }
 
+// `host` has all needed permissions, hence an extension can use them.
+IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
+                       ContentScriptAllowedTest) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::RenderFrameHost* main_rfh = web_contents->GetMainFrame();
+  ASSERT_TRUE(main_rfh);
+
+  // Allow permissions on the main frame, so they became available for an
+  // extension.
+  VerifyPermissionsAllowed(main_rfh);
+
+  extensions::ResultCatcher catcher;
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII(
+          "permissions_test/request_from_content_script_allowed"));
+
+  ASSERT_TRUE(extension);
+
+  // Another navigation to activate the extension.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
+// `host` does not have needed permissions, hence an extension can request them.
+IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
+                       ContentScriptPromptTest) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  permissions::PermissionRequestManager* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+  std::unique_ptr<permissions::MockPermissionPromptFactory> bubble_factory =
+      std::make_unique<permissions::MockPermissionPromptFactory>(manager);
+
+  // Enable auto-accept of a permission request.
+  bubble_factory->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
+
+  extensions::ResultCatcher catcher;
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII(
+          "permissions_test/request_from_content_script_prompt"));
+
+  ASSERT_TRUE(extension);
+
+  // Another navigation to activate the extension.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+  // The above loaded extension requests Notifications, Geolocation, Camera,
+  // Microphone.
+  EXPECT_EQ(4, bubble_factory->TotalRequestCount());
+}
+
 // Permissions requests are not allowed. All permissions denied.
-IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension, ContentScriptTest) {
+IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
+                       ContentScriptDeniedTest) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   content::WebContents* web_contents =
@@ -1711,18 +1780,18 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension, ContentScriptTest) {
   extensions::ResultCatcher catcher;
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII(
-          "permissions_test/request_from_content_script"));
+          "permissions_test/request_from_content_script_not_allowed"));
 
   ASSERT_TRUE(extension);
 
   GURL url = GetTestServerInsecureUrl("/extensions/test_file.html");
 
+  // Another navigation to activate the extension.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  content::RenderFrameHost* main_rfh = web_contents->GetMainFrame();
-  ASSERT_TRUE(main_rfh);
 
-  EXPECT_EQ(0, bubble_factory->TotalRequestCount());
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+  // No permission prompts has been shown.
+  EXPECT_EQ(0, bubble_factory->TotalRequestCount());
 }
 
 IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
