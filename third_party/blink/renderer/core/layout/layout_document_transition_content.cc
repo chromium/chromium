@@ -32,12 +32,6 @@ PaintLayerType LayoutDocumentTransitionContent::LayerTypeRequired() const {
   return kNormalPaintLayer;
 }
 
-CompositingReasons
-LayoutDocumentTransitionContent::AdditionalCompositingReasons() const {
-  NOT_DESTROYED();
-  return CompositingReason::kDocumentTransitionContentElement;
-}
-
 void LayoutDocumentTransitionContent::PaintReplaced(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) const {

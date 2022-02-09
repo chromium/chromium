@@ -232,18 +232,24 @@ CompositingReasonFinder::DirectReasonsForPaintPropertiesExceptScrolling(
 
   reasons |= BackfaceInvisibility3DAncestorReason(*layer);
 
+  switch (style.StyleType()) {
+    case kPseudoIdTransition:
+    case kPseudoIdTransitionContainer:
+    case kPseudoIdTransitionOldContent:
+    case kPseudoIdTransitionNewContent:
+      reasons |= CompositingReason::kDocumentTransitionPseudoElement;
+      break;
+    default:
+      break;
+  }
+
   if (auto* supplement =
           DocumentTransitionSupplement::FromIfExists(object.GetDocument())) {
     // Note that `IsTransitionParticipant returns true for values that are in
     // the non-transition-pseudo tree DOM. That is, things like layout view or
-    // the shared elements that we are transitioning. Independently of that, We
-    // also explicitly composite the ::transition pseudo.
-    // TODO(vmpstr): Clean up the notion of "shared" participant vs "pseudo
-    // tree" participant.
-    if (style.StyleType() == kPseudoIdTransition ||
-        supplement->GetTransition()->IsTransitionParticipant(object)) {
+    // the shared elements that we are transitioning.
+    if (supplement->GetTransition()->IsTransitionParticipant(object))
       reasons |= CompositingReason::kDocumentTransitionSharedElement;
-    }
   }
 
   return reasons;

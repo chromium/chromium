@@ -23,7 +23,7 @@ using CompositingReasons = uint64_t;
   V(Canvas)                                                                   \
   V(Plugin)                                                                   \
   V(IFrame)                                                                   \
-  V(DocumentTransitionContentElement)                                         \
+  V(DocumentTransitionPseudoElement)                                          \
   V(BackfaceVisibilityHidden)                                                 \
   V(ActiveTransformAnimation)                                                 \
   V(ActiveOpacityAnimation)                                                   \
@@ -125,7 +125,8 @@ class PLATFORM_EXPORT CompositingReason {
     kDirectReasonsForEffectProperty =
         kActiveOpacityAnimation | kWillChangeOpacity | kBackdropFilter |
         kWillChangeBackdropFilter | kActiveBackdropFilterAnimation |
-        kDocumentTransitionSharedElement | kTransform3DSceneLeaf,
+        kDocumentTransitionPseudoElement | kDocumentTransitionSharedElement |
+        kTransform3DSceneLeaf,
     kDirectReasonsForFilterProperty =
         kActiveFilterAnimation | kWillChangeFilter,
     kDirectReasonsForBackdropFilter = kBackdropFilter |

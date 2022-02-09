@@ -101,9 +101,10 @@ constexpr CompositingReasonStringMap kCompositingReasonsStringMap[] = {
     {CompositingReason::kDocumentTransitionSharedElement,
      "DocumentTransitionSharedElement",
      "This element is shared during document transition"},
-    {CompositingReason::kDocumentTransitionContentElement,
+    {CompositingReason::kDocumentTransitionPseudoElement,
      "DocumentTransitionContentElement",
-     "This element is rendering a cached/live snapshot for a shared element"},
+     "This element is a part of a pseudo element tree representing the shared "
+     "element transition"},
 };
 
 }  // anonymous namespace

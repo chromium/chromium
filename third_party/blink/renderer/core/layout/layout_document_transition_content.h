@@ -31,12 +31,6 @@ class CORE_EXPORT LayoutDocumentTransitionContent : public LayoutReplaced {
                      const PhysicalOffset& paint_offset) const override;
 
  private:
-  bool CanHaveAdditionalCompositingReasons() const override {
-    NOT_DESTROYED();
-    return true;
-  }
-  CompositingReasons AdditionalCompositingReasons() const override;
-
   scoped_refptr<cc::DocumentTransitionContentLayer> layer_;
 };
 
