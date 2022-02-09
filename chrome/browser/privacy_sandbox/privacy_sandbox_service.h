@@ -13,6 +13,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -169,6 +170,19 @@ class PrivacySandboxService : public KeyedService,
   // an interest group.
   std::vector<std::string> GetBlockedFledgeJoiningTopFramesForDisplay() const;
 
+  // Returns the top topics for the previous N epochs.
+  std::vector<privacy_sandbox::CanonicalTopic> GetCurrentTopTopics() const;
+
+  // Returns the set of topics which have been blocked by the user.
+  std::vector<privacy_sandbox::CanonicalTopic> GetBlockedTopics() const;
+
+  // Sets the allowability of |topic_id| both as a top topic, and as a topic
+  // provided to the web, to |allowed|. This is stored to preferences
+  // and made available to the Topics API via the PrivacySandboxSettings class.
+  // This function expects that |topic| will have previously been provided by
+  // one of the above functions.
+  void SetTopicAllowed(privacy_sandbox::CanonicalTopic topic, bool allowed);
+
   // KeyedService:
   void Shutdown() override;
 
@@ -289,6 +303,14 @@ class PrivacySandboxService : public KeyedService,
   // A manual record of whether policy_service_ is being observerd.
   // Unfortunately PolicyService does not support scoped observers.
   bool policy_service_observed_ = false;
+
+  // Fake implementation for current and blocked topics.
+  std::set<privacy_sandbox::CanonicalTopic> fake_current_topics_ = {
+      {1, privacy_sandbox::CanonicalTopic::TEST_TAXONOMY},
+      {2, privacy_sandbox::CanonicalTopic::TEST_TAXONOMY}};
+  std::set<privacy_sandbox::CanonicalTopic> fake_blocked_topics_ = {
+      {3, privacy_sandbox::CanonicalTopic::TEST_TAXONOMY},
+      {4, privacy_sandbox::CanonicalTopic::TEST_TAXONOMY}};
 
   base::WeakPtrFactory<PrivacySandboxService> weak_factory_{this};
 };

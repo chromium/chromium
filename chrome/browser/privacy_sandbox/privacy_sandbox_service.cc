@@ -5,12 +5,14 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 
 #include <algorithm>
+#include <iterator>
 
 #include "base/feature_list.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -238,6 +240,10 @@ bool PrivacySandboxService::IsPrivacySandboxManaged() {
   }
   return pref_service_->IsManagedPreference(
       prefs::kPrivacySandboxApisEnabledV2);
+}
+
+void PrivacySandboxService::SetPrivacySandboxEnabled(bool enabled) {
+  privacy_sandbox_settings_->SetPrivacySandboxEnabled(enabled);
 }
 
 void PrivacySandboxService::OnPrivacySandboxPrefChanged() {
@@ -525,4 +531,31 @@ void PrivacySandboxService::ConvertFledgeJoiningTopFramesForDisplay(
   // whatever the database gives back.
   std::move(callback).Run(
       std::vector<std::string>{display_entries.begin(), display_entries.end()});
+}
+
+std::vector<privacy_sandbox::CanonicalTopic>
+PrivacySandboxService::GetCurrentTopTopics() const {
+  // TODO(crbug.com/1286276): Add proper Topics implementation.
+  return std::vector<privacy_sandbox::CanonicalTopic>(
+      fake_current_topics_.begin(), fake_current_topics_.end());
+}
+
+std::vector<privacy_sandbox::CanonicalTopic>
+PrivacySandboxService::GetBlockedTopics() const {
+  // TODO(crbug.com/1286276): Add proper Topics implementation.
+  return std::vector<privacy_sandbox::CanonicalTopic>(
+      fake_blocked_topics_.begin(), fake_blocked_topics_.end());
+}
+
+void PrivacySandboxService::SetTopicAllowed(
+    privacy_sandbox::CanonicalTopic topic_id,
+    bool allowed) {
+  // TODO(crbug.com/1286276): Update preferences.
+  if (allowed) {
+    fake_current_topics_.insert(topic_id);
+    fake_blocked_topics_.erase(topic_id);
+  } else {
+    fake_current_topics_.erase(topic_id);
+    fake_blocked_topics_.insert(topic_id);
+  }
 }

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,11 +13,40 @@ import java.util.Set;
  */
 class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     private boolean mIsPrivacySandboxEnabled = true;
-    private final Set<String> mCurrentTopTopics = new HashSet<>(Arrays.asList("Foo", "Bar"));
-    private final Set<String> mBlockedTopics =
-            new HashSet<>(Arrays.asList("BlockedFoo", "BlockedBar"));
+
+    private final HashMap<String, Topic> mTopics = new HashMap<>();
+    private final Set<Topic> mCurrentTopTopics = new HashSet<>();
+    private final Set<Topic> mBlockedTopics = new HashSet<>();
     private @DialogType int mDialogType = DialogType.NONE;
     private Integer mLastDialogAction;
+
+    FakePrivacySandboxBridge() {
+        setCurrentTopTopics("Foo", "Bar");
+        setBlockedTopics("BlockedFoo", "BlockedBar");
+    }
+
+    public void setCurrentTopTopics(String... topics) {
+        mCurrentTopTopics.clear();
+        for (String name : topics) {
+            mCurrentTopTopics.add(getOrCreateTopic(name));
+        }
+    }
+
+    public void setBlockedTopics(String... topics) {
+        mBlockedTopics.clear();
+        for (String name : topics) {
+            mBlockedTopics.add(getOrCreateTopic(name));
+        }
+    }
+
+    private Topic getOrCreateTopic(String name) {
+        Topic t = mTopics.get(name);
+        if (t == null) {
+            t = new Topic(mTopics.size(), -1, name);
+            mTopics.put(name, t);
+        }
+        return t;
+    }
 
     @Override
     public boolean isPrivacySandboxEnabled() {
@@ -80,27 +109,23 @@ class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     }
 
     @Override
-    public String[] getCurrentTopTopics() {
-        return mCurrentTopTopics.toArray(new String[0]);
-    }
-
-    public void setCurrentTopTopics(String... topics) {
-        mCurrentTopTopics.clear();
-        mCurrentTopTopics.addAll(Arrays.asList(topics));
+    public Topic[] getCurrentTopTopics() {
+        return mCurrentTopTopics.toArray(new Topic[] {});
     }
 
     @Override
-    public String[] getBlockedTopics() {
-        return mBlockedTopics.toArray(new String[0]);
-    }
-
-    public void setBlockedTopics(String... topics) {
-        mBlockedTopics.clear();
-        mBlockedTopics.addAll(Arrays.asList(topics));
+    public Topic[] getBlockedTopics() {
+        return mBlockedTopics.toArray(new Topic[] {});
     }
 
     @Override
-    public void setTopicAllowed(String topic, boolean allowed) {
+    public void setTopicAllowed(int topicId, int taxonomyVersion, boolean allowed) {
+        Topic topic = null;
+        for (Topic t : mTopics.values()) {
+            if (t.getTopicId() == topicId) {
+                topic = t;
+            }
+        }
         if (allowed) {
             mCurrentTopTopics.add(topic);
             mBlockedTopics.remove(topic);

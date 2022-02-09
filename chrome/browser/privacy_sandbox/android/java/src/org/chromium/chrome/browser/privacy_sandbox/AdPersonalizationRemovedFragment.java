@@ -18,7 +18,6 @@ import androidx.preference.PreferenceFragmentCompat;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.browser_ui.settings.ImageButtonPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 /**
@@ -50,14 +49,13 @@ public class AdPersonalizationRemovedFragment
         mEmptyTopicsPreference = findPreference(EMPTY_TOPICS_PREFERENCE);
         assert mEmptyTopicsPreference != null;
 
-        for (String interest : PrivacySandboxBridge.getBlockedTopics()) {
-            ImageButtonPreference interestPreference = new ImageButtonPreference(getContext());
-            interestPreference.setTitle(interest);
-            interestPreference.setImage(
+        for (Topic topic : PrivacySandboxBridge.getBlockedTopics()) {
+            TopicPreference preference = new TopicPreference(getContext(), topic);
+            preference.setImage(
                     R.drawable.ic_add, R.string.privacy_sandbox_add_interest_button_description);
-            interestPreference.setDividerAllowedBelow(false);
-            interestPreference.setOnPreferenceClickListener(this);
-            mTopicsCategory.addPreference(interestPreference);
+            preference.setDividerAllowedBelow(false);
+            preference.setOnPreferenceClickListener(this);
+            mTopicsCategory.addPreference(preference);
         }
         updateEmptyState();
     }
@@ -71,15 +69,14 @@ public class AdPersonalizationRemovedFragment
         return view;
     }
 
-    private void allowTopic(String topic) {
+    private void allowTopic(Topic topic) {
         PrivacySandboxBridge.setTopicAllowed(topic, true);
     }
 
     @Override
     public boolean onPreferenceClick(@NonNull Preference preference) {
-        if (preference instanceof ImageButtonPreference) {
-            assert preference.getParent() == mTopicsCategory;
-            allowTopic(preference.getTitle().toString());
+        if (preference instanceof TopicPreference) {
+            allowTopic(((TopicPreference) preference).getTopic());
             mTopicsCategory.removePreference(preference);
             updateEmptyState();
             mSnackbarManager.showSnackbar(Snackbar.make(

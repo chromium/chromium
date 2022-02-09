@@ -18,6 +18,8 @@ static_library("privacy_sandbox_prefs") {
 
 source_set("privacy_sandbox") {
   sources = [
+    "canonical_topic.cc",
+    "canonical_topic.h",
     "privacy_sandbox_features.cc",
     "privacy_sandbox_features.h",
     "privacy_sandbox_settings.cc",

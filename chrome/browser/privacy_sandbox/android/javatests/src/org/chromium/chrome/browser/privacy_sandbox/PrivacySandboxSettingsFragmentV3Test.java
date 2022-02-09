@@ -30,6 +30,9 @@ import android.view.View;
 import androidx.annotation.StringRes;
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -181,8 +184,8 @@ public final class PrivacySandboxSettingsFragmentV3Test {
         onView(withText(R.string.privacy_sandbox_topic_empty_state)).check(doesNotExist());
 
         clickImageButtonNextToText("Foo");
-        assertThat(PrivacySandboxBridge.getCurrentTopTopics(), not(hasItem("Foo")));
-        assertThat(PrivacySandboxBridge.getBlockedTopics(), hasItem("Foo"));
+        assertThat(PrivacySandboxBridge.getCurrentTopTopics(), not(hasItem(withTopic("Foo"))));
+        assertThat(PrivacySandboxBridge.getBlockedTopics(), hasItem(withTopic("Foo")));
         onView(withText(R.string.privacy_sandbox_remove_interest_snackbar))
                 .check(matches(isDisplayed()));
         assertThat(mUserActionTester.getActions(),
@@ -215,8 +218,8 @@ public final class PrivacySandboxSettingsFragmentV3Test {
         onView(withText(R.string.privacy_sandbox_remove_interest_title)).perform(click());
 
         clickImageButtonNextToText("BlockedFoo");
-        assertThat(PrivacySandboxBridge.getCurrentTopTopics(), hasItem("BlockedFoo"));
-        assertThat(PrivacySandboxBridge.getBlockedTopics(), not(hasItem("BlockedFoo")));
+        assertThat(PrivacySandboxBridge.getCurrentTopTopics(), hasItem(withTopic("BlockedFoo")));
+        assertThat(PrivacySandboxBridge.getBlockedTopics(), not(hasItem(withTopic("BlockedFoo"))));
         onView(withText(R.string.privacy_sandbox_add_interest_snackbar))
                 .check(matches(isDisplayed()));
         assertThat(mUserActionTester.getActions(),
@@ -253,5 +256,19 @@ public final class PrivacySandboxSettingsFragmentV3Test {
         assertEquals("Cookies snackbar referrer histogram count wrong", 1,
                 mHistogramTestRule.getHistogramValueCount(
                         REFERRER_HISTOGRAM, PrivacySandboxReferrer.COOKIES_SNACKBAR));
+    }
+
+    private static Matcher<Topic> withTopic(String name) {
+        return new BaseMatcher<Topic>() {
+            @Override
+            public boolean matches(Object o) {
+                return ((Topic) o).getName().equals(name);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Should contain " + name);
+            }
+        };
     }
 }
