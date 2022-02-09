@@ -190,3 +190,11 @@ bool IsMetricsReportingPolicyManaged() {
 
   return is_managed;
 }
+
+void ClearPreviouslyCollectedMetricsData() {
+  // Mark histogram data that was collected during the current session up until
+  // now as reported so that they are not included in the next log.
+  g_browser_process->metrics_service()->MarkCurrentHistogramsAsReported();
+  // Note: There is no need to clear User Actions as they do not get recorded
+  // when metrics reporting is disabled.
+}

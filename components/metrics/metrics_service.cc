@@ -131,6 +131,7 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/metrics/histogram_base.h"
+#include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_samples.h"
@@ -168,6 +169,24 @@
 namespace metrics {
 
 namespace {
+
+// Used to mark histogram samples as reported so that they are not included in
+// the next log. A histogram's snapshot samples are simply discarded/ignored
+// when attempting to record them through this |HistogramFlattener|.
+class DiscardingFlattener : public base::HistogramFlattener {
+ public:
+  DiscardingFlattener() = default;
+
+  DiscardingFlattener(const DiscardingFlattener&) = delete;
+  DiscardingFlattener& operator=(const DiscardingFlattener&) = delete;
+
+  ~DiscardingFlattener() override = default;
+
+  void RecordDelta(const base::HistogramBase& histogram,
+                   const base::HistogramSamples& snapshot) override {
+    // No-op. We discard the samples.
+  }
+};
 
 // The delay, in seconds, after starting recording before doing expensive
 // initialization work.
@@ -445,6 +464,15 @@ void MetricsService::ClearSavedStabilityMetrics() {
   // Stability metrics are stored in Local State prefs, so schedule a Local
   // State write to flush the updated prefs.
   local_state_->CommitPendingWrite();
+}
+
+void MetricsService::MarkCurrentHistogramsAsReported() {
+  DiscardingFlattener flattener;
+  base::HistogramSnapshotManager snapshot_manager(&flattener);
+  base::StatisticsRecorder::PrepareDeltas(
+      /*include_persistent=*/true, /*flags_to_set=*/base::Histogram::kNoFlags,
+      /*required_flags=*/base::Histogram::kUmaTargetedHistogramFlag,
+      &snapshot_manager);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

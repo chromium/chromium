@@ -160,6 +160,12 @@ class MetricsService : public base::HistogramFlattener {
   // Clears the stability metrics that are saved in local state.
   void ClearSavedStabilityMetrics();
 
+  // Marks current histograms as reported by snapshotting them, without
+  // actually saving the deltas. At a higher level, this is used to throw
+  // away new histogram samples (since the last log) so that they will not
+  // be included in the next log.
+  void MarkCurrentHistogramsAsReported();
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Binds a user log store to store unsent logs. This log store will be
   // fully managed by MetricsLogStore. This will no-op if another log store has

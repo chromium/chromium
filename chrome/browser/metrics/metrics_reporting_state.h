@@ -35,4 +35,10 @@ void ApplyMetricsReportingPolicy();
 // Android).
 bool IsMetricsReportingPolicyManaged();
 
+// Clears previously collected metrics data. Used when enabling metrics to
+// prevent data collected while metrics reporting was disabled from being
+// included in the next log. Note that histogram data is not discarded. Rather,
+// they are just marked as being already reported.
+void ClearPreviouslyCollectedMetricsData();
+
 #endif  // CHROME_BROWSER_METRICS_METRICS_REPORTING_STATE_H_
