@@ -5,6 +5,7 @@ import 'chrome://resources/cr_elements/cr_page_host_style_css.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './icons.js';
+import '../lazy_load.js';
 import '../settings.js';
 
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
@@ -13,6 +14,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 // Those resources are loaded through settings.js as the privacy sandbox page
 // lives outside regular settings, hence can't access those resources directly
 // with |optimize_webui="true"|.
+import {CrDialogElement} from '../lazy_load.js';
 import {CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxy, MetricsBrowserProxyImpl, PrefsMixin, SettingsToggleButtonElement, TrustSafetyInteraction} from '../settings.js';
 
 import {getTemplate} from './app.html.js';
@@ -106,6 +108,19 @@ export class PrivacySandboxAppElement extends PrivacySandboxAppElementBase {
     this.metricsBrowserProxy_.recordAction(
         flocEnabled ? 'Settings.PrivacySandbox.FlocEnabled' :
                       'Settings.PrivacySandbox.FlocDisabled');
+  }
+
+  private onLearnMoreClick_(e: Event) {
+    // Stop the propagation of events, so that clicking on links inside
+    // actionable items won't trigger action.
+    e.stopPropagation();
+    this.shadowRoot!.querySelector<CrDialogElement>(
+                        '#learnMoreDialog')!.showModal();
+  }
+
+  private onLearnMoreClose_() {
+    this.shadowRoot!.querySelector<CrDialogElement>(
+                        '#learnMoreDialog')!.close();
   }
 }
 

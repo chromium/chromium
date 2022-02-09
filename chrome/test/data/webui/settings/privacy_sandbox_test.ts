@@ -5,6 +5,7 @@
 import 'chrome://settings/privacy_sandbox/app.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {CrDialogElement} from 'chrome://settings/lazy_load.js';
 import {PrivacySandboxAppElement} from 'chrome://settings/privacy_sandbox/app.js';
 import {PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from 'chrome://settings/privacy_sandbox/privacy_sandbox_browser_proxy.js';
 import {CrButtonElement, CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
@@ -254,5 +255,26 @@ suite('PrivacySandboxSettings3', function() {
                              'Settings.PrivacySandbox.ApisEnabled',
           await metricsBrowserProxy.whenCalled('recordAction'));
     });
+  });
+
+  test('testLearnMoreDialog', function() {
+    // The learn more link should be visible but the dialog itself not.
+    assertTrue(isChildVisible(page, '#learnMoreLink'));
+    assertFalse(
+        page.shadowRoot!.querySelector<CrDialogElement>(
+                            '#learnMoreDialog')!.open);
+
+    // Clicking on the learn more link should open the dialog.
+    page.shadowRoot!.querySelector<HTMLElement>('#learnMoreLink')!.click();
+    assertTrue(
+        page.shadowRoot!.querySelector<CrDialogElement>(
+                            '#learnMoreDialog')!.open);
+
+    // Clicking on the close button of the dialog should close it.
+    page.shadowRoot!.querySelector<HTMLElement>(
+                        '#learnMoreCloseButton')!.click();
+    assertFalse(
+        page.shadowRoot!.querySelector<CrDialogElement>(
+                            '#learnMoreDialog')!.open);
   });
 });

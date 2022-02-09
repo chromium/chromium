@@ -1623,6 +1623,18 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_TITLE},
       {"privacySandboxSpamAndFraudSummary",
        IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_SUMMARY},
+      {"privacySandboxLearnMoreDialogTitle",
+       IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_TITLE},
+      {"privacySandboxLearnMoreDialogBrowserInterests",
+       IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_BROWSER_INTERESTS},
+      {"privacySandboxLearnMoreDialogWebsiteInterests",
+       IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_WEBSITE_INTERESTS},
+      {"privacySandboxLearnMoreDialogDataTypes",
+       IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_DATA_TYPES},
+      {"privacySandboxLearnMoreDialogDataUsage",
+       IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_DATA_USAGE},
+      {"privacySandboxLearnMoreDialogDataManagement",
+       IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_DATA_MANAGEMENT},
 
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);

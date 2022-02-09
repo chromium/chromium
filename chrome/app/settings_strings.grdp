@@ -1407,6 +1407,24 @@
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_SUMMARY" translateable="false" desc="Summary of the Spam and Fraud section of the privacy sandbox settings.">
     Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
   </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_TITLE" translateable="false" desc="Title of the dialog to learn more about ad personalization.">
+    About Browser-based ad personalization
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_BROWSER_INTERESTS" translateable="false" desc="Title of the browser-based interests section of the dialog to learn more about ad personalization.">
+    Your interests as estimated by the browser
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_WEBSITE_INTERESTS" translateable="false" desc="Title of the website-based interests section of the dialog to learn more about ad personalization.">
+    Your interests as defined by sites you visit
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_DATA_TYPES" translateable="false" desc="Title of the data types subsection of the dialog to learn more about ad personalization.">
+    What data is used:
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_DATA_USAGE" translateable="false" desc="Title of the data usage subsection of the dialog to learn more about ad personalization.">
+    How we use this data:
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_DATA_MANAGEMENT" translateable="false" desc="Title of the data management subsection of the dialog to learn more about ad personalization.">
+    How you can manage your data:
+  </message>
 
   <!-- Privacy Review -->
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_LABEL" desc="Label of the row in the Chrome privacy and security settings page that leads to the privacy review.">
