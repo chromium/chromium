@@ -1879,6 +1879,7 @@ test("content_browsertests") {
   if (is_fuchsia) {
     use_test_server = true
 
+    use_cfv2 = false
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/audio_capabilities.test-cmx",
       "//build/config/fuchsia/test/font_capabilities.test-cmx",
@@ -2396,6 +2397,7 @@ test("content_unittests") {
       "../browser/accessibility/browser_accessibility_fuchsia_unittest.cc",
       "../browser/accessibility/browser_accessibility_manager_fuchsia_unittest.cc",
     ]
+    use_cfv2 = false
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/font_capabilities.test-cmx",
 

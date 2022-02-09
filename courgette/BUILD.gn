@@ -230,10 +230,6 @@ test("courgette_unittests") {
   ]
 
   data = [ "testdata/" ]
-
-  if (is_fuchsia) {
-    use_cfv2 = true
-  }
 }
 
 test("courgette_fuzz") {

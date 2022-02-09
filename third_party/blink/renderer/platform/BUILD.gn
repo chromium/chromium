@@ -1956,6 +1956,7 @@ test("blink_platform_unittests") {
   if (is_fuchsia) {
     # Oilpan reuses V8's v8::PageAllocator which generally requires JIT
     # permissions.
+    use_cfv2 = false
     additional_manifest_fragments =
         [ "//build/config/fuchsia/test/jit_capabilities.test-cmx" ]
   }

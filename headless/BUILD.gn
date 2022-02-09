@@ -773,10 +773,6 @@ test("headless_unittests") {
   }
 
   configs += [ ":headless_defines_config" ]
-
-  if (is_fuchsia) {
-    use_cfv2 = true
-  }
 }
 
 if (is_mac) {
@@ -839,6 +835,7 @@ test("headless_browsertests") {
   data_deps = [ "//testing/buildbot/filters:headless_browsertests_filters" ]
 
   if (is_fuchsia) {
+    use_cfv2 = false
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/font_capabilities.test-cmx",
 

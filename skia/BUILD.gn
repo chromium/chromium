@@ -942,6 +942,10 @@ test("skia_unittests") {
   }
 
   if (is_fuchsia) {
+    # TODO(https://crbug.com/1287051): fuchsia.sys.Launcher is used to launch
+    # fuchsia-pkg://fuchsia.com/fonts#meta/fonts.cmx with specific test
+    # args.
+    use_cfv2 = false
     sources += [ "ext/fontmgr_fuchsia_unittest.cc" ]
     deps += [
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.fonts",

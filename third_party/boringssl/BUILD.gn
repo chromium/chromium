@@ -184,6 +184,7 @@ if (build_with_chromium) {
     deps += [ "//base/test:test_support" ]
 
     if (is_fuchsia) {
+      use_cfv2 = false
       additional_manifest_fragments =
           [ "//build/config/fuchsia/test/network_capabilities.test-cmx" ]
     }

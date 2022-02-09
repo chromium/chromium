@@ -135,9 +135,7 @@ template("google_apis_tmpl") {
       "google_api_keys.h",
     ]
 
-    configs += [
-      ":key_defines",
-    ]
+    configs += [ ":key_defines" ]
 
     deps = [
       ":oauth2_mint_token_consent_result_proto",
@@ -261,6 +259,7 @@ test("google_apis_unittests") {
   }
 
   if (is_fuchsia) {
+    use_cfv2 = false
     additional_manifest_fragments =
         [ "//build/config/fuchsia/test/network_capabilities.test-cmx" ]
   }

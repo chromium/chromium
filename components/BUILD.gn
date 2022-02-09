@@ -81,6 +81,7 @@ test("components_unittests") {
   }
 
   if (is_fuchsia) {
+    use_cfv2 = false
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/font_capabilities.test-cmx",
 
@@ -883,6 +884,7 @@ if (!is_ios) {
     }
 
     if (is_fuchsia) {
+      use_cfv2 = false
       additional_manifest_fragments = [
         "//build/config/fuchsia/test/font_capabilities.test-cmx",
         "//build/config/fuchsia/test/jit_capabilities.test-cmx",

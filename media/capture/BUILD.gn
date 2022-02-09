@@ -469,6 +469,7 @@ test("capture_unittests") {
       "video/fuchsia/video_capture_device_factory_fuchsia_test.cc",
       "video/fuchsia/video_capture_device_fuchsia_test.cc",
     ]
+    use_cfv2 = false
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/web_engine_required_capabilities.test-cmx",
     ]

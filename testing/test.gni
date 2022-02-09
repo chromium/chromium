@@ -53,6 +53,8 @@ if (is_android) {
 #   use_native_activity: Test implements ANativeActivity_onCreate().
 #   use_cfv2: (Fuchsia, optional): build the test as a framework v2 component;
 #      see https://fuchsia.dev/fuchsia-src/concepts/components/v2 for details.
+#      The default value is true; set it to false explicitly to build a test as
+#      a v1 component.
 #   is_xctest: (iOS, optional) whether to build the executable as XCTest.
 #      Similar to the GN arg 'enable_run_ios_unittests_with_xctest' but
 #      for build targets.
@@ -336,7 +338,7 @@ template("test") {
     _pkg_target = "${_output_name}_pkg"
     _exec_target = "${_output_name}__exec"
 
-    if (defined(invoker.use_cfv2) && invoker.use_cfv2) {
+    if (!defined(invoker.use_cfv2) || invoker.use_cfv2) {
       # Generate a CML fragment that provides the program name.
       _test_program_fragment_target = "${target_name}_program-fragment"
       _test_program_fragment =

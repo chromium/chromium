@@ -4130,6 +4130,7 @@ if (!is_android) {
     }
 
     if (is_fuchsia) {
+      use_cfv2 = false
       additional_manifest_fragments = [
         "//build/config/fuchsia/test/font_capabilities.test-cmx",
         "//build/config/fuchsia/test/jit_capabilities.test-cmx",
@@ -8142,6 +8143,7 @@ test("unit_tests") {
 
     data += [ "//testing/buildbot/filters/fuchsia.unit_tests.filter" ]
 
+    use_cfv2 = false
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/font_capabilities.test-cmx",
 

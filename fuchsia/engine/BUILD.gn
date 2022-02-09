@@ -494,6 +494,7 @@ test("web_engine_browsertests") {
     "//ui/gfx",
     "//ui/ozone",
   ]
+  use_cfv2 = false
   additional_manifest_fragments = [
     "//build/config/fuchsia/test/jit_capabilities.test-cmx",
     "//build/config/fuchsia/test/network_capabilities.test-cmx",
@@ -567,6 +568,7 @@ test("web_engine_unittests") {
     "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//ui/ozone",
   ]
+  use_cfv2 = false
   additional_manifest_fragments = [
     # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
     "//build/config/fuchsia/test/jit_capabilities.test-cmx",
@@ -613,6 +615,7 @@ test("web_engine_integration_tests") {
         ":web_engine",
         "web_engine",
       ] ]
+  use_cfv2 = false
   additional_manifest_fragments = [
     "//build/config/fuchsia/test/network_capabilities.test-cmx",
     "//build/config/fuchsia/test/read_debug_data.test-cmx",

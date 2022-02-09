@@ -240,6 +240,7 @@ test("cast_runner_integration_tests") {
       "web_engine",
     ],
   ]
+  use_cfv2 = false
   additional_manifest_fragments = [
     "//build/config/fuchsia/test/network_capabilities.test-cmx",
     "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
@@ -269,6 +270,7 @@ test("cast_runner_browsertests") {
     "//testing/gtest",
     "//ui/ozone",
   ]
+  use_cfv2 = false
   additional_manifest_fragments = [
     "//build/config/fuchsia/test/jit_capabilities.test-cmx",
     "//build/config/fuchsia/test/network_capabilities.test-cmx",
@@ -332,6 +334,7 @@ test("web_runner_integration_tests") {
       "web_runner",
     ],
   ]
+  use_cfv2 = false
   additional_manifest_fragments = [
     "//build/config/fuchsia/test/network_capabilities.test-cmx",
     "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",

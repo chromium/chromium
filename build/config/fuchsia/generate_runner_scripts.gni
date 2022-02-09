@@ -244,7 +244,7 @@ template("fuchsia_test_runner") {
       ]
     }
 
-    if (defined(invoker.use_cfv2) && invoker.use_cfv2) {
+    if (!defined(invoker.use_cfv2) || invoker.use_cfv2) {
       executable_args += [ "--component-version=2" ]
     }
 
