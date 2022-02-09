@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/app_list/search/ranking/util.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
+#include "components/drive/drive_pref_names.h"
 #include "components/drive/file_errors.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -54,7 +55,8 @@ enum class Status {
   kNoResults = 2,
   kPathLocationFailed = 3,
   kAllFilesErrored = 4,
-  kMaxValue = kAllFilesErrored,
+  kDriveDisabled = 5,
+  kMaxValue = kDriveDisabled,
 };
 
 ThrottleInterval MinutesToThrottleInterval(const int minutes) {
@@ -102,6 +104,10 @@ ash::SearchResultDisplayType GetDisplayType() {
   return ash::features::IsProductivityLauncherEnabled()
              ? ash::SearchResultDisplayType::kContinue
              : ash::SearchResultDisplayType::kList;
+}
+
+bool IsDriveDisabled(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(drive::prefs::kDisableDrive);
 }
 
 }  // namespace
@@ -221,6 +227,9 @@ void ZeroStateDriveProvider::StartZeroState() {
   // Exit if drive fs isn't mounted, as we launch results via drive fs.
   if (!drive_service_ || !drive_service_->IsMounted()) {
     LogStatus(Status::kDriveFSNotMounted);
+    return;
+  } else if (IsDriveDisabled(profile_)) {
+    LogStatus(Status::kDriveDisabled);
     return;
   }
 

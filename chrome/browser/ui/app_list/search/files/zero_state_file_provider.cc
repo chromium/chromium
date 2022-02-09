@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/app_list/search/files/justifications.h"
 #include "chrome/browser/ui/app_list/search/ranking/util.h"
 #include "chrome/browser/ui/app_list/search/util/persistent_proto.h"
+#include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
 
 using file_manager::file_tasks::FileTasksObserver;
@@ -66,6 +67,10 @@ ash::SearchResultDisplayType GetDisplayType() {
   return ash::features::IsProductivityLauncherEnabled()
              ? ash::SearchResultDisplayType::kContinue
              : ash::SearchResultDisplayType::kList;
+}
+
+bool IsDriveDisabled(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(drive::prefs::kDisableDrive);
 }
 
 }  // namespace
@@ -119,7 +124,9 @@ void ZeroStateFileProvider::StartZeroState() {
   query_start_time_ = base::TimeTicks::Now();
   ClearResultsSilently();
 
-  if (!files_ranker_) {
+  // Despite this being for zero-state _local_ files only, we disable all
+  // results in the Continue section if Drive is disabled.
+  if (!files_ranker_ || IsDriveDisabled(profile_)) {
     return;
   }
 

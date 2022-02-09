@@ -25168,7 +25168,8 @@ Called by update_document_policy_enum.py.-->
   <int value="1" label="Drive FS not mounted"/>
   <int value="2" label="No results"/>
   <int value="3" label="Path location failed"/>
-  <int value="4" label="File error"/>
+  <int value="4" label="All files errored"/>
+  <int value="5" label="Drive disabled"/>
 </enum>
 
 <enum name="DriveZeroStateProviderThrottleInterval">
