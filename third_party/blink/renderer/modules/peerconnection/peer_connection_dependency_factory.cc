@@ -634,6 +634,8 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
       !metronome_source_
           ? CreateWebRtcTaskQueueFactory()
           : CreateWebRtcMetronomeTaskQueueFactory(metronome_source_);
+  if (metronome_source_)
+    pcf_deps.metronome = metronome_source_->CreateWebRtcMetronome();
   pcf_deps.call_factory = webrtc::CreateCallFactory();
   pcf_deps.event_log_factory = std::make_unique<webrtc::RtcEventLogFactory>(
       pcf_deps.task_queue_factory.get());
