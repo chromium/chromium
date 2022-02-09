@@ -461,11 +461,12 @@ void DesktopCaptureAccessHandler::HandleRequest(
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
+  const std::u16string application_title = pending_request->application_title;
   // base::Unretained(this) is safe because DesktopCaptureAccessHandler is owned
   // by MediaCaptureDevicesDispatcher, which is a lazy singleton which is
   // destroyed when the browser process terminates.
   policy::DlpContentManager::Get()->CheckScreenShareRestriction(
-      media_id, pending_request->application_title,
+      media_id, application_title,
       base::BindOnce(&DesktopCaptureAccessHandler::OnDlpRestrictionChecked,
                      base::Unretained(this), web_contents->GetWeakPtr(),
                      std::move(pending_request), media_id,
