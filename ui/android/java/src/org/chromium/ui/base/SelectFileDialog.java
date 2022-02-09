@@ -6,7 +6,6 @@ package org.chromium.ui.base;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ContentResolver;
@@ -247,7 +246,6 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
      * @param multiple Whether it should be possible to select multiple files.
      * @param window The WindowAndroid that can show intents
      */
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @CalledByNative
     private void selectFile(
             String[] fileTypes, boolean capture, boolean multiple, WindowAndroid window) {
@@ -659,7 +657,6 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
      * @param resultCode The result code whether the intent returned successfully.
      * @param results The results of the requested intent.
      */
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @Override
     public void onIntentCompleted(int resultCode, Intent results) {
         if (sPhotoPicker != null) {

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser;
 
-import android.annotation.TargetApi;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
@@ -140,7 +139,6 @@ public class SmartClipProviderTest implements Handler.Callback {
     }
 
     @After
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public void tearDown() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             mHandlerThread.quitSafely();

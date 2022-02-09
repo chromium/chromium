@@ -4,7 +4,6 @@
 
 package org.chromium.ui.display;
 
-import android.annotation.TargetApi;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -177,7 +176,6 @@ import java.util.List;
     }
 
     @SuppressWarnings("deprecation")
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     /* package */ void updateFromDisplay(Display display) {
         if (USE_CONFIGURATION) {
             assert display.getDisplayId()
