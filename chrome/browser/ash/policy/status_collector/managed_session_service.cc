@@ -19,6 +19,9 @@ constexpr base::TimeDelta kMinimumSuspendDuration = base::Minutes(1);
 
 ManagedSessionService::ManagedSessionService(base::Clock* clock)
     : clock_(clock), session_manager_(session_manager::SessionManager::Get()) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+
+  SetLoginStatus();
   if (session_manager_) {
     // To alleviate tight coupling in unit tests to DeviceStatusCollector.
     session_manager_observation_.Observe(session_manager_);
@@ -45,6 +48,11 @@ ManagedSessionService::~ManagedSessionService() {
 void ManagedSessionService::AddObserver(
     ManagedSessionService::Observer* observer) {
   observers_.AddObserver(observer);
+  if (is_logged_in_) {
+    auto* const profile = ash::ProfileHelper::Get()->GetProfileByUser(
+        user_manager::UserManager::Get()->GetPrimaryUser());
+    observer->OnLogin(profile);
+  }
 }
 
 void ManagedSessionService::RemoveObserver(
@@ -73,11 +81,14 @@ void ManagedSessionService::OnSessionStateChanged() {
 void ManagedSessionService::OnUserProfileLoaded(const AccountId& account_id) {
   Profile* profile =
       ash::ProfileHelper::Get()->GetProfileByAccountId(account_id);
-  profile_observations_.AddObservation(profile);
-  if (ash::SessionTerminationManager::Get() &&
-      ash::ProfileHelper::Get()->IsPrimaryProfile(profile)) {
-    ash::SessionTerminationManager::Get()->AddObserver(this);
+  bool is_primary_profile =
+      ash::ProfileHelper::Get()->IsPrimaryProfile(profile);
+  if (is_logged_in_ && is_primary_profile) {
+    return;
+  } else if (!is_primary_profile) {
+    profile_observations_.AddObservation(profile);
   }
+  SetLoginStatus();
   for (auto& observer : observers_) {
     observer.OnLogin(profile);
   }
@@ -142,4 +153,24 @@ void ManagedSessionService::OnAuthFailure(const ash::AuthFailure& error) {
   }
 }
 
+void ManagedSessionService::SetLoginStatus() {
+  if (is_logged_in_) {
+    return;
+  }
+
+  if (user_manager::UserManager::Get() &&
+      user_manager::UserManager::Get()->IsUserLoggedIn() &&
+      !user_manager::UserManager::Get()->IsLoggedInAsGuest() &&
+      user_manager::UserManager::Get()->GetPrimaryUser()) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    is_logged_in_ = true;
+    auto* const profile = ash::ProfileHelper::Get()->GetProfileByUser(
+        user_manager::UserManager::Get()->GetPrimaryUser());
+    profile_observations_.AddObservation(profile);
+    if (ash::SessionTerminationManager::Get()) {
+      ash::SessionTerminationManager::Get()->AddObserver(this);
+    }
+  }
+}
 }  // namespace policy

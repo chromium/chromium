@@ -11,6 +11,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
+#include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -101,7 +102,11 @@ class ManagedSessionService : public session_manager::SessionManagerObserver,
   void OnSessionWillBeTerminated() override;
 
  private:
+  void SetLoginStatus();
+
   bool is_session_locked_;
+
+  bool is_logged_in_ = false;
 
   base::Clock* clock_;
 
@@ -127,6 +132,8 @@ class ManagedSessionService : public session_manager::SessionManagerObserver,
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::Observer>
       user_manager_observation_{this};
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace policy
