@@ -77,110 +77,112 @@ std::string BuildHtml(bool allow_access_requests,
                       bool already_sent_remote_request,
                       bool is_main_frame) {
   base::DictionaryValue strings;
-  strings.SetString("blockPageTitle",
-                    l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_TITLE));
-  strings.SetBoolean("allowAccessRequests", allow_access_requests);
-  strings.SetString("avatarURL1x",
-                    BuildAvatarImageUrl(profile_image_url, kAvatarSize1x));
-  strings.SetString("avatarURL2x",
-                    BuildAvatarImageUrl(profile_image_url, kAvatarSize2x));
-  strings.SetString("secondAvatarURL1x",
-                    BuildAvatarImageUrl(profile_image_url2, kAvatarSize1x));
-  strings.SetString("secondAvatarURL2x",
-                    BuildAvatarImageUrl(profile_image_url2, kAvatarSize2x));
-  strings.SetString("custodianName", custodian);
-  strings.SetString("custodianEmail", custodian_email);
-  strings.SetString("secondCustodianName", second_custodian);
-  strings.SetString("secondCustodianEmail", second_custodian_email);
-  strings.SetBoolean("alreadySentRemoteRequest", already_sent_remote_request);
-  strings.SetBoolean("isMainFrame", is_main_frame);
+  strings.SetStringKey("blockPageTitle",
+                       l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_TITLE));
+  strings.SetBoolKey("allowAccessRequests", allow_access_requests);
+  strings.SetStringKey("avatarURL1x",
+                       BuildAvatarImageUrl(profile_image_url, kAvatarSize1x));
+  strings.SetStringKey("avatarURL2x",
+                       BuildAvatarImageUrl(profile_image_url, kAvatarSize2x));
+  strings.SetStringKey("secondAvatarURL1x",
+                       BuildAvatarImageUrl(profile_image_url2, kAvatarSize1x));
+  strings.SetStringKey("secondAvatarURL2x",
+                       BuildAvatarImageUrl(profile_image_url2, kAvatarSize2x));
+  strings.SetStringKey("custodianName", custodian);
+  strings.SetStringKey("custodianEmail", custodian_email);
+  strings.SetStringKey("secondCustodianName", second_custodian);
+  strings.SetStringKey("secondCustodianEmail", second_custodian_email);
+  strings.SetBoolKey("alreadySentRemoteRequest", already_sent_remote_request);
+  strings.SetBoolKey("isMainFrame", is_main_frame);
   bool web_filter_interstitial_refresh_enabled =
       supervised_users::IsWebFilterInterstitialRefreshEnabled();
   bool local_web_approvals_enabled =
       supervised_users::IsLocalWebApprovalsEnabled();
-  strings.SetBoolean("isWebFilterInterstitialRefreshEnabled",
+  strings.SetBoolKey("isWebFilterInterstitialRefreshEnabled",
                      web_filter_interstitial_refresh_enabled);
-  strings.SetBoolean("isLocalWebApprovalsEnabled", local_web_approvals_enabled);
+  strings.SetBoolKey("isLocalWebApprovalsEnabled", local_web_approvals_enabled);
   bool is_automatically_blocked = ReasonIsAutomatic(reason);
 
-  std::u16string custodian16 = base::UTF8ToUTF16(custodian);
-  std::u16string block_header;
-  std::u16string block_message;
+  std::string block_header;
+  std::string block_message;
   if (reason == FilteringBehaviorReason::NOT_SIGNED_IN) {
     block_header =
-        l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_HEADER_NOT_SIGNED_IN);
+        l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_HEADER_NOT_SIGNED_IN);
   } else if (allow_access_requests) {
     block_header =
-        l10n_util::GetStringUTF16(IDS_CHILD_BLOCK_INTERSTITIAL_HEADER);
-    block_message = l10n_util::GetStringUTF16(
+        l10n_util::GetStringUTF8(IDS_CHILD_BLOCK_INTERSTITIAL_HEADER);
+    block_message = l10n_util::GetStringUTF8(
         web_filter_interstitial_refresh_enabled && is_automatically_blocked
             ? IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_SAFE_SITES_BLOCKED
             : IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE);
   } else {
-    block_header = l10n_util::GetStringUTF16(
+    block_header = l10n_util::GetStringUTF8(
         IDS_BLOCK_INTERSTITIAL_HEADER_ACCESS_REQUESTS_DISABLED);
   }
-  strings.SetString("blockPageHeader", block_header);
-  strings.SetString("blockPageMessage", block_message);
-  strings.SetString("blockReasonMessage",
-                    l10n_util::GetStringUTF16(
-                        GetBlockMessageID(reason, second_custodian.empty())));
-  strings.SetString("blockReasonHeader", l10n_util::GetStringUTF16(
-                                             IDS_SUPERVISED_USER_BLOCK_HEADER));
+  strings.SetStringKey("blockPageHeader", block_header);
+  strings.SetStringKey("blockPageMessage", block_message);
+  strings.SetStringKey("blockReasonMessage",
+                       l10n_util::GetStringUTF8(GetBlockMessageID(
+                           reason, second_custodian.empty())));
+  strings.SetStringKey(
+      "blockReasonHeader",
+      l10n_util::GetStringUTF8(IDS_SUPERVISED_USER_BLOCK_HEADER));
 
-  strings.SetBoolean("showFeedbackLink", is_automatically_blocked);
-  strings.SetString("feedbackLink", l10n_util::GetStringUTF16(
-                                        IDS_BLOCK_INTERSTITIAL_SEND_FEEDBACK));
+  strings.SetBoolKey("showFeedbackLink", is_automatically_blocked);
+  strings.SetStringKey(
+      "feedbackLink",
+      l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_SEND_FEEDBACK));
   if (web_filter_interstitial_refresh_enabled) {
-    strings.SetString(
+    strings.SetStringKey(
         "remoteApprovalsButton",
-        l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_SEND_MESSAGE_BUTTON));
-    strings.SetString("backButton",
-                      l10n_util::GetStringUTF16(IDS_REQUEST_SENT_OK));
+        l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_SEND_MESSAGE_BUTTON));
+    strings.SetStringKey("backButton",
+                         l10n_util::GetStringUTF8(IDS_REQUEST_SENT_OK));
   } else {
-    strings.SetString("remoteApprovalsButton",
-                      l10n_util::GetStringUTF16(
-                          IDS_BLOCK_INTERSTITIAL_REQUEST_ACCESS_BUTTON));
-    strings.SetString("backButton", l10n_util::GetStringUTF16(IDS_BACK_BUTTON));
+    strings.SetStringKey(
+        "remoteApprovalsButton",
+        l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_REQUEST_ACCESS_BUTTON));
+    strings.SetStringKey("backButton",
+                         l10n_util::GetStringUTF8(IDS_BACK_BUTTON));
   }
 
-  strings.SetString(
+  strings.SetStringKey(
       "localApprovalsButton",
-      l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_ASK_IN_PERSON_BUTTON));
-  strings.SetString(
+      l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_ASK_IN_PERSON_BUTTON));
+  strings.SetStringKey(
       "showDetailsLink",
-      l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_SHOW_DETAILS));
-  strings.SetString(
+      l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_SHOW_DETAILS));
+  strings.SetStringKey(
       "hideDetailsLink",
-      l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_HIDE_DETAILS));
-  std::u16string request_sent_message;
-  std::u16string request_failed_message;
-  std::u16string request_sent_description;
+      l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_HIDE_DETAILS));
+  std::string request_sent_message;
+  std::string request_failed_message;
+  std::string request_sent_description;
   if (web_filter_interstitial_refresh_enabled) {
-    request_sent_message = l10n_util::GetStringUTF16(
+    request_sent_message = l10n_util::GetStringUTF8(
         IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_MESSAGE);
-    request_sent_description = l10n_util::GetStringUTF16(
+    request_sent_description = l10n_util::GetStringUTF8(
         second_custodian.empty()
             ? IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_DESCRIPTION_SINGLE_PARENT
             : IDS_CHILD_BLOCK_INTERSTITIAL_WAITING_APPROVAL_DESCRIPTION_MULTI_PARENT);
-    request_failed_message = l10n_util::GetStringUTF16(
+    request_failed_message = l10n_util::GetStringUTF8(
         second_custodian.empty()
             ? IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_SINGLE_PARENT
             : IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_MULTI_PARENT);
   } else if (second_custodian.empty()) {
-    request_sent_message = l10n_util::GetStringUTF16(
+    request_sent_message = l10n_util::GetStringUTF8(
         IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_SENT_MESSAGE_SINGLE_PARENT);
-    request_failed_message = l10n_util::GetStringUTF16(
+    request_failed_message = l10n_util::GetStringUTF8(
         IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_SINGLE_PARENT);
   } else {
-    request_sent_message = l10n_util::GetStringUTF16(
+    request_sent_message = l10n_util::GetStringUTF8(
         IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_SENT_MESSAGE_MULTI_PARENT);
-    request_failed_message = l10n_util::GetStringUTF16(
+    request_failed_message = l10n_util::GetStringUTF8(
         IDS_CHILD_BLOCK_INTERSTITIAL_REQUEST_FAILED_MESSAGE_MULTI_PARENT);
   }
-  strings.SetString("requestSentMessage", request_sent_message);
-  strings.SetString("requestSentDescription", request_sent_description);
-  strings.SetString("requestFailedMessage", request_failed_message);
+  strings.SetStringKey("requestSentMessage", request_sent_message);
+  strings.SetStringKey("requestSentDescription", request_sent_description);
+  strings.SetStringKey("requestFailedMessage", request_failed_message);
   webui::SetLoadTimeDataDefaults(app_locale, &strings);
   std::string html =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
