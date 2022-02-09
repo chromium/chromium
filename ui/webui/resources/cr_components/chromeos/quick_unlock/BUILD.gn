@@ -7,37 +7,6 @@ import("//tools/polymer/polymer.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
 import("../os_cr_components.gni")
 
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [
-    ":pin_keyboard",
-    ":setup_pin_keyboard",
-  ]
-}
-
-js_library("pin_keyboard") {
-  deps = [
-    ":lock_screen_constants",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-}
-
-js_library("lock_screen_constants") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-}
-
-js_library("setup_pin_keyboard") {
-  deps = [
-    ":lock_screen_constants",
-    ":pin_keyboard",
-    "//ui/webui/resources/cr_components/chromeos/quick_unlock:lock_screen_constants",
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-  externs_list = [ "$externs_path/quick_unlock_private.js" ]
-  extra_sources = [ "$interfaces_path/quick_unlock_private_interface.js" ]
-}
-
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
