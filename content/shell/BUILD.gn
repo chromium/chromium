@@ -565,11 +565,17 @@ if (is_android) {
   }
 
   if (is_fuchsia) {
-    cr_fuchsia_package("content_shell_pkg") {
+    fuchsia_component("content_shell_component") {
       testonly = true
-      binary = ":content_shell"
-      package_name = "content_shell"
       manifest = "fuchsia/content_shell.cmx"
+      data_deps = [ ":content_shell" ]
+      visibility = [ ":*" ]
+    }
+
+    fuchsia_package("content_shell_pkg") {
+      testonly = true
+      package_name = "content_shell"
+      deps = [ ":content_shell_component" ]
     }
 
     fuchsia_package_installer("content_shell_fuchsia") {

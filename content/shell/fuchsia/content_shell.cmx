@@ -1,4 +1,7 @@
 {
+  "program": {
+    "binary": "content_shell"
+  },
   "sandbox": {
     "features": [
       "deprecated-ambient-replace-as-executable",
