@@ -114,11 +114,10 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_AUDIO) AudioDevicesPrefHandlerImpl
   // Notifies the AudioPrefObserver for audio policy pref changes.
   void NotifyAudioPolicyChange();
 
-  // TODO(crbug.com/1187061): Refactor these off of base::DictionaryValue.
-  std::unique_ptr<base::DictionaryValue> device_mute_settings_;
-  std::unique_ptr<base::DictionaryValue> device_volume_settings_;
-  std::unique_ptr<base::DictionaryValue> device_gain_settings_;
-  std::unique_ptr<base::DictionaryValue> device_state_settings_;
+  base::Value device_mute_settings_;
+  base::Value device_volume_settings_;
+  base::Value device_gain_settings_;
+  base::Value device_state_settings_;
 
   PrefService* local_state_;  // not owned
 
