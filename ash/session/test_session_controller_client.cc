@@ -153,13 +153,18 @@ void TestSessionControllerClient::AddUserSession(
     bool provide_pref_service,
     bool is_new_profile,
     const std::string& given_name) {
+  // Set is_ephemeral in user_info to true if the user type is guest or public
+  // account.
+  bool is_ephemeral = user_type == user_manager::USER_TYPE_GUEST ||
+                      user_type == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
+
   UserSession session;
   session.session_id = ++fake_session_id_;
   session.user_info.type = user_type;
   session.user_info.account_id = account_id;
   session.user_info.display_name = "Über tray Über tray Über tray Über tray";
   session.user_info.display_email = display_email;
-  session.user_info.is_ephemeral = false;
+  session.user_info.is_ephemeral = is_ephemeral;
   session.user_info.is_new_profile = is_new_profile;
   session.user_info.given_name = given_name;
   controller_->UpdateUserSession(std::move(session));
