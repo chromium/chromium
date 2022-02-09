@@ -78766,8 +78766,47 @@
        {}
       ]
      ],
+     "break-between-avoid-010.html": [
+      "f07017a64cabdb74b5f8e6a619b896d93fd7585e",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "break-between-force-000.html": [
       "9bccf7395e5a83f52bd743cb6021577a85833b5e",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "break-between-force-001.html": [
+      "8ea340b12230066cfedc0c21cf04551a13543e78",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "break-between-force-002.html": [
+      "7e3b79e4f1bcf06290d54961a8f330d47bebea1f",
       [
        null,
        [
@@ -80812,6 +80851,97 @@
       ],
       "grid-item-fragmentation-043.html": [
        "7a4ddc54e21206a723e5f7f1dd53902d1718eedd",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-oof-001.html": [
+       "e94889228a79b2ec832d01cc82495a4a328d5077",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-oof-002.html": [
+       "b1ced43ab803c645f80eaed23b1475e58c0e041a",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-oof-003.html": [
+       "59235f9245d0cd75ea2090189a58e02dd79ed0da",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-oof-004.html": [
+       "f73d91a1927d9b6cf5ccceda4a31c7ab79ef5496",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-oof-005.html": [
+       "3536b30a96e788597af6a583525fad56f2471118",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-oof-006.html": [
+       "63a14e5cff891cd0197d8be6f549ed550f6774d4",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-oof-007.html": [
+       "6802973edb28a14d44b79a0868c9f6c9127ceeca",
        [
         null,
         [
@@ -120777,6 +120907,19 @@
         {}
        ]
       ],
+      "custom-highlight-painting-inheritance-003.html": [
+       "e449ebf334ff7f879c03e0795e7c9dc91cd44547",
+       [
+        null,
+        [
+         [
+          "/css/css-highlight-api/painting/custom-highlight-painting-inheritance-003-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "custom-highlight-painting-invalidation-001.html": [
        "aef391ec0f3c749554bc2cf284b18ff78f8bc525",
        [
@@ -120869,7 +121012,7 @@
        ]
       ],
       "custom-highlight-painting-overlapping-highlights-001.html": [
-       "25f4e7e362aa4b95247665e57e0de1be37e237ef",
+       "0b380574bc5df0731605d14f0adb34cd13e61350",
        [
         null,
         [
@@ -120882,7 +121025,7 @@
        ]
       ],
       "custom-highlight-painting-overlapping-highlights-002.html": [
-       "2e8d782f70b5ce178e2f9ef1fbdade29db3d5fe7",
+       "2dda273abfe8dfc17be2defec60340a85ac5ac4a",
        [
         null,
         [
@@ -174471,7 +174614,7 @@
     },
     "css-transforms": {
      "2d-rotate-001.html": [
-      "9e87de5fd284bf80bc9693edf1e91d6e8c2ba9ce",
+      "b4d81a07501d5e3a9617de847bc5361c9829014b",
       [
        null,
        [
@@ -174491,7 +174634,7 @@
            ],
            [
             643,
-            1193
+            1224
            ]
           ]
          ]
@@ -177844,7 +177987,7 @@
       ]
      ],
      "perspective-transforms-equivalence.html": [
-      "3a355d9813ac0feb50225a9f60d01878540f8611",
+      "c286837969d879c836d0bfd8646b6256cd3100a5",
       [
        null,
        [
@@ -177860,7 +178003,7 @@
           [
            [
             0,
-            27
+            29
            ],
            [
             0,
@@ -177990,7 +178133,7 @@
       ]
      ],
      "preserve3d-and-filter-with-perspective.html": [
-      "240ce6ec33037de7ab9cfd30b7fe676a454f1d29",
+      "fde34a2d22eaab8976fab032a7c170da65837ed9",
       [
        null,
        [
@@ -177999,7 +178142,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            4,
+            4
+           ],
+           [
+            26,
+            26
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "preserve3d-and-flattening-001.html": [
@@ -178812,7 +178971,7 @@
       ]
      ],
      "skew-test1.html": [
-      "30e0028664b62ac00362028641d03e4ed786277e",
+      "4080f39db9c832a543b3d975645821b909b7e3c4",
       [
        null,
        [
@@ -178831,7 +178990,7 @@
             233
            ],
            [
-            96,
+            90,
             771
            ]
           ]
@@ -179322,7 +179481,7 @@
       ]
      ],
      "transform-background-001.html": [
-      "50af968c4426f4819db1f56eefdd32ff08b40b5c",
+      "d58b0380bf149dbd06da9b582084cebbcdad879f",
       [
        null,
        [
@@ -179338,7 +179497,7 @@
           [
            [
             0,
-            1
+            4
            ],
            [
             0,
@@ -179351,7 +179510,7 @@
       ]
      ],
      "transform-background-002.html": [
-      "b32ddf3e109afb47d9b40a41c84844f868e3e987",
+      "46dc0b8d3da6b75dcaf7411719a6833a94be96b2",
       [
        null,
        [
@@ -179367,7 +179526,7 @@
           [
            [
             0,
-            1
+            5
            ],
            [
             0,
@@ -183175,7 +183334,7 @@
       ]
      ],
      "transform-table-009.html": [
-      "bf11029db76d2fa9e724c63c340215b6b80fc4cf",
+      "00371fa507f3ee93a1d8b6a01e730692a13111a7",
       [
        null,
        [
@@ -183188,11 +183347,27 @@
          "!="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            50,
+            50
+           ],
+           [
+            3,
+            3
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "transform-table-010.html": [
-      "8510e75cafcfe27249df032bf4898b474bd792d3",
+      "89fae1716bd2ed3d33e32060f058fd5f48b408f0",
       [
        null,
        [
@@ -183205,11 +183380,27 @@
          "!="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            50,
+            50
+           ],
+           [
+            3,
+            3
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "transform-table-011.html": [
-      "77fa946705fb8e9ca511958d7c0cf87c869c7a45",
+      "f2c8ca8a6140589bb9661e502042e0da340198a5",
       [
        null,
        [
@@ -183222,7 +183413,23 @@
          "!="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            50,
+            50
+           ],
+           [
+            3,
+            3
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "transform-transformable-inline-block.html": [
@@ -184776,7 +184983,7 @@
       ]
      ],
      "transforms-skewX.html": [
-      "bc5fda1391205b2ba66230fa1011ceb846229e42",
+      "fafb7df24d66c0cd6498b979be897f866cfe84a2",
       [
        null,
        [
@@ -184792,7 +184999,7 @@
           [
            [
             0,
-            1
+            9
            ],
            [
             0,
@@ -250021,7 +250228,7 @@
       []
      ],
      "idlharness-expected.txt": [
-      "2885179da4a9d847125c223b7957c70cabee9c03",
+      "4a491cdd38683f48f3e405951dc8b18064114d22",
       []
      ],
      "inheritance-expected.txt": [
@@ -250127,12 +250334,8 @@
        "2acc510d2d23c28a952753bdb54017eff2af8632",
        []
       ],
-      "font-palette-values-invalid-expected.txt": [
-       "37a55182405409757aca99c829f218b3749a9a0a",
-       []
-      ],
       "font-palette-values-valid-expected.txt": [
-       "0d122263fe10524fc377b8ea899df3ecc2fafb4f",
+       "acd524d7ef443286fcde7a94ffde45b3f0986102",
        []
       ],
       "font-size-adjust-computed-expected.txt": [
@@ -258167,16 +258370,20 @@
        "0d5385287ca80117c3e34866b1cd1b50b04b512f",
        []
       ],
+      "custom-highlight-painting-inheritance-003-ref.html": [
+       "cdab7615e4c5fe3f419c2b225bb6e4f7ee7d5f76",
+       []
+      ],
       "custom-highlight-painting-invalidation-007-ref.html": [
        "88f3d0f3d65cf46cc56fae34166d6c38db170eb2",
        []
       ],
       "custom-highlight-painting-overlapping-highlights-001-ref.html": [
-       "8049ba2257c7b44dec60068e47957b41e6b92a52",
+       "3c08ad55aefe3cbb6670250b7c069e897f805977",
        []
       ],
       "custom-highlight-painting-overlapping-highlights-002-ref.html": [
-       "efc4f487d764b9637b802bd6e9fa2d082c4ebd24",
+       "2907681b75a7e4f6e446b113d3862ab72113c51f",
        []
       ],
       "custom-highlight-painting-staticrange-001-ref.html": [
@@ -361942,6 +362149,13 @@
       ],
       "container-name-parsing.html": [
        "4fc6a1757f4266123463db9d3b156495e0a3fc46",
+       [
+        null,
+        {}
+       ]
+      ],
+      "container-nested.html": [
+       "92eed1c7a508c50d66338035242a3a915d484824",
        [
         null,
         {}
