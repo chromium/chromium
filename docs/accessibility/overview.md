@@ -528,7 +528,7 @@ is defined by [automation.idl], which must be kept synchronized with
 
 For more detail on Chrome web contents and platform accessibility, read [How Chrome Accessibility Works](browser/how_a11y_works.md).
 
-# TODO(accessibility): write os equiavlent how does Chrome os a11y work.
+For more detail on Chrome OS accessibility, read [How Chrome OS Accessibility Works](os/how_a11y_works.md).
 
 [ax.mojom.AXActionData]: https://source.chromium.org/chromium/chromium/src/+/main:ui/accessibility/mojom/ax_action_data.mojom;l=13
 [ax.mojom.RenderAccessibilityHost::HandleAXEvents()]: https://source.chromium.org/chromium/chromium/src/+/main:content/common/render_accessibility.mojom;l=47
