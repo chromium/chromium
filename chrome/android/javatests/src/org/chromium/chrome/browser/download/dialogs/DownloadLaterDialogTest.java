@@ -8,6 +8,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -21,6 +22,8 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.view.View;
 import android.widget.CheckBox;
@@ -135,6 +138,8 @@ public class DownloadLaterDialogTest {
             mDialogCoordinator.showDialog(
                     mActivityTestRule.getActivity(), getModalDialogManager(), mPrefService, mModel);
         });
+        onView(isRoot()).check(waitForView(
+                withId(org.chromium.components.browser_ui.modaldialog.R.id.modal_dialog_view)));
     }
 
     private void clickPositiveButton() {
