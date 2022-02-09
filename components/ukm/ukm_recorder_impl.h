@@ -16,9 +16,12 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/observer_list_threadsafe.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
+#include "base/synchronization/lock.h"
 #include "components/ukm/ukm_entry_filter.h"
 #include "services/metrics/public/cpp/ukm_decode.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -32,6 +35,7 @@ class UkmBrowserTestBase;
 namespace ukm {
 class Report;
 class UkmRecorderImplTest;
+class UkmRecorderObserver;
 class UkmSource;
 class UkmTestHelper;
 class UkmUtilsForTest;
@@ -94,6 +98,19 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   //
   // Currently only accommodates one entry filter.
   void SetEntryFilter(std::unique_ptr<UkmEntryFilter> entry_filter);
+
+  // Register an observer to be notified when a new UKM entry that comes with
+  // one of the |event_hashes| is added. This method can be called on any
+  // thread.
+  void AddUkmRecorderObserver(const base::flat_set<uint64_t>& event_hashes,
+                              UkmRecorderObserver* observer);
+
+  // Clears the given |observer| from |observers_|. This method can be called
+  // on any thread. If an observer is registered for multiple event sets, it
+  // will be removed from all the sets. If an event set no longer has any
+  // observers as a result of this call, it will be removed from |observers_|
+  // map.
+  void RemoveUkmRecorderObserver(UkmRecorderObserver* observer);
 
   // Sets the sampling seed for testing purposes.
   void SetSamplingSeedForTesting(uint32_t seed) {
@@ -160,6 +177,8 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, PurgeExtensionRecordings);
   FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, WebApkSourceUrl);
   FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, PaymentAppScopeUrl);
+  FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, ObserverNotifiedOnNewEntry);
+  FRIEND_TEST_ALL_PREFIXES(UkmRecorderImplTest, AddRemoveObserver);
 
   struct MetricAggregate {
     uint64_t total_count = 0;
@@ -183,10 +202,21 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
     uint64_t dropped_due_to_unconfigured = 0;
   };
 
+  // Result for ShouldRecordUrl() method.
+  enum class ShouldRecordUrlResult {
+    kOk = 0,        // URL will be recorded and observers will be notified.
+    kObserverOnly,  // The client has opted out from uploading UKM metrics.
+                    // As a result, observers will be notified but URL will not
+                    // be recorded.
+    kDropped,       // The URL is not allowed to be recorded and will be
+                    // dropped. Observers are not nofitied either.
+  };
+
   using MetricAggregateMap = std::map<uint64_t, MetricAggregate>;
 
-  // Returns true if |sanitized_url| should be recorded.
-  bool ShouldRecordUrl(SourceId source_id, const GURL& sanitized_url) const;
+  // Returns the result whether |sanitized_url| should be recorded.
+  ShouldRecordUrlResult ShouldRecordUrl(SourceId source_id,
+                                        const GURL& sanitized_url) const;
 
   void RecordSource(std::unique_ptr<UkmSource> source);
 
@@ -200,6 +230,13 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   // This is separated from the above to ease testing.
   void LoadExperimentSamplingParams(
       const std::map<std::string, std::string>& params);
+
+  // Called to notify interested observers about a newly added UKM entry.
+  void NotifyObserversWithNewEntry(const mojom::UkmEntry& entry);
+
+  // Helper method to notify all observers on UKM events.
+  template <typename Method, typename... Params>
+  void NotifyAllObservers(Method m, Params&&... params);
 
   // Whether recording new data is currently allowed.
   bool recording_enabled_ = false;
@@ -291,6 +328,21 @@ class COMPONENT_EXPORT(UKM_RECORDER) UkmRecorderImpl : public UkmRecorder {
   // The maximum number of Entries we'll keep in memory before discarding any
   // new ones being added.
   size_t max_entries_ = 5000;
+
+  using UkmRecorderObserverList =
+      base::ObserverListThreadSafe<UkmRecorderObserver>;
+  // Map from event hashes to observers. The key is a set of event hashes that
+  // their corresponding value pair will be norified when one of those events
+  // is added. The value is a non-empty observer list whose members are
+  // observing those events.
+  using UkmRecorderObserverMap =
+      base::flat_map<base::flat_set<uint64_t> /*event_hashes*/,
+                     scoped_refptr<UkmRecorderObserverList>>;
+  // Lock used to ensure mutual exclusive access to |observers_|.
+  mutable base::Lock lock_;
+
+  // Observers that will be notified on UKM events.
+  UkmRecorderObserverMap observers_ GUARDED_BY(lock_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

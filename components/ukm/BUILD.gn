@@ -20,6 +20,8 @@ component("ukm_recorder") {
     "ukm_entry_filter.h",
     "ukm_recorder_impl.cc",
     "ukm_recorder_impl.h",
+    "ukm_recorder_observer.cc",
+    "ukm_recorder_observer.h",
   ]
 
   deps = [

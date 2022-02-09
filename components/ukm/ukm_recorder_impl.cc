@@ -22,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "components/ukm/scheme_constants.h"
+#include "components/ukm/ukm_recorder_observer.h"
 #include "components/variations/variations_associated_data.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_decode.h"
@@ -92,6 +93,12 @@ void RecordDroppedSource(DroppedDataReason reason) {
   UMA_HISTOGRAM_ENUMERATION(
       "UKM.Sources.Dropped", static_cast<int>(reason),
       static_cast<int>(DroppedDataReason::NUM_DROPPED_DATA_REASONS));
+}
+
+void RecordDroppedSource(bool already_recorded_another_reason,
+                         DroppedDataReason reason) {
+  if (!already_recorded_another_reason)
+    RecordDroppedSource(reason);
 }
 
 void RecordDroppedEntry(uint64_t event_hash, DroppedDataReason reason) {
@@ -261,6 +268,8 @@ void UkmRecorderImpl::Purge() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   recordings_.Reset();
   recording_is_continuous_ = false;
+
+  NotifyAllObservers(&UkmRecorderObserver::OnPurge);
 }
 
 void UkmRecorderImpl::PurgeRecordingsWithUrlScheme(
@@ -278,6 +287,9 @@ void UkmRecorderImpl::PurgeRecordingsWithUrlScheme(
 
   PurgeSourcesAndEventsBySourceIds(relevant_source_ids);
   recording_is_continuous_ = false;
+
+  NotifyAllObservers(&UkmRecorderObserver::OnPurgeRecordingsWithUrlScheme,
+                     url_scheme);
 }
 
 void UkmRecorderImpl::PurgeRecordingsWithSourceIdType(
@@ -325,6 +337,32 @@ void UkmRecorderImpl::SetEntryFilter(
     std::unique_ptr<UkmEntryFilter> entry_filter) {
   DCHECK(!entry_filter_ || !entry_filter);
   entry_filter_ = std::move(entry_filter);
+}
+
+void UkmRecorderImpl::AddUkmRecorderObserver(
+    const base::flat_set<uint64_t>& event_hashes,
+    UkmRecorderObserver* observer) {
+  DCHECK(observer);
+  base::AutoLock auto_lock(lock_);
+  scoped_refptr<UkmRecorderObserverList> observers;
+  if (observers_.find(event_hashes) == observers_.end()) {
+    observers_.insert(
+        {event_hashes, base::MakeRefCounted<UkmRecorderObserverList>()});
+  }
+
+  observers_[event_hashes]->AddObserver(observer);
+}
+
+void UkmRecorderImpl::RemoveUkmRecorderObserver(UkmRecorderObserver* observer) {
+  base::AutoLock auto_lock(lock_);
+  for (auto it = observers_.begin(); it != observers_.end();) {
+    if (it->second->RemoveObserver(observer) ==
+        UkmRecorderObserverList::RemoveObserverResult::kWasOrBecameEmpty) {
+      it = observers_.erase(it);
+    } else {
+      ++it;
+    }
+  }
 }
 
 // TODO(rkaplow): This should be refactored.
@@ -774,9 +812,10 @@ void UkmRecorderImpl::UpdateSourceURL(SourceId source_id,
     return;
 
   const GURL sanitized_url = SanitizeURL(unsanitized_url);
-  if (!ShouldRecordUrl(source_id, sanitized_url))
+  if (ShouldRecordUrl(source_id, sanitized_url) ==
+      ShouldRecordUrlResult::kDropped) {
     return;
-
+  }
   RecordSource(std::make_unique<UkmSource>(source_id, sanitized_url));
 }
 
@@ -801,8 +840,10 @@ void UkmRecorderImpl::RecordNavigation(
   std::vector<GURL> urls;
   for (const GURL& url : unsanitized_navigation_data.urls) {
     const GURL sanitized_url = SanitizeURL(url);
-    if (ShouldRecordUrl(source_id, sanitized_url))
+    if (ShouldRecordUrl(source_id, sanitized_url) !=
+        ShouldRecordUrlResult::kDropped) {
       urls.push_back(std::move(sanitized_url));
+    }
   }
 
   // None of the URLs passed the ShouldRecordUrl check, so do not create a new
@@ -816,54 +857,73 @@ void UkmRecorderImpl::RecordNavigation(
       std::make_unique<UkmSource>(source_id, sanitized_navigation_data));
 }
 
-bool UkmRecorderImpl::ShouldRecordUrl(SourceId source_id,
-                                      const GURL& sanitized_url) const {
+UkmRecorderImpl::ShouldRecordUrlResult UkmRecorderImpl::ShouldRecordUrl(
+    SourceId source_id,
+    const GURL& sanitized_url) const {
+  ShouldRecordUrlResult result = ShouldRecordUrlResult::kOk;
+  bool has_recorded_reason = false;
   if (!recording_enabled_) {
     RecordDroppedSource(DroppedDataReason::RECORDING_DISABLED);
-    return false;
+    // Don't return the result yet. Check if the we are allowed to notify
+    // observers, as they may rely on the not uploaded metrics to determine
+    // how some features should work.
+    result = ShouldRecordUrlResult::kObserverOnly;
+    has_recorded_reason = true;
   }
 
   if (recordings_.sources.size() >= max_sources_) {
-    RecordDroppedSource(DroppedDataReason::MAX_HIT);
-    return false;
+    RecordDroppedSource(has_recorded_reason, DroppedDataReason::MAX_HIT);
+    return ShouldRecordUrlResult::kDropped;
   }
 
   if (ShouldRestrictToWhitelistedSourceIds() &&
       !IsWhitelistedSourceId(source_id)) {
-    RecordDroppedSource(DroppedDataReason::NOT_WHITELISTED);
-    return false;
+    RecordDroppedSource(has_recorded_reason,
+                        DroppedDataReason::NOT_WHITELISTED);
+    return ShouldRecordUrlResult::kDropped;
   }
 
   if (sanitized_url.is_empty()) {
-    RecordDroppedSource(DroppedDataReason::EMPTY_URL);
-    return false;
+    RecordDroppedSource(has_recorded_reason, DroppedDataReason::EMPTY_URL);
+    return ShouldRecordUrlResult::kDropped;
   }
 
   if (!HasSupportedScheme(sanitized_url)) {
-    RecordDroppedSource(DroppedDataReason::UNSUPPORTED_URL_SCHEME);
+    RecordDroppedSource(has_recorded_reason,
+                        DroppedDataReason::UNSUPPORTED_URL_SCHEME);
     DVLOG(2) << "Dropped Unsupported UKM URL:" << source_id << ":"
              << sanitized_url.spec();
-    return false;
+    return ShouldRecordUrlResult::kDropped;
   }
 
   // Extension URLs need to be specifically enabled and the extension synced.
   if (sanitized_url.SchemeIs(kExtensionScheme)) {
     DCHECK_EQ(sanitized_url.GetWithEmptyPath(), sanitized_url);
     if (!extensions_enabled_) {
-      RecordDroppedSource(DroppedDataReason::EXTENSION_URLS_DISABLED);
-      return false;
+      RecordDroppedSource(has_recorded_reason,
+                          DroppedDataReason::EXTENSION_URLS_DISABLED);
+      return ShouldRecordUrlResult::kDropped;
     }
     if (!is_webstore_extension_callback_ ||
         !is_webstore_extension_callback_.Run(sanitized_url.host_piece())) {
-      RecordDroppedSource(DroppedDataReason::EXTENSION_NOT_SYNCED);
-      return false;
+      RecordDroppedSource(has_recorded_reason,
+                          DroppedDataReason::EXTENSION_NOT_SYNCED);
+      return ShouldRecordUrlResult::kDropped;
     }
   }
-  return true;
+  return result;
 }
 
 void UkmRecorderImpl::RecordSource(std::unique_ptr<UkmSource> source) {
   SourceId source_id = source->id();
+  // If UKM recording is disabled due to |recording_enabled_|, still notify
+  // observers as they might be interested in it.
+  NotifyAllObservers(&UkmRecorderObserver::OnUpdateSourceURL, source_id,
+                     source->urls());
+  if (!recording_enabled_) {
+    return;
+  }
+
   if (GetSourceIdType(source_id) == SourceIdType::NAVIGATION_ID)
     recordings_.source_counts.navigation_sources++;
   recordings_.source_counts.observed++;
@@ -873,6 +933,8 @@ void UkmRecorderImpl::RecordSource(std::unique_ptr<UkmSource> source) {
 void UkmRecorderImpl::AddEntry(mojom::UkmEntryPtr entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!HasUnknownMetrics(decode_map_, *entry));
+
+  NotifyObserversWithNewEntry(*entry);
 
   if (!recording_enabled_) {
     RecordDroppedEntry(entry->event_hash,
@@ -1036,6 +1098,27 @@ bool UkmRecorderImpl::IsSampledIn(int64_t source_id,
 void UkmRecorderImpl::InitDecodeMap() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   decode_map_ = builders::CreateDecodeMap();
+}
+
+void UkmRecorderImpl::NotifyObserversWithNewEntry(
+    const mojom::UkmEntry& entry) {
+  base::AutoLock auto_lock(lock_);
+
+  for (const auto& observer : observers_) {
+    if (observer.first.contains(entry.event_hash)) {
+      mojom::UkmEntryPtr cloned = entry.Clone();
+      observer.second->Notify(FROM_HERE, &UkmRecorderObserver::OnEntryAdded,
+                              base::Passed(&cloned));
+    }
+  }
+}
+
+template <typename Method, typename... Params>
+void UkmRecorderImpl::NotifyAllObservers(Method m, Params&&... params) {
+  base::AutoLock auto_lock(lock_);
+  for (const auto& observer : observers_) {
+    observer.second->Notify(FROM_HERE, m, std::forward<Params>(params)...);
+  }
 }
 
 }  // namespace ukm

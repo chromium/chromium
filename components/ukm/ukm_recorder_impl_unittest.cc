@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "components/ukm/scheme_constants.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "components/ukm/ukm_recorder_observer.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_entry_builder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -20,6 +21,84 @@
 namespace ukm {
 
 using TestEvent1 = builders::PageLoad;
+
+const uint64_t kTestEntryHash = 1234;
+const uint64_t kTestMetricsHash = 12345;
+const char kTestEntryName[] = "TestEntry";
+const char kTestMetrics[] = "TestMetrics";
+
+std::map<uint64_t, builders::EntryDecoder> CreateTestingDecodeMap() {
+  return {
+      {kTestEntryHash,
+       {kTestEntryName,
+        {
+            {kTestMetricsHash, kTestMetrics},
+        }}},
+  };
+}
+
+// Helper class for testing UkmRecorderImpl observers.
+class TestUkmObserver : public UkmRecorderObserver {
+ public:
+  explicit TestUkmObserver(UkmRecorderImpl* ukm_recorder_impl) {
+    base::flat_set<uint64_t> event_hashes = {kTestEntryHash};
+    ukm_recorder_impl->AddUkmRecorderObserver(event_hashes, this);
+  }
+
+  ~TestUkmObserver() override = default;
+
+  // UkmRecorderImpl::UkmRecorderObserver override.
+  void OnEntryAdded(mojom::UkmEntryPtr entry) override {
+    if (stop_waiting_)
+      std::move(stop_waiting_).Run();
+    ASSERT_EQ(entry->event_hash, ukm_entry_->event_hash);
+    ASSERT_EQ(entry->source_id, ukm_entry_->source_id);
+    ASSERT_EQ(entry->metrics[kTestMetricsHash],
+              ukm_entry_->metrics[kTestMetricsHash]);
+  }
+
+  void OnUpdateSourceURL(SourceId source_id,
+                         const std::vector<GURL>& urls) override {
+    if (stop_waiting_)
+      std::move(stop_waiting_).Run();
+    ASSERT_EQ(source_id_, source_id);
+    ASSERT_EQ(urls_, urls);
+  }
+
+  void OnPurgeRecordingsWithUrlScheme(const std::string& url_scheme) override {
+    if (stop_waiting_)
+      std::move(stop_waiting_).Run();
+  }
+
+  void OnPurge() override {
+    if (stop_waiting_)
+      std::move(stop_waiting_).Run();
+  }
+
+  void WaitAddEntryCallback(uint64_t event_hash, mojom::UkmEntryPtr ukm_entry) {
+    ukm_entry_ = std::move(ukm_entry);
+    WaitCallback();
+  }
+
+  void WaitUpdateSourceURLCallback(SourceId source_id,
+                                   const std::vector<GURL>& urls) {
+    source_id_ = source_id;
+    urls_ = urls;
+    WaitCallback();
+  }
+
+  void WaitCallback() {
+    base::RunLoop run_loop;
+    stop_waiting_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+ private:
+  base::OnceClosure stop_waiting_;
+  mojom::UkmEntryPtr ukm_entry_;
+  SourceId source_id_;
+  std::vector<GURL> urls_;
+};
 
 TEST(UkmRecorderImplTest, IsSampledIn) {
   UkmRecorderImpl impl;
@@ -170,6 +249,93 @@ TEST(UkmRecorderImplTest, PaymentAppScopeUrl) {
   EXPECT_EQ(url, it->second->url());
   EXPECT_EQ(1u, it->second->urls().size());
   EXPECT_EQ(SourceIdType::PAYMENT_APP_ID, GetSourceIdType(id));
+}
+
+// Tests that UkmRecorderObserver is notified on a new UKM entry.
+TEST(UkmRecorderImplTest, ObserverNotifiedOnNewEntry) {
+  base::test::TaskEnvironment env;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  TestUkmObserver test_observer(&test_ukm_recorder);
+
+  test_ukm_recorder.decode_map_ = CreateTestingDecodeMap();
+  auto entry = mojom::UkmEntry::New();
+  entry->event_hash = kTestEntryHash;
+  entry->source_id = 345;
+  entry->metrics[kTestMetricsHash] = 10;
+  test_ukm_recorder.AddEntry(entry->Clone());
+  test_observer.WaitAddEntryCallback(kTestEntryHash, std::move(entry));
+}
+
+// Tests that UkmRecorderObserver is notified on source URL updates.
+TEST(UkmRecorderImplTest, ObserverNotifiedOnSourceURLUpdate) {
+  base::test::TaskEnvironment env;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  TestUkmObserver test_observer(&test_ukm_recorder);
+  uint64_t source_id = 345;
+
+  GURL url("http://abc.com");
+  std::vector<GURL> urls;
+  urls.emplace_back(url);
+  test_ukm_recorder.UpdateSourceURL(source_id, url);
+  test_observer.WaitUpdateSourceURLCallback(source_id, urls);
+}
+
+// Tests that UkmRecorderObserver is notified on purge.
+TEST(UkmRecorderImplTest, ObserverNotifiedOnPurge) {
+  base::test::TaskEnvironment env;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+  TestUkmObserver test_observer(&test_ukm_recorder);
+
+  test_ukm_recorder.PurgeRecordingsWithUrlScheme(kExtensionScheme);
+  test_observer.WaitCallback();
+
+  test_ukm_recorder.Purge();
+  test_observer.WaitCallback();
+}
+
+// Tests that adding and removing observers work as expected.
+TEST(UkmRecorderImplTest, AddRemoveObserver) {
+  base::test::TaskEnvironment env;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
+  // Adding 3 observers, the first 2 oberserve the same event
+  // while the last one observes a different event.
+  UkmRecorderObserver obs1, obs2, obs3;
+  base::flat_set<uint64_t> events1 = {123};
+  test_ukm_recorder.AddUkmRecorderObserver(events1, &obs1);
+  test_ukm_recorder.AddUkmRecorderObserver(events1, &obs2);
+  base::flat_set<uint64_t> events2 = {345};
+  test_ukm_recorder.AddUkmRecorderObserver(events2, &obs3);
+
+  // Remove the first observer.
+  test_ukm_recorder.RemoveUkmRecorderObserver(&obs1);
+  {
+    base::AutoLock auto_lock(test_ukm_recorder.lock_);
+    ASSERT_FALSE(test_ukm_recorder.observers_.empty());
+    // There are still 2 separate events being observed, each
+    // has one observer now.
+    ASSERT_NE(test_ukm_recorder.observers_.find(events1),
+              test_ukm_recorder.observers_.end());
+    ASSERT_NE(test_ukm_recorder.observers_.find(events2),
+              test_ukm_recorder.observers_.end());
+  }
+  // Removing the 2nd observer.
+  test_ukm_recorder.RemoveUkmRecorderObserver(&obs2);
+  {
+    base::AutoLock auto_lock(test_ukm_recorder.lock_);
+    // Only the 2nd event is being observed now, the first
+    // event should be removed from the observers map.
+    ASSERT_EQ(test_ukm_recorder.observers_.find(events1),
+              test_ukm_recorder.observers_.end());
+    ASSERT_NE(test_ukm_recorder.observers_.find(events2),
+              test_ukm_recorder.observers_.end());
+  }
+  // Removing the last observer should clear the observer map.
+  test_ukm_recorder.RemoveUkmRecorderObserver(&obs3);
+  {
+    base::AutoLock auto_lock(test_ukm_recorder.lock_);
+    ASSERT_TRUE(test_ukm_recorder.observers_.empty());
+  }
 }
 
 }  // namespace ukm
