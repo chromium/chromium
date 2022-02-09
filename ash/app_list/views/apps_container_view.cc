@@ -1456,7 +1456,7 @@ void AppsContainerView::OnAppsGridViewFadeOutAnimationEneded(
   if (old_toast_visible != toast_container_->is_toast_visible())
     Layout();
 
-  apps_grid_view_->FadeInVisibleItemsForReorder();
+  apps_grid_view_->FadeInVisibleItemsForReorder(base::NullCallback());
 }
 
 }  // namespace ash

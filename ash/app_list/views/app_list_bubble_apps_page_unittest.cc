@@ -4,8 +4,12 @@
 
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 
+#include <utility>
+
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_bubble_search_page.h"
+#include "ash/app_list/views/app_list_toast_container_view.h"
+#include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -22,6 +26,12 @@ namespace ash {
 namespace {
 
 class AppListBubbleAppsPageTest : public AshTestBase {
+ public:
+  void OnReorderAnimationDone(base::OnceClosure closure, bool aborted) {
+    EXPECT_FALSE(aborted);
+    std::move(closure).Run();
+  }
+
  private:
   base::test::ScopedFeatureList features_{features::kProductivityLauncher};
 };
@@ -142,6 +152,96 @@ TEST_F(AppListBubbleAppsPageTest, ScrollPositionResetOnShow) {
 
   // Scroll position is reset to top.
   EXPECT_EQ(apps_page->scroll_view()->vertical_scroll_bar()->GetPosition(), 0);
+}
+
+class AppListBubbleAppsReorderTest
+    : public AppListBubbleAppsPageTest,
+      public testing::WithParamInterface</*is_separator_visible=*/bool> {
+ public:
+  AppListBubbleAppsReorderTest() = default;
+  AppListBubbleAppsReorderTest(AppListBubbleAppsReorderTest&) = delete;
+  AppListBubbleAppsReorderTest& operator=(const AppListBubbleAppsReorderTest&) =
+      delete;
+  ~AppListBubbleAppsReorderTest() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, AppListBubbleAppsReorderTest, testing::Bool());
+
+// Verifies that after sorting the undo toast should fully show.
+TEST_P(AppListBubbleAppsReorderTest, ScrollToShowUndoToastWhenSorting) {
+  ui::ScopedAnimationDurationScaleMode scope_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Show an app list with enough apps to allow scrolling.
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppItems(50);
+
+  const bool is_separator_visible = GetParam();
+  if (is_separator_visible)
+    GetAppListTestHelper()->AddRecentApps(5);
+  helper->ShowAppList();
+
+  auto* apps_page = helper->GetBubbleAppsPage();
+  AppListToastContainerView* reorder_undo_toast_container =
+      apps_page->toast_container_for_test();
+
+  // Verify the separator's visibility.
+  EXPECT_EQ(is_separator_visible,
+            apps_page->separator_for_test()->GetVisible());
+
+  // Before sorting, the undo toast should be invisible.
+  EXPECT_FALSE(reorder_undo_toast_container->is_toast_visible());
+
+  {
+    apps_page->UpdateForNewSortingOrder(
+        AppListSortOrder::kNameAlphabetical,
+        /*animate=*/true, /*update_position_closure=*/base::DoNothing());
+
+    base::RunLoop run_loop;
+    apps_page->scrollable_apps_grid_view()->AddReorderDoneCallbackForTest(
+        base::BindRepeating(&AppListBubbleAppsPageTest::OnReorderAnimationDone,
+                            base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
+  // After sorting, the undo toast should be visible.
+  EXPECT_TRUE(reorder_undo_toast_container->is_toast_visible());
+
+  // Scroll the apps page to the end.
+  views::ScrollView* scroll_view = apps_page->scroll_view();
+  scroll_view->ScrollToPosition(scroll_view->vertical_scroll_bar(), INT_MAX);
+
+  // Verify that after scrolling the undo toast is not fully visible through
+  // the view port.
+  gfx::Point origin;
+  views::View::ConvertPointToTarget(reorder_undo_toast_container, scroll_view,
+                                    &origin);
+  gfx::Rect toast_container_bounds_in_scroll_view(
+      origin, reorder_undo_toast_container->size());
+  EXPECT_FALSE(scroll_view->GetVisibleRect().Contains(
+      toast_container_bounds_in_scroll_view));
+
+  {
+    apps_page->UpdateForNewSortingOrder(
+        AppListSortOrder::kColor,
+        /*animate=*/true, /*update_position_closure=*/base::DoNothing());
+
+    base::RunLoop run_loop;
+    apps_page->scrollable_apps_grid_view()->AddReorderDoneCallbackForTest(
+        base::BindRepeating(&AppListBubbleAppsPageTest::OnReorderAnimationDone,
+                            base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
+  // Verify that after sorting again the undo toast is fully shown.
+  origin = gfx::Point();
+  views::View::ConvertPointToTarget(reorder_undo_toast_container,
+                                    scroll_view->contents(), &origin);
+  toast_container_bounds_in_scroll_view =
+      gfx::Rect(origin, reorder_undo_toast_container->size());
+  EXPECT_TRUE(reorder_undo_toast_container->is_toast_visible());
+  EXPECT_TRUE(scroll_view->GetVisibleRect().Contains(
+      toast_container_bounds_in_scroll_view));
 }
 
 }  // namespace

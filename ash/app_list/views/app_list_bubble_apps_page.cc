@@ -91,6 +91,10 @@ constexpr base::TimeDelta kShowPageAnimationTransformDuration =
 constexpr base::TimeDelta kShowPageAnimationOpacityDuration =
     base::Milliseconds(100);
 
+// The time duration of the undo toast fade in animation.
+constexpr base::TimeDelta kToastFadeInAnimationDuration =
+    base::Milliseconds(400);
+
 }  // namespace
 
 AppListBubbleAppsPage::AppListBubbleAppsPage(
@@ -399,6 +403,24 @@ void AppListBubbleAppsPage::UpdateForNewSortingOrder(
       weak_factory_.GetWeakPtr(), new_order));
 }
 
+bool AppListBubbleAppsPage::MaybeScrollToShowToast() {
+  gfx::Point toast_origin;
+  views::View::ConvertPointToTarget(toast_container_, scroll_view_->contents(),
+                                    &toast_origin);
+  const gfx::Rect toast_bounds_in_scroll_view =
+      gfx::Rect(toast_origin, toast_container_->size());
+
+  // Do not scroll if the toast is already fully shown.
+  if (scroll_view_->GetVisibleRect().Contains(toast_bounds_in_scroll_view))
+    return false;
+
+  const int scroll_offset = separator_->GetVisible() ? separator_->y() : 0;
+  scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
+                                 scroll_offset);
+
+  return true;
+}
+
 void AppListBubbleAppsPage::Layout() {
   views::View::Layout();
   if (gradient_helper_)
@@ -538,14 +560,85 @@ void AppListBubbleAppsPage::OnAppsGridViewFadeOutAnimationEneded(
   if (aborted)
     return;
 
+  const bool target_toast_visible = toast_container_->is_toast_visible();
+  const bool toast_visibility_change =
+      (old_toast_visible != target_toast_visible);
+
   // When the undo toast's visibility changes, the apps grid's bounds should
   // change. Meanwhile, the fade in animation relies on the apps grid's bounds
   // to calculate visible items. Therefore trigger layout before starting the
   // fade in animation.
-  if (old_toast_visible != toast_container_->is_toast_visible())
+  if (toast_visibility_change)
     Layout();
 
-  scrollable_apps_grid_view_->FadeInVisibleItemsForReorder();
+  // Ensure to scroll before triggering apps grid fade in animation so that
+  // the bubble apps page's layout is ready.
+  const bool scroll_performed = MaybeScrollToShowToast();
+
+  scrollable_apps_grid_view_->FadeInVisibleItemsForReorder(base::BindRepeating(
+      &AppListBubbleAppsPage::OnAppsGridViewFadeInAnimationEnded,
+      weak_factory_.GetWeakPtr()));
+
+  // Fade in the undo toast when:
+  // (1) The toast's visibility becomes true from false, or
+  // (2) The apps page is scrolled to show the toast.
+  const bool should_fade_in_toast =
+      target_toast_visible && (scroll_performed || toast_visibility_change);
+
+  if (!should_fade_in_toast)
+    return;
+
+  // If the undo toast does not have its layer before fade in animation,
+  // create one.
+  bool has_layer_before_animation = toast_container_->layer();
+  if (!has_layer_before_animation) {
+    toast_container_->SetPaintToLayer();
+    toast_container_->layer()->SetFillsBoundsOpaquely(false);
+  }
+
+  // Hide the undo toast instantly before starting the toast fade in animation.
+  toast_container_->layer()->SetOpacity(0.f);
+
+  views::AnimationBuilder animation_builder;
+  toast_fade_in_abort_handle_ = animation_builder.GetAbortHandle();
+  animation_builder
+      .OnEnded(base::BindOnce(
+          &AppListBubbleAppsPage::OnReorderUndoToastFadeInAnimationEnded,
+          weak_factory_.GetWeakPtr(),
+          /*aborted=*/false, has_layer_before_animation))
+      .OnAborted(base::BindOnce(
+          &AppListBubbleAppsPage::OnReorderUndoToastFadeInAnimationEnded,
+          weak_factory_.GetWeakPtr(),
+          /*aborted=*/true, has_layer_before_animation))
+      .Once()
+      .SetDuration(kToastFadeInAnimationDuration)
+      .SetOpacity(toast_container_->layer(), 1.f);
+}
+
+void AppListBubbleAppsPage::OnAppsGridViewFadeInAnimationEnded(bool aborted) {
+  if (!aborted)
+    return;
+
+  // Abort the toast fade in animation if the apps grid fade in animation is
+  // aborted.
+  toast_fade_in_abort_handle_.reset();
+}
+
+void AppListBubbleAppsPage::OnReorderUndoToastFadeInAnimationEnded(
+    bool aborted,
+    bool clean_layer) {
+  toast_fade_in_abort_handle_.reset();
+
+  if (aborted && !clean_layer) {
+    // Ensure that the toast shows when the animation is aborted.
+    toast_container_->layer()->SetOpacity(1.f);
+    return;
+  }
+
+  if (clean_layer) {
+    toast_container_->DestroyLayer();
+    return;
+  }
 }
 
 void AppListBubbleAppsPage::SlideViewIntoPosition(views::View* view,

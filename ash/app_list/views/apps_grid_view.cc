@@ -1928,7 +1928,8 @@ void AppsGridView::FadeOutVisibleItemsForReorder(
       .SetTransform(layer(), translate_offset, gfx::Tween::LINEAR_OUT_SLOW_IN);
 }
 
-void AppsGridView::FadeInVisibleItemsForReorder() {
+void AppsGridView::FadeInVisibleItemsForReorder(
+    ReorderAnimationCallback done_callback) {
   DCHECK_EQ(ReorderAnimationStatus::kIntermediaryState,
             reorder_animation_status_);
   DCHECK(!bounds_animator_->IsAnimating());
@@ -1945,9 +1946,11 @@ void AppsGridView::FadeInVisibleItemsForReorder() {
   auto sequence_block =
       animation_builder
           .OnEnded(base::BindOnce(&AppsGridView::OnFadeInAnimationEnded,
-                                  weak_factory_.GetWeakPtr(), /*abort=*/false))
+                                  weak_factory_.GetWeakPtr(), done_callback,
+                                  /*abort=*/false))
           .OnAborted(base::BindOnce(&AppsGridView::OnFadeInAnimationEnded,
-                                    weak_factory_.GetWeakPtr(), /*abort=*/true))
+                                    weak_factory_.GetWeakPtr(), done_callback,
+                                    /*abort=*/true))
           .Once();
 
   // Animate to show the apps grid.
@@ -2857,9 +2860,8 @@ void AppsGridView::OnHostDragStartTimerFired() {
   }
 }
 
-void AppsGridView::OnFadeOutAnimationEnded(
-    ReorderAnimationCallback callback_from_caller,
-    bool aborted) {
+void AppsGridView::OnFadeOutAnimationEnded(ReorderAnimationCallback callback,
+                                           bool aborted) {
   reorder_animation_status_ = ReorderAnimationStatus::kIntermediaryState;
 
   // Reset with the identical transformation. Because the apps grid view is
@@ -2883,7 +2885,7 @@ void AppsGridView::OnFadeOutAnimationEnded(
   // is came up with.
   base::ScopedClosureRunner runner = LockAppsGridOpacity();
 
-  callback_from_caller.Run(aborted);
+  callback.Run(aborted);
 
   // When the fade out animation is abortted, the fade in animation should not
   // run. Hence, the reorder animation ends. The aborted animation's smoothness
@@ -2898,7 +2900,8 @@ void AppsGridView::OnFadeOutAnimationEnded(
   }
 }
 
-void AppsGridView::OnFadeInAnimationEnded(bool aborted) {
+void AppsGridView::OnFadeInAnimationEnded(ReorderAnimationCallback callback,
+                                          bool aborted) {
   // If the animation is aborted, reset the apps grid's layer.
   if (aborted)
     layer()->SetOpacity(1.f);
@@ -2912,6 +2915,9 @@ void AppsGridView::OnFadeInAnimationEnded(bool aborted) {
 
   // Clean app list items' layers.
   OnBoundsAnimatorDone(nullptr);
+
+  if (!callback.is_null())
+    callback.Run(aborted);
 
   MaybeRunFrontReorderAnimationCallbackForTest(aborted);
 }

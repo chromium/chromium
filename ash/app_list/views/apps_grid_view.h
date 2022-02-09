@@ -276,12 +276,13 @@ class ASH_EXPORT AppsGridView : public views::View,
   bool IsTabletMode() const;
 
   // Fades out visible items when reordering happens. Runs `done_callback` when
-  // the fade out animation ends.
+  // the fade out animation ends. The callback carries a boolean value that
+  // is true if the animation is aborted.
   using ReorderAnimationCallback = base::RepeatingCallback<void(bool)>;
   void FadeOutVisibleItemsForReorder(ReorderAnimationCallback done_callback);
 
   // Fades in items for reordering.
-  void FadeInVisibleItemsForReorder();
+  void FadeInVisibleItemsForReorder(ReorderAnimationCallback done_callback);
 
   // Whether the provided view is hidden to facilitate drag operation (for
   // example, the drag view for which a drag icon proxy has been created).
@@ -843,15 +844,15 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Invoked when |host_drag_start_timer_| fires.
   void OnHostDragStartTimerFired();
 
-  // Called at the end of the fade out animation. `callback_from_caller` comes
-  // from the caller that starts the fade out animation. `aborted` is true when
-  // the fade out animation gets aborted.
-  void OnFadeOutAnimationEnded(ReorderAnimationCallback callback_from_caller,
-                               bool aborted);
+  // Called at the end of the fade out animation. `callback` comes from the
+  // caller that starts the fade out animation. `aborted` is true when the fade
+  // out animation gets aborted.
+  void OnFadeOutAnimationEnded(ReorderAnimationCallback callback, bool aborted);
 
-  // Called at the end of the fade out animation. `aborted` is true when the
-  // fade in animation gets aborted.
-  void OnFadeInAnimationEnded(bool aborted);
+  // Called at the end of the fade out animation. `callback` comes from the
+  // caller that starts the fade in animation. `aborted` is true when the fade
+  // in animation gets aborted.
+  void OnFadeInAnimationEnded(ReorderAnimationCallback callback, bool aborted);
 
   // Aborts the active reordering animation if any.
   void MaybeAbortReorderingAnimation();
