@@ -533,7 +533,7 @@
   {
     "name": "biometric-reauth-password-filling",
     "owners": [ "ioanap" ],
-    "expiry_milestone": 99
+    "expiry_milestone": 104
   },
   {
     "name": "block-external-form-redirects-no-gesture",
