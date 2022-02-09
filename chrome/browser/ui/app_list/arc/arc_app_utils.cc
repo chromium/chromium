@@ -371,7 +371,8 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
       arc::ArcBootPhaseMonitorBridge::RecordFirstAppLaunchDelayUMA(context);
     }
 
-    if (full_restore::features::IsArcWindowPredictorEnabled()) {
+    if (full_restore::features::IsArcWindowPredictorEnabled() &&
+        IsArcVmEnabled()) {
       if (LaunchArcAppWithGhostWindow(profile, app_id, *app_info, event_flags,
                                       user_action, std::move(window_info))) {
         prefs->SetLastLaunchTime(app_id);
