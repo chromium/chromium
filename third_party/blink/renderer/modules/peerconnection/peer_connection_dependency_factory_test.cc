@@ -106,32 +106,7 @@ TEST_F(PeerConnectionDependencyFactoryTest, CountOpenPeerConnections) {
 }
 
 TEST_F(PeerConnectionDependencyFactoryTest,
-       ShouldNotUseMetronomeWhenFeatureIsDisabled) {
-  EXPECT_FALSE(base::FeatureList::IsEnabled(kWebRtcMetronomeTaskQueue));
-
-  V8TestingScope scope;
-  EnsureDependencyFactory(*scope.GetExecutionContext());
-
-  FakeMetronomeProviderListener fake_metronome_listener;
-  ExecutionContextMetronomeProvider::From(*scope.GetExecutionContext())
-      .metronome_provider()
-      ->AddListener(&fake_metronome_listener);
-
-  // Start using WebRTC. Nothing should happen to the metronome use counters.
-  std::unique_ptr<RTCPeerConnectionHandler> pc1 =
-      CreateRTCPeerConnectionHandler();
-  EXPECT_EQ(fake_metronome_listener.start_count(), 0u);
-  EXPECT_EQ(fake_metronome_listener.stop_count(), 0u);
-
-  ExecutionContextMetronomeProvider::From(*scope.GetExecutionContext())
-      .metronome_provider()
-      ->RemoveListener(&fake_metronome_listener);
-}
-
-TEST_F(PeerConnectionDependencyFactoryTest,
-       ShouldUseMetronomeWhenThereAreOpenPeerConnectionsAndFeatureIsEnabled) {
-  base::test::ScopedFeatureList feature_list(kWebRtcMetronomeTaskQueue);
-
+       ShouldUseMetronomeWhenThereAreOpenPeerConnections) {
   V8TestingScope scope;
   EnsureDependencyFactory(*scope.GetExecutionContext());
 

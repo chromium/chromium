@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
 #include "media/base/limits.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/renderer/platform/testing/video_frame_utils.h"
 #include "third_party/webrtc_overrides/metronome_provider.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
+#include "third_party/webrtc_overrides/webrtc_timer.h"
 
 namespace blink {
 
@@ -389,6 +391,9 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
 // mute detection logic that is based on this frame monitoring, see
 // MediaStreamVideoSourceTest.MutedSource instead.
 TEST_F(VideoTrackAdapterFixtureTest, MetronomeIsUsedWhileFrameMonitoring) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kWebRtcTimerUsesMetronome);
+
   scoped_refptr<MetronomeSource> metronome_source =
       base::MakeRefCounted<MetronomeSource>(base::Hertz(64));
   metronome_provider_->OnStartUsingMetronome(metronome_source);

@@ -90,6 +90,8 @@ namespace {
 
 using PassKey = base::PassKey<PeerConnectionDependencyFactory>;
 
+constexpr base::TimeDelta kMetronomeTick = base::Hertz(64);
+
 enum WebRTCIPHandlingPolicy {
   kDefault,
   kDefaultPublicAndPrivateInterfaces,
@@ -505,8 +507,7 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
   worker_thread_started_event.Wait();
   CHECK(GetWorkerThread());
 
-  if (!metronome_source_ &&
-      base::FeatureList::IsEnabled(kWebRtcMetronomeTaskQueue)) {
+  if (!metronome_source_) {
     // Store a reference to the context's metronome provider so that it can be
     // used when cleaning up peer connections, even while the context is being
     // destroyed.
@@ -514,8 +515,7 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
         ExecutionContextMetronomeProvider::From(*GetExecutionContext())
             .metronome_provider();
     DCHECK(metronome_provider_);
-    metronome_source_ = base::MakeRefCounted<MetronomeSource>(
-        kWebRtcMetronomeTaskQueueTick.Get());
+    metronome_source_ = base::MakeRefCounted<MetronomeSource>(kMetronomeTick);
   }
 
   base::WaitableEvent start_signaling_event(
@@ -630,8 +630,9 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
       GetWorkerThread() ? GetWorkerThread() : GetSignalingThread();
   pcf_deps.signaling_thread = GetSignalingThread();
   pcf_deps.network_thread = GetNetworkThread();
+  DCHECK(metronome_source_);
   pcf_deps.task_queue_factory =
-      !metronome_source_
+      !base::FeatureList::IsEnabled(kWebRtcMetronomeTaskQueue)
           ? CreateWebRtcTaskQueueFactory()
           : CreateWebRtcMetronomeTaskQueueFactory(metronome_source_);
   if (metronome_source_)
@@ -688,7 +689,9 @@ PeerConnectionDependencyFactory::CreatePeerConnection(
       config, std::move(dependencies));
   if (pc_or_error.ok()) {
     ++open_peer_connections_;
-    if (open_peer_connections_ == 1u && metronome_source_) {
+    if (open_peer_connections_ == 1u) {
+      DCHECK(metronome_provider_);
+      DCHECK(metronome_source_);
       metronome_provider_->OnStartUsingMetronome(metronome_source_);
     }
     // Convert from rtc::scoped_refptr to scoped_refptr
@@ -707,7 +710,9 @@ size_t PeerConnectionDependencyFactory::open_peer_connections() const {
 void PeerConnectionDependencyFactory::OnPeerConnectionClosed() {
   DCHECK(open_peer_connections_);
   --open_peer_connections_;
-  if (!open_peer_connections_ && metronome_source_) {
+  // |metronome_provider_| may be null in some testing-only environments.
+  if (!open_peer_connections_ && metronome_provider_) {
+    DCHECK(metronome_source_);
     metronome_provider_->OnStopUsingMetronome();
   }
 }

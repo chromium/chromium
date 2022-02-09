@@ -22,11 +22,6 @@ namespace blink {
 const base::Feature kWebRtcMetronomeTaskQueue{
     "WebRtcMetronomeTaskQueue", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::FeatureParam<base::TimeDelta> kWebRtcMetronomeTaskQueueTick{
-    &kWebRtcMetronomeTaskQueue, "tick",
-    // 64 Hz default value for the WebRtcMetronomeTaskQueue experiment.
-    base::Hertz(64)};
-
 namespace {
 
 class WebRtcMetronomeTaskQueue : public webrtc::TaskQueueBase {

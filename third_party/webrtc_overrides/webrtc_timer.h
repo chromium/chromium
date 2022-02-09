@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_WEBRTC_OVERRIDES_WEBRTC_TIMER_H_
 
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
@@ -18,12 +19,16 @@
 
 namespace blink {
 
+// Whether WebRtcTimer should use the metronome source. Default: false.
+RTC_EXPORT extern const base::Feature kWebRtcTimerUsesMetronome;
+
 // Implements a timer that is NOT guaranteed to have high precision.
 //
-// When a metronome source is available, the timer will fire on a metronome
-// tick. This allows running the timer without increasing Idle Wake Ups at the
-// cost of reducing the timer precision to the metronome tick frequency. When a
-// metronome source isn't available, the timer uses PostDelayedTask.
+// When a metronome source is available and kWebRtcTimerUsesMetronome is
+// enabled, the timer will fire on a metronome tick. This allows running the
+// timer without increasing Idle Wake Ups at the cost of reducing the timer
+// precision to the metronome tick frequency. When a metronome source isn't
+// available, the timer uses PostDelayedTask.
 //
 // Prefer this timer for WebRTC use cases that does not require high precision.
 class RTC_EXPORT WebRtcTimer : public MetronomeProviderListener {

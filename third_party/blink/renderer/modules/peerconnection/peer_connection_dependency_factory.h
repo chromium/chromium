@@ -194,8 +194,6 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
   std::unique_ptr<IpcPacketSocketFactory> socket_factory_;
 
   scoped_refptr<webrtc::PeerConnectionFactoryInterface> pc_factory_;
-  // The metronome should only be used if kWebRtcMetronomeTaskQueue is enabled
-  // and there exists open RTCPeerConnection objects.
   scoped_refptr<MetronomeProvider> metronome_provider_;
   scoped_refptr<MetronomeSource> metronome_source_;
 

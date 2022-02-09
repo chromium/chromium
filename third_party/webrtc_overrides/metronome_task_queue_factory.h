@@ -9,7 +9,6 @@
 
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/field_trial_params.h"
 #include "third_party/webrtc/api/task_queue/task_queue_factory.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"
 #include "third_party/webrtc_overrides/metronome_source.h"
@@ -18,13 +17,6 @@ namespace blink {
 
 // Whether WebRTC should use a metronome-backed task queue. Default: disabled.
 RTC_EXPORT extern const base::Feature kWebRtcMetronomeTaskQueue;
-
-// Feature params for the metronome task queue. Example use:
-// --enable-features=WebRtcMetronomeTaskQueue:tick/10ms
-
-// Specify the desired metronome tick interval with "tick". Default: 64 Hz.
-RTC_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kWebRtcMetronomeTaskQueueTick;
 
 }  // namespace blink
 

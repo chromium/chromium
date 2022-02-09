@@ -5,8 +5,12 @@
 #include "third_party/webrtc_overrides/webrtc_timer.h"
 
 #include "base/check.h"
+#include "third_party/webrtc_overrides/metronome_task_queue_factory.h"
 
 namespace blink {
+
+const base::Feature kWebRtcTimerUsesMetronome{
+    "WebRtcTimerUsesMetronome", base::FEATURE_DISABLED_BY_DEFAULT};
 
 WebRtcTimer::SchedulableCallback::SchedulableCallback(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -201,6 +205,11 @@ void WebRtcTimer::RescheduleCallback() {
 
 void WebRtcTimer::OnStartUsingMetronome(
     scoped_refptr<MetronomeSource> metronome) {
+  if (!base::FeatureList::IsEnabled(kWebRtcTimerUsesMetronome)) {
+    // Don't use the metronome if the experiment is disabled.
+    return;
+  }
+  LOG(INFO) << "A WebRtcTimer is using the metronome";
   base::AutoLock auto_lock(lock_);
   DCHECK(!metronome_);
   DCHECK(metronome);

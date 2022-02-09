@@ -213,6 +213,7 @@ bool MetronomeSource::IsActive() {
 void MetronomeSource::StartTimer() {
   DCHECK(!is_active_);
   is_active_ = true;
+  LOG(INFO) << "Starting MetronomeSource";
   // Ref-counting ensures |this| stays alive until the timer has started.
   metronome_task_runner_->PostTask(
       FROM_HERE,
@@ -232,6 +233,7 @@ void MetronomeSource::StartTimer() {
 void MetronomeSource::StopTimer() {
   DCHECK(is_active_);
   is_active_ = false;
+  LOG(INFO) << "Stopping MetronomeSource";
   // Ref-counting ensures |this| stays alive until the timer has stopped.
   metronome_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(
