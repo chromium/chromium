@@ -9,6 +9,7 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/bubble/bubble_constants.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/style/color_provider.h"
@@ -313,6 +314,8 @@ void TrayBubbleView::InitializeAndShowBubble() {
   if (IsAnchoredToStatusArea()) {
     tray_bubble_counter_.emplace(
         StatusAreaWidget::ForWindow(GetWidget()->GetNativeView()));
+    if (!Shell::Get()->tablet_mode_controller()->InTabletMode())
+      Shell::Get()->app_list_controller()->DismissAppList();
   }
 
   // Register pre target event handler to reroute key
