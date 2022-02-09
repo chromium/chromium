@@ -51,6 +51,7 @@ class PartitionAllocMemoryReclaimerTest : public ::testing::Test {
         PartitionOptions::BackupRefPtr::kDisabled,
         PartitionOptions::UseConfigurablePool::kNo,
     });
+    allocator_->root()->UncapEmptySlotSpanMemoryForTesting();
   }
 
   void TearDown() override {
@@ -69,8 +70,7 @@ class PartitionAllocMemoryReclaimerTest : public ::testing::Test {
   std::unique_ptr<PartitionAllocator> allocator_;
 };
 
-// Flaky. https://crbug.com/1212670
-TEST_F(PartitionAllocMemoryReclaimerTest, DISABLED_FreesMemory) {
+TEST_F(PartitionAllocMemoryReclaimerTest, FreesMemory) {
   PartitionRoot<internal::ThreadSafe>* root = allocator_->root();
 
   size_t committed_initially = root->get_total_size_of_committed_pages();
@@ -85,8 +85,7 @@ TEST_F(PartitionAllocMemoryReclaimerTest, DISABLED_FreesMemory) {
   EXPECT_LE(committed_initially, committed_after);
 }
 
-// Flaky. https://crbug.com/1211441
-TEST_F(PartitionAllocMemoryReclaimerTest, DISABLED_Reclaim) {
+TEST_F(PartitionAllocMemoryReclaimerTest, Reclaim) {
   PartitionRoot<internal::ThreadSafe>* root = allocator_->root();
   size_t committed_initially = root->get_total_size_of_committed_pages();
 
