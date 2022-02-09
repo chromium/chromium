@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -204,6 +205,7 @@ class WebAppIconManager : public AppRegistrarObserver {
   WebAppRegistrar& registrar_;
   base::FilePath web_apps_directory_;
   scoped_refptr<FileUtilsWrapper> utils_;
+  scoped_refptr<base::SequencedTaskRunner> icon_task_runner_;
 
   base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
       registrar_observation_{this};
