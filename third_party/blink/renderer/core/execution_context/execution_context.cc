@@ -672,20 +672,4 @@ bool ExecutionContext::RequireTrustedTypes() const {
          RuntimeEnabledFeatures::TrustedDOMTypesEnabled(this);
 }
 
-String ExecutionContext::addressSpaceForBindings() const {
-  switch (AddressSpace()) {
-    case network::mojom::IPAddressSpace::kPublic:
-    case network::mojom::IPAddressSpace::kUnknown:
-      return "public";
-
-    case network::mojom::IPAddressSpace::kPrivate:
-      return "private";
-
-    case network::mojom::IPAddressSpace::kLocal:
-      return "local";
-  }
-  NOTREACHED();
-  return "public";
-}
-
 }  // namespace blink

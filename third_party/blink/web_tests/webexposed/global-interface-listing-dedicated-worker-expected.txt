@@ -3243,7 +3243,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     setter onmessage
 [Worker] interface WorkerGlobalScope : EventTarget
 [Worker]     attribute @@toStringTag
-[Worker]     getter addressSpace
 [Worker]     getter caches
 [Worker]     getter crossOriginIsolated
 [Worker]     getter crypto
