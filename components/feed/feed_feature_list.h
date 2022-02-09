@@ -95,6 +95,7 @@ extern const base::Feature kEnableOpenInNewTabFromStartSurfaceFeed;
 // Feature that causes the WebUI version of the Feed to be enabled.
 extern const base::Feature kWebUiFeed;
 extern const base::FeatureParam<std::string> kWebUiScriptFetchUrl;
+extern const base::FeatureParam<bool> kWebUiDisableContentSecurityPolicy;
 
 std::string GetFeedReferrerUrl();
 
