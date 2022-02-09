@@ -478,6 +478,7 @@ crbug.com/1287249 [ android android-pixel-6 skia-renderer-vulkan android-chromiu
 crbug.com/1287249 [ android android-pixel-6 skia-renderer-vulkan android-chromium ] Pixel_Video_MP4_Rounded_Corner [ Failure ]
 crbug.com/1287249 [ android android-pixel-6 skia-renderer-vulkan android-chromium ] Pixel_Video_VP9 [ Failure ]
 crbug.com/1287249 [ android android-pixel-6 no-passthrough skia-renderer-vulkan android-chromium ] Pixel_Video_MP4_FourColors_Rot_180 [ Failure ]
+crbug.com/1287249 [ android android-pixel-6 android-chromium ] Pixel_WebGL2_BlitFramebuffer_Result_Displayed [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough skia-renderer-gl android-webview-instrumentation ] Pixel_Video_Context_Loss_VP9 [ Failure ]
 crbug.com/1288586 [ android android-pixel-6 no-passthrough skia-renderer-gl android-webview-instrumentation ] Pixel_OffscreenCanvasWebGLDefault [ Failure ]
 crbug.com/1289884 [ android android-pixel-6 skia-renderer-vulkan android-webview-instrumentation ] * [ Failure ]
