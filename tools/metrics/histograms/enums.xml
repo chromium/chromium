@@ -43255,6 +43255,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="7" label="LessThanFullThreadTimeAfterCapped"/>
   <int value="8" label="KillOnLessThreadTime"/>
   <int value="9" label="SlowWatchdogThread"/>
+  <int value="10" label="NoKillForGpuProgressInCrashDump"/>
 </enum>
 
 <enum name="GPUWebGraphicsContext3D_Init_CanLoseContext">

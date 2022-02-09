@@ -439,12 +439,11 @@ void GpuWatchdogThread::OnWatchdogTimeout() {
   // Delay the recording of kGpuWatchdogStart until the firs
   // OnWatchdogTimeout() to ensure this metric is created in the persistent
   // memory.
-  if (!is_watchdog_start_histogram_recorded) {
-    is_watchdog_start_histogram_recorded = true;
+  if (!is_watchdog_start_histogram_recorded_) {
+    is_watchdog_start_histogram_recorded_ = true;
     GpuWatchdogHistogram(GpuWatchdogThreadEvent::kGpuWatchdogStart);
   }
 
-  auto arm_disarm_counter = ReadArmDisarmCounter();
   GpuWatchdogTimeoutHistogram(GpuWatchdogTimeoutEvent::kTimeout);
   if (power_resumed_event_)
     num_of_timeout_after_power_resume_++;
@@ -456,6 +455,7 @@ void GpuWatchdogThread::OnWatchdogTimeout() {
 #endif
 
   // Collect all needed info for gpu hang detection.
+  auto arm_disarm_counter = ReadArmDisarmCounter();
   bool disarmed = arm_disarm_counter % 2 == 0;  // even number
   bool gpu_makes_progress = arm_disarm_counter != last_arm_disarm_counter_;
   bool no_gpu_hang = disarmed || gpu_makes_progress || SlowWatchdogThread();
@@ -467,25 +467,25 @@ void GpuWatchdogThread::OnWatchdogTimeout() {
 
   // No gpu hang. Continue with another OnWatchdogTimeout task.
   if (no_gpu_hang) {
-    last_on_watchdog_timeout_timeticks_ = base::TimeTicks::Now();
-    next_on_watchdog_timeout_time_ = base::Time::Now() + watchdog_timeout_;
-    last_arm_disarm_counter_ = ReadArmDisarmCounter();
-
-    task_runner()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&GpuWatchdogThread::OnWatchdogTimeout, weak_ptr_),
-        watchdog_timeout_);
+    ContinueWithNextWatchdogTimeoutTask();
     return;
   }
 
-  // Still armed without any progress. GPU possibly hangs.
-  GpuWatchdogTimeoutHistogram(GpuWatchdogTimeoutEvent::kKill);
-#if BUILDFLAG(IS_WIN)
-  if (less_than_full_thread_time_after_capped_)
-    GpuWatchdogTimeoutHistogram(GpuWatchdogTimeoutEvent::kKillOnLessThreadTime);
-#endif
-
+  // If the watched thread makes a progress after crash dump, the GPU process
+  // will not be killed and every thing continues after this function.
+  // Otherwise, this is the end of the GPU process.
   DeliberatelyTerminateToRecoverFromHang();
+}
+
+void GpuWatchdogThread::ContinueWithNextWatchdogTimeoutTask() {
+  last_on_watchdog_timeout_timeticks_ = base::TimeTicks::Now();
+  next_on_watchdog_timeout_time_ = base::Time::Now() + watchdog_timeout_;
+  last_arm_disarm_counter_ = ReadArmDisarmCounter();
+
+  task_runner()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&GpuWatchdogThread::OnWatchdogTimeout, weak_ptr_),
+      watchdog_timeout_);
 }
 
 bool GpuWatchdogThread::SlowWatchdogThread() {
@@ -583,7 +583,9 @@ base::ThreadTicks GpuWatchdogThread::GetWatchedThreadTime() {
 
 void GpuWatchdogThread::DeliberatelyTerminateToRecoverFromHang() {
   DCHECK(watchdog_thread_task_runner_->BelongsToCurrentThread());
+
   // If this is for gpu testing, do not terminate the gpu process.
+  // Just signal and quit.
   if (is_test_mode_) {
     test_result_timeout_and_gpu_hang_.Set();
     return;
@@ -640,12 +642,41 @@ void GpuWatchdogThread::DeliberatelyTerminateToRecoverFromHang() {
   auto last_arm_disarm_counter = ReadArmDisarmCounter();
   base::debug::Alias(&last_arm_disarm_counter);
 
-  // Use RESULT_CODE_HUNG so this crash is separated from other
-  // EXCEPTION_ACCESS_VIOLATION buckets for UMA analysis.
-  // Create a crash dump first. TerminateCurrentProcessImmediately will not
-  // create a dump.
+  // Create a crash dump first
   base::debug::DumpWithoutCrashing();
-  base::Process::TerminateCurrentProcessImmediately(RESULT_CODE_HUNG);
+
+  // Final check after the crash dump. If the watched thread makes a progress
+  // (disarmed) during generating crash dump, no need to crash the GPU process.
+  bool gpu_hang = IsArmed();
+  if (gpu_hang) {
+    // Still armed without any progress. GPU possibly hangs.
+    GpuWatchdogTimeoutHistogram(GpuWatchdogTimeoutEvent::kKill);
+#if BUILDFLAG(IS_WIN)
+    if (less_than_full_thread_time_after_capped_)
+      GpuWatchdogTimeoutHistogram(
+          GpuWatchdogTimeoutEvent::kKillOnLessThreadTime);
+#endif
+
+    // Use RESULT_CODE_HUNG so this crash is separated from other
+    // EXCEPTION_ACCESS_VIOLATION buckets for UMA analysis.
+    // TerminateCurrentProcessImmediately itself will not generate a dump.
+    base::Process::TerminateCurrentProcessImmediately(RESULT_CODE_HUNG);
+    // The end of the GPU process.
+  } else {
+    crash_keys::gpu_watchdog_crashed_in_gpu_init.Clear();
+    crash_keys::gpu_watchdog_kill_after_power_resume.Clear();
+    crash_keys::gpu_thread.Clear();
+
+    GpuWatchdogTimeoutHistogram(
+        GpuWatchdogTimeoutEvent::kNoKillForGpuProgressDuringCrashDumping);
+#if BUILDFLAG(IS_WIN)
+    // Reset the counters for WatchedThreadNeedsMoreThreadTime().
+    remaining_watched_thread_ticks_ = watchdog_timeout_;
+    count_of_more_gpu_thread_time_allowed_ = 0;
+#endif
+
+    ContinueWithNextWatchdogTimeoutTask();
+  }
 }
 
 void GpuWatchdogThread::GpuWatchdogHistogram(
@@ -704,10 +735,6 @@ void GpuWatchdogThread::WatchedThreadNeedsMoreThreadTimeHistogram(
         GpuWatchdogTimeoutHistogram(
             GpuWatchdogTimeoutEvent::kLessThanFullThreadTimeAfterCapped);
       }
-
-      // Used by GPU.WatchdogThread.WaitTime later
-      time_in_wait_for_full_thread_time_ =
-          count_of_more_gpu_thread_time_allowed_ * watchdog_timeout_;
     }
   }
 }

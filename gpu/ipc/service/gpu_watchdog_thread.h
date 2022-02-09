@@ -63,7 +63,8 @@ enum class GpuWatchdogTimeoutEvent {
   // OnWatchdogTimeout() is called long after the expected time. The GPU is not
   // killed this time because of the slow system.
   kSlowWatchdogThread = 9,
-  kMaxValue = kSlowWatchdogThread,
+  kNoKillForGpuProgressDuringCrashDumping = 10,
+  kMaxValue = kNoKillForGpuProgressDuringCrashDumping,
 };
 
 #if BUILDFLAG(IS_WIN)
@@ -173,6 +174,7 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
 
   // Do not change the function name. It is used for [GPU HANG] crash reports.
   void DeliberatelyTerminateToRecoverFromHang();
+  void ContinueWithNextWatchdogTimeoutTask();
 
   // Records "GPU.WatchdogThread.Event".
   void GpuWatchdogHistogram(GpuWatchdogThreadEvent thread_event);
@@ -254,10 +256,6 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
   // continue due to not enough thread time.
   int count_of_more_gpu_thread_time_allowed_ = 0;
 
-  // The total timeout, up to 60 seconds, the watchdog thread waits for the GPU
-  // main thread to get full thread time.
-  base::TimeDelta time_in_wait_for_full_thread_time_;
-
   // After detecting GPU hang and continuing running through
   // OnGpuWatchdogTimeout for the max cycles, the GPU main thread still cannot
   // get the full thread time.
@@ -285,7 +283,7 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
   bool is_paused_ = false;
 
   // whether GpuWatchdogThreadEvent::kGpuWatchdogStart has been recorded.
-  bool is_watchdog_start_histogram_recorded = false;
+  bool is_watchdog_start_histogram_recorded_ = false;
 
   // Read/Write by the watchdog thread only after initialized in the
   // constructor.
