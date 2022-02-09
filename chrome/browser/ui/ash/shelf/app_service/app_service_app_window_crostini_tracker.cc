@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_force_close_watcher.h"
@@ -67,6 +68,18 @@ void MoveWindowFromOldDisplayToNewDisplay(aura::Window* window,
   window->SetBoundsInScreen(new_bounds, new_display);
 }
 
+// Returns true if the crostini tracker should ignore this window. Mainly used
+// to exclude other windows that are created by exo. Transient windows may
+// actually belong to crostini but we exclude them as well as their IDs will be
+// set at a later point.
+bool ShouldSkipWindow(aura::Window* window) {
+  return wm::GetTransientParent(window) ||
+         arc::GetWindowTaskOrSessionId(window).has_value() ||
+         crosapi::browser_util::IsLacrosWindow(window) ||
+         plugin_vm::IsPluginVmAppWindow(window) ||
+         borealis::BorealisWindowManager::IsBorealisWindow(window);
+}
+
 }  // namespace
 
 AppServiceAppWindowCrostiniTracker::AppServiceAppWindowCrostiniTracker(
@@ -79,14 +92,8 @@ AppServiceAppWindowCrostiniTracker::~AppServiceAppWindowCrostiniTracker() =
 void AppServiceAppWindowCrostiniTracker::OnWindowVisibilityChanged(
     aura::Window* window,
     const std::string& shelf_app_id) {
-  // Transient windows are set up after window init, so remove them here.
-  // Crostini shouldn't need to know about ARC app windows.
-  if (wm::GetTransientParent(window) ||
-      arc::GetWindowTaskOrSessionId(window).has_value() ||
-      crosapi::browser_util::IsLacrosWindow(window) ||
-      plugin_vm::IsPluginVmAppWindow(window)) {
+  if (ShouldSkipWindow(window))
     return;
-  }
 
   // Handle browser windows.
   Browser* browser = chrome::FindBrowserWithWindow(window);
@@ -199,14 +206,8 @@ void AppServiceAppWindowCrostiniTracker::OnAppLaunchRequested(
 
 std::string AppServiceAppWindowCrostiniTracker::GetShelfAppId(
     aura::Window* window) const {
-  // Transient windows are set up after window init, so remove them here.
-  // Crostini shouldn't need to know about ARC app windows.
-  if (wm::GetTransientParent(window) ||
-      arc::GetWindowTaskOrSessionId(window).has_value() ||
-      crosapi::browser_util::IsLacrosWindow(window) ||
-      plugin_vm::IsPluginVmAppWindow(window)) {
+  if (ShouldSkipWindow(window))
     return std::string();
-  }
 
   ash::ShelfID shelf_id =
       ash::ShelfID::Deserialize(window->GetProperty(ash::kShelfIDKey));
