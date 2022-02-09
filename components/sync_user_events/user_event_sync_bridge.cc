@@ -280,8 +280,8 @@ void UserEventSyncBridge::HandleGlobalIdChange(int64_t old_global_id,
   // not be within our given range, this approach seems less error prone.
   std::vector<std::unique_ptr<UserEventSpecifics>> affected;
 
-  auto range = in_flight_nav_linked_events_.equal_range(old_global_id);
-  for (auto iter = range.first; iter != range.second;) {
+  auto [begin, end] = in_flight_nav_linked_events_.equal_range(old_global_id);
+  for (auto iter = begin; iter != end;) {
     DCHECK_EQ(old_global_id, iter->second.navigation_id());
     affected.emplace_back(std::make_unique<UserEventSpecifics>(iter->second));
     iter = in_flight_nav_linked_events_.erase(iter);

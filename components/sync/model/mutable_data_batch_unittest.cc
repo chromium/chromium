@@ -20,7 +20,7 @@ TEST(MutableDataBatchTest, PutAndNextWithReuse) {
   batch.Put("one", base::WrapUnique(entity1));
   EXPECT_TRUE(batch.HasNext());
 
-  const auto& [key1, data1] = batch.Next();
+  auto [key1, data1] = batch.Next();
   EXPECT_FALSE(batch.HasNext());
   EXPECT_EQ("one", key1);
   EXPECT_EQ(entity1, data1.get());
@@ -28,7 +28,7 @@ TEST(MutableDataBatchTest, PutAndNextWithReuse) {
   batch.Put("two", base::WrapUnique(entity2));
   EXPECT_TRUE(batch.HasNext());
 
-  const auto& [key2, data2] = batch.Next();
+  auto [key2, data2] = batch.Next();
   EXPECT_FALSE(batch.HasNext());
   EXPECT_EQ("two", key2);
   EXPECT_EQ(entity2, data2.get());
@@ -47,7 +47,7 @@ TEST(MutableDataBatchTest, PutAndNextInterleaved) {
   batch.Put("two", base::WrapUnique(entity2));
   EXPECT_TRUE(batch.HasNext());
 
-  const auto& [key1, data1] = batch.Next();
+  auto [key1, data1] = batch.Next();
   EXPECT_TRUE(batch.HasNext());
   EXPECT_EQ("one", key1);
   EXPECT_EQ(entity1, data1.get());
@@ -55,12 +55,12 @@ TEST(MutableDataBatchTest, PutAndNextInterleaved) {
   batch.Put("three", base::WrapUnique(entity3));
   EXPECT_TRUE(batch.HasNext());
 
-  const auto& [key2, data2] = batch.Next();
+  auto [key2, data2] = batch.Next();
   EXPECT_TRUE(batch.HasNext());
   EXPECT_EQ("two", key2);
   EXPECT_EQ(entity2, data2.get());
 
-  const auto& [key3, data3] = batch.Next();
+  auto [key3, data3] = batch.Next();
   EXPECT_FALSE(batch.HasNext());
   EXPECT_EQ("three", key3);
   EXPECT_EQ(entity3, data3.get());
@@ -78,12 +78,12 @@ TEST(MutableDataBatchTest, PutAndNextSharedKey) {
   batch.Put("same", base::WrapUnique(entity2));
   EXPECT_TRUE(batch.HasNext());
 
-  const auto& [key1, data1] = batch.Next();
+  auto [key1, data1] = batch.Next();
   EXPECT_TRUE(batch.HasNext());
   EXPECT_EQ("same", key1);
   EXPECT_EQ(entity1, data1.get());
 
-  const auto& [key2, data2] = batch.Next();
+  auto [key2, data2] = batch.Next();
   EXPECT_FALSE(batch.HasNext());
   EXPECT_EQ("same", key2);
   EXPECT_EQ(entity2, data2.get());

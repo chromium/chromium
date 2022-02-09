@@ -451,10 +451,8 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
     AutofillTable* table = AutofillTable::FromWebDatabase(&db_);
     syncer::MetadataBatch batch;
     if (table->GetAllSyncMetadata(syncer::AUTOFILL_WALLET_METADATA, &batch)) {
-      for (const std::pair<const std::string,
-                           std::unique_ptr<sync_pb::EntityMetadata>>& entry :
-           batch.GetAllMetadata()) {
-        storage_keys.push_back(entry.first);
+      for (const auto& [storage_key, metadata] : batch.GetAllMetadata()) {
+        storage_keys.push_back(storage_key);
       }
     }
     return storage_keys;

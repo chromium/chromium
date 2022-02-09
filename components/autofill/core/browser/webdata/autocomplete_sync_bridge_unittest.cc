@@ -113,10 +113,10 @@ MATCHER_P(HasSpecifics, expected, "") {
 void VerifyDataBatch(std::map<std::string, AutofillSpecifics> expected,
                      std::unique_ptr<DataBatch> batch) {
   while (batch->HasNext()) {
-    const KeyAndData& data_pair = batch->Next();
-    auto expected_iter = expected.find(data_pair.first);
+    auto [key, data] = batch->Next();
+    auto expected_iter = expected.find(key);
     ASSERT_NE(expected_iter, expected.end());
-    EXPECT_THAT(data_pair.second, HasSpecifics(expected_iter->second));
+    EXPECT_THAT(data, HasSpecifics(expected_iter->second));
     // Removing allows us to verify we don't see the same item multiple times,
     // and that we saw everything we expected.
     expected.erase(expected_iter);

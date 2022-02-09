@@ -248,13 +248,12 @@ void DeleteDirectiveHandler::DeleteDirectiveTask::
     return;
 
   // Call backend to expire history of directives in each group.
-  for (GlobalIdTimesGroup::const_iterator group_it = id_times_group.begin();
-       group_it != id_times_group.end(); ++group_it) {
+  for (const auto& [begin_and_end_times, times] : id_times_group) {
+    const auto& [begin_time, end_time] = begin_and_end_times;
     // Add 1us to cover history entries visited at the end time because time
     // range in directive is inclusive.
-    history_backend->ExpireHistoryForTimes(
-        group_it->second, group_it->first.first,
-        group_it->first.second + base::Microseconds(1));
+    history_backend->ExpireHistoryForTimes(times, begin_time,
+                                           end_time + base::Microseconds(1));
   }
 }
 

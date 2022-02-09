@@ -202,8 +202,8 @@ void TabNodePool::DeleteTabNode(int tab_node_id) {
 
 std::set<int> TabNodePool::GetAllTabNodeIds() const {
   std::set<int> tab_node_ids = free_nodes_pool_;
-  for (const auto& entry : nodeid_tabid_map_) {
-    tab_node_ids.insert(entry.first);
+  for (const auto& [tab_node_id, tab_id] : nodeid_tabid_map_) {
+    tab_node_ids.insert(tab_node_id);
   }
   return tab_node_ids;
 }

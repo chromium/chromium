@@ -152,7 +152,7 @@ class UserEventSyncBridgeTest : public testing::Test {
     std::map<std::string, sync_pb::EntitySpecifics> storage_key_to_specifics;
     if (batch != nullptr) {
       while (batch->HasNext()) {
-        const auto& [key, data] = batch->Next();
+        auto [key, data] = batch->Next();
         storage_key_to_specifics[key] = data->specifics;
       }
     }
@@ -177,7 +177,7 @@ class UserEventSyncBridgeTest : public testing::Test {
 
     std::unique_ptr<sync_pb::EntitySpecifics> specifics;
     if (batch != nullptr && batch->HasNext()) {
-      const auto& [key, data] = batch->Next();
+      auto [key, data] = batch->Next();
       specifics = std::make_unique<sync_pb::EntitySpecifics>(data->specifics);
       EXPECT_FALSE(batch->HasNext());
     }

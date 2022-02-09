@@ -415,12 +415,10 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
     // created version. Password comparison is done by comparing the client
     // tags. In addition, collect the client tags of local passwords.
     std::unordered_set<std::string> client_tags_of_local_passwords;
-    for (const auto& pair : key_to_local_form_map) {
-      const FormPrimaryKey primary_key = pair.first;
-      const PasswordForm& local_password_form = *pair.second;
-
+    for (const auto& [primary_key, local_password_form] :
+         key_to_local_form_map) {
       std::unique_ptr<syncer::EntityData> local_form_entity_data =
-          CreateEntityData(local_password_form);
+          CreateEntityData(*local_password_form);
       const std::string client_tag_of_local_password =
           GetClientTag(*local_form_entity_data);
       client_tags_of_local_passwords.insert(client_tag_of_local_password);
@@ -451,17 +449,17 @@ absl::optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
           metadata_change_list.get());
 
       if (AreLocalAndRemotePasswordsEqual(remote_password_specifics,
-                                          local_password_form)) {
+                                          *local_password_form)) {
         // Passwords are identical, nothing else to do.
         continue;
       }
 
       // Passwords or insecure credentials aren't identical.
       if (ConvertToBaseTime(remote_password_specifics.date_created()) <
-              local_password_form.date_created ||
+              local_password_form->date_created ||
           (AreLocalAndRemotePasswordsEqualExcludingIssues(
-               remote_password_specifics, local_password_form) &&
-           local_password_form.IsInsecureCredential(InsecureType::kPhished))) {
+               remote_password_specifics, *local_password_form) &&
+           local_password_form->IsInsecureCredential(InsecureType::kPhished))) {
         // Either the local password is more recent, or they are equal but the
         // local password has been marked as phished. While all other types of
         // issues are easy to recompute (e.g. via Password Check) phished
@@ -799,11 +797,10 @@ void PasswordSyncBridge::GetAllDataForDebugging(DataCallback callback) {
   }
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
-  for (const auto& pair : key_to_form_map) {
-    PasswordForm form = *pair.second;
-    form.password_value = u"<redacted>";
-    batch->Put(base::NumberToString(pair.first.value()),
-               CreateEntityData(form));
+  for (const auto& [primary_key, form] : key_to_form_map) {
+    form->password_value = u"<redacted>";
+    batch->Put(base::NumberToString(primary_key.value()),
+               CreateEntityData(*form));
   }
   std::move(callback).Run(std::move(batch));
 }
@@ -855,14 +852,12 @@ void PasswordSyncBridge::ApplyStopSyncChanges(
   if (result == FormRetrievalResult::kSuccess) {
     std::set<FormPrimaryKey> unsynced_passwords_storage_keys =
         GetUnsyncedPasswordsStorageKeys();
-    for (const auto& primary_key_and_form : logins) {
-      FormPrimaryKey primary_key = primary_key_and_form.first;
-      const PasswordForm& form = *primary_key_and_form.second;
-      password_store_changes.emplace_back(PasswordStoreChange::REMOVE, form,
+    for (const auto& [primary_key, form] : logins) {
+      password_store_changes.emplace_back(PasswordStoreChange::REMOVE, *form,
                                           primary_key);
       if (unsynced_passwords_storage_keys.count(primary_key) != 0 &&
-          !form.blocked_by_user) {
-        unsynced_logins_being_deleted.push_back(form);
+          !form->blocked_by_user) {
+        unsynced_logins_being_deleted.push_back(*form);
       }
     }
   }
@@ -894,11 +889,11 @@ std::set<FormPrimaryKey> PasswordSyncBridge::GetUnsyncedPasswordsStorageKeys() {
   }
   std::unique_ptr<syncer::MetadataBatch> batch =
       metadata_store->GetAllSyncMetadata();
-  for (const auto& metadata_entry : batch->GetAllMetadata()) {
+  for (const auto& [storage_key, metadata] : batch->GetAllMetadata()) {
     // Ignore unsynced deletions.
-    if (!metadata_entry.second->is_deleted() &&
-        change_processor()->IsEntityUnsynced(metadata_entry.first)) {
-      storage_keys.insert(ParsePrimaryKey(metadata_entry.first));
+    if (!metadata->is_deleted() &&
+        change_processor()->IsEntityUnsynced(storage_key)) {
+      storage_keys.insert(ParsePrimaryKey(storage_key));
     }
   }
   return storage_keys;

@@ -57,22 +57,20 @@ void SessionSyncTestHelper::VerifySyncedSession(
 
   // We assume the window id's are in increasing order.
   int i = 1;
-  for (auto win_iter = windows.begin(); win_iter != windows.end();
-       ++win_iter, ++i) {
+  for (const std::vector<SessionID>& window : windows) {
     sessions::SessionWindow* win_ptr;
     auto map_iter = session.windows.find(SessionID::FromSerializedValue(i));
     if (map_iter != session.windows.end())
       win_ptr = &map_iter->second->wrapped_window;
     else
       FAIL();
-    ASSERT_EQ(win_iter->size(), win_ptr->tabs.size());
+    ASSERT_EQ(window.size(), win_ptr->tabs.size());
     ASSERT_EQ(0, win_ptr->selected_tab_index);
     ASSERT_EQ(sessions::SessionWindow::TYPE_NORMAL, win_ptr->type);
     int j = 0;
-    for (auto tab_iter = (*win_iter).begin(); tab_iter != (*win_iter).end();
-         ++tab_iter, ++j) {
+    for (const SessionID& tab_id : window) {
       sessions::SessionTab* tab = win_ptr->tabs[j].get();
-      ASSERT_EQ(*tab_iter, tab->tab_id);
+      ASSERT_EQ(tab_id, tab->tab_id);
       ASSERT_EQ(1U, tab->navigations.size());
       ASSERT_EQ(1, tab->tab_visual_index);
       ASSERT_EQ(0, tab->current_navigation_index);
@@ -84,7 +82,9 @@ void SessionSyncTestHelper::VerifySyncedSession(
       ASSERT_EQ(tab->navigations[0].title(), base::ASCIIToUTF16(kTitle));
       ASSERT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
           tab->navigations[0].transition_type(), ui::PAGE_TRANSITION_TYPED));
+      j++;
     }
+    i++;
   }
 }
 

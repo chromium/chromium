@@ -286,27 +286,26 @@ void DeduplicateValidUpdatesByGUID(
           base::GUID::ParseLowercase(update.entity.specifics.bookmark().guid());
       DCHECK(guid_in_specifics.is_valid());
 
-      auto it_and_success =
+      auto [it, success] =
           guid_to_update.emplace(guid_in_specifics, updates_iter);
-      if (it_and_success.second) {
+      if (success) {
         ++updates_iter;
         continue;
       }
 
-      const UpdateResponseData& duplicate_update =
-          *it_and_success.first->second;
+      const auto& [guid, previous_update_it] = *it;
       DCHECK_EQ(guid_in_specifics.AsLowercaseString(),
-                duplicate_update.entity.specifics.bookmark().guid());
+                previous_update_it->entity.specifics.bookmark().guid());
       DLOG(ERROR) << "Duplicate guid for new sync ID " << update.entity.id
-                  << " and original sync ID " << duplicate_update.entity.id;
+                  << " and original sync ID " << previous_update_it->entity.id;
       const BookmarksGUIDDuplicates match_result =
-          MatchBookmarksGUIDDuplicates(update, duplicate_update);
+          MatchBookmarksGUIDDuplicates(update, *previous_update_it);
       base::UmaHistogramEnumeration("Sync.BookmarksGUIDDuplicates",
                                     match_result);
 
       if (CompareDuplicateUpdates(/*next_update=*/update,
-                                  /*previous_update=*/duplicate_update)) {
-        updates.erase(it_and_success.first->second);
+                                  /*previous_update=*/*previous_update_it)) {
+        updates.erase(previous_update_it);
         guid_to_update[guid_in_specifics] = updates_iter;
         ++updates_iter;
       } else {

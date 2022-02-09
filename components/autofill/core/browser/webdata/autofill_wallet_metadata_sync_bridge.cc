@@ -249,8 +249,7 @@ bool IsMetadataWorthUpdating(AutofillMetadata existing_entry,
 
 bool IsAnyMetadataDeletable(
     const std::map<std::string, AutofillMetadata>& metadata_map) {
-  for (const auto& pair : metadata_map) {
-    const AutofillMetadata& metadata = pair.second;
+  for (const auto& [storage_key, metadata] : metadata_map) {
     if (metadata.IsDeletable()) {
       return true;
     }
@@ -429,9 +428,9 @@ void AutofillWalletMetadataSyncBridge::ApplyStopSyncChanges(
   // disabled, so we want to delete the data as well (i.e. the wallet metadata
   // entities).
   if (delete_metadata_change_list) {
-    for (const std::pair<const std::string, AutofillMetadata>& pair : cache_) {
+    for (const auto& [storage_key, metadata] : cache_) {
       TypeAndMetadataId parsed_storage_key =
-          ParseWalletMetadataStorageKey(pair.first);
+          ParseWalletMetadataStorageKey(storage_key);
       RemoveServerMetadata(GetAutofillTable(), parsed_storage_key.type,
                            parsed_storage_key.metadata_id);
     }
@@ -492,13 +491,13 @@ void AutofillWalletMetadataSyncBridge::LoadDataCacheAndMetadata() {
         {FROM_HERE, "Failed reading autofill data from WebDatabase."});
     return;
   }
-  for (const auto& it : addresses_metadata) {
+  for (const auto& [metadata_id, metadata] : addresses_metadata) {
     cache_[GetStorageKeyForWalletMetadataTypeAndId(
-        WalletMetadataSpecifics::ADDRESS, it.first)] = it.second;
+        WalletMetadataSpecifics::ADDRESS, metadata_id)] = metadata;
   }
-  for (const auto& it : cards_metadata) {
+  for (const auto& [metadata_id, metadata] : cards_metadata) {
     cache_[GetStorageKeyForWalletMetadataTypeAndId(
-        WalletMetadataSpecifics::CARD, it.first)] = it.second;
+        WalletMetadataSpecifics::CARD, metadata_id)] = metadata;
   }
 
   // Load the metadata and send to the processor.
@@ -541,10 +540,9 @@ void AutofillWalletMetadataSyncBridge::DeleteOldOrphanMetadata() {
   // Identify storage keys of old orphans (we delete them below to avoid
   // modifying |cache_| while iterating).
   std::unordered_set<std::string> old_orphan_keys;
-  for (const auto& pair : cache_) {
-    const AutofillMetadata& metadata = pair.second;
+  for (const auto& [storage_key, metadata] : cache_) {
     if (metadata.IsDeletable() && !non_orphan_ids.count(metadata.id)) {
-      old_orphan_keys.insert(pair.first);
+      old_orphan_keys.insert(storage_key);
     }
   }
 
@@ -581,9 +579,7 @@ void AutofillWalletMetadataSyncBridge::GetDataImpl(
 
   auto batch = std::make_unique<syncer::MutableDataBatch>();
 
-  for (const auto& pair : cache_) {
-    const std::string& storage_key = pair.first;
-    const AutofillMetadata& metadata = pair.second;
+  for (const auto& [storage_key, metadata] : cache_) {
     TypeAndMetadataId parsed_storage_key =
         ParseWalletMetadataStorageKey(storage_key);
     if (!storage_keys_set || base::Contains(*storage_keys_set, storage_key)) {
@@ -600,8 +596,8 @@ void AutofillWalletMetadataSyncBridge::UploadInitialLocalData(
     const syncer::EntityChangeList& entity_data) {
   // First, make a copy of all local storage keys.
   std::set<std::string> local_keys_to_upload;
-  for (const auto& it : cache_) {
-    local_keys_to_upload.insert(it.first);
+  for (const auto& [storage_key, metadata] : cache_) {
+    local_keys_to_upload.insert(storage_key);
   }
   // Strip |local_keys_to_upload| of the keys of data provided by the server.
   for (const std::unique_ptr<EntityChange>& change : entity_data) {

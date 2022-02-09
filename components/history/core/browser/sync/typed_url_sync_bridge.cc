@@ -855,23 +855,24 @@ void TypedURLSyncBridge::MergeURLWithSync(
 
   // Same URL exists in sync data and in history data - compare the
   // entries to see if there's any difference.
-  std::vector<VisitRow>& visits = (*local_visit_vectors)[it->first];
+  auto& [url, url_row] = *it;
+  std::vector<VisitRow>& visits = (*local_visit_vectors)[url];
   std::vector<VisitInfo> added_visits;
 
   // Empty URLs should be filtered out by ShouldIgnoreUrl() previously.
-  DCHECK(!it->second.url().spec().empty());
+  DCHECK(!url_row.url().spec().empty());
 
   // Initialize fields in `new_url` to the same values as the fields in
   // the existing URLRow in the history DB. This is needed because we
   // overwrite the existing value in WriteToHistoryBackend(), but some of
   // the values in that structure are not synced (like typed_count).
-  URLRow new_url(it->second);
+  URLRow new_url(url_row);
 
   MergeResult difference =
-      MergeUrls(sync_url, it->second, &visits, &new_url, &added_visits);
+      MergeUrls(sync_url, url_row, &visits, &new_url, &added_visits);
 
   if (difference != DIFF_NONE) {
-    it->second = new_url;
+    url_row = new_url;
     if (difference & DIFF_UPDATE_NODE) {
       // We don't want to resurrect old visits that have been aged out by
       // other clients, so remove all visits that are older than the
@@ -898,12 +899,12 @@ void TypedURLSyncBridge::MergeURLWithSync(
     }
     if (difference & DIFF_LOCAL_ROW_CHANGED) {
       // Add entry to updated_synced_urls to update the local db.
-      DCHECK_EQ(it->second.id(), new_url.id());
+      DCHECK_EQ(url_row.id(), new_url.id());
       updated_synced_urls->push_back(new_url);
     }
     if (difference & DIFF_LOCAL_VISITS_ADDED) {
       // Add entry with new visits to new_synced_visits to update the local db.
-      new_synced_visits->emplace_back(it->first, added_visits);
+      new_synced_visits->emplace_back(url, added_visits);
     }
   } else {
     // No difference in urls, erase from map

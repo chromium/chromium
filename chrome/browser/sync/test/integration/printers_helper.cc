@@ -43,14 +43,14 @@ bool ListsContainTheSamePrinters(const PrinterList& list_a,
   }
 
   for (const chromeos::Printer& a : list_a) {
-    auto range = map_b.equal_range(a.id());
+    auto [begin, end] = map_b.equal_range(a.id());
 
     auto it = std::find_if(
-        range.first, range.second,
+        begin, end,
         [&a](const std::pair<std::string, const chromeos::Printer*>& entry)
             -> bool { return PrintersAreMostlyEqual(a, *(entry.second)); });
 
-    if (it == range.second) {
+    if (it == end) {
       // Element in a does not match an element in b. Lists do not contain the
       // same elements.
       return false;

@@ -228,10 +228,10 @@ void VerifyEqual(const TypedUrlSpecifics& s1, const TypedUrlSpecifics& s2) {
 void VerifyDataBatch(std::map<std::string, TypedUrlSpecifics> expected,
                      std::unique_ptr<DataBatch> batch) {
   while (batch->HasNext()) {
-    const KeyAndData& pair = batch->Next();
-    auto iter = expected.find(pair.first);
+    auto [key, data] = batch->Next();
+    auto iter = expected.find(key);
     ASSERT_NE(iter, expected.end());
-    VerifyEqual(iter->second, pair.second->specifics.typed_url());
+    VerifyEqual(iter->second, data->specifics.typed_url());
     // Removing allows us to verify we don't see the same item multiple times,
     // and that we saw everything we expected.
     expected.erase(iter);
@@ -461,8 +461,9 @@ class TypedURLSyncBridgeTest : public testing::Test {
     MetadataBatch metadata_batch;
     metadata_store()->GetAllSyncMetadata(&metadata_batch);
     std::set<std::string> keys;
-    for (const auto& kv : metadata_batch.GetAllMetadata()) {
-      keys.insert(kv.first);
+    for (const auto& [storage_key, metadata] :
+         metadata_batch.GetAllMetadata()) {
+      keys.insert(storage_key);
     }
     return keys;
   }

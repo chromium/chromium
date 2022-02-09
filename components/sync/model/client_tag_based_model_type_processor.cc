@@ -1113,7 +1113,7 @@ void ClientTagBasedModelTypeProcessor::MergeDataWithMetadataForDebugging(
   std::string type_string = ModelTypeToDebugString(type_);
 
   while (batch->HasNext()) {
-    const auto& [storage_key, data] = batch->Next();
+    auto [storage_key, data] = batch->Next();
 
     // There is an overlap between EntityData fields from the bridge and
     // EntityMetadata fields from the processor's entity, metadata is

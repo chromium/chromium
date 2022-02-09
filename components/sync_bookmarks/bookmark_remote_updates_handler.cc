@@ -86,9 +86,9 @@ void TraverseAndAppendChildren(
   }
   // Recurse over all children.
   for (const base::GUID& child : node_to_children.at(node_guid)) {
-    auto range = guid_to_updates.equal_range(child);
-    DCHECK(range.first != range.second);
-    for (auto it = range.first; it != range.second; ++it) {
+    auto [begin, end] = guid_to_updates.equal_range(child);
+    DCHECK(begin != end);
+    for (auto it = begin; it != end; ++it) {
       ordered_updates->push_back(it->second);
     }
     TraverseAndAppendChildren(child, guid_to_updates, node_to_children,

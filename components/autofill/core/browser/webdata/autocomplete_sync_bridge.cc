@@ -111,15 +111,16 @@ bool ParseStorageKey(const std::string& storage_key, AutofillKey* out_key) {
 AutofillEntry CreateAutofillEntry(const AutofillSpecifics& autofill_specifics) {
   AutofillKey key(base::UTF8ToUTF16(autofill_specifics.name()),
                   base::UTF8ToUTF16(autofill_specifics.value()));
-  Time date_created, date_last_used;
   const google::protobuf::RepeatedField<int64_t>& timestamps =
       autofill_specifics.usage_timestamp();
-  if (!timestamps.empty()) {
-    auto iter_pair = std::minmax_element(timestamps.begin(), timestamps.end());
-    date_created = Time::FromInternalValue(*iter_pair.first);
-    date_last_used = Time::FromInternalValue(*iter_pair.second);
+  if (timestamps.empty()) {
+    return AutofillEntry(key, base::Time(), base::Time());
   }
-  return AutofillEntry(key, date_created, date_last_used);
+
+  auto [date_created_iter, date_last_used_iter] =
+      std::minmax_element(timestamps.begin(), timestamps.end());
+  return AutofillEntry(key, Time::FromInternalValue(*date_created_iter),
+                       Time::FromInternalValue(*date_last_used_iter));
 }
 
 // This is used to respond to ApplySyncChanges() and MergeSyncData(). Attempts

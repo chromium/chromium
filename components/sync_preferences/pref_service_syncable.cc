@@ -77,8 +77,7 @@ PrefServiceSyncable::PrefServiceSyncable(
       &PrefServiceSyncable::ProcessPrefChange, base::Unretained(this)));
 
   // Add already-registered syncable preferences to PrefModelAssociator.
-  for (const auto& entry : *pref_registry_) {
-    const std::string& path = entry.first;
+  for (const auto& [path, value] : *pref_registry_) {
     AddRegisteredSyncablePreference(path,
                                     pref_registry_->GetRegistrationFlags(path));
   }

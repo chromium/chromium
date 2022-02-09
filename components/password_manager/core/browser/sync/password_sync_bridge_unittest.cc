@@ -217,8 +217,8 @@ class FakeDatabase {
 
   FormRetrievalResult ReadAllLogins(PrimaryKeyToFormMap* map) {
     map->clear();
-    for (const auto& pair : data_) {
-      map->emplace(pair.first, std::make_unique<PasswordForm>(*pair.second));
+    for (const auto& [primary_key, form] : data_) {
+      map->emplace(primary_key, std::make_unique<PasswordForm>(*form));
     }
     return FormRetrievalResult::kSuccess;
   }
@@ -277,9 +277,9 @@ class FakeDatabase {
 
  private:
   FormPrimaryKey GetPrimaryKey(const PasswordForm& form) const {
-    for (const auto& pair : data_) {
-      if (ArePasswordFormUniqueKeysEqual(*pair.second, form)) {
-        return pair.first;
+    for (const auto& [primary_key, other_form] : data_) {
+      if (ArePasswordFormUniqueKeysEqual(*other_form, form)) {
+        return primary_key;
       }
     }
     return FormPrimaryKey(-1);
@@ -421,10 +421,10 @@ class PasswordSyncBridgeTest : public testing::Test {
     if (!batch || !batch->HasNext()) {
       return absl::nullopt;
     }
-    const syncer::KeyAndData& data_pair = batch->Next();
-    EXPECT_THAT(data_pair.first, Eq(storage_key));
+    auto [other_storage_key, entity_data] = batch->Next();
+    EXPECT_THAT(other_storage_key, Eq(storage_key));
     EXPECT_FALSE(batch->HasNext());
-    return data_pair.second->specifics.password();
+    return entity_data->specifics.password();
   }
 
   FakeDatabase* fake_db() { return &fake_db_; }
@@ -983,8 +983,8 @@ TEST_F(PasswordSyncBridgeTest,
   ASSERT_THAT(batch, NotNull());
   EXPECT_TRUE(batch->HasNext());
   while (batch->HasNext()) {
-    const syncer::KeyAndData& data_pair = batch->Next();
-    EXPECT_EQ("<redacted>", data_pair.second->specifics.password()
+    auto [key, data] = batch->Next();
+    EXPECT_EQ("<redacted>", data->specifics.password()
                                 .client_only_encrypted_data()
                                 .password_value());
   }

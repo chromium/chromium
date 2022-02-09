@@ -60,13 +60,11 @@ bool IsPresentable(SyncSessionsClient* sessions_client,
 bool IsValidSessionHeader(const sync_pb::SessionHeader& header) {
   std::set<int> session_window_ids;
   std::set<int> session_tab_ids;
-  for (int i = 0; i < header.window_size(); ++i) {
-    const sync_pb::SessionWindow& window = header.window(i);
+  for (const sync_pb::SessionWindow& window : header.window()) {
     if (!session_window_ids.insert(window.window_id()).second)
       return false;
 
-    for (int j = 0; j < window.tab_size(); ++j) {
-      const int tab_id = window.tab(j);
+    for (int tab_id : window.tab()) {
       if (!session_tab_ids.insert(tab_id).second)
         return false;
     }
