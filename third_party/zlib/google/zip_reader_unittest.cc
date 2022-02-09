@@ -216,6 +216,11 @@ TEST_F(ZipReaderTest, Open_ExistentButNonZipFile) {
   ASSERT_FALSE(reader.Open(data_dir_.AppendASCII("create_test_zip.sh")));
 }
 
+TEST_F(ZipReaderTest, Open_EmptyFile) {
+  ZipReader reader;
+  EXPECT_FALSE(reader.Open(data_dir_.AppendASCII("empty.zip")));
+}
+
 // Iterate through the contents in the test ZIP archive, and compare that the
 // contents collected from the ZipReader matches the expected contents.
 TEST_F(ZipReaderTest, Iteration) {
