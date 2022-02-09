@@ -123,8 +123,10 @@ void FirstPartySets::ParseAndSet(base::File sets_file) {
     return;
   }
 
+  // We use USER_BLOCKING here since First-Party Set initialization blocks
+  // network navigations at startup.
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&ReadSetsFile, std::move(sets_file)),
       base::BindOnce(&FirstPartySets::OnReadSetsFile,
                      weak_factory_.GetWeakPtr()));

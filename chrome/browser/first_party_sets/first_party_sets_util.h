@@ -27,6 +27,10 @@ class FirstPartySetsUtil {
   // empty) and with a callback that should eventually be invoked with the
   // current First-Party Sets (encoded as a string). The callback writes the
   // current First-Party Sets to the file in `user_data_dir`.
+  //
+  // If First-Party Sets is disabled, then this method still needs to read the
+  // sets, since we may still need to clear data from a previous invocation of
+  // Chromium which had First-Party Sets enabled.
   void SendAndUpdatePersistedSets(
       const base::FilePath& user_data_dir,
       base::OnceCallback<void(base::OnceCallback<void(const std::string&)>,

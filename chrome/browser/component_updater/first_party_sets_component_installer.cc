@@ -80,8 +80,10 @@ void SetFirstPartySetsConfig(SetsReadyOnceCallback on_sets_ready) {
     return;
   }
 
+  // We use USER_BLOCKING here since First-Party Set initialization blocks
+  // network navigations at startup.
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&OpenFile, instance_path), std::move(on_sets_ready));
 }
 

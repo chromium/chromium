@@ -85,9 +85,11 @@ void FirstPartySetsUtil::SendAndUpdatePersistedSets(
   const base::FilePath persisted_sets_path =
       user_data_dir.Append(kPersistedFirstPartySetsFileName);
 
+  // We use USER_BLOCKING here since First-Party Set initialization blocks
+  // network navigations at startup.
   // base::Unretained(this) is safe here because this is a static singleton.
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&LoadSetsFromDisk, persisted_sets_path),
       base::BindOnce(&FirstPartySetsUtil::SendPersistedSets,
                      base::Unretained(this), std::move(send_sets),
