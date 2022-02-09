@@ -39,7 +39,8 @@ class FileSystemAccessAccessHandleHostImpl
       mojo::PendingReceiver<
           blink::mojom::FileSystemAccessCapacityAllocationHost>
           capacity_allocation_host_receiver,
-      int64_t file_size);
+      int64_t file_size,
+      base::ScopedClosureRunner on_close_callback);
   FileSystemAccessAccessHandleHostImpl(
       const FileSystemAccessAccessHandleHostImpl&) = delete;
   FileSystemAccessAccessHandleHostImpl& operator=(
@@ -92,6 +93,12 @@ class FileSystemAccessAccessHandleHostImpl
       capacity_allocation_host_;
 
   const storage::FileSystemURL url_;
+
+  // Comes from `FileSystemOperation::OpenFileCallback`'s `on_close_callback`,
+  // which needs to run when its corresponding file closes. `on_close_callback_`
+  // will run when `this` is destroyed, which errs on the side of not running
+  // the callback too early, before the file is actually closed.
+  base::ScopedClosureRunner on_close_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

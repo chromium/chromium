@@ -203,7 +203,8 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
           blink::mojom::FileSystemAccessCapacityAllocationHost>
           capacity_allocation_host_receiver,
       int64_t file_size,
-      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock);
+      scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
+      base::ScopedClosureRunner on_close_callback);
 
   // Create a transfer token for a specific file or directory.
   void CreateTransferToken(

@@ -4,6 +4,7 @@
 
 #include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
 
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/files/file_error_or.h"
@@ -257,7 +258,8 @@ void FileSystemAccessFileHandleImpl::DoOpenIncognitoFile(
   mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
       access_handle_host_remote = manager()->CreateAccessHandleHost(
           url(), file_delegate_host_remote.InitWithNewPipeAndPassReceiver(),
-          mojo::NullReceiver(), 0, std::move(lock));
+          mojo::NullReceiver(), 0, std::move(lock),
+          base::ScopedClosureRunner());
 
   std::move(callback).Run(
       file_system_access_error::Ok(),
@@ -286,8 +288,11 @@ void FileSystemAccessFileHandleImpl::DoGetLengthAfterOpenFile(
     OpenAccessHandleCallback callback,
     scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
     base::File file,
-    base::OnceClosure /*on_close_callback*/) {
+    base::OnceClosure on_close_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::ScopedClosureRunner scoped_on_close_callback(
+      std::move(on_close_callback));
 
   blink::mojom::FileSystemAccessErrorPtr result =
       file_system_access_error::FromFileError(file.error_details());
@@ -315,12 +320,13 @@ void FileSystemAccessFileHandleImpl::DoGetLengthAfterOpenFile(
       base::BindOnce(&GetFileLengthOnBlockingThread, std::move(file)),
       base::BindOnce(&FileSystemAccessFileHandleImpl::DidOpenFileAndGetLength,
                      weak_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(lock)));
+                     std::move(lock), std::move(scoped_on_close_callback)));
 }
 
 void FileSystemAccessFileHandleImpl::DidOpenFileAndGetLength(
     OpenAccessHandleCallback callback,
     scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock,
+    base::ScopedClosureRunner on_close_callback,
     std::pair<base::File, base::FileErrorOr<int64_t>> file_and_length) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -343,7 +349,8 @@ void FileSystemAccessFileHandleImpl::DidOpenFileAndGetLength(
       access_handle_host_remote = manager()->CreateAccessHandleHost(
           url(), mojo::NullReceiver(),
           capacity_allocation_host_remote.InitWithNewPipeAndPassReceiver(),
-          length_or_error.value(), std::move(lock));
+          length_or_error.value(), std::move(lock),
+          std::move(on_close_callback));
 
   std::move(callback).Run(
       file_system_access_error::Ok(),
