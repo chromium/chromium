@@ -73,6 +73,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/base/sync_base_switches.h"
@@ -133,7 +134,6 @@
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
 #include "chrome/browser/ash/sync/app_settings_model_type_controller.h"
 #include "chrome/browser/ash/sync/apps_model_type_controller.h"
-#include "chrome/browser/ash/sync/os_sync_model_type_controller.h"
 #include "chrome/browser/ash/sync/os_syncable_service_model_type_controller.h"
 #include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/sync/wifi_configuration_sync_service_factory.h"
@@ -450,45 +450,27 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
             syncer::OS_PRIORITY_PREFERENCES, model_type_store_factory,
             GetSyncableServiceForType(syncer::OS_PRIORITY_PREFERENCES),
             dump_stack, profile_->GetPrefs(), sync_service));
-    // Use the same delegate in full-sync and transport-only modes.
     syncer::ModelTypeControllerDelegate* printers_delegate =
         GetControllerDelegateForModelType(syncer::PRINTERS).get();
-    controllers.push_back(std::make_unique<OsSyncModelTypeController>(
+    controllers.push_back(std::make_unique<syncer::ModelTypeController>(
         syncer::PRINTERS,
-        /*delegate_for_full_sync_mode=*/
         std::make_unique<ForwardingModelTypeControllerDelegate>(
-            printers_delegate),
-        /*delegate_for_transport_mode=*/
-        std::make_unique<ForwardingModelTypeControllerDelegate>(
-            printers_delegate),
-        profile_->GetPrefs(), sync_service));
+            printers_delegate)));
     if (base::FeatureList::IsEnabled(switches::kSyncWifiConfigurations) &&
         WifiConfigurationSyncServiceFactory::ShouldRunInProfile(profile_)) {
-      // Use the same delegate in full-sync and transport-only modes.
       syncer::ModelTypeControllerDelegate* wifi_configurations_delegate =
           GetControllerDelegateForModelType(syncer::WIFI_CONFIGURATIONS).get();
-      controllers.push_back(std::make_unique<OsSyncModelTypeController>(
+      controllers.push_back(std::make_unique<syncer::ModelTypeController>(
           syncer::WIFI_CONFIGURATIONS,
-          /*delegate_for_full_sync_mode=*/
           std::make_unique<ForwardingModelTypeControllerDelegate>(
-              wifi_configurations_delegate),
-          /*delegate_for_transport_mode=*/
-          std::make_unique<ForwardingModelTypeControllerDelegate>(
-              wifi_configurations_delegate),
-          profile_->GetPrefs(), sync_service));
+              wifi_configurations_delegate)));
     }
-      // Use the same delegate in full-sync and transport-only modes.
-      syncer::ModelTypeControllerDelegate* workspace_desk_delegate =
-          GetControllerDelegateForModelType(syncer::WORKSPACE_DESK).get();
-      controllers.push_back(std::make_unique<OsSyncModelTypeController>(
-          syncer::WORKSPACE_DESK,
-          /*delegate_for_full_sync_mode=*/
-          std::make_unique<ForwardingModelTypeControllerDelegate>(
-              workspace_desk_delegate),
-          /*delegate_for_transport_mode=*/
-          std::make_unique<ForwardingModelTypeControllerDelegate>(
-              workspace_desk_delegate),
-          profile_->GetPrefs(), sync_service));
+    syncer::ModelTypeControllerDelegate* workspace_desk_delegate =
+        GetControllerDelegateForModelType(syncer::WORKSPACE_DESK).get();
+    controllers.push_back(std::make_unique<syncer::ModelTypeController>(
+        syncer::WORKSPACE_DESK,
+        std::make_unique<ForwardingModelTypeControllerDelegate>(
+            workspace_desk_delegate)));
   } else {
     // SyncSettingsCategorization is disabled.
     if (base::FeatureList::IsEnabled(switches::kSyncWifiConfigurations) &&
@@ -684,7 +666,7 @@ ChromeSyncClient::CreateAppsModelTypeController(
     return AppsModelTypeController::Create(
         GetModelTypeStoreService()->GetStoreFactory(),
         GetSyncableServiceForType(syncer::APPS), GetDumpStackClosure(),
-        sync_service, profile_);
+        profile_);
   }
   // Fall through.
 #endif
