@@ -246,8 +246,7 @@ class ResultsProcessorIntegrationTests(unittest.TestCase):
                      date_range.DateRange(1234567890987))
     self.assertEqual(hist.diagnostics['traceUrls'],
                      generic_set.GenericSet([
-                         'https://console.developers.google.com'
-                         '/m/cloudstorage/b/bucket/o/trace.html']))
+                         'https://storage.cloud.google.com/bucket/trace.html']))
 
   def testHistogramsOutputResetResults(self):
     self.SerializeIntermediateResults(

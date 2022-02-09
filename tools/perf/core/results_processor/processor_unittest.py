@@ -85,8 +85,7 @@ class ResultsProcessorUnitTests(unittest.TestCase):
       self.assertEqual(artifact['fetchUrl'], 'gs://bucket/path')
       self.assertEqual(
           artifact['viewUrl'],
-          'https://console.developers.google.com'
-          '/m/cloudstorage/b/bucket/o/path')
+          'https://storage.cloud.google.com/bucket/path')
 
   def testRunIdentifier(self):
     with mock.patch('random.randint') as randint_patch:
