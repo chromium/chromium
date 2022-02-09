@@ -31,7 +31,6 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.UrlBarDelegate;
@@ -176,7 +175,6 @@ public final class EditUrlSuggestionUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @FlakyTest(message = "https://crbug.com/1289740")
     public void testUrlSuggestionTriggered() {
         verifyUrlSuggestionTriggered(/* isIncognito */ false);
     }
@@ -204,7 +202,6 @@ public final class EditUrlSuggestionUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @FlakyTest(message = "https://crbug.com/1293353")
     public void testWhatYouTypedWrongUrl_Incognito() {
         verifyWhatYouTypedWrongUrl(/* isIncognito */ true);
     }
@@ -248,7 +245,6 @@ public final class EditUrlSuggestionUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @FlakyTest(message = "https://crbug.com/1289843")
     public void testCopyButtonPress() {
         verifyCopyButtonPress(/* isIncognito */ false);
     }
