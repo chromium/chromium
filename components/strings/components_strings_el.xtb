@@ -461,6 +461,7 @@
 <translation id="2337852623177822836">Η ρύθμιση ελέγχεται από τον διαχειριστή σας</translation>
 <translation id="2340263603246777781">Ο ιστότοπος <ph name="ORIGIN" /> επιθυμεί σύζευξη</translation>
 <translation id="2346319942568447007">Εικόνα που αντιγράψατε</translation>
+<translation id="2350796302381711542">Να επιτρέπεται στο <ph name="HANDLER_HOSTNAME" /> το άνοιγμα όλων των συνδέσμων <ph name="PROTOCOL" /> αντί για το χειριστή <ph name="REPLACED_HANDLER_TITLE" />;</translation>
 <translation id="2354001756790975382">Άλλοι σελιδοδείκτες</translation>
 <translation id="2354430244986887761">Η Ασφαλής περιήγηση Google πρόσφατα <ph name="BEGIN_LINK" />εντόπισε επιβλαβείς εφαρμογές<ph name="END_LINK" /> στον ιστότοπο <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Οι εισβολείς ενδέχεται να έχουν τη δυνατότητα να δουν τις εικόνες που προβάλετε σε αυτόν τον ιστότοπο και να σας εξαπατήσουν τροποποιώντας τες.</translation>
@@ -486,6 +487,7 @@
 <translation id="2413528052993050574">Ο διακομιστής δεν κατάφερε να αποδείξει ότι είναι <ph name="DOMAIN" />. Το πιστοποιητικό ασφαλείας του μπορεί να έχει ανακληθεί. Αυτό μπορεί να οφείλεται σε λανθασμένη ρύθμιση ή σε κάποιον τρίτο που επιτίθεται στη σύνδεσή σας.</translation>
 <translation id="2414886740292270097">Σκούρο</translation>
 <translation id="2430968933669123598">Διαχείριση Λογαριασμού Google, πατήστε το πλήκτρο Enter για να διαχειριστείτε τις πληροφορίες, το απόρρητο και την ασφάλειά σας στον Λογαριασμό σας Google</translation>
+<translation id="2436186046335138073">Να επιτρέπεται στο <ph name="HANDLER_HOSTNAME" /> το άνοιγμα όλων των συνδέσμων <ph name="PROTOCOL" />;</translation>
 <translation id="2438874542388153331">Τετραπλό τρύπημα στα δεξιά</translation>
 <translation id="2450021089947420533">Διαδρομές</translation>
 <translation id="2463739503403862330">Συμπλήρωση</translation>
@@ -635,6 +637,7 @@
 <translation id="2930577230479659665">Περικοπή μετά από κάθε αντίγραφο</translation>
 <translation id="2932085390869194046">Πρόταση για κωδικό πρόσβασης…</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">Άνοιγμα συνδέσμων <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">Ο διακομιστής δεν μπόρεσε να αποδείξει ότι είναι <ph name="DOMAIN" />. Το πιστοποιητικό ασφαλείας του είναι από το <ph name="DOMAIN2" />. Αυτό μπορεί να οφείλεται σε λανθασμένη ρύθμιση ή σε κάποιον τρίτο που επιτίθεται στη σύνδεσή σας.</translation>
 <translation id="2943895734390379394">Ώρα μεταφόρτωσης:</translation>
 <translation id="2948083400971632585">Μπορείτε να απενεργοποιήσετε τυχόν διακομιστές μεσολάβησης που έχουν διαμορφωθεί για μια σύνδεση από τη σελίδα ρυθμίσεων.</translation>
@@ -745,6 +748,7 @@
 <translation id="3288238092761586174">Ενδέχεται να χρειαστούν επιπλέον βήματα από το <ph name="URL" /> για την επαλήθευση της πληρωμής σας.</translation>
 <translation id="3293642807462928945">Μάθετε περισσότερα σχετικά με την πολιτική <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Δείτε και διαχειριστείτε τους κωδικούς πρόσβασής σας στις ρυθμίσεις του Chrome.</translation>
+<translation id="3303795387212510132">Να επιτρέπεται στην εφαρμογή το άνοιγμα συνδέσμων <ph name="PROTOCOL_SCHEME" />;</translation>
 <translation id="3303855915957856445">Δεν βρέθηκαν αποτελέσματα αναζήτησης</translation>
 <translation id="3304073249511302126">σάρωση Bluetooth</translation>
 <translation id="3308006649705061278">Οργανωτική ομάδα (OU)</translation>
@@ -882,6 +886,7 @@
 <translation id="370972442370243704">Ενεργοποίηση διαδρομών</translation>
 <translation id="3711895659073496551">Αναστολή</translation>
 <translation id="3712624925041724820">Οι άδειες έχουν εξαντληθεί</translation>
+<translation id="3714633008798122362">ημερολόγιο ιστού</translation>
 <translation id="3714780639079136834">Ενεργοποιήστε τα δεδομένα κινητής τηλεφωνίας ή το Wi-Fi.</translation>
 <translation id="3715597595485130451">Σύνδεση σε Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Ελέγξτε το διακομιστή μεσολάβησης, το τείχος προστασίας και τη διαμόρφωση DNS<ph name="END_LINK" /></translation>
@@ -943,6 +948,7 @@
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991">Το <ph name="URL" /> επιθυμεί την αναπαραγωγή προστατευμένου περιεχομένου. Η ταυτότητα της συσκευής σας θα επαληθευτεί από την Google και αυτός ο ιστότοπος μπορεί να αποκτήσει πρόσβαση σε αυτήν.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Άρνηση</translation>
 <translation id="3939773374150895049">Χρήση WebAuthn αντί του CVC;</translation>
 <translation id="3946209740501886391">Να γίνεται πάντα ερώτηση σε αυτόν τον ιστότοπο</translation>
 <translation id="3947595700203588284">Μπορεί να ζητά να συνδεθεί σε συσκευές MIDI.</translation>
@@ -1060,6 +1066,7 @@
 <translation id="4250680216510889253">Όχι</translation>
 <translation id="4253168017788158739">Σημείωση</translation>
 <translation id="425582637250725228">Οι αλλαγές που κάνατε ενδέχεται να μην έχουν αποθηκευτεί.</translation>
+<translation id="425869179292622354">Θέλετε να βελτιώσετε την ασφάλεια με μια εικονική κάρτα;</translation>
 <translation id="4258748452823770588">Εσφαλμένη υπογραφή</translation>
 <translation id="4261046003697461417">Δεν είναι δυνατός ο σχολιασμός των προστατευμένων εγγράφων</translation>
 <translation id="4265872034478892965">Επιτρέπεται από τον διαχειριστή σας</translation>
@@ -1572,6 +1579,7 @@
 <translation id="5921639886840618607">Αποθήκευση κάρτας στον Λογαριασμό Google;</translation>
 <translation id="5922853866070715753">Σχεδόν ολοκληρώθηκε</translation>
 <translation id="5932224571077948991">Ο ιστότοπος εμφανίζει παρεμβατικές ή παραπλανητικές διαφημίσεις</translation>
+<translation id="5938153366081463283">Προσθήκη εικονικής κάρτας</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Άνοιγμα <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Δεν είναι δυνατή η εγγραφή με λογαριασμό προσωπικής χρήσης (διατίθεται σχετική άδεια).</translation>
@@ -2196,6 +2204,7 @@
 <translation id="7976214039405368314">Πάρα πολλά αιτήματα</translation>
 <translation id="7977538094055660992">Συσκευή εξόδου</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="7981260203882740562">Συνδέθηκε με</translation>
 <translation id="798134797138789862">Μπορεί να ζητά να χρησιμοποιεί συσκευές και δεδομένα εικονικής πραγματικότητας.</translation>
 <translation id="7984945080620862648">Δεν μπορείτε να επισκεφτείτε το <ph name="SITE" /> αυτήν τη στιγμή επειδή ο ιστότοπος έστειλε κωδικοποιημένα διαπιστευτήρια τα οποία δεν μπορεί να επεξεργαστεί το Chrome. Τα σφάλματα δικτύου και οι επιθέσεις είναι συνήθως προσωρινά, συνεπώς αυτή η σελίδα πιθανότατα θα λειτουργήσει αργότερα.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2415,6 +2424,7 @@
 <translation id="8731544501227493793">Κουμπί διαχείρισης κωδικών πρόσβασης, πατήστε Enter για προβολή και διαχείριση των κωδικών πρόσβασής σας στις ρυθμίσεις του Chrome</translation>
 <translation id="8734529307927223492">Η διαχείριση της συσκευής <ph name="DEVICE_TYPE" /> γίνεται από τον τομέα <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Tab και έπειτα Enter για να ανοίξετε ένα νέο παράθυρο για ανώνυμη περιήγηση.</translation>
+<translation id="8737685506611670901">Άνοιγμα συνδέσμων <ph name="PROTOCOL" /> αντί για <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Για την επίτευξη μιας ασφαλούς σύνδεσης, θα πρέπει να γίνει σωστή ρύθμιση του ρολογιού σας. Αυτό οφείλεται στο γεγονός ότι τα πιστοποιητικά που χρησιμοποιούν οι ιστότοποι για την ταυτοποίησή τους είναι έγκυρα μόνο για συγκεκριμένες χρονικές περιόδους. Εφόσον το ρολόι της συσκευής σας δεν είναι σωστά ρυθμισμένο, το Chromium δεν μπορεί να επαληθεύσει αυτά τα πιστοποιητικά.</translation>
 <translation id="8740359287975076522">Δεν ήταν δυνατός ο εντοπισμός της &lt;abbr id="dnsDefinition"&gt;διεύθυνσης DNS&lt;/abbr&gt; του κεντρικού υπολογιστή <ph name="HOST_NAME" />. Γίνεται διάγνωση του προβλήματος.</translation>
 <translation id="8742371904523228557">Το <ph name="ONE_TIME_CODE" /> είναι ο κωδικός σας για το <ph name="ORIGIN" /></translation>
@@ -2492,6 +2502,7 @@
 <translation id="9004367719664099443">Περίοδος λειτουργίας VR σε εξέλιξη</translation>
 <translation id="9005998258318286617">Η φόρτωση του εγγράφου PDF απέτυχε.</translation>
 <translation id="9008201768610948239">Παράβλεψη</translation>
+<translation id="901834265349196618">ηλεκτρονικό ταχυδρομείο</translation>
 <translation id="9020200922353704812">Απαιτείται διεύθυνση χρέωσης της κάρτας</translation>
 <translation id="9020542370529661692">Αυτή η σελίδα έχει μεταφραστεί στα <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="9020742383383852663">A8</translation>

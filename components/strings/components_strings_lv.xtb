@@ -460,6 +460,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2337852623177822836">Iestatījumu kontrolē jūsu administrators</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> vēlas savienot pārī</translation>
 <translation id="2346319942568447007">Kopētais attēls</translation>
+<translation id="2350796302381711542">Vai ļaut <ph name="HANDLER_HOSTNAME" /> atvērt visas <ph name="PROTOCOL" /> saites <ph name="REPLACED_HANDLER_TITLE" /> vietā?</translation>
 <translation id="2354001756790975382">Citas grāmatzīmes</translation>
 <translation id="2354430244986887761">Izmantojot Google drošo pārlūkošanu, nesen <ph name="BEGIN_LINK" />tika atrastas kaitīgas lietotnes<ph name="END_LINK" /> vietnē <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Uzbrucēji var skatīt attēlus, kurus skatāt šajā vietnē, un apmānīt jūs, pārveidojot šos attēlus.</translation>
@@ -485,6 +486,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2413528052993050574">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tās drošības sertifikāts, iespējams, ir atsaukts. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ir ļaunprātīgi izmantojis jūsu savienojumu.</translation>
 <translation id="2414886740292270097">Tumšs</translation>
 <translation id="2430968933669123598">Google konta pārvaldība. Lai pārvaldītu savu informāciju, konfidencialitāti un drošību savā Google kontā, nospiediet taustiņu Enter.</translation>
+<translation id="2436186046335138073">Vai atļaut <ph name="HANDLER_HOSTNAME" /> atvērt visas <ph name="PROTOCOL" /> saites?</translation>
 <translation id="2438874542388153331">Četri caurumi labajā pusē</translation>
 <translation id="2450021089947420533">Meklēšanas ceļi</translation>
 <translation id="2463739503403862330">Aizpildīt</translation>
@@ -634,6 +636,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2930577230479659665">Apgriešana pēc katras kopijas</translation>
 <translation id="2932085390869194046">Ieteikt paroli...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">atvērt <ph name="PROTOCOL" /> saites</translation>
 <translation id="2941952326391522266">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tās drošības sertifikāts ir saistīts ar domēnu <ph name="DOMAIN2" />. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ir ļaunprātīgi izmantojis jūsu savienojumu.</translation>
 <translation id="2943895734390379394">Augšupielādes laiks:</translation>
 <translation id="2948083400971632585">Iestatījumu lapā varat atspējot jebkurus starpniekserverus, kas konfigurēti savienojuma izveidei.</translation>
@@ -743,6 +746,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3288238092761586174">Iespējams, vietnē <ph name="URL" /> būs jāveic papildu darbības, lai apstiprinātu maksājumu.</translation>
 <translation id="3293642807462928945">Uzzināt vairāk par politiku <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Skatiet un pārvaldiet savas paroles Chrome iestatījumos.</translation>
+<translation id="3303795387212510132">Vai atļaut lietotnē atvērt <ph name="PROTOCOL_SCHEME" /> saites?</translation>
 <translation id="3303855915957856445">Netika atrasts neviens meklēšanas rezultāts.</translation>
 <translation id="3304073249511302126">Bluetooth meklēšana</translation>
 <translation id="3308006649705061278">Organizacionālā vienība (OU)</translation>
@@ -879,6 +883,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="370972442370243704">Ieslēgt funkciju Meklēšanas ceļi</translation>
 <translation id="3711895659073496551">Darbības apturēšana</translation>
 <translation id="3712624925041724820">Nav pietiekami daudz licenču.</translation>
+<translation id="3714633008798122362">tīmekļa kalendārs</translation>
 <translation id="3714780639079136834">Ieslēdziet mobilo datu savienojumu vai Wi-Fi.</translation>
 <translation id="3715597595485130451">Savienojuma izveide ar Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Pārbaudiet starpniekserveri, ugunsmūri un DNS konfigurāciju<ph name="END_LINK" />.</translation>
@@ -940,6 +945,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3906954721959377182">Planšetdators</translation>
 <translation id="3909477809443608991">Vietne <ph name="URL" /> vēlas atskaņot aizsargātu saturu. Jūsu ierīces identitāti pārbaudīs Google, un tai var piekļūt šī vietne.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Neatļaut</translation>
 <translation id="3939773374150895049">Vai vēlaties izmantot WebAuthn, nevis CVC?</translation>
 <translation id="3946209740501886391">Vienmēr jautāt šajā vietnē</translation>
 <translation id="3947595700203588284">Var pieprasīt atļauju veidot savienojumu ar MIDI ierīcēm</translation>
@@ -2406,6 +2412,7 @@ Papildu informācija:
 <translation id="8731544501227493793">Poga “Pārvaldīt paroles”. Lai skatītu un pārvaldītu paroles Chrome iestatījumos, nospiediet ievadīšanas taustiņu.</translation>
 <translation id="8734529307927223492">Jūsu <ph name="DEVICE_TYPE" /> ierīci pārvalda <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Lai privātai pārlūkošanai atvērtu inkognito režīma logu, nospiediet tabulēšanas taustiņu un pēc tam — ievadīšanas taustiņu.</translation>
+<translation id="8737685506611670901">atvērt <ph name="PROTOCOL" /> saites, nevis <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Lai izveidotu drošu savienojumu, ir jāiestata pareizs pulksteņa laiks. Tas ir nepieciešams, jo sertifikāti, kurus vietnes izmanto, lai tiktu identificētas, ir derīgi tikai noteiktos laika periodos. Tā kā jūsu ierīces pulkstenis nav pareizi iestatīts, Chromium nevar verificēt šos sertifikātus.</translation>
 <translation id="8740359287975076522">Nevarēja atrast <ph name="HOST_NAME" /> &lt;abbr id="dnsDefinition"&gt;DNS adresi&lt;/abbr&gt;. Notiek problēmas diagnosticēšana.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> ir jūsu kods vietnei <ph name="ORIGIN" />.</translation>
@@ -2483,6 +2490,7 @@ Papildu informācija:
 <translation id="9004367719664099443">Notiek VR sesija</translation>
 <translation id="9005998258318286617">Neizdevās ielādēt PDF dokumentu.</translation>
 <translation id="9008201768610948239">Ignorēt</translation>
+<translation id="901834265349196618">e-pasts</translation>
 <translation id="9020200922353704812">Jānorāda kartes norēķinu adrese</translation>
 <translation id="9020542370529661692">Šī lapa ir tulkota <ph name="TARGET_LANGUAGE" /> valodā.</translation>
 <translation id="9020742383383852663">A8</translation>

@@ -460,6 +460,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2337852623177822836">Indstillingen styres af din administrator</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> vil gerne parre</translation>
 <translation id="2346319942568447007">Billede, du har kopieret</translation>
+<translation id="2350796302381711542">Vil du tillade, at <ph name="HANDLER_HOSTNAME" /> åbner alle <ph name="PROTOCOL" />-links i stedet for <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2354001756790975382">Andre bogmærker</translation>
 <translation id="2354430244986887761">Google Beskyttet browsing har for nylig <ph name="BEGIN_LINK" />fundet skadelige apps<ph name="END_LINK" /> på <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Hackere kan muligvis se de billeder, du kigger på på dette website, og narre dig ved at ændre dem.</translation>
@@ -485,6 +486,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2413528052993050574">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da sikkerhedscertifikatet muligvis er blevet tilbagekaldt. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
 <translation id="2414886740292270097">Mørk</translation>
 <translation id="2430968933669123598">Administrer Google-konto, tryk på Enter for at administrere dine oplysninger, dit privatliv og beskyttelsen på din Google-konto</translation>
+<translation id="2436186046335138073">Vil du tillade, at <ph name="HANDLER_HOSTNAME" /> åbner alle <ph name="PROTOCOL" />-links?</translation>
 <translation id="2438874542388153331">Fire huller i højre side</translation>
 <translation id="2450021089947420533">Søgninger</translation>
 <translation id="2463739503403862330">Udfyld</translation>
@@ -634,6 +636,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2930577230479659665">Beskær efter hver kopi</translation>
 <translation id="2932085390869194046">Foreslå adgangskode...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">Åbne <ph name="PROTOCOL" />-links</translation>
 <translation id="2941952326391522266">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da sikkerhedscertifikatet er fra <ph name="DOMAIN2" />. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
 <translation id="2943895734390379394">Tidspunkt for upload:</translation>
 <translation id="2948083400971632585">Du kan deaktivere alle proxyer, der er konfigureret for en forbindelse, fra siden Indstillinger.</translation>
@@ -743,6 +746,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3288238092761586174"><ph name="URL" /> er muligvis nødt til at gennemføre yderligere trin for at bekræfte din betaling</translation>
 <translation id="3293642807462928945">Få flere oplysninger om politikken <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Se og administrer dine adgangskoder i Chrome-indstillingerne</translation>
+<translation id="3303795387212510132">Vil du tillade, at appen åbner <ph name="PROTOCOL_SCHEME" />-links?</translation>
 <translation id="3303855915957856445">Der blev ikke fundet nogen søgeresultater</translation>
 <translation id="3304073249511302126">Bluetooth-scanning</translation>
 <translation id="3308006649705061278">Organisationsenhed (OU)</translation>
@@ -880,6 +884,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="370972442370243704">Aktivér Søgninger</translation>
 <translation id="3711895659073496551">Suspender</translation>
 <translation id="3712624925041724820">Licenserne er opbrugt</translation>
+<translation id="3714633008798122362">webkalender</translation>
 <translation id="3714780639079136834">Tænde for mobildata eller Wi-Fi</translation>
 <translation id="3715597595485130451">Opret forbindelse til Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Tjekke proxy-, firewall- og DNS-konfigurationen<ph name="END_LINK" /></translation>
@@ -941,6 +946,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> vil afspille beskyttet indhold. Din enheds identitet bekræftes af Google, og dette website får muligvis adgang til enheden.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Afvis</translation>
 <translation id="3939773374150895049">Vil du bruge WebAuthn i stedet for kontrolkoden?</translation>
 <translation id="3946209740501886391">Spørg altid på dette website</translation>
 <translation id="3947595700203588284">Websitet kan anmode om tilladelse til at oprette forbindelse til MIDI-enheder</translation>
@@ -2410,6 +2416,7 @@ Yderligere oplysninger:
 <translation id="8731544501227493793">Knappen Administrer adgangskoder – tryk på Enter for at se og administrere dine adgangskoder i Chrome-indstillingerne</translation>
 <translation id="8734529307927223492">Din <ph name="DEVICE_TYPE" /> administreres af <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> – tryk på Tab-tasten efterfulgt af Enter for at åbne et nyt inkognitovindue, så du kan browse privat</translation>
+<translation id="8737685506611670901">Åbne <ph name="PROTOCOL" />-links i stedet for <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">For at kunne oprette en sikker forbindelse skal dit ur være indstillet korrekt. Det er vigtigt, da de certifikater, som websites bruger til at identificere sig selv, kun er gyldige i bestemte tidsperioder. Da uret på din enhed går forkert, kan Chromium ikke bekræfte disse certifikater.</translation>
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;DNS-adressen&lt;/abbr&gt; for <ph name="HOST_NAME" /> blev ikke fundet. Diagnosticerer problemet.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> er din kode til <ph name="ORIGIN" /></translation>
@@ -2487,6 +2494,7 @@ Yderligere oplysninger:
 <translation id="9004367719664099443">VR-sessionen er i gang</translation>
 <translation id="9005998258318286617">PDF-dokumentet kunne ikke indlæses.</translation>
 <translation id="9008201768610948239">Ignorer</translation>
+<translation id="901834265349196618">mail</translation>
 <translation id="9020200922353704812">Kortets faktureringsadresse er obligatorisk</translation>
 <translation id="9020542370529661692">Denne side er oversat til <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

@@ -89,6 +89,7 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> wants to restore your Chrome settings to their original defaults. This will reset your homepage, new tab page and search engine, disable your extensions and unpin all tabs. It will also clear other temporary and cached data, such as cookies, content and site data.</translation>
 <translation id="1084096383128641877">Removing this password will not delete your account on <ph name="DOMAIN" />. Change your password or delete your account on <ph name="DOMAIN_LINK" /> to keep it safe from others.</translation>
 <translation id="1084824384139382525">Copy link addr&amp;ess</translation>
+<translation id="1085064499066015002">Always on all sites</translation>
 <translation id="1085697365578766383">Error starting the virtual machine. Please try again.</translation>
 <translation id="1087965115100412394">Don't allow sites to connect to MIDI devices</translation>
 <translation id="1088654056000736875">Chrome is removing harmful software from your computer…</translation>
@@ -342,6 +343,7 @@
 <translation id="1343865611738742294">Give Linux apps permission to access USB devices. Linux won't remember a USB device after it's removed.</translation>
 <translation id="1343920184519992513">Continue from where you left off and open a specific set of pages</translation>
 <translation id="1346630054604077329">Confirm and restart</translation>
+<translation id="1346748346194534595">Right</translation>
 <translation id="1347256498747320987">Install updates &amp; apps. By continuing, you agree that this device may also automatically download and install updates and apps from Google, your operator and your device's manufacturer, possibly using mobile data. Some of these apps may offer in-app purchases. <ph name="BEGIN_LINK1" />Learn More<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux storage</translation>
 <translation id="1347975661240122359">Update will begin when battery reaches <ph name="BATTERY_LEVEL" />%.</translation>
@@ -464,6 +466,7 @@
 <translation id="1464781208867302907">For device preferences, go to Settings.</translation>
 <translation id="1465176863081977902">C&amp;opy Audio Address</translation>
 <translation id="1465827627707997754">Pizza slice</translation>
+<translation id="1467432559032391204">Left</translation>
 <translation id="1468571364034902819">Can't use this profile</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Add tab to new group}other{Add tabs to new group}}</translation>
 <translation id="1470350905258700113">Use this device</translation>
@@ -1338,7 +1341,6 @@ You can manage this account’s settings by installing the Family Link app on yo
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2307630946657910723">Search part of the page with <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
-<translation id="230927227160767054">This page wants to install a service handler.</translation>
 <translation id="2309620859903500144">This site has been blocked from accessing your motion or light sensors.</translation>
 <translation id="2312219318583366810">Page URL</translation>
 <translation id="2314165183524574721">Current visibility setting is hidden</translation>
@@ -1389,7 +1391,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2349896577940037438">If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account. You can see your data, delete it and change your account settings at account.google.com.</translation>
 <translation id="2350133097354918058">Reloaded</translation>
 <translation id="2350182423316644347">Initialising application...</translation>
-<translation id="2350796302381711542">Allow <ph name="HANDLER_HOSTNAME" /> to open all <ph name="PROTOCOL" /> links instead of <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{1 item}other{{NUM_ITEMS} items}}</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Lock screen notes are automatically saved to <ph name="LOCK_SCREEN_APP_NAME" />. Your most recent note will remain on the lock screen.</translation>
@@ -1463,7 +1464,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2434758125294431199">Select who can share with you</translation>
 <translation id="2435248616906486374">Network disconnected</translation>
 <translation id="2435457462613246316">Show password</translation>
-<translation id="2436186046335138073">Allow <ph name="HANDLER_HOSTNAME" /> to open all <ph name="PROTOCOL" /> links?</translation>
 <translation id="2439626940657133600">Loading <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">View s&amp;ource</translation>
 <translation id="244231003699905658">Invalid address. Please check the address and try again.</translation>
@@ -1981,7 +1981,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="2935225303485967257">Manage profiles</translation>
 <translation id="2935654492420446828">Add a school account later</translation>
 <translation id="2936851848721175671">Backup &amp; restore</translation>
-<translation id="2938225289965773019">Open <ph name="PROTOCOL" /> links</translation>
 <translation id="2939908794993783865">Additional inactive sites</translation>
 <translation id="2939938020978911855">Show available Bluetooth devices</translation>
 <translation id="2941112035454246133">Low</translation>
@@ -2303,7 +2302,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="33022249435934718">GDI Handles</translation>
 <translation id="3302388252085547855">Enter justification…</translation>
 <translation id="3303260552072730022">An extension triggered full screen.</translation>
-<translation id="3303795387212510132">Allow app to open <ph name="PROTOCOL_SCHEME" /> links?</translation>
 <translation id="3303818374450886607">Copies</translation>
 <translation id="3303855915957856445">No search results found</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> off</translation>
@@ -2719,7 +2717,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="371300529209814631">Back/Forward</translation>
 <translation id="3713047097299026954">This security key does not have any sign-in data</translation>
 <translation id="3714195043138862580">This demo device has been placed into a deprovisioned state.</translation>
-<translation id="3714633008798122362">web calendar</translation>
 <translation id="3719826155360621982">Homepage</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">You and Google</translation>
@@ -7541,7 +7538,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8734674662128056360">Third-party cookie blocking</translation>
 <translation id="873545264931343897">When <ph name="PLUGIN_NAME" /> finishes updating, reload the page to activate it</translation>
 <translation id="8736288397686080465">This site has been updated in the background.</translation>
-<translation id="8737685506611670901">Open <ph name="PROTOCOL" /> links instead of <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Choose the language into which you want to translate the page</translation>
 <translation id="8740247629089392745">You can hand this Chromebook to <ph name="SUPERVISED_USER_NAME" />. Setup is almost done, then it's time to explore.</translation>
@@ -7805,7 +7801,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9003647077635673607">Allow on all websites</translation>
 <translation id="9003677638446136377">Check again</translation>
 <translation id="9004754973617721124">Clear site data and permissions for <ph name="SITE_NAME" />, all sites under it, and its installed app?</translation>
-<translation id="9008201768610948239">Ignore</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> details page back button</translation>
 <translation id="9009369504041480176">Uploading (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">Did you mean to change this page?</translation>
@@ -7815,7 +7810,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9013037634206938463"><ph name="INSTALL_SIZE" /> of free space is required to install Linux. To increase free space, delete files from your device.</translation>
 <translation id="901668144954885282">Back up to Google Drive</translation>
 <translation id="9018218886431812662">Installation complete</translation>
-<translation id="901834265349196618">email</translation>
 <translation id="9019062154811256702">Read and change auto-fill settings</translation>
 <translation id="9019894137004772119">Use location. Allow apps and services with location permission to use your device’s location. Google may collect location data periodically and use this data anonymously to improve location accuracy and location-based services.</translation>
 <translation id="9019956081903586892">Couldn’t download spell check dictionary</translation>

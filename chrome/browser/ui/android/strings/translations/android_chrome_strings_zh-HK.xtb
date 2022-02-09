@@ -224,7 +224,6 @@
 <translation id="2321958826496381788">拖曳滑桿，將文字調整到您閱讀時感到舒適的大小。當您輕按兩下文字段落，文字至少應有這樣大。</translation>
 <translation id="2323763861024343754">網站儲存空間資料量</translation>
 <translation id="2328985652426384049">無法登入</translation>
-<translation id="2342601525305963189">Chrome 提示：</translation>
 <translation id="234265804618409743">無法開啟攝錄機。發生錯誤。</translation>
 <translation id="2349710944427398404">Chrome 使用的資料總量，包括帳戶、書籤和已儲存的設定</translation>
 <translation id="2353636109065292463">檢查互聯網連線</translation>
@@ -568,9 +567,11 @@
 <translation id="4402611456429872546"><ph name="LANG" /> - 下載中…</translation>
 <translation id="4404568932422911380">沒有書籤</translation>
 <translation id="4405224443901389797">移至…</translation>
+<translation id="4405636711880428279">要移除虛擬卡嗎？</translation>
 <translation id="4409271659088619928">您的搜尋引擎是「<ph name="DSE" />」。建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)。</translation>
 <translation id="4415276339145661267">管理您的 Google 帳戶</translation>
 <translation id="4425140285732600465">正在追蹤價格。如果產品在任何網站上降價，系統將通知您。</translation>
+<translation id="442518031075347249">您將無法再透過 Google Pay 使用虛擬卡。<ph name="BEGIN_LINK1" />進一步瞭解虛擬卡<ph name="END_LINK1" /></translation>
 <translation id="4450672886426705087">Google 的搜尋結果。</translation>
 <translation id="4452411734226507615">關閉 <ph name="TAB_TITLE" /> 分頁</translation>
 <translation id="4452548195519783679">已將書籤加入到「<ph name="FOLDER_NAME" />」</translation>

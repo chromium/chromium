@@ -89,6 +89,7 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> хоче скинути ваші налаштування Chrome. Буде скинуто домашню сторінку, сторінку нової вкладки та пошукову систему. Буде вимкнено розширення та відкріплено всі закладки. Також буде видалено інші тимчасові й кешовані дані, як-от файли cookie, вміст і дані із сайтів.</translation>
 <translation id="1084096383128641877">Якщо видалити цей пароль, ваш обліковий запис на сайті <ph name="DOMAIN" /> залишиться. Змініть пароль або видаліть обліковий запис на сайті <ph name="DOMAIN_LINK" />, щоб захистити його.</translation>
 <translation id="1084824384139382525">Копіювати адр&amp;есу посилання</translation>
+<translation id="1085064499066015002">Завжди на всіх сайтах</translation>
 <translation id="1085697365578766383">Не вдалося запустити віртуальну машину. Повторіть спробу.</translation>
 <translation id="1087965115100412394">Заборонити сайтам підключатися до пристроїв MIDI</translation>
 <translation id="1088654056000736875">Chrome видаляє небезпечне програмне забезпечення з вашого комп'ютера…</translation>
@@ -345,6 +346,7 @@
 <translation id="1343865611738742294">Надайте додаткам Linux доступ до пристроїв USB. Linux не зберігатиме дані про пристрій USB після його вилучення.</translation>
 <translation id="1343920184519992513">Продовжувати з місця зупинки та відкривати певний набір сторінок</translation>
 <translation id="1346630054604077329">Підтвердити й перезапустити</translation>
+<translation id="1346748346194534595">Праворуч</translation>
 <translation id="1347256498747320987">Встановлення оновлень і додатків. Продовжуючи, ви дозволяєте цьому пристрою автоматично завантажувати та встановлювати оновлення й додатки від Google, вашого оператора чи виробника пристрою, зокрема через мобільний трафік. У деяких додатках можуть пропонуватися покупки. <ph name="BEGIN_LINK1" />Докладніше<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Пам'ять Linux</translation>
 <translation id="1347975661240122359">Оновлення почнеться, коли рівень заряду акумулятора сягне <ph name="BATTERY_LEVEL" />%.</translation>
@@ -467,6 +469,7 @@
 <translation id="1464781208867302907">Щоб перейти до параметрів пристрою, відкрийте налаштування.</translation>
 <translation id="1465176863081977902">Копіювати адресу аудіо</translation>
 <translation id="1465827627707997754">Шматок піци</translation>
+<translation id="1467432559032391204">Ліворуч</translation>
 <translation id="1468571364034902819">Цей профіль вимкнено</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Додати вкладку в нову групу}one{Додати вкладки в нову групу}few{Додати вкладки в нову групу}many{Додати вкладки в нову групу}other{Додати вкладки в нову групу}}</translation>
 <translation id="1470350905258700113">Використовувати цей пристрій</translation>
@@ -1339,7 +1342,6 @@
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2307630946657910723">Шукати на сторінці за допомогою технології <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
-<translation id="230927227160767054">Ця сторінка хоче встановити обробника служби.</translation>
 <translation id="2309620859903500144">Доступ цього сайту до датчиків руху чи світла заблоковано.</translation>
 <translation id="2312219318583366810">URL-адреса сторінки</translation>
 <translation id="2314165183524574721">Поточне налаштування видимості: "Приховано"</translation>
@@ -1390,7 +1392,6 @@
 <translation id="2349896577940037438">Якщо ввімкнено також запис Історії додатків і веб-пошуку, ці дані можуть зберігатися в обліковому записі Google. На сторінці account.google.com можна переглядати й видаляти дані, а також змінювати налаштування облікового запису.</translation>
 <translation id="2350133097354918058">Оновлено</translation>
 <translation id="2350182423316644347">Ініціалізація програми…</translation>
-<translation id="2350796302381711542">Дозволити обробнику <ph name="HANDLER_HOSTNAME" /> відкривати всі посилання протоколу <ph name="PROTOCOL" /> замість обробника <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{1 позиція}one{{NUM_ITEMS} позиція}few{{NUM_ITEMS} позиції}many{{NUM_ITEMS} позицій}other{{NUM_ITEMS} позиції}}</translation>
 <translation id="2352662711729498748">&lt; 1 МБ</translation>
 <translation id="2352810082280059586">Сповіщення на заблокованому екрані автоматично зберігаються в додатку <ph name="LOCK_SCREEN_APP_NAME" />. Останнє сповіщення залишатиметься на заблокованому екрані.</translation>
@@ -1463,7 +1464,6 @@
 <translation id="2434758125294431199">Виберіть, хто може надсилати вам дані</translation>
 <translation id="2435248616906486374">Немає з’єднання з мережею</translation>
 <translation id="2435457462613246316">Показати пароль</translation>
-<translation id="2436186046335138073">Дозволити обробнику <ph name="HANDLER_HOSTNAME" /> відкривати всі посилання протоколу <ph name="PROTOCOL" />?</translation>
 <translation id="2439626940657133600">Завантажується сервіс <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Див. д&amp;жерело</translation>
 <translation id="244231003699905658">Недійсна адреса. Перевірте адресу та повторіть спробу.</translation>
@@ -1980,7 +1980,6 @@
 <translation id="2935225303485967257">Керувати профілями</translation>
 <translation id="2935654492420446828">Додати обліковий запис закладу освіти пізніше</translation>
 <translation id="2936851848721175671">Резервне копіювання та відновлення</translation>
-<translation id="2938225289965773019">Відкрити посилання протоколу <ph name="PROTOCOL" /></translation>
 <translation id="2939908794993783865">Інші неактивні сайти</translation>
 <translation id="2939938020978911855">Показати доступні пристрої Bluetooth</translation>
 <translation id="2941112035454246133">Низький</translation>
@@ -2301,7 +2300,6 @@
 <translation id="33022249435934718">Обробка GDI</translation>
 <translation id="3302388252085547855">Введіть обґрунтування…</translation>
 <translation id="3303260552072730022">Розширення запустило повноекранний режим.</translation>
-<translation id="3303795387212510132">Дозволити додатку відкривати посилання <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303818374450886607">Копії</translation>
 <translation id="3303855915957856445">Немає результатів</translation>
 <translation id="3304212451103136496">Знижка <ph name="DISCOUNT_AMOUNT" /></translation>
@@ -2713,7 +2711,6 @@
 <translation id="371300529209814631">Уперед/назад</translation>
 <translation id="3713047097299026954">На цьому ключі безпеки немає даних для входу</translation>
 <translation id="3714195043138862580">Цей демо-пристрій деініціалізовано.</translation>
-<translation id="3714633008798122362">веб-календар</translation>
 <translation id="3719826155360621982">Головна сторінка</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Ви й Google</translation>
@@ -7521,7 +7518,6 @@
 <translation id="8734674662128056360">Блокування файлів cookie третіх сторін</translation>
 <translation id="873545264931343897">Коли оновлення плагіна <ph name="PLUGIN_NAME" /> закінчиться, оновіть сторінку, щоб активувати його</translation>
 <translation id="8736288397686080465">Цей сайт оновлено у фоновому режимі.</translation>
-<translation id="8737685506611670901">Відкривати посилання протоколу <ph name="PROTOCOL" />, а не обробника <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Виберіть, якою мовою перекласти сторінку</translation>
 <translation id="8740247629089392745"><ph name="SUPERVISED_USER_NAME" /> може отримати цей пристрій Chromebook. Налаштування майже завершено.</translation>
@@ -7788,7 +7784,6 @@
 <translation id="9003647077635673607">Дозволити на всіх веб-сайтах</translation>
 <translation id="9003677638446136377">Перевірити ще раз</translation>
 <translation id="9004754973617721124">Очистити дані та дозволи для сайту <ph name="SITE_NAME" />, усіх сайтів його групи та встановленого додатка?</translation>
-<translation id="9008201768610948239">Ігнорувати</translation>
 <translation id="9008201858626224558">Кнопка "Назад" на сторінці "<ph name="SUBPAGE_TITLE" />"</translation>
 <translation id="9009369504041480176">Завантаження (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">Ви хотіли змінити цю сторінку?</translation>
@@ -7798,7 +7793,6 @@
 <translation id="9013037634206938463">Щоб установити Linux, потрібно <ph name="INSTALL_SIZE" /> вільного місця. Щоб звільнити місце, видаліть файли з пристрою.</translation>
 <translation id="901668144954885282">Завантажувати резервну копію на Google Диск</translation>
 <translation id="9018218886431812662">Встановлення завершено</translation>
-<translation id="901834265349196618">електронна адреса</translation>
 <translation id="9019062154811256702">Переглядати та змінювати параметри автозаповнення</translation>
 <translation id="9019894137004772119">Використовувати геодані. Дозволити додаткам і сервісам використовувати місцезнаходження пристрою. Google може періодично збирати геодані й анонімно обробляти їх, щоб покращувати точність визначення місцезнаходження та роботу сервісів, які працюють на основі геоданих.</translation>
 <translation id="9019956081903586892">Не вдалося завантажити словник для перевірки орфографії</translation>

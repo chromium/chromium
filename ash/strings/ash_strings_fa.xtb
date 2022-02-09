@@ -105,6 +105,7 @@
 <translation id="1516740043221086139">«مزاحم نشوید» روشن است.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{نشان دادن تنظیمات اعلان. اعلان‌های یک برنامه خاموش است}one{نشان دادن تنظیمات اعلان. اعلان‌های # برنامه خاموش است}other{نشان دادن تنظیمات اعلان. اعلان‌های # برنامه خاموش است}}</translation>
 <translation id="1525508553941733066">رد کردن</translation>
+<translation id="1528259147807435347">هفته گذشته ویرایش شده است</translation>
 <translation id="1536604384701784949">برای استفاده از <ph name="USER_EMAIL_ADDRESS" />، باید ابتدا از سیستم همه حساب‌ها خارج شوید. برای خروج از سیستم، «لغو» را انتخاب کنید تا به عقب برگردید. سپس زمان را انتخاب کنید تا ناحیه نشانگر وضعیت باز شود و سپس «خروج از سیستم»را انتخاب کنید. سپس دوباره به سیستم <ph name="USER_EMAIL_ADDRESS_2" /> وارد شوید.</translation>
 <translation id="15373452373711364">نشانگر موشواره بزرگ</translation>
 <translation id="1546492247443594934">میز ۲</translation>
@@ -227,6 +228,7 @@
 <translation id="2427507373259914951">کلیک چپ</translation>
 <translation id="2429753432712299108">دستگاه بلوتوث «<ph name="DEVICE_NAME" />» برای مرتبط‌سازی به مجوز نیاز دارد. قبل از پذیرش، لطفاً تأیید کنید که این کلیدواژه در آن دستگاه نشان داده می‌شود: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">نمایش گذرواژه</translation>
+<translation id="243878895369688216">دیروز باز شده است</translation>
 <translation id="24452542372838207">بزرگ کردن اعلان</translation>
 <translation id="2450205753526923158">حالت نماگرفت</translation>
 <translation id="2456008742792828469">تقویم، <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -275,6 +277,7 @@
 <translation id="2819276065543622893">هم‌اکنون از سیستم خارج خواهید شد.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" />، از <ph name="SPECIFIED_RESOLUTION" /> پشتیبانی نمی‌کند. وضوح به <ph name="FALLBACK_RESOLUTION" /> تغییر کرد.</translation>
 <translation id="2825619548187458965">قفسه</translation>
+<translation id="2834813915651407382">اخیراً باز شده است</translation>
 <translation id="2841907151129139818">به حالت رایانه لوحی رفته‌اید</translation>
 <translation id="2844169650293029770">‏دستگاه USB-C (درگاه جلوی سمت چپ)</translation>
 <translation id="2849936225196189499">مهم</translation>
@@ -393,6 +396,7 @@
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> پین شد</translation>
 <translation id="3560866052109807830">ابزارهای طراحی نشانگر</translation>
 <translation id="3563775809269155755">فعال کردن نقطه اتصال</translation>
+<translation id="3566240529365775567">لحظاتی پیش باز شده است</translation>
 <translation id="3571734092741541777">تنظیم</translation>
 <translation id="3573179567135747900">به "<ph name="FROM_LOCALE" />" تغییر دهید (به راه‌اندازی دوباره نیاز دارد)</translation>
 <translation id="3576141592585647168">تغییر منطقه زمانی</translation>
@@ -427,6 +431,7 @@
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />، <ph name="UNAVAILABLE_APPS_TWO" />، و <ph name="UNAVAILABLE_APPS_COUNT" /> برنامه دیگر در این دستگاه وجود ندارند.</translation>
 <translation id="3735740477244556633">مرتب کردن براساس</translation>
 <translation id="3742055079367172538">نماگرفت گرفته شد</translation>
+<translation id="3765841986579723851">امروز ویرایش شده است</translation>
 <translation id="3771549900096082774">حالت تضاد بالا</translation>
 <translation id="3773700760453577392">یکی از سرپرستان ورود چندگانه به سیستم را برای <ph name="USER_EMAIL" /> غیرمجاز کرده است. برای ادامه دادن، همه کاربران باید از سیستم خارج شوند.</translation>
 <translation id="3779139509281456663">درحال اتصال <ph name="NAME" /></translation>
@@ -445,6 +450,7 @@
 <translation id="3846575436967432996">اطلاعات شبکه در دسترس نیست</translation>
 <translation id="385051799172605136">بازگشت</translation>
 <translation id="385300504083504382">آغاز</translation>
+<translation id="3886872229787704059">امروز باز شده است</translation>
 <translation id="3891340733213178823">‏برای خروج از سیستم Ctrl+Shift+Q را دو بار فشار دهید.</translation>
 <translation id="3893630138897523026">‏ChromeVox (بازخورد گفتاری)</translation>
 <translation id="3897533311200664389">شروع پُرسمان نوشتاری</translation>
@@ -484,6 +490,7 @@
 <translation id="4173958948577803258">پنجشنبه</translation>
 <translation id="4177913004758410636">{0,plural, =1{دستگاه را تا یک روز دیگر به‌روزرسانی کنید}one{دستگاه را تا # روز دیگر به‌روزرسانی کنید}other{دستگاه را تا # روز دیگر به‌روزرسانی کنید}}</translation>
 <translation id="4181841719683918333">زبان‌ها</translation>
+<translation id="4192112279662688596">یا</translation>
 <translation id="4195814663415092787">ادامه از جایی که ترک کردید</translation>
 <translation id="4195877955194704651">دکمه کلیک خودکار</translation>
 <translation id="4197790712631116042">خاموش</translation>
@@ -532,6 +539,7 @@
 <translation id="4421231901400348175">هم‌رسانی کنترل صفحه‌تان با <ph name="HELPER_NAME" /> از طریق راهنمایی ازراه‌دور.</translation>
 <translation id="4424159417645388645">میزکار ۵</translation>
 <translation id="4430019312045809116">میزان صدا</translation>
+<translation id="4441283832827406317">برنامه‌ها براساس نام مرتب شده‌اند</translation>
 <translation id="4445159312344259901">قفل‌گشایی با ورود به سیستم</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{۱ اعلان مهم}one{# اعلان مهم}other{# اعلان مهم}}</translation>
 <translation id="4450893287417543264">دیگر نشان داده نشود</translation>
@@ -675,6 +683,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (راست)</translation>
 <translation id="5352250171825660495">طرح زمینه تیره روشن است</translation>
 <translation id="5379115545237091094">تلاش‌های ناموفق زیادی انجام شده است</translation>
+<translation id="5393156353051693207">برای تغییر ترتیب برنامه‌ها، جایی را لمس کنید و نگه دارید</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> موجود در بالای <ph name="IN_PLACE_APP" />، برای ایجاد پوشه رها کنید.</translation>
 <translation id="5397578532367286026">‏میزان مصرف و سابقه این کاربر می‌تواند توسط مدیر (<ph name="MANAGER_EMAIL" />) در chrome.com بازبینی شود.</translation>
 <translation id="5400461572260843123">تنظیمات فوری، برای دسترسی به مرکز اعلان، «جستجو + چپ» را فشار دهید.</translation>
@@ -780,6 +789,7 @@
 <translation id="6059276912018042191">‏برگه‌های اخیر Chrome</translation>
 <translation id="6062360702481658777">به صورت خودکار در عرض <ph name="LOGOUT_TIME_LEFT" /> از سیستم خارج می‌شوید.</translation>
 <translation id="6073451960410192870">توقف ضبط</translation>
+<translation id="6099678161144790572">ماه گذشته ویرایش شده است</translation>
 <translation id="6114505516289286752">فایل‌های گفتار <ph name="LANGUAGE" /> بارگیری شد</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">تأیید بارگیری <ph name="FILENAME" /></translation>
@@ -879,6 +889,7 @@
 <translation id="6777216307882431711">‏درحال تأمین برق دستگاه‌های USB-C متصل</translation>
 <translation id="6786750046913594791">بستن پوشه</translation>
 <translation id="6790428901817661496">پخش</translation>
+<translation id="6801878137098616817">اخیراً ویرایش شده است</translation>
 <translation id="6803622936009808957">نمایش یک تصویر واحد در چند صفحه نمایش ممکن نیست زیرا وضوح تصویر پشتیبانی شده‌ای وجود ندارد. بجای آن حالت نمایش دسک‌تاپ چند بخشی استفاده می‌شود.</translation>
 <translation id="6811454077060061666">‏Google Drive ویژه رایانه دردسترس نیست</translation>
 <translation id="6818242057446442178">عقب رفتن کلمه‌به‌کلمه</translation>
@@ -887,10 +898,12 @@
 <translation id="6836499262298959512">فایل خطرناک</translation>
 <translation id="6837064795450991317">پنهان کردن نوار میزکار</translation>
 <translation id="6852052252232534364">کلیک برای فعال‌سازی</translation>
+<translation id="6855029042976311970">لحظاتی پیش ویرایش شده است</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ثانیه</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{یک رقم باقی‌مانده است}one{# رقم باقی‌مانده است}other{# رقم باقی‌مانده است}}</translation>
 <translation id="6867938213751067702">بارگیری <ph name="FILENAME" /> موقتاً متوقف شد</translation>
 <translation id="6878400149835617132">میان‌بر خاموش شد</translation>
+<translation id="6880133753431418782">‏قبلاً این پُرسمان را جستجو کرده‌اید. حذف این جستجو از سابقه‌تان، آن را برای همیشه از «حساب Google» شما در همه دستگاه‌هایتان حذف خواهد کرد.</translation>
 <translation id="6884665277231944629">برگشتن به امروز</translation>
 <translation id="6886172995547742638">‏ممکن است <ph name="DEVICE_TYPE" /> شما عملکرد ضعیف‌تری را تجربه کند. از آداپتور برق USB-C بالاتر یا <ph name="PREFERRED_MINIMUM_POWER" /> وات تأییدشده‌ای استفاده کنید.</translation>
 <translation id="688631446150864480">برای جابه‌جایی بین پنجره‌ها، کلید جهت‌نمای پایین را فشار دهید</translation>
@@ -929,6 +942,7 @@
 <translation id="7098389117866926363">‏دستگاه USB-C (درگاه عقب سمت چپ)</translation>
 <translation id="7106330611027933926">نمایش نوار میزکار</translation>
 <translation id="7118268675952955085">نماگرفت</translation>
+<translation id="7126996685418858413">هفته گذشته باز شده است</translation>
 <translation id="7130207228079676353">به احتمال خیلی زیاد</translation>
 <translation id="7131634465328662194">به‌طور خودکار از سیستم خارج خواهید شد.</translation>
 <translation id="7143207342074048698">در حال اتصال</translation>
@@ -940,6 +954,7 @@
 <translation id="7189412385142492784">‏How far is Venus (فاصله سیاره ناهید از ما چقدر است)</translation>
 <translation id="7246071203293827765">‏<ph name="UPDATE_TEXT" />. این Chromebook برای اعمال به‌روزرسانی باید بازراه‌اندازی شود. این کار ممکن است تا ۱ دقیقه طول بکشد.</translation>
 <translation id="7256634071279256947">میکروفون پشت</translation>
+<translation id="7258828758145722155">دیروز ویرایش شده است</translation>
 <translation id="726276584504105859">برای استفاده از تقسیم صفحه، به اینجا بکشید</translation>
 <translation id="7262906531272962081">ایجاد یادآوری</translation>
 <translation id="7279434993080105272">رنگ قلم نشان‌گذاری <ph name="COLOR_PARAMETER" /></translation>
@@ -959,6 +974,7 @@
 <translation id="7378203170292176219">برای انتخاب ناحیه ضبط، بکشید</translation>
 <translation id="7378594059915113390">کنترل‌های رسانه</translation>
 <translation id="7378889811480108604">حالت «بهینه‌سازی باتری» خاموش است</translation>
+<translation id="7384028040782072252">برای تغییر ترتیب برنامه‌ها، جایی کلیک راست کنید</translation>
 <translation id="7392563512730092880">همیشه می‌توانید راه‌اندازی را در زمان دیگری ازطریق «تنظیمات» انجام دهید.</translation>
 <translation id="7405710164030118432">‏برای باز کردن قفل دستگاه، کد دسترسی ولی را برای Family Link وارد کنید</translation>
 <translation id="7406608787870898861">تکمیل کردن راه‌اندازی شبکه تلفن همراه</translation>
@@ -977,6 +993,7 @@
 <translation id="7483025031359818980">ناحیه انتخاب روی تمام صفحه تنظیم شد</translation>
 <translation id="7486227320194954040">جمع کردن ابزارهای نشان‌گذاری</translation>
 <translation id="7497767806359279797">انتخاب زبان و صفحه‌کلید</translation>
+<translation id="7508690557411636492">ماه گذشته باز شده است</translation>
 <translation id="7509246181739783082">هویتتان را به‌تأیید برسانید</translation>
 <translation id="7513622367902644023">حالت نماگرفت انتخاب شد</translation>
 <translation id="7513922695575567867">تقویم، هفته <ph name="DATE" />، درحال‌حاضر <ph name="SELECTED_DATE" /> انتخاب شده است.</translation>
@@ -1010,6 +1027,7 @@
 <translation id="7654687942625752712">برای غیرفعال کردن بازخورد گفتاری، هردو کلید تنظیم صدا را پنج ثانیه فشار دهید و نگه‌دارید.</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7662283695561029522">برای پیکربندی ضربه بزنید</translation>
+<translation id="7671610481353807627">برنامه‌ها براساس رنگ مرتب شده‌اند</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">افزودن شبکه تلفن همراه جدید</translation>
 <translation id="7720410380936703141">امتحان مجدد</translation>
@@ -1146,6 +1164,7 @@
 <translation id="8563862697512465947">تنظیمات اعلام</translation>
 <translation id="857201607579416096">منو به گوشه چپ پایین صفحه منتقل شد.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
+<translation id="8598235756057743477">مرتب‌سازی برنامه‌ها براساس نام یا رنگ</translation>
 <translation id="8627191004499078455">متصل به <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">تنظیمات دسترس‌پذیری</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، تحت‌مدیریت سرپرست</translation>

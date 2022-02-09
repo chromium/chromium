@@ -87,6 +87,7 @@
 <translation id="1383876407941801731">Хайлт</translation>
 <translation id="1391102559483454063">Асаалттай</translation>
 <translation id="1407069428457324124">Бараан загвар</translation>
+<translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Огноо хооронд шилжихийн тулд суман товчнуудыг дарна уу.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, суулгасан апп</translation>
 <translation id="1419738280318246476">Мэдэгдлийн үйлдлийг гүйцэтгэхийн тулд төхөөрөмжийн түгжээг тайлна уу</translation>
 <translation id="1420408895951708260">Шөнийн гэрлийг асаах/унтраах. <ph name="STATE_TEXT" /></translation>
@@ -98,6 +99,7 @@
 <translation id="1467432559032391204">Зүүн</translation>
 <translation id="147310119694673958">Утасны батарей <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">Хөвж буй хандалтын цэс</translation>
+<translation id="1480845547124508962"><ph name="CURRENT_TIME" />, Календарийн харагдах байдлыг нээхийн тулд enter товчийг дарна уу</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" />-г <ph name="SECOND_ITEM_TITLE" />-р сольсон</translation>
 <translation id="1503394326855300303">Эзэмшигчийн дансанд эхлээд олон нэвтрэх хэсэгт нэвтэрсэн байх шаардлагтай.</translation>
@@ -684,6 +686,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (Баруун)</translation>
 <translation id="5352250171825660495">Бараан загвар асаалттай байна</translation>
 <translation id="5379115545237091094">Хэт олон удаа оролдлоо</translation>
+<translation id="5393156353051693207">Аппуудаа дахин эрэмбэлэхийн тулд хүссэн газраа удаан дарна уу</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" />-г <ph name="IN_PLACE_APP" /> дээр тавьсан байна. Фолдер үүсгэхийн тулд чөлөөлнө үү.</translation>
 <translation id="5397578532367286026">chrome.com дээр (<ph name="MANAGER_EMAIL" />) удирдагч энэ хэрэглэгчийн хэрэглээ болон түүхийг үзэх боломжтой.</translation>
 <translation id="5400461572260843123">Шуурхай тохиргоо. Мэдэгдлийн төвд хандахын тулд хайх + зүүн сумыг дарна уу.</translation>
@@ -852,6 +855,7 @@
 <translation id="6565007273808762236">eSIM холболт боломжгүй</translation>
 <translation id="6570831796530454248">{0,plural, =1{Төхөөрөмжийг нэг цагийн дотор шинэчилнэ үү}other{Төхөөрөмжийг # цагийн дотор шинэчилнэ үү}}</translation>
 <translation id="6570902864550063460">USB-р цэнэглэж байна</translation>
+<translation id="6574587113394758819">Үзэх хамгаалалт асаалттай тул <ph name="APP_TITLE" />-н мэдэгдлийг нуусан</translation>
 <translation id="6578407462441924264">Нэргүй</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" /> хугацааны дараа таны цаг дуусна.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -859,6 +863,7 @@
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />, таны администратор удирддаг</translation>
 <translation id="6612802754306526077">Дэлгэцийн үйлдэл бичих горимыг сонгосон</translation>
 <translation id="6614169507485700968">Нууцлалын дэлгэц асаалттай байна</translation>
+<translation id="6625718907317144388">Үзэх хамгаалалт асаалттай тул <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> болон бусад мэдэгдлийг нуусан</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> микрофон ашиглахыг хүсэж байна</translation>
 <translation id="6630773993843701741">Төхөөрөмжийг гар аргаар хослуулахын тулд Bluetooth-н тохиргоог нээнэ үү</translation>
@@ -974,6 +979,7 @@
 <translation id="7378203170292176219">Бичих хэсгийг сонгохын тулд чирнэ үү</translation>
 <translation id="7378594059915113390">Медиа хяналт</translation>
 <translation id="7378889811480108604">Батарей хэмнэгчийн горим унтраалттай байна</translation>
+<translation id="7384028040782072252">Аппуудаа дахин эрэмбэлэхийн тулд хүссэн газраа баруун товшино уу</translation>
 <translation id="7392563512730092880">Та дараа нь үргэлж Тохиргооноос тохируулах боломжтой.</translation>
 <translation id="7405710164030118432">Энэ төхөөрөмжийн түгжээг тайлахын тулд Family Link-н эцэг эхийн нэвтрэх кодоо оруулна уу</translation>
 <translation id="7406608787870898861">Мобайл сүлжээгээ тохируулж дуусгана уу</translation>
@@ -1040,6 +1046,7 @@
 <translation id="776344839111254542">Шинэчлэлтийн дэлгэрэнгүйг харахын тулд товшино уу</translation>
 <translation id="7780159184141939021">Дэлгэцийг эргүүлсэн</translation>
 <translation id="7796353162336583443">Тэмдэглэл бичих, дэлгэцийн зураг авах, Google Tуслах, лазер чиглүүлэгч эсвэл томруулдаг шил ашиглахын тулд тавиур дээрх мэдрэгч үзэгний товчлуурыг товшино уу.</translation>
+<translation id="7796735576426975947">Шинэ мэдэгдлийг нуусан</translation>
 <translation id="7798302898096527229">Цуцлахын тулд Search эсвэл Shift товчлуурыг дарна уу.</translation>
 <translation id="7807067443225230855">Хайлт болон Туслах</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> ба <ph name="MINUTE" /></translation>
@@ -1133,6 +1140,7 @@
 <translation id="8371991222807690464">Зочны горимд дагалдах төхөөрөмжийн гүйцэтгэлийг хязгаарласан байж магадгүй</translation>
 <translation id="8375916635258623388">Энэ <ph name="DEVICE_NAME" /> болон таны утас автоматаар холбогдоно</translation>
 <translation id="8380784334203145311">Сайхан амраарай,</translation>
+<translation id="8382715499079447151">Үзэх хамгаалалт</translation>
 <translation id="8388750414311082622">Сүүлийн дэлгэцийг устгах боломжгүй байна.</translation>
 <translation id="8394567579869570560">Таны эцэг эх энэ төхөөрөмжийг түгжсэн</translation>
 <translation id="8401850874595457088">Хэлний цэсийг оруулна уу</translation>
@@ -1164,6 +1172,8 @@
 <translation id="8563862697512465947">Мэдэгдлийн тохиргоо</translation>
 <translation id="857201607579416096">Цэсийг дэлгэцийн баруун доод булан руу зөөсөн.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
+<translation id="8598235756057743477">Аппуудаа нэр эсвэл өнгөөр эрэмбэлнэ үү</translation>
+<translation id="8614517853887502247">Үзэх хамгаалалт асаалттай тул <ph name="APP_1_TITLE" /> болон <ph name="APP_2_TITLE" />-н мэдэгдлийг нуусан</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" />-д холбогдсон</translation>
 <translation id="8631727435199967028">Хандалтын тохиргоо</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />, таны администратор удирддаг</translation>

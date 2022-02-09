@@ -120,6 +120,7 @@
 <translation id="1682195225331129001">Kipróbálom</translation>
 <translation id="1697284962337958118">Hozzáadás</translation>
 <translation id="1702543251015153180">Módosítja a sötét téma beállításait?</translation>
+<translation id="1702907158640575240">Felügyelt böngésző</translation>
 <translation id="1718835860248848330">Az elmúlt órából</translation>
 <translation id="1724977129262658800">Oldja fel a képernyőzárat a jelszó szerkesztéséhez</translation>
 <translation id="1726477445370128854">Gyorsabban böngészhet és kereshet, ha a Chrome betölti előre azokat az oldalakat, amelyeket a böngésző szerint Ön már felkeresett.</translation>
@@ -224,7 +225,6 @@ A kereséshez koppintson a kívánt szóra. A keresés finomításához ujja nyo
 <translation id="2321958826496381788">Húzza a csúszkát, amíg kényelmesen nem tudja olvasni a szöveget. A szövegnek legalább ekkorának kell lennie, miután duplán koppint egy bekezdésre.</translation>
 <translation id="2323763861024343754">Webhely tárhelye</translation>
 <translation id="2328985652426384049">Nem sikerült a bejelentkezés</translation>
-<translation id="2342601525305963189">Chrome-tippek:</translation>
 <translation id="234265804618409743">Nem lehet megnyitni a kamerát. Hiba történt.</translation>
 <translation id="2349710944427398404">A Chrome által használt teljes adatmennyiség, beleértve a fiókokat, könyvjelzőket és mentett beállításokat is</translation>
 <translation id="2353636109065292463">Az internetkapcsolat ellenőrzése</translation>
@@ -568,9 +568,11 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="4402611456429872546"><ph name="LANG" /> – Letöltés…</translation>
 <translation id="4404568932422911380">Nincsenek könyvjelzők</translation>
 <translation id="4405224443901389797">Áthelyezés…</translation>
+<translation id="4405636711880428279">Biztosan eltávolítja a virtuális kártyát?</translation>
 <translation id="4409271659088619928">Az Ön keresőmotorja a következő: <ph name="DSE" />. A keresési előzmények törléséről a keresőmotorja útmutatójából tájékozódhat, ha van ilyen.</translation>
 <translation id="4415276339145661267">Google-fiók kezelése</translation>
 <translation id="4425140285732600465">Ár nyomon követve. Értesítést kaphat, ha valamelyik webhelyen csökken az ár.</translation>
+<translation id="442518031075347249">A továbbiakban nem fogja tudni használni virtuális kártyáját a Google Pay alkalmazással. <ph name="BEGIN_LINK1" />További információ a virtuális kártyákról<ph name="END_LINK1" />.</translation>
 <translation id="4450672886426705087">Keresési találatok a Google-tól.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> lap bezárása</translation>
 <translation id="4452548195519783679">Könyvjelzők közé téve itt: <ph name="FOLDER_NAME" /></translation>

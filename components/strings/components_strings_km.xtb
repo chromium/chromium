@@ -462,6 +462,7 @@
 <translation id="2337852623177822836">ការកំណត់​គ្រប់គ្រង​ដោយ​អ្នកគ្រប់គ្រង​របស់អ្នក</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ចង់ផ្គូផ្គង</translation>
 <translation id="2346319942568447007">រូបភាព​ដែលអ្នក​បានចម្លង</translation>
+<translation id="2350796302381711542">អនុញ្ញាតឲ្យ <ph name="HANDLER_HOSTNAME" /> បើក <ph name="PROTOCOL" /> តំណទាំងអស់ជំនួសឲ្យ <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2354001756790975382">ចំណាំផ្សេងទៀត</translation>
 <translation id="2354430244986887761">ថ្មីៗនេះការរុករកដោយសុវត្ថិភាពលើ Google <ph name="BEGIN_LINK" />បានរកឃើញកម្មវិធីបង្កគ្រោះថ្នាក់<ph name="END_LINK" /> នៅលើ <ph name="SITE" /> ។</translation>
 <translation id="2355395290879513365">អ្នកវាយប្រហារអាចនឹងមើលឃើញរូបភាពដែលអ្នកកំពុងមើលនៅលើគេហទំព័រនេះ និងបញ្ឆោតអ្នកដោយធ្វើការកែសម្រួលពួកវា។</translation>
@@ -488,6 +489,7 @@
 អាចត្រូវបានបញ្ឈប់សុពលភាព។ នេះអាចបណ្តាលមកពីការកំណត់មិនត្រឹមត្រូវ ឬមានការស្ទាក់ការភ្ជាប់របស់អ្នកពីអ្នកវាយប្រហារ។</translation>
 <translation id="2414886740292270097">ងងឹត</translation>
 <translation id="2430968933669123598">គ្រប់គ្រង​គណនី Google, ចុច Enter ដើម្បីគ្រប់គ្រង​ព័ត៌មាន ឯកជនភាព និង​សុវត្ថិភាព​របស់អ្នក​នៅក្នុង​គណនី Google របស់អ្នក</translation>
+<translation id="2436186046335138073">អនុញ្ញាត <ph name="HANDLER_HOSTNAME" /> ឲ្យបើក <ph name="PROTOCOL" /> តំណទាំងអស់?</translation>
 <translation id="2438874542388153331">ចោះ​បួនរន្ធ​ខាងស្ដាំ</translation>
 <translation id="2450021089947420533">ការស្វែងរក</translation>
 <translation id="2463739503403862330">បំពេញ</translation>
@@ -637,6 +639,7 @@
 <translation id="2930577230479659665">តម្រឹម​បន្ទាប់ពី​ច្បាប់ចម្លង​នីមួយៗ</translation>
 <translation id="2932085390869194046">ណែនាំ​ពាក្យសម្ងាត់...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">បើកតំណ <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">ម៉ាស៊ីនមេនេះមិនអាចបង្ហាញថាវាជា <ph name="DOMAIN" /> ទេ វិញ្ញាបនប័ត្រសុវត្ថិភាពរបស់វាមកពី <ph name="DOMAIN2" />។ នេះអាចបណ្តាលមកពីការកំណត់មិនត្រឹមត្រូវ ឬមានការស្ទាក់ការភ្ជាប់របស់អ្នកពីអ្នកវាយប្រហារ។</translation>
 <translation id="2943895734390379394">ពេល​វេលាបង្ហោះ៖</translation>
 <translation id="2948083400971632585">អ្នកអាចបិទដំណើរការប្រូកស៊ីណាមួយដែលបានកំណត់សម្រាប់ការភ្ជាប់ ពីទំព័រការកំណត់។</translation>
@@ -746,6 +749,7 @@
 <translation id="3288238092761586174"><ph name="URL" /> អាចត្រូវអនុវត្ត​ជំហានបន្ថែម ដើម្បីផ្ទៀងផ្ទាត់​ការបង់ប្រាក់​របស់អ្នក</translation>
 <translation id="3293642807462928945">ស្វែង​យល់បន្ថែម​អំពី​គោលការណ៍ <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">មើល និងគ្រប់គ្រង​ពាក្យសម្ងាត់របស់អ្នក​នៅក្នុងការកំណត់ Chrome</translation>
+<translation id="3303795387212510132">អនុញ្ញាត​ឱ្យកម្មវិធី​បើកតំណ <ph name="PROTOCOL_SCHEME" /> ដែរទេ?</translation>
 <translation id="3303855915957856445">រកមិនឃើញលទ្ធផលស្វែងរកទេ</translation>
 <translation id="3304073249511302126">ការស្កេន​ប៊្លូធូស</translation>
 <translation id="3308006649705061278">ក្រុមអង្គភាព (OU)</translation>
@@ -883,6 +887,7 @@
 <translation id="370972442370243704">បើកការស្វែងរក</translation>
 <translation id="3711895659073496551">បញ្ឈប់</translation>
 <translation id="3712624925041724820">អស់អាជ្ញាប័ណ្ណ</translation>
+<translation id="3714633008798122362">ប្រតិទិនគេហទំព័រ</translation>
 <translation id="3714780639079136834">បើកទិន្នន័យចល័ត ឬ Wi-Fi</translation>
 <translation id="3715597595485130451">ភ្ជាប់ទៅ Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />ពិនិត្យការកំណត់រចនាសម្ព័ន្ធប្រូកស៊ី firewall និង DNS<ph name="END_LINK" /></translation>
@@ -944,6 +949,7 @@
 <translation id="3906954721959377182">ថេប្លេត</translation>
 <translation id="3909477809443608991"><ph name="URL" /> ចង់ចាក់ខ្លឹមសារ​ដែលមានការ​ការពារ។ អត្តសញ្ញាណ​ឧបករណ៍របស់អ្នក​នឹងត្រូវផ្ទៀងផ្ទាត់​ដោយ Google ហើយអាចនឹង​ត្រូវបានចូលប្រើ​ដោយគេហទំព័រនេះ។</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">បដិសេធ</translation>
 <translation id="3939773374150895049">ប្រើ WebAuthn ជំនួសឱ្យ CVC?</translation>
 <translation id="3946209740501886391">សួរជានិច្ចនៅលើគេហទំព័រនេះ</translation>
 <translation id="3947595700203588284">អាចស្នើសុំភ្ជាប់ជាមួយឧបករណ៍ MIDI</translation>
@@ -1059,6 +1065,7 @@
 <translation id="4250680216510889253">ទេ</translation>
 <translation id="4253168017788158739">កំណត់ត្រា</translation>
 <translation id="425582637250725228">ការផ្លាស់ប្តូរដែលអ្នកបានធ្វើប្រហែលជាមិនបានរក្សាទុកទេ</translation>
+<translation id="425869179292622354">ធ្វើឱ្យវាកាន់តែ​មានសុវត្ថិភាព​ដោយប្រើកាតនិម្មិតឬ?</translation>
 <translation id="4258748452823770588">ហេត្ថលេខាមិនល្អ</translation>
 <translation id="4261046003697461417">មិនអាចដាក់​ចំណារលើឯកសារ​ដែលត្រូវបានការពារនោះ​ទេ</translation>
 <translation id="4265872034478892965">អនុញ្ញាតដោយអ្នកគ្រប់គ្រងរបស់អ្នក</translation>
@@ -1570,6 +1577,7 @@
 <translation id="5921639886840618607">រក្សាទុក​កាត​ទៅក្នុង​គណនី Google ?</translation>
 <translation id="5922853866070715753">ជិត​រួចរាល់​ហើយ</translation>
 <translation id="5932224571077948991">គេហទំព័រ​បង្ហាញ​ការផ្សាយពាណិជ្ជកម្ម​ដែលនាំឱ្យយល់ច្រឡំ ឬរំខាន</translation>
+<translation id="5938153366081463283">បញ្ចូល​កាតនិម្មិត</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">កំពុងបើក <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">មិន​អាច​ចុះឈ្មោះ​ដោយប្រើគណនី​អ្នក​ប្រើប្រាស់​បានទេ (មាន​អាជ្ញាបណ្ណ​ពាក់ព័ន្ធ)។</translation>
@@ -2195,6 +2203,7 @@
 <translation id="7976214039405368314">សំណើច្រើនពេក</translation>
 <translation id="7977538094055660992">ឧបករណ៍នៃធាតុបញ្ចេញ</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="7981260203882740562">ភ្ជាប់​ជាមួយ</translation>
 <translation id="798134797138789862">អាចស្នើសុំ​ប្រើទិន្នន័យ និងឧបករណ៍ VR</translation>
 <translation id="7984945080620862648">អ្នកមិនអាចទៅកាន់ <ph name="SITE" /> ឥឡូវនេះទេ ពីព្រោះគេហទំព័ររបស់អ្នកបានផ្ញើអត្តសញ្ញាណសម្គាល់រញេរញៃដែល Chrome មិនអាចដំណើរការបាន។ ជាធម្មតាកំហុសឆ្គងបណ្តាញ
 និងការវាយប្រហារជារឿងបណ្ណោះអាសន្ន ដូច្នេះទំព័រនេះនឹងអាចដំណើរពេលក្រោយ។</translation>
@@ -2412,6 +2421,7 @@
 <translation id="8731544501227493793">ប៊ូតុង "គ្រប់គ្រងពាក្យសម្ងាត់" ចុច "Enter" ដើម្បីមើល និងគ្រប់គ្រងពាក្យសម្ងាត់របស់អ្នកនៅក្នុងការកំណត់ Chrome</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> របស់​អ្នក​ស្ថិតក្រោម​ការគ្រប់គ្រង​របស់ <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច "Tab" រួចចុច "Enter" ដើម្បីបើក​ផ្ទាំងឯកជនថ្មី ដើម្បីរុករកជាលក្ខណៈឯកជន</translation>
+<translation id="8737685506611670901">បើកតំណ <ph name="PROTOCOL" /> ជំនួសឲ្យ <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">ដើម្បីបង្កើតការភ្ជាប់ដែលមានសុវត្ថិភាព ម៉ោងរបស់អ្នកត្រូវបានតែកំណត់ឲ្យត្រឹមត្រូវ។ ដោយសារតែវិញ្ញាបនបត្រដែលគេហទំព័រប្រើដើម្បីកំណត់អត្តសញ្ញាណខ្លួនវាមានសុពលភាពត្រឹមចន្លោះរយៈពេលមួយប៉ុណ្ណោះ។ ដោយសារតែម៉ោងឧបករណ៍របស់អ្នកមិនត្រឹមត្រូវ Chromium មិនអាចផ្ទៀងផ្ទាត់វិញ្ញាបនបត្រទាំងនេះទេ។</translation>
 <translation id="8740359287975076522">រកមិនឃើញអាសយដ្ឋាន &lt;abbr id="dnsDefinition"&gt;DNS របស់<ph name="HOST_NAME" />&lt;/abbr&gt; ទេ។ កំពុងវិភាគរកបញ្ហា។</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> គឺជាលេខកូដ​របស់អ្នកសម្រាប់ <ph name="ORIGIN" /></translation>
@@ -2489,6 +2499,7 @@
 <translation id="9004367719664099443">VR កំពុង​ដំណើរការ</translation>
 <translation id="9005998258318286617">មិនអាចផ្ទុកឯកសារ PDF បានទេ។</translation>
 <translation id="9008201768610948239">មិនអើពើ</translation>
+<translation id="901834265349196618">អ៊ីម៉ែល</translation>
 <translation id="9020200922353704812">តម្រូវ​ឲ្យមាន​អាសយដ្ឋាន​ចេញវិក្កយបត្រសម្រាប់បណ្ណ</translation>
 <translation id="9020542370529661692">គេហទំព័រនេះត្រូវបានបកប្រែទៅ <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

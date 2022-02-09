@@ -120,6 +120,7 @@
 <translation id="1682195225331129001">Probatu</translation>
 <translation id="1697284962337958118">Gehitu hemen:</translation>
 <translation id="1702543251015153180">Gai ilunaren ezarpenak aldatu nahi dituzu?</translation>
+<translation id="1702907158640575240">Kudeatutako arakatzailea</translation>
 <translation id="1718835860248848330">Azken ordukoak</translation>
 <translation id="1724977129262658800">Pasahitza editatzeko, desblokeatu gailua</translation>
 <translation id="1726477445370128854">Ustez bisitatuko dituzun orriak aurrez kargatzen baditu Chrome-k, azkarrago arakatu ahalko dituzu webguneak, bai eta bilaketak bizkorrago egin ere.</translation>
@@ -224,7 +225,6 @@ Sakatu bilatu nahi duzun hitza. Bilaketa mugatzeko, eduki testua sakatuta eta ha
 <translation id="2321958826496381788">Arrastatu graduatzailea testu hau erraz irakurri ahal izan arte. Testuak gutxienez hau bezain handia izan beharko du paragrafoan klik bikoitza egin ondoren.</translation>
 <translation id="2323763861024343754">Webguneen datuak</translation>
 <translation id="2328985652426384049">Ezin da hasi saioa</translation>
-<translation id="2342601525305963189">Chrome-ri buruzko aholkuak:</translation>
 <translation id="234265804618409743">Ezin da ireki kamera. Arazo bat izan da.</translation>
 <translation id="2349710944427398404">Chrome-k erabilitako datuak, guztira; hala nola kontuak, laster-markak eta gordetako ezarpenak.</translation>
 <translation id="2353636109065292463">Internetera konektatuta zaudela egiaztatzea</translation>
@@ -568,9 +568,11 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="4402611456429872546"><ph name="LANG" />: deskargatzen…</translation>
 <translation id="4404568932422911380">Ez dago laster-markarik</translation>
 <translation id="4405224443901389797">Eraman hona…</translation>
+<translation id="4405636711880428279">Txartel birtuala kendu nahi duzu?</translation>
 <translation id="4409271659088619928"><ph name="DSE" /> da bilatzailea. Behar izanez gero, joan haren argibideetara bilaketa-historia ezabatzeari buruzko informazio gehiago lortzeko.</translation>
 <translation id="4415276339145661267">Kudeatu Google-ko kontua</translation>
 <translation id="4425140285732600465">Prezioaren jarraipena egiten ari zara. Jaso alertak webguneren batean prezioa jaisten bada.</translation>
+<translation id="442518031075347249">Aurrerantzean, ezingo duzu erabili txartel birtuala Google Pay-rekin. <ph name="BEGIN_LINK1" />Lortu txartel birtualei buruzko informazio gehiago<ph name="END_LINK1" /></translation>
 <translation id="4450672886426705087">Google-ren bilaketa-emaitzak.</translation>
 <translation id="4452411734226507615">Itxi <ph name="TAB_TITLE" /> fitxa</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> karpetan gehitu da laster-marka</translation>

@@ -89,6 +89,7 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> vol restaurar la configuració de Chrome i aplicar-hi els valors predeterminats originals. Es restablirà la pàgina d'inici, la pàgina Pestanya nova i el motor de cerca, es desactivaran les extensions i s'anul·larà la fixació de totes les pestanyes. També s'esborraran altres dades temporals i emmagatzemades a la memòria cau, com ara galetes i dades de contingut i de llocs.</translation>
 <translation id="1084096383128641877">Encara que suprimeixis aquesta contrasenya, el teu compte de <ph name="DOMAIN" /> no se suprimirà. Canvia la contrasenya o suprimeix el teu compte de <ph name="DOMAIN_LINK" /> per protegir-lo dels altres.</translation>
 <translation id="1084824384139382525">Copia l'adr&amp;eça de l'enllaç</translation>
+<translation id="1085064499066015002">Sempre en tots els llocs web</translation>
 <translation id="1085697365578766383">S'ha produït un error en iniciar la màquina virtual. Torna-ho a provar.</translation>
 <translation id="1087965115100412394">No permetis que els llocs web es connectin a dispositius MIDI</translation>
 <translation id="1088654056000736875">Chrome està suprimint programari nociu de l'ordinador...</translation>
@@ -340,6 +341,7 @@
 <translation id="1343865611738742294">Concedeix permís a les aplicacions de Linux per accedir als dispositius USB. Linux no recordarà els dispositius USB després d'extreure'ls.</translation>
 <translation id="1343920184519992513">Continua des d'on ho vas deixar i obre un conjunt de pàgines específic</translation>
 <translation id="1346630054604077329">Confirma i reinicia</translation>
+<translation id="1346748346194534595">Dreta</translation>
 <translation id="1347256498747320987">Instal·la actualitzacions i aplicacions. En continuar, acceptes que aquest dispositiu també pugui baixar i instal·lar automàticament actualitzacions i aplicacions de Google, de l'operador de telefonia mòbil i del fabricant del dispositiu, i que és possible que ho faci utilitzant dades mòbils. Pot ser que algunes d'aquestes aplicacions ofereixin compres des de l'aplicació. <ph name="BEGIN_LINK1" />Més informació<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Emmagatzematge de Linux</translation>
 <translation id="1347975661240122359">L'actualització començarà quan hi hagi un <ph name="BATTERY_LEVEL" />% de bateria.</translation>
@@ -461,6 +463,7 @@
 <translation id="1464781208867302907">Per accedir a les preferències del dispositiu, ves a Configuració.</translation>
 <translation id="1465176863081977902">C&amp;opia l'adreça de l'àudio</translation>
 <translation id="1465827627707997754">Tall de pizza</translation>
+<translation id="1467432559032391204">Esquerra</translation>
 <translation id="1468571364034902819">Aquest perfil no es pot utilitzar</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Afegeix una pestanya al grup nou}other{Afegeix pestanyes al grup nou}}</translation>
 <translation id="1470350905258700113">Utilitza aquest dispositiu</translation>
@@ -1320,7 +1323,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2307630946657910723">Cerca una part de la pàgina amb <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
-<translation id="230927227160767054">Aquesta pàgina vol instal·lar un gestor de serveis.</translation>
 <translation id="2309620859903500144">Aquest lloc web no té permís per accedir als sensors de llum o moviment.</translation>
 <translation id="2312219318583366810">URL de la pàgina</translation>
 <translation id="2314165183524574721">L'opció de configuració de visibilitat actual és Amagat</translation>
@@ -1371,7 +1373,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2349896577940037438">Si tens activada l'opció Activitat al web i en aplicacions addicional, és possible que aquestes dades es desin al teu Compte de Google. Pots veure les teves dades, suprimir-les i modificar la configuració del teu compte a account.google.com.</translation>
 <translation id="2350133097354918058">S'ha tornat a carregar</translation>
 <translation id="2350182423316644347">S'està inicialitzant l'aplicació...</translation>
-<translation id="2350796302381711542">Voleu permetre que <ph name="HANDLER_HOSTNAME" /> obri tots els enllaços de <ph name="PROTOCOL" /> en comptes de <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{1 element}other{{NUM_ITEMS} elements}}</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Les notes de la pantalla de bloqueig es desen automàticament a <ph name="LOCK_SCREEN_APP_NAME" />. La nota més recent romandrà a la pantalla de bloqueig.</translation>
@@ -1444,7 +1445,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2434758125294431199">Selecciona qui pot compartir contingut amb tu</translation>
 <translation id="2435248616906486374">S'ha desconnectat la xarxa</translation>
 <translation id="2435457462613246316">Mostra la contrasenya</translation>
-<translation id="2436186046335138073">Voleu permetre que <ph name="HANDLER_HOSTNAME" /> obri tots els enllaços de <ph name="PROTOCOL" />?</translation>
 <translation id="2439626940657133600">S'està carregant <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Visualitza l'&amp;origen</translation>
 <translation id="244231003699905658">L'adreça no és vàlida. Comprova-la i torna-ho a provar.</translation>
@@ -1962,7 +1962,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="2935225303485967257">Gestiona els perfils</translation>
 <translation id="2935654492420446828">Afegeix un compte de centre educatiu més endavant</translation>
 <translation id="2936851848721175671">Còpia de seguretat i restauració</translation>
-<translation id="2938225289965773019">Obrir els enllaços del protocol <ph name="PROTOCOL" /></translation>
 <translation id="2939908794993783865">Llocs web inactius addicionals</translation>
 <translation id="2939938020978911855">Mostra els dispositius Bluetooth disponibles</translation>
 <translation id="2941112035454246133">Baixa</translation>
@@ -2283,7 +2282,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="33022249435934718">Controls GDI</translation>
 <translation id="3302388252085547855">Introdueix una justificació...</translation>
 <translation id="3303260552072730022">Una extensió ha activat la pantalla completa.</translation>
-<translation id="3303795387212510132">Vols permetre que l'aplicació obri els enllaços <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303818374450886607">Còpies</translation>
 <translation id="3303855915957856445">No s'ha trobat cap resultat de la cerca</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> de descompte</translation>
@@ -2695,7 +2693,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="371300529209814631">Enrere/Endavant</translation>
 <translation id="3713047097299026954">Aquesta clau de seguretat no té dades d'inici de sessió</translation>
 <translation id="3714195043138862580">Aquest dispositiu de demostració s'ha donat de baixa.</translation>
-<translation id="3714633008798122362">calendari web</translation>
 <translation id="3719826155360621982">Pàgina d'inici</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Tu i Google</translation>
@@ -7505,7 +7502,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8734674662128056360">Bloqueig de galetes de tercers</translation>
 <translation id="873545264931343897">Quan el connector <ph name="PLUGIN_NAME" /> s'acabi d'actualitzar, torna a carregar la pàgina per activar-lo</translation>
 <translation id="8736288397686080465">El lloc s'ha actualitzat en segon pla.</translation>
-<translation id="8737685506611670901">Obrir els enllaços del protocol <ph name="PROTOCOL" /> en lloc del gestor <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Tria l'idioma al qual vulguis traduir la pàgina</translation>
 <translation id="8740247629089392745">Pots donar aquest Chromebook a <ph name="SUPERVISED_USER_NAME" />. Ja queda poc per finalitzar la configuració. És hora d'explorar.</translation>
@@ -7769,7 +7765,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="9003647077635673607">Permet-ho en tots els llocs web</translation>
 <translation id="9003677638446136377">Torna-ho a provar</translation>
 <translation id="9004754973617721124">Vols esborrar les dades i els permisos del lloc web <ph name="SITE_NAME" />, tots els llocs web que conté i la seva aplicació instal·lada?</translation>
-<translation id="9008201768610948239">Ignora</translation>
 <translation id="9008201858626224558">Botó Enrere de la pàgina de detalls de <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">S'està carregant (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">Volies canviar aquesta pàgina?</translation>
@@ -7779,7 +7774,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="9013037634206938463">Cal tenir almenys <ph name="INSTALL_SIZE" /> d'espai lliure per instal·lar Linux. Per augmentar l'espai lliure, suprimeix fitxers del dispositiu.</translation>
 <translation id="901668144954885282">Còpia de seguretat a Google Drive</translation>
 <translation id="9018218886431812662">La instal·lació s'ha completat</translation>
-<translation id="901834265349196618">correu electrònic</translation>
 <translation id="9019062154811256702">Llegir i canviar la configuració d'Emplenament automàtic</translation>
 <translation id="9019894137004772119">Utilitza la ubicació. Permet que les aplicacions i els serveis amb permís d'ubicació utilitzin la ubicació del dispositiu. Google pot recollir dades d'ubicació periòdicament i utilitzar-les de manera anònima per millorar la precisió de la ubicació i els serveis basats en la ubicació.</translation>
 <translation id="9019956081903586892">No s'ha pogut baixar el diccionari del corrector ortogràfic</translation>

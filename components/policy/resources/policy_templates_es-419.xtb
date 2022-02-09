@@ -488,23 +488,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="159946228300522107">Si estableces la política como verdadera, Chrome maximizará la primera ventana que se muestre en la primera ejecución.
 
       Si la estableces como falsa o no la estableces, Chrome maximizará la primera ventana siempre que el tamaño de la pantalla lo permita.</translation>
-<translation id="1600107337865729434">Esta política permite el agrupamiento en clústeres de agentes con clave de origen de forma predeterminada.
-
-      El encabezado del HTTP Origin-Agent-Cluster controla si un documento está
-      aislado en un clúster de agentes con clave de origen o bien en un
-      clúster con clave de sitio. Esto tiene repercusiones en la seguridad ya que un
-      clúster de agentes con clave de origen permite el aislamiento de documentos por origen. La consecuencia
-      visible de esto para el desarrollador es que el descriptor de acceso de document.domain ya no podrá
-      establecerse.
-
-      El comportamiento predeterminado cuando no se establece un encabezado Origin-Agent-Cluster
-      cambia en M101 de clave de sitio a clave de origen. Si habilitas
-      o no estableces la política, el navegador seguirá la nueva configuración predeterminada
-      de esa versión en adelante. Si la inhabilitas, se revierte este cambio y
-      los documentos que no contengan encabezados Origin-Agent-Cluster se asignarán a
-      los clústeres de agentes con clave de sitio. Como consecuencia, el descriptor de acceso de document.domain
-      podrá establecerse de forma predeterminada. Esto coincide con el comportamiento heredado.
-      </translation>
 <translation id="1600340610556453828">Si inhabilitas la política, <ph name="PRODUCT_OS_NAME" /> desactivará la conexión Wi-Fi y los usuarios no podrán cambiar esta acción.
 
       Si la habilitas o no la estableces, los usuarios podrán activar o desactivar la conexión Wi-Fi.</translation>

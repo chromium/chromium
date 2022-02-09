@@ -89,6 +89,7 @@
 <translation id="1082398631555931481">‏<ph name="THIRD_PARTY_TOOL_NAME" /> רוצה לשחזר את הגדרות Chrome לברירת המחדל המקורית שלהן. הפעולה הזו תגרום לאיפוס דף הבית, דף הכרטיסייה החדשה ומנוע החיפוש, תשבית את התוספים, ותבטל את ההצמדה של כל הכרטיסיות. כתוצאה מכך יימחקו גם נתונים אחרים מאחסון זמני ומהקובץ השמור, כמו נתונים של קובצי cookie, תוכן ואתרים.</translation>
 <translation id="1084096383128641877">הסרת הסיסמה הזו לא תגרום למחיקת החשבון שלך ב-<ph name="DOMAIN" />. כדי למנוע את החשיפה של הסיסמה, כדאי לשנות אותה או למחוק את החשבון שלך ב-<ph name="DOMAIN_LINK" />.</translation>
 <translation id="1084824384139382525">העתקת כתו&amp;בת קישור</translation>
+<translation id="1085064499066015002">פועל כל הזמן בכל האתרים</translation>
 <translation id="1085697365578766383">קרתה שגיאה בהפעלת המכונה הווירטואלית. יש לנסות שוב.</translation>
 <translation id="1087965115100412394">‏לא לאפשר לאתרים להתחבר למכשירי MIDI</translation>
 <translation id="1088654056000736875">‏Chrome מסיר כעת תוכנה מזיקה מהמחשב שלך…</translation>
@@ -344,6 +345,7 @@
 <translation id="1343865611738742294">‏הענקת הרשאה לאפליקציות Linux לגשת להתקני USB. אחרי שמוציאים התקן USB, הוא לא נשמר בזיכרון של Linux.</translation>
 <translation id="1343920184519992513">להמשיך מהמקום שבו הפסקת ולפתוח קבוצת דפים מסוימת</translation>
 <translation id="1346630054604077329">אישור והפעלה מחדש</translation>
+<translation id="1346748346194534595">ימינה</translation>
 <translation id="1347256498747320987">‏התקנת עדכונים ואפליקציות. המשך משמעו שהסכמת לכך שהמכשיר גם יוריד ויתקין באופן אוטומטי עדכונים ואפליקציות מ-Google, מהספק ומיצרן המכשיר. ייתכן שההורדה תיעשה באמצעות חבילת הגלישה. חלק מהאפליקציות האלה עשויות לכלול אפשרות לרכישות מהאפליקציה. <ph name="BEGIN_LINK1" />מידע נוסף<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">‏נפח האחסון של Linux</translation>
 <translation id="1347975661240122359">העדכון יתחיל כשהסוללה תיטען ל-%<ph name="BATTERY_LEVEL" />.</translation>
@@ -466,6 +468,7 @@
 <translation id="1464781208867302907">דרך ההגדרות אפשר לגשת להעדפות המכשיר.</translation>
 <translation id="1465176863081977902">העתקת כתובת &amp;אודיו</translation>
 <translation id="1465827627707997754">משולש פיצה</translation>
+<translation id="1467432559032391204">שמאלה</translation>
 <translation id="1468571364034902819">לא ניתן להשתמש בפרופיל הזה</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{הוספת הכרטיסייה לקבוצה חדשה}two{הוספת כרטיסיות לקבוצה חדשה}many{הוספת כרטיסיות לקבוצה חדשה}other{הוספת כרטיסיות לקבוצה חדשה}}</translation>
 <translation id="1470350905258700113">שימוש במכשיר הזה</translation>
@@ -1335,7 +1338,6 @@
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2307630946657910723">חיפוש בחלק מהדף באמצעות <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
-<translation id="230927227160767054">‏דף זה מעוניין להתקין handler של שירות.</translation>
 <translation id="2309620859903500144">נחסמה הגישה של האתר הזה אל חיישני התנועה או התאורה.</translation>
 <translation id="2312219318583366810">‏כתובת ה-URL של הדף</translation>
 <translation id="2314165183524574721">הגדרת הרשאות הגישה הנוכחית מוסתרת</translation>
@@ -1386,7 +1388,6 @@
 <translation id="2349896577940037438">‏אם הופעלה ההגדרה 'פעילות באפליקציות ובאתרי אינטרנט נוספים', ייתכן שהנתונים יישמרו בחשבון Google שלך. אפשר להציג את הנתונים שלך, למחוק אותם ולשנות את הגדרות החשבון בכתובת account.google.com.</translation>
 <translation id="2350133097354918058">נטען מחדש</translation>
 <translation id="2350182423316644347">אתחול היישום מתבצע...</translation>
-<translation id="2350796302381711542">האם לאפשר ל-<ph name="HANDLER_HOSTNAME" /> לפתוח את כל קישורי <ph name="PROTOCOL" /> במקום את <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{פריט אחד}two{{NUM_ITEMS} פריטים}many{{NUM_ITEMS} פריטים}other{{NUM_ITEMS} פריטים}}</translation>
 <translation id="2352662711729498748">‏&lt; MB‏ 1</translation>
 <translation id="2352810082280059586">הערות שנכתבות כשמסך הנעילה פועל נשמרות באופן אוטומטי ב-<ph name="LOCK_SCREEN_APP_NAME" />. ההערה האחרונה שכתבת תמשיך להופיע במסך הנעילה.</translation>
@@ -1459,7 +1460,6 @@
 <translation id="2434758125294431199">אנשי קשר לבחירתך שיוכלו לשתף איתך</translation>
 <translation id="2435248616906486374">הרשת מנותקת</translation>
 <translation id="2435457462613246316">הצגת סיסמה</translation>
-<translation id="2436186046335138073">האם לאפשר ל-<ph name="HANDLER_HOSTNAME" /> לפתוח את כל קישורי <ph name="PROTOCOL" />?</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> בטעינה</translation>
 <translation id="2440604414813129000">צפייה &amp;במקור</translation>
 <translation id="244231003699905658">כתובת לא חוקית. יש לבדוק את הכתובת ולנסות שוב.</translation>
@@ -1978,7 +1978,6 @@
 <translation id="2935225303485967257">ניהול פרופילים</translation>
 <translation id="2935654492420446828">הוספת חשבון בית ספרי מאוחר יותר</translation>
 <translation id="2936851848721175671">גיבוי ושחזור</translation>
-<translation id="2938225289965773019">לפתוח קישורי <ph name="PROTOCOL" /></translation>
 <translation id="2939908794993783865">אתרים נוספים שאינם פעילים</translation>
 <translation id="2939938020978911855">‏הצגת מכשירי Bluetooth זמינים</translation>
 <translation id="2941112035454246133">נמוכה</translation>
@@ -2299,7 +2298,6 @@
 <translation id="33022249435934718">‏מזהים ייחודיים של GDI</translation>
 <translation id="3302388252085547855">יש להזין הצדקה…</translation>
 <translation id="3303260552072730022">תוסף הפעיל מסך מלא.</translation>
-<translation id="3303795387212510132">לאשר לאפליקציה לפתוח קישורי <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303818374450886607">עותקים</translation>
 <translation id="3303855915957856445">לא נמצאו תוצאות חיפוש</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> הנחה</translation>
@@ -2711,7 +2709,6 @@
 <translation id="371300529209814631">הקודם/הבא</translation>
 <translation id="3713047097299026954">אין פרטי כניסה במפתח האבטחה הזה</translation>
 <translation id="3714195043138862580">מכשיר ההדגמה הזה הועבר למצב ביטול של ניהול תצורה.</translation>
-<translation id="3714633008798122362">יומן אינטרנט</translation>
 <translation id="3719826155360621982">דף הבית</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">‏ההגדרות שלך ב-Google</translation>
@@ -7521,7 +7518,6 @@
 <translation id="8734674662128056360">‏חסימת קובצי cookie של צד שלישי</translation>
 <translation id="873545264931343897">לאחר שהעדכון של <ph name="PLUGIN_NAME" /> יסתיים, יש לטעון מחדש את הדף כדי להפעיל את הפלאגין</translation>
 <translation id="8736288397686080465">האתר הזה עודכן ברקע.</translation>
-<translation id="8737685506611670901">פתיחת קישורי <ph name="PROTOCOL" /> במקום <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">בחירת השפה לתרגום הדף</translation>
 <translation id="8740247629089392745">‏אפשר להעביר את ה-Chromebook הזה אל <ph name="SUPERVISED_USER_NAME" />. ההתקנה כמעט הסתיימה. מיד ניתן יהיה לחקור ולהתנסות.</translation>
@@ -7787,7 +7783,6 @@
 <translation id="9003647077635673607">התרה בכל האתרים</translation>
 <translation id="9003677638446136377">בדיקה נוספת</translation>
 <translation id="9004754973617721124">לנקות את הנתונים ואת ההרשאות לאתר <ph name="SITE_NAME" />, לכל האתרים שתחתיו ולאפליקציות המותקנות בהם?</translation>
-<translation id="9008201768610948239">סגירה</translation>
 <translation id="9008201858626224558">לחצן 'הקודם' לדף הפרטים של <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">בטעינה (%<ph name="PROGRESS_PERCENT" />)...</translation>
 <translation id="9009708085379296446">האם התכוונת לשנות את הדף הזה?</translation>
@@ -7797,7 +7792,6 @@
 <translation id="9013037634206938463">‏נדרש שטח אחסון פנוי של <ph name="INSTALL_SIZE" /> כדי להתקין את Linux. כדי לפנות שטח אחסון, יש למחוק קבצים מהמכשיר.</translation>
 <translation id="901668144954885282">‏גיבוי ב-Google Drive</translation>
 <translation id="9018218886431812662">ההתקנה הושלמה</translation>
-<translation id="901834265349196618">אימייל</translation>
 <translation id="9019062154811256702">קריאה ושינוי של הגדרות מילוי אוטומטי</translation>
 <translation id="9019894137004772119">‏שימוש במיקום. אפליקציות ושירותים עם הרשאת מיקום יכולים להשתמש במיקום של המכשיר שלך. Google עשויה לאסוף נתוני מיקום מדי פעם, ולהשתמש בנתונים האלה בצורה אנונימית כדי לשפר את הדיוק של המיקום ואת האיכות של שירותים מבוססי-מיקום.</translation>
 <translation id="9019956081903586892">לא ניתן היה להוריד מילון לבדיקת איות</translation>

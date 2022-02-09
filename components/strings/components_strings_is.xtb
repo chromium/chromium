@@ -460,6 +460,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2337852623177822836">Kerfisstjóri stýrir þessari stillingu</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> vill parast</translation>
 <translation id="2346319942568447007">Mynd sem þú afritaðir</translation>
+<translation id="2350796302381711542">Leyfa <ph name="HANDLER_HOSTNAME" /> að opna alla <ph name="PROTOCOL" />-tengla í stað <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2354001756790975382">Önnur bókamerki</translation>
 <translation id="2354430244986887761">Örugg vefnotkun Google <ph name="BEGIN_LINK" />fann skaðleg forrit<ph name="END_LINK" /> á <ph name="SITE" /> nýlega.</translation>
 <translation id="2355395290879513365">Tölvuþrjótar gætu séð myndirnar sem þú skoðar á þessu vefsvæði og gabbað þig með því að breyta þeim.</translation>
@@ -485,6 +486,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2413528052993050574">Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" />; öryggisvottorð hans gæti hafa verið afturkallað. Þetta kann að orsakast af vanstillingu eða tölvuþrjóti sem komist hefur inn í tenginguna.</translation>
 <translation id="2414886740292270097">Dökkt</translation>
 <translation id="2430968933669123598">Stjórnaðu Google reikningnum þínum, ýttu á Enter til að stjórna upplýsingum, persónuvernd og öryggi á Google reikningnum þínum</translation>
+<translation id="2436186046335138073">Leyfa <ph name="HANDLER_HOSTNAME" /> að opna alla <ph name="PROTOCOL" />-tengla?</translation>
 <translation id="2438874542388153331">Fjögur göt hægra megin</translation>
 <translation id="2450021089947420533">Ferðir</translation>
 <translation id="2463739503403862330">Fylla út</translation>
@@ -634,6 +636,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2930577230479659665">Klippa eftir hvert eintak</translation>
 <translation id="2932085390869194046">Tillaga að aðgangsorði...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">Opna tengla fyrir <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" />; öryggisvottorð hans er frá <ph name="DOMAIN2" />. Þetta kann að orsakast af vanstillingu eða tölvuþrjóti sem komist hefur inn í tenginguna.</translation>
 <translation id="2943895734390379394">Tími sendingar:</translation>
 <translation id="2948083400971632585">Þú getur gert hvaða proxy-þjón sem stilltur er fyrir tengingu óvirkan á stillingasíðunni.</translation>
@@ -743,6 +746,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3288238092761586174"><ph name="URL" /> þarf hugsanlega að framkvæma viðbótarskref til að staðfesta greiðsluna frá þér</translation>
 <translation id="3293642807462928945">Frekari upplýsingar um regluna „<ph name="POLICY_NAME" />“</translation>
 <translation id="3295444047715739395">Skoða og stjórna aðgangsorðunum þínum í stillingum Chrome</translation>
+<translation id="3303795387212510132">Leyfa forritinu að opna <ph name="PROTOCOL_SCHEME" /> tengla?</translation>
 <translation id="3303855915957856445">Engar leitarniðurstöður fundust</translation>
 <translation id="3304073249511302126">Bluetooth-leit</translation>
 <translation id="3308006649705061278">Skipulagseining (OU)</translation>
@@ -880,6 +884,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="370972442370243704">Kveikja á ferðum</translation>
 <translation id="3711895659073496551">Biðstaða</translation>
 <translation id="3712624925041724820">Leyfi uppurin</translation>
+<translation id="3714633008798122362">vefdagatal</translation>
 <translation id="3714780639079136834">Kveikja á farsímagögnum eða Wi-Fi</translation>
 <translation id="3715597595485130451">Tengstu við Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Athuga staðgengilsþjóninn, eldvegginn og DNS-stillingarnar<ph name="END_LINK" /></translation>
@@ -941,6 +946,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3906954721959377182">Spjaldtölva</translation>
 <translation id="3909477809443608991"><ph name="URL" /> vill spila varið efni. Auðkenni tækisins verður staðfest af Google og þetta vefsvæði kann að fá aðgang að því.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Hafna</translation>
 <translation id="3939773374150895049">Nota WebAuthn í stað CVC-númers?</translation>
 <translation id="3946209740501886391">Alltaf spyrja á þessu vefsvæði</translation>
 <translation id="3947595700203588284">Geta beðið um að fá að tengjast MIDI-tækjum</translation>
@@ -2406,6 +2412,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8731544501227493793">Hnappurinn Stjórna aðgangsorðum, ýttu á Enter til að skoða og stjórna aðgangsorðunum þínum í stillingum Chrome</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> er í umsjón <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á Tab og svo Enter til að opna nýjan huliðsglugga og fara huldu höfði</translation>
+<translation id="8737685506611670901">Opna tengla fyrir <ph name="PROTOCOL" /> í staðinn fyrir <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Klukka tölvunnar þarf að vera rétt til að hægt sé að koma á öruggri nettengingu. Þetta er vegna þess að vottorðin sem vefsvæði nota til að auðkenna sig eru aðeins gild í tiltekinn tíma. Chromium getur ekki kannað vottorðin þar sem klukka tækisins er röng.</translation>
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;DNS-slóð&lt;/abbr&gt; <ph name="HOST_NAME" /> fannst ekki. Vandamálið er í greiningu.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> er kóðinn þinn fyrir <ph name="ORIGIN" /></translation>
@@ -2483,6 +2490,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="9004367719664099443">VR-lota í gangi</translation>
 <translation id="9005998258318286617">Mistókst að hlaða PDF-skjal.</translation>
 <translation id="9008201768610948239">Hunsa</translation>
+<translation id="901834265349196618">tölvupóstur</translation>
 <translation id="9020200922353704812">Heimilisfangs kortagreiðanda er krafist</translation>
 <translation id="9020542370529661692">Þessi síða var þýdd yfir á <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

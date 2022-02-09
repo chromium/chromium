@@ -460,6 +460,7 @@
 <translation id="2337852623177822836">ההגדרה נשלטת על-ידי מנהל המערכת</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> רוצה לבצע התאמה עם</translation>
 <translation id="2346319942568447007">תמונה שהעתקת</translation>
+<translation id="2350796302381711542">האם לאפשר ל-<ph name="HANDLER_HOSTNAME" /> לפתוח את כל קישורי <ph name="PROTOCOL" /> במקום את <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2354001756790975382">סימניות אחרות</translation>
 <translation id="2354430244986887761">‏התכונה 'גלישה בטוחה' של Google <ph name="BEGIN_LINK" />מצאה לאחרונה אפליקציות מזיקות<ph name="END_LINK" /> באתר <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">ייתכן שתוקפים יוכלו לראות את התמונות שבהן צפית באתר זה, ולאחר מכן הם ינסו להונות אותך על ידי שינוי התמונות.</translation>
@@ -485,6 +486,7 @@
 <translation id="2413528052993050574">השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. ייתכן שאישור האבטחה שלו בוטל. הסיבה לכך עשויה להיות הגדרה שגויה או תוקף המיירט את החיבור שלך.</translation>
 <translation id="2414886740292270097">כהה</translation>
 <translation id="2430968933669123598">‏ניהול חשבון Google, צריך להקיש על Enter כדי לנהל את המידע, הפרטיות והאבטחה בחשבון Google</translation>
+<translation id="2436186046335138073">האם לאפשר ל-<ph name="HANDLER_HOSTNAME" /> לפתוח את כל קישורי <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">4 ניקובים בצד ימין</translation>
 <translation id="2450021089947420533">תהליכים</translation>
 <translation id="2463739503403862330">מילוי</translation>
@@ -634,6 +636,7 @@
 <translation id="2930577230479659665">חיתוך אחרי כל עותק</translation>
 <translation id="2932085390869194046">הצעת סיסמה...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">לפתוח קישורי <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. אישור האבטחה שלו הוא מ-<ph name="DOMAIN2" />. ייתכן שהסיבה לכך היא תצורה שגויה או תוקף המיירט את החיבור שלך.</translation>
 <translation id="2943895734390379394">זמן העלאה:</translation>
 <translation id="2948083400971632585">‏ניתן להשבית כל שרת proxy המוגדר לחיבור מדף ההגדרות.</translation>
@@ -743,6 +746,7 @@
 <translation id="3288238092761586174">ייתכן שיידרשו שלבים נוספים לאימות התשלום שלך על ידי <ph name="URL" /></translation>
 <translation id="3293642807462928945">מידע נוסף על המדיניות <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">‏הצגה וניהול של הסיסמאות שלך בהגדרות Chrome</translation>
+<translation id="3303795387212510132">לאשר לאפליקציה לפתוח קישורי <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">לא נמצאו תוצאות חיפוש</translation>
 <translation id="3304073249511302126">‏סריקת Bluetooth</translation>
 <translation id="3308006649705061278">‏יחידה ארגונית (OU)</translation>
@@ -880,6 +884,7 @@
 <translation id="370972442370243704">הפעלת התהליכים</translation>
 <translation id="3711895659073496551">השהיה</translation>
 <translation id="3712624925041724820">אין מספיק רישיונות</translation>
+<translation id="3714633008798122362">יומן אינטרנט</translation>
 <translation id="3714780639079136834">‏להפעיל את חבילת הגלישה או את ה-Wi-Fi</translation>
 <translation id="3715597595485130451">‏התחברות ל-Wi-Fi</translation>
 <translation id="3717027428350673159">‏<ph name="BEGIN_LINK" />לבדוק את תצורת ה-DNS, חומת האש ושרת ה-Proxy<ph name="END_LINK" /></translation>
@@ -941,6 +946,7 @@
 <translation id="3906954721959377182">טאבלט</translation>
 <translation id="3909477809443608991">‏<ph name="URL" /> רוצה להציג תוכן מוגן. הזהות של המכשיר שלך תאומת על ידי Google ולאתר תהיה גישה אליה.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">דחייה</translation>
 <translation id="3939773374150895049">‏האם להשתמש ב-WebAuthn במקום ב-CVC?</translation>
 <translation id="3946209740501886391">יש לשאול תמיד באתר הזה</translation>
 <translation id="3947595700203588284">‏האתר יכול לבקש הרשאה להתחבר אל מכשירי MIDI</translation>
@@ -2409,6 +2415,7 @@ Del</translation>
 <translation id="8731544501227493793">‏הלחצן 'ניהול סיסמאות', יש להקיש על Enter כדי להציג ולנהל את הסיסמאות בהגדרות Chrome</translation>
 <translation id="8734529307927223492">ה-<ph name="DEVICE_TYPE" /> מנוהל על-ידי <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036">‏<ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לפתוח חלון אנונימי חדש לגלישה פרטית</translation>
+<translation id="8737685506611670901">פתיחת קישורי <ph name="PROTOCOL" /> במקום <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">‏כדי ליצור חיבור מאובטח, השעון צריך להיות מוגדר כהלכה. הסיבה לכך היא שהאישורים שבהם אתרים משתמשים כדי לזהות את עצמם תקפים רק למשך פרקי זמן מסוימים. מאחר שהשעון במכשיר שלך שגוי, Chromium לא יכול לאמת את האישורים האלו.</translation>
 <translation id="8740359287975076522">‏לא ניתן היה למצוא את &lt;abbr id="dnsDefinition"&gt;כתובת ה-DNS&lt;/abbr&gt; של <ph name="HOST_NAME" />. מאבחן את הבעיה.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> הוא הקוד שלך בשביל <ph name="ORIGIN" /></translation>
@@ -2486,6 +2493,7 @@ Del</translation>
 <translation id="9004367719664099443">‏יש עכשיו סשן VR פעיל</translation>
 <translation id="9005998258318286617">‏הטעינה של מסמך ה-PDF נכשלה.</translation>
 <translation id="9008201768610948239">סגירה</translation>
+<translation id="901834265349196618">אימייל</translation>
 <translation id="9020200922353704812">יש להזין את הכתובת לחיוב של הכרטיס</translation>
 <translation id="9020542370529661692">הדף הזה תורגם ל<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

@@ -459,6 +459,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2337852623177822836">Seadet juhib administraator</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> soovib siduda</translation>
 <translation id="2346319942568447007">Teie kopeeritud pilt</translation>
+<translation id="2350796302381711542">Kas lubada kasutajal <ph name="HANDLER_HOSTNAME" /> avada kõik protokolli <ph name="PROTOCOL" /> lingid kasutaja <ph name="REPLACED_HANDLER_TITLE" /> asemel?</translation>
 <translation id="2354001756790975382">Muud järjehoidjad</translation>
 <translation id="2354430244986887761">Google'i ohutu sirvimine leidis hiljuti saidilt <ph name="SITE" /> <ph name="BEGIN_LINK" />ohtlikke rakendusi<ph name="END_LINK" />.</translation>
 <translation id="2355395290879513365">Ründajad võivad näha pilte, mida sellel saidil vaatate, ja teid neid pilte muutes petta.</translation>
@@ -484,6 +485,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2413528052993050574">Server ei suutnud tõestada, et see on domeen <ph name="DOMAIN" />, selle turvasertifikaat võib olla tühistatud. Selle põhjuseks võib olla vale seadistus või ründaja, kes on sekkunud teie ühendusse.</translation>
 <translation id="2414886740292270097">Tume</translation>
 <translation id="2430968933669123598">Google'i konto haldamine, oma Google'i kontol teabe, privaatsuse ja turvalisuse haldamiseks vajutage sisestusklahvi</translation>
+<translation id="2436186046335138073">Kas lubada kasutajal <ph name="HANDLER_HOSTNAME" /> avada kõik protokolli <ph name="PROTOCOL" /> lingid?</translation>
 <translation id="2438874542388153331">Neli auku paremal</translation>
 <translation id="2450021089947420533">Teekonnad</translation>
 <translation id="2463739503403862330">Täida</translation>
@@ -633,6 +635,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2930577230479659665">Kärbi pärast iga koopiat</translation>
 <translation id="2932085390869194046">Soovita parooli …</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">Avada protokolli <ph name="PROTOCOL" /> lingid</translation>
 <translation id="2941952326391522266">Server ei suutnud tõestada, et see on domeen <ph name="DOMAIN" />, selle turvasertifikaati pärineb domeenilt <ph name="DOMAIN2" />. Selle põhjuseks võib olla vale seadistus või ründaja, kes on sekkunud teie ühendusse.</translation>
 <translation id="2943895734390379394">Üleslaadimise aeg:</translation>
 <translation id="2948083400971632585">Seadete lehel saate keelata kõik ühenduse jaoks konfigureeritud puhverserverid.</translation>
@@ -742,6 +745,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3288238092761586174"><ph name="URL" /> peab teie makse kinnitamiseks võib-olla täiendavaid toiminguid tegema</translation>
 <translation id="3293642807462928945">Lisateave reegli <ph name="POLICY_NAME" /> kohta</translation>
 <translation id="3295444047715739395">Vaadake ja hallake oma paroole Chrome'i seadetes</translation>
+<translation id="3303795387212510132">Kas lubada rakendusel <ph name="PROTOCOL_SCHEME" />-linke avada?</translation>
 <translation id="3303855915957856445">Otsingutulemusi ei leitud</translation>
 <translation id="3304073249511302126">Bluetoothi otsimine</translation>
 <translation id="3308006649705061278">Organisatsiooniüksus (OU)</translation>
@@ -879,6 +883,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="370972442370243704">Lülita sisse funktsioon Teekonnad</translation>
 <translation id="3711895659073496551">Peata</translation>
 <translation id="3712624925041724820">Litsentsid on ammendunud</translation>
+<translation id="3714633008798122362">veebikalender</translation>
 <translation id="3714780639079136834">Lülitage sisse mobiilne andmeside või WiFi</translation>
 <translation id="3715597595485130451">Ühenduse loomine WiFi-võrguga</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Kontrollige puhverserveri, tulemüüri ja DNS-i seadistust<ph name="END_LINK" /></translation>
@@ -940,6 +945,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3906954721959377182">Tahvelarvuti</translation>
 <translation id="3909477809443608991"><ph name="URL" /> soovib esitada kaitstud sisu. Google kinnitab teie seadme identiteedi ning sait võib sellele juurde pääseda.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Keela</translation>
 <translation id="3939773374150895049">Kas kasutada CVC asemel WebAuthn-autentimist?</translation>
 <translation id="3946209740501886391">Küsi sellel saidil alati</translation>
 <translation id="3947595700203588284">Saab küsida luba MIDI-seadmetega ühenduse loomiseks</translation>
@@ -2405,6 +2411,7 @@ Lisateave:
 <translation id="8731544501227493793">Nupp Paroolide haldamine, vajutage Chrome'i seadetes paroolide vaatamiseks ja haldamiseks sisestusklahvi</translation>
 <translation id="8734529307927223492">Teie seadet <ph name="DEVICE_TYPE" /> haldab <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage privaatse sirvimise jaoks uue inkognito akna avamiseks tabulaatorit ja seejärel sisestusklahvi</translation>
+<translation id="8737685506611670901">Ava protokolli <ph name="PROTOCOL" /> lingid teenuse <ph name="REPLACED_HANDLER_TITLE" /> asemel</translation>
 <translation id="8738058698779197622">Turvalise ühenduse loomiseks peab kell olema õigesti seadistatud. See on nii, kuna sertifikaadid, mida veebisaidid kasutavad enda tuvastamiseks, kehtivad ainult teatud perioodi jooksul. Kuna teie seadme kell on vale, ei saa Chromium neid sertifikaate kinnitada.</translation>
 <translation id="8740359287975076522">Hosti <ph name="HOST_NAME" /> &lt;abbr id="dnsDefinition"&gt;DNS-aadressi&lt;/abbr&gt; ei leitud. Probleemi diagnoositakse.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> on saidi <ph name="ORIGIN" /> puhul teie kood</translation>
@@ -2482,6 +2489,7 @@ Lisateave:
 <translation id="9004367719664099443">VR-seanss on pooleli</translation>
 <translation id="9005998258318286617">PDF-dokumendi laadimine ebaõnnestus.</translation>
 <translation id="9008201768610948239">Eira</translation>
+<translation id="901834265349196618">meil:</translation>
 <translation id="9020200922353704812">Kaardi arveldusaadress on nõutav</translation>
 <translation id="9020542370529661692">See leht on tõlgitud <ph name="TARGET_LANGUAGE" /> keelde</translation>
 <translation id="9020742383383852663">A8</translation>

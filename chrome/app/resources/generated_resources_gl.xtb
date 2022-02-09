@@ -89,6 +89,7 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> quere restaurar a túa configuración de Chrome aos seus axustes predeterminados orixinais. Esta acción restablecerá a túa páxina de inicio, a pestana Nova páxina e o motor de busca, desactivará as túas extensións e deixará todas as pestanas sen fixar. Tamén eliminará outros datos temporais e almacenados na memoria caché, como as cookies, o contido e os datos do sitio.</translation>
 <translation id="1084096383128641877">Quitar este contrasinal non provocará que se elimine a túa conta en <ph name="DOMAIN" />. Cambia o contrasinal ou elimina a túa conta en <ph name="DOMAIN_LINK" /> para protexela doutras persoas.</translation>
 <translation id="1084824384139382525">Copiar endere&amp;zo da ligazón</translation>
+<translation id="1085064499066015002">Activar sempre en todos os sitios</translation>
 <translation id="1085697365578766383">Produciuse un erro ao iniciar a máquina virtual. Téntao de novo.</translation>
 <translation id="1087965115100412394">Non permitir que os sitios se conecten a dispositivos MIDI</translation>
 <translation id="1088654056000736875">Chrome está quitando software daniño do teu ordenador...</translation>
@@ -340,6 +341,7 @@
 <translation id="1343865611738742294">Concédelle permiso ás aplicacións de Linux para acceder a dispositivos USB. Linux non recordará un dispositivo USB unha vez que se quite.</translation>
 <translation id="1343920184519992513">Retomar a actividade onde a deixaches e abrir un conxunto de páxinas específico</translation>
 <translation id="1346630054604077329">Confirmar e reiniciar</translation>
+<translation id="1346748346194534595">Dereita</translation>
 <translation id="1347256498747320987">Instalar actualizacións e aplicacións. Ao continuar, aceptas que este dispositivo tamén poida descargar e instalar automaticamente actualizacións e aplicacións de Google, do teu operador e do fabricante do teu dispositivo, posiblemente mediante datos móbiles. Algunhas destas aplicacións poden ofrecer compras integradas en aplicacións. <ph name="BEGIN_LINK1" />Máis información<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Almacenamento de Linux</translation>
 <translation id="1347975661240122359">A actualización comezará cando a batería alcance o <ph name="BATTERY_LEVEL" /> %.</translation>
@@ -461,6 +463,7 @@
 <translation id="1464781208867302907">Para ver as preferencias do dispositivo, vai a Configuración.</translation>
 <translation id="1465176863081977902">C&amp;opiar enderezo do audio</translation>
 <translation id="1465827627707997754">Porción de pizza</translation>
+<translation id="1467432559032391204">Esquerda</translation>
 <translation id="1468571364034902819">Non se pode utilizar este perfil</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Engadir pestana ao grupo novo}other{Engadir pestanas ao grupo novo}}</translation>
 <translation id="1470350905258700113">Usar este dispositivo</translation>
@@ -1320,7 +1323,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
     <ph name="BR" />
 <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2307630946657910723">Buscar parte da páxina con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
-<translation id="230927227160767054">Esta páxina quere instalar un controlador de servizo.</translation>
 <translation id="2309620859903500144">Bloqueouse o acceso deste sitio aos teus sensores de movemento ou luz.</translation>
 <translation id="2312219318583366810">URL da páxina</translation>
 <translation id="2314165183524574721">Visibilidade actual configurada como Oculto</translation>
@@ -1371,7 +1373,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2349896577940037438">Se está activada a opción Actividade web e das aplicacións adicional, estes datos pódense gardar na túa Conta de Google. Podes consultar a información, eliminala e cambiar as opcións de configuración en account.google.com.</translation>
 <translation id="2350133097354918058">Volveuse cargar a extensión</translation>
 <translation id="2350182423316644347">Iniciando aplicación...</translation>
-<translation id="2350796302381711542">Queres permitir que se use <ph name="HANDLER_HOSTNAME" /> en lugar de <ph name="REPLACED_HANDLER_TITLE" /> para abrir todas as ligazóns de <ph name="PROTOCOL" />?</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{1 elemento}other{{NUM_ITEMS} elementos}}</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">As notas da pantalla de bloqueo gárdanse automaticamente na aplicación <ph name="LOCK_SCREEN_APP_NAME" />. A túa nota máis recente permanecerá na pantalla de bloqueo.</translation>
@@ -1444,7 +1445,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2434758125294431199">Selecciona quen pode compartir contido contigo</translation>
 <translation id="2435248616906486374">Rede desconectada</translation>
 <translation id="2435457462613246316">Mostrar contrasinal</translation>
-<translation id="2436186046335138073">Queres que se use <ph name="HANDLER_HOSTNAME" /> para abrir todas as ligazóns de <ph name="PROTOCOL" />?</translation>
 <translation id="2439626940657133600">Cargando <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Ver f&amp;onte</translation>
 <translation id="244231003699905658">O enderezo non é válido. Compróbao e téntao de novo.</translation>
@@ -1961,7 +1961,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="2935225303485967257">Xestionar perfís</translation>
 <translation id="2935654492420446828">Engade unha conta de centro educativo máis tarde</translation>
 <translation id="2936851848721175671">Copia de seguranza e restauración</translation>
-<translation id="2938225289965773019">Abrir <ph name="PROTOCOL" /> ligazóns</translation>
 <translation id="2939908794993783865">Máis sitios inactivos</translation>
 <translation id="2939938020978911855">Mostrar dispositivos Bluetooth dispoñibles</translation>
 <translation id="2941112035454246133">Baixa</translation>
@@ -2282,7 +2281,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="33022249435934718">Indicadores GDI</translation>
 <translation id="3302388252085547855">Escribe unha xustificación...</translation>
 <translation id="3303260552072730022">Unha extensión activou a pantalla completa.</translation>
-<translation id="3303795387212510132">Queres darlle permiso á aplicación para que abra ligazóns <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303818374450886607">Copias</translation>
 <translation id="3303855915957856445">Non se encontraron resultados da busca</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> de desconto</translation>
@@ -2694,7 +2692,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="371300529209814631">Atrás/Adiante</translation>
 <translation id="3713047097299026954">Esta chave de seguranza non ten datos de inicio de sesión</translation>
 <translation id="3714195043138862580">O servidor deu de baixa este dispositivo de demostración.</translation>
-<translation id="3714633008798122362">calendario web</translation>
 <translation id="3719826155360621982">Páxina de inicio</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Ti e Google</translation>
@@ -7500,7 +7497,6 @@ Xestiona o que ves nas lembranzas en <ph name="BEGIN_LINK" />photos.google.com/s
 <translation id="8734674662128056360">Bloqueo de cookies de terceiros</translation>
 <translation id="873545264931343897">Cando <ph name="PLUGIN_NAME" /> acabe de actualizarse, volve cargar a páxina para activar o plugin</translation>
 <translation id="8736288397686080465">Este sitio actualizouse en segundo plano.</translation>
-<translation id="8737685506611670901">Abrir ligazóns de <ph name="PROTOCOL" /> en lugar de <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Elixir idioma ao que se traducirá a páxina</translation>
 <translation id="8740247629089392745">Podes entregar este Chromebook a <ph name="SUPERVISED_USER_NAME" />. A configuración case rematou, polo que é momento de explorar contido.</translation>
@@ -7764,7 +7760,6 @@ Xestiona o que ves nas lembranzas en <ph name="BEGIN_LINK" />photos.google.com/s
 <translation id="9003647077635673607">Permitir en todos os sitios web</translation>
 <translation id="9003677638446136377">Comprobar de novo</translation>
 <translation id="9004754973617721124">Queres borrar os datos dos sitios e os permisos de <ph name="SITE_NAME" />, todos os sitios que inclúa e tamén a aplicación que ten instalada?</translation>
-<translation id="9008201768610948239">Ignorar</translation>
 <translation id="9008201858626224558">Botón atrás da páxina de detalles <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">Cargando (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">Querías cambiar esta páxina?</translation>
@@ -7774,7 +7769,6 @@ Xestiona o que ves nas lembranzas en <ph name="BEGIN_LINK" />photos.google.com/s
 <translation id="9013037634206938463">Para instalar Linux, precísase un espazo libre de <ph name="INSTALL_SIZE" />. Se queres aumentar o espazo libre, elimina ficheiros do dispositivo.</translation>
 <translation id="901668144954885282">Crear copia de seguranza en Google Drive</translation>
 <translation id="9018218886431812662">Completouse a instalación</translation>
-<translation id="901834265349196618">correo electrónico</translation>
 <translation id="9019062154811256702">Ler e cambiar a configuración de autocompletar</translation>
 <translation id="9019894137004772119">Usar a localización. Permite que as aplicacións e servizos con permiso de localización utilicen a localización do dispositivo. Google pode recompilar datos de localización periodicamente e utilizalos de forma anónima para mellorar os servizos baseados na localización e a precisión da localización.</translation>
 <translation id="9019956081903586892">Non se puido descargar o dicionario do corrector ortográfico</translation>

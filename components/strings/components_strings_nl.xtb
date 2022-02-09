@@ -458,6 +458,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2337852623177822836">Instelling beheerd door je beheerder</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> wil koppelen</translation>
 <translation id="2346319942568447007">Afbeelding die je hebt gekopieerd</translation>
+<translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> toestaan alle links voor <ph name="PROTOCOL" /> te openen in plaats van <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2354001756790975382">Andere bookmarks</translation>
 <translation id="2354430244986887761">Google Safe Browsing heeft onlangs <ph name="BEGIN_LINK" />schadelijke apps gevonden<ph name="END_LINK" /> op <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Aanvallers kunnen mogelijk de afbeeldingen zien die je op deze site bekijkt en je misleiden door de afbeeldingen aan te passen.</translation>
@@ -483,6 +484,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2413528052993050574">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server is mogelijk ingetrokken. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
 <translation id="2414886740292270097">Donker</translation>
 <translation id="2430968933669123598">Google-account beheren, druk op Enter om je gegevens, privacy, en beveiliging te beheren in je Google-account</translation>
+<translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> toestaan alle links voor <ph name="PROTOCOL" /> te openen?</translation>
 <translation id="2438874542388153331">Vier perforaties rechts</translation>
 <translation id="2450021089947420533">Trajecten</translation>
 <translation id="2463739503403862330">Invullen</translation>
@@ -632,6 +634,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2930577230479659665">Bijsnijden na elke kopie</translation>
 <translation id="2932085390869194046">Wachtwoord voorstellen…</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">Links voor <ph name="PROTOCOL" /> openen</translation>
 <translation id="2941952326391522266">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server is afkomstig van <ph name="DOMAIN2" />. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
 <translation id="2943895734390379394">Uploadtijd:</translation>
 <translation id="2948083400971632585">Op de pagina met instellingen kun je proxyservers uitzetten die voor een verbinding zijn ingesteld.</translation>
@@ -738,6 +741,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3288238092761586174"><ph name="URL" /> moet mogelijk aanvullende stappen nemen om je betaling te verifiëren</translation>
 <translation id="3293642807462928945">Meer informatie over het beleid <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Je wachtwoorden bekijken en beheren in de Chrome-instellingen</translation>
+<translation id="3303795387212510132">App toestaan om <ph name="PROTOCOL_SCHEME" />-links te openen?</translation>
 <translation id="3303855915957856445">Geen zoekresultaten gevonden</translation>
 <translation id="3304073249511302126">bluetooth-scannen</translation>
 <translation id="3308006649705061278">Organisatie-eenheid (OU)</translation>
@@ -873,6 +877,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="370972442370243704">Traject aanzetten</translation>
 <translation id="3711895659073496551">Onderbreken</translation>
 <translation id="3712624925041724820">Licenties zijn verbruikt</translation>
+<translation id="3714633008798122362">online agenda</translation>
 <translation id="3714780639079136834">Zet je mobiele data of wifi aan</translation>
 <translation id="3715597595485130451">Verbinding maken met wifi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Controleer de proxy, firewall en DNS-configuratie<ph name="END_LINK" /></translation>
@@ -934,6 +939,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> wil beschermde content afspelen. De identiteit van je apparaat wordt geverifieerd door Google en is mogelijk toegankelijk voor deze site.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Weigeren</translation>
 <translation id="3939773374150895049">WebAuthn gebruiken in plaats van CVC?</translation>
 <translation id="3946209740501886391">Altijd vragen op deze site</translation>
 <translation id="3947595700203588284">Kan vragen of deze site verbinding mag maken met MIDI-apparaten</translation>
@@ -2399,6 +2405,7 @@ Aanvullende informatie:
 <translation id="8731544501227493793">Knop 'Wachtwoorden beheren'. Druk op Enter om je wachtwoorden te bekijken en te beheren in de Chrome-instellingen.</translation>
 <translation id="8734529307927223492">Je <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Druk op Tab en vervolgens op Enter om een nieuw incognitovenster te openen om privé te browsen.</translation>
+<translation id="8737685506611670901">Links voor <ph name="PROTOCOL" /> openen in plaats van <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Als je een beveiligde verbinding tot stand wilt brengen, moet je klok goed zijn ingesteld. Dit moet omdat de certificaten die deze websites gebruiken om zichzelf te identificeren, slechts gedurende bepaalde perioden geldig zijn. Aangezien de klok van je apparaat niet goed is ingesteld, kan Chromium deze certificaten niet verifiëren.</translation>
 <translation id="8740359287975076522">Het &lt;abbr id="dnsDefinition"&gt;DNS-adres&lt;/abbr&gt; van <ph name="HOST_NAME" /> kan niet worden gevonden. Er wordt een diagnose van het probleem uitgevoerd.</translation>
 <translation id="8742371904523228557">Je code voor <ph name="ORIGIN" /> is<ph name="ONE_TIME_CODE" />.</translation>
@@ -2476,6 +2483,7 @@ Aanvullende informatie:
 <translation id="9004367719664099443">VR-sessie is bezig</translation>
 <translation id="9005998258318286617">Kan pdf-document niet laden</translation>
 <translation id="9008201768610948239">Negeren</translation>
+<translation id="901834265349196618">e-mail</translation>
 <translation id="9020200922353704812">Factuuradres voor creditcard vereist</translation>
 <translation id="9020542370529661692">Deze pagina is vertaald naar het <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

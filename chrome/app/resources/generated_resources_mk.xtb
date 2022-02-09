@@ -89,6 +89,7 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> сака да ги врати поставките на Chrome на нивните оригинални стандардни вредности. Ова ќе ја ресетира вашата почетна страница, страницата во нова картичка и пребарувачот, ќе ги оневозможи вашите екстензии и ќе ги откачи сите картички. Исто така, ќе ги исчисти останатите привремени и кеширани податоци, како што се колачиња, содржини и податоци на локацијата.</translation>
 <translation id="1084096383128641877">Со отстранувањето на лозинкава нема да се избрише вашата сметка на <ph name="DOMAIN" />. Сменете ја лозинката или избришете ја сметката на <ph name="DOMAIN_LINK" /> за да ви биде безбедна од другите.</translation>
 <translation id="1084824384139382525">Копирај адр&amp;еса на врска</translation>
+<translation id="1085064499066015002">Секогаш на сите сајтови</translation>
 <translation id="1085697365578766383">Грешка при стартувањето на виртуелната машина. Обидете се повторно.</translation>
 <translation id="1087965115100412394">Не им дозволувај на сајтовите да се поврзуваат со MIDI-уреди</translation>
 <translation id="1088654056000736875">Chrome отстранува штетен софтвер од компјутерот…</translation>
@@ -343,6 +344,7 @@
 <translation id="1343865611738742294">Дајте им дозвола на апликациите на Linux да пристапуваат до USB-уреди. Linux нема да го запомни USB-уредот откако ќе се отстрани.</translation>
 <translation id="1343920184519992513">Продолжете каде што застанавте и отворете конкретен комплет страници</translation>
 <translation id="1346630054604077329">Потврди и рестартирај</translation>
+<translation id="1346748346194534595">Надесно</translation>
 <translation id="1347256498747320987">Инсталирање ажурирања и апликации. Ако продолжите, се согласувате дека уредов може автоматски да презема и инсталира ажурирања и апликации од Google, од операторот и од производителот на уредот, веројатно со користење мобилен интернет. Некои од апликацииве може да нудат купувања во апликација. <ph name="BEGIN_LINK1" />Дознајте повеќе<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Капацитет на Linux</translation>
 <translation id="1347975661240122359">Ажурирањето ќе започне кога батеријата ќе се наполни до <ph name="BATTERY_LEVEL" />%.</translation>
@@ -465,6 +467,7 @@
 <translation id="1464781208867302907">За поставки за уредот, одете во „Поставки“.</translation>
 <translation id="1465176863081977902">К&amp;опирај ја адресата на аудиото</translation>
 <translation id="1465827627707997754">Парче пица</translation>
+<translation id="1467432559032391204">Лево</translation>
 <translation id="1468571364034902819">Профилов не може да се користи</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Додајте картичка во новата група}one{Додајте картички во новата група}other{Додајте картички во новата група}}</translation>
 <translation id="1470350905258700113">Користи го уредов</translation>
@@ -1339,7 +1342,6 @@
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2307630946657910723">Пребарајте дел од страницата со <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
-<translation id="230927227160767054">Страницава сака да инсталира управувач на услуга.</translation>
 <translation id="2309620859903500144">Пристапот на сајтов до сензорите за движење или светлина е блокиран.</translation>
 <translation id="2312219318583366810">URL на страницата</translation>
 <translation id="2314165183524574721">Тековната поставка за видливост е „Сокриен“</translation>
@@ -1390,7 +1392,6 @@
 <translation id="2349896577940037438">Ако сте ја вклучиле дополнителната поставка „Активност на интернет и апликации“, податоциве може да се зачувуваат во вашата сметка на Google. Може да ги гледате и бришете податоците, како и да ги менувате поставките за сметката на account.google.com.</translation>
 <translation id="2350133097354918058">Повторно вчитана</translation>
 <translation id="2350182423316644347">Се иницијализира апликација...</translation>
-<translation id="2350796302381711542">Ќе дозволите <ph name="HANDLER_HOSTNAME" /> да ги отвори сите <ph name="PROTOCOL" /> врски наместо <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{1 ставка}one{{NUM_ITEMS} ставка}other{{NUM_ITEMS} ставки}}</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Белешките на заклучениот екран се зачувуваат автоматски во <ph name="LOCK_SCREEN_APP_NAME" />. Последната белешка ќе остане на заклучениот екран.</translation>
@@ -1464,7 +1465,6 @@
 <translation id="2434758125294431199">Изберете кој може да споделува со вас</translation>
 <translation id="2435248616906486374">Мрежата е исклучена</translation>
 <translation id="2435457462613246316">Прикажи ја лозинката</translation>
-<translation id="2436186046335138073">Ќе дозволите <ph name="HANDLER_HOSTNAME" /> да ги отвори сите врски на <ph name="PROTOCOL" />?</translation>
 <translation id="2439626940657133600">Се вчитува <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Прикажи и&amp;звор</translation>
 <translation id="244231003699905658">Неважечка адреса. Проверете ја адресата и обидете се повторно.</translation>
@@ -1982,7 +1982,6 @@
 <translation id="2935225303485967257">Управувајте со профилите</translation>
 <translation id="2935654492420446828">Додајте училишна сметка подоцна</translation>
 <translation id="2936851848721175671">Бекап и обнова</translation>
-<translation id="2938225289965773019">Отвори <ph name="PROTOCOL" /> врски</translation>
 <translation id="2939908794993783865">Дополнителни неактивни сајтови</translation>
 <translation id="2939938020978911855">Покажи достапни уреди со Bluetooth</translation>
 <translation id="2941112035454246133">Низок</translation>
@@ -2304,7 +2303,6 @@
 <translation id="33022249435934718">Рачки на ГДИ</translation>
 <translation id="3302388252085547855">Внесете објаснување…</translation>
 <translation id="3303260552072730022">Наставка активираше цел екран.</translation>
-<translation id="3303795387212510132">Дозволувате апликацијата да ги отвори линковите за <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303818374450886607">Копии</translation>
 <translation id="3303855915957856445">Не се пронајдени резултати од пребарувањето</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> попуст</translation>
@@ -2720,7 +2718,6 @@
 <translation id="371300529209814631">Назад/Напред</translation>
 <translation id="3713047097299026954">Овој безбедносен клуч нема податоци за најавување</translation>
 <translation id="3714195043138862580">Овој демо-режим е ставен во состојба на оневозможен пристап.</translation>
-<translation id="3714633008798122362">веб-календар</translation>
 <translation id="3719826155360621982">Почетна страница</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Вие и Google</translation>
@@ -7544,7 +7541,6 @@
 <translation id="8734674662128056360">Блокирање колачиња од трета страна</translation>
 <translation id="873545264931343897">Кога <ph name="PLUGIN_NAME" /> ќе заврши со ажурирање, повторно вчитајте ја страницата за да го активирате</translation>
 <translation id="8736288397686080465">Локацијава се ажурираше во заднина.</translation>
-<translation id="8737685506611670901">Отвори <ph name="PROTOCOL" /> врски наместо <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Изберете го јазикот за превод на страницата</translation>
 <translation id="8740247629089392745">Може да му го предадете овој Chromebook на<ph name="SUPERVISED_USER_NAME" />. Поставувањето речиси е готово, а потоа е време за истражување.</translation>
@@ -7809,7 +7805,6 @@
 <translation id="9003647077635673607">Дозволи на сите веб-локации</translation>
 <translation id="9003677638446136377">Проверете повторно</translation>
 <translation id="9004754973617721124">Да се избришат податоците и дозволите од сајтот за <ph name="SITE_NAME" />, сите сајтови под него и неговите инсталирани апликации?</translation>
-<translation id="9008201768610948239">Игнорирај</translation>
 <translation id="9008201858626224558">Копче за назад до страницата со детали за <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">Се поставува (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">Дали мислевте да ја промените страницава?</translation>
@@ -7819,7 +7814,6 @@
 <translation id="9013037634206938463">Потребни се <ph name="INSTALL_SIZE" /> слободен простор за инсталирање на Linux. За да го зголемите слободниот простор, избришете датотеки од уредот.</translation>
 <translation id="901668144954885282">Направете бекап на Google Drive</translation>
 <translation id="9018218886431812662">Инсталирањето заврши</translation>
-<translation id="901834265349196618">е-пошта</translation>
 <translation id="9019062154811256702">Читај и менувај ги поставките за автоматско пополнување</translation>
 <translation id="9019894137004772119">Користење на локацијата. Дозволете апликациите и услугите со дозвола за локација да ја користат локацијата на уредот. Google може повремено да прибира податоци за локацијата и анонимно да ги користи податоциве за да ги подобри прецизноста на локацијата и услугите според локација.</translation>
 <translation id="9019956081903586892">Не може да се преземе речникот со проверка на правописот</translation>

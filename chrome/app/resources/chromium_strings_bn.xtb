@@ -199,6 +199,7 @@
 <translation id="6734291798041940871">Chromium ইতোমধ্যে আপনার কম্পিউটারের সকল ব্যবহারকারীর জন্য ইনস্টল করা হয়েছে।</translation>
 <translation id="673636774878526923">সব ডিভাইস জুড়ে Chromium-এ থাকা ডেটা অ্যাক্সেস করতে, প্রথমে সাইন-ইন করে সিঙ্ক চালু করুন।</translation>
 <translation id="6774082503108938489">তোমার অভিভাবক Chromium-এ "সাইট, অ্যাপ ও এক্সটেনশনের অনুমতি" বন্ধ করে দিয়েছেন। এই <ph name="EXTENSION_TYPE_PARAMETER" /> চালু করার অনুমতি নেই।</translation>
+<translation id="6808964260981102146">আপনি আগে থেকেই বিভিন্ন ওয়েবসাইট ও অ্যাপকে যেসব অনুমতি দিয়েছেন সেগুলি এই অ্যাকাউন্টে প্রযোজ্য হতে পারে। কোনও ওয়েবসাইট বা অ্যাপকে আপনার অ্যাকাউন্ট সংক্রান্ত তথ্য অ্যাক্সেস করতে দিতে না চাইলে Chromium ব্রাউজারে <ph name="LINK_BEGIN" />গেস্ট মোড<ph name="LINK_END" /> ব্যবহার করুন। আপনি <ph name="LINK_2_BEGIN" />সেটিংস<ph name="LINK_2_END" /> থেকেও Google অ্যাকাউন্ট ম্যানেজ করতে পারবেন।</translation>
 <translation id="6847869444787758381">আপনার পাসওয়ার্ড কখনও চুরি হলে তা Chromium আপনাকে জানিয়ে দেবে</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (Chromium এ কপি করা হয়েছে)</translation>

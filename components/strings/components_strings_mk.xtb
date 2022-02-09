@@ -461,6 +461,7 @@
 <translation id="2337852623177822836">Поставка што ја контролира администраторот</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> сака да се спари</translation>
 <translation id="2346319942568447007">Сликата што ја копиравте</translation>
+<translation id="2350796302381711542">Ќе дозволите <ph name="HANDLER_HOSTNAME" /> да ги отвори сите <ph name="PROTOCOL" /> врски наместо <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2354001756790975382">Други обележувачи</translation>
 <translation id="2354430244986887761">Google Safe Browsing неодамна <ph name="BEGIN_LINK" />најде штетни апликации<ph name="END_LINK" /> на <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Напаѓачите можеби ќе можат да ги видат сликите што ги гледате на сајтов и да ве измамат со тоа што ќе ги модифицираат.</translation>
@@ -486,6 +487,7 @@
 <translation id="2413528052993050574">Серверот не може да докаже дека е <ph name="DOMAIN" />; можеби неговиот безбедносен сертификат е повлечен. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
 <translation id="2414886740292270097">Темна</translation>
 <translation id="2430968933669123598">Управувајте со сметката на Google, притиснете го копчето Enter за да управувате со податоците, приватноста и безбедноста на вашата сметка на Google</translation>
+<translation id="2436186046335138073">Ќе дозволите <ph name="HANDLER_HOSTNAME" /> да ги отвори сите врски на <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Четири дупки десно</translation>
 <translation id="2450021089947420533">Патувања</translation>
 <translation id="2463739503403862330">Пополни</translation>
@@ -635,6 +637,7 @@
 <translation id="2930577230479659665">Кратење по секој примерок</translation>
 <translation id="2932085390869194046">Предложете лозинка…</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">Отвори <ph name="PROTOCOL" /> врски</translation>
 <translation id="2941952326391522266">Серверот не може да докаже дека е <ph name="DOMAIN" />; неговиот сертификат е од <ph name="DOMAIN2" />. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
 <translation id="2943895734390379394">Време на прикачување:</translation>
 <translation id="2948083400971632585">Може да ги оневозможите проксијата конфигурирани за врска од страницата поставки.</translation>
@@ -744,6 +747,7 @@
 <translation id="3288238092761586174"><ph name="URL" /> можеби ќе треба да преземе дополнителни чекори за да го потврди вашето плаќање</translation>
 <translation id="3293642807462928945">Дознајте повеќе за правилото <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Прегледајте ги и управувајте со лозинките во поставките за Chrome</translation>
+<translation id="3303795387212510132">Дозволувате апликацијата да ги отвори линковите за <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Не се пронајдени резултати од пребарувањето</translation>
 <translation id="3304073249511302126">скенирање за Bluetooth</translation>
 <translation id="3308006649705061278">Организациска единица (ОУ)</translation>
@@ -881,6 +885,7 @@
 <translation id="370972442370243704">Вклучи „Патувања“</translation>
 <translation id="3711895659073496551">Суспендирај</translation>
 <translation id="3712624925041724820">Исцрпени лиценци</translation>
+<translation id="3714633008798122362">веб-календар</translation>
 <translation id="3714780639079136834">Да вклучите мобилен интернет или Wi-Fi</translation>
 <translation id="3715597595485130451">Поврзете се со Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Да ги проверите проксито, заштитниот ѕид и DNS-конфигурацијата<ph name="END_LINK" /></translation>
@@ -942,6 +947,7 @@
 <translation id="3906954721959377182">Таблет</translation>
 <translation id="3909477809443608991"><ph name="URL" /> сака да пушти заштитени содржини. Google ќе го потврди идентитетот на вашиот уред, а сајтов ќе може да пристапи до него.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Одбиј</translation>
 <translation id="3939773374150895049">Да се користи WebAuthn наместо CVC?</translation>
 <translation id="3946209740501886391">Прашувај секогаш на овој сајт</translation>
 <translation id="3947595700203588284">Може да прашува за да се поврзува со MIDI-уреди</translation>
@@ -2411,6 +2417,7 @@
 <translation id="8731544501227493793">Копче „Управувајте со лозинките“, притиснете Enter за да ги прегледувате и да управувате со вашите лозинки во поставките за Chrome</translation>
 <translation id="8734529307927223492"><ph name="MANAGER" /> управува со вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да отворите нов прозорец „Инкогнито“ и да прелистувате приватно</translation>
+<translation id="8737685506611670901">Отвори <ph name="PROTOCOL" /> врски наместо <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">За воспоставување безбедна врска, вашиот часовник треба да биде правилно поставен. Ова е така затоа што сертификатите кои веб-локациите ги користат за да се идентификуваат важат само определени периоди на време. Бидејќи часовникот на вашиот уред не е точен, Chromium не може да ги потврди овие сертификати.</translation>
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;DNS-адресата&lt;/abbr&gt; на <ph name="HOST_NAME" /> не може да се пронајде. Го дијагностицираме проблемот.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> е вашиот код за <ph name="ORIGIN" /></translation>
@@ -2488,6 +2495,7 @@
 <translation id="9004367719664099443">Во тек е сесија за VR</translation>
 <translation id="9005998258318286617">Не успеа да се вчита PDF-документот.</translation>
 <translation id="9008201768610948239">Игнорирај</translation>
+<translation id="901834265349196618">е-пошта</translation>
 <translation id="9020200922353704812">Адресата за наплата на картичката е задолжителна</translation>
 <translation id="9020542370529661692">Страницава е преведена на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

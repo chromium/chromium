@@ -456,6 +456,7 @@
 <translation id="2337852623177822836">管理者が指定する設定</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> がペア設定を要求しています</translation>
 <translation id="2346319942568447007">コピーした画像</translation>
+<translation id="2350796302381711542">すべての <ph name="PROTOCOL" /> リンクを <ph name="REPLACED_HANDLER_TITLE" /> ではなく <ph name="HANDLER_HOSTNAME" /> で開きますか？</translation>
 <translation id="2354001756790975382">その他のブックマーク</translation>
 <translation id="2354430244986887761"><ph name="SITE" /> では最近、Google セーフ ブラウジングにより<ph name="BEGIN_LINK" />有害なアプリが検出<ph name="END_LINK" />されました。</translation>
 <translation id="2355395290879513365">このサイトで目にする画像は、悪意のあるユーザーによって差し替えられたものである可能性があります。</translation>
@@ -481,6 +482,7 @@
 <translation id="2413528052993050574">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は取り消されている可能性があります。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
 <translation id="2414886740292270097">暗</translation>
 <translation id="2430968933669123598">[Google アカウントを管理] ボタンです。Enter キーを押すと、Google アカウントで情報、プライバシー、セキュリティを管理します</translation>
+<translation id="2436186046335138073">すべての <ph name="PROTOCOL" /> リンクを <ph name="HANDLER_HOSTNAME" /> で開きますか？</translation>
 <translation id="2438874542388153331">4 穴パンチ（右）</translation>
 <translation id="2450021089947420533">ジャーニー</translation>
 <translation id="2463739503403862330">入力する</translation>
@@ -630,6 +632,7 @@
 <translation id="2930577230479659665">トリミング（コピー単位）</translation>
 <translation id="2932085390869194046">パスワードを自動生成...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">「<ph name="PROTOCOL" />」リンクを開く</translation>
 <translation id="2941952326391522266">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は <ph name="DOMAIN2" /> から発行されています。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
 <translation id="2943895734390379394">アップロード時刻:</translation>
 <translation id="2948083400971632585">接続用に設定されたプロキシは、設定ページで無効にできます。</translation>
@@ -739,6 +742,7 @@
 <translation id="3288238092761586174">お客様のお支払い情報を検証するため、<ph name="URL" /> は追加の手順を必要とする場合があります</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> ポリシーの詳細</translation>
 <translation id="3295444047715739395">Chrome の設定でパスワードを表示、管理する</translation>
+<translation id="3303795387212510132">アプリに <ph name="PROTOCOL_SCHEME" /> リンクの表示を許可しますか？</translation>
 <translation id="3303855915957856445">一致する結果は見つかりませんでした</translation>
 <translation id="3304073249511302126">Bluetooth のスキャン</translation>
 <translation id="3308006649705061278">組織単位（OU）</translation>
@@ -876,6 +880,7 @@
 <translation id="370972442370243704">ジャーニーをオンにする</translation>
 <translation id="3711895659073496551">停止する</translation>
 <translation id="3712624925041724820">ライセンスを使い切りました</translation>
+<translation id="3714633008798122362">ウェブ カレンダー</translation>
 <translation id="3714780639079136834">モバイルデータまたは Wi-Fi を有効にする</translation>
 <translation id="3715597595485130451">Wi-Fi 接続</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />プロキシ、ファイアウォール、DNS の設定を確認する<ph name="END_LINK" /></translation>
@@ -937,6 +942,7 @@
 <translation id="3906954721959377182">タブレット</translation>
 <translation id="3909477809443608991"><ph name="URL" /> が保護されたコンテンツの再生を要求しています。デバイスの認証情報が Google によって確認され、このサイトによる認証情報へのアクセスが許可されます。</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">拒否</translation>
 <translation id="3939773374150895049">CVC の代わりに WebAuthn を使用しますか？</translation>
 <translation id="3946209740501886391">このサイトでは常に確認</translation>
 <translation id="3947595700203588284">MIDI デバイスへの接続を要求できる</translation>
@@ -2398,6 +2404,7 @@
 <translation id="8731544501227493793">パスワードを管理するボタンです。Enter キーを押すと Chrome の設定でパスワードを表示、管理します</translation>
 <translation id="8734529307927223492">この <ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、新しいシークレット ウィンドウを開いてシークレット モードでブラウジングします</translation>
+<translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> の代わりに「<ph name="PROTOCOL" />」リンクを開く</translation>
 <translation id="8738058698779197622">安全な接続を確立するには時計が正しく設定されている必要があります。この理由は、本物のウェブサイトであることを示すためにウェブサイトで使用される証明書には、有効期間（発効日時と失効日時）が設定されているためです。デバイスの時計が正しくないため、Chromium ではこれらの証明書を確認できません。</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> の &lt;abbr id="dnsDefinition"&gt;DNS アドレス&lt;/abbr&gt;が見つかりませんでした。問題を診断しています。</translation>
 <translation id="8742371904523228557"><ph name="ORIGIN" /> のコードは「<ph name="ONE_TIME_CODE" />」です</translation>
@@ -2475,6 +2482,7 @@
 <translation id="9004367719664099443">VR セッションが進行中</translation>
 <translation id="9005998258318286617">PDF ドキュメントを読み込めませんでした。</translation>
 <translation id="9008201768610948239">無視する</translation>
+<translation id="901834265349196618">メール</translation>
 <translation id="9020200922353704812">カードの請求先住所を入力する必要があります</translation>
 <translation id="9020542370529661692">このページは<ph name="TARGET_LANGUAGE" />に翻訳されています</translation>
 <translation id="9020742383383852663">A8</translation>

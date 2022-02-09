@@ -456,6 +456,7 @@
 <translation id="2337852623177822836">პარამეტრს აკონტროლებს თქვენი ადმინისტრატორი</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> დაწყვილებას ითხოვს</translation>
 <translation id="2346319942568447007">თქვენ მიერ კოპირებული სურათი</translation>
+<translation id="2350796302381711542">დავრთოთ ნება <ph name="HANDLER_HOSTNAME" />-ს, გახსნას ყველა <ph name="PROTOCOL" /> ბმული <ph name="REPLACED_HANDLER_TITLE" />-ის ნაცვლად?</translation>
 <translation id="2354001756790975382">სხვა სანიშნეები</translation>
 <translation id="2354430244986887761">Google Safe Browsing-მა ახლახან <ph name="BEGIN_LINK" />აღმოაჩინა საზიანო აპები<ph name="END_LINK" /> საიტზე: <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">თავდამსხმელებს შეუძლიათ იმ სურათების ნახვა, რომლებსაც ამ საიტზე ათვალიერებთ, და მათი შეცვლის მეშვეობით, თქვენი შეცდომაში შეყვანა.</translation>
@@ -481,6 +482,7 @@
 <translation id="2413528052993050574">ეს სერვერი ვერ ამტკიცებს რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერთიფიკატი შესაძლოა გაუქმებულია. ეს შეიძლება იყოს გამოწვეული არასწორი კონფიგურაციით ან თავდამსხმელის მიერ თქვენი კავშირის გადაჭრით.</translation>
 <translation id="2414886740292270097">მუქი</translation>
 <translation id="2430968933669123598">Google ანგარიშის მართვა, თქვენს Google ანგარიშში თქვენი ინფორმაციის, კონფიდენციალურობისა და უსაფრთხოების სამართავად დააჭირეთ კლავიშს Enter</translation>
+<translation id="2436186046335138073">დავრთოთ ნება <ph name="HANDLER_HOSTNAME" />-ს, გახსნას ყველა <ph name="PROTOCOL" /> ბმული?</translation>
 <translation id="2438874542388153331">ოთხმაგად გახვრეტა მარჯვნივ</translation>
 <translation id="2450021089947420533">პროცესები</translation>
 <translation id="2463739503403862330">შევსება</translation>
@@ -630,6 +632,7 @@
 <translation id="2930577230479659665">შემოჭრა თითოეული ასლის შემდეგ</translation>
 <translation id="2932085390869194046">პაროლის შემოთავაზება…</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019"><ph name="PROTOCOL" />-ის ბმულების გახსნა</translation>
 <translation id="2941952326391522266">ეს სერვერი ვერ ამტკიცებს, რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერტიფიკატი არის <ph name="DOMAIN2" /> .-დან. ეს შეიძლება იყოს გამოწვეული არასწორი კონფიგურაციით ან თავდამსხმელის მიერ თქვენი კავშირის გადაჭრით.</translation>
 <translation id="2943895734390379394">ატვირთვის დრო:</translation>
 <translation id="2948083400971632585">კავშირებისთვის დაყენებული ნებისმიერი პროქსის გამორთვა შესაძლებელია პარამეტრების გვერდიდან.</translation>
@@ -739,6 +742,7 @@
 <translation id="3288238092761586174"><ph name="URL" />, შესაძლოა, საჭიროებდეს დამატებითი ნაბიჯების გავლას გადახდის დასადასტურებლად</translation>
 <translation id="3293642807462928945">შეიტყვეთ მეტი „<ph name="POLICY_NAME" />“ წესების შესახებ</translation>
 <translation id="3295444047715739395">იხილეთ თქვენი პაროლები და მართეთ ისინი Chrome-ის პარამეტრებიდან</translation>
+<translation id="3303795387212510132">აძლევს უფლებას აპს, გახსნას <ph name="PROTOCOL_SCHEME" /> ბმულები?</translation>
 <translation id="3303855915957856445">ძიების შედეგები ვერ მოიძებნა</translation>
 <translation id="3304073249511302126">Bluetooth სკანირება</translation>
 <translation id="3308006649705061278">ორგანიზაციული ერთეული (OU)</translation>
@@ -876,6 +880,7 @@
 <translation id="370972442370243704">პროცესების ჩართვა</translation>
 <translation id="3711895659073496551">შეჩერება</translation>
 <translation id="3712624925041724820">ლიცენზიები ამოწურულია</translation>
+<translation id="3714633008798122362">ვებ კალენდარი</translation>
 <translation id="3714780639079136834">მობილური ინტერნეტის ან Wi-Fi-ს ჩართვა</translation>
 <translation id="3715597595485130451">Wi-Fi-სთან დაკავშირება</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />პროქსის, ქსელის დაცვისა და DNS-ის კონფიგურაციის შემოწმება<ph name="END_LINK" /></translation>
@@ -937,6 +942,7 @@
 <translation id="3906954721959377182">ტაბლეტი</translation>
 <translation id="3909477809443608991"><ph name="URL" /> ითხოვს დაცული კონტენტის დაკვრას. Google განახორციელებს თქვენი მოწყობილობის იდენტიფიკაციას, ხოლო ამ ინფორმაციაზე წვდომა შეიძლება ჰქონდეს ამ საიტსაც.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">უარყოფა</translation>
 <translation id="3939773374150895049">გსურთ გამოიყენოთ WebAuthn ნაცვლად CVC-ისა?</translation>
 <translation id="3946209740501886391">ყოველთვის შეკითხვა ამ საიტზე</translation>
 <translation id="3947595700203588284">შეუძლია MIDI-მოწყობილობებთან დაკავშირების თხოვნა</translation>
@@ -2397,6 +2403,7 @@
 <translation id="8731544501227493793">პაროლების მართვის ღილაკი, Chrome-ის პარამეტრებიდან თქვენი პაროლების სანახავად და სამართავად დააჭირეთ კლავიშს Enter</translation>
 <translation id="8734529307927223492">თქვენი <ph name="DEVICE_TYPE" /> იმართება <ph name="MANAGER" />-ის მიერ</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ვების კონფიდენციალურად დასათვალიერებლად ახალი ინკოგნიტო ფანჯრის გასახსნელად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
+<translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" />-ის ნაცვლად, <ph name="PROTOCOL" />-ის ბმულების გახსნა</translation>
 <translation id="8738058698779197622">უსაფრთხო კავშირის დასამყარებლად, საჭიროა საათის გასწორება. ამის მიზეზია ის, რომ სერტიფიკატები, რომლებსაც ვებსაიტები იყენებენ იდენტიფიცირების მიზნით, მოქმედებს მხოლოდ გარკვეული პერიოდის განმავლობაში. რადგან თქვენი მოწყობილობის საათი არასწორია, Chromium ვერ დაადასტურებს ამ სერტიფიკატებს.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" />-ის &lt;abbr id="dnsDefinition"&gt;DNS მისამართი&lt;/abbr&gt; ვერ მოიძებნა. მიმდინარეობს პრობლემის დიაგნოსტიკა.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> არის თქვენი კოდი <ph name="ORIGIN" />-ისთვის</translation>
@@ -2474,6 +2481,7 @@
 <translation id="9004367719664099443">VR სესია აქტიურია</translation>
 <translation id="9005998258318286617">PDF დოკუმენტი ვერ ჩაიტვირთა.</translation>
 <translation id="9008201768610948239">იგნორირება</translation>
+<translation id="901834265349196618">ელფოსტა</translation>
 <translation id="9020200922353704812">ბარათის ბილინგის მისამართი აუცილებელია</translation>
 <translation id="9020542370529661692">ეს გვერდი გადათარგმნილია ამ ენაზე: <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

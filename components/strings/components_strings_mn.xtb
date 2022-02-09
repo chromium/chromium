@@ -461,6 +461,7 @@
 <translation id="2337852623177822836">Тохируулгыг таны администратор хянадаг</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> холбогдох хүсэлтэй байна</translation>
 <translation id="2346319942568447007">Таны хуулсан зураг</translation>
+<translation id="2350796302381711542"><ph name="REPLACED_HANDLER_TITLE" />-ний оронд <ph name="HANDLER_HOSTNAME" />-д бүх <ph name="PROTOCOL" /> холбоосыг нээх зөвшөөрөл олгох?</translation>
 <translation id="2354001756790975382">Бусад хайлтын жагсаалтууд</translation>
 <translation id="2354430244986887761">Google-н Аюулгүй хайлт нь саяхан <ph name="SITE" />-с <ph name="BEGIN_LINK" />гэмтэл үүсгэж болох апп илрүүллээ<ph name="END_LINK" />.</translation>
 <translation id="2355395290879513365">Халдагч таны энэ сайтаас харж буй зургийг харах бөгөөд тэдгээрийг өөрчлөх замаар таныг хуурч болзошгүй.</translation>
@@ -486,6 +487,7 @@
 <translation id="2413528052993050574">Энэ сервер нь <ph name="DOMAIN" />-аа баталж чадсангүй; хамгаалалтын сертификат хүчингүй болсон байж болзошгүй. Энэ нь тохиргоо буруу хийгдсэнээс эсвэл халдагч таны холболтон саад учруулж байж болох юм.</translation>
 <translation id="2414886740292270097">Хар</translation>
 <translation id="2430968933669123598">Google Бүртгэл удирдах товчлуур, Google Бүртгэлийнхээ мэдээлэл, нууцлал болон аюулгүй байдлыг удирдахын тулд Enter дээр дарна уу</translation>
+<translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" />-д бүх <ph name="PROTOCOL" /> холбоосыг нээх зөвшөөрлийг олгох уу?</translation>
 <translation id="2438874542388153331">Баруун ирмэг дагуу дөрвөн нүх цоолох</translation>
 <translation id="2450021089947420533">Аяллууд</translation>
 <translation id="2463739503403862330">Бөглөх</translation>
@@ -635,6 +637,7 @@
 <translation id="2930577230479659665">Хуулбар бүрийн дараа тайрах</translation>
 <translation id="2932085390869194046">Нууц үг санал болгох...</translation>
 <translation id="2934466151127459956">Засгийн газрын-Захидал</translation>
+<translation id="2938225289965773019"><ph name="PROTOCOL" /> холбоосуудыг нээх</translation>
 <translation id="2941952326391522266">Энэ сервер нь <ph name="DOMAIN" />-аа баталж чадсангүй; <ph name="DOMAIN2" />-ээс хамгаалалтын сертификатаа авсан байна. Энэ нь тохиргоо буруу хийгдсэнээс эсвэл халдагч таны холболтонд саад учруулж байж болох юм.</translation>
 <translation id="2943895734390379394">Байршуулсан цаг:</translation>
 <translation id="2948083400971632585">Та тохиргооны хуудаснаас холболтонд зориулсан тохируулга нь хийгдсэн аливаа төлөөллийн тохиргоог идэвхгүй болгох боломжтой.</translation>
@@ -745,6 +748,7 @@
 <translation id="3288238092761586174"><ph name="URL" /> таны төлбөрийг баталгаажуулахын тулд нэмэлт алхмыг хийх шаардлагатай байж магадгүй</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> удирдамжийн талаар дэлгэрэнгүй үзэх</translation>
 <translation id="3295444047715739395">Chrome-н тохиргоо дээрээс нууц үгсээ харах, удирдах</translation>
+<translation id="3303795387212510132">Аппуудыг <ph name="PROTOCOL_SCHEME" />-н холбоосыг нээхийг зөвшөөрөх үү?</translation>
 <translation id="3303855915957856445">Хайлтын илэрц олдсонгүй</translation>
 <translation id="3304073249511302126">bluetooth скан хийх</translation>
 <translation id="3308006649705061278">Байгууллагын нэгж (БН)</translation>
@@ -882,6 +886,7 @@
 <translation id="370972442370243704">Аяллуудыг асаах</translation>
 <translation id="3711895659073496551">Түр зогсоох</translation>
 <translation id="3712624925041724820">Лицензийг цуцалсан</translation>
+<translation id="3714633008798122362">веб календарь</translation>
 <translation id="3714780639079136834">Мобайл дата, эсвэл Wi-Fi-г асааж байна</translation>
 <translation id="3715597595485130451">Wi-Fi-д холбогдох</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Прокси, галт хана болон DNS оновчилгоог шалгаж байна<ph name="END_LINK" /></translation>
@@ -943,6 +948,7 @@
 <translation id="3906954721959377182">Таблет</translation>
 <translation id="3909477809443608991"><ph name="URL" /> хамгаалагдсан контент тоглуулах хүсэлтэй байна. Таны төхөөрөмжийн таниулбарыг Google-с баталгаажуулах бөгөөд үүнд энэ сайтаас хандаж болзошгүй.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Татгалзах</translation>
 <translation id="3939773374150895049">Карт баталгаажуулалтын кодын оронд WebAuthn-г ашиглах уу?</translation>
 <translation id="3946209740501886391">Энэ сайтаас үргэлж асуух</translation>
 <translation id="3947595700203588284">MIDI төхөөрөмжүүдэд холбогдохыг хүсэх боломжтой</translation>
@@ -2411,6 +2417,7 @@
 <translation id="8731544501227493793">Нууц үг удирдах товч, Chrome-н тохиргоон дээр нууц үгээ харах, удирдахын тулд Enter дарна уу</translation>
 <translation id="8734529307927223492">Таны <ph name="DEVICE_TYPE" />-г <ph name="MANAGER" /> удирддаг</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, нууцлалтайгаар үзэхдээ Нууцлалтай цонх шинээр нээхийн тулд эхлээд Таб дээр, дараа нь Enter дарна уу</translation>
+<translation id="8737685506611670901"><ph name="PROTOCOL" /> холбоосуудыг <ph name="REPLACED_HANDLER_TITLE" />-ний оронд нээх</translation>
 <translation id="8738058698779197622">Найдвартай аюулгүй холболт бий болгохын тулд та цагаа зөв тохируулах хэрэгтэй. Учир нь  веб хуудсуудын өөрсдийгөө таниулахад ашигладаг гэрчилгээ нь тодорхой хугацаанд л хүчинтэй байдаг юм. Таны төхөөрөмжийн цаг буруу байгаа тохиолдолд Chromium нь эдгээр гэрчилгээнүүдийг баталгаажуулж чадахгүй.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" />-н &lt;abbr id="dnsDefinition"&gt;DNS хаяг&lt;/abbr&gt; олдсонгүй. Алдааг шалгаж байна.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> бол <ph name="ORIGIN" />-д зориулсан таны код</translation>
@@ -2488,6 +2495,7 @@
 <translation id="9004367719664099443">Виртуал орчны (VR) харилцан үйлдлийг хийж байна</translation>
 <translation id="9005998258318286617">PDF документыг ачаалж чадсангүй.</translation>
 <translation id="9008201768610948239">Алгас</translation>
+<translation id="901834265349196618">и-мэйл</translation>
 <translation id="9020200922353704812">Картын нэхэмжлэлийн хаяг шаардлагатай</translation>
 <translation id="9020542370529661692">Энэ хуудсыг <ph name="TARGET_LANGUAGE" /> руу хөрвүүлсэн байна.</translation>
 <translation id="9020742383383852663">A8</translation>

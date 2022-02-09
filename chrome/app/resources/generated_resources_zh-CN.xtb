@@ -89,6 +89,7 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" />要将您的 Chrome 设置恢复为原始默认设置。这不仅会重置您的主页、“打开新的标签页”页面和搜索引擎，而且还会禁用您的扩展程序并取消固定所有标签页。此外，其他临时数据和缓存的数据（例如 Cookie、内容和网站数据）也将被清除。</translation>
 <translation id="1084096383128641877">移除此密码不会删除您在 <ph name="DOMAIN" /> 上的帐号。如需保护您在 <ph name="DOMAIN_LINK" /> 上的帐号免遭他人盗用，请更改您的密码或删除该帐号。</translation>
 <translation id="1084824384139382525">复制链接地址(&amp;E)</translation>
+<translation id="1085064499066015002">在所有网站上始终允许</translation>
 <translation id="1085697365578766383">启动虚拟机时出错。请重试。</translation>
 <translation id="1087965115100412394">不允许网站连接到 MIDI 设备</translation>
 <translation id="1088654056000736875">Chrome 正在从您的计算机中移除有害软件…</translation>
@@ -340,6 +341,7 @@
 <translation id="1343865611738742294">授权 Linux 应用访问 USB 设备。Linux 不会记住已被拔出的 USB 设备。</translation>
 <translation id="1343920184519992513">继续浏览上次打开的网页并打开一组特定网页</translation>
 <translation id="1346630054604077329">确认并重启</translation>
+<translation id="1346748346194534595">向右</translation>
 <translation id="1347256498747320987">安装更新和应用。继续操作即表示您同意此设备还可从 Google、您的运营商以及您设备的制造商处自动下载并安装更新和应用（可能会使用移动数据网络）。部分应用可能会提供应用内购商品。<ph name="BEGIN_LINK1" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux 存储空间</translation>
 <translation id="1347975661240122359">当电池电量达到 <ph name="BATTERY_LEVEL" />% 时将开始更新。</translation>
@@ -461,6 +463,7 @@
 <translation id="1464781208867302907">若想指定设备偏好设置，请转到“设置”页面。</translation>
 <translation id="1465176863081977902">复制音频地址(&amp;O)</translation>
 <translation id="1465827627707997754">披萨片</translation>
+<translation id="1467432559032391204">向左</translation>
 <translation id="1468571364034902819">无法使用这份个人资料</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{向新群组中添加标签页}other{向新群组中添加标签页}}</translation>
 <translation id="1470350905258700113">使用此设备</translation>
@@ -1318,7 +1321,6 @@
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2307630946657910723">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜索网页的某个部分</translation>
-<translation id="230927227160767054">此页面想要安装一个服务处理程序。</translation>
 <translation id="2309620859903500144">此网站已被禁止使用您的动态传感器或光传感器。</translation>
 <translation id="2312219318583366810">网页网址</translation>
 <translation id="2314165183524574721">当前的公开范围设置是“已隐藏”</translation>
@@ -1369,7 +1371,6 @@
 <translation id="2349896577940037438">如果您已开启“其他网络与应用活动记录”设置，这些数据可能会被保存到您的 Google 帐号中。您可在 account.google.com 上查看和删除您的数据以及更改您的帐号设置。</translation>
 <translation id="2350133097354918058">已重新加载</translation>
 <translation id="2350182423316644347">正在初始化应用…</translation>
-<translation id="2350796302381711542">允许<ph name="HANDLER_HOSTNAME" />打开所有<ph name="PROTOCOL" />链接（而非<ph name="REPLACED_HANDLER_TITLE" />）？</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{1 项内容}other{{NUM_ITEMS} 项内容}}</translation>
 <translation id="2352662711729498748">&lt; 1MB</translation>
 <translation id="2352810082280059586">锁定屏幕记事会自动保存到 <ph name="LOCK_SCREEN_APP_NAME" /> 中。最近的记事将保留在锁定屏幕上。</translation>
@@ -1442,7 +1443,6 @@
 <translation id="2434758125294431199">选择哪些人员可与您分享文件</translation>
 <translation id="2435248616906486374">网络连接已断开</translation>
 <translation id="2435457462613246316">显示密码</translation>
-<translation id="2436186046335138073">允许<ph name="HANDLER_HOSTNAME" />打开所有<ph name="PROTOCOL" />链接？</translation>
 <translation id="2439626940657133600">正在加载“<ph name="WINDOW_TITLE" />”</translation>
 <translation id="2440604414813129000">查看源代码(&amp;O)</translation>
 <translation id="244231003699905658">地址无效。请检查该地址，然后重试。</translation>
@@ -1959,7 +1959,6 @@
 <translation id="2935225303485967257">管理个人资料</translation>
 <translation id="2935654492420446828">需要时再添加学校帐号</translation>
 <translation id="2936851848721175671">备份和恢复</translation>
-<translation id="2938225289965773019">打开<ph name="PROTOCOL" />链接</translation>
 <translation id="2939908794993783865">更多无效网站</translation>
 <translation id="2939938020978911855">显示可用的蓝牙设备</translation>
 <translation id="2941112035454246133">低</translation>
@@ -2280,7 +2279,6 @@
 <translation id="33022249435934718">GDI 句柄</translation>
 <translation id="3302388252085547855">输入理由…</translation>
 <translation id="3303260552072730022">某个扩展程序触发了全屏模式。</translation>
-<translation id="3303795387212510132">允许应用打开 <ph name="PROTOCOL_SCHEME" /> 链接？</translation>
 <translation id="3303818374450886607">份数</translation>
 <translation id="3303855915957856445">未找到任何搜索结果</translation>
 <translation id="3304212451103136496">直降 <ph name="DISCOUNT_AMOUNT" /></translation>
@@ -2692,7 +2690,6 @@
 <translation id="371300529209814631">后退/前进</translation>
 <translation id="3713047097299026954">此安全密钥不含任何登录数据</translation>
 <translation id="3714195043138862580">此演示设备目前处于“已取消配置”状态。</translation>
-<translation id="3714633008798122362">网络日历</translation>
 <translation id="3719826155360621982">主页</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">您与 Google</translation>
@@ -7498,7 +7495,6 @@
 <translation id="8734674662128056360">第三方 Cookie 屏蔽</translation>
 <translation id="873545264931343897"><ph name="PLUGIN_NAME" /> 更新完毕后，重新加载页面即可启用该插件</translation>
 <translation id="8736288397686080465">此网站已在后台更新。</translation>
-<translation id="8737685506611670901">打开<ph name="PROTOCOL" />链接而非“<ph name="REPLACED_HANDLER_TITLE" />”</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">选择要将网页翻译成哪种语言</translation>
 <translation id="8740247629089392745">您可将这部 Chromebook 交给<ph name="SUPERVISED_USER_NAME" />。即将设置完毕，然后就能尽情探索了。</translation>
@@ -7762,7 +7758,6 @@
 <translation id="9003647077635673607">允许在所有网站上运行脚本</translation>
 <translation id="9003677638446136377">再次检查</translation>
 <translation id="9004754973617721124">清除 <ph name="SITE_NAME" />、其下属所有网站及其已安装的应用的网站数据和权限？</translation>
-<translation id="9008201768610948239">忽略</translation>
 <translation id="9008201858626224558">“<ph name="SUBPAGE_TITLE" />”详情页面上的返回按钮</translation>
 <translation id="9009369504041480176">正在上传 (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">更改此网页是您的本意吗？</translation>
@@ -7772,7 +7767,6 @@
 <translation id="9013037634206938463">安装 Linux 需要 <ph name="INSTALL_SIZE" /> 的可用空间。如需增加可用空间，请从您的设备中删除文件。</translation>
 <translation id="901668144954885282">备份到 Google 云端硬盘</translation>
 <translation id="9018218886431812662">安装完成</translation>
-<translation id="901834265349196618">电子邮件</translation>
 <translation id="9019062154811256702">读取和更改自动填充设置</translation>
 <translation id="9019894137004772119">使用位置信息。允许具有位置权限的应用和服务使用您设备的位置信息。Google 可能会定期收集位置数据，并以匿名方式使用这类数据，从而提高位置信息精确度并改善基于地理位置的服务。</translation>
 <translation id="9019956081903586892">无法下载拼写检查字典</translation>

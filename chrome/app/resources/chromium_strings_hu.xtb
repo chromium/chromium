@@ -199,6 +199,7 @@
 <translation id="6734291798041940871">A Chromium már telepítve van az összes felhasználó számára a számítógépen.</translation>
 <translation id="673636774878526923">Ha szeretne minden eszközén hozzáférni Chromium-anyagaihoz, jelentkezzen be, majd kapcsolja be a szinkronizálást.</translation>
 <translation id="6774082503108938489">Szülőd kikapcsolta a Chromium „Engedélyek webhelyek, alkalmazások és bővítmények számára” beállítását. A(z) <ph name="EXTENSION_TYPE_PARAMETER" /> nem engedélyezhető.</translation>
+<translation id="6808964260981102146">A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra is érvényesek lehetnek. Ha nem szeretné, hogy webhelyek és alkalmazások hozzáférjenek a fiókadataihoz, használja a <ph name="LINK_BEGIN" />vendég módot<ph name="LINK_END" /> a Chromium böngészőben. A <ph name="LINK_2_BEGIN" />Beállításokban<ph name="LINK_2_END" /> is kezelheti Google-fiókjait.</translation>
 <translation id="6847869444787758381">A Chromium tájékoztatja arról, ha jelszavai illetéktelen kezekbe kerülnek</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (a Chromiumba másolva)</translation>

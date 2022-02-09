@@ -116,6 +116,7 @@
 <translation id="196896377990863006">顯示連結預覽</translation>
 <translation id="1973912524893600642">保留資料</translation>
 <translation id="1974060860693918893">進階</translation>
+<translation id="1981118202195772574">行動模式</translation>
 <translation id="1989112275319619282">瀏覽</translation>
 <translation id="199425419756152024">查看密碼</translation>
 <translation id="2015722694326466240">你必須先在裝置上設定螢幕解鎖密碼才能查看密碼。</translation>
@@ -236,6 +237,7 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />查看你可以同步處理的內容<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">全部封鎖</translation>
 <translation id="313283613037595347">新增無痕分頁。</translation>
+<translation id="3150887674190166798">選取你想要 Chrome 每次載入網站的模式</translation>
 <translation id="3153862085237805241">儲存卡片</translation>
 <translation id="3157387275655328056">加入閱讀清單</translation>
 <translation id="3157684681743766797">全部標示…</translation>
@@ -761,6 +763,7 @@
 <translation id="7911190106180361398">貴機構不允許你同步處理任何內容。</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">匯出密碼...</translation>
+<translation id="793971554166979165">預設的網站模式</translation>
 <translation id="794799177247607889">停止記錄</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{沒有任何密碼遭外洩}=1{有 {COUNT} 組密碼遭外洩}other{有 {COUNT} 組密碼遭外洩}}</translation>
 <translation id="7961015016161918242">一律不要</translation>
@@ -866,6 +869,7 @@
 <translation id="8881801611828450202">透過 <ph name="SEARCH_ENGINE" /> 搜尋這張圖片</translation>
 <translation id="8909135823018751308">分享…</translation>
 <translation id="8917490105272468696">是，我同意</translation>
+<translation id="8928133177108699615">電腦模式</translation>
 <translation id="8952559610785099500">新增密碼</translation>
 <translation id="895541991026785598">回報問題</translation>
 <translation id="8974714402877957201">1. 開啟 iPad 的 [設定]</translation>

@@ -488,12 +488,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="159946228300522107">Si cette règle est définie sur "True", Chrome agrandit la première fenêtre affichée à la première exécution.
 
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, Chrome peut agrandir la première fenêtre, selon la taille de l'écran.</translation>
-<translation id="1600107337865729434">Par défaut, cette règle autorise le clustering d'agents selon l'origine.
-
-      L'en-tête HTTP Origin-Agent-Cluster permet de spécifier si un document est isolé dans un cluster d'agents selon l'origine ou selon le site. Ce choix a des implications sur la sécurité, car le clustering d'agents selon l'origine permet d'isoler des documents en fonction de l'origine. Du point de vue du développeur, cela se traduit par l'impossibilité de configurer l'accesseur document.domain.
-
-      Le comportement par défaut (aucune configuration de l'en-tête Origin-Agent-Cluster) dans M101 n'est plus une isolation selon le site, mais selon l'origine. Si cette règle est activée ou qu'elle n'est pas configurée, le navigateur applique ce nouveau comportement par défaut à partir de cette version. Si cette règle est désactivée, ce changement est annulé et les documents sans en-têtes Origin-Agent-Cluster sont affectés aux clusters d'agents selon le site. L'accesseur document.domain reste donc configurable par défaut. Cela correspond à l'ancien comportement.
-      </translation>
 <translation id="1600340610556453828">Si cette règle est désactivée, <ph name="PRODUCT_OS_NAME" /> désactive le Wi-Fi. Les utilisateurs ne peuvent pas modifier ce paramètre.
 
       Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs peuvent activer ou désactiver le Wi-Fi.</translation>

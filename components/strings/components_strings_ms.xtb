@@ -461,6 +461,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2337852623177822836">Tetapan dikawal oleh pentadbir anda</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> mahu digandingkan</translation>
 <translation id="2346319942568447007">Imej yang anda salin</translation>
+<translation id="2350796302381711542">Benarkan <ph name="HANDLER_HOSTNAME" /> untuk membuka semua <ph name="PROTOCOL" /> pautan  dan bukannya <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2354001756790975382">Penanda halaman lain</translation>
 <translation id="2354430244986887761">Penyemakan Imbas Selamat Google <ph name="BEGIN_LINK" />menemui apl yang memudaratkan<ph name="END_LINK" /> di <ph name="SITE" /> baru-baru ini.</translation>
 <translation id="2355395290879513365">Penyerang mungkin dapat melihat imej yang anda lihat di tapak ini dan menipu anda dengan mengubah suainya.</translation>
@@ -486,6 +487,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2413528052993050574">Pelayan ini tidak dapat membuktikan bahawa domainnya ialah <ph name="DOMAIN" />; sijil keselamatannya mungkin dibatalkan. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang yang memintasi sambungan anda.</translation>
 <translation id="2414886740292270097">Gelap</translation>
 <translation id="2430968933669123598">Urus Google Account, tekan kekunci Enter untuk mengurus maklumat, privasi dan keselamatan anda dalam Google Account</translation>
+<translation id="2436186046335138073">Benarkan <ph name="HANDLER_HOSTNAME" /> untuk membuka semua <ph name="PROTOCOL" /> pautan?</translation>
 <translation id="2438874542388153331">Empat tebukan kanan</translation>
 <translation id="2450021089947420533">Perjalanan</translation>
 <translation id="2463739503403862330">Isi</translation>
@@ -635,6 +637,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2930577230479659665">Pangkas selepas setiap salinan</translation>
 <translation id="2932085390869194046">Cadangkan Kata Laluan...</translation>
 <translation id="2934466151127459956">Surat-Kerajaan</translation>
+<translation id="2938225289965773019">Buka pautan <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">Pelayan ini tidak dapat membuktikan bahawa domainnya ialah <ph name="DOMAIN" />; sijil keselamatannya adalah dari <ph name="DOMAIN2" />. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang yang memintasi sambungan anda.</translation>
 <translation id="2943895734390379394">Masa Muat Naik:</translation>
 <translation id="2948083400971632585">Anda boleh melumpuhkan sebarang proksi yang dikonfigurasi untuk sambungan dari halaman tetapan.</translation>
@@ -744,6 +747,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3288238092761586174"><ph name="URL" /> mungkin perlu mengambil langkah tambahan untuk mengesahkan pembayaran anda</translation>
 <translation id="3293642807462928945">Ketahui lebih lanjut tentang dasar <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Lihat dan urus kata laluan anda dalam tetapan Chrome</translation>
+<translation id="3303795387212510132">Benarkan apl membuka pautan <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Tiada hasil carian ditemui</translation>
 <translation id="3304073249511302126">pengimbasan bluetooth</translation>
 <translation id="3308006649705061278">Unit Organisasi (OU)</translation>
@@ -882,6 +886,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="370972442370243704">Hidupkan Perjalanan</translation>
 <translation id="3711895659073496551">Gantung</translation>
 <translation id="3712624925041724820">Kehabisan lesen</translation>
+<translation id="3714633008798122362">kalendar web</translation>
 <translation id="3714780639079136834">Menghidupkan data mudah alih atau Wi-Fi</translation>
 <translation id="3715597595485130451">Sambung ke Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Menyemak proksi, tembok api dan konfigurasi DNS<ph name="END_LINK" /></translation>
@@ -943,6 +948,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> mahu memainkan kandungan yang dilindungi. Identiti peranti anda akan disahkan oleh Google dan mungkin diakses oleh tapak ini.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Nafikan</translation>
 <translation id="3939773374150895049">Gunakan WebAuthn dan bukan CVC?</translation>
 <translation id="3946209740501886391">Sentiasa tanya pada tapak ini</translation>
 <translation id="3947595700203588284">Boleh meminta untuk menyambung kepada peranti MIDI</translation>
@@ -2410,6 +2416,7 @@ Butiran tambahan:
 <translation id="8731544501227493793">Urus butang kata laluan, tekan Enter untuk melihat dan mengurus kata laluan anda dalam tetapan Chrome</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> anda diurus oleh <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk membuka tetingkap Inkognito baharu untuk semak imbas secara peribadi</translation>
+<translation id="8737685506611670901">Buka pautan <ph name="PROTOCOL" /> dan bukannya <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Untuk mewujudkan sambungan yang selamat, jam anda perlu ditetapkan dengan betul. Ini kerana sijil yang digunakan oleh laman web untuk mengenal pastinya hanya sah untuk tempoh masa yang tertentu. Memandangkan jam peranti anda tidak betul, Chromium tidak boleh mengesahkan sijil-sijil ini.</translation>
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;Alamat DNS&lt;/abbr&gt; <ph name="HOST_NAME" /> tidak ditemui. Masalah sedang didiagnosis.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> ialah kod anda untuk <ph name="ORIGIN" /></translation>
@@ -2487,6 +2494,7 @@ Butiran tambahan:
 <translation id="9004367719664099443">Sesi VR sedang berlangsung</translation>
 <translation id="9005998258318286617">Gagal memuatkan dokumen PDF.</translation>
 <translation id="9008201768610948239">Abaikan</translation>
+<translation id="901834265349196618">e-mel</translation>
 <translation id="9020200922353704812">Alamat pengebilan kad diperlukan</translation>
 <translation id="9020542370529661692">Halaman ini telah diterjemahkan kepada <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

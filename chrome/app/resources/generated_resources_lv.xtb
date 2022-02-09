@@ -89,6 +89,7 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> vēlas atjaunot jūsu sākotnējos Chrome noklusējuma iestatījumus. Tādējādi tiks atiestatīta sākumlapa, jaunas cilnes lapa un meklētājprogramma, kā arī tiks atspējoti paplašinājumi un tiks atspraustas visas cilnes. Tiks notīrīti citi īslaicīgi glabātie dati un kešatmiņā saglabātie dati, piemēram, sīkfaili, satura un vietņu dati.</translation>
 <translation id="1084096383128641877">Noņemot šo paroli, netiks dzēsts jūsu konts vietnē <ph name="DOMAIN" />. Nomainiet savu paroli vai dzēsiet savu kontu vietnē <ph name="DOMAIN_LINK" />, lai aizsargātu to no citām personām.</translation>
 <translation id="1084824384139382525">Kopēt saites adresi</translation>
+<translation id="1085064499066015002">Vienmēr visās vietnēs</translation>
 <translation id="1085697365578766383">Startējot virtuālo mašīnu, radās kļūda. Lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="1087965115100412394">Neļaut vietnēm veidot savienojumu ar MIDI ierīcēm</translation>
 <translation id="1088654056000736875">Chrome noņem kaitīgu programmatūru no jūsu datora…</translation>
@@ -342,6 +343,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1343865611738742294">Piešķiriet Linux lietotnēm atļauju piekļūt USB ierīcēm. Pēc USB ierīces noņemšanas operētājsistēmā Linux netiks saglabāti šīs ierīces dati.</translation>
 <translation id="1343920184519992513">Atsākt darbu no vietas, kur to beidzāt, un atvērt konkrētu lapu kopu</translation>
 <translation id="1346630054604077329">Apstiprināt un restartēt</translation>
+<translation id="1346748346194534595">Pa labi</translation>
 <translation id="1347256498747320987">Instalēt atjauninājumus un lietotnes. Turpinot jūs piekrītat, ka šī ierīce var automātiski lejupielādēt un instalēt atjauninājumus un lietotnes, ko nodrošina Google, jūsu mobilo sakaru operators un ierīces ražotājs. Var tikt izmantoti mobilie dati. Dažās lietotnēs var tikt piedāvāti pirkumi. <ph name="BEGIN_LINK1" />Uzziniet vairāk.<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux krātuve</translation>
 <translation id="1347975661240122359">Atjaunināšana tiks sākta, kad akumulatora uzlādes līmenis būs <ph name="BATTERY_LEVEL" />%.</translation>
@@ -463,6 +465,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1464781208867302907">Lai skatītu ierīces preferences, pārejiet uz sadaļu Iestatījumi.</translation>
 <translation id="1465176863081977902">Kopēt audio adresi</translation>
 <translation id="1465827627707997754">Picas šķēle</translation>
+<translation id="1467432559032391204">Pa kreisi</translation>
 <translation id="1468571364034902819">Nevar izmantot šo profilu</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Pievienot cilni jaunai grupai}zero{Pievienot cilnes jaunai grupai}one{Pievienot cilnes jaunai grupai}other{Pievienot cilnes jaunai grupai}}</translation>
 <translation id="1470350905258700113">Izmantot šo ierīci</translation>
@@ -1323,7 +1326,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2307630946657910723">Meklēt lapas daļā, izmantojot <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
-<translation id="230927227160767054">Šī lapa vēlas instalēt pakalpojumu apdarinātāju.</translation>
 <translation id="2309620859903500144">Šīs vietnes piekļuve kustību vai gaismas sensoriem ir bloķēta.</translation>
 <translation id="2312219318583366810">Lapas URL</translation>
 <translation id="2314165183524574721">Pašreizējais redzamības iestatījums ir “Paslēpta”.</translation>
@@ -1374,7 +1376,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2349896577940037438">Ja ir ieslēgts iestatījums “papildu darbības tīmeklī un lietotnēs”, šie dati var tikt saglabāti jūsu Google kontā. Lai skatītu vai dzēstu datus vai mainītu konta iestatījumus, atveriet vietni account.google.com.</translation>
 <translation id="2350133097354918058">Atkārtoti ielādēts</translation>
 <translation id="2350182423316644347">Notiek lietojumprogrammas inicializēšana...</translation>
-<translation id="2350796302381711542">Vai ļaut <ph name="HANDLER_HOSTNAME" /> atvērt visas <ph name="PROTOCOL" /> saites <ph name="REPLACED_HANDLER_TITLE" /> vietā?</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{1 vienums}zero{{NUM_ITEMS} vienumi}one{{NUM_ITEMS} vienums}other{{NUM_ITEMS} vienumi}}</translation>
 <translation id="2352662711729498748">&lt;1 MB</translation>
 <translation id="2352810082280059586">Bloķēšanas ekrāna piezīmes tiek automātiski saglabātas lietotnē <ph name="LOCK_SCREEN_APP_NAME" />. Jūsu jaunākās piezīmes paliks bloķēšanas ekrānā.</translation>
@@ -1447,7 +1448,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2434758125294431199">Atlasiet, kas drīkst kopīgot saturu ar jums</translation>
 <translation id="2435248616906486374">Tika pārtraukts tīkla savienojums.</translation>
 <translation id="2435457462613246316">Rādīt paroli</translation>
-<translation id="2436186046335138073">Vai atļaut <ph name="HANDLER_HOSTNAME" /> atvērt visas <ph name="PROTOCOL" /> saites?</translation>
 <translation id="2439626940657133600">Notiek produkta <ph name="WINDOW_TITLE" /> ielāde</translation>
 <translation id="2440604414813129000">Skatīt avotu</translation>
 <translation id="244231003699905658">Adrese nav derīga. Lūdzu, pārbaudiet adresi un mēģiniet vēlreiz.</translation>
@@ -1965,7 +1965,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="2935225303485967257">Pārvaldīt profilus</translation>
 <translation id="2935654492420446828">Skolas kontu varēs pievienot vēlāk</translation>
 <translation id="2936851848721175671">Dublēšana un atjaunošana</translation>
-<translation id="2938225289965773019">atvērt <ph name="PROTOCOL" /> saites</translation>
 <translation id="2939908794993783865">Citas neaktīvas vietnes</translation>
 <translation id="2939938020978911855">Rādīt pieejamās Bluetooth ierīces</translation>
 <translation id="2941112035454246133">Zema</translation>
@@ -2286,7 +2285,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="33022249435934718">GDI apstrādātāji</translation>
 <translation id="3302388252085547855">Ievadiet pamatojumu…</translation>
 <translation id="3303260552072730022">Paplašinājums aktivizēja pilnekrāna režīmu.</translation>
-<translation id="3303795387212510132">Vai atļaut lietotnē atvērt <ph name="PROTOCOL_SCHEME" /> saites?</translation>
 <translation id="3303818374450886607">Kopijas</translation>
 <translation id="3303855915957856445">Netika atrasts neviens meklēšanas rezultāts.</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> atlaide</translation>
@@ -2698,7 +2696,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="371300529209814631">Atpakaļ/tālāk</translation>
 <translation id="3713047097299026954">Šai drošības atslēgai nav saglabātu pierakstīšanās datu</translation>
 <translation id="3714195043138862580">Šai demonstrācijas ierīcei ir atsaukts nodrošinājums.</translation>
-<translation id="3714633008798122362">tīmekļa kalendārs</translation>
 <translation id="3719826155360621982">Sākumlapa</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Jūs un Google</translation>
@@ -7505,7 +7502,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8734674662128056360">Trešo pušu sīkfailu bloķēšana</translation>
 <translation id="873545264931343897">Kad beigsies spraudņa <ph name="PLUGIN_NAME" /> atjaunināšana, atkārtoti ielādējiet lapu, lai aktivizētu spraudni</translation>
 <translation id="8736288397686080465">Šī vietne tika atjaunināta fonā.</translation>
-<translation id="8737685506611670901">atvērt <ph name="PROTOCOL" /> saites, nevis <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Izvēlieties valodu, kurā tulkot lapu</translation>
 <translation id="8740247629089392745">Varat iedot šo Chromebook datoru lietotājam <ph name="SUPERVISED_USER_NAME" />. Kad iestatīšana būs pabeigta, šo datoru varēs izmantot.</translation>
@@ -7771,7 +7767,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="9003647077635673607">Atļaut visās vietnēs</translation>
 <translation id="9003677638446136377">Pārbaudīt vēlreiz</translation>
 <translation id="9004754973617721124">Vai notīrīt vietnes <ph name="SITE_NAME" />, visu tās apakšvietņu datus un atļaujas, kā arī instalēto lietotni?</translation>
-<translation id="9008201768610948239">Ignorēt</translation>
 <translation id="9008201858626224558">Poga Atpakaļ detalizētās informācijas lapā <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">Notiek augšupielāde (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">Vai vēlējāties mainīt šo lapu?</translation>
@@ -7781,7 +7776,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="9013037634206938463">Lai varētu instalēt sistēmu Linux, ir nepieciešams <ph name="INSTALL_SIZE" /> brīvas vietas krātuvē. Lai atbrīvotu vietu, dzēsiet failus no ierīces.</translation>
 <translation id="901668144954885282">Dublēšana Google diskā</translation>
 <translation id="9018218886431812662">Instalēšana pabeigta</translation>
-<translation id="901834265349196618">e-pasts</translation>
 <translation id="9019062154811256702">Lasīt un mainīt automātiskās aizpildes iestatījumus</translation>
 <translation id="9019894137004772119">Atrašanās vietas datu izmantošana. Ļauj lietotnēm un pakalpojumiem ar atrašanās vietas atļauju izmantot jūsu ierīces atrašanās vietas datus. Google periodiski var vākt atrašanās vietas datus un izmantot šos datus anonīmā veidā, lai uzlabotu atrašanās vietas precizitāti un ar atrašanās vietu saistītus pakalpojumus.</translation>
 <translation id="9019956081903586892">Nevarēja lejupielādēt pareizrakstības pārbaudes vārdnīcu</translation>

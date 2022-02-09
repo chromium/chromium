@@ -105,6 +105,7 @@
 <translation id="1516740043221086139">'ಅಡಚಣೆ ಮಾಡಬೇಡಿ' ಆನ್ ಆಗಿದೆ.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{ಅಧಿಸೂಚನೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ. ಒಂದು ಅಪ್ಲಿಕೇಶನ್‌ಗಾಗಿ ಅಧಿಸೂಚನೆಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ}one{ಅಧಿಸೂಚನೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ. # ಅಪ್ಲಿಕೇಶನ್‌ಗಳಿಗಾಗಿ ಅಧಿಸೂಚನೆಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ}other{ಅಧಿಸೂಚನೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ. # ಅಪ್ಲಿಕೇಶನ್‌ಗಳಿಗಾಗಿ ಅಧಿಸೂಚನೆಗಳನ್ನು ಆಫ್ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="1525508553941733066">ವಜಾಗೊಳಿಸಿ</translation>
+<translation id="1528259147807435347">ಕಳೆದ ವಾರ ಎಡಿಟ್ ಮಾಡಿದ್ದಾರೆ</translation>
 <translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" /> ಅನ್ನು ಬಳಸಲು ಮೊದಲು ನೀವು ಎಲ್ಲಾ ಖಾತೆಗಳಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಬೇಕು. ಸೈನ್ ಔಟ್ ಮಾಡಲು, ಹಿಂತಿರುಗಲು ರದ್ದುಗೊಳಿಸಿ ಆಯ್ಕೆಮಾಡಿ. ನಂತರ ಸ್ಥಿತಿ ಕ್ಷೇತ್ರವನ್ನು ತೆರೆಯಲು ಸಮಯವನ್ನು ಆರಿಸಿ ಹಾಗೂ ಸೈನ್ ಔಟ್ ಆಯ್ಕೆಮಾಡಿ. ನಂತರ ಪುನಃ <ph name="USER_EMAIL_ADDRESS_2" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ.</translation>
 <translation id="15373452373711364">ದೊಡ್ಡ ಮೌಸ್ ಕರ್ಸರ್</translation>
 <translation id="1546492247443594934">ಡೆಸ್ಕ್ 2</translation>
@@ -227,6 +228,7 @@
 <translation id="2427507373259914951">ಎಡ-ಕ್ಲಿಕ್</translation>
 <translation id="2429753432712299108">ಬ್ಲೂಟೂತ್‌‌ ಸಾಧನವು "<ph name="DEVICE_NAME" />" ಜೋಡಣೆಗಾಗಿ ಅನುಮತಿಯನ್ನು ಬಯಸುತ್ತದೆ. ಸಮ್ಮತಿಸುವುದಕ್ಕೂ ಮೊದಲು, ದಯವಿಟ್ಟು ಆ ಸಾಧನದಲ್ಲಿ ಈ ಪಾಸ್‌ಕೀಲಿಯನ್ನು ತೋರಿಸಲಾಗಿದೆಯೇ ಎಂಬುದನ್ನು ಖಾತರಿಪಡಿಸಿಕೊಳ್ಳಿ: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ತೋರಿಸಿ</translation>
+<translation id="243878895369688216">ನಿನ್ನೆ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="24452542372838207">ವಿಸ್ತರಿಸುವ ಅಧಿಸೂಚನೆ</translation>
 <translation id="2450205753526923158">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಮೋಡ್</translation>
 <translation id="2456008742792828469">ಕ್ಯಾಲೆಂಡರ್, <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -275,6 +277,7 @@
 <translation id="2819276065543622893">ಈಗ ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="2825224105325558319"><ph name="SPECIFIED_RESOLUTION" /> ಅನ್ನು <ph name="DISPLAY_NAME" /> ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. ರೆಸಲ್ಯೂಷನ್‌ ಅನ್ನು <ph name="FALLBACK_RESOLUTION" /> ಗೆ ಬದಲಾಯಿಸಲಾಗಿದೆ.</translation>
 <translation id="2825619548187458965">ಶೆಲ್ಫ್</translation>
+<translation id="2834813915651407382">ಇತ್ತೀಚೆಗೆ ತೆರೆದಿದ್ದೀರಿ</translation>
 <translation id="2841907151129139818">ಟ್ಯಾಬ್ಲೆಟ್‌‌ ಮೋಡ್‌ಗೆ ಬದಲಿಸಲಾಗಿದೆ</translation>
 <translation id="2844169650293029770">USB-C ಸಾಧನ (ಎಡ ಭಾಗದ ಮುಂದಿನ ಪೋರ್ಟ್‌)</translation>
 <translation id="2849936225196189499">ಗಂಭೀರ</translation>
@@ -393,6 +396,7 @@
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> ಅನ್ನು ಪಿನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3560866052109807830">ಡ್ರಾಯಿಂಗ್ ಟೂಲ್‌ಗಳ ಮಾರ್ಕರ್</translation>
 <translation id="3563775809269155755">ಹಾಟ್‌ಸ್ಪಾಟ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
+<translation id="3566240529365775567">ಇದೀಗ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="3571734092741541777">ಹೊಂದಿಸು</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />" ಗೆ ಮರುಬದಲಾಯಿಸಿ (ಮರುಪ್ರಾರಂಭಿಸುವ ಅಗತ್ಯವಿದೆ)</translation>
 <translation id="3576141592585647168">ಸಮಯವಲಯವನ್ನು ಬದಲಾಯಿಸಿ</translation>
@@ -427,6 +431,7 @@
 <translation id="3726171378575546917">ಈ ಸಾಧನದಲ್ಲಿ <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ಮತ್ತು ಇನ್ನೂ <ph name="UNAVAILABLE_APPS_COUNT" /> ಆ್ಯಪ್‌ಗಳು ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="3735740477244556633">ಈ ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>
 <translation id="3742055079367172538">ಸ್ಕ್ರಿನ್‌ಶಾಟ್ ತೆಗೆದುಕೊಳ್ಳಲಾಗಿದೆ</translation>
+<translation id="3765841986579723851">ಇಂದು ಎಡಿಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3771549900096082774">ಉನ್ನತ ಕಾಂಟ್ರಾಸ್ಟ್ ಮೋಡ್</translation>
 <translation id="3773700760453577392"><ph name="USER_EMAIL" /> ಗೆ ಬಹು ಸೈನ್‌-ಇನ್‌ ಅನುಮತಿಯನ್ನು ನಿರ್ವಾಹಕರು ರದ್ದುಗೊಳಿಸಿದ್ದಾರೆ. ಮುಂದುವರಿಯಲು ಎಲ್ಲ ಬಳಕೆದಾರರು ಸೈನ್‌ ಔಟ್‌ ಮಾಡಬೇಕು.</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
@@ -445,6 +450,7 @@
 <translation id="3846575436967432996">ನೆಟ್‌ವರ್ಕ್ ಮಾಹಿತಿ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="385051799172605136">ಹಿಂದೆ</translation>
 <translation id="385300504083504382">ಪ್ರಾರಂಭ</translation>
+<translation id="3886872229787704059">ಇಂದು ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="3891340733213178823">ಸೈನ್ ಔಟ್ ಮಾಡಲು Ctrl+Shift+Q ಅನ್ನು ಎರಡುಬಾರಿ ಒತ್ತಿರಿ.</translation>
 <translation id="3893630138897523026">ChromeVox (ಮಾತಿನ ಪ್ರತಿಕ್ರಿಯೆ)</translation>
 <translation id="3897533311200664389">ಪಠ್ಯ ಪ್ರಶ್ನೆಯನ್ನು ತೋರಿಸಲು ಪ್ರಾರಂಭಿಸಿ</translation>
@@ -484,6 +490,7 @@
 <translation id="4173958948577803258">ಮಂ</translation>
 <translation id="4177913004758410636">{0,plural, =1{ಒಂದು ದಿನದೊಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}one{# ದಿನಗಳೊಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}other{# ದಿನಗಳೊಳಗೆ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ}}</translation>
 <translation id="4181841719683918333">ಭಾಷೆಗಳು</translation>
+<translation id="4192112279662688596">ಅಥವಾ</translation>
 <translation id="4195814663415092787">ಎಲ್ಲಿ ಬಿಡಲಾಗಿದೆಯೋ ಅಲ್ಲಿಂದಲೇ ಮುಂದುವರೆ</translation>
 <translation id="4195877955194704651">ಸ್ವಯಂಚಾಲಿತ ಕ್ಲಿಕ್‌ಗಳ ಬಟನ್</translation>
 <translation id="4197790712631116042">ಆಫ್</translation>
@@ -532,6 +539,7 @@
 <translation id="4421231901400348175">ರಿಮೋಟ್ ಸಹಾಯದ ಮೂಲಕ <ph name="HELPER_NAME" /> ಜೊತೆಗೆ ನಿಮ್ಮ ಪರದೆಯ ನಿಯಂತ್ರಣವನ್ನು ಹಂಚಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="4424159417645388645">ಡೆಸ್ಕ್ 5</translation>
 <translation id="4430019312045809116">ವಾಲ್ಯೂಮ್</translation>
+<translation id="4441283832827406317">ಆ್ಯಪ್‌ಗಳನ್ನು ಹೆಸರಿನ ಪ್ರಕಾರವಾಗಿ ವಿಂಗಡಿಸಲಾಗಿದೆ</translation>
 <translation id="4445159312344259901">ಅನ್‌ಲಾಕ್ ಮಾಡಲು ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 ಪ್ರಮುಖ ಅಧಿಸೂಚನೆ}one{# ಪ್ರಮುಖ ಅಧಿಸೂಚನೆಗಳು}other{# ಪ್ರಮುಖ ಅಧಿಸೂಚನೆಗಳು}}</translation>
 <translation id="4450893287417543264">ಮತ್ತೊಮ್ಮೆ ತೋರಿಸಬೇಡಿ</translation>
@@ -675,6 +683,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ಬಲಬದಿ)</translation>
 <translation id="5352250171825660495">ಡಾರ್ಕ್‌ ಥೀಮ್ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="5379115545237091094">ಹಲವು ಬಾರಿ ಪ್ರಯತ್ನಿಸಿದ್ದೀರಿ</translation>
+<translation id="5393156353051693207">ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳನ್ನು ಮರುಕ್ರಮಗೊಳಿಸಲು ಎಲ್ಲಿಯಾದರೂ ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಹಿಡಿದುಕೊಳ್ಳಿ</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> ನ ಮೇಲ್ಭಾಗದಲ್ಲಿ <ph name="DRAGGED_APP_NAME" />, ಫೋಲ್ಡರ್ ರಚಿಸಲು ಬಿಡುಗಡೆ ಮಾಡಿ.</translation>
 <translation id="5397578532367286026">ಈ ಬಳಕೆದಾರರ ಬಳಕೆ ಮತ್ತು ಇತಿಹಾಸವನ್ನು chrome.com ನಲ್ಲಿ ನಿರ್ವಾಹಕರು (<ph name="MANAGER_EMAIL" />) ಪರಿಶೀಲಿಸಬಹುದು.</translation>
 <translation id="5400461572260843123">ತ್ವರಿತ ಸೆಟ್ಟಿಂಗ್‌ಗಳು, ಅಧಿಸೂಚನೆ ಕೇಂದ್ರಕ್ಕೆ ಪ್ರವೇಶಿಸಲು ಹುಡುಕಾಟ + ಎಡಕ್ಕೆ ಬಾಣದ ಗುರುತನ್ನು ಒತ್ತಿರಿ.</translation>
@@ -781,6 +790,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="6059276912018042191">ಇತ್ತೀಚಿನ Chrome ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="6062360702481658777"><ph name="LOGOUT_TIME_LEFT" /> ನಲ್ಲಿ ನಿಮ್ಮನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೈನ್‌ಔಟ್‌ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
 <translation id="6073451960410192870">ರೆಕಾರ್ಡಿಂಗ್ ನಿಲ್ಲಿಸಿ</translation>
+<translation id="6099678161144790572">ಕಳೆದ ತಿಂಗಳು ಎಡಿಟ್ ಮಾಡಿದ್ದಾರೆ</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> ಧ್ವನಿ ಫೈಲ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> ಡೌನ್‌ಲೋಡ್ ಅನ್ನು ದೃಢೀಕರಿಸಿ</translation>
@@ -880,6 +890,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="6777216307882431711">ಸಂಪರ್ಕಿತ USB-C ಸಾಧನಗಳನ್ನು ಚಾರ್ಜ್ ಮಾಡುತ್ತಿದೆ</translation>
 <translation id="6786750046913594791">ಫೋಲ್ಡರ್ ಮುಚ್ಚಿರಿ</translation>
 <translation id="6790428901817661496">ಪ್ಲೇ ಮಾಡು</translation>
+<translation id="6801878137098616817">ಇತ್ತೀಚೆಗೆ ಎಡಿಟ್ ಮಾಡಿದ್ದೀರಿ</translation>
 <translation id="6803622936009808957">ಯಾವುದೇ ಬೆಂಬಲಿತ ಪರಿಹಾರಗಳು ಕಂಡುಬರದ ಕಾರಣ ಪ್ರದರ್ಶನಗಳನ್ನು ಪ್ರತಿಬಿಂಬಿಸಲಾಗಲಿಲ್ಲ. ಬದಲಿಗೆ ವಿಸ್ತರಿತ ಡೆಸ್ಕ್‌ಟಾಪ್ ಅನ್ನು ನಮೂದಿಸಲಾಗಿದೆ.</translation>
 <translation id="6811454077060061666">ಡೆಸ್ಕ್‌ಟಾಪ್‌ಗಾಗಿ Google Drive ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="6818242057446442178">ಒಂದು ಪದದಷ್ಟು ಹಿಂದಕ್ಕೆ ಹೋಗಿ</translation>
@@ -888,10 +899,12 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="6836499262298959512">ಅಪಾಯಕಾರಿ ಫೈಲ್</translation>
 <translation id="6837064795450991317">ಡೆಸ್ಕ್‌ಬಾರ್ ಅನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="6852052252232534364">ಸಕ್ರಿಯಗೊಳಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
+<translation id="6855029042976311970">ಇದೀಗ ಎಡಿಟ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ಸೆ</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ಒಂದು ಅಂಕಿ ಬಾಕಿಯಿದೆ}one{# ಅಂಕಿಗಳು ಬಾಕಿಯಿವೆ}other{# ಅಂಕಿಗಳು ಬಾಕಿಯಿವೆ}}</translation>
 <translation id="6867938213751067702">ಡೌನ್‌ಲೋಡ್ ವಿರಾಮಗೊಳಿಸಲಾಗಿದೆ <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">ಶಾರ್ಟ್‌ಕಟ್ ಆಫ್ ಆಗಿದೆ</translation>
+<translation id="6880133753431418782">ನೀವು ಮೊದಲು ಈ ಪ್ರಶ್ನೆಯನ್ನು ಹುಡುಕಿದ್ದೀರಿ. ನಿಮ್ಮ ಇತಿಹಾಸದಿಂದ ಈ ಹುಡುಕಾಟವನ್ನು ಅಳಿಸುವುದರಿಂದ ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಾದ್ಯಂತ ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ ಅದನ್ನು ಶಾಶ್ವತವಾಗಿ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ.</translation>
 <translation id="6884665277231944629">ಈ ದಿನಕ್ಕೆ ಹಿಂತಿರುಗಿ</translation>
 <translation id="6886172995547742638">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನ ಕಾರ್ಯಕ್ಷಮತೆಯು ಕಡಿಮೆಯಾಗಬಹುದು. ಪ್ರಮಾಣೀಕೃತ <ph name="PREFERRED_MINIMUM_POWER" />W ಅಥವಾ ಹೆಚ್ಚುವರಿ USB-C ಪವರ್ ಅಡಾಪ್ಟರ್ ಬಳಸಿ.</translation>
 <translation id="688631446150864480">ವಿಂಡೋಗಳನ್ನು ಬದಲಾಯಿಸಲು ಡೌನ್ ಆ್ಯರೋ ಕೀ ಅನ್ನು ಒತ್ತಿ</translation>
@@ -930,6 +943,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7098389117866926363">USB-C ಸಾಧನ (ಹಿಂಭಾಗದಲ್ಲಿ ಎಡ ಪೋರ್ಟ್‌)</translation>
 <translation id="7106330611027933926">ಡೆಸ್ಕ್‌ಬಾರ್ ತೋರಿಸಿ</translation>
 <translation id="7118268675952955085">ಸ್ಕ್ರೀನ್‌ಶಾಟ್</translation>
+<translation id="7126996685418858413">ಕಳೆದ ವಾರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="7130207228079676353">ಹೆಚ್ಚಿನ ಸಾಧ್ಯತೆ ಇದೆ</translation>
 <translation id="7131634465328662194">ನೀವು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೈನ್‌ಔಟ್‌ ಆಗುತ್ತೀರಿ.</translation>
 <translation id="7143207342074048698">ಕನೆಕ್ಟ್...</translation>
@@ -941,6 +955,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7189412385142492784">ಶುಕ್ರ ಗ್ರಹ ಎಷ್ಟು ದೂರದಲ್ಲಿದೆ</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. ಅಪ್‌ಡೇಟ್ ಅನ್ವಯಿಸಲು, ಈ Chromebook ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸುವ ಅಗತ್ಯವಿದೆ. ಇದು 1 ನಿಮಿಷದವರೆಗೆ ಸಮಯ ತೆಗೆದುಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="7256634071279256947">ಹಿಂಭಾಗದ ಮೈಕ್ರೊಫೋನ್</translation>
+<translation id="7258828758145722155">ನಿನ್ನೆ ಎಡಿಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="726276584504105859">ವಿಭಜಿತ ಪರದೆಯನ್ನು ಬಳಸಲು ಇಲ್ಲಿ ಡ್ರ್ಯಾಗ್‌ ಮಾಡಿ</translation>
 <translation id="7262906531272962081">ಜ್ಞಾಪನೆ ರಚಿಸಿ</translation>
 <translation id="7279434993080105272"><ph name="COLOR_PARAMETER" /> ಮಾರ್ಕರ್ ಬಣ್ಣ</translation>
@@ -960,6 +975,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7378203170292176219">ರೆಕಾರ್ಡ್ ಮಾಡುವುದಕ್ಕಾಗಿ ಪ್ರದೇಶವೊಂದನ್ನು ಆಯ್ಕೆ ಮಾಡಲು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
 <translation id="7378594059915113390">ಮೀಡಿಯಾ ನಿಯಂತ್ರಣಗಳು</translation>
 <translation id="7378889811480108604">ಬ್ಯಾಟರಿ ಸೇವರ್ ಮೋಡ್ ಆಫ್ ಆಗಿದೆ</translation>
+<translation id="7384028040782072252">ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳನ್ನು ಮರುಕ್ರಮಗೊಳಿಸಲು ಎಲ್ಲಿಯಾದರೂ ಬಲ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="7392563512730092880">ನೀವು ನಂತರ ಯಾವಾಗ ಬೇಕಾದರೂ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸೆಟಪ್ ಮಾಡಬಹುದು.</translation>
 <translation id="7405710164030118432">ಸಾಧನವನ್ನು ಅನ್‌ಲಾಕ್‌ ಮಾಡಲು, ನಿಮ್ಮ Family Link ಪೋಷಕ ಪ್ರವೇಶದ ಕೋಡ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="7406608787870898861">ನಿಮ್ಮ ಮೊಬೈಲ್ ನೆಟ್‌ವರ್ಕ್ ಸೆಟಪ್ ಮಾಡುವಿಕೆಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ</translation>
@@ -978,6 +994,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7483025031359818980">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್‌ಗೆ ಹೊಂದಿಸಲು ಪ್ರದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="7486227320194954040">ಮಾರ್ಕರ್ ಪರಿಕರಗಳನ್ನು ಕುಗ್ಗಿಸಿ</translation>
 <translation id="7497767806359279797">ಭಾಷೆ ಮತ್ತು ಕೀಬೋರ್ಡ್ ಆರಿಸಿ</translation>
+<translation id="7508690557411636492">ಕಳೆದ ತಿಂಗಳಿನಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="7509246181739783082">ನಿಮ್ಮ ಗುರುತನ್ನು ಖಚಿತಪಡಿಸಿ</translation>
 <translation id="7513622367902644023">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಮೋಡ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="7513922695575567867">ಕ್ಯಾಲೆಂಡರ್, <ph name="DATE" /> ನ ವಾರ, ಪ್ರಸ್ತುತವಾಗಿ <ph name="SELECTED_DATE" /> ದಿನಾಂಕವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.</translation>
@@ -1011,6 +1028,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7654687942625752712">ಮಾತಿನ ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು, ಎರಡೂ ವಾಲ್ಯೂಮ್ ಕೀಗಳನ್ನು ಐದು ಸೆಕೆಂಡ್‌ಗಳ ಕಾಲ ಒತ್ತಿ ಹಿಡಿದುಕೊಳ್ಳಿ.</translation>
 <translation id="7658239707568436148">ರದ್ದುಮಾಡಿ</translation>
 <translation id="7662283695561029522">ಕಾನ್ಫಿಗರ್ ಮಾಡಲು ಟ್ಯಾಪ್‌ ಮಾಡಿ</translation>
+<translation id="7671610481353807627">ಆ್ಯಪ್‌ಗಳನ್ನು ಬಣ್ಣದಿಂದ ವಿಂಗಡಿಸಲಾಗಿದೆ</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">ಹೊಸ ಸೆಲ್ಯುಲಾರ್ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="7720410380936703141">ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
@@ -1147,6 +1165,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="8563862697512465947">ಸೂಚನೆ  ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="857201607579416096">ಮೆನುವನ್ನು ಪರದೆಯ ಕೆಳಭಾಗದಲ್ಲಿ ಬಲತುದಿಗೆ ಸರಿಸಲಾಗಿದೆ.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
+<translation id="8598235756057743477">ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳನ್ನು ಹೆಸರು ಅಥವಾ ಬಣ್ಣದಿಂದ ವಿಂಗಡಿಸಿ</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> ಗೆ ಸಂಪರ್ಕಿಸಲಾಗಿದೆ</translation>
 <translation id="8631727435199967028">ಪ್ರವೇಶಿಸುವಿಕೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />, ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸಿದ್ದಾರೆ</translation>

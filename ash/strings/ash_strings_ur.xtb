@@ -105,6 +105,7 @@
 <translation id="1516740043221086139">'ڈسٹرب نہ کریں' آن ہے۔</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{اطلاع کی ترتیبات دکھائیں۔ اطلاعات ایک ایپ کے لیے آف ہیں}other{اطلاع کی ترتیبات دکھائیں۔ اطلاعات # ایپس کے لیے آف ہیں}}</translation>
 <translation id="1525508553941733066">برخاست کریں</translation>
+<translation id="1528259147807435347">گزشتہ ہفتے ترمیم کی گئی</translation>
 <translation id="1536604384701784949"><ph name="USER_EMAIL_ADDRESS" /> کو استعمال کرنے کے لیے آپ کو پہلے سبھی اکاؤنٹس سے سائن آؤٹ کرنے کی ضرورت ہے۔ سائن آؤٹ کرنے کے لیے، واپس جانے کے لئے منسوخ کریں کو منتخب کریں۔ پھر اسٹیٹس ایریا کھولنے کے لئے ٹائم کا انتخاب کریں اور سائن آؤٹ کو منتخب کریں۔ پھر <ph name="USER_EMAIL_ADDRESS_2" /> پر دوبارہ سائن ان کریں۔</translation>
 <translation id="15373452373711364">بڑا ماؤس کرسر</translation>
 <translation id="1546492247443594934">ڈیسک 2</translation>
@@ -227,6 +228,7 @@
 <translation id="2427507373259914951">بائیں طرف کلک کریں</translation>
 <translation id="2429753432712299108">بلوٹوتھ آلہ "<ph name="DEVICE_NAME" />" کو جوڑا بنانے کی اجازت درکار ہوگی۔ قبول کرنے سے پہلے، براہ کرم توثیق کریں کہ یہ پاس کلید اس آلہ پر دکھائی دے رہی ہے: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">پاس ورڈ دکھائیں</translation>
+<translation id="243878895369688216">گزشتہ کل کھولا گیا</translation>
 <translation id="24452542372838207">اطلاع پھیلائيں</translation>
 <translation id="2450205753526923158">اسکرین شاٹ وضع</translation>
 <translation id="2456008742792828469">کیلنڈر، <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -275,6 +277,7 @@
 <translation id="2819276065543622893">آپ اب سائن آؤٹ ہو جائیں گے۔</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> کو سپورٹ نہیں کرتا ہے۔ ریزولیوشن کو تبدیل کر کے <ph name="FALLBACK_RESOLUTION" /> کر دیا گیا تھا۔</translation>
 <translation id="2825619548187458965">شیلف</translation>
+<translation id="2834813915651407382">حال ہی میں کھولا گیا</translation>
 <translation id="2841907151129139818">ٹیبلیٹ وضع میں سوئچ کیا</translation>
 <translation id="2844169650293029770">‏USB-C آلہ (بائیں طرف کا اگلا پورٹ)</translation>
 <translation id="2849936225196189499">اہم</translation>
@@ -393,6 +396,7 @@
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> کو پن کر دیا گیا</translation>
 <translation id="3560866052109807830">مارکر ڈرائنگ ٹولز</translation>
 <translation id="3563775809269155755">ہاٹ اسپاٹ فعال کریں</translation>
+<translation id="3566240529365775567">ابھی کھولا گیا</translation>
 <translation id="3571734092741541777">ترتیب دیں</translation>
 <translation id="3573179567135747900">واپس "<ph name="FROM_LOCALE" />" میں تبدیل کریں (ری اسٹارٹ مطلوب ہے)</translation>
 <translation id="3576141592585647168">ٹائم زون تبدیل کریں</translation>
@@ -427,6 +431,7 @@
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />، <ph name="UNAVAILABLE_APPS_TWO" />، اور <ph name="UNAVAILABLE_APPS_COUNT" /> مزید اس آلہ پر موجود نہیں ہے۔</translation>
 <translation id="3735740477244556633">ترتیب دیں بلحاظ</translation>
 <translation id="3742055079367172538">اسکرین شاٹ لی گئی</translation>
+<translation id="3765841986579723851">آج ترمیم کیا گیا</translation>
 <translation id="3771549900096082774">اعلی تناسب امتزاج وضع</translation>
 <translation id="3773700760453577392">منتظم نے <ph name="USER_EMAIL" /> کیلئے متعدد سائن ان کی اجازت نہیں دی ہے۔ جاری رکھنے کیلئے تمام صارفین کا سائن آؤٹ کرنا لازمی ہے۔</translation>
 <translation id="3779139509281456663"><ph name="NAME" /> کو منسلک کیا جا رہا ہے</translation>
@@ -445,6 +450,7 @@
 <translation id="3846575436967432996">نیٹ ورک کی کوئی معلومات دستیاب نہیں ہے</translation>
 <translation id="385051799172605136">پیچھے</translation>
 <translation id="385300504083504382">شروعات</translation>
+<translation id="3886872229787704059">آج کھولا گیا</translation>
 <translation id="3891340733213178823">‏سائن آؤٹ کرنے کیلئے Ctrl+Shift+Q کو دو بار دبائیں۔</translation>
 <translation id="3893630138897523026">‏ChromeVox (صوتی تاثرات)</translation>
 <translation id="3897533311200664389">متن کا استفسار شروع کریں</translation>
@@ -484,6 +490,7 @@
 <translation id="4173958948577803258">T</translation>
 <translation id="4177913004758410636">{0,plural, =1{ایک دن کے اندر آلہ کو اپ ڈیٹ کریں}other{# دن کے اندر آلہ کو اپ ڈیٹ کریں}}</translation>
 <translation id="4181841719683918333">زبانیں</translation>
+<translation id="4192112279662688596">یا</translation>
 <translation id="4195814663415092787">آپ نے جہاں چھوڑا تھا وہیں سے جاری رکھیں</translation>
 <translation id="4195877955194704651">خودکار کلکس بٹن</translation>
 <translation id="4197790712631116042">آف</translation>
@@ -532,6 +539,7 @@
 <translation id="4421231901400348175">ریموٹ اسسٹنس کے ذریعے <ph name="HELPER_NAME" /> کے ساتھ آپ کی اسکرین کے کنٹرول کا اشتراک کیا جا رہا ہے۔</translation>
 <translation id="4424159417645388645">ڈیسک 5</translation>
 <translation id="4430019312045809116">والیوم</translation>
+<translation id="4441283832827406317">ایپس نام کے لحاظ سے ترتیب دی گئی ہیں</translation>
 <translation id="4445159312344259901">غیر مقفل کیلئے سائن ان کریں</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 اہم اطلاع}other{# اہم اطلاعات}}</translation>
 <translation id="4450893287417543264">دوبارہ نہ دکھائیں</translation>
@@ -675,6 +683,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (دائیں)</translation>
 <translation id="5352250171825660495">گہری تھیم آن ہے</translation>
 <translation id="5379115545237091094">کافی زیادہ کوششیں</translation>
+<translation id="5393156353051693207">اپنی ایپس کو دوبارہ ترتیب دینے کے لیے کہیں بھی ٹچ کریں اور دبائے رکھیں</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> کے اوپر <ph name="DRAGGED_APP_NAME" />، فولڈر بنانے کیلئے ریلیز کریں۔</translation>
 <translation id="5397578532367286026">‏اس صارف کے استعمال اور سرگزشت کا chrome.com پر مینیجر (<ph name="MANAGER_EMAIL" />) کے ذریعے جائزہ لیا جا سکتا ہے۔</translation>
 <translation id="5400461572260843123">فوری ترتیبات، اطلاع کے مرکز تک رسائی حاصل کرنے کے لیے تلاش + بائیں تیر والے بٹن کو دبائيں۔</translation>
@@ -780,6 +789,7 @@
 <translation id="6059276912018042191">‏حالیہ Chrome ٹیبز</translation>
 <translation id="6062360702481658777">آپ <ph name="LOGOUT_TIME_LEFT" /> میں خود بخود سائن آؤٹ ہو جائیں گے۔</translation>
 <translation id="6073451960410192870">ریکارڈنگ روکیں</translation>
+<translation id="6099678161144790572">گزشتہ مہینے میں ترمیم کی</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> کی اسپیچ فائلز ڈاؤن لوڈ ہو گئی</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />۔ <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> ڈاؤن لوڈ کی توثیق کریں</translation>
@@ -878,6 +888,7 @@
 <translation id="6777216307882431711">‏منسلک USB-C آلات کو پاور دی جا رہی ہے</translation>
 <translation id="6786750046913594791">فولڈر بند کریں</translation>
 <translation id="6790428901817661496">چلائیں</translation>
+<translation id="6801878137098616817">حال ہی میں ترمیم کیا گیا</translation>
 <translation id="6803622936009808957">ڈسپلیز کی عکاسی نہیں کر سکا کیونکہ کوئی تعاون یافتہ ریزولیوشنز نہیں ملے۔اس کی بجائے توسیع کردہ ڈیسک ٹاپ داخل کیا گیا۔</translation>
 <translation id="6811454077060061666">‏ڈیسک ٹاپ کے لیے Google Drive دستیاب نہیں ہے</translation>
 <translation id="6818242057446442178">ایک لفظ پیچھے جائیں</translation>
@@ -886,10 +897,12 @@
 <translation id="6836499262298959512">خطرناک فائل</translation>
 <translation id="6837064795450991317">ڈیسک بار چھپائیں</translation>
 <translation id="6852052252232534364">کلک برائے فعال</translation>
+<translation id="6855029042976311970">ابھی ابھی ترمیم کی گئی ہے</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> سیکنڈ</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ایک ہندسہ باقی ہے}other{# ہندسے باقی ہیں}}</translation>
 <translation id="6867938213751067702">ڈاؤن لوڈ موقوف ہو گیا <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">شارٹ کٹ آف ہے</translation>
+<translation id="6880133753431418782">‏آپ نے اس استفسار کو پہلے تلاش کیا تھا۔ آپ کی سرگزشت سے اس تلاش کو حذف کرنے سے، یہ آپ کے تمام آلات پر آپ کے Google اکاؤنٹ سے مستقل طور پر ہٹ جائے گی۔</translation>
 <translation id="6884665277231944629">آج کی تاریخ پر واپس جائیں</translation>
 <translation id="6886172995547742638">‏آپ کے <ph name="DEVICE_TYPE" /> کی کارکردگی کم ہو سکتی ہے سندیافتہ <ph name="PREFERRED_MINIMUM_POWER" />W یا اعلی USB-C پاور ایڈاپٹر استعمال کریں۔</translation>
 <translation id="688631446150864480">ونڈوز کو سوئچ کرنے کیلئے نیچے تیر کے نشان والی کلید کو دبائیں</translation>
@@ -928,6 +941,7 @@
 <translation id="7098389117866926363">‏USB-C آلہ (پیچھے موجود بایاں پورٹ)</translation>
 <translation id="7106330611027933926">ڈیسک بار دکھائیں</translation>
 <translation id="7118268675952955085">اسکرین شاٹ</translation>
+<translation id="7126996685418858413">پچھلے ہفتے میں کھولا گیا</translation>
 <translation id="7130207228079676353">غالبأ</translation>
 <translation id="7131634465328662194">آپ خود بخود سائن آؤٹ ہو جائیں گے۔</translation>
 <translation id="7143207342074048698">منسلک ہو رہا ہے</translation>
@@ -939,6 +953,7 @@
 <translation id="7189412385142492784">‏Venus کتنا دور ہے</translation>
 <translation id="7246071203293827765">‏<ph name="UPDATE_TEXT" />۔ اپ ڈیٹ کو لاگو کرنے کے لیے Chromebook کو ری سٹارٹ کرنے کی ضرورت ہے۔ اس میں 1 منٹ تک لگ سکتا ہے۔</translation>
 <translation id="7256634071279256947">پیچھے کا مائیکروفون</translation>
+<translation id="7258828758145722155">کل ترمیم کیا گیا</translation>
 <translation id="726276584504105859">اسپلٹ اسکرین استعمال کرنے کیلئے یہاں گھسیٹیں</translation>
 <translation id="7262906531272962081">یاد دہانی تخلیق کریں</translation>
 <translation id="7279434993080105272"><ph name="COLOR_PARAMETER" /> رنگ کا مارکر</translation>
@@ -958,6 +973,7 @@
 <translation id="7378203170292176219">ریکارڈ کرنے کے لئے کسی علاقے کو منتخب کرنے کیلئے گھسیٹیں</translation>
 <translation id="7378594059915113390">میڈیا کنٹرولز</translation>
 <translation id="7378889811480108604">بیٹری سیور وضع آف ہے</translation>
+<translation id="7384028040782072252">اپنی ایپس کو دوبارہ ترتیب دینے کے لیے کہیں بھی دائیں طرف کلک کریں</translation>
 <translation id="7392563512730092880">آپ ترتیبات سے بعد میں کسی بھی وقت سیٹ اپ کر سکتے ہیں۔</translation>
 <translation id="7405710164030118432">‏آلہ کو غیر مقفل کرنے کیلئے، اپنے Family Link کا والدین کا رسائی کا کوڈ درج کریں</translation>
 <translation id="7406608787870898861">اپنے موبائل نیٹ ورک کو سیٹ اپ کرنا مکمل کریں</translation>
@@ -976,6 +992,7 @@
 <translation id="7483025031359818980">فُل اسکرین کو بطور سورس سیٹ کیا گیا</translation>
 <translation id="7486227320194954040">مارکر ٹولز کو سکیڑیں</translation>
 <translation id="7497767806359279797">زبان اور کی بورڈ منتخب کریں</translation>
+<translation id="7508690557411636492">پچھلے مہینے میں کھولا گیا</translation>
 <translation id="7509246181739783082">اپنی شناخت کی توثیق کریں</translation>
 <translation id="7513622367902644023">اسکرین شاٹ وضع کا انتخاب کیا گیا</translation>
 <translation id="7513922695575567867">کیلنڈر، <ph name="DATE" /> والا ہفتہ، فی الحال <ph name="SELECTED_DATE" /> کو منتخب کیا گیا ہے۔</translation>
@@ -1009,6 +1026,7 @@
 <translation id="7654687942625752712">صوتی تاثرات کو غیر فعال کرنے کیلئے پانچ منٹ تک والیوم کی دونوں کلیدوں کو دبائے رکھیں۔</translation>
 <translation id="7658239707568436148">منسوخ کریں</translation>
 <translation id="7662283695561029522">کنفیگر کرنے کیلئے تھپتھپائیں</translation>
+<translation id="7671610481353807627">ایپس رنگ کے لحاظ سے ترتیب دی گئی ہیں</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">نیا سیلولر نیٹ ورک شامل کریں</translation>
 <translation id="7720410380936703141">دوبارہ کوشش کریں</translation>
@@ -1145,6 +1163,7 @@
 <translation id="8563862697512465947">اطلاع کی ترتیبات</translation>
 <translation id="857201607579416096">مینو کو اسکرین کے نچلے دائیں کونے میں منتقل کر دیا گیا۔</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
+<translation id="8598235756057743477">اپنی ایپس کو نام یا رنگ کے لحاظ سے ترتیب دیں</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> سے منسلک ہے</translation>
 <translation id="8631727435199967028">ایکسیسبیلٹی کی ترتیبات</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے</translation>

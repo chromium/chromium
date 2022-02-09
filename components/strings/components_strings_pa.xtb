@@ -456,6 +456,7 @@
 <translation id="2337852623177822836">ਸੈਟਿੰਗ ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਕੰਟਰੋਲ ਕੀਤੀ ਗਈ</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ਜੋੜਾਬੱਧ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
 <translation id="2346319942568447007">ਤੁਹਾਡੇ ਵੱਲੋਂ ਕਾਪੀ ਕੀਤਾ ਚਿੱਤਰ</translation>
+<translation id="2350796302381711542">ਕੀ <ph name="HANDLER_HOSTNAME" /> ਨੂੰ <ph name="REPLACED_HANDLER_TITLE" /> ਦੀ ਬਜਾਏ ਸਾਰੇ <ph name="PROTOCOL" /> ਲਿੰਕ ਖੋਲ੍ਹਣ ਦੀ ਆਗਿਆ ਦੇਣੀ ਹੈ?</translation>
 <translation id="2354001756790975382">ਹੋਰ ਬੁੱਕਮਾਰਕ</translation>
 <translation id="2354430244986887761">ਹਾਲ ਹੀ ਵਿੱਚ Google ਸੁਰੱਖਿਆ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ <ph name="SITE" /> 'ਤੇ <ph name="BEGIN_LINK" />ਹਾਨੀਕਾਰਕ ਐਪਾਂ ਮਿਲੀਆਂ ਹਨ<ph name="END_LINK" />।</translation>
 <translation id="2355395290879513365">ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਤੁਹਾਡੇ ਵੱਲੋਂ ਇਸ ਸਾਈਟ 'ਤੇ ਵੇਖੇ ਜਾ ਰਹੇ ਚਿੱਤਰਾਂ ਨੂੰ ਹਮਲਾਵਰ ਵੀ ਦੇਖਣ ਦੇ ਯੋਗ ਹੋਣ ਅਤੇ ਉਹਨਾਂ ਚਿੱਤਰਾਂ ਨੂੰ ਸੋਧ ਕੇ ਉਹ ਤੁਹਾਨੂੰ ਧੋਖਾ ਦੇ ਸਕਦੇ ਹਨ।</translation>
@@ -481,6 +482,7 @@
 <translation id="2413528052993050574">ਇਹ ਸਰਵਰ ਇਹ ਸਿੱਧ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿ ਇਹ <ph name="DOMAIN" /> ਹੈ; ਇਸਦਾ ਸੁਰੱਖਿਆ ਸਰਟੀਫਿਕੇਟ ਰੱਦ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। ਇਸ ਦਾ ਕਾਰਨ ਗਲਤ ਸੰਰੂਪਣ ਹੋ ਸਕਦਾ ਹੈ ਜਾਂ ਕੋਈ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਦੇ ਰਾਹ ਨੂੰ ਰੋਕ ਰਿਹਾ ਹੈ।</translation>
 <translation id="2414886740292270097">ਡਾਰਕ</translation>
 <translation id="2430968933669123598">Google ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ, ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਆਪਣੀ ਜਾਣਕਾਰੀ, ਪਰਦੇਦਾਰੀ ਅਤੇ ਸੁਰੱਖਿਆ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
+<translation id="2436186046335138073">ਕੀ <ph name="HANDLER_HOSTNAME" /> ਨੂੰ ਸਾਰੇ <ph name="PROTOCOL" /> ਲਿੰਕ ਖੋਲ੍ਹਣ ਦੀ ਆਗਿਆ ਦੇਣੀ ਹੈ?</translation>
 <translation id="2438874542388153331">ਸੱਜੇ ਪਾਸੇ ਚਾਰ ਮੋਰੀਆਂ</translation>
 <translation id="2450021089947420533">ਖੋਜ ਸਫ਼ਰ</translation>
 <translation id="2463739503403862330">ਭਰੋ</translation>
@@ -630,6 +632,7 @@
 <translation id="2930577230479659665">ਹਰ ਕਾਪੀ ਤੋਂ ਬਾਅਦ ਕਟਾਈ</translation>
 <translation id="2932085390869194046">ਪਾਸਵਰਡ ਸੁਝਾਓ...</translation>
 <translation id="2934466151127459956">ਸਰਕਾਰੀ ਚਿੱਠੀ</translation>
+<translation id="2938225289965773019"><ph name="PROTOCOL" /> ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="2941952326391522266">ਇਹ ਸਰਵਰ ਇਹ ਸਾਬਤ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿ ਇਹ <ph name="DOMAIN" /> ਹੈ; ਇਸਦਾ ਸੁਰੱਖਿਆ ਪ੍ਰਮਾਣ-ਪੱਤਰ <ph name="DOMAIN2" /> ਵੱਲੋਂ ਹੈ। ਇਹ ਇੱਕ ਗਲਤ ਸੰਰੂਪਣ ਕਾਰਨ ਹੋ ਸਕਦਾ ਹੈ ਜਾਂ ਕੋਈ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਨੂੰ ਰਾਹ ਵਿੱਚ ਰੋਕ ਰਿਹਾ ਹੈ।</translation>
 <translation id="2943895734390379394">ਅੱਪਲੋਡ ਦਾ ਸਮਾਂ:</translation>
 <translation id="2948083400971632585">ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਪੰਨੇ ਤੋਂ ਇੱਕ ਕਨੈਕਸ਼ਨ ਲਈ ਸੰਰੂਪਣ ਕੀਤੀਆਂ ਕੋਈ ਵੀ ਪ੍ਰੌਕਸੀਆਂ ਨੂੰ ਅਸਮਰੱਥ ਬਣਾ ਸਕਦੇ ਹੋ।</translation>
@@ -737,6 +740,7 @@
 <translation id="3288238092761586174"><ph name="URL" /> ਨੂੰ ਤੁਹਾਡੇ ਭੁਗਤਾਨ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਵਧੀਕ ਕਦਮ ਚੁੱਕਣ ਦੀ ਲੋੜ ਪੈ ਸਕਦੀ ਹੈ</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> ਨੀਤੀ ਬਾਰੇ ਹੋਰ ਜਾਣੋ</translation>
 <translation id="3295444047715739395">Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣੇ ਪਾਸਵਰਡ ਦੇਖੋ ਅਤੇ ਉਹਨਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
+<translation id="3303795387212510132">ਕੀ ਐਪ ਨੂੰ <ph name="PROTOCOL_SCHEME" /> ਲਿੰਕ ਖੋਲ੍ਹਣ ਦੀ ਆਗਿਆ ਦੇਣੀ ਹੈ?</translation>
 <translation id="3303855915957856445">ਕੋਈ ਖੋਜ ਨਤੀਜੇ ਨਹੀਂ ਮਿਲੇ</translation>
 <translation id="3304073249511302126">ਬਲੂਟੁੱਥ ਸਕੈਨਿੰਗ</translation>
 <translation id="3308006649705061278">ਸੰਸਥਾਈ ਯੂਨਿਟ (OU)</translation>
@@ -873,6 +877,7 @@
 <translation id="370972442370243704">ਖੋਜ ਸਫ਼ਰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="3711895659073496551">ਮੁਅੱਤਲ</translation>
 <translation id="3712624925041724820">ਲਸੰਸ ਸੱਖਣੇ ਕੀਤੇ</translation>
+<translation id="3714633008798122362">ਵੈਬ ਕੈਲੰਡਰ</translation>
 <translation id="3714780639079136834">ਸੈਲਿਊਲਰ  ਡਾਟਾ  ਜਾਂ Wi-Fi ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="3715597595485130451">ਵਾਈ-ਫਾਈ ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />ਪ੍ਰੌਕਸੀ, ਫ਼ਾਇਰਵਾਲ, ਅਤੇ DNS ਸੰਰੂਪਣ ਦੀ ਜਾਂਚ ਕਰੋ<ph name="END_LINK" /></translation>
@@ -934,6 +939,7 @@
 <translation id="3906954721959377182">ਟੈਬਲੈੱਟ</translation>
 <translation id="3909477809443608991"><ph name="URL" /> ਸੁਰੱਖਿਅਤ ਕੀਤੀ ਸਮੱਗਰੀ ਚਲਾਉਣਾ ਚਾਹੁੰਦੇ ਹਨ। ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦੀ ਪਛਾਣ ਨੂੰ Google ਵੱਲੋਂ ਪ੍ਰਮਾਣਿਤ ਕੀਤਾ ਜਾਵੇਗਾ ਅਤੇ ਇਸ ਸਾਈਟ ਦੁਆਰਾ ਇਸ ਤੱਕ ਪਹੁੰਚ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ।</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">ਅਸਵੀਕਾਰ ਕਰੋ</translation>
 <translation id="3939773374150895049">ਕੀ CVC ਦੀ ਬਜਾਏ WebAuthn ਨੂੰ ਵਰਤਣਾ ਹੈ?</translation>
 <translation id="3946209740501886391">ਹਮੇਸ਼ਾ ਇਸ ਸਾਈਟ 'ਤੇ ਪੁੱਛੋ</translation>
 <translation id="3947595700203588284">ਸਾਈਟ MIDI ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
@@ -2393,6 +2399,7 @@
 <translation id="8731544501227493793">'ਪਾਸਵਰਡ ਬਟਨ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ' ਬਟਨ, Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣੇ ਪਾਸਵਰਡ ਦੇਖਣ ਅਤੇ ਉਹਨਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="8734529307927223492">ਤੁਹਾਡੇ <ph name="DEVICE_TYPE" /> ਦਾ ਪ੍ਰਬੰਧਨ <ph name="MANAGER" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ਦਬਾਓ, ਫਿਰ ਨਿੱਜੀ ਤੌਰ 'ਤੇ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਲਈ ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਖੋਲ੍ਹਣ ਵਾਸਤੇ Enter ਦਬਾਓ</translation>
+<translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> ਦੀ ਬਜਾਏ <ph name="PROTOCOL" /> ਲਿੰਕਾਂ ਨੂੰ ਖੋਲ੍ਹੋ</translation>
 <translation id="8738058698779197622">ਇੱਕ ਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨ ਸਥਾਪਿਤ ਕਰਨ ਲਈ, ਤੁਹਾਡੀ ਘੜੀ ਨੂੰ ਸਹੀ ਢੰਗ ਨਾਲ ਸੈੱਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ। ਅਜਿਹਾ ਇਸ ਲਈ ਕਿਉਂਕਿ ਪ੍ਰਮਾਣ-ਪੱਤਰ, ਜਿਸਨੂੰ ਵੈੱਬਸਾਈਟਾਂ ਖੁਦ ਦੀ ਪਛਾਣ ਕਰਨ ਲਈ ਵਰਤਦੀਆਂ ਹਨ, ਕੇਵਲ ਖ਼ਾਸ ਮਿਆਦ ਲਈ ਵੈਧ ਹੁੰਦੇ ਹਨ। ਕਿਉਂਕਿ ਤੁਹਾਡੀ ਡੀਵਾਈਸ ਦੀ ਘੜੀ ਦਾ ਸਮਾਂ ਗਲਤ ਹੈ, Chromium ਇਹਨਾਂ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਦੀ ਜਾਂਚ ਨਹੀਂ ਕਰ ਸਕਦਾ।</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> ਦਾ &lt;abbr id="dnsDefinition"&gt;DNS ਪਤਾ&lt;/abbr&gt; ਨਹੀਂ ਮਿਲ ਸਕਿਆ। ਸਮੱਸਿਆ ਦਾ ਨਿਦਾਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="8742371904523228557"><ph name="ORIGIN" /> ਲਈ <ph name="ONE_TIME_CODE" /> ਤੁਹਾਡਾ ਕੋਡ ਹੈ</translation>
@@ -2470,6 +2477,7 @@
 <translation id="9004367719664099443">VR ਸੈਸ਼ਨ ਚੱਲ ਰਿਹਾ ਹੈ</translation>
 <translation id="9005998258318286617">PDF ਦਸਤਾਵੇਜ਼ ਲੋਡ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ।</translation>
 <translation id="9008201768610948239">ਅਣਡਿੱਠ ਕਰੋ</translation>
+<translation id="901834265349196618">ਈਮੇਲ</translation>
 <translation id="9020200922353704812">ਕਾਰਡ ਬਿਲਿੰਗ ਪਤਾ ਲੋੜੀਂਦਾ ਹੈ</translation>
 <translation id="9020542370529661692">ਇਸ ਸਫ਼ੇ ਦਾ ਅਨੁਵਾਦ <ph name="TARGET_LANGUAGE" /> ਵਿੱਚ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="9020742383383852663">A8</translation>

@@ -89,6 +89,7 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> तुमच्या Chrome सेटिंग्ज त्यांच्या मूळ डीफॉल्टवर रिस्टोअर करू इच्छित आहे. हे तुमचे मुख्यपेज, नवीन टॅब पेज आणि शोध इंजीन रीसेट करेल, तुमच्या एक्स्टेंशनांना अक्षम करेल आणि सर्व टॅबना अनपिन करेल. ते कुकीज, आशय आणि साइट डेटासारखा इतर तात्पुरता आणि कॅशे केलेला डेटा देखील साफ करेल.</translation>
 <translation id="1084096383128641877">हा पासवर्ड काढल्याने तुमचे <ph name="DOMAIN" /> वरील खाते हटवले जाणार नाही. तुमचे <ph name="DOMAIN_LINK" /> वरील खाते इतरांपासून सुरक्षित ठेवण्यासाठी तुमचा पासवर्ड बदला किंवा तुमचे खाते हटवा.</translation>
 <translation id="1084824384139382525">लिंक पत्ता कॉपी करा</translation>
+<translation id="1085064499066015002">सर्व साइटसाठी नेहमी सुरू</translation>
 <translation id="1085697365578766383">व्हर्च्युअल मशीन सुरू करताना एरर आली. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="1087965115100412394">साइटना MIDI डिव्हाइसशी कनेक्ट करण्याची अनुमती देऊ नका</translation>
 <translation id="1088654056000736875">Chrome तुमच्या कॉंप्युटरमधून हानिकारक सॉफ्टवेअर काढून टाकत आहे...</translation>
@@ -342,6 +343,7 @@
 <translation id="1343865611738742294">USB डिव्हाइस ॲक्सेस करण्यासाठी Linux ला परवानगी द्या. USB डिव्हाइस काढून टाकल्यानंतर Linux ते लक्षात ठेवणार नाही.</translation>
 <translation id="1343920184519992513">तुम्ही सोडले होते तेथून पुढे सुरू ठेवा आणि पेजचा विशिष्ट संच उघडा</translation>
 <translation id="1346630054604077329">निश्चित करा आणि रीस्टार्ट करा</translation>
+<translation id="1346748346194534595">उजवे</translation>
 <translation id="1347256498747320987">अपडेट आणि अ‍ॅप्स इंस्टॉल करा. पुढे सुरू ठेवून, तुम्ही सहमती देता की, हे डिव्हाइस शक्यतो मोबाइल डेटा वापरून Google, तुमचा वाहक आणि तुमच्या डिव्हाइसच्या निर्मात्याकडून अपडेट आणि ॲप्ससुद्धा आपोआप डाउनलोड आणि इंस्टॉल करू शकतो. यापैकी काही ॲप्स ॲपमधील खरेदी करण्याचा पर्याय देऊ शकतात. <ph name="BEGIN_LINK1" />अधिक जाणून घ्या<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux स्टोरेज</translation>
 <translation id="1347975661240122359">बॅटरी <ph name="BATTERY_LEVEL" />% पर्यंत पोहोचल्यावर अपडेट सुरू होईल.</translation>
@@ -464,6 +466,7 @@
 <translation id="1464781208867302907">डिव्हाइस प्राधान्यांसाठी, सेटिंग्ज वर जा.</translation>
 <translation id="1465176863081977902">ऑडिओ पत्ता कॉपी करा</translation>
 <translation id="1465827627707997754">पिझ्झा स्लाइस</translation>
+<translation id="1467432559032391204">डावे</translation>
 <translation id="1468571364034902819">ही प्रोफाइल वापरू शकत नाही</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{नवीन गट यामध्ये टॅब जोडा}other{नवीन गट यामध्ये टॅब जोडा}}</translation>
 <translation id="1470350905258700113">हे डिव्हाइस वापरा</translation>
@@ -1337,7 +1340,6 @@
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2307630946657910723"><ph name="VISUAL_SEARCH_PROVIDER" /> वापरून पेजचा काही भाग शोधा</translation>
-<translation id="230927227160767054">हे पृष्ठ एक सेवा हँडलर इंस्टॉल करू इच्छिते.</translation>
 <translation id="2309620859903500144">या साइटला तुमचे गती किंवा प्रकाश सेन्सर ॲक्सेस करण्यापासून ब्लॉक केले गेले आहे.</translation>
 <translation id="2312219318583366810">पेज URL</translation>
 <translation id="2314165183524574721">सध्याचे दृश्यमानता सेटिंग लपवलेले आहे</translation>
@@ -1388,7 +1390,6 @@
 <translation id="2349896577940037438">तुमचे अतिरिक्त वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी सेटिंग सुरू केलेले असल्यास, हा डेटा तुमच्या Google खाते वर सेव्ह केला जाऊ शकतो. तुम्ही account.google.com येथे तुमचा डेटा पाहू शकता, तो हटवू शकता आणि तुमची खाते सेटिंग्ज बदलू शकता.</translation>
 <translation id="2350133097354918058">रीलोड केलेले</translation>
 <translation id="2350182423316644347">ॲप्लिकेशन सुरू करत आहे...</translation>
-<translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> ला <ph name="REPLACED_HANDLER_TITLE" /> ऐवजी सर्व <ph name="PROTOCOL" /> लिंक उघडण्यासाठी अनुमती द्यायची?</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{एक आयटम}other{{NUM_ITEMS} आयटम}}</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">लॉक स्‍क्रीन नोट <ph name="LOCK_SCREEN_APP_NAME" /> वर आपोआप सेव्ह केल्या जातात. तुमची सर्वात अलीकडील नोट लॉक स्‍क्रीनवर राहील.</translation>
@@ -1462,7 +1463,6 @@
 <translation id="2434758125294431199">तुमच्यासोबत कोण शेअर करू शकते ते निवडा</translation>
 <translation id="2435248616906486374">नेटवर्क डिस्कनेक्ट झाले</translation>
 <translation id="2435457462613246316">पासवर्ड दर्शवा</translation>
-<translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> ला सर्व <ph name="PROTOCOL" /> लिंक उघडण्याची अनुमती द्यायची?</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> लोड करत आहे</translation>
 <translation id="2440604414813129000">स्त्रो&amp;त पहा</translation>
 <translation id="244231003699905658">चुकीचा ॲड्रेस. कृपया ॲड्रेस तपासा आणि पुन्हा प्रयत्न करा.</translation>
@@ -1980,7 +1980,6 @@
 <translation id="2935225303485967257">प्रोफाइल व्यवस्थापित करा</translation>
 <translation id="2935654492420446828">शाळेचे खाते नंतर जोडा</translation>
 <translation id="2936851848721175671">बॅकअप घ्या आणि रिस्टोअर करा</translation>
-<translation id="2938225289965773019"><ph name="PROTOCOL" /> लिंक उघडा</translation>
 <translation id="2939908794993783865">अतिरिक्त इनॲक्टिव्ह साइट</translation>
 <translation id="2939938020978911855">उपलब्ध असलेले ब्लूटूथ डिव्हाइस दर्शवा</translation>
 <translation id="2941112035454246133">निम्न</translation>
@@ -2302,7 +2301,6 @@
 <translation id="33022249435934718">GDI हँडल</translation>
 <translation id="3302388252085547855">कारण एंटर करा...</translation>
 <translation id="3303260552072730022">एका एक्स्टेंशनने फुल स्क्रीनला वेग दिला.</translation>
-<translation id="3303795387212510132">अ‍ॅपला <ph name="PROTOCOL_SCHEME" /> लिंक उघडण्याची अनुमती द्यायची आहे का?</translation>
 <translation id="3303818374450886607">प्रती</translation>
 <translation id="3303855915957856445">कोणतेही शोध परिणाम आढळले नाहीत</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> सूट</translation>
@@ -2718,7 +2716,6 @@
 <translation id="371300529209814631">मागे/पुढे</translation>
 <translation id="3713047097299026954">या सिक्युरिटी कीमध्ये कोणताही साइन इन डेटा नाही</translation>
 <translation id="3714195043138862580">हे डेमो डिव्हाइस अधिकार काढून घेतलेल्या स्थितीमध्ये ठेवले गेले आहे.</translation>
-<translation id="3714633008798122362">वेब कॅलेंडर</translation>
 <translation id="3719826155360621982">होम पेज</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">तुम्ही आणि Google</translation>
@@ -7537,7 +7534,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8734674662128056360">तृतीय पक्ष कुकी ब्लॉक करत आहे</translation>
 <translation id="873545264931343897"><ph name="PLUGIN_NAME" /> अपडेट समाप्त झाल्यावर, ते सक्रिय करण्यासाठी पृष्‍ठ रीलोड करा</translation>
 <translation id="8736288397686080465">ही साइट पार्श्वभूमीमध्ये अपडेट केली गेली आहे.</translation>
-<translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> ऐवजी <ph name="PROTOCOL" /> लिंक उघडा</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">पेज ज्यामध्ये भाषांतरित करायचे आहे ती भाषा निवडा</translation>
 <translation id="8740247629089392745">तुम्ही हे Chromebook <ph name="SUPERVISED_USER_NAME" /> कडे सोपवू शकता. सेट करणे जवळपास पूर्ण झाले आहे, त्यानंतर एक्सप्लोर करण्याची वेळ आहे.</translation>
@@ -7802,7 +7798,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9003647077635673607">सर्व वेबसाइटवर अनुमती द्या</translation>
 <translation id="9003677638446136377">पुन्हा तपासा</translation>
 <translation id="9004754973617721124"><ph name="SITE_NAME" /> साठी, त्याच्या अंतर्गत येणाऱ्या सर्व साइट आणि त्याचे इंस्टॉल केलेले अ‍ॅप यांच्यासह साइट डेटा आणि परवानग्या साफ करायच्या आहेत का?</translation>
-<translation id="9008201768610948239">दुर्लक्ष करा</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> च्या तपशील पेजवरील मागे जा बटण</translation>
 <translation id="9009369504041480176">अपलोड करीत आहे (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">तुम्हाला हे पेज बदलायचे होते का?</translation>
@@ -7812,7 +7807,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9013037634206938463">Linux इंस्टॉल करण्यासाठी <ph name="INSTALL_SIZE" /> मोकळ्या जागेची आवश्यकता आहे. मोकळी जागा वाढवण्यासाठी, तुमच्या डिव्हाइसमधून फाइल हटवा.</translation>
 <translation id="901668144954885282">Google Drive वर बॅकअप घ्या</translation>
 <translation id="9018218886431812662">इंस्टॉलेशन पूर्ण झाले</translation>
-<translation id="901834265349196618">ईमेल</translation>
 <translation id="9019062154811256702">ऑटोफिल सेटिंग्ज वाचा आणि बदला</translation>
 <translation id="9019894137004772119">स्थान वापरा. स्थान परवानगी असलेल्या अ‍ॅप्स आणि सेवांना तुमच्या डिव्हाइसचे स्थान वापरू द्या. Google वेळोवेळी स्थान डेटा गोळा करू शकते आणि स्थान अचूकता व स्थानावर आधारित सेवांमध्ये सुधारणा करण्यासाठी हा डेटा निनावी पद्धतीने वापरू शकते.</translation>
 <translation id="9019956081903586892">स्पेल चेक शब्दकोश डाउनलोड करता आला नाही</translation>

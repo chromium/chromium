@@ -456,6 +456,7 @@
 <translation id="2337852623177822836">Эта настройка управляется администратором</translation>
 <translation id="2340263603246777781">Сайт <ph name="ORIGIN" /> запрашивает подключение</translation>
 <translation id="2346319942568447007">Скопированное изображение</translation>
+<translation id="2350796302381711542">Использовать <ph name="HANDLER_HOSTNAME" /> для обработки ссылок типа "<ph name="PROTOCOL" />" вместо сервиса "<ph name="REPLACED_HANDLER_TITLE" />"?</translation>
 <translation id="2354001756790975382">Другие закладки</translation>
 <translation id="2354430244986887761">Система Безопасного просмотра Google недавно <ph name="BEGIN_LINK" />обнаружила вредоносные приложения<ph name="END_LINK" /> на сайте <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Злоумышленники могут видеть изображения, которые видны вам, и изменять их в целях мошенничества.</translation>
@@ -481,6 +482,7 @@
 <translation id="2413528052993050574">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Его сертификат безопасности может быть отозван. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
 <translation id="2414886740292270097">Темная</translation>
 <translation id="2430968933669123598">Параметры аккаунта Google. Чтобы управлять своими данными, конфиденциальностью и безопасностью в аккаунте Google, нажмите Ввод.</translation>
+<translation id="2436186046335138073">Использовать <ph name="HANDLER_HOSTNAME" /> для обработки ссылок типа "<ph name="PROTOCOL" />"?</translation>
 <translation id="2438874542388153331">Четыре отверстия справа</translation>
 <translation id="2450021089947420533">Связи</translation>
 <translation id="2463739503403862330">Заполнить</translation>
@@ -630,6 +632,7 @@
 <translation id="2930577230479659665">Подрезать после каждого экземпляра</translation>
 <translation id="2932085390869194046">Сгенерировать пароль…</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">переход по ссылкам <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Его сертификат безопасности относится к <ph name="DOMAIN2" />. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
 <translation id="2943895734390379394">Время загрузки:</translation>
 <translation id="2948083400971632585">Прокси-серверы, используемые для соединения, можно отключить на странице настроек.</translation>
@@ -738,6 +741,7 @@
 <translation id="3288238092761586174">Сайт <ph name="URL" /> может выполнить дополнительные действия, чтобы подтвердить ваш платеж.</translation>
 <translation id="3293642807462928945">Подробнее о политике <ph name="POLICY_NAME" />…</translation>
 <translation id="3295444047715739395">Перейти к просмотру паролей и управлению ими в настройках Chrome</translation>
+<translation id="3303795387212510132">Разрешить приложению открывать ссылки <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Ничего не найдено</translation>
 <translation id="3304073249511302126">поиск устройств Bluetooth</translation>
 <translation id="3308006649705061278">Подразделение (OU)</translation>
@@ -875,6 +879,7 @@
 <translation id="370972442370243704">Включить формирование связей</translation>
 <translation id="3711895659073496551">Спящий режим</translation>
 <translation id="3712624925041724820">Недостаточно лицензий</translation>
+<translation id="3714633008798122362">веб-календарь</translation>
 <translation id="3714780639079136834">Включите Wi-Fi или мобильный Интернет.</translation>
 <translation id="3715597595485130451">Подключение к Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Проверьте настройки прокси-сервера, брандмауэра и DNS<ph name="END_LINK" />.</translation>
@@ -936,6 +941,7 @@
 <translation id="3906954721959377182">Планшет</translation>
 <translation id="3909477809443608991">Сайт <ph name="URL" /> собирается воспроизвести защищенный контент. Ваше устройство пройдет проверку в Google, и этот сайт сможет получать к нему доступ.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" />. <ph name="ERROR" />.</translation>
+<translation id="3927932062596804919">Запретить</translation>
 <translation id="3939773374150895049">Использовать WebAuthn вместо CVC-кода?</translation>
 <translation id="3946209740501886391">Всегда спрашивать на этом сайте</translation>
 <translation id="3947595700203588284">Разрешено отправлять запрос на подключение к MIDI-устройствам</translation>
@@ -2396,6 +2402,7 @@
 <translation id="8731544501227493793">Кнопка "Управление паролями". Нажмите Ввод, чтобы перейти к управлению паролями в настройках Chrome.</translation>
 <translation id="8734529307927223492">Вашим устройством <ph name="DEVICE_TYPE" /> управляет <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы открыть новое окно в режиме инкогнито.</translation>
+<translation id="8737685506611670901">обработку всех ссылок типа "<ph name="PROTOCOL" />" вместо сервиса <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Для создания безопасного подключения необходимо, чтобы показания системных часов были верны. Причина в том, что сертификаты для идентификации сайтов имеют ограниченный срок действия. Если часы на устройстве неточны, Chromium не может проверить актуальность этих сертификатов.</translation>
 <translation id="8740359287975076522">Не удается найти &lt;abbr id="dnsDefinition"&gt;DNS-адрес&lt;/abbr&gt; сайта <ph name="HOST_NAME" />. Выполняется диагностика.</translation>
 <translation id="8742371904523228557">Ваш код для сервиса <ph name="ORIGIN" />: <ph name="ONE_TIME_CODE" />.</translation>
@@ -2473,6 +2480,7 @@
 <translation id="9004367719664099443">Сеанс VR запущен</translation>
 <translation id="9005998258318286617">Не удалось загрузить PDF-документ.</translation>
 <translation id="9008201768610948239">Пропустить</translation>
+<translation id="901834265349196618">электронная почта</translation>
 <translation id="9020200922353704812">Необходимо указать платежный адрес карты</translation>
 <translation id="9020542370529661692">Эта страница переведена на <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="9020742383383852663">A8</translation>

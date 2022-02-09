@@ -420,6 +420,7 @@
 <translation id="22081806969704220">紙匣 3</translation>
 <translation id="2212735316055980242">找不到政策</translation>
 <translation id="2213606439339815911">正在擷取項目…</translation>
+<translation id="2213612003795704869">已列印頁面</translation>
 <translation id="2215727959747642672">檔案編輯</translation>
 <translation id="2218879909401188352">目前在 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 上的攻擊者可能會安裝危險的應用程式來損害您的裝置、暗中加入隱藏的流動服務費用，或竊取您的個人資料。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2224337661447660594">沒有互聯網</translation>
@@ -456,6 +457,7 @@
 <translation id="2337852623177822836">由管理員控制的設定</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> 要求與下列藍牙裝置配對</translation>
 <translation id="2346319942568447007">您複製的圖片</translation>
+<translation id="2350796302381711542">要允許 <ph name="HANDLER_HOSTNAME" /> 取代 <ph name="REPLACED_HANDLER_TITLE" /> 開啟所有 <ph name="PROTOCOL" /> 連結嗎？</translation>
 <translation id="2354001756790975382">其他書籤</translation>
 <translation id="2354430244986887761">Google 安全瀏覽功能最近在 <ph name="SITE" /> 上<ph name="BEGIN_LINK" />發現有害的應用程式<ph name="END_LINK" />。</translation>
 <translation id="2355395290879513365">攻擊者可能可以看到您正在此網站上看到的圖片，然後透過修改圖片來欺騙您。</translation>
@@ -481,6 +483,7 @@
 <translation id="2413528052993050574">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證已被撤銷。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="2414886740292270097">灰暗</translation>
 <translation id="2430968933669123598">管理 Google 帳戶，㩒一下 Enter 鍵就可以喺 Google 帳戶度管理你嘅資料、私隱權同埋安全設定</translation>
+<translation id="2436186046335138073">要允許 <ph name="HANDLER_HOSTNAME" /> 開啟所有 <ph name="PROTOCOL" /> 連結嗎？</translation>
 <translation id="2438874542388153331">四孔 (右側)</translation>
 <translation id="2450021089947420533">瀏覽過程</translation>
 <translation id="2463739503403862330">填寫</translation>
@@ -630,6 +633,7 @@
 <translation id="2930577230479659665">完成每次複印後修剪</translation>
 <translation id="2932085390869194046">建議密碼…</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">開放<ph name="PROTOCOL" />連結</translation>
 <translation id="2941952326391522266">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證來自 <ph name="DOMAIN2" /> 網域。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="2943895734390379394">上載時間：</translation>
 <translation id="2948083400971632585">您可以在設定頁面停用任何為連線設定的 Proxy。</translation>
@@ -739,6 +743,7 @@
 <translation id="3288238092761586174"><ph name="URL" /> 可能需要採取其他步驟，才能驗證付款方式</translation>
 <translation id="3293642807462928945">進一步瞭解 <ph name="POLICY_NAME" /> 政策</translation>
 <translation id="3295444047715739395">在 Chrome 設定中查看和管理密碼</translation>
+<translation id="3303795387212510132">要允許應用程式開啟「<ph name="PROTOCOL_SCHEME" />」連結嗎？</translation>
 <translation id="3303855915957856445">找不到任何搜尋結果</translation>
 <translation id="3304073249511302126">藍牙掃瞄</translation>
 <translation id="3308006649705061278">機構單位 (OU)</translation>
@@ -875,6 +880,7 @@
 <translation id="370972442370243704">開啟瀏覽過程</translation>
 <translation id="3711895659073496551">暫停</translation>
 <translation id="3712624925041724820">授權已用盡</translation>
+<translation id="3714633008798122362">網絡日曆</translation>
 <translation id="3714780639079136834">開啟流動數據或 Wi-Fi</translation>
 <translation id="3715597595485130451">連線至 Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />檢查 Proxy、防火牆和 DNS 設定<ph name="END_LINK" /></translation>
@@ -936,6 +942,7 @@
 <translation id="3906954721959377182">平板電腦</translation>
 <translation id="3909477809443608991"><ph name="URL" /> 想播放受保護的內容。Google 會驗證您的裝置身分，此網站可能也會存取您的裝置身分。</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">拒絕</translation>
 <translation id="3939773374150895049">要使用 WebAuthn 取代 CVC 嗎？</translation>
 <translation id="3946209740501886391">在此網站上一律詢問</translation>
 <translation id="3947595700203588284">可要求連接 MIDI 裝置</translation>
@@ -956,6 +963,7 @@
 <translation id="3987940399970879459">小於 1 MB</translation>
 <translation id="3990250421422698716">撞頁偏移</translation>
 <translation id="3996311196211510766">網站 <ph name="ORIGIN" /> 指定所有收到的要求都必須套用來源政策，但目前無法套用此政策。</translation>
+<translation id="4009243425692662128">您列印的頁面內容會傳送至 Google Cloud 或第三方進行分析。例如，Google Cloud 或第三方可能會掃瞄文字，檢查是否含有敏感資料。</translation>
 <translation id="4010758435855888356">要授予儲存空間存取權嗎？</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF 文件入面有 {COUNT} 頁}other{PDF 文件入面有 {COUNT} 頁}}</translation>
 <translation id="4023431997072828269">由於此表格透過不安全的連線提交，其他人將可看到您的資料。</translation>
@@ -1046,6 +1054,7 @@
 <translation id="4250680216510889253">否</translation>
 <translation id="4253168017788158739">注意事項</translation>
 <translation id="425582637250725228">系統可能不會儲存您的變更。</translation>
+<translation id="425869179292622354">要透過虛擬卡片進一步保護卡片的安全嗎？</translation>
 <translation id="4258748452823770588">簽名有誤</translation>
 <translation id="4261046003697461417">無法為受保護的文件加入註釋</translation>
 <translation id="4265872034478892965">根據管理員的設定允許</translation>
@@ -1556,6 +1565,7 @@
 <translation id="5921639886840618607">要將付款卡儲存至 Google 帳戶嗎？</translation>
 <translation id="5922853866070715753">快將完成</translation>
 <translation id="5932224571077948991">網站顯示滋擾性或誤導廣告</translation>
+<translation id="5938153366081463283">新增虛擬卡片</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">正在開啟 <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">無法使用消費者帳戶註冊 (有可用套裝授權)。</translation>
@@ -2180,6 +2190,7 @@
 <translation id="7976214039405368314">要求數量過多</translation>
 <translation id="7977538094055660992">輸出裝置</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="7981260203882740562">已連結到</translation>
 <translation id="798134797138789862">可要求使用虛擬實境﻿裝置和資料</translation>
 <translation id="7984945080620862648">您目前無法瀏覽 <ph name="SITE" />，因為這個網站傳送的憑證經過編碼，導致 Chrome 無法處理。網絡錯誤和攻擊行為通常是暫時性的，所以這個網頁可能稍後就能正常使用。</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2396,6 +2407,7 @@
 <translation id="8731544501227493793">管理密碼按鈕，㩒一下 Enter 鍵就可以喺 Chrome 設定度睇同管理密碼</translation>
 <translation id="8734529307927223492">您的 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以開新嘅無痕式視窗私下瀏覽</translation>
+<translation id="8737685506611670901">開啟<ph name="PROTOCOL" />連結 (而非 <ph name="REPLACED_HANDLER_TITLE" />)</translation>
 <translation id="8738058698779197622">如要建立安全連線，您時鐘的設定必須正確無誤；因為網站用於自我識別的憑證僅在特定時間內有效。由於您裝置的時鐘設定有誤，Chromium 無法驗證這些憑證。</translation>
 <translation id="8740359287975076522">找不到 <ph name="HOST_NAME" /> 的 &lt;abbr id="dnsDefinition"&gt;網域名稱系統 (DNS) 地址&lt;/abbr&gt;。正在診斷問題。</translation>
 <translation id="8742371904523228557">您的 <ph name="ORIGIN" /> 驗證碼是 <ph name="ONE_TIME_CODE" /></translation>
@@ -2473,6 +2485,7 @@
 <translation id="9004367719664099443">正在執行 VR 工作階段</translation>
 <translation id="9005998258318286617">無法載入 PDF 文件。</translation>
 <translation id="9008201768610948239">略過</translation>
+<translation id="901834265349196618">電郵</translation>
 <translation id="9020200922353704812">請輸入信用卡帳單地址</translation>
 <translation id="9020542370529661692">這個網頁內容已翻譯成<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

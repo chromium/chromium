@@ -146,6 +146,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1836215606488044471">Assistant Google (chargement en cours…)</translation>
 <translation id="1838895407229022812">Le mode Éclairage nocturne est désactivé.</translation>
 <translation id="1864454756846565995">Appareil USB-C (port arrière)</translation>
+<translation id="1879018240766558464">Les fenêtres de navigation privée ne sont pas prises en charge actuellement. Les autres applications seront enregistrées.</translation>
 <translation id="1882814835921407042">Aucun réseau cellulaire</translation>
 <translation id="1882897271359938046">Mise en miroir pour <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Déverrouillage avec empreinte digitale</translation>
@@ -934,6 +935,7 @@ Nouvelle installation</translation>
 <translation id="7165278925115064263">Alt+Maj+K</translation>
 <translation id="7168224885072002358">Rétablissement de la résolution précédente dans <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Actualiser</translation>
+<translation id="718361511487535372">Ouvrir dans Google Agenda</translation>
 <translation id="7188494361780961876">Le menu a été déplacé vers le coin supérieur gauche de l'écran.</translation>
 <translation id="7189412385142492784">À quelle distance se trouve Vénus?</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Ce Chromebook doit redémarrer pour installer une mise à jour. Cela peut prendre jusqu'à une minute.</translation>
@@ -953,6 +955,7 @@ Nouvelle installation</translation>
 <translation id="7366890467478514168">Connecter <ph name="NAME" /></translation>
 <translation id="7371404428569700291">Enregistrer la fenêtre</translation>
 <translation id="7377169924702866686">La touche de verrouillage des majuscules est activée.</translation>
+<translation id="7377481913241237033">Connecter avec un code</translation>
 <translation id="7378203170292176219">Faites glisser le curseur pour sélectionner une région à enregistrer</translation>
 <translation id="7378594059915113390">Commandes multimédias</translation>
 <translation id="7378889811480108604">Le mode Économiseur de pile est désactivé</translation>
@@ -980,6 +983,7 @@ Nouvelle installation</translation>
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7526573455193969409">Le réseau peut être surveillé</translation>
 <translation id="7536035074519304529">Adresse IP : <ph name="ADDRESS" /></translation>
+<translation id="7543399541175347147">Les applications Linux et les fenêtres de navigation privée ne sont pas prises en charge actuellement. Les autres applications seront enregistrées.</translation>
 <translation id="7544300628205093162">Le rétroéclairage du clavier est activé</translation>
 <translation id="7548434653388805669">C'est l'heure du dodo</translation>
 <translation id="7551643184018910560">Épingler sur l'étagère</translation>

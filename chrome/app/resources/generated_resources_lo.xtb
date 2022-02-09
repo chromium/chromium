@@ -89,6 +89,7 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> ຕ້ອງ​ການ​ກູ້​ຄືນ​ການ​ຕັ້ງ​ຄ່າ Chrome ຂອງ​ທ່ານ​ເປັນ​ຄ່າເລີ່ມຕົ້ນເດີ​ມ​ຂອງ​ພວກ​ມັນ. ອັນນີ້ຈະຕັ້ງຄ່າໜ້າຫຼັກ, ໜ້າແຖບໃໝ່ ແລະ ໂປຣແກຣມຄົ້ນຫາຂອງທ່ານຄືນໃໝ່, ປິດໃຊ້ງານສ່ວນຂະຫຍາຍຂອງທ່ານ ແລະຖອນປັກໝຸກທຸກແຖບ. ມັນຍັງຈະລຶບຂໍ້ມູນຊົ່ວຄາວ ແລະຂໍ້ມູນທີ່ແຄຊ໌ໄວ້ອື່ນນຳອີກ ເຊັ່ນ ຄຸກກີ້, ເນື້ອໃນ ແລະ ຂໍ້ມູນເວັບໄຊທ໌.</translation>
 <translation id="1084096383128641877">ການລຶບລະຫັດຜ່ານນີ້ອອກຈະບໍ່ລຶບບັນຊີຂອງທ່ານໃນ <ph name="DOMAIN" />. ການປ່ຽນລະຫັດຜ່ານຂອງທ່ານ ຫຼື ລຶບບັນຊີຂອງທ່ານໃນ <ph name="DOMAIN_LINK" /> ເພື່ອຮັກສາໃຫ້ມັນປອດໄພຈາກຄົນອື່ນ.</translation>
 <translation id="1084824384139382525">ກັອບປີ້ທີ່ຢູ່ລິ້ງ</translation>
+<translation id="1085064499066015002">ເປີດຕະຫຼອດທຸກເວັບໄຊ</translation>
 <translation id="1085697365578766383">ເກີດຄວາມຜິດພາດໃນການເລີ່ມເຄື່ອງຈຳລອງສະເໝືອນຈິງ. ກະລຸນາລອງອີກຄັ້ງ.</translation>
 <translation id="1087965115100412394">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊເຊື່ອມຕໍ່ຫາອຸປະກອນ MIDI</translation>
 <translation id="1088654056000736875">Chrome ກຳລັງລຶບຊອບແວອັນຕະລາຍອອກຈາກຄອມພິວເຕີຂອງທ່ານ...</translation>
@@ -342,6 +343,7 @@
 <translation id="1343865611738742294">ອະນຸຍາດໃຫ້ແອັບ Linux ເຂົ້າເຖິງອຸປະກອນ USB. Linux ຈະບໍ່ຈື່ອຸປະກອນ USB ຫຼັງຈາກທີ່ລຶບມັນອອກແລ້ວ.</translation>
 <translation id="1343920184519992513">ສືບຕໍ່ໜ້າເວັບທີ່ທ່ານເບິ່ງຄ້າງໄວ້ ແລະ ເປີດຊຸດໜ້າເວັບສະເພາະໃດໜຶ່ງ</translation>
 <translation id="1346630054604077329">ຢືນຢັນ ແລະ ຣີສະຕາດ</translation>
+<translation id="1346748346194534595">ເບື້ອງຂວາ</translation>
 <translation id="1347256498747320987">ຕິດຕັ້ງການອັບເດດ ແລະ ແອັບ. ໂດຍການສືບຕໍ່, ແມ່ນຖືວ່າທ່ານເຫັນດີວ່າອຸປະກອນນີ້ອາດຈະດາວໂຫຼດ ແລະ ຕິດຕັ້ງການອັບເດດ ແລະ ແອັບໂດຍອັດຕະໂນມັດຈາກ Google, ຜູ້ໃຫ້ບໍລິການຂອງທ່ານ ແລະ ຜູ້ຜະລິດອຸປະກອນຂອງທ່ານໄດ້ເຊັ່ນກັນ, ໂດຍເປັນໄປໄດ້ວ່າອາດຈະໃຊ້ຂໍ້ມູນມືຖື. ບາງແອັບເຫຼົ່ານີ້ອາດມີການຊື້ໃນແອັບ. <ph name="BEGIN_LINK1" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">ບ່ອນຈັດເກັບຂໍ້ມູນ Linux</translation>
 <translation id="1347975661240122359">ການອັບເດດຈະເລີ່ມຕົ້ນເມື່ອແບັດເຕີຣີຮອດ <ph name="BATTERY_LEVEL" />%.</translation>
@@ -464,6 +466,7 @@
 <translation id="1464781208867302907">ສຳລັບການຕັ້ງຄ່າອຸປະກອນ, ໄປທີ່ການຕັ້ງຄ່າ.</translation>
 <translation id="1465176863081977902">ອັດ​ສຳ​ເນົາ​ທີ່​ຢູ່​ສຽງ</translation>
 <translation id="1465827627707997754">ແຜ່ນພິດຊ້າ</translation>
+<translation id="1467432559032391204">ເບື້ອງຊ້າຍ</translation>
 <translation id="1468571364034902819">ບໍ່ສາມາດໃຊ້ໂປຣໄຟລ໌ນີ້</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່}other{ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່}}</translation>
 <translation id="1470350905258700113">ໃຊ້ອຸປະກອນນີ້</translation>
@@ -1335,7 +1338,6 @@
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2307630946657910723">ຊອກຫາບາງສ່ວນຂອງໜ້າດ້ວຍ <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
-<translation id="230927227160767054">ໜ້ານີ້ຕ້ອງການຕິດຕັ້ງຕົວຈັດການເລື່ອງການ​ບໍ​ລິ​ການ​.</translation>
 <translation id="2309620859903500144">ເວັບໄຊນີ້ໄດ້ຖືກບລັອກບໍ່ໃຫ້ເຂົ້າເຖິງເຊັນເຊີກວດຈັບການເຄື່ອນໄຫວ ຫຼື ແສງຂອງທ່ານ.</translation>
 <translation id="2312219318583366810">URL ຂອງໜ້າ</translation>
 <translation id="2314165183524574721">ການຕັ້ງຄ່າການສະແດງໃນປັດຈຸບັນແມ່ນເຊື່ອງໄວ້</translation>
@@ -1386,7 +1388,6 @@
 <translation id="2349896577940037438">ຖ້າເປີດການຕັ້ງຄ່າການເຄື່ອນໄຫວເວັບ ແລະ ແອັບເພີ່ມເຕີມຂອງທ່ານ, ລະບົບອາດຈະບັນທຶກຂໍ້ມູນນີ້ໄວ້ໃນບັນຊີ Google ຂອງທ່ານ. ທ່ານສາມາດເຫັນຂໍ້ມູນຂອງທ່ານ, ລຶບມັນ ແລະ ປ່ຽນການຕັ້ງຄ່າບັນຊີຂອງທ່ານໄດ້ທີ່ account.google.com.</translation>
 <translation id="2350133097354918058">ໂຫຼດຄືນໃໝ່ແລ້ວ</translation>
 <translation id="2350182423316644347">ກໍາລັງລິເລີ່ມແອັບພລິເຄຊັນ...</translation>
-<translation id="2350796302381711542">ອະນຸຍາດໃຫ້ <ph name="HANDLER_HOSTNAME" /> ເປີດທຸກ <ph name="PROTOCOL" /> ລິ້ງແທນ <ph name="REPLACED_HANDLER_TITLE" /> ບໍ?</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{1 ລາຍການ}other{{NUM_ITEMS} ລາຍການ}}</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">ບັນທຶກໜ້າຈໍລັອກຖືກບັນທຶກໄວ້ໃນ <ph name="LOCK_SCREEN_APP_NAME" /> ໂດຍອັດຕະໂນມັດ. ບັນທຶກໃໝ່ຫຼ້າສຸດຂອງທ່ານຈະຍັງຄົງຢູ່ໜ້າຈໍລັອກ.</translation>
@@ -1459,7 +1460,6 @@
 <translation id="2434758125294431199">ເລືອກວ່າໃຜສາມາດແບ່ງປັນກັບທ່ານໄດ້</translation>
 <translation id="2435248616906486374">ຕັດເຊື່ອມຕໍ່ເຄືອຂ່າຍແລ້ວ</translation>
 <translation id="2435457462613246316">ສະ​ແດງ​ລະ​ຫັດ​ຜ່ານ</translation>
-<translation id="2436186046335138073">ອະນຸຍາດໃຫ້ <ph name="HANDLER_HOSTNAME" /> ເປີດທຸກລິ້ງ <ph name="PROTOCOL" /> ບໍ?</translation>
 <translation id="2439626940657133600">ກຳລັງໂຫຼດ <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">ເບິ່ງແຫຼ່ງທີ່ມາ</translation>
 <translation id="244231003699905658">ທີ່ຢູ່ບໍ່ຖືກຕ້ອງ. ກະລຸນາກວດເບິ່ງທີ່ຢູ່ ແລ້ວລອງໃໝ່.</translation>
@@ -1977,7 +1977,6 @@
 <translation id="2935225303485967257">ຈັດການໂປຣໄຟລ໌</translation>
 <translation id="2935654492420446828">ເພີ່ມບັນຊີໂຮງຮຽນໃນພາຍຫຼັງ</translation>
 <translation id="2936851848721175671">ສຳຮອງ ແລະ ກູ້ຄືນ</translation>
-<translation id="2938225289965773019">ເປີດ​ລິ້ງ <ph name="PROTOCOL" /></translation>
 <translation id="2939908794993783865">ເວັບໄຊທີ່ບໍ່ເຄື່ອນໄຫວເພີ່ມເຕີມ</translation>
 <translation id="2939938020978911855">ສະແດງອຸປະກອນ Bluetooth ທີ່ມີໃຫ້ນຳໃຊ້</translation>
 <translation id="2941112035454246133">ຕໍ່າ</translation>
@@ -2298,7 +2297,6 @@
 <translation id="33022249435934718">ດ້າມຈັບ GDI</translation>
 <translation id="3302388252085547855">ລະບຸເຫດຜົນ...</translation>
 <translation id="3303260552072730022">ສ່ວນຂະຫຍາຍໄດ້ກະຕຸ້ນໜ້າຈໍເຕັມ.</translation>
-<translation id="3303795387212510132">ອະນຸຍາດແອັບໃຫ້ເປີດລິ້ງ <ph name="PROTOCOL_SCHEME" /> ໄດ້ບໍ?</translation>
 <translation id="3303818374450886607">ຊຸດສໍາເນົາ</translation>
 <translation id="3303855915957856445">ບໍ່ພົບຜົນການຊອກຫາໃດໆ</translation>
 <translation id="3304212451103136496">ຫຼຸດ <ph name="DISCOUNT_AMOUNT" /></translation>
@@ -2712,7 +2710,6 @@
 <translation id="371300529209814631">ກັບຫຼັງ/ໄປໜ້າ</translation>
 <translation id="3713047097299026954">ກະແຈຄວາມປອດໄພນີ້ບໍ່ມີຂໍ້ມູນການເຂົ້າສູ່ລະບົບໃດໆ.</translation>
 <translation id="3714195043138862580">ອຸປະກອນສາທິດນີ້ໄດ້ຖືກກຳນົດໃຫ້ຢູ່ໃນສະຖານະຍົກເລີກການຈັດສັນ.</translation>
-<translation id="3714633008798122362">ປະ​ຕິ​ທິນ​ເວັບ​</translation>
 <translation id="3719826155360621982">ຫນ້າ​ຫຼັກ</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">ທ່ານ ແລະ Google</translation>
@@ -7525,7 +7522,6 @@
 <translation id="8734674662128056360">ການບລັອກຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
 <translation id="873545264931343897">ເມື່ອ <ph name="PLUGIN_NAME" /> ສຳເລັດການອັບເດດແລ້ວ, ໃຫ້ໂຫຼດໜ້າຄືນໃໝ່ເພື່ອເປີດນຳໃຊ້ມັນ</translation>
 <translation id="8736288397686080465">ເວັບ​ໄຊ​ທ໌​ນີ້​ໄດ້​ຮັບ​ການ​ອັບ​ເດດ​ຢູ່​ພື້ນ​ຫຼັງ.</translation>
-<translation id="8737685506611670901">ເປີດ <ph name="PROTOCOL" /> ລິ້ງ​ແທນ <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">ເລືອກພາສາທີ່ຈະແປໜ້າເປັນ</translation>
 <translation id="8740247629089392745">ທ່ານສາມາດມອບ Chromebook ນີ້ໃຫ້ <ph name="SUPERVISED_USER_NAME" /> ໄດ້. ການຕັ້ງຄ່າເກືອບສຳເລັດແລ້ວ, ຈາກນັ້ນມັນກໍເຖິງເວລາສຳຫຼວດແລ້ວ.</translation>
@@ -7789,7 +7785,6 @@
 <translation id="9003647077635673607">ອະ​ນຸ​ຍາດ​ໃຫ້​ຢູ່​ໃນ​ທຸກເວັບ​ໄຊ​ທ​໌​</translation>
 <translation id="9003677638446136377">ກວດ​ເບິ່ງ​ອີກ</translation>
 <translation id="9004754973617721124">ລຶບລ້າງຂໍ້ມູນເວັບໄຊ ແລະ ການອະນຸຍາດສຳລັບ <ph name="SITE_NAME" />, ເວັບໄຊທັງໝົດພາຍໃຕ້ມັນ ແລະ ແອັບທີ່ຕິດຕັ້ງໄວ້ແລ້ວຂອງມັນບໍ?</translation>
-<translation id="9008201768610948239">ບໍ່ສົນໃຈ</translation>
 <translation id="9008201858626224558">ປຸ່ມກັບຄືນໜ້າລາຍລະອຽດ <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">ກໍາລັງອັບ​ໂຫຼດ ( <ph name="PROGRESS_PERCENT" /> %​)...</translation>
 <translation id="9009708085379296446">ທ່ານຕັ້ງໃຈຈະປ່ຽນໜ້ານີ້ບໍ?</translation>
@@ -7799,7 +7794,6 @@
 <translation id="9013037634206938463">ຈຳເປັນຕ້ອງມີພື້ນທີ່ຫວ່າງ <ph name="INSTALL_SIZE" /> ເພື່ອຕິດຕັ້ງ Linux. ເພື່ອເພີ່ມພື້ນທີ່ຫວ່າງ, ກະລຸນາລຶບໄຟລ໌ຕ່າງໆອອກຈາກອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="901668144954885282">ສຳຮອງຂໍ້ມູນໄປໃສ່ Google Drive</translation>
 <translation id="9018218886431812662">ສຳເລັດການຕິດຕັ້ງແລ້ວ</translation>
-<translation id="901834265349196618">ອີເມວ</translation>
 <translation id="9019062154811256702">ອ່ານ ແລະ​ປ່ຽນ​ແປງ​ການ​ຕັ້ງ​ຄ່າ​ການ​ຕື່ມ​ໃສ່​ອັດ​ຕະ​ໂນ​ມັດ</translation>
 <translation id="9019894137004772119">ໃຊ້ສະຖານທີ່. ອະນຸຍາດໃຫ້ແອັບ ແລະ ການບໍລິການທີ່ມີການອະນຸຍາດສະຖານທີ່ໃຊ້ສະຖານທີ່ຂອງອຸປະກອນຂອງທ່ານ. Google ອາດຈະເກັບເອົາຂໍ້ມູນສະຖານທີ່ເປັນຊ່ວງໄລຍະ ແລະ ໃຊ້ຂໍ້ມູນນີ້ແບບບໍ່ເປີດເຜີຍຊື່ ເພື່ອປັບປຸງຄວາມຖືກຕ້ອງຂອງສະຖານທີ່ ແລະ ການບໍລິການທີ່ອີງໃສ່ສະຖານທີ່.</translation>
 <translation id="9019956081903586892">ບໍ່ສາມາດດາວໂຫຼດວັດຈະນານຸກົມສຳລັບກວດຄຳຜິດໄດ້</translation>

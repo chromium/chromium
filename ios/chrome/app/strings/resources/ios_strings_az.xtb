@@ -116,6 +116,7 @@ Axtarış mexanizminiz: <ph name="DSE_NAME" />. Axtarış tarixçənizi silmək 
 <translation id="196896377990863006">Keçid Önizləməsini Göstərin</translation>
 <translation id="1973912524893600642">Datanı saxlayın</translation>
 <translation id="1974060860693918893">Qabaqcıl</translation>
+<translation id="1981118202195772574">Mobil</translation>
 <translation id="1989112275319619282">Baxın</translation>
 <translation id="199425419756152024">Parola Baxın</translation>
 <translation id="2015722694326466240">Parollara baxmaq üçün əvvəlcə cihazınızda parol kod ayarlamalısınız.</translation>
@@ -236,6 +237,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Nəyi sinxronlaşdıra biləcəyinizə baxın<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Hamısını blok edin</translation>
 <translation id="313283613037595347">Yeni Anonim tab yaradın.</translation>
+<translation id="3150887674190166798">Chrome'un hər dəfə saytı necə sorğulamasını istədiyinizi seçin</translation>
 <translation id="3153862085237805241">Kartı Yadda saxlayın</translation>
 <translation id="3157387275655328056">Oxu Siyahısına əlavə edin</translation>
 <translation id="3157684681743766797">Hamısını Qeyd Edin…</translation>
@@ -764,6 +766,7 @@ Anonim rejimdə olduqda saytlar müxtəlif saytlarda baxış tarixçənizi görm
 <translation id="7911190106180361398">Təşkilatınız hər şeyi sinxronizasiya etməyinizə icazə vermir.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Parolları Eksport Edin...</translation>
+<translation id="793971554166979165">Defolt Sayt Rejimi</translation>
 <translation id="794799177247607889">Qeydiyyatı Dayandırın</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Oğurlanmış parol yoxdur}=1{{COUNT} oğurlanmış parol}other{{COUNT} oğurlanmış parol}}</translation>
 <translation id="7961015016161918242">Heç vaxt</translation>
@@ -869,6 +872,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8881801611828450202">Bu Şəkil üçün <ph name="SEARCH_ENGINE" /> Axtarışı Edin</translation>
 <translation id="8909135823018751308">Paylaşın...</translation>
 <translation id="8917490105272468696">Bəli, razıyam</translation>
+<translation id="8928133177108699615">Masaüstü</translation>
 <translation id="8952559610785099500">Parol əlavə edin</translation>
 <translation id="895541991026785598">Problemi Xəbər verin</translation>
 <translation id="8974714402877957201">1. iPad Ayarlarını açın</translation>

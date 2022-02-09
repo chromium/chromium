@@ -461,6 +461,7 @@
 <translation id="2337852623177822836">تنظیم توسط سرپرست کنترل می‌شود</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> می‌خواهد مرتبط شود</translation>
 <translation id="2346319942568447007">تصویری که کپی کرده‌اید</translation>
+<translation id="2350796302381711542">به <ph name="HANDLER_HOSTNAME" /> امکان داده شود همه پیوندهای <ph name="PROTOCOL" /> را به‌جای <ph name="REPLACED_HANDLER_TITLE" /> باز کند؟</translation>
 <translation id="2354001756790975382">نشانک‌های دیگر</translation>
 <translation id="2354430244986887761">‏مرور ایمن Google، اخیراً <ph name="BEGIN_LINK" />برنامه‌های خطرناکی<ph name="END_LINK" /> در <ph name="SITE" /> پیدا کرده است.</translation>
 <translation id="2355395290879513365">مهاجمین ممکن است بتوانند تصاویری را که در این سایت می‌بینید مشاهده کنند و با دست‌کاری آن‌ها شما را فریب دهند.</translation>
@@ -486,6 +487,7 @@
 <translation id="2413528052993050574">این سرور نتوانست اثبات کند که این <ph name="DOMAIN" /> است؛ ممکن است گواهی امنیتی آن باطل شده باشد. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجمی اتصال شما را قطع کرده است.</translation>
 <translation id="2414886740292270097">تاریک</translation>
 <translation id="2430968933669123598">‏مدیریت «حساب Google»؛ برای مدیریت اطلاعات، حریم‌خصوصی، و امنیت در «حساب Google»، کلید «ورود» را فشار دهید</translation>
+<translation id="2436186046335138073">به <ph name="HANDLER_HOSTNAME" /> امکان داده شود همه پیوندهای <ph name="PROTOCOL" /> را باز کند؟</translation>
 <translation id="2438874542388153331">چهار سوراخ در راست</translation>
 <translation id="2450021089947420533">سفرها</translation>
 <translation id="2463739503403862330">تکمیل</translation>
@@ -635,6 +637,7 @@
 <translation id="2930577230479659665">برش زدن بعد از چاپ هر کپی</translation>
 <translation id="2932085390869194046">پیشنهاد گذرواژه…</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">باز کردن پیوندهای <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">این سرور نتوانست اثبات کند که این <ph name="DOMAIN" /> است؛ گواهی امنیتی آن از <ph name="DOMAIN2" /> است. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجی اتصال شما را قطع کرده است.</translation>
 <translation id="2943895734390379394">زمان بارگذاری:</translation>
 <translation id="2948083400971632585">در صفحه تنظیمات می‌توانید همه پراکسی‌های پیکربندی شده برای هر اتصال را از کار بیاندازید.</translation>
@@ -744,6 +747,7 @@
 <translation id="3288238092761586174"><ph name="URL" /> ممکن است برای تأیید پرداخت شما به انجام مراحل تکمیلی نیاز داشته باشد</translation>
 <translation id="3293642807462928945">درباره خطمشی <ph name="POLICY_NAME" /> بیشتر بدانید</translation>
 <translation id="3295444047715739395">‏گذرواژه‌هایتان را در تنظیمات Chrome مشاهده و مدیریت کنید</translation>
+<translation id="3303795387212510132">برنامه مجاز است پیوندهای <ph name="PROTOCOL_SCHEME" /> را باز کند؟</translation>
 <translation id="3303855915957856445">هیچ نتیجه‌ای برای جستجو یافت نشد</translation>
 <translation id="3304073249511302126">اسکن کردن بلوتوث</translation>
 <translation id="3308006649705061278">‏واحد سازمانی (OU)</translation>
@@ -881,6 +885,7 @@
 <translation id="370972442370243704">روشن کردن «سفرها»</translation>
 <translation id="3711895659073496551">تعویق</translation>
 <translation id="3712624925041724820">مجوزها دیگر معتبر نیستند</translation>
+<translation id="3714633008798122362">تقویم وب</translation>
 <translation id="3714780639079136834">‏روشن کردن داده‌ شبکه تلفن همراه یا Wi-Fi</translation>
 <translation id="3715597595485130451">‏اتصال به Wi-Fi</translation>
 <translation id="3717027428350673159">‏<ph name="BEGIN_LINK" />بررسی پروکسی، دیوار آتش و پیکربندی DNS<ph name="END_LINK" /></translation>
@@ -942,6 +947,7 @@
 <translation id="3906954721959377182">رایانه لوحی</translation>
 <translation id="3909477809443608991">‏<ph name="URL" /> می‌خواهد محتوای محافظت‌شده پخش کند. هویت دستگاهتان توسط Google به‌تأیید می‌رسد و ممکن است این سایت به آن دسترسی داشته باشد.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">ردکردن</translation>
 <translation id="3939773374150895049">‏به‌جای CVC از WebAuthn استفاده شود؟</translation>
 <translation id="3946209740501886391">در این سایت، همیشه سؤال شود</translation>
 <translation id="3947595700203588284">‏می‌تواند برای اتصال به دستگاه‌های MIDI درخواست دهد</translation>
@@ -1058,6 +1064,7 @@
 <translation id="4250680216510889253">نه</translation>
 <translation id="4253168017788158739">یادداشت</translation>
 <translation id="425582637250725228">تغییراتی که انجام داده‌اید ممکن است ذخیره نشده باشند.</translation>
+<translation id="425869179292622354">می‌خواهید آن را با کارت مجازی ایمن‌تر کنیم؟</translation>
 <translation id="4258748452823770588">امضای نادرست</translation>
 <translation id="4261046003697461417">نمی‌توان در سند محافظت‌شده حاشیه‌نویسی کرد</translation>
 <translation id="4265872034478892965">توسط سرپرست مجاز شده است</translation>
@@ -1568,6 +1575,7 @@
 <translation id="5921639886840618607">‏کارت در حساب Google ذخیره شود؟</translation>
 <translation id="5922853866070715753">تقريباً تمام است</translation>
 <translation id="5932224571077948991">سایتْ آگهی‌های مزاحم یا گمراه‌کننده نشان می‌دهد</translation>
+<translation id="5938153366081463283">افزودن کارت مجازی</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">درحال باز کردن <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">نمی‌توان با حساب مصرف‌کننده ثبت‌نام کرد (مجوز بسته‌بندی دردسترس است).</translation>
@@ -2192,6 +2200,7 @@
 <translation id="7976214039405368314">تعداد درخواست‌ها بیش از حد است</translation>
 <translation id="7977538094055660992">دستگاه خروجی</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="7981260203882740562">پیوندداده‌شده با</translation>
 <translation id="798134797138789862">می‌تواند برای استفاده از داده‌ها و دستگاه‌های واقعیت مجازی درخواست دهد</translation>
 <translation id="7984945080620862648">‏در حال حاضر نمی‌توانید از <ph name="SITE" /> بازدید کنید زیرا این وب‌سایت اعتبارنامه‌های درهمی ارسال کرده است که Chrome نمی‌تواند پردازش کند. معمولاً خطاهای شبکه و حمله‌ها موقتی هستند، بنابراین احتمالاً این صفحه بعداً کار خواهد کرد.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2408,6 +2417,7 @@
 <translation id="8731544501227493793">‏دکمه «مدیریت گذرواژه‌ها»، برای مشاهده و مدیریت گذرواژه‌ها در تنظیمات Chrome، کلید Enter (ورود) را فشار دهید</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> شما توسط <ph name="MANAGER" /> مدیریت می‌شود.</translation>
 <translation id="8737134861345396036">‏<ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای باز کردن «پنجره ناشناس» جدید و مرور کردن به‌صورت خصوصی، دکمه Tab (جهش) و سپس Enter (ورود) را فشار دهید</translation>
+<translation id="8737685506611670901">باز کردن پیوندهای <ph name="PROTOCOL" /> به‌جای <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">‏به منظور برقراری یک اتصال امن، لازم است که ساعت شما به درستی تنظیم شود. زیرا گواهینامه‌هایی که وب‌سایت‌ها برای شناسایی خودشان استفاده می‌کنند تنها برای دوره‌های زمانی خاصی معتبر هستند. از آنجایی که ساعت دستگاه نادرست است، Chromium نمی‌تواند این گواهینامه‌ها را تأیید کند.</translation>
 <translation id="8740359287975076522">‏<ph name="HOST_NAME" />’s &lt;abbr id="dnsDefinition"&gt;آدرس DNS&lt;/abbr&gt; پیدا نشد. درحال بررسی برای تشخیص مشکل.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> کد شما برای <ph name="ORIGIN" /> است</translation>
@@ -2485,6 +2495,7 @@
 <translation id="9004367719664099443">‏جلسه VR درحال انجام است</translation>
 <translation id="9005998258318286617">‏سند PDF بارگیری نشد.</translation>
 <translation id="9008201768610948239">نادیده گرفتن</translation>
+<translation id="901834265349196618">ایمیل</translation>
 <translation id="9020200922353704812">نشانی صورت‌حساب کارت لازم است</translation>
 <translation id="9020542370529661692">این صفحه به <ph name="TARGET_LANGUAGE" /> ترجمه شده است</translation>
 <translation id="9020742383383852663">A8</translation>

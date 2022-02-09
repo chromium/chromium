@@ -456,6 +456,7 @@
 <translation id="2337852623177822836">设置由管理员控制</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> 希望与以下所选设备配对：</translation>
 <translation id="2346319942568447007">您复制的图片</translation>
+<translation id="2350796302381711542">允许<ph name="HANDLER_HOSTNAME" />打开所有<ph name="PROTOCOL" />链接（而非<ph name="REPLACED_HANDLER_TITLE" />）？</translation>
 <translation id="2354001756790975382">其他书签</translation>
 <translation id="2354430244986887761">Google 安全浏览功能最近在 <ph name="SITE" /> 上<ph name="BEGIN_LINK" />发现了有害应用<ph name="END_LINK" />。</translation>
 <translation id="2355395290879513365">攻击者可能能够看到您正在此网站上浏览的图片，并通过编辑这些图片让您受骗。</translation>
@@ -481,6 +482,7 @@
 <translation id="2413528052993050574">此服务器无法证明它是<ph name="DOMAIN" />；其安全证书可能已被撤消。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="2414886740292270097">深色调</translation>
 <translation id="2430968933669123598">“管理 Google 帐号”，按 Enter 键即可在您的 Google 帐号中管理自己的信息、隐私和安全</translation>
+<translation id="2436186046335138073">允许<ph name="HANDLER_HOSTNAME" />打开所有<ph name="PROTOCOL" />链接？</translation>
 <translation id="2438874542388153331">四孔（右侧）</translation>
 <translation id="2450021089947420533">历程</translation>
 <translation id="2463739503403862330">填充</translation>
@@ -630,6 +632,7 @@
 <translation id="2930577230479659665">完成每个副本后裁切</translation>
 <translation id="2932085390869194046">建议密码…</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">打开<ph name="PROTOCOL" />链接</translation>
 <translation id="2941952326391522266">此服务器无法证明它是<ph name="DOMAIN" />；其安全证书来自<ph name="DOMAIN2" />。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="2943895734390379394">上传时间：</translation>
 <translation id="2948083400971632585">您可以在设置页面中停用任何针对某个连接配置的代理。</translation>
@@ -737,6 +740,7 @@
 <translation id="3288238092761586174"><ph name="URL" /> 可能需要采取额外措施来验证您的付款</translation>
 <translation id="3293642807462928945">详细了解“<ph name="POLICY_NAME" />”政策</translation>
 <translation id="3295444047715739395">请在 Chrome 设置中查看和管理您的密码</translation>
+<translation id="3303795387212510132">允许应用打开 <ph name="PROTOCOL_SCHEME" /> 链接？</translation>
 <translation id="3303855915957856445">未找到任何搜索结果</translation>
 <translation id="3304073249511302126">蓝牙扫描</translation>
 <translation id="3308006649705061278">组织单位 (OU)</translation>
@@ -872,6 +876,7 @@
 <translation id="370972442370243704">开启“历程”功能</translation>
 <translation id="3711895659073496551">暂停</translation>
 <translation id="3712624925041724820">许可已用尽</translation>
+<translation id="3714633008798122362">网络日历</translation>
 <translation id="3714780639079136834">开启移动数据网络或 WLAN</translation>
 <translation id="3715597595485130451">连接到 Wi-Fi 网络</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />检查代理服务器、防火墙和 DNS 配置<ph name="END_LINK" /></translation>
@@ -933,6 +938,7 @@
 <translation id="3906954721959377182">平板电脑</translation>
 <translation id="3909477809443608991"><ph name="URL" /> 想播放受保护内容。Google 将会验证您的设备身份，而且此网站可能会查看您的设备身份。</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">拒绝</translation>
 <translation id="3939773374150895049">要改用 WebAuthn 来取代银行卡验证码 (CVC) 吗？</translation>
 <translation id="3946209740501886391">在该网站上一律询问</translation>
 <translation id="3947595700203588284">可以询问能否连接到 MIDI 设备</translation>
@@ -1223,7 +1229,7 @@
 <translation id="4819347708020428563">在默认视图中修改注释？</translation>
 <translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可快速创建新的 Google 表格</translation>
 <translation id="4825507807291741242">强大</translation>
-<translation id="4829962028570902310">被忽略了，因为此政策只能通过云端用户政策进行设置。</translation>
+<translation id="4829962028570902310">被忽略了，因为此政策只能设置为云端用户政策。</translation>
 <translation id="483241715238664915">开启警告</translation>
 <translation id="4838327282952368871">梦幻</translation>
 <translation id="4840250757394056958">查看您的 Chrome 历史记录</translation>
@@ -2393,6 +2399,7 @@
 <translation id="8731544501227493793">“管理密码”按钮，按 Enter 键即可在 Chrome 设置中查看和管理您的密码</translation>
 <translation id="8734529307927223492">您的 <ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />，依次按 Tab 键和 Enter 键即可打开一个新的无痕式窗口以私密浏览网页</translation>
+<translation id="8737685506611670901">打开<ph name="PROTOCOL" />链接而非“<ph name="REPLACED_HANDLER_TITLE" />”</translation>
 <translation id="8738058698779197622">要建立安全连接，您的时钟设置必须正确。这是因为，网站用于证明身份的证书仅在特定时间段有效。由于您设备的时钟不正确，因此 Chromium 无法验证这些证书。</translation>
 <translation id="8740359287975076522">无法找到 <ph name="HOST_NAME" /> 的 &lt;abbr id="dnsDefinition"&gt;DNS 地址&lt;/abbr&gt;。正在诊断该问题。</translation>
 <translation id="8742371904523228557">您的 <ph name="ORIGIN" /> 验证码是 <ph name="ONE_TIME_CODE" /></translation>
@@ -2470,6 +2477,7 @@
 <translation id="9004367719664099443">VR 会话正在进行中</translation>
 <translation id="9005998258318286617">未能加载 PDF 文档。</translation>
 <translation id="9008201768610948239">忽略</translation>
+<translation id="901834265349196618">电子邮件</translation>
 <translation id="9020200922353704812">必须输入信用卡帐单邮寄地址</translation>
 <translation id="9020542370529661692">已将此网页内容翻译成<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

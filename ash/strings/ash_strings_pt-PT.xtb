@@ -87,6 +87,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1391102559483454063">Ativada</translation>
 <translation id="1407069428457324124">Tema escuro</translation>
+<translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Utilize as teclas de seta para navegar entre datas.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, app instalada</translation>
 <translation id="1419738280318246476">Desbloqueie o dispositivo para realizar a ação de notificação.</translation>
 <translation id="1420408895951708260">Ativar/desativar Luz noturna. <ph name="STATE_TEXT" /></translation>
@@ -98,6 +99,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1467432559032391204">Esquerda</translation>
 <translation id="147310119694673958">Bateria do telemóvel a <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">Menu de acessibilidade flutuante</translation>
+<translation id="1480845547124508962"><ph name="CURRENT_TIME" />, prima a tecla Enter para abrir a vista do Calendário</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540">Houve uma troca de <ph name="FIRST_ITEM_TITLE" /> por <ph name="SECOND_ITEM_TITLE" />.</translation>
 <translation id="1503394326855300303">Esta conta de proprietário tem de ser a primeira conta com início de sessão integrado.</translation>
@@ -670,7 +672,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="5322611492012084517">Não é possível encontrar o telemóvel</translation>
 <translation id="5327248766486351172">Nome</translation>
 <translation id="5329548388331921293">A ligar…</translation>
-<translation id="5330201449517439522">Toque ou clique para introduzir</translation>
+<translation id="5330201449517439522">Toque ou clique para entrar</translation>
 <translation id="5331975486040154427">Dispositivo USB-C (porta traseira do lado esquerdo)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (direito)</translation>
 <translation id="5352250171825660495">O tema escuro está ativado.</translation>
@@ -842,6 +844,7 @@ Nova instalação</translation>
 <translation id="6565007273808762236">Ligação eSIM indisponível</translation>
 <translation id="6570831796530454248">{0,plural, =1{Atualize o dispositivo dentro de uma hora}one{Atualize o dispositivo dentro de # hora(s)}other{Atualize o dispositivo dentro de # horas}}</translation>
 <translation id="6570902864550063460">A carregar através de USB…</translation>
+<translation id="6574587113394758819">A notificação da app <ph name="APP_TITLE" /> está oculta porque a proteção da visualização está ativada</translation>
 <translation id="6578407462441924264">Sem nome</translation>
 <translation id="6585808820553845416">A sessão termina em <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -849,6 +852,7 @@ Nova instalação</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />, gerida pelo administrador</translation>
 <translation id="6612802754306526077">Modo de gravação de ecrã selecionado</translation>
 <translation id="6614169507485700968">O ecrã de privacidade está ligado</translation>
+<translation id="6625718907317144388">As notificações das apps <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" /> estão ocultas porque a proteção da visualização está ativada</translation>
 <translation id="6627638273713273709">Pesquisar+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> pretende utilizar o microfone</translation>
 <translation id="6630773993843701741">Abra as Definições de Bluetooth para sincronizar o dispositivo manualmente</translation>
@@ -1023,6 +1027,7 @@ Nova instalação</translation>
 <translation id="776344839111254542">Clique para ver os detalhes da atualização</translation>
 <translation id="7780159184141939021">Rodar ecrã</translation>
 <translation id="7796353162336583443">Toque no botão da caneta stylus na prateleira para tirar uma nota, criar uma captura de ecrã ou utilizar o Assistente Google, o ponteiro de laser ou a lupa.</translation>
+<translation id="7796735576426975947">Nova notificação oculta</translation>
 <translation id="7798302898096527229">Prima Pesquisar ou Shift para cancelar.</translation>
 <translation id="7807067443225230855">Pesquisa e Assistente</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
@@ -1077,7 +1082,7 @@ Nova instalação</translation>
 <translation id="8061464966246066292">Alto contraste</translation>
 <translation id="8098591350844501178">Parar a transmissão do ecrã para <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Ativado, todas as aplicações</translation>
-<translation id="8120151603115102514">O seu telemóvel não tem um ecrã de bloqueio. Para desbloquear o Chromebook, introduza a palavra-passe.</translation>
+<translation id="8120151603115102514">O telemóvel não tem ecrã de bloqueio. Para desbloquear o Chromebook, introduza a palavra-passe.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8132487352815776550">Parar legendas</translation>
@@ -1116,6 +1121,7 @@ Nova instalação</translation>
 <translation id="8371991222807690464">O desempenho periférico pode estar limitado no Modo convidado.</translation>
 <translation id="8375916635258623388">Este <ph name="DEVICE_NAME" /> e o telemóvel serão associados automaticamente.</translation>
 <translation id="8380784334203145311">Boa noite,</translation>
+<translation id="8382715499079447151">Proteção da visualização</translation>
 <translation id="8388750414311082622">Não é possível remover o último espaço de trabalho.</translation>
 <translation id="8394567579869570560">Os teus pais bloquearam este dispositivo</translation>
 <translation id="8401850874595457088">Aceder ao menu de idioma</translation>
@@ -1136,7 +1142,7 @@ Nova instalação</translation>
 <translation id="8473301994082929012">A <ph name="ORGANIZATION_NAME" /> colocou a funcionalidade <ph name="FEATURE_NAME" /> como <ph name="FEATURE_STATE" />.</translation>
 <translation id="8477270416194247200">Prima Alt + Pesquisar ou Shift para cancelar.</translation>
 <translation id="8492573885090281069">O <ph name="DISPLAY_NAME" /> não suporta a resolução <ph name="SPECIFIED_RESOLUTION" />. A resolução foi alterada para <ph name="FALLBACK_RESOLUTION" />. Clique em confirmar para manter as alterações. As definições anteriores serão restauradas dentro de <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="85123341071060231">O Bluetooth do Chromebook está desativado. Para desbloquear o Chromebook, introduza a palavra-passe.</translation>
+<translation id="85123341071060231">O Bluetooth do Chromebook está desativado. Para desbloquear, introduza a palavra-passe.</translation>
 <translation id="8513108775083588393">Rotação auto.</translation>
 <translation id="851458219935658693">Mostrar janelas do espaço de trabalho atual, botão de opção selecionado</translation>
 <translation id="8517041960877371778">O <ph name="DEVICE_TYPE" /> pode não carregar enquanto estiver ligado.</translation>
@@ -1146,6 +1152,7 @@ Nova instalação</translation>
 <translation id="8563862697512465947">Definições de notificação</translation>
 <translation id="857201607579416096">O menu foi movido para o canto inferior direito do ecrã.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
+<translation id="8614517853887502247">As notificações das apps <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" /> estão ocultas porque a proteção da visualização está ativada</translation>
 <translation id="8627191004499078455">Ligado a <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Definições de acessibilidade</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />, gerida pelo administrador</translation>

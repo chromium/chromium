@@ -203,6 +203,7 @@
 <translation id="6734291798041940871">Chromium је већ инсталиран за све кориснике на рачунару.</translation>
 <translation id="673636774878526923">Да бисте приступали Chromium садржају на свим уређајима, пријавите се, па укључите синхронизацију.</translation>
 <translation id="6774082503108938489">Родитељ је искључио Дозволе за сајтове, апликације и додатке за Chromium. Омогућавање ове ставке (<ph name="EXTENSION_TYPE_PARAMETER" />) није дозвољено.</translation>
+<translation id="6808964260981102146">Дозволе које сте већ дали веб-сајтовима и апликацијама могу да важе за овај налог. Ако не желите да веб-сајтови или апликације приступају информацијама о налогу, користите <ph name="LINK_BEGIN" />Режим госта<ph name="LINK_END" /> у Chromium прегледачу. Google налозима можете да управљате и у <ph name="LINK_2_BEGIN" />Подешавањима<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Chromium вас обавештава ако су лозинке угрожене</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (копирано у Chromium)</translation>

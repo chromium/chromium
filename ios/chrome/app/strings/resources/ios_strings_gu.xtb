@@ -116,6 +116,7 @@
 <translation id="196896377990863006">લિંકનો પ્રીવ્યૂ બતાવો</translation>
 <translation id="1973912524893600642">ડેટા રાખો</translation>
 <translation id="1974060860693918893">વિગતવાર</translation>
+<translation id="1981118202195772574">મોબાઇલ</translation>
 <translation id="1989112275319619282">બ્રાઉઝ કરો</translation>
 <translation id="199425419756152024">પાસવર્ડ જુઓ</translation>
 <translation id="2015722694326466240">પાસવર્ડ જોવા માટે, તમારે સૌથી પહેલા તમારા ઉપકરણ પર એક પાસકોડ સેટ કરવો આવશ્યક છે.</translation>
@@ -236,6 +237,7 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />તમે શું સિંક કરી શકો, તે જાણો<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">બધી બ્લૉક કરો</translation>
 <translation id="313283613037595347">નવી છૂપી ટૅબ બનાવો.</translation>
+<translation id="3150887674190166798">Chrome દર વખતે તમને સાઇટની વિનંતી કેવી રીતે કરે તે પસંદ કરો</translation>
 <translation id="3153862085237805241">કાર્ડ સાચવો</translation>
 <translation id="3157387275655328056">વાંચન સૂચિમાં ઉમેરો</translation>
 <translation id="3157684681743766797">તમામને આ રીતે ચિહ્નિત કરો…</translation>
@@ -761,6 +763,7 @@
 <translation id="7911190106180361398">તમારી સંસ્થા તમને બધું જ સિંક કરવાની મંજૂરી આપતી નથી.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">પાસવર્ડની નિકાસ કરો...</translation>
+<translation id="793971554166979165">ડિફૉલ્ટ સાઇટ મોડ</translation>
 <translation id="794799177247607889">લૉગ કરવાનું રોકો</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{ચેડાં કરાયેલો કોઈ પાસવર્ડ નથી}=1{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}one{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}other{ચેડાં કરાયેલા {COUNT} પાસવર્ડ}}</translation>
 <translation id="7961015016161918242">ક્યારેય નહીં</translation>
@@ -866,6 +869,7 @@
 <translation id="8881801611828450202"><ph name="SEARCH_ENGINE" /> પર આ છબી શોધો</translation>
 <translation id="8909135823018751308">શેર કરો…</translation>
 <translation id="8917490105272468696">હા, હું સંમત છું</translation>
+<translation id="8928133177108699615">ડેસ્કટૉપ</translation>
 <translation id="8952559610785099500">પાસવર્ડ ઉમેરો</translation>
 <translation id="895541991026785598">સમસ્યાની જાણ કરો</translation>
 <translation id="8974714402877957201">1. iPad સેટિંગ ખોલો</translation>

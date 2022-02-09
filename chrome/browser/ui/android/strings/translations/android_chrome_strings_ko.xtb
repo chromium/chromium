@@ -224,7 +224,6 @@
 <translation id="2321958826496381788">편하게 읽을 수 있을 때까지 슬라이더를 드래그하세요. 단락을 두 번 탭하면 텍스트가 이 이상의 크기로 표시됩니다.</translation>
 <translation id="2323763861024343754">사이트 저장공간</translation>
 <translation id="2328985652426384049">로그인할 수 없음</translation>
-<translation id="2342601525305963189">Chrome 사용 팁:</translation>
 <translation id="234265804618409743">카메라를 열 수 없습니다. 문제가 발생했습니다.</translation>
 <translation id="2349710944427398404">계정, 북마크, 저장된 설정 등 Chrome에서 사용한 전체 데이터</translation>
 <translation id="2353636109065292463">인터넷 연결 상태를 확인하세요.</translation>
@@ -568,9 +567,11 @@
 <translation id="4402611456429872546"><ph name="LANG" />: 다운로드 중입니다…</translation>
 <translation id="4404568932422911380">북마크 없음</translation>
 <translation id="4405224443901389797">다음 폴더로 이동…</translation>
+<translation id="4405636711880428279">가상 카드를 삭제하시겠습니까?</translation>
 <translation id="4409271659088619928">기본 검색엔진은 <ph name="DSE" />입니다. 해당 검색엔진에서 검색 기록을 삭제할 수 있는 경우 검색 기록 삭제 안내를 확인하세요.</translation>
 <translation id="4415276339145661267">Google 계정 관리</translation>
 <translation id="4425140285732600465">가격 추적 중입니다. 사이트에서 가격이 인하되면 알림이 전송됩니다.</translation>
+<translation id="442518031075347249">더 이상 Google Pay에서 가상 카드를 사용할 수 없습니다. <ph name="BEGIN_LINK1" />가상 카드에 관해 자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="4450672886426705087">Google 검색결과입니다.</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> 탭 닫기</translation>
 <translation id="4452548195519783679">북마크를 <ph name="FOLDER_NAME" />에 추가함</translation>

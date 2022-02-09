@@ -461,6 +461,7 @@
 <translation id="2337852623177822836">वह सेटिंग जिसे आपका व्यवस्थापक नियंत्रित करता है</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> युग्मित करना चाहता है</translation>
 <translation id="2346319942568447007">आपकी कॉपी की हुई इमेज</translation>
+<translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> को <ph name="REPLACED_HANDLER_TITLE" /> के बजाय सभी <ph name="PROTOCOL" /> लिंक खोलने दें?</translation>
 <translation id="2354001756790975382">अन्य बुकमार्क</translation>
 <translation id="2354430244986887761">Google सुरक्षित ब्राउज़िंग को हाल में <ph name="SITE" /> पर <ph name="BEGIN_LINK" />नुकसान पहुंचाने वाले ऐप्लिकेशन मिले हैं<ph name="END_LINK" />.</translation>
 <translation id="2355395290879513365">आप इस साइट पर जिन चित्रों को देख रहे हैं, हो सकता है कि वे हमलावरों को दिखाई दें और हमलावर उन्हें बदलने के लिए आपको भ्रमित करें.</translation>
@@ -486,6 +487,7 @@
 <translation id="2413528052993050574">यह सर्वर यह प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" />; इसका सुरक्षा प्रमाणपत्र निरस्त कर दिया गया है. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
 <translation id="2414886740292270097">गहरा</translation>
 <translation id="2430968933669123598">Google खाते को मैनेज करें, Google खाते में अपनी जानकारी, निजता, और सुरक्षा को मैनेज करने के लिए Enter बनाएं</translation>
+<translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> को सभी <ph name="PROTOCOL" /> लिंक खोलने दें?</translation>
 <translation id="2438874542388153331">दाईं ओर क्वाड पंच</translation>
 <translation id="2450021089947420533">'Chrome इतिहास' में आपकी गतिविधियां</translation>
 <translation id="2463739503403862330">भरें</translation>
@@ -635,6 +637,7 @@
 <translation id="2930577230479659665">हर कॉपी के बाद ट्रिम करें</translation>
 <translation id="2932085390869194046">पासवर्ड सुझाएं...</translation>
 <translation id="2934466151127459956">सरकारी-पत्र</translation>
+<translation id="2938225289965773019"><ph name="PROTOCOL" /> लिंक खोलें</translation>
 <translation id="2941952326391522266">यह सर्वर यह प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाणपत्र <ph name="DOMAIN2" /> की ओर से है. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
 <translation id="2943895734390379394">अपलोड करने का समय:</translation>
 <translation id="2948083400971632585">आप किसी कनेक्शन के लिए कॉन्फ़िगर की गई किसी भी प्रॉक्सी को सेटिंग पेज से बंद कर सकते हैं.</translation>
@@ -743,6 +746,7 @@
 <translation id="3288238092761586174">आपके पेमेंट की पुष्टि करने के लिए, <ph name="URL" /> को अतिरिक्त कदम उठाने पड़ सकते हैं</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> नीति के बारे में ज़्यादा जानें</translation>
 <translation id="3295444047715739395">Chrome की सेटिंग में अपने पासवर्ड देखें और प्रबंधित करें</translation>
+<translation id="3303795387212510132">क्या आप <ph name="PROTOCOL_SCHEME" /> लिंक खोलने के लिए, ऐप्लिकेशन को अनुमति देना चाहते हैं?</translation>
 <translation id="3303855915957856445">कोई खोज नतीजे नहीं मिले</translation>
 <translation id="3304073249511302126">ब्लूटूथ स्कैन किया जा रहा है</translation>
 <translation id="3308006649705061278">संगठनात्मक इकाई (OU)</translation>
@@ -880,6 +884,7 @@
 <translation id="370972442370243704">'Chrome इतिहास' में, अपनी गतिविधियां देखने की सुविधा चालू करें</translation>
 <translation id="3711895659073496551">निलंबित</translation>
 <translation id="3712624925041724820">लाइसेंस खत्म हो गए</translation>
+<translation id="3714633008798122362">वेब कैलेंडर</translation>
 <translation id="3714780639079136834">मोबाइल डेटा या वाई-फ़ाई चालू करें</translation>
 <translation id="3715597595485130451">वाई-फ़ाई से कनेक्ट करें</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />प्रॉक्सी, फायरवॉल और डीएनएस कॉन्फ़िगरेशन की जाँच करें<ph name="END_LINK" /></translation>
@@ -941,6 +946,7 @@
 <translation id="3906954721959377182">टैबलेट</translation>
 <translation id="3909477809443608991"><ph name="URL" /> सुरक्षित सामग्री चलाना चाहता है . Google आपके डिवाइस की पहचान की पुष्टि कर सकता है और यह साइट उसे ऐक्सेस कर सकती है.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">अस्वीकार करें</translation>
 <translation id="3939773374150895049">क्या आप कार्ड वेरीफ़िकेशन कोड (सीवीसी) के बजाय WebAuthn का इस्तेमाल करना चाहते हैं?</translation>
 <translation id="3946209740501886391">इस साइट पर हमेशा पूछें</translation>
 <translation id="3947595700203588284">साइट, MIDI डिवाइसों से कनेक्ट करने की अनुमति मांग सकती है</translation>
@@ -1056,6 +1062,7 @@
 <translation id="4250680216510889253">नहीं</translation>
 <translation id="4253168017788158739">नोट</translation>
 <translation id="425582637250725228">हो सकता है कि किए गए बदलाव सेव ना हों.</translation>
+<translation id="425869179292622354">वर्चुअल कार्ड की मदद से इसे और सुरक्षित बनाएं?</translation>
 <translation id="4258748452823770588">खराब हस्ताक्षर</translation>
 <translation id="4261046003697461417">सुरक्षित दस्तावेज़ों को एनोटेट नहीं किया जा सकता</translation>
 <translation id="4265872034478892965">आपके व्यवस्थापक ने अनुमति दी है</translation>
@@ -1566,6 +1573,7 @@
 <translation id="5921639886840618607">कार्ड को Google खाते में सेव करें?</translation>
 <translation id="5922853866070715753">करीब-करीब हो गया है</translation>
 <translation id="5932224571077948991">साइट में तंग करने वाले या गुमराह करने वाले विज्ञापन दिखाई देते हैं</translation>
+<translation id="5938153366081463283">वर्चुअल कार्ड जोड़ें</translation>
 <translation id="5938793338444039872">ट्रॉय</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> को खोला जा रहा है…</translation>
 <translation id="5951495562196540101">उपभोक्ता खाते (पैकेज किया गया लाइसेंस मौजूद है) के साथ नामांकन नहीं कर सकते.</translation>
@@ -2190,6 +2198,7 @@
 <translation id="7976214039405368314">बहुत सारे अनुरोध</translation>
 <translation id="7977538094055660992">आउटपुट डिवाइस</translation>
 <translation id="7977894662897852582">ईडीपी</translation>
+<translation id="7981260203882740562">इससे जोड़ा गया है</translation>
 <translation id="798134797138789862">साइट, वर्चुअल रिएलिटी डिवाइस और डेटा का इस्तेमाल करने की अनुमति मांग सकती है</translation>
 <translation id="7984945080620862648">आप इस समय <ph name="SITE" /> पर विज़िट नहीं कर सकते हैं क्योंकि वेबसाइट ने ऐसे अव्यवस्थित प्रमाणिकता भेजे हैं जिन्हें Chrome संसाधित नहीं कर सकता. नेटवर्क की त्रुटियां और हमले आमतौर पर अस्थायी होते हैं, इसलिए संभवत: यह पेज बाद में काम करेगा.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2407,6 +2416,7 @@
 <translation id="8731544501227493793">'पासवर्ड प्रबंधित करें' बटन, Chrome की सेटिंग में अपने पासवर्ड देखने और प्रबंधित करने के लिए Enter दबाएं</translation>
 <translation id="8734529307927223492">आपके <ph name="DEVICE_TYPE" /> को <ph name="MANAGER" /> प्रबंधित करता है</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, निजी रूप से ब्राउज़ करने के लिए, पहले Tab और फिर Enter दबाकर एक नई गुप्त विंडो खोलें</translation>
+<translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> के बजाय <ph name="PROTOCOL" /> लिंक खोलें</translation>
 <translation id="8738058698779197622">सुरक्षित कनेक्‍शन स्‍थापित करने के लिए, आपकी घड़ी को ठीक से सेट किए जाने की आवश्‍यकता है. ऐसा इसलिए क्‍योंकि वेबसाइटों द्वारा स्‍वयं की पहचान करने के लिए उपयोग किए जाने वाले प्रमाण पत्र केवल विशिष्‍ट समयावधियों के लिए ही मान्‍य होते हैं. चूंकि आपके डिवाइस की घड़ी गलत है, इसलिए क्रोमियम इन प्रमाणपत्रों को सत्‍यापित नहीं कर सकता.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> का &lt;abbr id="dnsDefinition"&gt;DNS पता&lt;/abbr&gt; नहीं पाया जा सका. समस्या का निदान किया जा रहा है.</translation>
 <translation id="8742371904523228557"><ph name="ORIGIN" /> के लिए आपका कोड <ph name="ONE_TIME_CODE" /> है</translation>
@@ -2484,6 +2494,7 @@
 <translation id="9004367719664099443">वीआर सेशन चल रहा है</translation>
 <translation id="9005998258318286617">PDF दस्तावेज़ लोड नहीं किया जा सका.</translation>
 <translation id="9008201768610948239">ध्यान न दें</translation>
+<translation id="901834265349196618">ईमेल</translation>
 <translation id="9020200922353704812">कार्ड बिलिंग पता ज़रूरी है</translation>
 <translation id="9020542370529661692">इस पेज का <ph name="TARGET_LANGUAGE" /> में अनुवाद कर दिया गया है</translation>
 <translation id="9020742383383852663">ए8</translation>

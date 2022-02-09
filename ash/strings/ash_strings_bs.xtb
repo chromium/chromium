@@ -87,6 +87,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1383876407941801731">Traži</translation>
 <translation id="1391102559483454063">Uključeno</translation>
 <translation id="1407069428457324124">Tamna tema</translation>
+<translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Za kretanje od jednog do drugog datuma koristite tipke sa strelicama.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, instalirana aplikacija</translation>
 <translation id="1419738280318246476">Otključajte uređaj da izvršite radnju obavještenja</translation>
 <translation id="1420408895951708260">Uključite ili isključite Noćno svjetlo. <ph name="STATE_TEXT" /></translation>
@@ -98,6 +99,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1467432559032391204">Lijevo</translation>
 <translation id="147310119694673958">Baterija telefona: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">Plutajući meni za pristupačnost</translation>
+<translation id="1480845547124508962"><ph name="CURRENT_TIME" />, pritisnite tipku Enter da biste otvorili prikaz kalendara.</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540">Stavka <ph name="FIRST_ITEM_TITLE" /> je zamijenjena stavkom <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1503394326855300303">Ovaj vlasnik računa mora biti prvi prijavljeni račun u sesiji višestruke prijave.</translation>
@@ -842,6 +844,7 @@ Nova instalacija</translation>
 <translation id="6565007273808762236">eSIM veza je nedostupna</translation>
 <translation id="6570831796530454248">{0,plural, =1{Ažurirajte uređaj u roku od jednog sata}one{Ažurirajte uređaj u roku od # sata}few{Ažurirajte uređaj u roku od # sata}other{Ažurirajte uređaj u roku od # sati}}</translation>
 <translation id="6570902864550063460">Punjenje putem USB-a</translation>
+<translation id="6574587113394758819">Obavijesti aplikacije <ph name="APP_TITLE" /> skrivene su jer je uključena zaštita prikaza.</translation>
 <translation id="6578407462441924264">Neimenovano</translation>
 <translation id="6585808820553845416">Sesija će se završiti za <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -849,6 +852,7 @@ Nova instalacija</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja vaš administrator</translation>
 <translation id="6612802754306526077">Odabran je način rada za snimanje ekrana</translation>
 <translation id="6614169507485700968">Ekran za privatnost je uključen</translation>
+<translation id="6625718907317144388">Obavijesti aplikacija <ph name="APP_1_TITLE" /> i <ph name="APP_2_TITLE" /> i drugih aplikacija skrivene su jer je uključena zaštita prikaza.</translation>
 <translation id="6627638273713273709">Tipka za pretraživanje + Shift + K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> želi koristiti mikrofon</translation>
 <translation id="6630773993843701741">Otvorite postavke Bluetootha da ručno uparite uređaj</translation>
@@ -1023,6 +1027,7 @@ Nova instalacija</translation>
 <translation id="776344839111254542">Kliknite da vidite detalje o ažuriranju</translation>
 <translation id="7780159184141939021">Rotiranje ekrana</translation>
 <translation id="7796353162336583443">Dodirnite gumb pisaljke na polici da biste napisali bilješku, izradili snimku zaslona ili upotrijebili Google asistent, laserski pokazivač ili povećalo.</translation>
+<translation id="7796735576426975947">Nova obavijest je skrivena</translation>
 <translation id="7798302898096527229">Za otkazivanje pritisnite tipku za pretraživanje ili Shift.</translation>
 <translation id="7807067443225230855">Pretraživanje i Asistent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> i <ph name="MINUTE" /></translation>
@@ -1116,6 +1121,7 @@ Nova instalacija</translation>
 <translation id="8371991222807690464">Performanse perifernog uređaja mogu biti ograničene u Načinu rada za gosta</translation>
 <translation id="8375916635258623388">Uređaj <ph name="DEVICE_NAME" /> i vaš telefon će se povezati automatski</translation>
 <translation id="8380784334203145311">Laku noć,</translation>
+<translation id="8382715499079447151">Zaštita prikaza</translation>
 <translation id="8388750414311082622">Nije moguće ukloniti posljednju radnu površinu.</translation>
 <translation id="8394567579869570560">Roditelj je zaključao uređaj</translation>
 <translation id="8401850874595457088">Otvaranje menija jezika</translation>
@@ -1146,6 +1152,7 @@ Nova instalacija</translation>
 <translation id="8563862697512465947">Postavke obavijesti</translation>
 <translation id="857201607579416096">Meni je pomjeren u donji desni ugao ekrana.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
+<translation id="8614517853887502247">Obavijesti aplikacija <ph name="APP_1_TITLE" /> i <ph name="APP_2_TITLE" /> skrivene su jer je uključena zaštita prikaza.</translation>
 <translation id="8627191004499078455">Povezano na <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Postavke pristupačnosti</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja vaš administrator</translation>

@@ -460,6 +460,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2337852623177822836">Nustatymą valdo administratorius</translation>
 <translation id="2340263603246777781">Svetainė <ph name="ORIGIN" /> nori būti susieta su</translation>
 <translation id="2346319942568447007">Nukopijuotas vaizdas</translation>
+<translation id="2350796302381711542">Leisti „<ph name="HANDLER_HOSTNAME" />“ atidaryti visas <ph name="PROTOCOL" /> nuorodas vietoje „<ph name="REPLACED_HANDLER_TITLE" />“?</translation>
 <translation id="2354001756790975382">Kitos žymės</translation>
 <translation id="2354430244986887761">„Google“ saugaus naršymo technologija svetainėje <ph name="SITE" /> neseniai <ph name="BEGIN_LINK" />aptiko kenkėjiškų programų<ph name="END_LINK" />.</translation>
 <translation id="2355395290879513365">Užpuolikai galbūt galės matyti, kuriuos šios svetainės vaizdus peržiūrite, ir juos pakeis siekdami jus suklaidinti.</translation>
@@ -485,6 +486,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2413528052993050574">Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikatas gali būti atšauktas. Taip gali nutikti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užgrobėjo.</translation>
 <translation id="2414886740292270097">Tamsi</translation>
 <translation id="2430968933669123598">Mygtukas „Tvarkyti „Google“ paskyrą“ – paspauskite klavišą „Enter“, jei norite tvarkyti savo informaciją, privatumo ir saugos nustatymus „Google“ paskyroje</translation>
+<translation id="2436186046335138073">Leisti „<ph name="HANDLER_HOSTNAME" />“ atidaryti visas <ph name="PROTOCOL" /> nuorodas?</translation>
 <translation id="2438874542388153331">Keturios skylės dešinėje</translation>
 <translation id="2450021089947420533">Atlikti veiksmai</translation>
 <translation id="2463739503403862330">Užpildyti</translation>
@@ -634,6 +636,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2930577230479659665">Apkarpymas po kiekvienos kopijos</translation>
 <translation id="2932085390869194046">Siūlyti slaptažodį...</translation>
 <translation id="2934466151127459956">Oficialus laiškas</translation>
+<translation id="2938225289965773019">Atidaryti „<ph name="PROTOCOL" />“ nuorodas</translation>
 <translation id="2941952326391522266">Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikatas yra iš <ph name="DOMAIN2" />. Taip gali nutikti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užgrobėjo.</translation>
 <translation id="2943895734390379394">Įkėlimo laikas:</translation>
 <translation id="2948083400971632585">Galite neleisti visų tarpinių serverių, jungimasis prie kurių sukonfigūruotas nustatymų puslapyje.</translation>
@@ -744,6 +747,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3288238092761586174"><ph name="URL" /> gali reikėti imtis papildomų veiksmų, kad patvirtintų jūsų mokėjimą</translation>
 <translation id="3293642807462928945">Sužinokite daugiau apie „<ph name="POLICY_NAME" />“ politiką</translation>
 <translation id="3295444047715739395">Peržiūrėkite ir tvarkykite slaptažodžius „Chrome“ nustatymuose</translation>
+<translation id="3303795387212510132">Leisti programai atidaryti „<ph name="PROTOCOL_SCHEME" />“ nuorodas?</translation>
 <translation id="3303855915957856445">Nerasta jokių paieškos rezultatų</translation>
 <translation id="3304073249511302126">„Bluetooth“ nuskaitymas</translation>
 <translation id="3308006649705061278">Organizacinis vienetas (angl. „Organizational Unit“) (OU)</translation>
@@ -881,6 +885,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="370972442370243704">Įjungti atliktus veiksmus</translation>
 <translation id="3711895659073496551">Laikinai sustabdyti</translation>
 <translation id="3712624925041724820">Licencijos baigėsi</translation>
+<translation id="3714633008798122362">žiniatinklio kalendorius</translation>
 <translation id="3714780639079136834">Įjungti mobiliojo ryšio duomenis arba „Wi-Fi“</translation>
 <translation id="3715597595485130451">Prisijungimas prie „Wi-Fi“</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Patikrinti tarpinio serverio, užkardos ir DNS konfigūraciją<ph name="END_LINK" /></translation>
@@ -942,6 +947,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3906954721959377182">Planšetinis kompiuteris</translation>
 <translation id="3909477809443608991"><ph name="URL" /> nori paleisti saugomą turinį Įrenginio tapatybę patvirtins „Google“ ir įrenginį galės pasiekti ši svetainė.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Uždrausti</translation>
 <translation id="3939773374150895049">Naudoti „WebAuthn“ vietoj CVC?</translation>
 <translation id="3946209740501886391">Visada klausti šioje svetainėje</translation>
 <translation id="3947595700203588284">Gali būti prašoma prisijungti prie MIDI įrenginių</translation>
@@ -1057,6 +1063,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4250680216510889253">Ne</translation>
 <translation id="4253168017788158739">Pastaba</translation>
 <translation id="425582637250725228">Atlikti pakeitimai gali nebūti išsaugoti.</translation>
+<translation id="425869179292622354">Labiau apsaugoti naudojant virtualią kortelę?</translation>
 <translation id="4258748452823770588">Netinkamas parašas</translation>
 <translation id="4261046003697461417">Negalima rašyti komentarų apsaugotuose dokumentuose</translation>
 <translation id="4265872034478892965">Leidžia jūsų administratorius</translation>
@@ -1567,6 +1574,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="5921639886840618607">Išsaugoti kortelę „Google“ paskyroje?</translation>
 <translation id="5922853866070715753">Beveik atlikta</translation>
 <translation id="5932224571077948991">Svetainėje rodomi nepageidaujami arba klaidinantys skelbimai</translation>
+<translation id="5938153366081463283">Pridėkite virtualią kortelę</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Atidaroma „<ph name="SITE_NAME" />“…</translation>
 <translation id="5951495562196540101">Nepavyko prisiregistruoti su kliento paskyra (galima įsigyti licencijos paketą).</translation>
@@ -2191,6 +2199,7 @@ Papildoma išsami informacija:
 <translation id="7976214039405368314">Per daug užklausų</translation>
 <translation id="7977538094055660992">Išvesties įrenginys</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="7981260203882740562">Susieta su</translation>
 <translation id="798134797138789862">Gali būti prašoma naudoti virtualiosios realybės įrenginius ir duomenis</translation>
 <translation id="7984945080620862648">Negalite dabar apsilankyti svetainėje <ph name="SITE" />, nes ji atsiuntė užšifruotus prisijungimo duomenis, kurių „Chrome“ negali apdoroti. Tinklo klaidos ir užpuolimai dažniausiai yra laikini, todėl šis puslapis vėliau tikriausiai veiks.</translation>
 <translation id="7986319120639858961">„<ph name="CARD_TITLE" />“ <ph name="TIME" /> <ph name="BOOKMARKED" /> „<ph name="TITLE" />“ <ph name="DOMAIN" /></translation>
@@ -2408,6 +2417,7 @@ Papildoma išsami informacija:
 <translation id="8731544501227493793">Mygtukas „Tvarkyti slaptažodžius“, paspauskite „Enter“, jei norite peržiūrėti ir tvarkyti slaptažodžius „Chrome“ nustatymuose</translation>
 <translation id="8734529307927223492">Jūsų „<ph name="DEVICE_TYPE" />“ tvarko <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, kad būtų atidarytas naujas privataus naršymo inkognito langas</translation>
+<translation id="8737685506611670901">Atidaryti „<ph name="PROTOCOL" />“ nuorodas vietoje „<ph name="REPLACED_HANDLER_TITLE" />“</translation>
 <translation id="8738058698779197622">Jei norite užmegzti saugų ryšį, turėsite tinkamai nustatyti laikrodį. To reikalaujama todėl, kad svetainių tapatybei įrodyti naudojami sertifikatai galioja tik tam tikrą laikotarpį. Kadangi įrenginio laikrodis nustatytas netinkamai, „Chromium“ negali tinkamai patvirtinti sertifikatų.</translation>
 <translation id="8740359287975076522">Nepavyko rasti <ph name="HOST_NAME" /> &lt;abbr id="dnsDefinition"&gt;DNS adreso&lt;/abbr&gt;. Nustatoma problema.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> yra kodas, skirtas svetainei <ph name="ORIGIN" /></translation>
@@ -2485,6 +2495,7 @@ Papildoma išsami informacija:
 <translation id="9004367719664099443">Vyksta VR sesija</translation>
 <translation id="9005998258318286617">PDF dokumento įkelti nepavyko.</translation>
 <translation id="9008201768610948239">Nepaisyti</translation>
+<translation id="901834265349196618">El. paštas</translation>
 <translation id="9020200922353704812">Būtina pateikti kortelės atsiskaitymo adresą</translation>
 <translation id="9020542370529661692">Šis puslapis išverstas į <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

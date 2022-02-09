@@ -116,6 +116,7 @@ Sie haben <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum 
 <translation id="196896377990863006">Link-Vorschau einblenden</translation>
 <translation id="1973912524893600642">Daten behalten</translation>
 <translation id="1974060860693918893">Erweitert</translation>
+<translation id="1981118202195772574">Mobil</translation>
 <translation id="1989112275319619282">Durchsuchen</translation>
 <translation id="199425419756152024">Passwort anzeigen</translation>
 <translation id="2015722694326466240">Um die Passwörter zu sehen, müssen Sie zuerst einen Passcode auf Ihrem Gerät einrichten.</translation>
@@ -236,6 +237,7 @@ Informationen zum Löschen Ihres Suchverlaufs finden Sie in der Anleitung Ihrer 
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Hier sehen Sie, was Sie synchronisieren können<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Alle blockieren</translation>
 <translation id="313283613037595347">Neuen Inkognitotab erstellen.</translation>
+<translation id="3150887674190166798">Festlegen, wie Chrome die Website anfordern soll</translation>
 <translation id="3153862085237805241">Karte speichern</translation>
 <translation id="3157387275655328056">Zur Leseliste hinzufügen</translation>
 <translation id="3157684681743766797">Alle markieren…</translation>
@@ -349,6 +351,7 @@ Gehen Sie so vor:</translation>
 <translation id="4181841719683918333">Sprachen</translation>
 <translation id="4237377247299956313">Tippen Sie auf <ph name="BEGIN_BOLD" />Standard-Browser-App<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Passphrase eingeben</translation>
+<translation id="4249955472157341256">Neueste zuerst</translation>
 <translation id="4263576668337963058">Verfügbare Seitenaktionen anzeigen</translation>
 <translation id="4267380167363222949">Nächster Tab</translation>
 <translation id="4272631900155121838">Um einen QR-Code zu scannen, aktivieren Sie in den Einstellungen die Kamera</translation>
@@ -506,6 +509,7 @@ Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein un
 <translation id="575902488528307720">Nach Bildern suchen</translation>
 <translation id="5781453543752460388">Zu Fotos hinzufügen</translation>
 <translation id="5782227691023083829">Wird übersetzt...</translation>
+<translation id="5791632441210678828">Schaltfläche zum Sortieren für den „Folge ich“-Feed.</translation>
 <translation id="5802829331520313983">Einrichten…</translation>
 <translation id="5803566855766646066">Möchten Sie diese neue Karte wirklich verwerfen?</translation>
 <translation id="5804241973901381774">Berechtigungen</translation>
@@ -621,6 +625,7 @@ Es empfiehlt sich aber, für jede Website ein eigenes Passwort zu verwenden.</tr
 <translation id="6561262006871132942">Heranzoomen</translation>
 <translation id="6583087784430677195">Öffnen Sie zum Deaktivieren die <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> und gehen Sie zu „Passwörter automatisch ausfüllen“.</translation>
 <translation id="6585618849026997638">Sie können Lesezeichen setzen, damit Sie zu Seiten zurückfinden, die für Sie interessant sind</translation>
+<translation id="6598875554591387303">Nach Publisher sortieren</translation>
 <translation id="6603393121510733479">Ihre Organisation hat das private Surfen deaktiviert.
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Übersetzungsoptionen</translation>
@@ -761,6 +766,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7911190106180361398">Ihre Organisation lässt nicht zu, dass Sie alles synchronisieren.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Passwörter exportieren…</translation>
+<translation id="793971554166979165">Standard-Websitemodus</translation>
 <translation id="794799177247607889">Protokollierung anhalten</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Keine gehackten Passwörter}=1{{COUNT} gehacktes Passwort}other{{COUNT} gehackte Passwörter}}</translation>
 <translation id="7961015016161918242">Nie</translation>
@@ -866,6 +872,7 @@ Websites können Cookies verwenden, um Ihre Browseraktivitäten auf anderen Webs
 <translation id="8881801611828450202">In <ph name="SEARCH_ENGINE" /> nach dem Bild suchen</translation>
 <translation id="8909135823018751308">Teilen...</translation>
 <translation id="8917490105272468696">Ja, bitte</translation>
+<translation id="8928133177108699615">Computer</translation>
 <translation id="8952559610785099500">Passwort hinzufügen</translation>
 <translation id="895541991026785598">Problem melden</translation>
 <translation id="8974714402877957201">1. Öffnen Sie die iPad-Einstellungen</translation>

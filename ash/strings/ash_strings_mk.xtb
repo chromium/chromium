@@ -684,6 +684,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (десна)</translation>
 <translation id="5352250171825660495">Темната тема е вклучена</translation>
 <translation id="5379115545237091094">Премногу обиди</translation>
+<translation id="5393156353051693207">Допрете и задржете каде било за да ги преуредите апликациите</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> врз <ph name="IN_PLACE_APP" />, пуштете за да се создаде папка.</translation>
 <translation id="5397578532367286026">Користењето и историјата на овој корисник може да ги прегледува управникот (<ph name="MANAGER_EMAIL" />) на chrome.com.</translation>
 <translation id="5400461572260843123">Брзи поставки, Притиснете „Пребарување + лево“ за да пристапите до центарот за известувања.</translation>
@@ -974,6 +975,7 @@
 <translation id="7378203170292176219">Повлечете за да изберете област за снимање</translation>
 <translation id="7378594059915113390">Контроли за аудиовизуелни медиуми</translation>
 <translation id="7378889811480108604">Режимот „Штедач на батерија“ е исклучен</translation>
+<translation id="7384028040782072252">Кликнете со десното копче каде било за да ги преуредите апликациите</translation>
 <translation id="7392563512730092880">Во секое време може да ја поставите подоцна од „Поставки“.</translation>
 <translation id="7405710164030118432">За да го отклучите уредот, внесете го кодот за пристап на родителот за Family Link</translation>
 <translation id="7406608787870898861">Завршете го поставувањето на мобилната мрежа</translation>
@@ -1163,6 +1165,7 @@
 <translation id="8563862697512465947">Поставки за известувања</translation>
 <translation id="857201607579416096">Менито е преместено во долниот десен агол на екранот.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
+<translation id="8598235756057743477">Подредете ги апликациите по име или боја.</translation>
 <translation id="8627191004499078455">Поврзан со <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Поставки за пристапност</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, управувана од администраторот</translation>

@@ -487,23 +487,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 <translation id="159946228300522107">Politikayı True (Doğru) değerine ayarlamak, Chrome'un ilk çalıştırmada birinci pencereyi büyüteceği anlamına gelir.
 
       Politikayı False (Yanlış) değerine ayarlamak veya ayarlamadan bırakmak, ekran boyutuna bağlı olarak Chrome'un ilk pencereyi büyütebileceği anlamına gelir.</translation>
-<translation id="1600107337865729434">Bu politika varsayılan olarak kaynak içeren veya kaynaklarla ilişkili aracı kümelemeye izin verir.
-
-      Kaynak Aracısı Kümesi: HTTP başlığı, bir dokümanın kaynak içeren veya kaynaklarla ilişkili aracı
-      kümesinde mi yoksa site içeren veya sitelerle ilişkili aracı kümesinde mi erişime kapalı olacağını
-      kontrol eder. Kaynak içeren veya kaynaklarla ilişkili aracı kümesi, dokümanların
-      kaynağa göre erişime kapatılmasına izin verdiği için güvenlik etkileri olabilir. Bu durumun
-      geliştirici tarafından görünür olan sonucu, document.domain erişeninin artık
-      ayarlanamamasıdır.
-
-      Kaynak Aracısı Kümesi olmadığında gerçekleşen varsayılan davranış: Başlık ayarlanmış,
-      M101'de site içeren veya sitelerle ilişkili seçeneğinden kaynak içeren veya kaynaklarla ilişkili seçeneğine geçiş. Bu politika
-      etkinleştirilir veya ayarlanmadan bırakılırsa tarayıcı bu sürümden itibaren yeni
-      varsayılanı izler. Bu politika devre dışı bırakılırsa bu değişiklik tersine
-      çevrilir ve dokümanlarda Kaynak Aracısı Kümesi olmaz. Başlıklar, site
-      içeren veya sitelerle ilişkili aracı kümelerine atanır. Sonuç olarak document.domain erişeni varsayılan
-      olarak ayarlanabilir olur. Bu da eski davranışla aynıdır.
-      </translation>
 <translation id="1600340610556453828">Politika, Devre Dışı değerine ayarlanırsa <ph name="PRODUCT_OS_NAME" /> ürünü kablosuz bağlantıyı kapatır ve kullanıcılar bunu değiştiremez.
 
       Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar kablosuz bağlantıyı açabilir veya kapatabilir.</translation>

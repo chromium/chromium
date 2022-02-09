@@ -89,6 +89,7 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> önskar återställa inställningarna för Chrome till de ursprungliga standardinställningarna. Detta innebär att din startsida tillsammans med sidan ny flik och sökmotorn återställs liksom att tillägg inaktiveras och alla flikar lossas. Dessutom rensas alla tillfälliga och cachelagrade data, såsom cookies, innehåll och webbplatsdata</translation>
 <translation id="1084096383128641877">Att ta bort det här lösenordet innebär inte att ditt konto på <ph name="DOMAIN" /> raderas. Skydda kontot genom att ändra lösenordet eller ta bort ditt konto på <ph name="DOMAIN_LINK" />.</translation>
 <translation id="1084824384139382525">Kopiera länk&amp;adress</translation>
+<translation id="1085064499066015002">Alltid på alla webbplatser</translation>
 <translation id="1085697365578766383">Det gick inte att starta den virtuella maskinen. Försök igen.</translation>
 <translation id="1087965115100412394">Tillåt inte att webbplatser ansluter till MIDI-enheter</translation>
 <translation id="1088654056000736875">Chrome tar bort skadlig programvara från datorn …</translation>
@@ -342,6 +343,7 @@
 <translation id="1343865611738742294">Ge Linux-appar åtkomstbehörighet till USB-enheter. När en USB-enhet tas bort sparas ingen information om den i Linux.</translation>
 <translation id="1343920184519992513">Fortsätt där du slutade och öppna en viss uppsättning sidor</translation>
 <translation id="1346630054604077329">Bekräfta och starta om</translation>
+<translation id="1346748346194534595">Höger</translation>
 <translation id="1347256498747320987">Installera uppdateringar och appar. Genom att fortsätta godkänner du att enheten får ladda ned och installera uppdateringar och appar automatiskt från Google, operatören och enhetstillverkaren, eventuellt genom att använda mobildata. Det kan hända att några av apparna erbjuder köp i appen. <ph name="BEGIN_LINK1" />Läs mer<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Lagringsutrymme för Linux</translation>
 <translation id="1347975661240122359">Uppdateringen börjar när batterinivån är på <ph name="BATTERY_LEVEL" /> %.</translation>
@@ -464,6 +466,7 @@
 <translation id="1464781208867302907">Öppna Inställningar om du vill visa enhetsinställningarna</translation>
 <translation id="1465176863081977902">K&amp;opiera ljudadress</translation>
 <translation id="1465827627707997754">Pizzabit</translation>
+<translation id="1467432559032391204">Vänster</translation>
 <translation id="1468571364034902819">Profilen kan inte användas</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Lägg till fliken i en ny grupp}other{Lägg till flikarna i en ny grupp}}</translation>
 <translation id="1470350905258700113">Använd den här enheten</translation>
@@ -1336,7 +1339,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2307630946657910723">Sök i en del av sidan med <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
-<translation id="230927227160767054">Den här sidan vill installera en tjänsthanterare.</translation>
 <translation id="2309620859903500144">Den här webbplatsen får inte använda enhetens rörelse- eller ljussensor.</translation>
 <translation id="2312219318583366810">Sidans webbadress</translation>
 <translation id="2314165183524574721">Den aktuella synlighetsinställningen är Dold</translation>
@@ -1387,7 +1389,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2349896577940037438">Om ytterligare webb- och appaktivitet har aktiverats kan denna data sparas i Google-kontot. Du kan visa din data, radera den och ändra inställningarna på account.google.com.</translation>
 <translation id="2350133097354918058">Inläst igen</translation>
 <translation id="2350182423316644347">Startar appen ...</translation>
-<translation id="2350796302381711542">Vill du tillåta att <ph name="HANDLER_HOSTNAME" /> öppnar alla <ph name="PROTOCOL" />-länkar i stället för <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{1 vara}other{{NUM_ITEMS} varor}}</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Anteckningar på låsskärmen sparas automatiskt i <ph name="LOCK_SCREEN_APP_NAME" />. Den senaste anteckningen visas på låsskärmen.</translation>
@@ -1460,7 +1461,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2434758125294431199">Välj vem som kan dela med dig</translation>
 <translation id="2435248616906486374">Anslutningen till nätverket har avbrutits</translation>
 <translation id="2435457462613246316">Visa lösenord</translation>
-<translation id="2436186046335138073">Vill du tillåta att <ph name="HANDLER_HOSTNAME" /> öppnar alla <ph name="PROTOCOL" />-länkar?</translation>
 <translation id="2439626940657133600">Läser in <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Visa &amp;källa</translation>
 <translation id="244231003699905658">Adressen är ogiltig. Kontrollera webbadressen och försök igen.</translation>
@@ -1978,7 +1978,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="2935225303485967257">Hantera profiler</translation>
 <translation id="2935654492420446828">Lägg till ett skolkonto senare</translation>
 <translation id="2936851848721175671">Säkerhetskopiera och återställ</translation>
-<translation id="2938225289965773019">Öppna <ph name="PROTOCOL" />-länkar</translation>
 <translation id="2939908794993783865">Ytterligare inaktiva webbplatser</translation>
 <translation id="2939938020978911855">Visa tillgängliga Bluetooth-enheter</translation>
 <translation id="2941112035454246133">Låg</translation>
@@ -2299,7 +2298,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="33022249435934718">GDI-handtag</translation>
 <translation id="3302388252085547855">Ange motivering …</translation>
 <translation id="3303260552072730022">Ett tillägg aktiverade helskärmsläge.</translation>
-<translation id="3303795387212510132">Vill du tillåta att appen öppnar <ph name="PROTOCOL_SCHEME" />-länkar?</translation>
 <translation id="3303818374450886607">Exemplar</translation>
 <translation id="3303855915957856445">Inga sökresultat hittades</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> i rabatt</translation>
@@ -2711,7 +2709,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="371300529209814631">Bakåt/framåt</translation>
 <translation id="3713047097299026954">Det finns inga inloggningsuppgifter på den här säkerhetsnyckeln</translation>
 <translation id="3714195043138862580">Demoenheten har avregistrerats.</translation>
-<translation id="3714633008798122362">webbkalender</translation>
 <translation id="3719826155360621982">Startsida</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Du och Google</translation>
@@ -7520,7 +7517,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8734674662128056360">Blockering av cookies från tredje part</translation>
 <translation id="873545264931343897">När <ph name="PLUGIN_NAME" /> har uppdaterats läser du in sidan igen för att aktivera det.</translation>
 <translation id="8736288397686080465">Den här webbplatsen har uppdaterats i bakgrunden.</translation>
-<translation id="8737685506611670901">Öppna <ph name="PROTOCOL" />-länkar i stället för <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Välj vilket språk som sidan ska översättas till</translation>
 <translation id="8740247629089392745">Du kan lämna över denna Chromebook till <ph name="SUPERVISED_USER_NAME" />. Konfigureringen är nästan klar. Sedan är det dags att utforska.</translation>
@@ -7784,7 +7780,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="9003647077635673607">Tillåt på alla webbplatser</translation>
 <translation id="9003677638446136377">Kontrollera igen</translation>
 <translation id="9004754973617721124">Vill du rensa webbplatsdata och behörigheter för <ph name="SITE_NAME" />, alla underordnade webbplatser och den tillhörande installerade appen?</translation>
-<translation id="9008201768610948239">Ignorera</translation>
 <translation id="9008201858626224558">Bakåtknapp på informationssida om <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">Överför (<ph name="PROGRESS_PERCENT" /> %)...</translation>
 <translation id="9009708085379296446">Hade du tänkt ändra den här sidan?</translation>
@@ -7794,7 +7789,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="9013037634206938463"><ph name="INSTALL_SIZE" /> ledigt utrymme krävs för att installera Linux. Frigör utrymme genom att radera filer på enheten.</translation>
 <translation id="901668144954885282">Säkerhetskopiera på Google Drive</translation>
 <translation id="9018218886431812662">Installationen har slutförts</translation>
-<translation id="901834265349196618">e-post</translation>
 <translation id="9019062154811256702">Läsa och ändra inställningarna för Autofyll</translation>
 <translation id="9019894137004772119">Använd plats. Tillåt att appar och tjänster med platsbehörighet använder enhetens plats. Google kan med jämna mellanrum samla in platsdata som används anonymt i syfte att förbättra platsangivelsens exakthet och platsbaserade tjänster.</translation>
 <translation id="9019956081903586892">Det gick inte att ladda ned ordlistan för stavningskontroll</translation>

@@ -203,6 +203,7 @@
 <translation id="6734291798041940871">모든 사용자가 사용할 수 있도록 컴퓨터에 Chromium이 이미 설치되어 있습니다.</translation>
 <translation id="673636774878526923">모든 기기에서 Chromium 계정 정보에 액세스하려면 로그인한 후 동기화를 사용 설정하세요.</translation>
 <translation id="6774082503108938489">부모님이 Chromium의 ‘사이트, 앱, 확장 프로그램에 대한 권한’을 사용 중지하셨습니다. 이 <ph name="EXTENSION_TYPE_PARAMETER" /> 사용은 허용되지 않습니다.</translation>
+<translation id="6808964260981102146">이 계정에는 웹사이트와 앱에 이미 부여한 권한이 적용될 수 있습니다. 웹사이트나 앱에서 계정 정보에 액세스하기를 원하지 않으면 Chromium 브라우저에서 <ph name="LINK_BEGIN" />게스트 모드<ph name="LINK_END" />를 사용하세요. <ph name="LINK_2_BEGIN" />설정<ph name="LINK_2_END" />에서 Google 계정을 관리할 수도 있습니다.</translation>
 <translation id="6847869444787758381">비밀번호가 유출되면 Chromium에서 알려줍니다.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay(Chromium에 복사됨)</translation>

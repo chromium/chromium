@@ -89,6 +89,7 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> quiere restaurar la configuración de Chrome a los valores predeterminados originales. Esta acción restablecerá la página principal, la página Nueva pestaña y el motor de búsqueda, inhabilitará las extensiones y no se fijará ninguna pestaña. También se borrarán otros datos temporales y almacenados en la caché, como las cookies y los datos de contenido y de sitios.</translation>
 <translation id="1084096383128641877">Si quitas esta contraseña, no se borrará tu cuenta de <ph name="DOMAIN" />. Cambia la contraseña o quita la cuenta de <ph name="DOMAIN_LINK" /> para protegerla.</translation>
 <translation id="1084824384139382525">Copiar dir&amp;ección de enlace</translation>
+<translation id="1085064499066015002">Siempre en todos los sitios</translation>
 <translation id="1085697365578766383">Se produjo un error al iniciar la máquina virtual. Vuelve a intentarlo.</translation>
 <translation id="1087965115100412394">No permitir que los sitios se conecten a dispositivos MIDI</translation>
 <translation id="1088654056000736875">Chrome está quitando el software dañino de la computadora…</translation>
@@ -340,6 +341,7 @@
 <translation id="1343865611738742294">Concédeles a las apps de Linux acceso a dispositivos USB. Linux no recuerda los dispositivos USB después de quitarlos.</translation>
 <translation id="1343920184519992513">Continuar la sesión desde donde la dejaste y abrir un conjunto específico de páginas</translation>
 <translation id="1346630054604077329">Confirmar y reiniciar</translation>
+<translation id="1346748346194534595">Derecha</translation>
 <translation id="1347256498747320987">Instala actualizaciones y apps. Al continuar, aceptas que este dispositivo también descargue e instale automáticamente actualizaciones y apps de Google, tu administrador y el fabricante del dispositivo, posiblemente a través de datos móviles. Es posible que algunas de estas apps ofrezcan compras directas desde la aplicación. <ph name="BEGIN_LINK1" />Más información<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Almacenamiento en Linux</translation>
 <translation id="1347975661240122359">La actualización comenzará cuando el nivel de la batería alcance el <ph name="BATTERY_LEVEL" />%.</translation>
@@ -461,6 +463,7 @@
 <translation id="1464781208867302907">Para ver las preferencias del dispositivo, accede a Configuración.</translation>
 <translation id="1465176863081977902">Copiar dirección del audio</translation>
 <translation id="1465827627707997754">Porción de pizza</translation>
+<translation id="1467432559032391204">Izquierda</translation>
 <translation id="1468571364034902819">No se puede usar este perfil</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Agregar pestaña a un grupo nuevo}other{Agregar pestañas a un grupo nuevo}}</translation>
 <translation id="1470350905258700113">Usar este dispositivo</translation>
@@ -1318,7 +1321,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2307630946657910723">Buscar parte de la página con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
-<translation id="230927227160767054">Esta página quiere instalar un controlador de servicios.</translation>
 <translation id="2309620859903500144">Este sitio no tiene permiso para acceder a los sensores de movimiento y luz.</translation>
 <translation id="2312219318583366810">URL de la página</translation>
 <translation id="2314165183524574721">Se estableció la configuración de visibilidad actual en Oculta</translation>
@@ -1369,7 +1371,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2349896577940037438">Si habilitaste la Actividad de web y de aplicaciones adicional, es posible que se almacenen estos datos en tu Cuenta de Google. Para ver y borrar esa información, y cambiar la configuración de la cuenta, accede a account.google.com.</translation>
 <translation id="2350133097354918058">Se volvió a cargar</translation>
 <translation id="2350182423316644347">Iniciando aplicación...</translation>
-<translation id="2350796302381711542">¿Deseas permitir que <ph name="HANDLER_HOSTNAME" /> abra todos los vínculos de <ph name="PROTOCOL" /> en lugar de <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{1 elemento}other{{NUM_ITEMS} elementos}}</translation>
 <translation id="2352662711729498748">Menos de 1 MB</translation>
 <translation id="2352810082280059586">Las notas de la pantalla bloqueada se guardan automáticamente en <ph name="LOCK_SCREEN_APP_NAME" />. La nota más reciente permanecerá en la pantalla bloqueada.</translation>
@@ -1442,7 +1443,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2434758125294431199">Selecciona quiénes pueden compartir contenido contigo</translation>
 <translation id="2435248616906486374">Red desconectada</translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
-<translation id="2436186046335138073">¿Deseas permitir que <ph name="HANDLER_HOSTNAME" /> abra todos los vínculos de <ph name="PROTOCOL" />?</translation>
 <translation id="2439626940657133600">Cargando <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Ver códig&amp;o fuente</translation>
 <translation id="244231003699905658">La dirección no es válida. Verifica la dirección y vuelve a intentarlo.</translation>
@@ -1960,7 +1960,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="2935225303485967257">Administrar perfiles</translation>
 <translation id="2935654492420446828">Agrega una cuenta de institución educativa más tarde</translation>
 <translation id="2936851848721175671">Crear copia de seguridad y restablecer</translation>
-<translation id="2938225289965773019">Abrir vínculos de <ph name="PROTOCOL" /></translation>
 <translation id="2939908794993783865">Sitios inactivos adicionales</translation>
 <translation id="2939938020978911855">Mostrar dispositivos Bluetooth disponibles</translation>
 <translation id="2941112035454246133">Baja</translation>
@@ -2281,7 +2280,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="33022249435934718">A cargo de GDI</translation>
 <translation id="3302388252085547855">Escribir justificación…</translation>
 <translation id="3303260552072730022">Una extensión activó la pantalla completa.</translation>
-<translation id="3303795387212510132">¿Deseas permitir que la app abra vínculos de <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303818374450886607">Copias</translation>
 <translation id="3303855915957856445">No se encontraron resultados en la búsqueda</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> de descuento</translation>
@@ -2693,7 +2691,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="371300529209814631">Atrás/adelante</translation>
 <translation id="3713047097299026954">Esta llave de seguridad no tiene almacenados datos de acceso</translation>
 <translation id="3714195043138862580">Se estableció el estado de desaprovisionamiento para este dispositivo de demostración.</translation>
-<translation id="3714633008798122362">Calendario web</translation>
 <translation id="3719826155360621982">Página principal</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Tú y Google</translation>
@@ -7501,7 +7498,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8734674662128056360">Bloqueo de cookies de terceros</translation>
 <translation id="873545264931343897">Cuando <ph name="PLUGIN_NAME" /> termine de actualizarse, vuelve a cargar la página para activarlo</translation>
 <translation id="8736288397686080465">Este sitio se actualizó en segundo plano.</translation>
-<translation id="8737685506611670901">Abrir vínculos de <ph name="PROTOCOL" /> en lugar de <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Elige el idioma al que quieras traducir la página</translation>
 <translation id="8740247629089392745">Puedes pasarle esta Chromebook a <ph name="SUPERVISED_USER_NAME" />. La configuración está casi lista. Luego, podrán comenzar a explorar.</translation>
@@ -7765,7 +7761,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="9003647077635673607">Permitir en todos los sitios web</translation>
 <translation id="9003677638446136377">Volver a comprobar</translation>
 <translation id="9004754973617721124">¿Deseas borrar los datos y permisos de <ph name="SITE_NAME" />, de todos sus sitios secundarios y de su app instalada?</translation>
-<translation id="9008201768610948239">Ignorar</translation>
 <translation id="9008201858626224558">Botón Atrás de la página de detalles de <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">Cargando (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">¿Querías cambiar esta página?</translation>
@@ -7775,7 +7770,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="9013037634206938463">Se necesitan <ph name="INSTALL_SIZE" /> de espacio libre para instalar Linux. Si necesitas liberar espacio, borra archivos del dispositivo.</translation>
 <translation id="901668144954885282">Crear una copia de seguridad en Google Drive</translation>
 <translation id="9018218886431812662">Se completó la instalación</translation>
-<translation id="901834265349196618">Correo electrónico</translation>
 <translation id="9019062154811256702">Leer y cambiar la configuración de Autocompletar</translation>
 <translation id="9019894137004772119">Usa la ubicación. Permite que las apps y los servicios con permiso de ubicación usen la ubicación de tu dispositivo. Es posible que Google recopile datos de ubicación anónimos de forma periódica y los use para mejorar la precisión de la ubicación y los servicios basados en ella.</translation>
 <translation id="9019956081903586892">No se pudo descargar el diccionario del corrector ortográfico.</translation>

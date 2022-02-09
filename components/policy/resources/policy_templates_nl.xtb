@@ -488,12 +488,6 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 <translation id="159946228300522107">Als je het beleid instelt op True, maximaliseert Chrome het eerste venster tijdens de eerste uitvoering.
 
       Als je het beleid instelt op False of niet instelt, kan Chrome het eerste venster mogelijk maximaliseren, afhankelijk van de schermgrootte.</translation>
-<translation id="1600107337865729434">Dit beleid staat origin-keyed agentclustering standaard toe.
-
-      De HTTP-header Origin-Agent-Cluster: bepaalt of een document wordt geïsoleerd in een origin-keyed agentcluster of in een site-keyed agentcluster. Dit heeft beveiligingsimplicaties omdat een origin-keyed agentcluster isolatie van documenten op basis van oorsprong toestaat. Het voor de ontwikkelaar zichtbare gevolg hiervan is dat de accessor document.domain niet meer kan worden ingesteld.
-
-      Het standaardgedrag (wanneer er geen header Origin-Agent-Cluster: is ingesteld) verandert in M101 van site-keyed naar origin-keyed. Als je dit beleid toepast of niet instelt, volgt de browser deze nieuwe standaardwaarde vanaf die versie. Als je dit beleid niet toepast, wordt deze wijziging teruggedraaid en worden documenten zonder een header Origin-Agent-Cluster: toegewezen aan site-keyed agentclusters. Als gevolg hiervan blijft de accessor document.domain standaard instelbaar. Dit komt overeen met het verouderde gedrag.
-      </translation>
 <translation id="1600340610556453828">Als je het beleid niet toepast, zet <ph name="PRODUCT_OS_NAME" /> wifi uit en kunnen gebruikers dit niet wijzigen.
 
       Als je het beleid niet toepast of niet instelt, kunnen gebruikers wifi aan- of uitzetten.</translation>

@@ -89,6 +89,7 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> dorește să restabilească setările Chrome la valorile inițiale. Astfel, pagina de pornire, pagina Filă nouă și motorul de căutare vor fi resetate, extensiile vor fi dezactivate și fixarea filelor va fi anulată. De asemenea, vor fi șterse alte date temporare și memorate în cache, cum ar fi cookie-urile, conținutul și datele despre site-uri.</translation>
 <translation id="1084096383128641877">Eliminarea acestei parole nu îți va șterge contul din <ph name="DOMAIN" />. Schimbă-ți parola sau șterge contul din <ph name="DOMAIN_LINK" /> ca să-l păstrezi în siguranță.</translation>
 <translation id="1084824384139382525">Copiază adresa linkului</translation>
+<translation id="1085064499066015002">Întotdeauna pe toate site-urile</translation>
 <translation id="1085697365578766383">A apărut o eroare la pornirea mașinii virtuale. Încearcă din nou.</translation>
 <translation id="1087965115100412394">Nu permite site-urilor să se conecteze la dispozitive MIDI</translation>
 <translation id="1088654056000736875">Chrome elimină software-ul dăunător de pe computer...</translation>
@@ -341,6 +342,7 @@
 <translation id="1343865611738742294">Permite aplicațiilor Linux să acceseze dispozitivele USB. Linux nu va păstra un dispozitiv USB după ce este eliminat.</translation>
 <translation id="1343920184519992513">Continuă de unde ai rămas și deschide un anumit set de pagini</translation>
 <translation id="1346630054604077329">Confirmă și repornește</translation>
+<translation id="1346748346194534595">Dreapta</translation>
 <translation id="1347256498747320987">Instalează actualizări și aplicații. Dacă alegi să continui, ești de acord că este posibil ca dispozitivul să descarce și să instaleze automat actualizări și aplicații de la Google, de la operatorul tău și de la producătorul dispozitivului, eventual folosind datele mobile. Unele dintre aceste aplicații pot oferi achiziții în aplicație. <ph name="BEGIN_LINK1" />Află mai multe<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Stocare Linux</translation>
 <translation id="1347975661240122359">Actualizarea va începe când bateria va ajunge la <ph name="BATTERY_LEVEL" />%.</translation>
@@ -462,6 +464,7 @@
 <translation id="1464781208867302907">Pentru preferințe privind dispozitivul, accesează Setările.</translation>
 <translation id="1465176863081977902">C&amp;opiază adresa conținutului audio</translation>
 <translation id="1465827627707997754">Felie de pizza</translation>
+<translation id="1467432559032391204">Stânga</translation>
 <translation id="1468571364034902819">Nu se poate folosi acest profil</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Adaugă fila într-un grup nou}few{Adaugă filele într-un grup nou}other{Adaugă filele într-un grup nou}}</translation>
 <translation id="1470350905258700113">Folosește acest dispozitiv</translation>
@@ -1324,7 +1327,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2307630946657910723">Caută într-o secțiune a paginii cu <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
-<translation id="230927227160767054">Această pagină dorește să instaleze un handler de serviciu.</translation>
 <translation id="2309620859903500144">Accesul acestui site la senzorii de mișcare sau de lumină a fost blocat.</translation>
 <translation id="2312219318583366810">Adresa URL a paginii</translation>
 <translation id="2314165183524574721">Setarea de vizibilitate actuală este ascunsă</translation>
@@ -1375,7 +1377,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2349896577940037438">Dacă setarea Activitatea suplimentară de pe web și din aplicații este activată, aceste date pot fi salvate în Contul tău Google. Poți să consulți datele, să le ștergi și să modifici setările contului la account.google.com.</translation>
 <translation id="2350133097354918058">S-a reîncărcat</translation>
 <translation id="2350182423316644347">Se inițializează aplicația...</translation>
-<translation id="2350796302381711542">Permiteți ca <ph name="HANDLER_HOSTNAME" /> să deschidă toate linkurile <ph name="PROTOCOL" /> în locul <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{Un element}few{{NUM_ITEMS} elemente}other{{NUM_ITEMS} de elemente}}</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Notele de pe ecranul de blocare sunt salvate automat în <ph name="LOCK_SCREEN_APP_NAME" />. Cea mai recentă notă va rămâne pe ecranul de blocare.</translation>
@@ -1448,7 +1449,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2434758125294431199">Selectează cine îți poate trimite fișiere</translation>
 <translation id="2435248616906486374">Rețea deconectată</translation>
 <translation id="2435457462613246316">Afișați parola</translation>
-<translation id="2436186046335138073">Permiteți ca <ph name="HANDLER_HOSTNAME" /> să deschidă toate linkurile <ph name="PROTOCOL" />?</translation>
 <translation id="2439626940657133600">Se încarcă <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Afișează s&amp;ursa</translation>
 <translation id="244231003699905658">Adresa nu este validă. Verifică adresa și încearcă din nou.</translation>
@@ -1966,7 +1966,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="2935225303485967257">Gestionează profilurile</translation>
 <translation id="2935654492420446828">Adaugă mai târziu un cont de la școală</translation>
 <translation id="2936851848721175671">Backup și restabilire</translation>
-<translation id="2938225289965773019">Deschide linkurile <ph name="PROTOCOL" /></translation>
 <translation id="2939908794993783865">Site-uri inactive suplimentare</translation>
 <translation id="2939938020978911855">Afișează dispozitivele Bluetooth disponibile</translation>
 <translation id="2941112035454246133">Redusă</translation>
@@ -2287,7 +2286,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="33022249435934718">Ghidaje GDI</translation>
 <translation id="3302388252085547855">Introdu justificarea...</translation>
 <translation id="3303260552072730022">O extensie a activat modul Ecran complet.</translation>
-<translation id="3303795387212510132">Permiți aplicației să deschidă linkuri <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303818374450886607">Copii</translation>
 <translation id="3303855915957856445">Nu s-au găsit rezultate de căutare</translation>
 <translation id="3304212451103136496">Reducere de <ph name="DISCOUNT_AMOUNT" /></translation>
@@ -2701,7 +2699,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="371300529209814631">Înapoi/Înainte</translation>
 <translation id="3713047097299026954">Cheia de securitate nu are date de conectare</translation>
 <translation id="3714195043138862580">Accesul dispozitivului demo a fost anulat.</translation>
-<translation id="3714633008798122362">calendar web</translation>
 <translation id="3719826155360621982">Pagina de pornire</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Tu și Google</translation>
@@ -7515,7 +7512,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8734674662128056360">Blocarea cookie-urilor terță-parte</translation>
 <translation id="873545264931343897">După ce actualizarea pluginului <ph name="PLUGIN_NAME" /> se finalizează, reîncarcă pagina pentru a-l activa</translation>
 <translation id="8736288397686080465">Acest site a fost actualizat în fundal.</translation>
-<translation id="8737685506611670901">Deschide linkurile <ph name="PROTOCOL" /> și nu <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Alege limba în care vrei să traduci pagina</translation>
 <translation id="8740247629089392745">Poți să îi dai Chromebookul utilizatorului <ph name="SUPERVISED_USER_NAME" />. Configurarea este aproape gata, apoi conținutul va putea fi explorat.</translation>
@@ -7780,7 +7776,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="9003647077635673607">Permiteți pe toate site-urile</translation>
 <translation id="9003677638446136377">Verifică din nou</translation>
 <translation id="9004754973617721124">Elimini datele și permisiunile privind site-urile pentru <ph name="SITE_NAME" />, toate site-urile asociate și aplicația instalată?</translation>
-<translation id="9008201768610948239">Ignorați</translation>
 <translation id="9008201858626224558">Butonul Înapoi din pagina cu detalii <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">Se încarcă (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">Ai vrut să modifici această pagină?</translation>
@@ -7790,7 +7785,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="9013037634206938463">Pentru a instala Linux, se recomandă un spațiu liber de cel puțin <ph name="INSTALL_SIZE" />. Pentru a elibera spațiu, șterge fișiere de pe dispozitiv.</translation>
 <translation id="901668144954885282">Fă backup în Google Drive</translation>
 <translation id="9018218886431812662">Instalare finalizată</translation>
-<translation id="901834265349196618">e-mail</translation>
 <translation id="9019062154811256702">Citește și modifică setările pentru completarea automată</translation>
 <translation id="9019894137004772119">Folosește locația. Permite aplicațiilor și serviciilor cu permisiune pentru locație să folosească locația dispozitivului tău. Google poate colecta periodic date despre locație și le poate folosi în mod anonim pentru a îmbunătăți precizia localizării și a serviciilor bazate pe locație.</translation>
 <translation id="9019956081903586892">Nu s-a putut descărca dicționarul pentru verificarea ortografiei</translation>

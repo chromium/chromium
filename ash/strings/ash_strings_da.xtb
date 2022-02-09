@@ -683,6 +683,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (højre)</translation>
 <translation id="5352250171825660495">Mørkt tema er aktiveret</translation>
 <translation id="5379115545237091094">For mange forsøg</translation>
+<translation id="5393156353051693207">Hold fingeren nede et vilkårligt sted for at omarrangere dine apps</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> oven på <ph name="IN_PLACE_APP" />, slip for at oprette mappe.</translation>
 <translation id="5397578532367286026">Denne brugers forbrug og historik kan ses af administratoren (<ph name="MANAGER_EMAIL" />) på chrome.com.</translation>
 <translation id="5400461572260843123">Kvikmenu, Tryk på søgetasten + venstre pil for at få adgang til notifikationscenteret.</translation>
@@ -973,6 +974,7 @@ Installeret for nylig</translation>
 <translation id="7378203170292176219">Træk for at vælge et område, der skal optages</translation>
 <translation id="7378594059915113390">Mediestyring</translation>
 <translation id="7378889811480108604">Tilstanden Batterisparefunktion er deaktiveret</translation>
+<translation id="7384028040782072252">Højreklik et vilkårligt sted for at omarrangere dine apps</translation>
 <translation id="7392563512730092880">Du kan altid konfigurere senere under Indstillinger.</translation>
 <translation id="7405710164030118432">Angiv forældreadgangskoden til Family Link for at låse enheden op</translation>
 <translation id="7406608787870898861">Afslut konfigurationen af dit mobilnetværk</translation>
@@ -1162,6 +1164,7 @@ Installeret for nylig</translation>
 <translation id="8563862697512465947">Indstillinger for notifikationer</translation>
 <translation id="857201607579416096">Menuen blev flyttet til nederste højre hjørne af skærmen.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
+<translation id="8598235756057743477">Sortér dine apps efter navn eller farve</translation>
 <translation id="8627191004499078455">Forbundet til <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Indstillinger for hjælpefunktioner</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" />, administreret af din administrator</translation>

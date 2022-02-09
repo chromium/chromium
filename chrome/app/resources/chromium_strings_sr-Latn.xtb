@@ -203,6 +203,7 @@ Neke funkcije će možda biti nedostupne. Navedite drugi direktorijum profila i
 <translation id="6734291798041940871">Chromium je već instaliran za sve korisnike na računaru.</translation>
 <translation id="673636774878526923">Da biste pristupali Chromium sadržaju na svim uređajima, prijavite se, pa uključite sinhronizaciju.</translation>
 <translation id="6774082503108938489">Roditelj je isključio Dozvole za sajtove, aplikacije i dodatke za Chromium. Omogućavanje ove stavke (<ph name="EXTENSION_TYPE_PARAMETER" />) nije dozvoljeno.</translation>
+<translation id="6808964260981102146">Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj nalog. Ako ne želite da veb-sajtovi ili aplikacije pristupaju informacijama o nalogu, koristite <ph name="LINK_BEGIN" />Režim gosta<ph name="LINK_END" /> u Chromium pregledaču. Google nalozima možete da upravljate i u <ph name="LINK_2_BEGIN" />Podešavanjima<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Chromium vas obaveštava ako su lozinke ugrožene</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopirano u Chromium)</translation>

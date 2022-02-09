@@ -460,6 +460,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2337852623177822836">Cài đặt do quản trị viên kiểm soát</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> muốn ghép nối</translation>
 <translation id="2346319942568447007">Hình ảnh bạn đã sao chép</translation>
+<translation id="2350796302381711542">Cho phép <ph name="HANDLER_HOSTNAME" /> mở tất cả liên kết <ph name="PROTOCOL" /> thay vì <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2354001756790975382">Dấu trang khác</translation>
 <translation id="2354430244986887761">Gần đây, Duyệt web an toàn của Google <ph name="BEGIN_LINK" />đã tìm thấy các ứng dụng có hại<ph name="END_LINK" /> trên <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Kẻ tấn công có thể thấy những hình ảnh mà bạn đang xem trên trang web này và lừa bạn bằng cách sửa đổi những hình ảnh đó.</translation>
@@ -485,6 +486,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2413528052993050574">Máy chủ này không chứng minh được rằng đó là <ph name="DOMAIN" />; chứng chỉ bảo mật của máy chủ này có thể đã bị thu hồi. Điều này có thể do định cấu hình sai hoặc có kẻ tấn công chặn kết nối của bạn.</translation>
 <translation id="2414886740292270097">Tối</translation>
 <translation id="2430968933669123598">Quản lý Tài khoản Google, nhấn phím Enter để quản lý thông tin, quyền riêng tư và chế độ bảo mật cho Tài khoản Google của bạn</translation>
+<translation id="2436186046335138073">Cho phép <ph name="HANDLER_HOSTNAME" /> mở tất cả liên kết <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Đục 4 lỗ bên phải</translation>
 <translation id="2450021089947420533">Hành trình</translation>
 <translation id="2463739503403862330">Điền</translation>
@@ -634,6 +636,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2930577230479659665">Cắt bỏ sau mỗi bản sao chép</translation>
 <translation id="2932085390869194046">Đề xuất mật khẩu...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">Mở đường liên kết <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">Máy chủ này không chứng minh được rằng đó là <ph name="DOMAIN" />; chứng chỉ bảo mật của máy chủ này là từ <ph name="DOMAIN2" />. Điều này có thể do định cấu hình sai hoặc có kẻ tấn công chặn kết nối của bạn.</translation>
 <translation id="2943895734390379394">Thời gian tải lên:</translation>
 <translation id="2948083400971632585">Bạn có thể tắt mọi proxy được định cấu hình cho kết nối từ trang cài đặt.</translation>
@@ -743,6 +746,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3288238092761586174"><ph name="URL" /> có thể cần thực hiện các bước bổ sung để xác minh khoản thanh toán của bạn</translation>
 <translation id="3293642807462928945">Hãy tìm hiểu thêm về chính sách <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Xem và quản lý mật khẩu của bạn trong phần cài đặt của Chrome</translation>
+<translation id="3303795387212510132">Cho phép ứng dụng mở liên kết <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Không tìm thấy kết quả tìm kiếm nào</translation>
 <translation id="3304073249511302126">quét tìm Bluetooth</translation>
 <translation id="3308006649705061278">Đơn vị Tổ chức (OU)</translation>
@@ -880,6 +884,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="370972442370243704">Bật tính năng Hành trình</translation>
 <translation id="3711895659073496551">Tạm ngừng</translation>
 <translation id="3712624925041724820">Giấy phép không đủ</translation>
+<translation id="3714633008798122362">lịch trên web</translation>
 <translation id="3714780639079136834">Bật dữ liệu di dộng hoặc Wi-Fi</translation>
 <translation id="3715597595485130451">Kết nối Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Kiểm tra proxy, tường lửa và cấu hình DNS<ph name="END_LINK" /></translation>
@@ -941,6 +946,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3906954721959377182">Máy tính bảng</translation>
 <translation id="3909477809443608991"><ph name="URL" /> muốn phát nội dung được bảo vệ. Thông tin định danh của thiết bị sẽ được Google xác minh và trang web này có thể truy cập vào thông tin đó.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Từ chối</translation>
 <translation id="3939773374150895049">Sử dụng WebAuthn thay cho CVC?</translation>
 <translation id="3946209740501886391">Luôn hỏi trên trang web này</translation>
 <translation id="3947595700203588284">Trang web có thể yêu cầu kết nối với thiết bị MIDI</translation>
@@ -2407,6 +2413,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8731544501227493793">Nút Quản lý mật khẩu, nhấn phím Enter để xem và quản lý các mật khẩu của bạn trong phần cài đặt của Chrome</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> của bạn do <ph name="MANAGER" /> quản lý</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, nhấn phím Tab rồi nhấn Enter để mở cửa sổ Ẩn danh mới nhằm duyệt web ở chế độ riêng tư</translation>
+<translation id="8737685506611670901">Mở đường liên kết <ph name="PROTOCOL" /> thay vì <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Để thiết lập kết nối an toàn, bạn cần đặt thời gian đúng cho đồng hồ. Nguyên nhân là do chứng chỉ mà các trang web dùng để tự nhận dạng chỉ có hiệu lực trong khoảng thời gian cụ thể. Vì đồng hồ trên thiết bị của bạn không đúng nên Chromium không thể xác minh các chứng chỉ này.</translation>
 <translation id="8740359287975076522">Không thể tìm thấy &lt;abbr id="dnsDefinition"&gt;địa chỉ DNS&lt;/abbr&gt; của <ph name="HOST_NAME" />. Đang chẩn đoán sự cố.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> là mã của bạn cho <ph name="ORIGIN" /></translation>
@@ -2484,6 +2491,7 @@ Thông tin chi tiết bổ sung:
 <translation id="9004367719664099443">Phiên thực tế ảo đang diễn ra</translation>
 <translation id="9005998258318286617">Không tải được tài liệu PDF.</translation>
 <translation id="9008201768610948239">Bỏ qua</translation>
+<translation id="901834265349196618">email</translation>
 <translation id="9020200922353704812">Yêu cầu địa chỉ thanh toán của thẻ</translation>
 <translation id="9020542370529661692">Trang này đã được dịch sang <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

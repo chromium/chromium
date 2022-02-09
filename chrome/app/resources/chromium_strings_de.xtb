@@ -201,6 +201,7 @@ Einige Funktionen stehen möglicherweise nicht zur Verfügung. Geben Sie bitte e
 <translation id="6734291798041940871">Chromium ist bereits für alle Nutzer auf Ihrem Computer installiert.</translation>
 <translation id="673636774878526923">Wenn Sie auf allen Ihren Geräten auf Ihre Chromium-Inhalte zugreifen möchten, melden Sie sich an und aktivieren Sie die Synchronisierung.</translation>
 <translation id="6774082503108938489">Dein Elternteil hat "Berechtigungen für Websites, Apps und Erweiterungen" für Chromium deaktiviert. Das Aktivieren dieser <ph name="EXTENSION_TYPE_PARAMETER" /> ist nicht zulässig.</translation>
+<translation id="6808964260981102146">Berechtigungen, die Sie Websites und Apps bereits gewährt haben, gelten möglicherweise für dieses Konto. Wenn Sie nicht möchten, dass Websites oder Apps Zugriff auf Ihre Kontoinformationen haben, können Sie den <ph name="LINK_BEGIN" />Gastmodus<ph name="LINK_END" /> des Chromium-Browsers verwenden. Sie können Ihre Google-Konten auch in den <ph name="LINK_2_BEGIN" />Einstellungen<ph name="LINK_2_END" /> verwalten.</translation>
 <translation id="6847869444787758381">Chromium wird Sie informieren, sollten Ihre Passwörter nicht mehr sicher sein</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (in Chromium kopiert)</translation>

@@ -460,6 +460,7 @@
 <translation id="2337852623177822836">તમારા વ્યવસ્થાપકે નિયંત્રિત કરેલ સેટિંગ</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" />, જોડી કરવા માગે છે</translation>
 <translation id="2346319942568447007">તમે કૉપિ કરેલી છબી</translation>
+<translation id="2350796302381711542"><ph name="REPLACED_HANDLER_TITLE" /> ના બદલે <ph name="HANDLER_HOSTNAME" /> ને બધી <ph name="PROTOCOL" /> લિંક્સ ખોલવાની મંજૂરી આપીએ?</translation>
 <translation id="2354001756790975382">અન્ય બુકમાર્ક</translation>
 <translation id="2354430244986887761">Google સલામત બ્રાઉઝિંગને તાજેતરમાં <ph name="SITE" /> પર <ph name="BEGIN_LINK" />હાનિકારક ઍપ્લિકેશન મળી<ph name="END_LINK" />.</translation>
 <translation id="2355395290879513365">તમે આ સાઇટ પર જોઈ રહ્યાં છો તે છબીઓને હુમલાખોરો જોઈ શકે છે અને તેમાં ફેરફાર કરીને તમને છેતરી શકે છે.</translation>
@@ -485,6 +486,7 @@
 <translation id="2413528052993050574">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે; તેનું સુરક્ષા પ્રમાણપત્ર રદબાતલ થયું હશે. આ કોઈ ખોટી ગોઠવણીને કારણે થયું હશે અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો છે.</translation>
 <translation id="2414886740292270097">ઘાટું</translation>
 <translation id="2430968933669123598">Google એકાઉન્ટ મેનેજ કરો, તમારા Google એકાઉન્ટમાં તમારી માહિતી, પ્રાઇવસી અને સુરક્ષા મેનેજ કરવા માટે, Enter કી દબાવો</translation>
+<translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> ને બધી <ph name="PROTOCOL" /> લિંક્સ ખોલવાની મંજૂરી આપીએ?</translation>
 <translation id="2438874542388153331">જમણી બાજુએ ચતુષ્કોણ કાણું પાડો</translation>
 <translation id="2450021089947420533">પ્રવાસ</translation>
 <translation id="2463739503403862330">ભરો</translation>
@@ -634,6 +636,7 @@
 <translation id="2930577230479659665">પ્રત્યેક કૉપિ પછી ટ્રિમ કરો</translation>
 <translation id="2932085390869194046">પાસવર્ડ સૂચવો...</translation>
 <translation id="2934466151127459956">સરકારી-દસ્તાવેજ</translation>
+<translation id="2938225289965773019"><ph name="PROTOCOL" /> લિંક્સ ખોલો</translation>
 <translation id="2941952326391522266">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે; તેનું સુરક્ષા પ્રમાણપત્ર <ph name="DOMAIN2" /> નું છે. આ કોઈ ખોટી ગોઠવણીને કારણે થયું હશે અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો છે.</translation>
 <translation id="2943895734390379394">અપલોડ કરાયાનો સમય:</translation>
 <translation id="2948083400971632585">તમે સેટિંગ પેજમાંથી કનેક્શન માટે ગોઠવવામાં આવેલ કોઈપણ પ્રોક્સીઓ બંધ કરી શકો છો.</translation>
@@ -743,6 +746,7 @@
 <translation id="3288238092761586174">તમારી ચુકવણીની ચકાસણી કરવા માટે <ph name="URL" /> દ્વારા વધારાના પગલાં લેવા જરૂરી હોઈ શકે છે</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> પૉલિસી વિશે વધુ જાણો</translation>
 <translation id="3295444047715739395">Chrome સેટિંગમાં તમારા પાસવર્ડ જુઓ અને તેને મેનેજ કરો</translation>
+<translation id="3303795387212510132">શું ઍપને <ph name="PROTOCOL_SCHEME" /> લિંક ખોલવાની મંજૂરી આપીએ?</translation>
 <translation id="3303855915957856445">કોઈ શોધ પરિણામો મળ્યાં નથી</translation>
 <translation id="3304073249511302126">બ્લૂટૂથ સ્કૅનિંગ</translation>
 <translation id="3308006649705061278">ઑર્ગેનાઇઝેશનલ યૂનિટ (OU)</translation>
@@ -880,6 +884,7 @@
 <translation id="370972442370243704">પ્રવાસ ચાલુ કરો</translation>
 <translation id="3711895659073496551">સસ્પેન્ડ કરો</translation>
 <translation id="3712624925041724820">લાઇસેંસીસ પૂર્ણ</translation>
+<translation id="3714633008798122362">વેબ કૅલેન્ડર</translation>
 <translation id="3714780639079136834">મોબાઇલ ડેટા અથવા વાઇ-ફાઇ ચાલુ કરીને</translation>
 <translation id="3715597595485130451">વાઇ-ફાઇથી કનેક્ટ કરો</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />પ્રૉક્સી, ફાયરવૉલ અને DNS ગોઠવણી ચેક કરવાનો પ્રયાસ કરો<ph name="END_LINK" /></translation>
@@ -941,6 +946,7 @@
 <translation id="3906954721959377182">ટૅબ્લેટ</translation>
 <translation id="3909477809443608991"><ph name="URL" /> સુરક્ષિત કન્ટેન્ટ ચલાવવા માગે છે. Google દ્વારા તમારા ડિવાઇસની ઓળખ ચકાસવામાં આવશે અને તે આ સાઇટ દ્વારા ઍક્સેસ કરવામાં આવી શકે છે.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">નકારો</translation>
 <translation id="3939773374150895049">CVCને બદલે WebAuthnનો ઉપયોગ કરીએ?</translation>
 <translation id="3946209740501886391">આ સાઇટ પર હંમેશાં પૂછો</translation>
 <translation id="3947595700203588284">MIDI ડિવાઇસ સાથે કનેક્ટ કરવાનું પૂછી શકે છે</translation>
@@ -1056,6 +1062,7 @@
 <translation id="4250680216510889253">નહીં</translation>
 <translation id="4253168017788158739">નોંધ</translation>
 <translation id="425582637250725228">તમે કરેલા ફેરફારો સાચવવામાં આવ્યાં ન હોઇ શકે.</translation>
+<translation id="425869179292622354">શું કોઈ વર્ચ્યુઅલ કાર્ડ વડે તેને વધુ સુરક્ષિત કરવા માગો છો?</translation>
 <translation id="4258748452823770588">ખરાબ હસ્તાક્ષર</translation>
 <translation id="4261046003697461417">સંરક્ષિત દસ્તાવેજ એનોટેટ કરી શકાતા નથી</translation>
 <translation id="4265872034478892965">તમારા વ્યવસ્થાપક દ્વારા મંજૂર</translation>
@@ -1566,6 +1573,7 @@
 <translation id="5921639886840618607">Google એકાઉન્ટમાં કાર્ડ સાચવીએ?</translation>
 <translation id="5922853866070715753">લગભગ થઈ ગયું</translation>
 <translation id="5932224571077948991">સાઇટ ઘૃણાસ્પદ અથવા ભ્રામક જાહેરાતો બતાવે છે</translation>
+<translation id="5938153366081463283">વર્ચ્યુઅલ કાર્ડ ઉમેરો</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> ખોલી રહ્યાં છે…</translation>
 <translation id="5951495562196540101">ઉપભોક્તા એકાઉન્ટ સાથે નોંધણી કરાવી શકાતી નથી (પૅકેજમાં લાઇસન્સ ઉપલબ્ધ છે).</translation>
@@ -2190,6 +2198,7 @@
 <translation id="7976214039405368314">ઘણી બધી વિનંતીઓ</translation>
 <translation id="7977538094055660992">આઉટપુટ ડિવાઇસ</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="7981260203882740562">આની સાથે લિંક કર્યું</translation>
 <translation id="798134797138789862">વર્ચ્યુઅલ રિયાલિટી ડિવાઇસનો અને ડેટાનો ઉપયોગ કરવાનું પૂછી શકે છે</translation>
 <translation id="7984945080620862648">તમે અત્યારે <ph name="SITE" />ની મુલાકાત લઈ શકતાં નથી કારણ કે વેબસાઇટે સમજાય નહીં તેવા ઓળખપત્રો મોકલ્યા છે જેની પર Chrome પ્રક્રિયા કરી શકતું નથી. નેટવર્ક ભૂલો અને હુમલા સામાન્ય રીતે અસ્થાયી છે, તેથી આ પેજ સંભવિત રીતે પછીથી કાર્ય કરશે.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2406,6 +2415,7 @@
 <translation id="8731544501227493793">પાસવર્ડ મેનેજ કરો બટન, Chrome સેટિંગમાં તમારા પાસવર્ડ જોવા અને તેમને મેનેજ કરવા માટે Enter દબાવો</translation>
 <translation id="8734529307927223492"><ph name="MANAGER" /> દ્વારા તમારા <ph name="DEVICE_TYPE" />ને મેનેજ કરવામાં આવે છે</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ખાનગી રીતે બ્રાઉઝ કરવા નવી છુપી વિન્ડો ખોલવા માટે Tab પછી Enter દબાવો</translation>
+<translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> ને બદલે <ph name="PROTOCOL" /> લિંક્સ ખોલો</translation>
 <translation id="8738058698779197622">એક સુરક્ષિત કનેક્શન સ્થાપિત કરવા માટે, તમારું ઘડિયાળ યોગ્ય રીતે સેટ હોવું જરૂરી છે. આનું કારણ એ કે  વેબસાઇટ્સ તેઓને ઓળખવા માટે જે પ્રમાણપત્રોનો ઉપયોગ કરે છે તે ચોક્કસ સમય અવધિ માટે જ માન્ય હોય છે. તમારા ઉપકરણની ઘડિયાળ ખોટી હોવાને લીધે, Chromium આ પ્રમાણપત્રોને ચકાસી શકતું નથી.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> નું &lt;abbr id="dnsDefinition"&gt;DNS સરનામું&lt;/abbr&gt; શોધી શકાયું નથી. સમસ્યાનું નિદાન કરી રહ્યાં છીએ.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> એ <ph name="ORIGIN" /> માટેનો તમારો કોડ છે</translation>
@@ -2483,6 +2493,7 @@
 <translation id="9004367719664099443">VR સત્ર ચાલુ છે</translation>
 <translation id="9005998258318286617">PDF દસ્તાવેજ લોડ કરવામાં નિષ્ફળ થયાં.</translation>
 <translation id="9008201768610948239">અવગણો</translation>
+<translation id="901834265349196618">ઇમેઇલ</translation>
 <translation id="9020200922353704812">કાર્ડનું બિલિંગ સરનામું આવશ્યક છે</translation>
 <translation id="9020542370529661692">આ પેજનો <ph name="TARGET_LANGUAGE" />માં અનુવાદ કરવામાં આવ્યો છે</translation>
 <translation id="9020742383383852663">A8</translation>

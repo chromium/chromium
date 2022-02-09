@@ -425,6 +425,7 @@
 <translation id="22081806969704220">ট্রে ৩</translation>
 <translation id="2212735316055980242">নীতি পাওয়া যায়নি</translation>
 <translation id="2213606439339815911">এন্ট্রিগুলি আনা হচ্ছে...</translation>
+<translation id="2213612003795704869">পৃষ্ঠা প্রিন্ট করা হয়েছে</translation>
 <translation id="2215727959747642672">ফাইল এডিট করা</translation>
 <translation id="2218879909401188352"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-এ যে আক্রমণকারীরা এই মুহূর্তে সক্রিয় আছে, তারা এমন বিপজ্জনক অ্যাপ ইনস্টল করে দিতে পারে যেগুলি আপনার ডিভাইসের ক্ষতি করতে, আপনার মোবাইলের বিলে লুকানো চার্জ যোগ করতে বা আপনার ব্যক্তিগত তথ্য চুরি করতে পারে৷ <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2224337661447660594">ইন্টারনেট কানেকশন নেই</translation>
@@ -461,6 +462,7 @@
 <translation id="2337852623177822836">সেটিংস আপনার প্রশাসক নিয়ন্ত্রণ করে</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> এদের সঙ্গে যুক্ত হতে চাচ্ছে</translation>
 <translation id="2346319942568447007">আপনার কপি করা ছবি</translation>
+<translation id="2350796302381711542"><ph name="REPLACED_HANDLER_TITLE" /> এর পরিবর্তে সমস্ত <ph name="PROTOCOL" /> লিঙ্কগুলি খুলতে <ph name="HANDLER_HOSTNAME" />কে অনুমোদিত করবেন?</translation>
 <translation id="2354001756790975382">অন্য বুকমার্ক</translation>
 <translation id="2354430244986887761">Google নিরাপদ ব্রাউজিং সম্প্রতি <ph name="SITE" /> এ <ph name="BEGIN_LINK" />ক্ষতিকারক অ্যাপ<ph name="END_LINK" /> খুঁজে পেয়েছে।</translation>
 <translation id="2355395290879513365">আপনি এই সাইটে যেসব ছবি দেখছেন, আক্রমণকারীরা সেগুলি দেখতে পেতে পারে এবং সেগুলি পরিবর্তন করে আপনাকে বোকা বানাতে পারে।</translation>
@@ -486,6 +488,7 @@
 <translation id="2413528052993050574">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেট প্রত্যাহার করা হতে পারে। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
 <translation id="2414886740292270097">অন্ধকার</translation>
 <translation id="2430968933669123598">Google অ্যাকাউন্ট ম্যানেজ করুন, আপনার Google অ্যাকাউন্টে নিজের সম্পর্কে তথ্য, গোপনীয়তা এবং সুরক্ষা ম্যানেজ করতে Enter প্রেস করুন</translation>
+<translation id="2436186046335138073">সমস্ত <ph name="PROTOCOL" /> লিঙ্কগুলিকে খুলতে <ph name="HANDLER_HOSTNAME" />কে সক্ষম করবেন?</translation>
 <translation id="2438874542388153331">ডানদিকে কোয়াড পাঞ্চ</translation>
 <translation id="2450021089947420533">অ্যাক্টিভিটির সিরিজ</translation>
 <translation id="2463739503403862330">পূরণ করুন</translation>
@@ -635,6 +638,7 @@
 <translation id="2930577230479659665">প্রতিটি কপির পর ট্রিম করুন</translation>
 <translation id="2932085390869194046">পাসওয়ার্ড প্রস্তাব করুন…</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019"><ph name="PROTOCOL" /> লিঙ্কগুলি খুলুন</translation>
 <translation id="2941952326391522266">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেট <ph name="DOMAIN2" /> থেকে পাওয়া। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
 <translation id="2943895734390379394">যে সময়ে আপলোড করা হয়েছিল:</translation>
 <translation id="2948083400971632585">আপনি সেটিংস পৃষ্ঠা থেকে কানেকশনের জন্য কনফিগার করা যেকোনো প্রক্সি নিষ্ক্রিয় করতে পারেন৷</translation>
@@ -744,6 +748,7 @@
 <translation id="3288238092761586174">আপনার পেমেন্ট যাচাই করতে, <ph name="URL" />হয়ত আরও কিছু করতে পারে</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> নীতি সম্পর্কে আরও জানুন</translation>
 <translation id="3295444047715739395">Chrome সেটিংস থেকে আপনার পাসওয়ার্ড দেখুন ও ম্যানেজ করুন</translation>
+<translation id="3303795387212510132"><ph name="PROTOCOL_SCHEME" /> লিঙ্ক খুলতে অ্যাপকে অনুমতি দেবেন?</translation>
 <translation id="3303855915957856445">কোনো সার্চ ফলাফল পাওয়া যায়নি</translation>
 <translation id="3304073249511302126">ব্লুটুথ স্ক্যানিং</translation>
 <translation id="3308006649705061278">অর্গানাইজেশনাল ইউনিট (OU) </translation>
@@ -881,6 +886,7 @@
 <translation id="370972442370243704">অ্যাক্টিভিটির সিরিজ চালু করুন</translation>
 <translation id="3711895659073496551">সাসপেন্ড</translation>
 <translation id="3712624925041724820">লাইসেন্সগুলির মেয়াদ শেষ হয়ে গেছে</translation>
+<translation id="3714633008798122362">ওয়েব ক্যালেন্ডার</translation>
 <translation id="3714780639079136834">মোবাইল ডেটা বা ওয়াই-ফাই চালু করে দেখুন</translation>
 <translation id="3715597595485130451">ওয়াই-ফাইতে কানেক্ট করুন</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />প্রক্সি, ফায়ারওয়াল এবং ডিএনএস কনফিগারেশন পরীক্ষা করে দেখুন<ph name="END_LINK" /></translation>
@@ -942,6 +948,7 @@
 <translation id="3906954721959377182">ট্যাবলেট</translation>
 <translation id="3909477809443608991"><ph name="URL" /> সুরক্ষিত কন্টেন্ট চালাতে চায়। আপনার ডিভাইসের পরিচয় Google যাচাই করে দেখবে এবং এই সাইট সম্ভবত সেটি অ্যাক্সেস করবে।</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">অস্বীকার</translation>
 <translation id="3939773374150895049">সিভিসি কোডের পরিবর্তে WebAuthn ব্যবহার করবেন?</translation>
 <translation id="3946209740501886391">এই সাইটে সর্বদা জিজ্ঞাসা করুন</translation>
 <translation id="3947595700203588284">MIDI ডিভাইসের সাথে কানেক্ট করতে অনুমতি চাইতে পারে</translation>
@@ -963,6 +970,7 @@
 <translation id="3990250421422698716">জগ অফসেট</translation>
 <translation id="3996311196211510766"><ph name="ORIGIN" /> সাইট থেকে অনুরোধ করা হয়েছে যে এতে করা সমস্ত অনুরোধের ক্ষেত্রে
     একটি 'অরিজিন নীতি' প্রয়োগ করা হোক, কিন্তু বর্তমানে এই নীতি কার্যকর করা যাচ্ছে না।</translation>
+<translation id="4009243425692662128">আপনার প্রিন্ট করা পৃষ্ঠার কন্টেন্ট বিশ্লেষণের জন্য Google Cloud বা থার্ড-পার্টিকে পাঠানো হয়েছে। যেমন, কোনও সংবেদনশীল ডেটা আছে কিনা জানার জন্য এটি হয়ত স্ক্যান করা হতে পারে।</translation>
 <translation id="4010758435855888356">স্টোরেজ অ্যাক্সেসের অনুমতি দেবেন?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{পিডিএফ ডকুমেন্টে {COUNT}টি পৃষ্ঠা আছে}one{পিডিএফ ডকুমেন্টে {COUNT}টি পৃষ্ঠা আছে}other{পিডিএফ ডকুমেন্টে {COUNT}টি পৃষ্ঠা আছে}}</translation>
 <translation id="4023431997072828269">এই ফর্মটি এমন কানেকশন ব্যবহার করে জমা দেওয়া হয়েছে যা নিরাপদ নয়, তাই আপনার তথ্য অন্যান্য ব্যবহারকারীরা দেখতে পাবেন।</translation>
@@ -1057,6 +1065,7 @@
 <translation id="4250680216510889253">না</translation>
 <translation id="4253168017788158739">টিকা</translation>
 <translation id="425582637250725228">আপনার করা পরিবর্তনগুলি সংরক্ষণ নাও করা হতে পারে।</translation>
+<translation id="425869179292622354">ভার্চুয়াল কার্ডের মাধ্যমে এটি আরও সুরক্ষিত করতে চান?</translation>
 <translation id="4258748452823770588">ত্রুটিপূর্ণ স্বাক্ষর</translation>
 <translation id="4261046003697461417">সুরক্ষিত ডকুমেন্ট ব্যাখ্যা করা যাবে না</translation>
 <translation id="4265872034478892965">আপনার প্রশাসক অনুমতি দিয়েছে</translation>
@@ -1567,6 +1576,7 @@
 <translation id="5921639886840618607">Google অ্যাকাউন্টে কার্ড সেভ করবেন?</translation>
 <translation id="5922853866070715753">প্রায় শেষ</translation>
 <translation id="5932224571077948991">সাইট ব্যাঘাত সৃষ্টিকারী বা বিভ্রান্তিকর বিজ্ঞাপন দেখায়</translation>
+<translation id="5938153366081463283">ভার্চুয়াল কার্ড যোগ করুন</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> খুলছে…</translation>
 <translation id="5951495562196540101">ক্রেতার অ্যাকাউন্টের মাধ্যমে এনরোল করা যাচ্ছে না (প্যাকেজ লাইসেন্স পাওয়া যাবে)৷</translation>
@@ -2190,6 +2200,7 @@
 <translation id="7976214039405368314">অত্যধিক অনুরোধ</translation>
 <translation id="7977538094055660992">আউটপুট ডিভাইস</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="7981260203882740562">এর সাথে লিঙ্ক করা আছে</translation>
 <translation id="798134797138789862">ভার্চুয়াল রিয়েলিটি ডিভাইস ও ডেটা ব্যবহার করতে অনুমতি চাইতে পারে</translation>
 <translation id="7984945080620862648">আপনি <ph name="SITE" /> এ যেতে পারবেন না কারণ অসম্পূর্ণ শংসাপত্র পাঠিয়েছে যেটি Chrome প্রক্রিয়া করতে পারে না।  নেটওয়ার্ক ত্রুটি এবং আক্রমণ সাধারণত সাময়িকভাবে হয়, তাই এই পৃষ্ঠা সম্ভবত পরে কাজ করবে।</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2406,6 +2417,7 @@
 <translation id="8731544501227493793">পাসওয়ার্ড ম্যানেজ করার বোতাম, Chrome সেটিংসে আপনার পাসওয়ার্ড দেখতে ও ম্যানেজ করতে Enter প্রেস করুন</translation>
 <translation id="8734529307927223492">আপনার <ph name="DEVICE_TYPE" />, <ph name="MANAGER" />-এর মাধ্যমে ম্যানেজ করা হয়</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, গোপনে ব্রাউজিংয়ের জন্য নতুন ছদ্মবেশী উইন্ডো খুলতে প্রথমে Tab আর তারপরে Enter প্রেস করুন</translation>
+<translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" />-এর পরিবর্তে <ph name="PROTOCOL" /> লিঙ্কসমূহ খুলুন</translation>
 <translation id="8738058698779197622">নিরাপদ নেটওয়ার্ক সংযোগ স্থাপন করতে আপনার ঘড়িকে সঠিকভাবে সেট করতে হবে৷ নিরাপদ সংযোগ স্থাপন করার জন্য নিজেদের শনাক্ত করার জন্য ওয়েবসাইটগুলি যে শংসাপত্রগুলি ব্যবহার করে, সেগুলি শুধুমাত্র নির্দিষ্ট সময়ের জন্য বৈধ থাকে৷ যেহেতু আপনার ডিভাইসের ঘড়িটি ভুল, সেই জন্য Chromium সঠিকভাবে শংসাপত্রগুলি পরীক্ষা করতে পারে না৷</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> এর &lt;abbr id="ডিএনএসDefinition"&gt;ডিএনএস ঠিকানা&lt;/abbr&gt; পাওয়া যায়নি। সমস্যা নির্ণয় করা হচ্ছে।</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> হল আপনার <ph name="ORIGIN" />-এর কোড</translation>
@@ -2483,6 +2495,7 @@
 <translation id="9004367719664099443">ভিআর (VR) সেশন চলছে</translation>
 <translation id="9005998258318286617">পিডিএফ ডকুমেন্ট লোড করা যায়নি।</translation>
 <translation id="9008201768610948239">উপেক্ষা করুন</translation>
+<translation id="901834265349196618">ইমেল আইডি</translation>
 <translation id="9020200922353704812">কার্ডের বিলিং ঠিকানা প্রয়োজন</translation>
 <translation id="9020542370529661692">এই পৃষ্ঠাটি <ph name="TARGET_LANGUAGE" /> এ অনুবাদ করা হয়েছে</translation>
 <translation id="9020742383383852663">A8</translation>

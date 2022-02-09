@@ -459,6 +459,7 @@
 <translation id="2337852623177822836">ನಿಮ್ಮ ನಿರ್ವಾಹಕದಿಂದ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿಯಂತ್ರಿಸಲಾಗಿದೆ</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ಜೋಡಿಸಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="2346319942568447007">ನೀವು ನಕಲಿಸಿದ ಚಿತ್ರ</translation>
+<translation id="2350796302381711542"><ph name="REPLACED_HANDLER_TITLE" /> ನ ಬದಲಿಗೆ ಎಲ್ಲಾ <ph name="PROTOCOL" /> ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಲು <ph name="HANDLER_HOSTNAME" /> ಗೆ ಅನುಮತಿಸುವುದೇ?</translation>
 <translation id="2354001756790975382">ಇತರ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
 <translation id="2354430244986887761">Google ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್‌ ಇತ್ತೀಚಿಗೆ <ph name="SITE" /> ನಲ್ಲಿ <ph name="BEGIN_LINK" />ಹಾನಿಕಾರಕ ಪ್ರೋಗ್ರಾಂಗಳನ್ನು ಕಂಡುಹಿಡಿದಿದೆ<ph name="END_LINK" />.</translation>
 <translation id="2355395290879513365">ಈ ಸೈಟ್‌ನಲ್ಲಿ ನೀವು ನೋಡುತ್ತಿರುವ ಚಿತ್ರಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಮತ್ತು ಅವುಗಳನ್ನು ಮಾರ್ಪಡಿಸುವ ಮೂಲಕ ನಿಮ್ಮನ್ನು ವಂಚಿಸಲು ದಾಳಿಕೋರರಿಗೆ ಸಾಧ್ಯವಾಗುತ್ತಿರಬಹುದು.</translation>
@@ -484,6 +485,7 @@
 <translation id="2413528052993050574">ಈ ಸರ್ವರ್ <ph name="DOMAIN" /> ಆಗಿದೆ ಎಂಬುದನ್ನು ಸಾಬೀತುಪಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ; ಅದರ ಸುರಕ್ಷತಾ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಹಿಂತೆಗೆದುಕೊಳ್ಳಲಾಗಿರಬಹುದು. ಇದು ತಪ್ಪು ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ಅಥವಾ ಆಕ್ರಮಣಕಾರರು ನಿಮ್ಮ ಸಂಪರ್ಕದಲ್ಲಿ ಒಳನುಸುಳಿರುವುದರಿಂದ ಆಗಿರಬಹುದು.</translation>
 <translation id="2414886740292270097">ಗಾಢ</translation>
 <translation id="2430968933669123598">Google ಖಾತೆಯನ್ನು ನಿರ್ವಹಿಸಿ, ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ನಿಮ್ಮ ಮಾಹಿತಿ, ಗೌಪ್ಯತೆ ಮತ್ತು ಸುರಕ್ಷತೆಯನ್ನು ನಿರ್ವಹಿಸಲು Enter ಒತ್ತಿ</translation>
+<translation id="2436186046335138073"><ph name="PROTOCOL" /> ಎಲ್ಲಾ ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಲು <ph name="HANDLER_HOSTNAME" /> ಗೆ ಅನುಮತಿಸುವುದೇ?</translation>
 <translation id="2438874542388153331">ಬಲಭಾಗದಲ್ಲಿ ನಾಲ್ಕು ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>
 <translation id="2450021089947420533">ಪ್ರಯಾಣಗಳು</translation>
 <translation id="2463739503403862330">ಭರ್ತಿ ಮಾಡು</translation>
@@ -633,6 +635,7 @@
 <translation id="2930577230479659665">ಪ್ರತಿ ಮುದ್ರಣಪ್ರತಿಯ ನಂತರ ಟ್ರಿಮ್ ಮಾಡಿ</translation>
 <translation id="2932085390869194046">ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೂಚಿಸಿ...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019"><ph name="PROTOCOL" /> ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="2941952326391522266">ಈ ಸರ್ವರ್ <ph name="DOMAIN" /> ಆಗಿದೆ ಎಂಬುದನ್ನು ಸಾಬೀತುಪಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ; ಅದರ ಸುರಕ್ಷತಾ ಪ್ರಮಾಣಪತ್ರವು <ph name="DOMAIN2" /> ದಿಂದ ಆಗಿದೆ. ಇದು ತಪ್ಪು ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ಅಥವಾ ಆಕ್ರಮಣಕಾರರು ನಿಮ್ಮ ಸಂಪರ್ಕದಲ್ಲಿ ಒಳನುಸುಳಿರುವುದರಿಂದ ಆಗಿರಬಹುದು.</translation>
 <translation id="2943895734390379394">ಅಪ್‌ಲೋಡ್ ಮಾಡಿದ ಸಮಯ:</translation>
 <translation id="2948083400971632585">ಸಂಪರ್ಕಕ್ಕಾಗಿ ಕಾನ್ಫಿಗರ್ ಮಾಡಲಾಗಿರುವ ಯಾವುದೇ ಪ್ರಾಕ್ಸಿಗಳನ್ನು ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಪುಟದಿಂದ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಬಹುದು.</translation>
@@ -740,6 +743,7 @@
 <translation id="3288238092761586174">ನಿಮ್ಮ ಪಾವತಿಯನ್ನು ಪರಿಶೀಲಿಸಲು <ph name="URL" /> ಗೆ ಹೆಚ್ಚುವರಿ ಹಂತಗಳನ್ನು ಅನುಸರಿಸಬೇಕಾಗಬಹುದು</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> ಕಾರ್ಯನೀತಿಯ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿದುಕೊಳ್ಳಿ</translation>
 <translation id="3295444047715739395">Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="3303795387212510132"><ph name="PROTOCOL_SCHEME" /> ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಲು ಆ್ಯಪ್‌ಗೆ ಅನುಮತಿಸಬೇಕೆ?</translation>
 <translation id="3303855915957856445">ಯಾವುದೇ ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳು ಕಂಡುಬಂದಿಲ್ಲ</translation>
 <translation id="3304073249511302126">ಬ್ಲೂಟೂತ್ ಸ್ಕ್ಯಾನಿಂಗ್</translation>
 <translation id="3308006649705061278">ಸಂಸ್ಥೆ ಘಟಕ (OU)</translation>
@@ -876,6 +880,7 @@
 <translation id="370972442370243704">ಪ್ರಯಾಣಗಳನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="3711895659073496551">ಅಮಾನತು</translation>
 <translation id="3712624925041724820">ಪರವಾನಗಿಗಳು ಬರಿದಾಗಿವೆ</translation>
+<translation id="3714633008798122362">ವೆಬ್ ಕ್ಯಾಲೆಂಡರ್</translation>
 <translation id="3714780639079136834">ಮೊಬೈಲ್ ಡೇಟಾ ಅಥವಾ ವೈ-ಫೈ ಆನ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3715597595485130451">ವೈ-ಫೈಗೆ ಸಂಪರ್ಕಿಸಿ</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />ಪ್ರಾಕ್ಸಿ, ಫೈರ್‌ವಾಲ್ ಮತ್ತು DNS ಕಾನ್ಫಿಗರೇಶನ್‌‌ ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ<ph name="END_LINK" /></translation>
@@ -937,6 +942,7 @@
 <translation id="3906954721959377182">ಟ್ಯಾಬ್ಲೆಟ್</translation>
 <translation id="3909477809443608991"><ph name="URL" />, ಸಂರಕ್ಷಿತ ವಿಷಯವನ್ನು ಪ್ಲೇ ಮಾಡಲು ಬಯಸುತ್ತದೆ. ನಿಮ್ಮ ಸಾಧನದ ಗುರುತನ್ನು Google ಪರಿಶೀಲಿಸುತ್ತದೆ ಮತ್ತು ಅದಕ್ಕೆ ಈ ಸೈಟ್ ಪ್ರವೇಶ ಪಡೆಯಬಹುದು.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">ನಿರಾಕರಿಸಿ</translation>
 <translation id="3939773374150895049">CVC ಬದಲಿಗೆ WebAuthn ಬಳಸುವಿರಾ?</translation>
 <translation id="3946209740501886391">ಯಾವಾಗಲೂ ಈ ಸೈಟ್‌ನಲ್ಲಿ ಕೇಳಿ</translation>
 <translation id="3947595700203588284">MIDI ಸಾಧನಗಳಿಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಕೇಳಬಹುದು</translation>
@@ -1048,6 +1054,7 @@
 <translation id="4250680216510889253">ಇಲ್ಲ</translation>
 <translation id="4253168017788158739">ಟಿಪ್ಪಣಿ</translation>
 <translation id="425582637250725228">ನೀವು ಮಾಡಿದ ಬದಲಾವಣೆಗಳನ್ನು ಉಳಿಸಲಾಗದೇ ಇರಬಹುದು.</translation>
+<translation id="425869179292622354">ವರ್ಚುವಲ್ ಕಾರ್ಡ್‌ನ ಮೂಲಕ ಅದನ್ನು ಮತ್ತಷ್ಟು ಸುರಕ್ಷಿತವಾಗಿಸಬೇಕೇ?</translation>
 <translation id="4258748452823770588">ತಪ್ಪಾದ ಸಹಿ</translation>
 <translation id="4261046003697461417">ಸಂರಕ್ಷಿತ ಡಾಕ್ಯುಮೆಂಟ್‌ಗಳನ್ನು ಟಿಪ್ಪಣಿ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="4265872034478892965">ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಂದ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
@@ -1558,6 +1565,7 @@
 <translation id="5921639886840618607">Google ಖಾತೆಯಲ್ಲಿ ಕಾರ್ಡ್ ಅನ್ನು ಉಳಿಸಬೇಕೇ?</translation>
 <translation id="5922853866070715753">ಬಹುತೇಕ ಮುಗಿದಿದೆ</translation>
 <translation id="5932224571077948991">ಅತಿಕ್ರಮಣಕಾರಿಯಾಗಿರುವ ಅಥವಾ ತಪ್ಪುದಾರಿಗೆಳೆಯುವ ಜಾಹೀರಾತುಗಳನ್ನು ಸೈಟ್ ತೋರಿಸುತ್ತದೆ</translation>
+<translation id="5938153366081463283">ವರ್ಚುವಲ್ ಕಾರ್ಡ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> ತೆರೆಯಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="5951495562196540101">ಗ್ರಾಹಕರ ಖಾತೆಯ ಮೂಲಕ ನೋಂದಣಿ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ (ಪ್ಯಾಕೇಜ್ ಮಾಡಲಾದ ಪರವಾನಗಿ ಲಭ್ಯವಿದೆ).</translation>
@@ -2180,6 +2188,7 @@
 <translation id="7976214039405368314">ಅತೀ ಹೆಚ್ಚು ವಿನಂತಿಗಳು</translation>
 <translation id="7977538094055660992">ಔಟ್‌ಪುಟ್ ಸಾಧನ</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="7981260203882740562">ಇದರೊಂದಿಗೆ ಲಿಂಕ್‌ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="798134797138789862">ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ ಸಾಧನಗಳು ಮತ್ತು ಡೇಟಾವನ್ನು ಬಳಸಲು ಕೇಳಬಹುದು</translation>
 <translation id="7984945080620862648">ನೀವು ಸದ್ಯಕ್ಕೆ <ph name="SITE" /> ಗೆ ಭೇಟಿ ನೀಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಏಕೆಂದರೆ, Chrome ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲದ ಸಂಘರ್ಷನೀಯ ರುಜುವಾತುಗಳನ್ನು ವೆಬ್‌ಸೈಟ್ ಕಳುಹಿಸಿದೆ. ನೆಟ್‌ವರ್ಕ್ ದೋಷಗಳು ಮತ್ತು ಆಕ್ರಮಣಗಳು ತಾತ್ಕಾಲಿಕವಾಗಿರುತ್ತವೆ, ಹೀಗಾಗಿ ಈ ಪುಟವು ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಕಾರ್ಯ ನಿರ್ವಹಿಸಬಹುದು.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2397,6 +2406,7 @@
 <translation id="8731544501227493793">ಪಾಸ್‌ವರ್ಡ್‌ಗಳ ಬಟನ್ ಅನ್ನು ನಿರ್ವಹಿಸಿ, ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು Chrome ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ವೀಕ್ಷಿಸಲು ಮತ್ತು ನಿರ್ವಹಿಸಲು ಎಂಟರ್ ಒತ್ತಿರಿ</translation>
 <translation id="8734529307927223492">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಸಾಧನವನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತದೆ</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ಖಾಸಗಿಯಾಗಿ ಬ್ರೌಸ್ ಮಾಡಲು ಹೊಸ ಅಜ್ಞಾತ ವಿಂಡೋ ಒಂದನ್ನು ತೆರೆಯಲು, Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
+<translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> ಬದಲಾಗಿ <ph name="PROTOCOL" /> ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8738058698779197622">ಸುರಕ್ಷಿತ ಸಂಪರ್ಕವನ್ನು ಸ್ಥಾಪಿಸಲು, ನಿಮ್ಮ ಗಡಿಯಾರವನ್ನು ಸರಿಯಾಗಿ ಹೊಂದಿಸುವ ಅಗತ್ಯವಿದೆ. ವೆಬ್‌ಸೈಟ್‌ಗಳು ತಮ್ಮನ್ನು ಗುರುತಿಸಲು ಬಳಸುವ ಪ್ರಮಾಣಪತ್ರಗಳು ಸಮಯದ ನಿರ್ದಿಷ್ಟ ಅವಧಿಗಳಲ್ಲಿ ಮಾತ್ರ ಮಾನ್ಯವಾಗಿರುವ ಕಾರಣ ಹೀಗಾಗುತ್ತದೆ. ನಿಮ್ಮ ಸಾಧನದ ಗಡಿಯಾರವು ತಪ್ಪಾಗಿರುವ ಕಾರಣ, Chromium ಗೆ ಈ ಪ್ರಮಾಣಪತ್ರಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> ನ &lt;abbr id="dnsDefinition"&gt;DNS ವಿಳಾಸ&lt;/abbr&gt; ಕಂಡುಬರಲಿಲ್ಲ. ಸಮಸ್ಯೆಯನ್ನು ಪತ್ತೆಹಚ್ಚಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="8742371904523228557"><ph name="ORIGIN" /> ಗಾಗಿ ನಿಮ್ಮ ಕೋಡ್ <ph name="ONE_TIME_CODE" /> ಆಗಿದೆ</translation>
@@ -2474,6 +2484,7 @@
 <translation id="9004367719664099443">VR ಸೆಶನ್ ಪ್ರಗತಿಯಲ್ಲಿದೆ</translation>
 <translation id="9005998258318286617">PDF ಡಾಕ್ಯುಮೆಂಟ್ ಅನ್ನು ಲೋಡ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="9008201768610948239">ನಿರ್ಲಕ್ಷಿಸಿ</translation>
+<translation id="901834265349196618">ಇಮೇಲ್</translation>
 <translation id="9020200922353704812">ಕಾರ್ಡ್‌ ಬಿಲ್ಲಿಂಗ್ ವಿಳಾಸದ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="9020542370529661692">ಈ ಪುಟವನ್ನು <ph name="TARGET_LANGUAGE" /> ಗೆ ಅನುವಾದಿಸಲಾಗಿದೆ</translation>
 <translation id="9020742383383852663">A8</translation>

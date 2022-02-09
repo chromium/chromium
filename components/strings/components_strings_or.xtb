@@ -456,6 +456,7 @@
 <translation id="2337852623177822836">ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ବାରା ସେଟିଂ ନିୟନ୍ତ୍ରଣ କରାଯାଇଛି</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ପେୟାର୍ କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="2346319942568447007">ଆପଣ ଯେଉଁ ଛବି କପି କରିଥିଲେ</translation>
+<translation id="2350796302381711542"><ph name="REPLACED_HANDLER_TITLE" /> ପରିବର୍ତ୍ତେ ସମସ୍ତ <ph name="PROTOCOL" /> ଲିଙ୍କ୍‍ଗୁଡ଼ିକୁ ଖୋଲିବା ପାଇଁ <ph name="HANDLER_HOSTNAME" />କୁ ଅନୁମତି ଦେବେ କି?</translation>
 <translation id="2354001756790975382">ଅନ୍ୟ ବୁକମାର୍କସ୍</translation>
 <translation id="2354430244986887761">Google ସେଫ୍ ବ୍ରାଉଜିଂକୁ ସମ୍ପ୍ରତି <ph name="SITE" />ରେ <ph name="BEGIN_LINK" />ହାନିକାରକ ଆପ୍ ମିଳିଲା<ph name="END_LINK" />।</translation>
 <translation id="2355395290879513365">ଆପଣ ଏହି ସାଇଟ୍‌ରେ ଦେଖୁଥିବା ଛବିଗୁଡ଼ିକୁ ଆକ୍ରମଣକାରୀ ଦେଖିବାରେ ସକ୍ଷମ ହୋ‍ଇପାରେ ଏବଂ ସେଗୁଡ଼ିକୁ ସଂଶୋଧନ କରି ଆପଣଙ୍କ ସହିତ ଛଳନା କରିପାରେ।</translation>
@@ -481,6 +482,7 @@
 <translation id="2413528052993050574">ଏହି ସର୍ଭର୍ ଏହା ପ୍ରମାଣ କରିପାରିଲା ନାହିଁ ଯେ, ଏହା ଏକ <ph name="DOMAIN" /> ଅଟେ; ଏହାର ସୁରକ୍ଷା ସାର୍ଟିଫିକେଟ୍ ପ୍ରତ୍ୟାହାର କରାଯାଇଥାଇପାରେ। ଏହା ଏକ ଭୁଲ୍ କନଫିଗ୍‍ରେସନ୍ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କର ସଂଯୋଗକୁ ପ୍ରତିରୋଧ କରୁଥିବା କାରଣରୁ ହୋଇପାରେ।</translation>
 <translation id="2414886740292270097">ଗାଢ଼</translation>
 <translation id="2430968933669123598">Google ଆକାଉଣ୍ଟ ପରିଚାଳନା କରନ୍ତୁ, ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ଆପଣଙ୍କର ସୂଚନା, ଗୋପନୀୟତା ଏବଂ ସୁରକ୍ଷାକୁ ପରିଚାଳନା କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
+<translation id="2436186046335138073">ସମସ୍ତ <ph name="PROTOCOL" /> ଲିଙ୍କ୍ ଖୋଲିବା ପାଇଁ <ph name="HANDLER_HOSTNAME" />କୁ ଅନୁମତି ଦେବେ?</translation>
 <translation id="2438874542388153331">ଡାହାଣ ପଟରେ ଚାରୋଟି ପଞ୍ଚ୍</translation>
 <translation id="2450021089947420533">ସନ୍ଧାନଗୁଡ଼ିକ</translation>
 <translation id="2463739503403862330">ପୂରଣ କରନ୍ତୁ</translation>
@@ -630,6 +632,7 @@
 <translation id="2930577230479659665">ପ୍ରତ୍ୟେକ କପି ପରେ ଟ୍ରିମ୍ କରନ୍ତୁ</translation>
 <translation id="2932085390869194046">ପାସ୍‌ୱର୍ଡ ପ୍ରସ୍ତାବ କରନ୍ତୁ...</translation>
 <translation id="2934466151127459956">ସରକାରୀ-ଚିଠି</translation>
+<translation id="2938225289965773019"><ph name="PROTOCOL" /> ଲିଙ୍କ୍‌ ଖୋଲନ୍ତୁ</translation>
 <translation id="2941952326391522266">ଏହା <ph name="DOMAIN" /> ଅଟେ ବୋଲି ଏହି ସର୍ଭର୍ ପ୍ରମାଣ କରିପାରିଲା ନାହିଁ; ଏହାର ସୁରକ୍ଷା ସାର୍ଟିଫିକେଟ୍ <ph name="DOMAIN2" /> ତରଫରୁ ଅଟେ। ଏହା ଏକ ଭୁଲ କନଫିଗ୍‌ରେସନ୍ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କର ସଂଯୋଗକୁ ପ୍ରତିରୋଧ କରୁଥିବା ଯୋଗୁଁ ହୋଇଥାଇପାରେ।</translation>
 <translation id="2943895734390379394">ଅପଲୋଡ୍ ସମୟ:</translation>
 <translation id="2948083400971632585">ଆପଣ ସେଟିଂସ୍ ପୃଷ୍ଠାରୁ ଏକ ସଂଯୋଗ ପାଇଁ କନ୍‍ଫିଗର୍ କରାଯାଇଥିବା କୌଣସି ପ୍ରକ୍ସିକୁ ଅକ୍ଷମ କରିପାରିବେ।</translation>
@@ -737,6 +740,7 @@
 <translation id="3288238092761586174">ଆପଣଙ୍କ ପେମେଣ୍ଟ ଯାଞ୍ଚ କରିବା ପାଇଁ <ph name="URL" />କୁ ଅତିରିକ୍ତ ଷ୍ଟେପ୍ ନେବାର ଆବଶ୍ୟକତା ହୋଇପାରେ</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> ନୀତି ସମ୍ଵନ୍ଧରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="3295444047715739395">Chrome ସେଟିଂସରେ ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକ ଦେଖନ୍ତୁ ଏବଂ ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="3303795387212510132"><ph name="PROTOCOL_SCHEME" /> ଲିଙ୍କଗୁଡ଼ିକ ଖୋଲିବା ପାଇଁ ଆପକୁ ଅନୁମତି ଦେବେ?</translation>
 <translation id="3303855915957856445">କୌଣସି ସନ୍ଧାନ ଫଳାଫଳଗୁଡିକ ଖୋଜି ପାଇଲା ନାହିଁ</translation>
 <translation id="3304073249511302126">ବ୍ଲୁଟୁଥ୍ ସ୍କାନିଂ</translation>
 <translation id="3308006649705061278">ସାଙ୍ଗଠନିକ‍ ୟୁନିଟ୍‌ (OU)</translation>
@@ -873,6 +877,7 @@
 <translation id="370972442370243704">ସନ୍ଧାନଗୁଡ଼ିକୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="3711895659073496551">ନିଲମ୍ବନ କରନ୍ତୁ</translation>
 <translation id="3712624925041724820">ଲାଇସେନ୍ସର ମିଆଦ ଶେଷ ହୋଇଛି</translation>
+<translation id="3714633008798122362">ୱେବ୍ କ୍ୟାଲେଣ୍ଡର୍</translation>
 <translation id="3714780639079136834">ମୋବାଇଲ୍‌ ଡାଟା କିମ୍ବା ୱାଇ-ଫାଇ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="3715597595485130451">ୱାଇ-ଫାଇ ସହ ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />ପ୍ରୋକ୍ସି ଓ ଫାୟାରୱାଲ୍ ଏବଂ DNS କନ୍‌ଫିଗ୍‌ରେସନ୍‌ ଯାଞ୍ଚ ହେଉଛି<ph name="END_LINK" /></translation>
@@ -934,6 +939,7 @@
 <translation id="3906954721959377182">ଟାବ୍‌ଲେଟ୍</translation>
 <translation id="3909477809443608991"><ph name="URL" /> ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁ ଚଳାଇବାକୁ ଚାହୁଁଛି। ଆପଣଙ୍କର ଡିଭାଇସ୍‌ର ପରିଚୟକୁ Google ଦ୍ୱାରା ଯାଞ୍ଚ କରାଯିବ ଏବଂ ଏହି ସାଇଟ୍ ଦ୍ୱାରା ଆକ୍ସେସ୍ କରାଯାଇପାରେ।</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /><ph name="ERROR" /></translation>
+<translation id="3927932062596804919">ଅସ୍ଵୀକାର</translation>
 <translation id="3939773374150895049">CVC ପରିବର୍ତ୍ତେ WebAuthn ବ୍ୟବହାର କରିବେ?</translation>
 <translation id="3946209740501886391">ସର୍ବଦା ଏହି ସାଇଟ୍‌ରେ ପଚାରନ୍ତୁ</translation>
 <translation id="3947595700203588284">MIDI ଡିଭାଇସଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବାକୁ ସାଇଟ୍ ପଚାରିପାରେ</translation>
@@ -2393,6 +2399,7 @@
 <translation id="8731544501227493793">"ପାସୱାର୍ଡଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ" ବଟନ୍, Chrome ସେଟିଂସରେ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଦେଖିବା ଏବଂ ପରିଚାଳନା କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="8734529307927223492">ଆପଣଙ୍କର <ph name="DEVICE_TYPE" />, <ph name="MANAGER" /> ଦ୍ଵାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ବ୍ୟକ୍ତିଗତ ଭାବରେ ବ୍ରାଉଜ୍ କରିବା ପାଇଁ ଏକ ନୂଆ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋ ଖୋଲିବାକୁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
+<translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" />ପରିବର୍ତ୍ତେ <ph name="PROTOCOL" /> ଲିଙ୍କ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="8738058698779197622">ଏକ ସୁରକ୍ଷିତ ସଂଯୋଗ ପ୍ରତିଷ୍ଠା କରିବାକୁ ଆପଣଙ୍କର ଘଣ୍ଟାକୁ ସଠିକ୍ ଭାବେ ସେଟ୍ କରିବା ଆବଶ୍ୟକ। ଏହା ଏପରି କାରଣ ୱେବ୍‌ସାଇଟ୍‌ଗୁଡ଼ିକ ଦ୍ୱାରା ନିଜକୁ ଚିହ୍ନଟ କରିବା ପାଇଁ ବ୍ୟବହାର କରାଯାଉଥିବା ସାର୍ଟିଫିକେଟ୍‍ କେବଳ ନିର୍ଦ୍ଧିଷ୍ଟ ସମୟର ଅବଧି ପାଇଁ କେବଳ ବୈଧ ଅଟେ। ଯେହେତୁ ଡିଭାଇସ୍‌ର ଘଣ୍ଟା ଭୁଲ୍ ଅଛି, ତେଣୁ Chromium ଏହି ସାର୍ଟିଫିକେଟ୍‌ଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ।</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" />’ର &lt;abbr id="dnsDefinition"&gt;DNS ଠିକଣା&lt;/abbr&gt; ମିଳିଲା ନାହିଁ। ସମସ୍ୟ ଡାଏଗ୍ନୋଜ୍ ହେଉଛି।</translation>
 <translation id="8742371904523228557"><ph name="ORIGIN" /> ପାଇଁ <ph name="ONE_TIME_CODE" /> ହେଉଛି ଆପଣଙ୍କର କୋଡ୍</translation>
@@ -2470,6 +2477,7 @@
 <translation id="9004367719664099443">VR ସମୟ ଅବଧି ପ୍ରକ୍ରିୟାରତ ଅଛି</translation>
 <translation id="9005998258318286617">PDF ଡକ୍ୟୁମେଣ୍ଟ ଲୋଡ୍ ହେବାରେ ବିଫଳ ହେଲା।</translation>
 <translation id="9008201768610948239">ଅଣଦେଖା କରନ୍ତୁ</translation>
+<translation id="901834265349196618">ଇମେଲ୍</translation>
 <translation id="9020200922353704812">କାର୍ଡ ବିଲିଂ ଠିକଣା ଆବଶ୍ୟକ</translation>
 <translation id="9020542370529661692">ଏହି ପୃଷ୍ଠା <ph name="TARGET_LANGUAGE" />ରେ ଅନୁବାଦ କରାଯାଇଛି</translation>
 <translation id="9020742383383852663">A8</translation>

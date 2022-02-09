@@ -244,6 +244,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7155997830309522122">그렇다면 Chrome에 저장된 비밀번호가 새로운 비밀번호와 일치하도록 수정해 주세요.</translation>
 <translation id="7161904924553537242">신개념 브라우저 - Chrome</translation>
 <translation id="7242029209006116544">관리 계정으로 로그인하고 관리자에게 Chrome 프로필에 대한 제어권을 부여하려고 합니다. 앱, 북마크, 방문 기록, 비밀번호 및 기타 설정과 같은 Chrome 데이터가 <ph name="USER_NAME" /> 계정에 영구적으로 연결됩니다. 이후 이 데이터를 Google 계정 대시보드에서 삭제할 수는 있지만 다른 계정에 연결할 수는 없습니다. 기존 Chrome 데이터를 유지하려면 새 프로필을 만드는 방법이 있습니다. <ph name="LEARN_MORE" /></translation>
+<translation id="7242050469146843186">이 계정에는 웹사이트와 앱에 이미 부여한 권한이 적용될 수 있습니다. 웹사이트나 앱에서 계정 정보에 액세스하기를 원하지 않으면 Chrome 브라우저에서 <ph name="LINK_BEGIN" />게스트 모드<ph name="LINK_END" />를 사용하세요. <ph name="LINK_2_BEGIN" />설정<ph name="LINK_2_END" />에서 Google 계정을 관리할 수도 있습니다.</translation>
 <translation id="7295052994004373688">Chrome UI가 이 언어로 표시됩니다.</translation>
 <translation id="7296210096911315575">사용 및 안전 관련 주요 정보</translation>
 <translation id="7308322188646931570">파일을 다운로드하려면 Chrome에 저장소 액세스 권한이 있어야 합니다</translation>

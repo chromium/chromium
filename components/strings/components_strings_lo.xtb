@@ -461,6 +461,7 @@
 <translation id="2337852623177822836">ການຕັ້ງຄ່າທີ່ຄວບຄຸມໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ຕ້ອງການຈັບຄູ່</translation>
 <translation id="2346319942568447007">ຮູບພາບທີ່ທ່ານສຳເນົາ</translation>
+<translation id="2350796302381711542">ອະນຸຍາດໃຫ້ <ph name="HANDLER_HOSTNAME" /> ເປີດທຸກ <ph name="PROTOCOL" /> ລິ້ງແທນ <ph name="REPLACED_HANDLER_TITLE" /> ບໍ?</translation>
 <translation id="2354001756790975382">ບຸກມາກສ໌ອື່ນໆ</translation>
 <translation id="2354430244986887761">Google Safe Browsing <ph name="BEGIN_LINK" />ພົບໂປຣແກຣມອັນຕະລາຍ<ph name="END_LINK" /> ຢູ່ໃນ <ph name="SITE" />ເມື່ອບໍ່ດົນມານີ້.</translation>
 <translation id="2355395290879513365">ຜູ້ໂຈມຕີອາດຈະສາມາດເຫັນຮູບພາບທີ່ທ່ານກຳລັງເບິ່ງຢູ່ໃນເວັບໄຊນີ້ ແລະ ຫຼອກລວງທ່ານໂດຍການດັດແປງຮູບພາບເຫຼົ່ານັ້ນ.</translation>
@@ -486,6 +487,7 @@
 <translation id="2413528052993050574">ເຊີບເວີນີ້ບໍ່ສາມາດພິສູດໄດ້ວ່າ ມັນແມ່ນ <ph name="DOMAIN" />; ໃບຢັ້ງຢືນຄວາມປອດໄພຂອງມັນອາດຈະຖືກຖອນຄືນແລ້ວ. ອັນນີ້ອາດຈະເຮັດໃຫ້ເກີດມີການປັບຕັ້ງຄ່າຜິດ ຫຼືຜູ້ໂຈມຕີອາດຈະດັກເອົາການເຊື່ອມຕໍ່ຂອງທ່ານ.</translation>
 <translation id="2414886740292270097">ມືດ</translation>
 <translation id="2430968933669123598">ຈັດການບັນຊີ Google, ກົດ Enter ເພື່ອຈັດການຂໍ້ມູນ, ຄວາມເປັນສ່ວນຕົວ ແລະ ຄວາມປອດໄພຂອງທ່ານໃນບັນຊີ Google ທ່ານ</translation>
+<translation id="2436186046335138073">ອະນຸຍາດໃຫ້ <ph name="HANDLER_HOSTNAME" /> ເປີດທຸກລິ້ງ <ph name="PROTOCOL" /> ບໍ?</translation>
 <translation id="2438874542388153331">ເຈາະຮູຢູ່ເບື້ອງຂວາສີ່ຮູ</translation>
 <translation id="2450021089947420533">ບັນທຶກ</translation>
 <translation id="2463739503403862330">ຕື່ມຂໍ້ມູນ</translation>
@@ -635,6 +637,7 @@
 <translation id="2930577230479659665">ຕັດອອກຫຼັງຈາກສຳເນົາແຕ່ລະສະບັບ</translation>
 <translation id="2932085390869194046">ແນະນຳລະຫັດຜ່ານ...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">ເປີດ​ລິ້ງ <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">ເຊີບເວີນີ້ບໍ່ສາມາດພິສູດໄດ້ວ່າ ມັນແມ່ນ <ph name="DOMAIN" />; ໃບຢັ້ງຢືນຄວາມປອດໄພຂອງມັນມາຈາກ <ph name="DOMAIN2" />. ອັນນີ້ອາດຈະເຮັດໃຫ້ເກີດມີການປັບຕັ້ງຄ່າຜິດ ຫຼືຜູ້ໂຈມຕີອາດຈະດັກເອົາການເຊື່ອມຕໍ່ຂອງທ່ານ.</translation>
 <translation id="2943895734390379394">ເວລາອັບໂຫຼດ:</translation>
 <translation id="2948083400971632585">ທ່ານສາມາດປິດໃຊ້ງານພຣັອກຊີໃດໜຶ່ງທີ່ໄດ້ປັບຕັ້ງຄ່າສໍາລັບການເຊື່ອມຕໍ່ຈາກໜ້າການຕັ້ງຄ່າ.</translation>
@@ -744,6 +747,7 @@
 <translation id="3288238092761586174"><ph name="URL" /> ອາດຕ້ອງເຮັດຂັ້ນຕອນເພີ່ມເຕີມເພື່ອຢັ້ງຢືນການຈ່າຍເງິນຂອງທ່ານ</translation>
 <translation id="3293642807462928945">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບນະໂຍບາຍ <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">ເບິ່ງ ແລະ ຈັດການລະຫັດຜ່ານຂອງທ່ານໃນການຕັ້ງຄ່າ Chrome</translation>
+<translation id="3303795387212510132">ອະນຸຍາດແອັບໃຫ້ເປີດລິ້ງ <ph name="PROTOCOL_SCHEME" /> ໄດ້ບໍ?</translation>
 <translation id="3303855915957856445">ບໍ່ພົບຜົນການຊອກຫາໃດໆ</translation>
 <translation id="3304073249511302126">ການສະແກນ Bluetooth</translation>
 <translation id="3308006649705061278">ໜ່ວຍງານການຈັດຕັ້ງ (OU)</translation>
@@ -881,6 +885,7 @@
 <translation id="370972442370243704">ເປີດໃຊ້ບັນທຶກ</translation>
 <translation id="3711895659073496551">ໂຈະ</translation>
 <translation id="3712624925041724820">ການອະ​ນຸ​ຍາດ​ໃຊ້ໝົດແລ້ວ</translation>
+<translation id="3714633008798122362">ປະ​ຕິ​ທິນ​ເວັບ​</translation>
 <translation id="3714780639079136834">ກຳລັງເປີດຂໍ້ມູນເຄືອຂ່າຍມືຖື ຫຼື Wi-Fi</translation>
 <translation id="3715597595485130451">​ເຊື່ອມ​ຕໍ່ກັບ Wi​-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />ກຳລັງກວດເບິ່ງການຕັ້ງຄ່າພຣັອກຊີ, ໄຟລ໌ວໍ ແລະ DNS<ph name="END_LINK" /></translation>
@@ -942,6 +947,7 @@
 <translation id="3906954721959377182">ແທັບເລັດ</translation>
 <translation id="3909477809443608991"><ph name="URL" /> ຕ້ອງການຫຼິ້ນເນື້ອຫາທີ່ມີການປົກປ້ອງໄວ້. ຕົວຕົນຂອງອຸປະກອນຂອງທ່ານຈະຖືກຢັ້ງຢືນໂດຍ Google ແລະ ອາດຈະເຂົ້າເຖິງໄດ້ໂດຍເວັບໄຊນີ້.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">ປະຕິເສດ</translation>
 <translation id="3939773374150895049">ໃຊ້ WebAuthn ແທນ CVC ບໍ?</translation>
 <translation id="3946209740501886391">ຖາມໃນເວັບໄຊນີ້ທຸກເທື່ອ</translation>
 <translation id="3947595700203588284">ສາມາດຂໍເຊື່ອມຕໍ່ກັບອຸປະກອນ MIDI ໄດ້</translation>
@@ -2408,6 +2414,7 @@
 <translation id="8731544501227493793">ປຸ່ມຈັດການລະຫັດຜ່ານ, ກົດ Enter ເພື່ອເບິ່ງ ແລະ ຈັດການລະຫັດຜ່ານຂອງທ່ານໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> ຂອງທ່ານຖືກຈັດການໂດຍ <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ກົດແຖບ ຈາກນັ້ນ Enter ເພື່ອເປີດໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່ເພື່ອຊອຫາແບບເປັນສ່ວນຕົວ</translation>
+<translation id="8737685506611670901">ເປີດ <ph name="PROTOCOL" /> ລິ້ງ​ແທນ <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">ເພື່ອ​ຕັ້ງ​ການ​ເຊື່ອມ​ຕໍ່​ທີ່​ປອດ​ໄພ, ຈຳ​ເປັນ​ຕ້ອງ​ໄດ້​ຕັ້ງ​ໂມງ​ຂອງ​ທ່ານ​ໃຫ້​ຖືກ​ຕ້ອງ. ອັນ​ນີ້​ເພາະ​ວ່າ​ໃບ​ຢັ້ງ​ຢືນ​ທີ່​ເວັບ​ໄຊ​ທ໌​ໃຊ້​ລະ​ບຸ​ຕົວ​ມັນ​ເອງ​ແມ່ນ​ຈະ​ໃຊ້​ໄດ້​ເປັນ​ໄລ​ຍະ​ເວ​ລາ​ສະ​ເພາະ​ເທົ່າ​ນັ້ນ. ເນື່ອງ​ຈາກ​ໂມງ​ຂອງ​ອຸ​ປະ​ກອນ​ຂອງ​ທ່ານ​ບໍ່​ຖືກ​ຕ້ອງ, Chromium ບໍ່​ສາ​ມາດກວດ​ສອບ​ໃບ​ຢັ້ງ​ຢືນ​ເຫຼົ່າ​ນີ້​ໄດ້.</translation>
 <translation id="8740359287975076522">ບໍ່ສາມາດຊອກພົບ &lt;abbr id="dnsDefinition"&gt;ທີ່ຢູ່ DNS&lt;/abbr&gt; ຂອງ <ph name="HOST_NAME" /> ໄດ້. ກຳລັງວິເຄາະບັນຫາຢູ່.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> ແມ່ນລະຫັດສຳລັບ <ph name="ORIGIN" /> ຂອງທ່ານ</translation>
@@ -2485,6 +2492,7 @@
 <translation id="9004367719664099443">ເຊດຊັນ VR ພວມດຳເນີນຢູ່</translation>
 <translation id="9005998258318286617">ໂຫຼດເອກະສານ PDF ບໍ່ສຳເລັດ.</translation>
 <translation id="9008201768610948239">ບໍ່ສົນໃຈ</translation>
+<translation id="901834265349196618">ອີເມວ</translation>
 <translation id="9020200922353704812">ຈຳເປັນຕ້ອງມີທີ່ຢູ່ຮຽກເກັບເງິນສຳລັບບັດ</translation>
 <translation id="9020542370529661692">ໜ້ານີ້ຖືກໂອນໄປຫາ <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

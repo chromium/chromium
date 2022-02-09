@@ -457,6 +457,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2337852623177822836">Configuração controlada pelo administrador</translation>
 <translation id="2340263603246777781">O <ph name="ORIGIN" /> deseja realizar o pareamento</translation>
 <translation id="2346319942568447007">Imagem que você copiou</translation>
+<translation id="2350796302381711542">Permitir que <ph name="HANDLER_HOSTNAME" /> abra todos os links de <ph name="PROTOCOL" /> em vez de <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2354001756790975382">Outros favoritos</translation>
 <translation id="2354430244986887761">Recentemente, o recurso "Navegação segura" do Google <ph name="BEGIN_LINK" />encontrou apps prejudiciais<ph name="END_LINK" /> em <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">É possível que invasores consigam ver as imagens que você está olhando nesse site e as modifiquem para enganar você.</translation>
@@ -482,6 +483,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2413528052993050574">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança pode ter sido revogado. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="2414886740292270097">Escuro</translation>
 <translation id="2430968933669123598">Gerenciar sua Conta do Google. Pressione Enter para gerenciar suas informações, sua privacidade e sua segurança na Conta do Google</translation>
+<translation id="2436186046335138073">Permitir que <ph name="HANDLER_HOSTNAME" /> abra todos os links de <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Perfuração quádrupla no lado direito</translation>
 <translation id="2450021089947420533">Jornadas</translation>
 <translation id="2463739503403862330">Preencher</translation>
@@ -631,6 +633,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2930577230479659665">Cortar depois de cada cópia</translation>
 <translation id="2932085390869194046">Sugerir senha…</translation>
 <translation id="2934466151127459956">Government Letter</translation>
+<translation id="2938225289965773019">Abrir links de <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança é de <ph name="DOMAIN2" />. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="2943895734390379394">Tempo de upload:</translation>
 <translation id="2948083400971632585">Na página "Configurações", você pode desativar quaisquer proxies configurados para uma conexão.</translation>
@@ -740,6 +743,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3288238092761586174"><ph name="URL" /> poderá realizar outras etapas para verificar seu pagamento</translation>
 <translation id="3293642807462928945">Saiba mais sobre a política <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Veja e gerencie suas senhas nas configurações do Chrome</translation>
+<translation id="3303795387212510132">Permitir que o app abra links <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Nenhum resultado de pesquisa encontrado</translation>
 <translation id="3304073249511302126">verificação de Bluetooth</translation>
 <translation id="3308006649705061278">Unidade organizacional (OU)</translation>
@@ -877,6 +881,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="370972442370243704">Ativar as jornadas</translation>
 <translation id="3711895659073496551">Suspender</translation>
 <translation id="3712624925041724820">Licenças esgotadas</translation>
+<translation id="3714633008798122362">agenda na web</translation>
 <translation id="3714780639079136834">Ativar os dados da rede celular ou o Wi-Fi</translation>
 <translation id="3715597595485130451">Conectar ao Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Verificar a configuração de DNS, proxy e firewall<ph name="END_LINK" /></translation>
@@ -938,6 +943,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991">Solicitação para reproduzir conteúdo protegido feita por <ph name="URL" />. A identidade do seu dispositivo será verificada pelo Google e poderá ser acessada por esse site.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Negar</translation>
 <translation id="3939773374150895049">Usar WebAuthn em vez de CVC?</translation>
 <translation id="3946209740501886391">Sempre perguntar neste site</translation>
 <translation id="3947595700203588284">Pode pedir para se conectar a dispositivos MIDI</translation>
@@ -2400,6 +2406,7 @@ Mais detalhes:
 <translation id="8731544501227493793">Botão "Gerenciar senhas". Pressione "Enter" para ver e gerenciar suas senhas nas configurações do Chrome</translation>
 <translation id="8734529307927223492">Seu <ph name="DEVICE_TYPE" /> é gerenciado por <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione "Tab" e depois "Enter" para abrir uma nova janela anônima e navegar com privacidade</translation>
+<translation id="8737685506611670901">Abrir links de <ph name="PROTOCOL" /> em vez de <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Para estabelecer uma conexão segura, o relógio precisa ser ajustado corretamente. Isso ocorre porque os certificados que os websites usam para se identificar são válidos apenas por períodos específicos. Como o relógio do seu dispositivo está incorreto, o Chromium não pode verificar esses certificados.</translation>
 <translation id="8740359287975076522">Não foi possível encontrar o &lt;abbr id="dnsDefinition"&gt;endereço DNS&lt;/abbr&gt; de <ph name="HOST_NAME" />. Diagnosticando o problema.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> é seu código para <ph name="ORIGIN" /></translation>
@@ -2477,6 +2484,7 @@ Mais detalhes:
 <translation id="9004367719664099443">Sessão de RV em andamento</translation>
 <translation id="9005998258318286617">Falha ao carregar documento PDF.</translation>
 <translation id="9008201768610948239">Ignorar</translation>
+<translation id="901834265349196618">e-mail</translation>
 <translation id="9020200922353704812">O endereço de cobrança do cartão é obrigatório</translation>
 <translation id="9020542370529661692">Esta página foi traduzida para <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

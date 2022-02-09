@@ -201,6 +201,7 @@ Sebagian fitur mungkin tidak tersedia. Tentukan direktori profil yang berbeda at
 <translation id="6734291798041940871">Chromium sudah terpasang untuk semua pengguna di komputer Anda.</translation>
 <translation id="673636774878526923">Untuk mengakses aktivitas Chromium di semua perangkat, login lalu aktifkan sinkronisasi.</translation>
 <translation id="6774082503108938489">Orang tuamu telah menonaktifkan "Izin untuk situs, aplikasi, dan ekstensi" untuk Chromium. Tindakan mengaktifkan <ph name="EXTENSION_TYPE_PARAMETER" /> ini tidak diizinkan.</translation>
+<translation id="6808964260981102146">Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini. Jika Anda tidak ingin situs atau aplikasi mengakses info akun Anda, gunakan <ph name="LINK_BEGIN" />mode Tamu<ph name="LINK_END" /> di browser Chromium. Anda juga dapat mengelola Akun Google Anda di <ph name="LINK_2_BEGIN" />Setelan<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Chromium akan memberi tahu jika sandi Anda disusupi</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (disalin ke Chromium)</translation>

@@ -116,6 +116,7 @@
 <translation id="196896377990863006">লিঙ্ক প্রিভিউ দেখুন</translation>
 <translation id="1973912524893600642">ডেটা রাখুন</translation>
 <translation id="1974060860693918893">উন্নত</translation>
+<translation id="1981118202195772574">মোবাইল</translation>
 <translation id="1989112275319619282">ব্রাউজ করুন</translation>
 <translation id="199425419756152024">পাসওয়ার্ড দেখুন</translation>
 <translation id="2015722694326466240">পাসওয়ার্ড দেখার জন্য আপনার ডিভাইসে আপনাকে অবশ্যই একটি পাসকোড সেট করতে হবে।</translation>
@@ -236,6 +237,7 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />আপনি কী সিঙ্ক করতে পারবেন তা দেখুন<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">সব ব্লক করুন</translation>
 <translation id="313283613037595347">নতুন ছদ্মবেশী ট্যাব তৈরি করুন।</translation>
+<translation id="3150887674190166798">প্রত্যেকবার কীভাবে আপনি Chrome-কে সাইট দেখানোর জন্য অনুরোধ করতে চান তা বেছে নিন</translation>
 <translation id="3153862085237805241">কার্ড সেভ করুন</translation>
 <translation id="3157387275655328056">পড়ার তালিকায় যোগ করুন</translation>
 <translation id="3157684681743766797">সবগুলি চিহ্নিত করুন…</translation>
@@ -349,6 +351,7 @@
 <translation id="4181841719683918333">ভাষাসমূহ</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />ডিফল্ট ব্রাউজার অ্যাপ<ph name="END_BOLD" /> বিকল্পে ট্যাপ করুন</translation>
 <translation id="424315890655130736">পাসফ্রেজ লিখুন</translation>
+<translation id="4249955472157341256">লেটেস্ট অনুযায়ী সাজান</translation>
 <translation id="4263576668337963058">পৃষ্ঠা সম্পর্কিত উপলভ্য অ্যাকশন দেখুন</translation>
 <translation id="4267380167363222949">পরের ট্যাব</translation>
 <translation id="4272631900155121838">একটি QR কোড স্ক্যান করতে, সেটিংস থেকে ক্যামেরা চালু করুন</translation>
@@ -507,6 +510,7 @@
 <translation id="575902488528307720">ছবি সার্চ করুন</translation>
 <translation id="5781453543752460388">Photos-এ যোগ করুন</translation>
 <translation id="5782227691023083829">অনুবাদ হচ্ছে...</translation>
+<translation id="5791632441210678828">এই ফিডের জন্য 'সাজান' বোতাম।</translation>
 <translation id="5802829331520313983">সেট-আপ করুন…</translation>
 <translation id="5803566855766646066">আপনি কি সত্যিই এই নতুন কার্ড বাতিল করতে চান?</translation>
 <translation id="5804241973901381774">অনুমতিগুলি</translation>
@@ -622,6 +626,7 @@
 <translation id="6561262006871132942">বড় করে দেখুন</translation>
 <translation id="6583087784430677195">বন্ধ করতে, <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" /> বিকল্প খুলে অটোফিল পাসওয়ার্ড বিকল্পে যান।</translation>
 <translation id="6585618849026997638">গুরুত্বপূর্ণ পৃষ্ঠার বুকমার্ক যোগ করে সহজেই সেখানে ফিরে যেতে পারবেন</translation>
+<translation id="6598875554591387303">প্রকাশক অনুযায়ী সাজান</translation>
 <translation id="6603393121510733479">আপনার সংস্থা ব্যক্তিগত ব্রাউজিংয়ের সুবিধা বন্ধ করে দিয়েছে।
 <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">অনুবাদের বিকল্প</translation>
@@ -762,6 +767,7 @@
 <translation id="7911190106180361398">আপনার প্রতিষ্ঠান আপনার জন্য সবকিছু সিঙ্ক করার অনুমতি দেয় না।</translation>
 <translation id="7938254975914653459">ফেসটাইম</translation>
 <translation id="7939128259257418052">পাসওয়ার্ড এক্সপোর্ট করুন...</translation>
+<translation id="793971554166979165">ডিফল্ট সাইট মোড</translation>
 <translation id="794799177247607889">লগ করা বন্ধ করুন</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{কোনও পাসওয়ার্ড চুরি হয়নি}=1{{COUNT}টি পাসওয়ার্ড চুরি হয়েছে}one{{COUNT}টি পাসওয়ার্ড চুরি হয়েছে}other{{COUNT}টি পাসওয়ার্ড চুরি হয়েছে}}</translation>
 <translation id="7961015016161918242">কখনই নয়</translation>
@@ -867,6 +873,7 @@
 <translation id="8881801611828450202">এই ইমেজটির জন্য <ph name="SEARCH_ENGINE" />-এ খুঁজুন</translation>
 <translation id="8909135823018751308">শেয়ার করুন...</translation>
 <translation id="8917490105272468696">হ্যাঁ, আমি রাজি</translation>
+<translation id="8928133177108699615">ডেস্কটপ</translation>
 <translation id="8952559610785099500">পাসওয়ার্ড যোগ করুন</translation>
 <translation id="895541991026785598">কোনও সমস্যা অভিযোগ করুন</translation>
 <translation id="8974714402877957201">১. iPad সেটিংস খুলুন</translation>

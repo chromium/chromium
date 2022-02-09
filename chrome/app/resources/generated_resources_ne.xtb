@@ -87,6 +87,7 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" />ले तपाईँका Chrome सेटिङहरू उनीहरूको आफ्नो मूल पूर्वनिर्धारितमा पुनर्स्थापना गर्न चाहन्छ। यसले तपाईँको गृहपृष्ठ, नयाँ ट्याब पृष्ठ र खोज इन्जिनलाई रिसेट गर्ने छ, तपाईँका विस्तारहरूलाई निस्क्रिय पार्दछ, र सबै ट्याबहरूलाई अनपिन गर्ने छ। यसले कुकीहरू, सामग्री र साइट डेटा जस्ता अन्य अस्थायी र क्यास गरिएका डेटालाई मेटाउने छ।</translation>
 <translation id="1084096383128641877">यो पासवर्ड हटाउनुले <ph name="DOMAIN" /> मा रहेको तपाईंको खाता मेटाउने छैन। <ph name="DOMAIN_LINK" /> मा रहेको तपाईंको खाता अन्य मान्छेहरूबाट सुरक्षित राख्न आफ्नो पासवर्ड परिवर्तन गर्नुहोस् वा उक्त खाता मेटाउनुहोस्।</translation>
 <translation id="1084824384139382525">लिङ्क ठे&amp;गानाको कपी गर्नुहोस्</translation>
+<translation id="1085064499066015002">सधैँ सबै साइटमा</translation>
 <translation id="1085697365578766383">भर्चुअल मेसिन सुरु गर्ने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1087965115100412394">साइटहरूलाई MIDI यन्त्रमा कनेक्ट गर्ने अनुमति नदिइयोस्</translation>
 <translation id="1088654056000736875">Chrome ले तपाईंको कम्प्युटरबाट हानिकारक सफ्टवेयर हटाउँदै छ...</translation>
@@ -338,6 +339,7 @@
 <translation id="1343865611738742294">Linux का एपलाई USB यन्त्रहरूमाथि पहुँच राख्न दिनुहोस्। कुनै USB यन्त्र हटाएपछि Linux ले उक्त यन्त्र सम्झने छैन।</translation>
 <translation id="1343920184519992513">आफूले छाडेकै ठाउँबाट जारी राख्नुहोस् र आफूले चाहेका विशेष पेजहरू खोल्नुहोस्</translation>
 <translation id="1346630054604077329">पुष्टि गर्नुहोस् र रिस्टार्ट गर्नुहोस्</translation>
+<translation id="1346748346194534595">दायाँ</translation>
 <translation id="1347256498747320987">अपडेट र एप इन्स्टल गर्नुहोस्‌। जारी राखेर, तपाईं यो यन्त्रले सम्भवतः सेलुलर डेटाको प्रयोग गरी Google, तपाईंको सेवा प्रदायक र तपाईंको डिभाइसका निर्माताहरूका अपडेट र एप स्वतः डाउनलोड गरी स्थापना गर्न सक्ने कुरामा सहमत हुनुहुन्छ। यीमध्ये केही एपहरूले अनुप्रयोगभित्र हुने किनमेलहरू प्रस्ताव गर्न सक्छन्। <ph name="BEGIN_LINK1" />थप जान्नुहोस्<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Linux भण्डारण</translation>
 <translation id="1347975661240122359">ब्याट्रीको स्तर <ph name="BATTERY_LEVEL" />% पुगेपछि अद्यावधिक सुरु हुनेछ।</translation>
@@ -460,6 +462,7 @@
 <translation id="1464781208867302907">प्राथमिक यन्त्र सेट गर्न सेटिङमा जानुहोस्।</translation>
 <translation id="1465176863081977902">अडियो ठेगाना कपी गर्नुहोस्</translation>
 <translation id="1465827627707997754">पिज्जाको टुक्रो</translation>
+<translation id="1467432559032391204">बाँया</translation>
 <translation id="1468571364034902819">यो प्रोफाइल प्रयोग गर्न सकिँदैन</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{नयाँ समूहमा ट्याब थप्नुहोस्}other{नयाँ समूहमा ट्याबहरू थप्नुहोस्}}</translation>
 <translation id="1470350905258700113">यो डिभाइस प्रयोग गरियोस्</translation>
@@ -1320,7 +1323,6 @@
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2307630946657910723"><ph name="VISUAL_SEARCH_PROVIDER" /> प्रयोग गरी पेजको कुनै भाग खोज्नुहोस्</translation>
-<translation id="230927227160767054">यस पृष्ठले एक सेवा सञ्चालनकर्ता स्थापना गर्न चाहन्छ।</translation>
 <translation id="2309620859903500144">यो साइटलाई तपाईंको चाल वा प्रकाशसम्बन्धी सेन्सरहरूको पहुँच राख्नबाट रोक लागाइएको छ।</translation>
 <translation id="2312219318583366810">पेजको URL</translation>
 <translation id="2314165183524574721">हालको भिजिबिलिटी सेटिङ यस प्रकार छ: लुकाइएको</translation>
@@ -1371,7 +1373,6 @@
 <translation id="2349896577940037438">तपाईंको खातामा अतिरिक्त वेब तथा एपसम्बन्धी गतिविधिको सेटिङ सक्रिय गरिएको छ भने यो डेटा तपाईंको Google खातामा सुरक्षित गरिन सक्छ। तपाईं account.google.com मा गई आफ्नो डेटा हेर्न, त्यसलाई मेट्न र आफ्नो खातासम्बन्धी सेटिङ परिवर्तन गर्न सक्नुहुन्छ।</translation>
 <translation id="2350133097354918058">पुनः लोड गरियो</translation>
 <translation id="2350182423316644347">एप्लिकेसन आरम्भ गर्दै...</translation>
-<translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> लाई <ph name="REPLACED_HANDLER_TITLE" /> को सट्टामा सबै <ph name="PROTOCOL" /> लिङ्कहरू खोल्ने अनुमति दिनुहोस् ?</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{१ वस्तु}other{{NUM_ITEMS} वस्तुहरू}}</translation>
 <translation id="2352662711729498748">&lt; 1 एमबी</translation>
 <translation id="2352810082280059586">लक स्क्रिनका टिपोटहरू <ph name="LOCK_SCREEN_APP_NAME" /> मा स्वत: सुरक्षित हुन्छन्। तपाईंको सबैभन्दा पछिल्लो टिपोट लक स्क्रिनमा रहनेछ।</translation>
@@ -1444,7 +1445,6 @@
 <translation id="2434758125294431199">तपाईंसँग कसले सेयर गर्न सक्छन् भन्ने कुरा चयन गर्नुहोस्</translation>
 <translation id="2435248616906486374">सञ्जाल विच्छेद गरियो</translation>
 <translation id="2435457462613246316">पासवर्ड देखाउनुहोस्</translation>
-<translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> लाई सबै <ph name="PROTOCOL" /> लिङ्कहरू खोल्ने अनुमति दिने?</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> लोड गरिँदै छ</translation>
 <translation id="2440604414813129000">स्रो&amp;त हेर्नुहोस्</translation>
 <translation id="244231003699905658">अमान्य ठेगाना कृपया उक्त ठेगानाको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
@@ -1963,7 +1963,6 @@
 <translation id="2935225303485967257">प्रोफाइलहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="2935654492420446828">पछि विद्यालयको खाता हाल्नुहोस्</translation>
 <translation id="2936851848721175671">ब्याकअप तथा पुनर्स्थापना</translation>
-<translation id="2938225289965773019"><ph name="PROTOCOL" /> लिंकहरू खोल्नुहोस्</translation>
 <translation id="2939908794993783865">थप निष्क्रिय साइटहरू</translation>
 <translation id="2939938020978911855">उपलब्ध ब्लुटुथ यन्त्रहरू देखाउनुहोस्</translation>
 <translation id="2941112035454246133">निम्न</translation>
@@ -2284,7 +2283,6 @@
 <translation id="33022249435934718">GDI ह्यान्डलहरू</translation>
 <translation id="3302388252085547855">कारण हाल्नुहोस्...</translation>
 <translation id="3303260552072730022">एक विस्तारले पूर्ण स्क्रिनलाई ट्रिगर गर्‍यो।</translation>
-<translation id="3303795387212510132">एपलाई <ph name="PROTOCOL_SCHEME" /> लिंकहरू खोल्ने अनुमति दिनुहोस्?</translation>
 <translation id="3303818374450886607">प्रतिहरू</translation>
 <translation id="3303855915957856445">खोजका परिणाम फेला परेनन्</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> छुट</translation>
@@ -2698,7 +2696,6 @@
 <translation id="371300529209814631">पछाडि/अगाडि जानुहोस्</translation>
 <translation id="3713047097299026954">यो सुरक्षा साँचोमा साइन इन गर्न चाहिने कुनै पनि डेटा छैन</translation>
 <translation id="3714195043138862580">यो डेमो यन्त्रलाई प्रयोगबाट हटाइएको छ।</translation>
-<translation id="3714633008798122362">वेब पात्रो</translation>
 <translation id="3719826155360621982">होमपेज</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">तपाईं र Google</translation>
@@ -7510,7 +7507,6 @@
 <translation id="8734674662128056360">तेस्रो पक्षीय कुकीलाई रोक लगाउने कार्य</translation>
 <translation id="873545264931343897"><ph name="PLUGIN_NAME" /> अद्यावधिक भइसकेपछि, त्यसलाई सक्रिय गर्न पृष्ठलाई पुन: लोड गर्नुहोस्</translation>
 <translation id="8736288397686080465">यो साइट पृष्ठभूमिमा अद्यावधिक गरिएको छ।</translation>
-<translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> को सट्टामा <ph name="PROTOCOL" /> लिंक खोल्नुहोस्</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">यो पृष्ठ जुन भाषामा अनुवाद गर्न चाहनुहुन्छ सो भाषा छान्नुहोस्</translation>
 <translation id="8740247629089392745">तपाईं यो Chromebook <ph name="SUPERVISED_USER_NAME" /> लाई दिन सक्नुहुन्छ। सेटअप गर्ने काम लगभग सकियो, अब उनी यो डिभाइस चलाउन थाल्न सक्छन्।</translation>
@@ -7774,7 +7770,6 @@
 <translation id="9003647077635673607">सबै वेबसाइटहरूमा अनुमति दिनुहोस्</translation>
 <translation id="9003677638446136377">फेरि जाँच गर्नुहोस्</translation>
 <translation id="9004754973617721124"><ph name="SITE_NAME" />, यसअन्तर्गत रहेका सबै साइट र इन्स्टल गरिएको सम्बन्धित वेब एपको साइट डेटा मेटाउनुका साथै ती साइट र एपलाई दिइएका अनुमति रद्द गर्ने हो?</translation>
-<translation id="9008201768610948239">बेवास्ता गर्नुहोस्</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> को विवरणसम्बन्धी पेजको 'पछाडि जानुहोस्' बटन</translation>
 <translation id="9009369504041480176">(<ph name="PROGRESS_PERCENT" />%) अपलोड गर्दै...</translation>
 <translation id="9009708085379296446">तपाईंले यो पृष्ठ परिवर्तन गर्न खोज्नुभएको हो?</translation>
@@ -7784,7 +7779,6 @@
 <translation id="9013037634206938463">Linux प्रयोग गर्न कम्तीमा पनि <ph name="INSTALL_SIZE" /> खाली ठाउँ आवश्यक पर्छ। थप ठाउँ खाली गर्न आफ्नो यन्त्रमा भएका फाइलहरू मेटाउनुहोस्।</translation>
 <translation id="901668144954885282">Google ड्राइभमा ब्याकअप गर्नुहोस्</translation>
 <translation id="9018218886431812662">स्थापना गर्ने कार्य सम्पन्न भयो</translation>
-<translation id="901834265349196618">इमेल</translation>
 <translation id="9019062154811256702">स्वतः भरण सेटिङहरू पढ्नुहोस् र परिवर्तन गर्नुहोस्</translation>
 <translation id="9019894137004772119">लोकेसन सर्भिस प्रयोग गर्नुहोस्। लोकेसन सर्भिस प्रयोग गर्ने अनुमति भएका एप र सेवाहरूलाई तपाईंको डिभाइसको स्थानसम्बन्धी जानकारी प्रयोग गर्न दिनुहोस्। Google ले आवधिक रूपमा स्थानसम्बन्धी डेटा सङ्कलन गर्न र स्थानसम्बन्धी जानकारीको सटीकता र स्थानमा आधारित सेवाहरूमा सुधार ल्याउन व्यक्तिगत पहिचान नखुल्ने गरी उक्त डेटा प्रयोग गर्न सक्छ।</translation>
 <translation id="9019956081903586892">हिज्जे जाँच गर्न प्रयोग गरिने शब्दकोश डाउनलोड गर्न सकिएन</translation>

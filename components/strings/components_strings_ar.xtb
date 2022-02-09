@@ -461,6 +461,7 @@
 <translation id="2337852623177822836">يتم التحكّم في الإعداد من قبل المشرف</translation>
 <translation id="2340263603246777781">يريد <ph name="ORIGIN" /> الاقتران</translation>
 <translation id="2346319942568447007">الصورة التي نسختها</translation>
+<translation id="2350796302381711542">هل تريد السماح لـ <ph name="HANDLER_HOSTNAME" /> بفتح كل روابط <ph name="PROTOCOL" /> بدلاً من <ph name="REPLACED_HANDLER_TITLE" />؟</translation>
 <translation id="2354001756790975382">الإشارات الأخرى</translation>
 <translation id="2354430244986887761">‏عثر ‏‫التصفح الآمن من Google‬ مؤخرًا <ph name="BEGIN_LINK" />على تطبيقات ضارة<ph name="END_LINK" /> في <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">قد يتمكن المهاجمون من رؤية الصور التي تتطلع عليها على هذا الموقع وخداعك من خلال تعديلها.</translation>
@@ -486,6 +487,7 @@
 <translation id="2413528052993050574">هذا الخادم لم يتمكن من إثبات أن ذلك <ph name="DOMAIN" />؛ بل إنه شهادة أمان ربما تم إلغاء صلاحيتها. وربما يكون السبب في ذلك خطأ في التكوين أو مهاجمًا يعترض اتصالك.</translation>
 <translation id="2414886740292270097">داكن</translation>
 <translation id="2430968933669123598">‏إدارة حساب Google: اضغط على مفتاح Enter لإدارة المعلومات والخصوصية والأمان في حسابك على Google.</translation>
+<translation id="2436186046335138073">هل تريد السماح لـ <ph name="HANDLER_HOSTNAME" /> بفتح كل روابط <ph name="PROTOCOL" />؟</translation>
 <translation id="2438874542388153331">عمل أربعة ثقوب يمينًا</translation>
 <translation id="2450021089947420533">سجلّ أنشطة البحث والتصفُّح</translation>
 <translation id="2463739503403862330">ملء</translation>
@@ -635,6 +637,7 @@
 <translation id="2930577230479659665">القطع بعد كل نسخة</translation>
 <translation id="2932085390869194046">اقتراح كلمة مرور...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">فتح روابط <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">هذا الخادم لم يتمكن من إثبات أن ذلك <ph name="DOMAIN" />؛ بل إنه شهادة أمان من <ph name="DOMAIN2" />. وربما سبب ذلك خطأ في التكوين أو مهاجمًا يعترض اتصالك.</translation>
 <translation id="2943895734390379394">وقت التحميل:</translation>
 <translation id="2948083400971632585">يمكنك إيقاف أي خوادم وكيلة تم إعدادها لاتصال من صفحة الإعدادات.</translation>
@@ -744,6 +747,7 @@
 <translation id="3288238092761586174">قد يُطلب من <ph name="URL" /> تنفيذ خطوات إضافية للتحقّق من عملية الدفع التي تجريها.</translation>
 <translation id="3293642807462928945">مزيد من المعلومات عن سياسة <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">‏عرض كلمات المرور وإدارتها في إعدادات متصفِّح Chrome</translation>
+<translation id="3303795387212510132">هل تريد السماح للتطبيق بفتح روابط <ph name="PROTOCOL_SCHEME" />؟</translation>
 <translation id="3303855915957856445">لم يتم العثور على أي نتائج بحث</translation>
 <translation id="3304073249511302126">البحث عن أجهزة تتضمن بلوتوث</translation>
 <translation id="3308006649705061278">‏الوحدة التنظيمية (OU)</translation>
@@ -881,6 +885,7 @@
 <translation id="370972442370243704">تفعيل ميزة "سجلّ أنشطة البحث والتصفُّح"</translation>
 <translation id="3711895659073496551">تعليق</translation>
 <translation id="3712624925041724820">التراخيص مستنفذة</translation>
+<translation id="3714633008798122362">تقويم الويب</translation>
 <translation id="3714780639079136834">‏تشغيل بيانات شبكة الجوّال أو Wi-Fi</translation>
 <translation id="3715597595485130451">‏الاتصال بـ Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />التحقق من إعداد الخادم الوكيل والجدار الناري ونظام أسماء النطاقات<ph name="END_LINK" /></translation>
@@ -942,6 +947,7 @@
 <translation id="3906954721959377182">جهاز لوحي</translation>
 <translation id="3909477809443608991">‏يريد <ph name="URL" /> تشغيل المحتوى المُحمي. ستتحقَّق Google من هوية جهازك ويمكن الوصول إليه من خلال هذا الموقع.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">رفض</translation>
 <translation id="3939773374150895049">‏هل تريد استخدم WebAuthn بدلاً من رمز التحقق من البطاقة (CVC)؟</translation>
 <translation id="3946209740501886391">السؤال دائمًا على الموقع الإلكتروني هذا</translation>
 <translation id="3947595700203588284">‏السماح للموقع الإلكتروني بطلب الاتصال بأجهزة MIDI</translation>
@@ -2310,7 +2316,8 @@
 <translation id="8351131234907093545">إنشاء ملاحظة</translation>
 <translation id="8355270400102541638">سياق التعطّل على جهاز المستخدِم:</translation>
 <translation id="8363502534493474904">إيقاف "وضع الطيران"</translation>
-<translation id="8364627913115013041">لم يتم تعيينها.</translation>
+<translation id="8364627913115013041">لم يتم ضبطها.
+</translation>
 <translation id="8368027906805972958">جهاز غير معروف أو غير متوافق (<ph name="DEVICE_ID" />)</translation>
 <translation id="8368476060205742148">‏خدمات Google Play</translation>
 <translation id="8369073279043109617">الحصول على رمز جديد</translation>
@@ -2409,6 +2416,7 @@
 <translation id="8731544501227493793">‏زر "إدارة كلمات المرور"، اضغط على مفتاح Enter لعرض كلمات المرور في إعدادات متصفِّح Chrome وإدارتها.</translation>
 <translation id="8734529307927223492">يدير <ph name="MANAGER" /> الجهاز <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8737134861345396036">‏<ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح التبويب (Tab) ثم مفتاح Enter لفتح نافذة تصفُّح متخفٍ جديدة للتصفُّح بخصوصية تامّة.</translation>
+<translation id="8737685506611670901">فتح روابط <ph name="PROTOCOL" /> بدلاً من <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">‏لإنشاء اتصال آمن، فإنك بحاجة إلى ضبط ساعتك بشكل صحيح. وذلك لأن الشهادات التي تستخدمها المواقع الإلكترونية لتعريف نفسها تكون صالحة فقط لفترات محددة من الوقت. فإذا كانت ساعة جهازك غير صحيحة، فلن يتمكن Chromium من التحقق من هذه الشهادات.</translation>
 <translation id="8740359287975076522">‏تعذر العثور على &lt;/abbr&gt;عنوان نظام أسماء النطاقات (DNS)‏&lt;abbr id="dnsDefinition"&gt; لـ <ph name="HOST_NAME" />. جارٍ تشخيص المشكلة.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> هو الرمز للنطاق <ph name="ORIGIN" /></translation>
@@ -2486,6 +2494,7 @@
 <translation id="9004367719664099443">‏جلسة VR قيد التقدم</translation>
 <translation id="9005998258318286617">‏فشل تحميل مستند PDF.</translation>
 <translation id="9008201768610948239">تجاهل</translation>
+<translation id="901834265349196618">بريد إلكتروني</translation>
 <translation id="9020200922353704812">عنوان إرسال الفواتير للبطاقة مطلوب</translation>
 <translation id="9020542370529661692">تمت ترجمة هذه الصفحة إلى <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

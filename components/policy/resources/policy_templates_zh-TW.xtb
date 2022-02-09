@@ -484,12 +484,6 @@
 <translation id="159946228300522107">如果將這項政策設為 True，Chrome 首次執行時會將第一個顯示的視窗最大化。
 
       如果將這項政策設為 False 或不設定，Chrome 會視螢幕大小而定，將第一個視窗最大化。</translation>
-<translation id="1600107337865729434">這項政策預設為允許使用 origin-keyed 代理程式叢集。
-
-      Origin-Agent-Cluster：HTTP 標頭會控制系統要在 origin-keyed 代理程式叢集或 site-keyed 代理程式叢集中隔離文件。這個做法有安全性疑慮，因為 origin-keyed 代理程式叢集允許系統按來源隔離文件。對開發人員來說，啟用這項政策就無法再設定 document.domain 存取子。
-
-      預設行為 - 未設定 Origin-Agent-Cluster 標頭時 - 在 M101 版本中從 site-keyed 變更為 origin-keyed。如果將這項政策設為啟用或不設定，瀏覽器會自該版本起採用這項新的預設設定。如果將這項政策設為停用，系統會復原這項變更，並將未包含 Origin-Agent-Cluster 標頭的文件指派給 site-keyed 代理程式叢集。因此在預設情況下，開發人員仍可設定 document.domain 存取子。這項設定與舊版行為相符。
-      </translation>
 <translation id="1600340610556453828">如果這項政策設為停用，<ph name="PRODUCT_OS_NAME" /> 會關閉 Wi-Fi 功能，而且使用者無法變更這項設定。
 
       如果將這項政策設為啟用或不設定，使用者可以開啟或關閉 Wi-Fi。</translation>
@@ -569,6 +563,7 @@
 <translation id="1648816843164517573">可略過 HTTP 嚴格傳輸安全性政策檢查的名稱清單</translation>
 <translation id="1654087023995670109">強制執行瀏覽器訪客模式</translation>
 <translation id="1655229863189977773">設定磁碟快取大小 (以位元組為單位)</translation>
+<translation id="165769015320654523">自動授權網站連結至指定廠商和產品 ID 的 HID 裝置。</translation>
 <translation id="166427968280387991">Proxy 伺服器：</translation>
 <translation id="1669584285557771729">如果設定這項政策，政策會控管啟用的放大鏡類型。
 
@@ -727,6 +722,11 @@
           只有在啟用「DefaultSearchProviderEnabled」時，系統才會遵循這項政策。</translation>
 <translation id="1850439894606905202">根據預設，系統會將文件放置在 site-keyed 代理程式叢集中。開發人員仍可設定 document.domain。</translation>
 <translation id="1852294065645015766">允許自動播放媒體</translation>
+<translation id="1855963029978337744">你可以透過這項政策設定網址清單，指定哪些網站會自動取得權限，能夠存取具備指定廠商 ID 和產品 ID 的 HID 裝置。清單中的每個項目都必須包含 <ph name="DEVICES_FIELD_NAME" /> 和 <ph name="URLS_FIELD_NAME" /> 欄位，這個項目才會生效，否則將遭到忽略。<ph name="DEVICES_FIELD_NAME" /> 欄位中的每個項目必須包含 <ph name="VENDOR_ID_FIELD_NAME" /> 且可能包含 <ph name="PRODUCT_ID_FIELD_NAME" /> 欄位。如果省略 <ph name="PRODUCT_ID_FIELD_NAME" /> 欄位，建立的政策將適用於具備指定廠商 ID 的裝置。要是政策包含 <ph name="PRODUCT_ID_FIELD_NAME" /> 欄位，但缺少 <ph name="VENDOR_ID_FIELD_NAME" /> 欄位，該項目將為無效且遭到忽略。
+
+      如果不設定這項政策，在已設定 <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> 政策的情況下，系統將套用該政策，否則系統會套用使用者的個人設定。
+
+      這項政策中的網址不得與透過 <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策設定的網址產生衝突。如有衝突情況，這項政策的優先順序高於 <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策。</translation>
 <translation id="1859859319036806634">警告：我們將於 <ph name="PRODUCT_NAME" /> 52 版發布 (大約在 2016 年 9 月) 之後淘汰 TLS 版本遞補功能，並停止支援這項政策。
 
       當 TLS 交握失敗時，<ph name="PRODUCT_NAME" /> 會先重新嘗試以較低版本的 TLS 建立連線，以忽略 HTTPS 伺服器發生的錯誤。這項設定可讓您指定要在哪個版本停止遞補程序。如果伺服器正確執行版本交涉 (亦即不中斷連線)，系統就不會套用這項設定。不過，最終的連線仍然必須符合 SSLVersionMin 要求。
@@ -1681,6 +1681,7 @@
       可將萬用字元用於整個來源或部分來源，包括通訊標準、主機名稱和通訊埠。</translation>
 <translation id="2893546967669465276">將系統記錄傳送到管理伺服器</translation>
 <translation id="2893660462311365527">以毫秒為單位的網路遙測收集率。</translation>
+<translation id="2895444724612647239">自動授權網站連結至任何 HID 裝置。</translation>
 <translation id="2896434627453256512">設定這項政策可啟用 ghost 視窗功能。
       如果將這項政策設為 True，系統就會在當機或重新啟動後至 ARC 啟動的這段期間，根據還原應用程式設定建立 ARC ghost 視窗。
       如果將這項政策設為 False，系統就不會在 ARC 啟動前建立 ghost 視窗。ARC 應用程式會在 ARC 啟動後還原</translation>
@@ -2387,6 +2388,11 @@
 <translation id="3711895659073496551">暫停</translation>
 <translation id="3715569262675717862">根據用戶端憑證進行驗證</translation>
 <translation id="3719826155360621982">首頁</translation>
+<translation id="372668389978450673">如果將這項政策設為 True 或不設定，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 將允許從使用者管理工具新增使用者。
+
+      如果將這項政策設為 False，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 將不允許從使用者管理工具新增使用者。
+
+      但請注意，如果不設定這項政策或將其設為 True，但將 <ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" /> 設為 False，<ph name="LACROS_NAME" /> 將無法從使用者管理工具新增使用者。</translation>
 <translation id="3727476641336727380">除非將 <ph name="ALLOW_WAKE_LOCKS_POLICY_NAME" /> 設為停用，否則將 <ph name="ALLOW_SCREEN_WAKE_LOCKS_POLICY_NAME" /> 設為啟用或不設定，系統會允許電源管理的螢幕 Wake Lock。擴充功能可透過電源管理擴充功能 API 和 ARC 應用程式，要求使用螢幕 Wake Lock。
 
       如果將這項政策設為停用，螢幕 Wake Lock 使用要求會降級為系統 Wake Lock 使用要求。</translation>
@@ -3383,6 +3389,15 @@
       如果設定這項政策，使用者將無法變更。如果未設定這項政策，則使用者可自行決定是否要傳送報告。
 
       如要進一步瞭解「安全瀏覽」功能，請前往 https://developers.google.com/safe-browsing。</translation>
+<translation id="4955566229684195326">如果啟用這項設定，使用者就能在 <ph name="LACROS_NAME" /> 瀏覽器中建立及使用次要設定檔，也可以使用訪客模式。
+
+      這項設定類似 <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> 和 <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />；如果將這項政策設為 False 或未設定，使用者就無法建立或使用次要設定檔，也無法使用訪客模式。
+
+      如果先前已建立任何次要設定檔，這些次要設定檔將無法使用。
+
+      如果將這項政策設為 True，代表使用者可以建立及使用次要設定檔，也可以使用訪客模式。
+
+      但請注意，如果將這項政策設為 True，但將 <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> 設為 False，使用者便無法建立次要設定檔。這個原則也適用於 <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" /> 和訪客模式。</translation>
 <translation id="4960597185231686653">布林值標記，表示螢幕小鍵盤是否能提供語音輸入功能。</translation>
 <translation id="4970046075219007744">允許網頁應用程式要求使用者授予透過 File Handling API 存取特定類型檔案的權限</translation>
 <translation id="4970855112942626932">禁止登入瀏覽器</translation>
@@ -5043,6 +5058,11 @@
 <translation id="6907778402784621686">封鎖這些網站上的不安全內容</translation>
 <translation id="6908640907898649429">設定預設搜尋引擎。你可以指定使用者要使用的預設搜尋引擎或選擇停用預設搜尋。</translation>
 <translation id="6913068954484253496">允許 <ph name="PRODUCT_NAME" /> 連線至所有 IP 位址上的 Cast 裝置。</translation>
+<translation id="6919819553978815392">如果將這項政策設為 True 或不設定，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 將啟用訪客登入。訪客可以登入 <ph name="PRODUCT_NAME" /> 設定檔，登入後，所有視窗都會以無痕模式開啟。
+
+      如果將這項政策設為 False，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 將不允許啟用訪客設定檔。
+
+      但請注意，如果不設定這項政策或將其設為 True，但將 <ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" /> 設為 False，<ph name="LACROS_NAME" /> 將不允許啟用訪客設定檔。</translation>
 <translation id="6922498040906800267">設定規則清單，避免 <ph name="PRODUCT_OS_NAME" />中發生資料外洩。
       複製並貼上資料、傳輸檔案、列印、分享螢幕畫面或擷取螢幕畫面等動作都有可能導致資料外洩。
 
@@ -6571,6 +6591,7 @@
 <translation id="8604178325750278068">如果將這項政策設為啟用，Google 助理會聽取語音啟動字詞。如果將這項政策設為停用，Google 助理無法聽取語音啟動字詞。
 
       如果未設定這項政策，使用者可自行決定要啟用或停用這項功能。</translation>
+<translation id="8604906464981340229">自動授權網站連結至包含具備指定 HID 使用權頂層集合的 HID 裝置。</translation>
 <translation id="8605216171953003144">如果將這項政策設為啟用或不設定，系統會開啟 NTLMv2。
 
       如果將這項政策設為停用，系統會關閉 NTLMv2。
@@ -6606,6 +6627,11 @@
 <translation id="8656110680728938054">啟用隨選朗讀功能</translation>
 <translation id="8661297125441579970">不允許資料遷移功能和 ARC。</translation>
 <translation id="8665314828727504286">安全瀏覽功能防護等級</translation>
+<translation id="8666123502812856425">你可以透過這項政策設定網址清單，指定哪些網站會自動取得權限，能夠存取包含具備指定 HID 使用權頂層集合的 HID 裝置。清單中的每個項目都必須包含 <ph name="USAGES_FIELD_NAME" /> 和 <ph name="URLS_FIELD_NAME" /> 欄位，這項政策才會生效。<ph name="USAGES_FIELD_NAME" /> 欄位中的每個項目必須包含 <ph name="USAGE_PAGE_FIELD_NAME" /> 且可能包含 <ph name="USAGE_FIELD_NAME" /> 欄位。如果省略 <ph name="USAGE_FIELD_NAME" /> 欄位，建立的政策將適用於所有包含使用來自指定使用頁面的頂層集合裝置。要是政策包含 <ph name="USAGE_FIELD_NAME" /> 欄位，但缺少 <ph name="USAGE_PAGE_FIELD_NAME" /> 欄位，該項目將為無效且遭到忽略。
+
+      如果不設定這項政策，在已設定 <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> 政策的情況下，系統將套用該政策，否則系統會套用使用者的個人設定。
+
+      這項政策中的網址不得與透過 <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策設定的網址產生衝突。如有衝突情況，這項政策的優先順序高於 <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策。</translation>
 <translation id="8669313549017524373">如果將 <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> 設為 RestoreOnStartupIsURLs，將 <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> 設為網址清單可指定要開啟的網址。
 
       如果未設定這項政策，瀏覽器啟動時會開啟「新分頁」。
@@ -6922,6 +6948,13 @@
 
       指定政策值時，請以秒為單位進行設定。</translation>
 <translation id="9015578113567730893">以毫秒為單位的音訊遙測收集率。</translation>
+<translation id="9024884890349148482">你可以透過這項政策設定網站清單，指定哪些網站會自動取得權限，能夠存取所有可用的裝置。
+
+      網址必須是有效網址，否則系統會忽略這項政策。系統只會檢視網址的來源 (配置、主機和連接埠)。
+
+      在 Chrome OS 中，這項政策只會套用至關聯的使用者。
+
+      這項政策會覆寫 <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />、<ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" />、<ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> 和使用者的偏好設定。</translation>
 <translation id="9035086760683255833">啟用鍵盤焦點醒目顯示無障礙功能。
 
           這項功能可以醒目顯示鍵盤聚焦的物件。

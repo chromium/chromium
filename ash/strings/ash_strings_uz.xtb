@@ -683,6 +683,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (oʻng)</translation>
 <translation id="5352250171825660495">Tungi mavzu yoniq</translation>
 <translation id="5379115545237091094">Juda ko‘p urinishlar bo‘ldi</translation>
+<translation id="5393156353051693207">Ilovalarni qayta saralash uchun istalgan joyni bosib turing</translation>
 <translation id="5395308026110844773">Jild yaratish uchun <ph name="DRAGGED_APP_NAME" /> ilovaisini <ph name="IN_PLACE_APP" /> ustiga sudrang.</translation>
 <translation id="5397578532367286026">Boshqaruvchi (<ph name="MANAGER_EMAIL" />) bu foydalanuvchining brauzerdagi ish tarixini chrome.com saytida ko‘rishi mumkin.</translation>
 <translation id="5400461572260843123">Tezkor sozlamalar, Bildirishnomalar markazini ochish uchun “Qidiruv + Chapga strelka” tugmalarini bosing.</translation>
@@ -973,6 +974,7 @@ yangi oʻrnatilgan</translation>
 <translation id="7378203170292176219">Yozib olinadigan hududni tanlash uchun suring</translation>
 <translation id="7378594059915113390">Media boshqaruv elementlari</translation>
 <translation id="7378889811480108604">Quvvat tejash rejimi oʻchiq</translation>
+<translation id="7384028040782072252">Ilovalarni qayta saralash uchun oʻng klikni istalgan joyga bosing</translation>
 <translation id="7392563512730092880">Buni istalgan vaqtda Sozlamalar orqali sozlash mumkin.</translation>
 <translation id="7405710164030118432">Bu qurilma qulfini ochish uchun Family Link ota-ona kodini kiriting</translation>
 <translation id="7406608787870898861">Mobil tarmoqni sozlashni yakunlash</translation>
@@ -1162,6 +1164,7 @@ yangi oʻrnatilgan</translation>
 <translation id="8563862697512465947">Bildirishnoma sozlamalari</translation>
 <translation id="857201607579416096">Menyu ekranning quyi oʻng burchagiga surildi.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
+<translation id="8598235756057743477">Ilovalarni nomi yoki rangi asosida saralash</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> qurilmasiga ulandi</translation>
 <translation id="8631727435199967028">Maxsus imkoniyatlar sozlamalari</translation>
 <translation id="8637598503828012618">Himoya: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />, Administrator boshqaruvida</translation>

@@ -116,6 +116,7 @@
 <translation id="196896377990863006">Алдын ала көрүү шилтемесин көрсөтүү</translation>
 <translation id="1973912524893600642">Дайындарды сактоо</translation>
 <translation id="1974060860693918893">Өркүндөтүлгөн</translation>
+<translation id="1981118202195772574">Мобилдик түзмөк</translation>
 <translation id="1989112275319619282">Серептөө</translation>
 <translation id="199425419756152024">Сырсөздү көрүү</translation>
 <translation id="2015722694326466240">Сырсөздөрдү көрүү үчүн адегенде, түзмөгүңүздөгү өткөрүүчү кодду жөндөп алышыңыз керек.</translation>
@@ -236,6 +237,7 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Шайкештире ала турган нерселерди көрүңүз<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Баарын бөгөттөө</translation>
 <translation id="313283613037595347">Жаңы жашыруун өтмөк түзүү.</translation>
+<translation id="3150887674190166798">Chrome бул сайтты ар дайым кайсы режимде ачарын тандаңыз</translation>
 <translation id="3153862085237805241">Карточканы сактоо</translation>
 <translation id="3157387275655328056">Окуу тизмесине кошуу</translation>
 <translation id="3157684681743766797">Баарын белгилөө…</translation>
@@ -764,6 +766,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="7911190106180361398">Уюмуңуз бардык маалыматты шайкештирүүгө тыюу салган.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Сырсөздөрдү экспорттоо…</translation>
+<translation id="793971554166979165">Демейки сайт режими</translation>
 <translation id="794799177247607889">Таржымалын жыйноону токтотуу</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Билинип калган сырсөздөр жок}=1{{COUNT} уурдалган сырсөз бар}other{{COUNT} уурдалган сырсөз бар}}</translation>
 <translation id="7961015016161918242">Эч качан</translation>
@@ -869,6 +872,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="8881801611828450202">Бул сүрөттү <ph name="SEARCH_ENGINE" /> издөө каражатынан издөө</translation>
 <translation id="8909135823018751308">Бөлүшүү…</translation>
 <translation id="8917490105272468696">Ооба, мен макулмун</translation>
+<translation id="8928133177108699615">Иш такта</translation>
 <translation id="8952559610785099500">Сырсөз кошуу</translation>
 <translation id="895541991026785598">Маселе жөнндө кабрл</translation>
 <translation id="8974714402877957201">1. iPad жөндөөлөрүн ачыңыз</translation>

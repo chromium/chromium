@@ -484,23 +484,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="159946228300522107">Se a política for definida como verdadeira, o Chrome maximizará a primeira janela exibida durante a primeira execução.
 
       Se ela for definida como falsa ou não for definida, o Chrome poderá maximizar a primeira janela, dependendo do tamanho da tela.</translation>
-<translation id="1600107337865729434">Esta política permite por padrão o clustering do agente com origin-key.
-
-      O cabeçalho HTTP Origin-Agent-Cluster: controla se um documento está
-      isolado em um cluster de agente com origin-key ou
-      com site-key. Como um cluster de agente com origin-key permite o isolamento de
-      documentos por origem, esse processo afeta a segurança. A consequência visível
-      para o desenvolvedor é a impossibilidade de definir o acessador
-      document.domain.
-
-      O comportamento padrão, quando nenhum cabeçalho Origin-Agent-Cluster: tiver sido definido,
-      muda de site-key para origin-key na versão M101. Se esta política
-      for ativada ou for deixada sem definição, o navegador vai seguir o novo padrão dessa
-      versão em diante. Se a política for desativada, a mudança será revertida e os
-      documentos sem cabeçalhos Origin-Agent-Cluster: serão atribuídos a
-      clusters de agente com site-key. Consequentemente, o acessador document.domain
-      vai permanecer definível por padrão. Esse comportamento é correspondente ao legado.
-      </translation>
 <translation id="1600340610556453828">Se a política for definida como "Desativada", o <ph name="PRODUCT_OS_NAME" /> desativará o Wi-Fi, e não será possível mudar essa configuração.
 
       Se a política for definida como "Ativada" ou não for definida, será possível ativar ou desativar o Wi-Fi.</translation>
@@ -2523,6 +2506,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       Se esta configuração estiver desativada, os usuários não terão permissão para usar o login do Smart Lock.
 
       Se esta política não for definida, o comportamento padrão será não permitir o login para usuários gerenciados por empresas e permitir o login para usuários não gerenciados.</translation>
+<translation id="3791179836066841809">Documentação da política</translation>
 <translation id="3794413118360704299">Esta política permite que um administrador especifique configurações para apps da Web instalados.
 
       Esta política mapeia um ID de app da Web para a própria configuração específica. Consulte <ph name="WEB_APP_ID_REFERENCE_URL" /> para ver instruções sobre como determinar o ID de um app da Web instalado.

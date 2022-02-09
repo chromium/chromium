@@ -224,7 +224,6 @@ Aby coś wyszukać, dotknij dowolnego słowa. Aby doprecyzować wyszukiwanie, na
 <translation id="2321958826496381788">Przeciągaj suwak, by umożliwić wygodne czytanie. Gdy dwukrotnie klikniesz akapit, tekst powiększy się co najmniej do tej wielkości.</translation>
 <translation id="2323763861024343754">Dane witryn:</translation>
 <translation id="2328985652426384049">Nie można się zalogować</translation>
-<translation id="2342601525305963189">Wskazówki dotyczące Chrome:</translation>
 <translation id="234265804618409743">Nie udało się otworzyć aparatu. Coś poszło nie tak.</translation>
 <translation id="2349710944427398404">Łączna ilość danych używanych przez Chrome, w tym konta, zakładki i zapisane ustawienia</translation>
 <translation id="2353636109065292463">Sprawdzanie połączenia z internetem</translation>
@@ -568,9 +567,11 @@ Aby coś wyszukać, naciśnij i przytrzymaj dowolne słowo. Aby doprecyzować w
 <translation id="4402611456429872546"><ph name="LANG" /> – pobieram…</translation>
 <translation id="4404568932422911380">Brak zakładek</translation>
 <translation id="4405224443901389797">Przenieś do…</translation>
+<translation id="4405636711880428279">Usunąć Twoją kartę wirtualną?</translation>
 <translation id="4409271659088619928">Twoja wyszukiwarka to <ph name="DSE" />. Zapoznaj się z jej instrukcjami, jeśli chcesz usunąć historię wyszukiwania.</translation>
 <translation id="4415276339145661267">Zarządzaj kontem Google</translation>
 <translation id="4425140285732600465">Monitoruję cenę. Jeśli na którejkolwiek stronie produkt stanieje, otrzymasz alert.</translation>
+<translation id="442518031075347249">Stracisz możliwość korzystania z karty wirtualnej w Google Pay. <ph name="BEGIN_LINK1" />Więcej informacji o kartach wirtualnych<ph name="END_LINK1" /></translation>
 <translation id="4450672886426705087">Wyniki z wyszukiwarki Google.</translation>
 <translation id="4452411734226507615">Zamknij kartę <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Utworzono zakładkę w folderze <ph name="FOLDER_NAME" /></translation>

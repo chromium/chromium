@@ -461,6 +461,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2337852623177822836">Kinokontrol ng iyong administrator ang setting</translation>
 <translation id="2340263603246777781">Gustong makipagpares ng <ph name="ORIGIN" /></translation>
 <translation id="2346319942568447007">Larawang kinopya mo</translation>
+<translation id="2350796302381711542">Papayagan ang <ph name="HANDLER_HOSTNAME" /> na buksan ang lahat ng <ph name="PROTOCOL" /> (na) link sa halip na ang <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2354001756790975382">Iba pang mga bookmark</translation>
 <translation id="2354430244986887761"><ph name="BEGIN_LINK" />May nahanap na mga mapanganib na app<ph name="END_LINK" /> kamakailan ang Ligtas na Pag-browse ng Google sa <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Maaaring makita ng mga umaatake ang mga larawang tinitingnan mo sa site na ito at lilinlangin ka sa pamamagitan ng pagbago sa mga ito.</translation>
@@ -486,6 +487,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2413528052993050574">Hindi mapatunayan ng server na ito na ito ay <ph name="DOMAIN" />; maaaring binawi ang certificate ng seguridad nito. Maaaring dulot ito ng maling configuration o isang umaatake na hinahadlangan ang iyong koneksyon.</translation>
 <translation id="2414886740292270097">Madilim</translation>
 <translation id="2430968933669123598">Pamahalaan ang Google Account, pindutin ang Enter para pamahalaan ang iyong impormasyon, privacy, at seguridad sa iyong Google Account</translation>
+<translation id="2436186046335138073">Papayagan ang <ph name="HANDLER_HOSTNAME" /> na buksan ang lahat ng link ng <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Quad punch right</translation>
 <translation id="2450021089947420533">Mga Journey</translation>
 <translation id="2463739503403862330">Punan</translation>
@@ -635,6 +637,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2930577230479659665">Paikliin pagkatapos ng bawat pagkopya</translation>
 <translation id="2932085390869194046">Magmungkahi ng Password...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">Buksan ang mga link ng <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">Hindi mapatunayan ng server na ito na ito ay <ph name="DOMAIN" />; mula sa <ph name="DOMAIN2" /> ang certificate ng seguridad nito. Maaaring dulot ito ng maling configuration o isang umaatake na hinahadlangan ang iyong koneksyon.</translation>
 <translation id="2943895734390379394">Oras ng Pag-upload:</translation>
 <translation id="2948083400971632585">Maaari mong i-disable ang anumang mga proxy na naka-configure para sa isang koneksyon mula sa pahina ng mga setting.</translation>
@@ -744,6 +747,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3288238092761586174">Posibleng kailanganin ng <ph name="URL" /> na magsagawa ng mga karagdagang hakbang para ma-verify ang iyong pagbabayad</translation>
 <translation id="3293642807462928945">Matuto pa tungkol sa patakarang <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Tingnan at pamahalaan ang iyong mga password sa mga setting ng Chrome</translation>
+<translation id="3303795387212510132">Payagan ang app na magbukas ng mga link na <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Walang nakitang resulta ng paghahanap</translation>
 <translation id="3304073249511302126">pag-scan ng bluetooth</translation>
 <translation id="3308006649705061278">Organizational Unit (OU)</translation>
@@ -881,6 +885,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="370972442370243704">I-on ang Mga Journey</translation>
 <translation id="3711895659073496551">Suspendihin</translation>
 <translation id="3712624925041724820">Naubos na ang mga lisensya</translation>
+<translation id="3714633008798122362">kalendaryo ng web</translation>
 <translation id="3714780639079136834">I-on ang mobile data o Wi-Fi</translation>
 <translation id="3715597595485130451">Kumonekta sa Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Suriin ang configuration ng proxy, firewall at DNS<ph name="END_LINK" /></translation>
@@ -942,6 +947,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991">Gusto ng <ph name="URL" /> na mag-play ng pinoprotektahang content. Ive-verify ng Google ang pagkakakilanlan ng iyong device, at maaari itong i-access ng site na ito.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Tanggihan</translation>
 <translation id="3939773374150895049">Gamitin ang WebAuthn sa halip na CVC?</translation>
 <translation id="3946209740501886391">Palaging hilingin sa site na ito</translation>
 <translation id="3947595700203588284">Puwedeng hilinging kumonekta sa mga MIDI device</translation>
@@ -1058,6 +1064,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4250680216510889253">Hindi</translation>
 <translation id="4253168017788158739">Tala</translation>
 <translation id="425582637250725228">Maaaring hindi ma-save ang mga pagbabagong ginawa mo.</translation>
+<translation id="425869179292622354">Gawin itong mas secure gamit ang virtual card?</translation>
 <translation id="4258748452823770588">Maling lagda</translation>
 <translation id="4261046003697461417">Hindi maaaring i-annotate ang mga protektadong dokumento</translation>
 <translation id="4265872034478892965">Pinayagan ng iyong administrator</translation>
@@ -1568,6 +1575,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5921639886840618607">I-save ang card sa Google Account?</translation>
 <translation id="5922853866070715753">Malapit nang matapos</translation>
 <translation id="5932224571077948991">Nagpapakita ang site ng mga nakakasagabal o nakakapanlinlang na ad</translation>
+<translation id="5938153366081463283">Magdagdag ng virtual card</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Binubuksan ang <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Hindi maka-enroll gamit ang account ng consumer (may available na naka-package na lisensya).</translation>
@@ -2192,6 +2200,7 @@ Mga karagdagang detalye:
 <translation id="7976214039405368314">Masyadong maraming kahilingan</translation>
 <translation id="7977538094055660992">Output device</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="7981260203882740562">Naka-link sa</translation>
 <translation id="798134797138789862">Puwedeng hilinging gumamit ng mga virtual reality device at data</translation>
 <translation id="7984945080620862648">Hindi mo maaaring bisitahin ang <ph name="SITE" /> sa ngayon dahil nagpadala ang website ng mga gulu-gulong kredensyal na hindi maproseso ng Chrome. Kadalasang pansamantala lang ang mga error at atake sa network, kaya malamang na gagana ang page na ito sa ibang pagkakataon.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2408,6 +2417,7 @@ Mga karagdagang detalye:
 <translation id="8731544501227493793">Button na Pamahalaan ang mga password, pindutin ang Enter para tingnan at pamahalaan ang mga password mo sa mga setting ng Chrome</translation>
 <translation id="8734529307927223492">Pinapamahalaan ng <ph name="MANAGER" /> ang iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay Enter para magbukas ng bagong Incognito window para makapag-browse nang pribado</translation>
+<translation id="8737685506611670901">Buksan ang mga link ng <ph name="PROTOCOL" /> sa halip na ang <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Upang makapagtatag ng secure na koneksyon, kailangang itakda nang tama ang iyong orasan. Ito ay dahil sa may-bisa lang ang mga certificate na ginagamit ng mga website upang tukuyin ang mga sarili ng mga ito sa loob ng mga partikular na tagal ng panahon. Dahil mali ang orasan ng iyong device, hindi ma-verify ng Chromium ang mga certificate na ito.</translation>
 <translation id="8740359287975076522">Hindi makita ang &lt;abbr id="dnsDefinition"&gt;DNS address&lt;/abbr&gt; ng <ph name="HOST_NAME" />. Dina-diagnose ang problema.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> ang iyong code para sa <ph name="ORIGIN" /></translation>
@@ -2485,6 +2495,7 @@ Mga karagdagang detalye:
 <translation id="9004367719664099443">Kasalukuyang isinasagawa ang VR session</translation>
 <translation id="9005998258318286617">Hindi na-load ang PDF document.</translation>
 <translation id="9008201768610948239">Balewalain</translation>
+<translation id="901834265349196618">email</translation>
 <translation id="9020200922353704812">Kinakailangan ang address sa pagsingil ng card</translation>
 <translation id="9020542370529661692">Na-translate sa <ph name="TARGET_LANGUAGE" /> ang pahinang ito</translation>
 <translation id="9020742383383852663">A8</translation>

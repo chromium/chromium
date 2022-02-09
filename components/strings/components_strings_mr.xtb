@@ -461,6 +461,7 @@
 <translation id="2337852623177822836">सेटिंग तुमच्या ॲडमिनिस्ट्रेटरने नियंत्रित केलेले आहे</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> जोडू इच्छिते</translation>
 <translation id="2346319942568447007">तुम्ही कॉपी केलेली इमेज</translation>
+<translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> ला <ph name="REPLACED_HANDLER_TITLE" /> ऐवजी सर्व <ph name="PROTOCOL" /> लिंक उघडण्यासाठी अनुमती द्यायची?</translation>
 <translation id="2354001756790975382">इतर बुकमार्क</translation>
 <translation id="2354430244986887761">Google सुरक्षित ब्राउझिंगला अलीकडे <ph name="SITE" />मध्ये <ph name="BEGIN_LINK" />हानिकारक ॲप्स सापडले<ph name="END_LINK" />.</translation>
 <translation id="2355395290879513365">तुम्ही या साइटवर पाहत असलेल्या इमेज पाहण्यास आक्रमणकर्ते सक्षम असू शकतात आणि त्यात सुधारणा करून तुमची फसवणूक करू शकतात.</translation>
@@ -486,6 +487,7 @@
 <translation id="2413528052993050574">हा सर्व्हर हे <ph name="DOMAIN" /> असल्याचे सिद्ध करू शकला नाही; त्याचे सुरक्षितता सर्टिफिकेट कदाचित रद्द केले असू शकते. हे कदाचित एका चुकीच्या कॉंफिगरेशनमुळे किंवा हल्लेखोराने तुमचे कनेक्शन इंटरसेप्ट केल्यामुळे झाले असू शकते.</translation>
 <translation id="2414886740292270097">गडद</translation>
 <translation id="2430968933669123598">Google खाते व्यवस्थापित करा, तुमच्या Google खाते मध्ये तुमची माहिती, गोपनीयता आणि सुरक्षा व्यवस्थापित करण्यासाठी एंटर दाबा</translation>
+<translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> ला सर्व <ph name="PROTOCOL" /> लिंक उघडण्याची अनुमती द्यायची?</translation>
 <translation id="2438874542388153331">क्वाड पंच राइट</translation>
 <translation id="2450021089947420533">प्रवास</translation>
 <translation id="2463739503403862330">भरून टाका</translation>
@@ -635,6 +637,7 @@
 <translation id="2930577230479659665">प्रत्येक प्रतीनंतर ट्रिम करा</translation>
 <translation id="2932085390869194046">पासवर्ड सुचवा...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019"><ph name="PROTOCOL" /> लिंक उघडा</translation>
 <translation id="2941952326391522266">हा सर्व्हर हे <ph name="DOMAIN" /> असल्याचे सिद्ध करू शकला नाही; त्याचे सुरक्षितता सर्टिफिकेट <ph name="DOMAIN2" /> वरील आहे. हे कदाचित एका चुकीच्या कॉंफिगरेशनमुळे किंवा हल्लेखोराने तुमचे कनेक्शन इंटरसेप्ट केल्यामुळे झाले असू शकते.</translation>
 <translation id="2943895734390379394">अपलोड करण्याची वेळ:</translation>
 <translation id="2948083400971632585">तुम्हे सेटिंग्ज पेजवरून एका कनेक्शनसाठी कॉंफिगर केलेले कोणत्याही प्रॉक्सी अक्षम करू शकता.</translation>
@@ -744,6 +747,7 @@
 <translation id="3288238092761586174">तुमच्या पेमेंटची पडताळणी करण्यासाठी <ph name="URL" /> ने अतिरिक्त पावले उचलणे आवश्यक असू शकते</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> धोरणांबद्दल अधिक जाणून घ्या</translation>
 <translation id="3295444047715739395">Chrome सेटिंग्जमध्ये तुमचे पासवर्ड पहा आणि व्‍यवस्‍थापित करा</translation>
+<translation id="3303795387212510132">अ‍ॅपला <ph name="PROTOCOL_SCHEME" /> लिंक उघडण्याची अनुमती द्यायची आहे का?</translation>
 <translation id="3303855915957856445">कोणतेही शोध परिणाम आढळले नाहीत</translation>
 <translation id="3304073249511302126">ब्लूटूथ स्कॅन करणे</translation>
 <translation id="3308006649705061278">संस्थात्मक एकक (OU)</translation>
@@ -880,6 +884,7 @@
 <translation id="370972442370243704">प्रवास सुरू करा</translation>
 <translation id="3711895659073496551">निलंबन</translation>
 <translation id="3712624925041724820">परवाने संपुष्टात</translation>
+<translation id="3714633008798122362">वेब कॅलेंडर</translation>
 <translation id="3714780639079136834">मोबाइल डेटा किंवा वाय-फाय सुरू करणे</translation>
 <translation id="3715597595485130451">वाय-फाय वर कनेक्ट करा</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />प्रॉक्सी, फायरवॉल आणि DNS कॉंफिगरेशन तपासणे<ph name="END_LINK" /></translation>
@@ -941,6 +946,7 @@
 <translation id="3906954721959377182">टॅबलेट</translation>
 <translation id="3909477809443608991"><ph name="URL" /> ला संरक्षित आशय प्ले करायचा आहे. तुमच्या डिव्हाइसच्या ओळखीची Google कडून पडताळणी केली जाईल आणि कदाचित या साइटकडून अ‍ॅक्सेस केली जाईल.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">नकार द्या</translation>
 <translation id="3939773374150895049">CVC ऐवजी WebAuthn वापरायचे का?</translation>
 <translation id="3946209740501886391">नेहमी या साइटवर विचारा</translation>
 <translation id="3947595700203588284">MIDI डिव्हाइसशी कनेक्ट करण्याची विनंती करू शकते</translation>
@@ -2411,6 +2417,7 @@
 <translation id="8731544501227493793">पासवर्ड व्यवस्थापित करा बटण, पाहण्यासाठी Enter दाबा आणि Chrome सेटिंग्जमध्ये तुमचे पासवर्ड व्यवस्थापित करा</translation>
 <translation id="8734529307927223492">तुमचे <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> द्वारे व्यवस्थापित केले आहे</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, खाजगीरीत्या ब्राउझ करण्यासाठी नवीन गुप्त विंडो उघडण्याकरिता टॅब आणि त्यानंतर एंटर दाबा</translation>
+<translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> ऐवजी <ph name="PROTOCOL" /> लिंक उघडा</translation>
 <translation id="8738058698779197622">एक सुरक्षित कनेक्‍शन स्‍थापित करण्‍यापूर्वी, तुमचे घड्‍याळ योग्यरित्या सेट केले असणे आवश्यक आहे. कारण वेबसाइट त्यांना स्‍वत:ला ओळखण्‍यासाठी वापरलेली ती सर्टिफिकेटे केवळ नमूद केलेल्‍या कालावधीसाठी वैध असतात. तुमच्या डिव्‍हाइसचे घड्‍याळ चुकीचे असल्‍यामुळे, Chromium ला सर्टिफिकेटे पडताळणी करता आले नाही.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" />चा &lt;abbr id="dnsDefinition"&gt;DNS पत्ता&lt;/abbr&gt; शोधणे शक्य झाले नाही. समस्येचे निराकरण करीत आहे.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> हा तुमचा <ph name="ORIGIN" />साठीचा कोड आहे</translation>
@@ -2488,6 +2495,7 @@
 <translation id="9004367719664099443">VR सेशन प्रगतीपथावर आहे</translation>
 <translation id="9005998258318286617">पीडीएफ दस्तऐवज लोड करण्यात अपयश आले.</translation>
 <translation id="9008201768610948239">दुर्लक्ष करा</translation>
+<translation id="901834265349196618">ईमेल</translation>
 <translation id="9020200922353704812">कार्ड बिलिंग पत्ता आवश्यक आहे</translation>
 <translation id="9020542370529661692">हे पृष्ठ <ph name="TARGET_LANGUAGE" /> मध्ये भाषांतरित केले गेले आहे.</translation>
 <translation id="9020742383383852663">A8</translation>

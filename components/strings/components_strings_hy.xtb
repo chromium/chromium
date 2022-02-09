@@ -460,6 +460,7 @@
 <translation id="2337852623177822836">Կարգավորումը վերահսկվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> կայքն ուզում է զուգակցվել</translation>
 <translation id="2346319942568447007">Ձեր պատճենած պատկերը</translation>
+<translation id="2350796302381711542">Թույլատրե՞լ <ph name="HANDLER_HOSTNAME" />-ին բացել <ph name="PROTOCOL" /> հաղորդակարգի բոլոր հղումները <ph name="REPLACED_HANDLER_TITLE" />-ի փոխարեն:</translation>
 <translation id="2354001756790975382">Այլ էջանիշներ</translation>
 <translation id="2354430244986887761">Google Ապահով դիտարկումը վերջերս <ph name="BEGIN_LINK" />վնասարար հավելվածներ է հայտնաբերել<ph name="END_LINK" /> <ph name="SITE" /> կայքում:</translation>
 <translation id="2355395290879513365">Հարձակվողները կարող են տեսնել պատկերները, որոնք դիտում եք, և խաբել ձեզ` դրանք ձևափոխելով:</translation>
@@ -485,6 +486,7 @@
 <translation id="2413528052993050574">Այս սերվերը չի կարող ապացուցել, որ <ph name="DOMAIN" /> է: Դրա անվտանգության վկայականը, հավանաբար, հետ է կանչվել: Պատճառը կարող է լինել սխալ կազմաձևումը կամ կապակցման խափանումը հարձակվողի կողմից:</translation>
 <translation id="2414886740292270097">Մուգ</translation>
 <translation id="2430968933669123598">Կառավարել Google հաշիվը։ Google հաշվում ձեր տվյալները, գաղտնիությունն ու անվտանգությունը կառավարելու համար սեղմեք Enter։</translation>
+<translation id="2436186046335138073">Թույլատրե՞լ <ph name="HANDLER_HOSTNAME" />-ին բացել <ph name="PROTOCOL" /> հաղորդակարգի բոլոր հղումները:</translation>
 <translation id="2438874542388153331">Չորս անցք աջ կողմում</translation>
 <translation id="2450021089947420533">Այցելություններ</translation>
 <translation id="2463739503403862330">Լրացնել</translation>
@@ -634,6 +636,7 @@
 <translation id="2930577230479659665">Կտրել յուրաքանչյուր օրինակից հետո</translation>
 <translation id="2932085390869194046">Ստեղծել գաղտնաբառ…</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">Բացել <ph name="PROTOCOL" /> հղումները</translation>
 <translation id="2941952326391522266">Այս սերվերը չի կարող ապացուցել, որ <ph name="DOMAIN" /> է: Դրա անվտանգության վկայականը <ph name="DOMAIN2" />-ից է: Պատճառը կարող է լինել սխալ կազմաձևումը կամ կապակցման խափանումը հարձակվողի կողմից:</translation>
 <translation id="2943895734390379394">Վերբեռնման օրը և ժամը՝</translation>
 <translation id="2948083400971632585">Դուք կարող եք անջատել կապակցման համար օգտագործվող պրոքսի-սերվերները ները կարգավորումների էջից:</translation>
@@ -743,6 +746,7 @@
 <translation id="3288238092761586174"><ph name="URL" /> կայքը կարող է լրացուցիչ քայլեր կատարել՝ ձեր վճարումը հաստատելու համար</translation>
 <translation id="3293642807462928945">Իմանալ ավելին <ph name="POLICY_NAME" /> կանոնի մասին</translation>
 <translation id="3295444047715739395">Դիտեք և կառավարեք ձեր գաղտնաբառերը Chrome-ի կարգավորումներում</translation>
+<translation id="3303795387212510132">Թույլատրե՞լ հավելվածին բացել <ph name="PROTOCOL_SCHEME" /> հղումները</translation>
 <translation id="3303855915957856445">Որոնման արդյունքներ չկան</translation>
 <translation id="3304073249511302126">bluetooth սարքերի որոնում</translation>
 <translation id="3308006649705061278">Ստորաբաժանում (OU)</translation>
@@ -880,6 +884,7 @@
 <translation id="370972442370243704">Միացնել Այցելությունները</translation>
 <translation id="3711895659073496551">Անգործուն ռեժիմ</translation>
 <translation id="3712624925041724820">Լիցենզիաներ այլևս չկան</translation>
+<translation id="3714633008798122362">վեբ օրացույց</translation>
 <translation id="3714780639079136834">Միացնել բջջային ինտերնետը կամ Wi-Fi-ը</translation>
 <translation id="3715597595485130451">Կապակցվել անլար կապին</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Ստուգել պրոքսի-սերվերի, հրապատի և DNS-ի կազմաձևումը<ph name="END_LINK" /></translation>
@@ -941,6 +946,7 @@
 <translation id="3906954721959377182">Պլանշետ</translation>
 <translation id="3909477809443608991"><ph name="URL" />-ն ուզում է նվագարկել պաշտպանված բովանդակությունը։ Google-ը կստուգի ձեր սարքը, և այն կարող է հասանելի դառնալ այս կայքին։</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Մերժել</translation>
 <translation id="3939773374150895049">Օգտագործե՞լ WebAuthn՝ CVC-ի փոխարեն</translation>
 <translation id="3946209740501886391">Միշտ հարցնել այս կայքում</translation>
 <translation id="3947595700203588284">Կարող է հայցել MIDI սարքերին միանալու թույլտվություն</translation>
@@ -2410,6 +2416,7 @@
 <translation id="8731544501227493793">«Կառավարել գաղտնաբառերը» կոճակ։ Chrome-ի կարգավորումներում գաղտնաբառերը դիտելու և կառավարելու համար սեղմեք Enter։</translation>
 <translation id="8734529307927223492">Ձեր <ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Նոր ինկոգնիտո պատուհան բացելու համար սեղմեք Tab, ապա՝ Enter։</translation>
+<translation id="8737685506611670901">Բացել <ph name="PROTOCOL" /> -ի հղումները <ph name="REPLACED_HANDLER_TITLE" />-ի փոխարեն</translation>
 <translation id="8738058698779197622">Անվտանգ կապակցում հաստատելու համար ձեր ժամացույցը պետք է ճիշտ կարգավորված լինի: Պատճառն այն է, որ վկայագրերը, որոնք կայքերն օգտագործում են իրենց նույնականացնելու համար, վավեր են լինում միայն որոշակի ժամանակահատվածի ընթացքում: Քանի որ ձեր սարքի ժամացույցը սխալ է, Chromium-ը չի կարող ստուգել այս վկայագրերը:</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" />-ի &lt;abbr id="dnsDefinition"&gt;DNS հասցեն&lt;/abbr&gt; չհաջողվեց գտնել: Կատարվում է խնդրի ախտորոշում:</translation>
 <translation id="8742371904523228557"><ph name="ORIGIN" /> կայքի ձեր կոդը՝ <ph name="ONE_TIME_CODE" /></translation>
@@ -2487,6 +2494,7 @@
 <translation id="9004367719664099443">VR աշխատաշրջանն ակտիվ է</translation>
 <translation id="9005998258318286617">Չհաջողվեց բեռնել PDF փաստաթուղթը։</translation>
 <translation id="9008201768610948239">Անտեսել</translation>
+<translation id="901834265349196618">էլփոստ</translation>
 <translation id="9020200922353704812">Անհրաժեշտ է նշել քարտի վճարային հասցեն</translation>
 <translation id="9020542370529661692">Այս էջը թարգմանվել է <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

@@ -460,6 +460,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2337852623177822836">Järjestelmänvalvojan hallinnoima asetus</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> haluaa muodostaa laiteparin</translation>
 <translation id="2346319942568447007">Kopioimasi kuva</translation>
+<translation id="2350796302381711542">Haluatko tahon <ph name="HANDLER_HOSTNAME" /> avaavan kaikki <ph name="PROTOCOL" />-linkit tahon <ph name="REPLACED_HANDLER_TITLE" /> sijaan?</translation>
 <translation id="2354001756790975382">Muut kirjanmerkit</translation>
 <translation id="2354430244986887761">Google-selaussuoja <ph name="BEGIN_LINK" />löysi äskettäin haitallisia sovelluksia<ph name="END_LINK" /> sivustolta <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Hyökkääjät voivat mahdollisesti nähdä kuvat, joita katselet tällä sivustolla, ja huijata sinua muokkaamalla niitä.</translation>
@@ -485,6 +486,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2413528052993050574">Palvelin ei voinut todistaa olevansa <ph name="DOMAIN" />; sen suojausvarmenne ei välttämättä ole voimassa. Tämä voi johtua määritysvirheestä tai verkkoyhteytesi siepanneesta hyökkääjästä.</translation>
 <translation id="2414886740292270097">Tumma</translation>
 <translation id="2430968933669123598">Ylläpidä Google-tiliä, ylläpidä tietojasi, yksityisyyttäsi ja tietoturvaasi Google-tilillä painamalla Enter</translation>
+<translation id="2436186046335138073">Haluatko tahon <ph name="HANDLER_HOSTNAME" /> avaavan kaikki <ph name="PROTOCOL" />-linkit?</translation>
 <translation id="2438874542388153331">Neljä reikää oikealla</translation>
 <translation id="2450021089947420533">Matkat</translation>
 <translation id="2463739503403862330">Täytä</translation>
@@ -634,6 +636,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2930577230479659665">Leikkaa jokaisen kopion jälkeen</translation>
 <translation id="2932085390869194046">Ehdota salasanaa…</translation>
 <translation id="2934466151127459956">Viranomaiskirje</translation>
+<translation id="2938225289965773019">Avata <ph name="PROTOCOL" />-linkit.</translation>
 <translation id="2941952326391522266">Palvelin ei voinut todistaa olevansa <ph name="DOMAIN" />; sen suojausvarmenne on verkkotunnuksesta <ph name="DOMAIN2" />. Tämä voi johtua määritysvirheestä tai verkkoyhteytesi siepanneesta hyökkääjästä.</translation>
 <translation id="2943895734390379394">Latausaika:</translation>
 <translation id="2948083400971632585">Voit poistaa yhteydelle määritetyt välityspalvelimet käytöstä asetussivulla.</translation>
@@ -744,6 +747,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3288238092761586174"><ph name="URL" /> saattaa vaatia lisävaiheita maksun vahvistamiseksi</translation>
 <translation id="3293642807462928945">Lisätietoja käytännöstä: <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Katso ja hallinnoi salasanojasi Chromen asetuksissa</translation>
+<translation id="3303795387212510132">Saako sovellus avata <ph name="PROTOCOL_SCHEME" /> ‑linkit?</translation>
 <translation id="3303855915957856445">Ei hakutuloksia</translation>
 <translation id="3304073249511302126">Bluetooth-haku</translation>
 <translation id="3308006649705061278">Organisaatioyksikkö (OU)</translation>
@@ -881,6 +885,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="370972442370243704">Ota Matkat käyttöön</translation>
 <translation id="3711895659073496551">Keskeytä</translation>
 <translation id="3712624925041724820">Käyttöluvat ovat lopussa</translation>
+<translation id="3714633008798122362">verkkokalenteri</translation>
 <translation id="3714780639079136834">Ota mobiilidata tai Wi-Fi käyttöön.</translation>
 <translation id="3715597595485130451">Yhteyden muodostaminen Wi-Fi-verkkoon</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Tarkista välityspalvelimen, palomuurin ja nimipalvelun määritykset<ph name="END_LINK" />.</translation>
@@ -942,6 +947,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3906954721959377182">Tabletti</translation>
 <translation id="3909477809443608991"><ph name="URL" /> haluaa toistaa suojattua sisältöä. Google vahvistaa laitteesi identiteetin, ja myös sivusto voi saada pääsyn laitteesi identiteettitietoihin.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Estä</translation>
 <translation id="3939773374150895049">Käytetäänkö WebAuthnia CVC:n sijaan?</translation>
 <translation id="3946209740501886391">Kysy aina tällä sivustolla</translation>
 <translation id="3947595700203588284">Saa pyytää lupaa yhdistää MIDI-laitteisiin</translation>
@@ -2408,6 +2414,7 @@ Lisätietoja:
 <translation id="8731544501227493793">Ylläpidä salasanoja ‑painike, katso ja ylläpidä salasanoja Chromen asetuksissa painamalla Enter</translation>
 <translation id="8734529307927223492"><ph name="MANAGER" /> ylläpitää laitetta (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, paina ensin sarkainta ja sitten Enter avataksesi uuden incognito-ikkunan, niin voit selata yksityisesti</translation>
+<translation id="8737685506611670901">Avata <ph name="PROTOCOL" />-linkit palvelun <ph name="REPLACED_HANDLER_TITLE" /> sijaan.</translation>
 <translation id="8738058698779197622">Kellosi täytyy asettaa oikeaan aikaan, jotta salattu yhteys voidaan muodostaa. Tämä johtuu siitä, että verkkosivustojen tunnistamisessa käytettävät varmenteet ovat voimassa vain tiettyinä ajanjaksoina. Chromium ei voi vahvistaa varmenteita, koska laitteesi kello on väärässä ajassa.</translation>
 <translation id="8740359287975076522">Sivuston <ph name="HOST_NAME" /> &lt;abbr id="dnsDefinition"&gt;DNS-osoitetta&lt;/abbr&gt; ei löydy. Ongelmaa diagnosoidaan.</translation>
 <translation id="8742371904523228557">Koodisi on <ph name="ONE_TIME_CODE" /> (<ph name="ORIGIN" />)</translation>
@@ -2485,6 +2492,7 @@ Lisätietoja:
 <translation id="9004367719664099443">VR-käyttökerta on käynnissä</translation>
 <translation id="9005998258318286617">PDF-asiakirjan lataaminen epäonnistui.</translation>
 <translation id="9008201768610948239">Ohita</translation>
+<translation id="901834265349196618">sähköposti</translation>
 <translation id="9020200922353704812">Kortin laskutusosoite pakollinen</translation>
 <translation id="9020542370529661692">Sivu on käännetty kielelle <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

@@ -461,6 +461,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2337852623177822836">Innstillingen kontrolleres av administratoren din</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> vil koble til</translation>
 <translation id="2346319942568447007">Bildet du kopierte</translation>
+<translation id="2350796302381711542">Vil du la <ph name="HANDLER_HOSTNAME" /> åpne alle <ph name="PROTOCOL" />-linker i stedet for <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2354001756790975382">Andre bokmerker</translation>
 <translation id="2354430244986887761">Google Safe Browsing har nylig <ph name="BEGIN_LINK" />funnet skadelige apper<ph name="END_LINK" /> på <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Angripere kan kanskje se bildene du ser på dette nettstedet, og lure deg ved å endre dem.</translation>
@@ -486,6 +487,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2413528052993050574">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Tjenerens sikkerhetssertifikat kan være trukket tilbake. Dette kan være forårsaket av en feilkonfigurering eller en angriper som avskjærer tilkoblingen din.</translation>
 <translation id="2414886740292270097">Mørk</translation>
 <translation id="2430968933669123598">Administrer Google-konto – trykk på Enter for å administrere informasjon, personvern og sikkerhet i Google-kontoen din</translation>
+<translation id="2436186046335138073">Vil du la <ph name="HANDLER_HOSTNAME" /> åpne alle <ph name="PROTOCOL" />-linker?</translation>
 <translation id="2438874542388153331">Fire hull høyre</translation>
 <translation id="2450021089947420533">Reiser</translation>
 <translation id="2463739503403862330">Fyll ut</translation>
@@ -635,6 +637,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2930577230479659665">Beskjær etter hver kopi</translation>
 <translation id="2932085390869194046">Foreslå passord</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">åpne linker til <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Tjenerens sikkerhetssertifikat er fra <ph name="DOMAIN2" />. Dette kan være forårsaket av en feilkonfigurering eller en angriper som avskjærer tilkoblingen din.</translation>
 <translation id="2943895734390379394">Opplastingstidspunkt:</translation>
 <translation id="2948083400971632585">På innstillingssiden kan du deaktivere eventuelle proxy-tjenere for tilkoblinger.</translation>
@@ -744,6 +747,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3288238092761586174"><ph name="URL" /> må kanskje utføre flere trinn for å bekrefte betalingen din</translation>
 <translation id="3293642807462928945">Finn ut mer om regelen <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Se og administrer passordene dine i Chrome-innstillingene</translation>
+<translation id="3303795387212510132">Vil du la appen åpne <ph name="PROTOCOL_SCHEME" />-linker?</translation>
 <translation id="3303855915957856445">Søket ga ingen treff</translation>
 <translation id="3304073249511302126">Bluetooth-skanning</translation>
 <translation id="3308006649705061278">Organisasjonsenhet (OU)</translation>
@@ -881,6 +885,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="370972442370243704">Slå på reiser</translation>
 <translation id="3711895659073496551">Suspender</translation>
 <translation id="3712624925041724820">Lisensene er oppbrukt</translation>
+<translation id="3714633008798122362">nettkalender</translation>
 <translation id="3714780639079136834">Slå på mobildata eller Wi-Fi</translation>
 <translation id="3715597595485130451">Tilkobling til Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Sjekk proxy-tjener-, brannmur- og DNS-konfigurasjonen<ph name="END_LINK" /></translation>
@@ -942,6 +947,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3906954721959377182">Nettbrett</translation>
 <translation id="3909477809443608991"><ph name="URL" /> ber om tillatelse til å spille beskyttet innhold. Identiteten til enheten din bekreftes av Google og kan bli gjort tilgjengelig for dette nettstedet.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Ikke tillat</translation>
 <translation id="3939773374150895049">Vil du bruke WebAuthn i stedet for CVC?</translation>
 <translation id="3946209740501886391">Spør alltid på dette nettstedet</translation>
 <translation id="3947595700203588284">Kan be om å få koble til MIDI-enheter</translation>
@@ -1058,6 +1064,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4250680216510889253">Nei</translation>
 <translation id="4253168017788158739">Merknad</translation>
 <translation id="425582637250725228">Det kan hende endringene dine ikke er lagret.</translation>
+<translation id="425869179292622354">Vil du gjøre det sikrere med et virtuelt kort?</translation>
 <translation id="4258748452823770588">Dårlig signatur</translation>
 <translation id="4261046003697461417">Beskyttede dokumenter kan ikke annoteres</translation>
 <translation id="4265872034478892965">Tillatt av administratoren din</translation>
@@ -1568,6 +1575,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5921639886840618607">Vil du lagre kortet i Google-kontoen?</translation>
 <translation id="5922853866070715753">Nesten ferdig</translation>
 <translation id="5932224571077948991">Nettstedet viser forstyrrende eller villedende annonser</translation>
+<translation id="5938153366081463283">Legg til et virtuelt kort</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Åpner <ph name="SITE_NAME" /> …</translation>
 <translation id="5951495562196540101">Kan ikke registrere med en forbrukerkonto (medfølgende lisens er tilgjengelig).</translation>
@@ -2191,6 +2199,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7976214039405368314">For mange forespørsler</translation>
 <translation id="7977538094055660992">Utskriftsenhet</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="7981260203882740562">Tilknyttet</translation>
 <translation id="798134797138789862">Kan be om å få bruke virtuell virkelighet-enheter og -data</translation>
 <translation id="7984945080620862648">Du kan ikke gå til <ph name="SITE" /> akkurat nå fordi nettstedet sendte kryptert legitimasjon som Chrome ikke kan behandle. Nettverksfeil og -angrep er som regel kortvarige, så denne siden fungerer nok igjen senere.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2407,6 +2416,7 @@ Mer informasjon:
 <translation id="8731544501227493793">Knappen «Administrer passord» – trykk på Enter for å se og administrere passord i Chrome-innstillingene</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> administreres av <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å åpne et nytt inkognitovindu for privat surfing</translation>
+<translation id="8737685506611670901">åpne linker til <ph name="PROTOCOL" /> i stedet for <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Klokken din må være riktig stilt for at du skal kunne opprette en sikker forbindelse. Sertifikatene som nettsteder bruker til å identifisere seg med, er nemlig bare gyldige i en viss tid. Siden enhetens klokke er feil, kan ikke Chromium kontrollere disse sertifikatene.</translation>
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;DNS-adressen&lt;/abbr&gt; til <ph name="HOST_NAME" /> ble ikke funnet. Problemet diagnostiseres.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> er koden din for <ph name="ORIGIN" /></translation>
@@ -2484,6 +2494,7 @@ Mer informasjon:
 <translation id="9004367719664099443">En VR-økt pågår</translation>
 <translation id="9005998258318286617">Kunne ikke laste inn PDF-dokumentet.</translation>
 <translation id="9008201768610948239">Ignorer</translation>
+<translation id="901834265349196618">e-post</translation>
 <translation id="9020200922353704812">Faktureringsadressen for kortet er obligatorisk</translation>
 <translation id="9020542370529661692">Denne siden har blitt oversatt til <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

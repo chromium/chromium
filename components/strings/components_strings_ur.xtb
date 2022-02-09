@@ -461,6 +461,7 @@
 <translation id="2337852623177822836">ترتیب آپ کے منتظم کی جانب سے کنٹرول کی جاتی ہے</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> جوڑا بنانا چاہتی ہے</translation>
 <translation id="2346319942568447007">آپ کی کاپی کردہ تصویر</translation>
+<translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> کو <ph name="REPLACED_HANDLER_TITLE" /> کی بجائے سبھی <ph name="PROTOCOL" /> لنکس کھولنے کی اجازت دیں؟</translation>
 <translation id="2354001756790975382">دیگر بُک مارکس</translation>
 <translation id="2354430244986887761">‏Google محفوظ براؤزنگ کو حال ہی میں <ph name="SITE" /> پر <ph name="BEGIN_LINK" />نقصاندہ ایپس ملی ہیں<ph name="END_LINK" />۔</translation>
 <translation id="2355395290879513365">حملہ آور ان تصاویر کو دیکھ سکتے ہیں جنہیں آپ اس سائٹ پر دیکھ رہے ہیں اور ان میں ترمیم کر کے آپ کو دھوکہ دے سکتے ہیں۔</translation>
@@ -486,6 +487,7 @@
 <translation id="2413528052993050574">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ ممکن ہے کہ اس کا سیکیورٹی سرٹیفکیٹ کالعدم قرار دے دیا گیا ہو۔ یہ غلط کنفیگریشن یا آپ کے کنکشن کو قطع کرنے والے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
 <translation id="2414886740292270097">گہری</translation>
 <translation id="2430968933669123598">‏Google اکاؤنٹ کا نظم کریں، اپنے Google اکاؤنٹ میں اپنی معلومات، رازداری اور سیکیورٹی کا نظم کرنے کیلئے Enter دبائیں</translation>
+<translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> کو سبھی <ph name="PROTOCOL" /> لنکس کھولنے کی اجازت دیں؟</translation>
 <translation id="2438874542388153331">دائیں طرف مستطیل سوراخ</translation>
 <translation id="2450021089947420533">صارف کے تجربے</translation>
 <translation id="2463739503403862330">پُر کریں</translation>
@@ -635,6 +637,7 @@
 <translation id="2930577230479659665">ہر ایک کاپی کے بعد تراشیں</translation>
 <translation id="2932085390869194046">پاس ورڈ تجویز کریں...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019"><ph name="PROTOCOL" /> لنکس کھولیں</translation>
 <translation id="2941952326391522266">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کا سیکیورٹی سرٹیفکیٹ <ph name="DOMAIN2" /> کی جانب سے ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن میں مانع بن رہے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
 <translation id="2943895734390379394">اپ لوڈ کا وقت:</translation>
 <translation id="2948083400971632585">آپ کنکشن کیلئے کنفیگر کردہ کسی بھی پراکسیز کو ترتیبات کے صفحہ سے غیر فعال کر سکتے ہیں۔</translation>
@@ -745,6 +748,7 @@
 <translation id="3288238092761586174">آپ کی ادائیگی کی تصدیق کے لیے <ph name="URL" /> کو اضافی اقدامات کرنے کی ضرورت پڑ سکتی ہے</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> پالیسی کے بارے میں مزید جانیں</translation>
 <translation id="3295444047715739395">‏Chrome ترتیبات میں اپنے پاس ورڈز دیکھیں اور ان کا نظم کریں</translation>
+<translation id="3303795387212510132">ایپ کو <ph name="PROTOCOL_SCHEME" /> لنکس کھولنے کی اجازت دیں؟</translation>
 <translation id="3303855915957856445">تلاش کے کوئی نتائج نہیں ملے</translation>
 <translation id="3304073249511302126">بلوٹوتھ اسکیننگ</translation>
 <translation id="3308006649705061278">‏تنظیمی اکائی (OU)</translation>
@@ -882,6 +886,7 @@
 <translation id="370972442370243704">صارف کا تجربہ آن کریں</translation>
 <translation id="3711895659073496551">معطل</translation>
 <translation id="3712624925041724820">لائسنسز ختم ہوگئے</translation>
+<translation id="3714633008798122362">ویب کیلنڈر</translation>
 <translation id="3714780639079136834">‏موبائل ڈیٹا یا Wi-Fi آن ہو رہا ہے</translation>
 <translation id="3715597595485130451">‏Wi-Fi سے منسلک ہوں</translation>
 <translation id="3717027428350673159">‏<ph name="BEGIN_LINK" />پراکسی، فائروال اور DNS کنفیگریشن کو چیک کیا جا رہا ہے<ph name="END_LINK" /></translation>
@@ -943,6 +948,7 @@
 <translation id="3906954721959377182">ٹیبلیٹ</translation>
 <translation id="3909477809443608991">‏<ph name="URL" /> ایک تحفظ یافتہ مواد چلانا چاہتا ہے۔ Google آپ کے آلے کی شناخت کرے گا اور عین ممکن ہے کہ یہ سائٹ اس تک رسائی حاصل کرے۔</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">مسترد کریں</translation>
 <translation id="3939773374150895049">‏CVC کے بجائے WebAuthn کا استعمال کریں؟</translation>
 <translation id="3946209740501886391">اس سائٹ پر ہمیشہ پوچھیں</translation>
 <translation id="3947595700203588284">‏سائٹ MIDI آلات سے منسلک ہونے کیلئے پوچھ سکتی ہے</translation>
@@ -1058,6 +1064,7 @@
 <translation id="4250680216510889253">نہیں</translation>
 <translation id="4253168017788158739">نوٹ</translation>
 <translation id="425582637250725228">ممکن ہے کہ آپ کی تبدیلیاں محفوظ نہ ہوں۔</translation>
+<translation id="425869179292622354">ورچوئل کارڈ کے ساتھ اسے مزید محفوظ بنائیں؟</translation>
 <translation id="4258748452823770588">غلط دستخط</translation>
 <translation id="4261046003697461417">تحفظ یافتہ دستاویزات کی تشریح نہیں کی جا سکتی</translation>
 <translation id="4265872034478892965">آپ کے منتظم کی جانب سے اجازت یافتہ</translation>
@@ -1568,6 +1575,7 @@
 <translation id="5921639886840618607">‏کارڈ کو Google اکاؤنٹ میں محفوظ کریں؟</translation>
 <translation id="5922853866070715753">تقریباً مکمل ہو گیا</translation>
 <translation id="5932224571077948991">سائٹ دخل انداز یا گمراہ کن اشتہارات دکھاتی ہے</translation>
+<translation id="5938153366081463283">ورچوئل کارڈ شامل کریں</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> کھل رہی ہے…</translation>
 <translation id="5951495562196540101">صارف اکاؤنٹ کے ذریعے اندراج نہیں کر سکتے (پیکیج شدہ لائسنس دستیاب ہے)۔</translation>
@@ -2193,6 +2201,7 @@
 <translation id="7976214039405368314">بہت زیادہ درخواستیں</translation>
 <translation id="7977538094055660992">آؤٹ پٹ آلہ</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="7981260203882740562">اس کے ساتھ لنک کیا گيا</translation>
 <translation id="798134797138789862">سائٹ ورچوئل رئیلٹی آلات اور ڈیٹا استعمال کرنے کیلئے پوچھ سکتی ہے</translation>
 <translation id="7984945080620862648">‏آپ ابھی <ph name="SITE" /> ملاحظہ نہیں کر سکتے ہیں کیونکہ ویب سائٹ نے جلد بازی والی اسنادات بھیجی ہیں جس پر Chrome کارروائی نہیں کر سکتا ہے۔ نیٹ ورک کی خرابیاں اور حملے عموماً عارضی ہوتے ہیں لہذا یہ صفحہ شاید بعد میں کام کرے گا۔</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2409,6 +2418,7 @@
 <translation id="8731544501227493793">‏'پاس ورڈز کا نظم کریں' بٹن، Chrome کی ترتیبات میں اپنے پاس ورڈز کا نظم کرنے اور انہیں دیکھنے کے لیے اینٹر دبائیں</translation>
 <translation id="8734529307927223492">آپ کا <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> کے زیر انتظام ہے</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />، نجی طور پر براؤز کرنے کے لیے ایک نئی پوشیدگی ونڈو کھولنے کی خاطر ٹیب، پھر اینٹر دبائیں</translation>
+<translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> کی بجائے <ph name="PROTOCOL" /> لنکس کھولیں</translation>
 <translation id="8738058698779197622">‏ایک محفوظ کنکشن تشکیل دینے کیلئے، آپ کی گھڑی کو صحیح سے سیٹ کرنے کی ضرورت ہے۔ اس کی وجہ یہ ہے کہ ویب سائٹس خود کو شناخت کرنے کیلئے جو سرٹیفکیٹس استعمال کرتی ہیں وہ صرف مخصوص وقت کیلئے درست ہیں۔ چونکہ آپ کے آلے کی گھڑی غلط ہے لہذا Chromium ان سرٹیفکیٹس کی توثیق نہیں کر سکتا ہے۔</translation>
 <translation id="8740359287975076522">‏<ph name="HOST_NAME" /> کا ‎&lt;abbr id="dnsDefinition"&gt;DNS پتہ‎&lt;/abbr&gt;‎ نہیں مل سکا۔ مسئلہ کی تشخیص کی جا رہی ہے۔</translation>
 <translation id="8742371904523228557"><ph name="ORIGIN" /> کیلئے آپ کا کوڈ <ph name="ONE_TIME_CODE" /> ہے</translation>
@@ -2486,6 +2496,7 @@
 <translation id="9004367719664099443">‏VR سیشن پیشرفت میں ہے</translation>
 <translation id="9005998258318286617">‏PDF دستاویز لوڈ نہیں ہو سکی۔</translation>
 <translation id="9008201768610948239">نظر انداز کریں</translation>
+<translation id="901834265349196618">ای میل</translation>
 <translation id="9020200922353704812">کارڈ کا بلنگ پتہ درکار ہے</translation>
 <translation id="9020542370529661692">اس صفحہ کا <ph name="TARGET_LANGUAGE" /> میں ترجمہ کر دیا گیا ہے</translation>
 <translation id="9020742383383852663">A8</translation>

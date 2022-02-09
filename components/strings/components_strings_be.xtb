@@ -460,6 +460,7 @@
 <translation id="2337852623177822836">Наладай кіруе ваш адміністратар</translation>
 <translation id="2340263603246777781">Сайт <ph name="ORIGIN" /> запытвае спалучэнне</translation>
 <translation id="2346319942568447007">Скапіраваны вамі відарыс</translation>
+<translation id="2350796302381711542">Дазволіць хосту <ph name="HANDLER_HOSTNAME" /> адкрываць усе спасылкі тыпу "<ph name="PROTOCOL" />" (замест <ph name="REPLACED_HANDLER_TITLE" />)?</translation>
 <translation id="2354001756790975382">Іншыя закладкі</translation>
 <translation id="2354430244986887761">Google Бяспечны прагляд нядаўна <ph name="BEGIN_LINK" />выявіў шкодныя праграмы<ph name="END_LINK" /> на сайце <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Зламыснікі могуць бачыць відарысы, якія вы праглядаеце на гэтым сайце, і падмануць вас, мадыфікуючы іх.</translation>
@@ -485,6 +486,7 @@
 <translation id="2413528052993050574">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />; магчыма, яго сертыфікат бяспекі адкліканы. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
 <translation id="2414886740292270097">Цёмная</translation>
 <translation id="2430968933669123598">Кіраванне Уліковым запісам Google. Каб кіраваць параметрамі даных, прыватнасці і бяспекі ва Уліковым запісе Google, націсніце Enter</translation>
+<translation id="2436186046335138073">Дазволіць <ph name="HANDLER_HOSTNAME" /> адкрываць усе спасылкі тыпу "<ph name="PROTOCOL" />"?</translation>
 <translation id="2438874542388153331">Чатыры дзіркі справа</translation>
 <translation id="2450021089947420533">Шляхі карыстальніка</translation>
 <translation id="2463739503403862330">Запоўніць</translation>
@@ -634,6 +636,7 @@
 <translation id="2930577230479659665">Абрэзка пасля кожнай копіі</translation>
 <translation id="2932085390869194046">Прапанаваць пароль...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">Адкрыць спасылкі <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />: яго сертыфікат бяспекі паходзіць з <ph name="DOMAIN2" />. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
 <translation id="2943895734390379394">Час запампоўкі:</translation>
 <translation id="2948083400971632585">На старонцы налад можна выключыць усе проксі-серверы, зададзеныя для падключэння.</translation>
@@ -743,6 +746,7 @@
 <translation id="3288238092761586174">Каб спраўдзіць ваш плацеж, сайту <ph name="URL" /> можа спатрэбіцца выканаць дадатковыя дзеянні</translation>
 <translation id="3293642807462928945">Даведацца больш пра палітыку "<ph name="POLICY_NAME" />"</translation>
 <translation id="3295444047715739395">Праглядаць свае паролі і кіраваць імі ў наладах Chrome</translation>
+<translation id="3303795387212510132">Дазволіць праграме адкрываць спасылкі <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Няма вынікаў пошуку</translation>
 <translation id="3304073249511302126">пошук прылад Bluetooth</translation>
 <translation id="3308006649705061278">Арганізацыйная адзінка (АА)</translation>
@@ -879,6 +883,7 @@
 <translation id="370972442370243704">Уключыць функцыю "Шляхі карыстальніка"</translation>
 <translation id="3711895659073496551">Прыпыненне</translation>
 <translation id="3712624925041724820">Ліцэнзіі скончыліся</translation>
+<translation id="3714633008798122362">вэб-каляндар</translation>
 <translation id="3714780639079136834">Уключыць мабільную перадачу даных або Wi-Fi.</translation>
 <translation id="3715597595485130451">Падключэнне да Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Праверыць проксі-сервер, брандмаўэр і канфігурацыю DNS<ph name="END_LINK" /></translation>
@@ -940,6 +945,7 @@
 <translation id="3906954721959377182">Планшэт</translation>
 <translation id="3909477809443608991"><ph name="URL" /> запытвае дазвол на прайграванне абароненага змесціва. Google спраўдзіць ідэнтыфікатар вашай прылады; сайт можа атрымаць да яго доступ.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Адмовіць</translation>
 <translation id="3939773374150895049">Выкарыстоўваць WebAuthn замест CVC?</translation>
 <translation id="3946209740501886391">Заўсёды пытацца на гэтым сайце</translation>
 <translation id="3947595700203588284">Сайт можа запытваць дазвол на падключэнне да прылад MIDI</translation>
@@ -2406,6 +2412,7 @@
 <translation id="8731544501227493793">Кнопка "Кіраваць паролямі". Каб паглядзець паролі або кіраваць імі ў наладах Chrome, націсніце Enter</translation>
 <translation id="8734529307927223492">Вашай прыладай <ph name="DEVICE_TYPE" /> кіруе <ph name="MANAGER" />.</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб адкрыць новае акно ў рэжыме інкогніта для прыватнага прагляду вэб-сайтаў, націсніце Tab, затым Enter</translation>
+<translation id="8737685506611670901">Адкрываць спасылкі <ph name="PROTOCOL" /> замест <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Для ўстанаўлення бяспечнага злучэння трэба, каб гадзіннік быў наладжаны правільна. Гэта патрабуецца таму, што сертыфікаты, якія выкарыстоўваюцца вэб-сайтамі для іх ідэнтыфікацыі, дзейнічаюць толькі пэўны час. Калі гадзіннік на вашай прыладзе наладжаны няправільна, Chromium не зможа спраўдзіць гэтыя сертыфікаты.</translation>
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;Адрас DNS &lt;/abbr&gt; хоста <ph name="HOST_NAME" /> не знойдзены. Дыягностыка праблемы.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> – ваш код для <ph name="ORIGIN" /></translation>
@@ -2483,6 +2490,7 @@
 <translation id="9004367719664099443">Ідзе сеанс VR</translation>
 <translation id="9005998258318286617">Не ўдалося загрузіць дакумент PDF.</translation>
 <translation id="9008201768610948239">Ігнараваць</translation>
+<translation id="901834265349196618">электронная пошта</translation>
 <translation id="9020200922353704812">Патрабуецца адрас для выстаўлення рахункаў па крэдытнай картцы</translation>
 <translation id="9020542370529661692">Гэта старонка была перакладзена на наступную мову: <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

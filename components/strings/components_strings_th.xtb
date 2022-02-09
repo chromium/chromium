@@ -457,6 +457,7 @@
 <translation id="2337852623177822836">ผู้ดูแลระบบเป็นผู้ควบคุมการตั้งค่า</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ต้องการจับคู่</translation>
 <translation id="2346319942568447007">รูปภาพที่คุณคัดลอก</translation>
+<translation id="2350796302381711542">ต้องการอนุญาตให้ <ph name="HANDLER_HOSTNAME" /> เปิดลิงก์ <ph name="PROTOCOL" /> ทั้งหมดแทน <ph name="REPLACED_HANDLER_TITLE" /> ไหม</translation>
 <translation id="2354001756790975382">บุ๊กมาร์กอื่นๆ</translation>
 <translation id="2354430244986887761">เมื่อเร็วๆ นี้ Google Safe Browsing <ph name="BEGIN_LINK" />พบแอปอันตราย<ph name="END_LINK" />ใน <ph name="SITE" /></translation>
 <translation id="2355395290879513365">ผู้โจมตีอาจเห็นรูปภาพที่คุณกำลังดูอยู่บนเว็บไซต์นี้และหลอกลวงคุณโดยการแก้ไขรูปภาพ</translation>
@@ -482,6 +483,7 @@
 <translation id="2413528052993050574">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะอาจมีการเพิกถอนใบรับรองความปลอดภัย โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
 <translation id="2414886740292270097">มืด</translation>
 <translation id="2430968933669123598">จัดการบัญชี Google กด Enter เพื่อจัดการข้อมูล ความเป็นส่วนตัว และการรักษาความปลอดภัยในบัญชี Google ของคุณ</translation>
+<translation id="2436186046335138073">อนุญาตให้ <ph name="HANDLER_HOSTNAME" /> เปิดลิงก์ <ph name="PROTOCOL" /> ทั้งหมดไหม</translation>
 <translation id="2438874542388153331">เจาะรูด้านขวา 4 รู</translation>
 <translation id="2450021089947420533">เส้นทางการท่องเว็บ</translation>
 <translation id="2463739503403862330">กรอกข้อมูล</translation>
@@ -631,6 +633,7 @@
 <translation id="2930577230479659665">ตัดออกหลังสำเนาแต่ละฉบับ</translation>
 <translation id="2932085390869194046">แนะนำรหัสผ่าน...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">เปิดลิงก์ <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะใบรับรองความปลอดภัยมาจาก <ph name="DOMAIN2" /> โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
 <translation id="2943895734390379394">เวลาที่อัปโหลด:</translation>
 <translation id="2948083400971632585">คุณสามารถปิดใช้งานพร็อกซีที่กำหนดค่าสำหรับการเชื่อมต่อจากหน้าการตั้งค่าได้</translation>
@@ -740,6 +743,7 @@
 <translation id="3288238092761586174"><ph name="URL" /> อาจต้องทำตามขั้นตอนเพิ่มเติมเพื่อยืนยันการชำระเงิน</translation>
 <translation id="3293642807462928945">ดูข้อมูลเพิ่มเติมเกี่ยวกับนโยบาย <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">ดูและจัดการรหัสผ่านในการตั้งค่า Chrome</translation>
+<translation id="3303795387212510132">อนุญาตให้แอปเปิดลิงก์ <ph name="PROTOCOL_SCHEME" /> ไหม</translation>
 <translation id="3303855915957856445">ไม่พบผลการค้นหา</translation>
 <translation id="3304073249511302126">การสแกนหาบลูทูธ</translation>
 <translation id="3308006649705061278">หน่วยองค์กร (OU)</translation>
@@ -876,6 +880,7 @@
 <translation id="370972442370243704">เปิดใช้เส้นทางการท่องเว็บ</translation>
 <translation id="3711895659073496551">ระงับการใช้งาน</translation>
 <translation id="3712624925041724820">ใบอนุญาตหมด</translation>
+<translation id="3714633008798122362">ปฏิทินเว็บ</translation>
 <translation id="3714780639079136834">เปิดอินเทอร์เน็ตมือถือหรือ Wi-Fi</translation>
 <translation id="3715597595485130451">เชื่อมต่อ Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />ตรวจสอบพร็อกซี ไฟร์วอลล์ และการกำหนดค่า DNS<ph name="END_LINK" /></translation>
@@ -937,6 +942,7 @@
 <translation id="3906954721959377182">แท็บเล็ต</translation>
 <translation id="3909477809443608991"><ph name="URL" /> ต้องการเล่นเนื้อหาที่ได้รับความคุ้มครอง ข้อมูลประจำตัวของอุปกรณ์จะได้รับการยืนยันโดย Google และเว็บไซต์นี้อาจเข้าถึงข้อมูลดังกล่าว</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">ปฏิเสธ</translation>
 <translation id="3939773374150895049">ใช้ WebAuthn แทน CVC ไหม</translation>
 <translation id="3946209740501886391">ถามทุกครั้งบนเว็บไซต์นี้</translation>
 <translation id="3947595700203588284">สามารถขอเชื่อมต่อกับอุปกรณ์ MIDI ได้</translation>
@@ -1048,6 +1054,7 @@
 <translation id="4250680216510889253">ไม่</translation>
 <translation id="4253168017788158739">หมายเหตุ</translation>
 <translation id="425582637250725228">ระบบอาจไม่ได้บันทึกการเปลี่ยนแปลงของคุณ</translation>
+<translation id="425869179292622354">เพิ่มความปลอดภัยด้วยบัตรเสมือนไหม</translation>
 <translation id="4258748452823770588">ลายเซ็นไม่เหมาะสม</translation>
 <translation id="4261046003697461417">เอกสารที่มีการป้องกันจะใส่หมายเหตุไม่ได้</translation>
 <translation id="4265872034478892965">อนุญาตโดยผู้ดูแลระบบ</translation>
@@ -1558,6 +1565,7 @@
 <translation id="5921639886840618607">บันทึกบัตรลงในบัญชี Google ไหม</translation>
 <translation id="5922853866070715753">เกือบเสร็จแล้ว</translation>
 <translation id="5932224571077948991">เว็บไซต์แสดงโฆษณาที่แทรกหรือทำให้เข้าใจผิด</translation>
+<translation id="5938153366081463283">เพิ่มบัตรเสมือน</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">กำลังเปิด <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">ลงทะเบียนด้วยบัญชีผู้ใช้ทั่วไปไม่ได้ (มีใบอนุญาตแบบแพ็กเกจ)</translation>
@@ -2182,6 +2190,7 @@
 <translation id="7976214039405368314">มีคำขอมากเกินไป</translation>
 <translation id="7977538094055660992">อุปกรณ์กระดาษออก</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="7981260203882740562">ลิงก์กับ</translation>
 <translation id="798134797138789862">สามารถขอใช้อุปกรณ์และข้อมูล Virtual Reality ได้</translation>
 <translation id="7984945080620862648">คุณไม่สามารถไปที่ <ph name="SITE" /> ได้ในขณะนี้ เนื่องจากเว็บไซต์ดังกล่าวส่งข้อมูลรับรองที่สลับกัน ซึ่ง Chrome ไม่สามารถเข้าถึงได้ โดยปกติข้อผิดพลาดของเครือข่ายและการบุกรุกจะเกิดขึ้นเพียงชั่วคราว หน้านี้จึงน่าจะใช้งานได้ในภายหลัง</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2399,6 +2408,7 @@
 <translation id="8731544501227493793">จัดการปุ่มรหัสผ่าน กด Enter เพื่อดูและจัดการรหัสผ่านในการตั้งค่า Chrome</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> ของคุณจัดการโดย <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อเปิดหน้าต่างใหม่ที่ไม่ระบุตัวตนเพื่อท่องเว็บแบบส่วนตัว</translation>
+<translation id="8737685506611670901">เปิดลิงก์ <ph name="PROTOCOL" /> แทน <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">หากต้องเริ่มการเชื่อมต่อที่ปลอดภัย นาฬิกาจะต้องตั้งค่าไว้อย่างถูกต้อง เนื่องจากใบรับรองที่เว็บไซต์ใช้เพื่อระบุตนเองจะใช้ได้เฉพาะช่วงเวลาหนึ่งเท่านั้น นาฬิกาของอุปกรณ์ไม่ถูกต้อง Chromium จึงไม่สามารถยืนยันใบรับรองเหล่านี้ได้</translation>
 <translation id="8740359287975076522">ไม่พบ&lt;abbr id="dnsDefinition"&gt;ที่อยู่ DNS&lt;/abbr&gt; ของ <ph name="HOST_NAME" /> กำลังวินิจฉัยปัญหา</translation>
 <translation id="8742371904523228557">รหัสสำหรับ <ph name="ORIGIN" /> คือ <ph name="ONE_TIME_CODE" /></translation>
@@ -2476,6 +2486,7 @@
 <translation id="9004367719664099443">เซสชัน VR กำลังทำงาน</translation>
 <translation id="9005998258318286617">ไม่สามารถโหลดเอกสาร PDF</translation>
 <translation id="9008201768610948239">ไม่สนใจ</translation>
+<translation id="901834265349196618">อีเมล</translation>
 <translation id="9020200922353704812">ต้องใส่ที่อยู่สำหรับการเรียกเก็บเงินของบัตร</translation>
 <translation id="9020542370529661692">หน้านี้ได้รับการแปลเป็น <ph name="TARGET_LANGUAGE" /> แล้ว</translation>
 <translation id="9020742383383852663">A8</translation>

@@ -102,6 +102,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1516740043221086139">„Bitte nicht stören“ ist aktiviert.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Benachrichtigungseinstellungen anzeigen. Benachrichtigungen sind für eine App deaktiviert.}other{Benachrichtigungseinstellungen anzeigen. Benachrichtigungen sind für # Apps deaktiviert.}}</translation>
 <translation id="1525508553941733066">SCHLIEẞEN</translation>
+<translation id="1528259147807435347">In der letzten Woche bearbeitet</translation>
 <translation id="1536604384701784949">Wenn Sie <ph name="USER_EMAIL_ADDRESS" /> verwenden möchten, müssen Sie sich zuerst von allen Konten abmelden. Wählen Sie „Abbrechen“ aus, um zurückzugehen und sich abzumelden. Wählen Sie dann die Zeitanzeige aus, um den Statusbereich zu öffnen, und dann „Abmelden“. Melden Sie sich dann noch einmal im Konto <ph name="USER_EMAIL_ADDRESS_2" /> an.</translation>
 <translation id="15373452373711364">Großer Cursor</translation>
 <translation id="1546492247443594934">Desktop 2</translation>
@@ -224,6 +225,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2427507373259914951">Linksklick</translation>
 <translation id="2429753432712299108">Das Bluetooth-Gerät "<ph name="DEVICE_NAME" />" bittet um Erlaubnis für Kopplung. Bevor Sie akzeptieren, überprüfen Sie, ob folgender Zugangscode auf dem Gerät angezeigt wird: <ph name="PASSKEY" />.</translation>
 <translation id="2435457462613246316">Passwort anzeigen</translation>
+<translation id="243878895369688216">Gestern geöffnet</translation>
 <translation id="24452542372838207">Benachrichtigung erweitern</translation>
 <translation id="2450205753526923158">Screenshotmodus</translation>
 <translation id="2456008742792828469">Kalender, <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -272,6 +274,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2819276065543622893">Sie werden jetzt abgemeldet.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> unterstützt <ph name="SPECIFIED_RESOLUTION" /> nicht. Die Auflösung wurde zu <ph name="FALLBACK_RESOLUTION" /> geändert.</translation>
 <translation id="2825619548187458965">Ablage</translation>
+<translation id="2834813915651407382">Kürzlich geöffnet</translation>
 <translation id="2841907151129139818">Zum Tabletmodus gewechselt</translation>
 <translation id="2844169650293029770">USB-C-Gerät (Port vorne links)</translation>
 <translation id="2849936225196189499">Kritisch</translation>
@@ -390,6 +393,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> wurde angepinnt</translation>
 <translation id="3560866052109807830">Markierungs-Zeichentools</translation>
 <translation id="3563775809269155755">Hotspot aktivieren</translation>
+<translation id="3566240529365775567">Soeben geöffnet</translation>
 <translation id="3571734092741541777">Einrichten</translation>
 <translation id="3573179567135747900">Zurücksetzen auf "<ph name="FROM_LOCALE" />" (Neustart erforderlich)</translation>
 <translation id="3576141592585647168">Zeitzone ändern</translation>
@@ -424,6 +428,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> und <ph name="UNAVAILABLE_APPS_COUNT" /> weitere sind nicht auf diesem Gerät installiert.</translation>
 <translation id="3735740477244556633">Sortieren nach</translation>
 <translation id="3742055079367172538">Screenshot erstellt</translation>
+<translation id="3765841986579723851">Heute bearbeitet</translation>
 <translation id="3771549900096082774">Modus mit hohem Kontrast</translation>
 <translation id="3773700760453577392">Ein Administrator hat die Mehrfachanmeldung für <ph name="USER_EMAIL" /> deaktiviert. Alle Nutzer müssen sich abmelden, um fortfahren zu können.</translation>
 <translation id="3779139509281456663">Verbindung mit <ph name="NAME" /> wird hergestellt</translation>
@@ -442,6 +447,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3846575436967432996">Keine Netzwerkinformationen verfügbar</translation>
 <translation id="385051799172605136">Zurück</translation>
 <translation id="385300504083504382">Anfang</translation>
+<translation id="3886872229787704059">Heute geöffnet</translation>
 <translation id="3891340733213178823">Drücken Sie zum Abmelden zweimal Strg + Umschalttaste + Q.</translation>
 <translation id="3893630138897523026">ChromeVox (gesprochenes Feedback)</translation>
 <translation id="3897533311200664389">Schriftliche Anfrage starten</translation>
@@ -481,6 +487,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4173958948577803258">D</translation>
 <translation id="4177913004758410636">{0,plural, =1{Gerät innerhalb eines Tages neu starten}other{Gerät innerhalb von # Tagen neu starten}}</translation>
 <translation id="4181841719683918333">Sprachen</translation>
+<translation id="4192112279662688596">oder</translation>
 <translation id="4195814663415092787">Zuletzt angesehene Seiten öffnen</translation>
 <translation id="4195877955194704651">Schaltfläche für automatische Klicks</translation>
 <translation id="4197790712631116042">Aus</translation>
@@ -529,6 +536,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4421231901400348175">Sie teilen sich die Bildschirmsteuerung mit <ph name="HELPER_NAME" /> per Remote-Unterstützung.</translation>
 <translation id="4424159417645388645">Desktop 5</translation>
 <translation id="4430019312045809116">Lautstärke</translation>
+<translation id="4441283832827406317">Apps wurden nach Name sortiert</translation>
 <translation id="4445159312344259901">Zum Entsperren anmelden</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 wichtige Benachrichtigung}other{# wichtige Benachrichtigungen}}</translation>
 <translation id="4450893287417543264">Nicht mehr anzeigen</translation>
@@ -672,6 +680,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (rechts)</translation>
 <translation id="5352250171825660495">Dunkles Design ist aktiviert</translation>
 <translation id="5379115545237091094">Zu viele Versuche</translation>
+<translation id="5393156353051693207">Beliebige Stelle berühren und halten, um Apps neu zu sortieren</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> über <ph name="IN_PLACE_APP" />; loslassen, um Ordner zu erstellen.</translation>
 <translation id="5397578532367286026">Die Nutzung und der Verlauf des Nutzers sind für den Manager (<ph name="MANAGER_EMAIL" />) unter chrome.com einsehbar.</translation>
 <translation id="5400461572260843123">Schnelleinstellungen, drücken Sie Suchtaste + Linkspfeil, um das Benachrichtigungscenter zu öffnen.</translation>
@@ -777,6 +786,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="6059276912018042191">Zuletzt geöffnete Chrome-Tabs</translation>
 <translation id="6062360702481658777">Sie werden in <ph name="LOGOUT_TIME_LEFT" /> automatisch abgemeldet.</translation>
 <translation id="6073451960410192870">Aufnahme beenden</translation>
+<translation id="6099678161144790572">Im letzten Monat bearbeitet</translation>
 <translation id="6114505516289286752">Sprachdateien auf <ph name="LANGUAGE" /> heruntergeladen</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="6121838516699723042">Download bestätigen: <ph name="FILENAME" /></translation>
@@ -876,6 +886,7 @@ Neuinstallation</translation>
 <translation id="6777216307882431711">Stromversorgung für verbundene USB-C-Geräte</translation>
 <translation id="6786750046913594791">Ordner schließen</translation>
 <translation id="6790428901817661496">Wiedergabe</translation>
+<translation id="6801878137098616817">Vor Kurzem bearbeitet</translation>
 <translation id="6803622936009808957">Der Bildschirm konnte nicht gespiegelt werden, da die Auflösung nicht unterstützt wird. Stattdessen wurde der Modus für den erweiterten Desktop gestartet.</translation>
 <translation id="6811454077060061666">Google Drive for Desktop ist nicht verfügbar</translation>
 <translation id="6818242057446442178">Zurück um ein Wort</translation>
@@ -884,10 +895,12 @@ Neuinstallation</translation>
 <translation id="6836499262298959512">Schädliche Datei</translation>
 <translation id="6837064795450991317">Desktopleiste ausblenden</translation>
 <translation id="6852052252232534364">Zum Aktivieren klicken</translation>
+<translation id="6855029042976311970">Soeben bearbeitet</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> Sek.</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Noch eine Ziffer}other{Noch # Ziffern}}</translation>
 <translation id="6867938213751067702">Download von „<ph name="FILENAME" />“ pausiert</translation>
 <translation id="6878400149835617132">Tastenkombination deaktiviert</translation>
+<translation id="6880133753431418782">Danach haben Sie schon einmal gesucht. Wenn Sie diese Suchanfrage aus Ihrem Verlauf löschen, wird sie unwiderruflich auf allen Ihren Geräten aus Ihrem Google-Konto entfernt.</translation>
 <translation id="6884665277231944629">Zurück zum heutigen Datum</translation>
 <translation id="6886172995547742638">Die Leistungsfähigkeit Ihres <ph name="DEVICE_TYPE" /> kann hierdurch beeinträchtigt werden. Verwenden Sie ein zugelassenes USB-C-Netzteil mit einer Leistung von mindestens <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Drücken Sie den Abwärtspfeil, um zwischen Fenstern zu wechseln</translation>
@@ -926,6 +939,7 @@ Neuinstallation</translation>
 <translation id="7098389117866926363">USB-C-Gerät (linker Port hinten)</translation>
 <translation id="7106330611027933926">Desktopleiste anzeigen</translation>
 <translation id="7118268675952955085">Screenshot</translation>
+<translation id="7126996685418858413">In der letzten Woche geöffnet</translation>
 <translation id="7130207228079676353">HOHE WAHRSCHEINLICHKEIT</translation>
 <translation id="7131634465328662194">Sie werden automatisch abgemeldet.</translation>
 <translation id="7143207342074048698">Verbindung...</translation>
@@ -937,6 +951,7 @@ Neuinstallation</translation>
 <translation id="7189412385142492784">Wie weit ist die Venus entfernt?</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Dieses Chromebook muss zur Installation eines Updates neu gestartet werden. Dies kann bis zu einer Minute dauern.</translation>
 <translation id="7256634071279256947">Mikrofon auf der Rückseite</translation>
+<translation id="7258828758145722155">Gestern bearbeitet</translation>
 <translation id="726276584504105859">Hierher ziehen, um den Bildschirm zu teilen</translation>
 <translation id="7262906531272962081">Erinnerung erstellen</translation>
 <translation id="7279434993080105272">Filzstift mit der Farbe „<ph name="COLOR_PARAMETER" />“</translation>
@@ -956,6 +971,7 @@ Neuinstallation</translation>
 <translation id="7378203170292176219">Ziehen, um einen Bereich für die Aufnahme auszuwählen</translation>
 <translation id="7378594059915113390">Mediensteuerelemente</translation>
 <translation id="7378889811480108604">Energiesparmodus ist deaktiviert</translation>
+<translation id="7384028040782072252">An einer beliebigen Stelle rechtsklicken, um Apps neu zu sortieren</translation>
 <translation id="7392563512730092880">Sie können die Einrichtung jederzeit später in den Einstellungen vornehmen.</translation>
 <translation id="7405710164030118432">Wenn Sie das Gerät entsperren möchten, geben Sie Ihren Eltern-Zugangscode für Family Link ein</translation>
 <translation id="7406608787870898861">Einrichtung des Mobilfunknetzes abschließen</translation>
@@ -974,6 +990,7 @@ Neuinstallation</translation>
 <translation id="7483025031359818980">Auswahlbereich auf ganzen Bildschirm festgelegt</translation>
 <translation id="7486227320194954040">Markierungstools minimieren</translation>
 <translation id="7497767806359279797">Sprache und Tastatur auswählen</translation>
+<translation id="7508690557411636492">Im letzten Monat geöffnet</translation>
 <translation id="7509246181739783082">Identität bestätigen</translation>
 <translation id="7513622367902644023">Screenshotmodus ausgewählt</translation>
 <translation id="7513922695575567867">Kalender, Woche ab dem <ph name="DATE" />, momentan ist der <ph name="SELECTED_DATE" /> ausgewählt.</translation>
@@ -1007,6 +1024,7 @@ Neuinstallation</translation>
 <translation id="7654687942625752712">Sie können gesprochenes Feedback deaktivieren, indem Sie die beiden Lautstärketasten fünf Sekunden lang gedrückt halten.</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7662283695561029522">Zum Konfigurieren tippen</translation>
+<translation id="7671610481353807627">Apps wurden nach Farbe sortiert</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Neues Mobilfunknetz hinzufügen</translation>
 <translation id="7720410380936703141">WIEDERHOLEN</translation>
@@ -1142,6 +1160,7 @@ Neuinstallation</translation>
 <translation id="8563862697512465947">Benachrichtigungseinstellungen</translation>
 <translation id="857201607579416096">Menü wurde nach rechts unten auf dem Bildschirm verschoben.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
+<translation id="8598235756057743477">Apps nach Name oder Farbe sortieren</translation>
 <translation id="8627191004499078455">Verbunden mit <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Einstellungen für Bedienungshilfen</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" />, von Ihrem Administrator verwaltet</translation>

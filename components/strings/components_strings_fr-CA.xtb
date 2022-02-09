@@ -456,6 +456,7 @@
 <translation id="2337852623177822836">Paramètre géré par votre administrateur</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> veut s'associer</translation>
 <translation id="2346319942568447007">L'image que vous avez copiée</translation>
+<translation id="2350796302381711542">Autoriser <ph name="HANDLER_HOSTNAME" /> à ouvrir tous les liens <ph name="PROTOCOL" /> à la place de <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2354001756790975382">Autres favoris</translation>
 <translation id="2354430244986887761">La fonctionnalité de navigation sécurisée de Google a récemment <ph name="BEGIN_LINK" />détecté des applications malveillantes<ph name="END_LINK" /> sur <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Des pirates pourraient être en mesure de voir les images que vous regardez sur ce site et vous tromper en les modifiant.</translation>
@@ -481,6 +482,7 @@
 <translation id="2413528052993050574">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />. Il se peut que son certificat de sécurité ait été révoqué. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="2414886740292270097">Foncé</translation>
 <translation id="2430968933669123598">Gérer le compte Google, appuyez sur Entrée pour gérer vos renseignements, la confidentialité et la sécurité de votre compte Google</translation>
+<translation id="2436186046335138073">Autoriser <ph name="HANDLER_HOSTNAME" /> à ouvrir tous les liens <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Quadruple perforation à droite</translation>
 <translation id="2450021089947420533">Explorations</translation>
 <translation id="2463739503403862330">Remplir</translation>
@@ -630,6 +632,7 @@
 <translation id="2930577230479659665">Couper après chaque copie</translation>
 <translation id="2932085390869194046">Suggérer un mot de passe…</translation>
 <translation id="2934466151127459956">Lettre (gouvernement)</translation>
+<translation id="2938225289965773019">Ouvrir des liens <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car son certificat de sécurité provient du domaine <ph name="DOMAIN2" />. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="2943895734390379394">Heure du téléversement :</translation>
 <translation id="2948083400971632585">Vous pouvez désactiver tout mandataire configuré pour une connexion à partir de la page des paramètres.</translation>
@@ -739,6 +742,7 @@
 <translation id="3288238092761586174"><ph name="URL" /> pourrait devoir prendre des mesures supplémentaires pour vérifier votre paiement</translation>
 <translation id="3293642807462928945">En savoir plus sur la politique <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Affichez et gérez vos mots de passe dans les paramètres de Chrome</translation>
+<translation id="3303795387212510132">Autoriser l'application à ouvrir les liens <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Aucun résultat de recherche n'a été trouvé</translation>
 <translation id="3304073249511302126">recherche d'appareils Bluetooth</translation>
 <translation id="3308006649705061278">Unité organisationnelle (« OU »)</translation>
@@ -876,6 +880,7 @@
 <translation id="370972442370243704">Activer la fonctionnalité Parcours</translation>
 <translation id="3711895659073496551">Mettre en veille</translation>
 <translation id="3712624925041724820">Licences épuisées.</translation>
+<translation id="3714633008798122362">Agenda Web</translation>
 <translation id="3714780639079136834">D'activer les données mobiles ou le Wi-Fi</translation>
 <translation id="3715597595485130451">Connexion au réseau Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />De vérifier la configuration du mandataire, du pare-feu et du DNS<ph name="END_LINK" /></translation>
@@ -937,6 +942,7 @@
 <translation id="3906954721959377182">Tablette</translation>
 <translation id="3909477809443608991"><ph name="URL" /> veut lire du contenu protégé. L'identité de votre appareil sera vérifiée par Google et sera accessible par ce site.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Refuser</translation>
 <translation id="3939773374150895049">Utiliser WebAuthn au lieu du code CVC?</translation>
 <translation id="3946209740501886391">Toujours demander sur ce site</translation>
 <translation id="3947595700203588284">Les sites peuvent demander à se connecter à des appareils MIDI</translation>
@@ -1962,6 +1968,7 @@ Détails supplémentaires :
 <translation id="7334320624316649418">&amp;Rétablir la réorganisation</translation>
 <translation id="7335157162773372339">Les sites peuvent demander à utiliser votre appareil photo</translation>
 <translation id="7337248890521463931">Afficher plus de lignes</translation>
+<translation id="7337418456231055214">Le numéro de carte virtuelle n'est pas rempli? Cliquez sur les détails de la carte pour les copier. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="7337706099755338005">Non disponible sur votre plateforme.</translation>
 <translation id="733923710415886693">Le certificat du serveur n'a pas été divulgué par l'intermédiaire de l'outil Certificate Transparency.</translation>
 <translation id="734600844861828519">11 po x 15 po</translation>
@@ -2396,6 +2403,7 @@ Détails supplémentaires :
 <translation id="8731544501227493793">Bouton Gérer les mots de passe, appuyez sur la touche Entrée pour afficher et gérer vos mots de passe dans les paramètres de Chrome</translation>
 <translation id="8734529307927223492">Votre <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour ouvrir une nouvelle fenêtre de navigation privée afin de naviguer en mode privé</translation>
+<translation id="8737685506611670901">Ouvrir les liens <ph name="PROTOCOL" /> à la place de <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Pour établir une connexion sécurisée, votre horloge doit être réglée correctement. En effet, les sites Web utilisent des certificats d'authentification valides pour une durée limitée. L'horloge de votre appareil étant incorrecte, Chromium ne peut pas authentifier les certificats.</translation>
 <translation id="8740359287975076522">L'&lt;abbr id="dnsDefinition"&gt;adresse DNS&lt;/abbr&gt; de <ph name="HOST_NAME" /> est introuvable. Diagnostic du problème en cours.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> est votre code pour <ph name="ORIGIN" /></translation>
@@ -2473,6 +2481,7 @@ Détails supplémentaires :
 <translation id="9004367719664099443">Séance de RV en cours</translation>
 <translation id="9005998258318286617">Échec du chargement du document PDF.</translation>
 <translation id="9008201768610948239">OK</translation>
+<translation id="901834265349196618">courriel</translation>
 <translation id="9020200922353704812">Carte de l'adresse de facturation requise</translation>
 <translation id="9020542370529661692">Cette page a été traduite en <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

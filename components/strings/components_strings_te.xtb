@@ -463,6 +463,7 @@
 <translation id="2337852623177822836">సెట్టింగ్‌ను మీ నిర్వాహకులు నియంత్రిస్తున్నారు</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> దీనితో జత చేయాలనుకుంటోంది</translation>
 <translation id="2346319942568447007">మీరు కాపీ చేసిన చిత్రం</translation>
+<translation id="2350796302381711542"><ph name="REPLACED_HANDLER_TITLE" />కి బదులుగా అన్ని <ph name="PROTOCOL" /> లింక్‌లను తెరవడానికి <ph name="HANDLER_HOSTNAME" />ను అనుమతించాలా?</translation>
 <translation id="2354001756790975382">ఇతర బుక్‌మార్క్‌లు</translation>
 <translation id="2354430244986887761">Google సురక్షిత బ్రౌజింగ్ ఇటీవల <ph name="SITE" />లో <ph name="BEGIN_LINK" />హానికర యాప్‌లను కనుగొంది<ph name="END_LINK" />.</translation>
 <translation id="2355395290879513365">దాడికి పాల్పడేవారు ఈ సైట్‌లో మీరు చూస్తున్న చిత్రాలను చూడగలరు, వాటిని సవరించడం ద్వారా మిమ్మల్ని మోసగించవచ్చు.</translation>
@@ -488,6 +489,7 @@
 <translation id="2413528052993050574">ఈ సర్వర్ <ph name="DOMAIN" /> అని నిరూపించుకోలేకపోయింది; దీని భద్రతా ప్రమాణపత్రం ఉపసంహరించబడి ఉండవచ్చు. ఇది తప్పుగా కాన్ఫిగర్ చేయడం వలన లేదా దాడిచేసే వ్యక్తి మీ కనెక్షన్‌కు అంతరాయం కలిగించడం వలన జరిగి ఉండవచ్చు.</translation>
 <translation id="2414886740292270097">ముదురు</translation>
 <translation id="2430968933669123598">Google ఖాతాను మేనేజ్ చేయండి, మీ Google ఖాతాలో మీ సమాచారం, గోప్యత, ఇంకా భద్రతను మేనేజ్ చేయడం కోసం Enterను నొక్కండి</translation>
+<translation id="2436186046335138073">అన్ని <ph name="PROTOCOL" /> లింక్‌లను తెరవడానికి <ph name="HANDLER_HOSTNAME" />ను అనుమతించాలా?</translation>
 <translation id="2438874542388153331">కుడివైపు నాలుగు రంధ్రాలు</translation>
 <translation id="2450021089947420533">Chrome హిస్టరీలో మీ యాక్టివిటీలు</translation>
 <translation id="2463739503403862330">పూరించు</translation>
@@ -637,6 +639,7 @@
 <translation id="2930577230479659665">ప్రతి కాపీ తర్వాత కత్తిరించండి</translation>
 <translation id="2932085390869194046">పాస్‌వర్డ్‌‌ను సూచించు...</translation>
 <translation id="2934466151127459956">ప్రభుత్వ-లెటర్</translation>
+<translation id="2938225289965773019"><ph name="PROTOCOL" /> లింక్‌లను తెరవండి</translation>
 <translation id="2941952326391522266">ఈ సర్వర్ <ph name="DOMAIN" /> అని నిరూపించుకోలేకపోయింది; దీని భద్రతా ప్రమాణపత్రం <ph name="DOMAIN2" /> నుండి జారీ చేయబడింది. ఇది తప్పుగా కాన్ఫిగర్ చేయడం వలన లేదా దాడిచేసే వ్యక్తి మీ కనెక్షన్‌కు అంతరాయం కలిగించడం వలన జరిగి ఉండవచ్చు.</translation>
 <translation id="2943895734390379394">అప్‌లోడ్ సమయం:</translation>
 <translation id="2948083400971632585">మీరు సెట్టింగ్‌ల పేజీ నుండి కనెక్షన్ కోసం కాన్ఫిగర్ చేయబడిన ఏ ప్రాక్సీలను అయినా నిలిపివేయవచ్చు.</translation>
@@ -746,6 +749,7 @@
 <translation id="3288238092761586174">మీ పేమెంట్‌ను వెరిఫై చేయడానికి, <ph name="URL" /> అదనపు దశలను తీసుకోవాల్సి రావచ్చు</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> విధానం గురించి మరింత తెలుసుకోండి</translation>
 <translation id="3295444047715739395">Chrome సెట్టింగ్‌లలో మీ పాస్‌వర్డ్‌లను చూడండి, మేనేజ్ చేయండి</translation>
+<translation id="3303795387212510132"><ph name="PROTOCOL_SCHEME" /> లింక్‌లను తెరవడానికి యాప్‌ను అనుమతించాలా?</translation>
 <translation id="3303855915957856445">ఆ సెర్చ్ కోసం ఫలితాలు ఏవీ దొరకలేదు</translation>
 <translation id="3304073249511302126">బ్లూటూత్ స్కానింగ్</translation>
 <translation id="3308006649705061278">ఆర్గనైజేషనల్ యూనిట్ (OU)</translation>
@@ -883,6 +887,7 @@
 <translation id="370972442370243704">జర్నీస్ ఫీచర్‌ను ఆన్ చేయండి</translation>
 <translation id="3711895659073496551">తాత్కాలికంగా నిలిపివేయడం</translation>
 <translation id="3712624925041724820">లైసెన్స్‌లు అయిపోయాయి</translation>
+<translation id="3714633008798122362">వెబ్ క్యాలెండర్</translation>
 <translation id="3714780639079136834">మొబైల్ డేటా లేదా Wi-Fiని ఆన్ చేయడం</translation>
 <translation id="3715597595485130451">Wi-Fiకి కనెక్ట్ చేయండి</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />ప్రాక్సీ, ఫైర్‌వాల్ మరియు DNS కాన్ఫిగరేషన్‌ను తనిఖీ చేయడం<ph name="END_LINK" /></translation>
@@ -944,6 +949,7 @@
 <translation id="3906954721959377182">టాబ్లెట్</translation>
 <translation id="3909477809443608991">రక్షిత కంటెంట్‌ను ప్లే చేయడానికి <ph name="URL" /> అనుమతి కోరుతుంది. మీ పరికరం గుర్తింపు Google ద్వారా ధృవీకరించబడుతుంది, దీనిని ఈ సైట్ ద్వారా యాక్సెస్ చేయవచ్చు</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">తిరస్కరించు</translation>
 <translation id="3939773374150895049">CVCకి బదులుగా WebAuthnను ఉపయోగించాలా?</translation>
 <translation id="3946209740501886391">ఈ సైట్‌లో ఎల్లప్పుడూ అడగాలి</translation>
 <translation id="3947595700203588284">MIDI పరికరాలకు కనెక్ట్ చేయడానికి సైట్ అనుమతి అడగవచ్చు</translation>
@@ -1060,6 +1066,7 @@
 <translation id="4250680216510889253">లేదు</translation>
 <translation id="4253168017788158739">గమనిక</translation>
 <translation id="425582637250725228">మీరు చేసిన మార్పులు సేవ్ అయ్యి ఉండకపోవచ్చు.</translation>
+<translation id="425869179292622354">వర్చువల్ కార్డ్‌తో దీన్ని మరింత సురక్షితంగా ఉంచాలనుకుంటున్నారా?</translation>
 <translation id="4258748452823770588">చెల్లని సంతకం</translation>
 <translation id="4261046003697461417">రక్షణలో ఉన్న డాక్యుమెంట్‌లకు అదనపు గమనికలను జోడించలేరు</translation>
 <translation id="4265872034478892965">మీ నిర్వాహకులు అనుమతించారు</translation>
@@ -1570,6 +1577,7 @@
 <translation id="5921639886840618607">Google ఖాతాకు కార్డ్‌ను సేవ్ చేయాలా?</translation>
 <translation id="5922853866070715753">దాదాపు పూర్తయింది</translation>
 <translation id="5932224571077948991">సైట్ అనుచితమైన లేదా తప్పుదారి పట్టించే ప్రకటనలను చూపుతుంది</translation>
+<translation id="5938153366081463283">వర్చువల్ కార్డ్‌ను జోడించండి</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> తెరవబడుతోంది…</translation>
 <translation id="5951495562196540101">వినియోగదారు ఖాతాతో నమోదు చేయడం సాధ్యపడదు (ప్యాకేజ్డ్ లైసెన్స్ అందుబాటులో ఉంది).</translation>
@@ -2194,6 +2202,7 @@
 <translation id="7976214039405368314">చాలా ఎక్కువ రిక్వెస్ట్‌లు</translation>
 <translation id="7977538094055660992">అవుట్‌పుట్ పరికరం</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="7981260203882740562">దీనితో లింక్ చేయబడింది</translation>
 <translation id="798134797138789862">వర్చువల్ రియాలిటీ పరికరాలు, డేటాను ఉపయోగించడానికి సైట్ అనుమతి అడగవచ్చు</translation>
 <translation id="7984945080620862648">Chrome ప్రాసెస్ చేయలేని, గజిబిజిగా ఉండే ఆధారాలను వెబ్‌సైట్ పంపినందున మీరు ప్రస్తుతం <ph name="SITE" />ని సందర్శించలేరు. నెట్‌వర్క్ లోపాలు మరియు దాడులు సాధారణంగా తాత్కాలికంగానే ఉంటాయి, కావున ఈ పేజీ కాసేపటి తర్వాత పని చేసే అవకాశం ఉంది.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2410,6 +2419,7 @@
 <translation id="8731544501227493793">'పాస్‌వర్డ్‌లు మేనేజ్ చేయి' బటన్, Chrome సెట్టింగ్‌లలో మీ పాస్‌వర్డ్‌లు చూసి, మేనేజ్ చేయడానికి 'Enter' నొక్కండి</translation>
 <translation id="8734529307927223492"><ph name="MANAGER" />, మీ <ph name="DEVICE_TYPE" />ను మేనేజ్ చేస్తోంది</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ప్రైవేట్‌గా బ్రౌజ్ చేసుకునేందుకు కొత్త అజ్ఞాత విండోను తెరవడానికి ముందు 'Tab'ను నొక్కి, ఆపై 'Enter'ను నొక్కండి</translation>
+<translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" />కి బదులుగా <ph name="PROTOCOL" /> లింక్‌లను తెరవాలనుకుంటోంది</translation>
 <translation id="8738058698779197622">సురక్షిత కనెక్షన్‌ను ఏర్పాటు చేయడానికి, మీ గడియారాన్ని సరైన సమయానికి సెట్ చేయాలి. ఎందుకంటే వెబ్‌సైట్‌లు వాటిని గుర్తించడానికి ఉపయోగించే సర్టిఫికెట్‌లు నిర్దిష్ట కాలవ్యవధులలో మాత్రమే చెల్లుబాటు అవుతాయి. మీ పరికరం యొక్క గడియారం సమయం తప్పుగా ఉన్నందున, Chromium ఈ సర్టిఫికెట్‌లను ధృవీకరించలేకపోయింది.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> &lt;abbr id="dnsDefinition"&gt;DNS అడ్రస్‌&lt;/abbr&gt; కనుగొనబడలేదు. సమస్యను నిర్ధారిస్తోంది.</translation>
 <translation id="8742371904523228557"><ph name="ORIGIN" /> కోసం మీ కోడ్ <ph name="ONE_TIME_CODE" /></translation>
@@ -2487,6 +2497,7 @@
 <translation id="9004367719664099443">VR సెషన్ ప్రోగ్రెస్‌లో ఉంది</translation>
 <translation id="9005998258318286617">PDF డాక్యుమెంట్‌ను లోడ్ చేయడం విఫలమైంది.</translation>
 <translation id="9008201768610948239">విస్మరించు</translation>
+<translation id="901834265349196618">ఈమెయిల్‌</translation>
 <translation id="9020200922353704812">కార్డ్ బిల్లింగ్ అడ్రస్‌ అవసరం</translation>
 <translation id="9020542370529661692">ఈ పేజీ <ph name="TARGET_LANGUAGE" />కి అనువదించబడింది</translation>
 <translation id="9020742383383852663">A8</translation>

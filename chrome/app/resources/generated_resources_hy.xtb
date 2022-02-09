@@ -89,6 +89,7 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" />-ը ցանկանում է վերականգնել ձեր Chrome-ի կարգավորումները իրենց բնօրինակ կանխադրվածների: Այս գործողության հետևանքով կվերակայվի ձեր գլխավոր էջը, նոր ներդիրի էջը և որոնման համակարգը, կանջատվեն ընդլայնումները, և բոլոր ներդիրները կապաամրացվեն: Կջնջվեն նաև այլ ժամանակավոր և քեշավորված տվյալներ, ինչպես օրինակ՝ քուքիները, բովանդակության և կայքի տվյալները:</translation>
 <translation id="1084096383128641877">Եթե հեռացնեք այս գաղտնաբառը, ձեր հաշիվը չի ջնջվի <ph name="DOMAIN" /> կայքից։ Անվտանգության նկատառումներով փոխեք գաղտնաբառը կամ ջնջեք հաշիվը <ph name="DOMAIN_LINK" /> կայքում։</translation>
 <translation id="1084824384139382525">Պատճենել հղումների հաս&amp;ցեները</translation>
+<translation id="1085064499066015002">Միշտ բոլոր կայքերում</translation>
 <translation id="1085697365578766383">Չհաջողվեց մեկնարկել վիրտուալ մեքենան: Նորից փորձեք:</translation>
 <translation id="1087965115100412394">Թույլ չտալ կայքերին միանալ MIDI սարքերին</translation>
 <translation id="1088654056000736875">Chrome-ը հեռացնում է վնասաբեր ծրագրերը ձեր համակարգչից…</translation>
@@ -342,6 +343,7 @@
 <translation id="1343865611738742294">Լինուքսի հավելվածներին հասանելի դարձրեք USB սարքերը: Երբ USB սարքը հեռացվի, Լինուքսը չի պահի այն:</translation>
 <translation id="1343920184519992513">Շարունակել այն պահից, որտեղ կանգ եմ առել, և բացել էջերի որոշակի խումբ</translation>
 <translation id="1346630054604077329">Հաստատել և վերագործարկել</translation>
+<translation id="1346748346194534595">Աջ</translation>
 <translation id="1347256498747320987">Թարմացումների ու հավելվածների տեղադրում։ Շարունակելով՝ դուք համաձայնում եք, որ սարքը կարող է ավտոմատ ներբեռնել և տեղադրել թարմացումներ ու հավելվածներ Google-ից, ձեր օպերատորից և սարքի արտադրողից (հնարավոր է բջջային ինտերնետի միջոցով): Որոշ հավելվածներում կառաջարկվի վճարովի բովանդակություն: <ph name="BEGIN_LINK1" />Իմանալ ավելին<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Լինուքսի տարածքը</translation>
 <translation id="1347975661240122359">Թարմացումը կսկսվի, երբ մարտկոցը լիցքավորված լինի <ph name="BATTERY_LEVEL" />%:</translation>
@@ -463,6 +465,7 @@
 <translation id="1464781208867302907">Սարքի պարամետրերը փոխելու համար անցեք կարգավորումներ:</translation>
 <translation id="1465176863081977902">Պատճենել ձայնանյութի հասցեն</translation>
 <translation id="1465827627707997754">Պիցցայի կտոր</translation>
+<translation id="1467432559032391204">Ձախ</translation>
 <translation id="1468571364034902819">Հնարավոր չէ օգտագործել այս պրոֆիլը</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Ավելացնել ներդիր նոր խմբում}one{Ավելացնել ներդիրներ նոր խմբում}other{Ավելացնել ներդիրներ նոր խմբում}}</translation>
 <translation id="1470350905258700113">Օգտագործել այս սարքը</translation>
@@ -1323,7 +1326,6 @@
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2307630946657910723">Որոնել էջի հատվածում <ph name="VISUAL_SEARCH_PROVIDER" /> հավելվածի միջոցով</translation>
-<translation id="230927227160767054">Այս էջը ծառայության մշակիչ է ուզում տեղադրել:</translation>
 <translation id="2309620859903500144">Այս կայքին արգելված է օգտագործել շարժման և լույսի ձեր տվիչները:</translation>
 <translation id="2312219318583366810">Էջի URL</translation>
 <translation id="2314165183524574721">Տեսանելիության ընթացիկ կարգավորումը՝ «Թաքցված»</translation>
@@ -1374,7 +1376,6 @@
 <translation id="2349896577940037438">Եթե միացնեք Վեբ որոնման և հավելվածների լրացուցիչ պատմությունը, այս տվյալները կպահվեն ձեր Google հաշվում։ Դուք կարող եք դիտել և ջնջել ձեր տվյալները, ինչպես նաև փոխել հաշվի կարգավորումները account.google.com էջում։</translation>
 <translation id="2350133097354918058">Կրկին բեռնվեց</translation>
 <translation id="2350182423316644347">Հավելվածի նախապատրաստում…</translation>
-<translation id="2350796302381711542">Թույլատրե՞լ <ph name="HANDLER_HOSTNAME" />-ին բացել <ph name="PROTOCOL" /> հաղորդակարգի բոլոր հղումները <ph name="REPLACED_HANDLER_TITLE" />-ի փոխարեն:</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{1 տարր}one{{NUM_ITEMS} տարր}other{{NUM_ITEMS} տարր}}</translation>
 <translation id="2352662711729498748">&lt;1 ՄԲ</translation>
 <translation id="2352810082280059586">Կողպէկրանի ծանուցումներն ավտոմատ պահվում են <ph name="LOCK_SCREEN_APP_NAME" /> հավելվածում: Ձեր վերջին նշումը կպահպանվի կողպէկրանի վրա:</translation>
@@ -1448,7 +1449,6 @@
 <translation id="2434758125294431199">Նշեք, թե ով կարող է կիսվել ձեզ հետ ֆայլերով</translation>
 <translation id="2435248616906486374">Ցանցն անջատված է</translation>
 <translation id="2435457462613246316">Ցույց տալ գաղտնաբառը</translation>
-<translation id="2436186046335138073">Թույլատրե՞լ <ph name="HANDLER_HOSTNAME" />-ին բացել <ph name="PROTOCOL" /> հաղորդակարգի բոլոր հղումները:</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" />-ի բեռնում</translation>
 <translation id="2440604414813129000">Դիտել ա&amp;ղբյուրը</translation>
 <translation id="244231003699905658">Հասցեն անվավեր է։ Ստուգեք հասցեն և նորից փորձեք։</translation>
@@ -1965,7 +1965,6 @@
 <translation id="2935225303485967257">Կառավարել պրոֆիլները</translation>
 <translation id="2935654492420446828">Ավելացնել դպրոցական հաշիվ ավելի ուշ</translation>
 <translation id="2936851848721175671">Պահուստավորում և վերականգնում</translation>
-<translation id="2938225289965773019">Բացել <ph name="PROTOCOL" /> հղումները</translation>
 <translation id="2939908794993783865">Լրացուցիչ ոչ ակտիվ կայքեր</translation>
 <translation id="2939938020978911855">Ցուցադրել հասանելի Bluetooth սարքերը</translation>
 <translation id="2941112035454246133">Ցածր</translation>
@@ -2287,7 +2286,6 @@
 <translation id="33022249435934718">GDI նկարագրիչներ</translation>
 <translation id="3302388252085547855">Ներկայացրեք հիմնավորում...</translation>
 <translation id="3303260552072730022">Ինչ-որ ընդլայնում գործարկել է լիաէկրան ռեժիմը:</translation>
-<translation id="3303795387212510132">Թույլատրե՞լ հավելվածին բացել <ph name="PROTOCOL_SCHEME" /> հղումները</translation>
 <translation id="3303818374450886607">Օրինակներ</translation>
 <translation id="3303855915957856445">Որոնման արդյունքներ չկան</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> զեղչ</translation>
@@ -2701,7 +2699,6 @@
 <translation id="371300529209814631">Հետ/առաջ</translation>
 <translation id="3713047097299026954">Անվտանգության այս բանալին մուտքի տվյալներ չունի</translation>
 <translation id="3714195043138862580">Այս դեմո սարքի տրամադրումը չեղարկվել է։</translation>
-<translation id="3714633008798122362">վեբ օրացույց</translation>
 <translation id="3719826155360621982">Գլխավոր էջ</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Դուք և Google-ը</translation>
@@ -7515,7 +7512,6 @@
 <translation id="8734674662128056360">Երրորդ կողմի քուքիների արգելափակում</translation>
 <translation id="873545264931343897"><ph name="PLUGIN_NAME" /> փլագինի թարմացումից հետո վերաբեռնեք էջը, որպեսզի ակտիվացնեք այն</translation>
 <translation id="8736288397686080465">Այս կայքը թարմացվել է հետին պլանում:</translation>
-<translation id="8737685506611670901">Բացել <ph name="PROTOCOL" /> -ի հղումները <ph name="REPLACED_HANDLER_TITLE" />-ի փոխարեն</translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Ընտրեք լեզու, որով պետք է թարգմանել էջը</translation>
 <translation id="8740247629089392745">Դուք կարող եք տալ այս Chromebook-ը <ph name="SUPERVISED_USER_NAME" />-ին։ Կարգավորումը գրեթե ավարտված է։ Սարքը շուտով պատրաստ կլինի օգտագործման։</translation>
@@ -7780,7 +7776,6 @@
 <translation id="9003647077635673607">Թույլ տալ բոլոր վեբկայքերում</translation>
 <translation id="9003677638446136377">Ստուգել նորից</translation>
 <translation id="9004754973617721124">Մաքրե՞լ <ph name="SITE_NAME" /> կայքի, դրա ենթադաս բոլոր կայքերի, ինչպես նաև դրա համար տեղադրված հավելվածի կայքի տվյալներն ու թույլտվությունները</translation>
-<translation id="9008201768610948239">Անտեսել</translation>
 <translation id="9008201858626224558">«<ph name="SUBPAGE_TITLE" />» մանրամասների էջ տանող «Հետ» կոճակ</translation>
 <translation id="9009369504041480176">Վերբեռնում (<ph name="PROGRESS_PERCENT" />%)…</translation>
 <translation id="9009708085379296446">Ուզում էիք փոխե՞լ այս էջը</translation>
@@ -7790,7 +7785,6 @@
 <translation id="9013037634206938463">Լինուքսը տեղադրելու համար անհրաժեշտ է նվազագույնը <ph name="INSTALL_SIZE" /> ազատ տարածք։ Տարածք ազատելու համար սարքի հիշողությունից ֆայլեր ջնջեք։</translation>
 <translation id="901668144954885282">Կրկնօրինակ Google Drive-ում</translation>
 <translation id="9018218886431812662">Տեղադրումն ավարտվեց</translation>
-<translation id="901834265349196618">էլփոստ</translation>
 <translation id="9019062154811256702">Կարդալ և փոփոխել ինքնալցման կարգավորումները</translation>
 <translation id="9019894137004772119">Տեղորոշման օգտագործում։ Թույլ տվեք հավելվածներին և ծառայություններին օգտագործել ձեր սարքի գտնվելու վայրի մասին տվյալները։ Google-ը կարող է պարբերաբար հավաքել տեղադրության տվյալները և անանուն կերպով օգտագործել դրանք՝ տեղորոշումն ավելի ճշգրիտ դարձնելու և տեղադրության վրա հիմնված ծառայությունների որակը բարձրացնելու համար։</translation>
 <translation id="9019956081903586892">Չհաջողվեց ներբեռնել ուղղագրիչի բառարանը</translation>

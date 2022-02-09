@@ -457,6 +457,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2337852623177822836">Ayar yöneticinizin kontrolü altındadır</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> eşlenmek istiyor</translation>
 <translation id="2346319942568447007">Kopyalanan resim</translation>
+<translation id="2350796302381711542">Tüm <ph name="PROTOCOL" /> bağlantılarını <ph name="REPLACED_HANDLER_TITLE" /> yerine <ph name="HANDLER_HOSTNAME" /> ana makinesinin açmasına izin verilsin mi?</translation>
 <translation id="2354001756790975382">Diğer yer işaretleri</translation>
 <translation id="2354430244986887761">Google Güvenli Tarama son zamanlarda <ph name="SITE" /> sitesinde <ph name="BEGIN_LINK" />zararlı uygulamalar buldu<ph name="END_LINK" />.</translation>
 <translation id="2355395290879513365">Saldırganlar bu sitede baktığınız resimleri görebilir ve bu resimler üzerinde değişiklik yaparak sizi kandırabilirler.</translation>
@@ -482,6 +483,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2413528052993050574">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Güvenlik sertifikası iptal edilmiş olabilir. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
 <translation id="2414886740292270097">Koyu</translation>
 <translation id="2430968933669123598">Google Hesabı'nı yönet, Google Hesabınızda bilgilerinizi, gizliliğinizi ve güvenliğinizi yönetmek için Enter'a basın</translation>
+<translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> ana makinesinin tüm <ph name="PROTOCOL" /> bağlantılarını açmasına izin verilsin mi?</translation>
 <translation id="2438874542388153331">Sağda dörtlü delik</translation>
 <translation id="2450021089947420533">Arama Yolculukları</translation>
 <translation id="2463739503403862330">Doldur</translation>
@@ -631,6 +633,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2930577230479659665">Her kopyadan sonra kırp</translation>
 <translation id="2932085390869194046">Şifre Öner...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019"><ph name="PROTOCOL" /> bağlantılarını açma</translation>
 <translation id="2941952326391522266">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Güvenlik sertifikası <ph name="DOMAIN2" /> alan adından geliyor. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
 <translation id="2943895734390379394">Yükleme Süresi:</translation>
 <translation id="2948083400971632585">Ayarlar sayfasından, bir bağlantı için yapılandırılmış proxy'leri devre dışı bırakabilirsiniz.</translation>
@@ -740,6 +743,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3288238092761586174"><ph name="URL" />, ödemenizi onaylamak için ek adımlar uygulayabilir</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> politikası ile ilgili daha fazla bilgi edinin</translation>
 <translation id="3295444047715739395">Chrome ayarlarında şifrelerinizi görüntüleyin ve yönetin</translation>
+<translation id="3303795387212510132">Uygulamanın <ph name="PROTOCOL_SCHEME" /> bağlantılarını açmasına izin verilsin mi?</translation>
 <translation id="3303855915957856445">Arama sonucu bulunamadı</translation>
 <translation id="3304073249511302126">bluetooth taraması</translation>
 <translation id="3308006649705061278">Kuruluş Birimi (OU)</translation>
@@ -877,6 +881,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="370972442370243704">Arama Yolculukları'nı aç</translation>
 <translation id="3711895659073496551">Askıya al</translation>
 <translation id="3712624925041724820">Lisanslar bitti</translation>
+<translation id="3714633008798122362">web takvimi</translation>
 <translation id="3714780639079136834">Mobil veriyi veya kablosuz bağlantıyı açma</translation>
 <translation id="3715597595485130451">Kablosuz Ağ Bağlantısı</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Proxy, güvenlik duvarı ve DNS yapılandırmasını kontrol etme<ph name="END_LINK" /></translation>
@@ -938,6 +943,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" />, korunan içeriği oynatmak istiyor. Cihazınızın kimliği Google tarafından doğrulanır ve bu site tarafından erişilebilir.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Reddet</translation>
 <translation id="3939773374150895049">CVC yerine WebAuthn kullanılsın mı?</translation>
 <translation id="3946209740501886391">Bu sitede her zaman sor</translation>
 <translation id="3947595700203588284">MIDI cihazlarına bağlanmak isteyebilir</translation>
@@ -2400,6 +2406,7 @@ Ek ayrıntılar:
 <translation id="8731544501227493793">Şifreleri yönet düğmesi, Chrome ayarlarında şifrelerinizi görüp yönetmek için Enter'a basın</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> cihazınız <ph name="MANAGER" /> tarafından yönetiliyor</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, yeni bir Gizli pencere açıp gizli olarak göz atmak için Sekme'ye, sonra Enter'a basın</translation>
+<translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> yerine <ph name="PROTOCOL" /> bağlantılarını açma</translation>
 <translation id="8738058698779197622">Güvenli bir bağlantı kurmak için saatinizin doğru ayarlanmış olması gerekir. Bunun sebebi, web sitelerinin kendilerini tanımlamak için kullandıkları sertifikaların sadece belli süreler için geçerli olmasıdır. Cihazınızın saati yanlış olduğundan, Chromium bu sertifikaları doğrulayamaz.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> ana makinesinin &lt;abbr id="dnsDefinition"&gt;DNS adresi&lt;/abbr&gt; bulunamadı. Sorun teşhis ediliyor.</translation>
 <translation id="8742371904523228557"><ph name="ORIGIN" /> için kodunuz: <ph name="ONE_TIME_CODE" /></translation>
@@ -2477,6 +2484,7 @@ Ek ayrıntılar:
 <translation id="9004367719664099443">VR oturumu devam ediyor</translation>
 <translation id="9005998258318286617">PDF dokümanı yüklenemedi.</translation>
 <translation id="9008201768610948239">Yoksay</translation>
+<translation id="901834265349196618">e-posta</translation>
 <translation id="9020200922353704812">Kartın fatura adresi gerekli</translation>
 <translation id="9020542370529661692">Bu sayfa <ph name="TARGET_LANGUAGE" /> diline çevrildi</translation>
 <translation id="9020742383383852663">A8</translation>

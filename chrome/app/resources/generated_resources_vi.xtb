@@ -89,6 +89,7 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> muốn khôi phục cài đặt Chrome của bạn về mặc định ban đầu. Thao tác này sẽ đặt lại trang chủ, trang thẻ mới và công cụ tìm kiếm, vô hiệu hóa các tiện ích của bạn và bỏ ghim tất cả các thẻ. Hành động này cũng xóa dữ liệu tạm thời và được lưu trong bộ nhớ đệm khác, chẳng hạn như cookie, nội dung và dữ liệu trang web.</translation>
 <translation id="1084096383128641877">Việc xóa mật khẩu này sẽ không xóa tài khoản của bạn trên <ph name="DOMAIN" />. Hãy đổi mật khẩu hoặc xóa tài khoản của bạn trên <ph name="DOMAIN_LINK" /> để bảo vệ mật khẩu hoặc tài khoản đó.</translation>
 <translation id="1084824384139382525">S&amp;ao chép địa chỉ liên kết</translation>
+<translation id="1085064499066015002">Cho phép trên tất cả trang web</translation>
 <translation id="1085697365578766383">Lỗi khi khởi động máy ảo. Vui lòng thử lại.</translation>
 <translation id="1087965115100412394">Không cho phép trang web kết nối với các thiết bị MIDI</translation>
 <translation id="1088654056000736875">Chrome đang xóa phần mềm gây hại khỏi máy tính của bạn...</translation>
@@ -342,6 +343,7 @@
 <translation id="1343865611738742294">Cấp cho các ứng dụng Linux quyền truy cập vào thiết bị USB. Linux sẽ không nhớ thiết bị USB sau khi bạn rút thiết bị ra.</translation>
 <translation id="1343920184519992513">Tiếp tục từ nơi bạn đang xem dở và mở một nhóm trang cụ thể</translation>
 <translation id="1346630054604077329">Xác nhận và khởi động lại</translation>
+<translation id="1346748346194534595">Phải</translation>
 <translation id="1347256498747320987">Cài đặt bản cập nhật và ứng dụng. Bằng việc tiếp tục, bạn đồng ý rằng thiết bị này cũng có thể tự động tải xuống và cài đặt các bản cập nhật cũng như ứng dụng từ Google, nhà mạng và nhà sản xuất thiết bị, có thể bằng cách sử dụng dữ liệu di động. Một vài ứng dụng có thể cung cấp tùy chọn mua hàng trong ứng dụng. <ph name="BEGIN_LINK1" />Tìm hiểu thêm<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Bộ nhớ Linux</translation>
 <translation id="1347975661240122359">Sẽ bắt đầu cập nhật khi pin đạt đến mức <ph name="BATTERY_LEVEL" />%.</translation>
@@ -464,6 +466,7 @@
 <translation id="1464781208867302907">Để xem các tùy chọn của thiết bị, hãy chuyển đến phần Cài đặt.</translation>
 <translation id="1465176863081977902">S&amp;ao chép địa chỉ âm thanh</translation>
 <translation id="1465827627707997754">Lát pizza</translation>
+<translation id="1467432559032391204">Trái</translation>
 <translation id="1468571364034902819">Không thể dùng hồ sơ này</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Thêm thẻ vào nhóm mới}other{Thêm các thẻ vào nhóm mới}}</translation>
 <translation id="1470350905258700113">Sử dụng thiết bị này</translation>
@@ -1336,7 +1339,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2307630946657910723">Tìm kiếm trên một phần của trang bằng <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
-<translation id="230927227160767054">Trang này muốn cài đặt trình xử lý dịch vụ.</translation>
 <translation id="2309620859903500144">Trang web này đã bị chặn sử dụng cảm biến chuyển động hoặc ánh sáng của thiết bị.</translation>
 <translation id="2312219318583366810">URL của trang</translation>
 <translation id="2314165183524574721">Tùy chọn hiển thị hiện tại là ẩn</translation>
@@ -1387,7 +1389,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2349896577940037438">Nếu bạn bật tùy chọn cài đặt Hoạt động trên web và ứng dụng bổ sung, thì dữ liệu này có thể được lưu vào Tài khoản Google của bạn. Bạn có thể xem, xóa dữ liệu và thay đổi các tùy chọn cài đặt tài khoản của mình tại account.google.com.</translation>
 <translation id="2350133097354918058">Đã tải lại</translation>
 <translation id="2350182423316644347">Đang chạy ứng dụng...</translation>
-<translation id="2350796302381711542">Cho phép <ph name="HANDLER_HOSTNAME" /> mở tất cả liên kết <ph name="PROTOCOL" /> thay vì <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{1 mục}other{{NUM_ITEMS} mục}}</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Ghi chú trên màn hình khóa được tự động lưu vào <ph name="LOCK_SCREEN_APP_NAME" />. Ghi chú mới nhất của bạn sẽ vẫn còn trên màn hình khóa.</translation>
@@ -1460,7 +1461,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2434758125294431199">Chọn người có thể chia sẻ với bạn</translation>
 <translation id="2435248616906486374">Mạng đã bị ngắt kết nối</translation>
 <translation id="2435457462613246316">Hiện mật khẩu</translation>
-<translation id="2436186046335138073">Cho phép <ph name="HANDLER_HOSTNAME" /> mở tất cả liên kết <ph name="PROTOCOL" />?</translation>
 <translation id="2439626940657133600">Đang tải <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Xem &amp;nguồn</translation>
 <translation id="244231003699905658">Địa chỉ không hợp lệ. Vui lòng kiểm tra địa chỉ rồi thử lại.</translation>
@@ -1704,6 +1704,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2684004000387153598">Để tiếp tục, hãy nhấp vào OK, sau đó nhấp vào Thêm người để tạo hồ sơ mới cho địa chỉ email của bạn.</translation>
 <translation id="2687403674020088961">Chặn tất cả cookie (không khuyến nghị)</translation>
 <translation id="2687407218262674387">Điều khoản dịch vụ của Google</translation>
+<translation id="2687621393791886981">Hỏi tôi sau</translation>
 <translation id="2688196195245426394">Lỗi khi đăng ký thiết bị với máy chủ: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2690024944919328218">Hiển thị tùy chọn ngôn ngữ</translation>
 <translation id="2691385045260836588">Kiểu</translation>
@@ -1977,7 +1978,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="2935225303485967257">Quản lý hồ sơ</translation>
 <translation id="2935654492420446828">Thêm một tài khoản trường học sau này</translation>
 <translation id="2936851848721175671">Sao lưu và khôi phục</translation>
-<translation id="2938225289965773019">Mở đường liên kết <ph name="PROTOCOL" /></translation>
 <translation id="2939908794993783865">Các trang web không hoạt động khác</translation>
 <translation id="2939938020978911855">Hiện các thiết bị Bluetooth có sẵn</translation>
 <translation id="2941112035454246133">Thấp</translation>
@@ -2298,7 +2298,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="33022249435934718">Xử lý GDI</translation>
 <translation id="3302388252085547855">Hãy nhập lý do...</translation>
 <translation id="3303260552072730022">Một tiện ích đã kích hoạt chế độ toàn màn hình.</translation>
-<translation id="3303795387212510132">Cho phép ứng dụng mở liên kết <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303818374450886607">Bản sao</translation>
 <translation id="3303855915957856445">Không tìm thấy kết quả tìm kiếm nào</translation>
 <translation id="3304212451103136496">Giảm giá <ph name="DISCOUNT_AMOUNT" /></translation>
@@ -2710,7 +2709,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="371300529209814631">Lùi/Tiến</translation>
 <translation id="3713047097299026954">Khóa bảo mật này không có bất kỳ dữ liệu đăng nhập nào</translation>
 <translation id="3714195043138862580">Thiết bị giới thiệu này đã được đặt sang trạng thái hủy cấp phép.</translation>
-<translation id="3714633008798122362">lịch trên web</translation>
 <translation id="3719826155360621982">Trang chủ</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Bạn và Google</translation>
@@ -7219,6 +7217,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8412136526970428322">Đã cho phép <ph name="PERMISSION" /> và <ph name="COUNT" /> quyền khác</translation>
 <translation id="8413385045638830869">Hỏi trước (khuyên dùng)</translation>
+<translation id="8414249071344507766">Đã ẩn Kỷ niệm trong hai ngày</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (Hộp đựng)</translation>
 <translation id="8417548266957501132">Mật khẩu của cha mẹ</translation>
 <translation id="8418445294933751433">&amp;Hiển thị dưới dạng thẻ</translation>
@@ -7518,7 +7517,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8734674662128056360">Chặn cookie của bên thứ ba</translation>
 <translation id="873545264931343897">Khi cập nhật xong <ph name="PLUGIN_NAME" />, hãy tải lại trang để kích hoạt plugin này</translation>
 <translation id="8736288397686080465">Trang web này đã được cập nhật trong nền.</translation>
-<translation id="8737685506611670901">Mở đường liên kết <ph name="PROTOCOL" /> thay vì <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Chọn ngôn ngữ mà trang sẽ được dịch sang</translation>
 <translation id="8740247629089392745">Bạn có thể đưa lại Chromebook này cho <ph name="SUPERVISED_USER_NAME" />. Sắp thiết lập xong. Hãy chuẩn bị khám phá.</translation>
@@ -7782,7 +7780,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="9003647077635673607">Cho phép trên tất cả các trang web</translation>
 <translation id="9003677638446136377">Kiểm tra lại</translation>
 <translation id="9004754973617721124">Xóa tất cả dữ liệu trang web và quyền của <ph name="SITE_NAME" />, cũng như mọi trang web và ứng dụng đã cài đặt thuộc nhóm này?</translation>
-<translation id="9008201768610948239">Bỏ qua</translation>
 <translation id="9008201858626224558">Nút quay lại trang chi tiết của <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">Đang tải lên (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">Có phải bạn muốn thay đổi trang này không?</translation>
@@ -7792,7 +7789,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="9013037634206938463">Cần có <ph name="INSTALL_SIZE" /> dung lượng trống để cài đặt Linux. Để tăng dung lượng trống, hãy xóa bớt tệp khỏi thiết bị.</translation>
 <translation id="901668144954885282">Sao lưu lên Google Drive</translation>
 <translation id="9018218886431812662">Đã cài đặt xong</translation>
-<translation id="901834265349196618">email</translation>
 <translation id="9019062154811256702">Đọc và thay đổi cài đặt tự động điền</translation>
 <translation id="9019894137004772119">Sử dụng vị trí. Cho phép các ứng dụng và dịch vụ có quyền vị trí sử dụng thông tin vị trí của thiết bị. Google có thể định kỳ thu thập dữ liệu vị trí và sử dụng dữ liệu này theo cách ẩn danh để cải thiện độ chính xác của vị trí và các dịch vụ dựa trên vị trí.</translation>
 <translation id="9019956081903586892">Không thể tải từ điển kiểm tra lỗi chính tả xuống</translation>

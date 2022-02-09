@@ -460,6 +460,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2337852623177822836">Setting controlled by your administrator</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> wants to pair</translation>
 <translation id="2346319942568447007">Image that you copied</translation>
+<translation id="2350796302381711542">Allow <ph name="HANDLER_HOSTNAME" /> to open all <ph name="PROTOCOL" /> links instead of <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2354001756790975382">Other bookmarks</translation>
 <translation id="2354430244986887761">Google Safe Browsing recently <ph name="BEGIN_LINK" />found harmful apps<ph name="END_LINK" /> on <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Attackers might be able to see the images that you’re looking at on this site and trick you by modifying them.</translation>
@@ -485,6 +486,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2413528052993050574">This server could not prove that it is <ph name="DOMAIN" />; its security certificate might be revoked. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
 <translation id="2414886740292270097">Dark</translation>
 <translation id="2430968933669123598">Manage Google Account: press Enter to manage your info, privacy and security in your Google Account</translation>
+<translation id="2436186046335138073">Allow <ph name="HANDLER_HOSTNAME" /> to open all <ph name="PROTOCOL" /> links?</translation>
 <translation id="2438874542388153331">Quad punch right</translation>
 <translation id="2450021089947420533">Journeys</translation>
 <translation id="2463739503403862330">Fill in</translation>
@@ -634,6 +636,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2930577230479659665">Trim after each copy</translation>
 <translation id="2932085390869194046">Suggest password...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">Open <ph name="PROTOCOL" /> links</translation>
 <translation id="2941952326391522266">This server could not prove that it is <ph name="DOMAIN" />; its security certificate is from <ph name="DOMAIN2" />. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
 <translation id="2943895734390379394">Upload time:</translation>
 <translation id="2948083400971632585">You can disable any proxies configured for a connection from the settings page.</translation>
@@ -743,6 +746,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3288238092761586174"><ph name="URL" /> may need to take additional steps to verify your payment</translation>
 <translation id="3293642807462928945">Learn more about <ph name="POLICY_NAME" /> policy</translation>
 <translation id="3295444047715739395">View and manage your passwords in Chrome settings</translation>
+<translation id="3303795387212510132">Allow app to open <ph name="PROTOCOL_SCHEME" /> links?</translation>
 <translation id="3303855915957856445">No search results found</translation>
 <translation id="3304073249511302126">bluetooth scanning</translation>
 <translation id="3308006649705061278">Organisational Unit (OU)</translation>
@@ -880,6 +884,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="370972442370243704">Turn on Journeys</translation>
 <translation id="3711895659073496551">Suspend</translation>
 <translation id="3712624925041724820">Licenses exhausted</translation>
+<translation id="3714633008798122362">web calendar</translation>
 <translation id="3714780639079136834">Turning on mobile data or Wi-Fi</translation>
 <translation id="3715597595485130451">Connect to Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Checking the proxy, firewall and DNS configuration<ph name="END_LINK" /></translation>
@@ -941,6 +946,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> wants to play protected content. Your device's identity will be verified by Google and may be accessed by this site.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Deny</translation>
 <translation id="3939773374150895049">Use WebAuthn instead of CVC?</translation>
 <translation id="3946209740501886391">Always ask on this site</translation>
 <translation id="3947595700203588284">Can ask to connect to MIDI devices</translation>
@@ -2410,6 +2416,7 @@ Additional details:
 <translation id="8731544501227493793">Manage passwords button; press enter to view and manage your passwords in Chrome settings</translation>
 <translation id="8734529307927223492">Your <ph name="DEVICE_TYPE" /> is managed by <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to open a new incognito window to browse privately</translation>
+<translation id="8737685506611670901">Open <ph name="PROTOCOL" /> links instead of <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">To establish a secure connection, your clock needs to be set correctly. This is because the certificates that websites use to identify themselves are only valid for specific periods of time. Since your device's clock is incorrect, Chromium cannot verify these certificates.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" />’s &lt;abbr id="dnsDefinition"&gt;DNS address&lt;/abbr&gt; could not be found. Diagnosing the problem.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> is your code for <ph name="ORIGIN" /></translation>
@@ -2487,6 +2494,7 @@ Additional details:
 <translation id="9004367719664099443">VR session in progress</translation>
 <translation id="9005998258318286617">Failed to load PDF document.</translation>
 <translation id="9008201768610948239">Ignore</translation>
+<translation id="901834265349196618">email</translation>
 <translation id="9020200922353704812">Card billing address required</translation>
 <translation id="9020542370529661692">This page has been translated to <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

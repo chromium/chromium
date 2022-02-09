@@ -89,6 +89,7 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> спрабуе аднавіць налады Chrome да стандартных значэнняў. Будуць скінуты налады галоўнай старонкі, старонкі новай укладкі і пошукавай сістэмы, а таксама выключаны пашырэнні і адмацаваны ўсе ўкладкі. Таксама будуць выдалены ўсе часовыя і кэшаваныя даныя, такія як файлы cookie, даныя сайтаў і змесціва.</translation>
 <translation id="1084096383128641877">Пры выдаленні гэтага пароля ўліковы запіс на сайце <ph name="DOMAIN" /> не выдаліцца. Каб абараніць свой уліковы запіс (на <ph name="DOMAIN_LINK" />), выдаліце яго або змяніце пароль.</translation>
 <translation id="1084824384139382525">Капіраваць &amp;адрас спасылкі</translation>
+<translation id="1085064499066015002">Заўсёды на ўсіх сайтах</translation>
 <translation id="1085697365578766383">Памылка падчас запуску віртуальнай машыны. Паўтарыце спробу.</translation>
 <translation id="1087965115100412394">Не дазваляць сайтам падключацца да прылад MIDI</translation>
 <translation id="1088654056000736875">Chrome выдаляе шкоднае праграмнае забеспячэнне з вашага камп'ютара...</translation>
@@ -343,6 +344,7 @@
 <translation id="1343865611738742294">Даць праграмам Linux доступ да прылад USB. Linux будзе забываць выдаленыя прылады USB.</translation>
 <translation id="1343920184519992513">Працягваць з месца, на якім вы спыніліся, і адкрываць пэўны набор старонак</translation>
 <translation id="1346630054604077329">Пацвердзіць і перазапусціць</translation>
+<translation id="1346748346194534595">Справа</translation>
 <translation id="1347256498747320987">Усталёўка абнаўленняў і праграм. Працягваючы, вы дазваляеце гэтай прыладзе аўтаматычна спампоўваць і ўсталёўваць абнаўленні і праграмы ад Google, вашага аператара і вытворцы прылады, у тым ліку праз сотавую перадачу даных. Некаторыя з гэтых праграм могуць прапаноўваць платнае змесціва. <ph name="BEGIN_LINK1" />Даведацца больш<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Сховішча Linux</translation>
 <translation id="1347975661240122359">Абнаўленне пачнецца, калі акумулятар будзе зараджаны на <ph name="BATTERY_LEVEL" />%.</translation>
@@ -464,6 +466,7 @@
 <translation id="1464781208867302907">Каб адкрыць параметры прылады, перайдзіце ў Налады.</translation>
 <translation id="1465176863081977902">К&amp;апіраваць адрас аўдыя</translation>
 <translation id="1465827627707997754">Кавалак піцы</translation>
+<translation id="1467432559032391204">Злева</translation>
 <translation id="1468571364034902819">Не ўдалося выкарыстаць гэты профіль</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Дадаць укладку ў новую групу}one{Дадаць укладкі ў новую групу}few{Дадаць укладкі ў новую групу}many{Дадаць укладкі ў новую групу}other{Дадаць укладкі ў новую групу}}</translation>
 <translation id="1470350905258700113">Выкарыстаць гэту прыладу</translation>
@@ -1324,7 +1327,6 @@
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2307630946657910723">Пошук па частцы старонкі з дапамогай <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
-<translation id="230927227160767054">Старонка спрабуе ўсталяваць апрацоўшчык сэрвісу.</translation>
 <translation id="2309620859903500144">Гэтаму сайту заблакіраваны доступ да датчыкаў руху або святла.</translation>
 <translation id="2312219318583366810">URL-адрас старонкі</translation>
 <translation id="2314165183524574721">Бягучая налада бачнасці: схавана</translation>
@@ -1375,7 +1377,6 @@
 <translation id="2349896577940037438">Калі налада "Дадатковыя дзеянні ў інтэрнэце і праграмах" уключана, адпаведныя даныя могуць захоўвацца ва Уліковым запісе Google. Вы можаце праглядаць і выдаляць свае даныя, а таксама змяняць налады ўліковага запісу на сайце account.google.com.</translation>
 <translation id="2350133097354918058">Перазагружана</translation>
 <translation id="2350182423316644347">Ідзе ініцыялізацыя праграмы...</translation>
-<translation id="2350796302381711542">Дазволіць хосту <ph name="HANDLER_HOSTNAME" /> адкрываць усе спасылкі тыпу "<ph name="PROTOCOL" />" (замест <ph name="REPLACED_HANDLER_TITLE" />)?</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{1 элемент}one{{NUM_ITEMS} элемент}few{{NUM_ITEMS} элементы}many{{NUM_ITEMS} элементаў}other{{NUM_ITEMS} элемента}}</translation>
 <translation id="2352662711729498748">&lt; 1 МБ</translation>
 <translation id="2352810082280059586">Нататкі на заблакіраваным экране аўтаматычна захоўваюцца ў праграме <ph name="LOCK_SCREEN_APP_NAME" />. Апошняя нататка будзе заставацца на экране блакіроўкі.</translation>
@@ -1448,7 +1449,6 @@
 <translation id="2434758125294431199">Выберыце, хто можа ажыццяўляць абагульванне з вамі</translation>
 <translation id="2435248616906486374">Сетка адключана</translation>
 <translation id="2435457462613246316">Паказаць пароль</translation>
-<translation id="2436186046335138073">Дазволіць <ph name="HANDLER_HOSTNAME" /> адкрываць усе спасылкі тыпу "<ph name="PROTOCOL" />"?</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" />: ідзе загрузка</translation>
 <translation id="2440604414813129000">Паказаць зы&amp;ходны тэкст</translation>
 <translation id="244231003699905658">Несапраўдны адрас. Праверце адрас і паўтарыце спробу.</translation>
@@ -1965,7 +1965,6 @@
 <translation id="2935225303485967257">Кіраваць профілямі</translation>
 <translation id="2935654492420446828">Дадаць навучальны ўліковы запіс пазней</translation>
 <translation id="2936851848721175671">Рэзервовае капіраванне i аднаўленне</translation>
-<translation id="2938225289965773019">Адкрыць спасылкі <ph name="PROTOCOL" /></translation>
 <translation id="2939908794993783865">Дадатковыя неактыўныя сайты</translation>
 <translation id="2939938020978911855">Паказаць даступныя прылады Bluetooth</translation>
 <translation id="2941112035454246133">Нізкі</translation>
@@ -2286,7 +2285,6 @@
 <translation id="33022249435934718">Маркеры GDI</translation>
 <translation id="3302388252085547855">Увядзіце абгрунтаванне...</translation>
 <translation id="3303260552072730022">Пашырэнне ўключыла поўнаэкранны рэжым.</translation>
-<translation id="3303795387212510132">Дазволіць праграме адкрываць спасылкі <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303818374450886607">Копіі</translation>
 <translation id="3303855915957856445">Няма вынікаў пошуку</translation>
 <translation id="3304212451103136496">Скідка <ph name="DISCOUNT_AMOUNT" /></translation>
@@ -2698,7 +2696,6 @@
 <translation id="371300529209814631">Назад/Наперад</translation>
 <translation id="3713047097299026954">На гэтым ключы бяспекі няма даных для ўваходу</translation>
 <translation id="3714195043138862580">Ініцыялізацыя гэтай дэманстрацыйнай прылады была скасавана.</translation>
-<translation id="3714633008798122362">вэб-каляндар</translation>
 <translation id="3719826155360621982">Галоўная старонка</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Вы і Google</translation>
@@ -7502,7 +7499,6 @@
 <translation id="8734674662128056360">Блакіроўка старонніх файлаў cookie</translation>
 <translation id="873545264931343897">Калі <ph name="PLUGIN_NAME" /> скончыць абнаўленне, перазагрузіце старонку, каб актываваць гэту ўбудову</translation>
 <translation id="8736288397686080465">Гэты сайт быў абноўлены ў фоне.</translation>
-<translation id="8737685506611670901">Адкрываць спасылкі <ph name="PROTOCOL" /> замест <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Фіктыўныя</translation>
 <translation id="8737914367566358838">Выберыце, на якую мову перакласці старонку</translation>
 <translation id="8740247629089392745">Вы можаце перадаць Chromebook карыстальніку <ph name="SUPERVISED_USER_NAME" />. Наладжванне амаль завершана. Пара пазнаёміцца са змесцівам.</translation>
@@ -7769,7 +7765,6 @@
 <translation id="9003647077635673607">Дазволіць на ўсіх вэб-сайтах</translation>
 <translation id="9003677638446136377">Паўтарыць праверку</translation>
 <translation id="9004754973617721124">Выдаліць дазволы і даныя сайта <ph name="SITE_NAME" /> і ўсіх сайтаў ніжэйшых узроўняў, а таксама ўсталяваныя праграмы?</translation>
-<translation id="9008201768610948239">Ігнараваць</translation>
 <translation id="9008201858626224558">Кнопка "Назад" на старонцы падрабязных звестак "<ph name="SUBPAGE_TITLE" />"</translation>
 <translation id="9009369504041480176">Ідзе запампоўванне (<ph name="PROGRESS_PERCENT" /> %)...</translation>
 <translation id="9009708085379296446">Магчыма, вы хацелі змяніць старонку?</translation>
@@ -7779,7 +7774,6 @@
 <translation id="9013037634206938463">Для ўсталявання Linux неабходна мець як мінімум <ph name="INSTALL_SIZE" />. Каб вызваліць месца, выдаліце файлы з прылады.</translation>
 <translation id="901668144954885282">Рэзервовае капіраванне на Google Дыск</translation>
 <translation id="9018218886431812662">Усталяванне завершана</translation>
-<translation id="901834265349196618">электронная пошта</translation>
 <translation id="9019062154811256702">Прагляд і змяненне налад аўтазапаўнення</translation>
 <translation id="9019894137004772119">Выкарыстанне геаданых. Дайце праграмам і сэрвісам з дазволам на вызначэнне месцазнаходжання доступ да геаданых. Google можа перыядычна збіраць такія даныя і ананімна выкарыстоўваць іх, каб павысіць дакладнасць вызначэння месцазнаходжання і палепшыць службы геалакацыі.</translation>
 <translation id="9019956081903586892">Не ўдалося спампаваць слоўнік для праверкі правапісу</translation>

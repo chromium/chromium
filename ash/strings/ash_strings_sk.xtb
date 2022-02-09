@@ -87,6 +87,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1383876407941801731">Vyhľadávanie</translation>
 <translation id="1391102559483454063">Zapnuté</translation>
 <translation id="1407069428457324124">Tmavý motív</translation>
+<translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Klávesmi so šípkami prechádzajte medzi dátumami.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, nainštalovaná aplikácia</translation>
 <translation id="1419738280318246476">Ak chcete vykonať akciu s upozornením, odomknite zariadenie</translation>
 <translation id="1420408895951708260">Prepnúť nočný režim. <ph name="STATE_TEXT" /></translation>
@@ -98,6 +99,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1467432559032391204">Doľava</translation>
 <translation id="147310119694673958">Batéria telefónu <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1479909375538722835">Plávajúca ponuka dostupnosti</translation>
+<translation id="1480845547124508962"><ph name="CURRENT_TIME" />, stlačením klávesa Enter otvorte zobrazenie kalendára</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540">Položka <ph name="FIRST_ITEM_TITLE" /> bola vymenená za <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1503394326855300303">Tento účet vlastníka musí byť prvým prihláseným účtom v relácii viacerých prihlásení.</translation>
@@ -683,6 +685,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (pravé)</translation>
 <translation id="5352250171825660495">Tmavý motív je zapnutý</translation>
 <translation id="5379115545237091094">Príliš veľa pokusov</translation>
+<translation id="5393156353051693207">Pridržte ľubovoľné miesto a zmeňte poradie aplikácií</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> na aplikáciu <ph name="IN_PLACE_APP" />, uvoľnením vytvoríte priečinok.</translation>
 <translation id="5397578532367286026">Aktivitu a históriu tohto používateľa môže skontrolovať správca (<ph name="MANAGER_EMAIL" />) na adrese chrome.com.</translation>
 <translation id="5400461572260843123">Rýchle nastavenia, do centra upozornení prejdete stlačením klávesa vyhľadávania + šípky doľava</translation>
@@ -851,6 +854,7 @@ Nová inštalácia</translation>
 <translation id="6565007273808762236">Pripojenie eSIM nie je k dispozícii</translation>
 <translation id="6570831796530454248">{0,plural, =1{Aktualizujte zariadenie do hodiny}few{Aktualizujte zariadenie do # hodín}many{Aktualizujte zariadenie do # hodiny}other{Aktualizujte zariadenie do # hodín}}</translation>
 <translation id="6570902864550063460">Nabíja sa cez USB</translation>
+<translation id="6574587113394758819">Upozornenie z aplikácie <ph name="APP_TITLE" /> je skryté, pretože je zapnutá ochrana pred zobrazením</translation>
 <translation id="6578407462441924264">Bez názvu</translation>
 <translation id="6585808820553845416">Relácia sa skončí o <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -858,6 +862,7 @@ Nová inštalácia</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" />, ovládané správcom</translation>
 <translation id="6612802754306526077">Bol vybraný režim nahrávania obrazovky</translation>
 <translation id="6614169507485700968">Obrazovka ochrany súkromia je zapnutá</translation>
+<translation id="6625718907317144388">Upozornenia z aplikácií <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> a ďalších sú skryté, pretože je zapnutá ochrana pred zobrazením</translation>
 <translation id="6627638273713273709">Hľadať+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> chce používať mikrofón</translation>
 <translation id="6630773993843701741">Otvorte nastavenia Bluetooth a spárujte zariadenie ručne</translation>
@@ -973,6 +978,7 @@ Nová inštalácia</translation>
 <translation id="7378203170292176219">Presunutím vyberte oblasť, ktorú chcete nahrať</translation>
 <translation id="7378594059915113390">Ovládacie prvky médií</translation>
 <translation id="7378889811480108604">Režim šetriča batérie je vypnutý</translation>
+<translation id="7384028040782072252">Kliknite pravým tlačidlom na ľubovoľné miesto a zmeňte poradie aplikácií</translation>
 <translation id="7392563512730092880">Túto funkciu môžete kedykoľvek nastaviť neskôr v sekcii Nastavenia.</translation>
 <translation id="7405710164030118432">Ak chcete toto zariadenie odomknúť, zadajte prístupový kód rodiča Family Link</translation>
 <translation id="7406608787870898861">Dokončite nastavovanie mobilnej siete</translation>
@@ -1039,6 +1045,7 @@ Nová inštalácia</translation>
 <translation id="776344839111254542">Kliknutím zobrazíte podrobnosti o aktualizácii</translation>
 <translation id="7780159184141939021">Otáčanie obrazovky</translation>
 <translation id="7796353162336583443">Klepnite na tlačidlo dotykového pera na poličke a vytvorte poznámku, snímku obrazovky, použite Asistenta Google, laserové ukazovadlo alebo lupu.</translation>
+<translation id="7796735576426975947">Nové upozornenie bolo skryté</translation>
 <translation id="7798302898096527229">Ak to chcete zrušiť, stlačte kláves Hľadať alebo Shift.</translation>
 <translation id="7807067443225230855">Vyhľadávanie a Asistent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> a <ph name="MINUTE" /></translation>
@@ -1132,6 +1139,7 @@ Nová inštalácia</translation>
 <translation id="8371991222807690464">V režime pre hostí môže byť výkonnosť periférie obmedzená</translation>
 <translation id="8375916635258623388">Toto zariadenie <ph name="DEVICE_NAME" /> a váš telefón sa automaticky pripoja</translation>
 <translation id="8380784334203145311">Dobrú noc,</translation>
+<translation id="8382715499079447151">Ochrana pred zobrazením</translation>
 <translation id="8388750414311082622">Posledná plocha sa nedá odstrániť.</translation>
 <translation id="8394567579869570560">Tvoj rodič uzamkol toto zariadenie</translation>
 <translation id="8401850874595457088">Otvoriť ponuku jazyka</translation>
@@ -1162,6 +1170,8 @@ Nová inštalácia</translation>
 <translation id="8563862697512465947">Nastavenia upozornení</translation>
 <translation id="857201607579416096">Ponuka bola presunutá do pravého dolného rohu obrazovky.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
+<translation id="8598235756057743477">Zoraďte aplikácie podľa názvu alebo farby</translation>
+<translation id="8614517853887502247">Upozornenia z aplikácií <ph name="APP_1_TITLE" /> a <ph name="APP_2_TITLE" /> sú skryté, pretože je zapnutá ochrana pred zobrazením</translation>
 <translation id="8627191004499078455">Pripojené k zariadeniu <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Nastavenia dostupnosti</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" />, ovládané správcom</translation>

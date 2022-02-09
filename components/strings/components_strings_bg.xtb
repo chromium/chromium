@@ -458,6 +458,7 @@
 <translation id="2337852623177822836">Настройката се контролира от администратора ви</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> иска да се сдвои</translation>
 <translation id="2346319942568447007">Копирано от вас изображение</translation>
+<translation id="2350796302381711542">Да се разреши ли на <ph name="HANDLER_HOSTNAME" /> да отваря вместо <ph name="REPLACED_HANDLER_TITLE" /> всички връзки от типа „<ph name="PROTOCOL" />“?</translation>
 <translation id="2354001756790975382">Други отметки</translation>
 <translation id="2354430244986887761">Google Безопасно сърфиране наскоро <ph name="BEGIN_LINK" />откри опасни приложения<ph name="END_LINK" /> на <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Извършители на атаки може да са в състояние да видят изображенията, които преглеждате на този сайт, и да ви подведат, като ги променят.</translation>
@@ -483,6 +484,7 @@
 <translation id="2413528052993050574">Сървърът не можа да докаже, че е <ph name="DOMAIN" />; възможно е сертификатът му за сигурност да е оттеглен. Това може да се дължи на неправилно конфигуриране или на прихващане на връзката ви от атакуващ.</translation>
 <translation id="2414886740292270097">Тъмно</translation>
 <translation id="2430968933669123598">Управление на профила в Google. Натиснете Enter, за да управлявате информацията си и настройките за поверителност и сигурност в профила си в Google</translation>
+<translation id="2436186046335138073">Да се разреши ли на <ph name="HANDLER_HOSTNAME" /> да отваря всички връзки от типа „<ph name="PROTOCOL" />“?</translation>
 <translation id="2438874542388153331">Четворно перфориране отдясно</translation>
 <translation id="2450021089947420533">Пътешествия</translation>
 <translation id="2463739503403862330">Попълване</translation>
@@ -632,6 +634,7 @@
 <translation id="2930577230479659665">Отрязване след всяко копие</translation>
 <translation id="2932085390869194046">Предложение за парола...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">Да отваря връзки от типа „<ph name="PROTOCOL" />“.</translation>
 <translation id="2941952326391522266">Сървърът не можа да докаже, че е <ph name="DOMAIN" />; сертификатът му за сигурност е от <ph name="DOMAIN2" />. Това може да се дължи на неправилно конфигуриране или на прихващане на връзката ви от атакуващ.</translation>
 <translation id="2943895734390379394">Време на качване:</translation>
 <translation id="2948083400971632585">Можете да деактивирате всички конфигурирани за дадена връзка прокси сървъри от страницата „Настройки“.</translation>
@@ -741,6 +744,7 @@
 <translation id="3288238092761586174">Може да се наложи <ph name="URL" /> да предприеме допълнителни стъпки за потвърждаване на плащането ви</translation>
 <translation id="3293642807462928945">Научете повече за правилото <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Преглеждайте и управлявайте паролите си в настройките на Chrome</translation>
+<translation id="3303795387212510132">Да се разреши ли на приложението да отваря връзки от типа <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Няма намерени резултати от търсенето</translation>
 <translation id="3304073249511302126">сканиране за устройства с Bluetooth</translation>
 <translation id="3308006649705061278">Организационна единица (OU)</translation>
@@ -878,6 +882,7 @@
 <translation id="370972442370243704">Включване на пътешествията</translation>
 <translation id="3711895659073496551">Спиране</translation>
 <translation id="3712624925041724820">Лицензите са изчерпани</translation>
+<translation id="3714633008798122362">уеб календар</translation>
 <translation id="3714780639079136834">Включете мобилните данни или Wi-Fi.</translation>
 <translation id="3715597595485130451">Свързване с Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Проверете конфигурацията на прокси сървъра, защитната стена и DNS<ph name="END_LINK" />.</translation>
@@ -939,6 +944,7 @@
 <translation id="3906954721959377182">Таблет</translation>
 <translation id="3909477809443608991"><ph name="URL" /> иска разрешение за възпроизвеждане на защитено съдържание. Идентичността на устройството ви ще бъде потвърдена от Google и този сайт може да осъществи достъп до нея.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> – <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Отказ</translation>
 <translation id="3939773374150895049">Искате ли да използвате WebAuthn вместо код за проверка?</translation>
 <translation id="3946209740501886391">Винаги да се извежда запитване за този сайт</translation>
 <translation id="3947595700203588284">Може да поиска разрешение да се свързва с MIDI устройства</translation>
@@ -2404,6 +2410,7 @@
 <translation id="8731544501227493793">Бутон „Управление на паролите“. Натиснете Enter, за да прегледате и управлявате паролите в настройките на Chrome</translation>
 <translation id="8734529307927223492">Вашият <ph name="DEVICE_TYPE" /> се управлява от <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да отворите нов прозорец в режим „инкогнито“ и да сърфирате частно</translation>
+<translation id="8737685506611670901">Да отваря връзки от типа „<ph name="PROTOCOL" />“ вместо <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">За установяване на сигурна връзка е необходимо часовникът ви да е верен. Това е така, защото сертификатите, с които уебсайтовете се идентифицират, са валидни само за конкретни периоди от време. Тъй като часовникът на устройството ви не е верен, Chromium не може да потвърди тези сертификати.</translation>
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;DNS адресът&lt;/abbr&gt; на <ph name="HOST_NAME" /> не можа да бъде намерен. Проблемът се диагностицира.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> е кодът ви за <ph name="ORIGIN" /></translation>
@@ -2481,6 +2488,7 @@
 <translation id="9004367719664099443">Сесията за VR е в ход</translation>
 <translation id="9005998258318286617">Зареждането на PDF документа не бе успешно.</translation>
 <translation id="9008201768610948239">Пренебрегване</translation>
+<translation id="901834265349196618">имейл</translation>
 <translation id="9020200922353704812">Свързаният с картата адрес за фактуриране е задължителен</translation>
 <translation id="9020542370529661692">Тази страница е преведена на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

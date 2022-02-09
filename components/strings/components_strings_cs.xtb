@@ -456,6 +456,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2337852623177822836">Nastavení je spravováno administrátorem</translation>
 <translation id="2340263603246777781">Web <ph name="ORIGIN" /> žádá o spárování</translation>
 <translation id="2346319942568447007">Obrázek, který jste zkopírovali</translation>
+<translation id="2350796302381711542">Chcete obslužnému nástroji <ph name="HANDLER_HOSTNAME" /> povolit otevírat všechny odkazy s protokolem <ph name="PROTOCOL" /> (namísto obslužného nástroje <ph name="REPLACED_HANDLER_TITLE" />)?</translation>
 <translation id="2354001756790975382">Ostatní záložky</translation>
 <translation id="2354430244986887761">Bezpečné prohlížení Google na webu <ph name="SITE" /> nedávno <ph name="BEGIN_LINK" />nalezlo škodlivé aplikace<ph name="END_LINK" />.</translation>
 <translation id="2355395290879513365">Útočníci mohou vidět obrázky, které si na tomto webu prohlížíte, a oklamat vás tím, že tyto obrázky upraví.</translation>
@@ -481,6 +482,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2413528052993050574">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Jeho bezpečnostní certifikát byl zřejmě zrušen. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
 <translation id="2414886740292270097">Tmavé</translation>
 <translation id="2430968933669123598">Spravovat účet Google, stisknutím klávesy Enter můžete spravovat své údaje, ochranu soukromí a zabezpečení v účtu Google</translation>
+<translation id="2436186046335138073">Chcete obslužnému nástroji <ph name="HANDLER_HOSTNAME" /> povolit otevírat všechny odkazy s protokolem <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Čtyři otvory vpravo</translation>
 <translation id="2450021089947420533">Cesty</translation>
 <translation id="2463739503403862330">Vyplnit</translation>
@@ -630,6 +632,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2930577230479659665">Oříznout za každou kopií</translation>
 <translation id="2932085390869194046">Navrhnout heslo...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">Otevírat odkazy <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Jeho bezpečnostní certifikát pochází z domény <ph name="DOMAIN2" />. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
 <translation id="2943895734390379394">Čas nahrání:</translation>
 <translation id="2948083400971632585">Libovolné servery proxy nakonfigurované pro připojení můžete zakázat na stránce Nastavení.</translation>
@@ -736,6 +739,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3288238092761586174"><ph name="URL" /> zřejmě bude muset vaši platbu ověřit pomocí dodatečných kroků</translation>
 <translation id="3293642807462928945">Další informace o zásadě <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Zobrazte a spravujte svá hesla v nastavení Chromu</translation>
+<translation id="3303795387212510132">Povolit aplikaci otevírat odkazy <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Nebyly nalezeny žádné výsledky</translation>
 <translation id="3304073249511302126">vyhledávání bluetooth</translation>
 <translation id="3308006649705061278">Organizační jednotka (OU)</translation>
@@ -872,6 +876,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="370972442370243704">Zapnout cesty</translation>
 <translation id="3711895659073496551">Pozastavit</translation>
 <translation id="3712624925041724820">Byly vyčerpány licence</translation>
+<translation id="3714633008798122362">webový kalendář</translation>
 <translation id="3714780639079136834">Zapnout mobilní datové připojení nebo Wi-Fi</translation>
 <translation id="3715597595485130451">Připojení k síti Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Zkontrolovat proxy server, firewall a konfiguraci DNS<ph name="END_LINK" /></translation>
@@ -933,6 +938,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> chce přehrávat chráněný obsah. Google ověří identitu vašeho zařízení a tento web k ní může získat přístup.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Odmítnout</translation>
 <translation id="3939773374150895049">Použít WebAuthn namísto CVC?</translation>
 <translation id="3946209740501886391">Na tomto webu se vždy zeptat</translation>
 <translation id="3947595700203588284">Může žádat o připojení k zařízením MIDI</translation>
@@ -2392,6 +2398,7 @@ Další podrobnosti:
 <translation id="8731544501227493793">Tlačítko Spravovat hesla, stisknutím klávesy Enter můžete zobrazit a spravovat hesla v nastavení Chromu</translation>
 <translation id="8734529307927223492">Váš <ph name="DEVICE_TYPE" /> spravuje doména <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Tab a poté Enter otevřete nové anonymní okno, abyste mohli prohlížet v soukromí</translation>
+<translation id="8737685506611670901">Otevírat odkazy <ph name="PROTOCOL" /> namísto aplikace <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Aby bylo možné navázat zabezpečené spojení, hodiny musejí být nastaveny správně. Důvodem je, že certifikáty, pomocí kterých se weby identifikují, platí pouze pro pevně daná období. Jelikož hodiny v zařízení nejsou nastaveny správně, prohlížeč Chromium tyto certifikáty nemůže ověřit.</translation>
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;Adresu DNS&lt;/abbr&gt; webu <ph name="HOST_NAME" /> nelze najít. Diagnostikování problému…</translation>
 <translation id="8742371904523228557">Váš kód pro <ph name="ORIGIN" /> je <ph name="ONE_TIME_CODE" /></translation>
@@ -2469,6 +2476,7 @@ Další podrobnosti:
 <translation id="9004367719664099443">Probíhá relace VR</translation>
 <translation id="9005998258318286617">Načtení dokumentu PDF se nezdařilo.</translation>
 <translation id="9008201768610948239">Ignorovat</translation>
+<translation id="901834265349196618">e-mail</translation>
 <translation id="9020200922353704812">Fakturační adresa karty je povinná</translation>
 <translation id="9020542370529661692">Stránka byla přeložena do jazyka <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

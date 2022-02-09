@@ -116,6 +116,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="196896377990863006">Pokaż podgląd linku</translation>
 <translation id="1973912524893600642">Zachowaj dane</translation>
 <translation id="1974060860693918893">Zaawansowane</translation>
+<translation id="1981118202195772574">Mobilny</translation>
 <translation id="1989112275319619282">Przeglądaj</translation>
 <translation id="199425419756152024">Wyświetl hasło</translation>
 <translation id="2015722694326466240">Aby wyświetlić hasła, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
@@ -236,6 +237,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Zobacz, co możesz synchronizować<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Blokuj wszystkie</translation>
 <translation id="313283613037595347">Utwórz nową kartę incognito.</translation>
+<translation id="3150887674190166798">Wybierz, w jaki sposób Chrome ma za każdym razem wyświetlać witrynę</translation>
 <translation id="3153862085237805241">Zapisz kartę</translation>
 <translation id="3157387275655328056">Dodaj do listy Do przeczytania</translation>
 <translation id="3157684681743766797">Oznacz wszystko…</translation>
@@ -347,6 +349,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4181841719683918333">Języki</translation>
 <translation id="4237377247299956313">Kliknij <ph name="BEGIN_BOLD" />Domyślna przeglądarka<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Wpisz hasło</translation>
+<translation id="4249955472157341256">Sortuj od najnowszego</translation>
 <translation id="4263576668337963058">Pokaż dostępne działania dotyczące strony</translation>
 <translation id="4267380167363222949">Następna karta</translation>
 <translation id="4272631900155121838">Aby zeskanować kod QR, włącz aparat w ustawieniach</translation>
@@ -504,6 +507,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="575902488528307720">Wyszukaj grafikę</translation>
 <translation id="5781453543752460388">Dodaj do zdjęć</translation>
 <translation id="5782227691023083829">Trwa tłumaczenie...</translation>
+<translation id="5791632441210678828">Przycisk sortowania obserwowanych kanałów.</translation>
 <translation id="5802829331520313983">Skonfiguruj…</translation>
 <translation id="5803566855766646066">Czy na pewno chcesz zamknąć tę nową kartę?</translation>
 <translation id="5804241973901381774">Uprawnienia</translation>
@@ -619,6 +623,7 @@ Postaraj się używać innego hasła w każdej witrynie.</translation>
 <translation id="6561262006871132942">Powiększ</translation>
 <translation id="6583087784430677195">Aby wyłączyć funkcję, otwórz <ph name="BEGIN_LINK" />Ustawienia<ph name="END_LINK" /> i przejdź do sekcji Automatyczne wypełnianie haseł.</translation>
 <translation id="6585618849026997638">Utwórz zakładkę, jeśli chcesz wrócić do interesującej Cię strony</translation>
+<translation id="6598875554591387303">Sortuj według wydawcy</translation>
 <translation id="6603393121510733479">Twoja organizacja wyłączyła przeglądanie prywatne.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Opcje tłumaczenia</translation>
@@ -759,6 +764,7 @@ W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twoj
 <translation id="7911190106180361398">Twoja organizacja nie pozwala Ci synchronizować wszystkich danych.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Eksportuj hasła…</translation>
+<translation id="793971554166979165">Domyślny tryb witryny</translation>
 <translation id="794799177247607889">Zatrzymaj rejestrowanie</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Brak przejętych haseł}=1{{COUNT} przejęte hasło}few{{COUNT} przejęte hasła}many{{COUNT} przejętych haseł}other{{COUNT} przejętego hasła}}</translation>
 <translation id="7961015016161918242">Nigdy</translation>
@@ -864,6 +870,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8881801611828450202">Szukaj tego obrazu w: <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Udostępnij…</translation>
 <translation id="8917490105272468696">Tak, zgadzam się</translation>
+<translation id="8928133177108699615">Komputerowy</translation>
 <translation id="8952559610785099500">Dodaj hasło</translation>
 <translation id="895541991026785598">Zgłaszanie problemu</translation>
 <translation id="8974714402877957201">1. Otwórz Ustawienia na iPadzie.</translation>

@@ -460,6 +460,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2337852623177822836">Impostazione controllata dall'amministratore</translation>
 <translation id="2340263603246777781">Il sito <ph name="ORIGIN" /> desidera accoppiarsi</translation>
 <translation id="2346319942568447007">Immagine copiata</translation>
+<translation id="2350796302381711542">Consentire a <ph name="HANDLER_HOSTNAME" /> di aprire tutti i link <ph name="PROTOCOL" /> al posto di <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2354001756790975382">Altri Preferiti</translation>
 <translation id="2354430244986887761">La funzione Navigazione sicura di Google ha recentemente <ph name="BEGIN_LINK" />rilevato app dannose<ph name="END_LINK" /> sul sito <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Gli utenti malintenzionati potrebbero riuscire a vedere le immagini che visualizzi in questo sito e ingannarti modificandole.</translation>
@@ -485,6 +486,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2413528052993050574">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza potrebbe essere revocato. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.</translation>
 <translation id="2414886740292270097">Scuro</translation>
 <translation id="2430968933669123598">Gestisci l'Account Google, premi Invio per gestire le tue informazioni, la privacy e la sicurezza nel tuo Account Google</translation>
+<translation id="2436186046335138073">Consentire a <ph name="HANDLER_HOSTNAME" /> di aprire tutti i link <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Perforatura quadrupla a destra</translation>
 <translation id="2450021089947420533">Percorsi</translation>
 <translation id="2463739503403862330">Compila</translation>
@@ -634,6 +636,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2930577230479659665">Taglia dopo la stampa di ciascuna copia</translation>
 <translation id="2932085390869194046">Suggerisci password...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">Aprire i link <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza proviene da <ph name="DOMAIN2" />. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.</translation>
 <translation id="2943895734390379394">Ora di caricamento:</translation>
 <translation id="2948083400971632585">Puoi disattivare tutti i proxy configurati per una connessione dalla pagina delle impostazioni.</translation>
@@ -740,6 +743,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3288238092761586174"><ph name="URL" /> potrebbe dover effettuare altri passaggi per verificare il pagamento</translation>
 <translation id="3293642807462928945">Scopri di più sulla norma <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Visualizza e gestisci le tue password nelle impostazioni di Chrome</translation>
+<translation id="3303795387212510132">Consentire all'app di aprire i link <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Nessun risultato di ricerca trovato</translation>
 <translation id="3304073249511302126">scansione Bluetooth</translation>
 <translation id="3308006649705061278">Unità organizzativa (OU)</translation>
@@ -877,6 +881,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="370972442370243704">Attiva i percorsi</translation>
 <translation id="3711895659073496551">Sospensione</translation>
 <translation id="3712624925041724820">Licenze esaurite</translation>
+<translation id="3714633008798122362">Calendario web</translation>
 <translation id="3714780639079136834">Attivare la rete dati mobile o Wi-Fi</translation>
 <translation id="3715597595485130451">Collegati alla rete Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Controllare la configurazione del proxy, firewall e DNS<ph name="END_LINK" /></translation>
@@ -938,6 +943,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> chiede di riprodurre contenuti protetti. Google verificherà l'identità del tuo dispositivo e questo sito potrebbe avervi accesso.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Non consentire</translation>
 <translation id="3939773374150895049">Usare WebAuthn anziché CVC?</translation>
 <translation id="3946209740501886391">Chiedi sempre su questo sito</translation>
 <translation id="3947595700203588284">Può chiedere di connettersi ai dispositivi MIDI</translation>
@@ -2403,6 +2409,7 @@ Ulteriori dettagli:
 <translation id="8731544501227493793">Pulsante Gestisci password, premi Invio per visualizzare e gestire le tue password nelle impostazioni di Chrome</translation>
 <translation id="8734529307927223492">Il tuo dispositivo <ph name="DEVICE_TYPE" /> è gestito da <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab poi Invio per aprire una nuova finestra di navigazione in incognito per navigare in privato</translation>
+<translation id="8737685506611670901">Aprire link <ph name="PROTOCOL" /> anziché <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Per poter stabilire una connessione protetta, l'orologio deve essere impostato correttamente perché i certificati utilizzati dai siti web per identificarsi sono validi soltanto per determinati periodi di tempo. L'orologio del dispositivo è sbagliato, pertanto Chromium non può verificare i certificati.</translation>
 <translation id="8740359287975076522">Impossibile trovare l'&lt;abbr id="dnsDefinition"&gt;indirizzo DNS&lt;/abbr&gt; di <ph name="HOST_NAME" />. Stiamo analizzando il problema.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> è il tuo codice per <ph name="ORIGIN" /></translation>
@@ -2480,6 +2487,7 @@ Ulteriori dettagli:
 <translation id="9004367719664099443">Sessione VR in corso</translation>
 <translation id="9005998258318286617">Impossibile caricare il documento PDF.</translation>
 <translation id="9008201768610948239">Ignora</translation>
+<translation id="901834265349196618">email</translation>
 <translation id="9020200922353704812">Indirizzo di fatturazione della carta obbligatorio</translation>
 <translation id="9020542370529661692">Questa pagina è stata tradotta in <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

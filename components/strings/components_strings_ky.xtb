@@ -461,6 +461,7 @@
 <translation id="2337852623177822836">Жөндөөнү администраторуңуз башкарат</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> жупташканы жатат</translation>
 <translation id="2346319942568447007">Сиз көчүргөн сүрөт</translation>
+<translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> <ph name="REPLACED_HANDLER_TITLE" /> ордуна <ph name="PROTOCOL" /> бардык шилтемелерин ача берсинби?</translation>
 <translation id="2354001756790975382">Башка кыстармалар</translation>
 <translation id="2354430244986887761">Google Коопсуз серептөө тутуму жакында <ph name="SITE" /> сайтында <ph name="BEGIN_LINK" />зыянкеч колдонмолорду тапты<ph name="END_LINK" />.</translation>
 <translation id="2355395290879513365">Сиз бул сайтта көрүп жаткан сүрөттөрдү чабуулчулар да көрүп алып, сүрөттөрдү өзгөртүп, сизди алдашы да мүмкүн.</translation>
@@ -486,6 +487,7 @@
 <translation id="2413528052993050574">Бул сервер <ph name="DOMAIN" /> экендигин далилдей алган жок; себеби анын коопсуздук тастыктамасы жокко чыгарылган окшойт. Мындай көйгөй туура эмес конфигурация менен шартталышы мүмкүн же туташууңузга чабуулчу кийлигишип жатат.</translation>
 <translation id="2414886740292270097">Кочкул</translation>
 <translation id="2430968933669123598">Google аккаунтун башкаруу. Маалыматты, купуялыкты жана коопсуздукту Google аккаунтуңузда башкаруу үчүн Enter баскычын басыңыз</translation>
+<translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> бардык <ph name="PROTOCOL" /> шилтемелерин ача берсинби?</translation>
 <translation id="2438874542388153331">Оң жагын төрт жолу тешүү</translation>
 <translation id="2450021089947420533">Саякаттар</translation>
 <translation id="2463739503403862330">Толтуруу</translation>
@@ -635,6 +637,7 @@
 <translation id="2930577230479659665">Ар бир көчүрүүдөн кийин кыркуу</translation>
 <translation id="2932085390869194046">Сырсөз сунушталсын…</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019"><ph name="PROTOCOL" /> шилтемелерин ачуу</translation>
 <translation id="2941952326391522266">Бул сервер <ph name="DOMAIN" /> экендигин далилдей алган жок; себеби анын коопсуздук тастыктамасы бул жерден <ph name="DOMAIN2" /> алынган. Мындай көйгөй туура эмес конфигурация менен шартталышы мүмкүн же туташууңузга чабуулчу кийлигишип жатат.</translation>
 <translation id="2943895734390379394">Жүктөп берүү убакыты:</translation>
 <translation id="2948083400971632585">Жөндөөлөр бетинен туташат деп конфигурацияланган бардык проксилерди өчүрүп койсоңуз болот.</translation>
@@ -744,6 +747,7 @@
 <translation id="3288238092761586174">Төлөмүңүздү ырастоо үчүн <ph name="URL" /> кошумча кадамдарды аткарышы керек</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> саясаты жөнүндө кеңири маалымат</translation>
 <translation id="3295444047715739395">Сырсөздөрүңүздү Chrome'дун жөндөөлөрүндө көрүп, башкарыңыз</translation>
+<translation id="3303795387212510132">Колдонмого <ph name="PROTOCOL_SCHEME" /> шилтемелерин ачууга уруксат берилсинби?</translation>
 <translation id="3303855915957856445">Эч нерсе табылган жок</translation>
 <translation id="3304073249511302126">bluetooth түзмөктөрүн издөө</translation>
 <translation id="3308006649705061278">Уюмдук бирдик (OU)</translation>
@@ -880,6 +884,7 @@
 <translation id="370972442370243704">Саякаттарды күйгүзүү</translation>
 <translation id="3711895659073496551">Токтото туруу</translation>
 <translation id="3712624925041724820">Уруксаттамалар эскирди</translation>
+<translation id="3714633008798122362">желе жылнаамасы</translation>
 <translation id="3714780639079136834">Мобилдик Интернетти же Wi-Fi'ды күйгүзүп көрүңүз</translation>
 <translation id="3715597595485130451">Wi-Fi'га туташуу</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Прокси, брандауэр жана DNS конфигурациясын текшерип көрүңүз<ph name="END_LINK" /></translation>
@@ -941,6 +946,7 @@
 <translation id="3906954721959377182">Планшет</translation>
 <translation id="3909477809443608991"><ph name="URL" /> сайтында корголгон мазмун ойнотулганы жатат. Түзмөгүңүздүн аныктыгы Google аркылуу текшерилет жана ага ушул сайт кире алат.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Четке кагуу</translation>
 <translation id="3939773374150895049">CVC'нин ордуна WebAuthn колдонулсунбу?</translation>
 <translation id="3946209740501886391">Бул сайтта ар дайым суралсын</translation>
 <translation id="3947595700203588284">MIDI түзмөктөрүнө туташууга уруксат сурай алат</translation>
@@ -1057,6 +1063,7 @@
 <translation id="4250680216510889253">Жок</translation>
 <translation id="4253168017788158739">Эскертме</translation>
 <translation id="425582637250725228">Киргизген өзгөртүүлөрүңүз сакталбай калышы мүмкүн.</translation>
+<translation id="425869179292622354">Анын коопсуздугун виртуалдык картанын жардамы менен бекемдейсизби?</translation>
 <translation id="4258748452823770588">Начар колтамга</translation>
 <translation id="4261046003697461417">Корголгон документтерде Аннотация режими иштебейт</translation>
 <translation id="4265872034478892965">Администраторуңуз уруксат берген</translation>
@@ -1567,6 +1574,7 @@
 <translation id="5921639886840618607">Карта Google аккаунтуңузда сакталсынбы?</translation>
 <translation id="5922853866070715753">Бүткөнү калды</translation>
 <translation id="5932224571077948991">Сайт тажатма же адаштыруучу жарнамаларды көрсөтүп жатат</translation>
+<translation id="5938153366081463283">Виртуалдык картаны кошуу</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> ачылууда…</translation>
 <translation id="5951495562196540101">Аккаунт түзмөктүн уруксаттамасына дал келбегендиктен аны менен катталууга болбойт.</translation>
@@ -2191,6 +2199,7 @@
 <translation id="7976214039405368314">Өтүнүчтөр өтө көп жөнөтүлдү</translation>
 <translation id="7977538094055660992">Чыгаруу түзмөгү</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="7981260203882740562">Төмөнкү менен байланышкан</translation>
 <translation id="798134797138789862">Виртуалдык чындык түзмөктөрүн жана маалыматтарды колдонууга уруксат сурай алат</translation>
 <translation id="7984945080620862648"><ph name="SITE" /> сайтына кире албайсыз, анткени вебсайт Chrome иштете албаган шифрленген далдаштырма дайындарын жөнөттү. Тармак каталары жана бузукулар адатта убактылуу көйгөй болгондуктан, бул бет кийинчерээк иштеп калышы мүмкүн.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2407,6 +2416,7 @@
 <translation id="8731544501227493793">Сырсөздөрдү башкаруу баскычы. Chrome'дун жөндөөлөрүнө өтүп, сырсөздөрдү көрүү жана башкаруу үчүн, Enter баскычын басыңыз</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> түзмөгүңүз <ph name="MANAGER" /> тарабынан башкарылууда</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Купуя карап чыкканга жашыруун терезе ачуу үчүн, Tab, андан соң Enter баскычын басыңыз</translation>
+<translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> ордуна <ph name="PROTOCOL" /> шилтемелерин ачуу</translation>
 <translation id="8738058698779197622">Коопсуз туташууну орнотуу үчүн, саатыңыз туура коюлушу керек. Себеби вебсайттардын аныктыгын текшере турган тастыктамалар белгилүү бир убакыт аралыгында гана жарактуу болот. Түзмөгүңүздүн сааты туура эмес болгондуктан, Chromium бул тастыктамаларды текшере албайт.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> сайтынын &lt;abbr id="dnsDefinition"&gt;DNS дареги&lt;/abbr&gt; табылбай койду. Көйгөйдүн себеби аныкталууда.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> - бул <ph name="ORIGIN" /> үчүн кодуңуз</translation>
@@ -2484,6 +2494,7 @@
 <translation id="9004367719664099443">VR сеансы жүрүүдө</translation>
 <translation id="9005998258318286617">PDF документи жүктөлбөй калды.</translation>
 <translation id="9008201768610948239">Этибарга албоо</translation>
+<translation id="901834265349196618">электрондук почта</translation>
 <translation id="9020200922353704812">Карточканын төлөм дареги талап кылынат</translation>
 <translation id="9020542370529661692">Бул бет <ph name="TARGET_LANGUAGE" /> тилине которулду</translation>
 <translation id="9020742383383852663">A8</translation>

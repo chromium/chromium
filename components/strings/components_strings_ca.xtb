@@ -456,6 +456,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2337852623177822836">L'administrador controla l'opció de configuració</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> es vol vincular</translation>
 <translation id="2346319942568447007">Imatge que has copiat</translation>
+<translation id="2350796302381711542">Voleu permetre que <ph name="HANDLER_HOSTNAME" /> obri tots els enllaços de <ph name="PROTOCOL" /> en comptes de <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2354001756790975382">Altres adreces d'interès</translation>
 <translation id="2354430244986887761">Recentment, Navegació segura de Google <ph name="BEGIN_LINK" />ha trobat aplicacions perjudicials<ph name="END_LINK" /> a <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">És possible que els atacants puguin veure les imatges que miris en aquest lloc i que les modifiquin per enganyar-te.</translation>
@@ -481,6 +482,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2413528052993050574">El servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè és possible que el seu certificat de seguretat s'hagi revocat. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.</translation>
 <translation id="2414886740292270097">Fosc</translation>
 <translation id="2430968933669123598">Gestiona el Compte de Google: prem Retorn per gestionar la teva informació, privadesa i seguretat al Compte de Google</translation>
+<translation id="2436186046335138073">Voleu permetre que <ph name="HANDLER_HOSTNAME" /> obri tots els enllaços de <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Encunyació quàdruple a la dreta</translation>
 <translation id="2450021089947420533">Recorreguts</translation>
 <translation id="2463739503403862330">Emplena</translation>
@@ -630,6 +632,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2930577230479659665">Retalla després de cada còpia</translation>
 <translation id="2932085390869194046">Suggereix una contrasenya...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">Obrir els enllaços del protocol <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">Aquest servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè el seu certificat de seguretat prové del domini <ph name="DOMAIN2" />. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.</translation>
 <translation id="2943895734390379394">Hora de la pujada:</translation>
 <translation id="2948083400971632585">Podeu desactivar qualsevol servidor intermediari configurat per a una connexió des de la pàgina de configuració.</translation>
@@ -739,6 +742,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3288238092761586174">És possible que <ph name="URL" /> hagi de fer més passos per verificar el teu pagament</translation>
 <translation id="3293642807462928945">Més informació sobre la política <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Consulta i gestiona les teves contrasenyes a la configuració de Chrome</translation>
+<translation id="3303795387212510132">Vols permetre que l'aplicació obri els enllaços <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">No s'ha trobat cap resultat de la cerca</translation>
 <translation id="3304073249511302126">cerca de dispositius Bluetooth</translation>
 <translation id="3308006649705061278">Unitat organitzativa (OU)</translation>
@@ -876,6 +880,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="370972442370243704">Activa Recorreguts</translation>
 <translation id="3711895659073496551">Suspèn</translation>
 <translation id="3712624925041724820">Llicències exhaurides</translation>
+<translation id="3714633008798122362">calendari web</translation>
 <translation id="3714780639079136834">Activa les dades mòbils o la Wi-Fi.</translation>
 <translation id="3715597595485130451">Connexió a xarxes Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Comproveu el servidor intermediari, el tallafoc i la configuració de DNS<ph name="END_LINK" /></translation>
@@ -937,6 +942,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3906954721959377182">Tauleta</translation>
 <translation id="3909477809443608991"><ph name="URL" /> vol reproduir contingut protegit. Google verificarà la identitat del teu dispositiu i aquest lloc web hi podrà accedir.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Denega</translation>
 <translation id="3939773374150895049">Vols utilitzar WebAuthn en lloc del CVC?</translation>
 <translation id="3946209740501886391">Pregunta sempre en aquest lloc</translation>
 <translation id="3947595700203588284">Pot demanar permís per connectar-se a dispositius MIDI</translation>
@@ -2397,6 +2403,7 @@ Detalls addicionals:
 <translation id="8731544501227493793">Botó Gestiona les contrasenyes; prem Retorn per veure i gestionar les teves contrasenyes a la configuració de Chrome</translation>
 <translation id="8734529307927223492">El teu dispositiu <ph name="DEVICE_TYPE" /> està gestionat per <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />; prem Tab i després Retorn per obrir una finestra d'incògnit nova i navegar en privat</translation>
+<translation id="8737685506611670901">Obrir els enllaços del protocol <ph name="PROTOCOL" /> en lloc del gestor <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Per establir una connexió segura, el rellotge ha d'estar ben ajustat, perquè els certificats que els llocs web fan servir per identificar-se només són vàlids per a períodes de temps concrets. Com que el rellotge del dispositiu no està ben ajustat, Chromium no pot verificar aquests certificats.</translation>
 <translation id="8740359287975076522">No s'ha trobat l'&lt;abbr id="dnsDefinition"&gt;adreça DNS&lt;/abbr&gt; de <ph name="HOST_NAME" />. S'està diagnosticant el problema.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> és el teu codi per a <ph name="ORIGIN" /></translation>
@@ -2474,6 +2481,7 @@ Detalls addicionals:
 <translation id="9004367719664099443">Sessió de realitat virtual en curs</translation>
 <translation id="9005998258318286617">No es pot carregar el document PDF.</translation>
 <translation id="9008201768610948239">Ignora</translation>
+<translation id="901834265349196618">correu electrònic</translation>
 <translation id="9020200922353704812">Es requereix l'adreça de facturació de la targeta</translation>
 <translation id="9020542370529661692">Aquesta pàgina s'ha traduït a <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

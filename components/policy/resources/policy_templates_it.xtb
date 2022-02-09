@@ -488,12 +488,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="159946228300522107">Se il criterio è impostato su True, Chrome ingrandisce la prima finestra mostrata alla prima esecuzione.
 
       Se il criterio è impostato su False o se non viene configurato, Chrome potrebbe ingrandire la prima finestra in base alle dimensioni dello schermo.</translation>
-<translation id="1600107337865729434">Questo criterio consente per impostazione predefinita il clustering di agenti in base all'origine.
-
-      L'intestazione HTTP Origin-Agent-Cluster consente di stabilire se un documento viene isolato in un cluster di agenti in base all'origine o in un cluster di agenti in base al sito. Questo comporta implicazioni relative alla sicurezza perché un cluster di agenti in base all'origine consente di isolare i documenti per origine. La conseguenza evidente di questo comportamento per gli sviluppatori è che non è più possibile impostare la funzione di accesso document.domain.
-
-      Il comportamento predefinito (se non è stata impostata alcuna intestazione Origin-Agent-Cluster) cambia in M101 da in base al sito a in base all'origine. Se questo criterio viene attivato o se non viene configurato, il browser seguirà questo nuovo comportamento predefinito a partire dalla versione indicata. Se il criterio viene disattivato, questa modifica viene annullata e i documenti senza intestazioni Origin-Agent-Cluster verranno assegnati a cluster di agenti in base al sito. Di conseguenza, la funzione di accesso document.domain rimane configurabile per impostazione predefinita (comportamento precedente).
-      </translation>
 <translation id="1600340610556453828">Se il criterio viene impostato su Disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva la rete Wi-Fi e gli utenti non possono modificarlo.
 
       Se viene impostato su Attivato o se non viene configurato, gli utenti possono attivare o disattivare la rete Wi-Fi.</translation>

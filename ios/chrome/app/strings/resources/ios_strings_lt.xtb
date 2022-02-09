@@ -116,6 +116,7 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="196896377990863006">Rodyti nuorodos peržiūrą</translation>
 <translation id="1973912524893600642">Palikti duomenis</translation>
 <translation id="1974060860693918893">Išplėstiniai</translation>
+<translation id="1981118202195772574">Mobiliojo įrenginio</translation>
 <translation id="1989112275319619282">Naršyti</translation>
 <translation id="199425419756152024">Peržiūrėti slaptažodį</translation>
 <translation id="2015722694326466240">Jei norite matyti slaptažodžius, pirmiausia turite nustatyti įrenginio slaptažodį.</translation>
@@ -236,6 +237,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Žr., ką galite sinchronizuoti<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Blokuoti viską</translation>
 <translation id="313283613037595347">Kurti naują inkognito skirtuką</translation>
+<translation id="3150887674190166798">Pasirinkite, kaip „Chrome“ turėtų kiekvieną kartą teikti svetaines</translation>
 <translation id="3153862085237805241">Kortelės išsaugojimas</translation>
 <translation id="3157387275655328056">Pridėti prie skaitomų sąrašo</translation>
 <translation id="3157684681743766797">Pažymėti visus...</translation>
@@ -761,6 +763,7 @@ Kai įjungtas inkognito režimas, svetainės negali naudoti slapukų, siekdamos 
 <translation id="7911190106180361398">Jūsų organizacija neleidžia jums visko sinchronizuoti.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Eksportuoti slaptažodžius...</translation>
+<translation id="793971554166979165">Numatytasis svetainės režimas</translation>
 <translation id="794799177247607889">Pradėti įrašyti į žurnalą</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Pažeistų slaptažodžių nėra}=1{{COUNT} pažeistas slaptažodis}one{{COUNT} pažeistas slaptažodis}few{{COUNT} pažeisti slaptažodžiai}many{{COUNT} pažeisto slaptažodžio}other{{COUNT} pažeistų slaptažodžių}}</translation>
 <translation id="7961015016161918242">Niekada</translation>
@@ -866,6 +869,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8881801611828450202">Ieškoti „<ph name="SEARCH_ENGINE" />“ šio vaizdo</translation>
 <translation id="8909135823018751308">Bendrinti…</translation>
 <translation id="8917490105272468696">Taip, sutinku</translation>
+<translation id="8928133177108699615">Stalinio kompiuterio</translation>
 <translation id="8952559610785099500">Slaptažodžio pridėjimas</translation>
 <translation id="895541991026785598">Pranešti apie problemą</translation>
 <translation id="8974714402877957201">1. Atidarykite „iPad“ nustatymus</translation>

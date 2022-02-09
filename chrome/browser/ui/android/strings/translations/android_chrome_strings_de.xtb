@@ -224,7 +224,6 @@ Tippen Sie auf ein Wort, um eine Suche damit zu starten. Sie können Ihre Suche 
 <translation id="2321958826496381788">Ziehen Sie den Schieberegler, bis Sie diesen Text problemlos lesen können. Nach dem Doppeltippen auf einen Abschnitt sollte der Text mindestens so groß sein.</translation>
 <translation id="2323763861024343754">Websitespeicher</translation>
 <translation id="2328985652426384049">Anmeldung nicht möglich</translation>
-<translation id="2342601525305963189">Chrome-Tipps:</translation>
 <translation id="234265804618409743">Die Kamera kann nicht geöffnet werden. Ein Fehler ist aufgetreten.</translation>
 <translation id="2349710944427398404">Gesamtdaten, die von Chrome verwendet werden, wie Konten, Lesezeichen und gespeicherte Einstellungen</translation>
 <translation id="2353636109065292463">Internetverbindung überprüfen</translation>
@@ -568,9 +567,11 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="4402611456429872546"><ph name="LANG" /> – wird heruntergeladen…</translation>
 <translation id="4404568932422911380">Keine Lesezeichen</translation>
 <translation id="4405224443901389797">Verschieben nach…</translation>
+<translation id="4405636711880428279">Virtuelle Karte entfernen?</translation>
 <translation id="4409271659088619928">Sie haben <ph name="DSE" /> als Suchmaschine festgelegt. Informationen zum Löschen Ihres Suchverlaufs finden Sie in der zugehörigen Anleitung.</translation>
 <translation id="4415276339145661267">Google-Konto verwalten</translation>
 <translation id="4425140285732600465">Preis wird beobachtet. Sie werden bei einem Preisnachlass benachrichtigt.</translation>
+<translation id="442518031075347249">Sie können Ihre virtuelle Karte dann nicht mehr mit Google Pay verwenden. <ph name="BEGIN_LINK1" />Weitere Informationen zu virtuellen Karten<ph name="END_LINK1" /></translation>
 <translation id="4450672886426705087">Google-Suchergebnisse.</translation>
 <translation id="4452411734226507615">Tab "<ph name="TAB_TITLE" />" schließen</translation>
 <translation id="4452548195519783679">Als Lesezeichen in "<ph name="FOLDER_NAME" />" gespeichert</translation>

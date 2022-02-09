@@ -120,6 +120,7 @@
 <translation id="1682195225331129001">Vyskúšať</translation>
 <translation id="1697284962337958118">Pridať do</translation>
 <translation id="1702543251015153180">Chcete zmeniť nastavenia tmavého motívu?</translation>
+<translation id="1702907158640575240">Spravovaný prehliadač</translation>
 <translation id="1718835860248848330">Posledná hodina</translation>
 <translation id="1724977129262658800">Ak chcete upraviť heslo, odomknite</translation>
 <translation id="1726477445370128854">Môžete prehliadať aj vyhľadávať rýchlejšie, keď Chrome prednačíta tie stránky, ktoré podľa neho možno navštívite</translation>
@@ -224,7 +225,6 @@ Vyhľadávanie spustíte klepnutím na ľubovoľné slovo. Spresníte ho pridrž
 <translation id="2321958826496381788">Presúvajte posúvač, dokým nebude čítanie tohto textu pohodlné. Po dvojitom klepnutí na odsek by mal byť text aspoň takto veľký.</translation>
 <translation id="2323763861024343754">Úložisko webu</translation>
 <translation id="2328985652426384049">Nedá sa prihlásiť</translation>
-<translation id="2342601525305963189">Tipy na používanie Chromu:</translation>
 <translation id="234265804618409743">Vaša kamera sa nedá otvoriť. Vyskytol sa problém.</translation>
 <translation id="2349710944427398404">Celkové dáta využívané Chromom vrátane účtov, záložiek a uložených nastavení</translation>
 <translation id="2353636109065292463">Kontroluje sa internetové pripojenie</translation>
@@ -568,9 +568,11 @@ Vyhľadávanie spustíte pridržaním ľubovoľného slova. Spresníte ho výber
 <translation id="4402611456429872546"><ph name="LANG" /> – sťahuje sa…</translation>
 <translation id="4404568932422911380">Žiadne záložky</translation>
 <translation id="4405224443901389797">Presunúť do…</translation>
+<translation id="4405636711880428279">Chcete virtuálnu kartu odstrániť?</translation>
 <translation id="4409271659088619928">Používate vyhľadávač <ph name="DSE" />. Prečítajte si jeho pokyny, ako odstrániť históriu vyhľadávania (ak je to možné).</translation>
 <translation id="4415276339145661267">Spravovať účet Google</translation>
 <translation id="4425140285732600465">Cenu sledujete. Dostávajte upozornenia, keď na ľubovoľnom webe poklesne.</translation>
+<translation id="442518031075347249">Virtuálnu kartu už nebudete môcť používať so službou Google Pay. <ph name="BEGIN_LINK1" />Ďalšie informácie o virtuálnych kartách<ph name="END_LINK1" /></translation>
 <translation id="4450672886426705087">Výsledky vyhľadávania od Googlu.</translation>
 <translation id="4452411734226507615">Zavrieť kartu <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Uložené ako záložka v priečinku <ph name="FOLDER_NAME" /></translation>

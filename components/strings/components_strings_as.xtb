@@ -460,6 +460,7 @@
 <translation id="2337852623177822836">ছেটিংটো আপোনাৰ প্ৰশাসকৰ দ্বাৰা নিয়ন্ত্ৰণ কৰা হয়</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" />এ যোৰা লাগিব খোজে</translation>
 <translation id="2346319942568447007">আপুনি প্ৰতিলিপি কৰা প্ৰতিচ্ছবি</translation>
+<translation id="2350796302381711542">সকলো <ph name="PROTOCOL" /> লিংক <ph name="REPLACED_HANDLER_TITLE" />ৰ সলনি <ph name="HANDLER_HOSTNAME" />ক খুলিবলৈ অনুমতি দিবনে?</translation>
 <translation id="2354001756790975382">অন্য বুকমাৰ্কসমূহ</translation>
 <translation id="2354430244986887761">Googleৰ সুৰক্ষিত ব্ৰাউজিঙে অলপতে <ph name="SITE" />ত <ph name="BEGIN_LINK" />ক্ষতিকাৰক এপ্‌ বিচাৰি পাইছিল<ph name="END_LINK" />।</translation>
 <translation id="2355395290879513365">আক্ৰমণকাৰীয়ে আপুনি এই ছাইটটোত চাই থকা প্ৰতিচ্ছবিসমূহ চাব পাৰিব পাৰে আৰু সেইসমূহ সলনি কৰি আপোনাক জালত পেলাব পাৰে।</translation>
@@ -485,6 +486,7 @@
 <translation id="2413528052993050574">এই ছার্ভাৰে নিজকে <ph name="DOMAIN" /> বুলি প্ৰমাণ কৰিব নোৱাৰিলে আৰু ইয়াৰ সুৰক্ষা প্ৰমাণপত্ৰ হয়তো প্ৰত্যাহাৰ কৰা হৈছে। এয়া কোনো ভুল কনফিগাৰেশ্বনৰ বাবে বা কোনো আক্ৰমণকাৰীয়ে আপোনাৰ সংযোগ প্ৰতিৰোধ কৰাৰ বাবে হ‘ব পাৰে।</translation>
 <translation id="2414886740292270097">গাঢ়</translation>
 <translation id="2430968933669123598">Google একাউণ্ট পৰিচালনা কৰক, আপোনাৰ Google একাউণ্টত নিজৰ তথ্য, গোপনীয়তা আৰু সুৰক্ষা পৰিচালনা কৰিবলৈ এণ্টাৰ টিপক</translation>
+<translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" />ক সকলো <ph name="PROTOCOL" />ৰ লিংক খুলিবলৈ অনুমতি দিবনে?</translation>
 <translation id="2438874542388153331">সোঁফালে চতুর্ভূজ আকাৰত পাঞ্চ কৰক</translation>
 <translation id="2450021089947420533">যাত্ৰাসমূহ</translation>
 <translation id="2463739503403862330">পুৰ কৰক</translation>
@@ -634,6 +636,7 @@
 <translation id="2930577230479659665">প্ৰতিখন প্ৰতিলিপিৰ পাছত ট্ৰিম কৰক</translation>
 <translation id="2932085390869194046">পাছৱৰ্ডৰ পৰামৰ্শ দিয়ক...</translation>
 <translation id="2934466151127459956">চৰকাৰী-পত্ৰ</translation>
+<translation id="2938225289965773019"><ph name="PROTOCOL" /> লিংকবোৰ খোলক</translation>
 <translation id="2941952326391522266">এই ছার্ভাৰটোৱে নিজকে <ph name="DOMAIN" /> বুলি প্ৰমাণ কৰিব নোৱাৰিলে; ইয়াৰ সুৰক্ষাৰ প্ৰমাণপত্ৰ <ph name="DOMAIN2" />ৰ প্ৰদান কৰা। এয়া কোনো ভুল কনফিগাৰেশ্বনৰ বাবে বা কোনো আক্ৰমণকাৰীয়ে আপোনাৰ সংযোগ অৱৰোধ কৰাৰ বাবে হ'ব পাৰে।</translation>
 <translation id="2943895734390379394">আপল'ডৰ সময়:</translation>
 <translation id="2948083400971632585">আপুনি ছেটিঙৰ পৃষ্ঠাটোৰ পৰা কোনো সংযোগৰ বাবে কনফিগাৰ কৰা যিকোনো প্ৰক্সি অক্ষম কৰিব পাৰে।</translation>
@@ -741,6 +744,7 @@
 <translation id="3288238092761586174"><ph name="URL" />এ আপোনাৰ পৰিশোধ সত্যাপন কৰিবলৈ অতিৰিক্ত পদক্ষেপ ল’বলগীয়া হ’ব পাৰে</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> নীতিৰ বিষয়ে অধিক জানক</translation>
 <translation id="3295444047715739395">Chromeৰ ছেটিংসমূহত আপোনাৰ পাছৱৰ্ডসমূহ চাওক আৰু পৰিচালনা কৰক</translation>
+<translation id="3303795387212510132"><ph name="PROTOCOL_SCHEME" /> লিংক খুলিবলৈ এপ্‌টোক অনুমতি দিবনে?</translation>
 <translation id="3303855915957856445">সন্ধানৰ কোনো ফলাফল পোৱা নগ'ল</translation>
 <translation id="3304073249511302126">ব্লুটুথ স্কেনিং</translation>
 <translation id="3308006649705061278">প্ৰতিষ্ঠানৰ ইউনিট (অ’ইউ)</translation>
@@ -877,6 +881,7 @@
 <translation id="370972442370243704">যাত্ৰাৰ সুবিধাটো অন কৰক</translation>
 <translation id="3711895659073496551">নিলম্বন কৰক</translation>
 <translation id="3712624925041724820">অনুজ্ঞাপত্ৰ নাই</translation>
+<translation id="3714633008798122362">ৱেব কেলেণ্ডাৰ</translation>
 <translation id="3714780639079136834">ম'বাইল ডেটা বা ৱাই-ফাই অন কৰক</translation>
 <translation id="3715597595485130451">ৱাই-ফাইৰ সৈতে সংযোগ কৰক</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />প্ৰক্সি, ফায়াৰৱাল আৰু DNS কনফিগাৰেশ্বন পৰীক্ষণ<ph name="END_LINK" /></translation>
@@ -938,6 +943,7 @@
 <translation id="3906954721959377182">টেবলেট</translation>
 <translation id="3909477809443608991"><ph name="URL" />এ সুৰক্ষিত সমল প্লে’ কৰিব বিচাৰে। Googleএ আপোনাৰ ডিভাইচৰ পৰিচয় সত্যাপন কৰিব আৰু এই ছাইটটোৱে এক্সেছ কৰিব পাৰে।</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">অস্বীকাৰ কৰক</translation>
 <translation id="3939773374150895049">CVCৰ পৰিৱৰ্তে WebAuthn ব্যৱহাৰ কৰিবনে?</translation>
 <translation id="3946209740501886391">এই ছাইটত সদায় সোধক</translation>
 <translation id="3947595700203588284">MIDI ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ অনুমতি বিচাৰিব পাৰে</translation>
@@ -2401,6 +2407,7 @@
 <translation id="8731544501227493793">পাছৱৰ্ডসমূহ পৰিচালনা কৰক বুটাম, Chromeৰ ছেটিংসমূহত আপোনাৰ পাছৱৰ্ডসমূহ চাবলৈ আৰু পৰিচালনা কৰিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="8734529307927223492">আপোনাৰ <ph name="DEVICE_TYPE" /> <ph name="MANAGER" />এ পৰিচালনা কৰে</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, ব্যক্তিগতভাৱে ব্ৰাউজ কৰাৰ বাবে এখন নতুন ইনক'গনিট' ৱিণ্ড' খুলিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
+<translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" />ৰ সলনি <ph name="PROTOCOL" /> লিংকসমূহ খোলক</translation>
 <translation id="8738058698779197622">কোনো সুৰক্ষিত সংযোগ স্থাপন কৰিবলৈ আপোনাৰ ঘড়ীটো সঠিককৈ ছেট কৰাৰ আৱশ্যক। ইয়াৰ কাৰণ হৈছে ৱেবছাইটসমূহে নিজৰ চিনাক্তকৰণৰ বাবে ব্যৱহাৰ কৰা প্ৰমাণপত্ৰসমূহ কোনো নির্দিষ্ট সময়সীমাৰ বাবেহে মান্য হয়। আপোনাৰ ডিভাইচৰ ঘড়ীটো অশুদ্ধ হোৱাৰ বাবে Chromiumএ প্ৰমাণপত্ৰসমূহ সত্যাপন কৰিব নোৱাৰে।</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" />ৰ &lt;abbr id="dnsDefinition"&gt;DNS ঠিকনা&lt;/abbr&gt; বিচাৰিব পৰা নগ’ল। সমস্যাটোৰ কাৰণ জানিবলৈ চেষ্টা কৰি থকা হৈছে।</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> হৈছে <ph name="ORIGIN" />ৰ ক’ড</translation>
@@ -2478,6 +2485,7 @@
 <translation id="9004367719664099443">VR ছেশ্বন চলি আছে</translation>
 <translation id="9005998258318286617">PDF নথি ল’ড কৰিব নোৱাৰিলে।</translation>
 <translation id="9008201768610948239">উপেক্ষা কৰক</translation>
+<translation id="901834265349196618">ইমেইল</translation>
 <translation id="9020200922353704812">কার্ড বিলিংৰ ঠিকনাৰ আৱশ্যক</translation>
 <translation id="9020542370529661692">এই পৃষ্ঠাটো <ph name="TARGET_LANGUAGE" />লৈ অনুবাদ কৰা হৈছে</translation>
 <translation id="9020742383383852663">A8</translation>

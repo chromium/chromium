@@ -488,12 +488,6 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
 <translation id="159946228300522107">Nếu bạn đặt chính sách này thành True, thì Chrome sẽ phóng to cửa sổ đầu tiên trong lần chạy đầu.
 
       Nếu bạn đặt chính sách này thành False hoặc không đặt chính sách này, thì Chrome có thể phóng to cửa sổ đầu tiên, tùy thuộc vào kích thước màn hình.</translation>
-<translation id="1600107337865729434">Chính sách này cho phép phân nhóm tác nhân theo khoá nguồn gốc theo mặc định.
-
-      Origin-Agent-Cluster: Tiêu đề HTTP kiểm soát việc một tài liệu sẽ được tách riêng trong cụm tác nhân theo khoá nguồn gốc hay trong cụm tác nhân theo khoá trang web. Việc này sẽ gây ra những vấn đề phức tạp về bảo mật vì một cụm tác nhân theo khoá gốc cho phép tách riêng tài liệu theo nguồn gốc. Hệ quả mà nhà phát triển thấy được từ việc này là họ không thể thiết lập trình truy cập document.domain được nữa.
-
-      Khi không có tiêu đề Origin-Agent-Cluster: nào được thiết lập, hành vi mặc định trong M101 sẽ thay đổi từ chỗ theo khoá trang web sang theo khoá nguồn gốc. Nếu chính sách này đang bật hoặc không được thiết lập, thì trình duyệt sẽ làm theo chế độ mặc định mới này kể từ phiên bản đó trở đi. Nếu chính sách này đang tắt thì thay đổi này sẽ đảo ngược lại và những tài liệu không có tiêu đề Origin-Agent-Cluster: sẽ được gán vào các cụm tác nhân theo khoá trang web. Do đó, trình truy cập document.domain sẽ vẫn thiết lập được theo mặc định. Hành vi này giống với hành vi cũ.
-      </translation>
 <translation id="1600340610556453828">Nếu bạn đặt chính sách này thành Tắt, <ph name="PRODUCT_OS_NAME" /> sẽ tắt Wi-Fi và người dùng không thể thay đổi tùy chọn này.
 
       Nếu bạn đặt chính sách này thành Bật hoặc không đặt, thì người dùng có thể bật hoặc tắt Wi-Fi.</translation>

@@ -116,6 +116,7 @@
 <translation id="196896377990863006">Ipakita ang Preview ng Link</translation>
 <translation id="1973912524893600642">Panatilihin ang Data</translation>
 <translation id="1974060860693918893">Advanced</translation>
+<translation id="1981118202195772574">Mobile</translation>
 <translation id="1989112275319619282">Mag-browse</translation>
 <translation id="199425419756152024">Tingnan ang Password</translation>
 <translation id="2015722694326466240">Upang makita ang mga password, dapat ka munang magtakda ng passcode sa iyong device.</translation>
@@ -236,6 +237,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Tingnan Kung Ano ang Puwede Mong I-sync<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">I-block Lahat</translation>
 <translation id="313283613037595347">Gumawa ng bagong tab na Incognito.</translation>
+<translation id="3150887674190166798">Piliin kung paano mo gustong i-load ng Chrome ang site sa lahat ng pagkakataon</translation>
 <translation id="3153862085237805241">I-save ang Card</translation>
 <translation id="3157387275655328056">Idagdag sa Listahan ng Babasahin</translation>
 <translation id="3157684681743766797">Markahan Lahat...</translation>
@@ -764,6 +766,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7911190106180361398">Hindi ka pinapayagan ng iyong organisasyon na i-sync ang lahat.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">I-export Password...</translation>
+<translation id="793971554166979165">Default Site Mode</translation>
 <translation id="794799177247607889">Ihinto ang Pag-log</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Walang nakompromisong password}=1{{COUNT} Nakompromisong password}one{{COUNT} Nakompromisong password}other{{COUNT} na Nakompromisong password}}</translation>
 <translation id="7961015016161918242">Hindi Kailanman</translation>
@@ -869,6 +872,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8881801611828450202">Hanapin sa <ph name="SEARCH_ENGINE" /> ang Larawang Ito</translation>
 <translation id="8909135823018751308">Ibahagi…</translation>
 <translation id="8917490105272468696">Oo, Tinatanggap Ko</translation>
+<translation id="8928133177108699615">Desktop</translation>
 <translation id="8952559610785099500">Magdagdag ng Password</translation>
 <translation id="895541991026785598">Mag-ulat ng Isyu</translation>
 <translation id="8974714402877957201">1. Buksan ang Mga Setting ng iPad</translation>

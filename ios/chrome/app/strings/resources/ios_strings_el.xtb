@@ -116,6 +116,7 @@
 <translation id="196896377990863006">Εμφάνιση προεπισκόπησης συνδέσμου</translation>
 <translation id="1973912524893600642">Διατήρηση δεδομένων</translation>
 <translation id="1974060860693918893">Σύνθετες</translation>
+<translation id="1981118202195772574">Για κινητό</translation>
 <translation id="1989112275319619282">Περιήγηση</translation>
 <translation id="199425419756152024">Προβ. κωδ. πρόσ.</translation>
 <translation id="2015722694326466240">Για να δείτε τους κωδικούς πρόσβασης, θα πρέπει πρώτα να ορίσετε έναν κωδικό πρόσβασης για τη συσκευή σας.</translation>
@@ -236,6 +237,7 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Δείτε τι μπορείτε να συγχρονίσετε<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Αποκλεισμός όλων</translation>
 <translation id="313283613037595347">Δημιουργία νέας καρτέλας ανώνυμης περιήγησης.</translation>
+<translation id="3150887674190166798">Επιλέξτε πώς θα θέλατε το Chrome να ζητά τον ιστότοπο κάθε φορά</translation>
 <translation id="3153862085237805241">Αποθήκευση κάρτας</translation>
 <translation id="3157387275655328056">Προσθήκη στη λίστα ανάγνωσης</translation>
 <translation id="3157684681743766797">Επισήμανση όλων…</translation>
@@ -765,6 +767,7 @@
 <translation id="7911190106180361398">Ο οργανισμός σας δεν σας επιτρέπει τον συγχρονισμό όλων των δεδομένων.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Εξαγωγή κωδικών πρόσβασης…</translation>
+<translation id="793971554166979165">Προεπιλεγμένη λειτουργία ιστοτόπου</translation>
 <translation id="794799177247607889">Διακοπή καταγραφής</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Δεν υπάρχουν παραβιασμένοι κωδικοί πρόσβασης}=1{{COUNT} παραβιασμένος κωδικός πρόσβασης}other{{COUNT} παραβιασμένοι κωδικοί πρόσβασης}}</translation>
 <translation id="7961015016161918242">Ποτέ</translation>
@@ -870,6 +873,7 @@
 <translation id="8881801611828450202">Αναζήτηση εικόνας σε <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Κοινοποίηση…</translation>
 <translation id="8917490105272468696">Ναι, συμφωνώ</translation>
+<translation id="8928133177108699615">Για υπολογιστή</translation>
 <translation id="8952559610785099500">Προσθήκη κωδικού πρόσβασης</translation>
 <translation id="895541991026785598">Αναφορά προβλήματος</translation>
 <translation id="8974714402877957201">1. Ανοίξτε τις Ρυθμίσεις του iPad</translation>

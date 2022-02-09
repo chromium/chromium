@@ -683,6 +683,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (उजवे)</translation>
 <translation id="5352250171825660495">गडद थीम सुरू आहे</translation>
 <translation id="5379115545237091094">खूप जास्त प्रयत्न</translation>
+<translation id="5393156353051693207">तुमची ॲप्स पुन्हा क्रमाने लावण्यासाठी कुठेही स्पर्श करा आणि धरून ठेवा</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> च्या वर <ph name="DRAGGED_APP_NAME" />, फोल्डर तयार करण्यासाठी रिलीझ करा.</translation>
 <translation id="5397578532367286026">या वापरकर्त्याच्या वापर आणि इतिहासाचे chrome.com वरील व्यवस्थापकाद्वारे (<ph name="MANAGER_EMAIL" />) पुनरावलोकन केले जाऊ शकते.</translation>
 <translation id="5400461572260843123">क्विक सेटिंग्ज, सूचना केंद्र अ‍ॅक्सेस करण्यासाठी शोध + डावे बटण दाबा.</translation>
@@ -973,6 +974,7 @@
 <translation id="7378203170292176219">रेकॉर्ड करायचे असलेले भाग निवडण्यासाठी ड्रॅग करा</translation>
 <translation id="7378594059915113390">मीडिया नियंत्रणे</translation>
 <translation id="7378889811480108604">बॅटरी सेव्हर मोड बंद आहे</translation>
+<translation id="7384028040782072252">तुमची ॲप्स पुन्हा क्रमाने लावण्यासाठी कुठेही राइट-क्लिक करा</translation>
 <translation id="7392563512730092880">तुम्ही नंतर कधीही सेटिंग्जमधून सेट करू शकता.</translation>
 <translation id="7405710164030118432">डिव्हाइस अनलॉक करण्यासाठी, तुमचा Family Link पालक ॲक्सेस कोड एंटर करा</translation>
 <translation id="7406608787870898861">तुमचे मोबाइल नेटवर्क सेट करणे पूर्ण करा</translation>
@@ -1162,6 +1164,7 @@
 <translation id="8563862697512465947">सूचना सेटिंग्ज</translation>
 <translation id="857201607579416096">मेनू स्क्रीनच्या तळाशी उजव्या कोपर्‍यात हलवला.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
+<translation id="8598235756057743477">नाव किंवा रंगानुसार तुमची ॲप्स क्रमाने लावा</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> शी कनेक्ट केले</translation>
 <translation id="8631727435199967028">अ‍ॅक्सेसिबिलिटी सेटिंग्ज</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले</translation>

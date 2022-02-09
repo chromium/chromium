@@ -203,6 +203,7 @@ Niektoré funkcie nemusia byť k dispozícii. Zadajte iný adresár profilu aleb
 <translation id="6734291798041940871">Chromium už majú nainštalovaný všetci používatelia na vašom počítači.</translation>
 <translation id="673636774878526923">Ak chcete získať prístup k obsahu prehliadača Chromium vo všetkých svojich zariadeniach, prihláste sa a zapnite synchronizáciu.</translation>
 <translation id="6774082503108938489">Tvoj rodič vypol „Povolenia pre weby, aplikácie a rozšírenia“ v prehliadači Chromium. Povolenie tohto rozšírenia (<ph name="EXTENSION_TYPE_PARAMETER" />) je zakázané.</translation>
+<translation id="6808964260981102146">Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať na tento účet. Ak nechcete, aby mali weby či aplikácie prístup k informáciám o vašom účte, použite <ph name="LINK_BEGIN" />režim pre hostí<ph name="LINK_END" /> v prehliadači Chromium. Účty Google môžete spravovať aj v <ph name="LINK_2_BEGIN" />Nastaveniach<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Ak budú vaše heslá napadnuté, Chromium vám to oznámi</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (skopírované do prehliadača Chromium)</translation>

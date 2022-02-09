@@ -460,6 +460,7 @@
 <translation id="2337852623177822836">Налаштуванням керує ваш адміністратор</translation>
 <translation id="2340263603246777781">Сайт <ph name="ORIGIN" /> хоче підключитися до пристрою</translation>
 <translation id="2346319942568447007">Скопійоване зображення</translation>
+<translation id="2350796302381711542">Дозволити обробнику <ph name="HANDLER_HOSTNAME" /> відкривати всі посилання протоколу <ph name="PROTOCOL" /> замість обробника <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2354001756790975382">Інші закладки</translation>
 <translation id="2354430244986887761">Функція безпечного перегляду від Google нещодавно <ph name="BEGIN_LINK" />виявила шкідливі додатки<ph name="END_LINK" /> на сайті <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Зловмисники можуть бачити зображення, які ви переглядаєте на цьому сайті, і змінювати їх із метою ошукати вас.</translation>
@@ -485,6 +486,7 @@
 <translation id="2413528052993050574">Цей сервер не зміг довести, що він – домен <ph name="DOMAIN" />. Можливо, його сертифікат безпеки відкликано. Імовірні причини: неправильна конфігурація або хтось намагається перехопити ваше з’єднання.</translation>
 <translation id="2414886740292270097">Темна</translation>
 <translation id="2430968933669123598">"Керувати обліковим записом Google"; натисніть Enter, щоб керувати своєю інформацією, конфіденційністю й безпекою в обліковому записі Google</translation>
+<translation id="2436186046335138073">Дозволити обробнику <ph name="HANDLER_HOSTNAME" /> відкривати всі посилання протоколу <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Пробити чотири отвори праворуч</translation>
 <translation id="2450021089947420533">Сеанси</translation>
 <translation id="2463739503403862330">Заповнити</translation>
@@ -634,6 +636,7 @@
 <translation id="2930577230479659665">Обрізати після кожної копії</translation>
 <translation id="2932085390869194046">Запропонувати пароль…</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">Відкрити посилання протоколу <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">Цей сервер не зміг довести, що він – домен <ph name="DOMAIN" />. Його сертифікат безпеки походить із домену <ph name="DOMAIN2" />. Імовірні причини: неправильна конфігурація або хтось намагається перехопити ваше з’єднання.</translation>
 <translation id="2943895734390379394">Час завантаження:</translation>
 <translation id="2948083400971632585">Усі проксі-сервери, налаштовані для з’єднання, можна вимкнути на сторінці налаштувань.</translation>
@@ -743,6 +746,7 @@
 <translation id="3288238092761586174">Сайт <ph name="URL" /> може виконати додаткові дії, щоб підтвердити ваш платіж</translation>
 <translation id="3293642807462928945">Докладніше про правило <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Переглянути паролі й керувати ними в налаштуваннях Chrome</translation>
+<translation id="3303795387212510132">Дозволити додатку відкривати посилання <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Немає результатів</translation>
 <translation id="3304073249511302126">пошук пристроїв із Bluetooth</translation>
 <translation id="3308006649705061278">Організаційний підрозділ (OU)</translation>
@@ -880,6 +884,7 @@
 <translation id="370972442370243704">Увімкнути функцію "Сеанси"</translation>
 <translation id="3711895659073496551">Призупинити</translation>
 <translation id="3712624925041724820">Ліцензії вичерпано</translation>
+<translation id="3714633008798122362">веб-календар</translation>
 <translation id="3714780639079136834">увімкнути мобільний Інтернет або Wi-Fi</translation>
 <translation id="3715597595485130451">Під’єднання до мережі Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />перевірити конфігурацію проксі-сервера, брандмауера та DNS-сервера<ph name="END_LINK" /></translation>
@@ -941,6 +946,7 @@
 <translation id="3906954721959377182">Планшет</translation>
 <translation id="3909477809443608991"><ph name="URL" /> хоче відтворити захищений вміст. Ми перевіримо ідентифікаційні дані вашого пристрою, і сайт зможе отримати до нього доступ.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" />: <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Відмовити</translation>
 <translation id="3939773374150895049">Використовувати веб-автентифікацію замість коду CVC?</translation>
 <translation id="3946209740501886391">Завжди запитувати на цьому сайті</translation>
 <translation id="3947595700203588284">Може просити дозвіл підключатися до пристроїв MIDI</translation>
@@ -2407,6 +2413,7 @@
 <translation id="8731544501227493793">Кнопка "Керувати паролями"; натисніть Enter, щоб переглянути паролі й керувати ними в налаштуваннях Chrome</translation>
 <translation id="8734529307927223492">Вашим пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб відкрити нове вікно в режимі анонімного перегляду</translation>
+<translation id="8737685506611670901">Відкривати посилання протоколу <ph name="PROTOCOL" />, а не обробника <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Щоб установити безпечне з’єднання, потрібно правильно вказати час, оскільки сертифікати, які веб-сайти використовують для самоідентифікації дійсні лише протягом певного періоду часу. Час на вашому пристрої неправильний, тому Chromium не може перевірити сертифікати.</translation>
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;Адресу DNS&lt;/abbr&gt; хосту <ph name="HOST_NAME" /> не знайдено. Діагностика проблеми.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> – ваш код для сайту <ph name="ORIGIN" /></translation>
@@ -2484,6 +2491,7 @@
 <translation id="9004367719664099443">Триває VR-сеанс</translation>
 <translation id="9005998258318286617">Не вдалося завантажити документ PDF.</translation>
 <translation id="9008201768610948239">Ігнорувати</translation>
+<translation id="901834265349196618">електронна адреса</translation>
 <translation id="9020200922353704812">Потрібно вказати платіжну адресу картки</translation>
 <translation id="9020542370529661692">Цю сторінку перекладено такою мовою: <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

@@ -89,6 +89,7 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> vuole ripristinare le impostazioni predefinite originali di Chrome. Questa operazione comporta la reimpostazione di pagina iniziale, pagina Nuova scheda e motore di ricerca, oltre alla disattivazione delle estensioni e allo sblocco di tutte le schede. Verranno inoltre cancellati altri dati temporanei e memorizzati nella cache, come cookie e dati relativi a contenuti e siti.</translation>
 <translation id="1084096383128641877">La rimozione di questa password non comporta l'eliminazione del tuo account su <ph name="DOMAIN" />. Cambia la password o elimina il tuo account su <ph name="DOMAIN_LINK" /> per proteggerlo dagli altri.</translation>
 <translation id="1084824384139382525">Copia indi&amp;rizzo link</translation>
+<translation id="1085064499066015002">Sempre su tutti i siti</translation>
 <translation id="1085697365578766383">Errore durante l'avvio della macchina virtuale. Riprova.</translation>
 <translation id="1087965115100412394">Non consentire ai siti di connettersi ai dispositivi MIDI</translation>
 <translation id="1088654056000736875">Chrome sta rimuovendo software dannoso dal computer…</translation>
@@ -341,6 +342,7 @@
 <translation id="1343865611738742294">Concedi alle app Linux l'autorizzazione ad accedere ai dispositivi USB. Dopo la rimozione di un dispositivo USB, Linux non manterrà memorizzato il dispositivo.</translation>
 <translation id="1343920184519992513">Continua dal punto in cui avevi interrotto e apri un insieme di pagine specifiche</translation>
 <translation id="1346630054604077329">Conferma e riavvia</translation>
+<translation id="1346748346194534595">Destra</translation>
 <translation id="1347256498747320987">Installa aggiornamenti e app. Se continui, accetti che questo dispositivo possa anche scaricare e installare automaticamente aggiornamenti e app di Google, del tuo operatore e del produttore del dispositivo, utilizzando anche la rete dati. Alcune di queste app potrebbero offrire acquisti in-app. <ph name="BEGIN_LINK1" />Ulteriori informazioni<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Spazio di archiviazione Linux</translation>
 <translation id="1347975661240122359">L'aggiornamento inizierà quando la carica della batteria raggiunge il <ph name="BATTERY_LEVEL" />%.</translation>
@@ -462,6 +464,7 @@
 <translation id="1464781208867302907">Per le preferenze del dispositivo, vai alle Impostazioni.</translation>
 <translation id="1465176863081977902">C&amp;opia l'indirizzo dell'audio</translation>
 <translation id="1465827627707997754">Fetta di pizza</translation>
+<translation id="1467432559032391204">Sinistra</translation>
 <translation id="1468571364034902819">Impossibile utilizzare questo profilo</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Aggiungi scheda a nuovo gruppo}one{Aggiungi schede a nuovo gruppo}other{Aggiungi schede a nuovo gruppo}}</translation>
 <translation id="1470350905258700113">Usa questo dispositivo</translation>
@@ -1322,7 +1325,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2307630946657910723">Esegui ricerche in una parte della pagina con <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
-<translation id="230927227160767054">Questa pagina vuole installare un gestore di servizi.</translation>
 <translation id="2309620859903500144">A questo sito è stato impedito l'accesso ai sensori di movimento o della luce.</translation>
 <translation id="2312219318583366810">URL della pagina</translation>
 <translation id="2314165183524574721">L'attuale impostazione di visibilità è Nascosto</translation>
@@ -1373,7 +1375,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2349896577940037438">Se hai attivato l'impostazione Attività web e app aggiuntiva, queste informazioni potrebbero essere salvate nel tuo Account Google. Puoi vedere ed eliminare i tuoi dati, nonché modificare le impostazioni account all'indirizzo account.google.com.</translation>
 <translation id="2350133097354918058">Ricaricata</translation>
 <translation id="2350182423316644347">Inizializzazione dell'applicazione in corso...</translation>
-<translation id="2350796302381711542">Consentire a <ph name="HANDLER_HOSTNAME" /> di aprire tutti i link <ph name="PROTOCOL" /> al posto di <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{1 elemento}one{{NUM_ITEMS} elementi}other{{NUM_ITEMS} elementi}}</translation>
 <translation id="2352662711729498748">&lt; 1 MB</translation>
 <translation id="2352810082280059586">Le note sulla schermata di blocco vengono salvate automaticamente nell'app <ph name="LOCK_SCREEN_APP_NAME" />. La nota più recente rimarrà sulla schermata di blocco.</translation>
@@ -1446,7 +1447,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2434758125294431199">Seleziona chi può condividere file con te</translation>
 <translation id="2435248616906486374">Rete scollegata</translation>
 <translation id="2435457462613246316">Mostra password</translation>
-<translation id="2436186046335138073">Consentire a <ph name="HANDLER_HOSTNAME" /> di aprire tutti i link <ph name="PROTOCOL" />?</translation>
 <translation id="2439626940657133600">Caricamento di <ph name="WINDOW_TITLE" /> in corso…</translation>
 <translation id="2440604414813129000">Visualizza &amp;sorgente</translation>
 <translation id="244231003699905658">Indirizzo non valido. Verifica l'indirizzo e riprova.</translation>
@@ -1964,7 +1964,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="2935225303485967257">Gestisci profili</translation>
 <translation id="2935654492420446828">Aggiungi un account della scuola in un secondo momento</translation>
 <translation id="2936851848721175671">Backup e ripristino</translation>
-<translation id="2938225289965773019">Aprire i link <ph name="PROTOCOL" /></translation>
 <translation id="2939908794993783865">Altri siti non attivi</translation>
 <translation id="2939938020978911855">Mostra dispositivi Bluetooth disponibili</translation>
 <translation id="2941112035454246133">Bassa</translation>
@@ -2285,7 +2284,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="33022249435934718">Handle GDI</translation>
 <translation id="3302388252085547855">Inserisci una motivazione…</translation>
 <translation id="3303260552072730022">Un'estensione ha attivato lo schermo intero.</translation>
-<translation id="3303795387212510132">Consentire all'app di aprire i link <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303818374450886607">Copie</translation>
 <translation id="3303855915957856445">Nessun risultato di ricerca trovato</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> di sconto</translation>
@@ -2697,7 +2695,6 @@ e Ctrl + Alt + Riduzione luminosità per diminuire lo zoom.</translation>
 <translation id="371300529209814631">Indietro/Avanti</translation>
 <translation id="3713047097299026954">Nessun dato di accesso memorizzato sul token di sicurezza</translation>
 <translation id="3714195043138862580">Lo stato del dispositivo per le demo è stato impostato su "Deprovisioning effettuato".</translation>
-<translation id="3714633008798122362">Calendario web</translation>
 <translation id="3719826155360621982">Home page</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Tu e Google</translation>
@@ -7505,7 +7502,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8734674662128056360">Blocco dei cookie di terze parti</translation>
 <translation id="873545264931343897">Al termine dell'aggiornamento del plug-in <ph name="PLUGIN_NAME" />, ricarica la pagina per attivarlo</translation>
 <translation id="8736288397686080465">Il sito è stato aggiornato in background.</translation>
-<translation id="8737685506611670901">Aprire link <ph name="PROTOCOL" /> anziché <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Scegli la lingua in cui tradurre la pagina</translation>
 <translation id="8740247629089392745">Puoi consegnare il Chromebook a <ph name="SUPERVISED_USER_NAME" />. La configurazione è quasi completa, a breve sarà possibile utilizzare il dispositivo.</translation>
@@ -7770,7 +7766,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="9003647077635673607">Consenti su tutti i siti web</translation>
 <translation id="9003677638446136377">Controlla</translation>
 <translation id="9004754973617721124">Cancellare le autorizzazioni e i dati dei siti per <ph name="SITE_NAME" />, tutti i siti al di sotto e la relativa app installata?</translation>
-<translation id="9008201768610948239">Ignora</translation>
 <translation id="9008201858626224558">Pulsante Indietro pagina dei dettagli <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">Caricamento in corso (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">Forse intendevi modificare la pagina?</translation>
@@ -7780,7 +7775,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="9013037634206938463">Sono necessari <ph name="INSTALL_SIZE" /> di spazio libero per installare Linux. Per aumentare lo spazio disponibile, elimina i file dal dispositivo.</translation>
 <translation id="901668144954885282">Backup su Google Drive</translation>
 <translation id="9018218886431812662">Installazione completata</translation>
-<translation id="901834265349196618">email</translation>
 <translation id="9019062154811256702">Lettura e modifica delle impostazioni di Compilazione automatica</translation>
 <translation id="9019894137004772119">Utilizza la geolocalizzazione. Consenti ad app e servizi che dispongono dell'autorizzazione di accesso alla posizione di usare la posizione del dispositivo. Google potrebbe raccogliere periodicamente dati sulla posizione da usare in forma anonima per migliorare la precisione della geolocalizzazione e i servizi basati sulla posizione geografica.</translation>
 <translation id="9019956081903586892">Impossibile scaricare il dizionario per il controllo ortografico</translation>

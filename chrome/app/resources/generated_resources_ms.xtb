@@ -89,6 +89,7 @@
 <translation id="1082398631555931481"><ph name="THIRD_PARTY_TOOL_NAME" /> mahu memulihkan tetapan Chrome anda kepada tetapan lalainya yang asal. Tindakan ini akan menetap semula halaman utama, halaman tab baharu dan enjin carian anda, melumpuhkan sambungan anda dan menyahsemat semua tab. Data sementara yang lain dan data cache anda, seperti data kuki, kandungan dan tapak akan turut dikosongkan.</translation>
 <translation id="1084096383128641877">Pengalihan keluar kata laluan tidak akan memadamkan akaun anda pada <ph name="DOMAIN" />. Tukar kata laluan anda atau padamkan akaun anda pada <ph name="DOMAIN_LINK" /> untuk melindungi kata laluan itu daripada orang lain.</translation>
 <translation id="1084824384139382525">Salin alamat pau&amp;tan</translation>
+<translation id="1085064499066015002">Sentiasa pada semua laman</translation>
 <translation id="1085697365578766383">Ralat semasa memulakan mesin maya. Sila cuba lagi.</translation>
 <translation id="1087965115100412394">Jangan benarkan laman menyambung kepada peranti MIDI</translation>
 <translation id="1088654056000736875">Chrome sedang mengalih keluar perisian berbahaya daripada komputer anda...</translation>
@@ -342,6 +343,7 @@
 <translation id="1343865611738742294">Beri Linux kebenaran apl untuk mengakses peranti USB. Linux tidak akan mengingat peranti USB selepas peranti itu dialih keluar.</translation>
 <translation id="1343920184519992513">Teruskan dari tempat anda berhenti dan buka set halaman tertentu</translation>
 <translation id="1346630054604077329">Sahkan dan mulakan semula</translation>
+<translation id="1346748346194534595">Kanan</translation>
 <translation id="1347256498747320987">Pasang kemas kini &amp; apl. Dengan meneruskan, anda bersetuju bahawa peranti ini mungkin memuat turun dan memasang kemas kini serta apl secara automatik daripada Google, pembawa anda dan pengeluar peranti anda juga, mungkin dengan menggunakan data selular. Sesetengah apl ini mungkin menawarkan pembelian dalam apl. <ph name="BEGIN_LINK1" />Ketahui Lebih Lanjut<ph name="END_LINK1" /></translation>
 <translation id="1347512539447549782">Storan Linux</translation>
 <translation id="1347975661240122359">Kemas kini akan bermula apabila bateri mencapai <ph name="BATTERY_LEVEL" />%.</translation>
@@ -464,6 +466,7 @@
 <translation id="1464781208867302907">Untuk pilihan peranti, pergi ke Tetapan.</translation>
 <translation id="1465176863081977902">S&amp;alin Alamat Audio</translation>
 <translation id="1465827627707997754">Potongan piza</translation>
+<translation id="1467432559032391204">Kiri</translation>
 <translation id="1468571364034902819">Tidak dapat menggunakan profil ini</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{Tambahkan Tab pada Kumpulan Baharu}other{Tambahkan Tab pada Kumpulan Baharu}}</translation>
 <translation id="1470350905258700113">Gunakan peranti ini</translation>
@@ -1338,7 +1341,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
     <ph name="BR" />
     <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2307630946657910723">Cari sebahagian daripada halaman ini dengan <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
-<translation id="230927227160767054">Halaman ini mahu memasang pengendali perkhidmatan.</translation>
 <translation id="2309620859903500144">Tapak ini telah disekat daripada mengakses penderia gerakan atau cahaya anda.</translation>
 <translation id="2312219318583366810">URL halaman</translation>
 <translation id="2314165183524574721">Tetapan keterlihatan semasa disembunyikan</translation>
@@ -1389,7 +1391,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2349896577940037438">Jika tetapan Aktiviti Web &amp; Apl tambahan anda dihidupkan, data ini mungkin disimpan pada Akaun Google anda. Anda dapat melihat data anda, memadamkan data dan menukar tetapan akaun melalui account.google.com.</translation>
 <translation id="2350133097354918058">Dimuat semula</translation>
 <translation id="2350182423316644347">Memulakan aplikasi...</translation>
-<translation id="2350796302381711542">Benarkan <ph name="HANDLER_HOSTNAME" /> untuk membuka semua <ph name="PROTOCOL" /> pautan  dan bukannya <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2352495879228166246">{NUM_ITEMS,plural, =1{1 item}other{{NUM_ITEMS} item}}</translation>
 <translation id="2352662711729498748">&lt;1 MB</translation>
 <translation id="2352810082280059586">Nota kunci skrin disimpan secara automatik ke <ph name="LOCK_SCREEN_APP_NAME" />. Nota terbaharu anda akan kekal pada kunci skrin.</translation>
@@ -1462,7 +1463,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2434758125294431199">Pilih orang yang boleh berkongsi dengan anda</translation>
 <translation id="2435248616906486374">Rangkaian diputuskan</translation>
 <translation id="2435457462613246316">Paparkan kata laluan</translation>
-<translation id="2436186046335138073">Benarkan <ph name="HANDLER_HOSTNAME" /> untuk membuka semua <ph name="PROTOCOL" /> pautan?</translation>
 <translation id="2439626940657133600">Memuatkan <ph name="WINDOW_TITLE" /></translation>
 <translation id="2440604414813129000">Lihat s&amp;umber</translation>
 <translation id="244231003699905658">Alamat tidak sah. Sila semak alamat dan cuba lagi.</translation>
@@ -1980,7 +1980,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="2935225303485967257">Urus profil</translation>
 <translation id="2935654492420446828">Tambah akaun institusi pengajian kemudian</translation>
 <translation id="2936851848721175671">Sandarkan &amp; pulihkan</translation>
-<translation id="2938225289965773019">Buka pautan <ph name="PROTOCOL" /></translation>
 <translation id="2939908794993783865">Laman tidak aktif tambahan</translation>
 <translation id="2939938020978911855">Tunjukkan peranti Bluetooth yang tersedia</translation>
 <translation id="2941112035454246133">Rendah</translation>
@@ -2301,7 +2300,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="33022249435934718">Pemegang GDI</translation>
 <translation id="3302388252085547855">Masukkan justifikasi...</translation>
 <translation id="3303260552072730022">Sambungan mencetuskan skrin penuh.</translation>
-<translation id="3303795387212510132">Benarkan apl membuka pautan <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303818374450886607">Salinan</translation>
 <translation id="3303855915957856445">Tiada hasil carian ditemui</translation>
 <translation id="3304212451103136496">Diskaun <ph name="DISCOUNT_AMOUNT" /></translation>
@@ -2715,7 +2713,6 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="371300529209814631">Kembali/Ke Hadapan</translation>
 <translation id="3713047097299026954">Kunci keselamatan ini tidak mempunyai sebarang data log masuk</translation>
 <translation id="3714195043138862580">Peranti tunjuk cara ini telah diletakkan dalam keadaan lucut peruntukan.</translation>
-<translation id="3714633008798122362">kalendar web</translation>
 <translation id="3719826155360621982">Halaman utama</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Anda dan Google</translation>
@@ -7532,7 +7529,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8734674662128056360">Sekatan kuki pihak ketiga</translation>
 <translation id="873545264931343897">Apabila <ph name="PLUGIN_NAME" /> selesai dikemas kini, muat semula halaman untuk mengaktifkannya</translation>
 <translation id="8736288397686080465">Tapak ini dikemas kini di latar belakang.</translation>
-<translation id="8737685506611670901">Buka pautan <ph name="PROTOCOL" /> dan bukannya <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
 <translation id="8737914367566358838">Ketik bahasa sasaran untuk penterjemahan halaman tersebut</translation>
 <translation id="8740247629089392745">Anda boleh menyerahkan Chromebook ini kepada <ph name="SUPERVISED_USER_NAME" />. Persediaan hampir selesai, kemudian tibalah masa untuk meneroka.</translation>
@@ -7796,7 +7792,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="9003647077635673607">Benarkan pada semua laman web</translation>
 <translation id="9003677638446136377">Semak sekali lagi</translation>
 <translation id="9004754973617721124">Kosongkan data dan kebenaran laman untuk <ph name="SITE_NAME" />, semua laman di bawahnya dan aplnya yang dipasang?</translation>
-<translation id="9008201768610948239">Abaikan</translation>
 <translation id="9008201858626224558">Butang kembali halaman butiran <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9009369504041480176">Memuat turun (<ph name="PROGRESS_PERCENT" />%)...</translation>
 <translation id="9009708085379296446">Adakah anda bermaksud untuk menukar halaman ini?</translation>
@@ -7806,7 +7801,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="9013037634206938463"><ph name="INSTALL_SIZE" /> ruang kosong diperlukan untuk memasang Linux. Untuk meningkatkan ruang kosong, padamkan fail daripada peranti anda.</translation>
 <translation id="901668144954885282">Sandarkan pada Google Drive</translation>
 <translation id="9018218886431812662">Pemasangan selesai</translation>
-<translation id="901834265349196618">e-mel</translation>
 <translation id="9019062154811256702">Baca dan tukar tetapan autolengkap</translation>
 <translation id="9019894137004772119">Gunakan lokasi. Benarkan apl dan perkhidmatan dengan kebenaran lokasi menggunakan lokasi peranti anda. Google mungkin mengumpulkan data lokasi secara berkala dan menggunakan data ini secara awanama untuk meningkatkan ketepatan lokasi dan perkhidmatan berasaskan lokasi.</translation>
 <translation id="9019956081903586892">Tidak dapat memuat turun kamus semak ejaan</translation>

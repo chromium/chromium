@@ -224,7 +224,6 @@
 <translation id="2321958826496381788">আপনি এটি স্বচ্ছন্দে পড়তে না পারা পর্যন্ত স্লাইডারটি টেনে আনুন৷ কোনো অনুচ্ছেদে দুবার-আলতো চাপার পরে পাঠ্যটিকে দেখতে অন্ততপক্ষে এইরকম বড় লাগা উচিত৷</translation>
 <translation id="2323763861024343754">সাইটের স্টোরেজ</translation>
 <translation id="2328985652426384049">সাইন ইন করতে পারছেন না</translation>
-<translation id="2342601525305963189">Chrome সংক্রান্ত পরামর্শ:</translation>
 <translation id="234265804618409743">ক্যামেরা চালু করা যাচ্ছে না। কোনও সমস্যা হয়েছে।</translation>
 <translation id="2349710944427398404">অ্যাকাউন্ট, ​​বুকমার্ক এবং স্টোর করা সেটিংসসহ Chrome-এর ব্যবহার করা মোট ডেটা</translation>
 <translation id="2353636109065292463">আপনার ইন্টারনেট কানেকশন ঠিক আছে কিনা সেটি দেখা হচ্ছে</translation>
@@ -570,9 +569,11 @@
 <translation id="4402611456429872546"><ph name="LANG" /> - ডাউনলোড করা হচ্ছে…</translation>
 <translation id="4404568932422911380">কোনও বুকমার্ক নেই</translation>
 <translation id="4405224443901389797">এই ফোল্ডারে সরান…</translation>
+<translation id="4405636711880428279">আপনার ভার্চুয়াল কার্ড সরাতে চান?</translation>
 <translation id="4409271659088619928">আপনার সার্চ ইঞ্জিনের নাম হল, <ph name="DSE" />। এক্ষেত্রে প্রযোজ্য হলে, আপনার সার্চ ইতিহাস মোছার জন্য সেটির নির্দেশাবলী দেখুন।</translation>
 <translation id="4415276339145661267">আপনার Google অ্যাকাউন্ট ম্যানেজ করুন</translation>
 <translation id="4425140285732600465">দাম ট্র্যাক করা হচ্ছে। কোনও সাইটে দাম কমলে সেই বিষয়ে বিজ্ঞপ্তি পান।</translation>
+<translation id="442518031075347249">Google Pay অ্যাপে আপনার ভার্চুয়াল কার্ড আর ব্যবহার করতে পারবেন না। <ph name="BEGIN_LINK1" />ভার্চুয়াল কার্ড সম্পর্কে আরও জানুন<ph name="END_LINK1" /></translation>
 <translation id="4450672886426705087">Google থেকে সার্চ ফলাফল।</translation>
 <translation id="4452411734226507615"><ph name="TAB_TITLE" /> ট্যাবটি বন্ধ করুন</translation>
 <translation id="4452548195519783679"><ph name="FOLDER_NAME" /> এ বুকমার্ক করা হয়েছে</translation>

@@ -461,6 +461,7 @@
 <translation id="2337852623177822836">Әкімші басқаратын параметр</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> сайты жұптасқысы келеді</translation>
 <translation id="2346319942568447007">Көшірілген сурет</translation>
+<translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> хостына <ph name="REPLACED_HANDLER_TITLE" /> орнына барлық <ph name="PROTOCOL" /> сілтемелерін ашуға рұқсат бересіз бе?</translation>
 <translation id="2354001756790975382">Басқа бетбелгілер</translation>
 <translation id="2354430244986887761">Жақында Google Safe Browsing <ph name="SITE" /> сайтынан <ph name="BEGIN_LINK" /> зиянды қолданбаларды тапты<ph name="END_LINK" />.</translation>
 <translation id="2355395290879513365">Шабуылдаушылар бұл сайтта көріп жатқан кескіндеріңізді біліп, оларды өзгерту арқылы сізді алдауы мүмкін.</translation>
@@ -486,6 +487,7 @@
 <translation id="2413528052993050574">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификаты қайтарып алынған болуы мүмкін. Бұл дұрыс конфигурацияланбағаннан немесе зиянды бағдарламаның байланысқа кедергі келтіргенінен болуы мүмкін.</translation>
 <translation id="2414886740292270097">Күңгірт</translation>
 <translation id="2430968933669123598">Google аккаунтын басқару, Google аккаунтыңыздағы ақпаратты, құпиялылықты және қауіпсіздікті басқару үшін Enter пернесін басыңыз.</translation>
+<translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> хостына <ph name="PROTOCOL" /> сілтемелерін ашуға рұқсат бересіз бе?</translation>
 <translation id="2438874542388153331">Оң жағын төрт рет тесу</translation>
 <translation id="2450021089947420533">Journeys</translation>
 <translation id="2463739503403862330">Толтыру</translation>
@@ -635,6 +637,7 @@
 <translation id="2930577230479659665">Әр көшірмеден кейін кесу</translation>
 <translation id="2932085390869194046">Құпия сөз жасау...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019"><ph name="PROTOCOL" /> сілтемелерін ашу</translation>
 <translation id="2941952326391522266">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификаты <ph name="DOMAIN2" /> доменінен алынған. Бұл дұрыс конфигурацияланбағаннан немесе зиянды бағдарламаның байланысқа кедергі келтіргенінен болуы мүмкін.</translation>
 <translation id="2943895734390379394">Жүктеп салу уақыты:</translation>
 <translation id="2948083400971632585">Сіз параметрлер бетінен қосылым үшін реттелген кез келген проксилерді өшіре аласыз.</translation>
@@ -743,6 +746,7 @@
 <translation id="3288238092761586174">Төлеміңізді растау үшін <ph name="URL" /> қосымша қадамдар орындауы қажет.</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> саясаты туралы қосымша ақпарат</translation>
 <translation id="3295444047715739395">Chrome параметрлерінде құпия сөздерді көріңіз және басқарыңыз.</translation>
+<translation id="3303795387212510132">Қолданбаға <ph name="PROTOCOL_SCHEME" /> сілтемелерін ашуға рұқсат берілсін бе?</translation>
 <translation id="3303855915957856445">Іздеу нәтижелері табылмады</translation>
 <translation id="3304073249511302126">Bluetooth құрылғыларын іздеу</translation>
 <translation id="3308006649705061278">Ұйымдық бірлік (OU)</translation>
@@ -880,6 +884,7 @@
 <translation id="370972442370243704">Journeys функциясын қосу</translation>
 <translation id="3711895659073496551">Уақытша тоқтату</translation>
 <translation id="3712624925041724820">Лицензиялар аяқталды</translation>
+<translation id="3714633008798122362">веб-күнтізбе</translation>
 <translation id="3714780639079136834">Мобильдік деректерді немесе Wi-Fi желісін қосу</translation>
 <translation id="3715597595485130451">Wi-Fi желісіне қосылу</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Проксиді, брандмауэрді және DNS конфигурациясын тексеру<ph name="END_LINK" /></translation>
@@ -941,6 +946,7 @@
 <translation id="3906954721959377182">Планшет</translation>
 <translation id="3909477809443608991"><ph name="URL" /> қорғалған мазмұнды ойнатқысы келеді. Google құрылғыңыздың идентификаторын растағаннан кейін барып, сайт мазмұнды пайдалана алады.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Тыйым салу</translation>
 <translation id="3939773374150895049">CVC орнына WebAuthn қолданасыз ба?</translation>
 <translation id="3946209740501886391">Осы сайтта әрқашан сұралсын</translation>
 <translation id="3947595700203588284">MIDI құрылғыларына қосылуға рұқсат сұрайды</translation>
@@ -2407,6 +2413,7 @@
 <translation id="8731544501227493793">"Құпия сөздерді басқару" түймесі. Chrome параметрлерінде құпия сөздеріңізді көру және басқару үшін Enter пернесін басыңыз.</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> құрылғыңызды <ph name="MANAGER" /> басқарады</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Жаңа инкогнито терезесін ашу үшін Tab, одан кейін Enter пернесін басыңыз.</translation>
+<translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> орнына <ph name="PROTOCOL" /> сілтемелерін ашу</translation>
 <translation id="8738058698779197622">Қауіпсіз байланыс орнату үшін сағатыңыз дұрыс орнатылуы қажет. Себебі веб-сайттар өзін анықтау үшін пайдаланатын сертификаттар көрсетілген уақыт мерзімінде ғана жарамды. Құрылғыңыздың сағаты дұрыс емес болғандықтан, Chromium бұл сертификаттарды растай алмайды.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> &lt;abbr id="dnsDefinition"&gt;DNS мекенжайы&lt;/abbr&gt; табылмады. Мәселе анықталуда.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> – <ph name="ORIGIN" /> сайтына арналған код</translation>
@@ -2484,6 +2491,7 @@
 <translation id="9004367719664099443">VR сеансы жүруде</translation>
 <translation id="9005998258318286617">PDF құжаты жүктелмеді</translation>
 <translation id="9008201768610948239">Елемеу</translation>
+<translation id="901834265349196618">электрондық пошта</translation>
 <translation id="9020200922353704812">Картаның төлем мекенжайы қажет</translation>
 <translation id="9020542370529661692">Бұл бет <ph name="TARGET_LANGUAGE" /> тіліне аударылды</translation>
 <translation id="9020742383383852663">A8</translation>

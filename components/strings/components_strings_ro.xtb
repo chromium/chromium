@@ -461,6 +461,7 @@
 <translation id="2337852623177822836">Setare controlată de administrator</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> dorește să se asocieze</translation>
 <translation id="2346319942568447007">Imaginea copiată de tine</translation>
+<translation id="2350796302381711542">Permiteți ca <ph name="HANDLER_HOSTNAME" /> să deschidă toate linkurile <ph name="PROTOCOL" /> în locul <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2354001756790975382">Alte marcaje</translation>
 <translation id="2354430244986887761">Navigarea sigură Google <ph name="BEGIN_LINK" />a descoperit recent aplicații dăunătoare<ph name="END_LINK" /> pe <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Este posibil ca atacatorii să poată vedea imaginile la care te uiți pe acest site și să te păcălească prin modificarea lor.</translation>
@@ -486,6 +487,7 @@
 <translation id="2413528052993050574">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; este posibil ca certificatul său de securitate să fie revocat. Cauza poate fi o configurare greșită sau interceptarea conexiunii de către un atacator.</translation>
 <translation id="2414886740292270097">Întunecat</translation>
 <translation id="2430968933669123598">Gestionează Contul Google, apasă pe Enter pentru a gestiona informațiile, confidențialitatea și securitatea Contului Google</translation>
+<translation id="2436186046335138073">Permiteți ca <ph name="HANDLER_HOSTNAME" /> să deschidă toate linkurile <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Perforare cvadruplă în dreapta</translation>
 <translation id="2450021089947420533">Experiențe</translation>
 <translation id="2463739503403862330">Completează</translation>
@@ -635,6 +637,7 @@
 <translation id="2930577230479659665">Decupare după fiecare exemplar</translation>
 <translation id="2932085390869194046">Sugerează o parolă...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">Deschide linkurile <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; certificatul său de securitate provine de la <ph name="DOMAIN2" />. Cauza poate fi o configurare greșită sau interceptarea conexiunii de către un atacator.</translation>
 <translation id="2943895734390379394">Ora încărcării:</translation>
 <translation id="2948083400971632585">Puteți să dezactivați serverele proxy configurate pentru o conexiune din pagina de setări.</translation>
@@ -744,6 +747,7 @@
 <translation id="3288238092761586174">Poate fi necesar ca <ph name="URL" /> să parcurgă câțiva pași suplimentari pentru a confirma plata</translation>
 <translation id="3293642807462928945">Află mai multe despre politica <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Afișează și gestionează parolele din setările Chrome</translation>
+<translation id="3303795387212510132">Permiți aplicației să deschidă linkuri <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Nu s-au găsit rezultate de căutare</translation>
 <translation id="3304073249511302126">căutarea Bluetooth</translation>
 <translation id="3308006649705061278">Unitate organizațională (OU)</translation>
@@ -881,6 +885,7 @@
 <translation id="370972442370243704">Activează Experiențe</translation>
 <translation id="3711895659073496551">Suspendați</translation>
 <translation id="3712624925041724820">Licențe epuizate</translation>
+<translation id="3714633008798122362">calendar web</translation>
 <translation id="3714780639079136834">să activezi datele mobile sau conexiunea Wi-Fi;</translation>
 <translation id="3715597595485130451">Conectează-te la o rețea Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />să verifici configurarea pentru proxy, firewall și DNS;<ph name="END_LINK" /></translation>
@@ -942,6 +947,7 @@
 <translation id="3906954721959377182">Tabletă</translation>
 <translation id="3909477809443608991"><ph name="URL" /> vrea să redea conținut protejat. Identitatea dispozitivului tău va fi verificată de Google și poate fi accesată de acest site.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Refuză</translation>
 <translation id="3939773374150895049">Folosești WebAuthn în loc de CVC?</translation>
 <translation id="3946209740501886391">Întreabă întotdeauna pe acest site</translation>
 <translation id="3947595700203588284">Poate solicita permisiunea de a se conecta la dispozitive MIDI</translation>
@@ -2409,6 +2415,7 @@ Detalii suplimentare:
 <translation id="8731544501227493793">Butonul Gestionează parolele, apasă pe Enter pentru a vedea și a gestiona parolele în setările Chrome</translation>
 <translation id="8734529307927223492">Dispozitivul <ph name="DEVICE_TYPE" /> este gestionat de <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a deschide o nouă fereastră incognito ca să navighezi în privat</translation>
+<translation id="8737685506611670901">Deschide linkurile <ph name="PROTOCOL" /> și nu <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Pentru a stabili o conexiune securizată, ceasul trebuie să fie setat corect. Aceasta deoarece certificatele pe care site-urile le folosesc pentru a se identifica sunt valabile numai pentru anumite intervale de timp. Din moment ce ora de pe dispozitiv este incorectă, Chromium nu poate verifica aceste certificate.</translation>
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;Adresa DNS&lt;/abbr&gt; pentru <ph name="HOST_NAME" /> nu a putut fi găsită. Se diagnostichează problema.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> este codul tău pentru <ph name="ORIGIN" /></translation>
@@ -2486,6 +2493,7 @@ Detalii suplimentare:
 <translation id="9004367719664099443">O sesiune RV este în desfășurare</translation>
 <translation id="9005998258318286617">Documentul PDF nu a fost încărcat.</translation>
 <translation id="9008201768610948239">Ignorați</translation>
+<translation id="901834265349196618">e-mail</translation>
 <translation id="9020200922353704812">Este necesară adresa de facturare a cardului</translation>
 <translation id="9020542370529661692">Această pagină a fost tradusă în <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

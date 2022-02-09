@@ -234,6 +234,7 @@
 <translation id="7155997830309522122">Jeśli tak, zaktualizuj je w Chrome, by zapisane hasło było takie samo.</translation>
 <translation id="7161904924553537242">Witamy w Google Chrome</translation>
 <translation id="7242029209006116544">Logujesz się na zarządzane konto i przekazujesz jego administratorowi kontrolę nad swoim profilem Google Chrome. Twoje dane Chrome, takie jak aplikacje, zakładki, historia, hasła i inne ustawienia, zostaną trwale powiązane z użytkownikiem <ph name="USER_NAME" />. Będzie można je usunąć w Panelu kont Google, ale nie będzie można ich powiązać z innym kontem. Możesz też utworzyć nowy profil, by przechowywać swoje dotychczasowe dane Chrome osobno. <ph name="LEARN_MORE" /></translation>
+<translation id="7242050469146843186">Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej stronom i aplikacjom. Jeśli nie chcesz, aby strony lub aplikacje uzyskiwały dostęp do informacji o Twoim koncie, użyj <ph name="LINK_BEGIN" />trybu gościa<ph name="LINK_END" /> w przeglądarce Chrome. Kontami Google możesz też zarządzać w <ph name="LINK_2_BEGIN" />Ustawieniach<ph name="LINK_2_END" />.</translation>
 <translation id="7295052994004373688">Ten język jest używany do wyświetlania UI Google Chrome</translation>
 <translation id="7296210096911315575">Ważne informacje dotyczące użytkowania i bezpieczeństwa</translation>
 <translation id="7308322188646931570">Chrome musi mieć dostęp do pamięci, by pobierać pliki</translation>

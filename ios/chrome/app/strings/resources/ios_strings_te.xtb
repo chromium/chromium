@@ -116,6 +116,7 @@
 <translation id="196896377990863006">లింక్ ప్రివ్యూను చూపండి</translation>
 <translation id="1973912524893600642">డేటాను అలాగే ఉంచు</translation>
 <translation id="1974060860693918893">అధునాతన సెట్టింగ్‌లు</translation>
+<translation id="1981118202195772574">మొబైల్</translation>
 <translation id="1989112275319619282">బ్రౌజ్ చేయి</translation>
 <translation id="199425419756152024">పాస్‌వర్డ్‌ను చూడండి</translation>
 <translation id="2015722694326466240">పాస్‌వర్డ్‌లను చూడటానికి, మీరు ముందుగా తప్పక మీ పరికరంలో పాస్‌కోడ్‌ను సెట్ చేయాలి.</translation>
@@ -236,6 +237,7 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />మీరు వేటిని సింక్ చేయగలరో చూడండి<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">అన్నీ బ్లాక్ చేయి</translation>
 <translation id="313283613037595347">కొత్త అజ్ఞాత ట్యాబ్‌ను క్రియేట్ చేయండి.</translation>
+<translation id="3150887674190166798">మీరు ప్రతిసారీ సైట్‌ను Chrome ఎలా రిక్వెస్ట్ చేయాలనుకుంటున్నారో ఎంచుకోండి</translation>
 <translation id="3153862085237805241">కార్డ్‌ను సేవ్ చేయండి</translation>
 <translation id="3157387275655328056">పఠన లిస్ట్‌కు జోడించు</translation>
 <translation id="3157684681743766797">అన్నీ గుర్తు పెట్టు…</translation>
@@ -764,6 +766,7 @@
 <translation id="7911190106180361398">అన్నింటిని సింక్ చేయడానికి మీ సంస్థ మిమ్మల్ని అనుమతించదు.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">పాస్‌వర్డ్‌లను ఎగుమతి చేయి...</translation>
+<translation id="793971554166979165">ఆటోమేటిక్ సెట్టింగ్ సైట్ మోడ్</translation>
 <translation id="794799177247607889">లాగ్ చేయడం ఆపివేయి</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{చోరీకి గురైన పాస్‌వర్డ్‌లు ఏవీ లేవు}=1{{COUNT} చోరీకి గురైన పాస్‌వర్డ్}other{{COUNT} చోరీకి గురైన పాస్‌వర్డ్‌లు}}</translation>
 <translation id="7961015016161918242">ఎప్పుడూ లేదు</translation>
@@ -869,6 +872,7 @@
 <translation id="8881801611828450202">ఈ చిత్రం కోసం <ph name="SEARCH_ENGINE" />ని వెతకండి</translation>
 <translation id="8909135823018751308">షేర్ చేయండి…</translation>
 <translation id="8917490105272468696">సరే, నాకు సమ్మతమే</translation>
+<translation id="8928133177108699615">డెస్క్‌టాప్</translation>
 <translation id="8952559610785099500">పాస్‌వర్డ్‌ను జోడించండి</translation>
 <translation id="895541991026785598">ఒక సమస్యను రిపోర్ట్ చేయండి</translation>
 <translation id="8974714402877957201">1. iPad సెట్టింగ్‌లను తెరవండి</translation>

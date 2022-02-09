@@ -461,6 +461,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2337852623177822836">Instelling word deur jou administrateur gekontroleer</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> wil saambind</translation>
 <translation id="2346319942568447007">Prent wat jy gekopieer het</translation>
+<translation id="2350796302381711542">Laat <ph name="HANDLER_HOSTNAME" /> toe om alle <ph name="PROTOCOL" />-skakels oop te maak eerder as <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2354001756790975382">Ander boekmerke</translation>
 <translation id="2354430244986887761">Google Veiligblaai het onlangs <ph name="BEGIN_LINK" />skadelike programme<ph name="END_LINK" /> op <ph name="SITE" /> gevind.</translation>
 <translation id="2355395290879513365">Aanvallers sal dalk die prente kan sien waarna jy op hierdie werf kyk en jou mislei deur hulle te wysig.</translation>
@@ -486,6 +487,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2413528052993050574">Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie; sy sekuriteitsertifikaat is dalk herroep. Dit kan veroorsaak word deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep.</translation>
 <translation id="2414886740292270097">Donker</translation>
 <translation id="2430968933669123598">Bestuur Google-rekening; druk Enter om jou inligting, privaatheid en sekuriteit in jou Google-rekening te bestuur</translation>
+<translation id="2436186046335138073">Laat <ph name="HANDLER_HOSTNAME" /> toe om alle <ph name="PROTOCOL" />-skakels oop te maak?</translation>
 <translation id="2438874542388153331">Vierpons regs</translation>
 <translation id="2450021089947420533">Reise</translation>
 <translation id="2463739503403862330">Vul in</translation>
@@ -635,6 +637,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2930577230479659665">Knip ná elke kopie</translation>
 <translation id="2932085390869194046">Stel wagwoord voor …</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">Maak <ph name="PROTOCOL" />-skakels oop</translation>
 <translation id="2941952326391522266">Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie; sy sekuriteitsertifikaat is van <ph name="DOMAIN2" /> af. Dit kan veroorsaak word deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep.</translation>
 <translation id="2943895734390379394">Oplaaityd:</translation>
 <translation id="2948083400971632585">Jy kan enige instaanbedieners wat vir 'n verbinding opgestel is van die instellingsbladsy af deaktiveer.</translation>
@@ -744,6 +747,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3288238092761586174"><ph name="URL" /> sal dalk bykomende stappe moet doen om jou betaling te verifieer</translation>
 <translation id="3293642807462928945">Kom meer te wete oor <ph name="POLICY_NAME" />-beleid</translation>
 <translation id="3295444047715739395">Bekyk en bestuur jou wagwoorde in Chrome-instellings</translation>
+<translation id="3303795387212510132">Laat program toe om <ph name="PROTOCOL_SCHEME" />-skakels oop te maak?</translation>
 <translation id="3303855915957856445">Geen soekresultate gevind nie</translation>
 <translation id="3304073249511302126">bluetooth-opsporing</translation>
 <translation id="3308006649705061278">Organisatoriese eenheid (OU)</translation>
@@ -881,6 +885,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="370972442370243704">Skakel Reise aan</translation>
 <translation id="3711895659073496551">Skort op</translation>
 <translation id="3712624925041724820">Lisensies is op</translation>
+<translation id="3714633008798122362">webkalender</translation>
 <translation id="3714780639079136834">Mobiele data of Wi-Fi aanskakel</translation>
 <translation id="3715597595485130451">Koppel aan Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Die instaanbediener, brandmuur en DNS-opstelling nagaan<ph name="END_LINK" /></translation>
@@ -942,6 +947,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> wil beskermde inhoud speel. Jou toestel se identiteit sal deur Google geverifieer word en hierdie werf kan toegang daartoe kry.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Weier</translation>
 <translation id="3939773374150895049">Gebruik WebAuthn pleks van CVC?</translation>
 <translation id="3946209740501886391">Vra altyd op hierdie werf</translation>
 <translation id="3947595700203588284">Kan vra om aan MIDI-toestelle te koppel</translation>
@@ -1058,6 +1064,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4250680216510889253">Nee</translation>
 <translation id="4253168017788158739">Nota</translation>
 <translation id="425582637250725228">Veranderinge wat jy aangebring het, sal dalk nie gestoor word nie.</translation>
+<translation id="425869179292622354">Maak dit veiliger met 'n virtuele kaart?</translation>
 <translation id="4258748452823770588">Swak handtekening</translation>
 <translation id="4261046003697461417">Aantekeninge kan nie op beskermde dokumente gemaak word nie</translation>
 <translation id="4265872034478892965">Toegelaat deur jou administrateur</translation>
@@ -1568,6 +1575,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5921639886840618607">Stoor kaart in Google-rekening?</translation>
 <translation id="5922853866070715753">Amper klaar</translation>
 <translation id="5932224571077948991">Werf wys indringerige of misleidende advertensies</translation>
+<translation id="5938153366081463283">Voeg virtuele kaart by</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Maak tans <ph name="SITE_NAME" /> oop …</translation>
 <translation id="5951495562196540101">Kan nie met 'n verbruikerrekening inskryf nie (verpakte lisensie beskikbaar).</translation>
@@ -2192,6 +2200,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7976214039405368314">Te veel versoeke</translation>
 <translation id="7977538094055660992">Uitvoertoestel</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="7981260203882740562">Gekoppel met</translation>
 <translation id="798134797138789862">Kan vra om virtuelerealiteittoestelle en -data te gebruik</translation>
 <translation id="7984945080620862648">Jy kan nie <ph name="SITE" /> op die oomblik besoek nie, want die webwerf het deurmekaar eiebewyse gestuur wat Chrome nie kan verwerk nie. Netwerkfoute en aanvalle is gewoonlik tydelik en daarom sal hierdie bladsy waarskynlik later werk.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2408,6 +2417,7 @@ Bykomende besonderhede:
 <translation id="8731544501227493793">Bestuur Wagwoorde-knoppie; druk Enter om jou wagwoorde in Chrome-instellings te bekyk en te bestuur</translation>
 <translation id="8734529307927223492">Jou <ph name="DEVICE_TYPE" /> word bestuur deur <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om 'n nuwe incognitovenster oop te maak om privaat te blaai</translation>
+<translation id="8737685506611670901">Maak <ph name="PROTOCOL" />-skakels oop pleks van <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Om 'n veilige verbinding te maak, moet jou horlosie reg gestel wees. Die rede hiervoor is omdat sertifikate wat webwerwe gebruik om hulself te identifiseer, net vir sekere tydperke beskikbaar is. Chromium kan nie hierdie sertifikate verifieer nie, omdat jou toestel se horlosie nie reg gestel is nie.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> se &lt;abbr id="dnsDefinition"&gt;DNS-adres&lt;/abbr&gt; kon nie gevind word nie. Diagnoseer tans die probleem.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> is jou kode vir <ph name="ORIGIN" /></translation>
@@ -2485,6 +2495,7 @@ Bykomende besonderhede:
 <translation id="9004367719664099443">VR-sessie is aan die gang</translation>
 <translation id="9005998258318286617">Kon nie 'n PDF-dokument laai nie.</translation>
 <translation id="9008201768610948239">Ignoreer</translation>
+<translation id="901834265349196618">e-pos</translation>
 <translation id="9020200922353704812">Kaart se faktureringadres word vereis</translation>
 <translation id="9020542370529661692">Hierdie bladsy is in <ph name="TARGET_LANGUAGE" /> vertaal</translation>
 <translation id="9020742383383852663">A8</translation>

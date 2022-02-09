@@ -456,6 +456,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2337852623177822836">Configuración controlada por tu administrador</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> desea sincronizarse</translation>
 <translation id="2346319942568447007">Imagen que copiaste</translation>
+<translation id="2350796302381711542">¿Deseas permitir que <ph name="HANDLER_HOSTNAME" /> abra todos los vínculos de <ph name="PROTOCOL" /> en lugar de <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2354001756790975382">Otros favoritos</translation>
 <translation id="2354430244986887761">Navegación segura de Google recientemente <ph name="BEGIN_LINK" />encontró apps dañinas<ph name="END_LINK" /> en <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Es posible que los atacantes vean las imágenes que observas en este sitio y las modifiquen para engañarte.</translation>
@@ -481,6 +482,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2413528052993050574">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" /> y se podría revocar el certificado de seguridad. Es posible que esto se deba a una configuración incorrecta o a que un atacante interceptó la conexión.</translation>
 <translation id="2414886740292270097">Oscuro</translation>
 <translation id="2430968933669123598">Botón Administrar la Cuenta de Google, presiona Intro para administrar la información, privacidad y seguridad de tu Cuenta de Google</translation>
+<translation id="2436186046335138073">¿Deseas permitir que <ph name="HANDLER_HOSTNAME" /> abra todos los vínculos de <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Perforación cuádruple a la derecha</translation>
 <translation id="2450021089947420533">Exploraciones</translation>
 <translation id="2463739503403862330">Llenar</translation>
@@ -630,6 +632,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2930577230479659665">Cortar después de cada copia</translation>
 <translation id="2932085390869194046">Sugerir contraseña…</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">Abrir vínculos de <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" />; el certificado de seguridad proviene de <ph name="DOMAIN2" />. Es posible que esto se deba a una configuración incorrecta o a que un atacante interceptó la conexión.</translation>
 <translation id="2943895734390379394">Hora de carga:</translation>
 <translation id="2948083400971632585">Puedes inhabilitar los servidores proxy configurados para una conexión desde la página de configuración.</translation>
@@ -740,6 +743,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3288238092761586174">Es posible que <ph name="URL" /> deba realizar pasos adicionales para verificar tu pago.</translation>
 <translation id="3293642807462928945">Más información sobre la política <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Consulta y administra tus contraseñas en la configuración de Chrome</translation>
+<translation id="3303795387212510132">¿Deseas permitir que la app abra vínculos de <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">No se encontraron resultados en la búsqueda</translation>
 <translation id="3304073249511302126">búsqueda de dispositivos Bluetooth</translation>
 <translation id="3308006649705061278">Unidad organizativa (OU)</translation>
@@ -877,6 +881,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="370972442370243704">Activar Exploraciones</translation>
 <translation id="3711895659073496551">Suspender</translation>
 <translation id="3712624925041724820">Licencias agotadas</translation>
+<translation id="3714633008798122362">Calendario web</translation>
 <translation id="3714780639079136834">Activar los datos móviles o la conexión Wi-Fi.</translation>
 <translation id="3715597595485130451">Conectar a Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Comprobar la configuración del proxy, firewall o DNS<ph name="END_LINK" />.</translation>
@@ -938,6 +943,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> quiere reproducir contenido protegido. Google verificará la identidad de tu dispositivo, y es posible que este sitio acceda a ella.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Rechazar</translation>
 <translation id="3939773374150895049">¿Deseas usar WebAuthn en lugar de CVC?</translation>
 <translation id="3946209740501886391">Preguntar siempre en este sitio</translation>
 <translation id="3947595700203588284">Puede solicitar permiso para conectarse con dispositivos MIDI</translation>
@@ -2399,6 +2405,7 @@ Detalles adicionales:
 <translation id="8731544501227493793">Botón Administrar contraseñas: presiona Intro para ver y administrar tus contraseñas en la configuración de Chrome</translation>
 <translation id="8734529307927223492"><ph name="MANAGER" /> administra tu dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para abrir una nueva ventana de incógnito de Chrome y así navegar de forma privada</translation>
+<translation id="8737685506611670901">Abrir vínculos de <ph name="PROTOCOL" /> en lugar de <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Para establecer una conexión segura, el reloj debe estar configurado correctamente. Esto se debe a que los certificados que usan los sitios web para su identificación solo son válidos por períodos de tiempo específicos. Debido a que la configuración del reloj del dispositivo es incorrecta, Chromium no puede verificar estos certificados.</translation>
 <translation id="8740359287975076522">No se encontró <ph name="HOST_NAME" />’s &lt;abbr id="dnsDefinition"&gt;DNS address&lt;/abbr&gt;. Se está diagnosticando el problema.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> es tu código para <ph name="ORIGIN" /></translation>
@@ -2476,6 +2483,7 @@ Detalles adicionales:
 <translation id="9004367719664099443">La sesión de RV está en curso</translation>
 <translation id="9005998258318286617">No se pudo cargar el documento PDF.</translation>
 <translation id="9008201768610948239">Ignorar</translation>
+<translation id="901834265349196618">Correo electrónico</translation>
 <translation id="9020200922353704812">Se requiere una dirección de facturación de la tarjeta</translation>
 <translation id="9020542370529661692">Esta página se tradujo al <ph name="TARGET_LANGUAGE" />.</translation>
 <translation id="9020742383383852663">A8</translation>

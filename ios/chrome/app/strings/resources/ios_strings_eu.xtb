@@ -85,6 +85,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1650222530560417226">Fitxa guztietako JavaScript-en kontsolaren erregistroak eta erroreak biltzeko, sakatu "Hasi partekatzen" botoia. Bildutako erregistroak memorian bakarrik gordeko dira, orria itxi arte edo "Utzi erregistratzeari" sakatu arte.</translation>
+<translation id="1654232554734641711">Mikrofonorako sarbidea gaituta dago</translation>
 <translation id="1657011748321897393">Ezin izan da partekatu ez zaudelako Internetera konektatuta.</translation>
 <translation id="1657641691196698092">Blokeatutako cookieak</translation>
 <translation id="165877110639533037">Ez dago irekitako fitxarik</translation>
@@ -348,6 +349,7 @@ Jarraitu beheko urratsei:</translation>
 <translation id="4181841719683918333">Hizkuntzak</translation>
 <translation id="4237377247299956313">Sakatu <ph name="BEGIN_BOLD" />Arakatzaile lehenetsia<ph name="END_BOLD" />.</translation>
 <translation id="424315890655130736">Idatzi pasaesaldia</translation>
+<translation id="4249955472157341256">Ordenatu berrienetatik zaharrenetara</translation>
 <translation id="4263576668337963058">Erakutsi erabilgarri dauden orriko ekintzak</translation>
 <translation id="4267380167363222949">Hurrengo fitxa</translation>
 <translation id="4272631900155121838">QR kodeak eskaneatzeko, gaitu kamera Ezarpenak atalean</translation>
@@ -396,6 +398,7 @@ Sinkronizatzeko pasaesaldiaren bidez daude enkriptatuta datuak. Idatz ezazu sink
 <translation id="4682686630151240767">1. Ireki iPhone-aren Settings (ezarpenak) atala.</translation>
 <translation id="4689564913179979534">Kudeatu ordainketa-metodoak…</translation>
 <translation id="470966556546083668">Ez aktibatu sinkronizazioa</translation>
+<translation id="4731472194328757163">Kamerarako eta mikrofonorako sarbideak gaituta daude</translation>
 <translation id="473775607612524610">Eguneratu</translation>
 <translation id="4747097190499141774">Pasaesaldi bidezko enkriptatzeak ez ditu hartzen barne Google Pay-ko ordainketa-metodoak eta helbideak. Pasaesaldia dutenek soilik irakur ditzakete enkriptatutako datuak. Pasaesaldia ez da bidaltzen Google-ra, ezta bertan gordetzen ere. Pasaesaldia ahazten bazaizu edo ezarpena aldatu nahi baduzu, sinkronizazioa berrezarri beharko duzu. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="4751645464639803239">Ezkutuko moduko fitxa berria</translation>
@@ -504,6 +507,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="575902488528307720">Bilatu irudia</translation>
 <translation id="5781453543752460388">Gehitu Photos-en (argazkien aplikazioan)</translation>
 <translation id="5782227691023083829">Itzultzen…</translation>
+<translation id="5791632441210678828">Jarraitzen jarioko Ordenatu botoia.</translation>
 <translation id="5802829331520313983">Konfiguratu…</translation>
 <translation id="5803566855766646066">Ziur txartel berri hau baztertu nahi duzula?</translation>
 <translation id="5804241973901381774">Baimenak</translation>
@@ -547,6 +551,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="6059830886158432458">Kontrolatu istorioak eta jarduerak hemen</translation>
 <translation id="6064824697233747382">Zure erakundeak sinkronizazioa desaktibatzea eskatzen du.</translation>
 <translation id="6066301408025741299">Sakatu bertan behera uzteko</translation>
+<translation id="6077126322656614846">Kamerarako sarbidea gaituta dago</translation>
 <translation id="60829778314739003">Onartu eta egin aurrera</translation>
 <translation id="6084848228346514841">Hautatu fitxak</translation>
 <translation id="6103540626693881831">Gailuan bertan enkriptatzea</translation>
@@ -618,6 +623,7 @@ Erabili pasahitz esklusibo bat webgune bakoitzerako.</translation>
 <translation id="6561262006871132942">Handitu</translation>
 <translation id="6583087784430677195">Aukera hori desaktibatzeko, ireki <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> (ezarpenak) eta joan AutoFill Passwords (bete pasahitzak automatikoki) atalera.</translation>
 <translation id="6585618849026997638">Garrantzitsuak iruditzen zaizkizun orriak bizkor atzitu ahal izateko, gehi iezazkiezu laster-markak</translation>
+<translation id="6598875554591387303">Ordenatu argitaratzailearen arabera</translation>
 <translation id="6603393121510733479">Zure erakundeak arakatze pribatua desaktibatu du.
 <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Itzultzeko aukerak</translation>

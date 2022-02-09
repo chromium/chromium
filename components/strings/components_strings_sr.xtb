@@ -424,6 +424,7 @@
 <translation id="22081806969704220">3. фиока</translation>
 <translation id="2212735316055980242">Смернице нису пронађене</translation>
 <translation id="2213606439339815911">Преузимање уноса...</translation>
+<translation id="2213612003795704869">Страница је одштампана</translation>
 <translation id="2215727959747642672">Мењање датотека</translation>
 <translation id="2218879909401188352">Нападачи који су тренутно на <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> могу да инсталирају опасне апликације које ће вам оштетити уређај, додати нежељене трошкове код мобилног оператера или украсти личне податке. <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2224337661447660594">Нема интернета</translation>
@@ -460,6 +461,7 @@
 <translation id="2337852623177822836">Подешавање контролише администратор</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> жели да се упари</translation>
 <translation id="2346319942568447007">Копирана слика</translation>
+<translation id="2350796302381711542">Желите ли да дозволите да <ph name="HANDLER_HOSTNAME" /> отвара све <ph name="PROTOCOL" /> линкове за које сте до сада користили <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2354001756790975382">Остали обележивачи</translation>
 <translation id="2354430244986887761">Google безбедно прегледање је недавно <ph name="BEGIN_LINK" />открило штетне апликације<ph name="END_LINK" /> на <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Нападачи ће моћи да виде слике које гледате на овом сајту и да их измене како би вас преварили.</translation>
@@ -485,6 +487,7 @@
 <translation id="2413528052993050574">Овај сервер не може да докаже да је <ph name="DOMAIN" />; његов безбедносни сертификат ће можда бити опозван. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу.</translation>
 <translation id="2414886740292270097">Тамнa</translation>
 <translation id="2430968933669123598">Управљајте Google налогом, притисните Enter да бисте управљали информацијама, приватношћу и безбедношћу на Google налогу</translation>
+<translation id="2436186046335138073">Желите ли да дозволите да <ph name="HANDLER_HOSTNAME" /> отвара све <ph name="PROTOCOL" /> линкове?</translation>
 <translation id="2438874542388153331">Четвороструко бушење на десној страни</translation>
 <translation id="2450021089947420533">Путеви</translation>
 <translation id="2463739503403862330">Попуни</translation>
@@ -634,6 +637,7 @@
 <translation id="2930577230479659665">Скрати после сваког копирања</translation>
 <translation id="2932085390869194046">Предложи лозинку...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">отвори линкове за <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">Овај сервер не може да докаже да је <ph name="DOMAIN" />; његов безбедносни сертификат је са домена <ph name="DOMAIN2" />. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу.</translation>
 <translation id="2943895734390379394">Време отпремања:</translation>
 <translation id="2948083400971632585">На страници Подешавања можете да онемогућите све проксије конфигурисане за везу.</translation>
@@ -743,6 +747,7 @@
 <translation id="3288238092761586174"><ph name="URL" /> треба да обави додатне кораке ради потврде плаћања</translation>
 <translation id="3293642807462928945">Сазнајте више о смерницама <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Прегледајте лозинке и управљајте њима у подешавањима Chrome-а</translation>
+<translation id="3303795387212510132">Желите ли да дозволите да апликација отвара <ph name="PROTOCOL_SCHEME" /> линкове?</translation>
 <translation id="3303855915957856445">Нису пронађени резултати претраге</translation>
 <translation id="3304073249511302126">Bluetooth скенирање</translation>
 <translation id="3308006649705061278">Организациона јединица (OU)</translation>
@@ -880,6 +885,7 @@
 <translation id="370972442370243704">Укључи Путеве</translation>
 <translation id="3711895659073496551">Искључи</translation>
 <translation id="3712624925041724820">Нема више лиценци</translation>
+<translation id="3714633008798122362">веб календар</translation>
 <translation id="3714780639079136834">да укључите податке за мобилне уређаје или WiFi</translation>
 <translation id="3715597595485130451">Повезивање са WiFi мрежом</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />да проверите конфигурацију проксија, заштитног зида и DNS-а<ph name="END_LINK" /></translation>
@@ -941,6 +947,7 @@
 <translation id="3906954721959377182">Таблет</translation>
 <translation id="3909477809443608991"><ph name="URL" /> жели да пусти заштићени садржај. Google ће потврдити идентитет уређаја и овај сајт ће моћи да му приступа.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Одбиј</translation>
 <translation id="3939773374150895049">Желите ли да користите WebAuthn уместо CVC-а?</translation>
 <translation id="3946209740501886391">Увек питај на овом сајту</translation>
 <translation id="3947595700203588284">Може да тражи да се повезује са MIDI уређајима</translation>
@@ -962,6 +969,7 @@
 <translation id="3990250421422698716">Протресање ради поравнања</translation>
 <translation id="3996311196211510766">Сајт <ph name="ORIGIN" /> је затражио да се смернице за порекло
     примене на све захтеве ка њему, али ове смернице тренутно не могу да се примене.</translation>
+<translation id="4009243425692662128">Садржај страница које штампате се шаље у Google Cloud или трећим странама на анализу. На пример, можда ће бити скениран у потрази за осетљивим подацима.</translation>
 <translation id="4010758435855888356">Желите ли да дозволите приступ меморијском простору?</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{PDF документ који садржи {COUNT} страницу}one{PDF документ који садржи {COUNT} страницу}few{PDF документ који садржи {COUNT} странице}other{PDF документ који садржи {COUNT} страница}}</translation>
 <translation id="4023431997072828269">Овај образац се шаље помоћу везе која није безбедна, па ће информације бити видљиве другима.</translation>
@@ -1056,6 +1064,7 @@
 <translation id="4250680216510889253">Не</translation>
 <translation id="4253168017788158739">Напомена</translation>
 <translation id="425582637250725228">Промене које сте унели можда неће бити сачуване.</translation>
+<translation id="425869179292622354">Желите ли да повећате безбедност помоћу виртуелне картице?</translation>
 <translation id="4258748452823770588">Неисправан потпис</translation>
 <translation id="4261046003697461417">Напомене не могу да се додају у заштићене документе</translation>
 <translation id="4265872034478892965">Дозвољава администратор</translation>
@@ -1566,6 +1575,7 @@
 <translation id="5921639886840618607">Желите ли да сачувате картицу на Google налогу?</translation>
 <translation id="5922853866070715753">Скоро је готово</translation>
 <translation id="5932224571077948991">Сајт приказује огласе који ометају активности или обмањујуће огласе</translation>
+<translation id="5938153366081463283">Додајте виртуелну картицу</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347">Отвара се <ph name="SITE_NAME" />…</translation>
 <translation id="5951495562196540101">Регистрација корисничког налога није успела (доступна је лиценца пакета).</translation>
@@ -2189,6 +2199,7 @@
 <translation id="7976214039405368314">Превише је захтева</translation>
 <translation id="7977538094055660992">Излазни уређај</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="7981260203882740562">Повезана са:</translation>
 <translation id="798134797138789862">Може да тражи да користи уређаје и податке виртуелне реалности</translation>
 <translation id="7984945080620862648">Тренутно не можете да посетите <ph name="SITE" /> зато што је веб-сајт послао шифроване акредитиве које Chrome не може да обради. Грешке и напади на мрежи су обично привремени, па ће ова страница вероватно функционисати касније.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2406,6 +2417,7 @@
 <translation id="8731544501227493793">Дугме Управљај лозинкама, притисните Enter да бисте прегледали лозинке и управљали њима у подешавањима Chrome-а</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" />-ом управља <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте отворили нов прозор без архивирања и прегледали приватно</translation>
+<translation id="8737685506611670901">отвори линкове за <ph name="PROTOCOL" /> уместо <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Да бисте успоставили безбедну везу, сат на уређају мора да буде тачан. То је зато што сертификати које веб-сајтови користе за идентификацију важе само одређени временски период. Пошто сат на вашем уређају није тачан, Chromium не може да верификује ове сертификате.</translation>
 <translation id="8740359287975076522">Нисмо успели да пронађемо &lt;abbr id="dnsDefinition"&gt;DNS адресу&lt;/abbr&gt; хоста <ph name="HOST_NAME" />. Покушавамо да утврдимо у чему је проблем.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> је ваш кôд за <ph name="ORIGIN" /></translation>
@@ -2483,6 +2495,7 @@
 <translation id="9004367719664099443">ВР сесија је у току</translation>
 <translation id="9005998258318286617">Учитавање PDF документа није успело.</translation>
 <translation id="9008201768610948239">Игнориши</translation>
+<translation id="901834265349196618">имејл</translation>
 <translation id="9020200922353704812">Адреса за обрачун за картицу је обавезна</translation>
 <translation id="9020542370529661692">Ова страница је преведена на <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

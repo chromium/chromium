@@ -105,6 +105,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1516740043221086139">Tryb Nie przeszkadzać jest włączony.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Pokaż ustawienia powiadomień. Jedna aplikacja ma wyłączone powiadomienia.}few{Pokaż ustawienia powiadomień. # aplikacje mają wyłączone powiadomienia.}many{Pokaż ustawienia powiadomień. # aplikacji ma wyłączone powiadomienia.}other{Pokaż ustawienia powiadomień. # aplikacji ma wyłączone powiadomienia.}}</translation>
 <translation id="1525508553941733066">ZAMKNIJ</translation>
+<translation id="1528259147807435347">Edytowane w zeszłym tygodniu</translation>
 <translation id="1536604384701784949">Jeśli chcesz użyć adresu <ph name="USER_EMAIL_ADDRESS" />, musisz najpierw wylogować się ze wszystkich kont. Aby to zrobić, kliknij Anuluj i wróć na poprzednią stronę. Kliknij na niej godzinę, aby otworzyć pasek stanu, i kliknij Wyloguj się. Następnie zaloguj się ponownie na konto <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
 <translation id="15373452373711364">Duży kursor myszy</translation>
 <translation id="1546492247443594934">Biurko 2</translation>
@@ -227,6 +228,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2427507373259914951">Kliknięcie lewym przyciskiem</translation>
 <translation id="2429753432712299108">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować. Zanim to zaakceptujesz, sprawdź, czy na tym urządzeniu wyświetla się klucz: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Pokaż hasło</translation>
+<translation id="243878895369688216">Otwierane wczoraj</translation>
 <translation id="24452542372838207">Rozwiń powiadomienie</translation>
 <translation id="2450205753526923158">Tryb zrzutu ekranu</translation>
 <translation id="2456008742792828469">Kalendarz, <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -275,6 +277,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2819276065543622893">Zostaniesz teraz wylogowany.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> nie obsługuje ustawienia <ph name="SPECIFIED_RESOLUTION" />. Rozdzielczość została zmieniona na <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Półka</translation>
+<translation id="2834813915651407382">Niedawno otwierane</translation>
 <translation id="2841907151129139818">Przełączono na tryb tabletu</translation>
 <translation id="2844169650293029770">Urządzenie USB-C (przedni port na lewym boku)</translation>
 <translation id="2849936225196189499">Krytyczne</translation>
@@ -393,6 +396,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3554637740840164787">Element <ph name="ITEM_TITLE" /> został przypięty</translation>
 <translation id="3560866052109807830">Narzędzia do rysowania znaczników</translation>
 <translation id="3563775809269155755">Włącz hotspot</translation>
+<translation id="3566240529365775567">Otwierane przed chwilą</translation>
 <translation id="3571734092741541777">Konfiguruj</translation>
 <translation id="3573179567135747900">Zmień z powrotem na „<ph name="FROM_LOCALE" />” (wymaga ponownego uruchomienia)</translation>
 <translation id="3576141592585647168">Zmień strefę czasową</translation>
@@ -427,6 +431,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3726171378575546917">Aplikacji <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ani jeszcze <ph name="UNAVAILABLE_APPS_COUNT" /> nie ma na tym urządzeniu.</translation>
 <translation id="3735740477244556633">Sortuj według</translation>
 <translation id="3742055079367172538">Wykonano zrzut ekranu</translation>
+<translation id="3765841986579723851">Edytowane dzisiaj</translation>
 <translation id="3771549900096082774">Tryb wysokiego kontrastu</translation>
 <translation id="3773700760453577392">Administrator nie zezwolił na wielokrotne logowanie użytkownika <ph name="USER_EMAIL" />. Aby kontynuować, wszyscy użytkownicy muszą się wylogować.</translation>
 <translation id="3779139509281456663">Łączę z urządzeniem <ph name="NAME" /></translation>
@@ -445,6 +450,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3846575436967432996">Brak informacji o sieciach</translation>
 <translation id="385051799172605136">Wstecz</translation>
 <translation id="385300504083504382">Początek</translation>
+<translation id="3886872229787704059">Otwierane dzisiaj</translation>
 <translation id="3891340733213178823">Naciśnij dwukrotnie Ctrl+Shift+Q, by się wylogować.</translation>
 <translation id="3893630138897523026">ChromeVox (komunikaty głosowe)</translation>
 <translation id="3897533311200664389">Rozpocznij zapytanie tekstowe</translation>
@@ -484,6 +490,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4173958948577803258">C</translation>
 <translation id="4177913004758410636">{0,plural, =1{Aktualizacja urządzenia nastąpi w ciągu 1 dnia}few{Aktualizacja urządzenia nastąpi w ciągu # dni}many{Aktualizacja urządzenia nastąpi w ciągu # dni}other{Aktualizacja urządzenia nastąpi w ciągu # dnia}}</translation>
 <translation id="4181841719683918333">Języki</translation>
+<translation id="4192112279662688596">lub</translation>
 <translation id="4195814663415092787">Kontynuuj od tego samego miejsca</translation>
 <translation id="4195877955194704651">Automatyczne klikanie przycisku</translation>
 <translation id="4197790712631116042">Wyłączono</translation>
@@ -532,6 +539,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4421231901400348175">Udostępnianie sterowania ekranem użytkownikowi <ph name="HELPER_NAME" /> przy użyciu pomocy zdalnej.</translation>
 <translation id="4424159417645388645">Biurko 5</translation>
 <translation id="4430019312045809116">Głośność</translation>
+<translation id="4441283832827406317">Aplikacje są posortowane według nazwy</translation>
 <translation id="4445159312344259901">Zaloguj się, aby odblokować</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 ważne powiadomienie}few{# ważne powiadomienia}many{# ważnych powiadomień}other{# ważnego powiadomienia}}</translation>
 <translation id="4450893287417543264">Nie pokazuj ponownie</translation>
@@ -675,6 +683,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (prawa)</translation>
 <translation id="5352250171825660495">Ciemny motyw jest włączony</translation>
 <translation id="5379115545237091094">Zbyt wiele prób</translation>
+<translation id="5393156353051693207">Naciśnij i przytrzymaj dowolne miejsce, aby zmienić kolejność aplikacji</translation>
 <translation id="5395308026110844773">Aplikacja <ph name="DRAGGED_APP_NAME" /> jest nad aplikacją <ph name="IN_PLACE_APP" /> – puść, by utworzyć folder.</translation>
 <translation id="5397578532367286026">Działania i historia tego użytkownika mogą być sprawdzane przez menedżera (<ph name="MANAGER_EMAIL" />) na chrome.com.</translation>
 <translation id="5400461572260843123">Szybkie ustawienia, naciśnij Wyszukaj + strzałka w lewo, by otworzyć centrum powiadomień.</translation>
@@ -780,6 +789,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6059276912018042191">Ostatnio przeglądane karty Chrome</translation>
 <translation id="6062360702481658777">Zostaniesz automatycznie wylogowany za <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Zatrzymaj nagrywanie</translation>
+<translation id="6099678161144790572">Edytowane w zeszłym miesiącu</translation>
 <translation id="6114505516289286752">Pliki z mową w języku: <ph name="LANGUAGE" /> zostały pobrane</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Potwierdź pobieranie pliku <ph name="FILENAME" /></translation>
@@ -878,6 +888,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6777216307882431711">Zasilanie podłączonych urządzeń USB-C</translation>
 <translation id="6786750046913594791">Zamknij folder</translation>
 <translation id="6790428901817661496">Odtwórz</translation>
+<translation id="6801878137098616817">Niedawno edytowane</translation>
 <translation id="6803622936009808957">Nie można wyświetlić odbicia lustrzanego, ponieważ nie znaleziono obsługiwanych rozdzielczości. Zamiast tego został włączony pulpit rozszerzony.</translation>
 <translation id="6811454077060061666">Dysk Google na komputer jest niedostępny</translation>
 <translation id="6818242057446442178">Cofnij o jedno słowo</translation>
@@ -886,10 +897,12 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6836499262298959512">Niebezpieczny plik</translation>
 <translation id="6837064795450991317">Ukryj pasek</translation>
 <translation id="6852052252232534364">Kliknij, by włączyć</translation>
+<translation id="6855029042976311970">Edytowane przed chwilą</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Pozostała 1 cyfra}few{Pozostały # cyfry}many{Pozostało # cyfr}other{Pozostało # cyfry}}</translation>
 <translation id="6867938213751067702">Pobieranie wstrzymane: <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Skrót wyłączony</translation>
+<translation id="6880133753431418782">Wcześniej tego szukano. Jeśli usuniesz to wyszukiwanie z historii, zostanie ono trwale usunięte z Twojego konta Google na wszystkich urządzeniach.</translation>
 <translation id="6884665277231944629">Wróć do dzisiaj</translation>
 <translation id="6886172995547742638">Twoje urządzenie <ph name="DEVICE_TYPE" /> może mieć gorszą wydajność. Używaj certyfikowanego zasilacza USB-C o mocy co najmniej <ph name="PREFERRED_MINIMUM_POWER" /> W.</translation>
 <translation id="688631446150864480">Aby przełączać okna, naciskaj klawisz strzałki w dół</translation>
@@ -928,6 +941,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7098389117866926363">Urządzenie USB-C (lewy port z tyłu)</translation>
 <translation id="7106330611027933926">Pokaż pasek</translation>
 <translation id="7118268675952955085">zrzut ekranu</translation>
+<translation id="7126996685418858413">Otwierane w zeszłym tygodniu</translation>
 <translation id="7130207228079676353">NAJBARDZIEJ PRAWDOPODOBNE</translation>
 <translation id="7131634465328662194">Nastąpi automatyczne wylogowanie.</translation>
 <translation id="7143207342074048698">Łączenie</translation>
@@ -939,6 +953,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7189412385142492784">Jak daleko jest Wenus</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Konieczne jest ponowne uruchomienie tego Chromebooka, by zainstalować aktualizację. Może to potrwać około minuty.</translation>
 <translation id="7256634071279256947">Tylny mikrofon</translation>
+<translation id="7258828758145722155">Edytowane wczoraj</translation>
 <translation id="726276584504105859">Przeciągnij tutaj, by podzielić ekran</translation>
 <translation id="7262906531272962081">Utwórz przypomnienie</translation>
 <translation id="7279434993080105272">Kolor pisaka: <ph name="COLOR_PARAMETER" /></translation>
@@ -958,6 +973,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7378203170292176219">Przeciągnij, by wybrać obszar, który chcesz nagrać</translation>
 <translation id="7378594059915113390">Sterowanie multimediami</translation>
 <translation id="7378889811480108604">Oszczędzanie baterii jest wyłączone.</translation>
+<translation id="7384028040782072252">Kliknij prawym przyciskiem w dowolnym miejscu, aby zmienić kolejność aplikacji</translation>
 <translation id="7392563512730092880">W każdej chwili możesz skonfigurować sterowanie telefonem w Ustawieniach.</translation>
 <translation id="7405710164030118432">Aby odblokować urządzenie, wpisz kod dostępu Family Link rodzica</translation>
 <translation id="7406608787870898861">Dokończ konfigurowanie sieci komórkowej</translation>
@@ -976,6 +992,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7483025031359818980">Jako obszar ustawiono cały ekran</translation>
 <translation id="7486227320194954040">Zwiń narzędzia pisaka</translation>
 <translation id="7497767806359279797">Wybierz język i klawiaturę</translation>
+<translation id="7508690557411636492">Otwierane w zeszłym miesiącu</translation>
 <translation id="7509246181739783082">Weryfikacja tożsamości</translation>
 <translation id="7513622367902644023">Wybrano tryb zrzutu ekranu</translation>
 <translation id="7513922695575567867">Kalendarz, tydzień do <ph name="DATE" />, obecnie wybrana jest data <ph name="SELECTED_DATE" />.</translation>
@@ -1009,6 +1026,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7654687942625752712">Naciśnij i przytrzymaj przez pięć sekund oba klawisze głośności, by wyłączyć komunikaty głosowe.</translation>
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7662283695561029522">Kliknij, by skonfigurować</translation>
+<translation id="7671610481353807627">Aplikacje są posortowane według koloru</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Dodaj nową sieć komórkową</translation>
 <translation id="7720410380936703141">SPRÓBUJ PONOWNIE</translation>
@@ -1145,6 +1163,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8563862697512465947">Ustawienia powiadomień</translation>
 <translation id="857201607579416096">Menu zostało przeniesione w prawy dolny róg ekranu.</translation>
 <translation id="8594115950068821369">–<ph name="FORMATTED_TIME" /></translation>
+<translation id="8598235756057743477">Posortuj aplikacje według nazwy lub koloru</translation>
 <translation id="8627191004499078455">Połączono z urządzeniem <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Ustawienia ułatwień dostępu</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />, zarządzana przez administratora</translation>

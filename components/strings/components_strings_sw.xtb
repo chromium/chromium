@@ -459,6 +459,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2337852623177822836">Mipangilio inadhibitiwa na msimamizi wako</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> inataka kuoanisha</translation>
 <translation id="2346319942568447007">Picha uliyonakili</translation>
+<translation id="2350796302381711542">Ungependa kuruhusu <ph name="HANDLER_HOSTNAME" /> kufungua viungo vyote vya <ph name="PROTOCOL" /> badala ya <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2354001756790975382">Alamisho zingine</translation>
 <translation id="2354430244986887761">Kipengele cha Kuvinjari Salama kwenye Google <ph name="BEGIN_LINK" />kilipata programu hasidi<ph name="END_LINK" /> kwenye <ph name="SITE" /> hivi majuzi.</translation>
 <translation id="2355395290879513365">Wavamizi wanaweza kuona picha unazoangalia kwenye tovuti hii na wakuhadae kwa kuzibadilisha.</translation>
@@ -484,6 +485,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2413528052993050574">Seva hii haikuweza kuthibitisha kuwa ni <ph name="DOMAIN" />; huenda cheti chake cha usalama kimebatilishwa. Hii inaweza kusababishwa na usanidi usiofaa au mvamizi kuingilia muunganisho wako.</translation>
 <translation id="2414886740292270097">Giza</translation>
 <translation id="2430968933669123598">Dhibiti Akaunti ya Google, bonyeza 'Enter' ili udhibiti maelezo, faragha na usalama wako katika Akaunti yako ya Google</translation>
+<translation id="2436186046335138073">Ungependa kuruhusu <ph name="HANDLER_HOSTNAME" /> kufungua viungo vyote vya <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Toboa mara nne kulia</translation>
 <translation id="2450021089947420533">Ziara</translation>
 <translation id="2463739503403862330">Jaza</translation>
@@ -633,6 +635,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2930577230479659665">Punguza baada ya kila nakala</translation>
 <translation id="2932085390869194046">Pendekeza Nenosiri…</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">Kufungua viungo vya <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">Seva hii haikuweza kuthibitisha kuwa ni <ph name="DOMAIN" />; cheti chake cha usalama kinatoka <ph name="DOMAIN2" />. Hii inaweza kusababishwa na usanidi usiofaa au mvamizi kuingilia muunganisho wako.</translation>
 <translation id="2943895734390379394">Muda wa Kupakia:</translation>
 <translation id="2948083400971632585">Unaweza kuzima proksi zozote zilizosanidiwa kwa muunganisho kutoka kwenye ukurasa wa mipangilio.</translation>
@@ -742,6 +745,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3288238092761586174">Huenda <ph name="URL" /> ikahitaji kuchukua hatua za ziada ili kuthibitisha malipo yako</translation>
 <translation id="3293642807462928945">Pata maelezo zaidi kuhusu sera ya <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Angalia na udhibiti manenosiri yako katika mipangilio ya Chrome</translation>
+<translation id="3303795387212510132">Ungependa kuruhusu programu ifungue viungo vya <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Hakuna matokeo ya utafutaji yaliyopatikana</translation>
 <translation id="3304073249511302126">kutafuta vifaa vyenye bluetooth</translation>
 <translation id="3308006649705061278">Sehemu ya Shirika (OU)</translation>
@@ -879,6 +883,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="370972442370243704">Washa kipengele cha Ziara</translation>
 <translation id="3711895659073496551">Sitisha</translation>
 <translation id="3712624925041724820">Leseni zimekwisha</translation>
+<translation id="3714633008798122362">kalenda ya wavuti</translation>
 <translation id="3714780639079136834">Kuwasha data ya simu au Wi-Fi</translation>
 <translation id="3715597595485130451">Unganisha kwenye Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Kuangalia seva mbadala, kingamtandao na mipangilio ya DNS<ph name="END_LINK" /></translation>
@@ -940,6 +945,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3906954721959377182">Kompyuta kibao</translation>
 <translation id="3909477809443608991"><ph name="URL" /> inataka kucheza maudhui yanayolindwa. Utambulisho wa kifaa chako utathibitishwa na Google na kinaweza kufikiwa na tovuti hii.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Kataza</translation>
 <translation id="3939773374150895049">Ungependa kutumia WebAuthn badala ya CVC?</translation>
 <translation id="3946209740501886391">Uliza kwenye tovuti hii kila wakati</translation>
 <translation id="3947595700203588284">Inaweza kuomba ruhusa ya kuunganisha kwenye vifaa vya MIDI</translation>
@@ -2402,6 +2408,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8731544501227493793">Kitufe cha 'Dhibiti manenosiri', bonyeza 'Enter' ili uangalie na udhibiti manenosiri yako katika mipangilio ya Chrome</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> yako inadhibitiwa na <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, bonyeza 'Tab' kisha 'Enter' ufungue dirisha jipya fiche ili uvinjari kwa faragha</translation>
+<translation id="8737685506611670901">Kufungua viungo vya <ph name="PROTOCOL" /> badala ya <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Ili kutambua muunganisho salama, saa yako inahitaji kuwekwa sahihi. Hii ni kwa sababu vyeti ambavyo tovuti hutumia kujitambua ni sahihi kwa vipindi mahususi pekee. Kwa kuwa saa ya kifaa chako si sahihi, Chromium haiwezi kuthibitisha vyeti hivi.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> &lt;abbr id="dnsDefinition"&gt;anwani ya DNS&lt;/abbr&gt; haikupatikana. Tatizo linachunguzwa.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> ni nambari yako ya <ph name="ORIGIN" /></translation>
@@ -2479,6 +2486,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="9004367719664099443">Kipindi cha VR kinaendelea</translation>
 <translation id="9005998258318286617">Imeshindwa kupakia hati ya PDF.</translation>
 <translation id="9008201768610948239">Puuza</translation>
+<translation id="901834265349196618">Barua pepe</translation>
 <translation id="9020200922353704812">Anwani ya kutuma bili ya kadi sharti iandikwe</translation>
 <translation id="9020542370529661692">Ukurasa huu umetafsiriwa kwenda <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

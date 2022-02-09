@@ -459,6 +459,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2337852623177822836">Cilësim i kontrolluar nga administratori yt</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> dëshiron të çiftohet</translation>
 <translation id="2346319942568447007">Imazhi që kopjove</translation>
+<translation id="2350796302381711542">Të lejohet <ph name="HANDLER_HOSTNAME" /> të hapë të gjitha lidhjet <ph name="PROTOCOL" /> në vend të <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2354001756790975382">Faqeshënues të tjerë</translation>
 <translation id="2354430244986887761">"Shfletimi i sigurt i Google" zbuloi së fundi <ph name="BEGIN_LINK" />aplikacione të dëmshme<ph name="END_LINK" /> në <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Sulmuesit mund të arrijnë t'i shikojnë imazhet që po shikon në këtë sajt dhe të të mashtrojnë duke i modifikuar ato.</translation>
@@ -484,6 +485,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2413528052993050574">Ky server nuk mund të dëshmonte se është  <ph name="DOMAIN" />; certifikata e tij e sigurisë mund të jetë e revokuar. Kjo mund të shkaktohet nga një konfigurim i pasaktë ose nga ndërhyrja e një sulmuesi në lidhjen tënde.</translation>
 <translation id="2414886740292270097">E errët</translation>
 <translation id="2430968933669123598">Menaxho "Llogarinë e Google", shtyp Enter për të menaxhuar informacionin, privatësinë dhe sigurinë tënde në "Llogarinë tënde të Google"</translation>
+<translation id="2436186046335138073">Të lejohet <ph name="HANDLER_HOSTNAME" /> të hapë të gjitha lidhjet <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Katër shpime djathtas</translation>
 <translation id="2450021089947420533">Udhëtimet</translation>
 <translation id="2463739503403862330">Plotëso</translation>
@@ -633,6 +635,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2930577230479659665">Prerje pas çdo kopjeje</translation>
 <translation id="2932085390869194046">Sugjero një fjalëkalim...</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">Hap lidhjet e <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">Ky server nuk mund të dëshmonte se është <ph name="DOMAIN" />; certifikata e tij e sigurisë është nga <ph name="DOMAIN2" />. Kjo mund të shkaktohet nga një konfigurim i pasaktë ose nga ndërhyrja e një sulmuesi në lidhjen tënde.</translation>
 <translation id="2943895734390379394">Koha e ngarkimit:</translation>
 <translation id="2948083400971632585">Mund të çaktivizosh çdo përfaqësues të konfiguruar për një lidhje nga faqja e cilësimeve.</translation>
@@ -742,6 +745,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3288238092761586174"><ph name="URL" /> mund të duhet të marrë hapa të mëtejshëm për të verifikuar pagesën tënde</translation>
 <translation id="3293642807462928945">Mëso më shumë për politikën <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Shiko dhe menaxho fjalëkalimet e tua te cilësimet e Chrome</translation>
+<translation id="3303795387212510132">Të lejohet aplikacioni të hapë lidhje <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Nuk u gjetën rezultate kërkimi</translation>
 <translation id="3304073249511302126">Skanimi i Bluetooth-it</translation>
 <translation id="3308006649705061278">Njësia organizative (OU)</translation>
@@ -879,6 +883,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="370972442370243704">Aktivizo "Udhëtimet"</translation>
 <translation id="3711895659073496551">Pezullo</translation>
 <translation id="3712624925041724820">Licencat janë shfrytëzuar</translation>
+<translation id="3714633008798122362">kalendari në ueb</translation>
 <translation id="3714780639079136834">Të aktivizosh të dhënat celulare ose Wi-Fi</translation>
 <translation id="3715597595485130451">Lidhu me Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Të kontrollosh përfaqësuesin, murin mbrojtës dhe konfigurimin e DNS-së<ph name="END_LINK" /></translation>
@@ -940,6 +945,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> dëshiron të luajë përmbajtjen e mbrojtur. Identiteti i pajisjes sate do të verifikohet nga Google dhe mund të qaset nga ky sajt.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Refuzo</translation>
 <translation id="3939773374150895049">Të përdoret WebAuthn në vend të CVC?</translation>
 <translation id="3946209740501886391">Gjithmonë pyet në këtë faqe</translation>
 <translation id="3947595700203588284">Mund të kërkojë të lidhet me pajisjet MIDI</translation>
@@ -2402,6 +2408,7 @@ Detaje shtesë:
 <translation id="8731544501227493793">Menaxho butonin e fjalëkalimeve, shtyp "Enter" për të parë dhe menaxhuar fjalëkalimet e tua në cilësimet e Chrome</translation>
 <translation id="8734529307927223492">Pajisja jote <ph name="DEVICE_TYPE" /> menaxhohet nga <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab", më pas "Enter" për të hapur një dritare të re "të fshehtë" për të shfletuar në mënyrë private</translation>
+<translation id="8737685506611670901">Hap lidhjet e <ph name="PROTOCOL" /> në vend të <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Për të krijuar një lidhje të sigurt, ora duhet të vendoset në mënyrë të saktë. Kjo ndodh sepse certifikatat që përdorin sajtet e internetit për t'u identifikuar janë të vlefshme vetëm për periudha specifike kohore. Meqenëse ora e pajisjes është e pasaktë, Chromium nuk mund t'i verifikojë këto certifikata.</translation>
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;Adresa DNS&lt;/abbr&gt; e <ph name="HOST_NAME" /> nuk mund të gjendej. Problemi po diagnostikohet.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> është kodi për <ph name="ORIGIN" /></translation>
@@ -2479,6 +2486,7 @@ Detaje shtesë:
 <translation id="9004367719664099443">Sesioni VR në proces</translation>
 <translation id="9005998258318286617">Ngarkimi i dokumentit PDF dështoi.</translation>
 <translation id="9008201768610948239">Shpërfill</translation>
+<translation id="901834265349196618">mail</translation>
 <translation id="9020200922353704812">Adresa e faturimit të kartës është e detyrueshme</translation>
 <translation id="9020542370529661692">Kjo faqe është përkthyer në <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

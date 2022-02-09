@@ -461,6 +461,7 @@
 <translation id="2337852623177822836">Ayara administrator tərəfindən nəzarət edilir</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ütləndirmək istəyir</translation>
 <translation id="2346319942568447007">Kopyalanmış şəkil</translation>
+<translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> hostuna <ph name="REPLACED_HANDLER_TITLE" /> əvəzinə <ph name="PROTOCOL" /> linklərinin açılması icazəsi verilsin?</translation>
 <translation id="2354001756790975382">Digər əlfəcinlər</translation>
 <translation id="2354430244986887761">Təhlükəsiz Google Axtarış bu yaxınlarda <ph name="SITE" /> saytında <ph name="BEGIN_LINK" />zərərli tətbiq tapdı<ph name="END_LINK" />.</translation>
 <translation id="2355395290879513365">Hücumçular bu saytda baxdığınız şəkilləri görə bilər və onları deyişdirərək Sizi aldada bilər.</translation>
@@ -486,6 +487,7 @@
 <translation id="2413528052993050574">Bu server <ph name="DOMAIN" /> domenini təsdiqləyə bilmir; təhlükəsizlik sertifikatı ləğv edilə bilər. Buna yanlış konfiqurasiya və ya hücumçu tərəfindən bağlantının ələ keçirilməsi səbəb ola bilər.</translation>
 <translation id="2414886740292270097">Qara</translation>
 <translation id="2430968933669123598">"Google Hesabını idarə edin" düyməsi, Enter düyməsinə basaraq Google Hesabınızda məlumat, məxfilik və təhlükəsizliyinizi idarə edin</translation>
+<translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> hostuna bütün <ph name="PROTOCOL" /> linklərini açmaq icazəsi verirsiniz?</translation>
 <translation id="2438874542388153331">Sağdan dördlü deşik açın</translation>
 <translation id="2450021089947420533">Baxışlar</translation>
 <translation id="2463739503403862330">Doldurun</translation>
@@ -635,6 +637,7 @@
 <translation id="2930577230479659665">Hər kopyadan sonra kəsin</translation>
 <translation id="2932085390869194046">Parol təklif edin...</translation>
 <translation id="2934466151127459956">Hökumət Məktubu</translation>
+<translation id="2938225289965773019"><ph name="PROTOCOL" /> linklərini açın</translation>
 <translation id="2941952326391522266">Server <ph name="DOMAIN" /> olmasını sübut edə bilmədi; güvənlik sertifikatı <ph name="DOMAIN2" /> domenindəndir.</translation>
 <translation id="2943895734390379394">Yükləmə Vaxtı:</translation>
 <translation id="2948083400971632585">Ayarlar səhifəsindən bağlantı üçün sazlanmış istənilən proksini deaktiv edə bilərsiniz.</translation>
@@ -742,6 +745,7 @@
 <translation id="3288238092761586174"><ph name="URL" /> ödənişinizi doğrulamaq üçün əlavə addımlar atmalı ola bilər</translation>
 <translation id="3293642807462928945"><ph name="POLICY_NAME" /> siyasəti haqqında ətraflı məlumat əldə edin</translation>
 <translation id="3295444047715739395">Parollarınıza Chrome ayarlarında baxın və idarə edin</translation>
+<translation id="3303795387212510132">Tətbiqin <ph name="PROTOCOL_SCHEME" /> keçidlərini açmasına icazə verilsin?</translation>
 <translation id="3303855915957856445">Heç bir axtarış nəticəsi tapılmadı</translation>
 <translation id="3304073249511302126">bluetooth skanlaması</translation>
 <translation id="3308006649705061278">Təşkilati Birlik (OU)</translation>
@@ -877,6 +881,7 @@
 <translation id="370972442370243704">Baxışları aktiv edin</translation>
 <translation id="3711895659073496551">Durdurun</translation>
 <translation id="3712624925041724820">Lisenziyalar bitib</translation>
+<translation id="3714633008798122362">veb təqvimi</translation>
 <translation id="3714780639079136834">Mobil data və ya Wi-Fi aktiv edilir</translation>
 <translation id="3715597595485130451">Wi-Fi'a qoşulun</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Proksi, güvənlik divarı və DNS konfiqurasiyası yoxlanılır<ph name="END_LINK" /></translation>
@@ -938,6 +943,7 @@
 <translation id="3906954721959377182">Planşet</translation>
 <translation id="3909477809443608991"><ph name="URL" /> qorunan kontenti oxutmaq istəyir. Cihazın kimliyi Google tərəfindən doğrulanacaq və bu sayt cihaza daxil ola biləcək.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Rədd edin</translation>
 <translation id="3939773374150895049">CVC əvəzinə WebAuthn istifadə edilsin?</translation>
 <translation id="3946209740501886391">Həmişə bu saytda sual verin</translation>
 <translation id="3947595700203588284">Saytlar MIDI cihazlarına qoşulmaq üçün icazə istəyə bilər</translation>
@@ -1053,6 +1059,7 @@
 <translation id="4250680216510889253">Yox</translation>
 <translation id="4253168017788158739">Qeyd</translation>
 <translation id="425582637250725228">Etdiyiniz dəyişikliklər yadda saxlanıla bilməz.</translation>
+<translation id="425869179292622354">Virtual kart ilə güvənliyi artırılsın?</translation>
 <translation id="4258748452823770588">Yanlış imza</translation>
 <translation id="4261046003697461417">Qorunan sənədlərdə annotasiya mümkün deyil</translation>
 <translation id="4265872034478892965">Administrator tərəfindən icazə verildi</translation>
@@ -1563,6 +1570,7 @@
 <translation id="5921639886840618607">Kart Google Hesabında yadda saxlanılsın?</translation>
 <translation id="5922853866070715753">Demək olar ki, hazırdır</translation>
 <translation id="5932224571077948991">Sayt intruziv və ya aldadıcı reklamlar göstərir</translation>
+<translation id="5938153366081463283">Virtual kart əlavə edin</translation>
 <translation id="5938793338444039872">Troy</translation>
 <translation id="5946937721014915347"><ph name="SITE_NAME" /> açılır…</translation>
 <translation id="5951495562196540101">Müştəri hesabı (toplu lisenziya əlçatandır) ilə qeydiyyatdan keçmək mümkün deyil.</translation>
@@ -2187,6 +2195,7 @@
 <translation id="7976214039405368314">Həddən çox sorğu var</translation>
 <translation id="7977538094055660992">Çıxış cihazı</translation>
 <translation id="7977894662897852582">Edp</translation>
+<translation id="7981260203882740562">Bununla əlaqələndirilib:</translation>
 <translation id="798134797138789862">Saytlar virtual reallıq cihazları və datadan istifadə üçün icazə istəyə bilər</translation>
 <translation id="7984945080620862648">Sayt güvənsiz kredensiallar göndərdiyi üçün <ph name="SITE" /> ünvanına girə bilməzsiniz.</translation>
 <translation id="7986319120639858961"><ph name="CARD_TITLE" /> <ph name="TIME" /> <ph name="BOOKMARKED" /> <ph name="TITLE" /> <ph name="DOMAIN" /></translation>
@@ -2403,6 +2412,7 @@
 <translation id="8731544501227493793">"Parolları idarə edin" düyməsi, Chrome ayarlarında parollarınıza baxmaq və idarə etmək üçün Enter düyməsinə basın</translation>
 <translation id="8734529307927223492"><ph name="DEVICE_TYPE" /> cihazınız <ph name="MANAGER" /> tərəfindən idarə edilir</translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq yeni Anonim pəncərə açın və gizli baxış keçirin</translation>
+<translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> əvəzinə <ph name="PROTOCOL" /> linklərini açın</translation>
 <translation id="8738058698779197622">Güvənli bağlantı yaratmaq üçün saatınız düzgün ayarlanmalıdır. Çünki saytların işlətdikləri sertifikatlar zamana bağlıdır. Saatınız düzgün işləmədiyi halda Chromium bu sertifikatları doğrulaya bilmir.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" />’s &lt;abbr id="dnsDefinition"&gt;DNS address&lt;/abbr&gt; tapılmadı. Problem təyin edilir.</translation>
 <translation id="8742371904523228557"><ph name="ORIGIN" /> üçün kodunuz: <ph name="ONE_TIME_CODE" /></translation>
@@ -2480,6 +2490,7 @@
 <translation id="9004367719664099443">VR sessiyası davam edir</translation>
 <translation id="9005998258318286617">PDF sənədini yükləmək alınmadı.</translation>
 <translation id="9008201768610948239">İqnor</translation>
+<translation id="901834265349196618">e-poçt</translation>
 <translation id="9020200922353704812">Kart faktura ünvanı tələb edilir</translation>
 <translation id="9020542370529661692">Bu səhifə <ph name="TARGET_LANGUAGE" /> dilinə tərcümə edilmişdir</translation>
 <translation id="9020742383383852663">A8</translation>

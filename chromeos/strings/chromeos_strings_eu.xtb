@@ -13,6 +13,7 @@
 <translation id="1119447706177454957">Barneko errorea</translation>
 <translation id="1124772482545689468">Erabiltzailea</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1145018782460575098">Kanpoko gailuen firmwarea eguneratzeko leihoa irekita dago. <ph name="NUM_UPDATES" /> eguneratze daude.</translation>
 <translation id="1175697296044146566"><ph name="MANAGER" /> domeinuak kudeatzen du <ph name="DEVICE_TYPE" /> gailua.</translation>
 <translation id="1175951029573070619">Normala (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Kendu</translation>
@@ -26,6 +27,7 @@
 <translation id="1270369111467284986">Sare-zerbitzuaren ataria dirudi</translation>
 <translation id="1290331692326790741">Seinale ahula</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308754910631152188">Eguneratzen (% <ph name="PERCENTAGE_VALUE" /> osatu da)</translation>
 <translation id="1310380015393971138">Ez dago <ph name="NETWORK_NAME" /> sarerik erabilgarri</translation>
 <translation id="1314565355471455267">Android VPN sarea</translation>
 <translation id="131461803491198646">Tokiko sarea, ez ibiltaritza</translation>
@@ -43,10 +45,12 @@
 <translation id="1468664791493211953">Eskaintzak</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> domeinuak kudeatzen du gailu hau, eta baliteke zure jardueren jarraipena egin ahal izatea.</translation>
 <translation id="1478594628797167447">Eskanerra</translation>
+<translation id="1491076385728777984"><ph name="DEVICE_NAME" /> gailuaren firmwarea eguneratzen</translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> domeinuak kudeatzen du erabiltzaile hau, eta baliteke urrunetik haren ezarpenak kudeatzea eta jarduerak gainbegiratzea.</translation>
 <translation id="150962533380566081">PUK kodeak ez du balio.</translation>
 <translation id="1510238584712386396">Abiarazlea</translation>
 <translation id="155865706765934889">Ukipen-teklatua</translation>
+<translation id="1565038567006703504">Ezin da eguneratu <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albumak</translation>
 <translation id="1572585716423026576">Ezarri horma-paper gisa</translation>
 <translation id="1621067168122174824">Abiarazi kargatzeko prozesuaren proba</translation>
@@ -117,6 +121,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Freskatu oraingo horma-paperaren irudia</translation>
 <translation id="2517472476991765520">Bilatu</translation>
+<translation id="253029298928638905">Berrabiarazten…</translation>
 <translation id="2536159006530886390">Ezin da konektatu Internetera.</translation>
 <translation id="2570743873672969996">Abian da <ph name="TEST_NAME" /> proba…</translation>
 <translation id="2584559707064218956">Konfiguratzeko, joan ezarpenetara</translation>
@@ -206,6 +211,7 @@
 <translation id="3967822245660637423">Deskargatzen amaitu da</translation>
 <translation id="397105322502079400">Kalkulatzen…</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> egun baino gehiagoko inprimatze-lanak kendu egingo dira</translation>
+<translation id="3993704782688964914"><ph name="DEVICE_NAME" /> eguneratuta dago</translation>
 <translation id="4003384961948020559">Hutsegitea - Irteera-erretilua beteta dago</translation>
 <translation id="4034824040120875894">Inprimagailua</translation>
 <translation id="4044093238444069296">Ezin da jarri harremanetan atebidearekin</translation>
@@ -232,6 +238,7 @@
 <translation id="4378373042927530923">Ez da exekutatu</translation>
 <translation id="4378551569595875038">Konektatzen…</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="439429847087949098"><ph name="DEVICE_NAME" /> berrabiarazten</translation>
 <translation id="4418498623216225764">Eguneratu gailu periferikoak</translation>
 <translation id="4425149324548788773">Nire unitatea</translation>
 <translation id="4428374560396076622">Desaktibatuta dago <ph name="NETWORK_NAME" /></translation>
@@ -248,6 +255,7 @@
 <translation id="4521826082652183069">Gaiaren ordezko izenaren bat-etortzea</translation>
 <translation id="4536864596629708641">IParen konfigurazioa</translation>
 <translation id="4548483925627140043">Ez da aurkitu seinalea</translation>
+<translation id="4556753742174065117">Firmwarea eguneratuta dago</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" /> mAh-ko bateria</translation>
 <translation id="4561801978359312462">SIM desblokeatuta dago</translation>
 <translation id="4562494484721939086">Zerbitzurik ez</translation>
@@ -434,6 +442,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="680983167891198932">Gakoa</translation>
 <translation id="6816797338148849397">Eskuragarri dago zure hautapenari buruzko informazioa. Erabili gora egiteko gezi-tekla informazioa atzitzeko.</translation>
 <translation id="6853312040151791195">Bateriaren deskargatze-abiadura</translation>
+<translation id="6889786074662672253">Gailua eguneratu bitartean, ez deskonektatu kanpoko gailua edo ez itzali ordenagailua. Leihoa minimiza dezakezu. Agian minutu batzuk beharko dira eguneratzea instalatzeko, eta baliteke kanpoko gailuak denbora tarte horretan ez funtzionatzea.</translation>
 <translation id="6905724422583748843">Itzuli <ph name="PAGE_NAME" /> orrira</translation>
 <translation id="6910312834584889076">Eskanerraren estalkia irekita dago. Itxi ezazu eta saiatu berriro.</translation>
 <translation id="6911383237894364323">Ezin da konektatu multimedia-zerbitzarietara</translation>

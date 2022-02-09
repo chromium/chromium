@@ -120,6 +120,7 @@
 <translation id="1682195225331129001">Пробајте</translation>
 <translation id="1697284962337958118">Додајте на/у</translation>
 <translation id="1702543251015153180">Желите да промените подешавања тамне теме?</translation>
+<translation id="1702907158640575240">Управљани прегледач</translation>
 <translation id="1718835860248848330">Последњих сат времена</translation>
 <translation id="1724977129262658800">Откључајте да бисте изменили лозинку</translation>
 <translation id="1726477445370128854">Можете да прегледате и претражујете брже када Chrome предучита странице за које сматра да ћете их можда посетити</translation>
@@ -224,7 +225,6 @@
 <translation id="2321958826496381788">Превлачите клизач док ово не будете могли лако да прочитате. Када двапут додирнете пасус, текст треба да буде бар оволики.</translation>
 <translation id="2323763861024343754">Меморијски простор за сајт</translation>
 <translation id="2328985652426384049">Не могу да се пријавим</translation>
-<translation id="2342601525305963189">Савети за Chrome:</translation>
 <translation id="234265804618409743">Не можемо да отворимо камеру. Нешто није у реду.</translation>
 <translation id="2349710944427398404">Сви подаци које користи Chrome, укључујући налоге, обележиваче и сачувана подешавања</translation>
 <translation id="2353636109065292463">Проверава се интернет веза</translation>
@@ -568,9 +568,11 @@
 <translation id="4402611456429872546"><ph name="LANG" /> – Преузима се…</translation>
 <translation id="4404568932422911380">Нема обележивача</translation>
 <translation id="4405224443901389797">Премести у...</translation>
+<translation id="4405636711880428279">Желите да уклоните виртуелну картицу?</translation>
 <translation id="4409271659088619928">Ваш претраживач је <ph name="DSE" />. Погледајте упутства тог претраживача за брисање историје претраге ако је то примењиво.</translation>
 <translation id="4415276339145661267">Управљајте Google налогом</translation>
 <translation id="4425140285732600465">Цена се прати. Добијајте обавештења када се цена снизи на било ком сајту.</translation>
+<translation id="442518031075347249">Више нећете моћи да користите виртуелну картицу уз Google Pay. <ph name="BEGIN_LINK1" />Сазнајте више о виртуелним картицама<ph name="END_LINK1" /></translation>
 <translation id="4450672886426705087">Резултати претраге са Google-а.</translation>
 <translation id="4452411734226507615">Затвори картицу <ph name="TAB_TITLE" /></translation>
 <translation id="4452548195519783679">Обележивач је додат у <ph name="FOLDER_NAME" /></translation>

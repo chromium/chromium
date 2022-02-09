@@ -460,6 +460,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2337852623177822836">Inställningen styrs av administratören</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> vill kopplas</translation>
 <translation id="2346319942568447007">Bilden som du kopierade</translation>
+<translation id="2350796302381711542">Vill du tillåta att <ph name="HANDLER_HOSTNAME" /> öppnar alla <ph name="PROTOCOL" />-länkar i stället för <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2354001756790975382">Övriga bokmärken</translation>
 <translation id="2354430244986887761">Google Säker webbsökning <ph name="BEGIN_LINK" />hittade skadliga appar<ph name="END_LINK" /> nyligen på <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Det är möjligt att hackare kan se vilka bilder du visar på den här webbplatsen och att de försöker lura dig genom att modifiera dem.</translation>
@@ -485,6 +486,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2413528052993050574">Servern kunde inte bevisa att den är <ph name="DOMAIN" /> eftersom dess säkerhetscertifikat kan ha återkallats. Detta kan orsakas av en felaktig konfigurering eller att någon spärrar anslutningen.</translation>
 <translation id="2414886740292270097">Mörk</translation>
 <translation id="2430968933669123598">Hantera Google-kontot: tryck på Retur om du vill hantera uppgifter, integritet och säkerhet i Google-kontot</translation>
+<translation id="2436186046335138073">Vill du tillåta att <ph name="HANDLER_HOSTNAME" /> öppnar alla <ph name="PROTOCOL" />-länkar?</translation>
 <translation id="2438874542388153331">Fyra hål till höger</translation>
 <translation id="2450021089947420533">Sökningar</translation>
 <translation id="2463739503403862330">Fyll i</translation>
@@ -634,6 +636,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2930577230479659665">Beskär efter varje exemplar</translation>
 <translation id="2932085390869194046">Föreslå lösenord …</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">Öppna <ph name="PROTOCOL" />-länkar</translation>
 <translation id="2941952326391522266">Servern kunde inte bevisa att den är <ph name="DOMAIN" /> eftersom dess säkerhetscertifikat kommer från <ph name="DOMAIN2" />. Detta kan orsakas av en felaktig konfigurering eller att någon spärrar anslutningen.</translation>
 <translation id="2943895734390379394">Uppladdningstid:</translation>
 <translation id="2948083400971632585">Du kan inaktivera alla proxyservrar som har konfigurerats för en anslutning från sidan Inställningar.</translation>
@@ -743,6 +746,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3288238092761586174"><ph name="URL" /> kan behöva vidta ytterligare steg för att verifiera din betalning</translation>
 <translation id="3293642807462928945">Läs mer om principen <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Visa och hantera dina lösenord i inställningarna för Chrome</translation>
+<translation id="3303795387212510132">Vill du tillåta att appen öppnar <ph name="PROTOCOL_SCHEME" />-länkar?</translation>
 <translation id="3303855915957856445">Inga sökresultat hittades</translation>
 <translation id="3304073249511302126">Bluetooth-sökning</translation>
 <translation id="3308006649705061278">Organisationsenhet (OU)</translation>
@@ -880,6 +884,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="370972442370243704">Aktivera sökningar</translation>
 <translation id="3711895659073496551">Stäng av</translation>
 <translation id="3712624925041724820">Licenserna har tagit slut</translation>
+<translation id="3714633008798122362">webbkalender</translation>
 <translation id="3714780639079136834">aktivera mobildata eller wifi</translation>
 <translation id="3715597595485130451">Anslut till wifi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />kontrollera proxyn, brandväggen och DNS-konfigureringen<ph name="END_LINK" /></translation>
@@ -941,6 +946,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3906954721959377182">Surfplatta</translation>
 <translation id="3909477809443608991"><ph name="URL" /> vill spela upp skyddat innehåll. Enhetens identitet verifieras av Google och kan öppnas av webbplatsen.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Neka</translation>
 <translation id="3939773374150895049">Vill du använda WebAuthn i stället för CVC?</translation>
 <translation id="3946209740501886391">Fråga alltid på den här webbplatsen</translation>
 <translation id="3947595700203588284">Får begära tillstånd att ansluta till MIDI-enheter</translation>
@@ -2407,6 +2413,7 @@ Mer information:
 <translation id="8731544501227493793">Knappen Hantera lösenord, tryck på Retur om du vill visa och hantera lösenord i inställningarna för Chrome</translation>
 <translation id="8734529307927223492">Din <ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryck på Tabb och sedan på Retur om du vill öppna ett nytt inkognitofönster och surfa privat</translation>
+<translation id="8737685506611670901">Öppna <ph name="PROTOCOL" />-länkar i stället för <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Om du vill upprätta en säker anslutning måste klockan vara rätt inställd. Det beror på att certifikaten som webbplatserna använder för att identifiera sig endast är giltiga under vissa tidsperioder. Chromium kan inte verifiera certifikaten eftersom klockan på enheten inte stämmer.</translation>
 <translation id="8740359287975076522">Det gick inte att hitta <ph name="HOST_NAME" />s &lt;abbr id="dnsDefinition"&gt;DNS-adress&lt;/abbr&gt;. Diagnostiserar problemet.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> är din kod för <ph name="ORIGIN" /></translation>
@@ -2484,6 +2491,7 @@ Mer information:
 <translation id="9004367719664099443">En VR-session pågår</translation>
 <translation id="9005998258318286617">Det gick inte att läsa in PDF-dokumentet.</translation>
 <translation id="9008201768610948239">Ignorera</translation>
+<translation id="901834265349196618">e-post</translation>
 <translation id="9020200922353704812">Kortets faktureringsadress måste anges</translation>
 <translation id="9020542370529661692">Den här sidan har översatts till <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>

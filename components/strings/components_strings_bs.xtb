@@ -461,6 +461,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2337852623177822836">Postavkom upravlja administrator</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> se želi upariti</translation>
 <translation id="2346319942568447007">Slika koju ste kopirali</translation>
+<translation id="2350796302381711542">Dozvoliti da <ph name="HANDLER_HOSTNAME" /> otvori sve linkove za <ph name="PROTOCOL" /> umjesto obrađivača <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2354001756790975382">Ostale oznake</translation>
 <translation id="2354430244986887761">Usluga Sigurno pregledanje na Googleu je nedavno <ph name="BEGIN_LINK" />pronašla štetne aplikacije <ph name="END_LINK" /> na web lokaciji <ph name="SITE" />.</translation>
 <translation id="2355395290879513365">Napadači mogu vidjeti slike koje gledate na ovoj web lokaciji i navesti vas da ih izmijenite.</translation>
@@ -486,6 +487,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2413528052993050574">Ovaj server nije uspio dokazati da je <ph name="DOMAIN" />; možda je njegova potvrda sigurnosti opozvana. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu.</translation>
 <translation id="2414886740292270097">Tamno</translation>
 <translation id="2430968933669123598">Upravljajte Google računom, pritisnite Enter da upravljate informacijama, privatnošću i sigurnošću na Google računu</translation>
+<translation id="2436186046335138073">Dozvoliti da <ph name="HANDLER_HOSTNAME" /> otvori sve linkove za protokol <ph name="PROTOCOL" />?</translation>
 <translation id="2438874542388153331">Četverostruko bušenje na desnoj strani</translation>
 <translation id="2450021089947420533">Iskustva pregledanja</translation>
 <translation id="2463739503403862330">Ispuni</translation>
@@ -635,6 +637,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2930577230479659665">Skraćivanje nakon svakog primjerka</translation>
 <translation id="2932085390869194046">Predloži lozinku…</translation>
 <translation id="2934466151127459956">Government-Letter</translation>
+<translation id="2938225289965773019">Otvoriti linkove protokola <ph name="PROTOCOL" /></translation>
 <translation id="2941952326391522266">Ovaj server nije uspio dokazati da je <ph name="DOMAIN" />. Njegova potvrda sigurnosti je s domene <ph name="DOMAIN2" />. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu.</translation>
 <translation id="2943895734390379394">Vrijeme otpremanja:</translation>
 <translation id="2948083400971632585">U Postavkama možete onemogućiti bilo koji proksi server koji je konfiguriran za povezivanje.</translation>
@@ -744,6 +747,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3288238092761586174"><ph name="URL" /> možda mora poduzeti dodatne korake da potvrdi vaše plaćanje</translation>
 <translation id="3293642807462928945">Saznajte više o pravilu <ph name="POLICY_NAME" /></translation>
 <translation id="3295444047715739395">Pregledajte lozinke i upravljajte njima u postavkama Chromea</translation>
+<translation id="3303795387212510132">Dozvoliti da aplikacija otvori linkove <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303855915957856445">Nije pronađen nijedan rezultat pretraživanja</translation>
 <translation id="3304073249511302126">skeniranje Bluetootha</translation>
 <translation id="3308006649705061278">Organizaciona jedinica (OU)</translation>
@@ -881,6 +885,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="370972442370243704">Uključi iskustva pregledanja</translation>
 <translation id="3711895659073496551">Obustavi</translation>
 <translation id="3712624925041724820">Licence su potrošene</translation>
+<translation id="3714633008798122362">web kalendar</translation>
 <translation id="3714780639079136834">Uključivanje prijenosa podataka na mobilnoj mreži ili WiFi-ja</translation>
 <translation id="3715597595485130451">Povežite se s WiFi mrežom</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />provjerite proxy, vatrozid i konfiguraciju DNS-a<ph name="END_LINK" /></translation>
@@ -942,6 +947,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909477809443608991">URL <ph name="URL" /> želi reproducirati zaštićeni sadržaj. Identitet vašeg uređaja će potvrditi Google i ova web lokacija mu može pristupiti.</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
+<translation id="3927932062596804919">Odbij</translation>
 <translation id="3939773374150895049">Koristiti mrežnu provjeru autentičnosti umjesto CVC-a?</translation>
 <translation id="3946209740501886391">Uvijek pitaj na ovoj web lokaciji</translation>
 <translation id="3947595700203588284">Može tražiti da se poveže na MIDI uređaje</translation>
@@ -2408,6 +2414,7 @@ Dodatni detalji:
 <translation id="8731544501227493793">Dugme Upravljaj lozinkama, pritisnite Enter da pregledate lozinke i upravljate njima u postavkama Chromea</translation>
 <translation id="8734529307927223492">Uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" /></translation>
 <translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pritisnite Tab, a zatim Enter da otvorite novi anonimni prozor i da privatno pregledate</translation>
+<translation id="8737685506611670901">Otvaranje linkova protokola <ph name="PROTOCOL" /> umjesto obrađivača <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Ispravno podesite sat da uspostavite sigurnu vezu. Razlog tome je taj što su certifikati koji web lokacije koriste da se identificiraju valjane samo na određeni period. Kako sat na vašem uređaju nije ispravan, Chromium ne može provjeriti ove certifikate.</translation>
 <translation id="8740359287975076522">Nije moguće pronaći &lt;abbr id="dnsDefinition"&gt;DNS adresu&lt;/abbr&gt; host računara <ph name="HOST_NAME" />. Dijagnosticiranje problema.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> je vaš kôd za <ph name="ORIGIN" /></translation>
@@ -2485,6 +2492,7 @@ Dodatni detalji:
 <translation id="9004367719664099443">VR sesija je u toku</translation>
 <translation id="9005998258318286617">Učitavanje PDF dokumenta nije uspjelo.</translation>
 <translation id="9008201768610948239">Zanemari</translation>
+<translation id="901834265349196618">e-pošta</translation>
 <translation id="9020200922353704812">Potrebna je adresa za naplatu kartice</translation>
 <translation id="9020542370529661692">Ova stranica je prevedena na <ph name="TARGET_LANGUAGE" /> jezik</translation>
 <translation id="9020742383383852663">A8</translation>

@@ -116,6 +116,7 @@
 <translation id="196896377990863006">แสดงตัวอย่างลิงก์</translation>
 <translation id="1973912524893600642">เก็บข้อมูลไว้</translation>
 <translation id="1974060860693918893">ขั้นสูง</translation>
+<translation id="1981118202195772574">อุปกรณ์เคลื่อนที่</translation>
 <translation id="1989112275319619282">เปิดดู</translation>
 <translation id="199425419756152024">ดูรหัสผ่าน</translation>
 <translation id="2015722694326466240">หากต้องการดูรหัสผ่าน คุณต้องตั้งพาสโค้ดในอุปกรณ์ก่อน</translation>
@@ -236,6 +237,7 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />ดูสิ่งที่คุณซิงค์ได้<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">บล็อกทั้งหมด</translation>
 <translation id="313283613037595347">สร้างแท็บใหม่ที่ไม่ระบุตัวตน</translation>
+<translation id="3150887674190166798">เลือกว่าคุณต้องการให้ Chrome โหลดเว็บไซต์อย่างไรในทุกครั้ง</translation>
 <translation id="3153862085237805241">บันทึกบัตร</translation>
 <translation id="3157387275655328056">เพิ่มไปยังเรื่องรออ่าน</translation>
 <translation id="3157684681743766797">ทำเครื่องหมายทั้งหมด…</translation>
@@ -764,6 +766,7 @@
 <translation id="7911190106180361398">องค์กรของคุณไม่อนุญาตให้ซิงค์ทุกอย่าง</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">ส่งออกรหัสผ่าน...</translation>
+<translation id="793971554166979165">โหมดเริ่มต้นของเว็บไซต์</translation>
 <translation id="794799177247607889">หยุดการบันทึก</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{ไม่มีรหัสผ่านที่ถูกละเมิด}=1{มีรหัสผ่านที่ถูกละเมิด {COUNT} รายการ}other{มีรหัสผ่านที่ถูกละเมิด {COUNT} รายการ}}</translation>
 <translation id="7961015016161918242">ไม่ต้องเลย</translation>
@@ -869,6 +872,7 @@
 <translation id="8881801611828450202">ค้นหาภาพนี้ใน <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">แชร์…</translation>
 <translation id="8917490105272468696">ได้สิ ตกลง</translation>
+<translation id="8928133177108699615">เดสก์ท็อป</translation>
 <translation id="8952559610785099500">เพิ่มรหัสผ่าน</translation>
 <translation id="895541991026785598">รายงานปัญหา</translation>
 <translation id="8974714402877957201">1. เปิดการตั้งค่า iPad</translation>
