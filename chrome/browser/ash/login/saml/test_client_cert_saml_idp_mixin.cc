@@ -4,9 +4,19 @@
 
 #include "chrome/browser/ash/login/saml/test_client_cert_saml_idp_mixin.h"
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "base/bind.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
+#include "chrome/common/chrome_paths.h"
+#include "google_apis/gaia/fake_gaia.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "net/ssl/ssl_config.h"
@@ -30,9 +40,36 @@ constexpr char kSamlPageUrlPath[] = "saml-page";
 // client via a client certificate.
 constexpr char kSamlWithClientCertsPageUrlPath[] = "saml-client-cert-page";
 
-// The response passed by the second SAML page to Gaia after successful
-// authentication.
-constexpr char kSamlResponse[] = "saml-response";
+// Returns the HTML page that sends a POST request to the Gaia URL with the SAML
+// RelayState.
+std::string GetHtmlFormSendingToGaia(const GURL& gaia_url,
+                                     const std::string& saml_relay_state) {
+  std::string html;
+  {
+    base::ScopedAllowBlockingForTesting allow_io;
+    EXPECT_TRUE(base::ReadFileToString(
+        base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+            .Append("login")
+            .Append("saml_api_login_auth_without_confirm.html"),
+        &html));
+  }
+  base::ReplaceSubstringsAfterOffset(&html, 0, "$RelayState", saml_relay_state);
+  base::ReplaceSubstringsAfterOffset(&html, 0, "$Post", gaia_url.spec());
+  return html;
+}
+
+// Returns the HTML page that simulates Gaia's behavior after a completed SAML
+// login.
+std::string GetGaiaHtmlForFinishAfterSaml() {
+  std::string html;
+  base::ScopedAllowBlockingForTesting allow_io;
+  EXPECT_TRUE(base::ReadFileToString(
+      base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+          .Append("login")
+          .Append("gaia_finish_after_saml.html"),
+      &html));
+  return html;
+}
 
 }  // namespace
 
@@ -58,6 +95,10 @@ TestClientCertSamlIdpMixin::TestClientCertSamlIdpMixin(
   saml_with_client_certs_server_.RegisterRequestHandler(base::BindRepeating(
       &TestClientCertSamlIdpMixin::HandleSamlWithClientCertsServerRequest,
       base::Unretained(this)));
+
+  // Set up the fake Gaia to notify Chrome after the SAML login completes.
+  gaia_mixin_->fake_gaia()->SetFakeSamlContinueResponse(
+      GetGaiaHtmlForFinishAfterSaml());
 }
 
 TestClientCertSamlIdpMixin::~TestClientCertSamlIdpMixin() = default;
@@ -105,28 +146,21 @@ TestClientCertSamlIdpMixin::HandleSamlWithClientCertsServerRequest(
     const net::test_server::HttpRequest& request) {
   if (request.GetURL().ExtractFileName() != kSamlWithClientCertsPageUrlPath)
     return nullptr;
+
   // Obtain the RelayState parameter that was originally specified by Gaia.
   std::string saml_relay_state;
   EXPECT_TRUE(net::GetValueForKeyInQuery(
       request.GetURL(), kSamlRelayStateUrlParam, &saml_relay_state));
-  // Redirect to the Gaia SAML assertion page.
-  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-  response->set_code(net::HTTP_TEMPORARY_REDIRECT);
-  response->AddCustomHeader("Location",
-                            GetGaiaSamlAssertionUrl(saml_relay_state).spec());
-  return response;
-}
 
-// Returns the URL to be used by the SAML page to redirect back to Gaia after
-// the authentication completion.
-GURL TestClientCertSamlIdpMixin::GetGaiaSamlAssertionUrl(
-    const std::string& saml_relay_state) {
-  GURL assertion_url = gaia_mixin_->GetFakeGaiaURL("/SSO");
-  assertion_url =
-      net::AppendQueryParameter(assertion_url, "SAMLResponse", kSamlResponse);
-  assertion_url = net::AppendQueryParameter(
-      assertion_url, kSamlRelayStateUrlParam, saml_relay_state);
-  return assertion_url;
+  // Redirect to the Gaia SAML assertion page, via an HTML page that sends a
+  // POST request (similarly to real SAML implementations).
+  GURL gaia_assertion_url = gaia_mixin_->GetFakeGaiaURL("/SSO");
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_OK);
+  response->set_content(
+      GetHtmlFormSendingToGaia(gaia_assertion_url, saml_relay_state));
+  response->set_content_type("text/html");
+  return response;
 }
 
 }  // namespace ash

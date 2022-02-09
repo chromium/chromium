@@ -674,7 +674,7 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenSessionBehaviorSamlTest, Logout) {
   StartSignIn();
   WaitForPinDialog();
   InputPinByClickingKeypad(GetCorrectPin());
-  test::OobeJS().ClickOnPath({"gaia-signin", "pinDialog", "submit"});
+  ClickPinDialogSubmit();
   test::WaitForPrimaryUserSessionStart();
 
   // Setup extension and pref.

@@ -152,6 +152,10 @@ void SecurityTokenSamlTest::InputPinByClickingKeypad(const std::string& pin) {
   }
 }
 
+void SecurityTokenSamlTest::ClickPinDialogSubmit() {
+  test::OobeJS().ClickOnPath({"gaia-signin", "pinDialog", "submit"});
+}
+
 std::string SecurityTokenSamlTest::GetCorrectPin() const {
   return kCorrectPin;
 }

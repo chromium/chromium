@@ -53,7 +53,7 @@ namespace ash {
 //   WaitForPinDialog();
 //
 //   InputPinByClickingKeypad(GetCorrectPin());
-//   test::OobeJS().ClickOnPath({"gaia-signin", "pinDialog", "submit"});
+//   ClickPinDialogSubmit();
 //   test::WaitForPrimaryUserSessionStart();
 // }
 
@@ -76,6 +76,9 @@ class SecurityTokenSamlTest : public OobeBaseTest {
   // Enters the security token PIN by simulating click events on the on-screen
   // keypad.
   void InputPinByClickingKeypad(const std::string& pin);
+
+  // Simulates a click on the PIN dialog submit button.
+  void ClickPinDialogSubmit();
 
   // Returns the Pin for `certificate_provider_extension_`.
   std::string GetCorrectPin() const;

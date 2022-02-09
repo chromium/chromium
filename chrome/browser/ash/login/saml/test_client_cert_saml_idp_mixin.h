@@ -55,10 +55,6 @@ class TestClientCertSamlIdpMixin final : public InProcessBrowserTestMixin {
   HandleSamlWithClientCertsServerRequest(
       const net::test_server::HttpRequest& request);
 
-  // Returns the URL to be used by the SAML page to redirect back to Gaia after
-  // the authentication completion.
-  GURL GetGaiaSamlAssertionUrl(const std::string& saml_relay_state);
-
   FakeGaiaMixin* const gaia_mixin_;
   net::EmbeddedTestServer saml_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   net::EmbeddedTestServer saml_with_client_certs_server_{
