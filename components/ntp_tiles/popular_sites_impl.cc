@@ -124,13 +124,21 @@ PopularSites::SitesVector ParseSiteList(
     const base::DictionaryValue& item =
         base::Value::AsDictionaryValue(item_value);
     std::u16string title;
+    if (const std::string* ptr = item.FindStringKey("title"))
+      title = base::UTF8ToUTF16(*ptr);
+    else
+      continue;
     std::string url;
-    if (!item.GetString("title", &title) || !item.GetString("url", &url))
+    if (const std::string* ptr = item.FindStringKey("url"))
+      url = *ptr;
+    else
       continue;
     std::string favicon_url;
-    item.GetString("favicon_url", &favicon_url);
+    if (const std::string* ptr = item.FindStringKey("favicon_url"))
+      favicon_url = *ptr;
     std::string large_icon_url;
-    item.GetString("large_icon_url", &large_icon_url);
+    if (const std::string* ptr = item.FindStringKey("large_icon_url"))
+      large_icon_url = *ptr;
 
     TileTitleSource title_source = TileTitleSource::UNKNOWN;
     absl::optional<int> title_source_int = item.FindIntKey("title_source");
