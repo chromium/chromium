@@ -78,4 +78,27 @@ export function WallpaperGridItemTest() {
     assertEquals(querySelector('.primary-text'), null);
     assertEquals(querySelector('.secondary-text')?.innerHTML, secondaryText);
   });
+
+  test('displays selected', async () => {
+    // Initialize |wallpaperGridItemElement|.
+    wallpaperGridItemElement = initElement(WallpaperGridItem);
+    await waitAfterNextRender(wallpaperGridItemElement);
+
+    // Verify state.
+    assertEquals(querySelector('.item[aria-selected]'), null);
+    assertEquals(getComputedStyle(querySelector('iron-icon')!).display, 'none');
+
+    // Select |wallpaperGridItemElement| and verify state.
+    wallpaperGridItemElement.selected = true;
+    await waitAfterNextRender(wallpaperGridItemElement);
+    assertNotEquals(querySelector('.item[aria-selected]'), null);
+    assertNotEquals(
+        getComputedStyle(querySelector('iron-icon')!).display, 'none');
+
+    // Deselect |wallpaperGridItemElement| and verify state.
+    wallpaperGridItemElement.selected = false;
+    await waitAfterNextRender(wallpaperGridItemElement);
+    assertEquals(querySelector('.item[aria-selected]'), null);
+    assertEquals(getComputedStyle(querySelector('iron-icon')!).display, 'none');
+  });
 }

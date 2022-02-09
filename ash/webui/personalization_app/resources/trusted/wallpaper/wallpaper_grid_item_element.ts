@@ -25,6 +25,11 @@ export class WallpaperGridItem extends PolymerElement {
       imageSrc: String,
       primaryText: String,
       secondaryText: String,
+
+      selected: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -36,6 +41,9 @@ export class WallpaperGridItem extends PolymerElement {
 
   /** The secondary text to render for the grid item. */
   secondaryText: string|undefined;
+
+  /** Whether the grid item is currently selected. */
+  selected: boolean;
 
   /** Whether the image is currently visible. */
   private isImageVisible_() {

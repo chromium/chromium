@@ -27,11 +27,13 @@
   }
 
   .item {
+    align-items: center;
     background-color: rgba(0, 0, 0, 0.12);
     border-radius: var(--personalization-app-grid-item-border-radius);
     box-sizing: border-box;
-    display: block;
+    display: flex;
     height: 100%;
+    justify-content: center;
     overflow: hidden;
     position: relative;
     width: 100%;
@@ -41,15 +43,33 @@
     outline: 2px solid var(--cros-focus-ring-color);
   }
 
+  .item[aria-selected] {
+    background-color: rgba(
+      var(--cros-color-prominent-rgb),
+      var(--personalization-app-second-tone-opacity));
+    border-radius:
+      calc(var(--personalization-app-grid-item-border-radius) + 4px);
+  }
+
   img {
-    bottom: 0;
+    border-radius: var(--personalization-app-grid-item-border-radius);
     height: 100%;
-    left: 0;
     object-fit: cover;
-    position: absolute;
-    right: 0;
-    top: 0;
     width: 100%;
+  }
+
+  .item[aria-selected] img {
+    animation-duration:  200ms;
+    animation-fill-mode: forwards;
+    animation-name: img-resize;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1.0);
+  }
+
+  @keyframes img-resize {
+    100% {
+      height: calc(100% - 8px);
+      width: calc(100% - 8px);
+    }
   }
 
   .text {
@@ -88,8 +108,32 @@
   .secondary-text {
     font: var(--cros-annotation-2-font);
   }
+
+  iron-icon {
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    animation-duration: 200ms;
+    animation-name: iron-icon-scale;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1.0);
+    left: 8px;
+    position: absolute;
+    top: 8px;
+  }
+
+  .item:not([aria-selected]) iron-icon {
+    display: none;
+  }
+
+  @keyframes iron-icon-scale {
+    from {
+      transform: scale(0);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
 </style>
-<div class="item">
+<div class="item" aria-selected$="[[selected]]">
   <template is="dom-if" if="[[isImageVisible_(imageSrc)]]">
     <img is="cr-auto-img" auto-src="[[imageSrc]]"></img>
   </template>
@@ -103,4 +147,5 @@
       </template>
     </div>
   </template>
+  <iron-icon icon="personalization:checkmark"></iron-icon>
 </div>
