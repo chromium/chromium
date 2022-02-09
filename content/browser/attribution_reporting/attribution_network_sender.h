@@ -7,13 +7,9 @@
 
 #include "base/callback_forward.h"
 
-class GURL;
-
-namespace base {
-class Value;
-}  // namespace base
-
 namespace content {
+
+class AttributionReport;
 
 struct SendResult;
 
@@ -24,12 +20,12 @@ class AttributionNetworkSender {
   virtual ~AttributionNetworkSender() = default;
 
   // Callback used to notify caller that the requested report has been sent.
-  using ReportSentCallback = base::OnceCallback<void(SendResult)>;
+  using ReportSentCallback =
+      base::OnceCallback<void(AttributionReport, SendResult)>;
 
   // Generates and sends a conversion report matching |report|. This should
   // generate a secure POST request with no-credentials.
-  virtual void SendReport(GURL report_url,
-                          base::Value report_body,
+  virtual void SendReport(AttributionReport report,
                           ReportSentCallback sent_callback) = 0;
 };
 

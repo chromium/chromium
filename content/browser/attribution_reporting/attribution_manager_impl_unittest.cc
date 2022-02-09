@@ -68,7 +68,6 @@ using ::testing::InSequence;
 using ::testing::IsEmpty;
 using ::testing::Le;
 using ::testing::Optional;
-using ::testing::Pair;
 using ::testing::Pointee;
 using ::testing::Return;
 using ::testing::SizeIs;
@@ -108,20 +107,18 @@ constexpr base::TimeDelta kImpressionExpiry = base::Days(30);
 class MockNetworkSender : public AttributionNetworkSender {
  public:
   // AttributionManagerImpl::NetworkSender:
-  void SendReport(GURL report_url,
-                  base::Value report_body,
+  void SendReport(AttributionReport report,
                   ReportSentCallback callback) override {
-    calls_.emplace_back(std::move(report_url), std::move(report_body));
-    callbacks_.push_back(std::move(callback));
+    calls_.push_back(report);
+    callbacks_.emplace_back(std::move(report), std::move(callback));
   }
 
-  using SendReportCalls = std::vector<std::pair<GURL, base::Value>>;
-
-  const SendReportCalls& calls() const { return calls_; }
+  const std::vector<AttributionReport>& calls() const { return calls_; }
 
   void RunCallback(size_t index, SendResult::Status status) {
-    std::move(callbacks_[index])
-        .Run(SendResult(status, /*http_response_code=*/0));
+    std::move(callbacks_[index].second)
+        .Run(std::move(callbacks_[index].first),
+             SendResult(status, /*http_response_code=*/0));
   }
 
   void Reset() {
@@ -136,7 +133,9 @@ class MockNetworkSender : public AttributionNetworkSender {
     const auto* status_it = statuses.begin();
 
     for (auto& callback : callbacks_) {
-      std::move(callback).Run(SendResult(*status_it, /*http_response_code=*/0));
+      std::move(callback.second)
+          .Run(std::move(callback.first),
+               SendResult(*status_it, /*http_response_code=*/0));
       status_it++;
     }
 
@@ -144,8 +143,8 @@ class MockNetworkSender : public AttributionNetworkSender {
   }
 
  private:
-  SendReportCalls calls_;
-  std::vector<ReportSentCallback> callbacks_;
+  std::vector<AttributionReport> calls_;
+  std::vector<std::pair<AttributionReport, ReportSentCallback>> callbacks_;
 };
 
 class MockCookieChecker : public AttributionCookieChecker {
@@ -383,9 +382,9 @@ TEST_F(AttributionManagerImplTest,
 
   // The 3 reports can be sent in any order due to the `base::RandomShuffle()`
   // in `AttributionManagerImpl::OnGetReportsToSend()`.
-  EXPECT_THAT(
-      network_sender_->calls(),
-      UnorderedElementsAre(Pair(url_a, _), Pair(url_b, _), Pair(url_c, _)));
+  EXPECT_THAT(network_sender_->calls(),
+              UnorderedElementsAre(ReportURLIs(url_a), ReportURLIs(url_b),
+                                   ReportURLIs(url_c)));
 }
 
 TEST_F(AttributionManagerImplTest,
@@ -422,11 +421,11 @@ TEST_F(AttributionManagerImplTest,
   EXPECT_THAT(network_sender_->calls(), IsEmpty());
 
   task_environment_.FastForwardBy(base::Microseconds(1));
-  EXPECT_THAT(network_sender_->calls(), ElementsAre(Pair(url_a, _)));
+  EXPECT_THAT(network_sender_->calls(), ElementsAre(ReportURLIs(url_a)));
   network_sender_->Reset();
 
   task_environment_.FastForwardBy(base::Microseconds(1));
-  EXPECT_THAT(network_sender_->calls(), ElementsAre(Pair(url_b, _)));
+  EXPECT_THAT(network_sender_->calls(), ElementsAre(ReportURLIs(url_b)));
 }
 
 TEST_F(AttributionManagerImplTest, SenderStillHandlingReport_NotSentAgain) {
@@ -499,7 +498,7 @@ TEST_F(AttributionManagerImplTest, RetryLogicOverridesGetReportTimer) {
   EXPECT_THAT(StoredReports(), SizeIs(2));
 
   task_environment_.FastForwardBy(kFirstReportingWindow - base::Minutes(10));
-  EXPECT_THAT(network_sender_->calls(), ElementsAre(Pair(url_a, _)));
+  EXPECT_THAT(network_sender_->calls(), ElementsAre(ReportURLIs(url_a)));
   // Because this report will be retried at its original report time + 5
   // minutes, the get-reports timer, which was originally scheduled to run at
   // the second report's report time, should be overridden to run earlier.
@@ -507,7 +506,7 @@ TEST_F(AttributionManagerImplTest, RetryLogicOverridesGetReportTimer) {
       {SendResult::Status::kTransientFailure});
 
   task_environment_.FastForwardBy(base::Minutes(5));
-  EXPECT_THAT(network_sender_->calls(), ElementsAre(Pair(url_a, _)));
+  EXPECT_THAT(network_sender_->calls(), ElementsAre(ReportURLIs(url_a)));
 }
 
 TEST_F(AttributionManagerImplTest,

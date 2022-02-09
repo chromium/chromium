@@ -24,6 +24,7 @@ class SimpleURLLoader;
 
 namespace content {
 
+class AttributionReport;
 class StoragePartition;
 
 // Implemented a NetworkSender capable of issuing POST requests for complete
@@ -46,8 +47,7 @@ class CONTENT_EXPORT AttributionNetworkSenderImpl
   // seconds.
   // |sent_callback| is run after the request finishes, whether or not it
   // succeeded,
-  void SendReport(GURL report_url,
-                  base::Value report_body,
+  void SendReport(AttributionReport report,
                   ReportSentCallback sent_callback) override;
 
   // Tests inject a TestURLLoaderFactory so they can mock the network response.
@@ -60,6 +60,7 @@ class CONTENT_EXPORT AttributionNetworkSenderImpl
 
   // Called when headers are available for a sent report.
   void OnReportSent(UrlLoaderList::iterator it,
+                    AttributionReport report,
                     ReportSentCallback sent_callback,
                     scoped_refptr<net::HttpResponseHeaders> headers);
 

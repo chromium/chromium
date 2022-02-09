@@ -15,7 +15,6 @@
 #include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker_impl.h"
 #include "content/browser/attribution_reporting/attribution_network_sender.h"
@@ -588,12 +587,9 @@ void AttributionManagerImpl::SendReports(std::vector<AttributionReport> reports,
     if (log_metrics)
       LogMetricsOnReportSend(report, now);
 
-    GURL report_url = report.ReportURL();
-    base::Value report_body = report.ReportBody();
     network_sender_->SendReport(
-        std::move(report_url), std::move(report_body),
-        base::BindOnce(&AttributionManagerImpl::OnReportSent,
-                       weak_factory_.GetWeakPtr(), done, std::move(report)));
+        std::move(report), base::BindOnce(&AttributionManagerImpl::OnReportSent,
+                                          weak_factory_.GetWeakPtr(), done));
   }
 }
 

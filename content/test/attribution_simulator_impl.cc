@@ -84,23 +84,23 @@ class SentReportAccumulator : public AttributionNetworkSender {
 
  private:
   // AttributionManagerImpl::NetworkSender:
-  void SendReport(GURL report_url,
-                  base::Value report_body,
+  void SendReport(AttributionReport report,
                   ReportSentCallback sent_callback) override {
+    base::Value report_body = report.ReportBody();
     if (remove_report_ids_)
       report_body.RemoveKey("report_id");
 
     base::DictionaryValue value;
     value.SetKey("report", std::move(report_body));
-    value.SetStringKey("report_url", report_url.spec());
+    value.SetStringKey("report_url", report.ReportURL().spec());
     value.SetIntKey("report_time",
                     (base::Time::Now() - time_origin_).InSeconds());
 
     reports_.push_back(std::move(value));
 
     std::move(sent_callback)
-        .Run(SendResult(SendResult::Status::kSent,
-                        /*http_response_code=*/200));
+        .Run(std::move(report), SendResult(SendResult::Status::kSent,
+                                           /*http_response_code=*/200));
   }
 
   const base::Time time_origin_;

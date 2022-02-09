@@ -539,6 +539,10 @@ MATCHER_P(TriggerPriorityIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.priority, result_listener);
 }
 
+MATCHER_P(ReportURLIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.ReportURL(), result_listener);
+}
+
 // `CreateReportResult` matchers
 
 MATCHER_P(CreateReportStatusIs, matcher, "") {
