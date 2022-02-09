@@ -719,6 +719,12 @@ TEST_F(HeapTest, HashMapOfMembers) {
   EXPECT_EQ(after_gc4, initial_object_payload_size);
 }
 
+namespace {
+
+static constexpr size_t kLargeObjectSize = size_t{1} << 27;
+
+}  // namespace
+
 // This test often fails on Android (https://crbug.com/843032).
 // We run out of memory on Android devices because ReserveCapacityForSize
 // actually allocates a much larger backing than specified (in this case 400MB).
@@ -728,11 +734,12 @@ TEST_F(HeapTest, HashMapOfMembers) {
 #define MAYBE_LargeHashMap LargeHashMap
 #endif
 TEST_F(HeapTest, MAYBE_LargeHashMap) {
-  ClearOutOldGarbage();
+  // Regression test: https://crbug.com/597953
+  //
+  // Try to allocate a HashTable larger than kLargeObjectSize.
 
-  // Try to allocate a HashTable larger than kMaxHeapObjectSize
-  // (crbug.com/597953).
-  wtf_size_t size = HeapAllocator::kMaxHeapObjectSize /
+  ClearOutOldGarbage();
+  wtf_size_t size = kLargeObjectSize /
                     sizeof(HeapHashMap<int, Member<IntWrapper>>::ValueType);
   Persistent<HeapHashMap<int, Member<IntWrapper>>> map =
       MakeGarbageCollected<HeapHashMap<int, Member<IntWrapper>>>();
@@ -741,12 +748,13 @@ TEST_F(HeapTest, MAYBE_LargeHashMap) {
 }
 
 TEST_F(HeapTest, LargeVector) {
+  // Regression test: https://crbug.com/597953
+  //
+  // Try to allocate a HeapVector larger than kLargeObjectSize.
+
   ClearOutOldGarbage();
 
-  // Try to allocate a HeapVectors larger than kMaxHeapObjectSize
-  // (crbug.com/597953).
-  const wtf_size_t size =
-      HeapAllocator::kMaxHeapObjectSize / sizeof(Member<IntWrapper>);
+  const wtf_size_t size = kLargeObjectSize / sizeof(Member<IntWrapper>);
   Persistent<HeapVector<Member<IntWrapper>>> vector =
       MakeGarbageCollected<HeapVector<Member<IntWrapper>>>(size);
   EXPECT_LE(size, vector->capacity());

@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/heap/write_barrier.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
 #include "v8/include/cppgc/explicit-management.h"
 #include "v8/include/cppgc/heap-consistency.h"
 #include "v8/include/cppgc/trace-trait.h"
@@ -31,13 +32,13 @@ class PLATFORM_EXPORT HeapAllocator {
 
   static constexpr bool kIsGarbageCollected = true;
 
-  // See wtf/size_t.h for details.
-  static constexpr size_t kMaxHeapObjectSizeLog2 = 27;
-  static constexpr size_t kMaxHeapObjectSize = 1 << kMaxHeapObjectSizeLog2;
-
   template <typename T>
   static size_t MaxElementCountInBackingStore() {
-    return kMaxHeapObjectSize / sizeof(T);
+    // Oilpan doesn't have a limit for supported capacity and instead supports
+    // arbitrary sized allocations. Delegate to PA to keep limits in sync which
+    // may be enforced for security reasons. E.g. PA may cap the limit below
+    // 32-bit sizes to avoid integer overflows in old code.
+    return WTF::PartitionAllocator::MaxElementCountInBackingStore<T>();
   }
 
   template <typename T>
