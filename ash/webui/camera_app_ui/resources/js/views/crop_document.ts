@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertInstanceof} from '../assert.js';
+import {assert, assertExists, assertInstanceof} from '../assert.js';
 import * as dom from '../dom.js';
 import {Box, Line, Point, Size, Vector, vectorFromPoints} from '../geometry.js';
 import {I18nString} from '../i18n_string.js';
@@ -83,13 +83,14 @@ class MovementAnnouncer {
 
   private announce() {
     if (this.lastXMovement === 0 && this.lastYMovement === 0) {
+      assert(this.announceInterval !== null);
       this.announceInterval.stop();
       this.announceInterval = null;
       return;
     }
     const signX = Math.sign(this.lastXMovement);
     const signY = Math.sign(this.lastYMovement);
-    speak(MOVEMENT_ANNOUNCE_LABELS.get(signX).get(signY));
+    speak(assertExists(MOVEMENT_ANNOUNCE_LABELS.get(signX)?.get(signY)));
     this.lastXMovement = this.lastYMovement = 0;
   }
 }
@@ -144,7 +145,7 @@ export class CropDocument extends Review<boolean> {
    */
   private rotation = 0;
 
-  private initialCorners: Point[]|null = null;
+  private initialCorners: Point[] = [];
   private corners: Corner[];
 
   constructor() {
@@ -174,7 +175,7 @@ export class CropDocument extends Review<boolean> {
       return ret;
     })();
 
-    const updateRotation = (newRotation) => {
+    const updateRotation = (newRotation: Rotation) => {
       this.rotation = newRotation;
       this.updateImage();
       this.updateCornerElAriaLabel();
@@ -211,8 +212,7 @@ export class CropDocument extends Review<boolean> {
 
       // Use arrow key to move corner.
       const KEYS = ['ArrowUp', 'ArrowLeft', 'ArrowDown', 'ArrowRight'];
-      const getKeyIndex = (e) =>
-          KEYS.indexOf(assertInstanceof(e, KeyboardEvent).key);
+      const getKeyIndex = (e: KeyboardEvent) => KEYS.indexOf(e.key);
       const KEY_MOVEMENTS = [
         new Vector(0, -1),
         new Vector(-1, 0),
@@ -220,7 +220,7 @@ export class CropDocument extends Review<boolean> {
         new Vector(1, 0),
       ];
       const pressedKeyIndices = new Set<number>();
-      let keyInterval = null;
+      let keyInterval: util.DelayInterval|null = null;
       const clearKeydown = () => {
         if (keyInterval !== null) {
           keyInterval.stop();
@@ -326,7 +326,9 @@ export class CropDocument extends Review<boolean> {
 
     // Prevent contextmenu popup triggered by long touch.
     this.image.addEventListener('contextmenu', (e) => {
-      if (e['pointerType'] === 'touch') {
+      // Chrome use PointerEvent instead of MouseEvent for contextmenu event:
+      // https://chromestatus.com/feature/5670732015075328.
+      if (assertInstanceof(e, PointerEvent).pointerType === 'touch') {
         e.preventDefault();
       }
     });
@@ -345,9 +347,11 @@ export class CropDocument extends Review<boolean> {
       options:
           [new Option({text: I18nString.LABEL_CROP_DONE}, {exitValue: true})],
     }));
-    const newCorners = this.corners.map(
-        ({pt: {x, y}}) => new Point(
-            x / this.cornerSpaceSize.width, y / this.cornerSpaceSize.height));
+    const newCorners = this.corners.map(({pt: {x, y}}) => {
+      assert(this.cornerSpaceSize !== null);
+      return new Point(
+          x / this.cornerSpaceSize.width, y / this.cornerSpaceSize.height);
+    });
     return {corners: newCorners, rotation: ROTATIONS[this.rotation]};
   }
 
@@ -370,6 +374,7 @@ export class CropDocument extends Review<boolean> {
   }
 
   private mapToValidArea(corn: Corner, pt: Point): Point|null {
+    assert(this.cornerSpaceSize !== null);
     pt = new Point(
         Math.max(Math.min(pt.x, this.cornerSpaceSize.width), 0),
         Math.max(Math.min(pt.y, this.cornerSpaceSize.height), 0));
@@ -505,6 +510,7 @@ export class CropDocument extends Review<boolean> {
    */
   private updateImage() {
     const {width: frameW, height: frameH} = this.frameSize;
+    assert(this.imageOriginalSize !== null);
     const {width: rawImageW, height: rawImageH} = this.imageOriginalSize;
     const style = this.image.attributeStyleMap;
 
@@ -527,7 +533,7 @@ export class CropDocument extends Review<boolean> {
       this.initialCorners.forEach(({x, y}, idx) => {
         this.corners[idx].pt = new Point(x * newImageW, y * newImageH);
       });
-      this.initialCorners = null;
+      this.initialCorners = [];
     } else {
       const oldImageW = this.cornerSpaceSize?.width || newImageW;
       const oldImageH = this.cornerSpaceSize?.height || newImageH;
@@ -559,9 +565,8 @@ export class CropDocument extends Review<boolean> {
     this.imageOriginalSize = new Size(image.width, image.height);
     const style = this.image.attributeStyleMap;
     if (style.has('background-image')) {
-      const oldUrl = style.get('background-image')
-                         .toString()
-                         .match(/url\(['"]([^'"]+)['"]\)/)[1];
+      const s = assertExists(style.get('background-image')).toString();
+      const oldUrl = assertExists(s.match(/url\(['"]([^'"]+)['"]\)/))[1];
       URL.revokeObjectURL(oldUrl);
     }
     style.set('background-image', `url('${image.src}')`);
