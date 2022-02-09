@@ -1921,12 +1921,9 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
     ClickExpandedStateTemplatesButton();
   }
 
-  // TODO(crbug.com/1287649) : This histogram is double counted when a template
-  // is launched from the UI.
   constexpr char kLaunchFromTemplateHistogramName[] =
       "Ash.DeskTemplate.LaunchFromTemplate";
-  histogram_tester.ExpectTotalCount(kLaunchFromTemplateHistogramName,
-                                    2 * launches);
+  histogram_tester.ExpectTotalCount(kLaunchFromTemplateHistogramName, launches);
 }
 
 class DesksTemplatesClientArcTest : public InProcessBrowserTest {

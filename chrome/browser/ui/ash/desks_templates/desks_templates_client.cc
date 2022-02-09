@@ -211,8 +211,6 @@ void DesksTemplatesClient::LaunchAppsFromTemplate(
   DCHECK(app_launch_handler_);
   app_launch_handler_->set_delay(delay);
   app_launch_handler_->SetRestoreDataAndLaunch(restore_data->Clone());
-
-  RecordLaunchFromTemplateHistogram();
 }
 
 desks_storage::DeskModel* DesksTemplatesClient::GetDeskModel() {
@@ -325,6 +323,8 @@ void DesksTemplatesClient::OnGetTemplateForDeskLaunch(
     std::move(callback).Run(std::string(kStorageError));
     return;
   }
+
+  RecordLaunchFromTemplateHistogram();
 
   // Launch the windows as specified in the template to a new desk.
   const auto template_name = entry->template_name();
