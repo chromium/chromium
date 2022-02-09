@@ -70,6 +70,8 @@
 #include "chrome/browser/ash/crosapi/video_capture_device_factory_ash.h"
 #include "chrome/browser/ash/crosapi/web_page_info_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/sync/sync_service_ash.h"
+#include "chrome/browser/ash/sync/sync_service_factory_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
@@ -421,6 +423,18 @@ void CrosapiAsh::BindCertDatabase(
 void CrosapiAsh::BindSearchControllerRegistry(
     mojo::PendingReceiver<mojom::SearchControllerRegistry> receiver) {
   search_provider_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindSyncService(
+    mojo::PendingReceiver<mojom::SyncService> receiver) {
+  ash::SyncServiceAsh* sync_service_ash =
+      ash::SyncServiceFactoryAsh::GetForProfile(GetAshProfile());
+  if (!sync_service_ash) {
+    // |sync_service_ash| is not always available. In particular, sync can be
+    // completely disabled via command line flags.
+    return;
+  }
+  sync_service_ash->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindSystemDisplay(

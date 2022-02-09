@@ -57,3 +57,14 @@ interface SyncExplicitPassphraseClient {
   SetDecryptionNigoriKey@2(AccountKey account_key,
                            NigoriKey decryption_key);
 };
+
+// Defines a Sync API that lives in ash-chrome and is accessed from
+// lacros-chrome. To be extended in the future.
+// Next version: 1
+// Next ordinal value: 1
+[Stable, Uuid="4499c528-4578-466d-a97d-d66217323f48"]
+interface SyncService {
+  // Binds SyncExplicitPassphraseClient, that lives in ash-chrome.
+  BindExplicitPassphraseClient@0(
+    pending_receiver<SyncExplicitPassphraseClient> receiver);
+};
