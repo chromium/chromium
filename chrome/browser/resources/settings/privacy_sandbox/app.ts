@@ -4,6 +4,7 @@
 import 'chrome://resources/cr_elements/cr_page_host_style_css.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import './icons.js';
 import '../settings.js';
 
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';

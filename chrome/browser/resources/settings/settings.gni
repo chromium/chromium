@@ -313,6 +313,7 @@ css_wrapper_files = [
   # subfolder files
   "autofill_page/passwords_shared_css.ts",
   "privacy_page/privacy_review/privacy_review_fragment_shared_css.ts",
+  "privacy_sandbox/icons.ts",
   "search_engines_page/search_engine_entry_css.ts",
   "site_settings/all_sites_icons.ts",
   "site_settings/clear_storage_dialog_css.ts",
