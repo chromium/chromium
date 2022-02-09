@@ -397,10 +397,9 @@ void CALayerOverlayProcessor::PutForcedOverlayContentIntoUnderlays(
     // Put hardware protected video into an overlay
     if (quad->material == ContentDrawQuadBase::Material::kYuvVideoContent) {
       const YUVVideoDrawQuad* video_quad = YUVVideoDrawQuad::MaterialCast(quad);
-      if (video_quad->protected_video_type ==
-          gfx::ProtectedVideoType::kHardwareProtected) {
+      if (video_quad->protected_video_type != gfx::ProtectedVideoType::kClear) {
         force_quad_to_overlay = true;
-        protected_video_type = gfx::ProtectedVideoType::kHardwareProtected;
+        protected_video_type = video_quad->protected_video_type;
       }
     }
 
@@ -408,10 +407,11 @@ void CALayerOverlayProcessor::PutForcedOverlayContentIntoUnderlays(
       const TextureDrawQuad* texture_quad = TextureDrawQuad::MaterialCast(quad);
 
       // Put hardware protected video into an overlay
-      if (texture_quad->is_video_frame &&
-          texture_quad->protected_video_type ==
-              gfx::ProtectedVideoType::kHardwareProtected)
+      if (texture_quad->is_video_frame && texture_quad->protected_video_type !=
+                                              gfx::ProtectedVideoType::kClear) {
         force_quad_to_overlay = true;
+        protected_video_type = texture_quad->protected_video_type;
+      }
 
       // Put HDR videos into an underlay.
       if (enable_hdr_underlays_) {

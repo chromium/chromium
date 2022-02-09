@@ -506,8 +506,7 @@ CARendererLayerTree::ContentLayer::ContentLayer(
         }
       }
 
-      if (protected_video_type_ ==
-          gfx::ProtectedVideoType::kHardwareProtected) {
+      if (protected_video_type_ != gfx::ProtectedVideoType::kClear) {
         if (@available(macOS 10.15, *)) {
           type_ = CALayerType::kVideo;
           video_type_can_downgrade_ = false;
@@ -864,8 +863,7 @@ void CARendererLayerTree::ContentLayer::CommitToCA(CALayer* superlayer,
         av_layer_.reset([[AVSampleBufferDisplayLayer alloc] init]);
         ca_layer_.reset([av_layer_ retain]);
         [av_layer_ setVideoGravity:AVLayerVideoGravityResize];
-        if (protected_video_type_ ==
-            gfx::ProtectedVideoType::kHardwareProtected) {
+        if (protected_video_type_ != gfx::ProtectedVideoType::kClear) {
           if (@available(macOS 10.15, *)) {
             [av_layer_ setPreventsCapture:true];
           }
