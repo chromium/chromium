@@ -882,11 +882,20 @@ BrowserView::~BrowserView() {
 // static
 const BrowserWindow* BrowserWindow::FindBrowserWindowWithWebContents(
     content::WebContents* web_contents) {
-  auto* widget = views::Widget::GetTopLevelWidgetForNativeView(
-      web_contents->GetNativeView());
-  return widget ? BrowserView::GetBrowserViewForNativeWindow(
-                      widget->GetNativeWindow())
-                : nullptr;
+  // Check first to see if the we can find a top level widget for the
+  // `web_contents`. This covers the case of searching for the browser window
+  // associated with a non-tab contents and the active tab contents. Fall back
+  // to searching the tab strip model for a tab contents match. This later
+  // search is necessary as a tab contents can be swapped out of the browser
+  // window's ContentWebView on a tab switch and may disassociate with its top
+  // level NativeView.
+  if (const auto* widget = views::Widget::GetTopLevelWidgetForNativeView(
+          web_contents->GetNativeView())) {
+    return BrowserView::GetBrowserViewForNativeWindow(
+        widget->GetNativeWindow());
+  }
+  const auto* browser = chrome::FindBrowserWithWebContents(web_contents);
+  return browser ? browser->window() : nullptr;
 }
 
 // static

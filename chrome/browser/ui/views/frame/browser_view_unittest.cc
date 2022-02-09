@@ -213,7 +213,7 @@ TEST_F(BrowserViewTest, FindBarBoundingBoxNoLocationBar) {
 
 // Tests that a browser window is correctly associated to a WebContents that
 // belongs to that window's UI hierarchy.
-TEST_F(BrowserViewTest, FindBrowserWindowForWebContents) {
+TEST_F(BrowserViewTest, FindBrowserWindowWithWebContents) {
   auto web_view = std::make_unique<views::WebView>(browser()->profile());
   ASSERT_NE(nullptr, web_view->GetWebContents());
 
@@ -234,6 +234,32 @@ TEST_F(BrowserViewTest, FindBrowserWindowForWebContents) {
   web_view = browser_view()->RemoveChildViewT(web_view_ptr);
   EXPECT_EQ(nullptr, BrowserWindow::FindBrowserWindowWithWebContents(
                          web_view->GetWebContents()));
+}
+
+// Tests that tab contents are correctly associated with their browser window,
+// even when non-active.
+TEST_F(BrowserViewTest, FindBrowserWindowWithWebContentsTabSwitch) {
+  AddTab(browser_view()->browser(), GURL("about:blank"));
+  content::WebContents* original_active_contents =
+      browser_view()->GetActiveWebContents();
+  EXPECT_EQ(browser()->window(),
+            BrowserWindow::FindBrowserWindowWithWebContents(
+                original_active_contents));
+
+  // Inactive tabs (aka tabs with their web contents not currently embedded in
+  // the browser's ContentWebView) should still be associated with their hosting
+  // browser window.
+  AddTab(browser_view()->browser(), GURL("about:blank"));
+  content::WebContents* new_active_contents =
+      browser_view()->GetActiveWebContents();
+  EXPECT_NE(original_active_contents, browser_view()->GetActiveWebContents());
+  EXPECT_EQ(new_active_contents, browser_view()->GetActiveWebContents());
+  EXPECT_EQ(browser()->window(),
+            BrowserWindow::FindBrowserWindowWithWebContents(
+                original_active_contents));
+  EXPECT_EQ(
+      browser()->window(),
+      BrowserWindow::FindBrowserWindowWithWebContents(new_active_contents));
 }
 
 // On macOS, most accelerators are handled by CommandDispatcher.
