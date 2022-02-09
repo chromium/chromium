@@ -12,6 +12,7 @@
       "LocalIdentity": "local-id",
       "RemoteIdentity": "remote-id",
       "SaveCredentials": true,
+      "ServerCAPEMs": ["1234"],
     },
   }
 }

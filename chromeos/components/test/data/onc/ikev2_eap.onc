@@ -10,6 +10,7 @@
       "LocalIdentity": "local-id",
       "RemoteIdentity": "remote-id",
       "SaveCredentials": true,
+      "ServerCAPEMs": ["1234"],
       "EAP": {
         "Outer": "MSCHAPv2",
         "Identity": "my_identity",
