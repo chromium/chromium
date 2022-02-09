@@ -284,6 +284,12 @@ void CaptureModeMenuGroup::AddOption(std::u16string option_label,
           /*enabled=*/delegate_->IsOptionEnabled(option_id))));
 }
 
+void CaptureModeMenuGroup::DeleteOptions() {
+  for (CaptureModeOption* option : options_)
+    options_container_->RemoveChildViewT(option);
+  options_.clear();
+}
+
 void CaptureModeMenuGroup::AddOrUpdateExistingOption(
     std::u16string option_label,
     int option_id) {

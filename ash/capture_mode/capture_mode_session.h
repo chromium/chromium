@@ -182,6 +182,10 @@ class ASH_EXPORT CaptureModeSession
   // events (tabbing through windows in capture window mode).
   void HighlightWindowForTab(aura::Window* window);
 
+  // Called when the settings view has been updated, its bounds may need to be
+  // updated correspondingly.
+  void MaybeUpdateSettingsBounds();
+
  private:
   friend class CaptureModeSettingsTestApi;
   friend class CaptureModeSessionFocusCycler;

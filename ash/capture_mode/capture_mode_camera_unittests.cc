@@ -2,13 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/capture_mode/capture_mode_bar_view.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_session_test_api.h"
+#include "ash/capture_mode/capture_mode_settings_test_api.h"
+#include "ash/capture_mode/capture_mode_settings_view.h"
+#include "ash/capture_mode/capture_mode_test_util.h"
+#include "ash/capture_mode/capture_mode_toggle_button.h"
+#include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/fake_video_source_provider.h"
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/system/system_monitor.h"
 #include "base/test/scoped_feature_list.h"
 
@@ -353,6 +361,59 @@ TEST_F(CaptureModeCameraTest, SelectedCameraChangedObserver) {
   // Clearing the ID should.
   camera_controller->SetSelectedCamera(CameraId());
   EXPECT_EQ(2, observer.selected_camera_change_event_count());
+}
+
+// Tests that the options on camera settings view are shown and checked
+// correctly when adding or removing cameras. Also tests that
+// `selected_camera_` is updated correspondently.
+TEST_F(CaptureModeCameraTest, CameraSettingsView) {
+  auto* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                         CaptureModeType::kVideo);
+  auto* event_generator = GetEventGenerator();
+  EXPECT_TRUE(controller->IsActive());
+  CaptureModeSession* session = controller->capture_mode_session();
+
+  // Click settings button to open settings menu.
+  ClickOnView(CaptureModeSessionTestApi(session)
+                  .GetCaptureModeBarView()
+                  ->settings_button(),
+              event_generator);
+  // Check camera settings is shown. `Off` option is selected.
+  CaptureModeSettingsTestApi test_api;
+  CaptureModeMenuGroup* camera_menu_group = test_api.GetCameraMenuGroup();
+  EXPECT_TRUE(camera_menu_group->IsOptionChecked(kCameraOff));
+  EXPECT_FALSE(camera_menu_group->IsOptionChecked(kCameraDevicesBegin));
+  EXPECT_FALSE(camera_controller->selected_camera().is_valid());
+
+  // Click camera option, check its display name matches with the camera's
+  // display name and it's selected. Also check the selected camera is valid
+  // now.
+  ClickOnView(test_api.GetCameraOption(kCameraDevicesBegin), event_generator);
+  EXPECT_FALSE(camera_menu_group->IsOptionChecked(kCameraOff));
+  EXPECT_EQ(base::UTF16ToUTF8(camera_menu_group->GetOptionLabelForTesting(
+                kCameraDevicesBegin)),
+            kDefaultCameraDisplayName);
+  EXPECT_TRUE(camera_menu_group->IsOptionChecked(kCameraDevicesBegin));
+  EXPECT_TRUE(camera_controller->selected_camera().is_valid());
+
+  // Now disconnect camera.
+  RemoveDefaultCamera();
+  // Check the camera option is removed from the camera menu. Selected camera
+  // is still valid and `Off` option is not checked.
+  EXPECT_FALSE(test_api.GetCameraOption(kCameraDevicesBegin));
+  EXPECT_FALSE(camera_menu_group->IsOptionChecked(kCameraOff));
+  EXPECT_TRUE(camera_controller->selected_camera().is_valid());
+
+  // Now connect the camera again.
+  AddDefaultCamera();
+  // Check the camera option is added back to the camera menu and it's checked
+  // automatically.
+  EXPECT_TRUE(test_api.GetCameraOption(kCameraDevicesBegin));
+  EXPECT_FALSE(camera_menu_group->IsOptionChecked(kCameraOff));
+  EXPECT_TRUE(camera_menu_group->IsOptionChecked(kCameraDevicesBegin));
+  EXPECT_TRUE(camera_controller->selected_camera().is_valid());
 }
 
 }  // namespace ash

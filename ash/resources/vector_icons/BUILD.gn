@@ -37,6 +37,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "cancel.icon",
     "cancel_circle_outline.icon",
     "capture_mode.icon",
+    "capture_mode_camera.icon",
     "capture_mode_circle_stop.icon",
     "capture_mode_close.icon",
     "capture_mode_copied_to_clipboard.icon",

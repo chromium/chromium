@@ -58,6 +58,9 @@ class ASH_EXPORT CaptureModeMenuGroup : public views::View {
   // visible all the time.
   void AddOption(std::u16string option_label, int option_id);
 
+  // Deletes all options in `options_`.
+  void DeleteOptions();
+
   // If an option with the given |option_id| exists, it will be updated with the
   // given |option_label|. Otherwise, a new option will be added.
   void AddOrUpdateExistingOption(std::u16string option_label, int option_id);

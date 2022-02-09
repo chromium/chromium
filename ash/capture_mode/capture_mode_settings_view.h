@@ -6,9 +6,11 @@
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_SETTINGS_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_menu_group.h"
 #include "ash/capture_mode/capture_mode_session_focus_cycler.h"
 #include "base/callback_forward.h"
+#include "base/containers/flat_map.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -28,6 +30,8 @@ enum CaptureSettingsOption {
   kAudioMicrophone,
   kDownloadsFolder,
   kCustomFolder,
+  kCameraOff,
+  kCameraDevicesBegin,
 };
 
 // A view that acts as the content view of the capture mode settings menu
@@ -35,7 +39,8 @@ enum CaptureSettingsOption {
 // `CaptureModeMenuGroup` for each setting, save to, audio input etc.
 class ASH_EXPORT CaptureModeSettingsView
     : public views::View,
-      public CaptureModeMenuGroup::Delegate {
+      public CaptureModeMenuGroup::Delegate,
+      public CaptureModeCameraController::Observer {
  public:
   METADATA_HEADER(CaptureModeSettingsView);
 
@@ -74,6 +79,10 @@ class ASH_EXPORT CaptureModeSettingsView
   bool IsOptionChecked(int option_id) const override;
   bool IsOptionEnabled(int option_id) const override;
 
+  // CaptureModeCameraController::Observer:
+  void OnAvailableCamerasChanged(const CameraInfoList& cameras) override;
+  void OnSelectedCameraChanged(const CameraId& camera_id) override;
+
   // For tests only:
   CaptureModeMenuGroup* GetAudioInputMenuGroupForTesting() {
     return audio_input_menu_group_;
@@ -96,6 +105,16 @@ class ASH_EXPORT CaptureModeSettingsView
   // empty.
   void OnCustomFolderAvailabilityChecked(bool available);
 
+  // Finds the camera id by the given `option_id` from the
+  // `option_camera_id_map_` if any. Otherwise, return nullptr.
+  const CameraId* FindCameraIdByOptionId(int option_id) const;
+
+  // Adds all camera options (including the option for `kCameraOff`) for the
+  // given `cameras` to the `camera_menu_group_`. It deletes all options in
+  // `camera_menu_group_` before adding options. Called when initializing
+  // `this` or `OnAvailableCamerasChanged` is triggered.
+  void AddCameraOptions(const CameraInfoList& cameras);
+
   // A reference to the session that owns this view indirectly by owning its
   // containing widget.
   CaptureModeSession* const capture_mode_session_;  // Not null;
@@ -105,9 +124,21 @@ class ASH_EXPORT CaptureModeSettingsView
   // "Off" is the default one which means no audio input selected.
   CaptureModeMenuGroup* audio_input_menu_group_;
 
+  // The separator between audio input and camera menus.
+  views::Separator* separator_1_ = nullptr;
+
+  // Camera menu group that users can select a camera device from for selfie
+  // cam while video recording. It has an `Off` option and options for all
+  // available camera devices. `Off` is the default one which means no camera is
+  // selected.
+  CaptureModeMenuGroup* camera_menu_group_ = nullptr;
+
+  // A mapping from option id to camera id for camera devices.
+  base::flat_map<int, CameraId> option_camera_id_map_;
+
   // Can be null when in Projector mode, since then it's not needed as the
   // "Save-to" menu group will not be added at all.
-  views::Separator* separator_ = nullptr;
+  views::Separator* separator_2_ = nullptr;
 
   // "Save to" menu group that users can select a folder to save the captured
   // files to. It will include the "Downloads" folder as the default one and

@@ -4082,6 +4082,12 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_MICROPHONE" desc="The label of the menu option button for microphone audio input.">
         Microphone
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_CAMERA" desc="The label of the camera menu group header in capture mode settings.">
+        Camera
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_CAMERA_OFF" desc="The label of the menu option button for no camera device selected.">
+        Off
+      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_SAVE_TO" desc="The label of the save to menu group header in capture mode settings.">
         Save to
       </message>

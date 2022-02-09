@@ -59,6 +59,14 @@ views::View* CaptureModeSettingsTestApi::GetSelectFolderMenuItem() {
   return GetSaveToMenuGroup()->GetSelectFolderMenuItemForTesting();
 }
 
+CaptureModeMenuGroup* CaptureModeSettingsTestApi::GetCameraMenuGroup() {
+  return settings_view_->camera_menu_group_;
+}
+
+views::View* CaptureModeSettingsTestApi::GetCameraOption(int option_id) {
+  return GetCameraMenuGroup()->GetOptionForTesting(option_id);
+}
+
 void CaptureModeSettingsTestApi::SetOnSettingsMenuRefreshedCallback(
     base::OnceClosure callback) {
   settings_view_->on_settings_menu_refreshed_callback_for_test_ =

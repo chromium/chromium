@@ -43,6 +43,9 @@ class CaptureModeSettingsTestApi {
   // open the folder selection dialog.
   views::View* GetSelectFolderMenuItem();
 
+  CaptureModeMenuGroup* GetCameraMenuGroup();
+  views::View* GetCameraOption(int option_id);
+
   // Sets a callback that will be triggered once the settings menu is refreshed.
   void SetOnSettingsMenuRefreshedCallback(base::OnceClosure callback);
 

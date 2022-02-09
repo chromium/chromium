@@ -795,8 +795,7 @@ void CaptureModeSession::OnCaptureFolderMayHaveChanged() {
 
   DCHECK(capture_mode_settings_view_);
   capture_mode_settings_view_->OnCaptureFolderMayHaveChanged();
-  capture_mode_settings_widget_->SetBounds(CaptureModeSettingsView::GetBounds(
-      capture_mode_bar_view_, capture_mode_settings_view_));
+  MaybeUpdateSettingsBounds();
 }
 
 void CaptureModeSession::OnDefaultCaptureFolderSelectionChanged() {
@@ -1086,6 +1085,13 @@ void CaptureModeSession::HighlightWindowForTab(aura::Window* window) {
   DCHECK_EQ(CaptureModeSource::kWindow, controller_->source());
   MaybeChangeRoot(window->GetRootWindow());
   capture_window_observer_->SetSelectedWindow(window);
+}
+
+void CaptureModeSession::MaybeUpdateSettingsBounds() {
+  if (!capture_mode_settings_widget_)
+    return;
+  capture_mode_settings_widget_->SetBounds(CaptureModeSettingsView::GetBounds(
+      capture_mode_bar_view_, capture_mode_settings_view_));
 }
 
 std::vector<views::Widget*> CaptureModeSession::GetAvailableWidgets() {
