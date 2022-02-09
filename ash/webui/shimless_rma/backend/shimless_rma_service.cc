@@ -85,7 +85,7 @@ ShimlessRmaService::ShimlessRmaService(
     std::unique_ptr<ShimlessRmaDelegate> shimless_rma_delegate)
     : shimless_rma_delegate_(std::move(shimless_rma_delegate)) {
   chromeos::RmadClient::Get()->AddObserver(this);
-  version_updater_.SetStatusCallback(
+  version_updater_.SetOsUpdateStatusCallback(
       base::BindRepeating(&ShimlessRmaService::OnOsUpdateStatusCallback,
                           weak_ptr_factory_.GetWeakPtr()));
   // Check if an OS update is available to minimize delays if needed later.
@@ -234,7 +234,7 @@ void ShimlessRmaService::UpdateOsSkipped(UpdateOsSkippedCallback callback) {
                             rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
     return;
   }
-  if (!version_updater_.IsIdle()) {
+  if (!version_updater_.IsUpdateEngineIdle()) {
     LOG(ERROR) << "UpdateOsSkipped called while UpdateEngine active";
     // Override the rmad state (kWelcome) with the mojo sub-state for OS
     // updates.

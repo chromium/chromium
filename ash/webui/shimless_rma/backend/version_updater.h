@@ -26,7 +26,7 @@ class VersionUpdater : public chromeos::UpdateEngineClient::Observer {
                                        bool powerwash,
                                        const std::string& version,
                                        int64_t update_size)>
-      StatusCallback;
+      OsUpdateStatusCallback;
 
   VersionUpdater();
   VersionUpdater(const VersionUpdater&) = delete;
@@ -34,19 +34,20 @@ class VersionUpdater : public chromeos::UpdateEngineClient::Observer {
 
   ~VersionUpdater() override;
 
-  void SetStatusCallback(StatusCallback status_callback);
-  bool CheckOsUpdateAvailable();
+  void SetOsUpdateStatusCallback(OsUpdateStatusCallback callback);
+  void CheckOsUpdateAvailable();
   bool UpdateOs();
-  bool IsIdle();
+  bool IsUpdateEngineIdle();
 
  private:
   // Callback from UpdateEngineClient::RequestUpdateCheck().
-  void OnUpdateProgress(chromeos::UpdateEngineClient::UpdateCheckResult result);
+  void OnRequestUpdateCheck(
+      chromeos::UpdateEngineClient::UpdateCheckResult result);
 
   // UpdateEngineClient::Observer implementation.
   void UpdateStatusChanged(const update_engine::StatusResult& status) override;
 
-  StatusCallback status_callback_;
+  OsUpdateStatusCallback status_callback_;
   enum CheckUpdateState {
     IDLE,
     CHECKING,

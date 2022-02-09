@@ -18,7 +18,7 @@ namespace shimless_rma {
 
 namespace {
 
-void ReportUpdateFailure(const VersionUpdater::StatusCallback& callback,
+void ReportUpdateFailure(const VersionUpdater::OsUpdateStatusCallback& callback,
                          update_engine::Operation operation) {
   callback.Run(operation, /*progress=*/0,
                /*rollback=*/false, /*powerwash=*/false,
@@ -28,32 +28,27 @@ void ReportUpdateFailure(const VersionUpdater::StatusCallback& callback,
 // Returns whether an update is allowed. If not, it calls the callback with
 // the appropriate status. |interactive| indicates whether the user is actively
 // checking for updates.
-bool EnsureCanUpdate(const VersionUpdater::StatusCallback& callback) {
-  if (!callback) {
-    return false;
-  }
-
+bool IsUpdateAllowed() {
   chromeos::NetworkStateHandler* network_state_handler =
       chromeos::NetworkHandler::Get()->network_state_handler();
   const chromeos::NetworkState* network =
       network_state_handler->DefaultNetwork();
-  // TODO(gavindodd): Confirm that metered networks should be excluded.
-  const bool metered = network_state_handler->default_network_is_metered();
   // Don't allow an update if device is currently offline or connected
   // to a network for which data is metered.
   if (!network || !network->IsConnectedState()) {
     // TODO(gavindodd): Pass a specific error to UI.
-    ReportUpdateFailure(callback, update_engine::REPORTING_ERROR_EVENT);
     return false;
-  } else if (metered) {
-    LOG(ERROR) << "A metered network connection cannot be used during RMA.";
-    callback.Run(update_engine::REPORTING_ERROR_EVENT, 0, false, false,
-                 std::string(), 0);
+  }
+
+  // TODO(gavinwill): Confirm that metered networks should be excluded.
+  const bool is_metered = network_state_handler->default_network_is_metered();
+  if (is_metered) {
     return false;
   }
 
   return true;
 }
+
 }  // namespace
 
 VersionUpdater::VersionUpdater() {
@@ -64,8 +59,9 @@ VersionUpdater::~VersionUpdater() {
   DBusThreadManager::Get()->GetUpdateEngineClient()->RemoveObserver(this);
 }
 
-void VersionUpdater::SetStatusCallback(StatusCallback status_callback) {
-  status_callback_ = std::move(status_callback);
+void VersionUpdater::SetOsUpdateStatusCallback(
+    OsUpdateStatusCallback callback) {
+  status_callback_ = std::move(callback);
 }
 
 // TODO(gavindodd): Align with chrome/browser/ui/webui/help/version_updater.h:27
@@ -77,60 +73,64 @@ void VersionUpdater::SetStatusCallback(StatusCallback status_callback) {
 // chrome/app/shared_settings_strings.grdp:378
 // chrome/app/os_settings_strings.grdp:66
 // for mapping of OS update status to strings
-
-bool VersionUpdater::CheckOsUpdateAvailable() {
-  // TODO(gavindodd): Does this need thread guarding.
-  if (check_update_available_ == UPDATE_AVAILABLE ||
-      check_update_available_ == NO_UPDATE_AVAILABLE) {
-    update_engine::Operation operation =
-        (check_update_available_ == UPDATE_AVAILABLE)
-            ? update_engine::Operation::UPDATE_AVAILABLE
-            : update_engine::Operation::IDLE;
-    status_callback_.Run(operation,
+void VersionUpdater::CheckOsUpdateAvailable() {
+  // TODO(gavinwill): Does this need thread guarding.
+  if (check_update_available_ == UPDATE_AVAILABLE) {
+    status_callback_.Run(update_engine::Operation::UPDATE_AVAILABLE,
                          /*progress=*/0, /*rollback=*/false,
                          /*powerwash=*/false, new_version_, /*update_size=*/0);
-    return true;
+    return;
+  }
+
+  if (check_update_available_ == NO_UPDATE_AVAILABLE) {
+    status_callback_.Run(update_engine::Operation::IDLE,
+                         /*progress=*/0, /*rollback=*/false,
+                         /*powerwash=*/false, new_version_, /*update_size=*/0);
+    return;
   }
 
   if (check_update_available_ == CHECKING) {
-    return true;
+    return;
   }
 
-  if (!EnsureCanUpdate(status_callback_)) {
-    return false;
+  if (!IsUpdateAllowed()) {
+    ReportUpdateFailure(status_callback_, update_engine::REPORTING_ERROR_EVENT);
+    return;
+  }
+
+  if (!IsUpdateEngineIdle()) {
+    LOG(ERROR) << "Tried to check for update when UpdateEngine not IDLE.";
+    ReportUpdateFailure(status_callback_, update_engine::REPORTING_ERROR_EVENT);
+    return;
   }
 
   check_update_available_ = CHECKING;
-  if (!IsIdle()) {
-    LOG(ERROR) << "Tried to start update when UpdateEngine not IDLE.";
-    return false;
-  }
-  // RequestUpdateCheck will check if an update is available and install it.
+  // RequestUpdateCheckWithoutApplying() will check if an update is available
+  // without installing it.
   DBusThreadManager::Get()
       ->GetUpdateEngineClient()
-      ->RequestUpdateCheckWithoutApplying(base::BindOnce(
-          &VersionUpdater::OnUpdateProgress, weak_ptr_factory_.GetWeakPtr()));
-  return true;
+      ->RequestUpdateCheckWithoutApplying(
+          base::BindOnce(&VersionUpdater::OnRequestUpdateCheck,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 bool VersionUpdater::UpdateOs() {
-  if (!EnsureCanUpdate(status_callback_)) {
+  if (!IsUpdateAllowed()) {
     return false;
   }
 
-  UpdateEngineClient* update_engine_client =
-      DBusThreadManager::Get()->GetUpdateEngineClient();
-  if (!IsIdle()) {
+  if (!IsUpdateEngineIdle()) {
     LOG(ERROR) << "Tried to start update when UpdateEngine not IDLE.";
     return false;
   }
   // RequestUpdateCheck will check if an update is available and install it.
-  update_engine_client->RequestUpdateCheck(base::BindOnce(
-      &VersionUpdater::OnUpdateProgress, weak_ptr_factory_.GetWeakPtr()));
+  DBusThreadManager::Get()->GetUpdateEngineClient()->RequestUpdateCheck(
+      base::BindOnce(&VersionUpdater::OnRequestUpdateCheck,
+                     weak_ptr_factory_.GetWeakPtr()));
   return true;
 }
 
-bool VersionUpdater::IsIdle() {
+bool VersionUpdater::IsUpdateEngineIdle() {
   return DBusThreadManager::Get()
              ->GetUpdateEngineClient()
              ->GetLastStatus()
@@ -183,30 +183,19 @@ void VersionUpdater::UpdateStatusChanged(
       break;
   }
 
-  // TODO(gavindodd): Work out how errors are passed from UpdateEngine when
+  // TODO(gavinwill): Work out how errors are passed from UpdateEngine when
   // operation == REPORTING_ERROR_EVENT and handle them appropriately.
   status_callback_.Run(status.current_operation(), status.progress(), false,
                        status.will_powerwash_after_reboot(),
                        status.new_version(), status.new_size());
 }
 
-void VersionUpdater::OnUpdateProgress(
+void VersionUpdater::OnRequestUpdateCheck(
     UpdateEngineClient::UpdateCheckResult result) {
-  switch (result) {
-    case chromeos::UpdateEngineClient::UPDATE_RESULT_SUCCESS:
-      // Nothing to do if the update check started successfully.
-      break;
-    case chromeos::UpdateEngineClient::UPDATE_RESULT_FAILED:
-      LOG(ERROR) << "Update failed.";
-      // TODO(gavindodd): Pass a specific error to UI.
-      ReportUpdateFailure(status_callback_,
-                          update_engine::REPORTING_ERROR_EVENT);
-      break;
-    case chromeos::UpdateEngineClient::UPDATE_RESULT_NOTIMPLEMENTED:
-      // No point retrying if the operation is not implemented.
-      LOG(ERROR) << "Update check failed: Operation not implemented.";
-      ReportUpdateFailure(status_callback_, update_engine::DISABLED);
-      break;
+  if (result != chromeos::UpdateEngineClient::UPDATE_RESULT_SUCCESS) {
+    LOG(ERROR) << "OS update request failed.";
+    // TODO(gavinwill): Pass a specific error to UI.
+    ReportUpdateFailure(status_callback_, update_engine::REPORTING_ERROR_EVENT);
   }
 }
 

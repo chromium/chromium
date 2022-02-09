@@ -85,7 +85,7 @@ class VersionUpdaterTest : public testing::Test {
   }
 
   void SetCallback() {
-    version_updater().SetStatusCallback(
+    version_updater().SetOsUpdateStatusCallback(
         base::BindRepeating(&VersionUpdaterTest::OnOsUpdateStatusCallback,
                             weak_ptr_factory_.GetWeakPtr()));
   }
@@ -175,39 +175,31 @@ TEST_F(VersionUpdaterTest, IsIdleWhenUpdateEngineIdle) {
   update_engine::StatusResult status;
   status.set_current_operation(update_engine::Operation::IDLE);
   fake_update_engine_client().set_default_status(status);
-  EXPECT_TRUE(version_updater().IsIdle());
+  EXPECT_TRUE(version_updater().IsUpdateEngineIdle());
 }
 
 TEST_F(VersionUpdaterTest, IsNotIdleWhenUpdateEngineNotIdle) {
   update_engine::StatusResult status;
   status.set_current_operation(update_engine::Operation::CHECKING_FOR_UPDATE);
   fake_update_engine_client().set_default_status(status);
-  EXPECT_FALSE(version_updater().IsIdle());
-}
-
-TEST_F(VersionUpdaterTest, NoCallbackFailsGracefully) {
-  SetupWiFiNetwork();
-  EXPECT_FALSE(version_updater().UpdateOs());
+  EXPECT_FALSE(version_updater().IsUpdateEngineIdle());
 }
 
 TEST_F(VersionUpdaterTest, WithoutNetworkUpdateOsFails) {
   SetCallback();
   EXPECT_FALSE(version_updater().UpdateOs());
-  EXPECT_EQ(1u, callback_count_);
 }
 
 TEST_F(VersionUpdaterTest, WithNetworkUpdateOsOk) {
   SetCallback();
   SetupWiFiNetwork();
   EXPECT_TRUE(version_updater().UpdateOs());
-  EXPECT_EQ(0u, callback_count_);
 }
 
 TEST_F(VersionUpdaterTest, WithMeteredNetworkUpdateOsFails) {
   SetCallback();
   SetupMeteredNetwork();
   EXPECT_FALSE(version_updater().UpdateOs());
-  EXPECT_EQ(1u, callback_count_);
 }
 
 TEST_F(VersionUpdaterTest, CallbackFiresWhenUpdateEngineStatusChanges) {
