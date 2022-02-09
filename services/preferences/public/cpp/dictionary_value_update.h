@@ -93,7 +93,6 @@ class DictionaryValueUpdate {
   // doubles.
   bool GetDouble(base::StringPiece path, double* out_value) const;
   bool GetString(base::StringPiece path, std::string* out_value) const;
-  bool GetString(base::StringPiece path, std::u16string* out_value) const;
   bool GetDictionary(base::StringPiece path,
                      const base::DictionaryValue** out_value) const;
   bool GetDictionary(base::StringPiece path,

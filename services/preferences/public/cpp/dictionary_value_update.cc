@@ -162,11 +162,6 @@ bool DictionaryValueUpdate::GetString(base::StringPiece path,
   return value_->GetString(path, out_value);
 }
 
-bool DictionaryValueUpdate::GetString(base::StringPiece path,
-                                      std::u16string* out_value) const {
-  return value_->GetString(path, out_value);
-}
-
 bool DictionaryValueUpdate::GetDictionary(
     base::StringPiece path,
     const base::DictionaryValue** out_value) const {
