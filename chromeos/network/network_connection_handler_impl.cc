@@ -168,10 +168,9 @@ bool IsVpnProhibited() {
   return base::Contains(prohibited_technologies, shill::kTypeVPN);
 }
 
-// TODO(b/161092818): Add wireguard type when it is supported in shill.
 bool IsBuiltInVpnType(const std::string& vpn_type) {
-  return vpn_type == shill::kProviderL2tpIpsec ||
-         vpn_type == shill::kProviderOpenVpn;
+  return vpn_type != shill::kProviderArcVpn &&
+         vpn_type != shill::kProviderThirdPartyVpn;
 }
 
 std::ostream& operator<<(std::ostream& stream, client_cert::ConfigType type) {

@@ -920,6 +920,23 @@ TEST_F(NetworkConnectionHandlerImplTest, ConnectToTetherNetwork_Failure) {
 }
 
 TEST_F(NetworkConnectionHandlerImplTest,
+       ConnectToIkev2VpnNetworkWhenProhibited_Failure) {
+  Init();
+
+  ProhibitVpnForNetworkHandler();
+
+  const std::string vpn_service_path =
+      ConfigureVpnServiceWithProviderType(shill::kProviderIKEv2);
+  ASSERT_FALSE(vpn_service_path.empty());
+
+  Connect(/*service_path=*/vpn_service_path);
+  EXPECT_EQ(NetworkConnectionHandler::kErrorBlockedByPolicy,
+            GetResultAndReset());
+
+  NetworkHandler::Shutdown();
+}
+
+TEST_F(NetworkConnectionHandlerImplTest,
        ConnectToL2tpIpsecVpnNetworkWhenProhibited_Failure) {
   Init();
 
@@ -944,6 +961,23 @@ TEST_F(NetworkConnectionHandlerImplTest,
 
   const std::string vpn_service_path =
       ConfigureVpnServiceWithProviderType(shill::kProviderOpenVpn);
+  ASSERT_FALSE(vpn_service_path.empty());
+
+  Connect(/*service_path=*/vpn_service_path);
+  EXPECT_EQ(NetworkConnectionHandler::kErrorBlockedByPolicy,
+            GetResultAndReset());
+
+  NetworkHandler::Shutdown();
+}
+
+TEST_F(NetworkConnectionHandlerImplTest,
+       ConnectToWireGuardNetworkWhenProhibited_Failure) {
+  Init();
+
+  ProhibitVpnForNetworkHandler();
+
+  const std::string vpn_service_path =
+      ConfigureVpnServiceWithProviderType(shill::kProviderWireGuard);
   ASSERT_FALSE(vpn_service_path.empty());
 
   Connect(/*service_path=*/vpn_service_path);
