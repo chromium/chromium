@@ -126,7 +126,7 @@ class NET_EXPORT_PRIVATE SpdyProxyClientSocket : public ProxyClientSocket,
 
   // Calls |callback.Run(result)|. Used to run a callback posted to the
   // message loop.
-  void RunCallback(CompletionOnceCallback callback, int result) const;
+  void RunWriteCallback(CompletionOnceCallback callback, int result) const;
 
   void OnIOComplete(int result);
 
@@ -141,7 +141,10 @@ class NET_EXPORT_PRIVATE SpdyProxyClientSocket : public ProxyClientSocket,
   // and returns the number of bytes read.
   size_t PopulateUserReadBuffer(char* out, size_t len);
 
-  State next_state_;
+  // Called when the peer sent END_STREAM.
+  void MaybeSendEndStream();
+
+  State next_state_ = STATE_DISCONNECTED;
 
   // Pointer to the SPDY Stream that this sits on top of.
   base::WeakPtr<SpdyStream> spdy_stream_;
@@ -183,6 +186,17 @@ class NET_EXPORT_PRIVATE SpdyProxyClientSocket : public ProxyClientSocket,
 
   const NetLogWithSource net_log_;
   const NetLogSource source_dependency_;
+
+  // State for handling END_STREAM. When the peer sends a DATA frame with
+  // END_STREAM, it should be treated as being equivalent to the TCP FIN bit.
+  // We should send a DATA frame with END_STREAM after receiving END_STREAM
+  // as the spec requires.
+  enum class EndStreamState {
+    kNone,
+    kEndStreamReceived,
+    kEndStreamSent,
+  };
+  EndStreamState end_stream_state_ = EndStreamState::kNone;
 
   // The default weak pointer factory.
   base::WeakPtrFactory<SpdyProxyClientSocket> weak_factory_{this};
