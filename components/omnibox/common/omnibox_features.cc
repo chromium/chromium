@@ -106,7 +106,7 @@ const base::Feature kClobberTriggersContextualWebZeroSuggest{
 // Chrome will request remote ZeroSuggest suggestions for the SRP (search
 // results page).
 const base::Feature kClobberTriggersSRPZeroSuggest{
-    "OmniboxClobberTriggersSRPZeroSuggest", base::FEATURE_DISABLED_BY_DEFAULT};
+    "OmniboxClobberTriggersSRPZeroSuggest", enabled_by_default_desktop_only};
 
 // Used to adjust the age threshold since the last visit in order to consider a
 // normalized keyword search term as a zero-prefix suggestion. If disabled, the
