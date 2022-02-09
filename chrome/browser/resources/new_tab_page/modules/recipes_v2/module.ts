@@ -4,7 +4,7 @@
 
 import '../module_header.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeat, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
 import {TaskItem, TaskModuleType} from '../../task_module.mojom-webui.js';
@@ -13,7 +13,13 @@ import {TaskModuleHandlerProxy} from '../task_module/task_module_handler_proxy.j
 
 import {getTemplate} from './module.html.js';
 
-class RecipeModuleElement extends I18nMixin
+export interface RecipeModuleElement {
+  $: {
+    recipesRepeat: DomRepeat,
+  };
+}
+
+export class RecipeModuleElement extends I18nMixin
 (PolymerElement) {
   static get is() {
     return 'ntp-recipes-module-redesigned';

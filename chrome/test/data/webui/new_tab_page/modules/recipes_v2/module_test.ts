@@ -4,17 +4,15 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {$$, recipeTasksV2Descriptor, TaskModuleHandlerProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {CrAutoImgElement, RecipeModuleElement, recipeTasksV2Descriptor, TaskModuleHandlerProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {TaskModuleHandlerRemote} from 'chrome://new-tab-page/task_module.mojom-webui.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {installMock} from '../../test_support.js';
 
 suite('NewTabPageModulesRecipesV2ModuleTest', () => {
-  /** @type {!TestBrowserProxy} */
-  let handler;
+  let handler: TestBrowserProxy;
 
   setup(() => {
     document.body.innerHTML = '';
@@ -51,40 +49,54 @@ suite('NewTabPageModulesRecipesV2ModuleTest', () => {
     handler.setResultFor('getPrimaryTask', Promise.resolve({task}));
 
     // Act.
-    const moduleElement = assert(await recipeTasksV2Descriptor.initialize(0));
+    const moduleElement =
+        await recipeTasksV2Descriptor.initialize(0) as RecipeModuleElement;
+    assertTrue(!!moduleElement);
     document.body.append(moduleElement);
-    $$(moduleElement, '#recipesRepeat').render();
+    moduleElement.$.recipesRepeat.render();
 
     // Assert.
     const recipes =
-        Array.from(moduleElement.shadowRoot.querySelectorAll('.recipe-item'));
+        Array.from(moduleElement.shadowRoot!.querySelectorAll<HTMLElement>(
+            '.recipe-item'));
     assertEquals(1, handler.getCallCount('getPrimaryTask'));
     assertEquals(3, recipes.length);
     assertEquals(
-        'https://apricot.com/img.png', recipes[0].querySelector('img').autoSrc);
-    assertEquals('apricot', recipes[0].querySelector('.name').innerText);
-    assertEquals('apricot', recipes[0].querySelector('.name').title);
+        'https://apricot.com/img.png',
+        recipes[0]!.querySelector<CrAutoImgElement>('img')!.autoSrc);
+    let nameElement = recipes[0]!.querySelector<HTMLElement>('.name')!;
+    assertEquals('apricot', nameElement.innerText);
+    assertEquals('apricot', nameElement.title);
     assertEquals(
-        'Viewed 6 months ago', recipes[0].querySelector('.info').innerText);
+        'Viewed 6 months ago',
+        recipes[0]!.querySelector<HTMLElement>('.info')!.innerText);
     assertEquals(
-        'Apricot Site', recipes[0].querySelector('.site-name').innerText);
+        'Apricot Site',
+        recipes[0]!.querySelector<HTMLElement>('.site-name')!.innerText);
     assertEquals(
-        'https://banana.com/img.png', recipes[1].querySelector('img').autoSrc);
-    assertEquals('banana', recipes[1].querySelector('.name').innerText);
-    assertEquals('banana', recipes[1].querySelector('.name').title);
+        'https://banana.com/img.png',
+        recipes[1]!.querySelector<CrAutoImgElement>('img')!.autoSrc);
+    nameElement = recipes[1]!.querySelector<HTMLElement>('.name')!;
+    assertEquals('banana', nameElement.innerText);
+    assertEquals('banana', nameElement.title);
     assertEquals(
-        'Viewed 2 days ago', recipes[1].querySelector('.info').innerText);
+        'Viewed 2 days ago',
+        recipes[1]!.querySelector<HTMLElement>('.info')!.innerText);
     assertEquals(
-        'Banana Site', recipes[1].querySelector('.site-name').innerText);
+        'Banana Site',
+        recipes[1]!.querySelector<HTMLElement>('.site-name')!.innerText);
     assertEquals(
         'https://cranberry.com/img.png',
-        recipes[2].querySelector('img').autoSrc);
-    assertEquals('cranberry', recipes[2].querySelector('.name').innerText);
-    assertEquals('cranberry', recipes[2].querySelector('.name').title);
+        recipes[2]!.querySelector<CrAutoImgElement>('img')!.autoSrc);
+    nameElement = recipes[2]!.querySelector<HTMLElement>('.name')!;
+    assertEquals('cranberry', nameElement.innerText);
+    assertEquals('cranberry', nameElement.title);
     assertEquals(
-        'Viewed 3 weeks ago', recipes[2].querySelector('.info').innerText);
+        'Viewed 3 weeks ago',
+        recipes[2]!.querySelector<HTMLElement>('.info')!.innerText);
     assertEquals(
-        'Cranberry Site', recipes[2].querySelector('.site-name').innerText);
+        'Cranberry Site',
+        recipes[2]!.querySelector<HTMLElement>('.site-name')!.innerText);
   });
 
   test('empty module renders if no tasks available', async () => {

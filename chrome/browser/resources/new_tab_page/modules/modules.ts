@@ -20,13 +20,14 @@ import {ModuleWrapperElement} from './module_wrapper.js';
 import {getTemplate} from './modules.html.js';
 
 
-type DismissModuleEvent =
+export type DismissModuleEvent =
     CustomEvent<{message: string, restoreCallback: () => void}>;
-type DisableModuleEvent = DismissModuleEvent;
+export type DisableModuleEvent = DismissModuleEvent;
 
 declare global {
   interface HTMLElementEventMap {
-    'dismiss-module': DismissModuleEvent, 'disable-module': DisableModuleEvent,
+    'dismiss-module': DismissModuleEvent;
+    'disable-module': DisableModuleEvent;
   }
 }
 

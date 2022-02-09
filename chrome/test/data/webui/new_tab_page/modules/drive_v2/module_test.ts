@@ -5,17 +5,15 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {DriveHandlerRemote} from 'chrome://new-tab-page/drive.mojom-webui.js';
-import {$$, DriveProxy, driveV2Descriptor} from 'chrome://new-tab-page/new_tab_page.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {$$, CrAutoImgElement, DisableModuleEvent, DriveProxy, driveV2Descriptor, DriveV2ModuleElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../test_support.js';
 
 suite('NewTabPageModulesDriveModuleTest', () => {
-  /** @type {!TestBrowserProxy} */
-  let handler;
+  let handler: TestBrowserProxy;
 
   setup(() => {
     document.body.innerHTML = '';
@@ -50,28 +48,32 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
 
-    const module = assert(await driveV2Descriptor.initialize(0));
+    const module =
+        await driveV2Descriptor.initialize(0) as DriveV2ModuleElement;
+    assertTrue(!!module);
     document.body.append(module);
     await handler.whenCalled('getFiles');
-    $$(module, '#fileRepeat').render();
-    const items = Array.from(module.shadowRoot.querySelectorAll('.file'));
-    const urls = module.shadowRoot.querySelectorAll('.file');
+    module.$.fileRepeat.render();
+    const items = Array.from(module.shadowRoot!.querySelectorAll('.file'));
+    const urls =
+        module.shadowRoot!.querySelectorAll<HTMLAnchorElement>('.file');
 
     assertTrue(isVisible(module.$.files));
-    assertTrue(!!module);
     assertEquals(2, items.length);
-    assertEquals('Bar', items[1].querySelector('.file-title').textContent);
+    assertEquals(
+        'Bar',
+        items[1]!.querySelector<HTMLElement>('.file-title')!.textContent);
     assertEquals(
         'Edited yesterday',
-        items[1].querySelector('.file-description').textContent);
+        items[1]!.querySelector<HTMLElement>('.file-description')!.textContent);
     assertEquals(
         'https://drive-thirdparty.googleusercontent.com/32/type/application/vnd.google-apps.spreadsheet',
-        items[0].querySelector('.file-icon').autoSrc);
+        items[0]!.querySelector<CrAutoImgElement>('.file-icon')!.autoSrc);
     assertEquals(
         'https://drive-thirdparty.googleusercontent.com/32/type/application/vnd.google-apps.document',
-        items[1].querySelector('.file-icon').autoSrc);
-    assertEquals('https://foo.com/', urls[0].href);
-    assertEquals('https://bar.com/', urls[1].href);
+        items[1]!.querySelector<CrAutoImgElement>('.file-icon')!.autoSrc);
+    assertEquals('https://foo.com/', urls[0]!.href);
+    assertEquals('https://bar.com/', urls[1]!.href);
   });
 
   test('empty module shows without data', async () => {
@@ -92,10 +94,12 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
 
-    const module = assert(await driveV2Descriptor.initialize(0));
+    const module =
+        await driveV2Descriptor.initialize(0) as DriveV2ModuleElement;
+    assertTrue(!!module);
     document.body.append(module);
     await handler.whenCalled('getFiles');
-    $$(module, '#fileRepeat').render();
+    module.$.fileRepeat.render();
 
     assertEquals(86, module.offsetHeight);
   });
@@ -113,10 +117,12 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
 
-    const module = assert(await driveV2Descriptor.initialize(0));
+    const module =
+        await driveV2Descriptor.initialize(0) as DriveV2ModuleElement;
+    assertTrue(!!module);
     document.body.append(module);
     await handler.whenCalled('getFiles');
-    $$(module, '#fileRepeat').render();
+    module.$.fileRepeat.render();
 
     assertEquals(142, module.offsetHeight);
   });
@@ -136,12 +142,14 @@ suite('NewTabPageModulesDriveModuleTest', () => {
       ]
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
-    const driveModule = assert(await driveV2Descriptor.initialize(0));
+    const driveModule =
+        await driveV2Descriptor.initialize(0) as DriveV2ModuleElement;
+    assertTrue(!!driveModule);
     document.body.append(driveModule);
 
     // Act.
-    const infoEvent = new Event('info-button-click');
-    $$(driveModule, 'ntp-module-header').dispatchEvent(infoEvent);
+    ($$(driveModule, 'ntp-module-header')!
+     ).dispatchEvent(new Event('info-button-click'));
 
     // Assert.
     assertTrue(!!$$(driveModule, 'ntp-info-dialog'));
@@ -163,19 +171,19 @@ suite('NewTabPageModulesDriveModuleTest', () => {
           ]
         };
         handler.setResultFor('getFiles', Promise.resolve(data));
-        const driveModule = assert(await driveV2Descriptor.initialize(0));
+        const driveModule =
+            await driveV2Descriptor.initialize(0) as DriveV2ModuleElement;
         document.body.append(driveModule);
 
         // Act.
-        const disable = {event: null};
-        driveModule.addEventListener(
-            'disable-module', (e) => disable.event = e);
-        const disableEvent = new Event('disable-button-click');
-        $$(driveModule, 'ntp-module-header').dispatchEvent(disableEvent);
+        const whenFired = eventToPromise('disable-module', driveModule);
+        ($$(driveModule, 'ntp-module-header')!
+         ).dispatchEvent(new Event('disable-button-click'));
 
         // Assert.
+        const event: DisableModuleEvent = await whenFired;
         assertEquals(
             'You won\'t see Drive files again on this page',
-            disable.event.detail.message);
+            event.detail.message);
       });
 });

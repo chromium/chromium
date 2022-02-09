@@ -5,8 +5,7 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {FooHandlerRemote} from 'chrome://new-tab-page/foo.mojom-webui.js';
-import {$$, dummyV2Descriptor, FooProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {CrAutoImgElement, DummyModuleElement, dummyV2Descriptor, FooProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -14,8 +13,7 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 import {installMock} from '../../test_support.js';
 
 suite('NewTabPageModulesDummyModuleTest', () => {
-  /** @type {!TestBrowserProxy} */
-  let handler;
+  let handler: TestBrowserProxy;
 
   setup(() => {
     document.body.innerHTML = '';
@@ -44,30 +42,31 @@ suite('NewTabPageModulesDummyModuleTest', () => {
       },
     ];
     handler.setResultFor('getData', Promise.resolve({data}));
-    const module = await dummyV2Descriptor.initialize(0);
-    assert(module);
+    const module = await dummyV2Descriptor.initialize(0) as DummyModuleElement;
+    assertTrue(!!module);
     document.body.append(module);
-    $$(module, '#tileList').render();
+    module.$.tileList.render();
 
     // Assert.
     assertTrue(isVisible(module.$.tiles));
-    const tiles = module.shadowRoot.querySelectorAll('#tiles .tile-item');
+    const tiles = module.shadowRoot!.querySelectorAll('#tiles .tile-item');
     assertEquals(3, tiles.length);
-    assertEquals('item3', tiles[2].getAttribute('title'));
-    assertEquals('baz', tiles[2].querySelector('span').textContent);
-    assertEquals('baz.com', tiles[2].querySelector('img').autoSrc);
+    assertEquals('item3', tiles[2]!.getAttribute('title'));
+    assertEquals('baz', tiles[2]!.querySelector('span')!.textContent);
+    assertEquals(
+        'baz.com', tiles[2]!.querySelector<CrAutoImgElement>('img')!.autoSrc);
   });
 
   test('creates module without data', async () => {
     // Act.
-    const module = await dummyV2Descriptor.initialize(0);
-    assert(module);
+    const module = await dummyV2Descriptor.initialize(0) as DummyModuleElement;
+    assertTrue(!!module);
     document.body.append(module);
-    $$(module, '#tileList').render();
+    module.$.tileList.render();
 
     // Assert.
     assertFalse(isVisible(module.$.tiles));
-    const tiles = module.shadowRoot.querySelectorAll('#tiles .tile-item');
+    const tiles = module.shadowRoot!.querySelectorAll('#tiles .tile-item');
     assertEquals(0, tiles.length);
   });
 });
