@@ -29743,7 +29743,8 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       site-keyed agent clusters. As a consequence, the document.domain accessor
       remains settable by default. This matches the legacy behaviour.
 
-      See https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/security/document-domain.md for additional details.
+      See https://developer.chrome.com/blog/immutable-document-domain/
+      for additional details.
       '''
     },
     {

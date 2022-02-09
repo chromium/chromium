@@ -726,8 +726,7 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
               "along with the HTTP response for the document and "
               "frames. See %s for more details.",
               MilestoneString(kM106).Ascii().c_str(),
-              "https://chromium.googlesource.com/chromium/src/+/refs/heads/"
-              "main/docs/security/document-domain.md"));
+              "https://developer.chrome.com/blog/immutable-document-domain/"));
 
     // Features that aren't deprecated don't have a deprecation message.
     default:
