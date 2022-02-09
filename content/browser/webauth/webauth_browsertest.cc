@@ -1210,9 +1210,10 @@ absl::optional<std::string> ExecuteScriptAndExtractPrefixedString(
     }
 
     std::string str;
-    if (result->GetAsString(&str) && str.find(result_prefix) == 0) {
+    if (result->is_string())
+      str = result->GetString();
+    if (str.find(result_prefix) == 0)
       return str;
-    }
   }
 }
 
