@@ -849,8 +849,6 @@ public class DownloadInfoBarController implements DownloadMessageUiController {
                             != InfoBarIdentifier.DOWNLOAD_PROGRESS_INFOBAR_ANDROID) {
                         return;
                     }
-
-                    mCurrentInfoBar = (DownloadProgressInfoBar) infoBar;
                 }
 
                 @Override

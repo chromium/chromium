@@ -751,8 +751,6 @@ static_library("ui") {
       "android/infobars/autofill_offer_notification_infobar.h",
       "android/infobars/autofill_save_card_infobar.cc",
       "android/infobars/autofill_save_card_infobar.h",
-      "android/infobars/download_progress_infobar.cc",
-      "android/infobars/download_progress_infobar.h",
       "android/infobars/duplicate_download_infobar.cc",
       "android/infobars/duplicate_download_infobar.h",
       "android/infobars/framebust_block_infobar.cc",
