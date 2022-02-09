@@ -283,10 +283,52 @@ FileType.types = [
   },
   {
     type: 'archive',
+    name: 'BZIP2_ARCHIVE_FILE_TYPE',
+    subtype: 'BZ2',
+    pattern: /\.bz2$/i,
+    mimePattern: /application\/x\-bzip2/i
+  },
+  {
+    type: 'archive',
     name: 'TAR_GZIP_ARCHIVE_FILE_TYPE',
     subtype: 'TGZ',
     pattern: /\.(tar\.|t)gz$/i,
     mimePattern: /application\/x\-gzip/i
+  },
+  {
+    type: 'archive',
+    name: 'GZIP_ARCHIVE_FILE_TYPE',
+    subtype: 'GZ',
+    pattern: /\.gz$/i,
+    mimePattern: /application\/x\-gzip/i
+  },
+  {
+    type: 'archive',
+    name: 'TAR_LZMA_ARCHIVE_FILE_TYPE',
+    subtype: 'TLZMA',
+    pattern: /\.(tar\.|t)lzma$/i,
+    mimePattern: /application\/x\-lzma/i
+  },
+  {
+    type: 'archive',
+    name: 'LZMA_ARCHIVE_FILE_TYPE',
+    subtype: 'LZMA',
+    pattern: /\.lzma$/i,
+    mimePattern: /application\/x\-lzma/i
+  },
+  {
+    type: 'archive',
+    name: 'TAR_XZ_ARCHIVE_FILE_TYPE',
+    subtype: 'TXZ',
+    pattern: /\.(tar\.|t)xz$/i,
+    mimePattern: /application\/x\-xz/i
+  },
+  {
+    type: 'archive',
+    name: 'XZ_ARCHIVE_FILE_TYPE',
+    subtype: 'XZ',
+    pattern: /\.xz$/i,
+    mimePattern: /application\/x\-xz/i
   },
 
   // Hosted docs.
