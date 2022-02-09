@@ -31,8 +31,27 @@
 #endif
 
 namespace zip {
-
 namespace {
+
+enum UnzipError : int;
+
+std::ostream& operator<<(std::ostream& out, UnzipError error) {
+#define SWITCH_ERR(X) \
+  case X:             \
+    return out << #X;
+  switch (error) {
+    SWITCH_ERR(UNZ_OK);
+    SWITCH_ERR(UNZ_END_OF_LIST_OF_FILE);
+    SWITCH_ERR(UNZ_ERRNO);
+    SWITCH_ERR(UNZ_PARAMERROR);
+    SWITCH_ERR(UNZ_BADZIPFILE);
+    SWITCH_ERR(UNZ_INTERNALERROR);
+    SWITCH_ERR(UNZ_CRCERROR);
+    default:
+      return out << "UNZ" << static_cast<int>(error);
+  }
+#undef SWITCH_ERR
+}
 
 // StringWriterDelegate --------------------------------------------------------
 
@@ -186,7 +205,8 @@ bool ZipReader::AdvanceToNextEntry() {
     reached_end_ = true;
   } else {
     DCHECK_LT(current_entry_index + 1, num_entries_);
-    if (unzGoToNextFile(zip_file_) != UNZ_OK) {
+    if (const int err = unzGoToNextFile(zip_file_); err != UNZ_OK) {
+      LOG(ERROR) << "Cannot go to next entry in ZIP: " << UnzipError(err);
       return false;
     }
   }
@@ -266,40 +286,47 @@ bool ZipReader::ExtractCurrentEntry(WriterDelegate* delegate,
                                     uint64_t num_bytes_to_extract) const {
   DCHECK(zip_file_);
 
-  const int open_result = unzOpenCurrentFile(zip_file_);
-  if (open_result != UNZ_OK)
+  if (const int err = unzOpenCurrentFile(zip_file_); err != UNZ_OK) {
+    LOG(ERROR) << "Cannot open file from ZIP entry: " << UnzipError(err);
     return false;
+  }
 
   if (!delegate->PrepareOutput())
     return false;
-  std::unique_ptr<char[]> buf(new char[internal::kZipBufSize]);
 
   uint64_t remaining_capacity = num_bytes_to_extract;
   bool entire_file_extracted = false;
 
   while (remaining_capacity > 0) {
+    char buf[internal::kZipBufSize];
     const int num_bytes_read =
-        unzReadCurrentFile(zip_file_, buf.get(), internal::kZipBufSize);
+        unzReadCurrentFile(zip_file_, buf, internal::kZipBufSize);
 
     if (num_bytes_read == 0) {
       entire_file_extracted = true;
       break;
-    } else if (num_bytes_read < 0) {
-      // If num_bytes_read < 0, then it's a specific UNZ_* error code.
-      break;
-    } else if (num_bytes_read > 0) {
-      uint64_t num_bytes_to_write = std::min<uint64_t>(
-          remaining_capacity, base::checked_cast<uint64_t>(num_bytes_read));
-      if (!delegate->WriteBytes(buf.get(), num_bytes_to_write))
-        break;
-      if (remaining_capacity == base::checked_cast<uint64_t>(num_bytes_read)) {
-        // Ensures function returns true if the entire file has been read.
-        entire_file_extracted =
-            (unzReadCurrentFile(zip_file_, buf.get(), 1) == 0);
-      }
-      CHECK_GE(remaining_capacity, num_bytes_to_write);
-      remaining_capacity -= num_bytes_to_write;
     }
+
+    if (num_bytes_read < 0) {
+      LOG(ERROR) << "Error " << UnzipError(num_bytes_read)
+                 << " while reading data from file in ZIP";
+      break;
+    }
+
+    DCHECK_LT(0, num_bytes_read);
+    CHECK_LE(num_bytes_read, internal::kZipBufSize);
+
+    uint64_t num_bytes_to_write = std::min<uint64_t>(
+        remaining_capacity, base::checked_cast<uint64_t>(num_bytes_read));
+    if (!delegate->WriteBytes(buf, num_bytes_to_write))
+      break;
+
+    if (remaining_capacity == base::checked_cast<uint64_t>(num_bytes_read)) {
+      // Ensures function returns true if the entire file has been read.
+      entire_file_extracted = (unzReadCurrentFile(zip_file_, buf, 1) == 0);
+    }
+    CHECK_GE(remaining_capacity, num_bytes_to_write);
+    remaining_capacity -= num_bytes_to_write;
   }
 
   unzCloseCurrentFile(zip_file_);
@@ -335,8 +362,8 @@ void ZipReader::ExtractCurrentEntryToFilePathAsync(
     return;
   }
 
-  if (unzOpenCurrentFile(zip_file_) != UNZ_OK) {
-    DVLOG(1) << "Unzip failed: unable to open current zip entry.";
+  if (const int err = unzOpenCurrentFile(zip_file_); err != UNZ_OK) {
+    LOG(ERROR) << "Cannot open file from ZIP entry: " << UnzipError(err);
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, std::move(failure_callback));
     return;
@@ -415,12 +442,16 @@ bool ZipReader::OpenInternal() {
   DCHECK(zip_file_);
 
   unz_global_info zip_info = {};  // Zero-clear.
-  if (unzGetGlobalInfo(zip_file_, &zip_info) != UNZ_OK) {
+  if (const int err = unzGetGlobalInfo(zip_file_, &zip_info); err != UNZ_OK) {
+    LOG(ERROR) << "Cannot get ZIP info: " << UnzipError(err);
     return false;
   }
+
   num_entries_ = zip_info.number_entry;
-  if (num_entries_ < 0)
+  if (num_entries_ < 0) {
+    LOG(ERROR) << "Cannot get ZIP info: " << UnzipError(num_entries_);
     return false;
+  }
 
   // We are already at the end if the ZIP archive is empty.
   reached_end_ = (num_entries_ == 0);
