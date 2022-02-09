@@ -73222,6 +73222,7 @@ Called by update_net_trust_anchors.py.-->
 <enum name="PrivacySandboxReferrer">
   <int value="0" label="Privacy Settings"/>
   <int value="1" label="Cookie Settings Snackbar"/>
+  <int value="2" label="Privacy Sandbox Notice"/>
 </enum>
 
 <enum name="PrivacyScreenToggleUISurface">

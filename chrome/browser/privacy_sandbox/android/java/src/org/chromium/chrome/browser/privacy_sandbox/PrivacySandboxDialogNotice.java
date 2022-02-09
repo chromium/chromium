@@ -9,14 +9,22 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.ui.widget.ButtonCompat;
 
 /**
  * Dialog in the form of a notice shown for the Privacy Sandbox.
  */
 public class PrivacySandboxDialogNotice extends Dialog implements View.OnClickListener {
-    public PrivacySandboxDialogNotice(Context context) {
+    private Context mContext;
+    private SettingsLauncher mSettingsLauncher;
+
+    public PrivacySandboxDialogNotice(Context context, @NonNull SettingsLauncher settingsLauncher) {
         super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
+        mContext = context;
+        mSettingsLauncher = settingsLauncher;
         View view = LayoutInflater.from(context).inflate(R.layout.privacy_sandbox_notice, null);
         setContentView(view);
 
@@ -26,11 +34,25 @@ public class PrivacySandboxDialogNotice extends Dialog implements View.OnClickLi
         settingsButton.setOnClickListener(this);
     }
 
+    @Override
+    public void show() {
+        PrivacySandboxBridge.dialogActionOccurred(DialogAction.NOTICE_SHOWN);
+        super.show();
+    }
+
     // OnClickListener:
 
     @Override
     public void onClick(View view) {
-        // TODO(crbug.com/1286276): Add the actual logic for the buttons.
-        dismiss();
+        int id = view.getId();
+        if (id == R.id.ack_button) {
+            PrivacySandboxBridge.dialogActionOccurred(DialogAction.NOTICE_ACKNOWLEDGE);
+            dismiss();
+        } else if (id == R.id.settings_button) {
+            PrivacySandboxBridge.dialogActionOccurred(DialogAction.NOTICE_OPEN_SETTINGS);
+            dismiss();
+            PrivacySandboxSettingsFragmentV3.launchPrivacySandboxSettings(
+                    mContext, mSettingsLauncher, PrivacySandboxReferrer.PRIVACY_SANDBOX_NOTICE);
+        }
     }
 }

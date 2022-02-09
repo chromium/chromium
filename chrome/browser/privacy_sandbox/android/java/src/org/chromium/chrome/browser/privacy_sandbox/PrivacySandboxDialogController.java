@@ -6,6 +6,10 @@ package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
+
 /**
  * Controller for the dialog shown for the Privacy Sandbox.
  */
@@ -13,7 +17,8 @@ public class PrivacySandboxDialogController {
     /**
      * Launches an appropriate dialog if necessary and returns whether that happened.
      */
-    public static boolean maybeLaunchPrivacySandboxDialog(Context context, boolean isIncognito) {
+    public static boolean maybeLaunchPrivacySandboxDialog(
+            Context context, @NonNull SettingsLauncher settingsLauncher, boolean isIncognito) {
         if (isIncognito) {
             return false;
         }
@@ -23,7 +28,7 @@ public class PrivacySandboxDialogController {
             case DialogType.NONE:
                 return false;
             case DialogType.NOTICE:
-                new PrivacySandboxDialogNotice(context).show();
+                new PrivacySandboxDialogNotice(context, settingsLauncher).show();
                 return true;
             case DialogType.CONSENT:
                 new PrivacySandboxDialogConsent(context).show();

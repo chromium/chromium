@@ -610,7 +610,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)) {
             didTriggerPromo = PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
-                    mActivity, mTabModelSelectorSupplier.get().isIncognitoSelected());
+                    mActivity, new SettingsLauncherImpl(),
+                    mTabModelSelectorSupplier.get().isIncognitoSelected());
         }
 
         if (!didTriggerPromo) {

@@ -26,11 +26,23 @@ public class PrivacySandboxDialogConsent extends Dialog implements View.OnClickL
         noButton.setOnClickListener(this);
     }
 
+    @Override
+    public void show() {
+        PrivacySandboxBridge.dialogActionOccurred(DialogAction.CONSENT_SHOWN);
+        super.show();
+    }
+
     // OnClickListener:
 
     @Override
     public void onClick(View view) {
-        // TODO(crbug.com/1286276): Add the actual logic for the buttons.
-        dismiss();
+        int id = view.getId();
+        if (id == R.id.yes_button) {
+            PrivacySandboxBridge.dialogActionOccurred(DialogAction.CONSENT_ACCEPTED);
+            dismiss();
+        } else if (id == R.id.no_button) {
+            PrivacySandboxBridge.dialogActionOccurred(DialogAction.CONSENT_DECLINED);
+            dismiss();
+        }
     }
 }
