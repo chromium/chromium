@@ -53,7 +53,7 @@ class TrustedVaultReauthenticationCoordinatorTest : public PlatformTest {
     identity_service->AddIdentity(identity);
     AuthenticationService* authentication_service =
         AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
-    authentication_service->SignIn(identity);
+    authentication_service->SignIn(identity, nil);
 
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
   }

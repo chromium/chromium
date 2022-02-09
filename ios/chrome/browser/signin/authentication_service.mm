@@ -348,6 +348,19 @@ ChromeIdentity* AuthenticationService::GetPrimaryIdentity(
 }
 
 void AuthenticationService::SignIn(ChromeIdentity* identity) {
+  SignIn(identity, nil);
+}
+
+void AuthenticationService::SignIn(ChromeIdentity* identity,
+                                   signin_ui::CompletionCallback completion) {
+  SignInInternal(identity);
+  if (completion) {
+    completion(
+        identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  }
+}
+
+void AuthenticationService::SignInInternal(ChromeIdentity* identity) {
   ServiceStatus status = GetServiceStatus();
   CHECK(status == ServiceStatus::SigninAllowed ||
         status == ServiceStatus::SigninForcedByPolicy)

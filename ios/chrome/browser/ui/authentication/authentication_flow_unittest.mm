@@ -186,7 +186,7 @@ TEST_F(AuthenticationFlowTest, TestAlreadySignedIn) {
   [[performer_ expect] commitSyncForBrowserState:browser_state_.get()];
 
   AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-      ->SignIn(identity1_);
+      ->SignIn(identity1_, nil);
   [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
 
   CheckSignInCompletion(/*expected_signed_in=*/true);
@@ -234,7 +234,7 @@ TEST_F(AuthenticationFlowTest, TestSignOutUserChoice) {
   [[performer_ expect] commitSyncForBrowserState:browser_state_.get()];
 
   AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-      ->SignIn(identity2_);
+      ->SignIn(identity2_, nil);
   [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
 
   CheckSignInCompletion(/*expected_signed_in=*/true);

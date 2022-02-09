@@ -75,7 +75,7 @@ TEST_F(AccountsTableViewControllerTest, AddChromeIdentity) {
   identity_service()->AddIdentity(identity);
 
   // Simulates a credential reload.
-  authentication_service()->SignIn(identity);
+  authentication_service()->SignIn(identity, nil);
   identity_service()->FireChromeIdentityReload();
   base::RunLoop().RunUntilIdle();
 
@@ -100,7 +100,7 @@ TEST_F(AccountsTableViewControllerTest, IgnoreMismatchWithAccountInfo) {
   identity_service()->AddIdentity(identity2);
 
   // Simulates a credential reload.
-  authentication_service()->SignIn(identity1);
+  authentication_service()->SignIn(identity1, nil);
   identity_service()->FireChromeIdentityReload();
   base::RunLoop().RunUntilIdle();
 

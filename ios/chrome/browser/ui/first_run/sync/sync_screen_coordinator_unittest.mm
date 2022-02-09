@@ -107,7 +107,7 @@ TEST_F(SyncScreenCoordinatorTest, TestStart) {
                                                                 gaiaID:@"gaiaID"
                                                                   name:@"name"];
 
-  auth_service_->SignIn(identity);
+  auth_service_->SignIn(identity, nil);
 
   // The delegate is a strict mock, it will fail if it calls it.
   [coordinator_ start];
@@ -132,7 +132,7 @@ TEST_F(SyncScreenCoordinatorTest, TestStartWithSyncActivated) {
                                                                 gaiaID:@"gaiaID"
                                                                   name:@"name"];
 
-  auth_service_->SignIn(identity);
+  auth_service_->SignIn(identity, nil);
 
   OCMExpect([delegate_ willFinishPresenting]);
   [coordinator_ start];
@@ -151,7 +151,7 @@ TEST_F(SyncScreenCoordinatorTest, TestStartWithSyncPolicyDisabled) {
                                                                 gaiaID:@"gaiaID"
                                                                   name:@"name"];
 
-  auth_service_->SignIn(identity);
+  auth_service_->SignIn(identity, nil);
 
   OCMExpect([delegate_ willFinishPresenting]);
   [coordinator_ start];

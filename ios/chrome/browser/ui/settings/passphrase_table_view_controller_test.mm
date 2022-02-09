@@ -106,7 +106,7 @@ void PassphraseTableViewControllerTest::SetUp() {
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForBrowserState(
           chrome_browser_state_.get());
-  auth_service->SignIn(account_manager_service->GetDefaultIdentity());
+  auth_service->SignIn(account_manager_service->GetDefaultIdentity(), nil);
 }
 
 void PassphraseTableViewControllerTest::SetUpNavigationController(

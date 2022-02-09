@@ -197,7 +197,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestModelSignedInSyncOff) {
       syncer::SyncService::DISABLE_REASON_USER_CHOICE);
 
   AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-      ->SignIn(fake_identity());
+      ->SignIn(fake_identity(), nil);
 
   [manager_ loadModel:model_];
 
@@ -304,7 +304,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestGoogleDSETextSignedIn) {
   scoped_feature_list.InitAndEnableFeature(kSearchHistoryLinkIOS);
 
   AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-      ->SignIn(fake_identity());
+      ->SignIn(fake_identity(), nil);
 
   [manager_ loadModel:model_];
 
@@ -340,7 +340,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestPrepopulatedTextSignedIn) {
   scoped_feature_list.InitAndEnableFeature(kSearchHistoryLinkIOS);
 
   AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-      ->SignIn(fake_identity());
+      ->SignIn(fake_identity(), nil);
 
   // Set DSE to one from "prepoulated list".
   const std::string kEngineP1Name = "prepopulated-1";
@@ -412,7 +412,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestCustomTextSignedIn) {
   scoped_feature_list.InitAndEnableFeature(kSearchHistoryLinkIOS);
 
   AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-      ->SignIn(fake_identity());
+      ->SignIn(fake_identity(), nil);
 
   // Set DSE to a be fully custom.
   const std::string kEngineC1Name = "custom-1";

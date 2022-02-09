@@ -126,10 +126,16 @@ class AuthenticationService : public KeyedService,
   virtual ChromeIdentity* GetPrimaryIdentity(
       signin::ConsentLevel consent_level) const;
 
+  // Deprecated. Use SignIn(identity, completion).
   // Grants signin::ConsentLevel::kSignin to |identity|.
   // This method does not set up Sync-the-feature for the identity.
   // Virtual for testing.
   virtual void SignIn(ChromeIdentity* identity);
+
+  // Grants signin::ConsentLevel::kSignin to |identity|.
+  // This method does not set up Sync-the-feature for the identity.
+  virtual void SignIn(ChromeIdentity* identity,
+                      signin_ui::CompletionCallback completion);
 
   // Grants signin::ConsentLevel::kSync to |identity|.
   // This starts setting up Sync-the-feature, but the setup will only complete
@@ -163,6 +169,10 @@ class AuthenticationService : public KeyedService,
  private:
   friend class AuthenticationServiceFake;
   friend class AuthenticationServiceTest;
+
+  // Grants signin::ConsentLevel::kSignin to |identity|.
+  // Virtual for testing.
+  virtual void SignInInternal(ChromeIdentity* identity);
 
   // Migrates the token service accounts stored in prefs from emails to account
   // ids.

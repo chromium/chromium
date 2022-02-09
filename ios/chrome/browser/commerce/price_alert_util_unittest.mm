@@ -69,7 +69,7 @@ class PriceAlertUtilTest : public PlatformTest {
     }
   }
 
-  void SignIn() { auth_service_->SignIn(fake_identity_); }
+  void SignIn() { auth_service_->SignIn(fake_identity_, nil); }
 
   void SignOut() {
     auth_service_->SignOut(signin_metrics::SIGNOUT_TEST,
