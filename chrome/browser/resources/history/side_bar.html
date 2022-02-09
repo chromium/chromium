@@ -95,24 +95,16 @@
       }
 
       iron-icon {
-        display: none;
-      }
-
-      :host-context([enable-branding-update]) iron-icon {
         display: block;
       }
 
-      :host-context([enable-branding-update]) #clear-browsing-data {
+      #clear-browsing-data {
         justify-content: normal;
       }
 
-      :host-context([enable-branding-update]) #clear-browsing-data .cr-icon {
+      #clear-browsing-data .cr-icon {
         margin-inline-end: 0;
         margin-inline-start: 9px;
-      }
-
-      :host-context([enable-branding-update]) #syncedTabs + .separator {
-        display: none;
       }
     </style>
 
@@ -135,7 +127,6 @@
           $i18n{openTabsMenuItem}
           <paper-ripple></paper-ripple>
         </a>
-        <div class="separator"></div>
         <a role="menuitem" id="clear-browsing-data"
             class="cr-nav-menu-item"
             href="chrome://settings/clearBrowserData"

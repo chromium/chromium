@@ -26,7 +26,6 @@
         --ink-color: var(--settings-nav-item-color);
         background: none;
         border: none;
-        border-radius: initial;
         box-shadow: none;
         color: var(--settings-nav-item-color);
         height: unset;
@@ -41,13 +40,6 @@
 
       :host-context(.focus-outline-visible) #advancedButton:focus {
         outline: auto 5px -webkit-focus-ring-color;
-      }
-
-      :host-context([enable-branding-update]) #advancedButton {
-        /* Override the border-radius: initial on #advancedButton. Can be
-         * removed once enable-branding-update launches. */
-        border-end-end-radius: 100px;
-        border-start-end-radius: 100px;
       }
 
       #advancedButton > span,
@@ -69,19 +61,7 @@
         margin-top: 8px;
       }
 
-      #extensionsLink iron-icon {
-        display: none;
-      }
-
-      :host-context([enable-branding-update]) #extensionsLink iron-icon {
-        display: block;
-      }
-
       #aboutIcon {
-        display: none;
-      }
-
-      :host-context([enable-branding-update]) #aboutIcon {
         --cr-icon-image: url(//resources/images/chrome_logo_dark.svg);
         -webkit-mask-size: 18px;
         background-color: var(--iron-icon-fill-color);
