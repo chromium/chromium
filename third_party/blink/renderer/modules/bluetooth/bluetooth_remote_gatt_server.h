@@ -66,8 +66,8 @@ class BluetoothRemoteGATTServer
   // IDL exposed interface:
   BluetoothDevice* device() { return device_; }
   bool connected() { return connected_; }
-  ScriptPromise connect(ScriptState*);
-  void disconnect(ScriptState*);
+  ScriptPromise connect(ScriptState*, ExceptionState&);
+  void disconnect(ScriptState*, ExceptionState&);
   ScriptPromise getPrimaryService(ScriptState* script_state,
                                   const V8BluetoothServiceUUID* service,
                                   ExceptionState& exception_state);

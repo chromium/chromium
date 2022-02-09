@@ -130,7 +130,8 @@ ScriptPromise BluetoothRemoteGATTService::GetCharacteristicsImpl(
     ExceptionState& exception_state,
     mojom::blink::WebBluetoothGATTQueryQuantity quantity,
     const String& characteristics_uuid) {
-  if (!device_->gatt()->connected()) {
+  if (!device_->gatt()->connected() ||
+      !device_->GetBluetooth()->IsServiceBound()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNetworkError,
         BluetoothError::CreateNotConnectedExceptionMessage(

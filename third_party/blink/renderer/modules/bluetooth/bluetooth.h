@@ -52,6 +52,7 @@ class Bluetooth final : public EventTargetWithInlineData,
                               const BluetoothLEScanOptions*,
                               ExceptionState&);
 
+  bool IsServiceBound() const { return service_.is_bound(); }
   mojom::blink::WebBluetoothService* Service() { return service_.get(); }
 
   // WebBluetoothAdvertisementClient

@@ -48,9 +48,11 @@ class BluetoothRemoteGATTDescriptor final : public ScriptWrappable {
  private:
   friend class DescriptorReadValueCallback;
 
-  BluetoothRemoteGATTServer* GetGatt() { return characteristic_->GetGatt(); }
-  mojom::blink::WebBluetoothService* GetService() {
-    return characteristic_->device_->GetBluetooth()->Service();
+  BluetoothRemoteGATTServer* GetGatt() const {
+    return characteristic_->GetGatt();
+  }
+  Bluetooth* GetBluetooth() const {
+    return characteristic_->device_->GetBluetooth();
   }
 
   void ReadValueCallback(ScriptPromiseResolver*,

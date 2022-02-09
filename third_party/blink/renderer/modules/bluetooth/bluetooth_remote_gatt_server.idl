@@ -14,8 +14,8 @@
 {
     [SameObject] readonly attribute BluetoothDevice device;
     readonly attribute boolean connected;
-    [CallWith=ScriptState, MeasureAs=WebBluetoothRemoteServerConnect] Promise<BluetoothRemoteGATTServer> connect();
-    [CallWith=ScriptState, MeasureAs=WebBluetoothRemoteServerDisconnect] void disconnect();
+    [CallWith=ScriptState, RaisesException, MeasureAs=WebBluetoothRemoteServerConnect] Promise<BluetoothRemoteGATTServer> connect();
+    [CallWith=ScriptState, RaisesException, MeasureAs=WebBluetoothRemoteServerDisconnect] void disconnect();
     [CallWith=ScriptState, RaisesException, MeasureAs=WebBluetoothRemoteServerGetPrimaryService] Promise<BluetoothRemoteGATTService> getPrimaryService (BluetoothServiceUUID service);
     [CallWith=ScriptState, RaisesException, MeasureAs=WebBluetoothRemoteServerGetPrimaryServices] Promise<sequence<BluetoothRemoteGATTService>> getPrimaryServices (optional BluetoothServiceUUID service);
 };

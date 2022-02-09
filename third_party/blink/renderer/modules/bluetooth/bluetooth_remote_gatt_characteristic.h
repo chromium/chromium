@@ -118,7 +118,10 @@ class BluetoothRemoteGATTCharacteristic final
     Member<ScriptPromiseResolver> resolver;  // Possibly null.
   };
 
-  BluetoothRemoteGATTServer* GetGatt() { return service_->device()->gatt(); }
+  BluetoothRemoteGATTServer* GetGatt() const {
+    return service_->device()->gatt();
+  }
+  Bluetooth* GetBluetooth() const { return device_->GetBluetooth(); }
 
   void ReadValueCallback(ScriptPromiseResolver*,
                          mojom::blink::WebBluetoothResult,
