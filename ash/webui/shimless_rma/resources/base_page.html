@@ -17,9 +17,16 @@
     flex-grow: 1;
     padding-inline-start: 48px;
   }
+
+  #optionalIcon {
+    height: 112px;
+  }
 </style>
 <div id="pageWrapper">
   <div id="leftPane">
+    <div id="optionalIcon">
+      <slot name="optional-icon"></slot>
+    </div>
     <slot name="left-pane"></slot>
   </div>
   <div id="rightPane">
