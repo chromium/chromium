@@ -9448,6 +9448,13 @@ bool RenderFrameHostImpl::CancelPrerendering(
   FrameTreeNode* outermost_frame =
       GetOutermostMainFrameOrEmbedder()->frame_tree_node();
 
+  // We need to explicitly check that `outermost_frame` is in a prerendering
+  // frame tree before accessing `GetPrerenderHostRegistry()`. Non-prerendered
+  // frames may outlive the PrerenderHostRegistry during WebContents
+  // destruction.
+  if (outermost_frame->GetFrameType() != FrameType::kPrerenderMainFrame)
+    return false;
+
   // TODO(https://crbug.com/1126305): Pass a FinalStatus to CancelPrerendering()
   // method when MojoInterface control, or IsInactiveAndDisallowActivation are
   // called.
