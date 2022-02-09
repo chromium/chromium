@@ -345,8 +345,6 @@ public class DownloadManagerServiceTest {
         createDownloadManagerService(notifier, UPDATE_DELAY_FOR_TEST);
         TestThreadUtils.runOnUiThreadBlocking(
                 (Runnable) () -> DownloadManagerService.setDownloadManagerService(mService));
-        DownloadMessageUiController infoBarController =
-                mService.getInfoBarController(/*otrProfileID=*/null);
         // Try calling download completed directly.
         DownloadInfo successful = getDownloadInfo();
         notifier.expect(MethodID.DOWNLOAD_SUCCESSFUL, successful);

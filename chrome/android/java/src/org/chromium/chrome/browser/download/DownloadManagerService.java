@@ -132,11 +132,7 @@ public class DownloadManagerService implements DownloadController.Observer,
 
     private OMADownloadHandler mOMADownloadHandler;
     private DownloadSnackbarController mDownloadSnackbarController;
-    private DownloadMessageUiController mInfoBarController;
-    private HashMap<OTRProfileID, DownloadInfoBarController> mIncognitoInfoBarControllerMap =
-            new HashMap<>();
     private DownloadMessageUiController mMessageUiController;
-    private DownloadMessageUiController.Delegate mDelegate;
     private long mNativeDownloadManagerService;
     // Flag to track if we need to post a task to update download notifications.
     private boolean mIsUIUpdateScheduled;
@@ -289,29 +285,12 @@ public class DownloadManagerService implements DownloadController.Observer,
 
     /** @return The {@link DownloadMessageUiController} controller associated with the profile. */
     public DownloadMessageUiController getInfoBarController(OTRProfileID otrProfileID) {
-        boolean showMessageUi =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_PROGRESS_MESSAGE);
-        if (!OTRProfileID.isOffTheRecord(otrProfileID)) {
-            return showMessageUi ? mMessageUiController : mInfoBarController;
-        }
-
-        // If the OTR profile does not exist, we should not create the controller.
-        if (!Profile.getLastUsedRegularProfile().hasOffTheRecordProfile(otrProfileID)) {
-            return null;
-        }
-
-        // TODO(shaktisahu, sideyilmaz): If we have multiple OTR profiles, will this be ever null?
-        return showMessageUi ? mMessageUiController
-                             : mIncognitoInfoBarControllerMap.get(otrProfileID);
+        return mMessageUiController;
     }
 
     /** For testing only. */
     public void setInfoBarControllerForTesting(DownloadMessageUiController infoBarController) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_PROGRESS_MESSAGE)) {
-            mMessageUiController = infoBarController;
-        } else {
-            mInfoBarController = infoBarController;
-        }
+        mMessageUiController = infoBarController;
     }
 
     // Deprecated after new download backend.
@@ -382,17 +361,7 @@ public class DownloadManagerService implements DownloadController.Observer,
      */
     public void onActivityLaunched(DownloadMessageUiController.Delegate delegate) {
         if (!mActivityLaunched) {
-            OTRProfileID primaryOTRProfileID = OTRProfileID.getPrimaryOTRProfileID();
-
-            // The info bar controller for regular and primary OTR profile should be created when
-            // activity is launched.
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_PROGRESS_MESSAGE)) {
-                mMessageUiController = new DownloadMessageUiControllerImpl(delegate);
-            } else {
-                mInfoBarController = new DownloadInfoBarController(/*otrProfileID=*/null);
-                mIncognitoInfoBarControllerMap.put(
-                        primaryOTRProfileID, new DownloadInfoBarController(primaryOTRProfileID));
-            }
+            mMessageUiController = new DownloadMessageUiControllerImpl(delegate);
 
             DownloadNotificationService.clearResumptionAttemptLeft();
 
@@ -1108,9 +1077,7 @@ public class DownloadManagerService implements DownloadController.Observer,
     }
 
     @Override
-    public void onProfileDestroyed(Profile profile) {
-        mIncognitoInfoBarControllerMap.remove(profile.getOTRProfileID());
-    }
+    public void onProfileDestroyed(Profile profile) {}
 
     @CalledByNative
     void onResumptionFailed(String downloadGuid) {

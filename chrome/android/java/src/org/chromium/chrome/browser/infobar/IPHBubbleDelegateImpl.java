@@ -10,10 +10,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.download.DownloadInfoBarController;
-import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.infobar.IPHInfoBarSupport.PopupState;
 import org.chromium.chrome.browser.infobar.IPHInfoBarSupport.TrackerParameters;
 import org.chromium.chrome.browser.permissions.PermissionSettingsBridge;
@@ -66,13 +63,7 @@ class IPHBubbleDelegateImpl implements IPHInfoBarSupport.IPHBubbleDelegate {
     private @Nullable TrackerParameters getTrackerParameters(@InfoBarIdentifier int infoBarId) {
         switch (infoBarId) {
             case InfoBarIdentifier.DOWNLOAD_PROGRESS_INFOBAR_ANDROID:
-                Profile profile = IncognitoUtils.getProfileFromWindowAndroid(
-                        mTab.getWindowAndroid(), mTab.isIncognito());
-                DownloadInfoBarController controller =
-                        (DownloadInfoBarController) DownloadManagerService
-                                .getDownloadManagerService()
-                                .getInfoBarController(profile.getOTRProfileID());
-                return controller != null ? controller.getTrackerParameters() : null;
+                return null;
             case InfoBarIdentifier.GROUPED_PERMISSION_INFOBAR_DELEGATE_ANDROID:
                 if (PermissionSettingsBridge.shouldShowNotificationsPromo(mTab.getWebContents())) {
                     PermissionSettingsBridge.didShowNotificationsPromo();
