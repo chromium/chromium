@@ -425,8 +425,6 @@ TEST_F(VideoEncoderTest, ForceKeyFrame) {
 
   // It is expected that our hw encoders don't produce key frames in a short
   // time span like a few hundred frames.
-  // TODO(hiroh): This might be wrong on some platforms. Needs to update.
-  // Encode the first frame, this should always be a keyframe.
   encoder->EncodeUntil(VideoEncoder::kBitstreamReady, 1u);
   EXPECT_TRUE(encoder->WaitUntilIdle());
   EXPECT_EQ(encoder->GetEventCount(VideoEncoder::kKeyFrame), 1u);
@@ -436,20 +434,11 @@ TEST_F(VideoEncoderTest, ForceKeyFrame) {
   // Check if there is no keyframe except the first frame.
   EXPECT_EQ(encoder->GetEventCount(VideoEncoder::kKeyFrame), 1u);
   encoder->ForceKeyFrame();
-  // Since kFrameReleased and kBitstreamReady events are asynchronous, the
-  // number of bitstreams being processed is unknown. We check keyframe request
-  // is applied by seeing if there is a keyframe in a few frames after
-  // requested. 10 is arbitrarily chosen.
-  constexpr size_t kKeyFrameRequestWindow = 10u;
-  encoder->EncodeUntil(VideoEncoder::kBitstreamReady,
-                       std::min(middle_frame + kKeyFrameRequestWindow,
-                                config.num_frames_to_encode));
-  EXPECT_TRUE(encoder->WaitUntilIdle());
-  EXPECT_EQ(encoder->GetEventCount(VideoEncoder::kKeyFrame), 2u);
 
   // Encode until the end of stream.
   encoder->Encode();
   EXPECT_TRUE(encoder->WaitForFlushDone());
+  // Check if there are two key frames, first frame and one on ForceKeyFrame().
   EXPECT_EQ(encoder->GetEventCount(VideoEncoder::kKeyFrame), 2u);
   EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
   EXPECT_EQ(encoder->GetFrameReleasedCount(), config.num_frames_to_encode);
