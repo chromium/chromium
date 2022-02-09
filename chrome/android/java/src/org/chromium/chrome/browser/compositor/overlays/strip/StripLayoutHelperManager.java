@@ -260,7 +260,7 @@ public class StripLayoutHelperManager implements SceneOverlay {
                 res.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_standard),
                 res.getString(R.string.accessibility_tabstrip_btn_incognito_toggle_incognito));
 
-        mStripScrim = new StripScrim(mWidth, mHeight);
+        mStripScrim = new StripScrim(res, mWidth, mHeight);
         mStripScrim.setVisible(false);
 
         onContextChanged(context);
