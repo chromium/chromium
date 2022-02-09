@@ -38,7 +38,10 @@ await new Promise((resolve, reject) => {
     script.textContent = JSON.stringify({
       source: '../resources/wbn/hello.wbn-without-nosniff'
     });
-    script.addEventListener('error', resolve);
+    script.onerror = () => {
+      // Wait for the console message to be logged.
+      setTimeout(resolve, 100);
+    }
     document.body.appendChild(script);
   });
 
