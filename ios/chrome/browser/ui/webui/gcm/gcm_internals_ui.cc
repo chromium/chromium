@@ -48,10 +48,10 @@ class GcmInternalsUIMessageHandler : public web::WebUIIOSMessageHandler {
                      const gcm::GCMClient::GCMStatistics* stats) const;
 
   // Request all of the GCM related infos through gcm profile service.
-  void RequestAllInfo(const base::Value::ConstListView args);
+  void RequestAllInfo(base::Value::ConstListView args);
 
   // Enables/disables GCM activity recording through gcm profile service.
-  void SetRecording(const base::Value::ConstListView args);
+  void SetRecording(base::Value::ConstListView args);
 
   // Callback function of the request for all gcm related infos.
   void RequestGCMStatisticsFinished(
@@ -79,7 +79,7 @@ void GcmInternalsUIMessageHandler::ReturnResults(
 }
 
 void GcmInternalsUIMessageHandler::RequestAllInfo(
-    const base::Value::ConstListView args) {
+    base::Value::ConstListView args) {
   if (args.size() != 1 || !args[0].is_bool()) {
     NOTREACHED();
     return;
@@ -106,7 +106,7 @@ void GcmInternalsUIMessageHandler::RequestAllInfo(
 }
 
 void GcmInternalsUIMessageHandler::SetRecording(
-    const base::Value::ConstListView args) {
+    base::Value::ConstListView args) {
   if (args.size() != 1 || !args[0].is_bool()) {
     NOTREACHED();
     return;

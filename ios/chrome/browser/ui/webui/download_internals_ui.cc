@@ -96,7 +96,7 @@ class DownloadInternalsUIMessageHandler : public web::WebUIIOSMessageHandler,
     web_ui()->FireWebUIListener("service-request-made", args);
   }
 
-  void HandleGetServiceStatus(const base::Value::ConstListView args) {
+  void HandleGetServiceStatus(base::Value::ConstListView args) {
     if (!download_service_)
       return;
 
@@ -104,7 +104,7 @@ class DownloadInternalsUIMessageHandler : public web::WebUIIOSMessageHandler,
         args[0], download_service_->GetLogger()->GetServiceStatus());
   }
 
-  void HandleGetServiceDownloads(const base::Value::ConstListView args) {
+  void HandleGetServiceDownloads(base::Value::ConstListView args) {
     if (!download_service_)
       return;
 
@@ -112,7 +112,7 @@ class DownloadInternalsUIMessageHandler : public web::WebUIIOSMessageHandler,
         args[0], download_service_->GetLogger()->GetServiceDownloads());
   }
 
-  void HandleStartDownload(const base::Value::ConstListView args) {
+  void HandleStartDownload(base::Value::ConstListView args) {
     if (!download_service_)
       return;
 

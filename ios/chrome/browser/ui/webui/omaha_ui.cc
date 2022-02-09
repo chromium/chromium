@@ -48,7 +48,7 @@ class OmahaDOMHandler : public WebUIIOSMessageHandler {
 
  private:
   // Asynchronously fetches the debug information. Called from JS.
-  void HandleRequestDebugInformation(const base::Value::ConstListView args);
+  void HandleRequestDebugInformation(base::Value::ConstListView args);
 
   // Called when the debug information have been computed.
   void OnDebugInformationAvailable(base::DictionaryValue* debug_information);
@@ -70,7 +70,7 @@ void OmahaDOMHandler::RegisterMessages() {
 }
 
 void OmahaDOMHandler::HandleRequestDebugInformation(
-    const base::Value::ConstListView args) {
+    base::Value::ConstListView args) {
   OmahaService::GetDebugInformation(
       base::BindOnce(&OmahaDOMHandler::OnDebugInformationAvailable,
                      weak_ptr_factory_.GetWeakPtr()));

@@ -79,17 +79,16 @@ class FlagsDOMHandler : public web::WebUIIOSMessageHandler {
   void RegisterMessages() override;
 
   // Callback for the "requestExperimentFeatures" message.
-  void HandleRequestExperimentalFeatures(const base::Value::ConstListView args);
+  void HandleRequestExperimentalFeatures(base::Value::ConstListView args);
 
   // Callback for the "enableExperimentalFeature" message.
-  void HandleEnableExperimentalFeatureMessage(
-      const base::Value::ConstListView args);
+  void HandleEnableExperimentalFeatureMessage(base::Value::ConstListView args);
 
   // Callback for the "restartBrowser" message. Restores all tabs on restart.
-  void HandleRestartBrowser(const base::Value::ConstListView args);
+  void HandleRestartBrowser(base::Value::ConstListView args);
 
   // Callback for the "resetAllFlags" message.
-  void HandleResetAllFlags(const base::Value::ConstListView args);
+  void HandleResetAllFlags(base::Value::ConstListView args);
 
  private:
   std::unique_ptr<flags_ui::FlagsStorage> flags_storage_;
@@ -124,7 +123,7 @@ void FlagsDOMHandler::Init(
 }
 
 void FlagsDOMHandler::HandleRequestExperimentalFeatures(
-    const base::Value::ConstListView args) {
+    base::Value::ConstListView args) {
   DCHECK(flags_storage_);
   DCHECK(!args.empty());
   const base::Value& callback_id = args[0];
@@ -152,7 +151,7 @@ void FlagsDOMHandler::HandleRequestExperimentalFeatures(
 }
 
 void FlagsDOMHandler::HandleEnableExperimentalFeatureMessage(
-    const base::Value::ConstListView args) {
+    base::Value::ConstListView args) {
   DCHECK(flags_storage_);
   DCHECK_EQ(2u, args.size());
   if (args.size() != 2)
@@ -168,15 +167,13 @@ void FlagsDOMHandler::HandleEnableExperimentalFeatureMessage(
   flags_storage_->CommitPendingWrites();
 }
 
-void FlagsDOMHandler::HandleRestartBrowser(
-    const base::Value::ConstListView args) {
+void FlagsDOMHandler::HandleRestartBrowser(base::Value::ConstListView args) {
 #if BUILDFLAG(CHROMIUM_BRANDING)
   CHECK(false);
 #endif  // BUILDFLAG(CHROMIUM_BRANDING)
 }
 
-void FlagsDOMHandler::HandleResetAllFlags(
-    const base::Value::ConstListView args) {
+void FlagsDOMHandler::HandleResetAllFlags(base::Value::ConstListView args) {
   DCHECK(flags_storage_);
   ResetAllFlags(flags_storage_.get());
   flags_storage_->CommitPendingWrites();

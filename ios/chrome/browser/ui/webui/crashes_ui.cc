@@ -80,10 +80,10 @@ class CrashesDOMHandler : public web::WebUIIOSMessageHandler {
   void OnUploadListAvailable();
 
   // Asynchronously fetches the list of crashes. Called from JS.
-  void HandleRequestCrashes(const base::Value::ConstListView args);
+  void HandleRequestCrashes(base::Value::ConstListView args);
 
   // Asynchronously requests a user triggered upload. Called from JS.
-  void HandleRequestSingleCrashUpload(const base::Value::ConstListView args);
+  void HandleRequestSingleCrashUpload(base::Value::ConstListView args);
 
   // Sends the recent crashes list JS.
   void UpdateUI();
@@ -115,8 +115,7 @@ void CrashesDOMHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void CrashesDOMHandler::HandleRequestCrashes(
-    const base::Value::ConstListView args) {
+void CrashesDOMHandler::HandleRequestCrashes(base::Value::ConstListView args) {
   if (first_load_) {
     first_load_ = false;
     if (list_available_)
@@ -129,7 +128,7 @@ void CrashesDOMHandler::HandleRequestCrashes(
 }
 
 void CrashesDOMHandler::HandleRequestSingleCrashUpload(
-    const base::Value::ConstListView args) {
+    base::Value::ConstListView args) {
   DCHECK(crash_reporter::IsCrashpadRunning());
   if (!IOSChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled()) {
     return;

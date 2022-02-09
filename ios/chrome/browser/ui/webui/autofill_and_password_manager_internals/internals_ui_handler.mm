@@ -64,7 +64,7 @@ void InternalsUIHandler::RegisterMessages() {
                                     base::Unretained(this)));
 }
 
-void InternalsUIHandler::OnLoaded(const base::Value::ConstListView args) {
+void InternalsUIHandler::OnLoaded(base::Value::ConstListView args) {
   base::Value load_event(call_on_load_);
   base::Value empty;
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback",

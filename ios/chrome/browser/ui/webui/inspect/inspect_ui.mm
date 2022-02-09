@@ -78,7 +78,7 @@ class InspectDOMHandler : public web::WebUIIOSMessageHandler,
 
  private:
   // Handles the message from JavaScript to enable or disable console logging.
-  void HandleSetLoggingEnabled(const base::Value::ConstListView args);
+  void HandleSetLoggingEnabled(base::Value::ConstListView args);
 
   // Enables or disables console logging.
   void SetLoggingEnabled(bool enabled);
@@ -95,7 +95,7 @@ InspectDOMHandler::~InspectDOMHandler() {
 }
 
 void InspectDOMHandler::HandleSetLoggingEnabled(
-    const base::Value::ConstListView args) {
+    base::Value::ConstListView args) {
   if (args.size() != 1) {
     NOTREACHED();
     return;
