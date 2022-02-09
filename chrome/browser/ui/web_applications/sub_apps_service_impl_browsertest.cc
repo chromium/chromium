@@ -46,8 +46,9 @@ constexpr const char kSubAppPathInvalid[] = "/invalid/sub/app/path.html";
 // There's one simple end-to-end test that actually calls the JS API interface,
 // the rest test the mojo interface (since the first layer listening to the API
 // calls is almost a direct passthrough to the mojo service).
-// TODO(isandrk): JS API interface tests should be in
-// third_party/blink/web_tests/wpt_internal/subapps/.
+//
+// JS API interface tests are in
+// third_party/blink/web_tests/external/wpt/subapps/.
 
 class SubAppsServiceImplBrowserTest : public WebAppControllerBrowserTest {
  public:

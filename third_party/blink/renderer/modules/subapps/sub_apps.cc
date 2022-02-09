@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -64,6 +65,9 @@ mojo::Remote<mojom::blink::SubAppsService>& SubApps::GetService() {
         ->GetExecutionContext()
         ->GetBrowserInterfaceBroker()
         .GetInterface(service_.BindNewPipeAndPassReceiver());
+    // In case the other endpoint gets disconnected, we want to reset our end of
+    // the pipe as well so that we don't remain connected to a half-open pipe.
+    service_.reset_on_disconnect();
   }
   return service_;
 }
@@ -77,7 +81,7 @@ ScriptPromise SubApps::add(ScriptState* script_state,
 
   if (!navigator->DomWindow()) {
     exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
+        DOMExceptionCode::kNotFoundError,
         "The object is no longer associated to a document.");
     return ScriptPromise();
   }
@@ -89,10 +93,17 @@ ScriptPromise SubApps::add(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  KURL completed_url = KURL(navigator->DomWindow()->Url(), install_url);
-  if (!url::IsSameOriginWith(navigator->DomWindow()->Url(), completed_url)) {
+  const SecurityOrigin* frame_origin = navigator->DomWindow()
+                                           ->GetFrame()
+                                           ->GetSecurityContext()
+                                           ->GetSecurityOrigin();
+  KURL completed_url = navigator->DomWindow()->CompleteURL(install_url);
+  scoped_refptr<const SecurityOrigin> completed_url_origin =
+      SecurityOrigin::Create(completed_url);
+
+  if (!frame_origin->IsSameOriginWith(completed_url_origin.get())) {
     exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
+        DOMExceptionCode::kURLMismatchError,
         "API argument must be a relative path or a fully qualified URL matching"
         " the origin of the caller.");
     return ScriptPromise();

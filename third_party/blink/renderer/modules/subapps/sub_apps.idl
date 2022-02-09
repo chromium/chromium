@@ -5,7 +5,9 @@
 // https://github.com/ivansandrk/multi-apps/blob/main/explainer.md
 
 [
-  SecureContext
+  Exposed=Window,
+  SecureContext,
+  RuntimeEnabled=DesktopPWAsSubApps
 ] interface SubApps {
   [CallWith=ScriptState, RaisesException] Promise<void> add(DOMString install_url);
 };

@@ -1,0 +1,14 @@
+[
+  Exposed=Window,
+  SecureContext,
+  ImplementedAs=SubApps
+] partial interface Navigator {
+  [SameObject, RuntimeEnabled=DesktopPWAsSubApps] readonly attribute SubApps subApps;
+};
+
+[
+  Exposed=Window,
+  SecureContext
+] interface SubApps {
+  [CallWith=ScriptState, RaisesException] Promise<undefined> add(DOMString install_url);
+};
