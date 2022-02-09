@@ -851,6 +851,10 @@
       status: "stable",
     },
     {
+      // crbug.com/1259085
+      name: "DeferredShaping",
+    },
+    {
       name: "DelegatedInkTrails",
       status: "stable",
     },
