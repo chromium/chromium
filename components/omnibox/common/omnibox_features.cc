@@ -282,7 +282,7 @@ const base::Feature kOmniboxPedalsBatch2NonEnglish{
 
 // Feature used to enable the third batch of Pedals.
 const base::Feature kOmniboxPedalsBatch3{"OmniboxPedalsBatch3",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Feature used to enable the third batch of Pedals (Find your phone, etc.)
 // for non-English locales (English locales are 'en' and 'en-GB').
