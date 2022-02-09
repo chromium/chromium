@@ -263,8 +263,9 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
   histogram_tester.ExpectTotalCount("History.Clusters.Actions.NumQueries", 0);
 }
 
-IN_PROC_BROWSER_TEST_F(HistoryClustersMetricsBrowserTest,
-                       DirectNavigationWithToggleToBasicAndToggleBack) {
+IN_PROC_BROWSER_TEST_F(
+    HistoryClustersMetricsBrowserTest,
+    DISABLED_DirectNavigationWithToggleToBasicAndToggleBack) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
