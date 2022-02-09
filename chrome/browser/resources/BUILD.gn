@@ -175,9 +175,6 @@ if (enable_js_type_check) {
         "video_tutorials:closure_compile",
         "webapks:closure_compile",
       ]
-    } else {
-      # !is_android
-      deps += [ "support_tool:closure_compile" ]
     }
 
     # Note: The following targets should only be type-checked on Windows builds,
