@@ -504,7 +504,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.AccountStoreVsProfileStore2.{DifferenceType}"
     units="accounts" expires_after="2022-05-31">
   <obsolete>
-    Removed in M100. Replaced with
+    Removed in M99. Replaced with
     PasswordManager.AccountStoreVsProfileStore3.{DifferenceType}.
   </obsolete>
   <owner>mamir@chromium.org</owner>
@@ -1042,7 +1042,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.CompromisedCredentials.{Issue}"
     units="credentials" expires_after="2022-06-12">
   <obsolete>
-    Removed in M100. Replaced with
+    Removed in M99. Replaced with
     PasswordManager.CompromisedCredentials2.{Issue}.
   </obsolete>
   <owner>vasilii@chromium.org</owner>
@@ -1170,7 +1170,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.CredentialsWithDuplicates" units="units"
     expires_after="2022-07-03">
   <obsolete>
-    Removed in M100. Replaced with PasswordManager.CredentialsWithDuplicates2.
+    Removed in M99. Replaced with PasswordManager.CredentialsWithDuplicates2.
   </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
@@ -1202,7 +1202,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.CredentialsWithMismatchedDuplicates"
     units="units" expires_after="2022-06-30">
   <obsolete>
-    Removed in M100. Replaced with
+    Removed in M99. Replaced with
     PasswordManager.CredentialsWithMismatchedDuplicates2.
   </obsolete>
   <owner>kazinova@google.com</owner>
@@ -1290,7 +1290,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.Enabled2" enum="BooleanEnabled"
     expires_after="2022-06-26">
   <obsolete>
-    Removed in M100. Replaced with PasswordManager.Enabled3.
+    Removed in M99. Replaced with PasswordManager.Enabled3.
   </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
@@ -2393,7 +2393,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.SyncingAccountState"
     enum="PasswordManagerSyncingAccountState" expires_after="2022-06-30">
   <obsolete>
-    Removed in M100. Replaced with PasswordManager.SyncingAccountState2.
+    Removed in M99. Replaced with PasswordManager.SyncingAccountState2.
   </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
@@ -2636,7 +2636,7 @@ chromium-metrics-reviews@google.com.
     name="PasswordManager.{Store}BlacklistedSitesHiRes{CustomPassphraseStatus}"
     units="sites" expires_after="2022-05-01">
   <obsolete>
-    Removed in M100. Replaced with
+    Removed in M99. Replaced with
     PasswordManager.{Store}BlacklistedSitesHiRes2{CustomPassphraseStatus}.
   </obsolete>
   <owner>kazinova@google.com</owner>
@@ -2673,7 +2673,7 @@ chromium-metrics-reviews@google.com.
     name="PasswordManager.{Store}TimesPasswordUsed.{PasswordType}{CustomPassphraseStatus}"
     units="PasswordUses" expires_after="2022-05-31">
   <obsolete>
-    Removed in M100. Replaced with
+    Removed in M99. Replaced with
     PasswordManager.{Store}TimesPasswordUsed2.{PasswordType}{CustomPassphraseStatus}.
   </obsolete>
   <owner>kazinova@google.com</owner>
@@ -2717,7 +2717,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="PasswordManager.{Store}TotalAccountsHiRes.WithScheme{Scheme}"
     units="accounts" expires_after="2022-05-31">
   <obsolete>
-    Removed in M100. Replaced with
+    Removed in M99. Replaced with
     PasswordManager.{Store}TotalAccountsHiRes2.WithScheme{Scheme}.
   </obsolete>
   <owner>battre@chromium.org</owner>
@@ -2806,7 +2806,7 @@ chromium-metrics-reviews@google.com.
     name="PasswordManager.{Store}{Metric}.{PasswordType}{CustomPassphraseStatus}"
     units="units" expires_after="2022-04-24">
   <obsolete>
-    Removed in M100. Replaced with
+    Removed in M99. Replaced with
     PasswordManager.{Store}{Metric2}.{PasswordType}{CustomPassphraseStatus}.
   </obsolete>
   <owner>kazinova@google.com</owner>
