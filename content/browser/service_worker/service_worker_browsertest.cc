@@ -266,7 +266,8 @@ void CountScriptResources(ServiceWorkerContextWrapper* wrapper,
 void StoreString(std::string* result,
                  base::OnceClosure callback,
                  base::Value value) {
-  value.GetAsString(result);
+  if (result && value.is_string())
+    *result = value.GetString();
   std::move(callback).Run();
 }
 
