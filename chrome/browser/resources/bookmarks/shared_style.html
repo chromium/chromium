@@ -50,41 +50,13 @@
     }
 
     .folder-icon {
-      content: url(chrome://theme/IDR_FOLDER_CLOSED);
-      height: var(--folder-icon-size);
-      min-width: var(--folder-icon-size);
-      width: var(--folder-icon-size);
-    }
-
-<if expr="is_macosx">
-    .folder-icon {
-      --folder-icon-size: 16px;
-    }
-
-    @media (prefers-color-scheme: dark) {
-      .folder-icon {
-         content: url(chrome://theme/IDR_FOLDER_CLOSED_WHITE);
-      }
-    }
-</if>
-
-<if expr="not is_macosx">
-    .folder-icon {
-      --folder-icon-size: 20px;
-    }
-
-    .folder-icon[open] {
-      content: url(chrome://theme/IDR_FOLDER_OPEN);
-    }
-</if>
-
-    :host-context([enable-branding-update]) .folder-icon {
       -webkit-mask-image: url(chrome://bookmarks/images/folder_open.svg);
       -webkit-mask-position: center;
       -webkit-mask-repeat: no-repeat;
       -webkit-mask-size: var(--cr-icon-size);
       background-color: var(--iron-icon-fill-color);
-      content: none;
+      height: var(--cr-icon-size);
+      width: var(--cr-icon-size);
     }
 
     :host-context([dir=rtl]) .folder-icon {

@@ -67,15 +67,11 @@
   }
 
   #drop-shadow {
-    display: none;
-  }
-
-  :host-context([enable-branding-update]) #drop-shadow {
     display: block;
     flex-shrink: 0;
   }
 
-  :host-context([enable-branding-update]):host([toolbar-shadow_]) #drop-shadow {
+  :host([toolbar-shadow_]) #drop-shadow {
     opacity: var(--cr-container-shadow-max-opacity);
   }
 </style>
