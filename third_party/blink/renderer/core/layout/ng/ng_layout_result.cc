@@ -91,17 +91,12 @@ NGLayoutResult::NGLayoutResult(
         builder->is_block_size_for_fragmentation_clamped_;
 
     bitfields_.break_appeal = builder->break_appeal_;
-    bitfields_.has_forced_break = builder->has_forced_break_;
-  }
-
-  if (builder->ConstraintSpace() &&
-      builder->ConstraintSpace()->ShouldPropagateChildBreakValues()) {
     bitfields_.initial_break_before = static_cast<unsigned>(
         builder->initial_break_before_.value_or(EBreakBetween::kAuto));
     bitfields_.final_break_after =
         static_cast<unsigned>(builder->previous_break_after_);
+    bitfields_.has_forced_break = builder->has_forced_break_;
   }
-
   if (builder->table_column_count_)
     EnsureRareData()->table_column_count_ = *builder->table_column_count_;
   if (builder->math_data_.has_value())

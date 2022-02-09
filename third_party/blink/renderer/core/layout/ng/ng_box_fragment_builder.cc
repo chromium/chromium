@@ -128,9 +128,6 @@ void NGBoxFragmentBuilder::AddResult(
 
   if (UNLIKELY(has_block_fragmentation_))
     PropagateBreakInfo(*result_for_propagation, offset);
-  if (UNLIKELY(ConstraintSpace() &&
-               ConstraintSpace()->ShouldPropagateChildBreakValues()))
-    PropagateChildBreakValues(*result_for_propagation);
 }
 
 void NGBoxFragmentBuilder::AddChild(
@@ -444,39 +441,6 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
   }
 }
 
-void NGBoxFragmentBuilder::PropagateChildBreakValues(
-    const NGLayoutResult& child_layout_result) {
-  if (child_layout_result.Status() != NGLayoutResult::kSuccess)
-    return;
-
-  const auto& fragment = child_layout_result.PhysicalFragment();
-  if (fragment.IsInline() || !fragment.IsCSSBox() ||
-      fragment.IsFloatingOrOutOfFlowPositioned())
-    return;
-
-  const ComputedStyle& child_style = fragment.Style();
-
-  // We need to propagate the initial break-before value up our container
-  // chain, until we reach a container that's not a first child. If we get all
-  // the way to the root of the fragmentation context without finding any such
-  // container, we have no valid class A break point, and if a forced break
-  // was requested, none will be inserted.
-  EBreakBetween break_before = JoinFragmentainerBreakValues(
-      child_layout_result.InitialBreakBefore(), child_style.BreakBefore());
-  SetInitialBreakBeforeIfNeeded(break_before);
-
-  // We also need to store the previous break-after value we've seen, since it
-  // will serve as input to the next breakpoint (where we will combine the
-  // break-after value of the previous child and the break-before value of the
-  // next child, to figure out what to do at the breakpoint). The break-after
-  // value of the last child will also be propagated up our container chain,
-  // until we reach a container that's not a last child. This will be the
-  // class A break point that it affects.
-  EBreakBetween break_after = JoinFragmentainerBreakValues(
-      child_layout_result.FinalBreakAfter(), child_style.BreakAfter());
-  SetPreviousBreakAfter(break_after);
-}
-
 scoped_refptr<const NGLayoutResult> NGBoxFragmentBuilder::ToBoxFragment(
     WritingMode block_or_line_writing_mode) {
 #if DCHECK_IS_ON()
@@ -668,11 +632,8 @@ void NGBoxFragmentBuilder::CheckNoBlockFragmentation() const {
   DCHECK(!has_forced_break_);
   DCHECK(!HasBreakTokenData());
   DCHECK_EQ(minimal_space_shortage_, LayoutUnit::Max());
-  if (ConstraintSpace() &&
-      !ConstraintSpace()->ShouldPropagateChildBreakValues()) {
-    DCHECK(!initial_break_before_);
-    DCHECK_EQ(previous_break_after_, EBreakBetween::kAuto);
-  }
+  DCHECK(!initial_break_before_);
+  DCHECK_EQ(previous_break_after_, EBreakBetween::kAuto);
 }
 
 #endif

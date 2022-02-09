@@ -1303,7 +1303,6 @@ NGConstraintSpace NGColumnLayoutAlgorithm::CreateConstraintSpaceForBalancing(
   NGConstraintSpaceBuilder space_builder(
       ConstraintSpace(), Style().GetWritingDirection(), /* is_new_fc */ true);
   space_builder.SetFragmentationType(kFragmentColumn);
-  space_builder.SetShouldPropagateChildBreakValues();
   space_builder.SetAvailableSize({column_size.inline_size, kIndefiniteSize});
   space_builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
   space_builder.SetPercentageResolutionSize(ColumnPercentageResolutionSize());

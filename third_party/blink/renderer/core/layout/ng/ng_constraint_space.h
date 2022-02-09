@@ -546,16 +546,6 @@ class CORE_EXPORT NGConstraintSpace final {
     return static_cast<NGBreakAppeal>(rare_data_->min_break_appeal);
   }
 
-  // In some cases, we may want to calculate the intial-break-before and
-  // final-break-after values for a node outside of the normal fragmentation
-  // pass. For example, the break values of flex/grid items in a row are
-  // propagated to the row itself. Calculating the intial-break-before and
-  // final-break-after for these items can be used to determine the break
-  // appeal of a row before the full fragmentation layout pass is performed.
-  bool ShouldPropagateChildBreakValues() const {
-    return HasRareData() && rare_data_->propagate_child_break_values;
-  }
-
   // Return true if the block size of the table-cell should be considered
   // restricted (e.g. height of the cell or its table is non-auto).
   bool IsRestrictedBlockSizeTableCell() const {
@@ -830,8 +820,7 @@ class CORE_EXPORT NGConstraintSpace final {
           is_in_column_bfc(other.is_in_column_bfc),
           min_block_size_should_encompass_intrinsic_size(
               other.min_block_size_should_encompass_intrinsic_size),
-          min_break_appeal(other.min_break_appeal),
-          propagate_child_break_values(other.propagate_child_break_values) {
+          min_break_appeal(other.min_break_appeal) {
       switch (data_union_type) {
         case kNone:
           break;
@@ -897,8 +886,7 @@ class CORE_EXPORT NGConstraintSpace final {
               other.requires_content_before_breaking ||
           is_inside_balanced_columns != other.is_inside_balanced_columns ||
           is_in_column_bfc != other.is_in_column_bfc ||
-          min_break_appeal != other.min_break_appeal ||
-          propagate_child_break_values != other.propagate_child_break_values)
+          min_break_appeal != other.min_break_appeal)
         return false;
 
       switch (data_union_type) {
@@ -928,8 +916,7 @@ class CORE_EXPORT NGConstraintSpace final {
           is_restricted_block_size_table_cell || hide_table_cell_if_empty ||
           block_direction_fragmentation_type != kFragmentNone ||
           requires_content_before_breaking || is_inside_balanced_columns ||
-          is_in_column_bfc || min_break_appeal != kBreakAppealLastResort ||
-          propagate_child_break_values)
+          is_in_column_bfc || min_break_appeal != kBreakAppealLastResort)
         return false;
 
       switch (data_union_type) {
@@ -1155,7 +1142,6 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned is_in_column_bfc : 1;
     unsigned min_block_size_should_encompass_intrinsic_size : 1;
     unsigned min_break_appeal : kNGBreakAppealBitsNeeded;
-    unsigned propagate_child_break_values : 1;
 
    private:
     struct BlockData {

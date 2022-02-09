@@ -131,8 +131,6 @@ NGConstraintSpace ConstructBlockLayoutTestConstraintSpace(
                                     : NGAutoBehavior::kFitContent);
   builder.SetFragmentainerBlockSize(fragmentainer_space_available);
   builder.SetFragmentationType(block_fragmentation);
-  if (block_fragmentation != NGFragmentationType::kFragmentNone)
-    builder.SetShouldPropagateChildBreakValues();
   return builder.ToConstraintSpace();
 }
 
