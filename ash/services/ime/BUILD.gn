@@ -35,6 +35,8 @@ source_set("decoder") {
 
 source_set("lib") {
   sources = [
+    "connection_factory.cc",
+    "connection_factory.h",
     "decoder/decoder_engine.cc",
     "decoder/decoder_engine.h",
     "decoder/system_engine.cc",

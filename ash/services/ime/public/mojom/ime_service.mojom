@@ -20,6 +20,12 @@ import "sandbox/policy/mojom/sandbox.mojom";
 //   between the IME extension and the IME service. It also provides additional
 //   functionality to the IME service (for downloading IME data as needed).
 
+// Specifies where a ConnectionFactory should initialize connections.
+enum ConnectionTarget {
+  kDecoder = 0,
+  kImeService = 1,
+};
+
 // Manages access to a set of IMEs, implemented by the IME service
 // itself. The IME framework in the browser process is responsible for brokering
 // the connection between the IME service and the IME extension, but does not
@@ -55,7 +61,8 @@ interface InputEngineManager {
   // and Chromium. Any messaging interfaces used will need to be associated
   // to this pipe (see AssociatedInterfaces documentation for more details).
   InitializeConnectionFactory(
-    pending_receiver<ConnectionFactory> connection_factory)
+    pending_receiver<ConnectionFactory> connection_factory,
+    ConnectionTarget connection_target)
     => (bool success);
 };
 

@@ -10,10 +10,10 @@
 #include "ash/services/ime/public/cpp/suggestions.h"
 #include "ash/services/ime/public/mojom/input_method.mojom.h"
 #include "ash/services/ime/public/mojom/input_method_host.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 
 namespace chromeos {
 namespace ime {
@@ -26,8 +26,8 @@ class RuleBasedEngine : public InputEngine, public mojom::InputMethod {
   // Returns nullptr if |ime_spec| is not valid for this RuleBasedEngine.
   static std::unique_ptr<RuleBasedEngine> Create(
       const std::string& ime_spec,
-      mojo::PendingReceiver<mojom::InputMethod> receiver,
-      mojo::PendingRemote<mojom::InputMethodHost> host);
+      mojo::PendingAssociatedReceiver<mojom::InputMethod> receiver,
+      mojo::PendingAssociatedRemote<mojom::InputMethodHost> host);
 
   RuleBasedEngine(const RuleBasedEngine& other) = delete;
   RuleBasedEngine& operator=(const RuleBasedEngine& other) = delete;
@@ -58,11 +58,11 @@ class RuleBasedEngine : public InputEngine, public mojom::InputMethod {
 
  private:
   RuleBasedEngine(const std::string& ime_spec,
-                  mojo::PendingReceiver<mojom::InputMethod> receiver,
-                  mojo::PendingRemote<mojom::InputMethodHost> host);
+                  mojo::PendingAssociatedReceiver<mojom::InputMethod> receiver,
+                  mojo::PendingAssociatedRemote<mojom::InputMethodHost> host);
 
-  mojo::Receiver<mojom::InputMethod> receiver_;
-  mojo::Remote<mojom::InputMethodHost> host_;
+  mojo::AssociatedReceiver<mojom::InputMethod> receiver_;
+  mojo::AssociatedRemote<mojom::InputMethodHost> host_;
 
   rulebased::Engine engine_;
 

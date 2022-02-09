@@ -84,8 +84,9 @@ class FakeSuggesterSwitch : public AssistiveSuggesterSwitch {
 
 class MockInputMethod : public ime::mojom::InputMethod {
  public:
-  void Bind(mojo::PendingReceiver<ime::mojom::InputMethod> receiver,
-            mojo::PendingRemote<ime::mojom::InputMethodHost> pending_host) {
+  void Bind(
+      mojo::PendingAssociatedReceiver<ime::mojom::InputMethod> receiver,
+      mojo::PendingAssociatedRemote<ime::mojom::InputMethodHost> pending_host) {
     receiver_.Bind(std::move(receiver));
     host.Bind(std::move(pending_host));
   }
@@ -120,10 +121,10 @@ class MockInputMethod : public ime::mojom::InputMethod {
               (override));
   MOCK_METHOD(void, OnCompositionCanceledBySystem, (), (override));
 
-  mojo::Remote<ime::mojom::InputMethodHost> host;
+  mojo::AssociatedRemote<ime::mojom::InputMethodHost> host;
 
  private:
-  mojo::Receiver<ime::mojom::InputMethod> receiver_{this};
+  mojo::AssociatedReceiver<ime::mojom::InputMethod> receiver_{this};
 };
 
 void SetInputMethodOptions(Profile& profile,
@@ -147,10 +148,36 @@ void SetPinyinLayoutPrefs(Profile& profile, const std::string& layout) {
                           input_method_setting);
 }
 
+class FakeConnectionFactory : public ime::mojom::ConnectionFactory {
+ public:
+  explicit FakeConnectionFactory(MockInputMethod* mock_input_method)
+      : mock_input_method_(mock_input_method) {}
+
+  // overrides ime::mojom::ConnectionFactory
+  void ConnectToInputMethod(
+      const std::string& ime_spec,
+      mojo::PendingAssociatedReceiver<ime::mojom::InputMethod> input_method,
+      mojo::PendingAssociatedRemote<ime::mojom::InputMethodHost>
+          input_method_host,
+      ConnectToInputMethodCallback callback) override {
+    mock_input_method_->Bind(std::move(input_method),
+                             std::move(input_method_host));
+    std::move(callback).Run(/*bound=*/true);
+  }
+
+  void Bind(mojo::PendingReceiver<ime::mojom::ConnectionFactory> receiver) {
+    connection_factory_.Bind(std::move(receiver));
+  }
+
+ private:
+  MockInputMethod* mock_input_method_;
+  mojo::Receiver<ime::mojom::ConnectionFactory> connection_factory_{this};
+};
+
 class TestInputEngineManager : public ime::mojom::InputEngineManager {
  public:
   explicit TestInputEngineManager(MockInputMethod* mock_input_method)
-      : mock_input_method_(mock_input_method) {}
+      : fake_connection_factory_(mock_input_method) {}
 
   void ConnectToImeEngine(
       const std::string& ime_spec,
@@ -167,18 +194,20 @@ class TestInputEngineManager : public ime::mojom::InputEngineManager {
       mojo::PendingReceiver<ime::mojom::InputMethod> input_method,
       mojo::PendingRemote<ime::mojom::InputMethodHost> host,
       ConnectToInputMethodCallback callback) override {
-    mock_input_method_->Bind(std::move(input_method), std::move(host));
-    std::move(callback).Run(/*bound=*/true);
+    // Not used by NativeInputMethodEngine.
+    std::move(callback).Run(/*bound=*/false);
   }
 
   void InitializeConnectionFactory(
       mojo::PendingReceiver<ime::mojom::ConnectionFactory> connection_factory,
+      ime::mojom::ConnectionTarget connection_target,
       InitializeConnectionFactoryCallback callback) override {
-    std::move(callback).Run(/*bound=*/false);
+    fake_connection_factory_.Bind(std::move(connection_factory));
+    std::move(callback).Run(/*bound=*/true);
   }
 
  private:
-  MockInputMethod* mock_input_method_;
+  FakeConnectionFactory fake_connection_factory_;
 };
 
 class TestInputMethodManager : public MockInputMethodManager {
@@ -274,6 +303,7 @@ TEST_F(NativeInputMethodEngineTest,
                     /*extension_id=*/"", &testing_profile);
 
   engine.Enable(kEngineIdUs);
+  engine.FlushForTesting();  // ensure input_method connected.
   EXPECT_FALSE(engine.IsConnectedForTesting());
 
   InputMethodManager::Shutdown();
@@ -292,6 +322,7 @@ TEST_F(NativeInputMethodEngineTest, LaunchesImeServiceIfAutocorrectIsOn) {
                     /*extension_id=*/"", &testing_profile);
 
   engine.Enable(kEngineIdUs);
+  engine.FlushForTesting();  // ensure input_method connected.
   EXPECT_TRUE(engine.IsConnectedForTesting());
 
   InputMethodManager::Shutdown();
@@ -311,6 +342,7 @@ TEST_F(NativeInputMethodEngineTest,
                     /*extension_id=*/"", &testing_profile);
 
   engine.Enable(kEngineIdUs);
+  engine.FlushForTesting();  // ensure input_method connected.
   EXPECT_FALSE(engine.IsConnectedForTesting());
 
   InputMethodManager::Shutdown();
@@ -331,6 +363,7 @@ TEST_F(NativeInputMethodEngineTest,
                     /*extension_id=*/"", &testing_profile);
 
   engine.Enable(kEngineIdEs);
+  engine.FlushForTesting();  // ensure input_method connected.
   EXPECT_FALSE(engine.IsConnectedForTesting());
 
   InputMethodManager::Shutdown();
@@ -351,6 +384,7 @@ TEST_F(NativeInputMethodEngineTest,
                     /*extension_id=*/"", &testing_profile);
 
   engine.Enable(kEngineIdUs);
+  engine.FlushForTesting();  // ensure input_method connected.
   EXPECT_FALSE(engine.IsConnectedForTesting());
 
   InputMethodManager::Shutdown();
@@ -371,6 +405,7 @@ TEST_F(NativeInputMethodEngineTest,
                     /*extension_id=*/"", &testing_profile);
 
   engine.Enable(kEngineIdUs);
+  engine.FlushForTesting();  // ensure input_method connected.
   EXPECT_TRUE(engine.IsConnectedForTesting());
 
   InputMethodManager::Shutdown();
@@ -385,12 +420,16 @@ TEST_F(NativeInputMethodEngineTest, TogglesImeServiceWhenAutocorrectChanges) {
   engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
                     /*extension_id=*/"", &testing_profile);
   engine.Enable(kEngineIdUs);
+  engine.FlushForTesting();  // ensure input_method connected.
 
   SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/true,
                         /*predictive_writing_enabled=*/false);
+  engine.FlushForTesting();
   EXPECT_TRUE(engine.IsConnectedForTesting());
+
   SetInputMethodOptions(testing_profile, /*autocorrect_enabled=*/false,
                         /*predictive_writing_enabled=*/false);
+  engine.FlushForTesting();
   EXPECT_FALSE(engine.IsConnectedForTesting());
 
   InputMethodManager::Shutdown();
@@ -455,6 +494,7 @@ TEST_F(NativeInputMethodEngineTest, FocusCallsRightMojoFunctions) {
       ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
       /*should_do_learning=*/true);
   engine.Enable(kEngineIdUs);
+  engine.FlushForTesting();  // ensure input_method connected.
   engine.FocusIn(input_context);
   engine.FlushForTesting();
 
@@ -477,6 +517,7 @@ TEST_F(NativeInputMethodEngineTest, FocusUpdatesXkbLayout) {
       ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
       /*should_do_learning=*/true);
   engine.Enable(kEngineIdPinyin);
+  engine.FlushForTesting();  // ensure input_method connected.
   engine.FocusIn(input_context);
 
   EXPECT_EQ(InputMethodManager::Get()
@@ -528,6 +569,7 @@ TEST_F(NativeInputMethodEngineTest,
       ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
       /*should_do_learning=*/true);
   engine.Enable(kEngineIdUs);
+  engine.FlushForTesting();  // ensure input_method connected.
   engine.FocusIn(input_context);
   engine.FlushForTesting();
 
@@ -550,6 +592,7 @@ TEST_F(NativeInputMethodEngineTest, HandleAutocorrectChangesAutocorrectRange) {
       ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
       /*should_do_learning=*/true);
   engine.Enable(kEngineIdUs);
+  engine.FlushForTesting();  // ensure input_method connected.
   engine.FocusIn(input_context);
   engine.FlushForTesting();
   ui::MockIMEInputContextHandler mock_handler;
@@ -593,6 +636,7 @@ TEST_F(NativeInputMethodEngineTest,
   }
 
   engine.Enable(kEngineIdUs);
+  engine.FlushForTesting();  // ensure input_method connected.
   engine.FocusIn(ui::IMEEngineHandlerInterface::InputContext(
       ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
       ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
@@ -640,6 +684,7 @@ TEST_F(NativeInputMethodEngineTest, ProcessesDeadKeysCorrectly) {
   }
 
   engine.Enable(kEngineIdUs);
+  engine.FlushForTesting();  // ensure input_method connected.
   engine.FocusIn(ui::IMEEngineHandlerInterface::InputContext(
       ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
       ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
@@ -697,6 +742,7 @@ TEST_F(NativeInputMethodEngineTest, ProcessesNamedKeysCorrectly) {
   }
 
   engine.Enable(kEngineIdUs);
+  engine.FlushForTesting();  // ensure input_method connected.
   engine.FocusIn(ui::IMEEngineHandlerInterface::InputContext(
       ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
       ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
@@ -742,6 +788,7 @@ TEST_F(NativeInputMethodEngineTest, DoesNotSendUnhandledNamedKeys) {
   }
 
   engine.Enable(kEngineIdUs);
+  engine.FlushForTesting();  // ensure input_method connected.
   engine.FocusIn(ui::IMEEngineHandlerInterface::InputContext(
       ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
       ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,

@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_ASH_INPUT_METHOD_NATIVE_INPUT_METHOD_ENGINE_H_
 
 #include "ash/services/ime/public/cpp/suggestions.h"
+#include "ash/services/ime/public/mojom/connection_factory.mojom.h"
 #include "ash/services/ime/public/mojom/input_engine.mojom.h"
 #include "ash/services/ime/public/mojom/input_method.mojom.h"
 #include "ash/services/ime/public/mojom/input_method_host.mojom.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/input_method/assistive_suggester.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
@@ -19,6 +21,8 @@
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/ime/character_composer.h"
 
@@ -204,12 +208,20 @@ class NativeInputMethodEngine
     bool ShouldRouteToRuleBasedEngine(const std::string& engine_id) const;
     bool ShouldRouteToNativeMojoEngine(const std::string& engine_id) const;
 
+    void BindInputMethod(const std::string& engine_id,
+                         bool connection_factory_bound);
+    void ConnectToImeService(
+        chromeos::ime::mojom::ConnectionTarget connection_target,
+        const std::string& engine_id);
+
     PrefService* prefs_ = nullptr;
 
     std::unique_ptr<InputMethodEngineObserver> ime_base_observer_;
     mojo::Remote<chromeos::ime::mojom::InputEngineManager> remote_manager_;
-    mojo::Remote<chromeos::ime::mojom::InputMethod> input_method_;
-    mojo::Receiver<chromeos::ime::mojom::InputMethodHost> host_receiver_{this};
+    mojo::Remote<chromeos::ime::mojom::ConnectionFactory> connection_factory_;
+    mojo::AssociatedRemote<chromeos::ime::mojom::InputMethod> input_method_;
+    mojo::AssociatedReceiver<chromeos::ime::mojom::InputMethodHost>
+        host_receiver_{this};
 
     std::unique_ptr<AssistiveSuggester> assistive_suggester_;
     std::unique_ptr<AutocorrectManager> autocorrect_manager_;
@@ -226,6 +238,8 @@ class NativeInputMethodEngine
     // TODO(crbug/1197005): Migrate native_input_method_engine_browsertest suite
     // to e2e Tast tests and unit tests, then dismantle this for-test-only flag.
     bool use_ime_service_ = true;
+
+    base::WeakPtrFactory<ImeObserver> weak_ptr_factory_{this};
   };
 
   // |use_ime_service| should always be |true| in prod code, and may only be

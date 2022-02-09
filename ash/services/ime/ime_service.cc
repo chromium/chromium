@@ -49,10 +49,6 @@ std::string ResolveDownloadPath(const base::FilePath& file) {
   return target.MaybeAsASCII();
 }
 
-bool IsRuleBasedInputMethod(const std::string& engine_id) {
-  return base::StartsWith(engine_id, "m17n:", base::CompareCase::SENSITIVE);
-}
-
 }  // namespace
 
 ImeService::ImeService(mojo::PendingReceiver<mojom::ImeService> receiver)
@@ -87,7 +83,8 @@ void ImeService::ConnectToImeEngine(
   //
   // The extension will only use ConnectToImeEngine, and NativeInputMethodEngine
   // will only use ConnectToInputMethod.
-  if (input_engine_ && input_engine_->IsConnected()) {
+  if ((connection_factory_ && connection_factory_->IsConnected()) ||
+      (input_engine_ && input_engine_->IsConnected())) {
     std::move(callback).Run(/*bound=*/false);
     return;
   }
@@ -104,31 +101,31 @@ void ImeService::ConnectToInputMethod(
     mojo::PendingReceiver<mojom::InputMethod> input_method,
     mojo::PendingRemote<mojom::InputMethodHost> input_method_host,
     ConnectToInputMethodCallback callback) {
-  decoder_engine_.reset();
-
-  if (IsRuleBasedInputMethod(ime_spec)) {
-    input_engine_ = RuleBasedEngine::Create(ime_spec, std::move(input_method),
-                                            std::move(input_method_host));
-    std::move(callback).Run(/*bound=*/input_engine_ != nullptr);
-    return;
-  }
-
-  auto system_engine = std::make_unique<SystemEngine>(this);
-  bool bound = system_engine->BindRequest(ime_spec, std::move(input_method),
-                                          std::move(input_method_host));
-  input_engine_ = std::move(system_engine);
-  std::move(callback).Run(bound);
+  // DEPRECATED: This method is now deprecated. If you would like to connect to
+  //   an input method in the ime service, please do so via the
+  //   InitializeConnectionFactory method below.
+  std::move(callback).Run(/*bound=*/false);
 }
 
 void ImeService::InitializeConnectionFactory(
     mojo::PendingReceiver<mojom::ConnectionFactory> connection_factory,
+    mojom::ConnectionTarget connection_target,
     InitializeConnectionFactoryCallback callback) {
+  // Drop any currently bound pipes.
+  connection_factory_.reset();
   decoder_engine_.reset();
+  input_engine_.reset();
+
+  if (connection_target == mojom::ConnectionTarget::kImeService) {
+    connection_factory_ =
+        std::make_unique<ConnectionFactory>(std::move(connection_factory));
+    std::move(callback).Run(/*success=*/true);
+    return;
+  }
 
   auto system_engine = std::make_unique<SystemEngine>(this);
   bool bound =
       system_engine->BindConnectionFactory(std::move(connection_factory));
-
   input_engine_ = std::move(system_engine);
   std::move(callback).Run(bound);
 }

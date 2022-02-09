@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/services/ime/connection_factory.h"
 #include "ash/services/ime/decoder/decoder_engine.h"
 #include "ash/services/ime/input_engine.h"
 #include "ash/services/ime/public/cpp/shared_lib/interfaces.h"
@@ -55,6 +56,7 @@ class ImeService : public mojom::ImeService,
       ConnectToInputMethodCallback callback) override;
   void InitializeConnectionFactory(
       mojo::PendingReceiver<mojom::ConnectionFactory> connection_factory,
+      mojom::ConnectionTarget connection_target,
       InitializeConnectionFactoryCallback callback) override;
 
   // ImeCrosPlatform overrides:
@@ -86,6 +88,10 @@ class ImeService : public mojom::ImeService,
   // decoder engine or input engine instance.
   std::unique_ptr<DecoderEngine> decoder_engine_;
   std::unique_ptr<InputEngine> input_engine_;
+
+  // Used to support connections to the RuleBasedEngine implemented in the
+  // ime service itself.
+  std::unique_ptr<ConnectionFactory> connection_factory_;
 
   // Platform delegate for access to privilege resources.
   mojo::Remote<mojom::PlatformAccessProvider> platform_access_;

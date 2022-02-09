@@ -637,6 +637,46 @@ bool NativeInputMethodEngine::ImeObserver::ShouldRouteToNativeMojoEngine(
   return use_ime_service_ && CanRouteToNativeMojoEngine(engine_id);
 }
 
+void NativeInputMethodEngine::ImeObserver::BindInputMethod(
+    const std::string& engine_id,
+    bool connection_factory_bound) {
+  if (!connection_factory_bound) {
+    LOG(ERROR) << "ConnectionFactory not bound, abort.";
+    return;
+  }
+
+  mojo::PendingAssociatedRemote<chromeos::ime::mojom::InputMethodHost>
+      input_method_host;
+  host_receiver_.Bind(input_method_host.InitWithNewEndpointAndPassReceiver());
+
+  connection_factory_->ConnectToInputMethod(
+      engine_id, input_method_.BindNewEndpointAndPassReceiver(),
+      std::move(input_method_host), base::BindOnce(&OnConnected));
+}
+
+void NativeInputMethodEngine::ImeObserver::ConnectToImeService(
+    mojom::ConnectionTarget connection_target,
+    const std::string& engine_id) {
+  if (!remote_manager_.is_bound()) {
+    auto* ime_manager = InputMethodManager::Get();
+    ime_manager->ConnectInputEngineManager(
+        remote_manager_.BindNewPipeAndPassReceiver());
+    remote_manager_.set_disconnect_handler(
+        base::BindOnce(&OnError, base::Time::Now()));
+    LogEvent(ImeServiceEvent::kInitSuccess);
+  }
+
+  // Deactivate any existing engine.
+  connection_factory_.reset();
+  input_method_.reset();
+  host_receiver_.reset();
+
+  remote_manager_->InitializeConnectionFactory(
+      connection_factory_.BindNewPipeAndPassReceiver(), connection_target,
+      base::BindOnce(&NativeInputMethodEngine::ImeObserver::BindInputMethod,
+                     weak_ptr_factory_.GetWeakPtr(), engine_id));
+}
+
 void NativeInputMethodEngine::ImeObserver::OnActivate(
     const std::string& engine_id) {
   // TODO(b/181077907): Always launch the IME service and let IME service decide
@@ -645,6 +685,7 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
       // The FST Mojo engine is only needed if autocorrect is enabled.
       !IsPhysicalKeyboardAutocorrectEnabled(prefs_, engine_id) &&
       !IsPredictiveWritingEnabled(prefs_, engine_id)) {
+    connection_factory_.reset();
     remote_manager_.reset();
     input_method_.reset();
     host_receiver_.reset();
@@ -652,47 +693,12 @@ void NativeInputMethodEngine::ImeObserver::OnActivate(
   }
 
   if (ShouldRouteToRuleBasedEngine(engine_id)) {
-    if (!remote_manager_.is_bound()) {
-      auto* ime_manager = InputMethodManager::Get();
-      ime_manager->ConnectInputEngineManager(
-          remote_manager_.BindNewPipeAndPassReceiver());
-      remote_manager_.set_disconnect_handler(
-          base::BindOnce(&OnError, base::Time::Now()));
-      LogEvent(ImeServiceEvent::kInitSuccess);
-    }
-
     const auto new_engine_id = NormalizeRuleBasedEngineId(engine_id);
-
-    // Deactivate any existing engine.
-    input_method_.reset();
-    host_receiver_.reset();
-
-    remote_manager_->ConnectToInputMethod(
-        new_engine_id, input_method_.BindNewPipeAndPassReceiver(),
-        host_receiver_.BindNewPipeAndPassRemote(),
-        base::BindOnce(&OnConnected));
-
+    ConnectToImeService(mojom::ConnectionTarget::kImeService, new_engine_id);
     // Notify the virtual keyboard extension that the IME has changed.
     ime_base_observer_->OnActivate(engine_id);
   } else if (ShouldRouteToNativeMojoEngine(engine_id)) {
-    if (!remote_manager_.is_bound()) {
-      auto* ime_manager = InputMethodManager::Get();
-      ime_manager->ConnectInputEngineManager(
-          remote_manager_.BindNewPipeAndPassReceiver());
-      remote_manager_.set_disconnect_handler(
-          base::BindOnce(&OnError, base::Time::Now()));
-      LogEvent(ImeServiceEvent::kInitSuccess);
-    }
-
-    // Deactivate any existing engine.
-    input_method_.reset();
-    host_receiver_.reset();
-
-    remote_manager_->ConnectToInputMethod(
-        engine_id, input_method_.BindNewPipeAndPassReceiver(),
-        host_receiver_.BindNewPipeAndPassRemote(),
-        base::BindOnce(&OnConnected));
-
+    ConnectToImeService(mojom::ConnectionTarget::kDecoder, engine_id);
     // Inform the assistive suggester of the new engine activation.
     assistive_suggester_->OnActivate(engine_id);
   } else {
@@ -1158,11 +1164,14 @@ void NativeInputMethodEngine::ImeObserver::ReportKoreanSettings(
 }
 
 void NativeInputMethodEngine::ImeObserver::FlushForTesting() {
-  remote_manager_.FlushForTesting();
+  if (remote_manager_.is_bound())
+    remote_manager_.FlushForTesting();  // IN-TEST
+  if (connection_factory_.is_bound())
+    connection_factory_.FlushForTesting();  // IN-TEST
   if (host_receiver_.is_bound())
-    host_receiver_.FlushForTesting();
+    host_receiver_.FlushForTesting();  // IN-TEST
   if (input_method_.is_bound())
-    input_method_.FlushForTesting();
+    input_method_.FlushForTesting();  // IN-TEST
 }
 
 void NativeInputMethodEngine::ImeObserver::OnProfileWillBeDestroyed() {
