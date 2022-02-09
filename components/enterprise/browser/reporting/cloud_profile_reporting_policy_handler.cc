@@ -35,7 +35,7 @@ bool CloudProfileReportingPolicyHandler::CheckPolicySettings(
 
   if (policy->source != policy::POLICY_SOURCE_CLOUD ||
       policy->scope != policy::POLICY_SCOPE_USER) {
-    errors->AddError(policy_name(), IDS_POLICY_CLOUD_SOURCE_ONLY_ERROR);
+    errors->AddError(policy_name(), IDS_POLICY_CLOUD_USER_ONLY_ERROR);
     return false;
   }
 
