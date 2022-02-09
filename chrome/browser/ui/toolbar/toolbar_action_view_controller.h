@@ -9,6 +9,7 @@
 
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/extensions/site_permissions_helper.h"
+#include "chrome/browser/ui/extensions/extension_popup_types.h"
 #include "ui/gfx/image/image.h"
 
 namespace content {
@@ -114,7 +115,7 @@ class ToolbarActionViewController {
   // Shows the toolbar action popup as a result of an API call. It is the
   // caller's responsibility to guarantee it is valid to show a popup (i.e.,
   // the action is enabled, has a popup, etc).
-  virtual void TriggerPopupForAPI() = 0;
+  virtual void TriggerPopupForAPI(ShowPopupCallback callback) = 0;
 
   // Updates the current state of the action.
   virtual void UpdateState() = 0;

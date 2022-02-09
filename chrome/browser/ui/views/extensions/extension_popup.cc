@@ -36,9 +36,10 @@ void ExtensionPopup::ShowPopup(
     std::unique_ptr<extensions::ExtensionViewHost> host,
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow,
-    PopupShowAction show_action) {
-  auto* popup =
-      new ExtensionPopup(std::move(host), anchor_view, arrow, show_action);
+    PopupShowAction show_action,
+    ShowPopupCallback callback) {
+  auto* popup = new ExtensionPopup(std::move(host), anchor_view, arrow,
+                                   show_action, std::move(callback));
   views::BubbleDialogDelegateView::CreateBubble(popup);
 
   // Check that the preferred adjustment is set to mirror to match
@@ -64,6 +65,11 @@ void ExtensionPopup::ShowPopup(
 
 ExtensionPopup::~ExtensionPopup() {
   content::DevToolsAgentHost::RemoveObserver(this);
+
+  // The ExtensionPopup may close before it was ever shown. If so, indicate such
+  // through the callback.
+  if (shown_callback_)
+    std::move(shown_callback_).Run(nullptr);
 }
 
 gfx::Size ExtensionPopup::CalculatePreferredSize() const {
@@ -212,12 +218,14 @@ ExtensionPopup::ExtensionPopup(
     std::unique_ptr<extensions::ExtensionViewHost> host,
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow,
-    PopupShowAction show_action)
+    PopupShowAction show_action,
+    ShowPopupCallback callback)
     : BubbleDialogDelegateView(anchor_view,
                                arrow,
                                views::BubbleBorder::STANDARD_SHADOW),
       host_(std::move(host)),
-      show_action_(show_action) {
+      show_action_(show_action),
+      shown_callback_(std::move(callback)) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_use_round_corners(false);
 
@@ -265,6 +273,9 @@ void ExtensionPopup::ShowBubble() {
     DevToolsWindow::OpenDevToolsWindow(
         host_->host_contents(), DevToolsToggleAction::ShowConsolePanel());
   }
+
+  if (shown_callback_)
+    std::move(shown_callback_).Run(host_.get());
 }
 
 void ExtensionPopup::CloseUnlessUnderInspection() {

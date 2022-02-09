@@ -70,7 +70,8 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   static void ShowPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
                         views::View* anchor_view,
                         views::BubbleBorder::Arrow arrow,
-                        PopupShowAction show_action);
+                        PopupShowAction show_action,
+                        ShowPopupCallback callback);
 
   ExtensionPopup(const ExtensionPopup&) = delete;
   ExtensionPopup& operator=(const ExtensionPopup&) = delete;
@@ -123,7 +124,8 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   ExtensionPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
                  views::View* anchor_view,
                  views::BubbleBorder::Arrow arrow,
-                 PopupShowAction show_action);
+                 PopupShowAction show_action,
+                 ShowPopupCallback callback);
 
   // Shows the bubble, focuses its content, and registers listeners.
   void ShowBubble();
@@ -145,6 +147,8 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
       extension_registry_observation_{this};
 
   PopupShowAction show_action_;
+
+  ShowPopupCallback shown_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_POPUP_H_

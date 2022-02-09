@@ -76,14 +76,15 @@ void ExtensionActionPlatformDelegateViews::UnregisterCommand() {
 
 void ExtensionActionPlatformDelegateViews::ShowPopup(
     std::unique_ptr<extensions::ExtensionViewHost> host,
-    PopupShowAction show_action) {
+    PopupShowAction show_action,
+    ShowPopupCallback callback) {
   // TOP_RIGHT is correct for both RTL and LTR, because the views platform
   // performs the flipping in RTL cases.
   views::BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_RIGHT;
 
   ExtensionPopup::ShowPopup(std::move(host),
                             GetDelegateViews()->GetReferenceButtonForPopup(),
-                            arrow, show_action);
+                            arrow, show_action, std::move(callback));
 }
 
 void ExtensionActionPlatformDelegateViews::OnExtensionCommandAdded(

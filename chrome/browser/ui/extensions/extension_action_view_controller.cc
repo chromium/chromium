@@ -276,17 +276,18 @@ void ExtensionActionViewController::ExecuteUserAction(InvocationSource source) {
   if (action_runner->RunAction(extension(), kGrantTabPermissions) ==
       extensions::ExtensionAction::ACTION_SHOW_POPUP) {
     constexpr bool kByUser = true;
-    GetPreferredPopupViewController()->TriggerPopup(PopupShowAction::kShow,
-                                                    kByUser);
+    GetPreferredPopupViewController()->TriggerPopup(
+        PopupShowAction::kShow, kByUser, ShowPopupCallback());
   }
 }
 
-void ExtensionActionViewController::TriggerPopupForAPI() {
+void ExtensionActionViewController::TriggerPopupForAPI(
+    ShowPopupCallback callback) {
   RecordInvocationSource(InvocationSource::kApi);
   // This method is called programmatically by an API; it should never be
   // considered a user action.
   constexpr bool kByUser = false;
-  TriggerPopup(PopupShowAction::kShow, kByUser);
+  TriggerPopup(PopupShowAction::kShow, kByUser, std::move(callback));
 }
 
 void ExtensionActionViewController::UpdateState() {
@@ -312,7 +313,7 @@ void ExtensionActionViewController::InspectPopup() {
   // menu entry).
   constexpr bool kByUser = true;
   GetPreferredPopupViewController()->TriggerPopup(
-      PopupShowAction::kShowAndInspect, kByUser);
+      PopupShowAction::kShowAndInspect, kByUser, ShowPopupCallback());
 }
 
 void ExtensionActionViewController::OnIconUpdated() {
@@ -393,7 +394,8 @@ ExtensionActionViewController::GetPreferredPopupViewController() {
 }
 
 void ExtensionActionViewController::TriggerPopup(PopupShowAction show_action,
-                                                 bool by_user) {
+                                                 bool by_user,
+                                                 ShowPopupCallback callback) {
   DCHECK(ExtensionIsValid());
   DCHECK_EQ(this, GetPreferredPopupViewController());
 
@@ -427,18 +429,23 @@ void ExtensionActionViewController::TriggerPopup(PopupShowAction show_action,
       this, is_sticky,
       base::BindOnce(&ExtensionActionViewController::ShowPopup,
                      weak_factory_.GetWeakPtr(), std::move(host), by_user,
-                     show_action));
+                     show_action, std::move(callback)));
 }
 
 void ExtensionActionViewController::ShowPopup(
     std::unique_ptr<extensions::ExtensionViewHost> popup_host,
     bool grant_tab_permissions,
-    PopupShowAction show_action) {
+    PopupShowAction show_action,
+    ShowPopupCallback callback) {
   // It's possible that the popup should be closed before it finishes opening
   // (since it can open asynchronously). Check before proceeding.
-  if (!popup_host_)
+  if (!popup_host_) {
+    if (callback)
+      std::move(callback).Run(nullptr);
     return;
-  platform_delegate_->ShowPopup(std::move(popup_host), show_action);
+  }
+  platform_delegate_->ShowPopup(std::move(popup_host), show_action,
+                                std::move(callback));
   view_delegate_->OnPopupShown(grant_tab_permissions);
 }
 

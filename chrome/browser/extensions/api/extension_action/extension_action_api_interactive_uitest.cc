@@ -176,6 +176,17 @@ IN_PROC_BROWSER_TEST_F(ActionAPIInteractiveUITest, OpenPopupFailures) {
                  'Error: Extension does not have a popup on the active tab.');
              chrome.test.succeed();
            },
+           async function tryToOpenPopupThatClosesBeforeItsOpened() {
+             await chrome.action.enable();
+             // insta_close_popup.html has a script file that synchronously
+             // calls window.close() during document parsing. This results in
+             // the popup closing before it's actually shown.
+             await chrome.action.setPopup({popup: 'insta_close_popup.html'});
+             await chrome.test.assertPromiseRejects(
+                 chrome.action.openPopup(),
+                 'Error: Failed to open popup.');
+             chrome.test.succeed();
+           },
          ]);)";
   RunScriptTest(kScript, *extension);
   EXPECT_FALSE(BrowserHasPopup(browser()));

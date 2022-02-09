@@ -28,7 +28,8 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveTest, ShowPageActionPopup) {
 
   ResultCatcher catcher;
   ASSERT_TRUE(ExtensionActionAPI::Get(browser()->profile())
-                  ->ShowExtensionActionPopupForAPICall(extension, browser()));
+                  ->ShowExtensionActionPopupForAPICall(extension, browser(),
+                                                       ShowPopupCallback()));
   ASSERT_TRUE(catcher.GetNextResult());
 }
 

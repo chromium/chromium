@@ -81,7 +81,7 @@ class ExtensionActionViewController
   void OnContextMenuShown() override;
   void OnContextMenuClosed() override;
   void ExecuteUserAction(InvocationSource source) override;
-  void TriggerPopupForAPI() override;
+  void TriggerPopupForAPI(ShowPopupCallback callback) override;
   void UpdateState() override;
   void RegisterCommand() override;
   void UnregisterCommand() override;
@@ -144,12 +144,15 @@ class ExtensionActionViewController
   // user action.
   // The popup may not be shown synchronously if the extension is hidden and
   // first needs to slide itself out.
-  void TriggerPopup(PopupShowAction show_action, bool by_user);
+  void TriggerPopup(PopupShowAction show_action,
+                    bool by_user,
+                    ShowPopupCallback callback);
 
   // Shows the popup with the given |host|.
   void ShowPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
                  bool grant_tab_permissions,
-                 PopupShowAction show_action);
+                 PopupShowAction show_action,
+                 ShowPopupCallback callback);
 
   // Handles cleanup after the popup closes.
   void OnPopupClosed();

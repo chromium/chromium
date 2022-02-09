@@ -402,14 +402,15 @@ void ExtensionsToolbarContainer::PopOutAction(
 }
 
 bool ExtensionsToolbarContainer::ShowToolbarActionPopupForAPICall(
-    const std::string& action_id) {
+    const std::string& action_id,
+    ShowPopupCallback callback) {
   // Don't override another popup, and only show in the active window.
   if (popped_out_action_ || !browser_->window()->IsActive())
     return false;
 
   ToolbarActionViewController* action = GetActionForId(action_id);
   DCHECK(action);
-  action->TriggerPopupForAPI();
+  action->TriggerPopupForAPI(std::move(callback));
 
   return true;
 }

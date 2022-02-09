@@ -7,8 +7,9 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/extensions/extension_popup_types.h"
+
 class ExtensionActionViewController;
-enum class PopupShowAction;
 
 namespace extensions {
 class ExtensionViewHost;
@@ -30,7 +31,8 @@ class ExtensionActionPlatformDelegate {
 
   // Shows the given |host| in an extension popup.
   virtual void ShowPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
-                         PopupShowAction show_action) = 0;
+                         PopupShowAction show_action,
+                         ShowPopupCallback callback) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_ACTION_PLATFORM_DELEGATE_H_

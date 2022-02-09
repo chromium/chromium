@@ -80,7 +80,8 @@ void TestToolbarActionViewController::ExecuteUserAction(
   ++execute_action_count_;
 }
 
-void TestToolbarActionViewController::TriggerPopupForAPI() {}
+void TestToolbarActionViewController::TriggerPopupForAPI(
+    ShowPopupCallback callback) {}
 
 void TestToolbarActionViewController::UpdateState() {
   UpdateDelegate();
