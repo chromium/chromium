@@ -606,13 +606,11 @@ crbug.com/1056830 [ android android-nexus-5x ] conformance/extensions/webgl-comp
 crbug.com/1099148 [ android android-nexus-5x ] deqp/data/gles2/shaders/swizzles.html [ Failure ]
 crbug.com/1122644 [ android android-nexus-5x ] conformance/textures/misc/texture-upload-size.html [ Failure ]
 crbug.com/1270815 [ android android-nexus-5x ] conformance/textures/misc/texture-size.html [ RetryOnFailure ]
-# Flakily returning RGBA(0,0,0,0) for all pixels
-crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ RetryOnFailure ]
-crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/textures/misc/texture-corner-case-videos.html [ RetryOnFailure ]
-crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
-crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Failure ]
+# Flakily returning RGBA(0,0,0,0) for pixels in video related tests
+crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/glsl/samplers/glsl-function-texture2dprojlod.html [ Failure ]
+crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Failure ]
+crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/textures/misc/texture-corner-case-videos.html [ Failure ]
+crbug.com/1295370 [ android android-nexus-5x passthrough ] conformance/textures/video/* [ Failure ]
 
 # Android NVIDIA: Nexus 9 and/or Shield TV
 crbug.com/798117 [ android android-nexus-9 ] conformance/glsl/bugs/assign-to-swizzled-twice-in-function.html [ Failure ]
@@ -668,11 +666,6 @@ crbug.com/angleproject/2988 [ android angle-opengles ] conformance/context/conte
 # Failing webgl passthrough test on nexus 5x.
 crbug.com/1209254 [ android android-nexus-5x android-chromium passthrough ] conformance/textures/misc/texture-npot-video.html [ Failure ]
 crbug.com/1209254 [ android android-nexus-5x android-chromium passthrough ] conformance/textures/misc/video-rotation.html [ Failure ]
-
-# Flaking webgl passthrough test on nexus 5x.
-crbug.com/1209254 [ android android-nexus-5x android-chromium passthrough ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ RetryOnFailure ]
-crbug.com/1209254 [ android android-nexus-5x android-chromium passthrough ] conformance/textures/video/tex-2d-alpha-alpha-unsigned_byte.html [ RetryOnFailure ]
-crbug.com/1209254 [ android android-nexus-5x android-chromium passthrough ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ RetryOnFailure ]
 
 # Failing test in passthrough mode when experiment DrDc is enabled via fieldtrial_testing_config.json.
 crbug.com/1276552 [ android passthrough ] conformance/canvas/render-after-resize-test.html [ Failure ]
