@@ -20,7 +20,8 @@ import org.chromium.base.annotations.JNINamespace;
  */
 @JNINamespace("android_webview")
 public class AwServiceWorkerSettings {
-    private static final String LOGTAG = AwServiceWorkerSettings.class.getSimpleName();
+    // Must be maximum 20 characters, hence the abbreviation
+    private static final String TAG = "AwSWSettings";
     private static final boolean TRACE = false;
 
     private int mCacheMode = WebSettings.LOAD_DEFAULT;
@@ -50,7 +51,7 @@ public class AwServiceWorkerSettings {
      * See {@link android.webkit.ServiceWorkerWebSettings#setCacheMode}.
      */
     public void setCacheMode(int mode) {
-        if (TRACE) Log.d(LOGTAG, "setCacheMode=" + mode);
+        if (TRACE) Log.d(TAG, "setCacheMode=" + mode);
         synchronized (mAwServiceWorkerSettingsLock) {
             if (mCacheMode != mode) {
                 mCacheMode = mode;
@@ -71,7 +72,7 @@ public class AwServiceWorkerSettings {
      * See {@link android.webkit.ServiceWorkerWebSettings#setAllowContentAccess}.
      */
     public void setAllowContentAccess(boolean allow) {
-        if (TRACE) Log.d(LOGTAG, "setAllowContentAccess=" + allow);
+        if (TRACE) Log.d(TAG, "setAllowContentAccess=" + allow);
         synchronized (mAwServiceWorkerSettingsLock) {
             if (mAllowContentUrlAccess != allow) {
                 mAllowContentUrlAccess = allow;
@@ -92,7 +93,7 @@ public class AwServiceWorkerSettings {
      * See {@link android.webkit.ServiceWorkerWebSettings#setAllowFileAccess}.
      */
     public void setAllowFileAccess(boolean allow) {
-        if (TRACE) Log.d(LOGTAG, "setAllowFileAccess=" + allow);
+        if (TRACE) Log.d(TAG, "setAllowFileAccess=" + allow);
         synchronized (mAwServiceWorkerSettingsLock) {
             if (mAllowFileUrlAccess != allow) {
                 mAllowFileUrlAccess = allow;
@@ -113,7 +114,7 @@ public class AwServiceWorkerSettings {
      * See {@link android.webkit.ServiceWorkerWebSettings#setBlockNetworkLoads}.
      */
     public void setBlockNetworkLoads(boolean flag) {
-        if (TRACE) Log.d(LOGTAG, "setBlockNetworkLoads=" + flag);
+        if (TRACE) Log.d(TAG, "setBlockNetworkLoads=" + flag);
         synchronized (mAwServiceWorkerSettingsLock) {
             if (!flag && !mHasInternetPermission) {
                 throw new SecurityException("Permission denied - "
