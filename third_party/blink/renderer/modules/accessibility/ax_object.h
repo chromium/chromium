@@ -1062,10 +1062,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // the parent. It calls ComputeParentImpl() for the actual work.
   AXObject* ComputeParent() const;
 
-  // Same as ComputeParent, but does not assert if there is no parent to compute
-  // (i.e. because the parent does not belong to the tree anymore).
-  AXObject* ComputeParentOrNull() const;
-
   // Can this node be used to compute the natural parent of an object?
   // These are objects that can have some children, but the children are
   // only of a certain type or from another part of the tree, and therefore
