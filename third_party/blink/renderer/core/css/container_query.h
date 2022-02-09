@@ -45,10 +45,13 @@ class CORE_EXPORT ContainerQuery final
   ContainerQuery(const ContainerQuery&);
 
   const ContainerSelector& Selector() const { return selector_; }
+  const ContainerQuery* Parent() const { return parent_.Get(); }
+
+  ContainerQuery* CopyWithParent(const ContainerQuery*) const;
 
   String ToString() const;
 
-  void Trace(Visitor*) const {}
+  void Trace(Visitor* visitor) const { visitor->Trace(parent_); }
 
  private:
   friend class ContainerQueryTest;
@@ -60,6 +63,7 @@ class CORE_EXPORT ContainerQuery final
 
   ContainerSelector selector_;
   std::unique_ptr<MediaQueryExpNode> query_;
+  Member<const ContainerQuery> parent_;
 };
 
 }  // namespace blink

@@ -46,4 +46,11 @@ String ContainerQuery::ToString() const {
   return query_->Serialize();
 }
 
+ContainerQuery* ContainerQuery::CopyWithParent(
+    const ContainerQuery* parent) const {
+  ContainerQuery* copy = MakeGarbageCollected<ContainerQuery>(*this);
+  copy->parent_ = parent;
+  return copy;
+}
+
 }  // namespace blink

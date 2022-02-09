@@ -1,0 +1,235 @@
+<!doctype html>
+<title>@container (nested)</title>
+<link rel="help" href="https://drafts.csswg.org/css-contain-3/#container-rule">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="support/cq-testcommon.js"></script>
+<style>
+
+#outer {
+  container-name: outer;
+  container-type: size;
+  width: 100px;
+  height: 100px;
+}
+
+#inner {
+  container-name: inner;
+  container-type: size;
+  width: 50px;
+  height: 50px;
+}
+</style>
+<div id=outer>
+  <div id=inner>
+    <div id=child></div>
+  </div>
+</div>
+<script>
+  setup(() => assert_implements_container_queries());
+</script>
+
+
+<style>
+  @container size(width: 50px) {
+    @container size(height: 50px) {
+      #child { --nearest:true; }
+    }
+  }
+</style>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(child).getPropertyValue('--nearest'), 'true');
+  }, 'Nearest');
+</script>
+
+
+<style>
+  @container size(width: 70px) {
+    @container size(height: 50px) {
+      #child { --nearest-outer-fail:true; }
+    }
+  }
+</style>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(child).getPropertyValue('--nearest-outer-fail'), '');
+  }, 'Nearest, outer failing');
+</script>
+
+
+<style>
+  @container size(width: 50px) {
+    @container size(height: 70px) {
+      #child { --nearest-inner-fail:true; }
+    }
+  }
+</style>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(child).getPropertyValue('--nearest-inner-fail'), '');
+  }, 'Nearest, inner failing');
+</script>
+
+
+<style>
+  @container outer size(width: 100px) {
+    @container inner size(height: 50px) {
+      #child { --named-outer-inner:true; }
+    }
+  }
+</style>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(child).getPropertyValue('--named-outer-inner'), 'true');
+  }, 'Outer named, inner named');
+</script>
+
+
+<style>
+  @container inner size(width: 50px) {
+    @container outer size(height: 100px) {
+      #child { --named-outer-inner-reverse:true; }
+    }
+  }
+</style>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(child).getPropertyValue('--named-outer-inner-reverse'), 'true');
+  }, 'Outer named, inner named (reverse)');
+</script>
+
+
+<style>
+  @container unknown size(width: 100px) {
+    @container inner size(height: 50px) {
+      #child { --named-failing-outer:true; }
+    }
+  }
+</style>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(child).getPropertyValue('--named-failing-outer'), '');
+  }, 'Failing outer name');
+</script>
+
+<style>
+  @container outer size(width: 100px) {
+    @container unknown size(height: 50px) {
+      #child { --named-failing-inner:true; }
+    }
+  }
+</style>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(child).getPropertyValue('--named-failing-inner'), '');
+  }, 'Failing inner name');
+</script>
+
+
+<style>
+  @container outer size(width: 100px) {
+    @container size(height: 50px) {
+      #child { --named-outer-inner-nearest:true; }
+    }
+  }
+</style>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(child).getPropertyValue('--named-outer-inner-nearest'), 'true');
+  }, 'Outer named, inner nearest');
+</script>
+
+
+<style>
+  @container size(width: 50px) {
+    @container inner size(height: 50px) {
+      #child { --nearest-outer-inner-named:true; }
+    }
+  }
+</style>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(child).getPropertyValue('--nearest-outer-inner-named'), 'true');
+  }, 'Inner named, outer nearest');
+</script>
+
+
+<style>
+  @container size(width: 50px) {
+    @container outer size(height: 100px) {
+      #child { --nearest-outer-inner-named-reverse:true; }
+    }
+  }
+</style>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(child).getPropertyValue('--nearest-outer-inner-named-reverse'), 'true');
+  }, 'Inner named, outer nearest (reverse)');
+</script>
+
+
+<style>
+  @container size(width > 1px) {
+    @container size(width > 2px) {
+      @container size(width > 3px) {
+        #child { --three-levels:true; }
+      }
+    }
+  }
+</style>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(child).getPropertyValue('--three-levels'), 'true');
+  }, 'Three levels');
+</script>
+
+
+<style>
+  @container size(width > 1px) {
+    @container size(width > 2000px) {
+      @container size(width > 3px) {
+        #child { --three-levels-middle-fail:true; }
+      }
+    }
+  }
+</style>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(child).getPropertyValue('--three-levels-middle-fail'), '');
+  }, 'Three levels, middle fail');
+</script>
+
+
+<style>
+  @container size(width: 50px) {
+    @container outer size(height: 100px) {
+      #child { --inner-named-invalidation:true; }
+    }
+  }
+</style>
+<script>
+  test((t) => {
+    t.add_cleanup(() => { outer.style = ''; });
+    assert_equals(getComputedStyle(child).getPropertyValue('--inner-named-invalidation'), 'true');
+    outer.style.height = '200px';
+    assert_equals(getComputedStyle(child).getPropertyValue('--inner-named-invalidation'), '');
+  }, 'Named inner invalidation');
+</script>
+
+
+<style>
+  @container size(width: 50px) {
+    @container outer size(height: 100px) {
+      #child { --outer-nearest-invalidation:true; }
+    }
+  }
+</style>
+<script>
+  test((t) => {
+    t.add_cleanup(() => { inner.style = ''; });
+    assert_equals(getComputedStyle(child).getPropertyValue('--outer-nearest-invalidation'), 'true');
+    inner.style.width = '200px';
+    assert_equals(getComputedStyle(child).getPropertyValue('--outer-nearest-invalidation'), '');
+  }, 'Nearest outer invalidation');
+</script>

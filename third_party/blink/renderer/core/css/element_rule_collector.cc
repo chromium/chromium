@@ -75,6 +75,22 @@ ContainerQueryEvaluator* FindContainerQueryEvaluator(
   return nullptr;
 }
 
+bool EvaluateAndAddContainerQueries(
+    const ContainerQuery& container_query,
+    const StyleRecalcContext& style_recalc_context,
+    MatchResult& result) {
+  for (const ContainerQuery* current = &container_query; current;
+       current = current->Parent()) {
+    auto* evaluator =
+        FindContainerQueryEvaluator(current->Selector(), style_recalc_context);
+
+    if (!evaluator || !evaluator->EvalAndAdd(*current, result))
+      return false;
+  }
+
+  return true;
+}
+
 bool AffectsAnimations(const RuleData& rule_data) {
   const CSSPropertyValueSet& properties = rule_data.Rule()->Properties();
   unsigned count = properties.PropertyCount();
@@ -304,10 +320,8 @@ void ElementRuleCollector::CollectMatchingRulesForList(
           result.dynamic_pseudo == kPseudoIdNone) {
         result_.SetDependsOnContainerQueries();
 
-        auto* evaluator = FindContainerQueryEvaluator(
-            container_query->Selector(), style_recalc_context_);
-
-        if (!evaluator || !evaluator->EvalAndAdd(*container_query, result_)) {
+        if (!EvaluateAndAddContainerQueries(*container_query,
+                                            style_recalc_context_, result_)) {
           rejected++;
           if (AffectsAnimations(*rule_data))
             result_.SetConditionallyAffectsAnimations();

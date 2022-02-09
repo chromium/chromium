@@ -459,10 +459,14 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
                       container_query, cascade_layer);
       }
     } else if (auto* container_rule = DynamicTo<StyleRuleContainer>(rule)) {
-      // TODO(crbug.com/1145970): Handle nested container queries.
-      // For now only the innermost applies.
+      const ContainerQuery* inner_container_query =
+          &container_rule->GetContainerQuery();
+      if (container_query) {
+        inner_container_query =
+            inner_container_query->CopyWithParent(container_query);
+      }
       AddChildRules(container_rule->ChildRules(), medium, add_rule_flags,
-                    &container_rule->GetContainerQuery(), cascade_layer);
+                    inner_container_query, cascade_layer);
     } else if (auto* layer_block_rule = DynamicTo<StyleRuleLayerBlock>(rule)) {
       CascadeLayer* sub_layer =
           GetOrAddSubLayer(cascade_layer, layer_block_rule->GetName());
