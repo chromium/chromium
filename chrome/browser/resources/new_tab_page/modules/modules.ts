@@ -35,6 +35,8 @@ export interface ModulesElement {
   $: {
     modules: HTMLElement,
     removeModuleToast: CrToastElement,
+    removeModuleToastMessage: HTMLElement,
+    undoRemoveModuleButton: HTMLElement,
   };
 }
 

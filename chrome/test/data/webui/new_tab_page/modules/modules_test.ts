@@ -4,44 +4,35 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {$$, ModuleDescriptor, ModuleDescriptorV2, ModuleHeight, ModuleRegistry, ModulesElement, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {Module, ModuleDescriptor, ModuleDescriptorV2, ModuleHeight, ModuleRegistry, ModulesElement, ModuleWrapperElement, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {TestBrowserProxy} from '../../test_browser_proxy.js';
 import {fakeMetricsPrivate, MetricsTracker} from '../metrics_test_support.js';
 import {assertNotStyle, assertStyle, createElement, initNullModule, installMock} from '../test_support.js';
 
 suite('NewTabPageModulesModulesTest', () => {
-  /** @type {!TestBrowserProxy} */
-  let handler;
-
-  /** @type {!PageRemote} */
-  let callbackRouterRemote;
-
-  /** @type {!MetricsTracker} */
-  let metrics;
-
-  /** @type {!TestBrowserProxy} */
-  let moduleRegistry;
+  let handler: TestBrowserProxy;
+  let callbackRouterRemote: PageRemote;
+  let metrics: MetricsTracker;
+  let moduleRegistry: TestBrowserProxy;
 
   setup(async () => {
     document.body.innerHTML = '';
     metrics = fakeMetricsPrivate();
     handler = installMock(
         PageHandlerRemote,
-        mock => NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
+        (mock: PageHandlerRemote) =>
+            NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
     moduleRegistry = installMock(ModuleRegistry);
     callbackRouterRemote = NewTabPageProxy.getInstance()
                                .callbackRouter.$.bindNewPipeAndPassRemote();
   });
 
-  /**
-   * @param {!Array<!Module>} modules
-   * @return {!Promise<!ModulesElement>}
-   */
-  async function createModulesElement(modules) {
+  async function createModulesElement(modules: Module[]):
+      Promise<ModulesElement> {
     const modulesPromise = Promise.resolve(modules);
     moduleRegistry.setResultFor('initializeModules', modulesPromise);
     const modulesElement = new ModulesElement();
@@ -75,21 +66,21 @@ suite('NewTabPageModulesModulesTest', () => {
 
       // Assert.
       const moduleWrappers =
-          modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
+          modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
       const moduleWrapperContainers =
-          modulesElement.shadowRoot.querySelectorAll('.module-container');
+          modulesElement.shadowRoot!.querySelectorAll('.module-container');
       assertEquals(2, moduleWrappers.length);
       assertEquals(2, moduleWrapperContainers.length);
-      assertNotStyle(moduleWrappers[0], 'display', 'none');
+      assertNotStyle(moduleWrappers[0]!, 'display', 'none');
       if (visible) {
-        assertNotStyle(moduleWrapperContainers[0], 'display', 'none');
+        assertNotStyle(moduleWrapperContainers[0]!, 'display', 'none');
       } else {
-        assertStyle(moduleWrapperContainers[0], 'display', 'none');
+        assertStyle(moduleWrapperContainers[0]!, 'display', 'none');
       }
-      assertNotStyle(moduleWrappers[1], 'display', 'none');
-      assertStyle(moduleWrapperContainers[1], 'display', 'none');
-      assertNotStyle(moduleWrappers[0], 'cursor', 'grab');
-      assertNotStyle(moduleWrappers[1], 'cursor', 'grab');
+      assertNotStyle(moduleWrappers[1]!, 'display', 'none');
+      assertStyle(moduleWrapperContainers[1]!, 'display', 'none');
+      assertNotStyle(moduleWrappers[0]!, 'cursor', 'grab');
+      assertNotStyle(moduleWrappers[1]!, 'cursor', 'grab');
       const histogram = 'NewTabPage.Modules.EnabledOnNTPLoad';
       assertEquals(1, metrics.count(`${histogram}.foo`, visible));
       assertEquals(1, metrics.count(`${histogram}.bar`, false));
@@ -131,47 +122,45 @@ suite('NewTabPageModulesModulesTest', () => {
       const modulesElement = await createModulesElement([
         {
           descriptor: fooDescriptor,
-          element: moduleArray[0],
+          element: moduleArray[0]!,
         },
         {
           descriptor: barDescriptor,
-          element: moduleArray[1],
+          element: moduleArray[1]!,
         },
         {
           descriptor: bazDescriptor,
-          element: moduleArray[2],
+          element: moduleArray[2]!,
         },
         {
           descriptor: quzDescriptor,
-          element: moduleArray[3],
+          element: moduleArray[3]!,
         },
       ]);
 
       // Assert.
       const modules =
-          Array.from(modulesElement.shadowRoot.querySelectorAll('#modules'));
+          Array.from(modulesElement.shadowRoot!.querySelectorAll('#modules'));
       const moduleWrappers =
-          modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
+          modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
       const moduleWrapperContainers =
-          modulesElement.shadowRoot.querySelectorAll('.module-container');
+          modulesElement.shadowRoot!.querySelectorAll('.module-container');
       const shortModuleSiblingsContainers =
-          modulesElement.shadowRoot.querySelectorAll(
+          modulesElement.shadowRoot!.querySelectorAll(
               '.short-module-siblings-container');
       assertEquals(4, moduleWrappers.length);
       assertEquals(4, moduleWrapperContainers.length);
       assertEquals(1, shortModuleSiblingsContainers.length);
-      assertEquals(modules[0].children[0], shortModuleSiblingsContainers[0]);
+      assertEquals(modules[0]!.children[0], shortModuleSiblingsContainers[0]);
       assertEquals(
           moduleArray[0],
-          shortModuleSiblingsContainers[0]
-              .children[0]
-              .children[0]
+          (shortModuleSiblingsContainers[0]!.children[0]!.children[0] as
+           ModuleWrapperElement)
               .module.element);
       assertEquals(
           moduleArray[1],
-          shortModuleSiblingsContainers[0]
-              .children[1]
-              .children[0]
+          (shortModuleSiblingsContainers[0]!.children[1]!.children[0] as
+           ModuleWrapperElement)
               .module.element);
     });
   });
@@ -194,17 +183,17 @@ suite('NewTabPageModulesModulesTest', () => {
 
     // Assert.
     const moduleWrappers =
-        modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
+        modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
     const moduleWrapperContainers =
-        modulesElement.shadowRoot.querySelectorAll('.module-container');
+        modulesElement.shadowRoot!.querySelectorAll('.module-container');
     assertEquals(1, moduleWrappers.length);
     assertEquals(1, moduleWrapperContainers.length);
-    assertNotStyle(moduleWrappers[0], 'display', 'none');
-    assertNotStyle(moduleWrapperContainers[0], 'display', 'none');
-    assertFalse($$(modulesElement, '#removeModuleToast').open);
+    assertNotStyle(moduleWrappers[0]!, 'display', 'none');
+    assertNotStyle(moduleWrapperContainers[0]!, 'display', 'none');
+    assertFalse(modulesElement.$.removeModuleToast.open);
 
     // Act.
-    moduleWrappers[0].dispatchEvent(new CustomEvent('dismiss-module', {
+    moduleWrappers[0]!.dispatchEvent(new CustomEvent('dismiss-module', {
       bubbles: true,
       composed: true,
       detail: {
@@ -216,23 +205,22 @@ suite('NewTabPageModulesModulesTest', () => {
     }));
 
     // Assert.
-    assertNotStyle(moduleWrappers[0], 'display', 'none');
-    assertStyle(moduleWrapperContainers[0], 'display', 'none');
-    assertTrue($$(modulesElement, '#removeModuleToast').open);
+    assertNotStyle(moduleWrappers[0]!, 'display', 'none');
+    assertStyle(moduleWrapperContainers[0]!, 'display', 'none');
+    assertTrue(modulesElement.$.removeModuleToast.open);
     assertEquals(
-        'Foo',
-        $$(modulesElement, '#removeModuleToastMessage').textContent.trim());
+        'Foo', modulesElement.$.removeModuleToastMessage.textContent!.trim());
     assertEquals(1, handler.getCallCount('onDismissModule'));
     assertEquals('foo', handler.getArgs('onDismissModule')[0]);
     assertFalse(restoreCalled);
 
     // Act.
-    $$(modulesElement, '#undoRemoveModuleButton').click();
+    modulesElement.$.undoRemoveModuleButton.click();
 
     // Assert.
-    assertNotStyle(moduleWrappers[0], 'display', 'none');
-    assertNotStyle(moduleWrapperContainers[0], 'display', 'none');
-    assertFalse($$(modulesElement, '#removeModuleToast').open);
+    assertNotStyle(moduleWrappers[0]!, 'display', 'none');
+    assertNotStyle(moduleWrapperContainers[0]!, 'display', 'none');
+    assertFalse(modulesElement.$.removeModuleToast.open);
     assertTrue(restoreCalled);
     assertEquals('foo', handler.getArgs('onRestoreModule')[0]);
   });
@@ -253,17 +241,17 @@ suite('NewTabPageModulesModulesTest', () => {
 
     // Assert.
     const moduleWrappers =
-        modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
+        modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper');
     const moduleWrapperContainers =
-        modulesElement.shadowRoot.querySelectorAll('.module-container');
+        modulesElement.shadowRoot!.querySelectorAll('.module-container');
     assertEquals(1, moduleWrappers.length);
     assertEquals(1, moduleWrapperContainers.length);
-    assertNotStyle(moduleWrappers[0], 'display', 'none');
-    assertNotStyle(moduleWrapperContainers[0], 'display', 'none');
-    assertFalse($$(modulesElement, '#removeModuleToast').open);
+    assertNotStyle(moduleWrappers[0]!, 'display', 'none');
+    assertNotStyle(moduleWrapperContainers[0]!, 'display', 'none');
+    assertFalse(modulesElement.$.removeModuleToast.open);
 
     // Act.
-    moduleWrappers[0].dispatchEvent(new CustomEvent('disable-module', {
+    moduleWrappers[0]!.dispatchEvent(new CustomEvent('disable-module', {
       bubbles: true,
       composed: true,
       detail: {
@@ -282,19 +270,18 @@ suite('NewTabPageModulesModulesTest', () => {
     await callbackRouterRemote.$.flushForTesting();
 
     // Assert.
-    assertNotStyle(moduleWrappers[0], 'display', 'none');
-    assertStyle(moduleWrapperContainers[0], 'display', 'none');
-    assertTrue($$(modulesElement, '#removeModuleToast').open);
+    assertNotStyle(moduleWrappers[0]!, 'display', 'none');
+    assertStyle(moduleWrapperContainers[0]!, 'display', 'none');
+    assertTrue(modulesElement.$.removeModuleToast.open);
     assertEquals(
-        'Foo',
-        $$(modulesElement, '#removeModuleToastMessage').textContent.trim());
+        'Foo', modulesElement.$.removeModuleToastMessage.textContent!.trim());
     assertEquals(1, metrics.count('NewTabPage.Modules.Disabled', 'foo'));
     assertEquals(
         1, metrics.count('NewTabPage.Modules.Disabled.ModuleRequest', 'foo'));
     assertFalse(restoreCalled);
 
     // Act.
-    $$(modulesElement, '#undoRemoveModuleButton').click();
+    modulesElement.$.undoRemoveModuleButton.click();
 
     // Assert.
     assertDeepEquals(['foo', false], handler.getArgs('setModuleDisabled')[1]);
@@ -304,9 +291,9 @@ suite('NewTabPageModulesModulesTest', () => {
     await callbackRouterRemote.$.flushForTesting();
 
     // Assert.
-    assertNotStyle(moduleWrappers[0], 'display', 'none');
-    assertNotStyle(moduleWrapperContainers[0], 'display', 'none');
-    assertFalse($$(modulesElement, '#removeModuleToast').open);
+    assertNotStyle(moduleWrappers[0]!, 'display', 'none');
+    assertNotStyle(moduleWrapperContainers[0]!, 'display', 'none');
+    assertFalse(modulesElement.$.removeModuleToast.open);
     assertTrue(restoreCalled);
     assertEquals(1, metrics.count('NewTabPage.Modules.Enabled', 'foo'));
     assertEquals(1, metrics.count('NewTabPage.Modules.Enabled.Toast', 'foo'));
@@ -345,22 +332,22 @@ suite('NewTabPageModulesModulesTest', () => {
       const modulesElement = await createModulesElement([
         {
           descriptor: fooDescriptor,
-          element: moduleArray[0],
+          element: moduleArray[0]!,
         },
         {
           descriptor: barDescriptor,
-          element: moduleArray[1],
+          element: moduleArray[1]!,
         },
         {
           descriptor: fooBarDescriptor,
-          element: moduleArray[2],
+          element: moduleArray[2]!,
         },
       ]);
       callbackRouterRemote.setDisabledModules(false, []);
       await callbackRouterRemote.$.flushForTesting();
 
       let moduleWrappers = Array.from(
-          modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper'));
+          modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper'));
       const firstModule = moduleWrappers[0];
       const secondModule = moduleWrappers[1];
       const thirdModule = moduleWrappers[2];
@@ -371,9 +358,9 @@ suite('NewTabPageModulesModulesTest', () => {
       assertStyle(secondModule, 'cursor', 'grab');
       assertStyle(thirdModule, 'cursor', 'grab');
 
-      const firstPositionRect = moduleWrappers[0].getBoundingClientRect();
-      const secondPositionRect = moduleWrappers[1].getBoundingClientRect();
-      const thirdPositionRect = moduleWrappers[2].getBoundingClientRect();
+      const firstPositionRect = moduleWrappers[0]!.getBoundingClientRect();
+      const secondPositionRect = moduleWrappers[1]!.getBoundingClientRect();
+      const thirdPositionRect = moduleWrappers[2]!.getBoundingClientRect();
 
       const startX = firstPositionRect.x + firstPositionRect.width / 2;
       const startY = firstPositionRect.y + firstPositionRect.height / 2;
@@ -402,24 +389,26 @@ suite('NewTabPageModulesModulesTest', () => {
 
       // Assert.
       moduleWrappers = Array.from(
-          modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper'));
+          modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper'));
       assertEquals(0, moduleWrappers.indexOf(secondModule));
       assertEquals(1, moduleWrappers.indexOf(thirdModule));
       assertEquals(2, moduleWrappers.indexOf(firstModule));
-      assertEquals(secondPositionRect.x, secondModule.getBoundingClientRect().x);
-      assertEquals(secondPositionRect.y, secondModule.getBoundingClientRect().y);
+      assertEquals(
+          secondPositionRect.x, secondModule.getBoundingClientRect().x);
+      assertEquals(
+          secondPositionRect.y, secondModule.getBoundingClientRect().y);
       assertEquals(thirdPositionRect.x, thirdModule.getBoundingClientRect().x);
       assertEquals(thirdPositionRect.y, thirdModule.getBoundingClientRect().y);
 
       assertEquals(1, secondModule.getAnimations().length);
       assertEquals(1, thirdModule.getAnimations().length);
-      secondModule.getAnimations()[0].finish();
-      thirdModule.getAnimations()[0].finish();
+      secondModule.getAnimations()[0]!.finish();
+      thirdModule.getAnimations()[0]!.finish();
       assertEquals(0, secondModule.getAnimations().length);
       assertEquals(0, thirdModule.getAnimations().length);
 
       moduleWrappers = Array.from(
-          modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper'));
+          modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper'));
       assertEquals(0, moduleWrappers.indexOf(secondModule));
       assertEquals(1, moduleWrappers.indexOf(thirdModule));
       assertEquals(2, moduleWrappers.indexOf(firstModule));
@@ -447,7 +436,7 @@ suite('NewTabPageModulesModulesTest', () => {
 
       // Assert.
       moduleWrappers = Array.from(
-          modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper'));
+          modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper'));
       assertEquals(0, moduleWrappers.indexOf(secondModule));
       assertEquals(1, moduleWrappers.indexOf(firstModule));
       assertEquals(2, moduleWrappers.indexOf(thirdModule));
@@ -458,13 +447,13 @@ suite('NewTabPageModulesModulesTest', () => {
 
       assertEquals(1, secondModule.getAnimations().length);
       assertEquals(1, thirdModule.getAnimations().length);
-      secondModule.getAnimations()[0].finish();
-      thirdModule.getAnimations()[0].finish();
+      secondModule.getAnimations()[0]!.finish();
+      thirdModule.getAnimations()[0]!.finish();
       assertEquals(0, secondModule.getAnimations().length);
       assertEquals(0, thirdModule.getAnimations().length);
 
       moduleWrappers = Array.from(
-          modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper'));
+          modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper'));
       assertEquals(0, moduleWrappers.indexOf(secondModule));
       assertEquals(1, moduleWrappers.indexOf(firstModule));
       assertEquals(2, moduleWrappers.indexOf(thirdModule));
@@ -478,15 +467,15 @@ suite('NewTabPageModulesModulesTest', () => {
 
       // Assert.
       moduleWrappers = Array.from(
-          modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper'));
+          modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper'));
       assertEquals(1, moduleWrappers.indexOf(firstModule));
 
       assertEquals(1, firstModule.getAnimations().length);
-      firstModule.getAnimations()[0].finish();
+      firstModule.getAnimations()[0]!.finish();
       assertEquals(0, firstModule.getAnimations().length);
 
       moduleWrappers = Array.from(
-          modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper'));
+          modulesElement.shadowRoot!.querySelectorAll('ntp-module-wrapper'));
       assertEquals(1, moduleWrappers.indexOf(firstModule));
       assertEquals(secondPositionRect.x, firstModule.getBoundingClientRect().x);
       assertEquals(secondPositionRect.y, firstModule.getBoundingClientRect().y);

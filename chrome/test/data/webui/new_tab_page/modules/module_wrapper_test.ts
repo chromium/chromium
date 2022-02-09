@@ -4,7 +4,7 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {$$, ModuleDescriptor, ModuleDescriptorV2, ModuleHeight, ModuleWrapperElement, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {ModuleDescriptor, ModuleDescriptorV2, ModuleHeight, ModuleWrapperElement, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertDeepEquals, assertEquals, assertThrows} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -14,14 +14,9 @@ import {fakeMetricsPrivate, MetricsTracker} from '../metrics_test_support.js';
 import {createElement, initNullModule, installMock} from '../test_support.js';
 
 suite('NewTabPageModulesModuleWrapperTest', () => {
-  /** @type {!ModuleWrapperElement} */
-  let moduleWrapper;
-
-  /** @type {!MetricsTracker} */
-  let metrics;
-
-  /** @type {!TestBrowserProxy} */
-  let windowProxy;
+  let moduleWrapper: ModuleWrapperElement;
+  let metrics: MetricsTracker;
+  let windowProxy: TestBrowserProxy;
 
   setup(() => {
     document.body.innerHTML = '';
@@ -50,9 +45,8 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
     await detectedImpression;
 
     // Assert.
-    assertEquals(100, $$(moduleWrapper, '#moduleElement').offsetHeight);
-    assertDeepEquals(
-        moduleElement, $$(moduleWrapper, '#moduleElement').children[0]);
+    assertEquals(100, moduleWrapper.$.moduleElement.offsetHeight);
+    assertDeepEquals(moduleElement, moduleWrapper.$.moduleElement.children[0]);
     assertEquals(1, metrics.count('NewTabPage.Modules.Impression'));
     assertEquals(1, metrics.count('NewTabPage.Modules.Impression.foo'));
     assertEquals(1, metrics.count('NewTabPage.Modules.Impression', 123));
@@ -68,8 +62,7 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
     };
 
     // Assert.
-    assertEquals(
-        ModuleHeight.TALL, $$(moduleWrapper, '#moduleElement').offsetHeight);
+    assertEquals(ModuleHeight.TALL, moduleWrapper.$.moduleElement.offsetHeight);
   });
 
   test('descriptor can only be set once', () => {

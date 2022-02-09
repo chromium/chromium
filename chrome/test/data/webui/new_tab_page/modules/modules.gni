@@ -16,12 +16,12 @@ if (!is_official_build) {
 
 modules_test_files =
     [
-      "modules/info_dialog_test.js",
-      "modules/module_descriptor_test.js",
-      "modules/module_header_test.js",
-      "modules/module_registry_test.js",
-      "modules/module_wrapper_test.js",
-      "modules/modules_test.js",
+      "modules/info_dialog_test.ts",
+      "modules/module_descriptor_test.ts",
+      "modules/module_header_test.ts",
+      "modules/module_registry_test.ts",
+      "modules/module_wrapper_test.ts",
+      "modules/modules_test.ts",
     ] + cart_test_files + cart_v2_test_files + drive_test_files +
     drive_v2_test_files + photos_test_files + recipes_v2_test_files +
     task_module_test_files

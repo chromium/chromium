@@ -4,12 +4,11 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {$$, InfoDialogElement} from 'chrome://new-tab-page/new_tab_page.js';
-import {assertFalse, assertTrue} from '../../chai_assert.js';
+import {InfoDialogElement} from 'chrome://new-tab-page/new_tab_page.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('NewTabPageModulesInfoDialogTest', () => {
-  /** @type {!InfoDialogElement} */
-  let infoDialog;
+  let infoDialog: InfoDialogElement;
 
   setup(() => {
     document.body.innerHTML = '';
@@ -18,9 +17,9 @@ suite('NewTabPageModulesInfoDialogTest', () => {
   });
 
   test('can open dialog', () => {
-    assertFalse($$(infoDialog, '#dialog').open);
+    assertFalse(infoDialog.$.dialog.open);
     infoDialog.showModal();
-    assertTrue($$(infoDialog, '#dialog').open);
+    assertTrue(infoDialog.$.dialog.open);
   });
 
   test('clicking close button closes cr dialog', () => {
@@ -28,9 +27,9 @@ suite('NewTabPageModulesInfoDialogTest', () => {
     infoDialog.showModal();
 
     // Act.
-    $$(infoDialog, '#closeButton').click();
+    infoDialog.$.closeButton.click();
 
     // Assert.
-    assertFalse($$(infoDialog, '#dialog').open);
+    assertFalse(infoDialog.$.dialog.open);
   });
 });

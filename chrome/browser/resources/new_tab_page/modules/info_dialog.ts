@@ -14,6 +14,7 @@ import {getTemplate} from './info_dialog.html.js';
 
 export interface InfoDialogElement {
   $: {
+    closeButton: HTMLElement,
     dialog: CrDialogElement,
   };
 }

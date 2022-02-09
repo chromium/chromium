@@ -13,11 +13,8 @@ import {fakeMetricsPrivate, MetricsTracker} from '../metrics_test_support.js';
 import {createElement, initNullModule, installMock} from '../test_support.js';
 
 suite('NewTabPageModulesModuleDescriptorTest', () => {
-  /** @type {!TestBrowserProxy} */
-  let windowProxy;
-
-  /** @type {!MetricsTracker} */
-  let metrics;
+  let windowProxy: TestBrowserProxy;
+  let metrics: MetricsTracker;
 
   setup(() => {
     document.body.innerHTML = '';

@@ -4,28 +4,22 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {$$, ModuleHeaderElement} from 'chrome://new-tab-page/new_tab_page.js';
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {$$, DomIf, ModuleHeaderElement} from 'chrome://new-tab-page/new_tab_page.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-/** @param {!HTMLElement} element */
-function render(element) {
-  element.shadowRoot.querySelectorAll('dom-if').forEach(tmpl => tmpl.render());
+function render(element: HTMLElement) {
+  element.shadowRoot!.querySelectorAll<DomIf>('dom-if').forEach(
+      tmpl => tmpl.render());
 }
 
-/**
- * @param {!HTMLElement} target
- * @param {string} event
- * @return {{received: boolean}}
- */
-function capture(target, event) {
+function capture(target: HTMLElement, event: string): {received: boolean} {
   const capture = {received: false};
   target.addEventListener(event, () => capture.received = true);
   return capture;
 }
 
 suite('NewTabPageModulesModuleHeaderTest', () => {
-  /** @type {!ModuleHeaderElement} */
-  let moduleHeader;
+  let moduleHeader: ModuleHeaderElement;
 
   setup(() => {
     document.body.innerHTML = '';
@@ -45,13 +39,20 @@ suite('NewTabPageModulesModuleHeaderTest', () => {
     render(moduleHeader);
 
     // Assert.
-    assertEquals('foo', $$(moduleHeader, '#chip').textContent.trim());
-    assertEquals('bar', $$(moduleHeader, '#description').textContent.trim());
-    assertEquals('baz', $$(moduleHeader, '#dismissButton').textContent.trim());
-    assertEquals('abc', $$(moduleHeader, '#disableButton').textContent.trim());
+    assertEquals(
+        'foo', $$<HTMLElement>(moduleHeader, '#chip')!.textContent!.trim());
+    assertEquals(
+        'bar',
+        $$<HTMLElement>(moduleHeader, '#description')!.textContent!.trim());
+    assertEquals(
+        'baz',
+        $$<HTMLElement>(moduleHeader, '#dismissButton')!.textContent!.trim());
+    assertEquals(
+        'abc',
+        $$<HTMLElement>(moduleHeader, '#disableButton')!.textContent!.trim());
     assertEquals(
         'Why am I seeing this?',
-        $$(moduleHeader, '#infoButton').textContent.trim());
+        $$<HTMLElement>(moduleHeader, '#infoButton')!.textContent!.trim());
   });
 
   test('clicking buttons sends events', () => {
@@ -65,10 +66,10 @@ suite('NewTabPageModulesModuleHeaderTest', () => {
     render(moduleHeader);
 
     // Act.
-    $$(moduleHeader, '#infoButton').click();
-    $$(moduleHeader, '#dismissButton').click();
-    $$(moduleHeader, '#disableButton').click();
-    $$(moduleHeader, '#customizeButton').click();
+    $$<HTMLElement>(moduleHeader, '#infoButton')!.click();
+    $$<HTMLElement>(moduleHeader, '#dismissButton')!.click();
+    $$<HTMLElement>(moduleHeader, '#disableButton')!.click();
+    $$<HTMLElement>(moduleHeader, '#customizeButton')!.click();
 
     // Assert.
     assertTrue(infoButtonClick.received);
@@ -79,11 +80,11 @@ suite('NewTabPageModulesModuleHeaderTest', () => {
 
   test('action menu opens and closes', () => {
     // Act & Assert.
-    assertFalse($$(moduleHeader, '#actionMenu').open);
-    $$(moduleHeader, '#menuButton').click();
-    assertTrue($$(moduleHeader, '#actionMenu').open);
-    $$(moduleHeader, '#disableButton').click();
-    assertFalse($$(moduleHeader, '#actionMenu').open);
+    assertFalse(moduleHeader.$.actionMenu.open);
+    $$<HTMLElement>(moduleHeader, '#menuButton')!.click();
+    assertTrue(moduleHeader.$.actionMenu.open);
+    $$<HTMLElement>(moduleHeader, '#disableButton')!.click();
+    assertFalse(moduleHeader.$.actionMenu.open);
   });
 
   test('module icon appears', () => {
@@ -94,7 +95,7 @@ suite('NewTabPageModulesModuleHeaderTest', () => {
     // Assert.
     assertEquals(
         'chrome://new-tab-page/icons/module_logo.svg',
-        $$(moduleHeader, '.module-icon').src);
+        $$<HTMLImageElement>(moduleHeader, '.module-icon')!.src);
   });
 
   test('can hide menu button', () => {
