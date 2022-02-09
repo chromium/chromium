@@ -25,6 +25,40 @@
 namespace optimization_guide {
 namespace features {
 
+namespace {
+
+// Returns whether |locale| is a supported locale for |feature|.
+//
+// This matches |locale| with the "supported_locales" feature param value in
+// |feature|, which is expected to be a comma-separated list of locales. A
+// feature param containing "en,es-ES,zh-TW" restricts the feature to English
+// language users from any locale and Spanish language users from the Spain
+// es-ES locale. A feature param containing "" is unrestricted by locale and any
+// user may load it.
+bool IsSupportedLocaleForFeature(const std::string locale,
+                                 const base::Feature& feature) {
+  if (!base::FeatureList::IsEnabled(feature)) {
+    return false;
+  }
+
+  std::string value =
+      base::GetFieldTrialParamValueByFeature(feature, "supported_locales");
+  std::vector<std::string> supported_locales = base::SplitString(
+      value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  // An empty allowlist admits any locale.
+  if (supported_locales.empty()) {
+    return true;
+  }
+
+  // Otherwise, the locale or the
+  // primary language subtag must match an element of the allowlist.
+  std::string locale_language = l10n_util::GetLanguage(locale);
+  return base::Contains(supported_locales, locale) ||
+         base::Contains(supported_locales, locale_language);
+}
+
+}  // namespace
+
 // Enables the syncing of the Optimization Hints component, which provides
 // hints for what optimizations can be applied on a page load.
 const base::Feature kOptimizationHints {
@@ -77,6 +111,13 @@ const base::Feature kOptimizationGuideModelDownloading {
 // Enables page content to be annotated.
 const base::Feature kPageContentAnnotations{"PageContentAnnotations",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables the page entities model to be annotated on every page load.
+const base::Feature kPageEntitiesPageContentAnnotations{
+    "PageEntitiesPageContentAnnotations", base::FEATURE_DISABLED_BY_DEFAULT};
+// Enables the page visibility model to be annotated on every page load.
+const base::Feature kPageVisibilityPageContentAnnotations{
+    "PageVisibilityPageContentAnnotations", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables push notification of hints.
 const base::Feature kPushNotifications{"OptimizationGuidePushNotifications",
@@ -403,75 +444,16 @@ bool ShouldExtractRelatedSearches() {
   return kContentAnnotationsExtractRelatedSearchesParam.Get();
 }
 
-std::vector<optimization_guide::proto::OptimizationTarget>
-GetPageContentModelsToExecute(const std::string& locale) {
-  if (!IsPageContentAnnotationEnabled())
-    return {};
+bool ShouldExecutePageEntitiesModelOnPageContent(const std::string& locale) {
+  return base::FeatureList::IsEnabled(kPageEntitiesPageContentAnnotations) &&
+         IsSupportedLocaleForFeature(locale,
+                                     kPageEntitiesPageContentAnnotations);
+}
 
-  // Use an updated parameter name that supports locale filtering. That way,
-  // older clients that don't know how to interpret locale filtering ignore the
-  // new parameter name and keep looking for the old one.
-  std::string value = base::GetFieldTrialParamValueByFeature(
-      kPageContentAnnotations, "models_to_execute_v2");
-  if (value.empty()) {
-    // If the updated parameter is empty, try getting the older parameter name
-    // that doesn't support locale-specific models. That way, older parameter
-    // configurations still work. We don't do a union because that's confusing.
-    value = base::GetFieldTrialParamValueByFeature(kPageContentAnnotations,
-                                                   "models_to_execute");
-  }
-  if (value.empty()) {
-    // If neither the newer or older parameter is set, run the page topics model
-    // by default.
-    return {optimization_guide::proto::OPTIMIZATION_TARGET_PAGE_TOPICS};
-  }
-
-  // The parameter value delimits models by commas, and per-model locale
-  // restrictions by colon. For example:
-  //   FOO_MODEL:en:es-ES,BAR_MODEL,BAZ_MODEL:zh-TW
-  //  - FOO_MODEL is restricted to English language users from any locale, and
-  //    Spanish language users from the Spain es-ES locale.
-  //  - BAR_MODEL is unrestricted by locale, and any user may load it.
-  //  - BAZ_MODEL is restricted to zh-TW only, so zh-CN users won't load it.
-  //
-  // First split by comma to handle one model at a time.
-  std::vector<std::string> model_target_strings = base::SplitString(
-      value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  std::string locale_language = l10n_util::GetLanguage(locale);
-
-  optimization_guide::InsertionOrderedSet<
-      optimization_guide::proto::OptimizationTarget>
-      model_targets;
-  for (const auto& model_target_string : model_target_strings) {
-    // Split by colon to extract the model name and allowlist, early continuing
-    // for invalid values.
-    std::vector<std::string> model_name_and_allowed_locales =
-        base::SplitString(model_target_string, ":", base::TRIM_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY);
-    if (model_name_and_allowed_locales.empty())
-      continue;
-    std::string model_name = model_name_and_allowed_locales[0];
-    std::vector<std::string> allowlist;
-    for (size_t i = 1; i < model_name_and_allowed_locales.size(); ++i) {
-      allowlist.push_back(model_name_and_allowed_locales[i]);
-    }
-
-    optimization_guide::proto::OptimizationTarget model_target;
-    if (!optimization_guide::proto::OptimizationTarget_Parse(model_name,
-                                                             &model_target)) {
-      continue;
-    }
-
-    // An empty allowlist admits any locale. Otherwise, the locale or the
-    // primary language subtag must match an element of the allowlist.
-    if (allowlist.empty() || base::Contains(allowlist, locale) ||
-        base::Contains(allowlist, locale_language)) {
-      model_targets.insert(model_target);
-    }
-  }
-
-  return model_targets.vector();
+bool ShouldExecutePageVisibilityModelOnPageContent(const std::string& locale) {
+  return base::FeatureList::IsEnabled(kPageVisibilityPageContentAnnotations) &&
+         IsSupportedLocaleForFeature(locale,
+                                     kPageVisibilityPageContentAnnotations);
 }
 
 bool RemotePageEntitiesEnabled() {

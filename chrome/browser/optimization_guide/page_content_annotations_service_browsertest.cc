@@ -169,7 +169,8 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
          {features::kPageContentAnnotations,
           {
               {"write_to_history_service", "true"},
-          }}},
+          }},
+         {features::kPageVisibilityPageContentAnnotations, {}}},
         /*disabled_features=*/{});
   }
   ~PageContentAnnotationsServiceBrowserTest() override = default;
@@ -471,7 +472,8 @@ class PageContentAnnotationsServiceNoHistoryTest
          {features::kPageContentAnnotations,
           {
               {"write_to_history_service", "false"},
-          }}},
+          }},
+         {features::kPageVisibilityPageContentAnnotations, {}}},
         /*disabled_features=*/{});
   }
   ~PageContentAnnotationsServiceNoHistoryTest() override = default;
@@ -553,7 +555,8 @@ class PageContentAnnotationsServiceBatchVisitTest
               {"write_to_history_service", "false"},
               {"annotate_visit_batch_size", "2"},
               {"annotate_title_instead_of_page_content", "true"},
-          }}},
+          }},
+         {features::kPageVisibilityPageContentAnnotations, {}}},
         /*disabled_features=*/{});
   }
   ~PageContentAnnotationsServiceBatchVisitTest() override = default;
@@ -613,7 +616,8 @@ class PageContentAnnotationsServiceBatchVisitNoAnnotateTest
               {"write_to_history_service", "false"},
               {"annotate_visit_batch_size", "2"},
               {"annotate_title_instead_of_page_content", "true"},
-          }}},
+          }},
+         {features::kPageVisibilityPageContentAnnotations, {}}},
         /*disabled_features=*/{});
   }
   ~PageContentAnnotationsServiceBatchVisitNoAnnotateTest() override = default;
@@ -705,7 +709,8 @@ class PageContentAnnotationsServiceModelNotLoadedOnStartupTest
   PageContentAnnotationsServiceModelNotLoadedOnStartupTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kOptimizationHints,
-                              features::kPageContentAnnotations},
+                              features::kPageContentAnnotations,
+                              features::kPageVisibilityPageContentAnnotations},
         /*disabled_features=*/{});
     set_load_model_on_startup(false);
   }

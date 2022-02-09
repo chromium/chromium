@@ -957,16 +957,11 @@ const FeatureEntry::FeatureParam kPageContentAnnotationsContentParams[] = {
     {"annotate_title_instead_of_page_content", "false"},
     {"extract_related_searches", "true"},
     {"max_size_for_text_dump_in_bytes", "5120"},
-    {"models_to_execute",
-     "OPTIMIZATION_TARGET_PAGE_TOPICS,OPTIMIZATION_TARGET_PAGE_ENTITIES"},
     {"write_to_history_service", "true"},
 };
 const FeatureEntry::FeatureParam kPageContentAnnotationsTitleParams[] = {
     {"annotate_title_instead_of_page_content", "true"},
     {"extract_related_searches", "true"},
-    {"max_size_for_text_dump_in_bytes", "5120"},
-    {"models_to_execute",
-     "OPTIMIZATION_TARGET_PAGE_TOPICS,OPTIMIZATION_TARGET_PAGE_ENTITIES"},
     {"write_to_history_service", "true"},
 };
 const FeatureEntry::FeatureVariation kPageContentAnnotationsVariations[] = {
@@ -4875,6 +4870,20 @@ const FeatureEntry kFeatureEntries[] = {
          optimization_guide::features::kPageContentAnnotations,
          kPageContentAnnotationsVariations,
          "PageContentAnnotations")},
+
+    {"page-entities-page-content-annotations",
+     flag_descriptions::kPageEntitiesPageContentAnnotationsName,
+     flag_descriptions::kPageEntitiesPageContentAnnotationsDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         optimization_guide::features::kPageEntitiesPageContentAnnotations)},
+
+    {"page-visibility-page-content-annotations",
+     flag_descriptions::kPageVisibilityPageContentAnnotationsName,
+     flag_descriptions::kPageVisibilityPageContentAnnotationsDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         optimization_guide::features::kPageVisibilityPageContentAnnotations)},
 
     {"search-prefetch", flag_descriptions::kEnableSearchPrefetchName,
      flag_descriptions::kEnableSearchPrefetchDescription, kOsAll,

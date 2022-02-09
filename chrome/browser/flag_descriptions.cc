@@ -1948,6 +1948,11 @@ const char kPageContentAnnotationsName[] = "Page content annotations";
 const char kPageContentAnnotationsDescription[] =
     "Enables page content to be annotated on-device.";
 
+const char kPageEntitiesPageContentAnnotationsName[] =
+    "Page entities content annotations";
+const char kPageEntitiesPageContentAnnotationsDescription[] =
+    "Enables annotating the page entities model for each page load on-device.";
+
 const char kPageInfoAboutThisSiteName[] =
     "'About this site' section in page info";
 const char kPageInfoAboutThisSiteDescription[] =
@@ -1956,6 +1961,12 @@ const char kPageInfoAboutThisSiteDescription[] =
 const char kPageInfoHistoryDesktopName[] = "Page info history";
 const char kPageInfoHistoryDesktopDescription[] =
     "Enable a history section in the page info.";
+
+const char kPageVisibilityPageContentAnnotationsName[] =
+    "Page visibility content annotations";
+const char kPageVisibilityPageContentAnnotationsDescription[] =
+    "Enables annotating the page visibility model for each page load "
+    "on-device.";
 
 const char kParallelDownloadingName[] = "Parallel downloading";
 const char kParallelDownloadingDescription[] =

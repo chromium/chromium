@@ -54,17 +54,17 @@ PageContentAnnotationsModelManager::PageContentAnnotationsModelManager(
     const std::string& application_locale,
     OptimizationGuideModelProvider* optimization_guide_model_provider)
     : optimization_guide_model_provider_(optimization_guide_model_provider) {
-  for (auto opt_target :
-       features::GetPageContentModelsToExecute(application_locale)) {
-    if (opt_target == proto::OPTIMIZATION_TARGET_PAGE_TOPICS) {
-      SetUpPageTopicsModel(optimization_guide_model_provider);
-      ordered_models_to_execute_.push_back(opt_target);
-    } else if (opt_target == proto::OPTIMIZATION_TARGET_PAGE_ENTITIES) {
-      SetUpPageEntitiesModel(optimization_guide_model_provider);
-      ordered_models_to_execute_.push_back(opt_target);
-    } else {
-      // TODO(crbug/1228790): Add histogram for if this happens.
-    }
+  if (features::ShouldExecutePageVisibilityModelOnPageContent(
+          application_locale)) {
+    SetUpPageTopicsModel(optimization_guide_model_provider);
+    ordered_models_to_execute_.push_back(
+        proto::OPTIMIZATION_TARGET_PAGE_TOPICS);
+  }
+  if (features::ShouldExecutePageEntitiesModelOnPageContent(
+          application_locale)) {
+    SetUpPageEntitiesModel(optimization_guide_model_provider);
+    ordered_models_to_execute_.push_back(
+        proto::OPTIMIZATION_TARGET_PAGE_ENTITIES);
   }
 }
 

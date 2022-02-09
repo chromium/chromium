@@ -4552,7 +4552,12 @@
   {
     "name": "page-content-annotations",
     "owners": [ "sophiechang", "mcrouse", "chrome-intelligence-core@google.com"],
-    "expiry_milestone": 100
+    "expiry_milestone": 102
+  },
+  {
+    "name": "page-entities-page-content-annotations",
+    "owners": [ "sophiechang", "mcrouse", "chrome-intelligence-core@google.com"],
+    "expiry_milestone": 102
   },
   {
     "name": "page-info-about-this-site",
@@ -4581,6 +4586,11 @@
   {
     "name": "page-info-store-info",
     "owners": [ "chrome-shopping@google.com" ],
+    "expiry_milestone": 102
+  },
+  {
+    "name": "page-visibility-page-content-annotations",
+    "owners": [ "sophiechang", "mcrouse", "chrome-intelligence-core@google.com"],
     "expiry_milestone": 102
   },
   {

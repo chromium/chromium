@@ -1100,11 +1100,17 @@ extern const char kOverscrollHistoryNavigationDescription[];
 extern const char kPageContentAnnotationsName[];
 extern const char kPageContentAnnotationsDescription[];
 
+extern const char kPageEntitiesPageContentAnnotationsName[];
+extern const char kPageEntitiesPageContentAnnotationsDescription[];
+
 extern const char kPageInfoAboutThisSiteName[];
 extern const char kPageInfoAboutThisSiteDescription[];
 
 extern const char kPageInfoHistoryDesktopName[];
 extern const char kPageInfoHistoryDesktopDescription[];
+
+extern const char kPageVisibilityPageContentAnnotationsName[];
+extern const char kPageVisibilityPageContentAnnotationsDescription[];
 
 extern const char kParallelDownloadingName[];
 extern const char kParallelDownloadingDescription[];

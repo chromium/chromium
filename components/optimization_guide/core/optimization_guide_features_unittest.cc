@@ -68,73 +68,72 @@ TEST(OptimizationGuideFeaturesTest, ValidPageContentRAPPORMetrics) {
   EXPECT_EQ(.2, features::NoiseProbabilityForRAPPORMetrics());
 }
 
-TEST(OptimizationGuideFeaturesTest, GetPageContentModelsToExecute) {
+TEST(OptimizationGuideFeaturesTest,
+     ShouldExecutePageEntitiesModelOnPageContentDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
 
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPageContentAnnotations,
-      {{"models_to_execute_v2",
-        "OPTIMIZATION_TARGET_PAGE_TOPICS,OPTIMIZATION_TARGET_PAGE_ENTITIES"}});
+  scoped_feature_list.InitAndDisableFeature(
+      features::kPageEntitiesPageContentAnnotations);
 
-  auto models = features::GetPageContentModelsToExecute("en-US");
-  ASSERT_EQ(2U, models.size());
-  ASSERT_EQ(proto::OPTIMIZATION_TARGET_PAGE_TOPICS, models[0]);
-  ASSERT_EQ(proto::OPTIMIZATION_TARGET_PAGE_ENTITIES, models[1]);
+  EXPECT_FALSE(features::ShouldExecutePageEntitiesModelOnPageContent("en-US"));
 }
 
 TEST(OptimizationGuideFeaturesTest,
-     GetPageContentModelsToExecuteOldParameterName) {
+     ShouldExecutePageEntitiesModelOnPageContentEmptyAllowlist) {
   base::test::ScopedFeatureList scoped_feature_list;
 
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPageContentAnnotations,
-      {{"models_to_execute",
-        "OPTIMIZATION_TARGET_PAGE_TOPICS,OPTIMIZATION_TARGET_PAGE_ENTITIES"}});
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPageEntitiesPageContentAnnotations);
 
-  auto models = features::GetPageContentModelsToExecute("en-US");
-  ASSERT_EQ(2U, models.size());
-  ASSERT_EQ(proto::OPTIMIZATION_TARGET_PAGE_TOPICS, models[0]);
-  ASSERT_EQ(proto::OPTIMIZATION_TARGET_PAGE_ENTITIES, models[1]);
+  EXPECT_TRUE(features::ShouldExecutePageEntitiesModelOnPageContent("en-US"));
 }
 
-TEST(OptimizationGuideFeaturesTest, GetPageContentModelsToExecuteLocales) {
+TEST(OptimizationGuideFeaturesTest,
+     ShouldExecutePageEntitiesModelOnPageContentWithAllowlist) {
   base::test::ScopedFeatureList scoped_feature_list;
 
   scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kPageContentAnnotations,
-      {{
-          "models_to_execute_v2",
-          // This string is meant to test language filtering, locale filtering,
-          // and tolerance of whitespaces, as well as extra delimiters.
-          "OPTIMIZATION_TARGET_PAGE_TOPICS:en:es-ES , OPTIMIZATION_TARGET_PAGE_"
-          "ENTITIES,,OPTIMIZATION_TARGET_PAGE_VISIBILITY:zh-TW:",
-      }});
+      features::kPageEntitiesPageContentAnnotations,
+      {{"supported_locales", "en,zh-TW"}});
 
-  {
-    auto models = features::GetPageContentModelsToExecute("en-US");
-    ASSERT_EQ(2U, models.size());
-    ASSERT_EQ(proto::OPTIMIZATION_TARGET_PAGE_TOPICS, models[0]);
-    ASSERT_EQ(proto::OPTIMIZATION_TARGET_PAGE_ENTITIES, models[1]);
-  }
+  EXPECT_TRUE(features::ShouldExecutePageEntitiesModelOnPageContent("en-US"));
+  EXPECT_FALSE(features::ShouldExecutePageEntitiesModelOnPageContent(""));
+  EXPECT_FALSE(features::ShouldExecutePageEntitiesModelOnPageContent("zh-CN"));
+}
 
-  {
-    auto models = features::GetPageContentModelsToExecute("");
-    ASSERT_EQ(1U, models.size());
-    ASSERT_EQ(proto::OPTIMIZATION_TARGET_PAGE_ENTITIES, models[0]);
-  }
+TEST(OptimizationGuideFeaturesTest,
+     ShouldExecutePageVisibilityModelOnPageContentDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
 
-  {
-    auto models = features::GetPageContentModelsToExecute("zh-CN");
-    ASSERT_EQ(1U, models.size());
-    ASSERT_EQ(proto::OPTIMIZATION_TARGET_PAGE_ENTITIES, models[0]);
-  }
+  scoped_feature_list.InitAndDisableFeature(
+      features::kPageVisibilityPageContentAnnotations);
 
-  {
-    auto models = features::GetPageContentModelsToExecute("zh-TW");
-    ASSERT_EQ(2U, models.size());
-    ASSERT_EQ(proto::OPTIMIZATION_TARGET_PAGE_ENTITIES, models[0]);
-    ASSERT_EQ(proto::OPTIMIZATION_TARGET_PAGE_VISIBILITY, models[1]);
-  }
+  EXPECT_FALSE(
+      features::ShouldExecutePageVisibilityModelOnPageContent("en-US"));
+}
+
+TEST(OptimizationGuideFeaturesTest,
+     ShouldExecutePageVisibilityModelOnPageContentEmptyAllowlist) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPageVisibilityPageContentAnnotations);
+
+  EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en-US"));
+}
+
+TEST(OptimizationGuideFeaturesTest,
+     ShouldExecutePageVisibilityModelOnPageContentWithAllowlist) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kPageVisibilityPageContentAnnotations,
+      {{"supported_locales", "en,zh-TW"}});
+
+  EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en-US"));
+  EXPECT_FALSE(features::ShouldExecutePageVisibilityModelOnPageContent(""));
+  EXPECT_FALSE(
+      features::ShouldExecutePageVisibilityModelOnPageContent("zh-CN"));
 }
 
 }  // namespace

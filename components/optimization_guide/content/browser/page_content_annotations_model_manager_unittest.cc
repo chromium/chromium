@@ -118,9 +118,8 @@ class FakePageEntitiesModelExecutor : public PageEntitiesModelExecutor {
 class PageContentAnnotationsModelManagerTest : public testing::Test {
  public:
   PageContentAnnotationsModelManagerTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPageContentAnnotations,
-        {{"models_to_execute_v2", "OPTIMIZATION_TARGET_PAGE_TOPICS"}});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kPageVisibilityPageContentAnnotations);
   }
   ~PageContentAnnotationsModelManagerTest() override = default;
 
@@ -1035,9 +1034,9 @@ class PageContentAnnotationsModelManagerEntitiesOnlyTest
     : public PageContentAnnotationsModelManagerTest {
  public:
   PageContentAnnotationsModelManagerEntitiesOnlyTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPageContentAnnotations,
-        {{"models_to_execute_v2", "OPTIMIZATION_TARGET_PAGE_ENTITIES"}});
+    scoped_feature_list_.InitWithFeatures(
+        {features::kPageEntitiesPageContentAnnotations},
+        {features::kPageVisibilityPageContentAnnotations});
   }
 
  private:
@@ -1117,11 +1116,10 @@ class PageContentAnnotationsModelManagerMultipleModelsTest
     : public PageContentAnnotationsModelManagerTest {
  public:
   PageContentAnnotationsModelManagerMultipleModelsTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kPageContentAnnotations,
-        {{"models_to_execute_v2",
-          "OPTIMIZATION_TARGET_PAGE_ENTITIES,OPTIMIZATION_TARGET_PAGE_"
-          "TOPICS"}});
+    scoped_feature_list_.InitWithFeatures(
+        {features::kPageEntitiesPageContentAnnotations,
+         features::kPageVisibilityPageContentAnnotations},
+        {});
   }
 
  private:
