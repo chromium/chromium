@@ -187,7 +187,7 @@ AdAuctionServiceImpl::~AdAuctionServiceImpl() {
     // callbacks from the renderers are invoked. Uninvoked Mojo callbacks may
     // not be destroyed before the Mojo pipe is, and the parent DocumentService
     // class owns the pipe, so it may still be open at this point.
-    (*auctions_.begin())->FailAuction(AuctionRunner::AuctionResult::kAborted);
+    (*auctions_.begin())->FailAuction();
   }
 }
 

@@ -304,6 +304,20 @@ void AuctionRunner::Auction::TakeDebugReportUrls(
   }
 }
 
+std::vector<GURL> AuctionRunner::Auction::TakeReportUrls() {
+  DCHECK_EQ(*final_auction_result_, AuctionResult::kSuccess);
+  return std::move(report_urls_);
+}
+
+std::vector<std::string> AuctionRunner::Auction::TakeErrors() {
+  return std::move(errors_);
+}
+
+AuctionRunner::ScoredBid* AuctionRunner::Auction::top_bid() {
+  DCHECK_EQ(*final_auction_result_, AuctionResult::kSuccess);
+  return top_bid_.get();
+}
+
 void AuctionRunner::Auction::OnInterestGroupRead(
     std::vector<StorageInterestGroup> interest_groups) {
   DCHECK_GT(num_pending_buyers_, 0u);
@@ -782,6 +796,8 @@ void AuctionRunner::Auction::OnReportingPhaseComplete(
     const std::vector<std::string>& errors) {
   DCHECK(reporting_phase_callback_);
   DCHECK(!final_auction_result_);
+  // There should be at most two report URLs.
+  DCHECK_LE(report_urls_.size(), 2u);
 
   errors_.insert(errors_.end(), errors.begin(), errors.end());
   final_auction_result_ = auction_result;
@@ -821,6 +837,26 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
   return instance;
 }
 
+AuctionRunner::~AuctionRunner() = default;
+
+void AuctionRunner::FailAuction() {
+  DCHECK(callback_);
+
+  // Can have loss URLs if the auction failed because the seller rejected all
+  // bids.
+  std::vector<GURL> debug_win_report_urls;
+  std::vector<GURL> debug_loss_report_urls;
+  auction_.TakeDebugReportUrls(debug_win_report_urls, debug_loss_report_urls);
+  // Shouldn't have any win report URLs if nothing won the auction.
+  DCHECK(debug_win_report_urls.empty());
+
+  std::move(callback_).Run(
+      this, /*render_url=*/absl::nullopt,
+      /*ad_component_urls=*/absl::nullopt,
+      /*report_urls=*/{}, std::move(debug_loss_report_urls),
+      std::move(debug_win_report_urls), auction_.TakeErrors());
+}
+
 AuctionRunner::AuctionRunner(AuctionWorkletManager* auction_worklet_manager,
                              InterestGroupManagerImpl* interest_group_manager,
                              blink::mojom::AuctionAdConfigPtr auction_config,
@@ -832,8 +868,6 @@ AuctionRunner::AuctionRunner(AuctionWorkletManager* auction_worklet_manager,
                auction_worklet_manager,
                interest_group_manager,
                /*auction_start_time=*/base::Time::Now()) {}
-
-AuctionRunner::~AuctionRunner() = default;
 
 std::unique_ptr<AuctionRunner::Bid> AuctionRunner::TryToCreateBid(
     auction_worklet::mojom::BidderWorkletBidPtr mojo_bid,
@@ -902,27 +936,6 @@ std::unique_ptr<AuctionRunner::Bid> AuctionRunner::TryToCreateBid(
                                mojo_bid->bid_duration, matching_ad, &bid_state);
 }
 
-void AuctionRunner::FailAuction(AuctionResult result,
-                                const std::vector<std::string>& errors) {
-  DCHECK(callback_);
-
-  auction_.errors_.insert(auction_.errors_.end(), errors.begin(), errors.end());
-
-  // Can have loss URLs if the auction failed because the seller rejected all
-  // bids.
-  std::vector<GURL> debug_win_report_urls;
-  std::vector<GURL> debug_loss_report_urls;
-  auction_.TakeDebugReportUrls(debug_win_report_urls, debug_loss_report_urls);
-  // Shouldn't have any win report URLs if nothing won the auction.
-  DCHECK(debug_win_report_urls.empty());
-
-  std::move(callback_).Run(
-      this, /*render_url=*/absl::nullopt,
-      /*ad_component_urls=*/absl::nullopt,
-      /*report_urls=*/{}, std::move(debug_loss_report_urls),
-      std::move(debug_win_report_urls), std::move(auction_.errors_));
-}
-
 void AuctionRunner::StartAuction(
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback) {
   auction_.StartLoadInterestGroupsPhase(
@@ -933,7 +946,7 @@ void AuctionRunner::StartAuction(
 
 void AuctionRunner::OnLoadInterestGroupsComplete(bool success) {
   if (!success) {
-    FailAuction(*auction_.final_auction_result_);
+    FailAuction();
     return;
   }
 
@@ -950,7 +963,7 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
         /*name=*/interest_group.second);
   }
   if (!success) {
-    FailAuction(*auction_.final_auction_result_);
+    FailAuction();
     return;
   }
 
@@ -960,40 +973,38 @@ void AuctionRunner::OnBidsGeneratedAndScored(bool success) {
 
 void AuctionRunner::OnReportingPhaseComplete(bool success) {
   if (!success) {
-    FailAuction(*auction_.final_auction_result_);
+    FailAuction();
     return;
   }
 
   DCHECK(callback_);
-  DCHECK(auction_.top_bid_);
-  DCHECK_LE(auction_.report_urls_.size(), 2u);
 
   std::string ad_metadata;
-  if (auction_.top_bid_->bid->bid_ad->metadata) {
+  if (auction_.top_bid()->bid->bid_ad->metadata) {
     //`metadata` is already in JSON so no quotes are needed.
     ad_metadata = base::StringPrintf(
         R"({"render_url":"%s","metadata":%s})",
-        auction_.top_bid_->bid->render_url.spec().c_str(),
-        auction_.top_bid_->bid->bid_ad->metadata.value().c_str());
+        auction_.top_bid()->bid->render_url.spec().c_str(),
+        auction_.top_bid()->bid->bid_ad->metadata.value().c_str());
   } else {
     ad_metadata =
         base::StringPrintf(R"({"render_url":"%s"})",
-                           auction_.top_bid_->bid->render_url.spec().c_str());
+                           auction_.top_bid()->bid->render_url.spec().c_str());
   }
 
   interest_group_manager_->RecordInterestGroupWin(
-      auction_.top_bid_->bid->interest_group->owner,
-      auction_.top_bid_->bid->interest_group->name, ad_metadata);
+      auction_.top_bid()->bid->interest_group->owner,
+      auction_.top_bid()->bid->interest_group->name, ad_metadata);
 
   std::vector<GURL> debug_win_report_urls;
   std::vector<GURL> debug_loss_report_urls;
   auction_.TakeDebugReportUrls(debug_win_report_urls, debug_loss_report_urls);
 
   std::move(callback_).Run(
-      this, auction_.top_bid_->bid->render_url,
-      auction_.top_bid_->bid->ad_components, std::move(auction_.report_urls_),
+      this, auction_.top_bid()->bid->render_url,
+      auction_.top_bid()->bid->ad_components, auction_.TakeReportUrls(),
       std::move(debug_loss_report_urls), std::move(debug_win_report_urls),
-      std::move(auction_.errors_));
+      auction_.TakeErrors());
 }
 
 }  // namespace content

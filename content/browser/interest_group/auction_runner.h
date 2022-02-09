@@ -114,20 +114,6 @@ class CONTENT_EXPORT AuctionRunner {
   explicit AuctionRunner(const AuctionRunner&) = delete;
   AuctionRunner& operator=(const AuctionRunner&) = delete;
 
-  // Fails the auction, invoking `callback_` and prevents any future calls into
-  // `this` by closing mojo pipes and disposing of weak pointers. The owner must
-  // be able to safely delete `this` when the callback is invoked. May only be
-  // invoked if the auction has not yet completed.
-  //
-  // `result` is used for logging purposes only.
-  //
-  //`errors` is appended to `errors_`.
-  //
-  // Public so that the owner can fail the auction on teardown, to invoke any
-  // pending Mojo callbacks.
-  void FailAuction(AuctionResult result,
-                   const std::vector<std::string>& errors = {});
-
   // Runs an entire FLEDGE auction.
   //
   // Arguments:
@@ -152,6 +138,12 @@ class CONTENT_EXPORT AuctionRunner {
 
   ~AuctionRunner();
 
+  // Fails the auction, invoking `callback_` and prevents any future calls into
+  // `this` by closing mojo pipes and disposing of weak pointers. The owner must
+  // be able to safely delete `this` when the callback is invoked. May only be
+  // invoked if the auction has not yet completed.
+  void FailAuction();
+
  private:
   // A set of interest groups, identified by owner and name. Used to log which
   // interest groups bid in an auction. A sets is used to avoid double-counting
@@ -159,6 +151,7 @@ class CONTENT_EXPORT AuctionRunner {
   // auction.
   using InterestGroupSet = std::set<std::pair<url::Origin, std::string>>;
 
+  // TODO(mmenke): Move BidState, Bid, and ScoredBid into Auction.
   struct BidState {
     BidState();
     BidState(BidState&&);
@@ -320,10 +313,21 @@ class CONTENT_EXPORT AuctionRunner {
     void TakeDebugReportUrls(std::vector<GURL>& debug_win_report_urls,
                              std::vector<GURL>& debug_loss_report_urls);
 
-   private:
-    // TODO(mmenke): Remove this once Auction fully manages its own state.
-    friend class AuctionRunner;
+    // Retrieves any reporting URLs returned by ReportWin() and ReportResult()
+    // methods. May only be called after an auction has completed successfully.
+    // May only be called once, since it takes ownership of stored reporting
+    // URLs.
+    std::vector<GURL> TakeReportUrls();
 
+    // Retrieves any errors from the auction. May only be called once, since it
+    // takes ownership of stored errors.
+    std::vector<std::string> TakeErrors();
+
+    // returns the top big of the auction. May only be invoked after an auction
+    // has succeeded.
+    ScoredBid* top_bid();
+
+   private:
     // ---------------------------------
     // Load interest group phase methods
     // ---------------------------------
