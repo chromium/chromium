@@ -2149,10 +2149,11 @@ cr-menu.chrome-menu hr {
   font-size: 0;
 }
 
-/* Message panel for unmounted Drive */
+/* Panel shown when USB device with no readable partitions
+   is plugged in. */
 #format-panel {
   bottom: 0;
-  color: #333;
+  color: var(--cros-text-color-primary);
   display: none;
   left: 0;
   padding-inline-start: 50px;
