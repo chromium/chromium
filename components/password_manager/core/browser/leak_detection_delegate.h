@@ -43,11 +43,10 @@ class LeakDetectionDelegate : public LeakDetectionDelegateInterface {
   LeakDetectionCheck* leak_check() const { return leak_check_.get(); }
 #endif  // defined(UNIT_TEST)
 
-  // Starts a leak check for `pending_credentials`, i.e. the credentials that
-  // Chrome might offer to save/update. Note that
-  // `submitted_form_was_likely_signup_form` is derived from a different
-  // PasswordForm instance!
-  void StartLeakCheck(const PasswordForm& pending_credentials,
+  // Starts a leak check for `credentials`. Note that
+  // `submitted_form_was_likely_signup_form` is typically derived from a
+  // different PasswordForm instance!
+  void StartLeakCheck(const PasswordForm& credentials,
                       bool submitted_form_was_likely_signup_form);
 
  private:

@@ -48,7 +48,7 @@ LeakDetectionDelegate::LeakDetectionDelegate(PasswordManagerClient* client)
 LeakDetectionDelegate::~LeakDetectionDelegate() = default;
 
 void LeakDetectionDelegate::StartLeakCheck(
-    const PasswordForm& pending_credentials,
+    const PasswordForm& credentials,
     bool submitted_form_was_likely_signup_form) {
   if (client_->IsIncognito())
     return;
@@ -56,10 +56,10 @@ void LeakDetectionDelegate::StartLeakCheck(
   if (!CanStartLeakCheck(*client_->GetPrefs(), client_))
     return;
 
-  if (pending_credentials.username_value.empty())
+  if (credentials.username_value.empty())
     return;
 
-  DCHECK(!pending_credentials.password_value.empty());
+  DCHECK(!credentials.password_value.empty());
 
   is_likely_signup_form_ = submitted_form_was_likely_signup_form;
 
@@ -70,9 +70,8 @@ void LeakDetectionDelegate::StartLeakCheck(
   helper_.reset();
   if (leak_check_) {
     is_leaked_timer_ = std::make_unique<base::ElapsedTimer>();
-    leak_check_->Start(pending_credentials.url,
-                       pending_credentials.username_value,
-                       pending_credentials.password_value);
+    leak_check_->Start(credentials.url, credentials.username_value,
+                       credentials.password_value);
   }
 }
 
