@@ -90,6 +90,7 @@ source_set("chrome_public_test_apk_filters") {
   data = [
     "//testing/buildbot/filters/android.pie_arm64_rel.chrome_public_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_11.chrome_public_test_apk.filter",
+    "//testing/buildbot/filters/android.emulator_12.chrome_public_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_m.chrome_public_test_apk.filter",
     "//testing/buildbot/filters/android.emulator_p.chrome_public_test_apk.filter",
   ]

@@ -942,6 +942,7 @@
       },
       'android-12-x64-fyi-rel': {
         'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.chrome_public_test_apk.filter',
           '--timeout-scale=2.0',
         ],
       },
