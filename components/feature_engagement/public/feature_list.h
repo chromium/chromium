@@ -337,6 +337,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHVideoTutorialTryNowFeature),
         VARIATION_ENTRY(kIPHExploreSitesTileFeature),
         VARIATION_ENTRY(kIPHFeedHeaderMenuFeature),
+        VARIATION_ENTRY(kIPHFeedSwipeRefresh),
         VARIATION_ENTRY(kIPHShareScreenshotFeature),
         VARIATION_ENTRY(kIPHSharingHubLinkToggleFeature),
         VARIATION_ENTRY(kIPHWebFeedFollowFeature),
