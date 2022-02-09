@@ -7,6 +7,7 @@
     <!-- Surface color elevations -->
     <dimen name="dialog_elevation">@dimen/default_elevation_3</dimen>
     <dimen name="sheet_background_elev">@dimen/default_elevation_4</dimen>
+    <dimen name="toolbar_text_box_elevation">@dimen/default_elevation_3</dimen>
 
     <!-- Chips default measures -->
     <dimen name="chip_state_layer_hover_alpha">@dimen/chip_state_layer_hover_alpha_dark</dimen>
