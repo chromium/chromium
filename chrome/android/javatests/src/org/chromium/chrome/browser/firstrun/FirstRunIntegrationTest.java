@@ -391,7 +391,7 @@ public class FirstRunIntegrationTest {
         // startup flow where they were interrupted.
         ScopedObserverData scopedObserverData = getObserverData(firstRunActivity);
         Assert.assertEquals(0, scopedObserverData.abortFirstRunExperienceCallback.getCallCount());
-        mLastActivity.onBackPressed();
+        TestThreadUtils.runOnUiThreadBlocking(mLastActivity::onBackPressed);
         scopedObserverData.abortFirstRunExperienceCallback.waitForCallback(
                 "FirstRunActivity didn't abort", 0);
 
