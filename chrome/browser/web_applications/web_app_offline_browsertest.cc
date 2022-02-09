@@ -9,6 +9,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -37,8 +38,8 @@ class WebAppOfflinePageTest : public InProcessBrowserTest,
 
   // Start a web app without a service worker and disconnect.
   void StartWebAppAndDisconnect(content::WebContents* web_contents,
-                                std::string html) {
-    GURL target_url(embedded_test_server()->GetURL(html));
+                                std::string relative_url) {
+    GURL target_url(embedded_test_server()->GetURL(relative_url));
     web_app::NavigateToURLAndWait(browser(), target_url);
     web_app::test::InstallPwaForCurrentUrl(browser());
 
@@ -53,8 +54,8 @@ class WebAppOfflinePageTest : public InProcessBrowserTest,
 
   // Start a PWA with a service worker and disconnect.
   void StartPwaAndDisconnect(content::WebContents* web_contents,
-                             std::string html) {
-    GURL target_url(embedded_test_server()->GetURL(html));
+                             std::string relative_url) {
+    GURL target_url(embedded_test_server()->GetURL(relative_url));
     web_app::ServiceWorkerRegistrationWaiter registration_waiter(
         browser()->profile(), target_url);
     web_app::NavigateToURLAndWait(browser(), target_url);
@@ -70,8 +71,17 @@ class WebAppOfflinePageTest : public InProcessBrowserTest,
     observer.Wait();
   }
 
+  void ExpectUniqueSample(net::Error error, int samples) {
+    // Expect that the histogram has been updated.
+    content::FetchHistogramsFromChildProcesses();
+    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+    histogram_tester_.ExpectUniqueSample(
+        "Net.ErrorPageCounts.WebAppAlternativeErrorPage", -error, samples);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histogram_tester_;
 };
 
 // When a web app with a manifest and no service worker is offline it should
@@ -82,15 +92,18 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflinePageIsDisplayed) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+  ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
   StartWebAppAndDisconnect(web_contents, "/banners/no-sw-with-colors.html");
 
   if (GetParam() == FlagParam::kWithFlag) {
+    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 1);
     // Expect that the default offline page is showing.
     EXPECT_TRUE(
         EvalJs(web_contents,
                "document.getElementById('default-web-app-msg') !== null")
             .ExtractBool());
   } else {
+    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
     // Expect that the default offline page is not showing.
     EXPECT_TRUE(
         EvalJs(web_contents,
@@ -106,15 +119,18 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest,
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+  ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
   StartPwaAndDisconnect(web_contents, "/banners/background-color.html");
 
   if (GetParam() == FlagParam::kWithFlag) {
+    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 1);
     // Expect that the default offline page is showing.
     EXPECT_TRUE(
         EvalJs(web_contents,
                "document.getElementById('default-web-app-msg') !== null")
             .ExtractBool());
   } else {
+    ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
     // Expect that the default offline page is not showing.
     EXPECT_TRUE(
         EvalJs(web_contents,
@@ -129,8 +145,10 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineWithServiceWorker) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+  ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
   StartPwaAndDisconnect(web_contents, "/banners/theme-color.html");
 
+  ExpectUniqueSample(net::ERR_INTERNET_DISCONNECTED, 0);
   // Expect that the default offline page is not showing.
   EXPECT_TRUE(EvalJs(web_contents,
                      "document.getElementById('default-web-app-msg') === null")

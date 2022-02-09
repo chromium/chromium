@@ -1478,6 +1478,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.ErrorPageCounts.WebAppAlternativeErrorPage"
+    enum="NetErrorCodes" expires_after="2022-08-07">
+  <owner>ericwilligers@chromium.org</owner>
+  <owner>alexbn@chromium.org</owner>
+  <summary>
+    Counts the number of times web apps receive `ERR_INTERNET_DISCONNECTED` and
+    the alternative error page (rather than the dino) is shown.
+    (crbug.com/1280518).
+  </summary>
+</histogram>
+
 <histogram name="Net.ExpectCT.HeaderPresentOnResponse" units="BooleanPresent"
     expires_after="2022-07-03">
   <owner>estark@chromium.org</owner>

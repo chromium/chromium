@@ -15,6 +15,7 @@
 #include "base/json/json_writer.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -260,7 +261,8 @@ LocalizedError::PageState NetErrorHelper::GenerateLocalizedErrorPage(
   if (alternative_error_page_info) {
     DCHECK(
         base::FeatureList::IsEnabled(features::kDesktopPWAsDefaultOfflinePage));
-    // TODO(crbug.com/1290204): Add histogram for default web app offline page.
+    base::UmaHistogramSparse("Net.ErrorPageCounts.WebAppAlternativeErrorPage",
+                             -error.reason());
     resource_id = alternative_error_page_info->resource_id;
     page_state = LocalizedError::GetPageStateForOverriddenErrorPage(
         std::move(alternative_error_page_info->alternative_error_page_params),
