@@ -565,7 +565,7 @@
 <translation id="1572266655485775982">வைஃபையை இயக்கு</translation>
 <translation id="1572876035008611720">மின்னஞ்சலை உள்ளிடவும்</translation>
 <translation id="1575741822946219011">மொழிகளும் உள்ளீட்டு முறைகளும்</translation>
-<translation id="1576594961618857597">இயல்பு வெள்ளைநிற அவதார்</translation>
+<translation id="1576594961618857597">இயல்பு வெண்ணிறத் தோற்றப்படம்</translation>
 <translation id="1578558981922970608">உடனே மூடு</translation>
 <translation id="1578784163189013834">ஸ்கிரீன் சேவர் பின்புலத்தைத் தேர்வுசெய்தல்</translation>
 <translation id="1580772913177567930">உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும்</translation>
@@ -938,7 +938,7 @@
 <translation id="1909880997794698664">இந்தச் சாதனத்தை kiosk பயன்முறையில் நிரந்தரமாக வைக்க விரும்புகிறீர்களா?</translation>
 <translation id="1915073950770830761">கேனரி</translation>
 <translation id="1915307458270490472">மூடுக</translation>
-<translation id="1916502483199172559">இயல்பு சிவப்புநிற அவதார்</translation>
+<translation id="1916502483199172559">இயல்பு சிவப்புநிறத் தோற்றப்படம்</translation>
 <translation id="1918141783557917887">&amp;சிறியது</translation>
 <translation id="1920390473494685033">தொடர்புகள்</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
@@ -2172,7 +2172,7 @@
 <translation id="3132996321662585180">தினமும் புதுப்பி</translation>
 <translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> பரிசோதனைக்கான பரிசோதனை நிலையைத் தேர்ந்தெடுக்கவும். பரிசோதனை விளக்கம்: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="313963229645891001">பதிவிறக்குகிறது, <ph name="STATUS" /></translation>
-<translation id="3139925690611372679">இயல்பு மஞ்சள்நிற அவதார்</translation>
+<translation id="3139925690611372679">இயல்பு மஞ்சள்நிறத் தோற்றப்படம்</translation>
 <translation id="3141318088920353606">கேட்கிறது...</translation>
 <translation id="3141917231319778873">குறிப்பிட்ட கோரிக்கை ஆதரிக்கப்படாத சாதனம்: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="3142562627629111859">புதிய குழு</translation>
@@ -2240,7 +2240,7 @@
 <translation id="3222066309010235055">முன்செயலாக்கம்: <ph name="PRERENDER_CONTENTS_NAME" /></translation>
 <translation id="3222779980972075989"><ph name="USB_VM_NAME" /> உடன் இணைக்கவும்</translation>
 <translation id="3223531857777746191">மீட்டமைப்பதற்கான பட்டன்</translation>
-<translation id="3225084153129302039">இயல்பு பர்பிள்நிற அவதார்</translation>
+<translation id="3225084153129302039">இயல்பு பர்பிள்நிறத் தோற்றப்படம்</translation>
 <translation id="3225319735946384299">குறியீடு கையொப்பமிடல்</translation>
 <translation id="3226487301970807183">இடப்புறமாகச் சீரமைக்கப்பட்ட பக்கவாட்டுப் பேனலுக்கு மாறும்</translation>
 <translation id="3227137524299004712">மைக்ரோஃபோன்</translation>
@@ -2393,7 +2393,7 @@
 <translation id="3399432415385675819">அறிவிப்புகள் முடக்கப்படும்</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> ஹெர்ட்ஸ்) - பிணைக்கப்பட்டுள்ளது</translation>
 <translation id="3402059702184703067">{COUNT,plural, =1{இந்தச் சாதனத்தில் {COUNT} கடவுச்சொல் சேமிக்கப்பட்டுள்ளது}other{இந்தச் சாதனத்தில் {COUNT} கடவுச்சொற்கள் சேமிக்கப்பட்டுள்ளன}}</translation>
-<translation id="3402255108239926910">தோற்றத்தைத் தேர்வுசெய்யுங்கள்</translation>
+<translation id="3402255108239926910">தோற்றப்படத்தைத் தேர்வுசெய்யுங்கள்</translation>
 <translation id="3402585168444815892">டெமோ பயன்முறையில் பதிவுசெய்கிறது</translation>
 <translation id="340282674066624"><ph name="DOWNLOAD_RECEIVED" />, <ph name="TIME_LEFT" /></translation>
 <translation id="3404065873681873169">இந்தத் தளத்திற்குக் கடவுச்சொற்கள் எதுவும் சேமிக்கப்படவில்லை</translation>
@@ -3515,7 +3515,7 @@
 <translation id="4541706525461326392">நெட்வொர்க் சுயவிவரத்தை அகற்றுகிறது. இதற்குச் சில நிமிடங்கள் ஆகலாம்.</translation>
 <translation id="4542520061254486227">உங்கள் தரவை <ph name="WEBSITE_1" /> மற்றும் <ph name="WEBSITE_2" /> இல் படிக்கவும்</translation>
 <translation id="4543778593405494224">சான்றிதழ் நிர்வாகி</translation>
-<translation id="4544174279960331769">இயல்பு நீலநிற அவதார்</translation>
+<translation id="4544174279960331769">இயல்பு நீலநிறத் தோற்றப்படம்</translation>
 <translation id="4545028762441890696">மீண்டும் இயக்க, புதிய அனுமதிகளை ஏற்கவும்:</translation>
 <translation id="4545759655004063573">போதிய அனுமதிகள் இல்லாத காரணத்தால் சேமிக்க முடியவில்லை. மற்றொரு இடத்தில் சேமிக்கவும்.</translation>
 <translation id="4546308221697447294">Google Chromeஐப் பயன்படுத்தி, விரைவாக உலாவவும்</translation>
@@ -3902,7 +3902,7 @@
 <translation id="4946459324029651239">நிலையான பாதுகாப்பைப் பெறுவீர்கள்</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{ஒரு ஃபைலை}other{# ஃபைல்களை}}</translation>
 <translation id="495170559598752135">செயல்கள்</translation>
-<translation id="4953808748584563296">இயல்பு ஆரஞ்சுநிற அவதார்</translation>
+<translation id="4953808748584563296">இயல்பு ஆரஞ்சுநிறத் தோற்றப்படம்</translation>
 <translation id="4955710816792587366">பின்னைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="4959262764292427323">கடவுச்சொற்களை வேறு சாதனங்களிலும் பயன்படுத்துவதற்காக, அவை உங்கள் Google கணக்கில் சேமிக்கப்பட்டுள்ளன</translation>
 <translation id="496027654926814138">தீங்கிழைப்பவர்கள் உங்கள் தனிப்பட்ட தகவல்களைத் திருட <ph name="FILE_NAME" /> அனுமதிக்கக்கூடும்.</translation>
@@ -4145,7 +4145,7 @@
 <translation id="5225324770654022472">ஆப்ஸின் ஷார்ட்கட்டைக் காட்டு</translation>
 <translation id="52254442782792731">தற்போதைய தெரிவுநிலை அமைப்பு இன்னும் அமைக்கப்படவில்லை</translation>
 <translation id="5225463052809312700">கேமராவை இயக்கு</translation>
-<translation id="5227679487546032910">இயல்பு பசும்நீலநிற அவதார்</translation>
+<translation id="5227679487546032910">இயல்பு பசும்நீலநிறத் தோற்றப்படம்</translation>
 <translation id="5227902338748591677">டார்க் தீமினைத் திட்டமிடுதல்</translation>
 <translation id="5228579091201413441">ஒத்திசைவை இயக்கு</translation>
 <translation id="5230516054153933099">விண்டோ</translation>
@@ -4703,7 +4703,7 @@
 <translation id="5816434091619127343">கோரிய பிரிண்டர் மாற்றங்கள், அதைப் பயன்படுத்த முடியாததாக மாற்றும்.</translation>
 <translation id="5817069030404929329">இந்தச் சாதனத்திலிருந்து உங்கள் Google கணக்கிற்குக் கடவுச்சொற்களை நகர்த்தவா?</translation>
 <translation id="5817918615728894473">இணை</translation>
-<translation id="581840385858998009">வால்பேப்பர், தோற்றம், ஸ்கிரீன் சேவர், மேலும் பலவற்றைப் பிரத்தியேகமாக்கலாம்</translation>
+<translation id="581840385858998009">வால்பேப்பர், தோற்றப்படம், ஸ்கிரீன் சேவர், மேலும் பலவற்றைப் பிரத்தியேகமாக்கலாம்</translation>
 <translation id="5821565227679781414">ஷார்ட்கட்டை உருவாக்கு</translation>
 <translation id="5822095611691580107">இடதுபக்க பட் பேட்டரி நிலை <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="5825412242012995131">ஆன் (பரிந்துரைக்கப்படுகிறது)</translation>
@@ -6372,7 +6372,7 @@
 <translation id="756503097602602175">உள்நுழைந்துள்ள Google கணக்குகளை <ph name="LINK_BEGIN" />அமைப்புகளில்<ph name="LINK_END" /> நிர்வகிக்கலாம். இணையதளங்களுக்கும் ஆப்ஸுக்கும் நீங்கள் வழங்கிய அனுமதிகள் அனைத்துக் கணக்குகளுக்கும் பொருந்தக்கூடும். உங்கள் கணக்குத் தகவலைத் தளங்களோ ஆப்ஸோ அணுக வேண்டாம் என நீங்கள் விரும்பினால் <ph name="DEVICE_TYPE" /> சாதனத்தில் நீங்கள் கெஸ்டாக உள்நுழையலாம் அல்லது இணையத்தில் <ph name="LINK_2_BEGIN" />மறைநிலைச் சாளரத்தில்<ph name="LINK_2_END" /> உலாவலாம்.</translation>
 <translation id="7566118625369982896">Play ஆப்ஸ் இணைப்புகளை நிர்வகி</translation>
 <translation id="756809126120519699">Chrome தரவு அழிக்கப்பட்டது</translation>
-<translation id="756876171895853918">தோற்றத்தைப் பிரத்தியேகமாக்கும்</translation>
+<translation id="756876171895853918">தோற்றப்படத்தைப் பிரத்தியேகமாக்கும்</translation>
 <translation id="7568790562536448087">புதுப்பிக்கிறது</translation>
 <translation id="7569983096843329377">கருப்பு</translation>
 <translation id="7571643774869182231">புதுப்பிப்பதற்குப் போதுமான சேமிப்பிடம் இல்லை</translation>
@@ -6905,7 +6905,7 @@
 <translation id="8061970399284390013">எழுத்துப்பிழை &amp; இலக்கணச் சரிபார்ப்பு</translation>
 <translation id="8061991877177392872">நீங்கள் ஏற்கெனவே வேறொரு சாதனத்தில் உங்கள் Assistantடில் Voice Matchசை அமைத்துள்ளதாகத் தெரிகிறது. இந்தச் சாதனத்தில் குரல் மாதிரியை உருவாக்குவதற்காக அந்த முந்தைய பதிவுகள் பயன்படுத்தப்பட்டன.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{தாளின் ஒரு பக்கம்}other{தாளின் {COUNT} பக்கங்கள்}}</translation>
-<translation id="8063235345342641131">இயல்பு பச்சைநிற அவதார்</translation>
+<translation id="8063235345342641131">இயல்பு பச்சைநிறத் தோற்றப்படம்</translation>
 <translation id="8063535366119089408">ஃபைலைக் காட்டு</translation>
 <translation id="8064279191081105977">குழு <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">இணைப்பு உரையாடல்</translation>
@@ -6951,7 +6951,7 @@
 <translation id="8107015733319732394">உங்கள் <ph name="DEVICE_TYPE" /> இல் Google Play Storeரை நிறுவுகிறது. இதற்குச் சில நிமிடங்கள் ஆகலாம்.</translation>
 <translation id="810728361871746125">திரையின் தெளிவுத்திறன்</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{மூன்றாம் தரப்பின் குக்கீகள் எதுவும் இல்லை}=1{1 மூன்றாம் தரப்பின் குக்கீ தடுக்கப்பட்டுள்ளது}other{# மூன்றாம் தரப்பின் குக்கீகள் தடுக்கப்பட்டுள்ளன}}</translation>
-<translation id="8109109153262930486">இயல்பு அவதார்</translation>
+<translation id="8109109153262930486">இயல்புத் தோற்றப்படம்</translation>
 <translation id="8110489095782891123">தொடர்புப் பட்டியலைப் பதிவிறக்குகிறது...</translation>
 <translation id="8113476325385351118">MIDI சாதனங்களுக்கான முழுக் கட்டுப்பாட்டையும் இந்தத் தளம் பெறுவதைத் தொடர்ந்து தடு</translation>
 <translation id="8114199541033039755">டேப்லெட் பயன்முறையில் பட்டன்களைப் பயன்படுத்தி முகப்பிற்குச் செல்லலாம், பின்செல்லலாம், ஆப்ஸுக்கு இடையே மாறலாம். ChromeVox அல்லது தானியங்கு கிளிக்குகள் இயக்கத்தில் இருக்கும்போது இயக்கப்படும்.</translation>

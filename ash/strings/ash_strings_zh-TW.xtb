@@ -368,7 +368,7 @@
 <translation id="3477079411857374384">Ctrl + Shift + 空格鍵</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">自動隱藏檔案櫃</translation>
-<translation id="3509391053705095206">找不到你的手機。請確認手機已開啟藍牙功能。</translation>
+<translation id="3509391053705095206">找不到你的手機。請確認手機的藍牙功能已開啟。</translation>
 <translation id="3510164367642747937">醒目顯示滑鼠游標</translation>
 <translation id="3513798432020909783">這個帳戶是由 <ph name="MANAGER_EMAIL" /> 管理</translation>
 <translation id="3518604429872942239">狀態匣，時間 <ph name="TIME" />，
@@ -659,7 +659,7 @@
 <translation id="5322611492012084517">找不到你的手機</translation>
 <translation id="5327248766486351172">名稱</translation>
 <translation id="5329548388331921293">連線中...</translation>
-<translation id="5330201449517439522">點選畫面即可繼續使用</translation>
+<translation id="5330201449517439522">按一下或輕觸即可繼續使用</translation>
 <translation id="5331975486040154427">USB-C 裝置 (左後方連接埠)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (右側)</translation>
 <translation id="5352250171825660495">深色主題已開啟</translation>
