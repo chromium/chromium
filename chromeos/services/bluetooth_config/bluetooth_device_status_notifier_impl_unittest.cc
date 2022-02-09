@@ -9,6 +9,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/fake_bluetooth_device_status_observer.h"
 #include "chromeos/services/bluetooth_config/fake_device_cache.h"
@@ -42,7 +43,8 @@ mojom::PairedBluetoothDevicePropertiesPtr GenerateStubPairedDeviceProperties(
 
 class BluetoothDeviceStatusNotifierImplTest : public testing::Test {
  protected:
-  BluetoothDeviceStatusNotifierImplTest() = default;
+  BluetoothDeviceStatusNotifierImplTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   BluetoothDeviceStatusNotifierImplTest(
       const BluetoothDeviceStatusNotifierImplTest&) = delete;
   BluetoothDeviceStatusNotifierImplTest& operator=(
@@ -51,9 +53,18 @@ class BluetoothDeviceStatusNotifierImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    PowerManagerClient::InitializeFake();
+
     device_status_notifier_ =
         std::make_unique<BluetoothDeviceStatusNotifierImpl>(
-            &fake_device_cache_);
+            &fake_device_cache_, FakePowerManagerClient::Get());
+  }
+
+  void TearDown() override {
+    // Destroy |device_status_notifier_| before the fake power manager client in
+    // order to remove observers correctly.
+    device_status_notifier_.reset();
+    PowerManagerClient::Shutdown();
   }
 
   void SetPairedDevices(
@@ -73,6 +84,15 @@ class BluetoothDeviceStatusNotifierImplTest : public testing::Test {
         observer->GeneratePendingRemote());
     device_status_notifier_->FlushForTesting();
     return observer;
+  }
+
+  int64_t GetSuspendCooldownTimeoutSeconds() {
+    return BluetoothDeviceStatusNotifierImpl::kSuspendCooldownTimeout
+        .InSeconds();
+  }
+
+  void FastForwardBy(int64_t seconds) {
+    task_environment_.FastForwardBy(base::Seconds(seconds));
   }
 
  private:
@@ -226,6 +246,211 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest, DisconnectToStopObserving) {
   std::vector<mojom::PairedBluetoothDevicePropertiesPtr> paired_devices;
   paired_devices.push_back(GenerateStubPairedDeviceProperties("id1"));
   EXPECT_EQ(0u, observer->paired_device_properties_list().size());
+}
+
+TEST_F(BluetoothDeviceStatusNotifierImplTest,
+       DeviceDisconnectsConnectsDuringSuspend) {
+  std::unique_ptr<FakeBluetoothDeviceStatusObserver> observer = Observe();
+  const std::string device_id = "id1";
+
+  // Add a connected device
+  std::vector<mojom::PairedBluetoothDevicePropertiesPtr> devices;
+  devices.push_back(GenerateStubPairedDeviceProperties(device_id));
+  SetPairedDevices(devices);
+
+  ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
+  ASSERT_EQ(0u, observer->connected_device_properties_list().size());
+  ASSERT_EQ(1u, observer->paired_device_properties_list().size());
+
+  // Simulate device being suspended from lid closing.
+  FakePowerManagerClient::Get()->SendSuspendImminent(
+      power_manager::SuspendImminent::LID_CLOSED);
+
+  // Update device from connected to disconnected. Observers should not be
+  // notified.
+  devices.pop_back();
+  devices.push_back(GenerateStubPairedDeviceProperties(
+      device_id,
+      /*connection_state=*/mojom::DeviceConnectionState::kNotConnected));
+  SetPairedDevices(devices);
+
+  ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
+  ASSERT_EQ(0u, observer->connected_device_properties_list().size());
+  ASSERT_EQ(1u, observer->paired_device_properties_list().size());
+
+  // Update device from disconnected to connected. Observers should be notified.
+  devices.pop_back();
+  devices.push_back(GenerateStubPairedDeviceProperties(
+      device_id,
+      /*connection_state=*/mojom::DeviceConnectionState::kConnected));
+  SetPairedDevices(devices);
+
+  ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
+  ASSERT_EQ(1u, observer->connected_device_properties_list().size());
+  ASSERT_EQ(
+      device_id,
+      observer->connected_device_properties_list()[0]->device_properties->id);
+  ASSERT_EQ(1u, observer->paired_device_properties_list().size());
+}
+
+TEST_F(BluetoothDeviceStatusNotifierImplTest,
+       DeviceDisconnectsConnectsAfterSuspendDuringCooldown) {
+  std::unique_ptr<FakeBluetoothDeviceStatusObserver> observer = Observe();
+  const std::string device_id = "id1";
+
+  // Add a connected device
+  std::vector<mojom::PairedBluetoothDevicePropertiesPtr> devices;
+  devices.push_back(GenerateStubPairedDeviceProperties(device_id));
+  SetPairedDevices(devices);
+
+  ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
+  ASSERT_EQ(0u, observer->connected_device_properties_list().size());
+  ASSERT_EQ(1u, observer->paired_device_properties_list().size());
+
+  // Simulate Chromebook being suspended from lid closing.
+  FakePowerManagerClient::Get()->SendSuspendImminent(
+      power_manager::SuspendImminent::LID_CLOSED);
+
+  // Simulate Chromebook being awakened.
+  FakePowerManagerClient::Get()->SendSuspendDone(base::Milliseconds(1000));
+
+  // Update device from connected to disconnected. Observers should not be
+  // notified.
+  devices.pop_back();
+  devices.push_back(GenerateStubPairedDeviceProperties(
+      device_id,
+      /*connection_state=*/mojom::DeviceConnectionState::kNotConnected));
+  SetPairedDevices(devices);
+
+  ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
+  ASSERT_EQ(0u, observer->connected_device_properties_list().size());
+  ASSERT_EQ(1u, observer->paired_device_properties_list().size());
+
+  // Update device from disconnected to connected. Observers should be notified.
+  devices.pop_back();
+  devices.push_back(GenerateStubPairedDeviceProperties(
+      device_id,
+      /*connection_state=*/mojom::DeviceConnectionState::kConnected));
+  SetPairedDevices(devices);
+
+  ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
+  ASSERT_EQ(1u, observer->connected_device_properties_list().size());
+  ASSERT_EQ(
+      device_id,
+      observer->connected_device_properties_list()[0]->device_properties->id);
+  ASSERT_EQ(1u, observer->paired_device_properties_list().size());
+}
+
+TEST_F(BluetoothDeviceStatusNotifierImplTest,
+       DeviceDisconnectsConnectsAfterSuspendCooldown) {
+  std::unique_ptr<FakeBluetoothDeviceStatusObserver> observer = Observe();
+  const std::string device_id = "id1";
+
+  // Add a connected device
+  std::vector<mojom::PairedBluetoothDevicePropertiesPtr> devices;
+  devices.push_back(GenerateStubPairedDeviceProperties(device_id));
+  SetPairedDevices(devices);
+
+  ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
+  ASSERT_EQ(0u, observer->connected_device_properties_list().size());
+  ASSERT_EQ(1u, observer->paired_device_properties_list().size());
+
+  // Simulate Chromebook being suspended from lid closing.
+  FakePowerManagerClient::Get()->SendSuspendImminent(
+      power_manager::SuspendImminent::LID_CLOSED);
+
+  // Simulate Chromebook being awakened.
+  FakePowerManagerClient::Get()->SendSuspendDone(base::Milliseconds(1000));
+
+  // Simulate the suspend cooldown passing.
+  FastForwardBy(GetSuspendCooldownTimeoutSeconds());
+
+  // Update device from connected to disconnected. Observers should be notified.
+  devices.pop_back();
+  devices.push_back(GenerateStubPairedDeviceProperties(
+      device_id,
+      /*connection_state=*/mojom::DeviceConnectionState::kNotConnected));
+  SetPairedDevices(devices);
+
+  ASSERT_EQ(1u, observer->disconnected_device_properties_list().size());
+  ASSERT_EQ(device_id, observer->disconnected_device_properties_list()[0]
+                           ->device_properties->id);
+  ASSERT_EQ(0u, observer->connected_device_properties_list().size());
+  ASSERT_EQ(1u, observer->paired_device_properties_list().size());
+
+  // Update device from disconnected to connected. Observers should be notified.
+  devices.pop_back();
+  devices.push_back(GenerateStubPairedDeviceProperties(
+      device_id,
+      /*connection_state=*/mojom::DeviceConnectionState::kConnected));
+  SetPairedDevices(devices);
+
+  ASSERT_EQ(1u, observer->disconnected_device_properties_list().size());
+  ASSERT_EQ(1u, observer->connected_device_properties_list().size());
+  ASSERT_EQ(
+      device_id,
+      observer->connected_device_properties_list()[0]->device_properties->id);
+  ASSERT_EQ(1u, observer->paired_device_properties_list().size());
+}
+
+TEST_F(BluetoothDeviceStatusNotifierImplTest,
+       DeviceDisconnectsConnectsDuringSecondSuspend) {
+  std::unique_ptr<FakeBluetoothDeviceStatusObserver> observer = Observe();
+  const std::string device_id = "id1";
+
+  // Add a connected device
+  std::vector<mojom::PairedBluetoothDevicePropertiesPtr> devices;
+  devices.push_back(GenerateStubPairedDeviceProperties(device_id));
+  SetPairedDevices(devices);
+
+  ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
+  ASSERT_EQ(0u, observer->connected_device_properties_list().size());
+  ASSERT_EQ(1u, observer->paired_device_properties_list().size());
+
+  // Simulate Chromebook being suspended from lid closing.
+  FakePowerManagerClient::Get()->SendSuspendImminent(
+      power_manager::SuspendImminent::LID_CLOSED);
+
+  // Simulate Chromebook being awakened.
+  FakePowerManagerClient::Get()->SendSuspendDone(base::Milliseconds(1000));
+
+  // Simulate |seconds_forward| seconds passing.
+  int seconds_forward = 1;
+  FastForwardBy(seconds_forward);
+
+  // Simulate Chromebook being suspended from lid closing again.
+  FakePowerManagerClient::Get()->SendSuspendImminent(
+      power_manager::SuspendImminent::LID_CLOSED);
+
+  // Simulate suspend cooldown time passing. This is where the first timer
+  // should timeout if it wasn't canceled.
+  FastForwardBy(GetSuspendCooldownTimeoutSeconds() - seconds_forward);
+
+  // Update device from connected to disconnected. Observers should not be
+  // notified.
+  devices.pop_back();
+  devices.push_back(GenerateStubPairedDeviceProperties(
+      device_id,
+      /*connection_state=*/mojom::DeviceConnectionState::kNotConnected));
+  SetPairedDevices(devices);
+
+  ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
+  ASSERT_EQ(0u, observer->connected_device_properties_list().size());
+  ASSERT_EQ(1u, observer->paired_device_properties_list().size());
+
+  // Update device from disconnected to connected. Observers should be notified.
+  devices.pop_back();
+  devices.push_back(GenerateStubPairedDeviceProperties(
+      device_id,
+      /*connection_state=*/mojom::DeviceConnectionState::kConnected));
+  SetPairedDevices(devices);
+
+  ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
+  ASSERT_EQ(1u, observer->connected_device_properties_list().size());
+  ASSERT_EQ(
+      device_id,
+      observer->connected_device_properties_list()[0]->device_properties->id);
+  ASSERT_EQ(1u, observer->paired_device_properties_list().size());
 }
 
 }  // namespace bluetooth_config

@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chromeos/services/bluetooth_config/bluetooth_device_status_notifier_impl.h"
+#include "base/time/time.h"
 #include "chromeos/services/bluetooth_config/device_cache.h"
+#include "chromeos/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 #include "components/device_event_log/device_event_log.h"
 
 #include <vector>
@@ -11,10 +13,18 @@
 namespace chromeos {
 namespace bluetooth_config {
 
+// static
+const base::TimeDelta
+    BluetoothDeviceStatusNotifierImpl::kSuspendCooldownTimeout =
+        base::Milliseconds(3000);
+
 BluetoothDeviceStatusNotifierImpl::BluetoothDeviceStatusNotifierImpl(
-    DeviceCache* device_cache)
-    : device_cache_(device_cache) {
+    DeviceCache* device_cache,
+    PowerManagerClient* power_manager_client)
+    : device_cache_(device_cache), power_manager_client_(power_manager_client) {
+  DCHECK(power_manager_client_);
   device_cache_observation_.Observe(device_cache_);
+  power_manager_client_observation_.Observe(power_manager_client_);
 
   for (const auto& paired_device : device_cache_->GetPairedDevices()) {
     devices_id_to_properties_map_[paired_device->device_properties->id] =
@@ -27,6 +37,29 @@ BluetoothDeviceStatusNotifierImpl::~BluetoothDeviceStatusNotifierImpl() =
 
 void BluetoothDeviceStatusNotifierImpl::OnPairedDevicesListChanged() {
   CheckForDeviceStateChange();
+}
+
+void BluetoothDeviceStatusNotifierImpl::SuspendImminent(
+    power_manager::SuspendImminent::Reason reason) {
+  // Set |did_recently_suspend_| when the device begins suspending. It's not
+  // sufficient to set this flag in SuspendDone() because
+  // OnPairedDevicesListChanged() can be called before SuspendDone() when the
+  // device is awoken. If the flag is not set at this point then disconnected
+  // devices will be notified to observers.
+  did_recently_suspend_ = true;
+
+  // If there's a timer currently running, stop it so it doesn't timeout while
+  // the device is suspended and flip |did_recently_suspend_| back to false.
+  suspend_cooldown_timer_.Stop();
+}
+
+void BluetoothDeviceStatusNotifierImpl::SuspendDone(
+    base::TimeDelta sleep_duration) {
+  suspend_cooldown_timer_.Start(
+      FROM_HERE, kSuspendCooldownTimeout,
+      base::BindOnce(
+          &BluetoothDeviceStatusNotifierImpl::OnSuspendCooldownTimeout,
+          base::Unretained(this)));
 }
 
 void BluetoothDeviceStatusNotifierImpl::CheckForDeviceStateChange() {
@@ -69,6 +102,17 @@ void BluetoothDeviceStatusNotifierImpl::CheckForDeviceStateChange() {
             mojom::DeviceConnectionState::kConnected &&
         device->device_properties->connection_state ==
             mojom::DeviceConnectionState::kNotConnected) {
+      // Check if the Chromebook is suspended or has recently awaken from being
+      // suspended. If it has, do not notify observers of disconnected devices
+      // (see b/216341171).
+      if (did_recently_suspend_) {
+        BLUETOOTH_LOG(EVENT) << "Device " << GetPairedDeviceName(device)
+                             << " connection status changed to disconnected, "
+                                "but device was recently awoken from being "
+                                "suspended. Not notifying observers";
+        continue;
+      }
+
       NotifyDeviceNewlyDisconnected(device);
       continue;
     }
@@ -82,6 +126,10 @@ void BluetoothDeviceStatusNotifierImpl::CheckForDeviceStateChange() {
       continue;
     }
   }
+}
+
+void BluetoothDeviceStatusNotifierImpl::OnSuspendCooldownTimeout() {
+  did_recently_suspend_ = false;
 }
 
 }  // namespace bluetooth_config

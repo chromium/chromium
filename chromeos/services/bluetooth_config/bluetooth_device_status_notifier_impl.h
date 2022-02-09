@@ -8,6 +8,9 @@
 #include <unordered_map>
 
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/services/bluetooth_config/bluetooth_device_status_notifier.h"
 #include "chromeos/services/bluetooth_config/device_cache.h"
 
@@ -17,29 +20,58 @@ namespace bluetooth_config {
 // Concrete BluetoothDeviceStatusNotifier implementation. Uses DeviceCache to
 // observe for device list changes in order to notify when a device is newly
 // paired, connected or disconnected.
-class BluetoothDeviceStatusNotifierImpl : public BluetoothDeviceStatusNotifier,
-                                          public DeviceCache::Observer {
+class BluetoothDeviceStatusNotifierImpl
+    : public BluetoothDeviceStatusNotifier,
+      public DeviceCache::Observer,
+      public chromeos::PowerManagerClient::Observer {
  public:
-  explicit BluetoothDeviceStatusNotifierImpl(DeviceCache* device_cache);
+  BluetoothDeviceStatusNotifierImpl(DeviceCache* device_cache,
+                                    PowerManagerClient* power_manager_client);
   ~BluetoothDeviceStatusNotifierImpl() override;
 
  private:
+  friend class BluetoothDeviceStatusNotifierImplTest;
+
+  // Time period after the Chromebook has awoken from being suspended where
+  // observers are not notified of devices that have changed their connection
+  // status from connected to disconnected.
+  static const base::TimeDelta kSuspendCooldownTimeout;
+
   // DeviceCache::Observer:
   void OnPairedDevicesListChanged() override;
+
+  // chromeos::PowerManagerClient::Observer:
+  void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
+  void SuspendDone(base::TimeDelta sleep_duration) override;
 
   // Checks the paired device list to find if a device has been newly paired.
   // Notifies observers on the device state change.
   void CheckForDeviceStateChange();
+
+  void OnSuspendCooldownTimeout();
 
   // Paired devices map, maps a device id with its corresponding device
   // properties.
   std::unordered_map<std::string, mojom::PairedBluetoothDevicePropertiesPtr>
       devices_id_to_properties_map_;
 
+  // Flag indicating that the Chromebook is currently suspended or was suspended
+  // less than |kSuspendCooldownTimeout| ago.
+  bool did_recently_suspend_ = false;
+
+  // Timer that starts once the Chromebook has awoken from being suspended that
+  // expires after |kSuspendCooldownTimeout|.
+  base::OneShotTimer suspend_cooldown_timer_;
+
   DeviceCache* device_cache_;
+
+  chromeos::PowerManagerClient* power_manager_client_;
 
   base::ScopedObservation<DeviceCache, DeviceCache::Observer>
       device_cache_observation_{this};
+
+  base::ScopedObservation<PowerManagerClient, PowerManagerClient::Observer>
+      power_manager_client_observation_{this};
 };
 
 }  // namespace bluetooth_config

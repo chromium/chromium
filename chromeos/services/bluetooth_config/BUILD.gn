@@ -58,6 +58,7 @@ static_library("bluetooth_config") {
   deps = [
     "//ash/constants",
     "//base",
+    "//chromeos/dbus/power",
     "//chromeos/services/bluetooth_config/public/cpp",
     "//chromeos/services/bluetooth_config/public/mojom",
     "//components/device_event_log",
@@ -166,6 +167,7 @@ source_set("unit_tests") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
+    "//chromeos/dbus/power",
     "//chromeos/services/bluetooth_config/public/cpp",
     "//components/session_manager/core",
     "//components/sync_preferences:test_support",
