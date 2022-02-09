@@ -6304,6 +6304,12 @@ static_library("browser") {
     if (is_mac) {
       sources += [ "printing/printer_manager_dialog_mac.mm" ]
     }
+    if (is_chromeos_lacros) {
+      sources += [
+        "printing/print_job_utils_lacros.cc",
+        "printing/print_job_utils_lacros.h",
+      ]
+    }
     if (is_chromeos) {
       deps += [ "//chromeos/crosapi/mojom" ]
     }

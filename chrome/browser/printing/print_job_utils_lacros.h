@@ -1,0 +1,27 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_PRINTING_PRINT_JOB_UTILS_LACROS_H_
+#define CHROME_BROWSER_PRINTING_PRINT_JOB_UTILS_LACROS_H_
+
+namespace crosapi {
+namespace mojom {
+class LocalPrinter;
+}
+}  // namespace crosapi
+
+namespace printing {
+
+class PrintedDocument;
+class PrintJob;
+
+// Notify Ash Chrome of a new print job.
+void NotifyAshJobCreated(const PrintJob& job,
+                         int job_id,
+                         const PrintedDocument& document,
+                         crosapi::mojom::LocalPrinter* local_printer);
+
+}  // namespace printing
+
+#endif  // CHROME_BROWSER_PRINTING_PRINT_JOB_UTILS_LACROS_H_
