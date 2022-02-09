@@ -122,7 +122,6 @@ gfx::Size PaintedScrollbarLayer::LayerSizeToContentSize(
 
 bool PaintedScrollbarLayer::UpdateThumbAndTrackGeometry() {
   // These properties should never change.
-  DCHECK(IsMutationAllowed());
   DCHECK_EQ(supports_drag_snap_back_,
             scrollbar_.Read(*this)->SupportsDragSnapBack());
   DCHECK_EQ(is_left_side_vertical_scrollbar(),
@@ -152,7 +151,6 @@ bool PaintedScrollbarLayer::UpdateThumbAndTrackGeometry() {
 }
 
 bool PaintedScrollbarLayer::UpdateInternalContentScale() {
-  DCHECK(IsMutationAllowed());
   gfx::Transform transform;
   transform = draw_property_utils::ScreenSpaceTransform(
       this, layer_tree_host()->property_trees()->transform_tree());

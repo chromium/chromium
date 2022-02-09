@@ -860,11 +860,6 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // generated or committed.
   bool IsPropertyChangeAllowed() const;
 
-  // For debugging. This is less restrictive than IsPropertyChangeAllowed().
-  // It is intended for layer attributes that can be modified during layer
-  // update, but not during commit.
-  bool IsMutationAllowed() const;
-
   void IncreasePaintCount() {
     if (debug_info_.Read(*this))
       ++debug_info_.Write(*this)->paint_count;

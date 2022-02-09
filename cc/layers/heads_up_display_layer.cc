@@ -34,7 +34,6 @@ HeadsUpDisplayLayer::~HeadsUpDisplayLayer() = default;
 void HeadsUpDisplayLayer::UpdateLocationAndSize(
     const gfx::Size& device_viewport,
     float device_scale_factor) {
-  DCHECK(IsMutationAllowed());
   float multiplier = 1.f / (device_scale_factor *
                             layer_tree_host()->painted_device_scale_factor());
   gfx::Size device_viewport_in_dips =
@@ -82,13 +81,11 @@ const std::vector<gfx::Rect>& HeadsUpDisplayLayer::LayoutShiftRects() const {
 
 void HeadsUpDisplayLayer::SetLayoutShiftRects(
     const std::vector<gfx::Rect>& rects) {
-  DCHECK(IsMutationAllowed());
   layout_shift_rects_.Write(*this) = rects;
 }
 
 void HeadsUpDisplayLayer::UpdateWebVitalMetrics(
     std::unique_ptr<WebVitalMetrics> web_vital_metrics) {
-  DCHECK(IsMutationAllowed());
   web_vital_metrics_.Write(*this) = std::move(web_vital_metrics);
 }
 

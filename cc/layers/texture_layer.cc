@@ -40,14 +40,12 @@ TextureLayer::TextureLayer(TextureLayerClient* client)
 TextureLayer::~TextureLayer() = default;
 
 void TextureLayer::ClearClient() {
-  DCHECK(IsMutationAllowed());
   client_.Write(*this) = nullptr;
   ClearTexture();
   SetDrawsContent(HasDrawableContent());
 }
 
 void TextureLayer::ClearTexture() {
-  DCHECK(IsMutationAllowed());
   SetTransferableResource(viz::TransferableResource(), viz::ReleaseCallback());
 }
 
@@ -57,7 +55,6 @@ std::unique_ptr<LayerImpl> TextureLayer::CreateLayerImpl(
 }
 
 void TextureLayer::SetFlipped(bool flipped) {
-  DCHECK(IsMutationAllowed());
   if (flipped_.Read(*this) == flipped)
     return;
   flipped_.Write(*this) = flipped;
@@ -65,7 +62,6 @@ void TextureLayer::SetFlipped(bool flipped) {
 }
 
 void TextureLayer::SetNearestNeighbor(bool nearest_neighbor) {
-  DCHECK(IsMutationAllowed());
   if (nearest_neighbor_.Read(*this) == nearest_neighbor)
     return;
   nearest_neighbor_.Write(*this) = nearest_neighbor;
@@ -74,7 +70,6 @@ void TextureLayer::SetNearestNeighbor(bool nearest_neighbor) {
 
 void TextureLayer::SetUV(const gfx::PointF& top_left,
                          const gfx::PointF& bottom_right) {
-  DCHECK(IsMutationAllowed());
   if (uv_top_left_.Read(*this) == top_left &&
       uv_bottom_right_.Read(*this) == bottom_right)
     return;
@@ -84,7 +79,6 @@ void TextureLayer::SetUV(const gfx::PointF& top_left,
 }
 
 void TextureLayer::SetPremultipliedAlpha(bool premultiplied_alpha) {
-  DCHECK(IsMutationAllowed());
   if (premultiplied_alpha_.Read(*this) == premultiplied_alpha)
     return;
   premultiplied_alpha_.Write(*this) = premultiplied_alpha;
@@ -92,7 +86,6 @@ void TextureLayer::SetPremultipliedAlpha(bool premultiplied_alpha) {
 }
 
 void TextureLayer::SetBlendBackgroundColor(bool blend) {
-  DCHECK(IsMutationAllowed());
   if (blend_background_color_.Read(*this) == blend)
     return;
   blend_background_color_.Write(*this) = blend;
@@ -100,7 +93,6 @@ void TextureLayer::SetBlendBackgroundColor(bool blend) {
 }
 
 void TextureLayer::SetForceTextureToOpaque(bool opaque) {
-  DCHECK(IsMutationAllowed());
   if (force_texture_to_opaque_.Read(*this) == opaque)
     return;
   force_texture_to_opaque_.Write(*this) = opaque;
@@ -111,7 +103,6 @@ void TextureLayer::SetTransferableResourceInternal(
     const viz::TransferableResource& resource,
     viz::ReleaseCallback release_callback,
     bool requires_commit) {
-  DCHECK(IsMutationAllowed());
   DCHECK(resource.mailbox_holder.mailbox.IsZero() ||
          !resource_holder_.Read(*this) ||
          resource != resource_holder_.Read(*this)->resource());
@@ -137,14 +128,12 @@ void TextureLayer::SetTransferableResourceInternal(
 void TextureLayer::SetTransferableResource(
     const viz::TransferableResource& resource,
     viz::ReleaseCallback release_callback) {
-  DCHECK(IsMutationAllowed());
   bool requires_commit = true;
   SetTransferableResourceInternal(resource, std::move(release_callback),
                                   requires_commit);
 }
 
 void TextureLayer::SetLayerTreeHost(LayerTreeHost* host) {
-  DCHECK(IsMutationAllowed());
   if (layer_tree_host() == host) {
     Layer::SetLayerTreeHost(host);
     return;
@@ -251,7 +240,6 @@ void TextureLayer::PushPropertiesTo(
 SharedBitmapIdRegistration TextureLayer::RegisterSharedBitmapId(
     const viz::SharedBitmapId& id,
     scoped_refptr<CrossThreadSharedBitmap> bitmap) {
-  DCHECK(IsMutationAllowed());
   DCHECK(to_register_bitmaps_.Read(*this).find(id) ==
          to_register_bitmaps_.Read(*this).end());
   DCHECK(registered_bitmaps_.Read(*this).find(id) ==
@@ -268,7 +256,6 @@ SharedBitmapIdRegistration TextureLayer::RegisterSharedBitmapId(
 }
 
 void TextureLayer::UnregisterSharedBitmapId(viz::SharedBitmapId id) {
-  DCHECK(IsMutationAllowed());
   // If we didn't get to sending the registration to the compositor thread yet,
   // just remove it.
   to_register_bitmaps_.Write(*this).erase(id);

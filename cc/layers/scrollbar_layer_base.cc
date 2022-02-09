@@ -62,7 +62,6 @@ scoped_refptr<ScrollbarLayerBase> ScrollbarLayerBase::CreateOrReuse(
 }
 
 void ScrollbarLayerBase::SetScrollElementId(ElementId element_id) {
-  DCHECK(IsMutationAllowed());
   if (element_id == scroll_element_id_.Read(*this))
     return;
 

@@ -24,7 +24,6 @@ SolidColorLayer::SolidColorLayer() = default;
 SolidColorLayer::~SolidColorLayer() = default;
 
 void SolidColorLayer::SetBackgroundColor(SkColor color) {
-  DCHECK(IsMutationAllowed());
   SetContentsOpaque(SkColorGetA(color) == 255);
   Layer::SetBackgroundColor(color);
 }

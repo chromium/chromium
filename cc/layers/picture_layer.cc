@@ -205,13 +205,11 @@ sk_sp<const SkPicture> PictureLayer::GetPicture() const {
 }
 
 void PictureLayer::ClearClient() {
-  DCHECK(IsMutationAllowed());
   picture_layer_inputs_.client = nullptr;
   SetDrawsContent(HasDrawableContent());
 }
 
 void PictureLayer::SetNearestNeighbor(bool nearest_neighbor) {
-  DCHECK(IsMutationAllowed());
   if (picture_layer_inputs_.nearest_neighbor == nearest_neighbor)
     return;
 
@@ -224,7 +222,6 @@ bool PictureLayer::HasDrawableContent() const {
 }
 
 void PictureLayer::SetIsBackdropFilterMask(bool is_backdrop_filter_mask) {
-  DCHECK(IsMutationAllowed());
   if (picture_layer_inputs_.is_backdrop_filter_mask == is_backdrop_filter_mask)
     return;
 

@@ -237,13 +237,6 @@ bool Layer::IsPropertyChangeAllowed() const {
          !layer_tree_host()->InProtectedSequence();
 }
 
-bool Layer::IsMutationAllowed() const {
-  if (!IsAttached())
-    return true;
-  DCHECK(IsMainThread());
-  return !layer_tree_host()->InProtectedSequence();
-}
-
 void Layer::CaptureContent(const gfx::Rect& rect,
                            std::vector<NodeInfo>* content) const {}
 
@@ -252,7 +245,6 @@ sk_sp<const SkPicture> Layer::GetPicture() const {
 }
 
 void Layer::SetParent(Layer* layer, RemovalReason reason) {
-  DCHECK(IsMutationAllowed());
   DCHECK(!layer || !layer->HasAncestor(this));
   DCHECK(reason == RemovalReason::kNormal || !layer);
 
@@ -454,7 +446,6 @@ void Layer::RemoveAllChildren() {
 
 void Layer::SetChildLayerList(LayerList new_children) {
   DCHECK(IsUsingLayerLists());
-  DCHECK(IsMutationAllowed());
 
   // Early out without calling |LayerTreeHost::SetNeedsFullTreeSync| if no
   // layer has changed.
