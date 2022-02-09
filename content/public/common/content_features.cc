@@ -671,8 +671,6 @@ const base::Feature kPrivateNetworkAccessRespectPreflightResults = {
     base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables sending CORS preflight requests ahead of private network requests.
-// If this flag is enabled, then `kWarnAboutSecurePrivateNetworkRequests` is
-// ignored.
 // See: https://wicg.github.io/private-network-access/#cors-preflight
 const base::Feature kPrivateNetworkAccessSendPreflights = {
     "PrivateNetworkAccessSendPreflights", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -992,11 +990,6 @@ const base::Feature kVideoPlaybackQuality{"VideoPlaybackQuality",
 // Enables future V8 VM features
 const base::Feature kV8VmFuture{"V8VmFuture",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enables DevTools warnings about accesses to private network resources from
-// secure contexts. See also feature `kBlockInsecurePrivateNetworkRequests`.
-const base::Feature kWarnAboutSecurePrivateNetworkRequests{
-    "WarnAboutSecurePrivateNetworkRequests", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable window controls overlays for desktop PWAs
 const base::Feature kWebAppWindowControlsOverlay{

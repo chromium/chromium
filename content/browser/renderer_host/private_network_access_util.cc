@@ -77,9 +77,7 @@ Policy DerivePrivateNetworkRequestPolicy(
     return Policy::kPreflightWarn;
   }
 
-  if (!is_web_secure_context ||
-      base::FeatureList::IsEnabled(
-          features::kWarnAboutSecurePrivateNetworkRequests)) {
+  if (!is_web_secure_context) {
     return Policy::kWarn;
   }
 
