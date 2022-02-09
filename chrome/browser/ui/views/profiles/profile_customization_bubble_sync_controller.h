@@ -25,6 +25,8 @@ class Profile;
 
 // Helper class for logic to show / delay showing the profile customization
 // bubble. Owns itself.
+// TODO(https://crbug.com/1282157): refactor this class to reuse
+// ProfileCustomizationSyncedThemeWaiter.
 class ProfileCustomizationBubbleSyncController
     : public syncer::SyncServiceObserver,
       public ThemeSyncableService::Observer,

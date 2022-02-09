@@ -8,12 +8,14 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/signin/profile_customization_synced_theme_waiter.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
@@ -160,6 +162,8 @@ void SigninInterceptFirstRunExperienceDialog::
   Step next_step;
   switch (result) {
     case LoginUIService::SYNC_WITH_DEFAULT_SETTINGS:
+      next_step = Step::kWaitForSyncedTheme;
+      break;
     case LoginUIService::ABORT_SYNC:
       next_step = Step::kProfileCustomization;
       break;
@@ -250,6 +254,9 @@ void SigninInterceptFirstRunExperienceDialog::DoNextStep(
     case Step::kSyncConfirmation:
       DoSyncConfirmation();
       return;
+    case Step::kWaitForSyncedTheme:
+      DoWaitForSyncedTheme();
+      return;
     case Step::kProfileCustomization:
       DoProfileCustomization();
       return;
@@ -277,6 +284,18 @@ void SigninInterceptFirstRunExperienceDialog::DoSyncConfirmation() {
   SetDialogDelegate(
       SigninViewControllerDelegate::CreateSyncConfirmationDelegate(browser_));
   PreloadProfileCustomizationUI();
+}
+
+void SigninInterceptFirstRunExperienceDialog::DoWaitForSyncedTheme() {
+  synced_theme_waiter_ =
+      std::make_unique<ProfileCustomizationSyncedThemeWaiter>(
+          SyncServiceFactory::GetForProfile(browser_->profile()),
+          ThemeServiceFactory::GetForProfile(browser_->profile()),
+          base::BindOnce(
+              &SigninInterceptFirstRunExperienceDialog::OnSyncedThemeReady,
+              // Unretained() is fine because `this` owns `synced_theme_waiter_`
+              base::Unretained(this)));
+  synced_theme_waiter_->Run();
 }
 
 void SigninInterceptFirstRunExperienceDialog::DoProfileCustomization() {
@@ -336,6 +355,24 @@ void SigninInterceptFirstRunExperienceDialog::PreloadProfileCustomizationUI() {
                          OnProfileCustomizationDoneButtonClicked,
                      // Unretained is fine because `this` owns the web contents.
                      base::Unretained(this)));
+}
+
+void SigninInterceptFirstRunExperienceDialog::OnSyncedThemeReady(
+    ProfileCustomizationSyncedThemeWaiter::Outcome outcome) {
+  synced_theme_waiter_.reset();
+  Step next_step;
+  switch (outcome) {
+    case ProfileCustomizationSyncedThemeWaiter::Outcome::kSyncSuccess:
+    case ProfileCustomizationSyncedThemeWaiter::Outcome::kSyncCannotStart:
+      next_step = Step::kProfileCustomization;
+      break;
+    case ProfileCustomizationSyncedThemeWaiter::Outcome::
+        kSyncPassphraseRequired:
+    case ProfileCustomizationSyncedThemeWaiter::Outcome::kTimeout:
+      next_step = Step::kProfileSwitchIPHAndCloseModal;
+      break;
+  }
+  DoNextStep(Step::kWaitForSyncedTheme, next_step);
 }
 
 void SigninInterceptFirstRunExperienceDialog::

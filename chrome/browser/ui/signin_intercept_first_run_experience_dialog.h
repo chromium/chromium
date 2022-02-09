@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/signin/profile_customization_synced_theme_waiter.h"
 #include "chrome/browser/ui/signin_modal_dialog.h"
 #include "chrome/browser/ui/signin_view_controller_delegate.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -59,6 +60,7 @@ class SigninInterceptFirstRunExperienceDialog
     kStart,
     kTurnOnSync,
     kSyncConfirmation,
+    kWaitForSyncedTheme,
     kProfileCustomization,
     kProfileSwitchIPHAndCloseModal,
   };
@@ -69,11 +71,14 @@ class SigninInterceptFirstRunExperienceDialog
   // Actions executed right after moving to a corresponding step.
   void DoTurnOnSync();
   void DoSyncConfirmation();
+  void DoWaitForSyncedTheme();
   void DoProfileCustomization();
   void DoProfileSwitchIPHAndCloseModal();
 
   void SetDialogDelegate(SigninViewControllerDelegate* delegate);
   void PreloadProfileCustomizationUI();
+  void OnSyncedThemeReady(
+      ProfileCustomizationSyncedThemeWaiter::Outcome outcome);
   void OnProfileCustomizationDoneButtonClicked();
 
   const raw_ptr<Browser> browser_;
@@ -89,6 +94,7 @@ class SigninInterceptFirstRunExperienceDialog
 
   std::unique_ptr<content::WebContents>
       profile_customization_preloaded_contents_;
+  std::unique_ptr<ProfileCustomizationSyncedThemeWaiter> synced_theme_waiter_;
 
   base::WeakPtrFactory<SigninInterceptFirstRunExperienceDialog>
       weak_ptr_factory_{this};

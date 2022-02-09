@@ -3292,6 +3292,8 @@ static_library("ui") {
       "profile_picker.cc",
       "profile_picker.h",
       "signin/profile_customization_bubble_sync_controller.h",
+      "signin/profile_customization_synced_theme_waiter.cc",
+      "signin/profile_customization_synced_theme_waiter.h",
       "startup/default_browser_infobar_delegate.cc",
       "startup/default_browser_infobar_delegate.h",
       "startup/default_browser_prompt.cc",
