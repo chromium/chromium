@@ -123,10 +123,10 @@ TEST_F(PrintJobFinishedEventDispatcherUnittest, EventIsDispatched) {
   ash::TestPrintJobHistoryServiceObserver observer(
       print_job_history_service, run_loop.QuitWhenIdleClosure());
 
-  chromeos::printing::proto::PrintJobInfo print_job_info_proto;
+  ash::printing::proto::PrintJobInfo print_job_info_proto;
   print_job_info_proto.set_title(kTitle);
   print_job_info_proto.set_status(
-      chromeos::printing::proto::PrintJobInfo_PrintJobStatus_FAILED);
+      ash::printing::proto::PrintJobInfo_PrintJobStatus_FAILED);
   print_job_info_proto.set_number_of_pages(kPagesNumber);
   print_job_history_service->SavePrintJobProto(print_job_info_proto);
   run_loop.Run();

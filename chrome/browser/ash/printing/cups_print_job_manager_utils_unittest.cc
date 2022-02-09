@@ -234,7 +234,7 @@ TEST_P(CupsPrintJobManagerUtilsTest, UpdatePrintJob) {
   chromeos::CupsPrintJob print_job(
       chromeos::Printer(), 0, std::string(), kTotalPages,
       crosapi::mojom::PrintJob::Source::UNKNOWN, std::string(),
-      chromeos::printing::proto::PrintSettings());
+      ash::printing::proto::PrintSettings());
   print_job.set_state(params.state);
   print_job.set_printed_page_number(params.pages);
   bool expected_print_job_updated = params.state != params.expected_state ||

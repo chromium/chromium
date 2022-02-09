@@ -26,7 +26,7 @@ namespace ash {
 
 namespace {
 
-namespace print = ::chromeos::printing::proto;
+namespace print = printing::proto;
 namespace em = ::enterprise_management;
 
 using ::testing::_;

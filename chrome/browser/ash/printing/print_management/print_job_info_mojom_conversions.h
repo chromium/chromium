@@ -9,27 +9,23 @@
 
 namespace chromeos {
 class CupsPrintJob;
-namespace printing {
-namespace proto {
-class PrintJobInfo;
-}  // namespace proto
-}  // namespace printing
 }  // namespace chromeos
 
-namespace ash {
-namespace printing {
+namespace ash::printing {
+namespace proto {
+class PrintJobInfo;
+}
 namespace print_management {
 
 // Converts proto::PrintJobInfo into mojom::PrintJobInfoPtr.
 printing_manager::mojom::PrintJobInfoPtr PrintJobProtoToMojom(
-    const chromeos::printing::proto::PrintJobInfo& print_job_info_proto);
+    const proto::PrintJobInfo& print_job_info_proto);
 
 // Convert CupsPrintJob into mojom::PrintJobInfoPtr.
 printing_manager::mojom::PrintJobInfoPtr CupsPrintJobToMojom(
     const chromeos::CupsPrintJob& job);
 
 }  // namespace print_management
-}  // namespace printing
-}  // namespace ash
+}  // namespace ash::printing
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_PRINT_MANAGEMENT_PRINT_JOB_INFO_MOJOM_CONVERSIONS_H_

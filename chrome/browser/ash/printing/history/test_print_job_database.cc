@@ -9,7 +9,7 @@
 
 namespace ash {
 
-using ::chromeos::printing::proto::PrintJobInfo;
+using printing::proto::PrintJobInfo;
 
 TestPrintJobDatabase::TestPrintJobDatabase() = default;
 

@@ -8,6 +8,9 @@
 
 namespace chromeos {
 
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace printing = ::ash::printing;
+
 CupsPrintJob::CupsPrintJob(const Printer& printer,
                            int job_id,
                            const std::string& document_title,

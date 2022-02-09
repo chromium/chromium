@@ -19,7 +19,7 @@ TestPrintJobHistoryServiceObserver::~TestPrintJobHistoryServiceObserver() {
 }
 
 void TestPrintJobHistoryServiceObserver::OnPrintJobFinished(
-    const chromeos::printing::proto::PrintJobInfo& print_job_info) {
+    const printing::proto::PrintJobInfo& print_job_info) {
   num_print_jobs_++;
   run_loop_closure_.Run();
 }

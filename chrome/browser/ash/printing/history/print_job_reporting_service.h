@@ -29,8 +29,8 @@ class PrintJobReportingService : public KeyedService,
   ~PrintJobReportingService() override = default;
 
   // PrintJobHistoryService::Observer:
-  void OnPrintJobFinished(const chromeos::printing::proto::PrintJobInfo&
-                              print_job_info) override = 0;
+  void OnPrintJobFinished(
+      const printing::proto::PrintJobInfo& print_job_info) override = 0;
 };
 
 }  // namespace ash

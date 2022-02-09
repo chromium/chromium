@@ -42,7 +42,7 @@ class PrintJobFinishedEventDispatcher
 
   // PrintJobHistoryService::Observer:
   void OnPrintJobFinished(
-      const chromeos::printing::proto::PrintJobInfo& print_job_info) override;
+      const ash::printing::proto::PrintJobInfo& print_job_info) override;
 
  private:
   // Needed for BrowserContextKeyedAPI implementation.

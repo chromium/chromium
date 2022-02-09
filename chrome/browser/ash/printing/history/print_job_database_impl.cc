@@ -21,8 +21,6 @@ namespace ash {
 
 namespace {
 
-namespace printing = ::chromeos::printing;
-
 using EntryVector =
     leveldb_proto::ProtoDatabase<printing::proto::PrintJobInfo>::KeyEntryVector;
 

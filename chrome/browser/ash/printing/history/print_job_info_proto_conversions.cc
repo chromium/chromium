@@ -10,9 +10,11 @@
 #include "printing/mojom/print.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace proto = printing::proto;
+
+using ::chromeos::PrinterErrorCode;
 
 namespace {
 
@@ -178,4 +180,4 @@ proto::PrintJobInfo CupsPrintJobToProto(const CupsPrintJob& print_job,
   return print_job_info_proto;
 }
 
-}  // namespace chromeos
+}  // namespace ash

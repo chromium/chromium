@@ -23,9 +23,9 @@ namespace printing {
 namespace print_management {
 
 using ::chromeos::CupsPrintJob;
-using ::chromeos::printing::proto::PrintJobInfo;
 using ::history::DeletionInfo;
 using ::history::HistoryService;
+using proto::PrintJobInfo;
 
 PrintingManager::PrintingManager(
     PrintJobHistoryService* print_job_history_service,

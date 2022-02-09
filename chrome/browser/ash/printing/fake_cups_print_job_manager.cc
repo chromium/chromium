@@ -31,7 +31,7 @@ bool FakeCupsPrintJobManager::CreatePrintJob(
     int total_page_number,
     ::printing::PrintJob::Source source,
     const std::string& source_id,
-    const chromeos::printing::proto::PrintSettings& settings) {
+    const printing::proto::PrintSettings& settings) {
   chromeos::Printer printer(printer_id);
   printer.set_display_name(printer_id);
 

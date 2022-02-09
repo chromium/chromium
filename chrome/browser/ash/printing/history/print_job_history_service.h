@@ -19,7 +19,7 @@ class PrintJobHistoryService : public KeyedService {
   class Observer {
    public:
     virtual void OnPrintJobFinished(
-        const chromeos::printing::proto::PrintJobInfo& print_job_info) = 0;
+        const printing::proto::PrintJobInfo& print_job_info) = 0;
   };
 
   PrintJobHistoryService();

@@ -19,13 +19,14 @@ class TestCupsPrintJobManager : public CupsPrintJobManager {
   ~TestCupsPrintJobManager() override;
 
   // CupsPrintJobManager:
-  bool CreatePrintJob(const std::string& printer_id,
-                      const std::string& title,
-                      int job_id,
-                      int total_page_number,
-                      ::printing::PrintJob::Source source,
-                      const std::string& source_id,
-                      const printing::proto::PrintSettings& settings) override;
+  bool CreatePrintJob(
+      const std::string& printer_id,
+      const std::string& title,
+      int job_id,
+      int total_page_number,
+      ::printing::PrintJob::Source source,
+      const std::string& source_id,
+      const ash::printing::proto::PrintSettings& settings) override;
   void CancelPrintJob(CupsPrintJob* job) override;
   bool SuspendPrintJob(CupsPrintJob* job) override;
   bool ResumePrintJob(CupsPrintJob* job) override;

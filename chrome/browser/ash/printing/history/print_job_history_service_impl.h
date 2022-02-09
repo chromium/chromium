@@ -51,9 +51,8 @@ class PrintJobHistoryServiceImpl
 
   void OnPrintJobDatabaseInitialized(bool success);
 
-  void OnPrintJobSaved(
-      const chromeos::printing::proto::PrintJobInfo& print_job_info,
-      bool success);
+  void OnPrintJobSaved(const printing::proto::PrintJobInfo& print_job_info,
+                       bool success);
 
   // Helper function to make sure that callback is only called as long as
   // this class instance still lives.
@@ -63,10 +62,9 @@ class PrintJobHistoryServiceImpl
   void OnPrintJobsCleanedUp(PrintJobDatabase::GetPrintJobsCallback callback);
   // Helper function to make sure that callback is only called as long as
   // this class instance still lives.
-  void OnGetPrintJobsDone(
-      PrintJobDatabase::GetPrintJobsCallback callback,
-      bool success,
-      std::vector<chromeos::printing::proto::PrintJobInfo> entries);
+  void OnGetPrintJobsDone(PrintJobDatabase::GetPrintJobsCallback callback,
+                          bool success,
+                          std::vector<printing::proto::PrintJobInfo> entries);
 
   std::unique_ptr<PrintJobDatabase> print_job_database_;
   chromeos::CupsPrintJobManager* print_job_manager_;

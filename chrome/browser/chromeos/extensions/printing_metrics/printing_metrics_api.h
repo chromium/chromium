@@ -21,9 +21,9 @@ class PrintingMetricsGetPrintJobsFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void OnPrintJobsRetrieved(bool success,
-                            std::vector<chromeos::printing::proto::PrintJobInfo>
-                                print_job_info_protos);
+  void OnPrintJobsRetrieved(
+      bool success,
+      std::vector<ash::printing::proto::PrintJobInfo> print_job_info_protos);
   DECLARE_EXTENSION_FUNCTION("printingMetrics.getPrintJobs",
                              PRINTINGMETRICS_GETPRINTJOBS)
 };

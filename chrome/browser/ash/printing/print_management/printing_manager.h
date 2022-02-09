@@ -84,10 +84,10 @@ class PrintingManager
   void OnPrintJobCancelled(base::WeakPtr<chromeos::CupsPrintJob> job) override;
 
   // PrintJobHistoryObserver
-  void OnPrintJobsRetrieved(GetPrintJobsCallback callback,
-                            bool success,
-                            std::vector<chromeos::printing::proto::PrintJobInfo>
-                                print_job_info_protos);
+  void OnPrintJobsRetrieved(
+      GetPrintJobsCallback callback,
+      bool success,
+      std::vector<proto::PrintJobInfo> print_job_info_protos);
 
   // Callback function that is called when the print jobs are cleared from the
   // local database.

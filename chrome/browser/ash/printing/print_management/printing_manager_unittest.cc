@@ -134,7 +134,7 @@ class PrintingManagerTest : public ::testing::Test {
     auto print_job = std::make_unique<chromeos::CupsPrintJob>(
         chromeos::Printer(), id, kTitle, kPagesNumber,
         ::printing::PrintJob::Source::PRINT_PREVIEW,
-        /*source_id=*/"", chromeos::printing::proto::PrintSettings());
+        /*source_id=*/"", printing::proto::PrintSettings());
     print_job_manager_->CreatePrintJob(print_job.get());
     return print_job;
   }

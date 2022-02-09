@@ -11,7 +11,7 @@
 namespace extensions {
 
 api::printing_metrics::PrintJobInfo PrintJobInfoProtoToIdl(
-    const chromeos::printing::proto::PrintJobInfo& print_job_info_proto);
+    const ash::printing::proto::PrintJobInfo& print_job_info_proto);
 
 }  // namespace extensions
 

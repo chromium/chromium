@@ -152,13 +152,14 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager,
 
   // Begin monitoring a print job for a given |printer_id| with the given
   // |title| with the pages |total_page_number|.
-  bool CreatePrintJob(const std::string& printer_id,
-                      const std::string& title,
-                      int job_id,
-                      int total_page_number,
-                      ::printing::PrintJob::Source source,
-                      const std::string& source_id,
-                      const printing::proto::PrintSettings& settings) override {
+  bool CreatePrintJob(
+      const std::string& printer_id,
+      const std::string& title,
+      int job_id,
+      int total_page_number,
+      ::printing::PrintJob::Source source,
+      const std::string& source_id,
+      const ash::printing::proto::PrintSettings& settings) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
     Profile* profile = ProfileManager::GetPrimaryUserProfile();

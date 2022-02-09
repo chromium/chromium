@@ -336,16 +336,16 @@ void LocalPrinterAsh::CreatePrintJob(mojom::PrintJobPtr job,
   DCHECK(profile);
   chromeos::CupsPrintJobManager* print_job_manager =
       chromeos::CupsPrintJobManagerFactory::GetForBrowserContext(profile);
-  chromeos::printing::proto::PrintSettings settings;
+  ash::printing::proto::PrintSettings settings;
   settings.set_color(
       printing::IsColorModelSelected(job->color_mode)
-          ? chromeos::printing::proto::PrintSettings_ColorMode_COLOR
-          : chromeos::printing::proto::PrintSettings_ColorMode_BLACK_AND_WHITE);
+          ? ash::printing::proto::PrintSettings_ColorMode_COLOR
+          : ash::printing::proto::PrintSettings_ColorMode_BLACK_AND_WHITE);
   settings.set_duplex(
-      static_cast<chromeos::printing::proto::PrintSettings_DuplexMode>(
+      static_cast<ash::printing::proto::PrintSettings_DuplexMode>(
           job->duplex_mode));
   settings.set_copies(job->copies);
-  chromeos::printing::proto::MediaSize media_size;
+  ash::printing::proto::MediaSize media_size;
   media_size.set_width(job->media_size.width());
   media_size.set_height(job->media_size.height());
   media_size.set_vendor_id(job->media_vendor_id);

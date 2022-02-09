@@ -18,7 +18,7 @@ namespace ash {
 
 namespace {
 
-using ::chromeos::printing::proto::PrintJobInfo;
+using printing::proto::PrintJobInfo;
 
 constexpr char kId1[] = "id1";
 constexpr char kId2[] = "id2";

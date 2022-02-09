@@ -85,7 +85,7 @@ void PrintJobHistoryCleaner::OnPrefServiceInitialized(
 void PrintJobHistoryCleaner::OnPrintJobsRetrieved(
     base::OnceClosure callback,
     bool success,
-    std::vector<chromeos::printing::proto::PrintJobInfo> print_job_infos) {
+    std::vector<printing::proto::PrintJobInfo> print_job_infos) {
   if (!success) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                      std::move(callback));

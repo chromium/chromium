@@ -69,7 +69,7 @@ class CupsPrintJobManager : public KeyedService {
       int total_page_number,
       ::printing::PrintJob::Source source,
       const std::string& source_id,
-      const printing::proto::PrintSettings& settings) = 0;
+      const ash::printing::proto::PrintSettings& settings) = 0;
 
   // Cancel a print job |job|. Note the |job| will be deleted after cancelled.
   // There will be no notifications after cancellation.

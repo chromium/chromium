@@ -9,7 +9,7 @@
 #include "printing/mojom/print.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace proto = printing::proto;
 
@@ -76,7 +76,7 @@ TEST(PrintJobInfoProtoConversionsTest, CupsPrintJobToProto) {
                               ::printing::PrintJob::Source::PRINT_PREVIEW,
                               kSourceId, settings);
   cups_print_job.set_state(CupsPrintJob::State::STATE_FAILED);
-  cups_print_job.set_error_code(PrinterErrorCode::OUT_OF_PAPER);
+  cups_print_job.set_error_code(chromeos::PrinterErrorCode::OUT_OF_PAPER);
   base::Time completion_time = base::Time::Now() + base::Seconds(10);
 
   proto::PrintJobInfo print_job_info_proto =
@@ -104,4 +104,4 @@ TEST(PrintJobInfoProtoConversionsTest, CupsPrintJobToProto) {
             print_job_info_proto.printer_error_code());
 }
 
-}  // namespace chromeos
+}  // namespace ash

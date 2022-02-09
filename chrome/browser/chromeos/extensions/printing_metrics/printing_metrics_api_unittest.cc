@@ -15,7 +15,7 @@
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using chromeos::printing::proto::PrintJobInfo;
+using ::ash::printing::proto::PrintJobInfo;
 
 namespace extensions {
 
@@ -37,22 +37,22 @@ void ReturnNoPrintJobs(ash::PrintJobDatabase::GetPrintJobsCallback callback) {
 }
 
 void ReturnOnePrintJob(ash::PrintJobDatabase::GetPrintJobsCallback callback) {
-  chromeos::printing::proto::PrintJobInfo print_job_info_proto;
+  PrintJobInfo print_job_info_proto;
   print_job_info_proto.set_title(kTitle1);
   print_job_info_proto.set_status(
-      chromeos::printing::proto::PrintJobInfo_PrintJobStatus_FAILED);
+      ash::printing::proto::PrintJobInfo_PrintJobStatus_FAILED);
   print_job_info_proto.set_number_of_pages(kPagesNumber);
   std::move(callback).Run(true,
                           std::vector<PrintJobInfo>{print_job_info_proto});
 }
 
 void ReturnTwoPrintJobs(ash::PrintJobDatabase::GetPrintJobsCallback callback) {
-  chromeos::printing::proto::PrintJobInfo print_job_info_proto1;
+  PrintJobInfo print_job_info_proto1;
   print_job_info_proto1.set_title(kTitle1);
   print_job_info_proto1.set_status(
-      chromeos::printing::proto::PrintJobInfo_PrintJobStatus_FAILED);
+      ash::printing::proto::PrintJobInfo_PrintJobStatus_FAILED);
   print_job_info_proto1.set_number_of_pages(kPagesNumber);
-  chromeos::printing::proto::PrintJobInfo print_job_info_proto2;
+  PrintJobInfo print_job_info_proto2;
   print_job_info_proto2.set_title(kTitle2);
   std::move(callback).Run(
       true,

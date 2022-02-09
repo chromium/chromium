@@ -36,7 +36,7 @@ class CupsPrintJob {
                int total_page_number,
                ::printing::PrintJob::Source source,
                const std::string& source_id,
-               const printing::proto::PrintSettings& settings);
+               const ash::printing::proto::PrintSettings& settings);
 
   CupsPrintJob(const CupsPrintJob&) = delete;
   CupsPrintJob& operator=(const CupsPrintJob&) = delete;
@@ -63,7 +63,9 @@ class CupsPrintJob {
   int printed_page_number() const { return printed_page_number_; }
   ::printing::PrintJob::Source source() const { return source_; }
   const std::string& source_id() const { return source_id_; }
-  const printing::proto::PrintSettings& settings() const { return settings_; }
+  const ash::printing::proto::PrintSettings& settings() const {
+    return settings_;
+  }
   base::Time creation_time() const { return creation_time_; }
   State state() const { return state_; }
   PrinterErrorCode error_code() const { return error_code_; }
@@ -90,7 +92,7 @@ class CupsPrintJob {
   int printed_page_number_ = 0;
   const ::printing::PrintJob::Source source_;
   const std::string source_id_;
-  const printing::proto::PrintSettings settings_;
+  const ash::printing::proto::PrintSettings settings_;
   const base::Time creation_time_;
 
   State state_ = State::STATE_NONE;
@@ -100,5 +102,10 @@ class CupsPrintJob {
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash {
+using ::chromeos::CupsPrintJob;
+}
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_CUPS_PRINT_JOB_H_

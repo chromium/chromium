@@ -80,7 +80,7 @@ void PrintJobHistoryServiceImpl::SavePrintJob(
   if (job->source() == ::printing::PrintJob::Source::PRINT_PREVIEW_INCOGNITO)
     return;
 
-  chromeos::printing::proto::PrintJobInfo print_job_info =
+  printing::proto::PrintJobInfo print_job_info =
       CupsPrintJobToProto(*job, /*id=*/base::GenerateGUID(), base::Time::Now());
   print_job_database_->SavePrintJob(
       print_job_info,
@@ -94,7 +94,7 @@ void PrintJobHistoryServiceImpl::OnPrintJobDatabaseInitialized(bool success) {
 }
 
 void PrintJobHistoryServiceImpl::OnPrintJobSaved(
-    const chromeos::printing::proto::PrintJobInfo& print_job_info,
+    const printing::proto::PrintJobInfo& print_job_info,
     bool success) {
   for (auto& observer : observers_) {
     observer.OnPrintJobFinished(print_job_info);
@@ -111,7 +111,7 @@ void PrintJobHistoryServiceImpl::OnPrintJobsCleanedUp(
 void PrintJobHistoryServiceImpl::OnGetPrintJobsDone(
     PrintJobDatabase::GetPrintJobsCallback callback,
     bool success,
-    std::vector<chromeos::printing::proto::PrintJobInfo> entries) {
+    std::vector<printing::proto::PrintJobInfo> entries) {
   std::move(callback).Run(success, entries);
 }
 

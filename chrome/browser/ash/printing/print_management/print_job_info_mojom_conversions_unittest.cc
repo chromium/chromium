@@ -19,7 +19,7 @@
 namespace ash {
 namespace {
 
-namespace proto = ::chromeos::printing::proto;
+namespace proto = printing::proto;
 namespace mojom = printing::printing_manager::mojom;
 
 constexpr char kName[] = "name";

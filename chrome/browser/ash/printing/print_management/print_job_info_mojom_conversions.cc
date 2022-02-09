@@ -19,7 +19,6 @@ namespace print_management {
 namespace {
 
 namespace mojom = printing_manager::mojom;
-namespace proto = ::chromeos::printing::proto;
 
 using ::chromeos::CupsPrintJob;
 using ::chromeos::PrinterErrorCode;

@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(PrintingMetricsApiTest, GetPrintJobs) {
       std::make_unique<chromeos::CupsPrintJob>(
           chromeos::Printer(), /*job_id=*/0, kTitle, kPagesNumber,
           ::printing::PrintJob::Source::PRINT_PREVIEW,
-          /*source_id=*/"", chromeos::printing::proto::PrintSettings());
+          /*source_id=*/"", ash::printing::proto::PrintSettings());
   chromeos::TestCupsPrintJobManager* print_job_manager =
       static_cast<chromeos::TestCupsPrintJobManager*>(
           chromeos::CupsPrintJobManagerFactory::GetForBrowserContext(

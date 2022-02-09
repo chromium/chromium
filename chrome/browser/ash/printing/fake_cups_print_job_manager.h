@@ -23,14 +23,13 @@ class FakeCupsPrintJobManager : public chromeos::CupsPrintJobManager {
   FakeCupsPrintJobManager& operator=(const FakeCupsPrintJobManager&) = delete;
   ~FakeCupsPrintJobManager() override;
 
-  bool CreatePrintJob(
-      const std::string& printer_id,
-      const std::string& title,
-      int job_id,
-      int total_page_number,
-      ::printing::PrintJob::Source source,
-      const std::string& source_id,
-      const chromeos::printing::proto::PrintSettings& settings) override;
+  bool CreatePrintJob(const std::string& printer_id,
+                      const std::string& title,
+                      int job_id,
+                      int total_page_number,
+                      ::printing::PrintJob::Source source,
+                      const std::string& source_id,
+                      const printing::proto::PrintSettings& settings) override;
 
   void CancelPrintJob(chromeos::CupsPrintJob* job) override;
   bool SuspendPrintJob(chromeos::CupsPrintJob* job) override;
