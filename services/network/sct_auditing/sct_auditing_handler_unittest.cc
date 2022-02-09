@@ -83,6 +83,10 @@ class SCTAuditingHandlerTest : public testing::Test {
     mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
     url_loader_factory_.Clone(factory_remote.InitWithNewPipeAndPassReceiver());
     handler_->SetURLLoaderFactoryForTesting(std::move(factory_remote));
+    scoped_feature_list_.InitWithFeatures(
+        {features::kSCTAuditingRetryReports,
+         features::kSCTAuditingPersistReports},
+        {});
   }
 
   // Get the contents of `persistence_path_`. Pumps the message loop before
@@ -136,7 +140,7 @@ class SCTAuditingHandlerTest : public testing::Test {
   std::unique_ptr<NetworkContext> network_context_;
   scoped_refptr<net::X509Certificate> chain_;
   std::unique_ptr<SCTAuditingHandler> handler_;
-
+  base::test::ScopedFeatureList scoped_feature_list_;
   TestURLLoaderFactory url_loader_factory_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -310,11 +314,6 @@ TEST_F(SCTAuditingHandlerTest, CalculateLeafHashOnHashdanceMode) {
 // Tests a single retry. The server initially returns an error, but then returns
 // OK the second try.
 TEST_F(SCTAuditingHandlerTest, ReportSucceedsOnSecondTry) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  // TODO(nsatragno): move to constructor harness (see comment on
-  // base/test/scoped_feature_list.h).
-  scoped_feature_list.InitAndEnableFeature(features::kSCTAuditingRetryReports);
-
   base::HistogramTester histograms;
 
   // Enqueue a report which will trigger a send.
@@ -366,11 +365,6 @@ TEST_F(SCTAuditingHandlerTest, ReportSucceedsOnSecondTry) {
 
 // Tests that after max_tries, the reporter stops and is deleted.
 TEST_F(SCTAuditingHandlerTest, ExhaustAllRetriesShouldDeleteReporter) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  // TODO(nsatragno): move to constructor harness (see comment on
-  // base/test/scoped_feature_list.h).
-  scoped_feature_list.InitAndEnableFeature(features::kSCTAuditingRetryReports);
-
   base::HistogramTester histograms;
 
   // Enqueue a report which will trigger a send.
@@ -407,11 +401,6 @@ TEST_F(SCTAuditingHandlerTest, ExhaustAllRetriesShouldDeleteReporter) {
 // Tests that report completion metrics are correctly recorded when a report
 // succeeds on the first try.
 TEST_F(SCTAuditingHandlerTest, RetriesEnabledSucceedFirstTryMetrics) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  // TODO(nsatragno): move to constructor harness (see comment on
-  // base/test/scoped_feature_list.h).
-  scoped_feature_list.InitAndEnableFeature(features::kSCTAuditingRetryReports);
-
   base::HistogramTester histograms;
 
   // Enqueue a report which will trigger a send.
@@ -484,37 +473,9 @@ TEST_F(SCTAuditingHandlerTest, ReportNotGeneratedIfNoValidSCTs) {
   EXPECT_EQ(0u, handler_->GetPendingReportersForTesting()->size());
 }
 
-// Test that when the persistence feature is disabled no reports will be
-// persisted on disk.
-TEST_F(SCTAuditingHandlerTest, PersistenceFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  // TODO(nsatragno): move to constructor harness (see comment on
-  // base/test/scoped_feature_list.h).
-  scoped_feature_list.InitWithFeatures({features::kSCTAuditingRetryReports},
-                                       {features::kSCTAuditingPersistReports});
-
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
-  url_loader_factory_.Clone(factory_remote.InitWithNewPipeAndPassReceiver());
-
-  SCTAuditingHandler handler(network_context_.get(), persistence_path_);
-  handler.SetMode(mojom::SCTAuditingMode::kEnhancedSafeBrowsingReporting);
-  handler.SetURLLoaderFactoryForTesting(std::move(factory_remote));
-
-  // `file_writer` should not be created for this handler.
-  auto* file_writer = handler.GetFileWriterForTesting();
-  EXPECT_EQ(file_writer, nullptr);
-}
-
 // Test that when the SCTAuditingHandler is created without a persistence path
 // (e.g., as happens for ephemeral profiles), no file writer is created.
 TEST_F(SCTAuditingHandlerTest, HandlerWithoutPersistencePath) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  // TODO(nsatragno): move to constructor harness (see comment on
-  // base/test/scoped_feature_list.h).
-  scoped_feature_list.InitWithFeatures({features::kSCTAuditingRetryReports,
-                                        features::kSCTAuditingPersistReports},
-                                       {});
-
   mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
   url_loader_factory_.Clone(factory_remote.InitWithNewPipeAndPassReceiver());
 
@@ -531,13 +492,6 @@ TEST_F(SCTAuditingHandlerTest, HandlerWithoutPersistencePath) {
 // Test that when the SCTAuditingHandler is created with a valid persistence
 // path, then pending reports get stored to disk.
 TEST_F(SCTAuditingHandlerTest, HandlerWithPersistencePath) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  // TODO(nsatragno): move to constructor harness (see comment on
-  // base/test/scoped_feature_list.h).
-  scoped_feature_list.InitWithFeatures({features::kSCTAuditingRetryReports,
-                                        features::kSCTAuditingPersistReports},
-                                       {});
-
   mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
   url_loader_factory_.Clone(factory_remote.InitWithNewPipeAndPassReceiver());
 
@@ -594,13 +548,6 @@ TEST_F(SCTAuditingHandlerTest, HandlerWithPersistencePath) {
 // Tests that serializing reports and then deserializing them results in the
 // same data.
 TEST_F(SCTAuditingHandlerTest, DataRoundTrip) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  // TODO(nsatragno): move to constructor harness (see comment on
-  // base/test/scoped_feature_list.h).
-  scoped_feature_list.InitWithFeatures({features::kSCTAuditingRetryReports,
-                                        features::kSCTAuditingPersistReports},
-                                       {});
-
   // Create a Handler, add a reporter, and wait for it to get persisted.
   {
     SCTAuditingHandler handler(network_context_.get(), persistence_path_);
@@ -667,13 +614,6 @@ TEST_F(SCTAuditingHandlerTest, DataRoundTrip) {
 // Test that deserializing bad data shouldn't result in any reporters being
 // created.
 TEST_F(SCTAuditingHandlerTest, DeserializeBadData) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  // TODO(nsatragno): move to constructor harness (see comment on
-  // base/test/scoped_feature_list.h).
-  scoped_feature_list.InitWithFeatures({features::kSCTAuditingRetryReports,
-                                        features::kSCTAuditingPersistReports},
-                                       {});
-
   mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
   url_loader_factory_.Clone(factory_remote.InitWithNewPipeAndPassReceiver());
 
@@ -723,13 +663,6 @@ TEST_F(SCTAuditingHandlerTest, DeserializeBadData) {
 // Test that a handler loads valid persisted data from disk and creates pending
 // reporters for each entry.
 TEST_F(SCTAuditingHandlerTest, HandlerWithExistingPersistedData) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  // TODO(nsatragno): move to constructor harness (see comment on
-  // base/test/scoped_feature_list.h).
-  scoped_feature_list.InitWithFeatures({features::kSCTAuditingRetryReports,
-                                        features::kSCTAuditingPersistReports},
-                                       {});
-
   // Set up previously persisted data on disk:
   // - Default-initialized net::HashValue(net::HASH_VALUE_SHA256)
   // - Empty SCTClientReport for origin "example.test:443".
@@ -782,13 +715,6 @@ TEST_F(SCTAuditingHandlerTest, HandlerWithExistingPersistedData) {
 // Test that scheduling a retry causes the failure count to increment in
 // persisted storage.
 TEST_F(SCTAuditingHandlerTest, RetryUpdatesPersistedBackoffEntry) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  // TODO(nsatragno): move to constructor harness (see comment on
-  // base/test/scoped_feature_list.h).
-  scoped_feature_list.InitWithFeatures({features::kSCTAuditingRetryReports,
-                                        features::kSCTAuditingPersistReports},
-                                       {});
-
   // Set up previously persisted data on disk:
   // - Default-initialized net::HashValue(net::HASH_VALUE_SHA256)
   // - Empty SCTClientReport for origin "example.test:443".
@@ -844,13 +770,6 @@ TEST_F(SCTAuditingHandlerTest, RetryUpdatesPersistedBackoffEntry) {
 // 14 retries already (one less than kMaxRetries), if after being loaded from
 // persisted storage tries and fails once more, should get deleted.
 TEST_F(SCTAuditingHandlerTest, RestoringMaxRetries) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  // TODO(nsatragno): move to constructor harness (see comment on
-  // base/test/scoped_feature_list.h).
-  scoped_feature_list.InitWithFeatures({features::kSCTAuditingRetryReports,
-                                        features::kSCTAuditingPersistReports},
-                                       {});
-
   // Set up previously persisted data on disk:
   // - Default-initialized net::HashValue(net::HASH_VALUE_SHA256)
   // - Empty SCTClientReport for origin "example.test:443".
@@ -898,6 +817,34 @@ TEST_F(SCTAuditingHandlerTest, RestoringMaxRetries) {
   ASSERT_FALSE(file_writer->HasPendingWrite());
   EXPECT_FALSE(FileContentsHasString(
       "sha256/qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqo="));
+}
+
+class NoPersistenceSCTAuditingHandlerTest : public SCTAuditingHandlerTest {
+ public:
+  void SetUp() override {
+    SCTAuditingHandlerTest::SetUp();
+    scoped_feature_list_.InitWithFeatures(
+        {features::kSCTAuditingRetryReports},
+        {features::kSCTAuditingPersistReports});
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test that when the persistence feature is disabled no reports will be
+// persisted on disk.
+TEST_F(NoPersistenceSCTAuditingHandlerTest, PersistenceFeatureDisabled) {
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
+  url_loader_factory_.Clone(factory_remote.InitWithNewPipeAndPassReceiver());
+
+  SCTAuditingHandler handler(network_context_.get(), persistence_path_);
+  handler.SetMode(mojom::SCTAuditingMode::kEnhancedSafeBrowsingReporting);
+  handler.SetURLLoaderFactoryForTesting(std::move(factory_remote));
+
+  // `file_writer` should not be created for this handler.
+  auto* file_writer = handler.GetFileWriterForTesting();
+  EXPECT_EQ(file_writer, nullptr);
 }
 
 }  // namespace
