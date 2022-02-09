@@ -4,10 +4,18 @@
 
 #include "chrome/browser/fuchsia/element_manager_impl.h"
 
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "chrome/browser/chrome_browser_main.h"
+#include "chrome/browser/ui/browser_list.h"
+
+namespace {
+bool HaveBrowser() {
+  return !BrowserList::GetInstance()->empty();
+}
+}  // namespace
 
 bool ElementManagerImpl::AnnotationKeyCompare::operator()(
     const fuchsia::element::AnnotationKey& lhs,
@@ -21,9 +29,12 @@ ElementManagerImpl::ElementManagerImpl(
     NewProposalCallback callback)
     : binding_(outgoing_directory, this), callback_(std::move(callback)) {
   DCHECK(callback_);
+  BrowserList::AddObserver(this);
 }
 
-ElementManagerImpl::~ElementManagerImpl() = default;
+ElementManagerImpl::~ElementManagerImpl() {
+  BrowserList::RemoveObserver(this);
+}
 
 std::vector<fuchsia::element::Annotation> ElementManagerImpl::GetAnnotations() {
   std::vector<fuchsia::element::Annotation> annotations;
@@ -81,4 +92,13 @@ void ElementManagerImpl::GetAnnotations(GetAnnotationsCallback callback) {
       GetAnnotations());
   callback(fuchsia::element::AnnotationController_GetAnnotations_Result::
                WithResponse(std::move(response)));
+}
+
+void ElementManagerImpl::OnBrowserRemoved(Browser* browser) {
+  // If the browser was the last, clear all active bindings to notify the shell.
+  bool have_browser =
+      have_browser_for_test_ ? have_browser_for_test_.Run() : HaveBrowser();
+  if (!have_browser) {
+    controller_bindings_.CloseAll();
+  }
 }

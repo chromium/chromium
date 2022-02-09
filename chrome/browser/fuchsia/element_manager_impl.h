@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/fuchsia/scoped_service_binding.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 
 namespace base {
 class CommandLine;
@@ -21,7 +22,8 @@ class OutgoingDirectory;
 }  // namespace sys
 
 class ElementManagerImpl final : public fuchsia::element::Manager,
-                                 public fuchsia::element::Controller {
+                                 public fuchsia::element::Controller,
+                                 public BrowserListObserver {
  public:
   // Implement this callback to handle notifications to start a new element. The
   // callback will receive the command line needed to start the new window(s).
@@ -30,6 +32,11 @@ class ElementManagerImpl final : public fuchsia::element::Manager,
   // down).
   using NewProposalCallback =
       base::RepeatingCallback<bool(const base::CommandLine& command_line)>;
+
+  // Implement this callback to let the manager knows whether there is at least
+  // one browser window. This is expected to only be set by tests, the Manager
+  // will use BrowserList if this is not set.
+  using HaveBrowserCallback = base::RepeatingCallback<bool()>;
 
   ElementManagerImpl(sys::OutgoingDirectory* outgoing_directory,
                      NewProposalCallback callback);
@@ -46,12 +53,9 @@ class ElementManagerImpl final : public fuchsia::element::Manager,
       fidl::InterfaceRequest<fuchsia::element::Controller> element_controller,
       ProposeElementCallback callback) override;
 
-  // fuchsia::element::Controller implementation
-  void UpdateAnnotations(
-      std::vector<fuchsia::element::Annotation> annotations_to_set,
-      std::vector<fuchsia::element::AnnotationKey> annotations_to_delete,
-      UpdateAnnotationsCallback callback) override;
-  void GetAnnotations(GetAnnotationsCallback callback) override;
+  void set_have_browser_callback_for_test(HaveBrowserCallback callback) {
+    have_browser_for_test_ = std::move(callback);
+  }
 
  private:
   struct AnnotationKeyCompare {
@@ -59,8 +63,19 @@ class ElementManagerImpl final : public fuchsia::element::Manager,
                     const fuchsia::element::AnnotationKey& rhs) const;
   };
 
+  // fuchsia::element::Controller implementation
+  void UpdateAnnotations(
+      std::vector<fuchsia::element::Annotation> annotations_to_set,
+      std::vector<fuchsia::element::AnnotationKey> annotations_to_delete,
+      UpdateAnnotationsCallback callback) override;
+  void GetAnnotations(GetAnnotationsCallback callback) override;
+
+  // BrowserListObserver
+  void OnBrowserRemoved(Browser* browser) override;
+
   base::ScopedServiceBinding<fuchsia::element::Manager> binding_;
   const NewProposalCallback callback_;
+  HaveBrowserCallback have_browser_for_test_;
   fidl::BindingSet<fuchsia::element::Controller> controller_bindings_;
   base::flat_map<fuchsia::element::AnnotationKey,
                  fuchsia::element::Annotation,

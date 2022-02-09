@@ -76,7 +76,10 @@ class TestElementManagerImpl : public testing::Test {
                              [&](const base::CommandLine& command_line) {
                                received_command_line_ = command_line;
                                return true;
-                             })) {}
+                             })) {
+    element_manager_.set_have_browser_callback_for_test(
+        base::BindLambdaForTesting([&]() { return browser_count_ > 0; }));
+  }
 
  protected:
   fuchsia::element::ManagerPtr GetElementManagerPtr() {
@@ -89,6 +92,7 @@ class TestElementManagerImpl : public testing::Test {
   base::TestComponentContextForProcess test_context_;
   std::optional<base::CommandLine> received_command_line_;
   ElementManagerImpl element_manager_;
+  int browser_count_ = 0;
 };
 
 TEST_F(TestElementManagerImpl, TestCorrectSpec) {
@@ -223,6 +227,47 @@ TEST_F(TestElementManagerImpl, Annotations) {
                              return annotation.key.value == key;
                            }));
   }
+}
+
+TEST_F(TestElementManagerImpl, ControllerLifeCycle) {
+  auto element_manager = GetElementManagerPtr();
+
+  fuchsia::element::ControllerPtr controller;
+  fuchsia::element::Spec valid_spec;
+  valid_spec.set_component_url(
+      "fuchsia-pkg://fuchsia.com/chrome#meta/chrome.cm");
+
+  element_manager->ProposeElement(
+      std::move(valid_spec), controller.NewRequest(),
+      [&](auto result) { ASSERT_TRUE(result.is_response()); });
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(controller.is_bound());
+
+  // Notifying the manager while there is still browser alive should not
+  // disconnect the controller.
+  browser_count_ = 1;
+  static_cast<BrowserListObserver*>(&element_manager_)
+      ->OnBrowserRemoved(nullptr);
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(controller.is_bound());
+
+  // When the manager is notified for the last window, the controller should be
+  // unbound.
+  browser_count_ = 0;
+  static_cast<BrowserListObserver*>(&element_manager_)
+      ->OnBrowserRemoved(nullptr);
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(controller.is_bound());
+
+  // A new connection to the manager should allow a new controller to be bounded
+  valid_spec.set_component_url(
+      "fuchsia-pkg://fuchsia.com/chrome#meta/chrome.cm");
+
+  element_manager->ProposeElement(
+      std::move(valid_spec), controller.NewRequest(),
+      [&](auto result) { ASSERT_TRUE(result.is_response()); });
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(controller.is_bound());
 }
 
 }  // namespace
