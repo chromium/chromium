@@ -428,7 +428,7 @@ const char kEnableOOBEChromeVoxHintForDevMode[] =
 // Enables OOBE testing API for tast tests.
 const char kEnableOobeTestAPI[] = "enable-oobe-test-api";
 
-// Enables configuring the OEM Device Requsition in the OOBE.
+// Enables configuring the OEM Device Requisition in the OOBE.
 const char kEnableRequisitionEdits[] = "enable-requisition-edits";
 
 // Enables tablet form factor.
@@ -711,7 +711,7 @@ const char kOobeTimerInterval[] = "oobe-timer-interval";
 // Allows the timezone to be overridden on the marketing opt-in screen.
 const char kOobeTimezoneOverrideForTests[] = "oobe-timezone-override-for-tests";
 
-// Trigger sync engine initialziation timeout in OOBE for testing.
+// Trigger sync engine initialization timeout in OOBE for testing.
 const char kOobeTriggerSyncTimeoutForTests[] =
     "oobe-trigger-sync-timeout-for-tests";
 

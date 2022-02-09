@@ -169,7 +169,7 @@ class PrefStoreStub : public TestingPrefStore {
   bool IsInitializationComplete() const override { return true; }
 
  private:
-  ~PrefStoreStub() override {}
+  ~PrefStoreStub() override = default;
 };
 
 // Used to set up a `FakeAutoEnrollmentClientFactory` for the duration of a
@@ -414,8 +414,12 @@ class WizardControllerTest : public OobeBaseTest {
   }
 };
 
+IN_PROC_BROWSER_TEST_F(WizardControllerTest, OobeSkipSwitchDisabled) {
+  EXPECT_FALSE(WizardController::IsZeroTouchHandsOffOobeFlow());
+}
+
 IN_PROC_BROWSER_TEST_F(WizardControllerTest, SwitchLanguage) {
-  ASSERT_TRUE(WizardController::default_controller() != NULL);
+  ASSERT_TRUE(WizardController::default_controller() != nullptr);
   WizardController::default_controller()->AdvanceToScreen(
       WelcomeView::kScreenId);
 
@@ -474,13 +478,36 @@ IN_PROC_BROWSER_TEST_F(WizardControllerTest, VolumeIsAdjustedForChromeVox) {
             cras->GetOutputVolumePercent());
 }
 
+class WizardControllerOobeSwitchTest : public WizardControllerTest {
+ public:
+  WizardControllerOobeSwitchTest(const WizardControllerOobeSwitchTest&) =
+      delete;
+  WizardControllerOobeSwitchTest& operator=(
+      const WizardControllerOobeSwitchTest&) = delete;
+
+ protected:
+  WizardControllerOobeSwitchTest() = default;
+  ~WizardControllerOobeSwitchTest() override = default;
+
+  // WizardControllerTest::
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WizardControllerTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        switches::kEnterpriseEnableZeroTouchEnrollment, "hands-off");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WizardControllerOobeSwitchTest, OobeSkipSwitchEnabled) {
+  EXPECT_TRUE(WizardController::IsZeroTouchHandsOffOobeFlow());
+}
+
 class WizardControllerFlowTest : public WizardControllerTest {
  public:
   WizardControllerFlowTest(const WizardControllerFlowTest&) = delete;
   WizardControllerFlowTest& operator=(const WizardControllerFlowTest&) = delete;
 
  protected:
-  WizardControllerFlowTest() {}
+  WizardControllerFlowTest() = default;
   // WizardControllerTest:
   void SetUpOnMainThread() override {
     WizardControllerTest::SetUpOnMainThread();
@@ -630,7 +657,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
                 base::Unretained(wizard_controller))));
 
     // Switch to the initial screen.
-    EXPECT_EQ(NULL, wizard_controller->current_screen());
+    EXPECT_EQ(nullptr, wizard_controller->current_screen());
     EXPECT_CALL(*mock_welcome_screen_, ShowImpl()).Times(1);
     wizard_controller->AdvanceToScreen(WelcomeView::kScreenId);
   }
@@ -744,7 +771,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
     EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(0);
     mock_auto_enrollment_check_screen_->ExitScreen();
 
-    EXPECT_FALSE(ExistingUserController::current_controller() == NULL);
+    EXPECT_FALSE(ExistingUserController::current_controller() == nullptr);
     EXPECT_EQ("ethernet,wifi,cellular", NetworkHandler::Get()
                                             ->network_state_handler()
                                             ->GetCheckPortalListForTest());
@@ -856,7 +883,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest,
   EXPECT_CALL(*mock_eula_screen_, ShowImpl()).Times(0);
   mock_auto_enrollment_check_screen_->ExitScreen();
 
-  EXPECT_FALSE(ExistingUserController::current_controller() == NULL);
+  EXPECT_FALSE(ExistingUserController::current_controller() == nullptr);
 }
 
 // This test verifies that if WizardController fails to apply a critical update
@@ -997,7 +1024,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest,
   CheckCurrentScreen(EnrollmentScreenView::kScreenId);
   mock_enrollment_screen_->ExitScreen(EnrollmentScreen::Result::COMPLETED);
 
-  EXPECT_FALSE(ExistingUserController::current_controller() == NULL);
+  EXPECT_FALSE(ExistingUserController::current_controller() == nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest,
@@ -1010,7 +1037,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest,
 
   EXPECT_CALL(*mock_welcome_screen_, HideImpl()).Times(1);
   LoginDisplayHost::default_host()->StartSignInScreen();
-  EXPECT_FALSE(ExistingUserController::current_controller() == NULL);
+  EXPECT_FALSE(ExistingUserController::current_controller() == nullptr);
 
   EXPECT_CALL(*mock_wrong_hwid_screen_, ShowImpl()).Times(1);
   WizardController::default_controller()->AdvanceToScreen(
@@ -1026,7 +1053,7 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowTest,
   // And this destroys WizardController.
   EXPECT_CALL(*mock_wrong_hwid_screen_, HideImpl()).Times(1);
   GetWrongHWIDScreen()->OnExit();
-  EXPECT_FALSE(ExistingUserController::current_controller() == NULL);
+  EXPECT_FALSE(ExistingUserController::current_controller() == nullptr);
 }
 
 // This parameterized test class extends WizardControllerFlowTest to verify how
@@ -2180,7 +2207,7 @@ class WizardControllerProxyAuthOnSigninTest : public WizardControllerTest {
   WizardControllerProxyAuthOnSigninTest()
       : proxy_server_(net::SpawnedTestServer::TYPE_BASIC_AUTH_PROXY,
                       base::FilePath()) {}
-  ~WizardControllerProxyAuthOnSigninTest() override {}
+  ~WizardControllerProxyAuthOnSigninTest() override = default;
 
   // WizardControllerTest:
   void SetUp() override {
@@ -2232,7 +2259,7 @@ class WizardControllerKioskFlowTest : public WizardControllerFlowTest {
       const WizardControllerKioskFlowTest&) = delete;
 
  protected:
-  WizardControllerKioskFlowTest() {}
+  WizardControllerKioskFlowTest() = default;
 
   // WizardControllerFlowTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -2433,7 +2460,7 @@ class WizardControllerEnableDebuggingTest : public WizardControllerFlowTest {
       const WizardControllerEnableDebuggingTest&) = delete;
 
  protected:
-  WizardControllerEnableDebuggingTest() {}
+  WizardControllerEnableDebuggingTest() = default;
 
   // MixinBasedInProcessBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -2993,7 +3020,7 @@ class WizardControllerOobeResumeTest : public WizardControllerTest {
       const WizardControllerOobeResumeTest&) = delete;
 
  protected:
-  WizardControllerOobeResumeTest() {}
+  WizardControllerOobeResumeTest() = default;
   // WizardControllerTest:
   void SetUpOnMainThread() override {
     WizardControllerTest::SetUpOnMainThread();
@@ -3096,7 +3123,7 @@ class WizardControllerCellularFirstTest : public WizardControllerFlowTest {
       const WizardControllerCellularFirstTest&) = delete;
 
  protected:
-  WizardControllerCellularFirstTest() {}
+  WizardControllerCellularFirstTest() = default;
 
   // WizardControllerFlowTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -3117,7 +3144,7 @@ class WizardControllerOobeConfigurationTest : public WizardControllerTest {
       const WizardControllerOobeConfigurationTest&) = delete;
 
  protected:
-  WizardControllerOobeConfigurationTest() {}
+  WizardControllerOobeConfigurationTest() = default;
 
   // WizardControllerTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -3157,7 +3184,7 @@ class WizardControllerRollbackFlowTest : public WizardControllerFlowTest {
       const WizardControllerRollbackFlowTest&) = delete;
 
  protected:
-  WizardControllerRollbackFlowTest() {}
+  WizardControllerRollbackFlowTest() = default;
 
   void SetUp() override {
     std::unique_ptr<FakeRollbackNetworkConfig> network_config =

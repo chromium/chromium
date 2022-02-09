@@ -363,7 +363,7 @@ const int WizardController::kMinAudibleOutputVolumePercent = 10;
 bool WizardController::skip_post_login_screens_ = false;
 
 // static
-bool WizardController::skip_enrollment_prompts_ = false;
+bool WizardController::skip_enrollment_prompts_for_testing_ = false;
 
 // static
 WizardController* WizardController::default_controller() {
@@ -428,7 +428,7 @@ void WizardController::Init(OobeScreenId first_screen) {
   // enterprise-enrolled devices.
   //
   // TODO (ygorshenin@): implement handling of the local state
-  // corruption in the case of asynchronious loading.
+  // corruption in the case of asynchronous loading.
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   const bool is_enterprise_managed = connector->IsDeviceEnterpriseManaged();
@@ -2287,11 +2287,11 @@ void WizardController::SkipPostLoginScreensForTesting() {
 
 // static
 void WizardController::SkipEnrollmentPromptsForTesting() {
-  skip_enrollment_prompts_ = true;
+  skip_enrollment_prompts_for_testing_ = true;
 }
 
 // static
-bool WizardController::UsingHandsOffEnrollment() {
+bool WizardController::IsZeroTouchHandsOffOobeFlow() {
   return policy::DeviceCloudPolicyManagerAsh::GetZeroTouchEnrollmentMode() ==
          policy::ZeroTouchEnrollmentMode::HANDS_OFF;
 }

@@ -144,18 +144,6 @@ class WelcomeScreenBrowserTest : public OobeBaseTest {
   base::ScopedTempDir data_dir_;
 };
 
-class WelcomeScreenSystemDevModeBrowserTest : public WelcomeScreenBrowserTest {
- public:
-  WelcomeScreenSystemDevModeBrowserTest() = default;
-  ~WelcomeScreenSystemDevModeBrowserTest() override = default;
-
-  // WelcomeScreenBrowserTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    WelcomeScreenBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(chromeos::switches::kSystemDevMode);
-  }
-};
-
 IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest, WelcomeScreenElements) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
 
@@ -457,6 +445,18 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest, A11yVirtualKeyboard) {
   histogram_tester_.ExpectTotalCount("OOBE.WelcomeScreen.A11yUserActions", 2);
 }
 
+class WelcomeScreenSystemDevModeBrowserTest : public WelcomeScreenBrowserTest {
+ public:
+  WelcomeScreenSystemDevModeBrowserTest() = default;
+  ~WelcomeScreenSystemDevModeBrowserTest() override = default;
+
+  // WelcomeScreenBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WelcomeScreenBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(chromeos::switches::kSystemDevMode);
+  }
+};
+
 IN_PROC_BROWSER_TEST_F(WelcomeScreenSystemDevModeBrowserTest,
                        DebuggerModeTest) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
@@ -472,6 +472,23 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenSystemDevModeBrowserTest,
       {"debugging", "removeProtectionCancelButton"});
   test::OobeJS().ExpectVisiblePath({"debugging", "help-link"});
   test::OobeJS().ClickOnPath({"debugging", "removeProtectionCancelButton"});
+}
+
+class WelcomeScreenHandsOffBrowserTest : public WelcomeScreenBrowserTest {
+ public:
+  WelcomeScreenHandsOffBrowserTest() = default;
+  ~WelcomeScreenHandsOffBrowserTest() override = default;
+
+  // WelcomeScreenBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WelcomeScreenBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        switches::kEnterpriseEnableZeroTouchEnrollment, "hands-off");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WelcomeScreenHandsOffBrowserTest, SkipScreen) {
+  WaitForScreenExit();
 }
 
 class WelcomeScreenTimezone : public WelcomeScreenBrowserTest {
@@ -581,15 +598,16 @@ class WelcomeScreenChromeVoxHintTest : public WelcomeScreenBrowserTest {
 // Clicking the 'activate' button in the dialog should activate ChromeVox.
 IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, LaptopClick) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
-  // A sanity check to ensure the ChromeVox hint idle detector is disabled for
-  // this and similar tests.
+  // A consistency check to ensure the ChromeVox hint idle detector is disabled
+  // for this and similar tests.
   ASSERT_FALSE(IdleDetectionActivatedForTesting());
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   test::ExecuteOobeJS(kSetAvailableVoices);
   test::SpeechMonitor monitor;
   test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, false);
   GiveChromeVoxHintForTesting();
-  // A sanity check to ensure we stop idle detection after the hint is given.
+  // A consistency check to ensure we stop idle detection after the hint is
+  // given.
   ASSERT_TRUE(IdleDetectionCancelledForTesting());
   monitor.ExpectSpeech(kChromeVoxHintLaptopSpokenString);
   monitor.Call([this]() {

@@ -523,7 +523,7 @@ void EnrollmentScreen::OnEnrollmentError(policy::EnrollmentStatus status) {
 
   if (view_)
     view_->ShowEnrollmentStatus(status);
-  if (WizardController::UsingHandsOffEnrollment())
+  if (WizardController::IsZeroTouchHandsOffOobeFlow())
     AutomaticRetry();
 }
 
@@ -533,7 +533,7 @@ void EnrollmentScreen::OnOtherError(
   RecordEnrollmentErrorMetrics();
   if (view_)
     view_->ShowOtherError(error);
-  if (WizardController::UsingHandsOffEnrollment())
+  if (WizardController::IsZeroTouchHandsOffOobeFlow())
     AutomaticRetry();
 }
 
@@ -615,7 +615,7 @@ void EnrollmentScreen::OnDeviceAttributeProvided(const std::string& asset_id,
 void EnrollmentScreen::OnDeviceAttributeUpdatePermission(bool granted) {
   // If user is permitted to update device attributes
   // Show attribute prompt screen
-  if (granted && !WizardController::skip_enrollment_prompts()) {
+  if (granted && !WizardController::skip_enrollment_prompts_for_testing()) {
     StartupUtils::MarkDeviceRegistered(
         base::BindOnce(&EnrollmentScreen::ShowAttributePromptScreen,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -697,8 +697,8 @@ void EnrollmentScreen::ShowEnrollmentStatusOnSuccess() {
   retry_backoff_->InformOfRequest(true);
   if (elapsed_timer_)
     UMA_ENROLLMENT_TIME(kMetricEnrollmentTimeSuccess, elapsed_timer_);
-  if (WizardController::UsingHandsOffEnrollment() ||
-      WizardController::skip_enrollment_prompts()) {
+  if (WizardController::IsZeroTouchHandsOffOobeFlow() ||
+      WizardController::skip_enrollment_prompts_for_testing()) {
     OnConfirmationClosed();
   } else if (view_) {
     view_->ShowEnrollmentStatus(

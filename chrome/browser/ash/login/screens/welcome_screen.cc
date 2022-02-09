@@ -349,8 +349,10 @@ void WelcomeScreen::ShowImpl() {
     SetApplicationLocale(startup_manifest->initial_locale_default());
   }
 
-  // Automatically continue if we are using hands-off enrollment.
-  if (WizardController::UsingHandsOffEnrollment()) {
+  // Automatically continue if we are using zero-touch hands-off enrollment.
+  // TODO(crbug.com/1295708): Move this check to an implementation of
+  // BaseScreen:MaybeSkip().
+  if (WizardController::IsZeroTouchHandsOffOobeFlow()) {
     OnUserAction(kUserActionContinueButtonClicked);
     return;
   }

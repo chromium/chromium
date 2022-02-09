@@ -224,9 +224,9 @@ void NetworkScreen::StopWaitingForConnection(const std::u16string& network_id) {
 
   network_id_ = network_id;
 
-  // Automatically continue if we are using Hands-Off Enrollment.
+  // Automatically continue if we are using Zero-Touch Hands-Off Enrollment.
   if (is_connected && continue_attempts_ == 0 &&
-      WizardController::UsingHandsOffEnrollment()) {
+      WizardController::IsZeroTouchHandsOffOobeFlow()) {
     OnContinueButtonClicked();
   }
 }

@@ -155,7 +155,7 @@ bool EulaScreen::IsUsageStatsEnabled() const {
 
 void EulaScreen::OnViewDestroyed(EulaView* view) {
   if (view_ == view)
-    view_ = NULL;
+    view_ = nullptr;
 }
 
 void EulaScreen::ShowImpl() {
@@ -166,7 +166,7 @@ void EulaScreen::ShowImpl() {
     TpmManagerClient::Get()->TakeOwnership(
         ::tpm_manager::TakeOwnershipRequest(), base::DoNothing());
   }
-  if (WizardController::UsingHandsOffEnrollment())
+  if (WizardController::IsZeroTouchHandsOffOobeFlow())
     OnUserAction(kUserActionAcceptButtonClicked);
   else if (view_)
     view_->Show();

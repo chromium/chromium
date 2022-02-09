@@ -111,7 +111,9 @@ class WizardController : public OobeUI::Observer {
   static bool skip_post_login_screens() { return skip_post_login_screens_; }
 
   // Whether to skip any prompts that may be normally shown during enrollment.
-  static bool skip_enrollment_prompts() { return skip_enrollment_prompts_; }
+  static bool skip_enrollment_prompts_for_testing() {
+    return skip_enrollment_prompts_for_testing_;
+  }
 
   // Sets delays to zero. MUST be used only for tests.
   static void SetZeroDelays();
@@ -126,9 +128,9 @@ class WizardController : public OobeUI::Observer {
   // Skips any enrollment prompts that may be normally shown.
   static void SkipEnrollmentPromptsForTesting();
 
-  // Returns true if OOBE is operating under the
-  // Zero-Touch Hands-Off Enrollment Flow.
-  static bool UsingHandsOffEnrollment();
+  // Returns true if OOBE is operating under the Zero-Touch Hands-Off
+  // Enrollment flow.
+  static bool IsZeroTouchHandsOffOobeFlow();
 
   bool is_initialized() { return is_initialized_; }
 
@@ -452,7 +454,7 @@ class WizardController : public OobeUI::Observer {
   // (registration, Terms of Service, user image selection).
   static bool skip_post_login_screens_;
 
-  static bool skip_enrollment_prompts_;
+  static bool skip_enrollment_prompts_for_testing_;
 
   // Screen that's currently active.
   BaseScreen* current_screen_ = nullptr;
