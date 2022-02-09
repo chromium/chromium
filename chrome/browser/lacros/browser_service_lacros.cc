@@ -12,6 +12,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/feedback/feedback_dialog_utils.h"
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/feedback_util.h"
@@ -142,11 +143,24 @@ void BrowserServiceLacros::NewWindow(bool incognito,
     return;
   }
 
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
   // TODO(crbug.com/1102815): Find what profile should be used.
-  ProfileManager::LoadLastUsedProfileAllowedByPolicy(
-      base::BindOnce(&BrowserServiceLacros::NewWindowWithProfile,
-                     weak_ptr_factory_.GetWeakPtr(), incognito,
-                     should_trigger_session_restore, std::move(callback)));
+  // Open the last used profile, unless it's a special profile like Guest. This
+  // deviates from other entry points here as this is the primary entry point to
+  // _launch_ Chrome. As there's no way to open other profiles from within
+  // Guest, user could get stuck with Guest forever without this treatment.
+  base::FilePath profile_path = profile_manager->GetLastUsedProfileDir();
+  if (profile_path == ProfileManager::GetGuestProfilePath() ||
+      profile_path == ProfileManager::GetSystemProfilePath()) {
+    profile_path = ProfileManager::GetPrimaryUserProfilePath();
+  }
+  profile_manager->LoadProfileByPath(
+      profile_path, /*incognito=*/false,
+      base::BindOnce(&ProfileManager::MaybeForceOffTheRecordMode)
+          .Then(base::BindOnce(&BrowserServiceLacros::NewWindowWithProfile,
+                               weak_ptr_factory_.GetWeakPtr(), incognito,
+                               should_trigger_session_restore,
+                               std::move(callback))));
 }
 
 void BrowserServiceLacros::NewFullscreenWindow(

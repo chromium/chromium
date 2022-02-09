@@ -1023,6 +1023,17 @@ base::FilePath ProfileManager::GetSystemProfilePath() {
   return system_path.Append(chrome::kSystemProfileDir);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// static
+base::FilePath ProfileManager::GetPrimaryUserProfilePath() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  return profile_manager->user_data_dir().Append(
+      profile_manager->GetInitialProfileDir());
+}
+#endif
+
 base::FilePath ProfileManager::GenerateNextProfileDirectoryPath() {
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);

@@ -228,6 +228,11 @@ class ProfileManager : public Profile::Delegate {
   // Returns the full path to be used for system profiles.
   static base::FilePath GetSystemProfilePath();
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Returns the full path of the primary profile on lacros.
+  static base::FilePath GetPrimaryUserProfilePath();
+#endif
+
   // Get the path of the next profile directory and increment the internal
   // count.
   // Lack of side effects:
