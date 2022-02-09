@@ -304,10 +304,6 @@ crbug.com/dawn/666 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,cr
 crbug.com/dawn/666 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createRenderPipeline:depth_stencil_state,stencil_aspect,stencil_write:isAsync=false;format="stencil8";* [ Failure ]
 crbug.com/dawn/666 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createRenderPipeline:depth_stencil_state,stencil_aspect,stencil_write:isAsync=true;format="stencil8";* [ Failure ]
 
-# Need to clamp depth in shader on Vulkan
-crbug.com/dawn/1125 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,rendering,depth_clip_clamp:depth_clamp_and_clip:clampDepth=false;writeDepth=true;* [ Failure ]
-crbug.com/dawn/1125 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,rendering,depth_clip_clamp:depth_test_input_clamped:clampDepth=false;* [ Failure ]
-
 crbug.com/tint/1215 wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,shader_io,compute_builtins:inputs:* [ Failure ]
 
 crbug.com/tint/1216 wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,robust_access:linear_memory:storageClass="private";access="read";containerType="vector";* [ Failure ]
@@ -329,9 +325,6 @@ crbug.com/1197369 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,que
 crbug.com/1197369 wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,ImageBitmap:from_ImageData:alpha="premultiply";orientation="flipY";* [ Skip ]
 
 crbug.com/dawn/995 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,buffer,create:createBuffer_invalid_and_oom:* [ Failure ]
-
-# baseVertex not implemented for indirect draws
-crbug.com/dawn/548 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,robust_access_vertex:vertex_buffer_access:indexed=true;indirect=true;drawCallTestParameter="baseVertex";* [ Failure ]
 
 # Dawn validation requires that aspects of attachments is "all", which the tests don't do.
 # See also crbug.com/dawn/603 for missing resource state D3D12_RESOURCE_STATE_DEPTH_WRITE that happens on the same tests.
@@ -430,6 +423,9 @@ crbug.com/dawn/1116 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,e
 crbug.com/dawn/1116 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,zero_init:compute,zero_init:storageClass="private";batch__=28;* [ Failure ]
 crbug.com/dawn/1116 [ Mac ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,zero_init:compute,zero_init:storageClass="private";batch__=29;* [ Failure ]
 
+# (Intel-only?) Flaky test failures on Mac 11.5.2
+crbug.com/dawn/1119 [ Mac11 ] wpt_internal/webgpu/cts.https.html?worker=1&q=webgpu:api,operation,rendering,basic:large_draw:* [ RetryOnFailure ]
+
 ###
 ### Linux (Vulkan) specific
 ###
@@ -472,6 +468,10 @@ crbug.com/tint/1287 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader
 
 crbug.com/dawn/1256 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_gpu_context_canvas:* [ Crash ]
 
+# Need to clamp depth in shader on Vulkan
+crbug.com/dawn/1125 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,rendering,depth_clip_clamp:depth_clamp_and_clip:clampDepth=false;writeDepth=true;* [ Failure ]
+crbug.com/dawn/1125 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,rendering,depth_clip_clamp:depth_test_input_clamped:clampDepth=false;* [ Failure ]
+
 ###
 ### Windows (D3D12) specific
 ###
@@ -509,9 +509,6 @@ crbug.com/tint/1287 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,e
 # (Intel-only) Unexpected result. Possibly due to using dst-alpha on an attachment with no alpha channel.
 crbug.com/dawn/1063 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,render_pipeline,pipeline_output_targets:color,component_count,blend:* [ Failure ]
 
-# (Intel-only?) Flaky test failures on Mac 11.5.2
-crbug.com/dawn/1119 [ Mac11 ] wpt_internal/webgpu/cts.https.html?worker=1&q=webgpu:api,operation,rendering,basic:large_draw:* [ RetryOnFailure ]
-
 # (Intel-HD630/UHD630-only) CopyExternalImageToTexture test failures with CPU uploading path on Windows.
 crbug.com/1269118 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_2d_context_canvas:canvasType="offscreen";dstColorFormat="rg32float";* [ Failure ]
 crbug.com/1269118 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_2d_context_canvas:canvasType="offscreen";dstColorFormat="rgba32float";* [ Failure ]
@@ -529,3 +526,10 @@ crbug.com/1269118 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:web_platfo
 # KI due to support in Tint being rolled back
 crbug.com/tint/1322 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,sampling,gradients_in_varying_loop:derivative_in_varying_loop:* [ Failure ]
 
+# baseVertex not implemented for indirect draws
+crbug.com/dawn/548 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:shader,execution,robust_access_vertex:vertex_buffer_access:indexed=true;indirect=true;drawCallTestParameter="baseVertex";* [ Failure ]
+
+# Various issues with 3D textures
+crbug.com/dawn/1288 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,non_compressed,array:dimension="3d";* [ Failure ]
+crbug.com/dawn/1289 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,image_copy:mip_levels:dimension="3d";* [ Failure ]
+crbug.com/dawn/1289 [ Win ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,command_buffer,image_copy:rowsPerImage_and_bytesPerRow:dimension="3d";* [ Failure ]
