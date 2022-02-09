@@ -72,10 +72,98 @@ message UMAFeature {
   repeated int32 enum_ids = 7;
 }
 
+message CustomInput {
+  // If the param is directly used as the input tensor field to the model, then
+  // this specifies the number of columns to fill in the tensor. In this case
+  // the value should be float.
+  optional int32 tensor_length = 1;
+
+  // Used to distinguish between different types of custom inputs.
+  enum FillPolicy {
+    // Custom functions provided by the engine that fills in the input feature
+    // to the model.
+    UNKNOWN_FILL_POLICY = 0;
+    // Output is the time at which model prediction is needed. Can be used to
+    // bind TIME type param to queries.
+    PREDICTION_TIME = 1;
+  }
+
+  // The fill type of the custom input.
+  optional FillPolicy fill_policy = 2;
+
+  // If the current chrome version does not support this fill type, use this
+  // value. If this is not specified and the function is unavailable, the model
+  // will not run due to missing input. The number of entries should be equal to
+  // the |tensor_length|.
+  repeated float default_value = 3;
+}
+
+// Configuration for storing signals in the SQL database.
+message SignalFilterConfig {
+  // Defines a single UKM event that should be stored.
+  message UkmEvent {
+    // Event hash of the UKM event.
+    optional uint64 event_hash = 1;
+    // List of metric hashes for the event, to store in the database. If
+    // empty, the database will store all the metrics for the UKM event. It is
+    // is recommended to provide list of necessary metrics, unless it is clear
+    // that the list of metrics of the event is easily trackable and doesn't
+    // grow over time.
+    repeated uint64 metric_hash_filter = 2;
+  }
+  // List of UKM events to store in the database.
+  repeated UkmEvent ukm_events = 1;
+}
+
+message SqlFeature {
+  // The query should select a single float column. The query can contain '?'
+  // which can be used to bind values using |bind_values| list.
+  // TODO(ssid): Consider expanding this to return multiple input tensor
+  // features.
+  optional string sql = 1;
+
+  // List of signals needed in the storage for the query.
+  optional SignalFilterConfig signal_filter = 2;
+
+  // Used to bind value for the SQL query.
+  message BindValue {
+    // The bind field numbers, in range of 0 to n-1, for n question marks in the
+    // SQL query.
+    repeated int32 bind_field_index = 1;
+
+    // Used to call Bind*() in sql::Statement.
+    enum ParamType {
+      UNKNOWN = 0;
+      NULL = 1;
+      BOOL = 2;
+      INT = 3;
+      INT64 = 4;
+      DOUBLE = 5;
+      STRING = 6;
+      TIME = 7;
+    }
+    optional ParamType param_type = 2;
+
+    // Value of the input to bind the query. The custom function should return
+    // the specified param type. The |tensor_length| should be 0 since these
+    // inputs can only be used for SQL bind values.
+    optional CustomInput value = 3;
+  }
+  repeated BindValue bind_values = 3;
+}
+
 // Contains a feature used as an input to the ML model.
 message InputFeature {
-  // An UMAFeature type of input feature.
-  optional UMAFeature uma_feature = 1;
+  oneof Feature {
+    // An UMAFeature type of input feature.
+    UMAFeature uma_feature = 1;
+
+    // A custom input type of input feature.
+    CustomInput custom_input = 2;
+
+    // Input feature computed using SQL query.
+    SqlFeature sql_feature = 3;
+  }
 }
 
 // Metadata about a segmentation model for a given segment. Contains information
