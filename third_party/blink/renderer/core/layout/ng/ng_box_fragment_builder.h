@@ -658,6 +658,9 @@ class CORE_EXPORT NGBoxFragmentBuilder final
         To<LayoutBlock>(layout_object_));
   }
 
+  // Propagate the break-before/break-after of the child (if applicable).
+  void PropagateChildBreakValues(const NGLayoutResult& child_layout_result);
+
  private:
   // Propagate fragmentation details. This includes checking whether we have
   // fragmented in this flow, break appeal, column spanner detection, and column
