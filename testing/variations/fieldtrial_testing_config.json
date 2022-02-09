@@ -6753,6 +6753,32 @@
             ]
         }
     ],
+    "V8SlowHistograms": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Control",
+                    "disable_features": [
+                        "V8SlowHistograms"
+                    ]
+                },
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "V8SlowHistograms"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8Sparkplug-Android": [
         {
             "platforms": [
