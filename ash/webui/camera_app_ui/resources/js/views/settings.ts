@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertInstanceof} from '../assert.js';
+import {assert, assertExists, assertInstanceof} from '../assert.js';
 import {CameraManager} from '../device/index.js';
 import * as dom from '../dom.js';
 import {reportError} from '../error.js';
@@ -117,7 +117,7 @@ export class PrimarySettings extends BaseSettings {
         // Use an IIFE here since TypeScript doesn't allow any statement
         // before super() call if we have property initializers.
         (() => {
-          const openHandler = (openerId, viewName) => {
+          const openHandler = (openerId: string, viewName: ViewName) => {
             const opener = dom.get(`#${openerId}`, HTMLElement);
             return {[openerId]: () => this.openSubSettings(opener, viewName)};
           };
@@ -340,10 +340,14 @@ export class ResolutionSettings extends BaseSettings {
         const deviceId = cameraManager.getDeviceId();
         if (cameraManager.getMode() === Mode.VIDEO) {
           const prefResol = cameraManager.getPrefVideoResolution(deviceId);
-          this.updateSelectedVideoResolution(deviceId, prefResol);
+          if (prefResol !== null) {
+            this.updateSelectedVideoResolution(deviceId, prefResol);
+          }
         } else {
           const prefResol = cameraManager.getPrefPhotoResolution(deviceId);
-          this.updateSelectedPhotoResolution(deviceId, prefResol);
+          if (prefResol !== null) {
+            this.updateSelectedPhotoResolution(deviceId, prefResol);
+          }
         }
       },
     });
@@ -455,10 +459,12 @@ export class ResolutionSettings extends BaseSettings {
         `.external-camera.title-item[data-device-id="${prevFId}"]`);
     const focusedId = focusIdx === -1 ? null : prevFId;
 
-    dom.getAllFrom(this.resMenu, '.menu-item.external-camera', HTMLElement)
-        .forEach(
-            (element) => element.dataset['deviceId'] !== focusedId &&
-                element.parentNode.removeChild(element));
+    for (const element of dom.getAllFrom(
+             this.resMenu, '.menu-item.external-camera', HTMLElement)) {
+      if (element.dataset['deviceId'] !== focusedId) {
+        assertExists(element.parentNode).removeChild(element);
+      }
+    }
 
     this.externalSettings.forEach((config, index) => {
       const {deviceId} = config;
@@ -493,6 +499,7 @@ export class ResolutionSettings extends BaseSettings {
           this.resMenu.appendChild(extItem);
         }
       } else {
+        assert(fTitle !== null);
         titleItem = fTitle;
         photoItem = assertInstanceof(fTitle.nextElementSibling, HTMLElement);
         videoItem = assertInstanceof(photoItem.nextElementSibling, HTMLElement);
@@ -520,7 +527,7 @@ export class ResolutionSettings extends BaseSettings {
    */
   private updateSelectedPhotoResolution(
       deviceId: string, resolution: Resolution) {
-    const {photo} = this.getDeviceSetting(deviceId);
+    const {photo} = assertExists(this.getDeviceSetting(deviceId));
     photo.prefResol = resolution;
     let photoItem: HTMLElement;
     if (this.frontSetting && this.frontSetting.deviceId === deviceId) {
@@ -555,7 +562,7 @@ export class ResolutionSettings extends BaseSettings {
    */
   private updateSelectedVideoResolution(
       deviceId: string, resolution: Resolution) {
-    const {video} = this.getDeviceSetting(deviceId);
+    const {video} = assertExists(this.getDeviceSetting(deviceId));
     video.prefResol = resolution;
     let videoItem: HTMLElement;
     if (this.frontSetting && this.frontSetting.deviceId === deviceId) {
@@ -640,7 +647,7 @@ export class ResolutionSettings extends BaseSettings {
     captionText.textContent = '';
     for (const element of dom.getAllFrom(
              menu, '.menu-item', HTMLLabelElement)) {
-      element.parentNode.removeChild(element);
+      assertExists(element.parentNode).removeChild(element);
     }
 
     for (const r of resolutions) {
@@ -648,7 +655,7 @@ export class ResolutionSettings extends BaseSettings {
       const input = dom.getFrom(item, 'input', HTMLInputElement);
       dom.getFrom(item, 'span', HTMLSpanElement).textContent =
           optTextTempl(r, resolutions);
-      input.name = menu.dataset[I18nString.NAME];
+      input.name = assertExists(menu.dataset[I18nString.NAME]);
       input.dataset['width'] = r.width.toString();
       input.dataset['height'] = r.height.toString();
       if (r.equals(selectedR)) {
