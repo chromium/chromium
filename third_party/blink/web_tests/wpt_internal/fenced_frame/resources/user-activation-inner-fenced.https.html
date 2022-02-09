@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="utils.js"></script>
+<title>Fenced frame content to verify user activations do not propagate.</title>
+
+<body>
+  <script>
+    async function init() {
+      // This file is meant to run in a <fencedframe>. It reports back to the
+      // outermost page whether or not user activation by click succeeded.
+
+      const url_parameters = new URL(location.href).searchParams;
+      const ack_key = url_parameters.get('uuid');
+
+      const user_activation_key = stringToStashKey("user_activation");
+
+      // Wait to start the test until the embedder tells us it's time.
+      await nextValueFromServer(ack_key);
+
+      // Check that the fenced frame hasn't been activated yet.
+      assert_false(navigator.userActivation.hasBeenActive,
+                   "The fenced frame has not been activated yet.");
+      assert_false(navigator.userActivation.isActive,
+                   "The fenced frame is not currently active.");
+
+      // Simulate a click using the absolute coordinates of this frame.
+      const fenced_frame_offset_x = parseInt(url_parameters.get('x'));
+      const fenced_frame_offset_y = parseInt(url_parameters.get('y'));
+      const body_coordinates = document.body.getBoundingClientRect();
+
+      var actions = new test_driver.Actions();
+      await actions.pointerMove(fenced_frame_offset_x + body_coordinates.x,
+                                fenced_frame_offset_y + body_coordinates.y)
+                   .pointerDown()
+                   .pointerUp()
+                   .send();
+
+      // Check that the fenced frame has now been activated.
+      assert_true(navigator.userActivation.hasBeenActive,
+                  "The fenced frame has been activated.");
+      assert_true(navigator.userActivation.isActive,
+                  "The fenced frame is currently active.");
+
+      // Tell the embedder that we're done.
+      writeValueToServer(user_activation_key, "pass");
+    }
+
+    init();
+  </script>
+</body>

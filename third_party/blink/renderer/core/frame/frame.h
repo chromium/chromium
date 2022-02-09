@@ -345,10 +345,14 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   Frame* Opener() const { return opener_; }
 
   // Returns the parent frame or null if this is the top-most frame.
+  // When `frame_tree_boundary` is `kFenced`, returns null if this is a fenced
+  // frame root.
   Frame* Parent(FrameTreeBoundary frame_tree_boundary =
                     FrameTreeBoundary::kIgnoreFence) const;
 
   // Returns the top-most frame in the hierarchy containing this frame.
+  // When `frame_tree_boundary` is `kFenced`, does not traverse out of fenced
+  // frame root nodes.
   Frame* Top(
       FrameTreeBoundary frame_tree_boundary = FrameTreeBoundary::kIgnoreFence);
 
@@ -360,7 +364,10 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   Frame* PreviousSibling() const { return previous_sibling_; }
 
   // Returns the next sibling frame.
-  Frame* NextSibling() const { return next_sibling_; }
+  // When `frame_tree_boundary` is `kFenced`, skips over siblings that are
+  // fenced frame roots.
+  Frame* NextSibling(FrameTreeBoundary frame_tree_boundary =
+                         FrameTreeBoundary::kIgnoreFence) const;
 
   // Returns the last child frame.
   Frame* LastChild() const { return last_child_; }

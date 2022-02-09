@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<title>Test that user activation propagation is fenced.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/common/utils.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+  <script>
+    promise_test(async () => {
+      // This test ensures that user activations (e.g. click events) don't
+      // propagate across fenced frame boundaries. Specifically, activations
+      // are visible through the `navigator.userActivation` object.
+      //
+      // The structure of the test is as follows: in the top-level frame A,
+      // we create iframe B, fencedframe C, iframe D, and fencedframe E.
+      // This order is chosen to test all cases in Frame::TraverseNext().
+      // - Click in C and check that only C gets activated (not A, B, or D)
+      // - Click in A and check that only A and B get activated (not D)
+      // - Click in B and check that only A gets activated (not E)
+      // - Click in D and check that only A gets activated (not E)
+
+      const user_activation_key = stringToStashKey("user_activation");
+      const iframe1_ack_key = token();
+      const iframe2_ack_key = token();
+      const fencedframe1_ack_key = token();
+      const fencedframe2_ack_key = token();
+
+      const iframe_url = "resources/user-activation-inner-iframe.https.html";
+      const fencedframe_url = "resources/user-activation-inner-fenced.https.html";
+
+      // Check that the embedding page is inactive before we start.
+      assert_false(navigator.userActivation.hasBeenActive,
+                   "The top-level frame has not been activated yet.");
+      assert_false(navigator.userActivation.isActive,
+                   "The top-level frame is not currently active.");
+
+      // Create two iframes and two fenced frames.
+      // TODO(crbug.com/1268238): We load an actual site (google.com)
+      // rather than about:blank due to a preexisting bug in MPArch.
+      iframe1 = attachIFrame(iframe_url + `?uuid=${iframe1_ack_key}`);
+      fencedframe1 = attachFencedFrame("google.com");
+      iframe2 = attachIFrame(iframe_url + `?uuid=${iframe2_ack_key}`);
+      fencedframe2 = attachFencedFrame("google.com");
+
+      // Inside the fenced frames you can't see absolute coordinates,
+      // so we need to tell them where they are in the context of the page.
+      const fencedframe1_coordinates = fencedframe1.getBoundingClientRect();
+      fencedframe1.src = fencedframe_url + `?uuid=${fencedframe1_ack_key}`
+                                         + `&x=${fencedframe1_coordinates.x}`
+                                         + `&y=${fencedframe1_coordinates.y}`;
+      const fencedframe2_coordinates = fencedframe2.getBoundingClientRect();
+      fencedframe2.src = fencedframe_url + `?uuid=${fencedframe2_ack_key}`
+                                         + `&x=${fencedframe2_coordinates.x}`
+                                         + `&y=${fencedframe2_coordinates.y}`;
+
+      // Tell the first fenced frame to run its simulated click tests.
+      writeValueToServer(fencedframe1_ack_key, "start");
+      await nextValueFromServer(user_activation_key);
+
+      // Check that the embedder is still inactive after the simulated click
+      // inside the first fenced frame.
+      assert_false(navigator.userActivation.hasBeenActive,
+                   "The top-level frame has still not been activated yet.");
+      assert_false(navigator.userActivation.isActive,
+                   "The top-level frame is still not currently active.");
+
+      // Tell the iframes to check that they haven't been activated, and wait.
+      writeValueToServer(iframe1_ack_key, "start");
+      await nextValueFromServer(user_activation_key);
+
+      writeValueToServer(iframe2_ack_key, "start");
+      await nextValueFromServer(user_activation_key);
+
+      // Simulate a click in this frame.
+      var actions = new test_driver.Actions();
+      await actions.pointerMove(0, 0, {origin: document.body})
+                   .pointerDown()
+                   .pointerUp()
+                   .send();
+
+      // Check that the click activated this frame.
+      assert_true(navigator.userActivation.hasBeenActive,
+                  "The top-level frame has been activated.");
+      assert_true(navigator.userActivation.isActive,
+                  "The top-level frame is currently active.");
+
+      // Tell the iframes to check that they were activated.
+      writeValueToServer(iframe1_ack_key, "start");
+      await nextValueFromServer(user_activation_key);
+
+      writeValueToServer(iframe2_ack_key, "start");
+      await nextValueFromServer(user_activation_key);
+
+      // Simulate a click in the first iframe.
+      var actions = new test_driver.Actions();
+      await actions.pointerMove(0, 0, {origin: iframe1})
+                   .pointerDown()
+                   .pointerUp()
+                   .send();
+
+      // Tell the first iframe to check that it was activated again.
+      writeValueToServer(iframe1_ack_key, "start");
+      await nextValueFromServer(user_activation_key);
+
+      // Check that the second iframe click activated this frame.
+      assert_true(navigator.userActivation.isActive,
+                  "The top-level frame is active again.");
+
+      // Simulate a click in the second iframe.
+      var actions = new test_driver.Actions();
+      await actions.pointerMove(0, 0, {origin: iframe2})
+                   .pointerDown()
+                   .pointerUp()
+                   .send();
+
+      // Tell the second iframe to check that it was activated again.
+      writeValueToServer(iframe2_ack_key, "start");
+      await nextValueFromServer(user_activation_key);
+
+      // Check that the second iframe click activated this frame.
+      assert_true(navigator.userActivation.isActive,
+                  "The top-level frame is active again.");
+
+      // Tell the second fenced frame to run its simulated click tests.
+      // In particular, check that none of the above clicks activated it.
+      writeValueToServer(fencedframe2_ack_key, "start");
+      await nextValueFromServer(user_activation_key);
+
+    }, "user-activation");
+  </script>
+</body>

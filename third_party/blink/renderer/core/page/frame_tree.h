@@ -69,7 +69,8 @@ class CORE_EXPORT FrameTree final {
                     FrameTreeBoundary::kIgnoreFence) const;
   Frame& Top(FrameTreeBoundary frame_tree_boundary =
                  FrameTreeBoundary::kIgnoreFence) const;
-  Frame* NextSibling() const;
+  Frame* NextSibling(FrameTreeBoundary frame_tree_boundary =
+                         FrameTreeBoundary::kIgnoreFence) const;
   Frame* FirstChild(FrameTreeBoundary frame_tree_boundary =
                         FrameTreeBoundary::kIgnoreFence) const;
 
