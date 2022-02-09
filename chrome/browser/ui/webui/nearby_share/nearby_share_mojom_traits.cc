@@ -57,6 +57,8 @@ StructTraits<nearby_share::mojom::ShareTargetDataView,
     attachment = &share_target.file_attachments[0];
   } else if (!share_target.text_attachments.empty()) {
     attachment = &share_target.text_attachments[0];
+  } else if (!share_target.wifi_credentials_attachments.empty()) {
+    attachment = &share_target.wifi_credentials_attachments[0];
   }
 
   // If there are no attachments, return an empty text preview.

@@ -14,6 +14,8 @@ source_set("share_target") {
     "share_target.h",
     "text_attachment.cc",
     "text_attachment.h",
+    "wifi_credentials_attachment.cc",
+    "wifi_credentials_attachment.h",
   ]
 
   deps = [
