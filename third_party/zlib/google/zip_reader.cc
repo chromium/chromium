@@ -10,6 +10,7 @@
 #include "base/files/file.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -149,6 +150,10 @@ bool ZipReader::Open(const base::FilePath& zip_path) {
   // this safely on Linux. See file_util.h for details.
   zip_file_ = internal::OpenForUnzipping(zip_path.AsUTF8Unsafe());
   if (!zip_file_) {
+    LOG(ERROR) << "Cannot open ZIP archive "
+               << (LOG_IS_ON(INFO)
+                       ? base::StrCat({"'", zip_path.AsUTF8Unsafe(), "'"})
+                       : "(redacted)");
     return false;
   }
 
@@ -164,6 +169,7 @@ bool ZipReader::OpenFromPlatformFile(base::PlatformFile zip_fd) {
   zip_file_ = internal::OpenHandleForUnzipping(zip_fd);
 #endif
   if (!zip_file_) {
+    LOG(ERROR) << "Cannot open ZIP from file handle " << zip_fd;
     return false;
   }
 
@@ -224,9 +230,11 @@ bool ZipReader::OpenCurrentEntryInZip() {
   // Get entry info.
   unz_file_info info = {};
   char path_in_zip[internal::kZipMaxPath] = {};
-  if (unzGetCurrentFileInfo(zip_file_, &info, path_in_zip,
-                            sizeof(path_in_zip) - 1, nullptr, 0, nullptr,
-                            0) != UNZ_OK) {
+  if (const int err = unzGetCurrentFileInfo(zip_file_, &info, path_in_zip,
+                                            sizeof(path_in_zip) - 1, nullptr, 0,
+                                            nullptr, 0);
+      err != UNZ_OK) {
+    LOG(ERROR) << "Cannot get entry from ZIP: " << UnzipError(err);
     return false;
   }
 
