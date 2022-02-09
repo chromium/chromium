@@ -15,10 +15,10 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/logging.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/backoff_delay_provider.h"
-#include "components/sync/engine/sync_engine_switches.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 
 using base::TimeTicks;

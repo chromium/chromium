@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/invalidations/interested_data_types_handler.h"
-#include "components/sync/invalidations/switches.h"
 
 namespace syncer {
 

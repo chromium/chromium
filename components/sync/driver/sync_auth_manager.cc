@@ -15,7 +15,6 @@
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "components/sync/base/stop_source.h"
 #include "components/sync/base/sync_prefs.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/engine/sync_credentials.h"
 #include "google_apis/gaia/gaia_constants.h"
 

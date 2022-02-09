@@ -11,7 +11,7 @@
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/sync/invalidations/switches.h"
+#include "components/sync/base/features.h"
 #include "components/sync/invalidations/sync_invalidations_service_impl.h"
 
 syncer::SyncInvalidationsService*

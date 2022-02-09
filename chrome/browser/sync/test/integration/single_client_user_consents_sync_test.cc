@@ -13,7 +13,6 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/consent_auditor/consent_auditor.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/protocol/user_consent_specifics.pb.h"
 #include "content/public/test/browser_test.h"
 

@@ -35,7 +35,6 @@
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/driver/sync_token_status.h"

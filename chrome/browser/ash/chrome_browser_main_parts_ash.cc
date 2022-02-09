@@ -220,7 +220,7 @@
 #include "components/quirks/quirks_manager.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/base/command_line_switches.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"

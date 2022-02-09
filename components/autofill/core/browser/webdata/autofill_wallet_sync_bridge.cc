@@ -25,7 +25,6 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/hash_util.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"

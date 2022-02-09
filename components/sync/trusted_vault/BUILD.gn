@@ -30,8 +30,6 @@ if (!is_android) {
       "trusted_vault_request.h",
       "trusted_vault_server_constants.cc",
       "trusted_vault_server_constants.h",
-      "trusted_vault_switches.cc",
-      "trusted_vault_switches.h",
     ]
     public_deps = [
       "//base",

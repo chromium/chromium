@@ -15,7 +15,6 @@
 #include "components/sync/driver/fake_data_type_controller.h"
 #include "components/sync/driver/fake_sync_api_component_factory.h"
 #include "components/sync/driver/sync_client_mock.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service_impl_bundle.h"
 #include "components/sync/test/engine/fake_sync_engine.h"
 #include "testing/gmock/include/gmock/gmock.h"

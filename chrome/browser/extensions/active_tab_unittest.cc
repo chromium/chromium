@@ -60,7 +60,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/login/login_state/scoped_test_public_session_login_state.h"
 #include "components/account_id/account_id.h"
-#include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/base/command_line_switches.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"

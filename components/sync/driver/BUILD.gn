@@ -43,7 +43,6 @@ static_library("driver") {
     "sync_auth_util.cc",
     "sync_auth_util.h",
     "sync_client.h",
-    "sync_driver_switches.cc",
     "sync_driver_switches.h",
     "sync_internals_util.cc",
     "sync_internals_util.h",

@@ -22,12 +22,12 @@
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/sync/base/bind_to_task_runner.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/invalidation_helper.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/driver/active_devices_provider.h"
 #include "components/sync/driver/glue/sync_engine_backend.h"
 #include "components/sync/driver/glue/sync_transport_data_prefs.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/engine_components_factory.h"
 #include "components/sync/engine/engine_components_factory_impl.h"
@@ -38,7 +38,6 @@
 #include "components/sync/engine/sync_engine_host.h"
 #include "components/sync/engine/sync_string_conversions.h"
 #include "components/sync/invalidations/fcm_handler.h"
-#include "components/sync/invalidations/switches.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 
 namespace syncer {

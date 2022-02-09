@@ -12,8 +12,8 @@
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "components/sync/base/features.h"
 #include "components/sync/engine/polling_constants.h"
-#include "components/sync/engine/sync_engine_switches.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 
 namespace syncer {

@@ -57,7 +57,7 @@
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
-#include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/base/features.h"
 #include "components/webapps/browser/android/features.h"
 #include "content/public/common/content_features.h"
 #include "device/fido/features.h"

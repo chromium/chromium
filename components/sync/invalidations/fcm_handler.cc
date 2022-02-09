@@ -12,9 +12,9 @@
 #include "base/time/time.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
+#include "components/sync/base/features.h"
 #include "components/sync/invalidations/fcm_registration_token_observer.h"
 #include "components/sync/invalidations/invalidations_listener.h"
-#include "components/sync/invalidations/switches.h"
 
 namespace syncer {
 

@@ -38,7 +38,6 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/pref_names.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"

@@ -21,7 +21,6 @@
 #include "base/threading/platform_thread.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/base/sync_base_switches.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"

@@ -135,7 +135,6 @@ static_library("engine") {
     "sync_engine.h",
     "sync_engine_event_listener.h",
     "sync_engine_host.h",
-    "sync_engine_switches.h",
     "sync_manager.cc",
     "sync_manager.h",
     "sync_manager_factory.cc",

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "components/sync/base/sync_base_switches.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 
 namespace syncer {

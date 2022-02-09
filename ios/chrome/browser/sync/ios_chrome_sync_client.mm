@@ -29,7 +29,6 @@
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/base/sync_base_switches.h"
 #include "components/sync/base/sync_util.h"
 #include "components/sync/driver/sync_api_component_factory.h"
 #include "components/sync/driver/sync_service.h"

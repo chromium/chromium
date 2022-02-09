@@ -17,7 +17,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/sync/base/sync_base_switches.h"
 #include "components/sync/model/blocking_model_type_store_impl.h"
 #include "components/sync/model/model_type_store_backend.h"
 #include "components/sync/model/model_type_store_impl.h"

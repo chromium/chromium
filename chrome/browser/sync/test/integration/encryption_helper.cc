@@ -9,10 +9,8 @@
 
 #include "base/bind.h"
 #include "components/sync/base/passphrase_enums.h"
-#include "components/sync/base/sync_base_switches.h"
 #include "components/sync/driver/sync_client.h"
 #include "components/sync/driver/sync_service_impl.h"
-#include "components/sync/engine/sync_engine_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 ServerNigoriChecker::ServerNigoriChecker(

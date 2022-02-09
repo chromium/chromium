@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 GEN('#include "build/build_config.h"');
-GEN('#include "components/sync/driver/sync_driver_switches.h"');
+GEN('#include "components/sync/base/features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 /**

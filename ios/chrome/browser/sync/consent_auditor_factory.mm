@@ -22,7 +22,6 @@
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_store_service.h"
 #include "components/version_info/version_info.h"

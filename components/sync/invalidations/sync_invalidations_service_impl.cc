@@ -6,8 +6,8 @@
 
 #include <utility>
 
+#include "components/sync/base/features.h"
 #include "components/sync/invalidations/fcm_handler.h"
-#include "components/sync/invalidations/switches.h"
 
 namespace syncer {
 

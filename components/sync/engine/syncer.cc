@@ -19,7 +19,6 @@
 #include "components/sync/engine/get_updates_delegate.h"
 #include "components/sync/engine/get_updates_processor.h"
 #include "components/sync/engine/net/server_connection_manager.h"
-#include "components/sync/engine/sync_engine_switches.h"
 
 namespace syncer {
 

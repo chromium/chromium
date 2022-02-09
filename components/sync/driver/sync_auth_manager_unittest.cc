@@ -13,7 +13,6 @@
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/engine/connection_status.h"
 #include "components/sync/engine/sync_credentials.h"
 #include "net/base/net_errors.h"

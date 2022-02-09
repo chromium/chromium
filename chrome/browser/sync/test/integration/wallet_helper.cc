@@ -20,7 +20,6 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 

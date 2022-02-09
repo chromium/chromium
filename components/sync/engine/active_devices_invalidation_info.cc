@@ -6,8 +6,6 @@
 
 #include <utility>
 
-#include "components/sync/engine/sync_engine_switches.h"
-
 namespace syncer {
 
 // static
