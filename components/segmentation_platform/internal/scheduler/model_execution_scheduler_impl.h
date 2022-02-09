@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/execution/model_execution_status.h"
 #include "components/segmentation_platform/internal/platform_options.h"
@@ -26,7 +27,6 @@ namespace proto {
 class SegmentInfo;
 }  // namespace proto
 
-class SegmentInfoDatabase;
 class SignalStorageConfig;
 
 class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
@@ -57,8 +57,7 @@ class ModelExecutionSchedulerImpl : public ModelExecutionScheduler {
  private:
   void FilterEligibleSegments(
       bool expired_only,
-      std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>
-          all_segments);
+      std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> all_segments);
   bool ShouldExecuteSegment(bool expired_only,
                             const proto::SegmentInfo& segment_info);
   void CancelOutstandingExecutionRequests(OptimizationTarget segment_id);

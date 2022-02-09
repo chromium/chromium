@@ -33,11 +33,10 @@ void SignalFilterProcessor::OnSignalListUpdated() {
 }
 
 void SignalFilterProcessor::FilterSignals(
-    std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>
-        segment_infos) {
+    std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_infos) {
   std::set<uint64_t> user_actions;
   std::set<std::pair<std::string, proto::SignalType>> histograms;
-  for (const auto& pair : segment_infos) {
+  for (const auto& pair : *segment_infos) {
     const proto::SegmentInfo& segment_info = pair.second;
     const auto& metadata = segment_info.model_metadata();
     auto features = metadata_utils::GetAllUmaFeatures(metadata);

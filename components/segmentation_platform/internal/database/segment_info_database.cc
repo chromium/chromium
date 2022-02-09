@@ -42,14 +42,14 @@ void SegmentInfoDatabase::OnMultipleSegmentInfoLoaded(
     MultipleSegmentInfoCallback callback,
     bool success,
     std::unique_ptr<std::vector<proto::SegmentInfo>> all_infos) {
-  std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>> pairs;
+  auto pairs = std::make_unique<SegmentInfoList>();
   if (success && all_infos) {
     for (auto& info : *all_infos.get()) {
-      pairs.emplace_back(std::make_pair(info.segment_id(), std::move(info)));
+      pairs->emplace_back(std::make_pair(info.segment_id(), std::move(info)));
     }
   }
 
-  std::move(callback).Run(pairs);
+  std::move(callback).Run(std::move(pairs));
 }
 
 void SegmentInfoDatabase::GetSegmentInfoForSegments(

@@ -53,18 +53,19 @@ void TestSegmentInfoDatabase::Initialize(SuccessCallback callback) {
 
 void TestSegmentInfoDatabase::GetAllSegmentInfo(
     MultipleSegmentInfoCallback callback) {
-  std::move(callback).Run(segment_infos_);
+  std::move(callback).Run(
+      std::make_unique<SegmentInfoDatabase::SegmentInfoList>(segment_infos_));
 }
 
 void TestSegmentInfoDatabase::GetSegmentInfoForSegments(
     const std::vector<OptimizationTarget>& segment_ids,
     MultipleSegmentInfoCallback callback) {
-  std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>> result;
+  auto result = std::make_unique<SegmentInfoDatabase::SegmentInfoList>();
   for (const auto& pair : segment_infos_) {
     if (base::Contains(segment_ids, pair.first))
-      result.emplace_back(pair);
+      result->emplace_back(pair);
   }
-  std::move(callback).Run(result);
+  std::move(callback).Run(std::move(result));
 }
 
 void TestSegmentInfoDatabase::GetSegmentInfo(OptimizationTarget segment_id,

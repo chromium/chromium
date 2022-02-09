@@ -39,8 +39,7 @@ using CleanupItem = DatabaseMaintenanceImpl::CleanupItem;
 
 namespace {
 std::set<SignalIdentifier> CollectAllSignalIdentifiers(
-    std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>
-        segment_infos) {
+    const SegmentInfoDatabase::SegmentInfoList& segment_infos) {
   std::set<SignalIdentifier> signal_ids;
   for (const auto& pair : segment_infos) {
     const proto::SegmentInfo& segment_info = pair.second;
@@ -112,10 +111,9 @@ void DatabaseMaintenanceImpl::ExecuteMaintenanceTasks() {
 }
 
 void DatabaseMaintenanceImpl::OnSegmentInfoCallback(
-    std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>
-        segment_infos) {
+    std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_infos) {
   std::set<SignalIdentifier> signal_ids =
-      CollectAllSignalIdentifiers(segment_infos);
+      CollectAllSignalIdentifiers(*segment_infos);
   stats::RecordMaintenanceSignalIdentifierCount(signal_ids.size());
 
   auto all_tasks = GetAllTasks(signal_ids);

@@ -100,10 +100,9 @@ void ModelExecutionSchedulerImpl::OnModelExecutionCompleted(
 
 void ModelExecutionSchedulerImpl::FilterEligibleSegments(
     bool expired_only,
-    std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>
-        all_segments) {
+    std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> all_segments) {
   std::vector<OptimizationTarget> models_to_run;
-  for (const auto& pair : all_segments) {
+  for (const auto& pair : *all_segments) {
     OptimizationTarget segment_id = pair.first;
     const proto::SegmentInfo& segment_info = pair.second;
     if (!ShouldExecuteSegment(expired_only, segment_info)) {

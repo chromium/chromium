@@ -46,10 +46,9 @@ class SegmentScoreProviderImpl : public SegmentScoreProvider {
  private:
   void ReadScoresFromLastSession(
       base::OnceClosure callback,
-      std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>
-          all_segments) {
+      std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> all_segments) {
     // Read results from last session to memory.
-    for (const auto& pair : all_segments) {
+    for (const auto& pair : *all_segments) {
       OptimizationTarget id = pair.first;
       const proto::SegmentInfo& info = pair.second;
       if (!info.has_prediction_result())

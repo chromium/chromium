@@ -77,18 +77,16 @@ void SegmentSelectorImpl::OnModelExecutionCompleted(
 }
 
 void SegmentSelectorImpl::RunSegmentSelection(
-    std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>
-        all_segments) {
-  if (!CanComputeSegmentSelection(all_segments))
+    std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> all_segments) {
+  if (!CanComputeSegmentSelection(*all_segments))
     return;
 
-  OptimizationTarget selected_segment = FindBestSegment(all_segments);
+  OptimizationTarget selected_segment = FindBestSegment(*all_segments);
   UpdateSelectedSegment(selected_segment);
 }
 
 bool SegmentSelectorImpl::CanComputeSegmentSelection(
-    const std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>&
-        all_segments) {
+    const SegmentInfoDatabase::SegmentInfoList& all_segments) {
   VLOG(1) << __func__ << ": all_segments.size()=" << all_segments.size();
   // Don't compute results if we don't have enough signals, or don't have
   // valid unexpired results for any of the segments.
@@ -142,8 +140,7 @@ bool SegmentSelectorImpl::CanComputeSegmentSelection(
 }
 
 OptimizationTarget SegmentSelectorImpl::FindBestSegment(
-    const std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>&
-        all_segments) {
+    const SegmentInfoDatabase::SegmentInfoList& all_segments) {
   int max_score = 0;
   OptimizationTarget max_score_id =
       OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN;

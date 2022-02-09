@@ -140,14 +140,13 @@ void ServiceProxyImpl::SetSelectedSegment(const std::string& segmentation_key,
 }
 
 void ServiceProxyImpl::OnGetAllSegmentationInfo(
-    std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>
-        segment_info) {
+    std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_info) {
   if (!configs_)
     return;
 
   // Convert the |segment_info| vector to a map for quick lookup.
   base::flat_map<OptimizationTarget, proto::SegmentInfo> optimization_targets;
-  for (const auto& info : segment_info) {
+  for (const auto& info : *segment_info) {
     optimization_targets[info.first] = info.second;
   }
 

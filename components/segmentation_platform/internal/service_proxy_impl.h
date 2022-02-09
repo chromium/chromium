@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SERVICE_PROXY_IMPL_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SERVICE_PROXY_IMPL_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -62,8 +63,7 @@ class ServiceProxyImpl : public ServiceProxy {
 
   //  Called after retrieving all the segmentation info from the DB.
   void OnGetAllSegmentationInfo(
-      std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>
-          segment_info);
+      std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_info);
 
   bool is_service_initialized_ = false;
   int service_status_flag_ = 0;
