@@ -1100,6 +1100,8 @@ void ExistingUserController::OnProfilePrepared(Profile* profile,
   bool is_enterprise_managed =
       profile_connector->IsManaged() &&
       user_context.GetUserType() != user_manager::USER_TYPE_CHILD;
+
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   user_manager::known_user::SetIsEnterpriseManaged(user_context.GetAccountId(),
                                                    is_enterprise_managed);
 
@@ -1107,8 +1109,7 @@ void ExistingUserController::OnProfilePrepared(Profile* profile,
     absl::optional<std::string> manager =
         chrome::GetAccountManagerIdentity(profile);
     if (manager) {
-      user_manager::known_user::SetAccountManager(user_context.GetAccountId(),
-                                                  *manager);
+      known_user.SetAccountManager(user_context.GetAccountId(), *manager);
     }
   }
 
