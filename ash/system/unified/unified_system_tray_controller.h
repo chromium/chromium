@@ -161,6 +161,9 @@ class ASH_EXPORT UnifiedSystemTrayController
   void ShowMediaControls() override;
   void OnMediaControlsViewClicked() override;
 
+  // Return true if UnifiedSystemTray is expanded.
+  bool IsExpanded() const;
+
   scoped_refptr<UnifiedSystemTrayModel> model() { return model_; }
 
   PaginationController* pagination_controller() {
@@ -218,9 +221,6 @@ class ASH_EXPORT UnifiedSystemTrayController
   // value. For example, if the view is expanded and it's dragged to the top, it
   // keeps returning 1.0.
   double GetDragExpandedAmount(const gfx::PointF& location) const;
-
-  // Return true if UnifiedSystemTray is expanded.
-  bool IsExpanded() const;
 
   // Return true if message center needs to be collapsed due to limited
   // screen height.
