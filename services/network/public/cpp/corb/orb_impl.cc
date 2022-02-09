@@ -21,15 +21,6 @@ namespace network::corb {
 
 namespace {
 
-// This corresponds to "opaque-blocklisted-never-sniffed MIME type" in ORB spec.
-//
-// TODO(https://crbug.com/1202846): Remove UMA-supporting code (including the
-// IsOpaqueBlocklistedNeverSniffedMimeType function below).
-bool IsOpaqueBlocklistedNeverSniffedMimeType(base::StringPiece mime_type) {
-  return CrossOriginReadBlocking::GetCanonicalMimeType(mime_type) ==
-         CrossOriginReadBlocking::MimeType::kNeverSniffed;
-}
-
 bool IsNonSniffableImageMimeType(base::StringPiece mime_type) {
   // TODO(lukasza): Once full Javascript sniffing is implemented, we may start
   // to undesirably block future (=unsniffable) image formats.  We should
@@ -102,23 +93,6 @@ bool IsOpaqueSafelistedMimeType(base::StringPiece mime_type) {
 
   // Based on the spec: Is it a JavaScript MIME type?
   if (CrossOriginReadBlocking::IsJavascriptMimeType(mime_type))
-    return true;
-
-  return false;
-}
-
-// Return true for multimedia MIME types that
-// 1) are not explicitly covered by ORB (e.g. that do not begin with "audio/",
-//    "image/", "video/" and that are not covered by
-//    IsOpaqueSafelistedMimeType).
-// 2) would be recognized by sniffing from steps 6 or 7 of ORB:
-//      step 6. If the image type pattern matching algorithm ...
-//      step 7. If the audio or video type pattern matching algorithm ...
-//
-// TODO(https://crbug.com/1202846): Remove UMA-supporting code (including the
-// IsSniffableMultimediaType function below).
-bool IsSniffableMultimediaType(base::StringPiece mime_type) {
-  if (base::LowerCaseEqualsASCII(mime_type, "application/ogg"))
     return true;
 
   return false;
@@ -204,77 +178,6 @@ bool IsOpaqueResponse(const absl::optional<url::Origin>& request_initiator,
   return true;
 }
 
-// TODO(https://crbug.com/1202846): Remove UMA-supporting code (including the
-// CalculateResponseHeadersHeuristicForUma function below).
-ResponseHeadersHeuristicForUma CalculateResponseHeadersHeuristicForUma(
-    const GURL& request_url,
-    const absl::optional<url::Origin>& request_initiator,
-    mojom::RequestMode request_mode,
-    const mojom::URLResponseHead& response) {
-  // Exclude responses that ORB doesn't apply to.
-  if (!IsOpaqueResponse(request_initiator, request_mode, response))
-    return ResponseHeadersHeuristicForUma::kNonOpaqueResponse;
-  DCHECK(request_initiator.has_value());
-
-  // Same-origin requests are allowed (the spec doesn't explicitly deal with
-  // this).
-  if (request_initiator->IsSameOriginWith(request_url))
-    return ResponseHeadersHeuristicForUma::kProcessedBasedOnHeaders;
-
-  // Presence of an "X-Content-Type-Options: nosniff" header means that ORB will
-  // reach a final decision in step 8, before reaching Javascript parsing in
-  // step 12:
-  //     step 8. If nosniff is true, then return false.
-  //     ...
-  //     step 12. If response's body parses as JavaScript ...
-  if (CrossOriginReadBlocking::CorbResponseAnalyzer::HasNoSniff(response))
-    return ResponseHeadersHeuristicForUma::kProcessedBasedOnHeaders;
-
-  // If a mime type is missing then ORB will reach a final decision in step 10,
-  // before reaching Javascript parsing in step 12:
-  //     step 10. If mimeType is failure, then return true.
-  //     ...
-  //     step 12. If response's body parses as JavaScript ...
-  std::string mime_type;
-  if (!response.headers || !response.headers->GetMimeType(&mime_type))
-    return ResponseHeadersHeuristicForUma::kProcessedBasedOnHeaders;
-
-  // Specific MIME types might make ORB reach a final decision before reaching
-  // Javascript parsing step:
-  //     step 3.i. If mimeType is an opaque-safelisted MIME type, then return
-  //               true.
-  //     step 3.ii. If mimeType is an opaque-blocklisted-never-sniffed MIME
-  //                type, then return false.
-  //     ...
-  //     step 11. If mimeType's essence starts with "audio/", "image/", or
-  //              "video/", then return false.
-  //     ...
-  //     step 12. If response's body parses as JavaScript ...
-  if (IsOpaqueBlocklistedNeverSniffedMimeType(mime_type) ||
-      IsOpaqueSafelistedMimeType(mime_type) ||
-      IsSniffableMultimediaType(mime_type)) {
-    return ResponseHeadersHeuristicForUma::kProcessedBasedOnHeaders;
-  }
-
-  constexpr auto kCaseInsensitive = base::CompareCase::INSENSITIVE_ASCII;
-  if (base::StartsWith(mime_type, "audio/", kCaseInsensitive) ||
-      base::StartsWith(mime_type, "image/", kCaseInsensitive) ||
-      base::StartsWith(mime_type, "video/", kCaseInsensitive)) {
-    return ResponseHeadersHeuristicForUma::kProcessedBasedOnHeaders;
-  }
-
-  // If the http response indicates an error, or a 206 response, then ORB will
-  // reach a final decision before reaching Javascript parsing in step 12:
-  //     step 9. If response's status is not an ok status, then return false.
-  //     ...
-  //     step 12. If response's body parses as JavaScript ...
-  if (!IsOkayHttpStatus(response) || IsHttpStatus(response, 206))
-    return ResponseHeadersHeuristicForUma::kProcessedBasedOnHeaders;
-
-  // Otherwise we need to parse the response body as Javascript.
-  return ResponseHeadersHeuristicForUma::kRequiresJavascriptParsing;
-}
-
 bool IsSensitiveHtmlXmlOrJson(base::StringPiece data,
                               base::StringPiece mime_type) {
   if (CrossOriginReadBlocking::SniffForHTML(data) ==
@@ -305,40 +208,6 @@ bool IsSensitiveHtmlXmlOrJson(base::StringPiece data,
 }
 
 }  // namespace
-
-// TODO(https://crbug.com/1202846): Remove UMA-supporting code (including the
-// LogUmaForOpaqueResponseBlocking function below).
-void LogUmaForOpaqueResponseBlocking(
-    const GURL& request_url,
-    const absl::optional<url::Origin>& request_initiator,
-    mojom::RequestMode request_mode,
-    mojom::RequestDestination request_destination,
-    const mojom::URLResponseHead& response) {
-  ResponseHeadersHeuristicForUma response_headers_decision =
-      CalculateResponseHeadersHeuristicForUma(request_url, request_initiator,
-                                              request_mode, response);
-  base::UmaHistogramEnumeration(
-      "SiteIsolation.ORB.ResponseHeadersHeuristic.Decision",
-      response_headers_decision);
-
-  switch (response_headers_decision) {
-    case ResponseHeadersHeuristicForUma::kNonOpaqueResponse:
-      break;
-
-    case ResponseHeadersHeuristicForUma::kProcessedBasedOnHeaders:
-      base::UmaHistogramEnumeration(
-          "SiteIsolation.ORB.ResponseHeadersHeuristic.ProcessedBasedOnHeaders",
-          request_destination);
-      break;
-
-    case ResponseHeadersHeuristicForUma::kRequiresJavascriptParsing:
-      base::UmaHistogramEnumeration(
-          "SiteIsolation.ORB.ResponseHeadersHeuristic."
-          "RequiresJavascriptParsing",
-          request_destination);
-      break;
-  }
-}
 
 OpaqueResponseBlockingAnalyzer::OpaqueResponseBlockingAnalyzer(
     PerFactoryState& state)

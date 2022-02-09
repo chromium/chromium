@@ -21,51 +21,6 @@
 namespace network {
 namespace corb {
 
-// Result of applying heuristics based on partial ORB algorithm (suitable only
-// for UMA).
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// TODO(https://crbug.com/1202846): Remove UMA-supporting code (including the
-// ResponseHeadersHeuristicForUma enum below).
-enum class ResponseHeadersHeuristicForUma {
-  // ORB only applies to opaque respones.  The enum value below includes:
-  // - mode != no-cors (e.g. mode=navigate or mode=cors)
-  // - browser-initiated requests
-  kNonOpaqueResponse = 0,
-
-  // ORB algorithm can *surely* make a decision based on response headers.  The
-  // enum value below covers all subresource requests:
-  // - scripts, images, video, etc.
-  // - both same-origin and cross-origin requests
-  kProcessedBasedOnHeaders = 1,
-
-  // ORB algorithm *might* require parsing the response body as Javascript.
-  //
-  // This might be a false positive if the response:
-  // 1) sniffs as an audio/image/video format
-  // 2) represents a valid range response for a media element
-  kRequiresJavascriptParsing = 2,
-
-  // Required enum value to support UMA macros.
-  kMaxValue = kRequiresJavascriptParsing,
-};
-
-// Logs UMA tracking expected behavior characteristics of the Opaque Response
-// Blocking algorithm (a potential successor of CORB aka Cross-Origin Read
-// Blocking).  See also https://github.com/annevk/orb
-//
-// TODO(https://crbug.com/1202846): Remove UMA-supporting code (including the
-// LogUmaForOpaqueResponseBlocking function below).
-COMPONENT_EXPORT(NETWORK_CPP)
-void LogUmaForOpaqueResponseBlocking(
-    const GURL& request_url,
-    const absl::optional<url::Origin>& request_initiator,
-    mojom::RequestMode request_mode,
-    mojom::RequestDestination request_destination,
-    const mojom::URLResponseHead& response);
-
 class COMPONENT_EXPORT(NETWORK_CPP) OpaqueResponseBlockingAnalyzer
     : public ResponseAnalyzer {
  public:

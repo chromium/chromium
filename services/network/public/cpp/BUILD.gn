@@ -401,7 +401,6 @@ source_set("tests") {
     "content_security_policy/csp_source_unittest.cc",
     "cookie_manager_mojom_traits_unittest.cc",
     "corb/corb_impl_unittest.cc",
-    "corb/orb_impl_unittest.cc",
     "cors/cors_mojom_traits_unittest.cc",
     "cors/cors_unittest.cc",
     "cors/origin_access_entry_unittest.cc",

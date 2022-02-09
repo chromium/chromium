@@ -800,6 +800,12 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SiteIsolation.ORB.ResponseHeadersHeuristic.Decision"
     enum="OpaqueResponseBlocking_ResponseHeadersHeuristic" expires_after="M92">
+  <obsolete>
+    Removed in Feb 2022 / M100.
+
+    Old results are preserved in
+    https://docs.google.com/document/d/1LkF7a-_RXg0uQQdk86FQHq7CMW5pKozPDmmbnJJRhY8/edit#heading=h.6labqs212jfn
+  </obsolete>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <summary>
@@ -820,6 +826,12 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SiteIsolation.ORB.ResponseHeadersHeuristic.{OrbDecision}"
     enum="RequestDestination" expires_after="M92">
+  <obsolete>
+    Removed in Feb 2022 / M100.
+
+    Old results are preserved in
+    https://docs.google.com/document/d/1LkF7a-_RXg0uQQdk86FQHq7CMW5pKozPDmmbnJJRhY8/edit#heading=h.6labqs212jfn
+  </obsolete>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <summary>
