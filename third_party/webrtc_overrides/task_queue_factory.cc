@@ -5,7 +5,6 @@
 #include "third_party/webrtc_overrides/task_queue_factory.h"
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/timer_slack.h"
@@ -16,13 +15,6 @@
 #include "third_party/webrtc/api/task_queue/task_queue_base.h"
 #include "third_party/webrtc/api/task_queue/task_queue_factory.h"
 
-namespace webrtc {
-
-constexpr base::Feature kWebRtcReasonableTimerSlack{
-    "WebRtcReasonableTimerSlack", base::FEATURE_DISABLED_BY_DEFAULT};
-
-}  // namespace webrtc
-
 namespace {
 
 class WebrtcTaskQueue final : public webrtc::TaskQueueBase {
@@ -31,9 +23,7 @@ class WebrtcTaskQueue final : public webrtc::TaskQueueBase {
       : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(traits)),
         is_active_(new base::RefCountedData<bool>(true)),
         suspend_timer_slack_(traits.priority() !=
-                                 base::TaskPriority::BEST_EFFORT &&
-                             !base::FeatureList::IsEnabled(
-                                 webrtc::kWebRtcReasonableTimerSlack)) {
+                             base::TaskPriority::BEST_EFFORT) {
     DCHECK(task_runner_);
   }
 
