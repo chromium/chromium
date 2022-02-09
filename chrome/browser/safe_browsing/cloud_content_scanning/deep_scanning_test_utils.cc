@@ -582,37 +582,67 @@ void SetAnalysisConnector(PrefService* prefs,
       machine_scope ? policy::POLICY_SCOPE_MACHINE : policy::POLICY_SCOPE_USER);
 }
 
+base::Value CreateOptInEventsValue(
+    const std::map<std::string, std::vector<std::string>>&
+        enabled_opt_in_events) {
+  base::Value enabled_opt_in_events_list(base::Value::Type::LIST);
+  for (const auto& enabled_opt_in_event : enabled_opt_in_events) {
+    base::Value event_value(base::Value::Type::DICTIONARY);
+    event_value.SetStringKey(enterprise_connectors::kKeyOptInEventName,
+                             enabled_opt_in_event.first);
+
+    base::Value url_patterns_list(base::Value::Type::LIST);
+    for (const auto& url_pattern : enabled_opt_in_event.second) {
+      url_patterns_list.Append(url_pattern);
+    }
+    event_value.SetKey(enterprise_connectors::kKeyOptInEventUrlPatterns,
+                       std::move(url_patterns_list));
+
+    enabled_opt_in_events_list.Append(std::move(event_value));
+  }
+  return enabled_opt_in_events_list;
+}
+
 void SetOnSecurityEventReporting(
     PrefService* prefs,
     bool enabled,
     const std::set<std::string>& enabled_event_names,
+    const std::map<std::string, std::vector<std::string>>&
+        enabled_opt_in_events,
     bool machine_scope) {
   ListPrefUpdate settings_list(prefs,
                                enterprise_connectors::kOnSecurityEventPref);
   DCHECK(settings_list.Get());
-  if (enabled) {
-    if (settings_list->GetListDeprecated().empty()) {
-      base::Value settings(base::Value::Type::DICTIONARY);
-
-      settings.SetKey(enterprise_connectors::kKeyServiceProvider,
-                      base::Value("google"));
-      if (!enabled_event_names.empty()) {
-        base::Value enabled_event_name_list(base::Value::Type::LIST);
-        for (const auto& enabled_event_name : enabled_event_names) {
-          enabled_event_name_list.Append(enabled_event_name);
-        }
-        settings.SetKey(enterprise_connectors::kKeyEnabledEventNames,
-                        std::move(enabled_event_name_list));
-      }
-      settings_list->Append(std::move(settings));
-    }
-    prefs->SetInteger(enterprise_connectors::kOnSecurityEventScopePref,
-                      machine_scope ? policy::POLICY_SCOPE_MACHINE
-                                    : policy::POLICY_SCOPE_USER);
-  } else {
+  if (!enabled) {
     settings_list->ClearList();
     prefs->ClearPref(enterprise_connectors::kOnSecurityEventScopePref);
+    return;
   }
+
+  if (settings_list->GetListDeprecated().empty()) {
+    base::Value settings(base::Value::Type::DICTIONARY);
+
+    settings.SetKey(enterprise_connectors::kKeyServiceProvider,
+                    base::Value("google"));
+    if (!enabled_event_names.empty()) {
+      base::Value enabled_event_name_list(base::Value::Type::LIST);
+      for (const auto& enabled_event_name : enabled_event_names) {
+        enabled_event_name_list.Append(enabled_event_name);
+      }
+      settings.SetKey(enterprise_connectors::kKeyEnabledEventNames,
+                      std::move(enabled_event_name_list));
+    }
+
+    if (!enabled_opt_in_events.empty()) {
+      settings.SetKey(enterprise_connectors::kKeyEnabledOptInEvents,
+                      CreateOptInEventsValue(enabled_opt_in_events));
+    }
+
+    settings_list->Append(std::move(settings));
+  }
+  prefs->SetInteger(
+      enterprise_connectors::kOnSecurityEventScopePref,
+      machine_scope ? policy::POLICY_SCOPE_MACHINE : policy::POLICY_SCOPE_USER);
 }
 
 void ClearAnalysisConnector(

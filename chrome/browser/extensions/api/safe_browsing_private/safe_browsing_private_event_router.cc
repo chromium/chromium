@@ -39,6 +39,8 @@
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/url_matcher/url_matcher.h"
+#include "components/url_matcher/url_util.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -141,6 +143,32 @@ std::u16string MaskUsername(const std::u16string& username) {
   }
 
   return std::u16string(kMaskedUsername) + username.substr(pos);
+}
+
+// Create a URLMatcher representing the filters in
+// `settings.enabled_opt_in_events` for `event_type`. This field of the
+// reporting settings connector contains a map where keys are event types and
+// values are lists of URL patterns specifying on which URLs the events are
+// allowed to be reported. An event is generated iff its event type is present
+// in the opt-in events field and the URL it relates to matches at least one of
+// the event type's filters.
+std::unique_ptr<url_matcher::URLMatcher> CreateURLMatcherForOptInEvent(
+    const enterprise_connectors::ReportingSettings& settings,
+    const char* event_type) {
+  const auto& it = settings.enabled_opt_in_events.find(event_type);
+  if (it == settings.enabled_opt_in_events.end())
+    return nullptr;
+
+  std::unique_ptr<url_matcher::URLMatcher> matcher =
+      std::make_unique<url_matcher::URLMatcher>();
+  url_matcher::URLMatcherConditionSet::ID unused_id(0);
+  url_matcher::util::AddFilters(matcher.get(), true, &unused_id, it->second);
+
+  return matcher;
+}
+
+bool IsOptInEventEnabled(url_matcher::URLMatcher* matcher, const GURL& url) {
+  return matcher && !matcher->MatchURL(url).empty();
 }
 
 }  // namespace
@@ -792,8 +820,13 @@ void SafeBrowsingPrivateEventRouter::OnLoginEvent(
     const std::u16string& username) {
   absl::optional<enterprise_connectors::ReportingSettings> settings =
       GetReportingSettings();
-  if (!settings.has_value() ||
-      settings->enabled_event_names.count(kKeyLoginEvent) == 0) {
+  if (!settings.has_value()) {
+    return;
+  }
+
+  std::unique_ptr<url_matcher::URLMatcher> matcher =
+      CreateURLMatcherForOptInEvent(settings.value(), kKeyLoginEvent);
+  if (!IsOptInEventEnabled(matcher.get(), url)) {
     return;
   }
 
@@ -814,8 +847,13 @@ void SafeBrowsingPrivateEventRouter::OnPasswordBreach(
     const std::vector<std::pair<GURL, std::u16string>>& identities) {
   absl::optional<enterprise_connectors::ReportingSettings> settings =
       GetReportingSettings();
-  if (!settings.has_value() ||
-      settings->enabled_event_names.count(kKeyPasswordBreachEvent) == 0) {
+  if (!settings.has_value()) {
+    return;
+  }
+
+  std::unique_ptr<url_matcher::URLMatcher> matcher =
+      CreateURLMatcherForOptInEvent(settings.value(), kKeyPasswordBreachEvent);
+  if (!matcher) {
     return;
   }
 
@@ -823,11 +861,22 @@ void SafeBrowsingPrivateEventRouter::OnPasswordBreach(
   std::vector<base::Value> identities_list;
   event.SetStringKey(kKeyTrigger, trigger);
   for (const std::pair<GURL, std::u16string>& i : identities) {
+    if (!IsOptInEventEnabled(matcher.get(), i.first)) {
+      continue;
+    }
+
     base::Value identity(base::Value::Type::DICTIONARY);
     identity.SetStringKey(kKeyPasswordBreachIdentitiesUrl, i.first.spec());
     identity.SetStringKey(kKeyPasswordBreachIdentitiesUsername, i.second);
     identities_list.push_back(std::move(identity));
   }
+
+  if (identities_list.empty()) {
+    // Don't send an empty event if none of the breached identities matched a
+    // pattern in the URL filters.
+    return;
+  }
+
   event.SetKey(kKeyPasswordBreachIdentities,
                base::Value(std::move(identities_list)));
   event.SetStringKey(kKeyProfileUserName, GetProfileUserName());

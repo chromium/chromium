@@ -235,6 +235,7 @@ class ContentAnalysisDelegateBrowserTestBase
     safe_browsing::SetOnSecurityEventReporting(browser()->profile()->GetPrefs(),
                                                /*enabled*/ true,
                                                /*enabled_event_names*/ {},
+                                               /*enabled_opt_in_events*/ {},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
                                                /*machine_scope*/ false);
 #else

@@ -151,6 +151,7 @@ class DownloadDeepScanningBrowserTestBase
   void SetUpReporting() {
     SetOnSecurityEventReporting(browser()->profile()->GetPrefs(),
                                 /*enabled*/ true, /*enabled_event_names*/ {},
+                                /*enabled_opt_in_events*/ {},
                                 connectors_machine_scope());
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
     client_->SetDMToken("dm_token");

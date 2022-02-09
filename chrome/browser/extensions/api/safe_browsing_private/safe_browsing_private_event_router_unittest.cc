@@ -228,12 +228,17 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
         ->OnPasswordBreach(trigger, identities);
   }
 
-  void SetReportingPolicy(bool enabled,
-                          bool authorized = true,
-                          const std::set<std::string>& enabled_event_names =
-                              std::set<std::string>()) {
+  void SetReportingPolicy(
+      bool enabled,
+      bool authorized = true,
+      const std::set<std::string>& enabled_event_names =
+          std::set<std::string>(),
+      const std::map<std::string, std::vector<std::string>>&
+          enabled_opt_in_events =
+              std::map<std::string, std::vector<std::string>>()) {
     safe_browsing::SetOnSecurityEventReporting(profile_->GetPrefs(), enabled,
-                                               enabled_event_names);
+                                               enabled_event_names,
+                                               enabled_opt_in_events);
 
     // If we are not enabling reporting, or if the client has already been
     // set for testing, just return.
@@ -258,13 +263,16 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
   void SetUpRouters(bool authorized = true,
                     bool realtime_reporting_enable = true,
                     const std::set<std::string>& enabled_event_names =
-                        std::set<std::string>()) {
+                        std::set<std::string>(),
+                    const std::map<std::string, std::vector<std::string>>&
+                        enabled_opt_in_events =
+                            std::map<std::string, std::vector<std::string>>()) {
     event_router_ = extensions::CreateAndUseTestEventRouter(profile_);
     SafeBrowsingPrivateEventRouterFactory::GetInstance()->SetTestingFactory(
         profile_, base::BindRepeating(&BuildSafeBrowsingPrivateEventRouter));
 
     SetReportingPolicy(realtime_reporting_enable, authorized,
-                       enabled_event_names);
+                       enabled_event_names, enabled_opt_in_events);
   }
 
  protected:
@@ -747,7 +755,11 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnLoginEvent) {
-  SetUpRouters();
+  SetUpRouters(
+      /*authorized=*/true,
+      /*realtime_reporting_enable=*/true,
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/{{"loginEvent", {"*"}}});
 
   signin::IdentityTestEnvironment identity_test_environment;
   SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
@@ -764,8 +776,33 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnLoginEvent) {
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest,
-       TestOnLoginEventWithEmailAsLoginUsernam) {
-  SetUpRouters();
+       TestOnLoginEventNoMatchingUrlPattern) {
+  SetUpRouters(
+      /*authorized=*/true,
+      /*realtime_reporting_enable=*/true,
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/{{"loginEvent", {"notexample.com"}}});
+
+  signin::IdentityTestEnvironment identity_test_environment;
+  SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
+      ->SetIdentityManagerForTesting(
+          identity_test_environment.identity_manager());
+  identity_test_environment.MakePrimaryAccountAvailable(
+      profile_->GetProfileUserName(), signin::ConsentLevel::kSignin);
+
+  safe_browsing::EventReportValidator validator(client_.get());
+  validator.ExpectNoReport();
+
+  TriggerOnLoginEvent(GURL("https://www.example.com/"), u"login-username");
+}
+
+TEST_F(SafeBrowsingPrivateEventRouterTest,
+       TestOnLoginEventWithEmailAsLoginUsername) {
+  SetUpRouters(
+      /*authorized=*/true,
+      /*realtime_reporting_enable=*/true,
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/{{"loginEvent", {"*"}}});
 
   signin::IdentityTestEnvironment identity_test_environment;
   SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
@@ -784,7 +821,11 @@ TEST_F(SafeBrowsingPrivateEventRouterTest,
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnLoginEventFederated) {
-  SetUpRouters();
+  SetUpRouters(
+      /*authorized=*/true,
+      /*realtime_reporting_enable=*/true,
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/{{"loginEvent", {"*"}}});
 
   signin::IdentityTestEnvironment identity_test_environment;
   SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
@@ -803,7 +844,11 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnLoginEventFederated) {
 }
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnPasswordBreach) {
-  SetUpRouters();
+  SetUpRouters(
+      /*authorized=*/true,
+      /*realtime_reporting_enable=*/true,
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/{{"passwordBreachEvent", {"*"}}});
 
   signin::IdentityTestEnvironment identity_test_environment;
   SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
@@ -826,6 +871,66 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnPasswordBreach) {
       {
           {GURL("https://first.example.com"), u"first_user_name"},
           {GURL("https://second.example.com"), u"second_user_name"},
+      });
+}
+
+TEST_F(SafeBrowsingPrivateEventRouterTest,
+       TestOnPasswordBreachNoMatchingUrlPattern) {
+  SetUpRouters(
+      /*authorized=*/true,
+      /*realtime_reporting_enable=*/true,
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/{{"passwordBreachEvent", {"notexample.com"}}});
+
+  signin::IdentityTestEnvironment identity_test_environment;
+  SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
+      ->SetIdentityManagerForTesting(
+          identity_test_environment.identity_manager());
+  identity_test_environment.MakePrimaryAccountAvailable(
+      profile_->GetProfileUserName(), signin::ConsentLevel::kSignin);
+
+  safe_browsing::EventReportValidator validator(client_.get());
+  validator.ExpectNoReport();
+
+  TriggerOnPasswordBreachEvent(
+      "SAFETY_CHECK",
+      {
+          {GURL("https://first.example.com"), u"first_user_name"},
+          {GURL("https://second.example.com"), u"second_user_name"},
+      });
+}
+
+TEST_F(SafeBrowsingPrivateEventRouterTest,
+       TestOnPasswordBreachPartiallyMatchingUrlPatterns) {
+  SetUpRouters(
+      /*authorized=*/true,
+      /*realtime_reporting_enable=*/true,
+      /*enabled_event_names=*/{},
+      /*enabled_opt_in_events=*/
+      {{"passwordBreachEvent", {"secondexample.com"}}});
+
+  signin::IdentityTestEnvironment identity_test_environment;
+  SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
+      ->SetIdentityManagerForTesting(
+          identity_test_environment.identity_manager());
+  identity_test_environment.MakePrimaryAccountAvailable(
+      profile_->GetProfileUserName(), signin::ConsentLevel::kSignin);
+
+  // The event is only enabled on secondexample.com, so expect only the
+  // information related to that origin to be reported.
+  safe_browsing::EventReportValidator validator(client_.get());
+  validator.ExpectPasswordBreachEvent(
+      "SAFETY_CHECK",
+      {
+          {"https://secondexample.com/", u"second_user_name"},
+      },
+      profile_->GetProfileUserName());
+
+  TriggerOnPasswordBreachEvent(
+      "SAFETY_CHECK",
+      {
+          {GURL("https://firstexample.com"), u"first_user_name"},
+          {GURL("https://secondexample.com"), u"second_user_name"},
       });
 }
 

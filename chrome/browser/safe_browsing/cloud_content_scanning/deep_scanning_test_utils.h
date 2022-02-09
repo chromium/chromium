@@ -216,6 +216,9 @@ void SetOnSecurityEventReporting(
     PrefService* prefs,
     bool enabled,
     const std::set<std::string>& enabled_event_names = std::set<std::string>(),
+    const std::map<std::string, std::vector<std::string>>&
+        enabled_opt_in_events =
+            std::map<std::string, std::vector<std::string>>(),
     bool machine_scope = true);
 void ClearAnalysisConnector(PrefService* prefs,
                             enterprise_connectors::AnalysisConnector connector);
