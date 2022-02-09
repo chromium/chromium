@@ -19,6 +19,26 @@ class AuthIconView;
 // lock screen.
 class ASH_EXPORT SmartLockAuthFactorModel : public AuthFactorModel {
  public:
+  class Factory {
+   public:
+    Factory() = default;
+    Factory(const Factory&) = delete;
+    Factory& operator=(const Factory&) = delete;
+
+    static std::unique_ptr<SmartLockAuthFactorModel> Create(
+        base::RepeatingCallback<void()> arrow_button_tap_callback);
+
+    static void SetFactoryForTesting(Factory* factory);
+
+   protected:
+    virtual ~Factory() = default;
+    virtual std::unique_ptr<SmartLockAuthFactorModel> CreateInstance(
+        base::RepeatingCallback<void()> arrow_button_tap_callback) = 0;
+
+   private:
+    static Factory* factory_instance_;
+  };
+
   SmartLockAuthFactorModel(
       base::RepeatingCallback<void()> arrow_button_tap_callback);
   SmartLockAuthFactorModel(SmartLockAuthFactorModel&) = delete;

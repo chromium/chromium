@@ -2420,6 +2420,8 @@ test("ash_unittests") {
     "login/security_token_request_controller_unittest.cc",
     "login/ui/fake_login_detachable_base_model.cc",
     "login/ui/fake_login_detachable_base_model.h",
+    "login/ui/fake_smart_lock_auth_factor_model.cc",
+    "login/ui/fake_smart_lock_auth_factor_model.h",
     "login/ui/lock_contents_view_unittest.cc",
     "login/ui/lock_screen_media_controls_view_unittest.cc",
     "login/ui/lock_screen_sanity_unittest.cc",

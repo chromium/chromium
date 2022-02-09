@@ -1022,6 +1022,11 @@ AuthFactorModel* LoginAuthUserView::TestApi::fingerprint_auth_factor_model()
   return view_->fingerprint_auth_factor_model_;
 }
 
+AuthFactorModel* LoginAuthUserView::TestApi::smart_lock_auth_factor_model()
+    const {
+  return view_->smart_lock_auth_factor_model_;
+}
+
 bool LoginAuthUserView::TestApi::HasAuthMethod(AuthMethods auth_method) const {
   return view_->HasAuthMethod(auth_method);
 }
@@ -1029,6 +1034,10 @@ bool LoginAuthUserView::TestApi::HasAuthMethod(AuthMethods auth_method) const {
 void LoginAuthUserView::TestApi::SetFingerprintState(
     FingerprintState state) const {
   return view_->SetFingerprintState(state);
+}
+
+void LoginAuthUserView::TestApi::SetSmartLockState(SmartLockState state) const {
+  return view_->SetSmartLockState(state);
 }
 
 const std::u16string&
@@ -1146,13 +1155,18 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
         std::make_unique<FingerprintAuthFactorModel>(user.fingerprint_state);
     fingerprint_auth_factor_model_ = fingerprint_auth_factor_model.get();
     auto smart_lock_auth_factor_model =
-        std::make_unique<SmartLockAuthFactorModel>(base::BindRepeating(
-            &LoginAuthUserView::OnUserViewTap, base::Unretained(this)));
+        SmartLockAuthFactorModel::Factory::Create(base::BindRepeating(
+            &LoginAuthUserView::OnSmartLockArrowButtonTapped,
+            base::Unretained(this)));
     smart_lock_auth_factor_model_ = smart_lock_auth_factor_model.get();
+
+    // Note: at the moment, between Fingerprint and Smart Lock, Smart Lock
+    // is the only auth factor which considers an "arrow button" tap event.
     auth_factors_view =
         std::make_unique<LoginAuthFactorsView>(base::BindRepeating(
             &SmartLockAuthFactorModel::OnArrowButtonTapOrClickEvent,
             base::Unretained(smart_lock_auth_factor_model_)));
+
     auth_factors_view_ = auth_factors_view.get();
     auth_factors_view_->AddAuthFactor(std::move(fingerprint_auth_factor_model));
     auth_factors_view_->AddAuthFactor(std::move(smart_lock_auth_factor_model));
@@ -1782,10 +1796,18 @@ void LoginAuthUserView::OnChallengeResponseAuthComplete(
                /*display_error_messages=*/false);
 }
 
+void LoginAuthUserView::OnSmartLockArrowButtonTapped() {
+  DCHECK(smart_lock_ui_revamp_enabled_);
+  Shell::Get()->login_screen_controller()->AuthenticateUserWithEasyUnlock(
+      current_user().basic_user_info.account_id);
+}
+
 void LoginAuthUserView::OnUserViewTap() {
   if (HasAuthMethod(AUTH_TAP)) {
-    Shell::Get()->login_screen_controller()->AuthenticateUserWithEasyUnlock(
-        current_user().basic_user_info.account_id);
+    if (!smart_lock_ui_revamp_enabled_) {
+      Shell::Get()->login_screen_controller()->AuthenticateUserWithEasyUnlock(
+          current_user().basic_user_info.account_id);
+    }
   } else if (HasAuthMethod(AUTH_ONLINE_SIGN_IN)) {
     // Tapping anywhere in the user view is the same with tapping the message.
     OnOnlineSignInMessageTap();

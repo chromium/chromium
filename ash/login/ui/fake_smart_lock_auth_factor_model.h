@@ -1,0 +1,35 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_LOGIN_UI_FAKE_SMART_LOCK_AUTH_FACTOR_MODEL_H_
+#define ASH_LOGIN_UI_FAKE_SMART_LOCK_AUTH_FACTOR_MODEL_H_
+
+#include "ash/login/ui/smart_lock_auth_factor_model.h"
+
+namespace ash {
+
+class FakeSmartLockAuthFactorModel : public SmartLockAuthFactorModel {
+ public:
+  explicit FakeSmartLockAuthFactorModel(
+      base::RepeatingCallback<void()> arrow_button_tap_callback);
+
+  FakeSmartLockAuthFactorModel(const FakeSmartLockAuthFactorModel&) = delete;
+  FakeSmartLockAuthFactorModel& operator=(const FakeSmartLockAuthFactorModel&) =
+      delete;
+
+  ~FakeSmartLockAuthFactorModel() override;
+};
+
+class FakeSmartLockAuthFactorModelFactory
+    : public SmartLockAuthFactorModel::Factory {
+ public:
+  FakeSmartLockAuthFactorModelFactory() = default;
+
+  std::unique_ptr<SmartLockAuthFactorModel> CreateInstance(
+      base::RepeatingCallback<void()> arrow_button_tap_callback) override;
+};
+
+}  // namespace ash
+
+#endif  // ASH_LOGIN_UI_FAKE_SMART_LOCK_AUTH_FACTOR_MODEL_H_

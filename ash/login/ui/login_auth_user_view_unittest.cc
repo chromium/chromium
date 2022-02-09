@@ -5,8 +5,10 @@
 #include "ash/login/ui/login_auth_user_view.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/login/login_screen_controller.h"
 #include "ash/login/mock_login_screen_client.h"
 #include "ash/login/ui/auth_factor_model.h"
+#include "ash/login/ui/fake_smart_lock_auth_factor_model.h"
 #include "ash/login/ui/fingerprint_auth_factor_model.h"
 #include "ash/login/ui/login_password_view.h"
 #include "ash/login/ui/login_pin_input_view.h"
@@ -14,6 +16,8 @@
 #include "ash/login/ui/login_test_base.h"
 #include "ash/login/ui/login_test_utils.h"
 #include "ash/login/ui/login_user_view.h"
+#include "ash/login/ui/smart_lock_auth_factor_model.h"
+#include "ash/shell.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/run_loop.h"
@@ -22,6 +26,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
@@ -546,7 +551,14 @@ class LoginAuthUserViewAuthFactorsUnittest : public LoginAuthUserViewUnittest {
     LoginTestBase::SetUp();
     feature_list_.InitWithFeatures({chromeos::features::kSmartLockUIRevamp},
                                    {});
+    fake_smart_lock_auth_factor_model_factory_ =
+        std::make_unique<FakeSmartLockAuthFactorModelFactory>();
+    SmartLockAuthFactorModel::Factory::SetFactoryForTesting(
+        fake_smart_lock_auth_factor_model_factory_.get());
   }
+
+  std::unique_ptr<FakeSmartLockAuthFactorModelFactory>
+      fake_smart_lock_auth_factor_model_factory_;
 };
 
 TEST_F(LoginAuthUserViewAuthFactorsUnittest, ShowFingerprintIfAvailable) {
@@ -571,6 +583,22 @@ TEST_F(LoginAuthUserViewAuthFactorsUnittest, NotShowFingerprintIfUnavaialble) {
       auth_test.fingerprint_auth_factor_model();
   EXPECT_EQ(fingerprint_auth_factor->GetAuthFactorState(),
             AuthFactorModel::AuthFactorState::kUnavailable);
+}
+
+TEST_F(LoginAuthUserViewAuthFactorsUnittest, VerifySmartLockArrowTapCallback) {
+  auto user = CreateUser("user@domain.com");
+  InitializeViewForUser(user);
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+  Shell::Get()->login_screen_controller()->ShowLockScreen();
+  LoginAuthUserView::TestApi auth_test(view_);
+  auth_test.SetSmartLockState(SmartLockState::kPhoneAuthenticated);
+  auto client = std::make_unique<MockLoginScreenClient>();
+  EXPECT_CALL(*client,
+              AuthenticateUserWithEasyUnlock(user.basic_user_info.account_id));
+  auth_test.smart_lock_auth_factor_model()->OnArrowButtonTapOrClickEvent();
 }
 
 }  // namespace ash

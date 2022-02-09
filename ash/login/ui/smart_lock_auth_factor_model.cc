@@ -14,6 +14,25 @@
 
 namespace ash {
 
+// static
+SmartLockAuthFactorModel::Factory*
+    SmartLockAuthFactorModel::Factory::factory_instance_ = nullptr;
+
+// static
+std::unique_ptr<SmartLockAuthFactorModel>
+SmartLockAuthFactorModel::Factory::Create(
+    base::RepeatingCallback<void()> arrow_button_tap_callback) {
+  if (factory_instance_)
+    return factory_instance_->CreateInstance(arrow_button_tap_callback);
+  return std::make_unique<SmartLockAuthFactorModel>(arrow_button_tap_callback);
+}
+
+// static
+void SmartLockAuthFactorModel::Factory::SetFactoryForTesting(
+    SmartLockAuthFactorModel::Factory* factory) {
+  factory_instance_ = factory;
+}
+
 SmartLockAuthFactorModel::SmartLockAuthFactorModel(
     base::RepeatingCallback<void()> arrow_button_tap_callback)
     : arrow_button_tap_callback_(arrow_button_tap_callback) {}

@@ -105,9 +105,11 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
     views::Label* challenge_response_label();
     LoginAuthFactorsView* auth_factors_view() const;
     AuthFactorModel* fingerprint_auth_factor_model() const;
+    AuthFactorModel* smart_lock_auth_factor_model() const;
     bool HasAuthMethod(AuthMethods auth_method) const;
     const std::u16string& GetDisabledAuthMessageContent() const;
     void SetFingerprintState(FingerprintState state) const;
+    void SetSmartLockState(SmartLockState state) const;
 
    private:
     LoginAuthUserView* const view_;
@@ -218,6 +220,11 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   // Called with the result of the request started in
   // |AttemptAuthenticateWithChallengeResponse|.
   void OnChallengeResponseAuthComplete(absl::optional<bool> auth_success);
+
+  // Called when the LoginAuthFactorsView "arrow button" is tapped for the
+  // Smart Lock auth factor; the user's phone is unlocked and the user has
+  // tapped this button in order to authenticate with Smart Lock.
+  void OnSmartLockArrowButtonTapped();
 
   // Called when the user view has been tapped. This will run |on_auth_| if tap
   // to unlock is enabled, or run |OnOnlineSignInMessageTap| if the online
