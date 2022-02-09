@@ -44,14 +44,14 @@ class NetworkStateTest : public testing::Test {
         kTestCellularDevicePath);
   }
 
-  bool SetProperty(const std::string& key, std::unique_ptr<base::Value> value) {
-    const bool result = network_state_.PropertyChanged(key, *value);
-    properties_.SetKey(key, base::Value::FromUniquePtrValue(std::move(value)));
+  bool SetProperty(const std::string& key, base::Value value) {
+    const bool result = network_state_.PropertyChanged(key, value);
+    properties_.SetKey(key, std::move(value));
     return result;
   }
 
   bool SetStringProperty(const std::string& key, const std::string& value) {
-    return SetProperty(key, std::make_unique<base::Value>(value));
+    return SetProperty(key, base::Value(value));
   }
 
   bool SignalInitialPropertiesReceived() {
@@ -70,7 +70,7 @@ class NetworkStateTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   NetworkStateTestHelper helper_{/*use_default_devices_and_services=*/false};
 
-  base::DictionaryValue properties_;
+  base::Value properties_{base::Value::Type::DICTIONARY};
 };
 
 }  // namespace
@@ -146,7 +146,7 @@ TEST_F(NetworkStateTest, SsidHex) {
   EXPECT_EQ(wifi_hex_result, network_state_.name());
 
   // Check HexSSID via network state dictionary.
-  base::DictionaryValue dictionary;
+  base::Value dictionary(base::Value::Type::DICTIONARY);
   network_state_.GetStateProperties(&dictionary);
   std::string* value = dictionary.FindStringKey(shill::kWifiHexSsid);
   EXPECT_NE(nullptr, value);
@@ -220,11 +220,11 @@ TEST_F(NetworkStateTest, VPNThirdPartyProvider) {
   EXPECT_TRUE(SetStringProperty(shill::kTypeProperty, shill::kTypeVPN));
   EXPECT_TRUE(SetStringProperty(shill::kNameProperty, "VPN"));
 
-  std::unique_ptr<base::DictionaryValue> provider(new base::DictionaryValue);
-  provider->SetKey(shill::kTypeProperty,
-                   base::Value(shill::kProviderThirdPartyVpn));
-  provider->SetKey(shill::kHostProperty,
-                   base::Value("third-party-vpn-provider-extension-id"));
+  base::Value provider(base::Value::Type::DICTIONARY);
+  provider.SetKey(shill::kTypeProperty,
+                  base::Value(shill::kProviderThirdPartyVpn));
+  provider.SetKey(shill::kHostProperty,
+                  base::Value("third-party-vpn-provider-extension-id"));
   EXPECT_TRUE(SetProperty(shill::kProviderProperty, std::move(provider)));
   SignalInitialPropertiesReceived();
   ASSERT_TRUE(network_state_.vpn_provider());
@@ -238,9 +238,9 @@ TEST_F(NetworkStateTest, VPNArcProvider) {
   EXPECT_TRUE(SetStringProperty(shill::kTypeProperty, shill::kTypeVPN));
   EXPECT_TRUE(SetStringProperty(shill::kNameProperty, "VPN"));
 
-  std::unique_ptr<base::DictionaryValue> provider(new base::DictionaryValue);
-  provider->SetKey(shill::kTypeProperty, base::Value(shill::kProviderArcVpn));
-  provider->SetKey(shill::kHostProperty, base::Value("package.name.foo"));
+  base::Value provider(base::Value::Type::DICTIONARY);
+  provider.SetKey(shill::kTypeProperty, base::Value(shill::kProviderArcVpn));
+  provider.SetKey(shill::kHostProperty, base::Value("package.name.foo"));
   EXPECT_TRUE(SetProperty(shill::kProviderProperty, std::move(provider)));
   SignalInitialPropertiesReceived();
   ASSERT_TRUE(network_state_.vpn_provider());
@@ -250,8 +250,8 @@ TEST_F(NetworkStateTest, VPNArcProvider) {
 
 TEST_F(NetworkStateTest, AllowRoaming) {
   EXPECT_FALSE(network_state_.allow_roaming());
-  EXPECT_TRUE(SetProperty(shill::kCellularAllowRoamingProperty,
-                          std::make_unique<base::Value>(true)));
+  EXPECT_TRUE(
+      SetProperty(shill::kCellularAllowRoamingProperty, base::Value(true)));
   EXPECT_TRUE(network_state_.allow_roaming());
 }
 
@@ -349,7 +349,7 @@ TEST_F(NetworkStateTest, TetherProperties) {
   network_state_.set_tether_has_connected_to_host(true);
   network_state_.set_signal_strength(75);
 
-  base::DictionaryValue dictionary;
+  base::Value dictionary(base::Value::Type::DICTIONARY);
   network_state_.GetStateProperties(&dictionary);
 
   absl::optional<int> signal_strength =
@@ -390,8 +390,7 @@ TEST_F(NetworkStateTest, CelularPaymentPortalPost) {
                         base::Value("fake_data"));
 
   EXPECT_TRUE(
-      SetProperty(shill::kPaymentPortalProperty,
-                  base::Value::ToUniquePtrValue(std::move(payment_portal))));
+      SetProperty(shill::kPaymentPortalProperty, std::move(payment_portal)));
 
   SignalInitialPropertiesReceived();
   EXPECT_EQ("Test Cellular", network_state_.name());
@@ -421,8 +420,7 @@ TEST_F(NetworkStateTest, CelularPaymentPortalGet) {
   payment_portal.SetKey(shill::kPaymentPortalPostData, base::Value("ignored"));
 
   EXPECT_TRUE(
-      SetProperty(shill::kPaymentPortalProperty,
-                  base::Value::ToUniquePtrValue(std::move(payment_portal))));
+      SetProperty(shill::kPaymentPortalProperty, std::move(payment_portal)));
 
   SignalInitialPropertiesReceived();
 
