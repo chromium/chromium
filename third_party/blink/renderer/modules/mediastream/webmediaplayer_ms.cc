@@ -177,6 +177,11 @@ class WebMediaPlayerMS::FrameDeliverer {
       return;
 #endif  // defined(OS_ANDROID)
 
+#if defined(OS_FUCHSIA)
+    // Always create GMP to workaround https://crbug.com/1293616.
+    CreateGpuMemoryBufferPoolIfNecessary();
+#endif  // !defined(OS_FUCHSIA)
+
     if (!gpu_memory_buffer_pool_) {
       int original_frame_id = frame->unique_id();
       EnqueueFrame(original_frame_id, std::move(frame));
