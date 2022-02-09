@@ -988,16 +988,16 @@ FileManagerPrivateInternalGetCrostiniSharedPathsFunction::Run() {
       continue;
     }
     auto entry = std::make_unique<base::DictionaryValue>();
-    entry->SetString(
+    entry->SetStringKey(
         "fileSystemRoot",
         storage::GetExternalFileSystemRootURIString(source_url(), mount_name));
-    entry->SetString("fileSystemName", file_system_name);
-    entry->SetString("fileFullPath", full_path);
+    entry->SetStringKey("fileSystemName", file_system_name);
+    entry->SetStringKey("fileFullPath", full_path);
     // All shared paths should be directories.  Even if this is not true,
     // it is fine for foreground/js/crostini.js class to think so. We
     // verify that the paths are in fact valid directories before calling
     // seneschal/9p in GuestOsSharePath::CallSeneschalSharePath().
-    entry->SetBoolean("fileIsDirectory", true);
+    entry->SetBoolKey("fileIsDirectory", true);
     entries->Append(std::move(entry));
   }
   return RespondNow(

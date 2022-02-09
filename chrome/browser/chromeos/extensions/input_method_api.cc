@@ -129,8 +129,8 @@ namespace extensions {
 ExtensionFunction::ResponseAction
 InputMethodPrivateGetInputMethodConfigFunction::Run() {
   std::unique_ptr<base::DictionaryValue> output(new base::DictionaryValue());
-  output->SetBoolean("isPhysicalKeyboardAutocorrectEnabled", true);
-  output->SetBoolean("isImeMenuActivated",
+  output->SetBoolKey("isPhysicalKeyboardAutocorrectEnabled", true);
+  output->SetBoolKey("isImeMenuActivated",
                      Profile::FromBrowserContext(browser_context())
                          ->GetPrefs()
                          ->GetBoolean(prefs::kLanguageImeMenuActivated));
@@ -181,9 +181,9 @@ InputMethodPrivateGetInputMethodsFunction::Run() {
     const ash::input_method::InputMethodDescriptor& input_method =
         (*input_methods)[i];
     auto val = std::make_unique<base::DictionaryValue>();
-    val->SetString("id", input_method.id());
-    val->SetString("name", util->GetInputMethodLongName(input_method));
-    val->SetString("indicator", input_method.GetIndicator());
+    val->SetStringKey("id", input_method.id());
+    val->SetStringKey("name", util->GetInputMethodLongName(input_method));
+    val->SetStringKey("indicator", input_method.GetIndicator());
     output->Append(std::move(val));
   }
   return RespondNow(
@@ -360,13 +360,13 @@ InputMethodPrivateGetSurroundingTextFunction::Run() {
           ? text_after_start + param_after_length
           : info.surrounding_text.length();
 
-  ret->SetString("before",
-                 info.surrounding_text.substr(
-                     text_before_start, text_before_end - text_before_start));
-  ret->SetString("selected",
-                 info.surrounding_text.substr(
-                     text_before_end, text_after_start - text_before_end));
-  ret->SetString(
+  ret->SetStringKey(
+      "before", info.surrounding_text.substr(
+                    text_before_start, text_before_end - text_before_start));
+  ret->SetStringKey("selected",
+                    info.surrounding_text.substr(
+                        text_before_end, text_after_start - text_before_end));
+  ret->SetStringKey(
       "after", info.surrounding_text.substr(text_after_start,
                                             text_after_end - text_after_start));
 
@@ -511,8 +511,8 @@ InputMethodPrivateGetAutocorrectRangeFunction::Run() {
   const gfx::Range range =
       engine->InputMethodEngine::GetAutocorrectRange(params.context_id, &error);
   auto ret = std::make_unique<base::DictionaryValue>();
-  ret->SetInteger("start", range.is_empty() ? 0 : range.start());
-  ret->SetInteger("end", range.is_empty() ? 0 : range.end());
+  ret->SetIntKey("start", range.is_empty() ? 0 : range.start());
+  ret->SetIntKey("end", range.is_empty() ? 0 : range.end());
   return RespondNow(
       OneArgument(base::Value::FromUniquePtrValue(std::move(ret))));
 }
@@ -535,10 +535,10 @@ InputMethodPrivateGetAutocorrectCharacterBoundsFunction::Run() {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
   auto ret = std::make_unique<base::DictionaryValue>();
-  ret->SetInteger("x", rect.x());
-  ret->SetInteger("y", rect.y());
-  ret->SetInteger("width", rect.width());
-  ret->SetInteger("height", rect.height());
+  ret->SetIntKey("x", rect.x());
+  ret->SetIntKey("y", rect.y());
+  ret->SetIntKey("width", rect.width());
+  ret->SetIntKey("height", rect.height());
   return RespondNow(
       OneArgument(base::Value::FromUniquePtrValue(std::move(ret))));
 }
@@ -559,10 +559,10 @@ InputMethodPrivateGetTextFieldBoundsFunction::Run() {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
   auto ret = std::make_unique<base::DictionaryValue>();
-  ret->SetInteger("x", rect.x());
-  ret->SetInteger("y", rect.y());
-  ret->SetInteger("width", rect.width());
-  ret->SetInteger("height", rect.height());
+  ret->SetIntKey("x", rect.x());
+  ret->SetIntKey("y", rect.y());
+  ret->SetIntKey("width", rect.width());
+  ret->SetIntKey("height", rect.height());
   return RespondNow(
       OneArgument(base::Value::FromUniquePtrValue(std::move(ret))));
 }

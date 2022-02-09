@@ -115,19 +115,19 @@ class ExternalCacheImplTest : public testing::Test,
 
   base::DictionaryValue CreateEntryWithUpdateUrl(bool from_webstore) {
     base::DictionaryValue entry;
-    entry.SetString(extensions::ExternalProviderImpl::kExternalUpdateUrl,
-                    from_webstore
-                        ? extension_urls::GetWebstoreUpdateUrl().spec()
-                        : kNonWebstoreUpdateUrl);
+    entry.SetStringKey(extensions::ExternalProviderImpl::kExternalUpdateUrl,
+                       from_webstore
+                           ? extension_urls::GetWebstoreUpdateUrl().spec()
+                           : kNonWebstoreUpdateUrl);
     return entry;
   }
 
   base::DictionaryValue CreateEntryWithExternalCrx() {
     base::DictionaryValue entry;
-    entry.SetString(extensions::ExternalProviderImpl::kExternalCrx,
-                    kExternalCrxPath);
-    entry.SetString(extensions::ExternalProviderImpl::kExternalVersion,
-                    kExternalCrxVersion);
+    entry.SetStringKey(extensions::ExternalProviderImpl::kExternalCrx,
+                       kExternalCrxPath);
+    entry.SetStringKey(extensions::ExternalProviderImpl::kExternalVersion,
+                       kExternalCrxVersion);
     return entry;
   }
 

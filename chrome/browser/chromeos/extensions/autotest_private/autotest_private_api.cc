@@ -271,12 +271,12 @@ std::string ConvertToString(message_center::NotificationType type) {
 std::unique_ptr<base::DictionaryValue> MakeDictionaryFromNotification(
     const message_center::Notification& notification) {
   auto result = std::make_unique<base::DictionaryValue>();
-  result->SetString("id", notification.id());
-  result->SetString("type", ConvertToString(notification.type()));
-  result->SetString("title", notification.title());
-  result->SetString("message", notification.message());
-  result->SetInteger("priority", notification.priority());
-  result->SetInteger("progress", notification.progress());
+  result->SetStringKey("id", notification.id());
+  result->SetStringKey("type", ConvertToString(notification.type()));
+  result->SetStringKey("title", notification.title());
+  result->SetStringKey("message", notification.message());
+  result->SetIntKey("priority", notification.priority());
+  result->SetIntKey("progress", notification.progress());
   return result;
 }
 
@@ -1300,20 +1300,20 @@ ExtensionFunction::ResponseAction AutotestPrivateLoginStatusFunction::Run() {
       ash::ScreenLocker::default_screen_locker()->locked();
 
   if (user_manager) {
-    result->SetBoolean("isLoggedIn", user_manager->IsUserLoggedIn());
-    result->SetBoolean("isOwner", user_manager->IsCurrentUserOwner());
-    result->SetBoolean("isScreenLocked", is_screen_locked);
-    result->SetBoolean("isReadyForPassword",
+    result->SetBoolKey("isLoggedIn", user_manager->IsUserLoggedIn());
+    result->SetBoolKey("isOwner", user_manager->IsCurrentUserOwner());
+    result->SetBoolKey("isScreenLocked", is_screen_locked);
+    result->SetBoolKey("isReadyForPassword",
                        ash::LoginScreen::Get()->IsReadyForPassword());
     if (user_manager->IsUserLoggedIn()) {
-      result->SetBoolean("isRegularUser",
+      result->SetBoolKey("isRegularUser",
                          user_manager->IsLoggedInAsUserWithGaiaAccount());
-      result->SetBoolean("isGuest", user_manager->IsLoggedInAsGuest());
-      result->SetBoolean("isKiosk", user_manager->IsLoggedInAsKioskApp());
+      result->SetBoolKey("isGuest", user_manager->IsLoggedInAsGuest());
+      result->SetBoolKey("isKiosk", user_manager->IsLoggedInAsKioskApp());
 
       const user_manager::User* user = user_manager->GetActiveUser();
-      result->SetString("email", user->GetAccountId().GetUserEmail());
-      result->SetString("displayEmail", user->display_email());
+      result->SetStringKey("email", user->GetAccountId().GetUserEmail());
+      result->SetStringKey("displayEmail", user->display_email());
 
       std::string user_image;
       switch (user->image_index()) {
@@ -1329,10 +1329,10 @@ ExtensionFunction::ResponseAction AutotestPrivateLoginStatusFunction::Run() {
           user_image = base::NumberToString(user->image_index());
           break;
       }
-      result->SetString("userImage", user_image);
+      result->SetStringKey("userImage", user_image);
 
       if (user->HasGaiaAccount()) {
-        result->SetBoolean("hasValidOauth2Token",
+        result->SetBoolKey("hasValidOauth2Token",
                            user->oauth_token_status() ==
                                user_manager::User::OAUTH2_TOKEN_STATUS_VALID);
       }
@@ -1426,14 +1426,14 @@ AutotestPrivateGetExtensionsInfoFunction::Run() {
     std::string id = extension->id();
     std::unique_ptr<base::DictionaryValue> extension_value(
         new base::DictionaryValue);
-    extension_value->SetString("id", id);
-    extension_value->SetString("version", extension->VersionString());
-    extension_value->SetString("name", extension->name());
-    extension_value->SetString("publicKey", extension->public_key());
-    extension_value->SetString("description", extension->description());
-    extension_value->SetString(
+    extension_value->SetStringKey("id", id);
+    extension_value->SetStringKey("version", extension->VersionString());
+    extension_value->SetStringKey("name", extension->name());
+    extension_value->SetStringKey("publicKey", extension->public_key());
+    extension_value->SetStringKey("description", extension->description());
+    extension_value->SetStringKey(
         "backgroundUrl", BackgroundInfo::GetBackgroundURL(extension).spec());
-    extension_value->SetString(
+    extension_value->SetStringKey(
         "optionsUrl", OptionsPageInfo::GetOptionsPage(extension).spec());
 
     extension_value->SetKey("hostPermissions",
@@ -1443,19 +1443,19 @@ AutotestPrivateGetExtensionsInfoFunction::Run() {
     extension_value->SetKey("apiPermissions", GetAPIPermissions(extension));
 
     ManifestLocation location = extension->location();
-    extension_value->SetBoolean("isComponent",
+    extension_value->SetBoolKey("isComponent",
                                 location == ManifestLocation::kComponent);
-    extension_value->SetBoolean("isInternal",
+    extension_value->SetBoolKey("isInternal",
                                 location == ManifestLocation::kInternal);
-    extension_value->SetBoolean("isUserInstalled",
+    extension_value->SetBoolKey("isUserInstalled",
                                 location == ManifestLocation::kInternal ||
                                     Manifest::IsUnpackedLocation(location));
-    extension_value->SetBoolean("isEnabled", service->IsExtensionEnabled(id));
-    extension_value->SetBoolean(
+    extension_value->SetBoolKey("isEnabled", service->IsExtensionEnabled(id));
+    extension_value->SetBoolKey(
         "allowedInIncognito", util::IsIncognitoEnabled(id, browser_context()));
     const ExtensionAction* action =
         extension_action_manager->GetExtensionAction(*extension);
-    extension_value->SetBoolean(
+    extension_value->SetBoolKey(
         "hasPageAction",
         action && action->action_type() == ActionInfo::TYPE_PAGE);
 

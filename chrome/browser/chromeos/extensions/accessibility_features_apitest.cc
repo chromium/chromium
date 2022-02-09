@@ -164,7 +164,7 @@ class AccessibilityFeaturesApiTest : public ExtensionApiTest,
                        const std::vector<std::string>& disabled_features,
                        std::string* result) {
     base::DictionaryValue test_arg;
-    test_arg.SetString(kTestNameKey, test_name);
+    test_arg.SetStringKey(kTestNameKey, test_name);
 
     base::ListValue enabled_list;
     for (size_t i = 0; i < enabled_features.size(); ++i)

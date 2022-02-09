@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_P(AutotestPrivateHoldingSpaceApiTest,
   const bool mark_time_of_first_add = GetParam();
 
   base::DictionaryValue options;
-  options.SetBoolean("markTimeOfFirstAdd", mark_time_of_first_add);
+  options.SetBoolKey("markTimeOfFirstAdd", mark_time_of_first_add);
   std::vector<base::Value> suite_args;
   suite_args.emplace_back(std::move(options));
 
