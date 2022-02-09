@@ -136,7 +136,9 @@ void PluginMetricsProvider::ProvideStabilityMetrics(
     // profiler runs.
     const metrics::SystemProfileProto::Plugin* system_profile_plugin = NULL;
     std::string plugin_name;
-    plugin_dict->GetString(prefs::kStabilityPluginName, &plugin_name);
+    if (const std::string* ptr =
+            plugin_dict->FindStringKey(prefs::kStabilityPluginName))
+      plugin_name = *ptr;
     for (int i = 0; i < system_profile_proto->plugin_size(); ++i) {
       if (system_profile_proto->plugin(i).name() == plugin_name) {
         system_profile_plugin = &system_profile_proto->plugin(i);
@@ -180,7 +182,10 @@ void PluginMetricsProvider::RecordCurrentState() {
     }
 
     std::u16string plugin_name;
-    plugin_dict->GetString(prefs::kStabilityPluginName, &plugin_name);
+    if (const std::string* ptr =
+            plugin_dict->FindStringKey(prefs::kStabilityPluginName)) {
+      plugin_name = base::UTF8ToUTF16(*ptr);
+    }
     if (plugin_name.empty()) {
       NOTREACHED();
       continue;
