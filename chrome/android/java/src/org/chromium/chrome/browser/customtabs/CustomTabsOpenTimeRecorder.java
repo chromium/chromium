@@ -9,6 +9,7 @@ import android.os.SystemClock;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -18,11 +19,22 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Records how long CCTs are open. Only logs if CCTs are closed automatically
- * without user intervention.
+ * Records how long CCTs are open and the cause of closing. The open time is logged only if CCTs
+ * are closed automatically without user intervention.
+ * <p>CCTs can be closed automatically when the client app closes the CCT by launching another
+ * activity with a flag CLEAR_TOP. We can't detect this exactly, but we use following heuristics:
+ *
+ *   <li> {@link Activity#onUserLeaveHint()} occurs when user presses home button to put CCT
+ *        to background.
+ *   <li> {@link Activity#isFinishing()} is _likely_ {@code false} at {@link Activity#onStop}
+ *        when user enters Recent screen on Android P/Q/R in system gesture navigation mode.
+ *
+ * <p>The above signals help eliminate some cases that look like autoclosing but are actually
+ * user-intervened ones.
  */
 class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
     private final CustomTabActivityNavigationController mNavigationController;
+    private final BooleanSupplier mIsCctFinishing;
 
     private long mOnStartTimestampMs;
 
@@ -40,9 +52,11 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
     private @CloseCause int mCloseCause;
 
     public CustomTabsOpenTimeRecorder(ActivityLifecycleDispatcher lifecycleDispatcher,
-            CustomTabActivityNavigationController navigationController) {
+            CustomTabActivityNavigationController navigationController,
+            BooleanSupplier isCctFinishing) {
         lifecycleDispatcher.register(this);
         mNavigationController = navigationController;
+        mIsCctFinishing = isCctFinishing;
     }
 
     @Override
@@ -56,7 +70,10 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
         assert mOnStartTimestampMs != 0;
         RecordHistogram.recordEnumeratedHistogram(
                 "CustomTabs.CloseCause", mCloseCause, CloseCause.COUNT);
-        if (mCloseCause == CloseCause.AUTOCLOSE) {
+
+        // Additional check with |mIsCctFinishing| can eliminate some false positives.
+        // See Javadoc for more details.
+        if (mCloseCause == CloseCause.AUTOCLOSE && mIsCctFinishing.getAsBoolean()) {
             long duration = SystemClock.elapsedRealtime() - mOnStartTimestampMs;
             RecordHistogram.recordLongTimesHistogram(
                     "CustomTabs.AutoclosedSessionDuration", duration);
