@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CUSTOM_HANDLERS_REGISTER_PROTOCOL_HANDLER_PERMISSION_REQUEST_H_
-#define CHROME_BROWSER_CUSTOM_HANDLERS_REGISTER_PROTOCOL_HANDLER_PERMISSION_REQUEST_H_
+#ifndef COMPONENTS_CUSTOM_HANDLERS_REGISTER_PROTOCOL_HANDLER_PERMISSION_REQUEST_H_
+#define COMPONENTS_CUSTOM_HANDLERS_REGISTER_PROTOCOL_HANDLER_PERMISSION_REQUEST_H_
 
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -19,7 +19,6 @@ using content::ProtocolHandler;
 class GURL;
 namespace custom_handlers {
 class ProtocolHandlerRegistry;
-}
 
 // This class provides display data for a permission request, shown when a page
 // wants to register a protocol handler and was triggered by a user action.
@@ -56,4 +55,6 @@ class RegisterProtocolHandlerPermissionRequest
   base::ScopedClosureRunner fullscreen_block_;
 };
 
-#endif  // CHROME_BROWSER_CUSTOM_HANDLERS_REGISTER_PROTOCOL_HANDLER_PERMISSION_REQUEST_H_
+}  // namespace custom_handlers
+
+#endif  // COMONENTS_CUSTOM_HANDLERS_REGISTER_PROTOCOL_HANDLER_PERMISSION_REQUEST_H_

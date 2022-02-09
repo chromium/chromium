@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
-#include "chrome/browser/custom_handlers/register_protocol_handler_permission_request.h"
 #include "chrome/browser/download/download_permission_request.h"
 #include "chrome/browser/permissions/attestation_permission_request.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
@@ -31,6 +30,7 @@
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
+#include "components/custom_handlers/register_protocol_handler_permission_request.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_ui_selector.h"
@@ -165,7 +165,7 @@ class PermissionPromptBubbleViewBrowserTest
         ProtocolHandlerRegistryFactory::GetForBrowserContext(
             browser()->profile());
     // Deleted in RegisterProtocolHandlerPermissionRequest::RequestFinished().
-    return new RegisterProtocolHandlerPermissionRequest(
+    return new custom_handlers::RegisterProtocolHandlerPermissionRequest(
         registry, handler, GetTestUrl(), base::ScopedClosureRunner());
   }
 

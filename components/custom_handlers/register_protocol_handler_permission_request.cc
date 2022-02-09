@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/custom_handlers/register_protocol_handler_permission_request.h"
+#include "components/custom_handlers/register_protocol_handler_permission_request.h"
 
 #include "base/bind.h"
 #include "base/metrics/user_metrics.h"
@@ -12,6 +12,8 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+
+namespace custom_handlers {
 
 RegisterProtocolHandlerPermissionRequest::
     RegisterProtocolHandlerPermissionRequest(
@@ -80,3 +82,5 @@ void RegisterProtocolHandlerPermissionRequest::PermissionDecided(
 void RegisterProtocolHandlerPermissionRequest::DeleteRequest() {
   delete this;
 }
+
+}  // namespace custom_handlers

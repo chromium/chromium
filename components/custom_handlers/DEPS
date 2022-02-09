@@ -1,7 +1,9 @@
 include_rules = [
   "+components/keyed_service",
+  "+components/permissions",
   "+components/pref_registry",
   "+components/prefs",
+  "+components/strings",
   "+components/sync_preferences",
   "+components/user_prefs",
   "+content/public/browser",
@@ -10,4 +12,5 @@ include_rules = [
   "+third_party/blink/public/common/loader",
   "+third_party/blink/public/common/security",
   "+services/network/public/cpp",
+  "+ui/base/l10n",
 ]
