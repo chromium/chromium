@@ -165,15 +165,9 @@ class WebView {
   virtual Status DispatchTouchEventWithMultiPoints(
       const std::vector<TouchEvent>& events,
       bool async_dispatch_events) = 0;
-
   // Dispatch a sequence of key events.
   virtual Status DispatchKeyEvents(const std::vector<KeyEvent>& events,
                                    bool async_dispatch_events) = 0;
-
-  // Emulate inserting text that doesn't come from a key press,
-  // for example an emoji keyboard or an IME.
-  virtual Status InsertText(const std::string& text,
-                            bool async_dispatch_events) = 0;
 
   // Return all the cookies visible to the current page.
   virtual Status GetCookies(std::unique_ptr<base::ListValue>* cookies,

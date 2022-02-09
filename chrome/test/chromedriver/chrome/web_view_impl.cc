@@ -789,21 +789,8 @@ Status WebViewImpl::DispatchKeyEvents(const std::vector<KeyEvent>& events,
   return status;
 }
 
-Status WebViewImpl::InsertText(const std::string& text,
-                               bool async_dispatch_events) {
-  Status status(kOk);
-  base::DictionaryValue params;
-  params.SetString("text", text);
-  if (async_dispatch_events) {
-    status = client_->SendCommandAndIgnoreResponse("Input.insertText", params);
-  } else {
-    status = client_->SendCommand("Input.insertText", params);
-  }
-  return status;
-}
-
 Status WebViewImpl::GetCookies(std::unique_ptr<base::ListValue>* cookies,
-                               const std::string& current_page_url) {
+                              const std::string& current_page_url) {
   base::DictionaryValue params;
   base::DictionaryValue result;
 

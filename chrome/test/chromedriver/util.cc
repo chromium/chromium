@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <string>
 
 #include "base/base64.h"
@@ -48,7 +47,18 @@ Status FlattenStringArray(const base::ListValue* src, std::u16string* dest) {
   for (const base::Value& i : src->GetList()) {
     if (!i.is_string())
       return Status(kUnknownError, "keys should be a string");
+
     std::u16string keys_list_part = base::UTF8ToUTF16(i.GetString());
+
+    for (char16_t ch : keys_list_part) {
+      if (CBU16_IS_SURROGATE(ch)) {
+        return Status(
+            kUnknownError,
+            base::StringPrintf("%s only supports characters in the BMP",
+                              kChromeDriverProductShortName));
+      }
+    }
+
     keys.append(keys_list_part);
   }
   *dest = keys;
@@ -57,67 +67,24 @@ Status FlattenStringArray(const base::ListValue* src, std::u16string* dest) {
 
 }  // namespace
 
-Status SendKeysOnWindow(WebView* web_view,
-                        const base::ListValue* key_list,
-                        bool release_modifiers,
-                        int* sticky_modifiers) {
+Status SendKeysOnWindow(
+    WebView* web_view,
+    const base::ListValue* key_list,
+    bool release_modifiers,
+    int* sticky_modifiers) {
   std::u16string keys;
   Status status = FlattenStringArray(key_list, &keys);
   if (status.IsError())
     return status;
-
-  // Replace shorthand keys with corresponding WebDriver special keys.
-  std::transform(keys.begin(), keys.end(), keys.begin(), [](char16_t ch) {
-    switch (ch) {
-      case u'\n':
-        return u'\uE006';
-      case u'\t':
-        return u'\uE004';
-      case u'\b':
-        return u'\uE003';
-      case u' ':
-        return u'\uE00D';
-      default:
-        return ch;
-    }
-  });
-
-  // \r goes together with \n on Windows.
-  // The last one is enough for identifying a line break.
-  keys.erase(std::remove(keys.begin(), keys.end(), u'\r'), keys.end());
-
+  std::vector<KeyEvent> events;
   int sticky_modifiers_tmp = *sticky_modifiers;
-
-  auto it2 = keys.begin();
-  for (auto it1 = keys.begin(); it1 != keys.end() && status.IsOk(); it1 = it2) {
-    bool is_typeable = IsTypeableKey(*it1);
-    it2 = std::find_if(next(it1), keys.end(), [is_typeable](char16_t ch) {
-      return is_typeable != IsTypeableKey(ch);
-    });
-    std::u16string block(it1, it2);
-
-    if (is_typeable) {
-      std::vector<KeyEvent> events;
-      status = ConvertKeysToKeyEvents(block, release_modifiers,
-                                      &sticky_modifiers_tmp, &events);
-      if (status.IsOk()) {
-        status = web_view->DispatchKeyEvents(events, false);
-      }
-    } else {
-      std::string block_utf8;
-      if (base::UTF16ToUTF8(block.c_str(), block.size(), &block_utf8)) {
-        status = web_view->InsertText(block_utf8, false);
-      } else {
-        // Malformed input, e.g. high surrogate not followed by a low surrogate.
-        status = Status(kUnknownError,
-                        "UTF16 to UTF8 conversion failed for the text");
-      }
-    }
-  }
-
+  status = ConvertKeysToKeyEvents(
+      keys, release_modifiers, &sticky_modifiers_tmp, &events);
+  if (status.IsError())
+    return status;
+  status = web_view->DispatchKeyEvents(events, false);
   if (status.IsOk())
     *sticky_modifiers = sticky_modifiers_tmp;
-
   return status;
 }
 
