@@ -209,10 +209,12 @@ export class EmojiSearch extends PolymerElement {
   }
 
   onSearchScroll() {
-    this.$['search-shadow'].style.boxShadow =
-        this.shadowRoot.getElementById('results').scrollTop > 0 ?
-        'var(--cr-elevation-3)' :
-        'none';
+    if (!this.v2Enabled) {
+      this.$['search-shadow'].style.boxShadow =
+          this.shadowRoot.getElementById('results').scrollTop > 0 ?
+          'var(--cr-elevation-3)' :
+          'none';
+    }
   }
 
   /**

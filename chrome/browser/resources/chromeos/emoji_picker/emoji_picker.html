@@ -116,6 +116,8 @@
     left: var(--emoji-picker-side-padding);
   }
 
+  /* TODO(b/218754137): Add margins to both end of divider to match v2 mocks 
+   */
   .divider {
     border-top: 1px solid var(--cros-separator-color);
     width: var(--emoji-picker-width);
@@ -172,7 +174,7 @@
 
   :host([v2-enabled]) #tabs {
     padding-bottom: 5px;
-    padding-top: 12px;
+    padding-top: 5px;
   }
 
   /* v2Enabled without text bar specifies the v2 emoji-based subcategory bar. */
