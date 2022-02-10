@@ -53,18 +53,24 @@ class WriterDelegate {
 // like:
 //
 //   ZipReader reader;
-//   reader.Open(zip_path);
-//   while (reader.HasMore()) {
-//     reader.OpenCurrentEntryInZip();
-//     const base::FilePath& entry_path =
-//        reader.current_entry_info()->file_path();
-//     auto writer = CreateFilePathWriterDelegate(extract_dir, entry_path);
-//     reader.ExtractCurrentEntry(writer, std::numeric_limits<uint64_t>::max());
-//     reader.AdvanceToNextEntry();
+//   if (!reader.Open(zip_path)) {
+//     // Cannot open
+//     return;
 //   }
 //
-// For simplicity, error checking is omitted in the example code above. The
-// production code should check return values from all of these functions.
+//   while (const ZipReader::entry* entry = reader.Next()) {
+//     auto writer = CreateFilePathWriterDelegate(extract_dir, entry->path);
+//     if (!reader.ExtractCurrentEntry(
+//         writer, std::numeric_limits<uint64_t>::max())) {
+//           // Cannot extract
+//           return;
+//     }
+//   }
+//
+//   if (!reader.ok()) {
+//     // Error while enumerating entries
+//     return;
+//   }
 //
 class ZipReader {
  public:
@@ -167,6 +173,20 @@ class ZipReader {
   // By default, paths are assumed to be in UTF-8.
   void SetEncoding(std::string encoding) { encoding_ = std::move(encoding); }
 
+  // Gets the next entry. Returns null if there is no more entry. The returned
+  // Entry is owned by this ZipReader, and is valid until Next() is called
+  // again or until this ZipReader is closed.
+  //
+  // This function is used to scan entries:
+  // while (const ZipReader::Entry* entry = reader.Next()) {
+  //   // Do something with the current entry here.
+  //   ...
+  // }
+  const Entry* Next();
+
+  // Returns true if the enumeration of entries was successful.
+  bool ok() const { return ok_; }
+
   // Returns true if there is at least one entry to read. This function is
   // used to scan entries with AdvanceToNextEntry(), like:
   //
@@ -174,9 +194,13 @@ class ZipReader {
   //   // Do something with the current file here.
   //   reader.AdvanceToNextEntry();
   // }
+  //
+  // TODO(crbug.com/1295127) Remove this method.
   bool HasMore();
 
   // Advances the next entry. Returns true on success.
+  //
+  // TODO(crbug.com/1295127) Remove this method.
   bool AdvanceToNextEntry();
 
   // Opens the current entry in the ZIP archive. On success, returns true and
@@ -186,6 +210,8 @@ class ZipReader {
   //
   // Note that there is no CloseCurrentEntryInZip(). The current entry state is
   // reset automatically as needed.
+  //
+  // TODO(crbug.com/1295127) Remove this method.
   bool OpenCurrentEntryInZip();
 
   // Extracts |num_bytes_to_extract| bytes of the current entry to |delegate|,
@@ -223,6 +249,8 @@ class ZipReader {
 
   // Returns the current entry info. Returns NULL if the current entry is
   // not yet opened. OpenCurrentEntryInZip() must be called beforehand.
+  //
+  // TODO(crbug.com/1295127) Remove this method.
   EntryInfo* current_entry_info() const { return current_entry_; }
 
   // Returns the number of entries in the ZIP archive.
@@ -247,7 +275,9 @@ class ZipReader {
   std::string encoding_;
   unzFile zip_file_;
   int num_entries_;
+  int next_index_;
   bool reached_end_;
+  bool ok_;
   EntryInfo entry_ = {};
   EntryInfo* current_entry_ = nullptr;
 

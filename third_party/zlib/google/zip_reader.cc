@@ -205,6 +205,7 @@ bool ZipReader::AdvanceToNextEntry() {
     reached_end_ = true;
     if (err != UNZ_END_OF_LIST_OF_FILE) {
       LOG(ERROR) << "Cannot go to next entry in ZIP: " << UnzipError(err);
+      ok_ = false;
       return false;
     }
   }
@@ -212,6 +213,26 @@ bool ZipReader::AdvanceToNextEntry() {
   entry_ = {};
   current_entry_ = nullptr;
   return true;
+}
+
+const ZipReader::Entry* ZipReader::Next() {
+  DCHECK(zip_file_);
+
+  if (reached_end_)
+    return nullptr;
+
+  if (next_index_ > 0 && (!AdvanceToNextEntry() || reached_end_))
+    return nullptr;
+
+  next_index_++;
+
+  if (!OpenCurrentEntryInZip()) {
+    reached_end_ = true;
+    ok_ = false;
+    return nullptr;
+  }
+
+  return &entry_;
 }
 
 bool ZipReader::OpenCurrentEntryInZip() {
@@ -449,13 +470,16 @@ bool ZipReader::OpenInternal() {
 
   num_entries_ = zip_info.number_entry;
   reached_end_ = (num_entries_ <= 0);
+  ok_ = true;
   return true;
 }
 
 void ZipReader::Reset() {
   zip_file_ = nullptr;
   num_entries_ = 0;
+  next_index_ = 0;
   reached_end_ = false;
+  ok_ = false;
   entry_ = {};
   current_entry_ = nullptr;
 }
