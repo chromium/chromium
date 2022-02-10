@@ -5242,6 +5242,76 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplAllowInsecureLocalhostBrowserTest,
   observer.Wait();
 }
 
+class WebContentsPrerenderBrowserTest : public WebContentsImplBrowserTest {
+ public:
+  WebContentsPrerenderBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kPrerender2},
+        // Disable the memory requirement of Prerender2 so the test can run on
+        // any bot.
+        {blink::features::kPrerender2MemoryControls});
+  }
+  ~WebContentsPrerenderBrowserTest() override = default;
+
+  WebContentsImpl* web_contents() {
+    return static_cast<WebContentsImpl*>(shell()->web_contents());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class TestWebContentsDestructionObserver : public WebContentsObserver {
+ public:
+  TestWebContentsDestructionObserver(WebContentsImpl* web_contents,
+                                     WebContentsImpl* inner_contents)
+      : content::WebContentsObserver(web_contents),
+        web_contents_(web_contents),
+        inner_contents_(inner_contents) {}
+
+  TestWebContentsDestructionObserver(
+      const TestWebContentsDestructionObserver&) = delete;
+  TestWebContentsDestructionObserver& operator=(
+      const TestWebContentsDestructionObserver&) = delete;
+
+  ~TestWebContentsDestructionObserver() override = default;
+
+  void WebContentsDestroyed() override {
+    // This has been added to validate that it's safe to call this method
+    // within a WebContentsDestroyed observer.
+    web_contents_->ForEachFrameTree(
+        base::BindLambdaForTesting([&](FrameTree* frame_tree) {
+          EXPECT_NE(frame_tree, &inner_contents_->GetPrimaryFrameTree());
+        }));
+  }
+
+ private:
+  WebContentsImpl* web_contents_;
+  WebContentsImpl* inner_contents_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebContentsPrerenderBrowserTest,
+                       SafeToCallForEachFrameTreeDuringDestruction) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL url_a(
+      embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  const GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), url_a));
+  auto* web_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  auto* inner_contents =
+      static_cast<WebContentsImpl*>(CreateAndAttachInnerContents(
+          web_contents->GetMainFrame()->child_at(0)->current_frame_host()));
+
+  TestWebContentsDestructionObserver test_web_contents_observer(web_contents,
+                                                                inner_contents);
+  ASSERT_TRUE(NavigateToURLFromRenderer(inner_contents, url_b));
+  WebContentsDestroyedWatcher close_observer(web_contents);
+  web_contents->DispatchBeforeUnload(false /* auto_cancel */);
+  close_observer.Wait();
+}
+
 class WebContentsFencedFrameBrowserTest : public WebContentsImplBrowserTest {
  public:
   WebContentsFencedFrameBrowserTest() = default;

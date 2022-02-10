@@ -1325,6 +1325,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   friend class RenderFrameHostImplBeforeUnloadBrowserTest;
   friend class WebContentsImplBrowserTest;
+  friend class WebContentsPrerenderBrowserTest;
+  friend class TestWebContentsDestructionObserver;
   friend class BeforeUnloadBlockingDelegate;
   friend class TestWCDelegateForDialogsAndFullscreen;
 
@@ -1368,6 +1370,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                            MaxFrameCountInjectedIframes);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest,
                            ForEachFrameTreeInnerContents);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsPrerenderBrowserTest, ForEachFrameTree);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsPrerenderBrowserTest,
+                           ResetPrerenderHostRegistry);
   FRIEND_TEST_ALL_PREFIXES(FencedFrameBrowserTest, FrameIteration);
   FRIEND_TEST_ALL_PREFIXES(FormStructureBrowserTest, HTMLFiles);
   FRIEND_TEST_ALL_PREFIXES(NavigationControllerTest, HistoryNavigate);
