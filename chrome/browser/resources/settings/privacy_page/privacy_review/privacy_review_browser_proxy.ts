@@ -14,9 +14,6 @@ const PRIVACY_REVIEW_PROMO_IMPRESSION_COUNT_KEY: string =
     'privacy-review-promo-count';
 
 export interface PrivacyReviewBrowserProxy {
-  /** Get the current privacy review status. */
-  isPrivacyReviewAvailable(): Promise<boolean>;
-
   /** @return The number of times the privacy review promo was shown. */
   getPromoImpressionCount(): number;
 
@@ -26,10 +23,6 @@ export interface PrivacyReviewBrowserProxy {
 
 export class PrivacyReviewBrowserProxyImpl implements
     PrivacyReviewBrowserProxy {
-  isPrivacyReviewAvailable() {
-    return sendWithPromise('isPrivacyReviewAvailable');
-  }
-
   getPromoImpressionCount() {
     return parseInt(
                window.localStorage.getItem(

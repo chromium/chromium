@@ -4,7 +4,6 @@ per-file people_handler*=msalama@chromium.org
 per-file people_handler*=treib@chromium.org
 
 per-file hats_handler*=sauski@google.com
-per-file privacy_review_handler*=rainhard@chromium.org
 per-file privacy_sandbox_handler*=sauski@google.com
 per-file *site_settings*=msramek@chromium.org
 per-file *site_settings*=sauski@google.com

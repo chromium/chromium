@@ -22,15 +22,9 @@ class TestPrivacyReviewBrowserProxy extends TestBrowserProxy implements
     PrivacyReviewBrowserProxy {
   constructor() {
     super([
-      'isPrivacyReviewAvailable',
       'getPromoImpressionCount',
       'incrementPromoImpressionCount',
     ]);
-  }
-
-  isPrivacyReviewAvailable() {
-    this.methodCalled('isPrivacyReviewAvailable');
-    return Promise.resolve(true);
   }
 
   getPromoImpressionCount() {
