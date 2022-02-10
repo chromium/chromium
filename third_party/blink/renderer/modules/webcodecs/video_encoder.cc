@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/clamped_math.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -202,7 +203,8 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
       // Currently webcodecs doesn't expose peak bitrate
       // (assuming unconstrained VBR), here we just set peak as 10 times
       // target as a good enough way of expressing unconstrained VBR.
-      result->options.bitrate = media::Bitrate::VariableBitrate(bps, 10 * bps);
+      result->options.bitrate = media::Bitrate::VariableBitrate(
+          bps, base::ClampMul(bps, 10u).RawValue());
     }
   }
 
