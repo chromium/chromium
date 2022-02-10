@@ -15,6 +15,7 @@
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/input_stream.h"
 #include "content/public/browser/download_manager.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -167,6 +168,13 @@ class MockDownloadManager : public DownloadManager {
   MOCK_METHOD1(GetDownloadByGuid, download::DownloadItem*(const std::string&));
   MOCK_METHOD1(GetNextId, void(base::OnceCallback<void(uint32_t)>));
   MOCK_METHOD1(CanDownload, bool(download::DownloadUrlParameters*));
+
+  // Implement a simple serialization and deserialization of
+  // StoragePartitionConfig for the mock.
+  std::string StoragePartitionConfigToSerializedEmbedderDownloadData(
+      const StoragePartitionConfig& storage_partition_config) override;
+  StoragePartitionConfig SerializedEmbedderDownloadDataToStoragePartitionConfig(
+      const std::string& serialized_embedder_download_data) override;
 
   void OnHistoryQueryComplete(
       base::OnceClosure load_history_downloads_cb) override;

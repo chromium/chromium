@@ -4,10 +4,20 @@
 
 #include "content/public/test/mock_download_manager.h"
 
+#include "base/strings/string_split.h"
 #include "components/download/public/common/download_create_info.h"
 #include "content/browser/byte_stream.h"
+#include "content/test/storage_partition_test_helpers.h"
 
 namespace content {
+
+namespace {
+const char* kDelimiter = "|";
+const char* kInMemorySetValue = "1";
+const char* kFallbackModeNoneSetValue = "0";
+const char* kFallbackModePartitionInMemorySetValue = "1";
+const char* kFallbackModePartitionOnDiskSetValue = "2";
+}  // namespace
 
 MockDownloadManager::CreateDownloadItemAdapter::CreateDownloadItemAdapter(
     const std::string& guid,
@@ -149,6 +159,73 @@ download::DownloadItem* MockDownloadManager::CreateDownloadItem(
       received_bytes, total_bytes, hash, state, danger_type, interrupt_reason,
       opened, last_access_time, transient, received_slices, reroute_info);
   return MockCreateDownloadItem(adapter);
+}
+
+std::string
+MockDownloadManager::StoragePartitionConfigToSerializedEmbedderDownloadData(
+    const StoragePartitionConfig& storage_partition_config) {
+  std::string fallback_mode_str;
+  switch (
+      storage_partition_config.fallback_to_partition_domain_for_blob_urls()) {
+    case StoragePartitionConfig::FallbackMode::kNone:
+      fallback_mode_str = kFallbackModeNoneSetValue;
+      break;
+    case StoragePartitionConfig::FallbackMode::kFallbackPartitionInMemory:
+      fallback_mode_str = kFallbackModePartitionInMemorySetValue;
+      break;
+    case StoragePartitionConfig::FallbackMode::kFallbackPartitionOnDisk:
+      fallback_mode_str = kFallbackModePartitionOnDiskSetValue;
+      break;
+    default:
+      fallback_mode_str = kFallbackModeNoneSetValue;
+      break;
+  }
+
+  return storage_partition_config.partition_domain() + std::string(kDelimiter) +
+         storage_partition_config.partition_name() + std::string(kDelimiter) +
+         (storage_partition_config.in_memory() ? std::string(kInMemorySetValue)
+                                               : "") +
+         std::string(kDelimiter) + fallback_mode_str;
+}
+
+StoragePartitionConfig
+MockDownloadManager::SerializedEmbedderDownloadDataToStoragePartitionConfig(
+    const std::string& serialized_embedder_download_data) {
+  std::vector<std::string> fields =
+      base::SplitString(serialized_embedder_download_data, kDelimiter,
+                        base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::string partition_domain;
+  std::string partition_name;
+  bool in_memory = false;
+  StoragePartitionConfig::FallbackMode fallback_mode =
+      StoragePartitionConfig::FallbackMode::kNone;
+
+  auto itr = fields.begin();
+  if (itr != fields.end())
+    partition_domain = *itr++;
+
+  if (itr != fields.end())
+    partition_name = *itr++;
+
+  if (itr != fields.end())
+    in_memory = (*itr++ == kInMemorySetValue);
+
+  if (itr != fields.end()) {
+    if (*itr == kFallbackModeNoneSetValue) {
+      fallback_mode = StoragePartitionConfig::FallbackMode::kNone;
+    } else if (*itr == kFallbackModePartitionInMemorySetValue) {
+      fallback_mode =
+          StoragePartitionConfig::FallbackMode::kFallbackPartitionInMemory;
+    } else if (*itr == kFallbackModePartitionOnDiskSetValue) {
+      fallback_mode =
+          StoragePartitionConfig::FallbackMode::kFallbackPartitionOnDisk;
+    }
+  }
+
+  auto config = CreateStoragePartitionConfigForTesting(
+      in_memory, partition_domain, partition_name);
+  config.set_fallback_to_partition_domain_for_blob_urls(fallback_mode);
+  return config;
 }
 
 void MockDownloadManager::OnHistoryQueryComplete(

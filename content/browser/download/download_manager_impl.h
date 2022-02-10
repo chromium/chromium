@@ -149,6 +149,10 @@ class CONTENT_EXPORT DownloadManagerImpl
   download::DownloadItem* GetDownload(uint32_t id) override;
   download::DownloadItem* GetDownloadByGuid(const std::string& guid) override;
   void GetNextId(GetNextIdCallback callback) override;
+  std::string StoragePartitionConfigToSerializedEmbedderDownloadData(
+      const StoragePartitionConfig& storage_partition_config) override;
+  StoragePartitionConfig SerializedEmbedderDownloadDataToStoragePartitionConfig(
+      const std::string& serialized_embedder_download_data) override;
 
   void StartDownload(
       std::unique_ptr<download::DownloadCreateInfo> info,
