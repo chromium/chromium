@@ -78,6 +78,7 @@
 #include "chrome/browser/ash/dbus/dlp_files_policy_service_provider.h"
 #include "chrome/browser/ash/dbus/drive_file_stream_service_provider.h"
 #include "chrome/browser/ash/dbus/encrypted_reporting_service_provider.h"
+#include "chrome/browser/ash/dbus/fusebox_service_provider.h"
 #include "chrome/browser/ash/dbus/kiosk_info_service_provider.h"
 #include "chrome/browser/ash/dbus/libvda_service_provider.h"
 #include "chrome/browser/ash/dbus/lock_to_single_user_service_provider.h"
@@ -419,11 +420,18 @@ class DBusServices {
                                 dbus::ObjectPath(smbfs::kSmbFsServicePath),
                                 CrosDBusService::CreateServiceProviderList(
                                     std::make_unique<SmbFsServiceProvider>()));
+
     lock_to_single_user_service_ = CrosDBusService::Create(
         system_bus, lock_to_single_user::kLockToSingleUserServiceName,
         dbus::ObjectPath(lock_to_single_user::kLockToSingleUserServicePath),
         CrosDBusService::CreateServiceProviderList(
             std::make_unique<LockToSingleUserServiceProvider>()));
+
+    fusebox_service_ = CrosDBusService::Create(
+        system_bus, fusebox::kFuseBoxServiceName,
+        dbus::ObjectPath(fusebox::kFuseBoxServicePath),
+        CrosDBusService::CreateServiceProviderList(
+            std::make_unique<FuseBoxServiceProvider>()));
 
     mojo_connection_service_ = CrosDBusService::Create(
         system_bus,
@@ -507,6 +515,7 @@ class DBusServices {
     cryptohome_key_delegate_service_.reset();
     encrypted_reporting_service_.reset();
     lock_to_single_user_service_.reset();
+    fusebox_service_.reset();
     mojo_connection_service_.reset();
     ProcessDataCollector::Shutdown();
     PowerDataCollector::Shutdown();
@@ -541,6 +550,7 @@ class DBusServices {
   std::unique_ptr<CrosDBusService> machine_learning_decision_service_;
   std::unique_ptr<CrosDBusService> smb_fs_service_;
   std::unique_ptr<CrosDBusService> lock_to_single_user_service_;
+  std::unique_ptr<CrosDBusService> fusebox_service_;
   std::unique_ptr<CrosDBusService> mojo_connection_service_;
   std::unique_ptr<CrosDBusService> dlp_files_policy_service_;
 };
