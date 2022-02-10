@@ -105,8 +105,10 @@ void GLContext::SetSwitchableGPUsSupported() {
 }
 
 bool GLContext::MakeCurrent(GLSurface* surface) {
-  if (context_lost_)
+  if (context_lost_) {
+    LOG(ERROR) << "Failed to make current since context is marked as lost";
     return false;
+  }
   return MakeCurrentImpl(surface);
 }
 

@@ -532,8 +532,10 @@ bool SharedContextState::InitializeGL(
 }
 
 bool SharedContextState::MakeCurrent(gl::GLSurface* surface, bool needs_gl) {
-  if (context_lost())
+  if (context_lost()) {
+    LOG(ERROR) << "Failed to make current since context is marked as lost";
     return false;
+  }
 
   const bool using_gl = GrContextIsGL() || needs_gl;
   if (using_gl) {
