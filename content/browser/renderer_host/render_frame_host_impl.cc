@@ -7686,12 +7686,23 @@ void RenderFrameHostImpl::PendingDeletionCheckCompletedOnSubtree() {
 
   // Collect children first before calling PendingDeletionCheckCompleted() on
   // them, because it may delete them.
-  std::vector<RenderFrameHostImpl*> children_rfh;
-  for (std::unique_ptr<FrameTreeNode>& child : children_)
-    children_rfh.push_back(child->current_frame_host());
+  //
+  // Note: In https://crbug.com/1276535, we believe as a side effect of deleting
+  // on RenderFrameHost, a sibling gets deleted. As an attempt to verify this,
+  // this holds WeakPtr<T> instead of T*.
+  std::vector<base::WeakPtr<RenderFrameHostImpl>> children_rfh;
+  for (std::unique_ptr<FrameTreeNode>& child : children_) {
+    RenderFrameHostImpl* child_rfh = child->current_frame_host();
+    if (!child_rfh)
+      continue;
+    children_rfh.push_back(child_rfh->GetWeakPtr());
+  }
 
-  for (RenderFrameHostImpl* child_rfh : children_rfh)
+  for (base::WeakPtr<RenderFrameHostImpl>& child_rfh : children_rfh) {
+    if (!child_rfh)  // Reached. See https://crbug.com/1276535
+      continue;
     child_rfh->PendingDeletionCheckCompletedOnSubtree();
+  }
 }
 
 void RenderFrameHostImpl::ResetNavigationsForPendingDeletion() {
