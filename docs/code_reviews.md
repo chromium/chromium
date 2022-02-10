@@ -124,7 +124,7 @@ the following process:
 
 ### OWNERS file details
 
-Refer to the [source code](https://chromium.googlesource.com/chromium/tools/depot_tools/+/main/owners.py)
+Refer to the [owners plugin](https://github.com/GerritCodeReview/plugins_code-owners/blob/master/resources/Documentation/backend-find-owners.md)
 for all details on the file format.
 
 This example indicates that two people are owners, in addition to any owners
@@ -171,19 +171,15 @@ per-file foo.*=a@chromium.org
 per-file readme.txt=*
 ```
 
-Note that `per-file` directives cannot directly specify subdirectories, e.g:
-```
-per-file foo/bar.cc=a@chromium.org
-```
-
-is not OK; instead, place a `per-file` directive in `foo/OWNERS`.
-
 Other `OWNERS` files can be included by reference by listing the path to the
 file with `file://...`. This example indicates that only the people listed in
 `//ipc/SECURITY_OWNERS` can review the messages files:
 ```
 per-file *_messages*.h=set noparent
 per-file *_messages*.h=file://ipc/SECURITY_OWNERS
+
+File globbing is supported using the
+[simple path expression format](https://github.com/GerritCodeReview/plugins_code-owners/blob/master/resources/Documentation/path-expressions.md#simplePathExpressions)
 ```
 
 ### Owners-Override
