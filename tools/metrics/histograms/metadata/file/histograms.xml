@@ -53,6 +53,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.DirectoryListLoad.{RootType}.{NumFiles}"
+    units="ms" expires_after="2022-08-09">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Tracks the user perceived load time for the directory list. Measured from
+    the beginning of the directory scan until all entries are scanned (excluding
+    metadata). {NumFiles} has a tolerance of 20% which leads to the following
+    buckets being tracked: 8-12 files, 80-120 files and 800-1200 files all
+    inclusive. Directories whose file counts fall outside these buckets are
+    simply not recorded. {RootType} is used to differentiate the load times for
+    various volumes.
+  </summary>
+  <token key="NumFiles">
+    <variant name="10"/>
+    <variant name="100"/>
+    <variant name="1000"/>
+  </token>
+  <token key="RootType">
+    <variant name="my_files"/>
+  </token>
+</histogram>
+
 <histogram name="FileBrowser.DirectoryScan" units="ms"
     expires_after="2022-04-10">
   <owner>simmonsjosh@google.com</owner>

@@ -1361,6 +1361,27 @@ export const ENTRIES = {
   }),
 };
 
+
+/**
+ * Creates a test file, which can be inside folders, however parent folders
+ * have to be created by the caller using |createTestFolder|.
+ * @param {string} path File path to be created,
+ * @return {TestEntryInfo}
+ */
+export function createTestFile(path) {
+  const name = path.split('/').pop();
+  return new TestEntryInfo({
+    targetPath: path,
+    nameText: name,
+    type: EntryType.FILE,
+    lastModifiedTime: 'Sep 4, 1998, 12:34 PM',
+    sizeText: '51 bytes',
+    typeText: 'Plain text',
+    sourceFileName: 'text.txt',
+    mimeType: 'text/plain'
+  });
+}
+
 /**
  * Returns the count for |value| for the histogram |name|.
  * @param {string} name The histogram to be queried.
@@ -1374,6 +1395,19 @@ export async function getHistogramCount(name, value) {
     'value': value,
   });
   return /** @type {number} */ (JSON.parse(result));
+}
+
+/**
+ * Returns the sum for for the histogram |name|.
+ * @param {string} name The histogram to be queried.
+ * @return {!Promise<number>} A promise fulfilled with the sum.
+ */
+export async function getHistogramSum(name) {
+  const result = await sendTestMessage({
+    'name': 'getHistogramSum',
+    'histogramName': name,
+  });
+  return /** @type {number} */ (parseInt(JSON.parse(result), 10));
 }
 
 /**

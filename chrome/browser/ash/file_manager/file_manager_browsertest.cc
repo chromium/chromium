@@ -1443,7 +1443,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(TestCase("metricsRecordEnum"),
                       TestCase("metricsRecordEnum").FilesSwa(),
-                      TestCase("metricsOpenSwa").FilesSwa()));
+                      TestCase("metricsOpenSwa").FilesSwa(),
+                      TestCase("metricsRecordDirectoryListLoad")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Breadcrumbs, /* breadcrumbs.js */

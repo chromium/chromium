@@ -709,6 +709,22 @@ struct GetHistogramCountMessage {
   int value = 0;
 };
 
+struct GetTotalHistogramSum {
+  static bool ConvertJSONValue(const base::DictionaryValue& value,
+                               GetTotalHistogramSum* message) {
+    base::JSONValueConverter<GetTotalHistogramSum> converter;
+    return converter.Convert(value, message);
+  }
+
+  static void RegisterJSONConverter(
+      base::JSONValueConverter<GetTotalHistogramSum>* converter) {
+    converter->RegisterStringField("histogramName",
+                                   &GetTotalHistogramSum::histogram_name);
+  }
+
+  std::string histogram_name;
+};
+
 struct GetUserActionCountMessage {
   static bool ConvertJSONValue(const base::DictionaryValue& value,
                                GetUserActionCountMessage* message) {
@@ -2865,6 +2881,18 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
                                 message.histogram_name, message.value)),
                             output);
 
+    return;
+  }
+
+  if (name == "getHistogramSum") {
+    GetTotalHistogramSum message;
+    ASSERT_TRUE(GetTotalHistogramSum::ConvertJSONValue(value, &message));
+    // GetTotalSum returns an int64_t which does not conform to JSON, convert to
+    // a string to ensure it can be JSON encoded.
+    base::JSONWriter::Write(
+        base::Value(base::NumberToString(
+            histograms_.GetTotalSum(message.histogram_name))),
+        output);
     return;
   }
 

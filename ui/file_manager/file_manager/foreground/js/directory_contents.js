@@ -767,6 +767,8 @@ export class DirectoryContents extends EventTarget {
       this.onScanError_(error);
     }
 
+    metrics.startInterval('DirectoryListLoad');
+
     // TODO(hidehiko,mtomasz): this scan method must be called at most once.
     // Remove such a limitation.
     this.scanner_ = this.scannerFactory_();
@@ -878,7 +880,21 @@ export class DirectoryContents extends EventTarget {
       // Call callback first, so isScanning() returns false in the event
       // handlers.
       callback();
-
+      // TODO(crbug.com/1290197): Currently we only care about the load time for
+      // local files, filter out all the other root types.
+      if (this.getDirectoryEntry()) {
+        const locationInfo = this.context_.volumeManager.getLocationInfo(
+            /** @type {!Entry} */ (this.getDirectoryEntry()));
+        if (locationInfo &&
+            (locationInfo.rootType === VolumeManagerCommon.RootType.MY_FILES ||
+             locationInfo.rootType ===
+                 VolumeManagerCommon.RootType.DOWNLOADS)) {
+          metrics.recordDirectoryListLoadWithTolerance(
+              'DirectoryListLoad', this.getFileListLength(),
+              VolumeManagerCommon.RootType.MY_FILES, [10, 100, 1000],
+              /*tolerance=*/ 0.2);
+        }
+      }
       dispatchSimpleEvent(this, 'scan-completed');
     });
   }

@@ -139,7 +139,7 @@ metricsBase.recordValue = (name, type, min, max, buckets, value) => {
 /**
  * Complete the time interval recording.
  *
- * Should be preceded by a call to startInterval with the same name. *
+ * Should be preceded by a call to startInterval with the same name.
  *
  * @param {string} name Unique interval name.
  */
@@ -150,6 +150,37 @@ metricsBase.recordInterval = name => {
     console.error('Unknown interval: ' + name);
   }
 };
+
+/**
+ * Complete the time interval recording into appropriate bucket.
+ *
+ * Should be preceded by a call to startInterval with the same |name|.
+ *
+ * @param {string} name Unique interval name.
+ * @param {number} numFiles The number of files in this current directory.
+ * @param {string} rootType The label of the root the directory belongs to.
+ * @param {!Array<number>} buckets Array of numbers that correspond to a bucket
+ *    value, this will be suffixed to |name| when recorded.
+ * @param {number=} tolerance Allowed tolerance for |value| to coalesce into a
+ *    bucket.
+ */
+metricsBase.recordDirectoryListLoadWithTolerance =
+    (name, numFiles, rootType, buckets, tolerance) => {
+      if (name in metricsBase.intervals) {
+        for (const bucketValue of buckets) {
+          const toleranceMargin = bucketValue * tolerance;
+          if (numFiles >= (bucketValue - toleranceMargin) &&
+              numFiles <= (bucketValue + toleranceMargin)) {
+            metricsBase.recordTime(
+                `${name}.${rootType}.${bucketValue}`,
+                Date.now() - metricsBase.intervals[name]);
+            return;
+          }
+        }
+      } else {
+        console.error('Interval not started:', name);
+      }
+    };
 
 /**
  * Record an enum value.
