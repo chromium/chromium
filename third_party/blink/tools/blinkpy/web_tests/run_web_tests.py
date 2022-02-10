@@ -328,6 +328,11 @@ def parse_args(args):
                 dest='build',
                 action='store_false',
                 help="Don't check to see if the build is up to date."),
+            optparse.make_option(
+                '--no-virtual-tests',
+                action='store_true',
+                default=False,
+                help=('Do not run virtual tests.')),
             optparse.make_option('--child-processes',
                                  '--jobs',
                                  '-j',
