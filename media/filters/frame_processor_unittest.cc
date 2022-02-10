@@ -2563,6 +2563,18 @@ TEST_P(FrameProcessorTest,
   EXPECT_FALSE(ProcessFrames("0|10K", ""));
 }
 
+TEST_P(FrameProcessorTest, FrameEndTimestamp_kInfiniteDuration_Fails) {
+  InSequence s;
+
+  AddTestTracks(HAS_AUDIO);
+  frame_processor_->SetSequenceMode(use_sequence_mode_);
+
+  frame_duration_ = Milliseconds(10);
+  SetTimestampOffset(kInfiniteDuration - Milliseconds(5));
+  EXPECT_MEDIA_LOG(FrameEndTimestampOutOfRange("audio"));
+  EXPECT_FALSE(ProcessFrames("0|0K", ""));
+}
+
 INSTANTIATE_TEST_SUITE_P(SequenceMode, FrameProcessorTest, Values(true));
 INSTANTIATE_TEST_SUITE_P(SegmentsMode, FrameProcessorTest, Values(false));
 

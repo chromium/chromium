@@ -1026,6 +1026,13 @@ bool FrameProcessor::ProcessFrame(scoped_refptr<StreamParserBuffer> frame,
       frame_end_timestamp = frame->timestamp() + frame->duration();
     }
 
+    if (frame_end_timestamp.is_inf()) {
+      MEDIA_LOG(ERROR, media_log_)
+          << "Frame end timestamp for " << frame->GetTypeName()
+          << " frame exceeds range allowed by implementation";
+      return false;
+    }
+
     if (presentation_timestamp < append_window_start ||
         frame_end_timestamp > append_window_end) {
       track_buffer->set_needs_random_access_point(true);

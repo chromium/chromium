@@ -552,6 +552,12 @@ MATCHER(OffsetOutOfRange, "") {
       arg, "timestampOffset exceeds range allowed by implementation");
 }
 
+MATCHER_P(FrameEndTimestampOutOfRange, frame_type, "") {
+  return CONTAINS_STRING(arg,
+                         "Frame end timestamp for " + std::string(frame_type) +
+                             " frame exceeds range allowed by implementation");
+}
+
 }  // namespace media
 
 #endif  // MEDIA_BASE_TEST_HELPERS_H_
