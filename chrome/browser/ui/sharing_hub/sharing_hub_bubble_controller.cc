@@ -122,8 +122,9 @@ void SharingHubBubbleController::ShowBubble() {
 #else
   sharing_hub_bubble_view_ =
       browser->window()->ShowSharingHubBubble(web_contents(), this, true);
-  share::LogShareSourceDesktop(share::ShareSourceDesktop::kOmniboxSharingHub);
 #endif
+
+  share::LogShareSourceDesktop(share::ShareSourceDesktop::kOmniboxSharingHub);
 }
 
 SharingHubBubbleView* SharingHubBubbleController::sharing_hub_bubble_view()
