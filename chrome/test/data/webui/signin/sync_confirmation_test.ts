@@ -4,12 +4,11 @@
 
 import 'chrome://sync-confirmation/sync_confirmation_app.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {SyncConfirmationAppElement} from 'chrome://sync-confirmation/sync_confirmation_app.js';
 import {SyncConfirmationBrowserProxyImpl} from 'chrome://sync-confirmation/sync_confirmation_browser_proxy.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-import {assertFalse} from 'chrome://webui-test/chai_assert.js';
-import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestSyncConfirmationBrowserProxy} from './test_sync_confirmation_browser_proxy.js';
 
@@ -34,9 +33,27 @@ import {TestSyncConfirmationBrowserProxy} from './test_sync_confirmation_browser
         `SigninSyncConfirmationTest${suiteDesignSuffix}${suiteForcedSuffix}`,
         function() {
           let app: SyncConfirmationAppElement;
+          let browserProxy: TestSyncConfirmationBrowserProxy;
+
+          function testButtonClick(buttonSelector: string) {
+            const allButtons =
+                Array.from(app.shadowRoot!.querySelectorAll('cr-button')) as
+                Array<CrButtonElement>;
+            const actionButton = app.shadowRoot!.querySelector(
+                                     buttonSelector) as CrButtonElement;
+            const spinner = app.shadowRoot!.querySelector('paper-spinner-lite');
+
+            allButtons.forEach(button => assertFalse(button.disabled));
+            assertFalse(spinner!.active);
+
+            actionButton.click();
+
+            allButtons.forEach(button => assertTrue(button.disabled));
+            assertTrue(spinner!.active);
+          }
 
           setup(async function() {
-            const browserProxy = new TestSyncConfirmationBrowserProxy();
+            browserProxy = new TestSyncConfirmationBrowserProxy();
             SyncConfirmationBrowserProxyImpl.setInstance(browserProxy);
             loadTimeData.overrideValues({
               isNewDesign: isNewDesignEnabled,
@@ -66,6 +83,25 @@ import {TestSyncConfirmationBrowserProxy} from './test_sync_confirmation_browser
             } else {
               assertFalse(cancelButton!.hidden);
             }
+          });
+
+          // Tests clicking on confirm button.
+          test('ConfirmClicked', async function() {
+            testButtonClick('#confirmButton');
+            await browserProxy.whenCalled('confirm');
+          });
+
+          // Tests clicking on cancel button.
+          test('CancelClicked', async function() {
+            testButtonClick(
+                isNewDesignEnabled ? '#notNowButton' : '#cancelButton');
+            await browserProxy.whenCalled('undo');
+          });
+
+          // Tests clicking on settings button.
+          test('SettingsClicked', async function() {
+            testButtonClick('#settingsButton');
+            await browserProxy.whenCalled('goToSettings');
           });
         });
   });

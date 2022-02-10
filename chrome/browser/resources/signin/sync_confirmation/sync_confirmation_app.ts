@@ -4,6 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import './strings.m.js';
@@ -41,6 +42,11 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
         value() {
           return loadTimeData.getString('accountPictureUrl');
         },
+      },
+
+      anyButtonClicked_: {
+        type: Boolean,
+        value: false,
       },
 
       isNewDesignModalDialog_: {
@@ -95,6 +101,7 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
   }
 
   private accountImageSrc_: string;
+  private anyButtonClicked_: boolean;
   private isNewDesignModalDialog_: boolean;
   private isNewDesign_: boolean;
   private highlightColor_: string;
@@ -113,16 +120,19 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
   }
 
   private onConfirm_(e: Event) {
+    this.anyButtonClicked_ = true;
     this.syncConfirmationBrowserProxy_.confirm(
         this.getConsentDescription_(),
         this.getConsentConfirmation_(e.composedPath() as Array<HTMLElement>));
   }
 
   private onUndo_() {
+    this.anyButtonClicked_ = true;
     this.syncConfirmationBrowserProxy_.undo();
   }
 
   private onGoToSettings_(e: Event) {
+    this.anyButtonClicked_ = true;
     this.syncConfirmationBrowserProxy_.goToSettings(
         this.getConsentDescription_(),
         this.getConsentConfirmation_(e.composedPath() as Array<HTMLElement>));

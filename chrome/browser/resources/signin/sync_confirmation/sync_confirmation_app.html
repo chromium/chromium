@@ -16,11 +16,17 @@
     color: var(--cr-secondary-text-color);
   }
 
-  .action-container {
+  .action-row {
     bottom: 0;
     box-sizing: border-box;
+    display: flex;
+    justify-content: flex-end;
     position: absolute;
     width: 100%;
+  }
+
+  paper-spinner-lite {
+    margin: auto 0;
   }
 
   /* The settings button is at the start of the line (opposite to other buttons)
@@ -260,26 +266,31 @@
     <div id="old-footer" class="message-container secondary">
       $i18n{syncConfirmationSettingsInfo}
     </div>
-    <div class$="action-container [[syncOptionalClass_]]">
-      <cr-button class="action-button" id="confirmButton"
-          on-click="onConfirm_" consent-confirmation autofocus>
-        $i18n{syncConfirmationConfirmLabel}
-      </cr-button>
-      <if expr="is_macosx or is_linux">
-        <cr-button id="settingsButton" on-click="onGoToSettings_"
-            consent-confirmation>
-          $i18n{syncConfirmationSettingsLabel}
+    <div class="action-row">
+      <paper-spinner-lite active="[[anyButtonClicked_]]"></paper-spinner-lite>
+      <div class$="action-container [[syncOptionalClass_]]">
+        <cr-button class="action-button" id="confirmButton"
+            on-click="onConfirm_" disabled="[[anyButtonClicked_]]"
+            consent-confirmation autofocus>
+          $i18n{syncConfirmationConfirmLabel}
         </cr-button>
-      </if>
-      <cr-button id="cancelButton" on-click="onUndo_" hidden="[[syncForced_]]">
-        $i18n{syncConfirmationUndoLabel}
-      </cr-button>
-      <if expr="not is_macosx and not is_linux">
-        <cr-button id="settingsButton" on-click="onGoToSettings_"
-            consent-confirmation>
-          $i18n{syncConfirmationSettingsLabel}
+        <if expr="is_macosx or is_linux">
+          <cr-button id="settingsButton" on-click="onGoToSettings_"
+              disabled="[[anyButtonClicked_]]" consent-confirmation>
+            $i18n{syncConfirmationSettingsLabel}
+          </cr-button>
+        </if>
+        <cr-button id="cancelButton" on-click="onUndo_"
+            disabled="[[anyButtonClicked_]]" hidden="[[syncForced_]]">
+          $i18n{syncConfirmationUndoLabel}
         </cr-button>
-      </if>
+        <if expr="not is_macosx and not is_linux">
+          <cr-button id="settingsButton" on-click="onGoToSettings_"
+              disabled="[[anyButtonClicked_]]" consent-confirmation>
+            $i18n{syncConfirmationSettingsLabel}
+          </cr-button>
+        </if>
+      </div>
     </div>
   </div>
 </template>
@@ -308,26 +319,32 @@
         <span consent-description>$i18n{syncConfirmationSyncInfoDesc}</span>.
       </div>
     </div>
-    <div id="buttonsContainer" class$="action-container [[syncOptionalClass_]]">
-      <cr-button class="action-button" id="confirmButton"
-          on-click="onConfirm_" consent-confirmation>
-        $i18n{syncConfirmationConfirmLabel}
-      </cr-button>
-      <if expr="is_macosx or is_linux">
-        <cr-button id="settingsButton" on-click="onGoToSettings_"
+    <div class="action-row">
+      <paper-spinner-lite active="[[anyButtonClicked_]]"></paper-spinner-lite>
+      <div id="buttonsContainer"
+          class$="action-container [[syncOptionalClass_]]">
+        <cr-button class="action-button" id="confirmButton"
+            on-click="onConfirm_" disabled="[[anyButtonClicked_]]"
             consent-confirmation>
-          $i18n{syncConfirmationSettingsLabel}
+          $i18n{syncConfirmationConfirmLabel}
         </cr-button>
-      </if>
-      <cr-button id="notNowButton" on-click="onUndo_" hidden="[[syncForced_]]">
-        $i18n{syncConfirmationUndoLabel}
-      </cr-button>
-      <if expr="not is_macosx and not is_linux">
-        <cr-button id="settingsButton" on-click="onGoToSettings_"
-            consent-confirmation>
-          $i18n{syncConfirmationSettingsLabel}
+        <if expr="is_macosx or is_linux">
+          <cr-button id="settingsButton" on-click="onGoToSettings_"
+              disabled="[[anyButtonClicked_]]" consent-confirmation>
+            $i18n{syncConfirmationSettingsLabel}
+          </cr-button>
+        </if>
+        <cr-button id="notNowButton" on-click="onUndo_"
+          disabled="[[anyButtonClicked_]]" hidden="[[syncForced_]]">
+          $i18n{syncConfirmationUndoLabel}
         </cr-button>
-      </if>
+        <if expr="not is_macosx and not is_linux">
+          <cr-button id="settingsButton" on-click="onGoToSettings_"
+              disabled="[[anyButtonClicked_]]" consent-confirmation>
+            $i18n{syncConfirmationSettingsLabel}
+          </cr-button>
+        </if>
+      </div>
     </div>
   </div>
 </template>
