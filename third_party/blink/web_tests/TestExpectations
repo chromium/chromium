@@ -6133,9 +6133,6 @@ crbug.com/1050549 http/tests/devtools/console/console-correct-suggestions.js [ F
 # Flaky test
 crbug.com/1173439 http/tests/devtools/service-workers/service-worker-manager.js [ Pass Skip Timeout ]
 
-# Sheriff 2018-01-25
-crbug.com/893869 css3/masking/mask-repeat-space-padding.html [ Failure Pass ]
-
 # V8 roll
 crbug.com/961059 fast/workers/worker-shared-asm-buffer.html [ Skip ]
 
