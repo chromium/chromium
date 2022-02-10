@@ -340,9 +340,9 @@ void HTMLTreeBuilder::ConstructTree(AtomicHTMLToken* token) {
         !HTMLElementStack::IsMathMLTextIntegrationPoint(adjusted_current_node);
   }
 
-  parser_->Tokenizer()->SetForceNullCharacterReplacement(
+  parser_->Tokenizer().SetForceNullCharacterReplacement(
       insertion_mode_ == kTextMode || in_foreign_content);
-  parser_->Tokenizer()->SetShouldAllowCDATA(in_foreign_content);
+  parser_->Tokenizer().SetShouldAllowCDATA(in_foreign_content);
 
   tree_.ExecuteQueuedTasks();
   // We might be detached now.
@@ -688,7 +688,7 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
   if (token->GetName() == html_names::kPlaintextTag) {
     ProcessFakePEndTagIfPInButtonScope();
     tree_.InsertHTMLElement(token);
-    parser_->Tokenizer()->SetState(HTMLTokenizer::kPLAINTEXTState);
+    parser_->Tokenizer().SetState(HTMLTokenizer::kPLAINTEXTState);
     return;
   }
   if (token->GetName() == html_names::kButtonTag) {
@@ -805,7 +805,7 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
   if (token->GetName() == html_names::kTextareaTag) {
     tree_.InsertHTMLElement(token);
     should_skip_leading_newline_ = true;
-    parser_->Tokenizer()->SetState(HTMLTokenizer::kRCDATAState);
+    parser_->Tokenizer().SetState(HTMLTokenizer::kRCDATAState);
     original_insertion_mode_ = insertion_mode_;
     frameset_ok_ = false;
     SetInsertionMode(kTextMode);
@@ -2230,7 +2230,7 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
 
         // We must set the tokenizer's state to DataState explicitly if the
         // tokenizer didn't have a chance to.
-        parser_->Tokenizer()->SetState(HTMLTokenizer::kDataState);
+        parser_->Tokenizer().SetState(HTMLTokenizer::kDataState);
         return;
       }
       tree_.OpenElements()->Pop();
@@ -2763,7 +2763,7 @@ bool HTMLTreeBuilder::ProcessStartTagForInHead(AtomicHTMLToken* token) {
 void HTMLTreeBuilder::ProcessGenericRCDATAStartTag(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kStartTag);
   tree_.InsertHTMLElement(token);
-  parser_->Tokenizer()->SetState(HTMLTokenizer::kRCDATAState);
+  parser_->Tokenizer().SetState(HTMLTokenizer::kRCDATAState);
   original_insertion_mode_ = insertion_mode_;
   SetInsertionMode(kTextMode);
 }
@@ -2771,7 +2771,7 @@ void HTMLTreeBuilder::ProcessGenericRCDATAStartTag(AtomicHTMLToken* token) {
 void HTMLTreeBuilder::ProcessGenericRawTextStartTag(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kStartTag);
   tree_.InsertHTMLElement(token);
-  parser_->Tokenizer()->SetState(HTMLTokenizer::kRAWTEXTState);
+  parser_->Tokenizer().SetState(HTMLTokenizer::kRAWTEXTState);
   original_insertion_mode_ = insertion_mode_;
   SetInsertionMode(kTextMode);
 }
@@ -2779,7 +2779,7 @@ void HTMLTreeBuilder::ProcessGenericRawTextStartTag(AtomicHTMLToken* token) {
 void HTMLTreeBuilder::ProcessScriptStartTag(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kStartTag);
   tree_.InsertScriptElement(token);
-  parser_->Tokenizer()->SetState(HTMLTokenizer::kScriptDataState);
+  parser_->Tokenizer().SetState(HTMLTokenizer::kScriptDataState);
   original_insertion_mode_ = insertion_mode_;
 
   TextPosition position = parser_->GetTextPosition();

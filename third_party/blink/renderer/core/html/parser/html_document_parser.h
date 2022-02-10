@@ -102,7 +102,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   // Exposed so that tests can check that the parser's exited in a good state.
   bool HasPendingWorkScheduledForTesting() const;
 
-  HTMLTokenizer* Tokenizer() const { return tokenizer_.get(); }
+  HTMLTokenizer& Tokenizer() { return tokenizer_; }
 
   TextPosition GetTextPosition() const final;
   OrdinalNumber LineNumber() const final;
@@ -187,15 +187,15 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   std::string GetPreloadHistogramSuffix();
   void FinishAppend();
 
-  HTMLToken& Token() { return *token_; }
+  HTMLToken& Token() { return token_; }
 
   HTMLParserOptions options_;
   HTMLInputStream input_;
+  HTMLToken token_;
+  HTMLTokenizer tokenizer_;
+
   Member<HTMLParserReentryPermit> reentry_permit_ =
       MakeGarbageCollected<HTMLParserReentryPermit>();
-
-  std::unique_ptr<HTMLToken> token_;
-  std::unique_ptr<HTMLTokenizer> tokenizer_;
   Member<HTMLParserScriptRunner> script_runner_;
   Member<HTMLTreeBuilder> tree_builder_;
 
