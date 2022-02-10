@@ -133,7 +133,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     /** Creates first page and sets up adapter. Should result UI being shown on the screen. */
     private void createFirstPage() {
-        FREMobileIdentityConsistencyFieldTrial.createFirstRunTrial();
         BooleanSupplier showWelcomePage = () -> !FirstRunStatus.shouldSkipWelcomePage();
         if (FREMobileIdentityConsistencyFieldTrial.isEnabled()) {
             mPages.add(new FirstRunPage<>(SigninFirstRunFragment.class, showWelcomePage));
@@ -234,6 +233,10 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     @Override
     public void triggerLayoutInflation() {
+        // Generate trial group as early as possible to guarantee it's available by the time native
+        // needs to register the synthetic trial group. See https://crbug.com/1295692 for details.
+        FREMobileIdentityConsistencyFieldTrial.createFirstRunTrial();
+
         initializeStateFromLaunchData();
         RecordHistogram.recordTimesHistogram("MobileFre.FromLaunch.TriggerLayoutInflation",
                 SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
