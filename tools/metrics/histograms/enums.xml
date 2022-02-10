@@ -93507,6 +93507,8 @@ others/histograms.xml -->
   <int value="19" label="A GetAssertion request was started"/>
   <int value="20" label="A GetAssertion response was received"/>
   <int value="21" label="The first transaction on a connection was completed"/>
+  <int value="22"
+      label="The contact ID was not ready in time for a QR transaction"/>
 </enum>
 
 <enum name="WebAuthenticationCableV2MobileResult">

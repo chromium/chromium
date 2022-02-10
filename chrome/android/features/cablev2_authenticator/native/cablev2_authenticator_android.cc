@@ -184,8 +184,9 @@ enum class CableV2MobileEvent {
   kGetAssertionStarted = 19,
   kGetAssertionComplete = 20,
   kFirstTransactionDone = 21,
+  kContactIDNotReady = 22,
 
-  kMaxValue = 21,
+  kMaxValue = 22,
 };
 
 // CableV2MobileResult enumerates the outcome of a caBLEv2 transction. Do not
@@ -689,6 +690,9 @@ static jlong JNI_CableAuthenticator_StartQR(
 
   if (!link) {
     RecordEvent(&global_data, CableV2MobileEvent::kLinkingNotRequested);
+  } else if (!global_data.registration->contact_id()) {
+    LOG(ERROR) << "Contact ID was not ready for QR transaction";
+    RecordEvent(&global_data, CableV2MobileEvent::kContactIDNotReady);
   }
 
   global_data.event_to_record_if_stopped =
