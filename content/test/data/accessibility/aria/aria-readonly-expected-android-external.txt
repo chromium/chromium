@@ -14,7 +14,7 @@ WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chr
 ++CheckBox text:"Readonly checkbox" checkable clickable disabled actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="checkBox", roleDescription="checkbox"]
 ++EditText hint:"Readonly combobox" canOpenPopUp clickable editable disabled focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS] bundle:[chromeRole="textFieldWithComboBox", clickableScore="300", hint="Readonly combobox"]
 ++ListView text:"Readonly listbox" clickable disabled CollectionInfo:[rows=0, cols=0] actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBox", roleDescription="list box"]
-++View text:"Readonly radiogroup" disabled actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="radioGroup", roleDescription="radio group"]
+++RadioGroup text:"Readonly radiogroup" disabled actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="radioGroup", roleDescription="radio group"]
 ++SeekBar text:"50, Readonly slider" clickable disabled RangeInfo:[current=50.0, min=0.0, max=100.0] actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS, SET_PROGRESS] bundle:[chromeRole="slider", roleDescription="slider"]
 ++EditText text:"0, Readonly spinbutton" clickable disabled RangeInfo:[current=0.0, min=0.0, max=0.0] actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS, SET_PROGRESS] bundle:[chromeRole="spinButton", roleDescription="spin button"]
 ++MenuItem text:"Readonly menuitemcheckbox" checkable clickable disabled actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menuItemCheckBox", roleDescription="checkbox"]

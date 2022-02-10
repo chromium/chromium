@@ -31,6 +31,7 @@ AX_EXPORT extern const char kAXMultiAutoCompleteTextViewClassname[];
 AX_EXPORT extern const char kAXPagerClassname[];
 AX_EXPORT extern const char kAXProgressBarClassname[];
 AX_EXPORT extern const char kAXRadioButtonClassname[];
+AX_EXPORT extern const char kAXRadioGroupClassname[];
 AX_EXPORT extern const char kAXScrollViewClassname[];
 AX_EXPORT extern const char kAXSeekBarClassname[];
 AX_EXPORT extern const char kAXSwitchClassname[];

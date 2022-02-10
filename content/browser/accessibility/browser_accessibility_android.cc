@@ -812,6 +812,12 @@ std::u16string BrowserAccessibilityAndroid::GetStateDescription() const {
     state_descs.push_back(GetToggleButtonStateDescription());
   }
 
+  // For radio buttons, we will communicate how many radio buttons are in the
+  // group and which one is selected/checked (e.g. "in group, option x of y")
+  if (GetRole() == ax::mojom::Role::kRadioButton) {
+    state_descs.push_back(GetRadioButtonStateDescription());
+  }
+
   // For list boxes, use state description to communicate child item count. We
   // will not communicate this in the case that the listbox is also
   // multiselectable and has some items selected, since the same info would be
@@ -948,6 +954,34 @@ std::u16string BrowserAccessibilityAndroid::GetAriaCurrentStateDescription()
   }
 
   return content_client->GetLocalizedString(message_id);
+}
+
+std::u16string BrowserAccessibilityAndroid::GetRadioButtonStateDescription()
+    const {
+  content::ContentClient* content_client = content::GetContentClient();
+
+  // The radio button should have an IntListAttribute of kRadioGroupIds, with
+  // a length of the total number of radio buttons in this group. Blink sets
+  // these attributes for all nodes automatically, including for nodes of
+  // <input type="radio"> which share a common name. If the list is empty,
+  // escape with empty string.
+  std::vector<ui::AXNodeID> group_ids =
+      GetIntListAttribute(ax::mojom::IntListAttribute::kRadioGroupIds);
+
+  if (group_ids.empty() || group_ids.size() == 1)
+    return std::u16string();
+
+  // Adding a stateDescription will override the 'checked' utterance in some
+  // downstream services like TalkBack, so add it to state as well.
+  int message_id = IsChecked()
+                       ? IDS_AX_RADIO_BUTTON_STATE_DESCRIPTION_CHECKED
+                       : IDS_AX_RADIO_BUTTON_STATE_DESCRIPTION_UNCHECKED;
+
+  return base::ReplaceStringPlaceholders(
+      content_client->GetLocalizedString(message_id),
+      std::vector<std::u16string>({base::NumberToString16(GetItemIndex() + 1),
+                                   base::NumberToString16(group_ids.size())}),
+      /* offsets */ nullptr);
 }
 
 std::u16string BrowserAccessibilityAndroid::GetComboboxExpandedText() const {

@@ -117,6 +117,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   std::u16string GetListBoxStateDescription() const;
   std::u16string GetListBoxItemStateDescription() const;
   std::u16string GetAriaCurrentStateDescription() const;
+  std::u16string GetRadioButtonStateDescription() const;
 
   std::u16string GetComboboxExpandedText() const;
   std::u16string GetComboboxExpandedTextFallback() const;

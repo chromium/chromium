@@ -426,6 +426,12 @@ below:
         <message name="IDS_AX_INDETERMINATE_VALUE" desc="Accessibility utterance for when a progress bar/indicator has no value and is being used as an indeterminate progress bar.">
           indeterminate
         </message>
+        <message name="IDS_AX_RADIO_BUTTON_STATE_DESCRIPTION_UNCHECKED" desc="Accessibility state description for a radio button inside a group that has not been checked.">
+          Not checked. In group, option <ph name="INDEX">$1<ex>1</ex></ph> of <ph name="COUNT">$2<ex>3</ex></ph>
+        </message>
+        <message name="IDS_AX_RADIO_BUTTON_STATE_DESCRIPTION_CHECKED" desc="Accessibility state description for a radio button inside a group that is checked.">
+          Checked. In group, option <ph name="INDEX">$1<ex>1</ex></ph> of <ph name="COUNT">$2<ex>3</ex></ph>
+        </message>
       </if>
 
       <message name="IDS_AX_AM_PM_FIELD_TEXT" desc="Accessibility label of the AM/PM field in a date/time control">
