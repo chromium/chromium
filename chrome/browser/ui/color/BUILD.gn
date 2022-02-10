@@ -12,8 +12,6 @@ source_set("color_headers") {
 
 source_set("mixers") {
   sources = [
-    "autofill_color_mixer.cc",
-    "autofill_color_mixer.h",
     "chrome_color_mixer.cc",
     "chrome_color_mixer.h",
     "chrome_color_mixers.cc",
