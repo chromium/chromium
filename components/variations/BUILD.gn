@@ -46,6 +46,8 @@ component("variations") {
     "client_filterable_state.h",
     "entropy_provider.cc",
     "entropy_provider.h",
+    "fake_crash.cc",
+    "fake_crash.h",
     "hashing.cc",
     "hashing.h",
     "metrics.cc",

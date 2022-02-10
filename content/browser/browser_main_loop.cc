@@ -59,6 +59,7 @@
 #include "components/services/storage/dom_storage/storage_area_impl.h"
 #include "components/tracing/common/trace_startup_config.h"
 #include "components/tracing/common/tracing_switches.h"
+#include "components/variations/fake_crash.h"
 #include "components/viz/host/compositing_mode_reporter_impl.h"
 #include "components/viz/host/gpu_host_impl.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -981,6 +982,8 @@ int BrowserMainLoop::PreMainMessageLoopRun() {
 
   if (parts_)
     result_code_ = parts_->PreMainMessageLoopRun();
+
+  variations::MaybeScheduleFakeCrash();
 
 #if BUILDFLAG(IS_WIN)
   // ShellBrowserMainParts initializes a ShellBrowserContext with a profile
