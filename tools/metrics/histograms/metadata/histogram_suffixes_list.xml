@@ -10298,13 +10298,10 @@ chromium-metrics-reviews@google.com.
   <suffix name="Web" label="Web"/>
   <affected-histogram name="Sqlite.AutoCommitTime"/>
   <affected-histogram name="Sqlite.CommitTime"/>
-  <affected-histogram name="Sqlite.Error"/>
   <affected-histogram name="Sqlite.QueryTime"/>
   <affected-histogram name="Sqlite.SizeKB"/>
   <affected-histogram name="Sqlite.Stats"/>
-  <affected-histogram name="Sqlite.Stats2"/>
   <affected-histogram name="Sqlite.UpdateTime"/>
-  <affected-histogram name="Sqlite.Version"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="StaleWhileRevalidate" separator=".">

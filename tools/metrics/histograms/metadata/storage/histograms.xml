@@ -22,6 +22,218 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="API.StorageAccess.AllowedRequests" enum="StorageAccessResult"
+    expires_after="2020-11-27">
+  <obsolete>
+    Removed 2021/09.
+  </obsolete>
+  <owner>mkwst@chromium.org</owner>
+  <owner>brandm@microsoft.com</owner>
+  <summary>
+    Records if various requests to access storage are allowed or not and if the
+    Storage Access API unblocked the request or not. Recorded whenever a
+    decision to access storage like getting/setting cookies or opening an
+    indexeddb connection is made in CookieSettings.
+
+    This histogram erroneously recorded ALLOW when cookies were globally
+    blocked.
+  </summary>
+</histogram>
+
+<histogram name="API.StorageAccess.AllowedRequests2" enum="StorageAccessResult"
+    expires_after="2022-03-27">
+  <owner>mkwst@chromium.org</owner>
+  <owner>brandm@microsoft.com</owner>
+  <summary>
+    Records if various requests to access storage are allowed or not and if the
+    Storage Access API unblocked the request or not. Recorded whenever a
+    decision to access storage like getting/setting cookies or opening an
+    indexeddb connection is made in CookieSettings.
+  </summary>
+</histogram>
+
+<histogram name="API.StorageAccess.GrantIsImplicit" enum="BooleanAvailable"
+    expires_after="2020-11-27">
+  <owner>mkwst@chromium.org</owner>
+  <owner>brandm@microsoft.com</owner>
+  <summary>
+    Records if a generated grant was implicit or explicit at the time it was
+    created.
+  </summary>
+</histogram>
+
+<histogram name="API.StorageAccess.RequestStorageAccess"
+    enum="RequestStorageResult" expires_after="2020-11-27">
+  <owner>mkwst@chromium.org</owner>
+  <owner>brandm@microsoft.com</owner>
+  <summary>
+    Records requests to use document.requestStorageAccess and reasons the
+    request may be approved or rejected.
+  </summary>
+</histogram>
+
+<histogram name="Clipboard.ExtensionContentScriptReadHasUserActivation"
+    units="proportion" expires_after="2021-08-09">
+  <obsolete>
+    Removed February 2021 as enough data was collected.
+  </obsolete>
+  <owner>huangdarwin@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/modules/clipboard/OWNERS</owner>
+  <summary>
+    For calls to document.execCommand('paste') by extensions via content
+    scripts, record the proportion of calls with user activation.
+  </summary>
+</histogram>
+
+<histogram name="Clipboard.Read" enum="ClipboardFormatRead"
+    expires_after="2022-08-07">
+  <owner>huangdarwin@chromium.org</owner>
+  <owner>src/ui/base/clipboard/OWNERS</owner>
+  <summary>
+    Counts how often each Clipboard format is read by the platform clipboard.
+    These reads generally imply that an application requested this format after
+    checking that the format is available, but there are some cases where Chrome
+    reads a format to check for existence (outside the
+    ui::Clipboard::ReadAvailableTypes() function). Please prefer interpreting
+    these numbers as relative use changes, as opposed to absolute user usage.
+  </summary>
+</histogram>
+
+<histogram name="Clipboard.RegisterClipboardFormatFailure" units="count"
+    expires_after="2021-01-01">
+  <obsolete>
+    Removed July 2021 as enough data was collected.
+  </obsolete>
+  <owner>huangdarwin@chromium.org</owner>
+  <owner>src/ui/base/clipboard/OWNERS</owner>
+  <summary>
+    Counts how often the Windows clipboard fails to register a format. Recorded
+    when RegisterClipbaordFormat fails (returns 0). Failure rates will inform
+    whether we implement error handling. https://crbug.com/1000919
+  </summary>
+</histogram>
+
+<histogram name="Clipboard.Write" enum="ClipboardFormatWrite"
+    expires_after="2022-08-07">
+  <owner>huangdarwin@chromium.org</owner>
+  <owner>src/ui/base/clipboard/OWNERS</owner>
+  <summary>
+    Counts how often each Clipboard format is written by the platform clipboard.
+    These writes all imply that an application had this format available, and
+    therefore wrote this format.
+  </summary>
+</histogram>
+
+<histogram name="Clipboard.X11StoreCopyPasteDuration" units="ms"
+    expires_after="M95">
+  <owner>dcheng@chromium.org</owner>
+  <owner>pkotwicz@chromium.org</owner>
+  <summary>
+    The length of time that it takes to transfer ownership of Chrome's CLIPBOARD
+    selection to the clipboard manager when Chrome exits.
+  </summary>
+</histogram>
+
+<histogram name="LevelDBEnv.DeleteTableBackupFile" enum="BooleanSuccess"
+    expires_after="2022-08-01">
+  <owner>cmumford@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Tracks the success rate of deleting an unused leveldb table backup file.
+  </summary>
+</histogram>
+
+<histogram name="LevelDBEnv.IOError" enum="LevelDBIOErrorMethods"
+    expires_after="2022-08-01">
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwnall@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>Methods where leveldb's Chromium environment has IO errors.</summary>
+</histogram>
+
+<histogram name="LevelDBEnv.MissingFiles" units="files"
+    expires_after="2022-08-01">
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwnall@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Number of backup files found without corresponding ldb files. As measured by
+    GetChildren when used in LevelDB clients other than IndexedDB.
+  </summary>
+</histogram>
+
+<histogram name="LevelDBWrapper.CommitDelay" units="ms"
+    expires_after="2022-08-01">
+  <owner>mek@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Delay between the browser process receiving changes and those changes being
+    written to the DB.
+  </summary>
+</histogram>
+
+<histogram name="MojoLevelDBEnv.IOError" enum="LevelDBIOErrorMethods"
+    expires_after="M87">
+  <owner>mek@chromium.org</owner>
+  <summary>Methods where leveldb's Mojo environment has IO errors.</summary>
+</histogram>
+
+<histogram name="NativeFileSystemAPI.ConfirmReadDirectoryResult"
+    enum="PermissionAction" expires_after="2022-02-06">
+  <owner>mek@chromium.org</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
+  <summary>
+    Did the user confirm read access to a directory via the Native File System
+    API.
+  </summary>
+</histogram>
+
+<histogram name="NativeFileSystemAPI.FileChooserResult" units="units"
+    expires_after="2022-04-24">
+  <owner>mek@chromium.org</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
+  <summary>
+    The number of files a user picked using the file picker in the Native File
+    System API. Recorded as 0 if the user cancelled the picker.
+  </summary>
+</histogram>
+
+<histogram name="NativeFileSystemAPI.ReadPermissionRequestOutcome"
+    enum="NativeFileSystemPermissionRequestOutcome" expires_after="2022-05-01">
+  <owner>mek@chromium.org</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
+  <summary>
+    The result of an attempt to request write permission to a file or directory
+    via the Native File System API.
+  </summary>
+</histogram>
+
+<histogram name="NativeFileSystemAPI.SensitiveDirectoryAccessResult"
+    enum="SensitiveDirectoryAccessResult" expires_after="2021-12-05">
+  <owner>mek@chromium.org</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
+  <summary>
+    Records if the file or directory selected by the user through the Native
+    File System API is considered a sensitive directory, and thus was blocked.
+  </summary>
+</histogram>
+
+<histogram name="NativeFileSystemAPI.WritePermissionRequestOutcome"
+    enum="NativeFileSystemPermissionRequestOutcome" expires_after="2022-02-06">
+  <owner>mek@chromium.org</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
+  <summary>
+    The result of an attempt to request write permission to a file or directory
+    via the Native File System API.
+  </summary>
+</histogram>
+
+<histogram name="Sqlite.RecoveryStep" enum="SqliteErrorCode"
+    expires_after="M77">
+  <owner>costan@google.com</owner>
+  <summary>Error from sqlite3_backup_step() in sql::Recovery.</summary>
+</histogram>
+
 <histogram name="Storage.BlacklistedImportantSites.Reason"
     enum="ClearDataSiteBlacklistCrossedReason" expires_after="M95">
   <owner>dmurph@chromium.org</owner>
@@ -519,6 +731,17 @@ chromium-metrics-reviews@google.com.
     How did the user interact with the StoragePressure Bubble? Ignored means the
     user did not click on the positive button before the bubble is closed
     (either manually closed or when the browser closes).
+  </summary>
+</histogram>
+
+<histogram name="websql.OpenDatabase" enum="BooleanSecure"
+    expires_after="never">
+<!-- expires-never: core storage metric; consumed in separate dashboard (go/chrome-storage-dashboard) -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>pwnall@chromium.org</owner>
+  <summary>
+    Counts the number of WebSQL databases opened for secure vs insecure origins.
   </summary>
 </histogram>
 
