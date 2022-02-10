@@ -1047,6 +1047,16 @@ CreditCard* PersonalDataManager::GetCreditCardByInstrumentId(
   return nullptr;
 }
 
+CreditCard* PersonalDataManager::GetCreditCardByServerId(
+    const std::string& server_id) {
+  const std::vector<CreditCard*> server_credit_cards = GetServerCreditCards();
+  for (CreditCard* credit_card : server_credit_cards) {
+    if (credit_card->server_id() == server_id)
+      return credit_card;
+  }
+  return nullptr;
+}
+
 void PersonalDataManager::GetNonEmptyTypes(
     ServerFieldTypeSet* non_empty_types) const {
   for (AutofillProfile* profile : GetProfiles())

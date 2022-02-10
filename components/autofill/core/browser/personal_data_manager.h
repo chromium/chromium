@@ -257,6 +257,10 @@ class PersonalDataManager : public KeyedService,
   // there is no credit card with the specified |instrument_id|.
   CreditCard* GetCreditCardByInstrumentId(int64_t instrument_id);
 
+  // Returns the credit card with the given server id, or nullptr if there is no
+  // match.
+  CreditCard* GetCreditCardByServerId(const std::string& server_id);
+
   // Gets the field types available in the stored address and credit card data.
   void GetNonEmptyTypes(ServerFieldTypeSet* non_empty_types) const;
 
@@ -484,6 +488,7 @@ class PersonalDataManager : public KeyedService,
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
                            AddCreditCard_CrazyCharacters);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest, AddCreditCard_Invalid);
+  FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest, GetCreditCardByServerId);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,
                            AddAndGetCreditCardArtImage);
   FRIEND_TEST_ALL_PREFIXES(PersonalDataManagerTest,

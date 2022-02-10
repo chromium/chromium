@@ -1217,6 +1217,17 @@ TEST_F(PersonalDataManagerTest, AddCreditCard_Invalid) {
   ASSERT_EQ(card, *personal_data_->GetCreditCards()[0]);
 }
 
+TEST_F(PersonalDataManagerTest, GetCreditCardByServerId) {
+  CreditCard card = test::GetFullServerCard();
+  card.set_server_id("server id");
+  personal_data_->AddFullServerCreditCard(card);
+  WaitForOnPersonalDataChanged();
+
+  ASSERT_EQ(1u, personal_data_->GetCreditCards().size());
+  EXPECT_TRUE(personal_data_->GetCreditCardByServerId("server id"));
+  EXPECT_FALSE(personal_data_->GetCreditCardByServerId("non-existing id"));
+}
+
 #if !BUILDFLAG(IS_IOS)
 TEST_F(PersonalDataManagerTest, AddAndGetCreditCardArtImage) {
   gfx::Image expected_image = gfx::test::CreateImage(32, 20);
