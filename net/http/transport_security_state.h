@@ -24,6 +24,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/http/transport_security_state_source.h"
+#include "net/log/net_log_with_source.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -383,7 +384,8 @@ class NET_EXPORT TransportSecurityState {
   // left to tests. The caller needs to handle the optional pinning override
   // when is_issued_by_known_root is false.
   bool ShouldSSLErrorsBeFatal(const std::string& host);
-  bool ShouldUpgradeToSSL(const std::string& host);
+  bool ShouldUpgradeToSSL(const std::string& host,
+                          const NetLogWithSource& net_log = NetLogWithSource());
   PKPStatus CheckPublicKeyPins(
       const HostPortPair& host_port_pair,
       bool is_issued_by_known_root,
@@ -611,6 +613,8 @@ class NET_EXPORT TransportSecurityState {
                         base::TimeTicks,
                         std::less<base::TimeTicks>>
       ReportCache;
+
+  base::Value NetLogUpgradeToSSLParam(const std::string& host);
 
   // IsBuildTimely returns true if the current build is new enough ensure that
   // built in security information (i.e. HSTS preloading and pinning

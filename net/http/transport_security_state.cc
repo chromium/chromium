@@ -437,8 +437,26 @@ bool TransportSecurityState::ShouldSSLErrorsBeFatal(const std::string& host) {
          GetStaticDomainState(host, &unused_sts, &unused_pkp);
 }
 
-bool TransportSecurityState::ShouldUpgradeToSSL(const std::string& host) {
+base::Value TransportSecurityState::NetLogUpgradeToSSLParam(
+    const std::string& host) {
   STSState sts_state;
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("host", host);
+  dict.SetBoolKey("get_sts_state_result", GetSTSState(host, &sts_state));
+  dict.SetBoolKey("should_upgrade_to_ssl", sts_state.ShouldUpgradeToSSL());
+  dict.SetBoolKey(
+      "host_found_in_hsts_bypass_list",
+      hsts_host_bypass_list_.find(host) != hsts_host_bypass_list_.end());
+  return dict;
+}
+
+bool TransportSecurityState::ShouldUpgradeToSSL(
+    const std::string& host,
+    const NetLogWithSource& net_log) {
+  STSState sts_state;
+  net_log.AddEvent(
+      NetLogEventType::TRANSPORT_SECURITY_STATE_SHOULD_UPGRADE_TO_SSL,
+      [&] { return NetLogUpgradeToSSLParam(host); });
   return GetSTSState(host, &sts_state) && sts_state.ShouldUpgradeToSSL();
 }
 

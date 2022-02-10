@@ -201,7 +201,7 @@ std::unique_ptr<URLRequestJob> URLRequestHttpJob::Create(URLRequest* request) {
     // Check for HSTS upgrade.
     TransportSecurityState* hsts =
         request->context()->transport_security_state();
-    if (hsts && hsts->ShouldUpgradeToSSL(url.host())) {
+    if (hsts && hsts->ShouldUpgradeToSSL(url.host(), request->net_log())) {
       return std::make_unique<URLRequestRedirectJob>(
           request, UpgradeSchemeToCryptographic(url),
           // Use status code 307 to preserve the method, so POST requests work.

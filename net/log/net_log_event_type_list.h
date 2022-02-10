@@ -4153,3 +4153,14 @@ EVENT_TYPE(WEBSOCKET_SENT_FRAME_HEADER)
 // This event is logged when the browser closes the connection instead of the
 // server.
 EVENT_TYPE(WEBSOCKET_CLOSE_TIMEOUT)
+
+// Temporarily added to investigate for https://crbug.com/1289379.
+// Logged at TransportSecurityState::ShouldUpgradeToSSL.
+// The following parameters are attached:
+//   {
+//     "host": <host name>
+//     "get_sts_state_result": <boolean>,
+//     "should_upgrade_to_ssl": <boolean>,
+//     "host_found_in_hsts_bypass_list": <boolean>,
+//   }
+EVENT_TYPE(TRANSPORT_SECURITY_STATE_SHOULD_UPGRADE_TO_SSL)
