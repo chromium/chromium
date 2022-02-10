@@ -27,6 +27,70 @@ to Chromium Objective-C and (especially) Objective-C++
 Use `nil` for null pointers to Objective-C objects, and `nullptr` for C++
 objects.
 
+## Delineate interface implementations with `#pragma mark -`
+
+To keep implementation files organized and navigable, method implementations
+should be clearly grouped by the interfaces they implement, and each such group
+should be marked with a `#pragma mark -`, followed by the interface name (see
+examples below). This kind of grouping should happen for the implementations's
+public methods, superclass methods, private methods, and each protocol the
+implementation conforms to. In each group, methods should appear in the same
+order they are defined in the corresponding interface declaration. (This is less
+important for superclass methods for UIKit subclasses; it's not a big deal if
+the ordering of `UIViewController` subclass methods doesn't match the UIKit
+header).
+
+```objective-c
+@interface ExampleViewController : UIViewController<ExampleConsumer, 
+                                                    UITableViewDelegate>
+
+...
+@end
+
+@implementation ExampleViewController
+
+- (instancetype)init {
+  ...
+}
+
+#pragma mark - Public Properties
+
+- (NSString*)stringProperty {
+  ...
+}
+
+... // Other properties
+
+#pragma mark - UIViewController
+
+- (void)viewDidLoad {
+  ...
+}
+
+... // Other superclass methods
+
+#pragma mark - UITableViewDelegate
+
+... // Protocol methods
+
+#pragma mark - ExampleConsumer
+
+... // Protocol methods
+
+#pragma mark - Private methods
+
+... // Private methods
+
+```
+
+Private methods can be grouped differently if it helps make the code more
+readable; for example, private methods that are just helpers for methods in
+specific protocols could be grouped under a `#pragma mark - <Protocol> helpers`,
+directly after the protocol methods, instead of with the other private methods.
+
+Remember that any method which isn't declared in an interface needs a full
+method comment.
+
 ## Objective-C++ style matches the language
 
 Within an Objective-C++ source file, follow the style for the language of the
