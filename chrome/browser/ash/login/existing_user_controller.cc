@@ -1120,7 +1120,9 @@ void ExistingUserController::OnProfilePrepared(Profile* profile,
 }
 
 void ExistingUserController::OnOffTheRecordAuthSuccess() {
-  is_login_in_progress_ = false;
+  // Do not reset is_login_in_progress_ flag:
+  // CompleteGuestSessionLogin() below should result in browser restart
+  // that would actually complete the login process.
 
   // Mark the device as registered., i.e. the second part of OOBE as completed.
   if (!StartupUtils::IsDeviceRegistered())
