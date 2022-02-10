@@ -68,6 +68,11 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kAppDiscoveryForOobe;
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kAppManagementAppDetails;
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kAppServiceLoadIconWithoutMojom;

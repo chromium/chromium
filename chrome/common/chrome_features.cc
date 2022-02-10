@@ -68,6 +68,11 @@ const base::Feature kAppDiscoveryForOobe{"AppDiscoveryForOobe",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const base::Feature kAppManagementAppDetails{"AppManagementAppDetails",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if !BUILDFLAG(IS_ANDROID)
 // App Service related flags. See components/services/app_service/README.md.
 const base::Feature kAppServiceLoadIconWithoutMojom{

@@ -54577,6 +54577,7 @@ from previous Chrome versions.
   <int value="273489120" label="CrostiniDiskResizing:disabled"/>
   <int value="274103741" label="enable-ntp-popular-sites"/>
   <int value="275616740" label="ForceInitialSyncWhenDecryptionFails:disabled"/>
+  <int value="275690549" label="AppManagementAppDetails:enabled"/>
   <int value="277483398" label="ClipboardHistory:disabled"/>
   <int value="277565405" label="ContextualSearchDefinitions:disabled"/>
   <int value="278756320" label="disable-app-list-app-info"/>
@@ -56856,6 +56857,7 @@ from previous Chrome versions.
   <int value="1887031213" label="AutofillManualFallbackAndroid:disabled"/>
   <int value="1887882558" label="RTCUnifiedPlanByDefault:enabled"/>
   <int value="1888812860" label="ChromeModernAlternateCardLayout:enabled"/>
+  <int value="1889038381" label="AppManagementAppDetails:disabled"/>
   <int value="1889076955" label="disable-app-link"/>
   <int value="1889198874" label="TabSwitcherOnReturn:disabled"/>
   <int value="1889885696" label="ZeroSuggestPrefetching:disabled"/>

@@ -5717,6 +5717,11 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"app-management-app-details",
+     flag_descriptions::kAppManagementAppDetailsName,
+     flag_descriptions::kAppManagementAppDetailsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAppManagementAppDetails)},
+
     {"arc-ghost-window", flag_descriptions::kArcGhostWindowName,
      flag_descriptions::kArcGhostWindowDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(full_restore::features::kArcGhostWindow)},
