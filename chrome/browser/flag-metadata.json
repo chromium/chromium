@@ -541,6 +541,11 @@
     "expiry_milestone": 101
   },
   {
+    "name": "block-migrated-default-chrome-app-sync",
+    "owners": [ "alancutter", "desktop-pwas-team@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "bluetooth-advertisement-monitoring",
     "owners": [ "cvandermerwe@google.com", "hansenmichael@google.com", "chromeos-cross-device-eng@google.com" ],
     "expiry_milestone": 98

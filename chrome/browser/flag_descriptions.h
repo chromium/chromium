@@ -2084,6 +2084,9 @@ extern const char kOmniboxPedalsAndroidBatch1Description[];
 extern const char kAllowAllSitesToInitiateMirroringName[];
 extern const char kAllowAllSitesToInitiateMirroringDescription[];
 
+extern const char kBlockMigratedDefaultChromeAppSyncName[];
+extern const char kBlockMigratedDefaultChromeAppSyncDescription[];
+
 extern const char kEnableAccessibilityLiveCaptionName[];
 extern const char kEnableAccessibilityLiveCaptionDescription[];
 

@@ -3635,6 +3635,12 @@ const char kAllowAllSitesToInitiateMirroringDescription[] =
     "via Presentation API. Requires #cast-media-route-provider to also be "
     "enabled";
 
+const char kBlockMigratedDefaultChromeAppSyncName[] =
+    "Block migrated default Chrome app sync";
+const char kBlockMigratedDefaultChromeAppSyncDescription[] =
+    "Prevents Chrome apps that have been migrated to default web apps from "
+    "getting sync installed and creating duplicate entries for the same app.";
+
 const char kEnableAccessibilityLiveCaptionName[] = "Live Caption";
 const char kEnableAccessibilityLiveCaptionDescription[] =
     "Enables the live caption feature which generates captions for "
