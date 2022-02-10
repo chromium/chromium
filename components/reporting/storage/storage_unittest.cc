@@ -1010,16 +1010,6 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
   {
     test::TestCallbackAutoWaiter waiter;
     EXPECT_CALL(set_mock_uploader_expectations_,
-                Call(Eq(UploaderInterface::UploadReason::KEY_DELIVERY)))
-        // Called once with empty queue.
-        .WillOnce(Invoke([this](UploaderInterface::UploadReason reason) {
-          return TestUploader::SetEmpty(this).Complete();
-        }))
-        // Can be called later again, reject it.
-        .WillRepeatedly(Invoke([](UploaderInterface::UploadReason reason) {
-          return Status(error::CANCELLED, "Repeated key delivery rejected");
-        }));
-    EXPECT_CALL(set_mock_uploader_expectations_,
                 Call(Eq(UploaderInterface::UploadReason::MANUAL)))
         .WillOnce(
             Invoke([&waiter, this](UploaderInterface::UploadReason reason) {
@@ -1043,7 +1033,7 @@ TEST_P(StorageTest, WriteIntoNewStorageAndUploadWithKeyUpdate) {
   WriteStringOrDie(MANUAL_BATCH, kMoreData[1]);
   WriteStringOrDie(MANUAL_BATCH, kMoreData[2]);
 
-  // Wait to trigger encryption key request on the next upload
+  // Wait to trigger encryption key request on the next upload.
   task_environment_.FastForwardBy(kKeyRenewalTime + base::Seconds(1));
 
   // Set uploader expectations with encryption key request.
