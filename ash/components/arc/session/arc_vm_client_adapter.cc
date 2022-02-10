@@ -213,6 +213,9 @@ std::vector<std::string> GenerateKernelCmdline(
       break;
   }
 
+  const int guest_zram_size = kGuestZramSize.Get();
+  VLOG(1) << "Setting ARCVM guest's zram size to " << guest_zram_size;
+
   std::vector<std::string> result = {
       // Note: Do not change the value "bertha". This string is checked in
       // platform2/metrics/process_meter.cc to detect ARCVM's crosvm processes,
@@ -240,7 +243,7 @@ std::vector<std::string> GenerateKernelCmdline(
                          BUILDFLAG(USE_IIOSERVICE)),
       base::StringPrintf("androidboot.enable_notifications_refresh=%d",
                          start_params.enable_notifications_refresh),
-      base::StringPrintf("androidboot.zram_size=%d", kGuestZramSize.Get()),
+      base::StringPrintf("androidboot.zram_size=%d", guest_zram_size),
   };
 
   const ArcVmUreadaheadMode mode =
