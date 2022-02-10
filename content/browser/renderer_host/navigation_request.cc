@@ -6684,11 +6684,11 @@ NavigationRequest::ComputeCrossOriginEmbedderPolicy() {
   // - FencedFrame: https://crbug.com/1277430
   // - Portals: https://crbug.com/1278207
   // - GuestView: XXX or slightly related https://crbug.com/1260747
-  const GURL& top_level_creation_url =
-      IsInMainFrame() ? url
-                      : frame_tree_node_->current_frame_host()
-                            ->GetMainFrame()
-                            ->GetLastCommittedURL();
+  const GURL& top_level_creation_url = GetParentFrameOrOuterDocument()
+                                           ? GetParentFrameOrOuterDocument()
+                                                 ->GetOutermostMainFrame()
+                                                 ->GetLastCommittedURL()
+                                           : url;
   // [spec]: https://html.spec.whatwg.org/C/#obtain-an-embedder-policy
   //
   // 1. Let policy be a new embedder policy.
@@ -6794,11 +6794,17 @@ NavigationRequest::EnforceCOEP() {
 bool NavigationRequest::CoopCoepSanityCheck() {
   const PolicyContainerPolicies& policies =
       policy_container_navigation_bundle_->FinalPolicies();
+  // Use GetParentFrameOrOuterDocument() to respect the outer frame's COEP for
+  // now. But other embedded cases like Portals should figure out how to inherit
+  // COEP because it's unclear yet.
+  // TODO(https://crbug.com/1278207) add other embedded cases if needed.
   network::mojom::CrossOriginOpenerPolicyValue coop_value =
-      IsInMainFrame() ? policies.cross_origin_opener_policy.value
-                      : render_frame_host_->GetMainFrame()
-                            ->cross_origin_opener_policy()
-                            .value;
+      GetParentFrameOrOuterDocument()
+          ? render_frame_host_->GetOutermostMainFrame()
+                ->cross_origin_opener_policy()
+                .value
+          : policies.cross_origin_opener_policy.value;
+
   if (coop_value ==
           network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep &&
       !CompatibleWithCrossOriginIsolated(

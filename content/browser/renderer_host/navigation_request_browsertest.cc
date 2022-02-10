@@ -36,6 +36,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_frame_navigation_observer.h"
@@ -48,6 +49,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/mock_commit_deferring_condition.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/url_request/url_request_failed_job.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
@@ -3385,6 +3387,86 @@ IN_PROC_BROWSER_TEST_F(CSPEmbeddedEnforcementBrowserTest,
     observer.WaitForNavigationFinished();
     EXPECT_EQ(test.expect_allow, observer.was_successful());
   }
+}
+
+class NavigationRequestFencedFrameBrowserTest
+    : public NavigationRequestBrowserTest {
+ public:
+  NavigationRequestFencedFrameBrowserTest() = default;
+  ~NavigationRequestFencedFrameBrowserTest() override = default;
+  NavigationRequestFencedFrameBrowserTest(
+      const NavigationRequestFencedFrameBrowserTest&) = delete;
+
+  NavigationRequestFencedFrameBrowserTest& operator=(
+      const NavigationRequestFencedFrameBrowserTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    net::test_server::RegisterDefaultHandlers(https_server());
+    ASSERT_TRUE(https_server()->Start());
+    NavigationRequestBrowserTest::SetUpOnMainThread();
+  }
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+};
+
+IN_PROC_BROWSER_TEST_F(
+    NavigationRequestFencedFrameBrowserTest,
+    ShouldRespectOutermostFrameCOEPParentAndChildOnInsecureContent) {
+  // Navigate |untrustworthy_url| to test if a fenced frame sets the outermost
+  // main frame's COEP.
+  GURL untrustworthy_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), untrustworthy_url));
+
+  // Create a fenced frame on an insecure content and its document should have
+  // the COEP of the outermost main frame.
+  GURL fenced_frame_url = embedded_test_server()->GetURL(
+      "a.test",
+      "/set-header?"
+      "Supports-Loading-Mode: fenced-frame&"
+      "Cross-Origin-Embedder-Policy: require-corp");
+  content::RenderFrameHostImpl* fenced_frame_host =
+      static_cast<content::RenderFrameHostImpl*>(
+          fenced_frame_test_helper().CreateFencedFrame(
+              shell()->web_contents()->GetMainFrame(), fenced_frame_url));
+  ASSERT_TRUE(fenced_frame_host);
+  EXPECT_EQ(network::mojom::CrossOriginEmbedderPolicyValue::kNone,
+            fenced_frame_host->cross_origin_embedder_policy().value);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    NavigationRequestFencedFrameBrowserTest,
+    RespectOutermostFrameCOEPParentOnInsecureContentAndChildOnSecureContent) {
+  // Navigate |untrustworthy_url| to test if a fenced frame sets the outermost
+  // main frame's COEP.
+  GURL untrustworthy_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), untrustworthy_url));
+
+  // Create a fenced frame on a secure content and its document should have the
+  // COEP of the outermost main frame.
+  GURL fenced_frame_url =
+      https_server()->GetURL("a.test",
+                             "/set-header?"
+                             "Supports-Loading-Mode: fenced-frame&"
+                             "Cross-Origin-Embedder-Policy: require-corp");
+  content::RenderFrameHostImpl* fenced_frame_host =
+      static_cast<content::RenderFrameHostImpl*>(
+          fenced_frame_test_helper().CreateFencedFrame(
+              shell()->web_contents()->GetMainFrame(), fenced_frame_url));
+  ASSERT_TRUE(fenced_frame_host);
+  EXPECT_EQ(network::mojom::CrossOriginEmbedderPolicyValue::kNone,
+            fenced_frame_host->cross_origin_embedder_policy().value);
 }
 
 }  // namespace content
