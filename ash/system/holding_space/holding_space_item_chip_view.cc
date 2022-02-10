@@ -19,6 +19,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_progress_indicator.h"
+#include "ash/system/holding_space/holding_space_progress_indicator_util.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "ash/system/progress_indicator/progress_ring_animation.h"
 #include "base/bind.h"
@@ -163,7 +164,8 @@ class ProgressIndicatorView : public views::View {
   // NOTE: This method should be invoked only once.
   void SetHoldingSpaceItem(const HoldingSpaceItem* item) {
     DCHECK(!progress_indicator_);
-    progress_indicator_ = HoldingSpaceProgressIndicator::CreateForItem(item);
+    progress_indicator_ =
+        holding_space_util::CreateProgressIndicatorForItem(item);
 
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);

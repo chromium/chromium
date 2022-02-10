@@ -21,6 +21,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_animation_registry.h"
 #include "ash/system/holding_space/holding_space_progress_indicator.h"
+#include "ash/system/holding_space/holding_space_progress_indicator_util.h"
 #include "ash/system/holding_space/holding_space_tray_bubble.h"
 #include "ash/system/holding_space/holding_space_tray_icon.h"
 #include "ash/system/holding_space/pinned_files_section.h"
@@ -241,8 +242,9 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   // NOTE: The `progress_indicator_` will only be visible when:
   //   * there is at least one in-progress item in the attached model, and
   //   * previews are hidden.
-  progress_indicator_ = HoldingSpaceProgressIndicator::CreateForController(
-      HoldingSpaceController::Get());
+  progress_indicator_ =
+      holding_space_util::CreateProgressIndicatorForController(
+          HoldingSpaceController::Get());
   layer()->Add(progress_indicator_->CreateLayer());
 
   // Subscribe to receive notification of changes to the `progress_indicator_`'s

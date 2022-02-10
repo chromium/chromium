@@ -16,8 +16,6 @@
 
 namespace ash {
 
-class HoldingSpaceController;
-class HoldingSpaceItem;
 class ProgressIconAnimation;
 class ProgressIndicatorAnimationRegistry;
 class ProgressRingAnimation;
@@ -40,16 +38,6 @@ class ASH_EXPORT HoldingSpaceProgressIndicator : public ui::LayerOwner,
   // `animation_registry_` that will manage progress animations as needed.
   static std::unique_ptr<HoldingSpaceProgressIndicator> CreateDefaultInstance(
       base::RepeatingCallback<absl::optional<float>()> progress_callback);
-
-  // Returns an instance which paints indication of progress for all holding
-  // space items in the model attached to the specified `controller`.
-  static std::unique_ptr<HoldingSpaceProgressIndicator> CreateForController(
-      HoldingSpaceController* controller);
-
-  // Returns an instance which paints indication of progress for the specified
-  // holding space `item`.
-  static std::unique_ptr<HoldingSpaceProgressIndicator> CreateForItem(
-      const HoldingSpaceItem* item);
 
   // Adds the specified `callback` to be notified of `progress_` changes. The
   // `callback` will continue to receive events so long as both `this` and the

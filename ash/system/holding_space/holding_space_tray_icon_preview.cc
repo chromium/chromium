@@ -17,6 +17,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_animation_registry.h"
 #include "ash/system/holding_space/holding_space_progress_indicator.h"
+#include "ash/system/holding_space/holding_space_progress_indicator_util.h"
 #include "ash/system/holding_space/holding_space_tray_icon.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
@@ -359,7 +360,8 @@ HoldingSpaceTrayIconPreview::HoldingSpaceTrayIconPreview(
     : shelf_(shelf),
       container_(container),
       image_layer_owner_(std::make_unique<ImageLayerOwner>(item)),
-      progress_indicator_(HoldingSpaceProgressIndicator::CreateForItem(item)),
+      progress_indicator_(
+          holding_space_util::CreateProgressIndicatorForItem(item)),
       use_small_previews_(ShouldUseSmallPreviews()) {
   container_observer_.Observe(container_);
 }
