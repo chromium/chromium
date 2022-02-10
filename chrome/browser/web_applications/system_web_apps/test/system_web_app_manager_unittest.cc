@@ -158,7 +158,8 @@ class SystemWebAppManagerTest : public WebAppTest {
     install_finalizer().SetSubsystems(
         &install_manager(), &controller().registrar(), &ui_manager(),
         &controller().sync_bridge(), &controller().os_integration_manager(),
-        &icon_manager(), web_app_policy_manager_.get());
+        &icon_manager(), web_app_policy_manager_.get(),
+        &controller().translation_manager());
 
     install_manager().SetSubsystems(&controller().registrar(),
                                     &controller().os_integration_manager(),

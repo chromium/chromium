@@ -202,7 +202,8 @@ class WebAppInstallManagerTest
         &install_manager(), &registrar(), ui_manager_.get(),
         &fake_registry_controller_->sync_bridge(),
         &fake_registry_controller_->os_integration_manager(),
-        icon_manager_.get(), policy_manager_.get());
+        icon_manager_.get(), policy_manager_.get(),
+        &fake_registry_controller_->translation_manager());
   }
 
   void TearDown() override {

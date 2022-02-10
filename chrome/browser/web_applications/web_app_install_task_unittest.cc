@@ -113,7 +113,8 @@ class WebAppInstallTaskTest : public WebAppTest {
         &install_manager(), &registrar(), ui_manager_.get(),
         &fake_registry_controller_->sync_bridge(),
         &fake_os_integration_manager(), icon_manager_.get(),
-        policy_manager_.get());
+        policy_manager_.get(),
+        &fake_registry_controller_->translation_manager());
 
     auto data_retriever = std::make_unique<FakeDataRetriever>();
     data_retriever_ = data_retriever.get();

@@ -24,6 +24,7 @@ namespace web_app {
 
 class FakeWebAppDatabaseFactory;
 class WebAppSyncBridge;
+class WebAppTranslationManager;
 class WebApp;
 
 class FakeWebAppRegistryController : public SyncInstallDelegate {
@@ -74,6 +75,9 @@ class FakeWebAppRegistryController : public SyncInstallDelegate {
   WebAppRegistrarMutable& mutable_registrar() { return *mutable_registrar_; }
   syncer::MockModelTypeChangeProcessor& processor() { return mock_processor_; }
   WebAppSyncBridge& sync_bridge() { return *sync_bridge_; }
+  WebAppTranslationManager& translation_manager() {
+    return *translation_manager_;
+  }
   FakeOsIntegrationManager& os_integration_manager() {
     return *os_integration_manager_;
   }
@@ -89,6 +93,7 @@ class FakeWebAppRegistryController : public SyncInstallDelegate {
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
   std::unique_ptr<WebAppSyncBridge> sync_bridge_;
   std::unique_ptr<FakeOsIntegrationManager> os_integration_manager_;
+  std::unique_ptr<WebAppTranslationManager> translation_manager_;
 };
 
 }  // namespace web_app

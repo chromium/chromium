@@ -36,6 +36,7 @@ class WebAppIconManager;
 class WebAppInstallManager;
 class WebAppPolicyManager;
 class WebAppRegistrar;
+class WebAppTranslationManager;
 class WebAppUninstallJob;
 enum class WebAppUninstallJobResult;
 
@@ -143,7 +144,8 @@ class WebAppInstallFinalizer {
                      WebAppSyncBridge* sync_bridge,
                      OsIntegrationManager* os_integration_manager,
                      WebAppIconManager* icon_manager,
-                     WebAppPolicyManager* policy_manager);
+                     WebAppPolicyManager* policy_manager,
+                     WebAppTranslationManager* translation_manager);
 
   virtual void SetRemoveSourceCallbackForTesting(
       base::RepeatingCallback<void(const AppId&)>);
@@ -176,10 +178,15 @@ class WebAppInstallFinalizer {
       std::unique_ptr<WebApp> web_app,
       CommitCallback commit_callback);
 
-  void OnIconsDataWritten(
+  void WriteTranslationsThenCommitToSyncBridge(
       CommitCallback commit_callback,
       std::unique_ptr<WebApp> web_app,
+      const WebAppInstallInfo& web_app_info,
       bool success);
+
+  void CommitToSyncBridge(CommitCallback commit_callback,
+                          std::unique_ptr<WebApp> web_app,
+                          bool success);
 
   void OnDatabaseCommitCompletedForInstall(InstallFinalizedCallback callback,
                                            AppId app_id,
@@ -216,6 +223,7 @@ class WebAppInstallFinalizer {
   raw_ptr<OsIntegrationManager> os_integration_manager_ = nullptr;
   raw_ptr<WebAppIconManager> icon_manager_ = nullptr;
   raw_ptr<WebAppPolicyManager> policy_manager_ = nullptr;
+  raw_ptr<WebAppTranslationManager> translation_manager_ = nullptr;
 
   const raw_ptr<Profile> profile_;
   bool started_ = false;

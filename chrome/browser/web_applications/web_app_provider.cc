@@ -41,6 +41,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -191,6 +192,11 @@ WebAppIconManager& WebAppProvider::icon_manager() {
   return *icon_manager_;
 }
 
+WebAppTranslationManager& WebAppProvider::translation_manager() {
+  CheckIsConnected();
+  return *translation_manager_;
+}
+
 SystemWebAppManager& WebAppProvider::system_web_app_manager() {
   CheckIsConnected();
   return *system_web_app_manager_;
@@ -266,6 +272,8 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
 
   auto icon_manager = std::make_unique<WebAppIconManager>(
       profile, *registrar, base::MakeRefCounted<FileUtilsWrapper>());
+  auto translation_manager = std::make_unique<WebAppTranslationManager>(
+      profile, registrar.get(), base::MakeRefCounted<FileUtilsWrapper>());
   install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(profile);
 
   if (g_os_integration_manager_factory_for_testing) {
@@ -298,6 +306,7 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
   registrar_ = std::move(registrar);
   sync_bridge_ = std::move(sync_bridge);
   icon_manager_ = std::move(icon_manager);
+  translation_manager_ = std::move(translation_manager);
 }
 
 void WebAppProvider::ConnectSubsystems() {
@@ -306,7 +315,7 @@ void WebAppProvider::ConnectSubsystems() {
   install_finalizer_->SetSubsystems(
       install_manager_.get(), registrar_.get(), ui_manager_.get(),
       sync_bridge_.get(), os_integration_manager_.get(), icon_manager_.get(),
-      web_app_policy_manager_.get());
+      web_app_policy_manager_.get(), translation_manager_.get());
   install_manager_->SetSubsystems(registrar_.get(),
                                   os_integration_manager_.get(),
                                   install_finalizer_.get());
@@ -346,6 +355,7 @@ void WebAppProvider::OnSyncBridgeReady() {
   registrar_->Start();
   install_finalizer_->Start();
   icon_manager_->Start();
+  translation_manager_->Start();
   install_manager_->Start();
   preinstalled_web_app_manager_->Start();
   web_app_policy_manager_->Start();

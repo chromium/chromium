@@ -41,6 +41,7 @@ class WebAppInstallManager;
 class WebAppPolicyManager;
 class WebAppUiManager;
 class OsIntegrationManager;
+class WebAppTranslationManager;
 
 // Connects Web App features, such as the installation of default and
 // policy-managed web apps, with Profiles (as WebAppProvider is a
@@ -124,6 +125,8 @@ class WebAppProvider : public KeyedService {
   // Implements fetching of app icons.
   WebAppIconManager& icon_manager();
 
+  WebAppTranslationManager& translation_manager();
+
   SystemWebAppManager& system_web_app_manager();
 
   // Manage all OS hooks that need to be deployed during Web Apps install
@@ -173,6 +176,7 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<WebAppSyncBridge> sync_bridge_;
   std::unique_ptr<PreinstalledWebAppManager> preinstalled_web_app_manager_;
   std::unique_ptr<WebAppIconManager> icon_manager_;
+  std::unique_ptr<WebAppTranslationManager> translation_manager_;
   std::unique_ptr<WebAppInstallFinalizer> install_finalizer_;
   std::unique_ptr<ManifestUpdateManager> manifest_update_manager_;
   std::unique_ptr<ExternallyManagedAppManager> externally_managed_app_manager_;

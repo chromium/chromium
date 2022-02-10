@@ -13,6 +13,7 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace web_app {
 
@@ -100,6 +101,8 @@ class WebAppTranslationManagerTest : public WebAppTest {
   std::unique_ptr<WebAppTranslationManager> translation_manager_;
   scoped_refptr<TestFileUtils> file_utils_;
   web_app::FakeWebAppProvider* provider_;
+  base::test::ScopedFeatureList features_{
+      blink::features::kWebAppEnableTranslations};
 };
 
 TEST_F(WebAppTranslationManagerTest, WriteReadAndDelete) {

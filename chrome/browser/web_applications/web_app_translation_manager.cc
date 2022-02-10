@@ -10,6 +10,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/web_applications/proto/web_app_translations.pb.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace web_app {
 
@@ -134,8 +135,11 @@ WebAppTranslationManager::WebAppTranslationManager(
 WebAppTranslationManager::~WebAppTranslationManager() = default;
 
 void WebAppTranslationManager::Start() {
-  ReadTranslations(base::DoNothing());
-  registrar_observation_.Observe(registrar_.get());
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWebAppEnableTranslations)) {
+    ReadTranslations(base::DoNothing());
+    registrar_observation_.Observe(registrar_.get());
+  }
 }
 
 // TODO(crbug.com/1259777): Consider adding to cache when writing a translation
@@ -157,11 +161,16 @@ void WebAppTranslationManager::WriteTranslations(
     const base::flat_map<Locale, blink::Manifest::TranslationItem>&
         translations,
     WriteCallback callback) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, kTaskTraits,
-      base::BindOnce(WriteTranslationsBlocking, utils_, web_apps_directory_,
-                     std::move(app_id), std::move(translations)),
-      std::move(callback));
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWebAppEnableTranslations)) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, kTaskTraits,
+        base::BindOnce(WriteTranslationsBlocking, utils_, web_apps_directory_,
+                       std::move(app_id), std::move(translations)),
+        std::move(callback));
+  } else {
+    std::move(callback).Run(true);
+  }
 }
 
 void WebAppTranslationManager::DeleteTranslations(const AppId& app_id,

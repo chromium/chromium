@@ -38,6 +38,7 @@
 #include "chrome/browser/web_applications/web_app_shortcuts_menu.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_system_web_app_data.h"
+#include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_uninstall_job.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -230,7 +231,7 @@ void WebAppInstallFinalizer::FinalizeInstall(
                                         std::move(commit_callback));
   } else {
     // Updates the web app with an additional source.
-    OnIconsDataWritten(std::move(commit_callback), std::move(web_app),
+    CommitToSyncBridge(std::move(commit_callback), std::move(web_app),
                        /*success=*/true);
   }
 }
@@ -453,7 +454,8 @@ void WebAppInstallFinalizer::SetSubsystems(
     WebAppSyncBridge* sync_bridge,
     OsIntegrationManager* os_integration_manager,
     WebAppIconManager* icon_manager,
-    WebAppPolicyManager* policy_manager) {
+    WebAppPolicyManager* policy_manager,
+    WebAppTranslationManager* translation_manager) {
   install_manager_ = install_manager;
   registrar_ = registrar;
   ui_manager_ = ui_manager;
@@ -461,6 +463,7 @@ void WebAppInstallFinalizer::SetSubsystems(
   os_integration_manager_ = os_integration_manager;
   icon_manager_ = icon_manager;
   policy_manager_ = policy_manager;
+  translation_manager_ = translation_manager;
 }
 
 void WebAppInstallFinalizer::UninstallWebAppInternal(
@@ -549,16 +552,41 @@ void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
   SetWebAppManifestFields(web_app_info, *web_app);
 
   AppId app_id = web_app->app_id();
+  IconBitmaps icon_bitmaps = web_app_info.icon_bitmaps;
+  ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps =
+      web_app_info.shortcuts_menu_icon_bitmaps;
+  IconsMap other_icon_bitmaps = web_app_info.other_icon_bitmaps;
 
   icon_manager_->WriteData(
-      std::move(app_id), web_app_info.icon_bitmaps,
-      web_app_info.shortcuts_menu_icon_bitmaps, web_app_info.other_icon_bitmaps,
-      base::BindOnce(&WebAppInstallFinalizer::OnIconsDataWritten,
+      std::move(app_id), std::move(icon_bitmaps),
+      std::move(shortcuts_menu_icon_bitmaps), std::move(other_icon_bitmaps),
+      base::BindOnce(
+          &WebAppInstallFinalizer::WriteTranslationsThenCommitToSyncBridge,
+          weak_ptr_factory_.GetWeakPtr(), std::move(commit_callback),
+          std::move(web_app), std::move(web_app_info)));
+}
+
+void WebAppInstallFinalizer::WriteTranslationsThenCommitToSyncBridge(
+    CommitCallback commit_callback,
+    std::unique_ptr<WebApp> web_app,
+    const WebAppInstallInfo& web_app_info,
+    bool success) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!success) {
+    std::move(commit_callback).Run(success);
+    return;
+  }
+
+  AppId app_id = web_app->app_id();
+
+  translation_manager_->WriteTranslations(
+      std::move(app_id), web_app_info.translations,
+      base::BindOnce(&WebAppInstallFinalizer::CommitToSyncBridge,
                      weak_ptr_factory_.GetWeakPtr(), std::move(commit_callback),
                      std::move(web_app)));
 }
 
-void WebAppInstallFinalizer::OnIconsDataWritten(CommitCallback commit_callback,
+void WebAppInstallFinalizer::CommitToSyncBridge(CommitCallback commit_callback,
                                                 std::unique_ptr<WebApp> web_app,
                                                 bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

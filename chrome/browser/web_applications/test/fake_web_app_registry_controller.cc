@@ -9,10 +9,12 @@
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
+#include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace web_app {
@@ -38,6 +40,8 @@ void FakeWebAppRegistryController::SetUp(base::raw_ptr<Profile> profile) {
                                          mutable_registrar_.get(),
                                          /*ui_manager=*/nullptr,
                                          /*icon_manager=*/nullptr);
+  translation_manager_ = std::make_unique<WebAppTranslationManager>(
+      profile, mutable_registrar_.get(), base::MakeRefCounted<TestFileUtils>());
 
   ON_CALL(processor(), IsTrackingMetadata())
       .WillByDefault(testing::Return(true));
@@ -117,6 +121,7 @@ void FakeWebAppRegistryController::DestroySubsystems() {
   sync_bridge_.reset();
   database_factory_.reset();
   os_integration_manager_.reset();
+  translation_manager_.reset();
 }
 
 }  // namespace web_app
