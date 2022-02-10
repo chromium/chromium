@@ -278,9 +278,14 @@ CryptoMessageParser* MockCryptoClientStream::crypto_message_parser() {
 }
 
 // Tests using MockCryptoClientStream() do not care about the handshaker's
-// state.  Intercept and ignore OnOneRttPacketAcknowledged() calls to prevent
-// DCHECKs within the handshaker from failing.
+// state.  Intercept and ignore the calls calls to prevent DCHECKs within the
+// handshaker from failing.
 void MockCryptoClientStream::OnOneRttPacketAcknowledged() {}
+
+std::unique_ptr<quic::QuicDecrypter>
+MockCryptoClientStream::AdvanceKeysAndCreateCurrentOneRttDecrypter() {
+  return std::make_unique<NullDecrypter>(Perspective::IS_CLIENT);
+}
 
 void MockCryptoClientStream::NotifySessionZeroRttComplete() {
   DCHECK(session()->version().UsesTls());
