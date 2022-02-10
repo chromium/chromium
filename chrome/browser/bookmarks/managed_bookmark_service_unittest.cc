@@ -109,8 +109,8 @@ class ManagedBookmarkServiceTest : public testing::Test {
       const std::string& url) {
     EXPECT_TRUE(GURL(url).is_valid());
     auto dict = std::make_unique<base::DictionaryValue>();
-    dict->SetString("name", title);
-    dict->SetString("url", GURL(url).spec());
+    dict->SetStringKey("name", title);
+    dict->SetStringKey("url", GURL(url).spec());
     return dict;
   }
 
@@ -118,7 +118,7 @@ class ManagedBookmarkServiceTest : public testing::Test {
       const std::string& title,
       std::unique_ptr<base::ListValue> children) {
     auto dict = std::make_unique<base::DictionaryValue>();
-    dict->SetString("name", title);
+    dict->SetStringKey("name", title);
     dict->SetKey("children",
                  base::Value::FromUniquePtrValue(std::move(children)));
     return dict;
