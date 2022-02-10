@@ -70,7 +70,6 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
   original.load_flags = 3;
   original.resource_type = 2;
   original.priority = net::IDLE;
-  original.is_external_request = false;
   original.cors_preflight_policy =
       mojom::CorsPreflightPolicy::kConsiderPreflight;
   original.originated_from_service_worker = false;

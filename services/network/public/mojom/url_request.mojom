@@ -242,12 +242,6 @@ struct URLRequest {
   // The priority of this request determined by Blink.
   RequestPriority priority;
 
-  // https://wicg.github.io/cors-rfc1918/#external-request
-  // TODO(toyoshim): The browser should know better than renderers do.
-  // This is used to plumb Blink decided information for legacy code path, but
-  // eventually we should remove this.
-  bool is_external_request;
-
   // A policy to decide if CORS-preflight fetch should be performed.
   CorsPreflightPolicy cors_preflight_policy;
 

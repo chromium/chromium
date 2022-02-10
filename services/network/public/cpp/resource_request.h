@@ -136,7 +136,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   int load_flags = 0;
   int resource_type = 0;
   net::RequestPriority priority = net::IDLE;
-  bool is_external_request = false;
   mojom::CorsPreflightPolicy cors_preflight_policy =
       mojom::CorsPreflightPolicy::kConsiderPreflight;
   bool originated_from_service_worker = false;

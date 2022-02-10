@@ -4022,7 +4022,6 @@ EVENT_TYPE(TRUST_TOKEN_OPERATION_BEGIN_SIGNING)
 //    "cors_preflight_policy" : <A policy to decide if CORS-preflight fetch
 //                              should be performed>,
 //    "headers" : <The list of header:value pairs>,
-//    "is_external_request": <Boolean indicating whether request is external>,
 //    "is_revalidating": <Boolean indicating whether request is revalidating>,
 //    "method": <The method ("POST" or "GET" or "HEAD" etc...)>,
 //    "url": <The URL to create a request for>

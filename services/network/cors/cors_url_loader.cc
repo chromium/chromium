@@ -37,8 +37,6 @@ namespace cors {
 namespace {
 
 enum class PreflightRequiredReason {
-  // TODO(https://crbug.com/1263483): Remove this.
-  kExternalRequest,
   kPrivateNetworkAccess,
   kCorsWithForcedPreflightMode,
   kDisallowedMethod,
@@ -59,10 +57,6 @@ absl::optional<PreflightRequiredReason> NeedsPreflight(
 
   if (!IsCorsEnabledRequestMode(request.mode))
     return absl::nullopt;
-
-  // TODO(https://crbug.com/1263483): Remove this.
-  if (request.is_external_request)
-    return PreflightRequiredReason::kExternalRequest;
 
   if (request.mode == mojom::RequestMode::kCorsWithForcedPreflight) {
     return PreflightRequiredReason::kCorsWithForcedPreflightMode;
@@ -89,7 +83,6 @@ base::Value NetLogCorsURLLoaderStartParams(const ResourceRequest& request) {
   dict.SetStringKey("url", request.url.possibly_invalid_spec());
   dict.SetStringKey("method", request.method);
   dict.SetStringKey("headers", request.headers.ToString());
-  dict.SetBoolKey("is_external_request", request.is_external_request);
   dict.SetBoolKey("is_revalidating", request.is_revalidating);
   std::string cors_preflight_policy;
   switch (request.cors_preflight_policy) {
@@ -111,10 +104,6 @@ base::Value NetLogPreflightRequiredParams(
   if (preflight_required_reason) {
     std::string preflight_required_reason_param;
     switch (preflight_required_reason.value()) {
-      // TODO(https://crbug.com/1263483): Remove this.
-      case PreflightRequiredReason::kExternalRequest:
-        preflight_required_reason_param = "external_request";
-        break;
       case PreflightRequiredReason::kPrivateNetworkAccess:
         preflight_required_reason_param = "private_network_access";
         break;

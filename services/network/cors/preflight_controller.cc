@@ -612,8 +612,6 @@ void PreflightController::PerformPreflightCheck(
                 ? request.trusted_params->isolation_info.network_isolation_key()
                 : net::NetworkIsolationKey();
   if (!RetrieveCacheFlags(request.load_flags) &&
-      // TODO(https://crbug.com/1263483): Remove this.
-      !request.is_external_request &&
       // TODO(https://crbug.com/1268312): Key the cache by target address space
       // and remove this guard.
       request.target_ip_address_space == mojom::IPAddressSpace::kUnknown &&
