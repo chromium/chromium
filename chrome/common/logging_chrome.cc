@@ -403,11 +403,14 @@ void CleanupChromeLogging() {
 }
 
 base::FilePath GetLogFileName(const base::CommandLine& command_line) {
-  std::string filename = command_line.GetSwitchValueASCII(switches::kLogFile);
-  if (filename.empty())
-    base::Environment::Create()->GetVar(env_vars::kLogFileName, &filename);
+  auto filename = command_line.GetSwitchValueNative(switches::kLogFile);
   if (!filename.empty())
-    return base::FilePath::FromUTF8Unsafe(filename);
+    return base::FilePath(filename);
+
+  std::string env_filename;
+  base::Environment::Create()->GetVar(env_vars::kLogFileName, &env_filename);
+  if (!env_filename.empty())
+    return base::FilePath::FromUTF8Unsafe(env_filename);
 
   const base::FilePath log_filename(FILE_PATH_LITERAL("chrome_debug.log"));
   base::FilePath log_path;
