@@ -95664,6 +95664,13 @@ Called by update_scheduler_enums.py.-->
   <int value="3" label="From non-ad script and non-ad frame"/>
 </enum>
 
+<enum name="WindowPredictorLaunchType">
+  <int value="0" label="Success"/>
+  <int value="1" label="FailedNoArcTaskHandler"/>
+  <int value="2" label="FailedAppPendingRestore"/>
+  <int value="3" label="FailedNoArcAppLaunchHandler"/>
+</enum>
+
 <enum name="WindowsDriveType">
   <int value="0" label="DRIVE_UNKNOWN"/>
   <int value="1" label="DRIVE_NO_ROOT_DIR"/>

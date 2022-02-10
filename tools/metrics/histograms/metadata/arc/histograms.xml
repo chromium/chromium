@@ -1630,6 +1630,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.WindowPredictorLaunch" enum="WindowPredictorLaunchType"
+    expires_after="2022-10-01">
+  <owner>sstan@google.com</owner>
+  <owner>arc-framework@google.com</owner>
+  <summary>
+    Number of ARC app ghost window launches by ArcWindowPredictor. Counted when
+    user manually launches ARC app when ARC is still in boot stage.
+  </summary>
+</histogram>
+
 <histogram name="ArcAuth.CheckinTime" units="ms" expires_after="M87">
 <!-- Deprecated, used to access legacy data -->
 
