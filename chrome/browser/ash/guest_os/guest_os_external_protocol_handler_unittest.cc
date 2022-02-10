@@ -93,8 +93,9 @@ class GuestOsExternalProtocolHandlerBorealisTest
   void SetUp() override {
     GuestOsExternalProtocolHandlerTest::SetUp();
 
-    allow_borealis_ = std::make_unique<borealis::ScopedAllowBorealis>(
-        profile(), /*also_enable=*/true);
+    borealis::AllowAndEnableBorealis(
+        profile(), scoped_feature_list_,
+        *profile()->ScopedCrosSettingsTestHelper());
     SetupBorealisApp(&borealis_scheme_, &borealis_url_);
   }
 
@@ -112,7 +113,7 @@ class GuestOsExternalProtocolHandlerBorealisTest
   std::string borealis_url_;
 
  private:
-  std::unique_ptr<borealis::ScopedAllowBorealis> allow_borealis_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(GuestOsExternalProtocolHandlerBorealisTest, AllowedURL) {

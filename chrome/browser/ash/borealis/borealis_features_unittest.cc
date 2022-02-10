@@ -7,14 +7,9 @@
 #include "ash/components/settings/cros_settings_names.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
-#include "chrome/browser/ash/borealis/testing/features.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,87 +17,58 @@ namespace borealis {
 namespace {
 
 class BorealisFeaturesTest : public testing::Test {
- public:
-  BorealisFeaturesTest()
-      : user_manager_(new ash::FakeChromeUserManager()),
-        scoped_user_manager_(base::WrapUnique(user_manager_)) {
-    features_.InitAndEnableFeature(features::kBorealis);
-    AccountId account_id =
-        AccountId::FromUserEmail(profile_.GetProfileUserName());
-    user_manager_->AddUserWithAffiliation(account_id, /*is_affiliated=*/false);
-    user_manager_->LoginUser(account_id);
-  }
-
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  base::test::ScopedFeatureList features_;
-  ash::FakeChromeUserManager* user_manager_;
-  user_manager::ScopedUserManager scoped_user_manager_;
 };
 
 TEST_F(BorealisFeaturesTest, DisallowedWhenFeatureIsDisabled) {
-  features_.Reset();
-  features_.InitAndDisableFeature(features::kBorealis);
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(features::kBorealis);
   EXPECT_FALSE(BorealisFeatures(&profile_).IsAllowed());
 }
 
 TEST_F(BorealisFeaturesTest, AllowedWhenFeatureIsEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kBorealis);
   EXPECT_TRUE(BorealisFeatures(&profile_).IsAllowed());
 }
 
-TEST_F(BorealisFeaturesTest, UnenrolledUserPolicyAllowedByDefault) {
-  EXPECT_TRUE(BorealisFeatures(&profile_).IsAllowed());
+TEST_F(BorealisFeaturesTest, CanDisableByUserPolicy) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kBorealis);
 
   profile_.GetPrefs()->SetBoolean(prefs::kBorealisAllowedForUser, false);
+
   EXPECT_FALSE(BorealisFeatures(&profile_).IsAllowed());
 }
 
-TEST_F(BorealisFeaturesTest, CanDisableByVmPolicy) {
-  EXPECT_TRUE(BorealisFeatures(&profile_).IsAllowed());
+TEST_F(BorealisFeaturesTest, CanDisableByDevicePolicy) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kBorealis);
 
   profile_.ScopedCrosSettingsTestHelper()
       ->ReplaceDeviceSettingsProviderWithStub();
-  profile_.ScopedCrosSettingsTestHelper()->GetStubbedProvider()->SetBoolean(
-      ash::kVirtualMachinesAllowed, false);
-
-  EXPECT_FALSE(BorealisFeatures(&profile_).IsAllowed());
-}
-
-TEST_F(BorealisFeaturesTest, EnrolledUserPolicyDisabledByDefault) {
-  profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
-  EXPECT_FALSE(BorealisFeatures(&profile_).IsAllowed());
-  profile_.GetTestingPrefService()->SetManagedPref(
-      prefs::kBorealisAllowedForUser, std::make_unique<base::Value>(true));
+  profile_.ScopedCrosSettingsTestHelper()->InstallAttributes()->SetCloudManaged(
+      "unittest.com", "device_id");
   EXPECT_TRUE(BorealisFeatures(&profile_).IsAllowed());
+
+  profile_.ScopedCrosSettingsTestHelper()->GetStubbedProvider()->SetBoolean(
+      ash::kBorealisAllowedForDevice, false);
+
+  EXPECT_FALSE(BorealisFeatures(&profile_).IsAllowed());
 }
 
 TEST_F(BorealisFeaturesTest, EnablednessDependsOnInstallation) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kBorealis);
+
   // The pref is false by default
   EXPECT_FALSE(BorealisFeatures(&profile_).IsEnabled());
 
   profile_.GetPrefs()->SetBoolean(prefs::kBorealisInstalledOnDevice, true);
 
   EXPECT_TRUE(BorealisFeatures(&profile_).IsEnabled());
-}
-
-// This is a meta-test that just makes sure our feature helper does what it
-// says on the tin.
-TEST(BorealisFeaturesHelperTest, CheckFeatureHelperWorks) {
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-  BorealisFeatures features(&profile);
-
-  {
-    ScopedAllowBorealis allow(&profile, /*also_enable=*/false);
-    EXPECT_TRUE(features.IsAllowed());
-    EXPECT_FALSE(features.IsEnabled());
-  }
-  {
-    ScopedAllowBorealis allow(&profile, /*also_enable=*/true);
-    EXPECT_TRUE(features.IsAllowed());
-    EXPECT_TRUE(features.IsEnabled());
-  }
 }
 
 }  // namespace

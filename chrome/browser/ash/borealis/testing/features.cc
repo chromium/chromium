@@ -4,38 +4,42 @@
 
 #include "chrome/browser/ash/borealis/testing/features.h"
 
+#include "ash/components/settings/cros_settings_names.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/prefs/pref_service.h"
 
 namespace borealis {
 
-void AllowBorealis(TestingProfile* profile,
-                   base::test::ScopedFeatureList* features,
-                   ash::FakeChromeUserManager* user_manager,
-                   bool also_enable) {
-  features->InitAndEnableFeature(features::kBorealis);
-  AccountId account_id =
-      AccountId::FromUserEmail(profile->GetProfileUserName());
-  user_manager->AddUserWithAffiliation(account_id, /*is_affiliated=*/false);
-  user_manager->LoginUser(account_id);
+void AllowAndEnableBorealis(Profile* profile,
+                            base::test::ScopedFeatureList& feature_list,
+                            ash::ScopedCrosSettingsTestHelper& cros_settings,
+                            bool should_allow /*=true*/,
+                            bool should_enable /*=true*/) {
+  AllowBorealis(profile, feature_list, cros_settings, should_allow);
+  EnableBorealis(profile, should_enable);
+}
+
+void AllowBorealis(Profile* profile,
+                   base::test::ScopedFeatureList& feature_list,
+                   ash::ScopedCrosSettingsTestHelper& cros_settings,
+                   bool should_allow /*=true*/) {
+  if (should_allow) {
+    feature_list.InitWithFeatures({features::kBorealis}, {});
+  } else {
+    feature_list.InitWithFeatures({}, {features::kBorealis});
+  }
+
+  cros_settings.SetBoolean(ash::kBorealisAllowedForDevice, should_allow);
+
+  profile->GetPrefs()->SetBoolean(prefs::kBorealisAllowedForUser, should_allow);
+}
+
+void EnableBorealis(Profile* profile, bool should_enable /*=true*/) {
   profile->GetPrefs()->SetBoolean(prefs::kBorealisInstalledOnDevice,
-                                  also_enable);
-}
-
-ScopedAllowBorealis::ScopedAllowBorealis(TestingProfile* profile,
-                                         bool also_enable)
-    : profile_(profile),
-      user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
-  AllowBorealis(profile_, &features_,
-                static_cast<ash::FakeChromeUserManager*>(
-                    user_manager::UserManager::Get()),
-                also_enable);
-}
-
-ScopedAllowBorealis::~ScopedAllowBorealis() {
-  profile_->GetPrefs()->SetBoolean(prefs::kBorealisInstalledOnDevice, false);
+                                  should_enable);
 }
 
 }  // namespace borealis
