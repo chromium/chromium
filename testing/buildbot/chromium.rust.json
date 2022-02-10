@@ -62,6 +62,70 @@
       }
     ]
   },
+  "linux-rust-intree-x64-rel": {
+    "additional_compile_targets": [
+      "mojo_rust",
+      "mojo_rust_extra_tests",
+      "mojo_rust_unittests",
+      "rust_build_tests"
+    ],
+    "gtest_tests": [
+      {
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "base_unittests",
+        "test_id_prefix": "ninja://base:base_unittests/"
+      },
+      {
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "test_cpp_including_rust_unittests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "test_cpp_including_rust_unittests",
+        "test_id_prefix": "ninja://build/rust/tests/test_cpp_including_rust:test_cpp_including_rust_unittests/"
+      },
+      {
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "test_serde_jsonrc",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "test_serde_jsonrc",
+        "test_id_prefix": "ninja://build/rust/tests/test_serde_jsonrc:test_serde_jsonrc/"
+      }
+    ],
+    "isolated_scripts": [
+      {
+        "isolate_name": "build_rust_tests",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "build_rust_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "build_rust_tests",
+        "test_id_prefix": "ninja://build/rust/tests:build_rust_tests/"
+      }
+    ]
+  },
   "linux-rust-x64-rel": {
     "additional_compile_targets": [
       "mojo_rust",

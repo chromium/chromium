@@ -27,5 +27,9 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux-rust-intree-x64-rel",
+)
+
+try_.builder(
     name = "android-rust-arm-rel",
 )

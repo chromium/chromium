@@ -1161,6 +1161,7 @@
 
     'tryserver.chromium.rust': {
       'linux-rust-x64-rel': 'release_rust_linux_x64',
+      'linux-rust-intree-x64-rel': 'release_rust_intree_linux_x64',
       'android-rust-arm-rel': 'release_rust_android_arm',
     },
 
@@ -3075,6 +3076,10 @@
       'release_trybot_minimal_symbols', 'enable_rust', 'x64',
     ],
 
+    'release_rust_intree_linux_x64': [
+      'release_trybot_minimal_symbols', 'enable_rust', 'use_chromium_rust_toolchain', 'x64',
+    ],
+
     'release_trybot_minimal_symbols': [
       'release_trybot_minimal_symbols',
     ],
@@ -4039,6 +4044,10 @@
 
     'ubsan_vptr': {
       'gn_args': 'is_ubsan_vptr=true',
+    },
+
+    'use_chromium_rust_toolchain': {
+      'gn_args': 'use_chromium_rust_toolchain=true',
     },
 
     'use_clang_coverage': {

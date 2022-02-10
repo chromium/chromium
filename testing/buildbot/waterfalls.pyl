@@ -5369,6 +5369,18 @@
           # TODO(https://crbug.com/1260120): Cover `rust_native_tests` here.
         },
       },
+      'linux-rust-intree-x64-rel' : {
+        'additional_compile_targets': [
+          'mojo_rust',
+          'mojo_rust_extra_tests',
+          'mojo_rust_unittests',
+          'rust_build_tests',
+        ],
+        'test_suites': {
+          'gtest_tests': 'rust_gtests',
+          'isolated_scripts': 'rust_native_tests',
+        },
+      },
       'linux-rust-x64-rel' : {
         'additional_compile_targets': [
           'mojo_rust',
@@ -5381,6 +5393,7 @@
           'isolated_scripts': 'rust_native_tests',
         },
       },
+
     },
   },
   {
