@@ -540,6 +540,14 @@ class CONTENT_EXPORT AuctionRunner {
     // All errors reported by worklets thus far.
     std::vector<std::string> errors_;
 
+    // This is set to true if the scoring phase ran and was able to score all
+    // bids that were made (of which there may have been none). This is used to
+    // gate accessors that should return nothing if the entire auction failed
+    // (e.g., don't want to report bids as having "lost" an auction if the
+    // seller failed to load, since neither the bids nor the bidders were the
+    // problem).
+    bool all_bids_scored_ = false;
+
     base::WeakPtrFactory<Auction> weak_ptr_factory_{this};
   };
 

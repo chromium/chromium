@@ -247,12 +247,8 @@ void AuctionRunner::Auction::ClosePipes() {
 
 AuctionRunner::InterestGroupSet
 AuctionRunner::Auction::GetInterestGroupsThatBid() const {
-  // If this auction has completed and the final result was anything other than
-  // kAllBidsRejected, all bids were thrown away.
-  if (final_auction_result_.has_value() &&
-      *final_auction_result_ != AuctionResult::kAllBidsRejected) {
+  if (!all_bids_scored_)
     return InterestGroupSet();
-  }
 
   InterestGroupSet out;
   for (const BidState& bid_state : bid_states_) {
@@ -268,14 +264,8 @@ AuctionRunner::Auction::GetInterestGroupsThatBid() const {
 void AuctionRunner::Auction::TakeDebugReportUrls(
     std::vector<GURL>& debug_win_report_urls,
     std::vector<GURL>& debug_loss_report_urls) {
-  // Should only send loss report if the auction succeeded, or the seller
-  // rejected all bids. `final_auction_result_` should only be null the in the
-  // case of cancellation.
-  if (!final_auction_result_ ||
-      (*final_auction_result_ != AuctionResult::kSuccess &&
-       *final_auction_result_ != AuctionResult::kAllBidsRejected)) {
+  if (!all_bids_scored_)
     return;
-  }
 
   BidState* top_bidder = nullptr;
   if (top_bid_) {
@@ -314,7 +304,8 @@ std::vector<std::string> AuctionRunner::Auction::TakeErrors() {
 }
 
 AuctionRunner::ScoredBid* AuctionRunner::Auction::top_bid() {
-  DCHECK_EQ(*final_auction_result_, AuctionResult::kSuccess);
+  DCHECK(all_bids_scored_);
+  DCHECK(top_bid_);
   return top_bid_.get();
 }
 
@@ -651,6 +642,8 @@ void AuctionRunner::Auction::MaybeCompleteBiddingAndScoringPhase() {
   // Since all bids have been scored, they also should have all been sent to the
   // SellerWorklet by this point.
   DCHECK_EQ(0, num_bids_not_sent_to_seller_worklet_);
+
+  all_bids_scored_ = true;
 
   // If there's no winning bid, fail with kAllBidsRejected if there were any
   // bids. Otherwise, fail with kNoBids.
