@@ -4751,6 +4751,28 @@
             ]
         }
     ],
+    "PartitionAllocBackupRefPtr": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "brp-mode": "enabled",
+                        "enabled-processes": "non-renderer"
+                    },
+                    "enable_features": [
+                        "PartitionAllocBackupRefPtr"
+                    ]
+                }
+            ]
+        }
+    ],
     "PartitionAllocLargeThreadCacheSizeAndroid": [
         {
             "platforms": [
