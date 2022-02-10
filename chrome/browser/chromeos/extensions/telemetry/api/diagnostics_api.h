@@ -263,6 +263,25 @@ class OsDiagnosticsRunMemoryRoutineFunction
   void RunIfAllowed() override;
 };
 
+class OsDiagnosticsRunSmartctlCheckRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runSmartctlCheckRoutine",
+                             OS_DIAGNOSTICS_RUNSMARTCTLCHECKROUTINE)
+
+  OsDiagnosticsRunSmartctlCheckRoutineFunction();
+  OsDiagnosticsRunSmartctlCheckRoutineFunction(
+      const OsDiagnosticsRunSmartctlCheckRoutineFunction&) = delete;
+  OsDiagnosticsRunSmartctlCheckRoutineFunction& operator=(
+      const OsDiagnosticsRunSmartctlCheckRoutineFunction&) = delete;
+
+ private:
+  ~OsDiagnosticsRunSmartctlCheckRoutineFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_TELEMETRY_API_DIAGNOSTICS_API_H_

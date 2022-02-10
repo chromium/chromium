@@ -56,6 +56,9 @@ bool ConvertMojoRoutine(MojoRoutineType in, RoutineType* out) {
     case MojoRoutineType::kMemory:
       *out = RoutineType::ROUTINE_TYPE_MEMORY;
       return true;
+    case MojoRoutineType::kSmartctlCheck:
+      *out = RoutineType::ROUTINE_TYPE_SMARTCTL_CHECK;
+      return true;
     default:
       return false;
   }

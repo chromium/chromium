@@ -77,15 +77,15 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kMemory, &out));
     EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_MEMORY);
   }
+  {
+    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
+    EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kSmartctlCheck, &out));
+    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_SMARTCTL_CHECK);
+  }
 
   // Tests for unsupported routines.
   // Note: If an unsupported routine becomes supported, the respective test
   // should be changed.
-  {
-    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
-    EXPECT_FALSE(ConvertMojoRoutine(MojoRoutineType::kSmartctlCheck, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_NONE);
-  }
   {
     RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
     EXPECT_FALSE(ConvertMojoRoutine(MojoRoutineType::kAcPower, &out));

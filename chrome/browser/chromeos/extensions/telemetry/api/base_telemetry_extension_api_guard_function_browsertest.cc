@@ -193,6 +193,15 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function runSmartctlCheckRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runSmartctlCheckRoutine(),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.runSmartctlCheckRoutine. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
     ];
 
     chrome.test.runTests([

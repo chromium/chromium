@@ -17,7 +17,8 @@ namespace os.diagnostics {
     cpu_floating_point_accuracy,
     cpu_prime_search,
     cpu_stress,
-    memory
+    memory,
+    smartctl_check
   };
 
   enum RoutineStatus {
@@ -135,5 +136,8 @@ namespace os.diagnostics {
 
     // Starts memory routine.
     [supportsPromises] static void runMemoryRoutine(RunRoutineCallback callback);
+
+    // Starts SmartctlCheck routine.
+    [supportsPromises] static void runSmartctlCheckRoutine(RunRoutineCallback callback);
   };
 };

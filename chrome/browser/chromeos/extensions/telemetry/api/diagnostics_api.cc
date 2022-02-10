@@ -321,4 +321,18 @@ void OsDiagnosticsRunMemoryRoutineFunction::RunIfAllowed() {
   remote_diagnostics_service_->RunMemoryRoutine(std::move(cb));
 }
 
+// OsDiagnosticsRunSmartctlCheckRoutineFunction --------------------------------
+
+OsDiagnosticsRunSmartctlCheckRoutineFunction::
+    OsDiagnosticsRunSmartctlCheckRoutineFunction() = default;
+OsDiagnosticsRunSmartctlCheckRoutineFunction::
+    ~OsDiagnosticsRunSmartctlCheckRoutineFunction() = default;
+
+void OsDiagnosticsRunSmartctlCheckRoutineFunction::RunIfAllowed() {
+  auto cb =
+      base::BindOnce(&DiagnosticsApiRunRoutineFunctionBase::OnResult, this);
+
+  remote_diagnostics_service_->RunSmartctlCheckRoutine(std::move(cb));
+}
+
 }  // namespace chromeos
