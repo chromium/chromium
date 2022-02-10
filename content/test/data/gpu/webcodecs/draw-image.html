@@ -33,6 +33,7 @@ CanvasRenderingContext2D.drawImage().
               TEST.log("Skip render result validation");
             break;
           }
+          case 'arraybuffer':
           case 'offscreen':
           case 'capture': {
             checkFourColorsFrame(ctx, cnv.width, cnv.height, 5);

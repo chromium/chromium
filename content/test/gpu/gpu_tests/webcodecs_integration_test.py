@@ -15,7 +15,9 @@ data_path = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'media', 'test',
                          'data')
 four_colors_img_path = os.path.join(data_path, 'four-colors.y4m')
 
-frame_sources = ['camera', 'capture', 'offscreen', 'hw_decoder', 'sw_decoder']
+frame_sources = [
+    'camera', 'capture', 'offscreen', 'arraybuffer', 'hw_decoder', 'sw_decoder'
+]
 codecs = ['avc1.42001E', 'vp8', 'vp09.00.10.08', 'av01.0.04M.08']
 accelerations = ['prefer-hardware', 'prefer-software']
 

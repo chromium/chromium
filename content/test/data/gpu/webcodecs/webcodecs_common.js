@@ -216,6 +216,31 @@ class StreamSource extends FrameSource {
   }
 }
 
+class ArrayBufferSource extends FrameSource {
+  constructor(width, height) {
+    super();
+    this.inner_src = new CanvasSource(width, height);
+    this.width = width;
+    this.height = height;
+  }
+
+  async getNextFrame() {
+    let prototype_frame = await this.inner_src.getNextFrame();
+    let size = prototype_frame.allocationSize();
+    let buf = new ArrayBuffer(size);
+    let layout = await prototype_frame.copyTo(buf);
+    let init = {
+        format: prototype_frame.format,
+        timestamp: prototype_frame.timestamp,
+        codedWidth: prototype_frame.codedWidth,
+        codedHeight: prototype_frame.codedHeight,
+        colorSpace: prototype_frame.colorSpace,
+        layout: layout
+    };
+    return new VideoFrame(buf, init);
+  }
+}
+
 // Source of video frames coming from either hardware of software decoder.
 class DecoderSource extends FrameSource {
   constructor(decoderConfig, chunks) {
@@ -381,6 +406,9 @@ async function createFrameSource(type, width, height) {
     }
     case 'sw_decoder': {
       return prepareDecoderSource(40, width, height, 'vp8', 'prefer-software');
+    }
+    case 'arraybuffer': {
+      return new ArrayBufferSource(width, height);
     }
   }
 }
