@@ -6,8 +6,12 @@
 #define NET_SOCKET_TRANSPORT_CONNECT_JOB_H_
 
 #include <memory>
+#include <set>
+#include <string>
+#include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -16,11 +20,13 @@
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/host_resolver.h"
+#include "net/dns/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/connection_attempts.h"
 #include "net/socket/socket_tag.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
 
@@ -41,11 +47,14 @@ class NET_EXPORT_PRIVATE TransportSocketParams
   // |host_resolution_callback| will be invoked after the the hostname is
   // resolved. |network_isolation_key| is passed to the HostResolver to prevent
   // cross-NIK leaks. If |host_resolution_callback| does not return OK, then the
-  // connection will be aborted with that value.
+  // connection will be aborted with that value. |supported_alpns| specifies
+  // ALPN protocols for selecting HTTPS/SVCB records. If empty, addresses from
+  // HTTPS/SVCB records will be ignored and only A/AAAA will be used.
   TransportSocketParams(Endpoint destination,
                         NetworkIsolationKey network_isolation_key,
                         SecureDnsPolicy secure_dns_policy,
-                        OnHostResolutionCallback host_resolution_callback);
+                        OnHostResolutionCallback host_resolution_callback,
+                        base::flat_set<std::string> supported_alpns);
 
   TransportSocketParams(const TransportSocketParams&) = delete;
   TransportSocketParams& operator=(const TransportSocketParams&) = delete;
@@ -58,6 +67,9 @@ class NET_EXPORT_PRIVATE TransportSocketParams
   const OnHostResolutionCallback& host_resolution_callback() const {
     return host_resolution_callback_;
   }
+  const base::flat_set<std::string>& supported_alpns() const {
+    return supported_alpns_;
+  }
 
  private:
   friend class base::RefCounted<TransportSocketParams>;
@@ -67,6 +79,7 @@ class NET_EXPORT_PRIVATE TransportSocketParams
   const NetworkIsolationKey network_isolation_key_;
   const SecureDnsPolicy secure_dns_policy_;
   const OnHostResolutionCallback host_resolution_callback_;
+  const base::flat_set<std::string> supported_alpns_;
 };
 
 // TransportConnectJob handles the host resolution necessary for socket creation
@@ -157,6 +170,7 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   enum State {
     STATE_RESOLVE_HOST,
     STATE_RESOLVE_HOST_COMPLETE,
+    STATE_RESOLVE_HOST_CALLBACK_COMPLETE,
     STATE_TRANSPORT_CONNECT,
     STATE_TRANSPORT_CONNECT_COMPLETE,
     STATE_FALLBACK_CONNECT_COMPLETE,
@@ -168,6 +182,7 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
 
   int DoResolveHost();
   int DoResolveHostComplete(int result);
+  int DoResolveHostCallbackComplete();
   int DoTransportConnect();
   int DoTransportConnectComplete(bool is_fallback, int result);
 
@@ -184,8 +199,22 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   // resolver request.
   void ChangePriorityInternal(RequestPriority priority) override;
 
+  // Returns whether `result` is usable for this connection.
+  bool IsEndpointResultUsable(const HostResolverEndpointResult& result) const;
+
+  // Returns an `AddressList` containing the IP endpoints for the current route.
+  // May only be called if the current route is usable for this connection.
+  AddressList GetCurrentAddressList() const;
+
+  // Appends connection attempts from `socket` to `connection_attempts_`. Should
+  // be called when discarding a failed socket.
+  void SaveConnectionAttempts(const StreamSocket& socket);
+
   scoped_refptr<TransportSocketParams> params_;
   std::unique_ptr<HostResolver::ResolveHostRequest> request_;
+  std::vector<HostResolverEndpointResult> endpoint_results_;
+  size_t current_endpoint_result_ = 0;
+  std::set<std::string> dns_aliases_;
 
   State next_state_;
 

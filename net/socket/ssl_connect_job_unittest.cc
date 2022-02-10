@@ -98,12 +98,14 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
             url::SchemeHostPort(url::kHttpsScheme, "host", 443),
             NetworkIsolationKey(),
             SecureDnsPolicy::kAllow,
-            OnHostResolutionCallback())),
+            OnHostResolutionCallback(),
+            /*supported_alpns=*/{"h2", "http/1.1"})),
         proxy_transport_socket_params_(
             new TransportSocketParams(HostPortPair("proxy", 443),
                                       NetworkIsolationKey(),
                                       SecureDnsPolicy::kAllow,
-                                      OnHostResolutionCallback())),
+                                      OnHostResolutionCallback(),
+                                      /*supported_alpns=*/{})),
         socks_socket_params_(
             new SOCKSSocketParams(proxy_transport_socket_params_,
                                   true,
@@ -435,7 +437,8 @@ TEST_F(SSLConnectJobTest, SecureDnsPolicy) {
         base::MakeRefCounted<TransportSocketParams>(
             url::SchemeHostPort(url::kHttpsScheme, "host", 443),
             NetworkIsolationKey(), secure_dns_policy,
-            OnHostResolutionCallback());
+            OnHostResolutionCallback(),
+            /*supported_alpns=*/base::flat_set<std::string>{"h2", "http/1.1"});
     auto common_connect_job_params = session_->CreateCommonConnectJobParams();
     std::unique_ptr<ConnectJob> ssl_connect_job =
         std::make_unique<SSLConnectJob>(DEFAULT_PRIORITY, SocketTag(),

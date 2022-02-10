@@ -1197,7 +1197,8 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
   scoped_refptr<TransportSocketParams> params =
       base::MakeRefCounted<TransportSocketParams>(
           HostPortPair(kHostName, 80), NetworkIsolationKey(),
-          SecureDnsPolicy::kAllow, OnHostResolutionCallback());
+          SecureDnsPolicy::kAllow, OnHostResolutionCallback(),
+          /*supported_alpns=*/base::flat_set<std::string>());
 
   WebSocketTransportConnectJob transport_connect_job(
       DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_, params,
@@ -1229,7 +1230,8 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
   scoped_refptr<TransportSocketParams> params =
       base::MakeRefCounted<TransportSocketParams>(
           HostPortPair(kHostName, 80), NetworkIsolationKey(),
-          SecureDnsPolicy::kAllow, OnHostResolutionCallback());
+          SecureDnsPolicy::kAllow, OnHostResolutionCallback(),
+          /*supported_alpns=*/base::flat_set<std::string>());
 
   WebSocketTransportConnectJob transport_connect_job(
       DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_, params,

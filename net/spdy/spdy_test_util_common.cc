@@ -483,22 +483,24 @@ base::WeakPtr<SpdySession> CreateSpdySessionHelper(
     bool enable_ip_based_pooling) {
   EXPECT_FALSE(http_session->spdy_session_pool()->FindAvailableSession(
       key, enable_ip_based_pooling,
-      /* is_websocket = */ false, NetLogWithSource()));
+      /*is_websocket=*/false, NetLogWithSource()));
 
   auto connection = std::make_unique<ClientSocketHandle>();
   TestCompletionCallback callback;
 
+  auto ssl_config = std::make_unique<SSLConfig>();
+  ssl_config->alpn_protos = http_session->GetAlpnProtos();
   scoped_refptr<ClientSocketPool::SocketParams> socket_params =
       base::MakeRefCounted<ClientSocketPool::SocketParams>(
-          std::make_unique<SSLConfig>() /* ssl_config_for_origin */,
-          nullptr /* ssl_config_for_proxy */);
+          /*ssl_config_for_origin=*/std::move(ssl_config),
+          /*ssl_config_for_proxy=*/nullptr);
   int rv = connection->Init(
       ClientSocketPool::GroupId(
           url::SchemeHostPort(url::kHttpsScheme,
                               key.host_port_pair().HostForURL(),
                               key.host_port_pair().port()),
           key.privacy_mode(), NetworkIsolationKey(), SecureDnsPolicy::kAllow),
-      socket_params, absl::nullopt /* proxy_annotation_tag */, MEDIUM,
+      socket_params, /*proxy_annotation_tag=*/absl::nullopt, MEDIUM,
       key.socket_tag(), ClientSocketPool::RespectLimits::ENABLED,
       callback.callback(), ClientSocketPool::ProxyAuthCallback(),
       http_session->GetSocketPool(HttpNetworkSession::NORMAL_SOCKET_POOL,

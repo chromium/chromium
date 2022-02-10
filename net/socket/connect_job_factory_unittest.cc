@@ -19,6 +19,7 @@
 #include "net/log/net_log_with_source.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/connect_job_test_util.h"
+#include "net/socket/next_proto.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/socks_connect_job.h"
 #include "net/socket/ssl_connect_job.h"
@@ -271,6 +272,7 @@ TEST_F(ConnectJobFactoryTest, CreateConnectJobWithoutScheme) {
 TEST_F(ConnectJobFactoryTest, CreateHttpsConnectJob) {
   const url::SchemeHostPort kEndpoint(url::kHttpsScheme, "test", 84);
   SSLConfig ssl_config;
+  ssl_config.alpn_protos = {kProtoHTTP2, kProtoHTTP11};
 
   std::unique_ptr<ConnectJob> job = factory_->CreateConnectJob(
       kEndpoint, ProxyServer::Direct(),
@@ -293,6 +295,8 @@ TEST_F(ConnectJobFactoryTest, CreateHttpsConnectJob) {
       *params.GetDirectConnectionParams();
   EXPECT_THAT(transport_params.destination(),
               testing::VariantWith<url::SchemeHostPort>(kEndpoint));
+  EXPECT_THAT(transport_params.supported_alpns(),
+              testing::UnorderedElementsAre("h2", "http/1.1"));
 }
 
 TEST_F(ConnectJobFactoryTest, CreateHttpsConnectJobWithoutScheme) {

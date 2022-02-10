@@ -38,6 +38,9 @@ AddressList::AddressList(const IPEndPoint& endpoint,
   push_back(endpoint);
 }
 
+AddressList::AddressList(std::vector<IPEndPoint> endpoints)
+    : endpoints_(std::move(endpoints)) {}
+
 // static
 AddressList AddressList::CreateFromIPAddress(const IPAddress& address,
                                              uint16_t port) {

@@ -1100,11 +1100,13 @@ TEST_F(TransportClientSocketPoolTest, SSLCertError) {
 
   const url::SchemeHostPort kEndpoint(url::kHttpsScheme, "ssl.server.test",
                                       443);
+  auto ssl_config_for_origin = std::make_unique<SSLConfig>();
+  ssl_config_for_origin->alpn_protos = {kProtoHTTP2, kProtoHTTP11};
 
   scoped_refptr<ClientSocketPool::SocketParams> socket_params =
       base::MakeRefCounted<ClientSocketPool::SocketParams>(
-          std::make_unique<SSLConfig>() /* ssl_config_for_origin */,
-          nullptr /* ssl_config_for_proxy */);
+          std::move(ssl_config_for_origin),
+          /*ssl_config_for_proxy=*/nullptr);
 
   ClientSocketHandle handle;
   TestCompletionCallback callback;
@@ -1734,13 +1736,15 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySsl) {
       url::SchemeHostPort(url::kHttpsScheme, kHost, 443),
       PrivacyMode::PRIVACY_MODE_DISABLED, kNetworkIsolationKey,
       SecureDnsPolicy::kAllow);
+  auto ssl_config_for_origin = std::make_unique<SSLConfig>();
+  ssl_config_for_origin->alpn_protos = {kProtoHTTP2, kProtoHTTP11};
   ClientSocketHandle handle;
   TestCompletionCallback callback;
   EXPECT_THAT(
       handle.Init(group_id,
                   base::MakeRefCounted<ClientSocketPool::SocketParams>(
-                      std::make_unique<SSLConfig>() /* ssl_config_for_origin */,
-                      nullptr /* ssl_config_for_proxy */),
+                      std::move(ssl_config_for_origin),
+                      /*ssl_config_for_proxy=*/nullptr),
                   TRAFFIC_ANNOTATION_FOR_TESTS, LOW, SocketTag(),
                   ClientSocketPool::RespectLimits::ENABLED, callback.callback(),
                   ClientSocketPool::ProxyAuthCallback(), pool_.get(),
@@ -2308,10 +2312,12 @@ TEST_F(TransportClientSocketPoolTest, TagSSLDirect) {
       PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
       SecureDnsPolicy::kAllow);
 
+  auto ssl_config_for_origin = std::make_unique<SSLConfig>();
+  ssl_config_for_origin->alpn_protos = {kProtoHTTP2, kProtoHTTP11};
   scoped_refptr<ClientSocketPool::SocketParams> socket_params =
       base::MakeRefCounted<ClientSocketPool::SocketParams>(
-          std::make_unique<SSLConfig>() /* ssl_config_for_origin */,
-          nullptr /* ssl_config_for_proxy */);
+          std::move(ssl_config_for_origin),
+          /*ssl_config_for_proxy=*/nullptr);
 
   // Test socket is tagged before connected.
   uint64_t old_traffic = GetTaggedBytes(tag_val1);
@@ -2378,10 +2384,12 @@ TEST_F(TransportClientSocketPoolTest, TagSSLDirectTwoSockets) {
       url::SchemeHostPort(test_server.base_url()),
       PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
       SecureDnsPolicy::kAllow);
+  auto ssl_config_for_origin = std::make_unique<SSLConfig>();
+  ssl_config_for_origin->alpn_protos = {kProtoHTTP2, kProtoHTTP11};
   scoped_refptr<ClientSocketPool::SocketParams> socket_params =
       base::MakeRefCounted<ClientSocketPool::SocketParams>(
-          std::make_unique<SSLConfig>() /* ssl_config_for_origin */,
-          nullptr /* ssl_config_for_proxy */);
+          std::move(ssl_config_for_origin),
+          /*ssl_config_for_proxy=*/nullptr);
 
   // Test connect jobs that are orphaned and then adopted, appropriately apply
   // new tag. Request socket with |tag1|.
@@ -2442,10 +2450,12 @@ TEST_F(TransportClientSocketPoolTest, TagSSLDirectTwoSocketsFullPool) {
       url::SchemeHostPort(test_server.base_url()),
       PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
       SecureDnsPolicy::kAllow);
+  auto ssl_config_for_origin = std::make_unique<SSLConfig>();
+  ssl_config_for_origin->alpn_protos = {kProtoHTTP2, kProtoHTTP11};
   scoped_refptr<ClientSocketPool::SocketParams> socket_params =
       base::MakeRefCounted<ClientSocketPool::SocketParams>(
-          std::make_unique<SSLConfig>() /* ssl_config_for_origin */,
-          nullptr /* ssl_config_for_proxy */);
+          std::move(ssl_config_for_origin),
+          /*ssl_config_for_proxy=*/nullptr);
 
   // Test that sockets paused by a full underlying socket pool are properly
   // connected and tagged when underlying pool is freed up.
@@ -2596,10 +2606,12 @@ TEST_F(TransportClientSocketPoolTest, TagHttpProxyTunnel) {
       kDestination, PrivacyMode::PRIVACY_MODE_DISABLED, NetworkIsolationKey(),
       SecureDnsPolicy::kAllow);
 
+  auto ssl_config_for_origin = std::make_unique<SSLConfig>();
+  ssl_config_for_origin->alpn_protos = {kProtoHTTP2, kProtoHTTP11};
   scoped_refptr<ClientSocketPool::SocketParams> socket_params =
       base::MakeRefCounted<ClientSocketPool::SocketParams>(
-          std::make_unique<SSLConfig>() /* ssl_config_for_origin */,
-          nullptr /* ssl_config_for_proxy */);
+          std::move(ssl_config_for_origin),
+          /*ssl_config_for_proxy=*/nullptr);
 
   // Verify requested socket is tagged properly.
   ClientSocketHandle handle;

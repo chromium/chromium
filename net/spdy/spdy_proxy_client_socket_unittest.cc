@@ -100,7 +100,8 @@ base::WeakPtr<SpdySession> CreateSpdyProxySession(
 
   auto transport_params = base::MakeRefCounted<TransportSocketParams>(
       destination, NetworkIsolationKey(), SecureDnsPolicy::kAllow,
-      OnHostResolutionCallback());
+      OnHostResolutionCallback(),
+      /*supported_alpns=*/base::flat_set<std::string>{"h2", "http/1.1"});
 
   SSLConfig ssl_config;
   auto ssl_params = base::MakeRefCounted<SSLSocketParams>(

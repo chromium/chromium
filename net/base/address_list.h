@@ -34,11 +34,14 @@ class NET_EXPORT AddressList {
   AddressList& operator=(AddressList&&);
   ~AddressList();
 
-  // Creates an address list for a single IP literal.
+  // Creates an address list for a single IP endpoint.
   explicit AddressList(const IPEndPoint& endpoint);
 
-  // Creates an address list for a single IP literal and a list of DNS aliases.
+  // Creates an address list for a single IP endpoint and a list of DNS aliases.
   AddressList(const IPEndPoint& endpoint, std::vector<std::string> aliases);
+
+  // Creates an address list for a list of IP endpoints.
+  explicit AddressList(std::vector<IPEndPoint> endpoints);
 
   static AddressList CreateFromIPAddress(const IPAddress& address,
                                          uint16_t port);
