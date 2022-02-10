@@ -164,9 +164,6 @@ void IntentPickerTabHelper::DidFinishNavigation(
   // or bubble if there are some apps available. We only want to check this if
   // the navigation happens in the primary main frame, and the navigation is not
   // the same document with same URL.
-  // TODO(crbug.com/826982): Check is not error page here. Adding this check
-  // will break the browser test, given this is a refactor CL, will add check in
-  // follow up CL.
   if (!web_contents()) {
     return;
   }
@@ -175,9 +172,10 @@ void IntentPickerTabHelper::DidFinishNavigation(
       (!navigation_handle->IsSameDocument() ||
        navigation_handle->GetURL() !=
            navigation_handle->GetPreviousMainFrameURL())) {
-    bool should_show_icon = navigation_handle->GetURL().SchemeIsHTTPOrHTTPS()
-                                ? apps::MaybeShowIntentPicker(navigation_handle)
-                                : false;
+    bool is_valid_page = navigation_handle->GetURL().SchemeIsHTTPOrHTTPS() &&
+                         !navigation_handle->IsErrorPage();
+    bool should_show_icon =
+        is_valid_page && apps::MaybeShowIntentPicker(navigation_handle);
     IntentPickerTabHelper::SetShouldShowIcon(web_contents(), should_show_icon);
   }
 }
