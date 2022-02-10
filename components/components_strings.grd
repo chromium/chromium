@@ -339,7 +339,7 @@
       <part file="version_ui_strings.grdp" />
       <part file="webapps_strings.grdp" />
 
-      <if expr="not is_android and not is_ios">
+      <if expr="not is_ios">
         <part file="management_strings.grdp" />
       </if>
       <if expr="not is_android and not is_ios">

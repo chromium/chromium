@@ -133,6 +133,12 @@
     <dimen name="cm_padding">32dp</dimen>
     <dimen name="cm_logo_width">40dp</dimen>
     <dimen name="cm_logo_height">36dp</dimen>
+    <dimen name="cm_title_margin_top">30dp</dimen>
+    <dimen name="cm_description_margin_top">24dp</dimen>
+    <dimen name="cm_learn_more_margin_top">22dp</dimen>
+    <dimen name="cm_browser_margin_top">42dp</dimen>
+    <dimen name="cm_browser_item_margin_top">20dp</dimen>
+    <dimen name="cm_browser_item_drawable_padding">18dp</dimen>
 
     <!-- Account Signin dimensions -->
     <!-- The Account Signin page appears in the First Run Experience (amongst other places), so uses

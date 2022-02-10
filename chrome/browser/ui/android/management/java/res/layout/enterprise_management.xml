@@ -6,44 +6,89 @@
 <org.chromium.chrome.browser.management.ManagementView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="@dimen/cm_padding">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@macro/default_bg_color">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@macro/default_bg_color"
-        app:layout_constraintWidth_max="@dimen/cm_max_width"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/cm_padding">
 
-        <ImageView
-            android:layout_width="@dimen/cm_logo_width"
-            android:layout_height="@dimen/cm_logo_height"
-            android:src="@drawable/enterprise_icon"
-            android:contentDescription="@string/close" />
-
-        <TextView
-            android:id="@+id/title_text"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:textAppearance="@style/TextAppearance.Headline.Primary" />
+            android:orientation="vertical"
+            app:layout_constraintWidth_max="@dimen/cm_max_width"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-        <TextView
-            android:id="@+id/description_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="@string/management_browser_notice"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+            <ImageView
+                android:layout_width="@dimen/cm_logo_width"
+                android:layout_height="@dimen/cm_logo_height"
+                android:src="@drawable/enterprise_icon"
+                android:contentDescription="@string/close" />
 
-        <TextView
-            android:id="@+id/learn_more"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="22dp"
-            android:textAppearance="@style/TextAppearance.TextMedium.Link" />
+            <TextView
+                android:id="@+id/title_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/cm_title_margin_top"
+                android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/description_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/cm_description_margin_top"
+                android:text="@string/management_browser_notice"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+            <TextView
+                android:id="@+id/learn_more"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/cm_learn_more_margin_top"
+                android:textAppearance="@style/TextAppearance.TextMedium.Link" />
+
+            <TextView
+                android:id="@+id/browser_reporting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/cm_browser_margin_top"
+                android:text="@string/management_browser_reporting"
+                android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+
+            <TextView
+                android:id="@+id/browser_reporting_explanation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/management_browser_reporting_explanation"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+            <TextView
+                android:id="@+id/extension_report_username"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_marginTop="@dimen/cm_browser_item_margin_top"
+                android:drawablePadding="@dimen/cm_browser_item_drawable_padding"
+                android:text="@string/management_extension_report_username"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                app:drawableLeftCompat="@drawable/enterprise_user_circle" />
+
+            <TextView
+                android:id="@+id/extension_report_version"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:layout_marginTop="@dimen/cm_browser_item_margin_top"
+                android:drawablePadding="@dimen/cm_browser_item_drawable_padding"
+                android:text="@string/management_extension_report_version"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                app:drawableLeftCompat="@drawable/enterprise_phone" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </org.chromium.chrome.browser.management.ManagementView>
