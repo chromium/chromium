@@ -252,7 +252,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
 
     // Show unsafe state if user already ran safety check and there are
     // compromised credentials.
-    if (!_passwordCheckManager->GetCompromisedCredentials().empty() &&
+    if (!_passwordCheckManager->GetUnmutedCompromisedCredentials().empty() &&
         PreviousSafetyCheckIssueFound()) {
       _passwordCheckRowState = PasswordCheckRowStateUnSafe;
     }
@@ -493,7 +493,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
   self.currentPasswordCheckState = newState;
 
   BOOL noCompromisedPasswords =
-      self.passwordCheckManager->GetCompromisedCredentials().empty();
+      self.passwordCheckManager->GetUnmutedCompromisedCredentials().empty();
 
   switch (self.currentPasswordCheckState) {
     case PasswordCheckState::kRunning:
@@ -570,7 +570,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
 
 // Computes the appropriate error info to be displayed in the passwords popover.
 - (NSAttributedString*)passwordCheckErrorInfo {
-  if (!self.passwordCheckManager->GetCompromisedCredentials().empty())
+  if (!self.passwordCheckManager->GetUnmutedCompromisedCredentials().empty())
     return nil;
 
   NSString* message;
@@ -1057,7 +1057,8 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
       break;
     }
     case PasswordCheckRowStateSafe: {
-      DCHECK(self.passwordCheckManager->GetCompromisedCredentials().empty());
+      DCHECK(self.passwordCheckManager->GetUnmutedCompromisedCredentials()
+                 .empty());
       UIImage* safeIconImage = [[UIImage imageNamed:@"settings_safe_state"]
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       self.passwordCheckItem.detailText =
@@ -1072,7 +1073,8 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
       self.passwordCheckItem.detailText =
           base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
               IDS_IOS_CHECK_PASSWORDS_COMPROMISED_COUNT,
-              self.passwordCheckManager->GetCompromisedCredentials().size()));
+              self.passwordCheckManager->GetUnmutedCompromisedCredentials()
+                  .size()));
       UIImage* unSafeIconImage = [[UIImage imageNamed:@"settings_unsafe_state"]
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       self.passwordCheckItem.trailingImage = unSafeIconImage;

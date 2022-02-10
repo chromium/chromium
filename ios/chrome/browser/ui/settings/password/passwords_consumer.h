@@ -33,9 +33,10 @@ typedef NS_ENUM(NSInteger, PasswordCheckUIState) {
 // Consumer for the Passwords Screen.
 @protocol PasswordsConsumer <NSObject>
 
-// Displays current password check UI state on screen.
+// Displays current password check UI state on screen for unmuted compromised
+// credentials.
 - (void)setPasswordCheckUIState:(PasswordCheckUIState)state
-      compromisedPasswordsCount:(NSInteger)count;
+    unmutedCompromisedPasswordsCount:(NSInteger)count;
 
 // Displays password and blocked forms.
 - (void)

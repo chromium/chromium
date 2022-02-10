@@ -76,7 +76,7 @@ PasswordForm CreatePasswordForm() {
 @implementation FakePasswordsConsumer
 
 - (void)setPasswordCheckUIState:(PasswordCheckUIState)state
-      compromisedPasswordsCount:(NSInteger)count {
+    unmutedCompromisedPasswordsCount:(NSInteger)count {
 }
 
 - (void)setPasswordsForms:

@@ -160,7 +160,7 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     }
 
     [passwords_controller setPasswordCheckUIState:state
-                        compromisedPasswordsCount:count];
+                 unmutedCompromisedPasswordsCount:count];
   }
 
   // Adds a form to PasswordsTableViewController.

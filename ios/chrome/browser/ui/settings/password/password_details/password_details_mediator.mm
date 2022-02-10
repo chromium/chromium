@@ -64,7 +64,7 @@ using InsecureCredentialsView =
     return;
   _consumer = consumer;
 
-  [self fetchPasswordWith:_manager->GetCompromisedCredentials()];
+  [self fetchPasswordWith:_manager->GetUnmutedCompromisedCredentials()];
 }
 
 - (void)disconnect {
@@ -85,7 +85,7 @@ using InsecureCredentialsView =
       return;
     }
   }
-  [self fetchPasswordWith:_manager->GetCompromisedCredentials()];
+  [self fetchPasswordWith:_manager->GetUnmutedCompromisedCredentials()];
 }
 
 - (void)passwordDetailsViewController:

@@ -781,6 +781,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          password_manager::features::kLeakDetectionUnauthenticated)},
+    {"mute-compromised-passwords",
+     flag_descriptions::kMuteCompromisedPasswordsName,
+     flag_descriptions::kMuteCompromisedPasswordsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(password_manager::features::kMuteCompromisedPasswords)},
     {"autofill-enable-sending-bcn-in-get-upload-details",
      flag_descriptions::kAutofillEnableSendingBcnInGetUploadDetailsName,
      flag_descriptions::kAutofillEnableSendingBcnInGetUploadDetailsDescription,

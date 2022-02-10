@@ -113,11 +113,12 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
   [self providePasswordsToConsumer];
 
   _currentState = _passwordCheckManager->GetPasswordCheckState();
-  [self.consumer setPasswordCheckUIState:
-                     [self computePasswordCheckUIStateWith:_currentState]
-               compromisedPasswordsCount:_passwordCheckManager
-                                             ->GetCompromisedCredentials()
-                                             .size()];
+  [self.consumer
+               setPasswordCheckUIState:
+                   [self computePasswordCheckUIStateWith:_currentState]
+      unmutedCompromisedPasswordsCount:_passwordCheckManager
+                                           ->GetUnmutedCompromisedCredentials()
+                                           .size()];
 }
 
 - (void)deletePasswordForm:(const password_manager::PasswordForm&)form {
@@ -163,7 +164,7 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
 }
 
 - (NSAttributedString*)passwordCheckErrorInfo {
-  if (!_passwordCheckManager->GetCompromisedCredentials().empty())
+  if (!_passwordCheckManager->GetUnmutedCompromisedCredentials().empty())
     return nil;
 
   NSString* message;
@@ -218,10 +219,11 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
 
   DCHECK(self.consumer);
   [self.consumer
-        setPasswordCheckUIState:[self computePasswordCheckUIStateWith:state]
-      compromisedPasswordsCount:_passwordCheckManager
-                                    ->GetCompromisedCredentials()
-                                    .size()];
+               setPasswordCheckUIState:
+                   [self computePasswordCheckUIStateWith:state]
+      unmutedCompromisedPasswordsCount:_passwordCheckManager
+                                           ->GetUnmutedCompromisedCredentials()
+                                           .size()];
 }
 
 - (void)compromisedCredentialsDidChange:
@@ -235,7 +237,7 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
 
   [self.consumer setPasswordCheckUIState:
                      [self computePasswordCheckUIStateWith:_currentState]
-               compromisedPasswordsCount:credentials.size()];
+        unmutedCompromisedPasswordsCount:credentials.size()];
 }
 
 #pragma mark - PasswordAutoFillStatusObserver
@@ -282,12 +284,12 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
     case PasswordCheckState::kOffline:
     case PasswordCheckState::kQuotaLimit:
     case PasswordCheckState::kOther:
-      return _passwordCheckManager->GetCompromisedCredentials().empty()
+      return _passwordCheckManager->GetUnmutedCompromisedCredentials().empty()
                  ? PasswordCheckStateError
                  : PasswordCheckStateUnSafe;
     case PasswordCheckState::kCanceled:
     case PasswordCheckState::kIdle: {
-      if (!_passwordCheckManager->GetCompromisedCredentials().empty()) {
+      if (!_passwordCheckManager->GetUnmutedCompromisedCredentials().empty()) {
         return PasswordCheckStateUnSafe;
       } else if (_currentState == PasswordCheckState::kIdle) {
         // Safe state is only possible after the state transitioned from

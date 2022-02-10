@@ -979,7 +979,7 @@ void RemoveFormsToBeDeleted(
 #pragma mark - PasswordsConsumer
 
 - (void)setPasswordCheckUIState:(PasswordCheckUIState)state
-      compromisedPasswordsCount:(NSInteger)count {
+    unmutedCompromisedPasswordsCount:(NSInteger)count {
   self.compromisedPasswordsCount = count;
   // Update password check status and check button with new state.
   [self updatePasswordCheckButtonWithState:state];

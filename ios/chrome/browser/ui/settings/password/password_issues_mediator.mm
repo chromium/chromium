@@ -18,7 +18,8 @@
 
   std::unique_ptr<PasswordCheckObserverBridge> _passwordCheckObserver;
 
-  std::vector<password_manager::CredentialWithPassword> _compromisedCredentials;
+  std::vector<password_manager::CredentialWithPassword>
+      _unmutedCompromisedCredentials;
 }
 
 // Object storing the time of the previous successful re-authentication.
@@ -50,7 +51,7 @@
 }
 
 - (void)deletePassword:(const password_manager::PasswordForm&)password {
-  for (const auto& credential : _compromisedCredentials) {
+  for (const auto& credential : _unmutedCompromisedCredentials) {
     if (std::tie(credential.signon_realm, credential.username,
                  credential.password) == std::tie(password.signon_realm,
                                                   password.username_value,
@@ -79,9 +80,9 @@
 
 - (void)fetchPasswordIssues {
   DCHECK(self.consumer);
-  _compromisedCredentials = _manager->GetCompromisedCredentials();
+  _unmutedCompromisedCredentials = _manager->GetUnmutedCompromisedCredentials();
   NSMutableArray* passwords = [[NSMutableArray alloc] init];
-  for (auto credential : _compromisedCredentials) {
+  for (auto credential : _unmutedCompromisedCredentials) {
     const password_manager::PasswordForm form =
         _manager->GetSavedPasswordsFor(credential)[0];
     [passwords

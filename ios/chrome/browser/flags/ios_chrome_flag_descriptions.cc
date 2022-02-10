@@ -346,6 +346,11 @@ const char kModernTabStripName[] = "Modern TabStrip";
 const char kModernTabStripDescription[] =
     "When enabled, the newly implemented tabstrip can be tested.";
 
+const char kMuteCompromisedPasswordsName[] =
+    "Mute & Unmute compromised passwords in bulk leak check";
+const char kMuteCompromisedPasswordsDescription[] =
+    "Enables muting/unmuting compromised passwords in bulk leak check.";
+
 const char kNewOverflowMenuName[] = "New Overflow Menu";
 const char kNewOverflowMenuDescription[] = "Enables the new overflow menu";
 

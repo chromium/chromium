@@ -1439,10 +1439,10 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   [_safetyCheckCoordinator start];
 }
 
-// Checks if there are any remaining password issues from the last time password
-// check was run.
+// Checks if there are any remaining password issues that are not muted from the
+// last time password check was run.
 - (BOOL)hasPasswordIssuesRemaining {
-  return !_passwordCheckManager->GetCompromisedCredentials().empty();
+  return !_passwordCheckManager->GetUnmutedCompromisedCredentials().empty();
 }
 
 // Displays a red issue state on |_safetyCheckItem| if there is a reamining
