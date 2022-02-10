@@ -13,8 +13,9 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {TopicSource} from '../personalization_app.mojom-webui.js';
+import {WithPersonalizationStore} from '../personalization_store.js';
 
-export class TopicSourceListElement extends PolymerElement {
+export class TopicSourceListElement extends WithPersonalizationStore {
   static get is() {
     return 'topic-source-list';
   }
@@ -31,8 +32,14 @@ export class TopicSourceListElement extends PolymerElement {
       },
 
       selectedTopicSource: TopicSource,
+
+      hasGooglePhotosAlbums: Boolean,
     };
   }
+
+  topicSources: Array<TopicSource>;
+  selectedTopicSource: TopicSource;
+  hasGooglePhotosAlbums_: boolean;
 
   private isSelected_(
       topicSource: TopicSource, selectedTopicSource: TopicSource) {

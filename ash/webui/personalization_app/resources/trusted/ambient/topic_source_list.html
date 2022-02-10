@@ -19,12 +19,14 @@
 </style>
 
 <h3 id="topicSourceTitle" aria-hidden="true">
-  image source
+  [[i18n('ambientModeTopicSourceTitle')]]
 </h3>
 
 <iron-list id="topicSourceList" items="[[topicSources]]">
   <template>
     <topic-source-item topic-source="[[item]]"
+        tabindex$="[[tabIndex]]"
+        has-google-photos-albums="[[hasGooglePhotosAlbums]]"
         checked="[[isSelected_(item, selectedTopicSource)]]">
     </topic-source-item>
   </template>

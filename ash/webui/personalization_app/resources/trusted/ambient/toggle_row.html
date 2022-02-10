@@ -19,10 +19,11 @@
 <div id="container">
   <div id="row">
     <div id="leftContent" aria-hidden="true">
-      <div id="description">[[description]]</div>
+      <div id="description">[[i18n('ambientModePageDescription')]]</div>
     </div>
     <div id="rightContent">
-      <cr-toggle id="toggle" checked="[[checked]]">
+      <cr-toggle id="toggle" checked="{{checked}}"
+          aria-label$="[[getAriaLabel_(checked)]]">
       </cr-toggle>
     </div>
   </div>

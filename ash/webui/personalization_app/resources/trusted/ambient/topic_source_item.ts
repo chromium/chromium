@@ -13,6 +13,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {isSelectionEvent} from '../../common/utils.js';
 import {TopicSource} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
@@ -41,21 +42,73 @@ export class TopicSourceItemElement extends WithPersonalizationStore {
       },
 
       topicSource: TopicSource,
+
+      hasGooglePhotosAlbums: Boolean,
+
+      ariaLabel: {
+        type: String,
+        computed: 'computeAriaLabel_(topicSource, checked)',
+        reflectToAttribute: true,
+      },
     };
   }
 
   checked: boolean;
   topicSource: TopicSource;
+  hasGooglePhotosAlbums: boolean;
+  ariaLabel: string;
 
   ready() {
     super.ready();
 
-    this.addEventListener('click', this.onItemSelected_);
+    this.addEventListener('click', this.onItemSelected_.bind(this));
+    this.addEventListener('keydown', this.onItemSelected_.bind(this));
   }
 
   private onItemSelected_(event: Event) {
+    if (!isSelectionEvent(event)) {
+      return;
+    }
+
+    event.preventDefault();
     event.stopPropagation();
     setTopicSource(this.topicSource, getAmbientProvider(), this.getStore());
+  }
+
+  private getItemName_(): string {
+    if (this.topicSource === TopicSource.kGooglePhotos) {
+      return this.i18n('ambientModeTopicSourceGooglePhotos');
+    } else if (this.topicSource === TopicSource.kArtGallery) {
+      return this.i18n('ambientModeTopicSourceArtGallery');
+    } else {
+      return '';
+    }
+  }
+
+  private getItemDescription_(): string {
+    if (this.topicSource === TopicSource.kGooglePhotos) {
+      if (this.hasGooglePhotosAlbums) {
+        return this.i18n('ambientModeTopicSourceGooglePhotosDescription');
+      } else {
+        return this.i18n(
+            'ambientModeTopicSourceGooglePhotosDescriptionNoAlbum');
+      }
+    } else if (this.topicSource === TopicSource.kArtGallery) {
+      return this.i18n('ambientModeTopicSourceArtGalleryDescription');
+    } else {
+      return '';
+    }
+  }
+
+  private computeAriaLabel_(): string {
+    if (this.checked) {
+      return this.i18n(
+          'ambientModeTopicSourceSelectedRow', this.getItemName_(),
+          this.getItemDescription_());
+    }
+    return this.i18n(
+        'ambientModeTopicSourceUnselectedRow', this.getItemName_(),
+        this.getItemDescription_());
   }
 }
 

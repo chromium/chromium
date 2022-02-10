@@ -11,7 +11,7 @@ import 'chrome://personalization/trusted/ambient/toggle_row.js';
 import 'chrome://personalization/trusted/ambient/topic_source_list.js';
 
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {TopicSource} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
@@ -33,18 +33,14 @@ export class AmbientSubpage extends WithPersonalizationStore {
 
   static get properties() {
     return {
-      ambientModeEnabled_: {type: Boolean, value: false},
-      description_: {
-        type: String,
-        value:
-            'When your screen is idle, show photos, time, weather, and media info'
-      },
+      ambientModeEnabled_: Boolean,
+      hasGooglePhotosAlbums_: {type: Boolean, value: true},
       topicSource_: Number,
     };
   }
 
   private ambientModeEnabled_: boolean;
-  private description_: string;
+  private hasGooglePhotosAlbums_: boolean;
   private topicSource_: TopicSource|null = null;
 
   connectedCallback() {
@@ -64,7 +60,7 @@ export class AmbientSubpage extends WithPersonalizationStore {
 
   private onToggleStateChanged_(event: Event) {
     const toggleRow = event.currentTarget as ToggleRowElement;
-    const ambientModeEnabled = toggleRow!.isChecked();
+    const ambientModeEnabled = toggleRow!.checked;
     this.setAmbientModeEnabled_(ambientModeEnabled);
   }
 

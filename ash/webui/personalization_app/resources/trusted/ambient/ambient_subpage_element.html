@@ -1,10 +1,11 @@
 <style></style>
 <div id="container">
   <h2>Ambient</h2>
-  <toggle-row description="[[description_]]" checked="[[ambientModeEnabled_]]"
+  <toggle-row checked="[[ambientModeEnabled_]]"
       on-click="onClickAmbientModeButton_" on-change="onToggleStateChanged_">
   </toggle-row>
   <ambient-preview>Image Preview</ambient-preview>
-  <topic-source-list selected-topic-source="[[topicSource_]]">
+  <topic-source-list selected-topic-source="[[topicSource_]]"
+      has-google-photos-albums="[[hasGooglePhotosAlbums_]]">
   </topic-source-list>
 </div>

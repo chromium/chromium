@@ -90,7 +90,29 @@ void AddStrings(content::WebUIDataSource* source) {
       {"oneImage", IDS_PERSONALIZATION_APP_ONE_IMAGE},
       {"multipleImages", IDS_PERSONALIZATION_APP_MULTIPLE_IMAGES},
       {"avatarLabel", IDS_PERSONALIZATION_APP_AVATAR_LABEL},
-      {"screensaverLabel", IDS_PERSONALIZATION_APP_SCREENSAVER_LABEL}};
+
+      // Ambient mode related string.
+      {"screensaverLabel", IDS_PERSONALIZATION_APP_SCREENSAVER_LABEL},
+      {"ambientModePageDescription",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_PAGE_DESCRIPTION},
+      {"ambientModeOn", IDS_PERSONALIZATION_APP_AMBIENT_MODE_ON},
+      {"ambientModeOff", IDS_PERSONALIZATION_APP_AMBIENT_MODE_OFF},
+      {"ambientModeTopicSourceTitle",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_TITLE},
+      {"ambientModeTopicSourceGooglePhotos",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_GOOGLE_PHOTOS},
+      {"ambientModeTopicSourceGooglePhotosDescription",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_GOOGLE_PHOTOS_DESC},
+      {"ambientModeTopicSourceGooglePhotosDescriptionNoAlbum",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_GOOGLE_PHOTOS_DESC_NO_ALBUM},
+      {"ambientModeTopicSourceArtGallery",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_ART_GALLERY},
+      {"ambientModeTopicSourceArtGalleryDescription",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_ART_GALLERY_DESCRIPTION},
+      {"ambientModeTopicSourceSelectedRow",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_SELECTED_ROW},
+      {"ambientModeTopicSourceUnselectedRow",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_UNSELECTED_ROW}};
 
   source->AddLocalizedStrings(kLocalizedStrings);
 

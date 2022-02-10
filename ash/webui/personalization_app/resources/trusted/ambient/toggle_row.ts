@@ -9,13 +9,15 @@
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {WithPersonalizationStore} from '../personalization_store.js';
 
 export interface ToggleRowElement {
   $: {toggle: CrToggleElement}
 }
 
-export class ToggleRowElement extends PolymerElement {
+export class ToggleRowElement extends WithPersonalizationStore {
   static get is() {
     return 'toggle-row';
   }
@@ -26,13 +28,16 @@ export class ToggleRowElement extends PolymerElement {
 
   static get properties() {
     return {
-      checked: {type: Boolean, value: false, reflectToAttribute: true},
-      description: String,
+      checked:
+          {type: Boolean, value: false, notify: true, reflectToAttribute: true},
     };
   }
 
-  isChecked(): boolean {
-    return this.$.toggle.checked;
+  checked: boolean;
+  ariaLabel: string;
+
+  private getAriaLabel_(): string {
+    return this.i18n(this.checked ? 'ambientModeOn' : 'ambientModeOff');
   }
 }
 
