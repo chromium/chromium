@@ -43,7 +43,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
      * set of channels returned by {@link #getStartupChannelIds()} or {@link #getLegacyChannelIds()}
      * changes.
      */
-    static final int CHANNELS_VERSION = 2;
+    static final int CHANNELS_VERSION = 3;
 
     private static class LazyHolder {
         private static ChromeChannelDefinitions sInstance = new ChromeChannelDefinitions();
@@ -73,7 +73,8 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
             ChannelId.WEBAPP_ACTIONS, ChannelId.SITES, ChannelId.SHARING, ChannelId.UPDATES,
             ChannelId.COMPLETED_DOWNLOADS, ChannelId.PERMISSION_REQUESTS,
             ChannelId.PERMISSION_REQUESTS_HIGH, ChannelId.ANNOUNCEMENT, ChannelId.WEBAPPS,
-            ChannelId.WEBAPPS_QUIET, ChannelId.PRICE_DROP})
+            ChannelId.WEBAPPS_QUIET, ChannelId.PRICE_DROP, ChannelId.SECURITY_KEY,
+            ChannelId.CHROME_TIPS})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ChannelId {
         String BROWSER = "browser";
@@ -97,6 +98,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
         String WEBRTC_CAM_AND_MIC = "webrtc_cam_and_mic";
         String PRICE_DROP = "shopping_price_drop_alerts";
         String SECURITY_KEY = "security_key";
+        String CHROME_TIPS = "chrome_tips";
     }
 
     @StringDef({ChannelGroupId.GENERAL, ChannelGroupId.SITES})
@@ -234,6 +236,13 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
             map.put(ChannelId.SECURITY_KEY,
                     PredefinedChannel.create(ChannelId.SECURITY_KEY,
                             R.string.notification_category_security_key,
+                            NotificationManager.IMPORTANCE_HIGH, ChannelGroupId.GENERAL));
+
+            // The chrome tips notification channel will only appear for users
+            // who are targeted for this feature.
+            map.put(ChannelId.CHROME_TIPS,
+                    PredefinedChannel.create(ChannelId.CHROME_TIPS,
+                            R.string.notification_category_feature_guide,
                             NotificationManager.IMPORTANCE_HIGH, ChannelGroupId.GENERAL));
 
             MAP = Collections.unmodifiableMap(map);

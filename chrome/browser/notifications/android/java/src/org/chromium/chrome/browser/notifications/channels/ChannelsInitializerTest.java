@@ -362,6 +362,24 @@ public class ChannelsInitializerTest {
         assertThat(channel.getGroup(), is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
     }
 
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
+    @TargetApi(Build.VERSION_CODES.O)
+    @Feature({"Browser", "Notifications"})
+    public void testEnsureInitialized_tipsChannel() {
+        mChannelsInitializer.ensureInitialized(ChromeChannelDefinitions.ChannelId.CHROME_TIPS);
+
+        assertThat(getChannelsIgnoringDefault(), hasSize(1));
+        NotificationChannel channel = getChannelsIgnoringDefault().get(0);
+        assertThat(channel.getId(), is(ChromeChannelDefinitions.ChannelId.CHROME_TIPS));
+        assertThat(channel.getName().toString(),
+                is(mContext.getString(org.chromium.chrome.R.string
+                                              .feature_notification_guide_notification_title)));
+        assertThat(channel.getImportance(), is(NotificationManager.IMPORTANCE_HIGH));
+        assertThat(channel.getGroup(), is(ChromeChannelDefinitions.ChannelGroupId.GENERAL));
+    }
+
     /**
      * Gets the current notification channels from the notification manager, except for any with
      * the default ID, which will be removed from the list before returning.

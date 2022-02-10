@@ -61,7 +61,8 @@ public class NotificationUmaTracker {
             SystemNotificationType.WEBAPK_INSTALL_IN_PROGRESS,
             SystemNotificationType.WEBAPK_INSTALL_COMPLETE,
             SystemNotificationType.PRICE_DROP_ALERTS_CHROME_MANAGED,
-            SystemNotificationType.PRICE_DROP_ALERTS_USER_MANAGED})
+            SystemNotificationType.PRICE_DROP_ALERTS_USER_MANAGED,
+            SystemNotificationType.CHROME_TIPS})
     @Retention(RetentionPolicy.SOURCE)
     public @interface SystemNotificationType {
         int UNKNOWN = -1;
@@ -99,8 +100,9 @@ public class NotificationUmaTracker {
         int WEBAPK_INSTALL_COMPLETE = 31;
         int PRICE_DROP_ALERTS_CHROME_MANAGED = 32;
         int PRICE_DROP_ALERTS_USER_MANAGED = 33;
+        int CHROME_TIPS = 34;
 
-        int NUM_ENTRIES = 34;
+        int NUM_ENTRIES = 35;
     }
 
     /*
