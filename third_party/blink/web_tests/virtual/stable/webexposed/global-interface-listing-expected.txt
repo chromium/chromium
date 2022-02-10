@@ -2363,6 +2363,7 @@ interface HIDDevice : EventTarget
     getter vendorId
     method close
     method constructor
+    method forget
     method open
     method receiveFeatureReport
     method sendFeatureReport

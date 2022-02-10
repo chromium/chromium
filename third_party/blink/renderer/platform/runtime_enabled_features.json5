@@ -1216,7 +1216,8 @@
     },
     {
       name: "HidDeviceForget",
-      status: "experimental",
+      depends_on: ["WebHID"],
+      status: {"Android": "", "default": "stable"},
     },
     {
       name: "HighlightAPI",
