@@ -461,8 +461,8 @@ if (is_win || is_mac || is_linux) {
 
     if (is_win) {
       sources += [
-        "//chrome/updater/util_win.cc",
         "//chrome/updater/lib_util_win.cc",
+        "//chrome/updater/util_win.cc",
         "//chrome/updater/win/user_info.cc",
         "//chrome/updater/win/user_info.h",
         "//chrome/updater/win/win_constants.cc",
@@ -648,13 +648,16 @@ if (is_win || is_mac || is_linux) {
 
       if (target_cpu == "x64") {
         data += [
+          "//third_party/updater/chrome_win_x86_64/UpdaterSetup_test.exe",
           "//third_party/updater/chromium_win_x86_64/UpdaterSetup_test.exe",
         ]
       }
 
       if (target_cpu == "x86") {
-        data +=
-            [ "//third_party/updater/chromium_win_x86/UpdaterSetup_test.exe" ]
+        data += [
+          "//third_party/updater/chrome_win_x86/UpdaterSetup_test.exe",
+          "//third_party/updater/chromium_win_x86/UpdaterSetup_test.exe",
+        ]
       }
     }
 
@@ -698,6 +701,14 @@ if (is_win || is_mac || is_linux) {
         "//chrome/test/data/updater/setup_test_envcheck/.install",
         "//chrome/test/data/updater/setup_test_envcheck/marker.app",
         "//chrome/test/data/updater/updater_qualification_app_dmg.crx",
+        "//third_party/updater/chrome_mac_universal/GoogleUpdater_test.app/Contents/MacOS/GoogleUpdater_test",
+        "//third_party/updater/chrome_mac_universal/GoogleUpdater_test.app/Contents/Info.plist",
+        "//third_party/updater/chrome_mac_universal/GoogleUpdater_test.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/MacOS/GoogleSoftwareUpdate",
+        "//third_party/updater/chrome_mac_universal/GoogleUpdater_test.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Resources/GoogleSoftwareUpdateAgent.app/Contents/MacOS/GoogleSoftwareUpdateAgent",
+        "//third_party/updater/chrome_mac_universal/GoogleUpdater_test.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Resources/GoogleSoftwareUpdateAgent.app/Contents/Info.plist",
+        "//third_party/updater/chrome_mac_universal/GoogleUpdater_test.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksinstall",
+        "//third_party/updater/chrome_mac_universal/GoogleUpdater_test.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Helpers/ksadmin",
+        "//third_party/updater/chrome_mac_universal/GoogleUpdater_test.app/Contents/Helpers/GoogleSoftwareUpdate.bundle/Contents/Info.plist",
       ]
 
       data_deps = [

@@ -848,6 +848,14 @@ void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
   old_updater_path =
       old_updater_path.Append(FILE_PATH_LITERAL("chromium_win_x86"));
 #endif
+#elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if defined(ARCH_CPU_X86_64)
+  old_updater_path =
+      old_updater_path.Append(FILE_PATH_LITERAL("chrome_win_x86_64"));
+#elif defined(ARCH_CPU_X86)
+  old_updater_path =
+      old_updater_path.Append(FILE_PATH_LITERAL("chrome_win_x86"));
+#endif
 #endif
   base::CommandLine command_line(
       old_updater_path.Append(FILE_PATH_LITERAL("UpdaterSetup_test.exe")));

@@ -548,6 +548,39 @@ deps = {
       'condition': 'checkout_mac',
   },
 
+  'src/third_party/updater/chrome_mac_universal': {
+      'dep_type': 'cipd',
+      'condition': 'checkout_mac',
+      'packages': [
+        {
+          'package': 'chromium/third_party/updater/chrome_mac_universal',
+          'version': '3UoNd4X57YAONz6mhQPapIUoO1Ds6K5AIHTAZxNmLUUC',
+        },
+      ],
+  },
+
+  'src/third_party/updater/chrome_win_x86': {
+      'dep_type': 'cipd',
+      'condition': 'checkout_win',
+      'packages': [
+        {
+          'package': 'chromium/third_party/updater/chrome_win_x86',
+          'version': 'vTjr7sgsZvG680Qx0nhiR3H4-EAJDdh5m1BkVbbuER0C',
+        },
+      ],
+  },
+
+  'src/third_party/updater/chrome_win_x86_64': {
+      'dep_type': 'cipd',
+      'condition': 'checkout_win',
+      'packages': [
+        {
+          'package': 'chromium/third_party/updater/chrome_win_x86_64',
+          'version': 'dQu9E9-wPljBkp6aaMxzCt9WJdBI_u_w2N1VRS2Mdf4C',
+        },
+      ],
+  },
+
   # A somewhat recent Chromium-branded updater build. (x86_64)
   'src/third_party/updater/chromium_mac_amd64': {
       'dep_type': 'cipd',

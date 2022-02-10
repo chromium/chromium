@@ -611,9 +611,7 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
 }
 #endif  // BUILDFLAG(IS_MAC)
 
-// Google-branded builds will eventually support this test, but for
-// now only Chromium-branded updaters are available in third_party.
-#if BUILDFLAG(CHROMIUM_BRANDING)
+#if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // TODO(crbug.com/1268555): Even on Windows, component builds do not work.
 #if !defined(COMPONENT_BUILD)
 TEST_F(IntegrationTest, SelfUpdateFromOldReal) {
