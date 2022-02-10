@@ -109,8 +109,8 @@ dependencies {
     // Used by R8 to desugar library functions.
     // See instructions in //third_party/r8/README.chromium for how to
     // update desugar_jdk_libs.json (needed when changing this version).
-    compile 'com.android.tools:desugar_jdk_libs:1.1.1'
-    compile 'com.android.tools:desugar_jdk_libs_configuration:1.1.1'
+    compile 'com.android.tools:desugar_jdk_libs:1.1.5'
+    compile 'com.android.tools:desugar_jdk_libs_configuration:1.1.5'
 
     // Needed by androidx.
     String kotlinxVersion = '1.5.0'
