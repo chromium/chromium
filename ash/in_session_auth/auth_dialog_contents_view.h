@@ -76,14 +76,14 @@ class AuthDialogContentsView : public views::View {
   // Add a view for entering PIN (if autosubmit is off).
   void AddPinTextInputView();
 
+  // Add a view for entering password.
+  void AddPasswordView();
+
   // Add a PIN pad view.
   void AddPinPadView();
 
   // Add a PIN input view that automatically submits PIN.
   void AddPinDigitInputView();
-
-  // Initializes password input field functionality.
-  void InitPasswordView();
 
   // Add a vertical spacing view.
   void AddVerticalSpacing(int height);
@@ -101,15 +101,19 @@ class AuthDialogContentsView : public views::View {
   // 1. the user inserts or deletes a character in
   // |pin_text_input_view_| or |pin_digit_input_view_| without using the PIN
   // pad, or
-  // 2. contents of |pin_text_input_view_| or |pin_digit_input_view_| are
-  // cleared by a Reset() call.
-  void OnPinTextChanged(bool is_empty);
+  // 2. the user inserts or deletes a character in |password_view_|, or
+  // 3. contents of |pin_text_input_view_|, |password_view_|, or
+  // |pin_digit_input_view_| are cleared by a Reset() call.
+  void OnInputTextChanged(bool is_empty);
 
-  // Called when the user submits password or PIN.
-  void OnAuthSubmit(const std::u16string& password);
+  // Called when the user submits password or PIN. If authenticated_by_pin is
+  // false, the user authenticated by password.
+  void OnAuthSubmit(bool authenticated_by_pin, const std::u16string& password);
 
-  // Called when PIN authentication of the user completes.
-  void OnPinAuthComplete(absl::optional<bool> success);
+  // Called when password or PIN authentication of the user completes. If
+  // authenticated_by_pin is false, the user authenticated by password.
+  void OnPasswordOrPinAuthComplete(bool authenticated_by_pin,
+                                   absl::optional<bool> success);
 
   // Called when fingerprint authentication completes.
   void OnFingerprintAuthComplete(bool success,
@@ -147,6 +151,9 @@ class AuthDialogContentsView : public views::View {
 
   // PIN input view that's shown if PIN can be auto submitted.
   LoginPinInputView* pin_digit_input_view_ = nullptr;
+
+  // Text input field for password.
+  LoginPasswordView* password_view_ = nullptr;
 
   // PIN pad view.
   LoginPinView* pin_pad_view_ = nullptr;

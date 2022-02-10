@@ -44,7 +44,7 @@ void InSessionAuthDialogControllerImpl::ShowAuthenticationDialog(
   AccountId account_id =
       Shell::Get()->session_controller()->GetActiveAccountId();
   // GAIA password option is not offered.
-  uint32_t auth_methods = 0;
+  uint32_t auth_methods = AuthDialogContentsView::kAuthPassword;
 
   if (client_->IsFingerprintAuthAvailable(account_id)) {
     client_->StartFingerprintAuthSession(
@@ -133,20 +133,21 @@ void InSessionAuthDialogControllerImpl::DestroyAuthenticationDialog() {
   source_window_tracker_.RemoveAll();
 }
 
-void InSessionAuthDialogControllerImpl::AuthenticateUserWithPin(
-    const std::string& pin,
+void InSessionAuthDialogControllerImpl::AuthenticateUserWithPasswordOrPin(
+    const std::string& password,
+    bool authenticated_by_pin,
     OnAuthenticateCallback callback) {
   DCHECK(client_);
 
   // TODO(b/156258540): Check that PIN is enabled / set up for this user.
-
-  if (!base::ContainsOnlyChars(pin, "0123456789")) {
+  if (authenticated_by_pin &&
+      !base::ContainsOnlyChars(password, "0123456789")) {
     OnAuthenticateComplete(std::move(callback), false);
     return;
   }
 
   client_->AuthenticateUserWithPasswordOrPin(
-      pin, true,
+      password, authenticated_by_pin,
       base::BindOnce(&InSessionAuthDialogControllerImpl::OnAuthenticateComplete,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

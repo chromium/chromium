@@ -20,6 +20,9 @@ LoginPalette CreateDefaultLoginPalette() {
        .password_placeholder_text_color = color_provider->GetContentLayerColor(
            AshColorProvider::ContentLayerType::kTextColorSecondary),
        .password_background_color = SK_ColorTRANSPARENT,
+       .password_row_background_color = color_provider->GetControlsLayerColor(
+           AshColorProvider::ControlsLayerType::
+               kControlBackgroundColorInactive),
        .button_enabled_color = color_provider->GetContentLayerColor(
            AshColorProvider::ContentLayerType::kIconColorPrimary),
        .button_annotation_color = color_provider->GetContentLayerColor(
@@ -28,15 +31,17 @@ LoginPalette CreateDefaultLoginPalette() {
            SkColorSetA(base_color_and_opacity.first, inkdrop_opacity),
        .pin_ink_drop_ripple_color =
            SkColorSetA(base_color_and_opacity.first, inkdrop_opacity),
-       .pin_input_text_color = AshColorProvider::Get()->GetContentLayerColor(
+       .pin_input_text_color = color_provider->GetContentLayerColor(
            AshColorProvider::ContentLayerType::kTextColorPrimary)});
 }
 
+// TODO(b/218610104): Support dark theme.
 LoginPalette CreateInSessionAuthPalette() {
   return LoginPalette(
       {.password_text_color = gfx::kGoogleGrey900,
-       .password_placeholder_text_color = gfx::kGoogleGrey900,
+       .password_placeholder_text_color = gfx::kGoogleGrey600,
        .password_background_color = SK_ColorTRANSPARENT,
+       .password_row_background_color = gfx::kGoogleGrey100,
        .button_enabled_color = gfx::kGoogleGrey900,
        .button_annotation_color = gfx::kGoogleGrey700,
        .pin_ink_drop_highlight_color = SkColorSetA(gfx::kGoogleGrey900, 0x0A),

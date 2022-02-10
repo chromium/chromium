@@ -199,7 +199,8 @@ class AnimationWillRepeatObserver : public ui::LayerAnimationObserver {
 // and indicators (easy unlock, display password, caps lock enabled).
 class LoginPasswordView::LoginPasswordRow : public views::View {
  public:
-  LoginPasswordRow() = default;
+  explicit LoginPasswordRow(const LoginPalette& palette)
+      : color_(palette.password_row_background_color) {}
   ~LoginPasswordRow() override = default;
   LoginPasswordRow(const LoginPasswordRow&) = delete;
   LoginPasswordRow& operator=(const LoginPasswordRow&) = delete;
@@ -210,11 +211,13 @@ class LoginPasswordView::LoginPasswordRow : public views::View {
 
     cc::PaintFlags flags;
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(AshColorProvider::Get()->GetControlsLayerColor(
-        AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
+    flags.setColor(color_);
     canvas->DrawRoundRect(GetContentsBounds(), kPasswordRowCornerRadiusDp,
                           flags);
   }
+
+ private:
+  const SkColor color_;
 };
 
 // A textfield that selects all text on focus and allows to switch between
@@ -276,8 +279,7 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
   void UpdatePalette(const LoginPalette& palette) {
     SetTextColor(palette.password_text_color);
     SetBackgroundColor(palette.password_background_color);
-    set_placeholder_text_color(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorSecondary));
+    set_placeholder_text_color(palette.password_placeholder_text_color);
   }
 
  private:
@@ -605,7 +607,7 @@ LoginPasswordView::LoginPasswordView(const LoginPalette& palette)
       views::BoxLayout::MainAxisAlignment::kCenter);
 
   password_row_ = password_row_container->AddChildView(
-      std::make_unique<LoginPasswordRow>());
+      std::make_unique<LoginPasswordRow>(palette));
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets(0, kInternalHorizontalPaddingPasswordRowDp),

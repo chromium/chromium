@@ -18,6 +18,7 @@ struct LoginPalette {
   SkColor password_text_color;
   SkColor password_placeholder_text_color;
   SkColor password_background_color;
+  SkColor password_row_background_color;
   SkColor button_enabled_color;
   SkColor button_annotation_color;
   SkColor pin_ink_drop_highlight_color;
