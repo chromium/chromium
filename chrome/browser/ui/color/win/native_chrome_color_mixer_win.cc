@@ -46,14 +46,11 @@ class FrameColorHelper {
 
   void AddNativeChromeColors(ui::ColorMixer& mixer,
                              const ui::ColorProviderManager::Key& key) const;
-  void AddBorderAccentColors(ui::ColorMixer& mixer,
-                             const ui::ColorProviderManager::Key& key) const;
+  void AddBorderAccentColors(ui::ColorMixer& mixer) const;
 
   static FrameColorHelper* Get();
 
  private:
-  // Inserts the border accent colors;
-  void AddBorderAccentColorsInternal(ui::ColorMixer& mixer) const;
   // Returns whether there is a custom image provided for the given id.
   bool HasCustomImage(int id, const ui::ColorProviderManager::Key& key) const;
 
@@ -104,7 +101,6 @@ void FrameColorHelper::AddNativeChromeColors(
     return absl::nullopt;
   };
   if (DwmColorsAllowed(key)) {
-    AddBorderAccentColorsInternal(mixer);
     // When we're custom-drawing the titlebar we want to use either the colors
     // we calculated in OnDwmKeyUpdated() or the default colors. When we're not
     // custom-drawing the titlebar we want to match the color Windows actually
@@ -137,22 +133,7 @@ void FrameColorHelper::AddNativeChromeColors(
   }
 }
 
-void FrameColorHelper::AddBorderAccentColors(
-    ui::ColorMixer& mixer,
-    const ui::ColorProviderManager::Key& key) const {
-  if (DwmColorsAllowed(key)) {
-    AddBorderAccentColorsInternal(mixer);
-  }
-}
-
-// static
-FrameColorHelper* FrameColorHelper::Get() {
-  static base::NoDestructor<FrameColorHelper> g_frame_color_helper;
-  return g_frame_color_helper.get();
-}
-
-void FrameColorHelper::AddBorderAccentColorsInternal(
-    ui::ColorMixer& mixer) const {
+void FrameColorHelper::AddBorderAccentColors(ui::ColorMixer& mixer) const {
   // In Windows 10, native inactive borders are #555555 with 50% alpha.
   // Prior to version 1809, native active borders use the accent color.
   // In version 1809 and following, the active border is #262626 with 66%
@@ -163,6 +144,12 @@ void FrameColorHelper::AddBorderAccentColorsInternal(
           ? SkColorSetARGB(0xa8, 0x26, 0x26, 0x26)
           : dwm_accent_border_color_};
   mixer[kColorAccentBorderInactive] = {SkColorSetARGB(0x80, 0x55, 0x55, 0x55)};
+}
+
+// static
+FrameColorHelper* FrameColorHelper::Get() {
+  static base::NoDestructor<FrameColorHelper> g_frame_color_helper;
+  return g_frame_color_helper.get();
 }
 
 bool FrameColorHelper::HasCustomImage(
@@ -219,6 +206,11 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
                                const ui::ColorProviderManager::Key& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
 
+  // NOTE: These cases are always handled, even on Win7, in order to ensure the
+  // the color provider redirection tests function. Win7 callers should never
+  // actually pass in these IDs.
+  FrameColorHelper::Get()->AddBorderAccentColors(mixer);
+
   if (key.contrast_mode == ui::ColorProviderManager::ContrastMode::kHigh) {
     // High contrast uses system colors.
     mixer[kColorOmniboxBackground] = {ui::kColorNativeBtnFace};
@@ -229,7 +221,6 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
     mixer[ui::kColorFrameInactive] = {ui::kColorNativeWindow};
     mixer[kColorTabForegroundActiveFrameActive] = {
         ui::kColorNativeHighlightText};
-    FrameColorHelper::Get()->AddBorderAccentColors(mixer, key);
     return;
   }
 

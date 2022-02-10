@@ -170,20 +170,23 @@ SkColor ThemeHelperWin::GetDefaultColor(
     return color;
   }
 
-  if (DwmColorsAllowed(theme_supplier)) {
-    // In Windows 10, native inactive borders are #555555 with 50% alpha.
-    // Prior to version 1809, native active borders use the accent color.
-    // In version 1809 and following, the active border is #262626 with 66%
-    // alpha unless the accent color is also used for the frame.
-    if (id == ThemeProperties::COLOR_ACCENT_BORDER_ACTIVE) {
-      return (base::win::GetVersion() >= base::win::Version::WIN10_RS5 &&
-              !dwm_frame_color_)
-                 ? SkColorSetARGB(0xa8, 0x26, 0x26, 0x26)
-                 : dwm_accent_border_color_;
-    }
-    if (id == ThemeProperties::COLOR_ACCENT_BORDER_INACTIVE)
-      return SkColorSetARGB(0x80, 0x55, 0x55, 0x55);
+  // In Windows 10, native inactive borders are #555555 with 50% alpha.
+  // Prior to version 1809, native active borders use the accent color.
+  // In version 1809 and following, the active border is #262626 with 66%
+  // alpha unless the accent color is also used for the frame.
+  // NOTE: These cases are always handled, even on Win7, in order to ensure the
+  // the color provider redirection tests function. Win7 callers should never
+  // actually pass in these IDs.
+  if (id == ThemeProperties::COLOR_ACCENT_BORDER_ACTIVE) {
+    return (base::win::GetVersion() >= base::win::Version::WIN10_RS5 &&
+            !dwm_frame_color_)
+               ? SkColorSetARGB(0xa8, 0x26, 0x26, 0x26)
+               : dwm_accent_border_color_;
+  }
+  if (id == ThemeProperties::COLOR_ACCENT_BORDER_INACTIVE)
+    return SkColorSetARGB(0x80, 0x55, 0x55, 0x55);
 
+  if (DwmColorsAllowed(theme_supplier)) {
     // When we're custom-drawing the titlebar we want to use either the colors
     // we calculated in OnDwmKeyUpdated() or the default colors. When we're not
     // custom-drawing the titlebar we want to match the color Windows actually
