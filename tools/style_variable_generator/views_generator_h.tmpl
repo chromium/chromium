@@ -14,6 +14,7 @@
 #ifndef {{header_guard}}
 #define {{header_guard}}
 
+#include "base/component_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace {{namespace_name}} {
@@ -32,15 +33,17 @@ enum class OpacityName {
 {%-   endfor %}
 };
 
-SkAlpha GetOpacity(OpacityName opacity_name,
-                   bool is_dark_mode);
+COMPONENT_EXPORT({{namespace_name}}) SkAlpha GetOpacity(
+    OpacityName opacity_name,
+    bool is_dark_mode);
 {%- endif %}
 
-SkColor ResolveColor(ColorName color_name,
-                     bool is_dark_mode,
-                     bool use_debug_colors);
+COMPONENT_EXPORT({{namespace_name}}) SkColor ResolveColor(
+    ColorName color_name,
+    bool is_dark_mode,
+    bool use_debug_colors);
 
-extern char kDebugOverrideCssString[];
+COMPONENT_EXPORT({{namespace_name}}) extern char kDebugOverrideCssString[];
 
 }  // namespace {{namespace_name}}
 #endif  // {{header_guard}}

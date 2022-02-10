@@ -9,6 +9,7 @@
 #ifndef TOOLS_STYLE_VARIABLE_GENERATOR_COLORS_TEST_EXPECTED_H_
 #define TOOLS_STYLE_VARIABLE_GENERATOR_COLORS_TEST_EXPECTED_H_
 
+#include "base/component_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace colors_test_expected {
@@ -25,14 +26,16 @@ enum class OpacityName {
   kReferenceOpacity,
 };
 
-SkAlpha GetOpacity(OpacityName opacity_name,
-                   bool is_dark_mode);
+COMPONENT_EXPORT(colors_test_expected) SkAlpha GetOpacity(
+    OpacityName opacity_name,
+    bool is_dark_mode);
 
-SkColor ResolveColor(ColorName color_name,
-                     bool is_dark_mode,
-                     bool use_debug_colors);
+COMPONENT_EXPORT(colors_test_expected) SkColor ResolveColor(
+    ColorName color_name,
+    bool is_dark_mode,
+    bool use_debug_colors);
 
-extern char kDebugOverrideCssString[];
+COMPONENT_EXPORT(colors_test_expected) extern char kDebugOverrideCssString[];
 
 }  // namespace colors_test_expected
 #endif  // TOOLS_STYLE_VARIABLE_GENERATOR_COLORS_TEST_EXPECTED_H_

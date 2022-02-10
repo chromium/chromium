@@ -98,7 +98,7 @@ template("style_variable_generator") {
            ] + rebase_path(sources, root_build_dir)
   }
 
-  source_set("${target_name}_views") {
+  component("${target_name}_views") {
     sources = [
       "$target_gen_dir/${original_target_name}.cc",
       "$target_gen_dir/${original_target_name}.h",
@@ -109,6 +109,7 @@ template("style_variable_generator") {
       "//base",
       "//skia",
     ]
+    defines = [ "IS_${original_target_name}_IMPL" ]
   }
 
   action("${target_name}_proto") {
