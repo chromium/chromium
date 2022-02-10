@@ -9,6 +9,9 @@ enum Feature {
   // Extends the emoji picker to include symbols and emoticons alongside
   // emojis as insertable options for the user.
   EMOJI_PICKER_EXTENSION = 0,
+  // Extends the search functionality of emoji picker by implementing multi word
+  // prefix search across all categories.
+  EMOJI_PICKER_SEARCH_EXTENSION = 1,
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.

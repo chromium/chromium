@@ -158,7 +158,9 @@ export class EmojiPicker extends PolymerElement {
         reflectToAttribute: true
       },
       /** @private {boolean} */
-      v2Enabled: {type: Boolean, value: false, reflectToAttribute: true}
+      v2Enabled: {type: Boolean, value: false, reflectToAttribute: true},
+      /** @private {boolean} */
+      searchExtensionEnabled: {type: Boolean, value: false}
     };
   }
 
@@ -306,6 +308,8 @@ export class EmojiPicker extends PolymerElement {
    */
   setActiveFeatures(featureList) {
     this.v2Enabled = featureList.includes(Feature.EMOJI_PICKER_EXTENSION);
+    this.searchExtensionEnabled =
+        featureList.includes(Feature.EMOJI_PICKER_SEARCH_EXTENSION);
   }
 
   /**
