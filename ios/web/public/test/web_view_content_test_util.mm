@@ -94,8 +94,8 @@ bool IsWebViewContainingText(web::WebState* web_state,
   std::unique_ptr<base::Value> value =
       web::test::ExecuteJavaScript(web_state, kGetDocumentBodyJavaScript);
   std::string body;
-  if (value && value->GetAsString(&body)) {
-    return body.find(text) != std::string::npos;
+  if (value && value->is_string()) {
+    return value->GetString().find(text) != std::string::npos;
   }
   return false;
 }
@@ -159,11 +159,10 @@ bool WaitForWebViewContainingImage(std::string image_id,
       base::StringPrintf("document.getElementById('%s').src", image_id.c_str());
   std::unique_ptr<base::Value> url_as_value =
       web::test::ExecuteJavaScript(web_state, get_url_script);
-  std::string url_as_string;
-  if (!url_as_value->GetAsString(&url_as_string))
+  if (!url_as_value->is_string())
     return false;
 
-  UIImage* image = LoadImage(GURL(url_as_string));
+  UIImage* image = LoadImage(GURL(url_as_value->GetString()));
   if (!image)
     return false;
 
@@ -181,9 +180,8 @@ bool WaitForWebViewContainingImage(std::string image_id,
                                    base::SysUTF8ToNSString(image_id)];
     std::unique_ptr<base::Value> value = web::test::ExecuteJavaScript(
         web_state, base::SysNSStringToUTF8(kGetElementAttributesScript));
-    std::string result;
-    if (value && value->GetAsString(&result)) {
-      NSString* evaluation_result = base::SysUTF8ToNSString(result);
+    if (value && value->is_string()) {
+      NSString* evaluation_result = base::SysUTF8ToNSString(value->GetString());
       NSData* image_attributes_as_data =
           [evaluation_result dataUsingEncoding:NSUTF8StringEncoding];
       NSDictionary* image_attributes =
