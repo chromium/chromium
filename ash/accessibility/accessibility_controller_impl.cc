@@ -1360,8 +1360,6 @@ bool AccessibilityControllerImpl::IsEnterpriseIconVisibleForSwitchAccess() {
 void AccessibilityControllerImpl::SetAccessibilityEventRewriter(
     AccessibilityEventRewriter* accessibility_event_rewriter) {
   accessibility_event_rewriter_ = accessibility_event_rewriter;
-  if (accessibility_event_rewriter_)
-    UpdateKeyCodesAfterSwitchAccessEnabled();
 }
 
 void AccessibilityControllerImpl::HideSwitchAccessBackButton() {
