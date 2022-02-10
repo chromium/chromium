@@ -170,8 +170,10 @@ public class CriticalPersistedTabData extends PersistedTabData {
         mParentId = serialized.getFlatBuffer().parentId();
         mRootId = serialized.getFlatBuffer().rootId();
         mTimestampMillis = serialized.getFlatBuffer().timestampMillis();
+        ByteBuffer webContentsState =
+                serialized.getFlatBuffer().webContentsStateBytesAsByteBuffer();
         mWebContentsState = new WebContentsState(
-                serialized.getFlatBuffer().webContentsStateBytesAsByteBuffer().slice());
+                webContentsState == null ? ByteBuffer.allocateDirect(0) : webContentsState.slice());
         mWebContentsState.setVersion(WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
         mUrl = mWebContentsState.getVirtualUrlFromState() == null
                 ? GURL.emptyGURL()
@@ -263,6 +265,10 @@ public class CriticalPersistedTabData extends PersistedTabData {
         return criticalPersistedTabData;
     }
 
+    // We are currently using the constructor
+    // CriticalPersistedTabData(Tab tab, SerializedCriticalPersistedTabData serialized) rather than
+    // deserialize as part of deserializing straight after the file read. Assuming this approach
+    // is successful, deserialize on CriticalPersistedTabData will be deprecated.
     @Override
     boolean deserialize(@Nullable ByteBuffer bytes) {
         try (TraceEvent e = TraceEvent.scoped("CriticalPersistedTabData.Deserialize")) {
@@ -272,8 +278,10 @@ public class CriticalPersistedTabData extends PersistedTabData {
             mParentId = deserialized.parentId();
             mRootId = deserialized.rootId();
             mTimestampMillis = deserialized.timestampMillis();
+            ByteBuffer webContentsState = deserialized.webContentsStateBytesAsByteBuffer();
             mWebContentsState =
-                    new WebContentsState(deserialized.webContentsStateBytesAsByteBuffer().slice());
+                    new WebContentsState(webContentsState == null ? ByteBuffer.allocateDirect(0)
+                                                                  : webContentsState.slice());
             mWebContentsState.setVersion(WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
             mUrl = mWebContentsState.getVirtualUrlFromState() == null
                     ? GURL.emptyGURL()
@@ -770,5 +778,11 @@ public class CriticalPersistedTabData extends PersistedTabData {
             SerializedCriticalPersistedTabData serializedCriticalPersistedTabData) {
         return serializedCriticalPersistedTabData == null
                 || serializedCriticalPersistedTabData.isEmpty();
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    protected static PersistedTabDataMapper<SerializedCriticalPersistedTabData>
+    getMapperForTesting() {
+        return sMapper;
     }
 }
