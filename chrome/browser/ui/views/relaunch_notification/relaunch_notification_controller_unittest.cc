@@ -1155,8 +1155,9 @@ class RelaunchNotificationControllerPlatformImplTest
   absl::optional<RelaunchNotificationControllerPlatformImpl> impl_;
 };
 
+// Flaky on all platforms: https://crbug.com/1294032
 TEST_F(RelaunchNotificationControllerPlatformImplTest,
-       SynchronousNotification) {
+       DISABLED_SynchronousNotification) {
   // Make the UX visible to the user so that no delay will be incurred
   ASSERT_NO_FATAL_FAILURE(SetVisibility(true));
 
