@@ -39,10 +39,11 @@ export class WindowController {
 
     const windowMonitorCallbackRouter =
         wrapEndpoint(new WindowStateMonitorCallbackRouter());
-    windowMonitorCallbackRouter.onWindowStateChanged.addListener((states) => {
-      this.windowStates = states;
-      this.listeners.forEach((listener) => listener(states));
-    });
+    windowMonitorCallbackRouter.onWindowStateChanged.addListener(
+        (states: WindowStateType[]) => {
+          this.windowStates = states;
+          this.listeners.forEach((listener) => listener(states));
+        });
     const {states} = await this.windowStateController.addMonitor(
         windowMonitorCallbackRouter.$.bindNewPipeAndPassRemote());
     this.windowStates = states;
