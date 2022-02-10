@@ -25267,6 +25267,11 @@ Called by update_document_policy_enum.py.-->
   <int value="3" label="Success from Breakpad"/>
 </enum>
 
+<enum name="DumpWithoutCrashingStatus">
+  <int value="0" label="Dump throttled"/>
+  <int value="1" label="Dump uploaded"/>
+</enum>
+
 <enum name="DuplicateBookmarkEntityOnRemoteUpdateCondition">
   <int value="0" label="Entity with server ID is a tombstone"/>
   <int value="1" label="Only entity with temporary ID is a tombstone"/>

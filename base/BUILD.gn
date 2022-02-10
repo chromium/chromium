@@ -3089,6 +3089,7 @@ test("base_unittests") {
     "debug/alias_unittest.cc",
     "debug/crash_logging_unittest.cc",
     "debug/debugger_unittest.cc",
+    "debug/dump_without_crashing_unittest.cc",
     "debug/stack_trace_unittest.cc",
     "debug/task_trace_unittest.cc",
     "environment_unittest.cc",

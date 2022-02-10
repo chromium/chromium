@@ -292,6 +292,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Stability.DumpWithoutCrashingStatus"
+    enum="DumpWithoutCrashingStatus" expires_after="never">
+<!-- expires-never: Used for monitoring the throttling frequency of
+     DumpWithoutCrashing. -->
+
+  <owner>dcheng@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <owner>adkushwa@microsoft.com</owner>
+  <summary>
+    Keeps a count of number of times uploading the dump was throttled when
+    calling DumpWithoutCrashing.
+  </summary>
+</histogram>
+
 <histogram name="Stability.Experimental.PageLoads" enum="StabilityPageLoadType"
     expires_after="2022-06-12">
   <owner>fdoray@chromium.org</owner>

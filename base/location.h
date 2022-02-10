@@ -55,6 +55,12 @@ class BASE_EXPORT Location {
     return program_counter_ == other.program_counter_;
   }
 
+  // Comparator is necessary to use location object within an ordered container
+  // type (eg. std::map).
+  bool operator<(const Location& other) const {
+    return program_counter_ < other.program_counter_;
+  }
+
   // Returns true if there is source code location info. If this is false,
   // the Location object only contains a program counter or is
   // default-initialized (the program counter is also null).
