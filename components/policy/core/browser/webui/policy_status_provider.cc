@@ -90,17 +90,17 @@ void PolicyStatusProvider::GetStatusFromCore(const CloudPolicyCore* core,
 
   bool no_error = store->status() == CloudPolicyStore::STATUS_OK && client &&
                   client->status() == DM_STATUS_SUCCESS;
-  dict->SetBoolean("error", !no_error);
-  dict->SetBoolean(
+  dict->SetBoolKey("error", !no_error);
+  dict->SetBoolKey(
       "policiesPushAvailable",
       refresh_scheduler ? refresh_scheduler->invalidations_available() : false);
-  dict->SetString("status", status);
-  dict->SetString(
+  dict->SetStringKey("status", status);
+  dict->SetStringKey(
       "refreshInterval",
       ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
                              ui::TimeFormat::LENGTH_SHORT, refresh_interval));
-  dict->SetString("timeSinceLastRefresh",
-                  GetTimeSinceLastRefreshString(last_refresh_time));
+  dict->SetStringKey("timeSinceLastRefresh",
+                     GetTimeSinceLastRefreshString(last_refresh_time));
 }
 
 // static
@@ -111,16 +111,16 @@ void PolicyStatusProvider::GetStatusFromPolicyData(
   std::string username = policy ? policy->username() : std::string();
 
   if (policy && policy->has_annotated_asset_id())
-    dict->SetString("assetId", policy->annotated_asset_id());
+    dict->SetStringKey("assetId", policy->annotated_asset_id());
   if (policy && policy->has_annotated_location())
-    dict->SetString("location", policy->annotated_location());
+    dict->SetStringKey("location", policy->annotated_location());
   if (policy && policy->has_directory_api_id())
-    dict->SetString("directoryApiId", policy->directory_api_id());
+    dict->SetStringKey("directoryApiId", policy->directory_api_id());
   if (policy && policy->has_gaia_id())
-    dict->SetString("gaiaId", policy->gaia_id());
+    dict->SetStringKey("gaiaId", policy->gaia_id());
 
-  dict->SetString("clientId", client_id);
-  dict->SetString("username", username);
+  dict->SetStringKey("clientId", client_id);
+  dict->SetStringKey("username", username);
 }
 
 // CloudPolicyStore errors take precedence to show in the status message.

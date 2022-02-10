@@ -979,9 +979,9 @@ TEST_F(PolicyMapTest, MergeValuesGroup) {
 
 TEST_F(PolicyMapTest, LoadFromSetsLevelScopeAndSource) {
   base::DictionaryValue policies;
-  policies.SetString("TestPolicy1", "google.com");
-  policies.SetBoolean("TestPolicy2", true);
-  policies.SetInteger("TestPolicy3", -12321);
+  policies.SetStringKey("TestPolicy1", "google.com");
+  policies.SetBoolKey("TestPolicy2", true);
+  policies.SetIntKey("TestPolicy3", -12321);
 
   PolicyMap loaded;
   loaded.LoadFrom(&policies,

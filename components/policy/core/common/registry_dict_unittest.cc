@@ -236,11 +236,11 @@ TEST(RegistryDictTest, ConvertToJSON) {
   auto expected_list = std::make_unique<base::ListValue>();
   expected_list->Append(std::make_unique<base::Value>(string_value.Clone()));
   expected.Set("dict-to-list", std::move(expected_list));
-  expected.SetBoolean("int-to-bool", true);
-  expected.SetDouble("int-to-double", 42.0);
-  expected.SetBoolean("string-to-bool", false);
-  expected.SetDouble("string-to-double", 0.0);
-  expected.SetInteger("string-to-int", static_cast<int>(0));
+  expected.SetBoolKey("int-to-bool", true);
+  expected.SetDoubleKey("int-to-double", 42.0);
+  expected.SetBoolKey("string-to-bool", false);
+  expected.SetDoubleKey("string-to-double", 0.0);
+  expected.SetIntKey("string-to-int", static_cast<int>(0));
   expected_list = std::make_unique<base::ListValue>();
   expected_list->Append(std::make_unique<base::Value>("value"));
   expected_subdict = std::make_unique<base::DictionaryValue>();

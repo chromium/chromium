@@ -22,20 +22,20 @@ TEST(PolicyMacUtilTest, PropertyToValue) {
   root.Set("null", std::make_unique<base::Value>());
 
   // base::Value::Type::BOOLEAN
-  root.SetBoolean("false", false);
-  root.SetBoolean("true", true);
+  root.SetBoolKey("false", false);
+  root.SetBoolKey("true", true);
 
   // base::Value::Type::INTEGER
-  root.SetInteger("int", 123);
-  root.SetInteger("zero", 0);
+  root.SetIntKey("int", 123);
+  root.SetIntKey("zero", 0);
 
   // base::Value::Type::DOUBLE
-  root.SetDouble("double", 123.456);
-  root.SetDouble("zerod", 0.0);
+  root.SetDoubleKey("double", 123.456);
+  root.SetDoubleKey("zerod", 0.0);
 
   // base::Value::Type::STRING
-  root.SetString("string", "the fox jumps over something");
-  root.SetString("empty", "");
+  root.SetStringKey("string", "the fox jumps over something");
+  root.SetStringKey("empty", "");
 
   // base::Value::Type::LIST
   root.Set("emptyl", std::make_unique<base::Value>(base::Value::Type::LIST));

@@ -359,15 +359,15 @@ Configuration3rdPartyPolicyProviderTest::
 
 TEST_P(Configuration3rdPartyPolicyProviderTest, Load3rdParty) {
   base::DictionaryValue policy_dict;
-  policy_dict.SetBoolean("bool", true);
-  policy_dict.SetDouble("double", 123.456);
-  policy_dict.SetInteger("int", 789);
-  policy_dict.SetString("string", "string value");
+  policy_dict.SetBoolKey("bool", true);
+  policy_dict.SetDoubleKey("double", 123.456);
+  policy_dict.SetIntKey("int", 789);
+  policy_dict.SetStringKey("string", "string value");
 
   base::ListValue list;
   for (int i = 0; i < 2; ++i) {
     auto dict = std::make_unique<base::DictionaryValue>();
-    dict->SetInteger("subdictindex", i);
+    dict->SetIntKey("subdictindex", i);
     dict->SetKey("subdict", policy_dict.Clone());
     list.Append(std::move(dict));
   }
@@ -386,8 +386,8 @@ TEST_P(Configuration3rdPartyPolicyProviderTest, Load3rdParty) {
   // Install invalid 3rd party policies that shouldn't be loaded. These also
   // help detecting memory leaks in the code paths that detect invalid input.
   policy_3rdparty.SetPath({"invalid-domain", "component"}, policy_dict.Clone());
-  policy_3rdparty.SetString("extensions.cccccccccccccccccccccccccccccccc",
-                            "invalid-value");
+  policy_3rdparty.SetStringPath("extensions.cccccccccccccccccccccccccccccccc",
+                                "invalid-value");
   test_harness_->Install3rdPartyPolicy(&policy_3rdparty);
 
   provider_->RefreshPolicies();

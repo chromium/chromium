@@ -100,21 +100,21 @@ void TestHarness::InstallEmptyPolicy() {
 void TestHarness::InstallStringPolicy(const std::string& policy_name,
                                       const std::string& policy_value) {
   base::DictionaryValue dict;
-  dict.SetString(policy_name, policy_value);
+  dict.SetStringKey(policy_name, policy_value);
   WriteConfigFile(dict, NextConfigFileName());
 }
 
 void TestHarness::InstallIntegerPolicy(const std::string& policy_name,
                                        int policy_value) {
   base::DictionaryValue dict;
-  dict.SetInteger(policy_name, policy_value);
+  dict.SetIntKey(policy_name, policy_value);
   WriteConfigFile(dict, NextConfigFileName());
 }
 
 void TestHarness::InstallBooleanPolicy(const std::string& policy_name,
                                        bool policy_value) {
   base::DictionaryValue dict;
-  dict.SetBoolean(policy_name, policy_value);
+  dict.SetBoolKey(policy_name, policy_value);
   WriteConfigFile(dict, NextConfigFileName());
 }
 
@@ -216,11 +216,11 @@ TEST_F(ConfigDirPolicyLoaderTest, ReadPrefsMergePrefs) {
   // but this is better than nothing.
   base::DictionaryValue test_dict_bar;
   const char kHomepageLocation[] = "HomepageLocation";
-  test_dict_bar.SetString(kHomepageLocation, "http://bar.com");
+  test_dict_bar.SetStringKey(kHomepageLocation, "http://bar.com");
   for (unsigned int i = 1; i <= 4; ++i)
     harness_.WriteConfigFile(test_dict_bar, base::NumberToString(i));
   base::DictionaryValue test_dict_foo;
-  test_dict_foo.SetString(kHomepageLocation, "http://foo.com");
+  test_dict_foo.SetStringKey(kHomepageLocation, "http://foo.com");
   harness_.WriteConfigFile(test_dict_foo, "9");
   for (unsigned int i = 5; i <= 8; ++i)
     harness_.WriteConfigFile(test_dict_bar, base::NumberToString(i));
