@@ -331,10 +331,9 @@ bool NGFragmentItem::IsListMarker() const {
   return layout_object_ && layout_object_->IsLayoutNGOutsideListMarker();
 }
 
-LayoutBlock& NGFragmentItem::BlockInInline() const {
+LayoutObject& NGFragmentItem::BlockInInline() const {
   DCHECK(IsBlockInInline());
-  auto* const block =
-      To<LayoutBlock>(To<LayoutNGBlockFlow>(GetLayoutObject())->FirstChild());
+  auto* const block = To<LayoutNGBlockFlow>(GetLayoutObject())->FirstChild();
   DCHECK(block) << this;
   return *block;
 }

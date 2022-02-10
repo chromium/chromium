@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
+#include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
@@ -417,6 +418,27 @@ TEST_P(NGInlineCursorTest, FirstLastLogicalLeafWithImages) {
   NGInlineCursor last_logical_leaf(cursor);
   last_logical_leaf.MoveToLastLogicalLeaf();
   EXPECT_EQ("#last", ToDebugString(last_logical_leaf));
+}
+
+// http://crbug.com/1295087
+TEST_P(NGInlineCursorTest, FirstNonPseudoLeafWithBlockImage) {
+  InsertStyleElement("img { display: block; }");
+  NGInlineCursor cursor = SetupCursor("<p id=root><b><img id=target></b></p>");
+
+  // Note: The first child of block-in-inline can be |LayoutImage|.
+  // LayoutNGBlockFlow P id="root"
+  //   +--LayoutInline SPAN
+  //   |  +--LayoutNGBlockFlow (anonymous)  # block-in-inline
+  //   |  |  +--LayoutImage IMG id="target" # first child of block-in-inline
+  //   +--LayoutText #text ""
+  const auto& target =
+      *To<LayoutImage>(GetElementById("target")->GetLayoutObject());
+
+  cursor.MoveToFirstNonPseudoLeaf();
+  ASSERT_TRUE(cursor.Current());
+  EXPECT_EQ(target.Parent(), cursor.Current().GetLayoutObject());
+  ASSERT_TRUE(cursor.Current()->IsBlockInInline());
+  EXPECT_EQ(&target, cursor.Current()->BlockInInline());
 }
 
 TEST_P(NGInlineCursorTest, IsEmptyLineBox) {
