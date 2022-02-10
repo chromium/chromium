@@ -259,6 +259,13 @@ void CaptureModeSettingsView::OnAvailableCamerasChanged(
     const CameraInfoList& cameras) {
   DCHECK(camera_menu_group_);
   AddCameraOptions(cameras);
+
+  // If the size of the given `cameras` is equal to the size of the current
+  // available cameras, the bounds of the `camera_menu_group_` won't be updated,
+  // hence a layout may not be triggered. This can cause the newly added camera
+  // options to be not visible. We must guarantee that a layout will always
+  // occur by invalidating the layout.
+  camera_menu_group_->InvalidateLayout();
   camera_menu_group_->RefreshOptionsSelections();
   capture_mode_session_->MaybeUpdateSettingsBounds();
 }
