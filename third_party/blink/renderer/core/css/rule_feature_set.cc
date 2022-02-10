@@ -644,6 +644,11 @@ InvalidationSet* RuleFeatureSet::InvalidationSetForSimpleSelector(
       case CSSSelector::kPseudoNthLastChild:
       case CSSSelector::kPseudoNthLastOfType:
         return &EnsureNthInvalidationSet();
+      case CSSSelector::kPseudoHas:
+        return position == kAncestor
+                   ? &EnsurePseudoInvalidationSet(selector.GetPseudoType(),
+                                                  type, position)
+                   : nullptr;
       case CSSSelector::kPseudoPart:
       default:
         break;
@@ -756,7 +761,6 @@ void RuleFeatureSet::ExtractInvalidationSetFeaturesFromSelectorList(
   // For the :has pseudo class, we should not extract invalidation set features
   // here because the :has invalidation direction is different with others.
   // (preceding-sibling/ancestors/preceding-sibling-of-ancestors)
-  // TODO(blee@igalia.com) Need to add :has invalidation
   if (UNLIKELY(pseudo_type == CSSSelector::kPseudoHas))
     return;
 
@@ -1002,6 +1006,11 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForSimpleSelector(
   if (simple_selector.IsIdClassOrAttributeSelector())
     descendant_features.has_features_for_rule_set_invalidation = true;
 
+  CSSSelector::PseudoType pseudo_type = simple_selector.GetPseudoType();
+
+  if (UNLIKELY(pseudo_type == CSSSelector::kPseudoHas))
+    CollectValuesInHasArgument(simple_selector);
+
   if (InvalidationSet* invalidation_set = InvalidationSetForSimpleSelector(
           simple_selector,
           sibling_features ? InvalidationType::kInvalidateSiblings
@@ -1038,12 +1047,9 @@ void RuleFeatureSet::AddFeaturesToInvalidationSetsForSimpleSelector(
     return;
   }
 
-  CSSSelector::PseudoType pseudo_type = simple_selector.GetPseudoType();
-
   // For the :has pseudo class, we should not extract invalidation set features
   // here because the :has invalidation direction is different with others.
   // (preceding-sibling/ancestors/preceding-sibling-of-ancestors)
-  // TODO(blee@igalia.com) Need to add :has invalidation
   if (UNLIKELY(pseudo_type == CSSSelector::kPseudoHas))
     return;
 

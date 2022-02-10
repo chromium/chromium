@@ -391,49 +391,45 @@ class ComputedStyle : public ComputedStyleBase,
                                IsAtShadowBoundary = kNotAtShadowBoundary);
   void CopyNonInheritedFromCached(const ComputedStyle&);
 
-  bool AncestorsAffectedByHas() const {
-    return DynamicRestyleFlagsForHas() & kAncestorsAffectedByHas;
+  bool AncestorsAffectedByHoverInSubjectHas() const {
+    return DynamicRestyleFlagsForSubjectHas() &
+           kAncestorsAffectedByHoverInSubjectHas;
   }
 
-  void SetAncestorsAffectedByHas() {
-    SetDynamicRestyleFlagsForHas(DynamicRestyleFlagsForHas() |
-                                 kAncestorsAffectedByHas);
+  void SetAncestorsAffectedByHoverInSubjectHas() {
+    SetDynamicRestyleFlagsForSubjectHas(DynamicRestyleFlagsForSubjectHas() |
+                                        kAncestorsAffectedByHoverInSubjectHas);
   }
 
-  bool AncestorsAffectedByHoverInHas() const {
-    return DynamicRestyleFlagsForHas() & kAncestorsAffectedByHoverInHas;
+  bool AncestorsAffectedByActiveInSubjectHas() const {
+    return DynamicRestyleFlagsForSubjectHas() &
+           kAncestorsAffectedByActiveInSubjectHas;
   }
 
-  void SetAncestorsAffectedByHoverInHas() {
-    SetDynamicRestyleFlagsForHas(DynamicRestyleFlagsForHas() |
-                                 kAncestorsAffectedByHoverInHas);
+  void SetAncestorsAffectedByActiveInSubjectHas() {
+    SetDynamicRestyleFlagsForSubjectHas(DynamicRestyleFlagsForSubjectHas() |
+                                        kAncestorsAffectedByActiveInSubjectHas);
   }
 
-  bool AncestorsAffectedByActiveInHas() const {
-    return DynamicRestyleFlagsForHas() & kAncestorsAffectedByActiveInHas;
+  bool AncestorsAffectedByFocusInSubjectHas() const {
+    return DynamicRestyleFlagsForSubjectHas() &
+           kAncestorsAffectedByFocusInSubjectHas;
   }
 
-  void SetAncestorsAffectedByActiveInHas() {
-    SetDynamicRestyleFlagsForHas(DynamicRestyleFlagsForHas() |
-                                 kAncestorsAffectedByActiveInHas);
+  void SetAncestorsAffectedByFocusInSubjectHas() {
+    SetDynamicRestyleFlagsForSubjectHas(DynamicRestyleFlagsForSubjectHas() |
+                                        kAncestorsAffectedByFocusInSubjectHas);
   }
 
-  bool AncestorsAffectedByFocusInHas() const {
-    return DynamicRestyleFlagsForHas() & kAncestorsAffectedByFocusInHas;
+  bool AncestorsAffectedByFocusVisibleInSubjectHas() const {
+    return DynamicRestyleFlagsForSubjectHas() &
+           kAncestorsAffectedByFocusVisibleInSubjectHas;
   }
 
-  void SetAncestorsAffectedByFocusInHas() {
-    SetDynamicRestyleFlagsForHas(DynamicRestyleFlagsForHas() |
-                                 kAncestorsAffectedByFocusInHas);
-  }
-
-  bool AncestorsAffectedByFocusVisibleInHas() const {
-    return DynamicRestyleFlagsForHas() & kAncestorsAffectedByFocusVisibleInHas;
-  }
-
-  void SetAncestorsAffectedByFocusVisibleInHas() {
-    SetDynamicRestyleFlagsForHas(DynamicRestyleFlagsForHas() |
-                                 kAncestorsAffectedByFocusVisibleInHas);
+  void SetAncestorsAffectedByFocusVisibleInSubjectHas() {
+    SetDynamicRestyleFlagsForSubjectHas(
+        DynamicRestyleFlagsForSubjectHas() |
+        kAncestorsAffectedByFocusVisibleInSubjectHas);
   }
 
   PseudoId StyleType() const {

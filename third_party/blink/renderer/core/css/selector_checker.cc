@@ -813,8 +813,39 @@ bool SelectorChecker::CheckPseudoHas(const SelectorCheckingContext& context,
           NOTREACHED();
           break;
       }
-      if (selector_matched)
+
+      if (selector_matched) {
+        // Need to walk up ancestors to set 'AncestorsAffectedByHas' flag so
+        // that the StyleEngine can walk up to find the elements affected by
+        // subject or non-subject :has().
+        //
+        // StyleEngine tries to find elements affected by :has() by walking up
+        // ancestors of a mutated element only when an element marked as
+        // 'AncestorsAffectedByHas'. If an ancestor of the mutated element
+        // is not 'AncestorsAffectedByHas' element, then StyleEngine will stop
+        // the upward tree walk at the element.
+        //
+        // HasArgumentSubtreeIterator traverses the sub-tree in the reversed
+        // DOM tree walk order for preventing O(n^2) matching problem of
+        // multiple elements affected by :has(). Due to this traversal order,
+        // this early returning can break the upward tree walk. To prevent the
+        // problem, marks all ancestors as 'AncestorsAffectedByHas' before
+        // returning.
+        //
+        // Similar to the DynamicRestyleFlags in the ContainerNode, this flag
+        // will never be reset.
+        //
+        // TODO(blee@igalia.com) Need to traverse to siblings and siblings of
+        // ancestors to support sibling combinator and complex selector in
+        // :has() argument.
+        for (Element* parent = iterator.Get(); parent && parent != element;
+             parent = parent->parentElement()) {
+          parent->SetAncestorsAffectedByHas();
+        }
         return true;
+      } else {
+        iterator.Get()->SetAncestorsAffectedByHas();
+      }
     }
   }
   return false;
@@ -1018,7 +1049,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (mode_ == kResolvingStyle) {
         if (UNLIKELY(context.is_inside_has_pseudo_class)) {
           if (context.pseudo_has_in_rightmost_compound)
-            element_style_->SetAncestorsAffectedByFocusInHas();
+            element_style_->SetAncestorsAffectedByFocusInSubjectHas();
         } else {
           if (!context.in_rightmost_compound)
             element.SetChildrenOrSiblingsAffectedByFocus();
@@ -1029,7 +1060,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (mode_ == kResolvingStyle) {
         if (UNLIKELY(context.is_inside_has_pseudo_class)) {
           if (context.pseudo_has_in_rightmost_compound)
-            element_style_->SetAncestorsAffectedByFocusVisibleInHas();
+            element_style_->SetAncestorsAffectedByFocusVisibleInSubjectHas();
         } else {
           if (!context.in_rightmost_compound)
             element.SetChildrenOrSiblingsAffectedByFocusVisible();
@@ -1040,7 +1071,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (mode_ == kResolvingStyle) {
         if (UNLIKELY(context.is_inside_has_pseudo_class)) {
           if (context.pseudo_has_in_rightmost_compound)
-            element_style_->SetAncestorsAffectedByFocusInHas();
+            element_style_->SetAncestorsAffectedByFocusInSubjectHas();
         } else {
           if (context.in_rightmost_compound)
             element_style_->SetAffectedByFocusWithin();
@@ -1057,7 +1088,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (mode_ == kResolvingStyle) {
         if (UNLIKELY(context.is_inside_has_pseudo_class)) {
           if (context.pseudo_has_in_rightmost_compound)
-            element_style_->SetAncestorsAffectedByHoverInHas();
+            element_style_->SetAncestorsAffectedByHoverInSubjectHas();
         } else {
           if (context.in_rightmost_compound)
             element_style_->SetAffectedByHover();
@@ -1076,7 +1107,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       if (mode_ == kResolvingStyle) {
         if (UNLIKELY(context.is_inside_has_pseudo_class)) {
           if (context.pseudo_has_in_rightmost_compound)
-            element_style_->SetAncestorsAffectedByActiveInHas();
+            element_style_->SetAncestorsAffectedByActiveInSubjectHas();
         } else {
           if (context.in_rightmost_compound)
             element_style_->SetAffectedByActive();
@@ -1285,17 +1316,17 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoHas:
       if (mode_ == kResolvingStyle) {
         if (context.in_rightmost_compound) {
-          // Set 'AffectedByHas' flag to indicate that the element is affected
-          // by a ':has()' state. It means that, when we have a mutation on a
-          // descendant of the element, we may need to invalidate the style of
-          // the element because the mutation can affect the state of this
-          // ':has()' selector.
-          element_style_->SetAffectedByHas();
-          element_style_->SetAncestorsAffectedByHas();
+          // Set 'AffectedBySubjectHas' flag to indicate that the element is
+          // affected by a subject ':has()' state. It means that, when we have
+          // a mutation on a descendant of the element, we may need to
+          // invalidate the style of the element because the mutation can affect
+          // the state of this ':has()' selector.
+          element_style_->SetAffectedBySubjectHas();
           if (selector.ContainsPseudoInsideHasPseudoClass())
-            element_style_->SetAffectedByPseudoInHas();
+            element_style_->SetAffectedByPseudoInSubjectHas();
+        } else {
+          element.SetAffectedByNonSubjectHas();
         }
-        // TODO(blee@igalia.com) non-terminal ':has() is not supported yet
       }
       return CheckPseudoHas(context, result);
     case CSSSelector::kPseudoRelativeLeftmost:

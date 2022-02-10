@@ -3694,29 +3694,29 @@ struct Element::AffectedByPseudoStateChange {
       case CSSSelector::kPseudoFocus:
         children_or_siblings = element.ChildrenOrSiblingsAffectedByFocus();
         if (auto* style = element.GetComputedStyle())
-          ancestors = style->AncestorsAffectedByFocusInHas();
+          ancestors = style->AncestorsAffectedByFocusInSubjectHas();
         break;
       case CSSSelector::kPseudoFocusVisible:
         children_or_siblings =
             element.ChildrenOrSiblingsAffectedByFocusVisible();
         if (auto* style = element.GetComputedStyle())
-          ancestors = style->AncestorsAffectedByFocusVisibleInHas();
+          ancestors = style->AncestorsAffectedByFocusVisibleInSubjectHas();
         break;
       case CSSSelector::kPseudoFocusWithin:
         children_or_siblings =
             element.ChildrenOrSiblingsAffectedByFocusWithin();
         if (auto* style = element.GetComputedStyle())
-          ancestors = style->AncestorsAffectedByFocusInHas();
+          ancestors = style->AncestorsAffectedByFocusInSubjectHas();
         break;
       case CSSSelector::kPseudoHover:
         children_or_siblings = element.ChildrenOrSiblingsAffectedByHover();
         if (auto* style = element.GetComputedStyle())
-          ancestors = style->AncestorsAffectedByHoverInHas();
+          ancestors = style->AncestorsAffectedByHoverInSubjectHas();
         break;
       case CSSSelector::kPseudoActive:
         children_or_siblings = element.ChildrenOrSiblingsAffectedByActive();
         if (auto* style = element.GetComputedStyle())
-          ancestors = style->AncestorsAffectedByActiveInHas();
+          ancestors = style->AncestorsAffectedByActiveInSubjectHas();
         break;
 
       case CSSSelector::kPseudoChecked:
@@ -4779,6 +4779,26 @@ void Element::SetHasUndoStack(bool value) {
 void Element::SetScrollbarPseudoElementStylesDependOnFontMetrics(bool value) {
   EnsureElementRareData().SetScrollbarPseudoElementStylesDependOnFontMetrics(
       value);
+}
+
+bool Element::AffectedByNonSubjectHas() const {
+  if (HasRareData())
+    return GetElementRareData()->AffectedByNonSubjectHas();
+  return false;
+}
+
+void Element::SetAffectedByNonSubjectHas() {
+  EnsureElementRareData().SetAffectedByNonSubjectHas();
+}
+
+bool Element::AncestorsAffectedByHas() const {
+  if (HasRareData())
+    return GetElementRareData()->AncestorsAffectedByHas();
+  return false;
+}
+
+void Element::SetAncestorsAffectedByHas() {
+  EnsureElementRareData().SetAncestorsAffectedByHas();
 }
 
 bool Element::UpdateForceLegacyLayout(const ComputedStyle& new_style,

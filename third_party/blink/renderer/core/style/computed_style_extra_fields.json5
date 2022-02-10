@@ -143,24 +143,24 @@
     },
     // Whether this style is related with :has() pseudo-class
     {
-      name: "AffectedByHas",
+      name: "AffectedBySubjectHas",
       field_template: "monotonic_flag",
       default_value: "false",
       custom_copy: true,
       custom_compare: true,
     },
     {
-      name: "AffectedByPseudoInHas",
+      name: "AffectedByPseudoInSubjectHas",
       field_template: "monotonic_flag",
       default_value: "false",
       custom_copy: true,
       custom_compare: true,
     },
     {
-      name: "DynamicRestyleFlagsForHas",
+      name: "DynamicRestyleFlagsForSubjectHas",
       field_template: "primitive",
       field_group: "*",
-      field_size: 5,
+      field_size: 4,
       default_value: "0",
       type_name: "unsigned",
       inherited: true,

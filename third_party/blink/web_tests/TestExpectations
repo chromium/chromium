@@ -7613,3 +7613,6 @@ crbug.com/1295711 [ Win7 ] virtual/prerender/external/wpt/speculation-rules/prer
 crbug.com/1295707 [ Mac11 ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/elements/elements-treeoutline-copy.js [ Failure Pass ]
 crbug.com/1295712 [ Mac10.13 ] fast/forms/color-scheme/datetimelocal-picker/datetimelocal-picker-appearance.html [ Failure ]
 crbug.com/1295733 [ Mac11-arm64 ] fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance-with-scroll-bar.html [ Failure ]
+
+# Disable to skip performance test caused by potential O(n^2) problem in AXObjectCacheImpl::ChildrenChanged
+crbug.com/1293714 external/wpt/css/selectors/invalidation/has-complexity.html [ Skip ]

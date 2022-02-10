@@ -55,7 +55,9 @@ ElementRareData::ElementRareData(NodeRenderingData* node_layout_data)
       should_force_legacy_layout_for_child_(false),
       style_should_force_legacy_layout_(false),
       has_undo_stack_(false),
-      scrollbar_pseudo_element_styles_depend_on_font_metrics_(false) {
+      scrollbar_pseudo_element_styles_depend_on_font_metrics_(false),
+      affected_by_non_subject_has_(false),
+      ancestors_affected_by_has_(false) {
   // When The ElementSuperRareData flag is disabled, then always initialize
   // ElementSuperRareData immediately in order to measure the memory usage
   // improvements.

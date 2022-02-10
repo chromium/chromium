@@ -323,6 +323,10 @@ class ElementRareData final : public NodeRareData {
   void SetScrollbarPseudoElementStylesDependOnFontMetrics(bool value) {
     scrollbar_pseudo_element_styles_depend_on_font_metrics_ = value;
   }
+  bool AffectedByNonSubjectHas() const { return affected_by_non_subject_has_; }
+  void SetAffectedByNonSubjectHas() { affected_by_non_subject_has_ = true; }
+  bool AncestorsAffectedByHas() const { return ancestors_affected_by_has_; }
+  void SetAncestorsAffectedByHas() { ancestors_affected_by_has_ = true; }
 
   AccessibleNode* GetAccessibleNode() const {
     if (super_rare_data_)
@@ -441,6 +445,46 @@ class ElementRareData final : public NodeRareData {
   unsigned style_should_force_legacy_layout_ : 1;
   unsigned has_undo_stack_ : 1;
   unsigned scrollbar_pseudo_element_styles_depend_on_font_metrics_ : 1;
+
+  // Flags for :has() invalidation.
+  // - affected_by_non_subject_has_ : Indicates that this element may match a
+  //                                  non-subject :has() selector, which means
+  //                                  we need to schedule descendant and sibling
+  //                                  invalidation sets on this element when
+  //                                  the :has() state changes.
+  // - ancestors_affected_by_has_ : Indicates that this element possibly matches
+  //                                any of the :has() subselectors, so we need
+  //                                to walk ancestors to find the elements
+  //                                affected by subject or non-subject :has()
+  //                                state change. Please refer the comments in
+  //                                SelectorChecker::CheckPseudoHas() for more
+  //                                details.
+  //
+  // Example 1) Subject :has()
+  //  <style> .a:has(.b) {...} </style>
+  //  <div>
+  //    <div class=a>  <!-- AffectedBySubjectHas (computed style extra flag) -->
+  //      <div>           <!-- AncestorsAffectedByHas -->
+  //        <div></div>   <!-- AncestorsAffectedByHas -->
+  //        <div></div>   <!-- AncestorsAffectedByHas -->
+  //      </div>
+  //    </div>
+  //  </div>
+  //
+  //
+  // Example 2) Non-subject :has()
+  //  <style> .a:has(.b) .c {...} </style>
+  //  <div>
+  //    <div class=a>             <!-- AffectedByNonSubjectHas -->
+  //      <div>                   <!-- AncestorsAffectedByHas -->
+  //        <div></div>           <!-- AncestorsAffectedByHas -->
+  //        <div class=c></div>   <!-- AncestorsAffectedByHas -->
+  //      </div>
+  //    </div>
+  //  </div>
+  //
+  unsigned affected_by_non_subject_has_ : 1;
+  unsigned ancestors_affected_by_has_ : 1;
 };
 
 inline LayoutSize DefaultMinimumSizeForResizing() {

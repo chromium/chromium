@@ -698,6 +698,12 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // container.
   void RebuildFieldSetContainer(HTMLFieldSetElement& fieldset);
 
+  // Walk-up to invalidate elements affected by :has() state change
+  void InvalidateAncestorsAffectedByHasInternal(Element*,
+                                                bool for_pseudo_change);
+  void InvalidateAncestorsAffectedByHas(Element*);
+  void InvalidateAncestorsAffectedByHasForPseudoChange(Element*);
+
   Member<Document> document_;
 
   // Tracks the number of currently loading top-level stylesheets. Sheets loaded
