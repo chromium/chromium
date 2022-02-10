@@ -448,13 +448,7 @@ bool ZipReader::OpenInternal() {
   }
 
   num_entries_ = zip_info.number_entry;
-  if (num_entries_ < 0) {
-    LOG(ERROR) << "Cannot get ZIP info: " << UnzipError(num_entries_);
-    return false;
-  }
-
-  // We are already at the end if the ZIP archive is empty.
-  reached_end_ = (num_entries_ == 0);
+  reached_end_ = (num_entries_ <= 0);
   return true;
 }
 
