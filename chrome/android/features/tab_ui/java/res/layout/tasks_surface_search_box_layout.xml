@@ -30,7 +30,7 @@
         android:id="@+id/search_box_text"
         style="@style/TextAppearance.TasksSurfaceSearchBoxText"
         android:layout_width="match_parent"
-        android:layout_height="24dp"
+        android:layout_height="match_parent"
         android:background="@null"
         android:ellipsize="end"
         android:focusable="false"
