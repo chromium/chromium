@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
+#include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 #include "third_party/blink/renderer/core/dom/named_node_map.h"
 #include "third_party/blink/renderer/core/dom/names_map.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
@@ -154,6 +155,9 @@ class ElementSuperRareData : public GarbageCollected<ElementSuperRareData> {
     return last_intrinsic_size_;
   }
 
+  FocusgroupFlags GetFocusgroupFlags() const { return focusgroup_flags_; }
+  void SetFocusgroupFlags(FocusgroupFlags flags) { focusgroup_flags_ = flags; }
+
   void Trace(blink::Visitor*) const;
 
  private:
@@ -171,6 +175,7 @@ class ElementSuperRareData : public GarbageCollected<ElementSuperRareData> {
   Member<CustomElementDefinition> custom_element_definition_;
   AtomicString is_value_;
   Member<ResizeObserverSize> last_intrinsic_size_;
+  FocusgroupFlags focusgroup_flags_ = FocusgroupFlags::kNone;
 };
 
 class ElementRareData final : public NodeRareData {
@@ -193,6 +198,22 @@ class ElementRareData final : public NodeRareData {
 
   void ClearTabIndexExplicitly() {
     ClearElementFlag(ElementFlags::kTabIndexWasSetExplicitly);
+  }
+
+  FocusgroupFlags GetFocusgroupFlags() const {
+    if (super_rare_data_)
+      return super_rare_data_->GetFocusgroupFlags();
+    return FocusgroupFlags::kNone;
+  }
+
+  void SetFocusgroupFlags(FocusgroupFlags flags) {
+    EnsureSuperRareData().SetFocusgroupFlags(flags);
+  }
+
+  void ClearFocusgroupFlags() {
+    if (!super_rare_data_)
+      return;
+    SetFocusgroupFlags(FocusgroupFlags::kNone);
   }
 
   CSSStyleDeclaration& EnsureInlineCSSStyleDeclaration(Element* owner_element);

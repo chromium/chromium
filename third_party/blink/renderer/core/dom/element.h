@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/dom/element_data.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
+#include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 #include "third_party/blink/renderer/core/dom/names_map.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -1063,6 +1064,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // all its subtree to be inert.
   bool IsInertRoot();
 
+  FocusgroupFlags GetFocusgroupFlags() const;
+
  protected:
   const ElementData* GetElementData() const { return element_data_.Get(); }
   UniqueElementData& EnsureUniqueElementData();
@@ -1305,6 +1308,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                 const AtomicString& old_id,
                 const AtomicString& new_id);
   void UpdateName(const AtomicString& old_name, const AtomicString& new_name);
+
+  void UpdateFocusgroup(const AtomicString& input);
 
   void ClientQuads(Vector<gfx::QuadF>& quads) const;
 

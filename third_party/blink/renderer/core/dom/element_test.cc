@@ -21,10 +21,14 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
-class ElementTest : public EditingTestBase {};
+class ElementTest : public EditingTestBase {
+ private:
+  ScopedFocusgroupForTest focusgroup_enabled{true};
+};
 
 TEST_F(ElementTest, SupportsFocus) {
   Document& document = GetDocument();
@@ -568,6 +572,448 @@ TEST_F(ElementTest, IsFocusableForInertInContentVisibility) {
   // IsFocusable() should update the LayoutObject and notice that it's inert.
   ASSERT_FALSE(target->IsFocusable());
   ASSERT_TRUE(target->GetLayoutObject()->Style()->IsInert());
+}
+
+TEST_F(ElementTest, ParseFocusgroupAttrDefaultValuesWhenEmptyValue) {
+  Document& document = GetDocument();
+  SetBodyContent(R"HTML(
+    <div id=not_fg></div>
+    <div id=fg focusgroup></div>
+  )HTML");
+
+  // We use this as a "control" to validate that not all elements are treated as
+  // Focusgroups.
+  auto* not_fg = document.getElementById("not_fg");
+  ASSERT_TRUE(not_fg);
+
+  FocusgroupFlags not_fg_flags = not_fg->GetFocusgroupFlags();
+  ASSERT_FALSE(focusgroup::IsFocusgroup(not_fg_flags));
+
+  auto* fg = document.getElementById("fg");
+  ASSERT_TRUE(fg);
+
+  FocusgroupFlags fg_flags = fg->GetFocusgroupFlags();
+  ASSERT_TRUE(focusgroup::IsFocusgroup(fg_flags));
+
+  ASSERT_TRUE(fg_flags & FocusgroupFlags::kHorizontal);
+  ASSERT_TRUE(fg_flags & FocusgroupFlags::kVertical);
+  ASSERT_FALSE(fg_flags & FocusgroupFlags::kExtend);
+  ASSERT_FALSE(fg_flags & FocusgroupFlags::kWrapHorizontally);
+  ASSERT_FALSE(fg_flags & FocusgroupFlags::kWrapVertically);
+}
+
+TEST_F(ElementTest, ParseFocusgroupAttrSupportedAxesAreValid) {
+  Document& document = GetDocument();
+  SetBodyContent(R"HTML(
+    <div id=fg1 focusgroup=horizontal></div>
+    <div id=fg2 focusgroup=vertical></div>
+    <div id=fg3 focusgroup>
+      <div id=fg3_a focusgroup="extend horizontal"></div>
+      <div id=fg3_b focusgroup="extend vertical">
+        <div id=fg3_b_1 focusgroup=extend></div>
+      </div>
+    </div>
+  )HTML");
+
+  // 1. Only horizontal should be supported.
+  auto* fg1 = document.getElementById("fg1");
+  ASSERT_TRUE(fg1);
+
+  FocusgroupFlags fg1_flags = fg1->GetFocusgroupFlags();
+  ASSERT_TRUE(fg1_flags & FocusgroupFlags::kHorizontal);
+  ASSERT_FALSE(fg1_flags & FocusgroupFlags::kVertical);
+
+  // 2. Only vertical should be supported.
+  auto* fg2 = document.getElementById("fg2");
+  ASSERT_TRUE(fg2);
+
+  FocusgroupFlags fg2_flags = fg2->GetFocusgroupFlags();
+  ASSERT_FALSE(fg2_flags & FocusgroupFlags::kHorizontal);
+  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kVertical);
+
+  // 3. No axis specified so both should be supported
+  auto* fg3 = document.getElementById("fg3");
+  ASSERT_TRUE(fg3);
+
+  FocusgroupFlags fg3_flags = fg3->GetFocusgroupFlags();
+  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kHorizontal);
+  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kVertical);
+
+  // 4. Only support horizontal because it's specified, regardless of the
+  // extend.
+  auto* fg3_a = document.getElementById("fg3_a");
+  ASSERT_TRUE(fg3_a);
+
+  FocusgroupFlags fg3_a_flags = fg3_a->GetFocusgroupFlags();
+  ASSERT_TRUE(fg3_a_flags & FocusgroupFlags::kHorizontal);
+  ASSERT_FALSE(fg3_a_flags & FocusgroupFlags::kVertical);
+
+  // 5. Only support vertical because it's specified, regardless of the extend.
+  auto* fg3_b = document.getElementById("fg3_b");
+  ASSERT_TRUE(fg3_b);
+
+  FocusgroupFlags fg3_b_flags = fg3_b->GetFocusgroupFlags();
+  ASSERT_FALSE(fg3_b_flags & FocusgroupFlags::kHorizontal);
+  ASSERT_TRUE(fg3_b_flags & FocusgroupFlags::kVertical);
+
+  // 6. Extends a focusgroup that only supports vertical axis, but should
+  // support both axes regardless.
+  auto* fg3_b_1 = document.getElementById("fg3_b_1");
+  ASSERT_TRUE(fg3_b_1);
+
+  FocusgroupFlags fg3_b_1_flags = fg3_b_1->GetFocusgroupFlags();
+  ASSERT_TRUE(fg3_b_1_flags & FocusgroupFlags::kHorizontal);
+  ASSERT_TRUE(fg3_b_1_flags & FocusgroupFlags::kVertical);
+}
+
+TEST_F(ElementTest, ParseFocusgroupAttrExtendCorrectly) {
+  Document& document = GetDocument();
+  SetBodyContent(R"HTML(
+    <div id=fg1 focusgroup>
+      <div id=fg2 focusgroup=extend>
+        <div>
+          <div>
+            <div id=fg3 focusgroup=extend></div>
+          </div>
+        </div>
+      </div>
+      <div id=fg4 focusgroup></div>
+      <div id=fg-none focusgroup=none>
+        <div id=fg5 focusgroup=extend></div>
+      </div>
+    </div>
+    <div id=fg6 focusgroup=extend>
+  )HTML");
+
+  // 1. Root focusgroup shouldn't extend any other.
+  auto* fg1 = document.getElementById("fg1");
+  ASSERT_TRUE(fg1);
+
+  FocusgroupFlags fg1_flags = fg1->GetFocusgroupFlags();
+  ASSERT_TRUE(focusgroup::IsFocusgroup(fg1_flags));
+  ASSERT_FALSE(fg1_flags & FocusgroupFlags::kExtend);
+
+  // 2. Direct child on which we specified "extend" should extend.
+  auto* fg2 = document.getElementById("fg2");
+  ASSERT_TRUE(fg2);
+
+  FocusgroupFlags fg2_flags = fg2->GetFocusgroupFlags();
+  ASSERT_TRUE(focusgroup::IsFocusgroup(fg2_flags));
+  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kExtend);
+
+  // 3. A focusgroup marked as extend should extend its closest ancestor even if
+  // that ancestor isn't its parent.
+  auto* fg3 = document.getElementById("fg3");
+  ASSERT_TRUE(fg3);
+
+  FocusgroupFlags fg3_flags = fg3->GetFocusgroupFlags();
+  ASSERT_TRUE(focusgroup::IsFocusgroup(fg3_flags));
+  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kExtend);
+
+  // 4. A focusgroup child of another focusgroup should only extend if the
+  // extend keyword is specified - in this case, it's not.
+  auto* fg4 = document.getElementById("fg4");
+  ASSERT_TRUE(fg4);
+
+  FocusgroupFlags fg4_flags = fg4->GetFocusgroupFlags();
+  ASSERT_TRUE(focusgroup::IsFocusgroup(fg4_flags));
+  ASSERT_FALSE(fg4_flags & FocusgroupFlags::kExtend);
+
+  // 5. When an element has the value "focusgroup=none", it should break any
+  // extend relationship between two focusgroups - in this case, with |fg5|, the
+  // element should be treated as a focusgroup that doesn't extend.
+  auto* fg5 = document.getElementById("fg5");
+  ASSERT_TRUE(fg5);
+
+  FocusgroupFlags fg5_flags = fg5->GetFocusgroupFlags();
+  ASSERT_TRUE(focusgroup::IsFocusgroup(fg5_flags));
+  ASSERT_FALSE(fg5_flags & FocusgroupFlags::kExtend);
+
+  // 6. A focusgroup that doesn't have an ancestor focusgroup can't extend.
+  auto* fg6 = document.getElementById("fg6");
+  ASSERT_TRUE(fg6);
+
+  FocusgroupFlags fg6_flags = fg6->GetFocusgroupFlags();
+  ASSERT_TRUE(focusgroup::IsFocusgroup(fg6_flags));
+  ASSERT_FALSE(fg6_flags & FocusgroupFlags::kExtend);
+}
+
+TEST_F(ElementTest, ParseFocusgroupAttrWrapCorrectly) {
+  Document& document = GetDocument();
+  SetBodyContent(R"HTML(
+    <div id=fg1 focusgroup=wrap>
+      <div id=fg2 focusgroup=extend>
+        <div id=fg3 focusgroup="extend horizontal"></div>
+        <div id=fg4 focusgroup="extend vertical">
+          <div id=fg5 focusgroup="extend horizontal"></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  // 1. Root focusgroup supports both axes and wraps, so should support wrapping
+  // in both axes.
+  auto* fg1 = document.getElementById("fg1");
+  ASSERT_TRUE(fg1);
+
+  FocusgroupFlags fg1_flags = fg1->GetFocusgroupFlags();
+  ASSERT_TRUE(focusgroup::IsFocusgroup(fg1_flags));
+  ASSERT_TRUE(fg1_flags & FocusgroupFlags::kWrapHorizontally);
+  ASSERT_TRUE(fg1_flags & FocusgroupFlags::kWrapVertically);
+
+  // 2. When a focusgroup extends another one, it should inherit its wrap
+  // properties in all supported axes.
+  auto* fg2 = document.getElementById("fg2");
+  ASSERT_TRUE(fg2);
+
+  FocusgroupFlags fg2_flags = fg2->GetFocusgroupFlags();
+  ASSERT_TRUE(focusgroup::IsFocusgroup(fg2_flags));
+  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kWrapHorizontally);
+  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kWrapVertically);
+
+  // 3. The ancestor focusgroup's wrap properties should only be inherited in
+  // the horizontal axis.
+  auto* fg3 = document.getElementById("fg3");
+  ASSERT_TRUE(fg3);
+
+  FocusgroupFlags fg3_flags = fg3->GetFocusgroupFlags();
+  ASSERT_TRUE(focusgroup::IsFocusgroup(fg3_flags));
+  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kWrapHorizontally);
+  ASSERT_FALSE(fg3_flags & FocusgroupFlags::kWrapVertically);
+
+  // 4. The ancestor focusgroup's wrap properties should only be inherited in
+  // the vertical axis.
+  auto* fg4 = document.getElementById("fg4");
+  ASSERT_TRUE(fg4);
+
+  FocusgroupFlags fg4_flags = fg4->GetFocusgroupFlags();
+  ASSERT_TRUE(focusgroup::IsFocusgroup(fg4_flags));
+  ASSERT_FALSE(fg4_flags & FocusgroupFlags::kWrapHorizontally);
+  ASSERT_TRUE(fg4_flags & FocusgroupFlags::kWrapVertically);
+
+  // 5. The ancestor focusgroup's wrap properties shouldn't be inherited since
+  // the two focusgroups have no axis in common.
+  auto* fg5 = document.getElementById("fg5");
+  ASSERT_TRUE(fg5);
+
+  FocusgroupFlags fg5_flags = fg5->GetFocusgroupFlags();
+  ASSERT_TRUE(focusgroup::IsFocusgroup(fg5_flags));
+  ASSERT_FALSE(fg5_flags & FocusgroupFlags::kWrapHorizontally);
+  ASSERT_FALSE(fg5_flags & FocusgroupFlags::kWrapVertically);
+}
+
+TEST_F(ElementTest, ParseFocusgroupAttrGridCorrectly) {
+  Document& document = GetDocument();
+  SetBodyContent(R"HTML(
+    <div id=fg1 focusgroup="grid vertical">
+      <div id=fg2 focusgroup=extend></div>
+      <div>
+        <div>
+          <div id=fg3 focusgroup=extend></div>
+        </div>
+      </div>
+    </div>
+    <div id=fg4 focusgroup="grid horizontal">
+      <div id=fg5 focusgroup=extend></div>
+    </div>
+    <div id=fg6 focusgroup=grid>
+      <div id=fg7 focusgroup=extend>
+        <div id=fg8 focusgroup=extend></div>
+      </div>
+    </div>
+  )HTML");
+
+  // 1. The outer focusgroup should only support the vertical axis and have the
+  // grid flag.
+  auto* fg1 = document.getElementById("fg1");
+  ASSERT_TRUE(fg1);
+
+  FocusgroupFlags fg1_flags = fg1->GetFocusgroupFlags();
+  ASSERT_TRUE(focusgroup::IsFocusgroup(fg1_flags));
+  ASSERT_TRUE(fg1_flags & FocusgroupFlags::kGrid);
+  ASSERT_FALSE(fg1_flags & FocusgroupFlags::kHorizontal);
+  ASSERT_TRUE(fg1_flags & FocusgroupFlags::kVertical);
+
+  // 2. The inner focusgroup should only support the axis orthogonal to its
+  // parent and have the grid flag even if not specified (because it extends a
+  // grid focusgroup).
+  auto* fg2 = document.getElementById("fg2");
+  ASSERT_TRUE(fg2);
+
+  FocusgroupFlags fg2_flags = fg2->GetFocusgroupFlags();
+  ASSERT_TRUE(focusgroup::IsFocusgroup(fg2_flags));
+  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kGrid);
+  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kHorizontal);
+  ASSERT_FALSE(fg2_flags & FocusgroupFlags::kVertical);
+
+  // 3. Same as the case above, even with the couple of extra divs there are
+  // between the inner focusgroup and the outer one.
+  auto* fg3 = document.getElementById("fg3");
+  ASSERT_TRUE(fg3);
+
+  FocusgroupFlags fg3_flags = fg3->GetFocusgroupFlags();
+  ASSERT_TRUE(focusgroup::IsFocusgroup(fg3_flags));
+  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kGrid);
+  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kHorizontal);
+  ASSERT_FALSE(fg3_flags & FocusgroupFlags::kVertical);
+
+  // 4. The outer focusgroup should only support the horizontal axis and have
+  // the grid flag.
+  auto* fg4 = document.getElementById("fg4");
+  ASSERT_TRUE(fg4);
+
+  FocusgroupFlags fg4_flags = fg4->GetFocusgroupFlags();
+  ASSERT_TRUE(focusgroup::IsFocusgroup(fg4_flags));
+  ASSERT_TRUE(fg4_flags & FocusgroupFlags::kGrid);
+  ASSERT_TRUE(fg4_flags & FocusgroupFlags::kHorizontal);
+  ASSERT_FALSE(fg4_flags & FocusgroupFlags::kVertical);
+
+  // 5. The inner focusgroup should only support the axis orthogonal to its
+  // parent and have the grid flag even if not specified (because it extends a
+  // grid focusgroup).
+  auto* fg5 = document.getElementById("fg5");
+  ASSERT_TRUE(fg5);
+
+  FocusgroupFlags fg5_flags = fg5->GetFocusgroupFlags();
+  ASSERT_TRUE(focusgroup::IsFocusgroup(fg5_flags));
+  ASSERT_TRUE(fg5_flags & FocusgroupFlags::kGrid);
+  ASSERT_FALSE(fg5_flags & FocusgroupFlags::kHorizontal);
+  ASSERT_TRUE(fg5_flags & FocusgroupFlags::kVertical);
+
+  // 6. The outer focusgroup should only support the horizontal axis even if
+  // it's not specified (default value) and have the grid flag.
+  auto* fg6 = document.getElementById("fg6");
+  ASSERT_TRUE(fg6);
+
+  FocusgroupFlags fg6_flags = fg6->GetFocusgroupFlags();
+  ASSERT_TRUE(focusgroup::IsFocusgroup(fg6_flags));
+  ASSERT_TRUE(fg6_flags & FocusgroupFlags::kGrid);
+  ASSERT_TRUE(fg6_flags & FocusgroupFlags::kHorizontal);
+  ASSERT_FALSE(fg6_flags & FocusgroupFlags::kVertical);
+
+  // 7. The inner focusgroup should only support the axis orthogonal to its
+  // parent (even if not explicit on the parent) and have the grid flag even if
+  // not specified (because it extends a grid focusgroup).
+  auto* fg7 = document.getElementById("fg7");
+  ASSERT_TRUE(fg7);
+
+  FocusgroupFlags fg7_flags = fg7->GetFocusgroupFlags();
+  ASSERT_TRUE(focusgroup::IsFocusgroup(fg7_flags));
+  ASSERT_TRUE(fg7_flags & FocusgroupFlags::kGrid);
+  ASSERT_FALSE(fg7_flags & FocusgroupFlags::kHorizontal);
+  ASSERT_TRUE(fg7_flags & FocusgroupFlags::kVertical);
+
+  // 8. No focusgroup is allowed to extend an inner grid focusgroup.
+  auto* fg8 = document.getElementById("fg8");
+  ASSERT_TRUE(fg8);
+
+  FocusgroupFlags fg8_flags = fg8->GetFocusgroupFlags();
+  ASSERT_FALSE(focusgroup::IsFocusgroup(fg8_flags));
+}
+
+TEST_F(ElementTest, ParseFocusgroupAttrExplicitlyNoneCorrectly) {
+  Document& document = GetDocument();
+  SetBodyContent(R"HTML(
+    <div id=fg1 focusgroup=none></div>
+  )HTML");
+
+  // "focusgroup=none" should only set the kExplicitlyNone flag.
+  auto* fg1 = document.getElementById("fg1");
+  ASSERT_TRUE(fg1);
+
+  FocusgroupFlags fg1_flags = fg1->GetFocusgroupFlags();
+  ASSERT_FALSE(focusgroup::IsFocusgroup(fg1_flags));
+  ASSERT_TRUE(fg1_flags & FocusgroupFlags::kExplicitlyNone);
+}
+
+TEST_F(ElementTest, ParseFocusgroupAttrValueRecomputedAfterDOMStructureChange) {
+  Document& document = GetDocument();
+  SetBodyContent(R"HTML(
+    <div id=fg1 focusgroup=wrap>
+      <div id=fg2 focusgroup=extend>
+          <div>
+            <div id=fg3 focusgroup=extend></div>
+          </div>
+      </div>
+    </div>
+    <div id=not-fg></div>
+  )HTML");
+
+  // 1. Validate that the |fg2| and |fg3| focusgroup properties were set
+  // correctly initially.
+  auto* fg2 = document.getElementById("fg2");
+  ASSERT_TRUE(fg2);
+
+  FocusgroupFlags fg2_flags = fg2->GetFocusgroupFlags();
+  ASSERT_TRUE(focusgroup::IsFocusgroup(fg2_flags));
+  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kExtend);
+  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kWrapHorizontally);
+  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kWrapVertically);
+
+  auto* fg3 = document.getElementById("fg3");
+  ASSERT_TRUE(fg3);
+
+  FocusgroupFlags fg3_flags = fg3->GetFocusgroupFlags();
+  ASSERT_TRUE(focusgroup::IsFocusgroup(fg3_flags));
+  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kExtend);
+  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kWrapHorizontally);
+  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kWrapVertically);
+
+  // 2. Move |fg2| from |fg1| to |not-fg|.
+  auto* not_fg = document.getElementById("not-fg");
+  ASSERT_TRUE(not_fg);
+
+  not_fg->AppendChild(fg2);
+
+  // 3. Validate that the focusgroup properties were updated correctly on |fg2|
+  // and |fg3| after they moved to a different ancestor.
+  fg2_flags = fg2->GetFocusgroupFlags();
+  ASSERT_TRUE(focusgroup::IsFocusgroup(fg2_flags));
+  ASSERT_FALSE(fg2_flags & FocusgroupFlags::kExtend);
+  ASSERT_FALSE(fg2_flags & FocusgroupFlags::kWrapHorizontally);
+  ASSERT_FALSE(fg2_flags & FocusgroupFlags::kWrapVertically);
+
+  fg3_flags = fg3->GetFocusgroupFlags();
+  ASSERT_TRUE(focusgroup::IsFocusgroup(fg3_flags));
+  ASSERT_TRUE(fg3_flags & FocusgroupFlags::kExtend);
+  ASSERT_FALSE(fg3_flags & FocusgroupFlags::kWrapHorizontally);
+  ASSERT_FALSE(fg3_flags & FocusgroupFlags::kWrapVertically);
+}
+
+TEST_F(ElementTest, ParseFocusgroupAttrValueClearedAfterNodeRemoved) {
+  Document& document = GetDocument();
+  SetBodyContent(R"HTML(
+    <div id=fg1 focusgroup>
+      <div id=fg2 focusgroup=extend></div>
+    </div>
+  )HTML");
+
+  // 1. Validate that the |fg1| and |fg1| focusgroup properties were set
+  // correctly initially.
+  auto* fg1 = document.getElementById("fg1");
+  ASSERT_TRUE(fg1);
+
+  FocusgroupFlags fg1_flags = fg1->GetFocusgroupFlags();
+  ASSERT_TRUE(focusgroup::IsFocusgroup(fg1_flags));
+  ASSERT_FALSE(fg1_flags & FocusgroupFlags::kExtend);
+
+  auto* fg2 = document.getElementById("fg2");
+  ASSERT_TRUE(fg2);
+
+  FocusgroupFlags fg2_flags = fg2->GetFocusgroupFlags();
+  ASSERT_TRUE(focusgroup::IsFocusgroup(fg2_flags));
+  ASSERT_TRUE(fg2_flags & FocusgroupFlags::kExtend);
+
+  // 2. Remove |fg1| from the DOM.
+  fg1->remove();
+
+  // 3. Validate that the focusgroup properties were cleared from both
+  // focusgroups.
+  fg1_flags = fg1->GetFocusgroupFlags();
+  ASSERT_FALSE(focusgroup::IsFocusgroup(fg1_flags));
+
+  fg2_flags = fg2->GetFocusgroupFlags();
+  ASSERT_FALSE(focusgroup::IsFocusgroup(fg2_flags));
 }
 
 }  // namespace blink

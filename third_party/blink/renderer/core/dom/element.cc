@@ -2589,6 +2589,13 @@ Node::InsertionNotificationRequest Element::InsertedInto(
   if (!name_value.IsNull())
     UpdateName(g_null_atom, name_value);
 
+  if (RuntimeEnabledFeatures::FocusgroupEnabled()) {
+    const AtomicString& focusgroup_value =
+        FastGetAttribute(html_names::kFocusgroupAttr);
+    if (!focusgroup_value.IsNull())
+      UpdateFocusgroup(focusgroup_value);
+  }
+
   if (parentElement() && parentElement()->IsInCanvasSubtree())
     SetIsInCanvasSubtree(true);
 
@@ -2654,6 +2661,7 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
   if (HasRareData()) {
     ElementRareData* data = GetElementRareData();
 
+    data->ClearFocusgroupFlags();
     data->ClearRestyleFlags();
 
     if (ElementAnimations* element_animations = data->GetElementAnimations())
@@ -4246,6 +4254,14 @@ void Element::ParseAttribute(const AttributeModificationParams& params) {
     } else {
       // We only set when value is in integer range.
       SetTabIndexExplicitly();
+    }
+  } else if (params.name == html_names::kFocusgroupAttr) {
+    // Only update the focusgroup flags when the node has been added to the
+    // tree. This is because the computed focusgroup value will depend on the
+    // focusgroup value of its closest ancestor node that is a focusgroup, if
+    // any.
+    if (parentNode()) {
+      UpdateFocusgroup(params.new_value);
     }
   } else if (params.name == xml_names::kLangAttr) {
     PseudoStateChanged(CSSSelector::kPseudoLang);
@@ -6338,6 +6354,14 @@ inline void Element::UpdateId(TreeScope& scope,
     UpdateIdNamedItemRegistration(type, old_id, new_id);
 }
 
+inline void Element::UpdateFocusgroup(const AtomicString& input) {
+  if (!RuntimeEnabledFeatures::FocusgroupEnabled())
+    return;
+
+  EnsureElementRareData().SetFocusgroupFlags(
+      focusgroup::ParseFocusgroup(this, input));
+}
+
 void Element::WillModifyAttribute(const QualifiedName& name,
                                   const AtomicString& old_value,
                                   const AtomicString& new_value) {
@@ -7159,6 +7183,12 @@ void Element::RebuildTransitionPseudoLayoutTree(
 bool Element::IsInertRoot() {
   return RuntimeEnabledFeatures::InertAttributeEnabled() &&
          FastHasAttribute(html_names::kInertAttr) && IsHTMLElement();
+}
+
+FocusgroupFlags Element::GetFocusgroupFlags() const {
+  if (!RuntimeEnabledFeatures::FocusgroupEnabled() || !HasRareData())
+    return FocusgroupFlags::kNone;
+  return GetElementRareData()->GetFocusgroupFlags();
 }
 
 }  // namespace blink

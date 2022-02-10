@@ -407,6 +407,8 @@ AttributeTriggers* HTMLElement::TriggersForAttributeName(
   static AttributeTriggers attribute_triggers[] = {
       {html_names::kDirAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::OnDirAttrChanged},
+      {html_names::kFocusgroupAttr, kNoWebFeature, kNoEvent,
+       &HTMLElement::OnFocusgroupAttrChanged},
       {html_names::kFormAttr, kNoWebFeature, kNoEvent,
        &HTMLElement::OnFormAttrChanged},
       {html_names::kLangAttr, kNoWebFeature, kNoEvent,
@@ -1914,6 +1916,11 @@ void HTMLElement::OnDirAttrChanged(const AttributeModificationParams& params) {
         StyleChangeReasonForTracing::Create(style_change_reason::kPseudoClass));
     PseudoStateChanged(CSSSelector::kPseudoDir);
   }
+}
+
+void HTMLElement::OnFocusgroupAttrChanged(
+    const AttributeModificationParams& params) {
+  Element::ParseAttribute(params);
 }
 
 void HTMLElement::OnFormAttrChanged(const AttributeModificationParams& params) {

@@ -162,6 +162,8 @@ blink_core_sources_dom = [
   "flat_tree_traversal.h",
   "flat_tree_traversal_forbidden_scope.h",
   "focus_params.h",
+  "focusgroup_flags.cc",
+  "focusgroup_flags.h",
   "frame_request_callback_collection.cc",
   "frame_request_callback_collection.h",
   "global_event_handlers.h",
