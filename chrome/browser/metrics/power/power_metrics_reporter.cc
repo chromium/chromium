@@ -129,12 +129,17 @@ std::vector<const char*> GetSuffixes(
 }  // namespace
 
 PowerMetricsReporter::PowerMetricsReporter(
-    const base::WeakPtr<UsageScenarioDataStore>& data_store,
+    UsageScenarioDataStore* usage_scenario_data_store,
     std::unique_ptr<BatteryLevelProvider> battery_level_provider)
-    : data_store_(data_store),
+    : data_store_(usage_scenario_data_store),
       battery_level_provider_(std::move(battery_level_provider)) {
   DCHECK(ProcessMonitor::Get());
   ProcessMonitor::Get()->AddObserver(this);
+
+  if (!data_store_) {
+    usage_scenario_tracker_ = std::make_unique<UsageScenarioTracker>();
+    data_store_ = usage_scenario_tracker_->data_store();
+  }
 
   battery_level_provider_->GetBatteryState(
       base::BindOnce(&PowerMetricsReporter::OnFirstBatteryStateSampled,
@@ -427,7 +432,6 @@ void PowerMetricsReporter::ReportUKMs(
     BatteryDischarge battery_discharge,
     absl::optional<int64_t> main_screen_brightness) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(data_store_.MaybeValid());
 
   // UKM may be unavailable in content_shell or other non-chrome/ builds; it
   // may also be unavailable if browser shutdown has started; so this may be a

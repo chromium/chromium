@@ -15,7 +15,6 @@
 #include "ui/display/display_observer.h"
 
 class ChromeBrowserMainParts;
-class UsageScenarioTracker;
 class PowerMetricsReporter;
 
 namespace chrome {
@@ -69,16 +68,7 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
 #endif  // defined(USE_OZONE)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  // Tracks coarse usage scenarios that affect performance during a given
-  // interval of time (e.g. navigating to a new page, watching a video). The
-  // data tracked by this is used by other classes (see below) to report metrics
-  // that correlate performance with usage scenarios, which is necessary to
-  // optimize the performance of specific scenarios.
-  std::unique_ptr<UsageScenarioTracker> usage_scenario_tracker_;
-
-  // Reports power metrics coupled with the data tracked by
-  // |usage_scenario_tracker_|, used to analyze the correlation between usage
-  // scenarios and power consumption.
+  // Reports power metrics.
   std::unique_ptr<PowerMetricsReporter> power_metrics_reporter_;
 #endif  // BUILDFLAG(IS_MAC) || defined (OS_WIN)
 };

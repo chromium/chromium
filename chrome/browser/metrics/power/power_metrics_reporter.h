@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_METRICS_POWER_POWER_METRICS_REPORTER_H_
 
 #include <stdint.h>
+#include <memory>
 #include <utility>
 
 #include "base/memory/weak_ptr.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/metrics/power/battery_level_provider.h"
 #include "chrome/browser/metrics/power/power_details_provider.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
+#include "chrome/browser/metrics/usage_scenario/usage_scenario_tracker.h"
 #include "chrome/browser/performance_monitor/process_monitor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -35,11 +37,15 @@ class PowerMetricsReporter
   using CoalitionResourceUsageRate = power_metrics::CoalitionResourceUsageRate;
 #endif  // BUILDFLAG(IS_MAC)
 
-  // |data_store| will be queried at regular interval to report the metrics, it
-  // needs to outlive this class.
-  PowerMetricsReporter(
-      const base::WeakPtr<UsageScenarioDataStore>& data_store,
-      std::unique_ptr<BatteryLevelProvider> battery_level_provider);
+  // Use the default arguments in production. In tests, use arguments to provide
+  // mocks. If specified, |usage_scenario_data_store| is queried to determine
+  // the usage scenario for an interval. It must outlive the
+  // PowerMetricsReporter. |battery_level_provider| is used to obtain the
+  // battery level.
+  explicit PowerMetricsReporter(
+      UsageScenarioDataStore* usage_scenario_data_store = nullptr,
+      std::unique_ptr<BatteryLevelProvider> battery_level_provider =
+          BatteryLevelProvider::Create());
   PowerMetricsReporter(const PowerMetricsReporter& rhs) = delete;
   PowerMetricsReporter& operator=(const PowerMetricsReporter& rhs) = delete;
   ~PowerMetricsReporter() override;
@@ -149,9 +155,11 @@ class PowerMetricsReporter
   void OnIOPMPowerSourceSamplingEvent();
 #endif  // BUILDFLAG(IS_MAC)
 
-  // The data store used to get the usage scenario data, it needs to outlive
-  // this class.
-  base::WeakPtr<UsageScenarioDataStore> data_store_;
+  // Tracks usage scenario for the reporting interval. In production, the data
+  // store is obtained from the tracker, but in tests it may be a mock injected
+  // via the constructor.
+  std::unique_ptr<UsageScenarioTracker> usage_scenario_tracker_;
+  raw_ptr<UsageScenarioDataStore> data_store_;
 
   std::unique_ptr<BatteryLevelProvider> battery_level_provider_;
 

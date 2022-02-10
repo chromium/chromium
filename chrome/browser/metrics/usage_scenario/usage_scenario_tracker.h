@@ -21,9 +21,7 @@ class UsageScenarioTracker {
   ~UsageScenarioTracker();
 
   // Return the data store owned by this tracker.
-  base::WeakPtr<UsageScenarioDataStore> data_store() {
-    return data_store_.AsWeakPtr();
-  }
+  UsageScenarioDataStore* data_store() { return &data_store_; }
 
  private:
   UsageScenarioDataStoreImpl data_store_;

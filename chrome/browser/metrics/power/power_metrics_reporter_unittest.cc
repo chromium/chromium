@@ -203,7 +203,7 @@ class PowerMetricsReporterUnitTest : public testing::Test {
     battery_provider_ = battery_provider.get();
     base::RunLoop run_loop;
     power_metrics_reporter_ = std::make_unique<PowerMetricsReporter>(
-        data_store_.AsWeakPtr(), std::move(battery_provider));
+        &data_store_, std::move(battery_provider));
     power_metrics_reporter_->set_power_details_provider_for_testing(
         std::make_unique<TestPowerDetailsProvider>());
     power_metrics_reporter_->OnFirstSampleForTesting(run_loop.QuitClosure());
