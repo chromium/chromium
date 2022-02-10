@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.incognito;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ActivityManager.AppTask;
 import android.app.ActivityManager.RecentTaskInfo;
+import android.util.Pair;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
@@ -51,12 +53,13 @@ public class IncognitoStartup {
             return false;
         }
 
-        Set<RecentTaskInfo> matchingTaskInfos =
-                AndroidTaskUtils.getRecentTaskInfosMatchingComponentNames(
+        Set<Pair<AppTask, RecentTaskInfo>> tabbedModeTasks =
+                AndroidTaskUtils.getRecentAppTasksMatchingComponentNames(
                         ContextUtils.getApplicationContext(), componentNames);
+
         Set<Integer> tabbedModeTaskIds = new HashSet<>();
-        for (RecentTaskInfo info : matchingTaskInfos) {
-            tabbedModeTaskIds.add(info.id);
+        for (Pair<AppTask, RecentTaskInfo> pair : tabbedModeTasks) {
+            tabbedModeTaskIds.add(pair.second.id);
         }
 
         if (tabbedModeTaskIds.size() == 0) {
