@@ -1414,7 +1414,7 @@
   },
   {
     "name": "edit-passwords-in-settings",
-    "owners": [ "fhorschig", "ioanap", "kazinova" ],
+    "owners": [ "fhorschig", "ioanap", "kazinova@google.com" ],
     "expiry_milestone": 98
   },
   {
