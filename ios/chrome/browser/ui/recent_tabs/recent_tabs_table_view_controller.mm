@@ -769,7 +769,10 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 - (void)setSearchTerms:(NSString*)searchTerms {
   DCHECK(IsTabsSearchEnabled());
 
-  if (_searchTerms == searchTerms) {
+  if (_searchTerms == searchTerms ||
+      // No need for an update if transitioning between nil and empty string.
+      // (Length of both |_searchTerms| and |searchTerms| will be zero.)
+      (!_searchTerms.length && !searchTerms.length)) {
     return;
   }
 
