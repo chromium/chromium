@@ -985,13 +985,13 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
   EXPECT_FALSE(IsUIShowing());
 }
 
-// Sets an empty launch config for Character Swap. This enables Character Swap
-// for engaged sites on local builds.
+// Set a launch config with 100% rollout for Character Swap. This should show a
+// Character Swap warning for lookalikes matching engaged sites.
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
                        TriggersOnCharacterSwap_SiteEngagement) {
   reputation::AddSafetyTipHeuristicLaunchConfigForTesting(
       reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
-      0);
+      100);
 
   const GURL kNavigatedUrl = GetURL("character-wsap.com");
   const GURL kTargetUrl = GetURL("character-swap.com");
@@ -1007,12 +1007,13 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
   }
 }
 
-// Set an empty launch config for Character Swap. This enables Character Swap
-// for top sites on local builds.
+// Set a launch config with 100% rollout for Character Swap. This should show a
+// Character Swap warning for lookalikes matching top sites.
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
                        TriggersOnCharacterSwap_TopSite) {
   reputation::AddSafetyTipHeuristicLaunchConfigForTesting(
-      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_TOP_SITES, 0);
+      reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_TOP_SITES,
+      100);
 
   const GURL kNavigatedUrl = GetURL("goolge.com");
   const GURL kTargetUrl = GetURL("google.com");
