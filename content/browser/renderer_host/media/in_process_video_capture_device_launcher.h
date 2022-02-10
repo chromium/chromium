@@ -92,6 +92,12 @@ class InProcessVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
       std::unique_ptr<media::VideoCaptureDeviceClient> client,
       ReceiveDeviceCallback result_callback);
 
+  void DoStartDesktopCaptureWithReceiverOnDeviceThread(
+      const DesktopMediaID& desktop_id,
+      const media::VideoCaptureParams& params,
+      std::unique_ptr<media::VideoFrameReceiver> receiver,
+      ReceiveDeviceCallback result_callback);
+
   void DoStartFakeDisplayCaptureOnDeviceThread(
       const DesktopMediaID& desktop_id,
       const media::VideoCaptureParams& params,

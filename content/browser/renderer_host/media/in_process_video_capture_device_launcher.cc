@@ -48,6 +48,9 @@
 #include "content/browser/media/capture/desktop_capture_device_mac.h"
 #include "content/browser/media/capture/views_widget_video_capture_device_mac.h"
 #endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "content/browser/media/capture/video_capture_device_proxy_lacros.h"
+#endif
 #endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -85,6 +88,42 @@ const base::Feature kDesktopCaptureMacV2{"DesktopCaptureMacV2",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 #endif
+
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
+
+void IncrementDesktopCaptureCounters(const DesktopMediaID& device_id) {
+  switch (device_id.type) {
+    case DesktopMediaID::TYPE_SCREEN:
+      IncrementDesktopCaptureCounter(SCREEN_CAPTURER_CREATED);
+      IncrementDesktopCaptureCounter(
+          device_id.audio_share ? SCREEN_CAPTURER_CREATED_WITH_AUDIO
+                                : SCREEN_CAPTURER_CREATED_WITHOUT_AUDIO);
+      break;
+    case DesktopMediaID::TYPE_WINDOW:
+      IncrementDesktopCaptureCounter(WINDOW_CAPTURER_CREATED);
+      break;
+    case DesktopMediaID::TYPE_WEB_CONTENTS:
+      IncrementDesktopCaptureCounter(TAB_VIDEO_CAPTURER_CREATED);
+      IncrementDesktopCaptureCounter(
+          device_id.audio_share ? TAB_VIDEO_CAPTURER_CREATED_WITH_AUDIO
+                                : TAB_VIDEO_CAPTURER_CREATED_WITHOUT_AUDIO);
+      break;
+    case DesktopMediaID::TYPE_NONE:
+      NOTREACHED();
+      break;
+  }
+}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+const base::Feature kDesktopCaptureLacrosV2{"DesktopCaptureLacrosV2",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool ShouldUseDesktopCaptureLacrosV2() {
+  return base::FeatureList::IsEnabled(kDesktopCaptureLacrosV2) &&
+         VideoCaptureDeviceProxyLacros::IsAvailable();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
 }  // anonymous namespace
 
@@ -185,20 +224,17 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
 
       if (desktop_id.type == DesktopMediaID::TYPE_WEB_CONTENTS) {
         after_start_capture_callback = base::BindOnce(
-            [](bool with_audio, ReceiveDeviceCallback callback,
+            [](const DesktopMediaID& device_id, ReceiveDeviceCallback callback,
                std::unique_ptr<media::VideoCaptureDevice> device) {
-              // Special case: Only call IncrementDesktopCaptureCounter()
+              // Special case: Only call IncrementDesktopCaptureCounters()
               // for WebContents capture if it was started from a desktop
               // capture API.
               if (device) {
-                IncrementDesktopCaptureCounter(TAB_VIDEO_CAPTURER_CREATED);
-                IncrementDesktopCaptureCounter(
-                    with_audio ? TAB_VIDEO_CAPTURER_CREATED_WITH_AUDIO
-                               : TAB_VIDEO_CAPTURER_CREATED_WITHOUT_AUDIO);
+                IncrementDesktopCaptureCounters(device_id);
               }
               std::move(callback).Run(std::move(device));
             },
-            desktop_id.audio_share, std::move(after_start_capture_callback));
+            desktop_id, std::move(after_start_capture_callback));
         start_capture_closure = base::BindOnce(
             &InProcessVideoCaptureDeviceLauncher::
                 DoStartTabCaptureOnDeviceThread,
@@ -223,6 +259,20 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
         break;
       }
 #endif  // defined(USE_AURA) || BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      if (ShouldUseDesktopCaptureLacrosV2()) {
+        TRACE_EVENT_INSTANT0(
+            TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+            "UsingDesktopCaptureLacrosV2", TRACE_EVENT_SCOPE_THREAD);
+        start_capture_closure = base::BindOnce(
+            &InProcessVideoCaptureDeviceLauncher::
+                DoStartDesktopCaptureWithReceiverOnDeviceThread,
+            base::Unretained(this), desktop_id, params, std::move(receiver),
+            std::move(after_start_capture_callback));
+        break;
+      }
+#endif
 
       // All cases other than tab capture or Aura desktop/window capture.
       TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
@@ -377,7 +427,7 @@ void InProcessVideoCaptureDeviceLauncher::
   SCOPED_UMA_HISTOGRAM_TIMER("Media.VideoCaptureManager.StartDeviceTime");
   DCHECK(device_task_runner_->BelongsToCurrentThread());
 
-  std::unique_ptr<content::FrameSinkVideoCaptureDevice> video_capture_device;
+  std::unique_ptr<FrameSinkVideoCaptureDevice> video_capture_device;
 #if defined(USE_AURA)
   video_capture_device =
       std::make_unique<AuraWindowVideoCaptureDevice>(device_id);
@@ -388,21 +438,7 @@ void InProcessVideoCaptureDeviceLauncher::
   if (video_capture_device) {
     video_capture_device->AllocateAndStartWithReceiver(params,
                                                        std::move(receiver));
-    switch (device_id.type) {
-      case DesktopMediaID::TYPE_SCREEN:
-        IncrementDesktopCaptureCounter(SCREEN_CAPTURER_CREATED);
-        IncrementDesktopCaptureCounter(
-            device_id.audio_share ? SCREEN_CAPTURER_CREATED_WITH_AUDIO
-                                  : SCREEN_CAPTURER_CREATED_WITHOUT_AUDIO);
-        break;
-      case DesktopMediaID::TYPE_WINDOW:
-        IncrementDesktopCaptureCounter(WINDOW_CAPTURER_CREATED);
-        break;
-      case DesktopMediaID::TYPE_NONE:
-      case DesktopMediaID::TYPE_WEB_CONTENTS:
-        NOTREACHED();
-        break;
-    }
+    IncrementDesktopCaptureCounters(device_id);
   }
   std::move(result_callback).Run(std::move(video_capture_device));
 }
@@ -434,6 +470,24 @@ void InProcessVideoCaptureDeviceLauncher::DoStartDesktopCaptureOnDeviceThread(
   std::move(result_callback).Run(std::move(video_capture_device));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void InProcessVideoCaptureDeviceLauncher::
+    DoStartDesktopCaptureWithReceiverOnDeviceThread(
+        const DesktopMediaID& device_id,
+        const media::VideoCaptureParams& params,
+        std::unique_ptr<media::VideoFrameReceiver> receiver,
+        ReceiveDeviceCallback result_callback) {
+  SCOPED_UMA_HISTOGRAM_TIMER("Media.VideoCaptureManager.StartDeviceTime");
+  DCHECK(device_task_runner_->BelongsToCurrentThread());
+
+  std::unique_ptr<VideoCaptureDeviceProxyLacros> video_capture_device =
+      std::make_unique<VideoCaptureDeviceProxyLacros>(device_id);
+  video_capture_device->AllocateAndStartWithReceiver(params,
+                                                     std::move(receiver));
+  IncrementDesktopCaptureCounters(device_id);
+  std::move(result_callback).Run(std::move(video_capture_device));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
 void InProcessVideoCaptureDeviceLauncher::

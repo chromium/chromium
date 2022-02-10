@@ -15,6 +15,11 @@
 #include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/crosapi/video_capture_device_ash.h"
+#include "content/public/browser/desktop_capture.h"
+#include "content/public/browser/desktop_media_id.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "ui/aura/window_observer.h"
 #include "ui/snapshot/snapshot.h"
 
@@ -84,7 +89,7 @@ class SnapshotCapturerBase : public mojom::SnapshotCapturer {
   }
 
   void TakeSnapshot(uint64_t id, TakeSnapshotCallback callback) override {
-    aura::Window* window = window_list_.LookupWindow(id);
+    aura::Window* window = LookupWindow(id);
     if (!window) {
       std::move(callback).Run(/*success=*/false, SkBitmap());
       return;
@@ -100,6 +105,10 @@ class SnapshotCapturerBase : public mojom::SnapshotCapturer {
               std::move(callback).Run(/*success=*/true, image.AsBitmap());
             },
             std::move(callback)));
+  }
+
+  aura::Window* LookupWindow(uint64_t id) {
+    return window_list_.LookupWindow(id);
   }
 
  protected:
@@ -223,6 +232,43 @@ void ScreenManagerAsh::GetWindowCapturer(
   GetWindowCapturerImpl()->BindReceiver(std::move(receiver));
 }
 
+void ScreenManagerAsh::GetScreenVideoCapturer(
+    mojo::PendingReceiver<mojom::VideoCaptureDevice> receiver,
+    uint64_t screen_id) {
+  // Only one instance of ScreenManagerAsh exists; so a window capturer must
+  // have been created in order to list the available sources. Otherwise, the
+  // passed-in id is invalid, as we have no way of translating it to a window.
+  if (!screen_capturer_impl_)
+    return;
+  aura::Window* window = screen_capturer_impl_->LookupWindow(screen_id);
+  if (!window)
+    return;
+
+  content::DesktopMediaID id = content::DesktopMediaID::RegisterNativeWindow(
+      content::DesktopMediaID::TYPE_SCREEN, window);
+
+  CreateVideoCaptureDevice(std::move(receiver), id);
+}
+
+void ScreenManagerAsh::GetWindowVideoCapturer(
+    mojo::PendingReceiver<mojom::VideoCaptureDevice> receiver,
+    uint64_t window_id) {
+  // Only one instance of ScreenManagerAsh exists; so a window capturer must
+  // have been created in order to list the available sources. Otherwise, the
+  // passed-in id is invalid, as we have no way of translating it to a window.
+  if (!window_capturer_impl_)
+    return;
+
+  aura::Window* window = window_capturer_impl_->LookupWindow(window_id);
+  if (!window)
+    return;
+
+  content::DesktopMediaID id = content::DesktopMediaID::RegisterNativeWindow(
+      content::DesktopMediaID::TYPE_WINDOW, window);
+
+  CreateVideoCaptureDevice(std::move(receiver), id);
+}
+
 ScreenManagerAsh::ScreenCapturerImpl*
 ScreenManagerAsh::GetScreenCapturerImpl() {
   if (!screen_capturer_impl_)
@@ -235,6 +281,21 @@ ScreenManagerAsh::GetWindowCapturerImpl() {
   if (!window_capturer_impl_)
     window_capturer_impl_ = std::make_unique<WindowCapturerImpl>();
   return window_capturer_impl_.get();
+}
+
+void ScreenManagerAsh::CreateVideoCaptureDevice(
+    mojo::PendingReceiver<mojom::VideoCaptureDevice> receiver,
+    const content::DesktopMediaID& device_id) {
+  // We can have multiple captures ongoing at the same time; we make this as a
+  // self-owned receiver so that the Lacros side code can control its lifetime
+  // by shutting down its remote.
+  mojo::PendingReceiver<video_capture::mojom::Device> device_receiver;
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<VideoCaptureDeviceAsh>(
+          device_receiver.InitWithNewPipeAndPassRemote()),
+      std::move(receiver));
+  content::desktop_capture::BindAuraWindowCapturer(std::move(device_receiver),
+                                                   device_id);
 }
 
 }  // namespace crosapi

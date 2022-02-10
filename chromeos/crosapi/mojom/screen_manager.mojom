@@ -5,6 +5,7 @@
 module crosapi.mojom;
 
 import "chromeos/crosapi/mojom/bitmap.mojom";
+import "chromeos/crosapi/mojom/video_capture.mojom";
 import "skia/public/mojom/bitmap.mojom";
 
 // A unique identifier and title for a window (or screen).
@@ -62,4 +63,18 @@ interface ScreenManager {
   // Get a SnapshotCapturer instance that can snapshot available windows.
   [MinVersion=1]
   GetWindowCapturer@4(pending_receiver<SnapshotCapturer> capturer);
+
+  // Get a VideoCaptureDevice instance that can capture a video stream of the
+  // specified screen. |screen_id| should be retrieved from the (Screen)
+  // SnapshotCapturer::ListSources.
+  [MinVersion=2]
+  GetScreenVideoCapturer@5(pending_receiver<VideoCaptureDevice> capturer,
+                      uint64 screen_id);
+
+  // Get a VideoCaptureDevice instance that can capture a video stream of the
+  // specified screen. |window_id| should be retrieved from the (Window)
+  // SnapshotCapturer::ListSources.
+  [MinVersion=2]
+  GetWindowVideoCapturer@6(pending_receiver<VideoCaptureDevice> capturer,
+                      uint64 window_id);
 };

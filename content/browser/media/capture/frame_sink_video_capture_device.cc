@@ -78,7 +78,7 @@ void FrameSinkVideoCaptureDevice::AllocateAndStartWithReceiver(
   if (fatal_error_message_) {
     receiver->OnLog(*fatal_error_message_);
     receiver->OnError(media::VideoCaptureError::
-                          kFrameSinkVideoCaptureDeviceAleradyEndedOnFatalError);
+                          kFrameSinkVideoCaptureDeviceAlreadyEndedOnFatalError);
     return;
   }
 

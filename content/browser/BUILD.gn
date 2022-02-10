@@ -2484,6 +2484,8 @@ source_set("browser") {
     }
     if (use_aura) {
       sources += [
+        "media/capture/aura_window_to_mojo_device_adapter.cc",
+        "media/capture/aura_window_to_mojo_device_adapter.h",
         "media/capture/aura_window_video_capture_device.cc",
         "media/capture/aura_window_video_capture_device.h",
         "media/capture/mouse_cursor_overlay_controller_aura.cc",
@@ -2508,6 +2510,8 @@ source_set("browser") {
       sources += [
         "media/capture/desktop_capturer_lacros.cc",
         "media/capture/desktop_capturer_lacros.h",
+        "media/capture/video_capture_device_proxy_lacros.cc",
+        "media/capture/video_capture_device_proxy_lacros.h",
       ]
     }
   }

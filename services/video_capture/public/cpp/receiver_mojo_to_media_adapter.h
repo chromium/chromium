@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_VIDEO_CAPTURE_RECEIVER_MOJO_TO_MEDIA_ADAPTER_H_
-#define SERVICES_VIDEO_CAPTURE_RECEIVER_MOJO_TO_MEDIA_ADAPTER_H_
+#ifndef SERVICES_VIDEO_CAPTURE_PUBLIC_CPP_RECEIVER_MOJO_TO_MEDIA_ADAPTER_H_
+#define SERVICES_VIDEO_CAPTURE_PUBLIC_CPP_RECEIVER_MOJO_TO_MEDIA_ADAPTER_H_
 
 #include "base/task/single_thread_task_runner.h"
 #include "media/capture/video/video_frame_receiver.h"
@@ -44,4 +44,4 @@ class ReceiverMojoToMediaAdapter : public media::VideoFrameReceiver {
 
 }  // namespace video_capture
 
-#endif  // SERVICES_VIDEO_CAPTURE_RECEIVER_MOJO_TO_MEDIA_ADAPTER_H_
+#endif  // SERVICES_VIDEO_CAPTURE_PUBLIC_CPP_RECEIVER_MOJO_TO_MEDIA_ADAPTER_H_

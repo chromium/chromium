@@ -116,7 +116,7 @@ enum VideoCaptureError {
   kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested,
   kVideoCaptureControllerIsAlreadyInErrorState,
   kVideoCaptureManagerDeviceConnectionLost,
-  kFrameSinkVideoCaptureDeviceAleradyEndedOnFatalError,
+  kFrameSinkVideoCaptureDeviceAlreadyEndedOnFatalError,
   kFrameSinkVideoCaptureDeviceEncounteredFatalError,
   kV4L2FailedToOpenV4L2DeviceDriverFile,
   kV4L2ThisIsNotAV4L2VideoCaptureDevice,
@@ -240,6 +240,8 @@ enum VideoCaptureError {
   kCrosHalV3BufferManagerFailedToReserveBuffers,
   [MinVersion=1] kWinMediaFoundationSystemPermissionDenied,
   [MinVersion=2] kVideoCaptureImplTimedOutOnStart,
+  [MinVersion=3] kLacrosVideoCaptureDeviceProxyAlreadyEndedOnFatalError,
+  [MinVersion=3] kLacrosVideoCaptureDeviceProxyEncounteredFatalError,
 };
 
 [Stable, Extensible]

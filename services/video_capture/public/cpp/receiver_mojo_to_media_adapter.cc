@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/video_capture/receiver_mojo_to_media_adapter.h"
+#include "services/video_capture/public/cpp/receiver_mojo_to_media_adapter.h"
 
 #include "base/memory/scoped_refptr.h"
 

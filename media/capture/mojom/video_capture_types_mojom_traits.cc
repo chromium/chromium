@@ -320,9 +320,9 @@ EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::ToMojom(
       return media::mojom::VideoCaptureError::
           kVideoCaptureManagerDeviceConnectionLost;
     case media::VideoCaptureError::
-        kFrameSinkVideoCaptureDeviceAleradyEndedOnFatalError:
+        kFrameSinkVideoCaptureDeviceAlreadyEndedOnFatalError:
       return media::mojom::VideoCaptureError::
-          kFrameSinkVideoCaptureDeviceAleradyEndedOnFatalError;
+          kFrameSinkVideoCaptureDeviceAlreadyEndedOnFatalError;
     case media::VideoCaptureError::
         kFrameSinkVideoCaptureDeviceEncounteredFatalError:
       return media::mojom::VideoCaptureError::
@@ -723,6 +723,14 @@ EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::ToMojom(
           kWinMediaFoundationSystemPermissionDenied;
     case media::VideoCaptureError::kVideoCaptureImplTimedOutOnStart:
       return media::mojom::VideoCaptureError::kVideoCaptureImplTimedOutOnStart;
+    case media::VideoCaptureError::
+        kLacrosVideoCaptureDeviceProxyAlreadyEndedOnFatalError:
+      return media::mojom::VideoCaptureError::
+          kLacrosVideoCaptureDeviceProxyAlreadyEndedOnFatalError;
+    case media::VideoCaptureError::
+        kLacrosVideoCaptureDeviceProxyEncounteredFatalError:
+      return media::mojom::VideoCaptureError::
+          kLacrosVideoCaptureDeviceProxyEncounteredFatalError;
   }
   NOTREACHED();
   return media::mojom::VideoCaptureError::kNone;
@@ -752,9 +760,9 @@ bool EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::
           media::VideoCaptureError::kVideoCaptureManagerDeviceConnectionLost;
       return true;
     case media::mojom::VideoCaptureError::
-        kFrameSinkVideoCaptureDeviceAleradyEndedOnFatalError:
+        kFrameSinkVideoCaptureDeviceAlreadyEndedOnFatalError:
       *output = media::VideoCaptureError::
-          kFrameSinkVideoCaptureDeviceAleradyEndedOnFatalError;
+          kFrameSinkVideoCaptureDeviceAlreadyEndedOnFatalError;
       return true;
     case media::mojom::VideoCaptureError::
         kFrameSinkVideoCaptureDeviceEncounteredFatalError:
@@ -1292,6 +1300,16 @@ bool EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::
       return true;
     case media::mojom::VideoCaptureError::kVideoCaptureImplTimedOutOnStart:
       *output = media::VideoCaptureError::kVideoCaptureImplTimedOutOnStart;
+      return true;
+    case media::mojom::VideoCaptureError::
+        kLacrosVideoCaptureDeviceProxyAlreadyEndedOnFatalError:
+      *output = media::VideoCaptureError::
+          kLacrosVideoCaptureDeviceProxyAlreadyEndedOnFatalError;
+      return true;
+    case media::mojom::VideoCaptureError::
+        kLacrosVideoCaptureDeviceProxyEncounteredFatalError:
+      *output = media::VideoCaptureError::
+          kLacrosVideoCaptureDeviceProxyEncounteredFatalError;
       return true;
   }
   NOTREACHED();
