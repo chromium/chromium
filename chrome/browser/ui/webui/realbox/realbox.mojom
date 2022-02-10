@@ -93,6 +93,7 @@ struct AutocompleteResult {
 // Theme settings for the NTP realbox.
 struct SearchBoxTheme {
   skia.mojom.SkColor bg;
+  skia.mojom.SkColor bg_hovered;
   skia.mojom.SkColor icon;
   skia.mojom.SkColor icon_selected;
   skia.mojom.SkColor ntp_bg;

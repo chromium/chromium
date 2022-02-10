@@ -176,6 +176,9 @@ new_tab_page::mojom::ThemePtr MakeTheme(
       theme_provider->GetColor(ThemeProperties::COLOR_NTP_BACKGROUND);
   search_box->bg =
       GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_BACKGROUND);
+  search_box->bg_hovered =
+      GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_BACKGROUND,
+                      OmniboxPartState::HOVERED);
   search_box->icon = GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_ICON);
   search_box->icon_selected = GetOmniboxColor(
       theme_provider, OmniboxPart::RESULTS_ICON, OmniboxPartState::SELECTED);

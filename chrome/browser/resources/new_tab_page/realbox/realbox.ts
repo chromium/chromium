@@ -313,12 +313,12 @@ export class RealboxElement extends I18nMixin
     if (variant === 0) {
       this.updateStyles({
         '--search-box-bg': skColorToRgba(assert(this.theme.bg)),
-        '--search-box-bg-hovered': skColorToRgba(assert(this.theme.bg))
+        '--search-box-bg-hovered': skColorToRgba(assert(this.theme.bgHovered))
       });
     } else if (variant === 1) {
       this.updateStyles({
         '--search-box-bg': skColorToRgba(assert(this.theme.ntpBg)),
-        '--search-box-bg-hovered': skColorToRgba(assert(this.theme.bg))
+        '--search-box-bg-hovered': skColorToRgba(assert(this.theme.bgHovered))
       });
     } else if (variant === 2) {
       this.updateStyles({
