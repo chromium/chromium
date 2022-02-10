@@ -912,4 +912,12 @@ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(H264VideoEncoderTest);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SVCVideoEncoderTest);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(SoftwareVideoEncoderTest);
 
+TEST(SoftwareVideoEncoderTest, DefaultBitrate) {
+  EXPECT_EQ(GetDefaultVideoEncodeBitrate({1280, 720}, 30u), 2'000'000u);
+  EXPECT_EQ(GetDefaultVideoEncodeBitrate({0, 0}, 0u), 10000u);
+  EXPECT_EQ(GetDefaultVideoEncodeBitrate({10000, 10000}, 10000), 1388888888u);
+  EXPECT_EQ(GetDefaultVideoEncodeBitrate({1920, 1080}, 60u), 9'000'000u);
+  EXPECT_EQ(GetDefaultVideoEncodeBitrate({1280, 720}, 1000u), 20'000'000u);
+}
+
 }  // namespace media

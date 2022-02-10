@@ -123,9 +123,8 @@ EncoderStatus SetUpVpxConfig(const VideoEncoder::Options& opts,
         break;
     }
   } else {
-    config->rc_target_bitrate =
-        double{opts.frame_size.GetCheckedArea().ValueOrDie()} / config->g_w /
-        config->g_h * config->rc_target_bitrate;
+    config->rc_target_bitrate = GetDefaultVideoEncodeBitrate(
+        opts.frame_size, opts.framerate.value_or(30));
   }
 
   config->g_w = opts.frame_size.width();

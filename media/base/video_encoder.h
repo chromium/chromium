@@ -20,6 +20,9 @@ namespace media {
 
 class VideoFrame;
 
+MEDIA_EXPORT uint32_t GetDefaultVideoEncodeBitrate(gfx::Size frame_size,
+                                                   uint32_t framerate);
+
 // Encoded video frame, its data and metadata.
 struct MEDIA_EXPORT VideoEncoderOutput {
   VideoEncoderOutput();

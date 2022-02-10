@@ -106,11 +106,9 @@ EncoderStatus SetUpAomConfig(const VideoEncoder::Options& opts,
         break;
     }
   } else {
-    // Default that gives about 2mbps to HD video
     config.rc_end_usage = AOM_VBR;
-    config.rc_target_bitrate =
-        int{(opts.frame_size.GetCheckedArea() * 2)
-                .ValueOrDefault(std::numeric_limits<int>::max())};
+    config.rc_target_bitrate = GetDefaultVideoEncodeBitrate(
+        opts.frame_size, opts.framerate.value_or(30));
   }
 
   config.g_w = opts.frame_size.width();
