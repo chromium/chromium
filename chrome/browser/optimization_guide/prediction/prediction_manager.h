@@ -37,13 +37,9 @@ namespace optimization_guide {
 enum class OptimizationGuideDecision;
 class OptimizationGuideStore;
 class OptimizationTargetModelObserver;
-class PredictionModel;
 class PredictionModelDownloadManager;
 class PredictionModelFetcher;
 class ModelInfo;
-
-using PostModelLoadCallback =
-    base::OnceCallback<void(std::unique_ptr<proto::PredictionModel>, bool)>;
 
 // A PredictionManager supported by the optimization guide that makes an
 // OptimizationTargetDecision by evaluating the corresponding prediction model
@@ -119,15 +115,6 @@ class PredictionManager : public PredictionModelDownloadObserver {
   void OnModelReady(const proto::PredictionModel& model) override;
 
  protected:
-  // Return the prediction model for the optimization target used by this
-  // PredictionManager for testing.
-  PredictionModel* GetPredictionModelForTesting(
-      proto::OptimizationTarget optimization_target) const;
-
-  // Create a PredictionModel, virtual for testing.
-  virtual std::unique_ptr<PredictionModel> CreatePredictionModel(
-      const proto::PredictionModel& model) const;
-
   // Process |prediction_models| to be stored in the in memory optimization
   // target prediction model map for immediate use and asynchronously write the
   // models to the model and features store to be persisted.
@@ -190,12 +177,6 @@ class PredictionManager : public PredictionModelDownloadObserver {
   void StoreLoadedModelInfo(proto::OptimizationTarget optimization_target,
                             std::unique_ptr<ModelInfo> prediction_model_file);
 
-  // Updates the in-memory model for |optimization_target| to
-  // |prediction_model|.
-  void StoreLoadedPredictionModel(
-      proto::OptimizationTarget optimization_target,
-      std::unique_ptr<PredictionModel> prediction_model);
-
   // Post-processing callback invoked after processing |model|.
   void OnProcessLoadedModel(const proto::PredictionModel& model, bool success);
 
@@ -226,11 +207,6 @@ class PredictionManager : public PredictionModelDownloadObserver {
   // updated.
   void NotifyObserversOfNewModel(proto::OptimizationTarget optimization_target,
                                  const ModelInfo& model_info) const;
-
-  // A map of optimization target to the prediction model capable of making
-  // an optimization target decision for it.
-  base::flat_map<proto::OptimizationTarget, std::unique_ptr<PredictionModel>>
-      optimization_target_prediction_model_map_;
 
   // A map of optimization target to the model file containing the model for the
   // target.

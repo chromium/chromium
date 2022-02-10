@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_model_download_manager.h"
@@ -31,7 +32,7 @@
 #include "components/optimization_guide/core/optimization_guide_test_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
-#include "components/optimization_guide/core/prediction_model.h"
+#include "components/optimization_guide/core/prediction_model_fetcher.h"
 #include "components/optimization_guide/core/prediction_model_fetcher_impl.h"
 #include "components/optimization_guide/core/proto_database_provider_test_base.h"
 #include "components/optimization_guide/proto/hint_cache.pb.h"
@@ -61,8 +62,7 @@ constexpr int kUpdateFetchModelAndFeaturesTimeSecs = 24 * 60 * 60 + 62;
 
 namespace optimization_guide {
 
-proto::PredictionModel CreatePredictionModel(
-    bool output_model_as_download_url = false) {
+proto::PredictionModel CreatePredictionModel() {
   proto::PredictionModel prediction_model;
 
   proto::ModelInfo* model_info = prediction_model.mutable_model_info();
@@ -70,65 +70,22 @@ proto::PredictionModel CreatePredictionModel(
   model_info->set_optimization_target(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
   model_info->add_supported_model_engine_versions(
-      proto::ModelEngineVersion::MODEL_ENGINE_VERSION_DECISION_TREE);
-  if (output_model_as_download_url) {
-    prediction_model.mutable_model()->set_download_url(
-        "https://example.com/model");
-  } else {
-    prediction_model.mutable_model()->mutable_threshold()->set_value(5.0);
-  }
+      proto::ModelEngineVersion::MODEL_ENGINE_VERSION_TFLITE_2_8);
+  prediction_model.mutable_model()->set_download_url(
+      "https://example.com/model");
   return prediction_model;
 }
 
-std::unique_ptr<proto::GetModelsResponse> BuildGetModelsResponse(
-    bool output_model_as_download_url = false) {
+std::unique_ptr<proto::GetModelsResponse> BuildGetModelsResponse() {
   std::unique_ptr<proto::GetModelsResponse> get_models_response =
       std::make_unique<proto::GetModelsResponse>();
 
-  proto::PredictionModel prediction_model =
-      CreatePredictionModel(output_model_as_download_url);
+  proto::PredictionModel prediction_model = CreatePredictionModel();
   prediction_model.mutable_model_info()->set_version(2);
   *get_models_response->add_models() = std::move(prediction_model);
 
   return get_models_response;
 }
-
-class TestPredictionModel : public PredictionModel {
- public:
-  explicit TestPredictionModel(const proto::PredictionModel& prediction_model)
-      : PredictionModel(prediction_model) {}
-  ~TestPredictionModel() override = default;
-
-  OptimizationTargetDecision Predict(
-      const base::flat_map<std::string, float>& model_features,
-      double* prediction_score) override {
-    *prediction_score = 0.0;
-    // Check to make sure the all model_features were provided.
-    for (const auto& model_feature : GetModelFeatures()) {
-      if (!model_features.contains(model_feature))
-        return OptimizationTargetDecision::kUnknown;
-    }
-    *prediction_score = 0.6;
-    model_evaluated_ = true;
-    last_evaluated_features_ =
-        base::flat_map<std::string, float>(model_features);
-    return OptimizationTargetDecision::kPageLoadMatches;
-  }
-
-  bool WasModelEvaluated() { return model_evaluated_; }
-
-  void ResetModelEvaluationState() { model_evaluated_ = false; }
-
-  base::flat_map<std::string, float> last_evaluated_features() {
-    return last_evaluated_features_;
-  }
-
- private:
-  bool ValidatePredictionModel() const override { return true; }
-
-  bool model_evaluated_ = false;
-  base::flat_map<std::string, float> last_evaluated_features_;
-};
 
 class FakeOptimizationTargetModelObserver
     : public OptimizationTargetModelObserver {
@@ -186,7 +143,6 @@ enum class PredictionModelFetcherEndState {
   kFetchFailed = 0,
   kFetchSuccessWithModels = 1,
   kFetchSuccessWithEmptyResponse = 2,
-  kFetchSuccessWithModelDownloadUrls = 3,
 };
 
 void RunGetModelsCallback(
@@ -234,11 +190,6 @@ class TestPredictionModelFetcher : public PredictionModelFetcherImpl {
       case PredictionModelFetcherEndState::kFetchSuccessWithEmptyResponse:
         models_fetched_ = true;
         get_models_response = std::make_unique<proto::GetModelsResponse>();
-        break;
-      case PredictionModelFetcherEndState::kFetchSuccessWithModelDownloadUrls:
-        models_fetched_ = true;
-        get_models_response =
-            BuildGetModelsResponse(/*output_model_as_download_url=*/true);
         break;
     }
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -399,26 +350,6 @@ class TestPredictionManager : public PredictionManager {
                           /*optimization_guide_logger=*/nullptr) {}
 
   ~TestPredictionManager() override = default;
-
-  std::unique_ptr<PredictionModel> CreatePredictionModel(
-      const proto::PredictionModel& model) const override {
-    if (!create_valid_prediction_model_)
-      return nullptr;
-    return std::make_unique<TestPredictionModel>(model);
-  }
-
-  void set_create_valid_prediction_model(bool create_valid_prediction_model) {
-    create_valid_prediction_model_ = create_valid_prediction_model;
-  }
-
-  using PredictionManager::GetPredictionModelForTesting;
-  void UpdatePredictionModelsForTesting(
-      proto::GetModelsResponse* get_models_response) {
-    UpdatePredictionModels(get_models_response->models());
-  }
-
- private:
-  bool create_valid_prediction_model_ = true;
 };
 
 class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
@@ -820,23 +751,22 @@ TEST_F(PredictionManagerTest,
 
 TEST_F(PredictionManagerTest, UpdatePredictionModelsWithInvalidModel) {
   base::HistogramTester histogram_tester;
+
   CreatePredictionManager();
-  prediction_manager()->SetPredictionModelFetcherForTesting(
-      BuildTestPredictionModelFetcher(
-          PredictionModelFetcherEndState::kFetchFailed));
 
   FakeOptimizationTargetModelObserver observer;
   prediction_manager()->AddObserverForOptimizationTargetModel(
-      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt, &observer);
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      /*model_metadata=*/absl::nullopt, &observer);
 
-  std::unique_ptr<proto::GetModelsResponse> get_models_response =
-      BuildGetModelsResponse();
-
-  // Override the manager so that any prediction model updates will be seen as
-  // invalid.
-  prediction_manager()->set_create_valid_prediction_model(false);
-  prediction_manager()->UpdatePredictionModelsForTesting(
-      get_models_response.get());
+  // Set invalid model with no download url.
+  proto::PredictionModel model;
+  model.mutable_model_info()->set_optimization_target(
+      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  model.mutable_model_info()->set_version(3);
+  model.mutable_model();
+  prediction_manager()->OnModelReady(model);
+  RunUntilIdle();
 
   histogram_tester.ExpectBucketCount("OptimizationGuide.IsPredictionModelValid",
                                      false, 1);
@@ -849,49 +779,6 @@ TEST_F(PredictionManagerTest, UpdatePredictionModelsWithInvalidModel) {
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 0);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionModelRemoved.PainfulPageLoad", true, 1);
-}
-
-TEST_F(PredictionManagerTest, UpdateModelWithSameVersion) {
-  base::HistogramTester histogram_tester;
-  CreatePredictionManager();
-  prediction_manager()->SetPredictionModelFetcherForTesting(
-      BuildTestPredictionModelFetcher(
-          PredictionModelFetcherEndState::kFetchFailed));
-
-  FakeOptimizationTargetModelObserver observer;
-  prediction_manager()->AddObserverForOptimizationTargetModel(
-      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt, &observer);
-
-  // Seed the PredictionManager with a prediction model with a higher version
-  // to try to be updated.
-  std::unique_ptr<proto::GetModelsResponse> get_models_response =
-      BuildGetModelsResponse();
-  get_models_response->mutable_models(0)->mutable_model_info()->set_version(3);
-
-  prediction_manager()->UpdatePredictionModelsForTesting(
-      get_models_response.get());
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PredictionManager.PredictionModelsStored", true, 1);
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 3, 1);
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PredictionManager.ModelTypeChanged.PainfulPageLoad",
-      false, 1);
-
-  get_models_response = BuildGetModelsResponse();
-
-  get_models_response->mutable_models(0)->mutable_model_info()->set_version(3);
-  prediction_manager()->UpdatePredictionModelsForTesting(
-      get_models_response.get());
-
-  TestPredictionModel* stored_prediction_model =
-      static_cast<TestPredictionModel*>(
-          prediction_manager()->GetPredictionModelForTesting(
-              proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
-  EXPECT_TRUE(stored_prediction_model);
-  EXPECT_EQ(3, stored_prediction_model->GetVersion());
-  histogram_tester.ExpectBucketCount("OptimizationGuide.IsPredictionModelValid",
-                                     true, 2);
 }
 
 TEST_F(PredictionManagerTest, UpdateModelFileWithSameVersion) {
@@ -929,10 +816,6 @@ TEST_F(PredictionManagerTest, UpdateModelFileWithSameVersion) {
                    .last_received_model_for_target(
                        proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
                    .has_value());
-
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PredictionManager.ModelTypeChanged.PainfulPageLoad",
-      false, 1);
 }
 
 TEST_F(PredictionManagerTest, DownloadManagerUnavailableShouldNotFetch) {
@@ -941,7 +824,7 @@ TEST_F(PredictionManagerTest, DownloadManagerUnavailableShouldNotFetch) {
   CreatePredictionManager();
   prediction_manager()->SetPredictionModelFetcherForTesting(
       BuildTestPredictionModelFetcher(
-          PredictionModelFetcherEndState::kFetchSuccessWithModelDownloadUrls));
+          PredictionModelFetcherEndState::kFetchSuccessWithModels));
   prediction_manager()->SetPredictionModelDownloadManagerForTesting(
       std::make_unique<FakePredictionModelDownloadManager>(
           task_environment()->GetMainThreadTaskRunner()));
@@ -966,7 +849,7 @@ TEST_F(PredictionManagerTest, UpdateModelWithDownloadUrl) {
   CreatePredictionManager();
   prediction_manager()->SetPredictionModelFetcherForTesting(
       BuildTestPredictionModelFetcher(
-          PredictionModelFetcherEndState::kFetchSuccessWithModelDownloadUrls));
+          PredictionModelFetcherEndState::kFetchSuccessWithModels));
   prediction_manager()->SetPredictionModelDownloadManagerForTesting(
       std::make_unique<FakePredictionModelDownloadManager>(
           task_environment()->GetMainThreadTaskRunner()));
@@ -993,35 +876,6 @@ TEST_F(PredictionManagerTest, UpdateModelWithDownloadUrl) {
             GURL("https://example.com/model"));
 }
 
-TEST_F(PredictionManagerTest, UpdateModelForUnregisteredTarget) {
-  base::HistogramTester histogram_tester;
-  CreatePredictionManager();
-  prediction_manager()->SetPredictionModelFetcherForTesting(
-      BuildTestPredictionModelFetcher(
-          PredictionModelFetcherEndState::kFetchSuccessWithModels));
-  SetStoreInitialized();
-
-  EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
-
-  std::unique_ptr<proto::GetModelsResponse> get_models_response =
-      BuildGetModelsResponse();
-
-  prediction_manager()->UpdatePredictionModelsForTesting(
-      get_models_response.get());
-
-  TestPredictionModel* test_prediction_model =
-      static_cast<TestPredictionModel*>(
-          prediction_manager()->GetPredictionModelForTesting(
-              proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
-  EXPECT_FALSE(test_prediction_model);
-
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionManager.PredictionModelsStored", 1);
-
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 0);
-}
-
 TEST_F(PredictionManagerTest, UpdateModelForUnregisteredTargetOnModelReady) {
   base::HistogramTester histogram_tester;
   CreatePredictionManager();
@@ -1041,81 +895,6 @@ TEST_F(PredictionManagerTest, UpdateModelForUnregisteredTargetOnModelReady) {
 
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 0);
-}
-
-TEST_F(PredictionManagerTest, UpdateModelForRegisteredTargetButNowFile) {
-  base::HistogramTester histogram_tester;
-  CreatePredictionManager();
-
-  FakeOptimizationTargetModelObserver observer;
-  prediction_manager()->AddObserverForOptimizationTargetModel(
-      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt, &observer);
-  SetStoreInitialized();
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 1, 1);
-
-  // Now, update the model to be a file.
-  proto::PredictionModel model;
-  model.mutable_model_info()->set_optimization_target(
-      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-  model.mutable_model_info()->set_version(3);
-  model.mutable_model()->set_download_url(
-      FilePathToString(temp_dir().AppendASCII("whatever")));
-  prediction_manager()->OnModelReady(model);
-  RunUntilIdle();
-
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.PredictionManager.PredictionModelsStored", 1);
-
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 3, 1);
-  histogram_tester.ExpectBucketCount(
-      "OptimizationGuide.PredictionManager.ModelTypeChanged.PainfulPageLoad",
-      true, 1);
-
-  // Model should use the file rather than the decision tree from the initial
-  // load.
-  EXPECT_EQ(observer
-                .last_received_model_for_target(
-                    proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
-                ->GetVersion(),
-            3);
-  EXPECT_EQ(observer
-                .last_received_model_for_target(
-                    proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
-                ->GetModelFilePath()
-                .BaseName()
-                .value(),
-            FILE_PATH_LITERAL("whatever"));
-}
-
-TEST_F(PredictionManagerTest, UpdateModelWithUnsupportedOptimizationTarget) {
-  CreatePredictionManager();
-  prediction_manager()->SetPredictionModelFetcherForTesting(
-      BuildTestPredictionModelFetcher(
-          PredictionModelFetcherEndState::kFetchFailed));
-
-  FakeOptimizationTargetModelObserver observer;
-  prediction_manager()->AddObserverForOptimizationTargetModel(
-      proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, absl::nullopt, &observer);
-
-  EXPECT_FALSE(prediction_model_fetcher()->models_fetched());
-  EXPECT_FALSE(models_and_features_store()->WasModelLoaded());
-
-  std::unique_ptr<proto::GetModelsResponse> get_models_response =
-      BuildGetModelsResponse();
-  get_models_response->mutable_models(0)
-      ->mutable_model_info()
-      ->clear_optimization_target();
-  prediction_manager()->UpdatePredictionModelsForTesting(
-      get_models_response.get());
-
-  TestPredictionModel* test_prediction_model =
-      static_cast<TestPredictionModel*>(
-          prediction_manager()->GetPredictionModelForTesting(
-              proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
-  EXPECT_FALSE(test_prediction_model);
-  EXPECT_FALSE(models_and_features_store()->WasModelLoaded());
 }
 
 TEST_F(PredictionManagerTest,

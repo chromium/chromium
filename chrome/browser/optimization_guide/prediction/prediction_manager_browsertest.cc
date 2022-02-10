@@ -46,77 +46,7 @@
 
 namespace {
 
-std::unique_ptr<optimization_guide::proto::PredictionModel>
-GetValidDecisionTreePredictionModel() {
-  std::unique_ptr<optimization_guide::proto::PredictionModel> prediction_model =
-      optimization_guide::GetMinimalDecisionTreePredictionModel(
-          /* threshold= */ 5.0,
-          /* weight= */ 2.0);
-
-  optimization_guide::proto::DecisionTree* decision_tree_model =
-      prediction_model->mutable_model()->mutable_decision_tree();
-
-  optimization_guide::proto::TreeNode* tree_node =
-      decision_tree_model->mutable_nodes(0);
-  tree_node->mutable_binary_node()->mutable_left_child_id()->set_value(1);
-  tree_node->mutable_binary_node()->mutable_right_child_id()->set_value(2);
-  tree_node->mutable_binary_node()
-      ->mutable_inequality_left_child_test()
-      ->mutable_feature_id()
-      ->mutable_id()
-      ->set_value("agg1");
-  tree_node->mutable_binary_node()
-      ->mutable_inequality_left_child_test()
-      ->set_type(optimization_guide::proto::InequalityTest::LESS_OR_EQUAL);
-  tree_node->mutable_binary_node()
-      ->mutable_inequality_left_child_test()
-      ->mutable_threshold()
-      ->set_float_value(1.0);
-
-  tree_node = decision_tree_model->add_nodes();
-  tree_node->mutable_node_id()->set_value(1);
-  tree_node->mutable_leaf()->mutable_vector()->add_value()->set_double_value(
-      2.);
-
-  tree_node = decision_tree_model->add_nodes();
-  tree_node->mutable_node_id()->set_value(2);
-  tree_node->mutable_leaf()->mutable_vector()->add_value()->set_double_value(
-      4.);
-
-  return prediction_model;
-}
-
-std::unique_ptr<optimization_guide::proto::PredictionModel>
-GetValidEnsemblePredictionModel() {
-  std::unique_ptr<optimization_guide::proto::PredictionModel> prediction_model =
-      std::make_unique<optimization_guide::proto::PredictionModel>();
-  prediction_model->mutable_model()->mutable_threshold()->set_value(5.0);
-
-  optimization_guide::proto::Model valid_decision_tree_model =
-      GetValidDecisionTreePredictionModel()->model();
-  optimization_guide::proto::Ensemble* ensemble =
-      prediction_model->mutable_model()->mutable_ensemble();
-  *ensemble->add_members()->mutable_submodel() = valid_decision_tree_model;
-  *ensemble->add_members()->mutable_submodel() = valid_decision_tree_model;
-  return prediction_model;
-}
-
-std::unique_ptr<optimization_guide::proto::PredictionModel>
-CreatePredictionModel() {
-  std::unique_ptr<optimization_guide::proto::PredictionModel> prediction_model =
-      GetValidEnsemblePredictionModel();
-
-  optimization_guide::proto::ModelInfo* model_info =
-      prediction_model->mutable_model_info();
-  model_info->set_version(1);
-  model_info->add_supported_host_model_features("agg1");
-  model_info->set_optimization_target(
-      optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
-  model_info->add_supported_model_engine_versions(
-      optimization_guide::proto::ModelEngineVersion::
-          MODEL_ENGINE_VERSION_DECISION_TREE);
-  return prediction_model;
-}
+constexpr int kSuccessfulModelVersion = 123;
 
 std::unique_ptr<optimization_guide::proto::GetModelsResponse>
 BuildGetModelsResponse() {
@@ -125,20 +55,28 @@ BuildGetModelsResponse() {
           std::make_unique<optimization_guide::proto::GetModelsResponse>();
 
   std::unique_ptr<optimization_guide::proto::PredictionModel> prediction_model =
-      CreatePredictionModel();
-  prediction_model->mutable_model_info()->set_version(2);
+      std::make_unique<optimization_guide::proto::PredictionModel>();
+  optimization_guide::proto::ModelInfo* model_info =
+      prediction_model->mutable_model_info();
+  model_info->set_version(2);
+  model_info->set_optimization_target(
+      optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+  model_info->add_supported_model_engine_versions(
+      optimization_guide::proto::ModelEngineVersion::
+          MODEL_ENGINE_VERSION_TFLITE_2_8);
+  prediction_model->mutable_model()->set_download_url(
+      "https://example.com/model");
   *get_models_response->add_models() = *prediction_model.get();
 
   return get_models_response;
 }
 
 enum class PredictionModelsFetcherRemoteResponseType {
-  kSuccessfulWithModelsAndFeatures = 0,
-  kSuccessfulWithValidModelFile = 1,
-  kSuccessfulWithInvalidModelFile = 2,
-  kSuccessfulWithValidModelFileAndInvalidAdditionalFiles = 3,
-  kSuccessfulWithValidModelFileAndValidAdditionalFiles = 4,
-  kUnsuccessful = 5,
+  kSuccessfulWithValidModelFile = 0,
+  kSuccessfulWithInvalidModelFile = 1,
+  kSuccessfulWithValidModelFileAndInvalidAdditionalFiles = 2,
+  kSuccessfulWithValidModelFileAndValidAdditionalFiles = 3,
+  kUnsuccessful = 4,
 };
 
 }  // namespace
@@ -344,8 +282,7 @@ class PredictionManagerBrowserTestBase : public InProcessBrowserTest {
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   std::unique_ptr<net::EmbeddedTestServer> models_server_;
   PredictionModelsFetcherRemoteResponseType response_type_ =
-      PredictionModelsFetcherRemoteResponseType::
-          kSuccessfulWithModelsAndFeatures;
+      PredictionModelsFetcherRemoteResponseType::kSuccessfulWithValidModelFile;
   base::flat_set<uint32_t> expected_field_trial_name_hashes_;
 };
 
@@ -371,6 +308,8 @@ class PredictionManagerBrowserTest : public PredictionManagerBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
                        ModelsAndFeaturesStoreInitialized) {
   ModelFileObserver model_file_observer;
+  SetResponseType(
+      PredictionModelsFetcherRemoteResponseType::kSuccessfulWithValidModelFile);
   base::HistogramTester histogram_tester;
   content::NetworkConnectionChangeSimulator().SetConnectionType(
       network::mojom::ConnectionType::CONNECTION_2G);
@@ -382,13 +321,14 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
   RetryForHistogramUntilCountReached(
       &histogram_tester,
       "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 1);
-
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PredictionManager.PredictionModelsStored", true, 1);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 2, 1);
+      "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad",
+      kSuccessfulModelVersion, 1);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 2, 1);
+      "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad",
+      kSuccessfulModelVersion, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PredictionManagerBrowserTest,
@@ -456,8 +396,8 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerNoUserPermissionsTest,
   ModelFileObserver model_file_observer;
   base::HistogramTester histogram_tester;
 
-  SetResponseType(PredictionModelsFetcherRemoteResponseType::
-                      kSuccessfulWithModelsAndFeatures);
+  SetResponseType(
+      PredictionModelsFetcherRemoteResponseType::kSuccessfulWithValidModelFile);
   RegisterWithKeyedService(&model_file_observer);
 
   RetryForHistogramUntilCountReached(
@@ -565,11 +505,11 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
         PredictionModelDownloadStatus::kSuccess, 1);
 
     histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 123,
-        1);
+        "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad",
+        kSuccessfulModelVersion, 1);
     histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 123,
-        1);
+        "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad",
+        kSuccessfulModelVersion, 1);
   }
 
   // Now set up model download with incognito profile. Download should not
@@ -691,9 +631,11 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError", 0);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 123, 1);
+      "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad",
+      kSuccessfulModelVersion, 1);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 123, 1);
+      "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad",
+      kSuccessfulModelVersion, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
@@ -737,9 +679,11 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PredictionModelDownloadManager.ReplaceFileError", 0);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad", 123, 1);
+      "OptimizationGuide.PredictionModelUpdateVersion.PainfulPageLoad",
+      kSuccessfulModelVersion, 1);
   histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad", 123, 1);
+      "OptimizationGuide.PredictionModelLoadedVersion.PainfulPageLoad",
+      kSuccessfulModelVersion, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,

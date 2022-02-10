@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
@@ -40,7 +41,6 @@
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
-#include "components/optimization_guide/core/prediction_model.h"
 #include "components/optimization_guide/core/prediction_model_fetcher_impl.h"
 #include "components/optimization_guide/core/store_update_data.h"
 #include "components/optimization_guide/proto/models.pb.h"
@@ -142,16 +142,6 @@ void RecordModelUpdateVersion(
           optimization_guide::GetStringNameForOptimizationTarget(
               model_info.optimization_target()),
       model_info.version());
-}
-
-void RecordModelTypeChanged(
-    optimization_guide::proto::OptimizationTarget optimization_target,
-    bool changed) {
-  base::UmaHistogramBoolean(
-      "OptimizationGuide.PredictionManager.ModelTypeChanged." +
-          optimization_guide::GetStringNameForOptimizationTarget(
-              optimization_target),
-      changed);
 }
 
 // Returns whether models should be fetched from the
@@ -313,14 +303,6 @@ PredictionManager::GetRegisteredOptimizationTargets() const {
   return optimization_targets;
 }
 
-PredictionModel* PredictionManager::GetPredictionModelForTesting(
-    proto::OptimizationTarget optimization_target) const {
-  auto it = optimization_target_prediction_model_map_.find(optimization_target);
-  if (it != optimization_target_prediction_model_map_.end())
-    return it->second.get();
-  return nullptr;
-}
-
 void PredictionManager::SetPredictionModelFetcherForTesting(
     std::unique_ptr<PredictionModelFetcher> prediction_model_fetcher) {
   prediction_model_fetcher_ = std::move(prediction_model_fetcher);
@@ -415,11 +397,6 @@ void PredictionManager::FetchModels() {
           *optimization_target_and_metadata.second;
     }
 
-    auto it = optimization_target_prediction_model_map_.find(
-        optimization_target_and_metadata.first);
-    if (it != optimization_target_prediction_model_map_.end())
-      model_info.set_version(it->second.get()->GetVersion());
-
     auto model_it = optimization_target_model_info_map_.find(
         optimization_target_and_metadata.first);
     if (model_it != optimization_target_model_info_map_.end())
@@ -473,12 +450,6 @@ void PredictionManager::OnModelsFetched(
 
   fetch_timer_.Stop();
   ScheduleModelsFetch();
-}
-
-std::unique_ptr<PredictionModel> PredictionManager::CreatePredictionModel(
-    const proto::PredictionModel& model) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return PredictionModel::Create(model);
 }
 
 void PredictionManager::UpdatePredictionModels(
@@ -672,10 +643,6 @@ void PredictionManager::LoadPredictionModels(
   for (const auto& optimization_target : optimization_targets) {
     // The prediction model for this optimization target has already been
     // loaded.
-    if (optimization_target_prediction_model_map_.contains(
-            optimization_target)) {
-      continue;
-    }
     if (!model_and_features_store_->FindPredictionModelEntryKey(
             optimization_target, &model_entry_key)) {
       continue;
@@ -743,9 +710,7 @@ bool PredictionManager::ProcessAndStoreLoadedModel(
   ScopedPredictionModelConstructionAndValidationRecorder
       prediction_model_recorder(model.model_info().optimization_target());
   std::unique_ptr<ModelInfo> model_info = ModelInfo::Create(model);
-  std::unique_ptr<PredictionModel> prediction_model =
-      model_info ? nullptr : CreatePredictionModel(model);
-  if (!model_info && !prediction_model) {
+  if (!model_info) {
     prediction_model_recorder.set_is_valid(false);
     return false;
   }
@@ -764,12 +729,6 @@ bool PredictionManager::ProcessAndStoreLoadedModel(
     StoreLoadedModelInfo(optimization_target, std::move(model_info));
   }
 
-  // Update prediction model if that is what we have loaded.
-  if (prediction_model) {
-    StoreLoadedPredictionModel(optimization_target,
-                               std::move(prediction_model));
-  }
-
   return true;
 }
 
@@ -783,11 +742,6 @@ bool PredictionManager::ShouldUpdateStoredModelForTarget(
   if (model_meta_it != optimization_target_model_info_map_.end())
     return model_meta_it->second->GetVersion() != new_version;
 
-  auto model_it =
-      optimization_target_prediction_model_map_.find(optimization_target);
-  if (model_it != optimization_target_prediction_model_map_.end())
-    return model_it->second->GetVersion() != new_version;
-
   return true;
 }
 
@@ -797,15 +751,6 @@ void PredictionManager::StoreLoadedModelInfo(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(model_info);
 
-  bool has_model_for_target =
-      optimization_target_prediction_model_map_.contains(optimization_target);
-  RecordModelTypeChanged(optimization_target, has_model_for_target);
-  if (has_model_for_target) {
-    // Remove prediction model if we received the update as a model file. In
-    // practice, this shouldn't happen.
-    optimization_target_prediction_model_map_.erase(optimization_target);
-  }
-
   // Notify observers of new model file path.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&PredictionManager::NotifyObserversOfNewModel,
@@ -814,23 +759,6 @@ void PredictionManager::StoreLoadedModelInfo(
 
   optimization_target_model_info_map_.insert_or_assign(optimization_target,
                                                        std::move(model_info));
-}
-
-void PredictionManager::StoreLoadedPredictionModel(
-    proto::OptimizationTarget optimization_target,
-    std::unique_ptr<PredictionModel> prediction_model) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  bool has_model_file_for_target =
-      optimization_target_model_info_map_.contains(optimization_target);
-  RecordModelTypeChanged(optimization_target, has_model_file_for_target);
-  if (has_model_file_for_target) {
-    // Remove prediction model file from map if we received the update as a
-    // PredictionModel. In practice, this shouldn't happen.
-    optimization_target_model_info_map_.erase(optimization_target);
-  }
-  optimization_target_prediction_model_map_.insert_or_assign(
-      optimization_target, std::move(prediction_model));
 }
 
 void PredictionManager::MaybeFetchModels() {
