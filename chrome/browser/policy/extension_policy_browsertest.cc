@@ -409,9 +409,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallRemovedPolicy) {
 
   // Should uninstall good_v1.crx.
   base::DictionaryValue dict_value;
-  dict_value.SetString(std::string(kGoodCrxId) + "." +
-                           extensions::schema_constants::kInstallationMode,
-                       extensions::schema_constants::kRemoved);
+  dict_value.SetStringPath(std::string(kGoodCrxId) + "." +
+                               extensions::schema_constants::kInstallationMode,
+                           extensions::schema_constants::kRemoved);
   PolicyMap policies;
   policies.Set(key::kExtensionSettings, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, dict_value.Clone(),
@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionWildcardRemovedPolicy) {
 
   // Should uninstall good_v1.crx.
   base::DictionaryValue dict_value;
-  dict_value.SetString(
+  dict_value.SetStringPath(
       std::string("*") + "." + extensions::schema_constants::kInstallationMode,
       extensions::schema_constants::kRemoved);
   PolicyMap policies;
@@ -1864,10 +1864,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
 
   // Setting the forcelist extension should install "good_v1.crx".
   base::DictionaryValue dict_value;
-  dict_value.SetString(std::string(kGoodCrxId) + "." +
-                           extensions::schema_constants::kInstallationMode,
-                       extensions::schema_constants::kNormalInstalled);
-  dict_value.SetString(
+  dict_value.SetStringPath(std::string(kGoodCrxId) + "." +
+                               extensions::schema_constants::kInstallationMode,
+                           extensions::schema_constants::kNormalInstalled);
+  dict_value.SetStringPath(
       std::string(kGoodCrxId) + "." + extensions::schema_constants::kUpdateUrl,
       url.spec());
   PolicyMap policies;

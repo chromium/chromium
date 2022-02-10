@@ -306,9 +306,8 @@ void CloudPolicyInvalidatorTestBase::StorePolicy(PolicyObject object,
   store_.invalidation_version_ = invalidation_version;
   store_.set_policy_data_for_testing(std::move(data));
   base::DictionaryValue policies;
-  policies.SetInteger(
-      key::kMaxInvalidationFetchDelay,
-      CloudPolicyInvalidator::kMaxFetchDelayMin);
+  policies.SetIntKey(key::kMaxInvalidationFetchDelay,
+                     CloudPolicyInvalidator::kMaxFetchDelayMin);
   store_.policy_map_.LoadFrom(
       &policies,
       POLICY_LEVEL_MANDATORY,
