@@ -112,6 +112,8 @@ ResourceFormat SkColorTypeToResourceFormat(SkColorType color_type) {
     case kRGBA_F16Norm_SkColorType:
     case kRGBA_F32_SkColorType:
     case kSRGBA_8888_SkColorType:
+    // Default case is for new color types added to Skia
+    default:
       break;
   }
   NOTREACHED();
