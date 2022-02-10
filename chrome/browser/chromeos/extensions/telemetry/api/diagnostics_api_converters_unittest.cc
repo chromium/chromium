@@ -79,6 +79,11 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
   }
   {
     RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
+    EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kNvmeWearLevel, &out));
+    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_NVME_WEAR_LEVEL);
+  }
+  {
+    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
     EXPECT_TRUE(ConvertMojoRoutine(MojoRoutineType::kSmartctlCheck, &out));
     EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_SMARTCTL_CHECK);
   }
@@ -89,11 +94,6 @@ TEST(TelemetryExtensionDiagnosticsApiConvertersUnitTest,
   {
     RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
     EXPECT_FALSE(ConvertMojoRoutine(MojoRoutineType::kAcPower, &out));
-    EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_NONE);
-  }
-  {
-    RoutineType out = RoutineType::ROUTINE_TYPE_NONE;
-    EXPECT_FALSE(ConvertMojoRoutine(MojoRoutineType::kNvmeWearLevel, &out));
     EXPECT_EQ(out, RoutineType::ROUTINE_TYPE_NONE);
   }
   {

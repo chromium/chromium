@@ -263,6 +263,25 @@ class OsDiagnosticsRunMemoryRoutineFunction
   void RunIfAllowed() override;
 };
 
+class OsDiagnosticsRunNvmeWearLevelRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runNvmeWearLevelRoutine",
+                             OS_DIAGNOSTICS_RUNNVMEWEARLEVELROUTINE)
+
+  OsDiagnosticsRunNvmeWearLevelRoutineFunction();
+  OsDiagnosticsRunNvmeWearLevelRoutineFunction(
+      const OsDiagnosticsRunNvmeWearLevelRoutineFunction&) = delete;
+  OsDiagnosticsRunNvmeWearLevelRoutineFunction& operator=(
+      const OsDiagnosticsRunNvmeWearLevelRoutineFunction&) = delete;
+
+ private:
+  ~OsDiagnosticsRunNvmeWearLevelRoutineFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 class OsDiagnosticsRunSmartctlCheckRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
  public:

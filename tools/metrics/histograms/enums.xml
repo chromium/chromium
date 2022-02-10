@@ -31631,6 +31631,7 @@ Called by update_extension_histograms.py.-->
   <int value="1622" label="WEB_AUTHENTICATION_PROXY_COMPLETE_GET_REQUEST"/>
   <int value="1623" label="PASSWORDSPRIVATE_UNMUTEINSECURECREDENTIAL"/>
   <int value="1624" label="OS_DIAGNOSTICS_RUNSMARTCTLCHECKROUTINE"/>
+  <int value="1625" label="OS_DIAGNOSTICS_RUNNVMEWEARLEVELROUTINE"/>
 </enum>
 
 <enum name="ExtensionIconState">
