@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/privacy_sandbox/privacy_sandbox_dialog_view.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_dialog.h"
@@ -33,8 +34,7 @@ void ShowPrivacySandboxDialog(Browser* browser,
   auto dialog =
       std::make_unique<PrivacySandboxDialogView>(browser, dialog_type);
   constrained_window::CreateBrowserModalDialogViews(
-      std::move(dialog), browser->window()->GetNativeWindow())
-      ->Show();
+      std::move(dialog), browser->window()->GetNativeWindow());
 }
 
 PrivacySandboxDialogView::PrivacySandboxDialogView(
@@ -42,6 +42,7 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
     PrivacySandboxService::DialogType dialog_type)
     : browser_(browser) {
   // Create the web view in the native bubble.
+  dialog_created_time_ = base::TimeTicks::Now();
   web_view_ =
       AddChildView(std::make_unique<views::WebView>(browser->profile()));
   web_view_->LoadInitialURL(GURL(chrome::kChromeUIPrivacySandboxDialogURL));
@@ -87,6 +88,11 @@ void PrivacySandboxDialogView::ResizeNativeView(int height) {
   web_view_->SetPreferredSize(gfx::Size(web_view_->GetPreferredSize().width(),
                                         std::min(height, max_height)));
   SizeToContents();
+  GetWidget()->Show();
+
+  DCHECK(!dialog_created_time_.is_null());
+  base::UmaHistogramTimes("Settings.PrivacySandbox.DialogLoadTime",
+                          base::TimeTicks::Now() - dialog_created_time_);
 }
 
 void PrivacySandboxDialogView::OpenPrivacySandboxSettings() {

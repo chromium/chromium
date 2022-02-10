@@ -224,6 +224,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.PrivacySandbox.DialogLoadTime" units="ms"
+    expires_after="M104">
+  <owner>olesiamarukhno@google.com</owner>
+  <owner>sauski@google.com</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <summary>
+    Records the load time of the Privacy Sandbox Dialog. The load time is the
+    time between the dialog view created and HTML loaded (DOMContentLoaded).
+  </summary>
+</histogram>
+
 <histogram name="Settings.PrivacySandbox.Enabled"
     enum="SettingsPrivacySandboxEnabled" expires_after="2022-06-26">
   <owner>harrisonsean@chromium.org</owner>
