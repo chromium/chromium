@@ -4,12 +4,10 @@
     display: grid;
     grid-template-areas:
       '. .     . .'
-      '. image . text'
-      '. .     . .';
+      '. image . text';
     grid-template-columns: 8px 84px 16px minmax(0, 1fr);
-    grid-template-rows: 12px 84px 12px;
+    grid-template-rows: 12px 84px;
     height: 100%;
-    margin: 0 8px;
   }
 
   #imageContainer {
@@ -63,7 +61,7 @@
     bottom: 0;
     grid-area: image;
     position: absolute;
-    right: 8px;
+    right: 10px;
   }
   #avatar:focus-visible {
     outline: 2px solid var(--cros-focus-ring-color);

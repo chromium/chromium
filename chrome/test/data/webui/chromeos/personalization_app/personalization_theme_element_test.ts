@@ -43,7 +43,7 @@ export function PersonalizationThemeTest() {
 
     assertEquals(
         personalizationThemeElement.i18n('themeLabel'),
-        personalizationThemeElement.shadowRoot!.querySelector('h2')!.innerText);
+        personalizationThemeElement.shadowRoot!.querySelector('p')!.innerText);
   });
 
   test('sets color mode in store on first load', async () => {

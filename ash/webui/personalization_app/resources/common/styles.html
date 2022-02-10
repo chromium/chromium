@@ -16,6 +16,9 @@
 
       /* copied from |AshColorProvider| |kSecondToneOpacity| constant. */
       --personalization-app-second-tone-opacity: 0.3;
+
+      --personalization-app-label-font: 500 13px/20px
+          var(--cros-font-family-google-sans);
     }
     @media (prefers-color-scheme: light) {
       .placeholder,
@@ -231,7 +234,7 @@
       margin-inline-start: 8px;
     }
     .preview-container {
-      border: 1px solid rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--cros-button-stroke-color-secondary);
       border-radius: 16px;
     }
   </style>

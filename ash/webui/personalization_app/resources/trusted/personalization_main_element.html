@@ -2,12 +2,11 @@
   #container {
     display: grid;
     grid-template-areas:
-      '. leftspacer userpreview userpreview rightspacer .'
-      '. leftspacer .           .           rightspacer .'
-      '. leftspacer wallpaper   screensaver rightspacer .'
-      '. leftspacer .           .           rightspacer .';
-    grid-template-columns: 1fr 72px minmax(240px, 480px) minmax(240px, 480px) 72px 1fr;
-    grid-template-rows: 108px 12px 1fr 12px;
+      '. leftspacer userpreview userpreview userpreview rightspacer .'
+      '. leftspacer wallpaper   .           screensaver rightspacer .'
+      '. leftspacer .           .           .           rightspacer .';
+    grid-template-columns: 1fr minmax(24px, 72px) minmax(208px, 400px) 16px minmax(208px, 400px) minmax(24px, 72px) 1fr;
+    grid-template-rows: 108px 1fr 12px;
     height: 100%;
     position: relative;
     width: 100%;
