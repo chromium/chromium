@@ -156,7 +156,6 @@ class WaylandEventSource : public PlatformEventSource,
 
   // PlatformEventSource:
   void OnDispatcherListChanged() override;
-  void StopProcessingEventsForTesting() override;
 
   // WaylandWindowObserver:
   void OnWindowRemoved(WaylandWindow* window) override;

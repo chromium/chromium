@@ -470,10 +470,6 @@ void WaylandEventSource::OnDispatcherListChanged() {
   StartProcessingEvents();
 }
 
-void WaylandEventSource::StopProcessingEventsForTesting() {
-  event_watcher_->StopProcessingEvents();
-}
-
 void WaylandEventSource::OnWindowRemoved(WaylandWindow* window) {
   if (connection_->IsDragInProgress()) {
     auto* target_window = window_manager_->GetCurrentTouchFocusedWindow();

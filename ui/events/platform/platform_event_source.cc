@@ -64,8 +64,6 @@ void PlatformEventSource::RemovePlatformEventDispatcher(
   OnDispatcherListChanged();
 }
 
-void PlatformEventSource::StopProcessingEventsForTesting() {}
-
 std::unique_ptr<ScopedEventDispatcher> PlatformEventSource::OverrideDispatcher(
     PlatformEventDispatcher* dispatcher) {
   CHECK(dispatcher);

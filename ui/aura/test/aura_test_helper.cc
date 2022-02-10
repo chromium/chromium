@@ -27,7 +27,6 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_context_factories.h"
 #include "ui/display/screen.h"
-#include "ui/events/platform/platform_event_source.h"
 #include "ui/wm/core/default_activation_client.h"
 #include "ui/wm/core/default_screen_position_client.h"
 
@@ -156,9 +155,6 @@ void AuraTestHelper::TearDown() {
       ui::test::EventGeneratorDelegate::FactoryFunction());
 
   ui::ShutdownInputMethodForTesting();
-
-  if (ui::PlatformEventSource::GetInstance())
-    ui::PlatformEventSource::GetInstance()->StopProcessingEventsForTesting();
 
   // Destroy all owned objects to prevent tests from depending on their state
   // after this returns.
