@@ -200,6 +200,7 @@
 #include "services/device/public/mojom/screen_orientation.mojom.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/not_implemented_url_loader_factory.h"
@@ -3658,6 +3659,39 @@ absl::optional<base::UnguessableToken> RenderFrameHostImpl::ComputeNonce(
   }
 
   return nonce;
+}
+
+url::Origin RenderFrameHostImpl::CalculateTopLevelOriginForStorageKey(
+    const url::Origin& new_rfh_origin) {
+  if (is_main_frame())
+    return new_rfh_origin;
+
+  // Find among the ancestors, the one at the top and its child.
+  RenderFrameHostImpl* ancestor_below_top = nullptr;
+  RenderFrameHostImpl* ancestor_top = nullptr;
+  RenderFrameHostImpl* ancestor_current = this;
+  while (ancestor_current) {
+    ancestor_below_top = ancestor_top;
+    ancestor_top = ancestor_current;
+    ancestor_current = ancestor_current->parent_;
+  }
+
+  // Sites with host permissions are saved in
+  // `browser_context->GetSharedCorsOriginAccessList()` because they are also
+  // used to bypass CORS restrictions. We can reuse this permissions list here
+  // because sites that are explicitly granted access permissions should also be
+  // able to access partitioned storage based not partitioned by the top level
+  // extension URL. A origin will only have access to another origin via
+  // OriginAccessList if the origin is an extension.
+  return GetBrowserContext()
+                     ->GetSharedCorsOriginAccessList()
+                     ->GetOriginAccessList()
+                     .CheckAccessState(
+                         ancestor_top->GetLastCommittedOrigin(),
+                         ancestor_below_top->GetLastCommittedURL()) ==
+                 network::cors::OriginAccessList::AccessState::kAllowed
+             ? ancestor_below_top->GetLastCommittedOrigin()
+             : ancestor_top->GetLastCommittedOrigin();
 }
 
 void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(

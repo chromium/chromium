@@ -7,6 +7,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/cors_origin_pattern_setter.h"
+#include "content/public/browser/shared_cors_origin_access_list.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/fake_local_frame.h"
 #include "content/public/test/test_utils.h"
@@ -15,12 +17,16 @@
 #include "content/test/test_web_contents.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
+#include "services/network/public/cpp/cors/origin_access_list.h"
+#include "services/network/public/mojom/cors.mojom.h"
+#include "services/network/public/mojom/cors_origin_pattern.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_util.h"
 
 namespace content {
 
@@ -466,6 +472,144 @@ TEST_F(RenderFrameHostImplTest, TransitionWhileShowLoadingUi) {
   EXPECT_TRUE(delegate->should_show_loading_ui());
   EXPECT_TRUE(contents()->IsLoading());
   EXPECT_TRUE(contents()->ShouldShowLoadingUI());
+}
+
+TEST_F(RenderFrameHostImplTest, CalculateTopLevelOriginForStorageKey) {
+  // Register extension scheme for testing.
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme("chrome-extension", url::SCHEME_WITH_HOST);
+
+  GURL initial_url_ext = GURL("chrome-extension://initial.example.test/");
+  NavigationSimulator::CreateRendererInitiated(initial_url_ext, main_rfh())
+      ->Commit();
+
+  // Create a child frame and navigate to `child_url`.
+  auto* child_frame = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(main_test_rfh())
+          ->AppendChild("child"));
+
+  GURL child_url = GURL("https://childframe.com");
+  child_frame = static_cast<TestRenderFrameHost*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(child_url,
+                                                         child_frame));
+
+  // Create a grandchild frame and navigate to `grandchild_url`.
+  auto* grandchild_frame = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(child_frame)
+          ->AppendChild("grandchild"));
+
+  GURL grandchild_url = GURL("https://grandchildframe.com/");
+  grandchild_frame = static_cast<TestRenderFrameHost*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(grandchild_url,
+                                                         grandchild_frame));
+
+  // Root frame is an extension but it has no host permissions yet so we should
+  // use the actual root as top level frame.
+  EXPECT_EQ(url::Origin::Create(initial_url_ext),
+            grandchild_frame->CalculateTopLevelOriginForStorageKey(
+                grandchild_frame->GetLastCommittedOrigin()));
+
+  // Give extension host permissions to `grandchild_frame`. Since
+  // `grandchild_frame` is not the root non-extension frame
+  // `CalculateTopLevelOriginForStorageKey` should still return the extension
+  // root frame.
+  std::vector<network::mojom::CorsOriginPatternPtr> patterns;
+  base::RunLoop run_loop;
+  patterns.push_back(network::mojom::CorsOriginPattern::New(
+      "https", "grandchildframe.com", 0,
+      network::mojom::CorsDomainMatchMode::kAllowSubdomains,
+      network::mojom::CorsPortMatchMode::kAllowAnyPort,
+      network::mojom::CorsOriginAccessMatchPriority::kDefaultPriority));
+  CorsOriginPatternSetter::Set(main_rfh()->GetBrowserContext(),
+                               main_rfh()->GetLastCommittedOrigin(),
+                               std::move(patterns), {}, run_loop.QuitClosure());
+  run_loop.Run();
+  EXPECT_EQ(url::Origin::Create(initial_url_ext),
+            grandchild_frame->CalculateTopLevelOriginForStorageKey(
+                grandchild_frame->GetLastCommittedOrigin()));
+
+  // Now give extension host permissions to `child_frame`. Since `child_frame`
+  // is the root non-extension frame, granting host permissions to
+  // `child_origin` should cause `CalculateTopLevelOriginForStorageKey`
+  // to return the `child_origin`.
+  base::RunLoop run_loop_update;
+  std::vector<network::mojom::CorsOriginPatternPtr> patterns2;
+  patterns2.push_back(network::mojom::CorsOriginPattern::New(
+      "https", "childframe.com", 0,
+      network::mojom::CorsDomainMatchMode::kAllowSubdomains,
+      network::mojom::CorsPortMatchMode::kAllowAnyPort,
+      network::mojom::CorsOriginAccessMatchPriority::kDefaultPriority));
+  CorsOriginPatternSetter::Set(
+      main_rfh()->GetBrowserContext(), main_rfh()->GetLastCommittedOrigin(),
+      std::move(patterns2), {}, run_loop_update.QuitClosure());
+  run_loop_update.Run();
+  EXPECT_EQ(url::Origin::Create(child_url),
+            grandchild_frame->CalculateTopLevelOriginForStorageKey(
+                grandchild_frame->GetLastCommittedOrigin()));
+}
+
+class RenderFrameHostImplThirdPartyStorageTest
+    : public RenderViewHostImplTestHarness,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    RenderViewHostImplTestHarness::SetUp();
+    contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
+    if (ThirdPartyStoragePartitioningEnabled()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          blink::features::kThirdPartyStoragePartitioning);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          blink::features::kThirdPartyStoragePartitioning);
+    }
+  }
+  bool ThirdPartyStoragePartitioningEnabled() { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_CASE_P(
+    All,
+    RenderFrameHostImplThirdPartyStorageTest,
+    /*third_party_storage_partitioning_enabled*/ testing::Bool());
+
+TEST_P(RenderFrameHostImplThirdPartyStorageTest,
+       ChildFramePartitionedByThirdPartyStorageKey) {
+  GURL initial_url = GURL("https://initial.example.test/");
+
+  NavigationSimulator::CreateRendererInitiated(initial_url, main_rfh())
+      ->Commit();
+
+  // Create a child frame and check that it has the correct storage key.
+  auto* child_frame = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(main_test_rfh())
+          ->AppendChild("child"));
+
+  GURL child_url = GURL("https://exampleChildSite.com");
+  child_frame = static_cast<TestRenderFrameHost*>(
+      NavigationSimulator::NavigateAndCommitFromDocument(child_url,
+                                                         child_frame));
+
+  // Top level storage key should not change if third party partitioning is on
+  // or off
+  EXPECT_EQ(blink::StorageKey(url::Origin::Create(initial_url)),
+            main_test_rfh()->storage_key());
+
+  if (ThirdPartyStoragePartitioningEnabled()) {
+    // child frame storage key should contain child_origin + top_level_origin if
+    // third party partitioning is on.
+    EXPECT_EQ(blink::StorageKey::CreateWithOptionalNonce(
+                  url::Origin::Create(child_url),
+                  net::SchemefulSite(url::Origin::Create(initial_url)), nullptr,
+                  blink::mojom::AncestorChainBit::kCrossSite),
+              child_frame->storage_key());
+  } else {
+    // child frame storage key should only be partitioned by child origin if
+    // third party partitioning is off.
+    EXPECT_EQ(blink::StorageKey(url::Origin::Create(child_url)),
+              child_frame->storage_key());
+  }
 }
 
 }  // namespace content
