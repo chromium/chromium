@@ -51,6 +51,8 @@ WaylandServerController::~WaylandServerController() {
   // TODO(https://crbug.com/1124106): Investigate if we can eliminate Shutdown
   // methods.
   display_->Shutdown();
+  DCHECK_EQ(g_instance, this);
+  g_instance = nullptr;
 }
 
 WaylandServerController::WaylandServerController(

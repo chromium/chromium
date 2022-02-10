@@ -16,8 +16,14 @@ BorealisWaylandInterface::BorealisWaylandInterface(Profile* profile)
     : profile_(profile) {}
 
 BorealisWaylandInterface::~BorealisWaylandInterface() {
-  if (capabilities_ && !server_path_.empty())
-    exo::WaylandServerController::Get()->DeleteServer(server_path_);
+  if (capabilities_ && !server_path_.empty()) {
+    exo::WaylandServerController* controller =
+        exo::WaylandServerController::Get();
+    // Exo's destructor can run before borealis'. When that happens exo is
+    // deleting the server itself and we don't need to. See crbug.com/1295392.
+    if (controller)
+      controller->DeleteServer(server_path_);
+  }
 }
 
 void BorealisWaylandInterface::GetWaylandServer(
