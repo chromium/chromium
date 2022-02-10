@@ -1771,6 +1771,9 @@
   <message desc="Spoken when earcons are off." name="IDS_CHROMEVOX_EARCONS_OFF">
     Earcons off
   </message>
+  <message desc="Description of the toggle dictation key combination. Shown in the ChromeVox menus." name="IDS_CHROMEVOX_TOGGLE_DICTATION">
+    Toggle dictation
+  </message>
   <message desc="Description of the toggle earcons key. Shown in options page." name="IDS_CHROMEVOX_TOGGLE_EARCONS">
     Turn sound feedback (earcons) on or off
   </message>

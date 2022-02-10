@@ -364,6 +364,9 @@ CommandHandler.onCommand = function(command) {
       // to set this manually.
       ChromeVoxState.instance.readNextClipboardDataChange();
       return false;
+    case 'toggleDictation':
+      EventGenerator.sendKeyPress(KeyCode.D, {search: true});
+      return false;
   }
 
   // Require a current range.

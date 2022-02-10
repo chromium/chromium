@@ -801,4 +801,8 @@ KeyMap.BINDINGS_ = [
     sequence:
         {cvoxModifier: true, keys: {keyCode: [KeyCode.C], ctrlKey: [true]}}
   },
+  {
+    command: 'toggleDictation',
+    sequence: {cvoxModifier: true, keys: {keyCode: [KeyCode.D]}}
+  }
 ];

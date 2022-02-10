@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/dictation_bubble_test_helper.h"
+#include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/ash/input_method/textinput_test_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/speech_recognition_constants.h"
@@ -140,25 +141,28 @@ class HistogramWaiterOneShot {
 // until it evaluates to true.
 class SuccessWaiter {
  public:
-  explicit SuccessWaiter(base::RepeatingCallback<bool()> is_success)
-      : is_success_(std::move(is_success)) {}
+  explicit SuccessWaiter(const base::RepeatingCallback<bool()>& is_success)
+      : is_success_(is_success) {}
   ~SuccessWaiter() = default;
   SuccessWaiter(const SuccessWaiter&) = delete;
   SuccessWaiter& operator=(const SuccessWaiter&) = delete;
 
   void Wait() {
-    base::RepeatingTimer timer;
-    timer.Start(FROM_HERE, base::Milliseconds(10), this,
-                &SuccessWaiter::OnTimer);
+    timer_.Start(FROM_HERE, base::Milliseconds(200), this,
+                 &SuccessWaiter::OnTimer);
     run_loop_.Run();
+    ASSERT_TRUE(is_success_.Run());
   }
 
   void OnTimer() {
-    if (is_success_.Run())
+    if (is_success_.Run()) {
+      timer_.Stop();
       run_loop_.Quit();
+    }
   }
 
  private:
+  base::RepeatingTimer timer_;
   base::RepeatingCallback<bool()> is_success_;
   base::RunLoop run_loop_;
 };
@@ -1211,28 +1215,24 @@ class DictationUITest : public DictationCommandsExtensionTest {
     SuccessWaiter waiter(base::BindRepeating(&DictationUITest::HasVisibility,
                                              base::Unretained(this), visible));
     waiter.Wait();
-    base::RunLoop().RunUntilIdle();
   }
 
   void WaitForVisibleIcon(DictationBubbleIconType icon) {
     SuccessWaiter waiter(base::BindRepeating(&DictationUITest::HasVisibleIcon,
                                              base::Unretained(this), icon));
     waiter.Wait();
-    base::RunLoop().RunUntilIdle();
   }
 
   void WaitForVisibleText(const std::u16string& text) {
     SuccessWaiter waiter(base::BindRepeating(&DictationUITest::HasText,
                                              base::Unretained(this), text));
     waiter.Wait();
-    base::RunLoop().RunUntilIdle();
   }
 
   void WaitForVisibleHints(const std::vector<std::u16string>& hints) {
     SuccessWaiter waiter(base::BindRepeating(&DictationUITest::HasVisibleHints,
                                              base::Unretained(this), hints));
     waiter.Wait();
-    base::RunLoop().RunUntilIdle();
   }
 
  private:
@@ -1325,6 +1325,55 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, Hints) {
   WaitForVisibleIcon(DictationBubbleIconType::kStandby);
   WaitForVisibleHints(std::vector<std::u16string>{
       u"Try saying:", u"\"Type [word / phrase]\"", u"\"Help\""});
+}
+
+class DictationUIAndChromeVoxTest : public DictationUITest {
+ protected:
+  DictationUIAndChromeVoxTest() = default;
+  ~DictationUIAndChromeVoxTest() override = default;
+  DictationUIAndChromeVoxTest(const DictationUIAndChromeVoxTest&) = delete;
+  DictationUIAndChromeVoxTest& operator=(const DictationUIAndChromeVoxTest&) =
+      delete;
+
+  void SetUpOnMainThread() override {
+    // Setup ChromeVox first.
+    EXPECT_FALSE(GetManager()->IsSpokenFeedbackEnabled());
+    extensions::ExtensionHostTestHelper host_helper(
+        browser()->profile(), extension_misc::kChromeVoxExtensionId);
+    EnableChromeVox();
+    host_helper.WaitForHostCompletedFirstLoad();
+    EXPECT_TRUE(GetManager()->IsSpokenFeedbackEnabled());
+
+    // Then setup Dictation.
+    DictationUITest::SetUpOnMainThread();
+  }
+
+  test::SpeechMonitor sm;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    Network,
+    DictationUIAndChromeVoxTest,
+    ::testing::Values(speech::SpeechRecognitionType::kNetwork));
+
+INSTANTIATE_TEST_SUITE_P(
+    OnDevice,
+    DictationUIAndChromeVoxTest,
+    ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
+
+// Ensures that Search + D can be used to toggle Dictation when ChromeVox is
+// active. Also verifies that ChromeVox announces hints when they are shown in
+// the Dictation UI.
+IN_PROC_BROWSER_TEST_P(DictationUIAndChromeVoxTest, ChromeVoxAnnouncesHints) {
+  // Hints should show up after a few seconds without speech.
+  WaitForVisibility(true);
+  WaitForVisibleIcon(DictationBubbleIconType::kStandby);
+  WaitForVisibleHints(std::vector<std::u16string>{
+      u"Try saying:", u"\"Type [word / phrase]\"", u"\"Help\""});
+
+  // Assert speech from ChromeVox.
+  sm.ExpectSpeechPattern("Try saying*Type*Help*");
+  sm.Replay();
 }
 
 // TODO(crbug.com/1264544): Test looking at gn args has pumpkin and does

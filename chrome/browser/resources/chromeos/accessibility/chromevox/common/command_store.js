@@ -200,6 +200,8 @@ CommandStore.CMD_ALLOWLIST = {
     category: 'controlling_speech'
   },
 
+  'toggleDictation':
+      {announce: false, msgId: 'toggle_dictation', category: 'actions'},
 
   'toggleEarcons':
       {announce: true, msgId: 'toggle_earcons', category: 'controlling_speech'},
