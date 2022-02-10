@@ -90,7 +90,9 @@ public class DeviceClassManager {
      */
     public static boolean enableAccessibilityLayout(Context context) {
         // TODO(crbug.com/1007598): Support TabGrid and TabGroup in Accessibility mode.
-        if (isPhone(context)
+        boolean gridTabSwitcherEnabled = isPhone(context)
+                || CachedFeatureFlags.isEnabled(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS);
+        if (gridTabSwitcherEnabled
                 && CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID)
                 && CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_GROUPS_ANDROID)) {
             return false;
