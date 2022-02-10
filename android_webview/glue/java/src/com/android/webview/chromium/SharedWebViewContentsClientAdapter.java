@@ -124,7 +124,7 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
             if (TRACE) Log.i(TAG, "onPageCommitVisible=" + url);
             if (mSupportLibClient.isFeatureAvailable(Features.VISUAL_STATE_CALLBACK)) {
                 mSupportLibClient.onPageCommitVisible(mWebView, url);
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            } else {
                 ApiHelperForM.onPageCommitVisible(mWebViewClient, mWebView, url);
             }
 
@@ -181,7 +181,7 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
                 // Note: we must pass AwWebResourceError, since this class was introduced after L.
                 mSupportLibClient.onReceivedError(
                         mWebView, new WebResourceRequestAdapter(request), error);
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            } else {
                 GlueApiHelperForM.onReceivedError(mWebViewClient, mWebView, request, error);
             }
             // Otherwise, this is handled by {@link #onReceivedError}.
@@ -235,7 +235,7 @@ abstract class SharedWebViewContentsClientAdapter extends AwContentsClient {
                         new WebResourceResponse(response.getMimeType(), response.getCharset(),
                                 response.getStatusCode(), reasonPhrase,
                                 response.getResponseHeaders(), response.getData()));
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            } else {
                 GlueApiHelperForM.onReceivedHttpError(mWebViewClient, mWebView, request, response);
             }
             // Otherwise, the API does not exist, so do nothing.

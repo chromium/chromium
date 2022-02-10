@@ -9,7 +9,6 @@ import static org.hamcrest.Matchers.contains;
 
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.MULTI_PROCESS;
 
-import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.MediumTest;
@@ -150,10 +149,8 @@ public class AwMetricsIntegrationTest {
         Assert.assertTrue(
                 "Should have some application_locale", systemProfile.hasApplicationLocale());
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            Assert.assertEquals(
-                    ApiHelperForM.isProcess64Bit(), systemProfile.getAppVersion().contains("-64"));
-        }
+        Assert.assertEquals(
+                ApiHelperForM.isProcess64Bit(), systemProfile.getAppVersion().contains("-64"));
         Assert.assertTrue(
                 "Should have some low_entropy_source", systemProfile.hasLowEntropySource());
         Assert.assertTrue(
