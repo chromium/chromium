@@ -626,7 +626,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest,
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ActivateAndMinimizeWindows DISABLED_ActivateAndMinimizeWindows
 #else
 #define MAYBE_ActivateAndMinimizeWindows ActivateAndMinimizeWindows
