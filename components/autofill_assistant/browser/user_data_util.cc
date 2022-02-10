@@ -531,37 +531,6 @@ std::unique_ptr<autofill::AutofillProfile> MakeUniqueFromProfile(
   return unique_profile;
 }
 
-bool CompareContactDetails(
-    const CollectUserDataOptions& collect_user_data_options,
-    const autofill::AutofillProfile* a,
-    const autofill::AutofillProfile* b) {
-  std::vector<autofill::ServerFieldType> types;
-  if (collect_user_data_options.request_payer_name) {
-    types.emplace_back(autofill::NAME_FULL);
-    types.emplace_back(autofill::NAME_FIRST);
-    types.emplace_back(autofill::NAME_MIDDLE);
-    types.emplace_back(autofill::NAME_LAST);
-  }
-  if (collect_user_data_options.request_payer_phone) {
-    types.emplace_back(autofill::PHONE_HOME_WHOLE_NUMBER);
-  }
-  if (collect_user_data_options.request_payer_email) {
-    types.emplace_back(autofill::EMAIL_ADDRESS);
-  }
-  if (types.empty()) {
-    return a->guid() == b->guid();
-  }
-
-  for (auto type : types) {
-    int comparison = a->GetRawInfo(type).compare(b->GetRawInfo(type));
-    if (comparison != 0) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
 ClientStatus GetFormattedClientValue(const AutofillValue& autofill_value,
                                      const UserData& user_data,
                                      std::string* out_value) {

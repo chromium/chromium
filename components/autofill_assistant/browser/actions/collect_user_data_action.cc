@@ -1469,10 +1469,8 @@ void CollectUserDataAction::UpdateSelectedContact(UserData* user_data) {
   if (selected_contact != nullptr) {
     found_contact = base::ranges::any_of(
         user_data->available_contacts_,
-        [&selected_contact, this](const std::unique_ptr<Contact>& contact) {
-          return user_data::CompareContactDetails(*collect_user_data_options_,
-                                                  contact->profile.get(),
-                                                  selected_contact);
+        [&selected_contact](const std::unique_ptr<Contact>& contact) {
+          return selected_contact->guid() == contact->profile->guid();
         });
   }
 
@@ -1507,7 +1505,7 @@ void CollectUserDataAction::UpdateSelectedShippingAddress(UserData* user_data) {
     found_shipping_address = base::ranges::any_of(
         user_data->available_addresses_,
         [&selected_shipping_address](const std::unique_ptr<Address>& address) {
-          return address->profile->Compare(*selected_shipping_address) == 0;
+          return selected_shipping_address->guid() == address->profile->guid();
         });
   }
 
@@ -1536,12 +1534,14 @@ void CollectUserDataAction::UpdateSelectedCreditCard(UserData* user_data) {
   DCHECK(user_data != nullptr);
 
   bool found_card = false;
-  for (const std::unique_ptr<PaymentInstrument>& payment_instrument :
-       user_data->available_payment_instruments_) {
-    if (user_data->selected_card() != nullptr &&
-        payment_instrument->card->Compare(*user_data->selected_card()) == 0) {
-      found_card = true;
-    }
+  auto* selected_card = user_data->selected_card();
+  if (selected_card != nullptr) {
+    found_card = base::ranges::any_of(
+        user_data->available_payment_instruments_,
+        [&selected_card](
+            const std::unique_ptr<PaymentInstrument>& payment_instrument) {
+          return selected_card->guid() == payment_instrument->card->guid();
+        });
   }
 
   if (!found_card) {

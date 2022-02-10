@@ -70,19 +70,21 @@ MATCHER_P(MatchingAutofillVariant, guid, "") {
 }
 
 MATCHER_P(MatchesProfile, profile, "") {
-  return arg.Compare(profile) == 0;
+  return arg.guid() == profile.guid() && arg.Compare(profile) == 0;
 }
 
 MATCHER_P(MatchesContact, profile, "") {
-  return arg.profile->Compare(profile) == 0;
+  return arg.profile->guid() == profile.guid() &&
+         arg.profile->Compare(profile) == 0;
 }
 
 MATCHER_P(MatchesAddress, profile, "") {
-  return arg.profile->Compare(profile) == 0;
+  return arg.profile->guid() == profile.guid() &&
+         arg.profile->Compare(profile) == 0;
 }
 
 MATCHER_P(MatchesCard, card, "") {
-  return arg.Compare(card) == 0;
+  return arg.guid() == card.guid() && arg.Compare(card) == 0;
 }
 
 RequiredDataPiece MakeRequiredDataPiece(autofill::ServerFieldType field) {
@@ -1860,7 +1862,8 @@ TEST_F(CollectUserDataActionTest, ResetsContactAndShippingIfNoLongerInList) {
   ON_CALL(mock_action_delegate_, CollectUserData(_))
       .WillByDefault(
           Invoke([=](CollectUserDataOptions* collect_user_data_options) {
-            ExpectSelectedProfileMatches("profile", nullptr);
+            // Default selected to newly sent profile.
+            ExpectSelectedProfileMatches("profile", &profile);
             ExpectSelectedProfileMatches("shipping_address", &profile);
 
             // Do not call the callback. We're only interested in the state.
@@ -1869,9 +1872,9 @@ TEST_F(CollectUserDataActionTest, ResetsContactAndShippingIfNoLongerInList) {
   ActionProto action_proto;
   auto* collect_user_data = action_proto.mutable_collect_user_data();
   collect_user_data->set_request_terms_and_conditions(false);
-  collect_user_data->mutable_contact_details();
   collect_user_data->set_shipping_address_name("shipping_address");
   auto* contact_details = collect_user_data->mutable_contact_details();
+  contact_details->set_request_payer_name(true);
   contact_details->set_contact_details_name("profile");
 
   // Set previous user data.
@@ -1886,6 +1889,50 @@ TEST_F(CollectUserDataActionTest, ResetsContactAndShippingIfNoLongerInList) {
   user_model_.SetSelectedAutofillProfile(
       "shipping_address",
       std::make_unique<autofill::AutofillProfile>(selected_profile),
+      &user_data_);
+
+  CollectUserDataAction action(&mock_action_delegate_, action_proto);
+  action.ProcessAction(callback_.Get());
+}
+
+TEST_F(CollectUserDataActionTest, ResetsMatchingButDifferentContact) {
+  ON_CALL(mock_personal_data_manager_, IsAutofillProfileEnabled)
+      .WillByDefault(Return(true));
+
+  autofill::AutofillProfile profile;
+  autofill::test::SetProfileInfo(&profile, "Adam", "", "West",
+                                 "adam.west@gmail.com", "", "", "", "", "", "",
+                                 "", "");
+
+  ON_CALL(mock_personal_data_manager_, GetProfiles)
+      .WillByDefault(
+          Return(std::vector<autofill::AutofillProfile*>({&profile})));
+
+  ON_CALL(mock_action_delegate_, CollectUserData(_))
+      .WillByDefault(
+          Invoke([=](CollectUserDataOptions* collect_user_data_options) {
+            // Default selected to newly sent profile.
+            ExpectSelectedProfileMatches("profile", &profile);
+
+            // Do not call the callback. We're only interested in the state.
+          }));
+
+  ActionProto action_proto;
+  auto* collect_user_data = action_proto.mutable_collect_user_data();
+  collect_user_data->set_request_terms_and_conditions(false);
+  auto* contact_details = collect_user_data->mutable_contact_details();
+  contact_details->set_request_payer_name(true);
+  contact_details->set_contact_details_name("profile");
+
+  // The selected profile is identical with the current one, but it has a
+  // different GUID.
+  autofill::AutofillProfile selected_profile;
+  autofill::test::SetProfileInfo(&selected_profile, "Adam", "", "West",
+                                 "adam.west@gmail.com", "", "", "", "", "", "",
+                                 "", "");
+
+  user_model_.SetSelectedAutofillProfile(
+      "profile", std::make_unique<autofill::AutofillProfile>(selected_profile),
       &user_data_);
 
   CollectUserDataAction action(&mock_action_delegate_, action_proto);

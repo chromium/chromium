@@ -80,14 +80,6 @@ int GetDefaultPaymentInstrument(
 std::unique_ptr<autofill::AutofillProfile> MakeUniqueFromProfile(
     const autofill::AutofillProfile& profile);
 
-// Compare contact fields only. This comparison checks a subset of
-// AutofillProfile::Compare. Falls back to comparing the GUIDs if nothing else
-// is to be compared.
-bool CompareContactDetails(
-    const CollectUserDataOptions& collect_user_data_options,
-    const autofill::AutofillProfile* a,
-    const autofill::AutofillProfile* b);
-
 // Get a formatted client value. The replacement is treated as strict,
 // meaning a missing value will lead to a failed ClientStatus.
 // This method returns:
