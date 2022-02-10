@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/strings/strcat.h"
@@ -325,11 +326,21 @@ Installer::Result Installer::RunApplicationInstaller(
     const base::FilePath& app_installer,
     const std::string& arguments,
     ProgressCallback progress_callback) {
+  if (!app_installer.MatchesExtension(L".exe") &&
+      !app_installer.MatchesExtension(L".msi")) {
+    return Installer::Result(
+        update_client::InstallError::LAUNCH_PROCESS_FAILED);
+  }
+
   DeleteInstallerOutput(updater_scope_, app_id());
 
+  const std::wstring argsw = base::UTF8ToWide(arguments);
   const std::wstring cmdline =
-      base::StrCat({base::CommandLine(app_installer).GetCommandLineString(),
-                    L" ", base::UTF8ToWide(arguments)});
+      app_installer.MatchesExtension(L".msi")
+          ? BuildMsiCommandLine(argsw, app_installer)
+          : base::StrCat(
+                {base::CommandLine(app_installer).GetCommandLineString(), L" ",
+                 argsw});
   VLOG(1) << "Running application installer: " << cmdline;
 
   base::LaunchOptions options;

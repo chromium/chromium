@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/containers/span.h"
+#include "base/files/file_path.h"
 #include "base/hash/hash.h"
 #include "base/process/process_iterator.h"
 #include "base/win/atl.h"
@@ -191,6 +192,12 @@ absl::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope);
 // up is a critical error, since ignoring exceptions may lead to corrupted
 // program state.
 [[nodiscard]] HRESULT DisableCOMExceptionHandling();
+
+// Builds a command line running `MSIExec` on the provided `msi_installer` and
+// `arguments`, with added logging to a log file in the same directory as the
+// MSI installer.
+std::wstring BuildMsiCommandLine(const std::wstring& arguments,
+                                 const base::FilePath& msi_installer);
 
 }  // namespace updater
 

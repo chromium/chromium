@@ -666,4 +666,15 @@ HRESULT DisableCOMExceptionHandling() {
                            COMGLB_EXCEPTION_DONOT_HANDLE);
 }
 
+std::wstring BuildMsiCommandLine(const std::wstring& arguments,
+                                 const base::FilePath& msi_installer) {
+  if (!msi_installer.MatchesExtension(L".msi")) {
+    return std::wstring();
+  }
+
+  return base::StrCat(
+      {L"msiexec ", arguments, L" REBOOT=ReallySuppress /qn /i \"",
+       msi_installer.value(), L"\" /log \"", msi_installer.value(), L".log\""});
+}
+
 }  // namespace updater
