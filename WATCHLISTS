@@ -707,7 +707,6 @@
     },
     'chrome_performance_manager': {
       'filepath': 'chrome/browser/performance_manager/'\
-                  '|chrome/common/performance_manager/'\
                   '|chrome/renderer/performance_manager/'\
                   '|components/performance_manager/',
     },
