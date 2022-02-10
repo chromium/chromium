@@ -172,6 +172,9 @@ class AccessibilityManager
   // Enables or disables autoclick.
   void EnableAutoclick(bool enabled);
 
+  // Enables or disables autoclick without confirmation dialog.
+  void EnableAutoclickWithoutConfirmationDialog(bool enabled);
+
   // Returns true if autoclick is enabled.
   bool IsAutoclickEnabled() const;
 
@@ -388,6 +391,7 @@ class AccessibilityManager
   const std::set<std::string>& GetAccessibilityCommonEnabledFeaturesForTest() {
     return accessibility_common_enabled_features_;
   }
+  bool IsDisableAutoclickDialogVisibleForTest();
 
  protected:
   AccessibilityManager();

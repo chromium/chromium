@@ -9,6 +9,7 @@
 
 #include <utility>
 
+#include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/components/audio/sounds.h"
 #include "ash/constants/ash_constants.h"
@@ -682,6 +683,21 @@ void AccessibilityManager::EnableAutoclick(bool enabled) {
   PrefService* pref_service = profile_->GetPrefs();
   pref_service->SetBoolean(prefs::kAccessibilityAutoclickEnabled, enabled);
   pref_service->CommitPendingWrite();
+}
+
+void AccessibilityManager::EnableAutoclickWithoutConfirmationDialog(
+    bool enabled) {
+  if (!profile_)
+    return;
+
+  // Updating auto-click pref causes a call to AutoclickController::SetEnabled
+  // with show_confirmation_dialog set to true. By making this call early with
+  // the same enabled parameter value, we cause the next call to be a no-op and
+  // show no confirmation dialog.
+  ash::Shell::Get()->autoclick_controller()->SetEnabled(
+      enabled, /*show_confirmation_dialog=*/false);
+
+  EnableAutoclick(enabled);
 }
 
 bool AccessibilityManager::IsAutoclickEnabled() const {
@@ -1968,6 +1984,11 @@ void AccessibilityManager::SetSwitchAccessKeysForTest(
   }
 
   profile_->GetPrefs()->CommitPendingWrite();
+}
+
+bool AccessibilityManager::IsDisableAutoclickDialogVisibleForTest() {
+  AutoclickController* controller = Shell::Get()->autoclick_controller();
+  return controller->GetDisableDialogForTesting() != nullptr;  // IN-TEST
 }
 
 // Sends a panel action event to the Select-to-speak extension.

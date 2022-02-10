@@ -431,46 +431,4 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, MonoAudioEnabled) {
   EXPECT_TRUE(accessibility_manager->IsMonoAudioEnabled());
 }
 
-// Flaky on chromeos: crbug.com/1184225
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_AutoclickEnabled DISABLED_AutoclickEnabled
-#else
-#define MAYBE_AutoclickEnabled AutoclickEnabled
-#endif
-IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, MAYBE_AutoclickEnabled) {
-  // Verifies that the autoclick accessibility feature can be controlled through
-  // policy.
-  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
-
-  accessibility_manager->EnableAutoclick(false);
-  // Verify that the autoclick is initially disabled.
-  EXPECT_FALSE(accessibility_manager->IsAutoclickEnabled());
-
-  // Manually enable the autoclick.
-  accessibility_manager->EnableAutoclick(true);
-  EXPECT_TRUE(accessibility_manager->IsAutoclickEnabled());
-
-  // Verify that policy overrides the manual setting.
-  PolicyMap policies;
-  policies.Set(key::kAutoclickEnabled, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
-               nullptr);
-  UpdateProviderPolicy(policies);
-  EXPECT_FALSE(accessibility_manager->IsAutoclickEnabled());
-
-  // Verify that the autoclick cannot be enabled manually anymore.
-  accessibility_manager->EnableAutoclick(true);
-  EXPECT_FALSE(accessibility_manager->IsAutoclickEnabled());
-
-  policies.Set(key::kAutoclickEnabled, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true),
-               nullptr);
-  UpdateProviderPolicy(policies);
-  EXPECT_TRUE(accessibility_manager->IsAutoclickEnabled());
-
-  // Verify that the autoclick cannot be disabled manually anymore.
-  accessibility_manager->EnableAutoclick(false);
-  EXPECT_TRUE(accessibility_manager->IsAutoclickEnabled());
-}
-
 }  // namespace policy

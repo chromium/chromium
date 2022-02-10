@@ -145,6 +145,7 @@
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_policy_handler.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
+#include "chrome/browser/ash/policy/handlers/autoclick_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/configuration_policy_handler_ash.h"
 #include "chrome/browser/ash/policy/handlers/lacros_availability_policy_handler.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
@@ -898,9 +899,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
   { key::kMonoAudioEnabled,
     ash::prefs::kAccessibilityMonoAudioEnabled,
-    base::Value::Type::BOOLEAN },
-  { key::kAutoclickEnabled,
-    ash::prefs::kAccessibilityAutoclickEnabled,
     base::Value::Type::BOOLEAN },
   { key::kSpokenFeedbackEnabled,
     ash::prefs::kAccessibilitySpokenFeedbackEnabled,
@@ -1986,6 +1984,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::move(screen_lock_legacy_policies),
       std::make_unique<ScreenLockDelayPolicyHandler>(chrome_schema)));
 
+  handlers->AddHandler(std::make_unique<AutoclickPolicyHandler>());
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
       key::kQuickUnlockModeAllowlist, ash::prefs::kQuickUnlockModeAllowlist,
       base::Value::Type::LIST));
