@@ -40,7 +40,7 @@ CGFloat const kBottomMargin = 10;
 CGFloat const kButtonHorizontalMargin = 4;
 CGFloat const kContentOptimalWidth = 327;
 
-BOOL isPasswordManagerBrandingUpdateEnabled() {
+BOOL IsPasswordManagerBrandingUpdateEnabled() {
   return base::FeatureList::IsEnabled(
       password_manager::features::kIOSEnablePasswordManagerBrandingUpdate);
 }
@@ -97,7 +97,7 @@ BOOL isPasswordManagerBrandingUpdateEnabled() {
     _titleText =
         l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS);
     _actionString = l10n_util::GetNSString(IDS_IOS_OPEN_SETTINGS);
-    if (isPasswordManagerBrandingUpdateEnabled()) {
+    if (IsPasswordManagerBrandingUpdateEnabled()) {
       UIUserInterfaceIdiom idiom =
           [[UIDevice currentDevice] userInterfaceIdiom];
       if (idiom == UIUserInterfaceIdiomPad) {

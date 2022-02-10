@@ -111,7 +111,7 @@ enum class PasswordInfoBarType { SAVE, UPDATE };
 // Duration for notify user auto-sign in dialog being displayed.
 constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 // Helper to check if password manager rebranding finch flag is enabled.
-BOOL isPasswordManagerBrandingUpdateEnabled() {
+BOOL IsPasswordManagerBrandingUpdateEnabled() {
   return base::FeatureList::IsEnabled(
       password_manager::features::kIOSEnablePasswordManagerBrandingUpdate);
 }
@@ -516,7 +516,7 @@ BOOL isPasswordManagerBrandingUpdateEnabled() {
   NSString* title;
   NSString* message;
 
-  if (isPasswordManagerBrandingUpdateEnabled()) {
+  if (IsPasswordManagerBrandingUpdateEnabled()) {
     title = [NSString
         stringWithFormat:@"%@\n%@\n ",
                          GetNSString(IDS_IOS_SUGGESTED_STRONG_PASSWORD),
@@ -601,7 +601,7 @@ BOOL isPasswordManagerBrandingUpdateEnabled() {
   };
 
   NSString* primaryActionString;
-  if (isPasswordManagerBrandingUpdateEnabled()) {
+  if (IsPasswordManagerBrandingUpdateEnabled()) {
     primaryActionString = GetNSString(IDS_IOS_USE_SUGGESTED_STRONG_PASSWORD);
   } else {
     primaryActionString = GetNSString(IDS_IOS_USE_SUGGESTED_PASSWORD);
