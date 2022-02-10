@@ -1244,10 +1244,6 @@ UIWindow* GetAnyKeyWindow() {
   return [ChromeEarlGreyAppInterface areMultipleWindowsSupported];
 }
 
-- (BOOL)isContextMenuActionsRefreshEnabled {
-  return [ChromeEarlGreyAppInterface isContextMenuActionsRefreshEnabled];
-}
-
 - (BOOL)isContextMenuInWebViewEnabled {
   return [ChromeEarlGreyAppInterface isContextMenuInWebViewEnabled];
 }

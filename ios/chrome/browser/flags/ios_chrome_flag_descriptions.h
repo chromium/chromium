@@ -74,10 +74,6 @@ extern const char kCommercePriceTrackingDescription[];
 extern const char kContentSuggestionsHeaderMigrationName[];
 extern const char kContentSuggestionsHeaderMigrationDescription[];
 
-// Title and description for the flag to enable context menu actions refresh.
-extern const char kContextMenuActionsRefreshName[];
-extern const char kContextMenuActionsRefreshDescription[];
-
 // Title and description for the flag to control which crash generation tool
 // is used.
 extern const char kCrashpadIOSName[];

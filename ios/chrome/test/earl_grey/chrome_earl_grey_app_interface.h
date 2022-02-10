@@ -530,9 +530,6 @@
 // can, open multiple windows.
 + (BOOL)areMultipleWindowsSupported;
 
-// Returns whether the ContextMenuActionsRefresh feature is enabled.
-+ (BOOL)isContextMenuActionsRefreshEnabled;
-
 // Returns whether the new ContextMenu for web content feature is enabled.
 + (BOOL)isContextMenuInWebViewEnabled;
 

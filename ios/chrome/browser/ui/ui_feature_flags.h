@@ -62,9 +62,6 @@ extern const base::Feature kSearchHistoryLinkIOS;
 // Incognito mode.
 extern const base::Feature kUpdateHistoryEntryPointsInIncognito;
 
-// Feature to update context menu actions.
-extern const base::Feature kContextMenuActionsRefresh;
-
 // Feature flag to enable using Lens to search for images.
 extern const base::Feature kUseLensToSearchForImage;
 
@@ -88,9 +85,6 @@ extern const base::Feature kUseSFSymbolsSamples;
 
 // Feature flag to use UIKit menus instead of custom ones.
 extern const base::Feature kUseUIKitPopupMenu;
-
-// Whether the ContextMenuActionsRefresh flag is enabled.
-bool IsContextMenuActionsRefreshEnabled();
 
 // Whether the kUseUIKitPopupMenu flag is enabled.
 bool ShouldUseUIKitPopupMenu();

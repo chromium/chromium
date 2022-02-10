@@ -838,11 +838,6 @@
     "expiry_milestone": 105
   },
   {
-    "name": "context-menu-actions-refresh",
-    "owners": [ "ewannpv@google.com", "gambard@google.com" ],
-    "expiry_milestone": 99
-  },
-  {
     "name": "context-menu-google-lens-chip",
     "owners": [ "yusuyoutube@google.com", "benwgold@google.com", "lens-chrome@google.com" ],
     "expiry_milestone": 100

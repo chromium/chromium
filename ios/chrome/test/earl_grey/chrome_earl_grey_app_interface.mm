@@ -1089,10 +1089,6 @@ NSString* SerializedValue(const base::Value* value) {
   return base::ios::IsMultipleScenesSupported();
 }
 
-+ (BOOL)isContextMenuActionsRefreshEnabled {
-  return IsContextMenuActionsRefreshEnabled();
-}
-
 + (BOOL)isContextMenuInWebViewEnabled {
   return base::FeatureList::IsEnabled(
       web::features::kWebViewNativeContextMenuPhase2);

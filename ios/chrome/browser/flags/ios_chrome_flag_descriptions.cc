@@ -83,10 +83,6 @@ const char kContentSuggestionsHeaderMigrationDescription[] =
     "When enabled, the Content Suggestions header will be logically moved to "
     "the Discover feed ScrollView";
 
-const char kContextMenuActionsRefreshName[] = "Context menu actions refresh";
-const char kContextMenuActionsRefreshDescription[] =
-    "When enabled, context menu actions are updated";
-
 const char kCrashpadIOSName[] = "Use Crashpad for crash collection.";
 const char kCrashpadIOSDescription[] =
     "When enabled use Crashpad to generate crash reports crash collection. "

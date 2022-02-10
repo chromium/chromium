@@ -203,14 +203,11 @@
 }
 
 - (UIAction*)actionSaveImageWithBlock:(ProceduralBlock)block {
-  int title = IsContextMenuActionsRefreshEnabled()
-                  ? IDS_IOS_CONTENT_CONTEXT_ADDTOPHOTOS
-                  : IDS_IOS_CONTENT_CONTEXT_SAVEIMAGE;
-
-  UIAction* action = [self actionWithTitle:l10n_util::GetNSString(title)
-                                     image:[UIImage imageNamed:@"download"]
-                                      type:MenuActionType::SaveImage
-                                     block:block];
+  UIAction* action = [self
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_SAVEIMAGE)
+                image:[UIImage imageNamed:@"download"]
+                 type:MenuActionType::SaveImage
+                block:block];
   return action;
 }
 

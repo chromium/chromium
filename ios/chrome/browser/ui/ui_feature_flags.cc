@@ -52,9 +52,6 @@ const base::Feature kSearchHistoryLinkIOS{"SearchHistoryLinkIOS",
 const base::Feature kUpdateHistoryEntryPointsInIncognito{
     "UpdateHistoryEntryPointsInIncognito", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kContextMenuActionsRefresh{
-    "ContextMenuActionsRefresh", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kUseLensToSearchForImage{"UseLensToSearchForImage",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -76,10 +73,6 @@ const base::Feature kUseSFSymbolsSamples{"UseSFSymbolsSamples",
 
 const base::Feature kUseUIKitPopupMenu{"UseUIKitPopupMenu",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
-bool IsContextMenuActionsRefreshEnabled() {
-  return base::FeatureList::IsEnabled(kContextMenuActionsRefresh);
-}
 
 bool ShouldUseUIKitPopupMenu() {
   return base::FeatureList::IsEnabled(kUseUIKitPopupMenu);
