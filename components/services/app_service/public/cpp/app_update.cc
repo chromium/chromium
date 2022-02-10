@@ -1015,7 +1015,9 @@ std::ostream& operator<<(std::ostream& out, const AppUpdate& app) {
 
   out << "ResizeLocked: " << app.ResizeLocked() << std::endl;
   out << "WindowMode: " << app.WindowMode() << std::endl;
-  out << "RunOnOsLoginMode: " << app.RunOnOsLogin()->login_mode << std::endl;
+  if (app.RunOnOsLogin()) {
+    out << "RunOnOsLoginMode: " << app.RunOnOsLogin()->login_mode << std::endl;
+  }
 
   return out;
 }
