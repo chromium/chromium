@@ -794,6 +794,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"enable-fullscreen-api", flag_descriptions::kEnableFullscreenAPIName,
      flag_descriptions::kEnableFullscreenAPIDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kEnableFullscreenAPI)},
+    {"context-menu-phase2-screenshot",
+     flag_descriptions::kWebViewNativeContextMenuPhase2ScreenshotName,
+     flag_descriptions::kWebViewNativeContextMenuPhase2ScreenshotDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         web::features::kWebViewNativeContextMenuPhase2Screenshot)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

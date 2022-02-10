@@ -501,6 +501,7 @@ source_set("ios_web_web_state_ui_unittests") {
     "//ios/web/test:test_support",
     "//ios/web/test/fakes:fakes",
     "//ios/web/web_state/js",
+    "//ios/web/web_state/ui",
     "//ios/web/web_state/ui:crw_context_menu_controller",
     "//net:test_support",
     "//testing/gmock",

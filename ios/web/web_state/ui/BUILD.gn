@@ -111,13 +111,17 @@ source_set("crw_web_view_navigation_proxy") {
 
 source_set("crw_context_menu_controller") {
   deps = [
+    ":wk_web_view_configuration_provider",
     "//base",
+    "//ios/web/common",
+    "//ios/web/common:features",
     "//ios/web/js_features/context_menu",
     "//ios/web/js_messaging",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/web_state:web_state_impl_header",
-    "//ios/web/web_state/ui:wk_web_view_configuration_provider",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
   ]
 
   sources = [

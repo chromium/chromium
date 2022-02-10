@@ -13,6 +13,9 @@ class Value;
 
 namespace web {
 
+// Maximum allowed size for a screenshot. (CGSize.width * CGSize.height)
+inline constexpr double kContextMenuMaxScreenshotSize = 1e7;
+
 // Returns true if the |params| contain enough information to present a context
 // menu. (A valid url for either link_url or src_url must exist in the params.)
 bool CanShowContextMenuForParams(const ContextMenuParams& params);

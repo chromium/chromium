@@ -573,6 +573,13 @@ const char kWebViewNativeContextMenuPhase2Description[] =
     "When enabled, the context menu displayed when long pressing on a link or "
     "an image has a non-live preview.";
 
+const char kWebViewNativeContextMenuPhase2ScreenshotName[] =
+    "Screenshot preview animation for Context Menu";
+
+const char kWebViewNativeContextMenuPhase2ScreenshotDescription[] =
+    "When enabled with phase2, uses a screenshot as transition animation to "
+    "the context menu.";
+
 // Please insert your name/description above in alphabetical order.
 
 }  // namespace flag_descriptions

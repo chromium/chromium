@@ -341,6 +341,9 @@ const CGFloat kFaviconWidthHeight = 24;
     ImagePreviewViewController* preview = [[ImagePreviewViewController alloc]
         initWithPreferredContentSize:CGSizeMake(params.natural_width,
                                                 params.natural_height)];
+    if (params.screenshot) {
+      [preview updateImage:params.screenshot];
+    }
     __weak ImagePreviewViewController* weakPreview = preview;
 
     ImageFetchTabHelper* imageFetcher =

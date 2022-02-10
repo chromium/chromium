@@ -43,6 +43,10 @@ const base::Feature kSetRequestAttribution{"SetRequestAttribution",
 const base::Feature kWebViewNativeContextMenuPhase2{
     "WebViewNativeContextMenuPhase2", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kWebViewNativeContextMenuPhase2Screenshot{
+    "WebViewNativeContextMenuPhase2Screenshot",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kDefaultWebViewContextMenu{
     "DefaultWebViewContextMenu", base::FEATURE_DISABLED_BY_DEFAULT};
 

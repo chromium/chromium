@@ -50,6 +50,10 @@ extern const base::Feature kSetRequestAttribution;
 // When enabled, display non-live preview for context menus in web content.
 extern const base::Feature kWebViewNativeContextMenuPhase2;
 
+// When enabled, uses a screenshot transition to display context menus in web
+// content.
+extern const base::Feature kWebViewNativeContextMenuPhase2Screenshot;
+
 // When enabled, the default context menu from WKWebView is used.
 extern const base::Feature kDefaultWebViewContextMenu;
 

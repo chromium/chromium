@@ -59,6 +59,12 @@ struct ContextMenuParams {
 
   // The natural height of the HTML img element. Can be null = 0.
   double natural_height;
+
+  // The client bounding box of the HTML element. Can be null = CGRectZero.
+  CGRect bounding_box;
+
+  // The screenshot of the HTML element. Can be null = nil.
+  UIImage* screenshot;
 };
 
 }  // namespace web

@@ -119,7 +119,7 @@ source_set("util") {
     "//ios/web/public:public",
     "//ios/web/public/js_messaging",
     "//ios/web/web_state:web_state_impl_header",
-    "//ios/web/web_state/ui:ui",
+    "//ios/web/web_state/ui",
     "//ios/web/web_view:util",
     "//net",
     "//testing/gtest",

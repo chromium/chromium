@@ -518,6 +518,11 @@ extern const char kWebPageAlternativeTextZoomDescription[];
 extern const char kWebViewNativeContextMenuPhase2Name[];
 extern const char kWebViewNativeContextMenuPhase2Description[];
 
+// Title and description for the flag to enable screenshot preview in the phase
+// 2 of context menus in the WebView.
+extern const char kWebViewNativeContextMenuPhase2ScreenshotName[];
+extern const char kWebViewNativeContextMenuPhase2ScreenshotDescription[];
+
 // Please add names and descriptions above in alphabetical order.
 
 }  // namespace flag_descriptions

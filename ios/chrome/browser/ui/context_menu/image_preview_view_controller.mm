@@ -42,6 +42,10 @@ const CGFloat kDefaultSize = 50;
   self.view = [[UIImageView alloc] init];
 }
 
+- (void)updateImage:(UIImage*)image {
+  self.view.image = image;
+}
+
 - (void)updateImageData:(NSData*)data {
   UIImage* image = [UIImage imageWithData:data];
   self.view.image = image;

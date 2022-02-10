@@ -38,6 +38,7 @@
 - (void)loadView {
   self.view = [[LinkNoPreviewView alloc] initWithTitle:self.contextMenuTitle
                                               subtitle:self.subtitle];
+  self.view.backgroundColor = UIColor.systemBackgroundColor;
 }
 
 - (void)viewDidLayoutSubviews {
