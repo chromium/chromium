@@ -229,6 +229,9 @@ class MESSAGE_CENTER_EXPORT MessageCenter {
   virtual const std::u16string& GetSystemNotificationAppName() const = 0;
   virtual void SetSystemNotificationAppName(const std::u16string& name) = 0;
 
+  // Called when a message view associated with `notification_id` is hovered on.
+  virtual void OnMessageViewHovered(const std::string& notification_id) = 0;
+
  protected:
   friend class ::DownloadNotification;
   friend class ::DownloadNotificationTestBase;

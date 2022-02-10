@@ -69,6 +69,9 @@ NotificationTypeDetailed GetNotificationType(
 absl::optional<NotificationTypeDetailed> GetNotificationType(
     const std::string& notification_id);
 
+// Logs a Hover event on a notification.
+void LogHover(const std::string& notification_id, bool is_popup);
+
 // Logs a ClickedBody event.
 void LogClickedBody(const std::string& notification_id, bool is_popup);
 

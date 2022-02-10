@@ -197,6 +197,9 @@ const std::u16string& FakeMessageCenter::GetSystemNotificationAppName() const {
 void FakeMessageCenter::SetSystemNotificationAppName(
     const std::u16string& product_os_name) {}
 
+void FakeMessageCenter::OnMessageViewHovered(
+    const std::string& notification_id) {}
+
 void FakeMessageCenter::DisableTimersForTest() {}
 
 }  // namespace message_center

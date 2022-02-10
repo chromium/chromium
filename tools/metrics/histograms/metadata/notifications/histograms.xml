@@ -256,6 +256,8 @@ chromium-metrics-reviews@google.com.
     <variant name="Popup.ExpireToTray"
         summary="A popup notification times out and is hidden (but still
                  visible in the message center)"/>
+    <variant name="Popup.Hover"
+        summary="User hover on the body of a popup notification"/>
     <variant name="Popup.InlineReplySent"
         summary="User sends an inline reply in a popup notification"/>
     <variant name="Popup.SettingsShown.HoverControls"
@@ -278,6 +280,8 @@ chromium-metrics-reviews@google.com.
                  button"/>
     <variant name="Tray.ClosedByUser.Swipe"
         summary="User closes a tray notification by swiping it away"/>
+    <variant name="Tray.Hover"
+        summary="User hover on the body of a notification in the tray"/>
     <variant name="Tray.InlineReplySent"
         summary="User sends an inline reply for a tray notification"/>
     <variant name="Tray.SettingsShown.HoverControls"

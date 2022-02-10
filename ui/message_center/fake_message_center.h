@@ -84,6 +84,7 @@ class FakeMessageCenter : public MessageCenter {
   void PausePopupTimers() override;
   const std::u16string& GetSystemNotificationAppName() const override;
   void SetSystemNotificationAppName(const std::u16string& name) override;
+  void OnMessageViewHovered(const std::string& notification_id) override;
 
  protected:
   void DisableTimersForTest() override;

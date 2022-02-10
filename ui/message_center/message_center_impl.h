@@ -95,6 +95,7 @@ class MessageCenterImpl : public MessageCenter,
   void PausePopupTimers() override;
   const std::u16string& GetSystemNotificationAppName() const override;
   void SetSystemNotificationAppName(const std::u16string& name) override;
+  void OnMessageViewHovered(const std::string& notification_id) override;
 
   // NotificationBlocker::Observer overrides:
   void OnBlockingStateChanged(NotificationBlocker* blocker) override;

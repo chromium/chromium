@@ -4,6 +4,7 @@
 
 #include "ash/system/message_center/metrics_utils.h"
 
+#include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/message_center/unified_message_center_view.h"
 #include "ash/system/message_center/unified_message_list_view.h"
@@ -50,9 +51,7 @@ class MessageCenterMetricsUtilsTest : public AshTestBase {
         data, /*delegate=*/nullptr);
   }
 
-  // Get the tested notification view from message center. This is used in
-  // checking smoothness metrics: The check requires the use of the compositor,
-  // which we don't have in the customed made `notification_view_`.
+  // Get the notification view from message center associated with `id`.
   views::View* GetNotificationViewFromMessageCenter(const std::string& id) {
     return GetPrimaryUnifiedSystemTray()
         ->message_center_bubble()
@@ -61,11 +60,24 @@ class MessageCenterMetricsUtilsTest : public AshTestBase {
         ->GetMessageViewForNotificationId(id);
   }
 
+  // Get the popup notification view associated with `id`.
+  views::View* GetPopupNotificationView(const std::string& id) {
+    return GetPrimaryUnifiedSystemTray()
+        ->GetMessagePopupCollection()
+        ->GetMessageViewForNotificationId(id);
+  }
+
   void ClickView(views::View* view) {
     ui::test::EventGenerator generator(GetRootWindow(view->GetWidget()));
     gfx::Point cursor_location = view->GetBoundsInScreen().CenterPoint();
     generator.MoveMouseTo(cursor_location);
     generator.ClickLeftButton();
+  }
+
+  void HoverOnView(views::View* view) {
+    ui::test::EventGenerator generator(GetRootWindow(view->GetWidget()));
+    gfx::Point cursor_location = view->GetBoundsInScreen().CenterPoint();
+    generator.MoveMouseTo(cursor_location);
   }
 
   scoped_refptr<message_center::NotificationDelegate> test_delegate() {
@@ -114,6 +126,30 @@ TEST_F(MessageCenterMetricsUtilsTest, RecordGoodClicks) {
       "Notifications.Cros.Actions.ClickedBody.GoodClick", 1);
   histograms.ExpectTotalCount("Notifications.Cros.Actions.ClickedBody.BadClick",
                               0);
+}
+
+TEST_F(MessageCenterMetricsUtilsTest, RecordHover) {
+  base::HistogramTester histograms;
+  auto notification = CreateTestNotification();
+
+  // Add the notification and get its view in message center.
+  message_center::MessageCenter::Get()->AddNotification(
+      std::make_unique<message_center::Notification>(*notification));
+
+  auto* popup = GetPopupNotificationView(notification->id());
+  // Move the mouse hover on the popup notification view, expect hover action
+  // recorded.
+  HoverOnView(popup);
+  histograms.ExpectTotalCount("Notifications.Cros.Actions.Popup.Hover", 1);
+
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  auto* notification_view =
+      GetNotificationViewFromMessageCenter(notification->id());
+
+  // Move the mouse hover on the notification view, expect hover action
+  // recorded.
+  HoverOnView(notification_view);
+  histograms.ExpectTotalCount("Notifications.Cros.Actions.Tray.Hover", 1);
 }
 
 }  // namespace ash

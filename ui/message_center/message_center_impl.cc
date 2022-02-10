@@ -557,6 +557,12 @@ void MessageCenterImpl::SetSystemNotificationAppName(
   system_notification_app_name_ = name;
 }
 
+void MessageCenterImpl::OnMessageViewHovered(
+    const std::string& notification_id) {
+  for (MessageCenterObserver& observer : observer_list_)
+    observer.OnMessageViewHovered(notification_id);
+}
+
 void MessageCenterImpl::DisableTimersForTest() {
   popup_timers_controller_.reset();
 }

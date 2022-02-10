@@ -53,6 +53,9 @@ class MESSAGE_CENTER_EXPORT MessageCenterObserver
       const std::string& notification_id,
       const DisplaySource source) {}
 
+  // Called when the message view associated with `notification_id` is hovered.
+  virtual void OnMessageViewHovered(const std::string& notification_id) {}
+
   // Called when the notification center is shown or hidden.
   virtual void OnCenterVisibilityChanged(Visibility visibility) {}
 

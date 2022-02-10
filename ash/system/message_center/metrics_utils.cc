@@ -238,6 +238,20 @@ absl::optional<NotificationTypeDetailed> GetNotificationType(
   return type;
 }
 
+void LogHover(const std::string& notification_id, bool is_popup) {
+  auto type = GetNotificationType(notification_id);
+  if (!type.has_value())
+    return;
+
+  if (is_popup) {
+    base::UmaHistogramEnumeration("Notifications.Cros.Actions.Popup.Hover",
+                                  type.value());
+  } else {
+    base::UmaHistogramEnumeration("Notifications.Cros.Actions.Tray.Hover",
+                                  type.value());
+  }
+}
+
 void LogClickedBody(const std::string& notification_id, bool is_popup) {
   auto* notification =
       message_center::MessageCenter::Get()->FindVisibleNotificationById(

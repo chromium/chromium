@@ -244,6 +244,10 @@ void MessageView::OnMouseReleased(const ui::MouseEvent& event) {
   MessageCenter::Get()->ClickOnNotification(notification_id_);
 }
 
+void MessageView::OnMouseEntered(const ui::MouseEvent& event) {
+  MessageCenter::Get()->OnMessageViewHovered(notification_id_);
+}
+
 bool MessageView::OnKeyPressed(const ui::KeyEvent& event) {
   if (event.flags() != ui::EF_NONE)
     return false;
