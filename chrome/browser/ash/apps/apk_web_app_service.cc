@@ -13,6 +13,8 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/apps/apk_web_app_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -26,6 +28,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "url/gurl.h"
 
@@ -82,6 +85,13 @@ ApkWebAppService::ApkWebAppService(Profile* profile)
     : profile_(profile), arc_app_list_prefs_(nullptr) {
   DCHECK(web_app::AreWebAppsEnabled(profile));
 
+  if (web_app::IsWebAppsCrosapiEnabled()) {
+    apps::AppRegistryCache& app_registry_cache =
+        apps::AppServiceProxyFactory::GetForProfile(profile)
+            ->AppRegistryCache();
+    app_registry_cache_observer_.Observe(&app_registry_cache);
+  }
+
   // Can be null in tests.
   arc_app_list_prefs_ = ArcAppListPrefs::Get(profile);
   if (arc_app_list_prefs_)
@@ -89,7 +99,9 @@ ApkWebAppService::ApkWebAppService(Profile* profile)
 
   provider_ = web_app::WebAppProvider::GetDeprecated(profile);
   DCHECK(provider_);
-  registrar_observer_.Observe(&provider_->registrar());
+  if (!web_app::IsWebAppsCrosapiEnabled()) {
+    registrar_observer_.Observe(&provider_->registrar());
+  }
 }
 
 ApkWebAppService::~ApkWebAppService() = default;
@@ -437,6 +449,23 @@ void ApkWebAppService::OnArcAppListPrefsDestroyed() {
 }
 
 void ApkWebAppService::OnWebAppWillBeUninstalled(
+    const web_app::AppId& web_app_id) {
+  MaybeRemoveArcPackageForWebApp(web_app_id);
+}
+
+void ApkWebAppService::OnAppUpdate(const apps::AppUpdate& update) {
+  if (update.AppType() == apps::mojom::AppType::kWeb &&
+      update.Readiness() == apps::mojom::Readiness::kUninstalledByUser) {
+    MaybeRemoveArcPackageForWebApp(update.AppId());
+  }
+}
+
+void ApkWebAppService::OnAppRegistryCacheWillBeDestroyed(
+    apps::AppRegistryCache* cache) {
+  app_registry_cache_observer_.Reset();
+}
+
+void ApkWebAppService::MaybeRemoveArcPackageForWebApp(
     const web_app::AppId& web_app_id) {
   if (!base::FeatureList::IsEnabled(features::kApkWebAppInstalls))
     return;

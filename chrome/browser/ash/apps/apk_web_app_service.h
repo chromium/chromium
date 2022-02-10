@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 
 class ArcAppListPrefs;
 class Profile;
@@ -37,7 +38,8 @@ namespace ash {
 class ApkWebAppService : public KeyedService,
                          public ApkWebAppInstaller::Owner,
                          public ArcAppListPrefs::Observer,
-                         public web_app::AppRegistrarObserver {
+                         public web_app::AppRegistrarObserver,
+                         public apps::AppRegistryCache::Observer {
  public:
   static ApkWebAppService* Get(Profile* profile);
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -99,7 +101,12 @@ class ApkWebAppService : public KeyedService,
 
   // web_app::AppRegistrarObserver overrides.
   void OnWebAppWillBeUninstalled(const web_app::AppId& web_app_id) override;
+  // apps::AppRegistryCache::Observer overrides:
+  void OnAppUpdate(const apps::AppUpdate& update) override;
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override;
 
+  void MaybeRemoveArcPackageForWebApp(const web_app::AppId& web_app_id);
   void OnDidGetWebAppIcon(const std::string& package_name,
                           arc::mojom::WebAppInfoPtr web_app_info,
                           arc::mojom::RawIconPngDataPtr icon);
@@ -121,6 +128,9 @@ class ApkWebAppService : public KeyedService,
   base::ScopedObservation<web_app::WebAppRegistrar,
                           web_app::AppRegistrarObserver>
       registrar_observer_{this};
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
 
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
       arc_app_list_prefs_observer_{this};
