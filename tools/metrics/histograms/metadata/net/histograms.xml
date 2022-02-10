@@ -1484,8 +1484,9 @@ chromium-metrics-reviews@google.com.
   <owner>alexbn@chromium.org</owner>
   <summary>
     Counts the number of times web apps receive `ERR_INTERNET_DISCONNECTED` and
-    the alternative error page (rather than the dino) is shown.
-    (crbug.com/1280518).
+    the alternative error page (rather than the dino) is shown. Reported when
+    the error page html is being prepared. See
+    `NetErrorHelper::GenerateLocalizedErrorPage` (crbug.com/1280518).
   </summary>
 </histogram>
 
