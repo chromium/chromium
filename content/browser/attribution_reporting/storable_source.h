@@ -13,6 +13,14 @@ namespace content {
 // Contains attributes specific to a source that hasn't been stored yet.
 class CONTENT_EXPORT StorableSource {
  public:
+  // Represents the potential outcomes from attempting to register a source.
+  enum class Result {
+    kSuccess,
+    kInternalError,
+    kInsufficientSourceCapacity,
+    kInsufficientUniqueDestinationCapacity,
+  };
+
   explicit StorableSource(CommonSourceInfo common_info);
 
   ~StorableSource();

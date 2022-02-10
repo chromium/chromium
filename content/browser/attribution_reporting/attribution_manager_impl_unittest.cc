@@ -53,9 +53,6 @@ namespace content {
 
 namespace {
 
-using CreateReportResult = ::content::AttributionStorage::CreateReportResult;
-using CreateReportStatus =
-    ::content::AttributionStorage::CreateReportResult::Status;
 using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
 
 using ::testing::_;
@@ -677,7 +674,7 @@ TEST_F(AttributionManagerImplTest, DroppedReport_ObserversNotified) {
         OnReportDropped(AllOf(
             DroppedReportIs(Optional(EventLevelDataIs(TriggerPriorityIs(1)))),
             CreateReportStatusIs(
-                CreateReportStatus::kSuccessDroppedLowerPriority))));
+                AttributionTrigger::Result::kSuccessDroppedLowerPriority))));
 
     EXPECT_CALL(checkpoint, Call(2));
 
@@ -685,7 +682,8 @@ TEST_F(AttributionManagerImplTest, DroppedReport_ObserversNotified) {
         observer,
         OnReportDropped(AllOf(
             DroppedReportIs(Optional(EventLevelDataIs(TriggerPriorityIs(-5)))),
-            CreateReportStatusIs(CreateReportStatus::kPriorityTooLow))));
+            CreateReportStatusIs(
+                AttributionTrigger::Result::kPriorityTooLow))));
 
     EXPECT_CALL(checkpoint, Call(3));
 
@@ -694,13 +692,13 @@ TEST_F(AttributionManagerImplTest, DroppedReport_ObserversNotified) {
         OnReportDropped(AllOf(
             DroppedReportIs(Optional(EventLevelDataIs(TriggerPriorityIs(2)))),
             CreateReportStatusIs(
-                CreateReportStatus::kSuccessDroppedLowerPriority))));
+                AttributionTrigger::Result::kSuccessDroppedLowerPriority))));
     EXPECT_CALL(
         observer,
         OnReportDropped(AllOf(
             DroppedReportIs(Optional(EventLevelDataIs(TriggerPriorityIs(3)))),
             CreateReportStatusIs(
-                CreateReportStatus::kSuccessDroppedLowerPriority))));
+                AttributionTrigger::Result::kSuccessDroppedLowerPriority))));
   }
 
   attribution_manager_->HandleSource(
@@ -952,8 +950,7 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_RecordsMetric) {
   EXPECT_THAT(StoredReports(), IsEmpty());
   histograms.ExpectUniqueSample(
       "Conversions.CreateReportStatus",
-      AttributionStorage::CreateReportResult::Status::kNoMatchingImpressions,
-      1);
+      AttributionTrigger::Result::kNoMatchingImpressions, 1);
 }
 
 TEST_F(AttributionManagerImplTest, OnReportSent_NotifiesObservers) {

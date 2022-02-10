@@ -396,8 +396,7 @@ bool operator==(const SendResult& a, const SendResult& b);
 bool operator==(const AttributionStorage::DeactivatedSource& a,
                 const AttributionStorage::DeactivatedSource& b);
 
-std::ostream& operator<<(std::ostream& out,
-                         AttributionStorage::CreateReportResult::Status status);
+std::ostream& operator<<(std::ostream& out, AttributionTrigger::Result status);
 
 std::ostream& operator<<(std::ostream& out,
                          AttributionStorage::DeactivatedSource::Reason reason);
@@ -447,8 +446,7 @@ std::ostream& operator<<(
     std::ostream& out,
     const AttributionStorage::DeactivatedSource& deactivated_source);
 
-std::ostream& operator<<(std::ostream& out,
-                         AttributionStorage::StoreSourceResult::Status status);
+std::ostream& operator<<(std::ostream& out, StorableSource::Result status);
 
 std::vector<AttributionReport> GetAttributionsToReportForTesting(
     AttributionManagerImpl* manager,

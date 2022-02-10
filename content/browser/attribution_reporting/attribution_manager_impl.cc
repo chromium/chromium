@@ -83,7 +83,7 @@ bool IsOriginSessionOnly(
   return false;
 }
 
-void RecordCreateReportStatus(CreateReportResult::Status status) {
+void RecordCreateReportStatus(AttributionTrigger::Result status) {
   base::UmaHistogramEnumeration("Conversions.CreateReportStatus", status);
 }
 
@@ -397,7 +397,7 @@ void AttributionManagerImpl::OnReportStored(CreateReportResult result) {
 
   UpdateGetReportsToSendTimer(result.report_time());
 
-  if (result.status() != CreateReportResult::Status::kInternalError) {
+  if (result.status() != AttributionTrigger::Result::kInternalError) {
     // Sources are changed here because storing a report can cause sources to be
     // deleted or become associated with a dedup key.
     NotifySourcesChanged();

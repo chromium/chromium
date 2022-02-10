@@ -15,7 +15,7 @@ using StoreSourceResult = ::content::AttributionStorage::StoreSourceResult;
 }  // namespace
 
 CreateReportResult::CreateReportResult(
-    Status status,
+    AttributionTrigger::Result status,
     absl::optional<AttributionReport> dropped_report,
     absl::optional<DeactivatedSource::Reason>
         dropped_report_source_deactivation_reason,
@@ -25,16 +25,18 @@ CreateReportResult::CreateReportResult(
       dropped_report_source_deactivation_reason_(
           dropped_report_source_deactivation_reason),
       report_time_(report_time) {
-  DCHECK_EQ(status_ == Status::kSuccessDroppedLowerPriority ||
-                status_ == Status::kRateLimited ||
-                status_ == Status::kPriorityTooLow ||
-                status_ == Status::kDroppedForNoise,
-            dropped_report_.has_value());
+  DCHECK_EQ(
+      status_ == AttributionTrigger::Result::kSuccessDroppedLowerPriority ||
+          status_ == AttributionTrigger::Result::kRateLimited ||
+          status_ == AttributionTrigger::Result::kPriorityTooLow ||
+          status_ == AttributionTrigger::Result::kDroppedForNoise,
+      dropped_report_.has_value());
   DCHECK(dropped_report_.has_value() ||
          !dropped_report_source_deactivation_reason_);
-  DCHECK_EQ(status_ == Status::kSuccess ||
-                status_ == Status::kSuccessDroppedLowerPriority,
-            report_time_.has_value());
+  DCHECK_EQ(
+      status_ == AttributionTrigger::Result::kSuccess ||
+          status_ == AttributionTrigger::Result::kSuccessDroppedLowerPriority,
+      report_time_.has_value());
 }
 
 CreateReportResult::~CreateReportResult() = default;
@@ -47,7 +49,7 @@ CreateReportResult& CreateReportResult::operator=(const CreateReportResult&) =
 CreateReportResult& CreateReportResult::operator=(CreateReportResult&&) =
     default;
 
-CreateReportResult::Status CreateReportResult::status() const {
+AttributionTrigger::Result CreateReportResult::status() const {
   return status_;
 }
 
@@ -84,7 +86,7 @@ DeactivatedSource& DeactivatedSource::operator=(const DeactivatedSource&) =
 DeactivatedSource& DeactivatedSource::operator=(DeactivatedSource&&) = default;
 
 StoreSourceResult::StoreSourceResult(
-    Status status,
+    StorableSource::Result status,
     std::vector<DeactivatedSource> deactivated_sources,
     absl::optional<base::Time> min_fake_report_time)
     : status(status),

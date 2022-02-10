@@ -15,8 +15,8 @@
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
+#include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
@@ -36,8 +36,6 @@ namespace content {
 
 namespace {
 
-using CreateReportStatus =
-    ::content::AttributionStorage::CreateReportResult::Status;
 using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
 
 using ::testing::_;
@@ -373,19 +371,19 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
                .SetPriority(13)
                .Build()}));
   manager_.NotifyReportDropped(AttributionStorage::CreateReportResult(
-      CreateReportStatus::kPriorityTooLow,
+      AttributionTrigger::Result::kPriorityTooLow,
       ReportBuilder(SourceBuilder(now).BuildStored())
           .SetReportTime(now + base::Hours(1))
           .SetPriority(11)
           .Build()));
   manager_.NotifyReportDropped(AttributionStorage::CreateReportResult(
-      CreateReportStatus::kDroppedForNoise,
+      AttributionTrigger::Result::kDroppedForNoise,
       ReportBuilder(SourceBuilder(now).BuildStored())
           .SetReportTime(now + base::Hours(2))
           .SetPriority(12)
           .Build()));
   manager_.NotifyReportDropped(AttributionStorage::CreateReportResult(
-      CreateReportStatus::kRateLimited,
+      AttributionTrigger::Result::kRateLimited,
       ReportBuilder(SourceBuilder(now).BuildStored())
           .SetReportTime(now + base::Hours(6))
           .SetPriority(-3)

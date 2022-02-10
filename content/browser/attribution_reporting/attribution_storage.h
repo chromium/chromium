@@ -10,6 +10,8 @@
 #include "base/callback_forward.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_trigger.h"
+#include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -19,9 +21,6 @@ class Origin;
 }  // namespace url
 
 namespace content {
-
-class AttributionTrigger;
-class StorableSource;
 
 // This class provides an interface for persisting attribution data to
 // disk, and performing queries on it. AttributionStorage should initialize
@@ -49,15 +48,8 @@ class AttributionStorage {
   };
 
   struct CONTENT_EXPORT StoreSourceResult {
-    enum class Status {
-      kSuccess,
-      kInternalError,
-      kInsufficientSourceCapacity,
-      kInsufficientUniqueDestinationCapacity,
-    };
-
     explicit StoreSourceResult(
-        Status status,
+        StorableSource::Result status,
         std::vector<DeactivatedSource> deactivated_sources = {},
         absl::optional<base::Time> min_fake_report_time = absl::nullopt);
 
@@ -69,7 +61,7 @@ class AttributionStorage {
     StoreSourceResult& operator=(const StoreSourceResult&);
     StoreSourceResult& operator=(StoreSourceResult&&);
 
-    Status status;
+    StorableSource::Result status;
     std::vector<DeactivatedSource> deactivated_sources;
     // The earliest report time for any fake reports stored alongside the
     // source, if any.
@@ -94,25 +86,8 @@ class AttributionStorage {
 
   class CONTENT_EXPORT CreateReportResult {
    public:
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    enum class Status {
-      kSuccess = 0,
-      // The report was stored successfully, but it replaced an existing report
-      // with a lower priority.
-      kSuccessDroppedLowerPriority = 1,
-      kInternalError = 2,
-      kNoCapacityForConversionDestination = 3,
-      kNoMatchingImpressions = 4,
-      kDeduplicated = 5,
-      kRateLimited = 6,
-      kPriorityTooLow = 7,
-      kDroppedForNoise = 8,
-      kMaxValue = kDroppedForNoise,
-    };
-
     explicit CreateReportResult(
-        Status status,
+        AttributionTrigger::Result status,
         absl::optional<AttributionReport> dropped_report = absl::nullopt,
         absl::optional<DeactivatedSource::Reason>
             dropped_report_source_deactivation_reason = absl::nullopt,
@@ -125,7 +100,7 @@ class AttributionStorage {
     CreateReportResult& operator=(const CreateReportResult&);
     CreateReportResult& operator=(CreateReportResult&&);
 
-    Status status() const;
+    AttributionTrigger::Result status() const;
 
     const absl::optional<AttributionReport>& dropped_report() const;
 
@@ -134,7 +109,7 @@ class AttributionStorage {
     absl::optional<DeactivatedSource> GetDeactivatedSource() const;
 
    private:
-    Status status_;
+    AttributionTrigger::Result status_;
 
     // Null unless `status` is `kSuccessDroppedLowerPriority`,
     // `kRateLimited`, `kPriorityTooLow`, or `kDroppedForNoise`.

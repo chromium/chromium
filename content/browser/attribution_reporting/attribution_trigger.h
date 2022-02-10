@@ -18,6 +18,25 @@ namespace content {
 // the renderer and is now being used by the browser process.
 class CONTENT_EXPORT AttributionTrigger {
  public:
+  // Represents the potential outcomes from attempting to register a trigger.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class Result {
+    kSuccess = 0,
+    // The report was stored successfully, but it replaced an existing report
+    // with a lower priority.
+    kSuccessDroppedLowerPriority = 1,
+    kInternalError = 2,
+    kNoCapacityForConversionDestination = 3,
+    kNoMatchingImpressions = 4,
+    kDeduplicated = 5,
+    kRateLimited = 6,
+    kPriorityTooLow = 7,
+    kDroppedForNoise = 8,
+    kMaxValue = kDroppedForNoise,
+  };
+
   // Should only be created with values that the browser process has already
   // validated. At creation time, |trigger_data_| should already be stripped
   // to a lower entropy. |conversion_destination| should be filled by a
