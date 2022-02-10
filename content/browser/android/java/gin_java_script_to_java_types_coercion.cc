@@ -536,10 +536,9 @@ jobject CoerceJavaScriptDictionaryToArray(JNIEnv* env,
   auto null_value = std::make_unique<base::Value>();
   for (jsize i = 0; i < length; ++i) {
     const std::string key(base::NumberToString(i));
-    const base::Value* value_element = null_value.get();
-    if (dictionary_value->HasKey(key)) {
-      dictionary_value->Get(key, &value_element);
-    }
+    const base::Value* value_element = dictionary_value->FindKey(key);
+    if (!value_element)
+      value_element = null_value.get();
     jvalue element = CoerceJavaScriptValueToJavaValue(
         env, value_element, target_inner_type, false, object_refs, error);
     SetArrayElement(env, result, target_inner_type, i, element);
