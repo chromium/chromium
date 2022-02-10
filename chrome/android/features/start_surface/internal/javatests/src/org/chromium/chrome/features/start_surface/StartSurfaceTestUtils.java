@@ -27,6 +27,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.uiautomator.UiDevice;
 import android.util.Base64;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,6 +72,7 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.start_surface.R;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
@@ -504,6 +506,15 @@ public class StartSurfaceTestUtils {
                                                 -> !tab.isLoading(),
                     MAX_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         }
+    }
+
+    /**
+     * Simulates pressing the Android's home button and bringing Chrome to the background.
+     */
+    public static void pressHome() {
+        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        device.pressHome();
+        ChromeApplicationTestUtils.waitUntilChromeInBackground();
     }
 
     /**

@@ -749,6 +749,7 @@ public final class ChromePreferenceKeys {
 
     public static final String REGULAR_TAB_COUNT = "Chrome.StartSurface.RegularTabCount";
     public static final String INCOGNITO_TAB_COUNT = "Chrome.StartSurface.IncognitoTabCount";
+    public static final String IS_LAST_VISITED_TAB_SRP = "Chrome.StartSurface.IsLastVisitedTabSRP";
 
     /**
      * Contains a trial group that was used to determine whether the reached code profiler should be
@@ -1043,6 +1044,7 @@ public final class ChromePreferenceKeys {
                 IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT,
                 IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN,
                 INCOGNITO_TAB_COUNT,
+                IS_LAST_VISITED_TAB_SRP,
                 ISOLATED_SPLITS_DEX_COMPILE_VERSION,
                 LAST_SESSION_BROWSER_PID,
                 LAST_SESSION_APPLICATION_STATE,

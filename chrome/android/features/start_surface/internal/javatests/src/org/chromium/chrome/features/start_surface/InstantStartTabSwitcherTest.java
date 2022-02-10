@@ -7,8 +7,11 @@ package org.chromium.chrome.features.start_surface;
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.pressKey;
+import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.swipeUp;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -26,6 +29,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -61,6 +65,8 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageManager;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
@@ -73,7 +79,6 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.test.util.ViewUtils;
@@ -114,7 +119,7 @@ public class InstantStartTabSwitcherTest {
      * {@link ParameterProvider} used for parameterized test that provides whether it's single tab
      * switcher or carousel tab switcher and whether last visited tab is a search result page.
      */
-    public static class LVTIsSRPTestParams implements ParameterProvider {
+    public static class LastVisitedTabIsSRPTestParams implements ParameterProvider {
         private static final List<ParameterSet> sLVTIsSRPTestParams =
                 Arrays.asList(new ParameterSet().value(false, false).name("CarouselTab_NotSRP"),
                         new ParameterSet().value(true, false).name("SingleTab_NotSRP"),
@@ -478,30 +483,68 @@ public class InstantStartTabSwitcherTest {
 
     @Test
     @MediumTest
-    @UseMethodParameter(LVTIsSRPTestParams.class)
+    @UseMethodParameter(LastVisitedTabIsSRPTestParams.class)
     // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
         INSTANT_START_TEST_BASE_PARAMS})
-    public void testRecordLastVisitedTabIsSRPHistogram(boolean isSingleTabSwitcher, boolean isSRP)
-            throws IOException {
-        // clang-format on
-        testRecordLastVisitedTabIsSRP(isSingleTabSwitcher, isSRP);
+    // clang-format on
+    public void testRecordLastVisitedTabIsSRPHistogram_Instant(
+            boolean isSingleTabSwitcher, boolean isSRP) throws IOException {
+        testRecordLastVisitedTabIsSRPHistogram(isSingleTabSwitcher, isSRP);
     }
 
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.INSTANT_START)
-    @UseMethodParameter(LVTIsSRPTestParams.class)
+    @UseMethodParameter(LastVisitedTabIsSRPTestParams.class)
     // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
         INSTANT_START_TEST_BASE_PARAMS})
     // clang-format on
     public void testRecordLastVisitedTabIsSRPHistogram_NoInstant(
             boolean isSingleTabSwitcher, boolean isSRP) throws IOException {
-        testRecordLastVisitedTabIsSRP(isSingleTabSwitcher, isSRP);
+        testRecordLastVisitedTabIsSRPHistogram(isSingleTabSwitcher, isSRP);
     }
 
-    private void testRecordLastVisitedTabIsSRP(boolean isSingleTabSwitcher, boolean isSRP)
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.INSTANT_START)
+    // clang-format off
+    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
+        INSTANT_START_TEST_BASE_PARAMS})
+    // clang-format on
+    public void testSaveIsLastVisitedTabSRP() throws Exception {
+        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
+        StartSurfaceTestUtils.startAndWaitNativeInitialization(mActivityTestRule);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForOverviewVisible(cta);
+        StartSurfaceTestUtils.waitForDeferredStartup(mActivityTestRule);
+
+        // Create a new search result tab by perform a query search in fake box.
+        onViewWaiting(withId(org.chromium.chrome.start_surface.R.id.search_box_text))
+                .check(matches(isCompletelyDisplayed()))
+                .perform(replaceText("test"));
+        onView(withId(org.chromium.chrome.start_surface.R.id.url_bar))
+                .perform(pressKey(KeyEvent.KEYCODE_ENTER));
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+
+        StartSurfaceTestUtils.pressHome();
+        Assert.assertTrue(SharedPreferencesManager.getInstance().readBoolean(
+                ChromePreferenceKeys.IS_LAST_VISITED_TAB_SRP, false));
+
+        // Simulates pressing Chrome's icon and launching Chrome from warm start.
+        mActivityTestRule.resumeMainActivityFromLauncher();
+
+        // Create a non search result tab and check the shared preferences.
+        StartSurfaceTestUtils.waitForTabModel(cta);
+        StartSurfaceTestUtils.launchFirstMVTile(cta, 1);
+
+        StartSurfaceTestUtils.pressHome();
+        Assert.assertFalse(SharedPreferencesManager.getInstance().readBoolean(
+                ChromePreferenceKeys.IS_LAST_VISITED_TAB_SRP, false));
+    }
+
+    private void testRecordLastVisitedTabIsSRPHistogram(boolean isSingleTabSwitcher, boolean isSRP)
             throws IOException {
         StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY.setForTesting(
                 isSingleTabSwitcher);
@@ -512,19 +555,14 @@ public class InstantStartTabSwitcherTest {
         StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(1);
         TabAttributeCache.setTitleForTesting(0, "Google SRP");
         TabAttributeCache.setTitleForTesting(1, "Google Homepage");
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.IS_LAST_VISITED_TAB_SRP, isSRP);
         StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         StartSurfaceTestUtils.startAndWaitNativeInitialization(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForOverviewVisible(cta);
         StartSurfaceTestUtils.waitForDeferredStartup(mActivityTestRule);
 
-        Assert.assertEquals(isSRP,
-                UrlUtilitiesJni.get().isGoogleSearchUrl(
-                        StartSurfaceUserData.getInstance().getLastVisitedTabAtStartupUrl()));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        ReturnToChromeExperimentsUtil
-                                .LAST_VISITED_TAB_IS_SRP_WHEN_OVERVIEW_IS_SHOWN_AT_LAUNCH_UMA));
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         ReturnToChromeExperimentsUtil

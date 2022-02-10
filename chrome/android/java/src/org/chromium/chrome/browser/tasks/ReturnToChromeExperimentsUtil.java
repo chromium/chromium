@@ -47,7 +47,6 @@ import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.optimization_guide.proto.ModelsProto.OptimizationTarget;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -493,9 +492,7 @@ public final class ReturnToChromeExperimentsUtil {
         // If Chrome is launched by tapping the New Tab Item from the launch icon and
         // {@link OMNIBOX_FOCUSED_ON_NEW_TAB} is enabled, a new Tab with omnibox focused will be
         // shown on Startup.
-        if (IntentHandler.shouldIntentShowNewTabOmniboxFocused(intent)) {
-            return false;
-        }
+        if (IntentHandler.shouldIntentShowNewTabOmniboxFocused(intent)) return false;
 
         // If user launches Chrome by tapping the app icon, the intentUrl is NULL;
         // If user taps the "New Tab" item from the app icon, the intentUrl will be chrome://newtab,
@@ -507,12 +504,18 @@ public final class ReturnToChromeExperimentsUtil {
                 && !intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)) {
             return true;
         }
-        if (ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(context)
-                && IntentUtils.isMainIntentFromLauncher(intent)
+
+        boolean isStartSurfaceEnabled =
+                ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(context);
+
+        // If Start surface is enabled and there's no tab existing, handle the initial tab creation.
+        if (isStartSurfaceEnabled && IntentUtils.isMainIntentFromLauncher(intent)
                 && ReturnToChromeExperimentsUtil.getTotalTabCount(tabModelSelector) <= 0) {
-            // Handle initial tab creation.
             return true;
         }
+
+        // Checks whether to hide Start surface when last visited tab is a search result page.
+        if (isStartSurfaceEnabled && shouldHideStartSurfaceWhenLastVisitedTabIsSRP()) return false;
 
         // Checks whether to show the Start surface / grid Tab switcher due to feature flag
         // TAB_SWITCHER_ON_RETURN_MS.
@@ -523,7 +526,7 @@ public final class ReturnToChromeExperimentsUtil {
         // If the overview page won't be shown on startup, stops here.
         if (!tabSwitcherOnReturn) return false;
 
-        if (ReturnToChromeExperimentsUtil.isStartSurfaceEnabled(context)) {
+        if (isStartSurfaceEnabled) {
             if (StartSurfaceConfiguration.CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP.getValue()) {
                 // We only check the sync status when flag CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP
                 // and the Start surface are both enabled.
@@ -891,8 +894,8 @@ public final class ReturnToChromeExperimentsUtil {
     public static void recordLastVisitedTabIsSRPWhenOverviewIsShownAtLaunch() {
         RecordHistogram.recordBooleanHistogram(
                 LAST_VISITED_TAB_IS_SRP_WHEN_OVERVIEW_IS_SHOWN_AT_LAUNCH_UMA,
-                UrlUtilitiesJni.get().isGoogleSearchUrl(
-                        StartSurfaceUserData.getInstance().getLastVisitedTabAtStartupUrl()));
+                SharedPreferencesManager.getInstance().readBoolean(
+                        ChromePreferenceKeys.IS_LAST_VISITED_TAB_SRP, false));
     }
 
     @VisibleForTesting
@@ -904,5 +907,14 @@ public final class ReturnToChromeExperimentsUtil {
     public static void setSyncForTesting(boolean isSyncing) {
         SharedPreferencesManager manager = SharedPreferencesManager.getInstance();
         manager.writeBoolean(ChromePreferenceKeys.PRIMARY_ACCOUNT_SYNC, isSyncing);
+    }
+
+    /**
+     * Returns whether Start surface should be hidden when last visited tab is a search result page.
+     */
+    private static boolean shouldHideStartSurfaceWhenLastVisitedTabIsSRP() {
+        return StartSurfaceConfiguration.HIDE_START_WHEN_LAST_VISITED_TAB_IS_SRP.getValue()
+                && SharedPreferencesManager.getInstance().readBoolean(
+                        ChromePreferenceKeys.IS_LAST_VISITED_TAB_SRP, false);
     }
 }

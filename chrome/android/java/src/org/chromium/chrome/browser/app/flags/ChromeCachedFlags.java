@@ -137,6 +137,7 @@ public class ChromeCachedFlags {
                         add(CustomTabIntentDataProvider.ALLOWLIST_ENTRIES);
                         add(StartSurfaceConfiguration.CHECK_SYNC_BEFORE_SHOW_START_AT_STARTUP);
                         add(StartSurfaceConfiguration.FINALE_ANIMATION_ENABLED);
+                        add(StartSurfaceConfiguration.HIDE_START_WHEN_LAST_VISITED_TAB_IS_SRP);
                         add(StartSurfaceConfiguration.HOME_BUTTON_ON_GRID_TAB_SWITCHER);
                         add(StartSurfaceConfiguration.IS_DOODLE_SUPPORTED);
                         add(StartSurfaceConfiguration.NEW_SURFACE_FROM_HOME_BUTTON);

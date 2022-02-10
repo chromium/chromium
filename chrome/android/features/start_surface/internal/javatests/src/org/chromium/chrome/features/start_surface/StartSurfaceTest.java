@@ -41,7 +41,6 @@ import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.uiautomator.UiDevice;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -94,7 +93,6 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.start_surface.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -418,7 +416,7 @@ public class StartSurfaceTest {
         TabUiTestHelper.verifyTabModelTabCount(cta, 0, 1);
 
         // Simulates pressing the Android's home button and bringing Chrome to the background.
-        pressHome();
+        StartSurfaceTestUtils.pressHome();
 
         // Simulates pressing Chrome's icon and launching Chrome from warm start.
         mActivityTestRule.resumeMainActivityFromLauncher();
@@ -1184,11 +1182,5 @@ public class StartSurfaceTest {
      */
     private boolean isInstantReturn() {
         return mUseInstantStart && mImmediateReturn;
-    }
-
-    private void pressHome() {
-        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        device.pressHome();
-        ChromeApplicationTestUtils.waitUntilChromeInBackground();
     }
 }
