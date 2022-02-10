@@ -67,18 +67,28 @@ std::unique_ptr<PluginMetadata> CreatePluginMetadata(
     const std::string& identifier,
     const base::DictionaryValue* plugin_dict) {
   std::string url;
-  bool success = plugin_dict->GetString("url", &url);
+  if (const std::string* ptr = plugin_dict->FindStringKey("url"))
+    url = *ptr;
   std::string help_url;
-  plugin_dict->GetString("help_url", &help_url);
+  if (const std::string* ptr = plugin_dict->FindStringKey("help_url"))
+    help_url = *ptr;
   std::u16string name;
-  success = plugin_dict->GetString("name", &name);
+  bool success = true;
+  if (const std::string* ptr = plugin_dict->FindStringKey("name"))
+    name = base::UTF8ToUTF16(*ptr);
+  else
+    success = false;
   DCHECK(success);
   bool display_url = plugin_dict->FindBoolKey("displayurl").value_or(true);
   std::u16string group_name_matcher;
-  success = plugin_dict->GetString("group_name_matcher", &group_name_matcher);
+  if (const std::string* ptr = plugin_dict->FindStringKey("group_name_matcher"))
+    group_name_matcher = base::UTF8ToUTF16(*ptr);
+  else
+    success = false;
   DCHECK(success);
   std::string language_str;
-  plugin_dict->GetString("lang", &language_str);
+  if (const std::string* ptr = plugin_dict->FindStringKey("lang"))
+    language_str = *ptr;
   bool plugin_is_deprecated =
       plugin_dict->FindBoolKey("plugin_is_deprecated").value_or(false);
 
@@ -94,10 +104,17 @@ std::unique_ptr<PluginMetadata> CreatePluginMetadata(
         continue;
       }
       std::string version;
-      success = version_dict->GetString("version", &version);
+      success = true;
+      if (const std::string* ptr = version_dict->FindStringKey("version"))
+        version = *ptr;
+      else
+        success = false;
       DCHECK(success);
       std::string status_str;
-      success = version_dict->GetString("status", &status_str);
+      if (const std::string* ptr = version_dict->FindStringKey("status"))
+        status_str = *ptr;
+      else
+        success = false;
       DCHECK(success);
       PluginMetadata::SecurityStatus status =
           PluginMetadata::SECURITY_STATUS_UP_TO_DATE;
