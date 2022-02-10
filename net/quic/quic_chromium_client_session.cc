@@ -2814,7 +2814,7 @@ void QuicChromiumClientSession::OnPathDegrading() {
   if (!stream_factory_)
     return;
 
-  if (allow_port_migration_) {
+  if (allow_port_migration_ && !migrate_session_early_v2_) {
     current_migration_cause_ = CHANGE_PORT_ON_PATH_DEGRADING;
     MaybeMigrateToDifferentPortOnPathDegrading();
     return;
