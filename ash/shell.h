@@ -569,6 +569,8 @@ class ASH_EXPORT Shell : public SessionObserver,
     return touch_transformer_controller_.get();
   }
   TrayAction* tray_action() { return tray_action_.get(); }
+
+  // Will return |nullptr| when the |kBluetoothRevamp| feature flag is enabled.
   TrayBluetoothHelper* tray_bluetooth_helper() {
     return tray_bluetooth_helper_.get();
   }
@@ -880,6 +882,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<BluetoothDeviceStatusUiHandler>
       bluetooth_device_status_ui_handler_;
   std::unique_ptr<BluetoothPowerController> bluetooth_power_controller_;
+
+  // Will be |nullptr| when the |kBluetoothRevamp| feature flag is enabled.
   std::unique_ptr<TrayBluetoothHelper> tray_bluetooth_helper_;
   std::unique_ptr<KeyboardControllerImpl> keyboard_controller_;
   std::unique_ptr<DisplayAlignmentController> display_alignment_controller_;

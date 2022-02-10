@@ -6,13 +6,16 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view_legacy.h"
+#include "ash/system/bluetooth/bluetooth_power_controller.h"
 #include "ash/system/bluetooth/tray_bluetooth_helper.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/fake_bluetooth_adapter_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_device_client.h"
@@ -37,6 +40,16 @@ class UnifiedBluetoothDetailedViewControllerTest : public AshTestBase {
   ~UnifiedBluetoothDetailedViewControllerTest() override = default;
 
   void SetUp() override {
+    // These tests should only be run with the kBluetoothRevamp feature flag is
+    // disabled, and so we force it off here and ensure that the local state
+    // prefs that would have been registered had the feature flag been off are
+    // registered.
+    if (ash::features::IsBluetoothRevampEnabled()) {
+      feature_list_.InitAndDisableFeature(features::kBluetoothRevamp);
+      BluetoothPowerController::RegisterLocalStatePrefs(
+          local_state()->registry());
+    }
+
     AshTestBase::SetUp();
 
     // Set fake adapter client to powered-on and initialize with zero simulation
@@ -106,6 +119,7 @@ class UnifiedBluetoothDetailedViewControllerTest : public AshTestBase {
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   bluez::FakeBluetoothAdapterClient* adapter_client_;
   bluez::FakeBluetoothDeviceClient* device_client_;
   scoped_refptr<UnifiedSystemTrayModel> tray_model_;

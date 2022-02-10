@@ -579,15 +579,18 @@ Shell::Shell(std::unique_ptr<ShellDelegate> shell_delegate)
   keyboard_controller_ =
       std::make_unique<KeyboardControllerImpl>(session_controller_.get());
 
-  if (base::FeatureList::IsEnabled(features::kUseBluetoothSystemInAsh)) {
-    mojo::PendingRemote<device::mojom::BluetoothSystemFactory>
-        bluetooth_system_factory;
-    shell_delegate_->BindBluetoothSystemFactory(
-        bluetooth_system_factory.InitWithNewPipeAndPassReceiver());
-    tray_bluetooth_helper_ = std::make_unique<TrayBluetoothHelperExperimental>(
-        std::move(bluetooth_system_factory));
-  } else {
-    tray_bluetooth_helper_ = std::make_unique<TrayBluetoothHelperLegacy>();
+  if (!ash::features::IsBluetoothRevampEnabled()) {
+    if (base::FeatureList::IsEnabled(features::kUseBluetoothSystemInAsh)) {
+      mojo::PendingRemote<device::mojom::BluetoothSystemFactory>
+          bluetooth_system_factory;
+      shell_delegate_->BindBluetoothSystemFactory(
+          bluetooth_system_factory.InitWithNewPipeAndPassReceiver());
+      tray_bluetooth_helper_ =
+          std::make_unique<TrayBluetoothHelperExperimental>(
+              std::move(bluetooth_system_factory));
+    } else {
+      tray_bluetooth_helper_ = std::make_unique<TrayBluetoothHelperLegacy>();
+    }
   }
 
   PowerStatus::Initialize();
@@ -1247,8 +1250,10 @@ void Shell::Init(
   logout_confirmation_controller_ =
       std::make_unique<LogoutConfirmationController>();
 
-  // May trigger initialization of the Bluetooth adapter.
-  tray_bluetooth_helper_->Initialize();
+  if (!ash::features::IsBluetoothRevampEnabled()) {
+    // May trigger initialization of the Bluetooth adapter.
+    tray_bluetooth_helper_->Initialize();
+  }
 
   // Create AshTouchTransformController before
   // WindowTreeHostManager::InitDisplays()

@@ -7,13 +7,16 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/system/bluetooth/bluetooth_power_controller.h"
 #include "ash/system/bluetooth/tray_bluetooth_helper.h"
 #include "ash/test/ash_test_base.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/fake_bluetooth_adapter_client.h"
@@ -81,7 +84,24 @@ class TestTrayBluetoothHelperObserver : public TrayBluetoothHelper::Observer {
   size_t device_list_changed_count_ = 0;
 };
 
-using TrayBluetoothHelperLegacyTest = AshTestBase;
+class TrayBluetoothHelperLegacyTest : public AshTestBase {
+ public:
+  void SetUp() override {
+    // These tests should only be run with the kBluetoothRevamp feature flag is
+    // disabled, and so we force it off here and ensure that the local state
+    // prefs that would have been registered had the feature flag been off are
+    // registered.
+    if (ash::features::IsBluetoothRevampEnabled()) {
+      feature_list_.InitAndDisableFeature(features::kBluetoothRevamp);
+      BluetoothPowerController::RegisterLocalStatePrefs(
+          local_state()->registry());
+    }
+    AshTestBase::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 // Tests basic functionality.
 TEST_F(TrayBluetoothHelperLegacyTest, Basics) {

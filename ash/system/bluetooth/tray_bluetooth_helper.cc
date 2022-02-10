@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "ash/system/bluetooth/tray_bluetooth_helper.h"
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/time/time.h"
 
 using device::mojom::BluetoothSystem;
@@ -16,7 +18,9 @@ constexpr base::TimeDelta kUpdateFrequencyMs = base::Milliseconds(1000);
 
 }  // namespace
 
-TrayBluetoothHelper::TrayBluetoothHelper() = default;
+TrayBluetoothHelper::TrayBluetoothHelper() {
+  DCHECK(!ash::features::IsBluetoothRevampEnabled());
+}
 
 TrayBluetoothHelper::~TrayBluetoothHelper() = default;
 
