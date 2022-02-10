@@ -52,6 +52,10 @@ class GURL;
 // applicable.
 - (void)showReadingListIPH;
 
+// Shows an IPH to explain to the user how to change the default site view, if
+// applicable.
+- (void)showDefaultSiteViewIPH;
+
 // Preloads voice search on the current BVC.
 - (void)preloadVoiceSearch;
 

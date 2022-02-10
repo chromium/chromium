@@ -45,6 +45,11 @@
 // FeatureEngagementTracker failed to load.
 + (BOOL)enableLongPressTipTriggering [[nodiscard]];
 
+// Enables the Default Site View tip to be triggered. The tip is triggered only
+// once after requesting the desktop version 3 times. Returns NO if
+// FeatureEngagementTracker failed to load.
++ (BOOL)enableDefaultSiteViewTipTriggering [[nodiscard]];
+
 // Starts manual page translation.
 + (void)showTranslate;
 

@@ -99,6 +99,12 @@ extern const char kBottomToolbarOpened[];
 
 // The Discover feed has loaded content in the NTP.
 extern const char kDiscoverFeedLoaded[];
+
+// The user has requested the desktop version of a page.
+extern const char kDesktopVersionRequested[];
+
+// The default site view tip is shown.
+extern const char kDefaultSiteViewShown[];
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

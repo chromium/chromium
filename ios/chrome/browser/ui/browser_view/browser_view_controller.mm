@@ -3873,10 +3873,16 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self addURLsToReadingList:command.URLs];
 }
 
-// TODO(crbug.com/1272534): Move this commend implementation to
+// TODO(crbug.com/1272534): Move this command implementation to
 // BrowserCoordinator, which should be owning bubblePresenter.
 - (void)showReadingListIPH {
   [self.bubblePresenter presentReadingListBottomToolbarTipBubble];
+}
+
+// TODO(crbug.com/1272534): Move this command implementation to
+// BrowserCoordinator, which should be owning bubblePresenter.
+- (void)showDefaultSiteViewIPH {
+  [self.bubblePresenter presentDefaultSiteViewTipBubble];
 }
 
 - (void)preloadVoiceSearch {
@@ -3930,6 +3936,13 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // WebNavigationBrowserAgent.
 - (void)requestDesktopSite {
   [self reloadWithUserAgentType:web::UserAgentType::DESKTOP];
+
+  feature_engagement::TrackerFactory::GetForBrowserState(self.browserState)
+      ->NotifyEvent(feature_engagement::events::kDesktopVersionRequested);
+
+  id<BrowserCommands> handler =
+      static_cast<id<BrowserCommands>>(self.commandDispatcher);
+  [handler showDefaultSiteViewIPH];
 }
 
 - (void)requestMobileSite {

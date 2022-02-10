@@ -2138,16 +2138,16 @@ Try to use a unique password for every site.
         Desktop
       </message>
       <message name="IDS_IOS_DEFAULT_PAGE_MODE_LABEL" desc="The label of the cell used to display the current mode (Desktop or Mobile) in which the pages will be loaded by default">
-        Default Site Mode
+        Default Site View
       </message>
       <message name="IDS_IOS_DEFAULT_PAGE_MODE_MOBILE" desc="The label used to let the user choose that their pages will be loaded using the Mobile mode (vs Desktop)" meaning="The pages will be loaded in Mobile mode">
         Mobile
       </message>
-      <message name="IDS_IOS_DEFAULT_PAGE_MODE_SUBTITLE" desc="The subtitle explaining what choosing a different mode (Desktop or Mobile) will do">
-        Select how you would like Chrome to request the site everytime
-      </message>
       <message name="IDS_IOS_DEFAULT_PAGE_MODE_TITLE" desc="The title of the screen in which the user can choose the default mode (Desktop or Mobile) in which the pages will be loaded">
-        Default Site Mode
+        Default Site View
+      </message>
+      <message name="IDS_IOS_DEFAULT_PAGE_MODE_TIP" desc="The text of the tip explaining to the user how to change the mode (desktop/mobile) in which the websites will be requested">
+        You can change the default site view to desktop in Settings > Content Settings
       </message>
       <message name="IDS_IOS_SEARCH_ENGINE_SETTING_CUSTOM_SECTION_HEADER" desc="The header for custom search engines section in Search Engine selection setting [iOS only]">
         Recently Visited

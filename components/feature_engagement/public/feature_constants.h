@@ -171,6 +171,7 @@ extern const base::Feature kIPHBadgedReadingListFeature;
 extern const base::Feature kIPHReadingListMessagesFeature;
 extern const base::Feature kIPHBadgedTranslateManualTriggerFeature;
 extern const base::Feature kIPHDiscoverFeedHeaderFeature;
+extern const base::Feature kIPHDefaultSiteViewFeature;
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
