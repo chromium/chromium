@@ -352,13 +352,9 @@ void DragDropController::OnMouseEvent(ui::MouseEvent* event) {
       // (aura::RootWindow::PostMouseMoveEventAfterWindowChange).
       break;
   }
-  ui::Event::DispatcherApi(translated_event.get()).set_phase(ui::EP_PRETARGET);
-  ui::Event::DispatcherApi(translated_event.get())
-      .set_target(translated_target->GetToplevelWindow());
 
   if (toplevel_window_drag_delegate_)
-    toplevel_window_drag_delegate_->OnToplevelWindowDragEvent(
-        translated_event.get());
+    toplevel_window_drag_delegate_->OnToplevelWindowDragEvent(event);
 
   event->StopPropagation();
 }

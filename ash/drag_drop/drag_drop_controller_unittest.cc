@@ -393,10 +393,13 @@ class TestToplevelWindowDragDelegate : public ToplevelWindowDragDelegate {
   void OnToplevelWindowDragStarted(const gfx::PointF& start_location,
                                    ui::mojom::DragEventSource source,
                                    aura::Window* source_window) override {
-    EXPECT_EQ(State::kNotInvoked, state_);
+    ASSERT_EQ(State::kNotInvoked, state_);
+    ASSERT_TRUE(source_window);
     state_ = State::kDragStartedInvoked;
     current_location_.emplace(start_location);
     source_ = source;
+    if (source == ui::mojom::DragEventSource::kMouse)
+      source_window->SetCapture();
   }
 
   DragOperation OnToplevelWindowDragDropped() override {
@@ -415,6 +418,7 @@ class TestToplevelWindowDragDelegate : public ToplevelWindowDragDelegate {
     EXPECT_TRUE(current_location_.has_value());
     current_location_.emplace(event->root_location_f());
     events_forwarded_++;
+    event->StopPropagation();
   }
 
  private:
@@ -1518,6 +1522,66 @@ TEST_F(DragDropControllerTest, ToplevelWindowDragDelegate) {
               delegate.state());
     EXPECT_TRUE(delegate.current_location().has_value());
     EXPECT_EQ(gfx::PointF(52, 52), *delegate.current_location());
+    EXPECT_EQ(2, delegate.events_forwarded());
+  }
+
+  // Regression test for https://crbug.com/1280128.
+  // With 2 side-by-side displays, ensures that, when ext-dragging a toplevel
+  // window from the rightmost display, entering in the leftmost display results
+  // in correct mouse (drag update) events being sent over to toplevel window
+  // drag delegate, i.e: negative 'x' coordinates.
+  {
+    UpdateDisplay("800x600,800x600");
+    aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+    ASSERT_EQ(2u, root_windows.size());
+
+    aura::client::SetDragDropClient(root_windows[0],
+                                    drag_drop_controller_.get());
+    aura::client::SetDragDropClient(root_windows[1],
+                                    drag_drop_controller_.get());
+
+    const gfx::Rect bounds_within_root1(0, 0, 800, 600);
+    const gfx::Rect bounds_within_root2(800, 0, 800, 600);
+    std::unique_ptr<aura::Window> window1 =
+        CreateTestWindow(bounds_within_root1);
+    std::unique_ptr<aura::Window> window2 =
+        CreateTestWindow(bounds_within_root2);
+    ASSERT_EQ(root_windows[0], window1->GetRootWindow());
+    ASSERT_EQ(root_windows[1], window2->GetRootWindow());
+
+    TestToplevelWindowDragDelegate delegate;
+    drag_drop_controller_->set_toplevel_window_drag_delegate(&delegate);
+
+    // Press and hold left mouse button at (0,0) in the rightmost display.
+    ui::test::EventGenerator generator(window2->GetRootWindow(), {0, 0});
+    generator.PressLeftButton();
+
+    auto data(std::make_unique<ui::OSExchangeData>());
+    drag_drop_controller_->StartDragAndDrop(
+        std::move(data), window2->GetRootWindow(), window2.get(),
+        gfx::Point(5, 5), ui::DragDropTypes::DRAG_MOVE,
+        ui::mojom::DragEventSource::kMouse);
+
+    EXPECT_EQ(TestToplevelWindowDragDelegate::State::kDragStartedInvoked,
+              delegate.state());
+    EXPECT_EQ(ui::mojom::DragEventSource::kMouse, delegate.source());
+    EXPECT_TRUE(delegate.current_location().has_value());
+    EXPECT_EQ(gfx::PointF(5, 5), *delegate.current_location());
+    EXPECT_EQ(0, delegate.events_forwarded());
+
+    // Drag to (790,0) in the root window corresponding to the leftmost display,
+    // and ensure that the latest drag event received by toplevel window drag
+    // delegate targets (-10, 0) location.
+    generator.SetTargetWindow(root_windows[0]);
+    generator.MoveMouseTo(gfx::Point(790, 0));
+
+    EXPECT_TRUE(delegate.current_location().has_value());
+    EXPECT_EQ(gfx::PointF(-10, 0), *delegate.current_location());
+    EXPECT_EQ(1, delegate.events_forwarded());
+
+    generator.ReleaseLeftButton();
+    EXPECT_EQ(TestToplevelWindowDragDelegate::State::kDragDroppedInvoked,
+              delegate.state());
     EXPECT_EQ(2, delegate.events_forwarded());
   }
 }

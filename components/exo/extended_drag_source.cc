@@ -280,10 +280,12 @@ void ExtendedDragSource::StartDrag(aura::Window* toplevel,
 
   // TODO(crbug.com/1167581): Experiment setting |update_gesture_target| back
   // to true when capture is removed from drag and drop.
-  toplevel_handler->AttemptToStartDrag(toplevel, pointer_location, HTCAPTION,
-                                       move_source, std::move(end_closure),
-                                       /*update_gesture_target=*/false,
-                                       /*grab_capture=*/false);
+  toplevel_handler->AttemptToStartDrag(
+      toplevel, pointer_location, HTCAPTION, move_source,
+      std::move(end_closure),
+      /*update_gesture_target=*/false,
+      /*grab_capture =*/
+      drag_event_source_ != ui::mojom::DragEventSource::kTouch);
 }
 
 void ExtendedDragSource::OnDraggedWindowVisibilityChanging(bool visible) {
