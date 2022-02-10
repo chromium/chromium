@@ -4,6 +4,6 @@
     "ref": "refs/branch-heads/4692",
     "chrome_project": "chrome-m97",
     "branch_types": [
-        "standard"
+        "fuchsia-lts"
     ]
 }
