@@ -1624,14 +1624,14 @@ void RemoteSuggestionsProviderImpl::StoreCategoriesToPrefs() {
     const Category& category = entry.first;
     const CategoryContent& content = *entry.second;
     auto dict = std::make_unique<base::DictionaryValue>();
-    dict->SetInteger(kCategoryContentId, category.id());
+    dict->SetIntKey(kCategoryContentId, category.id());
     // TODO(tschumann): Persist other properties of the CategoryInfo.
-    dict->SetString(kCategoryContentTitle, content.info.title());
-    dict->SetBoolean(kCategoryContentProvidedByServer,
+    dict->SetStringKey(kCategoryContentTitle, content.info.title());
+    dict->SetBoolKey(kCategoryContentProvidedByServer,
                      content.included_in_last_server_response);
     bool has_fetch_action = content.info.additional_action() ==
                             ContentSuggestionsAdditionalAction::FETCH;
-    dict->SetBoolean(kCategoryContentAllowFetchingMore, has_fetch_action);
+    dict->SetBoolKey(kCategoryContentAllowFetchingMore, has_fetch_action);
     list.Append(std::move(dict));
   }
   // Finally, store the result in the pref service.

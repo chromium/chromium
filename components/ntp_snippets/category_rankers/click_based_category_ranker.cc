@@ -384,9 +384,9 @@ void ClickBasedCategoryRanker::StoreOrderToPrefs(
   base::ListValue list;
   for (const RankedCategory& category : ordered_categories) {
     auto dictionary = std::make_unique<base::DictionaryValue>();
-    dictionary->SetInteger(kCategoryIdKey, category.category.id());
-    dictionary->SetInteger(kClicksKey, category.clicks);
-    dictionary->SetString(
+    dictionary->SetIntKey(kCategoryIdKey, category.category.id());
+    dictionary->SetIntKey(kClicksKey, category.clicks);
+    dictionary->SetStringKey(
         kLastDismissedKey,
         base::NumberToString(SerializeTime(category.last_dismissed)));
     list.Append(std::move(dictionary));
