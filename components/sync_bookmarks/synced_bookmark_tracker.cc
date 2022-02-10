@@ -444,7 +444,7 @@ SyncedBookmarkTracker::GetAllEntities() const {
 }
 
 std::vector<const SyncedBookmarkTracker::Entity*>
-SyncedBookmarkTracker::GetEntitiesWithLocalChanges(size_t max_entries) const {
+SyncedBookmarkTracker::GetEntitiesWithLocalChanges() const {
   std::vector<const SyncedBookmarkTracker::Entity*> entities_with_local_changes;
   // Entities with local non deletions should be sorted such that parent
   // creation/update comes before child creation/update.
@@ -466,13 +466,6 @@ SyncedBookmarkTracker::GetEntitiesWithLocalChanges(size_t max_entries) const {
     CHECK_EQ(0, std::count(ordered_local_changes.begin(),
                            ordered_local_changes.end(), tombstone_entity));
     ordered_local_changes.push_back(tombstone_entity);
-  }
-  if (ordered_local_changes.size() > max_entries) {
-    // TODO(crbug.com/516866): Should be smart and stop building the vector
-    // when |max_entries| is reached.
-    return std::vector<const SyncedBookmarkTracker::Entity*>(
-        ordered_local_changes.begin(),
-        ordered_local_changes.begin() + max_entries);
   }
   return ordered_local_changes;
 }
@@ -694,11 +687,6 @@ bool SyncedBookmarkTracker::ReuploadBookmarksOnLoadIfNeeded() {
   }
   SetBookmarksReuploaded();
   return true;
-}
-
-bool SyncedBookmarkTracker::bookmark_client_tags_in_protocol_enabled() const {
-  return base::FeatureList::IsEnabled(
-      switches::kSyncUseClientTagForBookmarkCommits);
 }
 
 void SyncedBookmarkTracker::RecordIgnoredServerUpdateDueToMissingParent(

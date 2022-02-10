@@ -234,8 +234,6 @@ static syncer::UniquePosition MakeRandomPosition() {
 }  // namespace
 
 TEST(BookmarkModelMergerTest, ShouldMergeLocalAndRemoteModels) {
-  const size_t kMaxEntries = 1000;
-
   const std::string kFolder1Title = "folder1";
   const std::string kFolder2Title = "folder2";
   const std::string kFolder3Title = "folder3";
@@ -416,7 +414,7 @@ TEST(BookmarkModelMergerTest, ShouldMergeLocalAndRemoteModels) {
   // Verify the tracker contents.
   EXPECT_THAT(tracker->TrackedEntitiesCountForTest(), Eq(11U));
   std::vector<const SyncedBookmarkTracker::Entity*> local_changes =
-      tracker->GetEntitiesWithLocalChanges(kMaxEntries);
+      tracker->GetEntitiesWithLocalChanges();
 
   EXPECT_THAT(local_changes.size(), Eq(4U));
   std::vector<const bookmarks::BookmarkNode*> nodes_with_local_changes;
@@ -437,8 +435,6 @@ TEST(BookmarkModelMergerTest, ShouldMergeLocalAndRemoteModels) {
 }
 
 TEST(BookmarkModelMergerTest, ShouldMergeRemoteReorderToLocalModel) {
-  const size_t kMaxEntries = 1000;
-
   const std::string kFolder1Title = "folder1";
   const std::string kFolder2Title = "folder2";
   const std::string kFolder3Title = "folder3";
@@ -521,7 +517,7 @@ TEST(BookmarkModelMergerTest, ShouldMergeRemoteReorderToLocalModel) {
 
   // There should be no local changes.
   std::vector<const SyncedBookmarkTracker::Entity*> local_changes =
-      tracker->GetEntitiesWithLocalChanges(kMaxEntries);
+      tracker->GetEntitiesWithLocalChanges();
   EXPECT_THAT(local_changes.size(), Eq(0U));
 
   // Verify positions in tracker.
@@ -1666,9 +1662,8 @@ TEST(BookmarkModelMergerTest,
   // Verify the tracker contents.
   EXPECT_THAT(tracker->TrackedEntitiesCountForTest(), Eq(5U));
 
-  const size_t kMaxEntries = 1000;
   std::vector<const SyncedBookmarkTracker::Entity*> local_changes =
-      tracker->GetEntitiesWithLocalChanges(kMaxEntries);
+      tracker->GetEntitiesWithLocalChanges();
 
   ASSERT_THAT(local_changes.size(), Eq(1U));
   EXPECT_THAT(local_changes[0]->bookmark_node(),

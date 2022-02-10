@@ -545,8 +545,6 @@ TEST(SyncedBookmarkTrackerTest, ShouldUndeleteTombstone) {
 
 TEST(SyncedBookmarkTrackerTest,
      ShouldOrderParentUpdatesBeforeChildUpdatesAndDeletionsComeLast) {
-  const size_t kMaxEntries = 1000;
-
   // Construct this structure:
   // bookmark_bar
   //  |- node0
@@ -598,7 +596,7 @@ TEST(SyncedBookmarkTrackerTest,
   tracker->IncrementSequenceNumber(tracker->GetEntityForSyncId(kId0));
 
   std::vector<const SyncedBookmarkTracker::Entity*> entities_with_local_change =
-      tracker->GetEntitiesWithLocalChanges(kMaxEntries);
+      tracker->GetEntitiesWithLocalChanges();
 
   ASSERT_THAT(entities_with_local_change.size(), Eq(4U));
   // Verify updates are in parent before child order node0 --> node1 --> node2.

@@ -4,7 +4,6 @@
 
 #include "components/sync_bookmarks/bookmark_local_changes_builder.h"
 
-#include <limits>
 #include <memory>
 #include <string>
 #include <utility>
@@ -35,11 +34,7 @@ syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
 
   const std::vector<const SyncedBookmarkTracker::Entity*>
       entities_with_local_changes =
-          bookmark_tracker_->GetEntitiesWithLocalChanges(
-              base::FeatureList::IsEnabled(
-                  switches::kSyncBookmarksEnforceLateMaxEntriesToCommit)
-                  ? std::numeric_limits<int>::max()
-                  : max_entries);
+          bookmark_tracker_->GetEntitiesWithLocalChanges();
 
   syncer::CommitRequestDataList commit_requests;
   for (const SyncedBookmarkTracker::Entity* entity :
@@ -58,16 +53,14 @@ syncer::CommitRequestDataList BookmarkLocalChangesBuilder::BuildCommitRequests(
     data->modification_time =
         syncer::ProtoTimeToTime(metadata->modification_time());
 
-    if (bookmark_tracker_->bookmark_client_tags_in_protocol_enabled()) {
-      DCHECK(!metadata->client_tag_hash().empty());
-      data->client_tag_hash =
-          syncer::ClientTagHash::FromHashed(metadata->client_tag_hash());
-      DCHECK(metadata->is_deleted() ||
-             data->client_tag_hash ==
-                 syncer::ClientTagHash::FromUnhashed(
-                     syncer::BOOKMARKS,
-                     entity->bookmark_node()->guid().AsLowercaseString()));
-    }
+    DCHECK(!metadata->client_tag_hash().empty());
+    data->client_tag_hash =
+        syncer::ClientTagHash::FromHashed(metadata->client_tag_hash());
+    DCHECK(metadata->is_deleted() ||
+           data->client_tag_hash ==
+               syncer::ClientTagHash::FromUnhashed(
+                   syncer::BOOKMARKS,
+                   entity->bookmark_node()->guid().AsLowercaseString()));
 
     if (!metadata->is_deleted()) {
       const bookmarks::BookmarkNode* node = entity->bookmark_node();

@@ -148,18 +148,6 @@ class SingleClientBookmarksSyncTestWithEnabledReuploadPreexistingBookmarks
   base::test::ScopedFeatureList features_override_;
 };
 
-class SingleClientBookmarksSyncTestWithEnabledClientTags : public SyncTest {
- public:
-  SingleClientBookmarksSyncTestWithEnabledClientTags()
-      : SyncTest(SINGLE_CLIENT) {
-    features_override_.InitAndEnableFeature(
-        switches::kSyncUseClientTagForBookmarkCommits);
-  }
-
- private:
-  base::test::ScopedFeatureList features_override_;
-};
-
 class SingleClientBookmarksSyncTestWithEnabledThrottling : public SyncTest {
  public:
   SingleClientBookmarksSyncTestWithEnabledThrottling()
@@ -1708,7 +1696,7 @@ IN_PROC_BROWSER_TEST_F(
               Contains(HasUniquePosition()).Times(3));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTestWithEnabledClientTags,
+IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
                        CommitLocalCreationWithClientTag) {
   ASSERT_TRUE(SetupSync());
 

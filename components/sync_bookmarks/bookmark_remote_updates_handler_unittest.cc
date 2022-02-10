@@ -1173,10 +1173,6 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 TEST_F(
     BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
     ShouldUpdateSyncIdWhenRecevingUpdateForNewlyCreatedLocalNodeWithClientTag) {
-  base::test::ScopedFeatureList override_features;
-  override_features.InitAndEnableFeature(
-      switches::kSyncUseClientTagForBookmarkCommits);
-
   const base::GUID kBookmarkGuid = base::GUID::GenerateRandomV4();
   const std::string kSyncId = "server_id";
   const int64_t kServerVersion = 1000;

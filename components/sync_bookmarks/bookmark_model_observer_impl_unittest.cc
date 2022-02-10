@@ -49,7 +49,6 @@ const char kOtherBookmarksId[] = "other_bookmarks_id";
 const char kOtherBookmarksTag[] = "other_bookmarks";
 const char kMobileBookmarksId[] = "synced_bookmarks_id";
 const char kMobileBookmarksTag[] = "synced_bookmarks";
-const size_t kMaxEntries = 1000;
 
 // Matches |arg| of type SyncedBookmarkTracker::Entity*.
 MATCHER_P(HasBookmarkNode, node, "") {
@@ -101,7 +100,7 @@ class BookmarkModelObserverImplTest : public testing::Test {
 
   void SimulateCommitResponseForAllLocalChanges() {
     for (const SyncedBookmarkTracker::Entity* entity :
-         bookmark_tracker()->GetEntitiesWithLocalChanges(kMaxEntries)) {
+         bookmark_tracker()->GetEntitiesWithLocalChanges()) {
       const std::string id = entity->metadata()->server_id();
       // Don't simulate change in id for simplicity.
       bookmark_tracker()->UpdateUponCommitResponse(
@@ -153,7 +152,7 @@ TEST_F(BookmarkModelObserverImplTest,
   EXPECT_THAT(bookmark_tracker()->TrackedEntitiesCountForTest(), 4U);
 
   std::vector<const SyncedBookmarkTracker::Entity*> local_changes =
-      bookmark_tracker()->GetEntitiesWithLocalChanges(kMaxEntries);
+      bookmark_tracker()->GetEntitiesWithLocalChanges();
   ASSERT_THAT(local_changes.size(), 1U);
   EXPECT_THAT(local_changes[0]->bookmark_node(), Eq(bookmark_node));
   EXPECT_THAT(local_changes[0]->metadata()->server_id(),
@@ -180,20 +179,18 @@ TEST_F(BookmarkModelObserverImplTest,
   // Both bookmarks should be tracked now.
   ASSERT_THAT(bookmark_tracker()->TrackedEntitiesCountForTest(), 5U);
   // There should be two local changes now for both entities.
-  ASSERT_THAT(
-      bookmark_tracker()->GetEntitiesWithLocalChanges(kMaxEntries).size(), 2U);
+  ASSERT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges().size(), 2U);
 
   SimulateCommitResponseForAllLocalChanges();
 
   // There should be no local changes now.
-  ASSERT_TRUE(
-      bookmark_tracker()->GetEntitiesWithLocalChanges(kMaxEntries).empty());
+  ASSERT_TRUE(bookmark_tracker()->GetEntitiesWithLocalChanges().empty());
 
   // Now update the title of the 2nd node.
   EXPECT_CALL(*nudge_for_commit_closure(), Run());
   bookmark_model()->SetTitle(bookmark_node2, base::UTF8ToUTF16(kNewTitle2));
   // Node 2 should be in the local changes list.
-  EXPECT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges(kMaxEntries),
+  EXPECT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges(),
               ElementsAre(HasBookmarkNode(bookmark_node2)));
 
   // Now update the url of the 1st node.
@@ -201,7 +198,7 @@ TEST_F(BookmarkModelObserverImplTest,
   bookmark_model()->SetURL(bookmark_node1, GURL(kNewUrl1));
 
   // Node 1 and 2 should be in the local changes list.
-  EXPECT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges(kMaxEntries),
+  EXPECT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges(),
               UnorderedElementsAre(HasBookmarkNode(bookmark_node1),
                                    HasBookmarkNode(bookmark_node2)));
 
@@ -227,8 +224,7 @@ TEST_F(BookmarkModelObserverImplTest,
 
   // Verify number of entities local changes. Should be the same as number of
   // new nodes.
-  ASSERT_THAT(
-      bookmark_tracker()->GetEntitiesWithLocalChanges(kMaxEntries).size(), 2U);
+  ASSERT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges().size(), 2U);
 
   // All bookmarks should be tracked now.
   ASSERT_THAT(bookmark_tracker()->TrackedEntitiesCountForTest(), 5U);
@@ -236,8 +232,7 @@ TEST_F(BookmarkModelObserverImplTest,
   SimulateCommitResponseForAllLocalChanges();
 
   // There should be no local changes now.
-  ASSERT_TRUE(
-      bookmark_tracker()->GetEntitiesWithLocalChanges(kMaxEntries).empty());
+  ASSERT_TRUE(bookmark_tracker()->GetEntitiesWithLocalChanges().empty());
 
   // Now change it to this structure.
   // Build this structure:
@@ -272,8 +267,7 @@ TEST_F(BookmarkModelObserverImplTest,
 
   // Verify number of entities local changes. Should be the same as number of
   // new nodes.
-  ASSERT_THAT(
-      bookmark_tracker()->GetEntitiesWithLocalChanges(kMaxEntries).size(), 4U);
+  ASSERT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges().size(), 4U);
 
   // All bookmarks should be tracked now.
   ASSERT_THAT(bookmark_tracker()->TrackedEntitiesCountForTest(), 7U);
@@ -293,7 +287,7 @@ TEST_F(BookmarkModelObserverImplTest,
   EXPECT_TRUE(PositionOf(nodes[0]).LessThan(PositionOf(nodes[2])));
 
   // All 4 nodes should have local changes to commit.
-  EXPECT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges(kMaxEntries),
+  EXPECT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges(),
               UnorderedElementsAre(
                   HasBookmarkNode(nodes[0]), HasBookmarkNode(nodes[1]),
                   HasBookmarkNode(nodes[2]), HasBookmarkNode(nodes[3])));
@@ -331,8 +325,7 @@ TEST_F(BookmarkModelObserverImplTest,
   SimulateCommitResponseForAllLocalChanges();
 
   // There should be no local changes now.
-  ASSERT_TRUE(
-      bookmark_tracker()->GetEntitiesWithLocalChanges(kMaxEntries).empty());
+  ASSERT_TRUE(bookmark_tracker()->GetEntitiesWithLocalChanges().empty());
 
   const SyncedBookmarkTracker::Entity* folder2_entity =
       bookmark_tracker()->GetEntityForBookmarkNode(folder2_node);
@@ -373,7 +366,7 @@ TEST_F(BookmarkModelObserverImplTest,
   // committed and folder2 deletion should be the last one (after all children
   // deletions).
   EXPECT_THAT(
-      bookmark_tracker()->GetEntitiesWithLocalChanges(kMaxEntries),
+      bookmark_tracker()->GetEntitiesWithLocalChanges(),
       ElementsAre(bookmark_tracker()->GetEntityForSyncId(bookmark2_entity_id),
                   bookmark_tracker()->GetEntityForSyncId(bookmark3_entity_id),
                   bookmark_tracker()->GetEntityForSyncId(folder2_entity_id)));
@@ -395,8 +388,7 @@ TEST_F(BookmarkModelObserverImplTest,
   const SyncedBookmarkTracker::Entity* entity =
       bookmark_tracker()->GetEntityForBookmarkNode(folder_node);
   const std::string id = entity->metadata()->server_id();
-  ASSERT_THAT(
-      bookmark_tracker()->GetEntitiesWithLocalChanges(kMaxEntries).size(), 1U);
+  ASSERT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges().size(), 1U);
 
   bookmark_tracker()->MarkCommitMayHaveStarted(entity);
 
@@ -410,8 +402,7 @@ TEST_F(BookmarkModelObserverImplTest,
                                                /*acked_sequence_number=*/1);
 
   // There should still be one local change (the deletion).
-  EXPECT_THAT(
-      bookmark_tracker()->GetEntitiesWithLocalChanges(kMaxEntries).size(), 1U);
+  EXPECT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges().size(), 1U);
 
   // Entity is still tracked.
   EXPECT_THAT(bookmark_tracker()->TrackedEntitiesCountForTest(), 4U);
@@ -437,8 +428,7 @@ TEST_F(BookmarkModelObserverImplTest,
                              ->GetEntityForBookmarkNode(folder_node)
                              ->metadata()
                              ->server_id();
-  ASSERT_THAT(
-      bookmark_tracker()->GetEntitiesWithLocalChanges(kMaxEntries).size(), 1U);
+  ASSERT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges().size(), 1U);
 
   // Remove the folder.
   bookmark_model()->Remove(folder_node);
@@ -637,8 +627,7 @@ TEST_F(BookmarkModelObserverImplTest, ShouldNotIssueCommitUponFaviconLoad) {
   ASSERT_TRUE(bookmark_client()->SimulateFaviconLoaded(
       kBookmarkUrl, kIconUrl, CreateTestImage(kColor)));
   SimulateCommitResponseForAllLocalChanges();
-  ASSERT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges(kMaxEntries),
-              IsEmpty());
+  ASSERT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges(), IsEmpty());
 
   const SyncedBookmarkTracker::Entity* entity =
       bookmark_tracker()->GetEntityForBookmarkNode(bookmark_node);
@@ -665,8 +654,7 @@ TEST_F(BookmarkModelObserverImplTest, ShouldNotIssueCommitUponFaviconLoad) {
   EXPECT_TRUE(entity->metadata()->has_bookmark_favicon_hash());
   EXPECT_THAT(entity->metadata()->bookmark_favicon_hash(),
               Eq(initial_favicon_hash));
-  EXPECT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges(kMaxEntries),
-              IsEmpty());
+  EXPECT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges(), IsEmpty());
 }
 
 TEST_F(BookmarkModelObserverImplTest, ShouldCommitLocalFaviconChange) {
@@ -683,8 +671,7 @@ TEST_F(BookmarkModelObserverImplTest, ShouldCommitLocalFaviconChange) {
   ASSERT_TRUE(bookmark_client()->SimulateFaviconLoaded(
       kBookmarkUrl, kInitialIconUrl, CreateTestImage(SK_ColorRED)));
   SimulateCommitResponseForAllLocalChanges();
-  ASSERT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges(kMaxEntries),
-              IsEmpty());
+  ASSERT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges(), IsEmpty());
 
   const SyncedBookmarkTracker::Entity* entity =
       bookmark_tracker()->GetEntityForBookmarkNode(bookmark_node);
@@ -708,7 +695,7 @@ TEST_F(BookmarkModelObserverImplTest, ShouldCommitLocalFaviconChange) {
   EXPECT_TRUE(entity->metadata()->has_bookmark_favicon_hash());
   EXPECT_THAT(entity->metadata()->bookmark_favicon_hash(),
               Ne(initial_favicon_hash));
-  EXPECT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges(kMaxEntries),
+  EXPECT_THAT(bookmark_tracker()->GetEntitiesWithLocalChanges(),
               ElementsAre(HasBookmarkNode(bookmark_node)));
 }
 
@@ -789,7 +776,7 @@ TEST_F(BookmarkModelObserverImplTest,
 
   // Check that the entity is a tombstone now.
   const std::vector<const SyncedBookmarkTracker::Entity*> local_changes =
-      bookmark_tracker()->GetEntitiesWithLocalChanges(/*max_entries=*/2);
+      bookmark_tracker()->GetEntitiesWithLocalChanges();
   ASSERT_THAT(local_changes, ElementsAre(folder_entity));
   ASSERT_TRUE(folder_entity->metadata()->is_deleted());
   ASSERT_EQ(

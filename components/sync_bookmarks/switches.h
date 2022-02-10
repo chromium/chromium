@@ -14,15 +14,6 @@ namespace switches {
 inline constexpr base::Feature kSyncReuploadBookmarks{
     "SyncReuploadBookmarks", base::FEATURE_ENABLED_BY_DEFAULT};
 
-inline constexpr base::Feature kSyncUseClientTagForBookmarkCommits{
-    "SyncUseClientTagForBookmarkCommits", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// TODO(crbug.com/1177798): remove this code after a quick verification that it
-// doesn't cause issues.
-inline constexpr base::Feature kSyncBookmarksEnforceLateMaxEntriesToCommit{
-    "SyncBookmarksEnforceLateMaxEntriesToCommit",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 }  // namespace switches
 
 #endif  // COMPONENTS_SYNC_BOOKMARKS_SWITCHES_H_

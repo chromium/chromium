@@ -217,8 +217,7 @@ class SyncedBookmarkTracker {
 
   std::vector<const Entity*> GetAllEntities() const;
 
-  std::vector<const Entity*> GetEntitiesWithLocalChanges(
-      size_t max_entries) const;
+  std::vector<const Entity*> GetEntitiesWithLocalChanges() const;
 
   // Updates the tracker after receiving the commit response. |sync_id| should
   // match the already tracked sync ID for |entity|, with the exception of the
@@ -278,10 +277,6 @@ class SyncedBookmarkTracker {
   // TODO(crbug.com/1232951): remove this code when most of bookmarks are
   // reuploaded.
   bool ReuploadBookmarksOnLoadIfNeeded();
-
-  // Returns whether bookmark commits sent to the server (most importantly
-  // creations) should populate client tags.
-  bool bookmark_client_tags_in_protocol_enabled() const;
 
   // Causes the tracker to remember that a remote sync update (initial or
   // incremental) was ignored because its parent was unknown (either because
