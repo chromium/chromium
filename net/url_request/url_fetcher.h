@@ -37,10 +37,6 @@ namespace url {
 class Origin;
 }
 
-namespace cloud_print {
-class CloudPrintURLFetcher;
-}
-
 namespace device {
 class UsbTestGadgetImpl;
 }
@@ -344,7 +340,6 @@ class NET_EXPORT URLFetcher {
  private:
   // This class is deprecated, and no new code should be using it. Construction
   // methods are private and pre-existing consumers are friended.
-  friend class cloud_print::CloudPrintURLFetcher;
   friend class device::UsbTestGadgetImpl;
   friend class remoting::GstaticJsonFetcher;
 
