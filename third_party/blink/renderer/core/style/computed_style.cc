@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/style/style_inherited_variables.h"
 #include "third_party/blink/renderer/core/style/style_non_inherited_variables.h"
 #include "third_party/blink/renderer/core/style/style_ray.h"
+#include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
@@ -2649,7 +2650,10 @@ bool ComputedStyle::ShouldApplyAnyContainment(const Element& element) const {
 
 bool ComputedStyle::IsContainerForContainerQueries(
     const Element& element) const {
-  return IsContainerForContainerQueries() && !element.ShouldForceLegacyLayout();
+  return IsContainerForContainerQueries() &&
+         !element.ShouldForceLegacyLayout() &&
+         (!element.IsSVGElement() ||
+          To<SVGElement>(element).IsOutermostSVGSVGElement());
 }
 
 STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kAuto,
