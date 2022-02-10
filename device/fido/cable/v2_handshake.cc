@@ -750,7 +750,7 @@ bool Crypter::Encrypt(std::vector<uint8_t>* message_to_encrypt) {
   DCHECK_EQ(nonce.size(), aes_key.NonceLength());
 
   base::span<const uint8_t> additional_data;
-  if (!new_construction_ || include_ad_in_new_construction_) {
+  if (!new_construction_) {
     additional_data = kAdditionalDataBytes;
   }
 
@@ -772,7 +772,7 @@ bool Crypter::Decrypt(base::span<const uint8_t> ciphertext,
   DCHECK_EQ(nonce.size(), aes_key.NonceLength());
 
   base::span<const uint8_t> additional_data;
-  if (!new_construction_ || include_ad_in_new_construction_) {
+  if (!new_construction_) {
     additional_data = kAdditionalDataBytes;
   }
 
@@ -782,33 +782,12 @@ bool Crypter::Decrypt(base::span<const uint8_t> ciphertext,
   if (!plaintext) {
     // We're transitioning to a different construction. If we failed to decrypt
     // the first message with the old one, try again with the new.
-    //
-    // This should be conditioned on `read_sequence_num_ == 0` but that doesn't
-    // pick up iOS 15.4 beta 1, which includes the AD bytes even with the new
-    // construction. Since nonce zero encodes the same in either endianness, the
-    // first message looks like the old construction.
-    // TODO: remove this after 15.4 beta 2 is released.
-    if (!new_construction_ /* TODO: && read_sequence_num_ == 0 */) {
+    if (!new_construction_ && read_sequence_num_ == 0) {
       new_construction_ = true;
-      new_construction_ = Decrypt(ciphertext, out_plaintext);
-      return new_construction_;
+      return Decrypt(ciphertext, out_plaintext);
     }
-
-    if (new_construction_ && !include_ad_in_new_construction_) {
-      // This is a workaround for iOS 15.4 beta 1, which includes the additional
-      // bytes even in the new construction.
-      // TODO: remove this after 15.4 beta 2 is released.
-      plaintext = aes_key.Open(ciphertext, nonce, kAdditionalDataBytes);
-      if (plaintext) {
-        include_ad_in_new_construction_ = true;
-      }
-    }
-
-    if (!plaintext) {
-      return false;
-    }
+    return false;
   }
-
   read_sequence_num_++;
 
   if (plaintext->empty()) {

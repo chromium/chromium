@@ -87,28 +87,14 @@ ReadCTAPMakeCredentialResponse(FidoTransportProtocol transport_used,
     return absl::nullopt;
 
   it = decoded_map.find(CBOR(0x03));
-  if (it == decoded_map.end()) {
+  if (it == decoded_map.end() || !it->second.is_map())
     return absl::nullopt;
-  }
-
-  cbor::Value attestation;
-  if (it->second.is_bytestring() && it->second.GetBytestring().size() == 1 &&
-      it->second.GetBytestring()[0] == 0xa0) {
-    // This is a workaround for iOS 15.4 beta 1, which encodes an empty CBOR map
-    // (0xa0) inside a bytestring.
-    // TODO: remove this after 15.4 beta 2 is released.
-    attestation = cbor::Value(cbor::Value::Type::MAP);
-  } else if (it->second.is_map()) {
-    attestation = it->second.Clone();
-  } else {
-    return absl::nullopt;
-  }
 
   AuthenticatorMakeCredentialResponse response(
       transport_used,
       AttestationObject(std::move(*authenticator_data),
                         std::make_unique<OpaqueAttestationStatement>(
-                            format, std::move(attestation))));
+                            format, it->second.Clone())));
 
   it = decoded_map.find(CBOR(0x04));
   if (it != decoded_map.end()) {
