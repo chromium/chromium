@@ -59,6 +59,7 @@ preprocess_if_expr("preprocess_src") {
     in_files += [
       "chromeos/cr_picture/cr_picture_types.js",
       "chromeos/cr_picture/png.js",
+      "chromeos/cr_picture/webcam_utils.js",
     ]
   }
 }

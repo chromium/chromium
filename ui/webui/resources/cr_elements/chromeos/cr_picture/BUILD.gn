@@ -10,7 +10,10 @@ assert(is_chromeos)
 
 js_type_check("closure_compile_module") {
   is_polymer3 = true
-  deps = [ ":png" ]
+  deps = [
+    ":png",
+    ":webcam_utils",
+  ]
 
   if (is_chromeos_ash) {
     deps += [
@@ -22,6 +25,9 @@ js_type_check("closure_compile_module") {
 }
 
 js_library("png") {
+}
+
+js_library("webcam_utils") {
 }
 
 if (is_chromeos_ash) {
@@ -37,7 +43,7 @@ if (is_chromeos_ash) {
   }
 
   js_library("cr_camera") {
-    deps = [ ":png" ]
+    deps = [ ":webcam_utils" ]
   }
 
   js_library("cr_picture_list") {

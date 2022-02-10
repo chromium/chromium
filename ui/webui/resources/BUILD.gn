@@ -338,6 +338,7 @@ ts_definitions("generate_definitions") {
     js_files += [
       "cr_elements/chromeos/cros_color_overrides.m.js",
       "cr_elements/chromeos/cr_picture/png.js",
+      "cr_elements/chromeos/cr_picture/webcam_utils.js",
       "js/cr/ui/store_client.js",
     ]
   }
