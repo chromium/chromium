@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "components/arc/common/intent_helper/arc_intent_helper_package.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/display.h"
@@ -76,9 +76,9 @@ void ArcAppInfoLinksPanel::LinkClicked() {
   gfx::NativeView native_view = GetWidget()->GetNativeView();
   const int64_t display_id =
       display::Screen::GetScreen()->GetDisplayNearestView(native_view).id();
-  if (arc::ShowPackageInfo(
-          arc::ArcIntentHelperBridge::kArcIntentHelperPackageName,
-          arc::mojom::ShowPackageInfoPage::MANAGE_LINKS, display_id)) {
+  if (arc::ShowPackageInfo(arc::kArcIntentHelperPackageName,
+                           arc::mojom::ShowPackageInfoPage::MANAGE_LINKS,
+                           display_id)) {
     Close();
   }
 }

@@ -20,6 +20,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "components/arc/common/intent_helper/arc_intent_helper_package.h"
 #include "components/arc/intent_helper/control_camera_app_delegate.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/open_url_delegate.h"
@@ -111,10 +112,6 @@ bool CanOpenWebAppForUrl(const GURL& url) {
 }
 
 }  // namespace
-
-// static
-const char ArcIntentHelperBridge::kArcIntentHelperPackageName[] =
-    "org.chromium.arc.intent_helper";
 
 // static
 ArcIntentHelperBridge* ArcIntentHelperBridge::GetForBrowserContext(
@@ -379,7 +376,7 @@ bool ArcIntentHelperBridge::ShouldChromeHandleUrl(const GURL& url) {
   for (auto& package_filters : intent_filters_) {
     // The intent helper package is used by ARC to send URLs to Chrome, so it
     // does not count as a candidate.
-    if (IsIntentHelperPackage(package_filters.first))
+    if (package_filters.first == kArcIntentHelperPackageName)
       continue;
     for (auto& filter : package_filters.second) {
       if (filter.Match(url))
@@ -458,18 +455,12 @@ void ArcIntentHelperBridge::SendNewCaptureBroadcast(bool is_video,
 }
 
 // static
-bool ArcIntentHelperBridge::IsIntentHelperPackage(
-    const std::string& package_name) {
-  return package_name == kArcIntentHelperPackageName;
-}
-
-// static
 std::vector<mojom::IntentHandlerInfoPtr>
 ArcIntentHelperBridge::FilterOutIntentHelper(
     std::vector<mojom::IntentHandlerInfoPtr> handlers) {
   std::vector<mojom::IntentHandlerInfoPtr> handlers_filtered;
   for (auto& handler : handlers) {
-    if (IsIntentHelperPackage(handler->package_name))
+    if (handler->package_name == kArcIntentHelperPackageName)
       continue;
     handlers_filtered.push_back(std::move(handler));
   }

@@ -19,6 +19,7 @@ static_library("common") {
   ]
 
   deps = [
+    ":arc_intent_helper_constants",
     "//base",
     "//build:chromeos_buildflags",
     "//components/google/core/common",
@@ -43,6 +44,10 @@ static_library("common") {
       "//chromeos/lacros",
     ]
   }
+}
+
+static_library("arc_intent_helper_constants") {
+  sources = [ "intent_helper/arc_intent_helper_package.h" ]
 }
 
 static_library("arc_test_support") {

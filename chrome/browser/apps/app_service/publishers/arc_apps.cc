@@ -48,6 +48,7 @@
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
+#include "components/arc/common/intent_helper/arc_intent_helper_package.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
@@ -321,8 +322,7 @@ void AddPreferredApp(const std::string& app_id,
   // If |app_info| doesn't exist, we are trying to set preferences for a
   // non-ARC app. Set the preferred app as the ARC intent helper package.
   const std::string& package_name =
-      app_info ? app_info->package_name
-               : arc::ArcIntentHelperBridge::kArcIntentHelperPackageName;
+      app_info ? app_info->package_name : arc::kArcIntentHelperPackageName;
 
   instance->AddPreferredApp(
       package_name,
@@ -1597,8 +1597,7 @@ AppPtr ArcApps::CreateApp(ArcAppListPrefs* prefs,
   auto* intent_helper_bridge =
       arc::ArcIntentHelperBridge::GetForBrowserContext(profile_);
   if (intent_helper_bridge &&
-      app_info.package_name !=
-          arc::ArcIntentHelperBridge::kArcIntentHelperPackageName) {
+      app_info.package_name != arc::kArcIntentHelperPackageName) {
     app->intent_filters = apps_util::CreateIntentFiltersFromArcBridge(
         app_info.package_name, intent_helper_bridge);
   }
@@ -1675,8 +1674,7 @@ apps::mojom::AppPtr ArcApps::Convert(ArcAppListPrefs* prefs,
   auto* intent_helper_bridge =
       arc::ArcIntentHelperBridge::GetForBrowserContext(profile_);
   if (intent_helper_bridge &&
-      app_info.package_name !=
-          arc::ArcIntentHelperBridge::kArcIntentHelperPackageName) {
+      app_info.package_name != arc::kArcIntentHelperPackageName) {
     UpdateAppIntentFilters(app_info.package_name, intent_helper_bridge,
                            &app->intent_filters);
   }

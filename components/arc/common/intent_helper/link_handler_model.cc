@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
+#include "components/arc/common/intent_helper/arc_intent_helper_package.h"
 #include "components/google/core/common/google_util.h"
 #include "url/url_util.h"
 
@@ -110,7 +111,7 @@ bool LinkHandlerModel::Init(content::BrowserContext* context, const GURL& url) {
 void LinkHandlerModel::OnUrlHandlerList(
     std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers) {
   for (auto& handler : handlers) {
-    if (handler.package_name == "org.chromium.arc.intent_helper")
+    if (handler.package_name == kArcIntentHelperPackageName)
       continue;
     handlers_.push_back(std::move(handler));
   }

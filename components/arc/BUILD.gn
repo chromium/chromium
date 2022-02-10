@@ -24,6 +24,7 @@ static_library("arc") {
     "//ash/components/arc",
     "//ash/public/cpp",
     "//components/arc/common",
+    "//components/arc/common:arc_intent_helper_constants",
     "//components/exo",
     "//components/google/core/common",
 
@@ -64,6 +65,7 @@ source_set("unit_tests") {
     "//ash/components/arc/mojom",
     "//ash/components/arc/session",
     "//base/test:test_support",
+    "//components/arc/common:arc_intent_helper_constants",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/aura:test_support",

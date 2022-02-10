@@ -55,7 +55,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/features.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "components/arc/common/intent_helper/arc_intent_helper_package.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -481,9 +481,9 @@ bool SetTouchMode(bool enable) {
   extras.SetBoolean("inTouchMode", enable);
   std::string extras_string;
   base::JSONWriter::Write(extras, &extras_string);
-  intent_helper_instance->SendBroadcast(
-      kSetInTouchModeIntent, ArcIntentHelperBridge::kArcIntentHelperPackageName,
-      kIntentHelperClassName, extras_string);
+  intent_helper_instance->SendBroadcast(kSetInTouchModeIntent,
+                                        kArcIntentHelperPackageName,
+                                        kIntentHelperClassName, extras_string);
 
   return true;
 }

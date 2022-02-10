@@ -348,6 +348,7 @@ source_set("chromeos") {
     "//components/app_restore",
     "//components/arc",
     "//components/arc/common",
+    "//components/arc/common:arc_intent_helper_constants",
     "//components/autofill/core/browser",
     "//components/browser_sync",
     "//components/captive_portal/core",

@@ -37,7 +37,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "components/arc/common/intent_helper/arc_intent_helper_package.h"
 #endif
 
 using AppInfo = apps::IntentPickerAppInfo;
@@ -52,13 +52,13 @@ using content::Referrer;
 // IntentPickerBubbleView on non-ChromeOS platforms, if needs to not filter any
 // packages.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-const char* kArcIntentHelperPackageName =
-    arc::ArcIntentHelperBridge::kArcIntentHelperPackageName;
-bool (*IsIntentHelperPackage)(const std::string&) =
-    arc::ArcIntentHelperBridge::IsIntentHelperPackage;
+const char* kArcIntentHelperPackageName = arc::kArcIntentHelperPackageName;
+bool IsIntentHelperPackage(const base::StringPiece package_name) {
+  return package_name == arc::kArcIntentHelperPackageName;
+}
 #else
-static const char kArcIntentHelperPackageName[] = "unused_intent_helper";
-bool IsIntentHelperPackage(const std::string& package_name) {
+constexpr char kArcIntentHelperPackageName[] = "unused_intent_helper";
+bool IsIntentHelperPackage(const base::StringPiece package_name) {
   return false;
 }
 #endif

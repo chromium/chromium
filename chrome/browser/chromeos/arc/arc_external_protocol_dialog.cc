@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
+#include "components/arc/common/intent_helper/arc_intent_helper_package.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "content/public/browser/browser_context.h"
@@ -52,9 +53,6 @@ constexpr char kPackageForOpeningArcImeSettingsPage[] =
     "org.chromium.arc.applauncher";
 constexpr char kActivityForOpeningArcImeSettingsPage[] =
     "org.chromium.arc.applauncher.InputMethodSettingsActivity";
-
-// A package name for the intent_helper apk.
-constexpr char kArcIntentHelperPackageName[] = "org.chromium.arc.intent_helper";
 
 // Size of device icons in DIPs.
 constexpr int kDeviceIconSize = 16;

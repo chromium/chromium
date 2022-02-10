@@ -14,6 +14,7 @@
 #include "chrome/browser/sharing/sharing_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/arc/common/intent_helper/arc_intent_helper_mojo_delegate.h"
+#include "components/arc/common/intent_helper/arc_intent_helper_package.h"
 #include "components/arc/common/test/fake_arc_icon_cache.h"
 #include "components/arc/common/test/fake_arc_intent_helper_mojo.h"
 #include "content/public/browser/render_process_host.h"
@@ -80,8 +81,6 @@ class ArcExternalProtocolDialogTestUtils : public BrowserWithTestWindowTest {
   std::unique_ptr<ArcIconCacheDelegate> arc_icon_cache_;
   std::unique_ptr<ArcIconCacheDelegateProvider> delegate_provider_;
 };
-
-const char* kChromePackageName = "org.chromium.arc.intent_helper";
 
 // Creates a dummy GurlAndActivityInfo object.
 GurlAndActivityInfo CreateEmptyGurlAndActivityInfo() {
@@ -306,7 +305,8 @@ TEST(ArcExternalProtocolDialogTest, TestGetActionWithGeoUrl) {
   const std::string activity_name("chrome_activity_name");
 
   std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
-  handlers.push_back(Create("Chrome", kChromePackageName, activity_name,
+  handlers.push_back(Create("Chrome", kArcIntentHelperPackageName,
+                            activity_name,
                             /*is_preferred=*/true,
                             /*fallback_url=*/GURL()));
 
@@ -318,15 +318,16 @@ TEST(ArcExternalProtocolDialogTest, TestGetActionWithGeoUrl) {
       GetActionForTesting(geo_url, handlers, no_selection,
                           &url_and_activity_name, &in_out_safe_to_bypass_ui));
   EXPECT_EQ(geo_url, url_and_activity_name.first);
-  EXPECT_EQ(kChromePackageName, url_and_activity_name.second.package_name);
+  EXPECT_EQ(kArcIntentHelperPackageName,
+            url_and_activity_name.second.package_name);
   EXPECT_EQ(activity_name, url_and_activity_name.second.activity_name);
   // Value will be corrected as in previous scenarios.
   EXPECT_TRUE(in_out_safe_to_bypass_ui);
 }
 
 // Tests that OPEN_URL_IN_CHROME is returned when a handler with a fallback http
-// URL and kChromePackageName is passed to GetAction, even if the handler is not
-// a preferred one.
+// URL and kArcIntentHelperPackageName is passed to GetAction, even if the
+// handler is not a preferred one.
 TEST(ArcExternalProtocolDialogTest, TestGetActionWithOneFallbackUrl) {
   const GURL intent_url_with_fallback(
       "intent://scan/#Intent;scheme=abc;package=com.google.abc;"
@@ -335,7 +336,8 @@ TEST(ArcExternalProtocolDialogTest, TestGetActionWithOneFallbackUrl) {
   const std::string activity_name("fake_activity_name");
 
   std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
-  handlers.push_back(Create("Chrome", kChromePackageName, activity_name,
+  handlers.push_back(Create("Chrome", kArcIntentHelperPackageName,
+                            activity_name,
                             /*is_preferred=*/false, fallback_url));
 
   const size_t no_selection = handlers.size();
@@ -348,7 +350,8 @@ TEST(ArcExternalProtocolDialogTest, TestGetActionWithOneFallbackUrl) {
       GetActionForTesting(intent_url_with_fallback, handlers, no_selection,
                           &url_and_activity_name, &in_out_safe_to_bypass_ui));
   EXPECT_EQ(fallback_url, url_and_activity_name.first);
-  EXPECT_EQ(kChromePackageName, url_and_activity_name.second.package_name);
+  EXPECT_EQ(kArcIntentHelperPackageName,
+            url_and_activity_name.second.package_name);
   EXPECT_EQ(activity_name, url_and_activity_name.second.activity_name);
   EXPECT_TRUE(in_out_safe_to_bypass_ui);
 
@@ -358,7 +361,8 @@ TEST(ArcExternalProtocolDialogTest, TestGetActionWithOneFallbackUrl) {
       GetActionForTesting(intent_url_with_fallback, handlers, no_selection,
                           &url_and_activity_name, &in_out_safe_to_bypass_ui));
   EXPECT_EQ(fallback_url, url_and_activity_name.first);
-  EXPECT_EQ(kChromePackageName, url_and_activity_name.second.package_name);
+  EXPECT_EQ(kArcIntentHelperPackageName,
+            url_and_activity_name.second.package_name);
   EXPECT_EQ(activity_name, url_and_activity_name.second.activity_name);
   EXPECT_TRUE(in_out_safe_to_bypass_ui);
 }
@@ -372,7 +376,8 @@ TEST(ArcExternalProtocolDialogTest, TestGetActionWithOnePreferredFallbackUrl) {
   const std::string activity_name("fake_activity_name");
 
   std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
-  handlers.push_back(Create("Chrome", kChromePackageName, activity_name,
+  handlers.push_back(Create("Chrome", kArcIntentHelperPackageName,
+                            activity_name,
                             /*is_preferred=*/true, fallback_url));
 
   const size_t no_selection = handlers.size();
@@ -386,7 +391,8 @@ TEST(ArcExternalProtocolDialogTest, TestGetActionWithOnePreferredFallbackUrl) {
       GetActionForTesting(intent_url_with_fallback, handlers, no_selection,
                           &url_and_activity_name, &in_out_safe_to_bypass_ui));
   EXPECT_EQ(fallback_url, url_and_activity_name.first);
-  EXPECT_EQ(kChromePackageName, url_and_activity_name.second.package_name);
+  EXPECT_EQ(kArcIntentHelperPackageName,
+            url_and_activity_name.second.package_name);
   EXPECT_EQ(activity_name, url_and_activity_name.second.activity_name);
   EXPECT_TRUE(in_out_safe_to_bypass_ui);
 
@@ -397,7 +403,8 @@ TEST(ArcExternalProtocolDialogTest, TestGetActionWithOnePreferredFallbackUrl) {
       GetActionForTesting(intent_url_with_fallback, handlers, no_selection,
                           &url_and_activity_name, &in_out_safe_to_bypass_ui));
   EXPECT_EQ(fallback_url, url_and_activity_name.first);
-  EXPECT_EQ(kChromePackageName, url_and_activity_name.second.package_name);
+  EXPECT_EQ(kArcIntentHelperPackageName,
+            url_and_activity_name.second.package_name);
   EXPECT_EQ(activity_name, url_and_activity_name.second.activity_name);
   EXPECT_TRUE(in_out_safe_to_bypass_ui);
 }
@@ -415,7 +422,7 @@ TEST(ArcExternalProtocolDialogTest, TestGetActionWithTwoFallbackUrls) {
   handlers.push_back(Create("Other browser", "com.other.browser",
                             /*activity_name=*/std::string(),
                             /*is_preferred=*/false, fallback_url));
-  handlers.push_back(Create("Chrome", kChromePackageName,
+  handlers.push_back(Create("Chrome", kArcIntentHelperPackageName,
                             /*activity_name=*/std::string(),
                             /*is_preferred=*/false, fallback_url));
 
@@ -443,7 +450,8 @@ TEST(ArcExternalProtocolDialogTest,
   handlers.push_back(Create("Other browser", "com.other.browser",
                             "fake_activity",
                             /*is_preferred=*/false, fallback_url));
-  handlers.push_back(Create("Chrome", kChromePackageName, chrome_activity,
+  handlers.push_back(Create("Chrome", kArcIntentHelperPackageName,
+                            chrome_activity,
                             /*is_preferred=*/true, fallback_url));
 
   const size_t no_selection = handlers.size();
@@ -454,7 +462,8 @@ TEST(ArcExternalProtocolDialogTest,
       GetActionForTesting(intent_url_with_fallback, handlers, no_selection,
                           &url_and_activity_name, &in_out_safe_to_bypass_ui));
   EXPECT_EQ(fallback_url, url_and_activity_name.first);
-  EXPECT_EQ(kChromePackageName, url_and_activity_name.second.package_name);
+  EXPECT_EQ(kArcIntentHelperPackageName,
+            url_and_activity_name.second.package_name);
   EXPECT_EQ(chrome_activity, url_and_activity_name.second.activity_name);
   // Remember that this flag gets fixed under the presence of a preferred app.
   EXPECT_TRUE(in_out_safe_to_bypass_ui);
@@ -475,7 +484,8 @@ TEST(ArcExternalProtocolDialogTest,
   std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("Other browser", package_name, other_activity_name,
                             /*is_preferred=*/true, fallback_url));
-  handlers.push_back(Create("Chrome", kChromePackageName, chrome_activity_name,
+  handlers.push_back(Create("Chrome", kArcIntentHelperPackageName,
+                            chrome_activity_name,
                             /*is_preferred=*/false, fallback_url));
 
   const size_t no_selection = handlers.size();
@@ -504,7 +514,8 @@ TEST(ArcExternalProtocolDialogTest,
   handlers.push_back(Create("Other browser", "com.other.browser",
                             /*activity_name=*/std::string(),
                             /*is_preferred=*/false, fallback_url));
-  handlers.push_back(Create("Chrome", kChromePackageName, chrome_activity_name,
+  handlers.push_back(Create("Chrome", kArcIntentHelperPackageName,
+                            chrome_activity_name,
                             /*is_preferred=*/false, fallback_url));
 
   constexpr size_t kSelection = 1;  // Chrome
@@ -515,7 +526,8 @@ TEST(ArcExternalProtocolDialogTest,
       GetActionForTesting(intent_url_with_fallback, handlers, kSelection,
                           &url_and_activity_name, &in_out_safe_to_bypass_ui));
   EXPECT_EQ(fallback_url, url_and_activity_name.first);
-  EXPECT_EQ(kChromePackageName, url_and_activity_name.second.package_name);
+  EXPECT_EQ(kArcIntentHelperPackageName,
+            url_and_activity_name.second.package_name);
   EXPECT_EQ(chrome_activity_name, url_and_activity_name.second.activity_name);
   EXPECT_FALSE(in_out_safe_to_bypass_ui);
 }
@@ -533,7 +545,8 @@ TEST(ArcExternalProtocolDialogTest,
   std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
   handlers.push_back(Create("Other browser", package_name, other_activity_name,
                             /*is_preferred=*/false, fallback_url));
-  handlers.push_back(Create("Chrome", kChromePackageName, "chrome_activity",
+  handlers.push_back(Create("Chrome", kArcIntentHelperPackageName,
+                            "chrome_activity",
                             /*is_preferred=*/false, fallback_url));
 
   constexpr size_t kSelection = 0;  // the other browser
@@ -767,7 +780,8 @@ TEST(ArcExternalProtocolDialogTest, TestGetActionWithGeoUrlAsFallback) {
   const std::string chrome_activity("chrome.activity");
 
   std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
-  handlers.push_back(Create("Chrome", kChromePackageName, chrome_activity,
+  handlers.push_back(Create("Chrome", kArcIntentHelperPackageName,
+                            chrome_activity,
                             /*is_preferred=*/true, geo_url));
 
   const size_t no_selection = handlers.size();
@@ -780,7 +794,8 @@ TEST(ArcExternalProtocolDialogTest, TestGetActionWithGeoUrlAsFallback) {
       GetActionForTesting(intent_url_with_fallback, handlers, no_selection,
                           &url_and_activity_name, &in_out_safe_to_bypass_ui));
   EXPECT_EQ(geo_url, url_and_activity_name.first);
-  EXPECT_EQ(kChromePackageName, url_and_activity_name.second.package_name);
+  EXPECT_EQ(kArcIntentHelperPackageName,
+            url_and_activity_name.second.package_name);
   EXPECT_EQ(chrome_activity, url_and_activity_name.second.activity_name);
   EXPECT_TRUE(in_out_safe_to_bypass_ui);
 }
@@ -823,9 +838,9 @@ TEST(ArcExternalProtocolDialogTest, TestGetUrlToNavigateOnDeactivateAppsOnly) {
 // contains Chrome, but it's not for http(s).
 TEST(ArcExternalProtocolDialogTest, TestGetUrlToNavigateOnDeactivateGeoUrl) {
   std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers;
-  handlers.push_back(
-      Create("Chrome", kChromePackageName, /*activity_name=*/std::string(),
-             /*is_preferred=*/false, GURL("geo:37.4220,-122.0840")));
+  handlers.push_back(Create(
+      "Chrome", kArcIntentHelperPackageName, /*activity_name=*/std::string(),
+      /*is_preferred=*/false, GURL("geo:37.4220,-122.0840")));
   EXPECT_EQ(GURL(), GetUrlToNavigateOnDeactivateForTesting(handlers));
 }
 
@@ -839,7 +854,7 @@ TEST(ArcExternalProtocolDialogTest,
   handlers.push_back(Create("A browser app", "browser.app.package",
                             /*activity_name=*/std::string(),
                             /*is_preferred=*/false, GURL("http://www1/")));
-  handlers.push_back(Create("Chrome", kChromePackageName,
+  handlers.push_back(Create("Chrome", kArcIntentHelperPackageName,
                             /*activity_name=*/std::string(),
                             /*is_preferred=*/false, GURL("http://www2/")));
   handlers.push_back(Create("Yet another browser app",
@@ -858,7 +873,7 @@ TEST(ArcExternalProtocolDialogTest,
   handlers.push_back(Create("A browser app", "browser.app.package",
                             /*activity_name=*/std::string(),
                             /*is_preferred=*/false, GURL("https://www1/")));
-  handlers.push_back(Create("Chrome", kChromePackageName,
+  handlers.push_back(Create("Chrome", kArcIntentHelperPackageName,
                             /*activity_name=*/std::string(),
                             /*is_preferred=*/false, GURL("https://www2/")));
   handlers.push_back(Create("Yet another browser app",
@@ -895,7 +910,7 @@ TEST(ArcExternalProtocolDialogTest, TestIsChromeAnAppCandidate) {
   handlers.push_back(
       Create("fake app 2", "fake.app.package2", /*activity_name=*/std::string(),
              /*is_preferred=*/false, GURL("https://www.bar.com")));
-  handlers.push_back(Create("Chrome", kChromePackageName,
+  handlers.push_back(Create("Chrome", kArcIntentHelperPackageName,
                             /*activity_name=*/std::string(),
                             /*is_preferred=*/false, GURL("https://www/")));
   EXPECT_TRUE(IsChromeAnAppCandidateForTesting(handlers));
@@ -904,7 +919,7 @@ TEST(ArcExternalProtocolDialogTest, TestIsChromeAnAppCandidate) {
   handlers2.push_back(
       Create("fake app 1", "fake.app.package", /*activity_name=*/std::string(),
              /*is_preferred=*/false, GURL("https://www.fo.com")));
-  handlers2.push_back(Create("Chrome", kChromePackageName,
+  handlers2.push_back(Create("Chrome", kArcIntentHelperPackageName,
                              /*activity_name=*/std::string(),
                              /*is_preferred=*/false, GURL("https://www/")));
   handlers2.push_back(
@@ -913,7 +928,7 @@ TEST(ArcExternalProtocolDialogTest, TestIsChromeAnAppCandidate) {
   EXPECT_TRUE(IsChromeAnAppCandidateForTesting(handlers2));
 
   std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers3;
-  handlers3.push_back(Create("Chrome", kChromePackageName,
+  handlers3.push_back(Create("Chrome", kArcIntentHelperPackageName,
                              /*activity_name=*/std::string(),
                              /*is_preferred=*/false, GURL("https://www/")));
   handlers3.push_back(

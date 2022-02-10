@@ -41,6 +41,7 @@
 #include "chromeos/network/network_state_handler_observer.h"
 #include "chromeos/network/onc/network_onc_utils.h"
 #include "chromeos/network/proxy/proxy_config_service_impl.h"
+#include "components/arc/common/intent_helper/arc_intent_helper_package.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/onc/onc_pref_names.h"
@@ -794,7 +795,7 @@ void ArcSettingsServiceImpl::SendSettingsBroadcast(
   DCHECK(write_success);
 
   instance->SendBroadcast(
-      action, ArcIntentHelperBridge::kArcIntentHelperPackageName,
+      action, kArcIntentHelperPackageName,
       ArcIntentHelperBridge::AppendStringToIntentHelperPackageName(
           "SettingsReceiver"),
       extras_json);

@@ -16,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "components/arc/common/intent_helper/arc_intent_helper_package.h"
 #include "components/arc/intent_helper/intent_constants.h"
 #include "components/arc/intent_helper/open_url_delegate.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
@@ -106,19 +107,6 @@ class ArcIntentHelperTest : public testing::Test {
   }
 };
 
-// Tests if IsIntentHelperPackage works as expected. Probably too trivial
-// to test but just in case.
-TEST_F(ArcIntentHelperTest, TestIsIntentHelperPackage) {
-  EXPECT_FALSE(ArcIntentHelperBridge::IsIntentHelperPackage(""));
-  EXPECT_FALSE(ArcIntentHelperBridge::IsIntentHelperPackage(
-      ArcIntentHelperBridge::kArcIntentHelperPackageName + std::string("a")));
-  EXPECT_FALSE(ArcIntentHelperBridge::IsIntentHelperPackage(
-      ArcIntentHelperBridge::kArcIntentHelperPackageName +
-      std::string("/.ArcIntentHelperActivity")));
-  EXPECT_TRUE(ArcIntentHelperBridge::IsIntentHelperPackage(
-      ArcIntentHelperBridge::kArcIntentHelperPackageName));
-}
-
 // Tests if FilterOutIntentHelper removes handlers as expected.
 TEST_F(ArcIntentHelperTest, TestFilterOutIntentHelper) {
   {
@@ -147,7 +135,7 @@ TEST_F(ArcIntentHelperTest, TestFilterOutIntentHelper) {
     std::vector<mojom::IntentHandlerInfoPtr> orig;
     orig.push_back(mojom::IntentHandlerInfo::New());
     orig[0]->name = "0";
-    orig[0]->package_name = ArcIntentHelperBridge::kArcIntentHelperPackageName;
+    orig[0]->package_name = kArcIntentHelperPackageName;
     orig.push_back(mojom::IntentHandlerInfo::New());
     orig[1]->name = "1";
     orig[1]->package_name = "package_name1";
@@ -164,13 +152,13 @@ TEST_F(ArcIntentHelperTest, TestFilterOutIntentHelper) {
     std::vector<mojom::IntentHandlerInfoPtr> orig;
     orig.push_back(mojom::IntentHandlerInfo::New());
     orig[0]->name = "0";
-    orig[0]->package_name = ArcIntentHelperBridge::kArcIntentHelperPackageName;
+    orig[0]->package_name = kArcIntentHelperPackageName;
     orig.push_back(mojom::IntentHandlerInfo::New());
     orig[1]->name = "1";
     orig[1]->package_name = "package_name1";
     orig.push_back(mojom::IntentHandlerInfo::New());
     orig[2]->name = "2";
-    orig[2]->package_name = ArcIntentHelperBridge::kArcIntentHelperPackageName;
+    orig[2]->package_name = kArcIntentHelperPackageName;
 
     // FilterOutIntentHelper should remove two elements.
     std::vector<mojom::IntentHandlerInfoPtr> filtered =
@@ -184,10 +172,10 @@ TEST_F(ArcIntentHelperTest, TestFilterOutIntentHelper) {
     std::vector<mojom::IntentHandlerInfoPtr> orig;
     orig.push_back(mojom::IntentHandlerInfo::New());
     orig[0]->name = "0";
-    orig[0]->package_name = ArcIntentHelperBridge::kArcIntentHelperPackageName;
+    orig[0]->package_name = kArcIntentHelperPackageName;
     orig.push_back(mojom::IntentHandlerInfo::New());
     orig[1]->name = "1";
-    orig[1]->package_name = ArcIntentHelperBridge::kArcIntentHelperPackageName;
+    orig[1]->package_name = kArcIntentHelperPackageName;
 
     // FilterOutIntentHelper should remove all elements.
     std::vector<mojom::IntentHandlerInfoPtr> filtered =
@@ -362,10 +350,10 @@ TEST_F(ArcIntentHelperTest, TestMultipleUpdate) {
 // suitable app candidates should still match if possible.
 TEST_F(ArcIntentHelperTest, TestIntentHelperAppIsNotAValidCandidate) {
   std::vector<IntentFilter> array;
-  array.emplace_back(GetIntentFilter(
-      "www.google.com", ArcIntentHelperBridge::kArcIntentHelperPackageName));
-  array.emplace_back(GetIntentFilter(
-      "www.android.com", ArcIntentHelperBridge::kArcIntentHelperPackageName));
+  array.emplace_back(
+      GetIntentFilter("www.google.com", kArcIntentHelperPackageName));
+  array.emplace_back(
+      GetIntentFilter("www.android.com", kArcIntentHelperPackageName));
   // Let the package name start with "z" to ensure the intent helper package
   // is not always the last package checked in the ShouldChromeHandleUrl
   // filter matching logic. This is to ensure this unit test tests the package
@@ -461,7 +449,7 @@ TEST_F(ArcIntentHelperTest, TestOnOpenAppWithIntent) {
 
 // Tests that AppendStringToIntentHelperPackageName works.
 TEST_F(ArcIntentHelperTest, TestAppendStringToIntentHelperPackageName) {
-  std::string package_name = ArcIntentHelperBridge::kArcIntentHelperPackageName;
+  std::string package_name = kArcIntentHelperPackageName;
   std::string fake_activity = "this_is_a_fake_activity";
   EXPECT_EQ(ArcIntentHelperBridge::AppendStringToIntentHelperPackageName(
                 fake_activity),

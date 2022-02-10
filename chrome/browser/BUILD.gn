@@ -4974,6 +4974,7 @@ static_library("browser") {
       "//components/app_restore",
       "//components/arc",
       "//components/arc/common",
+      "//components/arc/common:arc_intent_helper_constants",
       "//components/desks_storage",
       "//components/metrics/structured:neutrino_logging",
       "//components/metrics/structured:neutrino_logging_util",
@@ -5310,6 +5311,7 @@ static_library("browser") {
       "//chromeos/dbus/constants",
       "//chromeos/ui/wm",
       "//components/arc/common",
+      "//components/arc/common:arc_intent_helper_constants",
     ]
     allow_circular_includes_from += [ "//chrome/browser/policy:onc" ]
   }

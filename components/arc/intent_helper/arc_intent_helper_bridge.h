@@ -139,15 +139,10 @@ class ArcIntentHelperBridge : public KeyedService,
 
   void SendNewCaptureBroadcast(bool is_video, std::string file_path);
 
-  // Returns false if |package_name| is for the intent_helper apk.
-  static bool IsIntentHelperPackage(const std::string& package_name);
-
   // Filters out handlers that belong to the intent_helper apk and returns
   // a new array.
   static std::vector<mojom::IntentHandlerInfoPtr> FilterOutIntentHelper(
       std::vector<mojom::IntentHandlerInfoPtr> handlers);
-
-  static const char kArcIntentHelperPackageName[];
 
   const std::vector<IntentFilter>& GetIntentFilterForPackage(
       const std::string& package_name);
