@@ -150,9 +150,12 @@ void LayoutNGGrid::SetCachedPlacementData(
 }
 
 const NGGridLayoutData* LayoutNGGrid::GridLayoutData() const {
-  const auto* cached_layout_result = GetCachedLayoutResult();
-  return cached_layout_result ? cached_layout_result->GridLayoutData()
-                              : nullptr;
+  // Retrieve the layout data from the last fragment as it has the most
+  // up-to-date grid geometry.
+  const wtf_size_t fragment_count = PhysicalFragmentCount();
+  if (fragment_count == 0)
+    return nullptr;
+  return GetLayoutResult(fragment_count - 1)->GridLayoutData();
 }
 
 wtf_size_t LayoutNGGrid::AutoRepeatCountForDirection(
