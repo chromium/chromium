@@ -428,6 +428,8 @@ RemotingCompatibility RendererController::GetAudioCompatibility() const {
     case AudioCodec::kPCM_ALAW:
     case AudioCodec::kALAC:
     case AudioCodec::kAC3:
+    case AudioCodec::kDTS:
+    case AudioCodec::kDTSXP2:
       compatible =
           HasAudioCapability(RemotingSinkAudioCapability::CODEC_BASELINE_SET);
       break;
@@ -666,6 +668,8 @@ bool RendererController::IsAudioRemotePlaybackSupported() const {
     case AudioCodec::kPCM_ALAW:
     case AudioCodec::kALAC:
     case AudioCodec::kAC3:
+    case AudioCodec::kDTS:
+    case AudioCodec::kDTSXP2:
       return true;
     default:
       return false;

@@ -476,6 +476,8 @@ void AudioRendererImpl::OnDeviceInfoReceived(
       format = AudioParameters::AUDIO_BITSTREAM_AC3;
     } else if (codec == AudioCodec::kEAC3) {
       format = AudioParameters::AUDIO_BITSTREAM_EAC3;
+    } else if (codec == AudioCodec::kDTS) {
+      format = AudioParameters::AUDIO_BITSTREAM_DTS;
     } else {
       NOTREACHED();
     }

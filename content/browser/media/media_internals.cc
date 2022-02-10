@@ -111,9 +111,6 @@ std::string FormatToString(media::AudioParameters::Format format) {
     case media::AudioParameters::AUDIO_FAKE:
       return "fake";
   }
-
-  NOTREACHED();
-  return "unknown";
 }
 
 const char kAudioLogStatusKey[] = "status";

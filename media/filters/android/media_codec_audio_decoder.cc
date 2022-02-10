@@ -20,6 +20,8 @@
 #include "media/base/status.h"
 #include "media/base/timestamp_constants.h"
 #include "media/formats/ac3/ac3_util.h"
+#include "media/formats/dts/dts_util.h"
+#include "media/media_buildflags.h"
 
 namespace media {
 
@@ -77,6 +79,10 @@ void MediaCodecAudioDecoder::Initialize(const AudioDecoderConfig& config,
     sample_format_ = kSampleFormatEac3;
   else if (config.codec() == AudioCodec::kMpegHAudio)
     sample_format_ = kSampleFormatMpegHAudio;
+  else if (config.codec() == AudioCodec::kDTS)
+    sample_format_ = kSampleFormatDts;
+  else if (config.codec() == AudioCodec::kDTSXP2)
+    sample_format_ = kSampleFormatDtsxP2;
 
   if (state_ == STATE_ERROR) {
     DVLOG(1) << "Decoder is in error state.";
@@ -416,6 +422,10 @@ bool MediaCodecAudioDecoder::OnDecodedFrame(
     } else if (config_.codec() == AudioCodec::kEAC3) {
       frame_count = Ac3Util::ParseTotalEac3SampleCount(
           audio_buffer->channel_data()[0], out.size);
+    } else if (config_.codec() == AudioCodec::kDTS) {
+      frame_count = media::dts::ParseTotalSampleCount(
+          audio_buffer->channel_data()[0], out.size, AudioCodec::kDTS);
+      DVLOG(2) << ": DTS Frame Count = " << frame_count;
     } else {
       NOTREACHED() << "Unsupported passthrough format.";
     }

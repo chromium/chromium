@@ -80,19 +80,24 @@ void ParamTraits<AudioParameters::HardwareCapabilities>::Write(
     const param_type& p) {
   WriteParam(m, p.min_frames_per_buffer);
   WriteParam(m, p.max_frames_per_buffer);
+  WriteParam(m, p.bitstream_formats);
 }
 
 bool ParamTraits<AudioParameters::HardwareCapabilities>::Read(
     const base::Pickle* m,
     base::PickleIterator* iter,
     param_type* r) {
-  int max_frames_per_buffer, min_frames_per_buffer;
+  int bitstream_formats;
+  int max_frames_per_buffer;
+  int min_frames_per_buffer;
   if (!ReadParam(m, iter, &min_frames_per_buffer) ||
-      !ReadParam(m, iter, &max_frames_per_buffer)) {
+      !ReadParam(m, iter, &max_frames_per_buffer) ||
+      !ReadParam(m, iter, &bitstream_formats)) {
     return false;
   }
   r->min_frames_per_buffer = min_frames_per_buffer;
   r->max_frames_per_buffer = max_frames_per_buffer;
+  r->bitstream_formats = bitstream_formats;
   return true;
 }
 
