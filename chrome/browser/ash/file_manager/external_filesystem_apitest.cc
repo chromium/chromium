@@ -750,7 +750,8 @@ IN_PROC_BROWSER_TEST_F(LocalFileSystemExtensionApiTest,
       FLAGS_NONE)) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(LocalFileSystemExtensionApiTest, FileWatch) {
+// TODO(crbug.com/1296001): Test is flaky.
+IN_PROC_BROWSER_TEST_F(LocalFileSystemExtensionApiTest, DISABLED_FileWatch) {
   EXPECT_TRUE(RunFileSystemExtensionApiTest(
       "file_browser/file_watcher_test",
       FILE_PATH_LITERAL("manifest.json"),
