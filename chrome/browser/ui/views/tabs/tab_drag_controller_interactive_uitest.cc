@@ -1745,11 +1745,21 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   EXPECT_TRUE(IsWindowPositionManaged(
       new_browser->window()->GetNativeWindow()));
 
-  // The new window should be maximized.
-  MaximizedBrowserWindowWaiter(new_browser->window()).Wait();
-  EXPECT_TRUE(new_browser->window()->IsMaximized());
+  const bool kMaximizedStateRetainedOnTabDrag =
+#if BUILDFLAG(IS_WIN)
+      false;
+#else
+      true;
+#endif  // BUILDFLAG(IS_WIN)
+
+  if (kMaximizedStateRetainedOnTabDrag) {
+    // The new window should be maximized.
+    MaximizedBrowserWindowWaiter(new_browser->window()).Wait();
+  }
+  EXPECT_EQ(new_browser->window()->IsMaximized(),
+            kMaximizedStateRetainedOnTabDrag);
 }
-#endif
+#endif  // !BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
