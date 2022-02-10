@@ -9,6 +9,7 @@
 #include "chrome/browser/download/bubble/download_display_controller.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -18,10 +19,37 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/layout/layout_provider.h"
+
+namespace {
+
+constexpr int kProgressRingRadius = 7;
+
+// TODO(crbug.com/1282240): Move this helper function into ui/views/controls/
+// so it can be used by ring_progress_bar too.
+void DrawRing(gfx::Canvas* canvas,
+              const gfx::RectF& bounds,
+              SkColor color,
+              SkScalar sweep_angle) {
+  SkPath path;
+  path.addArc(gfx::RectFToSkRect(bounds), /*startAngle=*/-90,
+              /*sweepAngle=*/sweep_angle);
+
+  cc::PaintFlags flags;
+  flags.setStyle(cc::PaintFlags::Style::kStroke_Style);
+  flags.setAntiAlias(true);
+  flags.setColor(color);
+  flags.setStrokeWidth(1.7f);
+
+  canvas->DrawPath(std::move(path), std::move(flags));
+}
+
+}  // namespace
 
 DownloadToolbarButtonView::DownloadToolbarButtonView(BrowserView* browser_view)
     : ToolbarButton(
@@ -36,8 +64,8 @@ DownloadToolbarButtonView::DownloadToolbarButtonView(BrowserView* browser_view)
   Profile* profile = browser_->profile();
   content::DownloadManager* manager = profile->GetDownloadManager();
   // The display starts hidden and isn't shown until a download is initiated.
-  // TODO(anise): Use pref service to determine what the initial state
-  // should be.
+  // TODO(crbug.com/1282240): Use pref service to determine what the initial
+  // state should be.
   SetVisible(false);
   controller_ = std::make_unique<DownloadDisplayController>(this, manager);
   bubble_controller_ = std::make_unique<DownloadBubbleUIController>(manager);
@@ -46,6 +74,30 @@ DownloadToolbarButtonView::DownloadToolbarButtonView(BrowserView* browser_view)
 DownloadToolbarButtonView::~DownloadToolbarButtonView() {
   controller_.reset();
   bubble_controller_.reset();
+}
+
+void DownloadToolbarButtonView::PaintButtonContents(gfx::Canvas* canvas) {
+  DownloadDisplayController::ProgressInfo progress_info =
+      controller_->GetProgress();
+  // Do not show the progress ring when there is no in progress download.
+  if (progress_info.download_count == 0) {
+    return;
+  }
+
+  int x = width() / 2 - kProgressRingRadius;
+  int y = height() / 2 - kProgressRingRadius;
+  int diameter = 2 * kProgressRingRadius;
+  gfx::RectF ring_bounds(x, y, /*width=*/diameter, /*height=*/diameter);
+
+  // Draw the background ring that gets progressively filled.
+  DrawRing(
+      canvas, ring_bounds,
+      GetColorProvider()->GetColor(kColorDownloadToolbarButtonRingBackground),
+      /*sweep_angle=*/360);
+  // Draw the filled portion of the progress ring.
+  DrawRing(canvas, ring_bounds,
+           GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive),
+           /*sweep_angle=*/360 * progress_info.progress_percentage / 100.0);
 }
 
 void DownloadToolbarButtonView::Show() {
@@ -81,14 +133,17 @@ void DownloadToolbarButtonView::UpdateIcon() {
   if (!GetWidget())
     return;
 
+  // Schedule paint to update the progress ring.
+  SchedulePaint();
+
   const gfx::VectorIcon* new_icon;
-  SkColor icon_color;
+  SkColor icon_color =
+      GetColorProvider()->GetColor(kColorDownloadToolbarButtonActive);
   if (icon_state_ == download::DownloadIconState::kProgress) {
-    icon_color = GetColorProvider()->GetColor(ui::kColorThrobber);
     new_icon = &kDownloadInProgressIcon;
   } else {
-    icon_color = GetThemeProvider()->GetColor(
-        ThemeProperties::COLOR_TOOLBAR_VERTICAL_SEPARATOR);
+    // TODO(crbug.com/1282240): Change the color to inactive if the download was
+    // completed for more than 1 minute or the button was pressed.
     new_icon = &kDownloadToolbarButtonIcon;
   }
 
@@ -98,8 +153,6 @@ void DownloadToolbarButtonView::UpdateIcon() {
                     ui::ImageModel::FromVectorIcon(*new_icon, icon_color));
     }
   }
-
-  // TODO(anise): Add progress ring animation.
 }
 
 void DownloadToolbarButtonView::OnBubbleDelegateDeleted() {
