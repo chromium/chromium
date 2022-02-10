@@ -17,9 +17,11 @@
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_network_sender.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/send_result.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/test/attribution_simulator_input_parser.h"
@@ -95,6 +97,12 @@ class SentReportAccumulator : public AttributionNetworkSender {
     value.SetStringKey("report_url", report.ReportURL().spec());
     value.SetIntKey("report_time",
                     (base::Time::Now() - time_origin_).InSeconds());
+
+    base::DictionaryValue test_info;
+    test_info.SetBoolKey("randomized_trigger",
+                         report.source().attribution_logic() ==
+                             StoredSource::AttributionLogic::kFalsely);
+    value.SetKey("test_info", std::move(test_info));
 
     reports_.push_back(std::move(value));
 
