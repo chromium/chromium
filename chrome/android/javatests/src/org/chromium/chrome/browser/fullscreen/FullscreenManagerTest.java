@@ -145,12 +145,16 @@ public class FullscreenManagerTest {
             + "  <div style='width: 150vw'>wide</div>"
             + "  <script>"
             + "    load_promise = new Promise(r => {onload = r});"
-            + "    resize_promise = new Promise(r => {onresize = r});"
+            + "    resize_promise = null;"
             + "    reached_bottom = () => {"
             + "      return Math.abs("
             + "        (se => se.scrollHeight - (se.scrollTop + visualViewport.offsetTop +"
             + "          visualViewport.height))(document.scrollingElement)"
             + "      ) < 1;"
+            + "    };"
+            + "    start_listening_for_on_resize = () => {"
+            + "      resize_promise = new Promise(r => {onresize = r});"
+            + "      return true;"
             + "    };"
             + "  </script>"
             + "</body>"
@@ -433,15 +437,26 @@ public class FullscreenManagerTest {
         mActivityTestRule.startMainActivityWithURL(SCROLL_OFFSET_TEST_PAGE);
 
         ChromeActivity activity = mActivityTestRule.getActivity();
-        BrowserControlsManager browserControlsManager = activity.getBrowserControlsManager();
+        WebContents webContents = activity.getActivityTab().getWebContents();
 
+        // Browser startup generates resize events as part of compositor initialization. Depending
+        // on the relative timing of that initialization and the initial navigation, the test page
+        // may receive these onResize events. To ensure that the test page's onResize handler
+        // triggers only for the fling we initiate below, we tell the test page to start listening
+        // for onResize only now that browser startup has fully completed (note that
+        // startMainActivityWithURL() waits for full browser initialization before returning, and
+        // hence the renderer's processing of the earlier resize events will be ordered before its
+        // reception of the message sent below).
+        JavaScriptUtils.runJavascriptWithAsyncResult(
+                webContents, "domAutomationController.send(start_listening_for_on_resize());");
+
+        BrowserControlsManager browserControlsManager = activity.getBrowserControlsManager();
         CriteriaHelper.pollUiThread(
                 () -> { return browserControlsManager.getTopControlOffset() == 0f; });
 
         Point displaySize = new Point();
         activity.getWindowManager().getDefaultDisplay().getSize(displaySize);
 
-        WebContents webContents = activity.getActivityTab().getWebContents();
         FullscreenManagerTestUtils.waitForPageToBeScrollable(activity.getActivityTab());
 
         JavaScriptUtils.runJavascriptWithAsyncResult(
