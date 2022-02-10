@@ -42,11 +42,11 @@ void AccessibilityTreeFormatterAndroidExternal::RecursiveBuildTree(
   // TODO: It would be interesting to allow filtering here in the future.
   std::u16string str = android_node->GenerateAccessibilityNodeInfoString();
   if (str.empty()) {
-    dict->SetString(kStringKey, kErrorMessage);
+    dict->SetStringKey(kStringKey, kErrorMessage);
     return;
   }
 
-  dict->SetString(kStringKey, str);
+  dict->SetStringKey(kStringKey, str);
 
   base::ListValue children;
 

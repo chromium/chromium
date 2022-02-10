@@ -208,7 +208,7 @@ void AccessibilityTreeFormatterAuraLinux::RecursiveBuildTree(
     AtspiAccessible* child =
         atspi_accessible_get_child_at_index(node, i, &error);
     if (error) {
-      child_dict->SetString("error", "[Error retrieving child]");
+      child_dict->SetStringKey("error", "[Error retrieving child]");
       g_clear_error(&error);
       continue;
     }
@@ -499,19 +499,19 @@ void AccessibilityTreeFormatterAuraLinux::AddProperties(
       platform_node->GetDelegate());
   DCHECK(node);
 
-  dict->SetInteger("id", node->GetId());
+  dict->SetIntKey("id", node->GetId());
 
   AtkRole role = atk_object_get_role(atk_object);
   if (role != ATK_ROLE_UNKNOWN) {
-    dict->SetString("role", AtkRoleToString(role));
+    dict->SetStringKey("role", AtkRoleToString(role));
   }
 
   const gchar* name = atk_object_get_name(atk_object);
   if (name)
-    dict->SetString("name", std::string(name));
+    dict->SetStringKey("name", std::string(name));
   const gchar* description = atk_object_get_description(atk_object);
   if (description)
-    dict->SetString("description", std::string(description));
+    dict->SetStringKey("description", std::string(description));
 
   AtkStateSet* state_set = atk_object_ref_state_set(atk_object);
   auto states = std::make_unique<base::ListValue>();
@@ -536,8 +536,8 @@ void AccessibilityTreeFormatterAuraLinux::AddProperties(
   AtkAttributeSet* attributes = atk_object_get_attributes(atk_object);
   for (AtkAttributeSet* attr = attributes; attr; attr = attr->next) {
     AtkAttribute* attribute = static_cast<AtkAttribute*>(attr->data);
-    dict->SetString(std::string(kObjectAttributePrefix) + attribute->name,
-                    attribute->value);
+    dict->SetStringPath(std::string(kObjectAttributePrefix) + attribute->name,
+                        attribute->value);
   }
   atk_attribute_set_free(attributes);
 
@@ -556,20 +556,20 @@ void AccessibilityTreeFormatterAuraLinux::AddProperties(
   GError* error = nullptr;
   char* role_name = atspi_accessible_get_role_name(node, &error);
   if (!error)
-    dict->SetString("role", role_name);
+    dict->SetStringKey("role", role_name);
   g_clear_error(&error);
   free(role_name);
 
   char* name = atspi_accessible_get_name(node, &error);
   if (!error)
-    dict->SetString("name", name);
+    dict->SetStringKey("name", name);
   g_clear_error(&error);
   free(name);
 
   error = nullptr;
   char* description = atspi_accessible_get_description(node, &error);
   if (!error)
-    dict->SetString("description", description);
+    dict->SetStringKey("description", description);
   g_clear_error(&error);
   free(description);
 
@@ -582,7 +582,7 @@ void AccessibilityTreeFormatterAuraLinux::AddProperties(
 
     g_hash_table_iter_init(&i, attributes);
     while (g_hash_table_iter_next(&i, &key, &value)) {
-      dict->SetString(static_cast<char*>(key), static_cast<char*>(value));
+      dict->SetStringPath(static_cast<char*>(key), static_cast<char*>(value));
     }
   }
   g_clear_error(&error);
