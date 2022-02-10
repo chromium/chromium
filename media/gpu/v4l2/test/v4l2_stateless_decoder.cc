@@ -9,9 +9,11 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "media/base/video_types.h"
 #include "media/filters/ivf_parser.h"
 #include "media/gpu/v4l2/test/vp9_decoder.h"
@@ -25,6 +27,7 @@ constexpr char kUsageMsg[] =
     "           --video=<video path>\n"
     "           [--frames=<number of frames to decode>]\n"
     "           [--v=<log verbosity>]\n"
+    "           [--output_path_prefix=<output files path prefix>]\n"
     "           [--help]\n";
 
 constexpr char kHelpMsg[] =
@@ -37,6 +40,11 @@ constexpr char kHelpMsg[] =
     "    --frames=<int>\n"
     "        Optional. Number of frames to decode, defaults to all.\n"
     "        Override with a positive integer to decode at most that many.\n"
+    "    --output_path_prefix=<path>\n"
+    "        Optional. Prefix to the filepaths where raw YUV frames will be\n"
+    "        written. For example, setting <path> to \"test/test_\" would \n"
+    "        result in output files of the form \"test/test_000000.yuv\",\n"
+    "       \"test/test_000001.yuv\", etc.\n"
     "    --help\n"
     "        Display this help message and exit.\n";
 
@@ -102,6 +110,10 @@ int main(int argc, char** argv) {
     return EXIT_SUCCESS;
   }
 
+  const bool has_output_file = cmd->HasSwitch("output_path_prefix");
+  const std::string output_file_prefix =
+      cmd->GetSwitchValueASCII("output_path_prefix");
+
   const base::FilePath video_path = cmd->GetSwitchValuePath("video");
   if (video_path.empty())
     LOG(FATAL) << "No input video path provided to decode.\n" << kUsageMsg;
@@ -129,11 +141,28 @@ int main(int argc, char** argv) {
 
   for (int i = 0; i < n_frames || n_frames == 0; i++) {
     LOG(INFO) << "Frame " << i << "...";
-    const Vp9Decoder::Result res = dec->DecodeNextFrame(i);
+
+    std::vector<char> y_plane;
+    std::vector<char> u_plane;
+    std::vector<char> v_plane;
+    gfx::Size size;
+    Vp9Decoder::Result res =
+        dec->DecodeNextFrame(y_plane, u_plane, v_plane, size, i);
     if (res == Vp9Decoder::kEOStream) {
       LOG(INFO) << "End of stream.";
       break;
     }
+
+    if (!has_output_file)
+      continue;
+
+    base::FilePath filename(
+        base::StringPrintf("%s%.6d.yuv", output_file_prefix.c_str(), i));
+    base::File output_file(filename,
+                           base::File::FLAG_OPEN | base::File::FLAG_WRITE);
+    output_file.WriteAtCurrentPos(y_plane.data(), size.GetArea());
+    output_file.WriteAtCurrentPos(u_plane.data(), size.GetArea() / 4);
+    output_file.WriteAtCurrentPos(v_plane.data(), size.GetArea() / 4);
   }
 
   return EXIT_SUCCESS;

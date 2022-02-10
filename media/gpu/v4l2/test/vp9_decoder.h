@@ -41,8 +41,14 @@ class Vp9Decoder {
   // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/dev-stateless-decoder.html#initialization
   bool Initialize();
 
-  // Parses next frame from IVF stream and decodes the frame |frame_number|.
-  Vp9Decoder::Result DecodeNextFrame(const int frame_number);
+  // Parses next frame from IVF stream and decodes the frame. This method will
+  // place the Y, U, and V values into the respective vectors and update the
+  // size with the display area size of the decoded frame.
+  Vp9Decoder::Result DecodeNextFrame(std::vector<char>& y_plane,
+                                     std::vector<char>& u_plane,
+                                     std::vector<char>& v_plane,
+                                     gfx::Size& size,
+                                     const int frame_number);
 
  private:
   Vp9Decoder(std::unique_ptr<IvfParser> ivf_parser,
