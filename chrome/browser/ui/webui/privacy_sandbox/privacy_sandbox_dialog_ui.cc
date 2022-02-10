@@ -82,7 +82,7 @@ void PrivacySandboxDialogUI::Initialize(
 
   auto handler = std::make_unique<PrivacySandboxDialogHandler>(
       std::move(close_callback), std::move(resize_callback),
-      std::move(open_settings_callback));
+      std::move(open_settings_callback), dialog_type);
   web_ui()->AddMessageHandler(std::move(handler));
 }
 

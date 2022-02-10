@@ -17,7 +17,7 @@ export enum PrivacySandboxDialogAction {
   CONSENT_DECLINED = 7,
   CONSENT_MORE_INFO_OPENED = 8,
   CONSENT_MORE_INFO_CLOSED = 9,
-  CONSENT_CLOSED_NO_INTERACTION = 10,
+  CONSENT_CLOSED_NO_DECISION = 10,
 }
 
 export class PrivacySandboxDialogBrowserProxy {

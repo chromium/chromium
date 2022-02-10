@@ -73,10 +73,11 @@ class PrivacySandboxService : public KeyedService,
     kConsentMoreInfoOpened = 8,
     kConsentMoreInfoClosed = 9,
 
-    // As above, but for the consent.
-    kConsentClosedNoInteraction = 10,
+    // Implies that the browser, or browser window, was shut before the user
+    // has made the decision (accepted or declined the consent).
+    kConsentClosedNoDecision = 10,
 
-    kMaxValue = kConsentClosedNoInteraction,
+    kMaxValue = kConsentClosedNoDecision,
   };
 
   PrivacySandboxService(PrivacySandboxSettings* privacy_sandbox_settings,
@@ -101,7 +102,8 @@ class PrivacySandboxService : public KeyedService,
   // calls to GetRequiredDialogType() are correct. This is expected to be
   // called appropriately by all locations showing the dialog. Metrics shared
   // between platforms will also be recorded.
-  void DialogActionOccurred(DialogAction action);
+  // This method is virtual for mocking in tests.
+  virtual void DialogActionOccurred(DialogAction action);
 
   // Returns a description of FLoC ready for display to the user. Correctly
   // takes into account the FLoC feature parameters when determining the number
@@ -230,6 +232,9 @@ class PrivacySandboxService : public KeyedService,
                            MetricsLoggingOccursCorrectly);
   FRIEND_TEST_ALL_PREFIXES(PrivacySandboxServiceTestNonRegularProfile,
                            NoMetricsRecorded);
+
+  // Should be used only for tests when mocking the service.
+  PrivacySandboxService();
 
   // Contains all possible privacy sandbox states, recorded on startup.
   // These values are persisted to logs. Entries should not be renumbered and
