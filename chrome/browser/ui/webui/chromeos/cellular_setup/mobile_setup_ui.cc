@@ -313,16 +313,17 @@ void MobileSetupUIHTMLSource::StartDataRequest(
   NET_LOG(EVENT) << "Starting mobile setup: " << NetworkId(network);
   base::DictionaryValue strings;
 
-  strings.SetString(
+  strings.SetStringKey(
       "view_account_error_title",
       l10n_util::GetStringUTF16(IDS_MOBILE_VIEW_ACCOUNT_ERROR_TITLE));
-  strings.SetString(
+  strings.SetStringKey(
       "view_account_error_message",
       l10n_util::GetStringUTF16(IDS_MOBILE_VIEW_ACCOUNT_ERROR_MESSAGE));
-  strings.SetString("title", l10n_util::GetStringUTF16(IDS_MOBILE_SETUP_TITLE));
-  strings.SetString("close_button", l10n_util::GetStringUTF16(IDS_CLOSE));
-  strings.SetString("cancel_button", l10n_util::GetStringUTF16(IDS_CANCEL));
-  strings.SetString("ok_button", l10n_util::GetStringUTF16(IDS_OK));
+  strings.SetStringKey("title",
+                       l10n_util::GetStringUTF16(IDS_MOBILE_SETUP_TITLE));
+  strings.SetStringKey("close_button", l10n_util::GetStringUTF16(IDS_CLOSE));
+  strings.SetStringKey("cancel_button", l10n_util::GetStringUTF16(IDS_CANCEL));
+  strings.SetStringKey("ok_button", l10n_util::GetStringUTF16(IDS_OK));
 
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &strings);

@@ -184,10 +184,10 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
                                      chromeos::system::GetTimezoneList()));
 
   // If we are not logged in, we need to show the time zone dropdown.
-  values.SetBoolean("showTimezone", SetTimeDialog::ShouldShowTimezone());
+  values.SetBoolKey("showTimezone", SetTimeDialog::ShouldShowTimezone());
   std::string current_timezone_id;
   CrosSettings::Get()->GetString(kSystemTimezone, &current_timezone_id);
-  values.SetString("currentTimezoneId", current_timezone_id);
+  values.SetStringKey("currentTimezoneId", current_timezone_id);
   values.SetDoubleKey("buildTime", base::GetBuildTime().ToJsTime());
 
   source->AddLocalizedStrings(values);

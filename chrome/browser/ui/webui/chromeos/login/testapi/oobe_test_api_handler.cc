@@ -42,17 +42,17 @@ void OobeTestAPIHandler::Initialize() {}
 
 void OobeTestAPIHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
   login::NetworkStateHelper helper_;
-  dict->SetBoolean("testapi_shouldSkipNetworkFirstShow",
+  dict->SetBoolKey("testapi_shouldSkipNetworkFirstShow",
                    features::IsOobeNetworkScreenSkipEnabled() &&
                        helper_.IsConnectedToEthernet());
-  dict->SetBoolean(
+  dict->SetBoolKey(
       "testapi_shouldSkipEula",
       policy::EnrollmentRequisitionManager::IsRemoraRequisition() ||
           StartupUtils::IsEulaAccepted() ||
           features::IsOobeConsolidatedConsentEnabled() ||
           !BUILDFLAG(GOOGLE_CHROME_BRANDING));
 
-  dict->SetBoolean("testapi_shouldSkipGuestTos",
+  dict->SetBoolKey("testapi_shouldSkipGuestTos",
                    StartupUtils::IsEulaAccepted() ||
                        !features::IsOobeConsolidatedConsentEnabled() ||
                        !BUILDFLAG(GOOGLE_CHROME_BRANDING));

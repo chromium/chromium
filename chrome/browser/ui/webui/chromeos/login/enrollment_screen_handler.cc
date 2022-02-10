@@ -1061,21 +1061,22 @@ void EnrollmentScreenHandler::DoShowWithPartition(
 
   base::DictionaryValue screen_data;
 
-  screen_data.SetString("webviewPartitionName", partition_name);
+  screen_data.SetStringKey("webviewPartitionName", partition_name);
   signin_partition_name_ = partition_name;
 
-  screen_data.SetString("gaiaUrl", GaiaUrls::GetInstance()->gaia_url().spec());
-  screen_data.SetString("clientId",
-                        GaiaUrls::GetInstance()->oauth2_chrome_client_id());
-  screen_data.SetString("enrollment_mode",
-                        EnrollmentModeToUIMode(config_.mode));
-  screen_data.SetBoolean("is_enrollment_enforced", config_.is_forced());
-  screen_data.SetBoolean("attestationBased", config_.is_mode_attestation());
-  screen_data.SetString("management_domain", config_.management_domain);
-  screen_data.SetString("flow", GetFlowString(flow_type_));
+  screen_data.SetStringKey("gaiaUrl",
+                           GaiaUrls::GetInstance()->gaia_url().spec());
+  screen_data.SetStringKey("clientId",
+                           GaiaUrls::GetInstance()->oauth2_chrome_client_id());
+  screen_data.SetStringKey("enrollment_mode",
+                           EnrollmentModeToUIMode(config_.mode));
+  screen_data.SetBoolKey("is_enrollment_enforced", config_.is_forced());
+  screen_data.SetBoolKey("attestationBased", config_.is_mode_attestation());
+  screen_data.SetStringKey("management_domain", config_.management_domain);
+  screen_data.SetStringKey("flow", GetFlowString(flow_type_));
   const std::string app_locale = g_browser_process->GetApplicationLocale();
   if (!app_locale.empty())
-    screen_data.SetString("hl", app_locale);
+    screen_data.SetStringKey("hl", app_locale);
 
   ShowScreenWithData(EnrollmentScreenView::kScreenId, &screen_data);
   if (first_show_) {

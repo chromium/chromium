@@ -176,15 +176,15 @@ void DeviceEmulatorMessageHandler::PowerObserver::PowerChanged(
     const power_manager::PowerSupplyProperties& proto) {
   base::DictionaryValue power_properties;
 
-  power_properties.SetInteger("battery_percent", proto.battery_percent());
-  power_properties.SetInteger("battery_state", proto.battery_state());
-  power_properties.SetInteger("external_power", proto.external_power());
-  power_properties.SetInteger("battery_time_to_empty_sec",
-                              proto.battery_time_to_empty_sec());
-  power_properties.SetInteger("battery_time_to_full_sec",
-                              proto.battery_time_to_full_sec());
-  power_properties.SetString("external_power_source_id",
-                             proto.external_power_source_id());
+  power_properties.SetIntKey("battery_percent", proto.battery_percent());
+  power_properties.SetIntKey("battery_state", proto.battery_state());
+  power_properties.SetIntKey("external_power", proto.external_power());
+  power_properties.SetIntKey("battery_time_to_empty_sec",
+                             proto.battery_time_to_empty_sec());
+  power_properties.SetIntKey("battery_time_to_full_sec",
+                             proto.battery_time_to_full_sec());
+  power_properties.SetStringKey("external_power_source_id",
+                                proto.external_power_source_id());
 
   owner_->FireWebUIListener("power-properties-updated", power_properties);
 }

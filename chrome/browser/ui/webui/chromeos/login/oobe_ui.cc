@@ -733,20 +733,20 @@ void OobeUI::GetLocalizedStrings(base::DictionaryValue* localized_strings) {
     handler->GetLocalizedStrings(localized_strings);
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, localized_strings);
-  localized_strings->SetString("app_locale", app_locale);
+  localized_strings->SetStringKey("app_locale", app_locale);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  localized_strings->SetString("buildType", "chrome");
+  localized_strings->SetStringKey("buildType", "chrome");
 #else
-  localized_strings->SetString("buildType", "chromium");
+  localized_strings->SetStringKey("buildType", "chromium");
 #endif
 
   bool keyboard_driven_oobe =
       system::InputDeviceSettings::Get()->ForceKeyboardDrivenUINavigation();
-  localized_strings->SetString("highlightStrength",
-                               keyboard_driven_oobe ? "strong" : "normal");
+  localized_strings->SetStringKey("highlightStrength",
+                                  keyboard_driven_oobe ? "strong" : "normal");
 
-  localized_strings->SetBoolean(
+  localized_strings->SetBoolKey(
       "changePictureVideoModeEnabled",
       base::FeatureList::IsEnabled(::features::kChangePictureVideoMode));
 }

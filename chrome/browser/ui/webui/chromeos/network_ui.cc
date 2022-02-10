@@ -406,164 +406,164 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
 
 // static
 void NetworkUI::GetLocalizedStrings(base::DictionaryValue* localized_strings) {
-  localized_strings->SetString("titleText",
-                               l10n_util::GetStringUTF16(IDS_NETWORK_UI_TITLE));
+  localized_strings->SetStringKey(
+      "titleText", l10n_util::GetStringUTF16(IDS_NETWORK_UI_TITLE));
 
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "generalTab", l10n_util::GetStringUTF16(IDS_NETWORK_UI_TAB_GENERAL));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkHealthTab",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_TAB_NETWORK_HEALTH));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsTab",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_TAB_NETWORK_LOGS));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkStateTab",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_TAB_NETWORK_STATE));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkSelectTab",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_TAB_NETWORK_SELECT));
 
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "autoRefreshText",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_AUTO_REFRESH));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "deviceLogLinkText", l10n_util::GetStringUTF16(IDS_DEVICE_LOG_LINK_TEXT));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkRefreshText", l10n_util::GetStringUTF16(IDS_NETWORK_UI_REFRESH));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "clickToExpandText", l10n_util::GetStringUTF16(IDS_NETWORK_UI_EXPAND));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "propertyFormatText",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_PROPERTY_FORMAT));
 
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "normalFormatOption",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_FORMAT_NORMAL));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "managedFormatOption",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_FORMAT_MANAGED));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "stateFormatOption",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_FORMAT_STATE));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "shillFormatOption",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_FORMAT_SHILL));
 
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "dhcpHostnameLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_DHCP_HOSTNAME));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "globalPolicyLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_GLOBAL_POLICY));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkListsLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LISTS));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkHealthLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_HEALTH));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkDiagnosticsLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_DIAGNOSTICS));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "visibleNetworksLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_VISIBLE_NETWORKS));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "favoriteNetworksLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_FAVORITE_NETWORKS));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "ethernetEapNetworkLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_ETHERNET_EAP));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "devicesLabel", l10n_util::GetStringUTF16(IDS_NETWORK_UI_DEVICES));
 
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "cellularActivationLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NO_CELLULAR_ACTIVATION_LABEL));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "cellularActivationButtonText",
       l10n_util::GetStringUTF16(
           IDS_NETWORK_UI_OPEN_CELLULAR_ACTIVATION_BUTTON_TEXT));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "noCellularErrorText",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NO_CELLULAR_ERROR_TEXT));
 
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "resetESimCacheLabel",
       l10n_util::GetStringUTF16(
           IDS_NETWORK_UI_RESET_ESIM_PROFILES_BUTTON_TEXT));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "resetESimCacheButtonText",
       l10n_util::GetStringUTF16(
           IDS_NETWORK_UI_RESET_ESIM_PROFILES_BUTTON_TEXT));
 
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "disableESimProfilesLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_DISABLE_ESIM_PROFILES_LABEL));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "disableActiveESimProfileButtonText",
       l10n_util::GetStringUTF16(
           IDS_NETWORK_UI_DISABLE_ACTIVE_ESIM_PROFILE_BUTTON_TEXT));
 
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "addNewWifiLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_ADD_NEW_WIFI_LABEL));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "addNewWifiButtonText",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_ADD_NEW_WIFI_BUTTON_TEXT));
 
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "importOncButtonText",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_IMPORT_ONC_BUTTON_TEXT));
 
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "addWiFiListItemName",
       l10n_util::GetStringUTF16(IDS_NETWORK_ADD_WI_FI_LIST_ITEM_NAME));
 
   // Network logs
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsDescription",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_DESCRIPTION));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsSystemLogs",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_SYSTEM_LOGS));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsFilterPii",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_FILTER_PII));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsPolicies",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_POLICIES));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsDebugLogs",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_DEBUG_LOGS));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsChromeLogs",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_CHROME_LOGS));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsStoreButton",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_STORE_BUTTON));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsStatus",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_STATUS));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsDebuggingTitle",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_DEBUGGING_TITLE));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsDebuggingDescription",
       l10n_util::GetStringUTF16(
           IDS_NETWORK_UI_NETWORK_LOGS_DEBUGGING_DESCRIPTION));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsDebuggingNone",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_DEBUGGING_NONE));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsDebuggingUnknown",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_DEBUGGING_UNKNOWN));
 
   // Network Diagnostics
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "NetworkDiagnosticsRunAll",
       l10n_util::GetStringUTF16(IDS_NETWORK_DIAGNOSTICS_RUN_ALL));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "NetworkDiagnosticsSendFeedback",
       l10n_util::GetStringUTF16(IDS_NETWORK_DIAGNOSTICS_SEND_FEEDBACK));
 }

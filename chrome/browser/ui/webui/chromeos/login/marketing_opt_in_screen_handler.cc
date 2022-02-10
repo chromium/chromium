@@ -81,9 +81,9 @@ void MarketingOptInScreenHandler::Show(bool opt_in_visible,
                                        bool opt_in_default_state,
                                        bool legal_footer_visible) {
   base::DictionaryValue data;
-  data.SetBoolean(kOptInVisibility, opt_in_visible);
-  data.SetBoolean(kOptInDefaultState, opt_in_default_state);
-  data.SetBoolean(kLegalFooterVisibility, legal_footer_visible);
+  data.SetBoolKey(kOptInVisibility, opt_in_visible);
+  data.SetBoolKey(kOptInDefaultState, opt_in_default_state);
+  data.SetBoolKey(kLegalFooterVisibility, legal_footer_visible);
 
   ShowScreenWithData(kScreenId, &data);
 }

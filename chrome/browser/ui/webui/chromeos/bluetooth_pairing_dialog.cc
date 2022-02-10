@@ -93,7 +93,7 @@ BluetoothPairingDialog::BluetoothPairingDialog(
                               /*title=*/std::u16string()),
       dialog_id_(dialog_id) {
   if (canonical_device_address.has_value()) {
-    device_data_.SetString("address", canonical_device_address.value());
+    device_data_.SetStringKey("address", canonical_device_address.value());
   } else {
     CHECK(ash::features::IsBluetoothRevampEnabled());
   }

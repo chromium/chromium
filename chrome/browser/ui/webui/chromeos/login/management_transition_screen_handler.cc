@@ -117,9 +117,9 @@ void ManagementTransitionScreenHandler::Show() {
   ash::LoginScreen::Get()->SetIsFirstSigninStep(false);
 
   base::DictionaryValue data;
-  data.SetInteger("arcTransition",
-                  static_cast<int>(arc::GetManagementTransition(profile)));
-  data.SetString(
+  data.SetIntKey("arcTransition",
+                 static_cast<int>(arc::GetManagementTransition(profile)));
+  data.SetStringKey(
       "managementEntity",
       chrome::GetAccountManagerIdentity(profile).value_or(std::string()));
   ShowScreenWithData(kScreenId, &data);

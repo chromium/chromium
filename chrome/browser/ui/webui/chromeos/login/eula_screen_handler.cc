@@ -117,9 +117,9 @@ void EulaScreenHandler::DeclareLocalizedValues(
 
 void EulaScreenHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
 #if BUILDFLAG(ENABLE_RLZ)
-  dict->SetString("rlzEnabled", "enabled");
+  dict->SetStringKey("rlzEnabled", "enabled");
 #else
-  dict->SetString("rlzEnabled", "disabled");
+  dict->SetStringKey("rlzEnabled", "disabled");
 #endif
 }
 

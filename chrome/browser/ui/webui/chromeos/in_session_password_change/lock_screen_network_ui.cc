@@ -39,16 +39,16 @@ namespace chromeos {
 // static
 void LockScreenNetworkUI::GetLocalizedStrings(
     base::DictionaryValue* localized_strings) {
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "titleText", l10n_util::GetStringUTF16(IDS_LOCK_SCREEN_NETWORK_TITLE));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "lockScreenNetworkTitle",
       l10n_util::GetStringUTF16(IDS_LOCK_SCREEN_NETWORK_TITLE));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "lockScreenNetworkSubtitle",
       l10n_util::GetStringFUTF16(IDS_LOCK_SCREEN_NETWORK_SUBTITLE,
                                  ui::GetChromeOSDeviceName()));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "lockScreenCancelButton",
       l10n_util::GetStringUTF16(IDS_LOCK_SCREEN_CANCEL_BUTTON));
 }

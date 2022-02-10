@@ -58,10 +58,10 @@ std::unique_ptr<base::DictionaryValue> CreateInputMethodsEntry(
   const std::string& ime_id = method.id();
   std::unique_ptr<base::DictionaryValue> input_method(
       new base::DictionaryValue);
-  input_method->SetString("value", ime_id);
-  input_method->SetString(
-      "title", util->GetInputMethodLongNameStripped(method));
-  input_method->SetBoolean("selected", ime_id == selected);
+  input_method->SetStringKey("value", ime_id);
+  input_method->SetStringKey("title",
+                             util->GetInputMethodLongNameStripped(method));
+  input_method->SetBoolKey("selected", ime_id == selected);
   return input_method;
 }
 
@@ -74,7 +74,7 @@ bool InsertString(const std::string& str, std::set<std::string>* to) {
 
 void AddOptgroupOtherLayouts(base::ListValue* input_methods_list) {
   std::unique_ptr<base::DictionaryValue> optgroup(new base::DictionaryValue);
-  optgroup->SetString(
+  optgroup->SetStringKey(
       "optionGroupName",
       l10n_util::GetStringUTF16(IDS_OOBE_OTHER_KEYBOARD_LAYOUTS));
   input_methods_list->Append(std::move(optgroup));
@@ -94,10 +94,10 @@ std::unique_ptr<base::DictionaryValue> CreateLanguageEntry(
   const std::string directionality = has_rtl_chars ? "rtl" : "ltr";
 
   auto dictionary = std::make_unique<base::DictionaryValue>();
-  dictionary->SetString("code", language_code);
-  dictionary->SetString("displayName", language_display_name);
-  dictionary->SetString("textDirection", directionality);
-  dictionary->SetString("nativeDisplayName", language_native_display_name);
+  dictionary->SetStringKey("code", language_code);
+  dictionary->SetStringKey("displayName", language_display_name);
+  dictionary->SetStringKey("textDirection", directionality);
+  dictionary->SetStringKey("nativeDisplayName", language_native_display_name);
   return dictionary;
 }
 
@@ -270,7 +270,7 @@ std::unique_ptr<base::ListValue> GetLanguageList(
     if (insert_divider && display_name == divider16) {
       // Insert divider.
       auto dictionary = std::make_unique<base::DictionaryValue>();
-      dictionary->SetString("code", kMostRelevantLanguagesDivider);
+      dictionary->SetStringKey("code", kMostRelevantLanguagesDivider);
       language_list->Append(std::move(dictionary));
       continue;
     }

@@ -194,9 +194,10 @@ void AssistantOptInFlowScreenHandler::RegisterMessages() {
 
 void AssistantOptInFlowScreenHandler::GetAdditionalParameters(
     base::DictionaryValue* dict) {
-  dict->SetBoolean("voiceMatchDisabled",
+  dict->SetBoolKey("voiceMatchDisabled",
                    chromeos::assistant::features::IsVoiceMatchDisabled());
-  dict->SetString("assistantLocale", g_browser_process->GetApplicationLocale());
+  dict->SetStringKey("assistantLocale",
+                     g_browser_process->GetApplicationLocale());
   BaseScreenHandler::GetAdditionalParameters(dict);
 }
 

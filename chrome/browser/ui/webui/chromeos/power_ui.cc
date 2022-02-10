@@ -171,11 +171,11 @@ void PowerMessageHandler::OnGetProcessUsageData(const base::ListValue* args) {
   for (const auto& process_info : process_list) {
     std::unique_ptr<base::DictionaryValue> element =
         std::make_unique<base::DictionaryValue>();
-    element->SetInteger("pid", process_info.process_data.pid);
-    element->SetString("name", process_info.process_data.name);
-    element->SetString("cmdline", process_info.process_data.cmdline);
-    element->SetInteger("type",
-                        static_cast<int>(process_info.process_data.type));
+    element->SetIntKey("pid", process_info.process_data.pid);
+    element->SetStringKey("name", process_info.process_data.name);
+    element->SetStringKey("cmdline", process_info.process_data.cmdline);
+    element->SetIntKey("type",
+                       static_cast<int>(process_info.process_data.type));
     element->SetDoubleKey("powerUsageFraction",
                           process_info.power_usage_fraction);
     js_process_usages.Append(std::move(element));

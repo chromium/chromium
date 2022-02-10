@@ -121,17 +121,17 @@ std::pair<base::ListValue, base::DictionaryValue> GetGCacheContents(
     const base::Time last_modified = info.GetLastModifiedTime();
 
     auto entry = std::make_unique<base::DictionaryValue>();
-    entry->SetString("path", current.value());
+    entry->SetStringKey("path", current.value());
     // Use double instead of integer for large files.
     entry->SetDoubleKey("size", size);
-    entry->SetBoolean("is_directory", is_directory);
-    entry->SetBoolean("is_symbolic_link", is_symbolic_link);
-    entry->SetString(
+    entry->SetBoolKey("is_directory", is_directory);
+    entry->SetBoolKey("is_symbolic_link", is_symbolic_link);
+    entry->SetStringKey(
         "last_modified",
         google_apis::util::FormatTimeAsStringLocaltime(last_modified));
     // Print lower 9 bits in octal format.
-    entry->SetString("permission",
-                     base::StringPrintf("%03o", info.stat().st_mode & 0x1ff));
+    entry->SetStringKey(
+        "permission", base::StringPrintf("%03o", info.stat().st_mode & 0x1ff));
     files[current] = std::move(entry);
 
     total_size += size;
@@ -407,11 +407,11 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler {
     }
 
     base::DictionaryValue connection_status;
-    connection_status.SetString("status", status);
+    connection_status.SetStringKey("status", status);
     drive::DriveNotificationManager* drive_notification_manager =
         drive::DriveNotificationManagerFactory::FindForBrowserContext(
             profile());
-    connection_status.SetBoolean(
+    connection_status.SetBoolKey(
         "push-notification-enabled",
         drive_notification_manager
             ? drive_notification_manager->push_notification_enabled()

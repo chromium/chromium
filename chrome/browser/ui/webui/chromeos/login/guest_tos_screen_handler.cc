@@ -58,8 +58,8 @@ void GuestTosScreenHandler::Show(const std::string& google_eula_url,
   }
 
   base::DictionaryValue data;
-  data.SetString("googleEulaUrl", google_eula_url);
-  data.SetString("crosEulaUrl", cros_eula_url);
+  data.SetStringKey("googleEulaUrl", google_eula_url);
+  data.SetStringKey("crosEulaUrl", cros_eula_url);
   ShowScreenWithData(kScreenId, &data);
 }
 

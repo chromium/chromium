@@ -108,13 +108,13 @@ TEST_F(L10nUtilTest, GetUILanguageList) {
 TEST_F(L10nUtilTest, FindMostRelevantLocale) {
   base::ListValue available_locales;
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
-  dict->SetString("value", "de");
+  dict->SetStringKey("value", "de");
   available_locales.Append(std::move(dict));
   dict = std::make_unique<base::DictionaryValue>();
-  dict->SetString("value", "fr");
+  dict->SetStringKey("value", "fr");
   available_locales.Append(std::move(dict));
   dict = std::make_unique<base::DictionaryValue>();
-  dict->SetString("value", "en-GB");
+  dict->SetStringKey("value", "en-GB");
   available_locales.Append(std::move(dict));
 
   std::vector<std::string> most_relevant_language_codes;

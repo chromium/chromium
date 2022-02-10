@@ -68,13 +68,13 @@ void KioskAutolaunchScreenHandler::UpdateKioskApp() {
   }
 
   base::DictionaryValue app_info;
-  app_info.SetString("appName", app.name);
+  app_info.SetStringKey("appName", app.name);
 
   std::string icon_url("chrome://theme/IDR_APP_DEFAULT_ICON");
   if (!app.icon.isNull())
     icon_url = webui::GetBitmapDataUrl(*app.icon.bitmap());
 
-  app_info.SetString("appIconUrl", icon_url);
+  app_info.SetStringKey("appIconUrl", icon_url);
   CallJS("login.AutolaunchScreen.updateApp", app_info);
 }
 

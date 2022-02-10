@@ -185,25 +185,25 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
     net::CookieAccessResult result) {
   base::DictionaryValue params;
 
-  params.SetString("webviewPartitionName", partition_name);
+  params.SetStringKey("webviewPartitionName", partition_name);
   signin_partition_name_ = partition_name;
 
-  params.SetString("gaiaUrl", GaiaUrls::GetInstance()->gaia_url().spec());
-  params.SetString("clientId",
-                   GaiaUrls::GetInstance()->oauth2_chrome_client_id());
-  params.SetBoolean("dontResizeNonEmbeddedPages", false);
-  params.SetBoolean("enableGaiaActionButtons", false);
+  params.SetStringKey("gaiaUrl", GaiaUrls::GetInstance()->gaia_url().spec());
+  params.SetStringKey("clientId",
+                      GaiaUrls::GetInstance()->oauth2_chrome_client_id());
+  params.SetBoolKey("dontResizeNonEmbeddedPages", false);
+  params.SetBoolKey("enableGaiaActionButtons", false);
 
   std::string hosted_domain = GetHostedDomain(context.gaia_id);
 
   if (hosted_domain.empty()) {
     LOG(ERROR) << "Couldn't get hosted_domain from account info.";
-    params.SetBoolean("doSamlRedirect", force_saml_redirect_for_testing_);
+    params.SetBoolKey("doSamlRedirect", force_saml_redirect_for_testing_);
   } else {
-    params.SetString(
+    params.SetStringKey(
         "enterpriseEnrollmentDomain",
         force_saml_redirect_for_testing_ ? kIdpTestingDomain : hosted_domain);
-    params.SetBoolean("doSamlRedirect",
+    params.SetBoolKey("doSamlRedirect",
                       force_saml_redirect_for_testing_
                           ? true
                           : ShouldDoSamlRedirect(context.email));
@@ -211,13 +211,13 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
 
   const std::string app_locale = g_browser_process->GetApplicationLocale();
   DCHECK(!app_locale.empty());
-  params.SetString("hl", app_locale);
-  params.SetString("email", context.email);
-  params.SetString("gaiaId", context.gaia_id);
-  params.SetBoolean("extractSamlPasswordAttributes",
+  params.SetStringKey("hl", app_locale);
+  params.SetStringKey("email", context.email);
+  params.SetStringKey("gaiaId", context.gaia_id);
+  params.SetBoolKey("extractSamlPasswordAttributes",
                     login::ExtractSamlPasswordAttributesEnabled());
-  params.SetString("clientVersion", version_info::GetVersionNumber());
-  params.SetBoolean("readOnlyEmail", true);
+  params.SetStringKey("clientVersion", version_info::GetVersionNumber());
+  params.SetBoolKey("readOnlyEmail", true);
 
   CallJavascript("loadAuthenticator", params);
   if (features::IsNewLockScreenReauthLayoutEnabled()) {
