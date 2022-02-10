@@ -39,8 +39,10 @@ class CORE_EXPORT UnderlyingSourceBase
 
   ScriptValue type(ScriptState*) const;
 
-  // ExecutionContextLifecycleObserver
-  // TODO(ricea): Is this still useful?
+  // ExecutionContextLifecycleObserver implementation:
+
+  // This is needed to prevent stream operations being performed after the
+  // window or worker is destroyed.
   void ContextDestroyed() override;
 
  protected:

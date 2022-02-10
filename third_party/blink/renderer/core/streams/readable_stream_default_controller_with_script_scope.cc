@@ -25,7 +25,7 @@ ReadableStreamDefaultControllerWithScriptScope::
   DCHECK(controller_);
 }
 
-void ReadableStreamDefaultControllerWithScriptScope::NoteHasBeenCanceled() {
+void ReadableStreamDefaultControllerWithScriptScope::Deactivate() {
   controller_ = nullptr;
 }
 
