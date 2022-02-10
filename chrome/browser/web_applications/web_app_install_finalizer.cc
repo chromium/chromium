@@ -252,7 +252,8 @@ void WebAppInstallFinalizer::UninstallExternalWebApp(
              webapps::WebappUninstallSource::kSystemPreinstalled ||
          webapp_uninstall_source ==
              webapps::WebappUninstallSource::kPlaceholderReplacement ||
-         webapp_uninstall_source == webapps::WebappUninstallSource::kArc);
+         webapp_uninstall_source == webapps::WebappUninstallSource::kArc ||
+         webapp_uninstall_source == webapps::WebappUninstallSource::kSubApp);
 
   Source::Type source =
       InferSourceFromWebAppUninstallSource(webapp_uninstall_source);
@@ -535,6 +536,9 @@ void WebAppInstallFinalizer::OnMaybeRegisterOsUninstall(
   ScopedRegistryUpdate update(sync_bridge_);
   WebApp* app_to_update = update->UpdateApp(app_id);
   app_to_update->RemoveSource(source);
+  if (source == Source::kSubApp) {
+    app_to_update->SetParentAppId(absl::nullopt);
+  }
   if (install_source_removed_callback_for_testing_)
     install_source_removed_callback_for_testing_.Run(app_id);
 

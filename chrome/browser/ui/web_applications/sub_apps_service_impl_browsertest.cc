@@ -279,4 +279,51 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   EXPECT_FALSE(provider().registrar().IsInstalled(sub_app_id_3));
 }
 
+// Verify that uninstalling an app that has a sub-app with more than one
+// install source only removes the "sub-app" install source for that sub-app
+// but does not uninstall it.
+IN_PROC_BROWSER_TEST_F(
+    SubAppsServiceImplBrowserTest,
+    StandaloneAppStaysInstalledAfterUpgradedParentUninstall) {
+  // Install app as standalone app.
+  AppId standalone_app_id = InstallPWA(GetURL(kSubAppPath2));
+
+  InstallParentApp();
+  NavigateToParentApp();
+  BindRemote();
+
+  // Add normal subapp to verify standalone app install/uninstall does
+  // not affect normal sub app uninstalls.
+  EXPECT_EQ(SubAppsServiceResult::kSuccess, CallAdd(kSubAppPath));
+  AppId sub_app_id =
+      GenerateAppId(/*manifest_id=*/absl::nullopt, GetURL(kSubAppPath));
+  EXPECT_TRUE(provider().registrar().IsInstalled(sub_app_id));
+
+  // Add standalone app as sub-app.
+  EXPECT_EQ(SubAppsServiceResult::kSuccess, CallAdd(kSubAppPath2));
+
+  // Verify that it is now installed and registered as a subapp.
+  const WebApp* standalone_app =
+      provider().registrar().GetAppById(standalone_app_id);
+  EXPECT_EQ(parent_app_id_, standalone_app->parent_app_id());
+  EXPECT_FALSE(standalone_app->HasOnlySource(Source::kSync));
+  EXPECT_TRUE(standalone_app->IsSubAppInstalledApp());
+
+  UninstallParentApp();
+
+  // Verify that normal sub-app is uninstalled.
+  EXPECT_FALSE(provider().registrar().IsInstalled(sub_app_id));
+
+  // Verify that previous standalone is still installed.
+  EXPECT_TRUE(provider().registrar().IsInstalled(standalone_app_id));
+
+  // Verify that there are no apps registered as parent app's sub apps.
+  EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
+
+  EXPECT_EQ(absl::nullopt, standalone_app->parent_app_id());
+
+  // Verify that the standalone app no longer has the sub-app install source.
+  EXPECT_TRUE(standalone_app->HasOnlySource(Source::kSync));
+}
+
 }  // namespace web_app
