@@ -28,23 +28,42 @@ constexpr int kBackgroundCornerRadius = 18;
 
 constexpr gfx::Insets kViewInsets{2};
 
+// If `projector_mode` is false, Creates and initializes the toggle button that
+// is used for switching to image capture as a child of the given
+// `capture_mode_type_view` and returns a pointer to it.
+// `on_image_toggle_method` is a pointer to a member function inside
+// `CaptureModeTypeView` which will be triggered when the image toggle button is
+// pressed. Returns nullptr if `projector_mode` is true.
+CaptureModeToggleButton* MaybeCreateImageToggleButton(
+    CaptureModeTypeView* capture_mode_type_view,
+    void (CaptureModeTypeView::*on_image_toggle_method)(),
+    bool projector_mode) {
+  if (projector_mode)
+    return nullptr;
+
+  CaptureModeToggleButton* image_toggle_button =
+      capture_mode_type_view->AddChildView(
+          std::make_unique<CaptureModeToggleButton>(
+              base::BindRepeating(on_image_toggle_method,
+                                  base::Unretained(capture_mode_type_view)),
+              kCaptureModeImageIcon));
+  image_toggle_button->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_TOOLTIP_SCREENSHOT));
+  return image_toggle_button;
+}
+
 }  // namespace
 
 CaptureModeTypeView::CaptureModeTypeView(bool projector_mode)
-    : video_toggle_button_(
+    : image_toggle_button_(
+          MaybeCreateImageToggleButton(this,
+                                       &CaptureModeTypeView::OnImageToggle,
+                                       projector_mode)),
+      video_toggle_button_(
           AddChildView(std::make_unique<CaptureModeToggleButton>(
               base::BindRepeating(&CaptureModeTypeView::OnVideoToggle,
                                   base::Unretained(this)),
               kCaptureModeVideoIcon))) {
-  if (!projector_mode) {
-    image_toggle_button_ =
-        AddChildView(std::make_unique<CaptureModeToggleButton>(
-            base::BindRepeating(&CaptureModeTypeView::OnImageToggle,
-                                base::Unretained(this)),
-            kCaptureModeImageIcon));
-    image_toggle_button_->SetTooltipText(
-        l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_TOOLTIP_SCREENSHOT));
-  }
   auto* color_provider = AshColorProvider::Get();
   const SkColor bg_color = color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
