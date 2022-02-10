@@ -58,9 +58,17 @@ export function createTestProxy(addResult, castResult, castCallback) {
 suite('AccessCodeCastAppTest', () => {
   /** @type {!AccessCodeCastElement} */
   let app;
+  let mockProxy;
 
   setup(async () => {
     PolymerTest.clearBody();
+
+    mockProxy = createTestProxy(
+      AddSinkResultCode.OK,
+      RouteRequestResultCode.OK,
+      () => {}
+    );
+    BrowserProxy.setInstance(mockProxy);
 
     app = document.createElement('access-code-cast-app');
     document.body.appendChild(app);

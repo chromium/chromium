@@ -9,6 +9,7 @@ suite('BrowserProxyTest', () => {
 
   setup(() => {
     PolymerTest.clearBody();
+    BrowserProxy.setInstance(new BrowserProxy(true));
     proxy = BrowserProxy.getInstance();
   });
 

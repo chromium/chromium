@@ -17,9 +17,12 @@ export class BrowserProxy {
   callbackRouter: PageCallbackRouter;
   handler: PageHandlerRemote;
 
-  constructor() {
-    this.callbackRouter = new PageCallbackRouter();
+  constructor(omitHandler?: boolean) {
+    if (omitHandler) {
+      return;
+    }
 
+    this.callbackRouter = new PageCallbackRouter();
     this.handler = new PageHandlerRemote();
 
     const factory = PageHandlerFactory.getRemote();
