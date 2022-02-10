@@ -80,7 +80,7 @@ bool ChromePrintRenderFrameHelperDelegate::OverridePrint(
     // PDF plugin document correctly print the PDF. See
     // https://crbug.com/448720.
     base::DictionaryValue message;
-    message.SetString("type", "print");
+    message.SetStringKey("type", "print");
     post_message_support->PostMessageFromValue(message);
     return true;
   }

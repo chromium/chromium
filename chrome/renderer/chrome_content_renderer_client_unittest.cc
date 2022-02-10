@@ -102,14 +102,14 @@ scoped_refptr<const extensions::Extension> CreateTestExtension(
       extensions::Extension::NO_FLAGS;
 
   base::DictionaryValue manifest;
-  manifest.SetString("name", "NaCl Extension");
-  manifest.SetString("version", "1");
-  manifest.SetInteger("manifest_version", 2);
+  manifest.SetStringKey("name", "NaCl Extension");
+  manifest.SetStringKey("version", "1");
+  manifest.SetIntKey("manifest_version", 2);
   if (is_hosted_app) {
     base::ListValue url_list;
     url_list.Append(app_url);
     manifest.SetPath(extensions::manifest_keys::kWebURLs, std::move(url_list));
-    manifest.SetString(extensions::manifest_keys::kLaunchWebURL, app_url);
+    manifest.SetStringPath(extensions::manifest_keys::kLaunchWebURL, app_url);
   }
   std::string error;
   return extensions::Extension::Create(base::FilePath(), location, manifest,
