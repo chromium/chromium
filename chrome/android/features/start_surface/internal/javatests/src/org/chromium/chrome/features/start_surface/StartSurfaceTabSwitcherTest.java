@@ -306,6 +306,7 @@ public class StartSurfaceTabSwitcherTest {
     @Test
     @LargeTest
     @Feature({"StartSurface"})
+    @FlakyTest
     @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "/show_tabs_in_mru_order/true"})
     public void test_CarouselTabSwitcherShowTabsInMRUOrder() {
         if (!mImmediateReturn) {
