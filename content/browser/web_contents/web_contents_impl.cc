@@ -1466,15 +1466,12 @@ std::vector<FrameTree*> WebContentsImpl::GetOutermostFrameTrees() {
   result.push_back(&GetPrimaryFrameTree());
 
   if (blink::features::IsPrerender2Enabled()) {
-    // If the WebContentsImpl is being destroyed, then the PrerenderHostRegistry
-    // will be reset.  Returning early prevents a null pointer error.
-    if (IsBeingDestroyed())
-      return result;
     const std::vector<FrameTree*> prerender_frame_trees =
         GetPrerenderHostRegistry()->GetPrerenderFrameTrees();
     result.insert(result.end(), prerender_frame_trees.begin(),
                   prerender_frame_trees.end());
   }
+
   return result;
 }
 
