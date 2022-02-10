@@ -39,6 +39,8 @@ source_set("test") {
     "test_redirect_observer.h",
     "test_redirect_observer.mm",
     "test_web_thread.h",
+    "web_state_test_util.h",
+    "web_state_test_util.mm",
     "web_task_environment.h",
   ]
 }
@@ -67,8 +69,6 @@ source_set("test_fixture") {
   ]
 
   sources = [
-    "web_state_test_util.h",
-    "web_state_test_util.mm",
     "web_test.h",
     "web_test.mm",
     "web_test_suite.h",
