@@ -34,7 +34,7 @@ AXWebArea AXRoleDescription='HTML content'
 ++++++AXGroup AXRoleDescription='group' AXTitle='<newline>'
 ++++++AXRadioButton AXARIAPosInSet=1 AXARIASetSize=1 AXRoleDescription='radio button' AXTitle='blue' AXValue=0
 ++AXTable AXARIASetSize=100 AXRoleDescription='tree grid'
-++++AXRow AXRoleDescription='row'
+++++AXRow AXRoleDescription='row' AXTitle='content'
 ++++++AXCell AXRoleDescription='cell'
 ++++++++AXStaticText AXRoleDescription='text' AXValue='content'
 ++++AXColumn AXRoleDescription='column'

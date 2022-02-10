@@ -1469,8 +1469,6 @@ bool AXNode::SetRoleMatchesItemRole(const AXNode* ordered_set) const {
       return item_role == ax::mojom::Role::kTab;
     case ax::mojom::Role::kTree:
       return item_role == ax::mojom::Role::kTreeItem;
-    case ax::mojom::Role::kTreeGrid:
-      return item_role == ax::mojom::Role::kRow;
     case ax::mojom::Role::kListBox:
       return item_role == ax::mojom::Role::kListBoxOption;
     case ax::mojom::Role::kMenuListPopup:
