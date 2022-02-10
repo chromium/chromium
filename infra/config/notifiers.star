@@ -249,3 +249,11 @@ tree_closure_notifier(
         "thomasanderson@chromium.org",
     ],
 )
+
+luci.notifier(
+    name = "v8-sandbox-fyi-bots",
+    notify_emails = [
+        "saelo+fyi-bots@chromium.org",
+    ],
+    on_new_status = ["FAILURE"],
+)
