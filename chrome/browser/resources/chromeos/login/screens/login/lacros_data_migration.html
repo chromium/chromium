@@ -8,14 +8,17 @@
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-progress/paper-progress.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 
-<link rel="import" href="../../components/oobe_icons.html">
 <link rel="import" href="../../components/behaviors/login_screen_behavior.html">
-<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
 <link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
 <link rel="import" href="../../components/dialogs/oobe_loading_dialog.html">
+<link rel="import" href="../../components/oobe_icons.html">
 
 <dom-module id="lacros-data-migration-element">
   <template>
+    <style include="oobe-dialog-host-styles">
+    </style>
     <oobe-adaptive-dialog id="dialog" role="dialog">
       <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
       <h1 slot="title">[[i18nDynamic(locale, 'lacrosDataMigrationTitle')]]</h1>
@@ -35,8 +38,7 @@
             class="oobe-illustration" aria-hidden="true">
       </div>
       <!-- Cancel button -->
-      <div slot="bottom-buttons"
-          class="flex layout horizontal">
+      <div slot="bottom-buttons" class="flex layout horizontal end-justified">
         <oobe-text-button id="cancelButton"  hidden="[[!canCancel_]]"
             on-click="onCancelButtonClicked_"
             text-key="lacrosDataMigrationSkipButton">
