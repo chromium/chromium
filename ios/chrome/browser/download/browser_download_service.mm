@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/download/ar_quick_look_tab_helper.h"
 #include "ios/chrome/browser/download/download_manager_metric_names.h"
 #import "ios/chrome/browser/download/download_manager_tab_helper.h"
@@ -13,6 +14,8 @@
 #import "ios/chrome/browser/download/mobileconfig_tab_helper.h"
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/download/vcard_tab_helper.h"
+#import "ios/chrome/browser/prerender/prerender_service.h"
+#import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/ui/download/features.h"
 #import "ios/web/public/download/download_controller.h"
 #import "ios/web/public/download/download_task.h"
@@ -109,6 +112,15 @@ void BrowserDownloadService::OnDownloadCreated(
     web::DownloadController* download_controller,
     web::WebState* web_state,
     std::unique_ptr<web::DownloadTask> task) {
+  // When a prerendered page tries to download a file, cancel the download.
+  PrerenderService* prerender_service =
+      PrerenderServiceFactory::GetForBrowserState(
+          ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
+  if (prerender_service &&
+      prerender_service->IsWebStatePrerendered(web_state)) {
+    return;
+  }
+
   base::UmaHistogramEnumeration("Download.IOSDownloadMimeType",
                                 GetUmaResult(task->GetMimeType()));
   base::UmaHistogramEnumeration("Download.IOSDownloadFileUI",
