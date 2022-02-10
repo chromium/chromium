@@ -24,7 +24,6 @@ class UpdateClient;
 }  // namespace update_client
 
 namespace updater {
-class CheckForUpdatesTask;
 class Configurator;
 class PersistedData;
 struct RegistrationRequest;
@@ -59,8 +58,8 @@ class UpdateServiceImpl : public UpdateService {
   // Runs the task at the head of `tasks_`, if any.
   void TaskStart();
 
-  // Run `callback`, pops `tasks_`, and calls TaskStart.
-  void TaskDone(base::OnceClosure callback);
+  // Pops `tasks_`, and calls TaskStart.
+  void TaskDone();
 
   bool IsUpdateDisabledByPolicy(
       const std::string& app_id,
@@ -89,9 +88,8 @@ class UpdateServiceImpl : public UpdateService {
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   scoped_refptr<update_client::UpdateClient> update_client_;
 
-  // The queue prevents multiple Task instances from running simultaneously and
-  // processes them sequentially.
-  base::queue<scoped_refptr<CheckForUpdatesTask>> tasks_;
+  // The queue serializes periodic task execution.
+  base::queue<base::OnceClosure> tasks_;
 };
 
 }  // namespace updater

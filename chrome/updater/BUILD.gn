@@ -116,6 +116,8 @@ if (is_win || is_mac || is_linux) {
       "prefs_impl.h",
       "registration_data.cc",
       "registration_data.h",
+      "remove_uninstalled_apps_task.cc",
+      "remove_uninstalled_apps_task.h",
       "service_proxy_factory.h",
       "setup.h",
       "splash_screen.h",

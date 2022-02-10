@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -30,6 +31,7 @@
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/registration_data.h"
+#include "chrome/updater/remove_uninstalled_apps_task.h"
 #include "chrome/updater/update_block_check.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_version.h"
@@ -287,24 +289,37 @@ void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
     RegisterApp(updater_request, base::DoNothing());
   }
 
-  tasks_.push(base::MakeRefCounted<CheckForUpdatesTask>(
-      config_,
-      base::BindOnce(&UpdateServiceImpl::UpdateAll, this, base::DoNothing()),
-      base::BindOnce(&UpdateServiceImpl::TaskDone, this, std::move(callback))));
-  if (tasks_.size() == 1)
+  std::vector<base::OnceCallback<void(base::OnceClosure)>> new_tasks;
+  new_tasks.push_back(
+      base::BindOnce(&RemoveUninstalledAppsTask::Run,
+                     base::MakeRefCounted<RemoveUninstalledAppsTask>(config_)));
+  new_tasks.push_back(
+      base::BindOnce(&CheckForUpdatesTask::Run,
+                     base::MakeRefCounted<CheckForUpdatesTask>(
+                         config_, base::BindOnce(&UpdateServiceImpl::UpdateAll,
+                                                 this, base::DoNothing()))));
+  const auto barrier_closure =
+      base::BarrierClosure(new_tasks.size(), std::move(callback));
+  for (auto& task : new_tasks) {
+    tasks_.push(base::BindOnce(std::move(task),
+                               barrier_closure.Then(base::BindRepeating(
+                                   &UpdateServiceImpl::TaskDone, this))));
+  }
+
+  if (tasks_.size() == new_tasks.size()) {
     TaskStart();
+  }
 }
 
 void UpdateServiceImpl::TaskStart() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!tasks_.empty()) {
-    tasks_.front()->Run();
+    std::move(tasks_.front()).Run();
   }
 }
 
-void UpdateServiceImpl::TaskDone(base::OnceClosure callback) {
+void UpdateServiceImpl::TaskDone() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::move(callback).Run();
   tasks_.pop();
   TaskStart();
 }

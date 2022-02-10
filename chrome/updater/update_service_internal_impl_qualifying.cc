@@ -72,19 +72,16 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
     // Create a `CheckForUpdatesTask` with the local prefs' config and perform
     // an `Update` task for `kQualificationAppId`.
     DVLOG(2) << "RegistrationResponse: " << response.status_code;
-    scoped_refptr<CheckForUpdatesTask> qualification_task =
-        base::MakeRefCounted<CheckForUpdatesTask>(
-            config_,
-            base::BindOnce(&UpdateServiceImpl::Update,
-                           base::MakeRefCounted<UpdateServiceImpl>(config_),
-                           kQualificationAppId,
-                           UpdateService::Priority::kBackground,
-                           UpdateService::PolicySameVersionUpdate::kNotAllowed,
-                           base::DoNothing()),
-            base::BindOnce(
-                &UpdateServiceInternalQualifyingImpl::QualificationDone, this,
-                std::move(callback)));
-    qualification_task->Run();
+    base::MakeRefCounted<CheckForUpdatesTask>(
+        config_, base::BindOnce(
+                     &UpdateServiceImpl::Update,
+                     base::MakeRefCounted<UpdateServiceImpl>(config_),
+                     kQualificationAppId, UpdateService::Priority::kBackground,
+                     UpdateService::PolicySameVersionUpdate::kNotAllowed,
+                     base::DoNothing()))
+        ->Run(base::BindOnce(
+            &UpdateServiceInternalQualifyingImpl::QualificationDone, this,
+            std::move(callback)));
   }
 
   void QualificationDone(base::OnceClosure callback) {
