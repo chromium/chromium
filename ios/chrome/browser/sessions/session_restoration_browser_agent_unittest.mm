@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -26,6 +27,7 @@
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #include "ios/web/public/navigation/referrer.h"
+#import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #include "ios/web/public/test/web_task_environment.h"
@@ -39,6 +41,9 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using base::test::ios::kWaitForPageLoadTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 
@@ -112,7 +117,11 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
     for (int i = 0; i < sessions_count; i++) {
       CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
       session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-      session_storage.lastCommittedItemIndex = -1;
+      session_storage.lastCommittedItemIndex = 0;
+      CRWNavigationItemStorage* item_storage =
+          [[CRWNavigationItemStorage alloc] init];
+      item_storage.virtualURL = GURL("http://init.test");
+      session_storage.itemStorages = @[ item_storage ];
       [sessions addObject:session_storage];
     }
     return [[SessionWindowIOS alloc] initWithSessions:sessions
@@ -135,7 +144,12 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
 
     std::unique_ptr<web::WebState> web_state =
         web::WebState::Create(create_params);
+    web_state->GetView();
     web_state->GetNavigationManager()->LoadURLWithParams(load_params);
+    web::WebState* web_state_ptr = web_state.get();
+    DCHECK(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+      return !web_state_ptr->IsLoading();
+    }));
 
     int insertion_flags = WebStateList::INSERT_FORCE_INDEX;
     if (!background)
@@ -154,6 +168,24 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
   WebUsageEnablerBrowserAgent* web_usage_enabler_;
   SessionRestorationBrowserAgent* session_restoration_agent_;
 };
+
+// Tests that CRWSessionStorage with empty item_storages are not restored.
+TEST_F(SessionRestorationBrowserAgentTest, RestoreEmptySessions) {
+  NSMutableArray<CRWSessionStorage*>* sessions = [NSMutableArray array];
+  for (int i = 0; i < 3; i++) {
+    CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
+    session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
+    session_storage.lastCommittedItemIndex = -1;
+    [sessions addObject:session_storage];
+  }
+  SessionWindowIOS* window = [[SessionWindowIOS alloc] initWithSessions:sessions
+                                                        sessionsSummary:nil
+                                                            tabContents:nil
+                                                          selectedIndex:2];
+
+  session_restoration_agent_->RestoreSessionWindow(window);
+  ASSERT_EQ(0, browser_->GetWebStateList()->count());
+}
 
 // Tests that restoring a session works correctly on empty WebStateList.
 TEST_F(SessionRestorationBrowserAgentTest, RestoreSessionOnEmptyWebStateList) {

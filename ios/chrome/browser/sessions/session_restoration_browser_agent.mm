@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #include "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -112,8 +113,13 @@ bool SessionRestorationBrowserAgent::RestoreSessionWindow(
   std::vector<web::WebState*> restored_web_states;
   restored_web_states.reserve(window.sessions.count);
 
+  std::vector<web::WebState*> web_states_to_remove;
   for (int index = old_count; index < web_state_list_->count(); ++index) {
     web::WebState* web_state = web_state_list_->GetWebStateAt(index);
+    if (window.sessions[index - old_count].itemStorages.count == 0) {
+      web_states_to_remove.push_back(web_state);
+      continue;
+    }
     const GURL& visible_url = web_state->GetVisibleURL();
 
     if (visible_url != kChromeUINewTabURL) {
@@ -127,6 +133,12 @@ bool SessionRestorationBrowserAgent::RestoreSessionWindow(
     }
 
     restored_web_states.push_back(web_state);
+  }
+
+  for (web::WebState* web_state_to_remove : web_states_to_remove) {
+    const int index = web_state_list_->GetIndexOfWebState(web_state_to_remove);
+    DCHECK(index != WebStateList::kInvalidIndex);
+    web_state_list_->CloseWebStateAt(index, WebStateList::CLOSE_NO_FLAGS);
   }
 
   // If there was only one tab and it was the new tab page, clobber it.
