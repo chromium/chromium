@@ -414,6 +414,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
                                   FileSystemType type,
                                   OpenFileSystemMode mode,
                                   OpenFileSystemCallback callback);
+  void DidResolveURLOnOpenFileSystem(OpenFileSystemCallback callback,
+                                     const GURL& filesystem_root,
+                                     const std::string& filesystem_name,
+                                     base::File::Error error);
 
   // Returns a FileSystemBackend, used only by test code.
   SandboxFileSystemBackend* sandbox_backend() const {

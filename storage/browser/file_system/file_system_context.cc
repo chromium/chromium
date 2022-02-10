@@ -467,9 +467,22 @@ void FileSystemContext::ResolveURLOnOpenFileSystem(
     return;
   }
 
+  // Bind `this` to the callback to ensure this instance stays alive while the
+  // URL is resolving.
   backend->ResolveURL(
       CreateCrackedFileSystemURL(storage_key, type, base::FilePath()), mode,
-      std::move(callback));
+      base::BindOnce(&FileSystemContext::DidResolveURLOnOpenFileSystem, this,
+                     std::move(callback)));
+}
+
+void FileSystemContext::DidResolveURLOnOpenFileSystem(
+    OpenFileSystemCallback callback,
+    const GURL& filesystem_root,
+    const std::string& filesystem_name,
+    base::File::Error error) {
+  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+
+  std::move(callback).Run(filesystem_root, filesystem_name, error);
 }
 
 void FileSystemContext::ResolveURL(const FileSystemURL& url,
