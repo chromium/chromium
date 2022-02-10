@@ -107,8 +107,10 @@ ApkWebAppService::ApkWebAppService(Profile* profile)
 ApkWebAppService::~ApkWebAppService() = default;
 
 bool ApkWebAppService::IsWebOnlyTwa(const web_app::AppId& app_id) {
-  if (!IsWebAppInstalledFromArc(app_id))
+  if (!web_app::IsWebAppsCrosapiEnabled() &&
+      !IsWebAppInstalledFromArc(app_id)) {
     return false;
+  }
 
   DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
                                         kWebAppToApkDictPref);
@@ -121,9 +123,19 @@ bool ApkWebAppService::IsWebOnlyTwa(const web_app::AppId& app_id) {
 
 bool ApkWebAppService::IsWebAppInstalledFromArc(
     const web_app::AppId& web_app_id) {
-  web_app::WebAppRegistrar& registrar = provider_->registrar();
-  const web_app::WebApp* app = registrar.GetAppById(web_app_id);
-  return app ? app->IsWebAppStoreInstalledApp() : false;
+  if (web_app::IsWebAppsCrosapiEnabled()) {
+    // The web app will only be in prefs under this key if it was installed from
+    // ARC++.
+    DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
+                                          kWebAppToApkDictPref);
+    const base::Value* v = web_apps_to_apks->FindKeyOfType(
+        web_app_id, base::Value::Type::DICTIONARY);
+    return v != nullptr;
+  } else {
+    web_app::WebAppRegistrar& registrar = provider_->registrar();
+    const web_app::WebApp* app = registrar.GetAppById(web_app_id);
+    return app ? app->IsWebAppStoreInstalledApp() : false;
+  }
 }
 
 bool ApkWebAppService::IsWebAppShellPackage(const std::string& package_name) {
@@ -172,8 +184,10 @@ absl::optional<std::string> ApkWebAppService::GetPackageNameForWebApp(
 
 absl::optional<std::string> ApkWebAppService::GetCertificateSha256Fingerprint(
     const web_app::AppId& app_id) {
-  if (!IsWebAppInstalledFromArc(app_id))
+  if (!web_app::IsWebAppsCrosapiEnabled() &&
+      !IsWebAppInstalledFromArc(app_id)) {
     return absl::nullopt;
+  }
 
   DictionaryPrefUpdate web_apps_to_apks(profile_->GetPrefs(),
                                         kWebAppToApkDictPref);
@@ -208,7 +222,8 @@ void ApkWebAppService::SetWebAppUninstalledCallbackForTesting(
 }
 
 void ApkWebAppService::UninstallWebApp(const web_app::AppId& web_app_id) {
-  if (!IsWebAppInstalledFromArc(web_app_id)) {
+  if (!web_app::IsWebAppsCrosapiEnabled() &&
+      !IsWebAppInstalledFromArc(web_app_id)) {
     // Do not uninstall a web app that was not installed via ApkWebAppInstaller.
     return;
   }
