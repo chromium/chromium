@@ -7,26 +7,41 @@
 #include <memory>
 #include <vector>
 
+#include "ash/services/nearby/public/cpp/nearby_client_uuids.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/fake_bluetooth_device_status_observer.h"
 #include "chromeos/services/bluetooth_config/fake_device_cache.h"
+#include "device/bluetooth/test/mock_bluetooth_adapter.h"
+#include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
 namespace bluetooth_config {
 namespace {
 
+const uint32_t kTestBluetoothClass = 1337u;
+
+// Used for devices which are not connected by a nearby share connection.
+const char kNonNearbyUuid[] = "00001108-0000-1000-8000-00805f9b34fb";
+
 mojom::PairedBluetoothDevicePropertiesPtr GenerateStubPairedDeviceProperties(
-    std::string id,
+    const std::string& id,
     mojom::DeviceConnectionState connection_state =
         mojom::DeviceConnectionState::kConnected) {
   auto device_properties = mojom::BluetoothDeviceProperties::New();
-  device_properties->id = id;
+
+  // Concate "-Identifier" so device id matches
+  // MockBluetoothDevice->GetIdentifier() return value.
+  device_properties->id = base::StrCat({id, "-Identifier"});
+  device_properties->address = "test_device_address";
   device_properties->public_name = u"name";
   device_properties->device_type = mojom::DeviceType::kUnknown;
   device_properties->audio_capability =
@@ -55,9 +70,15 @@ class BluetoothDeviceStatusNotifierImplTest : public testing::Test {
   void SetUp() override {
     PowerManagerClient::InitializeFake();
 
+    mock_adapter_ =
+        base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
+    ON_CALL(*mock_adapter_, GetDevices())
+        .WillByDefault(testing::Invoke(
+            this, &BluetoothDeviceStatusNotifierImplTest::GenerateDevices));
+
     device_status_notifier_ =
         std::make_unique<BluetoothDeviceStatusNotifierImpl>(
-            &fake_device_cache_, FakePowerManagerClient::Get());
+            mock_adapter_, &fake_device_cache_, FakePowerManagerClient::Get());
   }
 
   void TearDown() override {
@@ -67,12 +88,47 @@ class BluetoothDeviceStatusNotifierImplTest : public testing::Test {
     PowerManagerClient::Shutdown();
   }
 
+  // Pass in a list of ids because MockBluetoothDevice appends "-Identifier"
+  // to any value passed in as identifier. We want GetIdentifier() value
+  // returned from MockBluetoothDevice to be the same as the id in
+  // PairedBluetoothDevicePropertiesPtr. The ids passed in here do not include
+  // "-Identifier" prefix.
   void SetPairedDevices(
       const std::vector<mojom::PairedBluetoothDevicePropertiesPtr>&
-          paired_devices) {
+          paired_devices,
+      const std::vector<std::string>& ids,
+      const bool includes_nearby_uuids = false) {
+    EXPECT_EQ(paired_devices.size(), ids.size());
+
     std::vector<mojom::PairedBluetoothDevicePropertiesPtr> copy;
-    for (const auto& paired_device : paired_devices)
-      copy.push_back(paired_device.Clone());
+    mock_devices_.clear();
+
+    base::flat_set<device::BluetoothUUID> uuid_set;
+
+    if (includes_nearby_uuids) {
+      uuid_set.insert(ash::nearby::GetNearbyClientUuids().front());
+    } else {
+      uuid_set.insert({device::BluetoothUUID(kNonNearbyUuid)});
+    }
+
+    for (unsigned int i = 0; i < paired_devices.size(); ++i) {
+      copy.push_back(paired_devices[i].Clone());
+
+      bool connected = paired_devices[i]->device_properties->connection_state ==
+                       mojom::DeviceConnectionState::kConnected;
+      auto mock_device =
+          std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
+              mock_adapter_.get(), kTestBluetoothClass,
+              base::UTF16ToASCII(
+                  paired_devices[i]->device_properties->public_name)
+                  .c_str(),
+              ids[i], /*paired=*/true, connected);
+
+      ON_CALL(*mock_device, GetUUIDs())
+          .WillByDefault(testing::Return(uuid_set));
+
+      mock_devices_.push_back(std::move(mock_device));
+    }
 
     fake_device_cache_.SetPairedDevices(std::move(copy));
     device_status_notifier_->FlushForTesting();
@@ -96,7 +152,18 @@ class BluetoothDeviceStatusNotifierImplTest : public testing::Test {
   }
 
  private:
+  std::vector<const device::BluetoothDevice*> GenerateDevices() {
+    std::vector<const device::BluetoothDevice*> devices;
+    for (auto& device : mock_devices_)
+      devices.push_back(device.get());
+    return devices;
+  }
+
   base::test::TaskEnvironment task_environment_;
+
+  std::vector<std::unique_ptr<testing::NiceMock<device::MockBluetoothDevice>>>
+      mock_devices_;
+  scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
 
   FakeAdapterStateController fake_adapter_state_controller_;
   FakeDeviceCache fake_device_cache_{&fake_adapter_state_controller_};
@@ -112,54 +179,59 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest, PairedDevicesChanges) {
 
   std::vector<mojom::PairedBluetoothDevicePropertiesPtr> paired_devices;
   paired_devices.push_back(GenerateStubPairedDeviceProperties(
-      "id", /*connection_state=*/mojom::DeviceConnectionState::kNotConnected));
+      "id",
+      /*connection_state=*/mojom::DeviceConnectionState::kNotConnected));
 
   // Add a paired but disconnected device and verify that the observer was
   // not notified.
-  SetPairedDevices(paired_devices);
+  SetPairedDevices(paired_devices, /*ids=*/{"id"});
   ASSERT_EQ(0u, observer->paired_device_properties_list().size());
   EXPECT_TRUE(observer->paired_device_properties_list().empty());
 
   paired_devices.pop_back();
   paired_devices.push_back(GenerateStubPairedDeviceProperties(
-      "id1", /*connection_state=*/mojom::DeviceConnectionState::kConnected));
+      "id1",
+      /*connection_state=*/mojom::DeviceConnectionState::kConnected));
 
   // Add a paired device and verify that the observer was notified.
-  SetPairedDevices(paired_devices);
+  SetPairedDevices(paired_devices, /*ids=*/{"id1"});
   ASSERT_EQ(1u, observer->paired_device_properties_list().size());
   ASSERT_EQ(
-      "id1",
+      "id1-Identifier",
       observer->paired_device_properties_list()[0]->device_properties->id);
 
   paired_devices.push_back(GenerateStubPairedDeviceProperties(
-      "id2", /*connection_state=*/mojom::DeviceConnectionState::kConnected));
+      "id2",
+      /*connection_state=*/mojom::DeviceConnectionState::kConnected));
   paired_devices.push_back(GenerateStubPairedDeviceProperties(
-      "id3", /*connection_state=*/mojom::DeviceConnectionState::kConnected));
+      "id3",
+      /*connection_state=*/mojom::DeviceConnectionState::kConnected));
 
   // Add two paired devices and verify that the observer was notified.
-  SetPairedDevices(paired_devices);
+  SetPairedDevices(paired_devices, /*ids=*/{"id1", "id2", "id3"});
   ASSERT_EQ(3u, observer->paired_device_properties_list().size());
   ASSERT_EQ(
-      "id2",
+      "id2-Identifier",
       observer->paired_device_properties_list()[1]->device_properties->id);
   ASSERT_EQ(
-      "id3",
+      "id3-Identifier",
       observer->paired_device_properties_list()[2]->device_properties->id);
 
   // Simulate device being unpaired, the observer should not be called.
   paired_devices.pop_back();
-  SetPairedDevices(paired_devices);
+  SetPairedDevices(paired_devices, /*ids=*/{"id1", "id2"});
   ASSERT_EQ(3u, observer->paired_device_properties_list().size());
 
   // Add the same device again.
   paired_devices.push_back(GenerateStubPairedDeviceProperties(
-      "id3", /*connection_state=*/mojom::DeviceConnectionState::kConnected));
+      "id3",
+      /*connection_state=*/mojom::DeviceConnectionState::kConnected));
 
   // Verify that the observer was notified.
-  SetPairedDevices(paired_devices);
+  SetPairedDevices(paired_devices, /*ids=*/{"id1", "id2", "id3"});
   ASSERT_EQ(4u, observer->paired_device_properties_list().size());
   ASSERT_EQ(
-      "id3",
+      "id3-Identifier",
       observer->paired_device_properties_list()[3]->device_properties->id);
 }
 
@@ -170,7 +242,7 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest, ConnectedDevicesChanges) {
   devices.push_back(GenerateStubPairedDeviceProperties("id1"));
 
   // Add a connected device
-  SetPairedDevices(devices);
+  SetPairedDevices(devices, /*ids=*/{"id1"});
 
   // Initially, observer would receive no updates.
   ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
@@ -183,24 +255,25 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest, ConnectedDevicesChanges) {
   // Update device from connected to disconnected.
   devices.pop_back();
   devices.push_back(GenerateStubPairedDeviceProperties(
-      "id1", /*connection_state=*/mojom::DeviceConnectionState::kNotConnected));
+      "id1",
+      /*connection_state=*/mojom::DeviceConnectionState::kNotConnected));
 
-  SetPairedDevices(devices);
+  SetPairedDevices(devices, /*ids=*/{"id1"});
 
   ASSERT_EQ(1u, observer->disconnected_device_properties_list().size());
-  ASSERT_EQ("id1", observer->disconnected_device_properties_list()[0]
-                       ->device_properties->id);
+  ASSERT_EQ("id1-Identifier", observer->disconnected_device_properties_list()[0]
+                                  ->device_properties->id);
   ASSERT_EQ(0u, observer->connected_device_properties_list().size());
   ASSERT_EQ(1u, observer->paired_device_properties_list().size());
 
   // Update device from disconnected to connected.
   devices.pop_back();
   devices.push_back(GenerateStubPairedDeviceProperties("id1"));
-  SetPairedDevices(devices);
+  SetPairedDevices(devices, /*ids=*/{"id1"});
 
   ASSERT_EQ(1u, observer->connected_device_properties_list().size());
   ASSERT_EQ(
-      "id1",
+      "id1-Identifier",
       observer->connected_device_properties_list()[0]->device_properties->id);
   ASSERT_EQ(1u, observer->disconnected_device_properties_list().size());
   ASSERT_EQ(1u, observer->paired_device_properties_list().size());
@@ -208,12 +281,13 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest, ConnectedDevicesChanges) {
   // Update state from connected to connecting, this should have no effect.
   devices.pop_back();
   devices.push_back(GenerateStubPairedDeviceProperties(
-      "id1", /*connection_state=*/mojom::DeviceConnectionState::kConnecting));
-  SetPairedDevices(devices);
+      "id1",
+      /*connection_state=*/mojom::DeviceConnectionState::kConnecting));
+  SetPairedDevices(devices, /*ids=*/{"id1"});
 
   ASSERT_EQ(1u, observer->connected_device_properties_list().size());
   ASSERT_EQ(
-      "id1",
+      "id1-Identifier",
       observer->connected_device_properties_list()[0]->device_properties->id);
   ASSERT_EQ(1u, observer->disconnected_device_properties_list().size());
   ASSERT_EQ(1u, observer->paired_device_properties_list().size());
@@ -221,11 +295,11 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest, ConnectedDevicesChanges) {
   // Update device from connecting to connected.
   devices.pop_back();
   devices.push_back(GenerateStubPairedDeviceProperties("id1"));
-  SetPairedDevices(devices);
+  SetPairedDevices(devices, /*ids=*/{"id1"});
 
   ASSERT_EQ(2u, observer->connected_device_properties_list().size());
   ASSERT_EQ(
-      "id1",
+      "id1-Identifier",
       observer->connected_device_properties_list()[0]->device_properties->id);
   ASSERT_EQ(1u, observer->disconnected_device_properties_list().size());
   ASSERT_EQ(1u, observer->paired_device_properties_list().size());
@@ -256,7 +330,7 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest,
   // Add a connected device
   std::vector<mojom::PairedBluetoothDevicePropertiesPtr> devices;
   devices.push_back(GenerateStubPairedDeviceProperties(device_id));
-  SetPairedDevices(devices);
+  SetPairedDevices(devices, /*ids=*/{device_id});
 
   ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
   ASSERT_EQ(0u, observer->connected_device_properties_list().size());
@@ -272,7 +346,7 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest,
   devices.push_back(GenerateStubPairedDeviceProperties(
       device_id,
       /*connection_state=*/mojom::DeviceConnectionState::kNotConnected));
-  SetPairedDevices(devices);
+  SetPairedDevices(devices, /*ids=*/{device_id});
 
   ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
   ASSERT_EQ(0u, observer->connected_device_properties_list().size());
@@ -283,12 +357,12 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest,
   devices.push_back(GenerateStubPairedDeviceProperties(
       device_id,
       /*connection_state=*/mojom::DeviceConnectionState::kConnected));
-  SetPairedDevices(devices);
+  SetPairedDevices(devices, /*ids=*/{device_id});
 
   ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
   ASSERT_EQ(1u, observer->connected_device_properties_list().size());
   ASSERT_EQ(
-      device_id,
+      base::StrCat({device_id, "-Identifier"}),
       observer->connected_device_properties_list()[0]->device_properties->id);
   ASSERT_EQ(1u, observer->paired_device_properties_list().size());
 }
@@ -301,7 +375,7 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest,
   // Add a connected device
   std::vector<mojom::PairedBluetoothDevicePropertiesPtr> devices;
   devices.push_back(GenerateStubPairedDeviceProperties(device_id));
-  SetPairedDevices(devices);
+  SetPairedDevices(devices, /*ids=*/{device_id});
 
   ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
   ASSERT_EQ(0u, observer->connected_device_properties_list().size());
@@ -320,7 +394,7 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest,
   devices.push_back(GenerateStubPairedDeviceProperties(
       device_id,
       /*connection_state=*/mojom::DeviceConnectionState::kNotConnected));
-  SetPairedDevices(devices);
+  SetPairedDevices(devices, /*ids=*/{device_id});
 
   ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
   ASSERT_EQ(0u, observer->connected_device_properties_list().size());
@@ -331,12 +405,12 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest,
   devices.push_back(GenerateStubPairedDeviceProperties(
       device_id,
       /*connection_state=*/mojom::DeviceConnectionState::kConnected));
-  SetPairedDevices(devices);
+  SetPairedDevices(devices, /*ids=*/{device_id});
 
   ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
   ASSERT_EQ(1u, observer->connected_device_properties_list().size());
   ASSERT_EQ(
-      device_id,
+      base::StrCat({device_id, "-Identifier"}),
       observer->connected_device_properties_list()[0]->device_properties->id);
   ASSERT_EQ(1u, observer->paired_device_properties_list().size());
 }
@@ -349,7 +423,7 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest,
   // Add a connected device
   std::vector<mojom::PairedBluetoothDevicePropertiesPtr> devices;
   devices.push_back(GenerateStubPairedDeviceProperties(device_id));
-  SetPairedDevices(devices);
+  SetPairedDevices(devices, /*ids=*/{device_id});
 
   ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
   ASSERT_EQ(0u, observer->connected_device_properties_list().size());
@@ -370,11 +444,12 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest,
   devices.push_back(GenerateStubPairedDeviceProperties(
       device_id,
       /*connection_state=*/mojom::DeviceConnectionState::kNotConnected));
-  SetPairedDevices(devices);
+  SetPairedDevices(devices, /*ids=*/{device_id});
 
   ASSERT_EQ(1u, observer->disconnected_device_properties_list().size());
-  ASSERT_EQ(device_id, observer->disconnected_device_properties_list()[0]
-                           ->device_properties->id);
+  ASSERT_EQ(base::StrCat({device_id, "-Identifier"}),
+            observer->disconnected_device_properties_list()[0]
+                ->device_properties->id);
   ASSERT_EQ(0u, observer->connected_device_properties_list().size());
   ASSERT_EQ(1u, observer->paired_device_properties_list().size());
 
@@ -383,12 +458,12 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest,
   devices.push_back(GenerateStubPairedDeviceProperties(
       device_id,
       /*connection_state=*/mojom::DeviceConnectionState::kConnected));
-  SetPairedDevices(devices);
+  SetPairedDevices(devices, /*ids=*/{device_id});
 
   ASSERT_EQ(1u, observer->disconnected_device_properties_list().size());
   ASSERT_EQ(1u, observer->connected_device_properties_list().size());
   ASSERT_EQ(
-      device_id,
+      base::StrCat({device_id, "-Identifier"}),
       observer->connected_device_properties_list()[0]->device_properties->id);
   ASSERT_EQ(1u, observer->paired_device_properties_list().size());
 }
@@ -401,7 +476,7 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest,
   // Add a connected device
   std::vector<mojom::PairedBluetoothDevicePropertiesPtr> devices;
   devices.push_back(GenerateStubPairedDeviceProperties(device_id));
-  SetPairedDevices(devices);
+  SetPairedDevices(devices, /*ids=*/{device_id});
 
   ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
   ASSERT_EQ(0u, observer->connected_device_properties_list().size());
@@ -432,7 +507,7 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest,
   devices.push_back(GenerateStubPairedDeviceProperties(
       device_id,
       /*connection_state=*/mojom::DeviceConnectionState::kNotConnected));
-  SetPairedDevices(devices);
+  SetPairedDevices(devices, /*ids=*/{device_id});
 
   ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
   ASSERT_EQ(0u, observer->connected_device_properties_list().size());
@@ -443,14 +518,41 @@ TEST_F(BluetoothDeviceStatusNotifierImplTest,
   devices.push_back(GenerateStubPairedDeviceProperties(
       device_id,
       /*connection_state=*/mojom::DeviceConnectionState::kConnected));
-  SetPairedDevices(devices);
+  SetPairedDevices(devices, /*ids=*/{device_id});
 
   ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
   ASSERT_EQ(1u, observer->connected_device_properties_list().size());
   ASSERT_EQ(
-      device_id,
+      base::StrCat({device_id, "-Identifier"}),
       observer->connected_device_properties_list()[0]->device_properties->id);
   ASSERT_EQ(1u, observer->paired_device_properties_list().size());
+}
+
+TEST_F(BluetoothDeviceStatusNotifierImplTest, NearbyDevicePaired) {
+  std::unique_ptr<FakeBluetoothDeviceStatusObserver> observer = Observe();
+
+  std::vector<mojom::PairedBluetoothDevicePropertiesPtr> devices;
+  devices.push_back(GenerateStubPairedDeviceProperties("id1"));
+  SetPairedDevices(devices, /*ids=*/{"id1"}, /*is_nearby_devices=*/true);
+
+  // Initially, observer would receive no updates.
+  ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
+  ASSERT_EQ(0u, observer->connected_device_properties_list().size());
+  ASSERT_EQ(0u, observer->paired_device_properties_list().size());
+
+  // Update device from connected to disconnected.
+  devices.pop_back();
+  devices.push_back(GenerateStubPairedDeviceProperties(
+      "id1",
+      /*connection_state=*/mojom::DeviceConnectionState::kNotConnected));
+
+  SetPairedDevices(devices, /*ids=*/{"id1"}, /*is_nearby_devices=*/true);
+
+  // No notifications are shown because the device is connected using
+  // Nearby connections.
+  ASSERT_EQ(0u, observer->disconnected_device_properties_list().size());
+  ASSERT_EQ(0u, observer->connected_device_properties_list().size());
+  ASSERT_EQ(0u, observer->paired_device_properties_list().size());
 }
 
 }  // namespace bluetooth_config

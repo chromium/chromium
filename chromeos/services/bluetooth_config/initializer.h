@@ -37,7 +37,9 @@ class Initializer {
   virtual std::unique_ptr<AdapterStateController> CreateAdapterStateController(
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) = 0;
   virtual std::unique_ptr<BluetoothDeviceStatusNotifier>
-  CreateBluetoothDeviceStatusNotifier(DeviceCache* device_cache) = 0;
+  CreateBluetoothDeviceStatusNotifier(
+      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+      DeviceCache* device_cache) = 0;
   virtual std::unique_ptr<BluetoothPowerController>
   CreateBluetoothPowerController(
       AdapterStateController* adapter_state_controller) = 0;

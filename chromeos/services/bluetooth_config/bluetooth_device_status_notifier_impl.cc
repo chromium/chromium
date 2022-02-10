@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 #include "chromeos/services/bluetooth_config/bluetooth_device_status_notifier_impl.h"
+#include "ash/services/nearby/public/cpp/nearby_client_uuids.h"
 #include "base/time/time.h"
 #include "chromeos/services/bluetooth_config/device_cache.h"
 #include "chromeos/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 #include "components/device_event_log/device_event_log.h"
+#include "device/bluetooth/bluetooth_device.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 #include <vector>
 
@@ -19,9 +22,12 @@ const base::TimeDelta
         base::Milliseconds(3000);
 
 BluetoothDeviceStatusNotifierImpl::BluetoothDeviceStatusNotifierImpl(
+    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
     DeviceCache* device_cache,
     PowerManagerClient* power_manager_client)
-    : device_cache_(device_cache), power_manager_client_(power_manager_client) {
+    : bluetooth_adapter_(std::move(bluetooth_adapter)),
+      device_cache_(device_cache),
+      power_manager_client_(power_manager_client) {
   DCHECK(power_manager_client_);
   device_cache_observation_.Observe(device_cache_);
   power_manager_client_observation_.Observe(power_manager_client_);
@@ -84,6 +90,13 @@ void BluetoothDeviceStatusNotifierImpl::CheckForDeviceStateChange() {
     devices_id_to_properties_map_[device->device_properties->id] =
         device.Clone();
 
+    device::BluetoothDevice* bluetooth_device =
+        FindDevice(device->device_properties->id);
+
+    if (!bluetooth_device || IsNearbyConnectionsDevice(*bluetooth_device)) {
+      continue;
+    }
+
     auto it = previous_devices_id_to_properties_map.find(
         device->device_properties->id);
 
@@ -130,6 +143,29 @@ void BluetoothDeviceStatusNotifierImpl::CheckForDeviceStateChange() {
 
 void BluetoothDeviceStatusNotifierImpl::OnSuspendCooldownTimeout() {
   did_recently_suspend_ = false;
+}
+
+bool BluetoothDeviceStatusNotifierImpl::IsNearbyConnectionsDevice(
+    const device::BluetoothDevice& device) {
+  // NOTE(http://b/215024088): If the newly paired device is connected via a
+  // Nearby Connections client (e.g., Nearby Share), do not display this
+  // notification.
+  device::BluetoothDevice::UUIDSet uuids = device.GetUUIDs();
+  if (std::any_of(uuids.begin(), uuids.end(),
+                  ash::nearby::IsNearbyClientUuid)) {
+    return true;
+  }
+
+  return false;
+}
+
+device::BluetoothDevice* BluetoothDeviceStatusNotifierImpl::FindDevice(
+    const std::string& device_id) {
+  for (auto* device : bluetooth_adapter_->GetDevices()) {
+    if (device->GetIdentifier() == device_id)
+      return device;
+  }
+  return nullptr;
 }
 
 }  // namespace bluetooth_config

@@ -31,9 +31,11 @@ InitializerImpl::CreateAdapterStateController(
 
 std::unique_ptr<BluetoothDeviceStatusNotifier>
 InitializerImpl::CreateBluetoothDeviceStatusNotifier(
+    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
     DeviceCache* device_cache) {
   return std::make_unique<BluetoothDeviceStatusNotifierImpl>(
-      device_cache, chromeos::PowerManagerClient::Get());
+      std::move(bluetooth_adapter), device_cache,
+      chromeos::PowerManagerClient::Get());
 }
 
 std::unique_ptr<BluetoothPowerController>

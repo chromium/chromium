@@ -1,4 +1,5 @@
 include_rules = [
+  "+ash/services/nearby/public/cpp/nearby_client_uuids.h",
   "+ash/constants",
   "+components/device_event_log",
   "+components/session_manager/core",

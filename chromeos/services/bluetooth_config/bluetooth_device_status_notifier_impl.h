@@ -7,12 +7,18 @@
 
 #include <unordered_map>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/services/bluetooth_config/bluetooth_device_status_notifier.h"
 #include "chromeos/services/bluetooth_config/device_cache.h"
+#include "device/bluetooth/bluetooth_adapter.h"
+
+namespace device {
+class BluetoothDevice;
+}  // namespace device
 
 namespace chromeos {
 namespace bluetooth_config {
@@ -25,8 +31,10 @@ class BluetoothDeviceStatusNotifierImpl
       public DeviceCache::Observer,
       public chromeos::PowerManagerClient::Observer {
  public:
-  BluetoothDeviceStatusNotifierImpl(DeviceCache* device_cache,
-                                    PowerManagerClient* power_manager_client);
+  BluetoothDeviceStatusNotifierImpl(
+      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+      DeviceCache* device_cache,
+      PowerManagerClient* power_manager_client);
   ~BluetoothDeviceStatusNotifierImpl() override;
 
  private:
@@ -50,6 +58,13 @@ class BluetoothDeviceStatusNotifierImpl
 
   void OnSuspendCooldownTimeout();
 
+  // Checks if device with id |device_id| is connected using a nearby share
+  // connection.
+  bool IsNearbyConnectionsDevice(const device::BluetoothDevice& device_id);
+
+  // Returns a |BluetoothDevice| corresponding to |device_id|.
+  device::BluetoothDevice* FindDevice(const std::string& device_id);
+
   // Paired devices map, maps a device id with its corresponding device
   // properties.
   std::unordered_map<std::string, mojom::PairedBluetoothDevicePropertiesPtr>
@@ -63,6 +78,7 @@ class BluetoothDeviceStatusNotifierImpl
   // expires after |kSuspendCooldownTimeout|.
   base::OneShotTimer suspend_cooldown_timer_;
 
+  scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   DeviceCache* device_cache_;
 
   chromeos::PowerManagerClient* power_manager_client_;

@@ -57,6 +57,7 @@ static_library("bluetooth_config") {
 
   deps = [
     "//ash/constants",
+    "//ash/services/nearby/public/cpp",
     "//base",
     "//chromeos/dbus/power",
     "//chromeos/services/bluetooth_config/public/cpp",
@@ -165,6 +166,7 @@ source_set("unit_tests") {
     ":bluetooth_config",
     ":test_support",
     "//ash/constants",
+    "//ash/services/nearby/public/cpp",
     "//base",
     "//base/test:test_support",
     "//chromeos/dbus/power",

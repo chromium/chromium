@@ -39,7 +39,8 @@ CrosBluetoothConfig::CrosBluetoothConfig(
               adapter_state_controller_.get(),
               device_cache_.get())),
       bluetooth_device_status_notifier_(
-          initializer.CreateBluetoothDeviceStatusNotifier(device_cache_.get())),
+          initializer.CreateBluetoothDeviceStatusNotifier(bluetooth_adapter,
+                                                          device_cache_.get())),
       discovered_devices_provider_(
           initializer.CreateDiscoveredDevicesProvider(device_cache_.get())),
       discovery_session_manager_(initializer.CreateDiscoverySessionManager(
