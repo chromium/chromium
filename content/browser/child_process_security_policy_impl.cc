@@ -1713,7 +1713,8 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForMaybeOpaqueOrigin(
                             actual_process_lock.GetStoragePartitionConfig())
                         .WithWebExposedIsolationInfo(
                             actual_process_lock.GetWebExposedIsolationInfo())
-                        .WithIsPdf(actual_process_lock.is_pdf())));
+                        .WithIsPdf(actual_process_lock.is_pdf())
+                        .WithSandbox(actual_process_lock.is_sandboxed())));
 
         if (actual_process_lock.is_locked_to_site()) {
           // Jail-style enforcement - a process with a lock can only access

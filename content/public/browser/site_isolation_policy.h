@@ -31,6 +31,9 @@ class CONTENT_EXPORT SiteIsolationPolicy {
   // Returns true if every site should be placed in a dedicated process.
   static bool UseDedicatedProcessesForAllSites();
 
+  // Returns true if sandboxed iframes should be isolated.
+  static bool AreIsolatedSandboxedIframesEnabled();
+
   // Returns true if isolated origins feature is enabled.
   static bool AreIsolatedOriginsEnabled();
 

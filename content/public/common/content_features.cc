@@ -441,6 +441,13 @@ const base::Feature kIsolateOrigins{"IsolateOrigins",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 const char kIsolateOriginsFieldTrialParamName[] = "OriginsList";
 
+// Allow process isolation of iframes with the 'sandbox' attribute set. Whether
+// or not such an iframe will be isolated may depend on options specified with
+// the attribute. Note: At present, only iframes with origin-restricted
+// sandboxes are isolated.
+const base::Feature kIsolateSandboxedIframes{"IsolateSandboxedIframes",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kLazyFrameLoading{"LazyFrameLoading",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kLazyFrameVisibleLoadTimeMetrics {

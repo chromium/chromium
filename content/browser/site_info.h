@@ -128,6 +128,7 @@ class CONTENT_EXPORT SiteInfo {
   SiteInfo(const GURL& site_url,
            const GURL& process_lock_url,
            bool requires_origin_keyed_process,
+           bool is_sandboxed,
            const StoragePartitionConfig storage_partition_config,
            const WebExposedIsolationInfo& web_exposed_isolation_info,
            bool is_guest,
@@ -144,6 +145,9 @@ class CONTENT_EXPORT SiteInfo {
   // the original SiteInfo, minus any OAC opt-in request.
   SiteInfo GetNonOriginKeyedEquivalentForMetrics(
       const IsolationContext& isolation_context) const;
+
+  // Returns a copy of `this` but with `is_sandboxed_` set to true.
+  SiteInfo SandboxedClone() const;
 
   // Returns the site URL associated with all of the documents and workers in
   // this principal, as described above.
@@ -190,6 +194,10 @@ class CONTENT_EXPORT SiteInfo {
   bool requires_origin_keyed_process() const {
     return requires_origin_keyed_process_;
   }
+
+  // The following accessor is for the `is_sandboxed` flag, which is true when
+  // this SiteInfo is for an origin-restricted-sandboxed iframe.
+  bool is_sandboxed() const { return is_sandboxed_; }
 
   // Returns the web-exposed isolation status of pages hosted by the
   // SiteInstance. The level of isolation which a page opts-into has
@@ -334,6 +342,10 @@ class CONTENT_EXPORT SiteInfo {
   // site-level URLs that are typically used in SiteInfo include subdomains, as
   // do command-line isolated origins.
   bool requires_origin_keyed_process_ = false;
+
+  // When true, indicates this SiteInfo is for a origin-restricted-sandboxed
+  // iframe.
+  bool is_sandboxed_ = false;
 
   // The StoragePartitionConfig to use when loading content belonging to this
   // SiteInfo.

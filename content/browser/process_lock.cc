@@ -12,11 +12,11 @@ namespace content {
 ProcessLock ProcessLock::CreateAllowAnySite(
     const StoragePartitionConfig& storage_partition_config,
     const WebExposedIsolationInfo& web_exposed_isolation_info) {
-  return ProcessLock(
-      SiteInfo(GURL(), GURL(), false, storage_partition_config,
-               web_exposed_isolation_info, /* is_guest */ false,
-               /* does_site_request_dedicated_process_for_coop */ false,
-               /* is_jit_disabled */ false, /* is_pdf */ false));
+  return ProcessLock(SiteInfo(
+      GURL(), GURL(), false, false /* is_sandboxed */, storage_partition_config,
+      web_exposed_isolation_info, /* is_guest */ false,
+      /* does_site_request_dedicated_process_for_coop */ false,
+      /* is_jit_disabled */ false, /* is_pdf */ false));
 }
 
 // static
@@ -121,6 +121,9 @@ std::string ProcessLock::ToString() const {
     if (is_origin_keyed_process())
       ret += " origin-keyed";
 
+    if (is_sandboxed())
+      ret += " sandboxed";
+
     if (is_pdf())
       ret += " pdf";
 
@@ -134,6 +137,7 @@ std::string ProcessLock::ToString() const {
       ret += " coi-origin='" +
              GetWebExposedIsolationInfo().origin().GetDebugString() + "'";
     }
+
     if (!GetStoragePartitionConfig().is_default()) {
       ret += ", partition=" + GetStoragePartitionConfig().partition_domain() +
              "." + GetStoragePartitionConfig().partition_name();

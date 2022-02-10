@@ -2923,6 +2923,32 @@ UrlInfo NavigationRequest::GetUrlInfo() {
   // Compute the WebExposedIsolationInfo that will be bundled into UrlInfo.
   auto web_exposed_isolation_info = ComputeWebExposedIsolationInfo();
 
+  // Determine if the request is for a sandboxed frame or not. If
+  // ComputeSandboxFlagsToCommit() has run `sandbox_flags_to_commit_` will be
+  // valid, but even if it hasn't, we can speculatively take
+  // `commit_params_->frame_policy.sandbox_flags` if we haven't received the
+  // response yet and don't have the final `sandbox_flags_to_commit_`, and
+  // if the state of the kOrigin flag changes, we'll detect the change and
+  // recompute the target SiteInstance elsewhere.
+  bool is_origin_restricted_sandbox = false;
+  if (SiteIsolationPolicy::AreIsolatedSandboxedIframesEnabled()) {
+    if (state_ >= WILL_PROCESS_RESPONSE) {
+      is_origin_restricted_sandbox =
+          (sandbox_flags_to_commit_.value() &
+           network::mojom::WebSandboxFlags::kOrigin) ==
+          network::mojom::WebSandboxFlags::kOrigin;
+    } else {
+      // Note: We'll end up here for srcdoc iframes, as they don't go through
+      // OnResponseStarted. That means ComputeSandboxFlagsToCommit() may not
+      // have been called yet, but we should be able to reliably get kOrigin
+      // information from `commit_params_->frame_policy.sandbox_flags`.
+      is_origin_restricted_sandbox =
+          (commit_params_->frame_policy.sandbox_flags &
+           network::mojom::WebSandboxFlags::kOrigin) ==
+          network::mojom::WebSandboxFlags::kOrigin;
+    }
+  }
+
   // TODO(crbug.com/1172042): Remove WebBundle-specific code here.
   if (GetWebBundleURL().is_valid()) {
     return UrlInfo(UrlInfoInit(GetURL())
@@ -2930,13 +2956,15 @@ UrlInfo NavigationRequest::GetUrlInfo() {
                        .WithOrigin(url::Origin::Resolve(
                            GetURL(), url::Origin::Create(GetWebBundleURL())))
                        .WithWebExposedIsolationInfo(web_exposed_isolation_info)
-                       .WithIsPdf(is_pdf_));
+                       .WithIsPdf(is_pdf_)
+                       .WithSandbox(is_origin_restricted_sandbox));
   }
 
   return UrlInfo(UrlInfoInit(GetURL())
                      .WithOriginIsolationRequest(isolation_request)
                      .WithWebExposedIsolationInfo(web_exposed_isolation_info)
-                     .WithIsPdf(is_pdf_));
+                     .WithIsPdf(is_pdf_)
+                     .WithSandbox(is_origin_restricted_sandbox));
 }
 
 const GURL& NavigationRequest::GetOriginalRequestURL() {
@@ -7012,6 +7040,15 @@ void NavigationRequest::ComputeSandboxFlagsToCommit() {
                                      kPropagatesToAuxiliaryBrowsingContexts;
   }
   commit_params_->sandbox_flags = *sandbox_flags_to_commit_;
+  // For about: urls this function should not change the kOrigin flag. We rely
+  // on this when deciding on process isolation for sandboxed frames with these
+  // URLs, see NavigationRequest::GetUrlInfo().
+  if (GetURL().IsAboutBlank() || GetURL().IsAboutSrcdoc()) {
+    CHECK_EQ(
+        commit_params_->frame_policy.sandbox_flags &
+            network::mojom::WebSandboxFlags::kOrigin,
+        *sandbox_flags_to_commit_ & network::mojom::WebSandboxFlags::kOrigin);
+  }
 }
 
 void NavigationRequest::CheckStateTransition(NavigationState state) const {

@@ -65,12 +65,13 @@ bool DoesURLRequireDedicatedProcess(const IsolationContext& isolation_context,
 
 SiteInfo CreateSimpleSiteInfo(const GURL& process_lock_url,
                               bool requires_origin_keyed_process) {
-  return SiteInfo(
-      GURL("https://www.foo.com"), process_lock_url,
-      requires_origin_keyed_process, CreateStoragePartitionConfigForTesting(),
-      WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
-      false /* does_site_request_dedicated_process_for_coop */,
-      false /* is_jit_disabled */, false /* is_pdf */);
+  return SiteInfo(GURL("https://www.foo.com"), process_lock_url,
+                  requires_origin_keyed_process, false /* is_sandboxed */,
+                  CreateStoragePartitionConfigForTesting(),
+                  WebExposedIsolationInfo::CreateNonIsolated(),
+                  false /* is_guest */,
+                  false /* does_site_request_dedicated_process_for_coop */,
+                  false /* is_jit_disabled */, false /* is_pdf */);
 }
 
 }  // namespace
@@ -265,7 +266,7 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
   auto site_info_1_with_isolation_request = SiteInfo(
       GURL("https://www.foo.com") /* site_url */,
       GURL("https://foo.com") /* process_lock_url */,
-      false /* requires_origin_keyed_process */,
+      false /* requires_origin_keyed_process */, false /* is_sandboxed */,
       CreateStoragePartitionConfigForTesting(),
       WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
       true /* does_site_request_dedicated_process_for_coop */,
@@ -279,7 +280,7 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
   auto site_info_1_with_jit_disabled = SiteInfo(
       GURL("https://www.foo.com") /* site_url */,
       GURL("https://foo.com") /* process_lock_url */,
-      false /* requires_origin_keyed_process */,
+      false /* requires_origin_keyed_process */, false /* is_sandboxed */,
       CreateStoragePartitionConfigForTesting(),
       WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
       false /* does_site_request_dedicated_process_for_coop */,
@@ -291,7 +292,7 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
   auto site_info_1_with_pdf = SiteInfo(
       GURL("https://www.foo.com") /* site_url */,
       GURL("https://foo.com") /* process_lock_url */,
-      false /* requires_origin_keyed_process */,
+      false /* requires_origin_keyed_process */, false /* is_sandboxed */,
       CreateStoragePartitionConfigForTesting(),
       WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
       false /* does_site_request_dedicated_process_for_coop */,
@@ -741,7 +742,7 @@ TEST_F(SiteInstanceTest, ProcessLockDoesNotUseEffectiveURL) {
 
   SiteInfo expected_site_info(
       app_url /* site_url */, nonapp_site_url /* process_lock_url */,
-      false /* requires_origin_keyed_process */,
+      false /* requires_origin_keyed_process */, false /* is_sandboxed */,
       CreateStoragePartitionConfigForTesting(),
       WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
       false /* does_site_request_dedicated_process_for_coop */,
@@ -1544,7 +1545,7 @@ TEST_F(SiteInstanceTest, OriginalURL) {
 
   SiteInfo expected_site_info(
       app_url /* site_url */, original_url /* process_lock_url */,
-      false /* requires_origin_keyed_process */,
+      false /* requires_origin_keyed_process */, false /* is_sandboxed */,
       CreateStoragePartitionConfigForTesting(),
       WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
       false /* does_site_request_dedicated_process_for_coop */,
@@ -1594,7 +1595,7 @@ namespace {
 ProcessLock ProcessLockFromString(const std::string& url) {
   return ProcessLock::FromSiteInfo(SiteInfo(
       GURL(url), GURL(url), false /* requires_origin_keyed_process */,
-      CreateStoragePartitionConfigForTesting(),
+      false /* is_sandboxed */, CreateStoragePartitionConfigForTesting(),
       WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
       false /* does_site_request_dedicated_process_for_coop */,
       false /* is_jit_disabled */, false /* is_pdf */));

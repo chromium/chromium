@@ -14,6 +14,7 @@ UrlInfo::UrlInfo(const UrlInfoInit& init)
     : url(init.url_),
       origin_isolation_request(init.origin_isolation_request_),
       origin(init.origin_),
+      is_sandboxed(init.is_sandboxed_),
       storage_partition_config(init.storage_partition_config_),
       web_exposed_isolation_info(init.web_exposed_isolation_info_),
       is_pdf(init.is_pdf_) {
@@ -47,6 +48,7 @@ UrlInfoInit::UrlInfoInit(const UrlInfo& base)
     : url_(base.url),
       origin_isolation_request_(base.origin_isolation_request),
       origin_(base.origin),
+      is_sandboxed_(base.is_sandboxed),
       storage_partition_config_(base.storage_partition_config),
       web_exposed_isolation_info_(base.web_exposed_isolation_info),
       is_pdf_(base.is_pdf) {}
@@ -61,6 +63,11 @@ UrlInfoInit& UrlInfoInit::WithOriginIsolationRequest(
 
 UrlInfoInit& UrlInfoInit::WithOrigin(const url::Origin& origin) {
   origin_ = origin;
+  return *this;
+}
+
+UrlInfoInit& UrlInfoInit::WithSandbox(bool is_sandboxed) {
+  is_sandboxed_ = is_sandboxed;
   return *this;
 }
 

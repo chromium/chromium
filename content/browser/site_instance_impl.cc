@@ -423,6 +423,13 @@ void SiteInstanceImpl::SetSite(const UrlInfo& url_info) {
       url_info, /* allow_default_instance */ false));
 }
 
+void SiteInstanceImpl::SetSite(const SiteInfo& site_info) {
+  TRACE_EVENT2("navigation", "SiteInstanceImpl::SetSite", "site id",
+               id_.value(), "siteinfo", site_info.GetDebugString());
+  DCHECK(!has_site_);
+  SetSiteInfoInternal(site_info);
+}
+
 void SiteInstanceImpl::SetSiteInfoToDefault(
     const StoragePartitionConfig& storage_partition_config) {
   TRACE_EVENT1("navigation", "SiteInstanceImpl::SetSiteInfoToDefault",
@@ -668,6 +675,10 @@ bool SiteInstanceImpl::IsSuitableForUrlInfo(const UrlInfo& url_info) {
   if (url.IsAboutBlank() && !site_info_.is_error_page())
     return true;
 
+  // The is_sandboxed flags must match for this to be a suitable SiteInstance.
+  if (GetSiteInfo().is_sandboxed() != url_info.is_sandboxed)
+    return false;
+
   // If the site URL is an extension (e.g., for hosted apps or WebUI) but the
   // process is not (or vice versa), make sure we notice and fix it.
 
@@ -885,6 +896,9 @@ bool SiteInstanceImpl::IsNavigationSameSite(
     const url::Origin last_committed_origin,
     bool for_main_frame,
     const UrlInfo& dest_url_info) {
+  if (GetSiteInfo().is_sandboxed() != dest_url_info.is_sandboxed)
+    return false;
+
   const GURL& dest_url = dest_url_info.url;
   BrowserContext* browser_context = GetBrowserContext();
 
@@ -1007,6 +1021,10 @@ bool SiteInstanceImpl::IsSameSite(const IsolationContext& isolation_context,
   if (!src_url.is_valid() || !dest_url.is_valid())
     return false;
 
+  // To be same-site they must have the same `is_sandbox` flag.
+  if (real_src_url_info.is_sandboxed != real_dest_url_info.is_sandboxed)
+    return false;
+
   // If the destination url is just a blank page, we treat them as part of the
   // same site.
   if (dest_url.IsAboutBlank())
@@ -1040,6 +1058,7 @@ bool SiteInstanceImpl::IsSameSite(const IsolationContext& isolation_context,
   // origins are the same.
   if (src_origin == dest_origin)
     return true;
+
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   url::Origin src_isolated_origin;
   url::Origin dest_isolated_origin;
@@ -1319,6 +1338,19 @@ void SiteInstanceImpl::WriteIntoTrace(
 
 int SiteInstanceImpl::EstimateOriginAgentClusterOverheadForMetrics() {
   return browsing_instance_->EstimateOriginAgentClusterOverhead();
+}
+
+scoped_refptr<SiteInstanceImpl>
+SiteInstanceImpl::GetCompatibleSandboxedSiteInstance() {
+  DCHECK(!IsDefaultSiteInstance());
+  DCHECK(has_site_);
+  const SiteInfo& site_info = GetSiteInfo();
+  DCHECK(!site_info.is_sandboxed());
+
+  auto result = browsing_instance_->GetSiteInstanceForSiteInfo(
+      site_info.SandboxedClone());
+  result->original_url_ = original_url_;
+  return result;
 }
 
 }  // namespace content

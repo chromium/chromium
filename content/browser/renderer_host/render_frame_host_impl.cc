@@ -7359,7 +7359,8 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
     const url::Origin& origin,
     const GURL& url,
     bool is_same_document_navigation,
-    bool is_pdf) {
+    bool is_pdf,
+    bool is_sandboxed) {
   // Note that callers are responsible for avoiding this function in modes that
   // can bypass these rules, such as --disable-web-security or certain Android
   // WebView features like universal access from file URLs.
@@ -7430,7 +7431,8 @@ CanCommitStatus RenderFrameHostImpl::CanCommitOriginAndUrl(
               .WithStoragePartitionConfig(
                   GetSiteInstance()->GetSiteInfo().storage_partition_config())
               .WithWebExposedIsolationInfo(
-                  GetSiteInstance()->GetWebExposedIsolationInfo())));
+                  GetSiteInstance()->GetWebExposedIsolationInfo())
+              .WithSandbox(is_sandboxed)));
   if (can_commit_status != CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL) {
     LogCanCommitOriginAndUrlFailureReason("cpspi_disallowed_commit");
     return can_commit_status;
@@ -7923,10 +7925,13 @@ void RenderFrameHostImpl::CommitNavigation(
     // navigation attempt is made. It shouldn't reach CommitNavigation.
     CHECK(!is_main_frame());
 
-    // An about:srcdoc document is always same SiteInstance with its parent.
-    // Otherwise, it won't be able to load. The parent's document contains the
-    // iframe and its srcdoc attribute.
-    CHECK_EQ(GetSiteInstance(), parent_->GetSiteInstance());
+    // For a srcdoc iframe, we expect it to either be in its parent's
+    // SiteInstance (either AreIsolatedSandboxedIframesEnabled is false or
+    // both parent and child are sandboxed), or that the two are in different
+    // SiteInstances when only the child is sandboxed.
+    CHECK(GetSiteInstance() == parent_->GetSiteInstance() ||
+          !parent_->GetSiteInstance()->GetSiteInfo().is_sandboxed() &&
+              GetSiteInstance()->GetSiteInfo().is_sandboxed());
   }
 
   // TODO(https://crbug.com/888079): Compute the Origin to commit here.
@@ -10406,12 +10411,14 @@ bool RenderFrameHostImpl::ValidateURLAndOrigin(
   // be needed to verify the process lock in `CanCommitOriginAndUrl()`, but
   // cannot be derived from the URL and origin alone.
   bool is_pdf = navigation_request && navigation_request->GetUrlInfo().is_pdf;
+  bool is_sandboxed =
+      navigation_request && navigation_request->GetUrlInfo().is_sandboxed;
 
   // Attempts to commit certain off-limits URL should be caught more strictly
   // than our FilterURL checks.  If a renderer violates this policy, it
   // should be killed.
-  switch (
-      CanCommitOriginAndUrl(origin, url, is_same_document_navigation, is_pdf)) {
+  switch (CanCommitOriginAndUrl(origin, url, is_same_document_navigation,
+                                is_pdf, is_sandboxed)) {
     case CanCommitStatus::CAN_COMMIT_ORIGIN_AND_URL:
       // The origin and URL are safe to commit.
       break;

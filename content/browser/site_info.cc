@@ -179,7 +179,7 @@ SiteInfo SiteInfo::CreateForErrorPage(
     bool is_guest) {
   return SiteInfo(GetErrorPageSiteAndLockURL(), GetErrorPageSiteAndLockURL(),
                   false /* requires_origin_keyed_process */,
-                  storage_partition_config,
+                  false /* is_sandboxed */, storage_partition_config,
                   WebExposedIsolationInfo::CreateNonIsolated(), is_guest,
                   false /* does_site_request_dedicated_process_for_coop */,
                   false /* is_jit_disabled */, false /* is_pdf */);
@@ -198,8 +198,8 @@ SiteInfo SiteInfo::CreateForDefaultSiteInstance(
   return SiteInfo(SiteInstanceImpl::GetDefaultSiteURL(),
                   SiteInstanceImpl::GetDefaultSiteURL(),
                   false /* requires_origin_keyed_process */,
-                  storage_partition_config, web_exposed_isolation_info,
-                  false /* is_guest */,
+                  false /* is_sandboxed */, storage_partition_config,
+                  web_exposed_isolation_info, false /* is_guest */,
                   false /* does_site_request_dedicated_process_for_coop */,
                   is_jit_disabled, false /* is_pdf */);
 }
@@ -226,12 +226,12 @@ SiteInfo SiteInfo::CreateForGuest(
           ? GURL()
           : GetSiteURLForGuestPartitionConfig(partition_config);
 
-  return SiteInfo(guest_site_url, guest_site_url,
-                  false /* requires_origin_keyed_process */, partition_config,
-                  WebExposedIsolationInfo::CreateNonIsolated(),
-                  true /* is_guest */,
-                  false /* does_site_request_dedicated_process_for_coop */,
-                  false /* is_jit_disabled */, false /* is_pdf */);
+  return SiteInfo(
+      guest_site_url, guest_site_url, false /* requires_origin_keyed_process */,
+      false /* is_sandboxed */, partition_config,
+      WebExposedIsolationInfo::CreateNonIsolated(), true /* is_guest */,
+      false /* does_site_request_dedicated_process_for_coop */,
+      false /* is_jit_disabled */, false /* is_pdf */);
 }
 
 // static
@@ -334,7 +334,7 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
   // appropriate to disregard WebExposedIsolationInfo and override it manually
   // to what they expect the other value to be.
   return SiteInfo(site_url, lock_url, requires_origin_keyed_process,
-                  storage_partition_config.value(),
+                  url_info.is_sandboxed, storage_partition_config.value(),
                   url_info.web_exposed_isolation_info.value_or(
                       WebExposedIsolationInfo::CreateNonIsolated()),
                   isolation_context.is_guest(),
@@ -351,6 +351,7 @@ SiteInfo SiteInfo::CreateForTesting(const IsolationContext& isolation_context,
 SiteInfo::SiteInfo(const GURL& site_url,
                    const GURL& process_lock_url,
                    bool requires_origin_keyed_process,
+                   bool is_sandboxed,
                    const StoragePartitionConfig storage_partition_config,
                    const WebExposedIsolationInfo& web_exposed_isolation_info,
                    bool is_guest,
@@ -360,6 +361,7 @@ SiteInfo::SiteInfo(const GURL& site_url,
     : site_url_(site_url),
       process_lock_url_(process_lock_url),
       requires_origin_keyed_process_(requires_origin_keyed_process),
+      is_sandboxed_(is_sandboxed),
       storage_partition_config_(storage_partition_config),
       web_exposed_isolation_info_(web_exposed_isolation_info),
       is_guest_(is_guest),
@@ -376,6 +378,7 @@ SiteInfo::SiteInfo(BrowserContext* browser_context)
           /*site_url=*/GURL(),
           /*process_lock_url=*/GURL(),
           /*requires_origin_keyed_process=*/false,
+          /*is_sandboxed*/ false,
           StoragePartitionConfig::CreateDefault(browser_context),
           WebExposedIsolationInfo::CreateNonIsolated(),
           /*is_guest=*/false,
@@ -402,7 +405,7 @@ auto SiteInfo::MakeSecurityPrincipalKey(const SiteInfo& site_info) {
                   // TODO(wjmaclean): Update this if we ever start to create
                   // separate SiteInfos for same-process OriginAgentCluster.
                   site_info.requires_origin_keyed_process_,
-                  site_info.storage_partition_config_,
+                  site_info.is_sandboxed_, site_info.storage_partition_config_,
                   site_info.web_exposed_isolation_info_, site_info.is_guest_,
                   site_info.is_jit_disabled_, site_info.is_pdf_);
 }
@@ -451,6 +454,12 @@ SiteInfo SiteInfo::GetNonOriginKeyedEquivalentForMetrics(
   return non_oac_site_info;
 }
 
+SiteInfo SiteInfo::SandboxedClone() const {
+  SiteInfo sandboxed_copy(*this);
+  sandboxed_copy.is_sandboxed_ = true;
+  return sandboxed_copy;
+}
+
 SiteInfo& SiteInfo::operator=(const SiteInfo& rhs) = default;
 
 bool SiteInfo::IsSamePrincipalWith(const SiteInfo& other) const {
@@ -462,6 +471,7 @@ bool SiteInfo::IsExactMatch(const SiteInfo& other) const {
       site_url_ == other.site_url_ &&
       process_lock_url_ == other.process_lock_url_ &&
       requires_origin_keyed_process_ == other.requires_origin_keyed_process_ &&
+      is_sandboxed_ == other.is_sandboxed_ &&
       storage_partition_config_ == other.storage_partition_config_ &&
       web_exposed_isolation_info_ == other.web_exposed_isolation_info_ &&
       is_guest_ == other.is_guest_ &&
@@ -487,9 +497,9 @@ auto SiteInfo::MakeProcessLockComparisonKey() const {
   //
   // TODO(wjmaclean, alexmos): Figure out why including `is_jit_disabled_` here
   // leads to crashes in https://crbug.com/1279453.
-  return std::tie(process_lock_url_, requires_origin_keyed_process_, is_pdf_,
-                  is_guest_, web_exposed_isolation_info_,
-                  storage_partition_config_);
+  return std::tie(process_lock_url_, requires_origin_keyed_process_,
+                  is_sandboxed_, is_pdf_, is_guest_,
+                  web_exposed_isolation_info_, storage_partition_config_);
 }
 
 int SiteInfo::ProcessLockCompareTo(const SiteInfo& other) const {
@@ -525,6 +535,9 @@ std::string SiteInfo::GetDebugString() const {
 
   if (requires_origin_keyed_process_)
     debug_string += ", origin-keyed";
+
+  if (is_sandboxed_)
+    debug_string += ", sandboxed";
 
   if (web_exposed_isolation_info_.is_isolated()) {
     debug_string += ", cross-origin isolated";
@@ -583,6 +596,14 @@ bool SiteInfo::RequiresDedicatedProcess(
                                requires_origin_keyed_process_)) {
     return true;
   }
+
+  // Require a dedicated process for all sandboxed frames. Note: If this
+  // SiteInstance is a sandboxed child of a sandboxed parent, then the logic in
+  // RenderFrameHostManager::CanUseSourceSiteInstance will assign the child to
+  // the parent's SiteInstance, so we don't need to worry about the parent's
+  // sandbox status here.
+  if (is_sandboxed_)
+    return true;
 
   // Error pages in main frames do require isolation, however since this is
   // missing the context whether this is for a main frame or not, that part
@@ -702,6 +723,7 @@ void SiteInfo::WriteIntoTrace(perfetto::TracedValue context) const {
   dict.Add("site_url", site_url());
   dict.Add("process_lock_url", process_lock_url());
   dict.Add("requires_origin_keyed_process", requires_origin_keyed_process_);
+  dict.Add("is_sandboxed", is_sandboxed_);
   dict.Add("is_guest", is_guest_);
 }
 

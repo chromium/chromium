@@ -105,6 +105,14 @@ class CONTENT_EXPORT ProcessLock {
            site_info_->requires_origin_keyed_process();
   }
 
+  // True if this ProcessLock is for a origin-restricted sandboxed iframe.
+  // TODO(wjmaclean): This function's return type could mutate to an enum in
+  // future if required for sandboxed iframes that are restricted with different
+  // sandbox flags.
+  bool is_sandboxed() const {
+    return site_info_.has_value() && site_info_->is_sandboxed();
+  }
+
   // Returns whether this ProcessLock is specific to PDF contents.
   bool is_pdf() const { return site_info_.has_value() && site_info_->is_pdf(); }
 

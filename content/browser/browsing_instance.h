@@ -134,6 +134,13 @@ class CONTENT_EXPORT BrowsingInstance final
       const UrlInfo& url_info,
       bool allow_default_instance);
 
+  // Searches existing SiteInstances in the BrowsingInstance and returns a
+  // pointer to the (unique) SiteInstance that matches `site_info`, if any.
+  // If no matching SiteInstance is found, then a new SiteInstance is created
+  // in this BrowsingInstance with its site set to `site_info`.
+  scoped_refptr<SiteInstanceImpl> GetSiteInstanceForSiteInfo(
+      const SiteInfo& site_info);
+
   // Returns a SiteInfo with site and process-lock URLs for |url_info| that are
   // identical with what these values would be if we called
   // GetSiteInstanceForURL() with the same `url_info` and

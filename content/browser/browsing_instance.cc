@@ -78,6 +78,17 @@ SiteInfo BrowsingInstance::GetSiteInfoForURL(const UrlInfo& url_info,
   return ComputeSiteInfoForURL(url_info);
 }
 
+scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForSiteInfo(
+    const SiteInfo& site_info) {
+  auto i = site_instance_map_.find(site_info);
+  if (i != site_instance_map_.end())
+    return i->second;
+
+  scoped_refptr<SiteInstanceImpl> instance = new SiteInstanceImpl(this);
+  instance->SetSite(site_info);
+  return instance;
+}
+
 scoped_refptr<SiteInstanceImpl> BrowsingInstance::GetSiteInstanceForURLHelper(
     const UrlInfo& url_info,
     bool allow_default_instance) {

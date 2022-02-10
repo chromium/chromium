@@ -1204,7 +1204,9 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
                           use_current_rfh);
     NOTREACHED() << "Picked an incompatible process for URL: "
                  << process_lock.ToString() << " lock vs "
-                 << request->common_params().url.DeprecatedGetOriginAsURL();
+                 << request->common_params().url.DeprecatedGetOriginAsURL()
+                 << ", request_is_sandboxed = "
+                 << request->GetUrlInfo().is_sandboxed;
     base::debug::DumpWithoutCrashing();
   }
 
@@ -2080,7 +2082,12 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
         // approach and explicitly check before calling IsSuitableForUrlInfo.
         SiteInstanceImpl* dest_instance_impl =
             static_cast<SiteInstanceImpl*>(dest_instance);
-        if (IsDataOrAbout(dest_url_info.url) ||
+        // Make sure that if the destination frame is sandboxed that we don't
+        // skip the IsSuitableForUrlInfo() check. Note that it's impossible to
+        // have a sandboxed parent but unsandboxed child.
+        bool is_data_or_about_and_not_sandboxed =
+            IsDataOrAbout(dest_url_info.url) && !dest_url_info.is_sandboxed;
+        if (is_data_or_about_and_not_sandboxed ||
             dest_instance_impl->IsSuitableForUrlInfo(dest_url_info)) {
           // If we are forcing a swap, this should be in a different
           // BrowsingInstance.
@@ -2445,6 +2452,16 @@ bool RenderFrameHostManager::CanUseSourceSiteInstance(
   // by the initiator and therefore needs to stay in the `source_instance`.
   if (!IsDataOrAbout(dest_url_info.url))
     return false;
+
+  // If `dest_url_info` is sandboxed, then we can't assign it to a SiteInstance
+  // that isn't sandboxed. But if the `source_instance` is also sandboxed, then
+  // it's possible (e.g. a sandboxed child frame in a sandboxed parent frame).
+  if (dest_url_info.is_sandboxed !=
+      static_cast<SiteInstanceImpl*>(source_instance)
+          ->GetSiteInfo()
+          .is_sandboxed()) {
+    return false;
+  }
 
   // One exception (where data URLs, about:srcdoc or about:blank pages are *not*
   // controlled by the initiator) is when these URLs are reached via a server
@@ -2991,12 +3008,34 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
     return base::WrapRefCounted(current_site_instance);
   }
 
-  // Srcdoc documents are always in the same SiteInstance as their parent. They
-  // load their content from the "srcdoc" iframe attribute which lives in the
-  // parent's process. Using `GetParent()` is correct here because we never
-  // share BrowsingInstance / SiteInstance across inner and outer frame tree.
+  // Srcdoc documents are only in the same SiteInstance as their parent if they
+  // both have the same value for is_sandboxed(). They load their content from
+  // the "srcdoc" iframe attribute which lives in the parent's process. Using
+  // `GetParent()` is correct here because we never share BrowsingInstance /
+  // SiteInstance across inner and outer frame tree.
   RenderFrameHostImpl* parent = render_frame_host_->GetParent();
   if (parent && request->common_params().url.IsAboutSrcdoc()) {
+    const UrlInfo& url_info = request->GetUrlInfo();
+    if (url_info.is_sandboxed &&
+        !parent->GetSiteInstance()->GetSiteInfo().is_sandboxed()) {
+      // TODO(wjmaclean); For now, SiteInfo::is_sandboxed() and
+      // UrlInfo::is_sandboxed both mean "origin-restricted sandbox", so this
+      // simple comparison suffices. But when we extend sandbox isolation to
+      // depend on other sandbox flags as well, we may want to do a more
+      // detailed comparison to make sure everything is compatible. E.g. if both
+      // the parent and child are sandboxed, but with different flags, then we
+      // may need separate SiteInstances, but that will be left for future CL.
+      AppendReason(reason,
+                   "GetSiteInstanceForNavigationRequest => compatible "
+                   "sandboxed instance (IsAboutSrcdoc)");
+      // In all the non-srcdoc cases we have a value for src and hence a UrlInfo
+      // from which to build a SiteInfo for the sandboxed frame. But in the case
+      // of a srcdoc iframe, we're basically picking a SiteInstance that is the
+      // same as the parent frame, but with the `is_sandbox` flag set. srcdoc
+      // iframes are normally considered to have the same origin as their
+      // parents, so this seems reasonable.
+      return parent->GetSiteInstance()->GetCompatibleSandboxedSiteInstance();
+    }
     AppendReason(reason,
                  "GetSiteInstanceForNavigationRequest => parent-instance"
                  " (IsAboutSrcdoc)");

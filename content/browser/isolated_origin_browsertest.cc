@@ -121,6 +121,7 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
     BrowserContext* browser_context = web_contents()->GetBrowserContext();
     return ProcessLock::FromSiteInfo(SiteInfo(
         GURL(url), GURL(url), false /* requires_origin_keyed_process */,
+        false /* is_sandboxed */,
         StoragePartitionConfig::CreateDefault(browser_context),
         WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
         false /* does_site_request_dedicated_process_for_coop */,
@@ -143,6 +144,7 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
     GURL origin_url = url::Origin::Create(url).GetURL();
     return ProcessLock::FromSiteInfo(SiteInfo(
         origin_url, origin_url, false /* requires_origin_keyed_process */,
+        false /* is_sandboxed */,
         StoragePartitionConfig::CreateDefault(browser_context),
         WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
         false /* does_site_request_dedicated_process_for_coop */,
@@ -767,6 +769,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   BrowserContext* browser_context = web_contents()->GetBrowserContext();
   auto expected_isolated_suborigin_lock = ProcessLock::FromSiteInfo(SiteInfo(
       origin_url, origin_url, true /* requires_origin_keyed_process */,
+      false /* is_sandboxed */,
       StoragePartitionConfig::CreateDefault(browser_context),
       WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
       false /* does_site_request_dedicated_process_for_coop */,

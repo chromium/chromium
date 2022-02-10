@@ -295,6 +295,11 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // SiteInstance.
   void SetSite(const UrlInfo& url_info);
 
+  // Same as above, but for SiteInfo. The above version should be used in most
+  // cases, unless the UrlInfo is unavailable, such as for sandboxed srcdoc
+  // frames.
+  void SetSite(const SiteInfo& site_info);
+
   // Similar to SetSite(), but first attempts to convert this object to a
   // default SiteInstance if |url_info| can be placed inside a default
   // SiteInstance. If conversion is not possible, then the normal SetSite()
@@ -392,6 +397,13 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // Simple helper function that returns the is_isolated property of the
   // WebExposedIsolationInfo of this BrowsingInstance.
   bool IsCrossOriginIsolated() const;
+
+  // Finds an existing SiteInstance in this SiteInstance's BrowsingInstance that
+  // matches this SiteInstance's SiteInfo but with the `is_sandboxed_` flag
+  // true. If an existing SiteInstance isn't found, a new one is created in the
+  // same BrowsingInstance. Note that this SiteInstance must have had its
+  // SiteInfo already assigned via SetSite() before calling this function.
+  scoped_refptr<SiteInstanceImpl> GetCompatibleSandboxedSiteInstance();
 
  private:
   friend class BrowsingInstance;

@@ -116,6 +116,10 @@ struct CONTENT_EXPORT UrlInfo {
   // this is just the origin of |url|.
   url::Origin origin;
 
+  // If url is being loaded in a frame that is in a origin-restricted sandboxed,
+  // then this flag will be true.
+  bool is_sandboxed = false;
+
   // The StoragePartitionConfig that should be used when loading content from
   // |url|. If absent, ContentBrowserClient::GetStoragePartitionConfig will be
   // used to determine which StoragePartitionConfig to use.
@@ -157,6 +161,7 @@ class CONTENT_EXPORT UrlInfoInit {
   UrlInfoInit& WithOriginIsolationRequest(
       UrlInfo::OriginIsolationRequest origin_isolation_request);
   UrlInfoInit& WithOrigin(const url::Origin& origin);
+  UrlInfoInit& WithSandbox(bool is_sandboxed);
   UrlInfoInit& WithStoragePartitionConfig(
       absl::optional<StoragePartitionConfig> storage_partition_config);
   UrlInfoInit& WithWebExposedIsolationInfo(
@@ -172,6 +177,7 @@ class CONTENT_EXPORT UrlInfoInit {
   UrlInfo::OriginIsolationRequest origin_isolation_request_ =
       UrlInfo::OriginIsolationRequest::kNone;
   url::Origin origin_;
+  bool is_sandboxed_ = false;
   absl::optional<StoragePartitionConfig> storage_partition_config_;
   absl::optional<WebExposedIsolationInfo> web_exposed_isolation_info_;
   bool is_pdf_ = false;
