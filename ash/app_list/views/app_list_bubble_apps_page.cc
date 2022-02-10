@@ -275,11 +275,18 @@ void AppListBubbleAppsPage::AnimateHideLauncher() {
 }
 
 void AppListBubbleAppsPage::AnimateShowPage() {
-  SetVisible(true);
-
   // If skipping animations, just update visibility.
-  if (ui::ScopedAnimationDurationScaleMode::is_zero())
+  if (ui::ScopedAnimationDurationScaleMode::is_zero()) {
+    SetVisible(true);
     return;
+  }
+
+  // Ensure any in-progress animations have their cleanup callbacks called.
+  // Note that this might call SetVisible(false) from the hide animation.
+  AbortAllAnimations();
+
+  // Ensure the view is visible.
+  SetVisible(true);
 
   // Scroll contents has a layer, so animate that.
   views::View* scroll_contents = scroll_view_->contents();
@@ -369,6 +376,7 @@ void AppListBubbleAppsPage::AbortAllAnimations() {
     if (view->layer())
       view->layer()->GetAnimator()->AbortAllAnimations();
   };
+  abort_animations(scroll_view_->contents());
   abort_animations(continue_section_);
   abort_animations(recent_apps_);
   abort_animations(separator_);

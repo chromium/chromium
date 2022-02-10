@@ -73,6 +73,35 @@ TEST_F(AppListBubbleAppsPageTest, SlideViewIntoPositionCleansUpLayers) {
   EXPECT_FALSE(recent_apps->layer());
 }
 
+// Regression test for https://crbug.com/1295794
+TEST_F(AppListBubbleAppsPageTest, AppsPageVisibleAfterQuicklyClearingSearch) {
+  // Open the app list without animation.
+  ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
+            ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppItems(5);
+  helper->ShowAppList();
+
+  auto* apps_page = helper->GetBubbleAppsPage();
+  ASSERT_TRUE(apps_page->GetVisible());
+
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Type a key to trigger the animation to transition to the search page.
+  PressAndReleaseKey(ui::VKEY_A);
+  ASSERT_TRUE(
+      apps_page->GetPageAnimationLayerForTest()->GetAnimator()->is_animating());
+
+  // Before the animation completes, delete the search. This should abort
+  // animations, animate back to the apps page, and leave the apps page visible.
+  PressAndReleaseKey(ui::VKEY_BACK);
+  helper->WaitForLayerAnimation(apps_page->GetPageAnimationLayerForTest());
+  EXPECT_TRUE(apps_page->GetVisible());
+  EXPECT_EQ(1.0f, apps_page->scroll_view()->contents()->layer()->opacity());
+}
+
 TEST_F(AppListBubbleAppsPageTest, AnimateHidePage) {
   // Open the app list without animation.
   ASSERT_EQ(ui::ScopedAnimationDurationScaleMode::duration_multiplier(),
