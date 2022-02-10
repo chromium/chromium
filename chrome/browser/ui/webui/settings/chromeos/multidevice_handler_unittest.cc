@@ -170,14 +170,13 @@ void VerifyPageContentDict(
   it = feature_states_map.find(multidevice_setup::mojom::Feature::kWifiSync);
   EXPECT_EQ(static_cast<int>(it->second), *wifi_sync_state);
 
-  std::string host_device_name;
+  const std::string* host_device_name =
+      page_content_dict->FindStringKey("hostDeviceName");
   if (expected_host_device) {
-    EXPECT_TRUE(
-        page_content_dict->GetString("hostDeviceName", &host_device_name));
-    EXPECT_EQ(expected_host_device->name(), host_device_name);
+    ASSERT_TRUE(host_device_name);
+    EXPECT_EQ(expected_host_device->name(), *host_device_name);
   } else {
-    EXPECT_FALSE(
-        page_content_dict->GetString("hostDeviceName", &host_device_name));
+    EXPECT_FALSE(host_device_name);
   }
 
   EXPECT_THAT(page_content_dict->FindBoolKey("isNearbyShareDisallowedByPolicy"),

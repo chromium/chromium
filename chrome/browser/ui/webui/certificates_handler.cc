@@ -99,8 +99,13 @@ struct DictionaryIdComparator {
     DCHECK(b_is_dictionary);
     std::u16string a_str;
     std::u16string b_str;
-    a_dict->GetString(kCertificatesHandlerNameField, &a_str);
-    b_dict->GetString(kCertificatesHandlerNameField, &b_str);
+    const std::string* ptr =
+        a_dict->FindStringKey(kCertificatesHandlerNameField);
+    if (ptr)
+      a_str = base::UTF8ToUTF16(*ptr);
+    ptr = b_dict->FindStringKey(kCertificatesHandlerNameField);
+    if (ptr)
+      b_str = base::UTF8ToUTF16(*ptr);
     if (collator_ == nullptr)
       return a_str < b_str;
     return base::i18n::CompareString16WithCollator(*collator_, a_str, b_str) ==

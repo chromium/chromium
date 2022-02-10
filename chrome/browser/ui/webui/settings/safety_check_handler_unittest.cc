@@ -394,8 +394,9 @@ std::string SafetyCheckHandlerTest::GenerateExtensionId(char char_to_repeat) {
 void SafetyCheckHandlerTest::VerifyDisplayString(
     const base::DictionaryValue* event,
     const std::u16string& expected) {
-  std::u16string display;
-  ASSERT_TRUE(event->GetString("displayString", &display));
+  const std::string* display_ptr = event->FindStringKey("displayString");
+  ASSERT_TRUE(display_ptr);
+  std::u16string display = base::UTF8ToUTF16(*display_ptr);
   ReplaceBrowserName(&display);
   // Need to also replace any instances of Chrome and Chromium in the
   // expected string due to an edge case on ChromeOS, where a device name

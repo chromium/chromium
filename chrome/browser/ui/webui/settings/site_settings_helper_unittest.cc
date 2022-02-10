@@ -53,16 +53,16 @@ class SiteSettingsHelperTest : public testing::Test {
     const base::Value& value = exceptions.GetListDeprecated()[index];
     EXPECT_TRUE(value.is_dict());
     const base::DictionaryValue& dict = base::Value::AsDictionaryValue(value);
-    std::string actual_pattern;
-    dict.GetString("origin", &actual_pattern);
-    EXPECT_EQ(pattern, actual_pattern);
-    std::string actual_display_name;
-    dict.GetString(kDisplayName, &actual_display_name);
-    EXPECT_EQ(pattern_display_name, actual_display_name);
-    std::string actual_setting;
-    dict.GetString(kSetting, &actual_setting);
+    const std::string* actual_pattern = dict.FindStringKey("origin");
+    ASSERT_TRUE(actual_pattern);
+    EXPECT_EQ(pattern, *actual_pattern);
+    const std::string* actual_display_name = dict.FindStringKey(kDisplayName);
+    ASSERT_TRUE(actual_display_name);
+    EXPECT_EQ(pattern_display_name, *actual_display_name);
+    const std::string* actual_setting = dict.FindStringKey(kSetting);
+    ASSERT_TRUE(actual_setting);
     EXPECT_EQ(content_settings::ContentSettingToString(setting),
-              actual_setting);
+              *actual_setting);
   }
 
   void AddSetting(HostContentSettingsMap* map,
@@ -269,29 +269,31 @@ TEST_F(SiteSettingsHelperTest, ExceptionListShowsEmbargoed) {
 
     // Fetch and check the first origin.
     const base::DictionaryValue* dictionary;
-    std::string primary_pattern, display_name;
     const base::Value* value = &exceptions.GetListDeprecated()[0];
     ASSERT_TRUE(value->is_dict());
     dictionary = &base::Value::AsDictionaryValue(*value);
-    ASSERT_TRUE(
-        dictionary->GetString(site_settings::kOrigin, &primary_pattern));
-    ASSERT_TRUE(
-        dictionary->GetString(site_settings::kDisplayName, &display_name));
+    const std::string* primary_pattern =
+        dictionary->FindStringKey(site_settings::kOrigin);
+    ASSERT_TRUE(primary_pattern);
+    const std::string* display_name =
+        dictionary->FindStringKey(site_settings::kDisplayName);
+    ASSERT_TRUE(display_name);
 
-    EXPECT_EQ(kOriginToBlock, primary_pattern);
-    EXPECT_EQ(kOriginToBlock, display_name);
+    EXPECT_EQ(kOriginToBlock, *primary_pattern);
+    EXPECT_EQ(kOriginToBlock, *display_name);
 
     // Fetch and check the second origin.
     value = &exceptions.GetListDeprecated()[1];
     ASSERT_TRUE(value->is_dict());
     dictionary = &base::Value::AsDictionaryValue(*value);
-    ASSERT_TRUE(
-        dictionary->GetString(site_settings::kOrigin, &primary_pattern));
-    ASSERT_TRUE(
-        dictionary->GetString(site_settings::kDisplayName, &display_name));
 
-    EXPECT_EQ(kOriginToEmbargo, primary_pattern);
-    EXPECT_EQ(kOriginToEmbargo, display_name);
+    primary_pattern = dictionary->FindStringKey(site_settings::kOrigin);
+    ASSERT_TRUE(primary_pattern);
+    display_name = dictionary->FindStringKey(site_settings::kDisplayName);
+    ASSERT_TRUE(display_name);
+
+    EXPECT_EQ(kOriginToEmbargo, *primary_pattern);
+    EXPECT_EQ(kOriginToEmbargo, *display_name);
   }
 
   {

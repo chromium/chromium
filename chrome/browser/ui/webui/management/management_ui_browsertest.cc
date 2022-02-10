@@ -43,9 +43,10 @@ class ManagementUITest : public InProcessBrowserTest {
     base::DictionaryValue* values_as_dict = NULL;
     actual_values->GetAsDictionary(&values_as_dict);
     for (const auto& val : expected_values) {
-      std::u16string actual_value;
-      values_as_dict->GetString(val.first, &actual_value);
-      ASSERT_EQ(actual_value, val.second);
+      const std::string* actual_value =
+          values_as_dict->FindStringKey(val.first);
+      ASSERT_TRUE(actual_value);
+      ASSERT_EQ(base::UTF8ToUTF16(*actual_value), val.second);
     }
   }
   policy::MockConfigurationPolicyProvider* provider() { return &provider_; }

@@ -66,11 +66,14 @@ const SkBitmap ImageTypeToBitmap(ImageType image_type_num, int size) {
 
 phonehub::Notification::AppMetadata DictToAppMetadata(
     const base::DictionaryValue* app_metadata_dict) {
-  std::u16string visible_app_name;
-  CHECK(app_metadata_dict->GetString("visibleAppName", &visible_app_name));
+  const std::string* visible_app_name_ptr =
+      app_metadata_dict->FindStringKey("visibleAppName");
+  CHECK(visible_app_name_ptr);
+  std::u16string visible_app_name = base::UTF8ToUTF16(*visible_app_name_ptr);
 
-  std::string package_name;
-  CHECK(app_metadata_dict->GetString("packageName", &package_name));
+  const std::string* package_name =
+      app_metadata_dict->FindStringKey("packageName");
+  CHECK(package_name);
 
   absl::optional<int> icon_image_type_as_int =
       app_metadata_dict->FindIntKey("icon");
@@ -82,7 +85,7 @@ phonehub::Notification::AppMetadata DictToAppMetadata(
 
   int user_id = app_metadata_dict->FindIntKey("userId").value_or(0);
 
-  return phonehub::Notification::AppMetadata(visible_app_name, package_name,
+  return phonehub::Notification::AppMetadata(visible_app_name, *package_name,
                                              icon, user_id);
 }
 
@@ -95,12 +98,12 @@ void TryAddingMetadata(
   if (!browser_tab_status_dict->GetDictionary(key, &browser_tab_metadata))
     return;
 
-  std::string url;
-  if (!browser_tab_metadata->GetString("url", &url) || url.empty())
+  const std::string* url = browser_tab_metadata->FindStringKey("url");
+  if (!url || url->empty())
     return;
 
-  std::u16string title;
-  if (!browser_tab_metadata->GetString("title", &title) || title.empty())
+  const std::string* title = browser_tab_metadata->FindStringKey("title");
+  if (!title)
     return;
 
   // JavaScript time stamps don't fit in int.
@@ -119,8 +122,8 @@ void TryAddingMetadata(
       ImageTypeToBitmap(favicon_image_type, kIconSize));
 
   auto metadata = phonehub::BrowserTabsModel::BrowserTabMetadata(
-      GURL(url), title, base::Time::FromJsTime(*last_accessed_timestamp),
-      favicon);
+      GURL(*url), base::UTF8ToUTF16(*title),
+      base::Time::FromJsTime(*last_accessed_timestamp), favicon);
 
   metadatas.push_back(metadata);
 }
@@ -428,8 +431,10 @@ void MultidevicePhoneHubHandler::HandleSetFakePhoneStatus(
 
   const base::DictionaryValue* phones_status_dict =
       static_cast<const base::DictionaryValue*>(&phones_status_value);
-  std::u16string mobile_provider;
-  CHECK(phones_status_dict->GetString("mobileProvider", &mobile_provider));
+  const std::string* mobile_provider_ptr =
+      phones_status_dict->FindStringKey("mobileProvider");
+  CHECK(mobile_provider_ptr);
+  std::u16string mobile_provider = base::UTF8ToUTF16(*mobile_provider_ptr);
 
   absl::optional<int> charging_state_as_int =
       phones_status_value.FindIntKey("chargingState");
@@ -536,16 +541,15 @@ void MultidevicePhoneHubHandler::HandleSetNotification(
   CHECK(inline_reply_id);
 
   absl::optional<std::u16string> opt_title;
-  std::u16string title;
-  if (notification_data_dict->GetString("title", &title) && !title.empty()) {
-    opt_title = title;
-  }
+  const std::string* title = notification_data_dict->FindStringKey("title");
+  if (title && !title->empty())
+    opt_title = base::UTF8ToUTF16(*title);
 
   absl::optional<std::u16string> opt_text_content;
-  std::u16string text_content;
-  if (notification_data_dict->GetString("textContent", &text_content) &&
-      !text_content.empty()) {
-    opt_text_content = text_content;
+  if (const std::string* text_content =
+          notification_data_dict->FindStringKey("textContent")) {
+    if (!text_content->empty())
+      opt_text_content = base::UTF8ToUTF16(*text_content);
   }
 
   absl::optional<gfx::Image> opt_shared_image;

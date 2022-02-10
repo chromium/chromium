@@ -28,9 +28,9 @@ void VerifyOnlyUILanguages(const base::ListValue& list) {
   for (const base::Value& value : list.GetListDeprecated()) {
     ASSERT_TRUE(value.is_dict());
     const base::DictionaryValue& dict = base::Value::AsDictionaryValue(value);
-    std::string code;
-    ASSERT_TRUE(dict.GetString("code", &code));
-    EXPECT_NE("ga", code)
+    const std::string* code = dict.FindStringKey("code");
+    ASSERT_TRUE(code);
+    EXPECT_NE("ga", *code)
         << "Irish is an example language which has input method "
         << "but can't use it as UI language.";
   }
@@ -42,9 +42,9 @@ void VerifyLanguageCode(const base::ListValue& list,
   const base::Value& value = list.GetListDeprecated()[index];
   ASSERT_TRUE(value.is_dict());
   const base::DictionaryValue& dict = base::Value::AsDictionaryValue(value);
-  std::string actual_code;
-  ASSERT_TRUE(dict.GetString("code", &actual_code));
-  EXPECT_EQ(expected_code, actual_code)
+  const std::string* actual_code = dict.FindStringKey("code");
+  ASSERT_TRUE(actual_code);
+  EXPECT_EQ(expected_code, *actual_code)
       << "Wrong language code at index " << index << ".";
 }
 

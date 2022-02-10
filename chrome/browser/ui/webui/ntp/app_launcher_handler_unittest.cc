@@ -140,9 +140,9 @@ class AppLauncherHandlerTest : public testing::Test {
     const base::DictionaryValue* app_info;
     arg1->GetAsDictionary(&app_info);
 
-    std::string app_id;
-    app_info->GetString(kKeyAppId, &app_id);
-    EXPECT_EQ(app_id, installed_app_id);
+    const std::string* app_id = app_info->FindStringKey(kKeyAppId);
+    ASSERT_TRUE(app_id);
+    EXPECT_EQ(*app_id, installed_app_id);
 
     EXPECT_THAT(app_info->FindBoolPath(kKeyIsLocallyInstalled), Optional(true));
   }

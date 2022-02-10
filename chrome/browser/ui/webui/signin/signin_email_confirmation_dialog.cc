@@ -185,17 +185,18 @@ void SigninEmailConfirmationDialog::OnDialogClosed(
   std::unique_ptr<base::DictionaryValue> ret_value(base::DictionaryValue::From(
       base::JSONReader::ReadDeprecated(json_retval)));
   if (ret_value) {
-    std::string action_string;
-    if (ret_value->GetString(kSigninEmailConfirmationActionKey,
-                             &action_string)) {
-      if (action_string == kSigninEmailConfirmationActionCancel) {
+    const std::string* action_string =
+        ret_value->FindStringKey(kSigninEmailConfirmationActionKey);
+    if (action_string) {
+      if (*action_string == kSigninEmailConfirmationActionCancel) {
         action = CLOSE;
-      } else if (action_string == kSigninEmailConfirmationActionCreateNewUser) {
+      } else if (*action_string ==
+                 kSigninEmailConfirmationActionCreateNewUser) {
         action = CREATE_NEW_USER;
-      } else if (action_string == kSigninEmailConfirmationActionStartSync) {
+      } else if (*action_string == kSigninEmailConfirmationActionStartSync) {
         action = START_SYNC;
       } else {
-        NOTREACHED() << "Unexpected action value [" << action_string << "]";
+        NOTREACHED() << "Unexpected action value [" << *action_string << "]";
       }
     } else {
       NOTREACHED() << "No action in the dialog close return arguments";

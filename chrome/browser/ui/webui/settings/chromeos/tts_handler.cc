@@ -135,8 +135,10 @@ void TtsHandler::HandlePreviewTtsVoice(base::Value::ConstListView args) {
       base::DictionaryValue::From(base::JSONReader::ReadDeprecated(voice_id));
   std::string name;
   std::string extension_id;
-  json->GetString("name", &name);
-  json->GetString("extension", &extension_id);
+  if (const std::string* ptr = json->FindStringKey("name"))
+    name = *ptr;
+  if (const std::string* ptr = json->FindStringKey("extension"))
+    extension_id = *ptr;
 
   std::unique_ptr<content::TtsUtterance> utterance =
       content::TtsUtterance::Create(web_ui()->GetWebContents());

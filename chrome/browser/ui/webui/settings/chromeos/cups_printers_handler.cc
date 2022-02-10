@@ -121,40 +121,42 @@ base::Value BuildCupsPrintersList(const std::vector<Printer>& printers) {
 // returns nullptr.
 std::unique_ptr<chromeos::Printer> DictToPrinter(
     const base::DictionaryValue& printer_dict) {
-  std::string printer_id;
-  std::string printer_name;
-  std::string printer_description;
-  std::string printer_make_and_model;
-  std::string printer_address;
-  std::string printer_protocol;
-  std::string print_server_uri;
-
-  if (!printer_dict.GetString("printerId", &printer_id) ||
-      !printer_dict.GetString("printerName", &printer_name) ||
-      !printer_dict.GetString("printerDescription", &printer_description) ||
-      !printer_dict.GetString("printerMakeAndModel", &printer_make_and_model) ||
-      !printer_dict.GetString("printerAddress", &printer_address) ||
-      !printer_dict.GetString("printerProtocol", &printer_protocol) ||
-      !printer_dict.GetString("printServerUri", &print_server_uri)) {
+  const std::string* printer_id = printer_dict.FindStringKey("printerId");
+  const std::string* printer_name = printer_dict.FindStringKey("printerName");
+  const std::string* printer_description =
+      printer_dict.FindStringKey("printerDescription");
+  const std::string* printer_make_and_model =
+      printer_dict.FindStringKey("printerMakeAndModel");
+  const std::string* printer_address =
+      printer_dict.FindStringKey("printerAddress");
+  const std::string* printer_protocol =
+      printer_dict.FindStringKey("printerProtocol");
+  const std::string* print_server_uri =
+      printer_dict.FindStringKey("printServerUri");
+  if (!printer_id || !printer_name || !printer_description ||
+      !printer_make_and_model || !printer_address || !printer_protocol ||
+      !print_server_uri) {
     return nullptr;
   }
 
   std::string printer_queue;
   // The protocol "socket" does not allow path.
-  if (printer_protocol != "socket") {
-    printer_dict.GetString("printerQueue", &printer_queue);
-    // Path must start from '/' character.
-    if (!printer_queue.empty() && printer_queue.front() != '/')
-      printer_queue.insert(0, "/");
+  if (*printer_protocol != "socket") {
+    if (const std::string* ptr = printer_dict.FindStringKey("printerQueue")) {
+      printer_queue = *ptr;
+      // Path must start from '/' character.
+      if (!printer_queue.empty() && printer_queue.front() != '/')
+        printer_queue.insert(0, "/");
+    }
   }
 
-  auto printer = std::make_unique<chromeos::Printer>(printer_id);
-  printer->set_display_name(printer_name);
-  printer->set_description(printer_description);
-  printer->set_make_and_model(printer_make_and_model);
-  printer->set_print_server_uri(print_server_uri);
+  auto printer = std::make_unique<chromeos::Printer>(*printer_id);
+  printer->set_display_name(*printer_name);
+  printer->set_description(*printer_description);
+  printer->set_make_and_model(*printer_make_and_model);
+  printer->set_print_server_uri(*print_server_uri);
 
-  Uri uri(printer_protocol + url::kStandardSchemeSeparator + printer_address +
+  Uri uri(*printer_protocol + url::kStandardSchemeSeparator + *printer_address +
           printer_queue);
   if (uri.GetLastParsingError().status != Uri::ParserStatus::kNoErrors) {
     PRINTER_LOG(ERROR) << "Uri parse error: "
@@ -470,28 +472,32 @@ void CupsPrintersHandler::HandleGetPrinterInfo(
 
   AllowJavascript();
 
-  std::string printer_address;
-  if (!printer_dict.GetString("printerAddress", &printer_address)) {
+  const std::string* printer_address =
+      printer_dict.FindStringKey("printerAddress");
+  if (!printer_address) {
     NOTREACHED() << "Address missing";
     return;
   }
 
   std::string printer_queue;
-  printer_dict.GetString("printerQueue", &printer_queue);
-  // Path must start from '/' character.
-  if (!printer_queue.empty() && printer_queue.front() != '/')
-    printer_queue = "/" + printer_queue;
+  if (const std::string* ptr = printer_dict.FindStringKey("printerQueue")) {
+    printer_queue = *ptr;
+    // Path must start from '/' character.
+    if (!printer_queue.empty() && printer_queue.front() != '/')
+      printer_queue = "/" + printer_queue;
+  }
 
-  std::string printer_protocol;
-  if (!printer_dict.GetString("printerProtocol", &printer_protocol)) {
+  const std::string* printer_protocol =
+      printer_dict.FindStringKey("printerProtocol");
+  if (!printer_protocol) {
     NOTREACHED() << "Protocol missing";
     return;
   }
 
-  DCHECK(printer_protocol == kIppScheme || printer_protocol == kIppsScheme)
+  DCHECK(*printer_protocol == kIppScheme || *printer_protocol == kIppsScheme)
       << "Printer info requests only supported for IPP and IPPS printers";
 
-  Uri uri(printer_protocol + url::kStandardSchemeSeparator + printer_address +
+  Uri uri(*printer_protocol + url::kStandardSchemeSeparator + *printer_address +
           printer_queue);
   if (uri.GetLastParsingError().status != Uri::ParserStatus::kNoErrors ||
       !IsValidPrinterUri(uri)) {
@@ -681,33 +687,33 @@ void CupsPrintersHandler::AddOrReconfigurePrinter(
   }
 
   // Read PPD selection if it was used.
-  std::string ppd_manufacturer;
-  std::string ppd_model;
-  printer_dict.GetString("ppdManufacturer", &ppd_manufacturer);
-  printer_dict.GetString("ppdModel", &ppd_model);
+  const std::string* ppd_manufacturer =
+      printer_dict.FindStringKey("ppdManufacturer");
+  const std::string* ppd_model = printer_dict.FindStringKey("ppdModel");
 
   // Read user provided PPD if it was used.
-  std::string printer_ppd_path;
-  printer_dict.GetString("printerPPDPath", &printer_ppd_path);
+  const std::string* printer_ppd_path =
+      printer_dict.FindStringKey("printerPPDPath");
 
   // Check if the printer already has a valid ppd_reference.
   Printer::PpdReference ppd_ref = GetPpdReference(&printer_dict);
   if (ppd_ref.IsFilled()) {
     *printer->mutable_ppd_reference() = ppd_ref;
-  } else if (!printer_ppd_path.empty()) {
-    GURL tmp = net::FilePathToFileURL(base::FilePath(printer_ppd_path));
+  } else if (printer_ppd_path && !printer_ppd_path->empty()) {
+    GURL tmp = net::FilePathToFileURL(base::FilePath(*printer_ppd_path));
     if (!tmp.is_valid()) {
-      LOG(ERROR) << "Invalid ppd path: " << printer_ppd_path;
+      LOG(ERROR) << "Invalid ppd path: " << *printer_ppd_path;
       OnAddOrEditPrinterError(callback_id, PrinterSetupResult::kInvalidPpd);
       return;
     }
     printer->mutable_ppd_reference()->user_supplied_ppd_url = tmp.spec();
-  } else if (!ppd_manufacturer.empty() && !ppd_model.empty()) {
+  } else if (ppd_manufacturer && !ppd_manufacturer->empty() && ppd_model &&
+             !ppd_model->empty()) {
     // Pull out the ppd reference associated with the selected manufacturer and
     // model.
     bool found = false;
-    for (const auto& resolved_printer : resolved_printers_[ppd_manufacturer]) {
-      if (resolved_printer.name == ppd_model) {
+    for (const auto& resolved_printer : resolved_printers_[*ppd_manufacturer]) {
+      if (resolved_printer.name == *ppd_model) {
         *printer->mutable_ppd_reference() = resolved_printer.ppd_ref;
         found = true;
         break;
@@ -721,7 +727,7 @@ void CupsPrintersHandler::AddOrReconfigurePrinter(
 
     if (printer->make_and_model().empty()) {
       // PPD Model names are actually make and model.
-      printer->set_make_and_model(ppd_model);
+      printer->set_make_and_model(*ppd_model);
     }
   } else {
     // TODO(https://crbug.com/738514): Support PPD guessing for non-autoconf

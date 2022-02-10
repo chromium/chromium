@@ -191,10 +191,9 @@ void GetUserManager(base::DictionaryValue* dict, Profile* profile) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ExtractDomainFromUsername(base::DictionaryValue* dict) {
-  std::string username;
-  dict->GetString("username", &username);
-  if (!username.empty())
-    dict->SetString("domain", gaia::ExtractDomainName(username));
+  const std::string* username = dict->FindStringKey("username");
+  if (username && !username->empty())
+    dict->SetString("domain", gaia::ExtractDomainName(*username));
 }
 
 // MachineStatus box labels itself as `machine policies` on desktop. In the
@@ -1107,10 +1106,9 @@ base::DictionaryValue PolicyUIHandler::GetStatusValue(bool for_webui) const {
   std::string domain = device_domain_;
   std::unique_ptr<base::DictionaryValue> user_status(new base::DictionaryValue);
   user_status_provider_->GetStatus(user_status.get());
-  std::string username;
-  user_status->GetString("username", &username);
-  if (!username.empty())
-    user_status->SetString("domain", gaia::ExtractDomainName(username));
+  const std::string* username = user_status->FindStringKey("username");
+  if (username && username->empty())
+    user_status->SetString("domain", gaia::ExtractDomainName(*username));
 
   std::unique_ptr<base::DictionaryValue> machine_status(
       new base::DictionaryValue);
