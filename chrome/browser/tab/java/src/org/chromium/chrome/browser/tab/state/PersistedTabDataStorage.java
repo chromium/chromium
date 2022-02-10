@@ -36,6 +36,26 @@ public interface PersistedTabDataStorage {
     ByteBuffer restore(int tabId, String tabDataId);
 
     /**
+     * @param <U> a {@link PersistedTabDataResult}
+     * @param tabId identifier for the {@link Tab}
+     * @param dataId unique identifier representing the type of {@link PersistedTabData}
+     * @param mapper converts a raw result from storage to a {@link PersistedTabDataResult}
+     * @return a {@link PersistedTabDataResult}
+     */
+    <U extends PersistedTabDataResult> U restore(
+            int tabId, String dataId, PersistedTabDataMapper<U> mapper);
+
+    /**
+     * @param <U> a {@link PersistedTabDataResult}
+     * @param tabId identifier for the {@link Tab}
+     * @param dataId unique identifier representing the type of {@link PersistedTabData}
+     * @param callback {@link Callback} thhe {@link PersistedTabDataResult} is passed back in
+     * @param mapper converts a raw result from storage to a {@link PersistedTabDataResult}
+     */
+    <U extends PersistedTabDataResult> void restore(
+            int tabId, String dataId, Callback<U> callback, PersistedTabDataMapper<U> mapper);
+
+    /**
      * @param tabId identifier for the {@link Tab}
      * @param tabDataId unique identifier representing the type of {@link PersistedTabData}
      */

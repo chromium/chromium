@@ -228,7 +228,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         mIncognito = incognito;
         if (!CriticalPersistedTabData.isEmptySerialization(serializedCriticalPersistedTabData)
                 && useCriticalPersistedTabData()) {
-            CriticalPersistedTabData.build(this, serializedCriticalPersistedTabData, true);
+            CriticalPersistedTabData.build(this, serializedCriticalPersistedTabData);
             mUsedCriticalPersistedTabData = true;
         }
 
