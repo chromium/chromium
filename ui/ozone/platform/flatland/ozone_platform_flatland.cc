@@ -103,7 +103,9 @@ class OzonePlatformFlatland : public OzonePlatform,
       CHECK_EQ(ZX_OK, status) << "zx_channel_create";
       properties.view_creation_token = std::move(child_token);
       properties.view_ref_pair = scenic::ViewRefPair::New();
-      ::ui::fuchsia::GetFlatlandViewPresenter().Run(std::move(parent_token));
+      properties.view_controller =
+          ::ui::fuchsia::GetFlatlandViewPresenter().Run(
+              std::move(parent_token));
     }
 
     // TODO(crbug.com/1230150): Add a hook for the RootPresenter equivalent of

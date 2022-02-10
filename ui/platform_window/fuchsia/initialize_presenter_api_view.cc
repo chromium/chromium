@@ -70,15 +70,19 @@ const FlatlandPresentViewCallback& GetFlatlandViewPresenter() {
 void IgnorePresentCallsForTest() {
   SetScenicViewPresenter(
       base::BindRepeating([](::fuchsia::ui::views::ViewHolderToken view_holder,
-                             ::fuchsia::ui::views::ViewRef view_ref) {
+                             ::fuchsia::ui::views::ViewRef view_ref)
+                              -> ::fuchsia::element::ViewControllerPtr {
         DCHECK(view_holder.value);
         DCHECK(view_ref.reference);
         DVLOG(1) << "Present call ignored for test.";
+        return nullptr;
       }));
   SetFlatlandViewPresenter(base::BindRepeating(
-      [](::fuchsia::ui::views::ViewportCreationToken viewport_creation_token) {
+      [](::fuchsia::ui::views::ViewportCreationToken viewport_creation_token)
+          -> ::fuchsia::element::ViewControllerPtr {
         DCHECK(viewport_creation_token.value);
         DVLOG(1) << "Present call ignored for test.";
+        return nullptr;
       }));
 }
 

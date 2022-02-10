@@ -114,8 +114,9 @@ class ViewProviderScenic : public fuchsia::ui::app::ViewProvider {
     scenic_.Unbind();
   }
 
-  void PresentView(fuchsia::ui::views::ViewHolderToken view_holder_token,
-                   fuchsia::ui::views::ViewRef view_ref) {
+  fuchsia::element::ViewControllerPtr PresentView(
+      fuchsia::ui::views::ViewHolderToken view_holder_token,
+      fuchsia::ui::views::ViewRef view_ref) {
     ScenicSubViewData subview = {
         .view_holder = scenic::ViewHolder(&scenic_session_,
                                           std::move(view_holder_token).value,
@@ -129,6 +130,7 @@ class ViewProviderScenic : public fuchsia::ui::app::ViewProvider {
       Present();
     }
     subviews_.push_back(std::move(subview));
+    return nullptr;
   }
 
   // fuchsia::ui::app::ViewProvider overrides.
@@ -265,7 +267,8 @@ class ViewProviderScenic : public fuchsia::ui::app::ViewProvider {
 // ViewProvider implementation that provides a single view and exposes all
 // requested views from OzonePlatformFlatland inside it. This class owns the top
 // level Flatland session.
-class ViewProviderFlatland : public fuchsia::ui::app::ViewProvider {
+class ViewProviderFlatland : public fuchsia::ui::app::ViewProvider,
+                             public fuchsia::element::ViewController {
  public:
   ViewProviderFlatland() {
     // This is safe since the callback is overwritten in dtor.
@@ -336,7 +339,12 @@ class ViewProviderFlatland : public fuchsia::ui::app::ViewProvider {
         fit::bind_member(this, &ViewProviderFlatland::OnViewRefFocused));
   }
 
-  void PresentView(
+  // fuchsia::element::ViewController override
+  void Dismiss() override {
+    // Ignoring dismiss requests.
+  }
+
+  fuchsia::element::ViewControllerPtr PresentView(
       fuchsia::ui::views::ViewportCreationToken viewport_creation_token) {
     // Flatland requires a size to be set in CreateViewport() calls, so wait for
     // receiving size before handling the presentation request. Flatland
@@ -345,7 +353,7 @@ class ViewProviderFlatland : public fuchsia::ui::app::ViewProvider {
     // OnGetLayout().
     if (view_size_.IsZero()) {
       pending_present_views_.push_back(std::move(viewport_creation_token));
-      return;
+      return nullptr;
     }
 
     FlatlandSubViewData subview;
@@ -368,6 +376,7 @@ class ViewProviderFlatland : public fuchsia::ui::app::ViewProvider {
           subviews_[index].child_view_ref = std::move(ref);
           RequestFocus();
         });
+    return nullptr;
   }
 
  private:
@@ -522,25 +531,32 @@ class ChromeBrowserMainPartsFuchsia::UseGraphicalPresenter final {
   UseGraphicalPresenter& operator=(const UseGraphicalPresenter&) = delete;
 
  private:
-  void PresentScenicView(fuchsia::ui::views::ViewHolderToken view_holder_token,
-                         fuchsia::ui::views::ViewRef view_ref) {
+  fuchsia::element::ViewControllerPtr PresentScenicView(
+      fuchsia::ui::views::ViewHolderToken view_holder_token,
+      fuchsia::ui::views::ViewRef view_ref) {
+    fuchsia::element::ViewControllerPtr view_controller;
     fuchsia::element::ViewSpec view_spec;
     view_spec.set_view_holder_token(std::move(view_holder_token));
     view_spec.set_view_ref(std::move(view_ref));
     view_spec.set_annotations(fidl::Clone(element_manager_->GetAnnotations()));
-    graphical_presenter_->PresentView(std::move(view_spec), nullptr, nullptr,
+    graphical_presenter_->PresentView(std::move(view_spec), nullptr,
+                                      view_controller.NewRequest(),
                                       [](auto result) {});
+    return view_controller;
   }
 
-  void PresentFlatlandView(
+  fuchsia::element::ViewControllerPtr PresentFlatlandView(
       fuchsia::ui::views::ViewportCreationToken viewport_creation_token) {
+    fuchsia::element::ViewControllerPtr view_controller;
     auto view_ref_pair = scenic::ViewRefPair::New();
     fuchsia::element::ViewSpec view_spec;
     view_spec.set_viewport_creation_token(std::move(viewport_creation_token));
     view_spec.set_view_ref(std::move(view_ref_pair.view_ref));
     view_spec.set_annotations(fidl::Clone(element_manager_->GetAnnotations()));
-    graphical_presenter_->PresentView(std::move(view_spec), nullptr, nullptr,
+    graphical_presenter_->PresentView(std::move(view_spec), nullptr,
+                                      view_controller.NewRequest(),
                                       [](auto result) {});
+    return view_controller;
   }
 
   base::raw_ptr<ElementManagerImpl> element_manager_;

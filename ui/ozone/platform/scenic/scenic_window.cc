@@ -51,6 +51,7 @@ ScenicWindow::ScenicWindow(ScenicWindowManager* window_manager,
       scenic_window_delegate_(properties.scenic_window_delegate),
       window_id_(manager_->AddWindow(this)),
       view_ref_(std::move(properties.view_ref_pair.view_ref)),
+      view_controller_(std::move(properties.view_controller)),
       event_dispatcher_(this),
       scenic_session_(manager_->GetScenic()),
       safe_presenter_(&scenic_session_),
@@ -63,6 +64,11 @@ ScenicWindow::ScenicWindow(ScenicWindowManager* window_manager,
       input_node_(&scenic_session_),
       render_node_(&scenic_session_),
       bounds_(properties.bounds) {
+  if (view_controller_) {
+    view_controller_.set_error_handler(
+        fit::bind_member(this, &ScenicWindow::OnViewControllerDisconnected));
+  }
+
   scenic_session_.set_error_handler(
       fit::bind_member(this, &ScenicWindow::OnScenicError));
   scenic_session_.set_event_handler(
@@ -143,6 +149,10 @@ void ScenicWindow::Hide() {
 }
 
 void ScenicWindow::Close() {
+  if (view_controller_) {
+    view_controller_->Dismiss();
+    view_controller_ = nullptr;
+  }
   Hide();
   delegate_->OnClosed();
 }
@@ -276,7 +286,7 @@ void ScenicWindow::DispatchEvent(ui::Event* event) {
 
 void ScenicWindow::OnScenicError(zx_status_t status) {
   LOG(ERROR) << "scenic::Session failed with code " << status << ".";
-  delegate_->OnClosed();
+  delegate_->OnCloseRequest();
 }
 
 void ScenicWindow::OnScenicEvents(
@@ -398,6 +408,11 @@ bool ScenicWindow::UpdateRootNodeVisibility() {
       node_.Detach();
   }
   return is_root_node_shown_;
+}
+
+void ScenicWindow::OnViewControllerDisconnected(zx_status_t status) {
+  view_controller_ = nullptr;
+  delegate_->OnCloseRequest();
 }
 
 }  // namespace ui

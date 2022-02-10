@@ -5,6 +5,7 @@
 #ifndef UI_PLATFORM_WINDOW_FUCHSIA_INITIALIZE_PRESENTER_API_VIEW_H_
 #define UI_PLATFORM_WINDOW_FUCHSIA_INITIALIZE_PRESENTER_API_VIEW_H_
 
+#include <fuchsia/element/cpp/fidl.h>
 #include <fuchsia/ui/views/cpp/fidl.h>
 
 #include "base/callback.h"
@@ -15,11 +16,13 @@ namespace ui {
 namespace fuchsia {
 
 using ScenicPresentViewCallback =
-    base::RepeatingCallback<void(::fuchsia::ui::views::ViewHolderToken,
-                                 ::fuchsia::ui::views::ViewRef)>;
+    base::RepeatingCallback<::fuchsia::element::ViewControllerPtr(
+        ::fuchsia::ui::views::ViewHolderToken,
+        ::fuchsia::ui::views::ViewRef)>;
 
 using FlatlandPresentViewCallback =
-    base::RepeatingCallback<void(::fuchsia::ui::views::ViewportCreationToken)>;
+    base::RepeatingCallback<::fuchsia::element::ViewControllerPtr(
+        ::fuchsia::ui::views::ViewportCreationToken)>;
 
 // Generates and sets the view tokens that are required to utilize the
 // Presenter API. |window_properties_out| must be a valid value.

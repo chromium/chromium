@@ -55,6 +55,7 @@ source_set("scenic") {
     "//services/service_manager/public/cpp",
     "//skia",
     "//third_party/angle/src/common/fuchsia_egl",
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.element",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.images",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.mem",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.sysmem",

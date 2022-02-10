@@ -125,6 +125,8 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow final : public PlatformWindow,
                                  view_properties_->bounding_box.min.y));
   }
 
+  void OnViewControllerDisconnected(zx_status_t status);
+
   ScenicWindowManager* const manager_;
   PlatformWindowDelegate* const delegate_;
   ScenicWindowDelegate* const scenic_window_delegate_;
@@ -134,6 +136,9 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow final : public PlatformWindow,
   // across the system. ViewRef consumers can access the handle by
   // calling CloneViewRef().
   const fuchsia::ui::views::ViewRef view_ref_;
+
+  // Used to coordinate window closure requests with the shell.
+  fuchsia::element::ViewControllerPtr view_controller_;
 
   // Dispatches Scenic input events as Chrome ui::Events.
   InputEventDispatcher event_dispatcher_;

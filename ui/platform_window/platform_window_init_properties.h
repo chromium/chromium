@@ -15,6 +15,7 @@
 #include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_FUCHSIA)
+#include <fuchsia/element/cpp/fidl.h>
 #include <fuchsia/ui/composition/cpp/fidl.h>
 #include <fuchsia/ui/views/cpp/fidl.h>
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
@@ -91,6 +92,9 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   fuchsia::ui::views::ViewCreationToken view_creation_token;
 
   scenic::ViewRefPair view_ref_pair;
+
+  // Used to coordinate window closure requests with the shell.
+  fuchsia::element::ViewControllerPtr view_controller;
 
   // Specifies whether handling of keypress events from the system is enabled.
   bool enable_keyboard = false;
