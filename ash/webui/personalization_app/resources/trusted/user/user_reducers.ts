@@ -53,10 +53,22 @@ export function profileImageReducer(
   }
 }
 
+export function isCameraPresentReducer(
+    state: UserState['isCameraPresent'], action: Actions,
+    _: PersonalizationState): UserState['isCameraPresent'] {
+  switch (action.name) {
+    case UserActionName.SET_IS_CAMERA_PRESENT:
+      return action.isCameraPresent;
+    default:
+      return state;
+  }
+}
+
 export const userReducers:
     {[K in keyof UserState]: ReducerFunction<UserState[K]>} = {
       defaultUserImages: defaultUserImagesReducer,
       image: imageReducer,
       info: infoReducer,
       profileImage: profileImageReducer,
+      isCameraPresent: isCameraPresentReducer,
     };

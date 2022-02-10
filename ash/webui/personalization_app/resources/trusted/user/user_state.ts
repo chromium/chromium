@@ -11,6 +11,7 @@ export interface UserState {
   image: Url|null;
   info: UserInfo|null;
   profileImage: Url|null;
+  isCameraPresent: boolean;
 }
 
 export function emptyState(): UserState {
@@ -19,5 +20,6 @@ export function emptyState(): UserState {
     image: null,
     info: null,
     profileImage: null,
+    isCameraPresent: false,
   };
 }

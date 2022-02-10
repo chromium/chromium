@@ -8,6 +8,7 @@
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_user_provider.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/camera_presence_notifier.h"
 #include "components/user_manager/user_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -21,7 +22,8 @@ class WebUI;
 
 class PersonalizationAppUserProviderImpl
     : public ash::PersonalizationAppUserProvider,
-      public user_manager::UserManager::Observer {
+      public user_manager::UserManager::Observer,
+      public ash::CameraPresenceNotifier::Observer {
  public:
   explicit PersonalizationAppUserProviderImpl(content::WebUI* web_ui);
 
@@ -56,6 +58,9 @@ class PersonalizationAppUserProviderImpl
   void OnUserProfileImageUpdated(const user_manager::User& user,
                                  const gfx::ImageSkia& profile_image) override;
 
+  // ash::CameraPresenceNotifier::Observer:
+  void OnCameraPresenceCheckDone(bool is_camera_present) override;
+
  private:
   // Pointer to profile of user that opened personalization SWA. Not owned.
   Profile* const profile_ = nullptr;
@@ -63,6 +68,10 @@ class PersonalizationAppUserProviderImpl
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::Observer>
       user_manager_observer_{this};
+
+  base::ScopedObservation<ash::CameraPresenceNotifier,
+                          ash::CameraPresenceNotifier::Observer>
+      camera_observer_{this};
 
   mojo::Remote<ash::personalization_app::mojom::UserImageObserver>
       user_image_observer_remote_;

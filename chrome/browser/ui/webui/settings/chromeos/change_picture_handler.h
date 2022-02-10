@@ -68,9 +68,6 @@ class ChangePictureHandler : public ::settings::SettingsPageUIHandler,
   // Sends the previous user image from camera or file to the page.
   void SendOldImage(std::string&& image_url);
 
-  // Starts camera presence check.
-  void CheckCameraPresence();
-
   // Updates UI with camera presence state.
   void SetCameraPresent(bool present);
 

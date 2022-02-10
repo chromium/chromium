@@ -6,7 +6,7 @@ import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {UserImageObserverInterface, UserImageObserverReceiver, UserProviderInterface} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
-import {setProfileImageAction, setUserImageAction} from './user_actions.js';
+import {setIsCameraPresentAction, setProfileImageAction, setUserImageAction} from './user_actions.js';
 
 import {getUserProvider} from './user_interface_provider.js';
 
@@ -48,5 +48,10 @@ export class UserImageObserver implements UserImageObserverInterface {
   onUserProfileImageUpdated(profileImage: Url) {
     const store = PersonalizationStore.getInstance();
     store.dispatch(setProfileImageAction(profileImage));
+  }
+
+  onCameraPresenceCheckDone(isCameraPresent: boolean) {
+    const store = PersonalizationStore.getInstance();
+    store.dispatch(setIsCameraPresentAction(isCameraPresent));
   }
 }

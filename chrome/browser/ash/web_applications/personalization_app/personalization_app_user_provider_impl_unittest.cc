@@ -74,6 +74,8 @@ class TestUserImageObserver
     current_profile_image_ = profile_image;
   }
 
+  void OnCameraPresenceCheckDone(bool is_camera_present) override {}
+
   mojo::PendingRemote<ash::personalization_app::mojom::UserImageObserver>
   pending_remote() {
     DCHECK(!user_image_observer_receiver_.is_bound());

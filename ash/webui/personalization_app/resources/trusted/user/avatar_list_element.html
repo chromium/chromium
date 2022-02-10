@@ -1,6 +1,21 @@
-<style></style>
+<style>
+  avatar-camera {
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+  }
+
+</style>
 <div id="container">
   <p>Avatar list</p>
+  <template is="dom-if" if="[[isCameraPresent_]]">
+    <div id="openCamera" on-click="openCamera_">
+      <!-- TODO(cowmoo) placeholder string -->
+      <p>Open Camera</p>
+    </div>
+  </template>
   <template is="dom-if" if="[[profileImage_]]">
     <img id="profileImage" src="[[profileImage_.url]]"
         on-click="onSelectProfileImage_"
@@ -11,3 +26,4 @@
         on-click="onSelectDefaultImage_" on-keypress="onSelectDefaultImage_">
   </template>
 </div>
+<avatar-camera id="avatarCamera" open="{{shouldShowCameraUi_}}"></avatar-camera>

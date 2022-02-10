@@ -8,6 +8,7 @@
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/mojom/personalization_app_mojom_traits.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/camera_presence_notifier.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
@@ -73,6 +74,11 @@ void PersonalizationAppUserProviderImpl::SetUserImageObserver(
   const gfx::ImageSkia& profile_image =
       user_image_manager->DownloadedProfileImage();
   OnUserProfileImageUpdated(*GetUser(profile_), profile_image);
+
+  // Always unbind and rebind the camera check observer to trigger an immediate
+  // |OnCameraPresenceCheckDone|.
+  camera_observer_.Reset();
+  camera_observer_.Observe(ash::CameraPresenceNotifier::GetInstance());
 }
 
 void PersonalizationAppUserProviderImpl::GetUserInfo(
@@ -138,4 +144,9 @@ void PersonalizationAppUserProviderImpl::OnUserProfileImageUpdated(
 
   user_image_observer_remote_->OnUserProfileImageUpdated(
       GURL(webui::GetBitmapDataUrl(*profile_image.bitmap())));
+}
+
+void PersonalizationAppUserProviderImpl::OnCameraPresenceCheckDone(
+    bool is_camera_present) {
+  user_image_observer_remote_->OnCameraPresenceCheckDone(is_camera_present);
 }

@@ -276,13 +276,18 @@ struct UserInfo {
   string name;
 };
 
-// Receives updated user image when it is changed for the current user.
+// Receives necessary information to display and change user image for the
+// current user.
 interface UserImageObserver {
   // Triggered by |UserManager::Observer::OnUserImageChanged|.
   OnUserImageChanged(url.mojom.Url image);
 
   // Triggered by |UserManager::Observer::OnUserProfileImageUpdated|.
   OnUserProfileImageUpdated(url.mojom.Url profile_image);
+
+  // Triggered by
+  // |ash::CameraPresenceNotifier::Observer::OnCameraPresenceCheckDone|.
+  OnCameraPresenceCheckDone(bool is_camera_present);
 };
 
 // A default user image stored on the device that can be set as the user's

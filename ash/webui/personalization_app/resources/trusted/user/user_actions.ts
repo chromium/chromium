@@ -14,12 +14,26 @@ import {DefaultUserImage, UserInfo} from '../personalization_app.mojom-webui.js'
 export enum UserActionName {
   SET_DEFAULT_USER_IMAGES = 'set_default_user_images',
   SET_PROFILE_IMAGE = 'set_profile_image',
+  SET_IS_CAMERA_PRESENT = 'set_is_camera_present',
   SET_USER_IMAGE = 'set_user_image',
   SET_USER_INFO = 'set_user_info',
 }
 
-export type UserActions = SetUserImageAction|SetDefaultUserImagesAction|
-    SetUserInfoAction|SetProfileImageAction;
+export type UserActions = SetIsCameraPresentAction|SetUserImageAction|
+    SetDefaultUserImagesAction|SetUserInfoAction|SetProfileImageAction;
+
+export type SetIsCameraPresentAction = Action&{
+  name: UserActionName.SET_IS_CAMERA_PRESENT,
+  isCameraPresent: boolean,
+};
+
+export function setIsCameraPresentAction(isCameraPresent: boolean):
+    SetIsCameraPresentAction {
+  return {
+    name: UserActionName.SET_IS_CAMERA_PRESENT,
+    isCameraPresent,
+  };
+}
 
 export type SetUserImageAction = Action&{
   name: UserActionName.SET_USER_IMAGE,
