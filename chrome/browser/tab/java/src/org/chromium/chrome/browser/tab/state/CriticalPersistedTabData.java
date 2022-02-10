@@ -16,6 +16,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -64,6 +65,9 @@ public class CriticalPersistedTabData extends PersistedTabData {
                                 "Failed to deserialize CriticalPersistedTabDataFlatBuffer. "
                                         + "Details: " + e.getMessage());
                     }
+                    RecordHistogram.recordBooleanHistogram(
+                            "Tabs.PersistedTabData.Critical.Map.Success",
+                            criticalPersistedTabDataFlatBuffer != null);
                     return new SerializedCriticalPersistedTabData(
                             criticalPersistedTabDataFlatBuffer);
                 }
