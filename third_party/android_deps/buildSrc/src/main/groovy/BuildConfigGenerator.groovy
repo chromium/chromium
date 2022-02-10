@@ -266,14 +266,13 @@ class BuildConfigGenerator extends DefaultTask {
         }
     }
 
-    static String make3ppPb(ChromiumDepGraph.DependencyDescription dependency, String cipdBucket, String repoPath) {
+    static String make3ppPb(String cipdBucket, String repoPath) {
         String pkgPrefix = "${cipdBucket}/${repoPath}/${DOWNLOAD_DIRECTORY_NAME}"
 
         return COPYRIGHT_HEADER + '\n' + GEN_REMINDER + """
             create {
               source {
                 script { name: "fetch.py" }
-                patch_version: "${dependency.cipdSuffix}"
               }
             }
 
@@ -401,7 +400,7 @@ class BuildConfigGenerator extends DefaultTask {
                 if (dependency.fileUrl) {
                     String absoluteDep3ppDir = "${absoluteDepDir}/3pp"
                     new File(absoluteDep3ppDir).mkdirs()
-                    new File("${absoluteDep3ppDir}/3pp.pb").write(make3ppPb(dependency, cipdBucket, repositoryPath))
+                    new File("${absoluteDep3ppDir}/3pp.pb").write(make3ppPb(cipdBucket, repositoryPath))
                     File fetchFile = new File("${absoluteDep3ppDir}/fetch.py")
                     fetchFile.write(make3ppFetch(fetchTemplate, dependency))
                     fetchFile.setExecutable(true, false)

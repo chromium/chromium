@@ -1,4 +1,4 @@
-${"#!/usr/bin/env python"}
+${"#!/usr/bin/env python3"}
 ${copyrightHeader}
 # This is generated, do not edit. Update BuildConfigGenerator.groovy and
 # 3ppFetch.template instead.
@@ -17,6 +17,7 @@ _GROUP_NAME = '${dependency.group.replace('.', '/')}'
 _MODULE_NAME = '${dependency.name}'
 _FILE_EXT = '${dependency.extension}'
 _OVERRIDE_LATEST = <%= dependency.overrideLatest ? "'${dependency.version}'" : "None" %>
+_PATCH_VERSION = '${dependency.cipdSuffix}'
 
 
 def do_latest():
@@ -36,16 +37,22 @@ def do_latest():
         # if no latest info was found just hope the versions are sorted and the
         # last one is the latest (as is commonly the case).
         latest = re.findall('<version>([^<]+)</version>', metadata)[-1]
-    print(latest)
+    print(latest + f'.{_PATCH_VERSION}')
 
 
 def get_download_url(version):
+    # Remove the patch version when getting the download url
+    version_no_patch, patch = version.rsplit('.', 1)
+    if patch.startswith('cr'):
+        version = version_no_patch
     file_url = '{0}/{1}/{2}/{3}/{2}-{3}.{4}'.format(_REPO_URL, _GROUP_NAME,
                                                     _MODULE_NAME, version,
                                                     _FILE_EXT)
+    file_name = file_url.rsplit('/', 1)[-1]
 
     partial_manifest = {
         'url': [file_url],
+        'name': [file_name],
         'ext': '.' + _FILE_EXT,
     }
     print(json.dumps(partial_manifest))

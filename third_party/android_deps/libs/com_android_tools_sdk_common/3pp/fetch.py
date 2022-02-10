@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -20,6 +20,7 @@ _GROUP_NAME = 'com/android/tools'
 _MODULE_NAME = 'sdk-common'
 _FILE_EXT = 'jar'
 _OVERRIDE_LATEST = None
+_PATCH_VERSION = 'cr0'
 
 
 def do_latest():
@@ -39,16 +40,22 @@ def do_latest():
         # if no latest info was found just hope the versions are sorted and the
         # last one is the latest (as is commonly the case).
         latest = re.findall('<version>([^<]+)</version>', metadata)[-1]
-    print(latest)
+    print(latest + f'.{_PATCH_VERSION}')
 
 
 def get_download_url(version):
+    # Remove the patch version when getting the download url
+    version_no_patch, patch = version.rsplit('.', 1)
+    if patch.startswith('cr'):
+        version = version_no_patch
     file_url = '{0}/{1}/{2}/{3}/{2}-{3}.{4}'.format(_REPO_URL, _GROUP_NAME,
                                                     _MODULE_NAME, version,
                                                     _FILE_EXT)
+    file_name = file_url.rsplit('/', 1)[-1]
 
     partial_manifest = {
         'url': [file_url],
+        'name': [file_name],
         'ext': '.' + _FILE_EXT,
     }
     print(json.dumps(partial_manifest))
