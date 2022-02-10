@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/tablet_state.h"
@@ -476,6 +477,7 @@ gfx::Size BrowserNonClientFrameViewChromeOS::GetMinimumSize() const {
 
 void BrowserNonClientFrameViewChromeOS::OnThemeChanged() {
   OnUpdateFrameColor();
+  OnUpdateBackgroundColor();
   BrowserNonClientFrameView::OnThemeChanged();
 }
 
@@ -911,6 +913,38 @@ bool BrowserNonClientFrameViewChromeOS::GetHideCaptionButtonsForFullscreen()
     return true;
 
   return immersive_controller->ShouldHideTopViews();
+}
+
+void BrowserNonClientFrameViewChromeOS::OnUpdateBackgroundColor() {
+  if (!browser_view())
+    return;
+
+  // If `browser` is not associated with a system web app, background color will
+  // be resolved from web contents and does not need to be overridden.
+  auto* browser = browser_view()->browser();
+  if (!browser || !web_app::IsSystemWebApp(browser))
+    return;
+
+  // If the system web app associated with the `browser` does not prefer the
+  // manifest background color, it will most likely be resolved from web
+  // contents and does not need to be overridden. Background color will fall
+  // back to the manifest background color in the event that web contents cannot
+  // resolve a background color.
+  auto* app_controller = browser->app_controller();
+  if (!app_controller->system_app()->PreferManifestBackgroundColor())
+    return;
+
+  auto* contents_web_view = browser_view()->contents_web_view();
+  if (!contents_web_view)
+    return;
+
+  // When a system web app prefers the manifest background color over web
+  // contents background color, it should be immediately overridden on theme
+  // changes. This circumvents a lack of synchronization with the `browser`
+  // frame header transition that would otherwise occur if we waited for web
+  // contents' background changed event to propagate back to native UI.
+  contents_web_view->SetBackgroundColorOverride(
+      app_controller->GetBackgroundColor());
 }
 
 void BrowserNonClientFrameViewChromeOS::OnUpdateFrameColor() {

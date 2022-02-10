@@ -113,6 +113,10 @@ class WebAppBrowserController : public AppBrowserController,
       digital_asset_links::RelationshipCheckResult result);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  // Helper function to return the resolved background color from the manifest
+  // given the current state of dark/light mode.
+  absl::optional<SkColor> GetResolvedManifestBackgroundColor() const;
+
   WebAppProvider& provider_;
   raw_ptr<const SystemWebAppDelegate> system_app_;
   mutable absl::optional<ui::ImageModel> app_icon_;

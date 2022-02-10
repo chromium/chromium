@@ -82,9 +82,11 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -97,6 +99,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/test/background_color_change_waiter.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
@@ -135,6 +138,172 @@ using BrowserNonClientFrameViewChromeOSTestWithWebUiTabStrip =
     WebUiTabStripOverrideTest<true, BrowserNonClientFrameViewChromeOSTest>;
 using BrowserNonClientFrameViewChromeOSTouchTestWithWebUiTabStrip =
     WebUiTabStripOverrideTest<true, BrowserNonClientFrameViewChromeOSTouchTest>;
+
+// Enumeration of test modes for
+// `BrowserNonClientFrameViewChromeOSBackgroundColorChangeTest`s.
+enum class BackgroundColorChangeTestMode {
+  kSWA,
+  kSWAPreferManifestBackgroundColor,
+  kNonSWA,
+};
+
+// Base class for `BackgroundColorChange` tests, parameterized by test mode.
+class BrowserNonClientFrameViewChromeOSBackgroundColorChangeTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<BackgroundColorChangeTestMode> {
+ public:
+  BrowserNonClientFrameViewChromeOSBackgroundColorChangeTest() {
+    switch (GetParam()) {
+      case BackgroundColorChangeTestMode::kSWA:
+      case BackgroundColorChangeTestMode::kSWAPreferManifestBackgroundColor:
+        system_web_app_installation_ =
+            web_app::TestSystemWebAppInstallation::SetUpAppWithColors(
+                /*theme_color=*/SK_ColorWHITE,
+                /*dark_mode_theme_color=*/SK_ColorBLACK,
+                /*background_color=*/SK_ColorWHITE,
+                /*dark_mode_background_color=*/SK_ColorBLACK,
+                PreferManifestBackgroundColor());
+        break;
+      case BackgroundColorChangeTestMode::kNonSWA:
+        break;
+    }
+  }
+
+  // Returns whether the web app under test prefers manifest background colors
+  // over web contents background colors.
+  bool PreferManifestBackgroundColor() const {
+    return GetParam() ==
+           BackgroundColorChangeTestMode::kSWAPreferManifestBackgroundColor;
+  }
+
+  // Toggles the color mode, triggering propagation of theme change events.
+  void ToggleColorMode() {
+    auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+    auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
+
+    const bool is_dark_mode_enabled = native_theme->ShouldUseDarkColors();
+
+    native_theme->set_use_dark_colors(!is_dark_mode_enabled);
+    native_theme_web->set_preferred_color_scheme(
+        is_dark_mode_enabled ? ui::NativeTheme::PreferredColorScheme::kLight
+                             : ui::NativeTheme::PreferredColorScheme::kDark);
+
+    native_theme->NotifyOnNativeThemeUpdated();
+    native_theme_web->NotifyOnNativeThemeUpdated();
+  }
+
+  // Installs the web app under test, blocking until installation is complete,
+  // and returning the `web_app::AppId` for the installed web app.
+  web_app::AppId WaitForAppInstall() {
+    switch (GetParam()) {
+      case BackgroundColorChangeTestMode::kSWA:
+      case BackgroundColorChangeTestMode::kSWAPreferManifestBackgroundColor:
+        system_web_app_installation_->WaitForAppInstall();
+        return system_web_app_installation_->GetAppId();
+      case BackgroundColorChangeTestMode::kNonSWA: {
+        if (!test_server_) {
+          test_server_ = std::make_unique<net::EmbeddedTestServer>(
+              net::EmbeddedTestServer::TYPE_HTTPS);
+          test_server_->AddDefaultHandlers(GetChromeTestDataDir());
+          CHECK(test_server_->Start());
+        }
+        const GURL app_url =
+            test_server_->GetURL("app.com", "/ssl/google.html");
+        auto web_app_info = std::make_unique<WebAppInstallInfo>();
+        web_app_info->start_url = app_url;
+        web_app_info->scope = app_url.GetWithoutFilename();
+        web_app_info->theme_color = SK_ColorWHITE;
+        web_app_info->dark_mode_theme_color = SK_ColorBLACK;
+        web_app_info->background_color = SK_ColorWHITE;
+        web_app_info->dark_mode_background_color = SK_ColorBLACK;
+        return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+      }
+    }
+  }
+
+  // Returns the `Profile` associated with the web app under test.
+  Profile* profile() { return browser()->profile(); }
+
+ private:
+  std::unique_ptr<web_app::TestSystemWebAppInstallation>
+      system_web_app_installation_;
+  std::unique_ptr<net::EmbeddedTestServer> test_server_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    Mode,
+    BrowserNonClientFrameViewChromeOSBackgroundColorChangeTest,
+    testing::Values(
+        BackgroundColorChangeTestMode::kSWA,
+        BackgroundColorChangeTestMode::kSWAPreferManifestBackgroundColor,
+        BackgroundColorChangeTestMode::kNonSWA),
+    [](const testing::TestParamInfo<BackgroundColorChangeTestMode>& info) {
+      switch (info.param) {
+        case BackgroundColorChangeTestMode::kSWA:
+          return "kSWA";
+        case BackgroundColorChangeTestMode::kSWAPreferManifestBackgroundColor:
+          return "kSWAPreferManifestBackgroundColor";
+        case BackgroundColorChangeTestMode::kNonSWA:
+          return "kNonSWA";
+      }
+    });
+
+IN_PROC_BROWSER_TEST_P(
+    BrowserNonClientFrameViewChromeOSBackgroundColorChangeTest,
+    BackgroundColorChange) {
+  const web_app::AppId app_id = WaitForAppInstall();
+  auto* browser = web_app::LaunchWebAppBrowser(profile(), app_id);
+  auto* contents_web_view =
+      BrowserView::GetBrowserViewForBrowser(browser)->contents_web_view();
+  auto* web_contents = contents_web_view->GetWebContents();
+
+  // Verify background color is immediately resolved from the app controller
+  // despite the fact that the web contents background color hasn't loaded
+  // yet.
+  EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
+            browser->app_controller()->GetBackgroundColor().value());
+  EXPECT_FALSE(web_contents->GetBackgroundColor().has_value());
+
+  // Wait for the web contents background color to load and verify that the
+  // background color still matches that resolved from the app controller.
+  {
+    content::BackgroundColorChangeWaiter waiter(web_contents);
+    waiter.Wait();
+    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
+              browser->app_controller()->GetBackgroundColor().value());
+    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
+              web_contents->GetBackgroundColor().value());
+  }
+
+  content::AwaitDocumentOnLoadCompleted(web_contents);
+
+  // Toggle color mode and verify background color is immediately resolved
+  // from the app controller. If a system web app is loaded which prefers
+  // manifest colors, there will be a temporary mismatch between the contents
+  // background color and the web contents background color due to the fact
+  // that the web contents background color update is async.
+  ToggleColorMode();
+  EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
+            browser->app_controller()->GetBackgroundColor().value());
+  if (PreferManifestBackgroundColor()) {
+    EXPECT_NE(contents_web_view->GetBackground()->get_color(),
+              web_contents->GetBackgroundColor().value());
+  } else {
+    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
+              web_contents->GetBackgroundColor().value());
+  }
+
+  // Wait for the web contents background color to update and verify that the
+  // background color still matches that resolved from the app controller.
+  {
+    content::BackgroundColorChangeWaiter waiter(web_contents);
+    waiter.Wait();
+    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
+              browser->app_controller()->GetBackgroundColor().value());
+    EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
+              web_contents->GetBackgroundColor().value());
+  }
+}
 
 // This test does not make sense for the webUI tabstrip, since the window layout
 // is different in that case.

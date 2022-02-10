@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
+#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -331,39 +332,121 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ManifestWithColor) {
   EXPECT_EQ(provider->registrar().GetAppThemeColor(app_id), SK_ColorGREEN);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BackgroundColorChange) {
-  const GURL app_url = GetSecureAppURL();
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
-  web_app_info->start_url = app_url;
-  web_app_info->scope = app_url.GetWithoutFilename();
-  web_app_info->theme_color = SK_ColorBLUE;
-  const AppId app_id = InstallWebApp(std::move(web_app_info));
+// Enumeration of test modes for `BackgroundColorChangeWebAppBrowserTest`s.
+enum class BackgroundColorChangeTestMode {
+  kSWA,
+  kSWAPreferManifestBackgroundColor,
+  kNonSWA,
+};
+
+// Base class for `BackgroundColorChange` tests, parameterized by test mode.
+class BackgroundColorChangeWebAppBrowserTest
+    : public WebAppBrowserTest,
+      public testing::WithParamInterface<BackgroundColorChangeTestMode> {
+ public:
+  BackgroundColorChangeWebAppBrowserTest() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    web_app::EnableSystemWebAppsInLacrosForTesting();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    switch (GetParam()) {
+      case BackgroundColorChangeTestMode::kSWA:
+      case BackgroundColorChangeTestMode::kSWAPreferManifestBackgroundColor:
+        system_web_app_installation_ =
+            TestSystemWebAppInstallation::SetUpAppWithColors(
+                /*theme_color=*/SK_ColorWHITE,
+                /*dark_mode_theme_color=*/SK_ColorBLACK,
+                /*background_color=*/SK_ColorWHITE,
+                /*dark_mode_background_color=*/SK_ColorBLACK,
+                PreferManifestBackgroundColor());
+        break;
+      case BackgroundColorChangeTestMode::kNonSWA:
+        break;
+    }
+  }
+
+  // Returns whether the web app under test prefers manifest background colors
+  // over web contents background colors.
+  bool PreferManifestBackgroundColor() const {
+    return GetParam() ==
+           BackgroundColorChangeTestMode::kSWAPreferManifestBackgroundColor;
+  }
+
+  // Installs the web app under test, blocking until installation is complete,
+  // and returning the `AppId` for the installed web app.
+  AppId WaitForAppInstall() {
+    switch (GetParam()) {
+      case BackgroundColorChangeTestMode::kSWA:
+      case BackgroundColorChangeTestMode::kSWAPreferManifestBackgroundColor:
+        system_web_app_installation_->WaitForAppInstall();
+        return system_web_app_installation_->GetAppId();
+      case BackgroundColorChangeTestMode::kNonSWA: {
+        const GURL app_url = GetSecureAppURL();
+        auto web_app_info = std::make_unique<WebAppInstallInfo>();
+        web_app_info->start_url = app_url;
+        web_app_info->scope = app_url.GetWithoutFilename();
+        web_app_info->theme_color = SK_ColorWHITE;
+        web_app_info->dark_mode_theme_color = SK_ColorBLACK;
+        web_app_info->background_color = SK_ColorWHITE;
+        web_app_info->dark_mode_background_color = SK_ColorBLACK;
+        return InstallWebApp(std::move(web_app_info));
+      }
+    }
+  }
+
+ private:
+  std::unique_ptr<TestSystemWebAppInstallation> system_web_app_installation_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    Mode,
+    BackgroundColorChangeWebAppBrowserTest,
+    testing::Values(
+        BackgroundColorChangeTestMode::kSWA,
+        BackgroundColorChangeTestMode::kSWAPreferManifestBackgroundColor,
+        BackgroundColorChangeTestMode::kNonSWA),
+    [](const testing::TestParamInfo<BackgroundColorChangeTestMode>& info) {
+      switch (info.param) {
+        case BackgroundColorChangeTestMode::kSWA:
+          return "kSWA";
+        case BackgroundColorChangeTestMode::kSWAPreferManifestBackgroundColor:
+          return "kSWAPreferManifestBackgroundColor";
+        case BackgroundColorChangeTestMode::kNonSWA:
+          return "kNonSWA";
+      }
+    });
+
+IN_PROC_BROWSER_TEST_P(BackgroundColorChangeWebAppBrowserTest,
+                       BackgroundColorChange) {
+  const AppId app_id = WaitForAppInstall();
 
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
   content::WebContents* const web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
 
-  // Wait for original background color (not cyan) to load.
+  // Wait for original background color to load.
   {
     content::BackgroundColorChangeWaiter waiter(web_contents);
     waiter.Wait();
-    EXPECT_NE(app_browser->app_controller()->GetBackgroundColor().value(),
-              SK_ColorCYAN);
+    EXPECT_EQ(app_browser->app_controller()->GetBackgroundColor().value(),
+              SK_ColorWHITE);
   }
   content::AwaitDocumentOnLoadCompleted(web_contents);
 
-  // Changing background color should update download shelf theme.
+  // Changing background color should update download shelf theme unless a
+  // system web app prefers manifest background colors over web contents
+  // background colors.
   {
     content::BackgroundColorChangeWaiter waiter(web_contents);
-    EXPECT_TRUE(content::ExecJs(
+    EXPECT_TRUE(content::ExecuteScript(
         web_contents, "document.body.style.backgroundColor = 'cyan';"));
     waiter.Wait();
     EXPECT_EQ(app_browser->app_controller()->GetBackgroundColor().value(),
-              SK_ColorCYAN);
+              PreferManifestBackgroundColor() ? SK_ColorWHITE : SK_ColorCYAN);
     SkColor download_shelf_color;
     app_browser->app_controller()->GetThemeSupplier()->GetColor(
         ThemeProperties::COLOR_DOWNLOAD_SHELF, &download_shelf_color);
-    EXPECT_EQ(download_shelf_color, SK_ColorCYAN);
+    EXPECT_EQ(download_shelf_color,
+              PreferManifestBackgroundColor() ? SK_ColorWHITE : SK_ColorCYAN);
   }
 }
 

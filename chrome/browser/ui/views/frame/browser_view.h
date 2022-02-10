@@ -256,7 +256,7 @@ class BrowserView : public BrowserWindow,
   }
 
   // Accessor for the contents WebView.
-  views::WebView* contents_web_view() { return contents_web_view_; }
+  ContentsWebView* contents_web_view() { return contents_web_view_; }
 
   base::WeakPtr<BrowserView> GetAsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

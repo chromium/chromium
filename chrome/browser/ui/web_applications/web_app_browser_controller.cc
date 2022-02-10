@@ -241,18 +241,13 @@ absl::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
 }
 
 absl::optional<SkColor> WebAppBrowserController::GetBackgroundColor() const {
-  if (auto color = AppBrowserController::GetBackgroundColor())
-    return color;
-
-  if (ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
-    absl::optional<SkColor> dark_mode_color =
-        registrar().GetAppDarkModeBackgroundColor(app_id());
-    if (dark_mode_color) {
-      return dark_mode_color;
-    }
-  }
-
-  return registrar().GetAppBackgroundColor(app_id());
+  auto web_contents_color = AppBrowserController::GetBackgroundColor();
+  auto manifest_color = GetResolvedManifestBackgroundColor();
+  auto [preferred_color, fallback_color] =
+      (system_app() && system_app()->PreferManifestBackgroundColor())
+          ? std::tie(manifest_color, web_contents_color)
+          : std::tie(web_contents_color, manifest_color);
+  return preferred_color ? preferred_color : fallback_color;
 }
 
 GURL WebAppBrowserController::GetAppStartUrl() const {
@@ -441,4 +436,15 @@ void WebAppBrowserController::PerformDigitalAssetLinkVerification(
                      base::Unretained(this)));
 #endif
 }
+
+absl::optional<SkColor>
+WebAppBrowserController::GetResolvedManifestBackgroundColor() const {
+  if (ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()) {
+    auto dark_mode_color = registrar().GetAppDarkModeBackgroundColor(app_id());
+    if (dark_mode_color)
+      return dark_mode_color;
+  }
+  return registrar().GetAppBackgroundColor(app_id());
+}
+
 }  // namespace web_app

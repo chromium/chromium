@@ -51,6 +51,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   gfx::Rect GetDefaultBounds(Browser* browser) const override;
   bool IsAppEnabled() const override;
   bool IsUrlInSystemAppScope(const GURL& url) const override;
+  bool PreferManifestBackgroundColor() const override;
 
   void SetAppIdsToUninstallAndReplace(const std::vector<AppId>&);
   void SetMinimumWindowSize(const gfx::Size&);
@@ -71,6 +72,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   void SetTimerInfo(const SystemAppBackgroundTaskInfo&);
   void SetDefaultBounds(base::RepeatingCallback<gfx::Rect(Browser*)>);
   void SetUrlInSystemAppScope(const GURL& url);
+  void SetPreferManifestBackgroundColor(bool);
 
  private:
   WebAppInstallInfoFactory info_factory_;
@@ -91,6 +93,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   bool should_have_reload_button_in_minimal_ui_ = true;
   bool allow_scripts_to_close_windows_ = false;
   GURL url_in_system_app_scope_;
+  bool prefer_manifest_background_color_ = false;
 
   base::RepeatingCallback<gfx::Rect(Browser*)> get_default_bounds_ =
       base::NullCallback();
@@ -174,6 +177,13 @@ class TestSystemWebAppInstallation {
   // - HELP: Multi Window, TabStrip
   static std::unique_ptr<TestSystemWebAppInstallation>
   SetUpAppsForContestMenuTest();
+
+  static std::unique_ptr<TestSystemWebAppInstallation> SetUpAppWithColors(
+      absl::optional<SkColor> theme_color,
+      absl::optional<SkColor> dark_mode_theme_color,
+      absl::optional<SkColor> background_color,
+      absl::optional<SkColor> dark_mode_background_color,
+      bool prefer_manifest_background_color);
 
   ~TestSystemWebAppInstallation();
 

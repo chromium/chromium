@@ -180,6 +180,10 @@ class SystemWebAppDelegate {
   // considered part of this System App.
   virtual bool IsUrlInSystemAppScope(const GURL& url) const;
 
+  // Whether it is preferred to resolve background color from the manifest,
+  // as opposed to resolving background color from web contents.
+  virtual bool PreferManifestBackgroundColor() const;
+
  protected:
   Profile* profile() const { return profile_; }
 

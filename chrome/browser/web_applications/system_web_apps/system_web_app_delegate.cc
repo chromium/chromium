@@ -137,4 +137,8 @@ bool SystemWebAppDelegate::IsUrlInSystemAppScope(const GURL& url) const {
   return false;
 }
 
+bool SystemWebAppDelegate::PreferManifestBackgroundColor() const {
+  return false;
+}
+
 }  // namespace web_app
