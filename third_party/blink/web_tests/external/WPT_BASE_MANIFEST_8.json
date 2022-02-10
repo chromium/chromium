@@ -88965,6 +88965,19 @@
        {}
       ]
      ],
+     "contain-layout-020.html": [
+      "655d4431d8951e96192b704f025751854118148b",
+      [
+       null,
+       [
+        [
+         "/css/css-contain/reference/contain-layout-020-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "contain-layout-baseline-001.html": [
       "cf8e94faa48eb3cfca6db0264b6f1a10e18b0e1d",
       [
@@ -91703,6 +91716,32 @@
         [
          [
           "/css/css-contain/container-queries/resize-while-content-visibility-hidden-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "svg-foreignobject-no-size-container.html": [
+       "4f021e755d77ff9bd01a8b4ebeac06dec7e71767",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/container-queries/svg-foreignobject-no-size-container-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "svg-g-no-size-container.html": [
+       "78e289d4e99df88be6970bf5bc1ab55d8c6c5cf3",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/container-queries/svg-g-no-size-container-ref.html",
           "=="
          ]
         ],
@@ -242063,7 +242102,7 @@
        []
       ],
       "testcommon.js": [
-       "7d3392a54f65dca018e960874efe19f8ca388a70",
+       "654aaa51c55c03b9b1c52f79e52d4f178d7aacc4",
        []
       ]
      },
@@ -245116,6 +245155,10 @@
       []
      ],
      "container-queries": {
+      "canvas-as-container-006-expected.txt": [
+       "bd5ae30045f5964e6c2f0d4609e30a5f38984517",
+       []
+      ],
       "change-display-in-container-ref.html": [
        "8dd3b8b2c1dea6230357f8ff6ec1225154650094",
        []
@@ -245125,11 +245168,11 @@
        []
       ],
       "container-parsing-expected.txt": [
-       "d52295fc224dbe3531be96cb325ea92e4038b831",
+       "3803908eca0e0ba7e9e2f326d45f869682f86167",
        []
       ],
       "container-type-parsing-expected.txt": [
-       "82de146d87fbc934e566b64ae6fb5b946bf93ac1",
+       "00429bde7e7d826357dcbbbf812b428dc8fc6d2e",
        []
       ],
       "counters-ref.html": [
@@ -245146,6 +245189,10 @@
       ],
       "inline-size-bfc-floats-ref.html": [
        "ecd72b7516c41c83b6e8d320c9b0b87f9c231781",
+       []
+      ],
+      "multicol-container-001-expected.txt": [
+       "81e1ba5e89ba840e12b22c5475412827d6db71f5",
        []
       ],
       "percentage-padding-orthogonal-expected.txt": [
@@ -245166,6 +245213,14 @@
         []
        ]
       },
+      "svg-foreignobject-no-size-container-ref.html": [
+       "abf1af122baad9f9ae39640be4ebc56171b4db23",
+       []
+      ],
+      "svg-g-no-size-container-ref.html": [
+       "4f30c399399796410b47ca5a63b49c97509f9fad",
+       []
+      ],
       "table-inside-container-changing-display-ref.html": [
        "c0355d2f5019b8c7c1e0b387e2f9c3b1a0c1f81c",
        []
@@ -245354,6 +245409,10 @@
       ],
       "contain-content-011-ref.html": [
        "00ad302ca42fffde46687953b4079e76c44f7f66",
+       []
+      ],
+      "contain-layout-020-ref.html": [
+       "9a0eab3afe60df4944c9754a6e9f549b86bb7e0f",
        []
       ],
       "contain-layout-baseline-004-ref.html": [
@@ -278372,36 +278431,24 @@
        "a3cc6d3d8f56fd31c4b19d23af606d7c65487145",
        []
       ],
-      "has-complexity-expected.txt": [
-       "4f95b6b63a0e8c51ee0d1e7482a5f1a5fc5239f9",
-       []
-      ],
       "has-in-adjacent-position-expected.txt": [
-       "19d2af0cbdca0b5f94813e04c9165480db8f586d",
+       "4eca5d7f7e017fbea7865c68f9aca416b019d2e5",
        []
       ],
       "has-in-ancestor-position-expected.txt": [
-       "e2ca9ed82387f12eafa7e361b34ab9891828fa34",
+       "010e5e18a6aa3f21d914e4283935861b7de7685f",
        []
       ],
       "has-in-parent-position-expected.txt": [
-       "7117c78b89541583d08a8e8cbc5245afe5a7138c",
+       "5cec677d485358f51e6086edfce4a208a317cb78",
        []
       ],
       "has-in-sibling-position-expected.txt": [
-       "19d2af0cbdca0b5f94813e04c9165480db8f586d",
-       []
-      ],
-      "has-pseudo-class-expected.txt": [
-       "7015182248e19d5cdc9f0450edb380e50ce28753",
+       "4eca5d7f7e017fbea7865c68f9aca416b019d2e5",
        []
       ],
       "has-sibling-expected.txt": [
        "01f64f5161ea4a19d58f13bc14b59b1e189e5255",
-       []
-      ],
-      "has-with-pseudo-class-expected.txt": [
-       "7768efd515fe9e7f018339989ae4cf87d55be6d2",
        []
       ],
       "sheet-going-away-002-ref.html": [
@@ -324296,8 +324343,16 @@
        "d4c921c5658e6798ec56b06f513413572aab846a",
        []
       ],
+      "Infinity.headers": [
+       "6805c323df5a975231648b830e33ce183c3cbbd3",
+       []
+      ],
       "NaN": [
        "1d06329788c3a6fd7480f462a9d1ded231356962",
+       []
+      ],
+      "NaN.headers": [
+       "6805c323df5a975231648b830e33ce183c3cbbd3",
        []
       ],
       "connect-event-expected.txt": [
@@ -359875,6 +359930,20 @@
        {}
       ]
      ],
+     "dialog-animation.html": [
+      "f6c8f6f0fa4060b15f68df8c4724b44ac534c4b3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "dialog-backdrop-animation.html": [
+      "cc61c2e38091b29df134ca3f4abf81252225e853",
+      [
+       null,
+       {}
+      ]
+     ],
      "event-dispatch.tentative.html": [
       "3e577d6ea6c67269766ed9ec38d13bd4cbda435c",
       [
@@ -362071,7 +362140,7 @@
        ]
       ],
       "at-container-parsing.html": [
-       "f49a382cadb01714594be9646253bef255ed8735",
+       "fc6cbbdd0440f05d35ab3f8093891f157453814a",
        [
         null,
         {}
@@ -362128,6 +362197,13 @@
       ],
       "container-inheritance.html": [
        "efc09983c0ddc97c393351633b7bf680f5ed4aae",
+       [
+        null,
+        {}
+       ]
+      ],
+      "container-inner-at-rules.html": [
+       "96aa62e0708a3aaffdf04dec46e69203a3692b03",
        [
         null,
         {}
@@ -362301,6 +362377,13 @@
         {}
        ]
       ],
+      "fragmented-container-001.html": [
+       "1eb37e3f9496ccea95cb310e0ad371fc2039964d",
+       [
+        null,
+        {}
+       ]
+      ],
       "get-animations.html": [
        "ea95bb9800352b92c16328c632cece6b1f9ecf13",
        [
@@ -362338,6 +362421,13 @@
       ],
       "inline-size-containment.html": [
        "2a450537404f8935aec9ac893a247c95488c7a3e",
+       [
+        null,
+        {}
+       ]
+      ],
+      "multicol-container-001.html": [
+       "2b80e1208a56b1e8034badf4a371d60dadaf2116",
        [
         null,
         {}
@@ -362408,6 +362498,13 @@
       ],
       "style-change-in-container.html": [
        "82a830cc502713d49ae3001aa76f37c27b5f6e4a",
+       [
+        null,
+        {}
+       ]
+      ],
+      "svg-root-size-container.html": [
+       "87f0a0689ff5f5b1e4cbcdc9d1ab5ec4fd3e5e8d",
        [
         null,
         {}
@@ -387506,6 +387603,15 @@
        }
       ]
      ],
+     "focus-visible-026.html": [
+      "718d1c0ecb6dbb54991dcc9a2eae297b40f0174b",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "focus-visible-script-focus-001.html": [
       "df6d9158b7cf3e829343834f1c5a499a15016434",
       [
@@ -388366,7 +388472,7 @@
        ]
       ],
       "parse-has.html": [
-       "1db87c4c00881182e2f54b538e21eef000b815df",
+       "219a6c9f0bd99e238fda7e98fa800fcb9c38311f",
        [
         null,
         {}
@@ -473460,7 +473566,7 @@
      ]
     ],
     "mediasource-detach.html": [
-     "b25b5c6f02f6e6abdb32de0902438c0b24d1f1c4",
+     "3f87d9a3d5abd33d25c9d47f761d84cba04ad671",
      [
       null,
       {}
@@ -530634,6 +530740,13 @@
       ],
       [
        "webmessaging/broadcastchannel/interface.any.worker.html",
+       {}
+      ]
+     ],
+     "opaque-origin.html": [
+      "c10e0cb22256a0ecc792034add87f243568a20e0",
+      [
+       null,
        {}
       ]
      ],
