@@ -347,11 +347,16 @@ ChromeIdentity* AuthenticationService::GetPrimaryIdentity(
   return account_manager_service_->GetIdentityWithGaiaID(authenticated_gaia_id);
 }
 
+void AuthenticationService::SignIn(ChromeIdentity* identity) {
+  SignIn(identity, nil);
+}
+
 void AuthenticationService::SignIn(ChromeIdentity* identity,
                                    signin_ui::CompletionCallback completion) {
   SignInInternal(identity);
   if (completion) {
-    completion(HasPrimaryIdentity(signin::ConsentLevel::kSignin));
+    completion(
+        identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   }
 }
 

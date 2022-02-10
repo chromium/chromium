@@ -36,6 +36,17 @@ AuthenticationServiceFake::AuthenticationServiceFake(
 
 AuthenticationServiceFake::~AuthenticationServiceFake() {}
 
+// TODO(crbug.com/1291188): Remove method after resolving internal dependency.
+void AuthenticationServiceFake::SignIn(ChromeIdentity* identity) {
+  SignInInternal(identity);
+}
+
+void AuthenticationServiceFake::SignIn(
+    ChromeIdentity* identity,
+    signin_ui::CompletionCallback completion) {
+  SignInInternal(identity);
+}
+
 void AuthenticationServiceFake::SignInInternal(ChromeIdentity* identity) {
   // Needs to call PrepareForFirstSyncSetup to behave like
   // AuthenticationService.
