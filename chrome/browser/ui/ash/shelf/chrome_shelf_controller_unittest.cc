@@ -405,24 +405,28 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
     model_ = std::make_unique<ash::ShelfModel>();
 
     base::DictionaryValue manifest;
-    manifest.SetString(extensions::manifest_keys::kName,
-                       "launcher controller test extension");
-    manifest.SetString(extensions::manifest_keys::kVersion, "1");
-    manifest.SetInteger(extensions::manifest_keys::kManifestVersion, 2);
-    manifest.SetString(extensions::manifest_keys::kDescription,
-                       "for testing pinned apps");
+    manifest.SetStringPath(extensions::manifest_keys::kName,
+                           "launcher controller test extension");
+    manifest.SetStringPath(extensions::manifest_keys::kVersion, "1");
+    manifest.SetIntPath(extensions::manifest_keys::kManifestVersion, 2);
+    manifest.SetStringPath(extensions::manifest_keys::kDescription,
+                           "for testing pinned apps");
     // AppService checks the app's type. So set the
     // manifest_keys::kLaunchWebURL, so that the extension can get the type
     // from manifest value, and then AppService can get the extension's type.
-    manifest.SetString(extensions::manifest_keys::kLaunchWebURL, kLaunchURL);
+    manifest.SetStringPath(extensions::manifest_keys::kLaunchWebURL,
+                           kLaunchURL);
 
     base::DictionaryValue manifest_platform_app;
-    manifest_platform_app.SetString(extensions::manifest_keys::kName,
-                                    "launcher controller test platform app");
-    manifest_platform_app.SetString(extensions::manifest_keys::kVersion, "1");
-    manifest_platform_app.SetString(extensions::manifest_keys::kDescription,
-                                    "for testing pinned platform apps");
-    manifest_platform_app.SetString(extensions::manifest_keys::kApp, "true");
+    manifest_platform_app.SetStringPath(
+        extensions::manifest_keys::kName,
+        "launcher controller test platform app");
+    manifest_platform_app.SetStringPath(extensions::manifest_keys::kVersion,
+                                        "1");
+    manifest_platform_app.SetStringPath(extensions::manifest_keys::kDescription,
+                                        "for testing pinned platform apps");
+    manifest_platform_app.SetStringPath(extensions::manifest_keys::kApp,
+                                        "true");
     manifest_platform_app.Set(extensions::manifest_keys::kPlatformAppBackground,
                               std::make_unique<base::DictionaryValue>());
     auto scripts = std::make_unique<base::ListValue>();

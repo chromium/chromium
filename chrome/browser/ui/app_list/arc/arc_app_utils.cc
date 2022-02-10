@@ -478,7 +478,7 @@ bool SetTouchMode(bool enable) {
     return false;
 
   base::DictionaryValue extras;
-  extras.SetBoolean("inTouchMode", enable);
+  extras.SetBoolKey("inTouchMode", enable);
   std::string extras_string;
   base::JSONWriter::Write(extras, &extras_string);
   intent_helper_instance->SendBroadcast(kSetInTouchModeIntent,

@@ -301,9 +301,9 @@ class AppContextMenuTest : public AppListTestBase {
   scoped_refptr<extensions::Extension> MakeChromeApp() {
     std::string err;
     base::DictionaryValue value;
-    value.SetString("name", "Chrome App");
-    value.SetString("version", "0.0");
-    value.SetString("app.launch.web_url", "http://google.com");
+    value.SetStringKey("name", "Chrome App");
+    value.SetStringKey("version", "0.0");
+    value.SetStringPath("app.launch.web_url", "http://google.com");
     scoped_refptr<extensions::Extension> app = extensions::Extension::Create(
         base::FilePath(), extensions::mojom::ManifestLocation::kInternal, value,
         extensions::Extension::WAS_INSTALLED_BY_DEFAULT,

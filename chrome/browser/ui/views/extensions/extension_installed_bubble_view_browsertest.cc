@@ -48,7 +48,8 @@ class ExtensionInstalledBubbleViewsBrowserTest
 
     if (type == "Omnibox") {
       auto extra_keys = std::make_unique<base::DictionaryValue>();
-      extra_keys->SetString(extensions::manifest_keys::kOmniboxKeyword, "foo");
+      extra_keys->SetStringPath(extensions::manifest_keys::kOmniboxKeyword,
+                                "foo");
       builder.MergeManifest(std::move(extra_keys));
     }
 

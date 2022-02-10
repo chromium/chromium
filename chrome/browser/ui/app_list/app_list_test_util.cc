@@ -83,9 +83,9 @@ scoped_refptr<extensions::Extension> MakeApp(
     extensions::Extension::InitFromValueFlags flags) {
   std::string err;
   base::DictionaryValue value;
-  value.SetString("name", name);
-  value.SetString("version", "0.0");
-  value.SetString("app.launch.web_url", "http://google.com");
+  value.SetStringKey("name", name);
+  value.SetStringKey("version", "0.0");
+  value.SetStringPath("app.launch.web_url", "http://google.com");
   scoped_refptr<extensions::Extension> app = extensions::Extension::Create(
       base::FilePath(), extensions::mojom::ManifestLocation::kInternal, value,
       flags, id, &err);

@@ -131,9 +131,9 @@ scoped_refptr<extensions::Extension> MakeApp(const std::string& name,
                                              const std::string& id) {
   std::string err;
   base::DictionaryValue value;
-  value.SetString("name", name);
-  value.SetString("version", version);
-  value.SetString("app.launch.web_url", url);
+  value.SetStringKey("name", name);
+  value.SetStringKey("version", version);
+  value.SetStringPath("app.launch.web_url", url);
   scoped_refptr<extensions::Extension> app = extensions::Extension::Create(
       base::FilePath(), extensions::mojom::ManifestLocation::kInternal, value,
       extensions::Extension::WAS_INSTALLED_BY_DEFAULT, id, &err);

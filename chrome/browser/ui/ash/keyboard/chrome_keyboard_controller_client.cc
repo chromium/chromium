@@ -342,10 +342,10 @@ void ChromeKeyboardControllerClient::OnKeyboardVisibleBoundsChanged(
   gfx::Rect bounds = BoundsFromScreen(screen_bounds);
   auto event_args = std::make_unique<base::ListValue>();
   auto new_bounds = std::make_unique<base::DictionaryValue>();
-  new_bounds->SetInteger("left", bounds.x());
-  new_bounds->SetInteger("top", bounds.y());
-  new_bounds->SetInteger("width", bounds.width());
-  new_bounds->SetInteger("height", bounds.height());
+  new_bounds->SetIntKey("left", bounds.x());
+  new_bounds->SetIntKey("top", bounds.y());
+  new_bounds->SetIntKey("width", bounds.width());
+  new_bounds->SetIntKey("height", bounds.height());
   event_args->Append(std::move(new_bounds));
 
   auto event = std::make_unique<extensions::Event>(

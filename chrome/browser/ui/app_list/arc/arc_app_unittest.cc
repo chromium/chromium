@@ -1351,11 +1351,11 @@ class ArcPlayStoreAppTest : public ArcDefaultAppTest {
     ArcDefaultAppTest::OnBeforeArcTestSetup();
 
     base::DictionaryValue manifest;
-    manifest.SetString(extensions::manifest_keys::kName, "Play Store");
-    manifest.SetString(extensions::manifest_keys::kVersion, "1");
-    manifest.SetInteger(extensions::manifest_keys::kManifestVersion, 2);
-    manifest.SetString(extensions::manifest_keys::kDescription,
-                       "Play Store for testing");
+    manifest.SetStringPath(extensions::manifest_keys::kName, "Play Store");
+    manifest.SetStringPath(extensions::manifest_keys::kVersion, "1");
+    manifest.SetIntPath(extensions::manifest_keys::kManifestVersion, 2);
+    manifest.SetStringPath(extensions::manifest_keys::kDescription,
+                           "Play Store for testing");
 
     std::string error;
     arc_support_host_ = extensions::Extension::Create(
