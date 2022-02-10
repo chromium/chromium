@@ -127,12 +127,12 @@ enum ScreenLockState {
 // Information about access to the camera roll feature on a connected Android
 // device
 message CameraRollAccessState {
-  // Whether the camera roll feature is enabled
-  // DEPRECATED: whether the Camera Roll feature can be enabled is now solely
-  // controlled by the storage_permission_granted bit.
-  bool feature_enabled = 1 [deprecated = true];
-  // Whether necessary storage permissions have been granted to access camera
-  // roll items
+  // Whether the user has explicitly granted permission to enable the Camera
+  // Roll feature which allows connected Chromebooks to access the phone's
+  // recent photos and media.
+  bool feature_enabled = 1;
+  // Whether necessary Android storage permissions have been granted to access
+  // camera roll items.
   bool storage_permission_granted = 2;
 }
 
@@ -175,10 +175,19 @@ message PhoneProperties {
   // Note: This is whether the phone uses a lock screen(and not whether the
   // phone is currently locked).
   ScreenLockState screen_lock_state = 16;
+  // To hide recent apps for users that turn on quiet mode.
+  repeated UserState user_states = 18;
 
-  FeatureSetupConfig feature_setup_config = 18;
+  FeatureSetupConfig feature_setup_config = 19;
 
-  // Next ID: 19
+  // Next ID: 20
+}
+
+message UserState {
+  // Records each user's ID for filter in ChromeOS.
+  int64 user_id = 1;
+  // The state when user turn on/off apps/notification, e.g. in work profile.
+  bool is_quiet_mode_enabled = 2;
 }
 
 message App {
