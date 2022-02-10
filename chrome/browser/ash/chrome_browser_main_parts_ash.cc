@@ -200,6 +200,7 @@
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/dbus/services/cros_dbus_service.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/fast_transition_observer.h"
@@ -612,16 +613,21 @@ int ChromeBrowserMainPartsAsh::PreEarlyInitialization() {
   CHECK(DBusThreadManager::IsInitialized());
 
 #if !defined(USE_REAL_DBUS_CLIENTS)
-  if (!base::SysInfo::IsRunningOnChromeOS() &&
-      parsed_command_line().HasSwitch(
-          switches::kFakeDriveFsLauncherChrootPath) &&
-      parsed_command_line().HasSwitch(
-          switches::kFakeDriveFsLauncherSocketPath)) {
-    drivefs::FakeDriveFsLauncherClient::Init(
-        parsed_command_line().GetSwitchValuePath(
-            switches::kFakeDriveFsLauncherChrootPath),
-        parsed_command_line().GetSwitchValuePath(
-            switches::kFakeDriveFsLauncherSocketPath));
+  if (!base::SysInfo::IsRunningOnChromeOS()) {
+    if (parsed_command_line().HasSwitch(
+            switches::kFakeDriveFsLauncherChrootPath) &&
+        parsed_command_line().HasSwitch(
+            switches::kFakeDriveFsLauncherSocketPath)) {
+      drivefs::FakeDriveFsLauncherClient::Init(
+          parsed_command_line().GetSwitchValuePath(
+              switches::kFakeDriveFsLauncherChrootPath),
+          parsed_command_line().GetSwitchValuePath(
+              switches::kFakeDriveFsLauncherSocketPath));
+    }
+
+    base::FilePath user_data_dir;
+    base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+    FakeUserDataAuthClient::Get()->set_user_data_dir(user_data_dir);
   }
 #endif  // !defined(USE_REAL_DBUS_CLIENTS)
 

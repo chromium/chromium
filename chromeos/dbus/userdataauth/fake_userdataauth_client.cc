@@ -7,9 +7,14 @@
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/notreached.h"
+#include "base/path_service.h"
 #include "base/strings/stringprintf.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 
@@ -400,9 +405,23 @@ FakeUserDataAuthClient::FindKey(
   return keys.find(label);
 }
 
+base::FilePath FakeUserDataAuthClient::GetUserProfileDir(
+    const cryptohome::AccountIdentifier& account_id) const {
+  DCHECK(!user_data_dir_.empty());
+  // "u-" below corresponds to chrome::kProfileDirPrefix,
+  // which can not be easily included.
+  std::string user_dir =
+      "u-" + UserDataAuthClient::GetStubSanitizedUsername(account_id);
+  base::FilePath profile_dir = user_data_dir_.Append(user_dir);
+  return profile_dir;
+}
+
 bool FakeUserDataAuthClient::UserExists(
     const cryptohome::AccountIdentifier& account_id) const {
-  return existing_users_.find(account_id) != std::end(existing_users_);
+  if (existing_users_.find(account_id) != std::end(existing_users_))
+    return true;
+  base::ScopedAllowBlockingForTesting allow_io;
+  return base::PathExists(GetUserProfileDir(account_id));
 }
 
 void FakeUserDataAuthClient::AddExistingUser(

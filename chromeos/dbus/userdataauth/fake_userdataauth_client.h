@@ -12,6 +12,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
+#include "base/files/file_path.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
@@ -199,6 +200,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
   void AddExistingUser(const cryptohome::AccountIdentifier& account_id);
 
+  void set_user_data_dir(base::FilePath path) { user_data_dir_ = path; }
+
  private:
   // Helper that returns the protobuf reply.
   template <typename ReplyType>
@@ -216,6 +219,10 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   std::map<std::string, cryptohome::Key>::const_iterator FindKey(
       const std::map<std::string, cryptohome::Key>& keys,
       const std::string& label);
+
+  // Returns a path to home directory for account.
+  base::FilePath GetUserProfileDir(
+      const cryptohome::AccountIdentifier& account_id) const;
 
   // Check whether user with given id exists
   bool UserExists(const cryptohome::AccountIdentifier& account_id) const;
@@ -294,6 +301,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
 
   // The users that have already logged in at least once
   std::set<cryptohome::AccountIdentifier> existing_users_;
+
+  //
+  base::FilePath user_data_dir_;
 
   // List of observers.
   base::ObserverList<Observer> observer_list_;
