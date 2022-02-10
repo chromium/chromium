@@ -146,7 +146,8 @@ class HistoryClustersService : public KeyedService {
   //
   // TODO(tommycli): Investigate entirely hiding access to this low-level method
   // behind QueryClustersState.
-  void QueryClusters(const std::string& query,
+  void QueryClusters(ClusteringRequestSource clustering_request_source,
+                     const std::string& query,
                      base::Time begin_time,
                      base::Time end_time,
                      QueryClustersCallback callback,
@@ -183,7 +184,8 @@ class HistoryClustersService : public KeyedService {
       base::Time continuation_end_time);
 
   // Internally used callback for `QueryClusters()`.
-  void OnGotHistoryVisits(const std::string& query,
+  void OnGotHistoryVisits(ClusteringRequestSource clustering_request_source,
+                          const std::string& query,
                           QueryClustersCallback callback,
                           std::vector<history::AnnotatedVisit> annotated_visits,
                           base::Time continuation_end_time) const;

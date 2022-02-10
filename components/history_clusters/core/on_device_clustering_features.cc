@@ -20,6 +20,10 @@ const base::Feature kOnDeviceClustering{"HistoryClustersOnDeviceClustering",
 const base::Feature kUseEngagementScoreCache{"JourneysUseEngagementScoreCache",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kSplitClusteringTasksToSmallerBatches{
+    "JourneysSplitClusteringTasksToSmallerBatches",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 base::TimeDelta ClusterNavigationTimeCutoff() {
   return base::Minutes(GetFieldTrialParamByFeatureAsInt(
       kOnDeviceClustering, "navigation_time_cutoff_minutes", 60));
@@ -142,6 +146,12 @@ bool ShouldIncludeCategoriesInKeywords() {
 bool ShouldExcludeKeywordsFromNoisyVisits() {
   return GetFieldTrialParamByFeatureAsBool(
       kOnDeviceClustering, "exclude_keywords_from_noisy_visits", false);
+}
+
+size_t GetClusteringTasksBatchSize() {
+  return GetFieldTrialParamByFeatureAsInt(
+      features::kSplitClusteringTasksToSmallerBatches,
+      "clustering_task_batch_size", 250);
 }
 
 }  // namespace features

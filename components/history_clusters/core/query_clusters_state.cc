@@ -24,7 +24,8 @@ void QueryClustersState::LoadNextBatchOfClusters(ResultCallback callback) {
 
   base::TimeTicks query_start_time = base::TimeTicks::Now();
   base::Time end_time = continuation_end_time_.value_or(base::Time());
-  service_->QueryClusters(query_, /*begin_time=*/base::Time(), end_time,
+  service_->QueryClusters(ClusteringRequestSource::kJourneysPage, query_,
+                          /*begin_time=*/base::Time(), end_time,
                           base::BindOnce(&QueryClustersState::OnGotClusters,
                                          weak_factory_.GetWeakPtr(),
                                          query_start_time, std::move(callback)),

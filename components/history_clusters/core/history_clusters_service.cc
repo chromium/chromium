@@ -347,6 +347,7 @@ void HistoryClustersService::CompleteVisitContextAnnotationsIfReady(
 }
 
 void HistoryClustersService::QueryClusters(
+    ClusteringRequestSource clustering_request_source,
     const std::string& query,
     base::Time begin_time,
     base::Time end_time,
@@ -378,7 +379,8 @@ void HistoryClustersService::QueryClusters(
       std::make_unique<GetAnnotatedVisitsToCluster>(
           incomplete_visit_context_annotations_, begin_time, end_time,
           base::BindOnce(&HistoryClustersService::OnGotHistoryVisits,
-                         weak_ptr_factory_.GetWeakPtr(), query,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         clustering_request_source, query,
                          std::move(callback))),
       task_tracker);
 }
@@ -422,6 +424,7 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
     //  solution will be to explicitly ask the backend for this bag of keywords.
     NotifyDebugMessage("Starting all_keywords_cache_ generation.");
     QueryClusters(
+        ClusteringRequestSource::kKeywordCacheGeneration,
         /*query=*/"", begin_time, /*end_time=*/
         base::Time(),
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
@@ -446,6 +449,7 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
 
     NotifyDebugMessage("Starting short_keywords_cache_ generation.");
     QueryClusters(
+        ClusteringRequestSource::kKeywordCacheGeneration,
         /*query=*/"",
         /*begin_time=*/all_keywords_cache_timestamp_, /*end_time=*/
         base::Time(),
@@ -517,6 +521,7 @@ void HistoryClustersService::PopulateClusterKeywordCache(
       (max_keyword_phrases == 0 ||
        keyword_accumulator->size() < max_keyword_phrases)) {
     QueryClusters(
+        ClusteringRequestSource::kKeywordCacheGeneration,
         /*query=*/"", begin_time, continuation_end_time,
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
                        weak_ptr_factory_.GetWeakPtr(), begin_time,
@@ -552,6 +557,7 @@ void HistoryClustersService::PopulateClusterKeywordCache(
 }
 
 void HistoryClustersService::OnGotHistoryVisits(
+    ClusteringRequestSource clustering_request_source,
     const std::string& query,
     QueryClustersCallback callback,
     std::vector<history::AnnotatedVisit> annotated_visits,
@@ -578,6 +584,7 @@ void HistoryClustersService::OnGotHistoryVisits(
                                static_cast<int>(annotated_visits.size()));
 
   backend_->GetClusters(
+      clustering_request_source,
       base::BindOnce(&HistoryClustersService::OnGotRawClusters,
                      weak_ptr_factory_.GetWeakPtr(), query,
                      continuation_end_time, base::TimeTicks::Now(),
