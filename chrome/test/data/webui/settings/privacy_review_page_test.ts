@@ -329,162 +329,6 @@ suite('PrivacyReviewPage', function() {
     assertStepIndicatorModel(activeIndex);
   }
 
-  async function assertMsbbMetrics({
-    msbbStartOn,
-    changeSetting,
-    expectedMetric,
-  }: {
-    msbbStartOn: boolean,
-    changeSetting: boolean,
-    expectedMetric: PrivacyGuideSettingsStates,
-  }) {
-    page.setPrefValue(
-        'url_keyed_anonymized_data_collection.enabled', msbbStartOn);
-    flush();
-    navigateToStep(PrivacyReviewStep.MSBB);
-    assertMsbbCardVisible();
-
-    if (changeSetting) {
-      page.shadowRoot!.querySelector('#' + PrivacyReviewStep.MSBB)!.shadowRoot!
-          .querySelector<HTMLElement>('#urlCollectionToggle')!.click();
-      flush();
-      const actionResult =
-          await testMetricsBrowserProxy.whenCalled('recordAction');
-      assertEquals(
-          actionResult,
-          msbbStartOn ? 'Settings.PrivacyGuide.ChangeMSBBOff' :
-                        'Settings.PrivacyGuide.ChangeMSBBOn');
-    }
-
-    page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
-    flush();
-
-    const result = await testMetricsBrowserProxy.whenCalled(
-        'recordPrivacyGuideSettingsStatesHistogram');
-    assertEquals(result, expectedMetric);
-  }
-
-  async function assertHistorySyncMetrics({
-    historySyncStartOn,
-    changeSetting,
-    expectedMetric,
-  }: {
-    historySyncStartOn: boolean,
-    changeSetting: boolean,
-    expectedMetric: PrivacyGuideSettingsStates,
-  }) {
-    setupSync({
-      syncBrowserProxy: syncBrowserProxy,
-      syncOn: true,
-      syncAllDataTypes: historySyncStartOn,
-      typedUrlsSynced: historySyncStartOn,
-    });
-    navigateToStep(PrivacyReviewStep.HISTORY_SYNC);
-    assertHistorySyncCardVisible();
-
-    if (changeSetting) {
-      page.shadowRoot!.querySelector('#' + PrivacyReviewStep.HISTORY_SYNC)!
-          .shadowRoot!.querySelector<HTMLElement>('#historyToggle')!.click();
-      flush();
-      const actionResult =
-          await testMetricsBrowserProxy.whenCalled('recordAction');
-      assertEquals(
-          actionResult,
-          historySyncStartOn ? 'Settings.PrivacyGuide.ChangeHistorySyncOff' :
-                               'Settings.PrivacyGuide.ChangeHistorySyncOn');
-    }
-
-    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
-    flush();
-
-    const result = await testMetricsBrowserProxy.whenCalled(
-        'recordPrivacyGuideSettingsStatesHistogram');
-    assertEquals(result, expectedMetric);
-  }
-
-  async function assertSafeBrowsingMetrics({
-    safeBrowsingStartsEnhanced,
-    changeSetting,
-    expectedMetric,
-  }: {
-    safeBrowsingStartsEnhanced: boolean,
-    changeSetting: boolean,
-    expectedMetric: PrivacyGuideSettingsStates,
-  }) {
-    const safeBrowsingStartState = safeBrowsingStartsEnhanced ?
-        SafeBrowsingSetting.ENHANCED :
-        SafeBrowsingSetting.STANDARD;
-    page.setPrefValue('generated.safe_browsing', safeBrowsingStartState);
-    flush();
-    navigateToStep(PrivacyReviewStep.SAFE_BROWSING);
-    assertSafeBrowsingCardVisible();
-
-    if (changeSetting) {
-      page.shadowRoot!.querySelector(
-                          '#' + PrivacyReviewStep.SAFE_BROWSING)!.shadowRoot!
-          .querySelector<HTMLElement>(
-              safeBrowsingStartsEnhanced ?
-                  '#safeBrowsingRadioStandard' :
-                  '#safeBrowsingRadioEnhanced')!.click();
-      flush();
-      const actionResult =
-          await testMetricsBrowserProxy.whenCalled('recordAction');
-      assertEquals(
-          actionResult,
-          safeBrowsingStartsEnhanced ?
-              'Settings.PrivacyGuide.ChangeSafeBrowsingStandard' :
-              'Settings.PrivacyGuide.ChangeSafeBrowsingEnhanced');
-    }
-
-    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
-    flush();
-
-    const result = await testMetricsBrowserProxy.whenCalled(
-        'recordPrivacyGuideSettingsStatesHistogram');
-    assertEquals(result, expectedMetric);
-  }
-
-  async function assertCookieMetrics({
-    cookieStartsBlock3PIncognito,
-    changeSetting,
-    expectedMetric,
-  }: {
-    cookieStartsBlock3PIncognito: boolean,
-    changeSetting: boolean,
-    expectedMetric: PrivacyGuideSettingsStates,
-  }) {
-    const cookieStartState = cookieStartsBlock3PIncognito ?
-        CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO :
-        CookiePrimarySetting.BLOCK_THIRD_PARTY;
-    page.setPrefValue('generated.cookie_primary_setting', cookieStartState);
-    flush();
-    navigateToStep(PrivacyReviewStep.COOKIES);
-    assertCookiesCardVisible();
-
-    if (changeSetting) {
-      page.shadowRoot!.querySelector(
-                          '#' + PrivacyReviewStep.COOKIES)!.shadowRoot!
-          .querySelector<HTMLElement>(
-              cookieStartsBlock3PIncognito ? '#block3P' :
-                                             '#block3PIncognito')!.click();
-      flush();
-      const actionResult =
-          await testMetricsBrowserProxy.whenCalled('recordAction');
-      assertEquals(
-          actionResult,
-          cookieStartsBlock3PIncognito ?
-              'Settings.PrivacyGuide.ChangeCookiesBlock3P' :
-              'Settings.PrivacyGuide.ChangeCookiesBlock3PIncognito');
-    }
-
-    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
-    flush();
-
-    const result = await testMetricsBrowserProxy.whenCalled(
-        'recordPrivacyGuideSettingsStatesHistogram');
-    assertEquals(result, expectedMetric);
-  }
-
   test('startPrivacyReview', function() {
     // Navigating to the privacy review without a step parameter navigates to
     // the welcome card.
@@ -539,38 +383,6 @@ suite('PrivacyReviewPage', function() {
     assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickMSBB');
   });
 
-  test('msbbMetricsOnToOn', async function() {
-    await assertMsbbMetrics({
-      msbbStartOn: true,
-      changeSetting: false,
-      expectedMetric: PrivacyGuideSettingsStates.MSBB_ON_TO_ON
-    });
-  });
-
-  test('msbbMetricsOnToOff', async function() {
-    await assertMsbbMetrics({
-      msbbStartOn: true,
-      changeSetting: true,
-      expectedMetric: PrivacyGuideSettingsStates.MSBB_ON_TO_OFF
-    });
-  });
-
-  test('msbbMetricsOffToOn', async function() {
-    await assertMsbbMetrics({
-      msbbStartOn: false,
-      changeSetting: true,
-      expectedMetric: PrivacyGuideSettingsStates.MSBB_OFF_TO_ON
-    });
-  });
-
-  test('msbbMetricsOffToOff', async function() {
-    await assertMsbbMetrics({
-      msbbStartOn: false,
-      changeSetting: false,
-      expectedMetric: PrivacyGuideSettingsStates.MSBB_OFF_TO_OFF
-    });
-  });
-
   test('msbbForwardNavigationSyncOn', async function() {
     navigateToStep(PrivacyReviewStep.MSBB);
     setupSync({
@@ -623,38 +435,6 @@ suite('PrivacyReviewPage', function() {
     const actionResult =
         await testMetricsBrowserProxy.whenCalled('recordAction');
     assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickHistorySync');
-  });
-
-  test('historySyncOnToOn', async function() {
-    await assertHistorySyncMetrics({
-      historySyncStartOn: true,
-      changeSetting: false,
-      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_ON
-    });
-  });
-
-  test('historySyncOnToOff', async function() {
-    await assertHistorySyncMetrics({
-      historySyncStartOn: true,
-      changeSetting: true,
-      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_OFF
-    });
-  });
-
-  test('historySyncOffToOn', async function() {
-    await assertHistorySyncMetrics({
-      historySyncStartOn: false,
-      changeSetting: true,
-      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_ON
-    });
-  });
-
-  test('historySyncOffToOff', async function() {
-    await assertHistorySyncMetrics({
-      historySyncStartOn: false,
-      changeSetting: false,
-      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_OFF
-    });
   });
 
   test('historySyncNavigatesAwayOnSyncOff', function() {
@@ -756,42 +536,6 @@ suite('PrivacyReviewPage', function() {
     assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickSafeBrowsing');
   });
 
-  test('safeBrowsingMetricsEnhancedToEnhanced', async function() {
-    await assertSafeBrowsingMetrics({
-      safeBrowsingStartsEnhanced: true,
-      changeSetting: false,
-      expectedMetric:
-          PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_ENHANCED,
-    });
-  });
-
-  test('safeBrowsingMetricsEnhancedToStandard', async function() {
-    await assertSafeBrowsingMetrics({
-      safeBrowsingStartsEnhanced: true,
-      changeSetting: true,
-      expectedMetric:
-          PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_STANDARD,
-    });
-  });
-
-  test('safeBrowsingMetricsStandardToEnhanced', async function() {
-    await assertSafeBrowsingMetrics({
-      safeBrowsingStartsEnhanced: false,
-      changeSetting: true,
-      expectedMetric:
-          PrivacyGuideSettingsStates.SAFE_BROWSING_STANDARD_TO_ENHANCED,
-    });
-  });
-
-  test('safeBrowsingMetricsStandardToStandard', async function() {
-    await assertSafeBrowsingMetrics({
-      safeBrowsingStartsEnhanced: false,
-      changeSetting: false,
-      expectedMetric:
-          PrivacyGuideSettingsStates.SAFE_BROWSING_STANDARD_TO_STANDARD,
-    });
-  });
-
   test('safeBrowsingCardBackNavigationSyncOff', async function() {
     navigateToStep(PrivacyReviewStep.SAFE_BROWSING);
     setupSync({
@@ -880,39 +624,6 @@ suite('PrivacyReviewPage', function() {
     const actionResult =
         await testMetricsBrowserProxy.whenCalled('recordAction');
     assertEquals(actionResult, 'Settings.PrivacyGuide.BackClickCookies');
-  });
-
-  test('cookiesMetrics3PIncognitoTo3PIncognito', async function() {
-    await assertCookieMetrics({
-      cookieStartsBlock3PIncognito: true,
-      changeSetting: false,
-      expectedMetric:
-          PrivacyGuideSettingsStates.BLOCK_3P_INCOGNITO_TO_3P_INCOGNITO,
-    });
-  });
-
-  test('cookiesMetrics3PIncognitoTo3P', async function() {
-    await assertCookieMetrics({
-      cookieStartsBlock3PIncognito: true,
-      changeSetting: true,
-      expectedMetric: PrivacyGuideSettingsStates.BLOCK_3P_INCOGNITO_TO_3P,
-    });
-  });
-
-  test('cookiesMetrics3PTo3PIncognito', async function() {
-    await assertCookieMetrics({
-      cookieStartsBlock3PIncognito: false,
-      changeSetting: true,
-      expectedMetric: PrivacyGuideSettingsStates.BLOCK_3P_TO_3P_INCOGNITO,
-    });
-  });
-
-  test('cookiesMetrics3PTo3P', async function() {
-    await assertCookieMetrics({
-      cookieStartsBlock3PIncognito: false,
-      changeSetting: false,
-      expectedMetric: PrivacyGuideSettingsStates.BLOCK_3P_TO_3P,
-    });
   });
 
   test('cookiesCardBackNavigationShouldHideSafeBrowsingCard', function() {
@@ -1061,6 +772,353 @@ suite('PrivacyReviewPage', function() {
     Router.getInstance().navigateTo(routes.PRIVACY_REVIEW);
     flush();
     assertEquals(routes.PRIVACY, Router.getInstance().getCurrentRoute());
+  });
+});
+
+suite('PrivacyReviewFragmentMetrics', function() {
+  let page: SettingsPrivacyReviewPageElement;
+  let syncBrowserProxy: TestSyncBrowserProxy;
+  let testMetricsBrowserProxy: TestMetricsBrowserProxy;
+
+  setup(function() {
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+    syncBrowserProxy = new TestSyncBrowserProxy();
+    syncBrowserProxy.testSyncStatus = null;
+    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
+
+    document.body.innerHTML = '';
+    page = document.createElement('settings-privacy-review-page');
+    page.disableAnimationsForTesting();
+    page.prefs = {
+      privacy_guide: {
+        viewed: {
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: false,
+        },
+      },
+      url_keyed_anonymized_data_collection: {
+        enabled: {
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: true,
+        },
+      },
+      generated: {
+        cookie_primary_setting: {
+          type: chrome.settingsPrivate.PrefType.NUMBER,
+          value: CookiePrimarySetting.BLOCK_THIRD_PARTY,
+        },
+        safe_browsing: {
+          type: chrome.settingsPrivate.PrefType.NUMBER,
+          value: SafeBrowsingSetting.STANDARD,
+        },
+      },
+    };
+    document.body.appendChild(page);
+
+    // Simulates the route of the user entering the privacy review from the S&P
+    // settings. This is necessary as tests seem to by default define the
+    // previous route as Settings "/". On a back navigation, "/" matches the
+    // criteria for a valid Settings parent no matter how deep the subpage is in
+    // the Settings tree. This would always navigate to Settings "/" instead of
+    // to the parent of the current subpage.
+    Router.getInstance().navigateTo(routes.PRIVACY);
+
+    return flushTasks();
+  });
+
+  teardown(function() {
+    page.remove();
+    // Reset route to default. The route is updated as we navigate through the
+    // cards, but the browser instance is shared among the tests, so otherwise
+    // the next test will be initialized to the same card as the previous test.
+    Router.getInstance().navigateTo(routes.BASIC);
+  });
+
+  async function assertMsbbMetrics({
+    msbbStartOn,
+    changeSetting,
+    expectedMetric,
+  }: {
+    msbbStartOn: boolean,
+    changeSetting: boolean,
+    expectedMetric: PrivacyGuideSettingsStates,
+  }) {
+    page.setPrefValue(
+        'url_keyed_anonymized_data_collection.enabled', msbbStartOn);
+    flush();
+    navigateToStep(PrivacyReviewStep.MSBB);
+
+    if (changeSetting) {
+      page.shadowRoot!.querySelector('#' + PrivacyReviewStep.MSBB)!.shadowRoot!
+          .querySelector<HTMLElement>('#urlCollectionToggle')!.click();
+      flush();
+      const actionResult =
+          await testMetricsBrowserProxy.whenCalled('recordAction');
+      assertEquals(
+          actionResult,
+          msbbStartOn ? 'Settings.PrivacyGuide.ChangeMSBBOff' :
+                        'Settings.PrivacyGuide.ChangeMSBBOn');
+    }
+
+    // Go back instead of forward to not need sync state in the test.
+    page.shadowRoot!.querySelector<HTMLElement>('#backButton')!.click();
+    flush();
+
+    const result = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideSettingsStatesHistogram');
+    assertEquals(result, expectedMetric);
+  }
+
+  async function assertHistorySyncMetrics({
+    historySyncStartOn,
+    changeSetting,
+    expectedMetric,
+  }: {
+    historySyncStartOn: boolean,
+    changeSetting: boolean,
+    expectedMetric: PrivacyGuideSettingsStates,
+  }) {
+    setupSync({
+      syncBrowserProxy: syncBrowserProxy,
+      syncOn: true,
+      syncAllDataTypes: historySyncStartOn,
+      typedUrlsSynced: historySyncStartOn,
+    });
+    navigateToStep(PrivacyReviewStep.HISTORY_SYNC);
+
+    if (changeSetting) {
+      page.shadowRoot!.querySelector('#' + PrivacyReviewStep.HISTORY_SYNC)!
+          .shadowRoot!.querySelector<HTMLElement>('#historyToggle')!.click();
+      flush();
+      const actionResult =
+          await testMetricsBrowserProxy.whenCalled('recordAction');
+      assertEquals(
+          actionResult,
+          historySyncStartOn ? 'Settings.PrivacyGuide.ChangeHistorySyncOff' :
+                               'Settings.PrivacyGuide.ChangeHistorySyncOn');
+    }
+
+    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
+    flush();
+
+    const result = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideSettingsStatesHistogram');
+    assertEquals(result, expectedMetric);
+  }
+
+  async function assertSafeBrowsingMetrics({
+    safeBrowsingStartsEnhanced,
+    changeSetting,
+    expectedMetric,
+  }: {
+    safeBrowsingStartsEnhanced: boolean,
+    changeSetting: boolean,
+    expectedMetric: PrivacyGuideSettingsStates,
+  }) {
+    const safeBrowsingStartState = safeBrowsingStartsEnhanced ?
+        SafeBrowsingSetting.ENHANCED :
+        SafeBrowsingSetting.STANDARD;
+    page.setPrefValue('generated.safe_browsing', safeBrowsingStartState);
+    flush();
+    navigateToStep(PrivacyReviewStep.SAFE_BROWSING);
+
+    if (changeSetting) {
+      page.shadowRoot!.querySelector(
+                          '#' + PrivacyReviewStep.SAFE_BROWSING)!.shadowRoot!
+          .querySelector<HTMLElement>(
+              safeBrowsingStartsEnhanced ?
+                  '#safeBrowsingRadioStandard' :
+                  '#safeBrowsingRadioEnhanced')!.click();
+      flush();
+      const actionResult =
+          await testMetricsBrowserProxy.whenCalled('recordAction');
+      assertEquals(
+          actionResult,
+          safeBrowsingStartsEnhanced ?
+              'Settings.PrivacyGuide.ChangeSafeBrowsingStandard' :
+              'Settings.PrivacyGuide.ChangeSafeBrowsingEnhanced');
+    }
+
+    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
+    flush();
+
+    const result = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideSettingsStatesHistogram');
+    assertEquals(result, expectedMetric);
+  }
+
+  async function assertCookieMetrics({
+    cookieStartsBlock3PIncognito,
+    changeSetting,
+    expectedMetric,
+  }: {
+    cookieStartsBlock3PIncognito: boolean,
+    changeSetting: boolean,
+    expectedMetric: PrivacyGuideSettingsStates,
+  }) {
+    const cookieStartState = cookieStartsBlock3PIncognito ?
+        CookiePrimarySetting.BLOCK_THIRD_PARTY_INCOGNITO :
+        CookiePrimarySetting.BLOCK_THIRD_PARTY;
+    page.setPrefValue('generated.cookie_primary_setting', cookieStartState);
+    flush();
+    navigateToStep(PrivacyReviewStep.COOKIES);
+
+    if (changeSetting) {
+      page.shadowRoot!.querySelector(
+                          '#' + PrivacyReviewStep.COOKIES)!.shadowRoot!
+          .querySelector<HTMLElement>(
+              cookieStartsBlock3PIncognito ? '#block3P' :
+                                             '#block3PIncognito')!.click();
+      flush();
+      const actionResult =
+          await testMetricsBrowserProxy.whenCalled('recordAction');
+      assertEquals(
+          actionResult,
+          cookieStartsBlock3PIncognito ?
+              'Settings.PrivacyGuide.ChangeCookiesBlock3P' :
+              'Settings.PrivacyGuide.ChangeCookiesBlock3PIncognito');
+    }
+
+    page.shadowRoot!.querySelector<HTMLElement>('#nextButton')!.click();
+    flush();
+
+    const result = await testMetricsBrowserProxy.whenCalled(
+        'recordPrivacyGuideSettingsStatesHistogram');
+    assertEquals(result, expectedMetric);
+  }
+
+  test('msbbMetricsOnToOn', function() {
+    return assertMsbbMetrics({
+      msbbStartOn: true,
+      changeSetting: false,
+      expectedMetric: PrivacyGuideSettingsStates.MSBB_ON_TO_ON
+    });
+  });
+
+  test('msbbMetricsOnToOff', function() {
+    return assertMsbbMetrics({
+      msbbStartOn: true,
+      changeSetting: true,
+      expectedMetric: PrivacyGuideSettingsStates.MSBB_ON_TO_OFF
+    });
+  });
+
+  test('msbbMetricsOffToOn', function() {
+    return assertMsbbMetrics({
+      msbbStartOn: false,
+      changeSetting: true,
+      expectedMetric: PrivacyGuideSettingsStates.MSBB_OFF_TO_ON
+    });
+  });
+
+  test('msbbMetricsOffToOff', function() {
+    return assertMsbbMetrics({
+      msbbStartOn: false,
+      changeSetting: false,
+      expectedMetric: PrivacyGuideSettingsStates.MSBB_OFF_TO_OFF
+    });
+  });
+
+  test('historySyncOnToOn', function() {
+    return assertHistorySyncMetrics({
+      historySyncStartOn: true,
+      changeSetting: false,
+      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_ON
+    });
+  });
+
+  test('historySyncOnToOff', function() {
+    return assertHistorySyncMetrics({
+      historySyncStartOn: true,
+      changeSetting: true,
+      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_ON_TO_OFF
+    });
+  });
+
+  test('historySyncOffToOn', function() {
+    return assertHistorySyncMetrics({
+      historySyncStartOn: false,
+      changeSetting: true,
+      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_ON
+    });
+  });
+
+  test('historySyncOffToOff', function() {
+    return assertHistorySyncMetrics({
+      historySyncStartOn: false,
+      changeSetting: false,
+      expectedMetric: PrivacyGuideSettingsStates.HISTORY_SYNC_OFF_TO_OFF
+    });
+  });
+
+  test('safeBrowsingMetricsEnhancedToEnhanced', function() {
+    return assertSafeBrowsingMetrics({
+      safeBrowsingStartsEnhanced: true,
+      changeSetting: false,
+      expectedMetric:
+          PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_ENHANCED,
+    });
+  });
+
+  test('safeBrowsingMetricsEnhancedToStandard', function() {
+    return assertSafeBrowsingMetrics({
+      safeBrowsingStartsEnhanced: true,
+      changeSetting: true,
+      expectedMetric:
+          PrivacyGuideSettingsStates.SAFE_BROWSING_ENHANCED_TO_STANDARD,
+    });
+  });
+
+  test('safeBrowsingMetricsStandardToEnhanced', function() {
+    return assertSafeBrowsingMetrics({
+      safeBrowsingStartsEnhanced: false,
+      changeSetting: true,
+      expectedMetric:
+          PrivacyGuideSettingsStates.SAFE_BROWSING_STANDARD_TO_ENHANCED,
+    });
+  });
+
+  test('safeBrowsingMetricsStandardToStandard', function() {
+    return assertSafeBrowsingMetrics({
+      safeBrowsingStartsEnhanced: false,
+      changeSetting: false,
+      expectedMetric:
+          PrivacyGuideSettingsStates.SAFE_BROWSING_STANDARD_TO_STANDARD,
+    });
+  });
+
+  test('cookiesMetrics3PIncognitoTo3PIncognito', function() {
+    return assertCookieMetrics({
+      cookieStartsBlock3PIncognito: true,
+      changeSetting: false,
+      expectedMetric:
+          PrivacyGuideSettingsStates.BLOCK_3P_INCOGNITO_TO_3P_INCOGNITO,
+    });
+  });
+
+  test('cookiesMetrics3PIncognitoTo3P', function() {
+    return assertCookieMetrics({
+      cookieStartsBlock3PIncognito: true,
+      changeSetting: true,
+      expectedMetric: PrivacyGuideSettingsStates.BLOCK_3P_INCOGNITO_TO_3P,
+    });
+  });
+
+  test('cookiesMetrics3PTo3PIncognito', function() {
+    return assertCookieMetrics({
+      cookieStartsBlock3PIncognito: false,
+      changeSetting: true,
+      expectedMetric: PrivacyGuideSettingsStates.BLOCK_3P_TO_3P_INCOGNITO,
+    });
+  });
+
+  test('cookiesMetrics3PTo3P', function() {
+    return assertCookieMetrics({
+      cookieStartsBlock3PIncognito: false,
+      changeSetting: false,
+      expectedMetric: PrivacyGuideSettingsStates.BLOCK_3P_TO_3P,
+    });
   });
 });
 

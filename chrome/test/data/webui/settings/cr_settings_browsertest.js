@@ -507,6 +507,12 @@ TEST_F(
     });
 
 TEST_F(
+    'CrSettingsPrivacyReviewPageTest', 'PrivacyReviewFragmentMetricsTests',
+    function() {
+      runMochaSuite('PrivacyReviewFragmentMetrics');
+    });
+
+TEST_F(
     'CrSettingsPrivacyReviewPageTest', 'HistorySyncFragmentTests', function() {
       runMochaSuite('HistorySyncFragment');
     });
