@@ -93,8 +93,7 @@ class TestExternallyManagedAppInstallFinalizer : public WebAppInstallFinalizer {
  public:
   explicit TestExternallyManagedAppInstallFinalizer(
       WebAppRegistrarMutable* registrar)
-      : WebAppInstallFinalizer(nullptr, nullptr, nullptr),
-        registrar_(registrar) {}
+      : WebAppInstallFinalizer(nullptr), registrar_(registrar) {}
   TestExternallyManagedAppInstallFinalizer(
       const TestExternallyManagedAppInstallFinalizer&) = delete;
   TestExternallyManagedAppInstallFinalizer& operator=(

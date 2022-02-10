@@ -266,8 +266,7 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
 
   auto icon_manager = std::make_unique<WebAppIconManager>(
       profile, *registrar, base::MakeRefCounted<FileUtilsWrapper>());
-  install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(
-      profile, icon_manager.get(), web_app_policy_manager_.get());
+  install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(profile);
 
   if (g_os_integration_manager_factory_for_testing) {
     os_integration_manager_ =
@@ -304,9 +303,10 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
 void WebAppProvider::ConnectSubsystems() {
   DCHECK(!started_);
 
-  install_finalizer_->SetSubsystems(install_manager_.get(), registrar_.get(),
-                                    ui_manager_.get(), sync_bridge_.get(),
-                                    os_integration_manager_.get());
+  install_finalizer_->SetSubsystems(
+      install_manager_.get(), registrar_.get(), ui_manager_.get(),
+      sync_bridge_.get(), os_integration_manager_.get(), icon_manager_.get(),
+      web_app_policy_manager_.get());
   install_manager_->SetSubsystems(registrar_.get(),
                                   os_integration_manager_.get(),
                                   install_finalizer_.get());

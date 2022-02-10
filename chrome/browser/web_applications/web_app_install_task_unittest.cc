@@ -107,13 +107,13 @@ class WebAppInstallTaskTest : public WebAppTest {
 
     ui_manager_ = std::make_unique<FakeWebAppUiManager>();
 
-    install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(
-        profile(), icon_manager_.get(), policy_manager_.get());
+    install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(profile());
 
-    install_finalizer_->SetSubsystems(&install_manager(), &registrar(),
-                                      ui_manager_.get(),
-                                      &fake_registry_controller_->sync_bridge(),
-                                      &fake_os_integration_manager());
+    install_finalizer_->SetSubsystems(
+        &install_manager(), &registrar(), ui_manager_.get(),
+        &fake_registry_controller_->sync_bridge(),
+        &fake_os_integration_manager(), icon_manager_.get(),
+        policy_manager_.get());
 
     auto data_retriever = std::make_unique<FakeDataRetriever>();
     data_retriever_ = data_retriever.get();

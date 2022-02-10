@@ -117,13 +117,8 @@ WebAppInstallFinalizer::FinalizeOptions::~FinalizeOptions() = default;
 WebAppInstallFinalizer::FinalizeOptions::FinalizeOptions(
     const FinalizeOptions&) = default;
 
-WebAppInstallFinalizer::WebAppInstallFinalizer(
-    Profile* profile,
-    WebAppIconManager* icon_manager,
-    WebAppPolicyManager* policy_manager)
-    : profile_(profile),
-      icon_manager_(icon_manager),
-      policy_manager_(policy_manager) {}
+WebAppInstallFinalizer::WebAppInstallFinalizer(Profile* profile)
+    : profile_(profile) {}
 
 WebAppInstallFinalizer::~WebAppInstallFinalizer() = default;
 
@@ -456,12 +451,16 @@ void WebAppInstallFinalizer::SetSubsystems(
     WebAppRegistrar* registrar,
     WebAppUiManager* ui_manager,
     WebAppSyncBridge* sync_bridge,
-    OsIntegrationManager* os_integration_manager) {
+    OsIntegrationManager* os_integration_manager,
+    WebAppIconManager* icon_manager,
+    WebAppPolicyManager* policy_manager) {
   install_manager_ = install_manager;
   registrar_ = registrar;
   ui_manager_ = ui_manager;
   sync_bridge_ = sync_bridge;
   os_integration_manager_ = os_integration_manager;
+  icon_manager_ = icon_manager;
+  policy_manager_ = policy_manager;
 }
 
 void WebAppInstallFinalizer::UninstallWebAppInternal(

@@ -27,7 +27,7 @@ AppId FakeInstallFinalizer::GetAppIdForUrl(const GURL& url) {
 }
 
 FakeInstallFinalizer::FakeInstallFinalizer()
-    : WebAppInstallFinalizer(nullptr, nullptr, nullptr) {}
+    : WebAppInstallFinalizer(nullptr) {}
 
 FakeInstallFinalizer::~FakeInstallFinalizer() = default;
 
