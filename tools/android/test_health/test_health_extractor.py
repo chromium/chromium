@@ -62,12 +62,12 @@ class TestHealthInfo:
     """Information about the Git repository being sampled."""
 
 
-def get_repo_test_health(
-        git_repo: pathlib.Path = _CHROMIUM_SRC_PATH,
-        *,
-        test_dir: Union[str, pathlib.Path] = pathlib.Path('.'),
-        ignored_dirs: Tuple[str, ...] = _IGNORED_DIRS,
-        ignored_files: Set[str] = _IGNORED_FILES) -> List[TestHealthInfo]:
+def get_repo_test_health(git_repo: pathlib.Path = None,
+                         *,
+                         test_dir: Union[str, pathlib.Path] = None,
+                         ignored_dirs: Tuple[str, ...] = _IGNORED_DIRS,
+                         ignored_files: Set[str] = _IGNORED_FILES
+                         ) -> List[TestHealthInfo]:
     """Gets test health information and stats for a Git repository.
 
     This function checks for Java tests annotated as disabled or flaky but could
@@ -90,6 +90,8 @@ def get_repo_test_health(
     Returns:
         A list of `TestHealthInfo` objects, one for each test file processed.
     """
+    git_repo = git_repo or _CHROMIUM_SRC_PATH
+    test_dir = test_dir or pathlib.Path('.')
     tests_root = (git_repo / test_dir).resolve(strict=True)
     repo_info = _get_git_repo_info(git_repo)
     test_health_infos: list[TestHealthInfo] = []
