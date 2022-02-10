@@ -1138,6 +1138,9 @@ void LayoutBlock::RemovePositionedObjects(
     LayoutObject* stay_within,
     ContainingBlockState containing_block_state) {
   NOT_DESTROYED();
+  TrackedLayoutBoxLinkedHashSet* positioned_descendants = PositionedObjects();
+  if (!positioned_descendants)
+    return;
 
   auto ProcessPositionedObjectRemoval = [&](LayoutObject* positioned_object) {
     if (stay_within && (!positioned_object->IsDescendantOf(stay_within) ||
@@ -1155,43 +1158,19 @@ void LayoutBlock::RemovePositionedObjects(
     return true;
   };
 
-  TrackedLayoutBoxLinkedHashSet* positioned_descendants = PositionedObjects();
   HeapVector<Member<LayoutBox>, 16> dead_objects;
-  bool has_positioned_children_in_fragment_tree = false;
-
-  // PositionedObjects() is populated in legacy, and in NG when inside a
-  // fragmentation context root. But in other NG cases it's empty as an
-  // optimization, since we can just look at the children in the fragment tree.
-  if (positioned_descendants) {
-    for (const auto& positioned_object : *positioned_descendants) {
-      if (ProcessPositionedObjectRemoval(positioned_object))
-        dead_objects.push_back(positioned_object);
-    }
-  } else {
-    for (const NGPhysicalBoxFragment& fragment : PhysicalFragments()) {
-      if (!fragment.HasOutOfFlowFragmentChild())
-        continue;
-      for (const NGLink& fragment_child : fragment.Children()) {
-        if (!fragment_child->IsOutOfFlowPositioned())
-          continue;
-        if (LayoutObject* child = fragment_child->GetMutableLayoutObject()) {
-          if (ProcessPositionedObjectRemoval(child))
-            has_positioned_children_in_fragment_tree = true;
-        }
-      }
-    }
+  for (LayoutBox* positioned_object : *positioned_descendants) {
+    if (ProcessPositionedObjectRemoval(positioned_object))
+      dead_objects.push_back(positioned_object);
   }
 
   // Invalidate the nearest OOF container to ensure it is marked for layout.
   // Fixed containing blocks are always absolute containing blocks too,
   // so we only need to look for absolute containing blocks.
-  if (dead_objects.size() > 0 || has_positioned_children_in_fragment_tree) {
+  if (dead_objects.size() > 0) {
     if (LayoutBlock* containing_block = ContainingBlockForAbsolutePosition())
       containing_block->SetChildNeedsLayout(kMarkContainerChain);
   }
-
-  if (!positioned_descendants)
-    return;
 
   for (const auto& object : dead_objects) {
     DCHECK_EQ(GetPositionedContainerMap().at(object), this);

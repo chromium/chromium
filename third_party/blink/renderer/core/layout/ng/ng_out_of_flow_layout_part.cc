@@ -716,13 +716,10 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
         SaveStaticPositionOnPaintLayer(layout_box, candidate.static_position);
       if (IsContainingBlockForCandidate(candidate) &&
           (!only_layout || layout_box == only_layout)) {
+        if (layout_box != only_layout)
+          container_builder_->InsertLegacyPositionedObject(candidate.Node());
         if (has_block_fragmentation_ &&
             !container_builder_->IsInitialColumnBalancingPass()) {
-          // As an optimization, only populate legacy positioned objects lists
-          // when inside a fragmentation context root, since otherwise we can
-          // just look at the children in the fragment tree.
-          if (layout_box != only_layout)
-            container_builder_->InsertLegacyPositionedObject(candidate.Node());
           container_builder_->AdjustOffsetsForFragmentainerDescendant(
               candidate);
           container_builder_->AdjustFixedposContainingBlockForInnerMulticols();
