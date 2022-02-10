@@ -16,8 +16,7 @@ class BrowserContext;
 
 namespace sharing_hub {
 
-// Returns true if the omnibox sharing hub is enabled for |context|. Only for
-// Windows/Mac/Linux.
+// Returns true if the omnibox sharing hub is enabled for |context|.
 bool SharingHubOmniboxEnabled(content::BrowserContext* context);
 
 // Returns true if the desktop screenshots feature is enabled.

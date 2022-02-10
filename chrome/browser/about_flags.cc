@@ -6737,12 +6737,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(apps::kAppDiscoveryRemoteUrlSearch)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"chromeos-sharing-hub", flag_descriptions::kChromeOSSharingHubName,
-     flag_descriptions::kChromeOSSharingHubDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kChromeOSSharingHub)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
     {"enable-bluetooth-spp-in-serial-api",
      flag_descriptions::kEnableBluetoothSerialPortProfileInSerialApiName,
      flag_descriptions::kEnableBluetoothSerialPortProfileInSerialApiDescription,

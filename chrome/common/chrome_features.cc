@@ -923,11 +923,6 @@ const base::Feature kSecurityKeyAttestationPrompt{
     "SecurityKeyAttestationPrompt", base::FEATURE_ENABLED_BY_DEFAULT};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-const base::Feature kChromeOSSharingHub{"ChromeOSSharingHub",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 const base::Feature kSharesheetCopyToClipboard{
     "SharesheetCopyToClipboard", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif

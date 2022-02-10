@@ -37,12 +37,15 @@ bool ScreenshotsDisabledByPolicy(content::BrowserContext* context) {
 }  // namespace
 
 bool SharingHubOmniboxEnabled(content::BrowserContext* context) {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  if (SharingHubDisabledByPolicy(context))
+    return false;
+#endif
+
   Profile* profile = Profile::FromBrowserContext(context);
   if (!profile)
     return false;
-
-  return !SharingHubDisabledByPolicy(context) &&
-         !profile->IsIncognitoProfile() && !profile->IsGuestSession();
+  return !profile->IsIncognitoProfile() && !profile->IsGuestSession();
 }
 
 bool DesktopScreenshotsFeatureEnabled(content::BrowserContext* context) {

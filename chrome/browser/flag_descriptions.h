@@ -2965,9 +2965,6 @@ extern const char kSchedulerConfigurationDescription[];
 extern const char kSchedulerConfigurationConservative[];
 extern const char kSchedulerConfigurationPerformance[];
 
-extern const char kChromeOSSharingHubName[];
-extern const char kChromeOSSharingHubDescription[];
-
 extern const char kShowBluetoothDebugLogToggleName[];
 extern const char kShowBluetoothDebugLogToggleDescription[];
 

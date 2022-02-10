@@ -5154,10 +5154,6 @@ const char kSchedulerConfigurationConservative[] =
 const char kSchedulerConfigurationPerformance[] =
     "Enables Hyper-Threading on relevant CPUs.";
 
-const char kChromeOSSharingHubName[] = "Chrome OS Sharing Hub";
-const char kChromeOSSharingHubDescription[] =
-    "Enables the Sharing Hub (share sheet) on ChromeOS via the Omnibox.";
-
 const char kShowBluetoothDebugLogToggleName[] =
     "Show Bluetooth debug log toggle";
 const char kShowBluetoothDebugLogToggleDescription[] =

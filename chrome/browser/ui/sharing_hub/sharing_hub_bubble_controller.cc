@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/web_contents.h"
@@ -76,8 +75,7 @@ SharingHubBubbleController::~SharingHubBubbleController() {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(features::kChromeOSSharingHub) &&
-      bubble_showing_) {
+  if (bubble_showing_) {
     bubble_showing_ = false;
     // Close any remnant Sharesheet dialog.
     if (web_contents_containing_window_) {
@@ -141,13 +139,7 @@ Profile* SharingHubBubbleController::GetProfile() const {
 }
 
 bool SharingHubBubbleController::ShouldOfferOmniboxIcon() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (GetProfile()->IsIncognitoProfile() || GetProfile()->IsGuestSession())
-    return false;
-  return base::FeatureList::IsEnabled(features::kChromeOSSharingHub);
-#else
   return SharingHubOmniboxEnabled(GetWebContents().GetBrowserContext());
-#endif
 }
 
 std::vector<SharingHubAction>
@@ -239,10 +231,6 @@ SharingHubBubbleController::GetSharesheetService() {
 
 void SharingHubBubbleController::ShowSharesheet(
     views::Button* highlighted_button) {
-  if (!base::FeatureList::IsEnabled(features::kChromeOSSharingHub)) {
-    return;
-  }
-
   DCHECK(highlighted_button);
   highlighted_button_tracker_.SetView(highlighted_button);
 
