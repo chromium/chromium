@@ -3053,7 +3053,6 @@ static_library("ui") {
       "//components/app_constants",
       "//components/app_restore",
       "//components/arc",
-      "//components/arc/common:arc_intent_helper_constants",
       "//components/assist_ranker",
       "//components/assist_ranker/proto",
       "//components/captive_portal/core",
@@ -4912,6 +4911,7 @@ static_library("ui") {
     }
     if (is_chromeos) {
       sources += [ "views/status_icons/status_tray_chromeos.cc" ]
+      deps += [ "//components/arc/common:arc_intent_helper_constants" ]
     }
     if (is_fuchsia) {
       sources += [

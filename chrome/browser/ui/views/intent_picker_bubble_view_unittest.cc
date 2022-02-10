@@ -36,7 +36,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/arc/common/intent_helper/arc_intent_helper_package.h"
 #endif
 
@@ -51,7 +51,7 @@ using content::Referrer;
 // ChromeOS-only, so for this unit test to match the behavior of
 // IntentPickerBubbleView on non-ChromeOS platforms, if needs to not filter any
 // packages.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char* kArcIntentHelperPackageName = arc::kArcIntentHelperPackageName;
 bool IsIntentHelperPackage(const base::StringPiece package_name) {
   return package_name == arc::kArcIntentHelperPackageName;

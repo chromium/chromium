@@ -47,9 +47,9 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/arc/common/intent_helper/arc_intent_helper_package.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -342,12 +342,12 @@ void IntentPickerBubbleView::Initialize() {
   size_t i = 0;
   size_t to_erase = app_info_.size();
   for (const auto& app_info : app_info_) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (app_info.launch_name == arc::kArcIntentHelperPackageName) {
       to_erase = i;
       continue;
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     auto app_button = std::make_unique<IntentPickerLabelButton>(
         base::BindRepeating(&IntentPickerBubbleView::AppButtonPressed,
                             base::Unretained(this), i),
