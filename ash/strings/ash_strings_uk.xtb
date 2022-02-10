@@ -331,7 +331,7 @@
 <translation id="3227137524299004712">Мікрофон</translation>
 <translation id="324366796737464147">Заглушення шумів</translation>
 <translation id="3249513730522716925">Вікно "<ph name="WINDOW_TITLE" />" переміщено з робочого столу "<ph name="ACTIVE_DESK" />" на робочий стіл "<ph name="TARGET_DESK" />"</translation>
-<translation id="3252248118006571685">Щоб розблокувати Chromebook, увімкніть Bluetooth на телефоні</translation>
+<translation id="3252248118006571685">Щоб розблокувати Chromebook, увімкніть Bluetooth на телефоні.</translation>
 <translation id="3255483164551725916">Що ти можеш?</translation>
 <translation id="3269597722229482060">Натиснути правою кнопкою миші</translation>
 <translation id="3289674678944039601">Заряджання через адаптер</translation>
@@ -540,7 +540,7 @@
 <translation id="4481530544597605423">Відключені пристрої</translation>
 <translation id="4505050298327493054">Активний робочий стіл.</translation>
 <translation id="4513946894732546136">Відгуки</translation>
-<translation id="4518404433291145981">Щоб розблокувати Chromebook, спершу розблокуйте телефон</translation>
+<translation id="4518404433291145981">Щоб розблокувати Chromebook, спершу розблокуйте телефон.</translation>
 <translation id="4527045527269911712">Пристрою Bluetooth "<ph name="DEVICE_NAME" />" потрібен дозвіл на підключення.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> до повного заряду</translation>
 <translation id="4538824937723742295">Зробити знімок усього екрана</translation>
@@ -845,7 +845,7 @@
 <translation id="6667908387435388584">Підключайтеся до точки доступу телефона, вимикайте звук на пристрої, визначайте його місцезнаходження та переглядайте останні вкладки Chrome, відкриті на телефоні</translation>
 <translation id="6670153871843998651">Робочий стіл 3</translation>
 <translation id="6671495933530132209">Копіювати зображення</translation>
-<translation id="6671661918848783005">Не вдається розблокувати Chromebook</translation>
+<translation id="6671661918848783005">Не вдається розблокувати Chromebook.</translation>
 <translation id="6696025732084565524">Змінну клавіатуру потрібно оновити</translation>
 <translation id="6700713906295497288">Кнопка меню IME</translation>
 <translation id="6707693040195709527">Кінцевий термін переходу пристрою до попередньої версії минув</translation>
@@ -1050,7 +1050,7 @@
 <translation id="8061464966246066292">Високий контраст</translation>
 <translation id="8098591350844501178">Зупинити трансляцію екрана на пристрій "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="8113423164597455979">Увімкнено всі</translation>
-<translation id="8120151603115102514">На телефоні не налаштовано заблокований екран. Щоб розблокувати Chromebook, введіть пароль.</translation>
+<translation id="8120151603115102514">На телефоні немає екрана блокування. Щоб розблокувати Chromebook, введіть пароль.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Підтвердити</translation>
 <translation id="8132487352815776550">Вимкнути субтитри</translation>

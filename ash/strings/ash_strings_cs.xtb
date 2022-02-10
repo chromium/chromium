@@ -345,7 +345,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="334252345105450327">Pořídit snímek obrazovky</translation>
 <translation id="3351879221545518001">Právě odesíláte obrazovku.</translation>
 <translation id="3364721542077212959">Nástroje pro dotykové pero</translation>
-<translation id="3365977133351922112">Telefon je moc daleko. Přineste ho blíž.</translation>
+<translation id="3365977133351922112">Telefon je moc daleko. Dejte ho blíž.</translation>
 <translation id="3368922792935385530">Připojeno</translation>
 <translation id="3371140690572404006">Zařízení USB Type-C (pravý přední port)</translation>
 <translation id="3375634426936648815">Připojeno</translation>
@@ -368,7 +368,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3477079411857374384">Control + Shift + mezerník</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Polička byla automaticky skryta</translation>
-<translation id="3509391053705095206">Telefon se nepodařilo najít. Zkontrolujte, zda je na telefonu zapnutý Bluetooth.</translation>
+<translation id="3509391053705095206">Telefon se nepodařilo najít. Zkontrolujte, jestli je na něm zapnutý Bluetooth.</translation>
 <translation id="3510164367642747937">Zvýraznit ukazatel myši</translation>
 <translation id="3513798432020909783">Správce účtu: <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3518604429872942239">Stavový panel, čas <ph name="TIME" />,
@@ -540,7 +540,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4481530544597605423">Nespárovaná zařízení</translation>
 <translation id="4505050298327493054">Aktivní plocha.</translation>
 <translation id="4513946894732546136">Zpětná vazba</translation>
-<translation id="4518404433291145981">Pokud chcete Chromebook odemknout, nejdřív odemkněte telefon</translation>
+<translation id="4518404433291145981">Pokud chcete Chromebook odemknout, nejdřív odemkněte telefon.</translation>
 <translation id="4527045527269911712">Zařízení Bluetooth „<ph name="DEVICE_NAME" />“ žádá o povolení ke spárování.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> do úplného nabití</translation>
 <translation id="4538824937723742295">Pořídit snímek celé obrazovky</translation>

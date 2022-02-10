@@ -368,7 +368,7 @@
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">پنهان شدن خودکار قفسه</translation>
-<translation id="3509391053705095206">نمی‌توان تلفنتان را پیدا کرد. مطمئن شوید بلوتوث تلفن روشن باشد.</translation>
+<translation id="3509391053705095206">تلفنتان پیدا نشد. مطمئن شوید بلوتوث تلفن روشن باشد.</translation>
 <translation id="3510164367642747937">برجسته کردن نشانگر موشواره</translation>
 <translation id="3513798432020909783">حساب تحت مدیریت <ph name="MANAGER_EMAIL" /> است</translation>
 <translation id="3518604429872942239">سینی وضعیت، زمان <ph name="TIME" />,
@@ -654,7 +654,7 @@
 <translation id="5314219114274263156">ضبط صفحه‌نمایش انجام شد</translation>
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5319712128756744240">مرتبط‌سازی دستگاه جدید</translation>
-<translation id="5322611492012084517">نمی‌توان تلفنتان را پیدا کرد</translation>
+<translation id="5322611492012084517">تلفنتان پیدا نشد</translation>
 <translation id="5327248766486351172">نام</translation>
 <translation id="5329548388331921293">درحال اتصال...</translation>
 <translation id="5330201449517439522">برای ورود، ضربه بزنید یا کلیک کنید</translation>

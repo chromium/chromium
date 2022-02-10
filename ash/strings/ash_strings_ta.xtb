@@ -540,7 +540,7 @@
 <translation id="4481530544597605423">இணைக்காத சாதனங்கள்</translation>
 <translation id="4505050298327493054">செயலிலுள்ள டெஸ்க்.</translation>
 <translation id="4513946894732546136">கருத்து</translation>
-<translation id="4518404433291145981">Chromebookகை அன்லாக் செய்ய, முதலில் உங்கள் மொபைலை அன்லாக் செய்யவும்</translation>
+<translation id="4518404433291145981">Chromebookகை திறக்க உங்கள் ஃபோனை அன்லாக் செய்க</translation>
 <translation id="4527045527269911712">புளூடூத் சாதனம் "<ph name="DEVICE_NAME" />", இணைப்பதற்கான அனுமதியை விரும்புகிறது.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> ஆகும் 100% சார்ஜாக</translation>
 <translation id="4538824937723742295">முழுத்திரையையும் ஸ்கிரீன்ஷாட் எடுக்கும்</translation>
@@ -657,7 +657,7 @@
 <translation id="5322611492012084517">உங்கள் மொபைலைக் கண்டறிய முடியவில்லை</translation>
 <translation id="5327248766486351172">பெயர்</translation>
 <translation id="5329548388331921293">இணைக்கப்படுகிறது...</translation>
-<translation id="5330201449517439522">உள்நுழைய, தட்டவும் அல்லது கிளிக் செய்யவும்</translation>
+<translation id="5330201449517439522">உள்நுழைய தட்டவும் அல்லது கிளிக் செய்யவும்</translation>
 <translation id="5331975486040154427">USB-C சாதனம் (இடது பக்கம் பின்னே இருக்கும் போர்ட்)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (வலதுபக்கம்)</translation>
 <translation id="5352250171825660495">டார்க் தீம் இயக்கப்பட்டுள்ளது</translation>
@@ -1050,7 +1050,7 @@
 <translation id="8061464966246066292">உயர் மாறுபாடு</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />க்குத் திரையை அனுப்புவதை நிறுத்து</translation>
 <translation id="8113423164597455979">எல்லா ஆப்ஸுக்கும் இயக்கு</translation>
-<translation id="8120151603115102514">உங்கள் மொபைலில் பூட்டுத் திரை இயக்கப்படவில்லை. Chromebookகை அன்லாக் செய்ய, கடவுச்சொல்லை டைப் செய்யவும்.</translation>
+<translation id="8120151603115102514">மொபைலில் பூட்டுத்திரை இல்லை. Chromebookகை திறக்க கடவுச்சொல் உள்ளிடுக</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">உறுதிப்படுத்து</translation>
 <translation id="8132487352815776550">வசனங்களைக் காட்டாதே</translation>
