@@ -31,10 +31,10 @@ PASS e.style['container'] = "inline-size / 10px" should not set the property val
 PASS e.style['container'] = "inline-size / #fefefe" should not set the property value
 PASS e.style['container'] = "inline-size / calc(3px)" should not set the property value
 PASS e.style['container'] = "size 1 / name" should not set the property value
-FAIL e.style['container'] = "block-size" should not set the property value assert_equals: expected "" but got "block-size"
-FAIL e.style['container'] = "block-size / name" should not set the property value assert_equals: expected "" but got "block-size / name"
-FAIL e.style['container'] = "block-size /  NAME" should not set the property value assert_equals: expected "" but got "block-size / NAME"
-FAIL e.style['container'] = "block-size/NAME" should not set the property value assert_equals: expected "" but got "block-size / NAME"
-FAIL e.style['container'] = "block-size / block-size" should not set the property value assert_equals: expected "" but got "block-size / block-size"
+PASS e.style['container'] = "block-size" should not set the property value
+PASS e.style['container'] = "block-size / name" should not set the property value
+PASS e.style['container'] = "block-size /  NAME" should not set the property value
+PASS e.style['container'] = "block-size/NAME" should not set the property value
+PASS e.style['container'] = "block-size / block-size" should not set the property value
 Harness: the test ran to completion.
 

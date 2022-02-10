@@ -1633,8 +1633,6 @@ inline Containment CSSIdentifierValue::ConvertTo() const {
       return kContainsSize;
     case CSSValueID::kInlineSize:
       return kContainsInlineSize;
-    case CSSValueID::kBlockSize:
-      return kContainsBlockSize;
     default:
       break;
   }
@@ -1649,8 +1647,6 @@ inline EContainerType CSSIdentifierValue::ConvertTo() const {
       return kContainerTypeNone;
     case CSSValueID::kInlineSize:
       return kContainerTypeInlineSize;
-    case CSSValueID::kBlockSize:
-      return kContainerTypeBlockSize;
     case CSSValueID::kSize:
       return kContainerTypeSize;
     default:

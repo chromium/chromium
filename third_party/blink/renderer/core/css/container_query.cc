@@ -21,13 +21,13 @@ String ContainerSelector::ToString() const {
   }
 
   if (type_) {
+    DCHECK_NE(type_ & kContainerTypeSize, kContainerTypeBlockSize);
+
     builder.Append("type(");
     if ((type_ & kContainerTypeSize) == kContainerTypeSize) {
       builder.Append("size");
     } else if (type_ & kContainerTypeInlineSize) {
       builder.Append("inline-size");
-    } else if (type_ & kContainerTypeBlockSize) {
-      builder.Append("block-size");
     }
     builder.Append(")");
   }

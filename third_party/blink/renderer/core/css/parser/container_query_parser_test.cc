@@ -45,13 +45,14 @@ TEST_F(ContainerQueryParserTest, ConsumeSelector) {
     const char* input;
     const char* output;
   } valid_tests[] = {
+      // clang-format off
       {"foo", nullptr},
       {"foo ", "foo"},
       {"name(foo)", "foo"},
       {"type(inline-size)", nullptr},
-      {"type(block-size)", nullptr},
       {"type(size)", nullptr},
       {"name(foo) type(inline-size)", nullptr},
+      // clang-format on
   };
 
   for (const auto& test : valid_tests) {
@@ -66,6 +67,7 @@ TEST_F(ContainerQueryParserTest, ConsumeSelector) {
   EXPECT_EQ(g_null_atom, ParseSelector("name(50px)"));
   EXPECT_EQ(g_null_atom, ParseSelector("type()"));
   EXPECT_EQ(g_null_atom, ParseSelector("type(unknown)"));
+  EXPECT_EQ(g_null_atom, ParseSelector("type(block-size)"));
   EXPECT_EQ(g_null_atom, ParseSelector("name(foo) name(bar)"));
 }
 

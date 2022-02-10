@@ -364,49 +364,41 @@ TEST_F(ContainerQueryTest, ContainerUnitsViewportFallback) {
   RegisterProperty(GetDocument(), "--qb", "<length>", "0px", false);
   RegisterProperty(GetDocument(), "--qmin", "<length>", "0px", false);
   RegisterProperty(GetDocument(), "--qmax", "<length>", "0px", false);
-  RegisterProperty(GetDocument(), "--fallback-w", "<length>", "0px", false);
   RegisterProperty(GetDocument(), "--fallback-h", "<length>", "0px", false);
   RegisterProperty(GetDocument(), "--fallback-min-qi-vh", "<length>", "0px",
                    false);
-  RegisterProperty(GetDocument(), "--fallback-min-qb-vw", "<length>", "0px",
-                   false);
   RegisterProperty(GetDocument(), "--fallback-max-qi-vh", "<length>", "0px",
-                   false);
-  RegisterProperty(GetDocument(), "--fallback-max-qb-vw", "<length>", "0px",
                    false);
 
   SetBodyInnerHTML(R"HTML(
     <style>
-      #inline, #block {
+      #inline, #size {
         width: 100px;
         height: 100px;
       }
       #inline {
         container-type: inline-size;
       }
-      #block {
-        container-type: block-size;
+      #size {
+        container-type: size;
       }
-      #inline_target, #block_target {
+      #inline_target, #size_target {
         --qw: 10qw;
         --qi: 10qi;
         --qh: 10qh;
         --qb: 10qb;
         --qmin: 10qmin;
         --qmax: 10qmax;
-        --fallback-w: 10vw;
         --fallback-h: 10vh;
         --fallback-min-qi-vh: min(10qi, 10vh);
-        --fallback-min-qb-vw: min(10qb, 10vw);
         --fallback-max-qi-vh: max(10qi, 10vh);
-        --fallback-max-qb-vw: max(10qb, 10vw);
       }
     </style>
     <div id=inline>
       <div id="inline_target"></div>
     </div>
-    <div id=block>
-      <div id="block_target"></div>
+    <div id=size>
+      <div id="size_target"></div>
     </div>
   )HTML");
 
@@ -423,18 +415,14 @@ TEST_F(ContainerQueryTest, ContainerUnitsViewportFallback) {
   EXPECT_EQ(ComputedValueString(inline_target, "--qmax"),
             ComputedValueString(inline_target, "--fallback-max-qi-vh"));
 
-  Element* block_target = GetDocument().getElementById("block_target");
-  ASSERT_TRUE(block_target);
-  EXPECT_EQ(ComputedValueString(block_target, "--qw"),
-            ComputedValueString(block_target, "--fallback-w"));
-  EXPECT_EQ(ComputedValueString(block_target, "--qi"),
-            ComputedValueString(block_target, "--fallback-w"));
-  EXPECT_EQ(ComputedValueString(block_target, "--qh"), "10px");
-  EXPECT_EQ(ComputedValueString(block_target, "--qb"), "10px");
-  EXPECT_EQ(ComputedValueString(block_target, "--qmin"),
-            ComputedValueString(block_target, "--fallback-min-qb-vw"));
-  EXPECT_EQ(ComputedValueString(block_target, "--qmax"),
-            ComputedValueString(block_target, "--fallback-max-qb-vw"));
+  Element* size_target = GetDocument().getElementById("size_target");
+  ASSERT_TRUE(size_target);
+  EXPECT_EQ(ComputedValueString(size_target, "--qw"), "10px");
+  EXPECT_EQ(ComputedValueString(size_target, "--qi"), "10px");
+  EXPECT_EQ(ComputedValueString(size_target, "--qh"), "10px");
+  EXPECT_EQ(ComputedValueString(size_target, "--qb"), "10px");
+  EXPECT_EQ(ComputedValueString(size_target, "--qmin"), "10px");
+  EXPECT_EQ(ComputedValueString(size_target, "--qmax"), "10px");
 }
 
 TEST_F(ContainerQueryTest, OldStyleForTransitions) {

@@ -5211,8 +5211,8 @@ CSSValue* ConsumeContainerType(CSSParserTokenRange& range) {
   if (CSSValue* value = ConsumeIdent<CSSValueID::kNone>(range))
     return value;
 
-  if (CSSValue* value = ConsumeIdent<CSSValueID::kSize, CSSValueID::kInlineSize,
-                                     CSSValueID::kBlockSize>(range)) {
+  if (CSSValue* value =
+          ConsumeIdent<CSSValueID::kSize, CSSValueID::kInlineSize>(range)) {
     // Note that StyleBuilderConverter::ConvertFlags requires that values
     // other than 'none' appear in a CSSValueList, hence we return a list with
     // one item here. Also note that the full grammar will require multiple

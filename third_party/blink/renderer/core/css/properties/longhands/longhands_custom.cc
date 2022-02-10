@@ -1894,7 +1894,7 @@ const CSSValue* Contain::ParseSingleValue(CSSParserTokenRange& range,
     id = range.Peek().Id();
     if ((id == CSSValueID::kSize ||
          (RuntimeEnabledFeatures::CSSContainSize1DEnabled() &&
-          (id == CSSValueID::kBlockSize || id == CSSValueID::kInlineSize))) &&
+          (id == CSSValueID::kInlineSize))) &&
         !size) {
       size = css_parsing_utils::ConsumeIdent(range);
     } else if (id == CSSValueID::kLayout && !layout) {
@@ -1934,13 +1934,12 @@ const CSSValue* Contain::CSSValueFromComputedStyleInternal(
     return CSSIdentifierValue::Create(CSSValueID::kContent);
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  DCHECK_NE(style.Contain() & kContainsSize, kContainsBlockSize);
   if ((style.Contain() & kContainsSize) == kContainsSize) {
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kSize));
   } else {
     if (style.Contain() & kContainsInlineSize)
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kInlineSize));
-    else if (style.Contain() & kContainsBlockSize)
-      list->Append(*CSSIdentifierValue::Create(CSSValueID::kBlockSize));
   }
   if (style.Contain() & kContainsLayout)
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kLayout));
@@ -2029,14 +2028,14 @@ const CSSValue* ContainerType::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject* layout_object,
     bool allow_visited_style) const {
+  DCHECK_NE(style.ContainerType() & kContainerTypeSize,
+            kContainerTypeBlockSize);
   if (style.ContainerType() == kContainerTypeNone)
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   if (style.ContainerType() == kContainerTypeSize)
     return CSSIdentifierValue::Create(CSSValueID::kSize);
   if (style.ContainerType() == kContainerTypeInlineSize)
     return CSSIdentifierValue::Create(CSSValueID::kInlineSize);
-  if (style.ContainerType() == kContainerTypeBlockSize)
-    return CSSIdentifierValue::Create(CSSValueID::kBlockSize);
   NOTREACHED();
   return nullptr;
 }
