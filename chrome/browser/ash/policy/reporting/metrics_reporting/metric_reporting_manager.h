@@ -178,6 +178,8 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
 
   void InitAudioCollectors();
 
+  void InitPeripheralsCollectors();
+
   CrosReportingSettings reporting_settings_;
 
   // Samplers and queues should be destructed on the same sequence where

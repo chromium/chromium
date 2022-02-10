@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_info_sampler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_telemetry_sampler.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/usb/usb_events_observer.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_factory.h"
@@ -46,6 +47,7 @@ constexpr base::TimeDelta kDefaultAudioTelemetryCollectionRate =
 
 constexpr bool kReportDeviceNetworkStatusDefaultValue = true;
 constexpr bool kReportDeviceAudioStatusDefaultValue = true;
+constexpr bool kReportDevicePeripheralsDefaultValue = false;
 
 base::TimeDelta GetDefaultRate(base::TimeDelta default_rate,
                                base::TimeDelta testing_rate) {
@@ -327,6 +329,7 @@ void MetricReportingManager::InitOnAffiliatedLogin() {
         /*enable_setting_path=*/::ash::kReportDeviceNetworkStatus,
         kReportDeviceNetworkStatusDefaultValue);
   }
+  InitPeripheralsCollectors();
 }
 
 void MetricReportingManager::DelayedInitOnAffiliatedLogin() {
@@ -465,4 +468,21 @@ void MetricReportingManager::InitAudioCollectors() {
       GetDefaulCollectionRate(kDefaultAudioTelemetryCollectionRate));
 }
 
+void MetricReportingManager::InitPeripheralsCollectors() {
+  // Peripheral events
+  InitEventObserverManager(std::make_unique<UsbEventsObserver>(),
+                           ::ash::kReportDevicePeripherals,
+                           kReportDevicePeripheralsDefaultValue);
+  auto peripheral_telemetry_sampler =
+      std::make_unique<CrosHealthdMetricSampler>(
+          chromeos::cros_healthd::mojom::ProbeCategoryEnum::kBus,
+          CrosHealthdMetricSampler::MetricType::kTelemetry);
+
+  // Peripheral telemetry
+  CreateCrosHealthdOneShotCollector(
+      chromeos::cros_healthd::mojom::ProbeCategoryEnum::kBus,
+      CrosHealthdMetricSampler::MetricType::kTelemetry,
+      ash::kReportDevicePeripherals, kReportDevicePeripheralsDefaultValue,
+      telemetry_report_queue_.get());
+}
 }  // namespace reporting
