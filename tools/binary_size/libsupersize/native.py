@@ -736,10 +736,11 @@ def _ElfInfoFromApk(apk_path, apk_so_path):
 
 
 def _CountRelocationsFromElf(elf_path):
-  args = [path_util.GetObjDumpPath(), '--private-headers', elf_path]
+  args = [path_util.GetReadElfPath(), '-r', elf_path]
   stdout = subprocess.check_output(args).decode('ascii')
-  relocations = re.search('REL[AR]?COUNT\s*(.+)', stdout).group(1)
-  return int(relocations, 16)
+  relocations = re.findall(
+      'Relocation section .* at offset .* contains (\d+) entries', stdout)
+  return sum([int(i) for i in relocations])
 
 
 def AddMetadata(*, metadata, native_spec, shorten_path):

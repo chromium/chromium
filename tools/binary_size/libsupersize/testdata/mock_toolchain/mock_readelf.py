@@ -196,6 +196,12 @@ Key to Flags:
 """,
 }
 
+_RELOCATIONS = """
+Relocation section '.rel.dyn' at offset 0x23b74 contains 394086 entries:
+Relocation section '.rel.plt' at offset 0x2f313c contains 1 entries:
+"""
+
+
 def _PrintHeader(path):
   sys.stdout.write('\n')
   sys.stdout.write('File: ' + path + '\n')
@@ -223,6 +229,8 @@ def main():
     sys.stdout.write(_SECTIONS)
   elif sys.argv[1] == '-n':
     sys.stdout.write(_NOTES)
+  elif sys.argv[1] == '-r':
+    sys.stdout.write(_RELOCATIONS)
   else:
     assert False, 'Invalid args: %s' % sys.argv
 
