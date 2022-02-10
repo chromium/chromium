@@ -21,6 +21,10 @@
             device="[[device.deviceProperties]]">
         </bluetooth-device-battery-info>
       </template>
+      <div id="subtitle" class="secondary"
+          hidden$="[[!isDeviceConnecting_(device)]]">
+        $i18n{bluetoothConnecting}
+      </div>
     </div>
     <template is="dom-if"
         if="[[device.deviceProperties.isBlockedByPolicy]]" restamp>

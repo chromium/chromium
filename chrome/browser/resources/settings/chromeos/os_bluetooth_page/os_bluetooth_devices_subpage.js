@@ -191,11 +191,11 @@ class SettingsBluetoothDevicesSubpageElement extends
             mojom.BluetoothSystemState.kEnabling;
 
     this.connectedDevices_ = this.systemProperties.pairedDevices.filter(
-        device => device.deviceProperties.connectionState !==
-            mojom.DeviceConnectionState.kNotConnected);
-    this.unconnectedDevices_ = this.systemProperties.pairedDevices.filter(
         device => device.deviceProperties.connectionState ===
-            mojom.DeviceConnectionState.kNotConnected);
+            mojom.DeviceConnectionState.kConnected);
+    this.unconnectedDevices_ = this.systemProperties.pairedDevices.filter(
+        device => device.deviceProperties.connectionState !==
+            mojom.DeviceConnectionState.kConnected);
   }
 
   /** @private */

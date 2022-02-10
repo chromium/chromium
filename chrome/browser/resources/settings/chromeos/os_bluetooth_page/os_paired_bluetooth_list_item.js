@@ -179,6 +179,17 @@ class SettingsPairedBluetoothListItemElement extends
   /**
    * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
    *     device
+   * @return {boolean}
+   * @private
+   */
+  isDeviceConnecting_(device) {
+    return device.deviceProperties.connectionState ===
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnecting;
+  }
+
+  /**
+   * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+   *     device
    * @return {string}
    * @private
    */
@@ -188,6 +199,10 @@ class SettingsPairedBluetoothListItemElement extends
     let a11yLabel = this.i18n(
         'bluetoothA11yDeviceName', this.itemIndex + 1, this.listSize,
         this.getDeviceName_(device));
+
+    // Include the connection status.
+    a11yLabel +=
+        ' ' + this.i18n(this.getA11yDeviceConnectionStatusTextName_(device));
 
     // Include the device type.
     a11yLabel += ' ' + this.i18n(this.getA11yDeviceTypeTextName_(device));
@@ -203,6 +218,27 @@ class SettingsPairedBluetoothListItemElement extends
           ' ' + this.i18n('bluetoothA11yDeviceBatteryInfo', batteryPercentage);
     }
     return a11yLabel;
+  }
+
+  /**
+   * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+   *     device
+   * @return {string}
+   * @private
+   */
+  getA11yDeviceConnectionStatusTextName_(device) {
+    const connectionState =
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState;
+    switch (device.deviceProperties.connectionState) {
+      case connectionState.kConnected:
+        return 'bluetoothA11yDeviceConnectionStateConnected';
+      case connectionState.kConnecting:
+        return 'bluetoothA11yDeviceConnectionStateConnecting';
+      case connectionState.kNotConnected:
+        return 'bluetoothA11yDeviceConnectionStateNotConnected';
+      default:
+        assertNotReached();
+    }
   }
 
   /**

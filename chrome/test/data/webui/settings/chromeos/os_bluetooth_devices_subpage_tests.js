@@ -178,10 +178,14 @@ suite('OsBluetoothDevicesSubpageTest', function() {
         /*id=*/ '123456789', /*publicName=*/ 'BeatsX',
         /*connectionState=*/
         chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
-    const unconnectedDevice = createDefaultBluetoothDevice(
+    const notConnectedDevice = createDefaultBluetoothDevice(
         /*id=*/ '987654321', /*publicName=*/ 'MX 3',
         /*connectionState=*/
         chromeos.bluetoothConfig.mojom.DeviceConnectionState.kNotConnected);
+    const connectingDevice = createDefaultBluetoothDevice(
+        /*id=*/ '11111111', /*publicName=*/ 'MX 3',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnecting);
 
     // Pair connected device.
     bluetoothConfig.appendToPairedDeviceList([connectedDevice]);
@@ -192,14 +196,24 @@ suite('OsBluetoothDevicesSubpageTest', function() {
     assertFalse(!!getDeviceList(/*connected=*/ false));
     assertFalse(!!getNoDeviceText());
 
-    // Pair unconnected device
-    bluetoothConfig.appendToPairedDeviceList([unconnectedDevice]);
+    // Pair not connected device
+    bluetoothConfig.appendToPairedDeviceList([notConnectedDevice]);
     await flushAsync();
 
     assertTrue(!!getDeviceList(/*connected=*/ true));
     assertEquals(getDeviceList(/*connected=*/ true).devices.length, 1);
     assertTrue(!!getDeviceList(/*connected=*/ false));
     assertEquals(getDeviceList(/*connected=*/ false).devices.length, 1);
+    assertFalse(!!getNoDeviceText());
+
+    // Pair connecting device
+    bluetoothConfig.appendToPairedDeviceList([connectingDevice]);
+    await flushAsync();
+
+    assertTrue(!!getDeviceList(/*connected=*/ true));
+    assertEquals(getDeviceList(/*connected=*/ true).devices.length, 1);
+    assertTrue(!!getDeviceList(/*connected=*/ false));
+    assertEquals(getDeviceList(/*connected=*/ false).devices.length, 2);
     assertFalse(!!getNoDeviceText());
   });
 

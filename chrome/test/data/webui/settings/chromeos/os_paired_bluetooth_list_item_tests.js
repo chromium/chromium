@@ -46,13 +46,15 @@ suite('OsPairedBluetoothListItemTest', function() {
   }
 
   test(
-      'Device name, type, battery info and a11y labels', async function() {
-        // Device with no nickname, battery info and unknown device type.
+      'Device name, type, connection state, battery info and a11y labels',
+      async function() {
+        // Device with no nickname, battery info, not connected and unknown
+        // device type.
         const publicName = 'BeatsX';
         const device = createDefaultBluetoothDevice(
             /*id=*/ '123456789', /*publicName=*/ publicName,
             /*connectionState=*/
-            chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
+            chromeos.bluetoothConfig.mojom.DeviceConnectionState.kNotConnected);
         pairedBluetoothListItem.device = device;
 
         const itemIndex = 3;
@@ -63,6 +65,9 @@ suite('OsPairedBluetoothListItemTest', function() {
 
         const getDeviceName = () => {
           return pairedBluetoothListItem.$.deviceName;
+        };
+        const isShowingSubtitle = () => {
+          return !pairedBluetoothListItem.$.subtitle.hidden;
         };
         const getBatteryInfo = () => {
           return pairedBluetoothListItem.shadowRoot.querySelector(
@@ -81,6 +86,7 @@ suite('OsPairedBluetoothListItemTest', function() {
         };
         assertTrue(!!getDeviceName());
         assertEquals(getDeviceName().innerText, publicName);
+        assertFalse(!!isShowingSubtitle());
         assertFalse(!!getBatteryInfo());
         assertTrue(!!getDeviceTypeIcon());
 
@@ -88,12 +94,39 @@ suite('OsPairedBluetoothListItemTest', function() {
                                     'bluetoothA11yDeviceName', itemIndex + 1,
                                     listSize, publicName) +
             ' ' +
+            pairedBluetoothListItem.i18n(
+                'bluetoothA11yDeviceConnectionStateNotConnected') +
+            ' ' +
             pairedBluetoothListItem.i18n('bluetoothA11yDeviceTypeUnknown');
         assertEquals(getItemA11yLabel(), expectedA11yLabel);
 
-        // Set device nickname, type and battery info.
+        // Set device to connecting.
+        device.deviceProperties.connectionState =
+            chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnecting;
+        pairedBluetoothListItem.device = {...device};
+        await flushAsync();
+
+        assertTrue(!!getDeviceName());
+        assertEquals(getDeviceName().innerText, publicName);
+        assertTrue(!!isShowingSubtitle());
+        assertFalse(!!getBatteryInfo());
+        assertTrue(!!getDeviceTypeIcon());
+
+        expectedA11yLabel = pairedBluetoothListItem.i18n(
+                                'bluetoothA11yDeviceName', itemIndex + 1,
+                                listSize, publicName) +
+            ' ' +
+            pairedBluetoothListItem.i18n(
+                'bluetoothA11yDeviceConnectionStateConnecting') +
+            ' ' +
+            pairedBluetoothListItem.i18n('bluetoothA11yDeviceTypeUnknown');
+        assertEquals(getItemA11yLabel(), expectedA11yLabel);
+
+        // Set device nickname, connection state, type and battery info.
         const nickname = 'nickname';
         device.nickname = nickname;
+        device.deviceProperties.connectionState =
+            chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected;
         device.deviceProperties.deviceType =
             chromeos.bluetoothConfig.mojom.DeviceType.kComputer;
         const batteryPercentage = 60;
@@ -108,6 +141,7 @@ suite('OsPairedBluetoothListItemTest', function() {
 
         assertTrue(!!getDeviceName());
         assertEquals(getDeviceName().innerText, nickname);
+        assertFalse(!!isShowingSubtitle());
         assertTrue(!!getBatteryInfo());
         assertEquals(
             getBatteryInfo().device,
@@ -116,6 +150,9 @@ suite('OsPairedBluetoothListItemTest', function() {
         expectedA11yLabel =
             pairedBluetoothListItem.i18n(
                 'bluetoothA11yDeviceName', itemIndex + 1, listSize, nickname) +
+            ' ' +
+            pairedBluetoothListItem.i18n(
+                'bluetoothA11yDeviceConnectionStateConnected') +
             ' ' +
             pairedBluetoothListItem.i18n('bluetoothA11yDeviceTypeComputer');
         assertEquals(
