@@ -349,15 +349,17 @@
     -->
     <div data-group="history">
       <template is="dom-if" if="[[emojiHistory.emoji.length]]">
-        <emoji-group data="[[emojiHistory]]" preferred="{}" clearable
-          class="group" v2-enabled$="[[v2Enabled]]">
+        <emoji-group data="[[emojiHistory.emoji]]"
+          group="[[emojiHistory.group]]" preferred="{}" clearable class="group"
+          v2-enabled$="[[v2Enabled]]">
         </emoji-group>
       </template>
     </div>
     <template is="dom-repeat" items="[[emojiData]]">
       <div data-group$="[[getDataGroupIndex('emoji', index)]]">
-        <emoji-group data="[[item]]" preferred="[[preferenceMapping]]"
-          class="group" v2-enabled$="[[v2Enabled]]">
+        <emoji-group data="[[item.emoji]]" group="[[item.group]]"
+          preferred="[[preferenceMapping]]" class="group"
+          v2-enabled$="[[v2Enabled]]">
         </emoji-group>
       </div>
     </template>
@@ -365,14 +367,16 @@
     <template is="dom-if" if="[[v2Enabled]]">
       <div data-group="emoticon-history">
         <template is="dom-if" if="[[emoticonHistory.emoji.length]]">
-            <emoticon-group data="[[emoticonHistory]]" class="group"
+            <emoticon-group data="[[emoticonHistory.emoji]]"
+              group="[[emoticonHistory.group]]" class="group"
               data-group="emoticon-history">
             </emoticon-group>
         </template>
       </div>
       <template is="dom-repeat" items="[[emoticonData]]">
         <div data-group$="[[getDataGroupIndex('emoticon', index)]]">
-          <emoticon-group data="[[item]]" class="group">
+          <emoticon-group data="[[item.emoji]]" group="[[item.group]]"
+            class="group">
           </emoticon-group>
         </div>
       </template>

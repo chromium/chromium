@@ -4,7 +4,7 @@
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {createCustomEvent, EMOJI_BUTTON_CLICK} from './events.js';
-import {CategoryEnum, EmojiGroup} from './types.js';
+import {CategoryEnum, EmojiVariants} from './types.js';
 
 class EmoticonGroupComponent extends PolymerElement {
   static get is() {
@@ -17,8 +17,8 @@ class EmoticonGroupComponent extends PolymerElement {
 
   static get properties() {
     return {
-      /** @type {EmojiGroup} */
-      data: {type: Object, readonly: true},
+      /** @type {!Array<EmojiVariants>}*/
+      data: {type: Array, readonly: true},
     };
   }
 

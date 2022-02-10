@@ -7,8 +7,8 @@ import {EmojiPickerApiProxyImpl} from 'chrome://emoji-picker/emoji_picker_api_pr
 import {EMOJI_BUTTON_CLICK, V2_CONTENT_LOADED} from 'chrome://emoji-picker/events.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {deepQuerySelector, isGroupButtonActive, waitForCondition, waitWithTimeout} from './emoji_picker_test_util.js';
+import {assertEquals, assertFalse, assertGT, assertTrue} from '../../chai_assert.js';
+import {deepQuerySelector, isGroupButtonActive, timeout, waitForCondition, waitWithTimeout} from './emoji_picker_test_util.js';
 
 const ACTIVE_CATEGORY_BUTTON = 'category-button-active';
 
@@ -261,4 +261,34 @@ suite('emoji-picker-extension', () => {
         () => leftChevron.style.display === 'flex' &&
             rightChevron.style.display === 'flex');
   });
+
+  test('By default, there is no search result.', () => {
+    const searchResults = findInEmojiPicker('emoji-search', '#results');
+    assert(!searchResults);
+  });
+
+  test(
+      'If matching, search should return both emoji and emoticon results',
+      () => {
+        const emojiSearch = findInEmojiPicker('emoji-search');
+        emojiSearch.search = 'face';
+        flush();
+        const emojiResults = findInEmojiPicker('emoji-search', 'emoji-group')
+                                 .shadowRoot.querySelectorAll('emoji-button');
+        assertGT(emojiResults.length, 0);
+        const emoticonResults =
+            findInEmojiPicker('emoji-search', 'emoticon-group')
+                .shadowRoot.querySelectorAll('.emoticon-button');
+        assertGT(emoticonResults.length, 0);
+      });
+
+  test(
+      'Search should display meaningful output when no result is found', () => {
+        const emojiSearch = findInEmojiPicker('emoji-search');
+        emojiSearch.search = 'zyxt';
+        flush();
+        const message = findInEmojiPicker('emoji-search', '.no-result');
+        assert(message);
+        assertEquals(message.innerText, 'No result found');
+      });
 });

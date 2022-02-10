@@ -45,10 +45,10 @@ export class EmojiSearch extends PolymerElement {
         computed: 'computeEmojiList(emoticonData)',
         observer: 'onEmoticonListChanged'
       },
-      /** @private {!FuseResults} */
+      /** @private {!Array<!EmojiVariants>} */
       emojiResults:
           {type: Array, computed: 'computeSearchResults(search, \'emoji\')'},
-      /** @private {!FuseResults} */
+      /** @private {!Array<!EmojiVariants>} */
       emoticonResults:
           {type: Array, computed: 'computeSearchResults(search, \'emoticon\')'},
       /** @private {!boolean} */
@@ -222,23 +222,40 @@ export class EmojiSearch extends PolymerElement {
       return [];
     // Add an initial space to force prefix matching only.
     const prefixSearchTerm = ` ${search}`;
+    let fuseResults = [];
     if (!this.v2Enabled) {
-      return this.emojiFuse.search(prefixSearchTerm);
+      fuseResults = this.emojiFuse.search(prefixSearchTerm);
+    } else {
+      switch (category) {
+        case CategoryEnum.EMOJI:
+          fuseResults = this.emojiFuse.search(prefixSearchTerm);
+          break;
+        case CategoryEnum.EMOTICON:
+          fuseResults = this.emoticonFuse.search(prefixSearchTerm);
+          break;
+        default:
+          throw new Error('Unknown category.');
+      }
     }
-    switch (category) {
-      case CategoryEnum.EMOJI:
-        return this.emojiFuse.search(prefixSearchTerm);
-      case CategoryEnum.EMOTICON:
-        return this.emoticonFuse.search(prefixSearchTerm);
-      default:
-        return;
-    }
+    return fuseResults.map(item => item.item);
   }
 
   onResultClick(ev) {
     ev.currentTarget.querySelector('emoji-button')
         .shadowRoot.querySelector('button')
         .click();
+  }
+
+  /**
+   * @param {!Array<!EmojiVariants>} emojiResults
+   * @param {!Array<!EmojiVariants>} emoticonResults
+   * @returns {boolean}
+   */
+  isSearchResultEmpty(emojiResults, emoticonResults) {
+    if (!this.v2Enabled) {
+      return emojiResults.length === 0;
+    }
+    return emojiResults.length === 0 && emoticonResults.length === 0;
   }
 }
 

@@ -3,6 +3,8 @@
     --emoji-picker-search-margins: 14px;
     --emoji-picker-search-height: 40px;
     --emoji-picker-top-bar-bottom-padding: 8px;
+    --v2-search-content-width:
+      calc(var(--v2-emoji-picker-width) - 2*var(--emoji-picker-side-padding));
     display: flex;
     flex-direction: column;
     overflow-y: scroll;
@@ -96,8 +98,7 @@
 
   :host([v2-enabled]) #search-shadow {
     display: flex;
-    width:
-    calc(var(--v2-emoji-picker-width) - 2*var(--emoji-picker-side-padding));
+    width: var(--v2-search-content-width);
   }
 
   #results {
@@ -105,6 +106,10 @@
     margin-inline-end: var(--emoji-picker-side-padding);
     overflow-y: scroll;
     padding-bottom: var(--emoji-picker-bottom-padding);
+  }
+
+  :host([v2-enabled]) #results {
+    padding-top: 20px;
   }
 
   #no-emoji-image {
@@ -121,6 +126,15 @@
 
   :host([v2-enabled]) #search {
     width: 240px;
+  }
+
+  #emoji-result {
+    width: var(--v2-search-content-width);
+  }
+
+  #emoticon-result {
+    margin-top: 12px;
+    width: var(--v2-search-content-width);
   }
 </style>
 
@@ -145,24 +159,42 @@
     <div class="sr-only" role="heading" aria-level="1">
       Emoji Search Results
     </div>
-    <template is="dom-repeat" items="[[emojiResults]]">
-      <div class="result" tabindex="0" on-click="onResultClick">
-        <emoji-button tabindex="-1"
-            emoji="[[item.item.base.string]]"
-            variants="[[item.item.alternates]]">
-        </emoji-button>
-        <div class="name">[[item.item.base.name]]</div>
+    <template is="dom-if" if="[[!v2Enabled]]">
+      <template is="dom-repeat" items="[[emojiResults]]">
+        <div class="result" tabindex="0" on-click="onResultClick">
+          <emoji-button tabindex="-1"
+              emoji="[[item.base.string]]"
+              variants="[[item.alternates]]">
+          </emoji-button>
+          <div class="name">[[item.base.name]]</div>
+        </div>
+      </template>
+    </template>
+    <template is="dom-if" if="[[v2Enabled]]">
+      <div id="emoji-result">  
+        <emoji-group data="[[emojiResults]]" preferred="{}">
+        </emoji-group>
+      </div>
+      <div id="emoticon-result">
+        <emoticon-group id="emoticon-result" data="[[emoticonResults]]">
+        </emoticon-group>
       </div>
     </template>
-    <template is="dom-if" if="[[!emojiResults.length]]">
+    <template is="dom-if"
+      if="[[isSearchResultEmpty(emojiResults, emoticonResults)]]">
       <div class="no-result">
         <picture>
           <source srcset="no_results_dark.svg"
               media="(prefers-color-scheme: dark)">
           <img src="no_results.svg" id = "no-emoji-image">
         </picture>
-        No emoji found
-        </div>
+        <template is="dom-if" if="[[!v2Enabled]]">
+          No emoji found
+        </template>
+        <template is="dom-if" if="[[v2Enabled]]">
+          No result found
+        </template>
+      </div>
     </template>
   </div>
 </template>

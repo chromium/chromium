@@ -47,13 +47,15 @@
     }
 </style>
 
-<div id="heading" role="heading">
-    [[data.group]]
-</div>
+<template is="dom-if" if="[[group]]">
+    <div id="heading" role="heading">
+        [[group]]
+    </div>
+</template>
 <!-- TODO(b/216194842): Implement emoticon group clear logic. -->
 <div id="palette">
     <div id="fake-focus-target" tabindex="-1"></div>
-    <template is="dom-repeat" items="[[data.emoji]]" as="emoticon">
+    <template is="dom-repeat" items="[[data]]" as="emoticon">
         <button class="emoticon-button"
             emoticon-name$="[[emoticon.base.name]]"
             on-click="onEmoticonClick"
