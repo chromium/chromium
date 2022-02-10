@@ -24,7 +24,6 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/trace_event/trace_event.h"
-#include "build/build_config.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
@@ -40,12 +39,6 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/scheme_host_port.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/radio_utils.h"
-#include "base/power_monitor/power_monitor.h"
-#include "net/android/network_library.h"
-#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace network {
 
@@ -453,7 +446,6 @@ class ResourceScheduler::Client
   bool ScheduleRequest(const net::URLRequest& url_request,
                        ScheduledResourceRequestImpl* request) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    UpdateSignalQualityStatus();
     SetRequestAttributes(request, DetermineRequestAttributes(request));
     ShouldStartReqResult should_start = ShouldStartRequest(request);
     if (should_start == START_REQUEST) {
@@ -998,127 +990,6 @@ class ResourceScheduler::Client
     request->Start(start_mode);
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  void RecordMetricsForWeakSignalThrottlingDuration() const {
-    if (weak_signal_throttling_start_timestamp_.has_value()) {
-      base::TimeDelta time_since_throttling_start =
-          tick_clock_->NowTicks() -
-          weak_signal_throttling_start_timestamp_.value();
-      if (base::android::RadioUtils::GetConnectionType() ==
-          base::android::RadioConnectionType::kWifi) {
-        base::UmaHistogramLongTimes(
-            "ResourceScheduler.WeakSignalThrottling.WeakSignalDuration.Wifi",
-            time_since_throttling_start);
-      } else {
-        base::UmaHistogramLongTimes(
-            "ResourceScheduler.WeakSignalThrottling.WeakSignalDuration.Cell",
-            time_since_throttling_start);
-      }
-    }
-  }
-
-  bool GetSignalQualityAllowsForThrottling() {
-    // We should only throttle while on battery power and poor radio signal.
-    if (base::PowerMonitor::IsInitialized() &&
-        !base::PowerMonitor::IsOnBatteryPower()) {
-      return false;
-    }
-    if (base::android::RadioUtils::GetConnectionType() ==
-        base::android::RadioConnectionType::kWifi) {
-      absl::optional<int32_t> maybe_level = net::android::GetWifiSignalLevel();
-      return maybe_level.has_value() &&
-             *maybe_level <=
-                 static_cast<int>(base::android::RadioSignalLevel::kModerate);
-    }
-    absl::optional<base::android::RadioSignalLevel> maybe_level =
-        base::android::RadioUtils::GetCellSignalLevel();
-    return maybe_level.has_value() &&
-           *maybe_level <= base::android::RadioSignalLevel::kModerate;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-
-  // While the radio signal is weak and the device is on battery power, we
-  // only allow short periods when IDLE browser requests can be sent.
-  // The length and interval of the periods are configurable via
-  // ResourceSchedulerParamsManager. Android only.
-  void UpdateSignalQualityStatus() {
-    if (!is_browser_client_)
-      return;
-
-    if (!base::FeatureList::IsEnabled(
-            features::kPauseLowPriorityBrowserRequestsOnWeakSignal)) {
-      return;
-    }
-
-#if BUILDFLAG(IS_ANDROID)
-    if (!base::android::RadioUtils::IsSupported())
-      return;
-
-    if (!GetSignalQualityAllowsForThrottling()) {
-      RecordMetricsForWeakSignalThrottlingDuration();
-      // Reset windows and stop throttling.
-      weak_signal_throttling_start_timestamp_ = absl::nullopt;
-      weak_signal_throttling_end_timestamp_ = absl::nullopt;
-      return;
-    }
-
-    if (weak_signal_throttling_end_timestamp_.has_value()) {
-      // Requests are temporarily being allowed to load. Check if we should
-      // start throttling again.
-      base::TimeDelta time_since_unthrottled =
-          tick_clock_->NowTicks() -
-          weak_signal_throttling_end_timestamp_.value();
-      base::TimeDelta weak_signal_unthrottle_duration =
-          resource_scheduler_->resource_scheduler_params_manager_
-              .weak_signal_unthrottle_duration()
-              .value();
-      if (time_since_unthrottled > weak_signal_unthrottle_duration) {
-        // Restart throttling.
-        weak_signal_throttling_start_timestamp_ = tick_clock_->NowTicks();
-        weak_signal_throttling_end_timestamp_ = absl::nullopt;
-      }
-      return;
-    }
-
-    if (weak_signal_throttling_start_timestamp_.has_value()) {
-      // We're currently throttling requests. Check if we should temporarily
-      // allow requests to load again to avoid infinite starvation.
-      base::TimeDelta time_since_throttling_start =
-          tick_clock_->NowTicks() -
-          weak_signal_throttling_start_timestamp_.value();
-      base::TimeDelta max_weak_signal_throttling_duration =
-          resource_scheduler_->resource_scheduler_params_manager_
-              .max_weak_signal_throttling_duration()
-              .value();
-      if (time_since_throttling_start > max_weak_signal_throttling_duration) {
-        RecordMetricsForWeakSignalThrottlingDuration();
-        // Temporarily pause throttling.
-        weak_signal_throttling_start_timestamp_ = absl::nullopt;
-        weak_signal_throttling_end_timestamp_ = tick_clock_->NowTicks();
-      }
-      return;
-    }
-
-    // Not currently throttling, so start throttling.
-    weak_signal_throttling_start_timestamp_ = tick_clock_->NowTicks();
-#endif  // BUILDFLAG(IS_ANDROID)
-  }
-
-  // Returns true if |request| should be throttled to avoid unnecessary
-  // radio power drain when radio signal is weak (Android only).
-  bool ShouldThrottleBrowserInitiatedRequestDueToSignalQuality(
-      const ScheduledResourceRequestImpl& request) const {
-    DCHECK(is_browser_client_);
-
-    // Check if throttling is currently enabled.
-    if (!weak_signal_throttling_start_timestamp_.has_value())
-      return false;
-
-    // IDLE browser requests can be delayed without affecting the user
-    // experience gravely.
-    return request.url_request()->priority() <= net::IDLE;
-  }
-
   // Returns true if |request| should be throttled to avoid network contention
   // with active P2P connections.
   bool ShouldThrottleBrowserInitiatedRequestDueToP2PConnections(
@@ -1252,10 +1123,6 @@ class ResourceScheduler::Client
     // Browser requests are treated differently since they are not user-facing.
     if (is_browser_client_) {
       if (ShouldThrottleBrowserInitiatedRequestDueToP2PConnections(*request)) {
-        return DO_NOT_START_REQUEST_AND_KEEP_SEARCHING;
-      }
-
-      if (ShouldThrottleBrowserInitiatedRequestDueToSignalQuality(*request)) {
         return DO_NOT_START_REQUEST_AND_KEEP_SEARCHING;
       }
 
@@ -1425,7 +1292,6 @@ class ResourceScheduler::Client
     // 3) We do not start the request, same as above, but StartRequest() tells
     //     us there's no point in checking any further requests.
     TRACE_EVENT0("loading", "LoadAnyStartablePendingRequests");
-    UpdateSignalQualityStatus();
     if (num_skipped_scans_due_to_scheduled_start_ > 0) {
       UMA_HISTOGRAM_COUNTS_1M("ResourceScheduler.NumSkippedScans.ScheduleStart",
                               num_skipped_scans_due_to_scheduled_start_);
@@ -1550,13 +1416,6 @@ class ResourceScheduler::Client
   absl::optional<base::TimeTicks> p2p_connections_count_end_timestamp_;
 
   base::OneShotTimer p2p_connections_count_ended_timer_;
-
-  // Start of period when we delay requests due to bad signal quality.
-  absl::optional<base::TimeTicks> weak_signal_throttling_start_timestamp_;
-
-  // Start of period when we don't delay requests even if the signal quality is
-  // bad.
-  absl::optional<base::TimeTicks> weak_signal_throttling_end_timestamp_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

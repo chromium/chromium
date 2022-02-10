@@ -53,13 +53,6 @@ const base::Feature kPauseBrowserInitiatedHeavyTrafficForP2P{
     "PauseBrowserInitiatedHeavyTrafficForP2P",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-// When kPauseLowPriorityBrowserRequestsOnWeakSignal is enabled, then a subset
-// of the browser initiated requests may be deferred if the device is using
-// cellular connection and the signal quality is low. Android only.
-const base::Feature kPauseLowPriorityBrowserRequestsOnWeakSignal{
-    "PauseLowPriorityBrowserRequestsOnWeakSignal",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // When kCORBProtectionSniffing is enabled CORB sniffs additional same-origin
 // resources if they look sensitive.
 const base::Feature kCORBProtectionSniffing{"CORBProtectionSniffing",

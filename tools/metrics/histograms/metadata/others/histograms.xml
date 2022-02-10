@@ -11192,6 +11192,9 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="ResourceScheduler.WeakSignalThrottling.WeakSignalDuration.{NetworkType}"
     units="ms" expires_after="2021-12-01">
+  <obsolete>
+    Removed Feb 2022.
+  </obsolete>
   <owner>eseckler@chromium.org</owner>
   <owner>khokhlov@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>

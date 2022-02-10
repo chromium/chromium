@@ -25,8 +25,6 @@ extern const base::Feature kDelayRequestsOnMultiplexedConnections;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kPauseBrowserInitiatedHeavyTrafficForP2P;
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kPauseLowPriorityBrowserRequestsOnWeakSignal;
-COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kCORBProtectionSniffing;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kProactivelyThrottleLowPriorityRequests;
