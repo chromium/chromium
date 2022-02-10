@@ -26,6 +26,9 @@ namespace {
 // Set the render host waiting time to 5s on Android, that's the same
 // as an "Application Not Responding" timeout.
 const int64_t kTimerDelaySeconds = 5;
+#elif BUILDFLAG(IS_CHROMEOS_ASH) && !defined(NDEBUG)
+// linux-chromeos-dbg is failing to destroy the profile in under 1 second
+const int64_t kTimerDelaySeconds = 2;
 #else
 const int64_t kTimerDelaySeconds = 1;
 #endif
