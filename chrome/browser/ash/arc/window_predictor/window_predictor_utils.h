@@ -24,7 +24,7 @@ bool LaunchArcAppWithGhostWindow(Profile* profile,
                                  const ArcAppListPrefs::AppInfo& app_info,
                                  int event_flags,
                                  arc::UserInteractionType user_interaction_type,
-                                 arc::mojom::WindowInfoPtr window_info);
+                                 const arc::mojom::WindowInfoPtr& window_info);
 
 // Is the the window info provide enough data to create corresponding ARC ghost
 // window.

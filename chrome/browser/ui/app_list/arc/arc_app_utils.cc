@@ -374,7 +374,7 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
     if (full_restore::features::IsArcWindowPredictorEnabled() &&
         IsArcVmEnabled()) {
       if (LaunchArcAppWithGhostWindow(profile, app_id, *app_info, event_flags,
-                                      user_action, std::move(window_info))) {
+                                      user_action, window_info)) {
         prefs->SetLastLaunchTime(app_id);
         return true;
       }

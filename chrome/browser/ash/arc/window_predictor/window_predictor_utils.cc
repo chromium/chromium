@@ -33,7 +33,7 @@ bool LaunchArcAppWithGhostWindow(Profile* profile,
                                  const ArcAppListPrefs::AppInfo& app_info,
                                  int event_flags,
                                  arc::UserInteractionType user_interaction_type,
-                                 arc::mojom::WindowInfoPtr window_info) {
+                                 const arc::mojom::WindowInfoPtr& window_info) {
   WindowPredictor::GetInstance()->MaybeCreateAppLaunchHandler(profile);
 
   auto* arc_task_handler =
@@ -64,8 +64,8 @@ bool LaunchArcAppWithGhostWindow(Profile* profile,
   }
 
   arc::mojom::WindowInfoPtr predict_window_info =
-      WindowPredictor::GetInstance()->PredictAppWindowInfo(
-          app_info, std::move(window_info));
+      WindowPredictor::GetInstance()->PredictAppWindowInfo(app_info,
+                                                           window_info.Clone());
   auto* app_launch_handler =
       WindowPredictor::GetInstance()->app_launch_handler();
   DCHECK(app_launch_handler);
