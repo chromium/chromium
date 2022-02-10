@@ -138,9 +138,9 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateForPortalOrFencedFrame(
       To<HTMLFrameOwnerElement>(element);
   LocalFrame* host_frame = frame_owner_element->GetDocument().GetFrame();
   frame->InitializeCoreFrame(
-      *host_frame->GetPage(), frame_owner_element, nullptr, nullptr,
-      FrameInsertType::kInsertInConstructor, g_null_atom,
-      &host_frame->window_agent_factory(), devtools_frame_token);
+      *host_frame->GetPage(), frame_owner_element, /*parent=*/nullptr,
+      /*previous_sibling=*/nullptr, FrameInsertType::kInsertInConstructor,
+      g_null_atom, &host_frame->window_agent_factory(), devtools_frame_token);
 
   return frame;
 }
