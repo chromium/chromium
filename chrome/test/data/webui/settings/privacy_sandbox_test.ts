@@ -5,8 +5,9 @@
 import 'chrome://settings/privacy_sandbox/app.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {DomIf} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrDialogElement} from 'chrome://settings/lazy_load.js';
-import {PrivacySandboxAppElement} from 'chrome://settings/privacy_sandbox/app.js';
+import {PrivacySandboxAppElement, PrivacySandboxSettingsView} from 'chrome://settings/privacy_sandbox/app.js';
 import {PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl} from 'chrome://settings/privacy_sandbox/privacy_sandbox_browser_proxy.js';
 import {CrButtonElement, CrSettingsPrefs, HatsBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, TrustSafetyInteraction} from 'chrome://settings/settings.js';
 
@@ -225,6 +226,38 @@ suite('PrivacySandboxSettings3', function() {
     return flushTasks();
   });
 
+  function assertMainViewVisible() {
+    assertEquals(
+        page.privacySandboxSettingsView_, PrivacySandboxSettingsView.MAIN);
+    const dialogWrapper =
+        page.shadowRoot!.querySelector<CrDialogElement>('#dialogWrapper');
+    assertFalse(!!dialogWrapper);
+  }
+
+  function assertLearnMoreDialogVisible() {
+    assertEquals(
+        page.privacySandboxSettingsView_,
+        PrivacySandboxSettingsView.LEARN_MORE_DIALOG);
+    const dialogWrapper =
+        page.shadowRoot!.querySelector<CrDialogElement>('#dialogWrapper');
+    assertTrue(!!dialogWrapper);
+    assertTrue(dialogWrapper.open);
+    assertTrue(page.shadowRoot!.querySelector<DomIf>('#learnMoreDialog')!.if !);
+  }
+
+  function assertAdPersonalizationDialogVisible() {
+    assertEquals(
+        page.privacySandboxSettingsView_,
+        PrivacySandboxSettingsView.AD_PERSONALIZATION_DIALOG);
+    const dialogWrapper =
+        page.shadowRoot!.querySelector<CrDialogElement>('#dialogWrapper');
+    assertTrue(!!dialogWrapper);
+    assertTrue(dialogWrapper.open);
+    assertTrue(
+        page.shadowRoot!.querySelector<DomIf>(
+                            '#adPersonalizationDialog')!.if !);
+  }
+
   test('testSandboxSettings3Visibility', function() {
     assertFalse(isChildVisible(page, '#trialsCard'));
     assertFalse(isChildVisible(page, '#flocCard'));
@@ -257,24 +290,34 @@ suite('PrivacySandboxSettings3', function() {
     });
   });
 
-  test('testLearnMoreDialog', function() {
+  test('testLearnMoreDialog', async function() {
     // The learn more link should be visible but the dialog itself not.
+    assertMainViewVisible();
     assertTrue(isChildVisible(page, '#learnMoreLink'));
-    assertFalse(
-        page.shadowRoot!.querySelector<CrDialogElement>(
-                            '#learnMoreDialog')!.open);
 
     // Clicking on the learn more link should open the dialog.
     page.shadowRoot!.querySelector<HTMLElement>('#learnMoreLink')!.click();
-    assertTrue(
-        page.shadowRoot!.querySelector<CrDialogElement>(
-                            '#learnMoreDialog')!.open);
+    await flushTasks();
+    assertLearnMoreDialogVisible();
 
     // Clicking on the close button of the dialog should close it.
+    page.shadowRoot!.querySelector<HTMLElement>('#dialogCloseButton')!.click();
+    await flushTasks();
+    assertMainViewVisible();
+  });
+
+  test('testAdPersonalizationDialog', async function() {
+    assertMainViewVisible();
+
+    // Clicking on the ad personalization row should open the dialog.
     page.shadowRoot!.querySelector<HTMLElement>(
-                        '#learnMoreCloseButton')!.click();
-    assertFalse(
-        page.shadowRoot!.querySelector<CrDialogElement>(
-                            '#learnMoreDialog')!.open);
+                        '#adPersonalizationRow')!.click();
+    await flushTasks();
+    assertAdPersonalizationDialogVisible();
+
+    // Clicking on the close button of the dialog should close it.
+    page.shadowRoot!.querySelector<HTMLElement>('#dialogCloseButton')!.click();
+    await flushTasks();
+    assertMainViewVisible();
   });
 });
