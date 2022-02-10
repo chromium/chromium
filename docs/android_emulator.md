@@ -17,6 +17,10 @@ target_cpu = "x86"  # or "x64" if you have an x86_64 emulator
 Chromium has a set of prebuilt images stored as CIPD packages. These are used
 by various builders to run tests on the emulator. Their configurations are
 currently stored in [`//tools/android/avd/proto`](../tools/android/avd/proto/).
+You can run this command to list them:
+```sh
+tools/android/avd/avd.py list
+```
 
 | Configurations | Android Version | AVD Target | Builder |
 |:-------------- |:--------------- |:---------- |:------- |
@@ -109,15 +113,6 @@ down. This is how builders run the emulator.
 
 The test runner will set up and tear down the emulator on each invocation.
 To manage emulator lifetime independently, use `tools/android/avd/avd.py`.
-
-> Note: Before calling `avd.py start`, use `avd.py install` to install the
-> emulator configuration you intend to use. Otherwise the emulator won't start
-> correctly.
->
-> ```
->   $ tools/android/avd/avd.py install \
->       --avd-config tools/android/avd/proto/generic_android28.textpb
-> ```
 
 ##### Options
 
