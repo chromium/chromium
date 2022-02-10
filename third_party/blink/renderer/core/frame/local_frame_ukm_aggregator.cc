@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/cpu_reduction_experiment.h"
 #include "base/format_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
@@ -253,6 +254,10 @@ void LocalFrameUkmAggregator::RecordTimerSample(size_t metric_index,
 
 void LocalFrameUkmAggregator::RecordCountSample(size_t metric_index,
                                                 int64_t count) {
+  static base::CpuReductionExperimentFilter filter;
+  if (!filter.ShouldLogHistograms())
+    return;
+
   // Always use RecordForcedLayoutSample for the kForcedStyleAndLayout
   // metric id.
   DCHECK_NE(metric_index, static_cast<size_t>(kForcedStyleAndLayout));

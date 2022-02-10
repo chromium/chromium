@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/cpu.h"
+#include "base/cpu_reduction_experiment.h"
 #include "base/cxx17_backports.h"
 #include "base/dcheck_is_on.h"
 #include "base/files/file_path.h"
@@ -732,6 +733,7 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
   base::HangWatcher::InitializeOnMainThread(hang_watcher_process_type);
 
   base::internal::TimerBase::InitializeFeatures();
+  base::InitializeCpuReductionExperiment();
   base::sequence_manager::internal::SequenceManagerImpl::InitializeFeatures();
 }
 

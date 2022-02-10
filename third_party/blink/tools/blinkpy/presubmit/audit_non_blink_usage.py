@@ -46,6 +46,7 @@ _CONFIG = [
             'base::ApplyMetadataToPastSamples',
             'base::AutoReset',
             'base::Contains',
+            'base::CpuReductionExperimentFilter',
             'base::CreateSequencedTaskRunner',
             'base::ValuesEquivalent',
             'base::Days',

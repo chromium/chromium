@@ -278,6 +278,8 @@ mixed_component("base") {
     "containers/vector_buffer.h",
     "cpu.cc",
     "cpu.h",
+    "cpu_reduction_experiment.cc",
+    "cpu_reduction_experiment.h",
     "critical_closure.h",
     "cxx17_backports.h",
     "cxx20_to_address.h",

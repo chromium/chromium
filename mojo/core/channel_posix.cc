@@ -15,6 +15,7 @@
 
 #include "base/bind.h"
 #include "base/containers/queue.h"
+#include "base/cpu_reduction_experiment.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -153,10 +154,17 @@ void ChannelPosix::ShutDownImpl() {
 }
 
 void ChannelPosix::Write(MessagePtr message) {
-  UMA_HISTOGRAM_COUNTS_100000("Mojo.Channel.WriteMessageSize",
-                              message->data_num_bytes());
-  UMA_HISTOGRAM_COUNTS_100("Mojo.Channel.WriteMessageHandles",
-                           message->NumHandlesForTransit());
+  bool log_histograms = true;
+#if !defined(MOJO_CORE_SHARED_LIBRARY)
+  static base::CpuReductionExperimentFilter filter;
+  log_histograms = filter.ShouldLogHistograms();
+#endif
+  if (log_histograms) {
+    UMA_HISTOGRAM_COUNTS_100000("Mojo.Channel.WriteMessageSize",
+                                message->data_num_bytes());
+    UMA_HISTOGRAM_COUNTS_100("Mojo.Channel.WriteMessageHandles",
+                             message->NumHandlesForTransit());
+  }
 
   bool write_error = false;
   {

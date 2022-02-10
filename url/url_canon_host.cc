@@ -5,6 +5,7 @@
 #include <unordered_set>
 
 #include "base/check.h"
+#include "base/cpu_reduction_experiment.h"
 #include "base/metrics/histogram_macros.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
@@ -177,12 +178,15 @@ bool DoSimpleHost(const INCHAR* host,
     }
   }
   if (success) {
-    bool did_escape = !escaped_chars_to_measure.empty();
-    UMA_HISTOGRAM_BOOLEAN("URL.Host.DidEscape", did_escape);
-    if (did_escape) {
-      for (char c : escaped_chars_to_measure) {
-        UMA_HISTOGRAM_ENUMERATION("URL.Host.EscapeChar",
-                                  EscapedHostCharToEnum(c));
+    static base::CpuReductionExperimentFilter filter;
+    if (filter.ShouldLogHistograms()) {
+      bool did_escape = !escaped_chars_to_measure.empty();
+      UMA_HISTOGRAM_BOOLEAN("URL.Host.DidEscape", did_escape);
+      if (did_escape) {
+        for (char c : escaped_chars_to_measure) {
+          UMA_HISTOGRAM_ENUMERATION("URL.Host.EscapeChar",
+                                    EscapedHostCharToEnum(c));
+        }
       }
     }
   }

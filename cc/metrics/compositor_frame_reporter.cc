@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/cpu_reduction_experiment.h"
 #include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -819,6 +820,9 @@ void CompositorFrameReporter::EndCurrentStage(base::TimeTicks end_time) {
 }
 
 void CompositorFrameReporter::ReportCompositorLatencyHistograms() const {
+  static base::CpuReductionExperimentFilter filter;
+  if (!filter.ShouldLogHistograms())
+    return;
   for (const StageData& stage : stage_history_) {
     ReportStageHistogramWithBreakdown(stage);
     for (size_t type = 0; type < active_trackers_.size(); ++type) {

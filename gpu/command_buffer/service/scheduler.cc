@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/cpu_reduction_experiment.h"
 #include "base/hash/md5_constexpr.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -612,11 +613,15 @@ Scheduler::RebuildSchedulingQueueIfNeeded(
 }
 
 void Scheduler::RunNextTask() {
+  static base::CpuReductionExperimentFilter filter;
+  bool log_histograms = filter.ShouldLogHistograms();
   base::AutoLock auto_lock(lock_);
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "GPU.Scheduler.ThreadSuspendedTime",
-      base::TimeTicks::Now() - run_next_task_scheduled_, base::Microseconds(10),
-      base::Seconds(30), 100);
+  if (log_histograms) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "GPU.Scheduler.ThreadSuspendedTime",
+        base::TimeTicks::Now() - run_next_task_scheduled_,
+        base::Microseconds(10), base::Seconds(30), 100);
+  }
   auto* task_runner = base::ThreadTaskRunnerHandle::Get().get();
 
   SchedulingState state;
@@ -641,15 +646,17 @@ void Scheduler::RunNextTask() {
   DCHECK(sequence);
   DCHECK_EQ(sequence->task_runner(), task_runner);
 
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "GPU.Scheduler.TaskDependencyTime",
-      sequence->FrontTaskWaitingDependencyDelta(), base::Microseconds(10),
-      base::Seconds(30), 100);
+  if (log_histograms) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "GPU.Scheduler.TaskDependencyTime",
+        sequence->FrontTaskWaitingDependencyDelta(), base::Microseconds(10),
+        base::Seconds(30), 100);
 
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "GPU.Scheduler.TaskSchedulingDelayTime",
-      sequence->FrontTaskSchedulingDelay(), base::Microseconds(10),
-      base::Seconds(30), 100);
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "GPU.Scheduler.TaskSchedulingDelayTime",
+        sequence->FrontTaskSchedulingDelay(), base::Microseconds(10),
+        base::Seconds(30), 100);
+  }
 
   base::OnceClosure closure;
   uint32_t order_num = sequence->BeginTask(&closure);
@@ -703,9 +710,11 @@ void Scheduler::RunNextTask() {
     }
   }
 
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "GPU.Scheduler.RunTaskTime", task_timer.Elapsed(), base::Microseconds(10),
-      base::Seconds(30), 100);
+  if (log_histograms) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "GPU.Scheduler.RunTaskTime", task_timer.Elapsed(),
+        base::Microseconds(10), base::Seconds(30), 100);
+  }
 
   // Avoid scheduling another RunNextTask if we're done with all tasks.
   auto& scheduling_queue = RebuildSchedulingQueueIfNeeded(task_runner);
