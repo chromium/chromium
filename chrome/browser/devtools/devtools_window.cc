@@ -1547,10 +1547,10 @@ void DevToolsWindow::SetEyeDropperActive(bool active) {
 
 void DevToolsWindow::ColorPickedInEyeDropper(int r, int g, int b, int a) {
   base::DictionaryValue color;
-  color.SetInteger("r", r);
-  color.SetInteger("g", g);
-  color.SetInteger("b", b);
-  color.SetInteger("a", a);
+  color.SetIntKey("r", r);
+  color.SetIntKey("g", g);
+  color.SetIntKey("b", b);
+  color.SetIntKey("a", a);
   bindings_->CallClientMethod("DevToolsAPI", "eyeDropperPickedColor",
                               std::move(color));
 }
