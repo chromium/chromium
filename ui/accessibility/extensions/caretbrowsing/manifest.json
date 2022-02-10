@@ -27,6 +27,8 @@
       "js": [
         "axs_testing.js",
         "traverse_util.js",
+	"node_util.js",
+	"selection_util.js",
 	"storage.js",
         "caretbrowsing.js"
       ]

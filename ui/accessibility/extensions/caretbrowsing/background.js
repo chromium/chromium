@@ -10,10 +10,8 @@ importScripts('storage.js');
 Storage.initialize();
 
 CONTENT_SCRIPTS = [
-  'accessibility_utils.js',
-  'traverse_util.js',
-  'storage.js',
-  'caret_browsing.js'
+  'accessibility_utils.js', 'node_util.js', 'selection_util.js',
+  'traverse_util.js', 'storage.js', 'caret_browsing.js'
 ];
 
 /**

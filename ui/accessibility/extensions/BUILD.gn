@@ -21,6 +21,7 @@ group("extension_tests") {
   testonly = true
   if (is_chromeos_ash) {
     deps = [
+      ":caretbrowsing_tests",
       ":colorenhancer_tests",
       "chromevoxclassic:chromevox_tests",
     ]
@@ -87,6 +88,15 @@ locale_files = [
   "_locales/en_XA/messages.json",
 ]
 
+unittest_sources = [
+  "//chrome/test/base/v8_unit_test.cc",
+  "//chrome/test/base/v8_unit_test.h",
+]
+
+unittest_deps = [ "//chrome/test:test_support_unit" ]
+
+webui_test_deps = [ "//chrome/test:browser_tests_runner" ]
+
 #
 # Color Enhancer
 #
@@ -128,18 +138,10 @@ copy("colorenhancer_copy") {
 }
 
 test("colorenhancer_tests") {
-  sources = [
-    "//chrome/test/base/v8_unit_test.cc",
-    "//chrome/test/base/v8_unit_test.h",
-  ]
+  sources = unittest_sources
 
-  deps = [
-    ":colorenhancer_js_tests",
-    "//base",
-    "//chrome/test:test_support_unit",
-    "//testing/gtest",
-    "//v8",
-  ]
+  deps = [ ":colorenhancer_js_tests" ]
+  deps += unittest_deps
 
   data = js2gtest_js_libraries
 }
@@ -179,8 +181,10 @@ caretbrowsing_files = [
   "caretbrowsing/caretbrowsing.js",
   "caretbrowsing/increase_brightness.png",
   "caretbrowsing/manifest.json",
+  "caretbrowsing/node_util.js",
   "caretbrowsing/options.html",
   "caretbrowsing/options.js",
+  "caretbrowsing/selection_util.js",
   "caretbrowsing/storage.js",
   "caretbrowsing/traverse_util.js",
   "//third_party/accessibility-audit/axs_testing.js",
@@ -189,4 +193,26 @@ caretbrowsing_files = [
 copy("caretbrowsing_copy") {
   sources = caretbrowsing_files
   outputs = [ "$root_out_dir/caretbrowsing/{{source_file_part}}" ]
+}
+
+test("caretbrowsing_tests") {
+  deps = [ ":caretbrowsing_webui_js_tests" ]
+  deps += webui_test_deps
+
+  data = js2gtest_js_libraries
+}
+
+js2gtest("caretbrowsing_webui_js_tests") {
+  test_type = "webui"
+  sources = [
+    "caretbrowsing/node_util_test.js",
+    "caretbrowsing/selection_util_test.js",
+  ]
+  gen_include_files = [
+    "caretbrowsing/node_util.js",
+    "caretbrowsing/selection_util.js",
+    "caretbrowsing/traverse_util.js",
+  ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 }
