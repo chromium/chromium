@@ -29,24 +29,28 @@
       }
 
       div[slot='title'] {
-        color: var(--cr-primary-text-color);
         flex-direction: column;
-        font-family: 'Google Sans';
-        font-size: 16px;
         font-weight: medium;
         height: auto;
         line-height: 24px;
-        padding-bottom: 24px;
-        padding-inline-end: 24px;
-        padding-inline-start: 24px;
-        padding-top: 24px;
+      }
+
+      #dialogTitle {
+        --cr-dialog-title-slot-padding-bottom: 24px;
+        --cr-dialog-title-slot-padding-end: 24px;
+        --cr-dialog-title-slot-padding-start: 24px;
+        --cr-dialog-title-slot-padding-top: 24px;
+      }
+
+      :host(:not([has-started-setup-attempt_])) #dialogTitle {
+        --cr-dialog-title-slot-padding-bottom: 20px;
       }
 
       #subtitle {
         color: var(--cr-secondary-text-color);
         font-family: 'Roboto';
         font-size: 14px;
-        font-weight: medium;
+        font-weight: normal; /* regular */
         line-height: 20px;
       }
 
@@ -75,13 +79,9 @@
 
       #feature-icon {
         --iron-icon-fill-color: var(--cros-icon-color-prominent);
-        padding-bottom: 13px;
-      }
-
-      #instruction-icon {
-        --iron-icon-fill-color: var(--cros-icon-color-secondary);
-        height: 14px;
-        width: 14px;
+        height: 20px;
+        padding-inline-end: 20px;
+        width: 20px;
       }
 
       #button-detail {
@@ -93,7 +93,19 @@
         color: var(--cros-text-color-secondary);
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        font-family: 'Roboto Medium'
+        font-size: 13px;
+        justify-content: start;
+        line-height: 20px;
+      }
+
+      #feature-description {
+        align-items: flex-start;
+        color: var(--cros-text-color-secondary);
+        display: flex;
+        flex-direction: column;
+        height: 204px;
+        padding-top: 12px;
       }
 
       #start-setup-description {
@@ -108,22 +120,50 @@
         align-items: flex-start;
         display: flex;
         flex-direction: row;
-        gap: 12px;
+        padding-bottom: 24px;
+      }
+
+      #feature-details-description {
+        align-items: flex-start;
+        display: flex;
+        flex-direction: column;
+      }
+
+      #feature-title {
+        color: var(--cr-primary-text-color);
+        font-family: 'Roboto'
+        font-size: 13px;
+        font-weight: normal; /* regular */
+        line-height: 20px;
+      }
+
+      #feature-subtitle {
+        color: var(--cr-secondary-text-color);
+        font-family: 'Roboto'
+        font-size: 13px;
+        font-weight: normal; /* regular */
+        line-height: 20px;
+        padding-top: 4px;
       }
 
       #half-container {
         flex: 1;
       }
 
+      #illustration-half-container {
+        flex: 1;
+        height: 216px;
+      }
+
       #instruction {
-        align-items: center;
+        align-items: flex-start;
         color: var(--cros-text-color-secondary);
         display: flex;
-        flex-direction: row;
-        font-size: 9px;
-        gap: 6px;
+        flex-direction: column;
+        font-family: 'Roboto Medium'
+        font-size: 13px;
         justify-content: start;
-        padding-top: 4px;
+        line-height: 20px;
       }
 
       :host(:not([did-setup-attempt-fail_])) #description {
@@ -141,14 +181,16 @@
         background-repeat: no-repeat;
         background-size: contain;
         height: 200px;
-        margin-bottom: 24px;
-        margin-top: 24px;
+        padding-bottom: 12px;
         width: 100%;
       }
 
       :host(:not([has-started-setup-attempt_])) #illustration {
         background-image:
-            url(chrome://os-settings/images/notification_access_setup.svg);
+            url(chrome://os-settings/images/notification_access_setup.svg);  
+        padding-bottom: 8px;
+        padding-top: 8px;
+        width: 90%;
       }
 
       :host([is-setup-attempt-in-progress_]) #illustration {
@@ -200,6 +242,12 @@
             $i18n{multideviceNotificationAccessSetupScreenLockSubtitle}
           </div>
         </template>
+        <template is="dom-if" if="[[shouldShowIntroSubTitle_(flowState_)]]"
+            restamp>
+          <div id="subtitle">
+            $i18n{multidevicePermissionsSetupAckSubtitle}
+          </div>
+        </template>
       </div>
       <div id="dialogBody" slot="body">
         <template is="dom-if" if="[[!hasStartedSetupAttempt_]]" restamp>
@@ -215,14 +263,36 @@
                 <div id="illustration"></div>
               </div>
               <div id="half-container">
-                <div id="description">
-                  <template is="dom-if" if="[[description_]]" restamp>
+                <div id="feature-description">
+                  <template is="dom-if" if="[[shouldShowNotificationItem_]]"
+                      restamp>
                     <div id="feature-details-container">
                       <iron-icon id="feature-icon"
                           icon="os-settings:multidevice-better-together-suite">
                       </iron-icon>
-                      <localized-link localized-string="[[description_]]">
-                      </localized-link>
+                      <div id="feature-details-description">
+                        <div id="feature-title">
+                          $i18n{multidevicePermissionsSetupNotificationsTitle}
+                        </div>
+                        <div id="feature-subtitle">
+                          $i18n{multidevicePermissionsSetupNotificationsSummary}
+                        </div>
+                      </div>
+                    </div>
+                  </template>
+                  <template is="dom-if" if="[[shouldShowAppsItem_]]" restamp>
+                    <div id="feature-details-container">
+                      <iron-icon id="feature-icon"
+                          icon="os-settings:multidevice-better-together-suite">
+                      </iron-icon>
+                      <div id="feature-details-description">
+                        <div id="feature-title">
+                          $i18n{multidevicePermissionsSetupAppsTitle}
+                        </div>
+                        <div id="feature-subtitle">
+                          $i18n{multidevicePermissionsSetupAppsSummary}
+                        </div>
+                      </div>
                     </div>
                   </template>
                 </div>
@@ -239,13 +309,9 @@
         </template>
         <template is="dom-if" if="[[shouldShowSetupInstructionsSeparately_]]"
             restamp>
-          <template is="dom-if" if="[[!shouldShowScreenLockInstructions_(flowState_)]]" restamp>
             <div id="instruction">
-              <iron-icon id="instruction-icon" icon="os-settings:failure-alert">
-              </iron-icon>
-              $i18n{multideviceNotificationAccessSetupInstructions}
+              $i18n{multidevicePermissionsSetupInstructions}
             </div>
-          </template>
         </template>
       </div>
       <div id="buttonContainer" slot="button-container">

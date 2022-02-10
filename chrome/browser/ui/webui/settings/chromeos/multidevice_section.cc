@@ -426,6 +426,22 @@ void MultiDeviceSection::AddLoadTimeData(
       {"multidevicePhoneHubAppsAndNotificationsItemTitle",
        IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_AND_NOTIFICATIONS_SECTION_TITLE},
       {"multideviceLearnMoreWithoutURL", IDS_SETTINGS_LEARN_MORE},
+      {"multidevicePermissionsSetupNotificationsTitle",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATION_ITEM_TITLE},
+      {"multidevicePermissionsSetupNotificationsSummary",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATION_ITEM_SUMMARY},
+      {"multidevicePermissionsSetupAppsTitle",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_APPS_ITEM_TITLE},
+      {"multidevicePermissionsSetupAppsSummary",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_APPS_ITEM_SUMMARY},
+      {"multidevicePermissionsSetupOperationsInstructions",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_OPERATION_INSTRUCTIONS},
+      {"multidevicePermissionsSetupInstructions",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_INSTRUCTIONS},
+      {"multidevicePermissionsSetupCompletedSummary",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_SUMMARY},
+      {"multidevicePermissionsSetupAwaitingResponseTitle",
+       IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_AWAITING_RESPONSE_TITLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -547,6 +563,18 @@ void MultiDeviceSection::AddLoadTimeData(
           IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_DISABLED_SUMMARY,
           ui::GetChromeOSDeviceName(),
           GetHelpUrlWithBoard(phonehub::kPhoneHubLearnMoreLink)));
+  html_source->AddString(
+      "multidevicePermissionsSetupAckTitle",
+      ui::SubstituteChromeOSDeviceType(
+          IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_ACK_TITLE));
+  html_source->AddString(
+      "multidevicePermissionsSetupAckSubtitle",
+      ui::SubstituteChromeOSDeviceType(
+          IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_ACK_SUBTITLE));
+  html_source->AddString(
+      "multidevicePermissionsSetupCompletedTitle",
+      ui::SubstituteChromeOSDeviceType(
+          IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_TITLE));
 
   AddEasyUnlockStrings(html_source);
 

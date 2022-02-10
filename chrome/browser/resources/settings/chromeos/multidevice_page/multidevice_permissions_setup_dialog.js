@@ -137,6 +137,22 @@ Polymer({
       value: settings.PhoneHubPermissionsSetupMode.INIT_MODE,
       notify: true,
     },
+
+    /** @private */
+    shouldShowNotificationItem_: {
+      type: Boolean,
+      computed: 'computeShouldShowNotificationItem_(' +
+          'setupState_, phonePermissionSetupMode)',
+      reflectToAttribute: true,
+    },
+
+    /** @private */
+    shouldShowAppsItem_: {
+      type: Boolean,
+      computed: 'computeShouldShowAppsItem_(' +
+          'setupState_, phonePermissionSetupMode)',
+      reflectToAttribute: true,
+    },
   },
 
   /** @private {?settings.MultiDeviceBrowserProxy} */
@@ -252,8 +268,7 @@ Polymer({
    * @private
    */
   computeShouldShowSetupInstructionsSeparately_() {
-    return this.setupState_ === null ||
-        this.setupState_ === PermissionsSetupStatus.CONNECTION_REQUESTED ||
+    return this.setupState_ === PermissionsSetupStatus.CONNECTION_REQUESTED ||
         this.setupState_ ===
         PermissionsSetupStatus.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE ||
         this.setupState_ === PermissionsSetupStatus.CONNECTING;
@@ -320,7 +335,7 @@ Polymer({
    */
   getTitle_() {
     if (this.flowState_ === SetupFlowStatus.INTRO) {
-      return this.i18n('multideviceNotificationAccessSetupAckTitle');
+      return this.i18n('multidevicePermissionsSetupAckTitle');
     }
     if (this.flowState_ === SetupFlowStatus.SET_LOCKSCREEN) {
       return this.i18n('multideviceNotificationAccessSetupScreenLockTitle');
@@ -332,10 +347,9 @@ Polymer({
       case Status.CONNECTING:
         return this.i18n('multideviceNotificationAccessSetupConnectingTitle');
       case Status.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE:
-        return this.i18n(
-            'multideviceNotificationAccessSetupAwaitingResponseTitle');
+        return this.i18n('multidevicePermissionsSetupAwaitingResponseTitle');
       case Status.COMPLETED_SUCCESSFULLY:
-        return this.i18n('multideviceNotificationAccessSetupCompletedTitle');
+        return this.i18n('multidevicePermissionsSetupCompletedTitle');
       case Status.TIMED_OUT_CONNECTING:
         return this.i18n(
             'multideviceNotificationAccessSetupCouldNotEstablishConnectionTitle');
@@ -356,7 +370,7 @@ Polymer({
    */
   getDescription_() {
     if (this.flowState_ === SetupFlowStatus.INTRO) {
-      return this.i18n('multideviceNotificationAccessSetupAckSummary');
+      return '';
     }
 
     if (this.flowState_ === SetupFlowStatus.SET_LOCKSCREEN) {
@@ -366,7 +380,7 @@ Polymer({
     const Status = PermissionsSetupStatus;
     switch (this.setupState_) {
       case Status.COMPLETED_SUCCESSFULLY:
-        return this.i18n('multideviceNotificationAccessSetupCompletedSummary');
+        return this.i18n('multidevicePermissionsSetupCompletedSummary');
       case Status.TIMED_OUT_CONNECTING:
         return this.i18n(
             'multideviceNotificationAccessSetupEstablishFailureSummary');
@@ -377,8 +391,7 @@ Polymer({
         return this.i18nAdvanced(
             'multideviceNotificationAccessSetupAccessProhibitedSummary');
       case Status.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE:
-        return this.i18n(
-            'multideviceNotificationAccessSetupAwaitingResponseSummary');
+        return this.i18n('multidevicePermissionsSetupOperationsInstructions');
 
       // Only setup instructions will be shown.
       case Status.CONNECTION_REQUESTED:
@@ -413,5 +426,37 @@ Polymer({
    */
   shouldShowScreenLockInstructions_() {
     return this.flowState_ === SetupFlowStatus.SET_LOCKSCREEN;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowIntroSubTitle_() {
+    return this.flowState_ === SetupFlowStatus.INTRO;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeShouldShowNotificationItem_() {
+    return this.flowState_ === SetupFlowStatus.INTRO &&
+        (this.phonePermissionSetupMode ===
+             PhoneHubPermissionsSetupMode.ALL_PERMISSIONS_SETUP_MODE ||
+         this.phonePermissionSetupMode ===
+             PhoneHubPermissionsSetupMode.NOTIFICATION_SETUP_MODE);
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeShouldShowAppsItem_() {
+    return this.flowState_ === SetupFlowStatus.INTRO &&
+        (this.phonePermissionSetupMode ===
+             PhoneHubPermissionsSetupMode.ALL_PERMISSIONS_SETUP_MODE ||
+         this.phonePermissionSetupMode ===
+             PhoneHubPermissionsSetupMode.APPS_SETUP_MODE);
   },
 });

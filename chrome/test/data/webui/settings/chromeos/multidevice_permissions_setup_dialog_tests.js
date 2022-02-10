@@ -49,6 +49,16 @@ suite('Multidevice', () => {
     return permissionsSetupDialog.shouldShowSetupInstructionsSeparately_;
   }
 
+  /** @return {boolean} */
+  function isNotificationItemShowen() {
+    return permissionsSetupDialog.shouldShowNotificationItem_;
+  }
+
+  /** @return {boolean} */
+  function isAppsItemShowen() {
+    return permissionsSetupDialog.shouldShowAppsItem_;
+  }
+
   setup(() => {
     PolymerTest.clearBody();
     browserProxy = new multidevice.TestMultideviceBrowserProxy();
@@ -64,7 +74,9 @@ suite('Multidevice', () => {
   test('Test notification setup success flow', async () => {
     permissionsSetupDialog.phonePermissionSetupMode =
         PhoneHubPermissionsSetupMode.NOTIFICATION_SETUP_MODE;
-    assertTrue(isSetupInstructionsShownSeparately());
+    assertTrue(isNotificationItemShowen());
+    assertFalse(isAppsItemShowen());
+    assertFalse(isSetupInstructionsShownSeparately());
     assertTrue(!!buttonContainer.querySelector('#learnMore'));
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertTrue(!!buttonContainer.querySelector('#getStartedButton'));
@@ -74,6 +86,8 @@ suite('Multidevice', () => {
     assertEquals(browserProxy.getCallCount('attemptNotificationSetup'), 1);
 
     simulateStatusChanged(PermissionsSetupStatus.CONNECTION_REQUESTED);
+    assertFalse(isNotificationItemShowen());
+    assertFalse(isAppsItemShowen());
     assertTrue(isSetupInstructionsShownSeparately());
     assertFalse(!!buttonContainer.querySelector('#learnMore'));
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
@@ -82,6 +96,8 @@ suite('Multidevice', () => {
     assertFalse(!!buttonContainer.querySelector('#tryAgainButton'));
 
     simulateStatusChanged(PermissionsSetupStatus.CONNECTING);
+    assertFalse(isNotificationItemShowen());
+    assertFalse(isAppsItemShowen());
     assertTrue(isSetupInstructionsShownSeparately());
     assertFalse(!!buttonContainer.querySelector('#learnMore'));
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
@@ -91,6 +107,8 @@ suite('Multidevice', () => {
 
     simulateStatusChanged(
         PermissionsSetupStatus.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE);
+    assertFalse(isNotificationItemShowen());
+    assertFalse(isAppsItemShowen());
     assertTrue(isSetupInstructionsShownSeparately());
     assertFalse(!!buttonContainer.querySelector('#learnMore'));
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
@@ -100,6 +118,8 @@ suite('Multidevice', () => {
 
     assertEquals(browserProxy.getCallCount('setFeatureEnabledState'), 0);
     simulateStatusChanged(PermissionsSetupStatus.COMPLETED_SUCCESSFULLY);
+    assertFalse(isNotificationItemShowen());
+    assertFalse(isAppsItemShowen());
     assertFalse(isSetupInstructionsShownSeparately());
     assertFalse(!!buttonContainer.querySelector('#learnMore'));
     assertFalse(!!buttonContainer.querySelector('#cancelButton'));
@@ -207,7 +227,9 @@ suite('Multidevice', () => {
   test('Test apps setup success flow', async () => {
     permissionsSetupDialog.phonePermissionSetupMode =
         PhoneHubPermissionsSetupMode.APPS_SETUP_MODE;
-    assertTrue(isSetupInstructionsShownSeparately());
+    assertFalse(isNotificationItemShowen());
+    assertTrue(isAppsItemShowen());
+    assertFalse(isSetupInstructionsShownSeparately());
     assertTrue(!!buttonContainer.querySelector('#learnMore'));
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertTrue(!!buttonContainer.querySelector('#getStartedButton'));
@@ -217,6 +239,8 @@ suite('Multidevice', () => {
     assertEquals(browserProxy.getCallCount('attemptAppsSetup'), 1);
 
     simulateAppsStatusChanged(PermissionsSetupStatus.CONNECTION_REQUESTED);
+    assertFalse(isNotificationItemShowen());
+    assertFalse(isAppsItemShowen());
     assertTrue(isSetupInstructionsShownSeparately());
     assertFalse(!!buttonContainer.querySelector('#learnMore'));
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
@@ -225,6 +249,8 @@ suite('Multidevice', () => {
     assertFalse(!!buttonContainer.querySelector('#tryAgainButton'));
 
     simulateAppsStatusChanged(PermissionsSetupStatus.CONNECTING);
+    assertFalse(isNotificationItemShowen());
+    assertFalse(isAppsItemShowen());
     assertTrue(isSetupInstructionsShownSeparately());
     assertFalse(!!buttonContainer.querySelector('#learnMore'));
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
@@ -234,6 +260,8 @@ suite('Multidevice', () => {
 
     simulateAppsStatusChanged(
         PermissionsSetupStatus.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE);
+    assertFalse(isNotificationItemShowen());
+    assertFalse(isAppsItemShowen());
     assertTrue(isSetupInstructionsShownSeparately());
     assertFalse(!!buttonContainer.querySelector('#learnMore'));
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
@@ -243,6 +271,8 @@ suite('Multidevice', () => {
 
     assertEquals(browserProxy.getCallCount('setFeatureEnabledState'), 0);
     simulateAppsStatusChanged(PermissionsSetupStatus.COMPLETED_SUCCESSFULLY);
+    assertFalse(isNotificationItemShowen());
+    assertFalse(isAppsItemShowen());
     assertFalse(isSetupInstructionsShownSeparately());
     assertFalse(!!buttonContainer.querySelector('#learnMore'));
     assertFalse(!!buttonContainer.querySelector('#cancelButton'));
@@ -325,7 +355,9 @@ suite('Multidevice', () => {
   test('Test notification and apps setup success flow', async () => {
     permissionsSetupDialog.phonePermissionSetupMode =
         PhoneHubPermissionsSetupMode.ALL_PERMISSIONS_SETUP_MODE;
-    assertTrue(isSetupInstructionsShownSeparately());
+    assertTrue(isNotificationItemShowen());
+    assertTrue(isAppsItemShowen());
+    assertFalse(isSetupInstructionsShownSeparately());
     assertTrue(!!buttonContainer.querySelector('#learnMore'));
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
     assertTrue(!!buttonContainer.querySelector('#getStartedButton'));
@@ -336,6 +368,8 @@ suite('Multidevice', () => {
 
     simulateStatusChanged(
         PermissionsSetupStatus.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE);
+    assertFalse(isNotificationItemShowen());
+    assertFalse(isAppsItemShowen());
     assertTrue(isSetupInstructionsShownSeparately());
     assertFalse(!!buttonContainer.querySelector('#learnMore'));
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
@@ -345,6 +379,8 @@ suite('Multidevice', () => {
     assertEquals(browserProxy.getCallCount('setFeatureEnabledState'), 0);
 
     simulateStatusChanged(PermissionsSetupStatus.COMPLETED_SUCCESSFULLY);
+    assertFalse(isNotificationItemShowen());
+    assertFalse(isAppsItemShowen());
     assertTrue(isSetupInstructionsShownSeparately());
     assertFalse(!!buttonContainer.querySelector('#learnMore'));
     assertTrue(!!buttonContainer.querySelector('#cancelButton'));
@@ -358,6 +394,8 @@ suite('Multidevice', () => {
     assertEquals(browserProxy.getCallCount('attemptAppsSetup'), 1);
 
     simulateAppsStatusChanged(PermissionsSetupStatus.COMPLETED_SUCCESSFULLY);
+    assertFalse(isNotificationItemShowen());
+    assertFalse(isAppsItemShowen());
     assertFalse(isSetupInstructionsShownSeparately());
     assertFalse(!!buttonContainer.querySelector('#learnMore'));
     assertFalse(!!buttonContainer.querySelector('#cancelButton'));
