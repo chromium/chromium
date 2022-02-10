@@ -1,4 +1,4 @@
-<style include="common-style">
+<style>
   #themeLabel > p {
     color: var(--cros-text-color-primary);
     font: var(--personalization-app-label-font);
@@ -6,6 +6,7 @@
 
   cr-button {
     background-color: var(--cros-tab-slider-track-color);
+    border-radius: 16px;
     display: flex;
     flex-flow: column nowrap;
     height: 60px;
@@ -42,8 +43,9 @@
     --iron-icon-width: 20px;
   }
   #buttonContainer {
-    display: flex;
-    flex-flow: row nowrap;
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   }
 </style>
 <div id="container">
@@ -62,6 +64,10 @@
         aria-pressed$="[[getDarkAriaPressed_(darkModeEnabled_)]]">
       <iron-icon icon="personalization:dark" aria-hidden="true"></iron-icon>
       <div class="text">[[i18n('darkColorMode')]]</div>
+    </cr-button>
+    <cr-button id="autoMode" aria-pressed$="[[getAutoAriaPressed_()]]">
+      <iron-icon icon="personalization:auto" aria-hidden="true"></iron-icon>
+      <div class="text">[[i18n('autoColorMode')]]</div>
     </cr-button>
   </div>
 </div>

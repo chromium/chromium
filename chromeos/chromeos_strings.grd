@@ -1996,6 +1996,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_THEME_LIGHT_COLOR_MODE" desc="Label for light color mode setting">
         Light
       </message>
+      <message name="IDS_PERSONALIZATION_APP_THEME_AUTO_COLOR_MODE" desc="Label for auto color mode setting">
+        Auto
+      </message>
       <message name="IDS_PERSONALIZATION_APP_AVATAR_LABEL" desc="Label for the Avatar page in Personalization app.">
         Avatar
       </message>

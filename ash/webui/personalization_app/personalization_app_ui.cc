@@ -86,6 +86,7 @@ void AddStrings(content::WebUIDataSource* source) {
       {"themeLabel", IDS_PERSONALIZATION_APP_THEME_LABEL},
       {"darkColorMode", IDS_PERSONALIZATION_APP_THEME_DARK_COLOR_MODE},
       {"lightColorMode", IDS_PERSONALIZATION_APP_THEME_LIGHT_COLOR_MODE},
+      {"autoColorMode", IDS_PERSONALIZATION_APP_THEME_AUTO_COLOR_MODE},
       {"zeroImages", IDS_PERSONALIZATION_APP_NO_IMAGES},
       {"oneImage", IDS_PERSONALIZATION_APP_ONE_IMAGE},
       {"multipleImages", IDS_PERSONALIZATION_APP_MULTIPLE_IMAGES},

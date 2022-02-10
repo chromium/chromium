@@ -51,6 +51,11 @@ export class PersonalizationThemeElement extends WithPersonalizationStore {
     return darkModeEnabled.toString();
   }
 
+  private getAutoAriaPressed_() {
+    // TODO(b/202860714): Add actual implementation.
+    return 'false';
+  }
+
   private onClickColorModeButton_(event: Event) {
     const eventTarget = event.currentTarget as HTMLElement;
     const colorMode = eventTarget.dataset['colorMode'];
