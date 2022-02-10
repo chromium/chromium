@@ -55,6 +55,7 @@ TEST_F(VirtualCardEnrollmentStrikeDatabaseTest, AddAndRemoveStrikes) {
   int max_strikes = strike_database_->GetMaxStrikesLimit();
   std::string test_guid = "00000000-0000-0000-0000-000000000001";
 
+  EXPECT_EQ(strike_database_->GetStrikes(test_guid), 0);
   strike_database_->AddStrike(test_guid);
   EXPECT_EQ(strike_database_->GetStrikes(test_guid), 1);
   EXPECT_FALSE(strike_database_->IsMaxStrikesLimitReached(test_guid));

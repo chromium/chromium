@@ -41,9 +41,11 @@ VirtualCardEnrollmentManager::VirtualCardEnrollmentManager(
   // does not exist.
   DCHECK(autofill_client_);
 
-  StrikeDatabaseBase* strike_database = autofill_client->GetStrikeDatabase();
-  virtual_card_enrollment_strike_database_ =
-      std::make_unique<VirtualCardEnrollmentStrikeDatabase>(strike_database);
+  if (autofill_client->GetStrikeDatabase()) {
+    virtual_card_enrollment_strike_database_ =
+        std::make_unique<VirtualCardEnrollmentStrikeDatabase>(
+            autofill_client->GetStrikeDatabase());
+  }
 }
 
 VirtualCardEnrollmentManager::~VirtualCardEnrollmentManager() = default;
@@ -53,14 +55,19 @@ void VirtualCardEnrollmentManager::OfferVirtualCardEnroll(
     VirtualCardEnrollmentSource virtual_card_enrollment_source) {
   DCHECK(credit_card);
   DCHECK_NE(virtual_card_enrollment_source, VirtualCardEnrollmentSource::kNone);
+  if (IsVirtualCardEnrollmentBlocked(credit_card,
+                                     virtual_card_enrollment_source)) {
+    return;
+  }
+
   state_.virtual_card_enrollment_fields.credit_card = credit_card;
 
   // The |card_art_image| might not be synced yet from the sync server which
-  // will result in a nullptr. This situation can occur in the upstream flow. If
-  // it is not synced, GetCreditCardArtImageForUrl() will send a fetch request
-  // to sync the |card_art_image|, and before showing the
-  // VirtualCardEnrollmentBubble we will try to fetch the |card_art_image| from
-  // the local cache.
+  // will result in a nullptr. This situation can occur in the upstream flow.
+  // If it is not synced, GetCreditCardArtImageForUrl() will send a fetch
+  // request to sync the |card_art_image|, and before showing the
+  // VirtualCardEnrollmentBubble we will try to fetch the |card_art_image|
+  // from the local cache.
   state_.virtual_card_enrollment_fields.card_art_image =
       personal_data_manager_->GetCreditCardArtImageForUrl(
           credit_card->card_art_url());
@@ -94,10 +101,17 @@ void VirtualCardEnrollmentManager::Unenroll(int64_t instrument_id) {
 }
 
 bool VirtualCardEnrollmentManager::IsVirtualCardEnrollmentBlocked(
-    const std::string& guid) const {
-  return GetVirtualCardEnrollmentStrikeDatabase() &&
-         GetVirtualCardEnrollmentStrikeDatabase()->IsMaxStrikesLimitReached(
-             guid);
+    raw_ptr<CreditCard> credit_card,
+    VirtualCardEnrollmentSource virtual_card_enrollment_source) const {
+  if (virtual_card_enrollment_source ==
+      VirtualCardEnrollmentSource::kSettingsPage)
+    return false;
+
+  if (!GetVirtualCardEnrollmentStrikeDatabase())
+    return false;
+
+  return GetVirtualCardEnrollmentStrikeDatabase()->IsMaxStrikesLimitReached(
+      credit_card->guid());
 }
 
 void VirtualCardEnrollmentManager::
@@ -229,9 +243,14 @@ void VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleAccepted() {
       base::BindOnce(&VirtualCardEnrollmentManager::
                          OnDidGetUpdateVirtualCardEnrollmentResponse,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  RemoveAllStrikesToBlockOfferingVirtualCardEnrollment(
+      state_.virtual_card_enrollment_fields.credit_card->guid());
 }
 
 void VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleCancelled() {
+  AddStrikeToBlockOfferingVirtualCardEnrollment(
+      state_.virtual_card_enrollment_fields.credit_card->guid());
   Reset();
 }
 
