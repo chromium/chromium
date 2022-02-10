@@ -326,8 +326,10 @@ void OnDeviceClusteringBackend::OnAllVisitsFinishedProcessing(
 
   // Post the actual clustering work onto the thread pool, then reply on the
   // calling sequence. This is to prevent UI jank.
-  if (clustering_request_source ==
-      ClusteringRequestSource::kKeywordCacheGeneration) {
+  if (base::FeatureList::IsEnabled(
+          features::kSplitClusteringTasksToSmallerBatches) &&
+      clustering_request_source ==
+          ClusteringRequestSource::kKeywordCacheGeneration) {
     low_priority_background_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(
@@ -335,19 +337,18 @@ void OnDeviceClusteringBackend::OnAllVisitsFinishedProcessing(
             base::Unretained(this), cluster_visits),
         std::move(callback));
     return;
-  } else if (!base::FeatureList::IsEnabled(
-                 features::kSplitClusteringTasksToSmallerBatches) ||
-             clustering_request_source ==
-                 ClusteringRequestSource::kJourneysPage) {
-    high_priority_background_task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(
-            &OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread,
-            base::Unretained(this), cluster_visits),
-        std::move(callback));
-    return;
   }
-  NOTREACHED();
+
+  DCHECK(clustering_request_source == ClusteringRequestSource::kJourneysPage ||
+         clustering_request_source ==
+             ClusteringRequestSource::kKeywordCacheGeneration);
+
+  high_priority_background_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          &OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread,
+          base::Unretained(this), cluster_visits),
+      std::move(callback));
 }
 
 std::vector<history::Cluster>

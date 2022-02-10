@@ -717,10 +717,6 @@ class BatchedClusteringTaskOnDeviceClusteringWithoutContentBackendTest
           std::tuple<bool, ClusteringRequestSource>> {
  public:
   BatchedClusteringTaskOnDeviceClusteringWithoutContentBackendTest() {
-    LOG(WARNING) << "xxx IsBatchingEnabled=" << IsBatchingEnabled()
-                 << " GetClusteringRequestSource="
-                 << static_cast<int>(GetClusteringRequestSource());
-
     const base::FieldTrialParams on_device_clustering_feature_parameters = {
         {"content_clustering_enabled", "false"},
         {"dedupe_similar_visits", "false"},
