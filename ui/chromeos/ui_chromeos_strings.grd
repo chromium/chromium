@@ -1461,6 +1461,12 @@
       <message name="IDS_NETWORK_LIST_ITEM_CELLULAR_BLOCKED_WITH_CONNECTION_STATUS_A11Y_LABEL" desc="A11y label for a cellular network in a list in settings and oobe that is blocked by the administrator. Includes connection status. Clicking the network navigates to the details page.">
         Network <ph name="NETWORK_INDEX">$1<ex>1</ex></ph> of <ph name="NETWORK_COUNT">$2<ex>10</ex></ph>, <ph name="NETWORK_NAME">$3<ex>Verizon Wireless</ex></ph>, <ph name="CONNECTION_STATUS">$4<ex>Connecting...</ex></ph>, Signal Strength <ph name="SIGNAL_STRENGTH">$5<ex>80</ex></ph>%, Blocked by your Administrator, Details
       </message>
+      <message name="IDS_NETWORK_LIST_ITEM_WIFI_BLOCKED_A11Y_LABEL" desc="A11y label for a Wi-Fi network in a list in settings and oobe that is blocked by the administrator. Clicking the network navigates to the details page.">
+        Network <ph name="NETWORK_INDEX">$1<ex>1</ex></ph> of <ph name="NETWORK_COUNT">$2<ex>10</ex></ph>, <ph name="NETWORK_NAME">$3<ex>GuestNetwork</ex></ph>, <ph name="SECURITY_STATUS">$4<ex>Unsecured</ex></ph>, Signal Strength <ph name="SIGNAL_STRENGTH">$5<ex>80</ex></ph>%, Blocked by your Administrator, Details
+      </message>
+      <message name="IDS_NETWORK_LIST_ITEM_WIFI_BLOCKED_WITH_CONNECTION_STATUS_A11Y_LABEL" desc="A11y label for a Wi-Fi network in a list in settings and oobe that is blocked by the administrator.  Includes connection status.  Clicking the network navigates to the details page.">
+        Network <ph name="NETWORK_INDEX">$1<ex>1</ex></ph> of <ph name="NETWORK_COUNT">$2<ex>10</ex></ph>, <ph name="NETWORK_NAME">$3<ex>GuestNetwork</ex></ph>, <ph name="SECURITY_STATUS">$4<ex>Unsecured</ex></ph>, <ph name="CONNECTION_STATUS">$5<ex>Connecting</ex></ph>, Signal Strength <ph name="SIGNAL_STRENGTH">$6<ex>80</ex></ph>%, Blocked by your Administrator, Details
+      </message>
       <message name="IDS_NETWORK_LIST_ITEM_UNAVAILABLE_SIM_NETWORK" desc="Text for label displayed for SIM networks that are not available to be setup.">
         Not activated. Contact your carrier.
       </message>

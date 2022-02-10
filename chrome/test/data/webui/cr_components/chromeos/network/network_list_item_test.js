@@ -659,6 +659,30 @@ suite('NetworkListItemTest', function() {
             networkStateLockedText, networkStateText.textContent.trim());
       });
 
+  test('computeIsBlockedNetwork()_ should return expected value', async () => {
+    init();
+    await flushAsync();
+    // Should return false if item is null or undefined.
+    assertFalse(listItem.computeIsBlockedNetwork_());
+
+    // Set item to a policy blocked wifi network.
+    const managedProperties = OncMojo.getDefaultManagedProperties(
+        chromeos.networkConfig.mojom.NetworkType.kWiFi, 'wifiguid');
+    managedProperties.source = chromeos.networkConfig.mojom.OncSource.kUser;
+    managedProperties.typeProperties.wifi.security =
+        chromeos.networkConfig.mojom.SecurityType.kWepPsk;
+    mojoApi_.setManagedPropertiesForTest(managedProperties);
+    const networkState =
+        OncMojo.managedPropertiesToNetworkState(managedProperties);
+    listItem.item = networkState;
+    // Set global policy to restrict managed wifi networks.
+    listItem.globalPolicy = {
+      allowOnlyPolicyWifiNetworksToConnect: true,
+    };
+    await flushAsync();
+    assertTrue(listItem.computeIsBlockedNetwork_());
+  });
+
   test(
       'Show detail page when clicking on blocked cellular network item',
       async () => {
