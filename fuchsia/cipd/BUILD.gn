@@ -129,9 +129,12 @@ template("cipd_archive") {
 # test manifests for a given list of test_sets.
 #
 # Parameters:
-#   test_sets: A list of scopes that contain a "manifest_path" and list of
-#                   "far_sources". Will be used to create a test manifest for
-#                   each set.
+#   test_sets: A list of scopes for which test manifests will be created. Each
+#              set contains:
+#     manifest_path: The path to the generated manifest JSON file.
+#     far_sources: An optional list of CFv2 test component .far files.
+#     cfv1_far_sources: An optional list of legacy CFv1 test component .far
+#                       files.
 #
 # Required parameters used by the cipd_archive template:
 #   "package_subdirectory",
@@ -164,20 +167,37 @@ template("cipd_test_archive") {
     # archive.
     sources = []
     foreach(test_set, test_sets) {
+      assert(
+          defined(test_set.far_sources) || defined(test_set.cfv1_far_sources))
+      sources += [ test_set.manifest_path ]
       _manifest_contents = []
-      foreach(source, test_set.far_sources) {
-        package_name = get_path_info(source, "name")
+      if (defined(test_set.far_sources)) {
+        foreach(source, test_set.far_sources) {
+          package_name = get_path_info(source, "name")
 
-        _manifest_contents += [
-          {
-            package = package_name
-            component_name = package_name
-          },
-        ]
+          _manifest_contents += [
+            {
+              package = package_name
+              component_name = package_name + ".cm"
+            },
+          ]
+        }
+        sources += test_set.far_sources
+      }
+      if (defined(test_set.cfv1_far_sources)) {
+        foreach(source, test_set.cfv1_far_sources) {
+          package_name = get_path_info(source, "name")
+
+          _manifest_contents += [
+            {
+              package = package_name
+              component_name = package_name + ".cmx"
+            },
+          ]
+        }
+        sources += test_set.cfv1_far_sources
       }
       write_file(test_set.manifest_path, _manifest_contents, "json")
-      sources += [ test_set.manifest_path ]
-      sources += test_set.far_sources
     }
   }
 }
@@ -271,12 +291,14 @@ cipd_test_archive("tests") {
       manifest_path = "${target_gen_dir}/test_manifest.json"
       far_sources = [
         "${root_gen_dir}/base/base_unittests/base_unittests.far",
+        "${root_gen_dir}/ipc/ipc_tests/ipc_tests.far",
+        "${root_gen_dir}/mojo/mojo_unittests/mojo_unittests.far",
+      ]
+      cfv1_far_sources = [
         "${root_gen_dir}/fuchsia/engine/web_engine_integration_tests/web_engine_integration_tests.far",
         "${root_gen_dir}/fuchsia/runners/cast_runner_integration_tests/cast_runner_integration_tests.far",
         "${root_gen_dir}/fuchsia/runners/web_runner_integration_tests/web_runner_integration_tests.far",
-        "${root_gen_dir}/ipc/ipc_tests/ipc_tests.far",
         "${root_gen_dir}/media/media_unittests/media_unittests.far",
-        "${root_gen_dir}/mojo/mojo_unittests/mojo_unittests.far",
         "${root_gen_dir}/skia/skia_unittests/skia_unittests.far",
         "${root_gen_dir}/third_party/blink/common/blink_common_unittests/blink_common_unittests.far",
       ]
@@ -286,22 +308,24 @@ cipd_test_archive("tests") {
       far_sources = [
         "${root_gen_dir}/base/base_unittests/base_unittests.far",
         "${root_gen_dir}/ipc/ipc_tests/ipc_tests.far",
-        "${root_gen_dir}/media/media_unittests/media_unittests.far",
         "${root_gen_dir}/mojo/mojo_unittests/mojo_unittests.far",
+      ]
+      cfv1_far_sources = [
+        "${root_gen_dir}/media/media_unittests/media_unittests.far",
         "${root_gen_dir}/skia/skia_unittests/skia_unittests.far",
         "${root_gen_dir}/third_party/blink/common/blink_common_unittests/blink_common_unittests.far",
       ]
     },
     {
       manifest_path = "${target_gen_dir}/web_engine_tests_manifest.json"
-      far_sources = [
+      cfv1_far_sources = [
         "${root_gen_dir}/fuchsia/engine/web_engine_integration_tests/web_engine_integration_tests.far",
         "${root_gen_dir}/fuchsia/runners/web_runner_integration_tests/web_runner_integration_tests.far",
       ]
     },
     {
       manifest_path = "${target_gen_dir}/cast_runner_tests_manifest.json"
-      far_sources = [ "${root_gen_dir}/fuchsia/runners/cast_runner_integration_tests/cast_runner_integration_tests.far" ]
+      cfv1_far_sources = [ "${root_gen_dir}/fuchsia/runners/cast_runner_integration_tests/cast_runner_integration_tests.far" ]
     },
   ]
 }
