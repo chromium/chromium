@@ -1291,10 +1291,8 @@ class VASupportedImageFormats {
   ~VASupportedImageFormats() = default;
 
   // Initialize the list of supported image formats.
-  bool InitSupportedImageFormats_Locked(const base::Lock* va_lock);
-
-  // Pointer to VADisplayState's member |va_display_|.
-  VADisplay va_display_;
+  bool InitSupportedImageFormats_Locked(const base::Lock* va_lock,
+                                        VADisplay va_display);
 
   std::vector<VAImageFormat> supported_formats_;
   const ReportErrorToUMACB report_error_to_uma_cb_;
@@ -1344,10 +1342,10 @@ VASupportedImageFormats::VASupportedImageFormats()
 
   {
     base::AutoLockMaybe auto_lock(va_lock);
-    va_display_ = display_state->va_display();
-    DCHECK(va_display_) << "VADisplayState hasn't been properly initialized";
+    VADisplay va_display = display_state->va_display();
+    DCHECK(va_display) << "VADisplayState hasn't been properly initialized";
 
-    if (!InitSupportedImageFormats_Locked(va_lock))
+    if (!InitSupportedImageFormats_Locked(va_lock, va_display))
       LOG(ERROR) << "Failed to get supported image formats";
   }
 
@@ -1356,11 +1354,12 @@ VASupportedImageFormats::VASupportedImageFormats()
 }
 
 bool VASupportedImageFormats::InitSupportedImageFormats_Locked(
-    const base::Lock* va_lock) {
+    const base::Lock* va_lock,
+    VADisplay va_display) {
   MAYBE_ASSERT_ACQUIRED(va_lock);
 
   // Query the driver for the max number of image formats and allocate space.
-  const int max_image_formats = vaMaxNumImageFormats(va_display_);
+  const int max_image_formats = vaMaxNumImageFormats(va_display);
   if (max_image_formats < 0) {
     LOG(ERROR) << "vaMaxNumImageFormats returned: " << max_image_formats;
     return false;
@@ -1370,7 +1369,7 @@ bool VASupportedImageFormats::InitSupportedImageFormats_Locked(
   // Query the driver for the list of supported image formats.
   int num_image_formats;
   const VAStatus va_res = vaQueryImageFormats(
-      va_display_, supported_formats_.data(), &num_image_formats);
+      va_display, supported_formats_.data(), &num_image_formats);
   VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVAQueryImageFormats, false);
   if (num_image_formats < 0 || num_image_formats > max_image_formats) {
     LOG(ERROR) << "vaQueryImageFormats returned: " << num_image_formats;
