@@ -850,8 +850,14 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   VerifyPermissionsForFile(main_rfh, /*expect_granted*/ false);
 }
 
+// Flaky - https://crbug.com/1289985
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_UniversalAccessFromFileUrls UniversalAccessFromFileUrls
+#else
+#define MAYBE_UniversalAccessFromFileUrls DISABLED_UniversalAccessFromFileUrls
+#endif
 IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
-                       UniversalAccessFromFileUrls) {
+                       MAYBE_UniversalAccessFromFileUrls) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::WebContents* embedder_contents =
