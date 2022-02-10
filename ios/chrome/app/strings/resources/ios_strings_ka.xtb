@@ -116,6 +116,7 @@
 <translation id="196896377990863006">ბმულის გადახედვის ჩვენება</translation>
 <translation id="1973912524893600642">მონაცემების შენარჩუნება</translation>
 <translation id="1974060860693918893">გაფართოებული</translation>
+<translation id="1981118202195772574">მობილური</translation>
 <translation id="1989112275319619282">დათვალიერება</translation>
 <translation id="199425419756152024">პაროლის ნახვა</translation>
 <translation id="2015722694326466240">პაროლების სანახავად, პირველ რიგში, საჭიროა თქვენს მოწყობილობაზე საიდუმლო კოდის დაყენება.</translation>
@@ -236,6 +237,7 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />იხილეთ, რისი სინქრონიზაცია შეგიძლიათ<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">ყველას დაბლოკვა</translation>
 <translation id="313283613037595347">ახალი ინკოგნიტო ჩანართის შექმნა.</translation>
+<translation id="3150887674190166798">აირჩიეთ, როგორ გსურთ, Chrome-მა მოითხოვოს საიტი ყოველ ჯერზე</translation>
 <translation id="3153862085237805241">ბარათის შენახვა</translation>
 <translation id="3157387275655328056">საკითხავ სიაში დამატება</translation>
 <translation id="3157684681743766797">ყველას მონიშვნა…</translation>
@@ -349,6 +351,7 @@
 <translation id="4181841719683918333">ენები</translation>
 <translation id="4237377247299956313">შეეხეთ <ph name="BEGIN_BOLD" />ბრაუზერის ნაგულისხმევ აპს<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">შეიყვანეთ საიდუმლო ფრაზა</translation>
+<translation id="4249955472157341256">დალაგება უახლესის მიხედვით</translation>
 <translation id="4263576668337963058">გვერდთან დაკავშირებული ხელმისაწვდომი ქმედებების ჩვენება</translation>
 <translation id="4267380167363222949">შემდეგი ჩანართი</translation>
 <translation id="4272631900155121838">QR კოდის სკანირებისთვის, ჩართეთ კამერა პარამეტრებიდან</translation>
@@ -506,6 +509,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="575902488528307720">სურათის ძიება</translation>
 <translation id="5781453543752460388">ფოტოებში დამატება</translation>
 <translation id="5782227691023083829">მიმდინარეობს თარგმნა...</translation>
+<translation id="5791632441210678828">დალაგების ღილაკი თვალმიდევნებულთა არხისთვის.</translation>
 <translation id="5802829331520313983">დაყენება…</translation>
 <translation id="5803566855766646066">ნამდვილად გსურთ ამ ახალი ბარათის გაუქმება?</translation>
 <translation id="5804241973901381774">ნებართვები</translation>
@@ -621,6 +625,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="6561262006871132942">მასშტაბის გადიდება</translation>
 <translation id="6583087784430677195">გამოსართავად გახსენით <ph name="BEGIN_LINK" />პარამეტრები<ph name="END_LINK" /> და გადადით „პაროლების ავტომატურ შევსებაზე“.</translation>
 <translation id="6585618849026997638">თქვენთვის მნიშვნელოვან გვერდზე დაბრუნება შესაძლებელია სანიშნეს დამატებით</translation>
+<translation id="6598875554591387303">დალაგება გამომცემლის მიხედვით</translation>
 <translation id="6603393121510733479">თქვენმა ორგანიზაციამ გამორთო კონფიდენციალური დათვალიერება.
 <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">თარგმნის ვარიანტები</translation>
@@ -761,6 +766,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="7911190106180361398">თქვენი ორგანიზაცია ყველაფრის სინქრონიზაციის უფლებას არ გაძლევთ.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">პაროლების ექსპორტი...</translation>
+<translation id="793971554166979165">საიტის ნაგულისხმევი რეჟიმი</translation>
 <translation id="794799177247607889">ჟურნალირების შეწყვეტა</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{გატეხილი პაროლები არ არის}=1{{COUNT} გატეხილი პაროლი}other{{COUNT} გატეხილი პაროლი}}</translation>
 <translation id="7961015016161918242">არასოდეს</translation>
@@ -866,6 +872,7 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="8881801611828450202">ამ სურათის ძიება <ph name="SEARCH_ENGINE" />-ში</translation>
 <translation id="8909135823018751308">გაზიარება…</translation>
 <translation id="8917490105272468696">დიახ, თანახმა ვარ</translation>
+<translation id="8928133177108699615">დესკტოპი</translation>
 <translation id="8952559610785099500">პაროლის დამატება</translation>
 <translation id="895541991026785598">მოხსენება პრობლემის შესახებ</translation>
 <translation id="8974714402877957201">1. გახსენით iPad-ის პარამეტრები</translation>

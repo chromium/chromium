@@ -13,6 +13,7 @@
 <translation id="1119447706177454957">Hitilafu ya ndani</translation>
 <translation id="1124772482545689468">Mtumiaji</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1145018782460575098">Sasisho la programu dhibiti kwa ajili ya dirisha la vifaa vinavyochomekwa lipo wazi. Masasisho <ph name="NUM_UPDATES" /> yanapatikana.</translation>
 <translation id="1175697296044146566"><ph name="DEVICE_TYPE" /> hii inasimamiwa na <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Wastani (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1181037720776840403">Ondoa</translation>
@@ -26,6 +27,7 @@
 <translation id="1270369111467284986">Inashukiwa kwamba kuna ukurasa wa mwanzo</translation>
 <translation id="1290331692326790741">Mtandao si thabiti</translation>
 <translation id="1301069673413256657">GSM</translation>
+<translation id="1308754910631152188">Inasasisha (imekamilika kwa asilimia <ph name="PERCENTAGE_VALUE" />)</translation>
 <translation id="1310380015393971138">Hakuna mtandao wa <ph name="NETWORK_NAME" /> unaopatikana</translation>
 <translation id="1314565355471455267">VPN ya Android</translation>
 <translation id="131461803491198646">Uko katika mtandao wako wa kawaida</translation>
@@ -43,10 +45,12 @@
 <translation id="1468664791493211953">Ofa</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> anadhibiti kifaa hiki na anaweza kufuatilia shughuli zako.</translation>
 <translation id="1478594628797167447">Kichanganuzi</translation>
+<translation id="1491076385728777984">Inasasisha programu dhibiti kwenye <ph name="DEVICE_NAME" /></translation>
 <translation id="1499900233129743732"><ph name="MANAGER" /> inamdhibiti mtumiaji huyu na huenda ikadhibiti mipangilio na kufuatilia shughuli za mtumiaji kwa mbali.</translation>
 <translation id="150962533380566081">PUK si sahihi.</translation>
 <translation id="1510238584712386396">Kizindua</translation>
 <translation id="155865706765934889">Touchpad</translation>
+<translation id="1565038567006703504">Imeshindwa kusasisha <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Albamu</translation>
 <translation id="1572585716423026576">Weka kama mandhari</translation>
 <translation id="1621067168122174824">Tekeleza jaribio la Kuchaji</translation>
@@ -117,6 +121,7 @@
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2505327257735685095">Onyesha upya picha ya sasa ya mandhari</translation>
 <translation id="2517472476991765520">Tafuta</translation>
+<translation id="253029298928638905">Inazima kisha iwake...</translation>
 <translation id="2536159006530886390">Imeshindwa kuunganisha kwenye intaneti.</translation>
 <translation id="2570743873672969996">Inatekeleza jaribio la <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Nenda kwenye Mipangilio ili uiweke</translation>
@@ -206,6 +211,7 @@
 <translation id="3967822245660637423">Faili imekamilika kupakuliwa</translation>
 <translation id="397105322502079400">Inakokotoa...</translation>
 <translation id="39823212440917567">Kazi za kuchapisha zilizohifadhiwa kwa zaidi ya siku <ph name="NUMBER_OF_DAYS" /> zitaondolewa</translation>
+<translation id="3993704782688964914">Sasa <ph name="DEVICE_NAME" /> imesasishwa</translation>
 <translation id="4003384961948020559">Haijakamilika - Sehemu ya kutoa karatasi imejaa</translation>
 <translation id="4034824040120875894">Printa</translation>
 <translation id="4044093238444069296">Imeshindwa kuwasiliana na lango</translation>
@@ -232,6 +238,7 @@
 <translation id="4378373042927530923">Usitekeleze</translation>
 <translation id="4378551569595875038">Inaunganisha...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="439429847087949098">Inazima kisha iwake <ph name="DEVICE_NAME" /></translation>
 <translation id="4418498623216225764">Sasisha vifaa vilivyounganishwa kwenye kompyuta</translation>
 <translation id="4425149324548788773">Hifadhi Yangu</translation>
 <translation id="4428374560396076622"><ph name="NETWORK_NAME" /> imezimwa</translation>
@@ -248,6 +255,7 @@
 <translation id="4521826082652183069">Jina mbadala la kichwa linalolingana</translation>
 <translation id="4536864596629708641">Mipangilio ya IP</translation>
 <translation id="4548483925627140043">Mawimbi ya WiFi hayapatikani</translation>
+<translation id="4556753742174065117">Programu dhibiti imesasishwa</translation>
 <translation id="455835558791489930">Betri ya mAh<ph name="CHARGE_VALUE" /></translation>
 <translation id="4561801978359312462">SIM Imefunguliwa</translation>
 <translation id="4562494484721939086">Hakuna huduma</translation>
@@ -432,6 +440,7 @@
 <translation id="680983167891198932">Ufunguo</translation>
 <translation id="6816797338148849397">Maelezo yanayohusiana na chaguo lako yanapatikana. Tumia kishale cha Juu ili uyafikie.</translation>
 <translation id="6853312040151791195">Kasi ya kutumia chaji</translation>
+<translation id="6889786074662672253">Inapozima kisha iwake, usichomoe kifaa kilichochomekwa wala kuzima kompyuta yako. Unaweza kupunguza kidirisha hiki. Hatua hii inaweza kuchukua dakika kadhaa na huenda kifaa ulichochomeka kisifanye kazi kwa wakati huu.</translation>
 <translation id="6905724422583748843">Rudi kwenye <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Kifuniko cha kichanganuzi kimefunguliwa. Funga kifuniko kisha ujaribu tena.</translation>
 <translation id="6911383237894364323">Imeshindwa kuunganisha kwenye seva za maudhui</translation>

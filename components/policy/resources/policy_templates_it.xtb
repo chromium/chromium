@@ -563,6 +563,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="1648816843164517573">Elenco di nomi che eviteranno il controllo dei criteri HSTS</translation>
 <translation id="1654087023995670109">Applica modalità ospite del browser</translation>
 <translation id="1655229863189977773">Imposta le dimensioni della cache su disco in byte</translation>
+<translation id="165769015320654523">Concedi automaticamente a questi siti l'autorizzazione di connessione a dispositivi HID con gli ID fornitore e prodotto forniti.</translation>
 <translation id="166427968280387991">Server proxy</translation>
 <translation id="1669584285557771729">Se questo criterio viene impostato, consente di controllare il tipo di lente d'ingrandimento che viene attivato.
 
@@ -720,6 +721,11 @@ Questa norma è facoltativa. Se non viene impostata, la richiesta di ricerca ist
 Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled" è attiva.</translation>
 <translation id="1850439894606905202">Per impostazione predefinita, i documenti vengono inseriti in cluster di agenti in base al sito. La funzione di accesso document.domain rimane configurabile.</translation>
 <translation id="1852294065645015766">Consenti la riproduzione automatica dei contenuti multimediali</translation>
+<translation id="1855963029978337744">La configurazione del criterio consente di elencare gli URL che specificano i siti a cui viene automaticamente concessa l'autorizzazione di accesso a un dispositivo HID con gli ID fornitore e prodotto forniti. Ogni elemento nell'elenco richiede che entrambi i campi <ph name="DEVICES_FIELD_NAME" /> e <ph name="URLS_FIELD_NAME" /> siano validi per l'elemento, altrimenti quest'ultimo viene ignorato. Ogni elemento nel campo <ph name="DEVICES_FIELD_NAME" /> deve avere un campo <ph name="VENDOR_ID_FIELD_NAME" /> e potrebbe avere un campo <ph name="PRODUCT_ID_FIELD_NAME" />. Se il campo <ph name="PRODUCT_ID_FIELD_NAME" /> viene omesso, il criterio può corrispondere a qualsiasi dispositivo con l'ID fornitore specificato. Un elemento con un campo <ph name="PRODUCT_ID_FIELD_NAME" /> senza un campo <ph name="VENDOR_ID_FIELD_NAME" /> non è valido e viene ignorato.
+
+      Se il criterio non viene configurato, viene applicato il criterio <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
+
+      Gli URL in questo criterio non devono essere in conflitto con quelli configurati tramite <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />. In caso di conflitto, questo criterio ha la precedenza su <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="1859859319036806634">Avviso. Il fallback della versione TLS sarà rimosso da <ph name="PRODUCT_NAME" /> dopo la versione 52 (nel periodo settembre 2016), dopodiché questa norma non sarà più attiva.
 
       Se lo handshake TLS non riesce, <ph name="PRODUCT_NAME" /> proverà a stabilire una connessione con una versione precedente di TLS per risolvere i bug nei server HTTPS. Con questa impostazione viene configurata la versione in cui si interrompe il processo di fallback. Se un server esegue correttamente la negoziazione della versione (cioè senza interrompere la connessione), questa impostazione non viene applicata. In ogni caso, la connessione risultante deve essere conforme a SSLVersionMin.
@@ -1210,6 +1216,7 @@ Lasciare il criterio non impostato significa che nessuna estensione è esente da
       Nota: per Android, utilizza invece il criterio <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME" />.</translation>
 <translation id="2306505001667207184">Richiedi all'utente di selezionare il certificato client quando il criterio di selezione automatica corrisponde a più certificati.</translation>
 <translation id="2307496301287881990">Segnala stati del display e della grafica</translation>
+<translation id="2309341709647905294">Non segnalare informazioni sulle periferiche collegate al dispositivo</translation>
 <translation id="2309390639296060546">Impostazione di geolocalizzazione predefinita</translation>
 <translation id="2331354174913096226">Il modello URI del resolver DNS over HTTPS desiderato. Per specificare diversi resolver DNS over HTTPS, separa i modelli URI corrispondenti con gli spazi.
 
@@ -1564,6 +1571,9 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       Eccezione: le informazioni relative alla memoria libera vengono controllate tramite il criterio <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> per M95 e versioni precedenti.</translation>
 <translation id="2721185634942265347">Disattiva i suggerimenti di ricerca</translation>
 <translation id="2721582713721006926">Disattiva definizioni di Risposte rapide</translation>
+<translation id="2722076884688932437">Se il criterio viene impostato su Vero, i dispositivi registrati segnalano informazioni relative alle periferiche collegate al dispositivo.
+
+      Se il criterio viene impostato su Falso o non viene impostato, i dispositivi registrati non segnalano informazioni relative alle periferiche.</translation>
 <translation id="2723692978495226412">Se il criterio viene impostato su Attivato, vengono visualizzati dei consigli per le app precedentemente installate dall'utente su altri dispositivi. Questi consigli vengono visualizzati in Avvio app in seguito ai consigli sulle app locali, se non viene inserito alcun testo di ricerca.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, questi consigli non vengono visualizzati.
@@ -1705,6 +1715,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
       I caratteri jolly sono consentiti sia per l'intera origine sia per le sue parti, ovvero lo schema, l'host e la porta.</translation>
 <translation id="2893546967669465276">Consente di inviare log di sistema al server di gestione</translation>
 <translation id="2893660462311365527">Velocità di raccolta della telemetria di rete in millisecondi.</translation>
+<translation id="2895444724612647239">Concedi automaticamente ai siti l'autorizzazione di connessione a qualsiasi dispositivo HID.</translation>
 <translation id="2896434627453256512">Se il criterio viene impostato su Attivato, la funzionalità di finestre nascoste viene attivata.
       Se viene impostato su Vero, le finestre nascoste ARC vengono create prima dell'avvio di ARC e dopo un arresto anomalo o un riavvio in base all'impostazione di ripristino dell'app.
       Se viene impostato su Falso, non viene creata alcuna finestra nascosta prima dell'avvio di ARC. Le app ARC vengono ripristinate dopo l'avvio di ARC</translation>
@@ -2422,6 +2433,11 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3711895659073496551">Sospensione</translation>
 <translation id="3715569262675717862">Autenticazione basata su certificati client</translation>
 <translation id="3719826155360621982">Home page</translation>
+<translation id="372668389978450673">Se questo criterio viene impostato su vero o se non viene configurato, <ph name="PRODUCT_NAME" /> e <ph name="LACROS_NAME" /> consentono l'aggiunta di una nuova persona da Gestione utenti.
+
+      Se viene impostato su falso, <ph name="PRODUCT_NAME" /> e <ph name="LACROS_NAME" /> non consentono l'aggiunta di una nuova persona da Gestione utenti.
+
+      Nota: se questo criterio non viene configurato o se viene impostato su vero, ma <ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" /> viene impostato su falso, <ph name="LACROS_NAME" /> non consente l'aggiunta di una nuova persona da Gestione utenti.</translation>
 <translation id="3727476641336727380">A meno che <ph name="ALLOW_WAKE_LOCKS_POLICY_NAME" /> non sia impostato su Disattivato, la mancata configurazione o l'impostazione del criterio <ph name="ALLOW_SCREEN_WAKE_LOCKS_POLICY_NAME" /> su Attivato consente i wakelock dello schermo per la gestione dell'alimentazione. Le estensioni possono richiedere wakelock dello schermo tramite l'API dell'estensione di gestione dell'alimentazione e le app ARC.
 
       Se il criterio viene impostato su Disattivato, le richieste di wakelock dello schermo vengono retrocesse a richieste di wakelock del sistema.</translation>
@@ -3426,6 +3442,13 @@ Se il criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> disattiva il Blu
       Se il criterio viene configurato, gli utenti non possono modificarlo. Se non viene configurato, gli utenti possono decidere se inviare o meno i rapporti.
 
       Ulteriori informazioni su Navigazione sicura (https://developers.google.com/safe-browsing).</translation>
+<translation id="4955566229684195326">Questa impostazione consente agli utenti di creare e usare profili secondari e di utilizzare la modalità ospite nel browser <ph name="LACROS_NAME" />.
+
+      In modo simile ai criteri <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> e <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />, se questo criterio viene impostato su falso o se non viene configurato, l'utente non può creare o usare profili secondari né utilizzare la modalità ospite. Gli eventuali profili secondari creati in precedenza non sono disponibili.
+
+      Se questo criterio viene impostato su vero, l'utente può creare e usare profili secondari e utilizzare la modalità ospite.
+
+      Nota: se questo criterio viene impostato su vero, ma il criterio <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> viene impostato su falso, l'utente non può creare profili secondari. Lo stesso vale per <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" /> e la modalità ospite.</translation>
 <translation id="4960597185231686653">Un flag booleano che indica se la tastiera sullo schermo può offrire la funzionalità di input vocale.</translation>
 <translation id="4970046075219007744">Consenti alle app web di richiedere all'utente l'accesso ai tipi di file tramite l'API File Handling</translation>
 <translation id="4970855112942626932">Disattiva accesso al browser</translation>
@@ -5113,6 +5136,11 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="6907778402784621686">Blocca contenuti non sicuri su questi siti</translation>
 <translation id="6908640907898649429">Configura il provider di ricerca predefinito. Puoi specificare il provider di ricerca predefinito che l'utente utilizzerà oppure scegliere di disattivare la ricerca predefinita.</translation>
 <translation id="6913068954484253496">Consenti a <ph name="PRODUCT_NAME" /> di connettersi ai dispositivi Cast su tutti gli indirizzi IP.</translation>
+<translation id="6919819553978815392">Se il criterio viene impostato su vero o se non viene configurato, <ph name="PRODUCT_NAME" /> e <ph name="LACROS_NAME" /> abilitano gli accessi come ospite. Gli accessi come ospite sono profili <ph name="PRODUCT_NAME" /> in cui tutte le finestre sono nella modalità di navigazione in incognito.
+
+      Se viene impostato su falso, <ph name="PRODUCT_NAME" /> e <ph name="LACROS_NAME" /> non consentono l'avvio dei profili ospite.
+
+      Nota: se questo criterio non viene configurato o se viene impostato su vero, ma <ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" /> viene impostato su falso, <ph name="LACROS_NAME" /> non consente l'avvio dei profili ospite.</translation>
 <translation id="6922498040906800267">Consente di configurare un elenco di regole per prevenire la fuga di dati su <ph name="PRODUCT_OS_NAME" />.
       La fuga di dati può verificarsi, ad esempio, tramite le operazioni di copia e incolla di dati, il trasferimento di file, la stampa, la condivisione dello schermo o l'acquisizione di screenshot.
 
@@ -6432,6 +6460,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
       Se viene disattivata, gli utenti non potranno usare questa funzionalità. Gli utenti non potranno usare questa funzionalità anche se viene disattivato il criterio <ph name="PHONE_HUB_ALLOWED_POLICY_NAME" />.
 
       Se questo criterio non viene configurato, per impostazione predefinita la funzionalità è consentita sia per gli utenti gestiti a livello aziendale sia per quelli non gestiti.</translation>
+<translation id="835283681355955417">Segnala dettagli periferica</translation>
 <translation id="8357681633047935212">Limita la durata di una sessione utente</translation>
 <translation id="8357989008292691856">Elenco di utenti autorizzati ad accedere</translation>
 <translation id="8359734107661430198">Attiva l'API ExampleDeprecatedFeature valida fino al 02/09/2008</translation>
@@ -6655,6 +6684,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8604178325750278068">Se il criterio viene impostato su Attivato, l'Assistente Google potrà ascoltare la frase di attivazione vocale. Se il criterio viene impostato su Disattivato, l'Assistente Google non potrà ascoltare la frase.
 
       Se il criterio non viene configurato, gli utenti potranno decidere se attivare o disattivare la funzionalità.</translation>
+<translation id="8604906464981340229">Concedi automaticamente a questi siti l'autorizzazione di connessione a dispositivi HID che contengono raccolte di livello superiore con l'utilizzo dell'HID specificato.</translation>
 <translation id="8605216171953003144">Se il criterio viene impostato su Attivato o se non viene configurato, il protocollo NTLMv2 viene attivato.
 
       Se il criterio viene impostato su Disattivato, il protocollo NTLMv2 viene disattivato.
@@ -6690,6 +6720,11 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8656110680728938054">Attiva Seleziona per ascoltare</translation>
 <translation id="8661297125441579970">Non consentire migrazione dei dati e ARC.</translation>
 <translation id="8665314828727504286">Livello di protezione Navigazione sicura</translation>
+<translation id="8666123502812856425">La configurazione del criterio consente di elencare gli URL che specificano i siti a cui viene automaticamente concessa l'autorizzazione di accesso a un dispositivo HID che contiene una raccolta di livello superiore con l'utilizzo dell'HID specificato. Perché il criterio sia valido, ogni elemento nell'elenco richiede entrambi i campi <ph name="USAGES_FIELD_NAME" /> e <ph name="URLS_FIELD_NAME" />. Ogni elemento nel campo <ph name="USAGES_FIELD_NAME" /> deve avere un campo <ph name="USAGE_PAGE_FIELD_NAME" /> e potrebbe avere un campo <ph name="USAGE_FIELD_NAME" />. Se il campo <ph name="USAGE_FIELD_NAME" /> viene omesso, il criterio può corrispondere a qualsiasi dispositivo che contiene una raccolta di livello superiore con un utilizzo dalla relativa pagina specificata. Un elemento con un campo <ph name="USAGE_FIELD_NAME" /> senza un campo <ph name="USAGE_PAGE_FIELD_NAME" /> non è valido e viene ignorato.
+
+      Se il criterio non viene configurato, viene applicato il criterio <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />, se impostato. In caso contrario, viene applicata l'impostazione personale dell'utente.
+
+      Gli URL in questo criterio non devono essere in conflitto con quelli configurati tramite <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />. In caso di conflitto, questo criterio ha la precedenza su <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="8669313549017524373">Se il criterio <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> viene impostato su RestoreOnStartupIsURLs e per il criterio <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> viene impostato un elenco di URL, è possibile specificare quali URL aprire.
 
       Se non viene impostato, all'avvio viene aperta la pagina Nuova scheda.
@@ -7010,6 +7045,13 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
 
       Il valore della norma deve essere specificato in secondi.</translation>
 <translation id="9015578113567730893">Frequenza di raccolta dei dati di telemetria audio in millisecondi.</translation>
+<translation id="9024884890349148482">La configurazione del criterio consente di elencare i siti a cui viene concessa automaticamente l'autorizzazione di accesso a tutti i dispositivi disponibili.
+
+      Se gli URL non sono validi, il criterio viene ignorato. Viene considerata soltanto l'origine (schema, host e porta) dell'URL.
+
+      Su Chrome OS, questo criterio viene applicato solo agli utenti affiliati.
+
+      Questo criterio sostituisce <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />, <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" />, <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> e le preferenze dell'utente.</translation>
 <translation id="9035086760683255833">Consente di attivare la funzione di accessibilità di evidenziazione dell'elemento attivo tramite tastiera.
 
           Questa funzione consente di evidenziare l'elemento attivo impostato tramite tastiera.
@@ -7086,6 +7128,7 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
 <translation id="9098409326885953506">La finestra coperta viene rilevata e viene sospesa la creazione</translation>
 <translation id="9105265795073104888">Solo un sottoinsieme di opzioni di configurazione del proxy viene reso disponibile alle app Android, che decidono volontariamente se rispettarlo o meno. Non puoi forzarle a utilizzare un proxy.</translation>
 <translation id="9106865192244721694">Consenti WebUSB su questi siti</translation>
+<translation id="9110251436602897914">Segnala informazioni sulle periferiche collegate al dispositivo</translation>
 <translation id="9111850884577810507">Questo campo deve corrispondere a una delle stringhe che rappresentano una stampante supportata da <ph name="PRODUCT_NAME" />. La stringa verrà usata per identificare e installare il file PPD appropriato per la stampante. È possibile trovare ulteriori informazioni all'indirizzo https://support.google.com/chrome?p=noncloudprint.</translation>
 <translation id="9112727953998243860">File di configurazione delle stampanti aziendali</translation>
 <translation id="911605919007170833">Segnala stato di sicurezza</translation>

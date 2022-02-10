@@ -197,6 +197,7 @@
 <translation id="6734291798041940871">Chromium вече е инсталиран за всички потребители на компютъра ви.</translation>
 <translation id="673636774878526923">За да имате достъп до нещата си в Chromium на всичките си устройства, влезте в профила си и включете синхронизирането.</translation>
 <translation id="6774082503108938489">Някой от родителите ви е изключил разрешенията за сайтове, приложения и разширения за Chromium. Активирането на <ph name="EXTENSION_TYPE_PARAMETER" /> не е разрешено.</translation>
+<translation id="6808964260981102146">За този профил може да важат разрешенията, които вече сте предоставили на уебсайтове и приложения. Ако не искате уебсайтовете и приложенията да имат достъп до информацията в профила ви, използвайте <ph name="LINK_BEGIN" />режима на гост<ph name="LINK_END" /> в браузъра Chromium. Можете също да управлявате профилите си в Google в <ph name="LINK_2_BEGIN" />Настройки<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Chromium ви уведомява, ако паролите ви бъдат компрометирани</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (копирано в Chromium)</translation>

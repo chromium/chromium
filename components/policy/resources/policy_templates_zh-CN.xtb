@@ -560,6 +560,7 @@
 <translation id="1648816843164517573">以列表形式指定：哪些名称将绕过 HSTS 政策检查</translation>
 <translation id="1654087023995670109">强制采用浏览器访客模式</translation>
 <translation id="1655229863189977773">设置磁盘缓存大小（字节）</translation>
+<translation id="165769015320654523">自动授权这些网站连接到具有给定供应商 ID 和产品 ID 的 HID 设备。</translation>
 <translation id="166427968280387991">代理服务器</translation>
 <translation id="1669584285557771729">如果设置了此政策，它就会控制启用的放大镜类型。
 
@@ -718,6 +719,11 @@
           此政策只在启用了“DefaultSearchProviderEnabled”政策的前提下才会生效。</translation>
 <translation id="1850439894606905202">默认情况下，文档会被放入以网站为键的代理集群中。document.domain 会处于可设置状态。</translation>
 <translation id="1852294065645015766">允许自动播放媒体内容</translation>
+<translation id="1855963029978337744">通过设置此政策，您可以罗列一些网址，从而指定自动授权哪些网站访问具有给定供应商 ID 和产品 ID 的 HID 设备。列表中的每个项都必须同时包含“<ph name="DEVICES_FIELD_NAME" />”和“<ph name="URLS_FIELD_NAME" />”字段才有效，否则便无效。“<ph name="DEVICES_FIELD_NAME" />”字段中的每个项都必须包含“<ph name="VENDOR_ID_FIELD_NAME" />”字段且可以包含“<ph name="PRODUCT_ID_FIELD_NAME" />”字段。如果您省略“<ph name="PRODUCT_ID_FIELD_NAME" />”字段，系统将会创建一项与所有具有给定供应商 ID 的设备都匹配的政策。包含“<ph name="PRODUCT_ID_FIELD_NAME" />”字段但不含“<ph name="VENDOR_ID_FIELD_NAME" />”字段的项无效，会被忽视。
+
+      如果您未设置此政策，那么，倘若 <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> 已设置，系统便会应用它，否则就会应用用户的个人设置。
+
+      此政策中的网址不应与通过 <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> 配置的网址冲突。如果它们冲突，此政策优先于 <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />。</translation>
 <translation id="1859859319036806634">警告：从 52 版开始，<ph name="PRODUCT_NAME" /> 中将取消 TLS 版本回退功能（2016 年 9 月左右）。届时，此政策将不再有效。
 
       如果 TLS 握手失败，<ph name="PRODUCT_NAME" /> 会首先重新尝试使用较低版本的 TLS 建立连接，以便忽略 HTTPS 服务器中的错误。此设置用于指定可回退到的最低版本。如果服务器正确地执行了版本协商（即没有中断连接），系统将不会应用此设置。无论怎样，最终的连接仍必须符合 SSLVersionMin 的规定。
@@ -1182,6 +1188,7 @@
       注意：对于 Android 设备，请改用 <ph name="SITE_PER_PROCESS_ANDROID_POLICY_NAME" /> 政策。</translation>
 <translation id="2306505001667207184">每当自动选择政策与多个证书匹配时，都会提示用户选择客户端证书。</translation>
 <translation id="2307496301287881990">报告显示状态和图形状态</translation>
+<translation id="2309341709647905294">不报告相应设备所插接的外围设备的相关信息</translation>
 <translation id="2309390639296060546">默认地理位置设置</translation>
 <translation id="2331354174913096226">所需 DNS-over-HTTPS 解析器的 URI 模板。要指定多个 DNS-over-HTTPS 解析器，请使用空格将相应的 URI 模板分隔开。
 
@@ -1531,6 +1538,9 @@
       例外情况：对于 M95 或更低版本，可用内存信息由 <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> 控制。</translation>
 <translation id="2721185634942265347">停用搜索建议</translation>
 <translation id="2721582713721006926">停用快速解答定义功能</translation>
+<translation id="2722076884688932437">如果此政策设为 True，已注册的设备便会报告其插接的外围设备的相关信息。
+
+      如果此政策设为 False 或未设置，已注册的设备将不会报告外围设备信息。</translation>
 <translation id="2723692978495226412">如果此政策已启用，系统便会推荐用户曾在其他设备上安装的应用。如果用户未输入任何搜索文字，系统将在启动器中显示推荐应用（位于推荐的本地应用后面）。
 
       如果此政策已停用或未设置，系统便不会显示推荐应用。
@@ -1671,6 +1681,7 @@
       来源的整体或部分内容都可以使用通配符，例如架构、主机和端口均可使用通配符。</translation>
 <translation id="2893546967669465276">将系统日志发送到管理服务器</translation>
 <translation id="2893660462311365527">网络遥测收集时间间隔（以毫秒为单位）。</translation>
+<translation id="2895444724612647239">自动授权这些网站连接到任意 HID 设备。</translation>
 <translation id="2896434627453256512">通过设置此政策，您可以启用“ghost 窗口”功能。
       如果此政策设为 true，系统将在发生崩溃或重新启动后，根据“还原应用”设置在 ARC 启动前创建 ARC ghost 窗口。
       如果此政策设为 false，系统将不会在 ARC 启动前创建 ghost 窗口，但会在 ARC 启动后还原 ARC 应用</translation>
@@ -2382,6 +2393,11 @@
 <translation id="3711895659073496551">暂停</translation>
 <translation id="3715569262675717862">基于客户端证书的身份验证</translation>
 <translation id="3719826155360621982">首页</translation>
+<translation id="372668389978450673">如果此政策设为 true 或未配置，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 将会允许从用户管理器中添加新用户。
+
+      如果此政策设为 false，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 将会禁止从用户管理器中添加新用户。
+
+      请注意：如果此政策设为 true 或未配置，但 <ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" /> 设为 false，<ph name="LACROS_NAME" /> 将会禁止从用户管理器中添加新用户。</translation>
 <translation id="3727476641336727380">如果 <ph name="ALLOW_SCREEN_WAKE_LOCKS_POLICY_NAME" /> 已启用或未设置，系统会允许使用屏幕唤醒锁定进行电源管理，除非 <ph name="ALLOW_WAKE_LOCKS_POLICY_NAME" /> 已停用。扩展程序可通过 Power Management Extension API 和 ARC 应用来请求屏幕唤醒锁定。
 
       如果此政策已停用，系统会将屏幕唤醒锁定请求降级为系统唤醒锁定请求。</translation>
@@ -3381,6 +3397,13 @@
       如果您设置了此政策，用户便无法更改它。如果您不设置此政策，用户可以决定是否发送报告。
 
       详细了解“安全浏览”功能 (https://developers.google.com/safe-browsing)。</translation>
+<translation id="4955566229684195326">此设置允许用户在 <ph name="LACROS_NAME" /> 浏览器中创建和使用次级个人资料以及使用访客模式。
+
+      与 <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> 和 <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" /> 这两项政策类似，如果此政策设为 false 或未设置，用户将无法创建或使用次级个人资料，也无法使用访客模式。以前创建的次级个人资料（若有）将会不可用。
+
+      如果此政策设为 true，用户将能够创建和使用次级个人资料以及使用访客模式。
+
+      请注意，如果此政策设为 true 但 <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> 设为 false，用户将无法创建次级个人资料。同理，如果此政策设为 true 但 <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" /> 设为 false，用户将无法使用访客模式。</translation>
 <translation id="4960597185231686653">一个布尔值标记，用于表明屏幕键盘能否提供语音输入功能。</translation>
 <translation id="4970046075219007744">允许 Web 应用通过 File Handling API 请求用户授权其访问各类文件</translation>
 <translation id="4970855112942626932">禁止登录浏览器</translation>
@@ -5060,6 +5083,11 @@
 <translation id="6907778402784621686">禁止在这些网站上显示不安全内容</translation>
 <translation id="6908640907898649429">配置默认搜索服务提供商。您可以指定用户会使用的默认搜索服务提供商，或选择停用默认搜索。</translation>
 <translation id="6913068954484253496">允许 <ph name="PRODUCT_NAME" /> 连接到位于所有 IP 地址的 Cast 设备。</translation>
+<translation id="6919819553978815392">如果此政策设为 true 或未配置，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 将会允许以访客身份登录。访客身份是一类 <ph name="PRODUCT_NAME" /> 个人资料；使用此类个人资料登录后，所有窗口均会处于无痕模式。
+
+      如果此政策设为 false，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 将会禁止启用访客个人资料。
+
+      请注意：如果此政策设为 true 或未配置，但 <ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" /> 设为 false，<ph name="LACROS_NAME" /> 将会禁止启用访客个人资料。</translation>
 <translation id="6922498040906800267">以列表形式配置一系列规则，防止 <ph name="PRODUCT_OS_NAME" />上发生数据泄露。
       复制并粘贴数据、传输文件、打印、共享屏幕或截屏等操作都可能会导致数据泄露。
 
@@ -6372,6 +6400,7 @@
       如果您停用了此设置，用户将无法使用该功能。如果 <ph name="PHONE_HUB_ALLOWED_POLICY_NAME" /> 政策已停用，用户也将无法使用该功能。
 
       如果此政策未设置，默认情况下，受企业管理的用户和非受管用户都能选择启用该功能。</translation>
+<translation id="835283681355955417">报告外围设备详情</translation>
 <translation id="8357681633047935212">限制用户会话的长度</translation>
 <translation id="8357989008292691856">登录用户许可名单</translation>
 <translation id="8359734107661430198">从 2008 年 9 月 2 日开始启用 ExampleDeprecatedFeature API</translation>
@@ -6595,6 +6624,7 @@
 <translation id="8604178325750278068">如果此政策已启用，Google 助理将会听取语音操作激活指令。如果此政策已停用，Google 助理将无法听取语音操作激活指令。
 
       如果您不设置此政策，用户便可自行开启/关闭此功能。</translation>
+<translation id="8604906464981340229">自动授权这些网站连接到提供了包含给定 HID 用法的顶层集合的 HID 设备。</translation>
 <translation id="8605216171953003144">如果此政策已启用或未设置，系统会开启 NTLMv2。
 
       如果此政策已停用，系统会关闭 NTLMv2。
@@ -6630,6 +6660,11 @@
 <translation id="8656110680728938054">启用“随选朗读”</translation>
 <translation id="8661297125441579970">禁止数据迁移和 ARC。</translation>
 <translation id="8665314828727504286">“安全浏览”功能的保护级别</translation>
+<translation id="8666123502812856425">通过设置此政策，您可以罗列一些网址，从而指定自动授权哪些网站访问提供了包含给定 HID 用法的顶层集合的 HID 设备。列表中的每个项都必须同时包含“<ph name="USAGES_FIELD_NAME" />”和“<ph name="URLS_FIELD_NAME" />”字段，此政策才有效。“<ph name="USAGES_FIELD_NAME" />”字段中的每个项都必须包含“<ph name="USAGE_PAGE_FIELD_NAME" />”字段且可以包含“<ph name="USAGE_FIELD_NAME" />”字段。如果您省略“<ph name="USAGE_FIELD_NAME" />”字段，系统将会创建一项与所有提供了给定用法页面所含用法的顶层集合的设备都匹配的政策。包含“<ph name="USAGE_FIELD_NAME" />”字段但不含“<ph name="USAGE_PAGE_FIELD_NAME" />”字段的项无效，会被忽视。
+
+      如果您未设置此政策，那么，倘若 <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> 已设置，系统便会应用它，否则就会应用用户的个人设置。
+
+      此政策中的网址不应与通过 <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> 配置的网址冲突。如果它们冲突，此政策优先于 <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />。</translation>
 <translation id="8669313549017524373">如果 <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> 设为 RestoreOnStartupIsURLs，那么将 <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> 设为一系列网址即可指定哪些网址会在 Chrome 启动时打开。
 
       如果您未设置此政策，“新标签页”页面会在 Chrome 启动时打开。
@@ -6949,6 +6984,13 @@
 
       此政策的值应以秒为单位。</translation>
 <translation id="9015578113567730893">音频遥测收集时间间隔（以毫秒为单位）。</translation>
+<translation id="9024884890349148482">通过设置此政策，您可以罗列一些网址，从而指定自动授权哪些网站访问所有可用的设备。
+
+      这些网址必须有效，否则系统会忽略此政策。系统将仅考虑相应网址的源（架构、主机和端口）。
+
+      在 Chrome 操作系统上，此政策仅适用于已关联的用户。
+
+      此政策会覆盖 <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />、<ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" />、<ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> 和用户的偏好设置。</translation>
 <translation id="9035086760683255833">启用“键盘焦点突出显示”无障碍功能。
 
           此功能负责突出显示通过键盘操作成为焦点的对象。
@@ -7025,6 +7067,7 @@
 <translation id="9098409326885953506">检测被遮挡的窗口并暂停其渲染进程</translation>
 <translation id="9105265795073104888">仅一小部分代理配置选项已可供 Android 应用使用。Android 应用可能会主动选择使用相应代理。您无法强制此类应用使用该代理。</translation>
 <translation id="9106865192244721694">允许这些网站使用 WebUSB</translation>
+<translation id="9110251436602897914">报告相应设备所插接的外围设备的相关信息</translation>
 <translation id="9111850884577810507">此字段必须与某个代表 <ph name="PRODUCT_NAME" />所支持打印机的字符串匹配。该字符串将用于识别和为打印机安装相应的 PPD。如需了解详情，请访问：https://support.google.com/chrome?p=noncloudprint。</translation>
 <translation id="9112727953998243860">企业打印机配置文件</translation>
 <translation id="911605919007170833">报告安全状态</translation>

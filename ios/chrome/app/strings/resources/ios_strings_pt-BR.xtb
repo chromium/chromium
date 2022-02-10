@@ -116,6 +116,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para
 <translation id="196896377990863006">Mostrar prévia do link</translation>
 <translation id="1973912524893600642">Manter dados</translation>
 <translation id="1974060860693918893">Avançado</translation>
+<translation id="1981118202195772574">Dispositivo móvel</translation>
 <translation id="1989112275319619282">Procurar</translation>
 <translation id="199425419756152024">Ver senha</translation>
 <translation id="2015722694326466240">Para ver as senhas, defina uma senha no dispositivo primeiro.</translation>
@@ -236,6 +237,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Veja o que pode ser sincronizado<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Bloquear tudo</translation>
 <translation id="313283613037595347">Criar nova guia anônima.</translation>
+<translation id="3150887674190166798">Selecione como você quer que o Chrome carregue o site sempre</translation>
 <translation id="3153862085237805241">Salvar cartão</translation>
 <translation id="3157387275655328056">Adicionar à lista de leitura</translation>
 <translation id="3157684681743766797">Marcar tudo...</translation>
@@ -764,6 +766,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7911190106180361398">Sua organização não permite que você sincronize tudo.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportar senhas…</translation>
+<translation id="793971554166979165">Modo padrão do site</translation>
 <translation id="794799177247607889">Parar de registrar</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Nenhuma senha comprometida}=1{{COUNT} senha comprometida}one{{COUNT} senha comprometida}other{{COUNT} senhas comprometidas}}</translation>
 <translation id="7961015016161918242">Nunca</translation>
@@ -869,6 +872,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8881801611828450202">Pesquisar esta imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Compartilhar...</translation>
 <translation id="8917490105272468696">Sim</translation>
+<translation id="8928133177108699615">Computador</translation>
 <translation id="8952559610785099500">Adicionar senha</translation>
 <translation id="895541991026785598">Informar um problema</translation>
 <translation id="8974714402877957201">1. Abra o app Ajustes do iPad</translation>

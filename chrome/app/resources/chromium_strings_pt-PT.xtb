@@ -201,6 +201,7 @@ Algumas funcionalidades podem não estar disponíveis. Especifique um diretório
 <translation id="6734291798041940871">O Chromium já está instalado para todos os utilizadores no seu computador.</translation>
 <translation id="673636774878526923">Para aceder aos seus itens do Chromium em todos os seus dispositivos, inicie sessão e, em seguida, ative a sincronização.</translation>
 <translation id="6774082503108938489">O teu pai/mãe desativou as "Autorizações para sites, apps e extensões" para o Chromium. Não é permitido ativar esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="6808964260981102146">As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta conta. Se não quiser que os Websites ou as apps acedam às informações da sua conta, utilize o <ph name="LINK_BEGIN" />Modo convidado<ph name="LINK_END" /> no navegador Chromium. Também pode gerir as suas Contas Google nas <ph name="LINK_2_BEGIN" />Definições<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">O Chromium indica-lhe se as suas palavras-passe forem comprometidas.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiado para o Chromium)</translation>

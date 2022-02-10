@@ -116,6 +116,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="196896377990863006">Afficher la version d'aperçu du lien</translation>
 <translation id="1973912524893600642">Garder les données</translation>
 <translation id="1974060860693918893">Options avancées</translation>
+<translation id="1981118202195772574">Mobile</translation>
 <translation id="1989112275319619282">Parcourir</translation>
 <translation id="199425419756152024">Afficher le mot de passe</translation>
 <translation id="2015722694326466240">Pour afficher vos mots de passe, vous devez d'abord définir un mot de passe sur votre appareil.</translation>
@@ -236,6 +237,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Afficher ce que vous pouvez synchroniser<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Tout bloquer</translation>
 <translation id="313283613037595347">Ouvrir un nouvel onglet de navigation privée.</translation>
+<translation id="3150887674190166798">Sélectionnez le mode avec lequel vous souhaitez que Chrome accède chaque fois au site</translation>
 <translation id="3153862085237805241">Enregistrer la carte</translation>
 <translation id="3157387275655328056">Ajouter à la liste de lecture</translation>
 <translation id="3157684681743766797">Tout marquer…</translation>
@@ -761,6 +763,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7911190106180361398">Votre organisation ne vous autorise pas à tout synchroniser.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exporter les mots de passe…</translation>
+<translation id="793971554166979165">Mode par défaut du site</translation>
 <translation id="794799177247607889">Arrêter la journalisation</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Aucun mot de passe compromis}=1{{COUNT} mot de passe compromis}one{{COUNT} mot de passe compromis}other{{COUNT} mots de passe compromis}}</translation>
 <translation id="7961015016161918242">Jamais</translation>
@@ -866,6 +869,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8881801611828450202">Rechercher cette image avec <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Partager...</translation>
 <translation id="8917490105272468696">Oui, j'accepte</translation>
+<translation id="8928133177108699615">Bureau</translation>
 <translation id="8952559610785099500">Ajouter un mot de passe</translation>
 <translation id="895541991026785598">Signaler un problème</translation>
 <translation id="8974714402877957201">1. Ouvrez Réglages de l'iPad</translation>

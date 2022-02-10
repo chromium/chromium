@@ -116,6 +116,7 @@
 <translation id="196896377990863006">Паказаць перадпрагляд спасылкі</translation>
 <translation id="1973912524893600642">Захаваць даныя</translation>
 <translation id="1974060860693918893">Пашыраныя налады</translation>
+<translation id="1981118202195772574">Рэжым мабільнай прылады</translation>
 <translation id="1989112275319619282">Агляд</translation>
 <translation id="199425419756152024">Праглядзець пароль</translation>
 <translation id="2015722694326466240">Каб убачыць паролі, на прыладзе трэба спачатку задаць пароль.</translation>
@@ -236,6 +237,7 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Паказаць, якія тыпы даных можна сінхранізаваць<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Блакіруюцца ўсе</translation>
 <translation id="313283613037595347">Стварыць новую ўкладку ў рэжыме інкогніта.</translation>
+<translation id="3150887674190166798">Выберыце рэжым, у якім Chrome павінен кожны раз адкрываць гэты сайт</translation>
 <translation id="3153862085237805241">Захаваць картку</translation>
 <translation id="3157387275655328056">Дадаць у спіс чытання</translation>
 <translation id="3157684681743766797">Пазначыць усе…</translation>
@@ -349,6 +351,7 @@
 <translation id="4181841719683918333">Мовы</translation>
 <translation id="4237377247299956313">Націсніце <ph name="BEGIN_BOLD" />Стандартны браўзер<ph name="END_BOLD" />.</translation>
 <translation id="424315890655130736">Увядз. фразу-пароль</translation>
+<translation id="4249955472157341256">Сартаваць па апошняй даце</translation>
 <translation id="4263576668337963058">Паказаць даступныя дзеянні са старонкай</translation>
 <translation id="4267380167363222949">Наступная ўкладка</translation>
 <translation id="4272631900155121838">Каб сканіраваць QR-код, уключыце камеру ў наладах</translation>
@@ -506,6 +509,7 @@
 <translation id="575902488528307720">Шукаць відарыс</translation>
 <translation id="5781453543752460388">Дадаць у Фота</translation>
 <translation id="5782227691023083829">Ідзе пераклад...</translation>
+<translation id="5791632441210678828">Кнопка для сартавання стужкі "Вы падпісаны".</translation>
 <translation id="5802829331520313983">Наладзіць…</translation>
 <translation id="5803566855766646066">Сапраўды адхіліць гэту новую картку?</translation>
 <translation id="5804241973901381774">Дазволы</translation>
@@ -621,6 +625,7 @@
 <translation id="6561262006871132942">Павялічыць</translation>
 <translation id="6583087784430677195">Для выключэння адкрыйце <ph name="BEGIN_LINK" />Налады<ph name="END_LINK" /> і перайдзіце ў раздзел "Аўтазапаўненне пароляў".</translation>
 <translation id="6585618849026997638">Каб мець магчымасць вярнуцца да важнай для вас старонкі пазней, можна дадаць закладку</translation>
+<translation id="6598875554591387303">Сартаваць па выдаўцу</translation>
 <translation id="6603393121510733479">Ваша арганізацыя адключыла прыватны прагляд.
 <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Параметры перакладу</translation>
@@ -761,6 +766,7 @@
 <translation id="7911190106180361398">Ваша арганізацыя не дазваляе сінхранізаваць усё.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Экспарт пароляў...</translation>
+<translation id="793971554166979165">Стандартны рэжым сайта</translation>
 <translation id="794799177247607889">Спыніць вядзенне журнала</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Раскрытых пароляў няма}=1{{COUNT} раскрыты пароль}one{{COUNT} раскрыты пароль}few{{COUNT} раскрытыя паролі}many{{COUNT} раскрытых пароляў}other{{COUNT} раскрытага пароля}}</translation>
 <translation id="7961015016161918242">Ніколі</translation>
@@ -866,6 +872,7 @@
 <translation id="8881801611828450202">Шукаць гэты відарыс праз <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Абагуліць…</translation>
 <translation id="8917490105272468696">Так, я згаджаюся</translation>
+<translation id="8928133177108699615">Рэжым ПК</translation>
 <translation id="8952559610785099500">Дадайце пароль</translation>
 <translation id="895541991026785598">Паведаміць аб праблеме</translation>
 <translation id="8974714402877957201">1. Адкрыйце налады iPad.</translation>

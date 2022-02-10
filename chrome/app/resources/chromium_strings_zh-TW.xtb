@@ -201,6 +201,7 @@
 <translation id="6734291798041940871">電腦上的所有使用者都已經安裝 Chromium 了。</translation>
 <translation id="673636774878526923">如要透過所有裝置存取你的 Chromium 資料，請登入並開啟同步處理功能。</translation>
 <translation id="6774082503108938489">你的家長已停用 Chromium 的「網站、應用程式和擴充功能的權限」設定，因此你無法啟用這個<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
+<translation id="6808964260981102146">你授予網站和應用程式的權限可能會套用到這個帳戶。如果不想讓網站或應用程式存取你的帳戶資訊，請使用 Chromium 瀏覽器的<ph name="LINK_BEGIN" />訪客模式<ph name="LINK_END" />。你也可以前往「<ph name="LINK_2_BEGIN" />設定<ph name="LINK_2_END" />」管理 Google 帳戶。</translation>
 <translation id="6847869444787758381">Chromium 會通知你密碼是否曾遭外洩</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (已複製到 Chromium)</translation>

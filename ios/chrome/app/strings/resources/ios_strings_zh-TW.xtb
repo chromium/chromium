@@ -351,6 +351,7 @@
 <translation id="4181841719683918333">語言</translation>
 <translation id="4237377247299956313">輕觸 [預設的瀏覽器應用程式]<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">輸入通關密語</translation>
+<translation id="4249955472157341256">依最新時間排序</translation>
 <translation id="4263576668337963058">顯示可用的網頁動作</translation>
 <translation id="4267380167363222949">下一個分頁</translation>
 <translation id="4272631900155121838">如要掃描 QR 圖碼，請在設定中啟用相機</translation>
@@ -508,6 +509,7 @@
 <translation id="575902488528307720">搜尋圖片</translation>
 <translation id="5781453543752460388">新增到相簿</translation>
 <translation id="5782227691023083829">正在翻譯...</translation>
+<translation id="5791632441210678828">用於排序已追蹤動態消息的按鈕。</translation>
 <translation id="5802829331520313983">設定…</translation>
 <translation id="5803566855766646066">確定要捨棄這張新的信用卡嗎？</translation>
 <translation id="5804241973901381774">權限</translation>
@@ -623,6 +625,7 @@
 <translation id="6561262006871132942">放大</translation>
 <translation id="6583087784430677195">如要關閉，請開啟「<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />」並前往「自動填入密碼」部分。</translation>
 <translation id="6585618849026997638">你可以將重要網頁加入書籤，以便再次造訪</translation>
+<translation id="6598875554591387303">依發布者排序</translation>
 <translation id="6603393121510733479">貴機構已關閉私密瀏覽功能。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">翻譯選項</translation>

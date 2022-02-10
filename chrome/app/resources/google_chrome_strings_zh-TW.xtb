@@ -237,6 +237,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7155997830309522122">如果是的話，請編輯你儲存在 Chrome 中的密碼，使其與新密碼相符。</translation>
 <translation id="7161904924553537242">歡迎使用 Google Chrome</translation>
 <translation id="7242029209006116544">你已登入管理化環境下的帳戶，並將管理控制權授予你的 Chrome 設定檔。你的 Chrome 資料 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。你可以透過 Google 帳戶資訊主頁刪除這些資料，但你無法將這些資料與其他帳戶建立關聯。如要另行保留現有的 Chromium 資料，你可以選擇建立新的設定檔。<ph name="LEARN_MORE" /></translation>
+<translation id="7242050469146843186">你授予網站和應用程式的權限可能會套用到這個帳戶。如果不想讓網站或應用程式存取你的帳戶資訊，請使用 Chrome 瀏覽器的<ph name="LINK_BEGIN" />訪客模式<ph name="LINK_END" />。你也可以前往「<ph name="LINK_2_BEGIN" />設定<ph name="LINK_2_END" />」管理 Google 帳戶。</translation>
 <translation id="7295052994004373688">這是 Google Chrome UI 的顯示語言</translation>
 <translation id="7296210096911315575">重要的使用與安全資訊</translation>
 <translation id="7308322188646931570">Chrome 需要儲存空間存取權，才能下載檔案</translation>

@@ -1575,6 +1575,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2540449034743108469">Ak chcete počúvať aktivity rozšírenia, stlačte tlačidlo Štart</translation>
 <translation id="2540651571961486573">Vyskytol sa problém. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="2541002089857695151">Chcete optimalizovať prenášanie na celú obrazovku?</translation>
+<translation id="2541423446708352368">Zobraziť všetky stiahnuté súbory</translation>
 <translation id="2541706104884128042">Bola nastavená nová večierka</translation>
 <translation id="2542050502251273923">Nastaví úroveň ladenia správcu pripojenia k sieti a ďalších služieb príkazom ff_debug.</translation>
 <translation id="2544352060595557290">Táto karta</translation>
@@ -5443,7 +5444,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6586099239452884121">Hosťovské prehliadanie</translation>
 <translation id="6586213706115310390">Aktivujte svojho Asistenta vyslovením výrazu „Hey Google“.</translation>
 <translation id="6586451623538375658">Zameniť primárne tlačidlo myši</translation>
-<translation id="6586604979641883411">Na inováciu systému Linux sa vyžaduje minimálne <ph name="REQUIRED_SPACE" /> voľného priestoru na disku. Uvoľnite priestor vo svojom zariadení a skúste to znova.</translation>
 <translation id="6588043302623806746">Používať zabezpečené DNS</translation>
 <translation id="659005207229852190">Kontrola bezpečnosti bola dokončená.</translation>
 <translation id="6590458744723262880">Premenovanie priečinka</translation>

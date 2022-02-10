@@ -201,6 +201,7 @@ On võimalik, et mõni funktsioon ei ole saadaval. Määrake muu profiilikataloo
 <translation id="6734291798041940871">Chromium on arvutisse kõigi kasutajate jaoks juba installitud.</translation>
 <translation id="673636774878526923">Selleks et oma Chromiumi sisule kõigis oma seadmetes juurde pääseda, logige sisse ja lülitage siis sisse sünkroonimine.</translation>
 <translation id="6774082503108938489">Sinu vanem lülitas valiku „Saitide, rakenduste ja laienduste load” Chromiumi puhul välja. Laienduse <ph name="EXTENSION_TYPE_PARAMETER" /> lubamine on keelatud.</translation>
+<translation id="6808964260981102146">Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle konto puhul kehtida. Kui te ei soovi, et veebisaidid või rakendused teie kontoteabele juurde pääseksid, kasutage Chromiumi brauseris <ph name="LINK_BEGIN" />külalisrežiimi<ph name="LINK_END" />. Saate oma Google'i kontosid hallata ka jaotises <ph name="LINK_2_BEGIN" />Seaded<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Chromium annab teile teada, kui teie paroolid ohtu satuvad</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopeeritud Chromiumi)</translation>

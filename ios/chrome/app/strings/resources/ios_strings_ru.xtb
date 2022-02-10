@@ -116,6 +116,7 @@
 <translation id="196896377990863006">Включить просмотр ссылки</translation>
 <translation id="1973912524893600642">Не удалять данные</translation>
 <translation id="1974060860693918893">Дополнительные</translation>
+<translation id="1981118202195772574">Мобильная версия</translation>
 <translation id="1989112275319619282">Выбрать</translation>
 <translation id="199425419756152024">Посмотреть пароль</translation>
 <translation id="2015722694326466240">Чтобы просматривать пароли, настройте на устройстве код доступа.</translation>
@@ -236,6 +237,7 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Какие данные можно синхронизировать<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Блокировать все</translation>
 <translation id="313283613037595347">Создать вкладку инкогнито.</translation>
+<translation id="3150887674190166798">Вы можете указать, как сайт будет отображаться по умолчанию в браузере Chrome</translation>
 <translation id="3153862085237805241">Сохранить подсказку</translation>
 <translation id="3157387275655328056">Добавить в список для чтения</translation>
 <translation id="3157684681743766797">Отметить все…</translation>
@@ -349,6 +351,7 @@
 <translation id="4181841719683918333">Языки</translation>
 <translation id="4237377247299956313">Нажмите <ph name="BEGIN_BOLD" />Браузер по умолчанию<ph name="END_BOLD" />.</translation>
 <translation id="424315890655130736">Введите кодовую фразу</translation>
+<translation id="4249955472157341256">Сортировать по дате</translation>
 <translation id="4263576668337963058">Показать доступные действия со страницей</translation>
 <translation id="4267380167363222949">Следующая вкладка</translation>
 <translation id="4272631900155121838">Чтобы отсканировать QR-код, разрешите доступ к камере в настройках.</translation>
@@ -506,6 +509,7 @@
 <translation id="575902488528307720">Найти изображение</translation>
 <translation id="5781453543752460388">Добавить в Фото</translation>
 <translation id="5782227691023083829">Перевод...</translation>
+<translation id="5791632441210678828">Кнопка "Сортировать" для ленты новостей.</translation>
 <translation id="5802829331520313983">Настроить</translation>
 <translation id="5803566855766646066">Удалить новую карту?</translation>
 <translation id="5804241973901381774">Разрешения</translation>
@@ -621,6 +625,7 @@
 <translation id="6561262006871132942">Увеличить</translation>
 <translation id="6583087784430677195">Чтобы отключить автозаполнение, выберите <ph name="BEGIN_LINK" />Настройки<ph name="END_LINK" /> и перейдите в раздел "Автозаполнение паролей".</translation>
 <translation id="6585618849026997638">Добавьте страницу с важными сведениями в закладки, и вы всегда сможете вернуться к ней.</translation>
+<translation id="6598875554591387303">Сортировать по издателю</translation>
 <translation id="6603393121510733479">В вашей организации режим инкогнито отключен.
 <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Параметры перевода</translation>
@@ -761,6 +766,7 @@
 <translation id="7911190106180361398">Синхронизация всех данных запрещена организацией</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Экспорт паролей...</translation>
+<translation id="793971554166979165">Режим по умолчанию</translation>
 <translation id="794799177247607889">Остановить запись журнала</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Нет раскрытых паролей.}=1{Раскрыт {COUNT} пароль.}one{Раскрыт {COUNT} пароль.}few{Раскрыто {COUNT} пароля.}many{Раскрыто {COUNT} паролей.}other{Раскрыто {COUNT} пароля.}}</translation>
 <translation id="7961015016161918242">Нет</translation>
@@ -866,6 +872,7 @@
 <translation id="8881801611828450202">Найти это изображение в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Поделиться...</translation>
 <translation id="8917490105272468696">Включить функцию</translation>
+<translation id="8928133177108699615">Версия для компьютера</translation>
 <translation id="8952559610785099500">Добавление пароля</translation>
 <translation id="895541991026785598">Сообщить о проблеме</translation>
 <translation id="8974714402877957201">1. Откройте настройки устройства iPad.</translation>

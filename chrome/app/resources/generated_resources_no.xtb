@@ -1582,6 +1582,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2540449034743108469">Trykk på «Start» for å lytte etter aktivitet fra utvidelser</translation>
 <translation id="2540651571961486573">Noe gikk galt. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2541002089857695151">Vil du optimalisere fullskjem-casting?</translation>
+<translation id="2541423446708352368">Vis alle nedlastinger</translation>
 <translation id="2541706104884128042">Ny sengetid er angitt</translation>
 <translation id="2542050502251273923">Angir feilsøkingsnivået for tjenesten for behandling av nettverkstilkoblinger og andre tjenester som bruker ff_debug.</translation>
 <translation id="2544352060595557290">Denne fanen</translation>
@@ -5447,7 +5448,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6586099239452884121">Gjestesurfing</translation>
 <translation id="6586213706115310390">Bruk assistenten ved å si «Hey Google».</translation>
 <translation id="6586451623538375658">Bytt primær museknapp</translation>
-<translation id="6586604979641883411">Minst <ph name="REQUIRED_SPACE" /> ledig diskplass kreves for å oppgradere Linux. Frigjør litt plass på enheten, og prøv på nytt.</translation>
 <translation id="6588043302623806746">Bruk sikker DNS</translation>
 <translation id="659005207229852190">Sikkerhetssjekken er fullført.</translation>
 <translation id="6590458744723262880">Gi mappen nytt navn</translation>

@@ -116,6 +116,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="196896377990863006">Mostrar pré-visualização do link</translation>
 <translation id="1973912524893600642">Manter dados</translation>
 <translation id="1974060860693918893">Avançadas</translation>
+<translation id="1981118202195772574">Telemóvel</translation>
 <translation id="1989112275319619282">Procurar</translation>
 <translation id="199425419756152024">Ver a palavra-passe</translation>
 <translation id="2015722694326466240">Para ver as palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
@@ -236,6 +237,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Veja o que pode sincronizar<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Bloquear tudo</translation>
 <translation id="313283613037595347">Crie um novo separador de navegação anónima.</translation>
+<translation id="3150887674190166798">Selecione como quer que o Chrome peça sempre o site</translation>
 <translation id="3153862085237805241">Guardar cartão</translation>
 <translation id="3157387275655328056">Adicionar à lista de leitura</translation>
 <translation id="3157684681743766797">Marcar tudo…</translation>
@@ -349,6 +351,7 @@ Siga os passos abaixo:</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4237377247299956313">Toque em <ph name="BEGIN_BOLD" />App de navegador predefinida<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Introduzir frase de acesso</translation>
+<translation id="4249955472157341256">Ordenar por mais recente</translation>
 <translation id="4263576668337963058">Mostrar ações de página disponíveis</translation>
 <translation id="4267380167363222949">Separador seguinte</translation>
 <translation id="4272631900155121838">Para ler um código QR, ative a câmara nas definições</translation>
@@ -506,6 +509,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="575902488528307720">Pesquisar imagem</translation>
 <translation id="5781453543752460388">Adicionar ao Fotos</translation>
 <translation id="5782227691023083829">A traduzir...</translation>
+<translation id="5791632441210678828">Botão Ordenar do feed A seguir.</translation>
 <translation id="5802829331520313983">Configurar…</translation>
 <translation id="5803566855766646066">Tem a certeza de que pretende rejeitar o novo cartão?</translation>
 <translation id="5804241973901381774">Permissões</translation>
@@ -621,6 +625,7 @@ Experimente utilizar uma palavra-passe exclusiva para cada site.</translation>
 <translation id="6561262006871132942">Aumentar zoom</translation>
 <translation id="6583087784430677195">Para desativar, abra as <ph name="BEGIN_LINK" />Definições<ph name="END_LINK" /> e aceda a Preenchimento automático de palavras-passe.</translation>
 <translation id="6585618849026997638">Pode regressar a uma página importante para si ao adicionar um marcador.</translation>
+<translation id="6598875554591387303">Ordenar por publicador</translation>
 <translation id="6603393121510733479">A sua entidade desativou a navegação anónima.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Opções de tradução</translation>
@@ -761,6 +766,7 @@ Quando estiver na Navegação anónima, os sites não podem utilizar cookies par
 <translation id="7911190106180361398">A sua entidade não permite que sincronize tudo.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportar palavras-passe...</translation>
+<translation id="793971554166979165">Modo do site predefinido</translation>
 <translation id="794799177247607889">Parar registo</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Nenhuma palavra-passe comprometida}=1{{COUNT} palavra-passe comprometida.}one{{COUNT} palavra(s)-passe comprometida(s)}other{{COUNT} palavras-passe comprometidas}}</translation>
 <translation id="7961015016161918242">Nunca</translation>
@@ -866,6 +872,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8881801611828450202">Pesquisar esta imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Partilhar…</translation>
 <translation id="8917490105272468696">Sim, aceito</translation>
+<translation id="8928133177108699615">Computador</translation>
 <translation id="8952559610785099500">Adicione uma palavra-passe</translation>
 <translation id="895541991026785598">Comunicar um problema</translation>
 <translation id="8974714402877957201">1. Abra as Definições do iPad</translation>

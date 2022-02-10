@@ -116,6 +116,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="196896377990863006">Visa förhandsgranskning av länkar</translation>
 <translation id="1973912524893600642">Behåll data</translation>
 <translation id="1974060860693918893">Avancerat</translation>
+<translation id="1981118202195772574">Mobil</translation>
 <translation id="1989112275319619282">Bläddra</translation>
 <translation id="199425419756152024">Visa lösenord</translation>
 <translation id="2015722694326466240">Du måste ställa in ett lösenord på enheten om du vill kunna se lösenorden.</translation>
@@ -236,6 +237,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Se vad du kan synkronisera<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Blockera alla</translation>
 <translation id="313283613037595347">Skapa en ny inkognitoflik.</translation>
+<translation id="3150887674190166798">Välj vilken version av webbplatsen som ska läsas in varje gång i Chrome</translation>
 <translation id="3153862085237805241">Spara kortet</translation>
 <translation id="3157387275655328056">Lägg till i läslistan</translation>
 <translation id="3157684681743766797">Markera alla …</translation>
@@ -349,6 +351,7 @@ Följ stegen nedan:</translation>
 <translation id="4181841719683918333">Språk</translation>
 <translation id="4237377247299956313">Tryck på <ph name="BEGIN_BOLD" />Standardwebbläsarapp<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Ange lösenfras</translation>
+<translation id="4249955472157341256">Sortera efter senaste</translation>
 <translation id="4263576668337963058">Visa tillgängliga åtgärder för sida</translation>
 <translation id="4267380167363222949">Nästa flik</translation>
 <translation id="4272631900155121838">Om du vill skanna en QR-kod aktiverar du kameran i inställningarna</translation>
@@ -506,6 +509,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="575902488528307720">Sökresultat för bild</translation>
 <translation id="5781453543752460388">Lägg till foton</translation>
 <translation id="5782227691023083829">Översätter...</translation>
+<translation id="5791632441210678828">Knappen Sortera för flödet Följer.</translation>
 <translation id="5802829331520313983">Konfigurera …</translation>
 <translation id="5803566855766646066">Vill du slänga det här nya kortet?</translation>
 <translation id="5804241973901381774">Behörigheter</translation>
@@ -621,6 +625,7 @@ Sträva efter att använda ett unikt lösenord för varje webbplats.</translatio
 <translation id="6561262006871132942">Zooma in</translation>
 <translation id="6583087784430677195">Inaktivera genom att öppna <ph name="BEGIN_LINK" />Inställningar<ph name="END_LINK" /> och sedan Autofyll lösenord.</translation>
 <translation id="6585618849026997638">Du kan återgå till en sida som är viktig för dig genom att lägga till ett bokmärke</translation>
+<translation id="6598875554591387303">Sortera efter utgivare</translation>
 <translation id="6603393121510733479">Organisationen har inaktiverat möjligheten att surfa privat.
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Översättningsalternativ</translation>
@@ -761,6 +766,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7911190106180361398">Organisationen tillåter inte att du synkroniserar allt.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportera lösenord …</translation>
+<translation id="793971554166979165">Standardläge för webbplats</translation>
 <translation id="794799177247607889">Stoppa loggning</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Inga utsatta lösenord}=1{{COUNT} utsatt lösenord}other{{COUNT} utsatta lösenord}}</translation>
 <translation id="7961015016161918242">Aldrig</translation>
@@ -866,6 +872,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8881801611828450202">Sök på <ph name="SEARCH_ENGINE" /> efter denna bild</translation>
 <translation id="8909135823018751308">Dela …</translation>
 <translation id="8917490105272468696">Ja</translation>
+<translation id="8928133177108699615">Dator</translation>
 <translation id="8952559610785099500">Lägg till lösenord</translation>
 <translation id="895541991026785598">Rapportera ett problem</translation>
 <translation id="8974714402877957201">1. Öppna iPad-inställningarna</translation>

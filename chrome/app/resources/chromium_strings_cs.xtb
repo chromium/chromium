@@ -203,6 +203,7 @@ Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu
 <translation id="6734291798041940871">Prohlížeč Chromium je na tomto počítači již nainstalován pro všechny uživatele.</translation>
 <translation id="673636774878526923">Chcete-li mít ve všech zařízeních přístup k údajům z prohlížeče Chromium, přihlaste se a zapněte synchronizaci.</translation>
 <translation id="6774082503108938489">Tvůj rodič pro prohlížeč Chromium vypnul možnost Oprávnění pro weby, aplikace a rozšíření. Aktivace tohoto <ph name="EXTENSION_TYPE_PARAMETER" /> není povolena.</translation>
+<translation id="6808964260981102146">Na tento účet se mohou vztahovat oprávnění, která jste již udělili webům a aplikacím. Pokud nechcete, aby weby nebo aplikace měly přístup k informacím o vašem účtu, použijte v prohlížeči Chromium <ph name="LINK_BEGIN" />režim hosta<ph name="LINK_END" />. Své účty Google můžete také spravovat v <ph name="LINK_2_BEGIN" />Nastavení<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Pokud vaše hesla někdo prolomí, Chromium vás o tom bude informovat</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (zkopírováno do prohlížeče Chromium)</translation>

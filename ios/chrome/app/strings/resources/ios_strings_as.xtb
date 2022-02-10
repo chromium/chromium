@@ -116,6 +116,7 @@
 <translation id="196896377990863006">লিংকৰ পূৰ্বদৰ্শন দেখুৱাওক</translation>
 <translation id="1973912524893600642">ডেটাখিনি ৰাখক</translation>
 <translation id="1974060860693918893">উন্নত</translation>
+<translation id="1981118202195772574">ম’বাইল</translation>
 <translation id="1989112275319619282">ব্ৰাউজ কৰক</translation>
 <translation id="199425419756152024">পাছৱৰ্ড চাওক</translation>
 <translation id="2015722694326466240">পাছৱৰ্ড চাবলৈ আপুনি প্ৰথমে এই ডিভাইচটোত এটা পাছক‘ড ছেট কৰিব লাগিব।</translation>
@@ -236,6 +237,7 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />আপুনি কি কি ছিংক কৰিব পাৰে, সেয়া চাওক<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">সকলো অৱৰোধ কৰক</translation>
 <translation id="313283613037595347">নতুন ইনক’গনিট’ টেব সৃষ্টি কৰক।</translation>
+<translation id="3150887674190166798">আপুনি প্ৰতিবাৰে Chromeএ ছাইটটো অনুৰোধ জনোৱাটো বিচাৰে সেয়া বাছনি কৰক</translation>
 <translation id="3153862085237805241">কাৰ্ড ছেভ কৰক</translation>
 <translation id="3157387275655328056">পঢ়াৰ সূচীত যোগ দিয়ক</translation>
 <translation id="3157684681743766797">সকলো চিহ্নিত কৰক…</translation>
@@ -349,6 +351,7 @@
 <translation id="4181841719683918333">ভাষাসমূহ</translation>
 <translation id="4237377247299956313"><ph name="BEGIN_BOLD" />ডিফ’ল্ট ব্ৰাউজাৰ এপ<ph name="END_BOLD" />ত টিপক</translation>
 <translation id="424315890655130736">পাছফ্ৰেজ লিখক</translation>
+<translation id="4249955472157341256">শেহতীয়া অনুসৰি সজাওক</translation>
 <translation id="4263576668337963058">উপলব্ধ পৃষ্ঠাৰ কার্যসমূহ দেখুৱাওক</translation>
 <translation id="4267380167363222949">পৰৱৰ্তী টেব</translation>
 <translation id="4272631900155121838">কোনো QR ক'ড স্কেন কৰিবলৈ ছেটিংত কেমেৰা সক্ষম কৰক</translation>
@@ -506,6 +509,7 @@
 <translation id="575902488528307720">প্ৰতিচ্ছবি সন্ধান কৰক</translation>
 <translation id="5781453543752460388">Photosত যোগ দিয়ক</translation>
 <translation id="5782227691023083829">অনুবাদ কাৰ্য্য চলি আছে...</translation>
+<translation id="5791632441210678828">ফ’ল’ কৰাৰ ফীড সজোৱাৰ বুটাম</translation>
 <translation id="5802829331520313983">ছেট আপ কৰক…</translation>
 <translation id="5803566855766646066">আপুনি এই নতুন কাৰ্ডখন প্ৰত্যাখ্যান কৰিব বিচাৰে বুলি নিশ্চিতনে?</translation>
 <translation id="5804241973901381774">অনুমতি</translation>
@@ -621,6 +625,7 @@
 <translation id="6561262006871132942">জুম ইন কৰক</translation>
 <translation id="6583087784430677195">অফ কৰিবলৈ<ph name="BEGIN_LINK" />ছেটিং<ph name="END_LINK" /> খোলক আৰু পাছৱৰ্ড স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱা সুবিধাটোলৈ যাওক।</translation>
 <translation id="6585618849026997638">এটা বুকমাৰ্ক যোগ দি আপুনি আপোনাৰ বাবে গুৰুত্বপূর্ণ এখন পৃষ্ঠালৈ উভতি যাব পাৰে</translation>
+<translation id="6598875554591387303">প্ৰকাশক অনুসৰি সজাওক</translation>
 <translation id="6603393121510733479">আপোনাৰ প্ৰতিষ্ঠানে ব্যক্তিগত ব্ৰাউজিং অফ কৰিছে।
 <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">অনুবাদৰ বিকল্প</translation>
@@ -761,6 +766,7 @@
 <translation id="7911190106180361398">আপোনাৰ প্ৰতিষ্ঠানে আপোনাক আটাইবোৰ ছিংক কৰাৰ অনুমতি নিদিয়ে।</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">পাছৱর্ডসমূহ ৰপ্তানি কৰক...</translation>
+<translation id="793971554166979165">ডিফ’ল্ট ছাইটৰ ম’ড</translation>
 <translation id="794799177247607889">লগ লোৱা বন্ধ কৰক</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{কোনো পাছৱৰ্ড হেক হোৱা নাই}=1{{COUNT} টা হেক হোৱা পাছৱৰ্ড}one{{COUNT} টা হেক হোৱা পাছৱৰ্ড}other{{COUNT} টা হেক হোৱা পাছৱৰ্ড}}</translation>
 <translation id="7961015016161918242">কেতিয়াও নহয়</translation>
@@ -866,6 +872,7 @@
 <translation id="8881801611828450202">এই প্ৰতিচ্ছবিটোৰ কাৰণে <ph name="SEARCH_ENGINE" />ত সন্ধান কৰক</translation>
 <translation id="8909135823018751308">শ্বেয়াৰ কৰক…</translation>
 <translation id="8917490105272468696">হয়, মই সন্মত</translation>
+<translation id="8928133177108699615">ডেস্কটপ</translation>
 <translation id="8952559610785099500">পাছৱৰ্ড যোগ দিয়ক</translation>
 <translation id="895541991026785598">কোনো সমস্যাৰ অভিযোগ দিয়ক</translation>
 <translation id="8974714402877957201">১) iPadৰ ছেটিং খোলক</translation>

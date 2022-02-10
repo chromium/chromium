@@ -1566,6 +1566,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2540449034743108469">Naciśnij „Start”, by rozpocząć nasłuchiwanie działań rozszerzenia</translation>
 <translation id="2540651571961486573">Coś poszło nie tak. Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="2541002089857695151">Zoptymalizować przesyłanie pełnoekranowe?</translation>
+<translation id="2541423446708352368">Pokaż wszystkie pobrane pliki</translation>
 <translation id="2541706104884128042">Ustawiono nową porę snu</translation>
 <translation id="2542050502251273923">Korzysta z ff_debug do ustawiania poziomu debugowania menedżera połączenia sieciowego i innych usług.</translation>
 <translation id="2544352060595557290">Ta karta</translation>
@@ -5424,7 +5425,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6586099239452884121">Przeglądanie jako gość</translation>
 <translation id="6586213706115310390">Uruchamiaj Asystenta, mówiąc „OK Google”.</translation>
 <translation id="6586451623538375658">Zamień główny przycisk myszy</translation>
-<translation id="6586604979641883411">Aby uaktualnić Linuksa, potrzeba co najmniej <ph name="REQUIRED_SPACE" /> wolnego miejsca na dysku. Zwolnij miejsce na urządzeniu i spróbuj ponownie.</translation>
 <translation id="6588043302623806746">Użyj bezpiecznego serwera DNS</translation>
 <translation id="659005207229852190">Kontrola zabezpieczeń została wykonana.</translation>
 <translation id="6590458744723262880">Zmień nazwę folderu</translation>

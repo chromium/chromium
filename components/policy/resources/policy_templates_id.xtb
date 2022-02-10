@@ -2528,6 +2528,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 Jika setelan ini dinonaktifkan, pengguna tidak akan diizinkan untuk menggunakan fitur Smart Lock Signin.
 
 Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengguna yang dikelola perusahaan dan diizinkan bagi pengguna yang tidak dikelola.</translation>
+<translation id="3791179836066841809">Dokumentasi kebijakan</translation>
 <translation id="3794413118360704299">Kebijakan ini memungkinkan admin menentukan setelan untuk aplikasi web terinstal.
 
       Kebijakan ini memetakan ID Aplikasi Web ke setelan tertentu. Lihat <ph name="WEB_APP_ID_REFERENCE_URL" /> untuk petunjuk terkait cara menentukan ID bagi aplikasi web terinstal.

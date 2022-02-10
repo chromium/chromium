@@ -105,6 +105,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1516740043221086139">Stör ej har aktiverats.</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{Visa aviseringsinställningar. Aviseringar har inaktiverats för 1 app}other{Visa aviseringsinställningar. Aviseringar har inaktiverats för # appar}}</translation>
 <translation id="1525508553941733066">IGNORERA</translation>
+<translation id="1528259147807435347">Redigerades under den senaste veckan</translation>
 <translation id="1536604384701784949">Du måste logga ut från alla konton innan du kan använda <ph name="USER_EMAIL_ADDRESS" />. Tryck på Avbryt för att återgå och logga ut. Öppna sedan statusfältet genom att välja klockan och välj sedan Logga ut. Logga sedan in på <ph name="USER_EMAIL_ADDRESS_2" /> på nytt.</translation>
 <translation id="15373452373711364">Stor muspekare</translation>
 <translation id="1546492247443594934">Skrivbord 2</translation>
@@ -114,9 +115,11 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1589090746204042747">Få tillgång till all aktivitet i sessionen</translation>
 <translation id="1610778689852195798">”Ångra”</translation>
 <translation id="1611993646327628135">På</translation>
+<translation id="1620510694547887537">Kamera</translation>
 <translation id="1632985212731562677">Brytarstyrning kan inaktiveras under Inställningar &gt; Tillgänglighet</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> enheter</translation>
 <translation id="1654477262762802994">Säg en sökfråga</translation>
+<translation id="1668469839109562275">Inbyggt VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> kvar</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> har inte anslutits.</translation>
 <translation id="1698080062160024910">Timer på <ph name="TOTAL_TIME" /> · <ph name="LABEL" /></translation>
@@ -227,6 +230,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2427507373259914951">Vänsterklicka</translation>
 <translation id="2429753432712299108">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling. Innan du godkänner bekräftar du att den här lösenordsnyckeln visas på den enheten: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Visa lösenord</translation>
+<translation id="243878895369688216">Öppnades i går</translation>
 <translation id="24452542372838207">Utöka avisering</translation>
 <translation id="2450205753526923158">Skärmbildsläge</translation>
 <translation id="2456008742792828469">Kalender, <ph name="CURRENT_MONTH_YEAR" /></translation>
@@ -275,6 +279,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2819276065543622893">Du loggas nu ut.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> har inte stöd för <ph name="SPECIFIED_RESOLUTION" />. Upplösningen ändrades till <ph name="FALLBACK_RESOLUTION" />.</translation>
 <translation id="2825619548187458965">Hylla</translation>
+<translation id="2834813915651407382">Öppnades nyligen</translation>
 <translation id="2841907151129139818">Bytte till surfplatteläge</translation>
 <translation id="2844169650293029770">USB-C-enhet (främre porten på vänster sida)</translation>
 <translation id="2849936225196189499">Kritiskt</translation>
@@ -393,6 +398,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> har fästs</translation>
 <translation id="3560866052109807830">Ritverktyg för markeringar</translation>
 <translation id="3563775809269155755">Aktivera surfzon</translation>
+<translation id="3566240529365775567">Öppnades nyss</translation>
 <translation id="3571734092741541777">Konfigurera</translation>
 <translation id="3573179567135747900">Byt tillbaka till "<ph name="FROM_LOCALE" />" (kräver omstart)</translation>
 <translation id="3576141592585647168">Ändra tidszon</translation>
@@ -427,6 +433,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> och <ph name="UNAVAILABLE_APPS_COUNT" /> till finns inte på enheten.</translation>
 <translation id="3735740477244556633">Sortera efter</translation>
 <translation id="3742055079367172538">Skärmbilden har tagits</translation>
+<translation id="3765841986579723851">Redigerades i dag</translation>
 <translation id="3771549900096082774">Högkontrastläge</translation>
 <translation id="3773700760453577392">En administratör har förbjudit multiinloggning för <ph name="USER_EMAIL" />. Alla användare måste logga ut för att fortsätta.</translation>
 <translation id="3779139509281456663">Ansluter <ph name="NAME" /></translation>
@@ -445,6 +452,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3846575436967432996">Det finns ingen nätverksinformation</translation>
 <translation id="385051799172605136">Föregående</translation>
 <translation id="385300504083504382">Början</translation>
+<translation id="3886872229787704059">Öppnades i dag</translation>
 <translation id="3891340733213178823">Tryck på Ctrl+Skift+Q två gånger om du vill logga ut.</translation>
 <translation id="3893630138897523026">ChromeVox (talad feedback)</translation>
 <translation id="3897533311200664389">Skriv en sökfråga</translation>
@@ -484,6 +492,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4173958948577803258">T</translation>
 <translation id="4177913004758410636">{0,plural, =1{Uppdatera enheten inom en dag}other{Uppdatera enheten inom # dagar}}</translation>
 <translation id="4181841719683918333">Språk</translation>
+<translation id="4192112279662688596">Eller</translation>
 <translation id="4195814663415092787">Fortsätt där du slutade</translation>
 <translation id="4195877955194704651">Knapp för Automatiska klick</translation>
 <translation id="4197790712631116042">Av</translation>
@@ -532,6 +541,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4421231901400348175">Dela kontroll över skärmen med <ph name="HELPER_NAME" /> via Fjärrhjälp.</translation>
 <translation id="4424159417645388645">Skrivbord 5</translation>
 <translation id="4430019312045809116">Volym</translation>
+<translation id="4441283832827406317">Apparna har sorterats efter namn</translation>
 <translation id="4445159312344259901">Logga in för att låsa upp</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 viktig avisering}other{# viktiga aviseringar}}</translation>
 <translation id="4450893287417543264">Visa inte igen</translation>
@@ -675,6 +685,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (höger)</translation>
 <translation id="5352250171825660495">Mörkt tema är på</translation>
 <translation id="5379115545237091094">För många försök</translation>
+<translation id="5393156353051693207">Tryck länge var som helst och ändra ordning på apparna</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> ovanpå <ph name="IN_PLACE_APP" />, om du släpper skapas en mapp.</translation>
 <translation id="5397578532367286026">Användning och historik för den här användaren kan granskas av den ansvarige (<ph name="MANAGER_EMAIL" />) på chrome.com.</translation>
 <translation id="5400461572260843123">Snabbinställningar, tryck på sök + vänster för att komma åt aviseringscentret.</translation>
@@ -682,7 +693,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5428899915242071344">Börja markera</translation>
 <translation id="5430931332414098647">Direktinternetdelning</translation>
 <translation id="5431318178759467895">Färg</translation>
-<translation id="5431825016875453137">OpenVPN/L2TP</translation>
 <translation id="5433020815079095860">Ljudingång</translation>
 <translation id="544691375626129091">Alla tillgängliga användare har redan lagts till i den här sessionen.</translation>
 <translation id="54609108002486618">Hanterade</translation>
@@ -780,6 +790,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6059276912018042191">Senaste flikarna i Chrome</translation>
 <translation id="6062360702481658777">Du loggas ut automatiskt om <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Sluta spela in</translation>
+<translation id="6099678161144790572">Redigerades under den senaste månaden</translation>
 <translation id="6114505516289286752">Filerna för taligenkänning på <ph name="LANGUAGE" /> har laddats ned</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">Bekräfta nedladdning <ph name="FILENAME" /></translation>
@@ -879,6 +890,7 @@ Nyligen installerad</translation>
 <translation id="6777216307882431711">Laddar anslutna USB-C-enheter</translation>
 <translation id="6786750046913594791">Stäng mappen</translation>
 <translation id="6790428901817661496">Spela</translation>
+<translation id="6801878137098616817">Redigerades nyligen</translation>
 <translation id="6803622936009808957">Det gick inte att spegla visningar eftersom inga upplösningar som stöds hittades. Utökat skrivbordsläge används i stället.</translation>
 <translation id="6811454077060061666">Google Drive för datorn är inte tillgängligt</translation>
 <translation id="6818242057446442178">Bakåt ord för ord</translation>
@@ -887,10 +899,12 @@ Nyligen installerad</translation>
 <translation id="6836499262298959512">Skadlig fil</translation>
 <translation id="6837064795450991317">Dölj skrivbordsfält</translation>
 <translation id="6852052252232534364">Aktivera</translation>
+<translation id="6855029042976311970">Redigerades nyss</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{En siffra kvar}other{# siffror kvar}}</translation>
 <translation id="6867938213751067702">Nedladdningen pausades <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">Kortkommandot har inaktiverats.</translation>
+<translation id="6880133753431418782">Du har sökt efter detta tidigare. Om du raderar sökningen från historiken tas den bort permanent från Google-kontot på alla dina enheter.</translation>
 <translation id="6884665277231944629">Återgå till i dag</translation>
 <translation id="6886172995547742638">Prestandan på <ph name="DEVICE_TYPE" /> kan försämras. Använd en certifierad USB-C-nätadapter för <ph name="PREFERRED_MINIMUM_POWER" /> W eller mer.</translation>
 <translation id="688631446150864480">Tryck på nedåtpilen på tangentbordet för att byta fönster</translation>
@@ -929,6 +943,7 @@ Nyligen installerad</translation>
 <translation id="7098389117866926363">USB-C-enhet (vänstra porten på baksidan)</translation>
 <translation id="7106330611027933926">Visa skrivbordsfält</translation>
 <translation id="7118268675952955085">skärmbild</translation>
+<translation id="7126996685418858413">Öppnades under den senaste veckan</translation>
 <translation id="7130207228079676353">MEST TROLIGA</translation>
 <translation id="7131634465328662194">Du loggas ut automatiskt.</translation>
 <translation id="7143207342074048698">Ansluter</translation>
@@ -940,6 +955,7 @@ Nyligen installerad</translation>
 <translation id="7189412385142492784">Hår långt är det till Venus</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Denna Chromebook behöver startas om så att en uppdatering tillämpas. Det kan ta upp till en minut.</translation>
 <translation id="7256634071279256947">Mikrofonen på baksidan</translation>
+<translation id="7258828758145722155">Redigerades i går</translation>
 <translation id="726276584504105859">Dra hit för att dela upp skärmen</translation>
 <translation id="7262906531272962081">Skapa påminnelse</translation>
 <translation id="7279434993080105272">Markeringsfärg: <ph name="COLOR_PARAMETER" /></translation>
@@ -959,6 +975,7 @@ Nyligen installerad</translation>
 <translation id="7378203170292176219">Välj ett område att spela in genom att dra</translation>
 <translation id="7378594059915113390">Mediereglage</translation>
 <translation id="7378889811480108604">Batterisparläget är avstängt</translation>
+<translation id="7384028040782072252">Högerklicka var som helst och ändra ordning på apparna</translation>
 <translation id="7392563512730092880">Du kan alltid konfigurera detta senare i inställningarna.</translation>
 <translation id="7405710164030118432">Lås upp enheten genom att ange föräldraåtkomstkoden för Family Link</translation>
 <translation id="7406608787870898861">Slutför konfigureringen av mobilnätverket</translation>
@@ -977,6 +994,7 @@ Nyligen installerad</translation>
 <translation id="7483025031359818980">Markeringsområdet är inställt på helskärm</translation>
 <translation id="7486227320194954040">Komprimera markeringsverktygen</translation>
 <translation id="7497767806359279797">Välj språk och tangentbord</translation>
+<translation id="7508690557411636492">Öppnades under den senaste månaden</translation>
 <translation id="7509246181739783082">Verifiera din identitet</translation>
 <translation id="7513622367902644023">Skärmbildsläget har valts</translation>
 <translation id="7513922695575567867">Kalender, veckan med den <ph name="DATE" />, just nu är <ph name="SELECTED_DATE" /> markerat.</translation>
@@ -1010,6 +1028,7 @@ Nyligen installerad</translation>
 <translation id="7654687942625752712">Inaktivera talad feedback genom att hålla båda volymknapparna nedtryckta i fem sekunder.</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7662283695561029522">Tryck om du vill konfigurera</translation>
+<translation id="7671610481353807627">Apparna har sorterats efter färg</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">Lägg till nytt mobilnätverk</translation>
 <translation id="7720410380936703141">FÖRSÖK IGEN</translation>
@@ -1146,6 +1165,7 @@ Nyligen installerad</translation>
 <translation id="8563862697512465947">Aviseringsinställningar</translation>
 <translation id="857201607579416096">Menyn har flyttats till skärmens nedre högra hörn.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
+<translation id="8598235756057743477">Sortera apparna efter namn eller färg</translation>
 <translation id="8627191004499078455">Ansluten till <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Tillgänglighetsinställningar</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, hanteras av administratören</translation>

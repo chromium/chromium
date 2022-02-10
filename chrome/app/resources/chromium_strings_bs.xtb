@@ -203,7 +203,7 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="6734291798041940871">Chromium je već instaliran za sve korisnike na računaru.</translation>
 <translation id="673636774878526923">Prijavite se, a zatim uključite sinhronizaciju da pristupite svojim Chromium stvarima na svim svojim uređajima.</translation>
 <translation id="6774082503108938489">Tvoj roditelj je isključio "Odobrenja za web lokacije, aplikacije i ekstenzije" za Chromium. Omogućavanje ove stavke (<ph name="EXTENSION_TYPE_PARAMETER" />) nije dozvoljeno.</translation>
-<translation id="6808964260981102146">Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti na ovaj račun. Ako ne želite da web-lokacije i aplikacije pristupaju podacima o vašem računu, koristite <ph name="LINK_BEGIN" />način rada za goste<ph name="LINK_END" /> u pregledniku Chromium. Možete i upravljati svojim Google računima u <ph name="LINK_2_BEGIN" />postavkama<ph name="LINK_2_END" />.</translation>
+<translation id="6808964260981102146">Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati na ovaj račun. Ako ne želite da web lokacije ili aplikacije pristupaju informacijama o vašem računu, koristite <ph name="LINK_BEGIN" />Način rada za gosta<ph name="LINK_END" /> u pregledniku Chromium. Također možete upravljati Google računima u <ph name="LINK_2_BEGIN" />Postavkama<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Chromium vas obavještava ako sigurnost vaših lozinki bude ugrožena</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopirano u Chromium)</translation>

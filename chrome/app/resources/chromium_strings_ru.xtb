@@ -199,6 +199,7 @@
 <translation id="6734291798041940871">Chromium уже установлен для всех пользователей вашего компьютера</translation>
 <translation id="673636774878526923">Чтобы получить доступ к данным в Chromium на всех своих устройствах, выполните вход и включите синхронизацию.</translation>
 <translation id="6774082503108938489">Родители отключили в Chromium параметр "Разрешения для сайтов, приложений и расширений". Включать это <ph name="EXTENSION_TYPE_PARAMETER" /> запрещено.</translation>
+<translation id="6808964260981102146">Разрешения, предоставленные сайтам и приложениям, могут применяться к этому аккаунту. Если вы не хотите, чтобы у сайтов или приложений был доступ к данным вашего аккаунта, используйте <ph name="LINK_BEGIN" />гостевой режим<ph name="LINK_END" /> в браузере Chromium. Аккаунтами Google также можно управлять в <ph name="LINK_2_BEGIN" />настройках<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Chromium сообщит вам, если возникнет проблема с безопасностью ваших паролей.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (скопирована в Chromium)</translation>

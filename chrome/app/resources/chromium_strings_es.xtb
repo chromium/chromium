@@ -203,6 +203,7 @@ Es posible que algunas funciones no estén disponibles. Especifica un directorio
 <translation id="6734291798041940871">Chromium ya está instalado para todos los usuarios en tu ordenador.</translation>
 <translation id="673636774878526923">Para acceder a tus cosas de Chromium en todos tus dispositivos, inicia sesión y activa la sincronización.</translation>
 <translation id="6774082503108938489">Tus padres han desactivado "Permisos de sitios, aplicaciones y extensiones" en Chromium. No se permite habilitar <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="6808964260981102146">Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta cuenta. Si no quieres que los sitios web ni las aplicaciones accedan a la información de tu cuenta, usa el <ph name="LINK_BEGIN" />Modo invitados<ph name="LINK_END" /> en el navegador Chromium. También puedes gestionar tus cuentas de Google en <ph name="LINK_2_BEGIN" />Configuración<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Chromium te avisará si tus contraseñas están en riesgo</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiada en Chromium)</translation>

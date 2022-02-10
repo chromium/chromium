@@ -116,6 +116,7 @@
 <translation id="196896377990863006">显示链接预览</translation>
 <translation id="1973912524893600642">保留数据</translation>
 <translation id="1974060860693918893">高级</translation>
+<translation id="1981118202195772574">移动版</translation>
 <translation id="1989112275319619282">浏览</translation>
 <translation id="199425419756152024">查看密码</translation>
 <translation id="2015722694326466240">要想查看密码，您必须先在设备上设置密码。</translation>
@@ -236,6 +237,7 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />查看您可同步的内容<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">阻止所有 Cookie</translation>
 <translation id="313283613037595347">创建新的无痕式标签页。</translation>
+<translation id="3150887674190166798">选择您想让 Chrome 一律以何种模式加载网站</translation>
 <translation id="3153862085237805241">保存卡片</translation>
 <translation id="3157387275655328056">添加到阅读清单</translation>
 <translation id="3157684681743766797">全部标为…</translation>
@@ -349,6 +351,7 @@
 <translation id="4181841719683918333">语言</translation>
 <translation id="4237377247299956313">点按<ph name="BEGIN_BOLD" />默认浏览器应用<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">请输入密码</translation>
+<translation id="4249955472157341256">按新近度排序</translation>
 <translation id="4263576668337963058">显示可用的网页操作</translation>
 <translation id="4267380167363222949">下一个标签页</translation>
 <translation id="4272631900155121838">要扫描 QR 码，请从设置中启用相机功能</translation>
@@ -506,6 +509,7 @@
 <translation id="575902488528307720">搜索图片</translation>
 <translation id="5781453543752460388">添加到相册</translation>
 <translation id="5782227691023083829">正在翻译...</translation>
+<translation id="5791632441210678828">用于对所关注 Feed 进行排序的按钮。</translation>
 <translation id="5802829331520313983">设置…</translation>
 <translation id="5803566855766646066">确定要舍弃这张新信用卡吗？</translation>
 <translation id="5804241973901381774">权限</translation>
@@ -621,6 +625,7 @@
 <translation id="6561262006871132942">放大</translation>
 <translation id="6583087784430677195">如需关闭此功能，请打开<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />，然后转至“自动填充密码”。</translation>
 <translation id="6585618849026997638">您可以为重要网页添加书签以便返回查看</translation>
+<translation id="6598875554591387303">按发布者排序</translation>
 <translation id="6603393121510733479">贵单位关闭了无痕浏览。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">翻译选项</translation>
@@ -761,6 +766,7 @@
 <translation id="7911190106180361398">贵组织不允许您同步所有内容。</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">导出密码…</translation>
+<translation id="793971554166979165">默认网站模式</translation>
 <translation id="794799177247607889">停止生成日志</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{没有密码已遭泄露}=1{有 {COUNT} 个密码已遭泄露}other{有 {COUNT} 个密码已遭泄露}}</translation>
 <translation id="7961015016161918242">一律不</translation>
@@ -866,6 +872,7 @@
 <translation id="8881801611828450202">在 <ph name="SEARCH_ENGINE" /> 中搜索此图片</translation>
 <translation id="8909135823018751308">分享…</translation>
 <translation id="8917490105272468696">我同意</translation>
+<translation id="8928133177108699615">桌面版</translation>
 <translation id="8952559610785099500">添加密码</translation>
 <translation id="895541991026785598">报告问题</translation>
 <translation id="8974714402877957201">1. 打开 iPad 设置</translation>

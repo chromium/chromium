@@ -201,6 +201,7 @@
 <translation id="6734291798041940871">已为您计算机上的所有用户都安装 Chromium。</translation>
 <translation id="673636774878526923">如需在您的所有设备上访问自己的 Chromium 信息，请登录您的帐号，然后开启同步功能。</translation>
 <translation id="6774082503108938489">您的家长已为 Chromium 停用“网站、应用和扩展程序的权限”。因此，您无法启用该<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
+<translation id="6808964260981102146">您已向网站和应用授予的权限可能会应用于此帐号。如果不想让网站或应用获取您的帐号信息，请在 Chromium 浏览器中使用<ph name="LINK_BEGIN" />访客模式<ph name="LINK_END" />登录。您还可在<ph name="LINK_2_BEGIN" />设置<ph name="LINK_2_END" />部分中管理您的 Google 帐号。</translation>
 <translation id="6847869444787758381">Chromium 会让您知道您的密码是否曾被泄露</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay（已复制到 Chromium）</translation>

@@ -201,6 +201,7 @@ Visse funktioner kan være utilgængelige. Angiv en anden profilmappe, eller bru
 <translation id="6734291798041940871">Chromium er allerede installeret for alle brugere på computeren.</translation>
 <translation id="673636774878526923">Log ind, og aktivér derefter synkronisering for at få adgang til dine Chromium-ting på alle dine enheder.</translation>
 <translation id="6774082503108938489">Din forælder har deaktiveret "Tilladelser til websites, apps og udvidelser" for Chromium. Det er ikke tilladt at aktivere denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="6808964260981102146">De tilladelser, du har givet til websites og apps, gælder muligvis for denne konto. Hvis du ikke vil have, at websites eller apps tilgår dine kontooplysninger, skal du bruge <ph name="LINK_BEGIN" />gæstetilstand<ph name="LINK_END" /> i Chromium-browseren. Du kan også administrere dine Google-konti under <ph name="LINK_2_BEGIN" />Indstillinger<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Chromium giver dig besked, hvis dine adgangskoder kompromitteres</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopieret til Chromium)</translation>

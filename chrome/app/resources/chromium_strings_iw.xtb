@@ -199,6 +199,7 @@
 <translation id="6734291798041940871">‏Chromium כבר מותקן במחשב ונגיש לכל המשתמשים.</translation>
 <translation id="673636774878526923">‏כדי לקבל גישה אל הפריטים שלך ב-Chromium בכל המכשירים, יש להיכנס לחשבון ולהפעיל את הסנכרון.</translation>
 <translation id="6774082503108938489">‏אחד מההורים השבית ב-Chromium את ההגדרה "הרשאות לאתרים, אפליקציות ותוספים". לא ניתן להפעיל את <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="6808964260981102146">‏יכול להיות שהרשאות שכבר ניתנו לאתרים ולאפליקציות יחולו על החשבון הזה. אם אינך רוצה שלאתרים או לאפליקציות תהיה גישה לפרטי החשבון שלך, צריך להשתמש ב<ph name="LINK_BEGIN" />מצב אורח<ph name="LINK_END" /> בדפדפן Chromium. יש לך גם אפשרות לנהל את חשבונות Google שלך ב<ph name="LINK_2_BEGIN" />הגדרות<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">‏Chromium מודיע לך אם הסיסמאות שלך נמצאות בסיכון</translation>
 <translation id="6857782730669500492">‏Chromium‏ - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">‏Google Pay (‏הועתק ל-Chromium)</translation>

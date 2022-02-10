@@ -116,6 +116,7 @@
 <translation id="196896377990863006">Показване на визуализацията на връзката</translation>
 <translation id="1973912524893600642">Запазване на данните</translation>
 <translation id="1974060860693918893">Разширени</translation>
+<translation id="1981118202195772574">Мобилна</translation>
 <translation id="1989112275319619282">Сърфиране</translation>
 <translation id="199425419756152024">Преглед на паролата</translation>
 <translation id="2015722694326466240">За да видите паролите, трябва първо да зададете код за достъп на устройството си.</translation>
@@ -236,6 +237,7 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Вижте какво можете да синхронизирате<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Блокиране на всички</translation>
 <translation id="313283613037595347">Създаване на нов раздел в режим „инкогнито“.</translation>
+<translation id="3150887674190166798">Изберете коя версия на сайта да се отваря в Chrome по подразбиране</translation>
 <translation id="3153862085237805241">Запазване на картата</translation>
 <translation id="3157387275655328056">Добавяне към списъка за четене</translation>
 <translation id="3157684681743766797">Означаване на всички…</translation>
@@ -349,6 +351,7 @@
 <translation id="4181841719683918333">Езици</translation>
 <translation id="4237377247299956313">Докоснете <ph name="BEGIN_BOLD" />Стандартно прилож. за браузър<ph name="END_BOLD" />.</translation>
 <translation id="424315890655130736">Въвеждане на пропуск</translation>
+<translation id="4249955472157341256">Сортиране по актуалност</translation>
 <translation id="4263576668337963058">Показване на наличните действия за страницата</translation>
 <translation id="4267380167363222949">Следващият раздел</translation>
 <translation id="4272631900155121838">За да сканирате код за бърза реакция, активирайте камерата от настройките</translation>
@@ -506,6 +509,7 @@
 <translation id="575902488528307720">Търсене на изображението</translation>
 <translation id="5781453543752460388">Добавяне към Photos</translation>
 <translation id="5782227691023083829">Превежда се...</translation>
+<translation id="5791632441210678828">Бутон за сортиране на емисията „Следено“.</translation>
 <translation id="5802829331520313983">Настройване…</translation>
 <translation id="5803566855766646066">Наистина ли искате да отхвърлите тази нова карта?</translation>
 <translation id="5804241973901381774">Разрешения</translation>
@@ -621,6 +625,7 @@
 <translation id="6561262006871132942">Приближаване</translation>
 <translation id="6583087784430677195">За да изключите функцията, отворете <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" /> и след това AutoFill Passwords.</translation>
 <translation id="6585618849026997638">Можете да се върнете на важна за вас страница, като добавите отметка</translation>
+<translation id="6598875554591387303">Сортиране по издател</translation>
 <translation id="6603393121510733479">Организацията ви е изключила режима за частно сърфиране.
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Опции за превод</translation>
@@ -761,6 +766,7 @@
 <translation id="7911190106180361398">Организацията ви не разрешава синхронизирането на всичко.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Експортиране на паролите...</translation>
+<translation id="793971554166979165">Стандартен режим за сайтовете</translation>
 <translation id="794799177247607889">Спиране на регистрирането</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Няма компрометирани пароли}=1{{COUNT} компрометирана парола}other{{COUNT} компрометирани пароли}}</translation>
 <translation id="7961015016161918242">Никога</translation>
@@ -866,6 +872,7 @@
 <translation id="8881801611828450202">Търсене на изобр. със: <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Споделяне…</translation>
 <translation id="8917490105272468696">Да, ще участвам</translation>
+<translation id="8928133177108699615">Настолна</translation>
 <translation id="8952559610785099500">Добавяне на парола</translation>
 <translation id="895541991026785598">Подаване на сигнал за проблем</translation>
 <translation id="8974714402877957201">1. Отворете настройките на iPad.</translation>

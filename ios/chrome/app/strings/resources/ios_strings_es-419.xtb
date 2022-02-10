@@ -349,6 +349,7 @@ Realiza los siguientes pasos:</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4237377247299956313">Presiona <ph name="BEGIN_BOLD" />App de navegador predeterminada<ph name="END_BOLD" />.</translation>
 <translation id="424315890655130736">Ingresar frase de contraseña</translation>
+<translation id="4249955472157341256">Ordenar por más recientes</translation>
 <translation id="4263576668337963058">Mostrar las acciones de página disponibles</translation>
 <translation id="4267380167363222949">Siguiente pestaña</translation>
 <translation id="4272631900155121838">Habilita la cámara en la configuración para escanear un código QR</translation>
@@ -506,6 +507,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="575902488528307720">Buscar imagen</translation>
 <translation id="5781453543752460388">Agregar a fotos</translation>
 <translation id="5782227691023083829">Traduciendo...</translation>
+<translation id="5791632441210678828">Botón para ordenar el feed de Siguiendo.</translation>
 <translation id="5802829331520313983">Configuración…</translation>
 <translation id="5803566855766646066">¿Confirmas que quieres descartar esta tarjeta nueva?</translation>
 <translation id="5804241973901381774">Permisos</translation>
@@ -621,6 +623,7 @@ Intenta usar una contraseña única para cada sitio.</translation>
 <translation id="6561262006871132942">Acercar</translation>
 <translation id="6583087784430677195">Para desactivar esta función, abre <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" /> y ve a Autocompletar contraseñas.</translation>
 <translation id="6585618849026997638">Agrega un favorito para poder regresar a una página que consideres importante</translation>
+<translation id="6598875554591387303">Ordenar por publicador</translation>
 <translation id="6603393121510733479">Tu organización desactivó la navegación privada.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Opciones de traducción</translation>

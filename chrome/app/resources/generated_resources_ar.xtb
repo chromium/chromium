@@ -1571,6 +1571,7 @@
 <translation id="2540449034743108469">يُرجى الضغط على "البدء" للاستماع إلى أنشطة الإضافات</translation>
 <translation id="2540651571961486573">حدث خطأ. رمز الخطأ: <ph name="ERROR_CODE" /></translation>
 <translation id="2541002089857695151">هل تريد تحسين الإرسال بوضع ملء الشاشة؟</translation>
+<translation id="2541423446708352368">عرض كل المحتوى الذي تم تنزيله</translation>
 <translation id="2541706104884128042">ضبط وقت جديد للنوم</translation>
 <translation id="2542050502251273923">‏يضبط هذا الإعداد مستوى تصحيح الأخطاء لمدير الاتصال بالشبكة وغيرها من الخدمات باستخدام ff_debug.</translation>
 <translation id="2544352060595557290">علامة التبويب الحالية</translation>
@@ -5423,7 +5424,6 @@
 <translation id="6586099239452884121">تصفح الضيف</translation>
 <translation id="6586213706115310390">‏يمكنك الوصول إلى "مساعد Google" عند قول "Ok Google".</translation>
 <translation id="6586451623538375658">تبديل زر الماوس الرئيسي</translation>
-<translation id="6586604979641883411">‏يجب توفّر <ph name="REQUIRED_SPACE" /> على الأقل من المساحة الخالية لترقية نظام التشغيل Linux. يُرجى إخلاء بعض المساحة وإعادة المحاولة.</translation>
 <translation id="6588043302623806746">‏استخدام "نظام أسماء النطاقات" (DNS) الآمن</translation>
 <translation id="659005207229852190">اكتمل إعداد "تأكيد السلامة".</translation>
 <translation id="6590458744723262880">إعادة تسمية المجلد</translation>

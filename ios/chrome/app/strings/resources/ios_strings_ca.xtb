@@ -116,6 +116,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="196896377990863006">Mostra la previsualització de l'enllaç</translation>
 <translation id="1973912524893600642">Conserva les dades</translation>
 <translation id="1974060860693918893">Configuració avançada</translation>
+<translation id="1981118202195772574">Mòbil</translation>
 <translation id="1989112275319619282">Examina</translation>
 <translation id="199425419756152024">Mostra la contrasenya</translation>
 <translation id="2015722694326466240">Per veure les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
@@ -236,6 +237,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Consulta què pots sincronitzar<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Bloqueja-ho tot</translation>
 <translation id="313283613037595347">Crea una pestanya d'incògnit.</translation>
+<translation id="3150887674190166798">Selecciona com vols que Chrome carregui el lloc web cada vegada</translation>
 <translation id="3153862085237805241">Desa la targeta</translation>
 <translation id="3157387275655328056">Afegeix a la llista de lectura</translation>
 <translation id="3157684681743766797">Marca-ho tot com a…</translation>
@@ -349,6 +351,7 @@ Segueix aquests passos:</translation>
 <translation id="4181841719683918333">Idiomes</translation>
 <translation id="4237377247299956313">Toca <ph name="BEGIN_BOLD" />Aplicació de navegador predeterminada<ph name="END_BOLD" />.</translation>
 <translation id="424315890655130736">Introduïu la frase de contrasenya</translation>
+<translation id="4249955472157341256">Ordena per Més recents</translation>
 <translation id="4263576668337963058">Mostra les accions de pàgina disponibles</translation>
 <translation id="4267380167363222949">Pestanya següent</translation>
 <translation id="4272631900155121838">Per poder escanejar un codi QR, activa la càmera a la configuració</translation>
@@ -506,6 +509,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="575902488528307720">Cerca una imatge</translation>
 <translation id="5781453543752460388">Afegeix a les fotos</translation>
 <translation id="5782227691023083829">S'està traduint...</translation>
+<translation id="5791632441210678828">Botó Ordena del tauler Seguint</translation>
 <translation id="5802829331520313983">Configura…</translation>
 <translation id="5803566855766646066">Confirmes que vols descartar aquesta targeta nova?</translation>
 <translation id="5804241973901381774">Permisos</translation>
@@ -621,6 +625,7 @@ Prova d'utilitzar una contrasenya única per a cada lloc web.</translation>
 <translation id="6561262006871132942">Amplia</translation>
 <translation id="6583087784430677195">Per desactivar aquesta funció, obre <ph name="BEGIN_LINK" />Configuració<ph name="END_LINK" /> i ves a Emplenament automàtic de contrasenyes.</translation>
 <translation id="6585618849026997638">Afegeix adreces d'interès per tornar a pàgines que consideris importants</translation>
+<translation id="6598875554591387303">Ordena per Editor</translation>
 <translation id="6603393121510733479">La teva organització ha desactivat la navegació privada.
 <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Opcions del Traductor</translation>
@@ -761,6 +766,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7911190106180361398">La teva organització no et permet sincronitzar-ho tot.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exporta les contrasenyes</translation>
+<translation id="793971554166979165">Mode predeterminat dels llocs web</translation>
 <translation id="794799177247607889">Atura el registre</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{No hi ha cap contrasenya en perill}=1{Hi ha {COUNT} contrasenya en perill}other{Hi ha {COUNT} contrasenyes en perill}}</translation>
 <translation id="7961015016161918242">Mai</translation>
@@ -866,6 +872,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8881801611828450202">Cerca aquesta imatge a <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Comparteix...</translation>
 <translation id="8917490105272468696">Sí, ho accepto</translation>
+<translation id="8928133177108699615">Ordinador</translation>
 <translation id="8952559610785099500">Afegeix una contrasenya</translation>
 <translation id="895541991026785598">Informa d'un problema</translation>
 <translation id="8974714402877957201">1. Obre la configuració de l'iPad.</translation>

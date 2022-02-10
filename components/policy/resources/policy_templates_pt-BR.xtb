@@ -563,6 +563,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="1648816843164517573">Lista de nomes que contornarão a verificação de política HSTS</translation>
 <translation id="1654087023995670109">Aplicar o modo visitante do navegador</translation>
 <translation id="1655229863189977773">Define o tamanho do cache de disco em bytes</translation>
+<translation id="165769015320654523">Conceder automaticamente permissão a esses sites para se conectarem a dispositivos HID com determinados IDs de fornecedores e de produtos.</translation>
 <translation id="166427968280387991">Servidor proxy</translation>
 <translation id="1669584285557771729">Se esta política for definida, ela controlará o tipo de lupa ativada.
 
@@ -720,6 +721,11 @@ Se você desativar a política, essa rolagem será desativada.</translation>
           Esta política só é seguida se a política "DefaultSearchProviderEnabled" estiver ativada.</translation>
 <translation id="1850439894606905202">Por padrão, documentos são colocados em clusters de agente com site-key. O document.domain permanece definível.</translation>
 <translation id="1852294065645015766">Permitir reprodução automática de mídia</translation>
+<translation id="1855963029978337744">Se a política for definida, será possível criar uma lista de URLs que especificam quais sites recebem permissão automaticamente para acessar um dispositivo HID com os IDs de produto e de fornecedor especificados. Cada item na lista precisa ter os campos "<ph name="DEVICES_FIELD_NAME" />" e "<ph name="URLS_FIELD_NAME" />" para que o item seja válido. Caso contrário, ele será ignorado. Cada item em "<ph name="DEVICES_FIELD_NAME" />" precisa ter um campo "<ph name="VENDOR_ID_FIELD_NAME" />" e pode ter um "<ph name="PRODUCT_ID_FIELD_NAME" />". A omissão do campo "<ph name="PRODUCT_ID_FIELD_NAME" />" cria uma política válida para qualquer dispositivo com o ID de fornecedor especificado. Um item com um campo "<ph name="PRODUCT_ID_FIELD_NAME" />" e sem um "<ph name="VENDOR_ID_FIELD_NAME" />" será inválido e ignorado.
+
+      Se a política for deixada sem definição, a <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> será aplicada, caso esteja definida. Caso contrário, a configuração pessoal do usuário será aplicada.
+
+      Os URLs desta política não devem entrar em conflito com os configurados pela <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />. Se entrarem, esta política terá precedência sobre a <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="1859859319036806634">Aviso: o substituto da versão do TLS será removido de <ph name="PRODUCT_NAME" /> após a versão 52 (por volta de setembro de 2016), e esta política deixará de funcionar.
 
       Quando um handshake de TLS falha, o <ph name="PRODUCT_NAME" /> recupera a conexão com uma versão inferior do TLS para driblar bugs nos servidores HTTPS. Essa definição configura a versão na qual o processo de substituição será interrompido. Se um servidor cumpre corretamente a negociação da versão (isto é, sem cortar a conexão), esta definição não é aplicável. Independentemente disso, a conexão resultante ainda deve estar em conformidade com SSLVersionMin.
@@ -1711,6 +1717,7 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
       O uso de caracteres curinga é permitido para toda a origem ou partes dela, seja o esquema, o host ou a porta.</translation>
 <translation id="2893546967669465276">Enviar registros do sistema ao servidor de gerenciamento</translation>
 <translation id="2893660462311365527">Frequência de coleta da telemetria de rede em milissegundos.</translation>
+<translation id="2895444724612647239">Permitir automaticamente que os sites se conectem a qualquer dispositivo HID.</translation>
 <translation id="2896434627453256512">Definir a política para ativar o recurso de janela fantasma.
       Se a política for definida como "true" (verdadeira), janelas fantasma do ARC serão criadas antes da inicialização do ARC após uma falha ou reinicialização com base na configuração de restauração do app.
       Se a política for definida como "false" (falsa), nenhuma janela fantasma será criada antes da inicialização do ARC. Apps do ARC serão restaurados após a inicialização dele</translation>
@@ -2425,6 +2432,11 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="3711895659073496551">Suspender</translation>
 <translation id="3715569262675717862">Autenticação baseada em certificados do cliente</translation>
 <translation id="3719826155360621982">Página inicial</translation>
+<translation id="372668389978450673">Se esta política for definida como verdadeira ou for deixada sem definição, o <ph name="PRODUCT_NAME" /> e o <ph name="LACROS_NAME" /> vão permitir que uma nova pessoa seja adicionada pelo gerenciador de usuários.
+
+      Se ela for definida como falsa, o <ph name="PRODUCT_NAME" /> e o <ph name="LACROS_NAME" /> não vão permitir que uma nova pessoa seja adicionada pelo gerenciador de usuários.
+
+      Observação: se a política for definida como verdadeira ou for deixada sem definição, mas a <ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" /> for definida como falsa, o <ph name="LACROS_NAME" /> não vai permitir que uma nova pessoa seja adicionada pelo gerenciador de usuários.</translation>
 <translation id="3727476641336727380">A menos que <ph name="ALLOW_WAKE_LOCKS_POLICY_NAME" /> seja definida como "Desativada", definir <ph name="ALLOW_SCREEN_WAKE_LOCKS_POLICY_NAME" /> como "Ativada" ou deixá-la sem definição permitirá wake locks de tela para gerenciamento de energia. Extensões podem solicitar wake locks de tela pela API da extensão de gerenciamento de energia e por apps ARC.
 
       Se a política for definida como "Desativada", as solicitações de wake lock de tela serão rebaixadas para solicitações de wake lock do sistema.</translation>
@@ -3428,6 +3440,13 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
       Se você definir a política, os usuários não poderão mudá-la. Se não for definida, os usuários poderão decidir se querem enviar os relatórios ou não.
 
       Leia mais sobre o "Navegação segura" (https://developers.google.com/safe-browsing).</translation>
+<translation id="4955566229684195326">Esta configuração permite que os usuários criem e usem perfis secundários e utilizem o modo visitante no navegador <ph name="LACROS_NAME" />.
+
+      De maneira semelhante às políticas <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> e <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />, se esta política for definida como falsa ou for deixada sem definição, o usuário não vai poder criar ou usar perfis secundários nem usar o modo visitante. Os perfis secundários já existentes, se houver, não vão ficar disponíveis.
+
+      Se a política for definida como verdadeira, o usuário poderá criar e usar perfis secundários e usar o modo visitante.
+
+      Observação: se ela for definida como verdadeira, mas a <ph name="BROWSER_ADD_PERSON_ENABLED_POLICY_NAME" /> for definida como falsa, a criação de perfis secundários não será permitida. Isso também vale para o modo visitante com a política <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />.</translation>
 <translation id="4960597185231686653">Uma sinalização booleana indicando se o teclado na tela pode oferecer entrada de texto por voz.</translation>
 <translation id="4970046075219007744">Permitir que apps da Web solicitem acesso a tipos de arquivos usando a API File Handling</translation>
 <translation id="4970855112942626932">Desativar login no navegador</translation>
@@ -5126,6 +5145,11 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
 <translation id="6907778402784621686">Bloquear conteúdo não seguro nesses sites</translation>
 <translation id="6908640907898649429">Configura o provedor de pesquisa padrão. É possível especificar o provedor de pesquisa padrão que será usado ou escolhido pelo usuário para desativar a pesquisa padrão.</translation>
 <translation id="6913068954484253496">Permitir que o <ph name="PRODUCT_NAME" /> conecte-se a dispositivos de transmissão em todos os endereços IP.</translation>
+<translation id="6919819553978815392">Se esta política for definida como verdadeira ou for deixada sem definição, o <ph name="PRODUCT_NAME" /> e o <ph name="LACROS_NAME" /> vão ativar os logins de visitantes. Esses são perfis do <ph name="PRODUCT_NAME" /> em que todas as janelas estão no modo de navegação anônima.
+
+      Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> e o <ph name="LACROS_NAME" /> não vão permitir que perfis de visitantes sejam iniciados.
+
+      Observação: se ela for definida como verdadeira ou for deixada sem definição, mas a <ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" /> for definida como falsa, o <ph name="LACROS_NAME" /> não vai permitir que perfis de visitantes sejam iniciados.</translation>
 <translation id="6922498040906800267">Configura uma lista de regras para prevenir vazamentos de dados no <ph name="PRODUCT_OS_NAME" />.
       Vazamentos de dados podem acontecer ao copiar e colar dados, transferir arquivos, imprimir, compartilhar ou capturar a tela, etc.
 
@@ -6676,6 +6700,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8604178325750278068">Se a política for definida como ativada, a frase de ativação por voz será detectada pelo Google Assistente. Se a política for definida como desativada, a frase não será detectada pelo Google Assistente.
 
       Se a política não for definida, o usuário poderá escolher ativar ou desativar esse recurso.</translation>
+<translation id="8604906464981340229">Conceder automaticamente permissão a esses sites para se conectarem a dispositivos HID que contêm uma coleção de nível mais alto com o uso de um HID especificado.</translation>
 <translation id="8605216171953003144">Definir a política como "Ativada" ou deixá-la sem definição ativa NTLMv2.
 
       Defini-la como "Desativada" desativa NTLMv2.
@@ -6711,6 +6736,11 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8656110680728938054">Ativa o Selecionar para ouvir</translation>
 <translation id="8661297125441579970">Bloquear migração de dados e ARC.</translation>
 <translation id="8665314828727504286">Nível de proteção do "Navegação segura"</translation>
+<translation id="8666123502812856425">Se a política for definida, será possível criar uma lista de URLs que especifica quais sites recebem permissão automaticamente para acessar um dispositivo HID que contém uma coleção de nível mais alto com o uso de um HID especificado. Cada item na lista precisa ter os campos "<ph name="USAGES_FIELD_NAME" />" e "<ph name="URLS_FIELD_NAME" />" para que a política seja válida. Cada item em "<ph name="USAGES_FIELD_NAME" />" precisa ter um campo "<ph name="USAGE_PAGE_FIELD_NAME" />" e pode ter um "<ph name="USAGE_FIELD_NAME" />". A omissão de "<ph name="USAGE_FIELD_NAME" />" cria uma política válida para qualquer dispositivo que contém uma coleção de nível mais alto com a página de uso especificada. Um item com um campo "<ph name="USAGE_FIELD_NAME" />" e sem um "<ph name="USAGE_PAGE_FIELD_NAME" />" será inválido e ignorado.
+
+      Se a política for deixada sem definição, a <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" /> será aplicada, caso esteja definida. Caso contrário, a configuração pessoal do usuário será aplicada.
+
+      Os URLs desta política não devem entrar em conflito com os configurados pela <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />. Se entrarem, esta política terá precedência sobre a <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="8669313549017524373">Se <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> for definida como RestoreOnStartupIsURLs, definir <ph name="RESTORE_ON_STARTUP_URLS_POLICY_NAME" /> como uma lista de URLs especifica quais serão abertos.
 
       Se ela não for definida, a página Nova guia será aberta na inicialização.
@@ -7030,6 +7060,13 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 
       O valor da política precisa ser especificado em segundos.</translation>
 <translation id="9015578113567730893">Frequência de coleta da telemetria de áudio em milissegundos.</translation>
+<translation id="9024884890349148482">Se a política for definida, você vai poder listar sites com permissão automática para acessar todos os dispositivos disponíveis.
+
+      Os URLs precisam ser válidos. Caso contrário, a política será ignorada. Apenas a origem (esquema, host e porta) do URL é considerada.
+
+      No Chrome OS, esta política se aplica apenas a usuários afiliados.
+
+      Esta política substitui a <ph name="DEFAULT_WEB_HID_GUARD_SETTING_POLICY_NAME" />, a <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" />, a <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> e as preferências do usuário.</translation>
 <translation id="9035086760683255833">Ativar o recurso de acessibilidade que destaca o objeto em foco por meio do teclado.
 
           Este recurso é responsável por destacar o objeto que está em foco no teclado.

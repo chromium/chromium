@@ -87,6 +87,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">On</translation>
 <translation id="1407069428457324124">Dark theme</translation>
+<translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Use arrow keys to navigate between dates.</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, installed app</translation>
 <translation id="1419738280318246476">Unlock device to perform the notification action</translation>
 <translation id="1420408895951708260">Toggle Night Light. <ph name="STATE_TEXT" /></translation>
@@ -98,6 +99,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1467432559032391204">Left</translation>
 <translation id="147310119694673958">Phone battery <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1479909375538722835">Floating accessibility menu</translation>
+<translation id="1480845547124508962"><ph name="CURRENT_TIME" />, press Enter key to open Calendar view</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> swapped with <ph name="SECOND_ITEM_TITLE" /></translation>
 <translation id="1503394326855300303">This owner account has to be the first signed-in account in a multiple sign-in session.</translation>
@@ -115,9 +117,11 @@ Here are some things that you can try to get started.</translation>
 <translation id="1589090746204042747">Access all your activity in this session</translation>
 <translation id="1610778689852195798">'Undo'</translation>
 <translation id="1611993646327628135">On</translation>
+<translation id="1620510694547887537">Camera</translation>
 <translation id="1632985212731562677">Switch Access can be disabled in Settings &gt; Accessibility.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> devices</translation>
 <translation id="1654477262762802994">Start a voice query</translation>
+<translation id="1668469839109562275">Built-in VPN</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> left</translation>
 <translation id="1677507110654891115"><ph name="FEATURE_NAME" /> is not connected.</translation>
 <translation id="1698080062160024910"><ph name="TOTAL_TIME" /> timer · <ph name="LABEL" /></translation>
@@ -691,7 +695,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="5428899915242071344">Start selecting</translation>
 <translation id="5430931332414098647">Instant Tethering</translation>
 <translation id="5431318178759467895">Colour</translation>
-<translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5433020815079095860">Audio input</translation>
 <translation id="544691375626129091">All available users have already been added to this session.</translation>
 <translation id="54609108002486618">Managed</translation>
@@ -852,6 +855,7 @@ New install</translation>
 <translation id="6565007273808762236">eSIM connection unavailable</translation>
 <translation id="6570831796530454248">{0,plural, =1{Update device within an hour}other{Update device within # hours}}</translation>
 <translation id="6570902864550063460">Charging via USB</translation>
+<translation id="6574587113394758819"><ph name="APP_TITLE" /> notification is hidden because viewing protection is on</translation>
 <translation id="6578407462441924264">Unnamed</translation>
 <translation id="6585808820553845416">Session ends in <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" /> <ph name="SECONDARY_TEXT" /></translation>
@@ -859,6 +863,7 @@ New install</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>
 <translation id="6612802754306526077">Screen recording mode selected</translation>
 <translation id="6614169507485700968">Privacy screen is on</translation>
+<translation id="6625718907317144388"><ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> and other notifications are hidden because viewing protection is on</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6629480180092995136"><ph name="APP_NAME" /> wants to use the microphone</translation>
 <translation id="6630773993843701741">Open Bluetooth settings to pair the device manually</translation>
@@ -1041,6 +1046,7 @@ New install</translation>
 <translation id="776344839111254542">Click to view update details</translation>
 <translation id="7780159184141939021">Rotate screen</translation>
 <translation id="7796353162336583443">Tap the stylus button on the shelf to take a note, screenshot, use the Google Assistant, laser pointer or magnifying glass.</translation>
+<translation id="7796735576426975947">New notification hidden</translation>
 <translation id="7798302898096527229">Press Search or Shift to cancel.</translation>
 <translation id="7807067443225230855">Search and Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> and <ph name="MINUTE" /></translation>
@@ -1134,6 +1140,7 @@ New install</translation>
 <translation id="8371991222807690464">Peripheral performance may be limited in Guest mode</translation>
 <translation id="8375916635258623388">This <ph name="DEVICE_NAME" /> and your phone will connect automatically</translation>
 <translation id="8380784334203145311">Good night,</translation>
+<translation id="8382715499079447151">Viewing protection</translation>
 <translation id="8388750414311082622">Last desk can't be removed.</translation>
 <translation id="8394567579869570560">Your parent has locked this device</translation>
 <translation id="8401850874595457088">Enter language menu</translation>
@@ -1165,6 +1172,7 @@ New install</translation>
 <translation id="857201607579416096">Menu moved to the bottom-right corner of the screen.</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
 <translation id="8598235756057743477">Sort your apps by name or colour</translation>
+<translation id="8614517853887502247"><ph name="APP_1_TITLE" /> and <ph name="APP_2_TITLE" /> notifications are hidden because viewing protection is on</translation>
 <translation id="8627191004499078455">Connected to <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Accessibility settings</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>

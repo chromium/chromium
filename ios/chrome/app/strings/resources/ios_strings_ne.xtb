@@ -116,6 +116,7 @@
 <translation id="196896377990863006">लिंकको प्रिभ्यू देखाउनुहोस्</translation>
 <translation id="1973912524893600642">डेटा राख्नुहोस्</translation>
 <translation id="1974060860693918893">उन्नत</translation>
+<translation id="1981118202195772574">मोबाइल</translation>
 <translation id="1989112275319619282">ब्राउज गर्नुहोस्</translation>
 <translation id="199425419756152024">पासवर्ड हेर्नुहोस्</translation>
 <translation id="2015722694326466240">पासवर्डहरू हेर्नका लागि सर्वप्रथम तपाईंले अनिवार्य रूपमा आफ्नो यन्त्रमा कुनै पासकोड सेट गर्नुपर्छ।</translation>
@@ -236,6 +237,7 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />तपाईं के कस्ता कुराहरू सिंक गर्न पाउनुहुन्छ भन्ने कुरा हेर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">सबै ब्लक गर्नुहोस्</translation>
 <translation id="313283613037595347">नयाँ इन्कोग्निटो ट्याब बनाउनुहोस्।</translation>
+<translation id="3150887674190166798">तपाईं Chrome ले हरेक पटक जुन मोड प्रयोग गरी साइट लोड गरोस् भन्ने चाहनुहुन्छ सोही मोड चयन गर्नुहोस्</translation>
 <translation id="3153862085237805241">कार्ड सेभ गर्नुहोस्</translation>
 <translation id="3157387275655328056">पाठ्य सूचीमा थप्नुहोस्</translation>
 <translation id="3157684681743766797">सबैलाई चिन्ह लगाउनुहोस्…</translation>
@@ -764,6 +766,7 @@
 <translation id="7911190106180361398">तपाईंको सङ्गठनले तपाईंलाई सबै सामग्री सिंक गर्ने अनुमति दिएको छैन।</translation>
 <translation id="7938254975914653459">फेसटाइम</translation>
 <translation id="7939128259257418052">पासवर्ड निर्यात गर्नु…</translation>
+<translation id="793971554166979165">डिफल्ट साइट मोड</translation>
 <translation id="794799177247607889">लग गर्न छाड्नुहोस्</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{कुनै पनि पासवर्ड अरूले देखेका छैनन्}=1{अरूले देखेको {COUNT} पासवर्ड फेला पर्‍यो}other{अरूले देखेका {COUNT} पासवर्डहरू फेला परे}}</translation>
 <translation id="7961015016161918242">कहिल्यै पनि होइन</translation>
@@ -869,6 +872,7 @@
 <translation id="8881801611828450202"><ph name="SEARCH_ENGINE" /> मा यो छवि खोज्नुहोस्</translation>
 <translation id="8909135823018751308">साझा गर्नुहोस्...</translation>
 <translation id="8917490105272468696">हो, म सहमत छु</translation>
+<translation id="8928133177108699615">डेस्कटप</translation>
 <translation id="8952559610785099500">पासवर्ड थप्नुहोस्</translation>
 <translation id="895541991026785598">समस्या रिपोर्ट गर्नुहोस्</translation>
 <translation id="8974714402877957201">१. iPad का सेटिङ खोल्नुहोस्</translation>

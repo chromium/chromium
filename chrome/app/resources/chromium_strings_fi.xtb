@@ -201,6 +201,7 @@ Kaikki ominaisuudet eivät ehkä ole käytettävissä. Määritä jokin muu prof
 <translation id="6734291798041940871">Chromium on jo asennettuna kaikille tietokoneen käyttäjille.</translation>
 <translation id="673636774878526923">Jos haluat pääsyn Chromium-sisältöösi kaikilla laitteilla, kirjaudu sisään ja laita sitten synkronointi päälle.</translation>
 <translation id="6774082503108938489">Vanhempasi ovat laittaneet Chromiumin sivustojen, sovellusten ja laajennusten käyttöluvat pois päältä. Käyttöönottoa (<ph name="EXTENSION_TYPE_PARAMETER" />) ei sallita.</translation>
+<translation id="6808964260981102146">Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Jos et halua, että sivustot ja sovellukset saavat pääsyn tilitietoihisi, käytä Chromium-selaimen <ph name="LINK_BEGIN" />Vierastilaa<ph name="LINK_END" />. Voit ylläpitää Google-tilejä myös <ph name="LINK_2_BEGIN" />asetuksissa<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Chromium ilmoittaa sinulle, jos salasanasi ovat vaarantuneet</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (kopioitu Chromiumiin)</translation>

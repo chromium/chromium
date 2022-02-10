@@ -116,6 +116,7 @@
 <translation id="196896377990863006">இணைப்பின் மாதிரிக்காட்சியைக் காட்டு</translation>
 <translation id="1973912524893600642">தரவை அழிக்காதே</translation>
 <translation id="1974060860693918893">மேம்பட்டவை</translation>
+<translation id="1981118202195772574">மொபைல்</translation>
 <translation id="1989112275319619282">உலாவு</translation>
 <translation id="199425419756152024">கடவுச்சொல்லைக் காட்டு</translation>
 <translation id="2015722694326466240">கடவுச்சொற்களைப் பார்க்க, முதலில் உங்கள் சாதனத்தில் கடவுக்குறியீட்டை அமைக்க வேண்டும்.</translation>
@@ -236,6 +237,7 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />எதையெல்லாம் ஒத்திசைக்கலாம் என அறிந்துகொள்ளுங்கள்<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">அனைத்தையும் தடு</translation>
 <translation id="313283613037595347">புதிய மறைநிலைத் தாவலை உருவாக்கும்.</translation>
+<translation id="3150887674190166798">ஒவ்வொரு முறையும் தளத்தை Chrome எவ்வாறு ஏற்ற வேண்டுமென்பதைத் தேர்ந்தெடுங்கள்</translation>
 <translation id="3153862085237805241">கார்டைச் சேமிக்கும்</translation>
 <translation id="3157387275655328056">வாசிப்புப் பட்டியலில் சேர்</translation>
 <translation id="3157684681743766797">அனைத்தையும் குறி…</translation>
@@ -764,6 +766,7 @@
 <translation id="7911190106180361398">சிலவற்றை ஒத்திசைக்க உங்கள் நிறுவனம் அனுமதிக்கவில்லை.</translation>
 <translation id="7938254975914653459">ஃபேஸ்டைம்</translation>
 <translation id="7939128259257418052">கடவுச்சொற்களை ஏற்று...</translation>
+<translation id="793971554166979165">இயல்புத் தளப் பயன்முறை</translation>
 <translation id="794799177247607889">பதிவுசெய்வதை நிறுத்து</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{களவாடப்பட்ட கடவுச்சொற்கள் எதுவும் இல்லை}=1{களவாடப்பட்ட கடவுச்சொல்: {COUNT}}other{களவாடப்பட்ட கடவுச்சொற்கள்: {COUNT}}}</translation>
 <translation id="7961015016161918242">எப்போதும் இல்லை</translation>
@@ -869,6 +872,7 @@
 <translation id="8881801611828450202">இந்தப் படத்தை <ph name="SEARCH_ENGINE" /> இல் தேடு</translation>
 <translation id="8909135823018751308">பகிர்...</translation>
 <translation id="8917490105272468696">ஏற்கிறேன்</translation>
+<translation id="8928133177108699615">டெஸ்க்டாப்</translation>
 <translation id="8952559610785099500">கடவுச்சொல்லைச் சேருங்கள்</translation>
 <translation id="895541991026785598">சிக்கலைப் புகார் செய்க</translation>
 <translation id="8974714402877957201">1. iPad அமைப்புகளைத் திறக்கவும்</translation>

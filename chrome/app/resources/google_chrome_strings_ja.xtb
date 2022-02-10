@@ -235,6 +235,7 @@
 <translation id="7155997830309522122">その場合は、Chrome に保存したパスワードを編集して、新しいパスワードと一致するようにしてください。</translation>
 <translation id="7161904924553537242">Google Chrome へようこそ</translation>
 <translation id="7242029209006116544">現在、管理対象アカウントでログインしており、あなたの Google Chrome プロファイルを管理者が制御できる状態になっています。あなたの Chrome データ（アプリ、ブックマーク、履歴、パスワードなどの設定）は永続的に <ph name="USER_NAME" /> に関連付けられます。このデータは Google アカウントのダッシュボードを介して削除できますが、このデータを別のアカウントに関連付けることはできなくなります。新しいプロファイルを作成して、既存の Chrome データを別に保管することができます。<ph name="LEARN_MORE" /></translation>
+<translation id="7242050469146843186">これまでにウェブサイトやアプリに許可した権限がこのアカウントに適用される可能性があります。ウェブサイトやアプリがアカウント情報にアクセスすることを望まない場合は、Chrome ブラウザの<ph name="LINK_BEGIN" />ゲストモード<ph name="LINK_END" />を使用してください。Google アカウントは [<ph name="LINK_2_BEGIN" />設定<ph name="LINK_2_END" />] でも管理できます。</translation>
 <translation id="7295052994004373688">この言語が Google Chrome UI の表示に使用されます</translation>
 <translation id="7296210096911315575">使用と安全に関する重要事項</translation>
 <translation id="7308322188646931570">ファイルをダウンロードするには、Chrome でストレージへのアクセスを許可する必要があります</translation>

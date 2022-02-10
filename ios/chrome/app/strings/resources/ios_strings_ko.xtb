@@ -116,6 +116,7 @@
 <translation id="196896377990863006">링크 미리보기 표시</translation>
 <translation id="1973912524893600642">데이터 보관</translation>
 <translation id="1974060860693918893">고급</translation>
+<translation id="1981118202195772574">모바일</translation>
 <translation id="1989112275319619282">찾아보기</translation>
 <translation id="199425419756152024">비밀번호 보기</translation>
 <translation id="2015722694326466240">비밀번호를 보려면 먼저 기기에 비밀번호를 설정해야 합니다.</translation>
@@ -236,6 +237,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />동기화할 수 있는 항목 확인하기<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">모두 차단</translation>
 <translation id="313283613037595347">새 시크릿 탭 만들기</translation>
+<translation id="3150887674190166798">Chrome에서 매번 사이트를 요청할 방식을 선택하세요</translation>
 <translation id="3153862085237805241">카드 저장</translation>
 <translation id="3157387275655328056">읽기 목록에 추가</translation>
 <translation id="3157684681743766797">모두 표시...</translation>
@@ -764,6 +766,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="7911190106180361398">조직에서 모든 항목을 동기화하도록 허용하지 않습니다.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">비밀번호 내보내기...</translation>
+<translation id="793971554166979165">기본 사이트 모드</translation>
 <translation id="794799177247607889">로깅 중지</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{유출된 비밀번호 없음}=1{유출된 비밀번호 {COUNT}개}other{유출된 비밀번호 {COUNT}개}}</translation>
 <translation id="7961015016161918242">사용하지 않음</translation>
@@ -869,6 +872,7 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="8881801611828450202"><ph name="SEARCH_ENGINE" />에서 이 이미지 검색</translation>
 <translation id="8909135823018751308">공유…</translation>
 <translation id="8917490105272468696">사용</translation>
+<translation id="8928133177108699615">데스크톱</translation>
 <translation id="8952559610785099500">비밀번호 추가</translation>
 <translation id="895541991026785598">문제 신고</translation>
 <translation id="8974714402877957201">1. iPad 설정을 엽니다.</translation>

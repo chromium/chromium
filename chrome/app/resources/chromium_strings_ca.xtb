@@ -201,6 +201,7 @@
 <translation id="6734291798041940871">Ja tens instal·lat Chromium per a tots els usuaris de l'ordinador.</translation>
 <translation id="673636774878526923">Per accedir al teu contingut de Chromium des de tots els teus dispositius, inicia la sessió i, després, activa la sincronització.</translation>
 <translation id="6774082503108938489">Els teus pares han desactivat Permisos per a llocs web, aplicacions i extensions en relació amb Chromium. No es permet activar aquesta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="6808964260981102146">És possible que els permisos que hagis donat a llocs web i aplicacions s'apliquin a aquest compte. Si no vols que els llocs web o les aplicacions accedeixin a la informació del teu compte, utilitza el <ph name="LINK_BEGIN" />mode de convidat<ph name="LINK_END" /> al navegador Chromium. També pots gestionar els teus Comptes de Google a <ph name="LINK_2_BEGIN" />Configuració<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Chromium et permet saber si les contrasenyes s'han posat en perill</translation>
 <translation id="6857782730669500492">Chromium: <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiada a Chromium)</translation>

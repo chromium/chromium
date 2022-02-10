@@ -201,6 +201,7 @@ Alcune funzioni potrebbero non essere disponibili. Specifica un'altra directory 
 <translation id="6734291798041940871">Chromium è già installato per tutti gli utenti sul computer.</translation>
 <translation id="673636774878526923">Per accedere ai tuoi contenuti Chromium su tutti i tuoi dispositivi, accedi e attiva la sincronizzazione.</translation>
 <translation id="6774082503108938489">Uno dei tuoi genitori ha disattivato "Autorizzazioni per siti, app ed estensioni" per Chromium. L'attivazione di <ph name="EXTENSION_TYPE_PARAMETER" /> non è consentita.</translation>
+<translation id="6808964260981102146">A questo account potrebbero essere applicate le autorizzazioni già concesse a siti web e app. Se non vuoi consentire a siti web o app di accedere ai dati del tuo account, usa la <ph name="LINK_BEGIN" />modalità Ospite<ph name="LINK_END" /> nel browser Chromium. Puoi anche gestire i tuoi Account Google nelle <ph name="LINK_2_BEGIN" />Impostazioni<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Chromium ti avvisa se le tue password vengono compromesse</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (copiata in Chromium)</translation>

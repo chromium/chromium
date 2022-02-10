@@ -116,6 +116,7 @@
 <translation id="196896377990863006">Показати попередній перегляд посилання</translation>
 <translation id="1973912524893600642">Зберігати дані</translation>
 <translation id="1974060860693918893">Розширені</translation>
+<translation id="1981118202195772574">Режим для мобільного пристрою</translation>
 <translation id="1989112275319619282">Переглянути</translation>
 <translation id="199425419756152024">Показати пароль</translation>
 <translation id="2015722694326466240">Щоб переглядати паролі, спершу потрібно налаштувати код доступу на пристрої.</translation>
@@ -236,6 +237,7 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Які дані можна синхронізувати<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Заблокувати всі</translation>
 <translation id="313283613037595347">Створити нову анонімну вкладку.</translation>
+<translation id="3150887674190166798">Ви можете щоразу вибирати, у якому режимі відображатиметься сайт у Chrome</translation>
 <translation id="3153862085237805241">Зберегти картку</translation>
 <translation id="3157387275655328056">Додати в список читання</translation>
 <translation id="3157684681743766797">Позначити всі…</translation>
@@ -349,6 +351,7 @@
 <translation id="4181841719683918333">Мови</translation>
 <translation id="4237377247299956313">Натисніть <ph name="BEGIN_BOLD" />Веб-переглядач за умовчанням<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Ввести парольну фразу</translation>
+<translation id="4249955472157341256">Сортувати за категорією "Останні"</translation>
 <translation id="4263576668337963058">Показати доступні дії зі сторінкою</translation>
 <translation id="4267380167363222949">Наступна вкладка</translation>
 <translation id="4272631900155121838">Щоб відсканувати QR-код, увімкніть камеру в налаштуваннях</translation>
@@ -506,6 +509,7 @@
 <translation id="575902488528307720">Шукати зображення</translation>
 <translation id="5781453543752460388">Додати у Фото</translation>
 <translation id="5782227691023083829">Виконується переклад сторінки...</translation>
+<translation id="5791632441210678828">Кнопка сортування для фіду підписок.</translation>
 <translation id="5802829331520313983">Налаштування…</translation>
 <translation id="5803566855766646066">Відхилити цю нову картку?</translation>
 <translation id="5804241973901381774">Дозволи</translation>
@@ -621,6 +625,7 @@
 <translation id="6561262006871132942">Наблизити</translation>
 <translation id="6583087784430677195">Щоб вимкнути, відкрийте <ph name="BEGIN_LINK" />Параметри<ph name="END_LINK" /> та перейдіть у розділ "Автозаповнення паролів".</translation>
 <translation id="6585618849026997638">Щоб повернутися на важливу сторінку пізніше, додайте закладку</translation>
+<translation id="6598875554591387303">Сортувати за категорією "Видавець"</translation>
 <translation id="6603393121510733479">Адміністратор вашої організації вимкнув режим анонімного перегляду.
 <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Параметри перекладу</translation>
@@ -761,6 +766,7 @@
 <translation id="7911190106180361398">Адміністратор вашої організації не дозволяє синхронізувати всі дані.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Експортувати паролі…</translation>
+<translation id="793971554166979165">Режим за умовчанням для сайту</translation>
 <translation id="794799177247607889">Припинити запис у журналі</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Немає зламаних паролів}=1{{COUNT} зламаний пароль}one{{COUNT} зламаний пароль}few{{COUNT} зламані паролі}many{{COUNT} зламаних паролів}other{{COUNT} зламаного пароля}}</translation>
 <translation id="7961015016161918242">Ніколи</translation>
@@ -866,6 +872,7 @@
 <translation id="8881801611828450202">Пошук цього зображення в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Надіслати…</translation>
 <translation id="8917490105272468696">Так</translation>
+<translation id="8928133177108699615">Режим робочого столу</translation>
 <translation id="8952559610785099500">Додайте пароль</translation>
 <translation id="895541991026785598">Повідомити про проблему</translation>
 <translation id="8974714402877957201">1. Відкрийте Параметри на iPad</translation>

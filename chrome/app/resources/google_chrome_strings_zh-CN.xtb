@@ -235,6 +235,7 @@
 <translation id="7155997830309522122">如果是的话，请修改您在 Chrome 中保存的密码，使它与您的新密码保持一致。</translation>
 <translation id="7161904924553537242">欢迎使用 Google Chrome</translation>
 <translation id="7242029209006116544">您目前登录的帐号是一个受管理帐号，该帐号的管理员将能够控制您的 Google Chrome 个人资料。您的 Chrome 数据（例如您的应用、书签、历史记录、密码和其他设置）将永远与 <ph name="USER_NAME" /> 相关联。您可以通过 Google 帐号信息中心删除这些数据，但无法将这些数据与其他帐号相关联。您可以选择创建新的个人资料来单独存储现有的 Chrome 数据。<ph name="LEARN_MORE" /></translation>
+<translation id="7242050469146843186">您已向网站和应用授予的权限可能会应用于此帐号。如果不想让网站或应用获取您的帐号信息，请在 Chrome 浏览器中使用<ph name="LINK_BEGIN" />访客模式<ph name="LINK_END" />登录。您还可在<ph name="LINK_2_BEGIN" />设置<ph name="LINK_2_END" />部分中管理您的 Google 帐号。</translation>
 <translation id="7295052994004373688">使用此语言显示 Google Chrome 界面</translation>
 <translation id="7296210096911315575">重要用途和安全信息</translation>
 <translation id="7308322188646931570">Chrome 需要获得存储空间使用权限，才能下载文件</translation>

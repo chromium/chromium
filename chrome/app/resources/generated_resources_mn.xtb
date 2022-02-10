@@ -600,6 +600,7 @@
 <translation id="1604432177629086300">Хэвлэж чадсангүй. Хэвлэгчийг шалгаад дахин оролдоно уу.</translation>
 <translation id="1605744057217831567">Сайтын бүх өгөгдөл болон зөвшөөрлийг харах</translation>
 <translation id="1606077700029460857">Хулганын тохиргоог өөрчлөх</translation>
+<translation id="1606566847233779212">Таны нэмсэн тодорхой сайтуудыг хасах уу?</translation>
 <translation id="1607139524282324606">Оролтыг устгах</translation>
 <translation id="1607499585984539560">Хэрэглэгч домэйнтэй холбоогүй байна</translation>
 <translation id="1608668830839595724">Сонгосон зүйлс дээр хийх нэмэлт үйлдэл</translation>
@@ -872,6 +873,7 @@
 <translation id="1845727111305721124">Дуу тоглуулахыг зөвшөөрсөн</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" />-г ажиллуулахын тулд control товчлуурыг дарна уу</translation>
 <translation id="184862733444771842">Онцлогийн хүсэлт</translation>
+<translation id="1849016657376805933">Дурын HID төхөөрөмж</translation>
 <translation id="1849186935225320012">Энэ хуудас нь MIDI төхөөрөмжүүдийг бүрэн хянаж байна.</translation>
 <translation id="1850145825777333687">Төхөөрөмжийн мандат үнэмлэх</translation>
 <translation id="1850508293116537636">Цагийн зүүний дагуу эргүүлэх</translation>
@@ -1006,6 +1008,7 @@
 <translation id="1988259784461813694">Шаардлага</translation>
 <translation id="1989112275319619282">Хөтлөх</translation>
 <translation id="1989113344093894667">Контентын зургийг авах боломжгүй</translation>
+<translation id="1989744123191450103">Хуулбарлаж чадсангүй</translation>
 <translation id="1989903373608997757">Үргэлж ашиглах</translation>
 <translation id="1990046457226896323">Ярианы файлуудыг татсан</translation>
 <translation id="1990512225220753005">Энэ хуудсан дээр товчлолыг бүү харуул</translation>
@@ -1015,6 +1018,7 @@
 <translation id="1994173015038366702">Сайтын URL</translation>
 <translation id="1995916364271252349">Ямар мэдээллийг сайтууд ашиглаж, харуулж (байршил, камер, үзэгдэх болон бусад зүйл) болохыг хянадаг</translation>
 <translation id="1997616988432401742">Таны сертификат</translation>
+<translation id="1997645434968427303">Таны Linux-н нөөцлөлтийг сэргээж чадсангүй. Энэ нь Linux-д дискийн хангалттай зай байхгүйтэй холбоотой байж магадгүй. Та Linux хэр их дискийн зайтай болохыг өөрчлөх болон OS-н тохиргоо хэсэгт нөөцлөлтөө сэргээхээр оролдох боломжтой.</translation>
 <translation id="1999115740519098545">Эхлүүлэх</translation>
 <translation id="2000419248597011803">Таны өгөгдмөл хайлтын системд хаяг оруулах хэсэг, хайх хэсгийн зарим күүки болон хайлтыг илгээдэг</translation>
 <translation id="2002109485265116295">Тухайн агшин</translation>
@@ -1584,6 +1588,7 @@
 <translation id="2540449034743108469">Өргөтгөлийн үйл ажиллагааг сонсохын тулд "Эхлүүлэх" сонголтыг дарна уу</translation>
 <translation id="2540651571961486573">Алдаа гарлаа. Алдааны код: <ph name="ERROR_CODE" />.</translation>
 <translation id="2541002089857695151">Бүтэн дэлгэцийн дамжуулалтыг оновчлох уу?</translation>
+<translation id="2541423446708352368">Татаж авсан бүх файлыг үзүүлэх</translation>
 <translation id="2541706104884128042">Унтах цагийн шинэ тохируулга</translation>
 <translation id="2542050502251273923">ff_debug-г ашиглан сүлжээний холболтын менежер болон бусад сүлжээний дебагийн түвшнийг тохируулна.</translation>
 <translation id="2544352060595557290">Энэ таб</translation>
@@ -2091,6 +2096,7 @@
 <translation id="3046178388369461825">Linux дискний зай маш бага байна</translation>
 <translation id="3046910703532196514">Веб хуудас, дууссан</translation>
 <translation id="304747341537320566">Ярианы хөдөлгүүр</translation>
+<translation id="3048336643003835855"><ph name="VENDOR_ID" /> нийлүүлэгчийн HID төхөөрөмжүүд</translation>
 <translation id="3048917188684939573">Cast болон төхөөрөмжийн лог</translation>
 <translation id="3051250416341590778">Дэлгэцийн хэмжээ</translation>
 <translation id="3053013834507634016">Гэрчилгээний үндсэн хэрэглээ</translation>
@@ -2519,6 +2525,7 @@
 <translation id="3511307672085573050">Холбоосын хаягийг хуулах</translation>
 <translation id="351152300840026870">Тогтмол өргөнтэй фонт</translation>
 <translation id="3511528412952710609">Богино</translation>
+<translation id="3514011352559420398">Сэргээж чадсангүй</translation>
 <translation id="3514335087372914653">Тоглоомын хяналт</translation>
 <translation id="3514373592552233661">Хэрэв нэгээс илүү боломжтой бол бусад танигдсан сүлжээнээс илүү давуу эрхтэй сүлжээг санал болгоно</translation>
 <translation id="3515983984924808886">Шинэчлэлтийг баталгаажуулахын тулд аюулгүй байдлын түлхүүр дээрээ дахин хүрнэ үү. Аюулгүй байдлын түлхүүрт хадгалсан ПИН зэрэг бүх мэдээллийг устгана.</translation>
@@ -3185,6 +3192,7 @@
 <translation id="4180788401304023883">Гэрчилгээг устгах уу "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Хэл</translation>
+<translation id="4184803915913850597">HID төхөөрөмж (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4184885522552335684">Дэлгэцийг шилжүүлэхийн тулд чирнэ үү</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" />-г тохируулж байна...</translation>
 <translation id="4190828427319282529">Гарын фокусыг тодруулах</translation>
@@ -3677,6 +3685,7 @@
 <translation id="4699357559218762027">(автоматаар эхлүүлсэн)</translation>
 <translation id="4701025263201366865">Эцэг эхийн нэвтрэлт</translation>
 <translation id="4701335814944566468">Өчигдөр үзсэн</translation>
+<translation id="4707337002099455863">Бүх сайт дээр үргэлж</translation>
 <translation id="4708794300267213770">Унтаад сэрэх үед дэлгэцийн түгжээг харуулах</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" />-аас гарах</translation>
 <translation id="4711638718396952945">Тохиргоог дахин сэргээх</translation>
@@ -4140,6 +4149,7 @@
 <translation id="5208548918290612795"><ph name="WEB_DRIVE" />-н баталгаажуулалтын токеныг хадгалж байна</translation>
 <translation id="520902706163766447">Одоогоор нээлттэй байгаа табууд дээр хайхын тулд Chrome UI-н дээд хэсэгт попап бөмбөлгийг идэвхжүүлнэ үү.</translation>
 <translation id="5209320130288484488">Төхөөрөмж олдсонгүй</translation>
+<translation id="5209513429611499188"><ph name="USAGE_PAGE" /> ашиглалтын хуудасны ашиглалттай HID төхөөрөмжүүд</translation>
 <translation id="5210365745912300556">Цонхыг хаа</translation>
 <translation id="5213114823401215820">Хаасан бүлгийг дахин нээх</translation>
 <translation id="5213481667492808996">Таны '<ph name="NAME" />'-н дата үйлчилгээ ашиглахад бэлэн байна</translation>
@@ -4546,6 +4556,7 @@
 <translation id="5627086634964711283">Энэ нь мөн таныг Home товчин дээр дарах үед гарч ирдэг хуудсыг хянаж байдаг.</translation>
 <translation id="5627676517703583263">Chrome-р ухаалаг хайгаарай</translation>
 <translation id="5627832140542566187">Дэлгэцийн чиглэл</translation>
+<translation id="5628393161682339323">Намайг өргөтгөлийг товших үед</translation>
 <translation id="562935524653278697">Таны админ хавчуурга, түүх, нууц үг болон бусад тохиргоог синк хийхийг цуцалсан.</translation>
 <translation id="5631017369956619646">CPU-ийн хэрэглээ</translation>
 <translation id="5632059346822207074">Зөвшөөрлийн хүсэлт тавьсан. Хариу өгөхийн тулд Ctrl + Forward дээр дарна уу</translation>
@@ -4680,6 +4691,7 @@
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" />-р синк хийх</translation>
 <translation id="5781865261247219930"><ph name="EXTENSION_NAME" />-д тушаал илгээх</translation>
 <translation id="5782227691023083829">Орчуулж байна...</translation>
+<translation id="5783304934509327739">Сайтын хандалтын сонголт</translation>
 <translation id="57838592816432529">Дууг хаах</translation>
 <translation id="5785583009707899920">Chrome Файл хэрэгсэл</translation>
 <translation id="5787146423283493983">Гол хэлэлцээр</translation>
@@ -4730,6 +4742,7 @@
 <translation id="5834581999798853053"><ph name="TIME" /> үлдсэн минутын тухай</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Камер, эсвэл микрофоны бичлэг</translation>
 <translation id="583673505367439042">Сайтууд таны төхөөрөмж дээрх файлууд эсвэл фолдеруудыг засахыг хүсэх боломжтой</translation>
+<translation id="583756221537636748">Гэр</translation>
 <translation id="5840680448799937675">Файлыг үргэлж офлайн үед хуваалцана</translation>
 <translation id="5841270259333717135">Ethernet-г тохируулах</translation>
 <translation id="5842497610951477805">Bluetooth-г идэвхжүүлэх</translation>
@@ -5366,6 +5379,7 @@
 <translation id="6499143127267478107">Төлөөллийн скриптээр дамжуулан оролцогчийг тодорхойлон шийдэх ...</translation>
 <translation id="6499764981457476645">Ойролцоо ямар ч төхөөрөмж олдсонгүй</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> энэ файлыг нээхийг хүсэж байна:</translation>
+<translation id="65017764184991091">Linux аппууд болон файлуудыг хуулбарлаж чадсангүй. Энэ нь таны төхөөрөмжид хадгалах сангийн хангалттай сул зай байхгүй бол тохиолдож болно. Төхөөрөмж дээрээ хэсэг сул зай гаргаж үзэх эсвэл хуулбарлах өөр байршил сонгоно уу.</translation>
 <translation id="6501957628055559556">Бүх контейнер</translation>
 <translation id="650266656685499220">Цомог үүсгэхийн тулд Google Зураг руу очно уу</translation>
 <translation id="6503077044568424649">Хамгийн олон хандалт авсан</translation>
@@ -5452,7 +5466,6 @@
 <translation id="6586099239452884121">Зочин хөтөч</translation>
 <translation id="6586213706115310390">"Ok Google" гэж хэлээд Туслахдаа хандаарай.</translation>
 <translation id="6586451623538375658">Хулганы үндсэн товчийг солих</translation>
-<translation id="6586604979641883411">Linux-г дэвшүүлэхэд хамгийн багадаа диск дээр <ph name="REQUIRED_SPACE" /> сул зайтай байх шаардлагатай. Төхөөрөмж дээрээ сул зай гаргаад дахин оролдоно уу.</translation>
 <translation id="6588043302623806746">Найдвартай DNS ашиглана уу</translation>
 <translation id="659005207229852190">Аюулгүй байдлын шалгалтыг хийж дуусгалаа.</translation>
 <translation id="6590458744723262880">Фолдерын нэрийг өөрчлөх</translation>
@@ -7392,6 +7405,7 @@
 <translation id="8581809080475256101">Үргэлжлүүлэх бол forward, түүх харах бол хулганын баруун товчлуур дээр дарна уу.</translation>
 <translation id="8584280235376696778">&amp; Шинэ цонхонд видео нээх</translation>
 <translation id="8584427708066927472">Энэ төхөөрөмжөөс нууц үг устгасан</translation>
+<translation id="8584843865238667486"><ph name="USAGE_PAGE" /> ашиглалтын хуудасны <ph name="USAGE" />-н ашиглалттай HID төхөөрөмжүүд</translation>
 <translation id="8585480574870650651">Crostini-г хасах</translation>
 <translation id="8585841788766257444">Доор жагсаасан сайтууд нь өгөгдмөл тохиргооны оронд захиалгат тохиргоог дагадаг</translation>
 <translation id="8588866096426746242">Профайлын статистик харуулах</translation>

@@ -203,6 +203,7 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog elle
 <translation id="6734291798041940871">Chromium har redan installerats för alla användare på datorn.</translation>
 <translation id="673636774878526923">Logga in och aktivera synkronisering om du vill få tillgång till dina saker i Chromium på olika enheter.</translation>
 <translation id="6774082503108938489">Din förälder har inaktiverat Behörigheter för webbplatser, appar och tillägg för Chromium. Det är inte tillåtet att aktivera denna <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="6808964260981102146">Behörigheter som du redan har gett webbplatser och appar kan gälla för det här kontot. Om du inte vill ge webbplatser och appar åtkomst till information i ditt konto kan du använda <ph name="LINK_BEGIN" />gästläget<ph name="LINK_END" /> i webbläsaren Chromium. Du kan även hantera dina Google-konton i <ph name="LINK_2_BEGIN" />inställningarna<ph name="LINK_2_END" />.</translation>
 <translation id="6847869444787758381">Om dina lösenord någonsin skulle läcka ut får du veta det i Chromium</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6863361426438995919">Google Pay (har kopierats till Chromium)</translation>

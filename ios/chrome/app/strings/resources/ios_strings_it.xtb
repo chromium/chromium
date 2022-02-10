@@ -116,6 +116,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="196896377990863006">Mostra anteprima link</translation>
 <translation id="1973912524893600642">Conserva i dati</translation>
 <translation id="1974060860693918893">Avanzate</translation>
+<translation id="1981118202195772574">Dispositivo mobile</translation>
 <translation id="1989112275319619282">Esplora</translation>
 <translation id="199425419756152024">Visualizza password</translation>
 <translation id="2015722694326466240">Per visualizzare le password, per prima cosa imposta un passcode sul tuo dispositivo.</translation>
@@ -236,6 +237,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Scopri cosa puoi sincronizzare<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Blocca tutti</translation>
 <translation id="313283613037595347">Crea nuova scheda di navigazione in incognito.</translation>
+<translation id="3150887674190166798">Seleziona la modalità con cui vuoi che Chrome richieda il sito ogni volta</translation>
 <translation id="3153862085237805241">Salva carta</translation>
 <translation id="3157387275655328056">Aggiungi all'elenco di lettura</translation>
 <translation id="3157684681743766797">Segna tutti come...</translation>
@@ -349,6 +351,7 @@ Svolgi i passaggi che seguono:</translation>
 <translation id="4181841719683918333">Lingue</translation>
 <translation id="4237377247299956313">Tocca <ph name="BEGIN_BOLD" />App browser predefinita<ph name="END_BOLD" /></translation>
 <translation id="424315890655130736">Inserisci passphrase</translation>
+<translation id="4249955472157341256">Ordina per Più recenti</translation>
 <translation id="4263576668337963058">Mostra le azioni disponibili per la pagina</translation>
 <translation id="4267380167363222949">Scheda successiva</translation>
 <translation id="4272631900155121838">Per eseguire la scansione di un codice QR, attiva la videocamera dalle impostazioni</translation>
@@ -506,6 +509,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="575902488528307720">Cerca immagine</translation>
 <translation id="5781453543752460388">Aggiungi a Foto</translation>
 <translation id="5782227691023083829">Traduzione in corso...</translation>
+<translation id="5791632441210678828">Pulsante Ordina per il feed Stai seguendo.</translation>
 <translation id="5802829331520313983">Configura…</translation>
 <translation id="5803566855766646066">Vuoi eliminare questa nuova carta?</translation>
 <translation id="5804241973901381774">Autorizzazioni</translation>
@@ -621,6 +625,7 @@ Cerca di usare una password univoca per ogni sito.</translation>
 <translation id="6561262006871132942">Aumenta lo zoom</translation>
 <translation id="6583087784430677195">Per disattivare la funzionalità, apri le <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" /> e vai a Riempimento automatico password.</translation>
 <translation id="6585618849026997638">Puoi tornare a una pagina che ritieni importante aggiungendola ai preferiti</translation>
+<translation id="6598875554591387303">Ordina per Publisher</translation>
 <translation id="6603393121510733479">La tua organizzazione ha disattivato la navigazione privata.
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Opzioni di Traduttore</translation>
@@ -761,6 +766,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7911190106180361398">La tua organizzazione non ti consente di sincronizzare tutti i dati.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Esporta password...</translation>
+<translation id="793971554166979165">Modalità sito predefinita</translation>
 <translation id="794799177247607889">Interrompi logging</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Nessuna password compromessa}=1{{COUNT} password compromessa}one{{COUNT} password compromesse}other{{COUNT} password compromesse}}</translation>
 <translation id="7961015016161918242">Mai</translation>
@@ -866,6 +872,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8881801611828450202">Cerca questa immagine su <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Condividi…</translation>
 <translation id="8917490105272468696">Sì, accetto</translation>
+<translation id="8928133177108699615">Desktop</translation>
 <translation id="8952559610785099500">Aggiungi password</translation>
 <translation id="895541991026785598">Segnala un problema</translation>
 <translation id="8974714402877957201">1. Apri le Impostazioni dell'iPad</translation>

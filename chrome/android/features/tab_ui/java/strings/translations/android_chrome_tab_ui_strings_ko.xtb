@@ -6,6 +6,7 @@
 <translation id="125153950246128346">다른 탭을 보려면 탭하세요.</translation>
 <translation id="1302104331113804646">가격 추적 설정</translation>
 <translation id="1378979118429748177">가격 인하 알림을 받습니다.</translation>
+<translation id="1403228085774130835">Chrome 기본 메뉴의 최근 탭에서 종료된 탭을 확인할 수 있습니다.</translation>
 <translation id="1657719826150349398">탭을 아래로 이동</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개}other{탭 <ph name="TABS_COUNT_MANY" />개}}</translation>
 <translation id="2118649612461486615">매장 정보</translation>
