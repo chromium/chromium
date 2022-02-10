@@ -113,6 +113,7 @@
 #include "chrome/browser/ui/views/hats/hats_next_web_dialog.h"
 #include "chrome/browser/ui/views/incognito_clear_browsing_data_dialog.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
+#include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
@@ -1680,6 +1681,13 @@ void BrowserView::SetToolbarButtonProvider(ToolbarButtonProvider* provider) {
 }
 
 void BrowserView::UpdatePageActionIcon(PageActionIconType type) {
+  // When present, the intent chip replaces the intent picker page action icon.
+  if (type == PageActionIconType::kIntentPicker &&
+      toolbar_button_provider()->GetIntentChipButton()) {
+    toolbar_button_provider()->GetIntentChipButton()->Update();
+    return;
+  }
+
   PageActionIconView* icon =
       toolbar_button_provider_->GetPageActionIconView(type);
   if (icon)

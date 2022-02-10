@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_contextual_menu.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
+#include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/media_router/cast_toolbar_button.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
@@ -504,6 +505,8 @@ void ToolbarView::ShowIntentPickerBubble(
   if (bubble_type == IntentPickerBubbleView::BubbleType::kClickToCall) {
     highlighted_button =
         GetPageActionIconView(PageActionIconType::kClickToCall);
+  } else if (base::FeatureList::IsEnabled(features::kLinkCapturingUiUpdate)) {
+    highlighted_button = GetIntentChipButton();
   } else {
     highlighted_button =
         GetPageActionIconView(PageActionIconType::kIntentPicker);
@@ -915,6 +918,10 @@ ToolbarButton* ToolbarView::GetBackButton() {
 
 ReloadButton* ToolbarView::GetReloadButton() {
   return reload_;
+}
+
+IntentChipButton* ToolbarView::GetIntentChipButton() {
+  return location_bar()->intent_chip();
 }
 
 BrowserRootView::DropIndex ToolbarView::GetDropIndex(

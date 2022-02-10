@@ -49,6 +49,7 @@ class ExtensionsToolbarButton;
 class ExtensionsToolbarContainer;
 class ChromeLabsButton;
 class HomeButton;
+class IntentChipButton;
 class MediaToolbarButtonView;
 class ReloadButton;
 class ToolbarButton;
@@ -245,6 +246,7 @@ class ToolbarView : public views::AccessiblePaneView,
   AvatarToolbarButton* GetAvatarToolbarButton() override;
   ToolbarButton* GetBackButton() override;
   ReloadButton* GetReloadButton() override;
+  IntentChipButton* GetIntentChipButton() override;
 
   // BrowserRootView::DropTarget
   BrowserRootView::DropIndex GetDropIndex(

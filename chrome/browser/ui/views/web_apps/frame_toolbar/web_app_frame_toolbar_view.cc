@@ -253,6 +253,10 @@ ReloadButton* WebAppFrameToolbarView::GetReloadButton() {
   return left_container_ ? left_container_->reload_button() : nullptr;
 }
 
+IntentChipButton* WebAppFrameToolbarView::GetIntentChipButton() {
+  return nullptr;
+}
+
 bool WebAppFrameToolbarView::DoesIntersectRect(const View* target,
                                                const gfx::Rect& rect) const {
   DCHECK_EQ(target, this);

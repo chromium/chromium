@@ -2828,8 +2828,6 @@ if (!is_android) {
         "../browser/ui/views/web_apps/pwa_confirmation_bubble_view_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_confirmation_view_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_identity_update_confirmation_view_browsertest.cc",
-        "../browser/ui/web_applications/test/web_app_navigation_browsertest.cc",
-        "../browser/ui/web_applications/test/web_app_navigation_browsertest.h",
       ]
 
       if (enable_background_mode) {
@@ -4123,6 +4121,7 @@ if (!is_android) {
 
     if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
       sources += [
+        "../browser/ui/views/location_bar/intent_chip_button_browsertest.cc",
         "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_mac_win_linux.cc",
         "../browser/ui/views/web_apps/web_app_url_handler_intent_picker_dialog_browsertest.cc",
@@ -4319,14 +4318,17 @@ if (is_chromeos_lacros) {
       "../browser/ui/browser_navigator_browsertest.cc",
       "../browser/ui/browser_navigator_browsertest.h",
       "../browser/ui/browser_navigator_browsertest_chromeos.cc",
+      "../browser/ui/views/location_bar/intent_chip_button_browsertest.cc",
       "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",
     ]
 
     deps = [
       ":browser_tests_runner",
       ":test_support",
+      ":test_support_ui",
       "//chrome/app:command_ids",
       "//chrome/browser/metrics/structured",
+      "//chrome/browser/web_applications:web_applications_test_support",
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",
@@ -8221,6 +8223,8 @@ if (!is_android) {
       "../browser/ui/views/user_education/user_education_test_util.h",
       "../browser/ui/views/web_apps/web_app_integration_test_driver.cc",
       "../browser/ui/views/web_apps/web_app_integration_test_driver.h",
+      "../browser/ui/web_applications/test/web_app_navigation_browsertest.cc",
+      "../browser/ui/web_applications/test/web_app_navigation_browsertest.h",
       "../browser/ui/webui/signin/login_ui_test_utils.cc",
       "../browser/ui/webui/signin/login_ui_test_utils.h",
       "../browser/web_applications/test/profile_test_helper.cc",

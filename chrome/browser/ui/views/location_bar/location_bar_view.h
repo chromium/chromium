@@ -44,6 +44,7 @@
 class CommandUpdater;
 class ContentSettingBubbleModelDelegate;
 class GURL;
+class IntentChipButton;
 class LocationIconView;
 enum class OmniboxPart;
 class OmniboxPopupView;
@@ -196,6 +197,8 @@ class LocationBarView : public LocationBar,
 
   // Removes previously displayed PermissionChip.
   void FinalizeChip();
+
+  IntentChipButton* intent_chip() { return intent_chip_; }
 
   // LocationBar:
   void FocusLocation(bool is_user_initiated) override;
@@ -456,6 +459,8 @@ class LocationBarView : public LocationBar,
 
   // Shown if the user has selected a keyword.
   raw_ptr<SelectedKeywordView> selected_keyword_view_ = nullptr;
+
+  raw_ptr<IntentChipButton> intent_chip_ = nullptr;
 
   // The content setting views.
   ContentSettingViews content_setting_views_;

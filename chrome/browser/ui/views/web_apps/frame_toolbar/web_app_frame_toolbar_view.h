@@ -79,6 +79,7 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   AvatarToolbarButton* GetAvatarToolbarButton() override;
   ToolbarButton* GetBackButton() override;
   ReloadButton* GetReloadButton() override;
+  IntentChipButton* GetIntentChipButton() override;
 
   // views::ViewTargeterDelegate
   bool DoesIntersectRect(const View* target,

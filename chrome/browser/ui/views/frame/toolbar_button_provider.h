@@ -10,6 +10,7 @@
 class AppMenuButton;
 class AvatarToolbarButton;
 class ExtensionsToolbarContainer;
+class IntentChipButton;
 class PageActionIconView;
 class SidePanelToolbarButton;
 class ReloadButton;
@@ -73,6 +74,9 @@ class ToolbarButtonProvider {
 
   // Returns the reload button.
   virtual ReloadButton* GetReloadButton() = 0;
+
+  // Returns the intent chip button, if present.
+  virtual IntentChipButton* GetIntentChipButton() = 0;
 
   // TODO(calamity): Move other buttons and button actions into here.
  protected:
