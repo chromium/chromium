@@ -28,8 +28,10 @@ template("android_wpt_finch_smoke_tests") {
       "//build/android/",
       "//testing/scripts/variations_smoke_test_data/",
       "//tools/android/",
+      "$root_build_dir/pyproto/",
     ]
     data_deps = [
+      "//android_webview/proto:aw_variations_seed_proto",
       "//chrome/test/chromedriver:chromedriver($host_toolchain)",
       "//testing:wpt_android_lib",
       "//third_party/blink/tools:wpt_tests_android_isolate",

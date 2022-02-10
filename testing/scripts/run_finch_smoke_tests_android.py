@@ -18,11 +18,17 @@ from collections import OrderedDict
 
 SRC_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
+OUT_DIR = os.path.join(SRC_DIR, 'out', 'Release')
 BLINK_TOOLS = os.path.join(
     SRC_DIR, 'third_party', 'blink', 'tools')
 BUILD_ANDROID = os.path.join(SRC_DIR, 'build', 'android')
 CATAPULT_DIR = os.path.join(SRC_DIR, 'third_party', 'catapult')
 PYUTILS = os.path.join(CATAPULT_DIR, 'common', 'py_utils')
+
+# Protocall buffer directories to import
+PYPROTO_LIB = os.path.join(OUT_DIR, 'pyproto', 'google')
+WEBVIEW_VARIATIONS_PROTO = os.path.join(OUT_DIR, 'pyproto',
+                                        'android_webview', 'proto')
 
 if PYUTILS not in sys.path:
   sys.path.append(PYUTILS)
@@ -32,6 +38,15 @@ if BUILD_ANDROID not in sys.path:
 
 if BLINK_TOOLS not in sys.path:
   sys.path.append(BLINK_TOOLS)
+
+if PYPROTO_LIB not in sys.path:
+  sys.path.append(PYPROTO_LIB)
+
+if WEBVIEW_VARIATIONS_PROTO not in sys.path:
+  sys.path.append(WEBVIEW_VARIATIONS_PROTO)
+
+if 'compile_targets' not in sys.argv:
+  import aw_variations_seed_pb2
 
 import common
 import devil_chromium
@@ -54,7 +69,7 @@ from py_utils.tempfile_ext import NamedTemporaryDirectory
 
 from wpt_android_lib import add_emulator_args, get_device
 
-_LOGCAT_FILTERS = [
+LOGCAT_FILTERS = [
   'chromium:v',
   'cr_*:v',
   'DEBUG:I',
@@ -75,14 +90,12 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     self.parse_args()
     self.output_directory = os.path.join(SRC_DIR, 'out', self.options.target)
     self.mojo_js_directory = os.path.join(self.output_directory, 'gen')
-    self.flags = flag_changer.FlagChanger(
-        self._device, '%s-command-line' % self.product_name())
     self.browser_package_name = apk_helper.GetPackageName(
         self.options.browser_apk)
     self.browser_activity_name = (self.options.browser_activity_name or
                                   self.default_browser_activity_name)
     self.log_mon = None
-
+    self.test_specific_browser_args = []
     if self.options.webview_provider_apk:
       self.webview_provider_package_name = (
           apk_helper.GetPackageName(self.options.webview_provider_apk))
@@ -116,6 +129,15 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
   def default_finch_seed_path(self):
     raise NotImplementedError
 
+  @classmethod
+  def finch_seed_download_args(cls):
+    return []
+
+  def new_seed_downloaded(self):
+    # TODO(crbug.com/1285152): Implement seed download test
+    # for Chrome and WebLayer.
+    return True
+
   def parse_args(self, args=None):
     super(FinchTestCase, self).parse_args(args)
     if (not self.options.finch_seed_path or
@@ -124,17 +146,19 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
 
   def __enter__(self):
     self._device.EnableRoot()
+    # Run below commands to ensure that the device can download a seed
+    self._device.adb.Emu(['power', 'ac', 'on'])
+    self._device.RunShellCommand(['svc', 'wifi', 'enable'])
     self.log_mon = logcat_monitor.LogcatMonitor(
           self._device.adb,
           output_file=os.path.join(
               os.path.dirname(self.options.isolated_script_test_output),
               '%s_finch_smoke_tests_logcat.txt' % self.product_name()),
-          filter_specs=_LOGCAT_FILTERS)
+          filter_specs=LOGCAT_FILTERS)
     self.log_mon.Start()
     return self
 
   def __exit__(self, exc_type, exc_val, exc_tb):
-    self.flags.ReplaceFlags([])
     self.log_mon.Stop()
 
   @property
@@ -248,10 +272,12 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     yield
 
   def browser_command_line_args(self):
-    return ['--fake-variations-channel=%s' %
-            self.options.fake_variations_channel]
+    return (['--fake-variations-channel=%s' %
+             self.options.fake_variations_channel] +
+            self.test_specific_browser_args)
 
-  def run_tests(self, test_run_variation, results_dict):
+  def run_tests(self, test_run_variation, results_dict,
+                extra_browser_args=None):
     """Run browser test on test device
 
     Args:
@@ -262,6 +288,7 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     """
     self.layout_test_results_subdir = ('%s_smoke_test_artifacts' %
                                        test_run_variation)
+    self.test_specific_browser_args = extra_browser_args or []
 
     # Make sure the browser is not running before the tests run
     self.stop_browser()
@@ -387,7 +414,6 @@ class ChromeFinchTestCase(FinchTestCase):
 
 class WebViewFinchTestCase(FinchTestCase):
 
-
   @classmethod
   def product_name(cls):
     """Returns name of product being tested"""
@@ -396,6 +422,15 @@ class WebViewFinchTestCase(FinchTestCase):
   @classmethod
   def wpt_product_name(cls):
     return ANDROID_WEBVIEW
+
+  @classmethod
+  def finch_seed_download_args(cls):
+    return [
+        '--finch-seed-expiration-age=0',
+        '--finch-seed-min-update-period=0',
+        '--finch-seed-min-download-period=0',
+        '--finch-seed-ignore-pending-download',
+        '--finch-seed-no-charging-requirement']
 
   @property
   def default_browser_activity_name(self):
@@ -406,6 +441,34 @@ class WebViewFinchTestCase(FinchTestCase):
     return os.path.join(SRC_DIR, 'testing', 'scripts',
                         'variations_smoke_test_data',
                         'webview_test_seed')
+
+  def new_seed_downloaded(self):
+    """Checks if a new seed was downloaded
+
+    Returns:
+      True if a new seed was downloaded, otherwise False
+    """
+    app_data_dir = posixpath.join(
+        self._device.GetApplicationDataDirectory(self.browser_package_name),
+        self.app_user_sub_dir())
+    remote_seed_path = posixpath.join(app_data_dir, 'variations_seed')
+
+    with NamedTemporaryDirectory() as tmp_dir:
+      current_seed_path = os.path.join(tmp_dir, 'current_seed')
+      self._device.adb.Pull(remote_seed_path, current_seed_path)
+      with open(current_seed_path, 'rb') as current_seed_obj, \
+          open(self.options.finch_seed_path, 'rb') as baseline_seed_obj:
+        current_seed_content = current_seed_obj.read()
+        baseline_seed_content = baseline_seed_obj.read()
+        current_seed = aw_variations_seed_pb2.AwVariationsSeed.FromString(
+            current_seed_content)
+        baseline_seed = aw_variations_seed_pb2.AwVariationsSeed.FromString(
+            baseline_seed_content)
+        shutil.copy(current_seed_path, os.path.join(OUT_DIR, 'final_seed'))
+
+        logger.info("Downloaded seed's signature: %s", current_seed.signature)
+        logger.info("Baseline seed's signature: %s", baseline_seed.signature)
+        return current_seed_content != baseline_seed_content
 
   def browser_command_line_args(self):
     return (super(WebViewFinchTestCase, self).browser_command_line_args() +
@@ -498,7 +561,6 @@ def main(args):
   with get_device(options) as device, \
       TEST_CASES[options.test_case](device) as test_case, \
       test_case.install_apks():
-
     devil_chromium.Initialize(adb_path=options.adb_path)
     logging_common.InitializeLogging(options)
 
@@ -521,11 +583,27 @@ def main(args):
     test_case.install_seed()
     ret |= test_case.run_tests('with_finch_seed', test_results_dict)
 
+    if test_case.product_name() == 'webview':
+      # WebView needs several restarts to fetch and load a new finch seed
+      # TODO(b/187185389): Figure out why the first restart is needed
+      ret |= test_case.run_tests('extra_restart', test_results_dict,
+                                 test_case.finch_seed_download_args())
+      # Restart webview+shell to fetch new seed to variations_seed_new
+      ret |= test_case.run_tests('fetch_new_seed_restart', test_results_dict,
+                                 test_case.finch_seed_download_args())
+      # Restart webview+shell to copy from
+      # variations_seed_new to variations_seed
+      ret |= test_case.run_tests('load_new_seed_restart', test_results_dict,
+                                 test_case.finch_seed_download_args())
+
     test_results_dict['seconds_since_epoch'] = int(time.time())
     test_results_dict['path_delimiter'] = '/'
 
-    with open(options.isolated_script_test_output, 'w') as json_out:
+    with open(test_case.options.isolated_script_test_output, 'w') as json_out:
       json_out.write(json.dumps(test_results_dict, indent=4))
+
+    if not test_case.new_seed_downloaded():
+      raise Exception('A new seed was not downloaded')
 
   # Return zero exit code if tests pass
   return ret
