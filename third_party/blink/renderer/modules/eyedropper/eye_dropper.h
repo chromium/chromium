@@ -43,7 +43,7 @@ class EyeDropper final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
-  void Abort();
+  void AbortCallback();
   void EyeDropperResponseHandler(ScriptPromiseResolver*, bool, uint32_t);
   void EndChooser();
   void RejectPromiseHelper(DOMExceptionCode, const WTF::String&);

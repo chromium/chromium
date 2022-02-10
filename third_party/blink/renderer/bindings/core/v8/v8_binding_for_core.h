@@ -532,7 +532,7 @@ v8::MicrotaskQueue* ToMicrotaskQueue(ScriptState*);
 // an "in parallel" algorithm, otherwise returns false.  What implements an "in
 // parallel" algorithm should check the runnability before using the context.
 // https://html.spec.whatwg.org/C/#in-parallel
-CORE_EXPORT CORE_EXPORT bool IsInParallelAlgorithmRunnable(
+CORE_EXPORT bool IsInParallelAlgorithmRunnable(
     ExecutionContext* execution_context,
     ScriptState* script_state);
 
