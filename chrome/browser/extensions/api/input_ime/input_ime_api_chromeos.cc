@@ -1327,10 +1327,10 @@ InputMethodPrivateGetCompositionBoundsFunction::Run() {
   auto bounds_list = std::make_unique<base::ListValue>();
   for (const auto& bounds : engine->composition_bounds()) {
     auto bounds_value = std::make_unique<base::DictionaryValue>();
-    bounds_value->SetInteger("x", bounds.x());
-    bounds_value->SetInteger("y", bounds.y());
-    bounds_value->SetInteger("w", bounds.width());
-    bounds_value->SetInteger("h", bounds.height());
+    bounds_value->SetIntKey("x", bounds.x());
+    bounds_value->SetIntKey("y", bounds.y());
+    bounds_value->SetIntKey("w", bounds.width());
+    bounds_value->SetIntKey("h", bounds.height());
     bounds_list->Append(std::move(bounds_value));
   }
 

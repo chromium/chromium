@@ -84,8 +84,8 @@ bool WillDispatchTabCreatedEvent(WebContents* contents,
   std::unique_ptr<base::DictionaryValue> tab_value =
       ExtensionTabUtil::CreateTabObject(contents, scrub_tab_behavior, extension)
           ->ToValue();
-  tab_value->SetBoolean(tabs_constants::kSelectedKey, active);
-  tab_value->SetBoolean(tabs_constants::kActiveKey, active);
+  tab_value->SetBoolKey(tabs_constants::kSelectedKey, active);
+  tab_value->SetBoolKey(tabs_constants::kActiveKey, active);
   event->event_args->Append(std::move(tab_value));
   return true;
 }
@@ -372,9 +372,9 @@ void TabsEventRouter::DispatchTabClosingAt(TabStripModel* tab_strip_model,
 
   std::unique_ptr<base::DictionaryValue> object_args(
       new base::DictionaryValue());
-  object_args->SetInteger(tabs_constants::kWindowIdKey,
-                          ExtensionTabUtil::GetWindowIdOfTab(contents));
-  object_args->SetBoolean(tabs_constants::kWindowClosing,
+  object_args->SetIntKey(tabs_constants::kWindowIdKey,
+                         ExtensionTabUtil::GetWindowIdOfTab(contents));
+  object_args->SetBoolKey(tabs_constants::kWindowClosing,
                           tab_strip_model->closing_all());
   args->Append(std::move(object_args));
 

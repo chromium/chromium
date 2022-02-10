@@ -467,29 +467,29 @@ std::unique_ptr<base::DictionaryValue> CreateProxyServerDict(
   auto out = std::make_unique<base::DictionaryValue>();
   switch (proxy.scheme()) {
     case net::ProxyServer::SCHEME_HTTP:
-      out->SetString(proxy_api_constants::kProxyConfigRuleScheme, "http");
+      out->SetStringKey(proxy_api_constants::kProxyConfigRuleScheme, "http");
       break;
     case net::ProxyServer::SCHEME_HTTPS:
-      out->SetString(proxy_api_constants::kProxyConfigRuleScheme, "https");
+      out->SetStringKey(proxy_api_constants::kProxyConfigRuleScheme, "https");
       break;
     case net::ProxyServer::SCHEME_QUIC:
-      out->SetString(proxy_api_constants::kProxyConfigRuleScheme, "quic");
+      out->SetStringKey(proxy_api_constants::kProxyConfigRuleScheme, "quic");
       break;
     case net::ProxyServer::SCHEME_SOCKS4:
-      out->SetString(proxy_api_constants::kProxyConfigRuleScheme, "socks4");
+      out->SetStringKey(proxy_api_constants::kProxyConfigRuleScheme, "socks4");
       break;
     case net::ProxyServer::SCHEME_SOCKS5:
-      out->SetString(proxy_api_constants::kProxyConfigRuleScheme, "socks5");
+      out->SetStringKey(proxy_api_constants::kProxyConfigRuleScheme, "socks5");
       break;
     case net::ProxyServer::SCHEME_DIRECT:
     case net::ProxyServer::SCHEME_INVALID:
       NOTREACHED();
       return NULL;
   }
-  out->SetString(proxy_api_constants::kProxyConfigRuleHost,
-                 proxy.host_port_pair().host());
-  out->SetInteger(proxy_api_constants::kProxyConfigRulePort,
-                  proxy.host_port_pair().port());
+  out->SetStringKey(proxy_api_constants::kProxyConfigRuleHost,
+                    proxy.host_port_pair().host());
+  out->SetIntKey(proxy_api_constants::kProxyConfigRulePort,
+                 proxy.host_port_pair().port());
   return out;
 }
 
@@ -516,13 +516,13 @@ std::unique_ptr<base::DictionaryValue> CreatePacScriptDict(
       LOG(ERROR) << "Cannot decode base64-encoded PAC data URL: " << pac_url;
       return NULL;
     }
-    pac_script_dict->SetString(proxy_api_constants::kProxyConfigPacScriptData,
-                               pac_data);
+    pac_script_dict->SetStringKey(
+        proxy_api_constants::kProxyConfigPacScriptData, pac_data);
   } else {
-    pac_script_dict->SetString(proxy_api_constants::kProxyConfigPacScriptUrl,
-                               pac_url);
+    pac_script_dict->SetStringKey(proxy_api_constants::kProxyConfigPacScriptUrl,
+                                  pac_url);
   }
-  pac_script_dict->SetBoolean(
+  pac_script_dict->SetBoolKey(
       proxy_api_constants::kProxyConfigPacScriptMandatory, pac_mandatory);
   return pac_script_dict;
 }

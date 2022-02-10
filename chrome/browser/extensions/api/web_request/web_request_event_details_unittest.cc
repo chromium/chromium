@@ -36,14 +36,14 @@ TEST(WebRequestEventDetailsTest, AllowlistedCopyForPublicSession) {
   orig->response_headers_ = std::make_unique<base::ListValue>();
 
   for (const char* safe_attr : safe_attributes) {
-    orig->dict_.SetString(safe_attr, safe_attr);
+    orig->dict_.SetStringKey(safe_attr, safe_attr);
   }
 
-  orig->dict_.SetString("url", "http://www.foo.bar/baz");
+  orig->dict_.SetStringKey("url", "http://www.foo.bar/baz");
 
   // Add some extra dict_ values that should be filtered out.
-  orig->dict_.SetString("requestBody", "request body value");
-  orig->dict_.SetString("requestHeaders", "request headers value");
+  orig->dict_.SetStringKey("requestBody", "request body value");
+  orig->dict_.SetStringKey("requestHeaders", "request headers value");
 
   // Get a filtered copy then check that filtering really works.
   std::unique_ptr<WebRequestEventDetails> copy =

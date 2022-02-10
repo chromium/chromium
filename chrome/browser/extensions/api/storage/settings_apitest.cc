@@ -232,9 +232,9 @@ class ExtensionSettingsApiTest : public ExtensionApiTest {
                             const std::string& action,
                             bool is_final_action) {
     base::DictionaryValue message;
-    message.SetString("namespace", StorageAreaToString(storage_area));
-    message.SetString("action", action);
-    message.SetBoolean("isFinalAction", is_final_action);
+    message.SetStringKey("namespace", StorageAreaToString(storage_area));
+    message.SetStringKey("action", action);
+    message.SetBoolKey("isFinalAction", is_final_action);
     std::string message_json;
     base::JSONWriter::Write(message, &message_json);
     return message_json;

@@ -518,14 +518,14 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   auto* keyboard_client = ChromeKeyboardControllerClient::Get();
 
   std::unique_ptr<base::DictionaryValue> results(new base::DictionaryValue());
-  results->SetString("layout", GetKeyboardLayout());
+  results->SetStringKey("layout", GetKeyboardLayout());
 
   // TODO(bshe): Consolidate a11y, hotrod and normal mode into a mode enum. See
   // crbug.com/529474.
-  results->SetBoolean("a11ymode",
+  results->SetBoolKey("a11ymode",
                       keyboard_client->IsEnableFlagSet(
                           keyboard::KeyboardEnableFlag::kAccessibilityEnabled));
-  results->SetBoolean("hotrodmode", g_hotrod_keyboard_enabled);
+  results->SetBoolKey("hotrodmode", g_hotrod_keyboard_enabled);
   base::Value features(base::Value::Type::LIST);
 
   keyboard::KeyboardConfig config = keyboard_client->GetKeyboardConfig();

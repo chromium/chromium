@@ -71,7 +71,8 @@ ChromeFeedbackPrivateDelegate::GetStrings(
   std::unique_ptr<base::DictionaryValue> dict =
       std::make_unique<base::DictionaryValue>();
 
-#define SET_STRING(id, idr) dict->SetString(id, l10n_util::GetStringUTF16(idr))
+#define SET_STRING(id, idr) \
+  dict->SetStringKey(id, l10n_util::GetStringUTF16(idr))
   SET_STRING("pageTitle", from_crash
                               ? IDS_FEEDBACK_REPORT_PAGE_TITLE_SAD_TAB_FLOW
                               : IDS_FEEDBACK_REPORT_PAGE_TITLE);

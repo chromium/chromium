@@ -90,13 +90,13 @@ std::string ParamsToString(const base::ListValue& parameters) {
 void InitializeTestMetaData(base::ListValue* parameters) {
   std::unique_ptr<base::DictionaryValue> meta_data_entry(
       new base::DictionaryValue());
-  meta_data_entry->SetString("key", kTestLoggingSessionIdKey);
-  meta_data_entry->SetString("value", kTestLoggingSessionIdValue);
+  meta_data_entry->SetStringKey("key", kTestLoggingSessionIdKey);
+  meta_data_entry->SetStringKey("value", kTestLoggingSessionIdValue);
   std::unique_ptr<base::ListValue> meta_data(new base::ListValue());
   meta_data->Append(std::move(meta_data_entry));
   meta_data_entry = std::make_unique<base::DictionaryValue>();
-  meta_data_entry->SetString("key", "url");
-  meta_data_entry->SetString("value", kTestLoggingUrl);
+  meta_data_entry->SetStringKey("key", "url");
+  meta_data_entry->SetStringKey("value", kTestLoggingUrl);
   meta_data->Append(std::move(meta_data_entry));
   parameters->Append(std::move(meta_data));
 }
@@ -150,7 +150,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   void AppendTabIdAndUrl(base::ListValue* parameters) {
     std::unique_ptr<base::DictionaryValue> request_info(
         new base::DictionaryValue());
-    request_info->SetInteger(
+    request_info->SetIntKey(
         "tabId", extensions::ExtensionTabUtil::GetTabId(web_contents()));
     parameters->Append(std::move(request_info));
     parameters->Append(web_contents()

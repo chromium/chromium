@@ -290,8 +290,8 @@ void DeveloperPrivateApiUnitTest::TestExtensionPrefSetting(
 
   {
     auto parameters = std::make_unique<base::DictionaryValue>();
-    parameters->SetString("extensionId", extension_id);
-    parameters->SetBoolean(key, true);
+    parameters->SetStringKey("extensionId", extension_id);
+    parameters->SetBoolKey(key, true);
 
     base::ListValue args;
     args.Append(std::move(parameters));
@@ -311,8 +311,8 @@ void DeveloperPrivateApiUnitTest::TestExtensionPrefSetting(
 
   {
     auto parameters = std::make_unique<base::DictionaryValue>();
-    parameters->SetString("extensionId", extension_id);
-    parameters->SetBoolean(key, false);
+    parameters->SetStringKey("extensionId", extension_id);
+    parameters->SetBoolKey(key, false);
 
     base::ListValue args;
     args.Append(std::move(parameters));
@@ -613,7 +613,7 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateLoadUnpacked) {
   function->SetRenderFrameHost(web_contents->GetMainFrame());
   base::ListValue unpacked_args;
   std::unique_ptr<base::DictionaryValue> options(new base::DictionaryValue());
-  options->SetBoolean("failQuietly", true);
+  options->SetBoolKey("failQuietly", true);
   unpacked_args.Append(std::move(options));
   current_ids = registry()->enabled_extensions().GetIDs();
   EXPECT_FALSE(RunFunction(function, unpacked_args));

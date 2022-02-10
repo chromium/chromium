@@ -186,10 +186,10 @@ TEST_F(LanguageSettingsPrivateApiTest, GetSpellcheckDictionaryStatusesTest) {
 
   base::ListValue expected;
   auto expected_status = std::make_unique<base::DictionaryValue>();
-  expected_status->SetString("languageCode", "fr");
-  expected_status->SetBoolean("isReady", false);
-  expected_status->SetBoolean("isDownloading", true);
-  expected_status->SetBoolean("downloadFailed", false);
+  expected_status->SetStringKey("languageCode", "fr");
+  expected_status->SetBoolKey("isReady", false);
+  expected_status->SetBoolKey("isDownloading", true);
+  expected_status->SetBoolKey("downloadFailed", false);
   expected.Append(std::move(expected_status));
   EXPECT_EQ(expected, *actual);
 }

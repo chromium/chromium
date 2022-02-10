@@ -160,9 +160,9 @@ void FontSettingsEventRouter::OnFontNamePrefChanged(
   std::string font_name = pref->GetValue()->GetString();
   base::ListValue args;
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetString(kFontIdKey, font_name);
-  dict->SetString(kGenericFamilyKey, generic_family);
-  dict->SetString(kScriptKey, script);
+  dict->SetStringKey(kFontIdKey, font_name);
+  dict->SetStringKey(kGenericFamilyKey, generic_family);
+  dict->SetStringKey(kScriptKey, script);
   args.Append(std::move(dict));
 
   extensions::preference_helpers::DispatchEventToExtensions(
@@ -255,8 +255,8 @@ ExtensionFunction::ResponseAction FontSettingsGetFontFunction::Run() {
                                                         pref_path, kIncognito);
 
   std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
-  result->SetString(kFontIdKey, font_name);
-  result->SetString(kLevelOfControlKey, level_of_control);
+  result->SetStringKey(kFontIdKey, font_name);
+  result->SetStringKey(kLevelOfControlKey, level_of_control);
   return RespondNow(
       OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
@@ -355,7 +355,7 @@ ExtensionFunction::ResponseAction GetFontPrefExtensionFunction::Run() {
   std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
   result->Set(GetKey(),
               base::Value::ToUniquePtrValue(pref->GetValue()->Clone()));
-  result->SetString(kLevelOfControlKey, level_of_control);
+  result->SetStringKey(kLevelOfControlKey, level_of_control);
   return RespondNow(
       OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }

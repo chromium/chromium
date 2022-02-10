@@ -112,25 +112,25 @@ class WebRequestRulesRegistryTest : public testing::Test {
     auto scheme_http = std::make_unique<base::ListValue>();
     scheme_http->Append("http");
     auto http_condition_dict = std::make_unique<base::DictionaryValue>();
-    http_condition_dict->SetString(keys2::kHostSuffixKey, "example.com");
+    http_condition_dict->SetStringKey(keys2::kHostSuffixKey, "example.com");
     base::DictionaryValue http_condition_url_filter;
-    http_condition_url_filter.SetString(keys::kInstanceTypeKey,
-                                        keys::kRequestMatcherType);
+    http_condition_url_filter.SetStringKey(keys::kInstanceTypeKey,
+                                           keys::kRequestMatcherType);
 
     scheme_http->Append("https");
     auto https_condition_dict = std::make_unique<base::DictionaryValue>();
     https_condition_dict->Set(keys2::kSchemesKey,
                               std::make_unique<base::ListValue>());
-    https_condition_dict->SetString(keys2::kHostSuffixKey, "example.com");
-    https_condition_dict->SetString(keys2::kHostPrefixKey, "www");
+    https_condition_dict->SetStringKey(keys2::kHostSuffixKey, "example.com");
+    https_condition_dict->SetStringKey(keys2::kHostPrefixKey, "www");
     base::DictionaryValue https_condition_url_filter;
     https_condition_url_filter.Set(keys::kUrlKey,
                                    std::move(https_condition_dict));
-    https_condition_url_filter.SetString(keys::kInstanceTypeKey,
-                                         keys::kRequestMatcherType);
+    https_condition_url_filter.SetStringKey(keys::kInstanceTypeKey,
+                                            keys::kRequestMatcherType);
 
     base::DictionaryValue action_dict;
-    action_dict.SetString(keys::kInstanceTypeKey, keys::kCancelRequestType);
+    action_dict.SetStringKey(keys::kInstanceTypeKey, keys::kCancelRequestType);
 
     api::events::Rule rule;
     rule.id = std::make_unique<std::string>(kRuleId1);
@@ -147,10 +147,11 @@ class WebRequestRulesRegistryTest : public testing::Test {
   // Returns a rule that matches anything and cancels it.
   api::events::Rule CreateRule2() {
     base::DictionaryValue condition_dict;
-    condition_dict.SetString(keys::kInstanceTypeKey, keys::kRequestMatcherType);
+    condition_dict.SetStringKey(keys::kInstanceTypeKey,
+                                keys::kRequestMatcherType);
 
     base::DictionaryValue action_dict;
-    action_dict.SetString(keys::kInstanceTypeKey, keys::kCancelRequestType);
+    action_dict.SetStringKey(keys::kInstanceTypeKey, keys::kCancelRequestType);
 
     api::events::Rule rule;
     rule.id = std::make_unique<std::string>(kRuleId2);
@@ -162,11 +163,13 @@ class WebRequestRulesRegistryTest : public testing::Test {
 
   api::events::Rule CreateRedirectRule(const std::string& destination) {
     base::DictionaryValue condition_dict;
-    condition_dict.SetString(keys::kInstanceTypeKey, keys::kRequestMatcherType);
+    condition_dict.SetStringKey(keys::kInstanceTypeKey,
+                                keys::kRequestMatcherType);
 
     base::DictionaryValue action_dict;
-    action_dict.SetString(keys::kInstanceTypeKey, keys::kRedirectRequestType);
-    action_dict.SetString(keys::kRedirectUrlKey, destination);
+    action_dict.SetStringKey(keys::kInstanceTypeKey,
+                             keys::kRedirectRequestType);
+    action_dict.SetStringKey(keys::kRedirectUrlKey, destination);
 
     api::events::Rule rule;
     rule.id = std::make_unique<std::string>(kRuleId3);
@@ -181,13 +184,14 @@ class WebRequestRulesRegistryTest : public testing::Test {
   api::events::Rule CreateIgnoreRule() {
     base::DictionaryValue condition_dict;
     auto http_condition_dict = std::make_unique<base::DictionaryValue>();
-    http_condition_dict->SetString(keys2::kPathContainsKey, "index.html");
-    condition_dict.SetString(keys::kInstanceTypeKey, keys::kRequestMatcherType);
+    http_condition_dict->SetStringKey(keys2::kPathContainsKey, "index.html");
+    condition_dict.SetStringKey(keys::kInstanceTypeKey,
+                                keys::kRequestMatcherType);
     condition_dict.Set(keys::kUrlKey, std::move(http_condition_dict));
 
     base::DictionaryValue action_dict;
-    action_dict.SetString(keys::kInstanceTypeKey, keys::kIgnoreRulesType);
-    action_dict.SetInteger(keys::kLowerPriorityThanKey, 150);
+    action_dict.SetStringKey(keys::kInstanceTypeKey, keys::kIgnoreRulesType);
+    action_dict.SetIntKey(keys::kLowerPriorityThanKey, 150);
 
     api::events::Rule rule;
     rule.id = std::make_unique<std::string>(kRuleId4);
@@ -216,7 +220,7 @@ class WebRequestRulesRegistryTest : public testing::Test {
       const char* rule_id,
       const std::vector<const std::string*>& attributes) {
     base::DictionaryValue action_dict;
-    action_dict.SetString(keys::kInstanceTypeKey, keys::kCancelRequestType);
+    action_dict.SetStringKey(keys::kInstanceTypeKey, keys::kCancelRequestType);
 
     api::events::Rule rule;
     rule.id = std::make_unique<std::string>(rule_id);

@@ -119,7 +119,7 @@ class WebrtcAudioPrivateTest : public AudioWaitingExtensionTest {
   void AppendTabIdToRequestInfo(base::ListValue* params, int tab_id) {
     std::unique_ptr<base::DictionaryValue> request_info(
         new base::DictionaryValue());
-    request_info->SetInteger("tabId", tab_id);
+    request_info->SetIntKey("tabId", tab_id);
     params->Append(std::move(request_info));
   }
 

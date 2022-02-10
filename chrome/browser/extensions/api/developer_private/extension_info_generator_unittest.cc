@@ -363,8 +363,8 @@ TEST_F(ExtensionInfoGeneratorUnitTest, BasicInfoTest) {
   EXPECT_EQ(extension->id(), manifest_error.extension_id);
 
   // Test an extension that isn't unpacked.
-  manifest_copy->SetString("update_url",
-                           "https://clients2.google.com/service/update2/crx");
+  manifest_copy->SetStringKey(
+      "update_url", "https://clients2.google.com/service/update2/crx");
   id = crx_file::id_util::GenerateId("beta");
   extension = ExtensionBuilder()
                   .SetManifest(std::move(manifest_copy))
