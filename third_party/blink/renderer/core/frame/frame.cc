@@ -579,11 +579,17 @@ Frame* Frame::Top(FrameTreeBoundary frame_tree_boundary) {
 }
 
 Frame* Frame::FirstChild(FrameTreeBoundary frame_tree_boundary) const {
-  if (frame_tree_boundary == FrameTreeBoundary::kFenced && first_child_ &&
-      first_child_->Owner()->GetFramePolicy().is_fenced) {
-    return nullptr;
+  if (frame_tree_boundary == FrameTreeBoundary::kIgnoreFence) {
+    return first_child_;
   }
-  return first_child_;
+
+  // Skip over children that are the root of a fenced subtree (and therefore
+  // on the other side of a fenced frame boundary).
+  Frame* first_child = first_child_;
+  while (first_child && first_child->Owner()->GetFramePolicy().is_fenced) {
+    first_child = first_child->next_sibling_;
+  }
+  return first_child;
 }
 
 bool Frame::Swap(WebFrame* new_web_frame) {

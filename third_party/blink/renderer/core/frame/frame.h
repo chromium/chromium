@@ -353,6 +353,8 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
       FrameTreeBoundary frame_tree_boundary = FrameTreeBoundary::kIgnoreFence);
 
   // Returns the first child frame.
+  // When `frame_tree_boundary` is `kFenced`, skips over children that are
+  // fenced frame roots.
   Frame* FirstChild(FrameTreeBoundary frame_tree_boundary =
                         FrameTreeBoundary::kIgnoreFence) const;
 
