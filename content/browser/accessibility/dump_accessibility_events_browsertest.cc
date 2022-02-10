@@ -325,8 +325,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-textbox-children-change.html"));
 }
 
+// Test is flaky on Mac: crbug.com/1295914
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_AccessibilityEventsAriaTextboxEditabilityChanges \
+  DISABLED_AccessibilityEventsAriaTextboxEditabilityChanges
+#else
+#define MAYBE_AccessibilityEventsAriaTextboxEditabilityChanges \
+  AccessibilityEventsAriaTextboxEditabilityChanges
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       AccessibilityEventsAriaTextboxEditabilityChanges) {
+                       MAYBE_AccessibilityEventsAriaTextboxEditabilityChanges) {
   RunEventTest(FILE_PATH_LITERAL("aria-textbox-editability-changes.html"));
 }
 
