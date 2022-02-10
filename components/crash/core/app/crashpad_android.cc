@@ -631,25 +631,6 @@ class HandlerStarter {
   bool use_java_handler_ = false;
 };
 
-bool ConnectToHandler(CrashReporterClient* client, base::ScopedFD* connection) {
-  int fds[2];
-  if (socketpair(AF_UNIX, SOCK_STREAM, 0, fds) != 0) {
-    PLOG(ERROR) << "socketpair";
-    return false;
-  }
-  base::ScopedFD local_connection(fds[0]);
-  base::ScopedFD handlers_socket(fds[1]);
-
-  if (!HandlerStarter::Get()->StartHandlerForClient(
-          client, handlers_socket.get(),
-          true /* write_minidump_to_database */)) {
-    return false;
-  }
-
-  *connection = std::move(local_connection);
-  return true;
-}
-
 bool g_is_browser = false;
 
 }  // namespace
@@ -672,35 +653,6 @@ void DumpWithoutCrashing() {
     crashpad::SandboxedHandler::Get()->HandleCrashNonFatal(siginfo.si_signo,
                                                            &siginfo, &context);
   }
-}
-
-bool DumpWithoutCrashingForClient(CrashReporterClient* client) {
-  base::ScopedFD connection;
-  if (!ConnectToHandler(client, &connection)) {
-    return false;
-  }
-
-  siginfo_t siginfo;
-  siginfo.si_signo = crashpad::Signals::kSimulatedSigno;
-  siginfo.si_errno = 0;
-  siginfo.si_code = 0;
-
-  ucontext_t context;
-  crashpad::CaptureContext(&context);
-
-  crashpad::SanitizationInformation sanitization;
-  crashpad::SetSanitizationInfo(client, &sanitization);
-
-  crashpad::ExceptionInformation exception;
-  crashpad::SetExceptionInformation(&siginfo, &context, &exception);
-
-  crashpad::ExceptionHandlerProtocol::ClientInformation info;
-  crashpad::SetClientInformation(&exception, &sanitization, &info);
-
-  crashpad::ScopedPrSetDumpable set_dumpable(/* may_log= */ false);
-
-  crashpad::ExceptionHandlerClient handler_client(connection.get(), false);
-  return handler_client.RequestCrashDump(info) == 0;
 }
 
 void AllowMemoryRange(void* begin, size_t length) {

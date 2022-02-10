@@ -221,12 +221,6 @@ void StartProcessingPendingReports();
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-// This is used by WebView to generate a dump on behalf of the embedding app.
-// This function can only be called from the browser process. Returns `true` on
-// success.
-class CrashReporterClient;
-bool DumpWithoutCrashingForClient(CrashReporterClient* client);
-
 // If a CrashReporterClient has enabled sanitization, this function specifies
 // regions of memory which are allowed to be collected by Crashpad.
 void AllowMemoryRange(void* begin, size_t size);
