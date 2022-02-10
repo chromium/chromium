@@ -25,6 +25,10 @@ namespace partition_alloc::internal {
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 using PartitionTlsKey = pthread_key_t;
 
+// Only on x86_64, the implementation is not stable on ARM64. For instance, in
+// macOS 11, the TPIDRRO_EL0 registers holds the CPU index in the low bits,
+// which is not the case in macOS 12. See libsyscall/os/tsd.h in XNU
+// (_os_tsd_get_direct() is used by pthread_getspecific() internally).
 #if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
 namespace {
 

@@ -201,6 +201,10 @@ TlsVectorState GetTlsVectorStateAndValue(void* tls_value,
 // Returns the tls vector and state using the tls key.
 TlsVectorState GetTlsVectorStateAndValue(PlatformThreadLocalStorage::TLSKey key,
                                          TlsVectorEntry** entry = nullptr) {
+// Only on x86_64, the implementation is not stable on ARM64. For instance, in
+// macOS 11, the TPIDRRO_EL0 registers holds the CPU index in the low bits,
+// which is not the case in macOS 12. See libsyscall/os/tsd.h in XNU
+// (_os_tsd_get_direct() is used by pthread_getspecific() internally).
 #if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_X86_64)
   // On macOS, pthread_getspecific() is in libSystem, so a call to it has to go
   // through PLT. However, and contrary to some other platforms, *all* TLS keys
