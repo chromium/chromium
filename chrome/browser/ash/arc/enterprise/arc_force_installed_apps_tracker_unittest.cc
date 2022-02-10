@@ -130,7 +130,7 @@ class ArcForceInstalledAppsTrackerTest : public testing::Test {
   }
 
   ArcAppListPrefs* prefs() { return arc_app_test_.arc_app_list_prefs(); }
-  arc::mojom::AppHost* const app_host() { return prefs(); }
+  arc::mojom::AppHost* app_host() { return prefs(); }
 
   content::BrowserTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
