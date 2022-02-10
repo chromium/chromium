@@ -18,6 +18,7 @@
 #include "base/strings/stringprintf.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/common/extension_api.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/features/feature_flags.h"
@@ -631,8 +632,11 @@ Feature::Availability SimpleFeature::GetEnvironmentAvailability(
   if (!MatchesSessionTypes(session_type))
     return CreateAvailability(INVALID_SESSION_TYPE, session_type);
 
-  if (developer_mode_only_ && !GetCurrentDeveloperMode(context_id))
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kRestrictDeveloperModeAPIs) &&
+      developer_mode_only_ && !GetCurrentDeveloperMode(context_id)) {
     return CreateAvailability(REQUIRES_DEVELOPER_MODE);
+  }
 
   return CreateAvailability(IS_AVAILABLE);
 }

@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/features/complex_feature.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/features/feature_developer_mode_only.h"
@@ -1075,34 +1076,86 @@ TEST(SimpleFeatureUnitTest, TestExperimentalExtensionApisSwitch) {
   }
 }
 
-TEST_F(SimpleFeatureTest, DeveloperModeOnly) {
+TEST_F(SimpleFeatureTest, EnableRestrictDeveloperModeAPIs) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      extensions_features::kRestrictDeveloperModeAPIs);
+
   constexpr int kContextId1 = 1;
   constexpr int kContextId2 = 2;
-  SimpleFeature feature;
+  SimpleFeature dev_mode_only_feature;
+  dev_mode_only_feature.set_developer_mode_only(true);
+  SimpleFeature other_feature;
 
-  EXPECT_EQ(Feature::IS_AVAILABLE,
-            feature.IsAvailableToEnvironment(kContextId1).result());
-  EXPECT_EQ(Feature::IS_AVAILABLE,
-            feature.IsAvailableToEnvironment(kContextId2).result());
-
+  // With kDeveloperModeRestriction enabled, developer mode-only APIs
+  // should be available if and only if the user is in dev mode.
   SetCurrentDeveloperMode(kContextId1, true);
+  EXPECT_EQ(
+      Feature::IS_AVAILABLE,
+      dev_mode_only_feature.IsAvailableToEnvironment(kContextId1).result());
   EXPECT_EQ(Feature::IS_AVAILABLE,
-            feature.IsAvailableToEnvironment(kContextId1).result());
+            other_feature.IsAvailableToEnvironment(kContextId1).result());
+
+  SetCurrentDeveloperMode(kContextId1, false);
+  EXPECT_EQ(
+      Feature::REQUIRES_DEVELOPER_MODE,
+      dev_mode_only_feature.IsAvailableToEnvironment(kContextId1).result());
+  EXPECT_EQ(Feature::IS_AVAILABLE,
+            other_feature.IsAvailableToEnvironment(kContextId1).result());
 
   SetCurrentDeveloperMode(kContextId2, true);
+  EXPECT_EQ(
+      Feature::IS_AVAILABLE,
+      dev_mode_only_feature.IsAvailableToEnvironment(kContextId2).result());
   EXPECT_EQ(Feature::IS_AVAILABLE,
-            feature.IsAvailableToEnvironment(kContextId2).result());
+            other_feature.IsAvailableToEnvironment(kContextId2).result());
 
-  feature.set_developer_mode_only(true);
-  SetCurrentDeveloperMode(kContextId1, false);
-  EXPECT_EQ(Feature::REQUIRES_DEVELOPER_MODE,
-            feature.IsAvailableToEnvironment(kContextId1).result());
+  SetCurrentDeveloperMode(kContextId2, false);
+  EXPECT_EQ(
+      Feature::REQUIRES_DEVELOPER_MODE,
+      dev_mode_only_feature.IsAvailableToEnvironment(kContextId2).result());
   EXPECT_EQ(Feature::IS_AVAILABLE,
-            feature.IsAvailableToEnvironment(kContextId2).result());
+            other_feature.IsAvailableToEnvironment(kContextId2).result());
+}
+
+TEST_F(SimpleFeatureTest, DisableRestrictDeveloperModeAPIs) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      extensions_features::kRestrictDeveloperModeAPIs);
+
+  constexpr int kContextId1 = 1;
+  constexpr int kContextId2 = 2;
+  SimpleFeature dev_mode_only_feature;
+  dev_mode_only_feature.set_developer_mode_only(true);
+  SimpleFeature other_feature;
 
   SetCurrentDeveloperMode(kContextId1, true);
+  EXPECT_EQ(
+      Feature::IS_AVAILABLE,
+      dev_mode_only_feature.IsAvailableToEnvironment(kContextId1).result());
   EXPECT_EQ(Feature::IS_AVAILABLE,
-            feature.IsAvailableToEnvironment(kContextId1).result());
+            other_feature.IsAvailableToEnvironment(kContextId1).result());
+
+  SetCurrentDeveloperMode(kContextId1, false);
+  EXPECT_EQ(
+      Feature::IS_AVAILABLE,
+      dev_mode_only_feature.IsAvailableToEnvironment(kContextId1).result());
+  EXPECT_EQ(Feature::IS_AVAILABLE,
+            other_feature.IsAvailableToEnvironment(kContextId1).result());
+
+  SetCurrentDeveloperMode(kContextId2, true);
+  EXPECT_EQ(
+      Feature::IS_AVAILABLE,
+      dev_mode_only_feature.IsAvailableToEnvironment(kContextId2).result());
+  EXPECT_EQ(Feature::IS_AVAILABLE,
+            other_feature.IsAvailableToEnvironment(kContextId2).result());
+
+  SetCurrentDeveloperMode(kContextId2, false);
+  EXPECT_EQ(
+      Feature::IS_AVAILABLE,
+      dev_mode_only_feature.IsAvailableToEnvironment(kContextId2).result());
+  EXPECT_EQ(Feature::IS_AVAILABLE,
+            other_feature.IsAvailableToEnvironment(kContextId2).result());
 }
 
 TEST(SimpleFeatureUnitTest, DisallowForServiceWorkers) {

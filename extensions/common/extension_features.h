@@ -30,6 +30,8 @@ extern const base::Feature kAllowWasmInMV3;
 
 extern const base::Feature kStructuredCloningForMV3Messaging;
 
+extern const base::Feature kRestrictDeveloperModeAPIs;
+
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

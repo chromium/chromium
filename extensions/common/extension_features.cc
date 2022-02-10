@@ -72,4 +72,9 @@ const base::Feature kAllowWasmInMV3{"AllowWasmInMV3",
 const base::Feature kStructuredCloningForMV3Messaging{
     "StructuredCloningForMV3Messaging", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, causes extensions to allow access to certain APIs only if the
+// user is in the developer mode.
+const base::Feature kRestrictDeveloperModeAPIs{
+    "RestrictDeveloperModeAPIs", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace extensions_features
