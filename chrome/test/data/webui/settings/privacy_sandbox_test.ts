@@ -277,6 +277,20 @@ suite('PrivacySandboxSettings3', function() {
                 '#' + PrivacySandboxSettingsView.AD_MEASUREMENT_DIALOG)!.if !);
   }
 
+  function assertSpamAndFraudDialogVisible() {
+    assertEquals(
+        page.privacySandboxSettingsView_,
+        PrivacySandboxSettingsView.SPAM_AND_FRAUD_DIALOG);
+    const dialogWrapper =
+        page.shadowRoot!.querySelector<CrDialogElement>('#dialogWrapper');
+    assertTrue(!!dialogWrapper);
+    assertTrue(dialogWrapper.open);
+    assertTrue(
+        page.shadowRoot!
+            .querySelector<DomIf>(
+                '#' + PrivacySandboxSettingsView.SPAM_AND_FRAUD_DIALOG)!.if !);
+  }
+
   test('testSandboxSettings3Visibility', function() {
     assertFalse(isChildVisible(page, '#trialsCard'));
     assertFalse(isChildVisible(page, '#flocCard'));
@@ -369,5 +383,19 @@ suite('PrivacySandboxSettings3', function() {
             'a[href]');
     assertTrue(!!browsingHistoryLink);
     assertEquals('chrome://history/', browsingHistoryLink.href);
+  });
+
+  test('testSpamAndFraudDialog', async function() {
+    assertMainViewVisible();
+
+    // Clicking on the spam & fraud row should open the dialog.
+    page.shadowRoot!.querySelector<HTMLElement>('#spamAndFraudRow')!.click();
+    await flushTasks();
+    assertSpamAndFraudDialogVisible();
+
+    // Clicking on the close button of the dialog should close it.
+    page.shadowRoot!.querySelector<HTMLElement>('#dialogCloseButton')!.click();
+    await flushTasks();
+    assertMainViewVisible();
   });
 });

@@ -141,10 +141,11 @@
         label="$i18n{privacySandboxAdMeasurementTitle}"
         sub-label="$i18n{privacySandboxAdMeasurementSummary}"
         on-click="onAdMeasurementRowClick_"></cr-link-row>
-      <cr-link-row
+      <cr-link-row id="spamAndFraudRow"
         start-icon="privacy-sandbox:spam-reduction"
         label="$i18n{privacySandboxSpamAndFraudTitle}"
-        sub-label="$i18n{privacySandboxSpamAndFraudSummary}"></cr-link-row>
+        sub-label="$i18n{privacySandboxSpamAndFraudSummary}"
+        on-click="onSpamAndFraudRowClick_"></cr-link-row>
     </div>
     <template is="dom-if"
         if="[[!showFragment_(privacySandboxSettingsViewEnum_.MAIN,
@@ -236,6 +237,23 @@
             <div id="adMeasurementDialogControlMeasurement"
                 class="dialog-description">
               $i18nRaw{privacySandboxAdMeasurementDialogControlMeasurement}
+            </div>
+          </div>
+        </template>
+        <template id="spamAndFraudDialog" is="dom-if"
+            if="[[showFragment_(
+                    privacySandboxSettingsViewEnum_.SPAM_AND_FRAUD_DIALOG,
+                    privacySandboxSettingsView_)]]">
+          <div slot="title">$i18n{privacySandboxSpamAndFraudDialogTitle}</div>
+          <div slot="body">
+            <div class="dialog-description">
+              $i18n{privacySandboxSpamAndFraudDialogDescription1}
+            </div>
+            <div class="dialog-description">
+              $i18n{privacySandboxSpamAndFraudDialogDescription2}
+            </div>
+            <div class="dialog-description">
+              $i18n{privacySandboxSpamAndFraudDialogDescription3}
             </div>
           </div>
         </template>
