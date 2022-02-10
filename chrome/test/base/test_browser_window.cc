@@ -179,6 +179,10 @@ bool TestBrowserWindow::IsFullscreenBubbleVisible() const {
   return false;
 }
 
+bool TestBrowserWindow::IsForceFullscreen() const {
+  return false;
+}
+
 bool TestBrowserWindow::IsVisible() const {
   return true;
 }

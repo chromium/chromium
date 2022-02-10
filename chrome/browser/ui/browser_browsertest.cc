@@ -2104,7 +2104,12 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, DisallowFileUrlUniversalAccessTest) {
 
 class KioskModeTest : public BrowserTest {
  public:
-  KioskModeTest() {}
+  KioskModeTest() = default;
+
+  void SetUpOnMainThread() override {
+    BrowserTest::SetUpOnMainThread();
+    browser()->window()->SetForceFullscreen(true);
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kKioskMode);
@@ -2125,6 +2130,23 @@ IN_PROC_BROWSER_TEST_F(KioskModeTest, MAYBE_EnableKioskModeTest) {
   ASSERT_TRUE(browser()->window()->IsFullscreen());
   ASSERT_FALSE(browser()->window()->IsFullscreenBubbleVisible());
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(KioskModeTest, DoNotExitFullscreen) {
+  browser()->window()->GetExclusiveAccessContext()->ExitFullscreen();
+  ASSERT_TRUE(browser()->window()->IsFullscreen());
+}
+
+IN_PROC_BROWSER_TEST_F(KioskModeTest, DoNotChangeBounds) {
+  gfx::Rect old_bounds = browser()->window()->GetBounds();
+
+  browser()->window()->SetBounds(gfx::Rect(10, 10, 10, 10));
+  gfx::Rect new_bounds = browser()->window()->GetBounds();
+
+  ASSERT_TRUE(browser()->window()->IsFullscreen());
+  ASSERT_EQ(old_bounds, new_bounds);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 // This test verifies that Chrome can be launched with a user-data-dir path

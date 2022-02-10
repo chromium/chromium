@@ -1128,6 +1128,9 @@ bool BrowserView::IsVisible() const {
 }
 
 void BrowserView::SetBounds(const gfx::Rect& bounds) {
+  if (IsForceFullscreen())
+    return;
+
   ExitFullscreen();
   GetWidget()->SetBounds(bounds);
 }
@@ -1567,6 +1570,9 @@ void BrowserView::ExitFullscreen() {
   if (!IsFullscreen())
     return;  // Nothing to do.
 
+  if (IsForceFullscreen())
+    return;
+
   ProcessFullscreen(false, GURL(), EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
                     display::kInvalidDisplayId);
 }
@@ -1645,6 +1651,14 @@ bool BrowserView::IsFullscreen() const {
 
 bool BrowserView::IsFullscreenBubbleVisible() const {
   return exclusive_access_bubble_ != nullptr;
+}
+
+bool BrowserView::IsForceFullscreen() const {
+  return force_fullscreen_;
+}
+
+void BrowserView::SetForceFullscreen(bool force_fullscreen) {
+  force_fullscreen_ = force_fullscreen;
 }
 
 void BrowserView::RestoreFocus() {

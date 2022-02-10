@@ -290,6 +290,11 @@ class BrowserWindow : public ui::BaseWindow {
   // Returns true if the fullscreen bubble is visible.
   virtual bool IsFullscreenBubbleVisible() const = 0;
 
+  // True when we do not want to allow exiting fullscreen, e.g. in Chrome OS
+  // Kiosk session.
+  virtual bool IsForceFullscreen() const = 0;
+  virtual void SetForceFullscreen(bool force_fullscreen) = 0;
+
   // Returns the size of WebContents in the browser. This may be called before
   // the TabStripModel has an active tab.
   virtual gfx::Size GetContentsSize() const = 0;
