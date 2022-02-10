@@ -275,10 +275,7 @@ void Frame::DidChangeVisibilityState() {
 
 void Frame::NotifyUserActivationInFrameTree(
     mojom::blink::UserActivationNotificationType notification_type) {
-  // TODO(crbug.com/1262022): Remove this once we use MPArch as the underlying
-  // fenced frames implementation, instead of ShadowDOM.
-  for (Frame* node = this; node;
-       node = node->Tree().Parent(FrameTreeBoundary::kFenced)) {
+  for (Frame* node = this; node; node = node->Tree().Parent()) {
     node->user_activation_state_.Activate(notification_type);
   }
 
@@ -290,9 +287,8 @@ void Frame::NotifyUserActivationInFrameTree(
     const SecurityOrigin* security_origin =
         local_frame->GetSecurityContext()->GetSecurityOrigin();
 
-    for (Frame *top = &Tree().Top(FrameTreeBoundary::kFenced), *node = top;
-         node;
-         node = node->Tree().TraverseNext(top, FrameTreeBoundary::kFenced)) {
+    for (Frame* node = &Tree().Top(); node;
+         node = node->Tree().TraverseNext()) {
       auto* local_frame_node = DynamicTo<LocalFrame>(node);
       if (local_frame_node &&
           security_origin->CanAccess(
@@ -588,27 +584,6 @@ Frame* Frame::FirstChild(FrameTreeBoundary frame_tree_boundary) const {
     return nullptr;
   }
   return first_child_;
-}
-
-Frame* Frame::NextSibling(FrameTreeBoundary frame_tree_boundary) const {
-  if (frame_tree_boundary == FrameTreeBoundary::kIgnoreFence) {
-    return next_sibling_;
-  }
-
-  // When respecting fenced frame boundaries, a fenced frame root is always
-  // considered as having no siblings.
-  if (Owner() && Owner()->GetFramePolicy().is_fenced) {
-    return nullptr;
-  }
-
-  // Skip over siblings that are the root of a fenced subtree (and therefore
-  // on the other side of a fenced frame boundary).
-  Frame* sibling = next_sibling_;
-  while (sibling && sibling->Owner()->GetFramePolicy().is_fenced) {
-    sibling = sibling->next_sibling_;
-  }
-
-  return sibling;
 }
 
 bool Frame::Swap(WebFrame* new_web_frame) {

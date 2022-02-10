@@ -160,13 +160,6 @@ function attachFencedFrame(url) {
   return fenced_frame;
 }
 
-function attachIFrame(url) {
-  const iframe = document.createElement('iframe');
-  iframe.src = url;
-  document.body.append(iframe);
-  return iframe;
-}
-
 // Reads the value specified by `key` from the key-value store on the server.
 async function readValueFromServer(key) {
   // Resolve the key if it is a Promise.
