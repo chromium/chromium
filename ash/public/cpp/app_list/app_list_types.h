@@ -58,9 +58,10 @@ enum class AppListConfigType {
 
 // Item types supported by SearchResultTextItem.
 enum class SearchResultTextItemType {
-  kString,       // Styled text.
-  kIconCode,     // Built in vector icons.
-  kCustomImage,  // Vector icons provided by the search model.
+  kString,         // Styled text.
+  kIconCode,       // Built in vector icons.
+  kCustomImage,    // Vector icons provided by the search model.
+  kIconifiedText,  // Text to be styled like an icon e.g. "Alt", "Ctrl".
 };
 
 // A structure holding an item icon' color information.

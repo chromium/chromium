@@ -386,6 +386,7 @@ SearchResultView::SetupContainerViewForTextVector(
       } break;
       case SearchResultTextItemType::kIconCode:
       case SearchResultTextItemType::kCustomImage:
+      case SearchResultTextItemType::kIconifiedText:
         // TODO(crbug/1216097): Add icon support for search result view.
         break;
     }
