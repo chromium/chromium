@@ -36,6 +36,7 @@ source_set("infobar_banner") {
     "//components/translate/core/browser",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars/overlays:infobar_delegates",
     "//ios/chrome/browser/infobars/overlays:overlay_type",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common",

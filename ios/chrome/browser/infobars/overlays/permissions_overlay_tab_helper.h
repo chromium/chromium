@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_WEB_PERMISSIONS_TAB_HELPER_H_
-#define IOS_CHROME_BROWSER_WEB_PERMISSIONS_TAB_HELPER_H_
+#ifndef IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_PERMISSIONS_OVERLAY_TAB_HELPER_H_
+#define IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_PERMISSIONS_OVERLAY_TAB_HELPER_H_
 
 #import <Foundation/Foundation.h>
 
@@ -12,6 +12,8 @@
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
+class InfobarOverlayRequestInserter;
+class OverlayRequestQueue;
 enum class Permission : NSUInteger;
 
 namespace base {
@@ -20,16 +22,17 @@ class OneShotTimer;
 
 // Tab helper that observes changes to web permissions and creates/replaces the
 // respective infobar accordingly.
-class PermissionsTabHelper
+class PermissionsOverlayTabHelper
     : public infobars::InfoBarManager::Observer,
       public web::WebStateObserver,
-      public web::WebStateUserData<PermissionsTabHelper> {
+      public web::WebStateUserData<PermissionsOverlayTabHelper> {
  public:
-  explicit PermissionsTabHelper(web::WebState* web_state);
+  explicit PermissionsOverlayTabHelper(web::WebState* web_state);
 
-  PermissionsTabHelper(const PermissionsTabHelper&) = delete;
-  PermissionsTabHelper& operator=(const PermissionsTabHelper&) = delete;
-  ~PermissionsTabHelper() override;
+  PermissionsOverlayTabHelper(const PermissionsOverlayTabHelper&) = delete;
+  PermissionsOverlayTabHelper& operator=(const PermissionsOverlayTabHelper&) =
+      delete;
+  ~PermissionsOverlayTabHelper() override;
 
   // web::WebStateObserver implementation.
   void PermissionStateChanged(web::WebState* web_state,
@@ -41,7 +44,7 @@ class PermissionsTabHelper
   void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
 
  private:
-  friend class web::WebStateUserData<PermissionsTabHelper>;
+  friend class web::WebStateUserData<PermissionsOverlayTabHelper>;
 
   // Adds/replaces the infobar and show the banner.
   void ShowInfoBar();
@@ -66,7 +69,13 @@ class PermissionsTabHelper
   // A mapping of current permissions to their states used to detect changes.
   NSMutableDictionary<NSNumber*, NSNumber*>* permissions_to_state_;
 
+  // Banner queue for the TabHelper's WebState;
+  OverlayRequestQueue* banner_queue_ = nullptr;
+
+  // Request inserter for the TabHelper's WebState;
+  InfobarOverlayRequestInserter* inserter_ = nullptr;
+
   WEB_STATE_USER_DATA_KEY_DECL();
 };
 
-#endif  // IOS_CHROME_BROWSER_WEB_PERMISSIONS_TAB_HELPER_H_
+#endif  // IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_PERMISSIONS_OVERLAY_TAB_HELPER_H_
