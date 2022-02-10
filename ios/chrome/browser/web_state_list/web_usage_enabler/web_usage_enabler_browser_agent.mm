@@ -39,15 +39,6 @@ void WebUsageEnablerBrowserAgent::SetWebUsageEnabled(bool web_usage_enabled) {
   UpdateWebUsageForAllWebStates();
 }
 
-bool WebUsageEnablerBrowserAgent::TriggersInitialLoad() const {
-  return triggers_initial_load_;
-}
-
-void WebUsageEnablerBrowserAgent::SetTriggersInitialLoad(
-    bool triggers_initial_load) {
-  triggers_initial_load_ = triggers_initial_load;
-}
-
 void WebUsageEnablerBrowserAgent::UpdateWebUsageForAllWebStates() {
   WebStateList* web_state_list = browser_->GetWebStateList();
   for (int index = 0; index < web_state_list->count(); ++index) {
@@ -61,8 +52,9 @@ void WebUsageEnablerBrowserAgent::UpdateWebUsageForAddedWebState(
     bool triggers_initial_load) {
   if (web_state->IsRealized()) {
     web_state->SetWebUsageEnabled(web_usage_enabled_);
-    if (web_usage_enabled_ && triggers_initial_load)
+    if (web_usage_enabled_ && triggers_initial_load) {
       web_state->GetNavigationManager()->LoadIfNecessary();
+    }
   } else if (!web_state_observations_.IsObservingSource(web_state)) {
     web_state_observations_.AddObservation(web_state);
   }
@@ -79,7 +71,8 @@ void WebUsageEnablerBrowserAgent::WebStateInsertedAt(
     web::WebState* web_state,
     int index,
     bool activating) {
-  UpdateWebUsageForAddedWebState(web_state, triggers_initial_load_);
+  UpdateWebUsageForAddedWebState(web_state,
+                                 /*triggers_initial_load=*/activating);
 }
 
 void WebUsageEnablerBrowserAgent::WebStateReplacedAt(
@@ -91,7 +84,7 @@ void WebUsageEnablerBrowserAgent::WebStateReplacedAt(
     web_state_observations_.RemoveObservation(old_web_state);
   }
 
-  UpdateWebUsageForAddedWebState(new_web_state, triggers_initial_load_);
+  UpdateWebUsageForAddedWebState(new_web_state, /*triggers_initial_load=*/true);
 }
 
 void WebUsageEnablerBrowserAgent::WebStateDetachedAt(
@@ -104,7 +97,7 @@ void WebUsageEnablerBrowserAgent::WebStateDetachedAt(
 }
 
 void WebUsageEnablerBrowserAgent::WebStateRealized(web::WebState* web_state) {
-  UpdateWebUsageForAddedWebState(web_state, triggers_initial_load_);
+  UpdateWebUsageForAddedWebState(web_state, /*triggers_initial_load=*/false);
   web_state_observations_.RemoveObservation(web_state);
 }
 

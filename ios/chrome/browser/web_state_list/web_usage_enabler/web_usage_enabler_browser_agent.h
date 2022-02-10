@@ -38,14 +38,6 @@ class WebUsageEnablerBrowserAgent
   // The current value set with |SetWebUsageEnabled|.
   bool IsWebUsageEnabled() const;
 
-  // When TriggersInitialLoad() is |true|, the enabler will kick off the initial
-  // load for WebStates added to the list while |IsWebUsageEnabled| is |true|.
-  // Initially |true|.
-  bool TriggersInitialLoad() const;
-
-  // Sets the value for |TriggersInitialLoad|.
-  void SetTriggersInitialLoad(bool triggers_initial_load);
-
  private:
   // Updates the web usage enabled status of all WebStates in |browser_|'s web
   // state list to |web_usage_enabled_|.
@@ -84,10 +76,6 @@ class WebUsageEnablerBrowserAgent
 
   // Whether web usage is enabled for the WebState in |web_state_list_|.
   bool web_usage_enabled_ = false;
-
-  // Whether the initial load for a WebState added to |web_state_list_| should
-  // be triggered if |web_usage_enabled_| is true.
-  bool triggers_initial_load_ = true;
 
   // Scoped observations of Browser, WebStateList and WebStates.
   base::ScopedObservation<Browser, BrowserObserver> browser_observation_{this};

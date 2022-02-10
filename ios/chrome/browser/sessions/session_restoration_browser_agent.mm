@@ -96,11 +96,6 @@ bool SessionRestorationBrowserAgent::RestoreSessionWindow(
   const int old_count = web_state_list_->count();
   DCHECK_GE(old_count, 0);
 
-  // Don't trigger the initial load for these restored WebStates since the
-  // number of WKWebViews is unbounded and may lead to an OOM crash.
-  const bool saved_triggers_initial_load = web_enabler_->TriggersInitialLoad();
-  web_enabler_->SetTriggersInitialLoad(false);
-
   web_state_list_->PerformBatchOperation(
       base::BindOnce(^(WebStateList* web_state_list) {
         web::WebState::CreateParams create_params(browser_state_);
@@ -109,8 +104,6 @@ bool SessionRestorationBrowserAgent::RestoreSessionWindow(
             base::BindRepeating(&web::WebState::CreateWithStorageSession,
                                 create_params));
       }));
-
-  web_enabler_->SetTriggersInitialLoad(saved_triggers_initial_load);
 
   DCHECK_GT(web_state_list_->count(), old_count);
   int restored_count = web_state_list_->count() - old_count;

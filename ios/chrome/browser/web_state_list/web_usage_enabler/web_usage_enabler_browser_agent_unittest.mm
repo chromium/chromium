@@ -106,14 +106,15 @@ TEST_F(WebUsageEnablerBrowserAgentTest, EnableWebUsage) {
 // of newly added WebStates from being kicked off.
 TEST_F(WebUsageEnablerBrowserAgentTest, DisableInitialLoad) {
   enabler_->SetWebUsageEnabled(true);
-  // Disable the initial load and verify that the added WebState's
-  // LoadIfNecessary() was not called.
-  enabler_->SetTriggersInitialLoad(false);
-  AppendNewWebState(kURL);
+
+  // Insert with FORCE_INDEX to not activate and not trigger a load.
+  web_state_list_->InsertWebState(0, CreateWebState(kURL),
+                                  WebStateList::INSERT_FORCE_INDEX,
+                                  WebStateOpener());
   EXPECT_FALSE(InitialLoadTriggeredForLastWebState());
-  // Enable the initial load and verify that the added WebState's
-  // LoadIfNecessary() was called.
-  enabler_->SetTriggersInitialLoad(true);
-  AppendNewWebState(kURL);
+
+  // Insert without FORCE_INDEX and verify LoadIfNecessary() was called.
+  web_state_list_->InsertWebState(
+      0, CreateWebState(kURL), WebStateList::INSERT_ACTIVATE, WebStateOpener());
   EXPECT_TRUE(InitialLoadTriggeredForLastWebState());
 }
