@@ -114,7 +114,13 @@ class PolicyPrefsTest : public PlatformBrowserTest {
 
 // Verifies that policies make their corresponding preferences become managed,
 // and that the user can't override that setting.
-IN_PROC_BROWSER_TEST_F(PolicyPrefsTest, PolicyToPrefsMapping) {
+// TODO(crbug.com/1294825) Flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PolicyToPrefsMapping DISABLED_PolicyToPrefsMapping
+#else
+#define MAYBE_PolicyToPrefsMapping PolicyToPrefsMapping
+#endif
+IN_PROC_BROWSER_TEST_F(PolicyPrefsTest, MAYBE_PolicyToPrefsMapping) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::FakeBrowserDMTokenStorage storage;
   policy::BrowserDMTokenStorage::SetForTesting(&storage);
