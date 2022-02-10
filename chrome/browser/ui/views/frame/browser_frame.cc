@@ -247,6 +247,9 @@ const ui::ThemeProvider* BrowserFrame::GetThemeProvider() const {
 ui::ColorProviderManager::InitializerSupplier* BrowserFrame::GetCustomTheme()
     const {
   Browser* browser = browser_view_->browser();
+  // If this is an incognito profile, there should never be a custom theme.
+  if (browser->profile()->IsIncognitoProfile())
+    return nullptr;
   auto* app_controller = browser->app_controller();
   // Ignore GTK+ for web apps with window-controls-overlay as the
   // display_override so the web contents can blend with the overlay by using
