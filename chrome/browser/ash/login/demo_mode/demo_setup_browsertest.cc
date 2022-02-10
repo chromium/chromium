@@ -743,13 +743,30 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
+class OfflineDemoSetupTest : public DemoSetupArcSupportedTest {
+ public:
+  OfflineDemoSetupTest(const OfflineDemoSetupTest&) = delete;
+  OfflineDemoSetupTest& operator=(const OfflineDemoSetupTest&) = delete;
+
+ protected:
+  OfflineDemoSetupTest() {
+    // Offline demo mode is not handled in the updated consolidated consent
+    // flow.
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kOobeConsolidatedConsent);
+  }
+  ~OfflineDemoSetupTest() override = default;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_OfflineSetupFlowErrorDefault DISABLED_OfflineSetupFlowErrorDefault
 #else
 #define MAYBE_OfflineSetupFlowErrorDefault OfflineSetupFlowErrorDefault
 #endif
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
+IN_PROC_BROWSER_TEST_F(OfflineDemoSetupTest,
                        MAYBE_OfflineSetupFlowErrorDefault) {
   // Simulate offline setup failure.
   enrollment_helper_.ExpectOfflineEnrollmentError(
@@ -779,7 +796,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
+IN_PROC_BROWSER_TEST_F(OfflineDemoSetupTest,
                        OfflineSetupFlowErrorPowerwashRequired) {
   // Simulate offline setup failure.
   enrollment_helper_.ExpectOfflineEnrollmentError(
@@ -815,7 +832,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 #else
 #define MAYBE_NextDisabledOnNetworkScreen NextDisabledOnNetworkScreen
 #endif
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
+IN_PROC_BROWSER_TEST_F(OfflineDemoSetupTest,
                        MAYBE_NextDisabledOnNetworkScreen) {
   SimulateNetworkDisconnected();
 
@@ -1034,9 +1051,6 @@ class DemoSetupProgressStepsTest : public DemoSetupArcSupportedTest {
          status, ":not([hidden])')).length"});
     return test::OobeJS().GetInt(query);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSetupProgressStepsTest,
@@ -1116,6 +1130,8 @@ class DemoSetupFRETest : public DemoSetupArcSupportedTest {
 
  protected:
   DemoSetupFRETest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kOobeConsolidatedConsent);
     statistics_provider_.SetMachineStatistic(system::kSerialNumberKeyForTest,
                                              "testserialnumber");
   }
@@ -1130,6 +1146,7 @@ class DemoSetupFRETest : public DemoSetupArcSupportedTest {
   }
 
   system::ScopedFakeStatisticsProvider statistics_provider_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, DeviceFromFactory) {
