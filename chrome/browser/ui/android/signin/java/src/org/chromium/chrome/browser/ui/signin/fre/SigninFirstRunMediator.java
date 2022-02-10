@@ -30,6 +30,7 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.ChildAccountStatus.Status;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -163,9 +164,14 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
                 TextUtils.equals(mDefaultAccountName, mSelectedAccountName)
                         ? MobileFreProgress.WELCOME_SIGNIN_WITH_DEFAULT_ACCOUNT
                         : MobileFreProgress.WELCOME_SIGNIN_WITH_NON_DEFAULT_ACCOUNT);
-        if (IdentityServicesProvider.get()
+        // If the user signs into an account on the FRE, goes to the sync consent page and presses
+        // back to come back to the FRE, then there will already be an account signed in.
+        @Nullable
+        CoreAccountInfo signedInAccount =
+                IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
-                        .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        if (signedInAccount != null && signedInAccount.getEmail().equals(mSelectedAccountName)) {
             mDelegate.acceptTermsOfService();
             return;
         }
