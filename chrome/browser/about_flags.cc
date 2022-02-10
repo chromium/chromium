@@ -7962,6 +7962,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableSendingBcnInGetUploadDetails)},
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"enable-discount-consent-v2", flag_descriptions::kDiscountConsentV2Name,
+     flag_descriptions::kDiscountConsentV2Description, kOsDesktop,
+     FEATURE_VALUE_TYPE(commerce::kDiscountConsentV2)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

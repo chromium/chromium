@@ -1902,6 +1902,11 @@
     "expiry_milestone": 101
   },
   {
+    "name": "enable-discount-consent-v2",
+    "owners": [ "chrome-shopping@google.com" ],
+    "expiry_milestone": 102
+  },
+  {
     "name": "enable-discover-feed-preview",
     "owners": [ "tinazwang", "sczs" ],
     "expiry_milestone": 101

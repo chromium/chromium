@@ -626,6 +626,9 @@ const char kDevicePostureName[] = "Device Posture API";
 const char kDevicePostureDescription[] =
     "Enables Device Posture API (foldable devices)";
 
+const char kDiscountConsentV2Name[] = "Discount Consent V2";
+const char kDiscountConsentV2Description[] = "Enables Discount Consent V2";
+
 const char kRestrictedApiOriginsName[] = "Restricted API Origins";
 const char kRestrictedApiOriginsDescription[] =
     "Enables Restricted APIs (Direct Sockets API) for development purposes for "

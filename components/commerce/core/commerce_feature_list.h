@@ -20,6 +20,9 @@ extern const base::Feature kCommerceDeveloper;
 // Parameter for enabling feature variation of coupons with code.
 extern const char kRetailCouponsWithCodeParam[];
 
+// Feature flag for Discount user consent v2.
+extern const base::Feature kDiscountConsentV2;
+
 // Interval that controls the frequency of showing coupons in infobar bubbles.
 constexpr base::FeatureParam<base::TimeDelta> kCouponDisplayInterval{
     &commerce::kRetailCoupons, "coupon_display_interval", base::Hours(18)};
