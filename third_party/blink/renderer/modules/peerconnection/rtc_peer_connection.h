@@ -62,6 +62,7 @@
 
 namespace blink {
 
+class Dictionary;
 class ExceptionState;
 class MediaStreamTrack;
 class RTCAnswerOptions;

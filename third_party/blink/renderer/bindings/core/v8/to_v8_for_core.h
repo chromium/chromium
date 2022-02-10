@@ -8,48 +8,15 @@
 // ToV8() provides C++ -> V8 conversion. Note that ToV8() can return an empty
 // handle. Call sites must check IsEmpty() before using return value.
 
-#include "third_party/blink/renderer/bindings/core/v8/idl_dictionary_base.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-local-handle.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-value.h"
 
 namespace blink {
-
-class Dictionary;
-
-inline v8::Local<v8::Value> ToV8(const Dictionary& value,
-                                 v8::Local<v8::Object> creation_context,
-                                 v8::Isolate* isolate) {
-  NOTREACHED();
-  return v8::Undefined(isolate);
-}
-
-template <typename T>
-inline v8::Local<v8::Value> ToV8(NotShared<T> value,
-                                 v8::Local<v8::Object> creation_context,
-                                 v8::Isolate* isolate) {
-  return ToV8(value.Get(), creation_context, isolate);
-}
-
-template <typename T>
-inline v8::Local<v8::Value> ToV8(MaybeShared<T> value,
-                                 v8::Local<v8::Object> creation_context,
-                                 v8::Isolate* isolate) {
-  return ToV8(value.Get(), creation_context, isolate);
-}
-
-// Dictionary
-
-inline v8::Local<v8::Value> ToV8(const IDLDictionaryBase* value,
-                                 v8::Local<v8::Object> creation_context,
-                                 v8::Isolate* isolate) {
-  if (!value)
-    return v8::Null(isolate);
-  return value->ToV8Impl(creation_context, isolate);
-}
 
 // Promise
 
