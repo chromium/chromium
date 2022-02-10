@@ -125,6 +125,7 @@ bool GetAppOutputInternal(CommandLine::StringPieceType cl,
     // process launched with GetAppOutput*() shouldn't wait back on the process
     // that launched it.
     internal::GetAppOutputScopedAllowBaseSyncPrimitives allow_wait;
+    ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
     WaitForSingleObject(proc_info.process_handle(), INFINITE);
   }
 
@@ -214,6 +215,7 @@ Process LaunchProcess(const CommandLine& cmdline,
 
 Process LaunchProcess(const CommandLine::StringType& cmdline,
                       const LaunchOptions& options) {
+  TRACE_EVENT0("base", "LaunchProcess");
   CHECK(!options.elevated);
   // Mitigate the issues caused by loading DLLs on a background thread
   // (http://crbug/973868).
@@ -400,8 +402,10 @@ Process LaunchProcess(const CommandLine::StringType& cmdline,
     DPLOG(ERROR) << "Failed to grant foreground privilege to launched process";
   }
 
-  if (options.wait)
+  if (options.wait) {
+    ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
     WaitForSingleObject(process_info.process_handle(), INFINITE);
+  }
 
   debug::GlobalActivityTracker::RecordProcessLaunchIfEnabled(
       process_info.process_id(), cmdline);
@@ -410,6 +414,7 @@ Process LaunchProcess(const CommandLine::StringType& cmdline,
 
 Process LaunchElevatedProcess(const CommandLine& cmdline,
                               const LaunchOptions& options) {
+  TRACE_EVENT0("base", "LaunchElevatedProcess");
   CHECK(options.elevated);
   const FilePath::StringType file = cmdline.GetProgram().value();
   const CommandLine::StringType arguments = cmdline.GetArgumentsString();
@@ -430,8 +435,10 @@ Process LaunchElevatedProcess(const CommandLine& cmdline,
     return Process();
   }
 
-  if (options.wait)
+  if (options.wait) {
+    ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
     WaitForSingleObject(shex_info.hProcess, INFINITE);
+  }
 
   debug::GlobalActivityTracker::RecordProcessLaunchIfEnabled(
       GetProcessId(shex_info.hProcess), file, arguments);
