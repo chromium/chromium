@@ -924,9 +924,9 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
     @VisibleForTesting
     boolean shouldShowIconRow() {
-        boolean shouldShowIconRow = !mIsTablet
-                || mDecorView.getWidth()
-                        < DeviceFormFactor.getNonMultiDisplayMinimumTabletWidthPx(mContext);
+        boolean shouldShowIconRow = mIsTablet ? mDecorView.getWidth()
+                        < DeviceFormFactor.getNonMultiDisplayMinimumTabletWidthPx(mContext)
+                                              : !isInStartSurfaceHomepage();
 
         final boolean isMenuButtonOnTop = mToolbarManager != null;
         shouldShowIconRow &= isMenuButtonOnTop;
