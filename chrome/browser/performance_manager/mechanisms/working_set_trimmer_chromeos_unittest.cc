@@ -9,8 +9,11 @@
 #include <utility>
 
 #include "ash/components/arc/memory/arc_memory_bridge.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_arc_session.h"
+#include "ash/components/arc/test/fake_memory_instance.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -41,6 +44,13 @@ class TestWorkingSetTrimmerChromeOS : public testing::Test {
     CreateTrimmer(testing_profile_.get());
     arc::ArcMemoryBridge::GetForBrowserContextForTesting(
         testing_profile_.get());
+
+    // Set a fake memory instance so that DropCaches() calls in test will
+    // succeed.
+    arc::ArcServiceManager::Get()->arc_bridge_service()->memory()->SetInstance(
+        &memory_instance_);
+    arc::WaitForInstanceReady(
+        arc::ArcServiceManager::Get()->arc_bridge_service()->memory());
   }
 
   void TearDown() override {
@@ -56,16 +66,25 @@ class TestWorkingSetTrimmerChromeOS : public testing::Test {
   }
   void TrimArcVmWorkingSet(
       WorkingSetTrimmerChromeOS::TrimArcVmWorkingSetCallback callback) {
-    trimmer_->TrimArcVmWorkingSet(std::move(callback));
+    trimmer_->TrimArcVmWorkingSet(std::move(callback),
+                                  ArcVmReclaimType::kReclaimAll);
+  }
+  void TrimArcVmWorkingSetDropPageCachesOnly(
+      WorkingSetTrimmerChromeOS::TrimArcVmWorkingSetCallback callback) {
+    trimmer_->TrimArcVmWorkingSet(std::move(callback),
+                                  ArcVmReclaimType::kReclaimGuestPageCaches);
   }
 
   void TearDownArcSessionManager() { arc_session_manager_.reset(); }
+
+  arc::FakeMemoryInstance* memory_instance() { return &memory_instance_; }
 
   std::unique_ptr<WorkingSetTrimmerChromeOS> trimmer_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   arc::ArcServiceManager arc_service_manager_;
+  arc::FakeMemoryInstance memory_instance_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
   std::unique_ptr<TestingProfile> testing_profile_;
 };
@@ -123,6 +142,86 @@ TEST_F(TestWorkingSetTrimmerChromeOS, TrimArcVmWorkingSetNoArcSessionManager) {
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(result);
   EXPECT_FALSE(*result);
+}
+
+// Tests that TrimArcVmWorkingSetDropPageCachesOnly runs the passed callback.
+TEST_F(TestWorkingSetTrimmerChromeOS, TrimArcVmWorkingSetDropPageCachesOnly) {
+  absl::optional<bool> result;
+  TrimArcVmWorkingSetDropPageCachesOnly(base::BindLambdaForTesting(
+      [&result](bool r, const std::string&) { result = r; }));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(result);
+  EXPECT_TRUE(*result);
+}
+
+// Tests that TrimArcVmWorkingSetDropPageCachesOnly runs the passed callback
+// with false (failure) when DropCaches() fails.
+TEST_F(TestWorkingSetTrimmerChromeOS,
+       TrimArcVmWorkingSetDropPageCachesOnly_DropCachesFailure) {
+  // Inject the failure.
+  memory_instance()->set_drop_caches_result(false);
+
+  absl::optional<bool> result;
+  TrimArcVmWorkingSetDropPageCachesOnly(base::BindLambdaForTesting(
+      [&result](bool r, const std::string&) { result = r; }));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(result);
+  EXPECT_FALSE(*result);
+}
+
+// Tests that TrimArcVmWorkingSetDropPageCachesOnly runs the passed callback
+// even when BrowserContext is not available.
+TEST_F(TestWorkingSetTrimmerChromeOS,
+       TrimArcVmWorkingSetDropPageCachesOnly_NoBrowserContext) {
+  // Create a trimmer again with a null BrowserContext to make it unavailable.
+  CreateTrimmer(nullptr);
+
+  absl::optional<bool> result;
+  TrimArcVmWorkingSetDropPageCachesOnly(base::BindLambdaForTesting(
+      [&result](bool r, const std::string&) { result = r; }));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(result);
+  // Expect false because dropping caches is not possible without a browser
+  // context.
+  EXPECT_FALSE(*result);
+}
+
+// Tests that TrimArcVmWorkingSetDropPageCachesOnly runs the passed callback
+// even when ArcMemoryBridge is not available.
+TEST_F(TestWorkingSetTrimmerChromeOS,
+       TrimArcVmWorkingSetDropPageCachesOnly_NoArcMemoryBridge) {
+  // Create a trimmer again with a different profile (BrowserContext) to make
+  // ArcMemoryBridge unavailable.
+  TestingProfile another_profile;
+  CreateTrimmer(&another_profile);
+
+  absl::optional<bool> result;
+  TrimArcVmWorkingSetDropPageCachesOnly(base::BindLambdaForTesting(
+      [&result](bool r, const std::string&) { result = r; }));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(result);
+  // Expect false because dropping caches is not possible without a memory
+  // bridge.
+  EXPECT_FALSE(*result);
+
+  trimmer_.reset();
+}
+
+// Tests that TrimArcVmWorkingSetDropPageCachesOnly runs the passed callback
+// even when ArcSessionManager is not available.
+TEST_F(TestWorkingSetTrimmerChromeOS,
+       TrimArcVmWorkingSetDropPageCachesOnly_NoArcSessionManager) {
+  // Make ArcSessionManager unavailable.
+  TearDownArcSessionManager();
+
+  absl::optional<bool> result;
+  TrimArcVmWorkingSetDropPageCachesOnly(base::BindLambdaForTesting(
+      [&result](bool r, const std::string&) { result = r; }));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(result);
+  // Expect true because dropping caches can be done without ArcSessionManager.
+  // The manager is necessary only for the actual VM trimming.
+  EXPECT_TRUE(*result);
 }
 
 }  // namespace

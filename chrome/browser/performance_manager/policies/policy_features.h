@@ -98,6 +98,12 @@ extern const base::FeatureParam<bool> kTrimArcVmOnCriticalPressure;
 extern const base::FeatureParam<bool>
     kTrimArcVmOnFirstMemoryPressureAfterArcVmBoot;
 
+// If true then we will drop ARCVM guest's page caches when the trimmer does
+// kTrimArcVmOnFirstMemoryPressureAfterArcVmBoot. If false (default), it also
+// trims ARCVM's shared memory.
+extern const base::FeatureParam<bool>
+    kOnlyDropCachesOnFirstMemoryPressureAfterArcVmBoot;
+
 struct TrimOnMemoryPressureParams {
   TrimOnMemoryPressureParams();
   TrimOnMemoryPressureParams(const TrimOnMemoryPressureParams&);
@@ -124,6 +130,7 @@ struct TrimOnMemoryPressureParams {
   base::TimeDelta arcvm_trim_backoff_time;
   bool trim_arcvm_on_critical_pressure = false;
   bool trim_arcvm_on_first_memory_pressure_after_arcvm_boot = false;
+  bool only_drop_caches_on_first_memory_pressure_after_arcvm_boot = false;
 };
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

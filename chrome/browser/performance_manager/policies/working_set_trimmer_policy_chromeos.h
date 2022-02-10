@@ -15,6 +15,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/process/arc_process_service.h"
+#include "chrome/browser/performance_manager/mechanisms/working_set_trimmer_chromeos.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy.h"
 #include "content/public/browser/browser_thread.h"
@@ -41,14 +42,15 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
    public:
     virtual ~ArcVmDelegate() = default;
 
-    // Returns true when ARCVM has been idle for more than
-    // |arcvm_inactivity_time| and therefore is safe to reclaim its memory.
-    // The function is called only on the UI thread.
-    // If |trim_once_after_arcvm_boot| is true, the function returns true when
-    // the function is called for the first time after ARCVM boot.
-    virtual bool IsEligibleForReclaim(
+    // Returns ReclaimType other than kReclaimNone when ARCVM has been idle for
+    // more than |arcvm_inactivity_time| and therefore is safe to reclaim its
+    // memory. The function is called only on the UI thread.
+    // If |trim_once_type_after_arcvm_boot| is not kReclaimNone, the function
+    // returns |trim_once_type_after_arcvm_boot| when the function is called for
+    // the first time after ARCVM boot.
+    virtual mechanism::ArcVmReclaimType IsEligibleForReclaim(
         const base::TimeDelta& arcvm_inactivity_time,
-        bool trim_once_after_arcvm_boot) = 0;
+        mechanism::ArcVmReclaimType trim_once_type_after_arcvm_boot) = 0;
   };
 
   WorkingSetTrimmerPolicyChromeOS(const WorkingSetTrimmerPolicyChromeOS&) =
@@ -122,8 +124,8 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
       base::MemoryPressureListener::MemoryPressureLevel level,
       features::TrimOnMemoryPressureParams params,
       base::WeakPtr<WorkingSetTrimmerPolicyChromeOS> ptr);
-  virtual void OnTrimArcVmProcesses(bool need_reclaim);
-  static void DoTrimArcVmOnUIThread();
+  virtual void OnTrimArcVmProcesses(mechanism::ArcVmReclaimType reclaim_type);
+  static void DoTrimArcVmOnUIThread(mechanism::ArcVmReclaimType reclaim_type);
 
   features::TrimOnMemoryPressureParams params_;
 

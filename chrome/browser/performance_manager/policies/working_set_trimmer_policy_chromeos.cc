@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/arc/process/arc_process.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/performance_manager/mechanisms/working_set_trimmer.h"
-#include "chrome/browser/performance_manager/mechanisms/working_set_trimmer_chromeos.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy_arcvm.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -336,35 +335,46 @@ void WorkingSetTrimmerPolicyChromeOS::TrimArcVmProcessesOnUIThread(
   const bool force_reclaim =
       params.trim_arcvm_on_critical_pressure &&
       (level == base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  const bool need_reclaim =
-      force_reclaim ||
-      arcvm_delegate->IsEligibleForReclaim(
-          params.arcvm_inactivity_time,
-          params.trim_arcvm_on_first_memory_pressure_after_arcvm_boot);
+  const mechanism::ArcVmReclaimType trim_once_type_after_arcvm_boot =
+      params.trim_arcvm_on_first_memory_pressure_after_arcvm_boot
+          ? (params.only_drop_caches_on_first_memory_pressure_after_arcvm_boot
+                 ? mechanism::ArcVmReclaimType::kReclaimGuestPageCaches
+                 : mechanism::ArcVmReclaimType::kReclaimAll)
+          : mechanism::ArcVmReclaimType::kReclaimNone;
+  const mechanism::ArcVmReclaimType reclaim_type =
+      force_reclaim
+          ? mechanism::ArcVmReclaimType::kReclaimAll
+          : arcvm_delegate->IsEligibleForReclaim(
+                params.arcvm_inactivity_time, trim_once_type_after_arcvm_boot);
+
   PerformanceManager::CallOnGraph(
       FROM_HERE,
       base::BindOnce(&WorkingSetTrimmerPolicyChromeOS::OnTrimArcVmProcesses,
-                     ptr, need_reclaim));
+                     ptr, reclaim_type));
 }
 
-void WorkingSetTrimmerPolicyChromeOS::OnTrimArcVmProcesses(bool need_reclaim) {
-  if (!need_reclaim)
+void WorkingSetTrimmerPolicyChromeOS::OnTrimArcVmProcesses(
+    mechanism::ArcVmReclaimType reclaim_type) {
+  if (reclaim_type == mechanism::ArcVmReclaimType::kReclaimNone)
     return;
   // TODO(crbug.com/1189677): Remove the PostTask once performance_manager code
   // is migrated to UI thread.
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindRepeating(&DoTrimArcVmOnUIThread));
-  last_arcvm_trim_ = base::TimeTicks::Now();
-  ++arcvm_trim_count_;
+      FROM_HERE, base::BindRepeating(&DoTrimArcVmOnUIThread, reclaim_type));
+  if (reclaim_type == mechanism::ArcVmReclaimType::kReclaimAll) {
+    last_arcvm_trim_ = base::TimeTicks::Now();
+    ++arcvm_trim_count_;
+  }
 }
 
 // static
-void WorkingSetTrimmerPolicyChromeOS::DoTrimArcVmOnUIThread() {
+void WorkingSetTrimmerPolicyChromeOS::DoTrimArcVmOnUIThread(
+    mechanism::ArcVmReclaimType reclaim_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto* trimmer = static_cast<mechanism::WorkingSetTrimmerChromeOS*>(
       mechanism::WorkingSetTrimmer::GetInstance());
-  trimmer->TrimArcVmWorkingSet(
-      base::BindOnce(&OnTrimArcVmWorkingSetOnUIThread));
+  trimmer->TrimArcVmWorkingSet(base::BindOnce(&OnTrimArcVmWorkingSetOnUIThread),
+                               reclaim_type);
 }
 
 // static

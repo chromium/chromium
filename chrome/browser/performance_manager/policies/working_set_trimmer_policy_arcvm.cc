@@ -102,19 +102,22 @@ WorkingSetTrimmerPolicyArcVm::~WorkingSetTrimmerPolicyArcVm() {
     arc_session_manager->RemoveObserver(this);
 }
 
-bool WorkingSetTrimmerPolicyArcVm::IsEligibleForReclaim(
+mechanism::ArcVmReclaimType WorkingSetTrimmerPolicyArcVm::IsEligibleForReclaim(
     const base::TimeDelta& arcvm_inactivity_time,
-    bool trim_once_after_arcvm_boot) {
+    mechanism::ArcVmReclaimType trim_once_type_after_arcvm_boot) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!is_boot_complete_and_connected_)
-    return false;
-  if (!trimmed_at_boot_ && trim_once_after_arcvm_boot) {
+    return mechanism::ArcVmReclaimType::kReclaimNone;
+  if (!trimmed_at_boot_ && trim_once_type_after_arcvm_boot !=
+                               mechanism::ArcVmReclaimType::kReclaimNone) {
     trimmed_at_boot_ = true;
-    return true;
+    return trim_once_type_after_arcvm_boot;
   }
   const bool is_inactive =
       (base::TimeTicks::Now() - last_user_interaction_) > arcvm_inactivity_time;
-  return !is_focused_ && is_inactive;
+  return (!is_focused_ && is_inactive)
+             ? mechanism::ArcVmReclaimType::kReclaimAll
+             : mechanism::ArcVmReclaimType::kReclaimNone;
 }
 
 void WorkingSetTrimmerPolicyArcVm::OnUserInteraction(

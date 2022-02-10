@@ -74,6 +74,11 @@ const base::FeatureParam<bool> kTrimArcVmOnFirstMemoryPressureAfterArcVmBoot = {
     &kTrimArcVmOnMemoryPressure, "TrimArcVmOnFirstMemoryPressureAfterArcVmBoot",
     false};
 
+const base::FeatureParam<bool>
+    kOnlyDropCachesOnFirstMemoryPressureAfterArcVmBoot = {
+        &kTrimArcVmOnMemoryPressure,
+        "OnlyDropCachesOnFirstMemoryPressureAfterArcVmBoot", false};
+
 // Specifies the minimum amount of time a parent frame node must be invisible
 // before considering the process node for working set trim.
 const base::FeatureParam<int> kNodeInvisibileTimeSec = {
@@ -119,6 +124,8 @@ TrimOnMemoryPressureParams TrimOnMemoryPressureParams::GetParams() {
   params.trim_arcvm_on_critical_pressure = kTrimArcVmOnCriticalPressure.Get();
   params.trim_arcvm_on_first_memory_pressure_after_arcvm_boot =
       kTrimArcVmOnFirstMemoryPressureAfterArcVmBoot.Get();
+  params.only_drop_caches_on_first_memory_pressure_after_arcvm_boot =
+      kOnlyDropCachesOnFirstMemoryPressureAfterArcVmBoot.Get();
 
   return params;
 }

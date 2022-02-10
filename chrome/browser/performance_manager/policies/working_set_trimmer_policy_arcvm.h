@@ -52,8 +52,9 @@ class WorkingSetTrimmerPolicyArcVm
   ~WorkingSetTrimmerPolicyArcVm() override;
 
   // WorkingSetTrimmerPolicyChromeOS::ArcVmDelegate overrides.
-  bool IsEligibleForReclaim(const base::TimeDelta& arcvm_inactivity_time,
-                            bool trim_once_after_arcvm_boot) override;
+  mechanism::ArcVmReclaimType IsEligibleForReclaim(
+      const base::TimeDelta& arcvm_inactivity_time,
+      mechanism::ArcVmReclaimType trim_once_type_after_arcvm_boot) override;
 
   // ArcMetricsService::UserInteractionObserver overrides.
   void OnUserInteraction(arc::UserInteractionType type) override;
