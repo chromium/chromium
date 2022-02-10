@@ -11,14 +11,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.share.ShareHelper;
-import org.chromium.chrome.browser.share.ShareRegistrationCoordinator.ShareBroadcastReceiver;
+import org.chromium.chrome.browser.share.ShareRegistrationCoordinator;
 
 /**
  * {@code ChromeActivityAccessor} is the base class for share options, which
  * are activities that are shown in the share chooser. Activities subclassing
  * ChromeAccessorActivity need to:
- * - Override #getBroadcastAction.
- * - Register to receive that broadcast in ShareRegistrationCoordinator.
+ * - Override {@link #getShareAction()}.
+ * - Register to receive that share action in {@link ShareRegistrationCoordinator).
  */
 public abstract class ChromeAccessorActivity extends AppCompatActivity {
     @Override
@@ -31,17 +31,17 @@ public abstract class ChromeAccessorActivity extends AppCompatActivity {
             if (!Intent.ACTION_SEND.equals(intent.getAction())) return;
             if (!IntentUtils.safeHasExtra(intent, ShareHelper.EXTRA_TASK_ID)) return;
 
-            ShareBroadcastReceiver.sendShareBroadcastWithAction(
-                    intent.getIntExtra(ShareHelper.EXTRA_TASK_ID, 0), getBroadcastAction());
+            ShareRegistrationCoordinator.onShareActionChosen(
+                    intent.getIntExtra(ShareHelper.EXTRA_TASK_ID, 0), getShareAction());
         } finally {
             finish();
         }
     }
 
     /**
-     * Return a unique action string which is used to register to receive the broadcast in
-     * ShareRegistrationController. Usually, the best option is to use the stringified class name
-     * with the "BroadcastAction" postfix.
+     * Return a unique action string which is used to register the action handler  in
+     * {@link ShareRegistrationCoordinator}. Usually, the best option is to use the stringified
+     * class name with the "ShareAction" postfix.
      */
-    protected abstract String getBroadcastAction();
+    protected abstract String getShareAction();
 }

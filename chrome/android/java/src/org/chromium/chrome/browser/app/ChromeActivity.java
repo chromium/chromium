@@ -657,7 +657,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             mShareRegistrationCoordinator = new ShareRegistrationCoordinator(
                     this, mActivityTabProvider, mRootUiCoordinator.getBottomSheetController());
             // Some share types are registered in the coorindator itself.
-            mShareRegistrationCoordinator.registerShareType(PrintShareActivity.BROADCAST_ACTION,
+            mShareRegistrationCoordinator.registerShareType(PrintShareActivity.SHARE_ACTION,
                     () -> doPrintShare(this, mActivityTabProvider));
 
             ShareDelegate shareDelegate = new ShareDelegateImpl(
