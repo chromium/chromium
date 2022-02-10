@@ -196,8 +196,8 @@ TEST_F(CaptureModeCameraTest, CameraDevicesChanges) {
 }
 
 TEST_F(CaptureModeCameraTest, SelectingUnavailableCamera) {
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
   auto* camera_controller = GetCameraController();
-  camera_controller->SetShouldShowPreview(true);
   EXPECT_FALSE(camera_controller->camera_preview_widget());
 
   // Selecting a camera that doesn't exist in the list shouldn't show its
@@ -207,8 +207,8 @@ TEST_F(CaptureModeCameraTest, SelectingUnavailableCamera) {
 }
 
 TEST_F(CaptureModeCameraTest, SelectingAvailableCamera) {
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
   auto* camera_controller = GetCameraController();
-  camera_controller->SetShouldShowPreview(true);
   EXPECT_FALSE(camera_controller->camera_preview_widget());
 
   AddDefaultCamera();
@@ -223,8 +223,8 @@ TEST_F(CaptureModeCameraTest, SelectingAvailableCamera) {
 }
 
 TEST_F(CaptureModeCameraTest, SelectedCameraBecomesAvailable) {
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
   auto* camera_controller = GetCameraController();
-  camera_controller->SetShouldShowPreview(true);
   EXPECT_FALSE(camera_controller->camera_preview_widget());
 
   camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
@@ -359,8 +359,8 @@ TEST_F(CaptureModeCameraTest, SelectAvailableCameraDuringGracePeriod) {
 
 // This tests simulates a flaky camera connection.
 TEST_F(CaptureModeCameraTest, ReconnectDuringGracePeriod) {
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
   auto* camera_controller = AddAndRemoveCameraAndTriggerGracePeriod();
-  camera_controller->SetShouldShowPreview(true);
   base::OneShotTimer* timer =
       camera_controller->camera_reconnect_timer_for_test();
   EXPECT_TRUE(timer->IsRunning());
@@ -474,21 +474,14 @@ TEST_F(CaptureModeCameraTest, CameraSettingsView) {
 }
 
 TEST_F(CaptureModeCameraTest, CameraPreviewWidgetStackingInFullscreen) {
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
   auto* camera_controller = GetCameraController();
-  // TODO(https://crbug.com/1295797): Start the capture session instead of
-  // SetShouldShowPreview explicitly after crbug/1293467 is done.
-  camera_controller->SetShouldShowPreview(true);
   AddDefaultCamera();
   camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
   const auto* camera_preview_widget =
       camera_controller->camera_preview_widget();
   EXPECT_TRUE(camera_preview_widget);
 
-  // TODO(https://crbug.com/1295797): Start the capture session from
-  // `kFullscreen` directly after crbug/1293467 is done, which will create and
-  // parent the preview widget correctly when start capture session.
-  StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
-  CaptureModeController::Get()->SetSource(CaptureModeSource::kFullscreen);
   auto* preview_window = camera_preview_widget->GetNativeWindow();
   const auto* overlay_container = preview_window->GetRootWindow()->GetChildById(
       kShellWindowId_OverlayContainer);
@@ -510,19 +503,15 @@ TEST_F(CaptureModeCameraTest, CameraPreviewWidgetStackingInFullscreen) {
 }
 
 TEST_F(CaptureModeCameraTest, CameraPreviewWidgetStackingInRegion) {
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kRegion, CaptureModeType::kVideo);
   auto* camera_controller = GetCameraController();
-  camera_controller->SetShouldShowPreview(true);
   AddDefaultCamera();
   camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
   const auto* camera_preview_widget =
       camera_controller->camera_preview_widget();
   EXPECT_TRUE(camera_preview_widget);
 
-  // TODO(https://crbug.com/1295797): Start the capture session from `kRegion`
-  // directly after crbug/1293467 is done, which will create and parent the
-  // preview widget correctly when start capture session.
-  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
-  CaptureModeController::Get()->SetSource(CaptureModeSource::kRegion);
   auto* preview_window = camera_preview_widget->GetNativeWindow();
   const auto* overlay_container = preview_window->GetRootWindow()->GetChildById(
       kShellWindowId_OverlayContainer);
@@ -533,8 +522,8 @@ TEST_F(CaptureModeCameraTest, CameraPreviewWidgetStackingInRegion) {
   EXPECT_EQ(parent, overlay_container);
   EXPECT_EQ(overlay_container->children().back(), preview_window);
 
-  CaptureModeController::Get()->SetUserCaptureRegion(gfx::Rect(10, 20, 80, 60),
-                                                     /*by_user=*/true);
+  controller->SetUserCaptureRegion(gfx::Rect(10, 20, 80, 60),
+                                   /*by_user=*/true);
   StartRecordingFromSource(CaptureModeSource::kRegion);
   preview_window = camera_preview_widget->GetNativeWindow();
   parent = preview_window->parent();
@@ -546,20 +535,18 @@ TEST_F(CaptureModeCameraTest, CameraPreviewWidgetStackingInRegion) {
 }
 
 TEST_F(CaptureModeCameraTest, CameraPreviewWidgetStackingInWindow) {
+  auto* controller =
+      StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
   auto* camera_controller = GetCameraController();
-  camera_controller->SetShouldShowPreview(true);
   AddDefaultCamera();
   camera_controller->SetSelectedCamera(CameraId(kDefaultCameraModelId, 1));
   const auto* camera_preview_widget =
       camera_controller->camera_preview_widget();
   EXPECT_TRUE(camera_preview_widget);
 
-  StartCaptureSession(CaptureModeSource::kWindow, CaptureModeType::kVideo);
   // The parent of the preview widget should be nullptr when selected window is
   // not set.
-  ASSERT_FALSE(CaptureModeController::Get()
-                   ->capture_mode_session()
-                   ->GetSelectedWindow());
+  ASSERT_FALSE(controller->capture_mode_session()->GetSelectedWindow());
   EXPECT_FALSE(camera_preview_widget->parent());
   EXPECT_FALSE(camera_preview_widget->IsVisible());
 
@@ -570,8 +557,7 @@ TEST_F(CaptureModeCameraTest, CameraPreviewWidgetStackingInWindow) {
   const auto* preview_window = camera_preview_widget->GetNativeWindow();
   const auto* parent = preview_window->parent();
   const auto* window_being_recorded =
-      CaptureModeController::Get()
-          ->video_recording_watcher_for_testing()
+      controller->video_recording_watcher_for_testing()
           ->window_being_recorded();
   ASSERT_EQ(parent, window_being_recorded);
   EXPECT_EQ(window_being_recorded->children().back(), preview_window);
