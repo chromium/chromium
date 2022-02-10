@@ -117,12 +117,10 @@ public class ToSAndUMAFirstRunFragment
                     if (!isAdded()) return;
                     getPageDelegate().showInfoPage(R.string.chrome_additional_terms_of_service_url);
                 });
-        NoUnderlineClickableSpan clickableFamilyLinkPrivacySpan =
+        NoUnderlineClickableSpan clickableGooglePrivacySpan =
                 new NoUnderlineClickableSpan(resources, (view1) -> {
                     if (!isAdded()) return;
-                    getPageDelegate().showInfoPage(showUmaDialog
-                                    ? R.string.google_privacy_policy_url
-                                    : R.string.family_link_privacy_policy_url);
+                    getPageDelegate().showInfoPage(R.string.google_privacy_policy_url);
                 });
 
         final CharSequence tosText;
@@ -133,12 +131,12 @@ public class ToSAndUMAFirstRunFragment
         if (showUmaDialog) {
             final NoUnderlineClickableSpan clickableUMADialogSpan =
                     new NoUnderlineClickableSpan(resources, (view1) -> openUmaDialog());
-            if (childAccountStatus == ChildAccountStatus.REGULAR_CHILD) {
+            if (ChildAccountStatus.isChild(childAccountStatus)) {
                 tosText = SpanApplier.applySpans(
                         getString(R.string.signin_fre_footer_supervised_user),
                         new SpanInfo("<TOS_LINK>", "</TOS_LINK>", clickableGoogleTermsSpan),
-                        new SpanInfo("<PRIVACY_LINK>", "</PRIVACY_LINK>",
-                                clickableFamilyLinkPrivacySpan),
+                        new SpanInfo(
+                                "<PRIVACY_LINK>", "</PRIVACY_LINK>", clickableGooglePrivacySpan),
                         new SpanInfo("<UMA_LINK>", "</UMA_LINK>", clickableUMADialogSpan));
             } else {
                 tosText = SpanApplier.applySpans(getString(R.string.signin_fre_footer),
@@ -146,12 +144,12 @@ public class ToSAndUMAFirstRunFragment
                         new SpanInfo("<UMA_LINK>", "</UMA_LINK>", clickableUMADialogSpan));
             }
         } else {
-            if (childAccountStatus == ChildAccountStatus.REGULAR_CHILD) {
+            if (ChildAccountStatus.isChild(childAccountStatus)) {
                 tosText = SpanApplier.applySpans(
                         getString(R.string.fre_tos_and_privacy_child_account),
                         new SpanInfo("<LINK1>", "</LINK1>", clickableGoogleTermsSpan),
                         new SpanInfo("<LINK2>", "</LINK2>", clickableChromeAdditionalTermsSpan),
-                        new SpanInfo("<LINK3>", "</LINK3>", clickableFamilyLinkPrivacySpan));
+                        new SpanInfo("<LINK3>", "</LINK3>", clickableGooglePrivacySpan));
             } else {
                 tosText = SpanApplier.applySpans(getString(R.string.fre_tos),
                         new SpanInfo("<LINK1>", "</LINK1>", clickableGoogleTermsSpan),

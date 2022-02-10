@@ -117,8 +117,8 @@ public class LightweightFirstRunActivity
                 resources, (view) -> showInfoPage(R.string.google_terms_of_service_url));
         NoUnderlineClickableSpan clickableChromeAdditionalTermsSpan = new NoUnderlineClickableSpan(
                 resources, (view) -> showInfoPage(R.string.chrome_additional_terms_of_service_url));
-        NoUnderlineClickableSpan clickableFamilyLinkPrivacySpan = new NoUnderlineClickableSpan(
-                resources, (view) -> showInfoPage(R.string.family_link_privacy_policy_url));
+        NoUnderlineClickableSpan clickableGooglePrivacySpan = new NoUnderlineClickableSpan(
+                resources, (view) -> showInfoPage(R.string.google_privacy_policy_url));
         String associatedAppName =
                 IntentUtils.safeGetStringExtra(getIntent(), EXTRA_ASSOCIATED_APP_NAME);
         if (associatedAppName == null) {
@@ -131,7 +131,7 @@ public class LightweightFirstRunActivity
                             associatedAppName),
                     new SpanInfo("<LINK1>", "</LINK1>", clickableGoogleTermsSpan),
                     new SpanInfo("<LINK2>", "</LINK2>", clickableChromeAdditionalTermsSpan),
-                    new SpanInfo("<LINK3>", "</LINK3>", clickableFamilyLinkPrivacySpan));
+                    new SpanInfo("<LINK3>", "</LINK3>", clickableGooglePrivacySpan));
         } else {
             tosAndPrivacyText = SpanApplier.applySpans(
                     getString(R.string.lightweight_fre_associated_app_tos, associatedAppName),
