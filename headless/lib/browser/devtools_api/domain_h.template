@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/observer_list.h"
 #include "base/values.h"
-#include "headless/lib/browser/protocol/base_string_adapter.h"
 {% for domain_name in domain.dependencies %}
 #include "headless/public/devtools/domains/types_{{domain_name | camelcase_to_hacker_style}}.h"
 {% endfor %}
