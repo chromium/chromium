@@ -3053,7 +3053,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    // Previously flaky and disabled 4/2021.  https://crbug.com/1192285
+    @FlakyTest(message = "Disabled 4/2021.  https://crbug.com/1192285")
     public void testTapWithoutLanguage(@EnabledFeature int enabledFeature) throws Exception {
         // Resolving an English word should NOT trigger translation.
         simulateResolveSearch("search");
