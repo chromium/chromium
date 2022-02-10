@@ -81,7 +81,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
-import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -724,7 +723,6 @@ public class StartSurfaceTest {
         StartSurfaceTestUtils.pressHomePageButton(cta);
         assertFalse(bottomSheetTestSupport.hasSuppressionTokens());
 
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
         StartSurfaceTestUtils.clickMoreTabs(cta);
         onViewWaiting(withId(R.id.secondary_tasks_surface_view));
         assertTrue(bottomSheetTestSupport.hasSuppressionTokens());

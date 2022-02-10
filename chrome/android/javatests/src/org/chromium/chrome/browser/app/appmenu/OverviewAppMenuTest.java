@@ -21,8 +21,6 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.layouts.LayoutTestUtils;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -48,8 +46,8 @@ public class OverviewAppMenuTest {
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
-        LayoutTestUtils.startShowingAndWaitForLayout(
-                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER, true);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mActivityTestRule.getActivity().getLayoutManager().showOverview(true); });
     }
 
     @Test

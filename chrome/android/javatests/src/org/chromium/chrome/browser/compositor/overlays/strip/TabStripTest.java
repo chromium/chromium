@@ -27,8 +27,6 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.layouts.LayoutTestUtils;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -915,13 +913,15 @@ public class TabStripTest {
     }
 
     private void exitOverviewMode() {
-        LayoutTestUtils.startShowingAndWaitForLayout(
-                sActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING, false);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> sActivityTestRule.getActivity().getLayoutManager().hideOverview(false));
+        Assert.assertFalse(sActivityTestRule.getActivity().getLayoutManager().overviewVisible());
     }
 
     private void enterOverviewMode() {
-        LayoutTestUtils.startShowingAndWaitForLayout(
-                sActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER, false);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> sActivityTestRule.getActivity().getLayoutManager().showOverview(false));
+        Assert.assertTrue(sActivityTestRule.getActivity().getLayoutManager().overviewVisible());
     }
 
     /**

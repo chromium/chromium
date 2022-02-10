@@ -43,8 +43,6 @@ import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.layouts.LayoutTestUtils;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -64,7 +62,6 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 /** Tests for the {@link StartSurfaceLayout}, mainly for animation performance. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -297,9 +294,7 @@ public class StartSurfaceLayoutPerfTest {
             mStartSurfaceLayout.setPerfListenerForTesting(collector);
             Thread.sleep(mWaitingTime);
             TestThreadUtils.runOnUiThreadBlocking(
-                    ()
-                            -> mActivityTestRule.getActivity().getLayoutManager().showLayout(
-                                    LayoutType.TAB_SWITCHER, true));
+                    () -> mActivityTestRule.getActivity().getLayoutManager().showOverview(true));
             final int expectedSize = i + 1;
             CriteriaHelper.pollInstrumentationThread(()
                                                              -> frameRates.size() == expectedSize,
@@ -331,8 +326,7 @@ public class StartSurfaceLayoutPerfTest {
     @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1184787",
             supported_abis_includes = "x86", sdk_is_greater_than = VERSION_CODES.O_MR1,
             sdk_is_less_than = VERSION_CODES.Q)
-    public void
-    testGridToTabToCurrentNTP() throws InterruptedException, TimeoutException {
+    public void testGridToTabToCurrentNTP() throws InterruptedException {
         prepareTabs(1, NTP_URL);
         reportGridToTabPerf(false, false, "Grid-to-Tab to current NTP");
     }
@@ -341,7 +335,7 @@ public class StartSurfaceLayoutPerfTest {
     @EnormousTest
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisabledTest(message = "crbug.com/1087608")
-    public void testGridToTabToOtherNTP() throws InterruptedException, TimeoutException {
+    public void testGridToTabToOtherNTP() throws InterruptedException {
         prepareTabs(2, NTP_URL);
         reportGridToTabPerf(true, false, "Grid-to-Tab to other NTP");
     }
@@ -350,7 +344,7 @@ public class StartSurfaceLayoutPerfTest {
     @EnormousTest
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisabledTest(message = "crbug.com/1087608")
-    public void testGridToTabToCurrentLive() throws InterruptedException, TimeoutException {
+    public void testGridToTabToCurrentLive() throws InterruptedException {
         prepareTabs(1, mUrl);
         reportGridToTabPerf(false, false, "Grid-to-Tab to current live tab");
     }
@@ -359,7 +353,7 @@ public class StartSurfaceLayoutPerfTest {
     @EnormousTest
     @CommandLineFlags.Add({BASE_PARAMS})
     @FlakyTest(message = "https://crbug.com/1225926")
-    public void testGridToTabToOtherLive() throws InterruptedException, TimeoutException {
+    public void testGridToTabToOtherLive() throws InterruptedException {
         prepareTabs(2, mUrl);
         reportGridToTabPerf(true, false, "Grid-to-Tab to other live tab");
     }
@@ -391,9 +385,10 @@ public class StartSurfaceLayoutPerfTest {
 
         for (int i = 0; i < mRepeat; i++) {
             mStartSurfaceLayout.setPerfListenerForTesting(null);
-            LayoutTestUtils.startShowingAndWaitForLayout(
-                    mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER,
-                    true);
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> mActivityTestRule.getActivity().getLayoutManager().showOverview(true));
+            assertTrue(mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+            Thread.sleep(1000);
 
             int index = mActivityTestRule.getActivity().getCurrentTabModel().index();
             final int targetIndex = switchToAnotherTab ? 1 - index : index;
@@ -417,8 +412,11 @@ public class StartSurfaceLayoutPerfTest {
                                                              -> frameRates.size() == expectedSize,
                     "Have not got PerfListener callback", DEFAULT_MAX_TIME_TO_POLL * 10,
                     DEFAULT_POLLING_INTERVAL);
-            LayoutTestUtils.waitForLayout(
-                    mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
+            CriteriaHelper.pollInstrumentationThread(()
+                                                             -> !mActivityTestRule.getActivity()
+                                                                         .getLayoutManager()
+                                                                         .overviewVisible(),
+                    "Overview not hidden yet");
             Thread.sleep(1000);
         }
         assertEquals(mRepeat, frameRates.size());

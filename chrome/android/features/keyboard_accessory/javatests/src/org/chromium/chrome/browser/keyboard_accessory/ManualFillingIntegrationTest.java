@@ -45,8 +45,6 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
-import org.chromium.chrome.browser.layouts.LayoutTestUtils;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.ui.messages.infobar.SimpleConfirmInfoBarBuilder;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -287,11 +285,10 @@ public class ManualFillingIntegrationTest {
         mHelper.waitForKeyboardToDisappear();
         whenDisplayed(withChild(withId(R.id.keyboard_accessory_sheet)));
 
-        LayoutTestUtils.startShowingAndWaitForLayout(
-                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER, false);
-
-        LayoutTestUtils.startShowingAndWaitForLayout(
-                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING, false);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mActivityTestRule.getActivity().getLayoutManager().showOverview(false); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mActivityTestRule.getActivity().getLayoutManager().hideOverview(false); });
 
         waitToBeHidden(withChild(withId(R.id.keyboard_accessory_sheet)));
     }

@@ -31,8 +31,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
-import org.chromium.chrome.browser.layouts.LayoutTestUtils;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -75,14 +73,14 @@ public class TabbedNavigationBarColorControllerTest {
         assertEquals("Navigation bar should be white before entering overview mode.",
                 mLightNavigationColor, mWindow.getNavigationBarColor());
 
-        LayoutTestUtils.startShowingAndWaitForLayout(
-                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER, false);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getActivity().getLayoutManager().showOverview(false));
 
         assertEquals("Navigation bar should be white in overview mode.", mLightNavigationColor,
                 mWindow.getNavigationBarColor());
 
-        LayoutTestUtils.startShowingAndWaitForLayout(
-                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING, false);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getActivity().getLayoutManager().hideOverview(false));
 
         assertEquals("Navigation bar should be white after exiting overview mode.",
                 mLightNavigationColor, mWindow.getNavigationBarColor());

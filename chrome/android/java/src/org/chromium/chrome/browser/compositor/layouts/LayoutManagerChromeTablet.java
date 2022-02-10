@@ -68,7 +68,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             }
         }
 
-        setNextLayout(null, true);
+        setNextLayout(null);
     }
 
     @Override
