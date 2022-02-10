@@ -107,18 +107,6 @@ class ReputationService : public KeyedService {
       ReputationCheckCallback callback,
       const std::vector<DomainInfo>& engaged_sites);
 
-  // Callback once we have |navigated_domain|, i.e., the DomainInfo for |url|.
-  // |get_domain_info_on_main_thread_duration| holds the delay that computing
-  // |navigated_domain| incurred on the main thread for metrics purposes. It
-  // will be 0 if |navigated_domain| was computed off of the main thread.
-  void GetReputationStatusWithEngagedSitesImpl(
-      const GURL& url,
-      bool has_delayed_warning,
-      ReputationCheckCallback callback,
-      const std::vector<DomainInfo>& engaged_sites,
-      base::TimeDelta get_domain_info_on_main_thread_duration,
-      const DomainInfo navigated_domain);
-
   // Set of eTLD+1s that we've warned about, and the user has explicitly
   // ignored.  Used to avoid re-warning the user.
   std::set<std::string> warning_dismissed_etld1s_;
