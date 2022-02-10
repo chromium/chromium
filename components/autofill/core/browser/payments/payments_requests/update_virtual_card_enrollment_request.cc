@@ -15,8 +15,8 @@ namespace autofill {
 namespace payments {
 
 namespace {
-const char kUpdateVirtualCardEnrollmentRequestPath[] =
-    "payments/apis/virtualcardservice/enroll";
+const char kEnrollRequestPath[] = "payments/apis/virtualcardservice/enroll";
+const char kUnenrollRequestPath[] = "payments/apis/virtualcardservice/unenroll";
 }  // namespace
 
 UpdateVirtualCardEnrollmentRequest::UpdateVirtualCardEnrollmentRequest(
@@ -29,7 +29,10 @@ UpdateVirtualCardEnrollmentRequest::~UpdateVirtualCardEnrollmentRequest() =
     default;
 
 std::string UpdateVirtualCardEnrollmentRequest::GetRequestUrlPath() {
-  return kUpdateVirtualCardEnrollmentRequestPath;
+  return request_details_.virtual_card_enrollment_request_type ==
+                 VirtualCardEnrollmentRequestType::kEnroll
+             ? kEnrollRequestPath
+             : kUnenrollRequestPath;
 }
 
 std::string UpdateVirtualCardEnrollmentRequest::GetRequestContentType() {
