@@ -32,7 +32,8 @@ TAG_HEADER = """\
 # Browser
 # tags: [ android-chromium android-webview-instrumentation
 #         debug debug-x64
-#         release release-x64 ]
+#         release release-x64
+#         fuchsia-chrome web-engine-shell ]
 # GPU
 # tags: [ amd amd-0x6613 amd-0x679e amd-0x6821 amd-0x7340
 #         apple apple-apple-m1 apple-angle-metal-renderer:-apple-m1
