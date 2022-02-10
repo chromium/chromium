@@ -2256,21 +2256,6 @@
             ]
         }
     ],
-    "DWriteFontProxyOnIO": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DWriteFontProxyOnIO"
-                    ]
-                }
-            ]
-        }
-    ],
     "DefaultPassthroughCommandDecoder": [
         {
             "platforms": [

@@ -2396,13 +2396,10 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  scoped_refptr<base::SequencedTaskRunner> font_runner;
-  if (!base::FeatureList::IsEnabled(features::kDWriteFontProxyOnIO)) {
-    font_runner = base::ThreadPool::CreateSequencedTaskRunner(
-        {base::TaskPriority::USER_BLOCKING, base::MayBlock()});
-  }
-  registry->AddInterface(base::BindRepeating(&DWriteFontProxyImpl::Create),
-                         font_runner);
+  registry->AddInterface(
+      base::BindRepeating(&DWriteFontProxyImpl::Create),
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::USER_BLOCKING, base::MayBlock()}));
 #endif
 
   file_system_manager_impl_.reset(new FileSystemManagerImpl(
