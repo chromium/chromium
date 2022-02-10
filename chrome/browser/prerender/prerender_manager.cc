@@ -50,6 +50,30 @@ PrerenderManager::~PrerenderManager() = default;
 
 void PrerenderManager::PrimaryPageChanged(content::Page& page) {
   search_prerender_handle_.reset();
+  direct_url_input_prerender_handle_.reset();
+}
+
+base::WeakPtr<content::PrerenderHandle>
+PrerenderManager::StartPrerenderDirectUrlInput(const GURL& prerendering_url) {
+  if (direct_url_input_prerender_handle_ &&
+      direct_url_input_prerender_handle_->GetInitialPrerenderingUrl() ==
+          prerendering_url) {
+    return nullptr;
+  }
+  direct_url_input_prerender_handle_.reset();
+  direct_url_input_prerender_handle_ = web_contents()->StartPrerendering(
+      prerendering_url, content::PrerenderTriggerType::kEmbedder,
+      prerender_utils::kDirectUrlInputMetricSuffix,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+  if (direct_url_input_prerender_handle_) {
+    return direct_url_input_prerender_handle_->GetWeakPtr();
+  }
+  return nullptr;
+}
+
+void PrerenderManager::CancelPrerenderDirectUrlInput() {
+  direct_url_input_prerender_handle_.reset();
 }
 
 void PrerenderManager::StartPrerenderAutocompleteMatch(

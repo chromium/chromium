@@ -37,4 +37,8 @@ GURL PrerenderHandleImpl::GetInitialPrerenderingUrl() {
   return prerendering_url_;
 }
 
+base::WeakPtr<PrerenderHandle> PrerenderHandleImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace content

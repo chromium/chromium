@@ -119,9 +119,6 @@ class AutocompleteActionPredictor
   // Should be called when a URL is opened from the omnibox.
   void OnOmniboxOpenedUrl(const OmniboxLog& log);
 
-  // Should be called when a navigation finished.
-  void OnFinishedNavigation();
-
  private:
   friend class AutocompleteActionPredictorTest;
   friend class ::PredictorsHandler;
@@ -257,7 +254,7 @@ class AutocompleteActionPredictor
 
   std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle_;
 
-  std::unique_ptr<content::PrerenderHandle> prerender_handle_;
+  base::WeakPtr<content::PrerenderHandle> prerender_handle_;
 
   // Local caches of the data store.  For incognito-owned predictors this is the
   // only copy of the data.

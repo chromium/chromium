@@ -477,10 +477,3 @@ void ChromeOmniboxClient::OnSuccessfulNavigation(
 
   shortcuts_backend->AddOrUpdateShortcut(text, match);
 }
-
-// static
-void ChromeOmniboxClient::OnFinishedNavigation(Profile* profile) {
-  AutocompleteActionPredictor* action_predictor =
-      predictors::AutocompleteActionPredictorFactory::GetForProfile(profile);
-  action_predictor->OnFinishedNavigation();
-}

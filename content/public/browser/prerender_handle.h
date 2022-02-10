@@ -16,6 +16,7 @@ class PrerenderHandle {
   // Returns the initial URL that is passed to PrerenderHostRegistry for
   // starting a prerendering page.
   virtual GURL GetInitialPrerenderingUrl() = 0;
+  virtual base::WeakPtr<PrerenderHandle> GetWeakPtr() = 0;
 };
 
 }  // namespace content

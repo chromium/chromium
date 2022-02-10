@@ -90,9 +90,6 @@ class ChromeOmniboxClient : public OmniboxClient {
                                      const std::u16string& text,
                                      const AutocompleteMatch& match);
 
-  // Called when a navigation finishes.
-  static void OnFinishedNavigation(Profile* profile);
-
  private:
   // Performs prerendering for |match|.
   void DoPrerender(const AutocompleteMatch& match);

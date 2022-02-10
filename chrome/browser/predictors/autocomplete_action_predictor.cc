@@ -21,6 +21,7 @@
 #include "chrome/browser/predictors/predictor_database_factory.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/prefetch/prefetch_prefs.h"
+#include "chrome/browser/prerender/prerender_manager.h"
 #include "chrome/browser/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
@@ -207,6 +208,8 @@ void AutocompleteActionPredictor::StartPrerendering(
     // activation/cancellation. There is a case that a user input the same url
     // after activation/cancellation, and this mechanism prevents the user from
     // starting a new prerendering.
+    PrerenderManager::CreateForWebContents(&web_contents);
+    auto* prerender_manager = PrerenderManager::FromWebContents(&web_contents);
     if (prerender_handle_) {
       // `url` has already been prerendered. Avoid starting new prerendering.
       if (prerender_handle_->GetInitialPrerenderingUrl() == url) {
@@ -216,14 +219,11 @@ void AutocompleteActionPredictor::StartPrerendering(
       // handle to trigger cancellation.
       UMA_HISTOGRAM_ENUMERATION("AutocompleteActionPredictor.PrerenderStatus",
                                 PredictionStatus::kCancelled);
-      prerender_handle_.reset();
+      prerender_manager->CancelPrerenderDirectUrlInput();
     }
 
-    prerender_handle_ = web_contents.StartPrerendering(
-        url, content::PrerenderTriggerType::kEmbedder,
-        prerender_utils::kDirectUrlInputMetricSuffix,
-        ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                  ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+    DCHECK(!prerender_handle_);
+    prerender_handle_ = prerender_manager->StartPrerenderDirectUrlInput(url);
   } else if (base::FeatureList::IsEnabled(
                  features::kOmniboxTriggerForNoStatePrefetch)) {
     content::SessionStorageNamespace* session_storage_namespace =
@@ -347,9 +347,6 @@ void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
       UMA_HISTOGRAM_ENUMERATION("AutocompleteActionPredictor.PrerenderStatus",
                                 PredictionStatus::kUnused);
     }
-    // Don't release `prerender_handle_` here as prerender activation is still
-    // ongoing at this point. The handle will be reset in
-    // AutocompleteActionPredictor::OnFinishedNavigation().
   } else {
     UMA_HISTOGRAM_ENUMERATION(
         "AutocompleteActionPredictor.NoStatePrefetchStatus",
@@ -712,12 +709,6 @@ void AutocompleteActionPredictor::OnHistoryServiceLoaded(
     history::HistoryService* history_service) {
   if (!initialized_)
     TryDeleteOldEntries(history_service);
-}
-
-void AutocompleteActionPredictor::OnFinishedNavigation() {
-  // Do not record AutocompleteActionPredictor.PrerenderStatus here because
-  // it is already recorded at OnOmniboxOpenedUrl().
-  prerender_handle_.reset();
 }
 
 AutocompleteActionPredictor::TransitionalMatch::TransitionalMatch() {

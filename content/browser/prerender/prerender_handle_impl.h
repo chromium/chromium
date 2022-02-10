@@ -18,6 +18,7 @@ class PrerenderHandleImpl final : public PrerenderHandle {
       const GURL& url);
   ~PrerenderHandleImpl() override;
   GURL GetInitialPrerenderingUrl() override;
+  base::WeakPtr<PrerenderHandle> GetWeakPtr() override;
 
  private:
   base::WeakPtr<PrerenderHostRegistry> prerender_host_registry_;
@@ -26,6 +27,8 @@ class PrerenderHandleImpl final : public PrerenderHandle {
   const int frame_tree_node_id_;
 
   const GURL prerendering_url_;
+
+  base::WeakPtrFactory<PrerenderHandle> weak_factory_{this};
 };
 
 }  // namespace content
