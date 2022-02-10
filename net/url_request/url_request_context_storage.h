@@ -32,6 +32,7 @@ class SCTAuditingDelegate;
 class SSLConfigService;
 class TransportSecurityState;
 class URLRequestContext;
+class ClientSocketFactory;
 class URLRequestJobFactory;
 class URLRequestThrottlerManager;
 
@@ -99,6 +100,9 @@ class NET_EXPORT URLRequestContextStorage {
           network_error_logging_service);
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
+  void set_client_socket_factory(
+      std::unique_ptr<ClientSocketFactory> client_socket_factory);
+
   // Everything else can be access through the URLRequestContext, but this
   // cannot.  Having an accessor for it makes usage a little cleaner.
   HttpNetworkSession* http_network_session() const {
@@ -124,6 +128,7 @@ class NET_EXPORT URLRequestContextStorage {
   std::unique_ptr<CTPolicyEnforcer> ct_policy_enforcer_;
   std::unique_ptr<SCTAuditingDelegate> sct_auditing_delegate_;
   std::unique_ptr<QuicContext> quic_context_;
+  std::unique_ptr<ClientSocketFactory> client_socket_factory_;
 
   // Not actually pointed at by the URLRequestContext, but may be used (but not
   // owned) by the HttpTransactionFactory.

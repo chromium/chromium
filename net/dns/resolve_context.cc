@@ -28,6 +28,7 @@
 #include "net/dns/host_cache.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/doh_provider_entry.h"
+#include "net/url_request/url_request_context.h"
 
 namespace net {
 
@@ -378,9 +379,10 @@ void ResolveContext::InvalidateCachesAndPerSessionData(
 }
 
 NetworkChangeNotifier::NetworkHandle ResolveContext::GetTargetNetwork() const {
-  // TODO(stefanoduo): Retrieve this from url_request_context_ once it can be
-  // bound to a network.
-  return NetworkChangeNotifier::kInvalidNetworkHandle;
+  if (!url_request_context())
+    return NetworkChangeNotifier::kInvalidNetworkHandle;
+
+  return url_request_context()->bound_network();
 }
 
 bool ResolveContext::MustRegisterForInvalidations() const {

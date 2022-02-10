@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/net_export.h"
+#include "net/base/network_change_notifier.h"
 #include "net/base/request_priority.h"
 #include "net/log/net_log_source.h"
 #include "net/net_buildflags.h"
@@ -302,6 +303,15 @@ class NET_EXPORT URLRequestContext {
     return require_network_isolation_key_;
   }
 
+  // If != NetworkChangeNotifier::kInvalidNetworkHandle, the network which this
+  // context has been bound to.
+  NetworkChangeNotifier::NetworkHandle bound_network() const {
+    return bound_network_;
+  }
+  void set_bound_network(NetworkChangeNotifier::NetworkHandle network) {
+    bound_network_ = network;
+  }
+
   void AssertCalledOnValidThread() {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   }
@@ -344,6 +354,8 @@ class NET_EXPORT URLRequestContext {
   // Triggers a DCHECK if a NetworkIsolationKey/IsolationInfo is not provided to
   // a request when true.
   bool require_network_isolation_key_;
+
+  NetworkChangeNotifier::NetworkHandle bound_network_;
 
   THREAD_CHECKER(thread_checker_);
 };

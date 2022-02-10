@@ -30,6 +30,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "net/base/net_export.h"
+#include "net/base/network_change_notifier.h"
 #include "net/base/network_delegate.h"
 #include "net/base/proxy_delegate.h"
 #include "net/dns/host_resolver.h"
@@ -321,12 +322,21 @@ class NET_EXPORT URLRequestContextBuilder {
       CreateHttpTransactionFactoryCallback
           create_http_network_transaction_factory);
 
-  // Sets a ClientSocketFactory so a test can mock out sockets. The
-  // ClientSocketFactory must be destroyed after the creates URLRequestContext.
+  // Sets a ClientSocketFactory so a test can mock out sockets. This must
+  // outlive the URLRequestContext that will be built.
   void set_client_socket_factory_for_testing(
       ClientSocketFactory* client_socket_factory_for_testing) {
-    client_socket_factory_for_testing_ = client_socket_factory_for_testing;
+    set_client_socket_factory(client_socket_factory_for_testing);
   }
+
+  // Binds the context to `network`. All requests scheduled through the context
+  // built by this builder will be sent using `network`. Requests will fail if
+  // `network` disconnects.
+  // This also imposes some limitations on the context capabilities:
+  // * Currently, URLs will only be resolved using the System DNS.
+  // * By design, QUIC connection migration will be turned off.
+  // Only implemented for Android (API level > 23).
+  void BindToNetwork(NetworkChangeNotifier::NetworkHandle network);
 
   // Creates a mostly self-contained URLRequestContext. May only be called once
   // per URLRequestContextBuilder. After this is called, the Builder can be
@@ -351,6 +361,13 @@ class NET_EXPORT URLRequestContextBuilder {
       bool pac_quick_check_enabled);
 
  private:
+  // Factory that will be used to create all client sockets used by the
+  // URLRequestContext that will be built.
+  // `client_socket_factory` must outlive the context.
+  void set_client_socket_factory(ClientSocketFactory* client_socket_factory) {
+    client_socket_factory_ = client_socket_factory;
+  }
+
   bool enable_brotli_ = false;
   raw_ptr<NetworkQualityEstimator> network_quality_estimator_ = nullptr;
 
@@ -363,6 +380,9 @@ class NET_EXPORT URLRequestContextBuilder {
   bool cookie_store_set_by_client_ = false;
   bool suppress_setting_socket_performance_watcher_factory_for_testing_ = false;
   bool first_party_sets_enabled_ = false;
+
+  NetworkChangeNotifier::NetworkHandle bound_network_ =
+      NetworkChangeNotifier::kInvalidNetworkHandle;
 
   HttpCacheParams http_cache_params_;
   HttpNetworkSessionParams http_network_session_params_;
@@ -397,7 +417,7 @@ class NET_EXPORT URLRequestContextBuilder {
   std::map<std::string, std::unique_ptr<URLRequestJobFactory::ProtocolHandler>>
       protocol_handlers_;
 
-  raw_ptr<ClientSocketFactory> client_socket_factory_for_testing_ = nullptr;
+  raw_ptr<ClientSocketFactory> client_socket_factory_ = nullptr;
 };
 
 }  // namespace net

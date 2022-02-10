@@ -150,6 +150,9 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   void UnregisterDohStatusObserver(const DohStatusObserver* observer);
 
   URLRequestContext* url_request_context() { return url_request_context_; }
+  const URLRequestContext* url_request_context() const {
+    return url_request_context_;
+  }
   void set_url_request_context(URLRequestContext* url_request_context) {
     DCHECK(!url_request_context_);
     DCHECK(url_request_context);
