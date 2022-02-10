@@ -310,7 +310,7 @@ crbug.com/624256 [ android ] Pixel_SolidColorBackground [ Failure ]
 crbug.com/773293 [ android android-nexus-5 ] Pixel_WebGL2_BlitFramebuffer_Result_Displayed [ Failure ]
 crbug.com/773293 [ android android-nexus-5 ] Pixel_WebGL2_ClearBufferfv_Result_Displayed [ Failure ]
 
-crbug.com/1213674 [ mac amd passthrough ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
+crbug.com/1213674 [ mac amd-0x6821 passthrough ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 crbug.com/1213674 [ mac nvidia passthrough ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 
 # TODO(kbr): temporary suppression for new test.
@@ -319,9 +319,6 @@ crbug.com/575305 [ win ] Pixel_WebGLSadCanvas [ Failure ]
 crbug.com/872423 [ mac ] Pixel_WebGLSadCanvas [ Failure ]
 crbug.com/575305 [ android android-chromium ] Pixel_WebGLSadCanvas [ Failure ]
 crbug.com/575305 [ fuchsia ] Pixel_WebGLSadCanvas [ Failure ]
-
-# float16 is not yet supported for accelerated canvases
-crbug.com/948141 Pixel_CanvasDisplaySRGBAccelerated2D [ Failure ]
 
 # Fails on Nexus 5
 crbug.com/883500 [ android android-nexus-5 ] Pixel_BackgroundImage [ Failure ]
@@ -338,11 +335,7 @@ crbug.com/950932 [ android-webview-instrumentation android-nexus-5x ] * [ RetryO
 # might have the same Nexus 5x driver bug as crbug.com/950932 but that
 # should have made this test flaky instead of always failing. Need to
 # investigate later. Filed a bug to track the debug.
-# crbug.com/984734 [ android android-webview-instrumentation android-nexus-5x ] Pixel_Video_Context_Loss_VP9 [ Failure ]
-
-# Flaking on Nexus 5X even outside WebView now. See commented-out
-# suppression above. Temporarily skipping it to stabilize the CQ.
-crbug.com/1061298 [ android android-nexus-5x ] Pixel_Video_Context_Loss_VP9 [ Failure ]
+crbug.com/984734 [ android android-webview-instrumentation android-nexus-5x ] Pixel_Video_Context_Loss_VP9 [ Failure ]
 
 # Failing on Linux and Windows, both Intel HD 630 and NVIDIA Quadro P400
 crbug.com/974380 [ linux ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Failure ]
@@ -352,9 +345,6 @@ crbug.com/974380 [ win ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorke
 
 # Producing blank images on Macmini and Macbook Pro
 crbug.com/974380 [ mac ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
-
-# Skia Renderer, producing incorrect color in one quadrant
-crbug.com/1008450 [ android skia-renderer-gl ] Pixel_Video_MP4_Rounded_Corner [ Failure ]
 
 # Flaky test on SkiaRenderer vulkan android bot.
 crbug.com/1252081 [ android skia-renderer-vulkan android-chromium ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ RetryOnFailure ]
@@ -413,10 +403,6 @@ crbug.com/1086690 [ chromeos ] Pixel_WebGLSadCanvas [ Failure ]
 # Flaky blank output on ChromeOS
 crbug.com/1278991 [ chromeos chromeos-board-amd64-generic skia-renderer-gl ] Pixel_OffscreenCanvasWebGLDefault [ RetryOnFailure ]
 
-# Failing on ChromeOS FYI Release (amd64-generic), ChromeOS FYI Release (kevin).
-crbug.com/1240440 [ chromeos ] Pixel_WebGLPreservedAfterTabSwitch [ Failure ]
-crbug.com/1240440 [ chromeos ] Pixel_WebGLReadPixelsTabSwitch [ Failure ]
-
 # Flakes on Mac dual-GPU
 crbug.com/1069339 [ mojave amd-0x6821 ] Pixel_OffscreenCanvasIBRCWebGLHighPerfWorker [ RetryOnFailure ]  # finder:disable-stale Very low flake rate (1 in 1k+ builds)
 
@@ -431,14 +417,16 @@ crbug.com/1271184 [ linux display-server-wayland intel skia-renderer-gl ] Pixel_
 crbug.com/1213920 [ win10 skia-renderer-dawn ] Pixel_WebGPU* [ Failure ]
 
 # Flaky on Pixel 4
-crbug.com/1215747 [ android android-pixel-4 skia-renderer-gl ] Pixel_OffscreenCanvasWebGLDefault [ RetryOnFailure ]
-crbug.com/1276605 [ android android-pixel-4 skia-renderer-gl ] Pixel_OffscreenCanvasTransferToImageBitmap [ RetryOnFailure ]
+crbug.com/1215747 [ android android-pixel-4 skia-renderer-gl android-webview-instrumentation ] Pixel_OffscreenCanvasWebGLDefault [ RetryOnFailure ]
+crbug.com/1276605 [ android android-pixel-4 skia-renderer-gl android-webview-instrumentation ] Pixel_OffscreenCanvasTransferToImageBitmap [ RetryOnFailure ]
 
 # Pixel tests are flakily asserting in GPU process on SkiaRenderer/Vulkan
 crbug.com/1230743 [ linux skia-renderer-vulkan ] Pixel_* [ RetryOnFailure ]
 
+crbug.com/1295079 [ linux skia-renderer-vulkan intel-0x5912 ] Pixel_CanvasDisplaySRGBAccelerated2D [ Failure ]
+
 # WebGPU pixel tests flakily hang in the metal shader compiler on Mac.
-crbug.com/1268120 [ mac ] Pixel_WebGPUToDataURL [ Failure ]
+crbug.com/1268120 [ mac asan ] Pixel_WebGPUToDataURL [ Failure ]
 
 # Failures on Sherlock
 # These two tests causes a crash on Swarming. Skipping so that we have a signal for other tests.
@@ -454,6 +442,9 @@ crbug.com/1261867 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] Pixel_
 crbug.com/1261867 [ fuchsia fuchsia-board-astro skia-renderer-vulkan ] Pixel_WebGLGreenTriangle_NoAA_NoAlpha [ Failure ]
 crbug.com/1261867 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] Pixel_WebGLGreenTriangle_NoAA_NoAlpha [ Failure ]
 
+# Failures in fuchsia-chrome browser
+crbug.com/1295076 [ fuchsia fuchsia-chrome ] Pixel_CanvasDisplaySRGBAccelerated2D [ Failure ]
+
 # Pixel_WebGPUImportVideoFrame hangs on Windows FYI bots
 crbug.com/1274796 [ win skia-renderer-gl ] Pixel_WebGPUImportVideoFrame [ Failure ]
 
@@ -465,7 +456,6 @@ crbug.com/1213542 [ skia-renderer-gl mac amd-0x6821 passthrough ] Pixel_Video_Me
 
 # Flaky on Pixel 4 Android WebView
 crbug.com/1278893 [ android android-pixel-4 android-webview-instrumentation skia-renderer-gl ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ RetryOnFailure ]
-crbug.com/1285104 [ android android-pixel-4 android-webview-instrumentation skia-renderer-gl ] Pixel_OffscreenCanvas2DResizeOnWorker [ RetryOnFailure ]
 crbug.com/1285084 [ android android-pixel-4 android-webview-instrumentation skia-renderer-gl ] Pixel_CSS3DBlueBox [ RetryOnFailure ]
 
 # Flaky failures on Win10 AMD RX 5500 XT
@@ -481,6 +471,7 @@ crbug.com/1287249 [ android android-pixel-6 skia-renderer-vulkan android-chromiu
 crbug.com/1287249 [ android android-pixel-6 no-passthrough skia-renderer-vulkan android-chromium ] Pixel_Video_MP4_FourColors_Rot_180 [ Failure ]
 crbug.com/1287249 [ android android-pixel-6 android-chromium ] Pixel_WebGL2_BlitFramebuffer_Result_Displayed [ Failure ]
 crbug.com/1287280 [ android android-pixel-6 no-passthrough skia-renderer-gl android-webview-instrumentation ] Pixel_Video_Context_Loss_VP9 [ Failure ]
+crbug.com/1287280 [ android android-pixel-6 no-passthrough android-chromium ] Pixel_CanvasDisplaySRGBAccelerated2D [ Failure ]
 crbug.com/1288586 [ android android-pixel-6 no-passthrough skia-renderer-gl android-webview-instrumentation ] Pixel_OffscreenCanvasWebGLDefault [ Failure ]
 crbug.com/1289884 [ android android-pixel-6 skia-renderer-vulkan android-webview-instrumentation ] * [ Failure ]
 
