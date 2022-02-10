@@ -76,34 +76,55 @@ class TestDecoderState : public mojom::ConnectionFactory {
   mojo::Receiver<ime::mojom::ConnectionFactory> connection_factory_{this};
 };
 
-ImeDecoder::EntryPoints CreateDecoderEntryPoints(TestDecoderState* state) {
-  g_test_decoder_state = state;
+class TestImeDecoder : public ImeDecoder {
+ public:
+  static TestImeDecoder* GetInstance() {
+    static base::NoDestructor<TestImeDecoder> instance;
+    return instance.get();
+  }
 
-  ImeDecoder::EntryPoints entry_points = {
-      .init_once = [](ImeCrosPlatform* platform) {},
-      .close = []() {},
-      .supports =
-          [](const char* ime_spec) {
-            return strcmp(kInvalidImeSpec, ime_spec) != 0;
-          },
-      .activate_ime = [](const char* ime_spec,
-                         ImeClientDelegate* delegate) { return true; },
-      .process = [](const uint8_t* data, size_t size) {},
-      .connect_to_input_method =
-          [](const char* ime_spec, uint32_t receiver_pipe_handle,
-             uint32_t host_pipe_handle,
-             uint32_t host_pipe_version) { return false; },
-      .initialize_connection_factory =
-          [](uint32_t receiver_pipe_handle) {
-            return g_test_decoder_state->InitializeConnectionFactory(
-                receiver_pipe_handle);
-          },
-      .is_input_method_connected =
-          []() { return g_test_decoder_state->IsConnected(); },
-  };
+  absl::optional<ImeDecoder::EntryPoints> MaybeLoadThenReturnEntryPoints()
+      override {
+    return entry_points_;
+  }
 
-  return entry_points;
-}
+  void ResetState() {
+    delete g_test_decoder_state;
+    g_test_decoder_state = new TestDecoderState();
+
+    entry_points_ = {
+        .init_once = [](ImeCrosPlatform* platform) {},
+        .close = []() {},
+        .supports =
+            [](const char* ime_spec) {
+              return strcmp(kInvalidImeSpec, ime_spec) != 0;
+            },
+        .activate_ime = [](const char* ime_spec,
+                           ImeClientDelegate* delegate) { return true; },
+        .process = [](const uint8_t* data, size_t size) {},
+        .connect_to_input_method =
+            [](const char* ime_spec, uint32_t receiver_pipe_handle,
+               uint32_t host_pipe_handle,
+               uint32_t host_pipe_version) { return false; },
+        .initialize_connection_factory =
+            [](uint32_t receiver_pipe_handle) {
+              return g_test_decoder_state->InitializeConnectionFactory(
+                  receiver_pipe_handle);
+            },
+        .is_input_method_connected =
+            []() { return g_test_decoder_state->IsConnected(); },
+    };
+  }
+
+ private:
+  friend class base::NoDestructor<TestImeDecoder>;
+
+  explicit TestImeDecoder() { ResetState(); }
+
+  ~TestImeDecoder() override = default;
+
+  absl::optional<ImeDecoder::EntryPoints> entry_points_;
+};
 
 struct MockInputMethodHost : public mojom::InputMethodHost {
   void CommitText(const std::u16string& text,
@@ -140,9 +161,7 @@ struct MockInputMethodHost : public mojom::InputMethodHost {
 
 class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
  public:
-  ImeServiceTest()
-      : service_(remote_service_.BindNewPipeAndPassReceiver(),
-                 ImeDecoder::GetInstance()) {}
+  ImeServiceTest() = default;
 
   ImeServiceTest(const ImeServiceTest&) = delete;
   ImeServiceTest& operator=(const ImeServiceTest&) = delete;
@@ -173,9 +192,16 @@ class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
 
  protected:
   void SetUp() override {
-    FakeDecoderEntryPointsForTesting(CreateDecoderEntryPoints(&state_));
+    service_ = std::make_unique<ImeService>(
+        remote_service_.BindNewPipeAndPassReceiver(),
+        TestImeDecoder::GetInstance());
     remote_service_->BindInputEngineManager(
         remote_manager_.BindNewPipeAndPassReceiver());
+  }
+
+  void TearDown() override {
+    service_.reset();
+    TestImeDecoder::GetInstance()->ResetState();
   }
 
   mojo::Remote<mojom::ImeService> remote_service_;
@@ -183,8 +209,7 @@ class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  ImeService service_;
-  TestDecoderState state_;
+  std::unique_ptr<ImeService> service_;
 };
 
 }  // namespace

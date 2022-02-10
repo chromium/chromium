@@ -77,7 +77,7 @@ bool ImePreSandboxHook(sandbox::policy::SandboxLinux::Options options) {
   // TODO(crbug.com/1217513): This is not ideal, as it means rule-based
   // input methods will unnecessarily load the IME decoder shared library.
   // Either remove this line, or use a separate sandbox for rule-based.
-  ImeDecoder::GetInstance()->MaybeLoadThenReturnEntryPoints();
+  ImeDecoderImpl::GetInstance()->MaybeLoadThenReturnEntryPoints();
   instance->EngageNamespaceSandboxIfPossible();
   return true;
 }

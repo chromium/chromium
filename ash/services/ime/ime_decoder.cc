@@ -16,8 +16,6 @@ namespace ime {
 
 namespace {
 
-absl::optional<ImeDecoder::EntryPoints> g_fake_decoder_entry_points_for_testing;
-
 const char kCrosImeDecoderLib[] = "libimedecoder.so";
 
 // TODO(b/161491092): Add test image path based on value of
@@ -53,16 +51,11 @@ void ImeLoggerBridge(int severity, const char* message) {
 
 }  // namespace
 
-ImeDecoder::ImeDecoder() = default;
+ImeDecoderImpl::ImeDecoderImpl() = default;
 
 absl::optional<ImeDecoder::EntryPoints>
-ImeDecoder::MaybeLoadThenReturnEntryPoints() {
+ImeDecoderImpl::MaybeLoadThenReturnEntryPoints() {
   if (entry_points_) {
-    return entry_points_;
-  }
-
-  if (g_fake_decoder_entry_points_for_testing) {
-    entry_points_ = g_fake_decoder_entry_points_for_testing;
     return entry_points_;
   }
 
@@ -119,16 +112,11 @@ ImeDecoder::MaybeLoadThenReturnEntryPoints() {
   return entry_points_;
 }
 
-ImeDecoder::~ImeDecoder() = default;
+ImeDecoderImpl::~ImeDecoderImpl() = default;
 
-ImeDecoder* ImeDecoder::GetInstance() {
-  static base::NoDestructor<ImeDecoder> instance;
+ImeDecoderImpl* ImeDecoderImpl::GetInstance() {
+  static base::NoDestructor<ImeDecoderImpl> instance;
   return instance.get();
-}
-
-void FakeDecoderEntryPointsForTesting(  // IN-TEST
-    const ImeDecoder::EntryPoints& decoder_entry_points) {
-  g_fake_decoder_entry_points_for_testing = decoder_entry_points;
 }
 
 }  // namespace ime

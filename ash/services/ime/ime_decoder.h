@@ -54,11 +54,10 @@ typedef bool (*IsInputMethodConnectedFn)();
 
 // END: Signatures of "C" API entry points of CrOS 1P IME shared lib.
 
-// A proxy class for the IME decoder.
-// ImeDecoder is implemented as a singleton and is initialized before 'ime'
-// sandbox is engaged.
 class ImeDecoder {
  public:
+  virtual ~ImeDecoder() = default;
+
   // Function pointers to "C" API entry points of the loaded IME shared library.
   // See ash/services/ime/public/cpp/shared_lib/interfaces.h for API specs.
   struct EntryPoints {
@@ -72,32 +71,36 @@ class ImeDecoder {
     IsInputMethodConnectedFn is_input_method_connected;
   };
 
-  // Gets the singleton ImeDecoder.
-  static ImeDecoder* GetInstance();
-
-  ImeDecoder(const ImeDecoder&) = delete;
-  ImeDecoder& operator=(const ImeDecoder&) = delete;
-
   // Loads the IME shared library (if not already loaded) then returns its entry
   // points. Entry points are only available if the IME shared library has been
   // successfully loaded.
-  absl::optional<EntryPoints> MaybeLoadThenReturnEntryPoints();
+  virtual absl::optional<EntryPoints> MaybeLoadThenReturnEntryPoints() = 0;
+};
+
+// A proxy class for the IME decoder.
+// ImeDecoder is implemented as a singleton and is initialized before 'ime'
+// sandbox is engaged.
+class ImeDecoderImpl : public ImeDecoder {
+ public:
+  // Gets the singleton ImeDecoderImpl.
+  static ImeDecoderImpl* GetInstance();
+
+  ImeDecoderImpl(const ImeDecoderImpl&) = delete;
+  ImeDecoderImpl& operator=(const ImeDecoderImpl&) = delete;
+
+  absl::optional<EntryPoints> MaybeLoadThenReturnEntryPoints() override;
 
  private:
-  friend class base::NoDestructor<ImeDecoder>;
+  friend class base::NoDestructor<ImeDecoderImpl>;
 
-  explicit ImeDecoder();
-  ~ImeDecoder();
+  explicit ImeDecoderImpl();
+  ~ImeDecoderImpl() override;
 
   // Result of IME decoder DSO initialization.
   absl::optional<base::ScopedNativeLibrary> library_;
 
   absl::optional<EntryPoints> entry_points_;
 };
-
-// Only used in tests to set a fake `ImeDecoder::EntryPoints`.
-void FakeDecoderEntryPointsForTesting(
-    const ImeDecoder::EntryPoints& decoder_entry_points);
 
 }  // namespace ime
 }  // namespace chromeos
