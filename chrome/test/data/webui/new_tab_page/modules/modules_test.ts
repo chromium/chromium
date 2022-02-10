@@ -319,14 +319,15 @@ suite('NewTabPageModulesModulesTest', () => {
       const moduleArray = [];
       for (let i = 0; i < 3; ++i) {
         let module = createElement();
-        module.style.height = `300px`;
-        module.style.width = `300px`;
         moduleArray.push(module);
       }
-      const fooDescriptor = new ModuleDescriptor('foo', 'Foo', initNullModule);
-      const barDescriptor = new ModuleDescriptor('bar', 'Bar', initNullModule);
-      const fooBarDescriptor =
-          new ModuleDescriptor('foo bar', 'Foo Baz', initNullModule);
+      const fooDescriptor = new ModuleDescriptorV2(
+          'foo', 'Foo', ModuleHeight.TALL, async () => createElement());
+      const barDescriptor = new ModuleDescriptorV2(
+          'bar', 'Bar', ModuleHeight.TALL, async () => createElement());
+      const fooBarDescriptor = new ModuleDescriptorV2(
+          'foo bar', 'Foo Baz', ModuleHeight.TALL, async () => createElement());
+
       moduleRegistry.setResultFor(
           'getDescriptors', [fooDescriptor, barDescriptor, fooBarDescriptor]);
       const modulesElement = await createModulesElement([

@@ -40,6 +40,9 @@ export interface ModulesElement {
   };
 }
 
+const SHORT_CLASS_NAME: string = 'short';
+const TALL_CLASS_NAME: string = 'tall';
+
 /** Container for the NTP modules. */
 export class ModulesElement extends I18nMixin
 (PolymerElement) {
@@ -135,13 +138,46 @@ export class ModulesElement extends I18nMixin
     this.renderModules_();
   }
 
+  private appendModuleContainers_(moduleContainers: HTMLElement[]) {
+    this.$.modules.innerHTML = '';
+    let shortModuleSiblingsContainer: HTMLElement|null = null;
+    moduleContainers.forEach((moduleContainer: HTMLElement, index: number) => {
+      let moduleContainerParent = this.$.modules;
+      if (loadTimeData.getBoolean('modulesRedesignedLayoutEnabled')) {
+        // Wrap pairs of sibling short modules in a container. All other
+        // modules will be placed in a container of their own.
+        if (moduleContainer.classList.contains(SHORT_CLASS_NAME) &&
+            shortModuleSiblingsContainer) {
+          // Add current sibling short module to container which already
+          // contains the previous sibling short module by setting its parent
+          // to be 'shortModuleSiblingsContainer'.
+          moduleContainerParent = shortModuleSiblingsContainer;
+          this.$.modules.appendChild(shortModuleSiblingsContainer);
+          shortModuleSiblingsContainer = null;
+        } else if (
+            moduleContainer.classList.contains(SHORT_CLASS_NAME) &&
+            index + 1 !== moduleContainers.length &&
+            moduleContainers[index + 1].classList.contains(SHORT_CLASS_NAME)) {
+          // Add current short module to a new container since the next one is
+          // short as well by setting its parent to be
+          // 'shortModuleSiblingsContainer'.
+          shortModuleSiblingsContainer =
+              this.ownerDocument.createElement('div');
+          shortModuleSiblingsContainer.classList.add(
+              'short-module-siblings-container');
+          moduleContainerParent = shortModuleSiblingsContainer;
+        }
+      }
+      moduleContainerParent.appendChild(moduleContainer);
+    });
+  }
+
   private async renderModules_(): Promise<void> {
     const modules = await ModuleRegistry.getInstance().initializeModules(
         loadTimeData.getInteger('modulesLoadTimeout'));
     if (modules) {
       NewTabPageProxy.getInstance().handler.onModulesLoadedWithData();
-      let shortModuleSiblingsContainer: HTMLElement|null = null;
-      modules.forEach((module, index) => {
+      const moduleContainers = modules.map(module => {
         const moduleWrapper = new ModuleWrapperElement();
         moduleWrapper.module = module;
         if (this.dragEnabled_) {
@@ -154,38 +190,21 @@ export class ModulesElement extends I18nMixin
         }
         moduleWrapper.addEventListener(
             'disable-module', e => this.onDisableModule_(e));
-        let moduleContainerParent = this.$.modules;
-        if (loadTimeData.getBoolean('modulesRedesignedLayoutEnabled')) {
-          // Wrap pairs of sibling short modules in a container. All other
-          // modules will be placed in a container of their own.
-          if (module.descriptor.height === ModuleHeight.SHORT &&
-              shortModuleSiblingsContainer) {
-            // Add current sibling short module to container which already
-            // contains the previous sibling short module by setting its parent
-            // to be 'shortModuleSiblingsContainer'.
-            moduleContainerParent = shortModuleSiblingsContainer;
-            this.$.modules.appendChild(shortModuleSiblingsContainer);
-            shortModuleSiblingsContainer = null;
-          } else if (
-              module.descriptor.height === ModuleHeight.SHORT &&
-              index + 1 !== modules.length &&
-              (modules[index + 1].descriptor.height === ModuleHeight.SHORT)) {
-            // Add current short module to a new container since the next one is
-            // short as well by setting its parent to be
-            // 'shortModuleSiblingsContainer'.
-            shortModuleSiblingsContainer =
-                this.ownerDocument.createElement('div');
-            shortModuleSiblingsContainer.classList.add(
-                'short-module-siblings-container');
-            moduleContainerParent = shortModuleSiblingsContainer;
-          }
-        }
         const moduleContainer = this.ownerDocument.createElement('div');
         moduleContainer.classList.add('module-container');
+        if (loadTimeData.getBoolean('modulesRedesignedLayoutEnabled')) {
+          if (module.descriptor.height === ModuleHeight.SHORT) {
+            moduleContainer.classList.add(SHORT_CLASS_NAME);
+          }
+          if (module.descriptor.height === ModuleHeight.TALL) {
+            moduleContainer.classList.add(TALL_CLASS_NAME);
+          }
+        }
         moduleContainer.hidden = this.moduleDisabled_(module.descriptor.id);
         moduleContainer.appendChild(moduleWrapper);
-        moduleContainerParent.appendChild(moduleContainer);
+        return moduleContainer;
       });
+      this.appendModuleContainers_(moduleContainers);
       this.onModulesLoaded_();
     }
   }
@@ -341,14 +360,16 @@ export class ModulesElement extends I18nMixin
     };
 
     const dragEnter = (e: MouseEvent) => {
-      const moduleContainers = [...this.$.modules.childNodes];
+      const moduleContainers = [
+        ...this.shadowRoot!.querySelectorAll<HTMLElement>('.module-container')
+      ];
       const dragIndex = moduleContainers.indexOf(dragElement.parentElement!);
       const dropIndex =
           moduleContainers.indexOf((e.target as HTMLElement).parentElement!);
 
       const positionType = dragIndex > dropIndex ? 'beforebegin' : 'afterend';
       const dragContainer = moduleContainers[dragIndex];
-      const previousContainer = moduleContainers[dropIndex];
+      const dropContainer = moduleContainers[dropIndex];
 
       // To animate the modules as they are reordered we use the FLIP
       // (First, Last, Invert, Play) animation approach by @paullewis.
@@ -360,9 +381,9 @@ export class ModulesElement extends I18nMixin
         return moduleWrapper.getBoundingClientRect();
       });
 
-      dragContainer.remove();
-      (previousContainer as Element)
-          .insertAdjacentElement(positionType, dragContainer as Element);
+      moduleContainers.splice(dragIndex, 1);
+      moduleContainers.splice(dropIndex, 0, dragContainer);
+      this.appendModuleContainers_(moduleContainers);
 
       undraggedModuleWrappers.forEach((moduleWrapper, i) => {
         const lastRect = moduleWrapper.getBoundingClientRect();
