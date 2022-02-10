@@ -16,7 +16,7 @@ load("./builder_config.star", _ = "builder_config")  # @unused
 
 # infra/infra git revision to use for the compilator_watcher luciexe sub_build
 # Used by chromium orchestrators
-_COMPILATOR_WATCHER_GIT_REVISION = "5fd7f4ae276865742fe632642ec4633dd9f81649"
+_COMPILATOR_WATCHER_GIT_REVISION = "c49f1d02dec735eb0e8f03121d3fab2840c2c954"
 
 # The kind of nodes for the definition of an orchestrator builder
 _ORCHESTRATOR_KIND = "orchestrator"
