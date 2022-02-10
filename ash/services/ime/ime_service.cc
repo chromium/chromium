@@ -51,10 +51,11 @@ std::string ResolveDownloadPath(const base::FilePath& file) {
 
 }  // namespace
 
-ImeService::ImeService(mojo::PendingReceiver<mojom::ImeService> receiver)
+ImeService::ImeService(mojo::PendingReceiver<mojom::ImeService> receiver,
+                       ImeDecoder* ime_decoder)
     : receiver_(this, std::move(receiver)),
-      main_task_runner_(base::SequencedTaskRunnerHandle::Get()) {
-}
+      main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      ime_decoder_(ime_decoder) {}
 
 ImeService::~ImeService() = default;
 
@@ -91,7 +92,7 @@ void ImeService::ConnectToImeEngine(
 
   input_engine_.reset();
   decoder_engine_ = std::make_unique<DecoderEngine>(
-      this, ImeDecoder::GetInstance()->GetEntryPoints());
+      this, ime_decoder_->MaybeLoadThenReturnEntryPoints());
   bool bound = decoder_engine_->BindRequest(
       ime_spec, std::move(to_engine_request), std::move(from_engine), extra);
   std::move(callback).Run(bound);
@@ -125,7 +126,7 @@ void ImeService::InitializeConnectionFactory(
   }
 
   auto system_engine = std::make_unique<SystemEngine>(
-      this, ImeDecoder::GetInstance()->GetEntryPoints());
+      this, ime_decoder_->MaybeLoadThenReturnEntryPoints());
   bool bound =
       system_engine->BindConnectionFactory(std::move(connection_factory));
   input_engine_ = std::move(system_engine);

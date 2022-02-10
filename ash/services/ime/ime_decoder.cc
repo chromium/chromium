@@ -53,10 +53,17 @@ void ImeLoggerBridge(int severity, const char* message) {
 
 }  // namespace
 
-ImeDecoder::ImeDecoder() {
+ImeDecoder::ImeDecoder() = default;
+
+absl::optional<ImeDecoder::EntryPoints>
+ImeDecoder::MaybeLoadThenReturnEntryPoints() {
+  if (entry_points_) {
+    return entry_points_;
+  }
+
   if (g_fake_decoder_entry_points_for_testing) {
     entry_points_ = g_fake_decoder_entry_points_for_testing;
-    return;
+    return entry_points_;
   }
 
   base::FilePath path = GetImeDecoderLibPath();
@@ -66,7 +73,7 @@ ImeDecoder::ImeDecoder() {
   if (!library.is_valid()) {
     LOG(ERROR) << "Failed to load decoder shared library from: " << path
                << ", error: " << library.GetError()->ToString();
-    return;
+    return absl::nullopt;
   }
 
   EntryPoints entry_points = {
@@ -95,7 +102,7 @@ ImeDecoder::ImeDecoder() {
       !entry_points.close || !entry_points.connect_to_input_method ||
       !entry_points.is_input_method_connected ||
       !entry_points.initialize_connection_factory) {
-    return;
+    return absl::nullopt;
   }
 
   // Optional function pointer.
@@ -109,6 +116,7 @@ ImeDecoder::ImeDecoder() {
 
   library_ = std::move(library);
   entry_points_ = entry_points;
+  return entry_points_;
 }
 
 ImeDecoder::~ImeDecoder() = default;
@@ -116,10 +124,6 @@ ImeDecoder::~ImeDecoder() = default;
 ImeDecoder* ImeDecoder::GetInstance() {
   static base::NoDestructor<ImeDecoder> instance;
   return instance.get();
-}
-
-absl::optional<ImeDecoder::EntryPoints> ImeDecoder::GetEntryPoints() const {
-  return entry_points_;
 }
 
 void FakeDecoderEntryPointsForTesting(  // IN-TEST

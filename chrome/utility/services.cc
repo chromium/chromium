@@ -289,7 +289,8 @@ auto RunPrintCompositor(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 auto RunImeService(
     mojo::PendingReceiver<chromeos::ime::mojom::ImeService> receiver) {
-  return std::make_unique<chromeos::ime::ImeService>(std::move(receiver));
+  return std::make_unique<chromeos::ime::ImeService>(
+      std::move(receiver), chromeos::ime::ImeDecoder::GetInstance());
 }
 
 auto RunRecordingService(

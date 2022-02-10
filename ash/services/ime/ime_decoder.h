@@ -78,14 +78,14 @@ class ImeDecoder {
   ImeDecoder(const ImeDecoder&) = delete;
   ImeDecoder& operator=(const ImeDecoder&) = delete;
 
-  // Returns entry points of the loaded IME shared library. Entry points are
-  // only available if the IME shared library has been successfully loaded.
-  absl::optional<EntryPoints> GetEntryPoints() const;
+  // Loads the IME shared library (if not already loaded) then returns its entry
+  // points. Entry points are only available if the IME shared library has been
+  // successfully loaded.
+  absl::optional<EntryPoints> MaybeLoadThenReturnEntryPoints();
 
  private:
   friend class base::NoDestructor<ImeDecoder>;
 
-  // Initialize the Ime decoder library.
   explicit ImeDecoder();
   ~ImeDecoder();
 
