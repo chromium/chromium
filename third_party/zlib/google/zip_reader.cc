@@ -201,17 +201,9 @@ bool ZipReader::AdvanceToNextEntry() {
   if (reached_end_)
     return false;
 
-  unz_file_pos position = {};
-  if (unzGetFilePos(zip_file_, &position) != UNZ_OK)
-    return false;
-  const int current_entry_index = position.num_of_file;
-  // If we are currently at the last entry, then the next position is the
-  // end of the ZIP archive, so mark that we reached the end.
-  if (current_entry_index + 1 == num_entries_) {
+  if (const int err = unzGoToNextFile(zip_file_); err != UNZ_OK) {
     reached_end_ = true;
-  } else {
-    DCHECK_LT(current_entry_index + 1, num_entries_);
-    if (const int err = unzGoToNextFile(zip_file_); err != UNZ_OK) {
+    if (err != UNZ_END_OF_LIST_OF_FILE) {
       LOG(ERROR) << "Cannot go to next entry in ZIP: " << UnzipError(err);
       return false;
     }
