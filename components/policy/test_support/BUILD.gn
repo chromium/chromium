@@ -5,8 +5,6 @@
 static_library("test_support") {
   testonly = true
 
-  data = [ "policy_testserver.py" ]
-
   sources = [
     "client_storage.cc",
     "client_storage.h",

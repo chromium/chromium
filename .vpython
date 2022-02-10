@@ -161,7 +161,6 @@ wheel: <
 
 # Used by:
 #   build/android/pylib/local/emulator/avd.py
-#   components/policy/test_support/policy_testserver.py
 wheel: <
   name: "infra/python/wheels/protobuf-py2_py3"
   version: "version:3.6.1"

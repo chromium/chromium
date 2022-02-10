@@ -67,29 +67,6 @@ group("test") {
   testonly = true
 }
 
-group("policy_testserver_pyproto") {
-  # Python proto files used by chrome/browser/policy/test/policy_testserver.py
-
-  data = [
-    "$root_out_dir/pyproto/components/policy/proto/device_management_backend_pb2.py",
-    "$root_out_dir/pyproto/components/policy/proto/cloud_policy_pb2.py",
-    "$root_out_dir/pyproto/components/policy/proto/policy_common_definitions_pb2.py",
-    "$root_out_dir/pyproto/third_party/shell-encryption/src/serialization_pb2.py",
-    "$root_out_dir/pyproto/third_party/private_membership/src/private_membership_pb2.py",
-    "$root_out_dir/pyproto/third_party/private_membership/src/private_membership_rlwe_pb2.py",
-  ]
-
-  if (!is_android) {
-    # Used by chrome/browser/policy/test/policy_testserver.py
-    data += [ "$root_out_dir/pyproto/components/policy/proto/chrome_extension_policy_pb2.py" ]
-  }
-
-  if (is_chromeos_ash) {
-    # Used by chrome/browser/policy/test/policy_testserver.py
-    data += [ "$root_out_dir/pyproto/components/policy/proto/chrome_device_policy_pb2.py" ]
-  }
-}
-
 if (is_android) {
   android_library("test_support_java") {
     testonly = true
@@ -1128,7 +1105,6 @@ if (!is_android) {
 
     deps = [
       ":browser_tests_runner",
-      ":policy_testserver_pyproto",
       ":sync_integration_test_support",
       ":test_support",
       ":test_support_ui",
