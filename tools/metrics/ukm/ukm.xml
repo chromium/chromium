@@ -16817,6 +16817,41 @@ be describing additional metrics about the same event.
       or sum of a UMA/UKM metric.
     </summary>
   </metric>
+  <metric name="ActualResult2">
+    <summary>
+      The 2nd UMA or UKM metrics related to the features affected by the ML
+      model, with or without aggregation, after running the features as
+      instructed by the ML model. No encoding is used.
+    </summary>
+  </metric>
+  <metric name="ActualResult3">
+    <summary>
+      The 3rd UMA or UKM metrics related to the features affected by the ML
+      model, with or without aggregation, after running the features as
+      instructed by the ML model. No encoding is used.
+    </summary>
+  </metric>
+  <metric name="ActualResult4">
+    <summary>
+      The 4th UMA or UKM metrics related to the features affected by the ML
+      model, with or without aggregation, after running the features as
+      instructed by the ML model. No encoding is used.
+    </summary>
+  </metric>
+  <metric name="ActualResult5">
+    <summary>
+      The 5th UMA or UKM metrics related to the features affected by the ML
+      model, with or without aggregation, after running the features as
+      instructed by the ML model. No encoding is used.
+    </summary>
+  </metric>
+  <metric name="ActualResult6">
+    <summary>
+      The 6th UMA or UKM metrics related to the features affected by the ML
+      model, with or without aggregation, after running the features as
+      instructed by the ML model. No encoding is used.
+    </summary>
+  </metric>
   <metric name="Input0">
     <summary>
       The input tensor at index 0 represented in IEEE 754 double precision.
