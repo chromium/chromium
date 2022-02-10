@@ -460,8 +460,7 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::Layout(
   }
 
   if (RuntimeEnabledFeatures::CSSContainerQueriesEnabled() &&
-      // Only consider the size of the first container fragment.
-      !IsResumingLayout(break_token) && IsContainerForContainerQueries()) {
+      IsContainerForContainerQueries()) {
     if (auto* element = DynamicTo<Element>(GetDOMNode())) {
       LogicalSize available_size = CalculateChildAvailableSize(
           constraint_space, *this, fragment_geometry->border_box_size,
