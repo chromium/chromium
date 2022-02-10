@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/ranges/algorithm.h"
-#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/device_service.h"
 #include "services/device/hid/hid_service.h"
 #include "third_party/blink/public/mojom/hid/hid.mojom.h"
@@ -29,11 +28,7 @@ void OnConnectResponse(
 
 }  // namespace
 
-HIDImpl::HIDImpl(content::BrowserContext* browser_context)
-    : browser_context_(browser_context) {
-  // TODO(b/214330822): Remove this when browser_context_ is used.
-  (void)browser_context_;
-}
+HIDImpl::HIDImpl() {}
 
 HIDImpl::~HIDImpl() {}
 

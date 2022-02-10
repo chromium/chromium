@@ -19,17 +19,13 @@
 #include "third_party/blink/public/mojom/chromeos/system_extensions/hid/cros_hid.mojom.h"
 #include "third_party/blink/public/mojom/hid/hid.mojom-forward.h"
 
-namespace content {
-class BrowserContext;
-}
-
 namespace ash {
 
 class HIDImpl : public blink::mojom::CrosHID,
                 public device::mojom::HidManagerClient,
                 public device::mojom::HidConnectionWatcher {
  public:
-  explicit HIDImpl(content::BrowserContext* browser_context);
+  HIDImpl();
   ~HIDImpl() override;
 
   void AccessDevices(std::vector<blink::mojom::HidDeviceFilterPtr> filters,
@@ -58,8 +54,6 @@ class HIDImpl : public blink::mojom::CrosHID,
   void SetUpHidManagerConnection(
       mojo::PendingRemote<device::mojom::HidManager> manager);
   void InitDeviceList(std::vector<device::mojom::HidDeviceInfoPtr> devices);
-
-  content::BrowserContext* browser_context_;
 
   mojo::Remote<device::mojom::HidManager> hid_manager_remote_;
   mojo::AssociatedReceiver<device::mojom::HidManagerClient>

@@ -414,10 +414,8 @@ void ChromeContentBrowserClient::
           // ensure that the render_process_host is origin-locked via
           // ChildProcessSecurityPolicy::CanAccessDataForOrigin().
 
-          mojo::MakeSelfOwnedReceiver(
-              std::make_unique<ash::HIDImpl>(
-                  render_process_host->GetBrowserContext()),
-              std::move(receiver));
+          mojo::MakeSelfOwnedReceiver(std::make_unique<ash::HIDImpl>(),
+                                      std::move(receiver));
         }));
   }
 #endif
