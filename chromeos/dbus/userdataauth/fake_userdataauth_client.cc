@@ -75,6 +75,7 @@ void FakeUserDataAuthClient::Mount(
     MountCallback callback) {
   ::user_data_auth::CryptohomeErrorCode error = cryptohome_error_;
   last_mount_request_ = request;
+  ++mount_request_count_;
   ::user_data_auth::MountReply reply;
 
   cryptohome::AccountIdentifier account;

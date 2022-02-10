@@ -102,6 +102,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
     cryptohome_error_ = error;
   }
   // Get the MountRequest to last Mount().
+  int get_mount_request_count() const { return mount_request_count_; }
   const ::user_data_auth::MountRequest& get_last_mount_request() const {
     return last_mount_request_;
   }
@@ -222,6 +223,7 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) FakeUserDataAuthClient
   // Mount() related fields.
   ::user_data_auth::CryptohomeErrorCode cryptohome_error_ =
       ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
+  int mount_request_count_ = 0;
   ::user_data_auth::MountRequest last_mount_request_;
   bool mount_create_required_ = false;
 
