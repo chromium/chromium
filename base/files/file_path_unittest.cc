@@ -811,6 +811,7 @@ TEST_F(FilePathTest, Extension2) {
     { FPL("foo.user.js"),            FPL(".user.js") },
     // Other cases.
     { FPL("/foo.1234.gz"),           FPL(".1234.gz") },
+    { FPL("/foo.1234.gz."),          FPL(".") },
     { FPL("/foo.1234.tar.gz"),       FPL(".tar.gz") },
     { FPL("/foo.tar.tar.gz"),        FPL(".tar.gz") },
     { FPL("/foo.tar.gz.gz"),         FPL(".gz.gz") },

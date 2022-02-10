@@ -256,13 +256,10 @@ class BASE_EXPORT FilePath {
   // this is the only situation in which BaseName will return an absolute path.
   [[nodiscard]] FilePath BaseName() const;
 
-  // Returns ".jpg" for path "C:\pics\jojo.jpg", or an empty string if the file
-  // has no extension.  If non-empty, Extension() will always start with
-  // precisely one ".".
-  //
-  // For common double-extensions like ".tar.gz" and ".user.js", this method
-  // returns the combined extension.  For a single component, use
-  // FinalExtension().
+  // Returns the extension of a file path.  This method works very similarly to
+  // FinalExtension(), except when the file path ends with a common
+  // double-extension.  For common double-extensions like ".tar.gz" and
+  // ".user.js", this method returns the combined extension.
   //
   // Common means that detecting double-extensions is based on a hard-coded
   // allow-list (including but not limited to ".*.gz" and ".user.js") and isn't
@@ -282,11 +279,16 @@ class BASE_EXPORT FilePath {
   //   ASSERT(new_path == path.value());
   //
   // NOTE: this is different from the original file_util implementation which
-  // returned the extension without a leading "." ("jpg" instead of ".jpg")
+  // returned the extension without a leading "." ("jpg" instead of ".jpg").
   [[nodiscard]] StringType Extension() const;
 
-  // Returns the path's file extension, as in Extension(), but will
-  // never return a double extension.
+  // Returns the final extension of a file path, or an empty string if the file
+  // path has no extension.  In most cases, the final extension of a file path
+  // refers to the part of the file path from the last dot to the end (including
+  // the dot itself).  For example, this method applied to "/pics/jojo.jpg"
+  // and "/pics/jojo." returns ".jpg" and ".", respectively.  However, if the
+  // base name of the file path is either "." or "..", this method returns an
+  // empty string.
   //
   // TODO(davidben): Check all our extension-sensitive code to see if
   // we can rename this to Extension() and the other to something like
