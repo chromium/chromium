@@ -814,11 +814,20 @@ void ServiceWorkerSubresourceLoader::OnSideDataReadingComplete(
   DCHECK(!side_data_reading_complete_);
   side_data_reading_complete_ = true;
 
-  if (metadata.has_value())
+  if (!base::FeatureList::IsEnabled(network::features::kCombineResponseBody) &&
+      metadata.has_value()) {
     url_loader_client_->OnReceiveCachedMetadata(std::move(metadata.value()));
+  }
 
   DCHECK(data_pipe.is_valid());
   CommitResponseBody(std::move(data_pipe));
+
+  // See https://crbug.com/1294238. The cached meta data needs to be sent after
+  // the response head.
+  if (base::FeatureList::IsEnabled(network::features::kCombineResponseBody) &&
+      metadata.has_value()) {
+    url_loader_client_->OnReceiveCachedMetadata(std::move(metadata.value()));
+  }
 
   // If the blob reading completed before the side data reading, then we
   // must manually finalize the blob reading now.

@@ -1123,6 +1123,10 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, BlobResponse) {
   StartRequest(factory, request, &loader, &client);
   client->RunUntilResponseReceived();
 
+  // This needs to come after the response, not the before, as some consumers
+  // such as ScriptResource depend on that.
+  ASSERT_FALSE(client->has_received_cached_metadata());
+
   auto expected_info = CreateResponseInfoFromServiceWorker();
   auto& info = client->response_head();
   expected_info->response_time = response_time;
