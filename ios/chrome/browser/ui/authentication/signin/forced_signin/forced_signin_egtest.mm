@@ -566,7 +566,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
 // Tests that the forced sign-in prompt can be shown on dynamic policy update
 // when a browser modal is displayed on top of the browser view.
-- (void)testSignInScreenOnModal {
+- (void)DISABLED_testSignInScreenOnModal {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
@@ -592,7 +592,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
 // Tests that the forced sign-in prompt can be shown on dynamic policy update
 // when on the tab switcher.
-- (void)testSignInScreenOnTabSwitcher {
+- (void)DISABLED_testSignInScreenOnTabSwitcher {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
@@ -618,7 +618,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
 // Tests that the forced sign-in prompt can be shown on dynamic policy update
 // when on an incognito browser tab.
-- (void)testSignInScreenOnIncognito {
+- (void)DISABLED_testSignInScreenOnIncognito {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
@@ -644,7 +644,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
 // Tests that the forced sign-in prompt is shown after the sign-in prompt when
 // sign-in is skipped.
-- (void)testSignInScreenDuringRegularSigninPrompt {
+- (void)DISABLED_testSignInScreenDuringRegularSigninPrompt {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
