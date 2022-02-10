@@ -31,7 +31,7 @@ enum class DispatchCode {
   FALL_THROUGH = 2,
   // For historical reasons, these error codes correspond to commonly used
   // XMLRPC codes (e.g. see METHOD_NOT_FOUND in
-  // https://github.com/python/cpython/blob/master/Lib/xmlrpc/client.py).
+  // https://github.com/python/cpython/blob/main/Lib/xmlrpc/client.py).
   PARSE_ERROR = -32700,
   INVALID_REQUEST = -32600,
   METHOD_NOT_FOUND = -32601,
