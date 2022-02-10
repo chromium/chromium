@@ -11,6 +11,7 @@ source_set("chromium_branded_images") {
     "resources:chromium_non_default_promo",
     "resources:chromium_stay_safe",
     "resources:download_drivium",
+    "resources:password_suggestion_key",
     "//ios/chrome/app/theme",
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//ui/base",
