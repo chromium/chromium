@@ -27,6 +27,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -227,8 +228,11 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
 
   // If we know there's no service worker for the storage key, let's skip asking
   // the storage to check the existence.
-  blink::StorageKey storage_key =
-      blink::StorageKey::FromNetIsolationInfo(isolation_info_);
+  blink::StorageKey storage_key = blink::StorageKey::CreateWithOptionalNonce(
+      new_origin,
+      net::SchemefulSite(isolation_info_.top_frame_origin().value()),
+      base::OptionalOrNullptr(isolation_info_.nonce()),
+      blink::mojom::AncestorChainBit::kSameSite);
 
   bool skip_service_worker =
       skip_service_worker_ ||

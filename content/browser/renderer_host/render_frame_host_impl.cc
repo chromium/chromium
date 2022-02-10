@@ -3712,7 +3712,14 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
   isolation_info_ = ComputeIsolationInfoInternal(
       new_frame_origin, net::IsolationInfo::RequestType::kOther, anonymous());
   SetLastCommittedOrigin(new_frame_origin);
-  SetStorageKey(blink::StorageKey::FromNetIsolationInfo(isolation_info_));
+  DCHECK(isolation_info_.top_frame_origin().has_value());
+  SetStorageKey(blink::StorageKey::CreateWithOptionalNonce(
+      new_frame_origin,
+      net::SchemefulSite(isolation_info_.top_frame_origin().value()),
+      base::OptionalOrNullptr(isolation_info_.nonce()),
+      ComputeSiteForCookies().IsNull()
+          ? blink::mojom::AncestorChainBit::kCrossSite
+          : blink::mojom::AncestorChainBit::kSameSite));
 
   // Apply private network request policy according to our new origin.
   if (GetContentClient()->browser()->ShouldAllowInsecurePrivateNetworkRequests(

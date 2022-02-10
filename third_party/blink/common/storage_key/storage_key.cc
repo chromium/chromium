@@ -16,7 +16,6 @@
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "net/base/isolation_info.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
@@ -222,21 +221,6 @@ StorageKey StorageKey::CreateWithOptionalNonce(
     blink::mojom::AncestorChainBit ancestor_chain_bit) {
   DCHECK(!nonce || !nonce->is_empty());
   return StorageKey(origin, top_level_site, nonce, ancestor_chain_bit);
-}
-
-// static
-// TODO(https://crbug.com/1287134): refactor FromNetIsolationInfo to correctly
-// infer the AncestorChainBit value instead of constructing with kSameSite each
-// time.
-blink::StorageKey StorageKey::FromNetIsolationInfo(
-    const net::IsolationInfo& isolation_info) {
-  DCHECK(isolation_info.frame_origin().has_value());
-  DCHECK(isolation_info.top_frame_origin().has_value());
-  return StorageKey(
-      isolation_info.frame_origin().value(),
-      net::SchemefulSite(isolation_info.top_frame_origin().value()),
-      base::OptionalOrNullptr(isolation_info.nonce()),
-      blink::mojom::AncestorChainBit::kSameSite);
 }
 
 std::string StorageKey::Serialize() const {
