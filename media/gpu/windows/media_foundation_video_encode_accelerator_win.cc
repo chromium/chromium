@@ -357,8 +357,7 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(const Config& config,
     return false;
   }
 
-  if (!ActivateAsyncEncoder(pp_activate, encoder_count,
-                            config.is_constrained_h264)) {
+  if (!ActivateAsyncEncoder(pp_activate, encoder_count)) {
     DLOG(ERROR) << "Failed activating an async hardware encoder MFT.";
 
     if (pp_activate) {
@@ -621,8 +620,7 @@ uint32_t MediaFoundationVideoEncodeAccelerator::EnumerateHardwareEncoders(
 
 bool MediaFoundationVideoEncodeAccelerator::ActivateAsyncEncoder(
     IMFActivate** pp_activate,
-    uint32_t encoder_count,
-    bool is_constrained_h264) {
+    uint32_t encoder_count) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -636,19 +634,6 @@ bool MediaFoundationVideoEncodeAccelerator::ActivateAsyncEncoder(
       if (encoder_.Get() != nullptr) {
         DCHECK(SUCCEEDED(hr));
         auto vendor = GetDriverVendor(pp_activate[i]);
-
-        // Skip NVIDIA GPU due to https://crbug.com/1088650 for constrained
-        // baseline profile H.264 encoding, and go to the next instance
-        // according to merit value.
-        if (vendor == DriverVendor::kNvidia && codec_ == VideoCodec::kH264 &&
-            is_constrained_h264) {
-          DLOG(WARNING)
-              << "Skipped NVIDIA GPU due to https://crbug.com/1088650";
-          pp_activate[i]->ShutdownObject();
-          encoder_.Reset();
-          hr = E_FAIL;
-          continue;
-        }
 
         activate_ = pp_activate[i];
         vendor_ = vendor;
