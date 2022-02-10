@@ -2147,57 +2147,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Download
       </message>
 
-      <!-- DownloadProgressInfoBar -->
-      <message name="IDS_DOWNLOAD_INFOBAR_SPEEDING_UP_DOWNLOAD" desc="InfoBar text describing that the download is being accelerated by chrome">
-        Speeding up your download.
-      </message>
-      <message name="IDS_DOWNLOAD_INFOBAR_DOWNLOADING_FILES" desc="InfoBar text describing that chrome is downloading one or more files">
-        {FILE_COUNT, plural,
-          =1 {Downloading file.}
-          other {Downloading # files.}}
-      </message>
-      <message name="IDS_DOWNLOADING_MULTIPLE_FILES_WITH_BYTES" desc="InfoBar text describing that chrome is downloading multiple files along with the total size of the files being downloaded">
-        Downloading <ph name="count">%1$d<ex>2</ex></ph> files (<ph name="megabytes">%2$s<ex>100 MB</ex></ph>).
-      </message>
-      <message name="IDS_DOWNLOADING_FILE_WITH_BYTES" desc="Label describing that file download is in progress along with the total size information">
-        Downloading file (<ph name="megabytes">%1$s<ex>100 MB</ex></ph>).
-      </message>
-      <message name="IDS_MULTIPLE_DOWNLOAD_COMPLETE" desc="Label describing that one or more downloads have completed">
-        {FILE_COUNT, plural,
-          =1 {1 download complete.}
-          other {# downloads complete.}}
-      </message>
-      <message name="IDS_MULTIPLE_DOWNLOAD_FAILED" desc="Label describing that one or more downloads have failed">
-        {FILE_COUNT, plural,
-          =1 {1 download failed.}
-          other {# downloads failed.}}
-      </message>
-      <message name="IDS_MULTIPLE_DOWNLOAD_PENDING" desc="Label describing that one or more downloads are pending">
-        {FILE_COUNT, plural,
-          =1 {1 download pending.}
-          other {# downloads pending.}}
-      </message>
-      <message name="IDS_MULTIPLE_DOWNLOAD_SCHEDULED" desc="Label describing that one or more downloads are scheduled">
-        {FILE_COUNT, plural,
-          =1 {1 download scheduled.}
-          other {# downloads scheduled.}}
-      </message>
-      <message name="IDS_DOWNLOAD_INFOBAR_FILENAME" desc="Label showing the file name that just finished downloading">
-         <ph name="FILE_NAME">%1$s<ex>abc.png</ex></ph>.
-      </message>
-      <message name="IDS_DOWNLOAD_INFOBAR_ACCESSIBILITY_MESSAGE_WITH_LINK" desc="InfoBar accessibility text describing the link on the download progress infobar">
-        <ph name="MESSAGE">%1$s<ex>Downloading file (200 MB)</ex></ph> <ph name="LINK_NAME">%2$s<ex>Details</ex></ph> button
-      </message>
-      <message name="IDS_DOWNLOAD_SCHEDULED_ON_WIFI" desc="Label describing that the download was scheduled to start on Wi-Fi.">
-        You’ll see a notification when this download starts on Wi-Fi.
-      </message>
-      <message name="IDS_DOWNLOAD_SCHEDULED_ON_DATE" desc="Label describing that the download was scheduled to start at a later date.">
-        You’ll see a notification when this download starts on <ph name="date">%1$s<ex>Feb 28 2020</ex></ph>.
-      </message>
-      <message name="IDS_DOWNLOAD_SCHEDULED_ON_TIME" desc="Label describing that the download was scheduled to start at a later time.">
-        You’ll see a notification when this download starts at <ph name="time">%1$s<ex>8:30PM</ex></ph>.
-      </message>
-
       <!-- Download progress message UI -->
       <message name="IDS_DOWNLOAD_MESSAGE_DOWNLOAD_IN_PROGRESS_DESCRIPTION" desc="Download message text describing that user can find about their download status from notifications.">
         See notification for download status
@@ -4459,9 +4408,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
       <message name="IDS_IPH_DOWNLOAD_INFOBAR_DOWNLOAD_CONTINUING_TEXT" desc="The in-product-help message on the download InfoBar to inform that download is still continuing.">
         Your download is still in progress
-      </message>
-      <message name="IDS_IPH_DOWNLOAD_INFOBAR_DOWNLOADS_ARE_FASTER_TEXT" desc="The in-product-help message on the download InfoBar to inform that downloads are now faster than before.">
-        Chrome now downloads files faster
       </message>
 
       <!-- Quick Action Search Widget -->

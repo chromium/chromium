@@ -468,8 +468,6 @@ chrome_java_resources = [
   "java/res/drawable/infobar_autofill_cc.xml",
   "java/res/drawable/infobar_download_complete.xml",
   "java/res/drawable/infobar_download_complete_animation.xml",
-  "java/res/drawable/infobar_downloading_fill_animation.xml",
-  "java/res/drawable/infobar_downloading_sweep_animation.xml",
   "java/res/drawable/lens_camera_icon.xml",
   "java/res/drawable/long_screenshot.xml",
   "java/res/drawable/material_tooltip_background.xml",
