@@ -111,7 +111,6 @@ source_set("browser") {
     "//content/browser/cookie_store:cookie_store_proto",
     "//content/browser/devtools:devtools_background_services_proto",
     "//content/browser/devtools:protocol_sources",
-    "//content/browser/download:proto",
     "//content/browser/file_system_access:proto",
     "//content/browser/notifications:notification_proto",
     "//content/browser/payments:payment_app_proto",

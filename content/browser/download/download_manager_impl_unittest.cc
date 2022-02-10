@@ -36,13 +36,11 @@
 #include "components/download/public/common/mock_download_file.h"
 #include "components/download/public/common/mock_download_item_impl.h"
 #include "components/download/public/common/mock_input_stream.h"
-#include "content/browser/download/embedder_download_data.pb.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/test/storage_partition_test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -811,98 +809,6 @@ TEST_F(DownloadManagerTest, OnInProgressDownloadsLoaded) {
   ASSERT_EQ(1u, vector.size());
   download->Remove();
   ASSERT_FALSE(download_manager_->GetDownloadByGuid(kGuid));
-}
-
-TEST_F(DownloadManagerTest,
-       StoragePartitionConfigAndEmbedderDownloadDataConversions) {
-  // Check that serializing then deserializing produces the same
-  // StoragePartitionConfig.
-  auto default_spc = StoragePartitionConfig::CreateDefault(
-      download_manager_->GetBrowserContext());
-  std::string serialized_default_spc =
-      download_manager_->StoragePartitionConfigToSerializedEmbedderDownloadData(
-          default_spc);
-  ASSERT_TRUE(!serialized_default_spc.empty());
-  auto deserialized_default_spc =
-      download_manager_->SerializedEmbedderDownloadDataToStoragePartitionConfig(
-          serialized_default_spc);
-  EXPECT_EQ(default_spc, deserialized_default_spc);
-
-  // Check that a given proto::EmbedderDownloadData produces the expected
-  // StoragePartitionConfig.
-  const char* kTestPartitionDomain = "test partition domain";
-  const char* kTestPartitionName = "test partition name";
-  const bool kTestInMemory = false;
-  proto::EmbedderDownloadData embedder_download_data;
-  proto::StoragePartitionConfig* config_proto =
-      embedder_download_data.mutable_storage_partition_config();
-  config_proto->set_partition_domain(kTestPartitionDomain);
-  config_proto->set_partition_name(kTestPartitionName);
-  config_proto->set_in_memory(kTestInMemory);
-  config_proto->set_fallback_mode(
-      proto::StoragePartitionConfig_FallbackMode_kPartitionOnDisk);
-  auto deserialized_embedder_download_data_spc =
-      download_manager_->SerializedEmbedderDownloadDataToStoragePartitionConfig(
-          embedder_download_data.SerializeAsString());
-  EXPECT_EQ(deserialized_embedder_download_data_spc.partition_domain(),
-            kTestPartitionDomain);
-  EXPECT_EQ(deserialized_embedder_download_data_spc.partition_name(),
-            kTestPartitionName);
-  EXPECT_EQ(deserialized_embedder_download_data_spc.in_memory(), kTestInMemory);
-  EXPECT_EQ(deserialized_embedder_download_data_spc
-                .fallback_to_partition_domain_for_blob_urls(),
-            StoragePartitionConfig::FallbackMode::kFallbackPartitionOnDisk);
-
-  // Check that the fallback modes values are properly serialized and
-  // deserialized.
-  const std::map<StoragePartitionConfig::FallbackMode,
-                 proto::StoragePartitionConfig_FallbackMode>
-      fallback_mode_mapping = {
-          {StoragePartitionConfig::FallbackMode::kNone,
-           proto::StoragePartitionConfig_FallbackMode_kNone},
-          {StoragePartitionConfig::FallbackMode::kFallbackPartitionInMemory,
-           proto::StoragePartitionConfig_FallbackMode_kPartitionInMemory},
-          {StoragePartitionConfig::FallbackMode::kFallbackPartitionOnDisk,
-           proto::StoragePartitionConfig_FallbackMode_kPartitionOnDisk},
-      };
-  for (auto fallback_pair : fallback_mode_mapping) {
-    // Check fallback mode equality going from StoragePartitionConfig to
-    // proto::EmbedderDownloadData.
-    auto fallback_spc = CreateStoragePartitionConfigForTesting(
-        /*in_memory=*/false, "test domain", "test name");
-    fallback_spc.set_fallback_to_partition_domain_for_blob_urls(
-        fallback_pair.first);
-    std::string serialized_fallback_spc =
-        download_manager_
-            ->StoragePartitionConfigToSerializedEmbedderDownloadData(
-                fallback_spc);
-    proto::EmbedderDownloadData deserialized_fallback_embedder_download_data;
-    ASSERT_TRUE(deserialized_fallback_embedder_download_data.ParseFromString(
-        serialized_fallback_spc));
-    ASSERT_TRUE(deserialized_fallback_embedder_download_data
-                    .has_storage_partition_config());
-    EXPECT_EQ(
-        deserialized_fallback_embedder_download_data.storage_partition_config()
-            .fallback_mode(),
-        fallback_pair.second);
-
-    // Check fallback mode equality going from proto::EmbedderDownloadData to
-    // StoragePartitionConfig.
-    proto::EmbedderDownloadData fallback_embedder_download_data;
-    proto::StoragePartitionConfig* fallback_proto_spc =
-        fallback_embedder_download_data.mutable_storage_partition_config();
-    fallback_proto_spc->set_partition_domain("test domain");
-    fallback_proto_spc->set_partition_name("test name");
-    fallback_proto_spc->set_in_memory(false);
-    fallback_proto_spc->set_fallback_mode(fallback_pair.second);
-    StoragePartitionConfig deserialized_fallback_spc =
-        download_manager_
-            ->SerializedEmbedderDownloadDataToStoragePartitionConfig(
-                fallback_embedder_download_data.SerializeAsString());
-    EXPECT_EQ(
-        deserialized_fallback_spc.fallback_to_partition_domain_for_blob_urls(),
-        fallback_pair.first);
-  }
 }
 
 class DownloadManagerWithExpirationTest : public DownloadManagerTest {
