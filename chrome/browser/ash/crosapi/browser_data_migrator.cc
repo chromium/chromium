@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/copy_migrator.h"
+#include "chrome/browser/ash/crosapi/move_migrator.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
@@ -231,11 +232,23 @@ void BrowserDataMigratorImpl::Migrate() {
   DCHECK(GetMigrationStep(local_state_) == MigrationStep::kRestartCalled);
   SetMigrationStep(local_state_, MigrationStep::kStarted);
 
-  migrator_delegate_ = std::make_unique<CopyMigrator>(
-      original_profile_dir_, user_id_hash_, std::move(progress_tracker_),
-      cancel_flag_,
-      base::BindOnce(&BrowserDataMigratorImpl::MigrateInternalFinishedUIThread,
-                     weak_factory_.GetWeakPtr()));
+  if (base::FeatureList::IsEnabled(kLacrosMoveProfileMigration)) {
+    LOG(WARNING) << "Initializing MoveMigrator.";
+    migrator_delegate_ = std::make_unique<MoveMigrator>(
+        original_profile_dir_, user_id_hash_, std::move(progress_tracker_),
+        cancel_flag_, local_state_,
+        base::BindOnce(
+            &BrowserDataMigratorImpl::MigrateInternalFinishedUIThread,
+            weak_factory_.GetWeakPtr()));
+  } else {
+    LOG(WARNING) << "Initializing CopyMigrator.";
+    migrator_delegate_ = std::make_unique<CopyMigrator>(
+        original_profile_dir_, user_id_hash_, std::move(progress_tracker_),
+        cancel_flag_,
+        base::BindOnce(
+            &BrowserDataMigratorImpl::MigrateInternalFinishedUIThread,
+            weak_factory_.GetWeakPtr()));
+  }
 
   migrator_delegate_->Migrate();
 }
@@ -293,6 +306,8 @@ void BrowserDataMigratorImpl::RegisterLocalStatePrefs(
                                 static_cast<int>(MigrationStep::kCheckStep));
   registry->RegisterDictionaryPref(kMigrationAttemptCountPref,
                                    base::DictionaryValue());
+  // Register prefs for move migration.
+  MoveMigrator::RegisterLocalStatePrefs(registry);
 }
 
 // static

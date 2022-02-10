@@ -334,6 +334,27 @@ bool CopyDirectoryByHardLinks(const base::FilePath& from_dir,
   return true;
 }
 
+bool CopyTargetItemsByHardLinks(const base::FilePath& to_dir,
+                                const TargetItems& target_items,
+                                CancelFlag* cancel_flag) {
+  for (const auto& item : target_items.items) {
+    if (cancel_flag->IsSet())
+      return false;
+
+    if (item.is_directory) {
+      if (!CopyDirectoryByHardLinks(item.path,
+                                    to_dir.Append(item.path.BaseName()))) {
+        return false;
+      }
+    } else {
+      if (!CreateHardLink(item.path, to_dir.Append(item.path.BaseName())))
+        return false;
+    }
+  }
+
+  return true;
+}
+
 bool CopyTargetItems(const base::FilePath& to_dir,
                      const TargetItems& target_items,
                      CancelFlag* cancel_flag,

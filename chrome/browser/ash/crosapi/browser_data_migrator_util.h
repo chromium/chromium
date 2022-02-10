@@ -30,6 +30,15 @@ constexpr char kLacrosProfilePath[] = "Default";
 // to the appropriate destination.
 constexpr char kTmpDir[] = "browser_data_migrator";
 
+// `MoveMigrator` migrates user data to this directory first then moves it to
+// the correct location as its final step.
+constexpr char kMoveTmpDir[] = "move_migrator";
+
+// Directory for `MoveMigrator` to move hard links for lacros file/dirs in ash
+// directory so that they become inaccessible from ash. This directory should be
+// cleaned up after the migraton.
+constexpr char kRemoveDir[] = "move_migrator_trash";
+
 // The following UMAs are recorded from
 // `DryRunToCollectUMA()`.
 constexpr char kDryRunNoCopyDataSize[] =
@@ -63,6 +72,7 @@ constexpr char kDryRunDeleteAndMoveMigrationHasEnoughDiskSpace[] =
 // storages.
 constexpr const char* const kDeletablePaths[] = {
     kTmpDir,
+    kMoveTmpDir,
     "blob_storage",
     "Cache",
     "Code Cache",
@@ -260,6 +270,12 @@ bool CreateHardLink(const base::FilePath& from_file,
 // already exists, then this will fail.
 bool CopyDirectoryByHardLinks(const base::FilePath& from_dir,
                               const base::FilePath& to_dir);
+
+// Copies `items` to `to_dir` by calling `CreateHardLink()` for files and
+// `CopyDirectoryBeHardLinks()` for directories.
+bool CopyTargetItemsByHardLinks(const base::FilePath& to_dir,
+                                const TargetItems& items,
+                                CancelFlag* cancel_flag);
 
 // Records the sizes of `TargetItem`s.
 void RecordTargetItemSizes(const std::vector<TargetItem>& items);

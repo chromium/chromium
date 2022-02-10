@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -39,6 +40,11 @@ constexpr char kMigrationAttemptCountPref[] =
 // Maximum number of migration attempts. Migration will be skipped for the user
 // after
 constexpr int kMaxMigrationAttemptCount = 3;
+
+// If enabled, use `MoveMigrator` instead of `CopyMigrator` to migrate data.
+// `MoveMigrator` moves data from ash to lacros instead of copying them.
+const base::Feature kLacrosMoveProfileMigration{
+    "LacrosMoveProfileMigration", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // The interface is exposed to be inherited by fakes in tests.
 class BrowserDataMigrator {
