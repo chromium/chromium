@@ -99,6 +99,8 @@ void RTCEncodedAudioUnderlyingSource::Close() {
 
 void RTCEncodedAudioUnderlyingSource::OnSourceTransferStartedOnTaskRunner() {
   DCHECK(task_runner_->BelongsToCurrentThread());
+  // This can potentially be called before the stream is constructed and so
+  // Controller() is still unset.
   if (Controller())
     Controller()->Close();
 }

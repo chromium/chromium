@@ -74,8 +74,7 @@ void RTCEncodedVideoUnderlyingSource::Close() {
   if (disconnect_callback_)
     std::move(disconnect_callback_).Run();
 
-  if (Controller())
-    Controller()->Close();
+  Controller()->Close();
 }
 
 }  // namespace blink
