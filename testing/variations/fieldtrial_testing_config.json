@@ -1930,6 +1930,7 @@
                         "EarlyCodeCache",
                         "EarlyEstablishGpuChannel",
                         "FontManagerEarlyInit",
+                        "NavigationRequestPreconnect",
                         "NavigationThreadingOptimizations",
                         "OptimizeLookalikeUrlNavigationThrottle",
                         "URLLoaderSyncClient"
@@ -1956,6 +1957,7 @@
                     "enable_features": [
                         "EarlyCodeCache",
                         "EarlyEstablishGpuChannel",
+                        "NavigationRequestPreconnect",
                         "NavigationThreadingOptimizations",
                         "OptimizeLookalikeUrlNavigationThrottle",
                         "URLLoaderSyncClient"
@@ -4042,28 +4044,6 @@
                     "enable_features": [
                         "AutofillCreditCardUploadFeedback",
                         "AutofillEnableToolbarStatusChip"
-                    ]
-                }
-            ]
-        }
-    ],
-    "NavigationRequestPreconnect": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "NavigationRequestPreconnect"
                     ]
                 }
             ]
