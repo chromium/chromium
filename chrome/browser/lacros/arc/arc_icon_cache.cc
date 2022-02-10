@@ -67,6 +67,7 @@ void ArcIconCache::OnRequestUrlHandlerList(
     crosapi::mojom::RequestUrlHandlerListStatus status) {
   if (status == crosapi::mojom::RequestUrlHandlerListStatus::kArcNotAvailable) {
     LOG(WARNING) << "Faild to connect to ARC in ash-chrome.";
+    std::move(callback).Run(std::vector<IntentHandlerInfo>());
     return;
   }
 

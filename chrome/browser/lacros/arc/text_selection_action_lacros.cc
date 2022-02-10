@@ -44,6 +44,7 @@ void TextSelectionActionLacros::OnRequestTextSelectionActions(
   if (status ==
       crosapi::mojom::RequestTextSelectionActionsStatus::kArcNotAvailable) {
     LOG(WARNING) << "Failed to connect to ARC in ash-chrome.";
+    std::move(callback).Run(std::vector<TextSelectionAction>());
     return;
   }
 
