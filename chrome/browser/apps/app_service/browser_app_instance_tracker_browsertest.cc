@@ -737,6 +737,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, TabbedSystemWebApp) {
     browser = CreateAppBrowser(app_id);
     chrome::NewTab(browser);
     content::WebContents* tab = browser->tab_strip_model()->GetWebContentsAt(0);
+    NavigateActiveTab(browser, chrome::kChromeUIUntrustedCroshURL);
     tab->UpdateTitleForEntry(tab->GetController().GetLastCommittedEntry(),
                              u"crosh1");
 
@@ -758,6 +759,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, TabbedSystemWebApp) {
     // Add a second WebContents to the same app window.
     chrome::NewTab(browser);
     content::WebContents* tab = browser->tab_strip_model()->GetWebContentsAt(1);
+    NavigateActiveTab(browser, chrome::kChromeUIUntrustedCroshURL);
     tab->UpdateTitleForEntry(tab->GetController().GetLastCommittedEntry(),
                              u"crosh2");
 
