@@ -550,6 +550,10 @@ const base::Feature kMouseSubframeNoImplicitCapture{
 const base::Feature kNavigationNetworkResponseQueue{
     "NavigationNetworkResponseQueue", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Preconnects socket at the construction of NavigationRequest.
+const base::Feature kNavigationRequestPreconnect{
+    "NavigationRequestPreconnect", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables optimizations for renderer->browser mojo calls to avoid waiting on
 // the UI thread during navigation.
 const base::Feature kNavigationThreadingOptimizations{

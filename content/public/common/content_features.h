@@ -140,6 +140,7 @@ CONTENT_EXPORT extern const base::Feature kMojoVideoCapture;
 CONTENT_EXPORT extern const base::Feature kMojoVideoCaptureSecondary;
 CONTENT_EXPORT extern const base::Feature kMouseSubframeNoImplicitCapture;
 CONTENT_EXPORT extern const base::Feature kNavigationNetworkResponseQueue;
+CONTENT_EXPORT extern const base::Feature kNavigationRequestPreconnect;
 CONTENT_EXPORT extern const base::Feature kNavigationThreadingOptimizations;
 CONTENT_EXPORT extern const base::Feature kNetworkQualityEstimatorWebHoldback;
 CONTENT_EXPORT extern const base::Feature kNetworkServiceInProcess;

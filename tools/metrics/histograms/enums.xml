@@ -52665,6 +52665,7 @@ from previous Chrome versions.
   <int value="-1119700637" label="ui-disable-partial-swap"/>
   <int value="-1119552494" label="SyncTrustedVaultPassphraseRecovery:disabled"/>
   <int value="-1118921985" label="ForceEnableSystemAec:enabled"/>
+  <int value="-1118113279" label="NavigationRequestPreconnect:enabled"/>
   <int value="-1117894706" label="DarkLightMode:enabled"/>
   <int value="-1117104514" label="smbfs-file-shares"/>
   <int value="-1116278039" label="ShelfAppScaling:disabled"/>
@@ -53482,6 +53483,7 @@ from previous Chrome versions.
   <int value="-528441522" label="AppsShortcutDefaultOff:disabled"/>
   <int value="-528149352" label="WebRtcUseEchoCanceller3:enabled"/>
   <int value="-527990339" label="ForceEnableFaceAe:enabled"/>
+  <int value="-527050466" label="NavigationRequestPreconnect:disabled"/>
   <int value="-526236814" label="WebAssemblyTiering:enabled"/>
   <int value="-523155003" label="PhoneHubCameraRoll:disabled"/>
   <int value="-523030434" label="EnableBackgroundBlur:enabled"/>

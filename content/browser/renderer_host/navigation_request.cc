@@ -1593,9 +1593,7 @@ NavigationRequest::NavigationRequest(
   }
 #endif
 
-  static constexpr base::Feature kNavigationRequestPreconnect{
-      "NavigationRequestPreconnect", base::FEATURE_DISABLED_BY_DEFAULT};
-  if (base::FeatureList::IsEnabled(kNavigationRequestPreconnect) &&
+  if (base::FeatureList::IsEnabled(features::kNavigationRequestPreconnect) &&
       NeedsUrlLoader() && common_params_->url.SchemeIsHTTPOrHTTPS()) {
     BrowserContext* browser_context =
         frame_tree_node_->navigator().controller().GetBrowserContext();
