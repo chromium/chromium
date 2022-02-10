@@ -232,7 +232,8 @@ ScriptPromise NavigatorSocket::openTCPSocket(ScriptState* script_state,
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  TCPSocket* pending = MakeGarbageCollected<TCPSocket>(*resolver);
+  TCPSocket* pending = MakeGarbageCollected<TCPSocket>(
+      ExecutionContext::From(script_state), *resolver);
   pending_tcp_.insert(pending);
   ScriptPromise promise = resolver->Promise();
 

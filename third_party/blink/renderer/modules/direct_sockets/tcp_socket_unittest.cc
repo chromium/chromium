@@ -27,7 +27,8 @@ class TCPSocketCreator {
   TCPSocket* Create(const V8TestingScope& scope) {
     auto* script_state = scope.GetScriptState();
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-    auto* tcp_socket = MakeGarbageCollected<TCPSocket>(*resolver);
+    auto* tcp_socket =
+        MakeGarbageCollected<TCPSocket>(scope.GetExecutionContext(), *resolver);
     create_promise_ = resolver->Promise();
 
     return tcp_socket;

@@ -20,15 +20,16 @@ constexpr char kTCPNetworkFailuresHistogramName[] =
 
 }  // namespace
 
-TCPSocket::TCPSocket(ScriptPromiseResolver& resolver)
-    : resolver_(&resolver),
+TCPSocket::TCPSocket(ExecutionContext* execution_context,
+                     ScriptPromiseResolver& resolver)
+    : ExecutionContextClient(execution_context),
+      resolver_(&resolver),
       feature_handle_for_scheduler_(
-          ExecutionContext::From(resolver_->GetScriptState())
-              ->GetScheduler()
-              ->RegisterFeature(
-                  SchedulingPolicy::Feature::
-                      kOutstandingNetworkRequestDirectSocket,
-                  {SchedulingPolicy::DisableBackForwardCache()})) {
+          execution_context->GetScheduler()->RegisterFeature(
+              SchedulingPolicy::Feature::kOutstandingNetworkRequestDirectSocket,
+              {SchedulingPolicy::DisableBackForwardCache()})),
+      tcp_socket_{execution_context},
+      socket_observer_receiver_{this, execution_context} {
   DCHECK(resolver_);
 }
 
@@ -37,13 +38,15 @@ TCPSocket::~TCPSocket() = default;
 mojo::PendingReceiver<network::mojom::blink::TCPConnectedSocket>
 TCPSocket::GetTCPSocketReceiver() {
   DCHECK(resolver_);
-  return tcp_socket_.BindNewPipeAndPassReceiver();
+  return tcp_socket_.BindNewPipeAndPassReceiver(
+      GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));
 }
 
 mojo::PendingRemote<network::mojom::blink::SocketObserver>
 TCPSocket::GetTCPSocketObserver() {
   DCHECK(resolver_);
-  auto result = socket_observer_receiver_.BindNewPipeAndPassRemote();
+  auto result = socket_observer_receiver_.BindNewPipeAndPassRemote(
+      GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));
 
   socket_observer_receiver_.set_disconnect_handler(WTF::Bind(
       &TCPSocket::OnSocketObserverConnectionError, WrapPersistent(this)));
@@ -134,6 +137,9 @@ void TCPSocket::Trace(Visitor* visitor) const {
   visitor->Trace(resolver_);
   visitor->Trace(tcp_readable_stream_wrapper_);
   visitor->Trace(tcp_writable_stream_wrapper_);
+  visitor->Trace(tcp_socket_);
+  visitor->Trace(socket_observer_receiver_);
+  ExecutionContextClient::Trace(visitor);
   ScriptWrappable::Trace(visitor);
 }
 

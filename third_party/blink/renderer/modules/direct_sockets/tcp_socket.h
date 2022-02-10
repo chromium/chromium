@@ -19,6 +19,8 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 
 namespace net {
@@ -29,11 +31,12 @@ namespace blink {
 
 class MODULES_EXPORT TCPSocket final
     : public ScriptWrappable,
+      public ExecutionContextClient,
       public network::mojom::blink::SocketObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit TCPSocket(ScriptPromiseResolver&);
+  explicit TCPSocket(ExecutionContext*, ScriptPromiseResolver&);
   ~TCPSocket() override;
 
   TCPSocket(const TCPSocket&) = delete;
@@ -79,9 +82,9 @@ class MODULES_EXPORT TCPSocket final
   FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
       feature_handle_for_scheduler_;
 
-  mojo::Remote<network::mojom::blink::TCPConnectedSocket> tcp_socket_;
-  mojo::Receiver<network::mojom::blink::SocketObserver>
-      socket_observer_receiver_{this};
+  HeapMojoRemote<network::mojom::blink::TCPConnectedSocket> tcp_socket_;
+  HeapMojoReceiver<network::mojom::blink::SocketObserver, TCPSocket>
+      socket_observer_receiver_;
 
   Member<TCPReadableStreamWrapper> tcp_readable_stream_wrapper_;
   Member<TCPWritableStreamWrapper> tcp_writable_stream_wrapper_;
