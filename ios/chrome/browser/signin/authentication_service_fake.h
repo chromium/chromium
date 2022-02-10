@@ -27,10 +27,6 @@ class AuthenticationServiceFake : public AuthenticationService {
 
   ~AuthenticationServiceFake() override;
 
-  void SignIn(ChromeIdentity* identity) override;
-  void SignIn(ChromeIdentity* identity,
-              signin_ui::CompletionCallback completion) override;
-
   void GrantSyncConsent(ChromeIdentity* identity) override;
 
   void SignOut(signin_metrics::ProfileSignout signout_source,
