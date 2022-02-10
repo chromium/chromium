@@ -90,8 +90,8 @@ void VerifyDownloadsConnectionPolicyChangedCallback(
   size_t account_info_received = 0;
   for (auto& data : web_ui_call_data) {
     EXPECT_EQ("cr.webUIListenerCallback", data->function_name());
-    std::string event;
-    ASSERT_TRUE(data->arg1()->GetAsString(&event));
+    ASSERT_TRUE(data->arg1()->is_string());
+    const std::string& event = data->arg1()->GetString();
     if (event == "downloads-connection-policy-changed") {
       policy_change_received = true;
       ASSERT_TRUE(data->arg2()->is_bool());
@@ -113,9 +113,8 @@ void VerifyDownloadsConnectionPolicyChangedCallback(
 
 void VerifyAutoOpenDownloadsChangedCallback(const WebUIDataReceivedPtr& data) {
   EXPECT_EQ("cr.webUIListenerCallback", data->function_name());
-  std::string event;
-  ASSERT_TRUE(data->arg1()->GetAsString(&event));
-  EXPECT_EQ("auto-open-downloads-changed", event);
+  ASSERT_TRUE(data->arg1()->is_string());
+  EXPECT_EQ("auto-open-downloads-changed", data->arg1()->GetString());
   ASSERT_TRUE(data->arg2()->is_bool());
   EXPECT_FALSE(data->arg2()->GetBool());
 }

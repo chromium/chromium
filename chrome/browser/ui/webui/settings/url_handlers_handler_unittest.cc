@@ -173,9 +173,8 @@ class UrlHandlersHandlerTest : public testing::Test {
     ASSERT_EQ(web_ui()->call_data().size(), 1u);
     const content::TestWebUI::CallData& data = *web_ui()->call_data()[0];
     EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
-    std::string event_name;
-    ASSERT_TRUE(data.arg1()->GetAsString(&event_name));
-    EXPECT_EQ("updateUrlHandlers", event_name);
+    ASSERT_TRUE(data.arg1()->is_string());
+    EXPECT_EQ("updateUrlHandlers", data.arg1()->GetString());
 
     if (!expected_enabled_handlers.empty())
       ParseAndExpectValue(*data.arg2(), expected_enabled_handlers);
