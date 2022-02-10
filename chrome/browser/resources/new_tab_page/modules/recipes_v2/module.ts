@@ -4,7 +4,7 @@
 
 import '../module_header.js';
 
-import {DomRepeat, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
 import {TaskItem, TaskModuleType} from '../../task_module.mojom-webui.js';
