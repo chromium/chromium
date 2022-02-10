@@ -379,7 +379,7 @@ TEST(EventTest, KeyEventCode) {
   const char kCodeForSpace[] = "Space";
   ASSERT_EQ(kDomCodeForSpace,
             ui::KeycodeConverter::CodeStringToDomCode(kCodeForSpace));
-  const uint16_t kNativeCodeSpace =
+  const int kNativeCodeSpace =
       ui::KeycodeConverter::DomCodeToNativeKeycode(kDomCodeForSpace);
   ASSERT_NE(ui::KeycodeConverter::InvalidNativeKeycode(), kNativeCodeSpace);
   ASSERT_EQ(kNativeCodeSpace,

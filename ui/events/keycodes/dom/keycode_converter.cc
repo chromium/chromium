@@ -34,17 +34,8 @@ namespace {
 #define DOM_CODE(usb, evdev, xkb, win, mac, code, id) \
   { usb, evdev, code }
 #elif BUILDFLAG(IS_FUCHSIA)
-// TODO(https://crbug.com/1107418): Fuchsia currently delivers events
-// with a USB Code but no Page specified, so only map |native_keycode| for
-// Keyboard Usage Page codes, for now.
-inline constexpr uint32_t CodeIfOnKeyboardPage(uint32_t usage) {
-  constexpr uint32_t kUsbHidKeyboardPageBase = 0x070000;
-  if ((usage & 0xffff0000) == kUsbHidKeyboardPageBase)
-    return usage & 0xffff;
-  return 0;
-}
 #define DOM_CODE(usb, evdev, xkb, win, mac, code, id) \
-  { usb, CodeIfOnKeyboardPage(usb), code }
+  { usb, usb, code }
 #else
 #error Unsupported platform
 #endif
