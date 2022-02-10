@@ -15,7 +15,7 @@
 
     // The number of pending encode requests. This does not include requests
     // that have been sent to the underlying codec.
-    readonly attribute long encodeQueueSize;
+    readonly attribute unsigned long encodeQueueSize;
 
     // Enqueues a control message to configure the audio encoder for encoding
     // audio data as described by config.

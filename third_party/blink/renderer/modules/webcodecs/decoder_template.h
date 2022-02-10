@@ -58,7 +58,7 @@ class MODULES_EXPORT DecoderTemplate
   DecoderTemplate(ScriptState*, const InitType*, ExceptionState&);
   ~DecoderTemplate() override;
 
-  int32_t decodeQueueSize();
+  uint32_t decodeQueueSize();
   void configure(const ConfigType*, ExceptionState&);
   void decode(const InputType*, ExceptionState&);
   ScriptPromise flush(ExceptionState&);
@@ -190,7 +190,7 @@ class MODULES_EXPORT DecoderTemplate
   Member<V8WebCodecsErrorCallback> error_cb_;
 
   HeapDeque<Member<Request>> requests_;
-  int32_t num_pending_decodes_ = 0;
+  uint32_t num_pending_decodes_ = 0;
 
   // Monotonic increasing generation counter for calls to ResetAlgorithm().
   uint32_t reset_generation_ = 0;

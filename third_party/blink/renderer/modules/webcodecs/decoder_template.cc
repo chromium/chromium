@@ -104,7 +104,7 @@ DecoderTemplate<Traits>::~DecoderTemplate() {
 }
 
 template <typename Traits>
-int32_t DecoderTemplate<Traits>::decodeQueueSize() {
+uint32_t DecoderTemplate<Traits>::decodeQueueSize() {
   return num_pending_decodes_;
 }
 
@@ -370,7 +370,7 @@ bool DecoderTemplate<Traits>::ProcessDecodeRequest(Request* request) {
   DCHECK_EQ(state_, V8CodecState::Enum::kConfigured);
   DCHECK(!pending_request_);
   DCHECK_EQ(request->type, Request::Type::kDecode);
-  DCHECK_GT(num_pending_decodes_, 0);
+  DCHECK_GT(num_pending_decodes_, 0u);
 
   if (!decoder()) {
     Shutdown(

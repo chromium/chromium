@@ -265,7 +265,7 @@ void AudioEncoder::ProcessEncode(Request* request) {
   DCHECK_EQ(state_, V8CodecState::Enum::kConfigured);
   DCHECK(media_encoder_);
   DCHECK_EQ(request->type, Request::Type::kEncode);
-  DCHECK_GT(requested_encodes_, 0);
+  DCHECK_GT(requested_encodes_, 0u);
 
   request->StartTracing();
 

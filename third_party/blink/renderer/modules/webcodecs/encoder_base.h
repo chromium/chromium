@@ -52,7 +52,7 @@ class MODULES_EXPORT EncoderBase
   ~EncoderBase() override;
 
   // *_encoder.idl implementation.
-  int32_t encodeQueueSize() { return requested_encodes_; }
+  uint32_t encodeQueueSize() { return requested_encodes_; }
 
   void configure(const ConfigType*, ExceptionState&);
 
@@ -147,7 +147,7 @@ class MODULES_EXPORT EncoderBase
   Member<OutputCallbackType> output_callback_;
   Member<V8WebCodecsErrorCallback> error_callback_;
   HeapDeque<Member<Request>> requests_;
-  int32_t requested_encodes_ = 0;
+  uint32_t requested_encodes_ = 0;
 
   // How many times reset() was called on the encoder. It's used to decide
   // when a callback needs to be dismissed because reset() was called between

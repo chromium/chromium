@@ -34,7 +34,7 @@
   // TODO(sandersd): Consider adding a predicted output count or other
   // backpressure mechanism that considers the state of the underlying codec.
   // TODO(sandersd): Consider emitting an event when this number decreases.
-  readonly attribute long decodeQueueSize;
+  readonly attribute unsigned long decodeQueueSize;
 
   // Which state the decoder is in, indicating which methods can be called.
   readonly attribute CodecState state;
