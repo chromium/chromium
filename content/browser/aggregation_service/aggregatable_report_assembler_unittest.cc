@@ -206,49 +206,9 @@ TEST_F(AggregatableReportAssemblerTest,
 }
 
 TEST_F(AggregatableReportAssemblerTest,
-       SingleServerTwoProcessingOrigins_ValidReportReturned) {
+       SingleServerKeyFetchSucceeds_ValidReportReturned) {
   AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
       AggregationServicePayloadContents::ProcessingType::kSingleServer);
-
-  std::vector<url::Origin> processing_origins = request.processing_origins();
-  std::vector<PublicKey> public_keys = {
-      aggregation_service::GenerateKey("id123").public_key,
-      aggregation_service::GenerateKey("456abc").public_key};
-
-  absl::optional<AggregatableReport> report =
-      AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          aggregation_service::CloneReportRequest(request), public_keys);
-  ASSERT_TRUE(report.has_value());
-
-  EXPECT_CALL(*fetcher(), GetPublicKey(processing_origins[0], _))
-      .WillOnce(base::test::RunOnceCallback<1>(public_keys[0],
-                                               PublicKeyFetchStatus::kOk));
-  EXPECT_CALL(*fetcher(), GetPublicKey(processing_origins[1], _))
-      .WillOnce(base::test::RunOnceCallback<1>(public_keys[1],
-                                               PublicKeyFetchStatus::kOk));
-  EXPECT_CALL(callback(), Run(report, AssemblyStatus::kOk));
-
-  absl::optional<AggregatableReportRequest> actual_request;
-  EXPECT_CALL(*report_provider(),
-              CreateFromRequestAndPublicKeys(_, public_keys))
-      .WillOnce(MoveRequestAndReturnReport(&actual_request,
-                                           std::move(report.value())));
-
-  assembler()->AssembleReport(aggregation_service::CloneReportRequest(request),
-                              callback().Get());
-  ASSERT_TRUE(actual_request.has_value());
-  EXPECT_TRUE(aggregation_service::ReportRequestsEqual(actual_request.value(),
-                                                       request));
-}
-
-TEST_F(AggregatableReportAssemblerTest,
-       SingleServerOneProcessingOrigin_ValidReportReturned) {
-  url::Origin processing_origin =
-      aggregation_service::GetExampleProcessingOrigins()[0];
-
-  AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
-      AggregationServicePayloadContents::ProcessingType::kSingleServer,
-      {processing_origin});
 
   PublicKey public_key = aggregation_service::GenerateKey("id123").public_key;
 
@@ -257,7 +217,7 @@ TEST_F(AggregatableReportAssemblerTest,
           aggregation_service::CloneReportRequest(request), {public_key});
   ASSERT_TRUE(report.has_value());
 
-  EXPECT_CALL(*fetcher(), GetPublicKey(processing_origin, _))
+  EXPECT_CALL(*fetcher(), GetPublicKey)
       .WillOnce(base::test::RunOnceCallback<1>(public_key,
                                                PublicKeyFetchStatus::kOk));
   EXPECT_CALL(callback(), Run(report, AssemblyStatus::kOk));
@@ -276,15 +236,11 @@ TEST_F(AggregatableReportAssemblerTest,
 }
 
 TEST_F(AggregatableReportAssemblerTest,
-       SingleServerOneProcessingOriginKeyFetchFails_ErrorReturned) {
-  url::Origin processing_origin =
-      aggregation_service::GetExampleProcessingOrigins()[0];
-
+       SingleServerKeyFetchFails_ErrorReturned) {
   AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
-      AggregationServicePayloadContents::ProcessingType::kSingleServer,
-      {processing_origin});
+      AggregationServicePayloadContents::ProcessingType::kSingleServer);
 
-  EXPECT_CALL(*fetcher(), GetPublicKey(processing_origin, _))
+  EXPECT_CALL(*fetcher(), GetPublicKey)
       .WillOnce(base::test::RunOnceCallback<1>(
           absl::nullopt, PublicKeyFetchStatus::kPublicKeyFetchFailed));
   EXPECT_CALL(callback(),
@@ -332,44 +288,6 @@ TEST_F(AggregatableReportAssemblerTest,
       .Run(public_keys[1], PublicKeyFetchStatus::kOk);
   std::move(pending_callbacks.front())
       .Run(public_keys[0], PublicKeyFetchStatus::kOk);
-}
-
-TEST_F(AggregatableReportAssemblerTest,
-       BothProcessingOriginsAreIdentical_ValidReportReturned) {
-  url::Origin processing_origin =
-      aggregation_service::GetExampleProcessingOrigins()[0];
-
-  // Set second processing origin to match the first and create a new request.
-  AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
-      AggregationServicePayloadContents::ProcessingType::kTwoParty,
-      {processing_origin, processing_origin});
-
-  PublicKey public_key = aggregation_service::GenerateKey("id123").public_key;
-
-  absl::optional<AggregatableReport> report =
-      AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          aggregation_service::CloneReportRequest(request),
-          /*public_keys=*/{public_key, public_key});
-  ASSERT_TRUE(report.has_value());
-
-  EXPECT_CALL(*fetcher(), GetPublicKey(processing_origin, _))
-      .WillRepeatedly(base::test::RunOnceCallback<1>(
-          public_key, PublicKeyFetchStatus::kOk));
-  EXPECT_CALL(callback(), Run(report, AssemblyStatus::kOk));
-
-  absl::optional<AggregatableReportRequest> actual_request;
-  EXPECT_CALL(*report_provider(),
-              CreateFromRequestAndPublicKeys(
-                  _, std::vector<PublicKey>{public_key, public_key}))
-      .WillOnce(MoveRequestAndReturnReport(&actual_request,
-                                           std::move(report.value())));
-
-  assembler()->AssembleReport(aggregation_service::CloneReportRequest(request),
-                              callback().Get());
-
-  ASSERT_TRUE(actual_request.has_value());
-  EXPECT_TRUE(aggregation_service::ReportRequestsEqual(actual_request.value(),
-                                                       request));
 }
 
 TEST_F(AggregatableReportAssemblerTest,

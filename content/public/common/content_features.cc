@@ -652,6 +652,11 @@ const base::Feature kHighPriorityBeforeUnload{
 const base::Feature kPrivacySandboxAggregationService = {
     "PrivacySandboxAggregationService", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::FeatureParam<std::string>
+    kPrivacySandboxAggregationServiceTrustedServerOriginParam{
+        &kPrivacySandboxAggregationService, "trusted_server_origin",
+        "https://server.example.com"};
+
 // Enables Private Network Access checks for all types of web workers.
 //
 // This affects initial worker script fetches, fetches initiated by workers

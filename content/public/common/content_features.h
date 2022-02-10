@@ -160,6 +160,8 @@ CONTENT_EXPORT extern const base::Feature kPepperCrossOriginRedirectRestriction;
 CONTENT_EXPORT extern const base::Feature kPictureInPictureV2;
 CONTENT_EXPORT extern const base::Feature kHighPriorityBeforeUnload;
 CONTENT_EXPORT extern const base::Feature kPrivacySandboxAggregationService;
+CONTENT_EXPORT extern const base::FeatureParam<std::string>
+    kPrivacySandboxAggregationServiceTrustedServerOriginParam;
 CONTENT_EXPORT extern const base::Feature kPrivateNetworkAccessForWorkers;
 CONTENT_EXPORT extern const base::Feature
     kPrivateNetworkAccessRespectPreflightResults;

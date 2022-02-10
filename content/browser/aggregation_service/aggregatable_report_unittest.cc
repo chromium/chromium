@@ -109,9 +109,6 @@ void VerifyReport(
   ASSERT_EQ(payloads.size(), expected_processing_origins.size());
   ASSERT_EQ(encryption_keys.size(), expected_processing_origins.size());
 
-  // Used for the single-server tests.
-  int complete_data_count = 0;
-
   for (size_t i = 0; i < expected_processing_origins.size(); ++i) {
     EXPECT_EQ(payloads[i].origin, expected_processing_origins[i]);
     EXPECT_EQ(payloads[i].key_id, encryption_keys[i].public_key.id);
@@ -157,34 +154,26 @@ void VerifyReport(
         const cbor::Value::ArrayValue& data_array =
             payload_map.at(cbor::Value("data")).GetArray();
 
-        if (!data_array.empty()) {
-          ++complete_data_count;
+        // TODO(crbug.com/1272030): Support multiple contributions in one
+        // payload.
+        EXPECT_EQ(data_array.size(), 1u);
+        ASSERT_TRUE(data_array[0].is_map());
+        const cbor::Value::MapValue& data_map = data_array[0].GetMap();
 
-          // TODO(crbug.com/1272030): Support multiple contributions in one
-          // payload.
-          EXPECT_EQ(data_array.size(), 1u);
-          ASSERT_TRUE(data_array[0].is_map());
-          const cbor::Value::MapValue& data_map = data_array[0].GetMap();
+        ASSERT_TRUE(CborMapContainsKeyAndType(data_map, "bucket",
+                                              cbor::Value::Type::UNSIGNED));
+        EXPECT_EQ(data_map.at(cbor::Value("bucket")).GetInteger(),
+                  expected_payload_contents.bucket);
 
-          ASSERT_TRUE(CborMapContainsKeyAndType(data_map, "bucket",
-                                                cbor::Value::Type::UNSIGNED));
-          EXPECT_EQ(data_map.at(cbor::Value("bucket")).GetInteger(),
-                    expected_payload_contents.bucket);
-
-          ASSERT_TRUE(CborMapContainsKeyAndType(data_map, "value",
-                                                cbor::Value::Type::UNSIGNED));
-          EXPECT_EQ(data_map.at(cbor::Value("value")).GetInteger(),
-                    expected_payload_contents.value);
-        }
+        ASSERT_TRUE(CborMapContainsKeyAndType(data_map, "value",
+                                              cbor::Value::Type::UNSIGNED));
+        EXPECT_EQ(data_map.at(cbor::Value("value")).GetInteger(),
+                  expected_payload_contents.value);
 
         EXPECT_FALSE(payload_map.contains(cbor::Value("dpf_key")));
         break;
       }
     }
-  }
-  if (expected_payload_contents.processing_type ==
-      AggregationServicePayloadContents::ProcessingType::kSingleServer) {
-    EXPECT_EQ(complete_data_count, 1);
   }
 }
 
@@ -211,18 +200,15 @@ TEST(AggregatableReportTest, ValidTwoPartyRequest_ValidReportReturned) {
                                        expected_processing_origins, hpke_keys));
 }
 
-TEST(AggregatableReportTest,
-     ValidSingleServerRequestWithOneProcessingOrigin_ValidReportReturned) {
-  url::Origin expected_processing_origin =
-      aggregation_service::GetExampleProcessingOrigins()[0];
-
+TEST(AggregatableReportTest, ValidSingleServerRequest_ValidReportReturned) {
   AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
-      AggregationServicePayloadContents::ProcessingType::kSingleServer,
-      {expected_processing_origin});
+      AggregationServicePayloadContents::ProcessingType::kSingleServer);
 
   AggregationServicePayloadContents expected_payload_contents =
       request.payload_contents();
   AggregatableReportSharedInfo expected_shared_info = request.shared_info();
+  std::vector<url::Origin> expected_processing_origins =
+      request.processing_origins();
 
   aggregation_service::TestHpkeKey hpke_key =
       aggregation_service::GenerateKey("id123");
@@ -233,189 +219,7 @@ TEST(AggregatableReportTest,
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyReport(report, expected_payload_contents, expected_shared_info,
-                   {expected_processing_origin}, {hpke_key}));
-}
-
-TEST(AggregatableReportTest,
-     ValidSingleServerRequestWithTwoProcessingOrigins_ValidReportReturned) {
-  AggregatableReportRequest request = aggregation_service::CreateExampleRequest(
-      AggregationServicePayloadContents::ProcessingType::kSingleServer);
-
-  AggregationServicePayloadContents expected_payload_contents =
-      request.payload_contents();
-  AggregatableReportSharedInfo expected_shared_info = request.shared_info();
-  std::vector<url::Origin> expected_processing_origins =
-      request.processing_origins();
-
-  std::vector<aggregation_service::TestHpkeKey> hpke_keys = {
-      aggregation_service::GenerateKey("id123"),
-      aggregation_service::GenerateKey("456abc")};
-
-  absl::optional<AggregatableReport> report =
-      AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          std::move(request),
-          {hpke_keys[0].public_key, hpke_keys[1].public_key});
-
-  ASSERT_NO_FATAL_FAILURE(VerifyReport(report, expected_payload_contents,
-                                       expected_shared_info,
-                                       expected_processing_origins, hpke_keys));
-}
-
-TEST(AggregatableReportTest, RequestCreatedWithZeroOrigins_Fails) {
-  AggregatableReportRequest example_request =
-      aggregation_service::CreateExampleRequest();
-  AggregationServicePayloadContents payload_contents =
-      example_request.payload_contents();
-  AggregatableReportSharedInfo shared_info = example_request.shared_info();
-
-  payload_contents.processing_type =
-      AggregationServicePayloadContents::ProcessingType::kTwoParty;
-  EXPECT_FALSE(
-      AggregatableReportRequest::Create({}, payload_contents, shared_info)
-          .has_value());
-
-  payload_contents.processing_type =
-      AggregationServicePayloadContents::ProcessingType::kSingleServer;
-  EXPECT_FALSE(
-      AggregatableReportRequest::Create({}, payload_contents, shared_info)
-          .has_value());
-}
-
-TEST(AggregatableReportTest,
-     RequestCreatedWithOneOrigin_OnlySingleServerSucceeds) {
-  AggregatableReportRequest example_request =
-      aggregation_service::CreateExampleRequest();
-  AggregationServicePayloadContents payload_contents =
-      example_request.payload_contents();
-  AggregatableReportSharedInfo shared_info = example_request.shared_info();
-
-  payload_contents.processing_type =
-      AggregationServicePayloadContents::ProcessingType::kTwoParty;
-  EXPECT_FALSE(AggregatableReportRequest::Create(
-                   {url::Origin::Create(GURL("https://a.example"))},
-                   payload_contents, shared_info)
-                   .has_value());
-
-  payload_contents.processing_type =
-      AggregationServicePayloadContents::ProcessingType::kSingleServer;
-  EXPECT_TRUE(AggregatableReportRequest::Create(
-                  {url::Origin::Create(GURL("https://a.example"))},
-                  payload_contents, shared_info)
-                  .has_value());
-}
-
-TEST(AggregatableReportTest, RequestCreatedWithTwoOrigins_Succeeds) {
-  AggregatableReportRequest example_request =
-      aggregation_service::CreateExampleRequest();
-  AggregationServicePayloadContents payload_contents =
-      example_request.payload_contents();
-  AggregatableReportSharedInfo shared_info = example_request.shared_info();
-
-  payload_contents.processing_type =
-      AggregationServicePayloadContents::ProcessingType::kTwoParty;
-  EXPECT_TRUE(AggregatableReportRequest::Create(
-                  {url::Origin::Create(GURL("https://a.example")),
-                   url::Origin::Create(GURL("https://b.example"))},
-                  payload_contents, shared_info)
-                  .has_value());
-
-  payload_contents.processing_type =
-      AggregationServicePayloadContents::ProcessingType::kSingleServer;
-  EXPECT_TRUE(AggregatableReportRequest::Create(
-                  {url::Origin::Create(GURL("https://a.example")),
-                   url::Origin::Create(GURL("https://b.example"))},
-                  payload_contents, shared_info)
-                  .has_value());
-}
-
-TEST(AggregatableReportTest, RequestCreatedWithMoreThanTwoOrigins_Fails) {
-  AggregatableReportRequest example_request =
-      aggregation_service::CreateExampleRequest();
-  AggregationServicePayloadContents payload_contents =
-      example_request.payload_contents();
-  AggregatableReportSharedInfo shared_info = example_request.shared_info();
-
-  payload_contents.processing_type =
-      AggregationServicePayloadContents::ProcessingType::kTwoParty;
-  EXPECT_FALSE(AggregatableReportRequest::Create(
-                   {url::Origin::Create(GURL("https://a.example")),
-                    url::Origin::Create(GURL("https://b.example")),
-                    url::Origin::Create(GURL("https://c.example"))},
-                   payload_contents, shared_info)
-                   .has_value());
-
-  payload_contents.processing_type =
-      AggregationServicePayloadContents::ProcessingType::kSingleServer;
-  EXPECT_FALSE(AggregatableReportRequest::Create(
-                   {url::Origin::Create(GURL("https://a.example")),
-                    url::Origin::Create(GURL("https://b.example")),
-                    url::Origin::Create(GURL("https://c.example"))},
-                   payload_contents, shared_info)
-                   .has_value());
-}
-
-TEST(AggregatableReportTest,
-     RequestCreatedWithSwappedOrigins_OrderingIsDeterminstic) {
-  AggregatableReportRequest example_request =
-      aggregation_service::CreateExampleRequest();
-  AggregationServicePayloadContents payload_contents =
-      example_request.payload_contents();
-  AggregatableReportSharedInfo shared_info = example_request.shared_info();
-
-  for (AggregationServicePayloadContents::ProcessingType processing_type :
-       {AggregationServicePayloadContents::ProcessingType::kTwoParty,
-        AggregationServicePayloadContents::ProcessingType::kSingleServer}) {
-    payload_contents.processing_type = processing_type;
-
-    absl::optional<AggregatableReportRequest> ordering_1 =
-        AggregatableReportRequest::Create(
-            {url::Origin::Create(GURL("https://a.example")),
-             url::Origin::Create(GURL("https://b.example"))},
-            payload_contents, shared_info);
-
-    absl::optional<AggregatableReportRequest> ordering_2 =
-        AggregatableReportRequest::Create(
-            {url::Origin::Create(GURL("https://b.example")),
-             url::Origin::Create(GURL("https://a.example"))},
-            payload_contents, shared_info);
-
-    ASSERT_TRUE(ordering_1.has_value());
-    ASSERT_TRUE(ordering_2.has_value());
-    EXPECT_EQ(ordering_1->processing_origins(),
-              ordering_2->processing_origins());
-  }
-}
-
-TEST(AggregatableReportTest, RequestCreatedWithInsecureOrigin_Failed) {
-  AggregatableReportRequest example_request =
-      aggregation_service::CreateExampleRequest();
-  AggregationServicePayloadContents payload_contents =
-      example_request.payload_contents();
-  AggregatableReportSharedInfo shared_info = example_request.shared_info();
-
-  absl::optional<AggregatableReportRequest> request =
-      AggregatableReportRequest::Create(
-          {url::Origin::Create(GURL("http://a.example")),
-           url::Origin::Create(GURL("https://b.example"))},
-          payload_contents, shared_info);
-
-  EXPECT_FALSE(request.has_value());
-}
-
-TEST(AggregatableReportTest, RequestCreatedWithOpaqueOrigin_Failed) {
-  AggregatableReportRequest example_request =
-      aggregation_service::CreateExampleRequest();
-  AggregationServicePayloadContents payload_contents =
-      example_request.payload_contents();
-  AggregatableReportSharedInfo shared_info = example_request.shared_info();
-
-  absl::optional<AggregatableReportRequest> request =
-      AggregatableReportRequest::Create(
-          {url::Origin::Create(GURL("about:blank")),
-           url::Origin::Create(GURL("https://b.example"))},
-          payload_contents, shared_info);
-
-  EXPECT_FALSE(request.has_value());
+                   expected_processing_origins, {hpke_key}));
 }
 
 TEST(AggregatableReportTest,
@@ -430,40 +234,32 @@ TEST(AggregatableReportTest,
       payload_contents;
   zero_bucket_payload_contents.bucket = 0;
   absl::optional<AggregatableReportRequest> zero_bucket_request =
-      AggregatableReportRequest::Create(
-          {url::Origin::Create(GURL("https://a.example")),
-           url::Origin::Create(GURL("https://b.example"))},
-          zero_bucket_payload_contents, shared_info);
+      AggregatableReportRequest::Create(zero_bucket_payload_contents,
+                                        shared_info);
   EXPECT_TRUE(zero_bucket_request.has_value());
 
   AggregationServicePayloadContents zero_value_payload_contents =
       payload_contents;
   zero_value_payload_contents.value = 0;
   absl::optional<AggregatableReportRequest> zero_value_request =
-      AggregatableReportRequest::Create(
-          {url::Origin::Create(GURL("https://a.example")),
-           url::Origin::Create(GURL("https://b.example"))},
-          zero_value_payload_contents, shared_info);
+      AggregatableReportRequest::Create(zero_value_payload_contents,
+                                        shared_info);
   EXPECT_TRUE(zero_value_request.has_value());
 
   AggregationServicePayloadContents negative_bucket_payload_contents =
       payload_contents;
   negative_bucket_payload_contents.bucket = -1;
   absl::optional<AggregatableReportRequest> negative_bucket_request =
-      AggregatableReportRequest::Create(
-          {url::Origin::Create(GURL("https://a.example")),
-           url::Origin::Create(GURL("https://b.example"))},
-          negative_bucket_payload_contents, shared_info);
+      AggregatableReportRequest::Create(negative_bucket_payload_contents,
+                                        shared_info);
   EXPECT_FALSE(negative_bucket_request.has_value());
 
   AggregationServicePayloadContents negative_value_payload_contents =
       payload_contents;
   negative_value_payload_contents.value = -1;
   absl::optional<AggregatableReportRequest> negative_value_request =
-      AggregatableReportRequest::Create(
-          {url::Origin::Create(GURL("https://a.example")),
-           url::Origin::Create(GURL("https://b.example"))},
-          negative_value_payload_contents, shared_info);
+      AggregatableReportRequest::Create(negative_value_payload_contents,
+                                        shared_info);
   EXPECT_FALSE(negative_value_request.has_value());
 }
 
@@ -474,10 +270,8 @@ TEST(AggregatableReportTest, RequestCreatedWithInvalidReportId_Failed) {
   shared_info.report_id = base::GUID();
 
   absl::optional<AggregatableReportRequest> request =
-      AggregatableReportRequest::Create(
-          {url::Origin::Create(GURL("http://a.example")),
-           url::Origin::Create(GURL("https://b.example"))},
-          example_request.payload_contents(), std::move(shared_info));
+      AggregatableReportRequest::Create(example_request.payload_contents(),
+                                        std::move(shared_info));
 
   EXPECT_FALSE(request.has_value());
 }

@@ -171,21 +171,9 @@ testing::AssertionResult SharedInfoEqual(
   return testing::AssertionSuccess();
 }
 
-std::vector<url::Origin> GetExampleProcessingOrigins() {
-  return {url::Origin::Create(GURL("https://a.example")),
-          url::Origin::Create(GURL("https://b.example"))};
-}
-
 AggregatableReportRequest CreateExampleRequest(
     AggregationServicePayloadContents::ProcessingType processing_type) {
-  return CreateExampleRequest(processing_type, GetExampleProcessingOrigins());
-}
-
-AggregatableReportRequest CreateExampleRequest(
-    AggregationServicePayloadContents::ProcessingType processing_type,
-    std::vector<url::Origin> processing_origins) {
   return AggregatableReportRequest::Create(
-             std::move(processing_origins),
              AggregationServicePayloadContents(
                  AggregationServicePayloadContents::Operation::kHistogram,
                  /*bucket=*/123, /*value=*/456, processing_type,
@@ -200,9 +188,9 @@ AggregatableReportRequest CreateExampleRequest(
 
 AggregatableReportRequest CloneReportRequest(
     const AggregatableReportRequest& request) {
-  return AggregatableReportRequest::Create(request.processing_origins(),
-                                           request.payload_contents(),
-                                           request.shared_info())
+  return AggregatableReportRequest::CreateForTesting(
+             request.processing_origins(), request.payload_contents(),
+             request.shared_info())
       .value();
 }
 

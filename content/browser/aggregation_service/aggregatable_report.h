@@ -104,9 +104,6 @@ class CONTENT_EXPORT AggregatableReport {
     // For the kSingleServer processing type, the "dpf_key" field is replaced
     // with:
     //   "data": [{ "bucket": <bucket>, "value": <value> }]
-    // If two processing origins are provided, one payload (chosen randomly)
-    // would contain that data and the other would instead contain:
-    //   "data": []
     std::vector<uint8_t> payload;
 
     // Indicates the chosen encryption key.
@@ -205,11 +202,18 @@ class CONTENT_EXPORT AggregatableReport {
 class CONTENT_EXPORT AggregatableReportRequest {
  public:
   // Returns `absl::nullopt` if `payload_contents` has a negative bucket or
+  // value. Also returns `absl::nullopt` if `shared_info.report_id` is not
+  // valid.
+  static absl::optional<AggregatableReportRequest> Create(
+      AggregationServicePayloadContents payload_contents,
+      AggregatableReportSharedInfo shared_info);
+
+  // Returns `absl::nullopt` if `payload_contents` has a negative bucket or
   // value. Also returns `absl::nullopt` if `processing_origins.size()` is not
   // valid for the `payload_contents.processing_type` (see
-  // `IsNumberOfProcessingOriginsValid` above). Also returns `absl::nullopt`
-  // if `shared_info.report_id` is not valid.
-  static absl::optional<AggregatableReportRequest> Create(
+  // `IsNumberOfProcessingOriginsValid` above). Also returns `absl::nullopt` if
+  // `shared_info.report_id` is not valid.
+  static absl::optional<AggregatableReportRequest> CreateForTesting(
       std::vector<url::Origin> processing_origins,
       AggregationServicePayloadContents payload_contents,
       AggregatableReportSharedInfo shared_info);
@@ -233,6 +237,11 @@ class CONTENT_EXPORT AggregatableReportRequest {
   // To avoid unnecessary copies, allow the provider to directly access members
   // of the AggregatableReportRequest being consumed.
   friend class AggregatableReport::Provider;
+
+  static absl::optional<AggregatableReportRequest> CreateInternal(
+      std::vector<url::Origin> processing_origins,
+      AggregationServicePayloadContents payload_contents,
+      AggregatableReportSharedInfo shared_info);
 
   AggregatableReportRequest(std::vector<url::Origin> processing_origins,
                             AggregationServicePayloadContents payload_contents,

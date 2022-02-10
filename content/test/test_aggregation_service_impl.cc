@@ -139,9 +139,9 @@ void TestAggregationServiceImpl::AssembleReport(
       /*report_id=*/base::GUID::GenerateRandomV4());
 
   absl::optional<AggregatableReportRequest> report_request =
-      AggregatableReportRequest::Create(std::move(request.processing_origins),
-                                        std::move(payload_contents),
-                                        std::move(shared_info));
+      AggregatableReportRequest::CreateForTesting(
+          std::move(request.processing_origins), std::move(payload_contents),
+          std::move(shared_info));
   if (!report_request.has_value()) {
     std::move(callback).Run(base::Value::DictStorage());
     return;

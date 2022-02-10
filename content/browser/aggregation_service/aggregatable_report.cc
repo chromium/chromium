@@ -25,10 +25,12 @@
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "content/browser/aggregation_service/public_key.h"
+#include "content/public/common/content_features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/hpke.h"
 #include "third_party/distributed_point_functions/code/dpf/distributed_point_function.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
@@ -44,6 +46,20 @@ using DpfParameters = distributed_point_functions::DpfParameters;
 constexpr char kHistogramValue[] = "histogram";
 constexpr char kOperationKey[] = "operation";
 constexpr char kReportingOriginKey[] = "reporting_origin";
+
+std::vector<url::Origin> GetDefaultProcessingOrigins(
+    AggregationServicePayloadContents::ProcessingType processing_type) {
+  switch (processing_type) {
+    case AggregationServicePayloadContents::ProcessingType::kTwoParty:
+      // TODO(crbug.com/1295705): Update default processing origins.
+      return {url::Origin::Create(GURL("https://server1.example.com")),
+              url::Origin::Create(GURL("https://server2.example.com"))};
+    case AggregationServicePayloadContents::ProcessingType::kSingleServer:
+      return {url::Origin::Create(GURL(
+          features::kPrivacySandboxAggregationServiceTrustedServerOriginParam
+              .Get()))};
+  }
+}
 
 // Returns parameters that support each possible prefix length in
 // `[1, kBucketDomainBitLength]` with the same element_bitsize of
@@ -133,44 +149,33 @@ std::vector<std::vector<uint8_t>> ConstructUnencryptedTwoPartyPayloads(
   return unencrypted_payloads;
 }
 
-// Returns a vector with a serialized CBOR map for each processing origin. See
-// the AggregatableReport documentation for more detail on the expected format.
-// Returns an empty vector in case of error.
-std::vector<std::vector<uint8_t>> ConstructUnencryptedSingleServerPayloads(
-    const AggregationServicePayloadContents& payload_contents,
-    size_t num_processing_origins) {
-  std::vector<std::vector<uint8_t>> unencrypted_payloads;
+// Returns a vector with a serialized CBOR map. See the AggregatableReport
+// documentation for more detail on the expected format. Returns an empty
+// vector in case of error.
+// Note that a vector is returned to match the two party case.
+std::vector<std::vector<uint8_t>> ConstructUnencryptedSingleServerPayload(
+    const AggregationServicePayloadContents& payload_contents) {
+  cbor::Value::MapValue value;
+  value.emplace(kReportingOriginKey,
+                payload_contents.reporting_origin.Serialize());
+  value.emplace(kOperationKey, kHistogramValue);
 
-  // If multiple processing origins are specified, one is randomly picked to
-  // encode the actual data.
-  size_t index_to_populate = base::RandGenerator(num_processing_origins);
-  for (size_t i = 0; i < num_processing_origins; ++i) {
-    cbor::Value::MapValue value;
-    value.emplace(kReportingOriginKey,
-                  payload_contents.reporting_origin.Serialize());
-    value.emplace(kOperationKey, kHistogramValue);
+  // TODO(crbug.com/1272030): Support multiple contributions in one payload.
+  cbor::Value::ArrayValue data;
+  cbor::Value::MapValue data_map;
+  data_map.emplace("bucket", payload_contents.bucket);
+  data_map.emplace("value", payload_contents.value);
+  data.push_back(cbor::Value(std::move(data_map)));
+  value.emplace("data", std::move(data));
 
-    // TODO(crbug.com/1272030): Support multiple contributions in one payload.
-    cbor::Value::ArrayValue data;
-    if (i == index_to_populate) {
-      cbor::Value::MapValue data_map;
-      data_map.emplace("bucket", payload_contents.bucket);
-      data_map.emplace("value", payload_contents.value);
-      data.push_back(cbor::Value(std::move(data_map)));
-    }
-    value.emplace("data", std::move(data));
+  absl::optional<std::vector<uint8_t>> unencrypted_payload =
+      cbor::Writer::Write(cbor::Value(std::move(value)));
 
-    absl::optional<std::vector<uint8_t>> unencrypted_payload =
-        cbor::Writer::Write(cbor::Value(std::move(value)));
-
-    if (!unencrypted_payload.has_value()) {
-      return {};
-    }
-
-    unencrypted_payloads.push_back(std::move(unencrypted_payload.value()));
+  if (!unencrypted_payload.has_value()) {
+    return {};
   }
 
-  return unencrypted_payloads;
+  return {std::move(unencrypted_payload.value())};
 }
 
 // Encrypts the `plaintext` with HPKE using the processing origin's
@@ -274,6 +279,27 @@ std::string AggregatableReportSharedInfo::SerializeAsJson() const {
 
 // static
 absl::optional<AggregatableReportRequest> AggregatableReportRequest::Create(
+    AggregationServicePayloadContents payload_contents,
+    AggregatableReportSharedInfo shared_info) {
+  std::vector<url::Origin> processing_origins =
+      GetDefaultProcessingOrigins(payload_contents.processing_type);
+  return CreateInternal(std::move(processing_origins),
+                        std::move(payload_contents), std::move(shared_info));
+}
+
+// static
+absl::optional<AggregatableReportRequest>
+AggregatableReportRequest::CreateForTesting(
+    std::vector<url::Origin> processing_origins,
+    AggregationServicePayloadContents payload_contents,
+    AggregatableReportSharedInfo shared_info) {
+  return CreateInternal(std::move(processing_origins),
+                        std::move(payload_contents), std::move(shared_info));
+}
+
+// static
+absl::optional<AggregatableReportRequest>
+AggregatableReportRequest::CreateInternal(
     std::vector<url::Origin> processing_origins,
     AggregationServicePayloadContents payload_contents,
     AggregatableReportSharedInfo shared_info) {
@@ -395,8 +421,8 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
       break;
     }
     case AggregationServicePayloadContents::ProcessingType::kSingleServer: {
-      unencrypted_payloads = ConstructUnencryptedSingleServerPayloads(
-          report_request.payload_contents(), num_processing_origins);
+      unencrypted_payloads = ConstructUnencryptedSingleServerPayload(
+          report_request.payload_contents());
       break;
     }
   }
@@ -470,7 +496,7 @@ bool AggregatableReport::IsNumberOfProcessingOriginsValid(
     case AggregationServicePayloadContents::ProcessingType::kTwoParty:
       return number == 2u;
     case AggregationServicePayloadContents::ProcessingType::kSingleServer:
-      return number == 1u || number == 2u;
+      return number == 1u;
   }
 }
 

@@ -55,16 +55,10 @@ testing::AssertionResult SharedInfoEqual(
     const AggregatableReportSharedInfo& expected,
     const AggregatableReportSharedInfo& actual);
 
-std::vector<url::Origin> GetExampleProcessingOrigins();
-
-// Returns an example report request, using the given parameters. If the first
-// signature is used, example processing origins will be used.
+// Returns an example report request, using the given parameters.
 AggregatableReportRequest CreateExampleRequest(
     AggregationServicePayloadContents::ProcessingType processing_type =
         AggregationServicePayloadContents::ProcessingType::kTwoParty);
-AggregatableReportRequest CreateExampleRequest(
-    AggregationServicePayloadContents::ProcessingType processing_type,
-    std::vector<url::Origin> processing_origins);
 
 AggregatableReportRequest CloneReportRequest(
     const AggregatableReportRequest& request);
