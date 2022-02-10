@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
+#include "cc/paint/paint_canvas.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
@@ -19,6 +20,7 @@
 #include "ui/native_theme/common_theme.h"
 #include "ui/native_theme/native_theme_aura.h"
 #include "ui/native_theme/native_theme_utils.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 using base::StrCat;
 

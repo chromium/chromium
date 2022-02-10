@@ -13,7 +13,6 @@
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "cc/paint/paint_canvas.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/menu_separator_types.h"
@@ -24,6 +23,10 @@
 #include "ui/native_theme/caption_style.h"
 #include "ui/native_theme/native_theme_export.h"
 #include "ui/native_theme/native_theme_observer.h"
+
+namespace cc {
+class PaintCanvas;
+}
 
 namespace gfx {
 class Rect;
