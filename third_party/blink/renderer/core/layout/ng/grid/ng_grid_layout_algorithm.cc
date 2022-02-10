@@ -2915,15 +2915,18 @@ const NGConstraintSpace NGGridLayoutAlgorithm::CreateConstraintSpace(
   builder.SetInlineAutoBehavior(grid_item.inline_auto_behavior);
   builder.SetBlockAutoBehavior(grid_item.block_auto_behavior);
 
-  if (ConstraintSpace().HasBlockFragmentation() &&
-      opt_fragment_relative_block_offset) {
-    if (opt_min_block_size_should_encompass_intrinsic_size)
-      builder.SetMinBlockSizeShouldEncompassIntrinsicSize();
-    SetupSpaceBuilderForFragmentation(
-        ConstraintSpace(), grid_item.node, *opt_fragment_relative_block_offset,
-        &builder,
-        /* is_new_fc */ true,
-        container_builder_.RequiresContentBeforeBreaking());
+  if (ConstraintSpace().HasBlockFragmentation()) {
+    if (opt_fragment_relative_block_offset) {
+      if (opt_min_block_size_should_encompass_intrinsic_size)
+        builder.SetMinBlockSizeShouldEncompassIntrinsicSize();
+      SetupSpaceBuilderForFragmentation(
+          ConstraintSpace(), grid_item.node,
+          *opt_fragment_relative_block_offset, &builder,
+          /* is_new_fc */ true,
+          container_builder_.RequiresContentBeforeBreaking());
+    } else {
+      builder.SetShouldPropagateChildBreakValues();
+    }
   }
 
   return builder.ToConstraintSpace();
