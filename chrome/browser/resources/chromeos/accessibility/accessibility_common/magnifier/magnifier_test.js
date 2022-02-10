@@ -243,7 +243,8 @@ TEST_F('MagnifierE2ETest', 'IgnoresRootNodeFocus', function() {
   });
 });
 
-TEST_F('MagnifierE2ETest', 'MagnifierCenterOnPoint', function() {
+// TODO(crbug.com/1295685): Test is flaky.
+TEST_F('MagnifierE2ETest', 'DISABLED_MagnifierCenterOnPoint', function() {
   this.runWithLoadedTree('', async function(root) {
     const magnifier = accessibilityCommon.getMagnifierForTest();
     magnifier.setIsInitializingForTest(false);
