@@ -1168,7 +1168,6 @@ if (!is_ios) {
     }
 
     data = [
-      "//build/skia_gold_common/",
       "//testing/scripts/common.py",
       "//testing/scripts/run_isolated_script_test.py",
       "//testing/xvfb.py",
@@ -1182,7 +1181,6 @@ if (!is_ios) {
       "//third_party/pywebsocket3/src/mod_pywebsocket/",
       "//third_party/test_fonts/test_fonts/",
       "//third_party/wpt_tools/",
-      "//tools/skia_goldctl/",
     ]
 
     if (is_win) {
@@ -1469,7 +1467,6 @@ if (!is_ios) {
       "//build/android/",
       "//build/gn_helpers.py",
       "//build/config/gclient_args.gni",
-      "//build/skia_gold_common/",
       "//components/crash/content/tools/generate_breakpad_symbols.py",
       "//testing/unexpected_passes_common/",
       "//third_party/blink/renderer/bindings/scripts/",
@@ -1493,7 +1490,6 @@ if (!is_ios) {
       "//third_party/depot_tools/pylintrc",
       "//third_party/ply/",
       "//tools/idl_parser/",
-      "//tools/skia_goldctl/",
     ]
   }
 }

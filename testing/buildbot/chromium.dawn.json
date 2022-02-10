@@ -196,8 +196,7 @@
           "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan",
-          "--git-revision=${got_revision}"
+          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -207,11 +206,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -224,7 +218,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -235,8 +229,7 @@
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan",
-          "--git-revision=${got_revision}"
+          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -246,11 +239,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_backend_validation",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -263,7 +251,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -463,8 +451,7 @@
           "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan",
-          "--git-revision=${got_revision}"
+          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -474,11 +461,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -491,7 +473,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -502,8 +484,7 @@
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan",
-          "--git-revision=${got_revision}"
+          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -513,11 +494,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_backend_validation",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -530,7 +506,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -730,8 +706,7 @@
           "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan",
-          "--git-revision=${got_revision}"
+          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -741,11 +716,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -758,7 +728,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -769,8 +739,7 @@
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan",
-          "--git-revision=${got_revision}"
+          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -780,11 +749,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_backend_validation",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -797,7 +761,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -997,8 +961,7 @@
           "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan",
-          "--git-revision=${got_revision}"
+          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -1008,11 +971,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1025,7 +983,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -1036,8 +994,7 @@
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan",
-          "--git-revision=${got_revision}"
+          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -1047,11 +1004,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_backend_validation",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1064,7 +1016,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -1280,8 +1232,7 @@
         "args": [
           "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11",
-          "--git-revision=${got_revision}"
+          "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -1291,11 +1242,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1311,7 +1257,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -1321,8 +1267,7 @@
           "--flag-specific=webgpu-with-backend-validation",
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11",
-          "--git-revision=${got_revision}"
+          "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -1332,11 +1277,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_backend_validation",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1352,7 +1292,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -1550,8 +1490,7 @@
         "args": [
           "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11",
-          "--git-revision=${got_revision}"
+          "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -1561,11 +1500,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1579,7 +1513,7 @@
               "os": "Mac-11.5.2"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -1589,8 +1523,7 @@
           "--flag-specific=webgpu-with-backend-validation",
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11",
-          "--git-revision=${got_revision}"
+          "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -1600,11 +1533,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_backend_validation",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1618,7 +1546,7 @@
               "os": "Mac-11.5.2"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -1839,8 +1767,7 @@
         "args": [
           "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11",
-          "--git-revision=${got_revision}"
+          "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -1850,11 +1777,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1871,7 +1793,7 @@
             }
           ],
           "expiration": 21600,
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -1881,8 +1803,7 @@
           "--flag-specific=webgpu-with-backend-validation",
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11",
-          "--git-revision=${got_revision}"
+          "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -1892,11 +1813,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_backend_validation",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -1913,7 +1829,7 @@
             }
           ],
           "expiration": 21600,
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -2163,8 +2079,7 @@
         "args": [
           "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11",
-          "--git-revision=${got_revision}"
+          "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -2174,11 +2089,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -2194,7 +2104,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -2204,8 +2114,7 @@
           "--flag-specific=webgpu-with-backend-validation",
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11",
-          "--git-revision=${got_revision}"
+          "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -2215,11 +2124,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_backend_validation",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -2235,7 +2139,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -2433,8 +2337,7 @@
         "args": [
           "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11",
-          "--git-revision=${got_revision}"
+          "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -2444,11 +2347,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -2462,7 +2360,7 @@
               "os": "Mac-11.5.2"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -2472,8 +2370,7 @@
           "--flag-specific=webgpu-with-backend-validation",
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--platform=mac-mac11",
-          "--git-revision=${got_revision}"
+          "--platform=mac-mac11"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -2483,11 +2380,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_backend_validation",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -2501,7 +2393,7 @@
               "os": "Mac-11.5.2"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -2699,7 +2591,6 @@
           "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--target=Release_x64",
-          "--git-revision=${got_revision}",
           "--timeout-ms=48000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -2710,11 +2601,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -2732,7 +2618,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -2927,8 +2813,7 @@
         "args": [
           "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--target=Release_x64",
-          "--git-revision=${got_revision}"
+          "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -2938,11 +2823,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -2955,7 +2835,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -2965,8 +2845,7 @@
           "--flag-specific=webgpu-with-partial-backend-validation",
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--target=Release_x64",
-          "--git-revision=${got_revision}"
+          "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -2976,11 +2855,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_partial_backend_validation",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -2993,7 +2867,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -3186,8 +3060,7 @@
         "args": [
           "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--target=Release_x64",
-          "--git-revision=${got_revision}"
+          "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -3197,11 +3070,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -3214,7 +3082,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -3224,8 +3092,7 @@
           "--flag-specific=webgpu-with-partial-backend-validation",
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--target=Release_x64",
-          "--git-revision=${got_revision}"
+          "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -3235,11 +3102,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_partial_backend_validation",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -3252,7 +3114,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -3445,8 +3307,7 @@
         "args": [
           "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--target=Release_x64",
-          "--git-revision=${got_revision}"
+          "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -3456,11 +3317,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -3473,7 +3329,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -3483,8 +3339,7 @@
           "--flag-specific=webgpu-with-partial-backend-validation",
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--target=Release_x64",
-          "--git-revision=${got_revision}"
+          "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -3494,11 +3349,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_partial_backend_validation",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -3511,7 +3361,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -3704,8 +3554,7 @@
         "args": [
           "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--target=Release_x64",
-          "--git-revision=${got_revision}"
+          "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -3715,11 +3564,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -3732,7 +3576,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -3742,8 +3586,7 @@
           "--flag-specific=webgpu-with-partial-backend-validation",
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--target=Release_x64",
-          "--git-revision=${got_revision}"
+          "--target=Release_x64"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -3753,11 +3596,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_partial_backend_validation",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -3770,7 +3608,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -3964,8 +3802,7 @@
       {
         "args": [
           "--flag-specific=webgpu",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--git-revision=${got_revision}"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -3975,11 +3812,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -3992,7 +3824,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -4001,8 +3833,7 @@
         "args": [
           "--flag-specific=webgpu-with-partial-backend-validation",
           "--timeout-ms=30000",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--git-revision=${got_revision}"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -4012,11 +3843,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_partial_backend_validation",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -4029,7 +3855,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -4221,8 +4047,7 @@
       {
         "args": [
           "--flag-specific=webgpu",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--git-revision=${got_revision}"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -4232,11 +4057,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -4249,7 +4069,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -4258,8 +4078,7 @@
         "args": [
           "--flag-specific=webgpu-with-partial-backend-validation",
           "--timeout-ms=30000",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--git-revision=${got_revision}"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -4269,11 +4088,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_partial_backend_validation",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -4286,7 +4100,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -4478,8 +4292,7 @@
       {
         "args": [
           "--flag-specific=webgpu",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--git-revision=${got_revision}"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -4489,11 +4302,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -4506,7 +4314,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -4515,8 +4323,7 @@
         "args": [
           "--flag-specific=webgpu-with-partial-backend-validation",
           "--timeout-ms=30000",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--git-revision=${got_revision}"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -4526,11 +4333,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_partial_backend_validation",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -4543,7 +4345,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -4735,8 +4537,7 @@
       {
         "args": [
           "--flag-specific=webgpu",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--git-revision=${got_revision}"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -4746,11 +4547,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -4763,7 +4559,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"
@@ -4772,8 +4568,7 @@
         "args": [
           "--flag-specific=webgpu-with-partial-backend-validation",
           "--timeout-ms=30000",
-          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
-          "--git-revision=${got_revision}"
+          "--initialize-webgpu-adapter-at-startup-timeout-ms=60000"
         ],
         "isolate_name": "webgpu_blink_web_tests",
         "merge": {
@@ -4783,11 +4578,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "webgpu_blink_web_tests_with_partial_backend_validation",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -4800,7 +4590,7 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
         "test_id_prefix": "ninja://:webgpu_blink_web_tests/"

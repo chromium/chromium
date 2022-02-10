@@ -9982,7 +9982,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--git-revision=${got_revision}",
           "--platform=fuchsia"
         ],
         "isolate_name": "blink_web_tests",
@@ -9993,11 +9992,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -10010,7 +10004,7 @@
               "os": "Ubuntu-16.04"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
@@ -23093,8 +23087,7 @@
       },
       {
         "args": [
-          "--num-retries=3",
-          "--git-revision=${got_revision}"
+          "--num-retries=3"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -23104,11 +23097,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -23121,7 +23109,7 @@
               "os": "Mac-10.15"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
@@ -26680,8 +26668,7 @@
       },
       {
         "args": [
-          "--num-retries=3",
-          "--git-revision=${got_revision}"
+          "--num-retries=3"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -26691,11 +26678,6 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
         "resultdb": {
           "enable": true
         },
@@ -26709,7 +26691,7 @@
               "pool": "chrome.tests"
             }
           ],
-          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
