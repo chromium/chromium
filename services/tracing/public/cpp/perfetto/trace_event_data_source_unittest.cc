@@ -73,8 +73,6 @@ constexpr const char kCategoryGroup[] = "browser";
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 std::unique_ptr<perfetto::TracingSession> g_tracing_session;
-constexpr auto kClockIdIncremental =
-    perfetto::internal::TrackEventIncrementalState::kClockIdIncremental;
 #else
 constexpr uint32_t kClockIdAbsolute = 64;
 constexpr uint32_t kClockIdIncremental = 65;
@@ -583,7 +581,6 @@ class TraceEventDataSourceTest
           if (clock.is_incremental()) {
             EXPECT_LE(last_timestamp_, clock.timestamp());
             last_timestamp_ = clock.timestamp();
-            EXPECT_EQ(clock.clock_id(), kClockIdIncremental);
           }
         }
       } else if (!packet->has_timestamp_clock_id()) {
