@@ -258,9 +258,10 @@ void DownloadController::CloseTabIfEmpty(content::WebContents* web_contents,
         DownloadOpenSource::kExternalApp);
     // For tablet, download home is opened in the current tab, so don't close
     // it.
-    if (ui::GetDeviceFormFactor() !=
-        ui::DeviceFormFactor::DEVICE_FORM_FACTOR_TABLET)
+    if (ui::GetDeviceFormFactor() ==
+        ui::DeviceFormFactor::DEVICE_FORM_FACTOR_TABLET) {
       return;
+    }
   }
   tab_model->CloseTabAt(tab_index);
 }
