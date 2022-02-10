@@ -84,10 +84,6 @@ id AXTextMarkerRangeFrom(id anchor_text_marker, id focus_text_marker);
 // from browserAccessibility_.
 - (ax::mojom::Role)internalRole;
 
-// Convenience method to get the BrowserAccessibilityDelegate from
-// the manager.
-- (content::BrowserAccessibilityDelegate*)delegate;
-
 // Get the BrowserAccessibility that this object wraps.
 - (content::BrowserAccessibility*)owner;
 

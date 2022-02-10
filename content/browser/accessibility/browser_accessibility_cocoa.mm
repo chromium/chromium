@@ -1300,11 +1300,6 @@ bool content::IsNSRange(id value) {
   return !labelName.empty();
 }
 
-// internal
-- (content::BrowserAccessibilityDelegate*)delegate {
-  return [self instanceActive] ? _owner->manager()->delegate() : nil;
-}
-
 - (content::BrowserAccessibility*)owner {
   return _owner;
 }
