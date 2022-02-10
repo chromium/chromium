@@ -341,26 +341,26 @@ FCMNetworkHandler::FCMNetworkHandlerDiagnostic::FCMNetworkHandlerDiagnostic() =
 base::DictionaryValue
 FCMNetworkHandler::FCMNetworkHandlerDiagnostic::CollectDebugData() const {
   base::DictionaryValue status;
-  status.SetString("NetworkHandler.Registration-result-code",
-                   RegistrationResultToString(registration_result));
-  status.SetString("NetworkHandler.Token", token);
-  status.SetString(
+  status.SetStringPath("NetworkHandler.Registration-result-code",
+                       RegistrationResultToString(registration_result));
+  status.SetStringPath("NetworkHandler.Token", token);
+  status.SetStringPath(
       "NetworkHandler.Token-was-requested",
       base::TimeFormatShortDateAndTime(instance_id_token_requested));
-  status.SetString(
+  status.SetStringPath(
       "NetworkHandler.Token-was-received",
       base::TimeFormatShortDateAndTime(instance_id_token_was_received));
-  status.SetString("NetworkHandler.Token-verification-started",
-                   base::TimeFormatShortDateAndTime(
-                       instance_id_token_verification_requested));
-  status.SetString(
+  status.SetStringPath("NetworkHandler.Token-verification-started",
+                       base::TimeFormatShortDateAndTime(
+                           instance_id_token_verification_requested));
+  status.SetStringPath(
       "NetworkHandler.Token-was-verified",
       base::TimeFormatShortDateAndTime(instance_id_token_verified));
-  status.SetString("NetworkHandler.Verification-result-code",
-                   RegistrationResultToString(token_verification_result));
-  status.SetBoolean("NetworkHandler.Token-changed-when-verified",
-                    token_changed);
-  status.SetInteger("NetworkHandler.Token-validation-requests",
+  status.SetStringPath("NetworkHandler.Verification-result-code",
+                       RegistrationResultToString(token_verification_result));
+  status.SetBoolPath("NetworkHandler.Token-changed-when-verified",
+                     token_changed);
+  status.SetIntPath("NetworkHandler.Token-validation-requests",
                     token_validation_requested_num);
   return status;
 }

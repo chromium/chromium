@@ -5,6 +5,7 @@
 #include "components/invalidation/public/identity_provider.h"
 
 #include "base/i18n/time_formatting.h"
+#include "base/strings/utf_string_conversions.h"
 
 namespace invalidation {
 
@@ -60,12 +61,12 @@ IdentityProvider::Diagnostics::Diagnostics() = default;
 base::DictionaryValue IdentityProvider::Diagnostics::CollectDebugData() const {
   base::DictionaryValue status;
 
-  status.SetInteger("IdentityProvider.token-removal-for-not-active-account",
+  status.SetIntPath("IdentityProvider.token-removal-for-not-active-account",
                     token_removal_for_not_active_account_count);
-  status.SetInteger("IdentityProvider.token-update-for-not-active-account",
+  status.SetIntPath("IdentityProvider.token-update-for-not-active-account",
                     token_update_for_not_active_account_count);
-  status.SetString("IdentityProvider.account-token-updated",
-                   base::TimeFormatShortDateAndTime(account_token_updated));
+  status.SetStringPath("IdentityProvider.account-token-updated",
+                       base::TimeFormatShortDateAndTime(account_token_updated));
   return status;
 }
 

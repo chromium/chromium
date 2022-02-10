@@ -620,10 +620,10 @@ base::DictionaryValue PerUserTopicSubscriptionManager::CollectDebugData()
     const {
   base::DictionaryValue status;
   for (const auto& topic_to_private_topic : topic_to_private_topic_) {
-    status.SetString(topic_to_private_topic.first,
-                     topic_to_private_topic.second);
+    status.SetStringKey(topic_to_private_topic.first,
+                        topic_to_private_topic.second);
   }
-  status.SetString("Instance id token", instance_id_token_);
+  status.SetStringKey("Instance id token", instance_id_token_);
   return status;
 }
 

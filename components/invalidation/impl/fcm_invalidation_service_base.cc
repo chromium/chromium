@@ -170,19 +170,19 @@ void FCMInvalidationServiceBase::InitForTest(
 base::DictionaryValue FCMInvalidationServiceBase::CollectDebugData() const {
   base::DictionaryValue status;
 
-  status.SetString(
+  status.SetStringPath(
       "InvalidationService.IID-requested",
       base::TimeFormatShortDateAndTime(diagnostic_info_.instance_id_requested));
-  status.SetString(
+  status.SetStringPath(
       "InvalidationService.IID-received",
       base::TimeFormatShortDateAndTime(diagnostic_info_.instance_id_received));
-  status.SetString(
+  status.SetStringPath(
       "InvalidationService.IID-cleared",
       base::TimeFormatShortDateAndTime(diagnostic_info_.instance_id_cleared));
-  status.SetString(
+  status.SetStringPath(
       "InvalidationService.Service-stopped",
       base::TimeFormatShortDateAndTime(diagnostic_info_.service_was_stopped));
-  status.SetString(
+  status.SetStringPath(
       "InvalidationService.Service-started",
       base::TimeFormatShortDateAndTime(diagnostic_info_.service_was_started));
   return status;

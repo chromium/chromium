@@ -32,8 +32,8 @@ std::unique_ptr<base::DictionaryValue> TopicToObjectIDValue(
     const Topic& topic) {
   auto value = std::make_unique<base::DictionaryValue>();
   // Source has been deprecated, pass 0 instead.
-  value->SetInteger("source", 0);
-  value->SetString("name", topic);
+  value->SetIntKey("source", 0);
+  value->SetStringKey("name", topic);
   return value;
 }
 
@@ -128,11 +128,11 @@ std::unique_ptr<base::DictionaryValue> Invalidation::ToValue() const {
   // Topic here together with js counterpart update.
   value->Set(kObjectIdKey, TopicToObjectIDValue(topic_));
   if (is_unknown_version_) {
-    value->SetBoolean(kIsUnknownVersionKey, true);
+    value->SetBoolKey(kIsUnknownVersionKey, true);
   } else {
-    value->SetBoolean(kIsUnknownVersionKey, false);
-    value->SetString(kVersionKey, base::NumberToString(version_));
-    value->SetString(kPayloadKey, payload_);
+    value->SetBoolKey(kIsUnknownVersionKey, false);
+    value->SetStringKey(kVersionKey, base::NumberToString(version_));
+    value->SetStringKey(kPayloadKey, payload_);
   }
   return value;
 }

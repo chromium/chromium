@@ -315,13 +315,13 @@ bool InvalidatorRegistrarWithMemory::HasDuplicateTopicRegistration(
 
 base::DictionaryValue InvalidatorRegistrarWithMemory::CollectDebugData() const {
   base::DictionaryValue return_value;
-  return_value.SetInteger("InvalidatorRegistrarWithMemory.Handlers",
+  return_value.SetIntPath("InvalidatorRegistrarWithMemory.Handlers",
                           handler_name_to_subscribed_topics_map_.size());
   for (const auto& handler_to_topics : handler_name_to_subscribed_topics_map_) {
     const std::string& handler = handler_to_topics.first;
     for (const auto& topic : handler_to_topics.second) {
-      return_value.SetString("InvalidatorRegistrarWithMemory." + topic.name,
-                             handler);
+      return_value.SetStringPath("InvalidatorRegistrarWithMemory." + topic.name,
+                                 handler);
     }
   }
   return return_value;
