@@ -19,6 +19,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
+import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -261,7 +262,7 @@ public class WebFeedFollowIntroController {
         mWebFeedFollowIntroView.showLoadingUI();
         Tab currentTab = mTabSupplier.get();
         FeedServiceBridge.reportOtherUserAction(
-                FeedUserActionType.TAPPED_FOLLOW_ON_FOLLOW_ACCELERATOR);
+                StreamKind.UNKNOWN, FeedUserActionType.TAPPED_FOLLOW_ON_FOLLOW_ACCELERATOR);
         GURL url = currentTab.getUrl();
         WebFeedBridge.followFromUrl(currentTab, url,
                 results -> mWebFeedFollowIntroView.hideLoadingUI(new LoadingView.Observer() {

@@ -179,7 +179,7 @@ public class FeedStreamTest {
                 .thenReturn(LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP);
         mFeedStream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
-                /* isInterestFeed= */ true,
+                /* isInterestFeed= */ StreamKind.FOR_YOU,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null);
         mFeedStream.mMakeGURL = url -> JUnitTestGURLs.getGURL(url);
@@ -735,7 +735,7 @@ public class FeedStreamTest {
     public void testUnreadContentObserver_nullInterestFeed() {
         FeedStream stream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
-                /* isInterestFeed= */ true,
+                /* isInterestFeed= */ StreamKind.FOR_YOU,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null);
         assertNull(stream.getUnreadContentObserverForTest());
@@ -749,7 +749,7 @@ public class FeedStreamTest {
         FeatureList.setTestFeatures(features);
         FeedStream stream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
-                /* isInterestFeed= */ false,
+                /* isInterestFeed= */ StreamKind.FOLLOWING,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null);
         assertNotNull(stream.getUnreadContentObserverForTest());
@@ -764,7 +764,7 @@ public class FeedStreamTest {
         FeatureList.setTestFeatures(features);
         FeedStream stream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
-                /* isInterestFeed= */ false,
+                StreamKind.FOLLOWING,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null);
         assertNotNull(stream.getUnreadContentObserverForTest());
@@ -779,7 +779,7 @@ public class FeedStreamTest {
         FeatureList.setTestFeatures(features);
         FeedStream stream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
-                /* isInterestFeed= */ true,
+                StreamKind.FOR_YOU,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null);
         assertFalse(stream.supportsOptions());
@@ -793,7 +793,7 @@ public class FeedStreamTest {
         FeatureList.setTestFeatures(features);
         FeedStream stream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
-                /* isInterestFeed= */ true,
+                StreamKind.FOR_YOU,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null);
         assertFalse(stream.supportsOptions());
@@ -807,7 +807,7 @@ public class FeedStreamTest {
         FeatureList.setTestFeatures(features);
         FeedStream stream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
-                /* isInterestFeed= */ false,
+                StreamKind.FOLLOWING,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null);
         assertFalse(stream.supportsOptions());
@@ -821,7 +821,7 @@ public class FeedStreamTest {
         FeatureList.setTestFeatures(features);
         FeedStream stream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
-                /* isInterestFeed= */ false,
+                StreamKind.FOLLOWING,
                 /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null);
         assertTrue(stream.supportsOptions());

@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.R;
+import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedAvailabilityStatus;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
@@ -152,7 +153,7 @@ class FollowManagementMediator {
         // intended new state, so make the reality match the checkbox state.
         if (!subscribed) {
             FeedServiceBridge.reportOtherUserAction(
-                    FeedUserActionType.TAPPED_FOLLOW_ON_MANAGEMENT_SURFACE);
+                    StreamKind.UNKNOWN, FeedUserActionType.TAPPED_FOLLOW_ON_MANAGEMENT_SURFACE);
             // The lambda will set the item as subscribed if the follow operation succeeds.
             WebFeedBridge.followFromId(id, results -> {
                 reportRequestStatus(results.requestStatus);
@@ -162,7 +163,7 @@ class FollowManagementMediator {
             });
         } else {
             FeedServiceBridge.reportOtherUserAction(
-                    FeedUserActionType.TAPPED_UNFOLLOW_ON_MANAGEMENT_SURFACE);
+                    StreamKind.UNKNOWN, FeedUserActionType.TAPPED_UNFOLLOW_ON_MANAGEMENT_SURFACE);
             // The lambda will set the item as unsubscribed if the unfollow operation succeeds.
             WebFeedBridge.unfollow(id, results -> {
                 reportRequestStatus(results.requestStatus);

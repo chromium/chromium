@@ -16,23 +16,14 @@ namespace feed {
 // parameters.
 class StreamType {
  public:
-  enum class Type {
-    // An unspecified stream type. Used only to represent an uninitialized
-    // stream type value.
-    kUnspecified,
-    // The For-You feed stream.
-    kForYou,
-    // The Web Feed stream.
-    kWebFeed,
-  };
   constexpr StreamType() = default;
-  constexpr explicit StreamType(Type t) : type_(t) {}
-  bool operator<(const StreamType& rhs) const { return type_ < rhs.type_; }
-  bool operator==(const StreamType& rhs) const { return type_ == rhs.type_; }
-  bool IsForYou() const { return type_ == Type::kForYou; }
-  bool IsWebFeed() const { return type_ == Type::kWebFeed; }
-  bool IsValid() const { return type_ != Type::kUnspecified; }
-  Type GetType() const { return type_; }
+  constexpr explicit StreamType(StreamKind k) : kind_(k) {}
+  bool operator<(const StreamType& rhs) const { return kind_ < rhs.kind_; }
+  bool operator==(const StreamType& rhs) const { return kind_ == rhs.kind_; }
+  bool IsForYou() const { return kind_ == StreamKind::kForYou; }
+  bool IsWebFeed() const { return kind_ == StreamKind::kFollowing; }
+  bool IsValid() const { return kind_ != StreamKind::kUnknown; }
+  StreamKind GetType() const { return kind_; }
 
   // Returns a human-readable value, for debugging/DCHECK prints.
   std::string ToString() const;
@@ -44,11 +35,11 @@ class StreamType {
   static StreamType ForTaskId(RefreshTaskId task_id);
 
  private:
-  Type type_ = Type::kUnspecified;
+  StreamKind kind_ = StreamKind::kUnknown;
 };
 
-constexpr StreamType kForYouStream(StreamType::Type::kForYou);
-constexpr StreamType kWebFeedStream(StreamType::Type::kWebFeed);
+constexpr StreamType kForYouStream(StreamKind::kForYou);
+constexpr StreamType kWebFeedStream(StreamKind::kFollowing);
 
 inline std::ostream& operator<<(std::ostream& os,
                                 const StreamType& stream_type) {

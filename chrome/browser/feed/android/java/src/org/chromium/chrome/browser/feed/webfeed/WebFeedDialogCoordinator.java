@@ -18,6 +18,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.R;
+import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -97,11 +98,11 @@ class WebFeedDialogCoordinator {
             secondaryButtonText = mContext.getString(R.string.close);
             buttonClickCallback = dismissalCause -> {
                 if (dismissalCause.equals(DialogDismissalCause.POSITIVE_BUTTON_CLICKED)) {
-                    FeedServiceBridge.reportOtherUserAction(
+                    FeedServiceBridge.reportOtherUserAction(StreamKind.UNKNOWN,
                             FeedUserActionType.TAPPED_GO_TO_FEED_POST_FOLLOW_ACTIVE_HELP);
                     feedLauncher.openFollowingFeed();
                 } else {
-                    FeedServiceBridge.reportOtherUserAction(
+                    FeedServiceBridge.reportOtherUserAction(StreamKind.UNKNOWN,
                             FeedUserActionType.TAPPED_DISMISS_POST_FOLLOW_ACTIVE_HELP);
                 }
             };

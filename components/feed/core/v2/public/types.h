@@ -242,6 +242,19 @@ enum class WebFeedPageInformationRequestReason : int {
   kMaxValue = kMenuItemPresentation,
 };
 
+// Values for feed type
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.feed
+enum class StreamKind : int {
+  // Stream type is unknown.
+  kUnknown = 0,
+  // For you stream.
+  kForYou = 1,
+  // Following stream.
+  kFollowing = 2,
+
+  kMaxValue = kFollowing,
+};
+
 // For testing and debugging only.
 std::ostream& operator<<(std::ostream& out,
                          WebFeedPageInformationRequestReason value);

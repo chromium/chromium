@@ -164,8 +164,9 @@ public final class FeedServiceBridge {
      * Reports that a user action occurred which is untied to a Feed tab. Use
      * FeedStream.reportOtherUserAction for stream-specific actions.
      */
-    public static void reportOtherUserAction(@FeedUserActionType int userAction) {
-        FeedServiceBridgeJni.get().reportOtherUserAction(userAction);
+    public static void reportOtherUserAction(
+            @StreamKind int streamKind, @FeedUserActionType int userAction) {
+        FeedServiceBridgeJni.get().reportOtherUserAction(streamKind, userAction);
     }
 
     /** Observes whether or not the Feed stream contains unread content */
@@ -206,7 +207,7 @@ public final class FeedServiceBridge {
         void setVideoPreviewsTypePreference(int videoPreviewsType);
         long getReliabilityLoggingId();
         boolean isAutoplayEnabled();
-        void reportOtherUserAction(@FeedUserActionType int userAction);
+        void reportOtherUserAction(@StreamKind int streamKind, @FeedUserActionType int userAction);
         @ContentOrder
         int getContentOrderForWebFeed();
         void setContentOrderForWebFeed(@ContentOrder int contentOrder);

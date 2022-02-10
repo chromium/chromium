@@ -11,7 +11,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.feed.NtpListContentManager.FeedContent;
-import org.chromium.chrome.browser.feed.sections.SectionType;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
@@ -24,19 +23,13 @@ public interface Stream {
     default void destroy() {}
 
     /** Returns the section type for this stream. */
-    @SectionType
-    int getSectionType();
+    @StreamKind
+    int getStreamKind();
 
     /**
      * @param scrollState Previous saved scroll state to restore to.
      */
     void restoreSavedInstanceState(FeedScrollState scrollState);
-
-    /**
-     * Record that visibility of the feed was toggled through the header menu. Note that
-     * bind() should be called separately when this happens.
-     */
-    default void toggledArticlesListVisible(boolean visible) {}
 
     /**
      * Notifies that the header count has changed. Headers are views added to the Recyclerview
@@ -74,21 +67,6 @@ public interface Stream {
      * Called when the placeholder is shown and the first batch of articles are about to show.
      */
     void hidePlaceholder();
-
-    /** Record that user tapped ManageInterests. */
-    default void recordActionManageInterests() {}
-
-    /** Record that user tapped Manage Activity. */
-    default void recordActionManageActivity() {}
-
-    /** Record that user tapped Manage Reactions. */
-    default void recordActionManageReactions() {}
-
-    /** Record that user tapped Learn More. */
-    default void recordActionLearnMore() {}
-
-    /** Record that user tapped Manage. */
-    default void recordActionManage() {}
 
     /** Whether activity logging is enabled for this feed. */
     default boolean isActivityLoggingEnabled() {

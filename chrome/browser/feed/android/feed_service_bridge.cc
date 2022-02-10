@@ -107,11 +107,12 @@ static jlong JNI_FeedServiceBridge_AddUnreadContentObserver(
 }
 
 static void JNI_FeedServiceBridge_ReportOtherUserAction(JNIEnv* env,
+                                                        jint stream_kind,
                                                         jint action) {
   FeedApi* api = GetFeedApi();
   if (!api)
     return;
-  api->ReportOtherUserAction(StreamType(),
+  api->ReportOtherUserAction(StreamType(static_cast<StreamKind>(stream_kind)),
                              static_cast<FeedUserActionType>(action));
 }
 

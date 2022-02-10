@@ -21,6 +21,7 @@ import org.chromium.base.Log;
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.R;
+import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
@@ -163,7 +164,8 @@ public class FeedManagementMediator {
     @VisibleForTesting
     void handleFollowingClick(View view) {
         Log.d(TAG, "Following click caught.");
-        FeedServiceBridge.reportOtherUserAction(FeedUserActionType.TAPPED_MANAGE_FOLLOWING);
+        FeedServiceBridge.reportOtherUserAction(
+                StreamKind.UNKNOWN, FeedUserActionType.TAPPED_MANAGE_FOLLOWING);
         mFollowManagementLauncher.launchFollowManagement(mContext);
     }
 }

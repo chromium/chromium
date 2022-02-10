@@ -7,12 +7,12 @@
 namespace feed {
 
 std::string StreamType::ToString() const {
-  switch (type_) {
-    case Type::kUnspecified:
-      return "Unspecified";
-    case Type::kForYou:
+  switch (kind_) {
+    case StreamKind::kUnknown:
+      return "Unknown";
+    case StreamKind::kForYou:
       return "ForYou";
-    case Type::kWebFeed:
+    case StreamKind::kFollowing:
       return "WebFeed";
   }
 }
@@ -28,13 +28,13 @@ StreamType StreamType::ForTaskId(RefreshTaskId task_id) {
 }
 
 bool StreamType::GetRefreshTaskId(RefreshTaskId& out_id) const {
-  switch (type_) {
-    case Type::kUnspecified:
+  switch (kind_) {
+    case StreamKind::kUnknown:
       return false;
-    case Type::kForYou:
+    case StreamKind::kForYou:
       out_id = RefreshTaskId::kRefreshForYouFeed;
       return true;
-    case Type::kWebFeed:
+    case StreamKind::kFollowing:
       return false;
   }
 }

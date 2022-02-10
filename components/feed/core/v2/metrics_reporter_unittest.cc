@@ -60,13 +60,13 @@ class MetricsReporterTest : public testing::Test, MetricsReporter::Delegate {
     std::map<FeedEngagementType, int> result;
     const char* histogram_name;
     switch (stream_type.GetType()) {
-      case StreamType::Type::kForYou:
+      case StreamKind::kForYou:
         histogram_name = "ContentSuggestions.Feed.EngagementType";
         break;
-      case StreamType::Type::kWebFeed:
+      case StreamKind::kFollowing:
         histogram_name = "ContentSuggestions.Feed.WebFeed.EngagementType";
         break;
-      case StreamType::Type::kUnspecified:
+      case StreamKind::kUnknown:
         histogram_name = "ContentSuggestions.Feed.AllFeeds.EngagementType";
         break;
     }

@@ -65,7 +65,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feed/sections/SectionHeaderProperties.java",
     "java/src/org/chromium/chrome/browser/feed/sections/SectionHeaderView.java",
     "java/src/org/chromium/chrome/browser/feed/sections/SectionHeaderViewBinder.java",
-    "java/src/org/chromium/chrome/browser/feed/sections/SectionType.java",
     "java/src/org/chromium/chrome/browser/feed/sections/ViewVisibility.java",
     "java/src/org/chromium/chrome/browser/feed/settings/FeedAutoplaySettingsFragment.java",
     "java/src/org/chromium/chrome/browser/feed/settings/RadioButtonGroupVideoPreviewsPreference.java",

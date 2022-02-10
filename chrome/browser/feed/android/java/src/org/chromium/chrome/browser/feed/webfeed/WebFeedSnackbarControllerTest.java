@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
 import org.chromium.chrome.browser.feed.R;
+import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -291,7 +292,8 @@ public final class WebFeedSnackbarControllerTest {
         assertEquals(sTestUrl, mPageInformationCaptor.getValue().mUrl);
         assertEquals(mTab, mPageInformationCaptor.getValue().mTab);
         verify(mFeedServideBridgeJniMock)
-                .reportOtherUserAction(FeedUserActionType.TAPPED_FOLLOW_TRY_AGAIN_ON_SNACKBAR);
+                .reportOtherUserAction(
+                        StreamKind.UNKNOWN, FeedUserActionType.TAPPED_FOLLOW_TRY_AGAIN_ON_SNACKBAR);
     }
 
     @Test
@@ -365,7 +367,8 @@ public final class WebFeedSnackbarControllerTest {
                         "FollowFromId should be called on follow try again when ID is available."))
                 .followWebFeedById(eq(sFollowId), any());
         verify(mFeedServideBridgeJniMock)
-                .reportOtherUserAction(FeedUserActionType.TAPPED_FOLLOW_TRY_AGAIN_ON_SNACKBAR);
+                .reportOtherUserAction(
+                        StreamKind.UNKNOWN, FeedUserActionType.TAPPED_FOLLOW_TRY_AGAIN_ON_SNACKBAR);
     }
 
     @Test
@@ -383,7 +386,7 @@ public final class WebFeedSnackbarControllerTest {
         verify(mWebFeedBridgeJniMock, description("Follow should be called on refollow."))
                 .followWebFeedById(eq(sFollowId), any());
         verify(mFeedServideBridgeJniMock)
-                .reportOtherUserAction(
+                .reportOtherUserAction(StreamKind.UNKNOWN,
                         FeedUserActionType.TAPPED_REFOLLOW_AFTER_UNFOLLOW_ON_SNACKBAR);
     }
 
@@ -403,7 +406,8 @@ public final class WebFeedSnackbarControllerTest {
                 description("Unfollow should be called on unfollow try again."))
                 .unfollowWebFeed(eq(sFollowId), any());
         verify(mFeedServideBridgeJniMock)
-                .reportOtherUserAction(FeedUserActionType.TAPPED_UNFOLLOW_TRY_AGAIN_ON_SNACKBAR);
+                .reportOtherUserAction(StreamKind.UNKNOWN,
+                        FeedUserActionType.TAPPED_UNFOLLOW_TRY_AGAIN_ON_SNACKBAR);
     }
 
     @Test

@@ -640,12 +640,12 @@ public class FeedSurfaceCoordinator
     /**
      * Creates a flavor {@Link FeedStream} without any other side-effects.
      *
-     * @param isInterestFeed True for interest feed, false for web feed.
+     * @param kind Kind of stream being created.
      * @return The FeedStream created.
      */
-    FeedStream createFeedStream(boolean isInterestFeed) {
+    FeedStream createFeedStream(@StreamKind int kind) {
         return new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
-                mIsPlaceholderShownInitially, mWindowAndroid, mShareSupplier, isInterestFeed, this,
+                mIsPlaceholderShownInitially, mWindowAndroid, mShareSupplier, kind, this,
                 mActionDelegate, mHelpAndFeedbackLauncher);
     }
 
