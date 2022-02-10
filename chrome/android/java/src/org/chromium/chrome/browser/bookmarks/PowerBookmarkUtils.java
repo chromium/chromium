@@ -365,7 +365,7 @@ public class PowerBookmarkUtils {
 
         Runnable updater = () -> {
             subscriptionsManager.getSubscriptions(
-                    CommerceSubscriptionType.PRICE_TRACK, false, (subscriptions) -> {
+                    CommerceSubscriptionType.PRICE_TRACK, true, (subscriptions) -> {
                         doBookmarkedSubscriptionValidation(
                                 bookmarkBridge, subscriptionsManager, subscriptions);
                     });
