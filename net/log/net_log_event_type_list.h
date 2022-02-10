@@ -4153,6 +4153,17 @@ EVENT_TYPE(WEBSOCKET_SENT_FRAME_HEADER)
 // server.
 EVENT_TYPE(WEBSOCKET_CLOSE_TIMEOUT)
 
+// This event is logged when the WebSocket frame is wrong or weird and the
+// browser closes the connection. It contains the following parameters:
+// {
+//    "code": <WebSocket close code based on
+//    https://datatracker.ietf.org/doc/html/rfc6455#section-7.1.5>,
+//    "reason":<WebSocket close reason based on
+//    https://datatracker.ietf.org/doc/html/rfc6455#section-7.1.6>,
+//    "internal_reason": <Detailed reason>,
+// }
+EVENT_TYPE(WEBSOCKET_INVALID_FRAME)
+
 // Temporarily added to investigate for https://crbug.com/1289379.
 // Logged at TransportSecurityState::ShouldUpgradeToSSL.
 // The following parameters are attached:
