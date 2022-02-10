@@ -418,12 +418,10 @@ void WebAppInstallFinalizer::FinalizeUpdate(
     return;
   }
 
-  bool should_update_os_hooks = ShouldUpdateOsHooks(app_id);
-
   CommitCallback commit_callback = base::BindOnce(
       &WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id,
-      existing_web_app->name(), should_update_os_hooks,
+      existing_web_app->name(),
       GetFileHandlerUpdateAction(app_id, web_app_info), web_app_info);
 
   // Prepare copy-on-write to update existing app.
@@ -645,7 +643,6 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
     InstallFinalizedCallback callback,
     AppId app_id,
     std::string old_name,
-    bool should_update_os_hooks,
     FileHandlerUpdateAction file_handlers_need_os_update,
     const WebAppInstallInfo& web_app_info,
     bool success) {
@@ -655,7 +652,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
     return;
   }
 
-  if (should_update_os_hooks) {
+  if (ShouldUpdateOsHooks(app_id)) {
     os_integration_manager_->UpdateOsHooks(
         app_id, old_name, file_handlers_need_os_update, web_app_info,
         base::BindOnce(&WebAppInstallFinalizer::OnUpdateHooksFinished,

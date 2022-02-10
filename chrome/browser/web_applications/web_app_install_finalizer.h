@@ -198,7 +198,6 @@ class WebAppInstallFinalizer {
       InstallFinalizedCallback callback,
       AppId app_id,
       std::string old_name,
-      bool should_update_os_hooks,
       FileHandlerUpdateAction file_handlers_need_os_update,
       const WebAppInstallInfo& web_app_info,
       bool success);
