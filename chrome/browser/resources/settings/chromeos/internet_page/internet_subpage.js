@@ -144,6 +144,18 @@ Polymer({
     },
 
     /**
+     * Whether the ESim Policy feature flag is enabled or not.
+     * @private
+     */
+    isESimPolicyEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('esimPolicyEnabled') &&
+            loadTimeData.getBoolean('esimPolicyEnabled');
+      }
+    },
+
+    /**
      * Always-on VPN operating mode.
      * @private {!chromeos.networkConfig.mojom.AlwaysOnVpnMode|undefined}
      */
@@ -804,10 +816,19 @@ Polymer({
    * @private
    */
   isBlockedByPolicy_(state) {
-    if (state.type !== mojom.NetworkType.kWiFi ||
-        this.isPolicySource(state.source) || !this.globalPolicy) {
+    if (state.type !== mojom.NetworkType.kWiFi &&
+        state.type !== mojom.NetworkType.kCellular) {
       return false;
     }
+    if (this.isPolicySource(state.source) || !this.globalPolicy) {
+      return false;
+    }
+
+    if (state.type === mojom.NetworkType.kCellular) {
+      return this.isESimPolicyEnabled_ &&
+          !!this.globalPolicy.allowOnlyPolicyCellularNetworks;
+    }
+
     return !!this.globalPolicy.allowOnlyPolicyWifiNetworksToConnect ||
         (!!this.globalPolicy.allowOnlyPolicyWifiNetworksToConnectIfAvailable &&
          !!this.deviceState && !!this.deviceState.managedNetworkAvailable) ||

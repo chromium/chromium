@@ -683,7 +683,7 @@ suite('NetworkListItemTest', function() {
 
         // Selecting the row should fire the show-detail event.
         const showDetailPromise =
-            test_util.eventToPromise('show-detail', listItem);
+            test_util.eventToPromise('selected', listItem);
         listItem.$.divOuter.click();
         const showDetailEvent = await showDetailPromise;
         assertEquals(showDetailEvent.detail, networkState);

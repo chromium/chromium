@@ -721,8 +721,6 @@ Polymer({
         this.showButtons &&
         (this.isPSimUnavailableNetwork_ || this.isPSimActivatingNetwork_)) {
       this.fireShowDetails_(event);
-    } else if (this.isBlockedNetwork_) {
-      this.fireShowDetails_(event);
     } else {
       this.fire('selected', this.item);
       this.focusRequested_ = true;
