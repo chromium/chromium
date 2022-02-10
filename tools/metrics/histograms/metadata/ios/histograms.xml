@@ -953,7 +953,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.OpenIn.DownloadResult" enum="IOSOpenInDownloadResult"
-    expires_after="2021-12-12">
+    expires_after="2022-10-10">
+  <owner>ewannpv@chromium.org</owner>
   <owner>mrefaat@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
