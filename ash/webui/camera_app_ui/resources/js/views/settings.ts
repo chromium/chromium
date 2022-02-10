@@ -23,7 +23,7 @@ import {
 } from '../type.js';
 import * as util from '../util.js';
 
-import {View} from './view.js';
+import {LeaveCondition, View} from './view.js';
 
 /**
  * Object of device id, preferred capture resolution and all
@@ -85,9 +85,9 @@ export class BaseSettings extends View {
     this.focusElement.focus();
   }
 
-  leaving(): boolean {
+  leaving(condition: LeaveCondition): boolean {
     this.focusElement = this.defaultFocus;
-    return super.leaving();
+    return super.leaving(condition);
   }
 
   /**
@@ -95,11 +95,15 @@ export class BaseSettings extends View {
    * @param opener The DOM element triggering the open.
    * @param name Name of settings view.
    */
-  protected openSubSettings(opener: HTMLElement, name: ViewName): void {
+  protected async openSubSettings(opener: HTMLElement, name: ViewName):
+      Promise<void> {
     this.focusElement = opener;
     // Dismiss primary-settings if sub-settings was dismissed by background
     // click.
-    nav.open(name).then((cond) => cond && cond['bkgnd'] && this.leave(cond));
+    const cond = await nav.open(name);
+    if (cond.kind === 'BACKGROUND_CLICKED') {
+      this.leave(cond);
+    }
   }
 }
 

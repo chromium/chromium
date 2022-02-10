@@ -46,6 +46,15 @@ export class PTZPanelOptions {
 export type EnterOptions =
     DialogEnterOptions|WarningEnterOptions|PTZPanelOptions;
 
+export type LeaveCondition = {
+  kind: 'BACKGROUND_CLICKED',
+}|{
+  kind: 'ESC_KEY_PRESSED',
+}|{
+  kind: 'CLOSED',
+  val?: unknown,
+};
+
 interface ViewOptions {
   /** enables dismissible by Esc-key. */
   dismissByEsc?: boolean;
@@ -69,7 +78,7 @@ export class View {
   /**
    * Signal it to ends the session.
    */
-  private session: WaitableEvent<unknown>|null = null;
+  private session: WaitableEvent<LeaveCondition>|null = null;
 
   private readonly dismissByEsc: boolean;
   private readonly defaultFocusSelector: string;
@@ -79,7 +88,7 @@ export class View {
    */
   constructor(readonly name: ViewName, {
     dismissByEsc = false,
-    dismissByBackgroundClick,
+    dismissByBackgroundClick = false,
     defaultFocusSelector = '[tabindex]:not([tabindex="-1"])',
   }: ViewOptions = {}) {
     this.root = dom.get(`#${name}`, HTMLElement);
@@ -88,7 +97,9 @@ export class View {
 
     if (dismissByBackgroundClick) {
       this.root.addEventListener('click', (event) => {
-        event.target === this.root && this.leave({bkgnd: true});
+        if (event.target === this.root) {
+          this.leave({kind: 'BACKGROUND_CLICKED'});
+        }
       });
     }
   }
@@ -118,7 +129,7 @@ export class View {
     if (this.handlingKey(key)) {
       return true;
     } else if (this.dismissByEsc && key === 'Escape') {
-      this.leave();
+      this.leave({kind: 'ESC_KEY_PRESSED'});
       return true;
     }
     return false;
@@ -154,7 +165,7 @@ export class View {
    * @param options Optional rest parameters for entering the view.
    * @return Promise for the navigation session.
    */
-  enter(options?: EnterOptions): Promise<unknown> {
+  enter(options?: EnterOptions): Promise<LeaveCondition> {
     // The session is started by entering the view and ended by leaving the
     // view.
     if (this.session === null) {
@@ -169,7 +180,7 @@ export class View {
    * @param condition Optional condition for leaving the view.
    * @return Whether able to leaving the view or not.
    */
-  leaving(_condition?: unknown): boolean {
+  leaving(_condition: LeaveCondition): boolean {
     return true;
   }
 
@@ -179,7 +190,7 @@ export class View {
    *     the result for the ended session.
    * @return Whether able to leaving the view or not.
    */
-  leave(condition?: unknown): boolean {
+  leave(condition: LeaveCondition = {kind: 'CLOSED'}): boolean {
     if (this.session !== null && this.leaving(condition)) {
       this.session.signal(condition);
       this.session = null;

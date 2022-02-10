@@ -9,7 +9,7 @@ import * as state from './state.js';
 import * as toast from './toast.js';
 import {ViewName} from './type.js';
 import * as util from './util.js';
-import {EnterOptions, View} from './views/view.js';
+import {EnterOptions, LeaveCondition, View} from './views/view.js';
 import {windowController} from './window_controller.js';
 
 /**
@@ -164,7 +164,8 @@ function findIndex(name: ViewName): number {
  * @param args Optional rest parameters for entering the view.
  * @return Promise for the operation or result.
  */
-export function open(name: ViewName, options?: EnterOptions): Promise<unknown> {
+export function open(
+    name: ViewName, options?: EnterOptions): Promise<LeaveCondition> {
   const index = findIndex(name);
   return show(index).enter(options).finally(() => {
     hide(index);
@@ -179,7 +180,7 @@ export function open(name: ViewName, options?: EnterOptions): Promise<unknown> {
  */
 export function close(name: ViewName, condition?: unknown): boolean {
   const index = findIndex(name);
-  return allViews[index].leave(condition);
+  return allViews[index].leave({kind: 'CLOSED', val: condition});
 }
 
 /**

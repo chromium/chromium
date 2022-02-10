@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertString} from '../assert.js';
+import {assert, assertString} from '../assert.js';
 import * as dom from '../dom.js';
 import {I18nString} from '../i18n_string.js';
 import * as loadTimeData from '../models/load_time_data.js';
 import {ViewName} from '../type.js';
 import {assertEnumVariant} from '../util.js';
 
-import {EnterOptions, View} from './view.js';
+import {EnterOptions, LeaveCondition, View} from './view.js';
 
 /**
  * The type of warning.
@@ -57,9 +57,11 @@ export class Warning extends View {
     this.updateMessage();
   }
 
-  leaving(condition?: unknown): boolean {
+  leaving(condition: LeaveCondition): boolean {
+    assert(condition.kind === 'CLOSED');
+
     // Recovered error-name for leaving the view.
-    const name = assertI18nString(condition);
+    const name = assertI18nString(condition.val);
 
     // Remove the recovered error from the stack but don't leave the view until
     // there is no error left in the stack.
