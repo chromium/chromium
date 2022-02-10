@@ -15,11 +15,6 @@
 #include "build/build_config.h"
 #include "content/public/common/process_type.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/performance_monitor/resource_coalition_mac.h"
-#include "components/power_metrics/resource_coalition_mac.h"
-#endif
-
 namespace performance_monitor {
 
 class ProcessMetricsHistory;
@@ -72,11 +67,6 @@ class ProcessMonitor {
     // "Energy Impact" is a synthetic power estimation metric displayed by macOS
     // in Activity Monitor and the battery menu.
     double energy_impact = 0.0;
-
-    // Process coalition data. Only available for aggregated metrics (not
-    // individual processes), on some Mac devices. absl::nullopt if not
-    // available.
-    absl::optional<power_metrics::CoalitionResourceUsageRate> coalition_data;
 #endif
   };
 
@@ -147,10 +137,6 @@ class ProcessMonitor {
   base::RepeatingTimer repeating_timer_;
 
   base::ObserverList<Observer> observer_list_;
-
-#if BUILDFLAG(IS_MAC)
-  ResourceCoalition coalition_data_provider_;
-#endif
 
   base::WeakPtrFactory<ProcessMonitor> weak_ptr_factory_{this};
 };

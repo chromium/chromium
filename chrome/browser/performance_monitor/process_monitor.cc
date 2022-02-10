@@ -253,11 +253,6 @@ void ProcessMonitor::GatherProcesses() {
     }
   }
 
-#if BUILDFLAG(IS_MAC)
-  if (coalition_data_provider_.IsAvailable())
-    aggregated_metrics.coalition_data = coalition_data_provider_.GetDataRate();
-#endif
-
   for (auto& observer : observer_list_)
     observer.OnAggregatedMetricsSampled(aggregated_metrics);
 }

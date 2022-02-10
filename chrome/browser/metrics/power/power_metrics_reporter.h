@@ -18,6 +18,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "chrome/browser/metrics/power/coalition_resource_usage_provider_mac.h"
 #include "components/power_metrics/iopm_power_source_sampling_event_source.h"
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -172,6 +173,8 @@ class PowerMetricsReporter
 
   // The time ticks from when the last IOPMPowerSource event was received.
   absl::optional<base::TimeTicks> last_event_time_ticks_;
+
+  CoalitionResourceUsageProvider coalition_resource_usage_provider_;
 #endif  // BUILDFLAG(IS_MAC)
 
   SEQUENCE_CHECKER(sequence_checker_);
