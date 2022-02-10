@@ -10,6 +10,7 @@
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/image_view.h"
@@ -20,6 +21,7 @@
 namespace ash {
 
 class AmbientInfoView;
+class JitterCalculator;
 class MediaStringView;
 
 // AmbientBackgroundImageView--------------------------------------------------
@@ -31,7 +33,9 @@ class ASH_EXPORT AmbientBackgroundImageView : public views::View,
  public:
   METADATA_HEADER(AmbientBackgroundImageView);
 
-  explicit AmbientBackgroundImageView(AmbientViewDelegate* delegate);
+  AmbientBackgroundImageView(
+      AmbientViewDelegate* delegate,
+      JitterCalculator* glanceable_info_jitter_calculator);
   AmbientBackgroundImageView(const AmbientBackgroundImageView&) = delete;
   AmbientBackgroundImageView& operator=(const AmbientBackgroundImageView&) =
       delete;
@@ -78,6 +82,8 @@ class ASH_EXPORT AmbientBackgroundImageView : public views::View,
 
   // Owned by |AmbientController| and should always outlive |this|.
   AmbientViewDelegate* delegate_ = nullptr;
+
+  const base::raw_ptr<JitterCalculator> glanceable_info_jitter_calculator_;
 
   // View to display current image(s) on ambient. Owned by the view hierarchy.
   views::View* image_container_ = nullptr;

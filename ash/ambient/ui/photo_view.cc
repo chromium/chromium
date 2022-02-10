@@ -37,10 +37,19 @@ void ReportSmoothness(int value) {
   base::UmaHistogramPercentage(kPhotoTransitionSmoothness, value);
 }
 
+constexpr JitterCalculator::Config kGlanceableInfoJitterConfig = {
+    /*step_size=*/5,
+    /*x_min_translation=*/0,
+    /*x_max_translation=*/20,
+    /*y_min_translation=*/-20,
+    /*y_max_translation=*/0};
+
 }  // namespace
 
 // PhotoView ------------------------------------------------------------------
-PhotoView::PhotoView(AmbientViewDelegate* delegate) : delegate_(delegate) {
+PhotoView::PhotoView(AmbientViewDelegate* delegate)
+    : delegate_(delegate),
+      glanceable_info_jitter_calculator_(kGlanceableInfoJitterConfig) {
   DCHECK(delegate_);
   SetID(AmbientViewID::kAmbientPhotoView);
   Init();
@@ -69,9 +78,13 @@ void PhotoView::Init() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   for (auto*& image_view : image_views_) {
-    // Creates image views.
-    image_view =
-        AddChildView(std::make_unique<AmbientBackgroundImageView>(delegate_));
+    // Creates image views. The same |glanceable_info_jitter_calculator_|
+    // instance is shared between the AmbientBackgroundImageViews so that the
+    // glanceable info on screen does not shift too much at once when
+    // transitioning between AmbientBackgroundImageViews in
+    // StartTransitionAnimation().
+    image_view = AddChildView(std::make_unique<AmbientBackgroundImageView>(
+        delegate_, &glanceable_info_jitter_calculator_));
     // Each image view will be animated on its own layer.
     image_view->SetPaintToLayer();
     image_view->layer()->SetFillsBoundsOpaquely(false);
