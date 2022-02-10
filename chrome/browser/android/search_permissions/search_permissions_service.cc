@@ -315,10 +315,9 @@ void SearchPermissionsService::SetDSEPrefForTesting(
     ContentSetting geolocation_setting_to_restore,
     ContentSetting notifications_setting_to_restore) {
   base::DictionaryValue dict;
-  dict.SetString(kDSENameKey, delegate_->GetDSEName());
-  dict.SetString(kDSEOriginKey, delegate_->GetDSEOrigin().GetURL().spec());
-  dict.SetInteger(kDSEGeolocationSettingKey, geolocation_setting_to_restore);
-  dict.SetInteger(kDSENotificationsSettingKey,
-                  notifications_setting_to_restore);
+  dict.SetStringKey(kDSENameKey, delegate_->GetDSEName());
+  dict.SetStringKey(kDSEOriginKey, delegate_->GetDSEOrigin().GetURL().spec());
+  dict.SetIntKey(kDSEGeolocationSettingKey, geolocation_setting_to_restore);
+  dict.SetIntKey(kDSENotificationsSettingKey, notifications_setting_to_restore);
   pref_service_->Set(prefs::kDSEPermissionsSettings, dict);
 }
