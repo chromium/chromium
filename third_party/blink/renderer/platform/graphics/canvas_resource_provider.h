@@ -289,7 +289,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
   gpu::gles2::GLES2Interface* ContextGL() const;
   gpu::raster::RasterInterface* RasterInterface() const;
   GrDirectContext* GetGrContext() const;
-  base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper() {
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
+      const {
     return context_provider_wrapper_;
   }
   GrSurfaceOrigin GetGrSurfaceOrigin() const {

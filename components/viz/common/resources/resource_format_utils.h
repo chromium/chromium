@@ -47,8 +47,12 @@ VIZ_RESOURCE_FORMAT_EXPORT gfx::BufferFormat BufferFormat(
     ResourceFormat format);
 VIZ_RESOURCE_FORMAT_EXPORT bool IsResourceFormatCompressed(
     ResourceFormat format);
+
+// |use_angle_rgbx_format| should be true when the GL_ANGLE_rgbx_internal_format
+// extension is available.
 VIZ_RESOURCE_FORMAT_EXPORT unsigned int TextureStorageFormat(
-    ResourceFormat format);
+    ResourceFormat format,
+    bool use_angle_rgbx_format);
 
 // Returns whether the format can be used with GpuMemoryBuffer texture storage,
 // allocated through TexStorage2DImageCHROMIUM.

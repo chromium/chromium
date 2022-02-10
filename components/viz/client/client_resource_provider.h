@@ -21,6 +21,7 @@
 #include "third_party/skia/include/core/SkSurface.h"
 
 namespace gpu {
+struct Capabilities;
 namespace gles2 {
 class GLES2Interface;
 }
@@ -115,6 +116,7 @@ class VIZ_CLIENT_EXPORT ClientResourceProvider {
   class VIZ_CLIENT_EXPORT ScopedSkSurface {
    public:
     ScopedSkSurface(GrDirectContext* gr_context,
+                    const gpu::Capabilities& capabilities,
                     sk_sp<SkColorSpace> color_space,
                     GLuint texture_id,
                     GLenum texture_target,

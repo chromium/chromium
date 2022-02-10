@@ -109,7 +109,10 @@ GLuint GetGrGLBackendTextureFormat(
     sk_sp<GrContextThreadSafeProxy> gr_context_thread_safe) {
   const gl::GLVersionInfo* version_info = &feature_info->gl_version_info();
   GLuint internal_format = gl::GetInternalFormat(
-      version_info, viz::TextureStorageFormat(resource_format));
+      version_info,
+      viz::TextureStorageFormat(
+          resource_format,
+          feature_info->feature_flags().angle_rgbx_internal_format));
 
   bool use_version_es2 = false;
 #if BUILDFLAG(IS_ANDROID)

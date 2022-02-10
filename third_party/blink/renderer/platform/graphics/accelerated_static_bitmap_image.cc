@@ -275,9 +275,10 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
       context_provider_wrapper->ContextProvider()->RasterInterface();
   shared_ri->WaitSyncTokenCHROMIUM(mailbox_ref_->sync_token().GetConstData());
 
-  if (context_provider_wrapper->ContextProvider()
-          ->GetCapabilities()
-          .supports_oop_raster) {
+  const auto& capabilities =
+      context_provider_wrapper->ContextProvider()->GetCapabilities();
+
+  if (capabilities.supports_oop_raster) {
     DCHECK_EQ(shared_image_texture_id, 0u);
     skia_context_provider_wrapper_ = context_provider_wrapper;
     texture_backing_ = sk_make_sp<MailboxTextureBacking>(
@@ -308,7 +309,8 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
   texture_info.fTarget = texture_target_;
   texture_info.fID = shared_context_texture_id;
   texture_info.fFormat = viz::TextureStorageFormat(
-      viz::SkColorTypeToResourceFormat(sk_image_info_.colorType()));
+      viz::SkColorTypeToResourceFormat(sk_image_info_.colorType()),
+      capabilities.angle_rgbx_internal_format);
   GrBackendTexture backend_texture(sk_image_info_.width(),
                                    sk_image_info_.height(), GrMipMapped::kNo,
                                    texture_info);

@@ -510,7 +510,8 @@ TEST_P(SharedImageBackingFactoryGLTextureTest, TexImageTexStorageEquivalence) {
     if (!viz::GLSupportsFormat(format) ||
         viz::IsResourceFormatCompressed(format))
       continue;
-    int storage_format = viz::TextureStorageFormat(format);
+    int storage_format = viz::TextureStorageFormat(
+        format, feature_info->feature_flags().angle_rgbx_internal_format);
 
     int image_gl_format = viz::GLDataFormat(format);
     int storage_gl_format =

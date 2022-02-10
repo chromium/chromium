@@ -1703,6 +1703,8 @@ gpu::Capabilities GLES2DecoderPassthroughImpl::GetCapabilities() {
   caps.disable_legacy_mailbox =
       group_->shared_image_manager() &&
       group_->shared_image_manager()->display_context_on_another_thread();
+  caps.angle_rgbx_internal_format =
+      feature_info_->feature_flags().angle_rgbx_internal_format;
 
   return caps;
 }

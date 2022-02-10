@@ -633,7 +633,11 @@ GLuint ExternalVkImageBacking::ProduceGLTextureInternal() {
   if (use_separate_gl_texture()) {
     DCHECK(!memory_object);
     if (UseTexStorage2D(context_state_.get())) {
-      GLuint internal_format = viz::TextureStorageFormat(format());
+      bool use_rgbx = context_state()
+                          ->feature_info()
+                          ->feature_flags()
+                          .angle_rgbx_internal_format;
+      GLuint internal_format = viz::TextureStorageFormat(format(), use_rgbx);
       api->glTexStorage2DEXTFn(GL_TEXTURE_2D, 1, internal_format,
                                size().width(), size().height());
     } else {
@@ -653,7 +657,11 @@ GLuint ExternalVkImageBacking::ProduceGLTextureInternal() {
     // when creating the image, so communicate that information to ANGLE.  This
     // makes sure that ANGLE recreates the VkImage identically to Chromium.
     DCHECK(image_->usage() != 0);
-    GLuint internal_format = viz::TextureStorageFormat(format());
+    bool use_rgbx = context_state()
+                        ->feature_info()
+                        ->feature_flags()
+                        .angle_rgbx_internal_format;
+    GLuint internal_format = viz::TextureStorageFormat(format(), use_rgbx);
     if (UseMinimalUsageFlags(context_state())) {
       api->glTexStorageMemFlags2DANGLEFn(
           GL_TEXTURE_2D, 1, internal_format, size().width(), size().height(),
@@ -681,7 +689,11 @@ ExternalVkImageBacking::ProduceGLTexture(SharedImageManager* manager,
     GLuint texture_service_id = ProduceGLTextureInternal();
     if (!texture_service_id)
       return nullptr;
-    GLuint internal_format = viz::TextureStorageFormat(format());
+    bool use_rgbx = context_state()
+                        ->feature_info()
+                        ->feature_flags()
+                        .angle_rgbx_internal_format;
+    GLuint internal_format = viz::TextureStorageFormat(format(), use_rgbx);
     GLenum gl_format = viz::GLDataFormat(format());
     GLenum gl_type = viz::GLDataType(format());
 
@@ -720,7 +732,11 @@ ExternalVkImageBacking::ProduceGLTexturePassthrough(
     GLuint texture_service_id = ProduceGLTextureInternal();
     if (!texture_service_id)
       return nullptr;
-    GLuint internal_format = viz::TextureStorageFormat(format());
+    bool use_rgbx = context_state()
+                        ->feature_info()
+                        ->feature_flags()
+                        .angle_rgbx_internal_format;
+    GLuint internal_format = viz::TextureStorageFormat(format(), use_rgbx);
     GLenum gl_format = viz::GLDataFormat(format());
     GLenum gl_type = viz::GLDataType(format());
 

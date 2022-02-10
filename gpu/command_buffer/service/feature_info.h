@@ -149,6 +149,7 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
     bool ext_texture_compression_rgtc = false;
     bool oes_draw_buffers_indexed = false;
     bool ext_yuv_target = false;
+    bool angle_rgbx_internal_format = false;
   };
 
   FeatureInfo();

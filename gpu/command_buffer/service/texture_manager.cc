@@ -3870,6 +3870,7 @@ GLenum TextureManager::ExtractFormatFromStorageFormat(GLenum internalformat) {
     case GL_ETC1_RGB8_OES:
     case GL_RGB:
     case GL_RGB8:
+    case GL_RGBX8_ANGLE:
     case GL_SRGB8:
     case GL_RGB16:
     case GL_R11F_G11F_B10F:
@@ -4086,6 +4087,8 @@ GLenum TextureManager::ExtractTypeFromStorageFormat(GLenum internalformat) {
     case GL_RGB32I:
       return GL_INT;
     case GL_RGBA8:
+      return GL_UNSIGNED_BYTE;
+    case GL_RGBX8_ANGLE:
       return GL_UNSIGNED_BYTE;
     case GL_SRGB8_ALPHA8:
       return GL_UNSIGNED_BYTE;

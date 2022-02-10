@@ -142,6 +142,9 @@ struct XVisualInfo;
 // GL_ANGLE_memory_size
 #define GL_MEMORY_SIZE_ANGLE 0x93AD
 
+// GL_ANGLE_rgbx_internal_format
+#define GL_RGBX8_ANGLE 0x96BA
+
 // GL_EXT_occlusion_query_boolean
 #define GL_ANY_SAMPLES_PASSED_EXT                        0x8C2F
 #define GL_ANY_SAMPLES_PASSED_CONSERVATIVE_EXT           0x8D6A

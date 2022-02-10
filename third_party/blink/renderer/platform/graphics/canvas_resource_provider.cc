@@ -806,11 +806,15 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
     if (IsGpuContextLost() || !resource_)
       return nullptr;
 
+    const auto& capabilities =
+        ContextProviderWrapper()->ContextProvider()->GetCapabilities();
+
     GrGLTextureInfo texture_info = {};
     texture_info.fID = resource_->GetBackBufferTextureId();
     texture_info.fTarget = resource_->TextureTarget();
     texture_info.fFormat = viz::TextureStorageFormat(
-        viz::SkColorTypeToResourceFormat(GetSkImageInfo().colorType()));
+        viz::SkColorTypeToResourceFormat(GetSkImageInfo().colorType()),
+        capabilities.angle_rgbx_internal_format);
 
     auto backend_texture = GrBackendTexture(Size().width(), Size().height(),
                                             GrMipMapped::kNo, texture_info);

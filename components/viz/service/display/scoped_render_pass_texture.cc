@@ -49,8 +49,11 @@ ScopedRenderPassTexture::ScopedRenderPassTexture(
     if (caps.texture_npot && mipmap_)
       levels += base::bits::Log2Floor(std::max(size_.width(), size_.height()));
 
-    gl->TexStorage2DEXT(GL_TEXTURE_2D, levels, TextureStorageFormat(format),
-                        size_.width(), size_.height());
+    gl->TexStorage2DEXT(
+        GL_TEXTURE_2D, levels,
+        TextureStorageFormat(format, context_provider_->ContextCapabilities()
+                                         .angle_rgbx_internal_format),
+        size_.width(), size_.height());
   } else {
     DCHECK(GLSupportsFormat(format));
     gl->TexImage2D(GL_TEXTURE_2D, 0, GLInternalFormat(format), size_.width(),

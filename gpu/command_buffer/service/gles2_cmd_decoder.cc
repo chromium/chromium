@@ -4395,6 +4395,9 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
   caps.texture_target_exception_list =
       group_->gpu_preferences().texture_target_exception_list;
 
+  caps.angle_rgbx_internal_format =
+      feature_info_->feature_flags().angle_rgbx_internal_format;
+
   return caps;
 }
 

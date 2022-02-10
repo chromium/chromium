@@ -327,6 +327,15 @@ typedef void (GL_APIENTRYP PFNGLBLITFRAMEBUFFERCHROMIUMPROC) (GLint srcX0, GLint
 #endif
 #endif /* GL_ANGLE_texture_compression_dxt5 */
 
+/* GL_ANGLE_rgbx_internal_format */
+#ifndef GL_ANGLE_rgbx_internal_format
+#define GL_ANGLE_rgbx_internal_format 1
+
+#ifndef GL_RGBX8_ANGLE
+#define GL_RGBX8_ANGLE 0x96BA
+#endif
+#endif /* GL_ANGLE_rgbx_internal_format */
+
 /* GL_CHROMIUM_async_pixel_transfers */
 #ifndef GL_CHROMIUM_async_pixel_transfers
 #define GL_CHROMIUM_async_pixel_transfers 1

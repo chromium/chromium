@@ -752,6 +752,7 @@ uint32_t GLES2Util::RenderbufferBytesPerPixel(int format) {
     case GL_DEPTH24_STENCIL8_OES:
     case GL_RGB8_OES:
     case GL_RGBA8_OES:
+    case GL_RGBX8_ANGLE:
     case GL_DEPTH_COMPONENT24_OES:
       return 4;
     default:
@@ -1163,6 +1164,7 @@ uint32_t GLES2Util::GetChannelsForFormat(int format) {
     case GL_RGB32I:
     case GL_RGB16_EXT:
     case GL_RGB16_SNORM_EXT:
+    case GL_RGBX8_ANGLE:
       return kRGB;
     case GL_RGB_YCRCB_420_CHROMIUM:
     case GL_RGB_YCBCR_420V_CHROMIUM:
@@ -1272,6 +1274,7 @@ bool GLES2Util::IsSizedColorFormat(uint32_t internal_format) {
     case GL_RGBA16I:
     case GL_RGBA32UI:
     case GL_RGBA32I:
+    case GL_RGBX8_ANGLE:
     case GL_R8:
     case GL_R8_SNORM:
     case GL_R16_EXT:
@@ -1379,6 +1382,7 @@ void GLES2Util::GetColorFormatComponentSizes(
     case GL_RGB8_SNORM:
     case GL_RGB8UI:
     case GL_RGB8I:
+    case GL_RGBX8_ANGLE:
       *r = 8;
       *g = 8;
       *b = 8;
