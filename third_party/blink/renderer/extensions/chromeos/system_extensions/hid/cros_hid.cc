@@ -87,7 +87,15 @@ void CrosHID::Connect(
     mojo::PendingRemote<device::mojom::blink::HidConnectionClient>
         connection_client,
     device::mojom::blink::HidManager::ConnectCallback callback) {
-  // TODO(b/214330925): Add necessary code to enable HIDDevice.open().
+  auto* cros_hid = GetCrosHIDOrNull();
+
+  if (!cros_hid) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  cros_hid_->Connect(device_guid, std::move(connection_client),
+                     std::move(callback));
 }
 
 void CrosHID::Forget(device::mojom::blink::HidDeviceInfoPtr device_info,

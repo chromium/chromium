@@ -6,12 +6,14 @@
 #define CHROME_BROWSER_ASH_SYSTEM_EXTENSIONS_API_HID_HID_IMPL_H_
 
 #include <map>
+#include <string>
 #include <vector>
 
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/hid.mojom.h"
 #include "third_party/blink/public/mojom/chromeos/system_extensions/hid/cros_hid.mojom.h"
@@ -24,7 +26,8 @@ class BrowserContext;
 namespace ash {
 
 class HIDImpl : public blink::mojom::CrosHID,
-                public device::mojom::HidManagerClient {
+                public device::mojom::HidManagerClient,
+                public device::mojom::HidConnectionWatcher {
  public:
   explicit HIDImpl(content::BrowserContext* browser_context);
   ~HIDImpl() override;
@@ -38,6 +41,10 @@ class HIDImpl : public blink::mojom::CrosHID,
   void DeviceChanged(device::mojom::HidDeviceInfoPtr device_info) override;
 
   device::mojom::HidManager* GetHidManager();
+
+  void Connect(const std::string& device_guid,
+               mojo::PendingRemote<device::mojom::HidConnectionClient> client,
+               ConnectCallback callback) override;
 
  private:
   void OnGotDevices(std::vector<blink::mojom::HidDeviceFilterPtr> filters,
@@ -61,6 +68,9 @@ class HIDImpl : public blink::mojom::CrosHID,
   // Map from device GUID to device info.
   std::map<std::string, device::mojom::HidDeviceInfoPtr> device_map_;
   bool device_map_is_initialized_ = false;
+
+  // Each pipe here watches a connection created by Connect().
+  mojo::ReceiverSet<device::mojom::HidConnectionWatcher> watchers_;
 
   // Last member definition.
   base::WeakPtrFactory<HIDImpl> weak_factory_{this};
