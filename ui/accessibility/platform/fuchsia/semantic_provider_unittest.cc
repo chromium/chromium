@@ -31,7 +31,7 @@ class AXFuchsiaSemanticProviderDelegate
   AXFuchsiaSemanticProviderDelegate() = default;
   ~AXFuchsiaSemanticProviderDelegate() override = default;
 
-  bool OnSemanticsManagerConnectionClosed() override {
+  bool OnSemanticsManagerConnectionClosed(zx_status_t status) override {
     on_semantics_manager_connection_closed_called_ = true;
     return true;
   }

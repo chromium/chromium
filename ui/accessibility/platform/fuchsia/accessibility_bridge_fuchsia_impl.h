@@ -23,6 +23,8 @@ class AX_EXPORT AccessibilityBridgeFuchsiaImpl final
     : public ui::AccessibilityBridgeFuchsia,
       public ui::AXFuchsiaSemanticProvider::Delegate {
  public:
+  using OnConnectionClosedCallback = base::RepeatingCallback<bool(zx_status_t)>;
+
   // Constructor args:
   //
   // |root_window|: Refers to the root aura::Window for which this accessibility
@@ -52,7 +54,7 @@ class AX_EXPORT AccessibilityBridgeFuchsiaImpl final
       fuchsia::ui::views::ViewRef view_ref,
       base::RepeatingCallback<float()> get_pixel_scale,
       base::RepeatingCallback<void(bool)> on_semantics_enabled,
-      base::RepeatingCallback<bool()> on_connection_closed,
+      OnConnectionClosedCallback on_connection_closed,
       inspect::Node inspect_node);
   ~AccessibilityBridgeFuchsiaImpl() override;
 
@@ -66,7 +68,7 @@ class AX_EXPORT AccessibilityBridgeFuchsiaImpl final
   inspect::Node GetInspectNode() override;
 
   // SemanticProvider::Delegate overrides.
-  bool OnSemanticsManagerConnectionClosed() override;
+  bool OnSemanticsManagerConnectionClosed(zx_status_t status) override;
   bool OnAccessibilityAction(
       uint32_t node_id,
       fuchsia::accessibility::semantics::Action action) override;
@@ -111,7 +113,10 @@ class AX_EXPORT AccessibilityBridgeFuchsiaImpl final
   base::RepeatingCallback<void(bool)> on_semantics_enabled_;
 
   // Callback invoked whenever the semantics manager connection is closed.
-  base::RepeatingCallback<bool()> on_connection_closed_;
+  // We use a base::RepeatingCallback, because we may attempt to reconnect, in
+  // which case it's possible that we may need to invoke the callback more than
+  // once.
+  OnConnectionClosedCallback on_connection_closed_;
 
   // The inspect output will have a node for each AXTree in this accessibility
   // bridge's window. Inspect node names are static, but AXTreeIDs can change.

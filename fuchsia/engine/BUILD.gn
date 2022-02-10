@@ -430,6 +430,7 @@ source_set("browsertest_core") {
 test("web_engine_browsertests") {
   sources = [
     "browser/accessibility_bridge_browsertest.cc",
+    "browser/accessibility_browsertest.cc",
     "browser/autoplay_browsertest.cc",
     "browser/cast_streaming_browsertest.cc",
     "browser/client_hints_browsertest.cc",

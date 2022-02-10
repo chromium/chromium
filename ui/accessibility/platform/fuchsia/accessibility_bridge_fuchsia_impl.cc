@@ -53,7 +53,7 @@ AccessibilityBridgeFuchsiaImpl::AccessibilityBridgeFuchsiaImpl(
     fuchsia::ui::views::ViewRef view_ref,
     base::RepeatingCallback<float()> get_pixel_scale,
     base::RepeatingCallback<void(bool)> on_semantics_enabled,
-    base::RepeatingCallback<bool()> on_connection_closed,
+    OnConnectionClosedCallback on_connection_closed,
     inspect::Node inspect_node)
     : root_window_(window),
       on_semantics_enabled_(std::move(on_semantics_enabled)),
@@ -232,9 +232,10 @@ void AccessibilityBridgeFuchsiaImpl::OnSemanticsEnabled(bool enabled) {
     on_semantics_enabled_.Run(enabled);
 }
 
-bool AccessibilityBridgeFuchsiaImpl::OnSemanticsManagerConnectionClosed() {
+bool AccessibilityBridgeFuchsiaImpl::OnSemanticsManagerConnectionClosed(
+    zx_status_t status) {
   if (on_connection_closed_)
-    return on_connection_closed_.Run();
+    return on_connection_closed_.Run(status);
 
   // If the user does not specify a callback, then we can assume no attempt to
   // reconnect should be made.

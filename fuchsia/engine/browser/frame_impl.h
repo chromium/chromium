@@ -36,6 +36,7 @@
 #include "fuchsia/engine/browser/theme_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia_impl.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/wm/core/focus_controller.h"
 #include "url/gurl.h"
@@ -115,6 +116,15 @@ class FrameImpl : public fuchsia::web::Frame,
     return web_contents_.get();
   }
   bool has_view_for_test() const { return window_tree_host_ != nullptr; }
+  FrameWindowTreeHost* window_tree_host_for_test() {
+    return window_tree_host_.get();
+  }
+
+  // Accessibility bridge accessor/setter methods.
+  // TODO(crbug.com/1291330): Remove the three methods below.
+  void set_use_v2_accessibility_bridge(bool use_v2_accessibility_bridge) {
+    use_v2_accessibility_bridge_ = use_v2_accessibility_bridge;
+  }
   AccessibilityBridge* accessibility_bridge_for_test() const {
     return accessibility_bridge_.get();
   }
@@ -122,15 +132,20 @@ class FrameImpl : public fuchsia::web::Frame,
       fuchsia::accessibility::semantics::SemanticsManager* semantics_manager) {
     semantics_manager_for_test_ = semantics_manager;
   }
-  FrameWindowTreeHost* window_tree_host_for_test() {
-    return window_tree_host_.get();
-  }
 
   // Override |blink_prefs| with settings defined in |content_settings_|.
   //
   // This method is called when WebPreferences is first created and when it is
   // recomputed.
   void OverrideWebPreferences(blink::web_pref::WebPreferences* web_prefs);
+
+  void set_window_size_for_test(gfx::Size size) {
+    window_size_for_test_ = size;
+  }
+
+  void set_device_scale_factor_for_test(float device_scale_factor) {
+    device_scale_factor_for_test_ = device_scale_factor;
+  }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FrameImplTest, DelayedNavigationEventAck);
@@ -169,7 +184,7 @@ class FrameImpl : public fuchsia::web::Frame,
   void OnMediaPlayerDisconnect();
 
   // An error handler for |accessibility_bridge_|.
-  void OnAccessibilityError(zx_status_t error);
+  bool OnAccessibilityError(zx_status_t error);
 
   // Creates and initializes WindowTreeHost for the view with the specified
   // |view_token|. |view_token| may be uninitialized in headless mode.
@@ -330,6 +345,9 @@ class FrameImpl : public fuchsia::web::Frame,
       const content::GlobalRequestID& request_id,
       const blink::mojom::ResourceLoadInfo& resource_load_info) override;
 
+  float GetDeviceScaleFactor();
+  void SetAccessibilityEnabled(bool enabled);
+
   const std::unique_ptr<content::WebContents> web_contents_;
   ContextImpl* const context_;
 
@@ -350,9 +368,16 @@ class FrameImpl : public fuchsia::web::Frame,
   // Owned via |window_tree_host_|.
   FrameLayoutManager* layout_manager_ = nullptr;
 
+  // TODO(crbug.com/1291330): Remove acessibility_bridge_ and
+  // semantics_manager_for_test_.
   std::unique_ptr<AccessibilityBridge> accessibility_bridge_;
   fuchsia::accessibility::semantics::SemanticsManager*
       semantics_manager_for_test_ = nullptr;
+  std::unique_ptr<ui::AccessibilityBridgeFuchsiaImpl> v2_accessibility_bridge_;
+
+  // Test settings.
+  absl::optional<gfx::Size> window_size_for_test_;
+  absl::optional<float> device_scale_factor_for_test_;
 
   EventFilter event_filter_;
   NavigationControllerImpl navigation_controller_;
@@ -390,6 +415,10 @@ class FrameImpl : public fuchsia::web::Frame,
   // Used to publish Frame details to Inspect.
   inspect::Node inspect_node_;
   const inspect::StringProperty inspect_name_property_;
+
+  // TODO(crbug.com/1291330): Remove.
+  // Used to control which accessibility bridge version is live.
+  bool use_v2_accessibility_bridge_ = false;
 
   base::WeakPtrFactory<FrameImpl> weak_factory_{this};
 };

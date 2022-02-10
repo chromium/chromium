@@ -101,7 +101,7 @@ class AccessibilityBridgeFuchsiaTest : public ::testing::Test {
         /*root_window=*/nullptr, std::move(view_ref_pair.view_ref),
         base::BindRepeating([]() { return 1.0f; }),
         base::RepeatingCallback<void(bool)>(),
-        base::RepeatingCallback<bool()>(), inspect::Node());
+        base::RepeatingCallback<bool(zx_status_t)>(), inspect::Node());
     accessibility_bridge_->set_semantic_provider_for_test(
         std::move(mock_semantic_provider));
   }

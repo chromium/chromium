@@ -34,7 +34,7 @@ class AX_EXPORT AXFuchsiaSemanticProvider {
 
     // Called when the FIDL channel to the Semantics Manager is closed. If this
     // callback returns true, an attempt to reconnect will be made.
-    virtual bool OnSemanticsManagerConnectionClosed() = 0;
+    virtual bool OnSemanticsManagerConnectionClosed(zx_status_t status) = 0;
 
     // Processes an incoming accessibility action from Fuchsia. It
     // receives the Fuchsia node ID and the action requested. If this

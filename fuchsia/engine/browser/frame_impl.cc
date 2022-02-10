@@ -23,6 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -61,6 +62,7 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/navigation/was_activated_option.mojom.h"
+#include "ui/accessibility/platform/fuchsia/semantic_provider_impl.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/switches.h"
@@ -72,9 +74,6 @@ namespace {
 
 // Simulated screen bounds to use when headless rendering is enabled.
 constexpr gfx::Size kHeadlessWindowSize = {1, 1};
-
-// Simulated screen bounds to use when testing the SemanticsManager.
-constexpr gfx::Size kSemanticsTestingWindowSize = {720, 640};
 
 // Name of the Inspect node that holds accessibility information.
 constexpr char kAccessibilityInspectNodeName[] = "accessibility";
@@ -533,6 +532,7 @@ void FrameImpl::DestroyWindowTreeHost() {
   window_tree_host_->compositor()->SetVisible(false);
   window_tree_host_.reset();
   accessibility_bridge_.reset();
+  v2_accessibility_bridge_.reset();
 
   // Allows posted focus events to process before the FocusController is torn
   // down.
@@ -556,12 +556,17 @@ void FrameImpl::OnMediaPlayerDisconnect() {
   media_player_ = nullptr;
 }
 
-void FrameImpl::OnAccessibilityError(zx_status_t error) {
+bool FrameImpl::OnAccessibilityError(zx_status_t error) {
   // The task is posted so |accessibility_bridge_| does not tear |this| down
   // while events are still being processed.
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&FrameImpl::CloseAndDestroyFrame,
                                 weak_factory_.GetWeakPtr(), error));
+
+  // The return value indicates to the accessibility bridge whether we should
+  // attempt to reconnect. Since the frame has been destroyed, no reconnect
+  // attempt should be made.
+  return false;
 }
 
 bool FrameImpl::MaybeHandleCastStreamingMessage(
@@ -617,22 +622,38 @@ void FrameImpl::UpdateRenderViewZoomLevel(
 }
 
 void FrameImpl::ConnectToAccessibilityBridge() {
-  fuchsia::accessibility::semantics::SemanticsManagerPtr semantics_manager;
-  if (!semantics_manager_for_test_) {
-    semantics_manager =
-        base::ComponentContextForProcess()
-            ->svc()
-            ->Connect<fuchsia::accessibility::semantics::SemanticsManager>();
-  }
+  if (use_v2_accessibility_bridge_) {
+    // TODO(crbug.com/1291613): Replace callbacks with an interface that
+    // FrameImpl implements.
+    v2_accessibility_bridge_ =
+        std::make_unique<ui::AccessibilityBridgeFuchsiaImpl>(
+            root_window(), window_tree_host_->CreateViewRef(),
+            base::BindRepeating(&FrameImpl::GetDeviceScaleFactor,
+                                base::Unretained(this)),
+            base::BindRepeating(&FrameImpl::SetAccessibilityEnabled,
+                                base::Unretained(this)),
+            base::BindRepeating(&FrameImpl::OnAccessibilityError,
+                                base::Unretained(this)),
+            inspect_node_.CreateChild(kAccessibilityInspectNodeName));
+  } else {
+    fuchsia::accessibility::semantics::SemanticsManagerPtr semantics_manager;
+    if (!semantics_manager_for_test_) {
+      semantics_manager =
+          base::ComponentContextForProcess()
+              ->svc()
+              ->Connect<fuchsia::accessibility::semantics::SemanticsManager>();
+    }
 
-  // If the SemanticTree owned by |accessibility_bridge_| is disconnected, it
-  // will cause |this| to be closed.
-  accessibility_bridge_ = std::make_unique<AccessibilityBridge>(
-      semantics_manager_for_test_ ? semantics_manager_for_test_
-                                  : semantics_manager.get(),
-      window_tree_host_.get(), web_contents_.get(),
-      base::BindOnce(&FrameImpl::OnAccessibilityError, base::Unretained(this)),
-      inspect_node_.CreateChild(kAccessibilityInspectNodeName));
+    // If the SemanticTree owned by |accessibility_bridge_| is disconnected, it
+    // will cause |this| to be closed.
+    accessibility_bridge_ = std::make_unique<AccessibilityBridge>(
+        semantics_manager_for_test_ ? semantics_manager_for_test_
+                                    : semantics_manager.get(),
+        window_tree_host_.get(), web_contents_.get(),
+        base::BindOnce(&FrameImpl::OnAccessibilityError,
+                       base::Unretained(this)),
+        inspect_node_.CreateChild(kAccessibilityInspectNodeName));
+  }
 }
 
 void FrameImpl::CreateView(fuchsia::ui::views::ViewToken view_token) {
@@ -896,11 +917,10 @@ void FrameImpl::EnableHeadlessRendering() {
                       std::move(view_ref_pair));
 
   gfx::Rect bounds(kHeadlessWindowSize);
-  if (semantics_manager_for_test_) {
-    ConnectToAccessibilityBridge();
 
-    // Set bounds for testing hit testing.
-    bounds.set_size(kSemanticsTestingWindowSize);
+  if (window_size_for_test_) {
+    ConnectToAccessibilityBridge();
+    bounds.set_size(*window_size_for_test_);
   }
 
   window_tree_host_->SetBoundsInPixels(bounds);
@@ -1333,4 +1353,23 @@ void FrameImpl::ResourceLoadComplete(
 // TODO(crbug.com/1136681#c6): Move below GetBindingChannelForTest when fixed.
 void FrameImpl::EnableExplicitSitesFilter(std::string error_page) {
   explicit_sites_filter_error_page_ = std::move(error_page);
+}
+
+float FrameImpl::GetDeviceScaleFactor() {
+  if (device_scale_factor_for_test_)
+    return *device_scale_factor_for_test_;
+
+  return window_tree_host_->scenic_scale_factor();
+}
+
+void FrameImpl::SetAccessibilityEnabled(bool enabled) {
+  auto* browser_accessibility_state =
+      content::BrowserAccessibilityState::GetInstance();
+
+  if (enabled) {
+    browser_accessibility_state->AddAccessibilityModeFlags(ui::kAXModeComplete);
+  } else {
+    browser_accessibility_state->RemoveAccessibilityModeFlags(
+        ui::kAXModeComplete);
+  }
 }

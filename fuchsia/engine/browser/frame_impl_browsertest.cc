@@ -122,11 +122,6 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, MAYBE_VisibilityState) {
 
   auto frame = cr_fuchsia::FrameForTest::Create(context(), {});
   base::RunLoop().RunUntilIdle();
-  FrameImpl* frame_impl = context_impl()->GetFrameImplForTest(&frame.ptr());
-
-  // CreateView() will cause the AccessibilityBridge to be created.
-  FakeSemanticsManager fake_semantics_manager;
-  frame_impl->set_semantics_manager_for_test(&fake_semantics_manager);
 
   // Navigate to a page and wait for it to finish loading.
   ASSERT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
@@ -307,10 +302,6 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, ContextDeletedBeforeFrameWithView) {
   EXPECT_TRUE(frame.ptr());
   base::RunLoop().RunUntilIdle();
   FrameImpl* frame_impl = context_impl()->GetFrameImplForTest(&frame.ptr());
-
-  // CreateView() will cause the AccessibilityBridge to be created.
-  FakeSemanticsManager fake_semantics_manager;
-  frame_impl->set_semantics_manager_for_test(&fake_semantics_manager);
 
   auto view_tokens = scenic::ViewTokenPair::New();
   frame->CreateView(std::move(view_tokens.view_token));
@@ -1047,10 +1038,6 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, RecreateView) {
   FrameImpl* frame_impl = context_impl()->GetFrameImplForTest(&frame.ptr());
   ASSERT_TRUE(frame_impl);
   EXPECT_FALSE(frame_impl->has_view_for_test());
-
-  // CreateView() will cause the AccessibilityBridge to be created.
-  FakeSemanticsManager fake_semantics_manager;
-  frame_impl->set_semantics_manager_for_test(&fake_semantics_manager);
 
   // Verify that the Frame can navigate, prior to the View being created.
   const GURL page1_url(embedded_test_server()->GetURL(kPage1Path));

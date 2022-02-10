@@ -78,7 +78,7 @@ AXFuchsiaSemanticProviderImpl::AXFuchsiaSemanticProviderImpl(
                                  semantic_tree_.NewRequest());
   semantic_tree_.set_error_handler([this](zx_status_t status) {
     ZX_LOG(ERROR, status) << "SemanticTree disconnected";
-    delegate_->OnSemanticsManagerConnectionClosed();
+    delegate_->OnSemanticsManagerConnectionClosed(status);
     semantic_updates_enabled_ = false;
   });
 }
