@@ -5,6 +5,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script type="module">
   import {fedcm_test} from './support/fedcm-helper.js';
+
   const test_options = {
     federated: {
       providers: [{
@@ -152,4 +153,18 @@
     const token = await navigator.credentials.get(test_options);
     assert_equals(token, "a_token");
   }, "get after abort should work");
+
+  promise_test(async t => {
+    const result = navigator.credentials.get({
+    federated: {
+      providers: [{
+        url: 'https://other-idp.test/',
+        clientId: '1',
+        nonce: '1',
+      }]
+    }
+    });
+    return promise_rejects_dom(t, "NetworkError", result);
+  }, "Provider URL should honor Content-Security-Policy.");
+
 </script>

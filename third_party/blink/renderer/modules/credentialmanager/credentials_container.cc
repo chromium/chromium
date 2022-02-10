@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -1124,6 +1125,9 @@ ScriptPromise CredentialsContainer::get(
 
   Vector<KURL> providers;
   if (options->hasFederated() && options->federated()->hasProviders()) {
+    ContentSecurityPolicy* policy =
+        resolver->GetExecutionContext()
+            ->GetContentSecurityPolicyForCurrentWorld();
     for (const auto& provider : options->federated()->providers()) {
       if (provider->IsString()) {
         KURL url = KURL(NullURL(), provider->GetAsString());
@@ -1153,6 +1157,17 @@ ScriptPromise CredentialsContainer::get(
           resolver->Reject(MakeGarbageCollected<DOMException>(
               DOMExceptionCode::kInvalidStateError,
               "Provided provider information is incomplete."));
+          return promise;
+        }
+        // We disallow redirects (in idp_network_request_manager.cc), so it is
+        // enough to check the initial URL here.
+        if (!policy->AllowConnectToSource(provider_url, provider_url,
+                                          RedirectStatus::kNoRedirect)) {
+          WTF::String error =
+              "Refused to connect to '" + provider_url.ElidedString() +
+              "' because it violates the document's Content Security Policy.";
+          resolver->Reject(MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kNetworkError, error));
           return promise;
         }
         DCHECK(options->federated()->hasPreferAutoSignIn());
