@@ -7343,11 +7343,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-input-noise-cancellation-ui",
-     flag_descriptions::kEnableInputNoiseCancellationUiName,
-     flag_descriptions::kEnableInputNoiseCancellationUiDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kEnableInputNoiseCancellationUi)},
-
     {"enable-keyboard-backlight-toggle",
      flag_descriptions::kEnableKeyboardBacklightToggleName,
      flag_descriptions::kEnableKeyboardBacklightToggleDescription, kOsCrOS,

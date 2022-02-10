@@ -83,12 +83,8 @@ AudioDetailedView::AudioDetailedView(DetailedViewDelegate* delegate)
     : TrayDetailedView(delegate) {
   CreateItems();
 
-  if (features::IsInputNoiseCancellationUiEnabled()) {
-    CrasAudioHandler::Get()->RequestNoiseCancellationSupported(
-        base::BindOnce(&AudioDetailedView::Update, base::Unretained(this)));
-  } else {
-    Update();
-  }
+  CrasAudioHandler::Get()->RequestNoiseCancellationSupported(
+      base::BindOnce(&AudioDetailedView::Update, base::Unretained(this)));
 
   Shell::Get()->accessibility_controller()->AddObserver(this);
 }
@@ -203,8 +199,7 @@ void AudioDetailedView::UpdateScrollableList() {
   CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
 
   // Set the input noise cancellation state.
-  if (features::IsInputNoiseCancellationUiEnabled() &&
-      audio_handler->noise_cancellation_supported()) {
+  if (audio_handler->noise_cancellation_supported()) {
     for (const auto& device : input_devices_) {
       if (device.type == AudioDeviceType::kInternalMic) {
         audio_handler->SetNoiseCancellationState(
@@ -220,14 +215,12 @@ void AudioDetailedView::UpdateScrollableList() {
         AddScrollListCheckableItem(GetAudioDeviceName(device), device.active);
     device_map_[container] = device;
 
-    if (features::IsInputNoiseCancellationUiEnabled()) {
-      // Add the input noise cancellation toggle.
-      if (audio_handler->GetPrimaryActiveInputNode() == device.id &&
-          audio_handler->noise_cancellation_supported()) {
-        if (device.audio_effect & cras::EFFECT_TYPE_NOISE_CANCELLATION) {
-          AddScrollListChild(
-              AudioDetailedView::CreateNoiseCancellationToggleRow(device));
-        }
+    // Add the input noise cancellation toggle.
+    if (audio_handler->GetPrimaryActiveInputNode() == device.id &&
+        audio_handler->noise_cancellation_supported()) {
+      if (device.audio_effect & cras::EFFECT_TYPE_NOISE_CANCELLATION) {
+        AddScrollListChild(
+            AudioDetailedView::CreateNoiseCancellationToggleRow(device));
       }
     }
 
@@ -241,7 +234,6 @@ void AudioDetailedView::UpdateScrollableList() {
 
 std::unique_ptr<views::View>
 AudioDetailedView::CreateNoiseCancellationToggleRow(const AudioDevice& device) {
-  DCHECK(features::IsInputNoiseCancellationUiEnabled());
   CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
   auto noise_cancellation_toggle = std::make_unique<TrayToggleButton>(
       base::BindRepeating(

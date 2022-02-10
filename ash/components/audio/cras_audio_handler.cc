@@ -1717,8 +1717,7 @@ void CrasAudioHandler::HandleGetNodes(absl::optional<AudioNodeList> node_list) {
   UpdateDevicesAndSwitchActive(node_list.value());
 
   // Always set the input noise cancellation state on NodesChange event.
-  if (features::IsInputNoiseCancellationUiEnabled() &&
-      noise_cancellation_supported()) {
+  if (noise_cancellation_supported()) {
     const AudioDevice* internal_mic =
         GetDeviceByType(AudioDeviceType::kInternalMic);
     if (internal_mic) {

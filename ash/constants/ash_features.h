@@ -197,8 +197,6 @@ extern const base::Feature kEnableIdleInhibit;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableInputInDiagnosticsApp;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kEnableInputNoiseCancellationUi;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableKeyboardBacklightToggle;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableLazyLoginWebUILoading;

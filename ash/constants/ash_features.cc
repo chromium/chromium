@@ -502,10 +502,6 @@ const base::Feature kEnableIdleInhibit{"EnableIdleInhibit",
 const base::Feature kEnableInputInDiagnosticsApp{
     "EnableInputInDiagnosticsApp", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables or disables noise cancellation UI toggle.
-const base::Feature kEnableInputNoiseCancellationUi{
-    "EnableInputNoiseCancellationUi", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables or disables keyboard backlight toggle.
 const base::Feature kEnableKeyboardBacklightToggle{
     "EnableKeyboardBacklightToggle", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1646,10 +1642,6 @@ bool IsImprovedDesksKeyboardShortcutsEnabled() {
 
 bool IsInputInDiagnosticsAppEnabled() {
   return base::FeatureList::IsEnabled(kEnableInputInDiagnosticsApp);
-}
-
-bool IsInputNoiseCancellationUiEnabled() {
-  return base::FeatureList::IsEnabled(kEnableInputNoiseCancellationUi);
 }
 
 bool IsInstantTetheringBackgroundAdvertisingSupported() {

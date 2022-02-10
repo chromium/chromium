@@ -113,7 +113,6 @@ void OnGotNSSCertDatabaseForUser(net::NSSCertDatabase* database) {
 
 void OnNoiseCancellationSupportedRetrieved(
     absl::optional<bool> noise_cancellation_supported) {
-  DCHECK(features::IsInputNoiseCancellationUiEnabled());
   if (noise_cancellation_supported.has_value() &&
       noise_cancellation_supported.value()) {
     PrefService* local_state = g_browser_process->local_state();
@@ -291,10 +290,8 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
     PciguardClient::Get()->SendExternalPciDevicesPermissionState(
         chromeos::settings::PeripheralDataAccessHandler::GetPrefState());
 
-    if (features::IsInputNoiseCancellationUiEnabled()) {
-      chromeos::CrasAudioClient::Get()->GetNoiseCancellationSupported(
-          base::BindOnce(&OnNoiseCancellationSupportedRetrieved));
-    }
+    chromeos::CrasAudioClient::Get()->GetNoiseCancellationSupported(
+        base::BindOnce(&OnNoiseCancellationSupportedRetrieved));
   }
 }
 

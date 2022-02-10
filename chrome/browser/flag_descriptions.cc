@@ -4546,12 +4546,6 @@ const char kEnableInputInDiagnosticsAppName[] =
 const char kEnableInputInDiagnosticsAppDescription[] =
     "Enable input device cards in the Diagnostics App";
 
-const char kEnableInputNoiseCancellationUiName[] =
-    "Enable Input Noise Cancellation UI.";
-const char kEnableInputNoiseCancellationUiDescription[] =
-    "Enable toggling input noise cancellation through the Quick Settings. By "
-    "default, this flag is disabled.";
-
 const char kEnableKeyboardBacklightToggleName[] =
     "Enable Keyboard Backlight Toggle.";
 const char kEnableKeyboardBacklightToggleDescription[] =
