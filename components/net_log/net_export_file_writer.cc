@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
@@ -235,7 +236,7 @@ std::unique_ptr<base::DictionaryValue> NetExportFileWriter::GetState() const {
 
   auto dict = std::make_unique<base::DictionaryValue>();
 
-  dict->SetString("file", log_path_.LossyDisplayName());
+  dict->SetStringKey("file", base::UTF16ToUTF8(log_path_.LossyDisplayName()));
 
   base::StringPiece state_string;
   switch (state_) {
@@ -258,11 +259,11 @@ std::unique_ptr<base::DictionaryValue> NetExportFileWriter::GetState() const {
       state_string = "STOPPING_LOG";
       break;
   }
-  dict->SetString("state", state_string);
+  dict->SetStringKey("state", state_string);
 
-  dict->SetBoolean("logExists", log_exists_);
-  dict->SetBoolean("logCaptureModeKnown", log_capture_mode_known_);
-  dict->SetString("captureMode", CaptureModeToString(log_capture_mode_));
+  dict->SetBoolKey("logExists", log_exists_);
+  dict->SetBoolKey("logCaptureModeKnown", log_capture_mode_known_);
+  dict->SetStringKey("captureMode", CaptureModeToString(log_capture_mode_));
 
   return dict;
 }

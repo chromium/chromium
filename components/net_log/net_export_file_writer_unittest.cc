@@ -133,12 +133,13 @@ bool SetPathToGivenAndReturnTrue(const base::FilePath& path_to_return,
     bool expected_log_capture_mode_known,
     const std::string& expected_log_capture_mode_string) {
   base::DictionaryValue expected_state;
-  expected_state.SetString("state", expected_state_string);
-  expected_state.SetBoolean("logExists", expected_log_exists);
-  expected_state.SetBoolean("logCaptureModeKnown",
+  expected_state.SetStringKey("state", expected_state_string);
+  expected_state.SetBoolKey("logExists", expected_log_exists);
+  expected_state.SetBoolKey("logCaptureModeKnown",
                             expected_log_capture_mode_known);
   if (expected_log_capture_mode_known) {
-    expected_state.SetString("captureMode", expected_log_capture_mode_string);
+    expected_state.SetStringKey("captureMode",
+                                expected_log_capture_mode_string);
   } else {
     state->RemoveKey("captureMode");
   }
@@ -701,7 +702,7 @@ TEST_F(NetExportFileWriterTest, StopWithPolledData) {
   const char kDummyPolledDataString[] = "dummy_info";
   std::unique_ptr<base::DictionaryValue> dummy_polled_data =
       std::make_unique<base::DictionaryValue>();
-  dummy_polled_data->SetString(kDummyPolledDataPath, kDummyPolledDataString);
+  dummy_polled_data->SetStringKey(kDummyPolledDataPath, kDummyPolledDataString);
 
   ASSERT_TRUE(StartThenVerifyNewState(
       base::FilePath(), net::NetLogCaptureMode::kDefault,
