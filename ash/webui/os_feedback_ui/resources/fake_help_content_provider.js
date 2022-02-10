@@ -18,6 +18,18 @@ export class FakeHelpContentProvider {
 
     // Setup method resolvers.
     this.methods_.register('getHelpContents');
+
+    /**
+     * Record the last query passed to getHelpContents to help verify the method
+     * has been called.
+     * @private {string}
+     */
+    this.lastQuery_ = '';
+  }
+
+  /** @return {string} */
+  get lastQuery() {
+    return this.lastQuery_;
   }
 
   /**
@@ -26,6 +38,7 @@ export class FakeHelpContentProvider {
    * @return {!Promise<!HelpContentList>}
    */
   getHelpContents(query, maxResults) {
+    this.lastQuery_ = query;
     return this.methods_.resolveMethod('getHelpContents');
   }
 

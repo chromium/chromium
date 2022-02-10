@@ -8,7 +8,7 @@ import {HelpContentElement} from 'chrome://os-feedback/help_content.js';
 import {setHelpContentProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
 import {SearchPageElement} from 'chrome://os-feedback/search_page.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
 export function searchPageTestSuite() {
@@ -44,16 +44,6 @@ export function searchPageTestSuite() {
     return flushTasks();
   }
 
-  /**
-   * Find all help content items.
-   * @return {!NodeList}
-   */
-  function findAllHelpItems() {
-    const helpContentElement =
-        page.shadowRoot.querySelector('#helpContentFrame');
-    return helpContentElement.shadowRoot.querySelectorAll('.help-item a');
-  }
-
   /** Test that expected html elements are in the page after loaded. */
   test('SearchPageLoaded', () => {
     return initializePage().then(() => {
@@ -62,10 +52,10 @@ export function searchPageTestSuite() {
       assertTrue(!!title);
       assertEquals('Send feedback', title.textContent);
 
-      // Verify the help content is in the page.
-      const helpContentFrame =
-          page.shadowRoot.querySelector('#helpContentFrame');
-      assertTrue(!!helpContentFrame);
+      // Verify the help content is not in the page. For security reason, help
+      // contents fetched online can't be displayed in trusted context.
+      const helpContent = page.shadowRoot.querySelector('help-content');
+      assertFalse(!!helpContent);
 
       // Verify the iframe is in the page.
       const untrustedFrame = page.shadowRoot.querySelector('iframe');
@@ -83,38 +73,8 @@ export function searchPageTestSuite() {
   /**
    * Test that the text area accepts input and may fire search query to retrieve
    * help contents.
-   * - Case 1: When number of characters entered is less than 3, search is not
-   *   triggered.
-   */
-  test('HelpContentNotPopulatedWithTwoOrLessChars', () => {
-    return initializePage()
-        .then(() => {
-          const textAreaElement =
-              page.shadowRoot.querySelector('#descriptionText');
-          assertTrue(!!textAreaElement);
-          // Verify the textarea is empty.
-          assertEquals('', textAreaElement.value);
-
-          // Verify the help content is empty.
-          assertEquals(0, findAllHelpItems().length);
-
-          // Enter two chars.
-          textAreaElement.value = 'ab';
-          // Setting the value of the textarea in code does not trigger the
-          // input event. So we trigger it here.
-          textAreaElement.dispatchEvent(new Event('input'));
-
-          return flushTasks();
-        })
-        .then(() => {
-          // Verify the help content is still empty.
-          assertEquals(0, findAllHelpItems().length);
-        });
-  });
-
-  /**
-   * Test that the text area accepts input and may fire search query to retrieve
-   * help contents.
+   * - Case 1: When number of characters newly entered is less than 3, search is
+   *   not triggered.
    * - Case 2: When number of characters newly entered is 3 or more, search is
    *   triggered and help contents are populated.
    */
@@ -129,9 +89,6 @@ export function searchPageTestSuite() {
           // Verify the textarea is empty.
           assertEquals('', textAreaElement.value);
 
-          // Verify the help content is empty.
-          assertEquals(0, findAllHelpItems().length);
-
           // Enter three chars.
           textAreaElement.value = 'abc';
           // Setting the value of the textarea in code does not trigger the
@@ -141,22 +98,29 @@ export function searchPageTestSuite() {
           return flushTasks();
         })
         .then(() => {
-          // Verify the help content is populated with 5 links.
-          assertEquals(5, findAllHelpItems().length);
+          // Verify that getHelpContent() has been called with query 'abc'.
+          assertEquals('abc', provider.lastQuery);
 
-          // Setup fake provider so to return 2 items instead of 5.
-          const newContentList = fakeHelpContentList.slice(1, 3);
-          provider.setFakeHelpContents(newContentList);
+          // Enter 2 more characters. This should NOT trigger another search.
+          textAreaElement.value = 'abc12';
+          textAreaElement.dispatchEvent(new Event('input'));
 
-          // Enter three more characters. This should trigger another search.
+          return flushTasks();
+        })
+        .then(() => {
+          // Verify that getHelpContent() has NOT been called with query
+          // 'abc12'.
+          assertNotEquals('abc12', provider.lastQuery);
+
+          // Enter one more characters. This should trigger another search.
           textAreaElement.value = 'abc123';
           textAreaElement.dispatchEvent(new Event('input'));
 
           return flushTasks();
         })
         .then(() => {
-          // Verify the help content is populated with 2 links.
-          assertEquals(2, findAllHelpItems().length);
+          // Verify that getHelpContent() has been called with query 'abc123'.
+          assertEquals('abc123', provider.lastQuery);
         });
   });
 }

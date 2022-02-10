@@ -6,7 +6,7 @@ import {fakeHelpContentList} from 'chrome://os-feedback/fake_data.js';
 import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_provider.js';
 import {HelpContentList, HelpContentType} from 'chrome://os-feedback/feedback_types.js';
 
-import {assertDeepEquals} from '../../chai_assert.js';
+import {assertDeepEquals, assertEquals} from '../../chai_assert.js';
 
 export function fakeHelpContentProviderTestSuite() {
   /** @type {?FakeHelpContentProvider} */
@@ -43,6 +43,7 @@ export function fakeHelpContentProviderTestSuite() {
     return provider.getHelpContents('wifi not working', 5)
         .then((helpContentList) => {
           assertDeepEquals(expectedList, helpContentList);
+          assertEquals('wifi not working', provider.lastQuery);
         });
   });
 }
