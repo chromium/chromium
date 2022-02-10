@@ -269,7 +269,7 @@ CSSNumericValue* CSSNumericValue::parse(const String& css_text,
           range.Peek().FunctionId() == CSSValueID::kMax ||
           range.Peek().FunctionId() == CSSValueID::kClamp) {
         CSSMathExpressionNode* expression =
-            CSSMathExpressionNode::ParseCalc(range);
+            CSSMathExpressionNode::ParseMathFunction(CSSValueID::kCalc, range);
         if (expression)
           return CalcToNumericValue(*expression);
       }

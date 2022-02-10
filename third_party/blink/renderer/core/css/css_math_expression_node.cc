@@ -1033,67 +1033,78 @@ class CSSMathExpressionNodeParser {
  public:
   CSSMathExpressionNodeParser() {}
 
+  bool IsSupportedMathFunction(CSSValueID function_id) {
+    switch (function_id) {
+      case CSSValueID::kMin:
+      case CSSValueID::kMax:
+      case CSSValueID::kClamp:
+        return true;
+      // TODO(crbug.com/1284199): Support other math functions.
+      default:
+        return false;
+    }
+  }
+
   CSSMathExpressionNode* ParseMathFunction(CSSValueID function_id,
-                                           const CSSParserTokenRange& tokens,
+                                           CSSParserTokenRange& tokens,
                                            int depth) {
+    // "arguments" refers to comma separated ones.
+    wtf_size_t min_argument_count = 1;
+    wtf_size_t max_argument_count = std::numeric_limits<wtf_size_t>::max();
+
     switch (function_id) {
       case CSSValueID::kCalc:
       case CSSValueID::kWebkitCalc:
-        return ParseCalc(tokens);
+        max_argument_count = 1;
+        break;
       case CSSValueID::kMin:
-        return ParseComparisonFunction(tokens, CSSMathOperator::kMin, depth);
       case CSSValueID::kMax:
-        return ParseComparisonFunction(tokens, CSSMathOperator::kMax, depth);
+        break;
       case CSSValueID::kClamp:
-        return ParseComparisonFunction(tokens, CSSMathOperator::kClamp, depth);
+        min_argument_count = 3;
+        max_argument_count = 3;
+        break;
+      // TODO(crbug.com/1284199): Support other math functions.
+      default:
+        break;
+    }
+
+    HeapVector<Member<const CSSMathExpressionNode>> nodes;
+
+    while (!tokens.AtEnd() && nodes.size() < max_argument_count) {
+      if (nodes.size()) {
+        if (!css_parsing_utils::ConsumeCommaIncludingWhitespace(tokens))
+          return nullptr;
+      }
+
+      tokens.ConsumeWhitespace();
+      CSSMathExpressionNode* node = ParseValueExpression(tokens, depth);
+      if (!node)
+        return nullptr;
+
+      nodes.push_back(node);
+    }
+
+    if (!tokens.AtEnd() || nodes.size() < min_argument_count)
+      return nullptr;
+
+    switch (function_id) {
+      case CSSValueID::kCalc:
+      case CSSValueID::kWebkitCalc:
+        return const_cast<CSSMathExpressionNode*>(nodes.front().Get());
+      case CSSValueID::kMin:
+        return CSSMathExpressionOperation::CreateComparisonFunction(
+            std::move(nodes), CSSMathOperator::kMin);
+      case CSSValueID::kMax:
+        return CSSMathExpressionOperation::CreateComparisonFunction(
+            std::move(nodes), CSSMathOperator::kMax);
+      case CSSValueID::kClamp:
+        return CSSMathExpressionOperation::CreateComparisonFunction(
+            std::move(nodes), CSSMathOperator::kClamp);
       // TODO(crbug.com/1284199): Support other math functions.
       default:
         return nullptr;
     }
-  }
-
-  // TODO(pjh0718) : Integrate ParseCalc and ParseComparisonFunction to
-  // ParseMathFunction.
-  CSSMathExpressionNode* ParseCalc(CSSParserTokenRange tokens) {
-    tokens.ConsumeWhitespace();
-    CSSMathExpressionNode* result = ParseValueExpression(tokens, 0);
-    if (!result || !tokens.AtEnd())
-      return nullptr;
-    return result;
-  }
-
-  CSSMathExpressionNode* ParseComparisonFunction(CSSParserTokenRange tokens,
-                                                 CSSMathOperator op,
-                                                 int depth) {
-    DCHECK(op == CSSMathOperator::kMin || op == CSSMathOperator::kMax ||
-           op == CSSMathOperator::kClamp);
-    if (tokens.AtEnd())
-      return nullptr;
-
-    CSSMathExpressionOperation::Operands operands;
-    bool last_token_is_comma = false;
-    while (!tokens.AtEnd()) {
-      tokens.ConsumeWhitespace();
-      CSSMathExpressionNode* operand = ParseValueExpression(tokens, depth);
-      if (!operand)
-        return nullptr;
-
-      last_token_is_comma = false;
-      operands.push_back(operand);
-
-      if (!css_parsing_utils::ConsumeCommaIncludingWhitespace(tokens))
-        break;
-      last_token_is_comma = true;
-    }
-
-    if (operands.IsEmpty() || !tokens.AtEnd() || last_token_is_comma)
-      return nullptr;
-
-    if (op == CSSMathOperator::kClamp && operands.size() != 3)
-      return nullptr;
-
-    return CSSMathExpressionOperation::CreateComparisonFunction(
-        std::move(operands), op);
   }
 
  private:
@@ -1151,19 +1162,8 @@ class CSSMathExpressionNodeParser {
       CSSParserTokenRange inner_range = tokens.ConsumeBlock();
       tokens.ConsumeWhitespace();
       inner_range.ConsumeWhitespace();
-      switch (function_id) {
-        case CSSValueID::kMin:
-          return ParseComparisonFunction(inner_range, CSSMathOperator::kMin,
-                                         depth);
-        case CSSValueID::kMax:
-          return ParseComparisonFunction(inner_range, CSSMathOperator::kMax,
-                                         depth);
-        case CSSValueID::kClamp:
-          return ParseComparisonFunction(inner_range, CSSMathOperator::kClamp,
-                                         depth);
-        default:
-          break;
-      }
+      if (IsSupportedMathFunction(function_id))
+        return ParseMathFunction(function_id, inner_range, depth);
     }
 
     return ParseValue(tokens);
@@ -1371,16 +1371,9 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
 }
 
 // static
-CSSMathExpressionNode* CSSMathExpressionNode::ParseCalc(
-    const CSSParserTokenRange& tokens) {
-  CSSMathExpressionNodeParser parser;
-  return parser.ParseCalc(tokens);
-}
-
-// static
 CSSMathExpressionNode* CSSMathExpressionNode::ParseMathFunction(
     CSSValueID function_id,
-    const CSSParserTokenRange& tokens) {
+    CSSParserTokenRange tokens) {
   CSSMathExpressionNodeParser parser;
   CSSMathExpressionNode* result =
       parser.ParseMathFunction(function_id, tokens, 0);

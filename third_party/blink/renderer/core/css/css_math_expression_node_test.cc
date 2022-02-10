@@ -273,7 +273,8 @@ TEST(CSSMathExpressionNode, TestParseDeeplyNestedExpression) {
     CSSTokenizer tokenizer(String(ss.str().c_str()));
     const auto tokens = tokenizer.TokenizeToEOF();
     const CSSParserTokenRange range(tokens);
-    const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseCalc(range);
+    const CSSMathExpressionNode* res =
+        CSSMathExpressionNode::ParseMathFunction(CSSValueID::kCalc, range);
 
     if (test_case.expected) {
       EXPECT_TRUE(res);

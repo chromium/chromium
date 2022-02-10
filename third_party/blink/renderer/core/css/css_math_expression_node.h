@@ -68,10 +68,8 @@ class CORE_EXPORT CSSMathExpressionNode
   static CSSMathExpressionNode* Create(PixelsAndPercent pixels_and_percent);
   static CSSMathExpressionNode* Create(const CalculationExpressionNode& node);
 
-  static CSSMathExpressionNode* ParseCalc(const CSSParserTokenRange& tokens);
-  static CSSMathExpressionNode* ParseMathFunction(
-      CSSValueID function_id,
-      const CSSParserTokenRange& tokens);
+  static CSSMathExpressionNode* ParseMathFunction(CSSValueID function_id,
+                                                  CSSParserTokenRange tokens);
 
   virtual bool IsNumericLiteral() const { return false; }
   virtual bool IsOperation() const { return false; }
