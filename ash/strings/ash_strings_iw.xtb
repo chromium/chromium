@@ -349,7 +349,7 @@
 <translation id="334252345105450327">יצירת צילום מסך</translation>
 <translation id="3351879221545518001">מתבצעת עכשיו העברה של מסך.</translation>
 <translation id="3364721542077212959">כלי סטיילוס</translation>
-<translation id="3365977133351922112">הטלפון שלך רחוק מדי. צריך לקרב את הטלפון.</translation>
+<translation id="3365977133351922112">הטלפון שלך רחוק מדי. צריך לקרב אותו.</translation>
 <translation id="3368922792935385530">מחובר</translation>
 <translation id="3371140690572404006">‏מכשיר עם יציאת USB-C (יציאה ימנית-קדמית)</translation>
 <translation id="3375634426936648815">מחובר</translation>
@@ -371,7 +371,7 @@
 <translation id="3477079411857374384">‏Control+‏Shift+מקש הרווח</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">המדף יוסתר באופן אוטומטי</translation>
-<translation id="3509391053705095206">‏לא ניתן למצוא את הטלפון. יש לוודא שה-Bluetooth של הטלפון מופעל.</translation>
+<translation id="3509391053705095206">‏לא הצלחנו למצוא את הטלפון. צריך לוודא שה-Bluetooth שלו מופעל.</translation>
 <translation id="3510164367642747937">הדגשה של סמן העכבר</translation>
 <translation id="3513798432020909783">החשבון מנוהל על-ידי <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3518604429872942239">מגש סטטוס, שעה <ph name="TIME" />,
@@ -541,7 +541,7 @@
 <translation id="4481530544597605423">מכשירים לא מותאמים</translation>
 <translation id="4505050298327493054">שולחן עבודה וירטואלי פעיל.</translation>
 <translation id="4513946894732546136">משוב</translation>
-<translation id="4518404433291145981">‏כדי לבטל את נעילת ה-Chromebook, תחילה צריך לבטל את נעילת הטלפון</translation>
+<translation id="4518404433291145981">‏כדי לבטל את נעילת ה-Chromebook, קודם צריך לבטל את הנעילה של הטלפון</translation>
 <translation id="4527045527269911712">‏מכשיר ה-Bluetooth ‏"<ph name="DEVICE_NAME" />" מבקש הרשאה לבצע התאמה.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> עד למילוי</translation>
 <translation id="4538824937723742295">לצילום מסך מלא</translation>
@@ -1068,7 +1068,7 @@
 <translation id="8061464966246066292">ניגודיות גבוהה</translation>
 <translation id="8098591350844501178">הפסקת העברת המסך אל <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">מופעל, כל האפליקציות</translation>
-<translation id="8120151603115102514">‏לטלפון שלך אין מסך נעילה. כדי לבטל את נעילת ה-Chromebook, עליך להזין סיסמה.</translation>
+<translation id="8120151603115102514">‏לא מוגדר בטלפון שלך מסך נעילה. צריך להזין סיסמה כדי לפתוח את ה-Chromebook.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />‎°‎ C</translation>
 <translation id="8131740175452115882">אישור</translation>
 <translation id="8132487352815776550">להפסקת הכתוביות</translation>

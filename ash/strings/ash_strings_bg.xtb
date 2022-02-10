@@ -853,7 +853,7 @@
 <translation id="6667908387435388584">Свързвайте се с точката за достъп на телефона си, заглушавайте и намирайте устройството си и преглеждайте наскоро отворените на телефона ви раздели на Chrome</translation>
 <translation id="6670153871843998651">Работен кът 3</translation>
 <translation id="6671495933530132209">Копиране на изображението</translation>
-<translation id="6671661918848783005">Chromebook не се отключи</translation>
+<translation id="6671661918848783005">Chromebook не може да се отключи</translation>
 <translation id="6696025732084565524">Вашата отделяща се клавиатура се нуждае от критична актуализация</translation>
 <translation id="6700713906295497288">Бутон за меню на редактора за метод на въвеждане</translation>
 <translation id="6707693040195709527">Срокът за връщане на устройството към предишна версия е изтекъл</translation>
@@ -1066,7 +1066,7 @@
 <translation id="8061464966246066292">Висок контраст</translation>
 <translation id="8098591350844501178">Спиране на предаването на екрана към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="8113423164597455979">Вкл. за всички</translation>
-<translation id="8120151603115102514">Телефонът ви няма заключен екран. За да отключите своя Chromebook, въведете паролата си.</translation>
+<translation id="8120151603115102514">Телефонът ви няма активирано заключване на екрана. За да отключите своя Chromebook, въведете паролата си.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8131740175452115882">Потвърждаване</translation>
 <translation id="8132487352815776550">Спиране на надписите</translation>

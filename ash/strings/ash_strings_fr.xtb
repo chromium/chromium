@@ -371,7 +371,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3477079411857374384">Ctrl+Maj+Espace</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Étagère automatiquement masquée</translation>
-<translation id="3509391053705095206">Impossible de localiser votre téléphone. Vérifiez que le Bluetooth y est activé.</translation>
+<translation id="3509391053705095206">Impossible de trouver votre téléphone. Vérifiez que le Bluetooth y est activé.</translation>
 <translation id="3510164367642747937">Mettre le curseur de la souris en surbrillance</translation>
 <translation id="3513798432020909783">Compte géré par <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3518604429872942239">Barre d'état, il est <ph name="TIME" />,
@@ -662,7 +662,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5322611492012084517">Impossible de trouver votre téléphone</translation>
 <translation id="5327248766486351172">Nom</translation>
 <translation id="5329548388331921293">Connexion…</translation>
-<translation id="5330201449517439522">Appuyez ou cliquez pour avoir accès</translation>
+<translation id="5330201449517439522">Appuyez ou cliquez pour entrer</translation>
 <translation id="5331975486040154427">Appareil USB de type C (port situé sur la gauche de l'appareil, à l'arrière)</translation>
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" /> % (droit)</translation>
 <translation id="5352250171825660495">Le thème sombre est activé</translation>
@@ -1066,7 +1066,7 @@ Nouvelle installation</translation>
 <translation id="8061464966246066292">Contraste élevé</translation>
 <translation id="8098591350844501178">Arrêter de diffuser l'écran sur "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="8113423164597455979">Activées, toutes applis</translation>
-<translation id="8120151603115102514">Votre téléphone n'a pas d'écran de verrouillage. Pour déverrouiller votre Chromebook, saisissez le mot de passe.</translation>
+<translation id="8120151603115102514">Votre téléphone n'a pas d'écran de verrouillage. Déverrouillez votre Chromebook avec votre mot de passe.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmer</translation>
 <translation id="8132487352815776550">Fermer les sous-titres</translation>
@@ -1125,7 +1125,7 @@ Nouvelle installation</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> a <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Appuyez sur Alt+Rechercher ou Maj pour annuler.</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> n'est pas compatible avec la résolution <ph name="SPECIFIED_RESOLUTION" />. La résolution <ph name="FALLBACK_RESOLUTION" /> sera utilisée à la place. Cliquez sur "Confirmer" pour conserver les modifications. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
-<translation id="85123341071060231">Le Bluetooth est désactivé sur votre Chromebook. Pour déverrouiller votre Chromebook, saisissez le mot de passe.</translation>
+<translation id="85123341071060231">Le Bluetooth est désactivé sur votre Chromebook. Pour déverrouiller, saisissez votre mot de passe.</translation>
 <translation id="8513108775083588393">Rotation auto</translation>
 <translation id="851458219935658693">Afficher les fenêtres du bureau actuel, case d'option cochée</translation>
 <translation id="8517041960877371778">Il est possible que votre appareil <ph name="DEVICE_TYPE" /> ne se recharge pas lorsqu'il est allumé.</translation>
