@@ -346,11 +346,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
   bool CacheControlContainsNoStore() const;
   bool HasCacheValidatorFields() const;
 
-  // https://wicg.github.io/cors-rfc1918/#external-request
-  bool IsExternalRequest() const { return is_external_request_; }
-  void SetExternalRequestStateFromRequestorAddressSpace(
-      network::mojom::IPAddressSpace);
-
   network::mojom::CorsPreflightPolicy CorsPreflightPolicy() const {
     return cors_preflight_policy_;
   }
@@ -585,7 +580,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
   String fetch_integrity_;
   String referrer_string_;
   network::mojom::ReferrerPolicy referrer_policy_;
-  bool is_external_request_;
   network::mojom::CorsPreflightPolicy cors_preflight_policy_;
   absl::optional<RedirectInfo> redirect_info_;
   absl::optional<network::mojom::blink::TrustTokenParams> trust_token_params_;

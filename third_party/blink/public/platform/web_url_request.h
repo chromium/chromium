@@ -247,9 +247,6 @@ class WebURLRequest {
   BLINK_PLATFORM_EXPORT Priority GetPriority() const;
   BLINK_PLATFORM_EXPORT void SetPriority(Priority);
 
-  // https://wicg.github.io/cors-rfc1918/#external-request
-  BLINK_PLATFORM_EXPORT bool IsExternalRequest() const;
-
   BLINK_PLATFORM_EXPORT network::mojom::CorsPreflightPolicy
   GetCorsPreflightPolicy() const;
 

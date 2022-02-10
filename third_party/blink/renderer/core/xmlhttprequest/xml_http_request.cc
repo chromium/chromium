@@ -1057,8 +1057,6 @@ void XMLHttpRequest::CreateRequest(scoped_refptr<EncodedFormData> http_body,
       with_credentials_ ? network::mojom::CredentialsMode::kInclude
                         : network::mojom::CredentialsMode::kSameOrigin);
   request.SetSkipServiceWorker(world_ && world_->IsIsolatedWorld());
-  request.SetExternalRequestStateFromRequestorAddressSpace(
-      execution_context.AddressSpace());
   if (trust_token_params_)
     request.SetTrustTokenParams(*trust_token_params_);
 

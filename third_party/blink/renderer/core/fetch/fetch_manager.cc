@@ -802,8 +802,6 @@ void FetchManager::Loader::PerformHTTPFetch() {
   request.SetFetchImportanceMode(fetch_request_data_->Importance());
   request.SetPriority(fetch_request_data_->Priority());
   request.SetUseStreamOnResponse(true);
-  request.SetExternalRequestStateFromRequestorAddressSpace(
-      execution_context_->AddressSpace());
   request.SetReferrerString(fetch_request_data_->ReferrerString());
   request.SetReferrerPolicy(fetch_request_data_->GetReferrerPolicy());
 

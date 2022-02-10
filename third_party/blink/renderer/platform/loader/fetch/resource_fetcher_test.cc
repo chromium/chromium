@@ -86,19 +86,6 @@ namespace {
 constexpr char kTestResourceFilename[] = "white-1x1.png";
 constexpr char kTestResourceMimeType[] = "image/png";
 
-const FetchClientSettingsObjectSnapshot& CreateFetchClientSettingsObject(
-    network::mojom::IPAddressSpace address_space) {
-  return *MakeGarbageCollected<FetchClientSettingsObjectSnapshot>(
-      KURL("https://example.com/foo.html"),
-      KURL("https://example.com/foo.html"),
-      SecurityOrigin::Create(KURL("https://example.com/")),
-      network::mojom::ReferrerPolicy::kDefault, "https://example.com/foo.html",
-      HttpsState::kModern, AllowedByNosniff::MimeTypeCheck::kStrict,
-      address_space,
-      mojom::blink::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,
-      FetchClientSettingsObject::InsecureNavigationsSet());
-}
-
 class PartialResourceRequest {
  public:
   PartialResourceRequest() : PartialResourceRequest(ResourceRequest()) {}
@@ -1380,86 +1367,6 @@ TEST_F(ResourceFetcherTest, Detach) {
   EXPECT_EQ(&properties, &fetcher->GetProperties());
 
   EXPECT_TRUE(properties.IsDetached());
-}
-
-// TODO(crbug.com/850785): Reenable this.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_SetIsExternalRequest DISABLED_SetIsExternalRequest
-#else
-#define MAYBE_SetIsExternalRequest SetIsExternalRequest
-#endif
-TEST_F(ResourceFetcherTest, MAYBE_SetIsExternalRequest) {
-  struct TestCase {
-    const char* url;
-    bool is_external_expectation_public;
-    bool is_external_expectation_private;
-    bool is_external_expectation_local;
-  } cases[] = {{"data:text/html,whatever", false, false, false},
-               {"file:///etc/passwd", false, false, false},
-               {"blob:http://example.com/", false, false, false},
-
-               {"http://example.com/", false, false, false},
-               {"https://example.com/", false, false, false},
-
-               {"http://192.168.1.1:8000/", true, false, false},
-               {"http://10.1.1.1:8000/", true, false, false},
-
-               {"http://localhost/", true, true, false},
-               {"http://127.0.0.1/", true, true, false},
-               {"http://127.0.0.1:8000/", true, true, false}};
-
-  for (const auto address_space : {network::mojom::IPAddressSpace::kPublic,
-                                   network::mojom::IPAddressSpace::kPrivate,
-                                   network::mojom::IPAddressSpace::kLocal}) {
-    auto* fetcher =
-        CreateFetcher(*MakeGarbageCollected<TestResourceFetcherProperties>(
-                          CreateFetchClientSettingsObject(address_space)),
-                      MakeGarbageCollected<MockFetchContext>());
-    EXPECT_EQ(address_space, fetcher->GetProperties()
-                                 .GetFetchClientSettingsObject()
-                                 .GetAddressSpace());
-
-    for (const bool enabled : {false, true}) {
-      ScopedCorsRFC1918ForTest cors_rfc1918(enabled);
-      for (const auto& test : cases) {
-        SCOPED_TRACE(test.url);
-        FetchParameters fetch_params =
-            FetchParameters::CreateForTest(ResourceRequest(test.url));
-        RegisterMockedURLLoad(fetch_params.Url());
-
-        Resource* new_resource =
-            MockResource::Fetch(fetch_params, fetcher, nullptr);
-        ASSERT_TRUE(new_resource);
-
-        if (enabled) {
-          bool expected;
-          switch (address_space) {
-            case network::mojom::IPAddressSpace::kPublic:
-              expected = test.is_external_expectation_public;
-              break;
-            case network::mojom::IPAddressSpace::kPrivate:
-              expected = test.is_external_expectation_private;
-              break;
-            case network::mojom::IPAddressSpace::kLocal:
-              expected = test.is_external_expectation_local;
-              break;
-            case network::mojom::IPAddressSpace::kUnknown:
-              NOTREACHED();
-              break;
-          }
-          EXPECT_EQ(expected,
-                    new_resource->GetResourceRequest().IsExternalRequest());
-        } else {
-          EXPECT_FALSE(new_resource->GetResourceRequest().IsExternalRequest());
-        }
-
-        // Clear mocked URLs from mock loader and MemoryCache.
-        platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
-        platform_->GetURLLoaderMockFactory()
-            ->UnregisterAllURLsAndClearMemoryCache();
-      }
-    }
-  }
 }
 
 }  // namespace blink

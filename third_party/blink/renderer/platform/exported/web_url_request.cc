@@ -386,10 +386,6 @@ void WebURLRequest::SetPriority(WebURLRequest::Priority priority) {
   resource_request_->SetPriority(static_cast<ResourceLoadPriority>(priority));
 }
 
-bool WebURLRequest::IsExternalRequest() const {
-  return resource_request_->IsExternalRequest();
-}
-
 network::mojom::CorsPreflightPolicy WebURLRequest::GetCorsPreflightPolicy()
     const {
   return resource_request_->CorsPreflightPolicy();

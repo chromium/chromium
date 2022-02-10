@@ -890,9 +890,6 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
 
   SetReferrer(resource_request, properties_->GetFetchClientSettingsObject());
 
-  resource_request.SetExternalRequestStateFromRequestorAddressSpace(
-      properties_->GetFetchClientSettingsObject().GetAddressSpace());
-
   Context().AddAdditionalRequestHeaders(resource_request);
 
   TRACE_EVENT_NESTABLE_ASYNC_INSTANT1(
