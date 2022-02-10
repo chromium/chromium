@@ -668,6 +668,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.Android.PasswordCredentialEntry"
     enum="PasswordManagerAndroidPasswordEntryActions" expires_after="M95">
+  <obsolete>
+    Obsolete since M95.
+  </obsolete>
   <owner>fhorschig@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -678,6 +681,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.Android.PasswordCredentialEntry.Password"
     enum="PasswordManagerAndroidPasswordActions" expires_after="M95">
+  <obsolete>
+    Obsolete since M95.
+  </obsolete>
   <owner>fhorschig@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -688,6 +694,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.Android.PasswordCredentialEntry.Username"
     enum="PasswordManagerAndroidUsernameActions" expires_after="M95">
+  <obsolete>
+    Osbolete since M95.
+  </obsolete>
   <owner>fhorschig@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -700,6 +709,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.Android.PasswordCredentialEntry.Website"
     enum="PasswordManagerAndroidWebsiteActions" expires_after="M95">
+  <obsolete>
+    Obsolete since M95.
+  </obsolete>
   <owner>fhorschig@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -712,6 +724,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.Android.PasswordExceptionEntry"
     enum="PasswordManagerAndroidPasswordEntryActions" expires_after="M95">
+  <obsolete>
+    Obsolete since M95.
+  </obsolete>
   <owner>fhorschig@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -722,6 +737,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.Android.PasswordExceptionEntry.Website"
     enum="PasswordManagerAndroidWebsiteActions" expires_after="M95">
+  <obsolete>
+    Obsolete since M95.
+  </obsolete>
   <owner>fhorschig@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>

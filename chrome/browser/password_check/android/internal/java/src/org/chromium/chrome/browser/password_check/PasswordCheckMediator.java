@@ -254,18 +254,7 @@ class PasswordCheckMediator
     public void onEdit(CompromisedCredential credential, Context context) {
         PasswordCheckMetricsRecorder.recordUiUserAction(
                 PasswordCheckUserAction.EDIT_PASSWORD_CLICK);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS)) {
-            mDelegate.onEditCredential(credential, context);
-            return;
-        }
-        if (!mReauthenticationHelper.canReauthenticate()) {
-            mReauthenticationHelper.showScreenLockToast(ReauthReason.VIEW_PASSWORD);
-            return;
-        }
-
-        mReauthenticationHelper.reauthenticate(ReauthReason.EDIT_PASSWORD, reauthSucceeded -> {
-            if (reauthSucceeded) mChangePasswordDelegate.launchEditPage(credential);
-        });
+        mDelegate.onEditCredential(credential, context);
     }
 
     @Override

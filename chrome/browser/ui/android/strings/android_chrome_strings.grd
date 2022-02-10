@@ -648,9 +648,6 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PASSWORD_VIA_FEDERATION" desc="Text for federated credential's value.">
         with <ph name="PROVIDER">%1$s<ex>example.com</ex></ph>
       </message>
-      <message name="IDS_PASSWORD_ENTRY_VIEWER_COPY_STORED_SITE" desc='Content description for the button that copies the stored site.'>
-        Copy URL
-      </message>
       <message name="IDS_PASSWORD_ENTRY_VIEWER_COPY_STORED_USERNAME" desc='Content description for the button that copies the stored username.'>
         Copy username
       </message>
@@ -678,14 +675,8 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PASSWORD_ENTRY_VIEWER_USERNAME_COPIED_INTO_CLIPBOARD" desc='Text that announces to the user that the username of a saved account has been copied into clipboard.'>
         Username copied
       </message>
-      <message name="IDS_PASSWORD_ENTRY_VIEWER_SITE_COPIED_INTO_CLIPBOARD" desc='Text that announces to the user that the site of a saved account has been copied into clipboard.'>
-        Site copied
-      </message>
       <message name="IDS_PASSWORD_ENTRY_VIEWER_PASSWORD_COPIED_INTO_CLIPBOARD" desc='Text that announces to the user that the password of a saved account has been copied into clipboard.'>
         Password copied
-      </message>
-      <message name="IDS_PASSWORD_ENTRY_VIEWER_SET_LOCK_SCREEN" desc='Text prompting user to set device lock in order to view/copy passwords'>
-        To view or copy your password here, set screen lock on this device.
       </message>
       <message name="IDS_PASSWORD_ENTRY_VIEW_SET_SCREEN_LOCK" desc='Text prompting user to set up screen lock on their device in order to view passwords'>
         To view passwords, first set a screen lock on your device

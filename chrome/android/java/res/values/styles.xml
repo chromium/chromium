@@ -391,16 +391,6 @@
         <item name="android:windowExitAnimation">@null</item>
     </style>
 
-    <!-- Password manager settings page -->
-    <style name="PasswordEntryName">
-        <item name="android:textAppearance">@style/TextAppearance.PasswordEntryName</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-    </style>
-    <style name="TextAppearance.PasswordEntryName" parent="TextAppearance.Button.Text.Blue">
-        <item name="android:textAllCaps">false</item>
-    </style>
-
     <!-- Context menu -->
     <style name="ContextMenuItemText">
         <item name="android:background">?attr/selectableItemBackground</item>

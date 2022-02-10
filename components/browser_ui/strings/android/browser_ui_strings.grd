@@ -171,9 +171,6 @@
     <messages fallback_to_english="true">
       <part file="site_settings.grdp" />
 
-      <message name="IDS_DELETED" desc='Text that announces to the user that something was deleted.'>
-        Deleted
-      </message>
       <message name="IDS_GOT_IT" desc="Button for the user to accept a disclosure/message">
         Got it
       </message>

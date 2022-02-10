@@ -352,15 +352,6 @@ id<GREYMatcher> EditDoneButton() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
-  // Password Editing Feature is enabled by test name. This is done because it
-  // is inefficient to use ensureAppLaunchedWithConfiguration for each test.
-  // This should be removed once test config is modified.
-  if ([self isRunningTest:@selector(testEditUsername)] ||
-      [self isRunningTest:@selector(testEditUsernameFails)]) {
-    config.features_enabled.push_back(
-        password_manager::features::kEditPasswordsInSettings);
-  }
-
   if ([self isRunningTest:@selector(testToolbarAddPasswordButton)] ||
       [self isRunningTest:@selector(testNoAddButtonInEditMode)] ||
       [self isRunningTest:@selector(testAddNewPasswordCredential)] ||

@@ -27,10 +27,6 @@ const base::Feature kDetectFormSubmissionOnFormClear = {
 #endif
 };
 
-// Enables the editing of passwords in Chrome settings.
-const base::Feature kEditPasswordsInSettings = {
-    "EditPasswordsInSettings", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables UI that allows the user to create a strong password even if the field
 // wasn't parsed as a new password field.
 // TODO(crbug/1181254): Remove once it's launched.

@@ -6751,11 +6751,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          password_manager::features::kSupportForAddPasswordsInSettings)},
 
-    {"edit-passwords-in-settings",
-     flag_descriptions::kEditPasswordsInSettingsName,
-     flag_descriptions::kEditPasswordsInSettingsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(password_manager::features::kEditPasswordsInSettings)},
-
     {"mute-compromised-passwords",
      flag_descriptions::kMuteCompromisedPasswordsName,
      flag_descriptions::kMuteCompromisedPasswordsDescription, kOsDesktop,
