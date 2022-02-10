@@ -171,8 +171,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 @property(nonatomic, readonly) WebStateList* webStateList;
 // Handler for URL drag interactions.
 @property(nonatomic, strong) TableViewURLDragDropHandler* dragDropHandler;
-// Search term for filtering displayed items.
-@property(nonatomic, copy) NSString* searchTerm;
 @end
 
 @implementation RecentTabsTableViewController : ChromeTableViewController
@@ -365,7 +363,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   if (!self.tabRestoreService)
     return;
 
-  if (!IsTabsSearchEnabled() || !self.searchTerm.length) {
+  if (!IsTabsSearchEnabled() || !self.searchTerms.length) {
     // A manual item refresh is necessary when tab search is disabled or when
     // there is no search term.
 
@@ -768,10 +766,14 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
       }];
 }
 
-- (void)searchTextChanged:(NSString*)searchTerm {
+- (void)setSearchTerms:(NSString*)searchTerms {
   DCHECK(IsTabsSearchEnabled());
 
-  self.searchTerm = searchTerm;
+  if (_searchTerms == searchTerms) {
+    return;
+  }
+
+  _searchTerms = searchTerms;
 
   if (self.preventUpdates)
     return;
@@ -780,7 +782,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
       TabsSearchServiceFactory::GetForBrowserState(self.browserState);
   __weak RecentTabsTableViewController* weakSelf = self;
   const std::u16string& search_terms =
-      base::SysNSStringToUTF16(self.searchTerm);
+      base::SysNSStringToUTF16(self.searchTerms);
 
   search_service->SearchRecentlyClosed(
       search_terms,
@@ -889,7 +891,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     return;
   }
 
-  if (!IsTabsSearchEnabled() || !self.searchTerm.length) {
+  if (!IsTabsSearchEnabled() || !self.searchTerms.length) {
     // A manual item refresh is necessary when tab search is disabled or there
     // is no search term.
     sync_sessions::SessionSyncService* syncService =

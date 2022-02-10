@@ -617,6 +617,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     return;
   }
 
+  // Reset search state when leaving search mode.
+  if (IsTabsSearchEnabled() && _tabGridMode == TabGridModeSearch) {
+    self.remoteTabsViewController.searchTerms = nil;
+    [self hideScrim];
+  }
+
   _tabGridMode = mode;
 
   self.bottomToolbar.mode = self.tabGridMode;
@@ -1791,6 +1797,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 // Shows scrim overlay.
 - (void)showScrim {
+  if (self.isScrimDisplayed) {
+    return;
+  }
+
   self.scrimView.alpha = 0.0f;
   [self.scrollContentView addSubview:self.scrimView];
   AddSameConstraints(self.scrimView, self.view.superview);
@@ -1811,6 +1821,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 // Hides scrim overlay.
 - (void)hideScrim {
+  if (!self.isScrimDisplayed) {
+    return;
+  }
+
   __weak TabGridViewController* weakSelf = self;
   [UIView animateWithDuration:0.2
       animations:^{
@@ -1849,21 +1863,18 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       // data.
       break;
     case TabGridPageRemoteTabs:
-      [self.remoteTabsViewController searchTextChanged:searchText];
+      self.remoteTabsViewController.searchTerms = searchText;
       break;
   }
 }
 
 - (void)updateScrimVisibilityForText:(NSString*)searchText {
   if (_tabGridMode == TabGridModeSearch && searchText.length == 0) {
-    if (!self.isScrimDisplayed)
-      [self showScrim];
+    [self showScrim];
   } else {
     // If no results have been presented yet, then hide the scrim to present the
     // results.
-    if (self.isScrimDisplayed) {
-      [self hideScrim];
-    }
+    [self hideScrim];
   }
 }
 
