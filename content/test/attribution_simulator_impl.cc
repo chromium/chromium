@@ -195,7 +195,7 @@ base::Value RunAttributionSimulationOrExit(
   if (last_report_time.has_value())
     task_environment.FastForwardBy(*last_report_time - base::Time::Now());
 
-  base::DictionaryValue output;
+  base::Value output(base::Value::Type::DICTIONARY);
   output.SetKey("reports", base::Value(std::move(reports)));
   return output;
 }
