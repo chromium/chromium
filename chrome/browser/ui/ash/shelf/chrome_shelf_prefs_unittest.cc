@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
 #include "base/values.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
@@ -136,6 +137,8 @@ class ChromeShelfPrefsTest : public testing::Test {
         prefs::kShelfDefaultPinLayoutRolls);
     pref_service_.registry()->RegisterListPref(
         prefs::kPolicyPinnedLauncherApps);
+    pref_service_.registry()->RegisterBooleanPref(
+        ash::prefs::kFilesAppUIPrefsMigrated, true);
   }
 
   void TearDown() override { shelf_prefs_.reset(); }
