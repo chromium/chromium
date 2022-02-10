@@ -53,7 +53,15 @@ class ASH_EXPORT AmbientAnimationResizer {
   // described above. The |animated_image_view| must:
   // * Have initialized non-empty bounds.
   // * Have been initialized already with a lottie::Animation.
-  static void Resize(views::AnimatedImageView& animated_image_view);
+  //
+  // |padding_for_jitter| specifies the additional padding in pixels that will
+  // be applied to all 4 sides of the animation when it gets resized. For
+  // landscape for example, the new animation width will end up being
+  // |2 * padding_for_jitter| larger than the view's width. This allows the
+  // animation to be translated in any direction by the padding amount while
+  // still overlapping with the view's content bounds.
+  static void Resize(views::AnimatedImageView& animated_image_view,
+                     int padding_for_jitter = 0);
 };
 
 }  // namespace ash

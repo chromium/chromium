@@ -78,6 +78,15 @@ TEST(AmbientAnimationResizerTest, LandscapeScalesUpByWidth) {
       gfx::Rect(0, -(375 / 2), 2500, 1875), /*tolerance=*/1));
 }
 
+TEST(AmbientAnimationResizerTest, LandscapeAppliesJitter) {
+  auto view =
+      CreateAnimatedImageView(gfx::Size(2000, 1500), gfx::Rect(1000, 600));
+  AmbientAnimationResizer::Resize(*view, /*padding_for_jitter=*/10);
+  // New Height: 1500 * (1020 / 2000) = 765
+  // New Y origin: -(765 - 600) / 2 = 82.5
+  EXPECT_THAT(view->GetImageBounds(), Eq(gfx::Rect(-10, -82, 1020, 765)));
+}
+
 TEST(AmbientAnimationResizerTest, PortraitScalesDownWidthAndCropsHeight) {
   auto view =
       CreateAnimatedImageView(gfx::Size(1500, 2000), gfx::Rect(600, 1000));
@@ -117,6 +126,15 @@ TEST(AmbientAnimationResizerTest, PortraitScalesUpByWidth) {
   AmbientAnimationResizer::Resize(*view);
   EXPECT_TRUE(view->GetImageBounds().ApproximatelyEqual(
       gfx::Rect(-(375 / 2), 0, 1875, 2500), /*tolerance=*/1));
+}
+
+TEST(AmbientAnimationResizerTest, PortraitAppliesJitter) {
+  auto view =
+      CreateAnimatedImageView(gfx::Size(1500, 2000), gfx::Rect(600, 1000));
+  AmbientAnimationResizer::Resize(*view, /*padding_for_jitter=*/10);
+  // New Width: 1500 * (1020 / 2000) = 765
+  // New X origin: -(765 - 600) / 2 = 82.5
+  EXPECT_THAT(view->GetImageBounds(), Eq(gfx::Rect(-82, -10, 765, 1020)));
 }
 
 }  // namespace ash

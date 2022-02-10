@@ -16,12 +16,15 @@ namespace ash {
 
 // static
 void AmbientAnimationResizer::Resize(
-    views::AnimatedImageView& animated_image_view) {
+    views::AnimatedImageView& animated_image_view,
+    int padding_for_jitter) {
   DCHECK(animated_image_view.animated_image());
+  DCHECK_GE(padding_for_jitter, 0);
   gfx::Size animation_size =
       animated_image_view.animated_image()->GetOriginalSize();
   DCHECK(!animation_size.IsEmpty());
   gfx::Rect destination_bounds = animated_image_view.GetContentsBounds();
+  destination_bounds.Outset(padding_for_jitter, padding_for_jitter);
   DCHECK(!destination_bounds.IsEmpty());
   gfx::Size animation_resized;
   if (destination_bounds.width() >= destination_bounds.height()) {
@@ -34,8 +37,7 @@ void AmbientAnimationResizer::Resize(
     // happen, so it's worth recording.
     animation_resized.set_height(
         base::ClampRound(animation_size.height() * width_scale_factor));
-    animated_image_view.SetVerticalAlignment(
-        views::ImageViewBase::Alignment::kCenter);
+
   } else {
     // Portrait: Scale the height and crop the width.
     float height_scale_factor =
@@ -44,9 +46,11 @@ void AmbientAnimationResizer::Resize(
     animation_resized.set_height(destination_bounds.height());
     animation_resized.set_width(
         base::ClampRound(animation_size.width() * height_scale_factor));
-    animated_image_view.SetHorizontalAlignment(
-        views::ImageViewBase::Alignment::kCenter);
   }
+  animated_image_view.SetVerticalAlignment(
+      views::ImageViewBase::Alignment::kCenter);
+  animated_image_view.SetHorizontalAlignment(
+      views::ImageViewBase::Alignment::kCenter);
   // The animation's new scaled size has been computed above.
   // AnimatedImageView::SetImageSize() takes care of both a) applying the
   // scaled size and b) cropping by translating the canvas before painting such
