@@ -315,6 +315,43 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Cryptohome.LoginDiskCleanupProgress"
+    enum="CryptohomeLoginDiskCleanupProgress" expires_after="2023-02-01">
+  <owner>vsavu@google.com</owner>
+  <owner>sarthakkukreti@chromium.org</owner>
+  <summary>
+    When disk space is very low during login, cryptohome will remove other users
+    to ensure that the current user can successfully log in. This metric tracks
+    what was performed to free up space.
+
+    cryptohomed reports what step was reached to fulfill a cleanup request. The
+    steps are described in CryptohomeLoginDiskCleanupProgress and are executed
+    in order.
+  </summary>
+</histogram>
+
+<histogram name="Cryptohome.LoginDiskCleanupResult"
+    enum="CryptohomeDiskCleanupResult" expires_after="2023-02-01">
+  <owner>vsavu@google.com</owner>
+  <owner>sarthakkukreti@chromium.org</owner>
+  <summary>
+    Records the result of triggering disk cleanup during login. Reports failure
+    when any error is encountered and skipped if enough disk space is already
+    available.
+  </summary>
+</histogram>
+
+<histogram name="Cryptohome.LoginDiskCleanupTotalTime" units="ms"
+    expires_after="2023-02-01">
+  <owner>vsavu@google.com</owner>
+  <owner>sarthakkukreti@chromium.org</owner>
+  <summary>
+    When disk space is very low during login, cryptohome will remove other users
+    to ensure that the current user can successfully log in. This metric records
+    how long cleanup took before the user logged in.
+  </summary>
+</histogram>
+
 <histogram name="Cryptohome.MigrationUI.ConsumedBatteryPercent" units="%"
     expires_after="2020-07-01">
   <owner>fukino@chromium.org</owner>
