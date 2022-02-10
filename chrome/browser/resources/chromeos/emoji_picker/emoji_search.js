@@ -152,13 +152,34 @@ export class EmojiSearch extends PolymerElement {
       ev.preventDefault();
       ev.stopPropagation();
 
-      // focus first item in result list.
-      const firstButton = this.shadowRoot.querySelector('.result');
-      firstButton.focus();
+      if (!this.v2Enabled) {
+        // focus first item in result list.
+        const firstButton = this.shadowRoot.querySelector('.result');
+        firstButton.focus();
 
-      // if there is only one result, select it on enter.
-      if (isEnter && this.emojiResults.length === 1) {
-        firstButton.querySelector('emoji-button').click();
+        // if there is only one result, select it on enter.
+        if (isEnter && this.emojiResults.length === 1) {
+          firstButton.querySelector('emoji-button').click();
+        }
+      } else {
+        const emojiButton = this.shadowRoot.querySelector('emoji-group')
+                                .shadowRoot.querySelector('emoji-button');
+        const emoticonButton =
+            this.shadowRoot.querySelector('emoticon-group')
+                .shadowRoot.querySelector('.emoticon-button');
+        if (this.emojiResults.length > 0) {
+          emojiButton.shadowRoot.querySelector('#emoji-button').focus();
+        } else if (this.emoticonResults.length > 0) {
+          emoticonButton.focus();
+        }
+        if (isEnter && this.emojiResults.length === 1 &&
+            this.emoticonResults.length === 0) {
+          emojiButton.shadowRoot.querySelector('#emoji-button').click();
+        } else if (
+            isEnter && this.emojiResults.length === 0 &&
+            this.emoticonResults.length === 1) {
+          emoticonButton.click();
+        }
       }
     }
   }

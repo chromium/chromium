@@ -262,33 +262,81 @@ suite('emoji-picker-extension', () => {
             rightChevron.style.display === 'flex');
   });
 
-  test('By default, there is no search result.', () => {
-    const searchResults = findInEmojiPicker('emoji-search', '#results');
-    assert(!searchResults);
+  suite('<emoji-search>', () => {
+    let emojiSearch;
+    setup(() => {
+      emojiSearch = findInEmojiPicker('emoji-search');
+    });
+
+    test('By default, there is no search result.', () => {
+      const searchResults = findInEmojiPicker('emoji-search', '#results');
+      assert(!searchResults);
+    });
+
+    test(
+        'If matching, search should return both emoji and emoticon results.',
+        () => {
+          emojiSearch.search = 'face';
+          flush();
+          const emojiResults = findInEmojiPicker('emoji-search', 'emoji-group')
+                                   .shadowRoot.querySelectorAll('emoji-button');
+          assertGT(emojiResults.length, 0);
+          const emoticonResults =
+              findInEmojiPicker('emoji-search', 'emoticon-group')
+                  .shadowRoot.querySelectorAll('.emoticon-button');
+          assertGT(emoticonResults.length, 0);
+        });
+
+    test(
+        'Search should display meaningful output when no result is found.',
+        () => {
+          emojiSearch.search = 'zyxt';
+          flush();
+          const message = findInEmojiPicker('emoji-search', '.no-result');
+          assert(message);
+          assertEquals(message.innerText, 'No result found');
+        });
+
+    test(
+        'If there is only one emoji returned, pressing Enter triggers the ' +
+            'clicking event.',
+        async () => {
+          emojiSearch.search = 'zombi';
+          await flush();
+          const enterEvent = new KeyboardEvent(
+              'keydown', {cancelable: true, key: 'Enter', keyCode: 13});
+          const buttonClickPromise = new Promise(
+              (resolve) =>
+                  emojiPicker.addEventListener(EMOJI_BUTTON_CLICK, (event) => {
+                    assertEquals('🧟', event.detail.text);
+                    assertEquals('zombie', event.detail.name.trim());
+                    resolve();
+                  }));
+          emojiSearch.onSearchKeyDown(enterEvent);
+          await waitWithTimeout(
+              buttonClickPromise, 1000,
+              'Failed to receive emoji button click event.');
+        });
+    test(
+        'If there is only emoticon returned, pressing Enter triggers the ' +
+            'clicking event.',
+        async () => {
+          emojiSearch.search = 'cat';
+          await flush();
+          const enterEvent = new KeyboardEvent(
+              'keydown', {cancelable: true, key: 'Enter', keyCode: 13});
+
+          const buttonClickPromise = new Promise(
+              (resolve) =>
+                  emojiPicker.addEventListener(EMOJI_BUTTON_CLICK, (event) => {
+                    assertEquals('=^.^=', event.detail.text);
+                    resolve();
+                  }));
+
+          emojiSearch.onSearchKeyDown(enterEvent);
+          await waitWithTimeout(
+              buttonClickPromise, 1000,
+              'Failed to receive emoji button click event.');
+        });
   });
-
-  test(
-      'If matching, search should return both emoji and emoticon results',
-      () => {
-        const emojiSearch = findInEmojiPicker('emoji-search');
-        emojiSearch.search = 'face';
-        flush();
-        const emojiResults = findInEmojiPicker('emoji-search', 'emoji-group')
-                                 .shadowRoot.querySelectorAll('emoji-button');
-        assertGT(emojiResults.length, 0);
-        const emoticonResults =
-            findInEmojiPicker('emoji-search', 'emoticon-group')
-                .shadowRoot.querySelectorAll('.emoticon-button');
-        assertGT(emoticonResults.length, 0);
-      });
-
-  test(
-      'Search should display meaningful output when no result is found', () => {
-        const emojiSearch = findInEmojiPicker('emoji-search');
-        emojiSearch.search = 'zyxt';
-        flush();
-        const message = findInEmojiPicker('emoji-search', '.no-result');
-        assert(message);
-        assertEquals(message.innerText, 'No result found');
-      });
 });
