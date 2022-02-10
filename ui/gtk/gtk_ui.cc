@@ -534,9 +534,24 @@ bool GtkUi::GetDefaultUsesSystemTheme() const {
 }
 
 gfx::Image GtkUi::GetIconForContentType(const std::string& content_type,
-                                        int size) const {
+                                        int dip_size,
+                                        float scale) const {
   // This call doesn't take a reference.
   GtkIconTheme* theme = GetDefaultIconTheme();
+
+  // GTK expects an integral scale. If `scale` is integral, pass it to GTK;
+  // otherwise pretend the scale is 1 and manually recalculate `size`.
+  int size;
+  int scale_int;
+  int scale_floor = base::ClampFloor(scale);
+  int scale_ceil = base::ClampCeil(scale);
+  if (scale_floor == scale_ceil) {
+    scale_int = scale_floor;
+    size = dip_size;
+  } else {
+    scale_int = 1;
+    size = scale * dip_size;
+  }
 
   std::string content_types[] = {content_type, kUnknownContentType};
 
@@ -545,7 +560,7 @@ gfx::Image GtkUi::GetIconForContentType(const std::string& content_type,
     SkBitmap bitmap;
     if (GtkCheckVersion(4)) {
       auto icon_paintable = Gtk4IconThemeLookupByGicon(
-          theme, icon.get(), size, 1, GTK_TEXT_DIR_NONE,
+          theme, icon.get(), size, scale_int, GTK_TEXT_DIR_NONE,
           static_cast<GtkIconLookupFlags>(0));
       if (!icon_paintable)
         continue;
@@ -564,8 +579,8 @@ gfx::Image GtkUi::GetIconForContentType(const std::string& content_type,
 
       gsk_render_node_unref(node);
     } else {
-      auto icon_info = Gtk3IconThemeLookupByGicon(
-          theme, icon.get(), size,
+      auto icon_info = Gtk3IconThemeLookupByGiconForScale(
+          theme, icon.get(), size, scale_int,
           static_cast<GtkIconLookupFlags>(GTK_ICON_LOOKUP_FORCE_SIZE));
       if (!icon_info)
         continue;
@@ -591,7 +606,8 @@ gfx::Image GtkUi::GetIconForContentType(const std::string& content_type,
         continue;
       }
     }
-    gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+    gfx::ImageSkia image_skia =
+        gfx::ImageSkia::CreateFromBitmap(bitmap, scale_int);
     image_skia.MakeThreadSafe();
     return gfx::Image(image_skia);
   }

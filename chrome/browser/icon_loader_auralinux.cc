@@ -42,7 +42,7 @@ void IconLoader::ReadIcon() {
   gfx::Image image;
   views::LinuxUI* ui = views::LinuxUI::instance();
   if (ui) {
-    image = gfx::Image(ui->GetIconForContentType(group_, size_pixels));
+    image = ui->GetIconForContentType(group_, size_pixels, scale_);
   }
 
   target_task_runner_->PostTask(

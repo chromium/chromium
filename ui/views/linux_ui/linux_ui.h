@@ -122,7 +122,8 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
   // TODO(davidben): Add an observer for the theme changing, so we can drop the
   // caches.
   virtual gfx::Image GetIconForContentType(const std::string& content_type,
-                                           int size) const = 0;
+                                           int size,
+                                           float scale) const = 0;
 
   // Builds a Border which paints the native button style.
   virtual std::unique_ptr<Border> CreateNativeBorder(

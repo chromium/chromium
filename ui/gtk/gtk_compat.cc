@@ -342,16 +342,18 @@ void GtkStyleContextGetStyle(GtkStyleContext* context, ...) {
 }
 
 DISABLE_CFI_ICALL
-ScopedGObject<GtkIconInfo> Gtk3IconThemeLookupByGicon(
+ScopedGObject<GtkIconInfo> Gtk3IconThemeLookupByGiconForScale(
     GtkIconTheme* theme,
     GIcon* icon,
     int size,
+    int scale,
     GtkIconLookupFlags flags) {
   DCHECK(!GtkCheckVersion(4));
-  static void* lookup = DlSym(GetLibGtk(), "gtk_icon_theme_lookup_by_gicon");
+  static void* lookup =
+      DlSym(GetLibGtk(), "gtk_icon_theme_lookup_by_gicon_for_scale");
   return TakeGObject(
-      DlCast<GtkIconInfo*(GtkIconTheme*, GIcon*, int, GtkIconLookupFlags)>(
-          lookup)(theme, icon, size, flags));
+      DlCast<GtkIconInfo*(GtkIconTheme*, GIcon*, int, int, GtkIconLookupFlags)>(
+          lookup)(theme, icon, size, scale, flags));
 }
 
 DISABLE_CFI_ICALL
