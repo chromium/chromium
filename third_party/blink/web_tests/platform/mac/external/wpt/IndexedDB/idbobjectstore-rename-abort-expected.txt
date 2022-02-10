@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS IndexedDB object store rename in aborted transaction
-FAIL IndexedDB object store creation and rename in an aborted transaction assert_equals: Expected success event, but got error event instead expected "success" but got "error"
-Harness: the test ran to completion.
-
