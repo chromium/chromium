@@ -58,6 +58,15 @@ def get_parts(config):
                 'chrome_crashpad_handler',
                 options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
                 verify_options=verify_options),
+        'developer_id_certificate_reauthorize':
+            CodeSignedProduct(
+                '{.framework_dir}/Helpers/developer_id_certificate_reauthorize'
+                .format(config),
+                uncustomized_bundle_id,
+                options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
+                requirements=config.codesign_requirements_outer_app,
+                sign_with_identifier=True,
+                verify_options=verify_options),
         'helper-app':
             CodeSignedProduct(
                 '{0.framework_dir}/Helpers/{0.product} Helper.app'.format(

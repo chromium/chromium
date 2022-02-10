@@ -5627,6 +5627,8 @@ static_library("browser") {
       "mac/auth_session_request.mm",
       "mac/bluetooth_utility.h",
       "mac/bluetooth_utility.mm",
+      "mac/developer_id_certificate_reauthorize.h",
+      "mac/developer_id_certificate_reauthorize.mm",
       "mac/dock.h",
       "mac/dock.mm",
       "mac/exception_processor.h",
@@ -8007,5 +8009,35 @@ if (!is_android) {
 if (is_chromeos_lacros) {
   proto_library("dlp_policy_event_proto") {
     sources = [ "chromeos/policy/dlp/dlp_policy_event.proto" ]
+  }
+}
+
+if (is_mac) {
+  executable("developer_id_certificate_reauthorize") {
+    # There is no C++ in here, so save ~150kB per architecture by omitting a
+    # copy of libc++.
+    no_default_deps = true
+
+    sources = [
+      "mac/developer_id_certificate_reauthorize.h",
+      "mac/developer_id_certificate_reauthorize_stub_main.c",
+    ]
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
+    deps = [ "//chrome:chrome_framework+link_nested" ]
+    ldflags = []
+    if (is_component_build) {
+      ldflags += [
+        # The stub is in Product.app/Contents/Frameworks/Product
+        # Framework.framework/Versions/X/Helpers so set rpath up to the base.
+        "-Wl,-rpath,@loader_path/../../../../../../..",
+
+        # ... and up to Contents/Frameworks.
+        "-Wl,-rpath,@executable_path/../../../..",
+      ]
+    }
+    if (enable_stripping) {
+      ldflags += [ "-Wl,-exported_symbols_list," +
+                   rebase_path("../app/app.exports", root_build_dir) ]
+    }
   }
 }

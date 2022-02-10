@@ -79,7 +79,7 @@ component("crypto") {
 
     if (is_mac) {
       sources += [
-        "apple_keychain_mac.mm",
+        "apple_keychain_mac.cc",
 
         # TODO(brettw): these mocks should be moved to a test_support_crypto
         # target if possible.

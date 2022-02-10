@@ -857,11 +857,13 @@ if (is_win) {
     sources = [
       "$root_out_dir/app_mode_loader",
       "$root_out_dir/chrome_crashpad_handler",
+      "$root_out_dir/developer_id_certificate_reauthorize",
     ]
 
     outputs = [ "{{bundle_contents_dir}}/Helpers/{{source_file_part}}" ]
 
     public_deps = [
+      "browser:developer_id_certificate_reauthorize",
       "//chrome/app_shim:app_mode_loader",
       "//components/crash/core/app:chrome_crashpad_handler",
     ]
@@ -1200,7 +1202,16 @@ if (is_win) {
     if (!is_component_build) {
       # Specify a sensible install_name for static builds. The library is
       # dlopen()ed so this is not used to resolve the module.
-      ldflags += [ "-Wl,-install_name,@executable_path/../Frameworks/$chrome_framework_name.framework/Versions/$chrome_version_full/$chrome_framework_name" ]
+      # ldflags += [ "-Wl,-install_name,@executable_path/../Frameworks/$chrome_framework_name.framework/Versions/$chrome_version_full/$chrome_framework_name" ]
+      #
+      # TODO(mark): The above is more sensible, but since nothing links against
+      # the framework directly aside from the
+      # developer_id_certificate_reauthorize stub executable, set the
+      # framework's install name properly to make the stub's link simpler. Once
+      # the stub is no longer built, switch back to the above.
+      # https://crbug.com/1263152.
+      ldflags +=
+          [ "-Wl,-install_name,@executable_path/../$chrome_framework_name" ]
     } else {
       # In the component build, both the :chrome_app and various
       # :chrome_helper* targets directly link to the Framework target. Use
@@ -1266,6 +1277,7 @@ if (is_win) {
     _chrome_symbols_sources = [
       "$root_out_dir/$chrome_product_full_name.app/Contents/MacOS/$chrome_product_full_name",
       "$root_out_dir/chrome_crashpad_handler",
+      "$root_out_dir/developer_id_certificate_reauthorize",
       "$root_out_dir/libEGL.dylib",
       "$root_out_dir/libGLESv2.dylib",
       "$root_out_dir/libswiftshader_libEGL.dylib",
@@ -1303,6 +1315,7 @@ if (is_win) {
       deps = [
         ":chrome_app",
         ":chrome_framework",
+        "browser:developer_id_certificate_reauthorize",
         "//components/crash/core/app:chrome_crashpad_handler",
         "//third_party/angle:libEGL",
         "//third_party/angle:libGLESv2",
@@ -1331,6 +1344,7 @@ if (is_win) {
         "$root_out_dir/$chrome_framework_name.dSYM",
         "$root_out_dir/$chrome_product_full_name.dSYM",
         "$root_out_dir/chrome_crashpad_handler.dSYM",
+        "$root_out_dir/developer_id_certificate_reauthorize.dSYM",
         "$root_out_dir/libEGL.dylib.dSYM",
         "$root_out_dir/libGLESv2.dylib.dSYM",
         "$root_out_dir/libswiftshader_libEGL.dylib.dSYM",
@@ -1344,6 +1358,7 @@ if (is_win) {
       deps = [
         ":chrome_app",
         ":chrome_framework",
+        "browser:developer_id_certificate_reauthorize",
         "//components/crash/core/app:chrome_crashpad_handler",
         "//third_party/angle:libEGL",
         "//third_party/angle:libGLESv2",
