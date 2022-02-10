@@ -160,10 +160,6 @@ def _bootstrap_properties(ctx):
                 }
                 ctx.output[properties_file] = json.indent(json.encode(builder_properties), indent = "  ")
 
-                # TODO(gbeaty) Once buildbucket picks up the property changes and is reading the JSON files, remove this
-                textpb_properties_file = "builders/{}/{}/properties.textpb".format(bucket_name, builder_name)
-                ctx.output[textpb_properties_file] = ctx.output[properties_file]
-
             if bootstrap_node.props.bootstrap:
                 non_bootstrapped_properties.update({
                     "$bootstrap/exe": {
