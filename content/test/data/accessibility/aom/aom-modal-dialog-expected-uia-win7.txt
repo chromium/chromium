@@ -1,3 +1,4 @@
+#<skip -- crbug.com/1289698>
 Document LocalizedControlType='document'
 ++Group LocalizedControlType='group' IsControlElement=false
 ++++Text LocalizedControlType='text' Name='Content outside modal dialog. '
