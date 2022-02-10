@@ -316,9 +316,11 @@ void ThreadWrapper::PostTaskInternal(const rtc::Location& posted_from,
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&ThreadWrapper::RunTask, weak_ptr_, task_id));
   } else {
-    task_runner_->PostDelayedTask(
-        FROM_HERE, base::BindOnce(&ThreadWrapper::RunTask, weak_ptr_, task_id),
-        base::Milliseconds(delay_ms));
+    task_runner_->PostDelayedTaskAt(
+        base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
+        base::BindOnce(&ThreadWrapper::RunTask, weak_ptr_, task_id),
+        base::TimeTicks::Now() + base::Milliseconds(delay_ms),
+        base::subtle::DelayPolicy::kPrecise);
   }
 }
 
@@ -330,10 +332,12 @@ void ThreadWrapper::PostTask(std::unique_ptr<webrtc::QueuedTask> task) {
 
 void ThreadWrapper::PostDelayedTask(std::unique_ptr<webrtc::QueuedTask> task,
                                     uint32_t milliseconds) {
-  task_runner_->PostDelayedTask(FROM_HERE,
-                                base::BindOnce(&ThreadWrapper::RunTaskQueueTask,
-                                               weak_ptr_, std::move(task)),
-                                base::Milliseconds(milliseconds));
+  task_runner_->PostDelayedTaskAt(
+      base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
+      base::BindOnce(&ThreadWrapper::RunTaskQueueTask, weak_ptr_,
+                     std::move(task)),
+      base::TimeTicks::Now() + base::Milliseconds(milliseconds),
+      base::subtle::DelayPolicy::kPrecise);
 }
 
 absl::optional<base::TimeTicks> ThreadWrapper::PrepareRunTask() {
