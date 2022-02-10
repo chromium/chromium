@@ -4295,6 +4295,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--git-revision=${got_revision}",
           "--platform=fuchsia",
           "--jobs=1"
         ],
@@ -4306,6 +4307,11 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true
         },
@@ -4318,7 +4324,7 @@
               "os": "Ubuntu-18.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
       }
@@ -6059,6 +6065,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--git-revision=${got_revision}",
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw"
         ],
         "isolate_name": "blink_web_tests",
@@ -6070,6 +6077,11 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true
         },
@@ -6082,7 +6094,7 @@
             }
           ],
           "quickrun_shards": 18,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
@@ -6202,7 +6214,8 @@
       {
         "args": [
           "--flag-specific=highdpi",
-          "--num-retries=3"
+          "--num-retries=3",
+          "--git-revision=${got_revision}"
         ],
         "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
@@ -6213,6 +6226,11 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "high_dpi_blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true
         },
@@ -6224,7 +6242,7 @@
               "os": "Ubuntu-18.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
@@ -6255,6 +6273,7 @@
         "args": [
           "--flag-specific=disable-site-isolation-trials",
           "--num-retries=3",
+          "--git-revision=${got_revision}",
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw"
         ],
         "isolate_name": "blink_web_tests",
@@ -6266,6 +6285,11 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "not_site_per_process_blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true
         },
@@ -6278,7 +6302,7 @@
             }
           ],
           "quickrun_shards": 18,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 10
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
@@ -6392,7 +6416,8 @@
           "--num-retries=3",
           "--skipped=always",
           "--test-list=../../testing/buildbot/filters/gpu.skiarenderer_vulkan_blink_web_tests.filter",
-          "--flag-specific=skia-vulkan-swiftshader"
+          "--flag-specific=skia-vulkan-swiftshader",
+          "--git-revision=${got_revision}"
         ],
         "isolate_name": "blink_web_tests",
         "isolate_profile_data": true,
@@ -6403,6 +6428,11 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "vulkan_swiftshader_blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true
         },
@@ -6414,7 +6444,7 @@
               "os": "Ubuntu-18.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
       }
@@ -9848,6 +9878,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--git-revision=${got_revision}",
           "--debug"
         ],
         "isolate_name": "blink_web_tests",
@@ -9858,6 +9889,11 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true
         },
@@ -9869,7 +9905,7 @@
               "os": "Ubuntu-18.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 30
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
@@ -10199,6 +10235,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--git-revision=${got_revision}",
           "--flag-specific=enable-back-forward-cache-same-site",
           "--ignore-tests=external/wpt/html/browsers/browsing-the-web/back-forward-cache/events.html"
         ],
@@ -10210,6 +10247,11 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true
         },
@@ -10221,7 +10263,7 @@
               "os": "Ubuntu-18.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
@@ -11767,7 +11809,8 @@
       },
       {
         "args": [
-          "--num-retries=3"
+          "--num-retries=3",
+          "--git-revision=${got_revision}"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -11777,6 +11820,11 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true
         },
@@ -11788,7 +11836,7 @@
               "os": "Ubuntu-18.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
@@ -11903,7 +11951,8 @@
       {
         "args": [
           "--flag-specific=highdpi",
-          "--num-retries=3"
+          "--num-retries=3",
+          "--git-revision=${got_revision}"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -11913,6 +11962,11 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "high_dpi_blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true
         },
@@ -11924,7 +11978,7 @@
               "os": "Ubuntu-18.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
@@ -11953,7 +12007,8 @@
       {
         "args": [
           "--flag-specific=disable-site-isolation-trials",
-          "--num-retries=3"
+          "--num-retries=3",
+          "--git-revision=${got_revision}"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -11963,6 +12018,11 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "not_site_per_process_blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true
         },
@@ -11974,7 +12034,7 @@
               "os": "Ubuntu-18.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 10
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
@@ -12084,7 +12144,8 @@
           "--num-retries=3",
           "--skipped=always",
           "--test-list=../../testing/buildbot/filters/gpu.skiarenderer_vulkan_blink_web_tests.filter",
-          "--flag-specific=skia-vulkan-swiftshader"
+          "--flag-specific=skia-vulkan-swiftshader",
+          "--git-revision=${got_revision}"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -12094,6 +12155,11 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "vulkan_swiftshader_blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true
         },
@@ -12105,7 +12171,7 @@
               "os": "Ubuntu-18.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
@@ -13721,7 +13787,8 @@
       },
       {
         "args": [
-          "--num-retries=3"
+          "--num-retries=3",
+          "--git-revision=${got_revision}"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -13731,6 +13798,11 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true
         },
@@ -13742,7 +13814,7 @@
               "os": "Ubuntu-14.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
@@ -13857,7 +13929,8 @@
       {
         "args": [
           "--flag-specific=highdpi",
-          "--num-retries=3"
+          "--num-retries=3",
+          "--git-revision=${got_revision}"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -13867,6 +13940,11 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "high_dpi_blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true
         },
@@ -13878,7 +13956,7 @@
               "os": "Ubuntu-14.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
@@ -13907,7 +13985,8 @@
       {
         "args": [
           "--flag-specific=disable-site-isolation-trials",
-          "--num-retries=3"
+          "--num-retries=3",
+          "--git-revision=${got_revision}"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -13917,6 +13996,11 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "not_site_per_process_blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true
         },
@@ -13928,7 +14012,7 @@
               "os": "Ubuntu-14.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 10
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
@@ -14038,7 +14122,8 @@
           "--num-retries=3",
           "--skipped=always",
           "--test-list=../../testing/buildbot/filters/gpu.skiarenderer_vulkan_blink_web_tests.filter",
-          "--flag-specific=skia-vulkan-swiftshader"
+          "--flag-specific=skia-vulkan-swiftshader",
+          "--git-revision=${got_revision}"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -14048,6 +14133,11 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "vulkan_swiftshader_blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true
         },
@@ -14059,7 +14149,7 @@
               "os": "Ubuntu-14.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
       },
@@ -15663,6 +15753,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--git-revision=${got_revision}",
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw"
         ],
         "isolate_name": "blink_web_tests",
@@ -15673,6 +15764,11 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true
         },
@@ -15684,7 +15780,7 @@
               "os": "Ubuntu-16.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
@@ -15799,7 +15895,8 @@
       {
         "args": [
           "--flag-specific=highdpi",
-          "--num-retries=3"
+          "--num-retries=3",
+          "--git-revision=${got_revision}"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -15809,6 +15906,11 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "high_dpi_blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true
         },
@@ -15820,7 +15922,7 @@
               "os": "Ubuntu-16.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
@@ -15850,6 +15952,7 @@
         "args": [
           "--flag-specific=disable-site-isolation-trials",
           "--num-retries=3",
+          "--git-revision=${got_revision}",
           "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw"
         ],
         "isolate_name": "blink_web_tests",
@@ -15860,6 +15963,11 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "not_site_per_process_blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true
         },
@@ -15871,7 +15979,7 @@
               "os": "Ubuntu-16.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 10
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
@@ -15981,7 +16089,8 @@
           "--num-retries=3",
           "--skipped=always",
           "--test-list=../../testing/buildbot/filters/gpu.skiarenderer_vulkan_blink_web_tests.filter",
-          "--flag-specific=skia-vulkan-swiftshader"
+          "--flag-specific=skia-vulkan-swiftshader",
+          "--git-revision=${got_revision}"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -15991,6 +16100,11 @@
           "script": "//third_party/blink/tools/merge_web_test_results.py"
         },
         "name": "vulkan_swiftshader_blink_web_tests",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
         "resultdb": {
           "enable": true
         },
@@ -16002,7 +16116,7 @@
               "os": "Ubuntu-16.04"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chrome-gold@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
       }

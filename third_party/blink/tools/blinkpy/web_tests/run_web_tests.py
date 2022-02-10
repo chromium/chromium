@@ -611,7 +611,28 @@ def parse_args(args):
                  'use case is to leave enough time to allow the process to '
                  'finish post-run hooks, such as dumping code coverage data. '
                  'Default is 1 second, can be overriden for specific use cases.'
-                 ))
+                 )),
+            optparse.make_option(
+                '--git-revision',
+                help=(
+                    'The Chromium git revision being tested. This is only used '
+                    'for an experimental Skia Gold dryrun.')),
+            optparse.make_option(
+                '--gerrit-issue',
+                help=(
+                    'The Gerrit issue/CL number being tested, if applicable. '
+                    'This is only used for an experimental Skia Gold dryrun.'
+                )),
+            optparse.make_option(
+                '--gerrit-patchset',
+                help=(
+                    'The Gerrit patchset being tested, if applicable. This is '
+                    'only used for an experimental Skia Gold dryrun.')),
+            optparse.make_option(
+                '--buildbucket-id',
+                help=(
+                    'The Buildbucket ID of the bot running the test. This is '
+                    'only used for an experimental Skia Gold dryrun.')),
         ]))
 
     # FIXME: Move these into json_results_generator.py.

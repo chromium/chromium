@@ -1688,6 +1688,24 @@ class PortTest(LoggingTestCase):
         finally:
             port.host.filesystem.chdir(original_dir)
 
+    def test_skia_gold_properties_initialization(self):
+        # The Gold code usually assumes that argparse is used, not optparse, so
+        # ensure that it still works with optparse here.
+        port = self.make_port()
+        expected_revision = 'a' * 40
+        expected_issue = '1234'
+        expected_patchset = '1'
+        expected_id = 'bbid'
+        port._options.git_revision = expected_revision
+        port._options.gerrit_issue = expected_issue
+        port._options.gerrit_patchset = expected_patchset
+        port._options.buildbucket_id = expected_id
+        properties = port.skia_gold_properties()
+        self.assertEqual(properties.git_revision, expected_revision)
+        self.assertEqual(properties.issue, expected_issue)
+        self.assertEqual(properties.patchset, expected_patchset)
+        self.assertEqual(properties.job_id, expected_id)
+
 
 class NaturalCompareTest(unittest.TestCase):
     def setUp(self):
