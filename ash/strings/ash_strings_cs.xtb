@@ -333,7 +333,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3477079411857374384">Control + Shift + mezerník</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">definice</translation>
-<translation id="3509391053705095206">Telefon se nepodařilo najít. Zkontrolujte, zda je na telefonu zapnutý Bluetooth.</translation>
+<translation id="3509391053705095206">Telefon se nepodařilo najít. Zkontrolujte, jestli je na něm zapnutý Bluetooth.</translation>
 <translation id="3510164367642747937">Zvýraznit ukazatel myši</translation>
 <translation id="3513798432020909783">Správce účtu: <ph name="MANAGER_EMAIL" /></translation>
 <translation id="353086728817903341">Připojeno k několika zařízením (<ph name="NUM_DEVICES" />)</translation>
@@ -483,7 +483,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4485060137115666462">Po kliknutí pravým tlačítkem nebo dlouhém stisknutí vám Asistent zobrazí informace, jako je definice, překlad nebo převod jednotky související s vybraným obsahem.</translation>
 <translation id="4505050298327493054">Aktivní plocha.</translation>
 <translation id="4513946894732546136">Zpětná vazba</translation>
-<translation id="4518404433291145981">Pokud chcete Chromebook odemknout, nejdřív odemkněte telefon</translation>
+<translation id="4518404433291145981">Pokud chcete Chromebook odemknout, nejdřív odemkněte telefon.</translation>
 <translation id="4527045527269911712">Zařízení Bluetooth „<ph name="DEVICE_NAME" />“ žádá o povolení ke spárování.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> do úplného nabití</translation>
 <translation id="4538824937723742295">Pořídit snímek celé obrazovky</translation>

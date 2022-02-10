@@ -333,7 +333,7 @@
 <translation id="3477079411857374384">‏Control+‏Shift+מקש הרווח</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">הגדרה</translation>
-<translation id="3509391053705095206">‏לא ניתן למצוא את הטלפון. יש לוודא שה-Bluetooth של הטלפון מופעל.</translation>
+<translation id="3509391053705095206">‏לא הצלחנו למצוא את הטלפון. צריך לוודא שה-Bluetooth שלו מופעל.</translation>
 <translation id="3510164367642747937">הדגשה של סמן העכבר</translation>
 <translation id="3513798432020909783">החשבון מנוהל על-ידי <ph name="MANAGER_EMAIL" /></translation>
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> מכשירים מחוברים</translation>
@@ -483,7 +483,7 @@
 <translation id="4485060137115666462">‏כשלוחצים לחיצה ימנית או לחיצה ארוכה, Assistant מציגה פריט מידע, למשל ההגדרה, התרגום או המרת היחידות של הטקסט שבחרת.</translation>
 <translation id="4505050298327493054">שולחן עבודה וירטואלי פעיל.</translation>
 <translation id="4513946894732546136">משוב</translation>
-<translation id="4518404433291145981">‏כדי לבטל את נעילת ה-Chromebook, תחילה צריך לבטל את נעילת הטלפון</translation>
+<translation id="4518404433291145981">‏כדי לבטל את נעילת ה-Chromebook, קודם צריך לבטל את הנעילה של הטלפון</translation>
 <translation id="4527045527269911712">‏מכשיר ה-Bluetooth ‏"<ph name="DEVICE_NAME" />" מבקש הרשאה לבצע התאמה.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> עד למילוי</translation>
 <translation id="4538824937723742295">לצילום מסך מלא</translation>

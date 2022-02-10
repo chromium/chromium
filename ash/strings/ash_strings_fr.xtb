@@ -333,7 +333,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3477079411857374384">Ctrl+Maj+Espace</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="3486220673238053218">définition</translation>
-<translation id="3509391053705095206">Impossible de localiser votre téléphone. Vérifiez que le Bluetooth y est activé.</translation>
+<translation id="3509391053705095206">Impossible de trouver votre téléphone. Vérifiez que le Bluetooth y est activé.</translation>
 <translation id="3510164367642747937">Mettre le curseur de la souris en surbrillance</translation>
 <translation id="3513798432020909783">Compte géré par <ph name="MANAGER_EMAIL" /></translation>
 <translation id="353086728817903341">Connecté à <ph name="NUM_DEVICES" /> appareils</translation>
@@ -597,7 +597,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5319712128756744240">Associer un nouvel appareil</translation>
 <translation id="5322611492012084517">Impossible de trouver votre téléphone</translation>
 <translation id="5329548388331921293">Connexion…</translation>
-<translation id="5330201449517439522">Appuyez ou cliquez pour avoir accès</translation>
+<translation id="5330201449517439522">Appuyez ou cliquez pour entrer</translation>
 <translation id="5331975486040154427">Appareil USB de type C (port situé sur la gauche de l'appareil, à l'arrière)</translation>
 <translation id="5352250171825660495">Le thème sombre est activé</translation>
 <translation id="5379115545237091094">Trop de tentatives</translation>
