@@ -3390,6 +3390,10 @@ const char kReaderModeHeuristicsAllArticles[] = "All articles";
 const char kReaderModeHeuristicsAlwaysOff[] = "Never";
 const char kReaderModeHeuristicsAlwaysOn[] = "Always";
 
+const char kImproveReaderModePromptName[] = "Improve Reader Mode Prompt";
+const char kImproveReaderModePromptDescription[] =
+    "Reduce prompt frequency and polish reader mode related settings.";
+
 const char kReaderModeInCCTName[] = "Reader Mode in CCT";
 const char kReaderModeInCCTDescription[] =
     "Open Reader Mode in Chrome Custom Tabs.";

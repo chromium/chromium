@@ -1951,6 +1951,9 @@ extern const char kReaderModeHeuristicsAllArticles[];
 extern const char kReaderModeHeuristicsAlwaysOff[];
 extern const char kReaderModeHeuristicsAlwaysOn[];
 
+extern const char kImproveReaderModePromptName[];
+extern const char kImproveReaderModePromptDescription[];
+
 extern const char kReaderModeInCCTName[];
 extern const char kReaderModeInCCTDescription[];
 

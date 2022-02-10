@@ -253,6 +253,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kProbabilisticCryptidRenderer,
     &kQuickActionSearchWidgetAndroid,
     &kReachedCodeProfiler,
+    &kImproveReaderModePrompt,
     &kReaderModeInCCT,
     &kReengagementNotification,
     &kRelatedSearches,
@@ -659,6 +660,9 @@ const base::Feature kHomepagePromoCard{"HomepagePromoCard",
 
 const base::Feature kImmersiveUiMode{"ImmersiveUiMode",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kImproveReaderModePrompt{"ImproveReaderModePrompt",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kIncognitoReauthenticationForAndroid{
     "IncognitoReauthenticationForAndroid", base::FEATURE_DISABLED_BY_DEFAULT};

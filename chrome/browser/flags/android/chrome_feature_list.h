@@ -107,6 +107,7 @@ extern const base::Feature kImmersiveUiMode;
 extern const base::Feature kIncognitoReauthenticationForAndroid;
 extern const base::Feature kIncognitoScreenshot;
 extern const base::Feature kImprovedA2HS;
+extern const base::Feature kImproveReaderModePrompt;
 extern const base::Feature kInstanceSwitcher;
 extern const base::Feature kInstantStart;
 extern const base::Feature kKitKatSupported;

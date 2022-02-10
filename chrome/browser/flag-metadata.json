@@ -3559,6 +3559,12 @@
     "expiry_milestone": -1
   },
   {
+    "name": "improve-reader-mode-prompt",
+    "owners": ["lazzzis@google.com", "aishwaryarj@google.com",
+               "//chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/OWNERS"],
+    "expiry_milestone": 110
+  },
+  {
     "name": "improved-desks-keyboard-shortcuts",
     "owners": [ "zxdan", "janetmac"],
     "expiry_milestone": 101
