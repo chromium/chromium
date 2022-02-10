@@ -789,19 +789,19 @@
     "label": "//crypto:crypto_unittests",
     "type": "console_test_launcher",
   },
-  "dawn_end2end_tests_temp": {
-    "label": "//third_party/dawn/src/tests:dawn_end2end_tests_temp",
+  "dawn_end2end_tests": {
+    "label": "//third_party/dawn/src/dawn/tests:dawn_end2end_tests",
     "type": "windowed_test_launcher",
   },
-  "dawn_perf_tests_temp": {
+  "dawn_perf_tests": {
     "args": [
-      "dawn_perf_tests_temp",
+      "dawn_perf_tests",
       "--non-telemetry=true",
       "--test-launcher-print-test-stdio=always",
       "--test-launcher-jobs=1",
       "--test-launcher-retry-limit=0",
     ],
-    "label": "//third_party/dawn/src/tests:dawn_perf_tests_temp",
+    "label": "//third_party/dawn/src/dawn/tests:dawn_perf_tests",
     "script": "//testing/scripts/run_performance_tests.py",
     "type": "script",
   },
