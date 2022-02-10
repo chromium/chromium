@@ -17,26 +17,13 @@
 
 @implementation VariationsSafeModeTestCase
 
-- (void)setUp {
-  [super setUp];
-  // Clear local state variations prefs since local state is persisted between
-  // EG tests. See crbug.com/1069086.
-  [VariationsAppInterface clearVariationsPrefs];
-}
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.additional_args = {"--disable-field-trial-config"};
-  return config;
-}
-
 #pragma mark - Helpers
 
 // Returns an AppLaunchConfiguration that shuts down Chrome cleanly and
 // relaunches it without using the field trial testing config. Shutting down
 // cleanly flushes local state. Disabling the testing config means that the only
 // field trials after the relaunch, if any, are client-side field trials.
-- (AppLaunchConfiguration)appConfigForPersistingPrefs {
+- (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.additional_args = {"--disable-field-trial-config"};
@@ -48,10 +35,18 @@
 // VariationsFieldTrialCreator::CreateTrialsFromSeed() executes and determines
 // whether to use variations safe mode. See the comment above
 // appConfigForPersistingPrefs for more info on disabling the testing config.
-- (AppLaunchConfiguration)appConfigForCrashing {
+- (AppLaunchConfiguration)appConfigurationForCrashing {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByKilling;
   config.additional_args = {"--disable-field-trial-config"};
+  return config;
+}
+
+// Returns an AppLaunchConfiguration that shuts down Chrome cleanly (if it is
+// already running) and relaunches it with no additional flags or settings.
+- (AppLaunchConfiguration)appConfigurationForCleanRestart {
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
   return config;
 }
 
@@ -69,6 +64,42 @@
   GREYAssertEqual(actualStreak, value,
                   @"Expected a failed fetch streak of %d, but got %d", value,
                   actualStreak);
+}
+
+// Restarts the app and ensures there's no variations/crash state active.
+- (void)resetAppState:(AppLaunchConfiguration)config {
+  // Clear local state variations prefs since local state is persisted between
+  // EG tests and restart Chrome. This is to avoid flakiness caused by tests
+  // that may have run previously and to avoid introducing flakiness in tests
+  // that might run after.
+  //
+  // See crbug.com/1069086.
+  [VariationsAppInterface clearVariationsPrefs];
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Validate app state:
+  //   * App is running
+  //   * No safe seed value in local state
+  //   * No evidence of safe seed settings in local state.
+  //   * No active crash streak
+  XCTAssertTrue([[AppLaunchManager sharedManager] appIsLaunched],
+                @"App should be launched.");
+  GREYAssertFalse([VariationsAppInterface hasSafeSeed], @"No safe seed.");
+  GREYAssertFalse([VariationsAppInterface fieldTrialExistsForTestSeed],
+                  @"No field trial from test seed.");
+  [self checkCrashStreakValue:0];
+}
+
+#pragma mark - Lifecycle
+
+- (void)setUp {
+  [super setUp];
+  [self resetAppState:[self appConfigurationForTestCase]];
+}
+
+- (void)tearDown {
+  [self resetAppState:[self appConfigurationForCleanRestart]];
+  [super tearDown];
 }
 
 #pragma mark - Tests
@@ -95,7 +126,7 @@
 
   // Persist the local state pref changes made above and in setUp().
   [[AppLaunchManager sharedManager]
-      ensureAppLaunchedWithConfiguration:[self appConfigForPersistingPrefs]];
+      ensureAppLaunchedWithConfiguration:[self appConfigurationForTestCase]];
 
   // Verify that (i) the crash and failed fetch streaks were reset, (ii) the
   // safe seed was persisted, and (iii) there is no field trial associated with
@@ -111,7 +142,7 @@
   // Crash the app three times since a crash streak of three or more triggers
   // variations safe mode. Also, verify the crash streak and the field trial
   // after crashes.
-  AppLaunchConfiguration config = [self appConfigForCrashing];
+  AppLaunchConfiguration config = [self appConfigurationForCrashing];
   // First crash.
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   [self checkCrashStreakValue:1];
@@ -149,7 +180,7 @@
 
   // Persist the local state pref changes made above and in setUp().
   [[AppLaunchManager sharedManager]
-      ensureAppLaunchedWithConfiguration:[self appConfigForPersistingPrefs]];
+      ensureAppLaunchedWithConfiguration:[self appConfigurationForTestCase]];
 
   // Verify that (i) the crash streak was reset, (ii) the failed fetch streak
   // and the safe seed were persisted, and (iii) safe mode was triggered.
@@ -183,7 +214,7 @@
 
   // Persist the local state pref changes made above and in setUp().
   [[AppLaunchManager sharedManager]
-      ensureAppLaunchedWithConfiguration:[self appConfigForPersistingPrefs]];
+      ensureAppLaunchedWithConfiguration:[self appConfigurationForTestCase]];
 
   // Verify that (i) the crash and failed fetch streaks are as expected, (ii)
   // the safe seed was stored, and (iii) safe mode was not triggered.

@@ -26,6 +26,12 @@
 // Provides control of the single application-under-test to EarlGrey 2 tests.
 @interface AppLaunchManager : NSObject
 
+// True if the app has been successfully launched.
+@property(readonly) BOOL appIsLaunched;
+
+// True if the app is currently running (in the foreground).
+@property(readonly) BOOL appIsRunning;
+
 // Returns the singleton instance of this class.
 + (AppLaunchManager*)sharedManager;
 

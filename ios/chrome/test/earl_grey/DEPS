@@ -26,4 +26,8 @@ specific_include_rules = {
   "web_http_server_chrome_test_case\.mm": [
     "+ios/web/public/test/http_server",
   ],
+
+  "chrome_test_case\.mm": [
+    "+ios/third_party/edo",
+  ],
 }

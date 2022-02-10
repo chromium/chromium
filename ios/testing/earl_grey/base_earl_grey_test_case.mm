@@ -60,8 +60,10 @@ bool g_needs_set_up_for_test_case = true;
 }
 
 + (void)tearDown {
-  [CoverageUtils writeClangCoverageProfile];
-  [CoverageUtils resetCoverageProfileCounters];
+  if ([[AppLaunchManager sharedManager] appIsLaunched]) {
+    [CoverageUtils writeClangCoverageProfile];
+    [CoverageUtils resetCoverageProfileCounters];
+  }
   g_needs_set_up_for_test_case = true;
   [super tearDown];
 }

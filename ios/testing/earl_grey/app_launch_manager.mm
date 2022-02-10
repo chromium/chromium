@@ -81,6 +81,18 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
   return self;
 }
 
+- (BOOL)appIsLaunched {
+  return (self.runningApplication != nil) &&
+         (self.runningApplication.state != XCUIApplicationStateNotRunning) &&
+         (self.runningApplication.state != XCUIApplicationStateUnknown);
+}
+
+- (BOOL)appIsRunning {
+  return
+      [self appIsLaunched] && (self.runningApplication.state !=
+                               XCUIApplicationStateRunningBackgroundSuspended);
+}
+
 // Makes sure the app has been started with the appropriate |arguments|.
 // In EG2, will launch the app if any of the following conditions are met:
 // * The app is not running
@@ -91,22 +103,15 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
 // fails to do so.
 // In EG1, this method is a no-op.
 - (void)ensureAppLaunchedWithArgs:(NSArray<NSString*>*)arguments
-                   relaunchPolicy:(RelaunchPolicy)relaunchPolicy {
+                   relaunchPolicy:(RelaunchPolicy)relaunchPolicy
+              maybeCrashOnStartup:(bool)maybeCrashOnStartup {
   BOOL forceRestart = (relaunchPolicy == ForceRelaunchByKilling) ||
                       (relaunchPolicy == ForceRelaunchByCleanShutdown);
   BOOL gracefullyKill = (relaunchPolicy == ForceRelaunchByCleanShutdown);
   BOOL runResets = (relaunchPolicy == NoForceRelaunchAndResetState);
 
-  // If app has crashed, |self.runningApplication| will be at
-  // |XCUIApplicationStateNotRunning| state and it should be relaunched with
-  // proper resets. The app also needs a relaunch if it's at
-  // |XCUIApplicationStateUnknown| state.
-  BOOL appIsRunning =
-      (self.runningApplication != nil) &&
-      (self.runningApplication.state != XCUIApplicationStateNotRunning) &&
-      (self.runningApplication.state != XCUIApplicationStateUnknown) &&
-      (self.runningApplication.state !=
-       XCUIApplicationStateRunningBackgroundSuspended);
+  // If app has crashed it should be relaunched with the proper resets.
+  BOOL appIsRunning = [self appIsRunning];
 
   // App PID change means an unknown relaunch not from AppLaunchManager, so it
   // needs a correct relaunch for setups.
@@ -163,11 +168,27 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
   application.launchArguments = arguments;
   [application launch];
 
+  if (maybeCrashOnStartup) {
+    // Can't use EG conditionals here since the app may be terminated.
+    NSLog(@"Giving application time to start/crash.");
+    if ([application waitForState:XCUIApplicationStateNotRunning timeout:20]) {
+      XCTAssertEqual(application.state, XCUIApplicationStateNotRunning);
+      NSLog(@"App has crashed (as expected).");
+      self.runningApplication = nil;
+      self.runningApplicationProcessIdentifier = -1;
+      self.currentLaunchArgs = nil;
+      XCTAssertFalse([self appIsLaunched]);
+      return;
+    }
+    NSLog(@"App is running.");
+  }
+
   [CoverageUtils configureCoverageReportPath];
 
   if (self.runningApplication) {
     [self.observers appLaunchManagerDidRelaunchApp:self runResets:runResets];
   }
+
   self.runningApplication = application;
   self.runningApplicationProcessIdentifier =
       [AppLaunchManagerAppInterface processIdentifier];
@@ -225,10 +246,14 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
   }
 
   [self ensureAppLaunchedWithArgs:arguments
-                   relaunchPolicy:configuration.relaunch_policy];
+                   relaunchPolicy:configuration.relaunch_policy
+              maybeCrashOnStartup:configuration.maybe_crash_on_startup];
 
-  if (@available(iOS 14, *))
-    [BaseEarlGreyTestCaseAppInterface enableFastAnimation];
+  if ([self appIsLaunched]) {
+    if (@available(iOS 14, *)) {
+      [BaseEarlGreyTestCaseAppInterface enableFastAnimation];
+    }
+  }
 }
 
 - (void)ensureAppLaunchedWithFeaturesEnabled:

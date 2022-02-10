@@ -51,7 +51,7 @@ class EmbeddedTestServer;
 // name of the currently running test method.
 - (BOOL)isRunningTest:(SEL)selector;
 
-// Configure the fixture for startup testing.
+// Configures the fixture for startup testing.
 + (void)testForStartup;
 
 @end

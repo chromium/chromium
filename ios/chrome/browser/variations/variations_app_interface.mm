@@ -70,6 +70,12 @@
                             variations::kSafeSeedPrefKeys);
 }
 
++ (void)setCrashingRegularSeedAndSignature {
+  PrefService* prefService = GetApplicationContext()->GetLocalState();
+  variations::WriteSeedData(prefService, variations::kCrashingSeedData,
+                            variations::kRegularSeedPrefKeys);
+}
+
 + (int)crashStreak {
   PrefService* prefService = GetApplicationContext()->GetLocalState();
   return prefService->GetInteger(variations::prefs::kVariationsCrashStreak);
