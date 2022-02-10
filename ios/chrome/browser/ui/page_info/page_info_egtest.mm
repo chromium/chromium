@@ -88,6 +88,11 @@
 // Tests that the Permissions section is not displayed, as there isn't any
 // accessible permissions.
 - (void)testShowPageInfoWithNoAccessiblePermission {
+  // TODO(crbug.com/1296203): Test fails on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
+  }
+
   if (@available(iOS 15.0, *)) {
     [ChromeEarlGrey loadURL:GURL("https://chromium.org/")];
     [ChromeEarlGreyUI openPageInfo];
