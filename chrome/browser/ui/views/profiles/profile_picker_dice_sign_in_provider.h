@@ -18,16 +18,13 @@
 
 struct CoreAccountInfo;
 class ProfilePickerDiceSignInToolbar;
+class ProfilePickerView;
 
 namespace content {
 struct ContextMenuParams;
 class RenderFrameHost;
 class WebContents;
 }  // namespace content
-
-namespace ui {
-class ThemeProvider;
-}  // namespace ui
 
 // Class responsible for the GAIA sign-in within profile creation flow.
 class ProfilePickerDiceSignInProvider
@@ -48,7 +45,7 @@ class ProfilePickerDiceSignInProvider
                               std::unique_ptr<content::WebContents>,
                               bool is_saml)>;
 
-  ProfilePickerDiceSignInProvider(ProfilePickerWebContentsHost* host,
+  ProfilePickerDiceSignInProvider(ProfilePickerView* host,
                                   ProfilePickerDiceSignInToolbar* toolbar);
   ~ProfilePickerDiceSignInProvider() override;
   ProfilePickerDiceSignInProvider(const ProfilePickerDiceSignInProvider&) =
@@ -71,10 +68,14 @@ class ProfilePickerDiceSignInProvider
   // Navigates back in the sign-in flow if applicable.
   void NavigateBack();
 
-  // Returns theme provider based on the sign-in profile or nullptr if the flow
-  // is not yet initialized.
-  const ui::ThemeProvider* GetThemeProvider() const;
   ui::ColorProviderManager::InitializerSupplier* GetCustomTheme() const;
+
+  // Returns nullptr if profile_ has not been created yet.
+  Profile* GetInitializedProfile();
+
+  // Returns whether the flow is initialized (i.e. whether `profile_` has been
+  // created).
+  bool IsInitialized() const;
 
  private:
   // content::WebContentsDelegate:
@@ -116,16 +117,12 @@ class ProfilePickerDiceSignInProvider
   // detected).
   void FinishFlow(bool is_saml);
 
-  // Returns whether the flow is initialized (i.e. whether `profile_` has been
-  // created).
-  bool IsInitialized() const;
-
   void OnSignInContentsFreedUp();
 
   content::WebContents* contents() const { return contents_.get(); }
 
   // The host and toolbar objects, must outlive this object.
-  const raw_ptr<ProfilePickerWebContentsHost> host_;
+  const raw_ptr<ProfilePickerView> host_;
   const raw_ptr<ProfilePickerDiceSignInToolbar> toolbar_;
   // Sign-in callback, valid until it's called.
   SignedInCallback callback_;

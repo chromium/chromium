@@ -30,6 +30,7 @@ class ProfilePickerDiceSignInProvider;
 class ProfilePickerDiceSignInToolbar;
 #endif
 
+class Profile;
 class ProfilePickerSignedInFlowController;
 class ScopedProfileKeepAlive;
 
@@ -44,10 +45,6 @@ class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
-namespace ui {
-class ThemeProvider;
-}  // namespace ui
-
 // Dialog widget that contains the Desktop Profile picker webui.
 class ProfilePickerView : public views::WidgetDelegateView,
                           public ProfilePickerWebContentsHost {
@@ -57,7 +54,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   ProfilePickerView(const ProfilePickerView&) = delete;
   ProfilePickerView& operator=(const ProfilePickerView&) = delete;
 
-  const ui::ThemeProvider* GetThemeProviderForProfileBeingCreated() const;
+  Profile* GetProfileBeingCreated() const;
   ui::ColorProviderManager::InitializerSupplier*
   GetCustomThemeForProfileBeingCreated() const;
 

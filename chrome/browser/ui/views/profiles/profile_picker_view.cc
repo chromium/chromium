@@ -24,6 +24,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -129,7 +130,10 @@ class ProfilePickerWidget : public views::Widget {
 
   // views::Widget:
   const ui::ThemeProvider* GetThemeProvider() const override {
-    return profile_picker_view_->GetThemeProviderForProfileBeingCreated();
+    Profile* profile = profile_picker_view_->GetProfileBeingCreated();
+    if (profile)
+      return &ThemeService::GetThemeProviderForProfile(profile);
+    return nullptr;
   }
   ui::ColorProviderManager::InitializerSupplier* GetCustomTheme()
       const override {
@@ -378,12 +382,14 @@ void ProfilePickerView::NavigationFinishedObserver::DidFinishNavigation(
 
 // ProfilePickerView ----------------------------------------------------------
 
-const ui::ThemeProvider*
-ProfilePickerView::GetThemeProviderForProfileBeingCreated() const {
+// Returns the initialized profile or nullptr if the profile has not been
+// initialized yet or not in the dice flow.
+Profile* ProfilePickerView::GetProfileBeingCreated() const {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Theme provider is only needed for the dice flow.
-  if (dice_sign_in_provider_)
-    return dice_sign_in_provider_->GetThemeProvider();
+  if (dice_sign_in_provider_ && dice_sign_in_provider_->IsInitialized()) {
+    return dice_sign_in_provider_->GetInitializedProfile();
+  }
 #endif
   return nullptr;
 }

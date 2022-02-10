@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_toolbar.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -54,7 +55,7 @@ bool IsExternalURL(const GURL& url) {
 }  // namespace
 
 ProfilePickerDiceSignInProvider::ProfilePickerDiceSignInProvider(
-    ProfilePickerWebContentsHost* host,
+    ProfilePickerView* host,
     ProfilePickerDiceSignInToolbar* toolbar)
     : host_(host), toolbar_(toolbar) {}
 
@@ -125,13 +126,6 @@ void ProfilePickerDiceSignInProvider::NavigateBack() {
   // picker contents.
   host_->ShowScreenInPickerContents(GURL());
   toolbar_->SetVisible(false);
-}
-
-const ui::ThemeProvider* ProfilePickerDiceSignInProvider::GetThemeProvider()
-    const {
-  if (!IsInitialized())
-    return nullptr;
-  return &ThemeService::GetThemeProviderForProfile(profile_);
 }
 
 ui::ColorProviderManager::InitializerSupplier*
@@ -277,7 +271,8 @@ void ProfilePickerDiceSignInProvider::OnProfileCreated(
   // Make sure the web contents used for sign-in has proper background to match
   // the toolbar (for dark mode).
   views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
-      contents(), GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR));
+      contents(),
+      host_->GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR));
 
   toolbar_->BuildToolbar(base::BindRepeating(
       &ProfilePickerDiceSignInProvider::NavigateBack, base::Unretained(this)));
@@ -288,6 +283,10 @@ void ProfilePickerDiceSignInProvider::OnProfileCreated(
                      // Unretained is enough as the callback is
                      // called by the owner of the toolbar.
                      base::Unretained(toolbar_), /*visible=*/true));
+}
+
+Profile* ProfilePickerDiceSignInProvider::GetInitializedProfile() {
+  return profile_;
 }
 
 bool ProfilePickerDiceSignInProvider::IsInitialized() const {
