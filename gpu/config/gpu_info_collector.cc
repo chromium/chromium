@@ -535,7 +535,10 @@ void FillGPUInfoFromSystemInfo(GPUInfo* gpu_info,
   gpu_info->gpu.device_id = active->deviceId;
 #if BUILDFLAG(IS_CHROMEOS)
   gpu_info->gpu.revision = active->revisionId;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC)
+  gpu_info->gpu.register_id = active->systemDeviceId;
+#endif  // BUILDFLAG(IS_MAC)
   gpu_info->gpu.driver_vendor = std::move(active->driverVendor);
   gpu_info->gpu.driver_version = std::move(active->driverVersion);
   gpu_info->gpu.active = true;
@@ -550,7 +553,10 @@ void FillGPUInfoFromSystemInfo(GPUInfo* gpu_info,
     device.device_id = system_info->gpus[i].deviceId;
 #if BUILDFLAG(IS_CHROMEOS)
     device.revision = system_info->gpus[i].revisionId;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_MAC)
+    device.register_id = system_info->gpus[i].systemDeviceId;
+#endif  // BUILDFLAG(IS_MAC)
     device.driver_vendor = std::move(system_info->gpus[i].driverVendor);
     device.driver_version = std::move(system_info->gpus[i].driverVersion);
 

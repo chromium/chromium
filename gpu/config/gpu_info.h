@@ -262,6 +262,12 @@ struct GPU_EXPORT GPUInfo {
     CHROME_LUID luid;
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_MAC)
+    // The registry ID of an IOGraphicsAccelerator2 or AGXAccelerator matches
+    // the ID used for GPU selection by ANGLE_platform_angle_device_id.
+    uint64_t register_id = 0ULL;
+#endif  // BUILDFLAG(IS_MAC)
+
     // Whether this GPU is the currently used one.
     // Currently this field is only supported and meaningful on OS X and on
     // Windows using Angle with D3D11.
