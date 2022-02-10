@@ -6702,7 +6702,6 @@ crbug.com/1220007 [ Linux ] fullscreen/full-screen-iframe-allowed-video.html [ F
 # Some flaky gpu canvas compositing
 crbug.com/1221326 virtual/gpu/fast/canvas/canvas-composite-image.html [ Failure Pass ]
 crbug.com/1221327 virtual/gpu/fast/canvas/canvas-composite-canvas.html [ Failure Pass ]
-crbug.com/1221420 virtual/gpu/fast/canvas/canvas-ellipse-zero-lineto.html [ Failure Pass ]
 
 # Sheriff
 crbug.com/1223327 wpt_internal/prerender/unload.html [ Pass Timeout ]
