@@ -1646,6 +1646,10 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_DATA_USAGE},
       {"privacySandboxLearnMoreDialogDataManagement",
        IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_DATA_MANAGEMENT},
+      {"privacySandboxAdMeasurementDialogTitle",
+       IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_TITLE},
+      {"privacySandboxAdMeasurementDialogDescription",
+       IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_DESCRIPTION},
 
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
@@ -1677,6 +1681,11 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "privacySandboxSettings3Enabled",
       base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3));
+  html_source->AddString(
+      "privacySandboxAdMeasurementDialogControlMeasurement",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_CONTROL_MEASUREMENT,
+          base::ASCIIToUTF16(chrome::kChromeUIHistoryURL)));
 }
 
 void AddPrivacyReviewStrings(content::WebUIDataSource* html_source) {

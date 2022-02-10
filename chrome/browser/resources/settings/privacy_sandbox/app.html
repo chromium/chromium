@@ -97,6 +97,14 @@
   .learn-more-section-subtitle {
     color: var(--cr-primary-text-color);
   }
+
+  .dialog-description {
+    color: var(--cr-primary-text-color);
+  }
+
+  cr-dialog [slot=body] .dialog-description:not(:last-of-type) {
+    padding-bottom: 8px;
+  }
 </style>
 
 <settings-prefs id="prefs" prefs="{{prefs}}"></settings-prefs>
@@ -128,10 +136,11 @@
           </a>
         </div>
       </cr-link-row>
-      <cr-link-row
+      <cr-link-row id="adMeasurementRow"
         start-icon="privacy-sandbox:insert-chart"
         label="$i18n{privacySandboxAdMeasurementTitle}"
-        sub-label="$i18n{privacySandboxAdMeasurementSummary}"></cr-link-row>
+        sub-label="$i18n{privacySandboxAdMeasurementSummary}"
+        on-click="onAdMeasurementRowClick_"></cr-link-row>
       <cr-link-row
         start-icon="privacy-sandbox:spam-reduction"
         label="$i18n{privacySandboxSpamAndFraudTitle}"
@@ -213,6 +222,21 @@
           <div slot="title">This is the second page</div>
           <div slot="body">
             This is example text for the second page.
+          </div>
+        </template>
+        <template id="adMeasurementDialog" is="dom-if"
+            if="[[showFragment_(
+                    privacySandboxSettingsViewEnum_.AD_MEASUREMENT_DIALOG,
+                    privacySandboxSettingsView_)]]">
+          <div slot="title">$i18n{privacySandboxAdMeasurementDialogTitle}</div>
+          <div slot="body">
+            <div class="dialog-description">
+              $i18n{privacySandboxAdMeasurementDialogDescription}
+            </div>
+            <div id="adMeasurementDialogControlMeasurement"
+                class="dialog-description">
+              $i18nRaw{privacySandboxAdMeasurementDialogControlMeasurement}
+            </div>
           </div>
         </template>
         <div slot="button-container">

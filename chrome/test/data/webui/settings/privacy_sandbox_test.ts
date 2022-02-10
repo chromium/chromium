@@ -242,7 +242,10 @@ suite('PrivacySandboxSettings3', function() {
         page.shadowRoot!.querySelector<CrDialogElement>('#dialogWrapper');
     assertTrue(!!dialogWrapper);
     assertTrue(dialogWrapper.open);
-    assertTrue(page.shadowRoot!.querySelector<DomIf>('#learnMoreDialog')!.if !);
+    assertTrue(
+        page.shadowRoot!
+            .querySelector<DomIf>(
+                '#' + PrivacySandboxSettingsView.LEARN_MORE_DIALOG)!.if !);
   }
 
   function assertAdPersonalizationDialogVisible() {
@@ -254,8 +257,24 @@ suite('PrivacySandboxSettings3', function() {
     assertTrue(!!dialogWrapper);
     assertTrue(dialogWrapper.open);
     assertTrue(
-        page.shadowRoot!.querySelector<DomIf>(
-                            '#adPersonalizationDialog')!.if !);
+        page.shadowRoot!
+            .querySelector<DomIf>(
+                '#' +
+                PrivacySandboxSettingsView.AD_PERSONALIZATION_DIALOG)!.if !);
+  }
+
+  function assertAdMeasurementDialogVisible() {
+    assertEquals(
+        page.privacySandboxSettingsView_,
+        PrivacySandboxSettingsView.AD_MEASUREMENT_DIALOG);
+    const dialogWrapper =
+        page.shadowRoot!.querySelector<CrDialogElement>('#dialogWrapper');
+    assertTrue(!!dialogWrapper);
+    assertTrue(dialogWrapper.open);
+    assertTrue(
+        page.shadowRoot!
+            .querySelector<DomIf>(
+                '#' + PrivacySandboxSettingsView.AD_MEASUREMENT_DIALOG)!.if !);
   }
 
   test('testSandboxSettings3Visibility', function() {
@@ -319,5 +338,36 @@ suite('PrivacySandboxSettings3', function() {
     page.shadowRoot!.querySelector<HTMLElement>('#dialogCloseButton')!.click();
     await flushTasks();
     assertMainViewVisible();
+  });
+
+  test('testAdMeasurementDialog', async function() {
+    assertMainViewVisible();
+
+    // Clicking on the ad measurement row should open the dialog.
+    page.shadowRoot!.querySelector<HTMLElement>('#adMeasurementRow')!.click();
+    await flushTasks();
+    assertAdMeasurementDialogVisible();
+
+    // Clicking on the close button of the dialog should close it.
+    page.shadowRoot!.querySelector<HTMLElement>('#dialogCloseButton')!.click();
+    await flushTasks();
+    assertMainViewVisible();
+  });
+
+  test('testAdMeasurementDialogBrowsingHistoryLink', async function() {
+    assertMainViewVisible();
+    page.shadowRoot!.querySelector<HTMLElement>('#adMeasurementRow')!.click();
+    await flushTasks();
+    assertAdMeasurementDialogVisible();
+
+    // Check that the browsing history link exists and goes to the right place.
+    const controlMeasurementDescription =
+        page.shadowRoot!.querySelector<HTMLElement>(
+            '#adMeasurementDialogControlMeasurement')!;
+    const browsingHistoryLink =
+        controlMeasurementDescription.querySelector<HTMLAnchorElement>(
+            'a[href]');
+    assertTrue(!!browsingHistoryLink);
+    assertEquals('chrome://history/', browsingHistoryLink.href);
   });
 });
