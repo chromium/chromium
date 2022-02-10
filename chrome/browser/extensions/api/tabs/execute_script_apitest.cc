@@ -181,8 +181,8 @@ class DestructiveScriptTest : public ExecuteScriptApiTestBase,
   }
 };
 
-// Flaky on ASAN. crbug.com/1293865
-#if defined(ADDRESS_SANITIZER)
+// Flaky on ASAN and -dbg. crbug.com/1293865
+#if defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
 #define MAYBE_SynchronousRemoval DISABLED_SynchronousRemoval
 #else
 #define MAYBE_SynchronousRemoval SynchronousRemoval
@@ -192,8 +192,8 @@ IN_PROC_BROWSER_TEST_P(DestructiveScriptTest, MAYBE_SynchronousRemoval) {
   ASSERT_TRUE(RunSubtest("synchronous")) << message_;
 }
 
-// Flaky on ASAN. crbug.com/1293865
-#if defined(ADDRESS_SANITIZER)
+// Flaky on ASAN and -dbg. crbug.com/1293865
+#if defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
 #define MAYBE_MicrotaskRemoval DISABLED_MicrotaskRemoval
 #else
 #define MAYBE_MicrotaskRemoval MicrotaskRemoval
