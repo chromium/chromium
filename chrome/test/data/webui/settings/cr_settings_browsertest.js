@@ -494,8 +494,8 @@ var CrSettingsPrivacyReviewPageTest = class extends CrSettingsBrowserTest {
   }
 };
 
-// TODO(crbug.com/1281967): Flaky on debug Linux and Win7 debug builds.
-GEN('#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)) && !defined(NDEBUG)');
+// TODO(crbug.com/1281967): Flaky on debug Linux builds.
+GEN('#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)');
 GEN('#define MAYBE_PrivacyReviewPageTests DISABLED_PrivacyReviewPageTests');
 GEN('#else');
 GEN('#define MAYBE_PrivacyReviewPageTests PrivacyReviewPageTests');
