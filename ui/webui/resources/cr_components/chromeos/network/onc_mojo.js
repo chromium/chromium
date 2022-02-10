@@ -19,6 +19,13 @@
  * strings and for debugging. They are not intended to be drectly user facing.
  */
 
+// Used to indicate a saved but unknown credential value. Will appear as
+// placeholder character in the credential (passphrase, password, etc.) field by
+// default.
+// See |kFakeCredential| in chromeos/network/policy_util.h.
+/** @type {string} */
+/* #export */ const FAKE_CREDENTIAL = 'FAKE_CREDENTIAL_VPaJDV9x';
+
   /**
    * Regex expression to validate RFC compliant DNS characters.
    */

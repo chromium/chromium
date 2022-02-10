@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {FAKE_CREDENTIAL} from './onc_mojo.m.js';
+// clang-format on
+
 /**
  * @fileoverview Polymer element for displaying a list of network properties
  * in a list. This also supports editing fields inline for fields listed in
@@ -447,6 +451,19 @@ Polymer({
       return this.i18n(oncKey);
     }
     return valueStr;
+  },
+
+  /**
+   * @param {string} key The property key.
+   * @return {string} CSS classes to apply to the property value container.
+   * @private
+   */
+  getPropertyValueCssClasses_(key) {
+    const classes = ['cr-secondary-text'];
+    if (this.getPropertyValue_(key) === FAKE_CREDENTIAL) {
+      classes.push('secure');
+    }
+    return classes.join(' ');
   },
 
   /**

@@ -26,6 +26,10 @@
       cr-policy-network-indicator-mojo {
         margin-inline-start: var(--settings-controlled-by-spacing);
       }
+
+      .secure {
+        -webkit-text-security: disc;
+      }
     </style>
     <template is="dom-repeat" items="[[fields]]"
         filter="[[computeFilter_(prefix, editFieldTypes, propertyDict)]]">
@@ -43,7 +47,7 @@
         <!-- Uneditable property value -->
         <template is="dom-if" restamp
             if="[[!showEditable_(item, editFieldTypes, propertyDict)]]">
-          <div class="cr-secondary-text">
+          <div class$="[[getPropertyValueCssClasses_(item, prefix, propertyDict)]]">
             [[getPropertyValue_(item, prefix, propertyDict)]]
           </div>
         </template>
