@@ -617,8 +617,9 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-// TODO(crbug.com/732501): Re-enable on Win once not flaky.
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || BUILDFLAG(IS_WIN)
+// TODO(crbug.com/732501): Re-enable on Win and Mac-ARM once not flaky.
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
+    BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM_FAMILY))
 #define MAYBE_HasZombieProfile DISABLED_HasZombieProfile
 #else
 #define MAYBE_HasZombieProfile HasZombieProfile
