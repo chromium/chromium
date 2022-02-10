@@ -8,6 +8,7 @@
 
 #include "third_party/blink/public/common/mobile_metrics/mobile_friendliness.h"
 #include "third_party/blink/public/mojom/mobile_metrics/mobile_friendliness.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_get_root_node_options.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
@@ -155,11 +156,10 @@ struct EdgeOrCenter {
 };
 
 bool IsTapTargetCandidate(Node* node) {
-  if (auto* image = DynamicTo<HTMLImageElement>(node);
-      image && image->WillRespondToMouseClickEvents()) {
-    return true;
-  } else if (auto* anchor = DynamicTo<HTMLAnchorElement>(node);
-             anchor && !anchor->Href().IsEmpty()) {
+  if (const auto* anchor = DynamicTo<HTMLAnchorElement>(node)) {
+    return !anchor->Href().IsEmpty();
+  } else if (auto* element = DynamicTo<HTMLElement>(node);
+             element && element->WillRespondToMouseClickEvents()) {
     return true;
   }
   return IsA<HTMLFormControlElement>(node);
@@ -235,7 +235,12 @@ int ExtractAndCountAllTapTargets(
       return static_cast<int>(tap_targets.size());
     }
 
-    if (ShouldSkipSubtree(forward)) {
+    blink::GetRootNodeOptions options;
+    if (forward->GetNode() != nullptr &&
+        forward->GetNode()->getRootNode(&options)->IsInUserAgentShadowRoot()) {
+      // Ignore shadow elements that may contain overlapping tap targets.
+      forward = forward->NextInPreOrderAfterChildren();
+    } else if (ShouldSkipSubtree(forward)) {
       forward = forward->NextInPreOrderAfterChildren();
     } else {
       if (!AddElement(forward, &tap_targets, finger_radius, x_positions,
@@ -246,7 +251,11 @@ int ExtractAndCountAllTapTargets(
       forward = forward->NextInPreOrder();
     }
 
-    if (ShouldSkipSubtree(backward)) {
+    if (backward->GetNode() != nullptr &&
+        backward->GetNode()->getRootNode(&options)->IsInUserAgentShadowRoot()) {
+      // Ignore shadow elements that may contain overlapping tap targets.
+      backward = backward->PreviousInPostOrderBeforeChildren(nullptr);
+    } else if (ShouldSkipSubtree(backward)) {
       backward = backward->PreviousInPostOrderBeforeChildren(nullptr);
     } else {
       if (!AddElement(backward, &tap_targets, finger_radius, x_positions,

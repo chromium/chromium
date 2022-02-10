@@ -1014,6 +1014,27 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest, TooCloseTapTargetsVertical) {
 }
 
 TEST_F(ClockFixedMobileFriendlinessCheckerTest,
+       TooCloseTapTargetsVerticalEventListener) {
+  MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
+<html>
+  <head>
+    <meta name="viewport" content="width=480, initial-scale=1">
+  </head>
+  <body style="font-size: 18px">
+    <div id="bigger" style="width: 400px; height: 400px; margin: 0px">bigger</div>
+    <div id="smaller" style="width: 10px; height: 10px; margin: 0px">smaller</div>
+    <script>
+      function noop() {}
+      document.getElementById("bigger").addEventListener("click", noop, false);
+      document.getElementById("smaller").addEventListener("click", noop, false);
+    </script>
+  </body>
+</html>
+)");
+  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 50);
+}
+
+TEST_F(ClockFixedMobileFriendlinessCheckerTest,
        TooCloseTapTargetsVerticalSamePoint) {
   MobileFriendliness actual_mf = CalculateMetricsForHTMLString(R"(
 <html>
