@@ -12,7 +12,6 @@
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/test_legal_message_line.h"
 #include "components/autofill/core/browser/payments/test_payments_client.h"
-#include "components/autofill/core/browser/payments/test_strike_database.h"
 #include "components/autofill/core/browser/payments/test_virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -51,8 +50,6 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
             autofill_driver_->GetURLLoaderFactory(),
             autofill_client_->GetIdentityManager(),
             personal_data_manager_.get()));
-    auto test_strike_database = std::make_unique<TestStrikeDatabase>();
-    autofill_client_->set_test_strike_database(std::move(test_strike_database));
     payments_client_ = static_cast<payments::TestPaymentsClient*>(
         autofill_client_->GetPaymentsClient());
     virtual_card_enrollment_manager_ =
@@ -70,7 +67,6 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
     CreditCard card = test::GetMaskedServerCard();
     card.set_card_art_url(autofill_client_->form_origin());
     card.set_instrument_id(112233445566);
-    card.set_guid("00000000-0000-0000-0000-000000000001");
     personal_data_manager_->AddFullServerCreditCard(card);
     return card;
   }
@@ -207,8 +203,6 @@ TEST_F(VirtualCardEnrollmentManagerTest,
   raw_ptr<VirtualCardEnrollmentProcessState> state =
       virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
   state->vcn_context_token = kTestVcnContextToken;
-  CreditCard card = SetUpCard();
-  state->virtual_card_enrollment_fields.credit_card = &card;
   personal_data_manager_->SetPaymentsCustomerData(
       std::make_unique<PaymentsCustomerData>(/*customer_id=*/"123456"));
 
@@ -260,101 +254,6 @@ TEST_F(VirtualCardEnrollmentManagerTest, Unenroll) {
   EXPECT_FALSE(request_details.vcn_context_token.has_value());
   EXPECT_EQ(virtual_card_enrollment_manager_->GetPaymentsRpcResult(),
             AutofillClient::PaymentsRpcResult::kSuccess);
-}
-
-TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleAccepted) {
-  raw_ptr<VirtualCardEnrollmentProcessState> state =
-      virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
-  state->vcn_context_token = kTestVcnContextToken;
-  CreditCard card = SetUpCard();
-  state->virtual_card_enrollment_fields.credit_card = &card;
-  personal_data_manager_->SetPaymentsCustomerData(
-      std::make_unique<PaymentsCustomerData>("123456"));
-  EXPECT_FALSE(virtual_card_enrollment_manager_->IsVirtualCardEnrollmentBlocked(
-      &card, VirtualCardEnrollmentSource::kUpstream));
-  // Reject the bubble and log strike.
-  virtual_card_enrollment_manager_->OnVirtualCardEnrollmentBubbleCancelled();
-  EXPECT_EQ(
-      virtual_card_enrollment_manager_->GetVirtualCardEnrollmentStrikeDatabase()
-          ->GetStrikes(card.guid()),
-      1);
-
-  // Check if a strike has been removed after enrollment accepted.
-  virtual_card_enrollment_manager_->OnVirtualCardEnrollmentBubbleAccepted();
-  EXPECT_EQ(
-      virtual_card_enrollment_manager_->GetVirtualCardEnrollmentStrikeDatabase()
-          ->GetStrikes(card.guid()),
-      0);
-}
-
-TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleCanceled) {
-  raw_ptr<VirtualCardEnrollmentProcessState> state =
-      virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
-  state->vcn_context_token = kTestVcnContextToken;
-  CreditCard card = SetUpCard();
-  state->virtual_card_enrollment_fields.credit_card = &card;
-  personal_data_manager_->SetPaymentsCustomerData(
-      std::make_unique<PaymentsCustomerData>("123456"));
-  EXPECT_FALSE(virtual_card_enrollment_manager_->IsVirtualCardEnrollmentBlocked(
-      &card, VirtualCardEnrollmentSource::kUpstream));
-  // Reject the bubble and log strike.
-  virtual_card_enrollment_manager_->OnVirtualCardEnrollmentBubbleCancelled();
-
-  // Check if a strike has been logged.
-  EXPECT_EQ(
-      virtual_card_enrollment_manager_->GetVirtualCardEnrollmentStrikeDatabase()
-          ->GetStrikes(card.guid()),
-      1);
-}
-
-TEST_F(VirtualCardEnrollmentManagerTest, StrikeDatabase_BubbleBlocked) {
-  raw_ptr<VirtualCardEnrollmentProcessState> state =
-      virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
-  state->vcn_context_token = kTestVcnContextToken;
-  CreditCard card = SetUpCard();
-  state->virtual_card_enrollment_fields.credit_card = &card;
-  personal_data_manager_->SetPaymentsCustomerData(
-      std::make_unique<PaymentsCustomerData>("123456"));
-  EXPECT_FALSE(virtual_card_enrollment_manager_->IsVirtualCardEnrollmentBlocked(
-      &card, VirtualCardEnrollmentSource::kUpstream));
-  EXPECT_FALSE(virtual_card_enrollment_manager_->IsVirtualCardEnrollmentBlocked(
-      &card, VirtualCardEnrollmentSource::kDownstream));
-
-  for (int i = 0; i < virtual_card_enrollment_manager_
-                          ->GetVirtualCardEnrollmentStrikeDatabase()
-                          ->GetMaxStrikesLimit();
-       i++) {
-    // Reject the bubble and log strike.
-    virtual_card_enrollment_manager_->OnVirtualCardEnrollmentBubbleCancelled();
-  }
-  EXPECT_TRUE(virtual_card_enrollment_manager_->IsVirtualCardEnrollmentBlocked(
-      &card, VirtualCardEnrollmentSource::kUpstream));
-  EXPECT_TRUE(virtual_card_enrollment_manager_->IsVirtualCardEnrollmentBlocked(
-      &card, VirtualCardEnrollmentSource::kDownstream));
-}
-
-TEST_F(VirtualCardEnrollmentManagerTest,
-       StrikeDatabase_SettingsPageNotBlocked) {
-  raw_ptr<VirtualCardEnrollmentProcessState> state =
-      virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
-  state->vcn_context_token = kTestVcnContextToken;
-  CreditCard card = SetUpCard();
-  state->virtual_card_enrollment_fields.credit_card = &card;
-
-  personal_data_manager_->SetPaymentsCustomerData(
-      std::make_unique<PaymentsCustomerData>("123456"));
-
-  for (int i = 0; i < virtual_card_enrollment_manager_
-                          ->GetVirtualCardEnrollmentStrikeDatabase()
-                          ->GetMaxStrikesLimit();
-       i++) {
-    // Reject the bubble and log strike.
-    virtual_card_enrollment_manager_->OnVirtualCardEnrollmentBubbleCancelled();
-  }
-
-  // Make sure enrollment is not blocked through settings page.
-  EXPECT_FALSE(virtual_card_enrollment_manager_->IsVirtualCardEnrollmentBlocked(
-      &card, VirtualCardEnrollmentSource::kSettingsPage));
 }
 
 }  // namespace autofill

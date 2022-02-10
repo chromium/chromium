@@ -20,20 +20,18 @@ constexpr size_t kMaxStrikeEntitiesAfterCleanup = 30;
 int kCardMaximumStrikes = 3;
 
 // The number of days until strikes expire for virtual card enrollment.
-int kDaysUntilCardStrikeExpiry = 180;
+constexpr size_t kDaysUntilCardStrikeExpiry = 180;
 
 VirtualCardEnrollmentStrikeDatabase::VirtualCardEnrollmentStrikeDatabase(
     StrikeDatabaseBase* strike_database)
-    : StrikeDatabaseIntegratorBase(strike_database) {
-  RemoveExpiredStrikes();
-}
+    : StrikeDatabaseIntegratorBase(strike_database) {}
 
 VirtualCardEnrollmentStrikeDatabase::~VirtualCardEnrollmentStrikeDatabase() =
     default;
 
 absl::optional<size_t> VirtualCardEnrollmentStrikeDatabase::GetMaximumEntries()
     const {
-  return absl::optional<size_t>(kMaxStrikeEntities);
+  return kMaxStrikeEntities;
 }
 
 absl::optional<size_t>
@@ -53,8 +51,7 @@ int VirtualCardEnrollmentStrikeDatabase::GetMaxStrikesLimit() const {
 absl::optional<base::TimeDelta>
 VirtualCardEnrollmentStrikeDatabase::GetExpiryTimeDelta() const {
   // Expiry time is 180 days by default.
-  return absl::optional<base::TimeDelta>(
-      base::Days(kDaysUntilCardStrikeExpiry));
+  return base::Days(kDaysUntilCardStrikeExpiry);
 }
 
 bool VirtualCardEnrollmentStrikeDatabase::UniqueIdsRequired() const {

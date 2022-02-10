@@ -99,12 +99,10 @@ class VirtualCardEnrollmentManager {
   // Unenrolls the card mapped to the given |instrument_id|.
   void Unenroll(int64_t instrument_id);
 
-  // Returns true if a credit card identified by its |credit_card->guid()| is
-  // blocked for virtual card enrollment and is not attempting to enroll from
-  // the settings page. Does nothing if the strike database is not available.
-  bool IsVirtualCardEnrollmentBlocked(
-      raw_ptr<CreditCard> credit_card,
-      VirtualCardEnrollmentSource virtual_card_enrollment_source) const;
+  // Returns true if a credit card identified by its |guid| is blocked for
+  // virtual card enrollment. Does nothing if the strike database is not
+  // available.
+  bool IsVirtualCardEnrollmentBlocked(const std::string& guid) const;
 
   // Adds a strike to block enrollment for credit card identified by its |guid|.
   // Does nothing if the strike database is not available.
@@ -139,24 +137,6 @@ class VirtualCardEnrollmentManager {
       const;
 
  private:
-  friend class VirtualCardEnrollmentManagerTest;
-  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
-                           OnDidGetDetailsForEnrollResponse);
-  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
-                           OnDidGetDetailsForEnrollResponse_Reset);
-  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
-                           OnRiskDataLoadedForVirtualCard);
-  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
-                           OnVirtualCardEnrollmentBubbleAccepted);
-  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
-                           StrikeDatabase_BubbleAccepted);
-  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
-                           StrikeDatabase_BubbleCanceled);
-  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
-                           StrikeDatabase_BubbleBlocked);
-  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
-                           StrikeDatabase_SettingsPageNotBlocked);
-
   // Called once the risk data is loaded. The |risk_data| will be used with
   // |state_|'s |virtual_card_enrollment_fields|'s |credit_card|'s
   // |instrument_id_| field to make a GetDetailsForEnroll request, and
@@ -195,6 +175,15 @@ class VirtualCardEnrollmentManager {
 
   // Cancels the entire Virtual Card Enrollment process.
   void OnVirtualCardEnrollmentBubbleCancelled();
+
+  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
+                           OnDidGetDetailsForEnrollResponse);
+  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
+                           OnDidGetDetailsForEnrollResponse_Reset);
+  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
+                           OnRiskDataLoadedForVirtualCard);
+  FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,
+                           OnVirtualCardEnrollmentBubbleAccepted);
 
   // The associated autofill client, used to load risk data at the point that we
   // need it. Weak reference.
