@@ -11,7 +11,9 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
@@ -139,6 +141,11 @@ class MobileSectionHeaderView : public NetworkSectionHeaderView,
   // Indicates whether add_esim_button_ should be enabled when the device is
   // not inhibited.
   bool can_add_esim_button_be_enabled_ = false;
+
+  // CrosBluetoothConfig remote that is only bound if the Bluetooth
+  // Revamp flag is enabled.
+  mojo::Remote<chromeos::bluetooth_config::mojom::CrosBluetoothConfig>
+      remote_cros_bluetooth_config_;
 
   base::WeakPtrFactory<MobileSectionHeaderView> weak_ptr_factory_{this};
 };
