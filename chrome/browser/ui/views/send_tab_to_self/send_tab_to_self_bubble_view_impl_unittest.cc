@@ -109,13 +109,7 @@ TEST_F(SendTabToSelfBubbleViewImplTest, KeyboardAccessibilityConfigured) {
             container->children()[2]->GetGroup());
 }
 
-// TODO(crbug.com/1285538): Flaky on Linux TSAN
-#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
-#define MAYBE_ButtonPressed DISABLED_ButtonPressed
-#else
-#define MAYBE_ButtonPressed ButtonPressed
-#endif
-TEST_F(SendTabToSelfBubbleViewImplTest, MAYBE_ButtonPressed) {
+TEST_F(SendTabToSelfBubbleViewImplTest, ButtonPressed) {
   EXPECT_CALL(*controller_, OnDeviceSelected("Device_3", "device_guid_3"));
   const views::View* button_container = bubble_->GetButtonContainerForTesting();
   ASSERT_EQ(3U, button_container->children().size());
