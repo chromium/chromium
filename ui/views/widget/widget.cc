@@ -850,7 +850,11 @@ bool Widget::IsVisible() const {
 }
 
 const ui::ThemeProvider* Widget::GetThemeProvider() const {
-  const Widget* root_widget = GetTopLevelWidget();
+  // The theme provider is provided by the very top widget in the ownership
+  // chain, which may include parenting, anchoring, etc. Use
+  // GetPrimaryWindowWidget() rather than GetTopLevelWidget() for this purpose
+  // (see description of those methods to learn more).
+  const Widget* const root_widget = GetPrimaryWindowWidget();
   return (root_widget && root_widget != this) ? root_widget->GetThemeProvider()
                                               : nullptr;
 }
