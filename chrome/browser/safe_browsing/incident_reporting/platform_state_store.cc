@@ -44,12 +44,11 @@ void KeysAndDigestsToProtobuf(
     const base::DictionaryValue& keys_and_digests,
     RepeatedPtrField<StateStoreData::Incidents::KeyDigestMapFieldEntry>*
         key_digest_pairs) {
-  std::string digest_value;
   for (base::DictionaryValue::Iterator iter(keys_and_digests); !iter.IsAtEnd();
        iter.Advance()) {
     uint32_t digest = 0;
-    if (!iter.value().is_string() || !iter.value().GetAsString(&digest_value) ||
-        !base::StringToUint(digest_value, &digest)) {
+    if (!iter.value().is_string() ||
+        !base::StringToUint(iter.value().GetString(), &digest)) {
       NOTREACHED();
       continue;
     }
