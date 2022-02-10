@@ -2483,6 +2483,7 @@ test("content_unittests") {
     "//content/browser/background_fetch:background_fetch_proto",
     "//content/browser/cache_storage:cache_storage_proto",
     "//content/browser/devtools:devtools_background_services_proto",
+    "//content/browser/download:proto",
     "//content/browser/notifications:notification_proto",
     "//content/child:for_content_tests",
     "//content/common:buildflags",

@@ -67,10 +67,11 @@ class CONTENT_EXPORT StoragePartitionConfig {
     if (fallback != FallbackMode::kNone) {
       DCHECK(!is_default());
       DCHECK(!partition_domain_.empty());
-      // TODO(acollwell): Ideally we shouldn't have storage partition configs
-      // that differ only in their fallback mode, but unfortunately that isn't
-      // true. When that is fixed this can be made more robust by disallowing
-      // fallback from storage partitions with an empty partition name.
+      // TODO(https://crbug.com/1279537): Ideally we shouldn't have storage
+      // partition configs that differ only in their fallback mode, but
+      // unfortunately that isn't true. When that is fixed this can be made more
+      // robust by disallowing fallback from storage partitions with an empty
+      // partition name.
       // DCHECK(!partition_name_.empty());
     }
     fallback_to_partition_domain_for_blob_urls_ = fallback;

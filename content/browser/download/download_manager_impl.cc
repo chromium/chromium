@@ -43,6 +43,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/data_url_loader_factory.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
+#include "content/browser/download/embedder_download_data.pb.h"
 #include "content/browser/download/network_download_pending_url_loader_factory.h"
 #include "content/browser/file_system/file_system_url_loader_factory.h"
 #include "content/browser/loader/file_url_loader_factory.h"
@@ -409,6 +410,81 @@ void DownloadManagerImpl::SetNextId(uint32_t next_id) {
   for (auto& callback : id_callbacks_)
     std::move(*callback).Run(next_download_id_++);
   id_callbacks_.clear();
+}
+
+std::string
+DownloadManagerImpl::StoragePartitionConfigToSerializedEmbedderDownloadData(
+    const StoragePartitionConfig& storage_partition_config) {
+  proto::EmbedderDownloadData embedder_download_data;
+  proto::StoragePartitionConfig* config_proto =
+      embedder_download_data.mutable_storage_partition_config();
+  config_proto->set_partition_domain(
+      storage_partition_config.partition_domain());
+  config_proto->set_partition_name(storage_partition_config.partition_name());
+  config_proto->set_in_memory(storage_partition_config.in_memory());
+
+  switch (
+      storage_partition_config.fallback_to_partition_domain_for_blob_urls()) {
+    case StoragePartitionConfig::FallbackMode::kNone:
+      config_proto->set_fallback_mode(
+          proto::StoragePartitionConfig_FallbackMode_kNone);
+      break;
+    case StoragePartitionConfig::FallbackMode::kFallbackPartitionOnDisk:
+      config_proto->set_fallback_mode(
+          proto::StoragePartitionConfig_FallbackMode_kPartitionOnDisk);
+      break;
+    case StoragePartitionConfig::FallbackMode::kFallbackPartitionInMemory:
+      config_proto->set_fallback_mode(
+          proto::StoragePartitionConfig_FallbackMode_kPartitionInMemory);
+      break;
+    default:
+      config_proto->set_fallback_mode(
+          proto::StoragePartitionConfig_FallbackMode_kNone);
+  }
+  return embedder_download_data.SerializeAsString();
+}
+
+StoragePartitionConfig
+DownloadManagerImpl::SerializedEmbedderDownloadDataToStoragePartitionConfig(
+    const std::string& serialized_embedder_download_data) {
+  proto::EmbedderDownloadData embedder_download_data;
+  bool success =
+      embedder_download_data.ParseFromString(serialized_embedder_download_data);
+  DCHECK(success);
+  DCHECK(embedder_download_data.has_storage_partition_config());
+
+  StoragePartitionConfig::FallbackMode fallback_mode;
+  switch (embedder_download_data.storage_partition_config().fallback_mode()) {
+    case proto::StoragePartitionConfig_FallbackMode_kNone:
+      fallback_mode = StoragePartitionConfig::FallbackMode::kNone;
+      break;
+    case proto::StoragePartitionConfig_FallbackMode_kPartitionOnDisk:
+      fallback_mode =
+          StoragePartitionConfig::FallbackMode::kFallbackPartitionOnDisk;
+      break;
+    case proto::StoragePartitionConfig_FallbackMode_kPartitionInMemory:
+      fallback_mode =
+          StoragePartitionConfig::FallbackMode::kFallbackPartitionInMemory;
+      break;
+    default:
+      fallback_mode = StoragePartitionConfig::FallbackMode::kNone;
+      break;
+  }
+
+  StoragePartitionConfig config;
+  if (embedder_download_data.storage_partition_config()
+          .partition_domain()
+          .empty()) {
+    config = StoragePartitionConfig::CreateDefault(browser_context_);
+  } else {
+    config = StoragePartitionConfig::Create(
+        browser_context_,
+        embedder_download_data.storage_partition_config().partition_domain(),
+        embedder_download_data.storage_partition_config().partition_name(),
+        embedder_download_data.storage_partition_config().in_memory());
+  }
+  config.set_fallback_to_partition_domain_for_blob_urls(fallback_mode);
+  return config;
 }
 
 void DownloadManagerImpl::OnHistoryNextIdRetrived(uint32_t next_id) {

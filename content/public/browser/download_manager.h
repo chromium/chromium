@@ -55,6 +55,7 @@ namespace content {
 
 class BrowserContext;
 class DownloadManagerDelegate;
+class StoragePartitionConfig;
 
 // Browser's download manager: manages all downloads and destination view.
 class CONTENT_EXPORT DownloadManager : public base::SupportsUserData::Data,
@@ -210,6 +211,15 @@ class CONTENT_EXPORT DownloadManager : public base::SupportsUserData::Data,
   // Called to get an ID for a new download. |callback| may be called
   // synchronously.
   virtual void GetNextId(GetNextIdCallback callback) = 0;
+
+  // Called to convert between a StoragePartitionConfig and a serialized
+  // proto::EmbedderDownloadData. The serialized proto::EmbedderDownloadData is
+  // written to the downloads database.
+  virtual std::string StoragePartitionConfigToSerializedEmbedderDownloadData(
+      const StoragePartitionConfig& storage_partition_config) = 0;
+  virtual StoragePartitionConfig
+  SerializedEmbedderDownloadDataToStoragePartitionConfig(
+      const std::string& serialized_embedder_download_data) = 0;
 };
 
 }  // namespace content
