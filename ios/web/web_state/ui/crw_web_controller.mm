@@ -988,8 +988,10 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 }
 
 - (void)handleNavigationHashChange {
-  self.navigationManagerImpl->GetCurrentItemImpl()->SetIsCreatedFromHashChange(
-      true);
+  web::NavigationItemImpl* currentItem = self.currentNavItem;
+  if (currentItem) {
+    currentItem->SetIsCreatedFromHashChange(true);
+  }
 }
 
 - (void)handleNavigationWillChangeState {

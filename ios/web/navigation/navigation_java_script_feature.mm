@@ -7,6 +7,7 @@
 #import "base/no_destructor.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/web_state_impl.h"
 
@@ -68,6 +69,18 @@ void NavigationJavaScriptFeature::ScriptMessageReceived(
 
   const std::string* command = message.body()->FindStringKey("command");
   if (!command) {
+    return;
+  }
+
+  const std::string* frame_id = message.body()->FindStringKey("frame_id");
+  if (!frame_id) {
+    return;
+  }
+
+  std::string main_frame_id = GetMainWebFrameId(web_state);
+  if (main_frame_id != *frame_id) {
+    // Frame has changed, do not send message to the web controller as it would
+    // update the incorrect navigation item.
     return;
   }
 
