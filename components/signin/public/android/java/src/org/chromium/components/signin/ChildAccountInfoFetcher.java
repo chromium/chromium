@@ -58,8 +58,9 @@ final class ChildAccountInfoFetcher {
                 }
             }
         };
-        ContextUtils.getApplicationContext().registerReceiver(mAccountFlagsChangedReceiver,
-                new IntentFilter(ACCOUNT_SERVICES_CHANGED_FILTER), ACCOUNT_CHANGE_PERMISSION, null);
+        ContextUtils.registerExportedBroadcastReceiver(ContextUtils.getApplicationContext(),
+                mAccountFlagsChangedReceiver, new IntentFilter(ACCOUNT_SERVICES_CHANGED_FILTER),
+                ACCOUNT_CHANGE_PERMISSION);
 
         // Fetch once now to update the status in case it changed before we registered for updates.
         fetch();
