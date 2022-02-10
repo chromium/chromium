@@ -76,6 +76,8 @@ static_library("internal") {
     "signals/user_action_signal_handler.h",
     "stats.cc",
     "stats.h",
+    "ukm_data_manager.cc",
+    "ukm_data_manager.h",
   ]
 
   deps = [

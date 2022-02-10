@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_config.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_profile_observer.h"
+#include "chrome/browser/segmentation_platform/ukm_database_client.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/segmentation_platform/internal/dummy_segmentation_platform_service.h"
@@ -76,7 +77,8 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
   base::DefaultClock* clock = base::DefaultClock::GetInstance();
 
   auto* service = new SegmentationPlatformServiceImpl(
-      optimization_guide, db_provider, storage_dir, profile->GetPrefs(),
+      optimization_guide, db_provider, storage_dir,
+      UkmDatabaseClient::GetInstance().GetUkmDataManager(), profile->GetPrefs(),
       task_runner, clock, GetSegmentationPlatformConfig());
 
   service->SetUserData(kSegmentationPlatformProfileObserverKey,

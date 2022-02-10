@@ -8,6 +8,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/segmentation_platform/ukm_database_client.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 
 namespace segmentation_platform {
@@ -77,6 +78,7 @@ void SegmentationPlatformProfileObserver::OnProfileAdded(Profile* profile) {
 }
 
 void SegmentationPlatformProfileObserver::OnProfileManagerDestroying() {
+  UkmDatabaseClient::GetInstance().ProfileManagerDestroying();
   profile_manager_ = nullptr;
 }
 

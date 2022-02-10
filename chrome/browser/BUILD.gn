@@ -1498,6 +1498,8 @@ static_library("browser") {
     "segmentation_platform/segmentation_platform_profile_observer.h",
     "segmentation_platform/segmentation_platform_service_factory.cc",
     "segmentation_platform/segmentation_platform_service_factory.h",
+    "segmentation_platform/ukm_database_client.cc",
+    "segmentation_platform/ukm_database_client.h",
     "send_tab_to_self/receiving_ui_handler.h",
     "send_tab_to_self/receiving_ui_handler_registry.cc",
     "send_tab_to_self/receiving_ui_handler_registry.h",

@@ -38,6 +38,7 @@
 #include "components/segmentation_platform/internal/signals/signal_filter_processor.h"
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
 #include "components/segmentation_platform/internal/stats.h"
+#include "components/segmentation_platform/internal/ukm_data_manager.h"
 #include "components/segmentation_platform/public/config.h"
 
 using optimization_guide::proto::OptimizationTarget;
@@ -56,6 +57,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     leveldb_proto::ProtoDatabaseProvider* db_provider,
     const base::FilePath& storage_dir,
+    UkmDataManager* ukm_data_manager,
     PrefService* pref_service,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     base::Clock* clock,
@@ -73,6 +75,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
               leveldb_proto::ProtoDbType::SIGNAL_STORAGE_CONFIG_DATABASE,
               storage_dir.Append(kSignalStorageConfigDBName),
               task_runner),
+          ukm_data_manager,
           model_provider,
           pref_service,
           task_runner,
@@ -85,6 +88,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
     std::unique_ptr<leveldb_proto::ProtoDatabase<proto::SignalData>> signal_db,
     std::unique_ptr<leveldb_proto::ProtoDatabase<proto::SignalStorageConfigs>>
         signal_storage_config_db,
+    UkmDataManager* ukm_data_manager,
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     PrefService* pref_service,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
@@ -94,7 +98,9 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
       task_runner_(task_runner),
       clock_(clock),
       platform_options_(PlatformOptions::CreateDefault()),
-      configs_(std::move(configs)) {
+      configs_(std::move(configs)),
+      ukm_data_manager_(ukm_data_manager) {
+  ukm_data_manager_->AddRef();
   // Construct databases.
   segment_info_database_ =
       std::make_unique<SegmentInfoDatabase>(std::move(segment_db));
@@ -150,7 +156,9 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
       weak_ptr_factory_.GetWeakPtr()));
 }
 
-SegmentationPlatformServiceImpl::~SegmentationPlatformServiceImpl() = default;
+SegmentationPlatformServiceImpl::~SegmentationPlatformServiceImpl() {
+  ukm_data_manager_->RemoveRef();
+}
 
 void SegmentationPlatformServiceImpl::GetSelectedSegment(
     const std::string& segmentation_key,

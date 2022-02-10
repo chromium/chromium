@@ -42,6 +42,7 @@
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
 #include "components/segmentation_platform/internal/signals/signal_filter_processor.h"
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
+#include "components/segmentation_platform/internal/ukm_data_manager.h"
 #include "components/segmentation_platform/public/config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -141,8 +142,9 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
     segmentation_platform_service_impl_ =
         std::make_unique<SegmentationPlatformServiceImpl>(
             std::move(segment_db), std::move(signal_db),
-            std::move(segment_storage_config_db), &model_provider_,
-            &pref_service_, task_runner_, &test_clock_, std::move(configs));
+            std::move(segment_storage_config_db), &ukm_data_manager_,
+            &model_provider_, &pref_service_, task_runner_, &test_clock_,
+            std::move(configs));
     segmentation_platform_service_impl_->GetServiceProxy()->AddObserver(
         &observer_);
   }
@@ -223,6 +225,7 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
   optimization_guide::TestOptimizationGuideModelProvider model_provider_;
   TestingPrefServiceSimple pref_service_;
   base::SimpleTestClock test_clock_;
+  UkmDataManager ukm_data_manager_;
   std::unique_ptr<SegmentationPlatformServiceImpl>
       segmentation_platform_service_impl_;
   MockServiceProxyObserver observer_;

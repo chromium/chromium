@@ -8,9 +8,14 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+#include "chrome/browser/segmentation_platform/ukm_database_client.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
+
+void ChromeBrowserMainExtraPartsSegmentationPlatform::PreProfileInit() {
+  segmentation_platform::UkmDatabaseClient::GetInstance().PreProfileInit();
+}
 
 void ChromeBrowserMainExtraPartsSegmentationPlatform::PostProfileInit(
     Profile* profile,
@@ -32,4 +37,8 @@ void ChromeBrowserMainExtraPartsSegmentationPlatform::PostProfileInit(
           last_used_profile);
   service->GetSelectedSegment(segmentation_platform::kDummySegmentationKey,
                               base::DoNothing());
+}
+
+void ChromeBrowserMainExtraPartsSegmentationPlatform::PostMainMessageLoopRun() {
+  segmentation_platform::UkmDatabaseClient::GetInstance().PostMessageLoopRun();
 }
