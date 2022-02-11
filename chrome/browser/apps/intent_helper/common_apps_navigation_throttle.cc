@@ -52,13 +52,13 @@ using ThrottleCheckResult = content::NavigationThrottle::ThrottleCheckResult;
 std::string GetAppDisabledErrorPage() {
   base::DictionaryValue strings;
 
-  strings.SetString(
+  strings.SetStringKey(
       "disabledPageHeader",
       l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_HEADER));
-  strings.SetString(
+  strings.SetStringKey(
       "disabledPageTitle",
       l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_TITLE));
-  strings.SetString(
+  strings.SetStringKey(
       "disabledPageMessage",
       l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_MESSAGE));
   std::string html =

@@ -74,7 +74,7 @@ void IntentPickerAutoDisplayPref::UpdatePlatform(Platform platform) {
   DCHECK_GE(static_cast<int>(platform), static_cast<int>(Platform::kNone));
   DCHECK_LE(static_cast<int>(platform), static_cast<int>(Platform::kMaxValue));
   platform_ = platform;
-  pref_dict_->SetInteger(kPlatformKey, static_cast<int>(platform_));
+  pref_dict_->SetIntKey(kPlatformKey, static_cast<int>(platform_));
   Commit();
 }
 
@@ -104,7 +104,7 @@ void IntentPickerAutoDisplayPref::SetDismissedCounter(int new_counter) {
     return;
 
   ui_dismissed_counter_ = new_counter;
-  pref_dict_->SetInteger(kAutoDisplayKey, ui_dismissed_counter_);
+  pref_dict_->SetIntKey(kAutoDisplayKey, ui_dismissed_counter_);
 }
 
 IntentPickerAutoDisplayPref::Platform

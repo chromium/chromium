@@ -127,13 +127,13 @@ std::unique_ptr<base::DictionaryValue> CreateDictionaryValueForFileSystemEntry(
   }
 
   auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetString("fileSystemType",
-                  storage::GetFileSystemTypeString(url.mount_type()));
-  dict->SetString("fileSystemName", storage::GetFileSystemName(
-                                        url.origin().GetURL(), url.type()));
-  dict->SetString("rootUrl", root_url);
-  dict->SetString("filePath", file_path);
-  dict->SetBoolean("isDirectory",
+  dict->SetStringKey("fileSystemType",
+                     storage::GetFileSystemTypeString(url.mount_type()));
+  dict->SetStringKey("fileSystemName", storage::GetFileSystemName(
+                                           url.origin().GetURL(), url.type()));
+  dict->SetStringKey("rootUrl", root_url);
+  dict->SetStringKey("filePath", file_path);
+  dict->SetBoolKey("isDirectory",
                    (file_type == ::sync_file_system::SYNC_FILE_TYPE_DIRECTORY));
 
   return dict;
