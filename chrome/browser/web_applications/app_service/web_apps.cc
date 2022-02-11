@@ -228,7 +228,7 @@ void WebApps::SetRunOnOsLoginMode(
   publisher_helper().SetRunOnOsLoginMode(app_id, run_on_os_login_mode);
 }
 
-void WebApps::PublishWebApps(std::vector<apps::mojom::AppPtr> mojom_apps) {
+void WebApps::PublishWebApps(std::vector<apps::AppPtr> apps) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const WebApp* web_app = GetWebApp(ash::kChromeUITrustedProjectorSwaAppId);
   if (web_app) {
@@ -238,13 +238,13 @@ void WebApps::PublishWebApps(std::vector<apps::mojom::AppPtr> mojom_apps) {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  if (mojom_apps.empty()) {
+  if (apps.empty()) {
     return;
   }
 
-  std::vector<apps::AppPtr> apps;
-  for (apps::mojom::AppPtr& app : mojom_apps) {
-    apps.push_back(apps::ConvertMojomAppToApp(app));
+  std::vector<apps::mojom::AppPtr> mojom_apps;
+  for (apps::AppPtr& app : apps) {
+    mojom_apps.push_back(apps::ConvertAppToMojomApp(app));
   }
 
   apps::AppPublisher::Publish(std::move(apps));
@@ -265,7 +265,7 @@ void WebApps::PublishWebApps(std::vector<apps::mojom::AppPtr> mojom_apps) {
   }
 }
 
-void WebApps::PublishWebApp(apps::mojom::AppPtr app) {
+void WebApps::PublishWebApp(apps::AppPtr app) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (app->app_id == ash::kChromeUITrustedProjectorSwaAppId) {
     // After OOBE, PublishWebApps() above could execute before the intent filter
@@ -278,8 +278,9 @@ void WebApps::PublishWebApp(apps::mojom::AppPtr app) {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  apps::AppPublisher::Publish(apps::ConvertMojomAppToApp(app));
-  PublisherBase::Publish(std::move(app), subscribers_);
+  auto mojom_app = apps::ConvertAppToMojomApp(app);
+  apps::AppPublisher::Publish(std::move(app));
+  PublisherBase::Publish(std::move(mojom_app), subscribers_);
 }
 
 void WebApps::ModifyWebAppCapabilityAccess(

@@ -104,9 +104,9 @@ void WebAppsPublisherHost::OnReady() {
     return;
   }
 
-  std::vector<apps::mojom::AppPtr> apps;
+  std::vector<apps::AppPtr> apps;
   for (const WebApp& web_app : registrar().GetApps()) {
-    apps.push_back(publisher_helper().ConvertWebApp(&web_app));
+    apps.push_back(publisher_helper().CreateWebApp(&web_app));
   }
   PublishWebApps(std::move(apps));
 }
@@ -308,8 +308,7 @@ const WebApp* WebAppsPublisherHost::GetWebApp(const AppId& app_id) const {
   return registrar().GetAppById(app_id);
 }
 
-void WebAppsPublisherHost::PublishWebApps(
-    std::vector<apps::mojom::AppPtr> mojom_apps) {
+void WebAppsPublisherHost::PublishWebApps(std::vector<apps::AppPtr> apps) {
   if (!remote_publisher_) {
     return;
   }
@@ -321,21 +320,15 @@ void WebAppsPublisherHost::PublishWebApps(
     return;
   }
 
-  std::vector<apps::AppPtr> apps;
-  for (const auto& mojom_app : mojom_apps) {
-    if (mojom_app) {
-      apps.push_back(apps::ConvertMojomAppToApp(mojom_app));
-    }
-  }
   remote_publisher_->OnApps(std::move(apps));
 }
 
-void WebAppsPublisherHost::PublishWebApp(apps::mojom::AppPtr app) {
+void WebAppsPublisherHost::PublishWebApp(apps::AppPtr app) {
   if (!remote_publisher_) {
     return;
   }
 
-  std::vector<apps::mojom::AppPtr> apps;
+  std::vector<apps::AppPtr> apps;
   apps.push_back(std::move(app));
   PublishWebApps(std::move(apps));
 }

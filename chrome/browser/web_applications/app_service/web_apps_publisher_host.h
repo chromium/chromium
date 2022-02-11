@@ -98,8 +98,8 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
                      apps::PermissionPtr permission) override;
 
   // WebAppPublisherHelper::Delegate:
-  void PublishWebApps(std::vector<apps::mojom::AppPtr> apps) override;
-  void PublishWebApp(apps::mojom::AppPtr app) override;
+  void PublishWebApps(std::vector<apps::AppPtr> apps) override;
+  void PublishWebApp(apps::AppPtr app) override;
   void ModifyWebAppCapabilityAccess(
       const std::string& app_id,
       absl::optional<bool> accessing_camera,

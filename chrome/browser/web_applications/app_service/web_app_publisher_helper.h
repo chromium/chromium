@@ -82,8 +82,8 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
     Delegate& operator=(const Delegate&) = delete;
     ~Delegate();
 
-    virtual void PublishWebApps(std::vector<apps::mojom::AppPtr> apps) = 0;
-    virtual void PublishWebApp(apps::mojom::AppPtr app) = 0;
+    virtual void PublishWebApps(std::vector<apps::AppPtr> apps) = 0;
+    virtual void PublishWebApp(apps::AppPtr app) = 0;
 
     virtual void ModifyWebAppCapabilityAccess(
         const std::string& app_id,
@@ -132,21 +132,19 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
   // Creates permissions for `web_app`.
   apps::Permissions CreatePermissions(const WebApp* web_app);
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   // Creates an |apps::AppPtr| describing |web_app|.
   apps::AppPtr CreateWebApp(const WebApp* web_app);
-#endif
 
   // Creates an |apps::mojom::App| describing |web_app|.
   apps::mojom::AppPtr ConvertWebApp(const WebApp* web_app);
 
   // Constructs an App with only the information required to identify an
   // uninstallation.
-  apps::mojom::AppPtr ConvertUninstalledWebApp(const WebApp* web_app);
+  apps::AppPtr ConvertUninstalledWebApp(const WebApp* web_app);
 
   // Constructs an App with only the information required to update
   // last launch time.
-  apps::mojom::AppPtr ConvertLaunchedWebApp(const WebApp* web_app);
+  apps::AppPtr ConvertLaunchedWebApp(const WebApp* web_app);
 
   // Directly uninstalls |web_app| without prompting the user.
   // If |clear_site_data| is true, any site data associated with the app will

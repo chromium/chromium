@@ -43,6 +43,7 @@
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
+#include "components/services/app_service/public/cpp/run_on_os_login_types.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "third_party/blink/public/mojom/manifest/capture_links.mojom.h"
 #include "ui/base/window_open_disposition.h"
@@ -195,7 +196,6 @@ apps::mojom::InstallSource ConvertInstallSourceToMojom(
   }
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 apps::WindowMode GetDisplayMode(blink::mojom::DisplayMode display_mode) {
   switch (display_mode) {
     case blink::mojom::DisplayMode::kUndefined:
@@ -211,7 +211,18 @@ apps::WindowMode GetDisplayMode(blink::mojom::DisplayMode display_mode) {
       return apps::WindowMode::kWindow;
   }
 }
-#endif
+
+apps::RunOnOsLoginMode ConvertOsLoginMode(
+    web_app::RunOnOsLoginMode login_mode) {
+  switch (login_mode) {
+    case web_app::RunOnOsLoginMode::kWindowed:
+      return apps::RunOnOsLoginMode::kWindowed;
+    case web_app::RunOnOsLoginMode::kNotRun:
+      return apps::RunOnOsLoginMode::kNotRun;
+    case web_app::RunOnOsLoginMode::kMinimized:
+      return apps::RunOnOsLoginMode::kUnknown;
+  }
+}
 
 bool IsNoteTakingWebApp(const web_app::WebApp& web_app) {
   return web_app.note_taking_new_note_url().is_valid();
@@ -257,14 +268,13 @@ void WebAppPublisherHelper::BadgeManagerDelegate::OnAppBadgeUpdated(
   if (!publisher_helper_) {
     return;
   }
-  apps::mojom::AppPtr app =
-      publisher_helper_->app_notifications_.GetAppWithHasBadgeStatus(
-          publisher_helper_->app_type(), app_id);
+  apps::AppPtr app =
+      publisher_helper_->app_notifications_.CreateAppWithHasBadgeStatus(
+          apps::ConvertMojomAppTypToAppType(publisher_helper_->app_type()),
+          app_id);
+  DCHECK(app->has_badge.has_value());
   app->has_badge =
-      publisher_helper_->ShouldShowBadge(
-          app_id, app->has_badge == apps::mojom::OptionalBool::kTrue)
-          ? apps::mojom::OptionalBool::kTrue
-          : apps::mojom::OptionalBool::kFalse;
+      publisher_helper_->ShouldShowBadge(app_id, app->has_badge.value());
   publisher_helper_->delegate_->PublishWebApp(std::move(app));
 }
 #endif
@@ -478,7 +488,6 @@ apps::Permissions WebAppPublisherHelper::CreatePermissions(
   return permissions;
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
   apps::Readiness readiness =
       web_app->is_locally_installed()
@@ -571,7 +580,6 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
 
   return app;
 }
-#endif
 
 apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
     const WebApp* web_app) {
@@ -680,23 +688,21 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
   return app;
 }
 
-apps::mojom::AppPtr WebAppPublisherHelper::ConvertUninstalledWebApp(
+apps::AppPtr WebAppPublisherHelper::ConvertUninstalledWebApp(
     const WebApp* web_app) {
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = app_type();
-  app->app_id = web_app->app_id();
+  auto app = std::make_unique<apps::App>(
+      apps::ConvertMojomAppTypToAppType(app_type()), web_app->app_id());
   // TODO(loyso): Plumb uninstall source (reason) here.
-  app->readiness = apps::mojom::Readiness::kUninstalledByUser;
+  app->readiness = apps::Readiness::kUninstalledByUser;
 
-  SetWebAppShowInFields(app, web_app);
+  SetWebAppShowInFields(web_app, *app);
   return app;
 }
 
-apps::mojom::AppPtr WebAppPublisherHelper::ConvertLaunchedWebApp(
+apps::AppPtr WebAppPublisherHelper::ConvertLaunchedWebApp(
     const WebApp* web_app) {
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = app_type();
-  app->app_id = web_app->app_id();
+  auto app = std::make_unique<apps::App>(
+      apps::ConvertMojomAppTypToAppType(app_type()), web_app->app_id());
   app->last_launch_time = web_app->last_launch_time();
   return app;
 }
@@ -753,10 +759,10 @@ void WebAppPublisherHelper::SetIconEffect(const std::string& app_id) {
     return;
   }
 
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = app_type();
-  app->app_id = app_id;
-  app->icon_key = MakeIconKey(web_app);
+  auto app = std::make_unique<apps::App>(
+      apps::ConvertMojomAppTypToAppType(app_type()), app_id);
+  app->icon_key =
+      std::move(*icon_key_factory_.CreateIconKey(GetIconEffects(web_app)));
   delegate_->PublishWebApp(std::move(app));
 }
 
@@ -766,8 +772,8 @@ void WebAppPublisherHelper::PauseApp(const std::string& app_id) {
   }
 
   constexpr bool kPaused = true;
-  delegate_->PublishWebApp(
-      paused_apps_.GetAppWithPauseStatus(app_type(), app_id, kPaused));
+  delegate_->PublishWebApp(paused_apps_.CreateAppWithPauseStatus(
+      apps::ConvertMojomAppTypToAppType(app_type()), app_id, kPaused));
 
   for (auto* browser : *BrowserList::GetInstance()) {
     if (!browser->is_type_app()) {
@@ -785,8 +791,8 @@ void WebAppPublisherHelper::UnpauseApp(const std::string& app_id) {
   }
 
   constexpr bool kPaused = false;
-  delegate_->PublishWebApp(
-      paused_apps_.GetAppWithPauseStatus(app_type(), app_id, kPaused));
+  delegate_->PublishWebApp(paused_apps_.CreateAppWithPauseStatus(
+      apps::ConvertMojomAppTypToAppType(app_type()), app_id, kPaused));
 }
 
 bool WebAppPublisherHelper::IsPaused(const std::string& app_id) {
@@ -1215,10 +1221,9 @@ void WebAppPublisherHelper::PublishWindowModeUpdate(
     return;
   }
 
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = app_type();
-  app->app_id = app_id;
-  app->window_mode = ConvertDisplayModeToWindowMode(display_mode);
+  auto app = std::make_unique<apps::App>(
+      apps::ConvertMojomAppTypToAppType(app_type()), app_id);
+  app->window_mode = GetDisplayMode(display_mode);
   delegate_->PublishWebApp(std::move(app));
 }
 
@@ -1230,14 +1235,12 @@ void WebAppPublisherHelper::PublishRunOnOsLoginModeUpdate(
     return;
   }
 
-  apps::mojom::AppPtr app = apps::mojom::App::New();
-  app->app_type = app_type();
-  app->app_id = app_id;
+  auto app = std::make_unique<apps::App>(
+      apps::ConvertMojomAppTypToAppType(app_type()), app_id);
   bool is_managed = provider_->policy_manager().GetUrlRunOnOsLoginPolicy(
                         app_id) != web_app::RunOnOsLoginPolicy::kAllowed;
-  apps::mojom::RunOnOsLoginMode login_mode =
-      ConvertOsLoginModeToMojom(run_on_os_login_mode);
-  app->run_on_os_login = apps::mojom::RunOnOsLogin::New(login_mode, is_managed);
+  app->run_on_os_login =
+      apps::RunOnOsLogin(ConvertOsLoginMode(run_on_os_login_mode), is_managed);
   delegate_->PublishWebApp(std::move(app));
 }
 
@@ -1287,21 +1290,21 @@ void WebAppPublisherHelper::OnWebAppFileHandlerApprovalStateChanged(
     const AppId& app_id) {
   const WebApp* web_app = GetWebApp(app_id);
   if (web_app && Accepts(app_id)) {
-    delegate_->PublishWebApp(ConvertWebApp(web_app));
+    delegate_->PublishWebApp(CreateWebApp(web_app));
   }
 }
 
 void WebAppPublisherHelper::OnWebAppInstalled(const AppId& app_id) {
   const WebApp* web_app = GetWebApp(app_id);
   if (web_app && Accepts(app_id)) {
-    delegate_->PublishWebApp(ConvertWebApp(web_app));
+    delegate_->PublishWebApp(CreateWebApp(web_app));
   }
 }
 
 void WebAppPublisherHelper::OnWebAppInstalledWithOsHooks(const AppId& app_id) {
   const WebApp* web_app = GetWebApp(app_id);
   if (web_app && Accepts(app_id)) {
-    delegate_->PublishWebApp(ConvertWebApp(web_app));
+    delegate_->PublishWebApp(CreateWebApp(web_app));
   }
 }
 
@@ -1310,7 +1313,7 @@ void WebAppPublisherHelper::OnWebAppManifestUpdated(
     base::StringPiece old_name) {
   const WebApp* web_app = GetWebApp(app_id);
   if (web_app && Accepts(app_id)) {
-    delegate_->PublishWebApp(ConvertWebApp(web_app));
+    delegate_->PublishWebApp(CreateWebApp(web_app));
   }
 }
 
@@ -1345,7 +1348,7 @@ void WebAppPublisherHelper::OnWebAppLocallyInstalledStateChanged(
     return;
   }
 
-  delegate_->PublishWebApp(ConvertWebApp(web_app));
+  delegate_->PublishWebApp(CreateWebApp(web_app));
 }
 
 void WebAppPublisherHelper::OnWebAppLastLaunchTimeChanged(
@@ -1382,20 +1385,22 @@ void WebAppPublisherHelper::OnWebAppDisabledStateChanged(const AppId& app_id,
   }
 
   DCHECK_EQ(is_disabled, web_app->chromeos_data()->is_disabled);
-  apps::mojom::AppPtr app = ConvertWebApp(web_app);
-  app->icon_key = MakeIconKey(web_app);
+  apps::AppPtr app = CreateWebApp(web_app);
+  app->icon_key =
+      std::move(*icon_key_factory_.CreateIconKey(GetIconEffects(web_app)));
+  ;
 
   // If the disable mode is hidden, update the visibility of the new disabled
   // app.
   if (is_disabled && provider_->policy_manager().IsDisabledAppsModeHidden()) {
-    UpdateAppDisabledMode(app);
+    UpdateAppDisabledMode(*app);
   }
 
   delegate_->PublishWebApp(std::move(app));
 }
 
 void WebAppPublisherHelper::OnWebAppsDisabledModeChanged() {
-  std::vector<apps::mojom::AppPtr> apps;
+  std::vector<apps::AppPtr> apps;
   std::vector<AppId> app_ids = registrar().GetAppIds();
   for (const auto& id : app_ids) {
     // We only update visibility of disabled apps in this method. When enabling
@@ -1407,10 +1412,9 @@ void WebAppPublisherHelper::OnWebAppsDisabledModeChanged() {
       if (!web_app || !Accepts(id)) {
         continue;
       }
-      apps::mojom::AppPtr app = apps::mojom::App::New();
-      app->app_type = app_type();
-      app->app_id = web_app->app_id();
-      UpdateAppDisabledMode(app);
+      auto app = std::make_unique<apps::App>(
+          apps::ConvertMojomAppTypToAppType(app_type()), web_app->app_id());
+      UpdateAppDisabledMode(*app);
       apps.push_back(std::move(app));
     }
   }
@@ -1439,13 +1443,10 @@ void WebAppPublisherHelper::OnNotificationClosed(
   app_notifications_.RemoveNotification(notification_id);
 
   for (const auto& app_id : app_ids) {
-    apps::mojom::AppPtr app =
-        app_notifications_.GetAppWithHasBadgeStatus(app_type(), app_id);
-    app->has_badge =
-        ShouldShowBadge(app_id,
-                        app->has_badge == apps::mojom::OptionalBool::kTrue)
-            ? apps::mojom::OptionalBool::kTrue
-            : apps::mojom::OptionalBool::kFalse;
+    auto app = app_notifications_.CreateAppWithHasBadgeStatus(
+        apps::ConvertMojomAppTypToAppType(app_type()), app_id);
+    DCHECK(app->has_badge.has_value());
+    app->has_badge = ShouldShowBadge(app_id, app->has_badge.value());
     delegate_->PublishWebApp(std::move(app));
   }
 }
@@ -1529,11 +1530,9 @@ void WebAppPublisherHelper::OnContentSettingChanged(
   for (const WebApp& web_app : registrar().GetApps()) {
     if (primary_pattern.Matches(web_app.start_url()) &&
         Accepts(web_app.app_id())) {
-      apps::mojom::AppPtr app = apps::mojom::App::New();
-      app->app_type = app_type_;
-      app->app_id = web_app.app_id();
-      PopulateWebAppPermissions(&web_app, &app->permissions);
-
+      auto app = std::make_unique<apps::App>(
+          apps::ConvertMojomAppTypToAppType(app_type()), web_app.app_id());
+      app->permissions = CreatePermissions(&web_app);
       delegate_->PublishWebApp(std::move(app));
     }
   }
@@ -1709,12 +1708,10 @@ bool WebAppPublisherHelper::MaybeAddNotification(
   }
 
   app_notifications_.AddNotification(app_id, notification_id);
-  apps::mojom::AppPtr app =
-      app_notifications_.GetAppWithHasBadgeStatus(app_type(), app_id);
-  app->has_badge = ShouldShowBadge(app_id, app->has_badge ==
-                                               apps::mojom::OptionalBool::kTrue)
-                       ? apps::mojom::OptionalBool::kTrue
-                       : apps::mojom::OptionalBool::kFalse;
+  auto app = app_notifications_.CreateAppWithHasBadgeStatus(
+      apps::ConvertMojomAppTypToAppType(app_type()), app_id);
+  DCHECK(app->has_badge.has_value());
+  app->has_badge = ShouldShowBadge(app_id, app->has_badge.value());
   delegate_->PublishWebApp(std::move(app));
   return true;
 }

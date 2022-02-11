@@ -128,8 +128,8 @@ class WebApps : public apps::PublisherBase,
       apps::mojom::RunOnOsLoginMode run_on_os_login_mode) override;
 
   // WebAppPublisherHelper::Delegate overrides.
-  void PublishWebApps(std::vector<apps::mojom::AppPtr> mojom_apps) override;
-  void PublishWebApp(apps::mojom::AppPtr mojom_app) override;
+  void PublishWebApps(std::vector<apps::AppPtr> apps) override;
+  void PublishWebApp(apps::AppPtr app) override;
   void ModifyWebAppCapabilityAccess(
       const std::string& app_id,
       absl::optional<bool> accessing_camera,

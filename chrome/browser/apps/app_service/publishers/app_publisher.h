@@ -38,6 +38,7 @@ class AppPublisher {
                         InstallReason install_reason,
                         InstallSource install_source);
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   // Registers this AppPublisher to AppServiceProxy, allowing it to receive App
   // Service API calls. This function must be called after the object's
   // creation, and can't be called in the constructor function to avoid
@@ -45,6 +46,7 @@ class AppPublisher {
   // be called immediately before the first call to AppPublisher::Publish that
   // sends the initial list of apps to the App Service.
   void RegisterPublisher(AppType app_type);
+#endif
 
   // Requests an icon for an app identified by |app_id|. The icon is identified
   // by |icon_key| and parameterised by |icon_type| and |size_hint_in_dp|. If
@@ -78,6 +80,7 @@ class AppPublisher {
                                    LaunchCallback callback) = 0;
 
  protected:
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   // Publish one `app` to AppServiceProxy. Should be called whenever the app
   // represented by `app` undergoes some state change to inform AppServiceProxy
   // of the change. Ensure that RegisterPublisher() has been called before the
@@ -89,6 +92,7 @@ class AppPublisher {
   // AppServiceProxy of the change. Ensure that RegisterPublisher() has been
   // called before the first call to this method.
   void Publish(std::vector<AppPtr> apps);
+#endif
 
   AppServiceProxy* proxy() { return proxy_; }
 

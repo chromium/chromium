@@ -37,6 +37,7 @@ AppPtr AppPublisher::MakeApp(AppType app_type,
   return app;
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void AppPublisher::RegisterPublisher(AppType app_type) {
   proxy_->RegisterPublisher(app_type, this);
 }
@@ -61,5 +62,6 @@ void AppPublisher::Publish(std::vector<AppPtr> apps) {
   proxy_->OnApps(std::move(apps), AppType::kUnknown,
                  false /* should_notify_initialized */);
 }
+#endif
 
 }  // namespace apps
