@@ -18,11 +18,10 @@ import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_containe
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {navigation, Page} from '../navigation_helper.js';
 
-import {getTemplate} from './activity_log.html.js';
 import {ActivityLogDelegate} from './activity_log_history.js';
 
 /**
@@ -64,7 +63,7 @@ export class ExtensionsActivityLogElement extends
   }
 
   static get template() {
-    return getTemplate();
+    return html`{__html_template__}`;
   }
 
   static get properties() {

@@ -30,7 +30,7 @@ import './kiosk_dialog.js';
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ActivityLogExtensionPlaceholder} from './activity_log/activity_log.js';
 import {ExtensionsDetailViewElement} from './detail_view.js';
@@ -38,7 +38,6 @@ import {ExtensionsItemListElement} from './item_list.js';
 // <if expr="chromeos">
 import {KioskBrowserProxyImpl} from './kiosk_browser_proxy.js';
 // </if>
-import {getTemplate} from './manager.html.js';
 import {Dialog, navigation, Page, PageState} from './navigation_helper.js';
 import {Service} from './service.js';
 
@@ -86,10 +85,6 @@ export interface ExtensionsManagerElement {
 export class ExtensionsManagerElement extends PolymerElement {
   static get is() {
     return 'extensions-manager';
-  }
-
-  static get template() {
-    return getTemplate();
   }
 
   static get properties() {
@@ -677,6 +672,10 @@ export class ExtensionsManagerElement extends PolymerElement {
     this.showKioskDialog_ = false;
   }
   // </if>
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
 }
 
 declare global {

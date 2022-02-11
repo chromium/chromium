@@ -23,10 +23,9 @@ import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ItemDelegate} from './item.js';
-import {getTemplate} from './runtime_host_permissions.html.js';
 import {getFaviconUrl} from './url_util.js';
 
 export interface ExtensionsRuntimeHostPermissionsElement {
@@ -41,7 +40,7 @@ export class ExtensionsRuntimeHostPermissionsElement extends PolymerElement {
   }
 
   static get template() {
-    return getTemplate();
+    return html`{__html_template__}`;
   }
 
   static get properties() {

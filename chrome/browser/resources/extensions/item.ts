@@ -24,8 +24,7 @@ import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getTemplate} from './item.html.js';
+import {flush, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ItemMixin} from './item_mixin.js';
 import {computeInspectableViewLabel, EnableControl, getEnableControl, getItemSource, getItemSourceString, isEnabled, SourceType, userCanChangeEnablement} from './item_util.js';
@@ -73,7 +72,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
   }
 
   static get template() {
-    return getTemplate();
+    return html`{__html_template__}`;
   }
 
   static get properties() {

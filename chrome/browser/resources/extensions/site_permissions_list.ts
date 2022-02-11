@@ -12,10 +12,9 @@ import './shared_vars.js';
 import './site_permissions_add_site_dialog.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SitePermissionsDelegate} from './site_permissions.js';
-import {getTemplate} from './site_permissions_list.html.js';
 import {getFaviconUrl} from './url_util.js';
 
 export interface ExtensionsSitePermissionsListElement {
@@ -30,7 +29,7 @@ export class ExtensionsSitePermissionsListElement extends PolymerElement {
   }
 
   static get template() {
-    return getTemplate();
+    return html`{__html_template__}`;
   }
 
   static get properties() {

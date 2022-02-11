@@ -6,10 +6,9 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {Debouncer, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Debouncer, html, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {navigation, Page} from './navigation_helper.js';
-import {getTemplate} from './options_dialog.html.js';
 
 /**
  * @return A signal that the document is ready. Need to wait for this, otherwise
@@ -49,7 +48,7 @@ export class ExtensionsOptionsDialogElement extends PolymerElement {
   }
 
   static get template() {
-    return getTemplate();
+    return html`{__html_template__}`;
   }
 
   static get properties() {

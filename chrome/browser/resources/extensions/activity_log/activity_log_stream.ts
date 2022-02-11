@@ -10,8 +10,7 @@ import './activity_log_stream_item.js';
 
 import {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getTemplate} from './activity_log_stream.html.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {StreamItem} from './activity_log_stream_item.js';
 
@@ -63,7 +62,7 @@ export class ActivityLogStreamElement extends PolymerElement {
   }
 
   static get template() {
-    return getTemplate();
+    return html`{__html_template__}`;
   }
 
   static get properties() {

@@ -9,10 +9,9 @@ import './shared_style.js';
 import './shared_vars.js';
 import './site_permissions_list.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Service} from './service.js';
-import {getTemplate} from './site_permissions.html.js';
 
 export interface SitePermissionsDelegate {
   getUserSiteSettings(): Promise<chrome.developerPrivate.UserSiteSettings>;
@@ -27,7 +26,7 @@ export class ExtensionsSitePermissionsElement extends PolymerElement {
   }
 
   static get template() {
-    return getTemplate();
+    return html`{__html_template__}`;
   }
 
   static get properties() {

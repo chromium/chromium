@@ -9,10 +9,9 @@ import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import './shortcut_input.js';
 
 import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {KeyboardShortcutDelegate} from './keyboard_shortcut_delegate.js';
-import {getTemplate} from './keyboard_shortcuts.html.js';
 
 /** Event interface for dom-repeat. */
 interface RepeaterEvent<T> extends CustomEvent {
@@ -34,7 +33,7 @@ export class ExtensionsKeyboardShortcutsElement extends
   }
 
   static get template() {
-    return getTemplate();
+    return html`{__html_template__}`;
   }
 
   static get properties() {
