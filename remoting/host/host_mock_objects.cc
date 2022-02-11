@@ -10,10 +10,7 @@
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/codec/audio_encoder.h"
 #include "remoting/codec/video_encoder.h"
-#include "remoting/host/audio_capturer.h"
-#include "remoting/host/file_transfer/file_operations.h"
 #include "remoting/host/input_injector.h"
-#include "remoting/host/keyboard_layout_monitor.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/proto/video.pb.h"
 #include "remoting/protocol/transport.h"
@@ -26,66 +23,13 @@ MockDesktopEnvironment::MockDesktopEnvironment() = default;
 
 MockDesktopEnvironment::~MockDesktopEnvironment() = default;
 
-std::unique_ptr<ActionExecutor> MockDesktopEnvironment::CreateActionExecutor() {
-  return base::WrapUnique(CreateActionExecutorPtr());
-}
-
-std::unique_ptr<AudioCapturer> MockDesktopEnvironment::CreateAudioCapturer() {
-  return base::WrapUnique(CreateAudioCapturerPtr());
-}
-
-std::unique_ptr<InputInjector> MockDesktopEnvironment::CreateInputInjector() {
-  return base::WrapUnique(CreateInputInjectorPtr());
-}
-
-std::unique_ptr<ScreenControls> MockDesktopEnvironment::CreateScreenControls() {
-  return base::WrapUnique(CreateScreenControlsPtr());
-}
-
-std::unique_ptr<webrtc::DesktopCapturer>
-MockDesktopEnvironment::CreateVideoCapturer() {
-  return base::WrapUnique(CreateVideoCapturerPtr());
-}
-
-std::unique_ptr<webrtc::MouseCursorMonitor>
-MockDesktopEnvironment::CreateMouseCursorMonitor() {
-  return base::WrapUnique(CreateMouseCursorMonitorPtr());
-}
-
-std::unique_ptr<KeyboardLayoutMonitor>
-MockDesktopEnvironment::CreateKeyboardLayoutMonitor(
-    base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback) {
-  return base::WrapUnique(CreateKeyboardLayoutMonitorPtr(std::move(callback)));
-}
-
-std::unique_ptr<FileOperations> MockDesktopEnvironment::CreateFileOperations() {
-  return base::WrapUnique(CreateFileOperationsPtr());
-}
-
-std::unique_ptr<DesktopAndCursorConditionalComposer>
-MockDesktopEnvironment::CreateComposingVideoCapturer() {
-  return base::WrapUnique(CreateComposingVideoCapturerPtr());
-}
-
 MockDesktopEnvironmentFactory::MockDesktopEnvironmentFactory() = default;
 
 MockDesktopEnvironmentFactory::~MockDesktopEnvironmentFactory() = default;
 
-std::unique_ptr<DesktopEnvironment> MockDesktopEnvironmentFactory::Create(
-    base::WeakPtr<ClientSessionControl> client_session_control,
-    base::WeakPtr<ClientSessionEvents> client_session_events,
-    const DesktopEnvironmentOptions& options) {
-  return base::WrapUnique(CreatePtr());
-}
-
 MockInputInjector::MockInputInjector() = default;
 
 MockInputInjector::~MockInputInjector() = default;
-
-void MockInputInjector::Start(
-    std::unique_ptr<protocol::ClipboardStub> client_clipboard) {
-  StartPtr(client_clipboard.get());
-}
 
 MockClientSessionControl::MockClientSessionControl() = default;
 

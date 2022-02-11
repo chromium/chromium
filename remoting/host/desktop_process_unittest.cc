@@ -137,24 +137,11 @@ class DesktopProcessTest : public testing::Test {
 
   // Creates a DesktopEnvironment with a fake webrtc::DesktopCapturer, to mock
   // DesktopEnvironmentFactory::Create().
-  DesktopEnvironment* CreateDesktopEnvironment();
+  std::unique_ptr<DesktopEnvironment> CreateDesktopEnvironment();
 
-  // Creates a dummy InputInjector, to mock
+  // Creates a fake InputInjector, to mock
   // DesktopEnvironment::CreateInputInjector().
-  InputInjector* CreateInputInjector();
-
-  // Creates a fake webrtc::DesktopCapturer, to mock
-  // DesktopEnvironment::CreateVideoCapturer().
-  webrtc::DesktopCapturer* CreateVideoCapturer();
-
-  // Creates a fake webrtc::MouseCursorMonitor, to mock
-  // DesktopEnvironment::CreateMouseCursorMonitor().
-  webrtc::MouseCursorMonitor* CreateMouseCursorMonitor();
-
-  // Creates a FakeKeyboardLayoutMonitor to mock
-  // DesktopEnvironment::CreateKeyboardLayoutMonitor
-  KeyboardLayoutMonitor* CreateKeyboardLayoutMonitor(
-      base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback);
+  std::unique_ptr<InputInjector> CreateInputInjector();
 
   // Disconnects the daemon-to-desktop channel causing the desktop process to
   // exit.
@@ -222,30 +209,30 @@ void DesktopProcessTest::StoreDesktopHandle(
   desktop_pipe_handle_ = std::move(desktop_pipe);
 }
 
-DesktopEnvironment* DesktopProcessTest::CreateDesktopEnvironment() {
-  MockDesktopEnvironment* desktop_environment = new MockDesktopEnvironment();
-  EXPECT_CALL(*desktop_environment, CreateAudioCapturerPtr())
-      .Times(0);
-  EXPECT_CALL(*desktop_environment, CreateInputInjectorPtr())
+std::unique_ptr<DesktopEnvironment>
+DesktopProcessTest::CreateDesktopEnvironment() {
+  auto desktop_environment = std::make_unique<MockDesktopEnvironment>();
+  EXPECT_CALL(*desktop_environment, CreateAudioCapturer()).Times(0);
+  EXPECT_CALL(*desktop_environment, CreateInputInjector())
       .Times(AtMost(1))
       .WillOnce(Invoke(this, &DesktopProcessTest::CreateInputInjector));
-  EXPECT_CALL(*desktop_environment, CreateActionExecutorPtr()).Times(AtMost(1));
-  EXPECT_CALL(*desktop_environment, CreateScreenControlsPtr())
-      .Times(AtMost(1));
-  EXPECT_CALL(*desktop_environment, CreateVideoCapturerPtr())
+  EXPECT_CALL(*desktop_environment, CreateActionExecutor()).Times(AtMost(1));
+  EXPECT_CALL(*desktop_environment, CreateScreenControls()).Times(AtMost(1));
+  EXPECT_CALL(*desktop_environment, CreateVideoCapturer())
       .Times(AtMost(1))
-      .WillOnce(Invoke(this, &DesktopProcessTest::CreateVideoCapturer));
-  EXPECT_CALL(*desktop_environment, CreateMouseCursorMonitorPtr())
+      .WillOnce(
+          Return(ByMove(std::make_unique<protocol::FakeDesktopCapturer>())));
+  EXPECT_CALL(*desktop_environment, CreateMouseCursorMonitor())
       .Times(AtMost(1))
-      .WillOnce(Invoke(this, &DesktopProcessTest::CreateMouseCursorMonitor));
-  EXPECT_CALL(*desktop_environment, CreateKeyboardLayoutMonitorPtr(_))
+      .WillOnce(Return(ByMove(std::make_unique<FakeMouseCursorMonitor>())));
+  EXPECT_CALL(*desktop_environment, CreateKeyboardLayoutMonitor(_))
       .Times(AtMost(1))
-      .WillOnce(Invoke(this, &DesktopProcessTest::CreateKeyboardLayoutMonitor));
+      .WillOnce(Return(ByMove(std::make_unique<FakeKeyboardLayoutMonitor>())));
   EXPECT_CALL(*desktop_environment, CreateUrlForwarderConfigurator())
       .Times(AtMost(1))
       .WillOnce(
           Return(ByMove(std::make_unique<FakeUrlForwarderConfigurator>())));
-  EXPECT_CALL(*desktop_environment, CreateFileOperationsPtr()).Times(AtMost(1));
+  EXPECT_CALL(*desktop_environment, CreateFileOperations()).Times(AtMost(1));
   EXPECT_CALL(*desktop_environment, GetCapabilities())
       .Times(AtMost(1));
   EXPECT_CALL(*desktop_environment, SetCapabilities(_))
@@ -256,23 +243,10 @@ DesktopEnvironment* DesktopProcessTest::CreateDesktopEnvironment() {
   return desktop_environment;
 }
 
-InputInjector* DesktopProcessTest::CreateInputInjector() {
-  MockInputInjector* input_injector = new MockInputInjector();
-  EXPECT_CALL(*input_injector, StartPtr(_));
+std::unique_ptr<InputInjector> DesktopProcessTest::CreateInputInjector() {
+  auto input_injector = std::make_unique<MockInputInjector>();
+  EXPECT_CALL(*input_injector, Start(_));
   return input_injector;
-}
-
-webrtc::DesktopCapturer* DesktopProcessTest::CreateVideoCapturer() {
-  return new protocol::FakeDesktopCapturer();
-}
-
-webrtc::MouseCursorMonitor* DesktopProcessTest::CreateMouseCursorMonitor() {
-  return new FakeMouseCursorMonitor();
-}
-
-KeyboardLayoutMonitor* DesktopProcessTest::CreateKeyboardLayoutMonitor(
-    base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback) {
-  return new FakeKeyboardLayoutMonitor();
 }
 
 void DesktopProcessTest::DisconnectChannels() {
@@ -312,10 +286,10 @@ void DesktopProcessTest::RunDesktopProcess() {
 
   std::unique_ptr<MockDesktopEnvironmentFactory> desktop_environment_factory(
       new MockDesktopEnvironmentFactory());
-  EXPECT_CALL(*desktop_environment_factory, CreatePtr())
+  EXPECT_CALL(*desktop_environment_factory, Create(_, _, _))
       .Times(AnyNumber())
-      .WillRepeatedly(Invoke(this,
-                             &DesktopProcessTest::CreateDesktopEnvironment));
+      .WillRepeatedly(
+          Invoke(this, &DesktopProcessTest::CreateDesktopEnvironment));
   EXPECT_CALL(*desktop_environment_factory, SupportsAudioCapture())
       .Times(AnyNumber())
       .WillRepeatedly(Return(false));
