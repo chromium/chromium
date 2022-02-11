@@ -212,6 +212,8 @@ bool NGFlexLayoutAlgorithm::IsContainerCrossSizeDefinite() const {
 }
 
 bool NGFlexLayoutAlgorithm::DoesItemStretch(const NGBlockNode& child) const {
+  // Note: Unresolvable % cross size doesn't count as auto for stretchability.
+  // As discussed in https://github.com/w3c/csswg-drafts/issues/4312.
   if (!DoesItemCrossSizeComputeToAuto(child))
     return false;
   const ComputedStyle& child_style = child.Style();
