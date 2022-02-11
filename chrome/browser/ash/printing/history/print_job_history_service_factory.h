@@ -50,9 +50,4 @@ class PrintJobHistoryServiceFactory : public BrowserContextKeyedServiceFactory {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::PrintJobHistoryServiceFactory;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_PRINTING_HISTORY_PRINT_JOB_HISTORY_SERVICE_FACTORY_H_

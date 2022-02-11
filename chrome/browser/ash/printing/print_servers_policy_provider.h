@@ -16,7 +16,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 using ServerPrintersFetchingMode =
     crosapi::mojom::PrintServersConfig::ServerPrintersFetchingMode;
@@ -64,6 +64,6 @@ class PrintServersPolicyProvider : public KeyedService,
   base::WeakPtrFactory<PrintServersPolicyProvider> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_PRINT_SERVERS_POLICY_PROVIDER_H_

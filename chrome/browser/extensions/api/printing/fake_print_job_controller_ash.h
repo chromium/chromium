@@ -10,11 +10,11 @@
 #include "base/containers/flat_map.h"
 #include "chrome/browser/extensions/api/printing/print_job_controller.h"
 
-namespace chromeos {
+namespace ash {
 class CupsPrintersManager;
 class CupsPrintJob;
 class TestCupsPrintJobManager;
-}  // namespace chromeos
+}  // namespace ash
 
 namespace extensions {
 
@@ -23,9 +23,8 @@ namespace extensions {
 // It's used in unit and API integration tests.
 class FakePrintJobControllerAsh : public PrintJobController {
  public:
-  FakePrintJobControllerAsh(
-      chromeos::TestCupsPrintJobManager* print_job_manager,
-      chromeos::CupsPrintersManager* printers_manager);
+  FakePrintJobControllerAsh(ash::TestCupsPrintJobManager* print_job_manager,
+                            ash::CupsPrintersManager* printers_manager);
   ~FakePrintJobControllerAsh() override;
 
   // PrintJobController:
@@ -38,15 +37,15 @@ class FakePrintJobControllerAsh : public PrintJobController {
   void OnPrintJobFinished(const std::string& job_id) override;
 
   // Helper method to be used in tests to access ongoing print jobs.
-  chromeos::CupsPrintJob* GetCupsPrintJob(const std::string& job_id);
+  ash::CupsPrintJob* GetCupsPrintJob(const std::string& job_id);
 
  private:
   // Not owned by FakePrintJobControllerAsh.
-  chromeos::TestCupsPrintJobManager* print_job_manager_;
-  chromeos::CupsPrintersManager* printers_manager_;
+  ash::TestCupsPrintJobManager* print_job_manager_;
+  ash::CupsPrintersManager* printers_manager_;
 
   // Stores ongoing print jobs as a mapping from job id to CupsPrintJob.
-  base::flat_map<std::string, std::unique_ptr<chromeos::CupsPrintJob>> jobs_;
+  base::flat_map<std::string, std::unique_ptr<ash::CupsPrintJob>> jobs_;
 
   // Current job id.
   int job_id_ = 0;

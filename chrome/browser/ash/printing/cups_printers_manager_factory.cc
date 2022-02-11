@@ -13,7 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 CupsPrintersManagerFactory* CupsPrintersManagerFactory::GetInstance() {
@@ -32,7 +32,7 @@ CupsPrintersManagerFactory::CupsPrintersManagerFactory()
           "CupsPrintersManagerFactory",
           BrowserContextDependencyManager::GetInstance()),
       proxy_(CupsPrintersManagerProxy::Create()) {
-  DependsOn(ash::SyncedPrintersManagerFactory::GetInstance());
+  DependsOn(SyncedPrintersManagerFactory::GetInstance());
 }
 
 CupsPrintersManagerFactory::~CupsPrintersManagerFactory() = default;
@@ -85,4 +85,4 @@ bool CupsPrintersManagerFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
 
-}  // namespace chromeos
+}  // namespace ash

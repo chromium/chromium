@@ -24,8 +24,8 @@ using GetPrinterCapabilitiesCallback = base::OnceCallback<void(
 // This function must be called from the UI thread.
 // This function is called when setting up a printer from Print Preview
 // and records a metric with the printer setup result code.
-void SetUpPrinter(chromeos::CupsPrintersManager* printers_manager,
-                  chromeos::PrinterConfigurer* printer_configurer,
+void SetUpPrinter(CupsPrintersManager* printers_manager,
+                  PrinterConfigurer* printer_configurer,
                   const chromeos::Printer& printer,
                   GetPrinterCapabilitiesCallback cb);
 

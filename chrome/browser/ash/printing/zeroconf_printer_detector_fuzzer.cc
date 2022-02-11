@@ -175,14 +175,14 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // ZeroconfPrinterDetector.
   MapOfListers listers;
   std::vector<CallToDelegate> calls = CreateFuzzCalls(&fuzz_data);
-  CreateLister(ash::ZeroconfPrinterDetector::kIppServiceName, calls, &listers);
-  CreateLister(ash::ZeroconfPrinterDetector::kIppsServiceName, calls, &listers);
-  CreateLister(ash::ZeroconfPrinterDetector::kIppEverywhereServiceName, calls,
+  CreateLister(ZeroconfPrinterDetector::kIppServiceName, calls, &listers);
+  CreateLister(ZeroconfPrinterDetector::kIppsServiceName, calls, &listers);
+  CreateLister(ZeroconfPrinterDetector::kIppEverywhereServiceName, calls,
                &listers);
-  CreateLister(ash::ZeroconfPrinterDetector::kIppsEverywhereServiceName, calls,
+  CreateLister(ZeroconfPrinterDetector::kIppsEverywhereServiceName, calls,
                &listers);
   // Creating an object of ZeroconfPrinterDetector to fuzz.
-  auto detector = ash::ZeroconfPrinterDetector::CreateForTesting(&listers);
+  auto detector = ZeroconfPrinterDetector::CreateForTesting(&listers);
   for (auto& lf : listers) {
     static_cast<FuzzDeviceLister*>(lf.second.get())
         ->SetDelegate(detector.get());

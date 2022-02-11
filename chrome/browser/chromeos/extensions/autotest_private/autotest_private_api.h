@@ -573,7 +573,7 @@ class AutotestPrivateTakeScreenshotForDisplayFunction
 
 class AutotestPrivateGetPrinterListFunction
     : public ExtensionFunction,
-      public chromeos::CupsPrintersManager::Observer {
+      public ash::CupsPrintersManager::Observer {
  public:
   DECLARE_EXTENSION_FUNCTION("autotestPrivate.getPrinterList",
                              AUTOTESTPRIVATE_GETPRINTERLIST)
@@ -587,11 +587,11 @@ class AutotestPrivateGetPrinterListFunction
   void RespondWithTimeoutError();
   void RespondWithSuccess();
 
-  // chromeos::CupsPrintersManager::Observer
+  // ash::CupsPrintersManager::Observer
   void OnEnterprisePrintersInitialized() override;
 
   std::unique_ptr<base::Value> results_;
-  std::unique_ptr<chromeos::CupsPrintersManager> printers_manager_;
+  std::unique_ptr<ash::CupsPrintersManager> printers_manager_;
   base::OneShotTimer timeout_timer_;
 };
 

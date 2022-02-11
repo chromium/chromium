@@ -14,9 +14,6 @@ class WebUIDataSource;
 }  // namespace content
 
 namespace chromeos {
-
-class CupsPrintersManager;
-
 namespace settings {
 
 class SearchTagRegistry;

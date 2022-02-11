@@ -15,7 +15,7 @@ namespace ash {
 
 // Observes device::UsbService for addition of USB printers, and implements the
 // PrinterDetector interface to export this to print system consumers.
-class UsbPrinterDetector : public chromeos::PrinterDetector {
+class UsbPrinterDetector : public PrinterDetector {
  public:
   // Factory function for the CUPS implementation.
   static std::unique_ptr<UsbPrinterDetector> Create();

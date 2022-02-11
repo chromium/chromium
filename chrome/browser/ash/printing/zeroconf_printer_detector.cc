@@ -139,11 +139,10 @@ std::string ZeroconfPrinterId(const ServiceDescription& service,
 // Attempt to fill |detected_printer| using the information in
 // |service_description| and |metadata|.  Return true on success, false on
 // failure.
-bool ConvertToPrinter(
-    const std::string& service_type,
-    const ServiceDescription& service_description,
-    const ParsedMetadata& metadata,
-    chromeos::PrinterDetector::DetectedPrinter* detected_printer) {
+bool ConvertToPrinter(const std::string& service_type,
+                      const ServiceDescription& service_description,
+                      const ParsedMetadata& metadata,
+                      PrinterDetector::DetectedPrinter* detected_printer) {
   // If we don't have the minimum information needed to attempt a setup, fail.
   // Also fail on a port of 0, as this is used to indicate that the service
   // doesn't *actually* exist, the device just wants to guard the name.

@@ -6,7 +6,11 @@
 
 #include "base/containers/contains.h"
 
-namespace chromeos {
+namespace ash {
+
+using ::chromeos::CupsPrinterStatus;
+using ::chromeos::Printer;
+using ::chromeos::PrinterClass;
 
 PrintersMap::PrintersMap() = default;
 PrintersMap::~PrintersMap() = default;
@@ -194,4 +198,4 @@ std::set<std::string> PrintersMap::GetPrinterIdsInClass(
   return result;
 }
 
-}  // namespace chromeos
+}  // namespace ash

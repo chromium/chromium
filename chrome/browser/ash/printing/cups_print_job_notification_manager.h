@@ -12,7 +12,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 class CupsPrintJob;
 class CupsPrintJobNotification;
@@ -53,6 +53,6 @@ class CupsPrintJobNotificationManager : public CupsPrintJobManager::Observer {
   Profile* profile_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_CUPS_PRINT_JOB_NOTIFICATION_MANAGER_H_

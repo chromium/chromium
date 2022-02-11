@@ -14,24 +14,28 @@
 #include "chromeos/printing/printer_configuration.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 class StubCupsPrintersManager : public CupsPrintersManager {
  public:
   StubCupsPrintersManager() = default;
 
-  std::vector<Printer> GetPrinters(PrinterClass printer_class) const override;
-  bool IsPrinterInstalled(const Printer& printer) const override;
-  absl::optional<Printer> GetPrinter(const std::string& id) const override;
+  std::vector<chromeos::Printer> GetPrinters(
+      chromeos::PrinterClass printer_class) const override;
+  bool IsPrinterInstalled(const chromeos::Printer& printer) const override;
+  absl::optional<chromeos::Printer> GetPrinter(
+      const std::string& id) const override;
   PrintServersManager* GetPrintServersManager() const override;
 
-  void SavePrinter(const Printer& printer) override {}
+  void SavePrinter(const chromeos::Printer& printer) override {}
   void RemoveSavedPrinter(const std::string& printer_id) override {}
   void AddObserver(CupsPrintersManager::Observer* observer) override {}
   void RemoveObserver(CupsPrintersManager::Observer* observer) override {}
-  void PrinterInstalled(const Printer& printer, bool is_automatic) override {}
-  void PrinterIsNotAutoconfigurable(const Printer& printer) override {}
-  void RecordSetupAbandoned(const Printer& printer) override {}
+  void PrinterInstalled(const chromeos::Printer& printer,
+                        bool is_automatic) override {}
+  void PrinterIsNotAutoconfigurable(const chromeos::Printer& printer) override {
+  }
+  void RecordSetupAbandoned(const chromeos::Printer& printer) override {}
   void FetchPrinterStatus(const std::string& printer_id,
                           PrinterStatusCallback cb) override {}
   void RecordNearbyNetworkPrinterCounts() const override {}
@@ -39,10 +43,16 @@ class StubCupsPrintersManager : public CupsPrintersManager {
 
 class StubPrinterConfigurer : public PrinterConfigurer {
  public:
-  void SetUpPrinter(const Printer& printer,
+  void SetUpPrinter(const chromeos::Printer& printer,
                     PrinterSetupCallback callback) override {}
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::StubCupsPrintersManager;
+using ::ash::StubPrinterConfigurer;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_PRINTING_STUBS_H_

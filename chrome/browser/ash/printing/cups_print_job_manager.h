@@ -18,7 +18,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 class CupsPrintJob;
 class CupsPrintJobNotificationManager;
@@ -69,7 +69,7 @@ class CupsPrintJobManager : public KeyedService {
       int total_page_number,
       ::printing::PrintJob::Source source,
       const std::string& source_id,
-      const ash::printing::proto::PrintSettings& settings) = 0;
+      const printing::proto::PrintSettings& settings) = 0;
 
   // Cancel a print job |job|. Note the |job| will be deleted after cancelled.
   // There will be no notifications after cancellation.
@@ -102,6 +102,6 @@ class CupsPrintJobManager : public KeyedService {
   std::map<std::string, base::TimeTicks> print_job_start_times_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_CUPS_PRINT_JOB_MANAGER_H_

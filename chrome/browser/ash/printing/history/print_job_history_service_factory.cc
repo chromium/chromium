@@ -37,7 +37,7 @@ PrintJobHistoryServiceFactory::PrintJobHistoryServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "PrintJobHistoryService",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(chromeos::CupsPrintJobManagerFactory::GetInstance());
+  DependsOn(CupsPrintJobManagerFactory::GetInstance());
   DependsOn(PrintJobReportingServiceFactory::GetInstance());
 }
 
@@ -58,8 +58,8 @@ KeyedService* PrintJobHistoryServiceFactory::BuildServiceInstanceFor(
 
   auto print_job_database = std::make_unique<PrintJobDatabaseImpl>(
       database_provider, profile->GetPath());
-  chromeos::CupsPrintJobManager* print_job_manager =
-      chromeos::CupsPrintJobManagerFactory::GetForBrowserContext(profile);
+  CupsPrintJobManager* print_job_manager =
+      CupsPrintJobManagerFactory::GetForBrowserContext(profile);
   PrintJobReportingService* print_job_reporting_service =
       PrintJobReportingServiceFactory::GetForBrowserContext(profile);
 

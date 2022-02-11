@@ -32,9 +32,12 @@
 #include "content/public/browser/browser_thread.h"
 #include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
+
+using ::chromeos::PpdProvider;
+using ::chromeos::Printer;
 
 // PrinterConfigurer override for testing.
 PrinterConfigurer* g_printer_configurer_for_test = nullptr;
@@ -107,7 +110,7 @@ PrinterSetupResult PrinterSetupResultFromDbusErrorCode(
 class PrinterConfigurerImpl : public PrinterConfigurer {
  public:
   explicit PrinterConfigurerImpl(Profile* profile)
-      : ppd_provider_(ash::CreatePpdProvider(profile)) {}
+      : ppd_provider_(CreatePpdProvider(profile)) {}
 
   PrinterConfigurerImpl(const PrinterConfigurerImpl&) = delete;
   PrinterConfigurerImpl& operator=(const PrinterConfigurerImpl&) = delete;
@@ -306,4 +309,4 @@ std::string ResultCodeToMessage(const PrinterSetupResult result) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

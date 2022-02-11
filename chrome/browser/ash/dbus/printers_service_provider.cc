@@ -20,7 +20,7 @@ PrintersServiceProvider::~PrintersServiceProvider() = default;
 void PrintersServiceProvider::Start(
     scoped_refptr<dbus::ExportedObject> exported_object) {
   exported_object_ = exported_object;
-  auto* proxy = chromeos::CupsPrintersManagerFactory::GetInstance()->GetProxy();
+  auto* proxy = CupsPrintersManagerFactory::GetInstance()->GetProxy();
   DCHECK(proxy);
   printers_manager_observation_.Observe(proxy);
 }

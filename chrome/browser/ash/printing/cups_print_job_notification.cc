@@ -25,9 +25,11 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
+
+using ::chromeos::PrinterErrorCode;
 
 const char kCupsPrintJobNotificationId[] =
     "chrome://settings/printing/cups-print-job-notification";
@@ -224,17 +226,17 @@ void CupsPrintJobNotification::UpdateNotificationIcon() {
     case CupsPrintJob::State::STATE_PAGE_DONE:
     case CupsPrintJob::State::STATE_SUSPENDED:
     case CupsPrintJob::State::STATE_RESUMED:
-      notification_->set_accent_color(ash::kSystemNotificationColorNormal);
+      notification_->set_accent_color(kSystemNotificationColorNormal);
       notification_->set_vector_small_image(kNotificationPrintingIcon);
       break;
     case CupsPrintJob::State::STATE_DOCUMENT_DONE:
-      notification_->set_accent_color(ash::kSystemNotificationColorNormal);
+      notification_->set_accent_color(kSystemNotificationColorNormal);
       notification_->set_vector_small_image(kNotificationPrintingDoneIcon);
       break;
     case CupsPrintJob::State::STATE_CANCELLED:
     case CupsPrintJob::State::STATE_FAILED:
     case CupsPrintJob::State::STATE_ERROR:
-      notification_->set_accent_color(ash::kSystemNotificationColorWarning);
+      notification_->set_accent_color(kSystemNotificationColorWarning);
       notification_->set_vector_small_image(kNotificationPrintingWarningIcon);
       break;
     case CupsPrintJob::State::STATE_NONE:
@@ -302,4 +304,4 @@ void CupsPrintJobNotification::UpdateNotificationTimeout() {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -13,7 +13,7 @@
 #include "chromeos/dbus/cups_proxy/cups_proxy_client.h"
 #include "content/public/browser/browser_context.h"
 
-namespace chromeos {
+namespace ash {
 
 CupsProxyServiceManager::CupsProxyServiceManager() {
   // Don't wait for the daemon if the feature is turned off anyway.
@@ -38,4 +38,4 @@ void CupsProxyServiceManager::OnDaemonAvailable(bool daemon_available) {
       std::make_unique<CupsProxyServiceDelegateImpl>());
 }
 
-}  // namespace chromeos
+}  // namespace ash

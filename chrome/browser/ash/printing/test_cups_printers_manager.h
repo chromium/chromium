@@ -13,7 +13,7 @@
 #include "chrome/browser/ash/printing/printing_stubs.h"
 #include "chromeos/printing/cups_printer_status.h"
 
-namespace chromeos {
+namespace ash {
 
 // Test printers manager which allows to add the printer of arbitrary class.
 // It's used in unit and API integration tests.
@@ -23,13 +23,16 @@ class TestCupsPrintersManager : public StubCupsPrintersManager {
   ~TestCupsPrintersManager() override;
 
   // CupsPrintersManager:
-  std::vector<Printer> GetPrinters(PrinterClass printer_class) const override;
-  bool IsPrinterInstalled(const Printer& printer) const override;
-  absl::optional<Printer> GetPrinter(const std::string& id) const override;
+  std::vector<chromeos::Printer> GetPrinters(
+      chromeos::PrinterClass printer_class) const override;
+  bool IsPrinterInstalled(const chromeos::Printer& printer) const override;
+  absl::optional<chromeos::Printer> GetPrinter(
+      const std::string& id) const override;
   void FetchPrinterStatus(const std::string& printer_id,
                           PrinterStatusCallback cb) override;
 
-  void AddPrinter(const Printer& printer, PrinterClass printer_class);
+  void AddPrinter(const chromeos::Printer& printer,
+                  chromeos::PrinterClass printer_class);
   void InstallPrinter(const std::string& id);
   void SetPrinterStatus(const chromeos::CupsPrinterStatus& status);
 
@@ -40,6 +43,6 @@ class TestCupsPrintersManager : public StubCupsPrintersManager {
   base::flat_set<std::string> installed_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_TEST_CUPS_PRINTERS_MANAGER_H_

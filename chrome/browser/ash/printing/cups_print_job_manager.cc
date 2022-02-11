@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/printing/cups_print_job.h"
 #include "chrome/browser/ash/printing/cups_print_job_notification_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 CupsPrintJobManager::CupsPrintJobManager(Profile* profile) : profile_(profile) {
   notification_manager_ =
@@ -103,4 +103,4 @@ void CupsPrintJobManager::RecordJobDuration(base::WeakPtr<CupsPrintJob> job) {
   print_job_start_times_.erase(job->GetUniqueId());
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -12,7 +12,7 @@ namespace content {
 class BrowserContext;
 }
 
-namespace chromeos {
+namespace ash {
 
 class CupsProxyServiceManager;
 
@@ -43,6 +43,6 @@ class CupsProxyServiceManagerFactory
   bool ServiceIsNULLWhileTesting() const override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_CUPS_PROXY_SERVICE_MANAGER_FACTORY_H_

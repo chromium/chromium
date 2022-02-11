@@ -42,9 +42,9 @@ namespace {
 class MockPrintingManager
     : public ash::printing::print_management::PrintingManager {
  public:
-  MockPrintingManager(PrintJobHistoryService* print_job_history_service,
+  MockPrintingManager(ash::PrintJobHistoryService* print_job_history_service,
                       history::HistoryService* history_service,
-                      chromeos::CupsPrintJobManager* cups_print_job_manager,
+                      ash::CupsPrintJobManager* cups_print_job_manager,
                       PrefService* pref_service)
       : ash::printing::print_management::PrintingManager(
             print_job_history_service,
@@ -85,10 +85,12 @@ class PrintJobsCleanupHandlerUnittest : public testing::Test {
 
     // Set up `MockPrintingManager`.
     print_job_manager_ =
-        std::make_unique<chromeos::TestCupsPrintJobManager>(testing_profile_);
+        std::make_unique<ash::TestCupsPrintJobManager>(testing_profile_);
     auto print_job_database = std::make_unique<TestPrintJobDatabase>();
-    print_job_history_service_ = std::make_unique<PrintJobHistoryServiceImpl>(
-        std::move(print_job_database), print_job_manager_.get(), &test_prefs_);
+    print_job_history_service_ =
+        std::make_unique<ash::PrintJobHistoryServiceImpl>(
+            std::move(print_job_database), print_job_manager_.get(),
+            &test_prefs_);
     test_prefs_.registry()->RegisterBooleanPref(
         prefs::kDeletePrintJobHistoryAllowed, true);
     test_prefs_.registry()->RegisterIntegerPref(
@@ -140,9 +142,9 @@ class PrintJobsCleanupHandlerUnittest : public testing::Test {
   TestingProfileManager testing_profile_manager_;
   TestingProfile* testing_profile_;
   base::ScopedTempDir history_dir_;
-  std::unique_ptr<chromeos::TestCupsPrintJobManager> print_job_manager_;
+  std::unique_ptr<ash::TestCupsPrintJobManager> print_job_manager_;
   std::unique_ptr<history::HistoryService> history_service_;
-  std::unique_ptr<PrintJobHistoryService> print_job_history_service_;
+  std::unique_ptr<ash::PrintJobHistoryService> print_job_history_service_;
 };
 
 TEST_F(PrintJobsCleanupHandlerUnittest, Cleanup) {

@@ -14,8 +14,10 @@
 class Profile;
 
 namespace chromeos {
-
 class Printer;
+}
+
+namespace ash {
 
 // These values are written to logs.  New enum values can be added, but existing
 // enums must never be renumbered or deleted and reused.
@@ -77,14 +79,14 @@ class PrinterConfigurer {
   // with CUPS.  |callback| is called with the result of the operation.  This
   // method must be called on the UI thread and will run |callback| on the
   // UI thread.
-  virtual void SetUpPrinter(const Printer& printer,
+  virtual void SetUpPrinter(const chromeos::Printer& printer,
                             PrinterSetupCallback callback) = 0;
 
   // Return an opaque fingerprint of the fields used to set up a printer with
   // CUPS.  The idea here is that if this fingerprint changes for a printer, we
   // need to reconfigure CUPS.  This fingerprint is not guaranteed to be stable
   // across reboots.
-  static std::string SetupFingerprint(const Printer& printer);
+  static std::string SetupFingerprint(const chromeos::Printer& printer);
 
   // Records UMA metrics for USB printer setup.
   static void RecordUsbPrinterSetupSource(UsbPrinterSetupSource source);
@@ -104,6 +106,13 @@ class PrinterConfigurer {
 // Return a message for |result| that can be used in device-log.
 std::string ResultCodeToMessage(const PrinterSetupResult result);
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::PrinterConfigurer;
+using ::ash::PrinterSetupResult;
+using ::ash::UsbPrinterSetupSource;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_PRINTER_CONFIGURER_H_

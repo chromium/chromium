@@ -20,25 +20,25 @@ class PrefRegistrySimple;
 class PrefService;
 class Profile;
 
-namespace ash {
-class EnterprisePrintersProvider;
-class SyncedPrintersManager;
-class PrinterEventTracker;
-class UsbPrinterNotificationController;
-}  // namespace ash
+namespace chromeos {
+class PpdProvider;
+}
 
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-namespace chromeos {
+namespace ash {
 
-class PpdProvider;
+class EnterprisePrintersProvider;
 class PrinterConfigurer;
 class PrinterDetector;
+class PrinterEventTracker;
+class SyncedPrintersManager;
+class UsbPrinterNotificationController;
 
 // Returns true if |printer_uri| is an IPP uri.
-bool IsIppUri(const Uri& printer_uri);
+bool IsIppUri(const chromeos::Uri& printer_uri);
 
 // Top level manager of available CUPS printers in ChromeOS.  All functions
 // in this class must be called from a sequenced context.
@@ -48,8 +48,9 @@ class CupsPrintersManager : public PrinterInstallationManager,
   class Observer {
    public:
     // The list of printers in this class has changed to the given printers.
-    virtual void OnPrintersChanged(PrinterClass printer_class,
-                                   const std::vector<Printer>& printers) {}
+    virtual void OnPrintersChanged(
+        chromeos::PrinterClass printer_class,
+        const std::vector<chromeos::Printer>& printers) {}
     // It is called exactly once for each observer. It means that the
     // subsystem for enterprise printers is initialized. When an observer is
     // being registered after the subsystem's initialization, this call is
@@ -60,7 +61,7 @@ class CupsPrintersManager : public PrinterInstallationManager,
   };
 
   using PrinterStatusCallback =
-      base::OnceCallback<void(const CupsPrinterStatus&)>;
+      base::OnceCallback<void(const chromeos::CupsPrinterStatus&)>;
 
   // Factory function.
   static std::unique_ptr<CupsPrintersManager> Create(Profile* profile);
@@ -68,17 +69,16 @@ class CupsPrintersManager : public PrinterInstallationManager,
   // Factory function that allows injected dependencies, for testing.  Ownership
   // is not taken of any of the raw-pointer arguments.
   static std::unique_ptr<CupsPrintersManager> CreateForTesting(
-      ash::SyncedPrintersManager* synced_printers_manager,
+      SyncedPrintersManager* synced_printers_manager,
       std::unique_ptr<PrinterDetector> usb_printer_detector,
       std::unique_ptr<PrinterDetector> zeroconf_printer_detector,
-      scoped_refptr<PpdProvider> ppd_provider,
+      scoped_refptr<chromeos::PpdProvider> ppd_provider,
       std::unique_ptr<PrinterConfigurer> printer_configurer,
-      std::unique_ptr<ash::UsbPrinterNotificationController>
+      std::unique_ptr<UsbPrinterNotificationController>
           usb_notification_controller,
       std::unique_ptr<PrintServersManager> print_servers_manager,
-      std::unique_ptr<ash::EnterprisePrintersProvider>
-          enterprise_printers_provider,
-      ash::PrinterEventTracker* event_tracker,
+      std::unique_ptr<EnterprisePrintersProvider> enterprise_printers_provider,
+      PrinterEventTracker* event_tracker,
       PrefService* pref_service);
 
   // Register the profile printing preferences with the |registry|.
@@ -90,12 +90,12 @@ class CupsPrintersManager : public PrinterInstallationManager,
   ~CupsPrintersManager() override = default;
 
   // Get the known printers in the given class.
-  virtual std::vector<Printer> GetPrinters(
-      PrinterClass printer_class) const = 0;
+  virtual std::vector<chromeos::Printer> GetPrinters(
+      chromeos::PrinterClass printer_class) const = 0;
 
   // Saves |printer|. If |printer| already exists in the saved class, it will
   // be overwritten. This is a NOP if |printer| is an enterprise or USB printer.
-  virtual void SavePrinter(const Printer& printer) = 0;
+  virtual void SavePrinter(const chromeos::Printer& printer) = 0;
 
   // Remove the saved printer with the given id.  This is a NOP if
   // the printer_id is not that of a saved printer.
@@ -108,17 +108,20 @@ class CupsPrintersManager : public PrinterInstallationManager,
   virtual void RemoveObserver(Observer* observer) = 0;
 
   // Implementation of PrinterInstallationManager interface.
-  void PrinterInstalled(const Printer& printer, bool is_automatic) override = 0;
-  bool IsPrinterInstalled(const Printer& printer) const override = 0;
-  void PrinterIsNotAutoconfigurable(const Printer& printer) override = 0;
+  void PrinterInstalled(const chromeos::Printer& printer,
+                        bool is_automatic) override = 0;
+  bool IsPrinterInstalled(const chromeos::Printer& printer) const override = 0;
+  void PrinterIsNotAutoconfigurable(const chromeos::Printer& printer) override =
+      0;
 
   // Look for a printer with the given id in any class.  Returns a copy of the
   // printer if found, absl::nullopt if not found.
-  virtual absl::optional<Printer> GetPrinter(const std::string& id) const = 0;
+  virtual absl::optional<chromeos::Printer> GetPrinter(
+      const std::string& id) const = 0;
 
   // Log an event that the user started trying to set up the given printer,
   // but setup was not completed for some reason.
-  virtual void RecordSetupAbandoned(const Printer& printer) = 0;
+  virtual void RecordSetupAbandoned(const chromeos::Printer& printer) = 0;
 
   // Performs individual printer status requests for each printer provided.
   // Passes retrieved printer status to the callbacks.
@@ -132,6 +135,12 @@ class CupsPrintersManager : public PrinterInstallationManager,
   virtual PrintServersManager* GetPrintServersManager() const = 0;
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::CupsPrintersManager;
+using ::ash::IsIppUri;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_CUPS_PRINTERS_MANAGER_H_

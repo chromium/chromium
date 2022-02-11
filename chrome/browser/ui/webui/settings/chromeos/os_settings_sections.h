@@ -16,6 +16,8 @@
 #include "chrome/browser/ash/android_sms/android_sms_service.h"
 // TODO(https://crbug.com/1164001): forward declare when moved ash
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
+// TODO(https://crbug.com/1164001): forward declare when moved ash
+#include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
 
@@ -32,8 +34,6 @@ class SyncService;
 }  // namespace syncer
 
 namespace chromeos {
-
-class CupsPrintersManager;
 
 namespace multidevice_setup {
 class MultiDeviceSetupClient;

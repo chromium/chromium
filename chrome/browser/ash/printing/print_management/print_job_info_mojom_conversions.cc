@@ -20,7 +20,6 @@ namespace {
 
 namespace mojom = printing_manager::mojom;
 
-using ::chromeos::CupsPrintJob;
 using ::chromeos::PrinterErrorCode;
 
 mojom::PrintJobCompletionStatus PrintJobStatusProtoToMojom(

@@ -21,7 +21,7 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
-namespace chromeos {
+namespace ash {
 
 // This class observes values of policies related to external print servers
 // and calculates resultant list of available print servers. This list is
@@ -75,6 +75,6 @@ class PrintServersProvider
   PrintServersProvider() = default;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_PRINT_SERVERS_PROVIDER_H_

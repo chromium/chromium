@@ -13,8 +13,8 @@
 
 namespace {
 
-base::WeakPtr<chromeos::PrintServersProvider> GetDevicePrintServersProvider() {
-  return chromeos::PrintServersProviderFactory::Get()->GetForDevice();
+base::WeakPtr<ash::PrintServersProvider> GetDevicePrintServersProvider() {
+  return ash::PrintServersProviderFactory::Get()->GetForDevice();
 }
 
 }  // namespace

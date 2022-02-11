@@ -43,9 +43,11 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
+
+using ::chromeos::CupsWrapper;
 
 // The rate at which we will poll CUPS for print job updates.
 constexpr base::TimeDelta kPollRate = base::Milliseconds(1000);
@@ -152,14 +154,13 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager,
 
   // Begin monitoring a print job for a given |printer_id| with the given
   // |title| with the pages |total_page_number|.
-  bool CreatePrintJob(
-      const std::string& printer_id,
-      const std::string& title,
-      int job_id,
-      int total_page_number,
-      ::printing::PrintJob::Source source,
-      const std::string& source_id,
-      const ash::printing::proto::PrintSettings& settings) override {
+  bool CreatePrintJob(const std::string& printer_id,
+                      const std::string& title,
+                      int job_id,
+                      int total_page_number,
+                      ::printing::PrintJob::Source source,
+                      const std::string& source_id,
+                      const printing::proto::PrintSettings& settings) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
     Profile* profile = ProfileManager::GetPrimaryUserProfile();
@@ -175,7 +176,7 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager,
       return false;
     }
 
-    absl::optional<Printer> printer = manager->GetPrinter(printer_id);
+    absl::optional<chromeos::Printer> printer = manager->GetPrinter(printer_id);
     if (!printer) {
       LOG(WARNING)
           << "Printer was removed while job was in progress.  It cannot "
@@ -283,7 +284,8 @@ class CupsPrintJobManagerImpl : public CupsPrintJobManager,
           NotifyJobStateUpdate(print_job->GetWeakPtr());
         }
 
-        if (print_job->error_code() == PrinterErrorCode::CLIENT_UNAUTHORIZED) {
+        if (print_job->error_code() ==
+            chromeos::PrinterErrorCode::CLIENT_UNAUTHORIZED) {
           // Job needs to be forcibly cancelled, CUPS will keep the job in held
           // and the job cannot be resumed in chromeos.
           FinishPrintJob(print_job);
@@ -393,4 +395,4 @@ CupsPrintJobManager* CupsPrintJobManager::CreateInstance(Profile* profile) {
   return new CupsPrintJobManagerImpl(profile);
 }
 
-}  // namespace chromeos
+}  // namespace ash

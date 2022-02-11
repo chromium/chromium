@@ -34,7 +34,7 @@ bool UsbDeviceIsPrinter(const device::mojom::UsbDeviceInfo& device_info);
 //
 // Returns false and logs an error on failure.
 bool UsbDeviceToPrinter(const device::mojom::UsbDeviceInfo& device_info,
-                        chromeos::PrinterDetector::DetectedPrinter* entry);
+                        PrinterDetector::DetectedPrinter* entry);
 
 // Expects |device_ptr| to be linked to a Printer-class USB Device. Queries the
 // printer for its IEEE 1284 Standard Device ID.

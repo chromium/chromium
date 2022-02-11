@@ -2662,7 +2662,7 @@ ExtensionFunction::ResponseAction AutotestPrivateGetPrinterListFunction::Run() {
   DVLOG(1) << "AutotestPrivateGetPrinterListFunction";
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  printers_manager_ = chromeos::CupsPrintersManager::Create(profile);
+  printers_manager_ = ash::CupsPrintersManager::Create(profile);
   printers_manager_->AddObserver(this);
 
   // Set up a timer to finish waiting after 10 seconds
@@ -2779,8 +2779,7 @@ ExtensionFunction::ResponseAction AutotestPrivateUpdatePrinterFunction::Run() {
       LOG(ERROR) << "Invalid ppd path: " << *js_printer.printer_ppd;
   }
   auto* printers_manager =
-      chromeos::CupsPrintersManagerFactory::GetForBrowserContext(
-          browser_context());
+      ash::CupsPrintersManagerFactory::GetForBrowserContext(browser_context());
   printers_manager->SavePrinter(printer);
   return RespondNow(NoArguments());
 }
@@ -2799,8 +2798,7 @@ ExtensionFunction::ResponseAction AutotestPrivateRemovePrinterFunction::Run() {
   DVLOG(1) << "AutotestPrivateRemovePrinterFunction " << params->printer_id;
 
   auto* printers_manager =
-      chromeos::CupsPrintersManagerFactory::GetForBrowserContext(
-          browser_context());
+      ash::CupsPrintersManagerFactory::GetForBrowserContext(browser_context());
   printers_manager->RemoveSavedPrinter(params->printer_id);
   return RespondNow(NoArguments());
 }

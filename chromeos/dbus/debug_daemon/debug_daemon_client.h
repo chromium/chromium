@@ -341,6 +341,7 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
 namespace ash {
+using ::chromeos::DbusLibraryError;
 using ::chromeos::DebugDaemonClient;
 }
 

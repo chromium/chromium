@@ -37,7 +37,7 @@ PrintingManagerFactory::PrintingManagerFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(PrintJobHistoryServiceFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
-  DependsOn(chromeos::CupsPrintJobManagerFactory::GetInstance());
+  DependsOn(CupsPrintJobManagerFactory::GetInstance());
 }
 
 PrintingManagerFactory::~PrintingManagerFactory() = default;
@@ -57,7 +57,7 @@ KeyedService* PrintingManagerFactory::BuildInstanceFor(
       PrintJobHistoryServiceFactory::GetForBrowserContext(context),
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
-      chromeos::CupsPrintJobManagerFactory::GetForBrowserContext(context),
+      CupsPrintJobManagerFactory::GetForBrowserContext(context),
       profile->GetPrefs());
 }
 

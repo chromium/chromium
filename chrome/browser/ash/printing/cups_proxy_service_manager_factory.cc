@@ -11,7 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 CupsProxyServiceManagerFactory* CupsProxyServiceManagerFactory::GetInstance() {
@@ -56,4 +56,4 @@ bool CupsProxyServiceManagerFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
 
-}  // namespace chromeos
+}  // namespace ash

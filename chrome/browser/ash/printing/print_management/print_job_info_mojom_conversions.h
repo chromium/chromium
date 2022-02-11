@@ -7,14 +7,15 @@
 
 #include "ash/webui/print_management/mojom/printing_manager.mojom.h"
 
-namespace chromeos {
-class CupsPrintJob;
-}  // namespace chromeos
+namespace ash {
 
-namespace ash::printing {
+class CupsPrintJob;
+
+namespace printing {
 namespace proto {
 class PrintJobInfo;
-}
+}  // namespace proto
+
 namespace print_management {
 
 // Converts proto::PrintJobInfo into mojom::PrintJobInfoPtr.
@@ -23,9 +24,10 @@ printing_manager::mojom::PrintJobInfoPtr PrintJobProtoToMojom(
 
 // Convert CupsPrintJob into mojom::PrintJobInfoPtr.
 printing_manager::mojom::PrintJobInfoPtr CupsPrintJobToMojom(
-    const chromeos::CupsPrintJob& job);
+    const CupsPrintJob& job);
 
 }  // namespace print_management
-}  // namespace ash::printing
+}  // namespace printing
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_PRINT_MANAGEMENT_PRINT_JOB_INFO_MOJOM_CONVERSIONS_H_

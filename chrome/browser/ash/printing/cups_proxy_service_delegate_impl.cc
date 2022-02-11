@@ -18,7 +18,9 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace chromeos {
+namespace ash {
+
+using ::chromeos::Printer;
 
 // TODO(crbug.com/945409): Decide on correct profile/s to use.
 CupsProxyServiceDelegateImpl::CupsProxyServiceDelegateImpl()
@@ -44,7 +46,7 @@ absl::optional<Printer> CupsProxyServiceDelegateImpl::GetPrinter(
 
 // TODO(crbug.com/945409): Incorporate printer limit workaround.
 std::vector<Printer> CupsProxyServiceDelegateImpl::GetPrinters(
-    PrinterClass printer_class) {
+    chromeos::PrinterClass printer_class) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(crbug.com/945409): Include saved + enterprise (+ephemeral?).
@@ -114,4 +116,4 @@ void CupsProxyServiceDelegateImpl::OnSetupPrinter(
   std::move(cb).Run(result == PrinterSetupResult::kSuccess);
 }
 
-}  // namespace chromeos
+}  // namespace ash

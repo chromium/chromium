@@ -9,8 +9,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
+using ::chromeos::CupsPrinterStatus;
 using CupsReason = CupsPrinterStatus::CupsPrinterStatusReason::Reason;
 using CupsSeverity = CupsPrinterStatus::CupsPrinterStatusReason::Severity;
 using ReasonFromPrinter = printing::PrinterStatus::PrinterReason::Reason;
@@ -145,4 +146,4 @@ TEST(CupsPrinterStatusCreatorTest, PrinterReasonToCupsReason) {
             PrinterReasonToCupsReason(ReasonFromPrinter::kUnknownReason));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -11,7 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 static base::LazyInstance<CupsPrintJobManagerFactory>::DestructorAtExit
@@ -40,8 +40,8 @@ CupsPrintJobManagerFactory::CupsPrintJobManagerFactory()
     : BrowserContextKeyedServiceFactory(
           "CupsPrintJobManagerFactory",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(ash::SyncedPrintersManagerFactory::GetInstance());
-  DependsOn(chromeos::CupsPrintersManagerFactory::GetInstance());
+  DependsOn(SyncedPrintersManagerFactory::GetInstance());
+  DependsOn(CupsPrintersManagerFactory::GetInstance());
 }
 
 CupsPrintJobManagerFactory::~CupsPrintJobManagerFactory() = default;
@@ -52,4 +52,4 @@ KeyedService* CupsPrintJobManagerFactory::BuildServiceInstanceFor(
       Profile::FromBrowserContext(context));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -6,8 +6,9 @@
 
 #include "components/device_event_log/device_event_log.h"
 
-namespace chromeos {
+namespace ash {
 
+using ::chromeos::CupsPrinterStatus;
 using CupsReason = CupsPrinterStatus::CupsPrinterStatusReason::Reason;
 using CupsSeverity = CupsPrinterStatus::CupsPrinterStatusReason::Severity;
 using ReasonFromPrinter = printing::PrinterStatus::PrinterReason::Reason;
@@ -100,4 +101,4 @@ CupsSeverity PrinterSeverityToCupsSeverity(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

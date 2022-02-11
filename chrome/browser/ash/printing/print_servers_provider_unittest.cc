@@ -14,7 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // An example of configuration file with print servers.
@@ -322,4 +322,4 @@ TEST_F(PrintServersProviderTest, Allowlist) {
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace ash

@@ -11,7 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -90,4 +90,4 @@ ServerPrintersFetchingMode PrintServersPolicyProvider::GetFetchingMode(
              : ServerPrintersFetchingMode::kSingleServerOnly;
 }
 
-}  // namespace chromeos
+}  // namespace ash

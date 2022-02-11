@@ -21,12 +21,11 @@ namespace ash {
 
 class UsbPrinterNotificationController;
 
-class AutomaticUsbPrinterConfigurer
-    : public chromeos::CupsPrintersManager::Observer {
+class AutomaticUsbPrinterConfigurer : public CupsPrintersManager::Observer {
  public:
   AutomaticUsbPrinterConfigurer(
-      std::unique_ptr<chromeos::PrinterConfigurer> printer_configurer,
-      chromeos::PrinterInstallationManager* installation_manager,
+      std::unique_ptr<PrinterConfigurer> printer_configurer,
+      PrinterInstallationManager* installation_manager,
       UsbPrinterNotificationController* notification_controller);
 
   AutomaticUsbPrinterConfigurer(const AutomaticUsbPrinterConfigurer&) = delete;
@@ -49,7 +48,7 @@ class AutomaticUsbPrinterConfigurer
 
   // Callback for PrinterConfiguer::SetUpPrinter().
   void OnSetupComplete(const chromeos::Printer& printer,
-                       chromeos::PrinterSetupResult result);
+                       PrinterSetupResult result);
 
   // Completes the configuration for |printer|. Saves printer in
   // |configured_printers_|.
@@ -74,8 +73,8 @@ class AutomaticUsbPrinterConfigurer
 
   SEQUENCE_CHECKER(sequence_);
 
-  std::unique_ptr<chromeos::PrinterConfigurer> printer_configurer_;
-  chromeos::PrinterInstallationManager* installation_manager_;  // Not owned.
+  std::unique_ptr<PrinterConfigurer> printer_configurer_;
+  PrinterInstallationManager* installation_manager_;           // Not owned.
   UsbPrinterNotificationController* notification_controller_;  // Not owned.
   base::flat_set<std::string> configured_printers_;
   base::flat_set<std::string> unconfigured_printers_;

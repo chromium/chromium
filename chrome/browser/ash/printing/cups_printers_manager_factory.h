@@ -17,7 +17,7 @@ template <typename T>
 struct DefaultSingletonTraits;
 }
 
-namespace chromeos {
+namespace ash {
 
 class CupsPrintersManager;
 class CupsPrintersManagerProxy;
@@ -55,6 +55,11 @@ class CupsPrintersManagerFactory : public BrowserContextKeyedServiceFactory {
   std::unique_ptr<CupsPrintersManagerProxy> proxy_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::CupsPrintersManagerFactory;
+}
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_CUPS_PRINTERS_MANAGER_FACTORY_H_

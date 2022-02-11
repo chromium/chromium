@@ -61,7 +61,7 @@ base::Value PrintServersConfigMojomToValue(
   ui_print_servers_config.SetBoolKey(
       "isSingleServerFetchingMode",
       config->fetching_mode ==
-          chromeos::ServerPrintersFetchingMode::kSingleServerOnly);
+          ash::ServerPrintersFetchingMode::kSingleServerOnly);
   return ui_print_servers_config;
 }
 

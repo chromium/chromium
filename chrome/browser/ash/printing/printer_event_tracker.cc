@@ -38,7 +38,7 @@ void SetPpdInfo(metrics::PrinterEventProto* event,
 
 // Add information to |event| specific to |usb_printer|.
 void SetUsbInfo(metrics::PrinterEventProto* event,
-                const chromeos::PrinterDetector::DetectedPrinter& detected) {
+                const PrinterDetector::DetectedPrinter& detected) {
   event->set_usb_vendor_id(detected.ppd_search_data.usb_vendor_id);
   event->set_usb_model_id(detected.ppd_search_data.usb_product_id);
   event->set_usb_printer_manufacturer(
@@ -65,7 +65,7 @@ void PrinterEventTracker::set_logging(bool logging) {
 }
 
 void PrinterEventTracker::RecordUsbPrinterInstalled(
-    const chromeos::PrinterDetector::DetectedPrinter& detected,
+    const PrinterDetector::DetectedPrinter& detected,
     SetupMode mode) {
   base::AutoLock l(lock_);
   if (!logging_) {
@@ -95,7 +95,7 @@ void PrinterEventTracker::RecordIppPrinterInstalled(
 }
 
 void PrinterEventTracker::RecordUsbSetupAbandoned(
-    const chromeos::PrinterDetector::DetectedPrinter& detected) {
+    const PrinterDetector::DetectedPrinter& detected) {
   base::AutoLock l(lock_);
   if (!logging_) {
     return;

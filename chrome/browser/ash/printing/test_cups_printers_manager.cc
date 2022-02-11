@@ -5,7 +5,11 @@
 #include "chrome/browser/ash/printing/test_cups_printers_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
+
+using ::chromeos::CupsPrinterStatus;
+using ::chromeos::Printer;
+using ::chromeos::PrinterClass;
 
 TestCupsPrintersManager::TestCupsPrintersManager() = default;
 
@@ -47,8 +51,8 @@ void TestCupsPrintersManager::InstallPrinter(const std::string& id) {
 }
 
 void TestCupsPrintersManager::SetPrinterStatus(
-    const chromeos::CupsPrinterStatus& status) {
+    const CupsPrinterStatus& status) {
   printer_status_map_[status.GetPrinterId()] = status;
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -10,7 +10,7 @@ struct PrinterStatus;
 struct CupsJob;
 }  // namespace printing
 
-namespace chromeos {
+namespace ash {
 class CupsPrintJob;
 
 // Updates the state of a print job based on `printer_status` and `job`.
@@ -19,5 +19,6 @@ bool UpdatePrintJob(const ::printing::PrinterStatus& printer_status,
                     const ::printing::CupsJob& job,
                     CupsPrintJob* print_job);
 
-}  // namespace chromeos
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_ASH_PRINTING_CUPS_PRINT_JOB_MANAGER_UTILS_H_

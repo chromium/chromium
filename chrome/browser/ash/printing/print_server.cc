@@ -6,11 +6,11 @@
 
 #include <string>
 
-namespace chromeos {
+namespace ash {
 
 PrintServer::PrintServer(const std::string& id,
                          const GURL& url,
                          const std::string& name)
     : id_(id), url_(url), name_(name) {}
 
-}  // namespace chromeos
+}  // namespace ash

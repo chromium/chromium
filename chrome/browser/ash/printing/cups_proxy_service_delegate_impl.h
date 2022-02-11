@@ -18,7 +18,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 class CupsPrintersManager;
 class PrinterConfigurer;
@@ -37,30 +37,31 @@ class CupsProxyServiceDelegateImpl
 
   // Look for a printer with the given id in any class.  Returns a copy of the
   // printer if found, nullptr otherwise.
-  absl::optional<Printer> GetPrinter(const std::string& id) override;
+  absl::optional<chromeos::Printer> GetPrinter(const std::string& id) override;
 
   // Get the currently known list of printers.
-  std::vector<Printer> GetPrinters(PrinterClass printer_class) override;
+  std::vector<chromeos::Printer> GetPrinters(
+      chromeos::PrinterClass printer_class) override;
 
   // Get the recently used printer list from print_preview_sticky_settings.
   std::vector<std::string> GetRecentlyUsedPrinters() override;
 
   // Returns whether |printer| is currently installed in CUPS with this config.
-  bool IsPrinterInstalled(const Printer& printer) override;
+  bool IsPrinterInstalled(const chromeos::Printer& printer) override;
 
   // Records that |printer| has been installed into CUPS with this config.
-  void PrinterInstalled(const Printer& printer) override;
+  void PrinterInstalled(const chromeos::Printer& printer) override;
 
   // Returns an IO-thread task runner.
   scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() override;
 
   // Install |printer| into CUPS.
-  void SetupPrinter(const Printer& printer,
+  void SetupPrinter(const chromeos::Printer& printer,
                     cups_proxy::SetupPrinterCallback cb) override;
 
  private:
   // Conducts SetupPrinter call on UI thread.
-  void SetupPrinterOnUIThread(const Printer& printer,
+  void SetupPrinterOnUIThread(const chromeos::Printer& printer,
                               cups_proxy::SetupPrinterCallback cb);
   void OnSetupPrinter(cups_proxy::SetupPrinterCallback cb,
                       PrinterSetupResult result);
@@ -79,6 +80,6 @@ class CupsProxyServiceDelegateImpl
   base::WeakPtrFactory<CupsProxyServiceDelegateImpl> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_CUPS_PROXY_SERVICE_DELEGATE_IMPL_H_

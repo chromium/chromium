@@ -28,8 +28,8 @@
 namespace extensions {
 
 FakePrintJobControllerAsh::FakePrintJobControllerAsh(
-    chromeos::TestCupsPrintJobManager* print_job_manager,
-    chromeos::CupsPrintersManager* printers_manager)
+    ash::TestCupsPrintJobManager* print_job_manager,
+    ash::CupsPrintersManager* printers_manager)
     : print_job_manager_(print_job_manager),
       printers_manager_(printers_manager) {}
 

@@ -21,7 +21,7 @@ namespace message_center {
 class Notification;
 }
 
-namespace chromeos {
+namespace ash {
 
 class CupsPrintJob;
 class CupsPrintJobNotificationManager;
@@ -73,6 +73,6 @@ class CupsPrintJobNotification : public message_center::NotificationObserver {
   base::WeakPtrFactory<CupsPrintJobNotification> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_CUPS_PRINT_JOB_NOTIFICATION_H_

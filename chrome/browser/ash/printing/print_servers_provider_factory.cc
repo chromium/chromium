@@ -12,7 +12,7 @@
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 PrintServersProviderFactory* PrintServersProviderFactory::Get() {
@@ -67,4 +67,4 @@ void PrintServersProviderFactory::Shutdown() {
 PrintServersProviderFactory::PrintServersProviderFactory() = default;
 PrintServersProviderFactory::~PrintServersProviderFactory() = default;
 
-}  // namespace chromeos
+}  // namespace ash

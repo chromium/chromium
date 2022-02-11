@@ -15,8 +15,6 @@
 
 namespace ash {
 
-using ::chromeos::CupsPrintJob;
-
 FakeCupsPrintJobManager::FakeCupsPrintJobManager(Profile* profile)
     : CupsPrintJobManager(profile) {
   VLOG(1) << "Using Fake Print Job Manager";
@@ -141,11 +139,9 @@ void FakeCupsPrintJobManager::ChangePrintJobState(CupsPrintJob* job) {
       base::Milliseconds(3000));
 }
 
-}  // namespace ash
-
-namespace chromeos {
 // static
 CupsPrintJobManager* CupsPrintJobManager::CreateInstance(Profile* profile) {
-  return new ash::FakeCupsPrintJobManager(profile);
+  return new FakeCupsPrintJobManager(profile);
 }
-}  // namespace chromeos
+
+}  // namespace ash

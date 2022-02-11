@@ -33,6 +33,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/network/network_state_handler.h"
+#include "chromeos/printing/ppd_provider.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -41,12 +42,18 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
+
+using ::chromeos::kPrinterId;
+using ::chromeos::PpdProvider;
+using ::chromeos::Printer;
+using ::chromeos::PrinterClass;
+using ::chromeos::PrinterSearchData;
 
 // Fake backend for EnterprisePrintersProvider.  This allows us to poke
 // arbitrary changes in the enterprise printer lists.
-class FakeEnterprisePrintersProvider : public ash::EnterprisePrintersProvider {
+class FakeEnterprisePrintersProvider : public EnterprisePrintersProvider {
  public:
   FakeEnterprisePrintersProvider() = default;
   ~FakeEnterprisePrintersProvider() override = default;
@@ -85,7 +92,7 @@ class FakeEnterprisePrintersProvider : public ash::EnterprisePrintersProvider {
 
 // Fake backend for SyncedPrintersManager.  This allows us to poke arbitrary
 // changes in the saved printer lists.
-class FakeSyncedPrintersManager : public ash::SyncedPrintersManager {
+class FakeSyncedPrintersManager : public SyncedPrintersManager {
  public:
   FakeSyncedPrintersManager() = default;
   ~FakeSyncedPrintersManager() override = default;
@@ -140,7 +147,7 @@ class FakeSyncedPrintersManager : public ash::SyncedPrintersManager {
   // CupsPrintersManager, or just use in a simple pass-through manner that's not
   // worth additional layers of testing on top of the testing in
   // SyncedPrintersManager.
-  ash::PrintersSyncBridge* GetSyncBridge() override { return nullptr; }
+  PrintersSyncBridge* GetSyncBridge() override { return nullptr; }
   // Returns the printer with id |printer_id|, or nullptr if no such printer
   // exists.
   std::unique_ptr<Printer> GetPrinter(
@@ -299,7 +306,7 @@ void ExpectPrinterIdsAre(const std::vector<Printer>& printers,
 }
 
 class FakeUsbPrinterNotificationController
-    : public ash::UsbPrinterNotificationController {
+    : public UsbPrinterNotificationController {
  public:
   FakeUsbPrinterNotificationController() = default;
   ~FakeUsbPrinterNotificationController() override = default;
@@ -349,7 +356,7 @@ class FakePrintServersManager : public PrintServersManager {
   }
 
   void ServerPrintersChanged(
-      const std::vector<chromeos::PrinterDetector::DetectedPrinter>& printers) {
+      const std::vector<PrinterDetector::DetectedPrinter>& printers) {
     observer_->OnServerPrintersChanged(printers);
   }
 
@@ -418,11 +425,11 @@ class CupsPrintersManagerTest : public testing::Test,
     pref_service_.SetManagedPref(name, std::move(value_ptr));
   }
 
-  static chromeos::PrintServer CreatePrintServer(std::string id,
-                                                 std::string server_url,
-                                                 std::string name) {
+  static PrintServer CreatePrintServer(std::string id,
+                                       std::string server_url,
+                                       std::string name) {
     GURL url(server_url);
-    chromeos::PrintServer print_server(id, url, name);
+    PrintServer print_server(id, url, name);
     return print_server;
   }
 
@@ -452,7 +459,7 @@ class CupsPrintersManagerTest : public testing::Test,
   scoped_refptr<FakePpdProvider> ppd_provider_;
 
   // This is unused, it's just here for memory ownership.
-  ash::PrinterEventTracker event_tracker_;
+  PrinterEventTracker event_tracker_;
 
   // PrefService used to register the |UserPrintersAllowed| pref and
   // change its value for testing.
@@ -1069,4 +1076,4 @@ TEST_F(CupsPrintersManagerTest, ActiveNetworkStrengthChanged) {
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace ash

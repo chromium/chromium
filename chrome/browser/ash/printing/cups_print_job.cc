@@ -6,12 +6,9 @@
 
 #include "base/strings/stringprintf.h"
 
-namespace chromeos {
+namespace ash {
 
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace printing = ::ash::printing;
-
-CupsPrintJob::CupsPrintJob(const Printer& printer,
+CupsPrintJob::CupsPrintJob(const chromeos::Printer& printer,
                            int job_id,
                            const std::string& document_title,
                            int total_page_number,
@@ -38,7 +35,7 @@ base::WeakPtr<CupsPrintJob> CupsPrintJob::GetWeakPtr() {
 }
 
 bool CupsPrintJob::IsExpired() const {
-  return error_code_ == PrinterErrorCode::PRINTER_UNREACHABLE;
+  return error_code_ == chromeos::PrinterErrorCode::PRINTER_UNREACHABLE;
 }
 
 // static
@@ -54,7 +51,7 @@ bool CupsPrintJob::IsJobFinished() const {
 }
 
 bool CupsPrintJob::PipelineDead() const {
-  return error_code_ == PrinterErrorCode::FILTER_FAILED;
+  return error_code_ == chromeos::PrinterErrorCode::FILTER_FAILED;
 }
 
-}  // namespace chromeos
+}  // namespace ash

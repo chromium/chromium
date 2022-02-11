@@ -8,7 +8,7 @@
 #include "chrome/browser/ash/printing/test_cups_printers_manager.h"
 #include "chromeos/printing/printer_configuration.h"
 
-namespace chromeos {
+namespace ash {
 
 TestPrinterConfigurer::TestPrinterConfigurer() = default;
 
@@ -17,7 +17,7 @@ TestPrinterConfigurer::TestPrinterConfigurer(TestCupsPrintersManager* manager)
 
 TestPrinterConfigurer::~TestPrinterConfigurer() = default;
 
-void TestPrinterConfigurer::SetUpPrinter(const Printer& printer,
+void TestPrinterConfigurer::SetUpPrinter(const chromeos::Printer& printer,
                                          PrinterSetupCallback callback) {
   MarkConfigured(printer.id());
   auto it = assigned_results_.find(printer.id());
@@ -42,4 +42,4 @@ void TestPrinterConfigurer::AssignPrinterSetupResult(
   assigned_results_[printer_id] = result;
 }
 
-}  // namespace chromeos
+}  // namespace ash

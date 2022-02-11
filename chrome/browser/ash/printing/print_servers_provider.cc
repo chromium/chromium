@@ -28,7 +28,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -355,4 +355,4 @@ std::unique_ptr<PrintServersProvider> PrintServersProvider::Create() {
   return std::make_unique<PrintServersProviderImpl>();
 }
 
-}  // namespace chromeos
+}  // namespace ash

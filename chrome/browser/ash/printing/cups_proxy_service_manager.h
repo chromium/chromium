@@ -11,7 +11,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
+namespace ash {
 
 // This KeyedService is responsible for helping manage the
 // lifetime of the CupsProxyService. This manager is started with the Profile
@@ -36,6 +36,6 @@ class CupsProxyServiceManager : public KeyedService {
   base::WeakPtrFactory<CupsProxyServiceManager> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_CUPS_PROXY_SERVICE_MANAGER_H_

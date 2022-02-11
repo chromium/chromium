@@ -56,17 +56,17 @@ proto::PrintJobInfo CreatePrintJobInfoProto() {
   return print_job_info;
 }
 
-std::unique_ptr<chromeos::CupsPrintJob> CreateCupsPrintJob() {
+std::unique_ptr<CupsPrintJob> CreateCupsPrintJob() {
   chromeos::Printer printer;
   printer.set_display_name(kName);
   printer.SetUri(kUri);
   printer.set_id(kPrinterId);
 
-  auto cups_print_job = std::make_unique<chromeos::CupsPrintJob>(
+  auto cups_print_job = std::make_unique<CupsPrintJob>(
       printer, /*job_id=*/0, kTitle, kPagesNumber,
       ::printing::PrintJob::Source::PRINT_PREVIEW, kId, proto::PrintSettings());
   cups_print_job->set_printed_page_number(kPrintedPageNumber);
-  cups_print_job->set_state(chromeos::CupsPrintJob::State::STATE_STARTED);
+  cups_print_job->set_state(CupsPrintJob::State::STATE_STARTED);
   return cups_print_job;
 }
 

@@ -40,13 +40,13 @@ constexpr char kMediaSizeVendorId[] = "iso_a4_210x297mm";
 
 std::unique_ptr<KeyedService> BuildTestCupsPrintJobManager(
     content::BrowserContext* context) {
-  return std::make_unique<chromeos::TestCupsPrintJobManager>(
+  return std::make_unique<ash::TestCupsPrintJobManager>(
       Profile::FromBrowserContext(context));
 }
 
 std::unique_ptr<KeyedService> BuildTestCupsPrintersManager(
     content::BrowserContext* context) {
-  return std::make_unique<chromeos::TestCupsPrintersManager>();
+  return std::make_unique<ash::TestCupsPrintersManager>();
 }
 
 std::unique_ptr<printing::PrinterSemanticCapsAndDefaults>
@@ -82,23 +82,23 @@ class PrintingApiTest : public ExtensionApiTest {
             ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
                 &PrintingApiTest::OnWillCreateBrowserContextServices,
                 base::Unretained(this)));
-    chromeos::PrinterConfigurer::SetPrinterConfigurerForTesting(
-        std::make_unique<chromeos::TestPrinterConfigurer>());
+    ash::PrinterConfigurer::SetPrinterConfigurerForTesting(
+        std::make_unique<ash::TestPrinterConfigurer>());
     test_print_backend_ = base::MakeRefCounted<printing::TestPrintBackend>();
     printing::PrintBackend::SetPrintBackendForTesting(
         test_print_backend_.get());
     ExtensionApiTest::SetUpInProcessBrowserTestFixture();
   }
 
-  chromeos::TestCupsPrintJobManager* GetPrintJobManager() {
-    return static_cast<chromeos::TestCupsPrintJobManager*>(
-        chromeos::CupsPrintJobManagerFactory::GetForBrowserContext(
+  ash::TestCupsPrintJobManager* GetPrintJobManager() {
+    return static_cast<ash::TestCupsPrintJobManager*>(
+        ash::CupsPrintJobManagerFactory::GetForBrowserContext(
             browser()->profile()));
   }
 
-  chromeos::TestCupsPrintersManager* GetPrintersManager() {
-    return static_cast<chromeos::TestCupsPrintersManager*>(
-        chromeos::CupsPrintersManagerFactory::GetForBrowserContext(
+  ash::TestCupsPrintersManager* GetPrintersManager() {
+    return static_cast<ash::TestCupsPrintersManager*>(
+        ash::CupsPrintersManagerFactory::GetForBrowserContext(
             browser()->profile()));
   }
 
@@ -119,9 +119,9 @@ class PrintingApiTest : public ExtensionApiTest {
 
  private:
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    chromeos::CupsPrintJobManagerFactory::GetInstance()->SetTestingFactory(
+    ash::CupsPrintJobManagerFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&BuildTestCupsPrintJobManager));
-    chromeos::CupsPrintersManagerFactory::GetInstance()->SetTestingFactory(
+    ash::CupsPrintersManagerFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&BuildTestCupsPrintersManager));
   }
 

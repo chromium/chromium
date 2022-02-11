@@ -17,7 +17,7 @@ namespace ash {
 // Use mDNS and DNS-SD to detect nearby networked printers.  This is sometimes
 // called zeroconf, or Bonjour.  Or Rendezvous.
 class ZeroconfPrinterDetector
-    : public chromeos::PrinterDetector,
+    : public PrinterDetector,
       public local_discovery::ServiceDiscoveryDeviceLister::Delegate {
  public:
   // Service types used by the detector.

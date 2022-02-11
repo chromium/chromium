@@ -20,17 +20,14 @@
 class PrefRegistrySimple;
 class Profile;
 
-namespace ash {
-class ServerPrintersProvider;
-}  // namespace ash
-
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-namespace chromeos {
+namespace ash {
 
 class PrinterDetector;
+class ServerPrintersProvider;
 
 struct PrintServersConfig {
   PrintServersConfig();
@@ -59,7 +56,7 @@ class PrintServersManager {
 
   // Factory function that allows injected dependencies, for testing.
   static std::unique_ptr<PrintServersManager> CreateForTesting(
-      std::unique_ptr<ash::ServerPrintersProvider> server_printers_provider,
+      std::unique_ptr<ServerPrintersProvider> server_printers_provider,
       std::unique_ptr<PrintServersPolicyProvider> print_servers_provider);
 
   // Register the profile printing preferences with the |registry|.
@@ -84,6 +81,6 @@ class PrintServersManager {
   virtual PrintServersConfig GetPrintServersConfig() const = 0;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_PRINT_SERVERS_MANAGER_H_

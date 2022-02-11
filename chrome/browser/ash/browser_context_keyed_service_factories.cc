@@ -63,10 +63,10 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   cert_provisioning::CertProvisioningSchedulerUserServiceFactory::GetInstance();
   crostini::CrostiniEngagementMetricsService::Factory::GetInstance();
 #if defined(USE_CUPS)
-  chromeos::CupsProxyServiceManagerFactory::GetInstance();
+  CupsProxyServiceManagerFactory::GetInstance();
 #endif
-  chromeos::CupsPrintersManagerFactory::GetInstance();
-  chromeos::CupsPrintJobManagerFactory::GetInstance();
+  CupsPrintersManagerFactory::GetInstance();
+  CupsPrintJobManagerFactory::GetInstance();
   EasyUnlockServiceFactory::GetInstance();
   eche_app::EcheAppManagerFactory::GetInstance();
   extensions::InputMethodAPI::GetFactoryInstance();

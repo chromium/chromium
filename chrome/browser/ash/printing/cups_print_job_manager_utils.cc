@@ -14,9 +14,12 @@
 #include "printing/backend/cups_jobs.h"
 #include "printing/printer_status.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
+
+using ::chromeos::PrinterErrorCode;
+using ::chromeos::PrinterErrorCodeFromPrinterStatusReasons;
 
 // The amount of time elapsed from print job creation before a timeout is
 // acknowledged. CUPS has a timeout of ~25s.
@@ -157,4 +160,4 @@ bool UpdatePrintJob(const ::printing::PrinterStatus& printer_status,
   return print_job->state() != old_state || pages_updated;
 }
 
-}  // namespace chromeos
+}  // namespace ash

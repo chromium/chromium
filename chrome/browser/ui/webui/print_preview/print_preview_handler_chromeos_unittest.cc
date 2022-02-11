@@ -227,7 +227,7 @@ TEST_F(PrintPreviewHandlerChromeOSTest, OnPrintServersChanged) {
   crosapi::mojom::PrintServersConfigPtr config =
       crosapi::mojom::PrintServersConfig::New();
   config->print_servers = std::move(servers);
-  config->fetching_mode = chromeos::ServerPrintersFetchingMode::kStandard;
+  config->fetching_mode = ash::ServerPrintersFetchingMode::kStandard;
   ChangePrintServersConfig(std::move(config));
   auto* call_data = web_ui()->call_data().back().get();
   AssertWebUIEventFired(*call_data, "print-servers-config-changed");

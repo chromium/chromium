@@ -13,7 +13,7 @@
 class AccountId;
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 class PrintServersProvider;
 
@@ -61,6 +61,6 @@ class PrintServersProviderFactory {
   std::unique_ptr<PrintServersProvider> device_provider_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_PRINT_SERVERS_PROVIDER_FACTORY_H_

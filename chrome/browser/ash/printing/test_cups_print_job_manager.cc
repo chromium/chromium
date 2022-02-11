@@ -6,10 +6,7 @@
 
 #include "chrome/browser/ash/printing/cups_print_job.h"
 
-namespace chromeos {
-
-// TODO(https://crbug.com/1164001): remove after migrating to ash.
-namespace printing = ::ash::printing;
+namespace ash {
 
 TestCupsPrintJobManager::TestCupsPrintJobManager(Profile* profile)
     : CupsPrintJobManager(profile) {}
@@ -64,4 +61,4 @@ void TestCupsPrintJobManager::CompletePrintJob(CupsPrintJob* job) {
   NotifyJobDone(job->GetWeakPtr());
 }
 
-}  // namespace chromeos
+}  // namespace ash

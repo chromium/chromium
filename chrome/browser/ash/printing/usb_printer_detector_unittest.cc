@@ -59,8 +59,7 @@ class UsbPrinterDetectorTest : public testing::Test {
     }
 
     void OnPrintersFound(
-        const std::vector<chromeos::PrinterDetector::DetectedPrinter>&
-            printers) {
+        const std::vector<PrinterDetector::DetectedPrinter>& printers) {
       if (done_callback_)
         std::move(done_callback_).Run();
     }

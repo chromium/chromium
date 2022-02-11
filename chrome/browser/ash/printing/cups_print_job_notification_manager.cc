@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/printing/cups_print_job_notification.h"
 #include "chrome/browser/profiles/profile.h"
 
-namespace chromeos {
+namespace ash {
 
 CupsPrintJobNotificationManager::CupsPrintJobNotificationManager(
     Profile* profile,
@@ -92,4 +92,4 @@ void CupsPrintJobNotificationManager::UpdateNotification(
   notification_map_[job.get()]->OnPrintJobStatusUpdated();
 }
 
-}  // namespace chromeos
+}  // namespace ash

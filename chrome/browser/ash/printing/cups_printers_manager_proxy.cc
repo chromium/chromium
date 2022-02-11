@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chromeos/printing/printer_configuration.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -45,8 +45,9 @@ class ProxyImpl : public CupsPrintersManagerProxy,
 
     // Emit a change event to wake up any observers.
     // Emitting for saved printers is an arbitrary decision.
-    OnPrintersChanged(PrinterClass::kSaved,
-                      active_manager_->GetPrinters(PrinterClass::kSaved));
+    OnPrintersChanged(
+        chromeos::PrinterClass::kSaved,
+        active_manager_->GetPrinters(chromeos::PrinterClass::kSaved));
   }
 
   void RemoveManager(CupsPrintersManager* manager) override {
@@ -65,8 +66,9 @@ class ProxyImpl : public CupsPrintersManagerProxy,
   }
 
   // CupsPrintersManager::Observer overrides
-  void OnPrintersChanged(PrinterClass printer_class,
-                         const std::vector<Printer>& printers) override {
+  void OnPrintersChanged(
+      chromeos::PrinterClass printer_class,
+      const std::vector<chromeos::Printer>& printers) override {
     for (auto& observer : observers_) {
       observer.OnPrintersChanged(printer_class, printers);
     }
@@ -86,4 +88,4 @@ std::unique_ptr<CupsPrintersManagerProxy> CupsPrintersManagerProxy::Create() {
   return std::make_unique<ProxyImpl>();
 }
 
-}  // namespace chromeos
+}  // namespace ash

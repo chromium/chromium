@@ -38,7 +38,7 @@ class ServerPrintersFetcher {
   using OnPrintersFetchedCallback = base::RepeatingCallback<void(
       const ServerPrintersFetcher* sender,
       const GURL& server_url,
-      std::vector<chromeos::PrinterDetector::DetectedPrinter>&& printers)>;
+      std::vector<PrinterDetector::DetectedPrinter>&& printers)>;
 
   ServerPrintersFetcher(Profile* profile,
                         const GURL& server_url,

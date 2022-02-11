@@ -12,7 +12,7 @@
 #include "chromeos/printing/ppd_provider.h"
 #include "chromeos/printing/printer_configuration.h"
 
-namespace chromeos {
+namespace ash {
 
 // Interface for automatic printer detection.  This API allows for
 // incremental discovery of printers and notification when discovery
@@ -33,10 +33,10 @@ class CHROMEOS_EXPORT PrinterDetector {
   // The result of a detection.
   struct DetectedPrinter {
     // Printer information
-    Printer printer;
+    chromeos::Printer printer;
 
     // Additional metadata used to find a driver.
-    PrinterSearchData ppd_search_data;
+    chromeos::PrinterSearchData ppd_search_data;
   };
 
   using OnPrintersFoundCallback = base::RepeatingCallback<void(
@@ -50,6 +50,11 @@ class CHROMEOS_EXPORT PrinterDetector {
   virtual std::vector<DetectedPrinter> GetPrinters() = 0;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::PrinterDetector;
+}
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_PRINTER_DETECTOR_H_

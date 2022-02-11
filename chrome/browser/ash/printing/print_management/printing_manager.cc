@@ -22,7 +22,6 @@ namespace ash {
 namespace printing {
 namespace print_management {
 
-using ::chromeos::CupsPrintJob;
 using ::history::DeletionInfo;
 using ::history::HistoryService;
 using proto::PrintJobInfo;
@@ -30,7 +29,7 @@ using proto::PrintJobInfo;
 PrintingManager::PrintingManager(
     PrintJobHistoryService* print_job_history_service,
     HistoryService* history_service,
-    chromeos::CupsPrintJobManager* cups_print_job_manager,
+    CupsPrintJobManager* cups_print_job_manager,
     PrefService* pref_service)
     : print_job_history_service_(print_job_history_service),
       history_service_(history_service),

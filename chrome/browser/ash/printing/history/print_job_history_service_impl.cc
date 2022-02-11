@@ -17,7 +17,7 @@ namespace ash {
 
 PrintJobHistoryServiceImpl::PrintJobHistoryServiceImpl(
     std::unique_ptr<PrintJobDatabase> print_job_database,
-    chromeos::CupsPrintJobManager* print_job_manager,
+    CupsPrintJobManager* print_job_manager,
     PrefService* pref_service)
     : print_job_database_(std::move(print_job_database)),
       print_job_manager_(print_job_manager),
@@ -55,22 +55,21 @@ void PrintJobHistoryServiceImpl::OnClearDone(
 }
 
 void PrintJobHistoryServiceImpl::OnPrintJobDone(
-    base::WeakPtr<chromeos::CupsPrintJob> job) {
+    base::WeakPtr<CupsPrintJob> job) {
   SavePrintJob(job);
 }
 
 void PrintJobHistoryServiceImpl::OnPrintJobError(
-    base::WeakPtr<chromeos::CupsPrintJob> job) {
+    base::WeakPtr<CupsPrintJob> job) {
   SavePrintJob(job);
 }
 
 void PrintJobHistoryServiceImpl::OnPrintJobCancelled(
-    base::WeakPtr<chromeos::CupsPrintJob> job) {
+    base::WeakPtr<CupsPrintJob> job) {
   SavePrintJob(job);
 }
 
-void PrintJobHistoryServiceImpl::SavePrintJob(
-    base::WeakPtr<chromeos::CupsPrintJob> job) {
+void PrintJobHistoryServiceImpl::SavePrintJob(base::WeakPtr<CupsPrintJob> job) {
   if (!job)
     return;
 
