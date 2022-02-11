@@ -35,6 +35,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PDF.AttachmentType" enum="ViewFileType"
+    expires_after="2022-08-15">
+  <owner>nigi@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Records encountering a PDF attachment with a specific file extension. This
+    is logged when a document is opened in the PDF viewer but not in the Print
+    Preview. The index of &quot;directory&quot; won't be used for this log since
+    a PDF attachment cannot be a directory. The index of &quot;unknown
+    extension&quot; won't be used for this log since it will be represented as
+    the index of &quot;other&quot;.
+  </summary>
+</histogram>
+
 <histogram name="PDF.FormType" enum="PDFFormTypes" expires_after="2022-04-17">
   <owner>rharrison@chromium.org</owner>
   <owner>thestig@chromium.org</owner>

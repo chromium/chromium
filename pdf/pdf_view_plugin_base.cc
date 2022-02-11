@@ -44,6 +44,7 @@
 #include "pdf/content_restriction.h"
 #include "pdf/document_layout.h"
 #include "pdf/document_metadata.h"
+#include "pdf/file_extension.h"
 #include "pdf/paint_ready_rect.h"
 #include "pdf/pdf_engine.h"
 #include "pdf/pdf_features.h"
@@ -1697,6 +1698,15 @@ enum class PdfIsTagged {
 
 }  // namespace
 
+void PdfViewPluginBase::RecordAttachmentTypes() {
+  const std::vector<DocumentAttachmentInfo>& list =
+      engine()->GetDocumentAttachmentInfoList();
+  for (const auto& info : list) {
+    HistogramEnumeration("PDF.AttachmentType",
+                         FileNameToExtensionIndex(info.name));
+  }
+}
+
 void PdfViewPluginBase::RecordDocumentMetrics() {
   const DocumentMetadata& document_metadata = engine()->GetDocumentMetadata();
   HistogramEnumeration("PDF.Version", document_metadata.version);
@@ -1709,6 +1719,7 @@ void PdfViewPluginBase::RecordDocumentMetrics() {
                                            ? PdfIsTagged::kYes
                                            : PdfIsTagged::kNo);
   HistogramEnumeration("PDF.FormType", document_metadata.form_type);
+  RecordAttachmentTypes();
 }
 
 template <typename T>

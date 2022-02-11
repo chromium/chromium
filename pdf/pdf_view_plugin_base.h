@@ -499,15 +499,18 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   void ResetRecentlySentFindUpdate(int32_t /*unused_but_required*/);
 
+  // Records metrics about the attachment types.
+  void RecordAttachmentTypes();
+
   // Records metrics about the document metadata.
   void RecordDocumentMetrics();
 
-  // Adds a sample to an enumerated histogram and filter out print preview
+  // Adds a sample to an enumerated histogram and filters out print preview
   // usage.
   template <typename T>
   void HistogramEnumeration(const char* name, T sample);
 
-  // Adds a sample to a custom counts histogram and filter out print preview
+  // Adds a sample to a custom counts histogram and filters out print preview
   // usage.
   void HistogramCustomCounts(const char* name,
                              int32_t sample,
