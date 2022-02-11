@@ -85,7 +85,7 @@ class EncodedPartitionFreelistEntryPtr {
 // the rationale and mechanism, respectively.
 class PartitionFreelistEntry {
  private:
-  explicit constexpr PartitionFreelistEntry(nullptr_t)
+  explicit constexpr PartitionFreelistEntry(std::nullptr_t)
       : encoded_next_(EncodedPartitionFreelistEntryPtr(nullptr))
 #if defined(PA_HAS_FREELIST_SHADOW_ENTRY)
         ,
