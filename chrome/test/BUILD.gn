@@ -2174,6 +2174,12 @@ if (!is_android) {
       ]
     }
 
+    if (is_win) {
+      sources += [
+        "../browser/ui/views/web_apps/web_app_integration_browsertest_win.cc",
+      ]
+    }
+
     # If this target is used on Android in the future, these browser/speech/*
     # files will probably not be applicable.
     sources += [

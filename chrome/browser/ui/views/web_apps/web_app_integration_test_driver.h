@@ -179,7 +179,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void UninstallFromList(const std::string& site_mode);
   void UninstallFromMenu(const std::string& site_mode);
   void UninstallPolicyApp(const std::string& site_mode);
-  void UninstallFromOS(const std::string& site_mode);
+  void UninstallFromOs(const std::string& site_mode);
 
   // State Check Actions:
   void CheckAppListEmpty();

@@ -1031,7 +1031,7 @@ void WebAppIntegrationTestDriver::UninstallPolicyApp(
   AfterStateChangeAction();
 }
 
-void WebAppIntegrationTestDriver::UninstallFromOS(
+void WebAppIntegrationTestDriver::UninstallFromOs(
     const std::string& site_mode) {
 #if BUILDFLAG(IS_WIN)
   BeforeStateChangeAction();

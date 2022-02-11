@@ -35,14 +35,6 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest, ManifestUpdateTitle) {
   helper_.CheckAppTitleSiteA("Site A - Updated name");
 }
 
-#if BUILDFLAG(IS_WIN)
-IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest, UninstallFromOS) {
-  helper_.InstallCreateShortcutWindowed("SiteA");
-  helper_.UninstallFromOS("SiteA");
-  helper_.CheckAppNotInList("SiteA");
-}
-#endif
-
 // Automated tests:
 
 // TODO(crbug.com/1279704): Test is consistently failing on Mac and Win7.
