@@ -551,21 +551,20 @@ public class CriticalPersistedTabData extends PersistedTabData {
         if (mShouldSaveForTesting) {
             return true;
         }
-        if (getUrl() == null || TextUtils.isEmpty(getUrl().getSpec())) {
+        if (getUrl() == null || getUrl().isEmpty()) {
             return false;
         }
-        if (UrlUtilities.isNTPUrl(getUrl().getSpec()) && !mTab.canGoBack()
-                && !mTab.canGoForward()) {
+        if (UrlUtilities.isNTPUrl(getUrl()) && !mTab.canGoBack() && !mTab.canGoForward()) {
             return false;
         }
-        if (isTabUrlContentScheme(getUrl().getSpec())) {
+        if (isTabUrlContentScheme(getUrl())) {
             return false;
         }
         return true;
     }
 
-    private boolean isTabUrlContentScheme(String url) {
-        return url != null && url.startsWith(UrlConstants.CONTENT_SCHEME);
+    private boolean isTabUrlContentScheme(GURL url) {
+        return url != null && url.getScheme().equals(UrlConstants.CONTENT_SCHEME);
     }
 
     @Override
