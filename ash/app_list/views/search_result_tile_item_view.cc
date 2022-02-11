@@ -209,43 +209,6 @@ void SearchResultTileItemView::OnResultChanged() {
   UpdateAccessibleName();
 }
 
-std::u16string SearchResultTileItemView::ComputeAccessibleName() const {
-  std::u16string accessible_name;
-  if (!result()->accessible_name().empty())
-    return result()->accessible_name();
-
-  if (result()->result_type() == AppListSearchResultType::kPlayStoreApp ||
-      result()->result_type() == AppListSearchResultType::kInstantApp) {
-    accessible_name = l10n_util::GetStringFUTF16(
-        IDS_APP_ACCESSIBILITY_ARC_APP_ANNOUNCEMENT, title_->GetText());
-  } else if (result()->result_type() ==
-             AppListSearchResultType::kPlayStoreReinstallApp) {
-    accessible_name = l10n_util::GetStringFUTF16(
-        IDS_APP_ACCESSIBILITY_APP_RECOMMENDATION_ARC, title_->GetText());
-  } else if (result()->result_type() ==
-             AppListSearchResultType::kInstalledApp) {
-    accessible_name = l10n_util::GetStringFUTF16(
-        IDS_APP_ACCESSIBILITY_INSTALLED_APP_ANNOUNCEMENT, title_->GetText());
-  } else if (result()->result_type() == AppListSearchResultType::kInternalApp) {
-    accessible_name = l10n_util::GetStringFUTF16(
-        IDS_APP_ACCESSIBILITY_INTERNAL_APP_ANNOUNCEMENT, title_->GetText());
-  } else {
-    accessible_name = title_->GetText();
-  }
-
-  if (rating_ && rating_->GetVisible()) {
-    accessible_name = l10n_util::GetStringFUTF16(
-        IDS_APP_ACCESSIBILITY_APP_WITH_STAR_RATING_ARC, accessible_name,
-        rating_->GetText());
-  }
-  if (price_ && price_->GetVisible()) {
-    accessible_name =
-        l10n_util::GetStringFUTF16(IDS_APP_ACCESSIBILITY_APP_WITH_PRICE_ARC,
-                                   accessible_name, price_->GetText());
-  }
-  return accessible_name;
-}
-
 void SearchResultTileItemView::SetParentBackgroundColor(SkColor color) {
   parent_background_color_ = color;
   UpdateBackgroundColor();

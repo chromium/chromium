@@ -257,8 +257,7 @@ TEST_P(SearchResultTileItemListViewTest, Basic) {
         l10n_util::GetStringFUTF8(
             IDS_APP_ACCESSIBILITY_ARC_APP_ANNOUNCEMENT,
             base::UTF8ToUTF16("PlayStoreApp " + base::NumberToString(i))) +
-            ", Star rating " + base::NumberToString(i + 1) + ".0, Price " +
-            base::NumberToString(i),
+            ", Star rating " + base::NumberToString(i + 1) + ".0",
         node_data.GetStringAttribute(ax::mojom::StringAttribute::kName));
   }
 

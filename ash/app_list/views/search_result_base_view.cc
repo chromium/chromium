@@ -7,7 +7,11 @@
 #include "ash/app_list/model/search/search_result.h"
 #include "ash/app_list/views/search_result_actions_view.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "base/i18n/number_formatting.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
@@ -83,13 +87,39 @@ void SearchResultBaseView::OnResultDestroying() {
 
 std::u16string SearchResultBaseView::ComputeAccessibleName() const {
   if (!result())
-    return std::u16string();
+    return u"";
 
-  std::u16string accessible_name = result()->title();
-  if (!result()->title().empty() && !result()->details().empty())
-    accessible_name += u", ";
-  accessible_name += result()->details();
+  std::u16string accessible_name;
+  if (!result()->accessible_name().empty())
+    return result()->accessible_name();
 
+  std::u16string title = result()->title();
+  if (result()->result_type() == AppListSearchResultType::kPlayStoreApp ||
+      result()->result_type() == AppListSearchResultType::kInstantApp) {
+    accessible_name = l10n_util::GetStringFUTF16(
+        IDS_APP_ACCESSIBILITY_ARC_APP_ANNOUNCEMENT, title);
+  } else if (result()->result_type() ==
+             AppListSearchResultType::kPlayStoreReinstallApp) {
+    accessible_name = l10n_util::GetStringFUTF16(
+        IDS_APP_ACCESSIBILITY_APP_RECOMMENDATION_ARC, title);
+  } else if (result()->result_type() ==
+             AppListSearchResultType::kInstalledApp) {
+    accessible_name = l10n_util::GetStringFUTF16(
+        IDS_APP_ACCESSIBILITY_INSTALLED_APP_ANNOUNCEMENT, title);
+  } else if (result()->result_type() == AppListSearchResultType::kInternalApp) {
+    accessible_name = l10n_util::GetStringFUTF16(
+        IDS_APP_ACCESSIBILITY_INTERNAL_APP_ANNOUNCEMENT, title);
+  } else if (!result()->details().empty()) {
+    accessible_name = base::JoinString({title, result()->details()}, u", ");
+  } else {
+    accessible_name = title;
+  }
+
+  if (result()->rating() && result()->rating() >= 0) {
+    accessible_name = l10n_util::GetStringFUTF16(
+        IDS_APP_ACCESSIBILITY_APP_WITH_STAR_RATING_ARC, accessible_name,
+        base::FormatDouble(result()->rating(), 1));
+  }
   return accessible_name;
 }
 

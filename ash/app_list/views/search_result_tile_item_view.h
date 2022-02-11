@@ -43,9 +43,6 @@ class ASH_EXPORT SearchResultTileItemView
 
   void OnResultChanged() override;
 
-  // Overridden from SearchResultBaseView:
-  std::u16string ComputeAccessibleName() const override;
-
   // Informs the SearchResultTileItemView of its parent's background color. The
   // controls within the SearchResultTileItemView will adapt to suit the given
   // color.
