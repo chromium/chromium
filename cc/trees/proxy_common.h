@@ -25,7 +25,6 @@ struct CC_EXPORT BeginMainFrameAndCommitState {
 
   viz::BeginFrameArgs begin_frame_args;
   std::unique_ptr<CompositorCommitData> commit_data;
-  size_t memory_allocation_limit_bytes = 0;
   std::vector<std::pair<int, bool>> completed_image_decode_requests;
   std::unique_ptr<MutatorEvents> mutator_events;
   // Bit encoding of the FrameSequenceTrackerType for active trackers

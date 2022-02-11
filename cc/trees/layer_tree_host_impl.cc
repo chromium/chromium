@@ -9,10 +9,10 @@
 
 #include <algorithm>
 #include <limits>
-#include <list>
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
@@ -24,7 +24,6 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
-#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -44,22 +43,14 @@
 #include "cc/debug/rendering_stats_instrumentation.h"
 #include "cc/document_transition/document_transition_request.h"
 #include "cc/input/browser_controls_offset_manager.h"
-#include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/page_scale_animation.h"
-#include "cc/input/scroll_elasticity_helper.h"
-#include "cc/input/scroll_state.h"
-#include "cc/input/scroll_utils.h"
-#include "cc/input/scrollbar.h"
 #include "cc/input/scrollbar_animation_controller.h"
 #include "cc/input/scroller_size_metrics.h"
-#include "cc/input/snap_selection_strategy.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/layers/effect_tree_layer_list_iterator.h"
 #include "cc/layers/heads_up_display_layer_impl.h"
 #include "cc/layers/layer_impl.h"
-#include "cc/layers/painted_scrollbar_layer_impl.h"
 #include "cc/layers/render_surface_impl.h"
-#include "cc/layers/scrollbar_layer_impl_base.h"
 #include "cc/layers/surface_layer_impl.h"
 #include "cc/layers/viewport.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
@@ -85,11 +76,9 @@
 #include "cc/tiles/picture_layer_tiling.h"
 #include "cc/tiles/raster_tile_priority_queue.h"
 #include "cc/tiles/software_image_decode_cache.h"
-#include "cc/trees/clip_node.h"
 #include "cc/trees/compositor_commit_data.h"
 #include "cc/trees/damage_tracker.h"
 #include "cc/trees/debug_rect_history.h"
-#include "cc/trees/draw_property_utils.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/image_animation_controller.h"
 #include "cc/trees/latency_info_swap_promise_monitor.h"
@@ -102,11 +91,8 @@
 #include "cc/trees/render_frame_metadata_observer.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/single_thread_proxy.h"
-#include "cc/trees/transform_node.h"
 #include "cc/trees/tree_synchronizer.h"
 #include "components/viz/common/features.h"
-#include "components/viz/common/frame_sinks/copy_output_request.h"
-#include "components/viz/common/frame_sinks/delay_based_time_source.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -115,10 +101,9 @@
 #include "components/viz/common/quads/frame_deadline.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
-#include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/platform_color.h"
-#include "components/viz/common/resources/resource_sizes.h"
+#include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/traced_value.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
@@ -130,7 +115,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.pbzero.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "ui/events/types/scroll_input_type.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -138,8 +122,6 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
-
-using ScrollThread = cc::InputHandler::ScrollThread;
 
 namespace cc {
 namespace {
@@ -2509,8 +2491,10 @@ absl::optional<EventMetricsSet> LayerTreeHostImpl::DrawLayers(
   auto compositor_frame = GenerateCompositorFrame(frame);
   const auto frame_token = compositor_frame.metadata.frame_token;
   frame->frame_token = frame_token;
+#if DCHECK_IS_ON()
   const viz::BeginFrameId begin_frame_ack_frame_id =
       compositor_frame.metadata.begin_frame_ack.frame_id;
+#endif
 
   EventMetricsSet events_metrics(
       active_tree()->TakeEventsMetrics(),

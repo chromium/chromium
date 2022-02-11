@@ -11,14 +11,10 @@
 #include <memory>
 #include <utility>
 
-#include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/command_line.h"
-#include "base/location.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -34,9 +30,9 @@
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/page_scale_animation.h"
 #include "cc/input/scroll_utils.h"
+#include "cc/input/scrollbar_controller.h"
 #include "cc/input/threaded_input_handler.h"
 #include "cc/layers/append_quads_data.h"
-#include "cc/layers/heads_up_display_layer_impl.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/painted_overlay_scrollbar_layer_impl.h"
 #include "cc/layers/painted_scrollbar_layer_impl.h"
@@ -44,7 +40,6 @@
 #include "cc/layers/solid_color_layer_impl.h"
 #include "cc/layers/solid_color_scrollbar_layer_impl.h"
 #include "cc/layers/surface_layer_impl.h"
-#include "cc/layers/texture_layer_impl.h"
 #include "cc/layers/video_layer_impl.h"
 #include "cc/layers/viewport.h"
 #include "cc/resources/ui_resource_bitmap.h"
@@ -54,7 +49,6 @@
 #include "cc/test/fake_impl_task_runner_provider.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
-#include "cc/test/fake_mask_layer_impl.h"
 #include "cc/test/fake_picture_layer_impl.h"
 #include "cc/test/fake_raster_source.h"
 #include "cc/test/fake_recording_source.h"
@@ -76,11 +70,11 @@
 #include "cc/trees/render_frame_metadata.h"
 #include "cc/trees/render_frame_metadata_observer.h"
 #include "cc/trees/scroll_node.h"
-#include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/transform_node.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
@@ -102,7 +96,6 @@
 #include "ui/events/types/scroll_input_type.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/point_conversions.h"
-#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/geometry/transform_operations.h"
@@ -124,10 +117,6 @@ using ::testing::Return;
 using ::testing::StrictMock;
 
 using ScrollThread = cc::InputHandler::ScrollThread;
-
-namespace viz {
-struct FrameTimingDetails;
-}
 
 namespace cc {
 namespace {

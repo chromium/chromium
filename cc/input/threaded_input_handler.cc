@@ -11,6 +11,7 @@
 #include "cc/base/features.h"
 #include "cc/input/scroll_elasticity_helper.h"
 #include "cc/input/scroll_utils.h"
+#include "cc/input/scrollbar_controller.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "cc/layers/viewport.h"
 #include "cc/trees/compositor_commit_data.h"
