@@ -1,0 +1,23 @@
+<!doctype html>
+<head>
+  <title>prefers-color-scheme inside an SVG image dynamically becoming dark</title>
+</head>
+<p>There should be a green square below.</p>
+<div style="background: url(resources/prefers-color-scheme.svg); height: 100px; width: 100px;"></div>
+<script src="../resources/run-after-layout-and-paint.js"></script>
+<script>
+    function endTest() {
+        if (window.testRunner)
+            testRunner.notifyDone();
+    }
+
+    function doTest() {
+        window.internals.setDarkPreferredColorScheme(document);
+        runAfterLayoutAndPaint(endTest);
+    }
+
+    runAfterLayoutAndPaint(doTest);
+
+    if (window.testRunner)
+        testRunner.waitUntilDone();
+</script>

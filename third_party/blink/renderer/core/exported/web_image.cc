@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <memory>
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
@@ -110,8 +111,11 @@ SkBitmap WebImage::DecodeSVG(const WebData& data,
   gfx::SizeF container_size(desired_size);
   if (container_size.IsEmpty())
     container_size = svg_image->ConcreteObjectSize(gfx::SizeF());
+  // TODO(chrishtr): perhaps the downloaded image should be decoded in dark
+  // mode if the preferred color scheme is dark.
   scoped_refptr<Image> svg_container =
-      SVGImageForContainer::Create(svg_image.get(), container_size, 1, KURL());
+      SVGImageForContainer::Create(svg_image.get(), container_size, 1, KURL(),
+                                   mojom::blink::PreferredColorScheme::kLight);
   if (PaintImage image = svg_container->PaintImageForCurrentFrame()) {
     image.GetSwSkImage()->asLegacyBitmap(&bitmap,
                                          SkImage::kRO_LegacyBitmapMode);

@@ -8,6 +8,7 @@
 #include <memory>
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
@@ -40,6 +41,7 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
       ImageElementBase*,
       absl::optional<gfx::Rect>,
       ScriptState*,
+      mojom::blink::PreferredColorScheme,
       const ImageBitmapOptions* = ImageBitmapOptions::Create());
   static sk_sp<SkImage> GetSkImageFromDecoder(std::unique_ptr<ImageDecoder>);
 

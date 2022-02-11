@@ -194,7 +194,7 @@ scoped_refptr<Image> LayoutImageResource::GetImage(
   }
   return SVGImageForContainer::Create(
       svg_image, container_size, layout_object_->StyleRef().EffectiveZoom(),
-      url);
+      url, layout_object_->GetDocument().GetPreferredColorScheme());
 }
 
 bool LayoutImageResource::MaybeAnimated() const {

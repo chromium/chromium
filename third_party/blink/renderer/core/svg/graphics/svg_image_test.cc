@@ -247,7 +247,8 @@ TEST_F(SVGImageTest, PaintFrameForCurrentFrameWithMQAndZoom) {
        kShouldPause);
 
   scoped_refptr<SVGImageForContainer> container = SVGImageForContainer::Create(
-      &GetImage(), gfx::SizeF(100, 100), 2, NullURL());
+      &GetImage(), gfx::SizeF(100, 100), 2, NullURL(),
+      mojom::blink::PreferredColorScheme::kLight);
   SkBitmap bitmap =
       container->AsSkBitmapForCurrentFrame(kDoNotRespectImageOrientation);
   ASSERT_EQ(bitmap.width(), 100);

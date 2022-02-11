@@ -887,6 +887,12 @@ void StyleEngine::PlatformColorsChanged() {
     resolver_->InvalidateMatchedPropertiesCache();
   MarkAllElementsForStyleRecalc(StyleChangeReasonForTracing::Create(
       style_change_reason::kPlatformColorChange));
+
+  // Invalidate paint so that SVG images can update the preferred color scheme
+  // of their document.
+  if (auto* view = GetDocument().GetLayoutView()) {
+    view->InvalidatePaintForViewAndDescendants();
+  }
 }
 
 bool StyleEngine::ShouldSkipInvalidationFor(const Element& element) const {

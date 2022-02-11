@@ -410,6 +410,13 @@ PaintImage SVGImage::PaintImageForCurrentFrame() {
   return builder.TakePaintImage();
 }
 
+void SVGImage::SetPreferredColorScheme(
+    mojom::blink::PreferredColorScheme preferred_color_scheme) {
+  if (page_) {
+    page_->GetSettings().SetPreferredColorScheme(preferred_color_scheme);
+  }
+}
+
 void SVGImage::DrawPatternForContainer(const DrawInfo& draw_info,
                                        GraphicsContext& context,
                                        const cc::PaintFlags& base_flags,

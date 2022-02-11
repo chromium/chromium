@@ -171,7 +171,7 @@ void StyleFetchedImage::ImageNotifyFinished(ImageResourceContent*) {
 
 scoped_refptr<Image> StyleFetchedImage::GetImage(
     const ImageResourceObserver&,
-    const Document&,
+    const Document& document,
     const ComputedStyle& style,
     const gfx::SizeF& target_size) const {
   Image* image = image_->GetImage();
@@ -184,7 +184,8 @@ scoped_refptr<Image> StyleFetchedImage::GetImage(
   if (!svg_image)
     return image;
   return SVGImageForContainer::Create(svg_image, target_size,
-                                      style.EffectiveZoom(), url_);
+                                      style.EffectiveZoom(), url_,
+                                      document.GetPreferredColorScheme());
 }
 
 bool StyleFetchedImage::KnownToBeOpaque(const Document&,

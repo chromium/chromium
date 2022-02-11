@@ -69,7 +69,8 @@ scoped_refptr<Image> ImageElementBase::GetSourceImageForCanvas(
     gfx::SizeF image_size = svg_image->ConcreteObjectSize(default_object_size);
     source_image = SVGImageForContainer::Create(
         svg_image, image_size, 1,
-        GetElement().GetDocument().CompleteURL(GetElement().ImageSourceURL()));
+        GetElement().GetDocument().CompleteURL(GetElement().ImageSourceURL()),
+        GetElement().GetDocument().GetPreferredColorScheme());
   }
 
   *status = kNormalSourceImageStatus;
@@ -170,7 +171,9 @@ ScriptPromise ImageElementBase::CreateImageBitmap(
       return ScriptPromise();
     }
     // The following function only works on SVGImages (as checked above).
-    return ImageBitmap::CreateAsync(this, crop_rect, script_state, options);
+    return ImageBitmap::CreateAsync(
+        this, crop_rect, script_state,
+        GetElement().GetDocument().GetPreferredColorScheme(), options);
   }
   return ImageBitmapSource::FulfillImageBitmap(
       script_state, MakeGarbageCollected<ImageBitmap>(this, crop_rect, options),

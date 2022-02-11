@@ -913,10 +913,12 @@ void ImageBitmap::RasterizeImageOnBackgroundThread(
                           ImageOrientationEnum::kDefault));
 }
 
-ScriptPromise ImageBitmap::CreateAsync(ImageElementBase* image,
-                                       absl::optional<gfx::Rect> crop_rect,
-                                       ScriptState* script_state,
-                                       const ImageBitmapOptions* options) {
+ScriptPromise ImageBitmap::CreateAsync(
+    ImageElementBase* image,
+    absl::optional<gfx::Rect> crop_rect,
+    ScriptState* script_state,
+    mojom::blink::PreferredColorScheme preferred_color_scheme,
+    const ImageBitmapOptions* options) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
@@ -961,7 +963,8 @@ ScriptPromise ImageBitmap::CreateAsync(ImageElementBase* image,
     canvas->scale(1, -1);
   }
   SVGImageForContainer::Create(To<SVGImage>(input.get()),
-                               gfx::SizeF(input_rect.size()), 1, NullURL())
+                               gfx::SizeF(input_rect.size()), 1, NullURL(),
+                               preferred_color_scheme)
       ->Draw(canvas, cc::PaintFlags(), gfx::RectF(draw_dst_rect),
              gfx::RectF(draw_src_rect), ImageDrawOptions());
   sk_sp<PaintRecord> paint_record = recorder.finishRecordingAsPicture();

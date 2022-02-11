@@ -664,7 +664,8 @@ absl::optional<ui::Cursor> EventHandler::SelectCursor(
         size.Scale(scale);
         // TODO(fs): Should pass proper URL. Use StyleImage::GetImage.
         svg_image_holder = SVGImageForContainer::Create(
-            svg_image, size, device_scale_factor, NullURL());
+            svg_image, size, device_scale_factor, NullURL(),
+            frame_->GetDocument()->GetPreferredColorScheme());
         image = svg_image_holder.get();
       }
 

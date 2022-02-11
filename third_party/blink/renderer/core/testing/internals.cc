@@ -3304,6 +3304,12 @@ void Internals::setForcedColorsAndDarkPreferredColorScheme(Document* document) {
   document->GetFrame()->View()->UpdateAllLifecyclePhasesForTest();
 }
 
+void Internals::setDarkPreferredColorScheme(Document* document) {
+  DCHECK(document);
+  Settings* settings = document->GetSettings();
+  settings->SetPreferredColorScheme(mojom::blink::PreferredColorScheme::kDark);
+}
+
 void Internals::setShouldRevealPassword(Element* element,
                                         bool reveal,
                                         ExceptionState& exception_state) {
