@@ -80,14 +80,12 @@ void StartCrashReporter(UpdaterScope updater_scope,
 
   std::map<std::string, std::string> annotations;
   annotations["ver"] = version;
-  annotations["prod"] = PRODUCT_FULLNAME_STRING;
+  annotations["prod"] = CRASH_PRODUCT_NAME;
 
-  // TODO(crbug.com/1163583): use the production front end instead of staging.
   crashpad::CrashpadClient& client = GetCrashpadClient();
   if (!client.StartHandler(handler_path, *database_path,
-                           /*metrics_dir=*/base::FilePath(),
-                           CRASH_STAGING_UPLOAD_URL, annotations,
-                           MakeCrashHandlerArgs(updater_scope),
+                           /*metrics_dir=*/base::FilePath(), CRASH_UPLOAD_URL,
+                           annotations, MakeCrashHandlerArgs(updater_scope),
                            /*restartable=*/true,
                            /*asynchronous_start=*/false)) {
     LOG(DFATAL) << "Failed to start handler.";
