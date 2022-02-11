@@ -130,6 +130,8 @@ class TestWaylandServerThread : public base::Thread,
     output_delegate_ = delegate;
   }
 
+  wl_client* client() const { return client_; }
+
  private:
   void SetupOutputs();
   bool SetupPrimarySelectionManager(PrimarySelectionProtocol protocol);

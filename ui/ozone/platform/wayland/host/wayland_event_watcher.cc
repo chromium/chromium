@@ -15,8 +15,39 @@ namespace ui {
 
 namespace {
 
+// Wayland error log that will be stored if the client (Chromium) is
+// disconnected due to a protocol error.
+static std::string* g_error_log = nullptr;
+
 void wayland_log(const char* fmt, va_list argp) {
-  LOG(ERROR) << "libwayland: " << base::StringPrintV(fmt, argp);
+  DCHECK(!g_error_log);
+  g_error_log = new std::string(base::StringPrintV(fmt, argp));
+  LOG(ERROR) << "libwayland: " << *g_error_log;
+}
+
+std::string GetWaylandProtocolError(int err, wl_display* display) {
+  std::string error_string;
+  if (err == EPROTO) {
+    uint32_t ec, id;
+    const struct wl_interface* intf;
+    ec = wl_display_get_protocol_error(display, &intf, &id);
+    if (intf) {
+      error_string = base::StringPrintf(
+          "Fatal Wayland protocol error %u on interface %s (object %u). "
+          "Shutting down..",
+          ec, intf->name, id);
+      LOG(ERROR) << error_string;
+    } else {
+      error_string = base::StringPrintf(
+          "Fatal Wayland protocol error %u. Shutting down..", ec);
+      LOG(ERROR) << error_string;
+    }
+  } else {
+    error_string = base::StringPrintf("Fatal Wayland communication error %s.",
+                                      std::strerror(err));
+    LOG(ERROR) << error_string;
+  }
+  return error_string;
 }
 
 }  // namespace
@@ -121,39 +152,27 @@ void WaylandEventWatcher::WlDisplayCheckForErrors() {
   // Errors are fatal. If this function returns non-zero the display can no
   // longer be used.
   if (int err = wl_display_get_error(display_)) {
-    // When |err| is EPROTO, we can still use the |display_| to retrieve the
-    // protocol error. Otherwise, get the error string from strerror and
-    // shutdown the browser.
     std::string error_string;
-    if (err == EPROTO) {
-      uint32_t ec, id;
-      const struct wl_interface* intf;
-      ec = wl_display_get_protocol_error(display_, &intf, &id);
-      if (intf) {
-        error_string = base::StringPrintf(
-            "Fatal Wayland protocol error %u on interface %s (object %u). "
-            "Shutting down..",
-            ec, intf->name, id);
-        LOG(ERROR) << error_string;
-      } else {
-        error_string = base::StringPrintf(
-            "Fatal Wayland protocol error %u. Shutting down..", ec);
-        LOG(ERROR) << error_string;
-      }
+    // It's not expected that Wayland doesn't send a wayland log. However, to
+    // avoid any possible cases (which are unknown. The unittests exercise all
+    // the known ways how a Wayland compositor sends errors) when g_error_log
+    // is NULL, get protocol errors (though, without an explicit description of
+    // an error) from the display.
+    if (g_error_log) {
+      error_string = *g_error_log;
+      delete g_error_log;
+      g_error_log = nullptr;
     } else {
-      error_string = base::StringPrintf("Fatal Wayland communication error %s.",
-                                        std::strerror(err));
-      LOG(ERROR) << error_string;
+      error_string = GetWaylandProtocolError(err, display_);
     }
-
     // Add a crash key so we can figure out why this is happening.
     static crash_reporter::CrashKeyString<256> wayland_error("wayland_error");
-    wayland_error.Set(error_string);
+    wayland_error.Set(std::move(error_string));
 
     // This can be null in tests.
     if (!shutdown_cb_.is_null()) {
       // Force a crash so that a crash report is generated.
-      CHECK(err == EPIPE || err == ECONNRESET) << "Wayland protocol error.";
+      CHECK(false) << "Wayland protocol error.";
       std::move(shutdown_cb_).Run();
     }
     StopProcessingEvents();
