@@ -20,20 +20,24 @@
 #include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
-namespace base {
-
-namespace internal {
-
+namespace base::internal {
 namespace {
-
 ThreadCacheRegistry g_instance;
-
 }  // namespace
+}  // namespace base::internal
 
-namespace tools {
-uintptr_t kThreadCacheNeedleArray[3] = {
-    kNeedle1, reinterpret_cast<uintptr_t>(&g_instance), kNeedle2};
-}
+namespace partition_alloc::internal::tools {
+uintptr_t kThreadCacheNeedleArray[kThreadCacheNeedleArraySize] = {
+    kNeedle1, reinterpret_cast<uintptr_t>(&::base::internal::g_instance),
+#if BUILDFLAG(RECORD_ALLOC_INFO)
+    reinterpret_cast<uintptr_t>(&partition_alloc::internal::g_allocs),
+#else
+    0,
+#endif
+    kNeedle2};
+}  // namespace partition_alloc::internal::tools
+
+namespace base::internal {
 
 BASE_EXPORT PartitionTlsKey g_thread_cache_key;
 #if defined(PA_THREAD_CACHE_FAST_TLS)
@@ -409,7 +413,8 @@ ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
   PA_CHECK(root);
   // See comment in thread_cache.h, this is used to make sure
   // kThreadCacheNeedleArray is kept in the final binary.
-  PA_CHECK(tools::kThreadCacheNeedleArray[0] == tools::kNeedle1);
+  PA_CHECK(partition_alloc::internal::tools::kThreadCacheNeedleArray[0] ==
+           partition_alloc::internal::tools::kNeedle1);
 
   // Placement new and RawAlloc() are used, as otherwise when this partition is
   // the malloc() implementation, the memory allocated for the new thread cache
@@ -732,6 +737,4 @@ void ThreadCache::PurgeInternal() {
     ClearBucket(bucket, 0);
 }
 
-}  // namespace internal
-
-}  // namespace base
+}  // namespace base::internal

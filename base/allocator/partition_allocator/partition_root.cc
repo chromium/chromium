@@ -33,6 +33,21 @@
 #include <pthread.h>
 #endif
 
+#if BUILDFLAG(RECORD_ALLOC_INFO)
+namespace partition_alloc::internal {
+
+// Even if this is not hidden behind a BUILDFLAG, it should not use any memory
+// when recording is disabled, since it ends up in the .bss section.
+AllocInfo g_allocs = {};
+
+void RecordAllocOrFree(uintptr_t addr, size_t size) {
+  g_allocs.allocs[g_allocs.index.fetch_add(1, std::memory_order_relaxed) %
+                  kAllocInfoSize] = {addr, size};
+}
+
+}  // namespace partition_alloc::internal
+#endif  // BUILDFLAG(RECORD_ALLOC_INFO)
+
 namespace base {
 
 #if defined(PA_USE_PARTITION_ROOT_ENUMERATOR)
@@ -864,12 +879,12 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
     return false;
   }
 
-  total_size_of_allocated_bytes -= slot_span->bucket->slot_size;
+  DecreaseTotalSizeOfAllocatedBytes(reinterpret_cast<uintptr_t>(slot_span),
+                                    slot_span->bucket->slot_size);
   slot_span->SetRawSize(raw_size);
   slot_span->bucket->slot_size = new_slot_size;
-  total_size_of_allocated_bytes += slot_span->bucket->slot_size;
-  max_size_of_allocated_bytes =
-      std::max(max_size_of_allocated_bytes, total_size_of_allocated_bytes);
+  IncreaseTotalSizeOfAllocatedBytes(reinterpret_cast<uintptr_t>(slot_span),
+                                    slot_span->bucket->slot_size, raw_size);
 
 #if DCHECK_IS_ON()
   // Write a new trailing cookie.

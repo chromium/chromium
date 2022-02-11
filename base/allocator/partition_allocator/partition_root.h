@@ -76,6 +76,25 @@
     PA_CHECK(false);                                  \
   }
 
+namespace partition_alloc::internal {
+
+static constexpr size_t kAllocInfoSize = 1 << 20;
+
+struct AllocInfo {
+  std::atomic<size_t> index{0};
+  struct {
+    uintptr_t addr;
+    size_t size;
+  } allocs[kAllocInfoSize] = {};
+};
+
+#if BUILDFLAG(RECORD_ALLOC_INFO)
+extern AllocInfo g_allocs;
+
+void RecordAllocOrFree(uintptr_t addr, size_t size);
+#endif  // BUILDFLAG(RECORD_ALLOC_INFO)
+}  // namespace partition_alloc::internal
+
 namespace base {
 
 namespace internal {
@@ -337,6 +356,18 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
   ALWAYS_INLINE static PartitionRoot* FromAddrInFirstSuperpage(
       uintptr_t address);
 
+  ALWAYS_INLINE void DecreaseTotalSizeOfAllocatedBytes(SlotSpan* slot_span)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  ALWAYS_INLINE void IncreaseTotalSizeOfAllocatedBytes(SlotSpan* slot_span,
+                                                       size_t raw_size)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  ALWAYS_INLINE void DecreaseTotalSizeOfAllocatedBytes(uintptr_t addr,
+                                                       size_t len)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  ALWAYS_INLINE void IncreaseTotalSizeOfAllocatedBytes(uintptr_t addr,
+                                                       size_t len,
+                                                       size_t raw_size)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
   ALWAYS_INLINE void IncreaseCommittedPages(size_t len);
   ALWAYS_INLINE void DecreaseCommittedPages(size_t len);
   ALWAYS_INLINE void DecommitSystemPagesForData(
@@ -974,9 +1005,7 @@ PartitionRoot<thread_safe>::AllocFromBucket(Bucket* bucket,
     *usable_size = slot_span->GetUsableSize(this);
   }
   PA_DCHECK(slot_span->GetUtilizedSlotSize() <= slot_span->bucket->slot_size);
-  total_size_of_allocated_bytes += slot_span->GetSlotSizeForBookkeeping();
-  max_size_of_allocated_bytes =
-      std::max(max_size_of_allocated_bytes, total_size_of_allocated_bytes);
+  IncreaseTotalSizeOfAllocatedBytes(slot_span, raw_size);
   return slot_start;
 }
 
@@ -1193,11 +1222,7 @@ template <bool thread_safe>
 ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeInSlotSpan(
     uintptr_t slot_start,
     SlotSpan* slot_span) {
-  // An underflow here means we've miscounted |total_size_of_allocated_bytes|
-  // somewhere.
-  PA_DCHECK(total_size_of_allocated_bytes >=
-            slot_span->GetSlotSizeForBookkeeping());
-  total_size_of_allocated_bytes -= slot_span->GetSlotSizeForBookkeeping();
+  DecreaseTotalSizeOfAllocatedBytes(slot_span);
   return slot_span->Free(slot_start);
 }
 
@@ -1261,8 +1286,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeBatch(
   // corresponding pages were faulted in (without acquiring the lock). So there
   // is no need to touch pages manually here before the lock.
   ::partition_alloc::internal::ScopedGuard guard{lock_};
-  total_size_of_allocated_bytes -=
-      (slot_span->GetSlotSizeForBookkeeping() * size);
+  DecreaseTotalSizeOfAllocatedBytes(slot_span);
   slot_span->AppendFreeList(head, tail, size);
 }
 
@@ -1331,6 +1355,50 @@ PartitionRoot<thread_safe>::FromAddrInFirstSuperpage(uintptr_t address) {
   uintptr_t super_page = address & kSuperPageBaseMask;
   PA_DCHECK(internal::IsReservationStart(super_page));
   return FromFirstSuperPage(super_page);
+}
+
+template <bool thread_safe>
+ALWAYS_INLINE void
+PartitionRoot<thread_safe>::IncreaseTotalSizeOfAllocatedBytes(
+    SlotSpan* slot_span,
+    size_t raw_size) {
+  IncreaseTotalSizeOfAllocatedBytes(reinterpret_cast<uintptr_t>(slot_span),
+                                    slot_span->GetSlotSizeForBookkeeping(),
+                                    raw_size);
+}
+
+template <bool thread_safe>
+ALWAYS_INLINE void
+PartitionRoot<thread_safe>::DecreaseTotalSizeOfAllocatedBytes(
+    SlotSpan* slot_span) {
+  DecreaseTotalSizeOfAllocatedBytes(reinterpret_cast<uintptr_t>(slot_span),
+                                    slot_span->GetSlotSizeForBookkeeping());
+}
+
+template <bool thread_safe>
+ALWAYS_INLINE void
+PartitionRoot<thread_safe>::IncreaseTotalSizeOfAllocatedBytes(uintptr_t addr,
+                                                              size_t len,
+                                                              size_t raw_size) {
+  total_size_of_allocated_bytes += len;
+  max_size_of_allocated_bytes =
+      std::max(max_size_of_allocated_bytes, total_size_of_allocated_bytes);
+#if BUILDFLAG(RECORD_ALLOC_INFO)
+  partition_alloc::internal::RecordAllocOrFree(addr | 0x01, raw_size);
+#endif  // BUILDFLAG(RECORD_ALLOC_INFO)
+}
+
+template <bool thread_safe>
+ALWAYS_INLINE void
+PartitionRoot<thread_safe>::DecreaseTotalSizeOfAllocatedBytes(uintptr_t addr,
+                                                              size_t len) {
+  // An underflow here means we've miscounted |total_size_of_allocated_bytes|
+  // somewhere.
+  PA_DCHECK(total_size_of_allocated_bytes >= len);
+  total_size_of_allocated_bytes -= len;
+#if BUILDFLAG(RECORD_ALLOC_INFO)
+  partition_alloc::internal::RecordAllocOrFree(addr | 0x00, len);
+#endif  // BUILDFLAG(RECORD_ALLOC_INFO)
 }
 
 template <bool thread_safe>

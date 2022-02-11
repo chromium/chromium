@@ -29,11 +29,7 @@
 #include <algorithm>
 #endif
 
-namespace base {
-
-namespace internal {
-
-namespace tools {
+namespace partition_alloc::internal::tools {
 
 // This is used from ThreadCacheInspector, which runs in a different process. It
 // scans the process memory looking for the two needles, to locate the thread
@@ -57,11 +53,16 @@ constexpr uintptr_t kNeedle2 = 0x9615ee1c;
 // It is refererenced in the thread cache constructor to make sure it is not
 // removed by the compiler. It is also not const to make sure it ends up in
 // .data.
-extern uintptr_t kThreadCacheNeedleArray[3];
+constexpr size_t kThreadCacheNeedleArraySize = 4;
+extern uintptr_t kThreadCacheNeedleArray[kThreadCacheNeedleArraySize];
 
 class ThreadCacheInspector;
 
-}  // namespace tools
+}  // namespace partition_alloc::internal::tools
+
+namespace base {
+
+namespace internal {
 
 class ThreadCache;
 
@@ -146,7 +147,7 @@ class BASE_EXPORT ThreadCacheRegistry {
   static constexpr size_t kMinCachedMemoryForPurging = 500 * 1024;
 
  private:
-  friend class tools::ThreadCacheInspector;
+  friend class partition_alloc::internal::tools::ThreadCacheInspector;
   friend class NoDestructor<ThreadCacheRegistry>;
   // Not using base::Lock as the object's constructor must be constexpr.
   PartitionLock lock_;
@@ -314,7 +315,7 @@ class BASE_EXPORT ThreadCache {
       ThreadCacheLimits::kLargeSizeThreshold;
 
  private:
-  friend class tools::ThreadCacheInspector;
+  friend class partition_alloc::internal::tools::ThreadCacheInspector;
 
   struct Bucket {
     PartitionFreelistEntry* freelist_head = nullptr;
@@ -396,7 +397,7 @@ class BASE_EXPORT ThreadCache {
 
   friend class ThreadCacheRegistry;
   friend class PartitionAllocThreadCacheTest;
-  friend class tools::ThreadCacheInspector;
+  friend class partition_alloc::internal::tools::ThreadCacheInspector;
   FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest, Simple);
   FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
                            MultipleObjectsCachedPerBucket);
