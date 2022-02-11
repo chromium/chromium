@@ -257,6 +257,10 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux-fieldtrial-fyi-rel",
+)
+
+try_.builder(
     name = "linux-mbi-mode-per-render-process-host-rel",
 )
 

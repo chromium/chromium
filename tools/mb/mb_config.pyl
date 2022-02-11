@@ -355,6 +355,7 @@
       'linux-code-coverage': 'clang_code_coverage',
       'linux-example-builder': 'release_bot',
       'linux-fieldtrial-rel': 'release_bot_minimal_symbols',
+      'linux-fieldtrial-fyi-rel': 'release_bot_minimal_symbols',
       'linux-headless-shell-rel': 'headless_shell_release_bot',
       'linux-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64',
       'linux-lacros-builder-rel (goma cache silo)': 'lacros_on_linux_release_bot',
