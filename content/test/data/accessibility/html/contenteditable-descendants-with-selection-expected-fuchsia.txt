@@ -1,7 +1,7 @@
 UNKNOWN focusable
 ++UNKNOWN hidden
 ++++UNKNOWN hidden
-++++++UNKNOWN focusable has_input_focus actions='{DEFAULT}' value='A contenteditable with a link and an  and a .<newline><newline>Always expose editable tables as tables.<newline>Editable list item.'
+++++++UNKNOWN focusable has_input_focus actions='{DEFAULT}' value='A contenteditable with a link and an <newline><newline> and a Button.<newline>Always expose editable tables as tables.<newline>1. Editable list item.'
 ++++++++PARAGRAPH actions='{DEFAULT}'
 ++++++++++STATIC_TEXT label='A contenteditable with a '
 ++++++++++++UNKNOWN label='A contenteditable with a '
