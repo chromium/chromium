@@ -160,7 +160,9 @@ js_library("accessibility_common") {
     ":autoclick",
     ":dictation",
     ":magnifier",
+    "../common:automation_predicate",
     "../common:chrome_event_handler",
+    "../common:constants",
     "../common:event_generator",
     "../common:event_handler",
     "../common:instance_checker",
@@ -214,6 +216,10 @@ js_library("dictation_input_controller") {
   sources = [
     "dictation/constants.js",
     "dictation/input_controller.js",
+  ]
+  deps = [
+    "../common:automation_predicate",
+    "../common:constants",
   ]
   externs_list = [
     "$externs_path/input_method_private.js",

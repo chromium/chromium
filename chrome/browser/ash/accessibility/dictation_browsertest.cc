@@ -34,6 +34,7 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/soda_installer.h"
+#include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
@@ -701,7 +702,12 @@ class DictationExtensionTest : public DictationBaseTest {
 
   void SendFinalSpeechResultAndWaitForTextAreaValue(const std::string& result,
                                                     const std::string& value) {
+    // Ensure that the accessibility tree and the text area value are updated.
+    content::AccessibilityNotificationWaiter waiter(
+        browser()->tab_strip_model()->GetActiveWebContents(),
+        ui::kAXModeComplete, ax::mojom::Event::kValueChanged);
     SendFinalFakeSpeechResultAndWait(result);
+    waiter.WaitForNotification();
     WaitForTextAreaValue(value);
   }
 
@@ -811,14 +817,38 @@ IN_PROC_BROWSER_TEST_P(DictationExtensionTest, EntersFinalizedSpeech) {
   WaitForRecognitionStopped();
 }
 
+// Tests that multiple finalized strings can be committed to the text area.
+// Also ensures that spaces are added between finalized utterances.
 IN_PROC_BROWSER_TEST_P(DictationExtensionTest, EntersMultipleFinalizedStrings) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   SendFinalSpeechResultAndWaitForTextAreaValue("The rain in Spain",
                                                "The rain in Spain");
   SendFinalSpeechResultAndWaitForTextAreaValue(
+      "falls mainly on the plain.",
+      "The rain in Spain falls mainly on the plain.");
+  SendFinalSpeechResultAndWaitForTextAreaValue(
+      "Vega is a star.",
+      "The rain in Spain falls mainly on the plain. Vega is a star.");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
+IN_PROC_BROWSER_TEST_P(DictationExtensionTest, OnlyAddSpaceWhenNecessary) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalSpeechResultAndWaitForTextAreaValue("The rain in Spain",
+                                               "The rain in Spain");
+  // Artificially add a space to this utterance. Verify that only one space is
+  // added.
+  SendFinalSpeechResultAndWaitForTextAreaValue(
       " falls mainly on the plain.",
       "The rain in Spain falls mainly on the plain.");
+  // Artificially add a space to this utterance. Verify that only one space is
+  // added.
+  SendFinalSpeechResultAndWaitForTextAreaValue(
+      " Vega is a star.",
+      "The rain in Spain falls mainly on the plain. Vega is a star.");
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
 }
@@ -841,9 +871,16 @@ IN_PROC_BROWSER_TEST_P(DictationExtensionTest, IgnoresCommands) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   std::string expected_text = "";
+  int i = 0;
   for (const char* command : kEnglishDictationCommands) {
-    expected_text += command;
+    if (i == 0) {
+      expected_text += command;
+    } else {
+      expected_text += " ";
+      expected_text += command;
+    }
     SendFinalSpeechResultAndWaitForTextAreaValue(command, expected_text);
+    ++i;
   }
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
@@ -1059,11 +1096,18 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, TypesCommands) {
   std::string expected_text = "";
+  int i = 0;
   for (const char* command : kEnglishDictationCommands) {
     std::string type_command = "type ";
-    expected_text += command;
+    if (i == 0) {
+      expected_text += command;
+    } else {
+      expected_text += " ";
+      expected_text += command;
+    }
     SendFinalSpeechResultAndWaitForTextAreaValue(type_command + command,
                                                  expected_text);
+    ++i;
   }
 }
 
@@ -1080,29 +1124,34 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, DeleteCharacter) {
 IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, MoveByCharacter) {
   SendFinalSpeechResultAndWaitForTextAreaValue("Lyra", "Lyra");
 
+  content::AccessibilityNotificationWaiter selection_waiter(
+      browser()->tab_strip_model()->GetActiveWebContents(), ui::kAXModeComplete,
+      ax::mojom::Event::kTextSelectionChanged);
   SendFinalFakeSpeechResultAndWait("Move to the Previous character");
+  selection_waiter.WaitForNotification();
   WaitForCaretBoundsChanged();
-  SendFinalSpeechResultAndWaitForTextAreaValue(" inserted ", "Lyr inserted a");
+
+  // White space is added to the text on the left of the text caret, but not
+  // to the right of the text caret.
+  SendFinalSpeechResultAndWaitForTextAreaValue("inserted", "Lyr inserteda");
   SendFinalFakeSpeechResultAndWait("move TO the next character ");
   WaitForCaretBoundsChanged();
   SendFinalSpeechResultAndWaitForTextAreaValue(
-      " is a constellation", "Lyr inserted a is a constellation");
+      "is a constellation", "Lyr inserteda is a constellation");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, NewLineAndMoveByLine) {
   SendFinalSpeechResultAndWaitForTextAreaValue("Line 1", "Line 1");
-
   SendFinalSpeechResultAndWaitForTextAreaValue("new line", "Line 1\n");
-
   SendFinalSpeechResultAndWaitForTextAreaValue("Line 2", "Line 1\nLine 2");
 
   SendFinalFakeSpeechResultAndWait("Move to the previous line ");
   WaitForCaretBoundsChanged();
-  SendFinalSpeechResultAndWaitForTextAreaValue("up", "Line 1up\nLine 2");
-
+  SendFinalSpeechResultAndWaitForTextAreaValue("up", "Line 1 up\nLine 2");
   SendFinalFakeSpeechResultAndWait("Move to the next line");
   WaitForCaretBoundsChanged();
-  SendFinalSpeechResultAndWaitForTextAreaValue("down", "Line 1up\nLine 2down");
+  SendFinalSpeechResultAndWaitForTextAreaValue("down",
+                                               "Line 1 up\nLine 2 down");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, UndoAndRedo) {
