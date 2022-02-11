@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -150,6 +151,13 @@ bool BrowserRootView::CanDrop(const ui::OSExchangeData& data) {
     return false;
 
   if (!tabstrip()->GetVisible() && !toolbar()->GetVisible())
+    return false;
+
+  // Return false and let TabStripRegionView forward drag events to TabStrip.
+  // This is necessary because we don't want to return true if
+  // tabstrip()->WantsToReceiveAllDragEvents() is true but the mouse is not over
+  // the tab strip region, and we don't know the current mouse location.
+  if (tabstrip()->WantsToReceiveAllDragEvents())
     return false;
 
   // If there is a URL, we'll allow the drop.

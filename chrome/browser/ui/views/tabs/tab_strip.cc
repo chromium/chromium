@@ -73,6 +73,9 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_constants.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -1698,6 +1701,10 @@ views::View* TabStrip::GetDefaultFocusableChild() {
   return active != TabStripModel::kNoTab ? tab_at(active) : nullptr;
 }
 
+bool TabStrip::WantsToReceiveAllDragEvents() const {
+  return TabDragController::IsSystemDragAndDropSessionRunning();
+}
+
 const ui::ListSelectionModel& TabStrip::GetSelectionModel() const {
   return controller_->GetSelectionModel();
 }
@@ -2218,6 +2225,36 @@ views::View* TabStrip::GetTooltipHandlerForPoint(const gfx::Point& point) {
     return tab;
 
   return this;
+}
+
+bool TabStrip::CanDrop(const OSExchangeData& data) {
+  return WantsToReceiveAllDragEvents();
+}
+
+bool TabStrip::GetDropFormats(int* formats,
+                              std::set<ui::ClipboardFormatType>* format_types) {
+  if (!WantsToReceiveAllDragEvents())
+    return false;
+
+  format_types->insert(
+      ui::ClipboardFormatType::GetType(ui::kMimeTypeWindowDrag));
+  return true;
+}
+
+void TabStrip::OnDragEntered(const ui::DropTargetEvent& event) {
+  DCHECK(WantsToReceiveAllDragEvents());
+  TabDragController::OnSystemDragAndDropUpdated(event);
+}
+
+int TabStrip::OnDragUpdated(const ui::DropTargetEvent& event) {
+  DCHECK(WantsToReceiveAllDragEvents());
+  TabDragController::OnSystemDragAndDropUpdated(event);
+  return ui::DragDropTypes::DRAG_MOVE;
+}
+
+void TabStrip::OnDragExited() {
+  DCHECK(WantsToReceiveAllDragEvents());
+  TabDragController::OnSystemDragAndDropExited();
 }
 
 BrowserRootView::DropIndex TabStrip::GetDropIndex(

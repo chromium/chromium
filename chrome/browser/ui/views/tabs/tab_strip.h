@@ -259,6 +259,15 @@ class TabStrip : public views::View,
   // Gets the default focusable child view in the TabStrip.
   views::View* GetDefaultFocusableChild();
 
+  // The usual drag and drop handling done by BrowserRootView interferes with
+  // TabDragController's fallback window dragging, and therefore must be
+  // disabled during such a fallback window dragging session. If this method
+  // returns true, BrowserRootView ignores all drag-related events, and lets
+  // TabStripRegionView forward all drag-related event to TabStrip. String data
+  // with the DRAG_MOVE action is accepted, but no action is actually performed
+  // on drop.
+  bool WantsToReceiveAllDragEvents() const;
+
   // TabController:
   const ui::ListSelectionModel& GetSelectionModel() const override;
   void SelectTab(Tab* tab, const ui::Event& event) override;
@@ -326,6 +335,14 @@ class TabStrip : public views::View,
   gfx::Size GetMinimumSize() const override;
   gfx::Size CalculatePreferredSize() const override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
+  bool CanDrop(const OSExchangeData& data) override;
+  bool GetDropFormats(int* formats,
+                      std::set<ui::ClipboardFormatType>* format_types) override;
+  void OnDragEntered(const ui::DropTargetEvent& event) override;
+  int OnDragUpdated(const ui::DropTargetEvent& event) override;
+  void OnDragExited() override;
+  // We don't override OnPerformDrop() because we don't actually want to
+  // transfer any data.
 
   // BrowserRootView::DropTarget:
   BrowserRootView::DropIndex GetDropIndex(
