@@ -250462,10 +250462,6 @@
        "2acc510d2d23c28a952753bdb54017eff2af8632",
        []
       ],
-      "font-palette-values-valid-expected.txt": [
-       "acd524d7ef443286fcde7a94ffde45b3f0986102",
-       []
-      ],
       "font-size-adjust-computed-expected.txt": [
        "c824213e0a9e82e61b31deac83c0dcdaecc30276",
        []
@@ -321027,7 +321023,7 @@
      []
     ],
     "RTCRtpReceiver-getStats.https-expected.txt": [
-     "002ae8027389e44ca60c1566a39b323f29efc7ef",
+     "8e5482d34165c3cee89cc7a4f15d5c0a67c7a726",
      []
     ],
     "RTCRtpReceiver-getSynchronizationSources.https-expected.txt": [
@@ -365757,7 +365753,7 @@
        ]
       ],
       "font-palette-values-valid.html": [
-       "972fd43883db15428ac3eaf1fb9c9097b5dfd264",
+       "e6e3dda9eb1ced5b187137bceb2a85ee8207e700",
        [
         null,
         {}
@@ -448956,6 +448952,13 @@
       ]
      ],
      "render-blocking": {
+      "blocking-idl-attr.tentative.html": [
+       "f3110364a51589b7afca62fa2bef8af34fd976cb",
+       [
+        null,
+        {}
+       ]
+      ],
       "parser-blocking-script.tentative.html": [
        "8d391144b26b04a2c74ba1fdaf1f6ce675a79a76",
        [
@@ -497669,7 +497672,7 @@
      ]
     ],
     "object-not-found-after-cross-origin-redirect.html": [
-     "a455ec406b3e9519d99bbfeb12a44e7214c66e6b",
+     "278c78e320e98ce65c62cfc2d4a612e3b84b82f0",
      [
       null,
       {}
@@ -532622,7 +532625,7 @@
      ]
     ],
     "RTCRtpReceiver-getStats.https.html": [
-     "20448d8a6c10b20168c4890aad2b37975219b6df",
+     "c4a6b4d54abd3e634da2bb8d54ae0bf1155e1403",
      [
       null,
       {}
