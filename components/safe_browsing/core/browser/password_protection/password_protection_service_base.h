@@ -403,6 +403,8 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
                            TestRemoveCachedVerdictOnURLsDeleted);
   FRIEND_TEST_ALL_PREFIXES(PasswordProtectionServiceTest,
                            TestCleanUpExpiredVerdict);
+  FRIEND_TEST_ALL_PREFIXES(PasswordProtectionServiceTest,
+                           NoSendPingPrivateIpHostname);
 
   // Overridden from history::HistoryServiceObserver.
   void OnURLsDeleted(history::HistoryService* history_service,

@@ -354,6 +354,19 @@ TEST_F(PasswordProtectionServiceTest,
   EXPECT_EQ(0U, GetNumberOfNavigationThrottles());
 }
 
+TEST_F(PasswordProtectionServiceTest, NoSendPingPrivateIpHostname) {
+  EXPECT_CALL(*password_protection_service_, IsPingingEnabled(_, _))
+      .WillRepeatedly(Return(true));
+  ReusedPasswordAccountType reused_password_type;
+  reused_password_type.set_account_type(ReusedPasswordAccountType::GMAIL);
+  EXPECT_FALSE(password_protection_service_->CanSendPing(
+      LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+      GURL("http://127.0.0.1"), reused_password_type));
+  EXPECT_FALSE(password_protection_service_->CanSendPing(
+      LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+      GURL("http://192.168.1.1"), reused_password_type));
+}
+
 class PasswordProtectionServiceBaseTest
     : public ::testing::TestWithParam<bool> {
  public:

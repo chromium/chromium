@@ -142,7 +142,12 @@ bool PasswordProtectionServiceBase::CanSendPing(
     ReusedPasswordAccountType password_type) {
   return IsPingingEnabled(trigger_type, password_type) &&
          !IsURLAllowlistedForPasswordEntry(main_frame_url) &&
-         !IsInExcludedCountry();
+         !IsInExcludedCountry() &&
+         // Although we can't get the reputation of the main frame URL for
+         // password reuse on about:blank, the referrer chain still provides
+         // enough useful information that we should send the ping.
+         (main_frame_url == GURL("about:blank") ||
+          CanGetReputationOfURL(main_frame_url));
 }
 
 bool PasswordProtectionServiceBase::
