@@ -317,7 +317,8 @@ void InitializeZygoteSandboxForBrowserProcess(
 
   if (parsed_command_line.HasSwitch(switches::kNoZygote)) {
     if (!parsed_command_line.HasSwitch(sandbox::policy::switches::kNoSandbox)) {
-      LOG(ERROR) << "--no-sandbox should be used together with --no--zygote";
+      LOG(ERROR) << "Zygote cannot be disabled if sandbox is enabled."
+                 << " Use --no-zygote together with --no-sandbox";
       exit(EXIT_FAILURE);
     }
     return;
