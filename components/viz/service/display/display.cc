@@ -768,7 +768,8 @@ bool Display::DrawAndSwap(base::TimeTicks frame_time,
 
   if (frame.delegated_ink_metadata) {
     TRACE_EVENT_INSTANT1(
-        "viz", "Delegated Ink Metadata was aggregated for DrawAndSwap.",
+        "delegated_ink_trails",
+        "Delegated Ink Metadata was aggregated for DrawAndSwap.",
         TRACE_EVENT_SCOPE_THREAD, "ink metadata",
         frame.delegated_ink_metadata->ToString());
     renderer_->SetDelegatedInkMetadata(std::move(frame.delegated_ink_metadata));

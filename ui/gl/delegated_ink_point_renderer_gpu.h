@@ -250,7 +250,7 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
 
   void SetDelegatedInkTrailStartPoint(
       std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
-    TRACE_EVENT1("gpu",
+    TRACE_EVENT1("delegated_ink_trails",
                  "DelegatedInkPointRendererGpu::SetDelegatedInkTrailStartPoint",
                  "metadata", metadata->ToString());
 
@@ -340,7 +340,8 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
   }
 
   void StoreDelegatedInkPoint(const gfx::DelegatedInkPoint& point) override {
-    TRACE_EVENT1("gpu", "DelegatedInkPointRendererGpu::StoreDelegatedInkPoint",
+    TRACE_EVENT1("delegated_ink_trails",
+                 "DelegatedInkPointRendererGpu::StoreDelegatedInkPoint",
                  "delegated ink point", point.ToString());
 
     const int32_t pointer_id = point.pointer_id();
@@ -438,7 +439,8 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
     if (SUCCEEDED(hr))
       return false;
 
-    TRACE_EVENT_INSTANT1("gpu", name, TRACE_EVENT_SCOPE_THREAD, "hr", hr);
+    TRACE_EVENT_INSTANT1("delegated_ink_trails", name, TRACE_EVENT_SCOPE_THREAD,
+                         "hr", hr);
     return true;
   }
 
@@ -547,7 +549,7 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
 
   void DrawSavedTrailPoints() {
     DCHECK(metadata_);
-    TRACE_EVENT0("gpu", "DrawSavedTrailPoints");
+    TRACE_EVENT0("delegated_ink_trails", "DrawSavedTrailPoints");
 
     // Remove all points that have a timestamp earlier than |metadata_|'s, since
     // we know that we won't need to draw them. This is subtly different than
@@ -589,7 +591,8 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
         }
       }
     } else {
-      TRACE_EVENT_INSTANT0("gpu", "DrawSavedTrailPoints failed - no pointer id",
+      TRACE_EVENT_INSTANT0("delegated_ink_trails",
+                           "DrawSavedTrailPoints failed - no pointer id",
                            TRACE_EVENT_SCOPE_THREAD);
     }
   }
@@ -629,7 +632,7 @@ class DelegatedInkPointRendererGpu<InkTrailDevice,
       return false;
     }
 
-    TRACE_EVENT_INSTANT1("gpu",
+    TRACE_EVENT_INSTANT1("delegated_ink_trails",
                          "DelegatedInkPointRendererGpu::DrawDelegatedInkPoint "
                          "- Point added to trail",
                          TRACE_EVENT_SCOPE_THREAD, "point", point.ToString());

@@ -99,7 +99,7 @@ void DelegatedInkPointRendererSkia::FinalizePathForDraw() {
 
   std::vector<SkPoint> sk_points = GetPointsToDraw();
 
-  TRACE_EVENT_INSTANT1("viz",
+  TRACE_EVENT_INSTANT1("delegated_ink_trails",
                        "Filtered and predicted points for delegated ink trail",
                        TRACE_EVENT_SCOPE_THREAD, "points", sk_points.size());
 
@@ -143,9 +143,10 @@ void DelegatedInkPointRendererSkia::FinalizePathForDraw() {
   damage_rect.Inset(-kRadius, -kRadius);
   damage_rect.Intersect(metadata_->presentation_area());
 
-  TRACE_EVENT_INSTANT1(
-      "viz", "DelegatedInkPointRendererSkia::FinalizePathForDraw",
-      TRACE_EVENT_SCOPE_THREAD, "damage_rect", damage_rect.ToString());
+  TRACE_EVENT_INSTANT1("delegated_ink_trails",
+                       "DelegatedInkPointRendererSkia::FinalizePathForDraw",
+                       TRACE_EVENT_SCOPE_THREAD, "damage_rect",
+                       damage_rect.ToString());
 
   SetDamageRect(damage_rect);
 }

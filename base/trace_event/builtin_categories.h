@@ -66,6 +66,7 @@
   X("compositor")                                                        \
   X("content")                                                           \
   X("content_capture")                                                   \
+  X("delegated_ink_trails")                                              \
   X("device")                                                            \
   X("devtools")                                                          \
   X("devtools.contrast")                                                 \

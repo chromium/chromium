@@ -137,9 +137,10 @@ void DelegatedInkTrailPresenter::updateInkTrailStartPoint(
           point, diameter_in_physical_pixels, color.Rgb(),
           evt->PlatformTimeStamp(), area, is_hovering);
 
-  TRACE_EVENT_INSTANT1(
-      "blink", "DelegatedInkTrailPresenter::updateInkTrailStartPoint",
-      TRACE_EVENT_SCOPE_THREAD, "ink metadata", metadata->ToString());
+  TRACE_EVENT_INSTANT1("delegated_ink_trails",
+                       "DelegatedInkTrailPresenter::updateInkTrailStartPoint",
+                       TRACE_EVENT_SCOPE_THREAD, "ink metadata",
+                       metadata->ToString());
 
   Page* page = local_frame_->GetPage();
   page->GetChromeClient().SetDelegatedInkMetadata(local_frame_,

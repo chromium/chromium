@@ -2351,7 +2351,8 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
           active_tree_->take_delegated_ink_metadata()) {
     delegated_ink_metadata->set_frame_time(CurrentBeginFrameArgs().frame_time);
     TRACE_EVENT_INSTANT1(
-        "cc", "Delegated Ink Metadata set on compositor frame metadata",
+        "delegated_ink_trails",
+        "Delegated Ink Metadata set on compositor frame metadata",
         TRACE_EVENT_SCOPE_THREAD, "ink metadata",
         delegated_ink_metadata->ToString());
     metadata.delegated_ink_metadata = std::move(delegated_ink_metadata);

@@ -80,7 +80,7 @@ void DelegatedInkTrailData::AddPoint(const gfx::DelegatedInkPoint& point) {
 void DelegatedInkTrailData::PredictPoints(
     std::vector<gfx::DelegatedInkPoint>* ink_points_to_draw,
     gfx::DelegatedInkMetadata* metadata) {
-  TRACE_EVENT0("viz", "DelegatedInkTrailData::PredictPoints");
+  TRACE_EVENT0("delegated_ink_trails", "DelegatedInkTrailData::PredictPoints");
   // Base name used for the histograms that measure the latency improvement from
   // the prediction done for different experiments.
   static const char* histogram_base_name =

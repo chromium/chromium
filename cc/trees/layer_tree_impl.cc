@@ -858,7 +858,8 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
   presentation_callbacks_.clear();
 
   if (delegated_ink_metadata_) {
-    TRACE_EVENT_INSTANT1("cc", "Delegated ink metadata pushed to tree",
+    TRACE_EVENT_INSTANT1("delegated_ink_trails",
+                         "Delegated ink metadata pushed to tree",
                          TRACE_EVENT_SCOPE_THREAD, "point",
                          delegated_ink_metadata_->point().ToString());
     target_tree->set_delegated_ink_metadata(std::move(delegated_ink_metadata_));
