@@ -311,6 +311,8 @@ class PLATFORM_EXPORT InputHandlerProxy : public cc::InputHandlerClient,
                                         bool was_main_thread_hit_tested,
                                         bool needs_main_thread_repaint);
 
+  bool HasQueuedEventsReadyForDispatch();
+
   InputHandlerProxyClient* client_;
 
   // The input handler object is owned by the compositor delegate. The input

@@ -6036,10 +6036,6 @@ crbug.com/1148259 [ Mac ] external/wpt/html/browsers/browsing-the-web/navigating
 crbug.com/1150700 [ Win ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/registration-updateviacache.https.html [ Failure Pass Skip Timeout ]
 crbug.com/1150700 [ Win ] virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/update-bytecheck-cors-import.https.html [ Pass Skip Timeout ]
 
-# Disable flaky tests when scroll unification is enabled
-crbug.com/1130020 virtual/scroll-unification/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Crash Failure Pass Timeout ]
-crbug.com/1130020 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Failure Pass Timeout ]
-
 # Sheriff 2020-11-16
 crbug.com/1149734 http/tests/devtools/sources/debugger-ui/debugger-inline-values-frames.js [ Failure Pass Skip Timeout ]
 crbug.com/1149734 http/tests/devtools/sources/debugger-ui/reveal-execution-line.js [ Failure Pass Skip Timeout ]
