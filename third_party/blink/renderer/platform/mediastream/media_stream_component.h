@@ -50,6 +50,7 @@ namespace blink {
 
 class MediaStreamSource;
 class WebAudioSourceProvider;
+class WebLocalFrame;
 
 // A MediaStreamComponent is a MediaStreamTrack.
 // TODO(hta): Consider merging the two classes.
@@ -106,6 +107,11 @@ class PLATFORM_EXPORT MediaStreamComponent final
   void GetSettings(MediaStreamTrackPlatform::Settings&);
   MediaStreamTrackPlatform::CaptureHandle GetCaptureHandle();
 
+  WebLocalFrame* CreationFrame() { return creation_frame_; }
+  void SetCreationFrame(WebLocalFrame* creation_frame) {
+    creation_frame_ = creation_frame;
+  }
+
   String ToString() const;
 
   void Trace(Visitor*) const;
@@ -138,6 +144,7 @@ class PLATFORM_EXPORT MediaStreamComponent final
 
   AudioSourceProviderImpl source_provider_;
   Member<MediaStreamSource> source_;
+
   String id_;
   int unique_id_;
   bool enabled_ = true;
@@ -146,6 +153,8 @@ class PLATFORM_EXPORT MediaStreamComponent final
       WebMediaStreamTrack::ContentHintType::kNone;
   MediaConstraints constraints_;
   std::unique_ptr<MediaStreamTrackPlatform> platform_track_;
+  // Frame where the referenced platform track was created, if applicable.
+  WebLocalFrame* creation_frame_ = nullptr;
 };
 
 typedef HeapVector<Member<MediaStreamComponent>> MediaStreamComponentVector;
