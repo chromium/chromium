@@ -57,6 +57,7 @@ constexpr char kProjectorCreationFlowHistogramName[] =
 constexpr char kProjectorTranscriptsCountHistogramName[] =
     "Ash.Projector.TranscriptsCount.ClamshellMode";
 
+constexpr char kMetadataFileName[] = "MyScreencast";
 constexpr char kProjectorExtension[] = "projector";
 
 void NotifyControllerForFinalSpeechResult(ProjectorControllerImpl* controller) {
@@ -332,7 +333,8 @@ TEST_F(ProjectorControllerTest, NoTranscriptsTest) {
 
   // Simulate ending the recording and saving the metadata file.
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  metadata_controller_->SaveMetadata(temp_dir_.GetPath());
+  base::FilePath metadata_file(temp_dir_.GetPath().Append(kMetadataFileName));
+  metadata_controller_->SaveMetadata(metadata_file);
   run_loop.Run();
 
   histogram_tester_.ExpectUniqueSample(kProjectorTranscriptsCountHistogramName,
@@ -340,7 +342,7 @@ TEST_F(ProjectorControllerTest, NoTranscriptsTest) {
 
   // Verify the written metadata file size is between 0-100 bytes. Change this
   // limit as needed if you make significant changes to the metadata file.
-  base::File file(temp_dir_.GetPath().AddExtension(kProjectorExtension),
+  base::File file(metadata_file.AddExtension(kProjectorExtension),
                   base::File::FLAG_OPEN | base::File::FLAG_READ);
   EXPECT_GT(file.GetLength(), 0);
   EXPECT_LT(file.GetLength(), 100);
@@ -359,7 +361,8 @@ TEST_F(ProjectorControllerTest, TranscriptsTest) {
 
   // Simulate ending the recording and saving the metadata file.
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-  metadata_controller_->SaveMetadata(temp_dir_.GetPath());
+  base::FilePath metadata_file(temp_dir_.GetPath().Append(kMetadataFileName));
+  metadata_controller_->SaveMetadata(metadata_file);
   run_loop.Run();
 
   histogram_tester_.ExpectUniqueSample(kProjectorTranscriptsCountHistogramName,
@@ -368,7 +371,7 @@ TEST_F(ProjectorControllerTest, TranscriptsTest) {
   // Verify the written metadata file size is between 400-500 bytes. This file
   // should be larger than the one in the NoTranscriptsTest above. Change this
   // limit as needed if you make significant changes to the metadata file.
-  base::File file(temp_dir_.GetPath().AddExtension(kProjectorExtension),
+  base::File file(metadata_file.AddExtension(kProjectorExtension),
                   base::File::FLAG_OPEN | base::File::FLAG_READ);
   EXPECT_GT(file.GetLength(), 400);
   EXPECT_LT(file.GetLength(), 500);
