@@ -1,0 +1,67 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file contains Mojo interfaces for the Cros Feedback tool, a SWA.
+// The tool provides inline assistive capabilities. As a user types text
+// describing an issue, the tool sends the text to Chromebook help service to
+// find relevant help articles and forum discussions. The top five links are
+// then displayed as suggested help content.
+//
+// The high level design is outlined below:
+// -[A] The input textbox is hosted in trusted context (chrome://os-feedback).
+// -[B] The online search is implemented in the browser process (c++).
+// -[C] The help content is hosted in untrusted context (chrome-untrusted://).
+// -[D] The untrusted context [C] is embedded in [A] inside an iframe.
+// -[E] Mojo is used to fetch the help content in [A](UI/JS) from [B](C++).
+// -[F] PostMessage is used to pass the help content fetched from [A](JS) to
+//      [D](JS). In the future, mojo will be used to replace postMessage.
+
+module ash.os_feedback_ui.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+import "url/mojom/url.mojom";
+
+// The type of help content.
+enum HelpContentType {
+  // Used as safety fallback default.
+  kUnknown,
+  // A help article.
+  kArticle,
+  // A discussion forum thread from community.
+  kForum
+};
+
+// Represent a help content. Although the data is fetched from service provided
+// by Google, it should be treated as untrustworthy.
+struct HelpContent {
+  // The title of the help content.
+  mojo_base.mojom.String16 title;
+  // The url of the help content.
+  url.mojom.Url url;
+  // The type of the help content.
+  HelpContentType content_type;
+};
+
+// Use to hold data for a search request.
+struct SearchRequest {
+  // The query to send to helpcontent search service.
+  mojo_base.mojom.String16 query;
+  // The maximum number of help contents to return per search.
+  uint32 max_results;
+};
+
+// Use to hold data for the search result.
+struct SearchResponse {
+  // The list of help contents to be sent back in response.
+  array<HelpContent> results;
+  // The total number of help contents found.
+  uint32 total_results;
+};
+
+// Interface for searching for help contents. Implemented in the browser
+// process. The interface is called from WebUI chrome://os-feedback.
+interface HelpContentProvider {
+  // [E] Returns top max_result help contents from online search.
+  GetHelpContents(SearchRequest request) => (SearchResponse response);
+};

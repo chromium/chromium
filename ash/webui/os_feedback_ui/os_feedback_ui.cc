@@ -4,14 +4,20 @@
 
 #include "ash/webui/os_feedback_ui/os_feedback_ui.h"
 
+#include <memory>
+#include <utility>
+
 #include "ash/webui/grit/ash_os_feedback_resources.h"
 #include "ash/webui/grit/ash_os_feedback_resources_map.h"
+#include "ash/webui/os_feedback_ui/backend/help_content_provider.h"
+#include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
 #include "base/memory/ptr_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/webui_allowlist.h"
@@ -66,8 +72,16 @@ OSFeedbackUI::OSFeedbackUI(content::WebUI* web_ui)
       url::Origin::Create(GURL(kChromeUIOSFeedbackUntrustedUrl));
   webui_allowlist->RegisterAutoGrantedPermission(
       untrusted_origin, ContentSettingsType::JAVASCRIPT);
+
+  helpContentProvider_ = std::make_unique<feedback::HelpContentProvider>();
 }
 
 OSFeedbackUI::~OSFeedbackUI() = default;
+
+void OSFeedbackUI::BindInterface(
+    mojo::PendingReceiver<os_feedback_ui::mojom::HelpContentProvider>
+        receiver) {
+  helpContentProvider_->BindInterface(std::move(receiver));
+}
 
 }  // namespace ash

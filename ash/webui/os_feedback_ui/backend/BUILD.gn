@@ -12,7 +12,11 @@ static_library("backend") {
     "help_content_provider.h",
   ]
 
-  deps = []
+  deps = [
+    "//ash/public/cpp",
+    "//ash/public/mojom",
+    "//ash/webui/os_feedback_ui/mojom",
+  ]
 }
 
 source_set("unit_tests") {
@@ -22,7 +26,12 @@ source_set("unit_tests") {
 
   deps = [
     ":backend",
+    "//ash/public/cpp",
+    "//ash/public/mojom",
+    "//ash/webui/os_feedback_ui/mojom",
     "//base/test:test_support",
+    "//content/test:test_support",
     "//testing/gtest",
+    "//url:url",
   ]
 }
