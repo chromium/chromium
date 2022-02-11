@@ -94,6 +94,7 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
       views::FlexLayoutView* parent,
       const std::vector<SearchResult::TextItem>& text_vector,
       LabelType label_type);
+  void UpdateBadgeIcon();
   void UpdateBigTitleText();
   void UpdateTitleText();
   void UpdateDetailsText();

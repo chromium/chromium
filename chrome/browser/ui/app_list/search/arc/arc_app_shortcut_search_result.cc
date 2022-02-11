@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -71,10 +72,15 @@ ArcAppShortcutSearchResult::ArcAppShortcutSearchResult(
       base::BindOnce(&ArcAppShortcutSearchResult::OnIconDecoded,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  badge_icon_loader_ = std::make_unique<AppServiceAppIconLoader>(
-      profile_,
-      ash::SharedAppListConfig::instance().search_tile_badge_icon_dimension(),
-      this);
+  // With categorical search enabled, app results are displayed as normal list
+  // items.
+  const int badge_size = app_list_features::IsCategoricalSearchEnabled()
+                             ? ash::SharedAppListConfig::instance()
+                                   .search_list_badge_icon_dimension()
+                             : ash::SharedAppListConfig::instance()
+                                   .search_tile_badge_icon_dimension();
+  badge_icon_loader_ =
+      std::make_unique<AppServiceAppIconLoader>(profile_, badge_size, this);
   badge_icon_loader_->FetchImage(GetAppId());
 }
 

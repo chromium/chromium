@@ -54,6 +54,7 @@ namespace ash {
 
 namespace {
 
+constexpr int kBadgeIconShadowWidth = 1;
 constexpr int kPreferredWidth = 640;
 constexpr int kClassicViewHeight = 48;
 constexpr int kDefaultViewHeight = 40;
@@ -290,6 +291,7 @@ void SearchResultView::OnResultChanged() {
     UpdateBigTitleText();
   UpdateTitleText();
   UpdateDetailsText();
+  UpdateBadgeIcon();
   UpdateRating();
   UpdateAccessibleName();
   SchedulePaint();
@@ -392,6 +394,37 @@ SearchResultView::SetupContainerViewForTextVector(
     }
   }
   return label_tags;
+}
+
+void SearchResultView::UpdateBadgeIcon() {
+  if (!result() || result()->badge_icon().IsEmpty()) {
+    badge_icon_->SetVisible(false);
+    return;
+  }
+
+  gfx::ImageSkia badge_icon_skia = views::GetImageSkiaFromImageModel(
+      result()->badge_icon(), GetColorProvider());
+
+  if (result()->use_badge_icon_background()) {
+    badge_icon_skia =
+        CreateIconWithCircleBackground(badge_icon_skia, SK_ColorWHITE);
+  }
+
+  gfx::ImageSkia resized_badge_icon(
+      gfx::ImageSkiaOperations::CreateResizedImage(
+          badge_icon_skia, skia::ImageOperations::RESIZE_BEST,
+          SharedAppListConfig::instance().search_list_badge_icon_size()));
+
+  gfx::ShadowValues shadow_values;
+  shadow_values.push_back(
+      gfx::ShadowValue(gfx::Vector2d(0, kBadgeIconShadowWidth), 0,
+                       SkColorSetARGB(0x33, 0, 0, 0)));
+  shadow_values.push_back(
+      gfx::ShadowValue(gfx::Vector2d(0, kBadgeIconShadowWidth), 2,
+                       SkColorSetARGB(0x33, 0, 0, 0)));
+  badge_icon_->SetImage(gfx::ImageSkiaOperations::CreateImageWithDropShadow(
+      resized_badge_icon, shadow_values));
+  badge_icon_->SetVisible(true);
 }
 
 void SearchResultView::UpdateBigTitleText() {
@@ -596,10 +629,10 @@ void SearchResultView::Layout() {
 
   const int badge_icon_dimension =
       SharedAppListConfig::instance().search_list_badge_icon_dimension();
-  badge_icon_bounds = gfx::Rect(icon_bounds.right() - badge_icon_dimension / 2,
-                                icon_bounds.bottom() - badge_icon_dimension / 2,
+  badge_icon_bounds = gfx::Rect(icon_bounds.right() - badge_icon_dimension,
+                                icon_bounds.bottom() - badge_icon_dimension,
                                 badge_icon_dimension, badge_icon_dimension);
-
+  badge_icon_bounds.Inset(-kBadgeIconShadowWidth);
   badge_icon_bounds.Intersect(rect);
   badge_icon_->SetBoundsRect(badge_icon_bounds);
 
@@ -796,27 +829,6 @@ void SearchResultView::OnMetadataChanged() {
     const int height = is_square ? dimension : dimension * image.height() / max;
     SetIconImage(image, icon_, gfx::Size(width, height));
     icon_->set_shape(icon_info.shape);
-  }
-
-  // Updates |badge_icon_|.
-  gfx::ImageSkia badge_icon_skia;
-  if (result() && !result()->badge_icon().IsEmpty()) {
-    const ui::ImageModel& badge_icon = result()->badge_icon();
-    gfx::ImageSkia badge_icon_skia =
-        views::GetImageSkiaFromImageModel(badge_icon, GetColorProvider());
-
-    if (result()->use_badge_icon_background())
-      badge_icon_skia =
-          CreateIconWithCircleBackground(badge_icon_skia, SK_ColorWHITE);
-  }
-
-  if (badge_icon_skia.isNull()) {
-    badge_icon_->SetVisible(false);
-  } else {
-    const int dimension =
-        SharedAppListConfig::instance().search_list_badge_icon_dimension();
-    SetIconImage(badge_icon_skia, badge_icon_, gfx::Size(dimension, dimension));
-    badge_icon_->SetVisible(true);
   }
 
   // Updates |actions_view()|.
