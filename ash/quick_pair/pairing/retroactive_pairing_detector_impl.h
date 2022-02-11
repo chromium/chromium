@@ -119,6 +119,9 @@ class RetroactivePairingDetectorImpl final
 
   void RemoveDeviceInformation(const std::string& device_address);
 
+  void OnHandshakeComplete(scoped_refptr<Device> device,
+                           absl::optional<PairFailure> failure);
+
   // The classic pairing addresses of Fast Pair devices that we have already
   // paired to.
   base::flat_set<std::string> fast_pair_addresses_;
