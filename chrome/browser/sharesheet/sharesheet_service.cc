@@ -323,7 +323,7 @@ void SharesheetService::OnAppIconsLoaded(
     DeliveredCallback delivered_callback,
     CloseCallback close_callback,
     std::vector<TargetInfo> targets) {
-  if (!web_contents) {
+  if (!web_contents || !web_contents->GetTopLevelNativeWindow()) {
     std::move(delivered_callback).Run(SharesheetResult::kErrorWindowClosed);
     return;
   }
