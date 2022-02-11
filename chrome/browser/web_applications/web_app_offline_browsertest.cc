@@ -293,8 +293,9 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
 
 // Testing offline page in dark mode for a web app with a manifest and service
 // worker that does not handle offline error.
+// TODO(1295430): Flaky on both Linux and Windows CI bots
 IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
-                       WebAppOfflineDarkModeEmptyServiceWorker) {
+                       DISABLED_WebAppOfflineDarkModeEmptyServiceWorker) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::WebContents* web_contents =
