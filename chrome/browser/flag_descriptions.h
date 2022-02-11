@@ -3084,6 +3084,9 @@ extern const char kLauncherNudgeShortIntervalDescription[];
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+extern const char kDesktopCaptureLacrosV2Name[];
+extern const char kDesktopCaptureLacrosV2Description[];
+
 extern const char kLacrosNonSyncingProfilesName[];
 extern const char kLacrosNonSyncingProfilesDescription[];
 #endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)

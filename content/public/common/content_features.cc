@@ -244,6 +244,12 @@ const base::Feature kDebugHistoryInterventionNoUserActivation{
 const base::Feature kDesktopCaptureChangeSource{
     "DesktopCaptureChangeSource", base::FEATURE_ENABLED_BY_DEFAULT};
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Enables the alternative, improved desktop/window capturer for LaCrOS
+const base::Feature kDesktopCaptureLacrosV2{"DesktopCaptureLacrosV2",
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
+#endif
+
 // Adds a tab strip to PWA windows.
 // TODO(crbug.com/897314): Enable this feature.
 const base::Feature kDesktopPWAsTabStrip{"DesktopPWAsTabStrip",

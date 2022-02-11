@@ -7868,6 +7868,13 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // TODO(b/180051795): Remove kOsLinux when lacros-chrome switches to
+    // kOsCrOS.
+    {"enable-desktop-capture-lacros-v2",
+     flag_descriptions::kDesktopCaptureLacrosV2Name,
+     flag_descriptions::kDesktopCaptureLacrosV2Description, kOsCrOS | kOsLinux,
+     FEATURE_VALUE_TYPE(features::kDesktopCaptureLacrosV2)},
+
     {"lacros-non-syncing-profiles",
      flag_descriptions::kLacrosNonSyncingProfilesName,
      flag_descriptions::kLacrosNonSyncingProfilesDescription, kOsAll,

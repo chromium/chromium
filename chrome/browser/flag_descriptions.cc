@@ -5358,6 +5358,11 @@ const char kLauncherNudgeShortIntervalDescription[] =
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+const char kDesktopCaptureLacrosV2Name[] = "Enable Lacros Desktop Capture V2";
+const char kDesktopCaptureLacrosV2Description[] =
+    "Enables the improved desktop/window capturer for doing screen/window "
+    "sharing on Lacros";
+
 const char kLacrosNonSyncingProfilesName[] =
     "Enable non-syncing profiles on lacros";
 const char kLacrosNonSyncingProfilesDescription[] =

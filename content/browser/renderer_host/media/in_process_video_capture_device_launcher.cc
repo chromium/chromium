@@ -115,11 +115,8 @@ void IncrementDesktopCaptureCounters(const DesktopMediaID& device_id) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-const base::Feature kDesktopCaptureLacrosV2{"DesktopCaptureLacrosV2",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
-
 bool ShouldUseDesktopCaptureLacrosV2() {
-  return base::FeatureList::IsEnabled(kDesktopCaptureLacrosV2) &&
+  return base::FeatureList::IsEnabled(features::kDesktopCaptureLacrosV2) &&
          VideoCaptureDeviceProxyLacros::IsAvailable();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -63,6 +63,9 @@ CONTENT_EXPORT extern const base::Feature kDataSaverHoldback;
 CONTENT_EXPORT extern const base::Feature
     kDebugHistoryInterventionNoUserActivation;
 CONTENT_EXPORT extern const base::Feature kDesktopCaptureChangeSource;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+CONTENT_EXPORT extern const base::Feature kDesktopCaptureLacrosV2;
+#endif
 CONTENT_EXPORT extern const base::Feature kDesktopPWAsTabStrip;
 CONTENT_EXPORT extern const base::Feature kDevicePosture;
 CONTENT_EXPORT extern const base::Feature kDocumentPolicy;
