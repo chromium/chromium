@@ -18,7 +18,10 @@ class BorealisFeatures {
   enum class AllowStatus {
     kAllowed,
     kFeatureDisabled,
-    kDevicePolicyBlocked,
+    kBlockedOnIrregularProfile,
+    kBlockedOnNonPrimaryProfile,
+    kBlockedOnChildAccount,
+    kVmPolicyBlocked,
     kUserPrefBlocked,
   };
 

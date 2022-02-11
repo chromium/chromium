@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
+#include "chrome/browser/ash/borealis/testing/features.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
@@ -1110,20 +1111,19 @@ class BorealisAppTest : public AppServiceAppModelBuilderTest {
                model_updater_.get());
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfile> testing_profile_;
 };
 
-TEST_F(BorealisAppTest, BorealisDisabled) {
+TEST_F(BorealisAppTest, BorealisDisallowed) {
   EXPECT_FALSE(borealis::BorealisService::GetForProfile(testing_profile_.get())
                    ->Features()
                    .IsAllowed());
   EXPECT_EQ(std::vector<std::string>{}, GetModelContent(model_updater_.get()));
 }
 
-TEST_F(BorealisAppTest, BorealisEnabled) {
-  // Enable the Borealis feature.
-  scoped_feature_list_.InitAndEnableFeature(features::kBorealis);
+TEST_F(BorealisAppTest, BorealisAllowed) {
+  borealis::ScopedAllowBorealis allow_borealis(testing_profile_.get(),
+                                               /*also_enable=*/false);
   // Reset the AppModelBuilder, so that it is created in a state where
   // Borealis was enabled.
   CreateBuilder(/*guest_mode=*/false);

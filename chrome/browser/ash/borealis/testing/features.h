@@ -6,27 +6,31 @@
 #define CHROME_BROWSER_ASH_BOREALIS_TESTING_FEATURES_H_
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "components/user_manager/scoped_user_manager.h"
 
-class Profile;
+namespace ash {
+class FakeChromeUserManager;
+}
+
+class TestingProfile;
 
 namespace borealis {
 
-// Convenience function for allowing and enabling Borealis at once.
-void AllowAndEnableBorealis(Profile* profile,
-                            base::test::ScopedFeatureList& feature_list,
-                            ash::ScopedCrosSettingsTestHelper& cros_settings,
-                            bool should_allow = true,
-                            bool should_enable = true);
-// Sets the prefs, features and settings so that Borealis is "allowed" on the
-// device. Note that |feature_list| will be re-initiated during this
-// function.
-void AllowBorealis(Profile* profile,
-                   base::test::ScopedFeatureList& feature_list,
-                   ash::ScopedCrosSettingsTestHelper& cros_settings,
-                   bool should_allow = true);
-// Sets the prefs so that Borealis is "enabled".
-void EnableBorealis(Profile* profile, bool should_enable = true);
+void AllowBorealis(TestingProfile* profile,
+                   base::test::ScopedFeatureList* features,
+                   ash::FakeChromeUserManager* user_manager,
+                   bool also_enable);
+
+class ScopedAllowBorealis {
+ public:
+  ScopedAllowBorealis(TestingProfile* profile, bool also_enable);
+  ~ScopedAllowBorealis();
+
+ private:
+  TestingProfile* profile_;
+  base::test::ScopedFeatureList features_;
+  user_manager::ScopedUserManager user_manager_;
+};
 
 }  // namespace borealis
 
