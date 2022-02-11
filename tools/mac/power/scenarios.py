@@ -10,6 +10,8 @@ import datetime
 import logging
 import typing
 import os
+import pyautogui
+from AppKit import NSBundle  # used to suppress macOS dock icon pop up/bounce
 
 import utils
 import browsers
@@ -37,6 +39,16 @@ class ScenarioOSADriver(abc.ABC):
   def Launch(self):
     """Starts the driver script.
     """
+    app_info = NSBundle.mainBundle().infoDictionary()
+    # Suppress macOS dock icon pop up/bounce.
+    app_info["LSBackgroundOnly"] = "1"
+
+    # Disable aborting the sequence of movements by moving to the corner of
+    # the screen. This is fine because there isn't a sequence but a single move.
+    pyautogui.FAILSAFE = False
+    # Move the cursor out of the way so it's always in the same spot.
+    pyautogui.moveTo(0, 0)
+
     assert self.osa_script is not None
     logging.debug(f"Starting scenario {self.name}")
     self.script_process = subprocess.Popen(['osascript', self.osa_script.name])
