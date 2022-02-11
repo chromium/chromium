@@ -149,7 +149,7 @@ TEST_F(NetworkSessionConfiguratorTest, EnableQuicFromParams) {
 }
 
 TEST_F(NetworkSessionConfiguratorTest, ValidQuicParams) {
-  quic::ParsedQuicVersion version = quic::ParsedQuicVersion::Draft29();
+  quic::ParsedQuicVersion version = net::DefaultSupportedQuicVersions().front();
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["enable_quic"] = "true";
   field_trial_params["channel"] = "T";
@@ -169,7 +169,7 @@ TEST_F(NetworkSessionConfiguratorTest, ValidQuicParams) {
 }
 
 TEST_F(NetworkSessionConfiguratorTest, InvalidQuicParams) {
-  quic::ParsedQuicVersion version = quic::ParsedQuicVersion::Draft29();
+  quic::ParsedQuicVersion version = net::DefaultSupportedQuicVersions().front();
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["enable_quic"] = "true";
   // These params are missing channel and epoch.
@@ -535,7 +535,7 @@ TEST_F(NetworkSessionConfiguratorTest, QuicVersionFromFieldTrialParams) {
 }
 
 TEST_F(NetworkSessionConfiguratorTest, QuicVersionFromFieldTrialParamsAlpn) {
-  quic::ParsedQuicVersion version = quic::AllSupportedVersions().front();
+  quic::ParsedQuicVersion version = net::DefaultSupportedQuicVersions().front();
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["quic_version"] = quic::ParsedQuicVersionToString(version);
   variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
@@ -557,6 +557,7 @@ TEST_F(NetworkSessionConfiguratorTest,
 
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["quic_version"] = quic_versions;
+  field_trial_params["obsolete_versions_allowed"] = "true";
   variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
   base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
 
