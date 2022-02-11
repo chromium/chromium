@@ -24,7 +24,7 @@ namespace content {
 class FederatedIdentityActiveSessionPermissionContextDelegate;
 class FederatedIdentityRequestPermissionContextDelegate;
 class FederatedIdentitySharingPermissionContextDelegate;
-class RenderFrameHost;
+class RenderFrameHostImpl;
 
 // FederatedAuthRequestImpl contains the state machines for executing federated
 // authentication requests. This can be owned either by a
@@ -33,7 +33,8 @@ class RenderFrameHost;
 // invocation is from an intercepted HTTP request.
 class CONTENT_EXPORT FederatedAuthRequestImpl {
  public:
-  FederatedAuthRequestImpl(RenderFrameHost* host, const url::Origin& origin);
+  FederatedAuthRequestImpl(RenderFrameHostImpl* host,
+                           const url::Origin& origin);
 
   FederatedAuthRequestImpl(const FederatedAuthRequestImpl&) = delete;
   FederatedAuthRequestImpl& operator=(const FederatedAuthRequestImpl&) = delete;
@@ -135,7 +136,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   // information and then we can remove the console error messages.
   void AddConsoleErrorMessage(blink::mojom::RequestIdTokenStatus status);
 
-  const raw_ptr<RenderFrameHost> render_frame_host_ = nullptr;
+  const raw_ptr<RenderFrameHostImpl> render_frame_host_ = nullptr;
   const url::Origin origin_;
 
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;

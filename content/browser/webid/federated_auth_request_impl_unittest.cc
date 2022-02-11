@@ -495,7 +495,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     // `FederatedAuthRequestService` derives from `DocumentService` and
     // controls its own lifetime.
     auth_request_service_ = new FederatedAuthRequestService(
-        main_rfh(), request_remote_.BindNewPipeAndPassReceiver());
+        main_test_rfh(), request_remote_.BindNewPipeAndPassReceiver());
     auto mock_request_manager =
         std::make_unique<NiceMock<MockIdpNetworkRequestManager>>(
             provider, url::Origin::Create(GURL(kRpTestOrigin)));

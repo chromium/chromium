@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/json/json_writer.h"
 #include "base/rand_util.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -325,7 +326,7 @@ constexpr char IdpNetworkRequestManager::kManifestFilePath[];
 // static
 std::unique_ptr<IdpNetworkRequestManager> IdpNetworkRequestManager::Create(
     const GURL& provider,
-    RenderFrameHost* host) {
+    RenderFrameHostImpl* host) {
   // FedCM is restricted to secure contexts.
   if (!network::IsOriginPotentiallyTrustworthy(url::Origin::Create(provider)))
     return nullptr;

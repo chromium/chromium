@@ -30,7 +30,7 @@ class SimpleURLLoader;
 
 namespace content {
 
-class RenderFrameHost;
+class RenderFrameHostImpl;
 
 // Manages network requests and maintains relevant state for interaction with
 // the Identity Provider across a FedCM transaction. Owned by
@@ -126,7 +126,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
 
   static std::unique_ptr<IdpNetworkRequestManager> Create(
       const GURL& provider,
-      RenderFrameHost* host);
+      RenderFrameHostImpl* host);
 
   IdpNetworkRequestManager(
       const GURL& provider,

@@ -10,6 +10,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "content/browser/bad_message.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/id_token_request_callback_data.h"
@@ -159,7 +160,7 @@ std::string GetConsoleErrorMessage(RequestIdTokenStatus status) {
 
 }  // namespace
 
-FederatedAuthRequestImpl::FederatedAuthRequestImpl(RenderFrameHost* host,
+FederatedAuthRequestImpl::FederatedAuthRequestImpl(RenderFrameHostImpl* host,
                                                    const url::Origin& origin)
     : render_frame_host_(host), origin_(origin) {}
 

@@ -5,6 +5,7 @@
 #include "content/browser/webid/federated_auth_request_service.h"
 
 #include "content/browser/bad_message.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/federated_auth_request_impl.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/render_frame_host.h"
@@ -13,7 +14,7 @@ namespace content {
 
 // static
 void FederatedAuthRequestService::Create(
-    RenderFrameHost* host,
+    RenderFrameHostImpl* host,
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver) {
   DCHECK(host);
 
@@ -35,7 +36,7 @@ void FederatedAuthRequestService::Create(
 }
 
 FederatedAuthRequestService::FederatedAuthRequestService(
-    RenderFrameHost* host,
+    RenderFrameHostImpl* host,
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver)
     : DocumentService(host, std::move(receiver)) {
   impl_ = std::make_unique<FederatedAuthRequestImpl>(
