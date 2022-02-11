@@ -2059,6 +2059,7 @@ if (!is_android) {
       "../browser/ui/web_applications/web_app_url_handling_browsertest.cc",
       "../browser/ui/web_applications/web_app_window_controls_overlay_browsertest.cc",
       "../browser/ui/webauthn/authenticator_dialog_browsertest.cc",
+      "../browser/ui/webui/app_service_internals/app_service_internals_browsertest.cc",
       "../browser/ui/webui/autofill_and_password_manager_internals/autofill_internals_ui_browsertest.cc",
       "../browser/ui/webui/autofill_and_password_manager_internals/password_manager_internals_ui_browsertest.cc",
       "../browser/ui/webui/bookmarks/bookmarks_browsertest.cc",
