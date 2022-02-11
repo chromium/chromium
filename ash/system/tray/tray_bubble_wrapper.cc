@@ -4,6 +4,7 @@
 
 #include "ash/system/tray/tray_bubble_wrapper.h"
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
@@ -24,6 +25,9 @@ TrayBubbleWrapper::TrayBubbleWrapper(TrayBackgroundView* tray,
 
   TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);
   bubble_view_->InitializeAndShowBubble();
+
+  if (!Shell::Get()->tablet_mode_controller()->InTabletMode())
+    Shell::Get()->app_list_controller()->DismissAppList();
 
   tray->tray_event_filter()->AddBubble(this);
 

@@ -7,7 +7,9 @@
 #include "ash/bubble/bubble_utils.h"
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
+#include "ash/system/status_area_widget.h"
 #include "base/callback.h"
 #include "base/check.h"
 #include "ui/aura/window.h"
@@ -77,6 +79,13 @@ void AppListBubbleEventFilter::ProcessPressedEvent(
         shelf->hotseat_widget()->EventTargetsShelfView(event)) {
       return;
     }
+
+    // Don't dismiss the auto-hide shelf if event happened in status area. Then
+    // the event can still be propagated.
+    const aura::Window* status_window =
+        shelf->shelf_widget()->status_area_widget()->GetNativeWindow();
+    if (status_window && status_window->Contains(target))
+      return;
   }
 
   on_click_outside_.Run();

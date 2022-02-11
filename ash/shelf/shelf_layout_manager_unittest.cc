@@ -1171,8 +1171,9 @@ TEST_F(ShelfLayoutManagerTest, OpenAppListInFullscreenWithShelfHiddenState) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(
       status_area->ime_menu_tray()->GetBoundsInScreen().CenterPoint());
-  generator->ClickLeftButton();
+  generator->PressLeftButton();
   base::RunLoop().RunUntilIdle();
+  generator->ReleaseLeftButton();
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
   GetAppListTestHelper()->CheckVisibility(false);

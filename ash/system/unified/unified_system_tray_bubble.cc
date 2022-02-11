@@ -4,6 +4,7 @@
 
 #include "ash/system/unified/unified_system_tray_bubble.h"
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/bubble/bubble_constants.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -70,6 +71,9 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
 
   // Notify accessibility features that the status tray has opened.
   NotifyAccessibilityEvent(ax::mojom::Event::kShow, true);
+
+  if (!Shell::Get()->tablet_mode_controller()->InTabletMode())
+    Shell::Get()->app_list_controller()->DismissAppList();
 
   tray->tray_event_filter()->AddBubble(this);
   tray->shelf()->AddObserver(this);
