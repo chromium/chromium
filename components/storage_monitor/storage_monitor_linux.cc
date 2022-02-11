@@ -440,6 +440,11 @@ void StorageMonitorLinux::UpdateMtab(const MountPointDeviceMap& new_mtab) {
   }
 }
 
+void StorageMonitorLinux::AwaitMtabWatcherTaskRunnerForTest(
+    base::OnceClosure on_done) {
+  mtab_watcher_task_runner_->PostTask(FROM_HERE, std::move(on_done));
+}
+
 bool StorageMonitorLinux::IsDeviceAlreadyMounted(
     const base::FilePath& mount_device) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

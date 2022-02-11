@@ -156,6 +156,7 @@ class TaskEnvironment::TestTaskTracker
                internal::TaskSource* sequence,
                const TaskTraits& traits) override;
   void BeginCompleteShutdown(base::WaitableEvent& shutdown_event) override;
+  void AssertFlushForTestingAllowed() override;
 
   // Synchronizes accesses to members below.
   mutable Lock lock_;
@@ -907,6 +908,15 @@ void TaskEnvironment::TestTaskTracker::BeginCompleteShutdown(
                 << kTimeout.InSeconds() << " seconds.\n"
                 << failure_tasks;
   base::Process::TerminateCurrentProcessImmediately(-1);
+}
+
+void TaskEnvironment::TestTaskTracker::AssertFlushForTestingAllowed() {
+  AutoLock auto_lock(lock_);
+  ASSERT_TRUE(can_run_tasks_)
+      << "FlushForTesting() requires ThreadPool tasks to be allowed to run or "
+         "it will hang. Note: DisallowRunTasks happens implicitly on-and-off "
+         "during TaskEnvironment::RunUntilIdle and main thread tasks running "
+         "under it should thus never FlushForTesting().";
 }
 
 }  // namespace test

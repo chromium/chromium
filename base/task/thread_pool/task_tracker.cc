@@ -353,6 +353,7 @@ void TaskTracker::CompleteShutdown() {
 }
 
 void TaskTracker::FlushForTesting() {
+  AssertFlushForTestingAllowed();
   CheckedAutoLock auto_lock(flush_lock_);
   while (num_incomplete_task_sources_.load(std::memory_order_acquire) != 0 &&
          !IsShutdownComplete()) {

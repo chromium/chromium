@@ -125,20 +125,20 @@ class TestStorageMonitorLinux : public StorageMonitorLinux {
 
   ~TestStorageMonitorLinux() override = default;
 
+  void SetMtabUpdatedCallback(base::OnceClosure mtab_updated_callback) {
+    EXPECT_FALSE(mtab_updated_callback_);
+    mtab_updated_callback_ = std::move(mtab_updated_callback);
+  }
+
  private:
   void UpdateMtab(
       const MtabWatcherLinux::MountPointDeviceMap& new_mtab) override {
     StorageMonitorLinux::UpdateMtab(new_mtab);
-
-    // The UpdateMtab call performs the actual mounting by posting tasks
-    // to the thread pool. This also needs to be flushed.
-    base::ThreadPoolInstance::Get()->FlushForTesting();
-
-    // Once the storage monitor picks up the changes to the fake mtab file,
-    // exit the RunLoop that should be blocking the main test thread.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated());
+    if (mtab_updated_callback_)
+      AwaitMtabWatcherTaskRunnerForTest(std::move(mtab_updated_callback_));
   }
+
+  base::OnceClosure mtab_updated_callback_;
 };
 
 class StorageMonitorLinuxTest : public testing::Test {
@@ -199,16 +199,14 @@ class StorageMonitorLinuxTest : public testing::Test {
   // file, and run the message loop.
   void AppendToMtabAndRunLoop(const MtabTestData* data, size_t data_size) {
     WriteToMtab(data, data_size, /*overwrite=*/false);
-    // Block until the mtab changes are detected by the file watcher.
-    base::RunLoop().Run();
+    WaitForMtabUpdate();
   }
 
   // Overwrite the mtab file with mtab entries from the |data| array of size
   // |data_size|, and run the message loop.
   void OverwriteMtabAndRunLoop(const MtabTestData* data, size_t data_size) {
     WriteToMtab(data, data_size, /*overwrite=*/true);
-    // Block until the mtab changes are detected by the file watcher.
-    base::RunLoop().Run();
+    WaitForMtabUpdate();
   }
 
   // Simplied version of OverwriteMtabAndRunLoop() that just deletes all the
@@ -254,6 +252,17 @@ class StorageMonitorLinuxTest : public testing::Test {
   }
 
  private:
+  // Invoked after making an mtab update. Blocks (in an active RunLoop) until
+  // the mtab changes are detected by the file watcher and side-effects of
+  // UpdateMtab() propagate.
+  void WaitForMtabUpdate() {
+    base::RunLoop run_loop;
+    // QuitWhenIdle() to make sure |mock_storage_observer_| is notified of the
+    // changes before this returns.
+    monitor_->SetMtabUpdatedCallback(run_loop.QuitWhenIdleClosure());
+    run_loop.Run();
+  }
+
   // Create a directory named |dir| relative to the test directory.
   // Set |with_dcim_dir| to true if the created directory will have a "DCIM"
   // subdirectory.

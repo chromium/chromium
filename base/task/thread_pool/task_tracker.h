@@ -155,6 +155,10 @@ class BASE_EXPORT TaskTracker {
   // before blocking the thread.
   virtual void BeginCompleteShutdown(base::WaitableEvent& shutdown_event);
 
+  // Asserts that FlushForTesting() is allowed to be called. Overridden in tests
+  // in situations where it is not.
+  virtual void AssertFlushForTestingAllowed() {}
+
  private:
   friend class RegisteredTaskSource;
   class State;

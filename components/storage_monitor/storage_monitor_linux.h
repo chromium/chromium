@@ -65,6 +65,10 @@ class StorageMonitorLinux : public StorageMonitor {
   virtual void UpdateMtab(
       const MtabWatcherLinux::MountPointDeviceMap& new_mtab);
 
+  // Invokes |on_done| on |mtab_watcher_task_runner_| after all currently
+  // pending tasks on it have run.
+  void AwaitMtabWatcherTaskRunnerForTest(base::OnceClosure on_done);
+
  private:
   // Structure to save mounted device information such as device path, unique
   // identifier, device name and partition size.
