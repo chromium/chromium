@@ -17,10 +17,16 @@ class PrintedDocument;
 class PrintJob;
 
 // Notify Ash Chrome of a new print job.
+// If `local_printer` is null, this method fails.
 void NotifyAshJobCreated(const PrintJob& job,
                          int job_id,
                          const PrintedDocument& document,
                          crosapi::mojom::LocalPrinter* local_printer);
+
+// Same as above but gets the LocalPrinter from LacrosService.
+void NotifyAshJobCreated(const PrintJob& job,
+                         int job_id,
+                         const PrintedDocument& document);
 
 }  // namespace printing
 

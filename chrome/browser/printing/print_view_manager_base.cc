@@ -763,7 +763,7 @@ void PrintViewManagerBase::SystemDialogCancelled() {
 
 void PrintViewManagerBase::OnDocDone(int job_id, PrintedDocument* document) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  NotifyAshJobCreated(*print_job_, job_id, *document, nullptr);
+  NotifyAshJobCreated(*print_job_, job_id, *document);
 #endif
 #if BUILDFLAG(IS_ANDROID)
   DCHECK_LE(number_pages(), kMaxPageCount);
