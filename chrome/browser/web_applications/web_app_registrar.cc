@@ -182,11 +182,6 @@ void WebAppRegistrar::NotifyWebAppRunOnOsLoginModeChanged(
     observer.OnWebAppRunOnOsLoginModeChanged(app_id, run_on_os_login_mode);
 }
 
-void WebAppRegistrar::NotifyAppRegistrarShutdown() {
-  for (AppRegistrarObserver& observer : observers_)
-    observer.OnAppRegistrarShutdown();
-}
-
 std::map<AppId, GURL> WebAppRegistrar::GetExternallyInstalledApps(
     ExternalInstallSource install_source) const {
   std::map<AppId, GURL> installed_apps =

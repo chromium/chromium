@@ -61,7 +61,6 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   // AppRegistrarObserver:
   void OnWebAppInstalled(const AppId& installed_app_id) override;
   void OnWebAppWillBeUninstalled(const AppId& uninstalled_app_id) override;
-  void OnAppRegistrarShutdown() override;
   void OnAppRegistrarDestroyed() override;
 
   void ResetAppId();

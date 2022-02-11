@@ -392,7 +392,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
   Profile* profile() const { return profile_; }
 
   void NotifyWebAppProfileWillBeDeleted(const AppId& app_id);
-  void NotifyAppRegistrarShutdown();
 
   Registry& registry() { return registry_; }
   void SetRegistry(Registry&& registry);

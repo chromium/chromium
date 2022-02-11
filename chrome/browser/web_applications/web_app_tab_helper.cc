@@ -138,12 +138,9 @@ void WebAppTabHelper::OnWebAppWillBeUninstalled(
     ResetAppId();
 }
 
-void WebAppTabHelper::OnAppRegistrarShutdown() {
-  ResetAppId();
-}
-
 void WebAppTabHelper::OnAppRegistrarDestroyed() {
   observation_.Reset();
+  ResetAppId();
 }
 
 void WebAppTabHelper::ResetAppId() {
