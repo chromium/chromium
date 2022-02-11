@@ -31,6 +31,7 @@
 
 #include "base/base_export.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/strings/char_traits.h"
 #include "base/strings/string_piece_forward.h"
 #include "build/build_config.h"
@@ -96,7 +97,7 @@ BASE_EXPORT size_t find_last_not_of(WStringPiece self,
 // Mirrors the C++17 version of std::basic_string_view<> as closely as possible,
 // except where noted below.
 template <typename CharT, typename Traits>
-class BasicStringPiece {
+class GSL_POINTER BasicStringPiece {
  public:
   using traits_type = Traits;
   using value_type = CharT;

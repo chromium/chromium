@@ -98,16 +98,16 @@ base::StringPiece SystemThemeName(
 
 #include "ui/color/color_id_map_macros.inc"
 
-base::StringPiece ColorIdName(ColorId color_id) {
+std::string ColorIdName(ColorId color_id) {
   static constexpr const auto color_id_map =
       base::MakeFixedFlatMap<ColorId, const char*>({COLOR_IDS});
   auto* i = color_id_map.find(color_id);
   if (i != color_id_map.cend())
-    return i->second;
+    return {i->second};
   base::StringPiece color_name;
   if (g_color_provider_utils_callbacks &&
       g_color_provider_utils_callbacks->ColorIdName(color_id, &color_name))
-    return color_name;
+    return {color_name};
   return base::StringPrintf("ColorId(%d)", color_id);
 }
 

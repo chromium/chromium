@@ -3912,6 +3912,7 @@ if (enable_nocompile_tests) {
       "no_destructor_unittest.nc",
       "observer_list_unittest.nc",
       "sequence_checker_unittest.nc",
+      "strings/string_piece_unittest.nc",
       "task/bind_post_task_unittest.nc",
       "task/task_traits_extension_unittest.nc",
       "task/task_traits_unittest.nc",

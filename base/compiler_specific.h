@@ -382,4 +382,10 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 #define CONSTINIT
 #endif
 
+#if defined(__clang__)
+#define GSL_POINTER [[gsl::Pointer]]
+#else
+#define GSL_POINTER
+#endif
+
 #endif  // BASE_COMPILER_SPECIFIC_H_
