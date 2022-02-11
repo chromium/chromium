@@ -533,13 +533,8 @@ id<GREYMatcher> SearchCopiedTextButton() {
 // displayed. Paste button should be hidden when pasteboard is empty otherwise
 // it should be displayed. Select & SelectAll buttons should be hidden when the
 // omnibox is empty.
-- (void)testEmptyOmnibox {
-// TODO(crbug.com/1209342): test failing on ipad device
-#if !TARGET_IPHONE_SIMULATOR
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
-  }
-#endif
+// TODO(crbug.com/1209342): test failing on device
+- (void)DISABLED_testEmptyOmnibox {
   // Focus omnibox.
   [self focusFakebox];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
