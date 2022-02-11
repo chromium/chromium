@@ -29,7 +29,6 @@ class PrefRegistrySyncable;
 namespace web_app {
 
 class WebAppDatabaseFactory;
-class WebAppMover;
 class WebAppSyncBridge;
 class WebAppIconManager;
 class PreinstalledWebAppManager;
@@ -171,7 +170,6 @@ class WebAppProvider : public KeyedService {
   void DoMigrateProfilePrefs(Profile* profile);
 
   std::unique_ptr<WebAppDatabaseFactory> database_factory_;
-  std::unique_ptr<WebAppMover> web_app_mover_;
   std::unique_ptr<WebAppRegistrar> registrar_;
   std::unique_ptr<WebAppSyncBridge> sync_bridge_;
   std::unique_ptr<PreinstalledWebAppManager> preinstalled_web_app_manager_;

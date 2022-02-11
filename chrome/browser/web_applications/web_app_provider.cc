@@ -33,7 +33,6 @@
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
-#include "chrome/browser/web_applications/web_app_mover.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/web_app_protocol_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
@@ -221,8 +220,6 @@ void WebAppProvider::Shutdown() {
   icon_manager_->Shutdown();
   install_finalizer_->Shutdown();
   registrar_->Shutdown();
-  if (web_app_mover_)
-    web_app_mover_->Shutdown();
 }
 
 void WebAppProvider::StartImpl() {
@@ -299,10 +296,6 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
         std::move(protocol_handler_manager), std::move(url_handler_manager));
   }
 
-  web_app_mover_ = WebAppMover::CreateIfNeeded(
-      profile, registrar.get(), install_finalizer_.get(),
-      install_manager_.get(), sync_bridge.get());
-
   registrar_ = std::move(registrar);
   sync_bridge_ = std::move(sync_bridge);
   icon_manager_ = std::move(icon_manager);
@@ -363,8 +356,6 @@ void WebAppProvider::OnSyncBridgeReady() {
   manifest_update_manager_->Start();
   os_integration_manager_->Start();
   ui_manager_->Start();
-  if (web_app_mover_)
-    web_app_mover_->Start();
 
   on_registry_ready_.Signal();
 }
