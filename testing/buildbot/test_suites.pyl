@@ -3112,14 +3112,14 @@
       },
     },
 
-    'gpu_skia_renderer_vulkan_telemetry_tests': {
+    'gpu_skia_renderer_vulkan_passthrough_telemetry_tests': {
       'vulkan_pixel_skia': {
         'name': 'vulkan_pixel_skia_gold_test',
         'args': [
           '--dont-restore-color-profile-after-test',
           '--test-machine-name',
           '${buildername}',
-          '--extra-browser-args=--use-vulkan=native --disable-vulkan-fallback-to-gl-for-testing --enable-features=UseSkiaRenderer,Vulkan --use-cmd-decoder=validating',
+          '--extra-browser-args=--use-vulkan=native --disable-vulkan-fallback-to-gl-for-testing --enable-features=UseSkiaRenderer,Vulkan --use-gl=angle --use-angle=gl --use-cmd-decoder=passthrough',
         ],
         'android_args': [
           # TODO(crbug.com/1093085): Remove this once we fix the tests.
@@ -6208,14 +6208,14 @@
     # TODO(jonross): remove this once Vulkan Swiftshader and Vulkan GL interop
     # paths are merged. This should mirror
     # `gpu_fyi_linux_release_telemetry_tests` but with additional
-    # `gpu_skia_renderer_vulkan_telemetry_tests`
+    # `gpu_skia_renderer_vulkan_passthrough_telemetry_tests`
     'gpu_fyi_linux_release_vulkan_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
       'gpu_mediapipe_passthrough_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
       'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
       'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
-      'gpu_skia_renderer_vulkan_telemetry_tests',
+      'gpu_skia_renderer_vulkan_passthrough_telemetry_tests',
     ],
 
     'gpu_fyi_mac_debug_gtests': [
