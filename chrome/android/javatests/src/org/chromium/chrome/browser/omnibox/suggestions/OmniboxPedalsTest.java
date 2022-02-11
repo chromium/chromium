@@ -331,6 +331,13 @@ public class OmniboxPedalsTest {
 
         verifyHistogram(OmniboxPedalType.RUN_CHROME_SAFETY_CHECK);
 
+        // Make sure the safety check was ran.
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(
+                    mHistogramTester.getHistogramTotalCount("Settings.SafetyCheck.UpdatesResult"),
+                    Matchers.is(1));
+        });
+
         settingsActivity.finish();
     }
 

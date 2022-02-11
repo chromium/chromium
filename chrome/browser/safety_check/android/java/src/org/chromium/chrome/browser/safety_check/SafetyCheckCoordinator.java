@@ -80,6 +80,10 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver {
         mSettingsFragment.getLifecycle().addObserver(new DefaultLifecycleObserver() {
             @Override
             public void onResume(LifecycleOwner lifecycleOwner) {
+                if (mSettingsFragment.shouldRunSafetyCheckImmediately()) {
+                    mMediator.performSafetyCheck();
+                    return;
+                }
                 mMediator.setInitialState();
             }
         });

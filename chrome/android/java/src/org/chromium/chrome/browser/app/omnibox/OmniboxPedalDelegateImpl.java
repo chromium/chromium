@@ -73,8 +73,10 @@ public class OmniboxPedalDelegateImpl implements OmniboxPedalDelegate {
                 }
                 break;
             case OmniboxPedalType.RUN_CHROME_SAFETY_CHECK:
-                settingsLauncher.launchSettingsActivity(
-                        mActivity, SafetyCheckSettingsFragment.class);
+                settingsLauncher.launchSettingsActivity(mActivity,
+                        SafetyCheckSettingsFragment.class,
+                        SafetyCheckSettingsFragment.createBundle(
+                                /*runSafetyCheckImmediately=*/true));
                 break;
             case OmniboxPedalType.MANAGE_SITE_SETTINGS:
                 settingsLauncher.launchSettingsActivity(mActivity, SiteSettings.class);

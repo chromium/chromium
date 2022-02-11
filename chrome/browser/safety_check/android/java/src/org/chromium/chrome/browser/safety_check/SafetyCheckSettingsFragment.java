@@ -21,10 +21,15 @@ import org.chromium.ui.widget.ButtonCompat;
  * Settings fragment containing Safety check. This class represents a View in the MVC paradigm.
  */
 public class SafetyCheckSettingsFragment extends PreferenceFragmentCompat {
+    private static final String SAFETY_CHECK_IMMEDIATE_RUN =
+            "SafetyCheckSettingsFragment.safetyCheckImmediateRun";
+
     /** The "Check" button at the bottom that needs to be added after the View is inflated. */
     private ButtonCompat mCheckButton;
 
     private TextView mTimestampTextView;
+
+    private boolean mRunSafetyCheckImmediately;
 
     /**
      * Initializes all the objects related to the preferences page.
@@ -34,6 +39,10 @@ public class SafetyCheckSettingsFragment extends PreferenceFragmentCompat {
         // Add all preferences and set the title.
         SettingsUtils.addPreferencesFromResource(this, R.xml.safety_check_preferences);
         getActivity().setTitle(getString(R.string.prefs_safety_check));
+
+        mRunSafetyCheckImmediately = getArguments() != null
+                && getArguments().containsKey(SAFETY_CHECK_IMMEDIATE_RUN)
+                && getArguments().getBoolean(SAFETY_CHECK_IMMEDIATE_RUN);
     }
 
     @Override
@@ -89,5 +98,30 @@ public class SafetyCheckSettingsFragment extends PreferenceFragmentCompat {
             return;
         }
         p.setSummary(statusString);
+    }
+
+    /**
+     * Creates a bundle for this fragment.
+     * @param runSafetyCheckImmediately Whether the afety check should be run right after the
+     *         fragment is opened.
+     */
+    public static Bundle createBundle(boolean runSafetyCheckImmediately) {
+        Bundle result = new Bundle();
+        result.putBoolean(SAFETY_CHECK_IMMEDIATE_RUN, runSafetyCheckImmediately);
+        return result;
+    }
+
+    /**
+     * @return Whether safety check need to be run immediately once the safety check settings is
+     *         fully initialized.
+     */
+    boolean shouldRunSafetyCheckImmediately() {
+        return mRunSafetyCheckImmediately;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mRunSafetyCheckImmediately = false;
     }
 }
