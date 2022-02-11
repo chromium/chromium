@@ -17,7 +17,6 @@
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_processing.h"
 #include "media/base/user_input_monitor.h"
-#include "media/webrtc/webrtc_features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/concurrent_stream_metric_reporter.h"
 #include "services/audio/device_output_listener.h"

@@ -94,7 +94,6 @@ source_set("audio") {
     "//base",
     "//media",
     "//media/mojo/mojom",
-    "//media/webrtc",
     "//services/audio/public/mojom",
   ]
 
@@ -129,7 +128,7 @@ source_set("audio") {
       "sync_mixing_graph_input.h",
     ]
 
-    deps += []
+    public_deps += [ "//media/webrtc" ]
   }
 
   configs += [
