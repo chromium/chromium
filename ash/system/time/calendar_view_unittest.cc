@@ -127,9 +127,11 @@ class CalendarViewTest : public AshTestBase {
     return calendar_view_->event_list_container_->event_list()->close_button_;
   }
 
-  void ScrollUpOneMonth() { calendar_view_->ScrollUpOneMonthAndAutoScroll(); }
+  void ScrollUpOneMonth() {
+    calendar_view_->ScrollOneMonthAndAutoScroll(/*scroll_up=*/true);
+  }
   void ScrollDownOneMonth() {
-    calendar_view_->ScrollDownOneMonthAndAutoScroll();
+    calendar_view_->ScrollOneMonthAndAutoScroll(/*scroll_up=*/false);
   }
   void ResetToToday() { calendar_view_->ResetToToday(); }
 
@@ -708,10 +710,10 @@ class CalendarViewAnimationTest : public AshTestBase {
   bool is_scrolling_up() { return calendar_view_->is_scrolling_up_; }
 
   void ScrollUpOneMonth() {
-    calendar_view_->ScrollOneMonthWithAnimation(/*is_scrolling_up=*/true);
+    calendar_view_->ScrollOneMonthWithAnimation(/*scroll_up=*/true);
   }
   void ScrollDownOneMonth() {
-    calendar_view_->ScrollOneMonthWithAnimation(/*is_scrolling_up=*/false);
+    calendar_view_->ScrollOneMonthWithAnimation(/*scroll_up=*/false);
   }
 
  private:
