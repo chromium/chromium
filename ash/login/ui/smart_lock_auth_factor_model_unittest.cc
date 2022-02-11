@@ -90,10 +90,15 @@ class SmartLockAuthFactorModelUnittest : public AshTestBase {
   ~SmartLockAuthFactorModelUnittest() override = default;
 
  protected:
-  // AshTestBase:
-  void SetUp() override {
-    AshTestBase::SetUp();
+  void InitializeSmartLockAuthFactorModel(
+      SmartLockState initial_state = SmartLockState::kConnectingToPhone) {
+    smart_lock_model_ = std::make_unique<SmartLockAuthFactorModel>(
+        initial_state,
+        base::BindRepeating(
+            &SmartLockAuthFactorModelUnittest::ArrowButtonTapCallback,
+            base::Unretained(this)));
 
+    model_ = smart_lock_model_.get();
     model_->Init(&icon_, base::BindRepeating(
                              &SmartLockAuthFactorModelUnittest::OnStateChanged,
                              base::Unretained(this)));
@@ -110,33 +115,56 @@ class SmartLockAuthFactorModelUnittest : public AshTestBase {
     EXPECT_EQ(arrow_button_tap_callback_called_, should_callback_be_called);
   }
 
-  std::unique_ptr<SmartLockAuthFactorModel> smart_lock_model_ =
-      std::make_unique<SmartLockAuthFactorModel>(base::BindRepeating(
-          &SmartLockAuthFactorModelUnittest::ArrowButtonTapCallback,
-          base::Unretained(this)));
-  AuthFactorModel* model_ = smart_lock_model_.get();
+  std::unique_ptr<SmartLockAuthFactorModel> smart_lock_model_;
+  AuthFactorModel* model_ = nullptr;
   AuthIconView icon_;
   bool on_state_changed_called_ = false;
   bool arrow_button_tap_callback_called_ = false;
 };
 
+TEST_F(SmartLockAuthFactorModelUnittest, InitialState_ConnectingToPhone) {
+  auto initial_state = SmartLockState::kConnectingToPhone;
+
+  InitializeSmartLockAuthFactorModel(initial_state);
+
+  // Confirm that the desired initial state was set by verifying that no
+  // change occurs on a subsequent call to `SetSmartLockState()`.
+  smart_lock_model_->SetSmartLockState(initial_state);
+  EXPECT_FALSE(on_state_changed_called_);
+}
+
+TEST_F(SmartLockAuthFactorModelUnittest, InitialState_Inactive) {
+  auto initial_state = SmartLockState::kInactive;
+
+  InitializeSmartLockAuthFactorModel(initial_state);
+
+  // Confirm that the desired initial state was set by verifying that no
+  // change occurs on a subsequent call to `SetSmartLockState()`.
+  smart_lock_model_->SetSmartLockState(initial_state);
+  EXPECT_FALSE(on_state_changed_called_);
+}
+
 TEST_F(SmartLockAuthFactorModelUnittest, GetType) {
+  InitializeSmartLockAuthFactorModel();
   EXPECT_EQ(AuthFactorType::kSmartLock, model_->GetType());
 }
 
 TEST_F(SmartLockAuthFactorModelUnittest, Disabled) {
+  InitializeSmartLockAuthFactorModel();
   smart_lock_model_->SetSmartLockState(SmartLockState::kDisabled);
   EXPECT_TRUE(on_state_changed_called_);
   EXPECT_EQ(AuthFactorState::kUnavailable, model_->GetAuthFactorState());
 }
 
 TEST_F(SmartLockAuthFactorModelUnittest, ClickRequired) {
+  InitializeSmartLockAuthFactorModel();
   smart_lock_model_->SetSmartLockState(SmartLockState::kPhoneAuthenticated);
   EXPECT_TRUE(on_state_changed_called_);
   EXPECT_EQ(AuthFactorState::kClickRequired, model_->GetAuthFactorState());
 }
 
 TEST_F(SmartLockAuthFactorModelUnittest, AvailableStates) {
+  InitializeSmartLockAuthFactorModel();
   for (SmartLockState state :
        {SmartLockState::kPhoneNotFound, SmartLockState::kConnectingToPhone,
         SmartLockState::kPhoneFoundLockedAndDistant,
@@ -149,6 +177,7 @@ TEST_F(SmartLockAuthFactorModelUnittest, AvailableStates) {
 }
 
 TEST_F(SmartLockAuthFactorModelUnittest, ErrorStates) {
+  InitializeSmartLockAuthFactorModel();
   for (SmartLockState state : {SmartLockState::kPasswordReentryRequired,
                                SmartLockState::kPrimaryUserAbsent,
                                SmartLockState::kPhoneNotAuthenticated,
@@ -165,6 +194,7 @@ TEST_F(SmartLockAuthFactorModelUnittest, ErrorStates) {
 }
 
 TEST_F(SmartLockAuthFactorModelUnittest, ReadyStates) {
+  InitializeSmartLockAuthFactorModel();
   smart_lock_model_->SetSmartLockState(
       SmartLockState::kPhoneFoundLockedAndProximate);
   EXPECT_TRUE(on_state_changed_called_);
@@ -173,14 +203,21 @@ TEST_F(SmartLockAuthFactorModelUnittest, ReadyStates) {
 }
 
 TEST_F(SmartLockAuthFactorModelUnittest, OnStateChangedDebounced) {
-  smart_lock_model_->SetSmartLockState(SmartLockState::kConnectingToPhone);
+  InitializeSmartLockAuthFactorModel(SmartLockState::kConnectingToPhone);
+  EXPECT_FALSE(on_state_changed_called_);
+
+  smart_lock_model_->SetSmartLockState(
+      SmartLockState::kPhoneFoundLockedAndProximate);
   EXPECT_TRUE(on_state_changed_called_);
+
   on_state_changed_called_ = false;
-  smart_lock_model_->SetSmartLockState(SmartLockState::kConnectingToPhone);
+  smart_lock_model_->SetSmartLockState(
+      SmartLockState::kPhoneFoundLockedAndProximate);
   EXPECT_FALSE(on_state_changed_called_);
 }
 
 TEST_F(SmartLockAuthFactorModelUnittest, ArrowButtonTapCallback) {
+  InitializeSmartLockAuthFactorModel();
   // Callback should only be called when state is
   // SmartLockState::kPhoneAuthenticated
   TestArrowButtonAndCheckCallbackCalled(SmartLockState::kDisabled, false);
@@ -209,6 +246,7 @@ TEST_F(SmartLockAuthFactorModelUnittest, ArrowButtonTapCallback) {
 }
 
 TEST_F(SmartLockAuthFactorModelUnittest, NotifySmartLockAuthResult) {
+  InitializeSmartLockAuthFactorModel();
   smart_lock_model_->NotifySmartLockAuthResult(/*result=*/true);
   EXPECT_TRUE(on_state_changed_called_);
   EXPECT_EQ(AuthFactorState::kAuthenticated, model_->GetAuthFactorState());
@@ -220,6 +258,7 @@ TEST_F(SmartLockAuthFactorModelUnittest, NotifySmartLockAuthResult) {
 }
 
 TEST_F(SmartLockAuthFactorModelUnittest, GetLabelAndAccessibleName) {
+  InitializeSmartLockAuthFactorModel();
   for (const LabelTestcase& testcase : kLabelTestcases) {
     smart_lock_model_->SetSmartLockState(testcase.state);
     if (testcase.can_use_pin.has_value()) {
@@ -232,6 +271,7 @@ TEST_F(SmartLockAuthFactorModelUnittest, GetLabelAndAccessibleName) {
 }
 
 TEST_F(SmartLockAuthFactorModelUnittest, GetLabelAfterPermanentErrorTimeout) {
+  InitializeSmartLockAuthFactorModel();
   smart_lock_model_->NotifySmartLockAuthResult(/*result=*/false);
   EXPECT_TRUE(on_state_changed_called_);
   EXPECT_EQ(AuthFactorState::kErrorPermanent, model_->GetAuthFactorState());

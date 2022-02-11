@@ -1155,9 +1155,11 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
         std::make_unique<FingerprintAuthFactorModel>(user.fingerprint_state);
     fingerprint_auth_factor_model_ = fingerprint_auth_factor_model.get();
     auto smart_lock_auth_factor_model =
-        SmartLockAuthFactorModel::Factory::Create(base::BindRepeating(
-            &LoginAuthUserView::OnSmartLockArrowButtonTapped,
-            base::Unretained(this)));
+        SmartLockAuthFactorModel::Factory::Create(
+            user.smart_lock_state,
+            base::BindRepeating(
+                &LoginAuthUserView::OnSmartLockArrowButtonTapped,
+                base::Unretained(this)));
     smart_lock_auth_factor_model_ = smart_lock_auth_factor_model.get();
 
     // Note: at the moment, between Fingerprint and Smart Lock, Smart Lock

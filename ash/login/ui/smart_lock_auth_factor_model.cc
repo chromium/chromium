@@ -21,10 +21,13 @@ SmartLockAuthFactorModel::Factory*
 // static
 std::unique_ptr<SmartLockAuthFactorModel>
 SmartLockAuthFactorModel::Factory::Create(
+    SmartLockState initial_state,
     base::RepeatingCallback<void()> arrow_button_tap_callback) {
   if (factory_instance_)
-    return factory_instance_->CreateInstance(arrow_button_tap_callback);
-  return std::make_unique<SmartLockAuthFactorModel>(arrow_button_tap_callback);
+    return factory_instance_->CreateInstance(initial_state,
+                                             arrow_button_tap_callback);
+  return std::make_unique<SmartLockAuthFactorModel>(initial_state,
+                                                    arrow_button_tap_callback);
 }
 
 // static
@@ -34,8 +37,10 @@ void SmartLockAuthFactorModel::Factory::SetFactoryForTesting(
 }
 
 SmartLockAuthFactorModel::SmartLockAuthFactorModel(
+    SmartLockState initial_state,
     base::RepeatingCallback<void()> arrow_button_tap_callback)
-    : arrow_button_tap_callback_(arrow_button_tap_callback) {}
+    : state_(initial_state),
+      arrow_button_tap_callback_(arrow_button_tap_callback) {}
 
 SmartLockAuthFactorModel::~SmartLockAuthFactorModel() = default;
 

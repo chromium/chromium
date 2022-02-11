@@ -886,6 +886,18 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
     user_info.can_remove = CanRemoveUser(user);
     user_info.fingerprint_state =
         quick_unlock::GetFingerprintStateForUser(user);
+
+    // TODO(b/214104455): If this kSmartLockUIRevamp flag is enabled, tests such
+    // as ScreenLockerUnitTest.VerifyAshIsNotifiedOfScreenLocked fail, because
+    // they do not correctly initialize an associated Profile with |account_id|.
+    if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
+      auto* easy_unlock_service = GetEasyUnlockServiceForUser(account_id);
+      if (easy_unlock_service) {
+        user_info.smart_lock_state =
+            easy_unlock_service->GetInitialSmartLockState();
+      }
+    }
+
     user_info.show_pin_pad_for_password = false;
     if (known_user.GetIsEnterpriseManaged(user->GetAccountId()) &&
         user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT) {

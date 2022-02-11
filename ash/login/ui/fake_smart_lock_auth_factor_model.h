@@ -11,7 +11,8 @@ namespace ash {
 
 class FakeSmartLockAuthFactorModel : public SmartLockAuthFactorModel {
  public:
-  explicit FakeSmartLockAuthFactorModel(
+  FakeSmartLockAuthFactorModel(
+      SmartLockState initial_state,
       base::RepeatingCallback<void()> arrow_button_tap_callback);
 
   FakeSmartLockAuthFactorModel(const FakeSmartLockAuthFactorModel&) = delete;
@@ -19,6 +20,8 @@ class FakeSmartLockAuthFactorModel : public SmartLockAuthFactorModel {
       delete;
 
   ~FakeSmartLockAuthFactorModel() override;
+
+  SmartLockState GetSmartLockState();
 };
 
 class FakeSmartLockAuthFactorModelFactory
@@ -27,7 +30,13 @@ class FakeSmartLockAuthFactorModelFactory
   FakeSmartLockAuthFactorModelFactory() = default;
 
   std::unique_ptr<SmartLockAuthFactorModel> CreateInstance(
+      SmartLockState initial_state,
       base::RepeatingCallback<void()> arrow_button_tap_callback) override;
+
+  FakeSmartLockAuthFactorModel* GetLastCreatedModel();
+
+ private:
+  FakeSmartLockAuthFactorModel* last_created_model_ = nullptr;
 };
 
 }  // namespace ash

@@ -585,6 +585,23 @@ TEST_F(LoginAuthUserViewAuthFactorsUnittest, NotShowFingerprintIfUnavaialble) {
             AuthFactorModel::AuthFactorState::kUnavailable);
 }
 
+TEST_F(LoginAuthUserViewAuthFactorsUnittest, SmartLockInitialState) {
+  auto user = CreateUser("user@domain.com");
+  user.smart_lock_state = SmartLockState::kConnectingToPhone;
+  InitializeViewForUser(user);
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+  Shell::Get()->login_screen_controller()->ShowLockScreen();
+  LoginAuthUserView::TestApi auth_test(view_);
+
+  EXPECT_EQ(SmartLockState::kConnectingToPhone,
+            fake_smart_lock_auth_factor_model_factory_->GetLastCreatedModel()
+                ->GetSmartLockState());
+}
+
 TEST_F(LoginAuthUserViewAuthFactorsUnittest, VerifySmartLockArrowTapCallback) {
   auto user = CreateUser("user@domain.com");
   InitializeViewForUser(user);
