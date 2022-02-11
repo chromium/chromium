@@ -43,7 +43,6 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
   syncer::DeviceInfoSyncService* GetDeviceInfoSyncService() override;
   send_tab_to_self::SendTabToSelfSyncService* GetSendTabToSelfSyncService()
       override;
-  bookmarks::BookmarkModel* GetBookmarkModel() override;
   favicon::FaviconService* GetFaviconService() override;
   history::HistoryService* GetHistoryService() override;
   sync_preferences::PrefServiceSyncable* GetPrefServiceSyncable() override;
@@ -53,7 +52,6 @@ class IOSChromeSyncClient : public browser_sync::BrowserSyncClient {
   invalidation::InvalidationService* GetInvalidationService() override;
   syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;
   syncer::TrustedVaultClient* GetTrustedVaultClient() override;
-  BookmarkUndoService* GetBookmarkUndoService() override;
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegateForModelType(syncer::ModelType type) override;

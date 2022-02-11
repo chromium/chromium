@@ -34,7 +34,6 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_user_events/user_event_service.h"
-#include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/bookmarks/bookmark_sync_service_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/dom_distiller/dom_distiller_service_factory.h"
@@ -54,7 +53,6 @@
 #include "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "ios/chrome/browser/sync/session_sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_invalidations_service_factory.h"
-#include "ios/chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 #include "ios/chrome/common/channel_info.h"
 #include "ios/web/public/thread/web_task_traits.h"
@@ -125,11 +123,6 @@ IOSChromeSyncClient::GetSendTabToSelfSyncService() {
   return SendTabToSelfSyncServiceFactory::GetForBrowserState(browser_state_);
 }
 
-bookmarks::BookmarkModel* IOSChromeSyncClient::GetBookmarkModel() {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  return ios::BookmarkModelFactory::GetForBrowserState(browser_state_);
-}
-
 favicon::FaviconService* IOSChromeSyncClient::GetFaviconService() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   return ios::FaviconServiceFactory::GetForBrowserState(
@@ -160,10 +153,6 @@ IOSChromeSyncClient::CreateDataTypeControllers(
   // The iOS port does not have any platform-specific datatypes.
   return component_factory_->CreateCommonDataTypeControllers(
       /*disabled_types=*/{}, sync_service);
-}
-
-BookmarkUndoService* IOSChromeSyncClient::GetBookmarkUndoService() {
-  return ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state_);
 }
 
 invalidation::InvalidationService*

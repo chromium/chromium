@@ -135,10 +135,6 @@ syncer::DeviceInfoSyncService* WebViewSyncClient::GetDeviceInfoSyncService() {
   return device_info_sync_service_;
 }
 
-bookmarks::BookmarkModel* WebViewSyncClient::GetBookmarkModel() {
-  return nullptr;
-}
-
 favicon::FaviconService* WebViewSyncClient::GetFaviconService() {
   return nullptr;
 }
@@ -166,10 +162,6 @@ WebViewSyncClient::CreateDataTypeControllers(
     syncer::SyncService* sync_service) {
   return component_factory_->CreateCommonDataTypeControllers(GetDisabledTypes(),
                                                              sync_service);
-}
-
-BookmarkUndoService* WebViewSyncClient::GetBookmarkUndoService() {
-  return nullptr;
 }
 
 invalidation::InvalidationService* WebViewSyncClient::GetInvalidationService() {

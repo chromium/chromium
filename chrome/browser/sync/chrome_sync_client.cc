@@ -13,7 +13,6 @@
 #include "base/syslog_logging.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -41,7 +40,6 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
-#include "chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_data_service_factory.h"
@@ -278,11 +276,6 @@ syncer::DeviceInfoSyncService* ChromeSyncClient::GetDeviceInfoSyncService() {
   return DeviceInfoSyncServiceFactory::GetForProfile(profile_);
 }
 
-bookmarks::BookmarkModel* ChromeSyncClient::GetBookmarkModel() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return BookmarkModelFactory::GetForBrowserContext(profile_);
-}
-
 favicon::FaviconService* ChromeSyncClient::GetFaviconService() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return FaviconServiceFactory::GetForProfile(
@@ -491,10 +484,6 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return controllers;
-}
-
-BookmarkUndoService* ChromeSyncClient::GetBookmarkUndoService() {
-  return BookmarkUndoServiceFactory::GetForProfile(profile_);
 }
 
 syncer::TrustedVaultClient* ChromeSyncClient::GetTrustedVaultClient() {
