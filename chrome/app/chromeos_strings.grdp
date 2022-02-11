@@ -4651,9 +4651,6 @@
   <message name="IDS_CROSTINI_UPGRADER_BACKUP_CHANGE_LOCATION" desc="Text shown in the Crostini upgrader dialog next to the backup checkbox with a link enabling the user to change the location to which files are backed up.">
     Change location
   </message>
-  <message name="IDS_CROSTINI_UPGRADER_OFFER_RESTORE_MESSAGE" desc="Text shown in the Crostini upgrader dialog when the upgrade has failed and the previous container backup can be restored.">
-    There was an error while upgrading Linux. We'll restore the container using your backup.
-  </message>
   <message name="IDS_CROSTINI_UPGRADER_RESTORE_MESSAGE" desc="Title of the Crostini upgrader when the container upgrade fails and restore of a backup is in progress.">
     Linux files and apps are being restored to their backed up state.
   </message>

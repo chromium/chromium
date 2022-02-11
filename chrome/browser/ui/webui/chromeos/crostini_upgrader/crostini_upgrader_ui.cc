@@ -69,7 +69,6 @@ void AddStringResources(content::WebUIDataSource* source) {
       {"upgradingMessage", IDS_CROSTINI_UPGRADER_UPGRADING},
       {"succeededMessage", IDS_CROSTINI_UPGRADER_SUCCEEDED},
       {"cancelingMessage", IDS_CROSTINI_UPGRADER_CANCELING},
-      {"offerRestoreMessage", IDS_CROSTINI_UPGRADER_OFFER_RESTORE_MESSAGE},
       {"restoreMessage", IDS_CROSTINI_UPGRADER_RESTORE_MESSAGE},
       {"restoreErrorMessage", IDS_CROSTINI_UPGRADER_RESTORE_ERROR_MESSAGE},
       {"restoreSucceededMessage",
