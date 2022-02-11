@@ -1,0 +1,69 @@
+From 0872badbc2bb59e8ea3f17320dd44a762aaa9a6c Mon Sep 17 00:00:00 2001
+From: Joseph Chao <josephchao@google.com>
+Date: Fri, 11 Feb 2022 17:45:00 +0000
+Subject: [PATCH 4/4] Adding SamePackagePolicy
+
+---
+ .../PolicyScheduler.java                      |  2 ++
+ .../policies/SamePackagePolicy.java           | 29 +++++++++++++++++++
+ 2 files changed, 31 insertions(+)
+ create mode 100644 src/main/java/com/android/tools/r8/horizontalclassmerging/policies/SamePackagePolicy.java
+
+diff --git a/src/main/java/com/android/tools/r8/horizontalclassmerging/PolicyScheduler.java b/src/main/java/com/android/tools/r8/horizontalclassmerging/PolicyScheduler.java
+index 5e76e2dc6..b4821aa85 100644
+--- a/src/main/java/com/android/tools/r8/horizontalclassmerging/PolicyScheduler.java
++++ b/src/main/java/com/android/tools/r8/horizontalclassmerging/PolicyScheduler.java
+@@ -51,6 +51,7 @@ import com.android.tools.r8.horizontalclassmerging.policies.SameFeatureSplit;
+ import com.android.tools.r8.horizontalclassmerging.policies.SameInstanceFields;
+ import com.android.tools.r8.horizontalclassmerging.policies.SameMainDexGroup;
+ import com.android.tools.r8.horizontalclassmerging.policies.SameNestHost;
++import com.android.tools.r8.horizontalclassmerging.policies.SamePackagePolicy;
+ import com.android.tools.r8.horizontalclassmerging.policies.SameParentClass;
+ import com.android.tools.r8.horizontalclassmerging.policies.SyntheticItemsPolicy;
+ import com.android.tools.r8.horizontalclassmerging.policies.VerifyPolicyAlwaysSatisfied;
+@@ -202,6 +203,7 @@ public class PolicyScheduler {
+     ImmediateProgramSubtypingInfo immediateSubtypingInfo =
+         ImmediateProgramSubtypingInfo.create(appView);
+     builder.add(
++        new SamePackagePolicy(),
+         new CheckAbstractClasses(appView),
+         new NoClassAnnotationCollisions(),
+         new SameFeatureSplit(appView),
+diff --git a/src/main/java/com/android/tools/r8/horizontalclassmerging/policies/SamePackagePolicy.java b/src/main/java/com/android/tools/r8/horizontalclassmerging/policies/SamePackagePolicy.java
+new file mode 100644
+index 000000000..deae6e78f
+--- /dev/null
++++ b/src/main/java/com/android/tools/r8/horizontalclassmerging/policies/SamePackagePolicy.java
+@@ -0,0 +1,29 @@
++// Copyright (c) 2022, the R8 project authors. Please see the AUTHORS file
++// for details. All rights reserved. Use of this source code is governed by a
++// BSD-style license that can be found in the LICENSE file.
++
++package com.android.tools.r8.horizontalclassmerging.policies;
++
++import com.android.tools.r8.graph.DexProgramClass;
++import com.android.tools.r8.horizontalclassmerging.MultiClassSameReferencePolicy;
++
++public class SamePackagePolicy extends MultiClassSameReferencePolicy<String> {
++
++  @Override
++  public String getMergeKey(DexProgramClass clazz) {
++    String packageName = clazz.getType().getPackageName();
++    if (isClassesInPackageEligibleForMerging(packageName)) {
++      return packageName;
++    }
++    return ineligibleForClassMerging();
++  }
++
++  private boolean isClassesInPackageEligibleForMerging(String packageName) {
++    return true;
++  }
++
++  @Override
++  public String getName() {
++    return "SamePackagePolicy";
++  }
++}
+-- 
+2.35.1.265.g69c8d7142f-goog
+
