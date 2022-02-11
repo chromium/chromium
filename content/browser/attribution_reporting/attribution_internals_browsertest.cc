@@ -383,17 +383,23 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           .SetPriority(12)
           .Build()));
   manager_.NotifyReportDropped(AttributionStorage::CreateReportResult(
-      AttributionTrigger::Result::kRateLimited,
+      AttributionTrigger::Result::kExcessiveReports,
       ReportBuilder(SourceBuilder(now).BuildStored())
           .SetReportTime(now + base::Hours(6))
           .SetPriority(-3)
+          .Build()));
+  manager_.NotifyReportDropped(AttributionStorage::CreateReportResult(
+      AttributionTrigger::Result::kExcessiveReportingOrigins,
+      ReportBuilder(SourceBuilder(now).BuildStored())
+          .SetReportTime(now + base::Hours(7))
+          .SetPriority(-4)
           .Build()));
 
   {
     static constexpr char wait_script[] = R"(
       let table = document.querySelector("#report-table-wrapper tbody");
       let obs = new MutationObserver(() => {
-        if (table.children.length === 7 &&
+        if (table.children.length === 8 &&
             table.children[0].children[2].innerText === "https://conversion.test" &&
             table.children[0].children[3].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-attribution" &&
@@ -409,7 +415,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[3].children[8].innerText === "Sent: HTTP 200" &&
             table.children[4].children[8].innerText === "Prohibited by browser policy" &&
             table.children[5].children[8].innerText === "Network error" &&
-            table.children[6].children[8].innerText === "Dropped due to rate-limiting") {
+            table.children[6].children[8].innerText === "Dropped due to excessive reports" &&
+            table.children[7].children[8].innerText === "Dropped due to excessive reporting origins") {
           document.title = $1;
         }
       });
@@ -425,23 +432,24 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     static constexpr char wait_script[] = R"(
       let table = document.querySelector("#report-table-wrapper tbody");
       let obs = new MutationObserver(() => {
-        if (table.children.length === 7 &&
-            table.children[6].children[2].innerText === "https://conversion.test" &&
-            table.children[6].children[3].innerText ===
+        if (table.children.length === 8 &&
+            table.children[7].children[2].innerText === "https://conversion.test" &&
+            table.children[7].children[3].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-attribution" &&
-            table.children[6].children[6].innerText === "13" &&
-            table.children[6].children[7].innerText === "yes" &&
-            table.children[6].children[8].innerText === "Pending" &&
-            table.children[5].children[6].innerText === "12" &&
-            table.children[5].children[8].innerText === "Dropped for noise" &&
-            table.children[4].children[6].innerText === "11" &&
-            table.children[4].children[8].innerText === "Dropped due to low priority" &&
-            table.children[3].children[6].innerText === "0" &&
-            table.children[3].children[7].innerText === "no" &&
-            table.children[3].children[8].innerText === "Sent: HTTP 200" &&
-            table.children[2].children[8].innerText === "Prohibited by browser policy" &&
-            table.children[1].children[8].innerText === "Network error" &&
-            table.children[0].children[8].innerText === "Dropped due to rate-limiting") {
+            table.children[7].children[6].innerText === "13" &&
+            table.children[7].children[7].innerText === "yes" &&
+            table.children[7].children[8].innerText === "Pending" &&
+            table.children[6].children[6].innerText === "12" &&
+            table.children[6].children[8].innerText === "Dropped for noise" &&
+            table.children[5].children[6].innerText === "11" &&
+            table.children[5].children[8].innerText === "Dropped due to low priority" &&
+            table.children[4].children[6].innerText === "0" &&
+            table.children[4].children[7].innerText === "no" &&
+            table.children[4].children[8].innerText === "Sent: HTTP 200" &&
+            table.children[3].children[8].innerText === "Prohibited by browser policy" &&
+            table.children[2].children[8].innerText === "Network error" &&
+            table.children[1].children[8].innerText === "Dropped due to excessive reports" &&
+            table.children[0].children[8].innerText === "Dropped due to excessive reporting origins") {
           document.title = $1;
         }
       });
@@ -459,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
     static constexpr char wait_script[] = R"(
       let table = document.querySelector("#report-table-wrapper tbody");
       let obs = new MutationObserver(() => {
-        if (table.children.length === 7 &&
+        if (table.children.length === 8 &&
             table.children[0].children[2].innerText === "https://conversion.test" &&
             table.children[0].children[3].innerText ===
               "https://report.test/.well-known/attribution-reporting/report-attribution" &&
@@ -475,7 +483,8 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
             table.children[3].children[8].innerText === "Sent: HTTP 200" &&
             table.children[4].children[8].innerText === "Prohibited by browser policy" &&
             table.children[5].children[8].innerText === "Network error" &&
-            table.children[6].children[8].innerText === "Dropped due to rate-limiting") {
+            table.children[6].children[8].innerText === "Dropped due to excessive reports" &&
+            table.children[7].children[8].innerText === "Dropped due to excessive reporting origins") {
           document.title = $1;
         }
       });

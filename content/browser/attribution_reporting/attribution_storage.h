@@ -112,7 +112,8 @@ class AttributionStorage {
     AttributionTrigger::Result status_;
 
     // Null unless `status` is `kSuccessDroppedLowerPriority`,
-    // `kRateLimited`, `kPriorityTooLow`, or `kDroppedForNoise`.
+    // `kExcessiveReports`, `kPriorityTooLow`, `kDroppedForNoise`, or
+    // `kExcessiveReportingOrigins`..
     absl::optional<AttributionReport> dropped_report_;
 
     // Null unless `dropped_report_`'s source was deactivated.

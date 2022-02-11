@@ -19,6 +19,7 @@ class CONTENT_EXPORT StorableSource {
     kInternalError,
     kInsufficientSourceCapacity,
     kInsufficientUniqueDestinationCapacity,
+    kExcessiveReportingOrigins,
   };
 
   explicit StorableSource(CommonSourceInfo common_info);

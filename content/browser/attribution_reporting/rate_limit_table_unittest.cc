@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <limits>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -13,6 +14,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/test/task_environment.h"
@@ -24,6 +26,7 @@
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -31,8 +34,8 @@ namespace content {
 
 namespace {
 
-using AttributionAllowedStatus =
-    ::content::RateLimitTable::AttributionAllowedStatus;
+using RateLimitResult = ::content::RateLimitTable::Result;
+using RateLimitScope = ::content::RateLimitTable::Scope;
 
 using ::testing::_;
 using ::testing::ElementsAre;
@@ -42,34 +45,75 @@ using ::testing::Pair;
 using ::testing::SizeIs;
 
 struct RateLimitRow {
+  template <typename... Args>
+  static RateLimitRow Source(Args&&... args) {
+    return RateLimitRow(RateLimitScope::kSource, args...);
+  }
+
+  template <typename... Args>
+  static RateLimitRow Report(Args&&... args) {
+    return RateLimitRow(RateLimitScope::kReport, args...);
+  }
+
+  RateLimitRow(RateLimitScope scope,
+               std::string impression_origin,
+               std::string conversion_origin,
+               std::string reporting_origin,
+               base::Time time)
+      : scope(scope),
+        impression_origin(std::move(impression_origin)),
+        conversion_origin(std::move(conversion_origin)),
+        reporting_origin(std::move(reporting_origin)),
+        time(time) {}
+
+  RateLimitScope scope;
   std::string impression_origin;
   std::string conversion_origin;
   std::string reporting_origin;
   base::Time time;
 
-  AttributionReport BuildReport() const {
-    auto source =
-        SourceBuilder()
-            .SetImpressionOrigin(url::Origin::Create(GURL(impression_origin)))
-            .SetConversionOrigin(url::Origin::Create(GURL(conversion_origin)))
-            .SetReportingOrigin(url::Origin::Create(GURL(reporting_origin)))
-            .BuildStored();
+  SourceBuilder NewSourceBuilder() const {
+    // Ensure that operations involving reports use the trigger time, not the
+    // source time.
+    auto source_time = scope == RateLimitScope::kSource ? time : base::Time();
+    auto builder = SourceBuilder(source_time);
 
+    builder.SetImpressionOrigin(url::Origin::Create(GURL(impression_origin)));
+    builder.SetConversionOrigin(url::Origin::Create(GURL(conversion_origin)));
+    builder.SetReportingOrigin(url::Origin::Create(GURL(reporting_origin)));
+
+    return builder;
+  }
+
+  AttributionReport BuildReport() const {
+    CHECK_EQ(scope, RateLimitScope::kReport);
+    auto source = NewSourceBuilder().BuildStored();
     return ReportBuilder(std::move(source)).SetTriggerTime(time).Build();
   }
 };
 
 bool operator==(const RateLimitRow& a, const RateLimitRow& b) {
   const auto tie = [](const RateLimitRow& row) {
-    return std::make_tuple(row.impression_origin, row.conversion_origin,
-                           row.reporting_origin, row.time);
+    return std::make_tuple(row.scope, row.impression_origin,
+                           row.conversion_origin, row.reporting_origin,
+                           row.time);
   };
   return tie(a) == tie(b);
 }
 
+std::ostream& operator<<(std::ostream& out, const RateLimitScope scope) {
+  switch (scope) {
+    case RateLimitScope::kSource:
+      return out << "kSource";
+    case RateLimitScope::kReport:
+      return out << "kReport";
+  }
+}
+
 std::ostream& operator<<(std::ostream& out, const RateLimitRow& row) {
-  return out << "{" << row.impression_origin << "," << row.conversion_origin
-             << "," << row.reporting_origin << "," << row.time << "}";
+  return out << "{" << row.scope << "," << row.impression_origin << ","
+             << row.conversion_origin << "," << row.reporting_origin << ","
+             << row.time << "}";
 }
 
 class RateLimitTableTest : public testing::Test {
@@ -86,31 +130,49 @@ class RateLimitTableTest : public testing::Test {
     std::vector<std::pair<int64_t, RateLimitRow>> rows;
 
     static constexpr char kSelectSql[] =
-        "SELECT rate_limit_id,impression_origin,conversion_origin,"
-        "reporting_origin,conversion_time FROM rate_limits";
+        "SELECT rate_limit_id,scope,impression_origin,conversion_origin,"
+        "reporting_origin,time FROM rate_limits";
     sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSelectSql));
 
     while (statement.Step()) {
-      rows.emplace_back(statement.ColumnInt64(0),
-                        RateLimitRow{
-                            .impression_origin = statement.ColumnString(1),
-                            .conversion_origin = statement.ColumnString(2),
-                            .reporting_origin = statement.ColumnString(3),
-                            .time = statement.ColumnTime(4),
-                        });
+      rows.emplace_back(
+          statement.ColumnInt64(0),
+          RateLimitRow(static_cast<RateLimitScope>(statement.ColumnInt(1)),
+                       /*impression_origin=*/statement.ColumnString(2),
+                       /*conversion_origin=*/statement.ColumnString(3),
+                       /*reporting_origin=*/statement.ColumnString(4),
+                       statement.ColumnTime(5)));
     }
 
     EXPECT_TRUE(statement.Succeeded());
     return base::flat_map<int64_t, RateLimitRow>(std::move(rows));
   }
 
-  [[nodiscard]] bool AddRateLimit(const AttributionReport& report) {
-    return table_.AddRateLimit(&db_, report);
+  [[nodiscard]] bool AddRateLimitForSource(const RateLimitRow& row) {
+    CHECK_EQ(row.scope, RateLimitScope::kSource);
+    return table_.AddRateLimitForSource(&db_,
+                                        row.NewSourceBuilder().BuildStored());
   }
 
-  [[nodiscard]] RateLimitTable::AttributionAllowedStatus AttributionAllowed(
-      const AttributionReport& report) {
-    return table_.AttributionAllowed(&db_, report);
+  [[nodiscard]] bool AddRateLimitForReport(const RateLimitRow& row) {
+    return table_.AddRateLimitForReport(&db_, row.BuildReport());
+  }
+
+  [[nodiscard]] RateLimitResult SourceAllowedForReportingOriginLimit(
+      const RateLimitRow& row) {
+    CHECK_EQ(row.scope, RateLimitScope::kSource);
+    return table_.SourceAllowedForReportingOriginLimit(
+        &db_, row.NewSourceBuilder().Build());
+  }
+
+  [[nodiscard]] RateLimitResult ReportAllowedForReportingOriginLimit(
+      const RateLimitRow& row) {
+    return table_.ReportAllowedForReportingOriginLimit(&db_, row.BuildReport());
+  }
+
+  [[nodiscard]] RateLimitResult ReportAllowedForAttributionLimit(
+      const RateLimitRow& row) {
+    return table_.ReportAllowedForAttributionLimit(&db_, row.BuildReport());
   }
 
  protected:
@@ -124,13 +186,16 @@ class RateLimitTableTest : public testing::Test {
 
 }  // namespace
 
-TEST_F(
-    RateLimitTableTest,
-    AttributionAllowed_ScopedToSourceSiteDestinationSiteReportingOriginTimeWindow) {
+// Tests that report counts are scoped to <source site, destination site,
+// reporting origin> in the correct time window.
+TEST_F(RateLimitTableTest, ReportAllowedForReportCountLimit_ScopedCorrectly) {
   constexpr base::TimeDelta kTimeWindow = base::Days(1);
   delegate_.set_rate_limits({
       .time_window = kTimeWindow,
-      .max_attributions_per_window = 2,
+      .max_source_registration_reporting_origins =
+          std::numeric_limits<int64_t>::max(),
+      .max_report_reporting_origins = std::numeric_limits<int64_t>::max(),
+      .max_attributions = 2,
   });
 
   const base::Time now = base::Time::Now();
@@ -139,45 +204,53 @@ TEST_F(
   // the correct handling of the previous one.
   const struct {
     RateLimitRow row;
-    AttributionAllowedStatus expected;
+    RateLimitResult expected;
   } kRateLimitsToAdd[] = {
       // Add the limit of 2 reports for this tuple. Note that although the first
       // two *origins* for each row are different, they share the same *sites*,
       // that is, https://s1.test and https://d1.test, respectively.
 
-      {{"https://a.s1.test", "https://a.d1.test", "https://a.r.test", now},
-       AttributionAllowedStatus::kAllowed},
+      {RateLimitRow::Report("https://a.s1.test", "https://a.d1.test",
+                            "https://a.r.test", now),
+       RateLimitResult::kAllowed},
 
-      {{"https://b.s1.test", "https://b.d1.test", "https://a.r.test", now},
-       AttributionAllowedStatus::kAllowed},
+      {RateLimitRow::Report("https://b.s1.test", "https://b.d1.test",
+                            "https://a.r.test", now),
+       RateLimitResult::kAllowed},
 
       // This is not allowed because
       // <https://s1.test, https://d1.test, https://a.r.test> already has the
       // maximum of 2
       // reports.
-      {{"https://b.s1.test", "https://b.d1.test", "https://a.r.test", now},
-       AttributionAllowedStatus::kNotAllowed},
+      {RateLimitRow::Report("https://b.s1.test", "https://b.d1.test",
+                            "https://a.r.test", now),
+       RateLimitResult::kNotAllowed},
 
       // This is allowed because the source site is different.
-      {{"https://s2.test", "https://a.d1.test", "https://a.r.test", now},
-       AttributionAllowedStatus::kAllowed},
+      {RateLimitRow::Report("https://s2.test", "https://a.d1.test",
+                            "https://a.r.test", now),
+       RateLimitResult::kAllowed},
 
       // This is allowed because the destination site is different.
-      {{"https://a.s1.test", "https://d2.test", "https://a.r.test", now},
-       AttributionAllowedStatus::kAllowed},
+      {RateLimitRow::Report("https://a.s1.test", "https://d2.test",
+                            "https://a.r.test", now),
+       RateLimitResult::kAllowed},
 
       // This is allowed because the reporting origin is different.
-      {{"https://a.s1.test", "https://d2.test", "https://b.r.test", now},
-       AttributionAllowedStatus::kAllowed},
+      {RateLimitRow::Report("https://a.s1.test", "https://d2.test",
+                            "https://b.r.test", now),
+       RateLimitResult::kAllowed},
   };
 
-  for (const auto& rate_limit_to_add : kRateLimitsToAdd) {
-    auto report = rate_limit_to_add.row.BuildReport();
+  for (const auto& rate_limit : kRateLimitsToAdd) {
+    auto report = rate_limit.row.BuildReport();
 
-    ASSERT_EQ(rate_limit_to_add.expected, AttributionAllowed(report)) << report;
+    ASSERT_EQ(rate_limit.expected,
+              ReportAllowedForAttributionLimit(rate_limit.row))
+        << rate_limit.row;
 
-    if (rate_limit_to_add.expected == AttributionAllowedStatus::kAllowed) {
-      ASSERT_TRUE(AddRateLimit(report)) << report;
+    if (rate_limit.expected == RateLimitResult::kAllowed) {
+      ASSERT_TRUE(AddRateLimitForReport(rate_limit.row)) << rate_limit.row;
     }
   }
 
@@ -185,16 +258,20 @@ TEST_F(
 
   // This is allowed because the original rows for the tuple have fallen out of
   // the time window.
-  const RateLimitRow row{"https://a.s1.test", "https://a.d1.test",
-                         "https://a.r.test", base::Time::Now()};
-  ASSERT_EQ(AttributionAllowedStatus::kAllowed,
-            AttributionAllowed(row.BuildReport()));
+  const auto row =
+      RateLimitRow::Report("https://a.s1.test", "https://a.d1.test",
+                           "https://a.r.test", base::Time::Now());
+  ASSERT_EQ(RateLimitResult::kAllowed, ReportAllowedForAttributionLimit(row));
 }
 
-TEST_F(RateLimitTableTest, AttributionAllowed_SourceTypesCombined) {
+TEST_F(RateLimitTableTest,
+       ReportAllowedForReportCountLimit_SourceTypesCombined) {
   delegate_.set_rate_limits({
       .time_window = base::Days(1),
-      .max_attributions_per_window = 2,
+      .max_source_registration_reporting_origins =
+          std::numeric_limits<int64_t>::max(),
+      .max_report_reporting_origins = std::numeric_limits<int64_t>::max(),
+      .max_attributions = 2,
   });
 
   const auto navigation_report =
@@ -210,26 +287,213 @@ TEST_F(RateLimitTableTest, AttributionAllowed_SourceTypesCombined) {
                         .BuildStored())
           .Build();
 
-  ASSERT_EQ(AttributionAllowedStatus::kAllowed,
-            AttributionAllowed(navigation_report));
+  ASSERT_EQ(RateLimitResult::kAllowed,
+            table_.ReportAllowedForAttributionLimit(&db_, navigation_report));
 
-  ASSERT_EQ(AttributionAllowedStatus::kAllowed,
-            AttributionAllowed(event_report));
+  ASSERT_EQ(RateLimitResult::kAllowed,
+            table_.ReportAllowedForAttributionLimit(&db_, event_report));
 
-  ASSERT_TRUE(AddRateLimit(navigation_report));
-  ASSERT_TRUE(AddRateLimit(event_report));
+  ASSERT_TRUE(table_.AddRateLimitForReport(&db_, navigation_report));
+  ASSERT_TRUE(table_.AddRateLimitForReport(&db_, event_report));
 
-  ASSERT_EQ(AttributionAllowedStatus::kNotAllowed,
-            AttributionAllowed(navigation_report));
+  ASSERT_EQ(RateLimitResult::kNotAllowed,
+            table_.ReportAllowedForAttributionLimit(&db_, navigation_report));
 
-  ASSERT_EQ(AttributionAllowedStatus::kNotAllowed,
-            AttributionAllowed(event_report));
+  ASSERT_EQ(RateLimitResult::kNotAllowed,
+            table_.ReportAllowedForAttributionLimit(&db_, event_report));
+}
+
+namespace {
+
+// The following loop iterations are *not* independent: Each one depends on
+// the correct handling of the previous one.
+const struct {
+  const char* impression_origin;
+  const char* conversion_origin;
+  const char* reporting_origin;
+  RateLimitResult expected;
+} kReportingOriginRateLimitsToAdd[] = {
+    // Add the limit of 2 distinct reporting origins for this tuple. Note that
+    // although the first two *origins* for each row are different, they share
+    // the same *sites*, that is, https://s1.test and https://d1.test,
+    // respectively.
+
+    {"https://a.s1.test", "https://a.d1.test", "https://a.r.test",
+     RateLimitResult::kAllowed},
+
+    {"https://b.s1.test", "https://b.d1.test", "https://b.r.test",
+     RateLimitResult::kAllowed},
+
+    // This is allowed because the reporting origin is not new.
+    {"https://b.s1.test", "https://b.d1.test", "https://b.r.test",
+     RateLimitResult::kAllowed},
+
+    // This is not allowed because
+    // <https://s1.test, https://d1.test> already has the max of 2 distinct
+    // reporting origins: https://a.r.test and https://b.r.test.
+    {"https://b.s1.test", "https://b.d1.test", "https://c.r.test",
+     RateLimitResult::kNotAllowed},
+
+    // This is allowed because the source site is different.
+    {"https://s2.test", "https://a.d1.test", "https://c.r.test",
+     RateLimitResult::kAllowed},
+
+    // This is allowed because the destination site is different.
+    {"https://a.s1.test", "https://d2.test", "https://c.r.test",
+     RateLimitResult::kAllowed},
+};
+
+}  // namespace
+
+TEST_F(RateLimitTableTest, SourceAllowedForReportingOriginLimit) {
+  constexpr base::TimeDelta kTimeWindow = base::Days(1);
+  delegate_.set_rate_limits({
+      .time_window = kTimeWindow,
+      .max_source_registration_reporting_origins = 2,
+      .max_report_reporting_origins = std::numeric_limits<int64_t>::max(),
+      .max_attributions = std::numeric_limits<int64_t>::max(),
+  });
+
+  const base::Time now = base::Time::Now();
+
+  for (const auto& rate_limit : kReportingOriginRateLimitsToAdd) {
+    auto row = RateLimitRow::Source(rate_limit.impression_origin,
+                                    rate_limit.conversion_origin,
+                                    rate_limit.reporting_origin, now);
+
+    ASSERT_EQ(rate_limit.expected, SourceAllowedForReportingOriginLimit(row))
+        << row;
+
+    if (rate_limit.expected == RateLimitResult::kAllowed) {
+      ASSERT_TRUE(AddRateLimitForSource(row)) << row;
+    }
+  }
+
+  task_environment_.FastForwardBy(kTimeWindow);
+
+  // This is allowed because the original rows for the tuple have fallen out of
+  // the time window.
+  const auto row =
+      RateLimitRow::Source("https://a.s1.test", "https://a.d1.test",
+                           "https://c.r.test", base::Time::Now());
+  ASSERT_EQ(RateLimitResult::kAllowed,
+            SourceAllowedForReportingOriginLimit(row));
+}
+
+TEST_F(RateLimitTableTest, ReportAllowedForReportingOriginLimit) {
+  constexpr base::TimeDelta kTimeWindow = base::Days(1);
+  delegate_.set_rate_limits({
+      .time_window = kTimeWindow,
+      .max_source_registration_reporting_origins =
+          std::numeric_limits<int64_t>::max(),
+      .max_report_reporting_origins = 2,
+      .max_attributions = std::numeric_limits<int64_t>::max(),
+  });
+
+  const base::Time now = base::Time::Now();
+
+  for (const auto& rate_limit : kReportingOriginRateLimitsToAdd) {
+    auto row = RateLimitRow::Report(rate_limit.impression_origin,
+                                    rate_limit.conversion_origin,
+                                    rate_limit.reporting_origin, now);
+
+    ASSERT_EQ(rate_limit.expected, ReportAllowedForReportingOriginLimit(row))
+        << row;
+
+    if (rate_limit.expected == RateLimitResult::kAllowed) {
+      ASSERT_TRUE(AddRateLimitForReport(row)) << row;
+    }
+  }
+
+  task_environment_.FastForwardBy(kTimeWindow);
+
+  // This is allowed because the original rows for the tuple have fallen out of
+  // the time window.
+  const auto row =
+      RateLimitRow::Report("https://a.s1.test", "https://a.d1.test",
+                           "https://c.r.test", base::Time::Now());
+  ASSERT_EQ(RateLimitResult::kAllowed,
+            ReportAllowedForReportingOriginLimit(row));
+}
+
+TEST_F(RateLimitTableTest,
+       ReportingOriginLimits_IndependentForSourcesAndReports) {
+  delegate_.set_rate_limits({
+      .time_window = base::Days(1),
+      .max_source_registration_reporting_origins = 2,
+      .max_report_reporting_origins = 1,
+      .max_attributions = std::numeric_limits<int64_t>::max(),
+  });
+
+  const base::Time now = base::Time::Now();
+
+  // The following loop iterations are *not* independent: Each one depends on
+  // the correct handling of the previous one.
+  const struct {
+    RateLimitScope scope;
+    const char* reporting_origin;
+    RateLimitResult expected;
+  } kRateLimitsToAdd[] = {
+      {
+          RateLimitScope::kSource,
+          "https://r1.test",
+          RateLimitResult::kAllowed,
+      },
+      {
+          RateLimitScope::kReport,
+          "https://r2.test",
+          RateLimitResult::kAllowed,
+      },
+      {
+          RateLimitScope::kReport,
+          "https://r3.test",
+          RateLimitResult::kNotAllowed,
+      },
+      {
+          RateLimitScope::kSource,
+          "https://r4.test",
+          RateLimitResult::kAllowed,
+      },
+      {
+          RateLimitScope::kSource,
+          "https://r5.test",
+          RateLimitResult::kNotAllowed,
+      },
+  };
+
+  for (const auto& rate_limit : kRateLimitsToAdd) {
+    RateLimitRow row(rate_limit.scope, "https://s.test", "https://d.test",
+                     rate_limit.reporting_origin, now);
+
+    switch (row.scope) {
+      case RateLimitScope::kSource:
+        ASSERT_EQ(rate_limit.expected,
+                  SourceAllowedForReportingOriginLimit(row))
+            << row;
+
+        if (rate_limit.expected == RateLimitResult::kAllowed) {
+          ASSERT_TRUE(AddRateLimitForSource(row)) << row;
+        }
+
+        break;
+      case RateLimitScope::kReport:
+        ASSERT_EQ(rate_limit.expected,
+                  ReportAllowedForReportingOriginLimit(row))
+            << row;
+
+        if (rate_limit.expected == RateLimitResult::kAllowed) {
+          ASSERT_TRUE(AddRateLimitForReport(row)) << row;
+        }
+
+        break;
+    }
+  }
 }
 
 TEST_F(RateLimitTableTest, ClearAllDataAllTime) {
   for (int i = 0; i < 2; i++) {
-    ASSERT_TRUE(
-        AddRateLimit(ReportBuilder(SourceBuilder().BuildStored()).Build()));
+    ASSERT_TRUE(table_.AddRateLimitForReport(
+        &db_, ReportBuilder(SourceBuilder().BuildStored()).Build()));
   }
   ASSERT_THAT(GetRateLimitRows(), SizeIs(2));
 
@@ -299,21 +563,25 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
 
   for (const auto& test_case : kTestCases) {
     base::flat_map<int64_t, RateLimitRow> rows = {
-        {1,
-         {"https://a.s1.test", "https://a.d1.test", "https://a.r.test", now}},
-        {2,
-         {"https://b.s1.test", "https://b.d1.test", "https://b.r.test", now}},
-        {3,
-         {"https://a.s1.test", "https://a.d1.test", "https://c.r.test",
-          now + base::Days(1)}},
-        {4,
-         {"https://b.s1.test", "https://b.d1.test", "https://d.r.test",
-          now + base::Days(1)}},
+        {1, RateLimitRow::Report("https://a.s1.test", "https://a.d1.test",
+                                 "https://a.r.test", now)},
+        {2, RateLimitRow::Source("https://b.s1.test", "https://b.d1.test",
+                                 "https://b.r.test", now)},
+        {3, RateLimitRow::Report("https://a.s1.test", "https://a.d1.test",
+                                 "https://c.r.test", now + base::Days(1))},
+        {4, RateLimitRow::Source("https://b.s1.test", "https://b.d1.test",
+                                 "https://d.r.test", now + base::Days(1))},
     };
 
     for (const auto& [_, row] : rows) {
-      const auto report = row.BuildReport();
-      ASSERT_TRUE(AddRateLimit(report)) << report;
+      switch (row.scope) {
+        case RateLimitScope::kSource:
+          ASSERT_TRUE(AddRateLimitForSource(row)) << row;
+          break;
+        case RateLimitScope::kReport:
+          ASSERT_TRUE(AddRateLimitForReport(row)) << row;
+          break;
+      }
     }
 
     ASSERT_EQ(GetRateLimitRows(), rows);
@@ -336,28 +604,31 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
 TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRows) {
   delegate_.set_rate_limits({
       .time_window = base::Minutes(2),
-      .max_attributions_per_window = INT_MAX,
+      .max_source_registration_reporting_origins =
+          std::numeric_limits<int64_t>::max(),
+      .max_report_reporting_origins = std::numeric_limits<int64_t>::max(),
+      .max_attributions = INT_MAX,
   });
 
   delegate_.set_delete_expired_rate_limits_frequency(base::Minutes(4));
 
-  ASSERT_TRUE(AddRateLimit(
-      ReportBuilder(
-          SourceBuilder()
-              .SetImpressionOrigin(url::Origin::Create(GURL("https://s1.test")))
-              .BuildStored())
-          .SetTriggerTime(base::Time::Now())
-          .Build()));
+  ASSERT_TRUE(table_.AddRateLimitForReport(
+      &db_, ReportBuilder(SourceBuilder()
+                              .SetImpressionOrigin(
+                                  url::Origin::Create(GURL("https://s1.test")))
+                              .BuildStored())
+                .SetTriggerTime(base::Time::Now())
+                .Build()));
 
   task_environment_.FastForwardBy(base::Minutes(4) - base::Milliseconds(1));
 
-  ASSERT_TRUE(AddRateLimit(
-      ReportBuilder(
-          SourceBuilder()
-              .SetImpressionOrigin(url::Origin::Create(GURL("https://s2.test")))
-              .BuildStored())
-          .SetTriggerTime(base::Time::Now())
-          .Build()));
+  ASSERT_TRUE(table_.AddRateLimitForReport(
+      &db_, ReportBuilder(SourceBuilder()
+                              .SetImpressionOrigin(
+                                  url::Origin::Create(GURL("https://s2.test")))
+                              .BuildStored())
+                .SetTriggerTime(base::Time::Now())
+                .Build()));
 
   // Neither row has expired at this point.
   ASSERT_THAT(GetRateLimitRows(), SizeIs(2));
@@ -365,13 +636,13 @@ TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRows) {
   // Advance to the next expiry period.
   task_environment_.FastForwardBy(base::Milliseconds(1));
 
-  ASSERT_TRUE(AddRateLimit(
-      ReportBuilder(
-          SourceBuilder()
-              .SetImpressionOrigin(url::Origin::Create(GURL("https://s3.test")))
-              .BuildStored())
-          .SetTriggerTime(base::Time::Now())
-          .Build()));
+  ASSERT_TRUE(table_.AddRateLimitForReport(
+      &db_, ReportBuilder(SourceBuilder()
+                              .SetImpressionOrigin(
+                                  url::Origin::Create(GURL("https://s3.test")))
+                              .BuildStored())
+                .SetTriggerTime(base::Time::Now())
+                .Build()));
 
   // The first row should be expired at this point.
   ASSERT_THAT(
@@ -382,20 +653,28 @@ TEST_F(RateLimitTableTest, AddRateLimit_DeletesExpiredRows) {
 }
 
 TEST_F(RateLimitTableTest, ClearDataForSourceIds) {
+  for (int64_t id = 4; id <= 6; id++) {
+    ASSERT_TRUE(table_.AddRateLimitForSource(
+        &db_, SourceBuilder().SetSourceId(StoredSource::Id(id)).BuildStored()));
+  }
+
   for (int64_t id = 7; id <= 9; id++) {
-    ASSERT_TRUE(AddRateLimit(
+    ASSERT_TRUE(table_.AddRateLimitForReport(
+        &db_,
         ReportBuilder(
             SourceBuilder().SetSourceId(StoredSource::Id(id)).BuildStored())
             .Build()));
   }
 
   ASSERT_THAT(GetRateLimitRows(),
-              ElementsAre(Pair(1, _), Pair(2, _), Pair(3, _)));
+              ElementsAre(Pair(1, _), Pair(2, _), Pair(3, _), Pair(4, _),
+                          Pair(5, _), Pair(6, _)));
 
   ASSERT_TRUE(table_.ClearDataForSourceIds(
-      &db_, {StoredSource::Id(7), StoredSource::Id(9)}));
+      &db_, {StoredSource::Id(5), StoredSource::Id(7), StoredSource::Id(9)}));
 
-  ASSERT_THAT(GetRateLimitRows(), ElementsAre(Pair(2, _)));
+  ASSERT_THAT(GetRateLimitRows(),
+              ElementsAre(Pair(1, _), Pair(3, _), Pair(5, _)));
 }
 
 }  // namespace content

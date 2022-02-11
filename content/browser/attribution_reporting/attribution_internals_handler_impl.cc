@@ -264,8 +264,13 @@ void AttributionInternalsHandlerImpl::OnReportDropped(
     case AttributionTrigger::Result::kDroppedForNoise:
       status = mojom::WebUIAttributionReport::Status::kDroppedForNoise;
       break;
-    case AttributionTrigger::Result::kRateLimited:
-      status = mojom::WebUIAttributionReport::Status::kDroppedDueToRateLimiting;
+    case AttributionTrigger::Result::kExcessiveReports:
+      status =
+          mojom::WebUIAttributionReport::Status::kDroppedDueToExcessiveReports;
+      break;
+    case AttributionTrigger::Result::kExcessiveReportingOrigins:
+      status = mojom::WebUIAttributionReport::Status::
+          kDroppedDueToExcessiveReportingOrigins;
       break;
     default:
       NOTREACHED();

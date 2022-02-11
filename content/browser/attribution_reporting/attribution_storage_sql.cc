@@ -123,11 +123,15 @@ namespace content {
 // Version 19 - 2022/02/07 - https://crrev.com/c/3421868
 //
 // Version 19 adds the impressions.debug_key and conversions.debug_key columns.
-const int AttributionStorageSql::kCurrentVersionNumber = 19;
+//
+// Version 20 - 2022/02/07 - https://crrev.com/c/3444062
+//
+// Version 20 adds the rate_limits.scope column and corresponding indexes.
+const int AttributionStorageSql::kCurrentVersionNumber = 20;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int AttributionStorageSql::kCompatibleVersionNumber = 19;
+const int AttributionStorageSql::kCompatibleVersionNumber = 20;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database.
@@ -141,7 +145,9 @@ const int AttributionStorageSql::kCompatibleVersionNumber = 19;
 // Version 17 was deprecated by https://crrev.com/c/3425176.
 //
 // Version 18 was deprecated by https://crrev.com/c/3421868.
-const int AttributionStorageSql::kDeprecatedVersionNumber = 18;
+//
+// Version 19 was deprecated by https://crrev.com/c/3444062.
+const int AttributionStorageSql::kDeprecatedVersionNumber = 19;
 
 namespace {
 
@@ -447,6 +453,17 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
         StorableSource::Result::kInsufficientUniqueDestinationCapacity);
   }
 
+  switch (rate_limit_table_.SourceAllowedForReportingOriginLimit(db_.get(),
+                                                                 source)) {
+    case RateLimitTable::Result::kAllowed:
+      break;
+    case RateLimitTable::Result::kNotAllowed:
+      return StoreSourceResult(
+          StorableSource::Result::kExcessiveReportingOrigins);
+    case RateLimitTable::Result::kError:
+      return StoreSourceResult(StorableSource::Result::kInternalError);
+  }
+
   // Wrap the deactivation and insertion in the same transaction. If the
   // deactivation fails, we do not want to store the new source as we may
   // return the wrong set of sources for a trigger.
@@ -512,10 +529,16 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
   if (!statement.Run())
     return StoreSourceResult(StorableSource::Result::kInternalError);
 
+  const StoredSource::Id source_id(db_->GetLastInsertRowId());
+  const StoredSource stored_source(source.common_info(), attribution_logic,
+                                   source_id);
+
+  if (!rate_limit_table_.AddRateLimitForSource(db_.get(), stored_source))
+    return StoreSourceResult(StorableSource::Result::kInternalError);
+
   absl::optional<base::Time> min_fake_report_time;
 
   if (attribution_logic == StoredSource::AttributionLogic::kFalsely) {
-    const StoredSource::Id source_id(db_->GetLastInsertRowId());
     const base::Time trigger_time = common_info.impression_time();
 
     for (const auto& fake_report : *randomized_response) {
@@ -730,13 +753,26 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
       AttributionReport::EventLevelData(trigger_data, trigger.priority(),
                                         /*id=*/absl::nullopt));
 
-  switch (rate_limit_table_.AttributionAllowed(db_.get(), report)) {
-    case RateLimitTable::AttributionAllowedStatus::kAllowed:
+  switch (
+      rate_limit_table_.ReportAllowedForAttributionLimit(db_.get(), report)) {
+    case RateLimitTable::Result::kAllowed:
       break;
-    case RateLimitTable::AttributionAllowedStatus::kNotAllowed:
-      return CreateReportResult(AttributionTrigger::Result::kRateLimited,
+    case RateLimitTable::Result::kNotAllowed:
+      return CreateReportResult(AttributionTrigger::Result::kExcessiveReports,
                                 std::move(report));
-    case RateLimitTable::AttributionAllowedStatus::kError:
+    case RateLimitTable::Result::kError:
+      return CreateReportResult(AttributionTrigger::Result::kInternalError);
+  }
+
+  switch (rate_limit_table_.ReportAllowedForReportingOriginLimit(db_.get(),
+                                                                 report)) {
+    case RateLimitTable::Result::kAllowed:
+      break;
+    case RateLimitTable::Result::kNotAllowed:
+      return CreateReportResult(
+          AttributionTrigger::Result::kExcessiveReportingOrigins,
+          std::move(report));
+    case RateLimitTable::Result::kError:
       return CreateReportResult(AttributionTrigger::Result::kInternalError);
   }
 
@@ -832,7 +868,8 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   // limit. Therefore, we don't need to call
   // |RateLimitTable::ClearDataForSourceIds()| here.
 
-  if (create_report && !rate_limit_table_.AddRateLimit(db_.get(), report)) {
+  if (create_report &&
+      !rate_limit_table_.AddRateLimitForReport(db_.get(), report)) {
     return CreateReportResult(AttributionTrigger::Result::kInternalError);
   }
 

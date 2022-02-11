@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_RATE_LIMIT_TABLE_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_RATE_LIMIT_TABLE_H_
 
-#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
@@ -28,16 +27,30 @@ namespace content {
 
 class AttributionReport;
 class AttributionStorageDelegate;
+class CommonSourceInfo;
+class StorableSource;
 
 // Manages storage for rate-limiting reports.
 // This class may be constructed on any sequence but must be accessed and
 // destroyed on the same sequence. The sequence must outlive |this|.
 class CONTENT_EXPORT RateLimitTable {
  public:
-  enum class AttributionAllowedStatus {
+  enum class Result {
     kAllowed,
     kNotAllowed,
     kError,
+  };
+
+  // We have separate reporting origin rate limits for sources and reports.
+  // This enum helps us differentiate between these two cases in the database.
+  //
+  // These values are persisted to the DB. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // The enum is only exposed here for use in unit tests.
+  enum class Scope {
+    kSource = 0,
+    kReport = 1,
   };
 
   explicit RateLimitTable(const AttributionStorageDelegate* delegate);
@@ -51,15 +64,25 @@ class CONTENT_EXPORT RateLimitTable {
   // Returns false on failure.
   [[nodiscard]] bool CreateTable(sql::Database* db);
 
-  // Adds a rate limit to the table for an event-level report.
   // Returns false on failure.
-  [[nodiscard]] bool AddRateLimit(sql::Database* db,
-                                  const AttributionReport& report);
+  [[nodiscard]] bool AddRateLimitForSource(sql::Database* db,
+                                           const StoredSource& source);
 
-  // Checks if the given attribution is allowed according to the data in the
-  // table and policy as specified by the delegate.
-  AttributionAllowedStatus AttributionAllowed(sql::Database* db,
-                                              const AttributionReport& report);
+  // Returns false on failure.
+  [[nodiscard]] bool AddRateLimitForReport(sql::Database* db,
+                                           const AttributionReport& report);
+
+  [[nodiscard]] Result SourceAllowedForReportingOriginLimit(
+      sql::Database* db,
+      const StorableSource& source);
+
+  [[nodiscard]] Result ReportAllowedForReportingOriginLimit(
+      sql::Database* db,
+      const AttributionReport& report);
+
+  [[nodiscard]] Result ReportAllowedForAttributionLimit(
+      sql::Database* db,
+      const AttributionReport& report);
 
   // These should be 1:1 with |AttributionStorageSql|'s |ClearData| functions.
   // Returns false on failure.
@@ -76,6 +99,18 @@ class CONTENT_EXPORT RateLimitTable {
       const std::vector<StoredSource::Id>& source_ids);
 
  private:
+  [[nodiscard]] bool AddRateLimit(sql::Database* db,
+                                  Scope scope,
+                                  const StoredSource& source,
+                                  base::Time time)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  [[nodiscard]] Result AllowedForReportingOriginLimit(
+      sql::Database* db,
+      Scope scope,
+      const CommonSourceInfo& common_info,
+      base::Time time) VALID_CONTEXT_REQUIRED(sequence_checker_);
+
   // Returns false on failure.
   [[nodiscard]] bool ClearAllDataInRange(sql::Database* db,
                                          base::Time delete_begin,

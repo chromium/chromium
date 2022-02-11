@@ -4,8 +4,10 @@
 
 #include "content/browser/attribution_reporting/attribution_storage.h"
 
+#include <stdint.h>
+
 #include <functional>
-#include <list>
+#include <limits>
 #include <memory>
 #include <tuple>
 #include <utility>
@@ -768,7 +770,10 @@ TEST_F(AttributionStorageTest, DeleteAllNullDeleteBegin) {
 TEST_F(AttributionStorageTest, MaxAttributionReportsBetweenSites) {
   delegate()->set_rate_limits({
       .time_window = base::TimeDelta::Max(),
-      .max_attributions_per_window = 2,
+      .max_source_registration_reporting_origins =
+          std::numeric_limits<int64_t>::max(),
+      .max_report_reporting_origins = std::numeric_limits<int64_t>::max(),
+      .max_attributions = 2,
   });
 
   auto conversion = DefaultTrigger();
@@ -780,7 +785,7 @@ TEST_F(AttributionStorageTest, MaxAttributionReportsBetweenSites) {
             MaybeCreateAndStoreReport(conversion));
   EXPECT_THAT(
       storage()->MaybeCreateAndStoreReport(conversion),
-      AllOf(CreateReportStatusIs(AttributionTrigger::Result::kRateLimited),
+      AllOf(CreateReportStatusIs(AttributionTrigger::Result::kExcessiveReports),
             DroppedReportIs(IsTrue())));
 
   const AttributionReport expected_report =
@@ -794,7 +799,10 @@ TEST_F(AttributionStorageTest,
        MaxAttributionReportsBetweenSites_IgnoresSourceType) {
   delegate()->set_rate_limits({
       .time_window = base::TimeDelta::Max(),
-      .max_attributions_per_window = 1,
+      .max_source_registration_reporting_origins =
+          std::numeric_limits<int64_t>::max(),
+      .max_report_reporting_origins = std::numeric_limits<int64_t>::max(),
+      .max_attributions = 1,
   });
 
   storage()->StoreSource(
@@ -809,7 +817,7 @@ TEST_F(AttributionStorageTest,
           .SetSourceType(CommonSourceInfo::SourceType::kEvent)
           .Build());
   // This would fail if the source types had separate limits.
-  EXPECT_EQ(AttributionTrigger::Result::kRateLimited,
+  EXPECT_EQ(AttributionTrigger::Result::kExcessiveReports,
             MaybeCreateAndStoreReport(DefaultTrigger()));
 }
 
@@ -856,7 +864,10 @@ TEST_F(AttributionStorageTest, NeverAttributeImpression_Deactivates) {
 TEST_F(AttributionStorageTest, NeverAttributeImpression_RateLimitsNotChanged) {
   delegate()->set_rate_limits({
       .time_window = base::TimeDelta::Max(),
-      .max_attributions_per_window = 1,
+      .max_source_registration_reporting_origins =
+          std::numeric_limits<int64_t>::max(),
+      .max_report_reporting_origins = std::numeric_limits<int64_t>::max(),
+      .max_attributions = 1,
   });
 
   delegate()->set_randomized_response(
@@ -875,7 +886,7 @@ TEST_F(AttributionStorageTest, NeverAttributeImpression_RateLimitsNotChanged) {
             MaybeCreateAndStoreReport(conversion));
 
   storage()->StoreSource(SourceBuilder().SetSourceEventId(9).Build());
-  EXPECT_EQ(AttributionTrigger::Result::kRateLimited,
+  EXPECT_EQ(AttributionTrigger::Result::kExcessiveReports,
             MaybeCreateAndStoreReport(conversion));
 
   const AttributionReport expected_report =
@@ -1720,6 +1731,80 @@ TEST_F(AttributionStorageTest, TriggerDebugKey_RoundTrips) {
   EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Now()),
               ElementsAre(AllOf(ReportSourceIs(SourceDebugKeyIs(22)),
                                 TriggerDebugKeyIs(33))));
+}
+
+// This is tested more thoroughly by the `RateLimitTable` unit tests. Here just
+// ensure that the rate limits are consulted at all.
+TEST_F(AttributionStorageTest, MaxReportingOriginsPerSource) {
+  delegate()->set_rate_limits({
+      .time_window = base::TimeDelta::Max(),
+      .max_source_registration_reporting_origins = 2,
+      .max_report_reporting_origins = std::numeric_limits<int64_t>::max(),
+      .max_attributions = std::numeric_limits<int64_t>::max(),
+  });
+
+  auto result = storage()->StoreSource(
+      SourceBuilder()
+          .SetReportingOrigin(url::Origin::Create(GURL("https://r1.test")))
+          .SetDebugKey(1)
+          .Build());
+  ASSERT_EQ(result.status, StorableSource::Result::kSuccess);
+
+  result = storage()->StoreSource(
+      SourceBuilder()
+          .SetReportingOrigin(url::Origin::Create(GURL("https://r2.test")))
+          .SetDebugKey(2)
+          .Build());
+  ASSERT_EQ(result.status, StorableSource::Result::kSuccess);
+
+  result = storage()->StoreSource(
+      SourceBuilder()
+          .SetReportingOrigin(url::Origin::Create(GURL("https://r3.test")))
+          .SetDebugKey(3)
+          .Build());
+  ASSERT_EQ(result.status, StorableSource::Result::kExcessiveReportingOrigins);
+
+  EXPECT_THAT(storage()->GetActiveSources(),
+              ElementsAre(SourceDebugKeyIs(1), SourceDebugKeyIs(2)));
+}
+
+// This is tested more thoroughly by the `RateLimitTable` unit tests. Here just
+// ensure that the rate limits are consulted at all.
+TEST_F(AttributionStorageTest, MaxReportingOriginsPerReport) {
+  delegate()->set_rate_limits({
+      .time_window = base::TimeDelta::Max(),
+      .max_source_registration_reporting_origins =
+          std::numeric_limits<int64_t>::max(),
+      .max_report_reporting_origins = 2,
+      .max_attributions = std::numeric_limits<int64_t>::max(),
+  });
+
+  const auto origin1 = url::Origin::Create(GURL("https://r1.test"));
+  const auto origin2 = url::Origin::Create(GURL("https://r2.test"));
+  const auto origin3 = url::Origin::Create(GURL("https://r3.test"));
+
+  storage()->StoreSource(SourceBuilder().SetReportingOrigin(origin1).Build());
+  storage()->StoreSource(SourceBuilder().SetReportingOrigin(origin2).Build());
+  storage()->StoreSource(SourceBuilder().SetReportingOrigin(origin3).Build());
+  ASSERT_THAT(storage()->GetActiveSources(), SizeIs(3));
+
+  ASSERT_EQ(
+      MaybeCreateAndStoreReport(
+          TriggerBuilder().SetReportingOrigin(origin1).SetDebugKey(1).Build()),
+      AttributionTrigger::Result::kSuccess);
+
+  ASSERT_EQ(
+      MaybeCreateAndStoreReport(
+          TriggerBuilder().SetReportingOrigin(origin2).SetDebugKey(2).Build()),
+      AttributionTrigger::Result::kSuccess);
+
+  ASSERT_EQ(
+      MaybeCreateAndStoreReport(
+          TriggerBuilder().SetReportingOrigin(origin3).SetDebugKey(3).Build()),
+      AttributionTrigger::Result::kExcessiveReportingOrigins);
+
+  EXPECT_THAT(storage()->GetAttributionsToReport(base::Time::Max()),
+              ElementsAre(TriggerDebugKeyIs(1), TriggerDebugKeyIs(2)));
 }
 
 }  // namespace content

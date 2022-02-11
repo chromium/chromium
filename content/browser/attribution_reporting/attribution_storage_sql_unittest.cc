@@ -147,9 +147,10 @@ TEST_F(AttributionStorageSqlTest,
     // [conversion_domain_idx], [impression_expiry_idx],
     // [impression_origin_idx], [impression_site_idx],
     // [conversion_report_time_idx], [conversion_impression_id_idx],
-    // [rate_limit_origin_type_idx], [rate_limit_conversion_time_idx],
-    // [rate_limit_impression_id_idx] and the meta table index.
-    EXPECT_EQ(10u, sql::test::CountSQLIndices(&raw_db));
+    // [rate_limit_report_idx], [rate_limit_reporting_origin_idx],
+    // [rate_limit_time_idx], [rate_limit_impression_id_idx] and the meta table
+    // index.
+    EXPECT_EQ(11u, sql::test::CountSQLIndices(&raw_db));
   }
 }
 
@@ -329,7 +330,7 @@ TEST_F(AttributionStorageSqlTest, MaxSourcesPerOrigin) {
   EXPECT_EQ(1u, impression_rows);
   size_t rate_limit_rows;
   sql::test::CountTableRows(&raw_db, "rate_limits", &rate_limit_rows);
-  EXPECT_EQ(1u, rate_limit_rows);
+  EXPECT_EQ(3u, rate_limit_rows);
 }
 
 TEST_F(AttributionStorageSqlTest, MaxAttributionsPerOrigin) {
@@ -351,17 +352,14 @@ TEST_F(AttributionStorageSqlTest, MaxAttributionsPerOrigin) {
   EXPECT_EQ(2u, conversion_rows);
   size_t rate_limit_rows;
   sql::test::CountTableRows(&raw_db, "rate_limits", &rate_limit_rows);
-  EXPECT_EQ(2u, rate_limit_rows);
+  EXPECT_EQ(3u, rate_limit_rows);
 }
 
 TEST_F(AttributionStorageSqlTest,
        DeleteRateLimitRowsForSubdomainImpressionOrigin) {
   OpenDatabase();
   delegate()->set_max_attributions_per_source(1);
-  delegate()->set_rate_limits({
-      .time_window = base::Days(7),
-      .max_attributions_per_window = INT_MAX,
-  });
+  delegate()->rate_limits().time_window = base::Days(7);
   const url::Origin impression_origin =
       url::Origin::Create(GURL("https://sub.impression.example/"));
   const url::Origin reporting_origin =
@@ -419,10 +417,7 @@ TEST_F(AttributionStorageSqlTest,
        DeleteRateLimitRowsForSubdomainConversionOrigin) {
   OpenDatabase();
   delegate()->set_max_attributions_per_source(1);
-  delegate()->set_rate_limits({
-      .time_window = base::Days(7),
-      .max_attributions_per_window = INT_MAX,
-  });
+  delegate()->rate_limits().time_window = base::Days(7);
   const url::Origin impression_origin =
       url::Origin::Create(GURL("https://b.example/"));
   const url::Origin reporting_origin =

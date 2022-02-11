@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <iosfwd>
+#include <limits>
 #include <vector>
 
 #include "base/guid.h"
@@ -119,6 +120,8 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
     max_destinations_per_source_site_reporting_origin_ = max;
   }
 
+  RateLimitConfig& rate_limits() { return rate_limits_; }
+
   void set_rate_limits(RateLimitConfig c) { rate_limits_ = c; }
 
   void set_delete_expired_sources_frequency(base::TimeDelta frequency) {
@@ -154,7 +157,10 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   RateLimitConfig rate_limits_ = {
       .time_window = base::TimeDelta::Max(),
-      .max_attributions_per_window = INT_MAX,
+      .max_source_registration_reporting_origins =
+          std::numeric_limits<int64_t>::max(),
+      .max_report_reporting_origins = std::numeric_limits<int64_t>::max(),
+      .max_attributions = std::numeric_limits<int64_t>::max(),
   };
 
   base::TimeDelta delete_expired_sources_frequency_;
@@ -242,6 +248,12 @@ class SourceBuilder {
  public:
   explicit SourceBuilder(base::Time time = base::Time::Now());
   ~SourceBuilder();
+
+  SourceBuilder(const SourceBuilder&);
+  SourceBuilder(SourceBuilder&&);
+
+  SourceBuilder& operator=(const SourceBuilder&);
+  SourceBuilder& operator=(SourceBuilder&&);
 
   SourceBuilder& SetExpiry(base::TimeDelta delta);
 
@@ -401,8 +413,7 @@ std::ostream& operator<<(std::ostream& out, AttributionTrigger::Result status);
 std::ostream& operator<<(std::ostream& out,
                          AttributionStorage::DeactivatedSource::Reason reason);
 
-std::ostream& operator<<(std::ostream& out,
-                         RateLimitTable::AttributionAllowedStatus status);
+std::ostream& operator<<(std::ostream& out, RateLimitTable::Result result);
 
 std::ostream& operator<<(std::ostream& out,
                          CommonSourceInfo::SourceType source_type);

@@ -27,9 +27,10 @@ CreateReportResult::CreateReportResult(
       report_time_(report_time) {
   DCHECK_EQ(
       status_ == AttributionTrigger::Result::kSuccessDroppedLowerPriority ||
-          status_ == AttributionTrigger::Result::kRateLimited ||
+          status_ == AttributionTrigger::Result::kExcessiveReports ||
           status_ == AttributionTrigger::Result::kPriorityTooLow ||
-          status_ == AttributionTrigger::Result::kDroppedForNoise,
+          status_ == AttributionTrigger::Result::kDroppedForNoise ||
+          status_ == AttributionTrigger::Result::kExcessiveReportingOrigins,
       dropped_report_.has_value());
   DCHECK(dropped_report_.has_value() ||
          !dropped_report_source_deactivation_reason_);

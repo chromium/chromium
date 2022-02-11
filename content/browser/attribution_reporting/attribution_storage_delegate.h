@@ -26,7 +26,18 @@ class AttributionStorageDelegate {
  public:
   struct RateLimitConfig {
     base::TimeDelta time_window;
-    int64_t max_attributions_per_window;
+
+    // Maximum number of distinct reporting origins that can register sources
+    // for a given <source site, destination site> in `time_window`.
+    int64_t max_source_registration_reporting_origins;
+
+    // Maximum number of distinct reporting origins that can create reports for
+    // a given <source site, destination site> in `time_window`.
+    int64_t max_report_reporting_origins;
+
+    // Maximum number of attributions for a given <source site, destination
+    // site, reporting origin> in `time_window`.
+    int64_t max_attributions;
   };
 
   // Both bounds are inclusive.

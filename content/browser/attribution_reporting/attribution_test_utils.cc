@@ -23,8 +23,6 @@ namespace content {
 
 namespace {
 
-using AttributionAllowedStatus =
-    ::content::RateLimitTable::AttributionAllowedStatus;
 using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
 
 const char kDefaultImpressionOrigin[] = "https://impression.test/";
@@ -174,6 +172,14 @@ SourceBuilder::SourceBuilder(base::Time time)
       reporting_origin_(url::Origin::Create(GURL(kDefaultReportOrigin))) {}
 
 SourceBuilder::~SourceBuilder() = default;
+
+SourceBuilder::SourceBuilder(const SourceBuilder&) = default;
+
+SourceBuilder::SourceBuilder(SourceBuilder&&) = default;
+
+SourceBuilder& SourceBuilder::operator=(const SourceBuilder&) = default;
+
+SourceBuilder& SourceBuilder::operator=(SourceBuilder&&) = default;
 
 SourceBuilder& SourceBuilder::SetExpiry(base::TimeDelta delta) {
   expiry_ = delta;
@@ -492,14 +498,17 @@ std::ostream& operator<<(std::ostream& out, AttributionTrigger::Result status) {
     case AttributionTrigger::Result::kDeduplicated:
       out << "kDeduplicated";
       break;
-    case AttributionTrigger::Result::kRateLimited:
-      out << "kRateLimited";
+    case AttributionTrigger::Result::kExcessiveReports:
+      out << "kExcessiveReports";
       break;
     case AttributionTrigger::Result::kPriorityTooLow:
       out << "kPriorityTooLow";
       break;
     case AttributionTrigger::Result::kDroppedForNoise:
       out << "kDroppedForNoise";
+      break;
+    case AttributionTrigger::Result::kExcessiveReportingOrigins:
+      out << "kExcessiveReportingOrigins";
       break;
   }
   return out;
@@ -517,15 +526,15 @@ std::ostream& operator<<(std::ostream& out, DeactivatedSource::Reason reason) {
   return out;
 }
 
-std::ostream& operator<<(std::ostream& out, AttributionAllowedStatus status) {
-  switch (status) {
-    case AttributionAllowedStatus::kAllowed:
+std::ostream& operator<<(std::ostream& out, RateLimitTable::Result result) {
+  switch (result) {
+    case RateLimitTable::Result::kAllowed:
       out << "kAllowed";
       break;
-    case AttributionAllowedStatus::kNotAllowed:
+    case RateLimitTable::Result::kNotAllowed:
       out << "kNotAllowed";
       break;
-    case AttributionAllowedStatus::kError:
+    case RateLimitTable::Result::kError:
       out << "kError";
       break;
   }
@@ -721,6 +730,8 @@ std::ostream& operator<<(std::ostream& out, StorableSource::Result status) {
       return out << "kInsufficientSourceCapacity";
     case StorableSource::Result::kInsufficientUniqueDestinationCapacity:
       return out << "kInsufficientUniqueDestinationCapacity";
+    case StorableSource::Result::kExcessiveReportingOrigins:
+      return out << "kExcessiveReportingOrigins";
   }
 }
 

@@ -31,10 +31,11 @@ class CONTENT_EXPORT AttributionTrigger {
     kNoCapacityForConversionDestination = 3,
     kNoMatchingImpressions = 4,
     kDeduplicated = 5,
-    kRateLimited = 6,
+    kExcessiveReports = 6,
     kPriorityTooLow = 7,
     kDroppedForNoise = 8,
-    kMaxValue = kDroppedForNoise,
+    kExcessiveReportingOrigins = 9,
+    kMaxValue = kExcessiveReportingOrigins,
   };
 
   // Should only be created with values that the browser process has already
