@@ -107,20 +107,3 @@ ci_builder(
     goma_enable_ats = True,
 )
 
-## builders using swarming staging instance
-
-def ci_builder_staging(**kwargs):
-    return ci_builder(
-        swarming_host = "chromium-swarm-staging.appspot.com",
-        **kwargs
-    )
-
-ci_builder_staging(
-    name = "linux-rel-swarming-staging",
-)
-
-ci_builder_staging(
-    name = "win-rel-swarming-staging",
-    os = os.WINDOWS_DEFAULT,
-    goma_enable_ats = True,
-)

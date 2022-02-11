@@ -16,13 +16,3 @@ luci.console_view(
         luci.console_view_entry(builder = "ci/win11-rel-swarming"),
     ],
 )
-
-luci.console_view(
-    name = "chromium.staging",
-    header = "//dev/chromium-header.textpb",
-    repo = "https://chromium.googlesource.com/chromium/src",
-    entries = [
-        luci.console_view_entry(builder = "ci/linux-rel-swarming-staging"),
-        luci.console_view_entry(builder = "ci/win-rel-swarming-staging"),
-    ],
-)

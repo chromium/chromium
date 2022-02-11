@@ -2383,14 +2383,6 @@
            'gtest_tests': 'chromium_swarm_linux_gtests',
         },
       },
-      'linux-rel-swarming-staging': {
-        'mixins': [
-          'linux-xenial',
-        ],
-        'test_suites': {
-           'gtest_tests': 'chromium_swarm_linux_gtests',
-        },
-      },
       'linux-ssd-rel-swarming': {
         'mixins': [
           'linux-bionic',
@@ -2413,11 +2405,6 @@
         },
       },
       'win-rel-swarming': {
-        'test_suites': {
-           'gtest_tests': 'chromium_swarm_desktop_gtests',
-        },
-      },
-      'win-rel-swarming-staging': {
         'test_suites': {
            'gtest_tests': 'chromium_swarm_desktop_gtests',
         },
