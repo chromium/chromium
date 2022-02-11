@@ -454,8 +454,22 @@ void SearchBoxView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 void SearchBoxView::UpdateBackground(AppListState target_state) {
-  SetSearchBoxBackgroundCornerRadius(
-      GetSearchBoxBorderCornerRadiusForState(target_state));
+  int corner_radius = GetSearchBoxBorderCornerRadiusForState(target_state);
+  SetSearchBoxBackgroundCornerRadius(corner_radius);
+
+  // The background layer is only painted for the search box in tablet mode.
+  // Also the layer is not painted when the search result page is visible.
+  if (is_tablet_mode_ && (!search_result_page_visible_ ||
+                          target_state == AppListState::kStateApps)) {
+    layer()->SetClipRect(GetContentsBounds());
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(corner_radius));
+  } else {
+    layer()->SetBackgroundBlur(0);
+    layer()->SetBackdropFilterQuality(0);
+  }
+
   UpdateBackgroundColor(GetBackgroundColorForState(target_state));
   UpdateTextColor();
   current_app_list_state_ = target_state;
@@ -569,7 +583,7 @@ void SearchBoxView::OnResultContainerVisibilityChanged(bool visible) {
   if (search_result_page_visible_ == visible)
     return;
   search_result_page_visible_ = visible;
-  UpdateBackgroundColor(GetBackgroundColorForState(current_app_list_state_));
+  UpdateBackground(current_app_list_state_);
   SchedulePaint();
 }
 

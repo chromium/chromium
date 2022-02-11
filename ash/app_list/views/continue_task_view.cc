@@ -24,6 +24,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -302,10 +303,16 @@ void ContinueTaskView::UpdateStyleForTabletMode() {
   if (!is_tablet_mode_)
     return;
 
-  SetBackground(views::CreateRoundedRectBackground(
-      ColorProvider::Get()->GetBaseLayerColor(
-          ColorProvider::BaseLayerType::kTransparent80),
-      GetCornerRadius(/*tablet_mode=*/true)));
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(GetCornerRadius(/*tablet_mode=*/true)));
+
+  SetBackground(
+      views::CreateSolidBackground(ColorProvider::Get()->GetBaseLayerColor(
+          ColorProvider::BaseLayerType::kTransparent60)));
   SetBorder(std::make_unique<HighlightBorder>(
       GetCornerRadius(/*tablet_mode=*/true),
       HighlightBorder::Type::kHighlightBorder2,
