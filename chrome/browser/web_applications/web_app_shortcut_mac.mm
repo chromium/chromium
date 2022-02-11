@@ -266,6 +266,12 @@ bool AppShimCreationDisabledForTest() {
          !web_app::GetShortcutOverrideForTesting();
 }
 
+bool AppShimRevealDisabledForTest() {
+  // Disable app shim reveal in the Finder during tests, to avoid
+  // creating Finder windows that are never closed.
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kTestType);
+}
+
 base::FilePath GetWritableApplicationsDirectory() {
   base::FilePath path;
   if (base::mac::GetUserDirectory(NSApplicationDirectory, &path)) {
@@ -1360,8 +1366,16 @@ void WebAppShortcutCreator::RevealAppShimInFinder(
     const base::FilePath& app_path) const {
   auto closure = base::BindOnce(
       [](const base::FilePath& app_path) {
-        // Use selectFile to show the contents of parent directory with the app
-        // shim selected.
+        // Use selectFile:inFileViewerRootedAtPath:  to show the contents of
+        // the parent directory with the app shim selected.
+        //
+        // Despite calling this API with a rooted path, the Finder creates a
+        // new window each time the app shim is revealed (at least during
+        // tests). We skip revealing the app shim during testing to avoid an
+        // avalanche of new Finder windows.
+        if (AppShimRevealDisabledForTest()) {
+          return;
+        }
         [[NSWorkspace sharedWorkspace]
                           selectFile:base::mac::FilePathToNSString(app_path)
             inFileViewerRootedAtPath:@""];
