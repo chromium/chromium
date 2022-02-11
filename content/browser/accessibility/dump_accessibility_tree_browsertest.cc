@@ -542,12 +542,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAomChecked) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAomLiveRegion) {
-#if BUILDFLAG(IS_WIN)
-  // This test fails on windows (https://crbug.com/1295450).
-  if (GetParam() == ui::AXApiType::kWinUIA)
-    GTEST_SKIP();
-#endif
-
   RunAomTest(FILE_PATH_LITERAL("aom-live-region.html"));
 }
 
@@ -1522,12 +1516,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityArticle) {
-#if BUILDFLAG(IS_WIN)
-  // This test fails on windows (https://crbug.com/1295450).
-  if (GetParam() == ui::AXApiType::kWinUIA)
-    GTEST_SKIP();
-#endif
-
   RunHtmlTest(FILE_PATH_LITERAL("article.html"));
 }
 
@@ -2644,12 +2632,6 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityOutput) {
-#if BUILDFLAG(IS_WIN)
-  // This test fails on windows (https://crbug.com/1295450).
-  if (GetParam() == ui::AXApiType::kWinUIA)
-    GTEST_SKIP();
-#endif
-
   RunHtmlTest(FILE_PATH_LITERAL("output.html"));
 }
 

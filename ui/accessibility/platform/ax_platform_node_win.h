@@ -1246,13 +1246,23 @@ class AX_EXPORT __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2"))
                            SanitizeStringAttributeForIA2);
 
  private:
-  enum class LocalizationStrategy { kDefer, kSupply };
+  // UIA will use the aria role and the UIA control type to generate a
+  // localized string. When our internal role cannot be described accurately
+  // with the aria role or UIA control type, we should supply our own
+  // localized string.
+  enum class UIALocalizationStrategy {
+    // Localized string should be provided by UIA from on the control type.
+    kDeferToControlType,
+    // Localized string should be provided by UIA from on the aria role.
+    // While we can't direct UIA from where to generate localization, managing
+    // the distinction is needed as UIA pre-Windows 8 cannot generate
+    // localized strings for all aria roles.
+    kDeferToAriaRole,
+    // We should supply our own localized string instead of relying on UIA.
+    kSupply
+  };
   struct UIARoleProperties {
-    // UIA will use the aria role and the UIA control type to generate a
-    // localized string. When our internal role cannot be described accurately
-    // with the aria role and UIA control type, we should supply our own
-    // localized string.
-    LocalizationStrategy localization_strategy;
+    UIALocalizationStrategy localization_strategy;
     LONG control_type;
     const wchar_t* aria_role;
   };
