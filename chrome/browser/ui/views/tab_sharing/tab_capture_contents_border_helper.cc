@@ -19,10 +19,13 @@
 namespace {
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-const int kContentsBorderThickness = 5;
-const float kContentsBorderOpacity = 0.50;
-const SkColor kContentsBorderColor = gfx::kGoogleBlue500;
+constexpr int kContentsBorderThickness = 5;
+constexpr float kContentsBorderOpacity = 0.50;
+constexpr SkColor kContentsBorderColor = gfx::kGoogleBlue500;
 #endif
+
+constexpr int kMinContentsBorderWidth = 20;
+constexpr int kMinContentsBorderHeight = 20;
 
 // TODO(https://crbug.com/1030925): Fix contents border on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -117,9 +120,13 @@ void TabCaptureContentsBorderHelper::OnRegionCaptureRectChanged(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(base::Contains(session_to_bounds_, capture_session_id));
 
-  // TODO(crbug.com/1276822): If the bounds are smaller than a certain size,
-  // fall back on drawing the contents around the entire content-area.
-  session_to_bounds_[capture_session_id] = region_capture_rect;
+  if (region_capture_rect &&
+      region_capture_rect->width() >= kMinContentsBorderWidth &&
+      region_capture_rect->height() >= kMinContentsBorderHeight) {
+    session_to_bounds_[capture_session_id] = region_capture_rect;
+  } else {
+    session_to_bounds_[capture_session_id] = absl::nullopt;
+  }
 
   UpdateBlueBorderLocation();
 }
