@@ -716,7 +716,15 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
     case IdpNetworkRequestManager::FetchStatus::kSuccess: {
       WebContents* rp_web_contents =
           WebContents::FromRenderFrameHost(render_frame_host_);
-      DCHECK(!idp_web_contents_);
+      bool is_visible = rp_web_contents && (rp_web_contents->GetVisibility() ==
+                                            Visibility::VISIBLE);
+      RecordWebContentsVisibilityUponReadyToShowDialog(is_visible);
+      // Does not show the dialog if the user has left the page. e.g. they may
+      // open a new tab before browser is ready to show the dialog.
+      if (!is_visible) {
+        CompleteRequest(RequestIdTokenStatus::kError, "");
+        return;
+      }
 
       // Populate the accounts login state.
       for (auto& account : accounts) {
@@ -736,6 +744,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
         account.login_state = login_state;
       }
 
+      DCHECK(!idp_web_contents_);
       idp_web_contents_ = CreateIdpWebContents();
       bool screen_reader_is_on =
           rp_web_contents->GetAccessibilityMode().has_mode(

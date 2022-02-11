@@ -820,6 +820,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.WebContentsVisible" enum="Boolean"
+    expires_after="M110">
+  <owner>yigu@chromium.org</owner>
+  <owner>webid-core@google.com</owner>
+  <summary>
+    Records whether the WebContents is visible when the browser is ready to show
+    the accounts dialog to the user. Records at most one sample per API call.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Fetch.ReducedUserAgent" enum="Boolean"
     expires_after="M102">
   <owner>abeyad@chromium.org</owner>
