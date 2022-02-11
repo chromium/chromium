@@ -36839,8 +36839,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3837" label="FeaturePolicyJSAPIFeaturesDocument"/>
   <int value="3838" label="FeaturePolicyJSAPIGetAllowlistIFrame"/>
   <int value="3839" label="FeaturePolicyJSAPIGetAllowlistDocument"/>
-  <int value="3840" label="V8Screens_Onchange_AttributeGetter"/>
-  <int value="3841" label="V8Screens_Onchange_AttributeSetter"/>
+  <int value="3840" label="OBSOLETE_V8Screens_Onchange_AttributeGetter"/>
+  <int value="3841" label="OBSOLETE_V8Screens_Onchange_AttributeSetter"/>
   <int value="3842" label="V8ScreenDetailed_Left_AttributeGetter"/>
   <int value="3843" label="V8ScreenDetailed_Top_AttributeGetter"/>
   <int value="3844" label="V8ScreenDetailed_IsPrimary_AttributeGetter"/>
