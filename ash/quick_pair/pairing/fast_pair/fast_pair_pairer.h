@@ -89,7 +89,7 @@ class FastPairPairer : public device::BluetoothDevice::PairingDelegate,
 
   // Creates a 16-byte array of random bytes with a first byte of 0x04 to
   // signal Fast Pair account key, and then writes to the device.
-  void SendAccountKey();
+  void AttemptSendAccountKey();
 
   // FastPairDataEncryptor::WriteAccountKey callback
   void OnWriteAccountKey(

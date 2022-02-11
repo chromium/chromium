@@ -202,7 +202,7 @@ void FastPairPairer::OnGattClientInitializedCallback(
       // Passkey verification will be skipped and we will directly write an
       // account key to the Provider after a shared secret is established.
       adapter_->RemovePairingDelegate(this);
-      SendAccountKey();
+      AttemptSendAccountKey();
       break;
   }
 }
@@ -318,14 +318,16 @@ void FastPairPairer::OnParseDecryptedPasskey(
   pairing_device->ConfirmPairing();
   std::move(paired_callback_).Run(device_);
   adapter_->RemovePairingDelegate(this);
-  SendAccountKey();
+  AttemptSendAccountKey();
 }
 
-void FastPairPairer::SendAccountKey() {
+void FastPairPairer::AttemptSendAccountKey() {
   // We only send the account key if we're doing an initial or retroactive
-  // pairing.
+  // pairing. For other FastPair protocols, we can consider the paring
+  // procedure complete at this point.
   if (device_->protocol != Protocol::kFastPairInitial &&
       device_->protocol != Protocol::kFastPairRetroactive) {
+    std::move(pairing_procedure_complete_).Run(device_);
     return;
   }
 
@@ -340,6 +342,7 @@ void FastPairPairer::SendAccountKey() {
   if (!ShouldBeEnabledForLoginStatus(
           Shell::Get()->session_controller()->login_status())) {
     QP_LOG(VERBOSE) << __func__ << ": No logged in user to save account key to";
+    std::move(pairing_procedure_complete_).Run(device_);
     return;
   }
 
@@ -412,7 +415,9 @@ void FastPairPairer::DevicePairedChanged(device::BluetoothAdapter* adapter,
   if (device->GetAddress() == device_->ble_address ||
       device->GetAddress() == device_->classic_address()) {
     std::move(paired_callback_).Run(device_);
-    std::move(pairing_procedure_complete_).Run(device_);
+
+    if (pairing_procedure_complete_)
+      std::move(pairing_procedure_complete_).Run(device_);
   }
 }
 

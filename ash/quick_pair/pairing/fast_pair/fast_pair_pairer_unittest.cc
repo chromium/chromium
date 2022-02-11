@@ -818,6 +818,7 @@ TEST_F(FastPairPairerTest, PairSuccess_Subsequent) {
   SetGetDeviceSuccess();
   NotifyConfirmPasskey();
   base::RunLoop().RunUntilIdle();
+  EXPECT_CALL(pairing_procedure_complete_, Run);
   RunWritePasskeyCallback(kResponseBytes);
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_TRUE(IsDevicePaired());
@@ -875,11 +876,10 @@ TEST_F(FastPairPairerTest, WriteAccountKey_Initial_GuestLoggedIn) {
   SetGetDeviceSuccess();
   NotifyConfirmPasskey();
   base::RunLoop().RunUntilIdle();
+  EXPECT_CALL(pairing_procedure_complete_, Run);
   RunWritePasskeyCallback(kResponseBytes);
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_TRUE(IsDevicePaired());
-
-  EXPECT_CALL(pairing_procedure_complete_, Run).Times(0);
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
 }
