@@ -165,9 +165,6 @@
       'cc_unittests': {
         'ci_only': True,
       },
-      'chrome_modern_public_bundle_fake_modules_smoke_test': {
-        'ci_only': True,
-      },
       'chrome_modern_public_bundle_smoke_test': {
         'ci_only': True,
       },
@@ -228,12 +225,10 @@
     },
 
     'android_modern_smoke_tests': {
-      'chrome_modern_public_bundle_fake_modules_smoke_test': {},
       'chrome_modern_public_bundle_smoke_test': {},
     },
 
     'android_monochrome_smoke_tests': {
-      'monochrome_public_bundle_fake_modules_smoke_test': {},
       'monochrome_public_bundle_smoke_test': {},
       'monochrome_public_smoke_test': {},
     },
@@ -338,7 +333,6 @@
     },
 
     'android_trichrome_smoke_tests': {
-      'trichrome_chrome_bundle_fake_modules_smoke_test': {},
       'trichrome_chrome_bundle_smoke_test': {},
     },
 
@@ -1115,7 +1109,6 @@
 
     'chromium_swarm_android_gtests': {
       'base_unittests': {},
-      'chrome_modern_public_bundle_fake_modules_smoke_test': {},
       'chrome_modern_public_bundle_smoke_test': {},
       'weblayer_bundle_test': {},
     },

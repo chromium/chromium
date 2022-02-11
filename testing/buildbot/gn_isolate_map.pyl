@@ -463,10 +463,6 @@
     "label": "//chrome/android:chrome_modern_public_bundle_smoke_test",
     "type": "console_test_launcher",
   },
-  "chrome_modern_public_bundle_fake_modules_smoke_test": {
-    "label": "//chrome/android:chrome_modern_public_bundle_fake_modules_smoke_test",
-    "type": "console_test_launcher",
-  },
   "chrome_nocompile_tests": {
     "label": "//chrome/android:chrome_nocompile_tests",
     "type": "additional_compile_target",
@@ -1270,10 +1266,6 @@
     "label": "//chrome/android:monochrome_public_bundle_smoke_test",
     "type": "console_test_launcher",
   },
-  "monochrome_public_bundle_fake_modules_smoke_test": {
-    "label": "//chrome/android:monochrome_public_bundle_fake_modules_smoke_test",
-    "type": "console_test_launcher",
-  },
   "mojo_core_unittests": {
     "label": "//mojo/core:mojo_core_unittests",
     "type": "console_test_launcher",
@@ -1852,10 +1844,6 @@
   },
   "trichrome_chrome_bundle_smoke_test": {
     "label": "//chrome/android:trichrome_chrome_bundle_smoke_test",
-    "type": "console_test_launcher",
-  },
-  "trichrome_chrome_bundle_fake_modules_smoke_test": {
-    "label": "//chrome/android:trichrome_chrome_bundle_fake_modules_smoke_test",
     "type": "console_test_launcher",
   },
   "ui_android_unittests": {
