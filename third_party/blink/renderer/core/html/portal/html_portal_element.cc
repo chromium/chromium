@@ -60,9 +60,11 @@ HTMLPortalElement::HTMLPortalElement(
         portal_client_receiver)
     : HTMLFrameOwnerElement(html_names::kPortalTag, document),
       feature_handle_for_scheduler_(
-          document.GetExecutionContext()->GetScheduler()->RegisterFeature(
-              SchedulingPolicy::Feature::kPortal,
-              {SchedulingPolicy::DisableBackForwardCache()})) {
+          document.GetExecutionContext()
+              ? document.GetExecutionContext()->GetScheduler()->RegisterFeature(
+                    SchedulingPolicy::Feature::kPortal,
+                    {SchedulingPolicy::DisableBackForwardCache()})
+              : FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle()) {
   if (remote_portal) {
     DCHECK(portal_token);
     was_just_adopted_ = true;
