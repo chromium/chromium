@@ -16,10 +16,10 @@ base::ListValue BookmarkItemsToListValue(const BookmarkItem items[],
   for (size_t i = 0; i < count; ++i) {
     auto element = std::make_unique<base::DictionaryValue>();
 
-    element->SetInteger("id", items[i].id);
-    element->SetString("name", items[i].name);
-    element->SetString("icon", items[i].webui_icon);
-    element->SetString("url", items[i].url);
+    element->SetIntKey("id", items[i].id);
+    element->SetStringKey("name", items[i].name);
+    element->SetStringKey("icon", items[i].webui_icon);
+    element->SetStringKey("url", items[i].url);
 
     list_value.Append(std::move(element));
   }
@@ -32,10 +32,10 @@ base::ListValue BookmarkItemsToListValue(
   for (const auto& item : items) {
     auto element = std::make_unique<base::DictionaryValue>();
 
-    element->SetInteger("id", item.id);
-    element->SetString("name", item.name);
-    element->SetString("icon", item.webui_icon);
-    element->SetString("url", item.url);
+    element->SetIntKey("id", item.id);
+    element->SetStringKey("name", item.name);
+    element->SetStringKey("icon", item.webui_icon);
+    element->SetStringKey("url", item.url);
 
     list_value.Append(std::move(element));
   }

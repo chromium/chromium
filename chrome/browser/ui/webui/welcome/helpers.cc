@@ -269,10 +269,10 @@ base::DictionaryValue GetModules(Profile* profile) {
   std::vector<std::string> available_modules = GetAvailableModules(profile);
 
   base::DictionaryValue modules;
-  modules.SetString("new-user",
-                    FilterModules(new_user_modules, available_modules));
-  modules.SetString("returning-user",
-                    FilterModules(returning_user_modules, available_modules));
+  modules.SetStringKey("new-user",
+                       FilterModules(new_user_modules, available_modules));
+  modules.SetStringKey("returning-user", FilterModules(returning_user_modules,
+                                                       available_modules));
   return modules;
 }
 
