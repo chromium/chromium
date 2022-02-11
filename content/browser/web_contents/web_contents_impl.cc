@@ -4404,8 +4404,12 @@ void WebContentsImpl::RecordAccessibilityEvents(
     auto* ax_mgr = GetOrCreateRootBrowserAccessibilityManager();
     DCHECK(ax_mgr);
     base::ProcessId pid = base::Process::Current().Pid();
-    event_recorder_ =
-        content::AXInspectFactory::CreatePlatformRecorder(ax_mgr, pid);
+    gfx::AcceleratedWidget widget =
+        ax_mgr->GetRoot()->GetTargetForNativeAccessibilityEvent();
+    DCHECK(widget);
+    ui::AXTreeSelector selector(widget);
+    event_recorder_ = content::AXInspectFactory::CreatePlatformRecorder(
+        ax_mgr, pid, selector);
     event_recorder_->ListenToEvents(*callback);
   } else {
     if (event_recorder_) {

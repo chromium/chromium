@@ -83,8 +83,7 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
                   : ui::AXEventRecorderWin::kAsync);
     }
     case ui::AXApiType::kWinUIA:
-      return std::make_unique<AccessibilityEventRecorderUia>(manager, pid,
-                                                             selector.pattern);
+      return std::make_unique<AccessibilityEventRecorderUia>(selector);
     default:
       NOTREACHED() << "Unsupported API type " << static_cast<std::string>(type);
   }

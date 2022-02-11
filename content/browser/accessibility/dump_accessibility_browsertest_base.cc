@@ -452,9 +452,12 @@ std::unique_ptr<AXTreeFormatter> DumpAccessibilityTestBase::CreateFormatter()
 std::pair<base::Value, std::vector<std::string>>
 DumpAccessibilityTestBase::CaptureEvents(InvokeAction invoke_action) {
   // Create a new Event Recorder for the run.
+  BrowserAccessibilityManager* manager = GetManager();
+  ui::AXTreeSelector selector(
+      manager->GetRoot()->GetTargetForNativeAccessibilityEvent());
   std::unique_ptr<ui::AXEventRecorder> event_recorder =
-      AXInspectFactory::CreateRecorder(GetParam(), GetManager(),
-                                       base::GetCurrentProcId(), {});
+      AXInspectFactory::CreateRecorder(GetParam(), manager,
+                                       base::GetCurrentProcId(), selector);
   event_recorder->SetOnlyWebEvents(true);
 
   event_recorder->ListenToEvents(base::BindRepeating(

@@ -845,11 +845,12 @@ class NativeWinEventWaiter {
   NativeWinEventWaiter(BrowserAccessibilityManager* manager,
                        const std::string& match_pattern,
                        ui::AXApiType::Type type = ui::AXApiType::kWinIA2)
-      : event_recorder_(
-            AXInspectFactory::CreateRecorder(type,
-                                             manager,
-                                             base::GetCurrentProcId(),
-                                             {})),
+      : event_recorder_(AXInspectFactory::CreateRecorder(
+            type,
+            manager,
+            base::GetCurrentProcId(),
+            ui::AXTreeSelector(
+                manager->GetRoot()->GetTargetForNativeAccessibilityEvent()))),
         match_pattern_(match_pattern),
         browser_accessibility_manager_(manager) {
     event_recorder_->ListenToEvents(base::BindRepeating(

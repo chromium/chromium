@@ -25,14 +25,9 @@
 
 namespace content {
 
-class BrowserAccessibilityManager;
-
 class AccessibilityEventRecorderUia : public ui::AXEventRecorder {
  public:
-  AccessibilityEventRecorderUia(
-      BrowserAccessibilityManager* manager,
-      base::ProcessId pid,
-      const base::StringPiece& application_name_match_pattern);
+  AccessibilityEventRecorderUia(const ui::AXTreeSelector& selector);
 
   AccessibilityEventRecorderUia(const AccessibilityEventRecorderUia&) = delete;
   AccessibilityEventRecorderUia& operator=(

@@ -19,10 +19,10 @@ AXInspectFactory::CreatePlatformFormatter() {
 
 // static
 std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreatePlatformRecorder(
-    BrowserAccessibilityManager* manager,
+    BrowserAccessibilityManager*,
     base::ProcessId pid,
     const ui::AXTreeSelector& selector) {
-  return AXInspectFactory::CreateRecorder(ui::AXApiType::kMac, manager, pid,
+  return AXInspectFactory::CreateRecorder(ui::AXApiType::kMac, nullptr, pid,
                                           selector);
 }
 

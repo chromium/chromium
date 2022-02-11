@@ -19,9 +19,6 @@
 #include "base/win/scoped_variant.h"
 #include "base/win/windows_version.h"
 #include "build/build_config.h"
-#include "content/browser/accessibility/browser_accessibility_com_win.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
-#include "content/browser/accessibility/browser_accessibility_manager_win.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_win.h"
 #include "ui/accessibility/platform/uia_registrar_win.h"
 #include "ui/base/win/atl_module.h"
@@ -71,14 +68,12 @@ volatile base::subtle::Atomic32 AccessibilityEventRecorderUia::instantiated_ =
     0;
 
 AccessibilityEventRecorderUia::AccessibilityEventRecorderUia(
-    BrowserAccessibilityManager* manager,
-    base::ProcessId pid,
-    const base::StringPiece& application_name_match_pattern) {
+    const ui::AXTreeSelector& selector) {
   CHECK(!base::subtle::NoBarrier_AtomicExchange(&instantiated_, 1))
       << "There can be only one instance at a time.";
 
   // Find the root content window
-  HWND hwnd = manager->GetRoot()->GetTargetForNativeAccessibilityEvent();
+  HWND hwnd = ui::GetHWNDBySelector(selector);
   CHECK(hwnd);
 
   // Create the event thread, and pump messages via |initialization_loop| until
