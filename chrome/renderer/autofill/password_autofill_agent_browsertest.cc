@@ -83,10 +83,8 @@ const char kUsernameName[] = "username";
 const char16_t kUsernameName16[] = u"username";
 const char kPasswordName[] = "password";
 const char16_t kPasswordName16[] = u"password";
-#if !BUILDFLAG(IS_ANDROID)
 const char kSearchField[] = "search";
 const char kSocialMediaTextArea[] = "new_chirp";
-#endif
 
 const char kAliceUsername[] = "alice";
 const char16_t kAliceUsername16[] = u"alice";
@@ -109,7 +107,6 @@ const char kFormHTML[] =
     "  <INPUT type='submit' value='Login'/>"
     "</FORM>";
 
-#if !BUILDFLAG(IS_ANDROID)
 const char kSocialNetworkPostFormHTML[] =
     "<FORM id='SocialMediaPostForm' action='http://www.chirper.com'>"
     "  <TEXTAREA id='new_chirp'>"
@@ -122,7 +119,6 @@ const char kSearchFieldHTML[] =
     "  <INPUT type='search' id='search'/>"
     "  <INPUT type='submit' value='Chirp'/>"
     "</FORM>";
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 const char kVisibleFormWithNoUsernameHTML[] =
     "<head> <style> form {display: inline;} </style> </head>"
@@ -428,7 +424,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
             base::Unretained(this)));
   }
 
-  void FocusElement(std::string element_id) {
+  void FocusElement(const std::string& element_id) {
     std::string script =
         "document.getElementById('" + element_id + "').focus()";
     ExecuteJavaScriptForTests(script.c_str());
@@ -529,10 +525,18 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
 
   void SimulateUsernameTyping(const std::string& username) {
     SimulatePointClick(gfx::Point(1, 1));
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/1293802): User typing doesn't send focus events properly.
+    FocusElement(kUsernameName);
+#endif
     SimulateUserInputChangeForElement(&username_element_, username);
   }
 
   void SimulatePasswordTyping(const std::string& password) {
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/1293802): User typing doesn't send focus events properly.
+    FocusElement(kPasswordName);
+#endif
     SimulateUserInputChangeForElement(&password_element_, password);
   }
 
@@ -558,6 +562,18 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
         SimulateUsernameFieldAutofill(u"Alice");
         break;
     }
+  }
+
+  // Helper to simulate that TouchTofFill was closed in order to test regular
+  // popups, e.g. |ShowPasswordSuggestions|.
+  void SimulateClosingTouchToFillIfAndroid(const std::string& element_id) {
+    // Put the build guard here to save space in the caller test.
+#if BUILDFLAG(IS_ANDROID)
+    FocusElement(element_id);
+    // Don't show a keyboard, but let the caller to trigger it if needed.
+    password_autofill_agent_->TouchToFillClosed(
+        /*show_virtual_keyboard*/ false);
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   void CheckTextFieldsStateForElements(const WebInputElement& username_element,
@@ -1875,29 +1891,25 @@ TEST_F(PasswordAutofillAgentTest, FillIntoFocusedWritableTextField) {
   CheckUsernameSelection(strlen(kAliceUsername), strlen(kAliceUsername));
 }
 
-// TODO(crbug.com/1292478): Amend the test to port it on Android if possible.
-// Otherwise, remove the TODO and add the reason why it is excluded.
-#if !BUILDFLAG(IS_ANDROID)
 // Tests that |FillIntoFocusedField| doesn't fill passwords in userfields.
 TEST_F(PasswordAutofillAgentTest, FillIntoFocusedFieldOnlyIntoPasswordFields) {
   // Neither field should be autocompleted.
   CheckTextFieldsDOMState(std::string(), false, std::string(), false);
 
   // Filling a password into a username field doesn't work.
-  SimulateElementClick(kUsernameName);
+  FocusElement(kUsernameName);
 
   password_autofill_agent_->FillIntoFocusedField(
       /*is_password=*/true, kAlicePassword16);
   CheckTextFieldsDOMState(std::string(), false, std::string(), false);
 
   // When a password field is focus, the filling works.
-  SimulateElementClick(kPasswordName);
+  FocusElement(kPasswordName);
 
   password_autofill_agent_->FillIntoFocusedField(
       /*is_password=*/true, kAlicePassword16);
   CheckTextFieldsDOMState(std::string(), false, kAlicePassword, true);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that |FillIntoFocusedField| fills last focused, not last clicked field.
 TEST_F(PasswordAutofillAgentTest, FillIntoFocusedFieldForNonClickFocus) {
@@ -1968,13 +1980,12 @@ TEST_F(PasswordAutofillAgentTest, OnChangeLoggingState_Deactivated) {
   EXPECT_FALSE(fake_driver_.called_record_save_progress());
 }
 
-// TODO(crbug.com/1292478): Amend the test to port it on Android if possible.
-// Otherwise, remove the TODO and add the reason why it is excluded.
-#if !BUILDFLAG(IS_ANDROID)
 // Tests that one user click on a username field is sufficient to bring up a
 // credential suggestion popup, and the user can autocomplete the password by
 // selecting the credential from the popup.
 TEST_F(PasswordAutofillAgentTest, ClickAndSelect) {
+  SimulateClosingTouchToFillIfAndroid(kUsernameName);
+
   // SimulateElementClick() is called so that a user gesture is actually made
   // and the password can be filled. However, SimulateElementClick() does not
   // actually lead to the AutofillAgent's InputElementClicked() method being
@@ -1991,7 +2002,6 @@ TEST_F(PasswordAutofillAgentTest, ClickAndSelect) {
 
   CheckTextFieldsDOMState(kAliceUsername, true, kAlicePassword, true);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(PasswordAutofillAgentTest,
        NoPopupOnPasswordFieldWithoutSuggestionsByDefault) {
@@ -2043,14 +2053,13 @@ TEST_F(PasswordAutofillAgentTest, NoPopupOnPasswordFieldWithoutSuggestions) {
   base::RunLoop().RunUntilIdle();
 }
 
-// TODO(crbug.com/1292478): Amend the test to port it on Android if possible.
-// Otherwise, remove the TODO and add the reason why it is excluded.
-#if !BUILDFLAG(IS_ANDROID)
 // Tests the autosuggestions that are given when the element is clicked.
 // Specifically, tests when the user clicks on the username element after page
 // load and the element is autofilled, when the user clicks on an element that
 // has a matching username.
 TEST_F(PasswordAutofillAgentTest, CredentialsOnClick) {
+  SimulateClosingTouchToFillIfAndroid(kUsernameName);
+
   // Simulate the browser sending back the login info.
   SimulateOnFillPasswordForm(fill_data_);
 
@@ -2073,14 +2082,12 @@ TEST_F(PasswordAutofillAgentTest, CredentialsOnClick) {
       .Times(testing::AtLeast(1));
   SimulateUsernameTyping(kAliceUsername);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/1292478): Amend the test to port it on Android if possible.
-// Otherwise, remove the TODO and add the reason why it is excluded.
-#if !BUILDFLAG(IS_ANDROID)
 // Tests that there is an autosuggestion from the password manager when the
 // user clicks on the password field.
 TEST_F(PasswordAutofillAgentTest, NoCredentialsOnPasswordClick) {
+  SimulateClosingTouchToFillIfAndroid(kUsernameName);
+
   // Simulate the browser sending back the login info.
   SimulateOnFillPasswordForm(fill_data_);
 
@@ -2099,7 +2106,6 @@ TEST_F(PasswordAutofillAgentTest, NoCredentialsOnPasswordClick) {
   EXPECT_CALL(fake_driver_, ShowPasswordSuggestions);
   base::RunLoop().RunUntilIdle();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // The user types in a username and a password, but then just before sending
 // the form off, a script clears them. This test checks that
@@ -2191,13 +2197,12 @@ TEST_F(PasswordAutofillAgentTest,
       u"", u"random");
 }
 
-// TODO(crbug.com/1292478): Amend the test to port it on Android if possible.
-// Otherwise, remove the TODO and add the reason why it is excluded.
-#if !BUILDFLAG(IS_ANDROID)
 // The user first accepts a suggestion, but then overwrites the password. This
 // test checks that the overwritten password is not reverted back.
 TEST_F(PasswordAutofillAgentTest,
        NoopEditingDoesNotOverwriteManuallyEditedPassword) {
+  SimulateClosingTouchToFillIfAndroid(kUsernameName);
+
   fill_data_.wait_for_username = true;
   SimulateUsernameTyping(kAliceUsername);
   SimulateOnFillPasswordForm(fill_data_);
@@ -2220,15 +2225,13 @@ TEST_F(PasswordAutofillAgentTest,
   CheckUsernameDOMStatePasswordSuggestedState(old_username, false,
                                               std::string(), false);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/1292478): Amend the test to port it on Android if possible.
-// Otherwise, remove the TODO and add the reason why it is excluded.
-#if !BUILDFLAG(IS_ANDROID)
 // The user types the username, then accepts a suggestion. This test checks
 // that autofilling does not rewrite the username, if the value is already
 // there.
 TEST_F(PasswordAutofillAgentTest, AcceptingSuggestionDoesntRewriteUsername) {
+  SimulateClosingTouchToFillIfAndroid(kUsernameName);
+
   fill_data_.wait_for_username = true;
   SimulateUsernameTyping(kAliceUsername);
   SimulateOnFillPasswordForm(fill_data_);
@@ -2240,7 +2243,6 @@ TEST_F(PasswordAutofillAgentTest, AcceptingSuggestionDoesntRewriteUsername) {
   // The password was autofilled. The username was not.
   CheckTextFieldsDOMState(username, false, password, true);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // The user types in a username and a password, but then just before sending
 // the form off, a script changes them. This test checks that
@@ -2264,12 +2266,10 @@ TEST_F(PasswordAutofillAgentTest,
       GetFormUniqueRendererId("LoginTestForm"), u"temp", u"random", u"");
 }
 
-// TODO(crbug.com/1292478): Amend the test to port it on Android if possible.
-// Otherwise, remove the TODO and add the reason why it is excluded.
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordAutofillAgentTest, RememberFieldPropertiesOnSubmit) {
-  SimulateUsernameTyping("temp");
-  SimulatePasswordTyping("random");
+  FocusElement("random_field");
+  SimulateUsernameTyping("typed_username");
+  SimulatePasswordTyping("typed_password");
 
   // Simulate that the username and the password value was changed by the
   // site's JavaScript before submit.
@@ -2288,7 +2288,6 @@ TEST_F(PasswordAutofillAgentTest, RememberFieldPropertiesOnSubmit) {
   ExpectFieldPropertiesMasks(PasswordFormSubmitted, expected_properties_masks,
                              SubmissionIndicatorEvent::HTML_FORM_SUBMISSION);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(PasswordAutofillAgentTest, FixEmptyFieldPropertiesOnSubmit) {
   SimulateOnFillPasswordForm(fill_data_);
@@ -2332,9 +2331,6 @@ TEST_F(PasswordAutofillAgentTest, FixEmptyFieldPropertiesOnSubmit) {
                              SubmissionIndicatorEvent::HTML_FORM_SUBMISSION);
 }
 
-// TODO(crbug.com/1292478): Amend the test to port it on Android if possible.
-// Otherwise, remove the TODO and add the reason why it is excluded.
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordAutofillAgentTest,
        RememberFieldPropertiesOnSameDocumentNavigation) {
   LoadHTML(kNoFormHTML);
@@ -2392,7 +2388,6 @@ TEST_F(PasswordAutofillAgentTest,
                              expected_properties_masks,
                              SubmissionIndicatorEvent::DOM_MUTATION_AFTER_XHR);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // The username/password is autofilled by password manager then just before
 // sending the form off, a script changes them. This test checks that
@@ -2495,9 +2490,6 @@ TEST_F(PasswordAutofillAgentTest, DontFillFormWithNoUsername) {
   CheckFirstFillingResult(FillingResult::kFoundNoPasswordForUsername);
 }
 
-// TODO(crbug.com/1292478): Amend the test to port it on Android if possible.
-// Otherwise, remove the TODO and add the reason why it is excluded.
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordAutofillAgentTest, ShowPopupOnEmptyPasswordField) {
   // Load a form with no username and update test data.
   LoadHTML(kVisibleFormWithNoUsernameHTML);
@@ -2505,6 +2497,8 @@ TEST_F(PasswordAutofillAgentTest, ShowPopupOnEmptyPasswordField) {
   fill_data_.username_field = FormFieldData();
   UpdateUrlForHTML(kVisibleFormWithNoUsernameHTML);
   fill_data_.additional_logins.clear();
+
+  SimulateClosingTouchToFillIfAndroid(kPasswordName);
 
   password_element_.SetValue("");
   password_element_.SetAutofillState(WebAutofillState::kNotFilled);
@@ -2522,11 +2516,7 @@ TEST_F(PasswordAutofillAgentTest, ShowPopupOnEmptyPasswordField) {
   EXPECT_EQ(kAlicePassword16, password_element_.Value().Utf16());
   EXPECT_TRUE(password_element_.IsAutofilled());
 }
-#endif
 
-// TODO(crbug.com/1292478): Amend the test to port it on Android if possible.
-// Otherwise, remove the TODO and add the reason why it is excluded.
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordAutofillAgentTest, ShowPopupOnAutofilledPasswordField) {
   // Load a form with no username and update test data.
   LoadHTML(kVisibleFormWithNoUsernameHTML);
@@ -2534,6 +2524,8 @@ TEST_F(PasswordAutofillAgentTest, ShowPopupOnAutofilledPasswordField) {
   fill_data_.username_field = FormFieldData();
   UpdateUrlForHTML(kVisibleFormWithNoUsernameHTML);
   fill_data_.additional_logins.clear();
+
+  SimulateClosingTouchToFillIfAndroid(kPasswordName);
 
   password_element_.SetValue("");
   password_element_.SetAutofillState(WebAutofillState::kNotFilled);
@@ -2551,7 +2543,6 @@ TEST_F(PasswordAutofillAgentTest, ShowPopupOnAutofilledPasswordField) {
   EXPECT_EQ(kAlicePassword16, password_element_.Value().Utf16());
   EXPECT_TRUE(password_element_.IsAutofilled());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(PasswordAutofillAgentTest, NotShowPopupPasswordField) {
   // Load a form with no username and update test data.
@@ -2633,9 +2624,6 @@ TEST_F(PasswordAutofillAgentTest, PasswordGenerationTriggered_TypedPassword) {
       GetFormUniqueRendererId("LoginTestForm"), u"NewGuy", u"NewPassword", u"");
 }
 
-// TODO(crbug.com/1292478): Amend the test to port it on Android if possible.
-// Otherwise, remove the TODO and add the reason why it is excluded.
-#if !BUILDFLAG(IS_ANDROID)
 // Verify that generated passwords are saved correctly when autofill and
 // generation both trigger. Regression test for https://crbug.com/493455.
 TEST_F(PasswordAutofillAgentTest,
@@ -2647,7 +2635,7 @@ TEST_F(PasswordAutofillAgentTest,
       "password" /* new_password_id */, nullptr /* confirm_password_id*/);
   // Simulate the user clicks on a password field, that leads to showing
   // generaiton pop-up. GeneratedPasswordAccepted can't be called without it.
-  SimulateElementClick(kPasswordName);
+  FocusElement(kPasswordName);
 
   std::u16string password = u"NewPass22";
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
@@ -2659,11 +2647,7 @@ TEST_F(PasswordAutofillAgentTest,
       GetFormUniqueRendererId("LoginTestForm"), kAliceUsername16, u"NewPass22",
       u"");
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/1292478): Amend the test to port it on Android if possible.
-// Otherwise, remove the TODO and add the reason why it is excluded.
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordAutofillAgentTest,
        ResetPasswordGenerationWhenFieldIsAutofilled) {
   // A user generates password.
@@ -2672,7 +2656,7 @@ TEST_F(PasswordAutofillAgentTest,
       "password" /* new_password_id */, nullptr /* confirm_password_id*/);
   // Simulate the user clicks on a password field, that leads to showing
   // generaiton pop-up. GeneratedPasswordAccepted can't be called without it.
-  SimulateElementClick(kPasswordName);
+  FocusElement(kPasswordName);
   std::u16string password = u"NewPass22";
   EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
   password_generation_->GeneratedPasswordAccepted(password);
@@ -2711,11 +2695,7 @@ TEST_F(PasswordAutofillAgentTest,
       GetFormUniqueRendererId("LoginTestForm"), kBobUsername16, kBobPassword16,
       u"");
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
-// TODO(crbug.com/1292478): Amend the test to port it on Android if possible.
-// Otherwise, remove the TODO and add the reason why it is excluded.
-#if !BUILDFLAG(IS_ANDROID)
 // If password generation is enabled for a field, password autofill should not
 // show UI.
 TEST_F(PasswordAutofillAgentTest, PasswordGenerationSupersedesAutofill) {
@@ -2747,7 +2727,7 @@ TEST_F(PasswordAutofillAgentTest, PasswordGenerationSupersedesAutofill) {
   // generation but not password autofill.
   SetFocused(password_element_);
   EXPECT_CALL(fake_pw_client_, AutomaticGenerationAvailable(_));
-  SimulateElementClick("new_password");
+  FocusElement("new_password");
   base::RunLoop().RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(&fake_pw_client_);
   EXPECT_CALL(fake_driver_, ShowPasswordSuggestions).Times(0);
@@ -2757,7 +2737,6 @@ TEST_F(PasswordAutofillAgentTest, PasswordGenerationSupersedesAutofill) {
   EXPECT_CALL(fake_pw_client_, GenerationElementLostFocus())
       .Times(testing::AnyNumber());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that a password change form is properly filled with the username and
 // password.
@@ -2782,9 +2761,6 @@ TEST_F(PasswordAutofillAgentTest, FillSuggestionPasswordChangeForms) {
   }
 }
 
-// TODO(crbug.com/1292478): Amend the test to port it on Android if possible.
-// Otherwise, remove the TODO and add the reason why it is excluded.
-#if !BUILDFLAG(IS_ANDROID)
 // Tests that one user click on a username field is sufficient to bring up a
 // credential suggestion popup on a change password form.
 TEST_F(PasswordAutofillAgentTest,
@@ -2792,6 +2768,8 @@ TEST_F(PasswordAutofillAgentTest,
   LoadHTML(kPasswordChangeFormHTML);
   UpdateUrlForHTML(kPasswordChangeFormHTML);
   UpdateUsernameAndPasswordElements();
+
+  SimulateClosingTouchToFillIfAndroid(kPasswordName);
 
   ClearUsernameAndPasswordFields();
   fill_data_.wait_for_username = true;
@@ -2810,6 +2788,8 @@ TEST_F(PasswordAutofillAgentTest,
   UpdateUrlForHTML(kPasswordChangeFormHTML);
   UpdateUsernameAndPasswordElements();
 
+  SimulateClosingTouchToFillIfAndroid(kPasswordName);
+
   ClearUsernameAndPasswordFields();
   fill_data_.wait_for_username = true;
   SimulateOnFillPasswordForm(fill_data_);
@@ -2818,7 +2798,6 @@ TEST_F(PasswordAutofillAgentTest,
   autofill_agent_->FormControlElementClicked(password_element_);
   CheckSuggestions(u"", true);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that only the password field is autocompleted when the browser sends
 // back data with only one credentials and empty username.
@@ -3075,12 +3054,9 @@ TEST_F(PasswordAutofillAgentTest,
   EXPECT_FALSE(fake_driver_.called_password_form_submitted());
 }
 
-// TODO(crbug.com/1292478): Amend the test to port it on Android if possible.
-// Otherwise, remove the TODO and add the reason why it is excluded.
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordAutofillAgentTest, DriverIsInformedAboutUnfillableField) {
   EXPECT_EQ(FocusedFieldType::kUnknown, fake_driver_.last_focused_field_type());
-  SimulateElementClick(kPasswordName);
+  FocusElement(kPasswordName);
   fake_driver_.Flush();
   EXPECT_EQ(FocusedFieldType::kFillablePasswordField,
             fake_driver_.last_focused_field_type());
@@ -3095,26 +3071,26 @@ TEST_F(PasswordAutofillAgentTest, DriverIsInformedAboutUnfillableField) {
 }
 
 TEST_F(PasswordAutofillAgentTest, DriverIsInformedAboutFillableFields) {
-  SimulateElementClick("random_field");
+  FocusElement("random_field");
   fake_driver_.Flush();
   EXPECT_EQ(FocusedFieldType::kFillableNonSearchField,
             fake_driver_.last_focused_field_type());
 
   // A username field without fill data is indistinguishable from any other text
   // field.
-  SimulateElementClick(kUsernameName);
+  FocusElement(kUsernameName);
   fake_driver_.Flush();
   EXPECT_EQ(FocusedFieldType::kFillableNonSearchField,
             fake_driver_.last_focused_field_type());
 
-  SimulateElementClick(kPasswordName);
+  FocusElement(kPasswordName);
   fake_driver_.Flush();
   EXPECT_EQ(FocusedFieldType::kFillablePasswordField,
             fake_driver_.last_focused_field_type());
 
   // A username field with fill data should be detected.
   SimulateOnFillPasswordForm(fill_data_);
-  SimulateElementClick(kUsernameName);
+  FocusElement(kUsernameName);
   fake_driver_.Flush();
   EXPECT_EQ(FocusedFieldType::kFillableUsernameField,
             fake_driver_.last_focused_field_type());
@@ -3122,7 +3098,7 @@ TEST_F(PasswordAutofillAgentTest, DriverIsInformedAboutFillableFields) {
 
 TEST_F(PasswordAutofillAgentTest, DriverIsInformedAboutFillablSearchField) {
   LoadHTML(kSearchFieldHTML);
-  SimulateElementClick(kSearchField);
+  FocusElement(kSearchField);
   fake_driver_.Flush();
   EXPECT_EQ(FocusedFieldType::kFillableSearchField,
             fake_driver_.last_focused_field_type());
@@ -3131,12 +3107,11 @@ TEST_F(PasswordAutofillAgentTest, DriverIsInformedAboutFillablSearchField) {
 TEST_F(PasswordAutofillAgentTest, DriverIsInformedAboutFillableTextArea) {
   LoadHTML(kSocialNetworkPostFormHTML);
 
-  SimulateElementClick(kSocialMediaTextArea);
+  FocusElement(kSocialMediaTextArea);
   fake_driver_.Flush();
   EXPECT_EQ(FocusedFieldType::kFillableTextArea,
             fake_driver_.last_focused_field_type());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that credential suggestions are autofilled on a password (and change
 // password) forms having either ambiguous or empty name.
@@ -3403,12 +3378,11 @@ TEST_F(PasswordAutofillAgentTest,
   }
 }
 
-// TODO(crbug.com/1292478): Amend the test to port it on Android if possible.
-// Otherwise, remove the TODO and add the reason why it is excluded.
-#if !BUILDFLAG(IS_ANDROID)
 // Tests that a suggestion dropdown is shown on a password field even if a
 // username field is present.
 TEST_F(PasswordAutofillAgentTest, SuggestPasswordFieldSignInForm) {
+  SimulateClosingTouchToFillIfAndroid(kUsernameName);
+
   // Simulate the browser sending back the login info.
   SimulateOnFillPasswordForm(fill_data_);
 
@@ -3424,6 +3398,9 @@ TEST_F(PasswordAutofillAgentTest, SuggestPasswordFieldSignInForm) {
   CheckSuggestions(u"", true);
 }
 
+// TODO(crbug.com/1292478): Amend the test to port it on Android if possible.
+// Otherwise, remove the TODO and add the reason why it is excluded.
+#if !BUILDFLAG(IS_ANDROID)
 // Tests that a suggestion dropdown is shown on each password field. But when a
 // user chose one of the fields to autofill, a suggestion dropdown will be shown
 // only on this field.
@@ -3499,12 +3476,11 @@ TEST_F(PasswordAutofillAgentTest, ShowAutofillSignaturesFlag) {
   }
 }
 
-// TODO(crbug.com/1292478): Amend the test to port it on Android if possible.
-// Otherwise, remove the TODO and add the reason why it is excluded.
-#if !BUILDFLAG(IS_ANDROID)
 // Tests that a suggestion dropdown is shown even if JavaScripts updated field
 // names.
 TEST_F(PasswordAutofillAgentTest, SuggestWhenJavaScriptUpdatesFieldNames) {
+  SimulateClosingTouchToFillIfAndroid(kUsernameName);
+
   // Simulate that JavaScript updated field names.
   auto fill_data = fill_data_;
   fill_data.username_field.name += u"1";
@@ -3523,7 +3499,6 @@ TEST_F(PasswordAutofillAgentTest, SuggestWhenJavaScriptUpdatesFieldNames) {
   autofill_agent_->FormControlElementClicked(password_element_);
   CheckSuggestions(u"", true);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Checks that a same-document navigation form submission could have an empty
 // username.
@@ -3738,10 +3713,9 @@ TEST_F(PasswordAutofillAgentTest,
                                 true);
 }
 
-// TODO(crbug.com/1292478): Amend the test to port it on Android if possible.
-// Otherwise, remove the TODO and add the reason why it is excluded.
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(PasswordAutofillAgentTest, SuggestLatestCredentials) {
+  SimulateClosingTouchToFillIfAndroid(kUsernameName);
+
   password_autofill_agent_->FillPasswordForm(fill_data_);
   SimulateElementClick(kPasswordName);
   EXPECT_CALL(fake_driver_, ShowPasswordSuggestions);
@@ -3755,7 +3729,6 @@ TEST_F(PasswordAutofillAgentTest, SuggestLatestCredentials) {
   // Empty value because nothing was typed into the field.
   CheckSuggestions(u"", true);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that PSL matched password is not autofilled even when there is
 // a prefilled username.
@@ -4009,12 +3982,11 @@ TEST_F(PasswordAutofillAgentTest, SingleUsernameClearPreview) {
   CheckUsernameSelection(3, 3);
 }
 
-// TODO(crbug.com/1292478): Amend the test to port it on Android if possible.
-// Otherwise, remove the TODO and add the reason why it is excluded.
-#if !BUILDFLAG(IS_ANDROID)
 // Fill on account select for credentials with empty usernames:
 // Do not refill usernames if non-empty username is already selected.
 TEST_F(PasswordAutofillAgentTest, NoUsernameCredential) {
+  SimulateClosingTouchToFillIfAndroid(kUsernameName);
+
   const char kPasswordForEmptyUsernameCredential[] = "empty";
   const char16_t kPasswordForEmptyUsernameCredential16[] = u"empty";
 
@@ -4039,7 +4011,6 @@ TEST_F(PasswordAutofillAgentTest, NoUsernameCredential) {
   CheckTextFieldsDOMState(kAliceUsername, true,
                           kPasswordForEmptyUsernameCredential, true);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that any fields that have user input are not refilled on the next
 // call of FillPasswordForm.
