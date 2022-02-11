@@ -5,7 +5,6 @@
 #include "chrome/browser/supervised_user/supervised_user_sync_model_type_controller.h"
 
 #include "base/callback_helpers.h"
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_mode.h"
@@ -23,7 +22,7 @@ class SupervisedUserSyncModelTypeControllerTest : public testing::Test {
 TEST_F(SupervisedUserSyncModelTypeControllerTest,
        SupervisedUserMeetsPreconditions) {
   TestingProfile::Builder builder;
-  builder.SetSupervisedUserId(supervised_users::kChildAccountSUID);
+  builder.SetIsSupervisedProfile();
   std::unique_ptr<Profile> child_profile = builder.Build();
   ASSERT_TRUE(child_profile->IsChild());
 
@@ -53,7 +52,7 @@ TEST_F(SupervisedUserSyncModelTypeControllerTest,
 
 TEST_F(SupervisedUserSyncModelTypeControllerTest, HasTransportModeDelegate) {
   TestingProfile::Builder builder;
-  builder.SetSupervisedUserId(supervised_users::kChildAccountSUID);
+  builder.SetIsSupervisedProfile();
   std::unique_ptr<Profile> child_profile = builder.Build();
   ASSERT_TRUE(child_profile->IsChild());
 

@@ -217,14 +217,12 @@ class EasyUnlockTpmKeyManagerTest : public testing::Test {
         chrome::kInitialProfile,
         std::unique_ptr<sync_preferences::TestingPrefServiceSyncable>(),
         base::UTF8ToUTF16(chrome::kInitialProfile), 0 /* avatar id */,
-        std::string() /* supervized user id */,
         TestingProfile::TestingFactories());
 
     user_profile_ = profile_manager_.CreateTestingProfile(
         test_account_id_.GetUserEmail(),
         std::unique_ptr<sync_preferences::TestingPrefServiceSyncable>(),
         base::UTF8ToUTF16(test_account_id_.GetUserEmail()), 0 /* avatar id */,
-        std::string() /* supervized user id */,
         TestingProfile::TestingFactories());
 
     SetUpTestSystemSlot();

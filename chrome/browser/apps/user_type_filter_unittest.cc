@@ -11,7 +11,6 @@
 
 #include "base/values.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -77,7 +76,7 @@ class UserTypeFilterTest : public testing::Test {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 TEST_F(UserTypeFilterTest, ChildUser) {
   const auto profile = CreateProfile();
-  profile->SetSupervisedUserId(supervised_users::kChildAccountSUID);
+  profile->SetIsSupervisedProfile();
   EXPECT_FALSE(Match(profile, CreateJsonWithFilter({kUserTypeUnmanaged})));
   EXPECT_TRUE(Match(profile, CreateJsonWithFilter({kUserTypeChild})));
   EXPECT_TRUE(Match(
@@ -123,7 +122,7 @@ TEST_F(UserTypeFilterTest, DefaultFilter) {
   EXPECT_TRUE(MatchDefault(CreateGuestProfile(), default_filter));
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   // Child user.
-  profile->SetSupervisedUserId(supervised_users::kChildAccountSUID);
+  profile->SetIsSupervisedProfile();
   EXPECT_FALSE(MatchDefault(profile, default_filter));
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
   // Managed user.

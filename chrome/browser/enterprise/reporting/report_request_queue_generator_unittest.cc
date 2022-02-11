@@ -113,10 +113,11 @@ class ReportRequestQueueGeneratorTest : public ::testing::Test {
       const std::string& profile_name,
       std::unique_ptr<policy::PolicyService> policy_service) {
     return profile_manager_.CreateTestingProfile(
-        profile_name, {}, base::UTF8ToUTF16(profile_name), 0, {},
+        profile_name, {}, base::UTF8ToUTF16(profile_name), 0,
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories(),
-        absl::nullopt, std::move(policy_service));
+        /*is_supervised_profile=*/false, absl::nullopt,
+        std::move(policy_service));
   }
 
 #if !BUILDFLAG(IS_ANDROID)

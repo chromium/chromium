@@ -193,7 +193,6 @@ class LastDownloadFinderTest : public testing::Test {
         profile_name, std::move(prefs),
         base::UTF8ToUTF16(profile_name),  // user_name
         0,                                // avatar_id
-        std::string(),                    // supervised_user_id
         std::move(factories));
 
     return profile;

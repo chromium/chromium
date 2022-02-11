@@ -128,7 +128,7 @@ class TabSearchPageHandlerTest : public BrowserWithTestWindowTest {
         content::WebContents::CreateParams(profile()));
     web_ui_.set_web_contents(web_contents_.get());
     profile2_ = profile_manager()->CreateTestingProfile(
-        "testing_profile2", nullptr, std::u16string(), 0, std::string(),
+        "testing_profile2", nullptr, std::u16string(), 0,
         GetTestingFactories());
     browser2_ = CreateTestBrowser(profile1(), false);
     browser3_ = CreateTestBrowser(

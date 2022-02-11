@@ -366,7 +366,7 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
     fake_user_manager_->LoginUser(account_id);
     TestingProfile* profile = profile_manager()->CreateTestingProfile(
         kSecondaryProfileName, std::move(prefs), u"Test profile",
-        1 /*avatar_id*/, std::string() /*supervised_user_id*/,
+        1 /*avatar_id*/,
         /*testing_factories=*/
         {{arc::ArcIntentHelperBridge::GetFactory(),
           base::BindRepeating(&BuildArcIntentHelperBridge)},

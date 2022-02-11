@@ -71,7 +71,7 @@ class ArcGhostWindowViewTest : public testing::Test {
     // Note that user profiles are created after user login in reality.
     profile_ = profile_manager_->CreateTestingProfile(
         kTestProfileName, /*prefs=*/{}, kTestProfileName16,
-        /*avatar_id=*/0, /*supervised_user_id=*/{},
+        /*avatar_id=*/0,
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories());
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,

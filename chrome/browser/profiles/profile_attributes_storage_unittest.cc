@@ -1085,8 +1085,8 @@ TEST_F(ProfileAttributesStorageTest, CreateSupervisedTestingProfile) {
       testing_profile_manager()
           .CreateTestingProfile(
               "test1", std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
-              supervised_user_name, 0, supervised_users::kChildAccountSUID,
-              TestingProfile::TestingFactories())
+              supervised_user_name, 0, TestingProfile::TestingFactories(),
+              /*is_supervised_profile=*/true)
           ->GetPath();
   base::FilePath profile_paths[] = {path_1, path_2};
   for (const base::FilePath& path : profile_paths) {

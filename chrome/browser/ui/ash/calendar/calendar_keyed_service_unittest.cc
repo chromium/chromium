@@ -66,7 +66,7 @@ class CalendarKeyedServiceTest : public BrowserWithTestWindowTest {
         kSecondaryProfileName,
         std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
         u"Test profile",
-        /*avatar_id=*/1, std::string() /*supervised_user_id*/,
+        /*avatar_id=*/1,
         /*testing_factories=*/{});
   }
 

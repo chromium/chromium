@@ -33,6 +33,10 @@
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
 #endif
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "chrome/browser/supervised_user/supervised_user_constants.h"
+#endif
+
 const char kGuestProfileName[] = "Guest";
 const char kSystemProfileName[] = "System";
 
@@ -68,8 +72,8 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
     const std::u16string& user_name,
     int avatar_id,
-    const std::string& supervised_user_id,
     TestingProfile::TestingFactories testing_factories,
+    bool is_supervised_profile,
     absl::optional<bool> is_new_profile,
     absl::optional<std::unique_ptr<policy::PolicyService>> policy_service) {
   DCHECK(called_set_up_);
@@ -94,7 +98,10 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
   TestingProfile::Builder builder;
   builder.SetPath(profile_path);
   builder.SetPrefService(std::move(prefs));
-  builder.SetSupervisedUserId(supervised_user_id);
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  if (is_supervised_profile)
+    builder.SetIsSupervisedProfile();
+#endif
   builder.SetProfileName(profile_name);
   builder.SetIsNewProfile(is_new_profile.value_or(false));
   if (policy_service)
@@ -114,7 +121,11 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
           .GetProfileAttributesWithPath(profile_path);
   DCHECK(entry);
   entry->SetAvatarIconIndex(avatar_id);
-  entry->SetSupervisedUserId(supervised_user_id);
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  entry->SetSupervisedUserId(is_supervised_profile
+                                 ? ::supervised_users::kChildAccountSUID
+                                 : std::string());
+#endif
   entry->SetLocalProfileName(user_name, entry->IsUsingDefaultName());
 
   testing_profiles_.insert(std::make_pair(profile_name, profile_ptr));
@@ -135,7 +146,7 @@ TestingProfile* TestingProfileManager::CreateTestingProfile(
   DCHECK(called_set_up_);
   return CreateTestingProfile(
       name, std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
-      base::UTF8ToUTF16(name), 0, std::string(), std::move(testing_factories));
+      base::UTF8ToUTF16(name), 0, std::move(testing_factories));
 }
 
 TestingProfile* TestingProfileManager::CreateGuestProfile() {

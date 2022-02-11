@@ -177,7 +177,7 @@ class UserCloudPolicyManagerAshTest
     profile_ = profile_manager_->CreateTestingProfile(
         chrome::kInitialProfile,
         std::unique_ptr<sync_preferences::PrefServiceSyncable>(), u"", 0,
-        std::string(), std::move(factories));
+        std::move(factories));
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
 

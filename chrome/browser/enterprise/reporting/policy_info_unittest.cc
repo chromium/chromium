@@ -55,9 +55,9 @@ class PolicyInfoTest : public ::testing::Test {
     profile_ = profile_manager_->CreateTestingProfile(
         test_profile_name,
         std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
-        base::UTF8ToUTF16(test_profile_name), 0, std::string(),
-        TestingProfile::TestingFactories(), absl::optional<bool>(),
-        GetPolicyService());
+        base::UTF8ToUTF16(test_profile_name), 0,
+        TestingProfile::TestingFactories(), /*is_supervised_profile=*/false,
+        absl::optional<bool>(), GetPolicyService());
     profile_manager_->CreateTestingProfile(chrome::kInitialProfile);
   }
 

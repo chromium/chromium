@@ -93,10 +93,11 @@ class ProfileReportGeneratorTest : public ::testing::Test {
     InitPolicyMap();
 
     profile_ = profile_manager_.CreateTestingProfile(
-        kProfile, {}, kProfile16, 0, {},
+        kProfile, {}, kProfile16, 0,
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories(),
-        absl::nullopt, std::move(policy_service_));
+        /*is_supervised_profile=*/false, absl::nullopt,
+        std::move(policy_service_));
   }
 
   void InitMockPolicyService() {

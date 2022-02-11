@@ -215,8 +215,7 @@ class QuickUnlockPrivateUnitTest
 
     TestingProfile* profile = profile_manager()->CreateTestingProfile(
         kTestUserEmail, std::move(pref_service), u"Test profile",
-        1 /* avatar_id */, std::string() /* supervised_user_id */,
-        GetTestingFactories());
+        1 /* avatar_id */, GetTestingFactories());
 
     // Setup a primary user.
     auto test_account =

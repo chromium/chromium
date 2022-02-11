@@ -278,9 +278,8 @@ class ProfileManagerTest : public testing::Test {
     builder.SetPath(dest_path);
     builder.SetIsNewProfile(profile_is_new);
 
-    if (profile_is_child) {
-      builder.SetSupervisedUserId(supervised_users::kChildAccountSUID);
-    }
+    if (profile_is_child)
+      builder.SetIsSupervisedProfile();
 
     builder.OverridePolicyConnectorIsManagedForTesting(profile_is_managed);
     std::unique_ptr<Profile> profile = builder.Build();

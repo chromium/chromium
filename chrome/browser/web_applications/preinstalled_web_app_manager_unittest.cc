@@ -22,7 +22,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -506,7 +505,7 @@ TEST_F(PreinstalledWebAppManagerTest, NoApp) {
 // TODO(crbug.com/1252273): Enable test for Lacros.
 TEST_F(PreinstalledWebAppManagerTest, ChildUser) {
   const auto profile = CreateProfileAndLogin();
-  profile->SetSupervisedUserId(supervised_users::kChildAccountSUID);
+  profile->SetIsSupervisedProfile();
   VerifySetOfApps(profile.get(), {GURL(kAppAllUrl), GURL(kAppChildUrl)});
 }
 

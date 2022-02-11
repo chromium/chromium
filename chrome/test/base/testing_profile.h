@@ -150,9 +150,9 @@ class TestingProfile : public Profile {
     void SetIsMainProfile(bool is_main_profile);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-    // Sets the supervised user ID (which is empty by default). If it is set to
-    // a non-empty string, the profile is supervised.
-    void SetSupervisedUserId(const std::string& supervised_user_id);
+    // Marks profile as a Family Link supervised profile.
+    // Only available when ENABLE_SUPERVISED_USERS feature is enabled.
+    void SetIsSupervisedProfile();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     void SetUserCloudPolicyManagerAsh(
@@ -202,10 +202,10 @@ class TestingProfile : public Profile {
     bool guest_session_ = false;
     bool allows_browser_windows_ = true;
     bool is_new_profile_ = false;
+    bool is_supervised_profile_ = false;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     bool is_main_profile_ = false;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    std::string supervised_user_id_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     std::unique_ptr<policy::UserCloudPolicyManagerAsh>
         user_cloud_policy_manager_;
@@ -245,10 +245,10 @@ class TestingProfile : public Profile {
       bool guest_session,
       bool allows_browser_windows,
       bool is_new_profile,
+      bool is_supervised_profile,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       bool is_main_profile,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-      const std::string& supervised_user_id,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       std::unique_ptr<policy::UserCloudPolicyManagerAsh> policy_manager,
 #else
@@ -292,7 +292,9 @@ class TestingProfile : public Profile {
   // |otr_profile| cannot be empty.
   void SetOffTheRecordProfile(std::unique_ptr<Profile> otr_profile);
 
-  void SetSupervisedUserId(const std::string& id);
+  // Marks profile as a Family Link supervised profile.
+  // Only available when ENABLE_SUPERVISED_USERS feature is enabled.
+  void SetIsSupervisedProfile();
 
   sync_preferences::TestingPrefServiceSyncable* GetTestingPrefService();
 
@@ -426,7 +428,7 @@ class TestingProfile : public Profile {
 
  private:
   // Common initialization between the two constructors.
-  void Init();
+  void Init(bool is_supervised_profile);
 
   // Finishes initialization when a profile is created asynchronously.
   void FinishInit();
@@ -464,8 +466,6 @@ class TestingProfile : public Profile {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   bool is_main_profile_ = false;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-  std::string supervised_user_id_;
 
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
 

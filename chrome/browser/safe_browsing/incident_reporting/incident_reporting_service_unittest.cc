@@ -270,8 +270,7 @@ class IncidentReportingServiceTest : public testing::Test {
     // Boom (or fizzle).
     auto* profile = profile_manager_.CreateTestingProfile(
         profile_name, std::move(prefs), base::ASCIIToUTF16(profile_name),
-        0,              // avatar_id (unused)
-        std::string(),  // supervised_user_id (unused)
+        0,  // avatar_id (unused)
         TestingProfile::TestingFactories());
     mock_time_task_runner_->FastForwardUntilNoTasksRemain();
 

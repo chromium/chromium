@@ -134,7 +134,6 @@ class DemoSessionTest : public testing::Test {
     RegisterUserProfilePrefs(prefs->registry());
     TestingProfile* profile = profile_manager_->CreateTestingProfile(
         "test-profile", std::move(prefs), u"Test profile", 1 /* avatar_id */,
-        std::string() /* supervised_user_id */,
         TestingProfile::TestingFactories());
     ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
 

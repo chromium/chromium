@@ -114,9 +114,9 @@ class ItemSuggestCacheTest : public testing::Test {
         {ChromeSigninClientFactory::GetInstance(),
          base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
                              &url_loader_factory_)});
-    profile_ = profile_manager_->CreateTestingProfile(
-        kEmail, /*prefs=*/{}, kEmail16,
-        /*avatar_id=*/0, /*supervised_user_id=*/{}, factories);
+    profile_ =
+        profile_manager_->CreateTestingProfile(kEmail, /*prefs=*/{}, kEmail16,
+                                               /*avatar_id=*/0, factories);
 
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);

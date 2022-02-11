@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filter.h"
@@ -97,7 +96,7 @@ class FamilyUserParentalControlMetricsTest : public testing::Test {
     RegisterUserProfilePrefs(prefs->registry());
     TestingProfile::Builder profile_builder;
     profile_builder.SetPrefService(std::move(prefs));
-    profile_builder.SetSupervisedUserId(supervised_users::kChildAccountSUID);
+    profile_builder.SetIsSupervisedProfile();
     profile_ = profile_builder.Build();
     EXPECT_TRUE(profile_->IsChild());
     supervised_user_service_ =

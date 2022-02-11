@@ -9,7 +9,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_service_impl.h"
@@ -116,7 +115,7 @@ TEST_F(ManagedUIHandlerTest, ManagedUIBecomesEnabledByProfile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ManagedUIHandlerTest, ManagedUIDisabledForChildAccount) {
   profile_policy_connector()->OverrideIsManagedForTesting(true);
-  profile()->SetSupervisedUserId(supervised_users::kChildAccountSUID);
+  profile()->SetIsSupervisedProfile();
 
   InitializeHandler();
 

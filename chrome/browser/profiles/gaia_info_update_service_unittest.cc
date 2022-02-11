@@ -120,8 +120,7 @@ class GAIAInfoUpdateServiceTestBase : public testing::Test {
   void CreateProfile(const std::string& name) {
     profile_ = testing_profile_manager_.CreateTestingProfile(
         name, std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
-        base::UTF8ToUTF16(name), 0, std::string(),
-        TestingProfile::TestingFactories());
+        base::UTF8ToUTF16(name), 0, TestingProfile::TestingFactories());
   }
 
   content::BrowserTaskEnvironment task_environment_;

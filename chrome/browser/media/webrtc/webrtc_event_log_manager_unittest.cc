@@ -41,7 +41,6 @@
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_unittest_helpers.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -709,7 +708,7 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
         is_managed_profile);
     if (is_supervised) {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-      profile_builder.SetSupervisedUserId(supervised_users::kChildAccountSUID);
+      profile_builder.SetIsSupervisedProfile();
 #endif
     }
     std::unique_ptr<TestingProfile> profile = profile_builder.Build();

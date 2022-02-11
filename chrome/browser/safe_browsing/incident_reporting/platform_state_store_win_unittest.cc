@@ -62,7 +62,7 @@ class PlatformStateStoreWinTest : public ::testing::Test {
     RegisterUserProfilePrefs(prefs->registry());
     profile_ = profile_manager_.CreateTestingProfile(
         kProfileName_, std::move(prefs), base::UTF8ToUTF16(kProfileName_), 0,
-        std::string(), TestingProfile::TestingFactories(),
+        TestingProfile::TestingFactories(), /*is_supervised_profile=*/false,
         absl::optional<bool>(new_profile));
     if (new_profile)
       ASSERT_TRUE(profile_->IsNewProfile());

@@ -49,7 +49,6 @@
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/ui/app_list/arc/arc_data_removal_dialog.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/common/chrome_switches.h"
@@ -385,7 +384,7 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
     profile_builder.SetPath(temp_dir_.GetPath().AppendASCII("TestArcProfile"));
     profile_builder.SetProfileName(kFakeUserName);
     if (user_type == user_manager::USER_TYPE_CHILD)
-      profile_builder.SetSupervisedUserId(supervised_users::kChildAccountSUID);
+      profile_builder.SetIsSupervisedProfile();
 
     profile_ = IdentityTestEnvironmentProfileAdaptor::
         CreateProfileForIdentityTestEnvironment(profile_builder);

@@ -141,7 +141,7 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
         account_id.GetUserEmail(),
         std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
         base::UTF8ToUTF16(account_id.GetUserEmail()), 0 /* avatar_id */,
-        std::string() /* supervised_user_id */, std::move(factories));
+        std::move(factories));
 
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile);

@@ -53,7 +53,7 @@ class SigninGlobalErrorTest : public testing::Test {
 
     profile_ = profile_manager_.CreateTestingProfile(
         "Person 1", std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
-        u"Person 1", 0, std::string(), std::move(testing_factories));
+        u"Person 1", 0, std::move(testing_factories));
 
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());

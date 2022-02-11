@@ -10,7 +10,6 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
@@ -226,8 +225,7 @@ TEST_F(SupervisedUserExtensionTest, ExtensionsDisabledAfterGellerization) {
   CheckEnabled(id);
 
   // Now make the profile supervised.
-  profile()->AsTestingProfile()->SetSupervisedUserId(
-      supervised_users::kChildAccountSUID);
+  profile()->AsTestingProfile()->SetIsSupervisedProfile();
 
   // The extension should be disabled now pending custodian approval.
   CheckDisabledForCustodianApproval(id);

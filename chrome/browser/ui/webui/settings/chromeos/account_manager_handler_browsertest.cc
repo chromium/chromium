@@ -181,7 +181,7 @@ class AccountManagerUIHandlerTest
     profile_builder.SetProfileName(GetDeviceAccountInfo().email);
     if (GetDeviceAccountInfo().user_type ==
         user_manager::UserType::USER_TYPE_CHILD) {
-      profile_builder.SetSupervisedUserId(GetDeviceAccountInfo().id);
+      profile_builder.SetIsSupervisedProfile();
     }
     profile_ = profile_builder.Build();
 

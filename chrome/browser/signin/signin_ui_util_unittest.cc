@@ -706,7 +706,7 @@ TEST(ShouldShowAnimatedIdentityOnOpeningWindow, ReturnsFalseForNewWindow) {
   std::string name("testing_profile");
   TestingProfile* profile = profile_manager.CreateTestingProfile(
       name, std::unique_ptr<sync_preferences::PrefServiceSyncable>(),
-      base::UTF8ToUTF16(name), 0, std::string(),
+      base::UTF8ToUTF16(name), 0,
       IdentityTestEnvironmentProfileAdaptor::
           GetIdentityTestEnvironmentFactories());
 

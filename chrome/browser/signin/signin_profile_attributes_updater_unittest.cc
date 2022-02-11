@@ -76,7 +76,7 @@ class SigninProfileAttributesUpdaterTest : public testing::Test {
     ASSERT_TRUE(profile_manager_.SetUp());
     std::string name = "profile_name";
     profile_ = profile_manager_.CreateTestingProfile(
-        name, /*prefs=*/nullptr, base::UTF8ToUTF16(name), 0, std::string(),
+        name, /*prefs=*/nullptr, base::UTF8ToUTF16(name), 0,
         TestingProfile::TestingFactories());
 
     RecreateSigninProfileAttributesUpdater();

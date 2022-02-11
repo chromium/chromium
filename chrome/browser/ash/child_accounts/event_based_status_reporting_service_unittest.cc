@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/child_accounts/screen_time_controller.h"
 #include "chrome/browser/ash/child_accounts/screen_time_controller_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
@@ -102,7 +101,7 @@ class EventBasedStatusReportingServiceTest : public testing::Test {
     SystemClockClient::InitializeFake();
 
     profile_ = std::make_unique<TestingProfile>();
-    profile_.get()->SetSupervisedUserId(supervised_users::kChildAccountSUID);
+    profile_->SetIsSupervisedProfile();
     arc_test_.SetUp(profile());
 
     session_manager_.CreateSession(

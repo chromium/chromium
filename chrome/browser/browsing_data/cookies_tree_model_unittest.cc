@@ -19,7 +19,6 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/mock_settings_observer.h"
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/mock_cache_storage_helper.h"
@@ -1892,7 +1891,7 @@ TEST_F(CookiesTreeModelTest, CookieDeletionFilterNormalUser) {
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(CookiesTreeModelTest, CookieDeletionFilterChildUser) {
-  profile_->SetSupervisedUserId(supervised_users::kChildAccountSUID);
+  profile_->SetIsSupervisedProfile();
   auto callback =
       CookiesTreeModel::GetCookieDeletionDisabledCallback(profile_.get());
 

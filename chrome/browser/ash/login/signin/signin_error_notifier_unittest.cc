@@ -17,7 +17,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/common/pref_names.h"
@@ -262,7 +261,7 @@ TEST_F(SigninErrorNotifierTest, ChildSecondaryAccountMigrationTest) {
       identity_test_env()->MakeAccountAvailable(kTestSecondaryEmail).account_id;
 
   // Mark the profile as a child user.
-  GetProfile()->SetSupervisedUserId(supervised_users::kChildAccountSUID);
+  GetProfile()->SetIsSupervisedProfile();
   base::RunLoop().RunUntilIdle();
 
   // Invalidate the secondary account.

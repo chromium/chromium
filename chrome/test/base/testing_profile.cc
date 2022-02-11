@@ -197,7 +197,7 @@ TestingProfile::TestingProfile(const base::FilePath& path, Delegate* delegate)
   if (profile_path_.empty()) {
     profile_path_ = base::CreateUniqueTempDirectoryScopedToTest();
   }
-  Init();
+  Init(/*is_supervised_profile=*/false);
   if (delegate_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
@@ -218,10 +218,10 @@ TestingProfile::TestingProfile(
     bool guest_session,
     bool allows_browser_windows,
     bool is_new_profile,
+    bool is_supervised_profile,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     bool is_main_profile,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    const std::string& supervised_user_id,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     std::unique_ptr<policy::UserCloudPolicyManagerAsh> policy_manager,
 #else
@@ -241,7 +241,6 @@ TestingProfile::TestingProfile(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       is_main_profile_(is_main_profile),
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-      supervised_user_id_(supervised_user_id),
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       extension_special_storage_policy_(extension_policy),
 #endif
@@ -270,7 +269,8 @@ TestingProfile::TestingProfile(
     pair.first->SetTestingFactory(this, std::move(pair.second));
   testing_factories.clear();
 
-  Init();
+  Init(is_supervised_profile);
+
   // If caller supplied a delegate, delay the FinishInit invocation until other
   // tasks have run.
   // TODO(atwilson): See if this is still required once we convert the current
@@ -282,11 +282,9 @@ TestingProfile::TestingProfile(
   } else {
     FinishInit();
   }
-
-  SetSupervisedUserId(supervised_user_id);
 }
 
-void TestingProfile::Init() {
+void TestingProfile::Init(bool is_supervised_profile) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   // If threads have been initialized, we should be on the UI thread.
   DCHECK(!content::BrowserThread::IsThreadInitialized(
@@ -342,11 +340,14 @@ void TestingProfile::Init() {
   else if (IsOffTheRecord())
     CreateIncognitoPrefService();
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  else if (!supervised_user_id_.empty())
+  else if (is_supervised_profile)
     CreatePrefServiceForSupervisedUser();
 #endif
   else
     CreateTestingPrefService();
+
+  if (is_supervised_profile)
+    SetIsSupervisedProfile();
 
   key_->SetPrefs(prefs_.get());
   SimpleKeyMap::GetInstance()->Associate(this, key_.get());
@@ -691,17 +692,19 @@ const Profile* TestingProfile::GetOriginalProfile() const {
   return this;
 }
 
-void TestingProfile::SetSupervisedUserId(const std::string& id) {
-  supervised_user_id_ = id;
-  if (!id.empty())
-    GetPrefs()->SetString(prefs::kSupervisedUserId, id);
-  else
-    GetPrefs()->ClearPref(prefs::kSupervisedUserId);
+void TestingProfile::SetIsSupervisedProfile() {
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  GetPrefs()->SetString(prefs::kSupervisedUserId,
+                        supervised_users::kChildAccountSUID);
+#else
+  NOTREACHED() << "Supervised users are not enabled";
+#endif
 }
 
 bool TestingProfile::IsChild() const {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  return supervised_user_id_ == supervised_users::kChildAccountSUID;
+  return GetPrefs()->GetString(prefs::kSupervisedUserId) ==
+         supervised_users::kChildAccountSUID;
 #else
   return false;
 #endif
@@ -744,7 +747,6 @@ void TestingProfile::CreateTestingPrefService() {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 void TestingProfile::CreatePrefServiceForSupervisedUser() {
   DCHECK(!prefs_.get());
-  DCHECK(!supervised_user_id_.empty());
 
   // Construct testing_prefs_ by hand to add the supervised user pref store.
   testing_prefs_ = new sync_preferences::TestingPrefServiceSyncable(
@@ -1021,9 +1023,8 @@ void TestingProfile::Builder::SetIsNewProfile(bool is_new_profile) {
   is_new_profile_ = is_new_profile;
 }
 
-void TestingProfile::Builder::SetSupervisedUserId(
-    const std::string& supervised_user_id) {
-  supervised_user_id_ = supervised_user_id;
+void TestingProfile::Builder::SetIsSupervisedProfile() {
+  is_supervised_profile_ = true;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1086,12 +1087,12 @@ std::unique_ptr<TestingProfile> TestingProfile::Builder::Build() {
       extension_policy_,
 #endif
       std::move(pref_service_), nullptr, guest_session_,
-      allows_browser_windows_, is_new_profile_,
+      allows_browser_windows_, is_new_profile_, is_supervised_profile_,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       is_main_profile_,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-      supervised_user_id_, std::move(user_cloud_policy_manager_),
-      std::move(policy_service_), std::move(testing_factories_), profile_name_,
+      std::move(user_cloud_policy_manager_), std::move(policy_service_),
+      std::move(testing_factories_), profile_name_,
       override_policy_connector_is_managed_, absl::optional<OTRProfileID>(),
       url_loader_factory_);
 }
@@ -1110,12 +1111,12 @@ TestingProfile* TestingProfile::Builder::BuildOffTheRecord(
       extension_policy_,
 #endif
       std::move(pref_service_), original_profile, guest_session_,
-      allows_browser_windows_, is_new_profile_,
+      allows_browser_windows_, is_new_profile_, is_supervised_profile_,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       is_main_profile_,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-      supervised_user_id_, std::move(user_cloud_policy_manager_),
-      std::move(policy_service_), std::move(testing_factories_), profile_name_,
+      std::move(user_cloud_policy_manager_), std::move(policy_service_),
+      std::move(testing_factories_), profile_name_,
       override_policy_connector_is_managed_,
       absl::optional<OTRProfileID>(otr_profile_id), url_loader_factory_);
 }
