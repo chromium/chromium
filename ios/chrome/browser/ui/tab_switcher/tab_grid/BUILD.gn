@@ -180,6 +180,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
+    "//components/commerce/core:feature_list",
     "//components/sessions",
     "//components/sync_preferences:test_support",
     "//components/unified_consent:unified_consent",

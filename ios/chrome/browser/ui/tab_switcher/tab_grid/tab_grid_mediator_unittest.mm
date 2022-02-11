@@ -11,6 +11,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/sessions/core/live_tab.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -367,7 +368,7 @@ class TabGridMediatorTest : public PlatformTest {
 
   void SetPriceDropIndicatorsFlag() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{kCommercePriceTracking,
+        {{commerce::kCommercePriceTracking,
           {{kPriceTrackingWithOptimizationGuideParam, "true"}}}},
         {});
   }

@@ -1380,9 +1380,6 @@ extern const char kCommerceDeveloperDescription[];
 extern const char kCommerceMerchantViewerAndroidName[];
 extern const char kCommerceMerchantViewerAndroidDescription[];
 
-extern const char kCommercePriceTrackingAndroidName[];
-extern const char kCommercePriceTrackingAndroidDescription[];
-
 extern const char kTabGroupsAndroidName[];
 extern const char kTabGroupsAndroidDescription[];
 

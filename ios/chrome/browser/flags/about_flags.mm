@@ -26,6 +26,8 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/ios/browser/autofill_switches.h"
 #include "components/breadcrumbs/core/features.h"
+#include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/flag_descriptions.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/dom_distiller/core/dom_distiller_switches.h"
 #include "components/enterprise/browser/enterprise_switches.h"
@@ -178,24 +180,6 @@ const FeatureEntry::FeatureVariation
          base::size(kAutofillUseMobileLabelDisambiguationShowAll), nullptr},
         {"(show one)", kAutofillUseMobileLabelDisambiguationShowOne,
          base::size(kAutofillUseMobileLabelDisambiguationShowOne), nullptr}};
-
-const FeatureEntry::FeatureParam kCommercePriceTrackingWithOptimizationGuide[] =
-    {{"price_tracking_with_optimization_guide", "true"},
-     {"price_tracking_opt_out", "false"}};
-
-const FeatureEntry::FeatureParam
-    kCommercePriceTrackingWithOptimizationGuideAndOptOut[] = {
-        {"price_tracking_with_optimization_guide", "true"},
-        {"price_tracking_opt_out", "true"}};
-
-const FeatureEntry::FeatureVariation kCommercePriceTrackingVariations[] = {
-    {"Price Tracking with Optimization Guide",
-     kCommercePriceTrackingWithOptimizationGuide,
-     base::size(kCommercePriceTrackingWithOptimizationGuide), nullptr},
-    {"Price Tracking with Optimization Guide and Opt Out",
-     kCommercePriceTrackingWithOptimizationGuideAndOptOut,
-     base::size(kCommercePriceTrackingWithOptimizationGuideAndOptOut),
-     nullptr}};
 
 const FeatureEntry::FeatureParam
     kDefaultBrowserFullscreenPromoExperimentRemindMeLater[] = {
@@ -698,10 +682,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSSharedHighlightingAmpDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(shared_highlighting::kSharedHighlightingAmp)},
     {"enable-commerce-price-tracking",
-     flag_descriptions::kCommercePriceTrackingName,
-     flag_descriptions::kCommercePriceTrackingDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kCommercePriceTracking,
-                                    kCommercePriceTrackingVariations,
+     commerce::flag_descriptions::kCommercePriceTrackingName,
+     commerce::flag_descriptions::kCommercePriceTrackingDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(commerce::kCommercePriceTracking,
+                                    commerce::kCommercePriceTrackingVariations,
                                     "CommercePriceTracking")},
     {"web-feed-ios", flag_descriptions::kEnableWebChannelsName,
      flag_descriptions::kEnableWebChannelsDescription, flags_ui::kOsIos,

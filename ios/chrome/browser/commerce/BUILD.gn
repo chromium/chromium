@@ -10,6 +10,7 @@ source_set("commerce") {
     "shopping_persisted_data_tab_helper.mm",
   ]
   deps = [
+    "//components/commerce/core:feature_list",
     "//components/commerce/core:proto",
     "//components/optimization_guide/core:core",
     "//components/payments/core:core",
@@ -36,6 +37,7 @@ source_set("unit_tests") {
   deps = [
     ":commerce",
     "//base/test:test_support",
+    "//components/commerce/core:feature_list",
     "//components/commerce/core:proto",
     "//components/optimization_guide/core:core",
     "//components/optimization_guide/core:test_support",

@@ -73,10 +73,6 @@ const char kBreakpadNoDelayInitialUploadDescription[] =
     "disabled, initial upload is delayed until deferred initialization. This "
     "does not affect recovery mode.";
 
-const char kCommercePriceTrackingName[] = "Price Tracking";
-const char kCommercePriceTrackingDescription[] =
-    "Allows users to track product prices through Chrome.";
-
 const char kContentSuggestionsHeaderMigrationName[] =
     "Content Suggestions header migration";
 const char kContentSuggestionsHeaderMigrationDescription[] =

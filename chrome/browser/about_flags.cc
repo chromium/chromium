@@ -83,6 +83,7 @@
 #include "components/certificate_transparency/ct_features.h"
 #include "components/cloud_devices/common/cloud_devices_switches.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/flag_descriptions.h"
 #include "components/component_updater/component_updater_command_line_config_policy.h"
 #include "components/component_updater/component_updater_switches.h"
 #include "components/content_settings/core/common/features.h"
@@ -1802,15 +1803,6 @@ const FeatureEntry::FeatureParam kTabGridLayoutAndroid_TallNTV[] = {
 const FeatureEntry::FeatureParam kTabGridLayoutAndroid_SearchChip[] = {
     {"enable_search_term_chip", "true"}};
 
-const FeatureEntry::FeatureParam kCommercePriceTracking_PriceAlerts[] = {
-    {"enable_price_tracking", "true"},
-    {"price_tracking_with_optimization_guide", "false"}};
-
-const FeatureEntry::FeatureParam
-    kCommercePriceTracking_PriceAlerts_WithOptimizationGuide[] = {
-        {"enable_price_tracking", "true"},
-        {"price_tracking_with_optimization_guide", "true"}};
-
 const FeatureEntry::FeatureParam
     kTabGridLayoutAndroid_TabGroupAutoCreation_TabGroupFirst[] = {
         {"enable_tab_group_auto_creation", "false"},
@@ -1819,11 +1811,6 @@ const FeatureEntry::FeatureParam
 const FeatureEntry::FeatureParam kTabGridLayoutAndroid_TabGroupAutoCreation[] =
     {{"enable_tab_group_auto_creation", "false"},
      {"show_open_in_tab_group_menu_item_first", "false"}};
-
-const FeatureEntry::FeatureParam kCommercePriceTracking_PriceNotifications[] = {
-    {"enable_price_tracking", "true"},
-    {"price_tracking_with_optimization_guide", "true"},
-    {"enable_price_notification", "true"}};
 
 const FeatureEntry::FeatureVariation kTabGridLayoutAndroidVariations[] = {
     {"New Tab Variation", kTabGridLayoutAndroid_NewTabVariation,
@@ -1840,18 +1827,6 @@ const FeatureEntry::FeatureVariation kTabGridLayoutAndroidVariations[] = {
      kTabGridLayoutAndroid_TabGroupAutoCreation_TabGroupFirst,
      base::size(kTabGridLayoutAndroid_TabGroupAutoCreation_TabGroupFirst),
      nullptr},
-};
-
-const FeatureEntry::FeatureVariation kCommercePriceTrackingAndroidVariations[] =
-    {
-        {"Price alerts", kCommercePriceTracking_PriceAlerts,
-         base::size(kCommercePriceTracking_PriceAlerts), nullptr},
-        {"Price alerts with OptimizationGuide",
-         kCommercePriceTracking_PriceAlerts_WithOptimizationGuide,
-         base::size(kCommercePriceTracking_PriceAlerts_WithOptimizationGuide),
-         nullptr},
-        {"Price notifications", kCommercePriceTracking_PriceNotifications,
-         base::size(kCommercePriceTracking_PriceNotifications), nullptr},
 };
 
 const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurface[] = {
@@ -5372,11 +5347,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(commerce::kCommerceMerchantViewer)},
 
     {"enable-commerce-price-tracking",
-     flag_descriptions::kCommercePriceTrackingAndroidName,
-     flag_descriptions::kCommercePriceTrackingAndroidDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(commerce::kCommercePriceTracking,
-                                    kCommercePriceTrackingAndroidVariations,
-                                    "CommercePriceTracking")},
+     commerce::flag_descriptions::kCommercePriceTrackingName,
+     commerce::flag_descriptions::kCommercePriceTrackingDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         commerce::kCommercePriceTracking,
+         commerce::kCommercePriceTrackingAndroidVariations,
+         "CommercePriceTracking")},
 
     {"enable-tab-groups", flag_descriptions::kTabGroupsAndroidName,
      flag_descriptions::kTabGroupsAndroidDescription, kOsAndroid,

@@ -63,12 +63,6 @@ extern const char kAutofillUseRendererIDsDescription[];
 extern const char kBreakpadNoDelayInitialUploadName[];
 extern const char kBreakpadNoDelayInitialUploadDescription[];
 
-// Enables the user to track prices of the Shopping URLs they are visiting.
-// The first variation is to display price drops in the Tab Switching UI when
-// they are identified.
-extern const char kCommercePriceTrackingName[];
-extern const char kCommercePriceTrackingDescription[];
-
 // Title and description for the flag that moves the Content Suggestions header
 // to the Discover feed ScrollView.
 extern const char kContentSuggestionsHeaderMigrationName[];
