@@ -22,7 +22,7 @@ const base::Feature kWebViewConnectionlessSafeBrowsing{
 // Enable WebView to set prefers-color-theme according to the app's theme unless
 // app specifies FORCE_DARK_OFF or DARK_STRATEGY_USER_AGENT_DARKENING_ONLY.
 const base::Feature kWebViewDarkModeMatchTheme{
-    "WebViewDarkModeMatchTheme", base::FEATURE_DISABLED_BY_DEFAULT};
+    "WebViewDarkModeMatchTheme", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable WebView to automatically darken the page in FORCE_DARK_AUTO mode if
 // the app's theme is dark.
