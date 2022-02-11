@@ -118,21 +118,15 @@ std::string GetRawFileNamesFromZip(const base::File& zip_file) {
   result.reserve(100000);
 
   // Iterate over file entries of the ZIP archive.
-  while (reader.HasMore()) {
-    if (reader.OpenCurrentEntryInZip()) {
-      const std::string& entry_path =
-          reader.current_entry_info()->file_path_in_original_encoding();
+  while (const zip::ZipReader::Entry* const entry = reader.Next()) {
+    const std::string& path = entry->path_in_original_encoding;
 
-      // Stop if we have enough data in |result|.
-      if (entry_path.size() > (result.capacity() - result.size()))
-        break;
-
-      // Accumulate data in |result|.
-      result += entry_path;
-    }
-
-    if (!reader.AdvanceToNextEntry())
+    // Stop if we have enough data in |result|.
+    if (path.size() > (result.capacity() - result.size()))
       break;
+
+    // Accumulate data in |result|.
+    result += path;
   }
 
   LOG_IF(ERROR, result.empty()) << "Cannot extract filenames from ZIP archive";
