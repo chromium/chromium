@@ -231,7 +231,7 @@ const int DownloadItemImpl::kMaxAutoResumeAttempts = 5;
 DownloadItemImpl::RequestInfo::RequestInfo(
     const std::vector<GURL>& url_chain,
     const GURL& referrer_url,
-    const GURL& site_url,
+    const std::string& serialized_embedder_download_data,
     const GURL& tab_url,
     const GURL& tab_referrer_url,
     const absl::optional<url::Origin>& request_initiator,
@@ -247,7 +247,7 @@ DownloadItemImpl::RequestInfo::RequestInfo(
     int64_t range_request_to)
     : url_chain(url_chain),
       referrer_url(referrer_url),
-      site_url(site_url),
+      serialized_embedder_download_data(serialized_embedder_download_data),
       tab_url(tab_url),
       tab_referrer_url(tab_referrer_url),
       request_initiator(request_initiator),
@@ -306,7 +306,7 @@ DownloadItemImpl::DownloadItemImpl(
     const base::FilePath& target_path,
     const std::vector<GURL>& url_chain,
     const GURL& referrer_url,
-    const GURL& site_url,
+    const std::string& serialized_embedder_download_data,
     const GURL& tab_url,
     const GURL& tab_refererr_url,
     const absl::optional<url::Origin>& request_initiator,
@@ -336,7 +336,7 @@ DownloadItemImpl::DownloadItemImpl(
     std::unique_ptr<DownloadEntry> download_entry)
     : request_info_(url_chain,
                     referrer_url,
-                    site_url,
+                    serialized_embedder_download_data,
                     tab_url,
                     tab_refererr_url,
                     request_initiator,
@@ -401,7 +401,7 @@ DownloadItemImpl::DownloadItemImpl(DownloadItemImplDelegate* delegate,
                                    const DownloadCreateInfo& info)
     : request_info_(info.url_chain,
                     info.referrer_url,
-                    info.site_url,
+                    info.serialized_embedder_download_data,
                     info.tab_url,
                     info.tab_referrer_url,
                     info.request_initiator,
@@ -896,8 +896,8 @@ const GURL& DownloadItemImpl::GetReferrerUrl() const {
   return request_info_.referrer_url;
 }
 
-const GURL& DownloadItemImpl::GetSiteUrl() const {
-  return request_info_.site_url;
+const std::string& DownloadItemImpl::GetSerializedEmbedderDownloadData() const {
+  return request_info_.serialized_embedder_download_data;
 }
 
 const GURL& DownloadItemImpl::GetTabUrl() const {
@@ -1315,7 +1315,7 @@ std::string DownloadItemImpl::DebugString(bool verbose) const {
         " rereoute_info = '%s'"
         "\""
         " referrer = \"%s\""
-        " site_url = \"%s\"",
+        " serialized_embedder_download_data = \"%s\"",
         GetTotalBytes(), GetReceivedBytes(),
         DownloadInterruptReasonToString(last_reason_).c_str(),
         IsPaused() ? 'T' : 'F', DebugResumeModeString(GetResumeMode()),
@@ -1324,7 +1324,7 @@ std::string DownloadItemImpl::DebugString(bool verbose) const {
         download_file_ ? "true" : "false", url_list.c_str(),
         GetFullPath().value().c_str(), GetTargetFilePath().value().c_str(),
         reroute_info_.DebugString().c_str(), GetReferrerUrl().spec().c_str(),
-        GetSiteUrl().spec().c_str());
+        GetSerializedEmbedderDownloadData().c_str());
   } else {
     description += base::StringPrintf(" url = \"%s\"", url_list.c_str());
   }
@@ -1678,13 +1678,8 @@ void DownloadItemImpl::Start(
     }
     RecordDownloadMimeType(mime_type_);
     DownloadContent file_type = DownloadContentFromMimeType(mime_type_, false);
-    bool is_same_host_download = base::EndsWith(
-        new_create_info.url().host(), new_create_info.site_url.host());
     DownloadConnectionSecurity state = CheckDownloadConnectionSecurity(
         new_create_info.url(), new_create_info.url_chain);
-    DownloadUkmHelper::RecordDownloadStarted(
-        ukm_download_id_, new_create_info.ukm_source_id, file_type,
-        download_source_, state, is_same_host_download);
     RecordDownloadValidationMetrics(DownloadMetricsCallsite::kDownloadItem,
                                     state, file_type);
 
@@ -2744,8 +2739,9 @@ void DownloadItemImpl::ResumeInterruptedDownload(
   DownloadUkmHelper::RecordDownloadResumed(ukm_download_id_, GetResumeMode(),
                                            time_since_start);
 
-  delegate_->ResumeInterruptedDownload(std::move(download_params),
-                                       request_info_.site_url);
+  delegate_->ResumeInterruptedDownload(
+      std::move(download_params),
+      request_info_.serialized_embedder_download_data);
 
   if (job_)
     job_->Resume(false);
@@ -2934,7 +2930,8 @@ size_t DownloadItemImpl::GetApproximateMemoryUsage() const {
   for (const GURL& url : GetUrlChain())
     size += url.EstimateMemoryUsage();
   size += GetReferrerUrl().EstimateMemoryUsage();
-  size += GetSiteUrl().EstimateMemoryUsage();
+  size += base::trace_event::EstimateMemoryUsage(
+      GetSerializedEmbedderDownloadData());
   size += GetTabUrl().EstimateMemoryUsage();
   size += GetTabReferrerUrl().EstimateMemoryUsage();
   size += base::trace_event::EstimateMemoryUsage(GetSuggestedFilename());

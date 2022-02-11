@@ -53,7 +53,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   struct COMPONENTS_DOWNLOAD_EXPORT RequestInfo {
     RequestInfo(const std::vector<GURL>& url_chain,
                 const GURL& referrer_url,
-                const GURL& site_url,
+                const std::string& serialized_embedder_download_data,
                 const GURL& tab_url,
                 const GURL& tab_referrer_url,
                 const absl::optional<url::Origin>& request_initiator,
@@ -78,8 +78,11 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
     // The URL of the page that initiated the download.
     GURL referrer_url;
 
-    // Site URL for the site instance that initiated this download.
-    GURL site_url;
+    // The serialized embedder download data for the site instance that
+    // initiated this download. The embedder can use this field to add
+    // additional information about the download, such as the
+    // StoragePartitionConfig that pertains to it.
+    std::string serialized_embedder_download_data;
 
     // The URL of the tab that initiated the download.
     GURL tab_url;
@@ -191,7 +194,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
       const base::FilePath& target_path,
       const std::vector<GURL>& url_chain,
       const GURL& referrer_url,
-      const GURL& site_url,
+      const std::string& serialized_embedder_download_data,
       const GURL& tab_url,
       const GURL& tab_referrer_url,
       const absl::optional<url::Origin>& request_initiator,
@@ -272,7 +275,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   const std::vector<GURL>& GetUrlChain() const override;
   const GURL& GetOriginalUrl() const override;
   const GURL& GetReferrerUrl() const override;
-  const GURL& GetSiteUrl() const override;
+  const std::string& GetSerializedEmbedderDownloadData() const override;
   const GURL& GetTabUrl() const override;
   const GURL& GetTabReferrerUrl() const override;
   const absl::optional<url::Origin>& GetRequestInitiator() const override;

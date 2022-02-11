@@ -143,7 +143,7 @@ class MockDownloadItemFactory
       const base::FilePath& target_path,
       const std::vector<GURL>& url_chain,
       const GURL& referrer_url,
-      const GURL& site_url,
+      const std::string& serialized_embedder_download_data,
       const GURL& tab_url,
       const GURL& tab_referrer_url,
       const absl::optional<url::Origin>& request_initiator,
@@ -221,7 +221,7 @@ download::DownloadItemImpl* MockDownloadItemFactory::CreatePersistedItem(
     const base::FilePath& target_path,
     const std::vector<GURL>& url_chain,
     const GURL& referrer_url,
-    const GURL& site_url,
+    const std::string& serialized_embedder_download_data,
     const GURL& tab_url,
     const GURL& tab_referrer_url,
     const absl::optional<url::Origin>& request_initiator,
@@ -497,7 +497,8 @@ class DownloadManagerTest : public testing::Test {
     download::DownloadItem* download_item =
         download_manager_->CreateDownloadItem(
             kGuid, 10, base::FilePath(), base::FilePath(), url_chain,
-            GURL("http://example.com/a"), GURL("http://example.com/a"),
+            GURL("http://example.com/a"),
+            StoragePartitionConfig::CreateDefault(browser_context_.get()),
             GURL("http://example.com/a"), GURL("http://example.com/a"),
             url::Origin::Create(GURL("http://example.com/")),
             "application/octet-stream", "application/octet-stream", start_time,
@@ -776,9 +777,13 @@ TEST_F(DownloadManagerTest, OnInProgressDownloadsLoaded) {
   auto in_progress_manager = std::make_unique<TestInProgressManager>();
   std::vector<GURL> url_chain;
   url_chain.emplace_back("http://example.com/1.zip");
+  auto storage_partition_config = StoragePartitionConfig::CreateDefault(
+      download_manager_->GetBrowserContext());
   auto in_progress_item = std::make_unique<download::DownloadItemImpl>(
       in_progress_manager.get(), kGuid, 10, base::FilePath(), base::FilePath(),
-      url_chain, GURL("http://example.com/a"), GURL("http://example.com/a"),
+      url_chain, GURL("http://example.com/a"),
+      download_manager_->StoragePartitionConfigToSerializedEmbedderDownloadData(
+          storage_partition_config),
       GURL("http://example.com/a"), GURL("http://example.com/a"),
       url::Origin::Create(GURL("http://example.com")),
       "application/octet-stream", "application/octet-stream", base::Time::Now(),

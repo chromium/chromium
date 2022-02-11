@@ -40,7 +40,7 @@ class MockDownloadManager : public DownloadManager {
     base::FilePath target_path;
     std::vector<GURL> url_chain;
     GURL referrer_url;
-    GURL site_url;
+    std::string serialized_embedder_download_data;
     GURL tab_url;
     GURL tab_referrer_url;
     absl::optional<url::Origin> request_initiator;
@@ -69,7 +69,7 @@ class MockDownloadManager : public DownloadManager {
         const base::FilePath& target_path,
         const std::vector<GURL>& url_chain,
         const GURL& referrer_url,
-        const GURL& site_url,
+        const std::string& serialized_embedder_download_data,
         const GURL& tab_url,
         const GURL& tab_refererr_url,
         const absl::optional<url::Origin>& request_initiator,
@@ -133,7 +133,7 @@ class MockDownloadManager : public DownloadManager {
       const base::FilePath& target_path,
       const std::vector<GURL>& url_chain,
       const GURL& referrer_url,
-      const GURL& site_url,
+      const StoragePartitionConfig& storage_partition_config,
       const GURL& tab_url,
       const GURL& tab_refererr_url,
       const absl::optional<url::Origin>& request_initiator,
@@ -168,6 +168,8 @@ class MockDownloadManager : public DownloadManager {
   MOCK_METHOD1(GetDownloadByGuid, download::DownloadItem*(const std::string&));
   MOCK_METHOD1(GetNextId, void(base::OnceCallback<void(uint32_t)>));
   MOCK_METHOD1(CanDownload, bool(download::DownloadUrlParameters*));
+  MOCK_METHOD1(GetStoragePartitionConfigForSiteUrl,
+               StoragePartitionConfig(const GURL&));
 
   // Implement a simple serialization and deserialization of
   // StoragePartitionConfig for the mock.

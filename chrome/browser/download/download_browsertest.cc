@@ -118,6 +118,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/resource_context.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -515,11 +516,13 @@ void CreateCompletedDownload(content::DownloadManager* download_manager,
   base::Time current_time = base::Time::Now();
   download_manager->CreateDownloadItem(
       guid, 1 /* id */, target_path, target_path, url_chain,
-      GURL() /* referrer_url */, GURL() /* site_url */, GURL() /* tab_url */,
-      GURL() /* tab_referrer_url */, url::Origin() /* request_initiator */,
-      "" /* mime_type */, "" /* original_mime_type */, current_time,
-      current_time, "" /* etag */, "" /* last_modified */, file_size, file_size,
-      "" /* hash */, download::DownloadItem::COMPLETE,
+      GURL() /* referrer_url */,
+      content::StoragePartitionConfig() /* storage_partition_config */,
+      GURL() /* tab_url */, GURL() /* tab_referrer_url */,
+      url::Origin() /* request_initiator */, "" /* mime_type */,
+      "" /* original_mime_type */, current_time, current_time, "" /* etag */,
+      "" /* last_modified */, file_size, file_size, "" /* hash */,
+      download::DownloadItem::COMPLETE,
       download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED,
       download::DOWNLOAD_INTERRUPT_REASON_NONE, false /* opened */,
       current_time, false /* transient */,
@@ -4998,13 +5001,13 @@ IN_PROC_BROWSER_TEST_F(InProgressDownloadTest,
       std::make_unique<download::DownloadItemImpl>(
           in_progress_manager(), guid, 1 /* id */,
           target_path.AddExtensionASCII("crdownload"), target_path, url_chain,
-          GURL() /* referrer_url */, GURL() /* site_url */,
-          GURL() /* tab_url */, GURL() /* tab_referrer_url */,
-          url::Origin() /* request_initiator */, "" /* mime_type */,
-          "" /* original_mime_type */, current_time, current_time,
-          "" /* etag */, "" /* last_modified */, 0 /* received_bytes */,
-          origin_file_size, 0 /* auto_resume_count */, "" /* hash */,
-          download::DownloadItem::INTERRUPTED,
+          GURL() /* referrer_url */,
+          std::string() /* serialized_embedder_data */, GURL() /* tab_url */,
+          GURL() /* tab_referrer_url */, url::Origin() /* request_initiator */,
+          "" /* mime_type */, "" /* original_mime_type */, current_time,
+          current_time, "" /* etag */, "" /* last_modified */,
+          0 /* received_bytes */, origin_file_size, 0 /* auto_resume_count */,
+          "" /* hash */, download::DownloadItem::INTERRUPTED,
           download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED,
           download::DOWNLOAD_INTERRUPT_REASON_CRASH, false /* paused */,
           false /* allow_metered */, false /* opened */, current_time,

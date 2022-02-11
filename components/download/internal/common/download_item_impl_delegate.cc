@@ -77,7 +77,7 @@ std::string DownloadItemImplDelegate::GetApplicationClientIdForFileScanning()
 
 void DownloadItemImplDelegate::ResumeInterruptedDownload(
     std::unique_ptr<DownloadUrlParameters> params,
-    const GURL& site_url) {}
+    const std::string& serialized_embedder_download_data) {}
 
 void DownloadItemImplDelegate::UpdatePersistence(DownloadItemImpl* download) {}
 

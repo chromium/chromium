@@ -77,7 +77,7 @@ class FakeDownloadItem : public download::DownloadItem {
   int64_t GetBytesWasted() const override;
   int32_t GetAutoResumeCount() const override;
   const GURL& GetReferrerUrl() const override;
-  const GURL& GetSiteUrl() const override;
+  const std::string& GetSerializedEmbedderDownloadData() const override;
   const GURL& GetTabUrl() const override;
   const GURL& GetTabReferrerUrl() const override;
   const absl::optional<url::Origin>& GetRequestInitiator() const override;
@@ -220,6 +220,7 @@ class FakeDownloadItem : public download::DownloadItem {
 
   // The members below are to be returned by methods, which return by reference.
   GURL dummy_url;
+  std::string serialized_embedder_download_data;
   absl::optional<url::Origin> dummy_origin;
   base::FilePath dummy_file_path;
 };

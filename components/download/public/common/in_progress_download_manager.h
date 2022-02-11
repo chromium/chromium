@@ -111,7 +111,7 @@ class COMPONENTS_DOWNLOAD_EXPORT InProgressDownloadManager
                      std::unique_ptr<network::PendingSharedURLLoaderFactory>
                          pending_url_loader_factory,
                      bool is_new_download,
-                     const GURL& site_url,
+                     const std::string& serialized_embedder_download_data,
                      const GURL& tab_url,
                      const GURL& tab_referrer_url);
 
@@ -120,7 +120,7 @@ class COMPONENTS_DOWNLOAD_EXPORT InProgressDownloadManager
       std::unique_ptr<network::ResourceRequest> resource_request,
       int render_process_id,
       int render_frame_id,
-      const GURL& site_url,
+      const std::string& serialized_embedder_download_data,
       const GURL& tab_url,
       const GURL& tab_referrer_url,
       std::vector<GURL> url_chain,
@@ -144,8 +144,9 @@ class COMPONENTS_DOWNLOAD_EXPORT InProgressDownloadManager
   // DownloadItemImplDelegate implementations.
   void DetermineDownloadTarget(DownloadItemImpl* download,
                                DownloadTargetCallback callback) override;
-  void ResumeInterruptedDownload(std::unique_ptr<DownloadUrlParameters> params,
-                                 const GURL& site_url) override;
+  void ResumeInterruptedDownload(
+      std::unique_ptr<DownloadUrlParameters> params,
+      const std::string& serialized_embedder_download_data) override;
   bool ShouldOpenDownload(DownloadItemImpl* item,
                           ShouldOpenDownloadCallback callback) override;
   void ReportBytesWasted(DownloadItemImpl* download) override;

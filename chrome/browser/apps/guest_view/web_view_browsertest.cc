@@ -3436,10 +3436,13 @@ IN_PROC_BROWSER_TEST_F(WebViewTest,
     downloads.push_back(download_manager->CreateDownloadItem(
         base::GenerateGUID(), download->GetId() + 2, download->GetFullPath(),
         download->GetTargetFilePath(), url_chain, download->GetReferrerUrl(),
-        download->GetSiteUrl(), download->GetTabUrl(),
-        download->GetTabReferrerUrl(), download->GetRequestInitiator(),
-        download->GetMimeType(), download->GetOriginalMimeType(),
-        download->GetStartTime(), download->GetEndTime(), download->GetETag(),
+        download_manager
+            ->SerializedEmbedderDownloadDataToStoragePartitionConfig(
+                download->GetSerializedEmbedderDownloadData()),
+        download->GetTabUrl(), download->GetTabReferrerUrl(),
+        download->GetRequestInitiator(), download->GetMimeType(),
+        download->GetOriginalMimeType(), download->GetStartTime(),
+        download->GetEndTime(), download->GetETag(),
         download->GetLastModifiedTime(), download->GetReceivedBytes(),
         download->GetTotalBytes(), download->GetHash(), download->GetState(),
         download->GetDangerType(), download->GetLastReason(),

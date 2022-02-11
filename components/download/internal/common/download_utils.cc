@@ -481,7 +481,8 @@ DownloadDBEntry CreateDownloadDBEntryFromItem(const DownloadItemImpl& item) {
   InProgressInfo in_progress_info;
   in_progress_info.url_chain = item.GetUrlChain();
   in_progress_info.referrer_url = item.GetReferrerUrl();
-  in_progress_info.site_url = item.GetSiteUrl();
+  in_progress_info.serialized_embedder_download_data =
+      item.GetSerializedEmbedderDownloadData();
   in_progress_info.tab_url = item.GetTabUrl();
   in_progress_info.tab_referrer_url = item.GetTabReferrerUrl();
   in_progress_info.fetch_error_body = item.fetch_error_body();

@@ -26,7 +26,7 @@ MockDownloadManager::CreateDownloadItemAdapter::CreateDownloadItemAdapter(
     const base::FilePath& target_path,
     const std::vector<GURL>& url_chain,
     const GURL& referrer_url,
-    const GURL& site_url,
+    const std::string& serialized_embedder_download_data,
     const GURL& tab_url,
     const GURL& tab_referrer_url,
     const absl::optional<url::Origin>& request_initiator,
@@ -53,7 +53,7 @@ MockDownloadManager::CreateDownloadItemAdapter::CreateDownloadItemAdapter(
       target_path(target_path),
       url_chain(url_chain),
       referrer_url(referrer_url),
-      site_url(site_url),
+      serialized_embedder_download_data(serialized_embedder_download_data),
       tab_url(tab_url),
       tab_referrer_url(tab_referrer_url),
       request_initiator(request_initiator),
@@ -81,7 +81,7 @@ MockDownloadManager::CreateDownloadItemAdapter::CreateDownloadItemAdapter(
       target_path(rhs.target_path),
       url_chain(rhs.url_chain),
       referrer_url(rhs.referrer_url),
-      site_url(rhs.site_url),
+      serialized_embedder_download_data(rhs.serialized_embedder_download_data),
       tab_url(rhs.tab_url),
       tab_referrer_url(rhs.tab_referrer_url),
       request_initiator(rhs.request_initiator),
@@ -103,21 +103,23 @@ MockDownloadManager::CreateDownloadItemAdapter::~CreateDownloadItemAdapter() {}
 
 bool MockDownloadManager::CreateDownloadItemAdapter::operator==(
     const CreateDownloadItemAdapter& rhs) const {
-  return (
-      guid == rhs.guid && id == rhs.id && current_path == rhs.current_path &&
-      target_path == rhs.target_path && url_chain == rhs.url_chain &&
-      referrer_url == rhs.referrer_url && site_url == rhs.site_url &&
-      tab_url == rhs.tab_url && tab_referrer_url == rhs.tab_referrer_url &&
-      request_initiator == rhs.request_initiator &&
-      mime_type == rhs.mime_type &&
-      original_mime_type == rhs.original_mime_type &&
-      start_time == rhs.start_time && end_time == rhs.end_time &&
-      etag == rhs.etag && last_modified == rhs.last_modified &&
-      received_bytes == rhs.received_bytes && total_bytes == rhs.total_bytes &&
-      state == rhs.state && danger_type == rhs.danger_type &&
-      interrupt_reason == rhs.interrupt_reason && opened == rhs.opened &&
-      last_access_time == rhs.last_access_time && transient == rhs.transient &&
-      received_slices == rhs.received_slices);
+  return (guid == rhs.guid && id == rhs.id &&
+          current_path == rhs.current_path && target_path == rhs.target_path &&
+          url_chain == rhs.url_chain && referrer_url == rhs.referrer_url &&
+          serialized_embedder_download_data ==
+              rhs.serialized_embedder_download_data &&
+          tab_url == rhs.tab_url && tab_referrer_url == rhs.tab_referrer_url &&
+          request_initiator == rhs.request_initiator &&
+          mime_type == rhs.mime_type &&
+          original_mime_type == rhs.original_mime_type &&
+          start_time == rhs.start_time && end_time == rhs.end_time &&
+          etag == rhs.etag && last_modified == rhs.last_modified &&
+          received_bytes == rhs.received_bytes &&
+          total_bytes == rhs.total_bytes && state == rhs.state &&
+          danger_type == rhs.danger_type &&
+          interrupt_reason == rhs.interrupt_reason && opened == rhs.opened &&
+          last_access_time == rhs.last_access_time &&
+          transient == rhs.transient && received_slices == rhs.received_slices);
 }
 
 MockDownloadManager::MockDownloadManager() {}
@@ -131,7 +133,7 @@ download::DownloadItem* MockDownloadManager::CreateDownloadItem(
     const base::FilePath& target_path,
     const std::vector<GURL>& url_chain,
     const GURL& referrer_url,
-    const GURL& site_url,
+    const StoragePartitionConfig& storage_partition_config,
     const GURL& tab_url,
     const GURL& tab_referrer_url,
     const absl::optional<url::Origin>& request_initiator,
@@ -153,7 +155,9 @@ download::DownloadItem* MockDownloadManager::CreateDownloadItem(
     const std::vector<download::DownloadItem::ReceivedSlice>& received_slices,
     const download::DownloadItemRerouteInfo& reroute_info) {
   CreateDownloadItemAdapter adapter(
-      guid, id, current_path, target_path, url_chain, referrer_url, site_url,
+      guid, id, current_path, target_path, url_chain, referrer_url,
+      StoragePartitionConfigToSerializedEmbedderDownloadData(
+          storage_partition_config),
       tab_url, tab_referrer_url, request_initiator, mime_type,
       original_mime_type, start_time, end_time, etag, last_modified,
       received_bytes, total_bytes, hash, state, danger_type, interrupt_reason,

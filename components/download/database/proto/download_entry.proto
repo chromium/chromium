@@ -56,7 +56,7 @@ message DownloadSchedule {
 message InProgressInfo {
   repeated string url_chain = 1;
   optional string referrer_url = 2;
-  optional string site_url = 3;
+  optional string site_url = 3;  // deprecated
   optional string tab_url = 4;
   optional string tab_referrer_url = 5;
   optional bool fetch_error_body = 6;
@@ -86,6 +86,7 @@ message InProgressInfo {
   optional int32 credentials_mode = 30;  // network::mojom::CredentialsMode
   optional int64 range_request_from = 31;
   optional int64 range_request_to = 32;
+  optional string serialized_embedder_download_data = 33;
 }
 
 // Stores various metadata related to a download.

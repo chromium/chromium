@@ -1339,11 +1339,13 @@ class ParallelDownloadTest : public DownloadContentTest {
     download::DownloadItem* download =
         DownloadManagerForShell(shell())->CreateDownloadItem(
             "F7FB1F59-7DE1-4845-AFDB-8A688F70F583", 1, path, base::FilePath(),
-            url_chain, GURL(), GURL(), GURL(), GURL(), url::Origin(),
-            "application/octet-stream", "application/octet-stream",
-            base::Time::Now(), base::Time(), parameters.etag,
-            parameters.last_modified, total_bytes, parameters.size,
-            std::string(), download::DownloadItem::INTERRUPTED,
+            url_chain, GURL(),
+            StoragePartitionConfig::CreateDefault(
+                shell()->web_contents()->GetBrowserContext()),
+            GURL(), GURL(), url::Origin(), "application/octet-stream",
+            "application/octet-stream", base::Time::Now(), base::Time(),
+            parameters.etag, parameters.last_modified, total_bytes,
+            parameters.size, std::string(), download::DownloadItem::INTERRUPTED,
             download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
             download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED, false,
             base::Time(), false, parallel_slices,
@@ -3172,11 +3174,13 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, ResumeRestoredDownload_NoFile) {
   download::DownloadItem* download =
       DownloadManagerForShell(shell())->CreateDownloadItem(
           "F7FB1F59-7DE1-4845-AFDB-8A688F70F583", 1, intermediate_file_path,
-          base::FilePath(), url_chain, GURL(), GURL(), GURL(), GURL(),
-          url::Origin(), "application/octet-stream", "application/octet-stream",
-          base::Time::Now(), base::Time(), parameters.etag, std::string(),
-          kIntermediateSize, parameters.size, std::string(),
-          download::DownloadItem::INTERRUPTED,
+          base::FilePath(), url_chain, GURL(),
+          StoragePartitionConfig::CreateDefault(
+              shell()->web_contents()->GetBrowserContext()),
+          GURL(), GURL(), url::Origin(), "application/octet-stream",
+          "application/octet-stream", base::Time::Now(), base::Time(),
+          parameters.etag, std::string(), kIntermediateSize, parameters.size,
+          std::string(), download::DownloadItem::INTERRUPTED,
           download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
           download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED, false,
           base::Time(), false,
@@ -3240,11 +3244,13 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, ResumeRestoredDownload_NoHash) {
   download::DownloadItem* download =
       DownloadManagerForShell(shell())->CreateDownloadItem(
           "F7FB1F59-7DE1-4845-AFDB-8A688F70F583", 1, intermediate_file_path,
-          base::FilePath(), url_chain, GURL(), GURL(), GURL(), GURL(),
-          url::Origin(), "application/octet-stream", "application/octet-stream",
-          base::Time::Now(), base::Time(), parameters.etag, std::string(),
-          kIntermediateSize, parameters.size, std::string(),
-          download::DownloadItem::INTERRUPTED,
+          base::FilePath(), url_chain, GURL(),
+          StoragePartitionConfig::CreateDefault(
+              shell()->web_contents()->GetBrowserContext()),
+          GURL(), GURL(), url::Origin(), "application/octet-stream",
+          "application/octet-stream", base::Time::Now(), base::Time(),
+          parameters.etag, std::string(), kIntermediateSize, parameters.size,
+          std::string(), download::DownloadItem::INTERRUPTED,
           download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
           download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED, false,
           base::Time(), false,
@@ -3295,11 +3301,13 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
   download::DownloadItem* download =
       DownloadManagerForShell(shell())->CreateDownloadItem(
           "F7FB1F59-7DE1-4845-AFDB-8A688F70F583", 1, intermediate_file_path,
-          base::FilePath(), url_chain, GURL(), GURL(), GURL(), GURL(),
-          url::Origin(), "application/octet-stream", "application/octet-stream",
-          base::Time::Now(), base::Time(), "fake-etag", std::string(),
-          kIntermediateSize, parameters.size, std::string(),
-          download::DownloadItem::INTERRUPTED,
+          base::FilePath(), url_chain, GURL(),
+          StoragePartitionConfig::CreateDefault(
+              shell()->web_contents()->GetBrowserContext()),
+          GURL(), GURL(), url::Origin(), "application/octet-stream",
+          "application/octet-stream", base::Time::Now(), base::Time(),
+          "fake-etag", std::string(), kIntermediateSize, parameters.size,
+          std::string(), download::DownloadItem::INTERRUPTED,
           download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
           download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED, false,
           base::Time(), false,
@@ -3356,10 +3364,12 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
   download::DownloadItem* download =
       DownloadManagerForShell(shell())->CreateDownloadItem(
           "F7FB1F59-7DE1-4845-AFDB-8A688F70F583", 1, intermediate_file_path,
-          base::FilePath(), url_chain, GURL(), GURL(), GURL(), GURL(),
-          url::Origin(), "application/octet-stream", "application/octet-stream",
-          base::Time::Now(), base::Time(), parameters.etag, std::string(),
-          kIntermediateSize, parameters.size,
+          base::FilePath(), url_chain, GURL(),
+          StoragePartitionConfig::CreateDefault(
+              shell()->web_contents()->GetBrowserContext()),
+          GURL(), GURL(), url::Origin(), "application/octet-stream",
+          "application/octet-stream", base::Time::Now(), base::Time(),
+          parameters.etag, std::string(), kIntermediateSize, parameters.size,
           std::string(std::begin(kPartialHash), std::end(kPartialHash)),
           download::DownloadItem::INTERRUPTED,
           download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
@@ -3424,10 +3434,12 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, ResumeRestoredDownload_WrongHash) {
   download::DownloadItem* download =
       DownloadManagerForShell(shell())->CreateDownloadItem(
           "F7FB1F59-7DE1-4845-AFDB-8A688F70F583", 1, intermediate_file_path,
-          base::FilePath(), url_chain, GURL(), GURL(), GURL(), GURL(),
-          url::Origin(), "application/octet-stream", "application/octet-stream",
-          base::Time::Now(), base::Time(), parameters.etag, std::string(),
-          kIntermediateSize, parameters.size,
+          base::FilePath(), url_chain, GURL(),
+          StoragePartitionConfig::CreateDefault(
+              shell()->web_contents()->GetBrowserContext()),
+          GURL(), GURL(), url::Origin(), "application/octet-stream",
+          "application/octet-stream", base::Time::Now(), base::Time(),
+          parameters.etag, std::string(), kIntermediateSize, parameters.size,
           std::string(std::begin(kPartialHash), std::end(kPartialHash)),
           download::DownloadItem::INTERRUPTED,
           download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
@@ -3502,11 +3514,13 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, ResumeRestoredDownload_ShortFile) {
   download::DownloadItem* download =
       DownloadManagerForShell(shell())->CreateDownloadItem(
           "F7FB1F59-7DE1-4845-AFDB-8A688F70F583", 1, intermediate_file_path,
-          base::FilePath(), url_chain, GURL(), GURL(), GURL(), GURL(),
-          url::Origin(), "application/octet-stream", "application/octet-stream",
-          base::Time::Now(), base::Time(), parameters.etag, std::string(),
-          kIntermediateSize, parameters.size, std::string(),
-          download::DownloadItem::INTERRUPTED,
+          base::FilePath(), url_chain, GURL(),
+          StoragePartitionConfig::CreateDefault(
+              shell()->web_contents()->GetBrowserContext()),
+          GURL(), GURL(), url::Origin(), "application/octet-stream",
+          "application/octet-stream", base::Time::Now(), base::Time(),
+          parameters.etag, std::string(), kIntermediateSize, parameters.size,
+          std::string(), download::DownloadItem::INTERRUPTED,
           download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
           download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED, false,
           base::Time(), false,
@@ -3577,11 +3591,13 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, ResumeRestoredDownload_LongFile) {
   download::DownloadItem* download =
       DownloadManagerForShell(shell())->CreateDownloadItem(
           "F7FB1F59-7DE1-4845-AFDB-8A688F70F583", 1, intermediate_file_path,
-          base::FilePath(), url_chain, GURL(), GURL(), GURL(), GURL(),
-          url::Origin(), "application/octet-stream", "application/octet-stream",
-          base::Time::Now(), base::Time(), parameters.etag, std::string(),
-          kIntermediateSize, parameters.size, std::string(),
-          download::DownloadItem::INTERRUPTED,
+          base::FilePath(), url_chain, GURL(),
+          StoragePartitionConfig::CreateDefault(
+              shell()->web_contents()->GetBrowserContext()),
+          GURL(), GURL(), url::Origin(), "application/octet-stream",
+          "application/octet-stream", base::Time::Now(), base::Time(),
+          parameters.etag, std::string(), kIntermediateSize, parameters.size,
+          std::string(), download::DownloadItem::INTERRUPTED,
           download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
           download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED, false,
           base::Time(), false,

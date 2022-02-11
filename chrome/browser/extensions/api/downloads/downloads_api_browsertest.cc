@@ -54,6 +54,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -453,6 +454,12 @@ class DownloadExtensionTest : public ExtensionApiTest {
   std::string GetExtensionURL() {
     return extension_->url().spec();
   }
+  content::StoragePartitionConfig GetExtensionStoragePartitionConfig() {
+    return browser()
+        ->profile()
+        ->GetDownloadManager()
+        ->GetStoragePartitionConfigForSiteUrl(extension_->url());
+  }
   std::string GetExtensionId() {
     return extension_->id();
   }
@@ -503,7 +510,9 @@ class DownloadExtensionTest : public ExtensionApiTest {
           base::GenerateGUID(), download::DownloadItem::kInvalidId + 1 + i,
           downloads_directory().Append(history_info[i].filename),
           downloads_directory().Append(history_info[i].filename), url_chain,
-          GURL(), GURL(), GURL(), GURL(), url::Origin(), std::string(),
+          GURL(),
+          content::StoragePartitionConfig::CreateDefault(browser()->profile()),
+          GURL(), GURL(), url::Origin(), std::string(),
           std::string(),  // mime_type, original_mime_type
           current,
           current,  // start_time, end_time
@@ -1645,7 +1654,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_TRUE(item);
   ScopedCancellingItem canceller(item);
   ASSERT_EQ(download_url, item->GetOriginalUrl().spec());
-  ASSERT_EQ(GetExtensionURL(), item->GetSiteUrl().spec());
+  ASSERT_EQ(GetExtensionStoragePartitionConfig(),
+            GetCurrentManager()
+                ->SerializedEmbedderDownloadDataToStoragePartitionConfig(
+                    item->GetSerializedEmbedderDownloadData()));
 
   ASSERT_TRUE(WaitFor(downloads::OnCreated::kEventName,
                       base::StringPrintf(
@@ -1688,8 +1700,8 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   LoadExtension("downloads_split");
   ASSERT_TRUE(StartEmbeddedTestServer());
   GURL download_final_url(embedded_test_server()->GetURL("/slow?0"));
-  GURL download_url(embedded_test_server()->GetURL(
-      "/server-redirect?" + download_final_url.spec()));
+  GURL download_url(embedded_test_server()->GetURL("/server-redirect?" +
+                                                   download_final_url.spec()));
 
   GoOnTheRecord();
 
@@ -1704,7 +1716,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_TRUE(item);
   ScopedCancellingItem canceller(item);
   ASSERT_EQ(download_url, item->GetOriginalUrl());
-  ASSERT_EQ(GetExtensionURL(), item->GetSiteUrl().spec());
+  ASSERT_EQ(GetExtensionStoragePartitionConfig(),
+            GetCurrentManager()
+                ->SerializedEmbedderDownloadDataToStoragePartitionConfig(
+                    item->GetSerializedEmbedderDownloadData()));
 
   ASSERT_TRUE(WaitFor(downloads::OnCreated::kEventName,
                       base::StringPrintf(
@@ -1867,7 +1882,10 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   ASSERT_TRUE(item);
   ScopedCancellingItem canceller(item);
   ASSERT_EQ(download_url, item->GetOriginalUrl());
-  EXPECT_EQ(GetExtensionURL(), item->GetSiteUrl().spec());
+  ASSERT_EQ(GetExtensionStoragePartitionConfig(),
+            GetCurrentManager()
+                ->SerializedEmbedderDownloadDataToStoragePartitionConfig(
+                    item->GetSerializedEmbedderDownloadData()));
 
   item->SimulateErrorForTesting(
       download::DOWNLOAD_INTERRUPT_REASON_NETWORK_FAILED);

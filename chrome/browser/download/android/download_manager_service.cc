@@ -42,6 +42,7 @@
 #include "components/download/public/common/download_item_impl.h"
 #include "components/download/public/common/download_stats.h"
 #include "components/download/public/common/simple_download_manager_coordinator.h"
+#include "components/download/public/common/storage_partition_config.h"
 #include "components/download/public/common/url_download_handler_factory.h"
 #include "components/download/public/task/task_manager_impl.h"
 #include "components/offline_items_collection/core/android/offline_item_bridge.h"
@@ -847,7 +848,7 @@ void DownloadManagerService::CreateInterruptedDownloadForTest(
       std::make_unique<download::DownloadItemImpl>(
           in_progress_manager, ConvertJavaStringToUTF8(env, jdownload_guid), 1,
           target_path.AddExtension("crdownload"), target_path, url_chain,
-          GURL(), GURL(), GURL(), GURL(), url::Origin(), "", "", base::Time(),
+          GURL(), "", GURL(), GURL(), url::Origin(), "", "", base::Time(),
           base::Time(), "", "", 0, -1, 0, "",
           download::DownloadItem::INTERRUPTED,
           download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,

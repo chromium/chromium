@@ -379,9 +379,9 @@ const GURL& FakeDownloadItem::GetReferrerUrl() const {
   return dummy_url;
 }
 
-const GURL& FakeDownloadItem::GetSiteUrl() const {
+const std::string& FakeDownloadItem::GetSerializedEmbedderDownloadData() const {
   NOTREACHED();
-  return dummy_url;
+  return serialized_embedder_download_data;
 }
 
 const GURL& FakeDownloadItem::GetTabUrl() const {

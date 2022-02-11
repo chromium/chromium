@@ -60,16 +60,16 @@ std::unique_ptr<DownloadItemImpl> CreateDownloadItemImpl(
       delegate, entry.download_info->guid, entry.download_info->id,
       in_progress_info->current_path, in_progress_info->target_path,
       in_progress_info->url_chain, in_progress_info->referrer_url,
-      in_progress_info->site_url, in_progress_info->tab_url,
-      in_progress_info->tab_referrer_url, absl::nullopt,
-      in_progress_info->mime_type, in_progress_info->original_mime_type,
-      in_progress_info->start_time, in_progress_info->end_time,
-      in_progress_info->etag, in_progress_info->last_modified,
-      in_progress_info->received_bytes, in_progress_info->total_bytes,
-      in_progress_info->auto_resume_count, in_progress_info->hash,
-      in_progress_info->state, in_progress_info->danger_type,
-      in_progress_info->interrupt_reason, in_progress_info->paused,
-      in_progress_info->metered, false, base::Time(),
+      in_progress_info->serialized_embedder_download_data,
+      in_progress_info->tab_url, in_progress_info->tab_referrer_url,
+      absl::nullopt, in_progress_info->mime_type,
+      in_progress_info->original_mime_type, in_progress_info->start_time,
+      in_progress_info->end_time, in_progress_info->etag,
+      in_progress_info->last_modified, in_progress_info->received_bytes,
+      in_progress_info->total_bytes, in_progress_info->auto_resume_count,
+      in_progress_info->hash, in_progress_info->state,
+      in_progress_info->danger_type, in_progress_info->interrupt_reason,
+      in_progress_info->paused, in_progress_info->metered, false, base::Time(),
       in_progress_info->transient, in_progress_info->received_slices,
       in_progress_info->reroute_info, in_progress_info->download_schedule,
       in_progress_info->range_request_from, in_progress_info->range_request_to,
@@ -94,7 +94,7 @@ void BeginResourceDownload(
     const URLSecurityPolicy& url_security_policy,
     bool is_new_download,
     base::WeakPtr<InProgressDownloadManager> download_manager,
-    const GURL& site_url,
+    const std::string& serialized_embedder_download_data,
     const GURL& tab_url,
     const GURL& tab_referrer_url,
     mojo::PendingRemote<device::mojom::WakeLockProvider> wake_lock_provider,
@@ -106,9 +106,9 @@ void BeginResourceDownload(
           download_manager, std::move(params), std::move(request),
           network::SharedURLLoaderFactory::Create(
               std::move(pending_url_loader_factory)),
-          url_security_policy, site_url, tab_url, tab_referrer_url,
-          is_new_download, false, std::move(wake_lock_provider),
-          is_background_mode, main_task_runner)
+          url_security_policy, serialized_embedder_download_data, tab_url,
+          tab_referrer_url, is_new_download, false,
+          std::move(wake_lock_provider), is_background_mode, main_task_runner)
           .release(),
       base::OnTaskRunnerDeleter(base::ThreadTaskRunnerHandle::Get()));
 
@@ -121,7 +121,7 @@ void CreateDownloadHandlerForNavigation(
     std::unique_ptr<network::ResourceRequest> resource_request,
     int render_process_id,
     int render_frame_id,
-    const GURL& site_url,
+    const std::string& serialized_embedder_download_data,
     const GURL& tab_url,
     const GURL& tab_referrer_url,
     std::vector<GURL> url_chain,
@@ -138,9 +138,10 @@ void CreateDownloadHandlerForNavigation(
 
   ResourceDownloader::InterceptNavigationResponse(
       download_manager, std::move(resource_request), render_process_id,
-      render_frame_id, site_url, tab_url, tab_referrer_url,
-      std::move(url_chain), std::move(cert_status), std::move(response_head),
-      std::move(response_body), std::move(url_loader_client_endpoints),
+      render_frame_id, serialized_embedder_download_data, tab_url,
+      tab_referrer_url, std::move(url_chain), std::move(cert_status),
+      std::move(response_head), std::move(response_body),
+      std::move(url_loader_client_endpoints),
       network::SharedURLLoaderFactory::Create(
           std::move(pending_url_loader_factory)),
       url_security_policy, std::move(wake_lock_provider), main_task_runner);
@@ -270,7 +271,8 @@ void InProgressDownloadManager::DownloadUrl(
   // Start the new download, the download should be saved to the file path
   // specifcied in the |params|.
   BeginDownload(std::move(params), url_loader_factory_->Clone(),
-                true /* is_new_download */, GURL() /* site_url */,
+                true /* is_new_download */,
+                std::string() /* serialized_embedder_download_data */,
                 GURL() /* tab_url */, GURL() /* tab_referral_url */);
 }
 
@@ -310,7 +312,7 @@ void InProgressDownloadManager::BeginDownload(
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory,
     bool is_new_download,
-    const GURL& site_url,
+    const std::string& serialized_embedder_download_data,
     const GURL& tab_url,
     const GURL& tab_referrer_url) {
   std::unique_ptr<network::ResourceRequest> request =
@@ -322,20 +324,20 @@ void InProgressDownloadManager::BeginDownload(
   }
   GetIOTaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&BeginResourceDownload, std::move(params),
-                     std::move(request), std::move(pending_url_loader_factory),
-                     url_security_policy_, is_new_download,
-                     weak_factory_.GetWeakPtr(), site_url, tab_url,
-                     tab_referrer_url, std::move(wake_lock_provider),
-                     !delegate_ /* is_background_mode */,
-                     base::ThreadTaskRunnerHandle::Get()));
+      base::BindOnce(
+          &BeginResourceDownload, std::move(params), std::move(request),
+          std::move(pending_url_loader_factory), url_security_policy_,
+          is_new_download, weak_factory_.GetWeakPtr(),
+          serialized_embedder_download_data, tab_url, tab_referrer_url,
+          std::move(wake_lock_provider), !delegate_ /* is_background_mode */,
+          base::ThreadTaskRunnerHandle::Get()));
 }
 
 void InProgressDownloadManager::InterceptDownloadFromNavigation(
     std::unique_ptr<network::ResourceRequest> resource_request,
     int render_process_id,
     int render_frame_id,
-    const GURL& site_url,
+    const std::string& serialized_embedder_download_data,
     const GURL& tab_url,
     const GURL& tab_referrer_url,
     std::vector<GURL> url_chain,
@@ -356,9 +358,10 @@ void InProgressDownloadManager::InterceptDownloadFromNavigation(
       base::BindOnce(
           &CreateDownloadHandlerForNavigation, weak_factory_.GetWeakPtr(),
           std::move(resource_request), render_process_id, render_frame_id,
-          site_url, tab_url, tab_referrer_url, std::move(url_chain),
-          std::move(cert_status), std::move(response_head),
-          std::move(response_body), std::move(url_loader_client_endpoints),
+          serialized_embedder_download_data, tab_url, tab_referrer_url,
+          std::move(url_chain), std::move(cert_status),
+          std::move(response_head), std::move(response_body),
+          std::move(url_loader_client_endpoints),
           std::move(pending_url_loader_factory), url_security_policy_,
           std::move(wake_lock_provider), base::ThreadTaskRunnerHandle::Get()));
 }
@@ -445,12 +448,12 @@ void InProgressDownloadManager::DetermineDownloadTarget(
 
 void InProgressDownloadManager::ResumeInterruptedDownload(
     std::unique_ptr<DownloadUrlParameters> params,
-    const GURL& site_url) {
+    const std::string& serialized_embedder_download_data) {
   if (!url_loader_factory_)
     return;
 
   BeginDownload(std::move(params), url_loader_factory_->Clone(), false,
-                site_url, GURL(), GURL());
+                serialized_embedder_download_data, GURL(), GURL());
 }
 
 bool InProgressDownloadManager::ShouldOpenDownload(

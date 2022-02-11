@@ -20,6 +20,7 @@
 #include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_utils.h"
 #include "components/download/public/common/mock_download_item.h"
@@ -242,10 +243,11 @@ class DownloadHistoryTest : public testing::Test {
       CHECK(reroute_info.ParseFromString(row.reroute_info_serialized));
     return content::MockDownloadManager::CreateDownloadItemAdapter(
         row.guid, history::ToContentDownloadId(row.id), row.current_path,
-        row.target_path, row.url_chain, row.referrer_url, row.site_url,
-        row.tab_url, row.tab_referrer_url, absl::nullopt, row.mime_type,
-        row.original_mime_type, row.start_time, row.end_time, row.etag,
-        row.last_modified, row.received_bytes, row.total_bytes, std::string(),
+        row.target_path, row.url_chain, row.referrer_url,
+        row.embedder_download_data, row.tab_url, row.tab_referrer_url,
+        absl::nullopt, row.mime_type, row.original_mime_type, row.start_time,
+        row.end_time, row.etag, row.last_modified, row.received_bytes,
+        row.total_bytes, std::string(),
         history::ToContentDownloadState(row.state),
         history::ToContentDownloadDangerType(row.danger_type),
         history::ToContentDownloadInterruptReason(row.interrupt_reason),
@@ -366,7 +368,9 @@ class DownloadHistoryTest : public testing::Test {
     row->target_path = base::FilePath(path);
     row->url_chain.push_back(GURL(url_string));
     row->referrer_url = GURL(referrer_string);
-    row->site_url = GURL("http://example.com");
+    row->embedder_download_data =
+        manager_->StoragePartitionConfigToSerializedEmbedderDownloadData(
+            content::StoragePartitionConfig::CreateDefault(&profile_));
     row->tab_url = GURL("http://example.com/tab-url");
     row->tab_referrer_url = GURL("http://example.com/tab-referrer-url");
     row->mime_type = "application/octet-stream";
@@ -420,8 +424,8 @@ class DownloadHistoryTest : public testing::Test {
         .WillRepeatedly(Return(row->original_mime_type));
     EXPECT_CALL(item(index), GetReferrerUrl())
         .WillRepeatedly(ReturnRefOfCopy(row->referrer_url));
-    EXPECT_CALL(item(index), GetSiteUrl())
-        .WillRepeatedly(ReturnRefOfCopy(row->site_url));
+    EXPECT_CALL(item(index), GetSerializedEmbedderDownloadData())
+        .WillRepeatedly(ReturnRefOfCopy(row->embedder_download_data));
     EXPECT_CALL(item(index), GetTabUrl())
         .WillRepeatedly(ReturnRefOfCopy(row->tab_url));
     EXPECT_CALL(item(index), GetTabReferrerUrl())
@@ -506,8 +510,8 @@ class DownloadHistoryTest : public testing::Test {
   raw_ptr<content::DownloadManager::Observer> manager_observer_ = nullptr;
   size_t download_created_index_ = 0;
   base::test::ScopedFeatureList feature_list_;
+  TestingProfile profile_;
 };
-
 
 // Test loading an item from the database, changing it and removing it.
 TEST_F(DownloadHistoryTest, DownloadHistoryTest_LoadWithDownloadDB) {

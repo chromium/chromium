@@ -13,7 +13,9 @@ InProgressInfo::InProgressInfo(const InProgressInfo& other) = default;
 InProgressInfo::~InProgressInfo() = default;
 
 bool InProgressInfo::operator==(const InProgressInfo& other) const {
-  return url_chain == other.url_chain && site_url == other.site_url &&
+  return url_chain == other.url_chain &&
+         serialized_embedder_download_data ==
+             other.serialized_embedder_download_data &&
          referrer_url == other.referrer_url && tab_url == other.tab_url &&
          tab_referrer_url == other.tab_referrer_url &&
          fetch_error_body == other.fetch_error_body &&

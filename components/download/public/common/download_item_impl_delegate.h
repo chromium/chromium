@@ -96,7 +96,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImplDelegate {
   // Called when an interrupted download is resumed.
   virtual void ResumeInterruptedDownload(
       std::unique_ptr<DownloadUrlParameters> params,
-      const GURL& site_url);
+      const std::string& serialized_embedder_data);
 
   // Update the persistent store with our information.
   virtual void UpdatePersistence(DownloadItemImpl* download);

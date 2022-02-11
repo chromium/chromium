@@ -14,7 +14,7 @@ MockDownloadItemImpl::MockDownloadItemImpl(DownloadItemImplDelegate* delegate)
                        base::FilePath(),
                        std::vector<GURL>(),
                        GURL(),
-                       GURL(),
+                       std::string(),
                        GURL(),
                        GURL(),
                        url::Origin(),

@@ -118,8 +118,9 @@ class MockDelegate : public DownloadItemImplDelegate {
   MOCK_METHOD1(ShouldOpenFileBasedOnExtension, bool(const base::FilePath&));
   MOCK_METHOD1(CheckForFileRemoval, void(DownloadItemImpl*));
 
-  void ResumeInterruptedDownload(std::unique_ptr<DownloadUrlParameters> params,
-                                 const GURL& site_url) override {
+  void ResumeInterruptedDownload(
+      std::unique_ptr<DownloadUrlParameters> params,
+      const std::string& serialized_embedder_download_data) override {
     MockResumeInterruptedDownload(params.get());
   }
   MOCK_METHOD1(MockResumeInterruptedDownload,
@@ -289,9 +290,8 @@ class DownloadItemTest : public testing::Test {
       const download::DownloadItemRerouteInfo& reroute_info) {
     auto item = std::make_unique<download::DownloadItemImpl>(
         mock_delegate(), kGuid, 10, base::FilePath(), base::FilePath(),
-        std::vector<GURL>(), GURL("http://example.com/a"),
+        std::vector<GURL>(), GURL("http://example.com/a"), std::string(),
         GURL("http://example.com/a"), GURL("http://example.com/a"),
-        GURL("http://example.com/a"),
         url::Origin::Create(GURL("http://example.com")),
         "application/octet-stream", "application/octet-stream",
         base::Time::Now(), base::Time::Now(), std::string(), std::string(), 10,

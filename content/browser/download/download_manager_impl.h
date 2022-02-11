@@ -117,7 +117,7 @@ class CONTENT_EXPORT DownloadManagerImpl
       const base::FilePath& target_path,
       const std::vector<GURL>& url_chain,
       const GURL& referrer_url,
-      const GURL& site_url,
+      const StoragePartitionConfig& storage_partition_config,
       const GURL& tab_url,
       const GURL& tab_refererr_url,
       const absl::optional<url::Origin>& request_initiator,
@@ -153,6 +153,8 @@ class CONTENT_EXPORT DownloadManagerImpl
       const StoragePartitionConfig& storage_partition_config) override;
   StoragePartitionConfig SerializedEmbedderDownloadDataToStoragePartitionConfig(
       const std::string& serialized_embedder_download_data) override;
+  StoragePartitionConfig GetStoragePartitionConfigForSiteUrl(
+      const GURL& site_url) override;
 
   void StartDownload(
       std::unique_ptr<download::DownloadCreateInfo> info,
@@ -252,7 +254,7 @@ class CONTENT_EXPORT DownloadManagerImpl
   void CheckForFileRemoval(download::DownloadItemImpl* download_item) override;
   void ResumeInterruptedDownload(
       std::unique_ptr<download::DownloadUrlParameters> params,
-      const GURL& site_url) override;
+      const std::string& serialized_embedder_download_data) override;
   void OpenDownload(download::DownloadItemImpl* download) override;
   void ShowDownloadInShell(download::DownloadItemImpl* download) override;
   void DownloadRemoved(download::DownloadItemImpl* download) override;
@@ -273,7 +275,7 @@ class CONTENT_EXPORT DownloadManagerImpl
       std::unique_ptr<download::DownloadUrlParameters> params,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       bool is_new_download,
-      const GURL& site_url);
+      const std::string& serialized_embedder_download_data);
 
   void InterceptNavigationOnChecksComplete(
       int frame_tree_node_id,
@@ -288,7 +290,7 @@ class CONTENT_EXPORT DownloadManagerImpl
       std::unique_ptr<download::DownloadUrlParameters> params,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory,
       bool is_new_download,
-      const GURL& site_url,
+      const StoragePartitionConfig& storage_partition_config,
       bool is_download_allowed);
 
   // Whether |next_download_id_| is initialized.

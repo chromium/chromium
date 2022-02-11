@@ -48,6 +48,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_manager.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -152,7 +153,7 @@ history::DownloadRow GetDownloadRow(download::DownloadItem* item) {
   download.target_path = item->GetTargetFilePath();
   download.url_chain = item->GetUrlChain();
   download.referrer_url = item->GetReferrerUrl();
-  download.site_url = item->GetSiteUrl();
+  download.embedder_download_data = item->GetSerializedEmbedderDownloadData();
   download.tab_url = item->GetTabUrl();
   download.tab_referrer_url = item->GetTabReferrerUrl();
   download.http_method = std::string();  // HTTP method not available yet.
@@ -389,12 +390,28 @@ void DownloadHistory::LoadHistoryDownloads(
         !reroute_info.ParseFromString(row.reroute_info_serialized)) {
       reroute_info.Clear();
     }
+
+    // If the serialized EmbedderDownloadData is not present in DownloadRow,
+    // use the site URL to grab the appropriate StoragePartitionConfig to use
+    // to create the DownloadItem. Since DownloadRow comes from the download
+    // history database, it may contain entries that still use site URL.
+    content::StoragePartitionConfig storage_partition_config;
+    if (row.embedder_download_data.empty()) {
+      storage_partition_config =
+          notifier_.GetManager()->GetStoragePartitionConfigForSiteUrl(
+              row.site_url);
+    } else {
+      storage_partition_config =
+          notifier_.GetManager()
+              ->SerializedEmbedderDownloadDataToStoragePartitionConfig(
+                  row.embedder_download_data);
+    }
     download::DownloadItem* item = notifier_.GetManager()->CreateDownloadItem(
         row.guid, loading_id_, row.current_path, row.target_path, url_chain,
-        row.referrer_url, row.site_url, row.tab_url, row.tab_referrer_url,
-        absl::nullopt, row.mime_type, row.original_mime_type, row.start_time,
-        row.end_time, row.etag, row.last_modified, row.received_bytes,
-        row.total_bytes,
+        row.referrer_url, storage_partition_config, row.tab_url,
+        row.tab_referrer_url, absl::nullopt, row.mime_type,
+        row.original_mime_type, row.start_time, row.end_time, row.etag,
+        row.last_modified, row.received_bytes, row.total_bytes,
         std::string(),  // TODO(asanka): Need to persist and restore hash of
                         // partial file for an interrupted download. No need to
                         // store hash for a completed file.
