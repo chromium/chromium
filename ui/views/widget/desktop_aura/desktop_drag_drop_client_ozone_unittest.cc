@@ -209,16 +209,15 @@ class FakeDragDropDelegate : public aura::client::DragDropDelegate {
   void OnDragExited() override { ++num_exits_; }
 
   DropCallback GetDropCallback(const ui::DropTargetEvent& event) override {
+    last_event_flags_ = event.flags();
     return base::BindOnce(&FakeDragDropDelegate::PerformDrop,
                           base::Unretained(this));
   }
 
-  void PerformDrop(const ui::DropTargetEvent& event,
-                   std::unique_ptr<ui::OSExchangeData> data,
+  void PerformDrop(std::unique_ptr<ui::OSExchangeData> data,
                    ui::mojom::DragOperation& output_drag_op) {
     ++num_drops_;
     received_data_ = std::move(data);
-    last_event_flags_ = event.flags();
     output_drag_op = destination_operation_;
   }
 

@@ -103,15 +103,12 @@ TEST_F(DropHelperTest, DropCoordinates) {
       drop_helper->GetDropCallback(*data, target, drag_operation);
   ASSERT_TRUE(callback);
 
-  // This location is currently unused in DropHelper.
-  gfx::PointF dummy_location = {255, 255};
-  ui::mojom::DragOperation output_op = ui::mojom::DragOperation::kNone;
-  ui::DropTargetEvent event(*data, dummy_location, dummy_location,
-                            drag_operation);
-
   // Perform the drop.
-  std::move(callback).Run(event, std::move(data), output_op);
+  ui::mojom::DragOperation output_op = ui::mojom::DragOperation::kNone;
+  std::move(callback).Run(std::move(data), output_op);
 
+  // The test view always executes a copy operation.
+  EXPECT_EQ(output_op, ui::mojom::DragOperation::kCopy);
   // Verify the location of the drop is centered in the target view.
   EXPECT_EQ(drop_target->drop_location(), gfx::Point(50, 25));
 }

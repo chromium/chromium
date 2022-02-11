@@ -1654,19 +1654,9 @@ WebContentsViewAura::GetDropCallback(const ui::DropTargetEvent& event) {
   base::ScopedClosureRunner drag_exit(base::BindOnce(
       &WebContentsViewAura::CompleteDragExit, weak_ptr_factory_.GetWeakPtr()));
   DropMetadata drop_metadata(event);
-  // TODO(crbug.com/1293449): Remove this when DropTargetEvent is removed from
-  // DropCallback.
-  return base::BindOnce(
-      [](base::WeakPtr<WebContentsViewAura> web_contents,
-         base::ScopedClosureRunner exit_drag, DropMetadata drop_metadata,
-         const ui::DropTargetEvent&, std::unique_ptr<ui::OSExchangeData> data,
-         ui::mojom::DragOperation& output_drag_op) {
-        if (!web_contents)
-          return;
-        web_contents->PerformDropOrExitDrag(std::move(exit_drag), drop_metadata,
-                                            std::move(data), output_drag_op);
-      },
-      weak_ptr_factory_.GetWeakPtr(), std::move(drag_exit), drop_metadata);
+  return base::BindOnce(&WebContentsViewAura::PerformDropOrExitDrag,
+                        weak_ptr_factory_.GetWeakPtr(), std::move(drag_exit),
+                        drop_metadata);
 }
 
 void WebContentsViewAura::CompleteDrop(RenderWidgetHostImpl* target_rwh,

@@ -314,7 +314,7 @@ class EventTargetTestDelegate : public aura::client::DragDropDelegate {
       const ui::DropTargetEvent& event,
       std::unique_ptr<ui::OSExchangeData> data) override {
     DragOperation output_drag_op = DragOperation::kNone;
-    PerformDrop(event, std::move(data), output_drag_op);
+    PerformDrop(std::move(data), output_drag_op);
 
     return output_drag_op;
   }
@@ -325,8 +325,7 @@ class EventTargetTestDelegate : public aura::client::DragDropDelegate {
   }
 
  private:
-  void PerformDrop(const ui::DropTargetEvent& event,
-                   std::unique_ptr<ui::OSExchangeData> data,
+  void PerformDrop(std::unique_ptr<ui::OSExchangeData> data,
                    ui::mojom::DragOperation& output_drag_op) {
     EXPECT_EQ(State::kDragUpdateInvoked, state_);
 

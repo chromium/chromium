@@ -585,7 +585,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, DragDropOnOopif) {
     auto drop_cb = view->GetDropCallback(event);
     ASSERT_TRUE(drop_cb);
     ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-    std::move(drop_cb).Run(event, std::move(data), output_drag_op);
+    std::move(drop_cb).Run(std::move(data), output_drag_op);
 
     run_loop.Run();
 
@@ -621,7 +621,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, DragDropOnOopif) {
     auto drop_cb = view->GetDropCallback(event);
     ASSERT_TRUE(drop_cb);
     ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-    std::move(drop_cb).Run(event, std::move(data), output_drag_op);
+    std::move(drop_cb).Run(std::move(data), output_drag_op);
 
     run_loop.Run();
 
@@ -664,7 +664,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, OnPerformDrop_DeepScanOK) {
   auto drop_cb = view->GetDropCallback(event);
   ASSERT_TRUE(drop_cb);
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(drop_cb).Run(event, std::move(data), output_drag_op);
+  std::move(drop_cb).Run(std::move(data), output_drag_op);
 
   // The user should be able to drag other content over Chrome while the scan is
   // occurring without affecting it.
@@ -721,7 +721,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, OnPerformDrop_DeepScanBad) {
   auto drop_cb = view->GetDropCallback(event);
   ASSERT_TRUE(drop_cb);
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(drop_cb).Run(event, std::move(data), output_drag_op);
+  std::move(drop_cb).Run(std::move(data), output_drag_op);
 
   // The user should be able to drag other content over Chrome while the scan is
   // occurring without affecting it.
@@ -981,7 +981,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, GetDropCallback_Run) {
   auto drop_cb = view->GetDropCallback(event);
   ASSERT_TRUE(drop_cb);
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(drop_cb).Run(event, std::move(data), output_drag_op);
+  std::move(drop_cb).Run(std::move(data), output_drag_op);
 
   run_loop.Run();
 

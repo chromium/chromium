@@ -196,8 +196,7 @@ class DragAndDropSimulator {
     // (DragDropDelegate) doesn't return NullCallback.
     DCHECK(drop_cb);
     ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-    std::move(drop_cb).Run(*active_drag_event_, std::move(os_exchange_data_),
-                           output_drag_op);
+    std::move(drop_cb).Run(std::move(os_exchange_data_), output_drag_op);
     return true;
   }
 
@@ -221,8 +220,7 @@ class DragAndDropSimulator {
     delegate->OnDragUpdated(*active_drag_event_);
     auto drop_cb = delegate->GetDropCallback(*active_drag_event_);
     ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-    std::move(drop_cb).Run(*active_drag_event_, std::move(os_exchange_data_),
-                           output_drag_op);
+    std::move(drop_cb).Run(std::move(os_exchange_data_), output_drag_op);
     return true;
   }
 

@@ -124,14 +124,6 @@ class WMHelperChromeOS : public WMHelper, public VSyncTimingManager::Delegate {
       override;
 
  private:
-  // TODO(crbug.com/1289902): This function will be removed when the callback
-  // signature for DropCallback is fixed.
-  void PerformDropAdapter(
-      std::vector<WMHelper::DragDropObserver::DropCallback> drop_callbacks,
-      const ui::DropTargetEvent&,
-      std::unique_ptr<ui::OSExchangeData> data,
-      ui::mojom::DragOperation& output_drag_op);
-
   void PerformDrop(
       std::vector<WMHelper::DragDropObserver::DropCallback> drop_callbacks,
       std::unique_ptr<ui::OSExchangeData> data,

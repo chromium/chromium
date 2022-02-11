@@ -265,8 +265,7 @@ void DesktopDragDropClientOzone::OnDragDrop(
       auto drop_cb = drag_drop_delegate_->GetDropCallback(*event);
       if (drop_cb) {
         auto output_drag_op = ui::mojom::DragOperation::kNone;
-        std::move(drop_cb).Run(*event, std::move(data_to_drop_),
-                               output_drag_op);
+        std::move(drop_cb).Run(std::move(data_to_drop_), output_drag_op);
       }
     }
   }

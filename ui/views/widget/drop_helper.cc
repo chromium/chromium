@@ -133,7 +133,6 @@ DropHelper::DropCallback DropHelper::GetDropCallback(
 
   return base::BindOnce(
       [](const ui::DropTargetEvent& drop_event, View::DropCallback drop_cb,
-         const ui::DropTargetEvent& /*window_event*/,
          std::unique_ptr<ui::OSExchangeData> data,
          ui::mojom::DragOperation& output_drag_op) {
         // Bind the drop_event here instead of using the one that the callback

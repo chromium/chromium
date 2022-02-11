@@ -152,7 +152,7 @@ ui::mojom::DragOperation WMHelperChromeOS::OnPerformDrop(
     std::unique_ptr<ui::OSExchangeData> data) {
   auto drop_cb = GetDropCallback(event);
   auto output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(drop_cb).Run(event, std::move(data), output_drag_op);
+  std::move(drop_cb).Run(std::move(data), output_drag_op);
   return output_drag_op;
 }
 
@@ -166,7 +166,7 @@ aura::client::DragDropDelegate::DropCallback WMHelperChromeOS::GetDropCallback(
       drop_callbacks.push_back(std::move(drop_cb));
     }
   }
-  return base::BindOnce(&WMHelperChromeOS::PerformDropAdapter,
+  return base::BindOnce(&WMHelperChromeOS::PerformDrop,
                         weak_ptr_factory_.GetWeakPtr(),
                         std::move(drop_callbacks));
 }
@@ -293,16 +293,6 @@ float GetDefaultDeviceScaleFactor() {
       display_manager->GetDisplayInfo(display::Display::InternalDisplayId());
   DCHECK(display_info.display_modes().size());
   return display_info.display_modes()[0].device_scale_factor();
-}
-
-void WMHelperChromeOS::PerformDropAdapter(
-    std::vector<WMHelper::DragDropObserver::DropCallback> drop_callbacks,
-    const ui::DropTargetEvent&,
-    std::unique_ptr<ui::OSExchangeData> data,
-    ui::mojom::DragOperation& output_drag_op) {
-  // TODO(crbug.com/1289902): Remove this adapter when the event parameter is
-  // eliminated.
-  PerformDrop(std::move(drop_callbacks), std::move(data), output_drag_op);
 }
 
 void WMHelperChromeOS::PerformDrop(
