@@ -373,7 +373,6 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
       const String& message = g_empty_string,
       const String& source_file = g_empty_string) const {}
 
-  String addressSpaceForBindings() const;
   network::mojom::IPAddressSpace AddressSpace() const;
   void SetAddressSpace(network::mojom::blink::IPAddressSpace ip_address_space);
 
