@@ -1247,7 +1247,7 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, MAYBE_Help) {
 }
 
 // Tests the behavior of the Dictation bubble UI.
-class DictationUITest : public DictationCommandsExtensionTest {
+class DictationUITest : public DictationExtensionTest {
  protected:
   DictationUITest() : dictation_bubble_test_helper_() {}
   ~DictationUITest() override = default;
@@ -1255,9 +1255,12 @@ class DictationUITest : public DictationCommandsExtensionTest {
   DictationUITest& operator=(const DictationUITest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    DictationCommandsExtensionTest::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kExperimentalAccessibilityDictationHints);
+    DictationExtensionTest::SetUpCommandLine(command_line);
+    std::vector<base::Feature> enabled_features = {
+        ::features::kExperimentalAccessibilityDictationCommands,
+        ::features::kExperimentalAccessibilityDictationHints};
+    std::vector<base::Feature> disabled_features;
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   void WaitForVisibility(bool visible) {
@@ -1317,11 +1320,17 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
 
 IN_PROC_BROWSER_TEST_P(DictationUITest, ShownWhenSpeechRecognitionStarts) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+
   WaitForVisibility(true);
   WaitForVisibleIcon(DictationBubbleIconType::kStandby);
 }
 
 IN_PROC_BROWSER_TEST_P(DictationUITest, DisplaysInterimSpeechResults) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+
   // Send an interim speech result.
   SendFakeSpeechResultAndWait(/*transcript=*/"Testing", /*is_final=*/false);
   WaitForVisibility(true);
@@ -1330,6 +1339,9 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, DisplaysInterimSpeechResults) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationUITest, DisplaysMacroSuccess) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+
   // Perform a command.
   SendFinalFakeSpeechResultAndWait("Select all");
   WaitForVisibility(true);
@@ -1343,6 +1355,9 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, DisplaysMacroSuccess) {
 
 IN_PROC_BROWSER_TEST_P(DictationUITest,
                        ResetsToStandbyModeAfterFinalSpeechResult) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+
   WaitForVisibility(true);
   WaitForVisibleIcon(DictationBubbleIconType::kStandby);
   // Send an interim speech result.
@@ -1358,6 +1373,9 @@ IN_PROC_BROWSER_TEST_P(DictationUITest,
 }
 
 IN_PROC_BROWSER_TEST_P(DictationUITest, HiddenWhenDictationDeactivates) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+
   WaitForVisibility(true);
   WaitForVisibleIcon(DictationBubbleIconType::kStandby);
   // The UI should be hidden when Dictation deactivates.
@@ -1367,6 +1385,9 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, HiddenWhenDictationDeactivates) {
 }
 
 IN_PROC_BROWSER_TEST_P(DictationUITest, Hints) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+
   WaitForVisibility(true);
   WaitForVisibleIcon(DictationBubbleIconType::kStandby);
   // Hints should show up after a few seconds without speech.
@@ -1376,44 +1397,22 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, Hints) {
       u"Try saying:", u"\"Type [word / phrase]\"", u"\"Help\""});
 }
 
-class DictationUIAndChromeVoxTest : public DictationUITest {
- protected:
-  DictationUIAndChromeVoxTest() = default;
-  ~DictationUIAndChromeVoxTest() override = default;
-  DictationUIAndChromeVoxTest(const DictationUIAndChromeVoxTest&) = delete;
-  DictationUIAndChromeVoxTest& operator=(const DictationUIAndChromeVoxTest&) =
-      delete;
-
-  void SetUpOnMainThread() override {
-    // Setup ChromeVox first.
-    EXPECT_FALSE(GetManager()->IsSpokenFeedbackEnabled());
-    extensions::ExtensionHostTestHelper host_helper(
-        browser()->profile(), extension_misc::kChromeVoxExtensionId);
-    EnableChromeVox();
-    host_helper.WaitForHostCompletedFirstLoad();
-    EXPECT_TRUE(GetManager()->IsSpokenFeedbackEnabled());
-
-    // Then setup Dictation.
-    DictationUITest::SetUpOnMainThread();
-  }
-
-  test::SpeechMonitor sm;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    Network,
-    DictationUIAndChromeVoxTest,
-    ::testing::Values(speech::SpeechRecognitionType::kNetwork));
-
-INSTANTIATE_TEST_SUITE_P(
-    OnDevice,
-    DictationUIAndChromeVoxTest,
-    ::testing::Values(speech::SpeechRecognitionType::kOnDevice));
-
 // Ensures that Search + D can be used to toggle Dictation when ChromeVox is
 // active. Also verifies that ChromeVox announces hints when they are shown in
 // the Dictation UI.
-IN_PROC_BROWSER_TEST_P(DictationUIAndChromeVoxTest, ChromeVoxAnnouncesHints) {
+IN_PROC_BROWSER_TEST_P(DictationUITest, ChromeVoxAnnouncesHints) {
+  // Setup ChromeVox first.
+  test::SpeechMonitor sm;
+  EXPECT_FALSE(GetManager()->IsSpokenFeedbackEnabled());
+  extensions::ExtensionHostTestHelper host_helper(
+      browser()->profile(), extension_misc::kChromeVoxExtensionId);
+  EnableChromeVox();
+  host_helper.WaitForHostCompletedFirstLoad();
+  EXPECT_TRUE(GetManager()->IsSpokenFeedbackEnabled());
+
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+
   // Hints should show up after a few seconds without speech.
   WaitForVisibility(true);
   WaitForVisibleIcon(DictationBubbleIconType::kStandby);
