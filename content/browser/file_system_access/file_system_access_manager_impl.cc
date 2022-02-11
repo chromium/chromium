@@ -78,16 +78,29 @@ void ShowFilePickerOnUIThread(const url::Origin& requesting_origin,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RenderFrameHost* rfh = RenderFrameHost::FromID(frame_id);
   WebContents* web_contents = WebContents::FromRenderFrameHost(rfh);
+  RenderFrameHost* outermost_rfh = rfh ? rfh->GetOutermostMainFrame() : nullptr;
 
-  if (!web_contents) {
+  if (!web_contents || !outermost_rfh) {
     std::move(callback).Run(file_system_access_error::FromStatus(
                                 FileSystemAccessStatus::kOperationAborted),
                             {});
     return;
   }
 
-  url::Origin embedding_origin =
-      web_contents->GetMainFrame()->GetLastCommittedOrigin();
+  DCHECK(outermost_rfh->IsInPrimaryMainFrame());
+
+  // TODO(crbug.com/1249865): could check browsing contexts vs a fenced frame
+  // check with MPArch fenced frames.
+  if (rfh->IsNestedWithinFencedFrame()) {
+    std::move(callback).Run(
+        file_system_access_error::FromStatus(
+            FileSystemAccessStatus::kPermissionDenied,
+            "Fenced frames are not allowed to show a file picker."),
+        {});
+    return;
+  }
+
+  url::Origin embedding_origin = outermost_rfh->GetLastCommittedOrigin();
   if (embedding_origin != requesting_origin) {
     // Third party iframes are not allowed to show a file picker.
     std::move(callback).Run(
