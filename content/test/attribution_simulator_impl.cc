@@ -24,10 +24,8 @@
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
-#include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/test/attribution_simulator_input_parser.h"
-#include "services/network/test/test_network_connection_tracker.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
@@ -212,12 +210,6 @@ base::Value RunAttributionSimulationOrExit(
 
   // Avoid creating an on-disk sqlite DB.
   content::AttributionManagerImpl::RunInMemoryForTesting();
-
-  // Ensure that the manager always thinks the browser is online.
-  auto network_connection_tracker =
-      network::TestNetworkConnectionTracker::CreateInstance();
-  content::SetNetworkConnectionTrackerForTesting(
-      network_connection_tracker.get());
 
   auto always_allow_reports_callback =
       base::BindRepeating([](const AttributionReport&) { return true; });
