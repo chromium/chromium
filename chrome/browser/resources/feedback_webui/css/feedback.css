@@ -79,7 +79,7 @@ body {
   padding-inline-start: 10px;
 }
 
-:is(input, select, textarea) {
+:is(input:not([type=file]), select, textarea) {
   background-color: var(--feedback-textfield-bg-color);
 }
 
