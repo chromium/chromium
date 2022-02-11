@@ -858,8 +858,8 @@ TEST_F(TransportConnectJobTest, GetEndpointMetadata) {
   EXPECT_EQ(transport_connect_job.GetEndpointMetadata(), endpoints[2].metadata);
 }
 
-// If the server supports ECH, TransportConnectJob should switch to SVCB-reliant
-// mode and disable the A/AAAA fallback.
+// If the client and server both support ECH, TransportConnectJob should switch
+// to SVCB-reliant mode and disable the A/AAAA fallback.
 TEST_F(TransportConnectJobTest, SvcbReliantIfEch) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
@@ -903,7 +903,7 @@ TEST_F(TransportConnectJobTest, SvcbReliantIfEch) {
   EXPECT_EQ(attempts[1].endpoint, IPEndPoint(ParseIP("2::"), 8442));
 }
 
-// SVCB-reliant mode should only be enabled for ECH servers when ECH is enabled.
+// SVCB-reliant mode should be disabled for ECH servers when ECH is disabled.
 TEST_F(TransportConnectJobTest, SvcbOptionalIfEchDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(features::kEncryptedClientHello);
@@ -920,7 +920,7 @@ TEST_F(TransportConnectJobTest, SvcbOptionalIfEchDisabled) {
   host_resolver_.rules()->AddRule(kHostName,
                                   std::vector{endpoint1, endpoint2, endpoint3});
 
-  // `TransportConnectJob` should not try `endpoint3`.
+  // `TransportConnectJob` should try `endpoint3`.
   MockTransportClientSocketFactory::Rule rules[] = {
       MockTransportClientSocketFactory::Rule(
           MockTransportClientSocketFactory::Type::kFailing,
@@ -942,8 +942,9 @@ TEST_F(TransportConnectJobTest, SvcbOptionalIfEchDisabled) {
                                         /*expect_sync_result=*/false);
 }
 
-// SVCB-reliant mode is not enabled for servers with inconsistent SVCB records.
-TEST_F(TransportConnectJobTest, SvcbReliantIfEchInconsistent) {
+// SVCB-reliant mode should be disabled if not all SVCB/HTTPS records include
+// ECH.
+TEST_F(TransportConnectJobTest, SvcbOptionalIfEchInconsistent) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
 
@@ -959,7 +960,7 @@ TEST_F(TransportConnectJobTest, SvcbReliantIfEchInconsistent) {
   host_resolver_.rules()->AddRule(kHostName,
                                   std::vector{endpoint1, endpoint2, endpoint3});
 
-  // `TransportConnectJob` should not try `endpoint3`.
+  // `TransportConnectJob` should try `endpoint3`.
   MockTransportClientSocketFactory::Rule rules[] = {
       MockTransportClientSocketFactory::Rule(
           MockTransportClientSocketFactory::Type::kFailing,
