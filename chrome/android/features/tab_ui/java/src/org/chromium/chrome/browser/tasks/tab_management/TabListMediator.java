@@ -80,6 +80,7 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
@@ -1268,12 +1269,11 @@ class TabListMediator {
     }
 
     void registerOrientationListener(GridLayoutManager manager) {
-        // TODO(yuezhanggg): Try to dynamically determine span counts based on screen width,
-        // minimum card width and padding.
         mComponentCallbacks = new ComponentCallbacks() {
             @Override
             public void onConfigurationChanged(Configuration newConfig) {
-                updateSpanCountForOrientation(manager, newConfig.orientation);
+                updateSpanCount(
+                        manager, newConfig.orientation, newConfig.screenWidthDp);
                 if (mMode == TabListMode.GRID && mUiType != UiType.SELECTABLE) updateLayout();
             }
 
@@ -1287,14 +1287,12 @@ class TabListMediator {
     /**
      * Update the grid layout span count and span size lookup base on orientation.
      * @param manager     The {@link GridLayoutManager} used to update the span count.
-     * @param orientation The orientation base on which we update the span count.
+     * @param orientation The orientation based on which we update the span count.
+     * @param screenWidthDp The screnWidth based on which we update the span count.
      */
-    void updateSpanCountForOrientation(GridLayoutManager manager, int orientation) {
-        // When in multi-window mode, the span count is fixed to 2 to keep tab card size reasonable.
-        int spanCount = orientation == Configuration.ORIENTATION_PORTRAIT
-                        || MultiWindowUtils.getInstance().isInMultiWindowMode((Activity) mContext)
-                ? TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_PORTRAIT
-                : TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_LANDSCAPE;
+    void updateSpanCount(
+            GridLayoutManager manager, int orientation, int screenWidthDp) {
+        int spanCount = getSpanCount(orientation, screenWidthDp);
         manager.setSpanCount(spanCount);
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
@@ -1308,6 +1306,26 @@ class TabListMediator {
                 return 1;
             }
         });
+    }
+
+    /**
+     * Span count is computed based on screen width for tablets and orientation for phones.
+     * When in multi-window mode on phone, the span count is fixed to 2 to keep tab card size
+     * reasonable.
+     */
+    private int getSpanCount(int orientation, int screenWidthDp) {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
+                && TabUiFeatureUtilities.isGridTabSwitcherEnabled(mContext)) {
+            return screenWidthDp < TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP
+                    ? TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT
+                    : screenWidthDp < TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP
+                            ? TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM
+                            : TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_LARGE;
+        }
+        return orientation == Configuration.ORIENTATION_PORTRAIT
+                        || MultiWindowUtils.getInstance().isInMultiWindowMode((Activity) mContext)
+                ? TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT
+                : TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM;
     }
 
     /**

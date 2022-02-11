@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -67,8 +68,11 @@ public class TabListCoordinator
         int NUM_ENTRIES = 4;
     }
 
-    static final int GRID_LAYOUT_SPAN_COUNT_PORTRAIT = 2;
-    static final int GRID_LAYOUT_SPAN_COUNT_LANDSCAPE = 3;
+    static final int GRID_LAYOUT_SPAN_COUNT_COMPACT = 2;
+    static final int GRID_LAYOUT_SPAN_COUNT_MEDIUM = 3;
+    static final int GRID_LAYOUT_SPAN_COUNT_LARGE = 4;
+    static final int MAX_SCREEN_WIDTH_COMPACT_DP = 600;
+    static final int MAX_SCREEN_WIDTH_MEDIUM_DP = 800;
     private final TabListMediator mMediator;
     private final TabListRecyclerView mRecyclerView;
     private final SimpleRecyclerViewAdapter mAdapter;
@@ -242,11 +246,12 @@ public class TabListCoordinator
 
         if (mMode == TabListMode.GRID) {
             GridLayoutManager gridLayoutManager =
-                    new GridLayoutManager(context, GRID_LAYOUT_SPAN_COUNT_PORTRAIT);
+                    new GridLayoutManager(context, GRID_LAYOUT_SPAN_COUNT_COMPACT);
             mRecyclerView.setLayoutManager(gridLayoutManager);
             mMediator.registerOrientationListener(gridLayoutManager);
-            mMediator.updateSpanCountForOrientation(
-                    gridLayoutManager, context.getResources().getConfiguration().orientation);
+            mMediator.updateSpanCount(gridLayoutManager,
+                    context.getResources().getConfiguration().orientation,
+                    context.getResources().getConfiguration().screenWidthDp);
             mMediator.setupAccessibilityDelegate(mRecyclerView);
         } else if (mMode == TabListMode.STRIP || mMode == TabListMode.CAROUSEL
                 || mMode == TabListMode.LIST) {
@@ -258,7 +263,7 @@ public class TabListCoordinator
 
         if (mMode == TabListMode.GRID && selectionDelegateProvider == null) {
             // TODO(crbug.com/964406): unregister the listener when we don't need it.
-            mGlobalLayoutListener = this::updateThumbnailLocation;
+            mGlobalLayoutListener = this::updateThumbnailAndSpanCount;
             mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(mGlobalLayoutListener);
         }
     }
@@ -309,6 +314,18 @@ public class TabListCoordinator
         rect.offset(0, getTabListTopOffset());
         mThumbnailLocationOfCurrentTab.set(rect);
         return true;
+    }
+
+    private void updateThumbnailAndSpanCount() {
+        updateThumbnailLocation();
+        // Resetting span count for tablets.
+        if (mMode == TabListMode.GRID && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
+                && TabUiFeatureUtilities.isGridTabSwitcherEnabled(mContext)) {
+            mMediator.updateSpanCount(
+                    (GridLayoutManager) mRecyclerView.getLayoutManager(),
+                    mContext.getResources().getConfiguration().orientation,
+                    mContext.getResources().getConfiguration().screenWidthDp);
+        }
     }
 
     /**

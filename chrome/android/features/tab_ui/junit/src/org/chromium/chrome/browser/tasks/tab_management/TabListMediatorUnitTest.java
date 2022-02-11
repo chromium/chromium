@@ -35,6 +35,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.START_SURFACE_ANDROID;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.STORE_HOURS;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_ANDROID;
@@ -393,7 +394,7 @@ public class TabListMediatorUnitTest {
                 .openTabGridDialog(any(Tab.class));
         doNothing().when(mActivity).registerComponentCallbacks(mComponentCallbacksCaptor.capture());
         doReturn(mGridLayoutManager).when(mRecyclerView).getLayoutManager();
-        doReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_PORTRAIT)
+        doReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT)
                 .when(mGridLayoutManager)
                 .getSpanCount();
         doReturn(mSpanSizeLookup).when(mGridLayoutManager).getSpanSizeLookup();
@@ -426,8 +427,7 @@ public class TabListMediatorUnitTest {
         doAnswer(invocation -> {
             int position = invocation.getArgument(0);
             int itemType = mModel.get(position).type;
-            if (itemType == TabProperties.UiType.MESSAGE
-                    || itemType == TabProperties.UiType.LARGE_MESSAGE) {
+            if (itemType == UiType.MESSAGE || itemType == UiType.LARGE_MESSAGE) {
                 return mGridLayoutManager.getSpanCount();
             }
             return 1;
@@ -1486,12 +1486,13 @@ public class TabListMediatorUnitTest {
         // Mock that we are switching to portrait mode.
         Configuration configuration = new Configuration();
         configuration.orientation = Configuration.ORIENTATION_PORTRAIT;
+        configuration.screenWidthDp = TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP - 1;
         // Mock that we are in single window mode.
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(false);
 
         mComponentCallbacksCaptor.getValue().onConfigurationChanged(configuration);
 
-        verify(mGridLayoutManager).setSpanCount(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_PORTRAIT);
+        verify(mGridLayoutManager).setSpanCount(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT);
     }
 
     @Test
@@ -1500,22 +1501,24 @@ public class TabListMediatorUnitTest {
         // Mock that we are switching to landscape mode.
         Configuration configuration = new Configuration();
         configuration.orientation = Configuration.ORIENTATION_LANDSCAPE;
+        configuration.screenWidthDp = TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP - 1;
         // Mock that we are in single window mode.
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(false);
 
         mComponentCallbacksCaptor.getValue().onConfigurationChanged(configuration);
 
-        verify(mGridLayoutManager)
-                .setSpanCount(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_LANDSCAPE);
+        verify(mGridLayoutManager).setSpanCount(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM);
     }
 
     @Test
     public void updateSpanCount_MultiWindow() {
         initAndAssertAllProperties();
         Configuration portraitConfiguration = new Configuration();
+        portraitConfiguration.screenWidthDp = TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP - 1;
         portraitConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
         Configuration landscapeConfiguration = new Configuration();
         landscapeConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
+        landscapeConfiguration.screenWidthDp = TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP - 1;
         // Mock that we are in multi window mode.
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
 
@@ -1525,7 +1528,36 @@ public class TabListMediatorUnitTest {
 
         // The span count is fixed to 2 for multi window mode regardless of the orientation change.
         verify(mGridLayoutManager, times(3))
-                .setSpanCount(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_PORTRAIT);
+                .setSpanCount(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT);
+    }
+
+    @Test
+    @Features.EnableFeatures(GRID_TAB_SWITCHER_FOR_TABLETS)
+    public void updateSpanCount_onTablet_multipleScreenWidths() {
+        initAndAssertAllProperties();
+        // Mock tablet
+        when(mResources.getInteger(R.integer.min_screen_width_bucket))
+                .thenReturn(TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP + 1);
+        Configuration portraitConfiguration = new Configuration();
+        portraitConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
+
+        // Mock that we are in single window mode.
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(false);
+
+        // Compact width
+        portraitConfiguration.screenWidthDp = TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP - 1;
+        mComponentCallbacksCaptor.getValue().onConfigurationChanged(portraitConfiguration);
+        verify(mGridLayoutManager).setSpanCount(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT);
+
+        // Medium width
+        portraitConfiguration.screenWidthDp = TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP - 1;
+        mComponentCallbacksCaptor.getValue().onConfigurationChanged(portraitConfiguration);
+        verify(mGridLayoutManager).setSpanCount(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM);
+
+        // Large width
+        portraitConfiguration.screenWidthDp = TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP + 1;
+        mComponentCallbacksCaptor.getValue().onConfigurationChanged(portraitConfiguration);
+        verify(mGridLayoutManager).setSpanCount(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_LARGE);
     }
 
     @Test
@@ -2609,12 +2641,12 @@ public class TabListMediatorUnitTest {
     public void testGetPriceWelcomeMessageInsertionIndex() {
         initWithThreeTabs();
 
-        doReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_PORTRAIT)
+        doReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT)
                 .when(mGridLayoutManager)
                 .getSpanCount();
         assertThat(mMediator.getPriceWelcomeMessageInsertionIndex(), equalTo(2));
 
-        doReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_LANDSCAPE)
+        doReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM)
                 .when(mGridLayoutManager)
                 .getSpanCount();
         assertThat(mMediator.getPriceWelcomeMessageInsertionIndex(), equalTo(3));
