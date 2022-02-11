@@ -141,6 +141,11 @@ class ThemeService : public KeyedService,
   // Gets the ThemeProvider for |profile|. This will be different for an
   // incognito profile and its original profile, even though both profiles use
   // the same ThemeService.
+  //
+  // Before using this function, consider if the caller is in a rooted UI tree.
+  // If it is, strongly favor referring to the conceptual roots for a
+  // ThemeProvider. For Views, this is the Widget. For Cocoa, this is the
+  // AppControl.
   static const ui::ThemeProvider& GetThemeProviderForProfile(Profile* profile);
   static CustomThemeSupplier* GetThemeSupplierForProfile(Profile* profile);
 
