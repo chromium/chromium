@@ -36,7 +36,7 @@ using LoginState = IdentityRequestAccount::LoginState;
 // TODO(kenrb): These need to be defined in the explainer or draft spec and
 // referenced here.
 
-// Well-known configuration keys.
+// fedcm.json configuration keys.
 constexpr char kIdpEndpointKey[] = "idp_endpoint";
 constexpr char kTokenEndpointKey[] = "idtoken_endpoint";
 constexpr char kAccountsEndpointKey[] = "accounts_endpoint";
@@ -52,8 +52,8 @@ constexpr char kAccountsKey[] = "accounts";
 constexpr char kIdpBrandingKey[] = "branding";
 
 // Sign-in request response keys.
-// TODO(majidvp): For consistency rename to signin_endpoint and move into
-// `.well-known`.
+// TODO(majidvp): For consistency rename to signin_endpoint and move into the
+// fedcm manifest.
 constexpr char kSigninUrlKey[] = "signin_url";
 constexpr char kIdTokenKey[] = "id_token";
 
@@ -320,7 +320,7 @@ IdpNetworkRequestManager::AccountRequestInfo::AccountRequestInfo(
     AccountRequestInfo&&) = default;
 
 // static
-constexpr char IdpNetworkRequestManager::kWellKnownFilePath[];
+constexpr char IdpNetworkRequestManager::kManifestFilePath[];
 
 // static
 std::unique_ptr<IdpNetworkRequestManager> IdpNetworkRequestManager::Create(
@@ -347,12 +347,11 @@ IdpNetworkRequestManager::IdpNetworkRequestManager(
 
 IdpNetworkRequestManager::~IdpNetworkRequestManager() = default;
 
-void IdpNetworkRequestManager::FetchIdpWellKnown(
-    FetchWellKnownCallback callback) {
+void IdpNetworkRequestManager::FetchManifest(FetchManifestCallback callback) {
   DCHECK(!url_loader_);
-  DCHECK(!idp_well_known_callback_);
+  DCHECK(!idp_manifest_callback_);
 
-  idp_well_known_callback_ = std::move(callback);
+  idp_manifest_callback_ = std::move(callback);
 
   // Accepts both "https://idp.example/foo/" and "https://idp.example/foo" as
   // valid provider url to locate the manifest. Historically, URLs with a
@@ -367,14 +366,14 @@ void IdpNetworkRequestManager::FetchIdpWellKnown(
     target_url = target_url.ReplaceComponents(replacements);
   }
 
-  target_url = target_url.Resolve(IdpNetworkRequestManager::kWellKnownFilePath);
+  target_url = target_url.Resolve(IdpNetworkRequestManager::kManifestFilePath);
 
   url_loader_ =
       CreateUncredentialedUrlLoader(target_url, /* send_referrer= */ false);
 
   url_loader_->DownloadToString(
       loader_factory_.get(),
-      base::BindOnce(&IdpNetworkRequestManager::OnWellKnownLoaded,
+      base::BindOnce(&IdpNetworkRequestManager::OnManifestLoaded,
                      weak_ptr_factory_.GetWeakPtr()),
       maxResponseSizeInKiB * 1024);
 }
@@ -554,27 +553,27 @@ void IdpNetworkRequestManager::SendLogout(const GURL& logout_url,
       maxResponseSizeInKiB * 1024);
 }
 
-void IdpNetworkRequestManager::OnWellKnownLoaded(
+void IdpNetworkRequestManager::OnManifestLoaded(
     std::unique_ptr<std::string> response_body) {
   FetchStatus response_error =
       GetResponseError(url_loader_.get(), response_body.get());
   url_loader_.reset();
 
   if (response_error != FetchStatus::kSuccess) {
-    std::move(idp_well_known_callback_).Run(response_error, Endpoints());
+    std::move(idp_manifest_callback_).Run(response_error, Endpoints());
     return;
   }
 
   data_decoder::DataDecoder::ParseJsonIsolated(
       *response_body,
-      base::BindOnce(&IdpNetworkRequestManager::OnWellKnownParsed,
+      base::BindOnce(&IdpNetworkRequestManager::OnManifestParsed,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void IdpNetworkRequestManager::OnWellKnownParsed(
+void IdpNetworkRequestManager::OnManifestParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   if (GetParsingError(result) == FetchStatus::kInvalidResponseError) {
-    std::move(idp_well_known_callback_)
+    std::move(idp_manifest_callback_)
         .Run(FetchStatus::kInvalidResponseError, Endpoints());
     return;
   }
@@ -595,7 +594,7 @@ void IdpNetworkRequestManager::OnWellKnownParsed(
   endpoints.client_metadata = ExtractEndpoint(kClientMetadataEndpointKey);
   endpoints.revoke = ExtractEndpoint(kRevokeEndpoint);
 
-  std::move(idp_well_known_callback_).Run(FetchStatus::kSuccess, endpoints);
+  std::move(idp_manifest_callback_).Run(FetchStatus::kSuccess, endpoints);
 }
 
 void IdpNetworkRequestManager::OnSigninRequestResponse(
@@ -630,7 +629,7 @@ void IdpNetworkRequestManager::OnSigninRequestParsed(
     return;
   }
 
-  // TODO(kenrb): This possibly should be part of the well-known file, unless
+  // TODO(kenrb): This possibly should be part of the fedcm manifest, unless
   // IDPs ever have a reason to serve different URLs for sign-in pages.
   // https://crbug.com/1141125.
   const base::Value* signin_url = response.FindKey(kSigninUrlKey);

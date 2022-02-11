@@ -785,9 +785,9 @@ experimental domain Audits
     enum
       ApprovalDeclined
       TooManyRequests
-      WellKnownHttpNotFound
-      WellKnownNoResponse
-      WellKnownInvalidResponse
+      ManifestHttpNotFound
+      ManifestNoResponse
+      ManifestInvalidResponse
       ClientMetadataHttpNotFound
       ClientMetadataNoResponse
       ClientMetadataInvalidResponse

@@ -173,14 +173,14 @@ std::string RequestIdTokenStatusToProtocol(
     case RequestIdTokenStatus::kErrorTooManyRequests: {
       return FederatedAuthRequestIssueReasonEnum::TooManyRequests;
     }
-    case RequestIdTokenStatus::kErrorFetchingWellKnownHttpNotFound: {
-      return FederatedAuthRequestIssueReasonEnum::WellKnownHttpNotFound;
+    case RequestIdTokenStatus::kErrorFetchingManifestHttpNotFound: {
+      return FederatedAuthRequestIssueReasonEnum::ManifestHttpNotFound;
     }
-    case RequestIdTokenStatus::kErrorFetchingWellKnownNoResponse: {
-      return FederatedAuthRequestIssueReasonEnum::WellKnownNoResponse;
+    case RequestIdTokenStatus::kErrorFetchingManifestNoResponse: {
+      return FederatedAuthRequestIssueReasonEnum::ManifestNoResponse;
     }
-    case RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse: {
-      return FederatedAuthRequestIssueReasonEnum::WellKnownInvalidResponse;
+    case RequestIdTokenStatus::kErrorFetchingManifestInvalidResponse: {
+      return FederatedAuthRequestIssueReasonEnum::ManifestInvalidResponse;
     }
     case RequestIdTokenStatus::kErrorFetchingClientMetadataHttpNotFound: {
       return FederatedAuthRequestIssueReasonEnum::ClientMetadataHttpNotFound;

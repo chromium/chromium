@@ -68,13 +68,13 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
 
  private:
   bool HasPendingRequest() const;
-  GURL ResolveWellKnownUrl(const std::string& url);
+  GURL ResolveManifestUrl(const std::string& url);
 
   // Checks validity of the passed-in endpoint URL origin.
   bool IsEndpointUrlValid(const GURL& endpoint_url);
 
-  void OnWellKnownFetched(IdpNetworkRequestManager::FetchStatus status,
-                          IdpNetworkRequestManager::Endpoints);
+  void OnManifestFetched(IdpNetworkRequestManager::FetchStatus status,
+                         IdpNetworkRequestManager::Endpoints);
   void OnClientMetadataResponseReceived(
       IdpNetworkRequestManager::FetchStatus status,
       IdpNetworkRequestManager::ClientMetadata data);
@@ -105,8 +105,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   void CompleteRequest(blink::mojom::RequestIdTokenStatus,
                        const std::string& id_token);
   void CompleteLogoutRequest(blink::mojom::LogoutRpsStatus);
-  void OnWellKnownFetchedForRevoke(IdpNetworkRequestManager::FetchStatus status,
-                                   IdpNetworkRequestManager::Endpoints);
+  void OnManifestFetchedForRevoke(IdpNetworkRequestManager::FetchStatus status,
+                                  IdpNetworkRequestManager::Endpoints);
   void OnRevokeResponse(IdpNetworkRequestManager::RevokeResponse response);
   void CompleteRevokeRequest(blink::mojom::RevokeStatus status);
 
@@ -162,7 +162,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
 
   bool prefer_auto_sign_in_;
 
-  // Fetched from the IDP well-known configuration.
+  // Fetched from the IDP FedCM manifest configuration.
   struct {
     GURL idp;
     GURL token;

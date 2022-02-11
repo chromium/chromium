@@ -23,9 +23,9 @@ enum class FedCmRequestIdTokenStatus {
   kUnhandledRequest,
   kNoNetworkManager,
   kNotSelectAccount,
-  kWellKnownHttpNotFound,
-  kWellKnownNoResponse,
-  kWellKnownInvalidResponse,
+  kManifestHttpNotFound,
+  kManifestNoResponse,
+  kManifestInvalidResponse,
   kClientMetadataHttpNotFound,
   kClientMetadataNoResponse,
   kClientMetadataInvalidResponse,
@@ -51,11 +51,11 @@ enum class FedCmRevokeStatus {
   kNoAccountToRevoke,
   kRevokeUrlIsCrossOrigin,
   kRevocationFailedOnServer,
-  kWellKnownHttpNotFound,
-  kWellKnownNoResponse,
-  kWellKnownInvalidResponse,
+  kManifestHttpNotFound,
+  kManifestNoResponse,
+  kManifestInvalidResponse,
 
-  kMaxValue = kWellKnownInvalidResponse
+  kMaxValue = kManifestInvalidResponse
 };
 
 // Records the time from when a call to the API was made to when the accounts

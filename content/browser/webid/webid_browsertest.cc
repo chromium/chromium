@@ -46,9 +46,9 @@ namespace {
 
 constexpr char kRpHostName[] = "rp.example";
 constexpr char kIdpOrigin[] = "https://idp.example.org";
-constexpr char kExpectedWellKnownPath[] = "/.well-known/fedcm";
+constexpr char kExpectedManifestPath[] = "/fedcm";
 constexpr char kIdpEndpointRelativeValue[] = "/fedcm/sign-in";
-constexpr char kTestWellKnownResponseBody[] =
+constexpr char kTestManifestResponseBody[] =
     "{\"idp_endpoint\": \"/fedcm/sign-in\"}";
 constexpr char kTestIdpEndpointBody[] = "{\"signin_url\": \"/fedcm/\"}";
 constexpr char kTestContentType[] = "application/json";
@@ -85,8 +85,8 @@ class IdpTestServer {
     }
 
     auto response = std::make_unique<BasicHttpResponse>();
-    if (IsWellKnownRequest(request)) {
-      BuildResponseFromDetails(*response.get(), well_known_details_);
+    if (IsManifestRequest(request)) {
+      BuildResponseFromDetails(*response.get(), manifest_details_);
       return response;
     }
 
@@ -98,8 +98,8 @@ class IdpTestServer {
     return nullptr;
   }
 
-  void SetWellKnownResponseDetails(ResponseDetails details) {
-    well_known_details_ = details;
+  void SetManifestResponseDetails(ResponseDetails details) {
+    manifest_details_ = details;
   }
 
   void SetIdpEndpointResponseDetails(ResponseDetails details) {
@@ -107,9 +107,9 @@ class IdpTestServer {
   }
 
  private:
-  bool IsWellKnownRequest(const HttpRequest& request) {
+  bool IsManifestRequest(const HttpRequest& request) {
     if (request.method == HttpMethod::METHOD_GET &&
-        request.relative_url == kExpectedWellKnownPath) {
+        request.relative_url == kExpectedManifestPath) {
       return true;
     }
     return false;
@@ -133,15 +133,15 @@ class IdpTestServer {
 
   // Response values for the types of requests that are sent to the IdP.
   // These have default values that can be overridden for specific tests.
-  ResponseDetails well_known_details_ = {
-      net::HTTP_OK, kTestWellKnownResponseBody, kTestContentType};
+  ResponseDetails manifest_details_ = {net::HTTP_OK, kTestManifestResponseBody,
+                                       kTestContentType};
   ResponseDetails idp_endpoint_details_ = {net::HTTP_OK, kTestIdpEndpointBody,
                                            kTestContentType};
 };
 
 }  // namespace
 
-// TODO(yigu): Update the tests (e.g. well-known) to cover mediation mode.
+// TODO(yigu): Update the tests (e.g. fedcm manifest) to cover mediation mode.
 class WebIdBrowserTest : public ContentBrowserTest {
  public:
   WebIdBrowserTest() = default;
@@ -180,7 +180,7 @@ class WebIdBrowserTest : public ContentBrowserTest {
     std::vector<base::Feature> features;
 
     // kSplitCacheByNetworkIsolationKey feature is needed to verify
-    // that the network shard for fetching the .well-known file is different
+    // that the network shard for fetching the fedcm manifest file is different
     // from that used for other IdP transactions, to prevent data leakage.
     features.push_back(net::features::kSplitCacheByNetworkIsolationKey);
     features.push_back(features::kFedCm);
@@ -253,10 +253,10 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, FastLoginFlow) {
 IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, AbsoluteURLs) {
   std::string idp_endpoint_absolute_url =
       BaseIdpUrl() + kIdpEndpointRelativeValue;
-  std::string well_known_response_body =
+  std::string manifest_response_body =
       "{\"idp_endpoint\": \"" + idp_endpoint_absolute_url + "\"}";
-  idp_server()->SetWellKnownResponseDetails(
-      {net::HTTP_OK, well_known_response_body, kTestContentType});
+  idp_server()->SetManifestResponseDetails(
+      {net::HTTP_OK, manifest_response_body, kTestContentType});
 
   std::string signin_url_absolute_url = BaseIdpUrl() + "/fedcm";
   std::string idp_endpoint_response_body =
@@ -298,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, TokenExchangePermissionDeclined) {
 
 // Verify an error is returned when WebID is not supported by the provided IdP.
 IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, WebIdNotSupported) {
-  idp_server()->SetWellKnownResponseDetails({net::HTTP_NOT_FOUND, "", ""});
+  idp_server()->SetManifestResponseDetails({net::HTTP_NOT_FOUND, "", ""});
 
   std::string expected_error =
       "a JavaScript error: \"NetworkError: Error retrieving an id token.\"\n";

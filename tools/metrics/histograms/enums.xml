@@ -37316,9 +37316,9 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="UnhandledRequest"/>
   <int value="4" label="NoNetworkManager"/>
   <int value="5" label="NotSelectAccount"/>
-  <int value="6" label="WellKnownHttpNotFound"/>
-  <int value="7" label="WellKnownNoResponse"/>
-  <int value="8" label="WellKnownInvalidResponse"/>
+  <int value="6" label="ManifestHttpNotFound"/>
+  <int value="7" label="ManifestNoResponse"/>
+  <int value="8" label="ManifestInvalidResponse"/>
   <int value="9" label="ClientMetadataHttpNotFound"/>
   <int value="10" label="ClientMetadataNoResponse"/>
   <int value="11" label="ClientMetadataInvalidResponse"/>
@@ -37339,9 +37339,9 @@ Called by update_permissions_policy_enum.py.-->
   <int value="4" label="NoAccountToRevoke"/>
   <int value="5" label="RevokeUrlIsCrossOrigin"/>
   <int value="6" label="RevocationFailedOnServer"/>
-  <int value="7" label="WellKnownHttpNotFound"/>
-  <int value="8" label="WellKnownNoResponse"/>
-  <int value="9" label="WellKnownInvalidResponse"/>
+  <int value="7" label="ManifestHttpNotFound"/>
+  <int value="8" label="ManifestNoResponse"/>
+  <int value="9" label="ManifestInvalidResponse"/>
 </enum>
 
 <enum name="FeedAutoplayEvent">

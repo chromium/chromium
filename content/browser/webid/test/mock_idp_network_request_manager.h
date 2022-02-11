@@ -21,7 +21,7 @@ class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
   MockIdpNetworkRequestManager& operator=(const MockIdpNetworkRequestManager&) =
       delete;
 
-  MOCK_METHOD1(FetchIdpWellKnown, void(FetchWellKnownCallback));
+  MOCK_METHOD1(FetchManifest, void(FetchManifestCallback));
   MOCK_METHOD3(FetchClientMetadata,
                void(const GURL&,
                     const std::string&,

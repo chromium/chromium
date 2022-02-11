@@ -131,7 +131,7 @@ typedef struct {
 typedef struct {
   const char* token;
   absl::optional<UserApproval> initial_permission;
-  absl::optional<FetchStatus> wellknown_fetch_status;
+  absl::optional<FetchStatus> manifest_fetch_status;
   absl::optional<MockClientIdConfiguration> client_metadata;
   const char* idp_endpoint;
   const char* accounts_endpoint;
@@ -200,25 +200,24 @@ static const AuthRequestTestCase kPermissionTestCases[]{
      {kToken, UserApproval::kDenied, absl::nullopt, absl::nullopt, "", "", "",
       "", kPermissionNoop, kMediatedNoop}},
 
-    {"Wellknown file not found",
+    {"FedCM manifest file not found",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
      {RequestIdTokenStatus::kError,
-      RequestIdTokenStatus::kErrorFetchingWellKnownHttpNotFound, kEmptyToken},
+      RequestIdTokenStatus::kErrorFetchingManifestHttpNotFound, kEmptyToken},
      {kToken, UserApproval::kApproved, FetchStatus::kHttpNotFoundError,
       absl::nullopt, "", "", "", "", kPermissionNoop, kMediatedNoop}},
 
-    {"Wellknown fetch error",
+    {"FedCM manifest fetch error",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
      {RequestIdTokenStatus::kError,
-      RequestIdTokenStatus::kErrorFetchingWellKnownNoResponse, kEmptyToken},
+      RequestIdTokenStatus::kErrorFetchingManifestNoResponse, kEmptyToken},
      {kToken, UserApproval::kApproved, FetchStatus::kNoResponseError,
       absl::nullopt, "", "", "", "", kPermissionNoop, kMediatedNoop}},
 
-    {"Error parsing wellknown for Permission mode",
+    {"Error parsing FedCM manifest for Permission mode",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kPermission},
      {RequestIdTokenStatus::kError,
-      RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse,
-      kEmptyToken},
+      RequestIdTokenStatus::kErrorFetchingManifestInvalidResponse, kEmptyToken},
      {kToken, UserApproval::kApproved, FetchStatus::kInvalidResponseError,
       absl::nullopt, "", kAccountsEndpoint, kTokenEndpoint, "", kPermissionNoop,
       kMediatedNoop}},
@@ -283,20 +282,18 @@ static const AuthRequestTestCase kPermissionTestCases[]{
       kMediatedNoop}}};
 
 static const AuthRequestTestCase kMediatedTestCases[]{
-    {"Error parsing wellknown for Mediated mode missing token endpoint",
+    {"Error parsing FedCM manifest for Mediated mode missing token endpoint",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
      {RequestIdTokenStatus::kError,
-      RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse,
-      kEmptyToken},
+      RequestIdTokenStatus::kErrorFetchingManifestInvalidResponse, kEmptyToken},
      {kToken, absl::nullopt, FetchStatus::kInvalidResponseError, absl::nullopt,
       kIdpEndpoint, kAccountsEndpoint, "", kClientMetadataEndpoint,
       kPermissionNoop, kMediatedNoop}},
 
-    {"Error parsing wellknown for Mediated mode missing accounts endpoint",
+    {"Error parsing FedCM manifest for Mediated mode missing accounts endpoint",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
      {RequestIdTokenStatus::kError,
-      RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse,
-      kEmptyToken},
+      RequestIdTokenStatus::kErrorFetchingManifestInvalidResponse, kEmptyToken},
      {kToken, absl::nullopt, FetchStatus::kSuccess, absl::nullopt, kIdpEndpoint,
       "", kTokenEndpoint, kClientMetadataEndpoint, kPermissionNoop,
       kMediatedNoop}},
@@ -304,8 +301,7 @@ static const AuthRequestTestCase kMediatedTestCases[]{
      "provider",
      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
      {RequestIdTokenStatus::kError,
-      RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse,
-      kEmptyToken},
+      RequestIdTokenStatus::kErrorFetchingManifestInvalidResponse, kEmptyToken},
      {kToken, absl::nullopt, FetchStatus::kSuccess, absl::nullopt, kIdpEndpoint,
       kCrossOriginAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
       kPermissionNoop, kMediatedNoop}},
@@ -682,21 +678,21 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
           .Times(0);
     }
 
-    if (test_case.config.wellknown_fetch_status) {
-      EXPECT_CALL(*mock_request_manager_, FetchIdpWellKnown(_))
+    if (test_case.config.manifest_fetch_status) {
+      EXPECT_CALL(*mock_request_manager_, FetchManifest(_))
           .WillOnce(Invoke(
-              [&](IdpNetworkRequestManager::FetchWellKnownCallback callback) {
+              [&](IdpNetworkRequestManager::FetchManifestCallback callback) {
                 IdpNetworkRequestManager::Endpoints endpoints;
                 endpoints.idp = test_case.config.idp_endpoint;
                 endpoints.accounts = test_case.config.accounts_endpoint;
                 endpoints.token = test_case.config.token_endpoint;
                 endpoints.client_metadata =
                     test_case.config.client_metadata_endpoint;
-                std::move(callback).Run(
-                    *test_case.config.wellknown_fetch_status, endpoints);
+                std::move(callback).Run(*test_case.config.manifest_fetch_status,
+                                        endpoints);
               }));
     } else {
-      EXPECT_CALL(*mock_request_manager_, FetchIdpWellKnown(_)).Times(0);
+      EXPECT_CALL(*mock_request_manager_, FetchManifest(_)).Times(0);
     }
 
     if (test_case.config.client_metadata) {
@@ -899,14 +895,13 @@ TEST_P(BasicFederatedAuthRequestImplTest, FederatedAuthRequestIssue) {
           {RequestIdTokenStatus::kSuccess, absl::nullopt},
           {RequestIdTokenStatus::kApprovalDeclined,
            "User declined the sign-in attempt."},
-          {RequestIdTokenStatus::kErrorFetchingWellKnownHttpNotFound,
-           "The provider's .well-known configuration cannot be found."},
-          {RequestIdTokenStatus::kErrorFetchingWellKnownNoResponse,
+          {RequestIdTokenStatus::kErrorFetchingManifestHttpNotFound,
+           "The provider's FedCM manifest configuration cannot be found."},
+          {RequestIdTokenStatus::kErrorFetchingManifestNoResponse,
            "The response body is empty when fetching the provider's "
-           ".well-known "
-           "configuration."},
-          {RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse,
-           "Provider's .well-known configuration is invalid."},
+           "FedCM manifest configuration."},
+          {RequestIdTokenStatus::kErrorFetchingManifestInvalidResponse,
+           "Provider's FedCM manifest configuration is invalid."},
           {RequestIdTokenStatus::kErrorFetchingSignin,
            "Error attempting to reach the provider's sign-in endpoint."},
           {RequestIdTokenStatus::kErrorInvalidSigninResponse,
@@ -1270,9 +1265,9 @@ TEST_F(FederatedAuthRequestImplTest, Revoke) {
       *mock_request_permission_delegate_,
       RevokeRequestPermission(_, url::Origin::Create(GURL(kIdpTestOrigin))));
 
-  EXPECT_CALL(*mock_request_manager_, FetchIdpWellKnown(_))
-      .WillOnce(Invoke(
-          [&](IdpNetworkRequestManager::FetchWellKnownCallback callback) {
+  EXPECT_CALL(*mock_request_manager_, FetchManifest(_))
+      .WillOnce(
+          Invoke([&](IdpNetworkRequestManager::FetchManifestCallback callback) {
             IdpNetworkRequestManager::Endpoints endpoints;
             endpoints.revoke = kRevokeEndpoint;
             std::move(callback).Run(FetchStatus::kSuccess, endpoints);

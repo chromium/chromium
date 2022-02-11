@@ -42,7 +42,7 @@ class RenderFrameHost;
 //  |Browser|                           |IDP|
 //  '-------'                           '---'
 //      |                                 |
-//      |     GET /.well-known/fedcm      |
+//      |     GET /fedcm.json             |
 //      |-------------------------------->|
 //      |                                 |
 //      |        JSON{idp_url}            |
@@ -104,14 +104,14 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     std::string terms_of_service_url;
   };
 
-  static constexpr char kWellKnownFilePath[] = ".well-known/fedcm";
+  static constexpr char kManifestFilePath[] = "fedcm";
 
   using AccountList = std::vector<content::IdentityRequestAccount>;
   using BrandIconDownloader =
       base::OnceCallback<void(const GURL& /*icon_url*/,
                               int /*ideal_icon_size*/,
                               WebContents::ImageDownloadCallback)>;
-  using FetchWellKnownCallback =
+  using FetchManifestCallback =
       base::OnceCallback<void(FetchStatus, Endpoints)>;
   using FetchClientMetadataCallback =
       base::OnceCallback<void(FetchStatus, ClientMetadata)>;
@@ -138,8 +138,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   IdpNetworkRequestManager(const IdpNetworkRequestManager&) = delete;
   IdpNetworkRequestManager& operator=(const IdpNetworkRequestManager&) = delete;
 
-  // Attempt to fetch the IDP's WebID parameters from the its .well-known file.
-  virtual void FetchIdpWellKnown(FetchWellKnownCallback);
+  // Attempt to fetch the IDP's FedCM parameters from the fedcm.json manifest.
+  virtual void FetchManifest(FetchManifestCallback);
 
   virtual void FetchClientMetadata(const GURL& endpoint,
                                    const std::string& client_id,
@@ -190,8 +190,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     std::string client_id;
   };
 
-  void OnWellKnownLoaded(std::unique_ptr<std::string> response_body);
-  void OnWellKnownParsed(data_decoder::DataDecoder::ValueOrError result);
+  void OnManifestLoaded(std::unique_ptr<std::string> response_body);
+  void OnManifestParsed(data_decoder::DataDecoder::ValueOrError result);
   void OnClientMetadataLoaded(std::unique_ptr<std::string> response_body);
   void OnClientMetadataParsed(data_decoder::DataDecoder::ValueOrError result);
   void OnSigninRequestResponse(std::unique_ptr<std::string> response_body);
@@ -228,7 +228,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
 
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
 
-  FetchWellKnownCallback idp_well_known_callback_;
+  FetchManifestCallback idp_manifest_callback_;
   FetchClientMetadataCallback client_metadata_callback_;
   SigninRequestCallback signin_request_callback_;
   TokenRequestCallback token_request_callback_;
