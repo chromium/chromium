@@ -4499,30 +4499,49 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
               renderer_before_unload_start_time),
           blink::RemoteTimeTicks::FromTimeTicks(
               renderer_before_unload_end_time));
-      blink::LocalTimeTicks browser_before_unload_end_time =
-          converter.ToLocalTimeTicks(blink::RemoteTimeTicks::FromTimeTicks(
-              renderer_before_unload_end_time));
-      before_unload_end_time = browser_before_unload_end_time.ToTimeTicks();
-      if (base::FeatureList::IsEnabled(
-              features::kIncludeIpcOverheadInNavigationStart)) {
-        const blink::LocalTimeTicks browser_before_unload_start_time =
-            converter.ToLocalTimeTicks(blink::RemoteTimeTicks::FromTimeTicks(
-                renderer_before_unload_start_time));
-        browser_to_renderer_ipc_time_delta =
-            browser_before_unload_start_time.ToTimeTicks() -
-            send_before_unload_start_time_;
-      }
-    } else if (base::FeatureList::IsEnabled(
-                   features::kIncludeIpcOverheadInNavigationStart)) {
+      const base::TimeTicks browser_before_unload_start_time =
+          converter
+              .ToLocalTimeTicks(blink::RemoteTimeTicks::FromTimeTicks(
+                  renderer_before_unload_start_time))
+              .ToTimeTicks();
+      const base::TimeTicks browser_before_unload_end_time =
+          converter
+              .ToLocalTimeTicks(blink::RemoteTimeTicks::FromTimeTicks(
+                  renderer_before_unload_end_time))
+              .ToTimeTicks();
+      before_unload_end_time = browser_before_unload_end_time;
+      browser_to_renderer_ipc_time_delta =
+          browser_before_unload_start_time - send_before_unload_start_time_;
+    } else {
       browser_to_renderer_ipc_time_delta =
           (renderer_before_unload_start_time - send_before_unload_start_time_);
+    }
+
+    if (for_legacy) {
+      base::UmaHistogramTimes(
+          "Navigation.OnBeforeUnloadLegacyPostTaskTime",
+          before_unload_completed_time - renderer_before_unload_end_time);
+      // When `for_legacy` is true callers should supply
+      // `send_before_unload_start_time_` as the value for
+      // `renderer_before_unload_start_time`, which means
+      // `browser_to_renderer_ipc_time_delta` should be 0.
+      DCHECK(browser_to_renderer_ipc_time_delta.is_zero());
+    } else {
+      base::UmaHistogramTimes(
+          "Navigation.OnBeforeUnloadBrowserToRendererIpcTime",
+          browser_to_renderer_ipc_time_delta);
+    }
+
+    if (!base::FeatureList::IsEnabled(
+            features::kIncludeIpcOverheadInNavigationStart)) {
+      browser_to_renderer_ipc_time_delta = base::TimeDelta();
     }
 
     base::TimeDelta on_before_unload_overhead_time =
         (before_unload_completed_time - send_before_unload_start_time_) -
         (renderer_before_unload_end_time - renderer_before_unload_start_time);
-    UMA_HISTOGRAM_TIMES("Navigation.OnBeforeUnloadOverheadTime",
-                        on_before_unload_overhead_time);
+    base::UmaHistogramTimes("Navigation.OnBeforeUnloadOverheadTime",
+                            on_before_unload_overhead_time);
 
     frame_tree_node_->navigator().LogBeforeUnloadTime(
         renderer_before_unload_start_time, renderer_before_unload_end_time,

@@ -876,6 +876,27 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
+<histogram name="Navigation.OnBeforeUnloadBrowserToRendererIpcTime" units="ms"
+    expires_after="M110">
+  <owner>sky@chromium.org</owner>
+  <owner>jam@chromium.org</owner>
+  <summary>
+    Time it takes for the renderer to receive the request to process
+    before-unload handlers.
+  </summary>
+</histogram>
+
+<histogram name="Navigation.OnBeforeUnloadLegacyPostTaskTime" units="ms"
+    expires_after="M110">
+  <owner>sky@chromium.org</owner>
+  <owner>jam@chromium.org</owner>
+  <summary>
+    Time it takes for navigation to start when a PostTask() is used for legacy
+    before-unload handlers. Only logged if the feature
+    AvoidUnnecessaryBeforeUnloadCheck is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.OnBeforeUnloadOverheadTime" units="ms"
     expires_after="M110">
   <owner>clamy@chromium.org</owner>
