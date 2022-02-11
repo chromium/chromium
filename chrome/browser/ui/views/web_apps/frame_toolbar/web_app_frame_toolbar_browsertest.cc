@@ -779,16 +779,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-// TODO(https://crbug.com/1277860): Flaky on Mac builders.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_WindowControlsOverlayDraggableRegions \
-  DISABLED_WindowControlsOverlayDraggableRegions
-#else
-#define MAYBE_WindowControlsOverlayDraggableRegions \
-  WindowControlsOverlayDraggableRegions
-#endif
+// TODO(https://crbug.com/1277860): Flaky.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
-                       MAYBE_WindowControlsOverlayDraggableRegions) {
+                       DISABLED_WindowControlsOverlayDraggableRegions) {
   InstallAndLaunchWebApp();
   ToggleWindowControlsOverlayAndWait();
 
