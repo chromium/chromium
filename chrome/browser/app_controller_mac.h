@@ -34,6 +34,10 @@ class ScopedKeepAlive;
 @class ShareMenuController;
 class TabMenuBridge;
 
+namespace ui {
+class ThemeProvider;
+}  // namespace ui
+
 // The application controller object, created by loading the MainMenu nib.
 // This handles things like responding to menus when there are no windows
 // open, etc and acts as the NSApplication delegate.
@@ -193,6 +197,10 @@ class TabMenuBridge;
 // the original or the incognito profile.
 - (void)setLastProfile:(Profile*)profile;
 
+// Returns the last active ThemeProvider. It is only valid to call this with a
+// last available profile.
+- (const ui::ThemeProvider&)lastActiveThemeProvider;
+
 // Certain NSMenuItems [Close Tab and Close Window] have different
 // keyEquivalents depending on context. This must be invoked in two locations:
 //   * In menuNeedsUpdate:, which is called prior to showing the NSMenu.
@@ -208,6 +216,7 @@ class TabMenuBridge;
 // Testing API.
 - (void)setCloseWindowMenuItemForTesting:(NSMenuItem*)menuItem;
 - (void)setCloseTabMenuItemForTesting:(NSMenuItem*)menuItem;
+- (void)setLastProfileForTesting:(Profile*)profile;
 
 @end
 

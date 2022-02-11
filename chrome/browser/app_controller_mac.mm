@@ -61,6 +61,7 @@
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -1828,6 +1829,16 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
                           _menuState.get(), _lastProfile));
 }
 
+- (const ui::ThemeProvider&)lastActiveThemeProvider {
+  // Themes are only available while a profile is available.
+  DCHECK(_lastProfile);
+
+  // AppController is conceptually a root for Chromium Mac. As a result, it is
+  // allowed to refer to the profile to get a theme provider. Non-root UI
+  // concepts should rely on well known roots to obtain a ThemeProvider.
+  return ThemeService::GetThemeProviderForProfile(_lastProfile);
+}
+
 - (BOOL)windowHasBrowserTabs:(NSWindow*)window {
   if (!window) {
     return NO;
@@ -1987,6 +1998,10 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
 
 - (void)setCloseTabMenuItemForTesting:(NSMenuItem*)menuItem {
   _closeTabMenuItem = menuItem;
+}
+
+- (void)setLastProfileForTesting:(Profile*)profile {
+  _lastProfile = profile;
 }
 
 @end  // @implementation AppController
