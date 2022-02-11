@@ -35,10 +35,11 @@ class EcheSignaler : public mojom::SignalingMessageExchanger,
 
   void Bind(mojo::PendingReceiver<mojom::SignalingMessageExchanger> receiver);
 
- private:
+  // Visible for testing.
   // secure_channel::ConnectionManager::Observer:
   void OnMessageReceived(const std::string& payload) override;
 
+ private:
   EcheConnector* eche_connector_;
   secure_channel::ConnectionManager* connection_manager_;
   mojo::Remote<mojom::SignalingMessageObserver> observer_;
