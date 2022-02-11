@@ -6699,10 +6699,6 @@ crbug.com/1220317 [ Linux ] external/wpt/media-capabilities/decodingInfoEncrypte
 crbug.com/1220317 [ Linux ] external/wpt/media-capabilities/decodingInfo.any.html [ Crash Failure Pass ]
 crbug.com/1220007 [ Linux ] fullscreen/full-screen-iframe-allowed-video.html [ Failure Pass Timeout ]
 
-# Some flaky gpu canvas compositing
-crbug.com/1221326 virtual/gpu/fast/canvas/canvas-composite-image.html [ Failure Pass ]
-crbug.com/1221327 virtual/gpu/fast/canvas/canvas-composite-canvas.html [ Failure Pass ]
-
 # Sheriff
 crbug.com/1223327 wpt_internal/prerender/unload.html [ Pass Timeout ]
 crbug.com/1223327 virtual/prerender/wpt_internal/prerender/unload.html [ Pass Timeout ]

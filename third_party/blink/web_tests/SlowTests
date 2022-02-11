@@ -172,8 +172,8 @@ crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-imag
 crbug.com/1152496 virtual/oopr-canvas2d/fast/canvas/canvas-composite-alpha.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite.html [ Slow ]
 crbug.com/1081534 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-composite.html [ Slow ]
-crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-canvas.html [ Slow ]
-crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-image.html [ Slow ]
+crbug.com/1081534 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-canvas.html [ Slow ]
+crbug.com/1081534 virtual/oopr-canvas2d/fast/canvas/canvas-composite-image.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-shadow-part4.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-transformclip.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-video-shadow.html [ Slow ]
@@ -198,6 +198,9 @@ crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/fillrect_gradient.ht
 crbug.com/1081534 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html [ Slow ]
 crbug.com/1081534 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-p3.html [ Slow ]
 crbug.com/1081534 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Slow ]
+
+# Slow canvas gpu tests
+crbug.com/1221326 virtual/gpu/fast/canvas/canvas-composite-image.html [ Slow ]
 
 # Media controls tests have to wait for panel to fade out.
 crbug.com/722825 media/controls/video-enter-exit-fullscreen-without-hovering-doesnt-show-controls.html [ Slow ]
@@ -448,7 +451,6 @@ crbug.com/874695 storage/websql/transaction-success-callback-isolated-world.html
 crbug.com/874695 virtual/android/fullscreen/video-specified-size.html [ Slow ]
 crbug.com/874695 virtual/display-compositor-pixel-dump/fast/canvas/display-compositor-pixel-dump/OffscreenCanvas-opaque-background-compositing.html [ Slow ]
 crbug.com/874695 virtual/gpu/fast/canvas/canvas-blending-image-over-color.html [ Slow ]
-crbug.com/874695 virtual/gpu/fast/canvas/canvas-composite-canvas.html [ Slow ]
 crbug.com/874695 virtual/gpu/fast/canvas/canvas-composite-transformclip.html [ Slow ]
 crbug.com/874695 virtual/gpu/fast/canvas/canvas-composite-video.html [ Slow ]
 crbug.com/874695 virtual/gpu/fast/canvas/canvas-createImageBitmap-svg-image.html [ Slow ]
