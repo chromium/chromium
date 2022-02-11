@@ -2063,6 +2063,7 @@ public class ContextualSearchManagerTest {
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
+    @DisabledTest(message = "http://crbug.com/1296677")
     public void testTapOnRoleIgnored() throws Exception {
         FeatureList.setTestFeatures(ENABLE_NONE);
 
@@ -2727,6 +2728,7 @@ public class ContextualSearchManagerTest {
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    @DisabledTest(message = "http://crbug.com/1296677")
     public void testNonResolveContentVisibility(@EnabledFeature int enabledFeature)
             throws Exception {
         // Simulate a non-resolve search and make sure no Content is created.
@@ -2833,6 +2835,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    @DisabledTest(message = "http://crbug.com/1296677")
     public void testChainedSearchCreatesNewContent(@EnabledFeature int enabledFeature)
             throws Exception {
         // This test depends on preloading the content - which is loaded and not made visible.
@@ -2962,6 +2965,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    @DisabledTest(message = "http://crbug.com/1296677")
     public void testTapCloseRemovedFromHistory(@EnabledFeature int enabledFeature)
             throws Exception {
         // Simulate a resolving search and make sure a URL was loaded.
@@ -3069,6 +3073,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    @DisabledTest(message = "http://crbug.com/1296677")
     public void testNonResolveTranslates(@EnabledFeature int enabledFeature) throws Exception {
         // A non-resolving gesture on any word should trigger a forced translation.
         simulateNonResolveSearch("search");
@@ -3428,6 +3433,7 @@ public class ContextualSearchManagerTest {
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
+    @DisabledTest(message = "http://crbug.com/1296677")
     public void testDictionaryDefinitions(@EnabledFeature int enabledFeature) throws Exception {
         runDictionaryCardTest(CardTag.CT_DEFINITION);
     }
