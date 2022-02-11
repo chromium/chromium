@@ -350,6 +350,10 @@ GURL FederatedAuthRequestImpl::ResolveWellKnownUrl(
   return well_known_url.Resolve(endpoint);
 }
 
+bool FederatedAuthRequestImpl::IsEndpointUrlValid(const GURL& endpoint_url) {
+  return url::Origin::Create(provider_).IsSameOriginWith(endpoint_url);
+}
+
 void FederatedAuthRequestImpl::OnWellKnownFetched(
     IdpNetworkRequestManager::FetchStatus status,
     IdpNetworkRequestManager::Endpoints endpoints) {
@@ -401,11 +405,9 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
             RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse, "");
         return;
       }
-      // TODO(kenrb): This has to be same-origin with the provider.
-      // https://crbug.com/1141125
-      if (!IdpUrlIsValid(endpoints_.token) ||
-          !IdpUrlIsValid(endpoints_.accounts) ||
-          !IdpUrlIsValid(endpoints_.client_id_metadata)) {
+      if (!IsEndpointUrlValid(endpoints_.token) ||
+          !IsEndpointUrlValid(endpoints_.accounts) ||
+          !IsEndpointUrlValid(endpoints_.client_id_metadata)) {
         RecordRequestIdTokenStatus(IdTokenStatus::kWellKnownInvalidResponse,
                                    render_frame_host_->GetPageUkmSourceId());
         CompleteRequest(
@@ -426,9 +428,7 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
             RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse, "");
         return;
       }
-      // TODO(kenrb): This has to be same-origin with the provider.
-      // https://crbug.com/1141125
-      if (!IdpUrlIsValid(endpoints_.idp)) {
+      if (!IsEndpointUrlValid(endpoints_.idp)) {
         CompleteRequest(
             RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse, "");
         return;
@@ -475,9 +475,7 @@ void FederatedAuthRequestImpl::OnWellKnownFetchedForRevoke(
   }
 
   GURL revoke_url = ResolveWellKnownUrl(endpoints.revoke);
-  // TODO(kenrb): This has to be same-origin with the provider.
-  // https://crbug.com/1141125
-  if (!IdpUrlIsValid(revoke_url)) {
+  if (!IsEndpointUrlValid(revoke_url)) {
     RecordRevokeStatus(RevokeStatusForMetrics::kRevokeUrlIsCrossOrigin,
                        render_frame_host_->GetPageUkmSourceId());
     CompleteRevokeRequest(RevokeStatus::kError);
@@ -569,7 +567,7 @@ void FederatedAuthRequestImpl::OnSigninResponseReceived(
   switch (status) {
     case IdpNetworkRequestManager::SigninResponse::kLoadIdp: {
       GURL idp_signin_page_url = endpoints_.idp.Resolve(url_or_token);
-      if (!IdpUrlIsValid(idp_signin_page_url)) {
+      if (!IsEndpointUrlValid(idp_signin_page_url)) {
         CompleteRequest(RequestIdTokenStatus::kError, "");
         return;
       }

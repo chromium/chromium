@@ -69,6 +69,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
  private:
   bool HasPendingRequest() const;
   GURL ResolveWellKnownUrl(const std::string& url);
+
+  // Checks validity of the passed-in endpoint URL origin.
+  bool IsEndpointUrlValid(const GURL& endpoint_url);
+
   void OnWellKnownFetched(IdpNetworkRequestManager::FetchStatus status,
                           IdpNetworkRequestManager::Endpoints);
   void OnClientIdMetadataResponseReceived(

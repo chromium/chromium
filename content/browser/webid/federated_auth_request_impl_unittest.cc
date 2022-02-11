@@ -69,6 +69,7 @@ constexpr char kRpTestOrigin[] = "https://rp.example";
 constexpr char kIdpTestOrigin[] = "https://idp.example";
 constexpr char kIdpEndpoint[] = "https://idp.example/webid";
 constexpr char kAccountsEndpoint[] = "https://idp.example/accounts";
+constexpr char kCrossOriginAccountsEndpoint[] = "https://idp2.example/accounts";
 constexpr char kTokenEndpoint[] = "https://idp.example/token";
 constexpr char kClientIdMetadataEndpoint[] =
     "https://idp.example/client_id_metadata";
@@ -296,8 +297,17 @@ static const AuthRequestTestCase kMediatedTestCases[]{
      {RequestIdTokenStatus::kError,
       RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse,
       kEmptyToken},
-     {kToken, absl::nullopt, FetchStatus::kInvalidResponseError, absl::nullopt,
-      kIdpEndpoint, "", kTokenEndpoint, kClientIdMetadataEndpoint,
+     {kToken, absl::nullopt, FetchStatus::kSuccess, absl::nullopt, kIdpEndpoint,
+      "", kTokenEndpoint, kClientIdMetadataEndpoint, kPermissionNoop,
+      kMediatedNoop}},
+    {"Error due to accounts endpoint in different origin than identity "
+     "provider",
+     {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
+     {RequestIdTokenStatus::kError,
+      RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse,
+      kEmptyToken},
+     {kToken, absl::nullopt, FetchStatus::kSuccess, absl::nullopt, kIdpEndpoint,
+      kCrossOriginAccountsEndpoint, kTokenEndpoint, kClientIdMetadataEndpoint,
       kPermissionNoop, kMediatedNoop}},
 
     {"Error reaching Accounts endpoint",
@@ -604,30 +614,38 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                 std::move(callback).Run(*conf.accounts_response, conf.accounts,
                                         IdentityProviderMetadata());
               }));
+    } else {
+      EXPECT_CALL(*mock_request_manager_, SendAccountsRequest(_, _, _, _, _, _))
+          .Times(0);
     }
 
-    if (conf.accounts_response == FetchStatus::kSuccess &&
-        !prefer_auto_sign_in && !conf.customized_dialog) {
-      // Expects a dialog if prefer_auto_sign_in is not set by RP. However,
-      // even though the bit is set we may not exercise the AutoSignIn flow.
-      // e.g. for sign up flow, multiple accounts, user opt-out etc. In this
-      // case, it's up to the test to expect this mock function call.
+    if (conf.accounts_response == FetchStatus::kSuccess) {
+      if (!prefer_auto_sign_in && !conf.customized_dialog) {
+        // Expects a dialog if prefer_auto_sign_in is not set by RP. However,
+        // even though the bit is set we may not exercise the AutoSignIn flow.
+        // e.g. for sign up flow, multiple accounts, user opt-out etc. In this
+        // case, it's up to the test to expect this mock function call.
+        EXPECT_CALL(*mock_dialog_controller_,
+                    ShowAccountsDialog(_, _, _, _, _, _, _, _))
+            .WillOnce(Invoke(
+                [&](content::WebContents* rp_web_contents,
+                    content::WebContents* idp_web_contents,
+                    const GURL& idp_signin_url,
+                    base::span<const content::IdentityRequestAccount> accounts,
+                    const IdentityProviderMetadata& idp_metadata,
+                    const ClientIdData& client_id_data, SignInMode sign_in_mode,
+                    IdentityRequestDialogController::AccountSelectionCallback
+                        on_selected) {
+                  displayed_accounts_ =
+                      AccountList(accounts.begin(), accounts.end());
+                  std::move(on_selected)
+                      .Run(accounts[0].account_id, /*is_sign_in=*/false);
+                }));
+      }
+    } else {
       EXPECT_CALL(*mock_dialog_controller_,
                   ShowAccountsDialog(_, _, _, _, _, _, _, _))
-          .WillOnce(Invoke(
-              [&](content::WebContents* rp_web_contents,
-                  content::WebContents* idp_web_contents,
-                  const GURL& idp_signin_url,
-                  base::span<const content::IdentityRequestAccount> accounts,
-                  const IdentityProviderMetadata& idp_metadata,
-                  const ClientIdData& client_id_data, SignInMode sign_in_mode,
-                  IdentityRequestDialogController::AccountSelectionCallback
-                      on_selected) {
-                displayed_accounts_ =
-                    AccountList(accounts.begin(), accounts.end());
-                std::move(on_selected)
-                    .Run(accounts[0].account_id, /*is_sign_in=*/false);
-              }));
+          .Times(0);
     }
 
     if (conf.token_response) {
@@ -641,6 +659,9 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                 std::move(callback).Run(*conf.token_response, delivered_token);
               }));
       task_environment()->FastForwardBy(base::Seconds(3));
+    } else {
+      EXPECT_CALL(*mock_request_manager_, SendTokenRequest(_, _, _, _))
+          .Times(0);
     }
   }
 
@@ -655,6 +676,10 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                       callback) {
                 std::move(callback).Run(*test_case.config.initial_permission);
               }));
+    } else {
+      EXPECT_CALL(*mock_dialog_controller_,
+                  ShowInitialPermissionDialog(_, _, _, _))
+          .Times(0);
     }
 
     if (test_case.config.wellknown_fetch_status) {
@@ -670,6 +695,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                 std::move(callback).Run(
                     *test_case.config.wellknown_fetch_status, endpoints);
               }));
+    } else {
+      EXPECT_CALL(*mock_request_manager_, FetchIdpWellKnown(_)).Times(0);
     }
 
     if (test_case.config.client_metadata) {
@@ -686,6 +713,9 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                         test_case.config.client_metadata
                             ->terms_of_service_url});
               }));
+    } else {
+      EXPECT_CALL(*mock_request_manager_, FetchClientIdMetadata(_, _, _))
+          .Times(0);
     }
 
     SetPermissionMockExpectations(test_case.config.Permission_conf,

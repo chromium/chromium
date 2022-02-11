@@ -20,11 +20,4 @@ bool IsSameOriginWithAncestors(RenderFrameHost* host,
   return true;
 }
 
-bool IdpUrlIsValid(const GURL& url) {
-  if (!url.is_valid() || !url.SchemeIs(url::kHttpsScheme))
-    return false;
-
-  return true;
-}
-
 }  // namespace content
