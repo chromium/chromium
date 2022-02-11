@@ -153,7 +153,8 @@ void ElementFinder::Start(const Result& start_element, Callback callback) {
   }
 }
 
-void ElementFinder::UpdateLogInfo(const ClientStatus& status) {
+void ElementFinder::UpdateLogInfo(const Result& result,
+                                  const ClientStatus& status) {
   if (log_info_ == nullptr) {
     return;
   }
@@ -172,10 +173,11 @@ void ElementFinder::UpdateLogInfo(const ClientStatus& status) {
 
   if (selector_.proto.has_semantic_information()) {
     auto* inference_result = info->mutable_semantic_inference_result();
-    for (const auto& node_data : semantic_node_data_) {
+    for (const auto& node_id : semantic_node_results_) {
       auto* predicted_element = inference_result->add_predicted_elements();
       predicted_element->set_matches_css_element(
-          node_data.backend_node_id == result_backend_node_id_.value_or(-1));
+          GlobalBackendNodeId(result.container_frame_host,
+                              result_backend_node_id_.value_or(-1)) == node_id);
     }
   }
 }
@@ -185,7 +187,7 @@ void ElementFinder::SendResult(const ClientStatus& status,
   if (!callback_) {
     return;
   }
-  UpdateLogInfo(status);
+  UpdateLogInfo(result, status);
   std::move(callback_).Run(
       ClientStatus(status.proto_status(), status.details()),
       std::make_unique<Result>(result));
@@ -264,9 +266,10 @@ void ElementFinder::RunAnnotateDomModel() {
   std::vector<content::GlobalRenderFrameHostId> host_ids;
   web_contents_->GetMainFrame()->ForEachRenderFrameHost(
       base::BindRepeating(&AddHostToList, std::ref(host_ids)));
-  const auto run_on_frame = base::BarrierCallback<std::vector<NodeData>>(
-      host_ids.size(), base::BindOnce(&ElementFinder::OnRunAnnotateDomModel,
-                                      weak_ptr_factory_.GetWeakPtr()));
+  const auto run_on_frame =
+      base::BarrierCallback<std::vector<GlobalBackendNodeId>>(
+          host_ids.size(), base::BindOnce(&ElementFinder::OnRunAnnotateDomModel,
+                                          weak_ptr_factory_.GetWeakPtr()));
   for (const auto& host_id : host_ids) {
     RunAnnotateDomModelOnFrame(host_id, run_on_frame);
   }
@@ -274,11 +277,11 @@ void ElementFinder::RunAnnotateDomModel() {
 
 void ElementFinder::RunAnnotateDomModelOnFrame(
     const content::GlobalRenderFrameHostId& host_id,
-    base::OnceCallback<void(std::vector<NodeData>)> callback) {
+    base::OnceCallback<void(std::vector<GlobalBackendNodeId>)> callback) {
   content::RenderFrameHost* render_frame_host =
       content::RenderFrameHost::FromID(host_id);
   if (!render_frame_host) {
-    std::move(callback).Run(std::vector<NodeData>());
+    std::move(callback).Run(std::vector<GlobalBackendNodeId>());
     return;
   }
 
@@ -286,7 +289,7 @@ void ElementFinder::RunAnnotateDomModelOnFrame(
       render_frame_host, annotate_dom_model_service_);
   if (!driver) {
     NOTREACHED();
-    std::move(callback).Run(std::vector<NodeData>());
+    std::move(callback).Run(std::vector<GlobalBackendNodeId>());
     return;
   }
 
@@ -294,21 +297,27 @@ void ElementFinder::RunAnnotateDomModelOnFrame(
       selector_.proto.semantic_information().semantic_role(),
       selector_.proto.semantic_information().objective(),
       base::BindOnce(&ElementFinder::OnRunAnnotateDomModelOnFrame,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), host_id,
+                     std::move(callback)));
 }
 
 void ElementFinder::OnRunAnnotateDomModelOnFrame(
-    base::OnceCallback<void(std::vector<NodeData>)> callback,
+    const content::GlobalRenderFrameHostId& host_id,
+    base::OnceCallback<void(std::vector<GlobalBackendNodeId>)> callback,
     bool success,
     const std::vector<NodeData>& node_data) {
-  std::move(callback).Run(node_data);
+  std::vector<GlobalBackendNodeId> node_ids;
+  for (const auto& node : node_data) {
+    node_ids.emplace_back(GlobalBackendNodeId(host_id, node.backend_node_id));
+  }
+  std::move(callback).Run(node_ids);
 }
 
 void ElementFinder::OnRunAnnotateDomModel(
-    const std::vector<std::vector<NodeData>>& all_node_data) {
-  for (const auto& node_data : all_node_data) {
-    semantic_node_data_.insert(semantic_node_data_.end(), node_data.begin(),
-                               node_data.end());
+    const std::vector<std::vector<GlobalBackendNodeId>>& all_nodes) {
+  for (const auto& node_ids : all_nodes) {
+    semantic_node_results_.insert(semantic_node_results_.end(),
+                                  node_ids.begin(), node_ids.end());
   }
   semantic_result_done_ = true;
   SendCollectedResultIfAny();

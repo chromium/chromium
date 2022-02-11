@@ -112,7 +112,7 @@ class ElementFinder : public WebControllerWorker {
 
  private:
   // Update the log info with details about the current run.
-  void UpdateLogInfo(const ClientStatus& status);
+  void UpdateLogInfo(const Result& result, const ClientStatus& status);
 
   // Eventually returns the given status and no element. This expects an error
   // status.
@@ -275,13 +275,14 @@ class ElementFinder : public WebControllerWorker {
   void RunAnnotateDomModel();
   void RunAnnotateDomModelOnFrame(
       const content::GlobalRenderFrameHostId& host_id,
-      base::OnceCallback<void(std::vector<NodeData>)> callback);
+      base::OnceCallback<void(std::vector<GlobalBackendNodeId>)> callback);
   void OnRunAnnotateDomModelOnFrame(
-      base::OnceCallback<void(std::vector<NodeData>)> callback,
+      const content::GlobalRenderFrameHostId& host_id,
+      base::OnceCallback<void(std::vector<GlobalBackendNodeId>)> callback,
       bool success,
       const std::vector<NodeData>& node_data);
   void OnRunAnnotateDomModel(
-      const std::vector<std::vector<NodeData>>& all_node_data);
+      const std::vector<std::vector<GlobalBackendNodeId>>& all_nodes);
 
   const raw_ptr<content::WebContents> web_contents_;
   const raw_ptr<DevtoolsClient> devtools_client_;
@@ -346,7 +347,7 @@ class ElementFinder : public WebControllerWorker {
 
   // Elements gathered through all frames. Unused if the |selector_| does not
   // contain |SemanticInformation|.
-  std::vector<NodeData> semantic_node_data_;
+  std::vector<GlobalBackendNodeId> semantic_node_results_;
   bool semantic_result_done_ = false;
 
   // Finder for the target of the current proximity filter.

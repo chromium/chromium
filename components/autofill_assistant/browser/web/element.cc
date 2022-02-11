@@ -15,6 +15,37 @@ DomObjectFrameStack::~DomObjectFrameStack() = default;
 
 DomObjectFrameStack::DomObjectFrameStack(const DomObjectFrameStack&) = default;
 
+GlobalBackendNodeId::GlobalBackendNodeId(
+    content::RenderFrameHost* render_frame_host,
+    int backend_node_id)
+    : backend_node_id_(backend_node_id) {
+  if (render_frame_host) {
+    host_id_ = render_frame_host->GetGlobalId();
+  }
+}
+
+GlobalBackendNodeId::GlobalBackendNodeId(
+    content::GlobalRenderFrameHostId host_id,
+    int backend_node_id)
+    : host_id_(host_id), backend_node_id_(backend_node_id) {}
+
+GlobalBackendNodeId::~GlobalBackendNodeId() = default;
+
+GlobalBackendNodeId::GlobalBackendNodeId(const GlobalBackendNodeId&) = default;
+
+bool GlobalBackendNodeId::operator==(const GlobalBackendNodeId& other) const {
+  return host_id_ == other.host_id_ &&
+         backend_node_id_ == other.backend_node_id_;
+}
+
+content::GlobalRenderFrameHostId GlobalBackendNodeId::host_id() const {
+  return host_id_;
+}
+
+int GlobalBackendNodeId::backend_node_id() const {
+  return backend_node_id_;
+}
+
 content::RenderFrameHost* FindCorrespondingRenderFrameHost(
     const std::string& frame_id,
     content::WebContents* web_contents) {
