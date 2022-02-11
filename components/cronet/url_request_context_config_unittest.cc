@@ -371,8 +371,9 @@ TEST(URLRequestContextConfigTest, SetSupportedQuicVersionByAlpn) {
       base::test::TaskEnvironment::MainThreadType::IO);
 
   quic::ParsedQuicVersion version = quic::AllSupportedVersions().front();
-  std::string experimental_options =
-      "{\"QUIC\":{\"quic_version\":\"" + quic::AlpnForVersion(version) + "\"}}";
+  std::string experimental_options = "{\"QUIC\":{\"quic_version\":\"" +
+                                     quic::ParsedQuicVersionToString(version) +
+                                     "\"}}";
 
   std::unique_ptr<URLRequestContextConfig> config =
       URLRequestContextConfig::CreateURLRequestContextConfig(
@@ -501,7 +502,9 @@ TEST(URLRequestContextConfigTest, SetObsoleteQuicVersion) {
           "fake agent",
           // JSON encoded experimental options.
           std::string("{\"QUIC\":{\"quic_version\":\"") +
-              quic::AlpnForVersion(net::ObsoleteQuicVersions().back()) + "\"}}",
+              quic::ParsedQuicVersionToString(
+                  net::ObsoleteQuicVersions().back()) +
+              "\"}}",
           // MockCertVerifier to use for testing purposes.
           std::unique_ptr<net::CertVerifier>(),
           // Enable network quality estimator.
@@ -554,7 +557,8 @@ TEST(URLRequestContextConfigTest, SetObsoleteQuicVersionWhenAllowed) {
           "fake agent",
           // JSON encoded experimental options.
           std::string("{\"QUIC\":{\"quic_version\":\"") +
-              quic::AlpnForVersion(net::ObsoleteQuicVersions().back()) +
+              quic::ParsedQuicVersionToString(
+                  net::ObsoleteQuicVersions().back()) +
               "\",\"obsolete_versions_allowed\":true}}",
           // MockCertVerifier to use for testing purposes.
           std::unique_ptr<net::CertVerifier>(),

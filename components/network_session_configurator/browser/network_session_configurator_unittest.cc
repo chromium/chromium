@@ -154,7 +154,7 @@ TEST_F(NetworkSessionConfiguratorTest, ValidQuicParams) {
   field_trial_params["enable_quic"] = "true";
   field_trial_params["channel"] = "T";
   field_trial_params["epoch"] = "90001234";  // Epoch in the far future.
-  field_trial_params["quic_version"] = quic::AlpnForVersion(version);
+  field_trial_params["quic_version"] = quic::ParsedQuicVersionToString(version);
   variations::AssociateVariationParams("QUIC", "ValidQuicParams",
                                        field_trial_params);
   base::FieldTrialList::CreateFieldTrial("QUIC", "ValidQuicParams");
@@ -173,7 +173,7 @@ TEST_F(NetworkSessionConfiguratorTest, InvalidQuicParams) {
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["enable_quic"] = "true";
   // These params are missing channel and epoch.
-  field_trial_params["quic_version"] = quic::AlpnForVersion(version);
+  field_trial_params["quic_version"] = quic::ParsedQuicVersionToString(version);
   variations::AssociateVariationParams("QUIC", "InvalidQuicParams",
                                        field_trial_params);
   base::FieldTrialList::CreateFieldTrial("QUIC", "InvalidQuicParams");
@@ -537,7 +537,7 @@ TEST_F(NetworkSessionConfiguratorTest, QuicVersionFromFieldTrialParams) {
 TEST_F(NetworkSessionConfiguratorTest, QuicVersionFromFieldTrialParamsAlpn) {
   quic::ParsedQuicVersion version = quic::AllSupportedVersions().front();
   std::map<std::string, std::string> field_trial_params;
-  field_trial_params["quic_version"] = quic::AlpnForVersion(version);
+  field_trial_params["quic_version"] = quic::ParsedQuicVersionToString(version);
   variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
   base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
 
@@ -552,8 +552,8 @@ TEST_F(NetworkSessionConfiguratorTest,
   ASSERT_LE(2u, quic::AllSupportedVersions().size());
   quic::ParsedQuicVersion version1 = quic::AllSupportedVersions()[0];
   quic::ParsedQuicVersion version2 = quic::AllSupportedVersions()[1];
-  std::string quic_versions =
-      quic::AlpnForVersion(version1) + "," + quic::AlpnForVersion(version2);
+  std::string quic_versions = quic::ParsedQuicVersionToString(version1) + "," +
+                              quic::ParsedQuicVersionToString(version2);
 
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["quic_version"] = quic_versions;
@@ -937,7 +937,7 @@ TEST_P(NetworkSessionConfiguratorWithQuicVersionTest, QuicVersionAlpn) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitch(switches::kEnableQuic);
   command_line.AppendSwitchASCII(switches::kQuicVersion,
-                                 quic::AlpnForVersion(version_));
+                                 quic::ParsedQuicVersionToString(version_));
   ParseCommandLineAndFieldTrials(command_line);
   quic::ParsedQuicVersionVector expected_versions = {version_};
   EXPECT_EQ(expected_versions, quic_params_.supported_versions);
@@ -978,8 +978,8 @@ TEST_P(NetworkSessionConfiguratorWithQuicVersionTest,
     // ObsoleteQuicVersion tests.
     return;
   }
-  std::string quic_versions =
-      quic::AlpnForVersion(version_) + "," + quic::AlpnForVersion(version_);
+  std::string quic_versions = quic::ParsedQuicVersionToString(version_) + "," +
+                              quic::ParsedQuicVersionToString(version_);
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["quic_version"] = quic_versions;
   variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
@@ -997,7 +997,7 @@ TEST_P(NetworkSessionConfiguratorWithQuicVersionTest, ObsoleteQuicVersion) {
     // Only test obsolete versions here.
     return;
   }
-  std::string quic_versions = quic::AlpnForVersion(version_);
+  std::string quic_versions = quic::ParsedQuicVersionToString(version_);
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["quic_version"] = quic_versions;
   variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
@@ -1016,7 +1016,7 @@ TEST_P(NetworkSessionConfiguratorWithQuicVersionTest,
     // Only test obsolete versions here.
     return;
   }
-  std::string quic_versions = quic::AlpnForVersion(version_);
+  std::string quic_versions = quic::ParsedQuicVersionToString(version_);
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["quic_version"] = quic_versions;
   field_trial_params["obsolete_versions_allowed"] = "true";
@@ -1038,8 +1038,8 @@ TEST_P(NetworkSessionConfiguratorWithQuicVersionTest,
     return;
   }
   quic::ParsedQuicVersion good_version = quic::AllSupportedVersions().front();
-  std::string quic_versions =
-      quic::AlpnForVersion(version_) + "," + quic::AlpnForVersion(good_version);
+  std::string quic_versions = quic::ParsedQuicVersionToString(version_) + "," +
+                              quic::ParsedQuicVersionToString(good_version);
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["quic_version"] = quic_versions;
   variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
@@ -1060,8 +1060,8 @@ TEST_P(NetworkSessionConfiguratorWithQuicVersionTest,
     return;
   }
   quic::ParsedQuicVersion good_version = quic::AllSupportedVersions().front();
-  std::string quic_versions =
-      quic::AlpnForVersion(version_) + "," + quic::AlpnForVersion(good_version);
+  std::string quic_versions = quic::ParsedQuicVersionToString(version_) + "," +
+                              quic::ParsedQuicVersionToString(good_version);
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["quic_version"] = quic_versions;
   field_trial_params["obsolete_versions_allowed"] = "true";

@@ -2989,6 +2989,10 @@ TEST_F(HttpServerPropertiesManagerTest,
 
 TEST_F(HttpServerPropertiesManagerTest, AdvertisedVersionsRoundTrip) {
   for (const quic::ParsedQuicVersion& version : quic::AllSupportedVersions()) {
+    if (version.AlpnDeferToRFCv1()) {
+      // These versions currently do not support Alt-Svc.
+      continue;
+    }
     // Reset test infrastructure.
     TearDown();
     SetUp();
