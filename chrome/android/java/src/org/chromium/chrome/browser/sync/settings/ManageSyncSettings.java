@@ -118,7 +118,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     @VisibleForTesting
     public static final String PREF_ENCRYPTION = "encryption";
     @VisibleForTesting
-    public static final String PREF_SYNC_MANAGE_DATA = "sync_manage_data";
+    public static final String PREF_SYNC_REVIEW_DATA = "sync_review_data";
     @VisibleForTesting
     public static final String PREF_SEARCH_AND_BROWSE_CATEGORY = "search_and_browse_category";
 
@@ -148,7 +148,7 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
     private Preference mTurnOffSync;
     private Preference mGoogleActivityControls;
     private Preference mSyncEncryption;
-    private Preference mManageSyncData;
+    private Preference mReviewSyncData;
 
     private PreferenceCategory mSearchAndBrowseCategory;
     private ChromeSwitchPreference mUrlKeyedAnonymizedData;
@@ -221,8 +221,8 @@ public class ManageSyncSettings extends PreferenceFragmentCompat
         mSyncEncryption = findPreference(PREF_ENCRYPTION);
         mSyncEncryption.setOnPreferenceClickListener(
                 SyncSettingsUtils.toOnClickListener(this, this::onSyncEncryptionClicked));
-        mManageSyncData = findPreference(PREF_SYNC_MANAGE_DATA);
-        mManageSyncData.setOnPreferenceClickListener(SyncSettingsUtils.toOnClickListener(
+        mReviewSyncData = findPreference(PREF_SYNC_REVIEW_DATA);
+        mReviewSyncData.setOnPreferenceClickListener(SyncSettingsUtils.toOnClickListener(
                 this, () -> SyncSettingsUtils.openSyncDashboard(getActivity())));
 
         mSyncTypePreferences =

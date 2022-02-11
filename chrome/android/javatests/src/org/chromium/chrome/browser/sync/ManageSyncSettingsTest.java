@@ -656,8 +656,8 @@ public class ManageSyncSettingsTest {
         return fragment.findPreference(ManageSyncSettings.PREF_ENCRYPTION);
     }
 
-    private Preference getManageData(ManageSyncSettings fragment) {
-        return fragment.findPreference(ManageSyncSettings.PREF_SYNC_MANAGE_DATA);
+    private Preference getReviewData(ManageSyncSettings fragment) {
+        return fragment.findPreference(ManageSyncSettings.PREF_SYNC_REVIEW_DATA);
     }
 
     private PassphraseDialogFragment getPassphraseDialogFragment() {
@@ -689,8 +689,8 @@ public class ManageSyncSettingsTest {
                 getGoogleActivityControls(fragment).isEnabled());
         Assert.assertTrue("The encryption button should always be enabled.",
                 getEncryption(fragment).isEnabled());
-        Assert.assertTrue("The manage sync data button should be always enabled.",
-                getManageData(fragment).isEnabled());
+        Assert.assertTrue("The review your synced data button should be always enabled.",
+                getReviewData(fragment).isEnabled());
     }
 
     private void assertChosenDataTypesAre(final Set<Integer> enabledDataTypes) {

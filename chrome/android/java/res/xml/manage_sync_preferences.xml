@@ -77,8 +77,8 @@
         android:title="@string/sync_encryption"/>
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:key="sync_manage_data"
-        android:title="@string/sync_manage_data"/>
+        android:key="sync_review_data"
+        android:title="@string/sync_review_data"/>
 
     <!-- This category is only shown for advanced sync consent flow. -->
     <PreferenceCategory
