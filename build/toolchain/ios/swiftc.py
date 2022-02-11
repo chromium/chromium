@@ -107,6 +107,12 @@ def compile_module(module, sources, settings, extras, tmpdir):
           system_framework_dir,
       ])
 
+  if settings.enable_cxx_interop:
+    extra_args.extend([
+        '-Xfrontend',
+        '-enable-cxx-interop',
+    ])
+
   process = subprocess.Popen([
       'swiftc',
       '-parse-as-library',
@@ -226,6 +232,10 @@ def main(args):
                       action='store',
                       required=True,
                       help='path to the root of the repository')
+  parser.add_argument('-enable-cxx-interop',
+                      dest='enable_cxx_interop',
+                      action='store_true',
+                      help='allow importing C++ modules into Swift')
 
   parsed, extras = parser.parse_known_args(args)
   with tempfile.TemporaryDirectory() as tmpdir:
