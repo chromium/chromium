@@ -3506,21 +3506,6 @@
             ]
         }
     ],
-    "IOSUMABackgroundSessions": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSUMABackgroundSessions"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSUseUserDefaultsForExitedCleanlyBeacon": [
         {
             "platforms": [

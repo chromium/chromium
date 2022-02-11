@@ -115,10 +115,6 @@ void BindNetworkChangeManagerReceiver(
   network_change_manager->AddReceiver(std::move(receiver));
 }
 
-// If enabled, keep logging and reporting UMA while chrome is backgrounded.
-const base::Feature kUmaBackgroundSessions{"IOSUMABackgroundSessions",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
-
 }  // namespace
 
 ApplicationContextImpl::ApplicationContextImpl(
@@ -283,9 +279,8 @@ void ApplicationContextImpl::OnAppEnterBackground() {
   // Tell the metrics services they were cleanly shutdown.
   metrics::MetricsService* metrics_service = GetMetricsService();
   if (metrics_service) {
-    const bool keep_reporting =
-        base::FeatureList::IsEnabled(kUmaBackgroundSessions);
-    metrics_service->OnAppEnterBackground(keep_reporting);
+    metrics_service->OnAppEnterBackground(
+        /*keep_recording_in_background=*/true);
   }
   ukm::UkmService* ukm_service = GetMetricsServicesManager()->GetUkmService();
   if (ukm_service)
