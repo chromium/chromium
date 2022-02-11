@@ -2,4 +2,4 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-cart_v2_test_files = [ "modules/cart_v2/module_test.js" ]
+cart_v2_test_files = [ "modules/cart_v2/module_test.ts" ]

@@ -334,6 +334,18 @@ var NewTabPageModulesChromeCartV2ModuleTest =
   }
 };
 
+// https://crbug.com/1227564: Flaky on Chrome OS.
+GEN('#if BUILDFLAG(IS_CHROMEOS)');
+GEN('#define MAYBE_All DISABLED_All');
+GEN('#else');
+GEN('#define MAYBE_All All');
+GEN('#endif');
+
+TEST_F('NewTabPageModulesChromeCartV2ModuleTest', 'MAYBE_All', function() {
+  mocha.run();
+});
+GEN('#undef MAYBE_All');
+
 GEN('#if !defined(OFFICIAL_BUILD)');
 
 var NewTabPageModulesPhotosModuleTest = class extends NewTabPageBrowserTest {
@@ -348,14 +360,3 @@ TEST_F('NewTabPageModulesPhotosModuleTest', 'All', function() {
 });
 
 GEN('#endif  // !defined(OFFICIAL_BUILD)');
-
-// https://crbug.com/1227564: Flaky on Chrome OS.
-GEN('#if BUILDFLAG(IS_CHROMEOS)');
-GEN('#define MAYBE_All DISABLED_All');
-GEN('#else');
-GEN('#define MAYBE_All All');
-GEN('#endif');
-
-TEST_F('NewTabPageModulesChromeCartV2ModuleTest', 'MAYBE_All', function() {
-  mocha.run();
-});

@@ -11,8 +11,9 @@ import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomIf, DomRepeat, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MerchantCart} from '../../chrome_cart.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
@@ -21,13 +22,22 @@ import {ModuleDescriptorV2, ModuleHeight} from '../module_descriptor.js';
 
 import {getTemplate} from './module.html.js';
 
-interface ChromeCartModuleElement {
+export interface ChromeCartModuleElement {
   $: {
     cartActionMenu: CrActionMenuElement,
     cartCarousel: HTMLElement,
     cartItemRepeat: DomRepeat,
+    confirmDiscountConsentButton: HTMLElement,
     confirmDiscountConsentToast: CrToastElement,
+    confirmDiscountConsentMessage: HTMLElement,
+    consentCardElement: DomIf,
     dismissCartToast: CrToastElement,
+    dismissCartToastMessage: HTMLElement,
+    hideCartButton: HTMLElement,
+    leftScrollButton: CrIconButtonElement,
+    removeCartButton: HTMLElement,
+    rightScrollButton: CrIconButtonElement,
+    undoDismissCartButton: HTMLElement,
   };
 }
 
@@ -35,7 +45,7 @@ interface ChromeCartModuleElement {
  * Implements the UI of chrome cart module. This module shows pending carts for
  * users on merchant sites so that users can resume shopping journey.
  */
-class ChromeCartModuleElement extends I18nMixin
+export class ChromeCartModuleElement extends I18nMixin
 (PolymerElement) {
   static get is() {
     return 'ntp-modules-redesigned';
@@ -75,6 +85,7 @@ class ChromeCartModuleElement extends I18nMixin
   headerChipText: string;
   headerDescriptionText: string;
   showDiscountConsent: boolean;
+  scrollBehavior: ScrollBehavior = 'smooth';
   private showLeftScrollButton_: boolean;
   private showRightScrollButton_: boolean;
   private cartMenuHideItem_: string;
@@ -84,7 +95,6 @@ class ChromeCartModuleElement extends I18nMixin
   private confirmDiscountConsentString_: string;
 
   private intersectionObserver_: IntersectionObserver|null = null;
-  private scrollBehavior: ScrollBehavior = 'smooth';
   private currentMenuIndex_: number = 0;
 
   connectedCallback() {
