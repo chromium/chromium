@@ -130,18 +130,16 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, SomeFilesZip) {
   zip::ZipReader reader;
   ASSERT_TRUE(reader.Open(zip_archive_path()));
   EXPECT_EQ(3, reader.num_entries());
-  while (reader.HasMore()) {
-    ASSERT_TRUE(reader.OpenCurrentEntryInZip());
-    const zip::ZipReader::EntryInfo* entry = reader.current_entry_info();
+  while (const zip::ZipReader::Entry* const entry = reader.Next()) {
     // ZipReader returns directory path with trailing slash.
-    if (entry->file_path() == kDir1.AsEndingWithSeparator()) {
-      EXPECT_TRUE(entry->is_directory());
-    } else if (entry->file_path() == kFile1) {
-      EXPECT_FALSE(entry->is_directory());
-      EXPECT_EQ(3, entry->original_size());
-    } else if (entry->file_path() == kFile2) {
-      EXPECT_FALSE(entry->is_directory());
-      EXPECT_EQ(kRandomDataSize, entry->original_size());
+    if (entry->path == kDir1.AsEndingWithSeparator()) {
+      EXPECT_TRUE(entry->is_directory);
+    } else if (entry->path == kFile1) {
+      EXPECT_FALSE(entry->is_directory);
+      EXPECT_EQ(3, entry->original_size);
+    } else if (entry->path == kFile2) {
+      EXPECT_FALSE(entry->is_directory);
+      EXPECT_EQ(kRandomDataSize, entry->original_size);
 
       const base::FilePath out = dir_.GetPath().AppendASCII("archived_content");
       zip::FilePathWriterDelegate writer(out);
@@ -151,8 +149,8 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, SomeFilesZip) {
     } else {
       ADD_FAILURE();
     }
-    ASSERT_TRUE(reader.AdvanceToNextEntry());
   }
+  EXPECT_TRUE(reader.ok());
 }
 
 IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, Cancellation) {
@@ -237,18 +235,15 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, DISABLED_BigFile) {
   // Check the archive content.
   zip::ZipReader reader;
   ASSERT_TRUE(reader.Open(zip_archive_path()));
-  while (reader.HasMore()) {
-    ASSERT_TRUE(reader.OpenCurrentEntryInZip());
-    const zip::ZipReader::EntryInfo* entry = reader.current_entry_info();
-    if (entry->file_path() == kFile) {
-      EXPECT_FALSE(entry->is_directory());
-      EXPECT_EQ(kSize, entry->original_size());
+  while (const zip::ZipReader::Entry* const entry = reader.Next()) {
+    if (entry->path == kFile) {
+      EXPECT_FALSE(entry->is_directory);
+      EXPECT_EQ(kSize, entry->original_size);
     } else {
       ADD_FAILURE();
     }
-
-    ASSERT_TRUE(reader.AdvanceToNextEntry());
   }
+  EXPECT_TRUE(reader.ok());
 }
 
 IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, ZipDirectoryWithManyFiles) {
@@ -333,21 +328,17 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, ZipDirectoryWithManyFiles) {
   ASSERT_TRUE(reader.Open(zip_archive_path()));
   EXPECT_EQ(file_tree_content.size(),
             static_cast<size_t>(reader.num_entries()));
-  while (reader.HasMore()) {
-    ASSERT_TRUE(reader.OpenCurrentEntryInZip());
-    const zip::ZipReader::EntryInfo* entry = reader.current_entry_info();
-
-    base::FilePath path(entry->file_path());
-    path = path.StripTrailingSeparators();
+  while (const zip::ZipReader::Entry* const entry = reader.Next()) {
+    base::FilePath path = entry->path.StripTrailingSeparators();
     auto iter = file_tree_content.find(path);
     ASSERT_NE(iter, file_tree_content.end())
-        << "Path not found in unzipped archive: " << path.value();
+        << "Path not found in unzipped archive: " << path;
     const std::string& expected_content = iter->second;
     if (expected_content.empty()) {
-      EXPECT_TRUE(entry->is_directory());
+      EXPECT_TRUE(entry->is_directory);
     } else {
       // It's a file.
-      EXPECT_FALSE(entry->is_directory());
+      EXPECT_FALSE(entry->is_directory);
       std::string actual_content;
       EXPECT_TRUE(reader.ExtractCurrentEntryToString(
           10 * 1024,  // 10KB, any of our test data is less than that.
@@ -355,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(ZipFileCreatorTest, ZipDirectoryWithManyFiles) {
       EXPECT_EQ(expected_content, actual_content);
     }
     file_tree_content.erase(iter);
-    ASSERT_TRUE(reader.AdvanceToNextEntry());
   }
+  EXPECT_TRUE(reader.ok());
   EXPECT_TRUE(file_tree_content.empty());
 }
