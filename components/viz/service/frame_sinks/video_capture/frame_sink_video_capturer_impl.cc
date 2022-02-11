@@ -978,16 +978,13 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
   }
 
   if (frame) {
-    gfx::Rect sub_region = properties.capture_rect;
-    // In some cases, the content_rect is smaller than the capture_rect.
-    sub_region.ClampToCenteredSize(content_rect.size());
-
     if (pixel_format_ != media::PIXEL_FORMAT_NV12) {
       // TODO(bialpio): implement overlays for NV12!
       auto overlay_renderer = VideoCaptureOverlay::MakeCombinedRenderer(
           GetOverlaysInOrder(),
           VideoCaptureOverlay::CapturedFrameProperties{
-              properties.active_frame_rect, sub_region, frame->format()});
+              properties.active_frame_rect, properties.capture_rect,
+              content_rect, frame->format()});
       if (overlay_renderer) {
         std::move(overlay_renderer).Run(frame.get());
       }
