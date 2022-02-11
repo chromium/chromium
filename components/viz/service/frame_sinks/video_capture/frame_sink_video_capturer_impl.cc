@@ -820,6 +820,10 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
     return;
 
   DCHECK(capture_region.size() == source_size);
+  if (absl::holds_alternative<RegionCaptureCropId>(target_->sub_target)) {
+    metadata.region_capture_rect = capture_region;
+  }
+
   CaptureRequestProperties request_properties(
       capture_frame_number, oracle_frame_number, content_version_, content_rect,
       capture_region, compositor_frame_region, std::move(frame),

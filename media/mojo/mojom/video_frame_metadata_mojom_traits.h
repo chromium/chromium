@@ -97,6 +97,11 @@ struct StructTraits<media::mojom::VideoFrameMetadataDataView,
     return input.capture_update_rect;
   }
 
+  static absl::optional<gfx::Rect> region_capture_rect(
+      const media::VideoFrameMetadata& input) {
+    return input.region_capture_rect;
+  }
+
   static absl::optional<base::UnguessableToken> overlay_plane_id(
       const media::VideoFrameMetadata& input) {
     return input.overlay_plane_id;

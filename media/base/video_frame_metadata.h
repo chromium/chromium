@@ -73,6 +73,11 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // fully contained within visible_rect().
   absl::optional<gfx::Rect> capture_update_rect;
 
+  // If cropping was applied due to Region Capture to produce this frame,
+  // then this reflects where the frame's contents originate from in the
+  // original uncropped frame.
+  absl::optional<gfx::Rect> region_capture_rect;
+
   // If not null, it indicates how video frame mailbox should be copied to a
   // new mailbox.
   absl::optional<CopyMode> copy_mode;
