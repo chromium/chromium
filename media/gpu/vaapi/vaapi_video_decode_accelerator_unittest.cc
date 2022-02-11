@@ -422,9 +422,16 @@ TEST_P(VaapiVideoDecodeAcceleratorTest, SupportedPlatforms) {
                 gl::kGLImplementationEGLGLES2));
 
 #if BUILDFLAG(USE_VAAPI_X11)
+  EXPECT_EQ(VaapiPictureFactory::kVaapiImplementationAngle,
+            mock_vaapi_picture_factory_->GetVaapiImplementation(
+                gl::kGLImplementationEGLANGLE));
   EXPECT_EQ(VaapiPictureFactory::kVaapiImplementationX11,
             mock_vaapi_picture_factory_->GetVaapiImplementation(
                 gl::kGLImplementationDesktopGL));
+#elif defined(USE_OZONE)
+  EXPECT_EQ(VaapiPictureFactory::kVaapiImplementationDrm,
+            mock_vaapi_picture_factory_->GetVaapiImplementation(
+                gl::kGLImplementationEGLANGLE));
 #endif
 }
 
