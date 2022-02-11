@@ -113,6 +113,8 @@ enum SearchResultType {
   HELP_APP_DISCOVER,
   // A keyboard shortcut result from the Keyboard Shortcut provider.
   KEYBOARD_SHORTCUT,
+  // A keyboard shortcut result from the Keyboard Shortcut provider.
+  OPEN_TAB,
   // Boundary is always last.
   SEARCH_RESULT_TYPE_BOUNDARY
 };

@@ -46,6 +46,7 @@ class ChromeSearchResult {
   using IconShape = ash::SearchResultIconShape;
   using TextItem = ash::SearchResultTextItem;
   using TextVector = std::vector<TextItem>;
+  using TextType = ash::SearchResultTextItemType;
 
   ChromeSearchResult();
 

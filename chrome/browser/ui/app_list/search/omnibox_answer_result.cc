@@ -175,7 +175,6 @@ void OmniboxAnswerResult::UpdateIcon() {
     SetIcon(CreateAnswerIconInfo(
         AutocompleteMatch::AnswerTypeToAnswerIcon(match_.answer->type())));
   }
-  return;
 }
 
 void OmniboxAnswerResult::UpdateTitleAndDetails() {

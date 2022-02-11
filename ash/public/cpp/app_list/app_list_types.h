@@ -287,8 +287,9 @@ enum class AppListSearchResultType {
   kFileSearch,             // Local file search results.
   kDriveSearch,            // Drive file search results.
   kKeyboardShortcut,       // Keyboard shortcut search results.
+  kOpenTab,                // Open tab search results.
   // Add new values here.
-  kMaxValue = kKeyboardShortcut,
+  kMaxValue = kOpenTab,
 };
 
 ASH_PUBLIC_EXPORT bool IsAppListSearchResultAnApp(

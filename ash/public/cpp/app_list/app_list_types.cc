@@ -39,6 +39,7 @@ bool IsAppListSearchResultAnApp(AppListSearchResultType result_type) {
     case AppListSearchResultType::kFileSearch:
     case AppListSearchResultType::kDriveSearch:
     case AppListSearchResultType::kKeyboardShortcut:
+    case AppListSearchResultType::kOpenTab:
       return false;
   }
 }

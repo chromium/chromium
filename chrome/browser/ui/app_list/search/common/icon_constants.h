@@ -5,12 +5,16 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_COMMON_ICON_CONSTANTS_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_COMMON_ICON_CONSTANTS_H_
 
+#include "ui/gfx/color_palette.h"
+
 namespace app_list {
 
 // Result icon dimension constants.
 constexpr int kFaviconDimension = 18;
 constexpr int kThumbnailDimension = 28;
 constexpr int kSystemIconDimension = 20;
+
+constexpr SkColor kOmniboxGenericIconColor = gfx::kGoogleGrey700;
 
 // The following dimensions depend on whether the productivity launcher is
 // enabled or not.

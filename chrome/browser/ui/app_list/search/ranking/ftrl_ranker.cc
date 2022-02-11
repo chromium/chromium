@@ -36,6 +36,7 @@ Category ResultTypeToCategory(ResultType result_type) {
       return Category::kAppShortcuts;
     case ResultType::kOmnibox:
     case ResultType::kAnswerCard:
+    case ResultType::kOpenTab:
       return Category::kWeb;
     case ResultType::kZeroStateFile:
     case ResultType::kZeroStateDrive:
