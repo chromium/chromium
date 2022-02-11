@@ -89,6 +89,7 @@ inspector_protocol_generate("protocol_sources") {
   config_file = "protocol_config.json"
   protocol_path = rebase_path(_concatenated_protocol_path, root_build_dir)
   config_values = [ "protocol.path=$protocol_path" ]
+  use_embedder_types = true
 
   inputs = [
     _concatenated_protocol_path,
@@ -101,8 +102,6 @@ inspector_protocol_generate("protocol_sources") {
     "protocol/audits.h",
     "protocol/background_service.cc",
     "protocol/background_service.h",
-    "protocol/base_string_adapter.cc",
-    "protocol/base_string_adapter.h",
     "protocol/browser.cc",
     "protocol/browser.h",
     "protocol/dom.cc",
@@ -128,7 +127,6 @@ inspector_protocol_generate("protocol_sources") {
     "protocol/overlay.h",
     "protocol/page.cc",
     "protocol/page.h",
-    "protocol/protocol.cc",
     "protocol/protocol.h",
     "protocol/runtime.cc",
     "protocol/runtime.h",

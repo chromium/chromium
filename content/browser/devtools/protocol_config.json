@@ -128,7 +128,7 @@
     "lib": {
         "package": "content/browser/devtools/protocol",
         "output": "protocol",
-        "string_header": "content/browser/devtools/protocol/base_string_adapter.h",
+        "protocol_traits": "third_party/inspector_protocol/crdtp/chromium/protocol_traits.h",
         "export_macro": "CONTENT_EXPORT",
         "export_header": "content/common/content_export.h"
     },

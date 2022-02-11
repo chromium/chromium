@@ -7,15 +7,15 @@ Runtime agent enabled
 Request Intercepted: simple-iframe.html
   responseStatusCode: 200
   responseHeaders:
-    Date: <Masked>
-    Server: <Masked>
-    Last-Modified: <Masked>
-    ETag: <Masked>
     Accept-Ranges: bytes
-    Content-Length: 39
-    Keep-Alive: <Masked>
     Connection: Keep-Alive
+    Content-Length: 39
     Content-Type: text/html
+    Date: <Masked>
+    ETag: <Masked>
+    Keep-Alive: <Masked>
+    Last-Modified: <Masked>
+    Server: <Masked>
   responseBody:
 <html>
 <body>hello world</body>

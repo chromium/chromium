@@ -70,39 +70,37 @@ static constexpr int kGPUInfoWatchdogTimeoutMs =
 
 class AuxGPUInfoEnumerator : public gpu::GPUInfo::Enumerator {
  public:
-  AuxGPUInfoEnumerator(protocol::DictionaryValue* dictionary)
-      : dictionary_(dictionary),
-        in_aux_attributes_(false) { }
+  explicit AuxGPUInfoEnumerator(
+      base::flat_map<std::string, base::Value>* dictionary)
+      : dictionary_(*dictionary) {}
+
+ private:
+  template <typename T>
+  void MaybeSetAuxAttribute(const char* name, T value) {
+    if (in_aux_attributes_)
+      dictionary_[name] = base::Value(value);
+  }
 
   void AddInt64(const char* name, int64_t value) override {
-    if (in_aux_attributes_)
-      dictionary_->setDouble(name, value);
+    AddInt(name, value);
   }
-
   void AddInt(const char* name, int value) override {
-    if (in_aux_attributes_)
-      dictionary_->setInteger(name, value);
+    MaybeSetAuxAttribute(name, value);
   }
-
   void AddString(const char* name, const std::string& value) override {
-    if (in_aux_attributes_)
-      dictionary_->setString(name, value);
+    MaybeSetAuxAttribute(name, value);
   }
-
   void AddBool(const char* name, bool value) override {
-    if (in_aux_attributes_)
-      dictionary_->setBoolean(name, value);
+    MaybeSetAuxAttribute(name, value);
   }
-
   void AddTimeDeltaInSecondsF(const char* name,
                               const base::TimeDelta& value) override {
-    if (in_aux_attributes_)
-      dictionary_->setDouble(name, value.InSecondsF());
+    MaybeSetAuxAttribute(name, value.InSecondsF());
   }
 
   void AddBinary(const char* name,
                  const base::span<const uint8_t>& value) override {
-    // TODO(penghuang): send vulkan info to devtool
+    // TODO(penghuang): send vulkan info to DevTools.
   }
 
   void BeginGPUDevice() override {}
@@ -133,9 +131,8 @@ class AuxGPUInfoEnumerator : public gpu::GPUInfo::Enumerator {
     in_aux_attributes_ = false;
   }
 
- private:
-  protocol::DictionaryValue* dictionary_;
-  bool in_aux_attributes_;
+  protocol::DictionaryValue& dictionary_;
+  bool in_aux_attributes_ = false;
 };
 
 std::unique_ptr<GPUDevice> GPUDeviceToProtocol(
@@ -230,19 +227,18 @@ void SendGetInfoResponse(std::unique_ptr<GetInfoCallback> callback) {
       continue;
     devices->emplace_back(GPUDeviceToProtocol(gpu_info.secondary_gpus[i]));
   }
-  std::unique_ptr<protocol::DictionaryValue> aux_attributes =
-      protocol::DictionaryValue::create();
+  auto aux_attributes =
+      std::make_unique<base::flat_map<std::string, base::Value>>();
   AuxGPUInfoEnumerator enumerator(aux_attributes.get());
   gpu_info.EnumerateFields(&enumerator);
-  enumerator.BeginAuxAttributes();
-  enumerator.AddInt("processCrashCount", GpuProcessHost::GetGpuCrashCount());
-  enumerator.AddInt("visibilityCallbackCallCount",
-                    gpu_info.visibility_callback_call_count);
-  enumerator.EndAuxAttributes();
+  (*aux_attributes)["processCrashCount"] =
+      base::Value(GpuProcessHost::GetGpuCrashCount());
+  (*aux_attributes)["visibilityCallbackCallCount"] =
+      base::Value(static_cast<int>(gpu_info.visibility_callback_call_count));
 
-  auto feature_status = protocol::DictionaryValue::cast(
-      protocol::toProtocolValue(GetFeatureStatus(), 1000));
-
+  auto feature_status =
+      std::make_unique<base::flat_map<std::string, base::Value>>(
+          GetFeatureStatus().TakeDictDeprecated());
   auto driver_bug_workarounds =
       std::make_unique<protocol::Array<std::string>>(GetDriverBugWorkarounds());
 
