@@ -5,7 +5,6 @@
 package org.chromium.components.browser_ui.contacts_picker;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
@@ -167,8 +166,7 @@ public class PickerCategoryView extends OptimizedFrameLayout
         View root = LayoutInflater.from(context).inflate(R.layout.contacts_picker_dialog, this);
         mSelectableListLayout =
                 (SelectableListLayout<ContactDetails>) root.findViewById(R.id.selectable_list);
-        mSelectableListLayout.initializeEmptyView(R.string.contacts_picker_no_contacts_found,
-                R.string.contacts_picker_no_contacts_found);
+        mSelectableListLayout.initializeEmptyView(R.string.contacts_picker_no_contacts_found);
 
         mPickerAdapter = adapter;
         mPickerAdapter.init(this, context, formattedOrigin);
@@ -209,13 +207,9 @@ public class PickerCategoryView extends OptimizedFrameLayout
         mDialog = dialog;
         mListener = listener;
 
-        mDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                executeAction(
-                        ContactsPickerListener.ContactsPickerAction.CANCEL, null, ACTION_CANCEL);
-            }
-        });
+        mDialog.setOnCancelListener(dialog1
+                -> executeAction(
+                        ContactsPickerListener.ContactsPickerAction.CANCEL, null, ACTION_CANCEL));
 
         mPickerAdapter.notifyDataSetChanged();
     }

@@ -403,15 +403,14 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
 
         if (BookmarkId.SHOPPING_FOLDER.equals(folder)) {
             mDelegate.getSelectableListLayout().setEmptyViewText(
-                    R.string.tracked_products_empty_list_title, R.string.bookmark_no_result);
+                    R.string.tracked_products_empty_list_title);
         } else if (folder.getType() == BookmarkType.READING_LIST) {
             TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
                     .notifyEvent(EventConstants.READ_LATER_BOOKMARK_FOLDER_OPENED);
             mDelegate.getSelectableListLayout().setEmptyViewText(
-                    R.string.reading_list_empty_list_title, R.string.bookmark_no_result);
+                    R.string.reading_list_empty_list_title);
         } else {
-            mDelegate.getSelectableListLayout().setEmptyViewText(
-                    R.string.bookmarks_folder_empty, R.string.bookmark_no_result);
+            mDelegate.getSelectableListLayout().setEmptyViewText(R.string.bookmarks_folder_empty);
         }
     }
 

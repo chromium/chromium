@@ -216,8 +216,7 @@ public class BookmarkManager
         SelectableListLayout<BookmarkId> selectableList =
                 mMainView.findViewById(R.id.selectable_list);
         mSelectableListLayout = selectableList;
-        mSelectableListLayout.initializeEmptyView(
-                R.string.bookmarks_folder_empty, R.string.bookmark_no_result);
+        mSelectableListLayout.initializeEmptyView(R.string.bookmarks_folder_empty);
 
         mAdapter = new BookmarkItemsAdapter(mContext, snackbarManager);
 
@@ -535,7 +534,7 @@ public class BookmarkManager
     @Override
     public void openSearchUI() {
         setState(BookmarkUIState.createSearchState());
-        mSelectableListLayout.onStartSearch();
+        mSelectableListLayout.onStartSearch(R.string.bookmark_no_result);
         mToolbar.showSearchView();
     }
 
