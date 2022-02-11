@@ -36,7 +36,6 @@ export class CrAutoImgElement extends HTMLImageElement {
     return [AUTO_SRC, WITH_COOKIES];
   }
 
-  /** @override */
   attributeChangedCallback(name, oldValue, newValue) {
     if (name !== AUTO_SRC) {
       return;
