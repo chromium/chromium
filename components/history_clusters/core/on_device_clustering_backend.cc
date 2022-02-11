@@ -334,7 +334,7 @@ void OnDeviceClusteringBackend::OnAllVisitsFinishedProcessing(
         FROM_HERE,
         base::BindOnce(
             &OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread,
-            base::Unretained(this), cluster_visits),
+            engagement_score_provider_ != nullptr, cluster_visits),
         std::move(callback));
     return;
   }
@@ -347,16 +347,15 @@ void OnDeviceClusteringBackend::OnAllVisitsFinishedProcessing(
       FROM_HERE,
       base::BindOnce(
           &OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread,
-          base::Unretained(this), cluster_visits),
+          engagement_score_provider_ != nullptr, cluster_visits),
       std::move(callback));
 }
 
+// static
 std::vector<history::Cluster>
 OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
+    bool engagement_score_provider_is_valid,
     const std::vector<history::ClusterVisit>& visits) {
-  DCHECK(high_priority_background_task_runner_->RunsTasksInCurrentSequence() ||
-         low_priority_background_task_runner_->RunsTasksInCurrentSequence());
-
   // TODO(crbug.com/1260145): All of these objects are "stateless" between
   // requests for clusters. If there needs to be shared state, the entire
   // backend needs to be refactored to separate these objects from the UI and
@@ -390,7 +389,8 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
         std::make_unique<SingleVisitClusterFinalizer>());
   }
   // Add feature to turn on/off site engagement score filter.
-  if (engagement_score_provider_ && features::ShouldFilterNoisyClusters()) {
+  if (engagement_score_provider_is_valid &&
+      features::ShouldFilterNoisyClusters()) {
     cluster_finalizers.push_back(std::make_unique<NoisyClusterFinalizer>());
   }
   cluster_finalizers.push_back(std::make_unique<KeywordClusterFinalizer>());

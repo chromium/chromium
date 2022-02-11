@@ -79,7 +79,8 @@ class OnDeviceClusteringBackend : public ClusteringBackend {
       ClustersCallback callback);
 
   // Clusters |visits| on background thread.
-  std::vector<history::Cluster> ClusterVisitsOnBackgroundThread(
+  static std::vector<history::Cluster> ClusterVisitsOnBackgroundThread(
+      bool engagement_score_provider_is_valid,
       const std::vector<history::ClusterVisit>& visits);
 
   // The object used to normalize SRP URLs. Not owned. Must outlive |this|.
