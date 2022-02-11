@@ -27,9 +27,6 @@ message Aggregate {
   // The total number of times this source/event was dropped due to sampling.
   optional uint64 dropped_due_to_sampling = 5;
 
-  // The total number of times this source/event was dropped due to whitelist.
-  optional uint64 DEPRECATED_dropped_due_to_whitelist = 7 [deprecated = true];
-
   // The total number of times this source/event was dropped due to filter.
   // Unlike the others, records dropped for this reason are not included
   // in the |total_count|.
@@ -43,7 +40,7 @@ message Aggregate {
   optional uint64 dropped_due_to_unconfigured = 9;
 
   // For each Event, we have a list of possible metrics included. Metric names
-  // cannot be repeated. There is no guarentee that all metrics that are
+  // cannot be repeated. There is no guarantee that all metrics that are
   // possible for a given event will be included in a single Aggregate.
   message Metric {
     // The hash of the metric's name.
@@ -59,7 +56,6 @@ message Aggregate {
     optional uint64 total_count = 4;
     optional uint64 dropped_due_to_limits = 5;
     optional uint64 dropped_due_to_sampling = 6;
-    optional uint64 DEPRECATED_dropped_due_to_whitelist = 7 [deprecated = true];
     optional uint64 dropped_due_to_filter = 8;
     optional uint64 dropped_due_to_unconfigured = 9;
   }

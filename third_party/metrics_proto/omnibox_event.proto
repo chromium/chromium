@@ -232,6 +232,8 @@ message OmniboxEventProto {
     HISTORY_CLUSTER = 20;
     // Suggestions from history derived from input with automatic corrections.
     HISTORY_FUZZY = 21;
+    // URLs amongst the user's currently open tabs.
+    OPEN_TAB = 22;
   }
 
   // The result set displayed on the completion popup
@@ -314,6 +316,7 @@ message OmniboxEventProto {
                                    // contains the input (the input might or
                                    // might not also match the title or URL of
                                    // this page).
+      OPEN_TAB = 32;  // A currently open tab whose URL contains the input.
     }
     optional ResultType result_type = 2;
 

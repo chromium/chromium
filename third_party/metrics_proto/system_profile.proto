@@ -572,8 +572,6 @@ message SystemProfileProto {
     optional int32 extension_renderer_failed_launch_count = 25;
     optional int32 extension_renderer_launch_count = 27;
 
-    // Number of non-renderer child process crashes.
-    optional int32 child_process_crash_count = 6;
     // Number of gpu crashes that generate a crash dump. Currently only used by
     // Android Chrome starting with M71.
     optional int32 gpu_crash_count = 31;
@@ -591,10 +589,8 @@ message SystemProfileProto {
     // Logged on ChromeOS only.
     optional int32 unclean_system_shutdown_count = 9;
 
-    //
     // All the remaining fields in the Stability are recorded at most once per
     // client session.
-    //
 
     // The number of times the program was launched since the last time metrics
     // was uploaded. For the initial metrics upload (right after startup), this

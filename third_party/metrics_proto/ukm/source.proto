@@ -173,8 +173,4 @@ message Source {
   // Unique identifier (for a given client_id/session_id) for the tab this
   // source is associated with. Should only be set for navigation sources.
   optional int64 tab_id = 10;
-
-  // Time between navigation and the first contentful paint, in milliseconds.
-  // Deprecated. Use ukm::Entry instead.
-  optional int64 first_contentful_paint_msec = 4 [deprecated = true];
 }
