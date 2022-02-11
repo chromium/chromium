@@ -207,6 +207,17 @@ void AddGeneralInformation(views::View* upper_panel,
   message->SetLineHeight(kBodyLineHeight);
 }
 
+// TODO(crbug.com/682266) Remove this function.
+int GetMaxConfidentialTitleWidth() {
+  int total_width = views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
+  int margin_width = kMarginInsets.width() + kConfidentialListInsets.width() +
+                     kConfidentialRowInsets.width();
+  int image_width = kFaviconSize;
+  int spacing = kBetweenChildSpacing;
+  return total_width - margin_width - image_width - spacing;
+}
+
 // Adds icon and title pair of the |confidential_content| to the container.
 void AddConfidentialContentRow(
     views::View* container,
@@ -229,6 +240,8 @@ void AddConfidentialContentRow(
   views::Label* title = row->AddChildView(
       std::make_unique<views::Label>(confidential_content.title));
   title->SetMultiLine(true);
+  // TODO(crbug.com/682266) Remove the next line that sets the line size.
+  title->SetMaximumWidth(GetMaxConfidentialTitleWidth());
   title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title->SetAllowCharacterBreak(true);
 // TODO(crbug.com/1261496) Enable dynamic UI color & theme in lacros
