@@ -55,8 +55,15 @@ IdentifiabilityStudyState::IdentifiabilityStudyState(PrefService* pref_service)
       active_surfaces_(valuation_),
       generation_(GetStudyGenerationFromFieldTrial()),
       active_surface_budget_(settings_.surface_budget()),
-      random_offset_generator_(settings_.expected_surface_count(),
-                               kMesaDistributionRatio) {
+      random_offset_generator_(
+          settings_.expected_surface_count() > 0
+              ? settings_.expected_surface_count()
+              // If settings_.expected_surface_count() is 0 then the study is
+              // disabled. The random offset generator will not be used.
+              // However, `MesaDistribution` needs a `pivot_point` parameter
+              // bigger than 0.
+              : 1,
+          kMesaDistributionRatio) {
   InitializeGlobalStudySettings();
   InitFromPrefs();
 }

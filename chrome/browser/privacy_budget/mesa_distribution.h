@@ -8,6 +8,7 @@
 #include <random>
 #include <set>
 #include <type_traits>
+#include "base/check_op.h"
 
 // Generates a set of integers drawn from a mesa shaped probability distribution
 // with replacement.
@@ -66,7 +67,7 @@
 // reserved for the long tail.
 //
 // Parameters:
-//   pivot_point: T as described above. Arbitrary range.
+//   pivot_point: T as described above. Any value bigger than 0.
 //   dist_ratio : τ as described above. Must be in (0,1).
 template <typename ResultType,
           std::enable_if_t<std::is_integral<ResultType>::value, int> = 0>
@@ -76,7 +77,12 @@ class MesaDistribution {
       : pivot_point_(pivot_point),
         uniform_distribution_(0, std::ceil(pivot_point / dist_ratio)),
         geometric_distribution_(dist_ratio /
-                                (pivot_point * (1.0l - dist_ratio))) {}
+                                (pivot_point * (1.0l - dist_ratio))) {
+    DCHECK_GT(pivot_point, static_cast<ResultType>(0));
+    DCHECK_GT(dist_ratio, 0);
+    DCHECK_LT(dist_ratio, 1);
+  }
+
   ~MesaDistribution() = default;
 
   // Draws a single value from the distribution.
