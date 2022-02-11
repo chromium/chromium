@@ -54,7 +54,7 @@
   }
 
   .tooltip .right {
-    background-color: #EEE;
+    background-color: #eee;
     border-radius: 8px;
     box-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
     box-sizing: border-box;
@@ -78,13 +78,14 @@
   .container {
     padding: 10px;
   }
-
 </style>
 
-<cr-toolbar page-name="Legacy Browser Support (LBS) - Internals"
-        clear-label="clear"
-        role="banner"
-        show-search="[[showSearch_]]">
+<cr-toolbar
+  page-name="Legacy Browser Support (LBS) - Internals"
+  clear-label="clear"
+  role="banner"
+  show-search="[[showSearch_]]"
+>
 </cr-toolbar>
 
 <div class="container">
@@ -94,8 +95,7 @@
     run those sites.
   </p>
 </div>
-<hr>
-</hr>
+<hr></hr>
 
 <section class="container" hidden$="[[isBrowserSwitcherEnabled_]]">
   <h2>Nothing to show</h2>
@@ -110,27 +110,27 @@
 </section>
 
 <section class="container" hidden$="[[!isBrowserSwitcherEnabled_]]">
-  <section id="url-checker-section">
+  <section>
     <h2>URL Checker</h2>
 
     <label>
       Enter a URL to see what LBS would do with it.
-      <input type="text"
-        id="url-checker-input"
+      <input
+        type="text"
+        value="{{urlCheckerInput_::input}}"
         placeholder="http://example.com/"
-        on-input="checkUrl">
+      ></input>
     </label>
 
     <ul>
-      <li id="output"></li>
-      <li id="reason"></li>
+      <template is="dom-repeat" items="[[urlCheckerOutput_]]">
+        <li>[[item]]</li>
+      </template>
     </ul>
   </section>
+  <hr></hr>
 
-  <hr>
-  </hr>
-
-  <section id="xml-configuration-source">
+  <section>
     <h2 class="tooltip">
       XML configuration source
       <span class="right">
@@ -138,35 +138,40 @@
       </span>
     </h2>
 
-    <table id="xml-sitelists"></table>
+    <table>
+      <tr>
+        <th>Source policy</th>
+        <th>URL</th>
+      </tr>
+      <template is="dom-repeat" items="[[xmlSiteLists_]]">
+        <tr>
+          <td>[[item.policyName]]</td>
+          <td class="url">[[item.url]]</td>
+        </tr>
+      </template>
+    </table>
 
-    <div id="xml-description-wrapper">
-      <p id="xml-not-fetched-yet">
-        XML sitelists have not been fetched yet.
-      </p>
-
-      <p id="xml-last-fetch">
-        XML sitelists were last downloaded at
-        <span id="last-fetch-placeholder"></span>.
-      </p>
-
-      <p id="xml-next-fetch">
-        Next download is at
-        <span id="next-fetch-placeholder"></span>.
-      </p>
-
+    <template is="dom-if" if="[[xmlSiteLists_.length]]">
       <p>
-        <button id="refresh-xml-button" on-click="refreshXml">
-          Download now
-        </button>
+        <template is="dom-if" if="[[!lastFetch_]]">
+          XML sitelists have not been fetched yet.
+        </template>
+        <template is="dom-if" if="[[lastFetch_]]">
+          XML sitelists were last downloaded at [[lastFetch_]].
+        </template>
       </p>
-    </div>
+      <template is="dom-if" if="[[nextFetch_]]">
+        <p>Next download is at [[nextFetch_]].</p>
+      </template>
+      <p>
+        <button on-click="refreshXml">Download now</button>
+      </p>
+    </template>
   </section>
 
-  <hr>
-  </hr>
+  <hr></hr>
 
-  <section id="sitelist-section">
+  <section>
     <h2 class="tooltip">
       Force open in
       <span class="right">
@@ -175,27 +180,56 @@
     </h2>
     <h4>
       This list is affected by
-      <a href="https://chromeenterprise.google/policies/#BrowserSwitcherUrlList"><span
-          class="policy-prop">{BrowserSwitcherUrlList}</span></a>,
       <a
-        href="https://chromeenterprise.google/policies/#BrowserSwitcherExternalSitelistUrl"><span
-          class="policy-prop">{BrowserSwitcherExternalSitelistUrl}</span></a>,
-      and
+        href="https://chromeenterprise.google/policies/#BrowserSwitcherUrlList"
+      >
+        <span class="policy-prop">{BrowserSwitcherUrlList}</span></a
+      >,
       <a
-        href="https://chromeenterprise.google/policies/#BrowserSwitcherUseIeSitelist"><span
-          class="policy-prop">{BrowserSwitcherUseIeSitelist}</span></a>
+        href="https://chromeenterprise.google/policies/#BrowserSwitcherExternal\
+        SitelistUrl"
+      >
+        <span class="policy-prop"
+          >{BrowserSwitcherExternalSitelistUrl}
+        </span> </a
+      >, and
+      <a
+        href="https://chromeenterprise.google/policies/#BrowserSwitcherUseIe\
+      Sitelist"
+      >
+        <span class="policy-prop">{BrowserSwitcherUseIeSitelist}</span></a
+      >
     </h4>
 
     <p>
       URLs matching these rules will be forced to open in a specific browser.
     </p>
-    <table id="sitelist"></table>
+    <table>
+      <tr>
+        <th>Rule</th>
+        <th>Opens in</th>
+        <th>Source</th>
+      </tr>
+      <template is="dom-repeat" items="[[siteListRules_]]">
+        <tr>
+          <td class="url">[[item.rule]]</td>
+          <td>[[getRuleBrowserName(item.rule)]]</td>
+          <td>
+            <span class="tooltip">
+              [[item.rulesetName]]
+              <span class="right">
+                [[getPolicyFromRuleset(item.rulesetName)]]
+              </span>
+            </span>
+          </td>
+        </tr>
+      </template>
+    </table>
   </section>
 
-  <hr>
-  </hr>
+  <hr></hr>
 
-  <section id="greylist-section">
+  <section>
     <h2 class="tooltip">
       Ignore
       <span class="right">
@@ -205,59 +239,39 @@
     <h4>
       This list is affected by
       <a
-        href="https://chromeenterprise.google/policies/#BrowserSwitcherExternalGreylistUrl"><span
-          class="policy-prop">{BrowserSwitcherExternalGreylistUrl}</span></a>,
-      and
+        href="https://chromeenterprise.google/policies/#BrowserSwitcher\
+      ExternalGreylistUrl"
+      >
+        <span class="policy-prop">{BrowserSwitcherExternalGreylistUrl}</span></a
+      >, and
       <a
-        href="https://chromeenterprise.google/policies/#BrowserSwitcherUrlGreylist"><span
-          class="policy-prop">{BrowserSwitcherUrlGreylist}</span></a>
+        href="https://chromeenterprise.google/policies/#BrowserSwitcherUrlGreylist"
+        ><span class="policy-prop">{BrowserSwitcherUrlGreylist}</span></a
+      >
     </h4>
 
-    <p id="greylist-description"></p>
-    <table id="greylist"></table>
+    <p>
+      URLs matching these rules won't trigger a browser switch and can be open
+      in either [[browserName_]] or [[altBrowserName_]].
+    </p>
+    <table>
+      <tr>
+        <th>Rule</th>
+        <th>Source</th>
+      </tr>
+      <template is="dom-repeat" items="[[greyListRules_]]">
+        <tr>
+          <td class="url">[[item.rule]]</td>
+          <td>
+            <span class="tooltip">
+              [[item.rulesetName]]
+              <span class="right"
+                >[[getPolicyFromRuleset(item.rulesetName)]]</span
+              >
+            </span>
+          </td>
+        </tr>
+      </template>
+    </table>
   </section>
-
-  <template id="header-row-template-sitelist" preserve-content>
-    <tr>
-      <th>Rule</th>
-      <th>Opens in</th>
-      <th>Source</th>
-    </tr>
-  </template>
-
-  <template id="header-row-template-greylist" preserve-content>
-    <tr>
-      <th>Rule</th>
-      <th>Source</th>
-    </tr>
-  </template>
-
-  <template id="rule-row-template-sitelist" preserve-content>
-    <tr>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-  </template>
-
-  <template id="rule-row-template-greylist" preserve-content>
-    <tr>
-      <td></td>
-      <td></td>
-    </tr>
-  </template>
-
-  <template id="xml-header-row-template" preserve-content>
-    <tr>
-      <th>Source policy</th>
-      <th>URL</th>
-    </tr>
-  </template>
-
-  <template id="xml-row-template" preserve-content>
-    <tr>
-      <td></td>
-      <td></td>
-    </tr>
-  </template>
 </section>
