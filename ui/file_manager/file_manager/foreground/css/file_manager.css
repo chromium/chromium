@@ -2149,45 +2149,11 @@ cr-menu.chrome-menu hr {
   font-size: 0;
 }
 
-/* Panel shown when USB device with no readable partitions
-   is plugged in. */
-#format-panel {
-  bottom: 0;
-  color: var(--cros-text-color-primary);
-  display: none;
-  left: 0;
-  padding-inline-start: 50px;
-  padding-top: 20px;
-  position: absolute;
-  right: 0;
-  top: 0;
-}
-
-body[unformatted] .dialog-container #format-panel {
-  display: block;
-}
-
-body[drive='unmounted'] .dialog-container .filelist-panel,
-body[drive='mounting'] .dialog-container .filelist-panel,
-body[drive='error'] .dialog-container .filelist-panel,
-body[unformatted] .dialog-container .filelist-panel {
-  /* Hide file list when Drive is not mounted.
-     Use opacity to avoid manual resizing.*/
+body[drive='unmounted'] .dialog-container #list-container,
+body[drive='mounting'] .dialog-container #list-container,
+body[drive='error'] .dialog-container #list-container,
+body[unformatted] .dialog-container #list-container {
   opacity: 0;
-}
-
-#format-panel > * {
-  align-items: center;
-  display: none;
-  flex-direction: row;
-  height: 22px;
-  justify-content: flex-start;
-  margin-bottom: 10px;
-}
-
-body[unformatted] #format-panel > .error,
-#format-panel > #format-button {
-  display: flex;
 }
 
 .buttonbar > * {

@@ -445,20 +445,8 @@ export class MainWindowComponent {
         null;
 
     // Update unformatted volume status.
-    if (newVolumeInfo && newVolumeInfo.error) {
-      this.ui_.element.setAttribute('unformatted', '');
-
-      if (newVolumeInfo.error ===
-          VolumeManagerCommon.VolumeError.UNSUPPORTED_FILESYSTEM) {
-        this.ui_.formatPanelError.textContent =
-            str('UNSUPPORTED_FILESYSTEM_WARNING');
-      } else {
-        this.ui_.formatPanelError.textContent =
-            str('UNKNOWN_FILESYSTEM_WARNING');
-      }
-    } else {
-      this.ui_.element.removeAttribute('unformatted');
-    }
+    const unformatted = !!(newVolumeInfo && newVolumeInfo.error);
+    this.ui_.element.toggleAttribute('unformatted', /*force=*/ unformatted);
 
     if (event.newDirEntry) {
       this.ui_.locationLine.show(event.newDirEntry);

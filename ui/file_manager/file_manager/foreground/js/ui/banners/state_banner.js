@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
+import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {util} from '../../../../common/js/util.js';
@@ -68,15 +70,27 @@ export class StateBanner extends Banner {
     if (extraButton) {
       extraButton.addEventListener('click', (e) => {
         const href = extraButton.getAttribute('href');
-        if (!href) {
-          e.preventDefault();
-          return;
-        }
         const chromeOsSettingsSubpage =
-            href.replace('chrome://os-settings/', '');
+            href && href.replace('chrome://os-settings/', '');
         if (chromeOsSettingsSubpage && chromeOsSettingsSubpage !== href) {
           chrome.fileManagerPrivate.openSettingsSubpage(
               chromeOsSettingsSubpage);
+          e.preventDefault();
+          return;
+        }
+        const commandName = extraButton.getAttribute('command');
+        if (commandName) {
+          const command =
+              assertInstanceof(document.querySelector(commandName), Command);
+          // Unit tests don't enclose a StateBanner inside a concrete banner,
+          // so we want to ensure the event is appropriately dispatched from the
+          // outer scope otherwise it won't bubble up to the commands.
+          let bannerInstance = this;
+          const parentBanner = this.getRootNode() && this.getRootNode().host;
+          if (parentBanner && parentBanner instanceof StateBanner) {
+            bannerInstance = parentBanner;
+          }
+          command.execute(bannerInstance);
           e.preventDefault();
           return;
         }

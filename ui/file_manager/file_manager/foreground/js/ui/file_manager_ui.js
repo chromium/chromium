@@ -290,12 +290,6 @@ export class FileManagerUI {
     this.listContainer;
 
     /**
-     * @type {!HTMLElement}
-     */
-    this.formatPanelError =
-        queryRequiredElement('#format-panel > .error', this.element);
-
-    /**
      * @type {!MultiMenu}
      * @const
      */
