@@ -4535,7 +4535,8 @@
                     },
                     "enable_features": [
                         "LoadModelFileForEachExecution",
-                        "PageContentAnnotations"
+                        "PageContentAnnotations",
+                        "PageVisibilityPageContentAnnotations"
                     ]
                 }
             ]
@@ -4562,7 +4563,9 @@
                         "Journeys",
                         "JourneysOmniboxAction",
                         "LoadModelFileForEachExecution",
-                        "PageContentAnnotations"
+                        "PageContentAnnotations",
+                        "PageEntitiesPageContentAnnotations",
+                        "PageVisibilityPageContentAnnotations"
                     ]
                 }
             ]
