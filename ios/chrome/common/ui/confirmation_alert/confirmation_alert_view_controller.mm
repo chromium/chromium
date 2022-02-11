@@ -21,6 +21,8 @@ NSString* const kConfirmationAlertMoreInfoAccessibilityIdentifier =
     @"kConfirmationAlertMoreInfoAccessibilityIdentifier";
 NSString* const kConfirmationAlertTitleAccessibilityIdentifier =
     @"kConfirmationAlertTitleAccessibilityIdentifier";
+NSString* const kConfirmationAlertSecondaryTitleAccessibilityIdentifier =
+    @"kConfirmationAlertSecondaryTitleAccessibilityIdentifier";
 NSString* const kConfirmationAlertSubtitleAccessibilityIdentifier =
     @"kConfirmationAlertSubtitleAccessibilityIdentifier";
 NSString* const kConfirmationAlertPrimaryActionAccessibilityIdentifier =
@@ -91,7 +93,16 @@ constexpr CGFloat kContentMaxWidth = 500;
   UILabel* title = [self createTitleLabel];
   UILabel* subtitle = [self createSubtitleLabel];
 
-  NSArray* stackSubviews = @[ self.imageView, title, subtitle ];
+  NSArray* stackSubviews = nil;
+  if ([self.secondaryTitleString length] != 0) {
+    UILabel* secondaryTitle = [self createSecondaryTitleLabel];
+    stackSubviews = @[ self.imageView, title, secondaryTitle, subtitle ];
+  } else {
+    stackSubviews = @[ self.imageView, title, subtitle ];
+  }
+
+  DCHECK(stackSubviews);
+
   UIStackView* stackView =
       [self createStackViewWithArrangedSubviews:stackSubviews];
 
@@ -422,6 +433,16 @@ constexpr CGFloat kContentMaxWidth = 500;
   return imageView;
 }
 
+// Creates a label with subtitle label defaults.
+- (UILabel*)createLabel {
+  UILabel* label = [[UILabel alloc] init];
+  label.numberOfLines = 0;
+  label.textAlignment = NSTextAlignmentCenter;
+  label.translatesAutoresizingMaskIntoConstraints = NO;
+  label.adjustsFontForContentSizeCategory = YES;
+  return label;
+}
+
 // Helper to create the title label.
 - (UILabel*)createTitleLabel {
   if (!self.titleTextStyle) {
@@ -446,16 +467,24 @@ constexpr CGFloat kContentMaxWidth = 500;
   return title;
 }
 
+// Helper to create the title description label.
+- (UILabel*)createSecondaryTitleLabel {
+  UILabel* secondaryTitle = [self createLabel];
+  secondaryTitle.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleTitle2];
+  secondaryTitle.text = self.secondaryTitleString;
+  secondaryTitle.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  secondaryTitle.accessibilityIdentifier =
+      kConfirmationAlertSecondaryTitleAccessibilityIdentifier;
+  return secondaryTitle;
+}
+
 // Helper to create the subtitle label.
 - (UILabel*)createSubtitleLabel {
-  UILabel* subtitle = [[UILabel alloc] init];
+  UILabel* subtitle = [self createLabel];
   subtitle.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  subtitle.numberOfLines = 0;
-  subtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
   subtitle.text = self.subtitleString;
-  subtitle.textAlignment = NSTextAlignmentCenter;
-  subtitle.translatesAutoresizingMaskIntoConstraints = NO;
-  subtitle.adjustsFontForContentSizeCategory = YES;
+  subtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
   subtitle.accessibilityIdentifier =
       kConfirmationAlertSubtitleAccessibilityIdentifier;
   return subtitle;

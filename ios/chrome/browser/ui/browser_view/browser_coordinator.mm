@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/ui/commands/page_info_commands.h"
 #import "ios/chrome/browser/ui/commands/password_breach_commands.h"
 #import "ios/chrome/browser/ui/commands/password_protection_commands.h"
+#import "ios/chrome/browser/ui/commands/password_suggestion_commands.h"
 #import "ios/chrome/browser/ui/commands/policy_change_commands.h"
 #import "ios/chrome/browser/ui/commands/qr_generation_commands.h"
 #import "ios/chrome/browser/ui/commands/share_highlight_command.h"
@@ -77,6 +78,7 @@
 #import "ios/chrome/browser/ui/page_info/page_info_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_breach_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/password_protection_coordinator.h"
+#import "ios/chrome/browser/ui/passwords/password_suggestion_coordinator.h"
 #import "ios/chrome/browser/ui/print/print_controller.h"
 #import "ios/chrome/browser/ui/qr_generator/qr_generator_coordinator.h"
 #import "ios/chrome/browser/ui/qr_scanner/qr_scanner_legacy_coordinator.h"
@@ -120,6 +122,8 @@
                                   PageInfoCommands,
                                   PasswordBreachCommands,
                                   PasswordProtectionCommands,
+                                  PasswordSuggestionCommands,
+                                  PasswordSuggestionCoordinatorDelegate,
                                   PolicyChangeCommands,
                                   RepostFormTabHelperDelegate,
                                   ToolbarAccessoryCoordinatorDelegate,
@@ -197,6 +201,10 @@
 // Coordinator for the password protection UI presentation.
 @property(nonatomic, strong)
     PasswordProtectionCoordinator* passwordProtectionCoordinator;
+
+// Coordinator for the password suggestion UI presentation.
+@property(nonatomic, strong)
+    PasswordSuggestionCoordinator* passwordSuggestionCoordinator;
 
 // Used to display the Print UI. Nil if not visible.
 // TODO(crbug.com/910017): Convert to coordinator.
@@ -276,12 +284,17 @@
   // starting any child coordinator, otherwise they won't be able to resolve
   // handlers.
   NSArray<Protocol*>* protocols = @[
-    @protocol(ActivityServiceCommands), @protocol(BrowserCoordinatorCommands),
+    @protocol(ActivityServiceCommands),
+    @protocol(BrowserCoordinatorCommands),
     @protocol(DefaultPromoCommands),
     @protocol(DefaultBrowserPromoNonModalCommands),
-    @protocol(FindInPageCommands), @protocol(PageInfoCommands),
-    @protocol(PasswordBreachCommands), @protocol(PasswordProtectionCommands),
-    @protocol(TextZoomCommands), @protocol(PolicyChangeCommands)
+    @protocol(FindInPageCommands),
+    @protocol(PageInfoCommands),
+    @protocol(PasswordBreachCommands),
+    @protocol(PasswordProtectionCommands),
+    @protocol(PasswordSuggestionCommands),
+    @protocol(PolicyChangeCommands),
+    @protocol(TextZoomCommands),
   ];
 
   for (Protocol* protocol in protocols) {
@@ -352,6 +365,9 @@
 
   [self.passwordProtectionCoordinator stop];
   self.passwordProtectionCoordinator = nil;
+
+  [self.passwordSuggestionCoordinator stop];
+  self.passwordSuggestionCoordinator = nil;
 
   [self.pageInfoCoordinator stop];
 
@@ -475,6 +491,8 @@
 
   /* passwordProtectionCoordinator is created and started by a BrowserCommand */
 
+  /* passwordSuggestionCoordinator is created and started by a BrowserCommand */
+
   /* ReadingListCoordinator is created and started by a BrowserCommand */
 
   /* RecentTabsCoordinator is created and started by a BrowserCommand */
@@ -543,6 +561,9 @@
 
   [self.passwordProtectionCoordinator stop];
   self.passwordProtectionCoordinator = nil;
+
+  [self.passwordSuggestionCoordinator stop];
+  self.passwordSuggestionCoordinator = nil;
 
   self.printController = nil;
 
@@ -1180,6 +1201,19 @@
   [self.passwordProtectionCoordinator startWithCompletion:completion];
 }
 
+#pragma mark - PasswordSuggestionCommands
+
+- (void)showPasswordSuggestion:(NSString*)passwordSuggestion
+               decisionHandler:(void (^)(BOOL accept))decisionHandler {
+  self.passwordSuggestionCoordinator = [[PasswordSuggestionCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+              passwordSuggestion:passwordSuggestion
+                 decisionHandler:decisionHandler];
+  self.passwordSuggestionCoordinator.delegate = self;
+  [self.passwordSuggestionCoordinator start];
+}
+
 #pragma mark - PolicyChangeCommands
 
 - (void)showForceSignedOutPrompt {
@@ -1285,6 +1319,13 @@
              mailComposerContext:context];
 
   [self.netExportCoordinator start];
+}
+
+#pragma mark - PasswordSuggestionCoordinatorDelegate
+
+- (void)closePasswordSuggestion {
+  [self.passwordSuggestionCoordinator stop];
+  self.passwordSuggestionCoordinator = nil;
 }
 
 @end

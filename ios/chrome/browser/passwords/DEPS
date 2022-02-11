@@ -13,6 +13,7 @@ specific_include_rules = {
     "+ios/chrome/browser/ui/commands/command_dispatcher.h",
     "+ios/chrome/browser/ui/commands/password_breach_commands.h",
     "+ios/chrome/browser/ui/commands/password_protection_commands.h",
+    "+ios/chrome/browser/ui/commands/password_suggestion_commands.h",
   ],
 
 }
