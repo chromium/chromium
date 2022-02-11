@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -78,15 +79,14 @@ namespace {
 bool CollectGraphicsInfo(GPUInfo* gpu_info) {
   DCHECK(gpu_info);
   TRACE_EVENT0("gpu,startup", "Collect Graphics Info");
-  base::TimeTicks before_collect_context_graphics_info = base::TimeTicks::Now();
+  base::ElapsedTimer elapsed_timer;
   bool success = CollectContextGraphicsInfo(gpu_info);
   if (!success)
     LOG(ERROR) << "CollectGraphicsInfo failed.";
 
   if (success) {
-    base::TimeDelta collect_context_time =
-        base::TimeTicks::Now() - before_collect_context_graphics_info;
-    UMA_HISTOGRAM_TIMES("GPU.CollectContextGraphicsInfo", collect_context_time);
+    UMA_HISTOGRAM_TIMES("GPU.CollectContextGraphicsInfo",
+                        elapsed_timer.Elapsed());
   }
   return success;
 }
@@ -124,20 +124,25 @@ void InitializePlatformOverlaySettings(GPUInfo* gpu_info,
 #endif
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
-bool CanAccessNvidiaDeviceFile() {
-  bool res = true;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
+bool CanAccessDeviceFile(const GPUInfo& gpu_info) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (gpu_info.gpu.vendor_id != 0x10de ||  // NVIDIA
+      gpu_info.gpu.driver_vendor != "NVIDIA")
+    return true;
+
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
   if (access("/dev/nvidiactl", R_OK) != 0) {
     DVLOG(1) << "NVIDIA device file /dev/nvidiactl access denied";
-    res = false;
+    return false;
   }
-  return res;
+  return true;
+#else
+  return true;
+#endif
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || (BUILDFLAG(IS_LINUX)  &&
-        // !BUILDFLAG(IS_CHROMECAST))
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
 
 class GpuWatchdogInit {
  public:
@@ -201,11 +206,10 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   if (!PopGPUInfoCache(&gpu_info_)) {
     CollectBasicGraphicsInfo(command_line, &gpu_info_);
   }
-#if BUILDFLAG(IS_WIN)
+
   IntelGpuSeriesType intel_gpu_series_type = GetIntelGpuSeriesType(
       gpu_info_.active_gpu().vendor_id, gpu_info_.active_gpu().device_id);
   UMA_HISTOGRAM_ENUMERATION("GPU.IntelGpuSeriesType", intel_gpu_series_type);
-#endif  // BUILDFLAG(IS_WIN)
 
   // Set keys for crash logging based on preliminary gpu info, in case we
   // crash during feature collection.
@@ -223,11 +227,10 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     device_perf_info_ = device_perf_info;
   }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (gpu_info_.gpu.vendor_id == 0x10de &&  // NVIDIA
-      gpu_info_.gpu.driver_vendor == "NVIDIA" && !CanAccessNvidiaDeviceFile())
+  if (!CanAccessDeviceFile(gpu_info_))
     return false;
-#endif
+
+  // GpuFeatureInfo is cached for the GPU service thread with WebView.
   if (!PopGpuFeatureInfoCache(&gpu_feature_info_)) {
     // Compute blocklist and driver bug workaround decisions based on basic GPU
     // info.
@@ -247,10 +250,11 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       InitializeSwitchableGPUs(
           gpu_feature_info_.enabled_gpu_driver_bug_workarounds);
     }
-  // If SwiftShader/SwANGLE is in use, set the flag gl_use_swiftshader so GPU
-  // initialization will take a software rendering path. Do not do this if
-  // SwiftShader/SwANGLE are explicitly requested via flags, because the flags
-  // are meant to specify running SwiftShader/SwANGLE on the hardware GPU path.
+    // If SwiftShader/SwANGLE is in use, set the flag gl_use_swiftshader_ so GPU
+    // initialization will take a software rendering path. Do not do this if
+    // SwiftShader/SwANGLE are explicitly requested via flags, because the flags
+    // are meant to specify running SwiftShader/SwANGLE on the hardware GPU
+    // path.
   } else if (gl::GetGLImplementationParts() ==
                  gl::GetLegacySoftwareGLImplementation() &&
              command_line->GetSwitchValueASCII(switches::kUseGL) !=
@@ -275,34 +279,32 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   enable_watchdog = false;
 #endif
 
-  // watchdog_init will call watchdog OnInitComplete() at the end of this
-  // function.
-  GpuWatchdogInit watchdog_init;
-
-  bool delayed_watchdog_enable = false;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Don't start watchdog immediately, to allow developers to switch to VT2 on
-  // startup.
-  delayed_watchdog_enable = true;
-#endif
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // PreSandbox is mainly for resource handling and not related to the GPU
-  // driver, it doesn't need the GPU watchdog. The loadLibrary may take long
-  // time that killing and restarting the GPU process will not help.
-  if (gpu_preferences_.gpu_sandbox_start_early) {
-    // The sandbox will be started earlier than usual (i.e. before GL) so
-    // execute the pre-sandbox steps now.
-    sandbox_helper_->PreSandboxStartup(gpu_preferences);
-  }
-#else
+  bool gpu_sandbox_start_early = gpu_preferences_.gpu_sandbox_start_early;
+#else   // !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
   // For some reasons MacOSX's VideoToolbox might crash when called after
   // initializing GL, see crbug.com/1047643 and crbug.com/871280. On other
   // operating systems like Windows and Android the pre-sandbox steps have
   // always been executed before initializing GL so keep it this way.
-  sandbox_helper_->PreSandboxStartup(gpu_preferences);
-#endif
+  bool gpu_sandbox_start_early = true;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+  // PreSandbox is mainly for resource handling and not related to the GPU
+  // driver, it doesn't need the GPU watchdog. The loadLibrary may take long
+  // time that killing and restarting the GPU process will not help.
+  if (gpu_sandbox_start_early) {
+    // The sandbox will be started earlier than usual (i.e. before GL) so
+    // execute the pre-sandbox steps now.
+    sandbox_helper_->PreSandboxStartup(gpu_preferences);
+  }
+
+  // watchdog_init will call watchdog OnInitComplete() at the end of this
+  // function.
+  GpuWatchdogInit watchdog_init;
+
+  // Don't start watchdog immediately, to allow developers to switch to VT2 on
+  // startup.
+  constexpr bool delayed_watchdog_enable = BUILDFLAG(IS_CHROMEOS_ASH);
 
   // Start the GPU watchdog only after anything that is expected to be time
   // consuming has completed, otherwise the process is liable to be aborted.
@@ -321,7 +323,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     // References:
     // https://bugs.python.org/issue26624
     // http://stackoverflow.com/questions/35572792/setlocale-stuck-on-windows
-    auto watchdog_started = watchdog_thread_->WaitUntilThreadStarted();
+    bool watchdog_started = watchdog_thread_->WaitUntilThreadStarted();
     DCHECK(watchdog_started);
 #endif  // BUILDFLAG(IS_WIN)
   }
@@ -338,16 +340,15 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-  base::TimeTicks before_initialize_one_off = base::TimeTicks::Now();
+  base::ElapsedTimer elapsed_timer;
 
 #if defined(USE_OZONE)
   // Initialize Ozone GPU after the watchdog in case it hangs. The sandbox
   // may also have started at this point.
-  std::vector<gfx::BufferFormat> supported_buffer_formats_for_texturing;
   ui::OzonePlatform::InitParams params;
   params.single_process = false;
   params.enable_native_gpu_memory_buffers =
-      gpu_preferences.enable_native_gpu_memory_buffers;
+      gpu_preferences_.enable_native_gpu_memory_buffers;
 
   // Page flip testing will only happen in ash-chrome, not in lacros-chrome.
   // Therefore, we only allow or disallow sync and real buffer page flip
@@ -363,24 +364,25 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   ui::OzonePlatform::InitializeForGPU(params);
   // We need to get supported formats before sandboxing to avoid an known
   // issue which breaks the camera preview. (b/166850715)
-  supported_buffer_formats_for_texturing =
+  std::vector<gfx::BufferFormat> supported_buffer_formats_for_texturing =
       ui::OzonePlatform::GetInstance()
           ->GetSurfaceFactoryOzone()
           ->GetSupportedFormatsForTexturing();
-#endif
+#endif  // defined(USE_OZONE)
 
   if (!gl_use_swiftshader_) {
     gl_use_swiftshader_ = EnableSwiftShaderIfNeeded(
         command_line, gpu_feature_info_,
         gpu_preferences_.disable_software_rasterizer, needs_more_info);
   }
+
   if (gl_initialized && gl_use_swiftshader_ &&
       !gl::IsSoftwareGLImplementation(gl::GetGLImplementationParts())) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     VLOG(1) << "Quit GPU process launch to fallback to SwiftShader cleanly "
             << "on Linux";
     return false;
-#else
+#else   // !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
     SaveHardwareGpuInfoAndGpuFeatureInfo();
     gl::init::ShutdownGL(true);
     gl_initialized = false;
@@ -542,7 +544,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
                               nullptr);
     }
   }
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
   if (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] !=
           kGpuFeatureStatusEnabled ||
@@ -628,10 +630,8 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     gpu_preferences_.disable_accelerated_video_encode = true;
   }
 
-  base::TimeDelta initialize_one_off_time =
-      base::TimeTicks::Now() - before_initialize_one_off;
   UMA_HISTOGRAM_MEDIUM_TIMES("GPU.InitializeOneOffMediumTime",
-                             initialize_one_off_time);
+                             elapsed_timer.Elapsed());
 
   // Software GL is expected to run slowly, so disable the watchdog
   // in that case.
@@ -888,8 +888,8 @@ scoped_refptr<gl::GLSurface> GpuInit::TakeDefaultOffscreenSurface() {
   return std::move(default_offscreen_surface_);
 }
 
-#if BUILDFLAG(ENABLE_VULKAN)
 bool GpuInit::InitializeVulkan() {
+#if BUILDFLAG(ENABLE_VULKAN)
   DCHECK_EQ(gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN],
             kGpuFeatureStatusEnabled);
   DCHECK_NE(gpu_preferences_.use_vulkan, VulkanImplementationName::kNone);
@@ -923,15 +923,16 @@ bool GpuInit::InitializeVulkan() {
   if (MatchGLRenderer(gpu_info_, disable_patterns.Get()))
     return false;
 
-  auto enable_patterns = base::GetFieldTrialParamValueByFeature(
-      features::kVulkan, "force_enable_by_gl_renderer");
-  forced_native |= MatchGLRenderer(gpu_info_, enable_patterns);
+  const base::FeatureParam<std::string> force_enable_patterns(
+      &features::kVulkan, "force_enable_by_gl_renderer", "");
+  forced_native |= MatchGLRenderer(gpu_info_, force_enable_patterns.Get());
 
+  const base::FeatureParam<std::string> enable_by_device_name(
+      &features::kVulkan, "enable_by_device_name", "");
   if (!use_swiftshader && !forced_native &&
       !CheckVulkanCompabilities(
           vulkan_implementation_->GetVulkanInstance()->vulkan_info(), gpu_info_,
-          base::GetFieldTrialParamValueByFeature(features::kVulkan,
-                                                 "enable_by_device_name"))) {
+          enable_by_device_name.Get())) {
     vulkan_implementation_.reset();
     return false;
   }
@@ -939,11 +940,9 @@ bool GpuInit::InitializeVulkan() {
   gpu_info_.vulkan_info =
       vulkan_implementation_->GetVulkanInstance()->vulkan_info();
   return true;
-}
-#else   // BUILDFLAG(ENABLE_VULKAN)
-bool GpuInit::InitializeVulkan() {
+#else   // !BUILDFLAG(ENABLE_VULKAN)
   return false;
+#endif  // BUILDFLAG(ENABLE_VULKAN)
 }
-#endif  // !BUILDFLAG(ENABLE_VULKAN)
 
 }  // namespace gpu
