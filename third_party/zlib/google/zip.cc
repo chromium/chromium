@@ -198,41 +198,40 @@ bool UnzipWithFilterAndWriters(const base::PlatformFile& src_file,
                                bool log_skipped_files) {
   ZipReader reader;
   if (!reader.OpenFromPlatformFile(src_file)) {
-    DLOG(WARNING) << "Cannot open '" << src_file << "'";
+    DLOG(WARNING) << "Cannot open ZIP from file handle " << src_file;
     return false;
   }
-  while (reader.HasMore()) {
-    if (!reader.OpenCurrentEntryInZip()) {
-      DLOG(WARNING) << "Failed to open the current file in zip";
+
+  while (const ZipReader::Entry* const entry = reader.Next()) {
+    if (entry->is_unsafe) {
+      DLOG(WARNING) << "Found unsafe entry in ZIP: " << entry->path;
       return false;
-    }
-    const base::FilePath& entry_path = reader.current_entry_info()->file_path();
-    if (reader.current_entry_info()->is_unsafe()) {
-      DLOG(WARNING) << "Found an unsafe file in zip " << entry_path;
-      return false;
-    }
-    if (filter_cb.Run(entry_path)) {
-      if (reader.current_entry_info()->is_directory()) {
-        if (!directory_creator.Run(entry_path))
-          return false;
-      } else {
-        std::unique_ptr<WriterDelegate> writer = writer_factory.Run(entry_path);
-        if (!reader.ExtractCurrentEntry(writer.get(),
-                                        std::numeric_limits<uint64_t>::max())) {
-          DLOG(WARNING) << "Failed to extract " << entry_path;
-          return false;
-        }
-      }
-    } else if (log_skipped_files) {
-      DLOG(WARNING) << "Skipped file " << entry_path;
     }
 
-    if (!reader.AdvanceToNextEntry()) {
-      DLOG(WARNING) << "Failed to advance to the next file";
+    if (filter_cb && !filter_cb.Run(entry->path)) {
+      DLOG_IF(WARNING, log_skipped_files)
+          << "Skipped ZIP entry " << entry->path;
+      continue;
+    }
+
+    if (entry->is_directory) {
+      // It's a directory.
+      if (!directory_creator.Run(entry->path))
+        return false;
+
+      continue;
+    }
+
+    // It's a file.
+    std::unique_ptr<WriterDelegate> writer = writer_factory.Run(entry->path);
+    if (!reader.ExtractCurrentEntry(writer.get(),
+                                    std::numeric_limits<uint64_t>::max())) {
+      DLOG(WARNING) << "Cannot extract " << entry->path;
       return false;
     }
   }
-  return true;
+
+  return reader.ok();
 }
 
 bool ZipWithFilterCallback(const base::FilePath& src_dir,
