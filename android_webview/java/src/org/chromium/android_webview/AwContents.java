@@ -1639,6 +1639,11 @@ public class AwContents implements SmartClipProvider {
             mAutofillProvider = null;
         }
 
+        if (mAwDarkMode != null) {
+            mAwDarkMode.destroy();
+            mAwDarkMode = null;
+        }
+
         // Remove pending messages
         mContentsClient.getCallbackHelper().removeCallbacksAndMessages();
 

@@ -45,6 +45,10 @@ public class AwDarkMode {
         return sEnableSimplifiedDarkMode;
     }
 
+    public void destroy() {
+        setWebContents(null);
+    }
+
     @CalledByNative
     private boolean isAppUsingDarkTheme() {
         return DarkModeHelper.LightTheme.LIGHT_THEME_FALSE
