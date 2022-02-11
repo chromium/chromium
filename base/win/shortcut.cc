@@ -190,19 +190,14 @@ bool CreateOrUpdateShortcutLink(const FilePath& shortcut_path,
 
   // If we successfully created/updated the icon, notify the shell that we have
   // done so.
-  const bool succeeded = SUCCEEDED(result);
-  if (succeeded) {
-    if (shortcut_existed) {
-      // TODO(gab): SHCNE_UPDATEITEM might be sufficient here; further testing
-      // required.
-      SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
-    } else {
-      SHChangeNotify(SHCNE_CREATE, SHCNF_PATH, shortcut_path.value().c_str(),
-                     nullptr);
-    }
-  }
+  if (!SUCCEEDED(result))
+    return false;
 
-  return succeeded;
+  SHChangeNotify(shortcut_existed ? SHCNE_UPDATEITEM : SHCNE_CREATE,
+                 SHCNF_PATH | SHCNF_FLUSH, shortcut_path.value().c_str(),
+                 nullptr);
+
+  return true;
 }
 
 bool ResolveShortcutProperties(const FilePath& shortcut_path,
