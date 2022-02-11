@@ -30,7 +30,9 @@ class MdTextButton;
 class HelpBubbleView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(HelpBubbleView);
-  HelpBubbleView(views::View* anchor_view, HelpBubbleParams params);
+  HelpBubbleView(views::View* anchor_view,
+                 HelpBubbleParams params,
+                 absl::optional<gfx::Rect> anchor_rect = absl::nullopt);
   HelpBubbleView(const HelpBubbleView&) = delete;
   HelpBubbleView& operator=(const HelpBubbleView&) = delete;
   ~HelpBubbleView() override;
@@ -56,6 +58,12 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   }
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   gfx::Size CalculatePreferredSize() const override;
+  gfx::Rect GetAnchorRect() const override;
+
+  // Forces the anchor rect to the specified rectangle (in screen coordinates).
+  // If an artificial anchor rect is used, we assume the exact target cannot be
+  // localized, and a visible arrow is not shown.
+  absl::optional<gfx::Rect> force_anchor_rect_;
 
   // If the bubble has buttons, it must be focusable.
   std::vector<views::MdTextButton*> buttons_;

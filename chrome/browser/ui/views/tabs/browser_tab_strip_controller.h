@@ -142,6 +142,9 @@ class BrowserTabStripController : public TabStripController,
 
   const Browser* browser() const { return browser_view_->browser(); }
 
+  // Test-specific methods.
+  void CloseContextMenuForTesting();
+
  private:
   class TabContextMenuContents;
 

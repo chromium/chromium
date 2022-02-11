@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/user_education/feature_promo_registry.h"
@@ -21,6 +22,10 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/views/interaction/element_tracker_views.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/views/user_education/help_bubble_factory_mac.h"
+#endif
 
 namespace {
 const char kTabGroupTutorialMetricPrefix[] = "TabGroup";
@@ -46,6 +51,9 @@ const char kTabGroupTutorialId[] = "Tab Group Tutorial";
 
 void RegisterChromeHelpBubbleFactories(HelpBubbleFactoryRegistry& registry) {
   registry.MaybeRegister<HelpBubbleFactoryViews>();
+#if BUILDFLAG(IS_MAC)
+  registry.MaybeRegister<HelpBubbleFactoryMac>();
+#endif
 }
 
 void MaybeRegisterChromeFeaturePromos(FeaturePromoRegistry& registry) {

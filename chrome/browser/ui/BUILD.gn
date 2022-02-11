@@ -4948,6 +4948,8 @@ static_library("ui") {
         "views/frame/browser_view_commands_mac.mm",
         "views/policy/enterprise_startup_dialog_mac_util.h",
         "views/policy/enterprise_startup_dialog_mac_util.mm",
+        "views/user_education/help_bubble_factory_mac.h",
+        "views/user_education/help_bubble_factory_mac.mm",
       ]
     } else {
       sources += [

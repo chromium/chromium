@@ -121,6 +121,11 @@ class BrowserTabStripController::TabContextMenuContents
 
   void Cancel() { controller_ = nullptr; }
 
+  void CloseMenu() {
+    if (menu_runner_)
+      menu_runner_->Cancel();
+  }
+
   void RunMenuAt(const gfx::Point& point, ui::MenuSourceType source_type) {
     menu_runner_->RunMenuAt(tab_->GetWidget(), nullptr,
                             gfx::Rect(point, gfx::Size()),
@@ -427,6 +432,11 @@ void BrowserTabStripController::ShowContextMenuForTab(
   base::UmaHistogramEnumeration(
       "TabStrip.Tab.Views.ActivationAction",
       TabStripModel::TabActivationTypes::kContextMenu);
+}
+
+void BrowserTabStripController::CloseContextMenuForTesting() {
+  if (context_menu_contents_)
+    context_menu_contents_->CloseMenu();
 }
 
 int BrowserTabStripController::HasAvailableDragActions() const {

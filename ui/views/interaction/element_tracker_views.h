@@ -101,6 +101,11 @@ class VIEWS_EXPORT ElementTrackerViews : private WidgetObserver {
   // identifier.
   ViewList GetAllMatchingViewsInAnyContext(ui::ElementIdentifier id);
 
+  // Returns a widget that matches the given context. A valid
+  // TrackedElementViews must exist within the widget.
+  Widget* GetWidgetForContext(ui::ElementContext context);
+
+  // ----------
   // Notifies listeners that a specific custom event has occurred for the given
   // view. Calls GetElementForView(view, true) under the hood; returns false if
   // an element cannot be found or created for the view (e.g. in the case where

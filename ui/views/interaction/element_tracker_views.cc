@@ -290,6 +290,15 @@ ElementTrackerViews::GetAllMatchingViewsInAnyContext(ui::ElementIdentifier id) {
   return it->second.GetAllViews();
 }
 
+Widget* ElementTrackerViews::GetWidgetForContext(ui::ElementContext context) {
+  for (auto& [id, data] : element_data_) {
+    auto* const view = data.FindFirstViewInContext(context);
+    if (view)
+      return view->GetWidget();
+  }
+  return nullptr;
+}
+
 bool ElementTrackerViews::NotifyCustomEvent(
     ui::CustomElementEventType event_type,
     View* view) {

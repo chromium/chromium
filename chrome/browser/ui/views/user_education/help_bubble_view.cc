@@ -271,10 +271,12 @@ END_METADATA
 // outline in dark mode on Mac. Use our own shadow instead. The shadow type is
 // the same for all other platforms.
 HelpBubbleView::HelpBubbleView(views::View* anchor_view,
-                               HelpBubbleParams params)
+                               HelpBubbleParams params,
+                               absl::optional<gfx::Rect> anchor_rect)
     : BubbleDialogDelegateView(anchor_view,
                                TranslateArrow(params.arrow),
-                               views::BubbleBorder::STANDARD_SHADOW) {
+                               views::BubbleBorder::STANDARD_SHADOW),
+      force_anchor_rect_(anchor_rect) {
   DCHECK(anchor_view)
       << "A bubble that closes on blur must be initially focused.";
   UseCompactMargins();
@@ -296,8 +298,10 @@ HelpBubbleView::HelpBubbleView(views::View* anchor_view,
   // an information bubble), override our role to kAlert.
   SetAccessibleRole(ax::mojom::Role::kAlert);
 
-  // We get the theme provider from the anchor view since our widget hasn't been
-  // created yet.
+  // We get the theme provider from the anchor view since our widget hasn't
+  // been created yet. This didn't work correctly for bubbles anchored to menu
+  // items before crbug.com/1295896 was fixed; if this breaks again that change
+  // might have gotten undone.
   const ui::ThemeProvider* theme_provider = anchor_view->GetThemeProvider();
   const views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
   DCHECK(theme_provider);
@@ -553,7 +557,8 @@ HelpBubbleView::HelpBubbleView(views::View* anchor_view,
   frame_view->SetCornerRadius(
       ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
           views::Emphasis::kHigh));
-  frame_view->SetDisplayVisibleArrow(params.arrow != HelpBubbleArrow::kNone);
+  frame_view->SetDisplayVisibleArrow(!force_anchor_rect_.has_value() &&
+                                     params.arrow != HelpBubbleArrow::kNone);
   SizeToContents();
 
   widget->ShowInactive();
@@ -613,6 +618,10 @@ gfx::Size HelpBubbleView::CalculatePreferredSize() const {
   }
 
   return layout_manager_preferred_size;
+}
+
+gfx::Rect HelpBubbleView::GetAnchorRect() const {
+  return force_anchor_rect_.value_or(BubbleDialogDelegateView::GetAnchorRect());
 }
 
 // static
