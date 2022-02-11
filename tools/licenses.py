@@ -384,7 +384,6 @@ KNOWN_NON_IOS_LIBRARIES = set([
     os.path.join('third_party', 'swiftshader'),
     os.path.join('third_party', 'swig'),
     os.path.join('third_party', 'talloc'),
-    os.path.join('third_party', 'tcmalloc'),
     os.path.join('third_party', 'usb_ids'),
     os.path.join('third_party', 'v8-i18n'),
     os.path.join('third_party', 'wtl'),

@@ -13,7 +13,6 @@ include_rules = [
   # in the gn build; see //base/BUILD.gn's conditional dependency on
   # //build/rust:cxx_cppdeps.
   "+third_party/rust/cxx",
-  "+third_party/tcmalloc",
   "+third_party/test_fonts",
 
   # These are implicitly brought in from the root, and we don't want them.

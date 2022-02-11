@@ -44,14 +44,14 @@ namespace allocator {
 //   consists of a single AllocatorDispatch element, herein called
 //   the "default dispatch", which is statically defined at build time and
 //   ultimately routes the calls to the actual allocator defined by the build
-//   config (tcmalloc, glibc, ...).
+//   config (glibc, ...).
 //
 // It is possible to dynamically insert further AllocatorDispatch stages
 // to the front of the chain, for debugging / profiling purposes.
 //
 // All the functions must be thread safe. The shim does not enforce any
-// serialization. This is to route to thread-aware allocators (e.g, tcmalloc)
-// wihout introducing unnecessary perf hits.
+// serialization. This is to route to thread-aware allocators without
+// introducing unnecessary perf hits.
 
 struct AllocatorDispatch {
   using AllocFn = void*(const AllocatorDispatch* self,

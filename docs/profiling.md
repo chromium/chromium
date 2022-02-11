@@ -31,14 +31,9 @@ Profiling should always be done on a Release build, which has very similar perfo
     is_debug = false
     blink_symbol_level = 2
     symbol_level = 2
-    use_allocator = "tcmalloc"
 
     # Needed for built-in profiling only
     enable_profiling = true
-
-## Profiling using built-in tcmalloc profiler
-
-Profiling support is built into tcmalloc and exposed in chromium, so any platform that uses tcmalloc should be able to generate profiling data without using external tools.
 
 #### Preparing your environment
 

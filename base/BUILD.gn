@@ -1410,7 +1410,6 @@ mixed_component("base") {
   ]
 
   deps = [
-    "//base/allocator",
     "//base/allocator:buildflags",
     "//base/third_party/double_conversion",
     "//base/third_party/dynamic_annotations",

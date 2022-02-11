@@ -334,8 +334,7 @@ constexpr size_t kMinDirectMappedDownsize = kMaxBucketed + 1;
 // fails. This is a security choice in Chrome, to help making size_t vs int bugs
 // harder to exploit.
 //
-// There are matching limits in other allocators, such as tcmalloc. See
-// crbug.com/998048 for details.
+
 PAGE_ALLOCATOR_CONSTANTS_DECLARE_CONSTEXPR ALWAYS_INLINE size_t
 MaxDirectMapped() {
   // Subtract kSuperPageSize to accommodate for granularity inside

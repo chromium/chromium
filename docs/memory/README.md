@@ -45,8 +45,8 @@ Second, familiarize yourself with the following:
 There are roughly three types of memory work within Chrome:
 
 * Team based, targeted improvements. Examples include:
-    * memory reductions for specific components like v8
-    * allocator improvements: tcmalloc for linux + cros, PartitionAlloc for blink, etc.
+    * memory reductions for specific components [e.g. for v8]
+    * allocator improvements [e.g. PartitionAlloc]
     * memory purging at appropriate times [e.g. on tab background]
     * better memory pressure signals
 * Memlog: Heap profiling in the wild for regression detection + root cause

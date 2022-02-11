@@ -147,8 +147,8 @@ bool g_instance_already_created = false;
 // (to make debugging easier) and also exit with a known error code (so that
 // the test framework considers this a failure -- http://crbug.com/57578).
 // Note: We only want to do this in the browser process, and not forked
-// processes. That might lead to hangs because of locks inside tcmalloc or the
-// OS. See http://crbug.com/141302.
+// processes. That might lead to hangs because of locks inside the OS.
+// See http://crbug.com/141302.
 int g_browser_process_pid;
 
 void DumpStackTraceSignalHandler(int signal) {

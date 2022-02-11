@@ -7,13 +7,6 @@ import("//build/buildflag_header.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
 
-# This "allocator" meta-target will forward to the default allocator according
-# to the build settings.
-# TODO(crbug.com/1257213): Remove this, since it was only here for tcmalloc.
-# TODO(crbug.com/1257213): Remove the tcmalloc sources: //third-party/tcmalloc.
-group("allocator") {
-}
-
 buildflag_header("buildflags") {
   header = "buildflags.h"
   _use_partition_alloc_as_malloc = use_allocator == "partition"

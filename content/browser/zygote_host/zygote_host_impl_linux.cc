@@ -267,12 +267,6 @@ void ZygoteHostImpl::AdjustRendererOOMScore(base::ProcessHandle pid,
   if (selinux)
     return;
 
-  // If heap profiling is running, these processes are not exiting, at least
-  // on ChromeOS. The easiest thing to do is not launch them when profiling.
-  // TODO(stevenjb): Investigate further and fix.
-  if (base::allocator::IsHeapProfilerRunning())
-    return;
-
   std::vector<std::string> adj_oom_score_cmdline;
   adj_oom_score_cmdline.push_back(sandbox_binary_);
   adj_oom_score_cmdline.push_back(sandbox::kAdjustOOMScoreSwitch);

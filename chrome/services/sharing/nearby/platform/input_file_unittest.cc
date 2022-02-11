@@ -108,7 +108,7 @@ TEST_F(InputFileTest, TestRead_Valid_ChunkLargerThanFileSize) {
 }
 
 TEST_F(InputFileTest, TestRead_Valid_LargeFileSize) {
-  // 100MB. 1GB does pass, but tcmalloc complains about a large alloc.
+  // 100MB
   CreateValidInputFile(kTestDataSize * 100);
   VerifyRead(kChunkSize);
 }

@@ -27,7 +27,7 @@ _is_partition_alloc_platform = !is_nacl && !is_ios
 #     against the debug CRT with "is_nacl=false".
 # Under Fuchsia the allocator shim is only required for PA-E.
 # For all other platforms & configurations, the shim is required, to replace
-#     the default system allocators, e.g. with tcmalloc.
+#     the default system allocators, e.g. with Partition Alloc.
 if ((is_linux || is_chromeos || is_android || is_apple ||
      (is_fuchsia && !_disable_partition_alloc) ||
      (is_win && !is_component_build && !is_debug)) && !_is_using_sanitizers) {
@@ -67,7 +67,6 @@ if (!use_partition_alloc && use_allocator == "partition") {
   use_allocator = "none"
 }
 
-# TODO(crbug.com/1257213): Completely remove tcmalloc and related files.
 assert(use_allocator == "none" || use_allocator == "partition")
 
 assert(

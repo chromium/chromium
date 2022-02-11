@@ -2231,8 +2231,7 @@ config("afdo_optimize_size") {
 }
 
 # GCC and clang support a form of profile-guided optimization called AFDO.
-# There are some targeted places that AFDO regresses (and an icky interaction
-# between //base/allocator:tcmalloc and AFDO on GCC), so we provide a separate
+# There are some targeted places that AFDO regresses, so we provide a separate
 # config to allow AFDO to be disabled per-target.
 config("afdo") {
   if (is_clang) {

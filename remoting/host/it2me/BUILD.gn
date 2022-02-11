@@ -221,7 +221,6 @@ if (!is_chromeos_ash && enable_remoting_host) {
 
       deps = [
         ":main_headers",
-        "//base/allocator",
         "//remoting/host/win:dpi_aware_exe_manifest",
         "//remoting/host/win:remoting_core",
         "//remoting/host/win:remoting_windows_resources",
@@ -247,7 +246,6 @@ if (!is_chromeos_ash && enable_remoting_host) {
 
       deps = [
         ":main_headers",
-        "//base/allocator",
         "//remoting/host/win:remoting_core",
         "//remoting/host/win:remoting_windows_resources",
       ]

@@ -184,7 +184,6 @@ IGNORED_PATHS = (
   'third_party/libxml/linux/xml2-config',
   'third_party/protobuf/',
   'third_party/sqlite/',
-  'third_party/tcmalloc/',
 )
 
 #### USER EDITABLE SECTION ENDS HERE ####
