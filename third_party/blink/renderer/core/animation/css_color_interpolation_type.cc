@@ -117,6 +117,31 @@ Color CSSColorInterpolationType::GetRGBA(const InterpolableValue& value) {
                         color[kAlpha]));
 }
 
+bool CSSColorInterpolationType::IsRGBA(const InterpolableValue& value) {
+  if (!value.IsList())
+    return false;
+
+  const InterpolableList& list = To<InterpolableList>(value);
+  if (list.length() != kInterpolableColorIndexCount)
+    return false;
+
+  for (wtf_size_t i = 0; i < list.length(); i++) {
+    if (!list.Get(i)->IsNumber())
+      return false;
+  }
+
+  // Values stored outside of the RGBA range of indices indicate fractional
+  // blending amounts and are important for resolving the color. If any of these
+  // store a non-zero value, then the interpolated color is not the same as the
+  // color produced by simply looking at the RGBA values.
+  for (wtf_size_t i = kCurrentcolor; i < list.length(); i++) {
+    if (To<InterpolableNumber>(*(list.Get(i))).Value() != 0)
+      return false;
+  }
+
+  return true;
+}
+
 static void AddPremultipliedColor(double& red,
                                   double& green,
                                   double& blue,

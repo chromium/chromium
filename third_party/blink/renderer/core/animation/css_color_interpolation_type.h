@@ -48,6 +48,9 @@ class CORE_EXPORT CSSColorInterpolationType : public CSSInterpolationType {
   // a InterpolableList.
   static Color GetRGBA(const InterpolableValue&);
 
+  // Determines if an interpolation values represents an RGBA color value.
+  static bool IsRGBA(const InterpolableValue&);
+
  private:
   InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,
                                          ConversionCheckers&) const final;

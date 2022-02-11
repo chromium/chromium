@@ -90,6 +90,7 @@ bool GetColorsFromKeyframe(const PropertySpecificKeyframe* frame,
     // TODO(crbug.com/1255912): handle system color.
     if (!computed_value->IsColorValue())
       return false;
+
     const cssvalue::CSSColor* color_value =
         static_cast<const cssvalue::CSSColor*>(computed_value);
     animated_colors->push_back(color_value->Value());
@@ -99,8 +100,20 @@ bool GetColorsFromKeyframe(const PropertySpecificKeyframe* frame,
         To<TransitionKeyframe::PropertySpecificKeyframe>(frame);
     InterpolableValue* value =
         keyframe->GetValue()->Value().interpolable_value.get();
+
+    if (!value->IsList())
+      return false;
+
+    // Transition keyframes store a pair of color values: one for the actual
+    // color and one for the reported color (conditionally resolved). This is to
+    // prevent JavaScript code from snooping the visited status of links. The
+    // color to use for the animation is stored first in the list.
+    // We need to further check that the color is a simple RGBA color and does
+    // not require blending with other colors (e.g. currentcolor).
     const InterpolableList& list = To<InterpolableList>(*value);
-    // Only the first one has the real value.
+    if (!CSSColorInterpolationType::IsRGBA(*(list.Get(0))))
+      return false;
+
     Color rgba = CSSColorInterpolationType::GetRGBA(*(list.Get(0)));
     animated_colors->push_back(rgba);
   }
