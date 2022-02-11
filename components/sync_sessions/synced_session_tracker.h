@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
@@ -26,14 +25,6 @@
 namespace sync_sessions {
 
 class SyncSessionsClient;
-
-// TODO(crbug.com/882489): Remove feature toggle during code cleanup when a
-// satisfying solution is found for closed tabs.
-inline constexpr base::Feature kDeferRecyclingOfSyncTabNodesIfUnsynced{
-    "DeferRecyclingOfSyncTabNodesIfUnsynced", base::FEATURE_ENABLED_BY_DEFAULT};
-
-inline constexpr base::Feature kSyncPopulateTabBrowserTypeInGetData{
-    "SyncPopulateTabBrowserTypeInGetData", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Class to manage synced sessions. The tracker will own all SyncedSession
 // and SyncedSessionTab objects it creates, and deletes them appropriately on

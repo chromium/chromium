@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sync/base/time.h"
@@ -622,49 +621,7 @@ TEST_F(LocalSessionEventHandlerImplTest, PropagateNewTab) {
   AddTab(kWindowId1, kBar1, kTabId2);
 }
 
-TEST_F(LocalSessionEventHandlerImplTest,
-       PropagateClosedTabWithoutDeferredRecyclingNorImmediateDeletion) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{kDeferRecyclingOfSyncTabNodesIfUnsynced,
-                             kTabNodePoolImmediateDeletion});
-
-  AddWindow(kWindowId1);
-  AddTab(kWindowId1, kFoo1, kTabId1);
-  TestSyncedTabDelegate* tab2 = AddTab(kWindowId1, kBar1, kTabId2);
-
-  InitHandler();
-
-  // Closing a tab (later below) is expected to verify if the sync entity is
-  // unsynced.
-  EXPECT_CALL(mock_delegate_, IsTabNodeUnsynced(/*tab_node_id=*/0));
-
-  // Closing a tab is expected to update the header and the remaining tab (this
-  // test issues a navigation for it, but it would have been updated anyway).
-  auto mock_batch = std::make_unique<StrictMock<MockWriteBatch>>();
-  EXPECT_CALL(
-      *mock_batch,
-      Put(Pointee(MatchesHeader(kSessionTag, {kWindowId1}, {kTabId2}))));
-  EXPECT_CALL(*mock_batch,
-              Put(Pointee(MatchesTab(kSessionTag, kWindowId1, kTabId2,
-                                     /*tab_node_id=*/1, /*urls=*/{kBar1}))));
-  EXPECT_CALL(*mock_batch, Commit());
-  EXPECT_CALL(mock_delegate_, CreateLocalSessionWriteBatch())
-      .WillOnce(Return(ByMove(std::move(mock_batch))));
-
-  // Close tab and force reassociation.
-  window_getter_.CloseTab(SessionID::FromSerializedValue(kTabId1));
-  handler_->OnLocalTabModified(tab2);
-}
-
 TEST_F(LocalSessionEventHandlerImplTest, PropagateClosedTab) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{kDeferRecyclingOfSyncTabNodesIfUnsynced,
-                            kTabNodePoolImmediateDeletion},
-      /*disabled_features=*/{});
-
   // We start with three tabs.
   AddWindow(kWindowId1);
   AddTab(kWindowId1, kFoo1, kTabId1);

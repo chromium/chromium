@@ -222,9 +222,6 @@ const sessions::SessionTab* SyncedSessionTracker::LookupSessionTab(
 absl::optional<sync_pb::SessionWindow::BrowserType>
 SyncedSessionTracker::LookupWindowType(const std::string& session_tag,
                                        SessionID window_id) const {
-  if (!base::FeatureList::IsEnabled(kSyncPopulateTabBrowserTypeInGetData))
-    return absl::nullopt;
-
   const TrackedSession* session = LookupTrackedSession(session_tag);
   if (!session)
     return absl::nullopt;
@@ -377,9 +374,7 @@ void SyncedSessionTracker::CleanupSessionImpl(
 
       if ((time_since_last_modified < kMaxUnmappedButUnsyncedLocalTabAge) &&
           num_unmapped_and_unsynced < kMaxUnmappedButUnsyncedLocalTabCount &&
-          is_tab_node_unsynced_cb.Run(tab_node_id) &&
-          base::FeatureList::IsEnabled(
-              kDeferRecyclingOfSyncTabNodesIfUnsynced)) {
+          is_tab_node_unsynced_cb.Run(tab_node_id)) {
         // Our caller has decided that this tab node cannot be reused at this
         // point because there are pending changes to be committed that would
         // otherwise be lost). Hence, it stays unmapped but we do not free the

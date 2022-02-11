@@ -15,9 +15,6 @@
 
 namespace sync_sessions {
 
-const size_t TabNodePool::kFreeNodesLowWatermark = 25;
-const size_t TabNodePool::kFreeNodesHighWatermark = 100;
-
 TabNodePool::TabNodePool() : max_used_tab_node_id_(kInvalidTabNodeID) {}
 
 // static
@@ -144,44 +141,23 @@ SessionID TabNodePool::GetTabIdFromTabNodeId(int tab_node_id) const {
 }
 
 std::set<int> TabNodePool::CleanupFreeTabNodes() {
-  if (base::FeatureList::IsEnabled(kTabNodePoolImmediateDeletion)) {
-    // Convert all free nodes into missing nodes, each representing a deletion.
-    missing_nodes_pool_.insert(free_nodes_pool_.begin(),
-                               free_nodes_pool_.end());
-    std::set<int> deleted_node_ids = std::move(free_nodes_pool_);
-    free_nodes_pool_.clear();
+  // Convert all free nodes into missing nodes, each representing a deletion.
+  missing_nodes_pool_.insert(free_nodes_pool_.begin(), free_nodes_pool_.end());
+  std::set<int> deleted_node_ids = std::move(free_nodes_pool_);
+  free_nodes_pool_.clear();
 
-    // As an optimization to save memory, update |max_used_tab_node_id_| and
-    // shrink |missing_nodes_pool_| appropriately.
-    if (nodeid_tabid_map_.empty()) {
-      max_used_tab_node_id_ = kInvalidTabNodeID;
-    } else {
-      max_used_tab_node_id_ = nodeid_tabid_map_.rbegin()->first;
-    }
-
-    missing_nodes_pool_.erase(
-        missing_nodes_pool_.upper_bound(max_used_tab_node_id_),
-        missing_nodes_pool_.end());
-
-    return deleted_node_ids;
+  // As an optimization to save memory, update |max_used_tab_node_id_| and
+  // shrink |missing_nodes_pool_| appropriately.
+  if (nodeid_tabid_map_.empty()) {
+    max_used_tab_node_id_ = kInvalidTabNodeID;
+  } else {
+    max_used_tab_node_id_ = nodeid_tabid_map_.rbegin()->first;
   }
 
-  // If number of free nodes exceed kFreeNodesHighWatermark,
-  // delete sync nodes till number reaches kFreeNodesLowWatermark.
-  // Note: This logic is to mitigate temporary disassociation issues with old
-  // clients: https://crbug.com/259918. Newer versions do not need this.
-  if (free_nodes_pool_.size() <= kFreeNodesHighWatermark) {
-    return std::set<int>();
-  }
+  missing_nodes_pool_.erase(
+      missing_nodes_pool_.upper_bound(max_used_tab_node_id_),
+      missing_nodes_pool_.end());
 
-  std::set<int> deleted_node_ids;
-  while (free_nodes_pool_.size() > kFreeNodesLowWatermark) {
-    // We delete the largest IDs first, to achieve more compaction.
-    const int tab_node_id = *free_nodes_pool_.rbegin();
-    deleted_node_ids.insert(tab_node_id);
-    missing_nodes_pool_.insert(tab_node_id);
-    free_nodes_pool_.erase(tab_node_id);
-  }
   return deleted_node_ids;
 }
 

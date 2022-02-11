@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/feature_list.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -18,9 +17,6 @@
 namespace syncer {
 
 namespace {
-
-constexpr base::Feature kSyncResetVeryShortPollInterval{
-    "SyncResetVeryShortPollInterval", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // 64-bit integer serialization of the base::Time when the last sync occurred.
 const char kSyncLastSyncedTime[] = "sync.last_synced_time";
@@ -214,8 +210,7 @@ base::TimeDelta SyncTransportDataPrefs::GetPollInterval() const {
   // callers to use a reasonable default value instead.
   // This fixes a past bug where stored pref values were accidentally
   // re-interpreted from "seconds" to "microseconds"; see crbug.com/1246850.
-  if (poll_interval < base::Minutes(1) &&
-      base::FeatureList::IsEnabled(kSyncResetVeryShortPollInterval)) {
+  if (poll_interval < base::Minutes(1)) {
     pref_service_->ClearPref(kSyncPollIntervalSeconds);
     return base::TimeDelta();
   }

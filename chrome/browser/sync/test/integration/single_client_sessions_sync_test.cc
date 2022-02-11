@@ -448,19 +448,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, NavigateThenCloseTab) {
           .Wait());
 }
 
-class SingleClientSessionsWithDeferRecyclingSyncTest
-    : public SingleClientSessionsSyncTest {
- public:
-  SingleClientSessionsWithDeferRecyclingSyncTest() {
-    features_.InitAndEnableFeature(
-        sync_sessions::kDeferRecyclingOfSyncTabNodesIfUnsynced);
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsWithDeferRecyclingSyncTest,
+IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
                        NavigateThenCloseTabThenOpenTab) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
   ASSERT_TRUE(CheckInitialState(0));
