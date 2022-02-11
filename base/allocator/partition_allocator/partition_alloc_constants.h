@@ -212,7 +212,17 @@ constexpr size_t kSuperPageBaseMask = ~kSuperPageOffsetMask & kMemTagUnmask;
 #if defined(PA_HAS_64_BITS_POINTERS)
 // The Configurable Pool is only available in 64-bit mode
 constexpr size_t kNumPools = 3;
+
+#if BUILDFLAG(IS_MAC)
+// Special-case macOS. Contrary to other platforms, there is no sandbox limit
+// there, meaning that a single renderer could "happily" consume >8GiB. So the
+// 8GiB pool size is a regression. Make the limit higher on this platform only
+// to be consistent with previous behavior. See crbug.com/1232567 for details.
+constexpr size_t kPoolMaxSize = 16 * kGiB;
+#else
 constexpr size_t kPoolMaxSize = 8 * kGiB;
+#endif  // BUILDFLAG(IS_MAC)
+
 #else
 constexpr size_t kNumPools = 2;
 constexpr size_t kPoolMaxSize = 4 * kGiB;
