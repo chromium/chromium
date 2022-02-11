@@ -2592,8 +2592,22 @@
        {}
       ]
      ],
+     "selectall-selection-modify-move-forward-lineboundary-selectall-around-editable-canvas.html": [
+      "8e57700af5f9c30fe93186a18408538f11bf6bb3",
+      [
+       null,
+       {}
+      ]
+     ],
      "selection-modify-around-input-in-contenteditable.html": [
       "90b615da5cdd2ad51782577a3b90a4106be5e128",
+      [
+       null,
+       {}
+      ]
+     ],
+     "selection-modify-extend-backward-character-to-outside-body-in-designMode.html": [
+      "9f465cc462115d32bf6a29dac9df967957caad81",
       [
        null,
        {}
@@ -80851,6 +80865,32 @@
       ],
       "grid-item-fragmentation-043.html": [
        "7a4ddc54e21206a723e5f7f1dd53902d1718eedd",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-fragmentation-044.html": [
+       "8c028479bc87d424f8e29a13780966d6ec475dd4",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-item-fragmentation-045.html": [
+       "2b3c7607ee045e93f7d9749ed84cc06373333d76",
        [
         null,
         [
@@ -231817,6 +231857,10 @@
      "0afbe29a53e8071333a5d6b6ef790284d63a156a",
      []
     ],
+    "idlharness-shadowrealm.window-expected.txt": [
+     "2db45e1a047c174b9c072cddd88d6f749c59eb7c",
+     []
+    ],
     "resources": {
      "concatenate-stream.js": [
       "a35bb1416e754893e331c0089d97720ae3b5af8e",
@@ -234423,6 +234467,18 @@
     ],
     "OWNERS": [
      "f0d1e9f64b369dd5c46866e3008aac3f9c710215",
+     []
+    ],
+    "fedcm-logout.https.html.headers": [
+     "90454dbb227b7a3be84fe4618980ef7e74622099",
+     []
+    ],
+    "fedcm-revoke.https.html.headers": [
+     "fd82d505dd48e2018b0689e751a572a6fd261376",
+     []
+    ],
+    "fedcm.https.html.headers": [
+     "e907cdd15d72a612b8dc06ddc68b47f05e1a4c18",
      []
     ],
     "federatedcredential-framed-get.sub.https-expected.txt": [
@@ -279395,7 +279451,7 @@
       []
      ],
      "general-guidelines.md": [
-      "a4278a7e0b68628f5959d1a8eae44ee10de3179b",
+      "e80eac55b28a5d9ca71e107092589a74802a5a3e",
       []
      ],
      "github-intro.md": [
@@ -279412,6 +279468,10 @@
      ],
      "index.md": [
       "e5739c9a6e60e32f2e83f6efad06449a3d9c1c26",
+      []
+     ],
+     "interacting-features.md": [
+      "b8c6ce389520d5655dd10de3cc928dc9084679d1",
       []
      ],
      "lint-tool.md": [
@@ -281235,6 +281295,10 @@
     ],
     "eof-utf-8-two-ref.html": [
      "76f39862339fe733205fdbe4d312d7b0d2639366",
+     []
+    ],
+    "idlharness-shadowrealm.window-expected.txt": [
+     "2db45e1a047c174b9c072cddd88d6f749c59eb7c",
      []
     ],
     "iso-2022-jp-decoder.any-expected.txt": [
@@ -284586,7 +284650,7 @@
        []
       ],
       "service-worker-bridge.html": [
-       "9bee90d210580b371dfadbff3061b666b0b83dbe",
+       "816de535feaa83c224e76159d3defa571b1199fe",
        []
       ],
       "service-worker.js": [
@@ -284622,6 +284686,10 @@
        []
       ]
      },
+     "service-worker-background-fetch.https.window-expected.txt": [
+      "5f2713b8cf35c6482010b6194c0bfaf72ff38e6a",
+      []
+     ],
      "service-worker-fetch.https.window-expected.txt": [
       "716cc67bdef69bfb4a99cafcc8e0af6c16e94787",
       []
@@ -286471,6 +286539,10 @@
     ],
     "cross-origin-isolated-timing-attack.https.html.headers": [
      "5f8621ef83660c66f0d037ea28fafefb558140f1",
+     []
+    ],
+    "idlharness-shadowrealm.window-expected.txt": [
+     "2db45e1a047c174b9c072cddd88d6f749c59eb7c",
      []
     ],
     "resources": {
@@ -291532,6 +291604,10 @@
      ],
      "elements-text.js": [
       "f71df48ee3c86afd9f7b634f3c390a9ccc9d4933",
+      []
+     ],
+     "idlharness-shadowrealm.window-expected.txt": [
+      "2db45e1a047c174b9c072cddd88d6f749c59eb7c",
       []
      ],
      "idlharness.https_exclude=(Document_Window_HTML._)-expected.txt": [
@@ -307919,6 +307995,10 @@
      "89fae1db0d9b7afd202737e34754b4e893298d49",
      []
     ],
+    "idlharness-shadowrealm.window-expected.txt": [
+     "2db45e1a047c174b9c072cddd88d6f749c59eb7c",
+     []
+    ],
     "performanceobservers.js": [
      "3f357374efdfc2245ee63ff54eb557291449f9db",
      []
@@ -315569,6 +315649,10 @@
      "9ab6e1284ad50d2982ea1f6fc78d7a519e796460",
      []
     ],
+    "idlharness-shadowrealm.window-expected.txt": [
+     "2db45e1a047c174b9c072cddd88d6f749c59eb7c",
+     []
+    ],
     "idlharness.any-expected.txt": [
      "a815d7e755432b949a01e52188f3d35936ac6520",
      []
@@ -317845,6 +317929,10 @@
      "50a71bb482df9e21f6385973268f9e95b3464e7c",
      []
     ],
+    "idlharness-shadowrealm.window-expected.txt": [
+     "2db45e1a047c174b9c072cddd88d6f749c59eb7c",
+     []
+    ],
     "percent-encoding.window-expected.txt": [
      "a4b0a3a4fa78feed4a378a69b0cba5aee47feec8",
      []
@@ -317919,6 +318007,10 @@
     ],
     "META.yml": [
      "5cb2a789c09c89b7c1029551e646b3f240e80c2a",
+     []
+    ],
+    "idlharness-shadowrealm.window-expected.txt": [
+     "2db45e1a047c174b9c072cddd88d6f749c59eb7c",
      []
     ],
     "resources": {
@@ -349786,6 +349878,20 @@
       }
      ]
     ],
+    "idlharness-shadowrealm.window.js": [
+     "2fdc807ee07e329fd017db31025b857b957e8040",
+     [
+      "compression/idlharness-shadowrealm.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/idlharness-shadowrealm.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "idlharness.https.any.js": [
      "8d96cf523c495389ec5bfdea921a65d4dd0cd1e3",
      [
@@ -358358,21 +358464,21 @@
      ]
     ],
     "fedcm-logout-rps.https.html": [
-     "dc3599272101ee6fdf0827dd441f63592c623c89",
+     "d9495266183f5bb5e4ddbd9c55d4d3848e068924",
      [
       null,
       {}
      ]
     ],
     "fedcm-revoke.https.html": [
-     "c014724b8173e47e9d9ffb00a08537055c3f8003",
+     "73ccb85d42e7a8002d8438d7f5870c0b69b1c006",
      [
       null,
       {}
      ]
     ],
     "fedcm.https.html": [
-     "618f0ec3c24e5cca8512748d972357e03590d77e",
+     "688212e2ed2a306a0d588de197d94b46520c4a4c",
      [
       null,
       {}
@@ -395536,6 +395642,20 @@
       }
      ]
     ],
+    "idlharness-shadowrealm.window.js": [
+     "baf3efcbb027e4f44df8d42a9ab0e6350bad328e",
+     [
+      "encoding/idlharness-shadowrealm.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/idlharness-shadowrealm.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "idlharness.any.js": [
      "acd100c43b461c85399407087d20a51a57ce8352",
      [
@@ -419157,6 +419277,24 @@
        }
       ]
      ],
+     "service-worker-background-fetch.https.window.js": [
+      "6369b166e21ef023c17ec5140282990092621990",
+      [
+       "fetch/private-network-access/service-worker-background-fetch.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "service-worker-fetch.https.window.js": [
       "5645d78456156d09afd5b074c24215de83b19c4a",
       [
@@ -421848,6 +421986,20 @@
      [
       null,
       {}
+     ]
+    ],
+    "idlharness-shadowrealm.window.js": [
+     "3209db5f41b721a2cb2376e3b79bf21bc0f0da08",
+     [
+      "hr-time/idlharness-shadowrealm.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/idlharness-shadowrealm.js"
+        ]
+       ]
+      }
      ]
     ],
     "idlharness.any.js": [
@@ -448678,6 +448830,20 @@
       [
        null,
        {}
+      ]
+     ],
+     "idlharness-shadowrealm.window.js": [
+      "cb9449acb1bd02544467b575f0194afc14c91383",
+      [
+       "html/dom/idlharness-shadowrealm.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/idlharness-shadowrealm.js"
+         ]
+        ]
+       }
       ]
      ],
      "idlharness.worker.js": [
@@ -481099,6 +481265,20 @@
       {}
      ]
     ],
+    "idlharness-shadowrealm.window.js": [
+     "6caaa3306132bdc930e5bbae24981f01d0022a0a",
+     [
+      "performance-timeline/idlharness-shadowrealm.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/idlharness-shadowrealm.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "idlharness.any.js": [
      "32efebe98ffd472ee1010027ff966a1ef907f17d",
      [
@@ -506328,6 +506508,20 @@
     ]
    },
    "streams": {
+    "idlharness-shadowrealm.window.js": [
+     "099b2475ca7e8795a685a080d48b0c0b05fd886d",
+     [
+      "streams/idlharness-shadowrealm.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/idlharness-shadowrealm.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "idlharness.any.js": [
      "42a17da58c5ae390234ee394303aa2fe6a72ebdd",
      [
@@ -517295,6 +517489,20 @@
       {}
      ]
     ],
+    "idlharness-shadowrealm.window.js": [
+     "2373f84e0e251a967c221ee63a1f7076bb089f78",
+     [
+      "url/idlharness-shadowrealm.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/idlharness-shadowrealm.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "idlharness.any.js": [
      "4a0e52f12b3c32b63cd4723b6b68bfd793e02700",
      [
@@ -517919,6 +518127,20 @@
      [
       "user-timing/entry_type.any.worker.html",
       {}
+     ]
+    ],
+    "idlharness-shadowrealm.window.js": [
+     "340da96f749d4910af1c487fa3ae0fa9d91f4d59",
+     [
+      "user-timing/idlharness-shadowrealm.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/idlharness-shadowrealm.js"
+        ]
+       ]
+      }
      ]
     ],
     "idlharness.any.js": [
