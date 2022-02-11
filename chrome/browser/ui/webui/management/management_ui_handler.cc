@@ -162,6 +162,8 @@ enum class ReportingType {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kManagementLogUploadEnabled[] = "managementLogUploadEnabled";
 const char kManagementReportActivityTimes[] = "managementReportActivityTimes";
+const char kManagementReportDeviceAudioStatus[] =
+    "managementReportDeviceAudioStatus";
 const char kManagementReportNetworkData[] = "managementReportNetworkData";
 const char kManagementReportHardwareData[] = "managementReportHardwareData";
 const char kManagementReportUsers[] = "managementReportUsers";
@@ -583,6 +585,15 @@ void ManagementUIHandler::AddDeviceReportingInfo(
   if (uploader->upload_enabled()) {
     AddDeviceReportingElement(report_sources, kManagementLogUploadEnabled,
                               DeviceReportingType::kLogs);
+  }
+
+  bool report_audio_status = false;
+  chromeos::CrosSettings::Get()->GetBoolean(ash::kReportDeviceAudioStatus,
+                                            &report_audio_status);
+  if (report_audio_status) {
+    AddDeviceReportingElement(report_sources,
+                              kManagementReportDeviceAudioStatus,
+                              DeviceReportingType::kDevice);
   }
 
   bool report_print_jobs = false;

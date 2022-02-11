@@ -110,6 +110,9 @@
     <message name="IDS_MANAGEMENT_REPORT_DEVICE_ACTIVITY_TIMES" desc="Message stating that administrators see device activity times.">
       Who has used the device recently and when
     </message>
+    <message name="IDS_MANAGEMENT_REPORT_DEVICE_AUDIO_STATUS" desc="Message stating that administrators see attached audio peripherals.">
+      Audio peripherals attached
+    </message>
     <message name="IDS_MANAGEMENT_REPORT_DEVICE_HARDWARE_STATUS" desc="Message stating that administrators see device hardware status.">
       Device statistics such as CPU/RAM usage
     </message>
