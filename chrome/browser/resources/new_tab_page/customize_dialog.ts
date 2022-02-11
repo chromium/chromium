@@ -27,7 +27,7 @@ import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {createScrollBorders} from './utils.js';
 
 
-interface CustomizeDialogElement {
+export interface CustomizeDialogElement {
   $: {
     backgrounds: CustomizeBackgroundsElement,
     bottomPageScrollBorder: HTMLElement,
@@ -44,7 +44,7 @@ interface CustomizeDialogElement {
  * Dialog that lets the user customize the NTP such as the background color or
  * image.
  */
-class CustomizeDialogElement extends I18nMixin
+export class CustomizeDialogElement extends I18nMixin
 (PolymerElement) {
   static get is() {
     return 'ntp-customize-dialog';
@@ -193,6 +193,12 @@ class CustomizeDialogElement extends I18nMixin
     }
     this.pageHandler_.onCustomizeDialogAction(
         CustomizeDialogAction.kBackgroundsRefreshToggleClicked);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-customize-dialog': CustomizeDialogElement;
   }
 }
 

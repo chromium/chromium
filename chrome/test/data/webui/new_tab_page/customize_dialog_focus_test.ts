@@ -5,16 +5,17 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://new-tab-page/lazy_load.js';
 
+import {CustomizeDialogElement} from 'chrome://new-tab-page/lazy_load.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {keydown} from './test_support.js';
 
 suite('NewTabPageCustomizeDialogFocusTest', () => {
-  /** @type {!CustomizeDialogElement} */
-  let customizeDialog;
+  let customizeDialog: CustomizeDialogElement;
 
   setup(() => {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
 
     customizeDialog = document.createElement('ntp-customize-dialog');
     document.body.appendChild(customizeDialog);
@@ -23,8 +24,9 @@ suite('NewTabPageCustomizeDialogFocusTest', () => {
 
   test('space selects focused menu item', () => {
     // Arrange.
-    const menuItem = customizeDialog.shadowRoot.querySelector(
+    const menuItem = customizeDialog.shadowRoot!.querySelector<HTMLElement>(
         '.menu-item[page-name=themes]');
+    assertTrue(!!menuItem);
     menuItem.focus();
 
     // Act.
@@ -38,8 +40,9 @@ suite('NewTabPageCustomizeDialogFocusTest', () => {
 
   test('enter selects focused menu item', () => {
     // Arrange.
-    const menuItem = customizeDialog.shadowRoot.querySelector(
+    const menuItem = customizeDialog.shadowRoot!.querySelector<HTMLElement>(
         '.menu-item[page-name=shortcuts]');
+    assertTrue(!!menuItem);
     menuItem.focus();
 
     // Act.

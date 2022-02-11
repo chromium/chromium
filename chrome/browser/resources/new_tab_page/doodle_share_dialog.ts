@@ -22,15 +22,19 @@ import {WindowProxy} from './window_proxy.js';
  */
 const FACEBOOK_APP_ID: number = 738026486351791;
 
-interface DoodleShareDialogElement {
+export interface DoodleShareDialogElement {
   $: {
     dialog: CrDialogElement,
+    copyButton: HTMLElement,
+    doneButton: HTMLElement,
+    emailButton: HTMLElement,
+    title: HTMLElement,
     url: CrInputElement,
   };
 }
 
 /** Dialog that lets the user share the doodle. */
-class DoodleShareDialogElement extends I18nMixin
+export class DoodleShareDialogElement extends I18nMixin
 (PolymerElement) {
   static get is() {
     return 'ntp-doodle-share-dialog';
@@ -88,6 +92,12 @@ class DoodleShareDialogElement extends I18nMixin
 
   private notifyShare_(channel: DoodleShareChannel) {
     this.dispatchEvent(new CustomEvent('share', {detail: channel}));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'ntp-doodle-share-dialog': DoodleShareDialogElement;
   }
 }
 

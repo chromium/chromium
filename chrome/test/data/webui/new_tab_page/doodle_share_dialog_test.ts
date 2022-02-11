@@ -4,20 +4,18 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {DoodleShareDialogElement, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 import {installMock} from './test_support.js';
 
 suite('NewTabPageDoodleShareDialogTest', () => {
-  /** @type {!DoodleShareDialogElement} */
-  let doodleShareDialog;
-
-  /** @type {!TestBrowserProxy} */
-  let windowProxy;
+  let doodleShareDialog: DoodleShareDialogElement;
+  let windowProxy: TestBrowserProxy;
 
   setup(() => {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
 
     windowProxy = installMock(WindowProxy);
 
@@ -64,7 +62,8 @@ suite('NewTabPageDoodleShareDialogTest', () => {
       doodleShareDialog.url = {url: 'https://bar.com'};
 
       // Act.
-      doodleShareDialog.$[buttonId].click();
+      doodleShareDialog.shadowRoot!.querySelector<HTMLElement>(
+                                       `#${buttonId}`)!.click();
 
       // Assert.
       const openedUrl = await windowProxy.whenCalled('open');

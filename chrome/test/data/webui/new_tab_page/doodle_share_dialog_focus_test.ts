@@ -5,12 +5,14 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://new-tab-page/new_tab_page.js';
 
+import {DoodleShareDialogElement} from 'chrome://new-tab-page/new_tab_page.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+
 suite('NewTabPageDoodleShareDialogFocusTest', () => {
-  /** @type {!DoodleShareDialogElement} */
-  let doodleShareDialog;
+  let doodleShareDialog: DoodleShareDialogElement;
 
   setup(() => {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     doodleShareDialog = document.createElement('ntp-doodle-share-dialog');
     document.body.appendChild(doodleShareDialog);
   });

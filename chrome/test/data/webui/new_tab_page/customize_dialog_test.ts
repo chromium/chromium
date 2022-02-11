@@ -5,26 +5,26 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://new-tab-page/lazy_load.js';
 
+import {CustomizeDialogElement} from 'chrome://new-tab-page/lazy_load.js';
 import {CustomizeDialogPage, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
-import {installMock} from './test_support.js';
+import {createTheme, installMock} from './test_support.js';
 
 suite('NewTabPageCustomizeDialogTest', () => {
-  /** @type {!CustomizeDialogElement} */
-  let customizeDialog;
-
-  /** @type {!TestBrowserProxy} */
-  let handler;
+  let customizeDialog: CustomizeDialogElement;
+  let handler: TestBrowserProxy;
 
   setup(() => {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
 
     handler = installMock(
         PageHandlerRemote,
-        mock => NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
+        (mock: PageHandlerRemote) =>
+            NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
     handler.setResultFor('getMostVisitedSettings', Promise.resolve({
       customLinksEnabled: false,
       shortcutsVisible: false,
@@ -49,10 +49,10 @@ suite('NewTabPageCustomizeDialogTest', () => {
   test('background page selected at start', () => {
     // Assert.
     const shownPages =
-        customizeDialog.shadowRoot.querySelectorAll('#pages .iron-selected');
+        customizeDialog.shadowRoot!.querySelectorAll('#pages .iron-selected');
     assertEquals(shownPages.length, 1);
     assertEquals(
-        shownPages[0].getAttribute('page-name'),
+        shownPages[0]!.getAttribute('page-name'),
         CustomizeDialogPage.BACKGROUNDS);
   });
 
@@ -62,117 +62,160 @@ suite('NewTabPageCustomizeDialogTest', () => {
 
     // Assert.
     const shownPages =
-        customizeDialog.shadowRoot.querySelectorAll('#pages .iron-selected');
+        customizeDialog.shadowRoot!.querySelectorAll('#pages .iron-selected');
     assertEquals(shownPages.length, 1);
     assertEquals(
-        shownPages[0].getAttribute('page-name'), CustomizeDialogPage.MODULES);
+        shownPages[0]!.getAttribute('page-name'), CustomizeDialogPage.MODULES);
   });
 
   test('selecting menu item shows page', async () => {
     // Act.
-    customizeDialog.$.menu.querySelector('[page-name=themes]').click();
+    customizeDialog.$.menu.querySelector<HTMLElement>(
+                              '[page-name=themes]')!.click();
     await flushTasks();
 
     // Assert.
     const shownPages =
-        customizeDialog.shadowRoot.querySelectorAll('#pages .iron-selected');
+        customizeDialog.shadowRoot!.querySelectorAll('#pages .iron-selected');
     assertEquals(shownPages.length, 1);
     assertEquals(
-        shownPages[0].getAttribute('page-name'), CustomizeDialogPage.THEMES);
+        shownPages[0]!.getAttribute('page-name'), CustomizeDialogPage.THEMES);
   });
 
   suite('scroll borders', () => {
-    /**
-     * @param {!HTMLElement} container
-     * @private
-     */
-    async function testScrollBorders(container) {
-      const assertHidden = el => {
+    async function testScrollBorders(container: HTMLElement) {
+      function assertHidden(el: HTMLElement) {
         assertTrue(el.matches('[scroll-border]:not([show])'));
-      };
-      const assertShown = el => {
+      }
+
+      function assertShown(el: HTMLElement) {
         assertTrue(el.matches('[scroll-border][show]'));
-      };
-      const {firstElementChild: top, lastElementChild: bottom} = container;
-      const scrollableElement = top.nextSibling;
-      const dialogBody =
-          customizeDialog.shadowRoot.querySelector('div[slot=body]');
+      }
+
+      const top = container.firstElementChild as HTMLElement;
+      const bottom = container.lastElementChild as HTMLElement;
+      const scrollableElement = top.nextSibling as HTMLElement;
+      const dialogBody = customizeDialog.shadowRoot!.querySelector<HTMLElement>(
+          'div[slot=body]')!;
       const heightWithBorders = `${scrollableElement.scrollHeight + 2}px`;
       dialogBody.style.height = heightWithBorders;
       assertHidden(top);
       assertHidden(bottom);
       dialogBody.style.height = '50px';
-      await waitAfterNextRender();
+      await waitAfterNextRender(container);
       assertHidden(top);
       assertShown(bottom);
       scrollableElement.scrollTop = 1;
-      await waitAfterNextRender();
+      await waitAfterNextRender(container);
       assertShown(top);
       assertShown(bottom);
       scrollableElement.scrollTop = scrollableElement.scrollHeight;
-      await waitAfterNextRender();
+      await waitAfterNextRender(container);
       assertShown(top);
       assertHidden(bottom);
       dialogBody.style.height = heightWithBorders;
-      await waitAfterNextRender();
+      await waitAfterNextRender(container);
       assertHidden(top);
       assertHidden(bottom);
     }
 
     // Disabled for flakiness, see https://crbug.com/1066459.
-    test.skip('menu', () => testScrollBorders(customizeDialog.$.menuContainer));
-    test.skip(
-        'pages', () => testScrollBorders(customizeDialog.$.pagesContainer));
+    test.skip('menu', () => testScrollBorders(customizeDialog.$.menu));
+    test.skip('pages', () => testScrollBorders(customizeDialog.$.pages));
   });
 
   suite('backgrounds', () => {
     setup(() => {
-      customizeDialog.theme = {
-        dailyRefreshCollectionId: 'landscape',
-        backgroundImageUrl: {url: 'https://example.com/image.png'},
+      const theme = createTheme();
+      theme.dailyRefreshCollectionId = 'landscape';
+      theme.backgroundImage = {
+        url: {url: 'https://example.com/image.png'},
+        attributionUrl: undefined,
+        positionX: undefined,
+        positionY: undefined,
+        repeatX: undefined,
+        repeatY: undefined,
+        size: undefined,
+        url2x: undefined,
       };
+      customizeDialog.theme = theme;
     });
 
     test('daily refresh toggle in sync with theme', () => {
       assertFalse(customizeDialog.$.refreshToggle.checked);
-      customizeDialog.$.backgrounds.selectedCollection = {id: 'landscape'};
+      customizeDialog.$.backgrounds.selectedCollection = {
+        id: 'landscape',
+        label: '',
+        previewImageUrl: {url: ''},
+      };
       assertTrue(customizeDialog.$.refreshToggle.checked);
-      customizeDialog.$.backgrounds.selectedCollection = {id: 'abstract'};
+      customizeDialog.$.backgrounds.selectedCollection = {
+        id: 'abstract',
+        label: '',
+        previewImageUrl: {url: ''},
+      };
       assertFalse(customizeDialog.$.refreshToggle.checked);
-      customizeDialog.$.backgrounds.selectedCollection = {id: 'landscape'};
+      customizeDialog.$.backgrounds.selectedCollection = {
+        id: 'landscape',
+        label: '',
+        previewImageUrl: {url: ''},
+      };
       assertTrue(customizeDialog.$.refreshToggle.checked);
     });
 
     test('daily refresh toggle set to new value', () => {
-      customizeDialog.$.backgrounds.selectedCollection = {id: 'abstract'};
+      customizeDialog.$.backgrounds.selectedCollection = {
+        id: 'abstract',
+        label: '',
+        previewImageUrl: {url: ''},
+      };
       assertFalse(customizeDialog.$.refreshToggle.checked);
       customizeDialog.$.refreshToggle.click();
       assertTrue(customizeDialog.$.refreshToggle.checked);
-      customizeDialog.$.backgrounds.selectedCollection = {id: 'landscape'};
+      customizeDialog.$.backgrounds.selectedCollection = {
+        id: 'landscape',
+        label: '',
+        previewImageUrl: {url: ''},
+      };
       assertEquals(1, handler.getCallCount('setDailyRefreshCollectionId'));
     });
 
     test('clicking back', () => {
-      customizeDialog.$.backgrounds.selectedCollection = {id: 'landscape'};
+      customizeDialog.$.backgrounds.selectedCollection = {
+        id: 'landscape',
+        label: '',
+        previewImageUrl: {url: ''},
+      };
       customizeDialog.$.pages.scrollTop = 100;
-      customizeDialog.shadowRoot.querySelector('.icon-arrow-back').click();
+      customizeDialog.shadowRoot!
+          .querySelector<HTMLElement>('.icon-arrow-back')!.click();
       assertEquals(customizeDialog.$.pages.scrollTop, 0);
     });
 
     test('clicking cancel', () => {
-      customizeDialog.$.backgrounds.selectedCollection = {id: 'landscape'};
+      customizeDialog.$.backgrounds.selectedCollection = {
+        id: 'landscape',
+        label: '',
+        previewImageUrl: {url: ''},
+      };
       assertTrue(customizeDialog.$.refreshToggle.checked);
-      customizeDialog.shadowRoot.querySelector('.cancel-button').click();
+      customizeDialog.shadowRoot!.querySelector<HTMLElement>(
+                                     '.cancel-button')!.click();
       assertEquals(1, handler.getCallCount('revertBackgroundChanges'));
     });
 
     suite('clicking done', () => {
       function done() {
-        customizeDialog.shadowRoot.querySelector('.action-button').click();
+        customizeDialog.shadowRoot!
+            .querySelector<HTMLElement>('.action-button')!.click();
       }
 
       test('sets daily refresh', async () => {
-        customizeDialog.$.backgrounds.selectedCollection = {id: 'abstract'};
+        customizeDialog.$.backgrounds.selectedCollection = {
+          id: 'abstract',
+          label: '',
+          previewImageUrl: {url: ''}
+        };
         customizeDialog.$.refreshToggle.click();
         assertEquals(1, handler.getCallCount('setDailyRefreshCollectionId'));
         done();

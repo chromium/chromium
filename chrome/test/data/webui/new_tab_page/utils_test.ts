@@ -5,27 +5,21 @@
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {createScrollBorders, decodeString16, mojoString16} from 'chrome://new-tab-page/new_tab_page.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 suite('scroll borders', () => {
-  /** @type {!HTMLElement} */
-  let container;
-  /** @type {!HTMLElement} */
-  let content;
-  /** @type {!HTMLElement} */
-  let top;
-  /** @type {!HTMLElement} */
-  let bottom;
-  /** @type {!IntersectionObserver} */
-  let observer;
+  let container: HTMLElement;
+  let content: HTMLElement;
+  let top: HTMLElement;
+  let bottom: HTMLElement;
+  let observer: IntersectionObserver;
 
-  /** @param {!HTMLElement} el */
-  function assertHidden(el) {
+  function assertHidden(el: HTMLElement) {
     assertTrue(el.matches('[scroll-border]:not([show])'));
   }
 
-  /** @param {!HTMLElement} el */
-  function assertShown(el) {
+  function assertShown(el: HTMLElement) {
     assertTrue(el.matches('[scroll-border][show]'));
   }
 
@@ -34,15 +28,15 @@ suite('scroll borders', () => {
         <div scroll-border></div>
         <div id="container"><div id="content"></div></div>
         <div scroll-border></div>`;
-    container = document.querySelector('#container');
+    container = document.body.querySelector<HTMLElement>('#container')!;
     container.style.height = '100px';
     container.style.overflow = 'auto';
-    content = document.querySelector('#content');
+    content = document.body.querySelector<HTMLElement>('#content')!;
     content.style.height = '200px';
-    top = document.body.firstElementChild;
-    bottom = document.body.lastElementChild;
+    top = document.body.firstElementChild as HTMLElement;
+    bottom = document.body.lastElementChild as HTMLElement;
     observer = createScrollBorders(container, top, bottom, 'show');
-    await waitAfterNextRender();
+    await waitAfterNextRender(document.body);
     await flushTasks();
   });
 
@@ -57,7 +51,7 @@ suite('scroll borders', () => {
 
   test('borders shown when content available above and below', async () => {
     container.scrollTop = 10;
-    await waitAfterNextRender();
+    await waitAfterNextRender(document.body);
     await flushTasks();
     assertShown(top);
     assertShown(bottom);
@@ -65,7 +59,7 @@ suite('scroll borders', () => {
 
   test('bottom border hidden when no content available below', async () => {
     container.scrollTop = 200;
-    await waitAfterNextRender();
+    await waitAfterNextRender(document.body);
     await flushTasks();
     assertShown(top);
     assertHidden(bottom);
@@ -73,7 +67,7 @@ suite('scroll borders', () => {
 
   test('borders hidden when all content is shown', async () => {
     content.style.height = '100px';
-    await waitAfterNextRender();
+    await waitAfterNextRender(document.body);
     await flushTasks();
     assertHidden(top);
     assertHidden(bottom);
