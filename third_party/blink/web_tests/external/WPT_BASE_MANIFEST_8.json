@@ -214118,6 +214118,19 @@
        ]
       },
       "form-controls": {
+       "input-line-height.html": [
+        "bfcd3665be14b390ff60c16ef8910c1f23e195a1",
+        [
+         null,
+         [
+          [
+           "/html/rendering/non-replaced-elements/form-controls/input-line-height-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "input-placeholder-line-height.html": [
         "7af4e65b09fe519e41c3e513ba2097e22281e055",
         [
@@ -295496,6 +295509,14 @@
        }
       },
       "form-controls": {
+       "input-line-height-computed-expected.txt": [
+        "0d3b48a912ee40683ad4b7721917096a3a54288f",
+        []
+       ],
+       "input-line-height-ref.html": [
+        "abf50b87282c093e4c08246f77842470f817755b",
+        []
+       ],
        "input-placeholder-line-height-ref.html": [
         "856146dec40a9d9a21aca3ecf46fbaeae74a6e76",
         []
@@ -450824,6 +450845,13 @@
        ]
       },
       "form-controls": {
+       "input-line-height-computed.html": [
+        "1bee40359af01937c4418dfb4e97ff5d2071e6fc",
+        [
+         null,
+         {}
+        ]
+       ],
        "placeholder-opacity-default.tentative.html": [
         "39ad44cfc012e824b4f0a097ae4339efd40bf1ea",
         [
@@ -566510,6 +566538,13 @@
       ],
       "grid-subgridded-axis-auto-repeater-crash-002.html": [
        "42bcbcfab0988faceb6b2b9975c13c52833028aa",
+       [
+        null,
+        {}
+       ]
+      ],
+      "grid-subgridded-axis-auto-repeater-crash-003.html": [
+       "eeb97967f7a248680166cacab8b5191e165f5976",
        [
         null,
         {}
