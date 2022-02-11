@@ -39,7 +39,7 @@
     "lib": {
         "package": "chrome/browser/devtools/protocol",
         "output": "protocol",
-        "string_header": "chrome/browser/devtools/protocol/base_string_adapter.h"
+        "protocol_traits": "third_party/inspector_protocol/crdtp/chromium/protocol_traits.h"
     },
 
     "crdtp": {

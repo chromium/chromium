@@ -17,16 +17,12 @@ if (!is_android) {
   import("$_inspector_protocol/inspector_protocol.gni")
 
   _protocol_generated = [
-    "protocol/base_string_adapter.cc",
-    "protocol/base_string_adapter.h",
     "protocol/browser.cc",
     "protocol/browser.h",
     "protocol/cast.cc",
     "protocol/cast.h",
-    "protocol/forward.h",
     "protocol/page.cc",
     "protocol/page.h",
-    "protocol/protocol.cc",
     "protocol/protocol.h",
     "protocol/security.cc",
     "protocol/security.h",
@@ -69,6 +65,7 @@ if (!is_android) {
     deps = [ ":concatenate_protocols" ]
     out_dir = target_gen_dir
     config_file = "inspector_protocol_config.json"
+    use_embedder_types = true
 
     protocol_path = rebase_path(_concatenated_protocol_path, root_build_dir)
     config_values = [ "protocol.path=$protocol_path" ]
