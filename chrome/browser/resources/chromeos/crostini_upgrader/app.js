@@ -534,6 +534,9 @@ Polymer({
       case State.UPGRADING:
         messageId = 'upgradingMessage';
         break;
+      case State.CANCELING:
+        messageId = 'cancelingMessage';
+        break;
       case State.RESTORE:
         messageId = 'restoreMessage';
         break;
