@@ -1509,8 +1509,7 @@ ui::AXNode* BrowserAccessibilityManager::GetNodeFromTree(
 
 ui::AXNode* BrowserAccessibilityManager::GetNodeFromTree(
     const ui::AXNodeID node_id) const {
-  BrowserAccessibility* wrapper = GetFromID(node_id);
-  return wrapper ? wrapper->node() : nullptr;
+  return ax_tree()->GetFromId(node_id);
 }
 
 ui::AXPlatformNode* BrowserAccessibilityManager::GetPlatformNodeFromTree(
