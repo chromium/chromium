@@ -154,8 +154,8 @@ HEADLESS_COMPOSITOR_TEST(RendererCssUrlFilter,
                          "sanity/renderer-css-url-filter.js")
 HEADLESS_COMPOSITOR_TEST(RendererCanvas, "sanity/renderer-canvas.js")
 
-#if BUILDFLAG(IS_LINUX)
-// Flaky on Linux: crbug.com/1294751.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+// Flaky on at least Linux and Windows: crbug.com/1294751.
 #define MAYBE_RendererOpacityAnimation DISABLED_RendererOpacityAnimation
 #else
 #define MAYBE_RendererOpacityAnimation RendererOpacityAnimation
