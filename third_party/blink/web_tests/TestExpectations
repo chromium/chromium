@@ -829,6 +829,8 @@ crbug.com/1054894 [ Mac ] http/tests/images/image-decode-in-frame.html [ Failure
 
 crbug.com/819617 [ Linux ] virtual/text-antialias/descent-clip-in-scaled-page.html [ Failure ]
 
+crbug.com/1196414 compositing/composited-replaced-subpixel-location.html [ Failure ]
+
 # ====== Paint team owned tests to here ======
 
 # WPT speculative-parsing tests failing

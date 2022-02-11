@@ -32,6 +32,8 @@
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/base64.h"
 
 namespace blink {
 
@@ -2594,6 +2596,40 @@ TEST_P(CompositingSimTest, CompositorAnimationRevealsChild) {
   // animate into view.
   EXPECT_TRUE(CcLayerByDOMElementId("child"));
   EXPECT_TRUE(CcLayerByDOMElementId("child")->DrawsContent());
+}
+
+static String ImageFileAsDataURL(const String& filename) {
+  return "data:image/jpeg;base64," +
+         Base64Encode(test::ReadFromFile(test::CoreTestDataPath(filename))
+                          ->CopyAs<Vector<uint8_t>>());
+}
+
+TEST_P(CompositingSimTest, CompositedImageWithSubpixelOffset) {
+  // The image is 100x50 with normal orientation.
+  InitializeWithHTML("<!DOCTYPE html><img id='image' src='" +
+                     ImageFileAsDataURL("exif-orientation-1-ul.jpg") +
+                     "' style='position: absolute; width: 400px; height: 800px;"
+                     "         top: 10.6px; will-change: top'>");
+  Compositor().BeginFrame();
+  auto* image_layer =
+      static_cast<const cc::PictureLayer*>(CcLayerByDOMElementId("image"));
+  ASSERT_TRUE(image_layer);
+  EXPECT_EQ(gfx::Vector2dF(0.25f, 0.0625f),
+            image_layer->DirectlyCompositedImageDefaultRasterScaleForTesting());
+}
+
+TEST_P(CompositingSimTest, CompositedImageWithSubpixelOffsetAndOrientation) {
+  // The image is 50x100 after transposed.
+  InitializeWithHTML("<!DOCTYPE html><img id='image' src='" +
+                     ImageFileAsDataURL("exif-orientation-5-lu.jpg") +
+                     "' style='position: absolute; width: 800px; height: 400px;"
+                     "         top: 10.6px; will-change: top'>");
+  Compositor().BeginFrame();
+  auto* image_layer =
+      static_cast<const cc::PictureLayer*>(CcLayerByDOMElementId("image"));
+  ASSERT_TRUE(image_layer);
+  EXPECT_EQ(gfx::Vector2dF(0.0625f, 0.25f),
+            image_layer->DirectlyCompositedImageDefaultRasterScaleForTesting());
 }
 
 }  // namespace blink

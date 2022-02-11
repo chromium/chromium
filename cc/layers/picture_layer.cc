@@ -70,8 +70,8 @@ void PictureLayer::PushPropertiesTo(
   layer_impl->set_gpu_raster_max_texture_size(
       commit_state.device_viewport_rect.size());
   layer_impl->SetIsBackdropFilterMask(is_backdrop_filter_mask());
-  layer_impl->SetDirectlyCompositedImageSize(
-      picture_layer_inputs_.directly_composited_image_size);
+  layer_impl->SetDirectlyCompositedImageDefaultRasterScale(
+      picture_layer_inputs_.directly_composited_image_default_raster_scale);
 
   // TODO(enne): http://crbug.com/918126 debugging
   CHECK(this);
@@ -157,18 +157,18 @@ bool PictureLayer::Update() {
 
     // Clear out previous directly composited image state - if the layer
     // qualifies we'll set up the state below.
-    picture_layer_inputs_.directly_composited_image_size = absl::nullopt;
+    picture_layer_inputs_.directly_composited_image_default_raster_scale =
+        gfx::Vector2dF();
     picture_layer_inputs_.nearest_neighbor = false;
     absl::optional<DisplayItemList::DirectlyCompositedImageResult> result =
-        picture_layer_inputs_.display_list->GetDirectlyCompositedImageResult(
-            bounds());
+        picture_layer_inputs_.display_list->GetDirectlyCompositedImageResult();
     if (result) {
       // Directly composited images are not guaranteed to fully cover every
       // pixel in the layer due to ceiling when calculating the tile content
       // rect from the layer bounds.
       recording_source_->SetRequiresClear(true);
-      picture_layer_inputs_.directly_composited_image_size =
-          result->intrinsic_image_size;
+      picture_layer_inputs_.directly_composited_image_default_raster_scale =
+          result->default_raster_scale;
       picture_layer_inputs_.nearest_neighbor = result->nearest_neighbor;
     }
 

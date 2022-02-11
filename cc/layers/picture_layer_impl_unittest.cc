@@ -5146,7 +5146,8 @@ TEST_F(LegacySWPictureLayerImplTest,
                                               gfx::Rect(150, 150, 100, 100));
 
   SetupPendingTreeWithFixedTileSize(filled_raster_source, tile_size, Region());
-  pending_layer()->SetDirectlyCompositedImageSize(layer_bounds);
+  pending_layer()->SetDirectlyCompositedImageDefaultRasterScale(
+      gfx::Vector2dF(1, 1));
   ActivateTree();
 
   PictureLayerTiling* pending_tiling = old_pending_layer()->HighResTiling();
@@ -5647,7 +5648,8 @@ TEST_F(LegacySWPictureLayerImplTest, CompositedImageCalculateContentsScale) {
   std::unique_ptr<FakePictureLayerImpl> pending_layer =
       FakePictureLayerImpl::Create(pending_tree, root_id(),
                                    pending_raster_source);
-  pending_layer->SetDirectlyCompositedImageSize(layer_bounds);
+  pending_layer->SetDirectlyCompositedImageDefaultRasterScale(
+      gfx::Vector2dF(1, 1));
   pending_layer->SetDrawsContent(true);
   FakePictureLayerImpl* pending_layer_ptr = pending_layer.get();
   pending_tree->SetRootLayerForTesting(std::move(pending_layer));
@@ -5671,7 +5673,8 @@ TEST_F(LegacySWPictureLayerImplTest, CompositedImageIgnoreIdealContentsScale) {
   std::unique_ptr<FakePictureLayerImpl> pending_layer =
       FakePictureLayerImpl::Create(pending_tree, root_id(),
                                    pending_raster_source);
-  pending_layer->SetDirectlyCompositedImageSize(layer_bounds);
+  pending_layer->SetDirectlyCompositedImageDefaultRasterScale(
+      gfx::Vector2dF(1, 1));
   pending_layer->SetDrawsContent(true);
   FakePictureLayerImpl* pending_layer_ptr = pending_layer.get();
   pending_tree->SetRootLayerForTesting(std::move(pending_layer));
@@ -5725,7 +5728,8 @@ TEST_F(LegacySWPictureLayerImplTest, CompositedImageRasterScaleChanges) {
       FakeRasterSource::CreateFilled(layer_bounds);
 
   SetupPendingTree(pending_raster_source);
-  pending_layer()->SetDirectlyCompositedImageSize(layer_bounds);
+  pending_layer()->SetDirectlyCompositedImageDefaultRasterScale(
+      gfx::Vector2dF(1, 1));
 
   float expected_contents_scale = 0.125f;
   for (int i = 1; i < 30; ++i) {
@@ -5781,42 +5785,26 @@ TEST_F(LegacySWPictureLayerImplTest, CompositedImageRasterOnChange) {
 
   SetupPendingTree(pending_raster_source);
 
-  // Set an image size that is smaller than the layer bounds.
-  gfx::Size image_size(200, 200);
-  pending_layer()->SetDirectlyCompositedImageSize(image_size);
+  // The image is smaller than the layer bounds.
+  pending_layer()->SetDirectlyCompositedImageDefaultRasterScale(
+      gfx::Vector2dF(0.5f, 0.5f));
   SetupDrawPropertiesAndUpdateTiles(pending_layer(), 1.f, 1.f, 1.f);
   EXPECT_FLOAT_EQ(0.5f, pending_layer()
                             ->picture_layer_tiling_set()
                             ->FindTilingWithResolution(HIGH_RESOLUTION)
                             ->contents_scale_key());
 
-  // Change the bounds and ensure we recalculated raster scale.
-  pending_layer()->SetBounds(gfx::Size(320, 320));
-  SetupDrawPropertiesAndUpdateTiles(pending_layer(), 1.f, 1.f, 1.f);
-  EXPECT_FLOAT_EQ(0.625f, pending_layer()
-                              ->picture_layer_tiling_set()
-                              ->FindTilingWithResolution(HIGH_RESOLUTION)
-                              ->contents_scale_key());
-
-  // Set an image size much larger than the layer bounds (5x). Verify that the
+  // The image is much larger than the layer bounds (5x). Verify that the
   // scaling down code is triggered (we should halve the raster scale until it
   // is less than 2x the ideal source scale).
   pending_layer()->SetBounds(layer_bounds);
-  pending_layer()->SetDirectlyCompositedImageSize(gfx::Size(2000, 2000));
+  pending_layer()->SetDirectlyCompositedImageDefaultRasterScale(
+      gfx::Vector2dF(5, 5));
   SetupDrawPropertiesAndUpdateTiles(pending_layer(), 1.f, 1.f, 1.f);
   EXPECT_FLOAT_EQ(1.25f, pending_layer()
                              ->picture_layer_tiling_set()
                              ->FindTilingWithResolution(HIGH_RESOLUTION)
                              ->contents_scale_key());
-
-  // Update the bounds to no longer match the aspect ratio, but still compute
-  // the same raster scale.
-  pending_layer()->SetBounds(gfx::Size(600, 500));
-  SetupDrawPropertiesAndUpdateTiles(pending_layer(), 1.f, 1.f, 1.f);
-  EXPECT_FLOAT_EQ(1.f, pending_layer()
-                           ->picture_layer_tiling_set()
-                           ->FindTilingWithResolution(HIGH_RESOLUTION)
-                           ->contents_scale_key());
 
   // Update the bounds and and bump up the ideal scale so that the scale down
   // restriction is lifted.
@@ -5851,8 +5839,8 @@ TEST_F(LegacySWPictureLayerImplTest, CompositedImageRasterHighResScreen) {
 
   // Verify that device_scale=2.0 is handled correctly. The image is expected to
   // be downscaled not more than 4x, so content scale is above 1.0.
-  gfx::Size image_size(500, 500);
-  pending_layer()->SetDirectlyCompositedImageSize(image_size);
+  pending_layer()->SetDirectlyCompositedImageDefaultRasterScale(
+      gfx::Vector2dF(5, 5));
   SetupDrawPropertiesAndUpdateTiles(pending_layer(), 1.f, 2.f, 1.f);
   EXPECT_FLOAT_EQ(1.25f, pending_layer()
                              ->picture_layer_tiling_set()
@@ -5870,7 +5858,8 @@ TEST_F(LegacySWPictureLayerImplTest, CompositedImageRasterOptOutTransitions) {
   // Start with image and bounds matching to have this layer initially opted
   // in to directly composited images.
   pending_layer()->SetBounds(layer_bounds);
-  pending_layer()->SetDirectlyCompositedImageSize(layer_bounds);
+  pending_layer()->SetDirectlyCompositedImageDefaultRasterScale(
+      gfx::Vector2dF(1, 1));
   SetupDrawPropertiesAndUpdateTiles(pending_layer(), 0.3f, 1.f, 1.f);
   EXPECT_FLOAT_EQ(0.5f, pending_layer()
                             ->picture_layer_tiling_set()
@@ -5879,9 +5868,9 @@ TEST_F(LegacySWPictureLayerImplTest, CompositedImageRasterOptOutTransitions) {
 
   // Change the image and bounds to values that make the layer not eligible for
   // direct compositing. This must be reflected by a |contents_scale_key()| of
-  // 0.1f (matching the ideal source scale).
-  gfx::Size image_size(300, 300);
-  pending_layer()->SetDirectlyCompositedImageSize(image_size);
+  // 0.2f (matching the ideal source scale).
+  pending_layer()->SetDirectlyCompositedImageDefaultRasterScale(
+      gfx::Vector2dF(50, 50));
   SetupDrawPropertiesAndUpdateTiles(pending_layer(), 0.2f, 1.f, 1.f);
   EXPECT_FLOAT_EQ(0.2f, pending_layer()
                             ->picture_layer_tiling_set()
@@ -5891,8 +5880,8 @@ TEST_F(LegacySWPictureLayerImplTest, CompositedImageRasterOptOutTransitions) {
   // Ensure we get back to a directly composited image if the input values
   // change such that the optimization should apply.
   pending_layer()->SetBounds(ScaleToFlooredSize(layer_bounds, 2));
-  pending_layer()->SetDirectlyCompositedImageSize(
-      ScaleToFlooredSize(layer_bounds, 2));
+  pending_layer()->SetDirectlyCompositedImageDefaultRasterScale(
+      gfx::Vector2dF(2, 2));
   SetupDrawPropertiesAndUpdateTiles(pending_layer(), 0.2f, 1.f, 1.f);
   EXPECT_FLOAT_EQ(0.25f, pending_layer()
                              ->picture_layer_tiling_set()

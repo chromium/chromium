@@ -103,7 +103,8 @@ PictureLayerImpl::PictureLayerImpl(LayerTreeImpl* tree_impl, int id)
       was_screen_space_transform_animating_(false),
       only_used_low_res_last_append_quads_(false),
       nearest_neighbor_(false),
-      raster_source_size_changed_(false) {
+      raster_source_size_changed_(false),
+      directly_composited_image_default_raster_scale_changed_(false) {
   layer_tree_impl()->RegisterPictureLayerImpl(this);
 }
 
@@ -155,7 +156,8 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
   layer_impl->twin_layer_ = this;
 
   layer_impl->SetNearestNeighbor(nearest_neighbor_);
-  layer_impl->SetDirectlyCompositedImageSize(directly_composited_image_size_);
+  layer_impl->SetDirectlyCompositedImageDefaultRasterScale(
+      directly_composited_image_default_raster_scale_);
   layer_impl->SetIsBackdropFilterMask(is_backdrop_filter_mask_);
 
   // Solid color layers have no tilings.
@@ -178,8 +180,6 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
   layer_impl->raster_source_scale_ = raster_source_scale_;
   layer_impl->raster_contents_scale_ = raster_contents_scale_;
   layer_impl->low_res_raster_contents_scale_ = low_res_raster_contents_scale_;
-  layer_impl->directly_composited_image_initial_raster_scale_ =
-      directly_composited_image_initial_raster_scale_;
   // Simply push the value to the active tree without any extra invalidations,
   // since the pending tree tiles would have this handled. This is here to
   // ensure the state is consistent for future raster.
@@ -247,7 +247,7 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   PopulateScaledSharedQuadState(shared_quad_state, max_contents_scale,
                                 contents_opaque());
 
-  if (directly_composited_image_size_) {
+  if (IsDirectlyCompositedImage()) {
     // Directly composited images should be clipped to the layer's content rect.
     // When a PictureLayerTiling is created for a directly composited image, the
     // layer bounds are multiplied by the raster scale in order to compute the
@@ -999,7 +999,7 @@ const PaintWorkletRecordMap& PictureLayerImpl::GetPaintWorkletRecords() const {
 }
 
 bool PictureLayerImpl::IsDirectlyCompositedImage() const {
-  return directly_composited_image_size_.has_value();
+  return directly_composited_image_default_raster_scale_ != 0.f;
 }
 
 bool PictureLayerImpl::ScrollInteractionInProgress() const {
@@ -1118,12 +1118,18 @@ void PictureLayerImpl::SetNearestNeighbor(bool nearest_neighbor) {
   NoteLayerPropertyChanged();
 }
 
-void PictureLayerImpl::SetDirectlyCompositedImageSize(
-    absl::optional<gfx::Size> size) {
-  if (directly_composited_image_size_ == size)
+void PictureLayerImpl::SetDirectlyCompositedImageDefaultRasterScale(
+    const gfx::Vector2dF& scale) {
+  SetDirectlyCompositedImageDefaultRasterScale(GetPreferredRasterScale(scale));
+}
+
+void PictureLayerImpl::SetDirectlyCompositedImageDefaultRasterScale(
+    float scale) {
+  if (directly_composited_image_default_raster_scale_ == scale)
     return;
 
-  directly_composited_image_size_ = size;
+  directly_composited_image_default_raster_scale_ = scale;
+  directly_composited_image_default_raster_scale_changed_ = true;
   NoteLayerPropertyChanged();
 }
 
@@ -1151,31 +1157,21 @@ bool PictureLayerImpl::ShouldDirectlyCompositeImage(float raster_scale) const {
          std::abs(layer_bounds.height() - content_rect.height()) < 1.f;
 }
 
-float PictureLayerImpl::GetDefaultDirectlyCompositedImageRasterScale() const {
-  DCHECK(directly_composited_image_size_.has_value());
-  float x = static_cast<float>(directly_composited_image_size_->width()) /
-            bounds().width();
-  float y = static_cast<float>(directly_composited_image_size_->height()) /
-            bounds().height();
-  return GetPreferredRasterScale(gfx::Vector2dF(x, y));
-}
-
 float PictureLayerImpl::CalculateDirectlyCompositedImageRasterScale() const {
-  float default_raster_scale = GetDefaultDirectlyCompositedImageRasterScale();
-  bool default_raster_scale_changed =
-      default_raster_scale != directly_composited_image_initial_raster_scale_;
-
+  DCHECK(IsDirectlyCompositedImage());
   // If the default raster scale didn't change, we will calculate based on the
   // previous raster source scale. The calculation may change based on updated
   // ideal source scale.
-  float adjusted_raster_scale = default_raster_scale_changed
-                                    ? default_raster_scale
-                                    : raster_source_scale_key();
+  float adjusted_raster_scale =
+      directly_composited_image_default_raster_scale_changed_
+          ? directly_composited_image_default_raster_scale_
+          : raster_source_scale_key();
 
   // We never want a raster scale larger than the default, since that uses more
   // memory but can't result it better quality (upscaling will happen in the
   // display compositor instead).
-  float max_scale = std::max(default_raster_scale, MinimumContentsScale());
+  float max_scale = std::max(directly_composited_image_default_raster_scale_,
+                             MinimumContentsScale());
   float min_scale = MinimumContentsScale();
 
   float clamped_ideal_source_scale =
@@ -1289,7 +1285,7 @@ void PictureLayerImpl::UpdateTilingsForRasterScaleAndTranslation(
 
   if (layer_tree_impl()->IsPendingTree() ||
       (layer_tree_impl()->settings().commit_to_active_tree &&
-       directly_composited_image_size_.has_value())) {
+       IsDirectlyCompositedImage())) {
     // On the pending tree, drop any tilings that are non-ideal since we don't
     // need them to activate anyway.
 
@@ -1316,13 +1312,13 @@ bool PictureLayerImpl::ShouldAdjustRasterScale() const {
   if (raster_source_size_changed_)
     return true;
 
-  if (directly_composited_image_size_) {
-    // If we have a directly composited image size, but previous raster scale
-    // calculations did not set an initial raster scale, we must recalcluate.
-    if (directly_composited_image_initial_raster_scale_ == 0)
+  if (IsDirectlyCompositedImage()) {
+    // If the default raster scale changed, that means the bounds or image size
+    // changed. We should recalculate in order to raster at the intrinsic image
+    // size. Note that this is not a comparison of the used raster_source_scale_
+    // and desired because of the adjustments in RecalculateRasterScales.
+    if (directly_composited_image_default_raster_scale_changed_)
       return true;
-
-    float default_raster_scale = GetDefaultDirectlyCompositedImageRasterScale();
 
     // First check to see if we need to adjust based on ideal_source_scale_
     // changing (i.e. scale transform has been modified). These limits exist
@@ -1330,20 +1326,15 @@ bool PictureLayerImpl::ShouldAdjustRasterScale() const {
     // be scaled down more than 4x ideal. This saves memory without sacrificing
     // noticeable quality. We'll also bump the scale back up in the case where
     // the ideal scale is increased.
-    float max_scale = std::max(default_raster_scale, MinimumContentsScale());
+    float max_scale = std::max(directly_composited_image_default_raster_scale_,
+                               MinimumContentsScale());
     if (raster_source_scale_key() <
         std::min(ideal_source_scale_key(), max_scale))
       return true;
     if (raster_source_scale_key() > 4 * ideal_source_scale_key())
       return true;
 
-    // If the default raster scale changed, that means the bounds or image size
-    // changed. We should recalculate in order to raster at the intrinsic image
-    // size. Note that this is not a comparison of the used raster_source_scale_
-    // and desired because of the adjustments in RecalculateRasterScales.
-    bool default_raster_scale_changed =
-        default_raster_scale != directly_composited_image_initial_raster_scale_;
-    return default_raster_scale_changed;
+    return false;
   }
 
   if (was_screen_space_transform_animating_ !=
@@ -1458,12 +1449,11 @@ void PictureLayerImpl::AddLowResolutionTilingIfNeeded() {
 }
 
 void PictureLayerImpl::RecalculateRasterScales() {
-  if (directly_composited_image_size_) {
+  if (IsDirectlyCompositedImage()) {
     // TODO(crbug.com/1196414): Support 2D scales in directly composited images.
     float used_raster_scale = CalculateDirectlyCompositedImageRasterScale();
+    directly_composited_image_default_raster_scale_changed_ = false;
     if (ShouldDirectlyCompositeImage(used_raster_scale)) {
-      directly_composited_image_initial_raster_scale_ =
-          GetDefaultDirectlyCompositedImageRasterScale();
       raster_source_scale_ =
           gfx::Vector2dF(used_raster_scale, used_raster_scale);
       raster_page_scale_ = 1.f;
@@ -1475,8 +1465,7 @@ void PictureLayerImpl::RecalculateRasterScales() {
 
     // If we should not directly composite this image, reset values and fall
     // back to normal raster scale calculations below.
-    directly_composited_image_size_ = absl::nullopt;
-    directly_composited_image_initial_raster_scale_ = 0.f;
+    directly_composited_image_default_raster_scale_ = 0.f;
   }
 
   gfx::Vector2dF old_raster_contents_scale = raster_contents_scale_;
@@ -1751,7 +1740,7 @@ void PictureLayerImpl::ResetRasterScale() {
   raster_source_scale_ = gfx::Vector2dF(0.f, 0.f);
   raster_contents_scale_ = gfx::Vector2dF(0.f, 0.f);
   low_res_raster_contents_scale_ = 0.f;
-  directly_composited_image_initial_raster_scale_ = 0.f;
+  directly_composited_image_default_raster_scale_ = 0.f;
 }
 
 bool PictureLayerImpl::CanHaveTilings() const {
@@ -1851,7 +1840,7 @@ void PictureLayerImpl::GetDebugBorderProperties(
   float device_scale_factor =
       layer_tree_impl() ? layer_tree_impl()->device_scale_factor() : 1;
 
-  if (directly_composited_image_size_) {
+  if (IsDirectlyCompositedImage()) {
     *color = DebugColors::ImageLayerBorderColor();
     *width = DebugColors::ImageLayerBorderWidth(device_scale_factor);
   } else {

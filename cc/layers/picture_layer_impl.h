@@ -108,7 +108,10 @@ class CC_EXPORT PictureLayerImpl
 
   void SetNearestNeighbor(bool nearest_neighbor);
 
-  void SetDirectlyCompositedImageSize(absl::optional<gfx::Size>);
+  void SetDirectlyCompositedImageDefaultRasterScale(
+      const gfx::Vector2dF& scale);
+  // TODO(crbug.com/1196414): Support 2D scales in directly composited images.
+  void SetDirectlyCompositedImageDefaultRasterScale(float scale);
 
   size_t GPUMemoryUsageInBytes() const override;
 
@@ -201,12 +204,6 @@ class CC_EXPORT PictureLayerImpl
   PictureLayerImpl* GetRecycledTwinLayer() const;
   bool ShouldDirectlyCompositeImage(float raster_scale) const;
 
-  // Returns the default raster scale used for current layer bounds and directly
-  // composited image size. To avoid re-raster on scale changes, this may be
-  // different than the used raster scale, see: |RecalculateRasterScales()| and
-  // |CalculateDirectlyCompositedImageRasterScale()|.
-  float GetDefaultDirectlyCompositedImageRasterScale() const;
-
   // Returns the raster scale that should be used for a directly composited
   // image. This takes into account the ideal contents scale to ensure we don't
   // use too much memory for layers that are small due to contents scale
@@ -295,19 +292,20 @@ class CC_EXPORT PictureLayerImpl
   // false after raster scale update.
   bool raster_source_size_changed_ : 1;
 
+  bool directly_composited_image_default_raster_scale_changed_ : 1;
+
   LCDTextDisallowedReason lcd_text_disallowed_reason_ =
       LCDTextDisallowedReason::kNone;
 
-  // The intrinsic size of the directly composited image. A directly composited
-  // image is an image which is the only thing drawn into a layer. In these
-  // cases we attempt to raster the image at its intrinsic size.
-  absl::optional<gfx::Size> directly_composited_image_size_;
-
-  // The default raster source scale for a directly composited image, the last
-  // time raster scales were calculated. This will be the same as
-  // |raster_source_scale_| if no adjustments were made in
+  // If this scale is not zero, it indicates that this layer is a directly
+  // composited image layer (i.e. the only thing drawn into this layer is an
+  // image). The rasterized pixels will be the same as the image's original
+  // pixels if this scale is used as the raster scale.
+  // To avoid re-raster on scale changes, this may be different than the used
+  // raster scale, see: |RecalculateRasterScales()| and
   // |CalculateDirectlyCompositedImageRasterScale()|.
-  float directly_composited_image_initial_raster_scale_ = 0.f;
+  // TODO(crbug.com/1196414): Support 2D scales in directly composited images.
+  float directly_composited_image_default_raster_scale_ = 0;
 
   // Use this instead of |visible_layer_rect()| for tiling calculations. This
   // takes external viewport and transform for tile priority into account.
