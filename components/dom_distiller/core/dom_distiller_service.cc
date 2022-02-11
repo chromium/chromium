@@ -137,4 +137,8 @@ base::WeakPtr<DomDistillerService> DomDistillerService::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+bool DomDistillerService::HasTaskTrackerForTesting(const GURL& url) const {
+  return GetTaskTrackerForUrl(url);
+}
+
 }  // namespace dom_distiller

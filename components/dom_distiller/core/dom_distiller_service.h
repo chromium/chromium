@@ -87,6 +87,8 @@ class DomDistillerService : public DomDistillerServiceInterface {
   DistillerUIHandle* GetDistillerUIHandle() override;
   base::WeakPtr<DomDistillerService> GetWeakPtr();
 
+  bool HasTaskTrackerForTesting(const GURL& url) const;
+
  private:
   void CancelTask(TaskTracker* task);
 
