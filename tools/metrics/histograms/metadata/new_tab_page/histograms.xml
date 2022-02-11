@@ -959,7 +959,7 @@ chromium-metrics-reviews@google.com.
     Records hashes associated with NTP modules. Logged when an NTP module makes
     a data request to a Chrome-external backend. Only logged on the 1P NTP. Note
     that even if the user has Google as their default search engine, Incognito
-    and Guest mode NTPs are not considered 1P and dont't log this histogram.
+    and Guest mode NTPs are not considered 1P and don't log this histogram.
   </summary>
 </histogram>
 
@@ -1036,7 +1036,7 @@ chromium-metrics-reviews@google.com.
     Logged when the user hovers on a module. Only logged once per NTP and
     module. Only logged on the 1P NTP. Note that even if the user has Google as
     their default search engine, Incognito and Guest mode NTPs are not
-    considered 1P and dont't log this histogram.
+    considered 1P and don't log this histogram.
   </summary>
 </histogram>
 
@@ -1072,6 +1072,19 @@ chromium-metrics-reviews@google.com.
     NTPs are not considered 1P and don't log these histograms. It is possible
     for this histogram to log a value of 0 if, for instance, the module was
     always more than 90% below the fold.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.Modules.InfoButtonClicked" enum="NtpModules"
+    expires_after="2022-10-09">
+  <owner>danpeng@google.com</owner>
+  <owner>pauladedeji@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the module's id when a user clicks the info button in the module's
+    header. Only logged on the 1P NTP. Note that even if the user has Google as
+    their default search engine, Incognito and Guest mode NTPs are not
+    considered 1P and don't log this histogram.
   </summary>
 </histogram>
 

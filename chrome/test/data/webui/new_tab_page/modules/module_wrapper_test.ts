@@ -94,4 +94,20 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
     assertEquals(1, metrics.count('NewTabPage.Modules.Usage'));
     assertEquals(1, metrics.count('NewTabPage.Modules.Usage.foo'));
   });
+
+  test('clicking info button records click and module id', () => {
+    // Arrange.
+    const moduleElement = createElement();
+    moduleWrapper.module = {
+      descriptor: new ModuleDescriptor('foo', 'Foo', initNullModule),
+      element: moduleElement,
+    };
+
+    // Act.
+    moduleElement.dispatchEvent(new Event('info-button-click'));
+
+    // Assert.
+    assertEquals(
+        1, metrics.count('NewTabPage.Modules.InfoButtonClicked', 'foo'));
+  });
 });

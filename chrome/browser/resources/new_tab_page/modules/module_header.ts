@@ -94,7 +94,8 @@ export class ModuleHeaderElement extends I18nMixin
 
   private onInfoButtonClick_() {
     this.$.actionMenu.close();
-    this.dispatchEvent(new Event('info-button-click', {bubbles: true}));
+    this.dispatchEvent(
+        new Event('info-button-click', {bubbles: true, composed: true}));
   }
 
   private onMenuButtonClick_(e: Event) {

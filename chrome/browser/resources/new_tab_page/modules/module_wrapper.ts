@@ -54,6 +54,12 @@ export class ModuleWrapperElement extends PolymerElement {
       recordOccurence(`NewTabPage.Modules.Usage.${this.module.descriptor.id}`);
     }, {once: true});
 
+    // Log module's id when module's info button is clicked.
+    this.module.element.addEventListener('info-button-click', () => {
+      chrome.metricsPrivate.recordSparseHashable(
+          'NewTabPage.Modules.InfoButtonClicked', this.module.descriptor.id);
+    }, {once: true});
+
     // Install observer to log module header impression.
     const headerObserver = new IntersectionObserver(([{intersectionRatio}]) => {
       if (intersectionRatio >= 1.0) {
