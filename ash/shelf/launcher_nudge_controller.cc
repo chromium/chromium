@@ -9,6 +9,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/session/session_types.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/home_button.h"
@@ -246,6 +247,15 @@ void LauncherNudgeController::ScheduleShowNudgeAttempt(
 
 void LauncherNudgeController::OnActiveUserPrefServiceChanged(
     PrefService* prefs) {
+  // If the current session is a guest session which is ephemeral and doesn't
+  // save prefs, return early and don't show nudges for these session types.
+  if (Shell::Get()
+          ->session_controller()
+          ->GetUserSession(0)
+          ->user_info.is_ephemeral) {
+    return;
+  }
+
   if (Shell::Get()->session_controller()->IsUserFirstLogin()) {
     // If the current logged in user is a new one, record the first login time
     // to know when to show the nudge.
