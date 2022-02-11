@@ -4,16 +4,19 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/user_education/feature_promo_snooze_service.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/browser/ui/views/user_education/help_bubble_factory_views.h"
 #include "chrome/browser/ui/views/user_education/help_bubble_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/mock_tracker.h"
@@ -39,6 +42,11 @@ using ::testing::NiceMock;
 using ::testing::Ref;
 using ::testing::Return;
 
+namespace {
+base::Feature kSnoozeTestFeature("SnoozeTestFeature",
+                                 base::FEATURE_ENABLED_BY_DEFAULT);
+}
+
 class FeaturePromoSnoozeInteractiveTest : public InProcessBrowserTest {
  public:
   FeaturePromoSnoozeInteractiveTest() {
@@ -60,6 +68,14 @@ class FeaturePromoSnoozeInteractiveTest : public InProcessBrowserTest {
     promo_controller_ = BrowserView::GetBrowserViewForBrowser(browser())
                             ->GetFeaturePromoController();
     snooze_service_ = promo_controller_->snooze_service();
+
+    if (!promo_controller_->registry()->IsFeatureRegistered(
+            kSnoozeTestFeature)) {
+      promo_controller_->registry()->RegisterFeature(
+          FeaturePromoSpecification::CreateForSnoozePromo(
+              kSnoozeTestFeature, kAppMenuButtonElementId,
+              IDS_TAB_GROUPS_NEW_GROUP_PROMO));
+    }
   }
 
  protected:
@@ -135,35 +151,23 @@ class FeaturePromoSnoozeInteractiveTest : public InProcessBrowserTest {
   // Tries to show tab groups IPH by meeting the trigger conditions. If
   // |should_show| is true it checks that it was shown. If false, it
   // checks that it was not shown.
-  void AttemptTabGroupsIPH(bool should_show) {
+  void AttemptIPH(bool should_show) {
     if (should_show) {
-      EXPECT_CALL(*mock_tracker_,
-                  ShouldTriggerHelpUI(Ref(
-                      feature_engagement::kIPHDesktopTabGroupsNewGroupFeature)))
+      EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kSnoozeTestFeature)))
           .WillOnce(Return(true));
     } else {
-      EXPECT_CALL(*mock_tracker_,
-                  ShouldTriggerHelpUI(Ref(
-                      feature_engagement::kIPHDesktopTabGroupsNewGroupFeature)))
+      EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kSnoozeTestFeature)))
           .Times(0);
     }
 
-    // Opening 6 or more tabs is the triggering event for tab groups
-    // IPH.
-    for (int i = 0; i < 5; ++i)
-      ASSERT_TRUE(
-          AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-
     ASSERT_EQ(should_show,
-              promo_controller_->IsPromoActive(
-                  feature_engagement::kIPHDesktopTabGroupsNewGroupFeature));
+              promo_controller_->MaybeShowPromo(kSnoozeTestFeature));
+    ASSERT_EQ(should_show,
+              promo_controller_->IsPromoActive(kSnoozeTestFeature));
 
     // If shown, Tracker::Dismissed should be called eventually.
     if (should_show) {
-      EXPECT_CALL(
-          *mock_tracker_,
-          Dismissed(
-              Ref(feature_engagement::kIPHDesktopTabGroupsNewGroupFeature)));
+      EXPECT_CALL(*mock_tracker_, Dismissed(Ref(kSnoozeTestFeature)));
     }
   }
 
@@ -214,11 +218,11 @@ class FeaturePromoSnoozeInteractiveTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
                        DismissDoesNotSnooze) {
   base::Time show_time_min = base::Time::Now();
-  ASSERT_NO_FATAL_FAILURE(AttemptTabGroupsIPH(true));
+  ASSERT_NO_FATAL_FAILURE(AttemptIPH(true));
   base::Time show_time_max = base::Time::Now();
 
   ClickButton(GetDismissButtonForTesting());
-  CheckSnoozePrefs(feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
+  CheckSnoozePrefs(kSnoozeTestFeature,
                    /* is_dismiss */ true,
                    /* show_count */ 1,
                    /* snooze_count */ 0,
@@ -231,14 +235,14 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
 IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
                        SnoozeSetsCorrectTime) {
   base::Time show_time_min = base::Time::Now();
-  ASSERT_NO_FATAL_FAILURE(AttemptTabGroupsIPH(true));
+  ASSERT_NO_FATAL_FAILURE(AttemptIPH(true));
   base::Time show_time_max = base::Time::Now();
 
   base::Time snooze_time_min = base::Time::Now();
   ClickButton(GetSnoozeButtonForTesting());
   base::Time snooze_time_max = base::Time::Now();
 
-  CheckSnoozePrefs(feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
+  CheckSnoozePrefs(kSnoozeTestFeature,
                    /* is_dismiss */ false,
                    /* show_count */ 1,
                    /* snooze_count */ 1,
@@ -253,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest, CanReSnooze) {
   base::TimeDelta snooze_duration = base::Hours(26);
   base::Time snooze_time = base::Time::Now() - snooze_duration;
   base::Time show_time = snooze_time - base::Seconds(1);
-  SetSnoozePrefs(feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
+  SetSnoozePrefs(kSnoozeTestFeature,
                  /* is_dismiss */ false,
                  /* show_count */ 1,
                  /* snooze_count */ 1,
@@ -262,14 +266,14 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest, CanReSnooze) {
                  /* last_snooze_duration */ snooze_duration);
 
   base::Time show_time_min = base::Time::Now();
-  ASSERT_NO_FATAL_FAILURE(AttemptTabGroupsIPH(true));
+  ASSERT_NO_FATAL_FAILURE(AttemptIPH(true));
   base::Time show_time_max = base::Time::Now();
 
   base::Time snooze_time_min = base::Time::Now();
   ClickButton(GetSnoozeButtonForTesting());
   base::Time snooze_time_max = base::Time::Now();
 
-  CheckSnoozePrefs(feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
+  CheckSnoozePrefs(kSnoozeTestFeature,
                    /* is_dismiss */ false,
                    /* show_count */ 2,
                    /* snooze_count */ 2,
@@ -282,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest, CanReSnooze) {
 IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
                        DoesNotShowIfDismissed) {
   // Simulate the user dismissing the IPH.
-  SetSnoozePrefs(feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
+  SetSnoozePrefs(kSnoozeTestFeature,
                  /* is_dismiss */ true,
                  /* show_count */ 1,
                  /* snooze_count */ 0,
@@ -290,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
                  /* last_snooze_time */ base::Time(),
                  /* last_snooze_duration */ base::TimeDelta());
 
-  AttemptTabGroupsIPH(false);
+  AttemptIPH(false);
 }
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
@@ -299,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
   base::TimeDelta snooze_duration = base::Hours(26);
   base::Time snooze_time = base::Time::Now();
   base::Time show_time = snooze_time - base::Seconds(1);
-  SetSnoozePrefs(feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
+  SetSnoozePrefs(kSnoozeTestFeature,
                  /* is_dismiss */ false,
                  /* show_count */ 1,
                  /* snooze_count */ 1,
@@ -307,19 +311,18 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
                  /* last_snooze_time */ snooze_time,
                  /* last_snooze_duration */ snooze_duration);
 
-  AttemptTabGroupsIPH(false);
+  AttemptIPH(false);
 }
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
                        CloseBubbleSetsPrefs) {
   base::Time show_time_min = base::Time::Now();
-  ASSERT_NO_FATAL_FAILURE(AttemptTabGroupsIPH(true));
+  ASSERT_NO_FATAL_FAILURE(AttemptIPH(true));
   base::Time show_time_max = base::Time::Now();
 
-  promo_controller_->CloseBubble(
-      feature_engagement::kIPHDesktopTabGroupsNewGroupFeature);
+  promo_controller_->CloseBubble(kSnoozeTestFeature);
 
-  CheckSnoozePrefs(feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
+  CheckSnoozePrefs(kSnoozeTestFeature,
                    /* is_dismiss */ false,
                    /* show_count */ 1,
                    /* snooze_count */ 0,
@@ -332,13 +335,13 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
 IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
                        WidgetCloseSetsPrefs) {
   base::Time show_time_min = base::Time::Now();
-  ASSERT_NO_FATAL_FAILURE(AttemptTabGroupsIPH(true));
+  ASSERT_NO_FATAL_FAILURE(AttemptIPH(true));
   base::Time show_time_max = base::Time::Now();
 
   auto* const bubble = GetPromoBubbleView();
   bubble->GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kEscKeyPressed);
-  CheckSnoozePrefs(feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
+  CheckSnoozePrefs(kSnoozeTestFeature,
                    /* is_dismiss */ false,
                    /* show_count */ 1,
                    /* snooze_count */ 0,
@@ -354,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
   // Make sure empty entries are properly handled.
   base::TimeDelta snooze_duration = base::Hours(26);
   base::Time snooze_time = base::Time::Now() - snooze_duration;
-  SetSnoozePrefs(feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
+  SetSnoozePrefs(kSnoozeTestFeature,
                  /* is_dismiss */ false,
                  /* show_count */ absl::nullopt,
                  /* snooze_count */ 1,
@@ -362,5 +365,5 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
                  /* last_snooze_time */ snooze_time,
                  /* last_snooze_duration */ snooze_duration);
 
-  AttemptTabGroupsIPH(true);
+  AttemptIPH(true);
 }
