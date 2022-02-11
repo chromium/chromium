@@ -175,6 +175,7 @@ generate_grd("build_grd") {
     "images/smart_privacy_dark.svg",
     "images/switch_access_setup_guide_assign_select.svg",
     "images/switch_access_setup_guide_assign_next.svg",
+    "images/switch_access_setup_guide_assign_next_dark.svg",
     "images/switch_access_setup_guide_assign_previous.svg",
     "images/switch_access_setup_guide_choose_one_switch.svg",
     "images/switch_access_setup_guide_choose_one_switch_dark.svg",
