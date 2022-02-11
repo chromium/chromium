@@ -5160,6 +5160,21 @@
             ]
         }
     ],
+    "PwaUpdateDialogForNameAndIcon": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PwaUpdateDialogForNameAndIcon"
+                    ]
+                }
+            ]
+        }
+    ],
     "QUIC": [
         {
             "platforms": [
