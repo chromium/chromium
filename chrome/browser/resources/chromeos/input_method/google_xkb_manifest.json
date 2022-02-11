@@ -31,14 +31,6 @@
     "persistent": false
   },
   "content_scripts": [
-    {
-      "matches": [
-        "https://www.googleapis.com/auth/imesync*"
-      ],
-      "js": [
-        "chos_inject-debug.js"
-      ]
-    }
   ],
   "ime_path": "/usr/share/chromeos-assets/input_methods/input_tools",
   "input_components": [
