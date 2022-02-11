@@ -133,6 +133,7 @@ source_set("content_suggestions_ui") {
     "content_suggestions_view_controller.mm",
     "content_suggestions_view_controller_audience.h",
     "ntp_home_consumer.h",
+    "ntp_home_delegate.h",
     "user_account_image_update_delegate.h",
   ]
   deps = [
