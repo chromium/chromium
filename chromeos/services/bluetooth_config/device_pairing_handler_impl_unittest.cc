@@ -230,17 +230,9 @@ class DevicePairingHandlerImplTest : public testing::Test {
   }
 
   void EnterKeys(const std::string device_id, uint32_t num_keys_entered) {
-    device_pairing_handler_->KeysEntered(FindDevice(device_id)->get(),
+    device_pairing_handler_->KeysEntered(FindDevice(device_id),
                                          num_keys_entered);
     base::RunLoop().RunUntilIdle();
-  }
-
-  void ChangeDeviceIsConnected(const std::string& device_id,
-                               bool is_connected) {
-    auto it = FindDevice(device_id);
-    EXPECT_TRUE(it != mock_devices_.end());
-
-    ON_CALL(**it, IsConnected()).WillByDefault(testing::Return(is_connected));
   }
 
   const absl::optional<mojom::PairingResult>& pairing_result() const {
@@ -265,12 +257,12 @@ class DevicePairingHandlerImplTest : public testing::Test {
     return devices;
   }
 
-  std::vector<NiceMockDevice>::iterator FindDevice(
-      const std::string& device_id) {
-    return std::find_if(mock_devices_.begin(), mock_devices_.end(),
-                        [&device_id](const NiceMockDevice& device) {
-                          return device_id == device->GetIdentifier();
-                        });
+  device::BluetoothDevice* FindDevice(const std::string device_id) const {
+    for (auto& device : mock_devices_) {
+      if (device->GetIdentifier() == device_id)
+        return device.get();
+    }
+    return nullptr;
   }
 
   void OnPairingAttemptFinished() { num_pairing_attempt_finished_calls_++; }
@@ -524,42 +516,6 @@ TEST_F(DevicePairingHandlerImplTest, PairDeviceNotFound) {
   CheckDurationHistogramMetrics(base::Milliseconds(0), /*success_count=*/0,
                                 /*failure_count=*/1,
                                 /*transport_name=*/"Invalid");
-}
-
-TEST_F(DevicePairingHandlerImplTest, PairFailsDeviceConnected) {
-  // Simulate case where pairing succeeded but the subsequent connection request
-  // returns with a failure. Empirically, it's found that the device actually
-  // does connect and should be treated as a successful pairing (See
-  // b/209531279).
-  std::string device_id;
-  AddDevice(&device_id, AuthType::kNone);
-
-  CheckPairingHistograms(device::BluetoothTransportType::kClassic,
-                         /*type_count=*/0, /*failure_count=*/0,
-                         /*success_count=*/0);
-  CheckDurationHistogramMetrics(kTestDuration, /*success_count=*/0,
-                                /*failure_count=*/0,
-                                /*transport_name=*/"Classic");
-
-  std::unique_ptr<FakeDevicePairingDelegate> delegate = PairDevice(device_id);
-  EXPECT_TRUE(HasPendingConnectCallback());
-  FastForwardOperation(kTestDuration);
-
-  // Update device to be connected.
-  ChangeDeviceIsConnected(device_id, /*is_connected=*/true);
-
-  // Fail the pairing.
-  InvokePendingConnectCallback(/*success=*/false);
-
-  // The pairing should still return as a success.
-  EXPECT_EQ(pairing_result(), mojom::PairingResult::kSuccess);
-  EXPECT_EQ(num_pairing_attempt_finished_calls(), 1u);
-  CheckPairingHistograms(device::BluetoothTransportType::kClassic,
-                         /*type_count=*/1, /*failure_count=*/0,
-                         /*success_count=*/1);
-  CheckDurationHistogramMetrics(kTestDuration, /*success_count=*/1,
-                                /*failure_count=*/0,
-                                /*transport_name=*/"Classic");
 }
 
 TEST_F(DevicePairingHandlerImplTest, PairAuthRequestPinCode) {
