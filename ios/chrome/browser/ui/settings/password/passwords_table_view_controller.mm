@@ -313,6 +313,9 @@ void RemoveFormsToBeDeleted(
 // site equivalent to that of |mostRecentlyUpdatedPassword|.
 @property(nonatomic, weak) PasswordFormContentItem* mostRecentlyUpdatedItem;
 
+// YES, if the user has tapped on the "Check Now" button.
+@property(nonatomic, assign) BOOL shouldFocusAccessibilityOnPasswordCheckStatus;
+
 @end
 
 @implementation PasswordsTableViewController
@@ -1507,10 +1510,13 @@ void RemoveFormsToBeDeleted(
   }
 
   // Notify the accessibility to focus on the password check status cell when
-  // the status changed to unsafe, safe or error.
-  if (state == PasswordCheckStateUnSafe || state == PasswordCheckStateSafe ||
-      state == PasswordCheckStateError) {
+  // the status changed to unsafe, safe or error. (Only do it after the user tap
+  // on the "Check Now" button.)
+  if (self.shouldFocusAccessibilityOnPasswordCheckStatus &&
+      (state == PasswordCheckStateUnSafe || state == PasswordCheckStateSafe ||
+       state == PasswordCheckStateError)) {
     [self focusAccessibilityOnPasswordCheckStatus];
+    self.shouldFocusAccessibilityOnPasswordCheckStatus = NO;
   }
 }
 
@@ -1698,12 +1704,15 @@ void RemoveFormsToBeDeleted(
 // Notifies accessibility to focus on the Password Check Status cell when its
 // layout changed.
 - (void)focusAccessibilityOnPasswordCheckStatus {
-  NSIndexPath* indexPath =
-      [self.tableViewModel indexPathForItemType:ItemTypePasswordCheckStatus
-                              sectionIdentifier:SectionIdentifierPasswordCheck];
-  UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
-  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
-                                  cell);
+  if ([self.tableViewModel hasItemForItemType:ItemTypePasswordCheckStatus
+                            sectionIdentifier:SectionIdentifierPasswordCheck]) {
+    NSIndexPath* indexPath = [self.tableViewModel
+        indexPathForItemType:ItemTypePasswordCheckStatus
+           sectionIdentifier:SectionIdentifierPasswordCheck];
+    UITableViewCell* cell = [self.tableView cellForRowAtIndexPath:indexPath];
+    UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                    cell);
+  }
 }
 
 #pragma mark - UITableViewDelegate
@@ -1756,6 +1765,7 @@ void RemoveFormsToBeDeleted(
     case ItemTypeCheckForProblemsButton:
       if (self.passwordCheckState != PasswordCheckStateRunning) {
         [self.delegate startPasswordCheck];
+        self.shouldFocusAccessibilityOnPasswordCheckStatus = YES;
         UmaHistogramEnumeration("PasswordManager.BulkCheck.UserAction",
                                 PasswordCheckInteraction::kManualPasswordCheck);
       }
