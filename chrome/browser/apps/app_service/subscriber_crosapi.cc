@@ -62,7 +62,14 @@ void SubscriberCrosapi::OnApps(std::vector<apps::mojom::AppPtr> deltas,
                                apps::mojom::AppType app_type,
                                bool should_notify_initialized) {
   if (Accepts(app_type) && Accepts(deltas) && subscriber_.is_bound()) {
-    subscriber_->OnApps(std::move(deltas), app_type, should_notify_initialized);
+    std::vector<AppPtr> apps;
+    for (const auto& mojom_app : deltas) {
+      if (mojom_app) {
+        apps.push_back(ConvertMojomAppToApp(mojom_app));
+      }
+    }
+    subscriber_->OnApps(std::move(apps), ConvertMojomAppTypToAppType(app_type),
+                        should_notify_initialized);
   }
 }
 
@@ -125,11 +132,11 @@ void SubscriberCrosapi::Launch(crosapi::mojom::LaunchParamsPtr launch_params) {
 }
 
 void SubscriberCrosapi::LoadIcon(const std::string& app_id,
-                                 apps::mojom::IconKeyPtr mojom_icon_key,
+                                 IconKeyPtr icon_key,
                                  IconType icon_type,
                                  int32_t size_hint_in_dip,
                                  apps::LoadIconCallback callback) {
-  if (!mojom_icon_key) {
+  if (!icon_key) {
     std::move(callback).Run(std::make_unique<IconValue>());
     return;
   }
@@ -137,15 +144,13 @@ void SubscriberCrosapi::LoadIcon(const std::string& app_id,
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   apps::mojom::AppType app_type = proxy->AppRegistryCache().GetAppType(app_id);
   if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    std::unique_ptr<IconKey> icon_key =
-        ConvertMojomIconKeyToIconKey(mojom_icon_key);
     proxy->LoadIconFromIconKey(ConvertMojomAppTypToAppType(app_type), app_id,
                                *icon_key, icon_type, size_hint_in_dip,
                                /*allow_placeholder_icon=*/false,
                                std::move(callback));
   } else {
     proxy->LoadIconFromIconKey(
-        app_type, app_id, std::move(mojom_icon_key),
+        app_type, app_id, ConvertIconKeyToMojomIconKey(*icon_key),
         ConvertIconTypeToMojomIconType(icon_type), size_hint_in_dip,
         /*allow_placeholder_icon=*/false,
         MojomIconValueToIconValueCallback(std::move(callback)));

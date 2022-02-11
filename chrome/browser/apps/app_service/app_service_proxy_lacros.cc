@@ -85,8 +85,10 @@ AppServiceProxyLacros::InnerIconLoader::LoadIconFromIconKey(
     std::move(callback).Run(std::make_unique<IconValue>());
   } else {
     service->GetRemote<crosapi::mojom::AppServiceProxy>()->LoadIcon(
-        app_id, ConvertIconKeyToMojomIconKey(icon_key), icon_type,
-        size_hint_in_dip, std::move(callback));
+        app_id,
+        std::make_unique<IconKey>(icon_key.timeline, icon_key.resource_id,
+                                  icon_key.icon_effects),
+        icon_type, size_hint_in_dip, std::move(callback));
   }
   return nullptr;
 }
@@ -108,7 +110,8 @@ AppServiceProxyLacros::InnerIconLoader::LoadIconFromIconKey(
 
   auto* service = chromeos::LacrosService::Get();
 
-  if (!service || !service->IsAvailable<crosapi::mojom::AppServiceProxy>()) {
+  if (!service || !service->IsAvailable<crosapi::mojom::AppServiceProxy>() ||
+      !icon_key) {
     std::move(callback).Run(apps::mojom::IconValue::New());
   } else if (host_->crosapi_app_service_proxy_version_ <
              int{crosapi::mojom::AppServiceProxy::MethodMinVersions::
@@ -119,8 +122,10 @@ AppServiceProxyLacros::InnerIconLoader::LoadIconFromIconKey(
     std::move(callback).Run(apps::mojom::IconValue::New());
   } else {
     service->GetRemote<crosapi::mojom::AppServiceProxy>()->LoadIcon(
-        app_id, std::move(icon_key), ConvertMojomIconTypeToIconType(icon_type),
-        size_hint_in_dip,
+        app_id,
+        std::make_unique<IconKey>(icon_key->timeline, icon_key->resource_id,
+                                  icon_key->icon_effects),
+        ConvertMojomIconTypeToIconType(icon_type), size_hint_in_dip,
         IconValueToMojomIconValueCallback(std::move(callback)));
   }
   return nullptr;
@@ -557,9 +562,18 @@ void AppServiceProxyLacros::SetWindowMode(const std::string& app_id,
   NOTIMPLEMENTED();
 }
 
-void AppServiceProxyLacros::OnApps(std::vector<apps::mojom::AppPtr> deltas,
-                                   apps::mojom::AppType app_type,
+void AppServiceProxyLacros::OnApps(std::vector<AppPtr> deltas,
+                                   AppType app_type,
                                    bool should_notify_initialized) {
+  std::vector<apps::mojom::AppPtr> mojom_deltas;
+  for (const auto& app : deltas) {
+    if (app) {
+      mojom_deltas.push_back(ConvertAppToMojomApp(app));
+    }
+  }
+  app_registry_cache_.OnApps(std::move(mojom_deltas),
+                             ConvertAppTypeToMojomAppType(app_type),
+                             should_notify_initialized);
   app_registry_cache_.OnApps(std::move(deltas), app_type,
                              should_notify_initialized);
 }

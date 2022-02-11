@@ -19,7 +19,9 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -78,13 +80,13 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
   void GetMenuModel(const std::string& app_id,
                     GetMenuModelCallback callback) override;
   void LoadIcon(const std::string& app_id,
-                apps::mojom::IconKeyPtr icon_key,
+                apps::IconKeyPtr icon_key,
                 apps::IconType icon_type,
                 int32_t size_hint_in_dip,
                 apps::LoadIconCallback callback) override;
   void OpenNativeSettings(const std::string& app_id) override;
   void SetWindowMode(const std::string& app_id,
-                     apps::mojom::WindowMode window_mode) override;
+                     apps::WindowMode window_mode) override;
   void Launch(crosapi::mojom::LaunchParamsPtr launch_params,
               LaunchCallback callback) override;
   void ExecuteContextMenuCommand(
@@ -93,7 +95,7 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
       ExecuteContextMenuCommandCallback callback) override;
   void StopApp(const std::string& app_id) override;
   void SetPermission(const std::string& app_id,
-                     apps::mojom::PermissionPtr permission) override;
+                     apps::PermissionPtr permission) override;
 
   // WebAppPublisherHelper::Delegate:
   void PublishWebApps(std::vector<apps::mojom::AppPtr> apps) override;

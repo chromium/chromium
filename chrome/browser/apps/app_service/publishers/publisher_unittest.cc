@@ -96,31 +96,20 @@ void AddArcPackage(ArcAppTest& arc_test,
   }
 }
 
-apps::mojom::AppPtr MakeMojomApp(apps::mojom::AppType app_type,
-                                 const std::string& app_id,
-                                 const std::string& name,
-                                 apps::mojom::Readiness readiness) {
-  apps::mojom::AppPtr app = apps::PublisherBase::MakeApp(
-      app_type, app_id, apps::mojom::Readiness::kReady, name,
-      apps::mojom::InstallReason::kUser);
-  app->install_source = apps::mojom::InstallSource::kSync;
-  app->icon_key = apps::mojom::IconKey::New(
-      /*timeline=*/1, apps::mojom::IconKey::kInvalidResourceId,
+apps::AppPtr MakeApp(apps::AppType app_type,
+                     const std::string& app_id,
+                     const std::string& name,
+                     apps::Readiness readiness) {
+  auto app = std::make_unique<apps::App>(app_type, app_id);
+  app->readiness = readiness;
+  app->name = name;
+  app->short_name = name;
+  app->install_reason = apps::InstallReason::kUser;
+  app->install_source = apps::InstallSource::kSync;
+  app->icon_key = apps::IconKey(
+      /*timeline=*/1, apps::IconKey::kInvalidResourceId,
       /*icon_effects=*/0);
   return app;
-}
-
-// TODO(crbug.com/1253250): Will be removed when AppService Lacros mojom is
-// migrated to non-mojom App struct.
-apps::mojom::PermissionPtr MakeFakeMojomPermission(
-    apps::mojom::PermissionType permission_type,
-    bool bool_value) {
-  auto permission = apps::mojom::Permission::New();
-  permission->permission_type = permission_type;
-  permission->value = apps::mojom::PermissionValue::New();
-  permission->value->set_bool_value(bool_value);
-  permission->is_managed = false;
-  return permission;
 }
 
 apps::Permissions MakeFakePermissions() {
@@ -468,21 +457,21 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
   void ExtensionAppsOnApps() {
     StandaloneBrowserExtensionApps* chrome_apps =
         StandaloneBrowserExtensionAppsFactory::GetForProfile(profile());
-    std::vector<mojom::AppPtr> apps;
-    auto app = MakeMojomApp(mojom::AppType::kStandaloneBrowserChromeApp,
-                            /*app_id=*/"a",
-                            /*name=*/"TestApp", mojom::Readiness::kReady);
-    app->is_platform_app = mojom::OptionalBool::kTrue;
-    app->recommendable = apps::mojom::OptionalBool::kFalse;
-    app->searchable = apps::mojom::OptionalBool::kFalse;
-    app->show_in_launcher = apps::mojom::OptionalBool::kFalse;
-    app->show_in_shelf = apps::mojom::OptionalBool::kFalse;
-    app->show_in_search = apps::mojom::OptionalBool::kFalse;
-    app->show_in_management = apps::mojom::OptionalBool::kFalse;
-    app->handles_intents = apps::mojom::OptionalBool::kFalse;
-    app->allow_uninstall = apps::mojom::OptionalBool::kFalse;
-    app->has_badge = apps::mojom::OptionalBool::kFalse;
-    app->paused = apps::mojom::OptionalBool::kFalse;
+    std::vector<AppPtr> apps;
+    auto app = MakeApp(AppType::kStandaloneBrowserChromeApp,
+                       /*app_id=*/"a",
+                       /*name=*/"TestApp", Readiness::kReady);
+    app->is_platform_app = true;
+    app->recommendable = false;
+    app->searchable = false;
+    app->show_in_launcher = false;
+    app->show_in_shelf = false;
+    app->show_in_search = false;
+    app->show_in_management = false;
+    app->handles_intents = false;
+    app->allow_uninstall = false;
+    app->has_badge = false;
+    app->paused = false;
     apps.push_back(std::move(app));
     chrome_apps->OnApps(std::move(apps));
   }
@@ -490,28 +479,25 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
   void WebAppsCrosapiOnApps() {
     WebAppsCrosapi* web_apps_crosapi =
         WebAppsCrosapiFactory::GetForProfile(profile());
-    std::vector<mojom::AppPtr> apps;
-    auto app = MakeMojomApp(mojom::AppType::kWeb,
-                            /*app_id=*/"a",
-                            /*name=*/"TestApp", mojom::Readiness::kReady);
+    std::vector<AppPtr> apps;
+    auto app = MakeApp(AppType::kWeb,
+                       /*app_id=*/"a",
+                       /*name=*/"TestApp", Readiness::kReady);
     app->additional_search_terms.push_back("TestApp");
     app->last_launch_time = kLastLaunchTime;
     app->install_time = kInstallTime;
-    app->permissions.push_back(MakeFakeMojomPermission(
-        apps::mojom::PermissionType::kCamera, /*bool_value=*/false));
-    app->permissions.push_back(MakeFakeMojomPermission(
-        apps::mojom::PermissionType::kLocation, /*bool_value=*/true));
-    app->recommendable = apps::mojom::OptionalBool::kTrue;
-    app->searchable = apps::mojom::OptionalBool::kTrue;
-    app->show_in_launcher = apps::mojom::OptionalBool::kTrue;
-    app->show_in_shelf = apps::mojom::OptionalBool::kTrue;
-    app->show_in_search = apps::mojom::OptionalBool::kTrue;
-    app->show_in_management = apps::mojom::OptionalBool::kTrue;
-    app->handles_intents = apps::mojom::OptionalBool::kTrue;
-    app->allow_uninstall = apps::mojom::OptionalBool::kTrue;
-    app->has_badge = apps::mojom::OptionalBool::kTrue;
-    app->paused = apps::mojom::OptionalBool::kTrue;
-    app->window_mode = apps::mojom::WindowMode::kBrowser;
+    app->permissions = MakeFakePermissions();
+    app->recommendable = true;
+    app->searchable = true;
+    app->show_in_launcher = true;
+    app->show_in_shelf = true;
+    app->show_in_search = true;
+    app->show_in_management = true;
+    app->handles_intents = true;
+    app->allow_uninstall = true;
+    app->has_badge = true;
+    app->paused = true;
+    app->window_mode = WindowMode::kBrowser;
     apps.push_back(std::move(app));
     web_apps_crosapi->OnApps(std::move(apps));
   }
@@ -550,7 +536,7 @@ TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiOnApps) {
   VerifyApp(AppType::kWeb, "a", "TestApp", Readiness::kReady,
             InstallReason::kUser, InstallSource::kSync, {"TestApp"},
             kLastLaunchTime, kInstallTime, MakeFakePermissions(),
-            /*is_platform_app=*/false, /*recommendable=*/true,
+            /*is_platform_app=*/absl::nullopt, /*recommendable=*/true,
             /*searchable=*/true,
             /*show_in_launcher=*/true, /*show_in_shelf=*/true,
             /*show_in_search=*/true, /*show_in_management=*/true,

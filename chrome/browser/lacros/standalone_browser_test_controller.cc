@@ -15,15 +15,15 @@
 
 namespace {
 blink::mojom::DisplayMode WindowModeToDisplayMode(
-    apps::mojom::WindowMode window_mode) {
+    apps::WindowMode window_mode) {
   switch (window_mode) {
-    case apps::mojom::WindowMode::kBrowser:
+    case apps::WindowMode::kBrowser:
       return blink::mojom::DisplayMode::kBrowser;
-    case apps::mojom::WindowMode::kTabbedWindow:
+    case apps::WindowMode::kTabbedWindow:
       return blink::mojom::DisplayMode::kTabbed;
-    case apps::mojom::WindowMode::kWindow:
+    case apps::WindowMode::kWindow:
       return blink::mojom::DisplayMode::kStandalone;
-    case apps::mojom::WindowMode::kUnknown:
+    case apps::WindowMode::kUnknown:
       return blink::mojom::DisplayMode::kUndefined;
   }
 }
@@ -39,7 +39,7 @@ StandaloneBrowserTestController::~StandaloneBrowserTestController() = default;
 
 void StandaloneBrowserTestController::InstallWebApp(
     const std::string& start_url,
-    apps::mojom::WindowMode window_mode,
+    apps::WindowMode window_mode,
     InstallWebAppCallback callback) {
   auto info = std::make_unique<WebAppInstallInfo>();
   info->title = u"Test Web App";

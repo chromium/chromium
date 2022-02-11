@@ -326,8 +326,8 @@ class AppServiceProxyLacros : public KeyedService,
   void Shutdown() override;
 
   // crosapi::mojom::AppServiceSubscriber overrides.
-  void OnApps(std::vector<apps::mojom::AppPtr> deltas,
-              apps::mojom::AppType app_type,
+  void OnApps(std::vector<AppPtr> deltas,
+              AppType app_type,
               bool should_notify_initialized) override;
   void OnPreferredAppsChanged(
       apps::mojom::PreferredAppChangesPtr changes) override;

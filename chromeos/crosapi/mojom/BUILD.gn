@@ -97,7 +97,7 @@ mojom("mojom") {
       types = [
         {
           mojom = "crosapi.mojom.App"
-          cpp = "::apps::mojom::AppPtr"
+          cpp = "::apps::AppPtr"
           move_only = true
           nullable_is_same_type = true
         },
@@ -121,16 +121,16 @@ mojom("mojom") {
         },
         {
           mojom = "crosapi.mojom.IconKey"
-          cpp = "::apps::mojom::IconKeyPtr"
+          cpp = "::apps::IconKeyPtr"
           move_only = true
         },
         {
           mojom = "crosapi.mojom.WindowMode"
-          cpp = "::apps::mojom::WindowMode"
+          cpp = "::apps::WindowMode"
         },
         {
           mojom = "crosapi.mojom.AppType"
-          cpp = "::apps::mojom::AppType"
+          cpp = "::apps::AppType"
         },
         {
           mojom = "crosapi.mojom.LaunchSource"
@@ -152,7 +152,7 @@ mojom("mojom") {
         },
         {
           mojom = "crosapi.mojom.Permission"
-          cpp = "::apps::mojom::PermissionPtr"
+          cpp = "::apps::PermissionPtr"
           move_only = true
         },
         {
@@ -169,6 +169,7 @@ mojom("mojom") {
       traits_headers = [
         "//chromeos/crosapi/mojom/app_service_types_mojom_traits.h",
         "//chromeos/crosapi/mojom/browser_app_instance_registry_mojom_traits.h",
+        "//components/services/app_service/public/cpp/app_types.h",
         "//components/services/app_service/public/cpp/icon_types.h",
         "//components/services/app_service/public/mojom/types.mojom.h",
       ]
@@ -177,6 +178,7 @@ mojom("mojom") {
         "//chromeos/crosapi/mojom/browser_app_instance_registry_mojom_traits.cc",
       ]
       traits_public_deps = [
+        "//components/services/app_service/public/cpp:app_types",
         "//components/services/app_service/public/cpp:browser_app_instance_registry_update",
         "//components/services/app_service/public/cpp:icon_types",
         "//components/services/app_service/public/mojom:mojom",

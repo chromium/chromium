@@ -39,6 +39,7 @@
 #include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -231,7 +232,7 @@ class BrowserAppShelfControllerBrowserTest : public InProcessBrowserTest {
   }
 
   std::string InstallWebApp(const std::string& start_url,
-                            apps::mojom::WindowMode mode) {
+                            apps::WindowMode mode) {
     crosapi::mojom::StandaloneBrowserTestControllerAsyncWaiter waiter(
         test_controller_ash_->GetStandaloneBrowserTestController().get());
     std::string app_id;
@@ -354,8 +355,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, TabbedApps) {
   {
     SCOPED_TRACE("launch unpinned, stop");
 
-    ASSERT_EQ(kAppId_A,
-              InstallWebApp(kURL_A, apps::mojom::WindowMode::kBrowser));
+    ASSERT_EQ(kAppId_A, InstallWebApp(kURL_A, apps::WindowMode::kBrowser));
     Launch(kAppId_A);
 
     // App A is unpinned, so no new item.
@@ -375,8 +375,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, TabbedApps) {
   {
     SCOPED_TRACE("launch, pin, stop");
 
-    ASSERT_EQ(kAppId_B,
-              InstallWebApp(kURL_B, apps::mojom::WindowMode::kBrowser));
+    ASSERT_EQ(kAppId_B, InstallWebApp(kURL_B, apps::WindowMode::kBrowser));
     Launch(kAppId_B);
     PinApp(kAppId_B);
 
@@ -399,8 +398,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, TabbedApps) {
   {
     SCOPED_TRACE("pin, launch, stop");
 
-    ASSERT_EQ(kAppId_C,
-              InstallWebApp(kURL_C, apps::mojom::WindowMode::kBrowser));
+    ASSERT_EQ(kAppId_C, InstallWebApp(kURL_C, apps::WindowMode::kBrowser));
     PinApp(kAppId_C);
     EXPECT_EQ(SelectShelfItem(kAppId_C),
               (SelectResult{ash::SHELF_ACTION_NEW_WINDOW_CREATED, {}}));
@@ -424,8 +422,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, TabbedApps) {
   {
     SCOPED_TRACE("pin, launch, unpin, stop");
 
-    ASSERT_EQ(kAppId_D,
-              InstallWebApp(kURL_D, apps::mojom::WindowMode::kBrowser));
+    ASSERT_EQ(kAppId_D, InstallWebApp(kURL_D, apps::WindowMode::kBrowser));
     PinApp(kAppId_D);
     EXPECT_EQ(SelectShelfItem(kAppId_D),
               (SelectResult{ash::SHELF_ACTION_NEW_WINDOW_CREATED, {}}));
@@ -464,8 +461,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, WindowedApps) {
   {
     SCOPED_TRACE("launch unpinned, stop");
 
-    ASSERT_EQ(kAppId_A,
-              InstallWebApp(kURL_A, apps::mojom::WindowMode::kWindow));
+    ASSERT_EQ(kAppId_A, InstallWebApp(kURL_A, apps::WindowMode::kWindow));
     Launch(kAppId_A);
     const apps::BrowserAppInstance* appA = registry_->FindAppInstanceIf(
         [&](const auto& instance) { return instance.app_id == kAppId_A; });
@@ -483,8 +479,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, WindowedApps) {
 
   {
     SCOPED_TRACE("launch, pin, stop");
-    ASSERT_EQ(kAppId_B,
-              InstallWebApp(kURL_B, apps::mojom::WindowMode::kWindow));
+    ASSERT_EQ(kAppId_B, InstallWebApp(kURL_B, apps::WindowMode::kWindow));
     Launch(kAppId_B);
     PinApp(kAppId_B);
     const apps::BrowserAppInstance* appB = registry_->FindAppInstanceIf(
@@ -503,8 +498,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, WindowedApps) {
 
   {
     SCOPED_TRACE("pin, launch, stop");
-    ASSERT_EQ(kAppId_C,
-              InstallWebApp(kURL_C, apps::mojom::WindowMode::kWindow));
+    ASSERT_EQ(kAppId_C, InstallWebApp(kURL_C, apps::WindowMode::kWindow));
     PinApp(kAppId_C);
     EXPECT_EQ(SelectShelfItem(kAppId_C),
               (SelectResult{ash::SHELF_ACTION_NEW_WINDOW_CREATED, {}}));
@@ -524,8 +518,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest, WindowedApps) {
 
   {
     SCOPED_TRACE("pin, launch, unpin, stop");
-    ASSERT_EQ(kAppId_D,
-              InstallWebApp(kURL_D, apps::mojom::WindowMode::kWindow));
+    ASSERT_EQ(kAppId_D, InstallWebApp(kURL_D, apps::WindowMode::kWindow));
     PinApp(kAppId_D);
     EXPECT_EQ(SelectShelfItem(kAppId_D),
               (SelectResult{ash::SHELF_ACTION_NEW_WINDOW_CREATED, {}}));
@@ -567,10 +560,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest,
   {
     // Install, pin, and launch two apps (A and B) in the same order. Both apps
     // will be running in two tabs in one window, app B is active.
-    ASSERT_EQ(kAppId_A,
-              InstallWebApp(kURL_A, apps::mojom::WindowMode::kBrowser));
-    ASSERT_EQ(kAppId_B,
-              InstallWebApp(kURL_B, apps::mojom::WindowMode::kBrowser));
+    ASSERT_EQ(kAppId_A, InstallWebApp(kURL_A, apps::WindowMode::kBrowser));
+    ASSERT_EQ(kAppId_B, InstallWebApp(kURL_B, apps::WindowMode::kBrowser));
     PinApp(kAppId_A);
     PinApp(kAppId_B);
     ASSERT_EQ(SelectShelfItem(kAppId_A),
@@ -642,8 +633,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest,
     EXPECT_EQ(ShelfStatus(kChromeAppId), ash::STATUS_RUNNING);
   }
 
-  ASSERT_EQ(kAppId_A, InstallWebApp(kURL_A, apps::mojom::WindowMode::kWindow));
-  ASSERT_EQ(kAppId_B, InstallWebApp(kURL_B, apps::mojom::WindowMode::kWindow));
+  ASSERT_EQ(kAppId_A, InstallWebApp(kURL_A, apps::WindowMode::kWindow));
+  ASSERT_EQ(kAppId_B, InstallWebApp(kURL_B, apps::WindowMode::kWindow));
   Launch(kAppId_A);
   Launch(kAppId_B);
   const apps::BrowserAppInstance* appA = registry_->FindAppInstanceIf(
@@ -695,7 +686,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest,
     EXPECT_EQ(ShelfStatus(kChromeAppId), ash::STATUS_RUNNING);
   }
 
-  ASSERT_EQ(kAppId_A, InstallWebApp(kURL_A, apps::mojom::WindowMode::kBrowser));
+  ASSERT_EQ(kAppId_A, InstallWebApp(kURL_A, apps::WindowMode::kBrowser));
   PinApp(kAppId_A);
   Launch(kAppId_A);
   Launch(kAppId_A);
@@ -707,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest,
                                                          {2, "a.example.org"},
                                                      }}));
 
-  ASSERT_EQ(kAppId_B, InstallWebApp(kURL_B, apps::mojom::WindowMode::kWindow));
+  ASSERT_EQ(kAppId_B, InstallWebApp(kURL_B, apps::WindowMode::kWindow));
   Launch(kAppId_B);
   Launch(kAppId_B);
   WAIT_FOR(AppInstanceCount(kAppId_B) == 2 &&

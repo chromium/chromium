@@ -99,10 +99,11 @@ class MockAppPublisher : public crosapi::mojom::AppPublisher {
 
  private:
   // crosapi::mojom::AppPublisher:
-  void OnApps(std::vector<apps::mojom::AppPtr> deltas) override {
-    app_deltas_.insert(app_deltas_.end(),
-                       std::make_move_iterator(deltas.begin()),
-                       std::make_move_iterator(deltas.end()));
+  void OnApps(std::vector<apps::AppPtr> deltas) override {
+    for (const auto& delta : deltas) {
+      if (delta)
+        app_deltas_.push_back(apps::ConvertAppToMojomApp(delta));
+    }
     run_loop_->Quit();
   }
 
@@ -685,8 +686,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, WindowMode) {
   EXPECT_EQ(mock_app_publisher.get_deltas().back()->window_mode,
             apps::mojom::WindowMode::kWindow);
 
-  web_apps_publisher_host.SetWindowMode(app_id,
-                                        apps::mojom::WindowMode::kBrowser);
+  web_apps_publisher_host.SetWindowMode(app_id, apps::WindowMode::kBrowser);
   mock_app_publisher.Wait();
 
   EXPECT_GE(mock_app_publisher.get_deltas().size(), 2U);

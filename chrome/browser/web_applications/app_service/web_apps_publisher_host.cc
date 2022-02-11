@@ -134,7 +134,7 @@ void WebAppsPublisherHost::UnpauseApp(const std::string& app_id) {
 }
 
 void WebAppsPublisherHost::LoadIcon(const std::string& app_id,
-                                    apps::mojom::IconKeyPtr icon_key,
+                                    apps::IconKeyPtr icon_key,
                                     apps::IconType icon_type,
                                     int32_t size_hint_in_dip,
                                     apps::LoadIconCallback callback) {
@@ -144,8 +144,6 @@ void WebAppsPublisherHost::LoadIcon(const std::string& app_id,
     return;
   }
 
-  std::unique_ptr<apps::IconKey> key =
-      apps::ConvertMojomIconKeyToIconKey(icon_key);
   publisher_helper().LoadIcon(app_id, icon_type, size_hint_in_dip,
                               static_cast<IconEffects>(icon_key->icon_effects),
                               std::move(callback));
@@ -156,8 +154,9 @@ void WebAppsPublisherHost::OpenNativeSettings(const std::string& app_id) {
 }
 
 void WebAppsPublisherHost::SetWindowMode(const std::string& app_id,
-                                         apps::mojom::WindowMode window_mode) {
-  return publisher_helper().SetWindowMode(app_id, window_mode);
+                                         apps::WindowMode window_mode) {
+  return publisher_helper().SetWindowMode(
+      app_id, apps::ConvertWindowModeToMojomWindowMode(window_mode));
 }
 
 void WebAppsPublisherHost::GetMenuModel(const std::string& app_id,
@@ -194,10 +193,10 @@ void WebAppsPublisherHost::StopApp(const std::string& app_id) {
   publisher_helper().StopApp(app_id);
 }
 
-void WebAppsPublisherHost::SetPermission(
-    const std::string& app_id,
-    apps::mojom::PermissionPtr permission) {
-  publisher_helper().SetPermission(app_id, std::move(permission));
+void WebAppsPublisherHost::SetPermission(const std::string& app_id,
+                                         apps::PermissionPtr permission) {
+  publisher_helper().SetPermission(
+      app_id, apps::ConvertPermissionToMojomPermission(permission));
 }
 
 // TODO(crbug.com/1144877): Clean up the multiple launch interfaces and remove
@@ -310,7 +309,7 @@ const WebApp* WebAppsPublisherHost::GetWebApp(const AppId& app_id) const {
 }
 
 void WebAppsPublisherHost::PublishWebApps(
-    std::vector<apps::mojom::AppPtr> apps) {
+    std::vector<apps::mojom::AppPtr> mojom_apps) {
   if (!remote_publisher_) {
     return;
   }
@@ -322,6 +321,12 @@ void WebAppsPublisherHost::PublishWebApps(
     return;
   }
 
+  std::vector<apps::AppPtr> apps;
+  for (const auto& mojom_app : mojom_apps) {
+    if (mojom_app) {
+      apps.push_back(apps::ConvertMojomAppToApp(mojom_app));
+    }
+  }
   remote_publisher_->OnApps(std::move(apps));
 }
 

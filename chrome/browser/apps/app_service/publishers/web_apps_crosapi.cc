@@ -75,8 +75,8 @@ void WebAppsCrosapi::LoadIcon(const std::string& app_id,
   const uint32_t icon_effects = icon_key.icon_effects;
 
   IconType crosapi_icon_type = icon_type;
-  apps::mojom::IconKeyPtr crosapi_icon_key =
-      ConvertIconKeyToMojomIconKey(icon_key);
+  IconKeyPtr crosapi_icon_key = std::make_unique<IconKey>(
+      icon_key.timeline, icon_key.resource_id, icon_key.icon_effects);
   if (crosapi_icon_type == apps::IconType::kCompressed) {
     // The effects are applied here in Ash.
     crosapi_icon_type = apps::IconType::kUncompressed;
@@ -130,7 +130,8 @@ void WebAppsCrosapi::LoadIcon(const std::string& app_id,
   const apps::IconEffects icon_effects =
       static_cast<apps::IconEffects>(icon_key->icon_effects);
   controller_->LoadIcon(
-      app_id, std::move(icon_key), icon_type, size_hint_in_dip,
+      app_id, ConvertMojomIconKeyToIconKey(icon_key), icon_type,
+      size_hint_in_dip,
       base::BindOnce(&WebAppsCrosapi::OnLoadIcon, weak_factory_.GetWeakPtr(),
                      icon_type, size_hint_in_dip, icon_effects,
                      IconValueToMojomIconValueCallback(std::move(callback))));
@@ -336,7 +337,8 @@ void WebAppsCrosapi::SetWindowMode(const std::string& app_id,
     return;
   }
 
-  controller_->SetWindowMode(app_id, window_mode);
+  controller_->SetWindowMode(app_id,
+                             ConvertMojomWindowModeToWindowMode(window_mode));
 }
 
 void WebAppsCrosapi::ExecuteContextMenuCommand(const std::string& app_id,
@@ -357,21 +359,22 @@ void WebAppsCrosapi::SetPermission(const std::string& app_id,
     return;
   }
 
-  controller_->SetPermission(app_id, std::move(permission));
+  controller_->SetPermission(app_id,
+                             ConvertMojomPermissionToPermission(permission));
 }
 
-void WebAppsCrosapi::OnApps(std::vector<apps::mojom::AppPtr> deltas) {
+void WebAppsCrosapi::OnApps(std::vector<AppPtr> deltas) {
   if (!web_app::IsWebAppsCrosapiEnabled())
     return;
 
-  std::vector<AppPtr> apps;
-  for (apps::mojom::AppPtr& delta : deltas) {
-    apps.push_back(ConvertMojomAppToApp(delta));
+  std::vector<apps::mojom::AppPtr> mojom_apps;
+  for (const AppPtr& delta : deltas) {
+    mojom_apps.push_back(ConvertAppToMojomApp(delta));
   }
-  apps::AppPublisher::Publish(std::move(apps));
+  apps::AppPublisher::Publish(std::move(deltas));
 
   for (auto& subscriber : subscribers_) {
-    subscriber->OnApps(apps_util::CloneStructPtrVector(deltas),
+    subscriber->OnApps(apps_util::CloneStructPtrVector(mojom_apps),
                        apps::mojom::AppType::kWeb, should_notify_initialized_);
   }
   should_notify_initialized_ = false;

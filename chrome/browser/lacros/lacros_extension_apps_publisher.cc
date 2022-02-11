@@ -368,13 +368,7 @@ bool LacrosExtensionAppsPublisher::InitializeCrosapi() {
 }
 
 void LacrosExtensionAppsPublisher::Publish(std::vector<apps::AppPtr> apps) {
-  std::vector<apps::mojom::AppPtr> mojom_apps;
-  for (const auto& app : apps) {
-    if (app) {
-      mojom_apps.push_back(ConvertAppToMojomApp(app));
-    }
-  }
-  publisher_->OnApps(std::move(mojom_apps));
+  publisher_->OnApps(std::move(apps));
 }
 
 void LacrosExtensionAppsPublisher::OnAppWindowAdded(

@@ -106,13 +106,12 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsControllerTest, LoadIcon) {
           &run_loop, &output);
 
       // Load the icon
-      auto icon_key = apps::mojom::IconKey::New(0, 0, 0);
       auto icon_type = compressed ? apps::IconType::kCompressed
                                   : apps::IconType::kUncompressed;
       LacrosExtensionAppsController controller;
       controller.LoadIcon(
           lacros_extension_apps_utility::MuxId(profile(), extension),
-          std::move(icon_key), icon_type,
+          std::make_unique<apps::IconKey>(0, 0, 0), icon_type,
           /*size_hint_in_dip=*/1, std::move(callback));
       run_loop.Run();
 

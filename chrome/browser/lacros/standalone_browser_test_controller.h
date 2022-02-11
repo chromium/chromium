@@ -10,6 +10,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -25,7 +26,7 @@ class StandaloneBrowserTestController
   ~StandaloneBrowserTestController() override;
 
   void InstallWebApp(const std::string& start_url,
-                     apps::mojom::WindowMode window_mode,
+                     apps::WindowMode window_mode,
                      InstallWebAppCallback callback) override;
 
  private:

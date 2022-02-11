@@ -61,6 +61,8 @@ struct COMPONENT_EXPORT(ICON_TYPES) IconKey {
   // components/services/app_service/public/cpp/icon_loader.*
 };
 
+using IconKeyPtr = std::unique_ptr<IconKey>;
+
 enum class IconType {
   // Sentinel value used in error cases.
   kUnknown,
