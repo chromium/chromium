@@ -145,6 +145,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   // https://docs.google.com/spreadsheets/d/1d3iAOAnojp4_WrPky9exz1-mjkeulOJVUav5QYG99MQ/edit#gid=2008870403
 
   // State change actions:
+  void AcceptAppIdUpdateDialog();
   void CloseCustomToolbar();
   void ClosePwa();
   void DisableRunOnOSLoginMode(const std::string& site_mode);
@@ -167,6 +168,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void NavigatePwaSiteATo(const std::string& site_mode);
   void NavigateNotfoundUrl();
   void NavigateTabbedBrowserToSite(const GURL& url);
+  void ManifestUpdateTitle(const std::string& site_mode);
   void ManifestUpdateDisplayMinimal(const std::string& site_mode);
   void ManifestUpdateScopeSiteAFooTo(const std::string& scope_mode);
   void SetOpenInTab(const std::string& site_mode);
@@ -186,6 +188,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void CheckAppInListTabbed(const std::string& site_mode);
   void CheckAppNavigationIsStartUrl();
   void CheckAppNotInList(const std::string& site_mode);
+  void CheckAppTitleSiteA(const std::string& title);
   void CheckAppWindowMode(const std::string& site_mode,
                           apps::mojom::WindowMode window_mode);
   void CheckInstallable();

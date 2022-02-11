@@ -80,7 +80,9 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/test/dialog_test.h"
 #include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom-forward.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -493,6 +495,18 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
 #endif
 }
 
+void WebAppIntegrationTestDriver::AcceptAppIdUpdateDialog() {
+  BeforeStateChangeAction();
+
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "WebAppIdentityUpdateConfirmationView");
+  views::Widget* widget = waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(widget != nullptr);
+  views::test::AcceptDialog(widget);
+
+  AfterStateChangeAction();
+}
+
 void WebAppIntegrationTestDriver::CloseCustomToolbar() {
   BeforeStateChangeAction();
   ASSERT_TRUE(app_browser());
@@ -766,6 +780,20 @@ void WebAppIntegrationTestDriver::NavigateTabbedBrowserToSite(const GURL& url) {
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   app_banner_manager->WaitForInstallableCheck();
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::ManifestUpdateTitle(
+    const std::string& site_mode) {
+  BeforeStateChangeAction();
+  ASSERT_EQ("SiteA", site_mode) << "Only site mode of 'SiteA' is supported";
+  auto scope_url_path =
+      g_site_mode_to_relative_scope_url.find(site_mode)->second;
+  std::string str_template =
+      "/web_apps/%s/basic.html?manifest=manifest_title.json";
+  GURL url = embedded_test_server()->GetURL(
+      base::StringPrintf(str_template.c_str(), scope_url_path.c_str()));
+  ForceUpdateManifestContents(site_mode, url);
   AfterStateChangeAction();
 }
 
@@ -1126,6 +1154,15 @@ void WebAppIntegrationTestDriver::CheckPlatformShortcutNotExists(
     app_id = app_state->id;
   }
   EXPECT_FALSE(IsShortcutAndIconCreated(profile(), app_name, app_id));
+  AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::CheckAppTitleSiteA(const std::string& title) {
+  BeforeStateCheckAction();
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      after_state_change_action_state_.get(), profile(), "SiteA");
+  ASSERT_TRUE(app_state);
+  EXPECT_EQ(app_state->name, title);
   AfterStateCheckAction();
 }
 
