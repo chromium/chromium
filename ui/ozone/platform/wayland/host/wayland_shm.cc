@@ -11,17 +11,6 @@ namespace ui {
 
 namespace {
 constexpr uint32_t kMinVersion = 1;
-
-// Given that buffers for canvas surfaces are submitted with alpha disabled,
-// using a format with alpha channel results in popup surfaces that have black
-// background when they are shown with fade out animation. Thus, disable this
-// channel so that exo sets the background of these canvas surface transparent.
-constexpr uint32_t kShmFormat =
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    WL_SHM_FORMAT_XRGB8888;
-#else
-    WL_SHM_FORMAT_ARGB8888;
-#endif
 }  // namespace
 
 // static
@@ -55,7 +44,8 @@ WaylandShm::~WaylandShm() = default;
 
 wl::Object<wl_buffer> WaylandShm::CreateBuffer(const base::ScopedFD& fd,
                                                size_t length,
-                                               const gfx::Size& size) {
+                                               const gfx::Size& size,
+                                               bool with_alpha_channel) {
   if (!fd.is_valid() || length == 0 || size.IsEmpty())
     return wl::Object<wl_buffer>(nullptr);
 
@@ -64,10 +54,10 @@ wl::Object<wl_buffer> WaylandShm::CreateBuffer(const base::ScopedFD& fd,
   if (!pool)
     return wl::Object<wl_buffer>(nullptr);
 
-  wl::Object<wl_buffer> shm_buffer(
-      wl_shm_pool_create_buffer(pool.get(), 0, size.width(), size.height(),
-                                size.width() * 4, kShmFormat));
-
+  const uint32_t format =
+      with_alpha_channel ? WL_SHM_FORMAT_ARGB8888 : WL_SHM_FORMAT_XRGB8888;
+  wl::Object<wl_buffer> shm_buffer(wl_shm_pool_create_buffer(
+      pool.get(), 0, size.width(), size.height(), size.width() * 4, format));
   connection_->ScheduleFlush();
   return shm_buffer;
 }

@@ -35,11 +35,16 @@ class WaylandShm : public wl::GlobalObjectRegistrar<WaylandShm> {
 
   wl_shm* get() const { return shm_.get(); }
 
-  // Creates a wl_buffer based on shared memory handle for the specified
-  // |widget|.
+  // Creates a wl_buffer based on shared memory handle with the specified
+  // |length| and |size|. Whereas |with_alpha_channel| indicates whether the
+  // buffer's color format should use or not the alpha channel.
+  //
+  // TODO(crbug.com/1269044): Remove |with_alpha_channel| parameter once
+  // Exo-side Skia Renderer issue is fixed.
   wl::Object<struct wl_buffer> CreateBuffer(const base::ScopedFD& fd,
                                             size_t length,
-                                            const gfx::Size& size);
+                                            const gfx::Size& size,
+                                            bool with_alpha_channel = true);
 
  private:
   wl::Object<wl_shm> const shm_;
