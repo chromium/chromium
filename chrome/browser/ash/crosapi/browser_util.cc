@@ -587,7 +587,7 @@ bool IsLacrosOnlyFlagAllowed(Channel channel) {
 }
 
 bool IsLacrosAllowedToLaunch() {
-  return user_manager::UserManager::Get()->GetLoggedInUsers().size() <= 1;
+  return user_manager::UserManager::Get()->GetLoggedInUsers().size() == 1;
 }
 
 bool IsLacrosChromeAppsEnabled() {
