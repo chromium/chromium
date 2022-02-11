@@ -407,6 +407,11 @@ void RuleSet::AddCounterStyleRule(StyleRuleCounterStyle* rule) {
   counter_style_rules_.push_back(rule);
 }
 
+void RuleSet::AddFontPaletteValuesRule(StyleRuleFontPaletteValues* rule) {
+  EnsurePendingRules();
+  font_palette_values_rules_.push_back(rule);
+}
+
 void RuleSet::AddScrollTimelineRule(StyleRuleScrollTimeline* rule) {
   EnsurePendingRules();  // So that property_rules_.ShrinkToFit() gets called.
   scroll_timeline_rules_.push_back(rule);
@@ -439,6 +444,11 @@ void RuleSet::AddChildRules(const HeapVector<Member<StyleRuleBase>>& rules,
     } else if (auto* font_face_rule = DynamicTo<StyleRuleFontFace>(rule)) {
       font_face_rule->SetCascadeLayer(cascade_layer);
       AddFontFaceRule(font_face_rule);
+    } else if (auto* font_palette_values_rule =
+                   DynamicTo<StyleRuleFontPaletteValues>(rule)) {
+      // TODO(https://crbug.com/1170794): Handle cascade layers for
+      // @font-palette-values.
+      AddFontPaletteValuesRule(font_palette_values_rule);
     } else if (auto* keyframes_rule = DynamicTo<StyleRuleKeyframes>(rule)) {
       keyframes_rule->SetCascadeLayer(cascade_layer);
       AddKeyframesRule(keyframes_rule);
@@ -592,6 +602,7 @@ void RuleSet::CompactRules() {
   visited_dependent_rules_.ShrinkToFit();
   page_rules_.ShrinkToFit();
   font_face_rules_.ShrinkToFit();
+  font_palette_values_rules_.ShrinkToFit();
   keyframes_rules_.ShrinkToFit();
   property_rules_.ShrinkToFit();
   counter_style_rules_.ShrinkToFit();
@@ -726,6 +737,7 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(visited_dependent_rules_);
   visitor->Trace(page_rules_);
   visitor->Trace(font_face_rules_);
+  visitor->Trace(font_palette_values_rules_);
   visitor->Trace(keyframes_rules_);
   visitor->Trace(property_rules_);
   visitor->Trace(counter_style_rules_);

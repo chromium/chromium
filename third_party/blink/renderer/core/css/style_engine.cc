@@ -1662,6 +1662,7 @@ enum RuleSetFlags {
   kScrollTimelineRules = 1 << 4,
   kCounterStyleRules = 1 << 5,
   kLayerRules = 1 << 6,
+  kFontPaletteValuesRules = 1 << 7,
 };
 
 const unsigned kRuleSetFlagsAll = ~0u;
@@ -1674,6 +1675,8 @@ unsigned GetRuleSetFlags(const HeapHashSet<Member<RuleSet>> rule_sets) {
       flags |= kKeyframesRules;
     if (!rule_set->FontFaceRules().IsEmpty())
       flags |= kFontFaceRules;
+    if (!rule_set->FontPaletteValuesRules().IsEmpty())
+      flags |= kFontPaletteValuesRules;
     if (rule_set->NeedsFullRecalcForRuleSetInvalidation())
       flags |= kFullRecalcRules;
     if (!rule_set->PropertyRules().IsEmpty())
@@ -1858,7 +1861,8 @@ void StyleEngine::ApplyUserRuleSetChanges(
     MarkCounterStylesNeedUpdate();
   }
 
-  if (changed_rule_flags & (kPropertyRules | kScrollTimelineRules)) {
+  if (changed_rule_flags &
+      (kPropertyRules | kScrollTimelineRules | kFontPaletteValuesRules)) {
     if (changed_rule_flags & kPropertyRules) {
       ClearPropertyRules();
       AtRuleCascadeMap cascade_map(GetDocument());
@@ -1870,6 +1874,12 @@ void StyleEngine::ApplyUserRuleSetChanges(
       AtRuleCascadeMap cascade_map(GetDocument());
       AddScrollTimelineRulesFromSheets(cascade_map, new_style_sheets,
                                        true /* is_user_style */);
+    }
+
+    if (changed_rule_flags & kFontPaletteValuesRules) {
+      font_palette_values_rule_map_.clear();
+      AddFontPaletteValuesRulesFromSheets(new_style_sheets);
+      MarkFontsNeedUpdate();
     }
 
     // We just cleared all the rules, which includes any author rules. They
@@ -1907,11 +1917,13 @@ void StyleEngine::ApplyRuleSetChanges(
                                  tree_scope.RootNode().IsDocumentNode();
   bool rebuild_at_property_registry = false;
   bool rebuild_at_scroll_timeline_map = false;
+  bool rebuild_at_font_palette_values_map = false;
   ScopedStyleResolver* scoped_resolver = tree_scope.GetScopedStyleResolver();
   if (scoped_resolver && scoped_resolver->NeedsAppendAllSheets()) {
     rebuild_font_face_cache = true;
     rebuild_at_property_registry = true;
     rebuild_at_scroll_timeline_map = true;
+    rebuild_at_font_palette_values_map = true;
     change = kActiveSheetsChanged;
   }
 
@@ -1991,6 +2003,17 @@ void StyleEngine::ApplyRuleSetChanges(
     }
   }
 
+  if ((changed_rule_flags & kFontPaletteValuesRules) ||
+      rebuild_at_font_palette_values_map) {
+    // TODO(https://crbug.com1296114): Support @font-palette-values in shadow
+    // trees and support scoping correctly.
+    if (tree_scope.RootNode().IsDocumentNode()) {
+      font_palette_values_rule_map_.clear();
+      AddFontPaletteValuesRulesFromSheets(active_user_style_sheets_);
+      AddFontPaletteValuesRulesFromSheets(new_style_sheets);
+    }
+  }
+
   bool has_rebuilt_font_face_cache = false;
   if (rebuild_font_face_cache) {
     has_rebuilt_font_face_cache =
@@ -2003,7 +2026,9 @@ void StyleEngine::ApplyRuleSetChanges(
   }
 
   if (tree_scope.RootNode().IsDocumentNode()) {
-    if ((changed_rule_flags & kFontFaceRules) || has_rebuilt_font_face_cache) {
+    if ((changed_rule_flags & kFontFaceRules) ||
+        (changed_rule_flags & kFontPaletteValuesRules) ||
+        has_rebuilt_font_face_cache) {
       GetFontSelector()->FontFaceInvalidated(
           FontInvalidationReason::kGeneralInvalidation);
     }
@@ -2189,6 +2214,14 @@ void StyleEngine::AddScrollTimelineRulesFromSheets(
   }
 }
 
+void StyleEngine::AddFontPaletteValuesRulesFromSheets(
+    const ActiveStyleSheetVector& sheets) {
+  for (const ActiveStyleSheet& active_sheet : sheets) {
+    if (RuleSet* rule_set = active_sheet.second)
+      AddFontPaletteValuesRules(*rule_set);
+  }
+}
+
 bool StyleEngine::AddUserFontFaceRules(const RuleSet& rule_set) {
   if (!font_selector_)
     return false;
@@ -2230,6 +2263,15 @@ bool StyleEngine::UserKeyframeStyleShouldOverride(
   return !user_cascade_layer_map_ || user_cascade_layer_map_->CompareLayerOrder(
                                          existing_rule->GetCascadeLayer(),
                                          new_rule->GetCascadeLayer()) <= 0;
+}
+
+void StyleEngine::AddFontPaletteValuesRules(const RuleSet& rule_set) {
+  const HeapVector<Member<StyleRuleFontPaletteValues>>
+      font_palette_values_rules = rule_set.FontPaletteValuesRules();
+  for (auto& rule : font_palette_values_rules) {
+    // TODO(https://crbug.com/1170794): Handle cascade layer reordering here.
+    font_palette_values_rule_map_.Set(rule->GetName(), rule);
+  }
 }
 
 void StyleEngine::AddPropertyRules(AtRuleCascadeMap& cascade_map,
@@ -2965,6 +3007,7 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(active_user_style_sheets_);
   visitor->Trace(custom_element_default_style_sheets_);
   visitor->Trace(keyframes_rule_map_);
+  visitor->Trace(font_palette_values_rule_map_);
   visitor->Trace(user_counter_style_map_);
   visitor->Trace(scroll_timeline_rule_map_);
   visitor->Trace(scroll_timeline_map_);

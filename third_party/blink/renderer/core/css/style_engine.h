@@ -659,11 +659,14 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void AddScrollTimelineRulesFromSheets(AtRuleCascadeMap&,
                                         const ActiveStyleSheetVector&,
                                         bool is_user_style);
+  void AddFontPaletteValuesRulesFromSheets(
+      const ActiveStyleSheetVector& sheets);
 
   // Returns true if any @font-face rules are added.
   bool AddUserFontFaceRules(const RuleSet&);
   void AddUserKeyframeRules(const RuleSet&);
   void AddUserKeyframeStyle(StyleRuleKeyframes*);
+  void AddFontPaletteValuesRules(const RuleSet& rule_set);
   void AddPropertyRules(AtRuleCascadeMap&, const RuleSet&, bool is_user_style);
   void AddScrollTimelineRules(AtRuleCascadeMap&,
                               const RuleSet&,
@@ -822,6 +825,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   using KeyframesRuleMap =
       HeapHashMap<AtomicString, Member<StyleRuleKeyframes>>;
   KeyframesRuleMap keyframes_rule_map_;
+
+  using FontPaletteValuesRuleMap =
+      HeapHashMap<AtomicString, Member<StyleRuleFontPaletteValues>>;
+  FontPaletteValuesRuleMap font_palette_values_rule_map_;
 
   Member<CounterStyleMap> user_counter_style_map_;
 
