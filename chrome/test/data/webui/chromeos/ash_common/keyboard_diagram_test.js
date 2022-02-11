@@ -213,4 +213,25 @@ export function keyboardDiagramTestSuite() {
             KeyboardKeyState.kPressed),
         RangeError);
   });
+
+  test('clearPressedKeys', async () => {
+    diagramElement.mechanicalLayout = MechanicalLayout.kIso;
+    diagramElement.topRowKeys = [
+      TopRowKey.kBack,
+      TopRowKey.kRefresh,
+      TopRowKey.kOverview,
+    ];
+    await flushTasks();
+
+    diagramElement.setKeyState(28 /* KEY_ENTER */, KeyboardKeyState.kPressed);
+    diagramElement.setKeyState(56 /* KEY_LEFTALT */, KeyboardKeyState.kPressed);
+    diagramElement.setKeyState(15 /* KEY_TAB */, KeyboardKeyState.kPressed);
+    diagramElement.setTopRowKeyState(2, KeyboardKeyState.kPressed);
+    diagramElement.clearPressedKeys();
+    await flushTasks();
+
+    const pressedKeys = diagramElement.root.querySelectorAll(
+        `keyboard-key[state="${KeyboardKeyState.kPressed}"]`);
+    assertEquals(0, pressedKeys.length);
+  });
 }

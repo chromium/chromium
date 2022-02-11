@@ -204,9 +204,18 @@ export class KeyboardDiagramElement extends PolymerElement {
     if (topRowPosition < 0 || topRowPosition >= this.topRowKeys.length) {
       throw new RangeError(
           `Invalid top row position ${topRowPosition} ` +
-          `> ${this.topRowKeys.length}`);
+          `>= ${this.topRowKeys.length}`);
     }
     this.$.topRow.children[topRowPosition + 1].state = state;
+  }
+
+  /** Set any pressed keys to the "tested" state. */
+  clearPressedKeys() {
+    const keys = this.root.querySelectorAll(
+        `keyboard-key[state="${KeyboardKeyState.kPressed}"]`);
+    for (const key of keys) {
+      key.state = KeyboardKeyState.kTested;
+    }
   }
 }
 

@@ -226,6 +226,7 @@ Polymer({
   onKeyEventsPaused() {
     // TODO(crbug.com/1207678): show key event pauses in the UI.
     console.log('key events paused');
+    this.$$('#diagram').clearPressedKeys();
   },
 
   /**
