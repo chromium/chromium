@@ -258,21 +258,37 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
       web_contents, "/web_apps/get_manifest.html?color_scheme_dark.json");
 
   // Expect that the default offline page is showing with dark mode colors.
-
-  EXPECT_TRUE(
-      EvalJs(web_contents,
-             "window.matchMedia('(prefers-color-scheme: dark)').matches")
-          .ExtractBool());
-  EXPECT_EQ(
-      EvalJs(web_contents,
-             "window.getComputedStyle(document.querySelector('h2')).color")
-          .ExtractString(),
-      "rgb(255, 0, 0)");
-  EXPECT_EQ(EvalJs(web_contents,
-                   "window.getComputedStyle(document.querySelector('body'))."
-                   "backgroundColor")
-                .ExtractString(),
-            "rgb(255, 0, 0)");
+  if (GetParam() == blink::mojom::PreferredColorScheme::kDark) {
+    EXPECT_TRUE(
+        EvalJs(web_contents,
+               "window.matchMedia('(prefers-color-scheme: dark)').matches")
+            .ExtractBool());
+    EXPECT_EQ(
+        EvalJs(web_contents,
+               "window.getComputedStyle(document.querySelector('h2')).color")
+            .ExtractString(),
+        "rgb(255, 0, 0)");
+    EXPECT_EQ(EvalJs(web_contents,
+                     "window.getComputedStyle(document.querySelector('body'))."
+                     "backgroundColor")
+                  .ExtractString(),
+              "rgb(255, 0, 0)");
+  } else {
+    EXPECT_TRUE(
+        EvalJs(web_contents,
+               "window.matchMedia('(prefers-color-scheme: light)').matches")
+            .ExtractBool());
+    EXPECT_EQ(
+        EvalJs(web_contents,
+               "window.getComputedStyle(document.querySelector('h2')).color")
+            .ExtractString(),
+        "rgb(0, 0, 255)");
+    EXPECT_EQ(EvalJs(web_contents,
+                     "window.getComputedStyle(document.querySelector('body'))."
+                     "backgroundColor")
+                  .ExtractString(),
+              "rgb(0, 0, 255)");
+  }
 }
 
 // Testing offline page in dark mode for a web app with a manifest and service
@@ -286,22 +302,39 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
   StartWebAppAndDisconnect(web_contents,
                            "/banners/manifest_test_page.html?manifest=../"
                            "web_apps/color_scheme_dark.json");
-
-  // Expect that the default offline page is showing with dark mode colors.
-  EXPECT_TRUE(
-      EvalJs(web_contents,
-             "window.matchMedia('(prefers-color-scheme: dark)').matches")
-          .ExtractBool());
-  EXPECT_EQ(
-      EvalJs(web_contents,
-             "window.getComputedStyle(document.querySelector('h2')).color")
-          .ExtractString(),
-      "rgb(255, 0, 0)");
-  EXPECT_EQ(EvalJs(web_contents,
-                   "window.getComputedStyle(document.querySelector('body'))."
-                   "backgroundColor")
-                .ExtractString(),
-            "rgb(255, 0, 0)");
+  if (GetParam() == blink::mojom::PreferredColorScheme::kDark) {
+    // Expect that the default offline page is showing with dark mode colors.
+    EXPECT_TRUE(
+        EvalJs(web_contents,
+               "window.matchMedia('(prefers-color-scheme: dark)').matches")
+            .ExtractBool());
+    EXPECT_EQ(
+        EvalJs(web_contents,
+               "window.getComputedStyle(document.querySelector('h2')).color")
+            .ExtractString(),
+        "rgb(255, 0, 0)");
+    EXPECT_EQ(EvalJs(web_contents,
+                     "window.getComputedStyle(document.querySelector('body'))."
+                     "backgroundColor")
+                  .ExtractString(),
+              "rgb(255, 0, 0)");
+  } else {
+    // Expect that the default offline page is showing with light mode colors.
+    EXPECT_TRUE(
+        EvalJs(web_contents,
+               "window.matchMedia('(prefers-color-scheme: light)').matches")
+            .ExtractBool());
+    EXPECT_EQ(
+        EvalJs(web_contents,
+               "window.getComputedStyle(document.querySelector('h2')).color")
+            .ExtractString(),
+        "rgb(0, 0, 255)");
+    EXPECT_EQ(EvalJs(web_contents,
+                     "window.getComputedStyle(document.querySelector('body'))."
+                     "backgroundColor")
+                  .ExtractString(),
+              "rgb(0, 0, 255)");
+  }
 }
 
 // Testing offline page in dark mode for a web app with a manifest that has not
@@ -314,11 +347,19 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   StartWebAppAndDisconnect(web_contents, "/banners/no-sw-with-colors.html");
 
-  // Expect that the default offline page is showing with dark mode colors.
-  EXPECT_TRUE(
-      EvalJs(web_contents,
-             "window.matchMedia('(prefers-color-scheme: dark)').matches")
-          .ExtractBool());
+  if (GetParam() == blink::mojom::PreferredColorScheme::kDark) {
+    // Expect that the default offline page is showing with dark mode colors.
+    EXPECT_TRUE(
+        EvalJs(web_contents,
+               "window.matchMedia('(prefers-color-scheme: dark)').matches")
+            .ExtractBool());
+  } else {
+    // Expect that the default offline page is showing with light mode colors.
+    EXPECT_TRUE(
+        EvalJs(web_contents,
+               "window.matchMedia('(prefers-color-scheme: light)').matches")
+            .ExtractBool());
+  }
   EXPECT_EQ(
       EvalJs(web_contents,
              "window.getComputedStyle(document.querySelector('h2')).color")
@@ -334,5 +375,6 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     WebAppOfflineDarkModeTest,
-    ::testing::Values(blink::mojom::PreferredColorScheme::kDark));
+    ::testing::Values(blink::mojom::PreferredColorScheme::kDark,
+                      blink::mojom::PreferredColorScheme::kLight));
 }  // namespace web_app
