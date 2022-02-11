@@ -378,9 +378,9 @@ TEST_F(FileUtilTest, BackgroundScriptsMustExist) {
   ASSERT_TRUE(temp.CreateUniqueTempDir());
 
   std::unique_ptr<base::DictionaryValue> value(new base::DictionaryValue());
-  value->SetString("name", "test");
-  value->SetString("version", "1");
-  value->SetInteger("manifest_version", 2);
+  value->SetStringKey("name", "test");
+  value->SetStringKey("version", "1");
+  value->SetIntKey("manifest_version", 2);
 
   base::ListValue* scripts =
       value->SetList("background.scripts", std::make_unique<base::ListValue>());

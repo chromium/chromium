@@ -30,12 +30,12 @@ scoped_refptr<Extension> CreateTestExtension(const std::string& name,
   path = path.AppendASCII(name);
 
   base::DictionaryValue manifest;
-  manifest.SetString("name", name);
-  manifest.SetString("version", "1");
-  manifest.SetInteger("manifest_version", 2);
+  manifest.SetStringKey("name", name);
+  manifest.SetStringKey("version", "1");
+  manifest.SetIntKey("manifest_version", 2);
 
   if (!launch_url.empty())
-    manifest.SetString("app.launch.web_url", launch_url);
+    manifest.SetStringPath("app.launch.web_url", launch_url);
 
   if (!extent.empty()) {
     base::Value urls(base::Value::Type::LIST);

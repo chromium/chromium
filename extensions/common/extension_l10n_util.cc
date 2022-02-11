@@ -347,7 +347,7 @@ bool LocalizeManifest(const extensions::MessageBundle& messages,
 
   // Add desired locale key to the manifest, so we can overwrite prefs
   // with new manifest when chrome locale changes.
-  manifest->SetString(keys::kCurrentLocale, LocaleForLocalization());
+  manifest->SetStringKey(keys::kCurrentLocale, LocaleForLocalization());
   return true;
 }
 
