@@ -27,7 +27,7 @@ TEST(ShoppingDataProviderTest, TestDataMergeWithLeadImage) {
   meta.mutable_lead_image()->set_url(kLeadImageUrl);
 
   base::DictionaryValue data_map;
-  data_map.SetString("image", kFallbackImageUrl);
+  data_map.SetStringKey("image", kFallbackImageUrl);
 
   MergeData(&meta, data_map);
 
@@ -40,7 +40,7 @@ TEST(ShoppingDataProviderTest, TestDataMergeWithNoLeadImage) {
   power_bookmarks::PowerBookmarkMeta meta;
 
   base::DictionaryValue data_map;
-  data_map.SetString("image", kFallbackImageUrl);
+  data_map.SetStringKey("image", kFallbackImageUrl);
 
   MergeData(&meta, data_map);
 
@@ -53,7 +53,7 @@ TEST(ShoppingDataProviderTest, TestDataMergeWithTitle) {
   meta.mutable_shopping_specifics()->set_title(kMainTitle);
 
   base::DictionaryValue data_map;
-  data_map.SetString("title", kFallbackTitle);
+  data_map.SetStringKey("title", kFallbackTitle);
 
   MergeData(&meta, data_map);
 
@@ -64,7 +64,7 @@ TEST(ShoppingDataProviderTest, TestDataMergeWithNoTitle) {
   power_bookmarks::PowerBookmarkMeta meta;
 
   base::DictionaryValue data_map;
-  data_map.SetString("title", kFallbackTitle);
+  data_map.SetStringKey("title", kFallbackTitle);
 
   MergeData(&meta, data_map);
 
@@ -77,7 +77,7 @@ TEST(ShoppingDataProviderTest, TestPopulateShoppingSpecifics) {
   power_bookmarks::PowerBookmarkMeta meta;
 
   base::DictionaryValue data_map;
-  data_map.SetString("title", kMainTitle);
+  data_map.SetStringKey("title", kMainTitle);
 
   commerce::BuyableProduct product;
   product.set_title(kMainTitle);
@@ -103,7 +103,7 @@ TEST(ShoppingDataProviderTest, TestPopulateShoppingSpecificsMissingData) {
   power_bookmarks::PowerBookmarkMeta meta;
 
   base::DictionaryValue data_map;
-  data_map.SetString("title", kMainTitle);
+  data_map.SetStringKey("title", kMainTitle);
 
   commerce::BuyableProduct product;
   product.set_title(kMainTitle);
