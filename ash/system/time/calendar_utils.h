@@ -10,6 +10,8 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/insets.h"
 
+#include <set>
+
 namespace views {
 
 class TableLayout;
@@ -45,6 +47,12 @@ bool IsToday(const base::Time selected_date);
 // Checks if the two exploded are in the same day.
 bool IsTheSameDay(absl::optional<base::Time> date_a,
                   absl::optional<base::Time> date_b);
+
+// Returns the set of months that includes |selected_date| and
+// |num_months_out| before and after.
+void GetSurroundingMonthsUTC(const base::Time& selected_date,
+                             unsigned int num_months_out,
+                             std::set<base::Time>& months_);
 
 // Gets the given `date`'s `Exploded` instance, in local time.
 base::Time::Exploded GetExplodedLocal(const base::Time& date);

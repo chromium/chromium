@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/unified/unified_system_tray_controller.h"
+#include <memory>
 
 #include "ash/capture_mode/capture_mode_feature_pod_controller.h"
 #include "ash/constants/ash_features.h"
@@ -46,6 +47,8 @@
 #include "ash/system/privacy_screen/privacy_screen_feature_pod_controller.h"
 #include "ash/system/rotation/rotation_lock_feature_pod_controller.h"
 #include "ash/system/time/calendar_metrics.h"
+#include "ash/system/time/calendar_model.h"
+#include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/unified_calendar_view_controller.h"
 #include "ash/system/tray/system_tray_item_uma_type.h"
 #include "ash/system/tray/tray_constants.h"
@@ -105,6 +108,7 @@ UnifiedSystemTrayController::UnifiedSystemTrayController(
       bubble_(bubble),
       active_user_prefs_(
           Shell::Get()->session_controller()->GetLastActiveUserPrefService()),
+      calendar_model_(nullptr),
       animation_(std::make_unique<gfx::SlideAnimation>(this)) {
   LoadIsExpandedPref();
 
@@ -120,6 +124,11 @@ UnifiedSystemTrayController::UnifiedSystemTrayController(
       model_->pagination_model(), PaginationController::SCROLL_AXIS_HORIZONTAL,
       base::BindRepeating(&RecordPageSwitcherSourceByEventType),
       Shell::Get()->tablet_mode_controller()->InTabletMode());
+
+  std::set<base::Time> prunable_months;
+  calendar_utils::GetSurroundingMonthsUTC(base::Time::Now(), 1,
+                                          prunable_months);
+  calendar_model_ = std::make_unique<CalendarModel>(prunable_months);
 
   Shell::Get()->metrics()->RecordUserMetricsAction(UMA_STATUS_AREA_MENU_OPENED);
   UMA_HISTOGRAM_BOOLEAN("ChromeOS.SystemTray.IsExpandedOnOpen",

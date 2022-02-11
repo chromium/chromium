@@ -251,7 +251,8 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
                            UnifiedSystemTrayController* controller)
     : TrayDetailedView(delegate),
       controller_(controller),
-      calendar_view_controller_(std::make_unique<CalendarViewController>()),
+      calendar_view_controller_(
+          std::make_unique<CalendarViewController>(controller)),
       scrolling_settled_timer_(
           FROM_HERE,
           kScrollingSettledTimeout,
@@ -346,6 +347,7 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
 
   SetMonthViews();
 
+  scoped_calendar_model_observer_.Observe(controller_->calendar_model());
   scoped_calendar_view_controller_observer_.Observe(
       calendar_view_controller_.get());
   scoped_view_observer_.AddObservation(scroll_view_);

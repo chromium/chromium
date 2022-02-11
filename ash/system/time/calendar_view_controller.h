@@ -12,6 +12,8 @@
 #include <set>
 
 #include "ash/ash_export.h"
+#include "ash/system/time/calendar_model.h"
+#include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
@@ -20,36 +22,19 @@
 
 namespace ash {
 
-// A simple std::list of calendar events, used to store a single day's events
-// in EventMap. Not to be confused with google_apis::calendar::EventList,
-// which represents the return value of a query from the GoogleCalendar API.
-using SingleDayEventList = std::list<google_apis::calendar::CalendarEvent>;
-
 // Controller of the `CalendarView`.
 class ASH_EXPORT CalendarViewController {
  public:
-  CalendarViewController();
+  CalendarViewController(UnifiedSystemTrayController* controller);
   CalendarViewController(const CalendarViewController& other) = delete;
   CalendarViewController& operator=(const CalendarViewController& other) =
       delete;
   virtual ~CalendarViewController();
 
-  // Maps a day, i.e. midnight on the day of the event's start_time, to a
-  // SingleDayEventList.
-  using SingleMonthEventMap = std::map<base::Time, SingleDayEventList>;
-
-  // Maps a month, i.e. midnight on the first day of the month, to a
-  // SingleMonthEventMap.
-  using MonthToEventsMap = std::map<base::Time, SingleMonthEventMap>;
-
   class Observer : public base::CheckedObserver {
    public:
     // Gets called when `current_date_ ` changes.
     virtual void OnMonthChanged(const base::Time::Exploded current_month) {}
-
-    // Invoked when a set of events has been fetched.
-    virtual void OnEventsFetched(
-        const google_apis::calendar::EventList* events) {}
 
     // Invoked when a date cell is clicked to open the event list.
     virtual void OpenEventList() {}
@@ -129,6 +114,10 @@ class ASH_EXPORT CalendarViewController {
 
   int time_difference_hours() { return time_difference_hours_; }
 
+  UnifiedSystemTrayController* unified_system_tray_controller() {
+    return unified_system_tray_controller_;
+  }
+
   // Getters of the today's row position, top and bottom.
   int GetTodayRowTopHeight() const;
   int GetTodayRowBottomHeight() const;
@@ -164,78 +153,15 @@ class ASH_EXPORT CalendarViewController {
 
  private:
   // For unit tests.
-  friend class MockCalendarViewController;
   friend class CalendarMonthViewTest;
-  friend class CalendarViewControllerEventsTest;
   friend class CalendarViewEventListViewTest;
-
-  // Insert a single |event| in the EventCache.
-  void InsertEvent(const google_apis::calendar::CalendarEvent* event);
-
-  // Insert a single |event| in the EventMap for the month that contains its
-  // start date.
-  void InsertEventInMonth(SingleMonthEventMap& month,
-                          const google_apis::calendar::CalendarEvent* event);
-
-  // Insert EventList |events| in the EventCache.
-  void InsertEvents(
-      const std::unique_ptr<google_apis::calendar::EventList>& events);
 
   // Find the event list of the given day.
   SingleDayEventList FindEvents(base::Time day) const;
 
-  // Free up months of events as needed to keep us within storage limits.
-  void PruneEventCache();
-
-  // Invoked when events requested via FetchEvents() are ready, or if the
-  // request failed.
-  void OnCalendarEventsFetched(
-      google_apis::ApiErrorCode error,
-      std::unique_ptr<google_apis::calendar::EventList> events);
-
-  // Returns true if we've already fetched events for |start_of_month| since the
-  // calendar was opened, false otherwise.
-  bool IsMonthAlreadyFetched(base::Time start_of_month) const;
-
-  // Fetch events for |start_of_month| if we haven't already done so since the
-  // calendar was opened.  This registers our callback OnCalendarEventsFetched.
-  virtual void MaybeFetchMonth(base::Time start_of_month);
-
-  // Officially declare the month denoted by |start_of_month| as "fetched."
-  // If the month is non-prunable then we won't attempt to fetch it again unless
-  // the calendar is closed and re-opened.  If the month is prunable then we'll
-  // attempt a re-fetch if it gets pruned and our visible window includes it
-  // again.
-  void MarkMonthAsFetched(base::Time start_of_month);
-
-  // Add a month to the queue of months eligible for pruning when we need to
-  // limit the amount we cache.
-  void QueuePrunableMonth(base::Time start_of_month);
-
-  // Returns the number of events that this `day` contains. If `events` is
-  // non-nullptr then we assign it to the EventList for `day`. Callers should
-  // NOT cache `events` themselves, and should instead just call this method
-  // again if they need to.
-  int EventsNumberOfDayInternal(base::Time day,
-                                SingleDayEventList* events) const;
-
   // The current date, which can be today or the first day of the current month
   // if current month is not today's month.
   base::Time current_date_;
-
-  // Internal storage for fetched events, with each fetched month having a map
-  // of days to events.
-  MonthToEventsMap event_months_;
-
-  // Months whose events we've fetched, that are eligible for pruning, in
-  // most-recently-used (MRU) order.
-  std::deque<base::Time> prunable_months_mru_;
-
-  // The set of months exempt from pruning.
-  const std::set<base::Time> non_prunable_months_;
-
-  // The set of months exempt from pruning that have been fetched.
-  std::set<base::Time> non_prunable_months_fetched_;
 
   // The today's date cell row number (which is index +1) in its
   // `CalendarMonthView`.
@@ -266,6 +192,8 @@ class ASH_EXPORT CalendarViewController {
 
   // The event list of the currently selected date.
   SingleDayEventList* selected_date_events_;
+
+  UnifiedSystemTrayController* unified_system_tray_controller_;
 
   base::ObserverList<Observer> observers_;
 

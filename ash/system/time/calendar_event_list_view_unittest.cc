@@ -47,10 +47,17 @@ class CalendarViewEventListViewTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-    controller_ = std::make_unique<CalendarViewController>();
+    tray_model_ =
+        base::MakeRefCounted<UnifiedSystemTrayModel>(/*shelf=*/nullptr);
+    tray_controller_ =
+        std::make_unique<UnifiedSystemTrayController>(tray_model_.get());
+    controller_ =
+        std::make_unique<CalendarViewController>(tray_controller_.get());
   }
 
   void TearDown() override {
+    tray_controller_.reset();
+    tray_model_.reset();
     event_list_view_.reset();
     controller_.reset();
     AshTestBase::TearDown();
@@ -59,7 +66,9 @@ class CalendarViewEventListViewTest : public AshTestBase {
   void CreateEventListView(base::Time date) {
     event_list_view_.reset();
     controller_->UpdateMonth(date);
-    controller_->InsertEvents(CreateMockEventList());
+    controller_->unified_system_tray_controller()
+        ->calendar_model()
+        ->InsertEvents(CreateMockEventList());
     event_list_view_ =
         std::make_unique<CalendarEventListView>(controller_.get());
   }
@@ -83,6 +92,8 @@ class CalendarViewEventListViewTest : public AshTestBase {
  private:
   std::unique_ptr<CalendarEventListView> event_list_view_;
   std::unique_ptr<CalendarViewController> controller_;
+  scoped_refptr<UnifiedSystemTrayModel> tray_model_;
+  std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
 };
 
 TEST_F(CalendarViewEventListViewTest, ShowEvents) {

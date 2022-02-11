@@ -50,11 +50,17 @@ class CalendarMonthViewTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
-
-    controller_ = std::make_unique<CalendarViewController>();
+    tray_model_ =
+        base::MakeRefCounted<UnifiedSystemTrayModel>(/*shelf=*/nullptr);
+    tray_controller_ =
+        std::make_unique<UnifiedSystemTrayController>(tray_model_.get());
+    controller_ =
+        std::make_unique<CalendarViewController>(tray_controller_.get());
   }
 
   void TearDown() override {
+    tray_controller_.reset();
+    tray_model_.reset();
     calendar_month_view_.reset();
     controller_.reset();
 
@@ -69,7 +75,11 @@ class CalendarMonthViewTest : public AshTestBase {
     calendar_month_view_->Layout();
   }
 
-  void UploadEvents() { controller_->InsertEvents(CreateMockEventList()); }
+  void UploadEvents() {
+    controller_->unified_system_tray_controller()
+        ->calendar_model()
+        ->InsertEvents(CreateMockEventList());
+  }
   void TriggerPaint() {
     gfx::Canvas canvas;
     for (auto* cell : calendar_month_view_->children())
@@ -85,6 +95,8 @@ class CalendarMonthViewTest : public AshTestBase {
  private:
   std::unique_ptr<CalendarMonthView> calendar_month_view_;
   std::unique_ptr<CalendarViewController> controller_;
+  scoped_refptr<UnifiedSystemTrayModel> tray_model_;
+  std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
   static base::Time fake_time_;
 };
 

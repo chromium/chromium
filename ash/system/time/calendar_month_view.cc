@@ -243,9 +243,10 @@ void CalendarDateCellView::MaybeDrawEventsIndicator(gfx::Canvas* canvas) {
     return;
 
   const int event_number =
-      calendar_view_controller_->EventsNumberOfDay(date_,
-                                                   /*events =*/nullptr);
-
+      calendar_view_controller_->unified_system_tray_controller()
+          ->calendar_model()
+          ->EventsNumberOfDay(date_,
+                              /*events =*/nullptr);
   const int tooltip_id = (event_number <= 1)
                              ? IDS_ASH_CALENDAR_DATE_CELL_TOOLTIP
                              : IDS_ASH_CALENDAR_DATE_CELL_PLURAL_EVENTS_TOOLTIP;

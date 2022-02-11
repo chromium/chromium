@@ -34,6 +34,32 @@ bool IsTheSameDay(absl::optional<base::Time> date_a,
          exploded_a.day_of_month == exploded_b.day_of_month;
 }
 
+ASH_EXPORT void GetSurroundingMonthsUTC(const base::Time& selected_date,
+                                        unsigned int num_months_out,
+                                        std::set<base::Time>& months_) {
+  // Make the output is empty before we start.
+  months_.clear();
+
+  // First month is the one that contains |selected_date|.
+  base::Time selected_date_start =
+      calendar_utils::GetStartOfMonthUTC(selected_date);
+  months_.emplace(selected_date_start);
+
+  // Add |num_months_out| before.
+  base::Time current = selected_date_start;
+  for (unsigned int i = 0; i < num_months_out; ++i) {
+    current = calendar_utils::GetStartOfPreviousMonthUTC(current);
+    months_.emplace(current);
+  }
+
+  // Add |num_months_out| after.
+  current = selected_date_start;
+  for (unsigned int i = 0; i < num_months_out; ++i) {
+    current = calendar_utils::GetStartOfNextMonthUTC(current);
+    months_.emplace(current);
+  }
+}
+
 base::Time::Exploded GetExplodedLocal(const base::Time& date) {
   base::Time::Exploded exploded;
   date.LocalExplode(&exploded);
