@@ -6,7 +6,8 @@
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './support_tool.html.js';
 
 export class SupportToolElement extends PolymerElement {
   static get is() {
@@ -15,7 +16,7 @@ export class SupportToolElement extends PolymerElement {
 
   // TODO(crbug.com/1292025): Use html_to_wrapper() for getting the template.
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
