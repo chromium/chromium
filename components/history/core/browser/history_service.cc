@@ -503,6 +503,19 @@ void HistoryService::AddRelatedSearchesForVisit(
                               history_backend_, visit_id, related_searches));
 }
 
+void HistoryService::AddSearchMetadataForVisit(
+    const GURL& search_normalized_url,
+    const std::u16string& search_terms,
+    VisitID visit_id) {
+  TRACE_EVENT0("browser", "HistoryService::AddSearchMetadataForVisit");
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ScheduleTask(PRIORITY_NORMAL,
+               base::BindOnce(&HistoryBackend::AddSearchMetadataForVisit,
+                              history_backend_, visit_id, search_normalized_url,
+                              search_terms));
+}
+
 void HistoryService::AddPageWithDetails(const GURL& url,
                                         const std::u16string& title,
                                         int visit_count,

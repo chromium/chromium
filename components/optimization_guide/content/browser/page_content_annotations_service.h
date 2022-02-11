@@ -76,6 +76,12 @@ struct HistoryVisit {
   };
 };
 
+// The information about a search visit to store in HistoryService.
+struct SearchMetadata {
+  GURL normalized_url;
+  std::u16string search_terms;
+};
+
 // A KeyedService that annotates page content.
 class PageContentAnnotationsService : public KeyedService,
                                       public EntityMetadataProvider {
@@ -166,6 +172,10 @@ class PageContentAnnotationsService : public KeyedService,
   static HistoryVisit CreateHistoryVisitFromWebContents(
       content::WebContents* web_contents,
       int64_t navigation_id);
+
+  // Persist |search_metadata| for |visit| in |history_service_|.
+  virtual void PersistSearchMetadata(const HistoryVisit& visit,
+                                     const SearchMetadata& search_metadata);
 
   // Requests |search_result_extractor_client_| to extract related searches from
   // the Google SRP DOM associated with |web_contents|.

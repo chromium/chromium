@@ -239,6 +239,12 @@ class HistoryService : public KeyedService {
       const std::vector<std::string>& related_searches,
       VisitID visit_id);
 
+  // Updates the history database with the search metadata for a search-like
+  // visit.
+  void AddSearchMetadataForVisit(const GURL& search_normalized_url,
+                                 const std::u16string& search_terms,
+                                 VisitID visit_id);
+
   // Querying ------------------------------------------------------------------
 
   // Returns the information about the requested URL. If the URL is found,

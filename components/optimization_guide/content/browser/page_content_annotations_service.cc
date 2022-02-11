@@ -258,6 +258,16 @@ void PageContentAnnotationsService::RequestAndNotifyWhenModelAvailable(
 #endif
 }
 
+void PageContentAnnotationsService::PersistSearchMetadata(
+    const HistoryVisit& visit,
+    const SearchMetadata& search_metadata) {
+  QueryURL(visit,
+           base::BindOnce(&history::HistoryService::AddSearchMetadataForVisit,
+                          history_service_->AsWeakPtr(),
+                          search_metadata.normalized_url,
+                          search_metadata.search_terms));
+}
+
 void PageContentAnnotationsService::ExtractRelatedSearches(
     const HistoryVisit& visit,
     content::WebContents* web_contents) {

@@ -2546,6 +2546,50 @@ TEST_F(HistoryBackendDBTest,
   }
 }
 
+TEST_F(HistoryBackendDBTest,
+       MigrateContentAnnotationsAddSearchMetadataColumns) {
+  ASSERT_NO_FATAL_FAILURE(CreateDBVersion(52));
+
+  const VisitID visit_id1 = 1;
+
+  // Open the db for manual manipulation.
+  sql::Database db;
+  ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+
+  const char kInsertContentAnnotationsStatement[] =
+      "INSERT INTO content_annotations "
+      "(visit_id, floc_protected_score, categories, page_topics_model_version, "
+      "annotation_flags, entities, related_searches) "
+      "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+  // Add an entry to "content_annotations" table.
+  {
+    sql::Statement s(db.GetUniqueStatement(kInsertContentAnnotationsStatement));
+    s.BindInt64(0, visit_id1);
+    s.BindDouble(1, -1);
+    s.BindString(2, "");
+    s.BindInt64(3, -1);
+    s.BindInt64(4, 0);
+    s.BindString(5, "");
+    s.BindString(6, "");
+    ASSERT_TRUE(s.Run());
+  }
+
+  // Re-open the db, triggering migration.
+  CreateBackendAndDatabase();
+
+  // The version should have been updated.
+  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 53);
+
+  // After the migration, the search metadata should be empty.
+  {
+    VisitContentAnnotations visit_content_annotations;
+    db_->GetContentAnnotationsForVisit(visit_id1, &visit_content_annotations);
+    EXPECT_TRUE(visit_content_annotations.search_normalized_url.is_empty());
+    EXPECT_TRUE(visit_content_annotations.search_terms.empty());
+  }
+}
+
 bool FilterURL(const GURL& url) {
   return url.SchemeIsHTTPOrHTTPS();
 }

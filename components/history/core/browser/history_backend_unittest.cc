@@ -1698,6 +1698,39 @@ TEST_F(HistoryBackendTest, AddRelatedSearchesWithNoEntryInVisitTable) {
       visit_id, &got_content_annotations));
 }
 
+TEST_F(HistoryBackendTest, AddSearchMetadataWithNoEntryInVisitTable) {
+  ASSERT_TRUE(backend_.get());
+
+  GURL url("http://pagewithvisit.com?q=search");
+  ContextID context_id = reinterpret_cast<ContextID>(1);
+  int nav_entry_id = 1;
+
+  HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
+                             GURL(), RedirectList(), ui::PAGE_TRANSITION_TYPED,
+                             false, SOURCE_BROWSED, false, true, false);
+  backend_->AddPage(request);
+
+  VisitVector visits;
+  URLRow row;
+  URLID id = backend_->db()->GetRowForURL(url, &row);
+  ASSERT_TRUE(backend_->db()->GetVisitsForURL(id, &visits));
+  ASSERT_EQ(1U, visits.size());
+  VisitID visit_id = visits[0].visit_id;
+
+  // Delete the visit.
+  backend_->DeleteURL(url);
+
+  // Try adding the search metadata. It should be a no-op as there's no
+  // matching entry in the visits table.
+  backend_->AddSearchMetadataForVisit(
+      visit_id, GURL("http://pagewithvisit.com?q=search"), u"search");
+
+  // The content_annotations table should have no entries.
+  VisitContentAnnotations got_content_annotations;
+  ASSERT_FALSE(backend_->db()->GetContentAnnotationsForVisit(
+      visit_id, &got_content_annotations));
+}
+
 TEST_F(HistoryBackendTest, SetBrowsingTopicsAllowed) {
   ASSERT_TRUE(backend_.get());
 
@@ -1889,6 +1922,69 @@ TEST_F(HistoryBackendTest, AddRelatedSearches) {
   ASSERT_TRUE(got_content_annotations.model_annotations.entities.empty());
   EXPECT_THAT(got_content_annotations.related_searches,
               ElementsAre("related searches", "búsquedas relacionadas"));
+
+  // Now, delete the URL. Content Annotations should be deleted.
+  backend_->DeleteURL(url);
+  ASSERT_FALSE(backend_->db()->GetContentAnnotationsForVisit(
+      visit_id, &got_content_annotations));
+}
+
+TEST_F(HistoryBackendTest, AddSearchMetadata) {
+  ASSERT_TRUE(backend_.get());
+
+  GURL url("http://pagewithvisit.com?q=search#garbage");
+  ContextID context_id = reinterpret_cast<ContextID>(1);
+  int nav_entry_id = 1;
+
+  HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
+                             GURL(), RedirectList(), ui::PAGE_TRANSITION_TYPED,
+                             false, SOURCE_BROWSED, false, true, false);
+  backend_->AddPage(request);
+
+  VisitVector visits;
+  URLRow row;
+  URLID id = backend_->db()->GetRowForURL(url, &row);
+  ASSERT_TRUE(backend_->db()->GetVisitsForURL(id, &visits));
+  ASSERT_EQ(1U, visits.size());
+  VisitID visit_id = visits[0].visit_id;
+
+  backend_->AddSearchMetadataForVisit(
+      visit_id, GURL("http://pagewithvisit.com?q=search"), u"search");
+
+  VisitContentAnnotations got_content_annotations;
+  ASSERT_TRUE(backend_->db()->GetContentAnnotationsForVisit(
+      visit_id, &got_content_annotations));
+
+  EXPECT_EQ(VisitContentAnnotationFlag::kNone,
+            got_content_annotations.annotation_flags);
+  EXPECT_EQ(-1.0f, got_content_annotations.model_annotations.visibility_score);
+  ASSERT_TRUE(got_content_annotations.model_annotations.categories.empty());
+  EXPECT_EQ(
+      -1, got_content_annotations.model_annotations.page_topics_model_version);
+  ASSERT_TRUE(got_content_annotations.model_annotations.entities.empty());
+  ASSERT_TRUE(got_content_annotations.related_searches.empty());
+  EXPECT_EQ(got_content_annotations.search_normalized_url,
+            GURL("http://pagewithvisit.com?q=search"));
+  EXPECT_EQ(got_content_annotations.search_terms, u"search");
+
+  QueryOptions options;
+  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+  QueryResults results = backend_->QueryHistory(/*text_query=*/{}, options);
+
+  ASSERT_EQ(results.size(), 1u);
+  EXPECT_EQ(VisitContentAnnotationFlag::kNone,
+            results[0].content_annotations().annotation_flags);
+  EXPECT_EQ(VisitContentAnnotationFlag::kNone,
+            got_content_annotations.annotation_flags);
+  EXPECT_EQ(-1.0f, got_content_annotations.model_annotations.visibility_score);
+  ASSERT_TRUE(got_content_annotations.model_annotations.categories.empty());
+  EXPECT_EQ(
+      -1, got_content_annotations.model_annotations.page_topics_model_version);
+  ASSERT_TRUE(got_content_annotations.model_annotations.entities.empty());
+  EXPECT_TRUE(got_content_annotations.related_searches.empty());
+  EXPECT_EQ(got_content_annotations.search_normalized_url,
+            GURL("http://pagewithvisit.com?q=search"));
+  EXPECT_EQ(got_content_annotations.search_terms, u"search");
 
   // Now, delete the URL. Content Annotations should be deleted.
   backend_->DeleteURL(url);

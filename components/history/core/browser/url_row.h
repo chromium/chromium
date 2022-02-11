@@ -238,7 +238,9 @@ struct VisitContentAnnotations {
   VisitContentAnnotations();
   VisitContentAnnotations(VisitContentAnnotationFlags annotation_flags,
                           VisitContentModelAnnotations model_annotations,
-                          const std::vector<std::string>& related_searches);
+                          const std::vector<std::string>& related_searches,
+                          const GURL& search_normalized_url,
+                          const std::u16string& search_terms);
   VisitContentAnnotations(const VisitContentAnnotations& other);
   ~VisitContentAnnotations();
 
@@ -247,6 +249,8 @@ struct VisitContentAnnotations {
   VisitContentModelAnnotations model_annotations;
   // A vector that contains related searches for a Google SRP visit.
   std::vector<std::string> related_searches;
+  GURL search_normalized_url;
+  std::u16string search_terms;
 };
 
 class URLResult : public URLRow {

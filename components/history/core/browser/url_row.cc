@@ -131,10 +131,14 @@ void VisitContentModelAnnotations::MergeFrom(
 VisitContentAnnotations::VisitContentAnnotations(
     VisitContentAnnotationFlags annotation_flags,
     VisitContentModelAnnotations model_annotations,
-    const std::vector<std::string>& related_searches)
+    const std::vector<std::string>& related_searches,
+    const GURL& search_normalized_url,
+    const std::u16string& search_terms)
     : annotation_flags(annotation_flags),
       model_annotations(model_annotations),
-      related_searches(related_searches) {}
+      related_searches(related_searches),
+      search_normalized_url(search_normalized_url),
+      search_terms(search_terms) {}
 VisitContentAnnotations::VisitContentAnnotations() = default;
 VisitContentAnnotations::VisitContentAnnotations(
     const VisitContentAnnotations&) = default;

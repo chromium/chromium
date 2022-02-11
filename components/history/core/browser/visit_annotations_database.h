@@ -129,13 +129,17 @@ class VisitAnnotationsDatabase {
   // table by adding a related searches column.
   bool MigrateContentAnnotationsAddRelatedSearchesColumn();
 
-  // Called by the drived classes to migrate the older content_annotations
+  // Called by the derived classes to migrate the older content_annotations
   // table by adding a visibility score column.
   bool MigrateContentAnnotationsAddVisibilityScore();
 
-  // Called by the drived classes to migrate the older context_annotations
+  // Called by the derived classes to migrate the older context_annotations
   // table by adding a total foreground duration column.
   bool MigrateContextAnnotationsAddTotalForegroundDuration();
+
+  // Called by the derived classes to migrate the older content_annotations
+  // table by adding the search_normalized_url and search_terms columns.
+  bool MigrateContentAnnotationsAddSearchMetadata();
 };
 
 }  // namespace history

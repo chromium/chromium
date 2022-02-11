@@ -22,24 +22,38 @@ namespace optimization_guide {
 
 namespace {
 
-// Returns the search query if |url| is a valid Search URL according to
+// Returns search metadata if |url| is a valid Search URL according to
 // |template_url_service|.
-absl::optional<std::u16string> ExtractSearchTerms(
+absl::optional<SearchMetadata> ExtractSearchMetadata(
     const TemplateURLService* template_url_service,
     const GURL& url) {
-  const TemplateURL* default_search_provider =
-      template_url_service->GetDefaultSearchProvider();
+  if (!template_url_service)
+    return absl::nullopt;
+
+  const TemplateURL* template_url =
+      template_url_service->GetTemplateURLForHost(url.host());
   const SearchTermsData& search_terms_data =
       template_url_service->search_terms_data();
 
   std::u16string search_terms;
-  if (default_search_provider &&
-      default_search_provider->ExtractSearchTermsFromURL(url, search_terms_data,
-                                                         &search_terms) &&
-      !search_terms.empty()) {
-    return search_terms;
-  }
-  return absl::nullopt;
+  bool is_valid_search_url = template_url &&
+                             template_url->ExtractSearchTermsFromURL(
+                                 url, search_terms_data, &search_terms) &&
+                             !search_terms.empty();
+  if (!is_valid_search_url)
+    return absl::nullopt;
+
+  const std::u16string& normalized_search_query =
+      base::i18n::ToLower(base::CollapseWhitespace(search_terms, false));
+  TemplateURLRef::SearchTermsArgs search_terms_args(normalized_search_query);
+  const TemplateURLRef& search_url_ref = template_url->url_ref();
+  if (!search_url_ref.SupportsReplacement(search_terms_data))
+    return absl::nullopt;
+
+  return SearchMetadata{
+      GURL(search_url_ref.ReplaceSearchTerms(search_terms_args,
+                                             search_terms_data)),
+      base::i18n::ToLower(base::CollapseWhitespace(search_terms, false))};
 }
 
 // Data scoped to a single page. PageData has the same lifetime as the page's
@@ -148,17 +162,17 @@ void PageContentAnnotationsWebContentsObserver::DidFinishNavigation(
                                                                 web_contents());
     }
 
-    absl::optional<std::u16string> search_terms =
-        ExtractSearchTerms(template_url_service_, navigation_handle->GetURL());
-    if (search_terms) {
+    absl::optional<SearchMetadata> search_metadata = ExtractSearchMetadata(
+        template_url_service_, navigation_handle->GetURL());
+    if (search_metadata) {
       if (page_data) {
         page_data->set_annotation_was_requested();
       }
-      const std::u16string& normalized_search_query =
-          base::i18n::ToLower(base::CollapseWhitespace(*search_terms, false));
       history_visit.text_to_annotate =
-          base::UTF16ToUTF8(normalized_search_query);
+          base::UTF16ToUTF8(search_metadata->search_terms);
       page_content_annotations_service_->Annotate(history_visit);
+      page_content_annotations_service_->PersistSearchMetadata(
+          history_visit, *search_metadata);
 
       if (switches::ShouldLogPageContentAnnotationsInput()) {
         LOG(ERROR) << "Annotating search terms: \n"

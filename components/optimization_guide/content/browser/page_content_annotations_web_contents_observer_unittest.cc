@@ -105,6 +105,15 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
     return last_entities_persistence_request_;
   }
 
+  void PersistSearchMetadata(const HistoryVisit& visit,
+                             const SearchMetadata& search_metadata) override {
+    last_search_metadata_ = search_metadata;
+  }
+
+  absl::optional<SearchMetadata> last_search_metadata_persisted() const {
+    return last_search_metadata_;
+  }
+
  private:
   absl::optional<HistoryVisit> last_annotation_request_;
   absl::optional<std::pair<HistoryVisit, content::WebContents*>>
@@ -113,6 +122,7 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
       std::pair<HistoryVisit,
                 std::vector<history::VisitContentModelAnnotations::Category>>>
       last_entities_persistence_request_;
+  absl::optional<SearchMetadata> last_search_metadata_;
 };
 
 class FakeOptimizationGuideDecider : public TestOptimizationGuideDecider {
@@ -377,6 +387,13 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
   EXPECT_EQ(last_annotation_request->url,
             GURL("http://default-engine.com/search?q=a"));
   EXPECT_EQ(last_annotation_request->text_to_annotate, "a");
+
+  absl::optional<SearchMetadata> last_search_metadata_persisted =
+      service()->last_search_metadata_persisted();
+  ASSERT_TRUE(last_search_metadata_persisted.has_value());
+  EXPECT_EQ(last_search_metadata_persisted->normalized_url,
+            GURL("http://default-engine.com/search?q=a"));
+  EXPECT_EQ(last_search_metadata_persisted->search_terms, u"a");
 }
 
 TEST_F(PageContentAnnotationsWebContentsObserverTest,

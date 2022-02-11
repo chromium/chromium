@@ -261,6 +261,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   void AddRelatedSearchesForVisit(
       VisitID visit_id,
       const std::vector<std::string>& related_searches);
+  void AddSearchMetadataForVisit(VisitID visit_id,
+                                 const GURL& search_normalized_url,
+                                 const std::u16string& search_terms);
 
   // Querying ------------------------------------------------------------------
 
