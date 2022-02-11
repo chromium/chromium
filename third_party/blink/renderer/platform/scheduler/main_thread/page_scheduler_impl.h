@@ -83,11 +83,10 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
       FrameScheduler::Delegate* delegate,
       BlameContext*,
       FrameScheduler::FrameType) override;
-  base::TimeTicks EnableVirtualTime() override;
+  base::TimeTicks EnableVirtualTime(base::Time initial_time) override;
   void DisableVirtualTimeForTesting() override;
   bool VirtualTimeAllowedToAdvance() const override;
   void SetVirtualTimePolicy(VirtualTimePolicy) override;
-  void SetInitialVirtualTime(base::Time time) override;
   void GrantVirtualTimeBudget(
       base::TimeDelta budget,
       base::OnceClosure budget_exhausted_callback) override;

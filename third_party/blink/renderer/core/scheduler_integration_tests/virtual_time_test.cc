@@ -37,7 +37,7 @@ class VirtualTimeTest : public SimTest {
  protected:
   void SetUp() override {
     SimTest::SetUp();
-    WebView().Scheduler()->EnableVirtualTime();
+    WebView().Scheduler()->EnableVirtualTime(base::Time());
   }
 
   String ExecuteJavaScript(String script_source) {
@@ -85,7 +85,7 @@ class VirtualTimeTest : public SimTest {
 #define MAYBE_SetInterval SetInterval
 #endif
 TEST_F(VirtualTimeTest, MAYBE_SetInterval) {
-  WebView().Scheduler()->EnableVirtualTime();
+  WebView().Scheduler()->EnableVirtualTime(base::Time());
   WebView().Scheduler()->SetVirtualTimePolicy(
       PageScheduler::VirtualTimePolicy::kAdvance);
 
@@ -145,7 +145,7 @@ TEST_F(VirtualTimeTest, MAYBE_AllowVirtualTimeToAdvance) {
 #endif
 TEST_F(VirtualTimeTest,
        MAYBE_VirtualTimeNotAllowedToAdvanceWhileResourcesLoading) {
-  WebView().Scheduler()->EnableVirtualTime();
+  WebView().Scheduler()->EnableVirtualTime(base::Time());
   WebView().Scheduler()->SetVirtualTimePolicy(
       PageScheduler::VirtualTimePolicy::kDeterministicLoading);
 

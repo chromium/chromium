@@ -445,14 +445,13 @@ Response InspectorEmulationAgent::setVirtualTimePolicy(
   InnerEnable();
 
   // This needs to happen before we apply virtual time.
-  if (initial_virtual_time.isJust()) {
-    web_local_frame_->View()->Scheduler()->SetInitialVirtualTime(
-        base::Time::FromDoubleT(initial_virtual_time.fromJust()));
-  }
-
-  web_local_frame_->View()->Scheduler()->SetVirtualTimePolicy(scheduler_policy);
+  base::Time initial_time =
+      initial_virtual_time.isJust()
+          ? base::Time::FromDoubleT(initial_virtual_time.fromJust())
+          : base::Time();
   virtual_time_base_ticks_ =
-      web_local_frame_->View()->Scheduler()->EnableVirtualTime();
+      web_local_frame_->View()->Scheduler()->EnableVirtualTime(initial_time);
+  web_local_frame_->View()->Scheduler()->SetVirtualTimePolicy(scheduler_policy);
   if (virtual_time_budget_ms.fromMaybe(0) > 0) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("renderer.scheduler", "VirtualTimeBudget",
                                       TRACE_ID_LOCAL(this), "budget",

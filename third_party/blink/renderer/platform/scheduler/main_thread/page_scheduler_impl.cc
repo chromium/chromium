@@ -410,8 +410,8 @@ void PageSchedulerImpl::ReportIntervention(const String& message) {
   delegate_->ReportIntervention(message);
 }
 
-base::TimeTicks PageSchedulerImpl::EnableVirtualTime() {
-  return main_thread_scheduler_->EnableVirtualTime();
+base::TimeTicks PageSchedulerImpl::EnableVirtualTime(base::Time initial_time) {
+  return main_thread_scheduler_->EnableVirtualTime(initial_time);
 }
 
 void PageSchedulerImpl::DisableVirtualTimeForTesting() {
@@ -420,10 +420,6 @@ void PageSchedulerImpl::DisableVirtualTimeForTesting() {
 
 void PageSchedulerImpl::SetVirtualTimePolicy(VirtualTimePolicy policy) {
   main_thread_scheduler_->SetVirtualTimePolicy(policy);
-}
-
-void PageSchedulerImpl::SetInitialVirtualTime(base::Time time) {
-  main_thread_scheduler_->SetInitialVirtualTime(time);
 }
 
 bool PageSchedulerImpl::VirtualTimeAllowedToAdvance() const {

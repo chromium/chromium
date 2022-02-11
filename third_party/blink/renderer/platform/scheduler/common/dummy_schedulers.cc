@@ -130,10 +130,11 @@ class DummyPageScheduler : public PageScheduler {
   bool IsMainFrameLocal() const override { return true; }
   void SetIsMainFrameLocal(bool) override {}
   void OnLocalMainFrameNetworkAlmostIdle() override {}
-  base::TimeTicks EnableVirtualTime() override { return base::TimeTicks(); }
+  base::TimeTicks EnableVirtualTime(base::Time initial_time) override {
+    return base::TimeTicks();
+  }
   void DisableVirtualTimeForTesting() override {}
   bool VirtualTimeAllowedToAdvance() const override { return true; }
-  void SetInitialVirtualTime(base::Time) override {}
   void SetVirtualTimePolicy(VirtualTimePolicy) override {}
   void GrantVirtualTimeBudget(base::TimeDelta, base::OnceClosure) override {}
   void SetMaxVirtualTimeTaskStarvationCount(int) override {}

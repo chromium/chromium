@@ -1777,15 +1777,16 @@ IdleTimeEstimator* MainThreadSchedulerImpl::GetIdleTimeEstimatorForTesting() {
   return &main_thread_only().idle_time_estimator;
 }
 
-base::TimeTicks MainThreadSchedulerImpl::EnableVirtualTime() {
+base::TimeTicks MainThreadSchedulerImpl::EnableVirtualTime(
+    base::Time initial_time) {
   if (main_thread_only().use_virtual_time)
     return main_thread_only().initial_virtual_time_ticks;
   main_thread_only().use_virtual_time = true;
+  main_thread_only().initial_virtual_time =
+      initial_time.is_null() ? base::Time::Now() : initial_time;
+  DCHECK(main_thread_only().initial_virtual_time_ticks.is_null());
+  main_thread_only().initial_virtual_time_ticks = NowTicks();
   DCHECK(!virtual_time_domain_);
-  if (main_thread_only().initial_virtual_time.is_null())
-    main_thread_only().initial_virtual_time = base::Time::Now();
-  if (main_thread_only().initial_virtual_time_ticks.is_null())
-    main_thread_only().initial_virtual_time_ticks = NowTicks();
   virtual_time_domain_ = std::make_unique<AutoAdvancingVirtualTimeDomain>(
       main_thread_only().initial_virtual_time,
       main_thread_only().initial_virtual_time_ticks, &helper_);
@@ -1905,12 +1906,9 @@ void MainThreadSchedulerImpl::MaybeAdvanceVirtualTime(
 }
 
 void MainThreadSchedulerImpl::SetVirtualTimePolicy(VirtualTimePolicy policy) {
+  DCHECK(main_thread_only().use_virtual_time);
   main_thread_only().virtual_time_policy = policy;
   ApplyVirtualTimePolicy();
-}
-
-void MainThreadSchedulerImpl::SetInitialVirtualTime(base::Time time) {
-  main_thread_only().initial_virtual_time = time;
 }
 
 void MainThreadSchedulerImpl::ApplyVirtualTimePolicy() {
@@ -1952,6 +1950,7 @@ void MainThreadSchedulerImpl::ApplyVirtualTimePolicy() {
 
 void MainThreadSchedulerImpl::SetMaxVirtualTimeTaskStarvationCount(
     int max_task_starvation_count) {
+  DCHECK(main_thread_only().use_virtual_time);
   main_thread_only().max_virtual_time_task_starvation_count =
       max_task_starvation_count;
   ApplyVirtualTimePolicy();

@@ -287,7 +287,7 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   // Tells the scheduler that all TaskQueues should use virtual time. Returns
   // the base::TimeTicks that virtual time offsets will be relative to.
-  base::TimeTicks EnableVirtualTime();
+  base::TimeTicks EnableVirtualTime(base::Time initial_time);
   bool IsVirtualTimeEnabled() const;
 
   // Migrates all task queues to real time.
@@ -296,7 +296,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
   // Returns true if virtual time is not paused.
   bool VirtualTimeAllowedToAdvance() const;
   void SetVirtualTimePolicy(VirtualTimePolicy virtual_time_policy);
-  void SetInitialVirtualTime(base::Time time);
   void SetMaxVirtualTimeTaskStarvationCount(int max_task_starvation_count);
   base::TimeTicks IncrementVirtualTimePauseCount();
   void DecrementVirtualTimePauseCount();

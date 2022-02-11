@@ -67,11 +67,12 @@ class FakePageScheduler final : public PageScheduler {
       FrameScheduler::FrameType frame_type) override {
     return nullptr;
   }
-  base::TimeTicks EnableVirtualTime() override { return base::TimeTicks(); }
+  base::TimeTicks EnableVirtualTime(base::Time initial_time) override {
+    return base::TimeTicks();
+  }
   void DisableVirtualTimeForTesting() override {}
   bool VirtualTimeAllowedToAdvance() const override { return false; }
   void SetVirtualTimePolicy(VirtualTimePolicy policy) override {}
-  void SetInitialVirtualTime(base::Time time) override {}
   void GrantVirtualTimeBudget(base::TimeDelta budget,
                               base::OnceClosure callback) override {}
   void SetMaxVirtualTimeTaskStarvationCount(int count) override {}

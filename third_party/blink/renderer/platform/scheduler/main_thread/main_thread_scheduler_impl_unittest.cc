@@ -3075,32 +3075,22 @@ TEST_F(MainThreadSchedulerImplTest, UnthrottledTaskRunner) {
   EXPECT_EQ(500u, unthrottled_count);
 }
 
-TEST_F(
-    MainThreadSchedulerImplTest,
-    VirtualTimePolicyDoesNotAffectNewThrottleableTaskQueueIfVirtualTimeNotEnabled) {
-  scheduler_->SetVirtualTimePolicy(
-      PageSchedulerImpl::VirtualTimePolicy::kPause);
-  scoped_refptr<MainThreadTaskQueue> throttleable_tq =
-      scheduler_->NewThrottleableTaskQueueForTest(nullptr);
-  EXPECT_FALSE(throttleable_tq->GetTaskQueue()->HasActiveFence());
-}
-
 TEST_F(MainThreadSchedulerImplTest, EnableVirtualTime) {
   EXPECT_FALSE(scheduler_->IsVirtualTimeEnabled());
-  scheduler_->EnableVirtualTime();
+  scheduler_->EnableVirtualTime(base::Time());
   EXPECT_TRUE(scheduler_->IsVirtualTimeEnabled());
   EXPECT_TRUE(scheduler_->GetVirtualTimeDomain());
 }
 
 TEST_F(MainThreadSchedulerImplTest, DisableVirtualTimeForTesting) {
-  scheduler_->EnableVirtualTime();
+  scheduler_->EnableVirtualTime(base::Time());
   scheduler_->DisableVirtualTimeForTesting();
   EXPECT_FALSE(scheduler_->IsVirtualTimeEnabled());
   EXPECT_FALSE(scheduler_->VirtualTimeControlTaskQueue());
 }
 
 TEST_F(MainThreadSchedulerImplTest, VirtualTimePauser) {
-  scheduler_->EnableVirtualTime();
+  scheduler_->EnableVirtualTime(base::Time());
   scheduler_->SetVirtualTimePolicy(
       PageSchedulerImpl::VirtualTimePolicy::kDeterministicLoading);
 
@@ -3120,7 +3110,7 @@ TEST_F(MainThreadSchedulerImplTest, VirtualTimePauser) {
 }
 
 TEST_F(MainThreadSchedulerImplTest, VirtualTimePauserNonInstantTask) {
-  scheduler_->EnableVirtualTime();
+  scheduler_->EnableVirtualTime(base::Time());
   scheduler_->SetVirtualTimePolicy(
       PageSchedulerImpl::VirtualTimePolicy::kDeterministicLoading);
 
@@ -3139,7 +3129,7 @@ TEST_F(MainThreadSchedulerImplTest, VirtualTimeWithOneQueueWithoutVirtualTime) {
   // This test ensures that we do not do anything strange like stopping
   // processing task queues after we encountered one task queue with
   // DoNotUseVirtualTime trait.
-  scheduler_->EnableVirtualTime();
+  scheduler_->EnableVirtualTime(base::Time());
   scheduler_->SetVirtualTimePolicy(
       PageSchedulerImpl::VirtualTimePolicy::kDeterministicLoading);
 
@@ -3398,9 +3388,8 @@ class MainThreadSchedulerImplWithInitalVirtualTimeTest
                 base::sequence_manager::SequenceManager::Settings::Builder()
                     .SetRandomisedSamplingEnabled(true)
                     .Build()));
-    main_thread_scheduler->SetInitialVirtualTime(
-        base::Time::FromJsTime(1000000.0));
-    main_thread_scheduler->EnableVirtualTime();
+    main_thread_scheduler->EnableVirtualTime(
+        /* initial_time= */ base::Time::FromJsTime(1000000.0));
     main_thread_scheduler->SetVirtualTimePolicy(
         PageScheduler::VirtualTimePolicy::kPause);
     Initialize(std::move(main_thread_scheduler));

@@ -261,7 +261,7 @@ class ScrollbarsTestWithVirtualTimer : public ScrollbarsTest {
  public:
   void SetUp() override {
     ScrollbarsTest::SetUp();
-    WebView().Scheduler()->EnableVirtualTime();
+    WebView().Scheduler()->EnableVirtualTime(base::Time());
   }
 
   void TearDown() override {

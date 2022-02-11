@@ -80,7 +80,10 @@ class PLATFORM_EXPORT PageScheduler {
   //
   // |ABCDE                       (virtual time)
   // |-----------------------------> time
-  virtual base::TimeTicks EnableVirtualTime() = 0;
+  //
+  // |initial_time| sets the initial value for Date.now()
+  //
+  virtual base::TimeTicks EnableVirtualTime(base::Time initial_time) = 0;
 
   // Disables virtual time. Note that this is only used for testing, because
   // there's no reason to do this in production.
@@ -110,16 +113,15 @@ class PLATFORM_EXPORT PageScheduler {
     kDeterministicLoading,
   };
 
-  // This is used to set initial Date.now() while in virtual time mode.
-  virtual void SetInitialVirtualTime(base::Time time) = 0;
-
   // Sets the virtual time policy, which is applied imemdiatly to all child
   // FrameSchedulers.
+  // May only be called after virtual time was enabled with EnableVirtualTime().
   virtual void SetVirtualTimePolicy(VirtualTimePolicy) = 0;
 
   // Set the remaining virtual time budget to |budget|. Once the budget runs
   // out, |budget_exhausted_callback| is called. Note that the virtual time
   // policy is not affected when the budget expires.
+  // May only be called after virtual time was enabled with EnableVirtualTime().
   virtual void GrantVirtualTimeBudget(
       base::TimeDelta budget,
       base::OnceClosure budget_exhausted_callback) = 0;
@@ -128,6 +130,7 @@ class PLATFORM_EXPORT PageScheduler {
   // block virtual time.  We can prevent this by setting an upper limit on the
   // number of tasks that can run before virtual time is advanced.
   // NB this anti-starvation logic doesn't apply to VirtualTimePolicy::kPause.
+  // May only be called after virtual time was enabled with EnableVirtualTime().
   virtual void SetMaxVirtualTimeTaskStarvationCount(
       int max_task_starvation_count) = 0;
 
