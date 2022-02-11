@@ -693,6 +693,16 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  # Reduce binary size. https:crbug.com/954584\n')
                 sb.append('  ignore_proguard_configs = true\n')
                 sb.append('  proguard_configs = ["material_design.flags"]\n')
+                sb.append('\n')
+                sb.append('  # Ensure ConstraintsLayout is not included by unused layouts:\n')
+                sb.append('  # https://crbug.com/1292510\n')
+                sb.append('  resource_exclusion_globs = [\n')
+                sb.append('      "res/layout*/*calendar*",\n')
+                sb.append('      "res/layout*/*chip_input*",\n')
+                sb.append('      "res/layout*/*clock*",\n')
+                sb.append('      "res/layout*/*picker*",\n')
+                sb.append('      "res/layout*/*time*",\n')
+                sb.append('  ]\n')
                 break
             case 'com_android_support_support_annotations':
                 sb.append('  # https://crbug.com/989505\n')
