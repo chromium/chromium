@@ -576,6 +576,16 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
   }
 
   /**
+   * @return true if the pref value for
+   *     profile.password_dismiss_compromised_alert exists and equals to false.
+   */
+  private isMutingDisabledByPrefs_(): boolean {
+    return !!this.prefs &&
+        this.getPref('profile.password_dismiss_compromised_alert').value ===
+        false;
+  }
+
+  /**
    * @return true if muting is enabled
    * and the password is compromised and is dismissable/mutable.
    */

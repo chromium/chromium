@@ -262,6 +262,9 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[password_manager::prefs::kPasswordLeakDetectionEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)
+      [password_manager::prefs::kPasswordDismissCompromisedAlertEnabled] =
+          settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
   // Privacy page
   (*s_allowlist)[::prefs::kSigninAllowedOnNextStartup] =

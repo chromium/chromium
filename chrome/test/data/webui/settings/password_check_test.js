@@ -625,6 +625,41 @@ suite('PasswordsCheckSection', function() {
 
   // Verify that for a leaked password the More Actions menu opens when the
   // button is clicked.
+  // If dismiss compromised password option is enabled but disabled by prefs,
+  // and if the clicked item is a leaked password: Menu must have a disabled
+  // dismiss button.
+  test('moreActionsMenuWithMuteButtonDisabled', async function() {
+    loadTimeData.overrideValues({showDismissCompromisedPasswordOption: true});
+    passwordManager.data.leakedCredentials = [
+      makeCompromisedCredential(
+          /*url*/ 'google.com', /*username*/ 'derinel', /*type*/ 'LEAKED',
+          /*id*/ 1, /*elapsedMinSinceCompromise*/ 1, /*isMuted*/ false),
+    ];
+    const checkPasswordSection = createCheckPasswordSection();
+    checkPasswordSection.prefs = {
+      profile: {password_dismiss_compromised_alert: {value: false}}
+    };
+    await passwordManager.whenCalled('getCompromisedCredentials');
+    flush();
+    assertFalse(checkPasswordSection.$.compromisedCredentialsBody.hidden);
+    const listElement = checkPasswordSection.shadowRoot.querySelector(
+        'password-check-list-item');
+    const menu = checkPasswordSection.$.moreActionsMenu;
+
+    assertFalse(menu.open);
+    listElement.$.more.click();
+    flush();
+    assertTrue(menu.open);
+
+    assertTrue(checkPasswordSection.shadowRoot
+                   .querySelector('#menuMuteCompromisedPassword')
+                   .disabled);
+    assertFalse(!!checkPasswordSection.shadowRoot.querySelector(
+        '#menuUnmuteMutedCompromisedPassword'));
+  });
+
+  // Verify that for a leaked password the More Actions menu opens when the
+  // button is clicked.
   // If dismiss compromised password option is enabled and if the clicked item
   // is a leaked password: Menu must have a dismiss button.
   test('moreActionsMenuWithUnmuteButton', async function() {
@@ -651,6 +686,41 @@ suite('PasswordsCheckSection', function() {
         '#menuMuteCompromisedPassword'));
     assertTrue(!!checkPasswordSection.shadowRoot.querySelector(
         '#menuUnmuteMutedCompromisedPassword'));
+  });
+
+  // Verify that for a leaked password the More Actions menu opens when the
+  // button is clicked.
+  // If dismiss compromised password option is enabled but disabled by prefs and
+  // if the clicked item is a leaked password: Menu must have a disabled dismiss
+  // button.
+  test('moreActionsMenuWithUnmuteButtonDisabled', async function() {
+    loadTimeData.overrideValues({showDismissCompromisedPasswordOption: true});
+    passwordManager.data.leakedCredentials = [
+      makeCompromisedCredential(
+          /*url*/ 'google.com', /*username*/ 'derinel', /*type*/ 'LEAKED', 1,
+          /*elapsedMinSinceCompromise*/ 1, /*isMuted*/ true),
+    ];
+    const checkPasswordSection = createCheckPasswordSection();
+    checkPasswordSection.prefs = {
+      profile: {password_dismiss_compromised_alert: {value: false}}
+    };
+    await passwordManager.whenCalled('getCompromisedCredentials');
+    flush();
+    assertFalse(checkPasswordSection.$.compromisedCredentialsBody.hidden);
+    const listElement = checkPasswordSection.shadowRoot.querySelector(
+        'password-check-list-item');
+    const menu = checkPasswordSection.$.moreActionsMenu;
+
+    assertFalse(menu.open);
+    listElement.$.more.click();
+    flush();
+    assertTrue(menu.open);
+
+    assertFalse(!!checkPasswordSection.shadowRoot.querySelector(
+        '#menuMuteCompromisedPassword'));
+    assertTrue(checkPasswordSection.shadowRoot
+                   .querySelector('#menuUnmuteMutedCompromisedPassword')
+                   .disabled);
   });
 
   // Verify that for a weak password the More Actions menu opens when the
