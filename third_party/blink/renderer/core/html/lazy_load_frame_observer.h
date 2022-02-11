@@ -64,6 +64,7 @@ class LazyLoadFrameObserver final
   void RecordMetricsOnLoadFinished();
 
   void LoadImmediately();
+  void LoadImmediatelyAndBlockLoadingEvent();
 
   void Trace(Visitor*) const;
 

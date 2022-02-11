@@ -973,6 +973,47 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, LazyLoadedImagesFetched) {
   EXPECT_NE(old_height, new_height);
 }
 
+IN_PROC_BROWSER_TEST_F(PrintBrowserTest, LazyLoadedIframeFetched) {
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL(
+      "/printing/lazy-loaded-iframe-offscreen.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  const char kExpression[] =
+      "target.contentWindow.document.documentElement.clientHeight";
+
+  double old_height = content::EvalJs(contents, kExpression).ExtractDouble();
+
+  PrintAndWaitUntilPreviewIsReady();
+
+  double new_height = content::EvalJs(contents, kExpression).ExtractDouble();
+
+  EXPECT_NE(old_height, new_height);
+}
+
+IN_PROC_BROWSER_TEST_F(PrintBrowserTest, LazyLoadedIframeFetchedCrossOrigin) {
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL(
+      "/printing/lazy-loaded-iframe-offscreen-cross-origin.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  const char kExpression[] = "document.documentElement.clientHeight";
+
+  double old_height =
+      content::EvalJs(content::ChildFrameAt(contents, 0), kExpression)
+          .ExtractDouble();
+
+  PrintAndWaitUntilPreviewIsReady();
+
+  double new_height =
+      content::EvalJs(content::ChildFrameAt(contents, 0), kExpression)
+          .ExtractDouble();
+
+  EXPECT_NE(old_height, new_height);
+}
+
 IN_PROC_BROWSER_TEST_F(PrintBrowserTest, LazyLoadedImagesFetchedScriptedPrint) {
   ASSERT_TRUE(embedded_test_server()->Started());
   GURL url(embedded_test_server()->GetURL(

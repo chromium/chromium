@@ -206,6 +206,8 @@ class CORE_EXPORT LocalFrameView final
   void SetNeedsUpdateGeometries() { needs_update_geometries_ = true; }
   void UpdateGeometry() override;
 
+  bool LoadAllLazyLoadedIframes();
+
   void UpdateStyleAndLayout();
 
   // Marks this frame, and ancestor frames, as needing one intersection

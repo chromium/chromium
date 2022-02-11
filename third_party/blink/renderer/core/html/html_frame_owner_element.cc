@@ -541,6 +541,15 @@ EmbeddedContentView* HTMLFrameOwnerElement::ReleaseEmbeddedContentView() {
   return embedded_content_view_.Release();
 }
 
+bool HTMLFrameOwnerElement::LoadImmediatelyIfLazy() {
+  if (!lazy_load_frame_observer_)
+    return false;
+
+  bool lazy_load_pending = lazy_load_frame_observer_->IsLazyLoadPending();
+  lazy_load_frame_observer_->LoadImmediately();
+  return lazy_load_pending;
+}
+
 bool HTMLFrameOwnerElement::LazyLoadIfPossible(
     const KURL& url,
     const ResourceRequestHead& request,

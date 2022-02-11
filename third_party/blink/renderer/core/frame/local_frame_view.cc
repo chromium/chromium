@@ -2023,6 +2023,20 @@ LayoutEmbeddedContent* LocalFrameView::GetLayoutEmbeddedContent() const {
   return frame_->OwnerLayoutObject();
 }
 
+bool LocalFrameView::LoadAllLazyLoadedIframes() {
+  bool result = false;
+  ForAllChildViewsAndPlugins([&](EmbeddedContentView& view) {
+    if (auto* embed = view.GetLayoutEmbeddedContent()) {
+      if (auto* node = embed->GetNode()) {
+        if (auto* frame_owner = DynamicTo<HTMLFrameOwnerElement>(node)) {
+          result = result || frame_owner->LoadImmediatelyIfLazy();
+        }
+      }
+    }
+  });
+  return result;
+}
+
 void LocalFrameView::UpdateGeometriesIfNeeded() {
   if (!needs_update_geometries_)
     return;

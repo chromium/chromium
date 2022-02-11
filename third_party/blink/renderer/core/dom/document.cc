@@ -2986,6 +2986,11 @@ void Document::DisplayNoneChangedForFrame() {
 bool Document::WillPrintSoon() {
   loading_for_print_ =
       EnsureLazyLoadImageObserver().LoadAllImagesAndBlockLoadEvent();
+
+  if (auto* view = View()) {
+    loading_for_print_ = loading_for_print_ || view->LoadAllLazyLoadedIframes();
+  }
+
   return loading_for_print_;
 }
 
