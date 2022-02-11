@@ -26,7 +26,7 @@
     },
     {
       "trigger_time": 1643235579,
-      "reporting_origin": "https://report.example",
+      "reporting_origin": "https://report2.example",
       "destination": "https://destination.example",
       "registration_config": {
         "trigger_data": "4",

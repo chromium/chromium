@@ -222,7 +222,8 @@ int ProcessJsonString(const std::string& json_input,
     std::cerr << "failed to deserialize input: " << error_msg << std::endl;
     return 1;
   }
-  base::Value output = content::RunAttributionSimulationOrExit(*input, options);
+  base::Value output =
+      content::RunAttributionSimulationOrExit(std::move(*input), options);
   std::string output_json;
   bool success = base::JSONWriter::WriteWithOptions(output, json_write_options,
                                                     &output_json);

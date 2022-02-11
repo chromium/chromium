@@ -11,10 +11,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
+#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_network_sender.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -33,7 +35,7 @@ namespace content {
 
 namespace {
 
-base::Time GetEventTime(const AttributionSimulationEvent& event) {
+base::Time GetEventTime(const AttributionSimulationEventAndValue& event) {
   struct Visitor {
     base::Time operator()(const StorableSource& source) {
       return source.common_info().impression_time();
@@ -44,7 +46,7 @@ base::Time GetEventTime(const AttributionSimulationEvent& event) {
     }
   };
 
-  return absl::visit(Visitor{}, event);
+  return absl::visit(Visitor{}, event.first);
 }
 
 // TODO(apaseltiner): Consider exposing other behaviors here.
@@ -116,29 +118,96 @@ class SentReportAccumulator : public AttributionNetworkSender {
   base::Value::ListStorage& reports_;
 };
 
-struct EventHandler {
-  base::raw_ptr<AttributionManagerImpl> manager;
+// Registers sources and triggers in the `AttributionManagerImpl` and records
+// rejected sources in a JSON list.
+class AttributionEventHandler : public AttributionManager::Observer {
+ public:
+  AttributionEventHandler(AttributionManagerImpl* manager,
+                          base::Value::ListStorage& rejected_sources)
+      : manager_(manager), rejected_sources_(rejected_sources) {
+    observation_.Observe(manager);
+  }
 
+  ~AttributionEventHandler() override = default;
+
+  void Handle(AttributionSimulationEventAndValue event) {
+    // Sources and triggers are handled in order; this includes observer
+    // invocations. Therefore, we can track the original `base::Value`
+    // associated with the event using a queue.
+    //
+    // TODO(apaseltiner): Record rejected triggers using this approach as well.
+
+    if (absl::holds_alternative<StorableSource>(event.first))
+      input_values_.push_back(std::move(event.second));
+
+    absl::visit(*this, std::move(event.first));
+  }
+
+  // For use with `absl::visit()`.
   void operator()(StorableSource source) {
-    manager->MaybeEnqueueEventForTesting(std::move(source));
+    manager_->MaybeEnqueueEventForTesting(std::move(source));
   }
 
+  // For use with `absl::visit()`.
   void operator()(AttributionTriggerAndTime trigger) {
-    manager->MaybeEnqueueEventForTesting(std::move(trigger.trigger));
+    manager_->MaybeEnqueueEventForTesting(std::move(trigger.trigger));
   }
+
+ private:
+  // AttributionManager::Observer:
+  void OnSourceHandled(const StorableSource& source,
+                       StorableSource::Result result) override {
+    DCHECK(!input_values_.empty());
+    base::Value input_value = std::move(input_values_.front());
+    input_values_.pop_front();
+
+    const char* reason;
+    switch (result) {
+      case StorableSource::Result::kSuccess:
+        return;
+      case StorableSource::Result::kInternalError:
+        reason = "internalError";
+        break;
+      case StorableSource::Result::kInsufficientSourceCapacity:
+        reason = "insufficientSourceCapacity";
+        break;
+      case StorableSource::Result::kInsufficientUniqueDestinationCapacity:
+        reason = "insufficientUniqueDestinationCapacity";
+        break;
+      case StorableSource::Result::kExcessiveReportingOrigins:
+        reason = "excessiveReportingOrigins";
+        break;
+    }
+
+    base::DictionaryValue dict;
+    dict.SetStringKey("reason", reason);
+    dict.SetKey("source", std::move(input_value));
+
+    rejected_sources_.push_back(std::move(dict));
+  }
+
+  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
+      observation_{this};
+
+  base::raw_ptr<AttributionManagerImpl> manager_;
+
+  base::Value::ListStorage& rejected_sources_;
+
+  base::circular_deque<base::Value> input_values_;
 };
 
 }  // namespace
 
 base::Value RunAttributionSimulationOrExit(
-    const base::Value& input,
+    base::Value input,
     const AttributionSimulationOptions& options) {
   // Prerequisites for using an environment with mock time.
   content::BrowserTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
 
-  std::vector<AttributionSimulationEvent> events =
-      ParseAttributionSimulationInputOrExit(input, base::Time::Now());
+  std::vector<AttributionSimulationEventAndValue> events =
+      ParseAttributionSimulationInputOrExit(std::move(input),
+                                            base::Time::Now());
   base::ranges::stable_sort(events, /*comp=*/{}, &GetEventTime);
 
   // Avoid creating an on-disk sqlite DB.
@@ -167,14 +236,12 @@ base::Value RunAttributionSimulationOrExit(
       std::make_unique<SentReportAccumulator>(reports,
                                               options.remove_report_ids));
 
-  // TODO(apaseltiner): Add an `AttributionManager::Observer` to `manager` so we
-  // can record dropped reports in the output.
-
-  EventHandler handler{.manager = manager.get()};
+  base::Value::ListStorage rejected_sources;
+  AttributionEventHandler handler(manager.get(), rejected_sources);
 
   for (auto& event : events) {
     task_environment.FastForwardBy(GetEventTime(event) - base::Time::Now());
-    absl::visit(handler, std::move(event));
+    handler.Handle(std::move(event));
   }
 
   absl::optional<base::Time> last_report_time;
@@ -197,6 +264,10 @@ base::Value RunAttributionSimulationOrExit(
 
   base::Value output(base::Value::Type::DICTIONARY);
   output.SetKey("reports", base::Value(std::move(reports)));
+
+  if (!rejected_sources.empty())
+    output.SetKey("rejected_sources", base::Value(std::move(rejected_sources)));
+
   return output;
 }
 

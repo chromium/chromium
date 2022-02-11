@@ -5,16 +5,14 @@
 #ifndef CONTENT_TEST_ATTRIBUTION_SIMULATOR_INPUT_PARSER_H_
 #define CONTENT_TEST_ATTRIBUTION_SIMULATOR_INPUT_PARSER_H_
 
+#include <utility>
 #include <vector>
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace content {
 
@@ -26,9 +24,13 @@ struct AttributionTriggerAndTime {
 using AttributionSimulationEvent =
     absl::variant<StorableSource, AttributionTriggerAndTime>;
 
-std::vector<AttributionSimulationEvent> ParseAttributionSimulationInputOrExit(
-    const base::Value& input,
-    base::Time offset_time);
+// The value is the raw JSON associated with the event.
+using AttributionSimulationEventAndValue =
+    std::pair<AttributionSimulationEvent, base::Value>;
+
+std::vector<AttributionSimulationEventAndValue>
+ParseAttributionSimulationInputOrExit(base::Value input,
+                                      base::Time offset_time);
 
 }  // namespace content
 

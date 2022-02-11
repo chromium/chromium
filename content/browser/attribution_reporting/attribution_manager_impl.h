@@ -182,6 +182,13 @@ class CONTENT_EXPORT AttributionManagerImpl
   // Internally holds a non-owning pointer to `BrowserContext`.
   IsReportAllowedCallback is_report_allowed_callback_;
 
+  // Holds pending sources and triggers in the order they were received by the
+  // browser. For the time being, they must be processed in this order in order
+  // to ensure that behavioral requirements are met and to ensure that
+  // `AttributionManager::Observer`s are notified in the correct order, which
+  // the simulator currently depends on. We may be able to loosen this
+  // requirement in the future so that there are conceptually separate queues
+  // per <source origin, destination origin, reporting origin>.
   base::circular_deque<SourceOrTrigger> pending_events_;
 
   base::SequenceBound<AttributionStorage> attribution_storage_;

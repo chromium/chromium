@@ -32,7 +32,7 @@ struct AttributionSimulationOptions {
 //
 // Exits if `input` cannot be parsed.
 base::Value RunAttributionSimulationOrExit(
-    const base::Value& input,
+    base::Value input,
     const AttributionSimulationOptions& options);
 
 }  // namespace content

@@ -167,20 +167,22 @@ AttributionTriggerAndTime ParseTrigger(const base::Value& dict,
 
 }  // namespace
 
-std::vector<AttributionSimulationEvent> ParseAttributionSimulationInputOrExit(
-    const base::Value& input,
-    base::Time offset_time) {
-  std::vector<AttributionSimulationEvent> events;
+std::vector<AttributionSimulationEventAndValue>
+ParseAttributionSimulationInputOrExit(base::Value input,
+                                      base::Time offset_time) {
+  std::vector<AttributionSimulationEventAndValue> events;
 
-  if (const base::Value* items = input.FindListKey("sources")) {
-    for (const base::Value& item : items->GetListDeprecated()) {
-      events.push_back(ParseSource(item, offset_time));
+  if (base::Value* items = input.FindListKey("sources")) {
+    for (base::Value& item : items->GetListDeprecated()) {
+      StorableSource source = ParseSource(item, offset_time);
+      events.emplace_back(std::move(source), std::move(item));
     }
   }
 
-  if (const base::Value* items = input.FindListKey("triggers")) {
-    for (const base::Value& item : items->GetListDeprecated()) {
-      events.push_back(ParseTrigger(item, offset_time));
+  if (base::Value* items = input.FindListKey("triggers")) {
+    for (base::Value& item : items->GetListDeprecated()) {
+      AttributionTriggerAndTime trigger = ParseTrigger(item, offset_time);
+      events.emplace_back(std::move(trigger), std::move(item));
     }
   }
 

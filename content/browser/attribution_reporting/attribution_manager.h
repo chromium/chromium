@@ -55,12 +55,18 @@ class AttributionManager {
 
     virtual void OnReportsChanged() {}
 
+    virtual void OnSourceHandled(const StorableSource& source,
+                                 StorableSource::Result result) {}
+
     virtual void OnSourceDeactivated(
         const AttributionStorage::DeactivatedSource& source) {}
 
     virtual void OnReportSent(const AttributionReport& report,
                               const SendResult& info) {}
 
+    // TODO(apaseltiner): This should be reserved for times when we actually
+    // drop a stored report without sending it; we currently also use this to
+    // notify about triggers that were rejected without ever storing a report.
     virtual void OnReportDropped(
         const AttributionStorage::CreateReportResult& result) {}
   };

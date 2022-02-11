@@ -34,8 +34,10 @@ std::ostream& operator<<(std::ostream& out,
 
 namespace {
 
-using ::testing::ElementsAreArray;
+using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::Pair;
 using ::testing::SizeIs;
 
 // Pick an arbitrary offset time to test correct handling.
@@ -50,8 +52,9 @@ TEST(AttributionSimulatorInputParserTest, EmptyInputParses) {
 
   for (const char* json : kTestCases) {
     base::Value value = base::test::ParseJson(json);
-    EXPECT_THAT(ParseAttributionSimulationInputOrExit(value, kOffsetTime),
-                IsEmpty())
+    EXPECT_THAT(
+        ParseAttributionSimulationInputOrExit(std::move(value), kOffsetTime),
+        IsEmpty())
         << json;
   }
 }
@@ -94,42 +97,53 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceParses) {
     }
   ]})json";
 
-  const AttributionSimulationEvent expected[] = {
-      SourceBuilder(kOffsetTime + base::Seconds(1643235574))
-          .SetSourceType(CommonSourceInfo::SourceType::kNavigation)
-          .SetReportingOrigin(url::Origin::Create(GURL("https://a.r.test")))
-          .SetImpressionOrigin(url::Origin::Create(GURL("https://a.s.test")))
-          .SetSourceEventId(123)
-          .SetConversionOrigin(url::Origin::Create(GURL("https://a.d.test")))
-          .SetExpiry(base::Days(10))
-          .SetPriority(-5)
-          .SetDebugKey(14)
-          .Build(),
-      SourceBuilder(kOffsetTime + base::Seconds(1643235573))
-          .SetSourceType(CommonSourceInfo::SourceType::kEvent)
-          .SetReportingOrigin(url::Origin::Create(GURL("https://b.r.test")))
-          .SetImpressionOrigin(url::Origin::Create(GURL("https://b.s.test")))
-          .SetSourceEventId(456)
-          .SetConversionOrigin(url::Origin::Create(GURL("https://b.d.test")))
-          .SetExpiry(base::Days(30))   // default
-          .SetPriority(0)              // default
-          .SetDebugKey(absl::nullopt)  // default
-          .Build(),
-      SourceBuilder(kOffsetTime + base::Seconds(1643235575))
-          .SetSourceType(CommonSourceInfo::SourceType::kEvent)
-          .SetReportingOrigin(url::Origin::Create(GURL("https://c.r.test")))
-          .SetImpressionOrigin(url::Origin::Create(GURL("https://c.s.test")))
-          .SetSourceEventId(789)
-          .SetConversionOrigin(url::Origin::Create(GURL("https://c.d.test")))
-          .SetExpiry(base::Days(10))   // rounded to whole number of days
-          .SetPriority(0)              // default
-          .SetDebugKey(absl::nullopt)  // default
-          .Build(),
-  };
-
   base::Value value = base::test::ParseJson(kJson);
-  EXPECT_THAT(ParseAttributionSimulationInputOrExit(value, kOffsetTime),
-              ElementsAreArray(expected));
+  EXPECT_THAT(
+      ParseAttributionSimulationInputOrExit(std::move(value), kOffsetTime),
+      ElementsAre(
+          Pair(SourceBuilder(kOffsetTime + base::Seconds(1643235574))
+                   .SetSourceType(CommonSourceInfo::SourceType::kNavigation)
+                   .SetReportingOrigin(
+                       url::Origin::Create(GURL("https://a.r.test")))
+                   .SetImpressionOrigin(
+                       url::Origin::Create(GURL("https://a.s.test")))
+                   .SetSourceEventId(123)
+                   .SetConversionOrigin(
+                       url::Origin::Create(GURL("https://a.d.test")))
+                   .SetExpiry(base::Days(10))
+                   .SetPriority(-5)
+                   .SetDebugKey(14)
+                   .Build(),
+               _),
+          Pair(SourceBuilder(kOffsetTime + base::Seconds(1643235573))
+                   .SetSourceType(CommonSourceInfo::SourceType::kEvent)
+                   .SetReportingOrigin(
+                       url::Origin::Create(GURL("https://b.r.test")))
+                   .SetImpressionOrigin(
+                       url::Origin::Create(GURL("https://b.s.test")))
+                   .SetSourceEventId(456)
+                   .SetConversionOrigin(
+                       url::Origin::Create(GURL("https://b.d.test")))
+                   .SetExpiry(base::Days(30))   // default
+                   .SetPriority(0)              // default
+                   .SetDebugKey(absl::nullopt)  // default
+                   .Build(),
+               _),
+          Pair(
+              SourceBuilder(kOffsetTime + base::Seconds(1643235575))
+                  .SetSourceType(CommonSourceInfo::SourceType::kEvent)
+                  .SetReportingOrigin(
+                      url::Origin::Create(GURL("https://c.r.test")))
+                  .SetImpressionOrigin(
+                      url::Origin::Create(GURL("https://c.s.test")))
+                  .SetSourceEventId(789)
+                  .SetConversionOrigin(
+                      url::Origin::Create(GURL("https://c.d.test")))
+                  .SetExpiry(base::Days(10))  // rounded to whole number of days
+                  .SetPriority(0)             // default
+                  .SetDebugKey(absl::nullopt)  // default
+                  .Build(),
+              _)));
 }
 
 TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
@@ -154,40 +168,44 @@ TEST(AttributionSimulatorInputParserTest, ValidTriggerParses) {
     }
   ]})json";
 
-  const AttributionSimulationEvent expected[] = {
-      AttributionTriggerAndTime{
-          .trigger = TriggerBuilder()
-                         .SetReportingOrigin(
-                             url::Origin::Create(GURL("https://a.r.test")))
-                         .SetConversionDestination(net::SchemefulSite(
-                             url::Origin::Create(GURL("https://a.d1.test"))))
-                         .SetTriggerData(2)             // sanitized to 3 bits
-                         .SetEventSourceTriggerData(1)  // sanitized to 1 bit
-                         .SetPriority(-5)
-                         .SetDedupKey(123)
-                         .SetDebugKey(14)
-                         .Build(),
-          .time = kOffsetTime + base::Seconds(1643235576),
-      },
-      AttributionTriggerAndTime{
-          .trigger = TriggerBuilder()
-                         .SetReportingOrigin(
-                             url::Origin::Create(GURL("https://b.r.test")))
-                         .SetConversionDestination(net::SchemefulSite(
-                             url::Origin::Create(GURL("https://a.d2.test"))))
-                         .SetTriggerData(0)             // default
-                         .SetEventSourceTriggerData(0)  // default
-                         .SetPriority(0)                // default
-                         .SetDedupKey(absl::nullopt)    // default
-                         .SetDebugKey(absl::nullopt)    // default
-                         .Build(),
-          .time = kOffsetTime + base::Seconds(1643235575),
-      },
-  };
-
   base::Value value = base::test::ParseJson(kJson);
-  EXPECT_THAT(ParseAttributionSimulationInputOrExit(value, kOffsetTime),
-              ElementsAreArray(expected));
+  EXPECT_THAT(
+      ParseAttributionSimulationInputOrExit(std::move(value), kOffsetTime),
+      ElementsAre(
+          Pair(
+              AttributionTriggerAndTime{
+                  .trigger =
+                      TriggerBuilder()
+                          .SetReportingOrigin(
+                              url::Origin::Create(GURL("https://a.r.test")))
+                          .SetConversionDestination(net::SchemefulSite(
+                              url::Origin::Create(GURL("https://a.d1.test"))))
+                          .SetTriggerData(2)             // sanitized to 3 bits
+                          .SetEventSourceTriggerData(1)  // sanitized to 1 bit
+                          .SetPriority(-5)
+                          .SetDedupKey(123)
+                          .SetDebugKey(14)
+                          .Build(),
+                  .time = kOffsetTime + base::Seconds(1643235576),
+              },
+              _),
+          Pair(
+              AttributionTriggerAndTime{
+                  .trigger =
+                      TriggerBuilder()
+                          .SetReportingOrigin(
+                              url::Origin::Create(GURL("https://b.r.test")))
+                          .SetConversionDestination(net::SchemefulSite(
+                              url::Origin::Create(GURL("https://a.d2.test"))))
+                          .SetTriggerData(0)             // default
+                          .SetEventSourceTriggerData(0)  // default
+                          .SetPriority(0)                // default
+                          .SetDedupKey(absl::nullopt)    // default
+                          .SetDebugKey(absl::nullopt)    // default
+                          .Build(),
+                  .time = kOffsetTime + base::Seconds(1643235575),
+              },
+              _)));
 }
 
 TEST(AttributionSimulatorInputParserTest, ValidSourceAndTriggerParses) {
@@ -211,8 +229,9 @@ TEST(AttributionSimulatorInputParserTest, ValidSourceAndTriggerParses) {
   })json";
 
   base::Value value = base::test::ParseJson(kJson);
-  EXPECT_THAT(ParseAttributionSimulationInputOrExit(value, kOffsetTime),
-              SizeIs(2));
+  EXPECT_THAT(
+      ParseAttributionSimulationInputOrExit(std::move(value), kOffsetTime),
+      SizeIs(2));
 }
 
 struct DeathTestCase {
@@ -231,7 +250,7 @@ TEST_P(AttributionSimulatorInputParserDeathTest, InvalidInputExits) {
   EXPECT_DEATH_IF_SUPPORTED(
       {
         base::Value value = base::test::ParseJson(test_case.json);
-        ParseAttributionSimulationInputOrExit(value, kOffsetTime);
+        ParseAttributionSimulationInputOrExit(std::move(value), kOffsetTime);
       },
       test_case.expected_failure);
 }

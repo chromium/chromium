@@ -79,6 +79,11 @@ class MockAttributionManagerObserver : public AttributionManager::Observer {
   MOCK_METHOD(void, OnReportsChanged, (), (override));
 
   MOCK_METHOD(void,
+              OnSourceHandled,
+              (const StorableSource& source, StorableSource::Result result),
+              (override));
+
+  MOCK_METHOD(void,
               OnSourceDeactivated,
               (const DeactivatedSource& source),
               (override));
@@ -1373,6 +1378,22 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_DebugKey) {
     attribution_manager_->ClearData(base::Time::Min(), base::Time::Max(),
                                     base::NullCallback(), base::DoNothing());
   }
+}
+
+TEST_F(AttributionManagerImplTest,
+       HandleSource_NotifiesObservers_SourceHandled) {
+  MockAttributionManagerObserver observer;
+  base::ScopedObservation<AttributionManager, AttributionManager::Observer>
+      observation(&observer);
+  observation.Observe(attribution_manager_.get());
+
+  const StorableSource source = SourceBuilder().Build();
+
+  EXPECT_CALL(observer,
+              OnSourceHandled(source, StorableSource::Result::kSuccess));
+
+  attribution_manager_->HandleSource(source);
+  EXPECT_THAT(StoredSources(), SizeIs(1));
 }
 
 }  // namespace content

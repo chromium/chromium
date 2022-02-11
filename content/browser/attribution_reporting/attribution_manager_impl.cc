@@ -261,9 +261,10 @@ void AttributionManagerImpl::StoreSource(StorableSource source) {
   // call is made and the time the response is received, but this is unlikely.
   int deactivated_source_return_limit = observers_.empty() ? 0 : 50;
   attribution_storage_.AsyncCall(&AttributionStorage::StoreSource)
-      .WithArgs(std::move(source), deactivated_source_return_limit)
+      .WithArgs(source, deactivated_source_return_limit)
       .Then(base::BindOnce(
           [](base::WeakPtr<AttributionManagerImpl> manager,
+             StorableSource source,
              AttributionStorage::StoreSourceResult result) {
             // TODO(apaseltiner): Consider logging UMA based on `result` to help
             // understand how often this fails due to privacy limits, etc.
@@ -273,6 +274,9 @@ void AttributionManagerImpl::StoreSource(StorableSource source) {
             if (!manager)
               return;
 
+            for (Observer& observer : manager->observers_)
+              observer.OnSourceHandled(source, result.status);
+
             if (result.min_fake_report_time.has_value()) {
               manager->UpdateGetReportsToSendTimer(
                   *result.min_fake_report_time);
@@ -280,11 +284,11 @@ void AttributionManagerImpl::StoreSource(StorableSource source) {
 
             manager->NotifySourcesChanged();
 
-            for (const auto& source : result.deactivated_sources) {
-              manager->NotifySourceDeactivated(source);
+            for (const auto& deactivated_source : result.deactivated_sources) {
+              manager->NotifySourceDeactivated(deactivated_source);
             }
           },
-          weak_factory_.GetWeakPtr()));
+          weak_factory_.GetWeakPtr(), std::move(source)));
 }
 
 void AttributionManagerImpl::HandleTrigger(AttributionTrigger trigger) {
