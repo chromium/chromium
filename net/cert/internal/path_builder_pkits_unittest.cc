@@ -68,7 +68,7 @@ class CrlCheckingPathBuilderDelegate : public SimplePathBuilderDelegate {
       // If the target cert does have a distribution point, use it.
       std::vector<ParsedDistributionPoint> distribution_points;
       ParsedExtension crl_dp_extension;
-      if (certs[i]->GetExtension(CrlDistributionPointsOid(),
+      if (certs[i]->GetExtension(der::Input(kCrlDistributionPointsOid),
                                  &crl_dp_extension)) {
         ASSERT_TRUE(ParseCrlDistributionPoints(crl_dp_extension.value,
                                                &distribution_points));

@@ -67,7 +67,7 @@ TEST_P(ParseCertificatePoliciesExtensionOidsTest, AnyPolicy) {
       der::Input(&der), fail_parsing_unknown_qualifier_oids(), &policies,
       &errors));
   ASSERT_EQ(1U, policies.size());
-  EXPECT_EQ(AnyPolicy(), policies[0]);
+  EXPECT_EQ(der::Input(kAnyPolicyOid), policies[0]);
 }
 
 TEST_P(ParseCertificatePoliciesExtensionOidsTest, AnyPolicyWithQualifier) {
@@ -79,7 +79,7 @@ TEST_P(ParseCertificatePoliciesExtensionOidsTest, AnyPolicyWithQualifier) {
       der::Input(&der), fail_parsing_unknown_qualifier_oids(), &policies,
       &errors));
   ASSERT_EQ(1U, policies.size());
-  EXPECT_EQ(AnyPolicy(), policies[0]);
+  EXPECT_EQ(der::Input(kAnyPolicyOid), policies[0]);
 }
 
 TEST_P(ParseCertificatePoliciesExtensionOidsTest,
@@ -283,7 +283,7 @@ TEST(ParseCertificatePoliciesExtensionTest, TwoPoliciesWithQualifiers) {
     EXPECT_EQ(der::Input(policy_1_2_3_der), policy.policy_oid);
     ASSERT_EQ(1U, policy.policy_qualifiers.size());
     PolicyQualifierInfo& qualifier = policy.policy_qualifiers[0];
-    EXPECT_EQ(CpsPointerId(), qualifier.qualifier_oid);
+    EXPECT_EQ(der::Input(kCpsPointerId), qualifier.qualifier_oid);
     // IA5String { "https://example.com/1_2_3" }
     const uint8_t kExpectedQualifier[] = {
         0x16, 0x19, 0x68, 0x74, 0x74, 0x70, 0x73, 0x3a, 0x2f,
@@ -296,7 +296,7 @@ TEST(ParseCertificatePoliciesExtensionTest, TwoPoliciesWithQualifiers) {
     EXPECT_EQ(der::Input(policy_1_2_4_der), policy.policy_oid);
     ASSERT_EQ(1U, policy.policy_qualifiers.size());
     PolicyQualifierInfo& qualifier = policy.policy_qualifiers[0];
-    EXPECT_EQ(CpsPointerId(), qualifier.qualifier_oid);
+    EXPECT_EQ(der::Input(kCpsPointerId), qualifier.qualifier_oid);
     // IA5String { "http://example.com/1_2_4" }
     const uint8_t kExpectedQualifier[] = {
         0x16, 0x18, 0x68, 0x74, 0x74, 0x70, 0x3a, 0x2f, 0x2f,

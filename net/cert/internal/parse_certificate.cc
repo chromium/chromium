@@ -623,136 +623,6 @@ bool ParseExtension(const der::Input& extension_tlv, ParsedExtension* out) {
   return true;
 }
 
-der::Input SubjectKeyIdentifierOid() {
-  // From RFC 5280:
-  //
-  //     id-ce-subjectKeyIdentifier OBJECT IDENTIFIER ::=  { id-ce 14 }
-  //
-  // In dotted notation: 2.5.29.14
-  static const uint8_t oid[] = {0x55, 0x1d, 0x0e};
-  return der::Input(oid);
-}
-
-der::Input KeyUsageOid() {
-  // From RFC 5280:
-  //
-  //     id-ce-keyUsage OBJECT IDENTIFIER ::=  { id-ce 15 }
-  //
-  // In dotted notation: 2.5.29.15
-  static const uint8_t oid[] = {0x55, 0x1d, 0x0f};
-  return der::Input(oid);
-}
-
-der::Input SubjectAltNameOid() {
-  // From RFC 5280:
-  //
-  //     id-ce-subjectAltName OBJECT IDENTIFIER ::=  { id-ce 17 }
-  //
-  // In dotted notation: 2.5.29.17
-  static const uint8_t oid[] = {0x55, 0x1d, 0x11};
-  return der::Input(oid);
-}
-
-der::Input BasicConstraintsOid() {
-  // From RFC 5280:
-  //
-  //     id-ce-basicConstraints OBJECT IDENTIFIER ::=  { id-ce 19 }
-  //
-  // In dotted notation: 2.5.29.19
-  static const uint8_t oid[] = {0x55, 0x1d, 0x13};
-  return der::Input(oid);
-}
-
-der::Input NameConstraintsOid() {
-  // From RFC 5280:
-  //
-  //     id-ce-nameConstraints OBJECT IDENTIFIER ::=  { id-ce 30 }
-  //
-  // In dotted notation: 2.5.29.30
-  static const uint8_t oid[] = {0x55, 0x1d, 0x1e};
-  return der::Input(oid);
-}
-
-der::Input CertificatePoliciesOid() {
-  // From RFC 5280:
-  //
-  //     id-ce-certificatePolicies OBJECT IDENTIFIER ::=  { id-ce 32 }
-  //
-  // In dotted notation: 2.5.29.32
-  static const uint8_t oid[] = {0x55, 0x1d, 0x20};
-  return der::Input(oid);
-}
-
-der::Input AuthorityKeyIdentifierOid() {
-  // From RFC 5280:
-  //
-  //     id-ce-authorityKeyIdentifier OBJECT IDENTIFIER ::=  { id-ce 35 }
-  //
-  // In dotted notation: 2.5.29.35
-  static const uint8_t oid[] = {0x55, 0x1d, 0x23};
-  return der::Input(oid);
-}
-
-der::Input PolicyConstraintsOid() {
-  // From RFC 5280:
-  //
-  //     id-ce-policyConstraints OBJECT IDENTIFIER ::=  { id-ce 36 }
-  //
-  // In dotted notation: 2.5.29.36
-  static const uint8_t oid[] = {0x55, 0x1d, 0x24};
-  return der::Input(oid);
-}
-
-der::Input ExtKeyUsageOid() {
-  // From RFC 5280:
-  //
-  //     id-ce-extKeyUsage OBJECT IDENTIFIER ::= { id-ce 37 }
-  //
-  // In dotted notation: 2.5.29.37
-  static const uint8_t oid[] = {0x55, 0x1d, 0x25};
-  return der::Input(oid);
-}
-
-der::Input AuthorityInfoAccessOid() {
-  // From RFC 5280:
-  //
-  //     id-pe-authorityInfoAccess OBJECT IDENTIFIER ::= { id-pe 1 }
-  //
-  // In dotted notation: 1.3.6.1.5.5.7.1.1
-  static const uint8_t oid[] = {0x2B, 0x06, 0x01, 0x05, 0x05, 0x07, 0x01, 0x01};
-  return der::Input(oid);
-}
-
-der::Input AdCaIssuersOid() {
-  // From RFC 5280:
-  //
-  //     id-ad-caIssuers OBJECT IDENTIFIER ::= { id-ad 2 }
-  //
-  // In dotted notation: 1.3.6.1.5.5.7.48.2
-  static const uint8_t oid[] = {0x2B, 0x06, 0x01, 0x05, 0x05, 0x07, 0x30, 0x02};
-  return der::Input(oid);
-}
-
-der::Input AdOcspOid() {
-  // From RFC 5280:
-  //
-  //     id-ad-ocsp OBJECT IDENTIFIER ::= { id-ad 1 }
-  //
-  // In dotted notation: 1.3.6.1.5.5.7.48.1
-  static const uint8_t oid[] = {0x2B, 0x06, 0x01, 0x05, 0x05, 0x07, 0x30, 0x01};
-  return der::Input(oid);
-}
-
-der::Input CrlDistributionPointsOid() {
-  // From RFC 5280:
-  //
-  //     id-ce-cRLDistributionPoints OBJECT IDENTIFIER ::=  { id-ce 31 }
-  //
-  // In dotted notation: 2.5.29.31
-  static const uint8_t oid[] = {0x55, 0x1d, 0x1f};
-  return der::Input(oid);
-}
-
 NET_EXPORT bool ParseExtensions(
     const der::Input& extensions_tlv,
     std::map<der::Input, ParsedExtension>* extensions) {
@@ -949,9 +819,9 @@ bool ParseAuthorityInfoAccessURIs(
       if (!base::IsStringASCII(uri))
         return false;
 
-      if (access_description.access_method_oid == AdCaIssuersOid())
+      if (access_description.access_method_oid == der::Input(kAdCaIssuersOid))
         out_ca_issuers_uris->push_back(uri);
-      else if (access_description.access_method_oid == AdOcspOid())
+      else if (access_description.access_method_oid == der::Input(kAdOcspOid))
         out_ocsp_uris->push_back(uri);
     }
   }

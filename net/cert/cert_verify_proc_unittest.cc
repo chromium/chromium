@@ -674,7 +674,7 @@ TEST_P(CertVerifyProcInternalTest, CertWithNullInCommonNameAndNoSAN) {
   CertBuilder::CreateSimpleChain(&leaf, &intermediate, &root);
   ASSERT_TRUE(leaf && intermediate && root);
 
-  leaf->EraseExtension(SubjectAltNameOid());
+  leaf->EraseExtension(der::Input(kSubjectAltNameOid));
 
   std::string common_name;
   common_name += "www.fake.com";

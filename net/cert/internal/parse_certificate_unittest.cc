@@ -482,7 +482,7 @@ TEST(ParseAuthorityInfoAccess, BasicTests) {
   ASSERT_EQ(5u, access_descriptions.size());
   {
     const auto& desc = access_descriptions[0];
-    EXPECT_EQ(AdOcspOid(), desc.access_method_oid);
+    EXPECT_EQ(der::Input(kAdOcspOid), desc.access_method_oid);
     const uint8_t location_der[] = {0xa4, 0x11, 0x30, 0x0f, 0x31, 0x0d, 0x30,
                                     0x0b, 0x06, 0x03, 0x55, 0x04, 0x03, 0x13,
                                     0x04, 0x6f, 0x63, 0x73, 0x70};
@@ -490,7 +490,7 @@ TEST(ParseAuthorityInfoAccess, BasicTests) {
   }
   {
     const auto& desc = access_descriptions[1];
-    EXPECT_EQ(AdCaIssuersOid(), desc.access_method_oid);
+    EXPECT_EQ(der::Input(kAdCaIssuersOid), desc.access_method_oid);
     const uint8_t location_der[] = {
         0xa4, 0x16, 0x30, 0x14, 0x31, 0x12, 0x30, 0x10, 0x06, 0x03, 0x55, 0x04,
         0x03, 0x13, 0x09, 0x63, 0x61, 0x20, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72};
@@ -509,7 +509,7 @@ TEST(ParseAuthorityInfoAccess, BasicTests) {
   }
   {
     const auto& desc = access_descriptions[3];
-    EXPECT_EQ(AdOcspOid(), desc.access_method_oid);
+    EXPECT_EQ(der::Input(kAdOcspOid), desc.access_method_oid);
     const uint8_t location_der[] = {0x86, 0x17, 0x68, 0x74, 0x74, 0x70, 0x3a,
                                     0x2f, 0x2f, 0x6f, 0x63, 0x73, 0x70, 0x2e,
                                     0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65,
@@ -518,7 +518,7 @@ TEST(ParseAuthorityInfoAccess, BasicTests) {
   }
   {
     const auto& desc = access_descriptions[4];
-    EXPECT_EQ(AdCaIssuersOid(), desc.access_method_oid);
+    EXPECT_EQ(der::Input(kAdCaIssuersOid), desc.access_method_oid);
     const uint8_t location_der[] = {
         0x86, 0x21, 0x68, 0x74, 0x74, 0x70, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77,
         0x2e, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d,
@@ -668,7 +668,7 @@ class ParseCrlDistributionPointsTest : public ::testing::Test {
     if (!cert)
       return false;
 
-    auto it = cert->extensions().find(CrlDistributionPointsOid());
+    auto it = cert->extensions().find(der::Input(kCrlDistributionPointsOid));
     if (it == cert->extensions().end())
       return false;
 

@@ -162,7 +162,8 @@ TEST_P(CheckCRLTest, FromFile) {
   ParsedDistributionPoint* cert_dp = &fake_cert_dp;
   std::vector<ParsedDistributionPoint> distribution_points;
   ParsedExtension crl_dp_extension;
-  if (cert->GetExtension(CrlDistributionPointsOid(), &crl_dp_extension)) {
+  if (cert->GetExtension(der::Input(kCrlDistributionPointsOid),
+                         &crl_dp_extension)) {
     ASSERT_TRUE(ParseCrlDistributionPoints(crl_dp_extension.value,
                                            &distribution_points));
     ASSERT_LE(distribution_points.size(), 1U);

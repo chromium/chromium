@@ -220,7 +220,7 @@ TEST(ParsedCertificateTest, ExtendedKeyUsage) {
   ASSERT_EQ(4u, cert->extensions().size());
 
   ParsedExtension extension;
-  ASSERT_TRUE(cert->GetExtension(ExtKeyUsageOid(), &extension));
+  ASSERT_TRUE(cert->GetExtension(der::Input(kExtKeyUsageOid), &extension));
 
   EXPECT_FALSE(extension.critical);
   EXPECT_EQ(45u, extension.value.Length());
@@ -255,7 +255,8 @@ TEST(ParsedCertificateTest, Policies) {
   ASSERT_EQ(4u, cert->extensions().size());
 
   ParsedExtension extension;
-  ASSERT_TRUE(cert->GetExtension(CertificatePoliciesOid(), &extension));
+  ASSERT_TRUE(
+      cert->GetExtension(der::Input(kCertificatePoliciesOid), &extension));
 
   EXPECT_FALSE(extension.critical);
   EXPECT_EQ(95u, extension.value.Length());
@@ -306,7 +307,8 @@ TEST(ParsedCertificateTest, ExtensionsReal) {
             cert->subject_key_identifier());
 
   ParsedExtension extension;
-  ASSERT_TRUE(cert->GetExtension(CertificatePoliciesOid(), &extension));
+  ASSERT_TRUE(
+      cert->GetExtension(der::Input(kCertificatePoliciesOid), &extension));
 
   EXPECT_FALSE(extension.critical);
   EXPECT_EQ(16u, extension.value.Length());
@@ -559,7 +561,7 @@ TEST(ParsedCertificateTest, InhibitAnyPolicy) {
   ASSERT_TRUE(cert);
 
   ParsedExtension extension;
-  ASSERT_TRUE(cert->GetExtension(InhibitAnyPolicyOid(), &extension));
+  ASSERT_TRUE(cert->GetExtension(der::Input(kInhibitAnyPolicyOid), &extension));
 
   uint8_t skip_count;
   ASSERT_TRUE(ParseInhibitAnyPolicy(extension.value, &skip_count));

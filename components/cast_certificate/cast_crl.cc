@@ -164,7 +164,8 @@ bool VerifyCRL(const Crl& crl,
   net::CertPathBuilder path_builder(
       parsed_cert.get(), trust_store, &path_builder_delegate, verification_time,
       net::KeyPurpose::ANY_EKU, net::InitialExplicitPolicy::kFalse,
-      {net::AnyPolicy()}, net::InitialPolicyMappingInhibit::kFalse,
+      {net::der::Input(net::kAnyPolicyOid)},
+      net::InitialPolicyMappingInhibit::kFalse,
       net::InitialAnyPolicyInhibit::kFalse);
   net::CertPathBuilder::Result result = path_builder.Run();
   if (!result.HasValidPath()) {

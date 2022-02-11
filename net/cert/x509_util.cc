@@ -496,7 +496,8 @@ bool SignatureVerifierInitWithCertificate(
       return false;
     }
     ParsedExtension key_usage_ext;
-    if (ConsumeExtension(KeyUsageOid(), &extensions, &key_usage_ext)) {
+    if (ConsumeExtension(der::Input(kKeyUsageOid), &extensions,
+                         &key_usage_ext)) {
       der::BitString key_usage;
       if (!ParseKeyUsage(key_usage_ext.value, &key_usage) ||
           !key_usage.AssertsBit(KEY_USAGE_BIT_DIGITAL_SIGNATURE)) {

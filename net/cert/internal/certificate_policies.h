@@ -18,21 +18,21 @@ class CertErrors;
 
 // Returns the DER-encoded OID, without tag or length, of the anyPolicy
 // certificate policy defined in RFC 5280 section 4.2.1.4.
-NET_EXPORT const der::Input AnyPolicy();
+inline constexpr uint8_t kAnyPolicyOid[] = {0x55, 0x1D, 0x20, 0x00};
 
 // From RFC 5280:
 //
 //     id-ce-inhibitAnyPolicy OBJECT IDENTIFIER ::=  { id-ce 54 }
 //
 // In dotted notation: 2.5.29.54
-NET_EXPORT der::Input InhibitAnyPolicyOid();
+inline constexpr uint8_t kInhibitAnyPolicyOid[] = {0x55, 0x1d, 0x36};
 
 // From RFC 5280:
 //
 //     id-ce-policyMappings OBJECT IDENTIFIER ::=  { id-ce 33 }
 //
 // In dotted notation: 2.5.29.33
-NET_EXPORT der::Input PolicyMappingsOid();
+inline constexpr uint8_t kPolicyMappingsOid[] = {0x55, 0x1d, 0x21};
 
 // -- policyQualifierIds for Internet policy qualifiers
 //
@@ -40,12 +40,14 @@ NET_EXPORT der::Input PolicyMappingsOid();
 // id-qt-cps      OBJECT IDENTIFIER ::=  { id-qt 1 }
 //
 // In dotted decimal form: 1.3.6.1.5.5.7.2.1
-NET_EXPORT const der::Input CpsPointerId();
+inline constexpr uint8_t kCpsPointerId[] = {0x2b, 0x06, 0x01, 0x05,
+                                            0x05, 0x07, 0x02, 0x01};
 
 // id-qt-unotice  OBJECT IDENTIFIER ::=  { id-qt 2 }
 //
 // In dotted decimal form: 1.3.6.1.5.5.7.2.2
-NET_EXPORT const der::Input UserNoticeId();
+inline constexpr uint8_t kUserNoticeId[] = {0x2b, 0x06, 0x01, 0x05,
+                                            0x05, 0x07, 0x02, 0x02};
 
 struct PolicyQualifierInfo {
   der::Input qualifier_oid;

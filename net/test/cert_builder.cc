@@ -156,13 +156,13 @@ void CertBuilder::CreateSimpleChain(
       std::make_unique<CertBuilder>(orig_certs[2]->cert_buffer(), nullptr);
   *out_intermediate = std::make_unique<CertBuilder>(
       orig_certs[1]->cert_buffer(), out_root->get());
-  (*out_intermediate)->EraseExtension(CrlDistributionPointsOid());
-  (*out_intermediate)->EraseExtension(AuthorityInfoAccessOid());
+  (*out_intermediate)->EraseExtension(der::Input(kCrlDistributionPointsOid));
+  (*out_intermediate)->EraseExtension(der::Input(kAuthorityInfoAccessOid));
   *out_leaf = std::make_unique<CertBuilder>(orig_certs[0]->cert_buffer(),
                                             out_intermediate->get());
   (*out_leaf)->SetSubjectAltName(kHostname);
-  (*out_leaf)->EraseExtension(CrlDistributionPointsOid());
-  (*out_leaf)->EraseExtension(AuthorityInfoAccessOid());
+  (*out_leaf)->EraseExtension(der::Input(kCrlDistributionPointsOid));
+  (*out_leaf)->EraseExtension(der::Input(kAuthorityInfoAccessOid));
 }
 
 void CertBuilder::CreateSimpleChain(std::unique_ptr<CertBuilder>* out_leaf,
@@ -214,7 +214,8 @@ void CertBuilder::SetBasicConstraints(bool is_ca, int path_len) {
   if (path_len >= 0)
     ASSERT_TRUE(CBB_add_asn1_uint64(&basic_constraints, path_len));
 
-  SetExtension(BasicConstraintsOid(), FinishCBB(cbb.get()), /*critical=*/true);
+  SetExtension(der::Input(kBasicConstraintsOid), FinishCBB(cbb.get()),
+               /*critical=*/true);
 }
 
 void CertBuilder::SetCaIssuersUrl(const GURL& url) {
@@ -226,9 +227,9 @@ void CertBuilder::SetCaIssuersAndOCSPUrls(
     const std::vector<GURL>& ocsp_urls) {
   std::vector<std::pair<der::Input, GURL>> entries;
   for (const auto& url : ca_issuers_urls)
-    entries.emplace_back(AdCaIssuersOid(), url);
+    entries.emplace_back(der::Input(kAdCaIssuersOid), url);
   for (const auto& url : ocsp_urls)
-    entries.emplace_back(AdOcspOid(), url);
+    entries.emplace_back(der::Input(kAdOcspOid), url);
   ASSERT_GT(entries.size(), 0U);
 
   // From RFC 5280:
@@ -256,7 +257,7 @@ void CertBuilder::SetCaIssuersAndOCSPUrls(
     ASSERT_TRUE(CBB_flush(&aia));
   }
 
-  SetExtension(AuthorityInfoAccessOid(), FinishCBB(cbb.get()));
+  SetExtension(der::Input(kAuthorityInfoAccessOid), FinishCBB(cbb.get()));
 }
 
 void CertBuilder::SetCrlDistributionPointUrl(const GURL& url) {
@@ -297,7 +298,7 @@ void CertBuilder::SetCrlDistributionPointUrls(const std::vector<GURL>& urls) {
     ASSERT_TRUE(CBB_flush(&dp_fullname));
   }
 
-  SetExtension(CrlDistributionPointsOid(), FinishCBB(cbb.get()));
+  SetExtension(der::Input(kCrlDistributionPointsOid), FinishCBB(cbb.get()));
 }
 
 void CertBuilder::SetSubjectCommonName(const std::string common_name) {
@@ -362,7 +363,7 @@ void CertBuilder::SetSubjectAltNames(
       ASSERT_TRUE(CBB_flush(&general_names));
     }
   }
-  SetExtension(SubjectAltNameOid(), FinishCBB(cbb.get()));
+  SetExtension(der::Input(kSubjectAltNameOid), FinishCBB(cbb.get()));
 }
 
 void CertBuilder::SetExtendedKeyUsages(
@@ -382,7 +383,7 @@ void CertBuilder::SetExtendedKeyUsages(
     ASSERT_TRUE(CBBAddBytes(&purpose_cbb, oid.AsStringPiece()));
     ASSERT_TRUE(CBB_flush(&eku));
   }
-  SetExtension(ExtKeyUsageOid(), FinishCBB(cbb.get()));
+  SetExtension(der::Input(kExtKeyUsageOid), FinishCBB(cbb.get()));
 }
 
 void CertBuilder::SetCertificatePolicies(
@@ -412,7 +413,7 @@ void CertBuilder::SetCertificatePolicies(
     ASSERT_TRUE(CBB_flush(&certificate_policies));
   }
 
-  SetExtension(CertificatePoliciesOid(), FinishCBB(cbb.get()));
+  SetExtension(der::Input(kCertificatePoliciesOid), FinishCBB(cbb.get()));
 }
 
 void CertBuilder::SetValidity(base::Time not_before, base::Time not_after) {
@@ -445,7 +446,7 @@ void CertBuilder::SetSubjectKeyIdentifier(
       subject_key_identifier.size()));
 
   // Replace the existing SKI. Note it MUST be non-critical, per RFC 5280.
-  SetExtension(SubjectKeyIdentifierOid(), FinishCBB(cbb.get()),
+  SetExtension(der::Input(kSubjectKeyIdentifierOid), FinishCBB(cbb.get()),
                /*critical=*/false);
 }
 
@@ -457,7 +458,7 @@ void CertBuilder::SetAuthorityKeyIdentifier(
   // which would violate RFC 5280, so using the empty value as a placeholder
   // unless and until a use case emerges is fine.
   if (authority_key_identifier.empty()) {
-    EraseExtension(AuthorityKeyIdentifierOid());
+    EraseExtension(der::Input(kAuthorityKeyIdentifierOid));
     return;
   }
 
@@ -477,7 +478,7 @@ void CertBuilder::SetAuthorityKeyIdentifier(
   ASSERT_TRUE(CBBAddBytes(&aki_value, authority_key_identifier));
   ASSERT_TRUE(CBB_flush(&aki));
 
-  SetExtension(AuthorityKeyIdentifierOid(), FinishCBB(cbb.get()));
+  SetExtension(der::Input(kAuthorityKeyIdentifierOid), FinishCBB(cbb.get()));
 }
 
 void CertBuilder::SetSignatureAlgorithmRsaPkca1(DigestAlgorithm digest) {
@@ -530,7 +531,7 @@ uint64_t CertBuilder::GetSerialNumber() {
 }
 
 std::string CertBuilder::GetSubjectKeyIdentifier() {
-  std::string ski_oid = SubjectKeyIdentifierOid().AsString();
+  std::string ski_oid = der::Input(kSubjectKeyIdentifierOid).AsString();
   if (extensions_.find(ski_oid) == extensions_.end()) {
     // If no SKI is present, this means that the certificate was either
     // created by FromStaticCert() and lacked one, or it was explicitly

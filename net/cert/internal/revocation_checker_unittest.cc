@@ -350,7 +350,7 @@ TEST(RevocationChecker, SkipEntireInvalidCRLDistributionPoints) {
                            0x70, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x62,
                            0x61, 0x72, 0x2e, 0x63, 0x72, 0x6c};
   leaf->SetExtension(
-      CrlDistributionPointsOid(),
+      der::Input(kCrlDistributionPointsOid),
       std::string(reinterpret_cast<const char*>(crldp), std::size(crldp)));
 
   ParsedCertificateList chain;
@@ -435,7 +435,7 @@ TEST(RevocationChecker, SkipUnsupportedCRLDistPointWithNonUriFullname) {
       0x77, 0x77, 0x2e, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x2e,
       0x63, 0x6f, 0x6d, 0x2f, 0x62, 0x61, 0x72, 0x2e, 0x63, 0x72, 0x6c};
   leaf->SetExtension(
-      CrlDistributionPointsOid(),
+      der::Input(kCrlDistributionPointsOid),
       std::string(reinterpret_cast<const char*>(crldp), std::size(crldp)));
 
   ParsedCertificateList chain;
@@ -504,7 +504,7 @@ TEST(RevocationChecker, SkipUnsupportedCRLDistPointWithReasons) {
       0x77, 0x77, 0x2e, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x2e, 0x63,
       0x6f, 0x6d, 0x2f, 0x62, 0x61, 0x72, 0x2e, 0x63, 0x72, 0x6c};
   leaf->SetExtension(
-      CrlDistributionPointsOid(),
+      der::Input(kCrlDistributionPointsOid),
       std::string(reinterpret_cast<const char*>(crldp), std::size(crldp)));
 
   ParsedCertificateList chain;
@@ -605,7 +605,7 @@ TEST(RevocationChecker, SkipUnsupportedCRLDistPointWithCrlIssuer) {
       0x77, 0x77, 0x77, 0x2e, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x2e,
       0x63, 0x6f, 0x6d, 0x2f, 0x62, 0x61, 0x72, 0x2e, 0x63, 0x72, 0x6c};
   leaf->SetExtension(
-      CrlDistributionPointsOid(),
+      der::Input(kCrlDistributionPointsOid),
       std::string(reinterpret_cast<const char*>(crldp), std::size(crldp)));
 
   ParsedCertificateList chain;

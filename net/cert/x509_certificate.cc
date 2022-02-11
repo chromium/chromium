@@ -347,7 +347,7 @@ bool X509Certificate::GetSubjectAltName(
     return false;
 
   ParsedExtension subject_alt_names_extension;
-  if (!ConsumeExtension(SubjectAltNameOid(), &extensions,
+  if (!ConsumeExtension(der::Input(kSubjectAltNameOid), &extensions,
                         &subject_alt_names_extension)) {
     return false;
   }

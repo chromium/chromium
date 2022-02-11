@@ -215,7 +215,8 @@ RSAKeyUsage CheckRSAKeyUsage(const X509Certificate* cert,
     return RSAKeyUsage::kError;
   }
   ParsedExtension key_usage_ext;
-  if (!ConsumeExtension(KeyUsageOid(), &extensions, &key_usage_ext)) {
+  if (!ConsumeExtension(der::Input(kKeyUsageOid), &extensions,
+                        &key_usage_ext)) {
     return RSAKeyUsage::kOKNoExtension;
   }
   der::BitString key_usage;

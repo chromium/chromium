@@ -331,91 +331,94 @@ struct NET_EXPORT ParsedExtension {
 //     id-ce-subjectKeyIdentifier OBJECT IDENTIFIER ::=  { id-ce 14 }
 //
 // In dotted notation: 2.5.29.14
-NET_EXPORT der::Input SubjectKeyIdentifierOid();
+inline constexpr uint8_t kSubjectKeyIdentifierOid[] = {0x55, 0x1d, 0x0e};
 
 // From RFC 5280:
 //
 //     id-ce-keyUsage OBJECT IDENTIFIER ::=  { id-ce 15 }
 //
 // In dotted notation: 2.5.29.15
-NET_EXPORT der::Input KeyUsageOid();
+inline constexpr uint8_t kKeyUsageOid[] = {0x55, 0x1d, 0x0f};
 
 // From RFC 5280:
 //
 //     id-ce-subjectAltName OBJECT IDENTIFIER ::=  { id-ce 17 }
 //
 // In dotted notation: 2.5.29.17
-NET_EXPORT der::Input SubjectAltNameOid();
+inline constexpr uint8_t kSubjectAltNameOid[] = {0x55, 0x1d, 0x11};
 
 // From RFC 5280:
 //
 //     id-ce-basicConstraints OBJECT IDENTIFIER ::=  { id-ce 19 }
 //
 // In dotted notation: 2.5.29.19
-NET_EXPORT der::Input BasicConstraintsOid();
+inline constexpr uint8_t kBasicConstraintsOid[] = {0x55, 0x1d, 0x13};
 
 // From RFC 5280:
 //
 //     id-ce-nameConstraints OBJECT IDENTIFIER ::=  { id-ce 30 }
 //
 // In dotted notation: 2.5.29.30
-NET_EXPORT der::Input NameConstraintsOid();
+inline constexpr uint8_t kNameConstraintsOid[] = {0x55, 0x1d, 0x1e};
 
 // From RFC 5280:
 //
 //     id-ce-certificatePolicies OBJECT IDENTIFIER ::=  { id-ce 32 }
 //
 // In dotted notation: 2.5.29.32
-NET_EXPORT der::Input CertificatePoliciesOid();
+inline constexpr uint8_t kCertificatePoliciesOid[] = {0x55, 0x1d, 0x20};
 
 // From RFC 5280:
 //
 //     id-ce-authorityKeyIdentifier OBJECT IDENTIFIER ::=  { id-ce 35 }
 //
 // In dotted notation: 2.5.29.35
-NET_EXPORT der::Input AuthorityKeyIdentifierOid();
+inline constexpr uint8_t kAuthorityKeyIdentifierOid[] = {0x55, 0x1d, 0x23};
 
 // From RFC 5280:
 //
 //     id-ce-policyConstraints OBJECT IDENTIFIER ::=  { id-ce 36 }
 //
 // In dotted notation: 2.5.29.36
-NET_EXPORT der::Input PolicyConstraintsOid();
+inline constexpr uint8_t kPolicyConstraintsOid[] = {0x55, 0x1d, 0x24};
 
 // From RFC 5280:
 //
 //     id-ce-extKeyUsage OBJECT IDENTIFIER ::= { id-ce 37 }
 //
 // In dotted notation: 2.5.29.37
-NET_EXPORT der::Input ExtKeyUsageOid();
+inline constexpr uint8_t kExtKeyUsageOid[] = {0x55, 0x1d, 0x25};
 
 // From RFC 5280:
 //
 //     id-pe-authorityInfoAccess OBJECT IDENTIFIER ::= { id-pe 1 }
 //
 // In dotted notation: 1.3.6.1.5.5.7.1.1
-NET_EXPORT der::Input AuthorityInfoAccessOid();
+inline constexpr uint8_t kAuthorityInfoAccessOid[] = {0x2B, 0x06, 0x01, 0x05,
+                                                      0x05, 0x07, 0x01, 0x01};
 
 // From RFC 5280:
 //
 //     id-ad-caIssuers OBJECT IDENTIFIER ::= { id-ad 2 }
 //
 // In dotted notation: 1.3.6.1.5.5.7.48.2
-NET_EXPORT der::Input AdCaIssuersOid();
+inline constexpr uint8_t kAdCaIssuersOid[] = {0x2B, 0x06, 0x01, 0x05,
+                                              0x05, 0x07, 0x30, 0x02};
 
 // From RFC 5280:
 //
 //     id-ad-ocsp OBJECT IDENTIFIER ::= { id-ad 1 }
 //
 // In dotted notation: 1.3.6.1.5.5.7.48.1
-NET_EXPORT der::Input AdOcspOid();
+inline constexpr uint8_t kAdOcspOid[] = {0x2B, 0x06, 0x01, 0x05,
+                                         0x05, 0x07, 0x30, 0x01};
 
 // From RFC 5280:
 //
 //     id-ce-cRLDistributionPoints OBJECT IDENTIFIER ::=  { id-ce 31 }
 //
 // In dotted notation: 2.5.29.31
-NET_EXPORT der::Input CrlDistributionPointsOid();
+inline constexpr uint8_t kCrlDistributionPointsOid[] = {0x55, 0x1d, 0x1f};
 
 // Parses the Extensions sequence as defined by RFC 5280. Extensions are added
 // to the map |extensions| keyed by the OID. Parsing guarantees that each OID

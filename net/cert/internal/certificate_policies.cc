@@ -65,8 +65,9 @@ bool ParsePolicyQualifiers(bool restrict_to_known_qualifiers,
     der::Input qualifier_oid;
     if (!policy_information_parser.ReadTag(der::kOid, &qualifier_oid))
       return false;
-    if (restrict_to_known_qualifiers && qualifier_oid != CpsPointerId() &&
-        qualifier_oid != UserNoticeId()) {
+    if (restrict_to_known_qualifiers &&
+        qualifier_oid != der::Input(kCpsPointerId) &&
+        qualifier_oid != der::Input(kUserNoticeId)) {
       errors->AddError(kUnknownPolicyQualifierOid,
                        CreateCertErrorParams1Der("oid", qualifier_oid));
       return false;
@@ -189,9 +190,10 @@ bool ParseCertificatePoliciesExtensionImpl(
     // RFC 5280 section 4.2.1.4: When qualifiers are used with the special
     // policy anyPolicy, they MUST be limited to the qualifiers identified in
     // this section.
-    if (!ParsePolicyQualifiers(
-            fail_parsing_unknown_qualifier_oids || policy_oid == AnyPolicy(),
-            &policy_qualifiers_sequence_parser, policy_qualifiers, errors)) {
+    if (!ParsePolicyQualifiers(fail_parsing_unknown_qualifier_oids ||
+                                   policy_oid == der::Input(kAnyPolicyOid),
+                               &policy_qualifiers_sequence_parser,
+                               policy_qualifiers, errors)) {
       errors->AddError(kFailedParsingPolicyQualifiers);
       return false;
     }
@@ -212,59 +214,6 @@ bool ParseCertificatePoliciesExtensionImpl(
 }
 
 }  // namespace
-
-const der::Input AnyPolicy() {
-  // id-ce OBJECT IDENTIFIER  ::=  {joint-iso-ccitt(2) ds(5) 29}
-  //
-  // id-ce-certificatePolicies OBJECT IDENTIFIER ::=  { id-ce 32 }
-  //
-  // anyPolicy OBJECT IDENTIFIER ::= { id-ce-certificatePolicies 0 }
-  //
-  // In dotted decimal form: 2.5.29.32.0
-  static const uint8_t any_policy[] = {0x55, 0x1D, 0x20, 0x00};
-  return der::Input(any_policy);
-}
-
-der::Input InhibitAnyPolicyOid() {
-  // From RFC 5280:
-  //
-  //     id-ce-inhibitAnyPolicy OBJECT IDENTIFIER ::=  { id-ce 54 }
-  //
-  // In dotted notation: 2.5.29.54
-  static const uint8_t oid[] = {0x55, 0x1d, 0x36};
-  return der::Input(oid);
-}
-
-der::Input PolicyMappingsOid() {
-  // From RFC 5280:
-  //
-  //     id-ce-policyMappings OBJECT IDENTIFIER ::=  { id-ce 33 }
-  //
-  // In dotted notation: 2.5.29.33
-  static const uint8_t oid[] = {0x55, 0x1d, 0x21};
-  return der::Input(oid);
-}
-
-const der::Input CpsPointerId() {
-  // -- policyQualifierIds for Internet policy qualifiers
-  //
-  // id-qt          OBJECT IDENTIFIER ::=  { id-pkix 2 }
-  // id-qt-cps      OBJECT IDENTIFIER ::=  { id-qt 1 }
-  //
-  // In dotted decimal form: 1.3.6.1.5.5.7.2.1
-  static const uint8_t cps_pointer_id[] = {0x2b, 0x06, 0x01, 0x05,
-                                           0x05, 0x07, 0x02, 0x01};
-  return der::Input(cps_pointer_id);
-}
-
-const der::Input UserNoticeId() {
-  // id-qt-unotice  OBJECT IDENTIFIER ::=  { id-qt 2 }
-  //
-  // In dotted decimal form: 1.3.6.1.5.5.7.2.2
-  static const uint8_t user_notice_id[] = {0x2b, 0x06, 0x01, 0x05,
-                                           0x05, 0x07, 0x02, 0x02};
-  return der::Input(user_notice_id);
-}
 
 PolicyInformation::PolicyInformation() = default;
 PolicyInformation::~PolicyInformation() = default;

@@ -575,7 +575,7 @@ CertPathBuilder::Result TryBuildPath(
     GetEVPolicyOids(ev_metadata, target.get(), &user_initial_policy_set);
     // TODO(crbug.com/634484): netlog user_initial_policy_set.
   } else {
-    user_initial_policy_set = {AnyPolicy()};
+    user_initial_policy_set = {der::Input(kAnyPolicyOid)};
   }
 
   PathBuilderDelegateImpl path_builder_delegate(
