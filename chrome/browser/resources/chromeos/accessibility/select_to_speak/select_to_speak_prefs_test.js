@@ -6,7 +6,7 @@ GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
 GEN_INCLUDE(['../../../../../../ui/webui/resources/js/cr.js']);
 GEN_INCLUDE(['fake_chrome_event.js']);
 GEN_INCLUDE(['fake_settings_private.js']);
-GEN_INCLUDE(['mock_storage.js']);
+GEN_INCLUDE(['../common/testing/mock_storage.js']);
 
 /**
  * Browser tests for select-to-speak's feature to speak text
@@ -99,7 +99,7 @@ TEST_F(
     function() {
       this.setGlobalRateAndPitch(1.0, 1.0);
       this.setStsRateAndPitch(1.0, 1.0);
-      this.mockStorage_.updatePrefs();
+      this.mockStorage_.callOnChangedListeners();
 
       this.ensurePrefsRemovedAndGlobalSetTo(1.0, 1.0);
     });
@@ -109,7 +109,7 @@ TEST_F(
     'SelectToSpeakPrefsTest', 'RemovesPrefsWithNoAlertIfAllEqual', function() {
       this.setGlobalRateAndPitch(1.5, 1.8);
       this.setStsRateAndPitch(1.5, 1.8);
-      this.mockStorage_.updatePrefs();
+      this.mockStorage_.callOnChangedListeners();
 
       this.ensurePrefsRemovedAndGlobalSetTo(1.5, 1.8);
     });
@@ -117,7 +117,7 @@ TEST_F(
 TEST_F('SelectToSpeakPrefsTest', 'SavesNonDefaultStsPrefsToGlobal', function() {
   this.setGlobalRateAndPitch(1.0, 1.0);
   this.setStsRateAndPitch(2.0, 2.5);
-  this.mockStorage_.updatePrefs();
+  this.mockStorage_.callOnChangedListeners();
 
   this.ensurePrefsRemovedAndGlobalSetTo(2.0, 2.5);
 });
@@ -127,7 +127,7 @@ TEST_F(
     'DoesNotSaveNonDefaultStsPrefsToGlobalIfGlobalChanged', function() {
       this.setGlobalRateAndPitch(1.0, 1.5);
       this.setStsRateAndPitch(1.0, 2.5);
-      this.mockStorage_.updatePrefs();
+      this.mockStorage_.callOnChangedListeners();
 
       this.ensurePrefsRemovedAndGlobalSetTo(1.0, 1.5);
     });
@@ -137,7 +137,7 @@ TEST_F(
     function() {
       this.setGlobalRateAndPitch(2.0, 1.0);
       this.setStsRateAndPitch(1.0, 1.0);
-      this.mockStorage_.updatePrefs();
+      this.mockStorage_.callOnChangedListeners();
 
       this.ensurePrefsRemovedAndGlobalSetTo(2.0, 1.0);
     });
