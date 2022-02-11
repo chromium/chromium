@@ -260,7 +260,7 @@ bool TouchInjector::MenuAnchorPressed(const ui::Event& event,
     return false;
 
   auto menu_anchor_bounds =
-      display_overlay_controller_->GetOverlayMenuAnchorBounds();
+      display_overlay_controller_->GetOverlayMenuEntryBounds();
   if (!menu_anchor_bounds) {
     DCHECK(display_mode_ != DisplayMode::kView);
     return false;

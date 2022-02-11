@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "ash/frame/non_client_frame_view_ash.h"
+#include "base/bind.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/input_menu_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
@@ -23,10 +25,10 @@ namespace input_overlay {
 
 namespace {
 // UI specs.
-constexpr int kMenuAnchorSize = 56;
-constexpr int kMenuAnchorSideMargin = 24;
+constexpr int kMenuEntrySize = 56;
+constexpr int kMenuEntrySideMargin = 24;
 constexpr SkColor kEditModeBgColor = SkColorSetA(SK_ColorGRAY, 0x99);
-constexpr SkColor kMenuAnchorBgColor = SkColorSetA(SK_ColorWHITE, 0x99);
+constexpr SkColor kMenuEntryBgColor = SkColorSetA(SK_ColorWHITE, 0x99);
 constexpr int kCornerRadius = 8;
 
 }  // namespace
@@ -129,7 +131,6 @@ void DisplayOverlayController::RemoveOverlayIfAny() {
 void DisplayOverlayController::AddInputMappingView(
     views::Widget* overlay_widget) {
   DCHECK(overlay_widget);
-
   auto input_mapping_view = std::make_unique<InputMappingView>(this);
   input_mapping_view->SetPosition(gfx::Point());
 
@@ -138,59 +139,67 @@ void DisplayOverlayController::AddInputMappingView(
   input_mapping_view_->SetPosition(gfx::Point());
 }
 
-void DisplayOverlayController::AddMenuAnchor(views::Widget* overlay_widget) {
+void DisplayOverlayController::AddMenuEntryView(views::Widget* overlay_widget) {
   DCHECK(overlay_widget);
   auto game_icon = gfx::CreateVectorIcon(
       vector_icons::kVideogameAssetOutlineIcon, SK_ColorBLACK);
 
-  // Create and position entry point for |InputOverlayMenuView|.
-  auto overlay_menu_anchor = std::make_unique<views::ImageButton>(
-      base::BindRepeating(&DisplayOverlayController::OnMenuAnchorPressed,
-                          base::Unretained(this)));
-  overlay_menu_anchor->SetImage(views::Button::STATE_NORMAL, game_icon);
-  overlay_menu_anchor->SetBackground(
-      views::CreateRoundedRectBackground(kMenuAnchorBgColor, kCornerRadius));
-  overlay_menu_anchor->SetSize(gfx::Size(kMenuAnchorSize, kMenuAnchorSize));
-  overlay_menu_anchor->SetImageHorizontalAlignment(
-      views::ImageButton::ALIGN_CENTER);
-  overlay_menu_anchor->SetImageVerticalAlignment(
-      views::ImageButton::ALIGN_MIDDLE);
+  // Create and position entry point for |InputMenuView|.
+  auto menu_entry = std::make_unique<views::ImageButton>(base::BindRepeating(
+      &DisplayOverlayController::OnMenuEntryPressed, base::Unretained(this)));
+  menu_entry->SetImage(views::Button::STATE_NORMAL, game_icon);
+  menu_entry->SetBackground(
+      views::CreateRoundedRectBackground(kMenuEntryBgColor, kCornerRadius));
+  menu_entry->SetSize(gfx::Size(kMenuEntrySize, kMenuEntrySize));
+  menu_entry->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
+  menu_entry->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   // TODO(djacobo): Set proper positioning based on specs and responding to
   // resize.
-  overlay_menu_anchor->SetPosition(CalculateMenuAnchorPosition());
+  menu_entry->SetPosition(CalculateMenuEntryPosition());
   // TODO(djacobo): come up with a new resource for this so it can be
   // translated, or just keep reusing the one I set here.
-  overlay_menu_anchor->SetAccessibleName(
+  menu_entry->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_MENU_ENTRY_BUTTON));
 
   auto* parent_view = overlay_widget->GetContentsView();
   DCHECK(parent_view);
-  overlay_menu_anchor_ =
-      parent_view->AddChildView(std::move(overlay_menu_anchor));
+  menu_entry_ = parent_view->AddChildView(std::move(menu_entry));
 }
 
-void DisplayOverlayController::RemoveMenuAnchor() {
-  if (!overlay_menu_anchor_)
-    return;
-  overlay_menu_anchor_->parent()->RemoveChildViewT(overlay_menu_anchor_);
-  overlay_menu_anchor_ = nullptr;
-}
+void DisplayOverlayController::OnMenuEntryPressed() {
+  auto* overlay_widget = GetOverlayWidget();
+  DCHECK(overlay_widget);
+  auto* parent_view = overlay_widget->GetContentsView();
+  DCHECK(parent_view);
 
-void DisplayOverlayController::OnMenuAnchorPressed() {
-  RemoveMenuAnchor();
-  // TODO(djacobo): Implement calling |InputOverlayMenuView|.
   SetDisplayMode(DisplayMode::kMenu);
+
+  input_menu_view_ = parent_view->AddChildView(
+      InputMenuView::BuildMenuView(this, menu_entry_));
+}
+
+void DisplayOverlayController::RemoveInputMenuView() {
+  auto* overlay_widget = GetOverlayWidget();
+  if (!input_menu_view_ || !overlay_widget)
+    return;
+  overlay_widget->GetContentsView()->RemoveChildViewT(input_menu_view_);
+  input_menu_view_ = nullptr;
 }
 
 void DisplayOverlayController::RemoveInputMappingView() {
-  if (!input_mapping_view_)
-    return;
   auto* overlay_widget = GetOverlayWidget();
-  DCHECK(overlay_widget);
-  if (!overlay_widget)
+  if (!input_mapping_view_ || !overlay_widget)
     return;
   overlay_widget->GetContentsView()->RemoveChildViewT(input_mapping_view_);
   input_mapping_view_ = nullptr;
+}
+
+void DisplayOverlayController::RemoveMenuEntryView() {
+  auto* overlay_widget = GetOverlayWidget();
+  if (!menu_entry_ || !overlay_widget)
+    return;
+  overlay_widget->GetContentsView()->RemoveChildViewT(menu_entry_);
+  menu_entry_ = nullptr;
 }
 
 views::Widget* DisplayOverlayController::GetOverlayWidget() {
@@ -203,7 +212,7 @@ views::Widget* DisplayOverlayController::GetOverlayWidget() {
                             : nullptr;
 }
 
-gfx::Point DisplayOverlayController::CalculateMenuAnchorPosition() {
+gfx::Point DisplayOverlayController::CalculateMenuEntryPosition() {
   auto* overlay_widget = GetOverlayWidget();
   if (!overlay_widget)
     return gfx::Point();
@@ -212,8 +221,8 @@ gfx::Point DisplayOverlayController::CalculateMenuAnchorPosition() {
     return gfx::Point();
 
   return gfx::Point(
-      std::max(0, view->width() - kMenuAnchorSize - kMenuAnchorSideMargin),
-      std::max(0, view->height() / 2 - kMenuAnchorSize / 2));
+      std::max(0, view->width() - kMenuEntrySize - kMenuEntrySideMargin),
+      std::max(0, view->height() / 2 - kMenuEntrySize / 2));
 }
 
 void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
@@ -235,17 +244,17 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
     case DisplayMode::kView:
       if (!input_mapping_view_)
         AddInputMappingView(overlay_widget);
-      DCHECK(!overlay_menu_anchor_);
-      if (!overlay_menu_anchor_)
-        AddMenuAnchor(overlay_widget);
+      DCHECK(!menu_entry_);
+      if (!menu_entry_)
+        AddMenuEntryView(overlay_widget);
       overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
           aura::EventTargetingPolicy::kNone);
       touch_injector_->set_display_mode(mode);
       break;
     case DisplayMode::kEdit:
-      // TODO(cuicuiruan): |RemoveMenuAnchor()| can be removed after the entry
+      // TODO(cuicuiruan): |RemoveMenuEntry()| can be removed after the entry
       // point for |kEdit| is created from menu.
-      RemoveMenuAnchor();
+      RemoveMenuEntryView();
       overlay_widget->GetNativeWindow()->SetEventTargetingPolicy(
           aura::EventTargetingPolicy::kTargetAndDescendants);
       touch_injector_->set_display_mode(mode);
@@ -267,11 +276,27 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
 }
 
 absl::optional<gfx::Rect>
-DisplayOverlayController::GetOverlayMenuAnchorBounds() {
-  if (!overlay_menu_anchor_)
+DisplayOverlayController::GetOverlayMenuEntryBounds() {
+  if (!menu_entry_)
     return absl::nullopt;
 
-  return absl::optional<gfx::Rect>(overlay_menu_anchor_->bounds());
+  return absl::optional<gfx::Rect>(menu_entry_->bounds());
+}
+
+bool DisplayOverlayController::HasMenuView() const {
+  return input_menu_view_ != nullptr;
+}
+
+void DisplayOverlayController::SetInputMappingVisible(bool visible) {
+  if (!input_mapping_view_)
+    return;
+  input_mapping_view_->SetVisible(visible);
+}
+
+bool DisplayOverlayController::GetInputMappingViewVisible() const {
+  if (!input_mapping_view_)
+    return false;
+  return input_mapping_view_->GetVisible();
 }
 
 }  // namespace input_overlay

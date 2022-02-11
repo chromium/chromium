@@ -12309,6 +12309,21 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_INPUT_OVERLAY_MENU_ENTRY_BUTTON" desc="Button to access Input Overlay's settings menu.">
         Game Control
       </message>
+      <message name="IDS_INPUT_OVERLAY_MENU_GAME_CONTROL" desc="Toggle to enable input overlay feature for arc games.">
+        Game Control
+      </message>
+      <message name="IDS_INPUT_OVERLAY_MENU_KEY_MAPPING" desc="Text shown next to the customize button to engage in modifying key bindings for games.">
+        Key mapping
+      </message>
+      <message name="IDS_INPUT_OVERLAY_MENU_CUSTOMIZE_BUTTON" desc="Text displayed to engage in key binding edition.">
+        Customize
+      </message>
+      <message name="IDS_INPUT_OVERLAY_MENU_SHOW_HINT_OVERLAY" desc="Text shown next to the toggle to enable/disable the display overlay to the user.">
+        Show hint overlay
+      </message>
+      <message name="IDS_INPUT_OVERLAY_MENU_SEND_FEEDBACK" desc="Entry point to send feedback regarding input-overlay.">
+        Send feedback
+      </message>
     </if>
 
     <!-- Privacy Sandbox Dialog strings -->

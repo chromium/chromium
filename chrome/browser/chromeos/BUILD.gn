@@ -901,6 +901,8 @@ source_set("chromeos") {
     "../ash/arc/input_overlay/touch_id_manager.h",
     "../ash/arc/input_overlay/touch_injector.cc",
     "../ash/arc/input_overlay/touch_injector.h",
+    "../ash/arc/input_overlay/ui/input_menu_view.cc",
+    "../ash/arc/input_overlay/ui/input_menu_view.h",
     "../ash/arc/instance_throttle/arc_active_window_throttle_observer.cc",
     "../ash/arc/instance_throttle/arc_active_window_throttle_observer.h",
     "../ash/arc/instance_throttle/arc_app_launch_throttle_observer.cc",
