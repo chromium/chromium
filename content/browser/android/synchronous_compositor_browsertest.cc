@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "content/browser/android/synchronous_compositor_host.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/android/synchronous_compositor.h"

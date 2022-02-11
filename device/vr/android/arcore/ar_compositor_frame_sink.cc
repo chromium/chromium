@@ -9,12 +9,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/bind_post_task.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/quads/surface_draw_quad.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/host/host_display_client.h"
 #include "components/viz/host/renderer_settings_creation.h"
 #include "device/vr/android/arcore/ar_image_transport.h"
 #include "device/vr/android/web_xr_presentation_state.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
 #include "ui/android/window_android.h"
+#include "ui/gfx/video_types.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace {

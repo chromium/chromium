@@ -243,6 +243,7 @@ mojom("mojom") {
           mojom = "viz.mojom.CompositorFrame"
           cpp = "::viz::CompositorFrame"
           move_only = true
+          forward_declaration = "namespace viz { class CompositorFrame; }"
         },
       ]
       traits_sources = [ "//services/viz/public/cpp/compositing/compositor_frame_mojom_traits.cc" ]

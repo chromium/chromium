@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "cc/base/math_util.h"
 #include "cc/test/render_pass_test_utils.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
