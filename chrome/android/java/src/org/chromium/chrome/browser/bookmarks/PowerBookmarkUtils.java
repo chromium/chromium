@@ -69,10 +69,10 @@ public class PowerBookmarkUtils {
      * @param enabled Whether price-tracking should be enabled.
      * @param callback The status callback.
      */
-    public static void setPriceTrackingEnabled(@NonNull SubscriptionsManager subscriptionsManager,
+    public static void setPriceTrackingEnabled(@Nullable SubscriptionsManager subscriptionsManager,
             @NonNull BookmarkBridge bookmarkBridge, @Nullable BookmarkId bookmarkId,
             boolean enabled, Callback<Integer> callback) {
-        if (bookmarkId == null) return;
+        if (bookmarkId == null || subscriptionsManager == null) return;
 
         PowerBookmarkMeta meta = bookmarkBridge.getPowerBookmarkMeta(bookmarkId);
         if (meta == null || meta.getType() != PowerBookmarkType.SHOPPING) return;
@@ -113,7 +113,7 @@ public class PowerBookmarkUtils {
      *         retries on failure.
      */
     public static void setPriceTrackingEnabledWithSnackbars(
-            @NonNull SubscriptionsManager subscriptionsManager,
+            @Nullable SubscriptionsManager subscriptionsManager,
             @NonNull BookmarkBridge bookmarkBridge, @Nullable BookmarkId bookmarkId,
             boolean enabled, SnackbarManager snackbarManager, Resources resources,
             Callback<Integer> callback) {
