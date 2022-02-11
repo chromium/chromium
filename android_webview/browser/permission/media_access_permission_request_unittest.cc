@@ -59,8 +59,7 @@ class MediaAccessPermissionRequestTest : public testing::Test {
         video_id, blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
         blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
         false /* disable_local_echo */,
-        false /* request_pan_tilt_zoom_permission */,
-        false /* region_capture_capable */);
+        false /* request_pan_tilt_zoom_permission */);
 
     std::unique_ptr<TestMediaAccessPermissionRequest> permission_request;
     permission_request = std::make_unique<TestMediaAccessPermissionRequest>(

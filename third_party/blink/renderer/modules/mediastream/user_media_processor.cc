@@ -795,9 +795,6 @@ void UserMediaProcessor::SetupVideoInput() {
       IsPanTiltZoomPermissionRequested(
           current_request_info_->request()->VideoConstraints());
 
-  current_request_info_->stream_controls()->region_capture_capable =
-      current_request_info_->request()->region_capture_capable();
-
   if (blink::IsDeviceMediaType(video_controls.stream_type)) {
     GetMediaDevicesDispatcher()->GetVideoInputCapabilities(
         WTF::Bind(&UserMediaProcessor::SelectVideoDeviceSettings,

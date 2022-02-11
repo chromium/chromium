@@ -101,8 +101,7 @@ content::MediaStreamRequest CreateMediaStreamRequest(
       /*requested_audio_device_id=*/std::string(), requested_video_device_id,
       blink::mojom::MediaStreamType::NO_SERVICE, video_type,
       /*disable_local_echo=*/false,
-      /*request_pan_tilt_zoom_permission=*/false,
-      /*region_capture_capable=*/false);
+      /*request_pan_tilt_zoom_permission=*/false);
 }
 
 }  // namespace
@@ -190,8 +189,7 @@ class DlpContentManagerAshBrowserTest : public InProcessBrowserTest {
         blink::mojom::MediaStreamType::NO_SERVICE,
         blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
         /*disable_local_echo=*/false,
-        /*request_pan_tilt_zoom_permission=*/false,
-        /*region_capture_capable=*/false);
+        /*request_pan_tilt_zoom_permission=*/false);
     DesktopCaptureAccessHandler access_handler{
         std::make_unique<FakeDesktopMediaPickerFactory>()};
 

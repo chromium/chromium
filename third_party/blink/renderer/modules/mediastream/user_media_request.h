@@ -111,7 +111,6 @@ class MODULES_EXPORT UserMediaRequest final
                    MediaConstraints audio,
                    MediaConstraints video,
                    bool should_prefer_current_tab,
-                   bool region_capture_capable,
                    Callbacks*,
                    IdentifiableSurface surface);
   ~UserMediaRequest() override;
@@ -154,8 +153,6 @@ class MODULES_EXPORT UserMediaRequest final
 
   bool should_prefer_current_tab() const { return should_prefer_current_tab_; }
 
-  bool region_capture_capable() const { return region_capture_capable_; }
-
   void Trace(Visitor*) const override;
 
  private:
@@ -163,7 +160,6 @@ class MODULES_EXPORT UserMediaRequest final
   MediaConstraints audio_;
   MediaConstraints video_;
   const bool should_prefer_current_tab_ = false;
-  const bool region_capture_capable_ = false;
   bool should_disable_hardware_noise_suppression_;
   bool has_transient_user_activation_ = false;
   int request_id_ = -1;

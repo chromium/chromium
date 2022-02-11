@@ -192,18 +192,15 @@ std::unique_ptr<TabSharingUI> TabSharingUI::Create(
     GlobalRenderFrameHostId capturer,
     const content::DesktopMediaID& media_id,
     std::u16string app_name,
-    bool region_capture_capable,
     bool favicons_used_for_switch_to_tab_button) {
   return std::make_unique<TabSharingUIViews>(
-      capturer, media_id, app_name, region_capture_capable,
-      favicons_used_for_switch_to_tab_button);
+      capturer, media_id, app_name, favicons_used_for_switch_to_tab_button);
 }
 
 TabSharingUIViews::TabSharingUIViews(
     GlobalRenderFrameHostId capturer,
     const content::DesktopMediaID& media_id,
     std::u16string app_name,
-    bool region_capture_capable,
     bool favicons_used_for_switch_to_tab_button)
     : capturer_(capturer),
       capturer_origin_(GetOriginFromId(capturer)),
@@ -216,8 +213,6 @@ TabSharingUIViews::TabSharingUIViews(
       shared_tab_(WebContents::FromRenderFrameHost(RenderFrameHost::FromID(
           media_id.web_contents_id.render_process_id,
           media_id.web_contents_id.main_render_frame_id))),
-      is_self_capture_(GetGlobalId(shared_tab_) == capturer_),
-      region_capture_capable_(region_capture_capable),
       favicons_used_for_switch_to_tab_button_(
           favicons_used_for_switch_to_tab_button) {
   Observe(shared_tab_);
@@ -625,16 +620,6 @@ void TabSharingUIViews::UpdateTabCaptureData(WebContents* contents,
                                              TabCaptureUpdate update) {
   // TODO(https://crbug.com/1030925) fix contents border on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!base::FeatureList::IsEnabled(features::kTabCaptureBlueBorder)) {
-    return;
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          features::kTabCaptureBlueBorderForSelfCaptureRegionCaptureOT) &&
-      is_self_capture_ && region_capture_capable_) {
-    return;
-  }
-
   if (!contents) {
     return;
   }

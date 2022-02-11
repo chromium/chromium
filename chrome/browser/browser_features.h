@@ -53,8 +53,6 @@ extern const base::Feature kPrewarmSearchResultsPageFonts;
 extern const base::Feature kPwaUpdateDialogForNameAndIcon;
 
 extern const base::Feature kSandboxExternalProtocolBlocked;
-extern const base::Feature kTabCaptureBlueBorder;
-extern const base::Feature kTabCaptureBlueBorderForSelfCaptureRegionCaptureOT;
 extern const base::Feature kTriggerNetworkDataMigration;
 
 extern const base::Feature kWebUsbDeviceDetection;

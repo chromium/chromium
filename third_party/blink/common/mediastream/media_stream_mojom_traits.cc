@@ -70,7 +70,6 @@ bool StructTraits<blink::mojom::StreamControlsDataView, blink::StreamControls>::
   out->disable_local_echo = input.disable_local_echo();
   out->request_pan_tilt_zoom_permission =
       input.request_pan_tilt_zoom_permission();
-  out->region_capture_capable = input.region_capture_capable();
   return true;
 }
 

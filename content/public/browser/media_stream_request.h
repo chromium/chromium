@@ -35,8 +35,7 @@ struct CONTENT_EXPORT MediaStreamRequest {
                      blink::mojom::MediaStreamType audio_type,
                      blink::mojom::MediaStreamType video_type,
                      bool disable_local_echo,
-                     bool request_pan_tilt_zoom_permission,
-                     bool region_capture_capable);
+                     bool request_pan_tilt_zoom_permission);
 
   MediaStreamRequest(const MediaStreamRequest& other);
 
@@ -84,9 +83,6 @@ struct CONTENT_EXPORT MediaStreamRequest {
 
   // Flag to indicate whether the request is for PTZ use.
   bool request_pan_tilt_zoom_permission;
-
-  // Flag to indicate if the requester is able to use Region Capture.
-  bool region_capture_capable;
 };
 
 // Interface used by the content layer to notify chrome about changes in the

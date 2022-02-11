@@ -258,7 +258,6 @@ std::unique_ptr<content::MediaStreamUI> GetDevicesForDesktopCapture(
       }
       notification_ui = TabSharingUI::Create(
           capturer_id, media_id, application_title,
-          request.region_capture_capable,
           /*favicons_used_for_switch_to_tab_button=*/false);
     } else {
       notification_ui = ScreenCaptureNotificationUI::Create(

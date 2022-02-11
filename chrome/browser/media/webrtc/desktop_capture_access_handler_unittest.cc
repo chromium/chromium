@@ -76,8 +76,7 @@ class DesktopCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
         blink::mojom::MediaStreamType::NO_SERVICE,
         blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
         /*disable_local_echo=*/false,
-        /*request_pan_tilt_zoom_permission=*/false,
-        /*region_capture_capable=*/false);
+        /*request_pan_tilt_zoom_permission=*/false);
     base::RunLoop wait_loop;
     content::MediaResponseCallback callback = base::BindOnce(
         [](base::RunLoop* wait_loop, bool expect_result,
@@ -122,8 +121,7 @@ class DesktopCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
         std::string(), audio_type,
         blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
         /*disable_local_echo=*/false,
-        /*request_pan_tilt_zoom_permission=*/false,
-        /*region_capture_capable=*/false);
+        /*request_pan_tilt_zoom_permission=*/false);
 
     base::RunLoop wait_loop;
     content::MediaResponseCallback callback = base::BindOnce(
@@ -224,8 +222,7 @@ TEST_F(DesktopCaptureAccessHandlerTest,
       render_process_id, render_frame_id, page_request_id, GURL(kOrigin), false,
       blink::MEDIA_DEVICE_UPDATE, std::string(), std::string(),
       blink::mojom::MediaStreamType::NO_SERVICE, stream_type,
-      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false,
-      /*region_capture_capable=*/false);
+      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
   content::MediaResponseCallback callback;
   access_handler_->HandleRequest(web_contents(), request, std::move(callback),
                                  nullptr /* extension */);
@@ -257,8 +254,7 @@ TEST_F(DesktopCaptureAccessHandlerTest, ChangeSourceWebContentsDestroyed) {
       0, 0, 0, GURL(kOrigin), false, blink::MEDIA_DEVICE_UPDATE, std::string(),
       std::string(), blink::mojom::MediaStreamType::NO_SERVICE,
       blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
-      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false,
-      /*region_capture_capable=*/false);
+      /*disable_local_echo=*/false, /*request_pan_tilt_zoom_permission=*/false);
   content::MediaResponseCallback callback;
   access_handler_->HandleRequest(web_contents(), request, std::move(callback),
                                  nullptr /* extension */);
@@ -299,8 +295,7 @@ TEST_F(DesktopCaptureAccessHandlerTest, ChangeSourceMultipleRequests) {
         std::string(), std::string(), blink::mojom::MediaStreamType::NO_SERVICE,
         blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
         /*disable_local_echo=*/false,
-        /*request_pan_tilt_zoom_permission=*/false,
-        /*region_capture_capable=*/false);
+        /*request_pan_tilt_zoom_permission=*/false);
     content::MediaResponseCallback callback = base::BindOnce(
         [](base::RunLoop* wait_loop,
            blink::mojom::MediaStreamRequestResult* request_result,
