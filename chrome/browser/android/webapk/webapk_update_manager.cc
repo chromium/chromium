@@ -14,10 +14,12 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/android/chrome_jni_headers/WebApkUpdateManager_jni.h"
+#include "chrome/browser/android/webapk/webapk_features.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
 #include "chrome/browser/android/webapk/webapk_installer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -45,6 +47,13 @@ void OnUpdated(const JavaRef<jobject>& java_callback,
 }
 
 }  // anonymous namespace
+
+// static JNI method.
+static jint JNI_WebApkUpdateManager_GetWebApkTargetShellVersion(JNIEnv* env) {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      kWebApkShellUpdate, kWebApkTargetShellVersion.name,
+      kWebApkTargetShellVersion.default_value);
+}
 
 // static JNI method.
 static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(

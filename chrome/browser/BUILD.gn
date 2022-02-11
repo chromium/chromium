@@ -3344,6 +3344,7 @@ static_library("browser") {
       "//chrome/android/modules/extra_icu/provider:native",
       "//chrome/browser/android/messages:jni_headers",
       "//chrome/browser/android/metrics:jni_headers",
+      "//chrome/browser/android/webapk:webapk_features",
       "//chrome/browser/attribution_reporting/android:jni_headers",
       "//chrome/browser/attribution_reporting/android/internal",
       "//chrome/browser/banners/android:jni_headers",

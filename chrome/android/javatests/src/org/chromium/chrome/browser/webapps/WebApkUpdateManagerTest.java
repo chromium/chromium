@@ -40,7 +40,6 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.webapk.lib.client.WebApkVersion;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -220,12 +219,11 @@ public class WebApkUpdateManagerTest {
                             creationData.displayMode, creationData.orientation, 0,
                             creationData.themeColor, creationData.backgroundColor, 0,
                             creationData.isPrimaryIconMaskable, false /* isSplashIconMaskable */,
-                            "", WebApkVersion.REQUEST_UPDATE_FOR_SHELL_APK_VERSION,
-                            creationData.manifestUrl, creationData.startUrl,
-                            WebApkDistributor.BROWSER, creationData.iconUrlToMurmur2HashMap, null,
-                            false /* forceNavigation */, false /* isSplashProvidedByWebApk */,
-                            null /* shareData */, creationData.shortcuts,
-                            1 /* webApkVersionCode */);
+                            "", 1000 /* shellApkVersion */, creationData.manifestUrl,
+                            creationData.startUrl, WebApkDistributor.BROWSER,
+                            creationData.iconUrlToMurmur2HashMap, null, false /* forceNavigation */,
+                            false /* isSplashProvidedByWebApk */, null /* shareData */,
+                            creationData.shortcuts, 1 /* webApkVersionCode */);
             updateManager.updateIfNeeded(storage, intentDataProvider);
         });
         waiter.waitForCallback(0);

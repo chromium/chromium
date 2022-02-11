@@ -12,8 +12,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import static org.chromium.webapk.lib.client.WebApkVersion.REQUEST_UPDATE_FOR_SHELL_APK_VERSION;
-
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
@@ -91,6 +89,8 @@ public class WebApkUpdateManagerUnitTest {
     private static final String WEBAPK_PACKAGE_NAME = "org.chromium.webapk.test_package";
     private static final String UNBOUND_WEBAPK_PACKAGE_NAME = "com.webapk.test_package";
 
+    private static final int REQUEST_UPDATE_FOR_SHELL_APK_VERSION = 100;
+
     /** Web Manifest URL */
     private static final String WEB_MANIFEST_URL = "manifest.json";
 
@@ -164,6 +164,11 @@ public class WebApkUpdateManagerUnitTest {
         public void updateWebApkFromFile(
                 String updateRequestPath, WebApkUpdateManager.WebApkUpdateCallback callback) {
             sUpdateCallback = callback;
+        }
+
+        @Override
+        public int getWebApkTargetShellVersion() {
+            return REQUEST_UPDATE_FOR_SHELL_APK_VERSION;
         }
     }
 
