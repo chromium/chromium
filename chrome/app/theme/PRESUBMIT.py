@@ -10,7 +10,8 @@ https://chromium.googlesource.com/chromium/src/+/main/styleguide/web/web.md
 for the rules we're checking against here.
 """
 
-USE_PYTHON3 = True
+# http://crbug.com/1296727 - ico_files has not yet been converted to Python 3.
+USE_PYTHON3 = False
 
 def CheckChangeOnUpload(input_api, output_api):
   return _CommonChecks(input_api, output_api)
