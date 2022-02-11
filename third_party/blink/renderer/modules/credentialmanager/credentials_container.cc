@@ -925,6 +925,7 @@ ScriptPromise CredentialsContainer::get(
     const CredentialRequestOptions* options) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
+  ExecutionContext* context = ExecutionContext::From(script_state);
 
   auto required_origin_type = RequiredOriginType::kSecureAndSameWithAncestors;
   // hasPublicKey() implies that this is a WebAuthn request.
@@ -941,28 +942,26 @@ ScriptPromise CredentialsContainer::get(
   }
 
   if (options->hasFederated()) {
-    UseCounter::Count(resolver->GetExecutionContext(),
+    UseCounter::Count(context,
                       WebFeature::kCredentialManagerGetFederatedCredential);
   } else if (options->hasPassword()) {
-    UseCounter::Count(resolver->GetExecutionContext(),
+    UseCounter::Count(context,
                       WebFeature::kCredentialManagerGetPasswordCredential);
   }
 
   if (options->hasPublicKey()) {
     auto cryptotoken_origin = SecurityOrigin::Create(KURL(kCryptotokenOrigin));
-    if (!cryptotoken_origin->IsSameOriginWith(
-            resolver->GetExecutionContext()->GetSecurityOrigin())) {
+    if (!cryptotoken_origin->IsSameOriginWith(context->GetSecurityOrigin())) {
       // Cryptotoken requests are recorded as kU2FCryptotokenSign from within
       // the extension.
-      UseCounter::Count(resolver->GetExecutionContext(),
+      UseCounter::Count(context,
                         WebFeature::kCredentialManagerGetPublicKeyCredential);
     }
 
 #if BUILDFLAG(IS_ANDROID)
     if (options->publicKey()->hasExtensions() &&
         options->publicKey()->extensions()->hasUvm()) {
-      UseCounter::Count(resolver->GetExecutionContext(),
-                        WebFeature::kCredentialManagerGetWithUVM);
+      UseCounter::Count(context, WebFeature::kCredentialManagerGetWithUVM);
     }
 #endif
 
@@ -1028,8 +1027,7 @@ ScriptPromise CredentialsContainer::get(
             "creating a credential"));
         return promise;
       }
-      if (RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(
-              resolver->GetExecutionContext()) &&
+      if (RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(context) &&
           options->publicKey()->extensions()->hasPayment()) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotAllowedError,
@@ -1080,8 +1078,7 @@ ScriptPromise CredentialsContainer::get(
     if (mojo_options) {
       mojo_options->is_conditional = is_conditional_ui_request;
       if (!mojo_options->relying_party_id) {
-        mojo_options->relying_party_id =
-            resolver->GetExecutionContext()->GetSecurityOrigin()->Domain();
+        mojo_options->relying_party_id = context->GetSecurityOrigin()->Domain();
       }
       auto* authenticator =
           CredentialManagerProxy::From(script_state)->Authenticator();
@@ -1137,12 +1134,13 @@ ScriptPromise CredentialsContainer::get(
         // TODO(yigu): Ideally the logic should be handled in CredentialManager
         // via Get. However currently it's only for password management and we
         // should refactor the logic to make it generic.
-        if (!RuntimeEnabledFeatures::WebIDEnabled(
-                ExecutionContext::From(script_state))) {
+        if (!RuntimeEnabledFeatures::WebIDEnabled(context)) {
           resolver->Reject(MakeGarbageCollected<DOMException>(
               DOMExceptionCode::kNotSupportedError, "Invalid provider entry"));
           return promise;
         }
+        // Log the UseCounter only when the WebID flag is enabled.
+        UseCounter::Count(context, WebFeature::kFederatedCredentialManagement);
         // TODO(kenrb): Add some renderer-side validation here, such as
         // validating |provider|, and making sure the calling context is legal.
         // Some of this has not been spec'd yet.
@@ -1200,16 +1198,16 @@ ScriptPromise CredentialsContainer::get(
     return promise;
   }
   if (options->mediation() == "silent") {
-    UseCounter::Count(ExecutionContext::From(script_state),
+    UseCounter::Count(context,
                       WebFeature::kCredentialManagerGetMediationSilent);
     requirement = CredentialMediationRequirement::kSilent;
   } else if (options->mediation() == "optional") {
-    UseCounter::Count(ExecutionContext::From(script_state),
+    UseCounter::Count(context,
                       WebFeature::kCredentialManagerGetMediationOptional);
     requirement = CredentialMediationRequirement::kOptional;
   } else {
     DCHECK_EQ("required", options->mediation());
-    UseCounter::Count(ExecutionContext::From(script_state),
+    UseCounter::Count(context,
                       WebFeature::kCredentialManagerGetMediationRequired);
     requirement = CredentialMediationRequirement::kRequired;
   }

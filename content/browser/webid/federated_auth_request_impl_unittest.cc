@@ -850,6 +850,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
 
   GURL provider_;
 
+  base::HistogramTester histogram_tester_;
+
  private:
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
@@ -1249,7 +1251,6 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
 }
 
 TEST_F(FederatedAuthRequestImplTest, Revoke) {
-  base::HistogramTester histogram_tester;
   constexpr char kAccountId[] = "foo@bar.com";
 
   auto& auth_request = CreateAuthRequest(GURL(kIdpEndpoint));
@@ -1291,16 +1292,14 @@ TEST_F(FederatedAuthRequestImplTest, Revoke) {
 
   ukm_loop.Run();
 
-  histogram_tester.ExpectTotalCount("Blink.FedCm.Status.Revoke", 1);
-  histogram_tester.ExpectBucketCount("Blink.FedCm.Status.Revoke",
-                                     RevokeStatusForMetrics::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Status.Revoke", 1);
+  histogram_tester_.ExpectBucketCount("Blink.FedCm.Status.Revoke",
+                                      RevokeStatusForMetrics::kSuccess, 1);
 
   ExpectRevokeStatusUKM(RevokeStatusForMetrics::kSuccess);
 }
 
 TEST_F(FederatedAuthRequestImplTest, RevokeNoPermission) {
-  base::HistogramTester histogram_tester;
-
   constexpr char kAccountId[] = "foo@bar.com";
 
   auto& auth_request = CreateAuthRequest(GURL(kIdpEndpoint));
@@ -1321,17 +1320,15 @@ TEST_F(FederatedAuthRequestImplTest, RevokeNoPermission) {
   EXPECT_EQ(RevokeStatus::kError, status);
 
   ukm_loop.Run();
-  histogram_tester.ExpectTotalCount("Blink.FedCm.Status.Revoke", 1);
-  histogram_tester.ExpectBucketCount("Blink.FedCm.Status.Revoke",
-                                     RevokeStatusForMetrics::kNoAccountToRevoke,
-                                     1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Status.Revoke", 1);
+  histogram_tester_.ExpectBucketCount(
+      "Blink.FedCm.Status.Revoke", RevokeStatusForMetrics::kNoAccountToRevoke,
+      1);
 
   ExpectRevokeStatusUKM(RevokeStatusForMetrics::kNoAccountToRevoke);
 }
 
 TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignUpCase) {
-  base::HistogramTester histogram_tester;
-
   const auto& test_case = kSuccessfulMediatedSignUpTestCase;
   auto& auth_request = CreateAuthRequest(GURL(test_case.inputs.provider));
   SetMockExpectations(test_case);
@@ -1353,15 +1350,16 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignUpCase) {
 
   ukm_loop.Run();
 
-  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog", 1);
-  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.ContinueOnDialog", 1);
-  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.CancelOnDialog", 0);
-  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.IdTokenResponse", 1);
-  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog",
+                                     1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ContinueOnDialog", 1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.CancelOnDialog", 0);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.IdTokenResponse", 1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 1);
 
-  histogram_tester.ExpectTotalCount("Blink.FedCm.Status.RequestIdToken", 1);
-  histogram_tester.ExpectBucketCount("Blink.FedCm.Status.RequestIdToken",
-                                     IdTokenStatus::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Status.RequestIdToken", 1);
+  histogram_tester_.ExpectBucketCount("Blink.FedCm.Status.RequestIdToken",
+                                      IdTokenStatus::kSuccess, 1);
 
   ExpectTimingUKM("Timing.ShowAccountsDialog");
   ExpectTimingUKM("Timing.ContinueOnDialog");
@@ -1373,8 +1371,6 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignUpCase) {
 }
 
 TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
-  base::HistogramTester histogram_tester;
-
   const auto& test_case = kSuccessfulMediatedSignUpTestCase;
   auto& auth_request = CreateAuthRequest(GURL(test_case.inputs.provider));
   SetMockExpectations(test_case);
@@ -1400,15 +1396,16 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
 
   ukm_loop.Run();
 
-  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog", 1);
-  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.ContinueOnDialog", 1);
-  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.CancelOnDialog", 0);
-  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.IdTokenResponse", 1);
-  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog",
+                                     1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ContinueOnDialog", 1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.CancelOnDialog", 0);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.IdTokenResponse", 1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 1);
 
-  histogram_tester.ExpectTotalCount("Blink.FedCm.Status.RequestIdToken", 1);
-  histogram_tester.ExpectBucketCount("Blink.FedCm.Status.RequestIdToken",
-                                     IdTokenStatus::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Status.RequestIdToken", 1);
+  histogram_tester_.ExpectBucketCount("Blink.FedCm.Status.RequestIdToken",
+                                      IdTokenStatus::kSuccess, 1);
 
   ExpectTimingUKM("Timing.ShowAccountsDialog");
   ExpectTimingUKM("Timing.ContinueOnDialog");
@@ -1420,7 +1417,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
 }
 
 TEST_F(BasicFederatedAuthRequestImplTest, MetricsForNotSelectingAccount) {
-  base::HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester_;
 
   AccountList displayed_accounts;
   const AuthRequestTestCase test_case = {
@@ -1477,15 +1474,16 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForNotSelectingAccount) {
   ASSERT_FALSE(displayed_accounts.empty());
   EXPECT_EQ(displayed_accounts[0].login_state, LoginState::kSignUp);
 
-  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog", 1);
-  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.ContinueOnDialog", 0);
-  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.CancelOnDialog", 1);
-  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.IdTokenResponse", 0);
-  histogram_tester.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 0);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog",
+                                     1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ContinueOnDialog", 0);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.CancelOnDialog", 1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.IdTokenResponse", 0);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 0);
 
-  histogram_tester.ExpectTotalCount("Blink.FedCm.Status.RequestIdToken", 1);
-  histogram_tester.ExpectBucketCount("Blink.FedCm.Status.RequestIdToken",
-                                     IdTokenStatus::kNotSelectAccount, 1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Status.RequestIdToken", 1);
+  histogram_tester_.ExpectBucketCount("Blink.FedCm.Status.RequestIdToken",
+                                      IdTokenStatus::kNotSelectAccount, 1);
 
   ExpectTimingUKM("Timing.ShowAccountsDialog");
   ExpectTimingUKM("Timing.CancelOnDialog");

@@ -3484,6 +3484,7 @@ enum WebFeature {
   kV8Document_Onprerenderingchange_AttributeSetter = 4163,
   kCSSAtRuleFontPaletteValues = 4164,
   kCSSAtRuleContainer = 4165,
+  kFederatedCredentialManagement = 4166,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
