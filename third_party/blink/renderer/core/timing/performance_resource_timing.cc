@@ -258,8 +258,10 @@ DOMHighResTimeStamp PerformanceResourceTiming::redirectEnd() const {
 
 DOMHighResTimeStamp PerformanceResourceTiming::fetchStart() const {
   ResourceLoadTiming* timing = GetResourceLoadTiming();
-  if (!timing)
+  if (!timing ||
+      (!allow_redirect_details_ && !last_redirect_end_time_.is_null())) {
     return PerformanceEntry::startTime();
+  }
 
   if (!last_redirect_end_time_.is_null()) {
     return Performance::MonotonicTimeToDOMHighResTimeStamp(
