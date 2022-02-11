@@ -171,6 +171,7 @@ android_resources("java_resources") {
     "java/res/drawable-v24/default_list_item_bg_rect.xml",
     "java/res/drawable-v24/dialog_bg_no_shadow.xml",
     "java/res/drawable-v24/menu_bg_tinted.xml",
+    "java/res/drawable-v24/modern_toolbar_text_box_background.xml",
     "java/res/drawable-v24/oval_surface_1.xml",
     "java/res/drawable-v24/rectangle_surface_1.xml",
     "java/res/drawable-v24/rounded_rectangle_surface_1.xml",

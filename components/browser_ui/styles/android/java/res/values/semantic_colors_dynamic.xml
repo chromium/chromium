@@ -2,7 +2,7 @@
 <!-- Copyright 2021 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Full dynamic colors ?attr version. -->
     <macro name="default_bg_color">?attr/colorSurface</macro>
     <macro name="default_bg_color_elev_0">?attr/colorSurface</macro>
@@ -35,6 +35,8 @@
     <macro name="chip_outline_focused_color">?attr/colorOnSurface</macro>
     <macro name="chip_state_layer_color">?attr/colorOnSurfaceVariant</macro>
     <macro name="chip_state_layer_selected_color">?attr/colorOnSecondaryContainer</macro>
+
+    <macro name="toolbar_background_primary" tools:ignore="UnusedResources">@macro/default_bg_color</macro>
 
     <!-- Temporarily holdback @color version. Keep until we're certain we won't
          need to disable. -->
@@ -70,6 +72,8 @@
     <macro name="chip_outline_focused_color">@color/chip_outline_focused_color_baseline</macro>
     <macro name="chip_state_layer_color">@color/chip_state_layer_color_baseline</macro>
     <macro name="chip_state_layer_selected_color">@color/chip_state_layer_selected_color_baseline</macro>
+
+    <macro name="toolbar_background_primary">@color/default_bg_color</macro>
     -->
 
     <!-- Gated by full dynamic colors param, no fallback needed. -->
