@@ -7749,42 +7749,6 @@ TEST_F(ResidentKeyAuthenticatorImplTest, ConditionalUI) {
   EXPECT_TRUE(test_client_.is_conditional);
 }
 
-TEST_F(ResidentKeyAuthenticatorImplWithFlagsTest,
-       NoDiscoverableCredentialsViaCable) {
-  // caBLE devices never support discoverable credentials currently and we
-  // shouldn't offer them for such requests.
-
-  NavigateAndCommit(GURL(kTestOrigin1));
-
-  device::VirtualCtap2Device::Config config;
-  config.resident_key_support = true;
-  config.internal_uv_support = true;
-  virtual_device_factory_->SetCtap2Config(config);
-  virtual_device_factory_->mutable_state()->fingerprints_enrolled = true;
-
-  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
-      /*credential_id=*/{{4, 3, 2, 1}}, kTestRelyingPartyId,
-      /*user_id=*/{{1, 2, 3, 4}}, absl::nullopt, absl::nullopt));
-
-  for (const auto transport :
-       {device::FidoTransportProtocol::kUsbHumanInterfaceDevice,
-        device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy}) {
-    virtual_device_factory_->SetTransport(transport);
-    PublicKeyCredentialRequestOptionsPtr options =
-        GetTestPublicKeyCredentialRequestOptions();
-    options->allow_credentials.clear();
-
-    if (transport == device::FidoTransportProtocol::kUsbHumanInterfaceDevice) {
-      EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
-                AuthenticatorStatus::SUCCESS);
-    } else {
-      EXPECT_EQ(
-          AuthenticatorGetAssertionAndWaitForTimeout(std::move(options)).status,
-          AuthenticatorStatus::NOT_ALLOWED_ERROR);
-    }
-  }
-}
-
 class InternalAuthenticatorImplTest : public AuthenticatorTestBase {
  protected:
   InternalAuthenticatorImplTest() = default;
@@ -7957,16 +7921,18 @@ TEST_F(TouchIdAuthenticatorImplTest, IsUVPAA) {
 }
 #endif  // BUILDFLAG(IS_MAC)
 
-class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
+// AuthenticatorCableV2Test tests features of the caBLEv2 transport and
+// protocol.
+class AuthenticatorCableV2Test : public AuthenticatorImplTest {
  public:
-  CableV2AuthenticatorImplTest()
+  AuthenticatorCableV2Test()
       : network_context_(device::cablev2::NewMockTunnelServer(
-            base::BindRepeating(&CableV2AuthenticatorImplTest::OnContact,
+            base::BindRepeating(&AuthenticatorCableV2Test::OnContact,
                                 base::Unretained(this)))),
         virtual_device_(new VirtualFidoDevice::State, DeviceConfig()),
-        browser_client_(base::BindRepeating(
-            &CableV2AuthenticatorImplTest::MaybeContactPhones,
-            base::Unretained(this))) {
+        browser_client_(
+            base::BindRepeating(&AuthenticatorCableV2Test::MaybeContactPhones,
+                                base::Unretained(this))) {
     scoped_feature_list_.InitWithFeatures(
         {features::kWebAuthCable, device::kWebAuthPhoneSupport},
         /*disabled_features=*/{});
@@ -8000,7 +7966,7 @@ class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
 
   base::RepeatingCallback<void(device::cablev2::PairingEvent)>
   GetPairingCallback() {
-    return base::BindRepeating(&CableV2AuthenticatorImplTest::OnPairingEvent,
+    return base::BindRepeating(&AuthenticatorCableV2Test::OnPairingEvent,
                                base::Unretained(this));
   }
 
@@ -8024,6 +7990,13 @@ class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
 
    private:
     std::unique_ptr<device::cablev2::Discovery> discovery_;
+  };
+
+  class TestAuthenticationDelegate : public WebAuthenticationDelegate {
+   public:
+    bool SupportsResidentKeys(RenderFrameHost*) override { return true; }
+
+    bool IsFocused(WebContents* web_contents) override { return true; }
   };
 
   class ContactWhenReadyAuthenticatorRequestDelegate
@@ -8056,8 +8029,13 @@ class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
           callback_);
     }
 
+    WebAuthenticationDelegate* GetWebAuthenticationDelegate() override {
+      return &authentication_delegate_;
+    }
+
    private:
     base::RepeatingClosure callback_;
+    TestAuthenticationDelegate authentication_delegate_;
   };
 
   // MaybeContactPhones is called when OnTransportAvailabilityEnumerated is
@@ -8132,7 +8110,7 @@ class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(CableV2AuthenticatorImplTest, QRBasedWithNoPairing) {
+TEST_F(AuthenticatorCableV2Test, QRBasedWithNoPairing) {
   auto discovery = std::make_unique<device::cablev2::Discovery>(
       device::FidoRequestType::kGetAssertion, network_context_.get(),
       qr_generator_key_, std::move(ble_advert_events_),
@@ -8148,7 +8126,8 @@ TEST_F(CableV2AuthenticatorImplTest, QRBasedWithNoPairing) {
   std::unique_ptr<device::cablev2::authenticator::Transaction> transaction =
       device::cablev2::authenticator::TransactFromQRCode(
           device::cablev2::authenticator::NewMockPlatform(
-              std::move(ble_advert_callback_), &virtual_device_),
+              std::move(ble_advert_callback_), &virtual_device_,
+              /*observer=*/nullptr),
           network_context_.get(), root_secret_, "Test Authenticator",
           zero_qr_secret_, peer_identity_x962_,
           /*contact_id=*/absl::nullopt,
@@ -8158,43 +8137,7 @@ TEST_F(CableV2AuthenticatorImplTest, QRBasedWithNoPairing) {
   EXPECT_EQ(pairings_.size(), 0u);
 }
 
-TEST_F(CableV2AuthenticatorImplTest, QRBasedWithNoPairingGetAssertion) {
-  // Similar to `QRBasedWithNoPairing`, but exercise the GetAssertion code
-  // instead.
-  auto discovery = std::make_unique<device::cablev2::Discovery>(
-      device::FidoRequestType::kGetAssertion, network_context_.get(),
-      qr_generator_key_, std::move(ble_advert_events_),
-      /*pairings=*/std::vector<std::unique_ptr<device::cablev2::Pairing>>(),
-      /*contact_device_stream=*/nullptr,
-      /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
-      GetPairingCallback());
-
-  AuthenticatorEnvironmentImpl::GetInstance()
-      ->ReplaceDefaultDiscoveryFactoryForTesting(
-          std::make_unique<DiscoveryFactory>(std::move(discovery)));
-
-  std::unique_ptr<device::cablev2::authenticator::Transaction> transaction =
-      device::cablev2::authenticator::TransactFromQRCode(
-          device::cablev2::authenticator::NewMockPlatform(
-              std::move(ble_advert_callback_), &virtual_device_),
-          network_context_.get(), root_secret_, "Test Authenticator",
-          zero_qr_secret_, peer_identity_x962_,
-          /*contact_id=*/absl::nullopt,
-          /*use_new_crypter_construction=*/false);
-
-  PublicKeyCredentialRequestOptionsPtr options =
-      GetTestPublicKeyCredentialRequestOptions();
-  options->allow_credentials[0].transports.insert(
-      device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
-  ASSERT_TRUE(virtual_device_.mutable_state()->InjectRegistration(
-      options->allow_credentials[0].id, options->relying_party_id));
-
-  EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
-            AuthenticatorStatus::SUCCESS);
-  EXPECT_EQ(pairings_.size(), 0u);
-}
-
-TEST_F(CableV2AuthenticatorImplTest, QRBasedNewCrypterConstruction) {
+TEST_F(AuthenticatorCableV2Test, QRBasedNewCrypterConstruction) {
   // The new Crypter construction should be transparently supported by the
   // client code.
   auto discovery = std::make_unique<device::cablev2::Discovery>(
@@ -8212,7 +8155,8 @@ TEST_F(CableV2AuthenticatorImplTest, QRBasedNewCrypterConstruction) {
   std::unique_ptr<device::cablev2::authenticator::Transaction> transaction =
       device::cablev2::authenticator::TransactFromQRCode(
           device::cablev2::authenticator::NewMockPlatform(
-              std::move(ble_advert_callback_), &virtual_device_),
+              std::move(ble_advert_callback_), &virtual_device_,
+              /*observer=*/nullptr),
           network_context_.get(), root_secret_, "Test Authenticator",
           zero_qr_secret_, peer_identity_x962_,
           /*contact_id=*/absl::nullopt,
@@ -8222,7 +8166,7 @@ TEST_F(CableV2AuthenticatorImplTest, QRBasedNewCrypterConstruction) {
   EXPECT_EQ(pairings_.size(), 0u);
 }
 
-TEST_F(CableV2AuthenticatorImplTest, PairingBased) {
+TEST_F(AuthenticatorCableV2Test, PairingBased) {
   // First do unpaired exchange to get pairing data.
   auto discovery = std::make_unique<device::cablev2::Discovery>(
       device::FidoRequestType::kGetAssertion, network_context_.get(),
@@ -8240,7 +8184,8 @@ TEST_F(CableV2AuthenticatorImplTest, PairingBased) {
   std::unique_ptr<device::cablev2::authenticator::Transaction> transaction =
       device::cablev2::authenticator::TransactFromQRCode(
           device::cablev2::authenticator::NewMockPlatform(
-              std::move(ble_advert_callback_), &virtual_device_),
+              std::move(ble_advert_callback_), &virtual_device_,
+              /*observer=*/nullptr),
           network_context_.get(), root_secret_, "Test Authenticator",
           zero_qr_secret_, peer_identity_x962_, contact_id,
           /*use_new_crypter_construction=*/false);
@@ -8294,7 +8239,8 @@ TEST_F(CableV2AuthenticatorImplTest, PairingBased) {
         CHECK_EQ(request_type_hint, expected_request_type_string);
         transaction = device::cablev2::authenticator::TransactFromFCM(
             device::cablev2::authenticator::NewMockPlatform(
-                std::move(ble_advert_callback_), &virtual_device_),
+                std::move(ble_advert_callback_), &virtual_device_,
+                /*observer=*/nullptr),
             network_context_.get(), root_secret_, routing_id, tunnel_id,
             pairing_id, client_nonce, contact_id);
       });
@@ -8320,7 +8266,7 @@ static std::unique_ptr<device::cablev2::Pairing> DummyPairing() {
   return ret;
 }
 
-TEST_F(CableV2AuthenticatorImplTest, ContactIDDisabled) {
+TEST_F(AuthenticatorCableV2Test, ContactIDDisabled) {
   std::vector<std::unique_ptr<device::cablev2::Pairing>> pairings;
   pairings.emplace_back(DummyPairing());
   // Passing |nullopt| as the callback here causes all contact IDs to be
@@ -8353,6 +8299,90 @@ TEST_F(CableV2AuthenticatorImplTest, ContactIDDisabled) {
   // The pairing should be been erased because of the signal from the tunnel
   // server.
   ASSERT_EQ(pairings_.size(), 0u);
+}
+
+// AuthenticatorCableV2AuthenticatorTest tests aspects of the authenticator
+// implementation, rather than of the underlying caBLEv2 transport.
+class AuthenticatorCableV2AuthenticatorTest
+    : public AuthenticatorCableV2Test,
+      public device::cablev2::authenticator::Observer {
+ public:
+  void SetUp() override {
+    AuthenticatorCableV2Test::SetUp();
+
+    auto discovery = std::make_unique<device::cablev2::Discovery>(
+        device::FidoRequestType::kGetAssertion, network_context_.get(),
+        qr_generator_key_, std::move(ble_advert_events_),
+        /*pairings=*/std::vector<std::unique_ptr<device::cablev2::Pairing>>(),
+        /*contact_device_stream=*/nullptr,
+        /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
+        GetPairingCallback());
+
+    AuthenticatorEnvironmentImpl::GetInstance()
+        ->ReplaceDefaultDiscoveryFactoryForTesting(
+            std::make_unique<DiscoveryFactory>(std::move(discovery)));
+
+    transaction_ = device::cablev2::authenticator::TransactFromQRCode(
+        device::cablev2::authenticator::NewMockPlatform(
+            std::move(ble_advert_callback_), &virtual_device_, this),
+        network_context_.get(), root_secret_, "Test Authenticator",
+        zero_qr_secret_, peer_identity_x962_,
+        /*contact_id=*/absl::nullopt,
+        /*use_new_crypter_construction=*/false);
+  }
+
+ protected:
+  // device::cablev2::authenticator::Observer
+  void OnStatus(device::cablev2::authenticator::Platform::Status) override {}
+  void OnCompleted(
+      absl::optional<device::cablev2::authenticator::Platform::Error> error)
+      override {
+    did_complete_ = true;
+    error_ = error;
+  }
+
+  std::unique_ptr<device::cablev2::authenticator::Transaction> transaction_;
+  bool did_complete_ = false;
+  absl::optional<device::cablev2::authenticator::Platform::Error> error_;
+};
+
+TEST_F(AuthenticatorCableV2AuthenticatorTest, GetAssertion) {
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  options->allow_credentials[0].transports.insert(
+      device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
+  ASSERT_TRUE(virtual_device_.mutable_state()->InjectRegistration(
+      options->allow_credentials[0].id, options->relying_party_id));
+
+  EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
+            AuthenticatorStatus::SUCCESS);
+}
+
+TEST_F(AuthenticatorCableV2AuthenticatorTest, MakeDiscoverableCredential) {
+  auto options = GetTestPublicKeyCredentialCreationOptions();
+  options->authenticator_selection->resident_key =
+      device::ResidentKeyRequirement::kRequired;
+  EXPECT_EQ(
+      AuthenticatorMakeCredentialAndWaitForTimeout(std::move(options)).status,
+      AuthenticatorStatus::NOT_ALLOWED_ERROR);
+
+  ASSERT_TRUE(did_complete_);
+  ASSERT_TRUE(error_.has_value());
+  EXPECT_EQ(*error_, device::cablev2::authenticator::Platform::Error::
+                         AUTHENTICATOR_SELECTION_RECEIVED);
+}
+
+TEST_F(AuthenticatorCableV2AuthenticatorTest, EmptyAllowList) {
+  auto options = GetTestPublicKeyCredentialRequestOptions();
+  options->allow_credentials.clear();
+  EXPECT_EQ(
+      AuthenticatorGetAssertionAndWaitForTimeout(std::move(options)).status,
+      AuthenticatorStatus::NOT_ALLOWED_ERROR);
+
+  ASSERT_TRUE(did_complete_);
+  ASSERT_TRUE(error_.has_value());
+  EXPECT_EQ(*error_, device::cablev2::authenticator::Platform::Error::
+                         DISCOVERABLE_CREDENTIALS_REQUEST);
 }
 
 // AuthenticatorImplWithRequestProxyTest tests behavior with an installed

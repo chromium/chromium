@@ -205,8 +205,9 @@ enum class CableV2MobileResult {
   kInvalidQR = 9,
   kInvalidServerLink = 10,
   kEOFWhileProcessing = 11,
+  kDiscoverableCredentialsRejected = 12,
 
-  kMaxValue = 11,
+  kMaxValue = 12,
 };
 
 // JavaByteArrayToSpan returns a span that aliases |data|. Be aware that the
@@ -500,6 +501,10 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
           break;
         case Error::UNKNOWN_COMMAND:
           result = CableV2MobileResult::kUnknownCommand;
+          break;
+        case Error::AUTHENTICATOR_SELECTION_RECEIVED:
+        case Error::DISCOVERABLE_CREDENTIALS_REQUEST:
+          result = CableV2MobileResult::kDiscoverableCredentialsRejected;
           break;
         case Error::INTERNAL_ERROR:
         case Error::SERVER_LINK_WRONG_LENGTH:

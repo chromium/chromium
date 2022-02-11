@@ -31,6 +31,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
@@ -192,6 +193,7 @@ std::vector<uint8_t> BuildGetInfoResponse() {
   std::array<uint8_t, device::kAaguidLength> aaguid{};
   std::vector<cbor::Value> versions;
   versions.emplace_back("FIDO_2_0");
+  versions.emplace_back("FIDO_2_1");
 
   cbor::Value::MapValue options;
   // This code is only invoked if a screen-lock (i.e. user verification) is
@@ -527,25 +529,27 @@ class CTAP2Processor : public Transaction {
     }
 
     std::vector<uint8_t>& msg = absl::get<std::vector<uint8_t>>(update);
-    absl::optional<std::vector<uint8_t>> response = ProcessCTAPMessage(msg);
-    if (!response) {
-      // TODO(agl): expose more error information from |ProcessCTAPMessage|.
-      platform_->OnCompleted(Platform::Error::INVALID_CTAP);
+    const absl::variant<std::vector<uint8_t>, Platform::Error> result =
+        ProcessCTAPMessage(msg);
+    if (const auto* error = absl::get_if<Platform::Error>(&result)) {
+      platform_->OnCompleted(*error);
       return;
     }
 
-    if (response->empty()) {
+    const std::vector<uint8_t>& response =
+        absl::get<std::vector<uint8_t>>(result);
+    if (response.empty()) {
       // Response is pending.
       return;
     }
 
-    transport_->Write(std::move(*response));
+    transport_->Write(std::move(response));
   }
 
-  absl::optional<std::vector<uint8_t>> ProcessCTAPMessage(
+  absl::variant<std::vector<uint8_t>, Platform::Error> ProcessCTAPMessage(
       base::span<const uint8_t> message_bytes) {
     if (message_bytes.empty()) {
-      return absl::nullopt;
+      return Platform::Error::INVALID_CTAP;
     }
     const auto command = message_bytes[0];
     const auto cbor_bytes = message_bytes.subspan(1);
@@ -556,7 +560,7 @@ class CTAP2Processor : public Transaction {
       if (!payload) {
         FIDO_LOG(ERROR) << "CBOR decoding failed for "
                         << base::HexEncode(cbor_bytes);
-        return absl::nullopt;
+        return Platform::Error::INVALID_CTAP;
       }
       FIDO_LOG(DEBUG) << "<- (" << base::HexEncode(&command, 1) << ") "
                       << cbor::DiagnosticWriter::Write(*payload);
@@ -570,24 +574,24 @@ class CTAP2Processor : public Transaction {
           device::CtapRequestCommand::kAuthenticatorGetInfo): {
         if (payload) {
           FIDO_LOG(ERROR) << "getInfo command incorrectly contained payload";
-          return absl::nullopt;
+          return Platform::Error::INVALID_CTAP;
         }
 
         absl::optional<std::vector<uint8_t>> response = BuildGetInfoResponse();
         if (!response) {
-          return absl::nullopt;
+          return Platform::Error::INTERNAL_ERROR;
         }
         response->insert(
             response->begin(),
             static_cast<uint8_t>(CtapDeviceResponseCode::kSuccess));
-        return response;
+        return *response;
       }
 
       case static_cast<uint8_t>(
           device::CtapRequestCommand::kAuthenticatorMakeCredential): {
         if (!payload || !payload->is_map()) {
           FIDO_LOG(ERROR) << "Invalid makeCredential payload";
-          return absl::nullopt;
+          return Platform::Error::INVALID_CTAP;
         }
 
         MakeCredRequest make_cred_request;
@@ -595,7 +599,7 @@ class CTAP2Processor : public Transaction {
                 &make_cred_request, kMakeCredParseSteps, payload->GetMap())) {
           FIDO_LOG(ERROR) << "Failed to parse makeCredential request: "
                           << base::HexEncode(cbor_bytes);
-          return absl::nullopt;
+          return Platform::Error::INVALID_CTAP;
         }
 
         auto params = blink::mojom::PublicKeyCredentialCreationOptions::New();
@@ -609,16 +613,21 @@ class CTAP2Processor : public Transaction {
         params->user.name = *make_cred_request.user_name;
         params->user.display_name = *make_cred_request.user_display_name;
 
+        const bool rk =
+            make_cred_request.resident_key && *make_cred_request.resident_key;
+        if (rk && !base::FeatureList::IsEnabled(device::kWebAuthCableDisco)) {
+          return Platform::Error::DISCOVERABLE_CREDENTIALS_REQUEST;
+        }
+
         params->authenticator_selection.emplace(
             device::AuthenticatorAttachment::kPlatform,
-            (make_cred_request.resident_key && *make_cred_request.resident_key)
-                ? device::ResidentKeyRequirement::kRequired
-                : device::ResidentKeyRequirement::kDiscouraged,
+            rk ? device::ResidentKeyRequirement::kRequired
+               : device::ResidentKeyRequirement::kDiscouraged,
             device::UserVerificationRequirement::kRequired);
 
         if (!CopyCredIds(make_cred_request.excluded_credentials,
                          &params->exclude_credentials)) {
-          return absl::nullopt;
+          return Platform::Error::INTERNAL_ERROR;
         }
 
         if (!device::cbor_extract::ForEachPublicKeyEntry(
@@ -645,7 +654,7 @@ class CTAP2Processor : public Transaction {
                       return true;
                     },
                     base::Unretained(&params->public_key_parameters)))) {
-          return absl::nullopt;
+          return Platform::Error::INVALID_CTAP;
         }
 
         transaction_received_ = true;
@@ -660,7 +669,7 @@ class CTAP2Processor : public Transaction {
           device::CtapRequestCommand::kAuthenticatorGetAssertion): {
         if (!payload || !payload->is_map()) {
           FIDO_LOG(ERROR) << "Invalid makeCredential payload";
-          return absl::nullopt;
+          return Platform::Error::INVALID_CTAP;
         }
 
         GetAssertionRequest get_assertion_request;
@@ -668,7 +677,13 @@ class CTAP2Processor : public Transaction {
                 &get_assertion_request, kGetAssertionParseSteps,
                 payload->GetMap())) {
           FIDO_LOG(ERROR) << "Failed to parse getAssertion request";
-          return absl::nullopt;
+          return Platform::Error::INVALID_CTAP;
+        }
+
+        if ((!get_assertion_request.allowed_credentials ||
+             get_assertion_request.allowed_credentials->empty()) &&
+            !base::FeatureList::IsEnabled(device::kWebAuthCableDisco)) {
+          return Platform::Error::DISCOVERABLE_CREDENTIALS_REQUEST;
         }
 
         auto params = blink::mojom::PublicKeyCredentialRequestOptions::New();
@@ -680,7 +695,7 @@ class CTAP2Processor : public Transaction {
 
         if (!CopyCredIds(get_assertion_request.allowed_credentials,
                          &params->allow_credentials)) {
-          return absl::nullopt;
+          return Platform::Error::INTERNAL_ERROR;
         }
 
         transaction_received_ = true;
@@ -692,10 +707,19 @@ class CTAP2Processor : public Transaction {
         return std::vector<uint8_t>();
       }
 
+      case static_cast<uint8_t>(
+          device::CtapRequestCommand::kAuthenticatorSelection): {
+        if (payload) {
+          FIDO_LOG(ERROR) << "Invalid authenticatorSelection payload";
+          return Platform::Error::INVALID_CTAP;
+        }
+        return Platform::Error::AUTHENTICATOR_SELECTION_RECEIVED;
+      }
+
       default:
         FIDO_LOG(ERROR) << "Received unknown command "
                         << static_cast<unsigned>(command);
-        return absl::nullopt;
+        return Platform::Error::INVALID_CTAP;
     }
   }
 
