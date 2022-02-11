@@ -695,6 +695,10 @@ class AX_EXPORT AXNode final {
   // Finds and returns a pointer to ordered set containing node.
   AXNode* GetOrderedSet() const;
 
+  // Returns false if the |data_| is uninitialized or has been taken. Returns
+  // true otherwise.
+  bool IsDataValid() const;
+  
  private:
   AXTableInfo* GetAncestorTableInfo() const;
   void IdVectorToNodeVector(const std::vector<AXNodeID>& ids,

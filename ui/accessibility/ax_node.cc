@@ -1510,6 +1510,10 @@ AXNode* AXNode::GetOrderedSet() const {
 
   return result;
 }
+  
+bool AXNode::IsDataValid() const {
+  return !is_data_still_uninitialized_ && !has_data_been_taken_;
+}
 
 AXNode* AXNode::ComputeLastUnignoredChildRecursive() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
