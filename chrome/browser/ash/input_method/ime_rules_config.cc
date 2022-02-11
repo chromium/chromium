@@ -77,7 +77,7 @@ void ImeRulesConfig::InitFromTrialParams() {
     if (ac_domains_items != nullptr) {
       for (const auto& domain : ac_domains_items->GetListDeprecated()) {
         if (domain.is_string()) {
-          auto_correct_domain_denylist_.push_back(*domain.GetIfString());
+          rule_auto_correct_domain_denylist_.push_back(*domain.GetIfString());
         }
       }
     }
@@ -86,8 +86,14 @@ void ImeRulesConfig::InitFromTrialParams() {
 
 bool ImeRulesConfig::IsAutoCorrectDisabled(
     const TextFieldContextualInfo& info) {
-  // Check the domain denylist rules
-  for (const auto& domain : auto_correct_domain_denylist_) {
+  // Check the default domain denylist rules.
+  for (const auto& domain : default_auto_correct_domain_denylist_) {
+    if (info.tab_url.DomainIs(domain)) {
+      return true;
+    }
+  }
+  // Check the rule domain denylist rules.
+  for (const auto& domain : rule_auto_correct_domain_denylist_) {
     if (info.tab_url.DomainIs(domain)) {
       return true;
     }

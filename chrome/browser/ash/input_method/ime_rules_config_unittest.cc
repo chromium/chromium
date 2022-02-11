@@ -45,7 +45,7 @@ class ImeRulesConfigTest : public testing::Test {
   ~ImeRulesConfigTest() override = default;
 
   std::vector<std::string> GetAutocorrectDomainDenylistForTest() {
-    return ImeRulesConfig::GetInstance()->auto_correct_domain_denylist_;
+    return ImeRulesConfig::GetInstance()->rule_auto_correct_domain_denylist_;
   }
 };
 
@@ -73,6 +73,10 @@ TEST_F(ImeRulesConfigTest, IsAutoCorrectDisabled) {
       FakeTextFieldContextualInfo(GURL("https://www.example.com"))));
   EXPECT_TRUE(rules->IsAutoCorrectDisabled(
       FakeTextFieldContextualInfo(GURL("https://test.com.au"))));
+  EXPECT_TRUE(rules->IsAutoCorrectDisabled(
+      FakeTextFieldContextualInfo(GURL("https://www.youtube.com"))));
+  EXPECT_TRUE(rules->IsAutoCorrectDisabled(
+      FakeTextFieldContextualInfo(GURL("https://b.corp.google.com/134"))));
   EXPECT_TRUE(rules->IsAutoCorrectDisabled(FakeTextFieldContextualInfo(
       GURL("https://docs.google.com/document/d/documentId/edit"))));
 }
