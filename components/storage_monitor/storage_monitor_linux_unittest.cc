@@ -350,7 +350,7 @@ TEST_F(StorageMonitorLinuxTest, BasicAttachDetach) {
 
 // Only removable devices are recognized.
 // This test is flaky, see https://crbug.com/1012211
-TEST_F(StorageMonitorLinuxTest, DISABLED_Removable) {
+TEST_F(StorageMonitorLinuxTest, Removable) {
   base::FilePath test_path_a = CreateMountPointWithDCIMDir(kMountPointA);
   ASSERT_FALSE(test_path_a.empty());
   MtabTestData test_data1[] = {
@@ -435,7 +435,7 @@ TEST_F(StorageMonitorLinuxTest, SwapMountPoints) {
 }
 
 // More complicated test case with multiple devices on multiple mount points.
-TEST_F(StorageMonitorLinuxTest, DISABLED_MultiDevicesMultiMountPoints) {
+TEST_F(StorageMonitorLinuxTest, MultiDevicesMultiMountPoints) {
   base::FilePath test_path_a = CreateMountPointWithDCIMDir(kMountPointA);
   base::FilePath test_path_b = CreateMountPointWithDCIMDir(kMountPointB);
   ASSERT_FALSE(test_path_a.empty());
@@ -502,8 +502,7 @@ TEST_F(StorageMonitorLinuxTest, DISABLED_MultiDevicesMultiMountPoints) {
   EXPECT_EQ(5, observer().detach_calls());
 }
 
-TEST_F(StorageMonitorLinuxTest,
-       DISABLED_MultipleMountPointsWithNonDCIMDevices) {
+TEST_F(StorageMonitorLinuxTest, MultipleMountPointsWithNonDCIMDevices) {
   base::FilePath test_path_a = CreateMountPointWithDCIMDir(kMountPointA);
   base::FilePath test_path_b = CreateMountPointWithDCIMDir(kMountPointB);
   ASSERT_FALSE(test_path_a.empty());
@@ -663,7 +662,7 @@ TEST_F(StorageMonitorLinuxTest, DeviceLookUp) {
   EXPECT_EQ(1, observer().detach_calls());
 }
 
-TEST_F(StorageMonitorLinuxTest, DISABLED_DevicePartitionSize) {
+TEST_F(StorageMonitorLinuxTest, DevicePartitionSize) {
   base::FilePath test_path_a = CreateMountPointWithDCIMDir(kMountPointA);
   base::FilePath test_path_b = CreateMountPointWithoutDCIMDir(kMountPointB);
   ASSERT_FALSE(test_path_a.empty());
