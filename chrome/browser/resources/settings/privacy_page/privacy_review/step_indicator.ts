@@ -8,7 +8,7 @@
  * highlighted, to indicate how far the user is through a multi-step flow.
  */
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getTemplate} from './step_indicator.html.js';
 
 const StepIndicatorBase = I18nMixin(PolymerElement);

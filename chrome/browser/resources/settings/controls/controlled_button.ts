@@ -7,7 +7,7 @@ import '//resources/cr_elements/policy/cr_policy_pref_indicator.m.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
 import '../settings_shared_css.js';
 
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getTemplate} from './controlled_button.html.js';
 
 import {CrPolicyPrefMixin} from './cr_policy_pref_mixin.js';

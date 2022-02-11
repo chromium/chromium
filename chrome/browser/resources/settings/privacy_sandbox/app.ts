@@ -9,7 +9,7 @@ import '../lazy_load.js';
 import '../settings.js';
 
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 // Those resources are loaded through lazy_load.js and settings.js as the
 // privacy sandbox page lives outside regular settings, hence can't access those

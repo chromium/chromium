@@ -8,7 +8,7 @@ import '../settings_shared_css.js';
 
 import {assert} from '//resources/js/assert.m.js';
 import {I18nMixin} from '//resources/js/i18n_mixin.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ExtensionControlBrowserProxyImpl} from '../extension_control_browser_proxy.js';
 

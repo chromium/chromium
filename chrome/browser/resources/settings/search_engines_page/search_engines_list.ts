@@ -11,7 +11,7 @@ import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 import './search_engine_entry.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SearchEngine} from './search_engines_browser_proxy.js';
 import {getTemplate} from './search_engines_list.html.js';

@@ -12,7 +12,7 @@ import '../../prefs/prefs.js';
 import './privacy_review_description_item.js';
 import './privacy_review_fragment_shared_css.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getTemplate} from './privacy_review_clear_on_exit_fragment.html.js';
 
 export class PrivacyReviewClearOnExitFragmentElement extends PolymerElement {

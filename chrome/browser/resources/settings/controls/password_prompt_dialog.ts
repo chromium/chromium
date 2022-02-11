@@ -27,7 +27,7 @@ import '../settings_shared_css.js';
 
 import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.m.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getTemplate} from './password_prompt_dialog.html.js';
 
 interface SettingsPasswordPromptDialogElement {
