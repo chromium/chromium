@@ -28,6 +28,7 @@ public class NavigationHandle {
     private final boolean mIsSameDocument;
     private @PageTransition int mPageTransition;
     private GURL mUrl;
+    private GURL mReferrerUrl;
     private boolean mHasCommitted;
     private boolean mIsDownload;
     private boolean mIsErrorPage;
@@ -37,19 +38,32 @@ public class NavigationHandle {
     private int mHttpStatusCode;
     private final Origin mInitiatorOrigin;
     private final Impression mImpression;
+    private final boolean mIsPost;
+    private final boolean mHasUserGesture;
+    private final boolean mIsRedirect;
+    private final boolean mIsExternalProtocol;
+    private final long mNavigationId;
 
     @CalledByNative
-    public NavigationHandle(long nativeNavigationHandleProxy, GURL url,
+    public NavigationHandle(long nativeNavigationHandleProxy, GURL url, GURL referrerUrl,
             boolean isInPrimaryMainFrame, boolean isSameDocument, boolean isRendererInitiated,
-            Origin initiatorOrigin, ByteBuffer impressionData, @PageTransition int transition) {
+            Origin initiatorOrigin, ByteBuffer impressionData, @PageTransition int transition,
+            boolean isPost, boolean hasUserGesture, boolean isRedirect, boolean isExternalProtocol,
+            long navigationId) {
         mNativeNavigationHandleProxy = nativeNavigationHandleProxy;
         mUrl = url;
+        mReferrerUrl = referrerUrl;
         mIsInPrimaryMainFrame = isInPrimaryMainFrame;
         mIsSameDocument = isSameDocument;
         mIsRendererInitiated = isRendererInitiated;
         mInitiatorOrigin = initiatorOrigin;
         mImpression = impressionData != null ? Impression.deserialize(impressionData) : null;
         mPageTransition = transition;
+        mIsPost = isPost;
+        mHasUserGesture = hasUserGesture;
+        mIsRedirect = isRedirect;
+        mIsExternalProtocol = isExternalProtocol;
+        mNavigationId = navigationId;
     }
 
     /**
@@ -97,6 +111,11 @@ public class NavigationHandle {
      */
     public GURL getUrl() {
         return mUrl;
+    }
+
+    /** The referrer URL for the navigation. */
+    public GURL getReferrerUrl() {
+        return mReferrerUrl;
     }
 
     /**
@@ -240,6 +259,33 @@ public class NavigationHandle {
      */
     public Impression getImpression() {
         return mImpression;
+    }
+
+    /** True if the the navigation method is "POST". */
+    public boolean isPost() {
+        return mIsPost;
+    }
+
+    /** True if the navigation was initiated by the user. */
+    public boolean hasUserGesture() {
+        return mHasUserGesture;
+    }
+
+    /** Is the navigation a redirect (in which case URL is the "target" address). */
+    public boolean isRedirect() {
+        return mIsRedirect;
+    }
+
+    /** True if the target URL can't be handled by Chrome's internal protocol handlers. */
+    public boolean isExternalProtocol() {
+        return mIsExternalProtocol;
+    }
+
+    /**
+     * Get a unique ID for this navigation.
+     */
+    public long getNavigationId() {
+        return mNavigationId;
     }
 
     @NativeMethods

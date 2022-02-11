@@ -43,13 +43,20 @@ NavigationHandleProxy::NavigationHandleProxy(
   java_navigation_handle_ = Java_NavigationHandle_Constructor(
       env, reinterpret_cast<jlong>(this),
       url::GURLAndroid::FromNativeGURL(env, cpp_navigation_handle_->GetURL()),
+      url::GURLAndroid::FromNativeGURL(
+          env, cpp_navigation_handle_->GetReferrer().url),
       cpp_navigation_handle_->IsInPrimaryMainFrame(),
       cpp_navigation_handle_->IsSameDocument(),
       cpp_navigation_handle_->IsRendererInitiated(),
       cpp_navigation_handle_->GetInitiatorOrigin()
           ? cpp_navigation_handle_->GetInitiatorOrigin()->CreateJavaObject()
           : nullptr,
-      impression_byte_buffer, cpp_navigation_handle_->GetPageTransition());
+      impression_byte_buffer, cpp_navigation_handle_->GetPageTransition(),
+      cpp_navigation_handle_->IsPost(),
+      cpp_navigation_handle_->HasUserGesture(),
+      cpp_navigation_handle_->WasServerRedirect(),
+      cpp_navigation_handle_->IsExternalProtocol(),
+      cpp_navigation_handle_->GetNavigationId());
 }
 
 void NavigationHandleProxy::DidRedirect() {
