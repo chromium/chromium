@@ -18,6 +18,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/security_interstitials/core/metrics_helper.h"
@@ -29,12 +30,14 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/test/test_data_directory.h"
+#include "net/test/url_request/url_request_failed_job.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/url_constants.h"
 
@@ -819,6 +822,64 @@ IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest, CloseInterstitialTab) {
   histograms()->ExpectBucketCount(
       "interstitial.https_first_mode.decision",
       security_interstitials::MetricsHelper::Decision::DONT_PROCEED, 1);
+}
+
+// Tests that the HTTPS-First Mode interstitial is not triggered when a
+// potentially transient network error occurs.
+IN_PROC_BROWSER_TEST_F(HttpsOnlyModeBrowserTest,
+                       NetErrorDoesNotTriggerInterstitial) {
+  HttpsOnlyModeUpgradeInterceptor::SetHttpsPortForTesting(0);
+  HttpsOnlyModeUpgradeInterceptor::SetHttpPortForTesting(0);
+  content::URLLoaderInterceptor interceptor(base::BindRepeating(
+      [](content::URLLoaderInterceptor::RequestParams* params) {
+        return false;
+      }));
+
+  // Navigate to the HTTP URL and simulate an ERR_INTERNET_DISCONNECTED on both
+  // HTTP/HTTPS.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), net::URLRequestFailedJob::GetMockHttpUrl(
+                     net::ERR_INTERNET_DISCONNECTED)));
+
+  // No interstitial should be shown.
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+          contents));
+
+  // Verify that the navigation event histogram was correctly logged.
+  histograms()->ExpectTotalCount("Security.HttpsFirstMode.NavigationEvent", 3);
+  histograms()->ExpectBucketCount(
+      "Security.HttpsFirstMode.NavigationEvent",
+      HttpsOnlyModeNavigationThrottle::Event::kUpgradeAttempted, 1);
+  histograms()->ExpectBucketCount(
+      "Security.HttpsFirstMode.NavigationEvent",
+      HttpsOnlyModeNavigationThrottle::Event::kUpgradeFailed, 1);
+  histograms()->ExpectBucketCount(
+      "Security.HttpsFirstMode.NavigationEvent",
+      HttpsOnlyModeNavigationThrottle::Event::kUpgradeExemptError, 1);
+
+  // Navigate to the HTTP URL and simulate a DNS error on both HTTP/HTTPS.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      net::URLRequestFailedJob::GetMockHttpUrl(net::ERR_NAME_NOT_RESOLVED)));
+
+  // No interstitial should be shown.
+  EXPECT_FALSE(
+      chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+          contents));
+
+  // Verify that the navigation event histogram was correctly logged again.
+  histograms()->ExpectTotalCount("Security.HttpsFirstMode.NavigationEvent", 6);
+  histograms()->ExpectBucketCount(
+      "Security.HttpsFirstMode.NavigationEvent",
+      HttpsOnlyModeNavigationThrottle::Event::kUpgradeAttempted, 2);
+  histograms()->ExpectBucketCount(
+      "Security.HttpsFirstMode.NavigationEvent",
+      HttpsOnlyModeNavigationThrottle::Event::kUpgradeFailed, 2);
+  histograms()->ExpectBucketCount(
+      "Security.HttpsFirstMode.NavigationEvent",
+      HttpsOnlyModeNavigationThrottle::Event::kUpgradeExemptError, 2);
 }
 
 // A simple test fixture that ensures the kHttpsOnlyMode feature is enabled and

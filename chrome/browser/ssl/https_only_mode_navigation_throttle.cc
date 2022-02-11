@@ -31,6 +31,18 @@ void RecordHttpsFirstModeNavigation(
                                 event);
 }
 
+// Check for net errors that should not result in an HTTPS-First Mode
+// interstitial and fallback to HTTP. These cover cases where the error is most
+// likely related to the local network conditions or a transient error, where it
+// is more useful to show the user a network error page than the HTTPS-First
+// Mode interstitial.
+bool IsHttpsFirstModeExemptedError(const net::Error& error) {
+  return net::IsHostnameResolutionError(error) ||
+         error == net::ERR_NETWORK_CHANGED ||
+         error == net::ERR_INTERNET_DISCONNECTED ||
+         error == net::ERR_ADDRESS_UNREACHABLE;
+}
+
 }  // namespace
 
 // static
@@ -76,23 +88,33 @@ HttpsOnlyModeNavigationThrottle::~HttpsOnlyModeNavigationThrottle() = default;
 content::NavigationThrottle::ThrottleCheckResult
 HttpsOnlyModeNavigationThrottle::WillFailRequest() {
   auto* handle = navigation_handle();
-
-  // If there was no certificate error, SSLInfo will be empty.
-  const net::SSLInfo info = handle->GetSSLInfo().value_or(net::SSLInfo());
-  int cert_status = info.cert_status;
-  if (!net::IsCertStatusError(cert_status) &&
-      handle->GetNetErrorCode() == net::OK) {
-    // Don't fallback.
-    return content::NavigationThrottle::PROCEED;
-  }
+  auto* contents = handle->GetWebContents();
+  auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(contents);
 
   // Only show the interstitial if the Interceptor attempted to upgrade the
   // navigation.
-  auto* contents = handle->GetWebContents();
-  auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(contents);
   if (tab_helper->is_navigation_upgraded()) {
     // Record failure type metrics for upgraded navigations.
     RecordHttpsFirstModeNavigation(Event::kUpgradeFailed);
+
+    // Prefer showing a net error page for potentially transient network errors.
+    // These do not provide sufficient indication that the server does not
+    // support HTTPS, so it is clearer to the user to show the network error
+    // page instead of falling back to HTTP and showing an HTTP interstitial.
+    //
+    // TODO(crbug.com/1257272): If possible, it may be preferable to "undo" the
+    // upgrade in these cases and then show the network error. (That is, fall
+    // back but skip showing the interstitial or marking the host as
+    // allowlisted.) That way, when the user refreshes, HFM will retry the
+    // upgrade. Otherwise, it's possible that a user reloading will lose the
+    // "is upgraded" state, and the fallback won't trigger if the transient
+    // error goes away and the server doesn't support HTTPS.
+    if (IsHttpsFirstModeExemptedError(handle->GetNetErrorCode())) {
+      RecordHttpsFirstModeNavigation(Event::kUpgradeExemptError);
+      return content::NavigationThrottle::PROCEED;
+    }
+
+    // Other error types may indicate that the server does not support HTTPS.
     if (net::IsCertificateError(handle->GetNetErrorCode())) {
       RecordHttpsFirstModeNavigation(Event::kUpgradeCertError);
     } else if (handle->GetNetErrorCode() == net::ERR_TIMED_OUT) {
