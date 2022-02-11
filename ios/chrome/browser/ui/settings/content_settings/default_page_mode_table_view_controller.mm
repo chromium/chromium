@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/content_settings/default_page_mode_table_view_controller.h"
 
+#import "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/ui/settings/content_settings/default_page_mode_table_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -71,7 +72,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   TableViewLinkHeaderFooterItem* footer =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
-  footer.text = l10n_util::GetNSString(IDS_IOS_DEFAULT_PAGE_MODE_SUBTITLE);
+  if (self.chosenItemType == ItemTypeDesktop) {
+    footer.text =
+        l10n_util::GetNSString(IDS_IOS_DEFAULT_PAGE_MODE_DESKTOP_SUBTITLE);
+  } else {
+    footer.text =
+        l10n_util::GetNSString(IDS_IOS_DEFAULT_PAGE_MODE_MOBILE_SUBTITLE);
+  }
   [model setFooter:footer forSectionWithIdentifier:SectionIdentifierMode];
 }
 
@@ -109,11 +116,25 @@ typedef NS_ENUM(NSInteger, ItemType) {
     }
   }
 
+  TableViewLinkHeaderFooterItem* footer =
+      base::mac::ObjCCastStrict<TableViewLinkHeaderFooterItem>(
+          [self.tableViewModel
+              footerForSectionWithIdentifier:SectionIdentifierMode]);
+  if (mode == DefaultPageModeDesktop) {
+    footer.text =
+        l10n_util::GetNSString(IDS_IOS_DEFAULT_PAGE_MODE_DESKTOP_SUBTITLE);
+  } else {
+    footer.text =
+        l10n_util::GetNSString(IDS_IOS_DEFAULT_PAGE_MODE_MOBILE_SUBTITLE);
+  }
+
   base::RecordAction(
       base::UserMetricsAction("MobileDefaultPageModeSettingsToggled"));
-  [self reloadCellsForItems:[self.tableViewModel itemsInSectionWithIdentifier:
-                                                     SectionIdentifierMode]
-           withRowAnimation:UITableViewRowAnimationAutomatic];
+  NSIndexSet* section = [NSIndexSet
+      indexSetWithIndex:[self.tableViewModel
+                            sectionForSectionIdentifier:SectionIdentifierMode]];
+  [self.tableView reloadSections:section
+                withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 #pragma mark - SettingsControllerProtocol
