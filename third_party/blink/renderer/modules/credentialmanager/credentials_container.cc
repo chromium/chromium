@@ -941,10 +941,15 @@ ScriptPromise CredentialsContainer::get(
     return promise;
   }
 
-  if (options->hasFederated()) {
+  // |kCredentialManagerGetFederatedCredential| was introduced to measure the
+  // use of |FederatedCredential|. FedCM API reuses |FederatedCredential| with a
+  // non-string type |provider|. Therefore, we need to update the use counter to
+  // consistently measure the string type of |provider| usage.
+  if (options->hasFederated() && !options->federated()->hasProviders()) {
     UseCounter::Count(context,
                       WebFeature::kCredentialManagerGetFederatedCredential);
-  } else if (options->hasPassword()) {
+  }
+  if (!options->hasFederated() && options->hasPassword()) {
     UseCounter::Count(context,
                       WebFeature::kCredentialManagerGetPasswordCredential);
   }
@@ -1127,6 +1132,8 @@ ScriptPromise CredentialsContainer::get(
             ->GetContentSecurityPolicyForCurrentWorld();
     for (const auto& provider : options->federated()->providers()) {
       if (provider->IsString()) {
+        UseCounter::Count(context,
+                          WebFeature::kCredentialManagerGetFederatedCredential);
         KURL url = KURL(NullURL(), provider->GetAsString());
         if (url.IsValid())
           providers.push_back(std::move(url));
