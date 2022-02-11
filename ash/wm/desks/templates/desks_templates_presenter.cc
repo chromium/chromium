@@ -387,7 +387,7 @@ void DesksTemplatesPresenter::RemoveUIEntries(
     if (views::Widget* grid_widget =
             overview_grid->desks_templates_grid_widget()) {
       static_cast<DesksTemplatesGridView*>(grid_widget->GetContentsView())
-          ->DeleteTemplates(uuids, /*layout=*/true);
+          ->DeleteTemplates(uuids);
     }
   }
 

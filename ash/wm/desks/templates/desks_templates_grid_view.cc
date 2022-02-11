@@ -118,22 +118,17 @@ DesksTemplatesGridView::CreateDesksTemplatesGridWidget(aura::Window* root) {
 void DesksTemplatesGridView::PopulateGridUI(
     const std::vector<DeskTemplate*>& desk_templates,
     const gfx::Rect& grid_bounds) {
-  // In the cases where the grid was hidden and needs to be reshown, we will
-  // clear the current views and repopulate the grid with the new
-  // `desk_templates`.
-  // TODO(crbug.com/1291087): Change this logic so that we just go through and
-  // add/update the necessary views.
-  RemoveAllChildViews();
-  grid_items_.clear();
-
-  if (desk_templates.empty())
+  if (desk_templates.empty()) {
+    RemoveAllChildViews();
+    grid_items_.clear();
     return;
+  }
 
   DCHECK_LE(desk_templates.size(),
             DesksTemplatesPresenter::Get()->GetMaxEntryCount());
 
-  AddTemplatesToGrid(std::vector<const DeskTemplate*>(desk_templates.begin(),
-                                                      desk_templates.end()));
+  AddOrUpdateTemplates(std::vector<const DeskTemplate*>(desk_templates.begin(),
+                                                        desk_templates.end()));
 
   feedback_button_ = AddChildView(std::make_unique<PillButton>(
       base::BindRepeating(&DesksTemplatesGridView::OnFeedbackButtonPressed,
@@ -155,24 +150,43 @@ void DesksTemplatesGridView::PopulateGridUI(
 }
 
 void DesksTemplatesGridView::AddOrUpdateTemplates(
-    const std::vector<const DeskTemplate*>& new_entries) {
-  // TODO(crbug.com/1291087): Instead of deleting and then adding a new template
-  // view, we should just add a way to directly update the existing view.
-  std::vector<std::string> entries_uuids;
-  for (auto* new_entry : new_entries)
-    entries_uuids.emplace_back(new_entry->uuid().AsLowercaseString());
+    const std::vector<const DeskTemplate*>& entries) {
+  for (const DeskTemplate* entry : entries) {
+    auto iter = std::find_if(grid_items_.begin(), grid_items_.end(),
+                             [entry](DesksTemplatesItemView* grid_item) {
+                               return entry->uuid() == grid_item->uuid();
+                             });
 
-  // We wait to do a layout until after we both delete and add all the templates
-  // views to the grid.
-  DeleteTemplates(entries_uuids, /*layout=*/false);
-  AddTemplatesToGrid(new_entries);
+    if (iter != grid_items_.end()) {
+      (*iter)->UpdateTemplate(*entry);
+    } else {
+      grid_items_.push_back(
+          AddChildView(std::make_unique<DesksTemplatesItemView>(entry)));
+    }
+  }
+
+  // Sort the `grid_items_` into alphabetical order based on template name.
+  // Note that this doesn't update the order of the child views, but just sorts
+  // the vector. `Layout` is responsible for placing the views in the correct
+  // locations in the grid.
+  UErrorCode error_code = U_ZERO_ERROR;
+  std::unique_ptr<icu::Collator> collator(
+      icu::Collator::createInstance(error_code));  // Use current ICU locale.
+  DCHECK(U_SUCCESS(error_code));
+
+  std::sort(grid_items_.begin(), grid_items_.end(),
+            [&collator](const DesksTemplatesItemView* a,
+                        const DesksTemplatesItemView* b) {
+              return base::i18n::CompareString16WithCollator(
+                         *collator, a->name_view()->GetAccessibleName(),
+                         b->name_view()->GetAccessibleName()) < 0;
+            });
 
   Layout();
 }
 
 void DesksTemplatesGridView::DeleteTemplates(
-    const std::vector<std::string>& uuids,
-    bool layout) {
+    const std::vector<std::string>& uuids) {
   OverviewHighlightController* highlight_controller =
       Shell::Get()
           ->overview_controller()
@@ -197,8 +211,7 @@ void DesksTemplatesGridView::DeleteTemplates(
     grid_items_.erase(iter);
   }
 
-  if (layout)
-    Layout();
+  Layout();
 }
 
 bool DesksTemplatesGridView::IsTemplateNameBeingModified() const {
@@ -278,32 +291,6 @@ void DesksTemplatesGridView::OnWindowDestroying(aura::Window* window) {
   widget_window_->RemoveObserver(this);
   event_handler_.reset();
   widget_window_ = nullptr;
-}
-
-void DesksTemplatesGridView::AddTemplatesToGrid(
-    const std::vector<const DeskTemplate*>& desk_templates) {
-  for (const DeskTemplate* desk_template : desk_templates) {
-    grid_items_.push_back(
-        AddChildView(std::make_unique<DesksTemplatesItemView>(desk_template)));
-  }
-
-  // Sort the `grid_items_` into alphabetical order based on template name.
-  // Note that this doesn't update the order of the child views, but just sorts
-  // the vector. `Layout` is responsible for placing the views in the correct
-  // locations in the grid and callers are expected to call `Layout` after this
-  // function.
-  UErrorCode error_code = U_ZERO_ERROR;
-  std::unique_ptr<icu::Collator> collator(
-      icu::Collator::createInstance(error_code));  // Use current ICU locale.
-  DCHECK(U_SUCCESS(error_code));
-
-  std::sort(grid_items_.begin(), grid_items_.end(),
-            [&collator](const DesksTemplatesItemView* a,
-                        const DesksTemplatesItemView* b) {
-              return base::i18n::CompareString16WithCollator(
-                         *collator, a->name_view()->GetAccessibleName(),
-                         b->name_view()->GetAccessibleName()) < 0;
-            });
 }
 
 void DesksTemplatesGridView::OnLocatedEvent(ui::LocatedEvent* event,

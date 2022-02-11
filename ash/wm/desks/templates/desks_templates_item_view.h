@@ -87,8 +87,15 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
 
   // Rename current template with new name, delete old template with same name
   // by uuid. Used for callback functions for Replace Dialog.
-  void ReplaceTemplate(const std::string& uuid, const std::u16string& new_name);
+  void ReplaceTemplate(const std::string& uuid);
   void RevertTemplateName();
+
+  // This allows us to update an existing template view. Currently, this
+  // function will only update the name. We will need to update this once we
+  // allow the user to make more changes to a template. If the text field is
+  // blurred when there is an update, we intentionally leave it blurred in order
+  // to align this behavior with other similar cases.
+  void UpdateTemplate(const DeskTemplate& updated_template);
 
   // views::Button:
   void Layout() override;

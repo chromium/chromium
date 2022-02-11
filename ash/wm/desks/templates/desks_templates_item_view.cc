@@ -239,10 +239,11 @@ bool DesksTemplatesItemView::IsTemplateNameBeingModified() const {
   return name_view_->HasFocus();
 }
 
-void DesksTemplatesItemView::ReplaceTemplate(const std::string& uuid,
-                                             const std::u16string& new_name) {
-  UpdateTemplateName();
+void DesksTemplatesItemView::ReplaceTemplate(const std::string& uuid) {
+  // Make sure we delete the template we are replacing first, so that we don't
+  // get template name collisions.
   DesksTemplatesPresenter::Get()->DeleteEntry(uuid);
+  UpdateTemplateName();
   RecordReplaceTemplateHistogram();
 }
 
@@ -253,6 +254,22 @@ void DesksTemplatesItemView::RevertTemplateName() {
   name_view_->SelectAll(true);
 
   name_view_->OnContentsChanged();
+}
+
+void DesksTemplatesItemView::UpdateTemplate(
+    const DeskTemplate& updated_template) {
+  desk_template_ = updated_template.Clone();
+
+  hover_container_->SetVisible(false);
+  icon_container_view_->SetVisible(true);
+
+  auto new_name = desk_template_->template_name();
+  name_view_->SetText(new_name);
+  name_view_->SetAccessibleName(new_name);
+  SetAccessibleName(new_name);
+  name_view_->OnContentsChanged();
+
+  Layout();
 }
 
 void DesksTemplatesItemView::Layout() {
@@ -394,8 +411,7 @@ void DesksTemplatesItemView::OnViewBlurred(views::View* observed_view) {
           base::BindOnce(
               &DesksTemplatesItemView::ReplaceTemplate,
               weak_ptr_factory_.GetWeakPtr(),
-              template_item->desk_template_->uuid().AsLowercaseString(),
-              new_name),
+              template_item->desk_template_->uuid().AsLowercaseString()),
           base::BindOnce(&DesksTemplatesItemView::RevertTemplateName,
                          weak_ptr_factory_.GetWeakPtr()));
       return;
@@ -418,18 +434,8 @@ void DesksTemplatesItemView::UpdateTemplateName() {
   desk_template_->set_template_name(name_view_->GetText());
   OnTemplateNameChanged(desk_template_->template_name());
 
-  // Calling `SaveOrUpdateDeskTemplate` will trigger rebuilding the desks
-  // templates grid views hierarchy which includes `this`. Use a post task as
-  // some other `ViewObserver`'s may still be using `this`.
-  // TODO(crbug.com/1266552): Remove the post task once saving and updating does
-  // not cause `this` to be deleted anymore.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](std::unique_ptr<DeskTemplate> desk_template) {
-                       DesksTemplatesPresenter::Get()->SaveOrUpdateDeskTemplate(
-                           /*is_update=*/true, std::move(desk_template));
-                     },
-                     desk_template_->Clone()));
+  DesksTemplatesPresenter::Get()->SaveOrUpdateDeskTemplate(
+      /*is_update=*/true, desk_template_->Clone());
 }
 
 void DesksTemplatesItemView::ContentsChanged(

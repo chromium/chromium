@@ -2294,25 +2294,25 @@ TEST_F(DesksTemplatesTest, ReplaceTemplateMetric) {
   UpdateDisplay("800x600,800x600");
 
   const base::GUID uuid_1 = base::GUID::GenerateRandomV4();
-  const std::u16string name_1 = u"template_1";
-  AddEntry(uuid_1, "template_1", base::Time::Now());
+  const std::string name_1 = "template_1";
+  AddEntry(uuid_1, name_1, base::Time::Now());
 
   const base::GUID uuid_2 = base::GUID::GenerateRandomV4();
-  const std::u16string name_2 = u"template_2";
-  AddEntry(uuid_2, "template_2", base::Time::Now());
+  const std::string name_2 = "template_2";
+  AddEntry(uuid_2, name_2, base::Time::Now());
 
   OpenOverviewAndShowTemplatesGrid();
 
   DesksTemplatesItemView* item_view = GetItemViewFromTemplatesGrid(
-      /*grid_item_index=*/0);
+      /*grid_item_index=*/1);
   // Show replace dialogs.
   auto* dialog_controller = DesksTemplatesDialogController::Get();
-  auto callback = base::BindLambdaForTesting([&]() {
-    item_view->ReplaceTemplate(uuid_1.AsLowercaseString(), name_1);
-  });
+  auto callback = base::BindLambdaForTesting(
+      [&]() { item_view->ReplaceTemplate(uuid_1.AsLowercaseString()); });
 
-  dialog_controller->ShowReplaceDialog(Shell::GetPrimaryRootWindow(), u"Bento",
-                                       callback, base::DoNothing());
+  dialog_controller->ShowReplaceDialog(Shell::GetPrimaryRootWindow(),
+                                       base::UTF8ToUTF16(name_1), callback,
+                                       base::DoNothing());
   EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
   ASSERT_TRUE(GetOverviewSession());
 
@@ -2327,7 +2327,7 @@ TEST_F(DesksTemplatesTest, ReplaceTemplateMetric) {
   // The Template has been replaced.
   DesksTemplatesNameView* name_view =
       GetItemViewFromTemplatesGrid(0)->name_view();
-  EXPECT_EQ(name_1, name_view->GetText());
+  EXPECT_EQ(base::UTF8ToUTF16(name_1), name_view->GetText());
   std::vector<DeskTemplate*> entries = GetAllEntries();
   EXPECT_EQ(uuid_2, entries[0]->uuid());
   // Assert metrics being recorded.
