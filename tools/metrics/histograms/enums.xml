@@ -37172,6 +37172,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4162" label="V8Document_Onprerenderingchange_AttributeGetter"/>
   <int value="4163" label="V8Document_Onprerenderingchange_AttributeSetter"/>
   <int value="4164" label="CSSAtRuleFontPaletteValues"/>
+  <int value="4165" label="CSSAtRuleContainer"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

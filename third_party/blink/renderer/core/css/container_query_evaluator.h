@@ -84,7 +84,6 @@ class CORE_EXPORT ContainerQueryEvaluator final
   bool Eval(const ContainerQuery&) const;
   bool Eval(const ContainerQuery&, MediaQueryEvaluator::Results) const;
 
-  // TODO(crbug.com/1145970): Don't lean on MediaQueryEvaluator.
   Member<MediaQueryEvaluator> media_query_evaluator_;
   PhysicalSize size_;
   PhysicalAxes contained_axes_;
