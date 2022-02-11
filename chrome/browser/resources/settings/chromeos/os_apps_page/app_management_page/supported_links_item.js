@@ -206,20 +206,25 @@ Polymer({
       case 1:
         this.overlappingAppsWarning_ =
             this.i18n('appManagementIntentOverlapWarningText1App', appNames[0]);
+        break;
       case 2:
         this.overlappingAppsWarning_ = this.i18n(
             'appManagementIntentOverlapWarningText2Apps', ...appNames);
+        break;
       case 3:
         this.overlappingAppsWarning_ = this.i18n(
             'appManagementIntentOverlapWarningText3Apps', ...appNames);
+        break;
       case 4:
         this.overlappingAppsWarning_ = this.i18n(
             'appManagementIntentOverlapWarningText4Apps',
             ...appNames.slice(0, 3));
+        break;
       default:
         this.overlappingAppsWarning_ = this.i18n(
             'appManagementIntentOverlapWarningText5OrMoreApps',
             ...appNames.slice(0, 3), appNames.length - 3);
+        break;
     }
 
     this.showOverlappingAppsWarning_ = true;
