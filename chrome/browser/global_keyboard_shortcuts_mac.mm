@@ -131,6 +131,9 @@ CommandForKeyEventResult ShortcutCommand(int cmd) {
   return {cmd, /*from_main_menu=*/false};
 }
 
+// Returns a vector of hidden keyboard shortcuts (i.e. ones that arent present
+// in the menus). Note that the hidden "Cmd =" shortcut is somehow enabled by
+// the ui::VKEY_OEM_PLUS entry in accelerators_cocoa.mm.
 std::vector<KeyboardShortcutData> CreateKeyboardShortcutVector() {
   // clang-format off
   std::vector<KeyboardShortcutData> keys({
@@ -171,10 +174,6 @@ std::vector<KeyboardShortcutData> CreateKeyboardShortcutVector() {
     {true,  false, false, true,  kVK_UpArrow,           IDC_FOCUS_PREVIOUS_PANE},
     {true,  true,  false, false, kVK_ANSI_A,            IDC_TAB_SEARCH},
     {true,  true,  false, true,  kVK_ANSI_A,            IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY},
-
-    // Special shortcuts for Zoom in and out.
-    {true,  false, false, false, kVK_ANSI_KeypadPlus,   IDC_ZOOM_PLUS},
-    {true,  false, false, false, kVK_ANSI_KeypadMinus,  IDC_ZOOM_MINUS},
   });
   // clang-format on
 

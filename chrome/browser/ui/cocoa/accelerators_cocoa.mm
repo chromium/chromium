@@ -53,6 +53,8 @@ const struct AcceleratorMapping {
     {IDC_SHOW_HISTORY, ui::EF_COMMAND_DOWN, ui::VKEY_Y},
     {IDC_VIEW_SOURCE, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::VKEY_U},
     {IDC_ZOOM_MINUS, ui::EF_COMMAND_DOWN, ui::VKEY_OEM_MINUS},
+    // The following entry also enables "Cmd =" on US keyboards to invoke View
+    // -> Zoom In.
     {IDC_ZOOM_PLUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN, ui::VKEY_OEM_PLUS},
 
     // Accelerators used in the Main Menu, but not the toolbar menu.

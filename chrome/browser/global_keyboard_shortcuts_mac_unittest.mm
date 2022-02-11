@@ -159,19 +159,3 @@ TEST(GlobalKeyboardShortcuts, KeypadNumberKeysMatch) {
     }
   }
 }
-
-// Test that the extra View -> Zoom shortcuts exist.
-TEST(GlobalKeyboardShortcuts, ExtraZoomInOutShortcutsExist) {
-  const int zoomIn = CommandForKeys(kVK_ANSI_Equal, CommandKeyState::kDown,
-                                    ShiftKeyState::kDown);
-  ASSERT_EQ(IDC_ZOOM_PLUS, zoomIn);
-  const int zoomOut = CommandForKeys(kVK_ANSI_Minus, CommandKeyState::kDown);
-  ASSERT_EQ(IDC_ZOOM_MINUS, zoomOut);
-
-  const int cmdPlusFromKeypad =
-      CommandForKeys(kVK_ANSI_KeypadPlus, CommandKeyState::kDown);
-  EXPECT_EQ(cmdPlusFromKeypad, zoomIn);
-  const int cmdMinusFromKeypad =
-      CommandForKeys(kVK_ANSI_KeypadMinus, CommandKeyState::kDown);
-  EXPECT_EQ(cmdMinusFromKeypad, zoomOut);
-}
