@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/public/cpp/session/session_controller.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/quick_pair/common/account_key_failure.h"
 #include "ash/quick_pair/common/device.h"
@@ -20,6 +21,7 @@
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/model/system_tray_model.h"
 #include "base/bind.h"
@@ -67,6 +69,21 @@ std::string GattErrorToString(
     default:
       NOTREACHED();
       return "";
+  }
+}
+
+bool ShouldBeEnabledForLoginStatus(ash::LoginStatus status) {
+  switch (status) {
+    case ash::LoginStatus::NOT_LOGGED_IN:
+    case ash::LoginStatus::LOCKED:
+    case ash::LoginStatus::KIOSK_APP:
+    case ash::LoginStatus::GUEST:
+    case ash::LoginStatus::PUBLIC:
+      return false;
+    case ash::LoginStatus::USER:
+    case ash::LoginStatus::CHILD:
+    default:
+      return true;
   }
 }
 
@@ -309,6 +326,20 @@ void FastPairPairer::SendAccountKey() {
   // pairing.
   if (device_->protocol != Protocol::kFastPairInitial &&
       device_->protocol != Protocol::kFastPairRetroactive) {
+    return;
+  }
+
+  // If there is no signed in user, don't send the account key. This can only
+  // happen in an initial pairing scenario since the retroactive pairing
+  // scenario is disabled in the RetroactivePairingDetector for users who are
+  // not signed in. Because this check happens a long time after the
+  // FastPairPairer is instantiated unlike other classes that disable certain
+  // paths for users who are not signed in, we do not need to check for a
+  // delayed login. At this point, if the user is not logged in, they will not
+  // be.
+  if (!ShouldBeEnabledForLoginStatus(
+          Shell::Get()->session_controller()->login_status())) {
+    QP_LOG(VERBOSE) << __func__ << ": No logged in user to save account key to";
     return;
   }
 

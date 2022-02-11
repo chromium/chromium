@@ -25,6 +25,7 @@
 #include "ash/services/quick_pair/public/cpp/decrypted_passkey.h"
 #include "ash/services/quick_pair/public/cpp/decrypted_response.h"
 #include "ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
@@ -65,6 +66,7 @@ const uint8_t kInvalidPasskey = 9;
 constexpr char kMetadataId[] = "test_metadata_id";
 constexpr char kDeviceName[] = "test_device_name";
 constexpr char kBluetoothCanonicalizedAddress[] = "0C:0E:4C:C8:05:08";
+const std::string kUserEmail = "test@test.test";
 
 const char kWritePasskeyCharacteristicResultMetric[] =
     "Bluetooth.ChromeOS.FastPair.Passkey.Write.Result";
@@ -234,6 +236,11 @@ class FastPairPairerTest : public AshTestBase {
         &fast_pair_gatt_service_factory_);
   }
 
+  void TearDown() override {
+    ClearLogin();
+    AshTestBase::TearDown();
+  }
+
   void SuccessfulDataEncryptorSetUp(bool fast_pair_v1, Protocol protocol) {
     device_ = base::MakeRefCounted<Device>(
         kMetadataId, kBluetoothCanonicalizedAddress, protocol);
@@ -347,6 +354,10 @@ class FastPairPairerTest : public AshTestBase {
 
   void SetPublicKey() { data_encryptor_->public_key(kPublicKey); }
 
+  void Login(user_manager::UserType user_type) {
+    SimulateUserLogin(kUserEmail, user_type);
+  }
+
  protected:
   // This is done on-demand to enable setting up mock expectations first.
   void CreatePairer() {
@@ -380,6 +391,9 @@ class FastPairPairerTest : public AshTestBase {
 };
 
 TEST_F(FastPairPairerTest, FailedCallbackInvokedOnGattError) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairInitial);
   CreatePairer();
@@ -388,6 +402,9 @@ TEST_F(FastPairPairerTest, FailedCallbackInvokedOnGattError) {
 }
 
 TEST_F(FastPairPairerTest, FailedCallbackInvokedOnDeviceNotFound) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairInitial);
   SetGetDeviceFailure();
@@ -396,6 +413,9 @@ TEST_F(FastPairPairerTest, FailedCallbackInvokedOnDeviceNotFound) {
 }
 
 TEST_F(FastPairPairerTest, NoCallbackIsInvokedOnGattSuccess_Initial) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairInitial);
   CreatePairer();
@@ -404,6 +424,9 @@ TEST_F(FastPairPairerTest, NoCallbackIsInvokedOnGattSuccess_Initial) {
 }
 
 TEST_F(FastPairPairerTest, NoCallbackIsInvokedOnGattSuccess_Retroactive) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairRetroactive);
   CreatePairer();
@@ -412,6 +435,9 @@ TEST_F(FastPairPairerTest, NoCallbackIsInvokedOnGattSuccess_Retroactive) {
 }
 
 TEST_F(FastPairPairerTest, NoCallbackIsInvokedOnGattSuccess_Subsequent) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairSubsequent);
   CreatePairer();
@@ -420,6 +446,9 @@ TEST_F(FastPairPairerTest, NoCallbackIsInvokedOnGattSuccess_Subsequent) {
 }
 
 TEST_F(FastPairPairerTest, SuccessfulDecryptedResponsePairFailure_Initial) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   histogram_tester().ExpectTotalCount(kPairDeviceResult, 0);
   histogram_tester().ExpectTotalCount(kPairDeviceErrorReason, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
@@ -434,6 +463,9 @@ TEST_F(FastPairPairerTest, SuccessfulDecryptedResponsePairFailure_Initial) {
 }
 
 TEST_F(FastPairPairerTest, SuccessfulDecryptedResponsePairFailure_Subsequent) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   histogram_tester().ExpectTotalCount(kPairDeviceResult, 0);
   histogram_tester().ExpectTotalCount(kPairDeviceErrorReason, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
@@ -448,6 +480,9 @@ TEST_F(FastPairPairerTest, SuccessfulDecryptedResponsePairFailure_Subsequent) {
 }
 
 TEST_F(FastPairPairerTest, SuccessfulDecryptedResponsePairSuccess_Initial) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairInitial);
   CreatePairer();
@@ -457,6 +492,9 @@ TEST_F(FastPairPairerTest, SuccessfulDecryptedResponsePairSuccess_Initial) {
 }
 
 TEST_F(FastPairPairerTest, SuccessfulDecryptedResponsePairSuccess_Subsequent) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairSubsequent);
   CreatePairer();
@@ -466,6 +504,9 @@ TEST_F(FastPairPairerTest, SuccessfulDecryptedResponsePairSuccess_Subsequent) {
 }
 
 TEST_F(FastPairPairerTest, SuccessfulDecryptedResponseConnectFailure_Initial) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   histogram_tester().ExpectTotalCount(kConnectDeviceResult, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairInitial);
@@ -480,6 +521,9 @@ TEST_F(FastPairPairerTest, SuccessfulDecryptedResponseConnectFailure_Initial) {
 
 TEST_F(FastPairPairerTest,
        SuccessfulDecryptedResponseConnectFailure_Subsequent) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   histogram_tester().ExpectTotalCount(kConnectDeviceResult, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairSubsequent);
@@ -493,6 +537,9 @@ TEST_F(FastPairPairerTest,
 }
 
 TEST_F(FastPairPairerTest, SuccessfulDecryptedResponseConnectSuccess_Initial) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   histogram_tester().ExpectTotalCount(kWritePasskeyCharacteristicResultMetric,
                                       0);
   histogram_tester().ExpectTotalCount(
@@ -512,6 +559,9 @@ TEST_F(FastPairPairerTest, SuccessfulDecryptedResponseConnectSuccess_Initial) {
 
 TEST_F(FastPairPairerTest,
        SuccessfulDecryptedResponseConnectSuccess_Subsequent) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   histogram_tester().ExpectTotalCount(kWritePasskeyCharacteristicResultMetric,
                                       0);
   histogram_tester().ExpectTotalCount(
@@ -530,6 +580,9 @@ TEST_F(FastPairPairerTest,
 }
 
 TEST_F(FastPairPairerTest, ParseDecryptedPasskeyFailure_Initial) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   histogram_tester().ExpectTotalCount(kWritePasskeyCharacteristicResultMetric,
                                       0);
   histogram_tester().ExpectTotalCount(
@@ -556,6 +609,9 @@ TEST_F(FastPairPairerTest, ParseDecryptedPasskeyFailure_Initial) {
 }
 
 TEST_F(FastPairPairerTest, ParseDecryptedPasskeyFailure_Subsequent) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   histogram_tester().ExpectTotalCount(kWritePasskeyCharacteristicResultMetric,
                                       0);
   histogram_tester().ExpectTotalCount(
@@ -582,6 +638,9 @@ TEST_F(FastPairPairerTest, ParseDecryptedPasskeyFailure_Subsequent) {
 }
 
 TEST_F(FastPairPairerTest, ParseDecryptedPasskeyIncorrectMessageType_Initial) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
@@ -602,6 +661,9 @@ TEST_F(FastPairPairerTest, ParseDecryptedPasskeyIncorrectMessageType_Initial) {
 
 TEST_F(FastPairPairerTest,
        ParseDecryptedPasskeyIncorrectMessageType_Subsequent) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
@@ -621,6 +683,9 @@ TEST_F(FastPairPairerTest,
 }
 
 TEST_F(FastPairPairerTest, ParseDecryptedPasskeyMismatch_Initial) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
@@ -640,6 +705,9 @@ TEST_F(FastPairPairerTest, ParseDecryptedPasskeyMismatch_Initial) {
 }
 
 TEST_F(FastPairPairerTest, ParseDecryptedPasskeyMismatch_Subsequent) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
@@ -659,6 +727,9 @@ TEST_F(FastPairPairerTest, ParseDecryptedPasskeyMismatch_Subsequent) {
 }
 
 TEST_F(FastPairPairerTest, PairedDeviceLost_Initial) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
@@ -678,6 +749,9 @@ TEST_F(FastPairPairerTest, PairedDeviceLost_Initial) {
 }
 
 TEST_F(FastPairPairerTest, PairedDeviceLost_Subsequent) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
@@ -697,6 +771,9 @@ TEST_F(FastPairPairerTest, PairedDeviceLost_Subsequent) {
 }
 
 TEST_F(FastPairPairerTest, PairSuccess_Initial) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   histogram_tester().ExpectTotalCount(kConfirmPasskeyAskTime, 0);
   histogram_tester().ExpectTotalCount(kConfirmPasskeyConfirmTime, 0);
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
@@ -722,6 +799,9 @@ TEST_F(FastPairPairerTest, PairSuccess_Initial) {
 }
 
 TEST_F(FastPairPairerTest, PairSuccess_Subsequent) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   histogram_tester().ExpectTotalCount(kConfirmPasskeyAskTime, 0);
   histogram_tester().ExpectTotalCount(kConfirmPasskeyConfirmTime, 0);
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
@@ -748,6 +828,9 @@ TEST_F(FastPairPairerTest, PairSuccess_Subsequent) {
 }
 
 TEST_F(FastPairPairerTest, WriteAccountKey_Initial) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
@@ -773,7 +856,38 @@ TEST_F(FastPairPairerTest, WriteAccountKey_Initial) {
       kWriteAccountKeyCharacteristicResultMetric, 1);
 }
 
+TEST_F(FastPairPairerTest, WriteAccountKey_Initial_GuestLoggedIn) {
+  Login(user_manager::UserType::USER_TYPE_GUEST);
+  base::RunLoop().RunUntilIdle();
+
+  histogram_tester().ExpectTotalCount(
+      kWriteAccountKeyCharacteristicResultMetric, 0);
+  SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
+                               /*protocol=*/Protocol::kFastPairInitial);
+  SetPublicKey();
+  CreatePairer();
+  SetGetDeviceFailure();
+  RunOnGattClientInitializedCallback();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_CALL(paired_callback_, Run);
+  SetDecryptPasskeyForSuccess();
+  SetGetDeviceSuccess();
+  NotifyConfirmPasskey();
+  base::RunLoop().RunUntilIdle();
+  RunWritePasskeyCallback(kResponseBytes);
+  EXPECT_EQ(GetPairFailure(), absl::nullopt);
+  EXPECT_TRUE(IsDevicePaired());
+
+  EXPECT_CALL(pairing_procedure_complete_, Run).Times(0);
+  histogram_tester().ExpectTotalCount(
+      kWriteAccountKeyCharacteristicResultMetric, 0);
+}
+
 TEST_F(FastPairPairerTest, WriteAccountKey_Retroactive) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
@@ -789,6 +903,9 @@ TEST_F(FastPairPairerTest, WriteAccountKey_Retroactive) {
 }
 
 TEST_F(FastPairPairerTest, WriteAccountKeyFailure_Initial) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
@@ -815,6 +932,9 @@ TEST_F(FastPairPairerTest, WriteAccountKeyFailure_Initial) {
 }
 
 TEST_F(FastPairPairerTest, FastPairVersionOne) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/true,
                                /*protocol=*/Protocol::kFastPairInitial);
   CreatePairer();
@@ -822,6 +942,9 @@ TEST_F(FastPairPairerTest, FastPairVersionOne) {
 }
 
 TEST_F(FastPairPairerTest, WriteAccountKeyFailure_Retroactive) {
+  Login(user_manager::UserType::USER_TYPE_REGULAR);
+  base::RunLoop().RunUntilIdle();
+
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
