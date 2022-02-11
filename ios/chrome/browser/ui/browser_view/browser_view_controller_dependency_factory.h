@@ -25,11 +25,6 @@ class Browser;
 // Returns a new keyboard commands coordinator to handle keyboard commands.
 - (KeyCommandsProvider*)newKeyCommandsProvider;
 
-- (AlertCoordinator*)alertCoordinatorWithTitle:(NSString*)title
-                                       message:(NSString*)message
-                                viewController:
-                                    (UIViewController*)viewController;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_BROWSER_VIEW_BROWSER_VIEW_CONTROLLER_DEPENDENCY_FACTORY_H_

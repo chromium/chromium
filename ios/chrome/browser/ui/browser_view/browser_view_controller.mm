@@ -6,8 +6,6 @@
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+delegates.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+private.h"
 
-#import <MessageUI/MessageUI.h>
-
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #include "base/mac/bundle_locations.h"
@@ -55,7 +53,6 @@
 #import "ios/chrome/browser/ssl/captive_portal_tab_helper_delegate.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
-#import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/re_signin_infobar_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_interaction_controller.h"
@@ -153,8 +150,6 @@
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
-#import "ios/chrome/browser/webui/net_export_tab_helper.h"
-#import "ios/chrome/browser/webui/net_export_tab_helper_delegate.h"
 #import "ios/chrome/browser/webui/show_mail_composer_context.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
@@ -276,7 +271,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                                      InfobarPositioner,
                                      KeyCommandsPlumbing,
                                      MainContentUI,
-                                     MFMailComposeViewControllerDelegate,
                                      OmniboxPopupPresenterDelegate,
                                      PreloadControllerDelegate,
                                      SideSwipeControllerDelegate,
@@ -335,10 +329,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // The controller that shows the bookmarking UI after the user taps the star
   // button.
   BookmarkInteractionController* _bookmarkInteractionController;
-
-  // Coordinator for displaying alerts for the net export tab helper.
-  // TODO(crbug.com/1272483): Move this to its own coordinator.
-  AlertCoordinator* _alertCoordinatorForNetExport;
 
   // Coordinator for displaying Sad Tab.
   // TODO(crbug.com/1272494): Move SadTabCoordinator to BrowserCoordinator.
@@ -2621,7 +2611,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   DCHECK(!prerenderService ||
          !prerenderService->IsWebStatePrerendered(webState));
 
-  NetExportTabHelper::CreateForWebState(webState, self);
   CaptivePortalTabHelper::CreateForWebState(webState, self);
 
   NewTabPageTabHelper::FromWebState(webState)->SetDelegate(self);
@@ -4511,61 +4500,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 - (UIView*)webViewContainer {
   return self.contentArea;
-}
-
-#pragma mark - NetExportTabHelperDelegate
-// TODO(crbug.com/1272483): Factor NextExportTabHelperDelegate out of the BVC,
-// along with the alert coordinator. This feature can be moved to its own
-// coordinator.
-
-- (void)netExportTabHelper:(NetExportTabHelper*)tabHelper
-    showMailComposerWithContext:(ShowMailComposerContext*)context {
-  if (![MFMailComposeViewController canSendMail]) {
-    NSString* alertTitle =
-        l10n_util::GetNSString([context emailNotConfiguredAlertTitleId]);
-    NSString* alertMessage =
-        l10n_util::GetNSString([context emailNotConfiguredAlertMessageId]);
-
-    // Dismiss current alert, if any.
-    [_alertCoordinatorForNetExport stop];
-
-    _alertCoordinatorForNetExport =
-        [_dependencyFactory alertCoordinatorWithTitle:alertTitle
-                                              message:alertMessage
-                                       viewController:self];
-    [_alertCoordinatorForNetExport start];
-    return;
-  }
-  MFMailComposeViewController* mailViewController =
-      [[MFMailComposeViewController alloc] init];
-  [mailViewController setModalPresentationStyle:UIModalPresentationFormSheet];
-  [mailViewController setToRecipients:[context toRecipients]];
-  [mailViewController setSubject:[context subject]];
-  [mailViewController setMessageBody:[context body] isHTML:NO];
-
-  const base::FilePath& textFile = [context textFileToAttach];
-  if (!textFile.empty()) {
-    NSString* filename = base::SysUTF8ToNSString(textFile.value());
-    NSData* data = [NSData dataWithContentsOfFile:filename];
-    if (data) {
-      NSString* displayName =
-          base::SysUTF8ToNSString(textFile.BaseName().value());
-      [mailViewController addAttachmentData:data
-                                   mimeType:@"text/plain"
-                                   fileName:displayName];
-    }
-  }
-
-  [mailViewController setMailComposeDelegate:self];
-  [self presentViewController:mailViewController animated:YES completion:nil];
-}
-
-#pragma mark - MFMailComposeViewControllerDelegate methods
-
-- (void)mailComposeController:(MFMailComposeViewController*)controller
-          didFinishWithResult:(MFMailComposeResult)result
-                        error:(NSError*)error {
-  [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - LogoAnimationControllerOwnerOwner (Public)

@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/snapshots/snapshot_generator_delegate.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
-#import "ios/chrome/browser/webui/net_export_tab_helper_delegate.h"
 
 // Protocol containing all of the tab helper delegate protocols needed to set
 // up webstates after the UI is available.
@@ -19,9 +18,6 @@
 // that the BVC conforms to to zero.
 @protocol CommonTabHelperDelegate <
     BubblePresenterDelegate,
-    // TODO(crbug.com/1272483): Factor NetExportTabHelperDelegate out of the
-    // BVC.
-    NetExportTabHelperDelegate,
     // TODO(crbug.com/1173610): Factor NewTabPageTabHelperDelegate out of the
     // BVC.
     NewTabPageTabHelperDelegate,

@@ -16,6 +16,8 @@
 #import "ios/chrome/browser/web_state_list/web_state_dependency_installation_observer.h"
 #import "ios/chrome/browser/web_state_list/web_state_dependency_installer_bridge.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/webui/net_export_tab_helper.h"
+#import "ios/chrome/browser/webui/net_export_tab_helper_delegate.h"
 #import "ios/web/public/deprecated/crw_web_controller_util.h"
 #include "ui/base/device_form_factor.h"
 
@@ -40,6 +42,7 @@
   __weak DownloadManagerCoordinator* _downloadManagerCoordinator;
   __weak UIViewController* _baseViewController;
   __weak CommandDispatcher* _commandDispatcher;
+  __weak id<NetExportTabHelperDelegate> _tabHelperDelegate;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
@@ -52,6 +55,7 @@
     _downloadManagerCoordinator = dependencies.downloadManagerCoordinator;
     _baseViewController = dependencies.baseViewController;
     _commandDispatcher = dependencies.commandDispatcher;
+    _tabHelperDelegate = dependencies.tabHelperDelegate;
 
     // Set the delegate before any of the dependency observers, because they
     // will do delegate installation on creation.
@@ -99,6 +103,8 @@
   DCHECK(_downloadManagerCoordinator);
   DownloadManagerTabHelper::CreateForWebState(webState,
                                               _downloadManagerCoordinator);
+
+  NetExportTabHelper::CreateForWebState(webState, _tabHelperDelegate);
 }
 
 - (void)uninstallDependencyForWebState:(web::WebState*)webState {

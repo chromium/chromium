@@ -28,7 +28,6 @@
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/activity_services/requirements/activity_service_positioner.h"
-#import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/alert_coordinator/repost_form_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_type.h"
@@ -90,6 +89,7 @@
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/webui/net_export_coordinator.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
@@ -101,6 +101,7 @@
 #import "ios/chrome/browser/web_state_list/view_source_browser_agent.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/webui/net_export_tab_helper_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -115,6 +116,7 @@
                                   DefaultPromoNonModalPresentationDelegate,
                                   EnterprisePromptCoordinatorDelegate,
                                   FormInputAccessoryCoordinatorNavigator,
+                                  NetExportTabHelperDelegate,
                                   PageInfoCommands,
                                   PasswordBreachCommands,
                                   PasswordProtectionCommands,
@@ -175,6 +177,9 @@
 
 // Opens downloaded Vcard.
 @property(nonatomic, strong) VcardCoordinator* vcardCoordinator;
+
+// The coordinator that manages net export.
+@property(nonatomic, strong) NetExportCoordinator* netExportCoordinator;
 
 // Weak reference for the next coordinator to be displayed over the toolbar.
 @property(nonatomic, weak) ChromeCoordinator* nextToolbarCoordinator;
@@ -464,6 +469,8 @@
                          browser:self.browser];
   [self.qrScannerCoordinator start];
 
+  /* NetExportCoordinator is created and started by a delegate method */
+
   /* passwordBreachCoordinator is created and started by a BrowserCommand */
 
   /* passwordProtectionCoordinator is created and started by a BrowserCommand */
@@ -580,6 +587,9 @@
 
   [self.nonModalPromoCoordinator stop];
   self.nonModalPromoCoordinator = nil;
+
+  [self.netExportCoordinator stop];
+  self.netExportCoordinator = nil;
 }
 
 // Starts mediators owned by this coordinator.
@@ -597,6 +607,7 @@
       browserViewController.downloadManagerCoordinator;
   dependencies.baseViewController = browserViewController;
   dependencies.commandDispatcher = self.browser->GetCommandDispatcher();
+  dependencies.tabHelperDelegate = self;
 
   self.tabLifecycleMediator = [[TabLifecycleMediator alloc]
       initWithWebStateList:self.browser->GetWebStateList()
@@ -1262,6 +1273,18 @@
 - (void)hideEnterprisePrompForLearnMore:(BOOL)learnMore {
   [self.enterprisePromptCoordinator stop];
   self.enterprisePromptCoordinator = nil;
+}
+
+#pragma mark - NetExportTabHelperDelegate
+
+- (void)netExportTabHelper:(NetExportTabHelper*)tabHelper
+    showMailComposerWithContext:(ShowMailComposerContext*)context {
+  self.netExportCoordinator = [[NetExportCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+             mailComposerContext:context];
+
+  [self.netExportCoordinator start];
 }
 
 @end
