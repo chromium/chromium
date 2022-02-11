@@ -8,8 +8,6 @@ _inspector_protocol = "//third_party/inspector_protocol"
 import("$_inspector_protocol/inspector_protocol.gni")
 
 _protocol_generated = [
-  "base_string_adapter.cc",
-  "base_string_adapter.h",
   "css.cc",
   "css.h",
   "dom.cc",
@@ -19,7 +17,6 @@ _protocol_generated = [
   "overlay.h",
   "page.cc",
   "page.h",
-  "protocol.cc",
   "protocol.h",
   "tracing.h",
   "tracing.cc",
@@ -52,6 +49,7 @@ inspector_protocol_generate("protocol_generated_sources") {
     "protocol.json",
     "inspector_protocol_config.json",
   ]
+  use_embedder_types = true
 
   outputs = _protocol_generated
 }

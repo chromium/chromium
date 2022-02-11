@@ -29,7 +29,7 @@
     "lib": {
         "package": "components/ui_devtools",
         "output": "",
-        "string_header": "components/ui_devtools/base_string_adapter.h",
+        "protocol_traits": "third_party/inspector_protocol/crdtp/chromium/protocol_traits.h",
         "export_macro": "UI_DEVTOOLS_EXPORT",
         "export_header": "components/ui_devtools/devtools_export.h"
     },
