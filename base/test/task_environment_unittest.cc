@@ -13,6 +13,7 @@
 #include "base/cancelable_callback.h"
 #include "base/check.h"
 #include "base/debug/debugger.h"
+#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/synchronization/waitable_event.h"
@@ -1471,6 +1472,69 @@ TEST_F(TaskEnvironmentTest, ParallelExecutionFenceNonMainThreadDeath) {
   task_environment.RunUntilIdle();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+namespace {
+bool FailOnTaskEnvironmentLog(int severity,
+                              const char* file,
+                              int line,
+                              size_t message_start,
+                              const std::string& str) {
+  StringPiece file_str(file);
+  if (file_str.find("task_environment.cc") != StringPiece::npos) {
+    ADD_FAILURE() << str;
+    return true;
+  }
+  return false;
+}
+}  // namespace
+
+// Regression test for crbug.com/1293931
+TEST_F(TaskEnvironmentTest, DisallowRunTasksRetriesForFullTimeout) {
+  TaskEnvironment task_environment;
+
+  // Verify that steps below can let 1 second pass without generating logs.
+  auto previous_handler = logging::GetLogMessageHandler();
+  logging::SetLogMessageHandler(&FailOnTaskEnvironmentLog);
+
+  TestWaitableEvent worker_running;
+  TestWaitableEvent resume_worker_task;
+
+  ThreadPool::PostTask(BindLambdaForTesting([&]() {
+    worker_running.Signal();
+    resume_worker_task.Wait();
+  }));
+
+  // Churn on this task so that TestTaskTracker::task_completed_cv_ gets
+  // signaled a bunch and reproduces the bug's conditions
+  // (TestTaskTracker::DisallowRunTasks gets early chances to quit).
+  RepeatingClosure infinite_repost = BindLambdaForTesting([&]() {
+    if (!resume_worker_task.IsSignaled())
+      ThreadPool::PostTask(infinite_repost);
+  });
+  ThreadPool::PostTask(infinite_repost);
+
+  // Allow ThreadPool quiescence after 1 second of test.
+  ThreadPool::PostDelayedTask(
+      FROM_HERE,
+      BindOnce(&TestWaitableEvent::Signal, Unretained(&resume_worker_task)),
+      Seconds(1));
+
+  worker_running.Wait();
+  {
+    // Attempt to instantiate a ParallelExecutionFence. Without the fix to
+    // crbug.com/1293931, this would result in quickly exiting DisallowRunTasks
+    // without waiting for the intended 5 seconds timeout and would emit
+    // erroneous WARNING logs about slow tasks. This test passses if it doesn't
+    // trip FailOnTaskEnvironmentLog().
+    TaskEnvironment::ParallelExecutionFence fence;
+  }
+
+  // Flush the last |infinite_repost| task to avoid a UAF on
+  // |resume_worker_task|.
+  task_environment.RunUntilIdle();
+
+  logging::SetLogMessageHandler(previous_handler);
+}
 
 }  // namespace test
 }  // namespace base

@@ -825,10 +825,15 @@ bool TaskEnvironment::TestTaskTracker::DisallowRunTasks(TimeDelta timeout) {
   AutoLock auto_lock(lock_);
 
   // Can't disallow run task if there are tasks running.
-  if (!running_tasks_.empty()) {
-    task_completed_cv_.TimedWait(timeout);
-    return false;
+  for (TimeTicks now = subtle::TimeTicksNowIgnoringOverride(),
+                 end = now + timeout;
+       !running_tasks_.empty() && now < end;
+       now = subtle::TimeTicksNowIgnoringOverride()) {
+    task_completed_cv_.TimedWait(end - now);
   }
+  // Timed out waiting for running tasks, yield to caller.
+  if (!running_tasks_.empty())
+    return false;
 
   can_run_tasks_ = false;
   return true;
