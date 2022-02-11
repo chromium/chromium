@@ -127,9 +127,7 @@ GbmSurfacelessWayland::GbmSurfacelessWayland(
 
 void GbmSurfacelessWayland::QueueOverlayPlane(OverlayPlane plane,
                                               BufferId buffer_id) {
-  auto result =
-      unsubmitted_frames_.back()->planes.emplace(buffer_id, std::move(plane));
-  DCHECK(result.second);
+  unsubmitted_frames_.back()->planes.emplace(buffer_id, std::move(plane));
 }
 
 bool GbmSurfacelessWayland::ScheduleOverlayPlane(
