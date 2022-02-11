@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.tab.WebContentsStateBridge;
 import org.chromium.chrome.browser.tab.flatbuffer.CriticalPersistedTabDataFlatBuffer;
 import org.chromium.chrome.browser.tab.flatbuffer.LaunchTypeAtCreation;
 import org.chromium.chrome.browser.tab.flatbuffer.UserAgentType;
-import org.chromium.chrome.browser.tab.proto.CriticalPersistedTabData.CriticalPersistedTabDataProto;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -467,7 +466,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Override
     public Supplier<ByteBuffer> getSerializeSupplier() {
-        CriticalPersistedTabDataProto.Builder builder;
         final WebContentsState webContentsState;
         final ByteBuffer byteBuffer;
         final String openerAppId;
@@ -478,7 +476,6 @@ public class CriticalPersistedTabData extends PersistedTabData {
         final int themeColor;
         final int launchType;
         final int userAgentType;
-        FlatBufferBuilder fbb = new FlatBufferBuilder();
         try (TraceEvent e = TraceEvent.scoped("CriticalPersistedTabData.PreSerialize")) {
             webContentsState = mWebContentsState == null ? getWebContentsStateFromTab(mTab)
                                                          : mWebContentsState;
@@ -497,6 +494,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
         }
         return () -> {
             try (TraceEvent e = TraceEvent.scoped("CriticalPersistedTabData.Serialize")) {
+                FlatBufferBuilder fbb = new FlatBufferBuilder();
                 int wcs = CriticalPersistedTabDataFlatBuffer.createWebContentsStateBytesVector(fbb,
                         byteBuffer == null ? ByteBuffer.allocate(0).put(new byte[] {})
                                            : byteBuffer);
