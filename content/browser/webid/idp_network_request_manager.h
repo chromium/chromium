@@ -95,11 +95,11 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     std::string idp;
     std::string token;
     std::string accounts;
-    std::string client_id_metadata;
+    std::string client_metadata;
     std::string revoke;
   };
 
-  struct ClientIdMetadata {
+  struct ClientMetadata {
     std::string privacy_policy_url;
     std::string terms_of_service_url;
   };
@@ -113,8 +113,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
                               WebContents::ImageDownloadCallback)>;
   using FetchWellKnownCallback =
       base::OnceCallback<void(FetchStatus, Endpoints)>;
-  using FetchClientIdMetadataCallback =
-      base::OnceCallback<void(FetchStatus, ClientIdMetadata)>;
+  using FetchClientMetadataCallback =
+      base::OnceCallback<void(FetchStatus, ClientMetadata)>;
   using SigninRequestCallback =
       base::OnceCallback<void(SigninResponse, const std::string&)>;
   using AccountsRequestCallback = base::OnceCallback<
@@ -141,9 +141,9 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   // Attempt to fetch the IDP's WebID parameters from the its .well-known file.
   virtual void FetchIdpWellKnown(FetchWellKnownCallback);
 
-  virtual void FetchClientIdMetadata(const GURL& endpoint,
-                                     const std::string& client_id,
-                                     FetchClientIdMetadataCallback);
+  virtual void FetchClientMetadata(const GURL& endpoint,
+                                   const std::string& client_id,
+                                   FetchClientMetadataCallback);
 
   // Transmit the OAuth request to the IDP.
   virtual void SendSigninRequest(const GURL& signin_url,
@@ -192,8 +192,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
 
   void OnWellKnownLoaded(std::unique_ptr<std::string> response_body);
   void OnWellKnownParsed(data_decoder::DataDecoder::ValueOrError result);
-  void OnClientIdMetadataLoaded(std::unique_ptr<std::string> response_body);
-  void OnClientIdMetadataParsed(data_decoder::DataDecoder::ValueOrError result);
+  void OnClientMetadataLoaded(std::unique_ptr<std::string> response_body);
+  void OnClientMetadataParsed(data_decoder::DataDecoder::ValueOrError result);
   void OnSigninRequestResponse(std::unique_ptr<std::string> response_body);
   void OnSigninRequestParsed(data_decoder::DataDecoder::ValueOrError result);
   void OnAccountsRequestResponse(AccountRequestInfo request_info,
@@ -229,7 +229,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
 
   FetchWellKnownCallback idp_well_known_callback_;
-  FetchClientIdMetadataCallback client_metadata_callback_;
+  FetchClientMetadataCallback client_metadata_callback_;
   SigninRequestCallback signin_request_callback_;
   TokenRequestCallback token_request_callback_;
   RevokeCallback revoke_callback_;

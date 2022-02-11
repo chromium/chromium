@@ -22,10 +22,10 @@ class MockIdpNetworkRequestManager : public IdpNetworkRequestManager {
       delete;
 
   MOCK_METHOD1(FetchIdpWellKnown, void(FetchWellKnownCallback));
-  MOCK_METHOD3(FetchClientIdMetadata,
+  MOCK_METHOD3(FetchClientMetadata,
                void(const GURL&,
                     const std::string&,
-                    FetchClientIdMetadataCallback));
+                    FetchClientMetadataCallback));
   MOCK_METHOD3(SendSigninRequest,
                void(const GURL&, const std::string&, SigninRequestCallback));
   MOCK_METHOD6(SendAccountsRequest,

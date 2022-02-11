@@ -105,14 +105,14 @@ std::string GetConsoleErrorMessage(RequestIdTokenStatus status) {
     case RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse: {
       return "Provider's .well-known configuration is invalid.";
     }
-    case RequestIdTokenStatus::kErrorFetchingClientIdMetadataHttpNotFound: {
+    case RequestIdTokenStatus::kErrorFetchingClientMetadataHttpNotFound: {
       return "The provider's client metadata endpoint cannot be found.";
     }
-    case RequestIdTokenStatus::kErrorFetchingClientIdMetadataNoResponse: {
+    case RequestIdTokenStatus::kErrorFetchingClientMetadataNoResponse: {
       return "The response body is empty when fetching the provider's client "
              "metadata.";
     }
-    case RequestIdTokenStatus::kErrorFetchingClientIdMetadataInvalidResponse: {
+    case RequestIdTokenStatus::kErrorFetchingClientMetadataInvalidResponse: {
       return "Provider's client metadata is invalid.";
     }
     case RequestIdTokenStatus::kErrorFetchingSignin: {
@@ -391,14 +391,13 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
   endpoints_.idp = ResolveWellKnownUrl(endpoints.idp);
   endpoints_.token = ResolveWellKnownUrl(endpoints.token);
   endpoints_.accounts = ResolveWellKnownUrl(endpoints.accounts);
-  endpoints_.client_id_metadata =
-      ResolveWellKnownUrl(endpoints.client_id_metadata);
+  endpoints_.client_metadata = ResolveWellKnownUrl(endpoints.client_metadata);
 
   switch (mode_) {
     case RequestMode::kMediated: {
       // For Mediated mode we require accounts, token and client ID endpoints.
       if (endpoints_.token.is_empty() || endpoints_.accounts.is_empty() ||
-          endpoints_.client_id_metadata.is_empty()) {
+          endpoints_.client_metadata.is_empty()) {
         RecordRequestIdTokenStatus(IdTokenStatus::kWellKnownInvalidResponse,
                                    render_frame_host_->GetPageUkmSourceId());
         CompleteRequest(
@@ -407,17 +406,17 @@ void FederatedAuthRequestImpl::OnWellKnownFetched(
       }
       if (!IsEndpointUrlValid(endpoints_.token) ||
           !IsEndpointUrlValid(endpoints_.accounts) ||
-          !IsEndpointUrlValid(endpoints_.client_id_metadata)) {
+          !IsEndpointUrlValid(endpoints_.client_metadata)) {
         RecordRequestIdTokenStatus(IdTokenStatus::kWellKnownInvalidResponse,
                                    render_frame_host_->GetPageUkmSourceId());
         CompleteRequest(
             RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse, "");
         return;
       }
-      network_manager_->FetchClientIdMetadata(
-          endpoints_.client_id_metadata, client_id_,
+      network_manager_->FetchClientMetadata(
+          endpoints_.client_metadata, client_id_,
           base::BindOnce(
-              &FederatedAuthRequestImpl::OnClientIdMetadataResponseReceived,
+              &FederatedAuthRequestImpl::OnClientMetadataResponseReceived,
               weak_ptr_factory_.GetWeakPtr()));
       break;
     }
@@ -526,11 +525,11 @@ void FederatedAuthRequestImpl::CompleteRevokeRequest(RevokeStatus status) {
     std::move(revoke_callback_).Run(status);
 }
 
-void FederatedAuthRequestImpl::OnClientIdMetadataResponseReceived(
+void FederatedAuthRequestImpl::OnClientMetadataResponseReceived(
     IdpNetworkRequestManager::FetchStatus status,
-    IdpNetworkRequestManager::ClientIdMetadata data) {
+    IdpNetworkRequestManager::ClientMetadata data) {
   // We purposefully do not check status; client metadata is optional.
-  client_id_metadata_ = data;
+  client_metadata_ = data;
 
   network_manager_->SendAccountsRequest(
       endpoints_.accounts, request_dialog_controller_->GetBrandIconIdealSize(),
@@ -750,8 +749,8 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
                              accounts[0].login_state == LoginState::kSignIn &&
                              !screen_reader_is_on;
       // TODO(cbiesinger): Check that the URLs are valid.
-      ClientIdData data{GURL(client_id_metadata_.terms_of_service_url),
-                        GURL(client_id_metadata_.privacy_policy_url)};
+      ClientIdData data{GURL(client_metadata_.terms_of_service_url),
+                        GURL(client_metadata_.privacy_policy_url)};
       show_accounts_dialog_time_ = base::TimeTicks::Now();
       RecordShowAccountsDialogTime(show_accounts_dialog_time_ - start_time_,
                                    render_frame_host_->GetPageUkmSourceId());

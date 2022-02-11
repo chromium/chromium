@@ -24,7 +24,7 @@
 #include "url/gurl.h"
 
 using AccountList = content::IdpNetworkRequestManager::AccountList;
-using ClientIdMetadata = content::IdpNetworkRequestManager::ClientIdMetadata;
+using ClientMetadata = content::IdpNetworkRequestManager::ClientMetadata;
 using FetchStatus = content::IdpNetworkRequestManager::FetchStatus;
 using AccountsRequestCallback =
     content::IdpNetworkRequestManager::AccountsRequestCallback;
@@ -43,8 +43,8 @@ const char kTestIdpUrl[] = "https://idp.test";
 const char kTestRpUrl[] = "https://rp.test";
 const char kTestAccountsEndpoint[] = "https://idp.test/accounts_endpoint";
 const char kTestTokenEndpoint[] = "https://idp.test/token_endpoint";
-const char kTestClientIdMetadataEndpoint[] =
-    "https://idp.test/client_id_metadata_endpoint";
+const char kTestClientMetadataEndpoint[] =
+    "https://idp.test/client_metadata_endpoint";
 const char kTestRevokeEndpoint[] = "https://idp.test/revoke_endpoint";
 
 class IdpNetworkRequestManagerTest : public ::testing::Test {
@@ -116,24 +116,24 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
     return token;
   }
 
-  ClientIdMetadata SendClientIdMetadataRequestAndWaitForResponse(
+  ClientMetadata SendClientMetadataRequestAndWaitForResponse(
       const char* client_id,
       net::HttpStatusCode http_status = net::HTTP_OK) {
     const char response[] = R"({})";
-    GURL client_id_endpoint(kTestClientIdMetadataEndpoint);
+    GURL client_id_endpoint(kTestClientMetadataEndpoint);
     test_url_loader_factory().AddResponse(
         client_id_endpoint.spec() + "?client_id=" + client_id, response,
         http_status);
 
-    ClientIdMetadata data;
+    ClientMetadata data;
     base::RunLoop run_loop;
     auto callback = base::BindLambdaForTesting(
-        [&](FetchStatus status, ClientIdMetadata metadata) {
+        [&](FetchStatus status, ClientMetadata metadata) {
           data = metadata;
           run_loop.Quit();
         });
-    manager().FetchClientIdMetadata(client_id_endpoint, client_id,
-                                    std::move(callback));
+    manager().FetchClientMetadata(client_id_endpoint, client_id,
+                                  std::move(callback));
     run_loop.Run();
     return data;
   }
@@ -760,20 +760,20 @@ TEST_F(IdpNetworkRequestManagerTest, TokenRequest) {
   ASSERT_EQ("token", token);
 }
 
-// Tests the client id metadata implementation.
-TEST_F(IdpNetworkRequestManagerTest, ClientIdMetadata) {
+// Tests the client metadata implementation.
+TEST_F(IdpNetworkRequestManagerTest, ClientMetadata) {
   bool called = false;
   auto interceptor =
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
         called = true;
         std::string url_string =
-            std::string(kTestClientIdMetadataEndpoint) + "?client_id=xxx";
+            std::string(kTestClientMetadataEndpoint) + "?client_id=xxx";
         EXPECT_EQ(GURL(url_string), request.url);
         EXPECT_EQ(request.request_body, nullptr);
         EXPECT_EQ(GURL(kTestRpUrl), request.referrer);
       });
   test_url_loader_factory().SetInterceptor(interceptor);
-  ClientIdMetadata data = SendClientIdMetadataRequestAndWaitForResponse("xxx");
+  ClientMetadata data = SendClientMetadataRequestAndWaitForResponse("xxx");
   ASSERT_TRUE(called);
   ASSERT_EQ("", data.privacy_policy_url);
   ASSERT_EQ("", data.terms_of_service_url);

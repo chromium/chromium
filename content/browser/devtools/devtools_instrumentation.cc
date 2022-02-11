@@ -182,15 +182,14 @@ std::string RequestIdTokenStatusToProtocol(
     case RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse: {
       return FederatedAuthRequestIssueReasonEnum::WellKnownInvalidResponse;
     }
-    case RequestIdTokenStatus::kErrorFetchingClientIdMetadataHttpNotFound: {
-      return FederatedAuthRequestIssueReasonEnum::ClientIdMetadataHttpNotFound;
+    case RequestIdTokenStatus::kErrorFetchingClientMetadataHttpNotFound: {
+      return FederatedAuthRequestIssueReasonEnum::ClientMetadataHttpNotFound;
     }
-    case RequestIdTokenStatus::kErrorFetchingClientIdMetadataNoResponse: {
-      return FederatedAuthRequestIssueReasonEnum::ClientIdMetadataNoResponse;
+    case RequestIdTokenStatus::kErrorFetchingClientMetadataNoResponse: {
+      return FederatedAuthRequestIssueReasonEnum::ClientMetadataNoResponse;
     }
-    case RequestIdTokenStatus::kErrorFetchingClientIdMetadataInvalidResponse: {
-      return FederatedAuthRequestIssueReasonEnum::
-          ClientIdMetadataInvalidResponse;
+    case RequestIdTokenStatus::kErrorFetchingClientMetadataInvalidResponse: {
+      return FederatedAuthRequestIssueReasonEnum::ClientMetadataInvalidResponse;
     }
     case RequestIdTokenStatus::kErrorFetchingSignin: {
       return FederatedAuthRequestIssueReasonEnum::ErrorFetchingSignin;

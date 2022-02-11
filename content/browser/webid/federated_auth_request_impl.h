@@ -75,9 +75,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
 
   void OnWellKnownFetched(IdpNetworkRequestManager::FetchStatus status,
                           IdpNetworkRequestManager::Endpoints);
-  void OnClientIdMetadataResponseReceived(
+  void OnClientMetadataResponseReceived(
       IdpNetworkRequestManager::FetchStatus status,
-      IdpNetworkRequestManager::ClientIdMetadata data);
+      IdpNetworkRequestManager::ClientMetadata data);
 
   void OnSigninApproved(IdentityRequestDialogController::UserApproval approval);
   void OnSigninResponseReceived(IdpNetworkRequestManager::SigninResponse status,
@@ -167,7 +167,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
     GURL idp;
     GURL token;
     GURL accounts;
-    GURL client_id_metadata;
+    GURL client_metadata;
   } endpoints_;
 
   // The WebContents that is used to load the IDP sign-up page. This is
@@ -183,7 +183,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   raw_ptr<FederatedIdentitySharingPermissionContextDelegate>
       sharing_permission_delegate_ = nullptr;
 
-  IdpNetworkRequestManager::ClientIdMetadata client_id_metadata_;
+  IdpNetworkRequestManager::ClientMetadata client_metadata_;
   // The account that was selected by the user. This is only applicable to the
   // mediation flow.
   std::string account_id_;

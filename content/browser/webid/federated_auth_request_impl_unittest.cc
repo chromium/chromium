@@ -71,8 +71,8 @@ constexpr char kIdpEndpoint[] = "https://idp.example/webid";
 constexpr char kAccountsEndpoint[] = "https://idp.example/accounts";
 constexpr char kCrossOriginAccountsEndpoint[] = "https://idp2.example/accounts";
 constexpr char kTokenEndpoint[] = "https://idp.example/token";
-constexpr char kClientIdMetadataEndpoint[] =
-    "https://idp.example/client_id_metadata";
+constexpr char kClientMetadataEndpoint[] =
+    "https://idp.example/client_metadata";
 constexpr char kRevokeEndpoint[] = "https://idp.example/revoke";
 constexpr char kPrivacyPolicyUrl[] = "https://rp.example/pp";
 constexpr char kTermsOfServiceUrl[] = "https://rp.example/tos";
@@ -289,7 +289,7 @@ static const AuthRequestTestCase kMediatedTestCases[]{
       RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse,
       kEmptyToken},
      {kToken, absl::nullopt, FetchStatus::kInvalidResponseError, absl::nullopt,
-      kIdpEndpoint, kAccountsEndpoint, "", kClientIdMetadataEndpoint,
+      kIdpEndpoint, kAccountsEndpoint, "", kClientMetadataEndpoint,
       kPermissionNoop, kMediatedNoop}},
 
     {"Error parsing wellknown for Mediated mode missing accounts endpoint",
@@ -298,7 +298,7 @@ static const AuthRequestTestCase kMediatedTestCases[]{
       RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse,
       kEmptyToken},
      {kToken, absl::nullopt, FetchStatus::kSuccess, absl::nullopt, kIdpEndpoint,
-      "", kTokenEndpoint, kClientIdMetadataEndpoint, kPermissionNoop,
+      "", kTokenEndpoint, kClientMetadataEndpoint, kPermissionNoop,
       kMediatedNoop}},
     {"Error due to accounts endpoint in different origin than identity "
      "provider",
@@ -307,7 +307,7 @@ static const AuthRequestTestCase kMediatedTestCases[]{
       RequestIdTokenStatus::kErrorFetchingWellKnownInvalidResponse,
       kEmptyToken},
      {kToken, absl::nullopt, FetchStatus::kSuccess, absl::nullopt, kIdpEndpoint,
-      kCrossOriginAccountsEndpoint, kTokenEndpoint, kClientIdMetadataEndpoint,
+      kCrossOriginAccountsEndpoint, kTokenEndpoint, kClientMetadataEndpoint,
       kPermissionNoop, kMediatedNoop}},
 
     {"Error reaching Accounts endpoint",
@@ -321,7 +321,7 @@ static const AuthRequestTestCase kMediatedTestCases[]{
       "",
       kAccountsEndpoint,
       kTokenEndpoint,
-      kClientIdMetadataEndpoint,
+      kClientMetadataEndpoint,
       kPermissionNoop,
       {FetchStatus::kNoResponseError, kAccounts, absl::nullopt}}},
 
@@ -336,7 +336,7 @@ static const AuthRequestTestCase kMediatedTestCases[]{
       "",
       kAccountsEndpoint,
       kTokenEndpoint,
-      kClientIdMetadataEndpoint,
+      kClientMetadataEndpoint,
       kPermissionNoop,
       {FetchStatus::kInvalidResponseError, kAccounts, absl::nullopt}}},
 
@@ -350,7 +350,7 @@ static const AuthRequestTestCase kMediatedTestCases[]{
       "",
       kAccountsEndpoint,
       kTokenEndpoint,
-      kClientIdMetadataEndpoint,
+      kClientMetadataEndpoint,
       kPermissionNoop,
       {FetchStatus::kSuccess, kAccounts, FetchStatus::kSuccess}}},
 };
@@ -690,7 +690,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                 endpoints.idp = test_case.config.idp_endpoint;
                 endpoints.accounts = test_case.config.accounts_endpoint;
                 endpoints.token = test_case.config.token_endpoint;
-                endpoints.client_id_metadata =
+                endpoints.client_metadata =
                     test_case.config.client_metadata_endpoint;
                 std::move(callback).Run(
                     *test_case.config.wellknown_fetch_status, endpoints);
@@ -700,21 +700,21 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     }
 
     if (test_case.config.client_metadata) {
-      EXPECT_CALL(*mock_request_manager_, FetchClientIdMetadata(_, _, _))
+      EXPECT_CALL(*mock_request_manager_, FetchClientMetadata(_, _, _))
           .WillOnce(
               Invoke([&](const GURL&, const std::string& client_id,
-                         IdpNetworkRequestManager::FetchClientIdMetadataCallback
+                         IdpNetworkRequestManager::FetchClientMetadataCallback
                              callback) {
                 EXPECT_EQ(test_case.inputs.client_id, client_id);
                 std::move(callback).Run(
                     test_case.config.client_metadata->fetch_status,
-                    IdpNetworkRequestManager::ClientIdMetadata{
+                    IdpNetworkRequestManager::ClientMetadata{
                         test_case.config.client_metadata->privacy_policy_url,
                         test_case.config.client_metadata
                             ->terms_of_service_url});
               }));
     } else {
-      EXPECT_CALL(*mock_request_manager_, FetchClientIdMetadata(_, _, _))
+      EXPECT_CALL(*mock_request_manager_, FetchClientMetadata(_, _, _))
           .Times(0);
     }
 
@@ -987,7 +987,7 @@ static const AuthRequestTestCase kSuccessfulMediatedSignUpTestCase{
      "",
      kAccountsEndpoint,
      kTokenEndpoint,
-     kClientIdMetadataEndpoint,
+     kClientMetadataEndpoint,
      kPermissionNoop,
      {FetchStatus::kSuccess, kAccounts, FetchStatus::kSuccess}}};
 
@@ -1003,7 +1003,7 @@ static const AuthRequestTestCase kFailedMediatedSignUpTestCase{
      "",
      kAccountsEndpoint,
      kTokenEndpoint,
-     kClientIdMetadataEndpoint,
+     kClientMetadataEndpoint,
      kPermissionNoop,
      {FetchStatus::kSuccess, kAccounts, FetchStatus::kInvalidResponseError}}};
 
@@ -1019,7 +1019,7 @@ static const AuthRequestTestCase kSuccessfulMediatedAutoSignInTestCase{
      "",
      kAccountsEndpoint,
      kTokenEndpoint,
-     kClientIdMetadataEndpoint,
+     kClientMetadataEndpoint,
      kPermissionNoop,
      {FetchStatus::kSuccess, kAccounts, FetchStatus::kSuccess}}};
 
@@ -1440,7 +1440,7 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForNotSelectingAccount) {
        "",
        kAccountsEndpoint,
        kTokenEndpoint,
-       kClientIdMetadataEndpoint,
+       kClientMetadataEndpoint,
        kPermissionNoop,
        {FetchStatus::kSuccess, kAccounts, absl::nullopt,
         /*customized_dialog=*/true}}};
