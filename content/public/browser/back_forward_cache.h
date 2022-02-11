@@ -143,6 +143,10 @@ class CONTENT_EXPORT BackForwardCache {
   // Evict all entries from the BackForwardCache.
   virtual void Flush() = 0;
 
+  // Evict back/forward cache entries from the least recently used ones until
+  // the cache is within the given size limit.
+  virtual void Prune(size_t limit) = 0;
+
   // Disables the BackForwardCache so that no documents will be stored/served.
   // This allows tests to "force" not using the BackForwardCache, this can be
   // useful when:

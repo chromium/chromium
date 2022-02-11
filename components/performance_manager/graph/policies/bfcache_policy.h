@@ -18,19 +18,20 @@ namespace performance_manager::policies {
 class BFCachePolicy : public GraphOwned,
                       public SystemNode::ObserverDefaultImpl {
  public:
-  BFCachePolicy();
+  BFCachePolicy() = default;
   BFCachePolicy(const BFCachePolicy&) = delete;
   BFCachePolicy(BFCachePolicy&&) = delete;
   BFCachePolicy& operator=(const BFCachePolicy&) = delete;
   BFCachePolicy& operator=(BFCachePolicy&&) = delete;
-  ~BFCachePolicy() override;
+  ~BFCachePolicy() override = default;
 
  protected:
+  using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
+
   // Try to flush the BFCache associated with |page_node|. This will be a no-op
   // if there's a pending navigation.
-  virtual void MaybeFlushBFCache(const PageNode* page_node);
-
-  bool flush_on_moderate_pressure_;
+  virtual void MaybeFlushBFCache(const PageNode* page_node,
+                                 MemoryPressureLevel memory_pressure_level);
 
  private:
   // GraphOwned implementation:
@@ -38,8 +39,7 @@ class BFCachePolicy : public GraphOwned,
   void OnTakenFromGraph(Graph* graph) override;
 
   // SystemNodeObserver:
-  void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel new_level) override;
+  void OnMemoryPressure(MemoryPressureLevel new_level) override;
 
   raw_ptr<Graph> graph_;
 };

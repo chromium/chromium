@@ -13,20 +13,22 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace performance_manager {
-namespace policies {
+namespace performance_manager::policies {
 
 namespace {
 
 // Mock version of a performance_manager::BFCachePolicy.
 class LenientMockBFCachePolicy : public BFCachePolicy {
  public:
-  LenientMockBFCachePolicy() { flush_on_moderate_pressure_ = true; }
+  LenientMockBFCachePolicy() = default;
   ~LenientMockBFCachePolicy() override = default;
   LenientMockBFCachePolicy(const LenientMockBFCachePolicy& other) = delete;
   LenientMockBFCachePolicy& operator=(const LenientMockBFCachePolicy&) = delete;
-  MOCK_METHOD1(MaybeFlushBFCache, void(const PageNode* page_node));
+  MOCK_METHOD2(MaybeFlushBFCache,
+               void(const PageNode* page_node,
+                    MemoryPressureLevel memory_pressure_level));
 };
+using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
 using MockBFCachePolicy = ::testing::StrictMock<LenientMockBFCachePolicy>;
 
 }  // namespace
@@ -74,18 +76,21 @@ TEST_F(BFCachePolicyTest, BFCacheFlushedOnMemoryPressure) {
   page_node_->SetLoadingState(PageNode::LoadingState::kLoadedBusy);
   ::testing::Mock::VerifyAndClearExpectations(policy_);
 
-  EXPECT_CALL(*policy_, MaybeFlushBFCache(page_node_.get()));
+  EXPECT_CALL(
+      *policy_,
+      MaybeFlushBFCache(page_node_.get(),
+                        MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE));
   GetSystemNode()->OnMemoryPressureForTesting(
-      base::MemoryPressureListener::MemoryPressureLevel::
-          MEMORY_PRESSURE_LEVEL_MODERATE);
+      MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE);
   ::testing::Mock::VerifyAndClearExpectations(policy_);
 
-  EXPECT_CALL(*policy_, MaybeFlushBFCache(page_node_.get()));
+  EXPECT_CALL(
+      *policy_,
+      MaybeFlushBFCache(page_node_.get(),
+                        MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL));
   GetSystemNode()->OnMemoryPressureForTesting(
-      base::MemoryPressureListener::MemoryPressureLevel::
-          MEMORY_PRESSURE_LEVEL_CRITICAL);
+      MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL);
   ::testing::Mock::VerifyAndClearExpectations(policy_);
 }
 
-}  // namespace policies
-}  // namespace performance_manager
+}  // namespace performance_manager::policies

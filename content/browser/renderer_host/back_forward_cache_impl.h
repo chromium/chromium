@@ -310,6 +310,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
 
   // BackForwardCache overrides:
   void Flush() override;
+  void Prune(size_t limit) override;
   void DisableForTesting(DisableForTestingReason reason) override;
 
   // RenderProcessHostInternalObserver methods

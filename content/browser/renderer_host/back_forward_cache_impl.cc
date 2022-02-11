@@ -1054,6 +1054,11 @@ void BackForwardCacheImpl::EnforceCacheSizeLimit() {
                                 /*foregrounded_only=*/false);
 }
 
+void BackForwardCacheImpl::Prune(size_t limit) {
+  EnforceCacheSizeLimitInternal(limit,
+                                /*foregrounded_only=*/false);
+}
+
 size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
     size_t limit,
     bool foregrounded_only) {
