@@ -51,8 +51,11 @@ class WebstorePrivateApi {
       Profile* profile,
       const std::string& extension_id);
 
-  // Clear the pending approvals. This should be used for testing only.
+  // Clear the pending approvals. This should only be used for testing.
   static void ClearPendingApprovalsForTesting();
+
+  // Get the count of pending approvals. This should only be used for testing.
+  static int GetPendingApprovalsCountForTesting();
 };
 
 class WebstorePrivateBeginInstallWithManifest3Function
