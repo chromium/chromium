@@ -10,6 +10,7 @@
 <translation id="1071587090247825784">已偵測到防火牆</translation>
 <translation id="1075811647922107217">網頁大小</translation>
 <translation id="1094693127011229778">缺少 IP 位址</translation>
+<translation id="1113892970288677790">選取系統收錄的藝術圖片和圖像</translation>
 <translation id="1119447706177454957">內部錯誤</translation>
 <translation id="1124772482545689468">使用者</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -73,6 +74,7 @@
 <translation id="1782199038061388045">翻譯</translation>
 <translation id="1792647875738159689">正在取消掃描</translation>
 <translation id="1807246157184219062">淺色</translation>
+<translation id="1827738518074806965">畫廊</translation>
 <translation id="1851218745569890714">視訊會議</translation>
 <translation id="1874612839560830905">最大傳輸單元</translation>
 <translation id="1887850431809612466">硬體版本</translation>
@@ -284,6 +286,7 @@
 <translation id="4832079907277790330">在「檔案」應用程式中選取資料夾...</translation>
 <translation id="4835901797422965222">沒有使用中的網路</translation>
 <translation id="4839698083503556542">創作自己的電影</translation>
+<translation id="4847902821209177679">已選取「<ph name="TOPIC_SOURCE" /><ph name="TOPIC_SOURCE_DESC" />」，按下 Enter 鍵即可選取「<ph name="TOPIC_SOURCE" />」的相簿</translation>
 <translation id="484790837831576105">(Android) DNS 解析</translation>
 <translation id="4848429997038228357">執行中</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />剩餘嘗試次數：{0} 次}other{<ph name="ERROR_MESSAGE" />剩餘嘗試次數：{0} 次}}</translation>
@@ -371,6 +374,7 @@
 <translation id="5866840822086176774">極強</translation>
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="5916084858004523819">禁止</translation>
+<translation id="5916664084637901428">開啟</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{檔案掃描完成，現已存放在「<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />」資料夾。}other{檔案掃描完成，現已存放在「<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />」資料夾。}}</translation>
 <translation id="5931523347251946569">找不到檔案</translation>
 <translation id="594552776027197022">產生隨機金鑰組</translation>
@@ -418,6 +422,7 @@
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
 <translation id="649050271426829538">已停止 - 卡紙</translation>
 <translation id="6500818810472529210">查看 Google 搜尋結果</translation>
+<translation id="650266656685499220">如要建立相簿，請前往 Google 相簿</translation>
 <translation id="6516990319416533844">如要測試充電速率，請讓電池耗電一小段時間</translation>
 <translation id="6517239166834772319">探索</translation>
 <translation id="6527081081771465939">Wi-Fi 安全通訊協定不明</translation>
@@ -542,9 +547,11 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">要求流量計數器</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8143951647992294073">選取「<ph name="TOPIC_SOURCE" /><ph name="TOPIC_SOURCE_DESC" />」</translation>
 <translation id="8206859287963243715">手機</translation>
 <translation id="8208861521865154048">獎勵</translation>
 <translation id="8217675307824400706">連上網路</translation>
+<translation id="8226628635270268143">選擇你最喜愛的相片和相簿</translation>
 <translation id="8230672074305416752">無法連線偵測預設的網路閘道</translation>
 <translation id="8246209727385807362">不明電信業者</translation>
 <translation id="8281886186245836920">略過</translation>

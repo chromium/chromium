@@ -10,6 +10,7 @@
 <translation id="1071587090247825784">Zaznan je požarni zid</translation>
 <translation id="1075811647922107217">Velikost strani</translation>
 <translation id="1094693127011229778">Naslov IP ni na voljo.</translation>
+<translation id="1113892970288677790">Izberite izbrani slikovni material in slike</translation>
 <translation id="1119447706177454957">Notranja napaka</translation>
 <translation id="1124772482545689468">Uporabnik</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -73,6 +74,7 @@
 <translation id="1782199038061388045">prevod</translation>
 <translation id="1792647875738159689">Preklic optičnega branja</translation>
 <translation id="1807246157184219062">Svetlo</translation>
+<translation id="1827738518074806965">Umetnostna galerija</translation>
 <translation id="1851218745569890714">Videokonference</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Različica strojne opreme</translation>
@@ -284,6 +286,7 @@
 <translation id="4832079907277790330">Izberite mapo v aplikaciji Datoteke ...</translation>
 <translation id="4835901797422965222">Ni aktivnih omrežij</translation>
 <translation id="4839698083503556542">Ustvarite svoj film</translation>
+<translation id="4847902821209177679">Izbrali ste <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />, pritisnite Enter, da izberete albume <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">Razreševanje DNS-ja (Android)</translation>
 <translation id="4848429997038228357">IZVAJANJE</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Na voljo imate še {0} poskus}one{<ph name="ERROR_MESSAGE" /> Na voljo imate še {0} poskus}two{<ph name="ERROR_MESSAGE" /> Na voljo imate še {0} poskusa}few{<ph name="ERROR_MESSAGE" /> Na voljo imate še {0} poskuse}other{<ph name="ERROR_MESSAGE" /> Na voljo imate še {0} poskusov}}</translation>
@@ -371,6 +374,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="5866840822086176774">Zelo močan</translation>
 <translation id="5895138241574237353">Znova zaženi</translation>
 <translation id="5916084858004523819">Onemogočeno</translation>
+<translation id="5916664084637901428">Vklopljeno</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Vaša datoteka je bila uspešno pregledana in je shranjena v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Datoteke ni bilo mogoče najti</translation>
 <translation id="594552776027197022">Ustvarjanje naključnega para ključev</translation>
@@ -418,6 +422,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6480327114083866287">Upravlja domena <ph name="MANAGER" />.</translation>
 <translation id="649050271426829538">Ustavljeno – zastoj papirja</translation>
 <translation id="6500818810472529210">Ogled rezultatov v Iskanju Google</translation>
+<translation id="650266656685499220">Če želite ustvariti albume, odprite Google Foto</translation>
 <translation id="6516990319416533844">Če želite preizkusiti hitrost polnjenja baterije, za krajši čas pustite baterijo, naj se prazni.</translation>
 <translation id="6517239166834772319">Raziskovanje</translation>
 <translation id="6527081081771465939">Neznani varnostni protokol za Wi-Fi</translation>
@@ -542,9 +547,11 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Zahtevaj števce prometa</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8143951647992294073">Izberite: <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8206859287963243715">Prenosni</translation>
 <translation id="8208861521865154048">Ugodnosti</translation>
 <translation id="8217675307824400706">Povežite se</translation>
+<translation id="8226628635270268143">Izberite priljubljene fotografije in albume</translation>
 <translation id="8230672074305416752">Ni mogoče preveriti privzetega prehoda omrežja</translation>
 <translation id="8246209727385807362">Neznani operater</translation>
 <translation id="8281886186245836920">Preskoči</translation>

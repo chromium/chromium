@@ -5068,32 +5068,6 @@
       如果將這項政策設為 False，<ph name="PRODUCT_NAME" /> 和 <ph name="LACROS_NAME" /> 將不允許啟用訪客設定檔。
 
       但請注意，如果不設定這項政策或將其設為 True，但將 <ph name="LACROS_SECONDARY_PROFILES_ALLOWED_POLICY_NAME" /> 設為 False，<ph name="LACROS_NAME" /> 將不允許啟用訪客設定檔。</translation>
-<translation id="6922498040906800267">設定規則清單，避免 <ph name="PRODUCT_OS_NAME" />中發生資料外洩。
-      複製並貼上資料、傳輸檔案、列印、分享螢幕畫面或擷取螢幕畫面等動作都有可能導致資料外洩。
-
-      每條規則都包含下列項目：
-      - 定義為網址的來源清單。系統會將來源中的所有資料都視為機密資料並套用限制。
-      - 定義為網址或元件的目的地清單，可允許或禁止將機密資料分享到清單中的目的地。
-      - 要套用到來源資料的限制清單。
-
-      你可以透過新增規則控管下列項目：
-      - 來源與目的地共用的剪貼簿資料。
-      - 任何來源的螢幕畫面擷取動作設定。
-      - 任何來源的列印動作設定。
-      - 任何來源在顯示狀態下的隱私保護畫面設定。
-      - 任何來源的螢幕畫面分享動作設定。
-
-      限制等級可設為「BLOCK」、「ALLOW」或「REPORT」。
-      - 如果將限制等級設為「BLOCK」，將無法執行該動作。如果將 <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> 設為 True，系統會將遭禁止的動作回報給管理員。
-      - 如果將限制等級設為「ALLOW」，則可以執行該動作。
-      - 如果將限制等級設為「REPORT」，並將 <ph name="DATA_LEAK_PREVENTION_REPORTING_ENABLED" /> 設為 True，系統會將該動作回報給管理員。
-
-      注意：
-      - PRIVACY_SCREEN 限制等級設為「BLOCK」時，不會禁止啟用隱私保護畫面，而會強制執行該功能。
-      - 如果有任一限制是「CLIPBOARD」，請勿將目的地留空，但目的地對其餘限制沒有影響。
-      - 網址格式如下：https://www.chromium.org/administrators/url-blocklist-filter-format。
-
-      如未設定這項政策，系統不會套用任何限制。</translation>
 <translation id="6922884955650325312">封鎖 <ph name="FLASH_PLUGIN_NAME" /> 外掛程式</translation>
 <translation id="6923731550900440989">在登入畫面上啟用插入點醒目顯示功能</translation>
 <translation id="6924223708804692571">這項政策會強制停用指定語言的拼字檢查功能。系統會忽略該清單中無法辨識的語言。

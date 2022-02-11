@@ -24,7 +24,6 @@
 <translation id="1123070903960493543">Ο τρόπος με τον οποίο αλληλεπιδράτε με το Chrome, οι ρυθμίσεις που έχετε επιλέξει, οι λεπτομέρειες για τα σφάλματα του Chrome.</translation>
 <translation id="1126809382673880764">Δεν σας προστατεύει από επικίνδυνους ιστοτόπους, λήψεις και επεκτάσεις. Θα εξακολουθείτε να λαμβάνετε προστασία από την Ασφαλή περιήγηση, όπου είναι διαθέσιμη, σε άλλες Υπηρεσίες Google, όπως το Gmail και η Αναζήτηση.</translation>
 <translation id="1129510026454351943">Λεπτομέρειες: <ph name="ERROR_DESCRIPTION" /></translation>
-<translation id="1141800923049248244">{FILE_COUNT,plural, =1{1 λήψη σε εκκρεμότητα.}other{# λήψεις σε εκκρεμότητα.}}</translation>
 <translation id="1142732900304639782">Να μην παρέχεται δυνατότητα μετάφρασης αυτών των ιστοτόπων</translation>
 <translation id="1145536944570833626">Διαγραφή υπαρχόντων δεδομένων.</translation>
 <translation id="1146678959555564648">Εισαγωγή VR</translation>
@@ -59,6 +58,7 @@
 <translation id="1298077576058087471">Εξοικονομήστε έως και το 60% των δεδομένων, διαβάστε τις σημερινές ειδήσεις</translation>
 <translation id="1303339473099049190">Δεν είναι δυνατή η εύρεση αυτού του κωδικού πρόσβασης. Ελέγξτε για τυχόν ορθογραφικά λάθη και δοκιμάστε ξανά.</translation>
 <translation id="1303507811548703290"><ph name="DOMAIN" /> - Στάλθηκε από <ph name="DEVICE_NAME" /></translation>
+<translation id="1308203910992842860">Χρησιμοποιώντας το Chrome, συμφωνείτε με τους <ph name="BEGIN_TOS_LINK" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_TOS_LINK" /> και τους<ph name="BEGIN_ATOS_LINK" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_ATOS_LINK" />. Ισχύει επίσης η <ph name="BEGIN_PRIVACY_LINK" />Σημείωση απορρήτου για Λογαριασμούς Google με διαχείριση μέσω του Family Link<ph name="END_PRIVACY_LINK" />.</translation>
 <translation id="1310482092992808703">Ομαδοποίηση καρτελών</translation>
 <translation id="1311657260431405215">Αυτός ο κωδικός QR δεν είναι URL: <ph name="QRCODEVALUE" /></translation>
 <translation id="1316212908214730110">chrome_stylized_highlight_</translation>
@@ -138,7 +138,6 @@
 <translation id="1810845389119482123">Η αρχική ρύθμιση συγχρονισμού δεν ολοκληρώθηκε</translation>
 <translation id="1829244130665387512">Εύρεση στη σελίδα</translation>
 <translation id="1832459821645506983">Ναι, συμφωνώ</translation>
-<translation id="1868024384445905608">Το Chrome κατεβάζει πλέον τα αρχεία πιο γρήγορα</translation>
 <translation id="1877026089748256423">Το Chrome δεν είναι ενημερωμένο</translation>
 <translation id="1883903952484604915">Τα αρχεία μου</translation>
 <translation id="189358972401248634">Άλλες γλώσσες</translation>
@@ -164,7 +163,6 @@
 <translation id="1974060860693918893">Σύνθετες</translation>
 <translation id="1984417487208496350">Χωρίς προστασία (δεν συνιστάται)</translation>
 <translation id="1986685561493779662">Το όνομα υπάρχει ήδη</translation>
-<translation id="1987739130650180037">Κουμπί <ph name="MESSAGE" /> <ph name="LINK_NAME" /></translation>
 <translation id="2000419248597011803">Στέλνει ορισμένα cookie και αναζητήσεις από τη γραμμή διευθύνσεων και το πλαίσιο αναζήτησης στην προεπιλεγμένη μηχανή αναζήτησης</translation>
 <translation id="200114059308480249">Συμπερίληψη περιβάλλοντος κειμένου στις αναζητήσεις Google;</translation>
 <translation id="2013642289801508067">{FILE_COUNT,plural, =1{# Αρχείο}other{# Αρχεία}}</translation>
@@ -289,7 +287,6 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Αρχείο ήχου}other{# Αρχεία ήχου}}</translation>
 <translation id="265156376773362237">Βασική προφόρτωση</translation>
 <translation id="2656405586795711023">Εφαρμογές ιστού</translation>
-<translation id="2689830683995595741">Χρησιμοποιώντας το Chrome, συμφωνείτε με τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" /> και τους<ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_LINK2" />. Ισχύει επίσης η <ph name="BEGIN_LINK3" />Σημείωση απορρήτου για Λογαριασμούς Google που διαχειρίζονται από το Family Link<ph name="END_LINK3" />.</translation>
 <translation id="2702516483241149200">Νέο: Κοινοποιήστε έναν σύνδεσμο που κάνει κύλιση σε αυτό το κείμενο</translation>
 <translation id="2704606927547763573">Αντιγράφ.</translation>
 <translation id="2707726405694321444">Ανανέωση σελίδας</translation>
@@ -433,6 +430,7 @@
 <translation id="3478363558367712427">Μπορείτε να επιλέξετε τη μηχανή αναζήτησής σας</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /> σχετικά με το προτεινόμενο περιεχόμενο</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="3502647154914451322">Χρησιμοποιώντας το Chrome, συμφωνείτε με τους <ph name="BEGIN_TOS_LINK" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_TOS_LINK" /> και τους<ph name="BEGIN_ATOS_LINK" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_ATOS_LINK" />.</translation>
 <translation id="3507132249039706973">Η Βασική προστασία είναι ενεργή.</translation>
 <translation id="3509330069915219067">Εκτός σύνδεσης. Το Chrome δεν μπορεί να ελέγξει για ενημερώσεις.</translation>
 <translation id="3513704683820682405">Επαυξημένη πραγματικότητα</translation>
@@ -504,7 +502,6 @@
 <translation id="3958287878205277013">Για να διαγράψετε το ιστορικό ανώνυμης περιήγησης από τη συσκευή σας, κλείστε όλες τις καρτέλες ανώνυμης περιήγησης.</translation>
 <translation id="396192773038029076">{NUM_IN_PROGRESS,plural, =1{Το Chrome θα φορτώσει τη σελίδα σας όταν είναι έτοιμη}other{Το Chrome θα φορτώσει τις σελίδες σας όταν είναι έτοιμες}}</translation>
 <translation id="3962119236270174787">Βασική προστασία από ιστοτόπους, λήψεις και επεκτάσεις που είναι γνωστό ότι είναι επικίνδυνα</translation>
-<translation id="3962957115499249330">Θα εμφανιστεί μια ειδοποίηση όταν ξεκινήσει αυτή η λήψη σε Wi-Fi.</translation>
 <translation id="3963007978381181125">Η κρυπτογράφηση με φράση πρόσβασης δεν περιλαμβάνει τρόπους πληρωμής και διευθύνσεις από το Google Pay. Μόνο κάποιος που γνωρίζει τη φράση πρόσβασής σας μπορεί να διαβάσει τα κρυπτογραφημένα δεδομένα σας. Η φράση πρόσβασης δεν αποστέλλεται στην Google ούτε αποθηκεύεται από αυτήν. Εάν ξεχάσετε τη φράση πρόσβασής σας ή θέλετε να αλλάξετε αυτήν τη ρύθμιση, θα πρέπει να επαναφέρετε τον συγχρονισμό. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="3969142555815019568">Το Chrome δεν μπορεί να ελέγξει τους κωδικούς πρόσβασής σας.</translation>
 <translation id="3969863827134279083">Μετακίνηση επάνω</translation>
@@ -623,7 +620,6 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ακόμη}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 και <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> ακόμη}}</translation>
 <translation id="4696983787092045100">Αποστολή μηνύματος κειμένου στις συσκευές σας</translation>
 <translation id="4699172675775169585">Εικόνες και αρχεία στην κρυφή μνήμη</translation>
-<translation id="471759387343966120">Εάν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_TOS_LINK" />Όρους Παροχής Υπηρεσιών<ph name="END_TOS_LINK" /> και την <ph name="BEGIN_PRIVACY_LINK" />Πολιτική\u00A0απορρήτου<ph name="END_PRIVACY_LINK" />.\nΓια να συμβάλλει στη βελτίωση της εφαρμογής, το Chrome στέλνει δεδομένα χρήσης και σφαλμάτων στην Google. <ph name="BEGIN_UMA_LINK" />Διαχείριση<ph name="END_UMA_LINK" /></translation>
 <translation id="4719927025381752090">Πρόταση για μετάφραση</translation>
 <translation id="4720023427747327413">Άνοιγμα σε <ph name="PRODUCT_NAME" /></translation>
 <translation id="4720982865791209136">Συμβάλλετε στη βελτίωση του Chrome. <ph name="BEGIN_LINK" />Λάβετε μέρος στην έρευνα<ph name="END_LINK" /></translation>
@@ -636,9 +632,7 @@
 <translation id="4758061975920522644">Κοινοποίηση μόνο εικόνας</translation>
 <translation id="4759238208242260848">Λήψεις</translation>
 <translation id="4763480195061959176">βίντεο</translation>
-<translation id="4763829664323285145">{FILE_COUNT,plural, =1{1 ολοκληρωμένη λήψη.}other{# ολοκληρωμένες λήψεις.}}</translation>
 <translation id="4766678251456904326">Προσθήκη λογαριασμού στη συσκευή</translation>
-<translation id="4767937498890654900">{FILE_COUNT,plural, =1{Προγραμματίστηκε 1 λήψη.}other{Προγραμματίστηκαν # λήψεις.}}</translation>
 <translation id="4791358705705538979">Σας βοηθάει να ολοκληρώνετε εργασίες στον ιστό, όπως είναι η ολοκλήρωση αγορών</translation>
 <translation id="4794291718671962615">(<ph name="MEGABYTES" />) <ph name="URL" /></translation>
 <translation id="4802417911091824046">Η κρυπτογράφηση φράσης πρόσβασης δεν περιλαμβάνει τρόπους πληρωμής και διευθύνσεις από το Google Pay.
@@ -683,7 +677,6 @@
 <translation id="4961107849584082341">Μεταφράστε αυτήν τη σελίδα σε οποιαδήποτε γλώσσα</translation>
 <translation id="4971735654804503942">Πιο γρήγορη και προληπτική ασφάλεια από επικίνδυνους ιστοτόπους, λήψεις και επεκτάσεις. Σας προειδοποιεί για τις παραβιάσεις του κωδικού πρόσβασης. Απαιτεί την αποστολή δεδομένων περιήγησης στην Google.</translation>
 <translation id="497421865427891073">Μετάβαση προς τα εμπρός</translation>
-<translation id="4988210275050210843">Λήψη αρχείου (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Σελίδες</translation>
 <translation id="5001388021414335527">Ακολουθήστε αυτόν τον ιστότοπο εδώ</translation>
 <translation id="5004416275253351869">Στοιχεία ελέγχου δραστηριότητας Google</translation>
@@ -710,7 +703,6 @@
 <translation id="5142281402488957685">Για νέες ειδήσεις, σύρετε προς τα κάτω για ανανέωση</translation>
 <translation id="5152843274749979095">Δεν έχουν εγκατασταθεί υποστηριζόμενες εφαρμογές</translation>
 <translation id="5161254044473106830">Απαιτείται τίτλος</translation>
-<translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 λήψη απέτυχε.}other{# λήψεις απέτυχαν.}}</translation>
 <translation id="5170568018924773124">Εμφάνιση στο φάκελο</translation>
 <translation id="5171045022955879922">Αναζήτηση ή πληκτρολόγηση διεύθυνσης URL</translation>
 <translation id="517734441743343109">Αν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_TOS_LINK" />Όρους Παροχής Υπηρεσιών<ph name="END_TOS_LINK" /> και την <ph name="BEGIN_PRIVACY_LINK" />Πολιτική\u00A0απορρήτου<ph name="END_PRIVACY_LINK" />.</translation>
@@ -719,7 +711,6 @@
 <translation id="5191251636205085390">Μάθετε περισσότερα και δείτε πώς μπορείτε να ελέγχετε τις νέες τεχνολογίες που προορίζονται για την αντικατάσταση των cookie τρίτου μέρους</translation>
 <translation id="5193988420012215838">Αντιγράφηκε στο πρόχειρό σας</translation>
 <translation id="5199929503336119739">Προφίλ εργασίας</translation>
-<translation id="5201464744567315552">Θα εμφανιστεί μια ειδοποίηση όταν ξεκινήσει αυτή η λήψη στις <ph name="TIME" />.</translation>
 <translation id="5204967432542742771">Εισαγωγή κωδικού πρόσβασης</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{Λήψη αρχείου…}other{Λήψη # αρχείων…}}</translation>
 <translation id="5210286577605176222">Μετάβαση στην προηγούμενη καρτέλα</translation>
@@ -731,7 +722,6 @@
 <translation id="5233638681132016545">Νέα καρτέλα</translation>
 <translation id="5235196193381275927">Παρουσιάστηκε κάποιο πρόβλημα κατά τη σύνδεση</translation>
 <translation id="5246093389635966745">Επεξεργασία συντόμευσης γραμμής εργαλείων</translation>
-<translation id="5262378156578470238">Θα εμφανιστεί μια ειδοποίηση όταν ξεκινήσει αυτή η λήψη στις <ph name="DATE" />.</translation>
 <translation id="526421993248218238">Δεν είναι δυνατή η φόρτωση αυτής της σελίδας</translation>
 <translation id="5271967389191913893">Η συσκευή δεν μπορεί να ανοίξει το περιεχόμενο προς λήψη.</translation>
 <translation id="5292796745632149097">Αποστολή προς</translation>
@@ -753,12 +743,10 @@
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB διαθέσιμα</translation>
 <translation id="543338862236136125">Επεξεργασία κωδικού πρόσβασης</translation>
 <translation id="5433691172869980887">Το όνομα χρήστη αντιγράφηκε</translation>
-<translation id="543509235395288790">Λήψη <ph name="COUNT" /> αρχείων (<ph name="MEGABYTES" />).</translation>
 <translation id="5438292632479953702">Λήψη ξανά</translation>
 <translation id="5441466871879044658">Μετάφραση σε αυτήν τη γλώσσα</translation>
 <translation id="5441522332038954058">Μετάβαση στη γραμμή διευθύνσεων</translation>
 <translation id="544776284582297024">Για να ανοίξετε καρτέλες και να επισκεφτείτε διαφορετικές σελίδες ταυτόχρονα, πατήστε το κουμπί Άνοιγμα καρτελών.</translation>
-<translation id="545042621069398927">Επιτάχυνση της λήψης σας.</translation>
 <translation id="5454166040603940656">με <ph name="PROVIDER" /></translation>
 <translation id="5456381639095306749">Λήψη σελίδας</translation>
 <translation id="5458366071038729214">Εδώ θα βρίσκετε τους ιστοτόπους που ακολουθείτε.</translation>
@@ -906,7 +894,6 @@
 <translation id="6277522088822131679">Παρουσιάστηκε ένα πρόβλημα κατά την εκτύπωση της σελίδας. Δοκιμάστε ξανά.</translation>
 <translation id="6277722725779679269">Δεν ήταν δυνατή η ενημέρωση της Παρακολούθησης τιμής</translation>
 <translation id="6278428485366576908">Θέμα</translation>
-<translation id="6292420053234093573">Χρησιμοποιώντας το Chrome, συμφωνείτε με τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" /> και τους<ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6294610283659775533">Μπορείτε να στέλνετε καρτέλες μεταξύ συσκευών οι οποίες έχουν συνδεθεί με τον ίδιο Λογαριασμό Google.</translation>
 <translation id="6297765934698848803">Ο οργανισμός που διαχειρίζεται τη συσκευή σας απενεργοποίησε την κάμερά σας.</translation>
 <translation id="6301525844455696527">Μη αναγνωσμένο περιεχόμενο στη λίστα ανάγνωσης</translation>
@@ -1114,7 +1101,6 @@
 <translation id="7376560087009844242">Συμπεριλαμβάνοντας μεγαλύτερο μέρος από το κείμενο μιας σελίδας, ενδέχεται να βλέπετε καλύτερα αποτελέσματα όταν χρησιμοποιείτε τη λειτουργία Αγγίξτε για αναζήτηση. Μπορείτε να επισκεφτείτε ανά πάσα στιγμή τις <ph name="BEGIN_LINK" />ρυθμίσεις<ph name="END_LINK" /> για να αλλάξετε αυτήν την επιλογή.</translation>
 <translation id="7379900596734708416">Διατίθεται σκούρο θέμα για ιστοτόπους</translation>
 <translation id="7386842512861524348">Η σύνδεση με τον ιστότοπο είναι ασφαλής εκτός αν το Chrome σας ειδοποιήσει ότι δεν είναι.</translation>
-<translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Εμπειρία πρώτης εκτέλεσης Chrome</translation>
 <translation id="741204030948306876">Ναι, συμφωνώ</translation>
@@ -1213,7 +1199,6 @@
 <translation id="789763218334337857">Τρόπος χρήσης του Chrome</translation>
 <translation id="7903184275147100332">Μπορεί να χρειαστεί λίγα λεπτά</translation>
 <translation id="7919123827536834358">Αυτόματη μετάφραση αυτών των γλωσσών</translation>
-<translation id="7925590027513907933">{FILE_COUNT,plural, =1{Λήψη αρχείου.}other{Λήψη # αρχείων.}}</translation>
 <translation id="7926975587469166629">Ψευδώνυμο κάρτας</translation>
 <translation id="7929962904089429003">Άνοιγμα μενού</translation>
 <translation id="7930998711684428189">Σας προειδοποιεί σε περίπτωση που οι κωδικοί πρόσβασής σας αποκαλυφθούν στο πλαίσιο μιας παραβίασης δεδομένων.</translation>

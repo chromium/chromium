@@ -10,6 +10,7 @@
 <translation id="1071587090247825784">виявлено брандмауер</translation>
 <translation id="1075811647922107217">Розмір сторінки</translation>
 <translation id="1094693127011229778">IP-адреса недоступна</translation>
+<translation id="1113892970288677790">Вибрати рекомендовані твори мистецтва й зображення</translation>
 <translation id="1119447706177454957">Внутрішня помилка</translation>
 <translation id="1124772482545689468">Користувач</translation>
 <translation id="1128128132059598906">EAP – TTLS</translation>
@@ -73,6 +74,7 @@
 <translation id="1782199038061388045">переклад</translation>
 <translation id="1792647875738159689">Сканування скасовується</translation>
 <translation id="1807246157184219062">Світла</translation>
+<translation id="1827738518074806965">Мистецька галерея</translation>
 <translation id="1851218745569890714">Відеоконференції</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Апаратне забезпечення</translation>
@@ -284,6 +286,7 @@
 <translation id="4832079907277790330">Вибрати папку в додатку "Файли"…</translation>
 <translation id="4835901797422965222">Немає активних мереж</translation>
 <translation id="4839698083503556542">Створюйте власний фільм</translation>
+<translation id="4847902821209177679">Вибрано тему "<ph name="TOPIC_SOURCE" />" з описом "<ph name="TOPIC_SOURCE_DESC" />". Натисніть Enter, щоб вибрати альбоми для теми "<ph name="TOPIC_SOURCE" />"</translation>
 <translation id="484790837831576105">Перетворення DNS (Android)</translation>
 <translation id="4848429997038228357">ТРИВАЄ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Залишилася {0} спроба}one{<ph name="ERROR_MESSAGE" /> Залишилася {0} спроба}few{<ph name="ERROR_MESSAGE" /> Залишилися {0} спроби}many{<ph name="ERROR_MESSAGE" /> Залишилося {0} спроб}other{<ph name="ERROR_MESSAGE" /> Залишилося {0} спроби}}</translation>
@@ -371,6 +374,7 @@
 <translation id="5866840822086176774">Дуже потужний</translation>
 <translation id="5895138241574237353">Перезапустити</translation>
 <translation id="5916084858004523819">Заборонено</translation>
+<translation id="5916664084637901428">Увімкнено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файл зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Файли зіскановано та збережено в папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Файл не знайдено</translation>
 <translation id="594552776027197022">Створити випадкову пару ключів</translation>
@@ -418,6 +422,7 @@
 <translation id="6480327114083866287">Керує <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Зупинено – зам'яло папір</translation>
 <translation id="6500818810472529210">Переглянути результати в Пошуку Google</translation>
+<translation id="650266656685499220">Щоб створити альбоми, відкрийте Google Фото</translation>
 <translation id="6516990319416533844">Щоб перевірити швидкість заряджання акумулятора, максимально використайте його заряд протягом короткого періоду часу</translation>
 <translation id="6517239166834772319">Можливості</translation>
 <translation id="6527081081771465939">Невідомий протокол безпеки Wi-Fi</translation>
@@ -542,9 +547,11 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Надіслати запит на лічильники трафіку</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8143951647992294073">Вибрати тему "<ph name="TOPIC_SOURCE" />" з описом "<ph name="TOPIC_SOURCE_DESC" />"</translation>
 <translation id="8206859287963243715">Мобільний</translation>
 <translation id="8208861521865154048">Бонуси</translation>
 <translation id="8217675307824400706">Підключіться до Інтернету</translation>
+<translation id="8226628635270268143">Вибрати улюблені фотографії й альбоми</translation>
 <translation id="8230672074305416752">Не вдалося надіслати запит ping шлюзу мережі за умовчанням</translation>
 <translation id="8246209727385807362">Невідомий оператор</translation>
 <translation id="8281886186245836920">Пропустити</translation>

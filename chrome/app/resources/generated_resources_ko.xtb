@@ -7696,6 +7696,7 @@
 <translation id="8871696467337989339">지원되지 않는 명령줄 플래그(<ph name="BAD_FLAG" />)를 사용 중이므로 안정성과 보안에 문제가 발생합니다.</translation>
 <translation id="8871974300055371298">콘텐츠 설정</translation>
 <translation id="8872155268274985541">잘못된 Kiosk 외부 업데이트 매니페스트 파일이 발견되었습니다. Kiosk 앱을 업데이트하지 못했습니다. USB 메모리를 제거하세요.</translation>
+<translation id="8872506776304248286">앱에서 열기</translation>
 <translation id="8872777911145321141">사이트에서 내 가상 현실 기기 및 데이터를 사용하려고 할 때 확인(권장)</translation>
 <translation id="8874184842967597500">연결되지 않음</translation>
 <translation id="8874341931345877644">기기로 전송:</translation>

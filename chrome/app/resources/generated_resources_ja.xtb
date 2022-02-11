@@ -7664,6 +7664,7 @@
 <translation id="8871696467337989339">サポートされていないコマンドライン フラグ <ph name="BAD_FLAG" /> を使用しています。これにより、安全性とセキュリティが損なわれます。</translation>
 <translation id="8871974300055371298">コンテンツの設定</translation>
 <translation id="8872155268274985541">無効なキオスク外部更新マニフェスト ファイルが見つかりました。キオスクアプリを更新できませんでした。USB スティックを取り外してください。</translation>
+<translation id="8872506776304248286">アプリで開く</translation>
 <translation id="8872777911145321141">サイトからバーチャル リアリティ デバイスとデータの使用を求められたときに確認する（推奨）</translation>
 <translation id="8874184842967597500">未接続</translation>
 <translation id="8874341931345877644">デバイスにキャスト:</translation>

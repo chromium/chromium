@@ -10,6 +10,7 @@
 <translation id="1071587090247825784">Eldveggur greindist</translation>
 <translation id="1075811647922107217">Síðustærð</translation>
 <translation id="1094693127011229778">IP-tala er ekki tiltæk</translation>
+<translation id="1113892970288677790">Veldu sérvalin listaverk og myndir</translation>
 <translation id="1119447706177454957">Innri villa</translation>
 <translation id="1124772482545689468">Notandi</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -73,6 +74,7 @@
 <translation id="1782199038061388045">þýðing</translation>
 <translation id="1792647875738159689">Hættir við að skanna</translation>
 <translation id="1807246157184219062">Ljóst</translation>
+<translation id="1827738518074806965">Listasafn</translation>
 <translation id="1851218745569890714">Myndfundur</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Útgáfa vélbúnaðar</translation>
@@ -284,6 +286,7 @@
 <translation id="4832079907277790330">Velja möppu í forritinu Skrár...</translation>
 <translation id="4835901797422965222">Engin virk net</translation>
 <translation id="4839698083503556542">Búðu til eigin kvikmynd</translation>
+<translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> valið, ýttu á færslulykilinn til að velja albúm í <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) DNS-lausn</translation>
 <translation id="4848429997038228357">Í GANGI</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} tilraun eftir}one{<ph name="ERROR_MESSAGE" /> {0} tilraun eftir}other{<ph name="ERROR_MESSAGE" /> {0} tilraunir eftir}}</translation>
@@ -371,6 +374,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="5866840822086176774">Mjög mikill</translation>
 <translation id="5895138241574237353">Endurræsa</translation>
 <translation id="5916084858004523819">Bannað</translation>
+<translation id="5916664084637901428">Kveikt</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Skráin var skönnuð og vistuð í <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Skrárnar voru skannaðar og vistaðar í <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Skrárnar voru skannaðar og vistaðar í <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Skráin fannst ekki</translation>
 <translation id="594552776027197022">Búa til handahófsvalið lyklasett</translation>
@@ -418,6 +422,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6480327114083866287">Stýrt af <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Stöðvað – pappírsstífla</translation>
 <translation id="6500818810472529210">Sjá niðurstöður í Google leit</translation>
+<translation id="650266656685499220">Farðu í Google myndir til að búa til möppur</translation>
 <translation id="6516990319416533844">Til að prófa hleðsluhraða rafhlöðunnar skaltu láta rafhleðsluna minnka í stutta stund</translation>
 <translation id="6517239166834772319">Kanna</translation>
 <translation id="6527081081771465939">Óþekkt Wi-Fi öryggisregla</translation>
@@ -542,9 +547,11 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Biðja um talningu umferðar</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8143951647992294073">Velja <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8206859287963243715">Farsímakerfi</translation>
 <translation id="8208861521865154048">Fríðindi</translation>
 <translation id="8217675307824400706">Kominn tími til að tengjast</translation>
+<translation id="8226628635270268143">Veldu uppáhaldsmyndir og -möppur</translation>
 <translation id="8230672074305416752">Ping-prófun sjálfvalinnar netkerfisgáttar mistókst</translation>
 <translation id="8246209727385807362">Óþekkt símafyrirtæki</translation>
 <translation id="8281886186245836920">Sleppa</translation>

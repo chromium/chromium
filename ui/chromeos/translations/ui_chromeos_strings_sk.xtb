@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Katalánčina</translation>
 <translation id="1168100932582989117">Menné servery Google</translation>
+<translation id="1171082344678443012">Komprimovaný archív XZ</translation>
 <translation id="1172970565351728681">Zostáva približne <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Premenovať</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, batéria telefónu <ph name="BATTERY_STATUS" /> %, podrobnosti</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">Formátovaním kľúča odstránite všetky dáta, ktoré sú v ňom uložené. Túto akciu nie je možné vrátiť späť.</translation>
 <translation id="2025955442973426285">Tigrinská klávesnica</translation>
 <translation id="2028997212275086731">Archív vo formáte RAR</translation>
+<translation id="2036414735548252477">Komprimovaný archív tar LZMA</translation>
 <translation id="2037845485764049925">Ruská klávesnica</translation>
 <translation id="2044023416777079300">Modem nebol zaregistrovaný</translation>
 <translation id="2046702855113914483">Rámen</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> B</translation>
 <translation id="4880214202172289027">Posúvač hlasitosti</translation>
 <translation id="4881695831933465202">Otvoriť</translation>
+<translation id="4886199584824489598">Komprimovaný archív Bzip2</translation>
 <translation id="4900532980794411603">Zdieľať pomocou aplikácie Parallels Desktop</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, pripojenie</translation>
 <translation id="4905417359854579806">Môžete začať zálohovať (počet: <ph name="FILE_COUNT" />)</translation>
@@ -586,6 +589,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6055907707645252013">Sieť <ph name="NETWORK_TYPE" /> nie je pripojená</translation>
 <translation id="6074825444536523002">Formulár Google</translation>
 <translation id="6079871810119356840">Maďarská klávesnica s rozložením Qwerty</translation>
+<translation id="6082256976217156453">Komprimovaný archív LZMA</translation>
 <translation id="6096979789310008754">Text vyhľadávania bol vymazaný, zobrazujú sa všetky súbory a priečinky</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> sa presúva do priečnika <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">Medzera</translation>
@@ -842,6 +846,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8297012244086013755">Hangul 3 Set (bez klávesa Shift)</translation>
 <translation id="8299269255470343364">Japončina</translation>
 <translation id="8300849813060516376">Zlyhanie služby OTASP</translation>
+<translation id="8308481408797647857">Komprimovaný archív tar XZ</translation>
 <translation id="8312871300878166382">Prilepiť do priečinka</translation>
 <translation id="8329978297633540474">Obyčajný text</translation>
 <translation id="8335587457941836791">Odopnúť z poličky</translation>
@@ -950,6 +955,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="943972244133411984">Upravil(a):</translation>
 <translation id="945522503751344254">Odoslať spätnú väzbu</translation>
 <translation id="947144732524271678">Bol vybraný rozsah <ph name="ENTRY_COUNT" /> položiek od <ph name="FROM_ENTRY_NAME" /> do <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="961973045258256291">Komprimovaný archív Gzip</translation>
 <translation id="965477715979482472">Angličtina (Južná Afrika)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Súbor s názvom <ph name="FILE_NAME" /> už existuje. Chcete ho nahradiť?</translation>

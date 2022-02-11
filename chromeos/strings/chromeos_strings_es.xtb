@@ -10,6 +10,7 @@
 <translation id="1071587090247825784">cortafuegos detectado</translation>
 <translation id="1075811647922107217">Tamaño de página</translation>
 <translation id="1094693127011229778">La dirección IP no está disponible</translation>
+<translation id="1113892970288677790">Elige imágenes y obras de arte seleccionadas</translation>
 <translation id="1119447706177454957">Error interno</translation>
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -73,6 +74,7 @@
 <translation id="1782199038061388045">traducción</translation>
 <translation id="1792647875738159689">Cancelando análisis</translation>
 <translation id="1807246157184219062">Claro</translation>
+<translation id="1827738518074806965">Galería de arte</translation>
 <translation id="1851218745569890714">Videoconferencias</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revisión de hardware</translation>
@@ -284,6 +286,7 @@
 <translation id="4832079907277790330">Seleccionar carpeta en aplicación Files...</translation>
 <translation id="4835901797422965222">No hay redes activas</translation>
 <translation id="4839698083503556542">Crea tu propia película</translation>
+<translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> seleccionado, pulsa Intro para seleccionar los álbumes de <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Resolución de DNS</translation>
 <translation id="4848429997038228357">EN CURSO</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intento.}other{<ph name="ERROR_MESSAGE" /> Quedan {0} intentos.}}</translation>
@@ -370,6 +373,7 @@
 <translation id="5866840822086176774">Óptima</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5916084858004523819">Prohibida</translation>
+<translation id="5916664084637901428">Activado</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Tu archivo se ha escaneado correctamente y se ha guardado en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Tus archivos se han escaneado correctamente y se han guardado en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Archivo no encontrado</translation>
 <translation id="594552776027197022">Generar par de claves aleatorio</translation>
@@ -417,6 +421,7 @@
 <translation id="6480327114083866287">Gestionado por <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Detenido: atasco de papel</translation>
 <translation id="6500818810472529210">Mostrar resultado en la Búsqueda de Google</translation>
+<translation id="650266656685499220">Para crear álbumes, ve a Google Fotos</translation>
 <translation id="6516990319416533844">Para comprobar la velocidad de carga de la batería, deja que se use un poco</translation>
 <translation id="6517239166834772319">Explorar</translation>
 <translation id="6527081081771465939">Protocolo de seguridad Wi-Fi desconocido</translation>
@@ -541,9 +546,11 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Solicitar contadores de tráfico</translation>
 <translation id="8138405288920084977">LTE Advanced</translation>
+<translation id="8143951647992294073">Seleccionar <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8206859287963243715">Móvil</translation>
 <translation id="8208861521865154048">Ventajas</translation>
 <translation id="8217675307824400706">Conéctate</translation>
+<translation id="8226628635270268143">Elige tus fotos y álbumes favoritos</translation>
 <translation id="8230672074305416752">Se ha producido un error al hacer ping en la puerta de enlace de red predeterminada</translation>
 <translation id="8246209727385807362">Operador desconocido</translation>
 <translation id="8281886186245836920">Saltar</translation>

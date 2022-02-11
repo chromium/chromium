@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Хангыль Ahnmatae горим</translation>
 <translation id="1155759005174418845">Каталан</translation>
 <translation id="1168100932582989117">Google-н нэрийн сервер</translation>
+<translation id="1171082344678443012">XZ-н шахсан архив</translation>
 <translation id="1172970565351728681">Ойролцоогоор <ph name="REMAINING_TIME" /> үлдсэн</translation>
 <translation id="1173894706177603556">Нэр солих</translation>
 <translation id="1173916544412572294">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, утасны батарей <ph name="BATTERY_STATUS" />%, дэлгэрэнгүй мэдээлэл</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">Драйвыг форматлах нь түүн дээр хадгалсан бүх өгөгдлийг устгана. Энэ үйлдлийг буцаах боломжгүй.</translation>
 <translation id="2025955442973426285">Тигринья</translation>
 <translation id="2028997212275086731">RAR архив</translation>
+<translation id="2036414735548252477">LZMA-н шахсан tar архив</translation>
 <translation id="2037845485764049925">Орос</translation>
 <translation id="2044023416777079300">Модемыг бүртгээгүй байна</translation>
 <translation id="2046702855113914483">Рамен</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> байт</translation>
 <translation id="4880214202172289027">Дууны түвшин тохируулагч</translation>
 <translation id="4881695831933465202">Нээх</translation>
+<translation id="4886199584824489598">Bzip2-н шахсан архив</translation>
 <translation id="4900532980794411603">Parallels Desktop-тай хуваалцах</translation>
 <translation id="4902546322522096650">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, дохионы хүч<ph name="SIGNAL_STRENGTH" />%, холбогдох</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" />-г нөөцлөхөд бэлэн</translation>
@@ -583,6 +586,7 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> сүлжээ, холбогдоогүй</translation>
 <translation id="6074825444536523002">Google-ийн маягт</translation>
 <translation id="6079871810119356840">Qwerty гартай унгар</translation>
+<translation id="6082256976217156453">LZMA-н шахсан архив</translation>
 <translation id="6096979789310008754">Хайлтын текстийг устгасан, бүх файл болон фолдерыг харуулж байна.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" />-г <ph name="FOLDER_NAME" /> руу зөөж байна</translation>
 <translation id="6129953537138746214">Space</translation>
@@ -839,6 +843,7 @@
 <translation id="8297012244086013755">Хангыль 3 Багц (Солихгүй)</translation>
 <translation id="8299269255470343364">Япон</translation>
 <translation id="8300849813060516376">OTASP амжилтгүй болсон</translation>
+<translation id="8308481408797647857">XZ-н шахсан tar архив</translation>
 <translation id="8312871300878166382">Хавтас руу наах</translation>
 <translation id="8329978297633540474">Энгийн текст</translation>
 <translation id="8335587457941836791">Програмын жагсаалтын эхэнд байрлуулахыг болих</translation>
@@ -947,6 +952,7 @@
 <translation id="943972244133411984">Өөрчилсөн</translation>
 <translation id="945522503751344254">Санал хүсэлт илгээх</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" />-с <ph name="TO_ENTRY_NAME" /> хүртэлх <ph name="ENTRY_COUNT" /> оролтын мужийг сонгосон.</translation>
+<translation id="961973045258256291">Gzip-н шахсан архив</translation>
 <translation id="965477715979482472">Англи хэл (Өмнөд Африк)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" нэртэй файл аль хэдийн байна. Та үүнийг солих уу?</translation>

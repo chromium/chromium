@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Catalan</translation>
 <translation id="1168100932582989117">Server nama Google</translation>
+<translation id="1171082344678443012">Arsip terkompresi XZ</translation>
 <translation id="1172970565351728681">Sekitar <ph name="REMAINING_TIME" /> lagi</translation>
 <translation id="1173894706177603556">Ganti nama</translation>
 <translation id="1173916544412572294">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Baterai Ponsel <ph name="BATTERY_STATUS" />%, Detail</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">Memformat drive akan menghapus semua data yang tersimpan di dalamnya. Tindakan ini tidak dapat diurungkan.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2028997212275086731">Arsip RAR</translation>
+<translation id="2036414735548252477">Arsip tar terkompresi LZMA</translation>
 <translation id="2037845485764049925">Rusia</translation>
 <translation id="2044023416777079300">Modem tidak terdaftar</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> byte</translation>
 <translation id="4880214202172289027">Pengatur volume</translation>
 <translation id="4881695831933465202">Buka</translation>
+<translation id="4886199584824489598">Arsip terkompresi Bzip2</translation>
 <translation id="4900532980794411603">Bagikan ke Parallels Desktop</translation>
 <translation id="4902546322522096650">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Sambungkan</translation>
 <translation id="4905417359854579806">Siap untuk mencadangkan <ph name="FILE_COUNT" /></translation>
@@ -586,6 +589,7 @@
 <translation id="6055907707645252013">Jaringan <ph name="NETWORK_TYPE" />, tidak terhubung</translation>
 <translation id="6074825444536523002">Google Formulir</translation>
 <translation id="6079871810119356840">Hungaria dengan keyboard Qwerty</translation>
+<translation id="6082256976217156453">Arsip terkompresi LZMA</translation>
 <translation id="6096979789310008754">Teks penelusuran dihapus, menampilkan semua file dan folder.</translation>
 <translation id="610101264611565198">Memindahkan <ph name="FILE_NAME" /> ke <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">Spasi</translation>
@@ -842,6 +846,7 @@
 <translation id="8297012244086013755">3 Himpunan Hangul (Tanpa Shift)</translation>
 <translation id="8299269255470343364">Jepang</translation>
 <translation id="8300849813060516376">OTASP gagal</translation>
+<translation id="8308481408797647857">Arsip tar terkompresi XZ</translation>
 <translation id="8312871300878166382">Tempelkan ke folder</translation>
 <translation id="8329978297633540474">Teks biasa</translation>
 <translation id="8335587457941836791">Lepaskan pin dari rak</translation>
@@ -950,6 +955,7 @@
 <translation id="943972244133411984">Diubah oleh</translation>
 <translation id="945522503751344254">Kirim masukan</translation>
 <translation id="947144732524271678">Rentang <ph name="ENTRY_COUNT" /> entri dari <ph name="FROM_ENTRY_NAME" /> ke <ph name="TO_ENTRY_NAME" /> dipilih.</translation>
+<translation id="961973045258256291">Arsip terkompresi Gzip</translation>
 <translation id="965477715979482472">Inggris (Afrika Selatan)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">File bernama "<ph name="FILE_NAME" />" sudah ada. Ingin menggantinya?</translation>

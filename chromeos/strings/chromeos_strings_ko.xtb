@@ -10,6 +10,7 @@
 <translation id="1071587090247825784">방화벽 감지됨</translation>
 <translation id="1075811647922107217">페이지 크기</translation>
 <translation id="1094693127011229778">IP 주소를 사용할 수 없습니다.</translation>
+<translation id="1113892970288677790">선별된 예술작품 및 이미지를 선택합니다.</translation>
 <translation id="1119447706177454957">내부 오류</translation>
 <translation id="1124772482545689468">사용자</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -73,6 +74,7 @@
 <translation id="1782199038061388045">번역</translation>
 <translation id="1792647875738159689">스캔 취소 중</translation>
 <translation id="1807246157184219062">밝게</translation>
+<translation id="1827738518074806965">아트 갤러리</translation>
 <translation id="1851218745569890714">화상 회의</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">하드웨어 버전</translation>
@@ -284,6 +286,7 @@
 <translation id="4832079907277790330">파일 앱에서 폴더 선택…</translation>
 <translation id="4835901797422965222">활성 네트워크 없음</translation>
 <translation id="4839698083503556542">나만의 동영상 만들기</translation>
+<translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> 선택됨, <ph name="TOPIC_SOURCE" /> 앨범을 선택하려면 Enter를 누르세요</translation>
 <translation id="484790837831576105">(Android) DNS 변환</translation>
 <translation id="4848429997038228357">실행 중</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />, 남은 시도 {0}회}other{<ph name="ERROR_MESSAGE" />, 남은 시도 {0}회}}</translation>
@@ -371,6 +374,7 @@
 <translation id="5866840822086176774">매우 강함</translation>
 <translation id="5895138241574237353">다시 시작</translation>
 <translation id="5916084858004523819">금지됨</translation>
+<translation id="5916664084637901428">사용</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{파일 스캔이 완료되어 <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />에 저장되었습니다.}other{파일 스캔이 완료되어 <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />에 저장되었습니다.}}</translation>
 <translation id="5931523347251946569">파일을 찾을 수 없음</translation>
 <translation id="594552776027197022">임의의 키 쌍 생성</translation>
@@ -418,6 +422,7 @@
 <translation id="6480327114083866287"><ph name="MANAGER" />에서 관리함</translation>
 <translation id="649050271426829538">중지됨 - 용지 걸림</translation>
 <translation id="6500818810472529210">Google 검색에서 결과 보기</translation>
+<translation id="650266656685499220">앨범을 만들려면 Google 포토로 이동하세요.</translation>
 <translation id="6516990319416533844">배터리 충전 속도를 테스트하려면 짧은 시간 동안 배터리를 소모하세요.</translation>
 <translation id="6517239166834772319">살펴보기</translation>
 <translation id="6527081081771465939">알려지지 않은 Wi-Fi 보안 프로토콜입니다.</translation>
@@ -542,9 +547,11 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">트래픽 카운터 요청</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> 선택</translation>
 <translation id="8206859287963243715">휴대전화</translation>
 <translation id="8208861521865154048">혜택</translation>
 <translation id="8217675307824400706">연결</translation>
+<translation id="8226628635270268143">좋아하는 사진 및 앨범을 선택합니다.</translation>
 <translation id="8230672074305416752">기본 네트워크 게이트웨이를 핑할 수 없습니다.</translation>
 <translation id="8246209727385807362">알 수 없는 이동통신사</translation>
 <translation id="8281886186245836920">건너뛰기</translation>

@@ -10,6 +10,7 @@
 <translation id="1071587090247825784">Tembok api dikesan</translation>
 <translation id="1075811647922107217">Saiz halaman</translation>
 <translation id="1094693127011229778">Alamat IP tidak tersedia</translation>
+<translation id="1113892970288677790">Pilih kerja seni dan imej yang dipilih susun</translation>
 <translation id="1119447706177454957">Ralat dalaman</translation>
 <translation id="1124772482545689468">Pengguna</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -73,6 +74,7 @@
 <translation id="1782199038061388045">terjemahan</translation>
 <translation id="1792647875738159689">Membatalkan pengimbasan</translation>
 <translation id="1807246157184219062">Cahaya</translation>
+<translation id="1827738518074806965">Galeri seni</translation>
 <translation id="1851218745569890714">Persidangan Video</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Semakan perkakasan</translation>
@@ -284,6 +286,7 @@
 <translation id="4832079907277790330">Pilih folder dalam apl Files...</translation>
 <translation id="4835901797422965222">Tiada rangkaian aktif</translation>
 <translation id="4839698083503556542">Buat filem anda sendiri</translation>
+<translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> dipilih, tekan Enter untuk memilih album <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">Peleraian DNS (Android)</translation>
 <translation id="4848429997038228357">BERJALAN</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} percubaan lagi}other{<ph name="ERROR_MESSAGE" /> {0} percubaan lagi}}</translation>
@@ -371,6 +374,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="5866840822086176774">Sangat kuat</translation>
 <translation id="5895138241574237353">Mulakan Semula</translation>
 <translation id="5916084858004523819">Dilarang</translation>
+<translation id="5916664084637901428">Hidupkan</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fail anda telah berjaya diimbas dan disimpan pada <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Fail anda telah berjaya diimbas dan disimpan pada <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Fail tidak dijumpai</translation>
 <translation id="594552776027197022">Jana pasangan kunci rawak</translation>
@@ -418,6 +422,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6480327114083866287">Diurus oleh <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Dihentikan - Kertas tersangkut</translation>
 <translation id="6500818810472529210">Lihat hasil dalam Google Search</translation>
+<translation id="650266656685499220">Untuk mencipta album, pergi ke Google Photos</translation>
 <translation id="6516990319416533844">Untuk menguji kadar pengecasan bateri, biarkan cas bateri anda habis dalam tempoh yang singkat</translation>
 <translation id="6517239166834772319">Teroka</translation>
 <translation id="6527081081771465939">Protokol keselamatan Wi-Fi tidak diketahui</translation>
@@ -542,9 +547,11 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">Minta Pembilang Trafik</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8143951647992294073">Pilih <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8206859287963243715">Selular</translation>
 <translation id="8208861521865154048">Manfaat</translation>
 <translation id="8217675307824400706">Berhubung</translation>
+<translation id="8226628635270268143">Pilih foto dan album kegemaran anda</translation>
 <translation id="8230672074305416752">Gagal untuk ping get laluan rangkaian lalai</translation>
 <translation id="8246209727385807362">Pembawa tidak diketahui</translation>
 <translation id="8281886186245836920">Langkau</translation>

@@ -21,6 +21,7 @@
 <translation id="115443833402798225">ฮังกูล Ahnmatae</translation>
 <translation id="1155759005174418845">คาตาลัน</translation>
 <translation id="1168100932582989117">เซิร์ฟเวอร์ชื่อของ Google</translation>
+<translation id="1171082344678443012">ที่เก็บถาวรซึ่งบีบอัดโดย XZ</translation>
 <translation id="1172970565351728681">เหลือเวลาอีกประมาณ <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">เปลี่ยนชื่อ</translation>
 <translation id="1173916544412572294">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, แบตเตอรี่โทรศัพท์ <ph name="BATTERY_STATUS" />%, รายละเอียด</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">การฟอร์แมตไดรฟ์จะลบข้อมูลทั้งหมดที่เก็บไว้ในไดรฟ์ การดำเนินการนี้ยกเลิกไม่ได้</translation>
 <translation id="2025955442973426285">ตีกรินยา</translation>
 <translation id="2028997212275086731">ไฟล์ RAR</translation>
+<translation id="2036414735548252477">ที่เก็บถาวร Tar ซึ่งบีบอัดโดย LZMA</translation>
 <translation id="2037845485764049925">รัสเซีย</translation>
 <translation id="2044023416777079300">ไม่ได้จดทะเบียนโมเด็ม</translation>
 <translation id="2046702855113914483">ราเม็ง</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> ไบต์</translation>
 <translation id="4880214202172289027">แถบเลื่อนระดับเสียง</translation>
 <translation id="4881695831933465202">เปิด</translation>
+<translation id="4886199584824489598">ที่เก็บถาวรซึ่งบีบอัดโดย Bzip2</translation>
 <translation id="4900532980794411603">แชร์กับ Parallels Desktop</translation>
 <translation id="4902546322522096650">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, เชื่อมต่อ</translation>
 <translation id="4905417359854579806">พร้อมสำรอง <ph name="FILE_COUNT" /></translation>
@@ -586,6 +589,7 @@
 <translation id="6055907707645252013">เครือข่าย <ph name="NETWORK_TYPE" /> ยังไม่ได้เชื่อมต่อ</translation>
 <translation id="6074825444536523002">Google ฟอร์ม</translation>
 <translation id="6079871810119356840">ฮังการีด้วยแป้นพิมพ์ Qwerty</translation>
+<translation id="6082256976217156453">ที่เก็บถาวรซึ่งบีบอัดโดย LZMA</translation>
 <translation id="6096979789310008754">ล้างข้อความค้นหาแล้ว กำลังแสดงไฟล์และโฟลเดอร์ทั้งหมด</translation>
 <translation id="610101264611565198">กำลังย้าย <ph name="FILE_NAME" /> ไปยัง <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">ช่องว่าง</translation>
@@ -842,6 +846,7 @@
 <translation id="8297012244086013755">ฮังกูลแบบ 3 ชุด (ไม่มี Shift)</translation>
 <translation id="8299269255470343364">ญี่ปุ่น</translation>
 <translation id="8300849813060516376">OTASP ล้มเหลว</translation>
+<translation id="8308481408797647857">ที่เก็บถาวร Tar ซึ่งบีบอัดโดย XZ</translation>
 <translation id="8312871300878166382">วางลงในโฟลเดอร์</translation>
 <translation id="8329978297633540474">ข้อความล้วน</translation>
 <translation id="8335587457941836791">เลิกตรึงในชั้นวาง</translation>
@@ -950,6 +955,7 @@
 <translation id="943972244133411984">แก้ไขโดย</translation>
 <translation id="945522503751344254">ส่งความคิดเห็น</translation>
 <translation id="947144732524271678">เลือกรายการทั้งหมด <ph name="ENTRY_COUNT" /> รายการตั้งแต่ <ph name="FROM_ENTRY_NAME" /> จนถึง <ph name="TO_ENTRY_NAME" /></translation>
+<translation id="961973045258256291">ที่เก็บถาวรซึ่งบีบอัดโดย Gzip</translation>
 <translation id="965477715979482472">อังกฤษ (แอฟริกาใต้)</translation>
 <translation id="981121421437150478">ออฟไลน์</translation>
 <translation id="988685240266037636">มีไฟล์ชื่อ "<ph name="FILE_NAME" />" อยู่แล้ว คุณต้องการแทนที่ไฟล์ดังกล่าวไหม</translation>

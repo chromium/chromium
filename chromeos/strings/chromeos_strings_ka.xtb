@@ -10,6 +10,7 @@
 <translation id="1071587090247825784">აღმოჩენილია ქსელის დაცვა</translation>
 <translation id="1075811647922107217">გვერდის ზომა</translation>
 <translation id="1094693127011229778">IP მისამართი მიუწვდომელია</translation>
+<translation id="1113892970288677790">აირჩიეთ კურირებული სურათები და ხელოვნების ნიმუშები</translation>
 <translation id="1119447706177454957">შიდა შეცდომა</translation>
 <translation id="1124772482545689468">მომხმარებელი</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -73,6 +74,7 @@
 <translation id="1782199038061388045">თარგმანი</translation>
 <translation id="1792647875738159689">მიმდინარეობს სკანირების გაუქმება</translation>
 <translation id="1807246157184219062">ნათელი</translation>
+<translation id="1827738518074806965">ხელოვნების გალერეა</translation>
 <translation id="1851218745569890714">ვიდეოკონფერენცია</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">აპარატურის ვერსია</translation>
@@ -284,6 +286,7 @@
 <translation id="4832079907277790330">საქაღალდის არჩევა ფაილების აპიდან...</translation>
 <translation id="4835901797422965222">აქტიური ქსელები არ არის</translation>
 <translation id="4839698083503556542">შექმენით საკუთარი ფილმი</translation>
+<translation id="4847902821209177679">არჩეულია <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />, <ph name="TOPIC_SOURCE" /> ალბომების ასარჩევად დააჭირეთ კლავიშზე Enter</translation>
 <translation id="484790837831576105">(Android) DNS-ის დარეგულირება</translation>
 <translation id="4848429997038228357">გაშვებულია</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> დარჩენილია {0} მცდელობა}other{<ph name="ERROR_MESSAGE" /> დარჩენილია {0} მცდელობა}}</translation>
@@ -371,6 +374,7 @@
 <translation id="5866840822086176774">ძალიან ძლიერი</translation>
 <translation id="5895138241574237353">გადატვირთვა</translation>
 <translation id="5916084858004523819">აკრძალული</translation>
+<translation id="5916664084637901428">ჩართვა</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{თქვენი ფაილი წარმატებით დასკანირდა და შეინახა საქაღალდეში <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{თქვენი ფაილები წარმატებით დასკანირდა და შეინახა საქაღალდეში <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">ფაილი ვერ მოიძებნა</translation>
 <translation id="594552776027197022">გასაღებთა შემთხვევითი წყვილის შექმნა</translation>
@@ -418,6 +422,7 @@
 <translation id="6480327114083866287">მართავს <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">გაჩერდა — ქაღალდი გაიჭედა</translation>
 <translation id="6500818810472529210">იხილეთ შედეგები Google Search-ში</translation>
+<translation id="650266656685499220">ალბომების შესაქმნელად გადადით Google Photos-ზე</translation>
 <translation id="6516990319416533844">ბატარეის დატენის სიჩქარის შესამოწმებლად ჯერ დაცალეთ ბატარეა გარკვეული დროის განმავლობაში</translation>
 <translation id="6517239166834772319">გაცნობა</translation>
 <translation id="6527081081771465939">Wi-Fi-ს უცნობი უსაფრთხოების პროტოკოლი</translation>
@@ -542,9 +547,11 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">ტრაფიკის მთვლელების მოთხოვნა</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8143951647992294073">აირჩიეთ <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8206859287963243715">ფიჭური</translation>
 <translation id="8208861521865154048">ბონუსები</translation>
 <translation id="8217675307824400706">დაამყარეთ კავშირი</translation>
+<translation id="8226628635270268143">აირჩიეთ თქვენი რჩეული ფოტოები და ალბომები</translation>
 <translation id="8230672074305416752">ნაგულისხმევი ქსელის გეითვეისთან კავშირის შემოწმება ვერ მოხერხდა</translation>
 <translation id="8246209727385807362">უცნობი ოპერატორი</translation>
 <translation id="8281886186245836920">გამოტოვება</translation>

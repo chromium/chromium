@@ -21,6 +21,7 @@
 <translation id="115443833402798225">हंगुल आनमाटी</translation>
 <translation id="1155759005174418845">कैटेलन</translation>
 <translation id="1168100932582989117">Google नाम सर्वर</translation>
+<translation id="1171082344678443012">XZ compressed archive</translation>
 <translation id="1172970565351728681">करीब <ph name="REMAINING_TIME" /> बाकी हैं</translation>
 <translation id="1173894706177603556">नाम बदलें</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, फ़ोन की बैटरी <ph name="BATTERY_STATUS" />%, जानकारी</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">किसी डिस्क को फ़ॉर्मैट करने से उस पर सेव किया गया पूरा डेटा मिट जाएगा. यह कार्रवाई वापस नहीं ली जा सकती.</translation>
 <translation id="2025955442973426285">टिगरिन्या</translation>
 <translation id="2028997212275086731">RAR संग्रह</translation>
+<translation id="2036414735548252477">LZMA compressed tar archive</translation>
 <translation id="2037845485764049925">रशियन</translation>
 <translation id="2044023416777079300">मॉडम रजिस्टर नहीं किया गया है</translation>
 <translation id="2046702855113914483">रेमन</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> बाइट</translation>
 <translation id="4880214202172289027">वॉल्‍यूम स्‍लाइडर</translation>
 <translation id="4881695831933465202">खोलें</translation>
+<translation id="4886199584824489598">Bzip2 compressed archive</translation>
 <translation id="4900532980794411603">Parallels Desktop से शेयर करें</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, कनेक्ट करें</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> का बैक अप लेने के लिए तैयार है</translation>
@@ -586,6 +589,7 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> नेटवर्क, कनेक्ट नहीं है</translation>
 <translation id="6074825444536523002">Google फ़ॉर्म</translation>
 <translation id="6079871810119356840">क्वर्टी कीबोर्ड के साथ हंगेरियन</translation>
+<translation id="6082256976217156453">LZMA compressed archive</translation>
 <translation id="6096979789310008754">खोज के लिए इस्तेमाल किए गए टेक्स्ट मिटा दिए गए हैं. सभी फ़ील्ड और फ़ोल्डर दिखाए जा रहे हैं.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" />, <ph name="FOLDER_NAME" /> में ट्रांसफ़र हो रही है</translation>
 <translation id="6129953537138746214">Space</translation>
@@ -842,6 +846,7 @@
 <translation id="8297012244086013755">हंगुल 3 सेट ('Shift की' की ज़रूरत नहीं)</translation>
 <translation id="8299269255470343364">जापानी</translation>
 <translation id="8300849813060516376">OTASP विफल</translation>
+<translation id="8308481408797647857">XZ compressed tar archive</translation>
 <translation id="8312871300878166382">फ़ोल्डर में चिपकाएं</translation>
 <translation id="8329978297633540474">सादा लेख</translation>
 <translation id="8335587457941836791">अलमारी से टैब बड़ी करें</translation>
@@ -950,6 +955,7 @@
 <translation id="943972244133411984">बदलाव करने वाले</translation>
 <translation id="945522503751344254">फ़ीडबैक भेजें</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> से <ph name="TO_ENTRY_NAME" /> तक की <ph name="ENTRY_COUNT" /> एंट्री को चुना गया.</translation>
+<translation id="961973045258256291">Gzip compressed archive</translation>
 <translation id="965477715979482472">अंग्रेज़ी (दक्षिण अफ़्रीका)</translation>
 <translation id="981121421437150478">ऑफ़लाइन</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" की एक फ़ाइल पहले से मौजूद है. क्या आप उसे बदलना चाहते हैं?</translation>

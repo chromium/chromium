@@ -10,6 +10,7 @@
 <translation id="1071587090247825784">U zbulua mur mbrojtës</translation>
 <translation id="1075811647922107217">Madhësia e faqes</translation>
 <translation id="1094693127011229778">Adresa IP nuk ofrohet</translation>
+<translation id="1113892970288677790">Zgjidh veprat e artit dhe imazhet e përzgjedhura</translation>
 <translation id="1119447706177454957">Gabim i brendshëm</translation>
 <translation id="1124772482545689468">Përdoruesi</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -73,6 +74,7 @@
 <translation id="1782199038061388045">përkthimi</translation>
 <translation id="1792647875738159689">Skanimi po anulohet</translation>
 <translation id="1807246157184219062">I lehtë</translation>
+<translation id="1827738518074806965">Galeri arti</translation>
 <translation id="1851218745569890714">Videokonferenca</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Rishikimi i harduerit</translation>
@@ -284,6 +286,7 @@
 <translation id="4832079907277790330">Zgjidh dosjen në aplikacionin "Skedarët"...</translation>
 <translation id="4835901797422965222">Nuk ka asnjë rrjet aktiv</translation>
 <translation id="4839698083503556542">Krijo filmin tënd</translation>
+<translation id="4847902821209177679">Është zgjedhur "<ph name="TOPIC_SOURCE_DESC" />" nga "<ph name="TOPIC_SOURCE" />". Shtyp "Enter" për të zgjedhur albumet e "<ph name="TOPIC_SOURCE" />"</translation>
 <translation id="484790837831576105">(Android) Zgjidhja e DNS-së</translation>
 <translation id="4848429997038228357">NË EKZEKUTIM</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} përpjekje e mbetur}other{<ph name="ERROR_MESSAGE" /> {0} përpjekje të mbetura}}</translation>
@@ -370,6 +373,7 @@
 <translation id="5866840822086176774">Shumë i fortë</translation>
 <translation id="5895138241574237353">Rinis</translation>
 <translation id="5916084858004523819">E ndaluar</translation>
+<translation id="5916664084637901428">Aktiv</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Skedari yt është skanuar dhe është ruajtur me sukses në <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Skedarët e tu janë skanuar dhe janë ruajtur me sukses në <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Skedari nuk u gjet</translation>
 <translation id="594552776027197022">Gjenero çift të rastësishëm çelësash</translation>
@@ -417,6 +421,7 @@
 <translation id="6480327114083866287">Menaxhuar nga <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Ndaloi - Bllokim letre</translation>
 <translation id="6500818810472529210">Shikoje rezultatin te "Kërko në Google"</translation>
+<translation id="650266656685499220">Për të krijuar albume, shko te "Fotografitë e Google"</translation>
 <translation id="6516990319416533844">Për të testuar shpejtësinë e karikimit të baterisë, lëre baterinë të shkarkohet për një periudhë të shkurtër</translation>
 <translation id="6517239166834772319">Eksploro</translation>
 <translation id="6527081081771465939">Protokoll i panjohur sigurie i Wi-Fi</translation>
@@ -541,9 +546,11 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Kërko matësit e trafikut</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8143951647992294073">Zgjidh "<ph name="TOPIC_SOURCE_DESC" />" nga "<ph name="TOPIC_SOURCE" />"</translation>
 <translation id="8206859287963243715">Rrjeti celular</translation>
 <translation id="8208861521865154048">Avantazhet</translation>
 <translation id="8217675307824400706">Lidh</translation>
+<translation id="8226628635270268143">Zgjidh fotografitë dhe albumet e tua të preferuara</translation>
 <translation id="8230672074305416752">Dështoi verifikimi "ping" për portën e parazgjedhur të kalimit</translation>
 <translation id="8246209727385807362">Operator celular i panjohur</translation>
 <translation id="8281886186245836920">Kapërceje</translation>

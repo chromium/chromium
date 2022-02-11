@@ -10,6 +10,7 @@
 <translation id="1071587090247825784">Установена е защитна стена</translation>
 <translation id="1075811647922107217">Размер на страницата</translation>
 <translation id="1094693127011229778">IP адресът не е налице</translation>
+<translation id="1113892970288677790">Изберете подбрани произведения на изкуството и изображения</translation>
 <translation id="1119447706177454957">Вътрешна грешка</translation>
 <translation id="1124772482545689468">Потребител</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -73,6 +74,7 @@
 <translation id="1782199038061388045">превод</translation>
 <translation id="1792647875738159689">Сканирането се отменя</translation>
 <translation id="1807246157184219062">Светло</translation>
+<translation id="1827738518074806965">Художествена галерия</translation>
 <translation id="1851218745569890714">Видеоконференции</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Версия на хардуера</translation>
@@ -284,6 +286,7 @@
 <translation id="4832079907277790330">Избиране на папка в приложението Файлове…</translation>
 <translation id="4835901797422965222">Няма активни мрежи</translation>
 <translation id="4839698083503556542">Създайте свой филм</translation>
+<translation id="4847902821209177679">Избрахте опцията <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />. Натиснете Enter, за да посочите албуми от <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Преобразуване от DNS</translation>
 <translation id="4848429997038228357">ИЗПЪЛНЯВА СЕ</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Остава {0} опит}other{<ph name="ERROR_MESSAGE" /> Остават {0} опита}}</translation>
@@ -371,6 +374,7 @@
 <translation id="5866840822086176774">Много силен</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
 <translation id="5916084858004523819">Забранено</translation>
+<translation id="5916664084637901428">Включено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файлът ви бе сканиран успешно и запазен в папката <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Файловете ви бяха сканирани успешно и запазени в папката <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Файлът не бе намерен</translation>
 <translation id="594552776027197022">Генериране на произволна двойка ключове</translation>
@@ -418,6 +422,7 @@
 <translation id="6480327114083866287">Управлява се от <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Спряло – заседнала хартия</translation>
 <translation id="6500818810472529210">Вижте резултата в Google Търсене</translation>
+<translation id="650266656685499220">За да създадете албуми, отворете Google Снимки</translation>
 <translation id="6516990319416533844">За да тествате скоростта на зареждане, трябва да изчакате малко, така че батерията да се изтощи</translation>
 <translation id="6517239166834772319">Explore</translation>
 <translation id="6527081081771465939">Неизвестен протокол за сигурност на Wi-Fi</translation>
@@ -542,9 +547,11 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8132480444149501833">Заявяване на броячи за трафика</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8143951647992294073">Избиране на <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8206859287963243715">Клетъчно</translation>
 <translation id="8208861521865154048">Предимства</translation>
 <translation id="8217675307824400706">Установяване на връзка</translation>
+<translation id="8226628635270268143">Изберете любимите си снимки и албуми</translation>
 <translation id="8230672074305416752">Неуспех при команда ping към шлюза на основната мрежа</translation>
 <translation id="8246209727385807362">Неизвестен оператор</translation>
 <translation id="8281886186245836920">Пропускане</translation>

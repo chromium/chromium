@@ -10,6 +10,7 @@
 <translation id="1071587090247825784">En firewall blev registreret</translation>
 <translation id="1075811647922107217">Sidestørrelse</translation>
 <translation id="1094693127011229778">IP-adresse er ikke tilgængelig</translation>
+<translation id="1113892970288677790">Vælg blandt udvalgte kunstværker og billeder</translation>
 <translation id="1119447706177454957">Intern fejl</translation>
 <translation id="1124772482545689468">Bruger</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -73,6 +74,7 @@
 <translation id="1782199038061388045">oversættelse</translation>
 <translation id="1792647875738159689">Annullerer scanning</translation>
 <translation id="1807246157184219062">Lys</translation>
+<translation id="1827738518074806965">Kunstgalleri</translation>
 <translation id="1851218745569890714">Videomøder</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Hardwarerevision</translation>
@@ -284,6 +286,7 @@
 <translation id="4832079907277790330">Vælg mappe i appen Filer...</translation>
 <translation id="4835901797422965222">Ingen aktive netværk</translation>
 <translation id="4839698083503556542">Lav din egen film</translation>
+<translation id="4847902821209177679"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> er valgt. Tryk på Enter for at vælge <ph name="TOPIC_SOURCE" />-album</translation>
 <translation id="484790837831576105">(Android) DNS-oversættelse</translation>
 <translation id="4848429997038228357">KØRER</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} forsøg tilbage}one{<ph name="ERROR_MESSAGE" /> {0} forsøg tilbage}other{<ph name="ERROR_MESSAGE" /> {0} forsøg tilbage}}</translation>
@@ -370,6 +373,7 @@
 <translation id="5866840822086176774">Meget stærk</translation>
 <translation id="5895138241574237353">Genstart</translation>
 <translation id="5916084858004523819">Forbudt</translation>
+<translation id="5916664084637901428">Til</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Din fil blev scannet og er gemt i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Din fil blev scannet og er gemt i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Dine filer blev scannet og er gemt i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Filen blev ikke fundet</translation>
 <translation id="594552776027197022">Generér vilkårligt nøglepar</translation>
@@ -417,6 +421,7 @@
 <translation id="6480327114083866287">Administreres af <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Stoppet – Papirstop</translation>
 <translation id="6500818810472529210">Se resultatet i Google Søgning</translation>
+<translation id="650266656685499220">Gå til Google Fotos for at oprette album</translation>
 <translation id="6516990319416533844">Du kan teste, hvor hurtigt batteriet oplades, ved at aflade det i en kortere periode</translation>
 <translation id="6517239166834772319">Udforsk</translation>
 <translation id="6527081081771465939">Ukendt Wi-Fi-sikkerhedsprotokol</translation>
@@ -541,9 +546,11 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Anmod om trafiktællere</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8143951647992294073">Vælg <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Fordele</translation>
 <translation id="8217675307824400706">Få forbindelse</translation>
+<translation id="8226628635270268143">Vælg dine foretrukne billeder og album</translation>
 <translation id="8230672074305416752">Kunne ikke pinge standardnetværkets gateway</translation>
 <translation id="8246209727385807362">Ukendt mobilselskab</translation>
 <translation id="8281886186245836920">Spring over</translation>

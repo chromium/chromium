@@ -10,6 +10,7 @@
 <translation id="1071587090247825784">Se detectó un firewall</translation>
 <translation id="1075811647922107217">Tamaño de la página</translation>
 <translation id="1094693127011229778">La dirección IP no está disponible</translation>
+<translation id="1113892970288677790">Imágenes y obras de arte seleccionadas especialmente</translation>
 <translation id="1119447706177454957">Error interno</translation>
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -73,6 +74,7 @@
 <translation id="1782199038061388045">traducción</translation>
 <translation id="1792647875738159689">Cancelando el escaneo</translation>
 <translation id="1807246157184219062">Claro</translation>
+<translation id="1827738518074806965">Galería de arte</translation>
 <translation id="1851218745569890714">Videoconferencias</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revisión de hardware</translation>
@@ -284,6 +286,7 @@
 <translation id="4832079907277790330">Seleccionar carpeta en la app de Archivos…</translation>
 <translation id="4835901797422965222">No hay redes activas</translation>
 <translation id="4839698083503556542">Crea tu propia película</translation>
+<translation id="4847902821209177679">Se seleccionó <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />; presiona Intro para seleccionar álbumes de <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) resolución de DNS</translation>
 <translation id="4848429997038228357">EN EJECUCIÓN</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Queda {0} intento.}other{<ph name="ERROR_MESSAGE" /> Quedan {0} intentos.}}</translation>
@@ -371,6 +374,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5866840822086176774">Muy fuerte</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5916084858004523819">Prohibido</translation>
+<translation id="5916664084637901428">Activado</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Tu archivo se escaneó correctamente y se guardó en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Tus archivos se escanearon correctamente y se guardaron en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">No se encontró el archivo</translation>
 <translation id="594552776027197022">Generar un par de llaves aleatorio</translation>
@@ -418,6 +422,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="6480327114083866287">Administrador: <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Se detuvo: se atascó el papel</translation>
 <translation id="6500818810472529210">Ver el resultado en la Búsqueda de Google</translation>
+<translation id="650266656685499220">Para crear álbumes, ve a Google Fotos</translation>
 <translation id="6516990319416533844">Para probar la velocidad de carga de la batería, deja que esta se descargue un poco.</translation>
 <translation id="6517239166834772319">Explorar</translation>
 <translation id="6527081081771465939">el protocolo de seguridad Wi-Fi es desconocido</translation>
@@ -542,9 +547,11 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Solicitar contadores de tráfico</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8143951647992294073">Seleccionar <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8206859287963243715">Celular</translation>
 <translation id="8208861521865154048">Beneficios</translation>
 <translation id="8217675307824400706">Conéctate</translation>
+<translation id="8226628635270268143">Elige tus fotos y álbumes favoritos</translation>
 <translation id="8230672074305416752">no se pudo hacer ping en la puerta de enlace de la red predeterminada</translation>
 <translation id="8246209727385807362">El proveedor es desconocido</translation>
 <translation id="8281886186245836920">Omitir</translation>

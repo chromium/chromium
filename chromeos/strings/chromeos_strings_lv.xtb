@@ -10,6 +10,7 @@
 <translation id="1071587090247825784">Konstatēts ugunsmūris</translation>
 <translation id="1075811647922107217">Lapas lielums</translation>
 <translation id="1094693127011229778">IP adrese nav pieejama</translation>
+<translation id="1113892970288677790">Izvēlieties atlasītos mākslas darbus un attēlus.</translation>
 <translation id="1119447706177454957">Iekšēja kļūda</translation>
 <translation id="1124772482545689468">Lietotājs</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -73,6 +74,7 @@
 <translation id="1782199038061388045">tulkojumu</translation>
 <translation id="1792647875738159689">Skenēšana tiek atcelta</translation>
 <translation id="1807246157184219062">Gaišs</translation>
+<translation id="1827738518074806965">Mākslas galerija</translation>
 <translation id="1851218745569890714">Videokonferences</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Aparatūras pārskatījums</translation>
@@ -284,6 +286,7 @@
 <translation id="4832079907277790330">Atlasīt mapi lietotnē Faili…</translation>
 <translation id="4835901797422965222">Nav aktīvu tīklu</translation>
 <translation id="4839698083503556542">Izveidojiet savu filmu</translation>
+<translation id="4847902821209177679">Atlasīts <ph name="TOPIC_SOURCE" /> vienums <ph name="TOPIC_SOURCE_DESC" />. Lai atlasītu <ph name="TOPIC_SOURCE" /> albumus, nospiediet taustiņu Enter.</translation>
 <translation id="484790837831576105">(Android) DNS atrise</translation>
 <translation id="4848429997038228357">TIEK VEIKTA</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Atlicis {0} mēģinājums.}zero{<ph name="ERROR_MESSAGE" />. Atlikuši {0} mēģinājumi.}one{<ph name="ERROR_MESSAGE" />. Atlicis {0} mēģinājums.}other{<ph name="ERROR_MESSAGE" />. Atlikuši {0} mēģinājumi.}}</translation>
@@ -371,6 +374,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="5866840822086176774">Ļoti spēcīgs</translation>
 <translation id="5895138241574237353">Restartēt</translation>
 <translation id="5916084858004523819">Aizliegts</translation>
+<translation id="5916664084637901428">Iesl.</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fails ir sekmīgi noskenēts un saglabāts mapē <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}zero{Faili ir sekmīgi noskenēti un saglabāti mapē <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Faili ir sekmīgi noskenēti un saglabāti mapē <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Faili ir sekmīgi noskenēti un saglabāti mapē <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Fails nav atrasts</translation>
 <translation id="594552776027197022">Ģenerēt nejauši izveidotu atslēgu pāri</translation>
@@ -418,6 +422,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6480327114083866287">Pārvalda <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Apturēts — iestrēdzis papīrs</translation>
 <translation id="6500818810472529210">Skatiet rezultātu Google meklēšanā</translation>
+<translation id="650266656685499220">Lai izveidotu albumus, pārejiet uz pakalpojumu Google fotoattēli.</translation>
 <translation id="6516990319416533844">Lai pārbaudītu akumulatora uzlādes ātrumu, uz neilgu laiku palieliniet akumulatora enerģijas patēriņu, sasniedzot zemu uzlādes līmeni.</translation>
 <translation id="6517239166834772319">Izpēte</translation>
 <translation id="6527081081771465939">Nezināms Wi-Fi drošības protokols</translation>
@@ -542,9 +547,11 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Pieprasīt datplūsmas skaitītājus</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8143951647992294073">Atlasīt <ph name="TOPIC_SOURCE" /> vienumu <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8206859287963243715">Mobilais tālrunis</translation>
 <translation id="8208861521865154048">Priekšrocības</translation>
 <translation id="8217675307824400706">Savienojuma izveide</translation>
+<translation id="8226628635270268143">Izvēlieties savus iecienītākos fotoattēlus un albumus.</translation>
 <translation id="8230672074305416752">Neizdevās ehotestēt noklusējuma tīkla vārteju</translation>
 <translation id="8246209727385807362">Nezināms operators</translation>
 <translation id="8281886186245836920">Izlaist</translation>

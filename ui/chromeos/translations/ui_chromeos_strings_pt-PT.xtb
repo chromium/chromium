@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Catalão</translation>
 <translation id="1168100932582989117">Servidores de nome Google</translation>
+<translation id="1171082344678443012">Arquivo comprimido XZ</translation>
 <translation id="1172970565351728681">Falta(m) cerca de <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Mudar nome</translation>
 <translation id="1173916544412572294">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, bateria do telemóvel: <ph name="BATTERY_STATUS" />%, detalhes</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">Ao formatar uma unidade, todos os dados aí armazenados são eliminados. Não é possível anular esta ação.</translation>
 <translation id="2025955442973426285">Tigrínia</translation>
 <translation id="2028997212275086731">Arquivo RAR</translation>
+<translation id="2036414735548252477">Arquivo tar comprimido LZMA</translation>
 <translation id="2037845485764049925">Russo</translation>
 <translation id="2044023416777079300">Modem não registado</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bytes</translation>
 <translation id="4880214202172289027">Controlo de deslize do volume</translation>
 <translation id="4881695831933465202">Abrir</translation>
+<translation id="4886199584824489598">Arquivo comprimido Bzip2</translation>
 <translation id="4900532980794411603">Partilhar com o Parallels Desktop</translation>
 <translation id="4902546322522096650">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />%, ligar</translation>
 <translation id="4905417359854579806">Pronto para fazer uma cópia de segurança de <ph name="FILE_COUNT" />.</translation>
@@ -586,6 +589,7 @@
 <translation id="6055907707645252013">Rede <ph name="NETWORK_TYPE" />, não ligada</translation>
 <translation id="6074825444536523002">Formulário do Google</translation>
 <translation id="6079871810119356840">Húngaro com teclado Qwerty</translation>
+<translation id="6082256976217156453">Arquivo comprimido LZMA</translation>
 <translation id="6096979789310008754">Texto da pesquisa limpo, a mostrar todos os ficheiros e pastas.</translation>
 <translation id="610101264611565198">A mover <ph name="FILE_NAME" /> para <ph name="FOLDER_NAME" />…</translation>
 <translation id="6129953537138746214">Espaço</translation>
@@ -842,6 +846,7 @@
 <translation id="8297012244086013755">Hangul 3 Set (sem Shift)</translation>
 <translation id="8299269255470343364">Japonês</translation>
 <translation id="8300849813060516376">O OTASP falhou</translation>
+<translation id="8308481408797647857">Arquivo tar comprimido XZ</translation>
 <translation id="8312871300878166382">Colar numa pasta</translation>
 <translation id="8329978297633540474">Texto simples</translation>
 <translation id="8335587457941836791">Soltar da prateleira</translation>
@@ -950,6 +955,7 @@
 <translation id="943972244133411984">Modificado por</translation>
 <translation id="945522503751344254">Enviar feedback</translation>
 <translation id="947144732524271678">Selecionou um intervalo de <ph name="ENTRY_COUNT" /> entradas de <ph name="FROM_ENTRY_NAME" /> a <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="961973045258256291">Arquivo comprimido Gzip</translation>
 <translation id="965477715979482472">Inglês (África do Sul)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Já existe um ficheiro com o nome "<ph name="FILE_NAME" />". Pretende substituí-lo?</translation>

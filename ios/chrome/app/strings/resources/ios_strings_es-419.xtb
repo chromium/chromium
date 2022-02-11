@@ -116,6 +116,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="196896377990863006">Mostrar la vista previa de vínculos</translation>
 <translation id="1973912524893600642">Conservar los datos</translation>
 <translation id="1974060860693918893">Configuración avanzada</translation>
+<translation id="1981118202195772574">Dispositivo móvil</translation>
 <translation id="1989112275319619282">Navegar</translation>
 <translation id="199425419756152024">Ver contraseña</translation>
 <translation id="2015722694326466240">Para ver las contraseñas, primero debes establecer una en tu dispositivo.</translation>
@@ -236,6 +237,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Consulta lo que puedes sincronizar<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Bloquear todas</translation>
 <translation id="313283613037595347">Crear una pestaña de incógnito nueva.</translation>
+<translation id="3150887674190166798">Selecciona cómo quieres que Chrome solicite el sitio cada vez</translation>
 <translation id="3153862085237805241">Guardar tarjeta</translation>
 <translation id="3157387275655328056">Agregar a la lista de lectura</translation>
 <translation id="3157684681743766797">Marcar todas…</translation>
@@ -764,6 +766,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7911190106180361398">Tu organización no te permite sincronizar todo el contenido.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportar contraseñas…</translation>
+<translation id="793971554166979165">Modo predeterminado de los sitios</translation>
 <translation id="794799177247607889">Detener registro</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{No tienes contraseñas hackeadas}=1{{COUNT} contraseña hackeada}other{{COUNT} contraseñas hackeadas}}</translation>
 <translation id="7961015016161918242">Nunca</translation>
@@ -869,6 +872,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8881801611828450202">Buscar esta imagen en <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8909135823018751308">Compartir…</translation>
 <translation id="8917490105272468696">Acepto</translation>
+<translation id="8928133177108699615">Escritorio</translation>
 <translation id="8952559610785099500">Agregar contraseña</translation>
 <translation id="895541991026785598">Informar de un problema</translation>
 <translation id="8974714402877957201">1. Abre Configuración en el iPad.</translation>

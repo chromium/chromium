@@ -10,6 +10,7 @@
 <translation id="1071587090247825784">Bol zistený firewall</translation>
 <translation id="1075811647922107217">Veľkosť stránky</translation>
 <translation id="1094693127011229778">Adresa IP nie je k dispozícii</translation>
+<translation id="1113892970288677790">Vyberte plagáty a obrázky</translation>
 <translation id="1119447706177454957">Interná chyba</translation>
 <translation id="1124772482545689468">Používateľ</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -73,6 +74,7 @@
 <translation id="1782199038061388045">preklad</translation>
 <translation id="1792647875738159689">Ruší sa skenovanie</translation>
 <translation id="1807246157184219062">Svetlý režim</translation>
+<translation id="1827738518074806965">Umelecká galéria</translation>
 <translation id="1851218745569890714">Videokonferencie</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Revízia hardvéru</translation>
@@ -284,6 +286,7 @@
 <translation id="4832079907277790330">Vybrať priečinok v aplikácii Súbory…</translation>
 <translation id="4835901797422965222">Žiadne aktívne siete</translation>
 <translation id="4839698083503556542">Vytvorte si vlastný film</translation>
+<translation id="4847902821209177679">Zdroj <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> je vybraný, stlačením klávesa Enter vyberte albumy zo zdroja <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Preklad DNS</translation>
 <translation id="4848429997038228357">PREBIEHA</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Zostáva {0} pokus}few{<ph name="ERROR_MESSAGE" /> Zostávajú {0} pokusy}many{<ph name="ERROR_MESSAGE" /> {0} attempts left}other{<ph name="ERROR_MESSAGE" /> Zostáva {0} pokusov}}</translation>
@@ -371,6 +374,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5866840822086176774">Veľmi silné</translation>
 <translation id="5895138241574237353">Reštartovať</translation>
 <translation id="5916084858004523819">Zakázané</translation>
+<translation id="5916664084637901428">Zapnuté</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Súbor bol úspešne naskenovaný a uložený do priečinka <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Súbory boli úspešne naskenované a uložené do priečinka <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Súbory boli úspešne naskenované a uložené do priečinka <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Súbory boli úspešne naskenované a uložené do priečinka <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Súbor nebol nájdený</translation>
 <translation id="594552776027197022">Generovanie náhodného páru kľúčov</translation>
@@ -418,6 +422,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6480327114083866287">Spravuje <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Zastavené – zaseknutý papier</translation>
 <translation id="6500818810472529210">Zobrazte si výsledok vo Vyhľadávaní Google</translation>
+<translation id="650266656685499220">Ak chcete vytvoriť albumy, prejdite do Fotiek Google</translation>
 <translation id="6516990319416533844">Ak chcete otestovať rýchlosť nabíjania batérie, nechajte batériu chvíľu vybíjať.</translation>
 <translation id="6517239166834772319">Preskúmať</translation>
 <translation id="6527081081771465939">Neznámy protokol zabezpečenia siete Wi‑Fi</translation>
@@ -542,9 +547,11 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Požiadať o údaje počítadiel návštevnosti</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8143951647992294073">Vyberte <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8206859287963243715">Mobilné</translation>
 <translation id="8208861521865154048">Výhody</translation>
 <translation id="8217675307824400706">Pripojte sa</translation>
+<translation id="8226628635270268143">Vyberte svoje obľúbené fotky a albumy</translation>
 <translation id="8230672074305416752">Predvolenú bránu siete sa nepodarilo otestovať</translation>
 <translation id="8246209727385807362">Neznámy operátor</translation>
 <translation id="8281886186245836920">Preskočiť</translation>

@@ -10,6 +10,7 @@
 <translation id="1071587090247825784">Otkriven je vatrozid</translation>
 <translation id="1075811647922107217">Veličina stranice</translation>
 <translation id="1094693127011229778">IP adresa nije dostupna</translation>
+<translation id="1113892970288677790">Odaberite birana umjetnička djela i slike</translation>
 <translation id="1119447706177454957">Interna pogreška</translation>
 <translation id="1124772482545689468">Korisnik</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -73,6 +74,7 @@
 <translation id="1782199038061388045">prijevod</translation>
 <translation id="1792647875738159689">Otkazivanje skeniranja</translation>
 <translation id="1807246157184219062">Svijetlo</translation>
+<translation id="1827738518074806965">Umjetnička galerija</translation>
 <translation id="1851218745569890714">Videokonferencije</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Hardverska revizija</translation>
@@ -284,6 +286,7 @@
 <translation id="4832079907277790330">Odaberi mapu u aplikaciji Datoteke...</translation>
 <translation id="4835901797422965222">Nema aktivnih mreža</translation>
 <translation id="4839698083503556542">Snimite vlastiti film</translation>
+<translation id="4847902821209177679">Odabrana je usluga <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />, pritisnite Enter da biste odabrali albume s usluge <ph name="TOPIC_SOURCE" /></translation>
 <translation id="484790837831576105">(Android) Razrješavanje DNS-a</translation>
 <translation id="4848429997038228357">IZVODI SE</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Preostao je {0} pokušaj.}one{<ph name="ERROR_MESSAGE" /> Preostao je {0} pokušaj.}few{<ph name="ERROR_MESSAGE" /> Preostala su {0} pokušaja.}other{<ph name="ERROR_MESSAGE" /> Preostalo je {0} pokušaja.}}</translation>
@@ -371,6 +374,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="5866840822086176774">Vrlo jak</translation>
 <translation id="5895138241574237353">Ponovno pokreni</translation>
 <translation id="5916084858004523819">Zabranjeno</translation>
+<translation id="5916664084637901428">Uključi</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Vaša je datoteka skenirana i spremljena u mapu <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Vaše su datoteke skenirane i spremljene u mapu <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Vaše su datoteke skenirane i spremljene u mapu <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vaše su datoteke skenirane i spremljene u mapu <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Datoteka nije pronađena</translation>
 <translation id="594552776027197022">Generiraj nasumični par ključeva</translation>
@@ -418,6 +422,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="6480327114083866287">Upravlja <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Zaustavljeno – zaglavljeni papir</translation>
 <translation id="6500818810472529210">Pogledajte rezultate na Google pretraživanju</translation>
+<translation id="650266656685499220">Da biste izradili albume, otvorite Google fotografije</translation>
 <translation id="6516990319416533844">Da biste testirali brzinu punjenja baterije, pustite da se baterija kratko prazni</translation>
 <translation id="6517239166834772319">Istražite</translation>
 <translation id="6527081081771465939">Nepoznat sigurnosni protokol za Wi-Fi</translation>
@@ -542,9 +547,11 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">Zatraži brojače prometa</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8143951647992294073">Odaberite <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8206859287963243715">Mobitel</translation>
 <translation id="8208861521865154048">Pogodnosti</translation>
 <translation id="8217675307824400706">Povežite se</translation>
+<translation id="8226628635270268143">Odaberite svoje omiljene fotografije i albume</translation>
 <translation id="8230672074305416752">Pinganje pristupnika zadane mreže nije uspjelo</translation>
 <translation id="8246209727385807362">Nepoznat mobilni operater</translation>
 <translation id="8281886186245836920">Preskoči</translation>

@@ -10,6 +10,7 @@
 <translation id="1071587090247825784">检测到防火墙</translation>
 <translation id="1075811647922107217">页面大小</translation>
 <translation id="1094693127011229778">IP 地址缺失</translation>
+<translation id="1113892970288677790">选择系统挑选的美术作品和图片</translation>
 <translation id="1119447706177454957">内部错误</translation>
 <translation id="1124772482545689468">用户</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -73,6 +74,7 @@
 <translation id="1782199038061388045">翻译</translation>
 <translation id="1792647875738159689">正在取消扫描</translation>
 <translation id="1807246157184219062">浅色调</translation>
+<translation id="1827738518074806965">画廊</translation>
 <translation id="1851218745569890714">视频会议</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">硬件版本</translation>
@@ -284,6 +286,7 @@
 <translation id="4832079907277790330">在“文件”应用中选择文件夹…</translation>
 <translation id="4835901797422965222">未连接到任何网络</translation>
 <translation id="4839698083503556542">创建您自己的影片</translation>
+<translation id="4847902821209177679">已选中 <ph name="TOPIC_SOURCE" /> - <ph name="TOPIC_SOURCE_DESC" />，按 Enter 键即可从 <ph name="TOPIC_SOURCE" />中选择影集</translation>
 <translation id="484790837831576105">(Android) DNS 解析</translation>
 <translation id="4848429997038228357">正在运行</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" />剩余尝试次数：{0}}other{<ph name="ERROR_MESSAGE" />剩余尝试次数：{0}}}</translation>
@@ -371,6 +374,7 @@
 <translation id="5866840822086176774">非常强</translation>
 <translation id="5895138241574237353">重新启动</translation>
 <translation id="5916084858004523819">已禁止</translation>
+<translation id="5916664084637901428">启用</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{系统已成功扫描完您的文件并已将扫描版保存至<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />。}other{系统已成功扫描完您的文件并已将扫描版保存至<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />。}}</translation>
 <translation id="5931523347251946569">未找到文件</translation>
 <translation id="594552776027197022">生成随机密钥对</translation>
@@ -418,6 +422,7 @@
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
 <translation id="649050271426829538">已停止 - 卡纸了</translation>
 <translation id="6500818810472529210">查看“Google 搜索”中的结果</translation>
+<translation id="650266656685499220">如需创建影集，请转至 Google 相册。</translation>
 <translation id="6516990319416533844">若要测试电池充电速率，请先耗掉少许电池电量</translation>
 <translation id="6517239166834772319">探索</translation>
 <translation id="6527081081771465939">未知的 Wi-Fi 安全协议</translation>
@@ -542,9 +547,11 @@
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8132480444149501833">请求流量计数器</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8143951647992294073">选择 <ph name="TOPIC_SOURCE" /> - <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8206859287963243715">蜂窝网络设备</translation>
 <translation id="8208861521865154048">福利</translation>
 <translation id="8217675307824400706">连接到网络</translation>
+<translation id="8226628635270268143">选择您喜爱的照片和影集</translation>
 <translation id="8230672074305416752">未能对默认网关执行 ping 操作</translation>
 <translation id="8246209727385807362">未知运营商</translation>
 <translation id="8281886186245836920">跳过</translation>

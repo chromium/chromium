@@ -10,6 +10,7 @@
 <translation id="1071587090247825784">Tuvastati tulemüür</translation>
 <translation id="1075811647922107217">Lehe suurus</translation>
 <translation id="1094693127011229778">IP-aadress pole saadaval</translation>
+<translation id="1113892970288677790">Valige kureeritud kujundused ja pildid</translation>
 <translation id="1119447706177454957">Sisemine viga</translation>
 <translation id="1124772482545689468">Kasutaja</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -73,6 +74,7 @@
 <translation id="1782199038061388045">tõlge</translation>
 <translation id="1792647875738159689">Skannimise tühistamine</translation>
 <translation id="1807246157184219062">Hele</translation>
+<translation id="1827738518074806965">Kunstigalerii</translation>
 <translation id="1851218745569890714">Videokonverents</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1887850431809612466">Riistvara redaktsioon</translation>
@@ -284,6 +286,7 @@
 <translation id="4832079907277790330">Valige rakenduses Failid kaust …</translation>
 <translation id="4835901797422965222">Aktiivseid võrke pole</translation>
 <translation id="4839698083503556542">Enda filmi loomine</translation>
+<translation id="4847902821209177679">Valitud on taust „<ph name="TOPIC_SOURCE" /> – <ph name="TOPIC_SOURCE_DESC" />”. Vajutage sisestusklahvi, et valida tausta „<ph name="TOPIC_SOURCE" />” jaoks albumid</translation>
 <translation id="484790837831576105">(Android) DNS-lahendus</translation>
 <translation id="4848429997038228357">POOLELI</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} katse jäänud}other{<ph name="ERROR_MESSAGE" /> {0} katset jäänud}}</translation>
@@ -371,6 +374,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="5866840822086176774">Väga tugev</translation>
 <translation id="5895138241574237353">Taaskäivitamine</translation>
 <translation id="5916084858004523819">Keelatud</translation>
+<translation id="5916664084637901428">Sees</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Teie faili skannimine õnnestus ja see salvestati kausta <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Teie failide skannimine õnnestus ja need salvestati kausta <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Faili ei leitud</translation>
 <translation id="594552776027197022">Loo juhuslik võtmepaar</translation>
@@ -418,6 +422,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6480327114083866287">Haldab <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Peatatud – paberiummistus</translation>
 <translation id="6500818810472529210">Kuva Google'i otsingu tulemused</translation>
+<translation id="650266656685499220">Albumite loomiseks minge teenusesse Google Photos</translation>
 <translation id="6516990319416533844">Aku laadimiskiiruse testimiseks laske akul lühikese perioodi jooksul tühjeneda</translation>
 <translation id="6517239166834772319">Avastamine</translation>
 <translation id="6527081081771465939">Tundmatu WiFi-turvaprotokoll</translation>
@@ -542,9 +547,11 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8132480444149501833">Taotle liiklusloendureid</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8143951647992294073">Vali „<ph name="TOPIC_SOURCE" /> – <ph name="TOPIC_SOURCE_DESC" />”</translation>
 <translation id="8206859287963243715">Mobiil</translation>
 <translation id="8208861521865154048">Hüved</translation>
 <translation id="8217675307824400706">Looge ühendus</translation>
+<translation id="8226628635270268143">Valige oma lemmikfotod ja -albumid</translation>
 <translation id="8230672074305416752">Vaikevõrgulüüsi pingimine ebaõnnestus</translation>
 <translation id="8246209727385807362">Tundmatu operaator</translation>
 <translation id="8281886186245836920">Jäta vahele</translation>
