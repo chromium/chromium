@@ -634,9 +634,15 @@ void Home(Browser* browser, WindowOpenDisposition disposition) {
 
 base::WeakPtr<content::NavigationHandle> OpenCurrentURL(Browser* browser) {
   base::RecordAction(UserMetricsAction("LoadURL"));
-  LocationBar* location_bar = browser->window()->GetLocationBar();
-  if (!location_bar)
+  // TODO(https://crbug.com/1294004): Eliminate extra checks once source of
+  //  bad pointer dereference is identified. See also TODO comment below.
+  CHECK(browser);
+  BrowserWindow* window = browser->window();
+  CHECK(window);
+  LocationBar* location_bar = window->GetLocationBar();
+  if (!location_bar) {
     return nullptr;
+  }
 
   GURL url(location_bar->GetDestinationURL());
   TRACE_EVENT1("navigation", "chrome::OpenCurrentURL", "url", url);
@@ -662,10 +668,13 @@ base::WeakPtr<content::NavigationHandle> OpenCurrentURL(Browser* browser) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   DCHECK(extensions::ExtensionSystem::Get(browser->profile())
              ->extension_service());
+  // TODO(https://crbug.com/1294004): Eliminate extra checks once source of
+  //  bad pointer dereference is identified. See also TODO comment above.
+  extensions::ExtensionRegistry* extension_registry =
+      extensions::ExtensionRegistry::Get(browser->profile());
+  CHECK(extension_registry);
   const extensions::Extension* extension =
-      extensions::ExtensionRegistry::Get(browser->profile())
-          ->enabled_extensions()
-          .GetAppByURL(url);
+      extension_registry->enabled_extensions().GetAppByURL(url);
   if (extension) {
     extensions::RecordAppLaunchType(extension_misc::APP_LAUNCH_OMNIBOX_LOCATION,
                                     extension->GetType());
