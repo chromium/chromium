@@ -214,7 +214,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UKM.PrunedSource.{Type}" units="sources"
+<histogram name="UKM.PrunedSources.{Type}" units="sources"
     expires_after="2022-07-01">
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
