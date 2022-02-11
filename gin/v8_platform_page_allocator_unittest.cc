@@ -38,7 +38,7 @@ TEST(V8PlatformPageAllocatorTest, VerifyGetPageConfig) {
   CHECK_EQ(sut.GetPageConfigForTesting(v8::PageAllocator::kReadExecute),
            base::CPU::GetInstanceNoAllocation().has_bti()
                ? partition_alloc::PageAccessibilityConfiguration::
-                     kPageReadExecuteProtected
+                     kReadExecuteProtected
                : partition_alloc::PageAccessibilityConfiguration::kReadExecute);
 #else
   CHECK_EQ(sut.GetPageConfigForTesting(v8::PageAllocator::kReadExecute),
