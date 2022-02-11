@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -26,6 +27,7 @@ class FakeWebAppDatabaseFactory;
 class WebAppSyncBridge;
 class WebAppTranslationManager;
 class WebApp;
+class WebAppPolicyManager;
 
 class FakeWebAppRegistryController : public SyncInstallDelegate {
  public:
@@ -81,6 +83,7 @@ class FakeWebAppRegistryController : public SyncInstallDelegate {
   FakeOsIntegrationManager& os_integration_manager() {
     return *os_integration_manager_;
   }
+  WebAppPolicyManager& policy_manager() { return *policy_manager_; }
 
  private:
   InstallWebAppsAfterSyncDelegate install_web_apps_after_sync_delegate_;
@@ -94,6 +97,9 @@ class FakeWebAppRegistryController : public SyncInstallDelegate {
   std::unique_ptr<WebAppSyncBridge> sync_bridge_;
   std::unique_ptr<FakeOsIntegrationManager> os_integration_manager_;
   std::unique_ptr<WebAppTranslationManager> translation_manager_;
+  std::unique_ptr<WebAppPolicyManager> policy_manager_;
+  std::unique_ptr<FakeExternallyManagedAppManager>
+      fake_externally_managed_app_manager_;
 };
 
 }  // namespace web_app

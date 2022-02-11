@@ -123,6 +123,7 @@ void OsIntegrationManager::SetSubsystems(WebAppSyncBridge* sync_bridge,
   // both as arguments.
   registrar_ = registrar;
   ui_manager_ = ui_manager;
+  sync_bridge_ = sync_bridge;
   file_handler_manager_->SetSubsystems(sync_bridge);
   shortcut_manager_->SetSubsystems(icon_manager, registrar);
   if (protocol_handler_manager_)
@@ -528,8 +529,8 @@ void OsIntegrationManager::UnregisterRunOnOsLogin(
     const base::FilePath& profile_path,
     const std::u16string& shortcut_title,
     ResultCallback callback) {
-  ScheduleUnregisterRunOnOsLogin(app_id, profile_path, shortcut_title,
-                                 std::move(callback));
+  ScheduleUnregisterRunOnOsLogin(sync_bridge_, app_id, profile_path,
+                                 shortcut_title, std::move(callback));
 }
 
 void OsIntegrationManager::DeleteShortcuts(
@@ -828,7 +829,8 @@ void OsIntegrationManager::OnShortcutsDeleted(const AppId& app_id,
 void OsIntegrationManager::OnShortcutInfoRetrievedRegisterRunOnOsLogin(
     ResultCallback callback,
     std::unique_ptr<ShortcutInfo> info) {
-  ScheduleRegisterRunOnOsLogin(std::move(info), std::move(callback));
+  ScheduleRegisterRunOnOsLogin(sync_bridge_, std::move(info),
+                               std::move(callback));
 }
 
 }  // namespace web_app

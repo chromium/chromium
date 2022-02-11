@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/webui/extensions/extension_basic_info.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
+#include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -278,19 +279,12 @@ void AppLauncherHandler::CreateWebAppInfo(const web_app::AppId& app_id,
       base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) &&
           is_locally_installed);
 
-  // TODO(crbug.com/1280773): This should use the WebAppRegistrar to determine
-  // if the user can configure Run on OS Login.
-  value->SetBoolean(
-      "mayToggleRunOnOsLoginMode",
-      web_app_provider_->policy_manager().GetUrlRunOnOsLoginPolicy(app_id) ==
-          web_app::RunOnOsLoginPolicy::kAllowed);
-
-  std::string runOnOsLoginModeString =
-      (registrar.GetAppRunOnOsLoginMode(app_id) ==
-       web_app::RunOnOsLoginMode::kNotRun)
-          ? kRunOnOsLoginModeNotRun
-          : kRunOnOsLoginModeWindowed;
-  value->SetString("runOnOsLoginMode", runOnOsLoginModeString);
+  const auto login_mode = registrar.GetAppRunOnOsLoginMode(app_id);
+  value->SetBoolean("mayToggleRunOnOsLoginMode", login_mode.user_controllable);
+  value->SetString("runOnOsLoginMode",
+                   (login_mode.value == web_app::RunOnOsLoginMode::kNotRun)
+                       ? kRunOnOsLoginModeNotRun
+                       : kRunOnOsLoginModeWindowed);
 
   // Show settings instead of App info for locally installed web apps.
   if (base::FeatureList::IsEnabled(features::kDesktopPWAsWebAppSettingsPage) &&
@@ -1165,23 +1159,7 @@ void AppLauncherHandler::HandleRunOnOsLogin(const base::ListValue* args) {
     return;
   }
 
-  if (!web_app_provider_->registrar().IsInstalled(app_id))
-    return;
-
-  web_app_provider_->sync_bridge().SetAppRunOnOsLoginMode(app_id, mode);
-
-  if (mode == web_app::RunOnOsLoginMode::kNotRun) {
-    web_app::OsHooksOptions os_hooks;
-    os_hooks[web_app::OsHookType::kRunOnOsLogin] = true;
-    web_app_provider_->os_integration_manager().UninstallOsHooks(
-        app_id, os_hooks, base::DoNothing());
-  } else {
-    web_app::InstallOsHooksOptions install_options;
-    install_options.os_hooks[web_app::OsHookType::kRunOnOsLogin] = true;
-    web_app_provider_->os_integration_manager().InstallOsHooks(
-        app_id, base::DoNothing(), /*web_application_info=*/nullptr,
-        std::move(install_options));
-  }
+  web_app::PersistRunOnOsLoginUserChoice(web_app_provider_, app_id, mode);
 }
 
 void AppLauncherHandler::OnFaviconForAppInstallFromLink(

@@ -9,7 +9,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_shortcut.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -31,20 +33,36 @@ void RegisterRunOnOsLoginAndPostCallback(ResultCallback callback,
 
 }  // namespace
 
-void ScheduleRegisterRunOnOsLogin(std::unique_ptr<ShortcutInfo> shortcut_info,
+void ScheduleRegisterRunOnOsLogin(WebAppSyncBridge* sync_bridge,
+                                  std::unique_ptr<ShortcutInfo> shortcut_info,
                                   ResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(sync_bridge);
+
+  {
+    ScopedRegistryUpdate update(sync_bridge);
+    update->UpdateApp(shortcut_info->extension_id)
+        ->SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode::kWindowed);
+  }
 
   internals::PostShortcutIOTask(
       base::BindOnce(&RegisterRunOnOsLoginAndPostCallback, std::move(callback)),
       std::move(shortcut_info));
 }
 
-void ScheduleUnregisterRunOnOsLogin(const std::string& app_id,
+void ScheduleUnregisterRunOnOsLogin(WebAppSyncBridge* sync_bridge,
+                                    const std::string& app_id,
                                     const base::FilePath& profile_path,
                                     const std::u16string& shortcut_title,
                                     ResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(sync_bridge);
+
+  {
+    ScopedRegistryUpdate update(sync_bridge);
+    update->UpdateApp(app_id)->SetRunOnOsLoginOsIntegrationState(
+        RunOnOsLoginMode::kNotRun);
+  }
 
   internals::GetShortcutIOTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,

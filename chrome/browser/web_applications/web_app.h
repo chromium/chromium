@@ -183,6 +183,11 @@ class WebApp {
     return run_on_os_login_mode_;
   }
 
+  absl::optional<RunOnOsLoginMode> run_on_os_login_os_integration_state()
+      const {
+    return run_on_os_login_os_integration_state_;
+  }
+
   bool window_controls_overlay_enabled() const {
     return window_controls_overlay_enabled_;
   }
@@ -315,6 +320,7 @@ class WebApp {
   void SetInstallTime(const base::Time& time);
   void SetManifestUpdateTime(const base::Time& time);
   void SetRunOnOsLoginMode(RunOnOsLoginMode mode);
+  void SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode os_integration_state);
   void SetSyncFallbackData(SyncFallbackData sync_fallback_data);
   void SetCaptureLinks(blink::mojom::CaptureLinks capture_links);
   void SetHandleLinks(blink::mojom::HandleLinks handle_links);
@@ -385,6 +391,10 @@ class WebApp {
   base::Time install_time_;
   base::Time manifest_update_time_;
   RunOnOsLoginMode run_on_os_login_mode_ = RunOnOsLoginMode::kNotRun;
+  // Tracks if the app run on os login mode has been registered with the OS.
+  // This might go out of sync with actual OS integration status, as Chrome does
+  // not actively monitor OS registries.
+  absl::optional<RunOnOsLoginMode> run_on_os_login_os_integration_state_;
   SyncFallbackData sync_fallback_data_;
   blink::mojom::CaptureLinks capture_links_ =
       blink::mojom::CaptureLinks::kUndefined;

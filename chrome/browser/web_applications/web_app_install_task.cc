@@ -903,11 +903,20 @@ void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
   options.os_hooks[OsHookType::kShortcutsMenu] = true;
   options.add_to_desktop = true;
   options.add_to_quick_launch_bar = kAddAppsToQuickLaunchBarByDefault;
-  options.os_hooks[OsHookType::kRunOnOsLogin] = web_app_info->run_on_os_login;
   // TODO(crbug.com/1087219): Determine if file handlers should be
   // configured from somewhere else rather than always true.
   options.os_hooks[OsHookType::kFileHandlers] = true;
   options.os_hooks[OsHookType::kProtocolHandlers] = true;
+
+  // TODO(crbug.com/1280773): Determine if |web_app_info->run_on_os_login| is
+  // needed after WebAppSettings work is completed.
+  {
+    web_app::RunOnOsLoginMode current_mode =
+        registrar_->GetAppRunOnOsLoginMode(app_id).value;
+    options.os_hooks[OsHookType::kRunOnOsLogin] =
+        web_app_info->run_on_os_login ||
+        current_mode == RunOnOsLoginMode::kWindowed;
+  }
 
   // Apps that can't be uninstalled from users shouldn't register to
   // OS Settings.

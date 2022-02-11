@@ -7,6 +7,8 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
@@ -43,6 +45,16 @@ void FakeWebAppRegistryController::SetUp(base::raw_ptr<Profile> profile) {
   translation_manager_ = std::make_unique<WebAppTranslationManager>(
       profile, mutable_registrar_.get(), base::MakeRefCounted<TestFileUtils>());
 
+  fake_externally_managed_app_manager_ =
+      std::make_unique<FakeExternallyManagedAppManager>(profile);
+
+  policy_manager_ = std::make_unique<WebAppPolicyManager>(profile);
+  policy_manager_->SetSubsystems(fake_externally_managed_app_manager_.get(),
+                                 mutable_registrar_.get(), sync_bridge_.get(),
+                                 /*web_app_manager=*/nullptr,
+                                 os_integration_manager_.get());
+
+  mutable_registrar_->SetSubsystems(policy_manager_.get());
   ON_CALL(processor(), IsTrackingMetadata())
       .WillByDefault(testing::Return(true));
 }

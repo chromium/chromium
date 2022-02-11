@@ -1484,7 +1484,7 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
                    web_app_publisher_helper.ConvertDisplayModeToWindowMode(
                        registrar.GetAppUserDisplayMode(app_id)),
                    web_app_publisher_helper.ConvertOsLoginModeToMojom(
-                       registrar.GetAppRunOnOsLoginMode(app_id)),
+                       registrar.GetAppRunOnOsLoginMode(app_id).value),
                    registrar.GetAppEffectiveDisplayMode(app_id),
                    registrar.GetAppUserDisplayMode(app_id),
                    registrar.IsLocallyInstalled(app_id),

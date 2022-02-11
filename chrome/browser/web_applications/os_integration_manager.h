@@ -308,6 +308,7 @@ class OsIntegrationManager : public AppRegistrarObserver {
   const raw_ptr<Profile> profile_;
   raw_ptr<WebAppRegistrar> registrar_ = nullptr;
   raw_ptr<WebAppUiManager> ui_manager_ = nullptr;
+  raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
 
   std::unique_ptr<WebAppShortcutManager> shortcut_manager_;
   std::unique_ptr<WebAppFileHandlerManager> file_handler_manager_;

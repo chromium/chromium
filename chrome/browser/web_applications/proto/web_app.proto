@@ -302,4 +302,7 @@ message WebAppProto {
   // The precise source of the latest install, used for metrics purposes. The
   // meaning of the value aligns with `webapps::WebappInstallSource`.
   optional uint32 install_source_for_metrics = 50;
+
+  // Whether the app should be registered to run during OS Login time.
+  optional RunOnOsLoginMode run_on_os_login_os_integration_state = 51;
 }

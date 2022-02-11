@@ -334,6 +334,10 @@ void WebApp::SetRunOnOsLoginMode(RunOnOsLoginMode mode) {
   run_on_os_login_mode_ = mode;
 }
 
+void WebApp::SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode state) {
+  run_on_os_login_os_integration_state_ = state;
+}
+
 void WebApp::SetSyncFallbackData(SyncFallbackData sync_fallback_data) {
   sync_fallback_data_ = std::move(sync_fallback_data);
 }
@@ -467,6 +471,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.install_time_,
         app.manifest_update_time_,
         app.run_on_os_login_mode_,
+        app.run_on_os_login_os_integration_state_,
         app.sync_fallback_data_,
         app.capture_links_,
         app.handle_links_,
@@ -661,6 +666,11 @@ base::Value WebApp::AsDebugValue() const {
 
   root.SetStringKey("run_on_os_login_mode",
                     RunOnOsLoginModeToString(run_on_os_login_mode_));
+  root.SetStringKey(
+      "run_on_os_login_os_integration_state",
+      run_on_os_login_os_integration_state_
+          ? RunOnOsLoginModeToString(*run_on_os_login_os_integration_state_)
+          : "not set");
 
   root.SetStringKey("scope", ConvertToString(scope_));
 

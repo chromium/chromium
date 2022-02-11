@@ -100,6 +100,9 @@ void FakeOsIntegrationManager::UninstallOsHooks(
     const AppId& app_id,
     const OsHooksOptions& os_hooks,
     UninstallOsHooksCallback callback) {
+  if (os_hooks[OsHookType::kRunOnOsLogin]) {
+    ++num_unregister_run_on_os_login_calls_;
+  }
   OsHooksErrors os_hooks_errors;
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), os_hooks_errors));

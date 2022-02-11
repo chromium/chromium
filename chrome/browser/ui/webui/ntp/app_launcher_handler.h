@@ -53,6 +53,8 @@ class WebAppProvider;
 }  // namespace web_app
 
 // The handler for Javascript messages related to the "apps" view.
+// TODO(https://crbug.com/1295802): This class should listen to changes from
+// other sources (such as other app pages or web app settings page).
 class AppLauncherHandler
     : public content::WebUIMessageHandler,
       public extensions::ExtensionUninstallDialog::Delegate,

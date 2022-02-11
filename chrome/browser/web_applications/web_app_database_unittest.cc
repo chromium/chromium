@@ -326,6 +326,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app->shortcuts_menu_item_infos().empty());
   EXPECT_TRUE(app->downloaded_shortcuts_menu_icons_sizes().empty());
   EXPECT_EQ(app->run_on_os_login_mode(), RunOnOsLoginMode::kNotRun);
+  EXPECT_FALSE(app->run_on_os_login_os_integration_state().has_value());
   EXPECT_TRUE(app->manifest_url().is_empty());
   EXPECT_FALSE(app->manifest_id().has_value());
   EXPECT_FALSE(app->IsStorageIsolated());
@@ -392,6 +393,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app_copy->shortcuts_menu_item_infos().empty());
   EXPECT_TRUE(app_copy->downloaded_shortcuts_menu_icons_sizes().empty());
   EXPECT_EQ(app_copy->run_on_os_login_mode(), RunOnOsLoginMode::kNotRun);
+  EXPECT_FALSE(app_copy->run_on_os_login_os_integration_state().has_value());
   EXPECT_TRUE(app_copy->manifest_url().is_empty());
   EXPECT_FALSE(app_copy->manifest_id().has_value());
   EXPECT_FALSE(app_copy->IsStorageIsolated());

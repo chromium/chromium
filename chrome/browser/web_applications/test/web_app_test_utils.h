@@ -49,6 +49,8 @@ void CheckServiceWorkerStatus(const GURL& url,
                               content::StoragePartition* storage_partition,
                               content::ServiceWorkerCapability status);
 
+void SetWebAppSettingsDictPref(Profile* profile, const base::StringPiece pref);
+
 }  // namespace test
 }  // namespace web_app
 

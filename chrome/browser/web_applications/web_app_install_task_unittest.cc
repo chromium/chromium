@@ -1530,6 +1530,68 @@ TEST_F(WebAppInstallTaskWithRunOnOsLoginTest,
             fake_os_integration_manager().num_register_run_on_os_login_calls());
 }
 
+TEST_F(WebAppInstallTaskWithRunOnOsLoginTest,
+       InstallFromWebContentsRunOnOsLoginByPolicy) {
+  EXPECT_TRUE(AreWebAppsUserInstallable(profile()));
+
+  const GURL url = GURL("https://example.com/scope/path");
+  const std::string name = "Name";
+  const std::string description = "Description";
+  const GURL scope = GURL("https://example.com/scope");
+  const absl::optional<SkColor> theme_color = 0xFFAABBCC;
+
+  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
+
+  CreateDefaultDataToRetrieve(url, scope);
+  CreateRendererAppInfo(url, name, description, /*scope=*/GURL{}, theme_color,
+                        /*user_display_mode=*/DisplayMode::kStandalone,
+                        /*run_on_os_login=*/false);
+
+  const char kWebAppSettingWithDefaultConfiguration[] = R"({
+    "https://example.com/scope/path": {
+      "run_on_os_login": "run_windowed"
+    },
+    "*": {
+      "run_on_os_login": "blocked"
+    }
+  })";
+
+  test::SetWebAppSettingsDictPref(profile(),
+                                  kWebAppSettingWithDefaultConfiguration);
+  controller().policy_manager().RefreshPolicySettingsForTesting();
+
+  base::RunLoop run_loop;
+  bool callback_called = false;
+  const bool force_shortcut_app = false;
+
+  install_task_->InstallWebAppFromManifestWithFallback(
+      web_contents(), force_shortcut_app,
+      webapps::WebappInstallSource::MENU_BROWSER_TAB,
+      base::BindOnce(test::TestAcceptDialogCallback),
+      base::BindLambdaForTesting(
+          [&](const AppId& installed_app_id, InstallResultCode code) {
+            EXPECT_EQ(InstallResultCode::kSuccessNewInstall, code);
+            EXPECT_EQ(app_id, installed_app_id);
+            callback_called = true;
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  EXPECT_TRUE(callback_called);
+
+  const WebApp* web_app = registrar().GetAppById(app_id);
+  EXPECT_NE(nullptr, web_app);
+
+  EXPECT_EQ(app_id, web_app->app_id());
+  EXPECT_EQ(description, web_app->description());
+  EXPECT_EQ(url, web_app->start_url());
+  EXPECT_EQ(scope, web_app->scope());
+  EXPECT_EQ(theme_color, web_app->theme_color());
+  EXPECT_EQ(RunOnOsLoginMode::kNotRun, web_app->run_on_os_login_mode());
+  EXPECT_EQ(1u,
+            fake_os_integration_manager().num_register_run_on_os_login_calls());
+}
+
 // TODO(https://crbug.com/1096953): Move these tests out into a dedicated
 // unittest file.
 class WebAppInstallTaskTestWithShortcutsMenu : public WebAppInstallTaskTest {

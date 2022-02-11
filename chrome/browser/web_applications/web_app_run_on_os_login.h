@@ -19,7 +19,7 @@ class FilePath;
 
 namespace web_app {
 
-enum class Result;
+class WebAppSyncBridge;
 struct ShortcutInfo;
 
 namespace internals {
@@ -41,13 +41,15 @@ Result UnregisterRunOnOsLogin(const std::string& app_id,
 // Schedules a call to |RegisterRunOnOsLogin| on the Shortcut IO thread and
 // invokes |callback| when complete. This function must be called from the UI
 // thread.
-void ScheduleRegisterRunOnOsLogin(std::unique_ptr<ShortcutInfo> shortcut_info,
+void ScheduleRegisterRunOnOsLogin(WebAppSyncBridge* sync_bridge,
+                                  std::unique_ptr<ShortcutInfo> shortcut_info,
                                   ResultCallback callback);
 
 // Schedules a call to |UnregisterRunOnOsLogin| on the Shortcut IO thread and
 // invokes |callback| when complete. This function must be called from the UI
 // thread.
-void ScheduleUnregisterRunOnOsLogin(const std::string& app_id,
+void ScheduleUnregisterRunOnOsLogin(WebAppSyncBridge* sync_bridge,
+                                    const std::string& app_id,
                                     const base::FilePath& profile_path,
                                     const std::u16string& shortcut_title,
                                     ResultCallback callback);

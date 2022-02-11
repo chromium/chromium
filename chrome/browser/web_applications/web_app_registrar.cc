@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
@@ -457,6 +458,10 @@ void WebAppRegistrar::Shutdown() {
     g_browser_process->profile_manager()->RemoveObserver(this);
 }
 
+void WebAppRegistrar::SetSubsystems(WebAppPolicyManager* policy_manager) {
+  policy_manager_ = policy_manager;
+}
+
 bool WebAppRegistrar::IsInstalled(const AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
   return web_app && !web_app->is_from_sync_and_pending_installation() &&
@@ -785,10 +790,31 @@ std::vector<AppId> WebAppRegistrar::GetAllSubAppIds(
   return sub_app_ids;
 }
 
-RunOnOsLoginMode WebAppRegistrar::GetAppRunOnOsLoginMode(
+ValueWithPolicy<RunOnOsLoginMode> WebAppRegistrar::GetAppRunOnOsLoginMode(
+    const AppId& app_id) const {
+  RunOnOsLoginPolicy login_policy =
+      policy_manager_->GetUrlRunOnOsLoginPolicy(app_id);
+
+  switch (login_policy) {
+    case RunOnOsLoginPolicy::kAllowed: {
+      auto* web_app = GetAppById(app_id);
+      return {
+          web_app ? web_app->run_on_os_login_mode() : RunOnOsLoginMode::kNotRun,
+          true};
+    }
+    case RunOnOsLoginPolicy::kBlocked:
+      return {RunOnOsLoginMode::kNotRun, false};
+    case RunOnOsLoginPolicy::kRunWindowed:
+      return {RunOnOsLoginMode::kWindowed, false};
+  }
+}
+
+absl::optional<RunOnOsLoginMode>
+WebAppRegistrar::GetExpectedRunOnOsLoginOsIntegrationState(
     const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->run_on_os_login_mode() : RunOnOsLoginMode::kNotRun;
+  return web_app ? web_app->run_on_os_login_os_integration_state()
+                 : absl::nullopt;
 }
 
 bool WebAppRegistrar::GetWindowControlsOverlayEnabled(

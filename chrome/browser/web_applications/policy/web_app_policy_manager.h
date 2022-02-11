@@ -93,6 +93,7 @@ class WebAppPolicyManager {
       base::OnceClosure callback);
   void SetRefreshPolicySettingsCompletedCallbackForTesting(
       base::OnceClosure callback);
+  void RefreshPolicySettingsForTesting();
 
   // Changes the manifest to conform to the WebAppInstallForceList policy.
   void MaybeOverrideManifest(content::RenderFrameHost* frame_host,

@@ -209,6 +209,7 @@ TEST(WebAppTest, EmptyAppAsDebugValue) {
    "parent_app_id": "",
    "protocol_handlers": [  ],
    "run_on_os_login_mode": "not run",
+   "run_on_os_login_os_integration_state": "not set",
    "scope": "",
    "share_target": null,
    "shortcuts_menu_item_infos": [  ],
@@ -417,6 +418,7 @@ TEST(WebAppTest, SampleAppAsDebugValue) {
       "url": "https://example.com/24741963854"
    } ],
    "run_on_os_login_mode": "windowed",
+   "run_on_os_login_os_integration_state": "not run",
    "scope": "https://example.com/scope1234/",
    "share_target": null,
    "shortcuts_menu_item_infos": [ {

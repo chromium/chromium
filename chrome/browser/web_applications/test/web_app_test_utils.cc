@@ -6,9 +6,11 @@
 
 #include <random>
 
+#include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -18,7 +20,9 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/pref_names.h"
 #include "components/services/app_service/public/cpp/url_handler_info.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -368,6 +372,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
     app->SetLaunchQueryParams(base::NumberToString(random.next_uint()));
 
   app->SetRunOnOsLoginMode(random.next_enum<RunOnOsLoginMode>());
+  app->SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode::kNotRun);
 
   const SquareSizePx size = 256;
   const int num_icons = random.next_uint(10);
@@ -540,6 +545,14 @@ void CheckServiceWorkerStatus(const GURL& url,
             run_loop.Quit();
           }));
   run_loop.Run();
+}
+
+void SetWebAppSettingsDictPref(Profile* profile, const base::StringPiece pref) {
+  base::JSONReader::ValueWithError result =
+      base::JSONReader::ReadAndReturnValueWithError(
+          pref, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+  DCHECK(result.value && result.value->is_dict()) << result.error_message;
+  profile->GetPrefs()->Set(prefs::kWebAppSettings, std::move(*result.value));
 }
 
 }  // namespace test

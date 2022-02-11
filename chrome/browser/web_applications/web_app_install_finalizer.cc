@@ -186,6 +186,7 @@ void WebAppInstallFinalizer::FinalizeInstall(
     web_app->SetIsLocallyInstalled(options.locally_installed);
     if (options.locally_installed)
       web_app->SetInstallTime(base::Time::Now());
+    web_app->SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode::kNotRun);
   }
 
   // Set |user_display_mode| and any user-controllable fields here if this

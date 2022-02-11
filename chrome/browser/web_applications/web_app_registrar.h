@@ -37,8 +37,15 @@ namespace web_app {
 
 class AppRegistrarObserver;
 class WebApp;
+class WebAppPolicyManager;
 
 using Registry = std::map<AppId, std::unique_ptr<WebApp>>;
+
+template <typename T>
+struct ValueWithPolicy {
+  T value;
+  bool user_controllable;
+};
 
 // A registry model. This is a read-only container, which owns WebApp objects.
 class WebAppRegistrar : public ProfileManagerObserver {
@@ -59,6 +66,8 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   void Start();
   void Shutdown();
+
+  void SetSubsystems(WebAppPolicyManager* policy_manager);
 
   // Returns whether the app with |app_id| is currently listed in the registry.
   // ie. we have data for web app manifest and icons, and this |app_id| can be
@@ -203,8 +212,14 @@ class WebAppRegistrar : public ProfileManagerObserver {
   std::vector<IconSizes> GetAppDownloadedShortcutsMenuIconsSizes(
       const AppId& app_id) const;
 
-  // Returns the Run on OS Login mode.
-  RunOnOsLoginMode GetAppRunOnOsLoginMode(const AppId& app_id) const;
+  // Returns the Run on OS Login mode and enterprise policy value.
+  ValueWithPolicy<RunOnOsLoginMode> GetAppRunOnOsLoginMode(
+      const AppId& app_id) const;
+
+  // Returns true iff it's expected that the app has been, **or is in
+  // the process of being**, registered with the OS.
+  absl::optional<RunOnOsLoginMode> GetExpectedRunOnOsLoginOsIntegrationState(
+      const AppId& app_id) const;
 
   bool GetWindowControlsOverlayEnabled(const AppId& app_id) const;
 
@@ -407,6 +422,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
  private:
   const raw_ptr<Profile> profile_;
+  raw_ptr<WebAppPolicyManager> policy_manager_ = nullptr;
 
   base::ObserverList<AppRegistrarObserver, /*check_empty=*/true> observers_;
 
