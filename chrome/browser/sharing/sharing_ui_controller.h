@@ -22,7 +22,6 @@
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/views/controls/styled_label.h"
 #include "url/origin.h"
 
 class SharingDialog;
