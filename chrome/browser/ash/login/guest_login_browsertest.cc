@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/guest_tos_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
@@ -26,6 +27,7 @@
 namespace ash {
 
 constexpr char kGuestTosId[] = "guest-tos";
+const test::UIPath kLoadedDialog = {kGuestTosId, "loaded"};
 const test::UIPath kGuestTosAcceptButton = {kGuestTosId, "acceptButton"};
 
 // Tests guest user log in.
@@ -50,10 +52,12 @@ class GuestLoginTest : public MixinBasedInProcessBrowserTest {
   }
 
   void StartGuestSession() {
+    OobeScreenWaiter(UserCreationView::kScreenId).Wait();
     ASSERT_TRUE(LoginScreenTestApi::ClickGuestButton());
 
     if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
       OobeScreenWaiter(GuestTosScreenView::kScreenId).Wait();
+      test::OobeJS().CreateVisibilityWaiter(true, kLoadedDialog)->Wait();
       test::OobeJS().ClickOnPath(kGuestTosAcceptButton);
     }
   }
@@ -108,6 +112,7 @@ IN_PROC_BROWSER_TEST_F(GuestLoginTest, Login) {
 // The test verifies that clicking the Guest button multiple times doesn't
 // trigger extra userdataauth requests. A regression test for b/213835042.
 IN_PROC_BROWSER_TEST_F(GuestLoginTest, PRE_MultipleClicks) {
+  StartupUtils::MarkEulaAccepted();
   base::RunLoop restart_job_waiter;
   FakeSessionManagerClient::Get()->set_restart_job_callback(
       restart_job_waiter.QuitClosure());
@@ -115,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(GuestLoginTest, PRE_MultipleClicks) {
   // Start the guest session, with additional clicks right before and after this
   // UI activity, and additionally after the restart job is created.
   EXPECT_TRUE(LoginScreenTestApi::ClickGuestButton());
-  StartGuestSession();
+  EXPECT_TRUE(LoginScreenTestApi::ClickGuestButton());
   EXPECT_TRUE(LoginScreenTestApi::ClickGuestButton());
   restart_job_waiter.Run();
   EXPECT_TRUE(LoginScreenTestApi::ClickGuestButton());

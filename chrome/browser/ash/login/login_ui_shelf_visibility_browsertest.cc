@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
@@ -60,7 +61,10 @@ class LoginUIShelfVisibilityTest : public MixinBasedInProcessBrowserTest {
 
     // Sync consent is the first post-login screen shown when a new user signs
     // in.
-    OobeScreenWaiter(SyncConsentScreenView::kScreenId).Wait();
+    if (features::IsOobeConsolidatedConsentEnabled())
+      OobeScreenWaiter(ConsolidatedConsentScreenView::kScreenId).Wait();
+    else
+      OobeScreenWaiter(SyncConsentScreenView::kScreenId).Wait();
   }
 
  private:

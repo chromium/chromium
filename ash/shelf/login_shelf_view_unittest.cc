@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/focus_cycler.h"
 #include "ash/lock_screen_action/lock_screen_action_background_controller.h"
@@ -549,7 +550,11 @@ TEST_F(LoginShelfViewTest, ClickCancelButton) {
 
 TEST_F(LoginShelfViewTest, ClickBrowseAsGuestButton) {
   auto client = std::make_unique<MockLoginScreenClient>();
-  EXPECT_CALL(*client, LoginAsGuest());
+
+  if (features::IsOobeConsolidatedConsentEnabled())
+    EXPECT_CALL(*client, ShowGuestTosScreen());
+  else
+    EXPECT_CALL(*client, LoginAsGuest());
 
   login_shelf_view_->SetAllowLoginAsGuest(true /*allow_guest*/);
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
