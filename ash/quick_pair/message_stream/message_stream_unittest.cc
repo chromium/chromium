@@ -14,9 +14,11 @@
 #include "ash/services/quick_pair/quick_pair_process_manager.h"
 #include "ash/services/quick_pair/quick_pair_process_manager_impl.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "device/bluetooth/bluetooth_socket.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -322,6 +324,23 @@ TEST_F(MessageStreamTest, ReceiveMessages_SocketDisconnect) {
 
   histogram_tester().ExpectTotalCount(kMessageStreamReceiveResultMetric, 1);
   histogram_tester().ExpectTotalCount(kMessageStreamReceiveErrorMetric, 1);
+}
+
+TEST_F(MessageStreamTest,
+       ReceiveMessages_DisconnectCallback_SocketAlreadyDisconnected) {
+  EXPECT_FALSE(on_socket_disconnected_);
+  EXPECT_TRUE(message_stream_->messages().empty());
+  DisconnectSocket();
+  AddObserver();
+  TriggerReceiveSuccessCallback();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(message_stream_->messages().empty());
+  EXPECT_TRUE(on_socket_disconnected_);
+
+  base::MockCallback<base::OnceClosure> callback;
+  EXPECT_CALL(callback, Run).Times(1);
+  message_stream_->Disconnect(callback.Get());
 }
 
 TEST_F(MessageStreamTest, ReceiveMessages_FailureAfterMaxRetries) {
