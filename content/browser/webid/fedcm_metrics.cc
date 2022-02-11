@@ -75,4 +75,8 @@ void RecordRevokeStatus(FedCmRevokeStatus status, ukm::SourceId source_id) {
   UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.Status.Revoke", status);
 }
 
+void RecordWebContentsVisibilityUponReadyToShowDialog(bool is_visible) {
+  UMA_HISTOGRAM_BOOLEAN("Blink.FedCm.WebContentsVisible", is_visible);
+}
+
 }  // namespace content

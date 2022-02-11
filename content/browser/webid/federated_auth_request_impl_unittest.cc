@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/federated_auth_request_service.h"
 #include "content/browser/webid/id_token_request_callback_data.h"
@@ -1492,6 +1493,75 @@ TEST_F(BasicFederatedAuthRequestImplTest, MetricsForNotSelectingAccount) {
   ExpectNoTimingUKM("Timing.TurnaroundTime");
 
   ExpectRequestIdTokenStatusUKM(IdTokenStatus::kNotSelectAccount);
+}
+
+TEST_F(BasicFederatedAuthRequestImplTest, MetricsForWebContentsVisible) {
+  base::HistogramTester histogram_tester;
+  // Sets the WebContents to visible
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(web_contents());
+  web_contents_impl->UpdateWebContentsVisibility(Visibility::VISIBLE);
+  ASSERT_EQ(web_contents_impl->GetVisibility(), Visibility::VISIBLE);
+
+  const auto& test_case = kSuccessfulMediatedSignUpTestCase;
+  auto& auth_request = CreateAuthRequest(GURL(test_case.inputs.provider));
+  SetMockExpectations(test_case);
+  // Sets specific expectations for sharing permission.
+  NiceMock<MockSharingPermissionDelegate> mock_sharing_permission_delegate;
+  auth_request.SetSharingPermissionDelegateForTests(
+      &mock_sharing_permission_delegate);
+
+  // Pretends that the sharing permission has been granted for this account.
+  EXPECT_CALL(mock_sharing_permission_delegate,
+              HasSharingPermissionForAccount(
+                  url::Origin::Create(GURL(kIdpTestOrigin)), _, "1234"))
+      .WillOnce(Return(true));
+
+  auto auth_response = PerformAuthRequest(
+      test_case.inputs.client_id, test_case.inputs.nonce, test_case.inputs.mode,
+      test_case.inputs.prefer_auto_sign_in);
+  EXPECT_EQ(LoginState::kSignIn, displayed_accounts()[0].login_state);
+
+  histogram_tester.ExpectBucketCount("Blink.FedCm.WebContentsVisible", 1, 1);
+  histogram_tester.ExpectTotalCount("Blink.FedCm.WebContentsVisible", 1);
+}
+
+TEST_F(BasicFederatedAuthRequestImplTest, MetricsForWebContentsInvisible) {
+  base::HistogramTester histogram_tester;
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(web_contents());
+  web_contents_impl->UpdateWebContentsVisibility(Visibility::VISIBLE);
+  ASSERT_EQ(web_contents_impl->GetVisibility(), Visibility::VISIBLE);
+
+  const AuthRequestTestCase test_case = {
+      "Failed mediated flow due to user leaving the page",
+      {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated,
+       kNotPreferAutoSignIn},
+      {RequestIdTokenStatus::kSuccess, RequestIdTokenStatus::kSuccess, kToken},
+      {kToken,
+       absl::nullopt,
+       FetchStatus::kSuccess,
+       kSuccessfulClientId,
+       "",
+       kAccountsEndpoint,
+       kTokenEndpoint,
+       kClientMetadataEndpoint,
+       kPermissionNoop,
+       {FetchStatus::kSuccess, kAccounts, absl::nullopt,
+        /*customized_dialog=*/true}}};
+  CreateAuthRequest(GURL(test_case.inputs.provider));
+  SetMockExpectations(test_case);
+
+  // Sets the WebContents to invisible
+  web_contents_impl->UpdateWebContentsVisibility(Visibility::HIDDEN);
+  ASSERT_NE(web_contents_impl->GetVisibility(), Visibility::VISIBLE);
+
+  PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                     test_case.inputs.mode,
+                     test_case.inputs.prefer_auto_sign_in);
+
+  histogram_tester.ExpectBucketCount("Blink.FedCm.WebContentsVisible", 0, 1);
+  histogram_tester.ExpectTotalCount("Blink.FedCm.WebContentsVisible", 1);
 }
 
 }  // namespace content
