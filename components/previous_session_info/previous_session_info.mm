@@ -94,6 +94,7 @@ NSString* const kPreviousSessionInfoThermalState =
 // - A (boolean) describing whether or not low power mode is enabled.
 NSString* const kPreviousSessionInfoLowPowerMode =
     @"PreviousSessionInfoLowPowerMode";
+// TODO(crbug.com/1295763): Remove key for no longer used state.
 // - A (boolean) describing whether the last session was on Multi-Window enabled
 //   version of the application.
 NSString* const kPreviousSessionInfoMultiWindowEnabled =
@@ -142,7 +143,6 @@ NSString* const kPreviousSessionInfoOTRTabCount =
 @property(nonatomic, assign) BOOL didSeeMemoryWarningShortlyBeforeTerminating;
 @property(nonatomic, assign) BOOL isFirstSessionAfterUpgrade;
 @property(nonatomic, assign) BOOL isFirstSessionAfterLanguageChange;
-@property(nonatomic, assign) BOOL isMultiWindowEnabledSession;
 @property(nonatomic, assign) BOOL OSRestartedAfterPreviousSession;
 @property(nonatomic, strong) NSString* OSVersion;
 @property(nonatomic, strong) NSDate* sessionStartTime;
@@ -210,10 +210,11 @@ static PreviousSessionInfo* gSharedInstance = nil;
     gSharedInstance.isFirstSessionAfterUpgrade =
         ![lastRanVersion isEqualToString:currentVersion];
 
-    // TODO(crbug.com/1109280): Remove after the migration to Multi-Window
-    // sessions is done.
-    gSharedInstance.isMultiWindowEnabledSession =
-        [defaults boolForKey:kPreviousSessionInfoMultiWindowEnabled];
+    // This key is no longer being used so we remove it here,
+    // but this should be cleaned-up in many milestones.
+    // TODO(crbug.com/1295763): Remove this line.
+    [[NSUserDefaults standardUserDefaults]
+        removeObjectForKey:kPreviousSessionInfoMultiWindowEnabled];
 
     gSharedInstance.connectedSceneSessionsIDs = [NSMutableSet
         setWithArray:[defaults
@@ -541,15 +542,6 @@ static PreviousSessionInfo* gSharedInstance = nil;
 - (void)resetConnectedSceneSessionIDs {
   self.connectedSceneSessionsIDs = [[NSMutableSet alloc] init];
   [self synchronizeSceneSessionIDs];
-}
-
-- (void)updateMultiWindowSupportStatus {
-  gSharedInstance.isMultiWindowEnabledSession =
-      base::ios::IsMultiwindowSupported();
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  [defaults setBool:gSharedInstance.isMultiWindowEnabledSession
-             forKey:kPreviousSessionInfoMultiWindowEnabled];
-  [defaults synchronize];
 }
 
 - (base::ScopedClosureRunner)startSessionRestoration {

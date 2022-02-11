@@ -788,61 +788,6 @@ TEST_F(AppStateTest, applicationWillEnterForegroundFromBackground) {
   EXPECT_OCMOCK_VERIFY(getBrowserLauncherMock());
 }
 
-// Tests that -applicationWillEnterForeground starts the safe mode if the
-// application is in background.
-TEST_F(AppStateTest,
-       applicationWillEnterForegroundFromBackgroundShouldStartSafeMode) {
-  if (base::ios::IsMultiwindowSupported()) {
-    // In Multi Window, this is not the case. Skip this test.
-    return;
-  }
-  // Setup.
-  id application = [OCMockObject mockForClass:[UIApplication class]];
-  id metricsMediator = [OCMockObject mockForClass:[MetricsMediator class]];
-  id memoryHelper = [OCMockObject mockForClass:[MemoryWarningHelper class]];
-
-  base::TimeTicks now = base::TimeTicks::Now();
-  [[[getStartupInformationMock() stub] andReturnValue:@YES] isColdStart];
-  [[[getStartupInformationMock() stub] andDo:^(NSInvocation* invocation) {
-    [invocation setReturnValue:(void*)&now];
-  }] appLaunchTime];
-
-  id window = getWindowMock();
-
-  [[[window stub] andReturn:nil] rootViewController];
-  [[window stub] setRootViewController:[OCMArg any]];
-  swizzleSafeModeShouldStart(YES);
-
-  // The helper below calls makeKeyAndVisible.
-  [[window expect] makeKeyAndVisible];
-
-  AppState* appState = getAppStateWithRealWindow(window);
-  id browserLauncherMock = getBrowserLauncherMock();
-  NSDictionary* launchOptions = @{};
-  [[browserLauncherMock expect] setLaunchOptions:launchOptions];
-
-  [appState requiresHandlingAfterLaunchWithOptions:launchOptions
-                                   stateBackground:YES];
-
-  // Starting safe mode will call makeKeyAndVisible on the window.
-  [[window expect] makeKeyAndVisible];
-  FakeSceneState* sceneState = base::mac::ObjCCastStrict<FakeSceneState>(
-      appState.connectedScenes.firstObject);
-  sceneState.window = window;
-
-  // Actions.
-  [appState applicationWillEnterForeground:application
-                           metricsMediator:metricsMediator
-                              memoryHelper:memoryHelper];
-  // Transition the activation level to active to trigger the safe mode.
-  sceneState.activationLevel = SceneActivationLevelForegroundActive;
-
-  // Tests.
-  EXPECT_OCMOCK_VERIFY(window);
-
-  EXPECT_EQ(InitStageSafeMode, appState.initStage);
-}
-
 // Tests that -applicationDidEnterBackground calls the metrics mediator.
 TEST_F(AppStateTest, applicationDidEnterBackgroundIncognito) {
   swizzleSafeModeShouldStart(NO);

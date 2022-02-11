@@ -869,14 +869,6 @@ bool IsSigninForcedByPolicy() {
 
   [self createInitialUI:[self initialUIMode]];
 
-  // By reaching here, it's guaranteed that both Normal and incognito sessions
-  // were restored. and if it's the first time that multi-window sessions are
-  // created, the migration was done. Update the Multi-Window flag so it's not
-  // used again in the same run when creating new windows.
-  // TODO(crbug.com/1109280): Remove after the migration to Multi-Window
-  // sessions is done.
-  [[PreviousSessionInfo sharedInstance] updateMultiWindowSupportStatus];
-
   if ([self shouldShowRestorePrompt]) {
     [self.sceneState.appState.startupInformation
             .restoreHelper showRestorePrompt];

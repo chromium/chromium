@@ -49,12 +49,6 @@ BASE_EXPORT void OverridePathOfEmbeddedICU(const char* path);
 // returns invalid FilePath.
 BASE_EXPORT FilePath FilePathOfEmbeddedICU();
 
-// Returns true if multiwindow is supported on this OS version and is enabled in
-// the current build configuration. Does not check if this device can actually
-// show multiple windows (e.g. on iPhone): use [UIApplication
-// supportsMultipleScenes] instead.
-BASE_EXPORT bool IsMultiwindowSupported();
-
 // Returns true iff multiple windows can be opened, i.e. when the multiwindow
 // build flag is on, the device is running on iOS 13+ and it's a compatible
 // iPad.

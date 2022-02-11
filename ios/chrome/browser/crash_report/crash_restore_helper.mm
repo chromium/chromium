@@ -414,17 +414,9 @@ int SessionCrashedInfoBarDelegate::GetIconId() const {
 
     // Remove the backup directory for this session as it will not be moved
     // back to its original browser state directory.
-    if (base::ios::IsMultiwindowSupported()) {
-      [fileManager
-          removeItemAtPath:[backupPath stringByDeletingLastPathComponent]
-                     error:&error];
-    }
+    [fileManager removeItemAtPath:[backupPath stringByDeletingLastPathComponent]
+                            error:&error];
   }
-
-  // If this is not multiwindow platform, there are no more sessions to deal
-  // with.
-  if (!base::ios::IsMultiwindowSupported())
-    return success;
 
   // Now put non restored sessions files to its original location in the browser
   // state directory.
@@ -495,11 +487,8 @@ int SessionCrashedInfoBarDelegate::GetIconId() const {
       // webStateList.
       tabRestoreService->CreateHistoricalTab(live_tab.get(), 0);
     }
-    if (base::ios::IsMultiwindowSupported()) {
-      [fileManager
-          removeItemAtPath:[backupPath stringByDeletingLastPathComponent]
-                     error:&error];
-    }
+    [fileManager removeItemAtPath:[backupPath stringByDeletingLastPathComponent]
+                            error:&error];
   }
 }
 
