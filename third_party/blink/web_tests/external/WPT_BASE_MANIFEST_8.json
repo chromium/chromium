@@ -71082,6 +71082,19 @@
         {}
        ]
       ],
+      "background-color-transition-currentcolor.html": [
+       "7d12b440511c0321fd3467e69f47529dc38f01da",
+       [
+        null,
+        [
+         [
+          "/css/css-backgrounds/animations/background-color-transition-currentcolor-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "background-color-transition.html": [
        "d43b9415cf65910a46b29089d5030d41cd59ac0e",
        [
@@ -109753,7 +109766,7 @@
       ]
      ],
      "font-palette-modify.html": [
-      "0b5ac99c9ac924f26f3301307773fbfff2725ee9",
+      "49992ad8a13fb9182206aaa67d7809c451c28faa",
       [
        null,
        [
@@ -242270,6 +242283,10 @@
        "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
        []
       ],
+      "background-color-transition-currentcolor-ref.html": [
+       "b91047865660c8d73a195d158992df423cedd3f1",
+       []
+      ],
       "background-color-transparent-animation-in-body-ref.html": [
        "72c0c83ffca3079656fa9701a535b2874a55f686",
        []
@@ -249928,7 +249945,7 @@
       []
      ],
      "font-palette-modify-notref.html": [
-      "8dc2f9e3c7fad12e205356afd136292cf98d710d",
+      "170cd8baaf88edb1b988df7d758332201e3ec345",
       []
      ],
      "font-palette-ref.html": [
@@ -249940,7 +249957,7 @@
       []
      ],
      "font-palette-remove-notref.html": [
-      "b0d34a066e68af29584001f215343d2ff5685708",
+      "b2c06f72be49fb1e9ecd45b0fa3b209882e13cbd",
       []
      ],
      "font-size-adjust-001-ref.html": [
@@ -250450,7 +250467,7 @@
       []
      ],
      "palette-values-rule-delete-notref.html": [
-      "ded10a338c467db6dfe2239700322202a864d184",
+      "9b2b10ca280a2cb53215a68b89628ea182979dae",
       []
      ],
      "parsing": {
@@ -462760,6 +462777,15 @@
      },
      "selectors": {
       "pseudo-classes": {
+       "active-disabled.html": [
+        "63dda59c011d4a4aae4578416535829a7f81a2ce",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
        "autofill.html": [
         "b7c3644bdbad02f7775c3ae4a341715d082870c2",
         [
