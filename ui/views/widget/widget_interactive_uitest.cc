@@ -1173,6 +1173,28 @@ TEST_F(DesktopWidgetTestInteractive, RestoreAfterMinimize) {
   EXPECT_TRUE(restore_waiter.Wait());
 }
 
+// Maximize is not implemented on macOS, see crbug.com/868599
+#if !BUILDFLAG(IS_MAC)
+// Widget::Show/ShowInactive should not restore a maximized window
+TEST_F(DesktopWidgetTestInteractive, ShowAfterMaximize) {
+  WidgetAutoclosePtr widget(CreateTopLevelNativeWidget());
+  ShowSync(widget.get());
+  ASSERT_FALSE(widget->IsMaximized());
+
+  PropertyWaiter maximize_waiter(
+      base::BindRepeating(&Widget::IsMaximized, base::Unretained(widget.get())),
+      true);
+  widget->Maximize();
+  EXPECT_TRUE(maximize_waiter.Wait());
+
+  ShowSync(widget.get());
+  EXPECT_TRUE(widget->IsMaximized());
+
+  ShowInactiveSync(widget.get());
+  EXPECT_TRUE(widget->IsMaximized());
+}
+#endif
+
 #if BUILDFLAG(IS_WIN)
 // TODO(davidbienvenu): Get this test to pass on Linux and ChromeOS by hiding
 // the root window when desktop widget is minimized.
