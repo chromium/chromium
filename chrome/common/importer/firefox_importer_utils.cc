@@ -29,21 +29,25 @@ namespace {
 // Retrieves the file system path of the profile name.
 base::FilePath GetProfilePath(const base::DictionaryValue& root,
                               const std::string& profile_name) {
-  std::u16string path16;
-  std::string is_relative;
-  if (!root.GetStringASCII(profile_name + ".IsRelative", &is_relative) ||
-      !root.GetString(profile_name + ".Path", &path16))
+  std::string path_str;
+  const std::string* is_relative =
+      root.FindStringPath(profile_name + ".IsRelative");
+  if (!is_relative)
+    return base::FilePath();
+  if (const std::string* ptr = root.FindStringPath(profile_name + ".Path"))
+    path_str = *ptr;
+  else
     return base::FilePath();
 
 #if BUILDFLAG(IS_WIN)
-  base::ReplaceSubstringsAfterOffset(&path16, 0, u"/", u"\\");
+  base::ReplaceSubstringsAfterOffset(&path_str, 0, "/", "\\");
 #endif
-  base::FilePath path = base::FilePath::FromUTF16Unsafe(path16);
+  base::FilePath path = base::FilePath::FromUTF8Unsafe(path_str);
 
   // IsRelative=1 means the folder path would be relative to the
   // path of profiles.ini. IsRelative=0 refers to a custom profile
   // location.
-  if (is_relative == "1")
+  if (*is_relative == "1")
     path = GetProfilesINI().DirName().Append(path);
 
   return path;
