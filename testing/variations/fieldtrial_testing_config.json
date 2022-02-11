@@ -557,6 +557,22 @@
             ]
         }
     ],
+    "AutofillAssistantDomAnnotation": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "//1": "This launch is gated external to Chrome.",
+                    "name": "Enabled_20220211",
+                    "enable_features": [
+                        "AutofillAssistantAnnotateDom"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillAssistantInCCTTriggering": [
         {
             "platforms": [
