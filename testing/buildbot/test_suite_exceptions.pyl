@@ -1320,6 +1320,9 @@
         },
       },
       'android-12-x64-fyi-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.content_browsertests.filter',
+        ],
         'swarming': {
           'shards': 20,
         },
