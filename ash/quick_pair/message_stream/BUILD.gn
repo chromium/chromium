@@ -57,7 +57,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "message_stream_lookup_unittest.cc",
+    "message_stream_lookup_impl_unittest.cc",
     "message_stream_unittest.cc",
   ]
 
