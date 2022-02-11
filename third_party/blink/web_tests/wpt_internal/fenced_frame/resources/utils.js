@@ -99,6 +99,9 @@ function attachFrameContext(element_name, html, headers) {
       if (key == "execute") {
         return context.execute_script;
       }
+      if (key == "element") {
+        return frame;
+      }
       if (key in target) {
         return target[key];
       }
@@ -158,6 +161,13 @@ function attachFencedFrame(url) {
   fenced_frame.src = url;
   document.body.append(fenced_frame);
   return fenced_frame;
+}
+
+function attachIFrame(url) {
+  const iframe = document.createElement('iframe');
+  iframe.src = url;
+  document.body.append(iframe);
+  return iframe;
 }
 
 // Reads the value specified by `key` from the key-value store on the server.

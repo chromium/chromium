@@ -125,8 +125,8 @@ Frame& FrameTree::Top(FrameTreeBoundary frame_tree_boundary) const {
   return *this_frame_->Top(frame_tree_boundary);
 }
 
-Frame* FrameTree::NextSibling() const {
-  return this_frame_->NextSibling();
+Frame* FrameTree::NextSibling(FrameTreeBoundary frame_tree_boundary) const {
+  return this_frame_->NextSibling(frame_tree_boundary);
 }
 
 Frame* FrameTree::FirstChild(FrameTreeBoundary frame_tree_boundary) const {
@@ -340,18 +340,20 @@ Frame* FrameTree::TraverseNext(const Frame* stay_within,
   if (this_frame_ == stay_within)
     return nullptr;
 
-  Frame* sibling = NextSibling();
+  Frame* sibling = NextSibling(frame_tree_boundary);
   if (sibling) {
     DCHECK(!stay_within || sibling->Tree().IsDescendantOf(stay_within));
     return sibling;
   }
 
   Frame* frame = this_frame_;
-  while (!sibling && (!stay_within || frame->Tree().Parent() != stay_within)) {
-    frame = frame->Tree().Parent();
+  while (!sibling &&
+         (!stay_within ||
+          frame->Tree().Parent(frame_tree_boundary) != stay_within)) {
+    frame = frame->Tree().Parent(frame_tree_boundary);
     if (!frame)
       return nullptr;
-    sibling = frame->Tree().NextSibling();
+    sibling = frame->Tree().NextSibling(frame_tree_boundary);
   }
 
   if (frame) {
