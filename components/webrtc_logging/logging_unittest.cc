@@ -18,7 +18,11 @@
 
 // The following #include come before including logging.h. It ensures that
 // WebRTC-style logging is used.
+// TODO(mbonadei): Remove this one once the GN config fix is rolled into
+// Chromium.
+#ifndef LOGGING_INSIDE_WEBRTC
 #define LOGGING_INSIDE_WEBRTC
+#endif
 
 #include "build/build_config.h"
 #include "third_party/webrtc_overrides/rtc_base/logging.h"
