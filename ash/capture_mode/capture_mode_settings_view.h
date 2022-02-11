@@ -111,9 +111,12 @@ class ASH_EXPORT CaptureModeSettingsView
 
   // Adds all camera options (including the option for `kCameraOff`) for the
   // given `cameras` to the `camera_menu_group_`. It deletes all options in
-  // `camera_menu_group_` before adding options. Called when initializing
-  // `this` or `OnAvailableCamerasChanged` is triggered.
+  // `camera_menu_group_` before adding options. Called when initializing `this`
+  // or `OnAvailableCamerasChanged` is triggered. It will also trigger
+  // `UpdateCameraMenuGroupVisibility` at the end.
   void AddCameraOptions(const CameraInfoList& cameras);
+
+  void UpdateCameraMenuGroupVisibility(bool visible);
 
   // A reference to the session that owns this view indirectly by owning its
   // containing widget.

@@ -158,6 +158,16 @@ class CaptureModeCameraTest : public AshTestBase {
     return camera_controller;
   }
 
+  void OpenSettingsView() {
+    CaptureModeSession* session =
+        CaptureModeController::Get()->capture_mode_session();
+    DCHECK(session);
+    ClickOnView(CaptureModeSessionTestApi(session)
+                    .GetCaptureModeBarView()
+                    ->settings_button(),
+                GetEventGenerator());
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::SystemMonitor system_monitor_;
@@ -420,56 +430,72 @@ TEST_F(CaptureModeCameraTest, ShouldShowPreviewTest) {
   EXPECT_FALSE(camera_controller->should_show_preview());
 }
 
-// Tests that the options on camera settings view are shown and checked
-// correctly when adding or removing cameras. Also tests that
-// `selected_camera_` is updated correspondently.
-TEST_F(CaptureModeCameraTest, CameraSettingsView) {
+// Tests that the options on camera menu are shown and checked correctly when
+// adding or removing cameras. Also tests that `selected_camera_` is updated
+// correspondently.
+TEST_F(CaptureModeCameraTest, CheckCameraOptions) {
   auto* camera_controller = GetCameraController();
-  AddDefaultCamera();
-  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
-                                         CaptureModeType::kVideo);
-  auto* event_generator = GetEventGenerator();
-  EXPECT_TRUE(controller->IsActive());
-  CaptureModeSession* session = controller->capture_mode_session();
+  const std::string device_id_1 = "/dev/video0";
+  const std::string display_name_1 = "Integrated Webcam";
 
-  // Click settings button to open settings menu.
-  ClickOnView(CaptureModeSessionTestApi(session)
-                  .GetCaptureModeBarView()
-                  ->settings_button(),
-              event_generator);
-  // Check camera settings is shown. `Off` option is selected.
+  const std::string device_id_2 = "/dev/video1";
+  const std::string display_name_2 = "Integrated Webcam 1";
+
+  AddFakeCamera(device_id_1, display_name_1, display_name_1);
+  AddFakeCamera(device_id_2, display_name_2, display_name_2);
+
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  OpenSettingsView();
+
+  // Check camera settings is shown. `Off` option is checked. Two camera options
+  // are not checked.
   CaptureModeSettingsTestApi test_api;
   CaptureModeMenuGroup* camera_menu_group = test_api.GetCameraMenuGroup();
+  EXPECT_TRUE(camera_menu_group && camera_menu_group->GetVisible());
   EXPECT_TRUE(camera_menu_group->IsOptionChecked(kCameraOff));
   EXPECT_FALSE(camera_menu_group->IsOptionChecked(kCameraDevicesBegin));
+  EXPECT_FALSE(camera_menu_group->IsOptionChecked(kCameraDevicesBegin + 1));
   EXPECT_FALSE(camera_controller->selected_camera().is_valid());
 
-  // Click camera option, check its display name matches with the camera's
-  // display name and it's selected. Also check the selected camera is valid
-  // now.
-  ClickOnView(test_api.GetCameraOption(kCameraDevicesBegin), event_generator);
+  // Click the option for camera device 1, check its display name matches with
+  // the camera device 1 display name and it's checked. Also check the selected
+  // camera is valid now.
+  ClickOnView(test_api.GetCameraOption(kCameraDevicesBegin),
+              GetEventGenerator());
   EXPECT_FALSE(camera_menu_group->IsOptionChecked(kCameraOff));
   EXPECT_EQ(base::UTF16ToUTF8(camera_menu_group->GetOptionLabelForTesting(
                 kCameraDevicesBegin)),
-            kDefaultCameraDisplayName);
+            display_name_1);
   EXPECT_TRUE(camera_menu_group->IsOptionChecked(kCameraDevicesBegin));
   EXPECT_TRUE(camera_controller->selected_camera().is_valid());
 
-  // Now disconnect camera.
-  RemoveDefaultCamera();
-  // Check the camera option is removed from the camera menu. Selected camera
-  // is still valid and `Off` option is not checked.
-  EXPECT_FALSE(test_api.GetCameraOption(kCameraDevicesBegin));
-  EXPECT_FALSE(camera_menu_group->IsOptionChecked(kCameraOff));
-  EXPECT_TRUE(camera_controller->selected_camera().is_valid());
+  // Now disconnect camera device 1.
+  RemoveFakeCamera(device_id_1);
 
-  // Now connect the camera again.
-  AddDefaultCamera();
-  // Check the camera option is added back to the camera menu and it's checked
-  // automatically.
+  // Check the camera device 1 is removed from the camera menu. There's only a
+  // camera option for camera device 2. Selected camera is still valid. `Off`
+  // option and option for camera device 2 are not checked.
   EXPECT_TRUE(test_api.GetCameraOption(kCameraDevicesBegin));
+  EXPECT_FALSE(test_api.GetCameraOption(kCameraDevicesBegin + 1));
+  EXPECT_EQ(base::UTF16ToUTF8(camera_menu_group->GetOptionLabelForTesting(
+                kCameraDevicesBegin)),
+            display_name_2);
   EXPECT_FALSE(camera_menu_group->IsOptionChecked(kCameraOff));
-  EXPECT_TRUE(camera_menu_group->IsOptionChecked(kCameraDevicesBegin));
+  EXPECT_FALSE(camera_menu_group->IsOptionChecked(kCameraDevicesBegin));
+  EXPECT_TRUE(camera_controller->selected_camera().is_valid());
+
+  // Now connect the camera device 1 again.
+  AddFakeCamera(device_id_1, display_name_1, display_name_1);
+
+  // Check the camera device 1 is added back to the camera menu and it's checked
+  // automatically. Check the selected option's label matches with the camera
+  // device 1's display name.
+  EXPECT_TRUE(test_api.GetCameraOption(kCameraDevicesBegin + 1));
+  EXPECT_FALSE(camera_menu_group->IsOptionChecked(kCameraOff));
+  EXPECT_TRUE(camera_menu_group->IsOptionChecked(kCameraDevicesBegin + 1));
+  EXPECT_EQ(base::UTF16ToUTF8(camera_menu_group->GetOptionLabelForTesting(
+                kCameraDevicesBegin + 1)),
+            display_name_1);
   EXPECT_TRUE(camera_controller->selected_camera().is_valid());
 }
 
@@ -561,6 +587,37 @@ TEST_F(CaptureModeCameraTest, CameraPreviewWidgetStackingInWindow) {
           ->window_being_recorded();
   ASSERT_EQ(parent, window_being_recorded);
   EXPECT_EQ(window_being_recorded->children().back(), preview_window);
+}
+
+// Tests the visibility of camera menu when there's no camera connected.
+TEST_F(CaptureModeCameraTest, CheckCameraMenuVisibility) {
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kVideo);
+  OpenSettingsView();
+
+  // Check camera menu is hidden.
+  CaptureModeSettingsTestApi test_api;
+  CaptureModeMenuGroup* camera_menu_group = test_api.GetCameraMenuGroup();
+  EXPECT_TRUE(camera_menu_group && !camera_menu_group->GetVisible());
+
+  // Connect a camera.
+  AddDefaultCamera();
+
+  // Check the camera menu is shown. And there's an `Off` option and an option
+  // for the connected camera.
+  camera_menu_group = test_api.GetCameraMenuGroup();
+  EXPECT_TRUE(camera_menu_group && camera_menu_group->GetVisible());
+  EXPECT_TRUE(test_api.GetCameraOption(kCameraOff));
+  EXPECT_TRUE(test_api.GetCameraOption(kCameraDevicesBegin));
+
+  // Now disconnect the camera.
+  RemoveDefaultCamera();
+
+  // Check the menu group is hidden again and all options has been removed from
+  // the menu.
+  camera_menu_group = test_api.GetCameraMenuGroup();
+  EXPECT_TRUE(camera_menu_group && !camera_menu_group->GetVisible());
+  EXPECT_FALSE(test_api.GetCameraOption(kCameraOff));
+  EXPECT_FALSE(test_api.GetCameraOption(kCameraDevicesBegin));
 }
 
 }  // namespace ash
