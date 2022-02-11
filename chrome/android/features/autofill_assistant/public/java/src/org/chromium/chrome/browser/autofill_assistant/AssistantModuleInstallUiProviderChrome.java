@@ -5,10 +5,13 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
+import android.content.Context;
+
 import org.chromium.base.Consumer;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.modules.ModuleInstallUi;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Implementation of {@link AssistantModuleInstallUi.Provider} for Chrome.
@@ -22,8 +25,20 @@ public class AssistantModuleInstallUiProviderChrome implements AssistantModuleIn
 
     @Override
     public AssistantModuleInstallUi create(Consumer<Boolean> onFailure) {
-        ModuleInstallUi ui = new ModuleInstallUi(mTab, R.string.autofill_assistant_module_title,
-                new ModuleInstallUi.FailureUiListener() {
+        ModuleInstallUi.Delegate moduleInstallUiDelegate = new ModuleInstallUi.Delegate() {
+            @Override
+            public WindowAndroid getWindowAndroid() {
+                return mTab.getWindowAndroid();
+            }
+
+            @Override
+            public Context getContext() {
+                return mTab.getWindowAndroid() != null ? mTab.getWindowAndroid().getActivity().get()
+                                                       : null;
+            }
+        };
+        ModuleInstallUi ui = new ModuleInstallUi(moduleInstallUiDelegate,
+                R.string.autofill_assistant_module_title, new ModuleInstallUi.FailureUiListener() {
                     @Override
                     public void onFailureUiResponse(boolean retry) {
                         onFailure.accept(retry);

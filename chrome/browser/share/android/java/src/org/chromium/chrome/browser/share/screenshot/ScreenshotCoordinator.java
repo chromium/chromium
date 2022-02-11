@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share.screenshot;
 
 import android.app.Activity;
+import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -16,6 +17,7 @@ import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Handles the screenshot action in the Sharing Hub and launches the screenshot editor.
@@ -141,12 +143,24 @@ public class ScreenshotCoordinator extends BaseScreenshotCoordinator {
      * Installs the DFM and shows UI (i.e. toasts and a retry dialog) informing the
      * user of the installation status.
      * @param showFallback The fallback will be shown on a unsuccessful installation.
-     * @param onSuccessRunnable the runnable to run on a succesfful install.
+     * @param onSuccessRunnable the runnable to run on a successful install.
      */
     private void installEditor(boolean showFallback, Runnable onSuccessRunnable) {
         assert mImageEditorModuleProvider != null;
-        final ModuleInstallUi ui = new ModuleInstallUi(
-                mTab, R.string.image_editor_module_title, new ModuleInstallUi.FailureUiListener() {
+        ModuleInstallUi.Delegate moduleInstallUiDelegate = new ModuleInstallUi.Delegate() {
+            @Override
+            public WindowAndroid getWindowAndroid() {
+                return mTab.getWindowAndroid();
+            }
+
+            @Override
+            public Context getContext() {
+                return mTab.getWindowAndroid() != null ? mTab.getWindowAndroid().getActivity().get()
+                                                       : null;
+            }
+        };
+        final ModuleInstallUi ui = new ModuleInstallUi(moduleInstallUiDelegate,
+                R.string.image_editor_module_title, new ModuleInstallUi.FailureUiListener() {
                     @Override
                     public void onFailureUiResponse(boolean retry) {
                         if (retry) {
