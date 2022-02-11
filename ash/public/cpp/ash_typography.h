@@ -18,9 +18,6 @@ enum AshTextContext {
   // A button that appears in the launcher's status area.
   CONTEXT_LAUNCHER_BUTTON = ASH_TEXT_CONTEXT_START,
 
-  // Buttons and labels that appear in the fullscreen toast overlay UI.
-  CONTEXT_TOAST_OVERLAY,
-
   // A button that appears within a row of the tray popup.
   CONTEXT_TRAY_POPUP_BUTTON,
 

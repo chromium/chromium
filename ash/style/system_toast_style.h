@@ -17,16 +17,14 @@ class Label;
 class LabelButton;
 }  // namespace views
 
-namespace gfx {
-class Size;
-}  // namespace gfx
-
 namespace ash {
 
 // A view that has rounded corner with label and button inside. The label shows
 // the information. The button inside is optional and has certain functionality
 // e.g. dismiss the view or retry. A managed icon will be put ahead of the label
 // inside if `is_managed` is true.
+// TODO(crbug/1289478): Migrate the `managed_icon_` to `Quick settings toast`,
+// which includes an icon on the left.
 class ASH_EXPORT SystemToastStyle : public views::View {
  public:
   METADATA_HEADER(SystemToastStyle);
@@ -46,8 +44,6 @@ class ASH_EXPORT SystemToastStyle : public views::View {
 
  private:
   // views::View:
-  gfx::Size GetMinimumSize() const override;
-  gfx::Size GetMaximumSize() const override;
   void OnThemeChanged() override;
 
   views::Label* label_ = nullptr;
