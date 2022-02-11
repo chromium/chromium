@@ -104,6 +104,10 @@ template("mixed_target") {
 
   if (_rs_enable) {
     rust_source_set("${_target_name}_rs") {
+      # Normally we forward both testonly and visibility from the invoker. But
+      # here we exclude "visibility" since the Rust parts are only visible to
+      # the C++ parts of the same mixed target by default.
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY, [ "visibility" ])
       mutually_dependent_target = ":${_target_name}"
       if (defined(invoker.rs_epoch)) {
         epoch = invoker.rs_epoch

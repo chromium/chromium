@@ -23,6 +23,7 @@ group("deps") {
   deps = [
     "test_mixed_component:test_mixed_component_demo",
     "test_mixed_executable",
+    "test_mixed_testonly_executable",
     "test_variable_source_set:test_variable_source_set_demo",
   ]
 

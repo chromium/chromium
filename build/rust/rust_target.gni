@@ -130,9 +130,9 @@ template("rust_target") {
 
     # Downstream Rust targets should include this in their deps.
     group(target_name) {
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       deps = [ ":${_target_name}${main_target_suffix}" ]
       deps += _deps_for_rust_targets
-      forward_variables_from(invoker, [ "visibility" ])
     }
 
     # Downstream C++ targets should include this in their deps.
@@ -145,9 +145,12 @@ template("rust_target") {
                              # binary by the C++ linker.
       ]
       if (defined(invoker.mutually_dependent_target)) {
+        forward_variables_from(invoker,
+                               TESTONLY_AND_VISIBILITY,
+                               [ "visibility" ])
         visibility = [ invoker.mutually_dependent_target ]
       } else {
-        forward_variables_from(invoker, [ "visibility" ])
+        forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       }
       if (defined(_cxx_bindings)) {
         public_deps = [ ":${_target_name}_cxx" ]
