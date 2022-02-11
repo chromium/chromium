@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/service_worker_registration_waiter.h"
+#include "chrome/browser/web_applications/test/web_app_icon_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -40,7 +41,6 @@ class WebAppOfflineTest : public InProcessBrowserTest {
     GURL target_url(embedded_test_server()->GetURL(relative_url));
     web_app::NavigateToURLAndWait(browser(), target_url);
     web_app::test::InstallPwaForCurrentUrl(browser());
-
     std::unique_ptr<content::URLLoaderInterceptor> interceptor =
         content::URLLoaderInterceptor::SetupRequestFailForURL(
             target_url, net::ERR_INTERNET_DISCONNECTED);
@@ -166,6 +166,36 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineWithServiceWorker) {
   EXPECT_TRUE(EvalJs(web_contents,
                      "document.getElementById('default-web-app-msg') === null")
                   .ExtractBool());
+}
+
+// Default offline page icon test.
+IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflinePageIconShowing) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  StartWebAppAndDisconnect(web_contents, "/favicon/title2_with_favicon.html");
+
+  if (GetParam() == PageFlagParam::kWithDefaultPageFlag) {
+    // Expect that the icon on default offline page is showing.
+    EXPECT_TRUE(
+        EvalJs(web_contents,
+               "document.getElementById('default-web-app-msg') !== null")
+            .ExtractBool());
+    EXPECT_EQ(EvalJs(web_contents, "document.getElementById('icon').src")
+                  .ExtractString(),
+              "data:image/"
+              "png;base64,"
+              "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAYElEQVQ4jd2SKxLA"
+              "MAhEXzKdweFyp97/"
+              "DHVxOFQrGjr9iCY2qAX2LYbEujNSecg9GeD9gEPtYCpsJ2Ag4CCxs49wKM2Qm1Xj"
+              "DqEraEyuLMjIo/+tpeXdGYMSQt9AmuCXDpHoFE1lEw9DAAAAAElFTkSuQmCC");
+  } else {
+    // Expect that the default offline page is not showing.
+    EXPECT_TRUE(
+        EvalJs(web_contents,
+               "document.getElementById('default-web-app-msg') === null")
+            .ExtractBool());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -37,6 +37,7 @@ const char kMessage[] = "web_app_default_offline_message";
 const char kAppShortName[] = "app_short_name";
 const char kThemeColor[] = "theme_color";
 const char kBackgroundColor[] = "customized_background_color";
+const char kIconUrl[] = "icon_url";
 const char kDarkModeBackgroundColor[] = "dark_mode_background_color";
 const char kDarkModeThemeColor[] = "dark_mode_theme_color";
 }  // namespace default_offline

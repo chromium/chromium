@@ -6,8 +6,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/test/web_app_icon_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -249,4 +251,41 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   EXPECT_EQ(
       *info->alternative_error_page_params.FindKey("dark_mode_theme_color"),
       base::Value(kGreen));
+}
+
+// Testing manifest with icon.
+IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
+                       ManifestWithIcon) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ChromeContentBrowserClient browser_client;
+  content::ScopedContentBrowserClientSetting setting(&browser_client);
+  const GURL app_url = embedded_test_server()->GetURL(
+      "/banners/"
+      "manifest_test_page.html?manifest=manifest_one_icon.json");
+  web_app::NavigateToURLAndWait(browser(), app_url);
+  web_app::test::InstallPwaForCurrentUrl(browser());
+  Profile* profile = browser()->profile();
+  web_app::WebAppProvider* web_app_provider =
+      web_app::WebAppProvider::GetForTest(profile);
+  const absl::optional<web_app::AppId> app_id =
+      web_app_provider->registrar().FindAppWithUrlInScope(app_url);
+  WebAppIconWaiter(profile, app_id.value()).Wait();
+  content::mojom::AlternativeErrorPageOverrideInfoPtr info =
+      browser_client.GetAlternativeErrorPageOverrideInfo(
+          app_url, profile, net::ERR_INTERNET_DISCONNECTED);
+
+  // Expect mojom struct with icon url.
+  EXPECT_TRUE(info);
+  EXPECT_EQ(
+      *info->alternative_error_page_params.FindKey("icon_url"),
+      base::Value(
+          "data:image/"
+          "png;base64,"
+          "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAA4UlEQVQ4jZVSuwqFMAw1"
+          "8baI2M3FyUXXfoGT3+FvC/"
+          "6A4iQKUrFDcweht7fWwUwhOSc5eUDXddEbw1foKIo+"
+          "1iOiIAIAiAgAfIINubh7KtABALTWxhjOuYVax58BAM7zLIqirmtEvMS4an8EIkJEpZSU"
+          "smkaIYQQwhjjSUK3tmVmWaaUWtc1jmNvGbGU0m3COZ/neRiGtm3zPO/"
+          "7Pk3T8JYuSVrrsiyrqjqOY5omzrkx5nGtRMQYG8dx33et9bZtSZK46D+"
+          "Cy1yWBREvtJcNH44xdg8GZrh3u5d7fI0ne/2tX8uNb4qnIrpWAAAAAElFTkSuQmCC"));
 }

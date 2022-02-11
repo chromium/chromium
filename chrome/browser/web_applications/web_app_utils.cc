@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
@@ -26,6 +28,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "skia/ext/skia_utils_base.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -44,6 +47,18 @@ bool g_enable_system_web_apps_in_lacros_for_testing = false;
 // main profile. This may be modified by SkipMainProfileCheckForTesting().
 bool g_skip_main_profile_check_for_testing = false;
 #endif
+
+GURL EncodeIconAsUrl(const SkBitmap& bitmap) {
+  std::vector<unsigned char> output;
+  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &output);
+  std::string encoded;
+  base::Base64Encode(
+      base::StringPiece(reinterpret_cast<const char*>(output.data()),
+                        output.size()),
+      &encoded);
+  return GURL("data:image/png;base64," + encoded);
+}
+
 }  // namespace
 
 namespace web_app {
@@ -141,27 +156,27 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr GetAppManifestInfo(
       content::mojom::AlternativeErrorPageOverrideInfo::New();
   // TODO(crbug.com/1285128): Ensure sufficient contrast.
   base::Value dict(base::Value::Type::DICTIONARY);
-  SkColor theme_color =
-      web_app_registrar.GetAppThemeColor(*app_id).value_or(SK_ColorBLACK);
-  SkColor background_color =
-      web_app_registrar.GetAppBackgroundColor(*app_id).value_or(SK_ColorWHITE);
-  dict.SetStringKey(default_offline::kThemeColor,
-                    skia::SkColorToHexString(theme_color));
-  dict.SetStringKey(default_offline::kBackgroundColor,
-                    skia::SkColorToHexString(background_color));
+  std::string theme_color = skia::SkColorToHexString(
+      web_app_registrar.GetAppThemeColor(*app_id).value_or(SK_ColorBLACK));
+  std::string background_color = skia::SkColorToHexString(
+      web_app_registrar.GetAppBackgroundColor(*app_id).value_or(SK_ColorWHITE));
+  dict.SetStringKey(default_offline::kThemeColor, theme_color);
+  dict.SetStringKey(default_offline::kBackgroundColor, background_color);
   dict.SetStringKey(default_offline::kAppShortName,
                     web_app_registrar.GetAppShortName(*app_id));
   dict.SetStringKey(
       default_offline::kMessage,
       l10n_util::GetStringUTF16(IDS_ERRORPAGES_HEADING_INTERNET_DISCONNECTED));
+  SkBitmap bitmap = web_app_provider->icon_manager().GetFavicon(*app_id);
+  std::string icon_url = EncodeIconAsUrl(bitmap).spec();
+  dict.SetStringKey(default_offline::kIconUrl, icon_url);
   absl::optional<SkColor> dark_mode_theme_color =
       web_app_registrar.GetAppDarkModeThemeColor(*app_id);
   if (dark_mode_theme_color) {
     dict.SetStringKey(default_offline::kDarkModeThemeColor,
                       skia::SkColorToHexString(dark_mode_theme_color.value()));
   } else {
-    dict.SetStringKey(default_offline::kDarkModeThemeColor,
-                      skia::SkColorToHexString(theme_color));
+    dict.SetStringKey(default_offline::kDarkModeThemeColor, theme_color);
   }
   absl::optional<SkColor> dark_mode_background_color =
       web_app_registrar.GetAppDarkModeThemeColor(*app_id);
@@ -171,7 +186,7 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr GetAppManifestInfo(
         skia::SkColorToHexString(dark_mode_background_color.value()));
   } else {
     dict.SetStringKey(default_offline::kDarkModeBackgroundColor,
-                      skia::SkColorToHexString(background_color));
+                      background_color);
   }
   alternative_error_page_info->alternative_error_page_params = std::move(dict);
   alternative_error_page_info->resource_id = IDR_WEBAPP_DEFAULT_OFFLINE_HTML;
