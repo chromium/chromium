@@ -19,7 +19,6 @@ cast_source_set("app") {
     "//chromecast:chromecast_buildflags",
     "//chromecast/base",
     "//chromecast/browser",
-    "//chromecast/browser/migration",
     "//chromecast/common",
     "//chromecast/common:resource_delegate",
     "//chromecast/gpu",

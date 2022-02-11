@@ -26,7 +26,6 @@
 #include "chromecast/base/process_types.h"
 #include "chromecast/browser/cast_content_browser_client.h"
 #include "chromecast/browser/cast_feature_list_creator.h"
-#include "chromecast/browser/migration/migration_utils.h"
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/common/cast_resource_delegate.h"
 #include "chromecast/common/global_descriptors.h"
@@ -248,14 +247,6 @@ void CastMainDelegate::PostEarlyInitialization(bool is_running_tests) {
   CHECK(base::CreateDirectory(home_dir));
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
-  const bool use_browser_config =
-      command_line->HasSwitch(switches::kUseCastBrowserPrefConfig);
-  if (use_browser_config) {
-    cast_browser_migration::CopyPrefConfigsIfMissing();
-  }
-
   // TODO(crbug/1249485): If we're able to create the MetricsStateManager
   // earlier, clean up the below if and else blocks and call
   // MetricsStateManager::InstantiateFieldTrialList().
@@ -276,6 +267,10 @@ void CastMainDelegate::PostEarlyInitialization(bool is_running_tests) {
   // Initialize the base::FeatureList and the PrefService (which it depends on),
   // so objects initialized after this point can use features from
   // base::FeatureList.
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  const bool use_browser_config =
+      command_line->HasSwitch(switches::kUseCastBrowserPrefConfig);
   ProcessType process_type = use_browser_config ? ProcessType::kCastBrowser
                                                 : ProcessType::kCastService;
   cast_feature_list_creator_->CreatePrefServiceAndFeatureList(process_type);
