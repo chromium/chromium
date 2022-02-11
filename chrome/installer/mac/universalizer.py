@@ -224,9 +224,37 @@ def _universalize(input_paths, output_path, root):
                         os.path.basename(output_path).endswith('-Info.plist')):
                     _merge_info_plists(input_paths, output_path)
                 else:
-                    command = ['lipo', '-create']
+                    command = ['lipo', '-create', '-output', output_path]
+
+                    # Force 16kB alignment for both x86_64 and arm64 slices. The
+                    # inherent alignment requirement for x86_64 (absent Rosetta
+                    # x86_64-on-arm64 concerns) is 4kB, and that is what lipo
+                    # traditionally aligned x86_64 slices to. Since
+                    # cctools-959.0.1 (Xcode 11.4), lipo attempts to guess the
+                    # desired alignment of each slice, with the sometimes
+                    # comical result being a slice over-aligned for its
+                    # architecture. Over-alignment is normally benign, but
+                    # https://crbug.com/1281111 documents a bug caused by “slice
+                    # mobility” in the the main executable across updates, when
+                    # the x86_64 slice moved from its traditional offset of 4kB
+                    # to 16kB as a result of over-aligning. Until a code change
+                    # lifts that restriction, the main executable’s physical
+                    # layout across the installed base is frozen. In order to
+                    # ensure that this temporary requirement can be met,
+                    # artificially inflate the x86_64 slice’s alignment
+                    # requirement to 16kB to keep its location stable. The arm64
+                    # slice’s alignment requirement is also frozen at 16kB,
+                    # although this is the correct value for that architecture.
+                    #
+                    # TODO(mark): Implement “Change 3” from
+                    # https://crbug.com/1281111#c33 by reducing the x86_64
+                    # alignment requirement to 4kB and truncating this comment,
+                    # or if appropriate, implement “Change 3A” instead, updating
+                    # this comment with a revised rationale.
+                    command.extend(['-segalign', 'x86_64', '0x4000'])
+                    command.extend(['-segalign', 'arm64', '0x4000'])
+
                     command.extend(input_paths)
-                    command.extend(['-output', output_path])
                     subprocess.check_call(command)
 
         if identical:
