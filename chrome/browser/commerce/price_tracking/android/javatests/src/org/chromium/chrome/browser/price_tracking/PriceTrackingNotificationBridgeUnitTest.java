@@ -192,6 +192,17 @@ public class PriceTrackingNotificationBridgeUnitTest {
     }
 
     @Test
+    public void testShowNotification_InvalidDestinationURL() {
+        PriceDropNotificationPayload.Builder priceDropNotificationPayload =
+                createValidPriceDropNotificationPayload();
+        priceDropNotificationPayload.setDestinationUrl("test");
+        ChromeNotification.Builder builder =
+                createChromeNotification(createValidChromeMessage(), priceDropNotificationPayload);
+        mPriceTrackingNotificationBridge.showNotification(builder.build().toByteArray());
+        verify(mNotifier, times(0)).showNotification(any());
+    }
+
+    @Test
     public void testShowNotification_NoOfferId() {
         PriceDropNotificationPayload.Builder priceDropNotificationPayload =
                 createValidPriceDropNotificationPayload();
