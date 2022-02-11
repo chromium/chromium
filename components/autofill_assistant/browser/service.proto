@@ -634,7 +634,7 @@ message ActionsResponseProto {
   message UpdateScriptListProto { repeated SupportedScriptProto scripts = 1; }
   optional UpdateScriptListProto update_script_list = 5;
 
-  reserved 1, 6 to 10;
+  reserved 1, 6 to 10, 12;
 }
 
 // RPC request to fetch the available trigger scripts for a particular domain.
