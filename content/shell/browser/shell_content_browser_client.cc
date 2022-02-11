@@ -693,6 +693,10 @@ void ShellContentBrowserClient::OnNetworkServiceCreated(
     network_service->UpdateCtLogList(
         std::vector<network::mojom::CTLogInfoPtr>(), base::Time::Now());
   }
+
+  // Network service receives an empty First-Party Sets file when component
+  // updater is disabled.
+  network_service->SetFirstPartySets(base::File());
 }
 
 }  // namespace content

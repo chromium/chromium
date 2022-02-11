@@ -20,6 +20,8 @@ source_set("first_party_sets") {
     "first_party_set_parser.h",
     "first_party_sets.cc",
     "first_party_sets.h",
+    "first_party_sets_loader.cc",
+    "first_party_sets_loader.h",
   ]
 
   deps = [
@@ -61,6 +63,7 @@ source_set("tests") {
 
   sources = [
     "first_party_set_parser_unittest.cc",
+    "first_party_sets_loader_unittest.cc",
     "first_party_sets_unittest.cc",
   ]
 

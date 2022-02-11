@@ -973,6 +973,8 @@ class NetworkServiceTestWithService : public testing::Test {
     service_->first_party_sets()->SetEnabledForTesting(true);
     service_->first_party_sets()->SetManuallySpecifiedSet(
         command_line->GetSwitchValueASCII(switches::kUseFirstPartySet));
+    // Set required input to make sure FirstPartySets receives the merged sets.
+    service_->first_party_sets()->ParseAndSet(base::File());
   }
 
   void CreateNetworkContext() {

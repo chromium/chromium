@@ -431,6 +431,7 @@ class SamePartyEnabledRestrictedCookieManagerTest
       : first_party_sets_(/*enabled=*/true) {
     first_party_sets_.SetManuallySpecifiedSet(
         "https://example.com,https://member1.com");
+    first_party_sets_.ParseAndSet(base::File());
     auto cookie_access_delegate = std::make_unique<CookieAccessDelegateImpl>(
         mojom::CookieAccessDelegateType::USE_CONTENT_SETTINGS,
         &first_party_sets_, &cookie_settings_);

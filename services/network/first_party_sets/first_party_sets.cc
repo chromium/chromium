@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -36,53 +35,17 @@ namespace network {
 
 namespace {
 
-absl::optional<
-    std::pair<net::SchemefulSite, base::flat_set<net::SchemefulSite>>>
-CanonicalizeSet(const std::vector<std::string>& origins) {
-  if (origins.empty())
-    return absl::nullopt;
-
-  const absl::optional<net::SchemefulSite> maybe_owner =
-      FirstPartySetParser::CanonicalizeRegisteredDomain(origins[0],
-                                                        true /* emit_errors */);
-  if (!maybe_owner.has_value()) {
-    LOG(ERROR) << "First-Party Set owner is not valid; aborting.";
-    return absl::nullopt;
-  }
-
-  const net::SchemefulSite& owner = *maybe_owner;
-  base::flat_set<net::SchemefulSite> members;
-  for (auto it = origins.begin() + 1; it != origins.end(); ++it) {
-    const absl::optional<net::SchemefulSite> maybe_member =
-        FirstPartySetParser::CanonicalizeRegisteredDomain(
-            *it, true /* emit_errors */);
-    if (maybe_member.has_value() && maybe_member != owner)
-      members.emplace(std::move(*maybe_member));
-  }
-
-  if (members.empty()) {
-    LOG(ERROR) << "No valid First-Party Set members were specified; aborting.";
-    return absl::nullopt;
-  }
-
-  return absl::make_optional(
-      std::make_pair(std::move(owner), std::move(members)));
-}
-
 net::SamePartyContext::Type ContextTypeFromBool(bool is_same_party) {
   return is_same_party ? net::SamePartyContext::Type::kSameParty
                        : net::SamePartyContext::Type::kCrossParty;
 }
 
-std::string ReadSetsFile(base::File sets_file) {
-  std::string raw_sets;
-  base::ScopedFILE file(FileToFILE(std::move(sets_file), "r"));
-  return base::ReadStreamToString(file.get(), &raw_sets) ? raw_sets : "";
-}
-
 }  // namespace
 
-FirstPartySets::FirstPartySets(bool enabled) : enabled_(enabled) {}
+FirstPartySets::FirstPartySets(bool enabled) : enabled_(enabled) {
+  sets_loader_ = std::make_unique<FirstPartySetsLoader>(base::BindOnce(
+      &FirstPartySets::SetCompleteSets, weak_factory_.GetWeakPtr()));
+}
 
 FirstPartySets::~FirstPartySets() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -92,67 +55,16 @@ void FirstPartySets::SetManuallySpecifiedSet(const std::string& flag_value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!enabled_)
     return;
-
-  manually_specified_set_ = CanonicalizeSet(base::SplitString(
-      flag_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
-
-  ApplyManuallySpecifiedSet();
-  manual_sets_ready_ = true;
-  ClearSiteDataOnChangedSetsIfReady();
+  sets_loader_->SetManuallySpecifiedSet(flag_value);
 }
 
 void FirstPartySets::ParseAndSet(base::File sets_file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!enabled_ || component_sets_parse_progress_ != Progress::kNotStarted) {
-    if (sets_file.IsValid()) {
-      base::ThreadPool::PostTask(
-          FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-          base::BindOnce(
-              [](base::File sets_file) {
-                // Run `sets_file`'s dtor in the threadpool.
-              },
-              std::move(sets_file)));
-    }
+  if (!enabled_) {
+    sets_loader_->DisposeFile(std::move(sets_file));
     return;
   }
-
-  component_sets_parse_progress_ = Progress::kStarted;
-
-  if (!sets_file.IsValid()) {
-    OnReadSetsFile("");
-    return;
-  }
-
-  // We use USER_BLOCKING here since First-Party Set initialization blocks
-  // network navigations at startup.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&ReadSetsFile, std::move(sets_file)),
-      base::BindOnce(&FirstPartySets::OnReadSetsFile,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void FirstPartySets::OnReadSetsFile(const std::string& raw_sets) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(component_sets_parse_progress_, Progress::kStarted);
-  DCHECK(enabled_);
-
-  bool is_v1_format = raw_sets.find('[') < raw_sets.find('{');
-  if (is_v1_format) {
-    // The file is a single list of records; V1 format.
-    sets_ = FirstPartySetParser::ParseSetsFromComponentUpdater(raw_sets);
-  } else {
-    // The file is invalid, or is a newline-delimited sequence of
-    // records; V2 format.
-    std::istringstream stream(raw_sets);
-    sets_ = FirstPartySetParser::ParseSetsFromStream(stream);
-  }
-  base::UmaHistogramBoolean("Cookie.FirstPartySets.ComponentIsV1Format",
-                            is_v1_format);
-
-  ApplyManuallySpecifiedSet();
-  component_sets_parse_progress_ = Progress::kFinished;
-  ClearSiteDataOnChangedSetsIfReady();
+  sets_loader_->SetComponentSets(std::move(sets_file));
 }
 
 bool FirstPartySets::IsContextSamePartyWithSite(
@@ -309,49 +221,16 @@ absl::optional<FirstPartySets::SetsByOwner> FirstPartySets::Sets(
   return sets;
 }
 
-void FirstPartySets::ApplyManuallySpecifiedSet() {
+void FirstPartySets::SetCompleteSets(FirstPartySets::FlattenedSets sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!manually_specified_set_)
-    return;
-
-  const net::SchemefulSite& manual_owner = manually_specified_set_->first;
-  const base::flat_set<net::SchemefulSite>& manual_members =
-      manually_specified_set_->second;
-
-  const auto was_manually_provided =
-      [&manual_members, &manual_owner](const net::SchemefulSite& site) {
-        return site == manual_owner || manual_members.contains(site);
-      };
-
-  // Erase the intersection between the manually-specified set and the
-  // CU-supplied set, and any members whose owner was in the intersection.
-  base::EraseIf(sets_, [&was_manually_provided](const auto& p) {
-    return was_manually_provided(p.first) || was_manually_provided(p.second);
-  });
-
-  // Now remove singleton sets. We already removed any sites that were part
-  // of the intersection, or whose owner was part of the intersection. This
-  // leaves sites that *are* owners, which no longer have any (other)
-  // members.
-  std::set<net::SchemefulSite> owners_with_members;
-  for (const auto& it : sets_) {
-    if (it.first != it.second)
-      owners_with_members.insert(it.second);
-  }
-  base::EraseIf(sets_, [&owners_with_members](const auto& p) {
-    return p.first == p.second && !base::Contains(owners_with_members, p.first);
-  });
-
-  // Next, we must add the manually-added set to the parsed value.
-  for (const net::SchemefulSite& member : manual_members) {
-    sets_.emplace(member, manual_owner);
-  }
-  sets_.emplace(manual_owner, manual_owner);
+  sets_ = std::move(sets);
+  sets_ready_ = true;
+  ClearSiteDataOnChangedSetsIfReady();
 }
 
 void FirstPartySets::SetPersistedSets(base::StringPiece raw_sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  raw_persisted_sets_ = std::string(raw_sets);
+  raw_persisted_sets_ = static_cast<std::string>(raw_sets);
   persisted_sets_ready_ = true;
   ClearSiteDataOnChangedSetsIfReady();
 }
@@ -390,9 +269,7 @@ base::flat_set<net::SchemefulSite> FirstPartySets::ComputeSetsDiff(
 
 void FirstPartySets::ClearSiteDataOnChangedSetsIfReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!persisted_sets_ready_ ||
-      component_sets_parse_progress_ != Progress::kFinished ||
-      !manual_sets_ready_ || on_site_data_cleared_.is_null())
+  if (!persisted_sets_ready_ || !sets_ready_ || on_site_data_cleared_.is_null())
     return;
 
   base::flat_set<net::SchemefulSite> diff = ComputeSetsDiff(

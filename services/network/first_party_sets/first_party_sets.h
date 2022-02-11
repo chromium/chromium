@@ -19,13 +19,14 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/first_party_set_metadata.h"
 #include "net/cookies/same_party_context.h"
+#include "services/network/first_party_sets/first_party_sets_loader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
-// Class FirstPartySets is a pseudo-singleton owned by NetworkService; it stores
-// all known information about First-Party Sets state. This information is
-// updated by the component updater via |ParseAndSet|.
+// Class FirstPartySets is a pseudo-singleton owned by NetworkService; it
+// handles loading First-Party Sets from multiple sources and answers queries
+// about First-Party Sets.
 class FirstPartySets {
  public:
   using SetsByOwner =
@@ -45,29 +46,24 @@ class FirstPartySets {
     return enabled_;
   }
 
-  // Stores the First-Party Set that was provided via the `kUseFirstPartySet`
-  // flag/switch.
+  // Parses and stores the First-Party Set that was provided via the
+  // `kUseFirstPartySet` flag/switch.
   //
-  // Has no effect if `kFirstPartySets` is disabled.
+  // Has no effect if `kFirstPartySets` is disabled, or `ParseAndSet` is not
+  // called.
   void SetManuallySpecifiedSet(const std::string& flag_value);
 
-  // Asynchronously overwrites the current members-to-owners map with the sets
-  // in `sets_file`.  `sets_file` is expected to contain either a JSON-encoded
-  // array of records, or a sequence of newline-delimited JSON records. Each
-  // record is a set declaration in the format specified here:
+  // Asynchronously parses and stores the First-Party Sets from `sets_file`.
+  //  `sets_file` is expected to contain either a JSON-encoded array of records,
+  //  or a sequence of newline-delimited JSON records. Each record is a set
+  //  declaration in the format specified here:
   // https://github.com/privacycg/first-party-sets.
   //
   // Only the first call to ParseAndSet can have any effect; subsequent
   // invocations are ignored.
   //
-  // If `sets_file.IsValid()` is false, then the set of sets is considered
-  // empty.
-  //
-  // In case of invalid input, the set of sets provided by the file is
-  // considered empty. Note that the FirstPartySets instance may still have some
-  // sets, from the command line or enterprise policies.
-  //
-  // Has no effect if `kFirstPartySets` is disabled.
+  // Has no effect if `kFirstPartySets` is disabled, or
+  // `SetManuallySpecifiedSet` is not called.
   void ParseAndSet(base::File sets_file);
 
   // Computes the First-Party Set metadata related to the given context.
@@ -97,6 +93,9 @@ class FirstPartySets {
   [[nodiscard]] absl::optional<SetsByOwner> Sets(
       base::OnceCallback<void(SetsByOwner)> callback) const;
 
+  // Receives the completed First-Party Sets from `sets_loader_` and stores it
+  // in the `sets_`.
+  void SetCompleteSets(FlattenedSets sets);
   // Sets the `raw_persisted_sets_`, which is a JSON-encoded
   // string representation of a map of site -> site.
   void SetPersistedSets(base::StringPiece persisted_sets);
@@ -163,23 +162,12 @@ class FirstPartySets {
       const net::SchemefulSite* top_frame_site,
       const std::set<net::SchemefulSite>& party_context) const;
 
-  // Parses the contents of `raw_sets` as a collection of First-Party Set
-  // declarations, and assigns to `sets_`.
-  void OnReadSetsFile(const std::string& raw_sets);
-
   // Returns `site`'s owner (optionally inferring a singleton set if necessary),
   // or `nullopt` if `site` has no owner. Must not return `nullopt` if
   // `infer_singleton_sets` is true.
   const absl::optional<net::SchemefulSite> FindOwner(
       const net::SchemefulSite& site,
       bool infer_singleton_sets) const;
-
-  // We must ensure there's no intersection between the manually-specified set
-  // and the sets that came from Component Updater. (When reconciling the
-  // manually-specified set and `sets_`, entries in the manually-specified set
-  // always win.) We must also ensure that `sets_` includes the set described by
-  // `manually_specified_set_`.
-  void ApplyManuallySpecifiedSet();
 
   // Compares the map `old_sets` to `sets_` and returns the set of sites that:
   // 1) were in `old_sets` but are no longer in `sets_`, i.e. leave the FPSs;
@@ -198,26 +186,18 @@ class FirstPartySets {
   // values are owners of the sets. Owners are explicitly represented as members
   // of the set.
   FlattenedSets sets_ GUARDED_BY_CONTEXT(sequence_checker_);
-  absl::optional<
-      std::pair<net::SchemefulSite, base::flat_set<net::SchemefulSite>>>
-      manually_specified_set_ GUARDED_BY_CONTEXT(sequence_checker_);
+  bool sets_ready_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   std::string raw_persisted_sets_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  enum Progress {
-    kNotStarted,
-    kStarted,
-    kFinished,
-  };
-
   bool persisted_sets_ready_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
-  Progress component_sets_parse_progress_
-      GUARDED_BY_CONTEXT(sequence_checker_) = kNotStarted;
-  bool manual_sets_ready_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
   bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
   // The callback runs after the site state clearing is completed.
   base::OnceCallback<void(const std::string&)> on_site_data_cleared_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  std::unique_ptr<FirstPartySetsLoader> sets_loader_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
