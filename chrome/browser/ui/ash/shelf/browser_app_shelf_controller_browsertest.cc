@@ -626,13 +626,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest,
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ActivateAndMinimizeWindows DISABLED_ActivateAndMinimizeWindows
-#else
-#define MAYBE_ActivateAndMinimizeWindows ActivateAndMinimizeWindows
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest,
-                       MAYBE_ActivateAndMinimizeWindows) {
+                       ActivateAndMinimizeWindows) {
   if (!ash_starter_.HasLacrosArgument()) {
     return;
   }
@@ -660,7 +655,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppShelfControllerBrowserTest,
   EXPECT_EQ(ShelfStatus(kAppId_A), ash::STATUS_RUNNING);
   EXPECT_EQ(ShelfStatus(kAppId_B), ash::STATUS_RUNNING);
   // App B is active.
-  WAIT_FOR(!IsAppActive(kAppId_A) && !IsAppActive(kAppId_B));
+  WAIT_FOR(!IsAppActive(kAppId_A) && IsAppActive(kAppId_B));
 
   // App A window is activated.
   ASSERT_EQ(SelectShelfItem(kAppId_A),
