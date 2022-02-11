@@ -18,16 +18,7 @@ using DesktopNativeWidgetAuraTest = DesktopWidgetTestInteractive;
 // would activate the parent widget at the same time the new widget receives
 // activation, causing windows to lock when minimizing / maximizing (see
 // crbug.com/1284537).
-// TODO(https://crbug.com/1293959): Fails on the linux-wayland-rel bot.
-#if defined(USE_OZONE)
-#define MAYBE_WidgetsWithChildrenDeactivateCorrectly \
-  DISABLED_WidgetsWithChildrenDeactivateCorrectly
-#else
-#define MAYBE_WidgetsWithChildrenDeactivateCorrectly \
-  WidgetsWithChildrenDeactivateCorrectly
-#endif
-TEST_F(DesktopNativeWidgetAuraTest,
-       MAYBE_WidgetsWithChildrenDeactivateCorrectly) {
+TEST_F(DesktopNativeWidgetAuraTest, WidgetsWithChildrenDeactivateCorrectly) {
   auto widget1 = std::make_unique<Widget>();
   Widget::InitParams params1(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params1.context = GetContext();

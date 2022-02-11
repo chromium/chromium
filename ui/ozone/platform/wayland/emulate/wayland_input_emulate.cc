@@ -219,9 +219,11 @@ void WaylandInputEmulate::OnWindowConfigured(gfx::AcceleratedWidget widget,
   // will be size of the last attached buffer or 0x0).
   //
   // This is needed as running some tests doesn't result in sending frames that
-  // require buffers to be created.;
+  // require buffers to be created.
   auto buffer_size = wayland_proxy->GetWindowBounds(widget).size();
-  DCHECK(!buffer_size.IsEmpty());
+  // Adjust the buffer size in case if the window was created with empty size.
+  if (buffer_size.IsEmpty())
+    buffer_size.SetSize(1, 1);
   test_surface->buffer = wayland_proxy->CreateShmBasedWlBuffer(buffer_size);
 
   auto* wlsurface = wayland_proxy->GetWlSurfaceForAcceleratedWidget(widget);
