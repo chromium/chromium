@@ -18,7 +18,6 @@
 #include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/translate/content/browser/translate_model_service.h"
 
 AnnotateDomModelServiceFactory::AnnotateDomModelServiceFactory()
     : BrowserContextKeyedServiceFactory(

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_TRANSLATE_CONTENT_BROWSER_TRANSLATE_MODEL_SERVICE_H_
-#define COMPONENTS_TRANSLATE_CONTENT_BROWSER_TRANSLATE_MODEL_SERVICE_H_
+#ifndef COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_MODEL_SERVICE_H_
+#define COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_MODEL_SERVICE_H_
 
 #include <memory>
 #include <vector>
@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -83,9 +84,11 @@ class TranslateModelService
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
   base::WeakPtrFactory<TranslateModelService> weak_ptr_factory_{this};
 };
 
 }  //  namespace translate
 
-#endif  // COMPONENTS_TRANSLATE_CONTENT_BROWSER_TRANSLATE_MODEL_SERVICE_H_
+#endif  // COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_MODEL_SERVICE_H_

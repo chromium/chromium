@@ -14,7 +14,7 @@
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/translate/content/browser/translate_model_service.h"
+#include "components/translate/core/browser/translate_model_service.h"
 #include "components/translate/core/common/translate_util.h"
 
 // static

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/translate/content/browser/translate_model_service.h"
+#include "components/translate/core/browser/translate_model_service.h"
 
 #include "base/bind.h"
 #include "base/files/file.h"
@@ -12,7 +12,6 @@
 #include "base/task/post_task.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace {
@@ -97,7 +96,7 @@ void TranslateModelService::Shutdown() {
 void TranslateModelService::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
     const optimization_guide::ModelInfo& model_info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (optimization_target !=
       optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION) {
     return;
@@ -109,7 +108,7 @@ void TranslateModelService::OnModelUpdated(
 }
 
 void TranslateModelService::OnModelFileLoaded(base::File model_file) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ScopedModelLoadingResultRecorder result_recorder;
   if (!model_file.IsValid())
     return;

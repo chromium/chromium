@@ -2240,6 +2240,7 @@ static_library("browser") {
     "//components/tracing:startup_tracing",
     "//components/translate/content/browser",
     "//components/translate/core/browser",
+    "//components/translate/core/browser:translate_model_service",
     "//components/translate/core/common",
     "//components/ui_devtools",
     "//components/ukm",
