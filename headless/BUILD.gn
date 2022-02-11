@@ -273,6 +273,7 @@ inspector_protocol_generate("protocol_sources") {
   out_dir = target_gen_dir
   config_file = "protocol_config.json"
   config_values = [ "protocol.path=$_blink_protocol_path" ]
+  use_embedder_types = true
 
   inputs = [
     "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json",
@@ -281,8 +282,6 @@ inspector_protocol_generate("protocol_sources") {
 
   # These are relative to $target_gen_dir.
   outputs = [
-    "lib/browser/protocol/base_string_adapter.cc",
-    "lib/browser/protocol/base_string_adapter.h",
     "lib/browser/protocol/browser.cc",
     "lib/browser/protocol/browser.h",
     "lib/browser/protocol/headless_experimental.cc",
@@ -291,7 +290,6 @@ inspector_protocol_generate("protocol_sources") {
     "lib/browser/protocol/page.h",
     "lib/browser/protocol/target.cc",
     "lib/browser/protocol/target.h",
-    "lib/browser/protocol/protocol.cc",
     "lib/browser/protocol/protocol.h",
   ]
 }
