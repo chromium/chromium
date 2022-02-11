@@ -455,9 +455,11 @@ Browser::Browser(const CreateParams& params)
       window_(nullptr),
       tab_strip_model_delegate_(
           std::make_unique<chrome::BrowserTabStripModelDelegate>(this)),
-      tab_strip_model_(
-          std::make_unique<TabStripModel>(tab_strip_model_delegate_.get(),
-                                          params.profile)),
+      tab_strip_model_(std::make_unique<TabStripModel>(
+          tab_strip_model_delegate_.get(),
+          params.profile,
+          params.are_tab_groups_enabled ? TabGroupModelFactory::GetInstance()
+                                        : nullptr)),
       tab_menu_model_delegate_(
           std::make_unique<chrome::BrowserTabMenuModelDelegate>(this)),
       app_name_(params.app_name),
@@ -1196,6 +1198,7 @@ void Browser::OnTabGroupChanged(const TabGroupChange& change) {
   // work to refactor the code to support that into SessionServiceBase
   // would be the best way to achieve that.
   DCHECK(!IsRelevantToAppSessionService(type_));
+  DCHECK(tab_strip_model_->group_model());
   if (change.type == TabGroupChange::kVisualsChanged) {
     SessionService* const session_service =
         SessionServiceFactory::GetForProfile(profile_);

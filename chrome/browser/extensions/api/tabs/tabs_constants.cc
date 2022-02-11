@@ -94,6 +94,8 @@ const char kTabStripNotEditableError[] =
     "Tabs cannot be edited right now (user may be dragging a tab).";
 const char kTabStripNotEditableQueryError[] =
     "Tabs cannot be queried right now (user may be dragging a tab).";
+const char kTabStripDoesNotSupportTabGroupsError[] =
+    "Grouping is not supported by tabs in this window.";
 const char kNoSelectedTabError[] = "No selected tab";
 const char kNoHighlightedTabError[] = "No highlighted tab";
 const char kIncognitoModeIsDisabled[] = "Incognito mode is disabled.";

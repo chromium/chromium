@@ -965,6 +965,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsAutoCreateEnabled,
 
 IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsAutoCreateEnabled,
                        SecondNewTabFromLinkWithSameDomainCreatesGroup) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Open a tab not in a group.
@@ -1026,6 +1027,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsAutoCreateEnabled,
 
 // TODO(crbug.com/997344): Test this with implicitly-created links.
 IN_PROC_BROWSER_TEST_F(BrowserTest, TargetBlankLinkOpensInGroup) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Add a grouped tab.
@@ -1046,6 +1048,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TargetBlankLinkOpensInGroup) {
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserTest, NewTabFromLinkInGroupedTabOpensInGroup) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Add a grouped tab.

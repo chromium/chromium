@@ -43,6 +43,8 @@ class TabStripBrowsertest : public InProcessBrowserTest {
   }
 
   void AddTabToExistingGroup(int tab_index, tab_groups::TabGroupId group) {
+    ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
     tab_strip_model()->AddToExistingGroup({tab_index}, group);
   }
 
@@ -64,6 +66,8 @@ class TabStripBrowsertest : public InProcessBrowserTest {
 
 // Regression test for crbug.com/983961.
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, MoveTabAndDeleteGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -98,6 +102,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftTabPrevious_Success) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftTabPrevious_AddsToGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -132,6 +138,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        ShiftTabPrevious_BetweenTwoCollapsedGroups_Success) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
   AppendTab();
   AppendTab();
   AppendTab();
@@ -162,6 +169,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftTabPrevious_RemovesFromGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -176,6 +185,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftTabPrevious_RemovesFromGroup) {
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        ShiftTabPrevious_ShiftsBetweenGroups) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -225,6 +236,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftTabNext_Success) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftTabNext_AddsToGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -239,6 +252,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftTabNext_AddsToGroup) {
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        ShiftTabNext_PastCollapsedGroup_Success) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -259,6 +274,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        ShiftTabNext_BetweenTwoCollapsedGroups_Success) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
   AppendTab();
@@ -289,6 +306,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftTabNext_RemovesFromGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -302,6 +321,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftTabNext_RemovesFromGroup) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftTabNext_ShiftsBetweenGroups) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -363,6 +384,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, MoveTabFirst_PinnedTabs_Success) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, MoveTabFirst_DoesNotAddToGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -373,6 +396,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, MoveTabFirst_DoesNotAddToGroup) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, MoveTabFirst_RemovesFromGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -458,6 +483,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, MoveTabLast_AllPinnedTabs_Success) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, MoveTabLast_DoesNotAddToGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -468,6 +495,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, MoveTabLast_DoesNotAddToGroup) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, MoveTabLast_RemovesFromGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -517,6 +546,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, MoveTabLast_AllPinnedTabs_Failure) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftGroupLeft_Success) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -529,6 +560,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftGroupLeft_Success) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftGroupLeft_OtherGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
   AppendTab();
@@ -546,6 +579,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftGroupLeft_OtherGroup) {
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        ShiftGroupLeft_Failure_EdgeOfTabstrip) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -559,6 +594,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftGroupLeft_Failure_Pinned) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
   tab_strip_model()->SetTabPinned(0, true);
@@ -573,6 +610,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftGroupLeft_Failure_Pinned) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftGroupRight_Success) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -585,6 +624,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftGroupRight_Success) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftGroupRight_OtherGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
   AppendTab();
@@ -602,6 +643,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftGroupRight_OtherGroup) {
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        ShiftGroupRight_Failure_EdgeOfTabstrip) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
   AppendTab();
   AppendTab();
 
@@ -615,6 +657,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftCollapsedGroupLeft_Success) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -631,6 +675,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftCollapsedGroupLeft_Success) {
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        ShiftCollapsedGroupLeft_OtherCollapsedGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
   AppendTab();
@@ -655,6 +701,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        ShiftCollapsedGroupLeft_Failure_EdgeOfTabstrip) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -673,6 +721,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        ShiftCollapsedGroupLeft_Failure_Pinned) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
   tab_strip_model()->SetTabPinned(0, true);
@@ -691,6 +741,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftCollapsedGroupRight_Success) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -707,6 +759,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftCollapsedGroupRight_Success) {
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        ShiftCollapsedGroupRight_OtherCollapsedGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
   AppendTab();
@@ -731,6 +785,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        ShiftCollapsedGroupRight_Failure_EdgeOfTabstrip) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -748,6 +804,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        CollapseGroup_WithActiveTabInGroup_SelectsNext) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
 
   tab_groups::TabGroupId group = AddTabToNewGroup(0);
@@ -777,6 +835,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 IN_PROC_BROWSER_TEST_F(
     TabStripBrowsertest,
     CollapseGroup_WithActiveTabOutsideGroup_DoesNotChangeActiveTab) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
 
   tab_groups::TabGroupId group = AddTabToNewGroup(0);
@@ -818,6 +878,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 // IDC_SELECT_LAST_TAB. The tab navigation accelerators should ignore tabs in
 // collapsed groups.
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, TabGroupTabNavigationAccelerators) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
   // Create five tabs.
   for (int i = 0; i < 4; i++)
     AppendTab();

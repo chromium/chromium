@@ -55,8 +55,13 @@ std::unique_ptr<api::tab_groups::TabGroup> CreateTabGroupObject(
 std::unique_ptr<api::tab_groups::TabGroup> CreateTabGroupObject(
     const tab_groups::TabGroupId& id) {
   Browser* browser = chrome::FindBrowserWithGroup(id, nullptr);
+  if (!browser)
+    return nullptr;
+
+  CHECK(browser->tab_strip_model()->SupportsTabGroups());
+  TabGroupModel* group_model = browser->tab_strip_model()->group_model();
   const tab_groups::TabGroupVisualData* visual_data =
-      browser->tab_strip_model()->group_model()->GetTabGroup(id)->visual_data();
+      group_model->GetTabGroup(id)->visual_data();
 
   DCHECK(visual_data);
 
@@ -82,6 +87,8 @@ bool GetGroupById(int group_id,
     if (target_browser->profile() == profile ||
         target_browser->profile() == incognito_profile) {
       TabStripModel* target_tab_strip = target_browser->tab_strip_model();
+      if (!target_tab_strip->SupportsTabGroups())
+        continue;
       for (tab_groups::TabGroupId target_group :
            target_tab_strip->group_model()->ListTabGroups()) {
         if (GetGroupId(target_group) == group_id) {

@@ -140,18 +140,20 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
       unique_domain[domain] += 1;
     }
 
-    const std::vector<tab_groups::TabGroupId>& groups =
-        tab_strip_model->group_model()->ListTabGroups();
-    tab_group_count += groups.size();
-    for (const tab_groups::TabGroupId& group_id : groups) {
-      const TabGroup* const tab_group =
-          tab_strip_model->group_model()->GetTabGroup(group_id);
-      if (tab_group->IsCustomized() ||
-          !tab_group->visual_data()->title().empty()) {
-        ++customized_tab_group_count;
-      }
-      if (tab_group->visual_data()->is_collapsed()) {
-        ++collapsed_tab_group_count;
+    if (tab_strip_model->group_model()) {
+      const std::vector<tab_groups::TabGroupId>& groups =
+          tab_strip_model->group_model()->ListTabGroups();
+      tab_group_count += groups.size();
+      for (const tab_groups::TabGroupId& group_id : groups) {
+        const TabGroup* const tab_group =
+            tab_strip_model->group_model()->GetTabGroup(group_id);
+        if (tab_group->IsCustomized() ||
+            !tab_group->visual_data()->title().empty()) {
+          ++customized_tab_group_count;
+        }
+        if (tab_group->visual_data()->is_collapsed()) {
+          ++collapsed_tab_group_count;
+        }
       }
     }
 
@@ -195,15 +197,17 @@ void UMABrowsingActivityObserver::LogBrowserTabCount() const {
   const Browser* current_browser = BrowserList::GetInstance()->GetLastActive();
   if (current_browser) {
     TabStripModel* const tab_strip_model = current_browser->tab_strip_model();
-    const absl::optional<tab_groups::TabGroupId> active_group =
-        tab_strip_model->GetTabGroupForTab(tab_strip_model->active_index());
-    UMA_HISTOGRAM_COUNTS_100("Tabs.TabCountInGroupPerLoad",
-                             active_group.has_value()
-                                 ? tab_strip_model->group_model()
-                                       ->GetTabGroup(active_group.value())
-                                       ->ListTabs()
-                                       .length()
-                                 : 0);
+    if (tab_strip_model->group_model()) {
+      const absl::optional<tab_groups::TabGroupId> active_group =
+          tab_strip_model->GetTabGroupForTab(tab_strip_model->active_index());
+      UMA_HISTOGRAM_COUNTS_100("Tabs.TabCountInGroupPerLoad",
+                               active_group.has_value()
+                                   ? tab_strip_model->group_model()
+                                         ->GetTabGroup(active_group.value())
+                                         ->ListTabs()
+                                         .length()
+                                   : 0);
+    }
   }
 
   // Record how many tab groups with a user-set name or color are open across

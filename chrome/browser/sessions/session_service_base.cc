@@ -598,12 +598,15 @@ void SessionServiceBase::BuildCommandsForBrowser(
 
   // Set the visual data for each tab group.
   TabStripModel* tab_strip = browser->tab_strip_model();
-  TabGroupModel* group_model = tab_strip->group_model();
-  for (const tab_groups::TabGroupId& group_id : group_model->ListTabGroups()) {
-    const tab_groups::TabGroupVisualData* visual_data =
-        group_model->GetTabGroup(group_id)->visual_data();
-    command_storage_manager()->AppendRebuildCommand(
-        sessions::CreateTabGroupMetadataUpdateCommand(group_id, visual_data));
+  if (tab_strip->SupportsTabGroups()) {
+    TabGroupModel* group_model = tab_strip->group_model();
+    for (const tab_groups::TabGroupId& group_id :
+         group_model->ListTabGroups()) {
+      const tab_groups::TabGroupVisualData* visual_data =
+          group_model->GetTabGroup(group_id)->visual_data();
+      command_storage_manager()->AppendRebuildCommand(
+          sessions::CreateTabGroupMetadataUpdateCommand(group_id, visual_data));
+    }
   }
 
   for (int i = 0; i < tab_strip->count(); ++i) {

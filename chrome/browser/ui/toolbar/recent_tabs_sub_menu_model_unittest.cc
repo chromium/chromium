@@ -276,6 +276,8 @@ TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedTabsFromCurrentSession) {
 
 // Test recently closed groups with no foreign tabs.
 TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedGroupsFromCurrentSession) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
   DisableSync();
 
   TabRestoreServiceFactory::GetInstance()->SetTestingFactory(

@@ -580,6 +580,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroup) {
 // Close a grouped tab, then the entire group. Restore both. The group should be
 // in its original position, with the tab in its original position as well.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupedTabThenGroup) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
   AddSomeTabs(browser(), 3);
   tab_groups::TabGroupId group =
       browser()->tab_strip_model()->AddToNewGroup({0, 1, 2});
@@ -601,6 +602,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupedTabThenGroup) {
 // closing. Then restore the group. The window should be recreated with the
 // group intact.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupInNewWindow) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
   // Add all tabs in the starting browser to a group.
   tab_groups::TabGroupId group =
       browser()->tab_strip_model()->AddToNewGroup({0});
@@ -644,6 +646,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupInNewWindow) {
 // TODO(crbug.com/1181521): Run unload handlers before the group is closed.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest,
                        MAYBE_RestoreGroupWithUnloadHandlerRejected) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
   const char kUnloadHTML[] =
       "<html><body>"
       "<script>window.onbeforeunload=function(e){return 'foo';}</script>"
@@ -710,6 +714,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
 // unload handler, resulting in the tab (and group) closing anyway. Then restore
 // the group. The group should restore intact with no duplicates.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupWithUnloadHandlerAccepted) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
   const char kUnloadHTML[] =
       "<html><body>"
       "<script>window.onbeforeunload=function(e){return 'foo';}</script>"
@@ -1236,6 +1242,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowWithName) {
 // Closing the last tab in a group then restoring will place the group back with
 // its metadata.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreSingleGroupedTab) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
   const int tab_count = AddSomeTabs(browser(), 1);
   ASSERT_LE(2, tab_count);
 
@@ -1268,6 +1276,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreSingleGroupedTab) {
 // Closing the last tab in a collapsed group then restoring will place the group
 // back expanded with its metadata.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreCollapsedGroupTab_ExpandsGroup) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
   const int tab_count = AddSomeTabs(browser(), 1);
   ASSERT_LE(2, tab_count);
 
@@ -1306,6 +1316,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreCollapsedGroupTab_ExpandsGroup) {
 // group upon restore.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest,
                        RestoreTabIntoCollapsedGroup_ExpandsGroup) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
   const int tab_count = AddSomeTabs(browser(), 2);
   ASSERT_LE(3, tab_count);
 
@@ -1341,6 +1353,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest,
 // Closing a tab in a group then updating the metadata before restoring will
 // place the group back without updating the metadata.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabIntoGroup) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
   const int tab_count = AddSomeTabs(browser(), 2);
   ASSERT_LE(3, tab_count);
 
@@ -1374,6 +1388,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabIntoGroup) {
 // Closing a tab in a group then moving the group to a new window before
 // restoring will place the tab in the group in the new window.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabIntoGroupInNewWindow) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
   const int tab_count = AddSomeTabs(browser(), 3);
   ASSERT_LE(4, tab_count);
 
@@ -1396,6 +1412,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabIntoGroupInNewWindow) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowWithGroupedTabs) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUINewTabURL),
       WindowOpenDisposition::NEW_WINDOW,
@@ -1449,6 +1467,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowWithGroupedTabs) {
 // Ensure a tab is not restored between tabs of another group.
 // Regression test for https://crbug.com/1109368.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, DoesNotRestoreIntoOtherGroup) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
   TabStripModel* const tabstrip = browser()->tab_strip_model();
 
   tabstrip->AddToNewGroup({0});
@@ -1817,6 +1837,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, BackToAboutBlank) {
 // the same group between multiple windows. See https://crbug.com/1202102. This
 // test is temporary until a more comprehensive fix is implemented.
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoredWindowHasNewGroupIds) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(browser()->profile());
 
@@ -1860,6 +1882,8 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoredWindowHasNewGroupIds) {
 // Ensures window.tab_groups is kept in sync with the groups referenced
 // in window.tabs
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, WindowTabGroupsMatchesWindowTabs) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(browser()->profile());
 

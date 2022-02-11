@@ -2003,6 +2003,10 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
       ExtensionTabUtil::GetEditableTabStripModel(target_browser);
   if (!tab_strip)
     return RespondNow(Error(tabs_constants::kTabStripNotEditableError));
+  if (!tab_strip->SupportsTabGroups()) {
+    return RespondNow(
+        Error(tabs_constants::kTabStripDoesNotSupportTabGroupsError));
+  }
   if (group.is_empty()) {
     group = tab_strip->AddToNewGroup(tab_indices);
     group_id = tab_groups_util::GetGroupId(group);
@@ -2040,10 +2044,10 @@ ExtensionFunction::ResponseAction TabsUngroupFunction::Run() {
 
 bool TabsUngroupFunction::UngroupTab(int tab_id, std::string* error) {
   Browser* browser = nullptr;
-  TabStripModel* tab_strip = nullptr;
+  TabStripModel* tab_strip_model = nullptr;
   int tab_index = -1;
   if (!GetTabById(tab_id, browser_context(), include_incognito_information(),
-                  &browser, &tab_strip, nullptr, &tab_index, error)) {
+                  &browser, &tab_strip_model, nullptr, &tab_index, error)) {
     return false;
   }
 
@@ -2052,7 +2056,12 @@ bool TabsUngroupFunction::UngroupTab(int tab_id, std::string* error) {
     return false;
   }
 
-  tab_strip->RemoveFromGroup({tab_index});
+  if (!tab_strip_model->SupportsTabGroups()) {
+    *error = tabs_constants::kTabStripDoesNotSupportTabGroupsError;
+    return false;
+  }
+
+  tab_strip_model->RemoveFromGroup({tab_index});
 
   return true;
 }

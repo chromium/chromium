@@ -526,14 +526,18 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportHeartbeatMetrics(
 
   // Record the width of all open browser windows with tabs.
   for (Browser* browser : *BrowserList::GetInstance()) {
-    TabGroupModel* const tab_group_model =
-        browser->tab_strip_model()->group_model();
-    const std::vector<tab_groups::TabGroupId>& groups =
-        tab_group_model->ListTabGroups();
-    for (const tab_groups::TabGroupId& group_id : groups) {
-      const TabGroup* const tab_group = tab_group_model->GetTabGroup(group_id);
-      if (tab_group->visual_data()->is_collapsed())
-        collapsed_tab_count += tab_group->ListTabs().length();
+    // first log any collapsed tab info.
+    if (browser->tab_strip_model()->SupportsTabGroups()) {
+      TabGroupModel* const tab_group_model =
+          browser->tab_strip_model()->group_model();
+      const std::vector<tab_groups::TabGroupId>& groups =
+          tab_group_model->ListTabGroups();
+      for (const tab_groups::TabGroupId& group_id : groups) {
+        const TabGroup* const tab_group =
+            tab_group_model->GetTabGroup(group_id);
+        if (tab_group->visual_data()->is_collapsed())
+          collapsed_tab_count += tab_group->ListTabs().length();
+      }
     }
 
     if (browser->type() != Browser::TYPE_NORMAL)

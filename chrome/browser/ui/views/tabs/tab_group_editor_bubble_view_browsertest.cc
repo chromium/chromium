@@ -27,12 +27,13 @@
 class TabGroupEditorBubbleViewDialogBrowserTest : public DialogBrowserTest {
  protected:
   void ShowUi(const std::string& name) override {
-    tab_groups::TabGroupId group =
+    absl::optional<tab_groups::TabGroupId> group =
         browser()->tab_strip_model()->AddToNewGroup({0});
-    browser()->tab_strip_model()->OpenTabGroupEditor(group);
+    browser()->tab_strip_model()->OpenTabGroupEditor(group.value());
 
     BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
-    TabGroupHeader* header = browser_view->tabstrip()->group_header(group);
+    TabGroupHeader* header =
+        browser_view->tabstrip()->group_header(group.value());
     ASSERT_NE(nullptr, header);
     ASSERT_TRUE(header->editor_bubble_tracker_.is_open());
   }
@@ -187,14 +188,14 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
 
   TabStripModel* tsm = browser()->tab_strip_model();
   ASSERT_EQ(3, tsm->count());
-  tab_groups::TabGroupId group = tsm->AddToNewGroup({0, 1});
+  absl::optional<tab_groups::TabGroupId> group = tsm->AddToNewGroup({0, 1});
 
   ASSERT_FALSE(browser_view->tabstrip()->tab_at(0)->HasFreezingVoteToken());
   ASSERT_FALSE(browser_view->tabstrip()->tab_at(1)->HasFreezingVoteToken());
   ASSERT_FALSE(browser_view->tabstrip()->tab_at(2)->HasFreezingVoteToken());
   ASSERT_TRUE(
       browser_view->tabstrip()->controller()->ToggleTabGroupCollapsedState(
-          group));
+          group.value()));
   EXPECT_TRUE(browser_view->tabstrip()->tab_at(0)->HasFreezingVoteToken());
   EXPECT_TRUE(browser_view->tabstrip()->tab_at(1)->HasFreezingVoteToken());
   EXPECT_FALSE(browser_view->tabstrip()->tab_at(2)->HasFreezingVoteToken());

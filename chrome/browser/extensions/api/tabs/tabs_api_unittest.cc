@@ -693,6 +693,8 @@ TEST_F(TabsApiUnitTest, TabsMoveAcrossWindows) {
 // Test that the tabs.group() function correctly rearranges sets of tabs within
 // a single window before grouping.
 TEST_F(TabsApiUnitTest, TabsGroupWithinWindow) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("GroupWithinWindowTest").Build();
 
@@ -745,6 +747,8 @@ TEST_F(TabsApiUnitTest, TabsGroupWithinWindow) {
 // Test that the tabs.group() function correctly groups tabs even when given
 // out-of-order or duplicate tab IDs.
 TEST_F(TabsApiUnitTest, TabsGroupMixedTabIds) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("GroupMixedTabIdsTest").Build();
 
@@ -798,6 +802,8 @@ TEST_F(TabsApiUnitTest, TabsGroupMixedTabIds) {
 // Test that the tabs.group() function throws an error if both createProperties
 // and groupId are specified.
 TEST_F(TabsApiUnitTest, TabsGroupParamsError) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("GroupParamsErrorTest").Build();
 
@@ -843,6 +849,8 @@ TEST_F(TabsApiUnitTest, TabsGroupParamsError) {
 // Test that the tabs.group() function correctly rearranges sets of tabs across
 // windows before grouping.
 TEST_F(TabsApiUnitTest, TabsGroupAcrossWindows) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("GroupAcrossWindowsTest").Build();
 
@@ -918,6 +926,8 @@ TEST_F(TabsApiUnitTest, TabsGroupAcrossWindows) {
 // Test that the tabs.ungroup() function correctly ungroups tabs from a single
 // group and deletes it.
 TEST_F(TabsApiUnitTest, TabsUngroupSingleGroup) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("UngroupSingleGroupTest").Build();
 
@@ -966,6 +976,9 @@ TEST_F(TabsApiUnitTest, TabsUngroupSingleGroup) {
 // Test that the tabs.ungroup() function correctly ungroups tabs from several
 // different groups and deletes any empty ones.
 TEST_F(TabsApiUnitTest, TabsUngroupFromMultipleGroups) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("UngroupFromMultipleGroupsTest").Build();
 
@@ -982,16 +995,14 @@ TEST_F(TabsApiUnitTest, TabsUngroupFromMultipleGroups) {
         sessions::SessionTabHelper::IdForTab(contents.get()).id());
     web_contentses.push_back(contents.get());
 
-    browser()->tab_strip_model()->AppendWebContents(std::move(contents),
-                                                    /* foreground */ true);
+    tab_strip_model->AppendWebContents(std::move(contents),
+                                       /* foreground */ true);
   }
-  ASSERT_EQ(kNumTabs, browser()->tab_strip_model()->count());
+  ASSERT_EQ(kNumTabs, tab_strip_model->count());
 
   // Add tabs 1, 2, and 3 to a group1, and tab 4 to group2.
-  tab_groups::TabGroupId group1 =
-      browser()->tab_strip_model()->AddToNewGroup({1, 2, 3});
-  tab_groups::TabGroupId group2 =
-      browser()->tab_strip_model()->AddToNewGroup({4});
+  tab_groups::TabGroupId group1 = tab_strip_model->AddToNewGroup({1, 2, 3});
+  tab_groups::TabGroupId group2 = tab_strip_model->AddToNewGroup({4});
 
   // Use the TabsUngroupFunction to ungroup tabs 2, 3, and 4.
   auto function = base::MakeRefCounted<TabsUngroupFunction>();
@@ -1003,8 +1014,7 @@ TEST_F(TabsApiUnitTest, TabsUngroupFromMultipleGroups) {
       function.get(), args, browser(), api_test_utils::NONE));
 
   // Expect group2 to be deleted because all tabs were ungrouped from it.
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  EXPECT_EQ(group1, tab_strip_model->GetTabGroupForTab(1).value());
+  EXPECT_EQ(group1, tab_strip_model->GetTabGroupForTab(1));
   EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(2));
   EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(3));
   EXPECT_FALSE(tab_strip_model->GetTabGroupForTab(4));
@@ -1012,7 +1022,7 @@ TEST_F(TabsApiUnitTest, TabsUngroupFromMultipleGroups) {
   EXPECT_FALSE(tab_strip_model->group_model()->ContainsTabGroup(group2));
 
   // Clean up.
-  browser()->tab_strip_model()->CloseAllTabs();
+  tab_strip_model->CloseAllTabs();
 }
 
 TEST_F(TabsApiUnitTest, TabsGoForwardNoSelectedTabError) {

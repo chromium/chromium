@@ -47,6 +47,16 @@ namespace content {
 class WebContents;
 }
 
+class TabGroupModelFactory {
+ public:
+  TabGroupModelFactory();
+  TabGroupModelFactory(const TabGroupModelFactory&) = delete;
+  TabGroupModelFactory& operator=(const TabGroupModelFactory&) = delete;
+
+  static TabGroupModelFactory* GetInstance();
+  std::unique_ptr<TabGroupModel> Create(TabGroupController* controller);
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 //
 // TabStripModel
@@ -203,7 +213,12 @@ class TabStripModel : public TabGroupController {
 
   // Construct a TabStripModel with a delegate to help it do certain things
   // (see the TabStripModelDelegate documentation). |delegate| cannot be NULL.
-  explicit TabStripModel(TabStripModelDelegate* delegate, Profile* profile);
+  // the TabGroupModelFactory can be replaced with a nullptr to set the
+  // group_model to null in cases where groups are not supported.
+  explicit TabStripModel(TabStripModelDelegate* delegate,
+                         Profile* profile,
+                         TabGroupModelFactory* group_model_factory =
+                             TabGroupModelFactory::GetInstance());
 
   TabStripModel(const TabStripModel&) = delete;
   TabStripModel& operator=(const TabStripModel&) = delete;
@@ -531,6 +546,8 @@ class TabStripModel : public TabGroupController {
   void RemoveFromGroup(const std::vector<int>& indices);
 
   TabGroupModel* group_model() const { return group_model_.get(); }
+
+  bool SupportsTabGroups() const { return group_model_.get() != nullptr; }
 
   // Returns true if one or more of the tabs pointed to by |indices| are
   // supported by read later.

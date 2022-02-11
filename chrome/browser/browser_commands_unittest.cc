@@ -269,6 +269,7 @@ TEST_F(BrowserCommandsTest, BackForwardInNewTab) {
 TEST_F(BrowserCommandsTest, BackForwardInNewTabWithGroup) {
   GURL url1("http://foo/1");
   GURL url2("http://foo/2");
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   // Make a tab with the two pages navigated in it.
   AddTab(browser(), url1);

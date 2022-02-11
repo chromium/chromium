@@ -239,6 +239,7 @@ Browser* FindBrowserWithGroup(tab_groups::TabGroupId group, Profile* profile) {
   for (auto* browser : *BrowserList::GetInstance()) {
     if ((!profile || browser->profile() == profile) &&
         browser->tab_strip_model() &&
+        browser->tab_strip_model()->group_model() &&
         browser->tab_strip_model()->group_model()->ContainsTabGroup(group)) {
       return browser;
     }

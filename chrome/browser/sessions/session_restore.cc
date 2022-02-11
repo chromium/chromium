@@ -620,12 +620,14 @@ class SessionRestoreImpl : public BrowserListObserver {
 
       // 6. Tabs will be grouped appropriately in RestoreTabsToBrowser. Now
       //    restore the groups' visual data.
-      TabGroupModel* group_model = browser->tab_strip_model()->group_model();
-      for (auto& session_tab_group : (*i)->tab_groups) {
-        TabGroup* model_tab_group =
-            group_model->GetTabGroup(new_group_ids.at(session_tab_group->id));
-        DCHECK(model_tab_group);
-        model_tab_group->SetVisualData(session_tab_group->visual_data);
+      if (browser->tab_strip_model()->SupportsTabGroups()) {
+        TabGroupModel* group_model = browser->tab_strip_model()->group_model();
+        for (auto& session_tab_group : (*i)->tab_groups) {
+          TabGroup* model_tab_group =
+              group_model->GetTabGroup(new_group_ids.at(session_tab_group->id));
+          DCHECK(model_tab_group);
+          model_tab_group->SetVisualData(session_tab_group->visual_data);
+        }
       }
 
       // 7. Notify SessionService of restored tabs, so they can be saved to the

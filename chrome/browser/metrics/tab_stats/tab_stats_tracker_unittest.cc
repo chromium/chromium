@@ -547,6 +547,8 @@ TEST_F(TabStatsTrackerTest, HeartbeatMetrics) {
 
   expected_tab_count = tab_stats_tracker_->RemoveTabs(4, tab_strip_model_);
   expected_window_count = tab_stats_tracker_->RemoveWindows(3);
+
+  ASSERT_TRUE(tab_strip_model_->SupportsTabGroups());
   tab_groups::TabGroupId group_id1 = tab_strip_model_->AddToNewGroup({0, 1});
   tab_groups::TabGroupId group_id2 = tab_strip_model_->AddToNewGroup({5});
   const tab_groups::TabGroupVisualData visual_data(

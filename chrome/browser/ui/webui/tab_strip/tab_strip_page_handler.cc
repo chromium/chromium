@@ -232,20 +232,20 @@ void TabStripPageHandler::OnTabGroupChanged(const TabGroupChange& change) {
     }
 
     case TabGroupChange::kVisualsChanged: {
-      page_->TabGroupVisualsChanged(
-          change.group.ToString(),
-          GetTabGroupData(
-              browser_->tab_strip_model()->group_model()->GetTabGroup(
-                  change.group)));
+      TabGroupModel* group_model = browser_->tab_strip_model()->group_model();
+      if (group_model) {
+        page_->TabGroupVisualsChanged(
+            change.group.ToString(),
+            GetTabGroupData(group_model->GetTabGroup(change.group)));
+      }
       break;
     }
 
     case TabGroupChange::kMoved: {
-      const int start_tab = browser_->tab_strip_model()
-                                ->group_model()
-                                ->GetTabGroup(change.group)
-                                ->ListTabs()
-                                .start();
+      DCHECK(browser_->tab_strip_model()->SupportsTabGroups());
+      TabGroupModel* group_model = browser_->tab_strip_model()->group_model();
+      const int start_tab =
+          group_model->GetTabGroup(change.group)->ListTabs().start();
       page_->TabGroupMoved(change.group.ToString(), start_tab);
       break;
     }
