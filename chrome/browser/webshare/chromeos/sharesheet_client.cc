@@ -297,10 +297,9 @@ void SharesheetClient::ShowSharesheet(
       (*intent->files)[index]->file_size = file_sizes[index];
     }
   }
-  sharesheet_service->ShowBubble(
-      web_contents, std::move(intent),
-      sharesheet::SharesheetMetrics::LaunchSource::kWebShare,
-      std::move(delivered_callback));
+  sharesheet_service->ShowBubble(web_contents, std::move(intent),
+                                 sharesheet::LaunchSource::kWebShare,
+                                 std::move(delivered_callback));
 }
 
 SharesheetClient::SharesheetCallback&

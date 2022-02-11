@@ -7,12 +7,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/share/share_metrics.h"
-#include "chrome/browser/sharesheet/sharesheet_metrics.h"
-#include "chrome/browser/sharesheet/sharesheet_service.h"
-#include "chrome/browser/sharesheet/sharesheet_service_factory.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/sharing_hub/sharing_hub_model.h"
 #include "chrome/browser/sharing_hub/sharing_hub_service.h"
@@ -29,6 +27,12 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/button.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/sharesheet/sharesheet_metrics.h"
+#include "chrome/browser/sharesheet/sharesheet_service.h"
+#include "chrome/browser/sharesheet/sharesheet_service_factory.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace sharing_hub {
 
@@ -243,7 +247,7 @@ void SharingHubBubbleController::ShowSharesheet(
       base::UTF16ToUTF8(GetWebContents().GetTitle()));
   sharesheet_service->ShowBubble(
       &GetWebContents(), std::move(intent),
-      sharesheet::SharesheetMetrics::LaunchSource::kOmniboxShare,
+      sharesheet::LaunchSource::kOmniboxShare,
       base::BindOnce(&SharingHubBubbleController::OnShareDelivered,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&SharingHubBubbleController::OnSharesheetClosed,

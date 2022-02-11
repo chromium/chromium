@@ -11,6 +11,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/nearby_share/share_info_file_handler.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
+#include "chromeos/components/sharesheet/constants.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"

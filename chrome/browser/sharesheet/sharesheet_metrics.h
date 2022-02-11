@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "chromeos/components/sharesheet/constants.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace sharesheet {
@@ -48,18 +49,6 @@ class SharesheetMetrics {
     kTablet = 0,
     kClamshell,
     kMaxValue = kClamshell,
-  };
-
-  // The source from which the sharesheet was launched from.
-  // This enum is for recording histograms and must be treated as append-only.
-  enum class LaunchSource {
-    kUnknown = 0,
-    kFilesAppShareButton = 1,
-    kFilesAppContextMenu = 2,
-    kWebShare = 3,
-    kArcNearbyShare = 4,
-    kOmniboxShare = 5,
-    kMaxValue = kOmniboxShare,
   };
 
   // The mime type that is being shared.

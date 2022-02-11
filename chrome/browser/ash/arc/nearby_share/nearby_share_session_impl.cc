@@ -28,7 +28,6 @@
 #include "chrome/browser/ash/arc/nearby_share/ui/progress_bar_dialog_view.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -383,8 +382,7 @@ void NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow(
     share_path = file_handler_->GetShareDirectory();
   }
   sharesheet_service->ShowNearbyShareBubbleForArc(
-      arc_window_, std::move(intent),
-      sharesheet::SharesheetMetrics::LaunchSource::kArcNearbyShare,
+      arc_window_, std::move(intent), sharesheet::LaunchSource::kArcNearbyShare,
       /*delivered_callback=*/
       base::BindOnce(&NearbyShareSessionImpl::OnNearbyShareBubbleShown,
                      weak_ptr_factory_.GetWeakPtr()),

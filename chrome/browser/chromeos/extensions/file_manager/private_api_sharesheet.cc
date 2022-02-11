@@ -29,16 +29,15 @@ namespace {
 
 using extensions::api::file_manager_private::SharesheetLaunchSource;
 
-sharesheet::SharesheetMetrics::LaunchSource GetLaunchSource(
-    SharesheetLaunchSource launch_source) {
+sharesheet::LaunchSource GetLaunchSource(SharesheetLaunchSource launch_source) {
   switch (launch_source) {
     case (SharesheetLaunchSource::SHARESHEET_LAUNCH_SOURCE_SHARESHEET_BUTTON):
-      return sharesheet::SharesheetMetrics::LaunchSource::kFilesAppShareButton;
+      return sharesheet::LaunchSource::kFilesAppShareButton;
     case (SharesheetLaunchSource::SHARESHEET_LAUNCH_SOURCE_CONTEXT_MENU):
-      return sharesheet::SharesheetMetrics::LaunchSource::kFilesAppContextMenu;
+      return sharesheet::LaunchSource::kFilesAppContextMenu;
     case (SharesheetLaunchSource::SHARESHEET_LAUNCH_SOURCE_UNKNOWN):
     case (SharesheetLaunchSource::SHARESHEET_LAUNCH_SOURCE_NONE):
-      return sharesheet::SharesheetMetrics::LaunchSource::kUnknown;
+      return sharesheet::LaunchSource::kUnknown;
   }
 }
 
@@ -223,7 +222,7 @@ FileManagerPrivateInternalInvokeSharesheetFunction::Run() {
 }
 
 void FileManagerPrivateInternalInvokeSharesheetFunction::OnMimeTypesCollected(
-    sharesheet::SharesheetMetrics::LaunchSource launch_source,
+    sharesheet::LaunchSource launch_source,
     std::unique_ptr<std::vector<std::string>> mime_types) {
   // On button press show sharesheet bubble.
   sharesheet::SharesheetService* sharesheet_service =
@@ -258,7 +257,7 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::OnMimeTypesCollected(
 
 void FileManagerPrivateInternalInvokeSharesheetFunction::
     OnDrivePropertyCollected(
-        sharesheet::SharesheetMetrics::LaunchSource launch_source,
+        sharesheet::LaunchSource launch_source,
         std::unique_ptr<std::vector<std::string>> mime_types,
         std::unique_ptr<api::file_manager_private::EntryProperties> properties,
         base::File::Error error) {
@@ -280,7 +279,7 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::
 }
 
 void FileManagerPrivateInternalInvokeSharesheetFunction::OnIsDirectoryCollected(
-    sharesheet::SharesheetMetrics::LaunchSource launch_source,
+    sharesheet::LaunchSource launch_source,
     std::unique_ptr<std::vector<std::string>> mime_types,
     std::unique_ptr<api::file_manager_private::EntryProperties> properties,
     std::unique_ptr<std::set<base::FilePath>> path_directory_set) {

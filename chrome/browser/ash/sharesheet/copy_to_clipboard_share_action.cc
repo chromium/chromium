@@ -19,6 +19,7 @@
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_util.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/components/sharesheet/constants.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/base/clipboard/file_info.h"

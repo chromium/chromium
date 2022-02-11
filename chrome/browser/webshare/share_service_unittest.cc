@@ -29,6 +29,7 @@ using blink::mojom::ShareError;
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/webshare/chromeos/sharesheet_client.h"
+#include "chromeos/components/sharesheet/constants.h"
 #endif
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/webshare/mac/sharing_service_operation.h"

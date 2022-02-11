@@ -18,6 +18,7 @@
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
+#include "chromeos/components/sharesheet/constants.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -69,13 +70,13 @@ class SharesheetService : public KeyedService {
   // dialog has closed (this includes separate UI, e.g. Nearby Sharing).
   void ShowBubble(content::WebContents* web_contents,
                   apps::mojom::IntentPtr intent,
-                  SharesheetMetrics::LaunchSource source,
+                  LaunchSource source,
                   DeliveredCallback delivered_callback,
                   CloseCallback close_callback = base::NullCallback());
   void ShowBubble(content::WebContents* web_contents,
                   apps::mojom::IntentPtr intent,
                   bool contains_hosted_document,
-                  SharesheetMetrics::LaunchSource source,
+                  LaunchSource source,
                   DeliveredCallback delivered_callback,
                   CloseCallback close_callback = base::NullCallback());
   // Gets the sharesheet controller for the given |native_window|.
@@ -86,7 +87,7 @@ class SharesheetService : public KeyedService {
   // NearbyShare bubble dialog for ARC.
   void ShowNearbyShareBubbleForArc(gfx::NativeWindow native_window,
                                    apps::mojom::IntentPtr intent,
-                                   SharesheetMetrics::LaunchSource source,
+                                   LaunchSource source,
                                    DeliveredCallback delivered_callback,
                                    CloseCallback close_callback,
                                    ActionCleanupCallback cleanup_callback);
@@ -113,7 +114,7 @@ class SharesheetService : public KeyedService {
   void ShowBubbleForTesting(gfx::NativeWindow native_window,
                             apps::mojom::IntentPtr intent,
                             bool contains_hosted_document,
-                            SharesheetMetrics::LaunchSource source,
+                            LaunchSource source,
                             DeliveredCallback delivered_callback,
                             CloseCallback close_callback);
   SharesheetUiDelegate* GetUiDelegateForTesting(

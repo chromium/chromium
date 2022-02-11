@@ -16,7 +16,6 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/sharesheet/share_action/share_action.h"
 #include "chrome/browser/sharesheet/sharesheet_service_delegator.h"
-#include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -53,7 +52,7 @@ SharesheetService::~SharesheetService() = default;
 
 void SharesheetService::ShowBubble(content::WebContents* web_contents,
                                    apps::mojom::IntentPtr intent,
-                                   SharesheetMetrics::LaunchSource source,
+                                   LaunchSource source,
                                    DeliveredCallback delivered_callback,
                                    CloseCallback close_callback) {
   ShowBubble(web_contents, std::move(intent),
@@ -64,7 +63,7 @@ void SharesheetService::ShowBubble(content::WebContents* web_contents,
 void SharesheetService::ShowBubble(content::WebContents* web_contents,
                                    apps::mojom::IntentPtr intent,
                                    bool contains_hosted_document,
-                                   SharesheetMetrics::LaunchSource source,
+                                   LaunchSource source,
                                    DeliveredCallback delivered_callback,
                                    CloseCallback close_callback) {
   DCHECK(apps_util::IsShareIntent(intent));
@@ -86,7 +85,7 @@ SharesheetController* SharesheetService::GetSharesheetController(
 void SharesheetService::ShowNearbyShareBubbleForArc(
     gfx::NativeWindow native_window,
     apps::mojom::IntentPtr intent,
-    SharesheetMetrics::LaunchSource source,
+    LaunchSource source,
     DeliveredCallback delivered_callback,
     CloseCallback close_callback,
     ActionCleanupCallback action_cleanup_callback) {
@@ -192,7 +191,7 @@ void SharesheetService::ShowBubbleForTesting(
     gfx::NativeWindow native_window,
     apps::mojom::IntentPtr intent,
     bool contains_hosted_document,
-    SharesheetMetrics::LaunchSource source,
+    LaunchSource source,
     DeliveredCallback delivered_callback,
     CloseCallback close_callback) {
   SharesheetMetrics::RecordSharesheetLaunchSource(source);

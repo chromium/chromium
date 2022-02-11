@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/components/sharesheet/constants.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -54,8 +55,8 @@ class SharesheetBubbleViewBrowserTest
     intent->action = apps_util::kIntentActionSend;
     sharesheet_service->ShowBubble(
         browser()->tab_strip_model()->GetActiveWebContents(), std::move(intent),
-        ::sharesheet::SharesheetMetrics::LaunchSource::kUnknown,
-        base::DoNothing(), base::DoNothing());
+        ::sharesheet::LaunchSource::kUnknown, base::DoNothing(),
+        base::DoNothing());
 
     views::Widget::Widgets new_widgets;
     for (aura::Window* root_window : Shell::GetAllRootWindows())

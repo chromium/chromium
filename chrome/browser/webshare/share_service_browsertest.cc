@@ -21,6 +21,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/webshare/chromeos/sharesheet_client.h"
+#include "chromeos/components/sharesheet/constants.h"
 #endif
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/webshare/win/scoped_share_operation_fake_components.h"

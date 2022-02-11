@@ -23,6 +23,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/components/sharesheet/constants.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -93,9 +94,8 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
     parent_window_ = widget->GetNativeWindow();
   }
 
-  void ShowAndVerifyBubble(
-      apps::mojom::IntentPtr intent,
-      ::sharesheet::SharesheetMetrics::LaunchSource source) {
+  void ShowAndVerifyBubble(apps::mojom::IntentPtr intent,
+                           ::sharesheet::LaunchSource source) {
     ::sharesheet::SharesheetService* const sharesheet_service =
         ::sharesheet::SharesheetServiceFactory::GetForProfile(profile_.get());
     sharesheet_service->ShowBubbleForTesting(
@@ -154,13 +154,13 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
 
 TEST_F(SharesheetBubbleViewTest, BubbleDoesOpenAndClose) {
   ShowAndVerifyBubble(::sharesheet::CreateValidTextIntent(),
-                      ::sharesheet::SharesheetMetrics::LaunchSource::kUnknown);
+                      ::sharesheet::LaunchSource::kUnknown);
   CloseBubble();
 }
 
 TEST_F(SharesheetBubbleViewTest, EmptyState) {
   ShowAndVerifyBubble(::sharesheet::CreateInvalidIntent(),
-                      ::sharesheet::SharesheetMetrics::LaunchSource::kUnknown);
+                      ::sharesheet::LaunchSource::kUnknown);
 
   // Header should contain Share label.
   ASSERT_TRUE(header_view()->GetVisible());
@@ -178,14 +178,13 @@ TEST_F(SharesheetBubbleViewTest, EmptyState) {
 TEST_F(SharesheetBubbleViewTest, RecordLaunchSource) {
   base::HistogramTester histograms;
 
-  auto source =
-      ::sharesheet::SharesheetMetrics::LaunchSource::kFilesAppShareButton;
+  auto source = ::sharesheet::LaunchSource::kFilesAppShareButton;
   ShowAndVerifyBubble(::sharesheet::CreateValidTextIntent(), source);
   CloseBubble();
   histograms.ExpectBucketCount(
       ::sharesheet::kSharesheetLaunchSourceResultHistogram, source, 1);
 
-  source = ::sharesheet::SharesheetMetrics::LaunchSource::kArcNearbyShare;
+  source = ::sharesheet::LaunchSource::kArcNearbyShare;
   ShowAndVerifyBubble(::sharesheet::CreateValidTextIntent(), source);
   CloseBubble();
   histograms.ExpectBucketCount(
@@ -196,7 +195,7 @@ TEST_F(SharesheetBubbleViewTest, RecordShareActionCount) {
   // Text intent should only show copy action.
   base::HistogramTester histograms;
   ShowAndVerifyBubble(::sharesheet::CreateValidTextIntent(),
-                      ::sharesheet::SharesheetMetrics::LaunchSource::kUnknown);
+                      ::sharesheet::LaunchSource::kUnknown);
   CloseBubble();
   histograms.ExpectBucketCount(
       ::sharesheet::kSharesheetShareActionResultHistogram,
@@ -207,7 +206,7 @@ TEST_F(SharesheetBubbleViewTest, RecordShareActionCount) {
 
   // Drive intent should show only drive action.
   ShowAndVerifyBubble(::sharesheet::CreateDriveIntent(),
-                      ::sharesheet::SharesheetMetrics::LaunchSource::kUnknown);
+                      ::sharesheet::LaunchSource::kUnknown);
   CloseBubble();
   histograms.ExpectBucketCount(
       ::sharesheet::kSharesheetShareActionResultHistogram,
@@ -218,7 +217,7 @@ TEST_F(SharesheetBubbleViewTest, RecordShareActionCount) {
 
   // Invalid intent should not show any actions.
   ShowAndVerifyBubble(::sharesheet::CreateInvalidIntent(),
-                      ::sharesheet::SharesheetMetrics::LaunchSource::kUnknown);
+                      ::sharesheet::LaunchSource::kUnknown);
   CloseBubble();
   histograms.ExpectBucketCount(
       ::sharesheet::kSharesheetShareActionResultHistogram,
@@ -232,7 +231,7 @@ TEST_F(SharesheetBubbleViewTest, ClickCopyToClipboard) {
   base::HistogramTester histograms;
   // Text intent should only show copy action.
   ShowAndVerifyBubble(::sharesheet::CreateValidTextIntent(),
-                      ::sharesheet::SharesheetMetrics::LaunchSource::kUnknown);
+                      ::sharesheet::LaunchSource::kUnknown);
 
   // |targets_view| should only contain the copy to clipboard target.
   views::View* targets_view = sharesheet_bubble_view()->GetViewByID(

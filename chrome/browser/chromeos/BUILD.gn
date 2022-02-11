@@ -234,6 +234,7 @@ source_set("chromeos") {
     "//chromeos/components/sensors",
     "//chromeos/components/sensors:buildflags",
     "//chromeos/components/sensors/mojom",
+    "//chromeos/components/sharesheet:constants",
     "//chromeos/components/string_matching",
     "//chromeos/components/sync_wifi",
     "//chromeos/crosapi/cpp",
