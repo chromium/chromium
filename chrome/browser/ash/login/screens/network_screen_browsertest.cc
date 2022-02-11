@@ -81,8 +81,13 @@ class NetworkScreenTest : public OobeBaseTest {
     base::RunLoop().RunUntilIdle();
 
     ASSERT_TRUE(last_screen_result_.has_value());
-    EXPECT_EQ(NetworkScreen::Result::CONNECTED_REGULAR,
-              last_screen_result_.value());
+    if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
+      EXPECT_EQ(NetworkScreen::Result::CONNECTED_REGULAR_CONSOLIDATED_CONSENT,
+                last_screen_result_.value());
+    } else {
+      EXPECT_EQ(NetworkScreen::Result::CONNECTED_REGULAR,
+                last_screen_result_.value());
+    }
   }
 
   void SetDefaultNetworkStateHelperExpectations() {
@@ -184,7 +189,12 @@ IN_PROC_BROWSER_TEST_F(NetworkScreenTest, SkippedEthernetConnected) {
       .WillRepeatedly((Return(true)));
   ShowNetworkScreen();
   WaitForScreenExit();
-  CheckResult(NetworkScreen::Result::NOT_APPLICABLE);
+
+  if (chromeos::features::IsOobeConsolidatedConsentEnabled())
+    CheckResult(NetworkScreen::Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT);
+  else
+    CheckResult(NetworkScreen::Result::NOT_APPLICABLE);
+
   histogram_tester_.ExpectTotalCount(
       "OOBE.StepCompletionTimeByExitReason.Network-selection.Connected", 0);
   histogram_tester_.ExpectTotalCount(

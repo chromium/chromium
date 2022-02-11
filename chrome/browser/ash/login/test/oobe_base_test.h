@@ -37,6 +37,7 @@ class OobeBaseTest : public MixinBasedInProcessBrowserTest {
   virtual void RegisterAdditionalRequestHandlers();
 
   static OobeScreenId GetFirstSigninScreen();
+  static OobeScreenId GetScreenAfterNetworkScreen();
 
  protected:
   // MixinBasedInProcessBrowserTest::

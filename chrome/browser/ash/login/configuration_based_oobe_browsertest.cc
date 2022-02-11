@@ -168,13 +168,13 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestSwitchLanguageIME) {
 // Check that configuration lets correctly select a network by GUID.
 IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestSelectNetwork) {
   LoadConfiguration();
-  OobeScreenWaiter(EulaView::kScreenId).Wait();
+  OobeScreenWaiter(OobeBaseTest::GetScreenAfterNetworkScreen()).Wait();
 }
 
 // Check that configuration would proceed if there is a connected network.
 IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestSelectConnectedNetwork) {
   LoadConfiguration();
-  OobeScreenWaiter(EulaView::kScreenId).Wait();
+  OobeScreenWaiter(OobeBaseTest::GetScreenAfterNetworkScreen()).Wait();
 }
 
 // Check that configuration would not proceed with connected network if
@@ -199,7 +199,8 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestAcceptEula) {
 // beginning.
 IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestDeviceRequisition) {
   LoadConfiguration();
-  OobeScreenWaiter(EulaView::kScreenId).Wait();
+  OobeScreenWaiter(OobeBaseTest::GetScreenAfterNetworkScreen()).Wait();
+
   EXPECT_EQ(policy::EnrollmentRequisitionManager::GetDeviceRequisition(),
             "some_requisition");
 }
