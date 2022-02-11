@@ -534,25 +534,14 @@ class ExtensionWebRequestEventRouter {
   void DecrementExtraHeadersListenerCount(
       content::BrowserContext* browser_context);
 
+  // Called when a BrowserContext is being destroyed.
+  void OnBrowserContextShutdown(content::BrowserContext* browser_context);
+
  private:
   friend class WebRequestAPI;
   friend class base::NoDestructor<ExtensionWebRequestEventRouter>;
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest,
-                           BlockingEventPrecedenceRedirect);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest,
-                           BlockingEventPrecedenceCancel);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest,
-                           SimulateChancelWhileBlocked);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest, AccessRequestBodyData);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest,
-                           MinimalAccessRequestBodyData);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest,
-                           ProperFilteringInPublicSession);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest, NoAccessRequestBodyData);
   FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest, AddAndRemoveListeners);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest, BlockedRequestsAreRemoved);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestHeaderModificationTest,
-                           TestModifications);
+  FRIEND_TEST_ALL_PREFIXES(ExtensionWebRequestTest, BrowserContextShutdown);
 
   struct EventListener {
     // TODO(rdevlin.cronin): There are two types of EventListeners - those

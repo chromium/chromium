@@ -649,6 +649,8 @@ void WebRequestAPI::Shutdown() {
   proxies_.reset();
   EventRouter::Get(browser_context_)->UnregisterObserver(this);
   extensions::ExtensionRegistry::Get(browser_context_)->RemoveObserver(this);
+  ExtensionWebRequestEventRouter::GetInstance()->OnBrowserContextShutdown(
+      browser_context_);
 }
 
 static base::LazyInstance<
@@ -1818,6 +1820,7 @@ void ExtensionWebRequestEventRouter::OnOTRBrowserContextDestroyed(
     content::BrowserContext* otr_browser_context) {
   cross_browser_context_map_.erase(otr_browser_context);
   cross_browser_context_map_.erase(original_browser_context);
+  OnBrowserContextShutdown(otr_browser_context);
 }
 
 void ExtensionWebRequestEventRouter::AddCallbackForPageLoad(
@@ -1875,7 +1878,6 @@ void ExtensionWebRequestEventRouter::IncrementExtraHeadersListenerCount(
     // We only keep values greater than 0 in the map.
     DCHECK_GT(result.first->second, 0);
     result.first->second++;
-    return;
   }
 }
 
@@ -1889,6 +1891,12 @@ void ExtensionWebRequestEventRouter::DecrementExtraHeadersListenerCount(
 
   DCHECK_EQ(0, it->second);
   extra_headers_listener_count_.erase(it);
+}
+
+void ExtensionWebRequestEventRouter::OnBrowserContextShutdown(
+    content::BrowserContext* browser_context) {
+  listeners_.erase(browser_context);
+  extra_headers_listener_count_.erase(browser_context);
 }
 
 bool ExtensionWebRequestEventRouter::HasAnyExtraHeadersListenerImpl(
