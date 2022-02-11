@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager.h"
 
+#include "base/run_loop.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

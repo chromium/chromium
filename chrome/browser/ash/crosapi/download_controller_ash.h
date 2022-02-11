@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/app_list/reorder/app_list_reorder_core.h"
 
+#include <stack>
+
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"

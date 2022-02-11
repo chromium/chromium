@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/video_encoder.h"
 
+#include "base/run_loop.h"
 #include "media/base/mock_filters.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_event_logger.pb.h"
 #include "extensions/browser/extension_registry.h"

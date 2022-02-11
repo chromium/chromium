@@ -4,6 +4,8 @@
 
 #include "ui/display/screen_infos.h"
 
+#include "base/ranges/algorithm.h"
+
 namespace display {
 
 ScreenInfos::ScreenInfos() = default;

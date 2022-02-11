@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 #include "base/debug/alias.h"
+#include "base/run_loop.h"
 #include "build/build_config.h"
 #include "content/public/common/result_codes.h"
 #include "headless/app/headless_shell_switches.h"

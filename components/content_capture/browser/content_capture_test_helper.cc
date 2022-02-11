@@ -4,6 +4,7 @@
 
 #include "components/content_capture/browser/content_capture_test_helper.h"
 
+#include "base/run_loop.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content_capture {

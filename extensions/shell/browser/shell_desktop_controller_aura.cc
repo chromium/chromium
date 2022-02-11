@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "extensions/browser/app_window/app_window.h"

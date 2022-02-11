@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/ranges/algorithm.h"
+#include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"

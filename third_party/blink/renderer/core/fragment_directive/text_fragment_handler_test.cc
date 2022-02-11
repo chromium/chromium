@@ -7,6 +7,7 @@
 #include <gtest/gtest.h>
 
 #include "base/feature_list.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"

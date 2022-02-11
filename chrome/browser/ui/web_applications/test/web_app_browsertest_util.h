@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_TEST_WEB_APP_BROWSERTEST_UTIL_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"

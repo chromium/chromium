@@ -11,6 +11,8 @@
 #include "ash/ash_export.h"
 #include "ash/components/geolocation/simple_geolocation_provider.h"
 #include "ash/components/settings/timezone_settings.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

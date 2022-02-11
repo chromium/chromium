@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"

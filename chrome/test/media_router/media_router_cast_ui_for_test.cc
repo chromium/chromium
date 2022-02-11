@@ -5,6 +5,7 @@
 #include "chrome/test/media_router/media_router_cast_ui_for_test.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/media_router/media_router_ui.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"

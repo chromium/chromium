@@ -10,6 +10,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/location.h"
+#include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/scoped_blocking_call.h"

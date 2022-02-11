@@ -13,6 +13,7 @@
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/common/extension_id.h"

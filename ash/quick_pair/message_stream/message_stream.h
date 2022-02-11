@@ -11,6 +11,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "device/bluetooth/bluetooth_socket.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/run_loop.h"
 #include "base/task/current_thread.h"
 #include "base/task/task_traits.h"
 #include "base/threading/thread.h"

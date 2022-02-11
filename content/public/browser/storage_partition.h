@@ -10,6 +10,7 @@
 #include <set>
 
 #include "base/callback_forward.h"
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom-forward.h"

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_WEB_APP_ICON_WAITER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_TEST_WEB_APP_ICON_WAITER_H_
 
+#include "base/run_loop.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 

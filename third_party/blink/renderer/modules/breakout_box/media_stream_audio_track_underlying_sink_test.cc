@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_audio_track_underlying_sink.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/video_decoder.h"
 
+#include "base/run_loop.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "media/base/mock_filters.h"

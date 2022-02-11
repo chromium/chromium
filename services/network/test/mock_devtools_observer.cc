@@ -4,6 +4,7 @@
 
 #include "services/network/test/mock_devtools_observer.h"
 
+#include "base/run_loop.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/http_raw_headers.mojom.h"
