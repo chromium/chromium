@@ -150,9 +150,7 @@ std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
 absl::optional<content::IdentityRequestAccount> ParseAccount(
     const base::Value& account,
     const std::string& client_id) {
-  // TODO(yigu): Per spec the account id field should be "account_id" instead of
-  // "sub". Using "sub" temporarily to unblock partner deployment.
-  auto* account_id = account.FindStringKey("sub");
+  auto* account_id = account.FindStringKey("account_id");
   auto* email = account.FindStringKey("email");
   auto* name = account.FindStringKey("name");
   auto* given_name = account.FindStringKey("given_name");
