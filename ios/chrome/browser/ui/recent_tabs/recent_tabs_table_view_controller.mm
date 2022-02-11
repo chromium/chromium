@@ -223,10 +223,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   }
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-  [super viewWillDisappear:animated];
-}
-
 #pragma mark - Setters & Getters
 
 - (void)setBrowser:(Browser*)browser {
@@ -318,6 +314,11 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 #pragma mark Recently Closed Section
 
 - (void)addRecentlyClosedSection {
+  // Hide section during search if empty.
+  if (![self recentlyClosedTabsSectionExists]) {
+    return;
+  }
+
   TableViewModel* model = self.tableViewModel;
 
   // Recently Closed Section.
@@ -340,6 +341,12 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
   // Add Recently Closed Tabs Cells.
   [self addRecentlyClosedTabItems];
+
+  if (self.searchTerms.length) {
+    // Hide the show full history item in the recently closed section while
+    // searching.
+    return;
+  }
 
   // Add show full history item last.
   TableViewImageItem* historyItem =
@@ -1157,6 +1164,21 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 #pragma mark - Recently closed tab helpers
+
+- (BOOL)recentlyClosedTabsSectionExists {
+  // Recently closed section always exists when tab search is disabled.
+  if (!IsTabsSearchEnabled()) {
+    return YES;
+  }
+
+  // The recently closed section does not exist if the user is searching and
+  // there are no matching recently closed items.
+  if (self.searchTerms.length && [self numberOfRecentlyClosedTabs] == 0) {
+    return NO;
+  }
+
+  return YES;
+}
 
 - (NSInteger)numberOfRecentlyClosedTabs {
   if (!self.tabRestoreService)
