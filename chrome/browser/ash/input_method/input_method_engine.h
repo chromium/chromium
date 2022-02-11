@@ -291,11 +291,6 @@ class InputMethodEngine : virtual public ui::IMEEngineHandlerInterface,
   // Set the position of the cursor in the candidate window.
   bool SetCursorPosition(int context_id, int candidate_id, std::string* error);
 
-  // Set the list of items that appears in the language menu when this IME is
-  // active.
-  bool SetMenuItems(const std::vector<InputMethodManager::MenuItem>& items,
-                    std::string* error);
-
   // Update the state of the menu items.
   bool UpdateMenuItems(const std::vector<InputMethodManager::MenuItem>& items,
                        std::string* error);

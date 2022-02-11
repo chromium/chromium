@@ -1003,12 +1003,6 @@ void InputMethodEngine::OnProfileWillBeDestroyed(Profile* profile) {
   }
 }
 
-bool InputMethodEngine::SetMenuItems(
-    const std::vector<InputMethodManager::MenuItem>& items,
-    std::string* error) {
-  return UpdateMenuItems(items, error);
-}
-
 bool InputMethodEngine::UpdateMenuItems(
     const std::vector<InputMethodManager::MenuItem>& items,
     std::string* error) {
