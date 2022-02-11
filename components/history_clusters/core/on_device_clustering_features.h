@@ -112,6 +112,9 @@ bool ShouldExcludeKeywordsFromNoisyVisits();
 // Returns the default batch size for annotating visits when clustering.
 size_t GetClusteringTasksBatchSize();
 
+// Whether to split the clusters when a search visit is encountered.
+bool ShouldSplitClustersAtSearchVisits();
+
 }  // namespace features
 }  // namespace history_clusters
 

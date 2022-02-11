@@ -96,7 +96,8 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
          {"dedupe_similar_visits", "false"},
          {"min_page_topics_model_version_for_visibility", "125"},
          {"include_categories_in_keywords", "true"},
-         {"exclude_keywords_from_noisy_visits", "false"}});
+         {"exclude_keywords_from_noisy_visits", "false"},
+         {"split_clusters_at_search_visits", "false"}});
   }
 
   void SetUp() override {

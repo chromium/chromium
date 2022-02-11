@@ -154,5 +154,10 @@ size_t GetClusteringTasksBatchSize() {
       "clustering_task_batch_size", 250);
 }
 
+bool ShouldSplitClustersAtSearchVisits() {
+  return GetFieldTrialParamByFeatureAsBool(
+      kOnDeviceClustering, "split_clusters_at_search_visits", true);
+}
+
 }  // namespace features
 }  // namespace history_clusters

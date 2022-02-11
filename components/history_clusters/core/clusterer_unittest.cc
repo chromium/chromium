@@ -197,5 +197,49 @@ TEST_F(ClustererTest, SplitClusterOnNavigationTime) {
                           ElementsAre(testing::VisitResult(3, 1.0))));
 }
 
+TEST_F(ClustererTest, SplitClusterOnSearchVisit) {
+  std::vector<history::ClusterVisit> visits;
+
+  history::AnnotatedVisit visit =
+      testing::CreateDefaultAnnotatedVisit(1, GURL("https://google.com/"));
+  visit.visit_row.visit_time = base::Time::Now();
+  visits.push_back(testing::CreateClusterVisit(visit));
+
+  // Visit2 has a different URL but is linked by referring id to visit.
+  history::AnnotatedVisit visit2 =
+      testing::CreateDefaultAnnotatedVisit(2, GURL("https://bar.com/"));
+  visit2.referring_visit_of_redirect_chain_start = 1;
+  visit2.visit_row.visit_time = base::Time::Now() + base::Minutes(5);
+  visits.push_back(testing::CreateClusterVisit(visit2));
+
+  // Visit3 has a different URL but is linked by referring id to visit but the
+  // cutoff has passed so it should be in a different cluster.
+  history::AnnotatedVisit visit3 =
+      testing::CreateDefaultAnnotatedVisit(3, GURL("https://foo.com/"));
+  visit3.referring_visit_of_redirect_chain_start = 1;
+  visit3.visit_row.visit_time = base::Time::Now() + base::Hours(2);
+  visits.push_back(testing::CreateClusterVisit(visit3));
+
+  // Visit4 was referred by visit 3 but is a search visit.
+  history::AnnotatedVisit visit4 =
+      testing::CreateDefaultAnnotatedVisit(4, GURL("https://search.com/"));
+  visit4.referring_visit_of_redirect_chain_start = 3;
+  visit4.visit_row.visit_time =
+      base::Time::Now() + base::Hours(2) + base::Minutes(1);
+  history::ClusterVisit cluster_visit4 = testing::CreateClusterVisit(visit4);
+  cluster_visit4.is_search_visit = true;
+  visits.push_back(cluster_visit4);
+
+  std::vector<history::Cluster> result_clusters =
+      CreateInitialClustersFromVisits(visits);
+  EXPECT_THAT(testing::ToVisitResults(result_clusters),
+              ElementsAre(ElementsAre(testing::VisitResult(1, 1.0),
+                                      testing::VisitResult(2, 1.0)),
+                          ElementsAre(testing::VisitResult(3, 1.0)),
+                          ElementsAre(testing::VisitResult(
+                              4, 1.0, /*duplicate_visits=*/{},
+                              /*is_search_visit=*/true))));
+}
+
 }  // namespace
 }  // namespace history_clusters
