@@ -3,11 +3,6 @@
     margin-inline-start: 8px;
   }
 
-  :host {
-    display: block;
-    padding: 0 var(--cr-section-padding);
-  }
-
   .expand-section {
     border-bottom: var(--cr-separator-line);
     border-top: var(--cr-separator-line);
@@ -33,8 +28,41 @@
   }
 
   .buttons-container {
+    align-items: center;
     display: flex;
+    height: 64px;
     justify-content: end;
+    padding-inline-end:
+        var(--cr-dialog-button-container-padding-horizontal, 16px);
+    width: 100%;
+  }
+
+  .content-area {
+    border-color: transparent;
+    border-style: solid;
+    border-width: 1px 0;
+    overflow-y: auto;
+    padding: 0 var(--cr-section-padding);
+  }
+
+  .wrapper.fit-into-size {
+    height: 100vh;
+  }
+
+  .wrapper.fit-into-size .buttons-container {
+    bottom: 0;
+    position: fixed;
+    right: 0;
+  }
+
+  .wrapper.fit-into-size .content-area {
+    bottom: 64px;
+    position: absolute;
+    top: 0;
+  }
+
+  .content-area.can-scroll {
+    border-bottom-color: var(--scrollable-border-color);
   }
 
   .expand-section b {
@@ -43,68 +71,71 @@
   }
 </style>
 
-<div class="header">
-  <img src="images/privacy_sandbox_confirmation_banner.svg">
+<div class$="wrapper [[fitIntoDialogClass_]]">
+  <div class$="content-area [[canScrollClass_]]">
+    <div class="header">
+      <img src="images/privacy_sandbox_confirmation_banner.svg">
 
-  <template is="dom-if" if="[[isConsent_]]">
-    <h1>$i18n{title}</h1>
-  </template>
+      <template is="dom-if" if="[[isConsent_]]">
+        <h1>$i18n{title}</h1>
+      </template>
 
-  <h2>$i18n{subtitle}</h2>
-</div>
+      <h2>$i18n{subtitle}</h2>
+    </div>
 
-<div class="section cr-padded-text">
-  <div>$i18n{bodyHeader1}</div>
-  <div class="cr-secondary-text">$i18n{bodyDescription1}</div>
-</div>
+    <div class="section cr-padded-text">
+      <div>$i18n{bodyHeader1}</div>
+      <div class="cr-secondary-text">$i18n{bodyDescription1}</div>
+    </div>
 
-<div class="section cr-padded-text">
-  <div>$i18n{bodyHeader2}</div>
-  <div class="cr-secondary-text">$i18n{bodyDescription2}</div>
-</div>
+    <div class="section cr-padded-text">
+      <div>$i18n{bodyHeader2}</div>
+      <div class="cr-secondary-text">$i18n{bodyDescription2}</div>
+    </div>
 
-<template is="dom-if" if="[[isConsent_]]">
-  <div class="expand-section" >
-  <cr-expand-button expanded="{{expanded_}}">
-    <div class="cr-secondary-text">$i18n{learnMoreLabel}</div>
-  </cr-expand-button>
-  <iron-collapse opened="[[expanded_]]">
-    <div>$i18n{learnMoreSection1Header}</div>
-    <ul class="cr-secondary-text">
-      <li>$i18nRaw{learnMoreSection1BulletPoint1}</li>
-      <li>$i18nRaw{learnMoreSection1BulletPoint2}</li>
-      <li>$i18nRaw{learnMoreSection1BulletPoint3}</li>
-    </ul>
+    <template is="dom-if" if="[[isConsent_]]">
+      <div class="expand-section" >
+        <cr-expand-button expanded="{{expanded_}}">
+          <div class="cr-secondary-text">$i18n{learnMoreLabel}</div>
+        </cr-expand-button>
+        <iron-collapse opened="[[expanded_]]">
+          <div>$i18n{learnMoreSection1Header}</div>
+          <ul class="cr-secondary-text">
+            <li>$i18nRaw{learnMoreSection1BulletPoint1}</li>
+            <li>$i18nRaw{learnMoreSection1BulletPoint2}</li>
+            <li>$i18nRaw{learnMoreSection1BulletPoint3}</li>
+          </ul>
 
-    <div>$i18n{learnMoreSection2Header}</div>
-    <ul class="cr-secondary-text">
-      <li>$i18nRaw{learnMoreSection2BulletPoint1}</li>
-      <li>$i18nRaw{learnMoreSection2BulletPoint2}</li>
-      <li>$i18nRaw{learnMoreSection2BulletPoint3}</li>
-    </ul>
-  </iron-collapse>
-</div>
-</template>
+          <div>$i18n{learnMoreSection2Header}</div>
+          <ul class="cr-secondary-text">
+            <li>$i18nRaw{learnMoreSection2BulletPoint1}</li>
+            <li>$i18nRaw{learnMoreSection2BulletPoint2}</li>
+            <li>$i18nRaw{learnMoreSection2BulletPoint3}</li>
+          </ul>
+        </iron-collapse>
+      </div>
+    </template>
 
-<div class="cr-secondary-text cr-padded-text">$i18n{bottomSummary}</div>
+    <div class="cr-secondary-text cr-padded-text">$i18n{bottomSummary}</div>
+  </div>
 
-<div class="buttons-container">
-  <template is="dom-if" if="[[isConsent_]]">
-    <cr-button class="action-button" on-click="onConsentDeclined_">
-      $i18n{consentDeclineButton}
-    </cr-button>
-    <cr-button class="action-button" on-click="onConsentAccepted_">
-      $i18n{consentAcceptButton}
-    </cr-button>
-  </template>
+  <div class="buttons-container">
+    <template is="dom-if" if="[[isConsent_]]">
+      <cr-button class="action-button" on-click="onConsentDeclined_">
+        $i18n{consentDeclineButton}
+      </cr-button>
+      <cr-button class="action-button" on-click="onConsentAccepted_">
+        $i18n{consentAcceptButton}
+      </cr-button>
+    </template>
 
-  <template is="dom-if" if="[[!isConsent_]]">
-    <cr-button on-click="onNoticeOpenSettings_">
-      $i18n{noticeOpenSettingsButton}
-    </cr-button>
-    <cr-button class="action-button" on-click="onNoticeAcknowledge_">
-      $i18n{noticeAcknowledgeButton}
-    </cr-button>
-</div>
-</template>
+    <template is="dom-if" if="[[!isConsent_]]">
+      <cr-button on-click="onNoticeOpenSettings_">
+        $i18n{noticeOpenSettingsButton}
+      </cr-button>
+      <cr-button class="action-button" on-click="onNoticeAcknowledge_">
+        $i18n{noticeAcknowledgeButton}
+      </cr-button>
+    </template>
+  </div>
 </div>

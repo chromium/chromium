@@ -9,23 +9,11 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrivacySandboxDialogAction, PrivacySandboxDialogBrowserProxy} from './privacy_sandbox_dialog_browser_proxy.js';
 
 const PrivacySandboxDialogAppElementBase = PolymerElement;
-
-document.addEventListener('DOMContentLoaded', () => {
-  const proxy = PrivacySandboxDialogBrowserProxy.getInstance();
-  // Prefer using |document.body.offsetHeight| instead of
-  // |document.body.scrollHeight| as it returns the correct height of the
-  // page even when the page zoom in Chrome is different than 100%.
-  proxy.resizeDialog(document.body.offsetHeight);
-  // The web dialog size has been initialized, so reset the body width to
-  // auto. This makes sure that the body only takes up the viewable width,
-  // e.g. when there is a scrollbar.
-  document.body.style.width = 'auto';
-});
 
 export class PrivacySandboxDialogAppElement extends
     PrivacySandboxDialogAppElementBase {
@@ -49,11 +37,31 @@ export class PrivacySandboxDialogAppElement extends
           return loadTimeData.getBoolean('isConsent');
         },
       },
+      canScrollClass_: String,
+      fitIntoDialogClass_: String,
     };
   }
 
   private expanded_: boolean;
   private isConsent_: boolean;
+  private canScrollClass_: String;
+  private fitIntoDialogClass_: String;
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    afterNextRender(this, () => {
+      const proxy = PrivacySandboxDialogBrowserProxy.getInstance();
+      // Prefer using |document.body.offsetHeight| instead of
+      // |document.body.scrollHeight| as it returns the correct height of the
+      // page even when the page zoom in Chrome is different than 100%.
+      proxy.resizeDialog(document.body.offsetHeight);
+
+      // After the content was rendered at size it requires, toggle a class
+      // to fit the content into dialog bounds.
+      this.fitIntoDialogClass_ = 'fit-into-size';
+    });
+  }
 
   private onNoticeOpenSettings_() {
     this.dialogActionOccurred(PrivacySandboxDialogAction.NOTICE_OPEN_SETTINGS);
@@ -80,6 +88,9 @@ export class PrivacySandboxDialogAppElement extends
       this.dialogActionOccurred(
           PrivacySandboxDialogAction.CONSENT_MORE_INFO_CLOSED);
     }
+    // TODO(crbug.com/1286276): Add showing the divider if the dialog starts
+    // scrollable.
+    this.canScrollClass_ = newVal ? 'can-scroll' : '';
   }
 
   private dialogActionOccurred(action: PrivacySandboxDialogAction) {

@@ -22,7 +22,7 @@
 
 namespace {
 
-constexpr int kDialogWidth = 460;
+constexpr int kDialogWidth = 512;
 constexpr int kDefaultConsentDialogHeight = 569;
 constexpr int kDefaultNoticeDialogHeight = 494;
 
@@ -74,6 +74,7 @@ PrivacySandboxDialogView::PrivacySandboxDialogView(
   SetModalType(ui::MODAL_TYPE_WINDOW);
   SetShowCloseButton(false);
   SetUseDefaultFillLayout(true);
+  set_margins(gfx::Insets());
 }
 
 void PrivacySandboxDialogView::Close() {
