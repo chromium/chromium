@@ -451,6 +451,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntityMetadata& proto) {
   VISIT(modification_time);
   VISIT(specifics_hash);
   VISIT(base_specifics_hash);
+  VISIT(possibly_trimmed_base_specifics);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
