@@ -33,13 +33,14 @@ enum WallpaperType {
   kPolicy = 5,        // Controlled by policy, can't be changed by the user.
   kThirdParty = 6,    // Current wallpaper is set by a third party app.
   kDevice = 7,        // Current wallpaper is the device policy controlled
-                     // wallpaper. It shows on the login screen if the device
-                     // is an enterprise managed device.
-  kOneShot = 8,      // Current wallpaper is shown one-time only, which doesn't
-                     // belong to a particular user and isn't saved to file. It
-                     // goes away when another wallpaper is shown or the browser
-                     // process exits. Note: the image will never be blurred or
-                     // dimmed.
+                      // wallpaper. It shows on the login screen if the device
+                      // is an enterprise managed device.
+  kOneShot = 8,       // Current wallpaper is shown one-time only, which doesn't
+                      // belong to a particular user and isn't saved to file. It
+                      // goes away when another wallpaper is shown or the
+                      // browser process exits. Note: the image will never be
+                      // blurred or dimmed.
+  kGooglePhotos = 9,  // WallpaperInfo.location contains the Google Photos id.
 };
 
 // The image type specific to online wallpapers. This should be kept in sync
@@ -224,6 +225,9 @@ interface WallpaperProvider {
     // against list of file paths returned by |GetLocalImages|.
     SelectLocalImage(mojo_base.mojom.FilePath path, WallpaperLayout layout,
         bool preview_mode) => (bool success);
+
+    // Sets the Google Photos photo with the given id as the wallpaper.
+    SelectGooglePhotosPhoto(string id) => (bool success);
 
     // Sets the custom layout for current wallpaper
     SetCustomWallpaperLayout(WallpaperLayout layout);

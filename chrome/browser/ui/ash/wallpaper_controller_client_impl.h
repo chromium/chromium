@@ -99,6 +99,9 @@ class WallpaperControllerClientImpl
   void SetOnlineWallpaper(
       const ash::OnlineWallpaperParams& params,
       ash::WallpaperController::SetOnlineWallpaperCallback callback);
+  void SetGooglePhotosWallpaper(
+      const ash::GooglePhotosWallpaperParams& params,
+      ash::WallpaperController::SetGooglePhotosWallpaperCallback callback);
   void SetOnlineWallpaperIfExists(
       const ash::OnlineWallpaperParams& params,
       ash::WallpaperController::SetOnlineWallpaperCallback callback);

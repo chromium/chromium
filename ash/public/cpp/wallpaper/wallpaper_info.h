@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/wallpaper/google_photos_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
@@ -21,6 +22,8 @@ struct ASH_PUBLIC_EXPORT WallpaperInfo {
   WallpaperInfo();
 
   explicit WallpaperInfo(const OnlineWallpaperParams& online_wallpaper_params);
+  explicit WallpaperInfo(
+      const GooglePhotosWallpaperParams& google_photos_wallpaper_params);
 
   WallpaperInfo(const std::string& in_location,
                 WallpaperLayout in_layout,
@@ -40,7 +43,8 @@ struct ASH_PUBLIC_EXPORT WallpaperInfo {
   ~WallpaperInfo();
 
   // Either file name of migrated wallpaper including first directory level
-  // (corresponding to user wallpaper_files_id) or online wallpaper URL.
+  // (corresponding to user wallpaper_files_id), online wallpaper URL, or
+  // Google Photos id.
   std::string location;
   WallpaperLayout layout;
   WallpaperType type;

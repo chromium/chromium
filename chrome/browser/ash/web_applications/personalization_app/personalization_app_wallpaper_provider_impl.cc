@@ -13,6 +13,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/tablet_mode.h"
+#include "ash/public/cpp/wallpaper/google_photos_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
@@ -326,6 +327,7 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperChanged() {
     }
     case ash::WallpaperType::kDefault:
     case ash::WallpaperType::kDevice:
+    case ash::WallpaperType::kGooglePhotos:
     case ash::WallpaperType::kOneShot:
     case ash::WallpaperType::kPolicy:
     case ash::WallpaperType::kThirdParty:
@@ -412,6 +414,24 @@ void PersonalizationAppWallpaperProviderImpl::SelectLocalImage(
       base::BindOnce(
           &PersonalizationAppWallpaperProviderImpl::OnLocalImageSelected,
           backend_weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PersonalizationAppWallpaperProviderImpl::SelectGooglePhotosPhoto(
+    const std::string& id,
+    SelectGooglePhotosPhotoCallback callback) {
+  if (pending_select_google_photos_photo_callback_)
+    std::move(pending_select_google_photos_photo_callback_).Run(false);
+  pending_select_google_photos_photo_callback_ = std::move(callback);
+  WallpaperControllerClientImpl* client = WallpaperControllerClientImpl::Get();
+  DCHECK(client);
+
+  client->RecordWallpaperSourceUMA(ash::WallpaperType::kGooglePhotos);
+
+  client->SetGooglePhotosWallpaper(
+      ash::GooglePhotosWallpaperParams(GetAccountId(profile_), id),
+      base::BindOnce(&PersonalizationAppWallpaperProviderImpl::
+                         OnGooglePhotosWallpaperSelected,
+                     backend_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PersonalizationAppWallpaperProviderImpl::SetCustomWallpaperLayout(
@@ -552,6 +572,12 @@ void PersonalizationAppWallpaperProviderImpl::OnOnlineWallpaperSelected(
     bool success) {
   DCHECK(pending_select_wallpaper_callback_);
   std::move(pending_select_wallpaper_callback_).Run(success);
+}
+
+void PersonalizationAppWallpaperProviderImpl::OnGooglePhotosWallpaperSelected(
+    bool success) {
+  DCHECK(pending_select_google_photos_photo_callback_);
+  std::move(pending_select_google_photos_photo_callback_).Run(success);
 }
 
 void PersonalizationAppWallpaperProviderImpl::OnLocalImageSelected(

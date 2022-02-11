@@ -69,6 +69,10 @@ class FakePersonalizationAppWallpaperProvider
                        bool preview_mode,
                        SelectWallpaperCallback callback) override;
 
+  void SelectGooglePhotosPhoto(
+      const std::string& id,
+      SelectGooglePhotosPhotoCallback callback) override;
+
   void SelectLocalImage(const base::FilePath& path,
                         ash::WallpaperLayout layout,
                         bool preview_mode,

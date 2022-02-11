@@ -324,6 +324,8 @@ component("cpp") {
     "views_text_services_context_menu_impl.h",
     "vm_camera_mic_constants.cc",
     "vm_camera_mic_constants.h",
+    "wallpaper/google_photos_wallpaper_params.cc",
+    "wallpaper/google_photos_wallpaper_params.h",
     "wallpaper/online_wallpaper_params.cc",
     "wallpaper/online_wallpaper_params.h",
     "wallpaper/online_wallpaper_variant.cc",

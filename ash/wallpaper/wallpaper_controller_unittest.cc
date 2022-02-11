@@ -46,6 +46,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time_override.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -3247,6 +3248,7 @@ class WallpaperControllerWallpaperWebUiTest
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kWallpaperWebUI, features::kWallpaperFullScreenPreview,
+         features::kWallpaperGooglePhotosIntegration,
          chromeos::features::kDarkLightMode},
         {});
     WallpaperControllerTestBase::SetUp();
@@ -4140,6 +4142,73 @@ TEST_F(WallpaperControllerWallpaperWebUiTest,
   EXPECT_EQ(local_info, actual_info);
   // Verify the wallpaper is not set again.
   EXPECT_EQ(0, GetWallpaperCount());
+}
+
+class WallpaperControllerGooglePhotosWallpaperTest
+    : public WallpaperControllerTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  WallpaperControllerGooglePhotosWallpaperTest() {
+    if (GooglePhotosEnabled()) {
+      scoped_feature_list_.InitWithFeatures(
+          {ash::features::kWallpaperWebUI,
+           ash::features::kWallpaperGooglePhotosIntegration},
+          {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {}, {ash::features::kWallpaperWebUI,
+               ash::features::kWallpaperGooglePhotosIntegration});
+    }
+  }
+
+  WallpaperControllerGooglePhotosWallpaperTest(
+      const WallpaperControllerGooglePhotosWallpaperTest&) = delete;
+  WallpaperControllerGooglePhotosWallpaperTest& operator=(
+      const WallpaperControllerGooglePhotosWallpaperTest&) = delete;
+
+  ~WallpaperControllerGooglePhotosWallpaperTest() override = default;
+
+  bool GooglePhotosEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WallpaperControllerGooglePhotosWallpaperTest,
+                         testing::Bool());
+
+TEST_P(WallpaperControllerGooglePhotosWallpaperTest, SetGooglePhotosWallpaper) {
+  bool feature_enabled = GooglePhotosEnabled();
+  SimulateUserLogin(account_id_1);
+
+  // First set the wallpaper to an Online one so we can tell for sure if setting
+  // a Google Photos wallpaper has failed.
+  base::test::TestFuture<bool> online_future;
+  controller_->SetOnlineWallpaper({account_id_1,
+                                   kAssetId,
+                                   GURL(kDummyUrl),
+                                   kDummyCollectionId,
+                                   WALLPAPER_LAYOUT_CENTER_CROPPED,
+                                   /*preview_mode=*/false,
+                                   /*from_user=*/true,
+                                   /*daily_refresh_enabled=*/false,
+                                   kUnitId,
+                                   {}},
+                                  online_future.GetCallback());
+  ASSERT_TRUE(online_future.Wait());
+  ASSERT_EQ(1, GetWallpaperCount());
+  ASSERT_EQ(controller_->GetWallpaperType(), WallpaperType::kOnline);
+
+  // Now attempt setting a Google Photos wallpaper.
+  ClearWallpaperCount();
+  ASSERT_EQ(0, GetWallpaperCount());
+  base::test::TestFuture<bool> google_photos_future;
+  controller_->SetGooglePhotosWallpaper({account_id_1, ""},
+                                        google_photos_future.GetCallback());
+  EXPECT_EQ(feature_enabled, google_photos_future.Get());
+  EXPECT_EQ(feature_enabled,
+            controller_->GetWallpaperType() == WallpaperType::kGooglePhotos);
 }
 
 }  // namespace ash

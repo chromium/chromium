@@ -12,6 +12,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "base/bind.h"
@@ -357,6 +358,15 @@ void WallpaperControllerClientImpl::SetOnlineWallpaper(
     return;
 
   wallpaper_controller_->SetOnlineWallpaper(params, std::move(callback));
+}
+
+void WallpaperControllerClientImpl::SetGooglePhotosWallpaper(
+    const ash::GooglePhotosWallpaperParams& params,
+    ash::WallpaperController::SetGooglePhotosWallpaperCallback callback) {
+  if (!IsKnownUser(params.account_id))
+    return;
+
+  wallpaper_controller_->SetGooglePhotosWallpaper(params, std::move(callback));
 }
 
 void WallpaperControllerClientImpl::SetOnlineWallpaperIfExists(

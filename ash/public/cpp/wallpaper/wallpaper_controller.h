@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/wallpaper/google_photos_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
@@ -92,6 +93,13 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   using SetOnlineWallpaperCallback = base::OnceCallback<void(bool success)>;
   virtual void SetOnlineWallpaper(const OnlineWallpaperParams& params,
                                   SetOnlineWallpaperCallback callback) = 0;
+
+  // Sets the Google Photos photo with id |params.id| as the active wallpaper.
+  using SetGooglePhotosWallpaperCallback =
+      base::OnceCallback<void(bool success)>;
+  virtual void SetGooglePhotosWallpaper(
+      const GooglePhotosWallpaperParams& params,
+      SetGooglePhotosWallpaperCallback callback) = 0;
 
   // Deprecated. Use |SetOnlineWallpaper| instead because it will handle
   // downloading the image if it is not on disk yet.

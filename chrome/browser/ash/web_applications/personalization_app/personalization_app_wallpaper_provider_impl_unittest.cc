@@ -739,3 +739,25 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
                                                  absl::nullopt),
             google_photos_photos_fetcher->ParseResponse(std::move(response)));
 }
+
+TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest,
+       SelectGooglePhotosPhoto) {
+  test_wallpaper_controller()->ClearCounts();
+  const std::string photo_id = "OmnisVirLupus";
+  bool feature_enabled = GooglePhotosEnabled();
+
+  wallpaper_provider_remote()->get()->SelectGooglePhotosPhoto(
+      photo_id, base::BindLambdaForTesting([&feature_enabled](bool success) {
+        EXPECT_EQ(success, feature_enabled);
+      }));
+  wallpaper_provider_remote()->FlushForTesting();
+
+  EXPECT_EQ(1,
+            test_wallpaper_controller()->set_google_photos_wallpaper_count());
+  EXPECT_EQ(feature_enabled,
+            ash::WallpaperInfo(
+                {AccountId::FromUserEmailGaiaId(kFakeTestEmail, kTestGaiaId),
+                 photo_id}) ==
+                test_wallpaper_controller()->wallpaper_info().value_or(
+                    ash::WallpaperInfo()));
+}
