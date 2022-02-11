@@ -125,6 +125,7 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://bookmarks/*",
+      "chrome://bookmarks-side-panel.top-chrome/*",
       "chrome://read-later.top-chrome/*"
     ]
   }],
@@ -137,6 +138,7 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://bookmarks/*",
+      "chrome://bookmarks-side-panel.top-chrome/*",
       "chrome://read-later.top-chrome/*",
       "chrome://welcome/*"
     ]
@@ -800,6 +802,7 @@
     "contexts": ["webui"],
     "matches": [
       "chrome://bookmarks/*",
+      "chrome://bookmarks-side-panel.top-chrome/*",
       "chrome://read-later.top-chrome/*",
       "chrome://tab-strip.top-chrome/*"
     ]

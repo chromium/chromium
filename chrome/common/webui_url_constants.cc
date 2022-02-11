@@ -233,6 +233,10 @@ const char kChromeUIWebApksHost[] = "webapks";
 #else
 const char kChromeUIAppServiceInternalsHost[] = "app-service-internals";
 const char kChromeUINearbyInternalsHost[] = "nearby-internals";
+const char kChromeUIBookmarksSidePanelHost[] =
+    "bookmarks-side-panel.top-chrome";
+const char kChromeUIBookmarksSidePanelURL[] =
+    "chrome://bookmarks-side-panel.top-chrome/";
 const char kChromeUIReadLaterHost[] = "read-later.top-chrome";
 const char kChromeUIReadLaterURL[] = "chrome://read-later.top-chrome/";
 const char kChromeUIWebAppInternalsHost[] = "web-app-internals";

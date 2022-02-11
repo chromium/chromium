@@ -35,6 +35,12 @@ void SetupWebUIDataSource(content::WebUIDataSource* source,
                           base::span<const ResourcePath> resources,
                           int default_resource);
 
+// Adds string for |id| to |source| and removes & from the string to allow for
+// reuse of generic strings.
+void AddLocalizedString(content::WebUIDataSource* source,
+                        const std::string& message,
+                        int id);
+
 // Returns whether the device is enterprise managed. Note that on Linux, there's
 // no good way of detecting whether the device is managed, so always return
 // false.

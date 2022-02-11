@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "ui/base/models/simple_combobox_model.h"
 
+class Browser;
 class BrowserView;
 
 namespace views {
@@ -48,6 +49,8 @@ class SidePanelCoordinator final {
   std::unique_ptr<views::View> CreateHeader();
   std::unique_ptr<views::Combobox> CreateCombobox();
   void OnComboboxChanged();
+
+  std::unique_ptr<views::View> CreateBookmarksWebView(Browser* browser);
 
   const raw_ptr<BrowserView> browser_view_;
   SidePanelRegistry window_registry_;

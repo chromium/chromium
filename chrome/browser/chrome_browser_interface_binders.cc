@@ -155,6 +155,7 @@
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
 #include "chrome/browser/ui/webui/read_later/read_later.mojom.h"
 #include "chrome/browser/ui/webui/read_later/read_later_ui.h"
+#include "chrome/browser/ui/webui/read_later/side_panel/bookmarks_side_panel_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
@@ -799,8 +800,14 @@ void PopulateChromeWebUIFrameBinders(
   }
 
   if (base::FeatureList::IsEnabled(features::kSidePanel)) {
-    RegisterWebUIControllerInterfaceBinder<
-        side_panel::mojom::BookmarksPageHandlerFactory, ReadLaterUI>(map);
+    if (base::FeatureList::IsEnabled(features::kUnifiedSidePanel)) {
+      RegisterWebUIControllerInterfaceBinder<
+          side_panel::mojom::BookmarksPageHandlerFactory, BookmarksSidePanelUI>(
+          map);
+    } else {
+      RegisterWebUIControllerInterfaceBinder<
+          side_panel::mojom::BookmarksPageHandlerFactory, ReadLaterUI>(map);
+    }
   }
 
   if (features::IsReaderModeSidePanelEnabled()) {

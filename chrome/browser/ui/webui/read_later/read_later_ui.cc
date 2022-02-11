@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/cxx20_erase.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -29,19 +28,8 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
-
-namespace {
-void AddLocalizedString(content::WebUIDataSource* source,
-                        const std::string& message,
-                        int id) {
-  std::u16string str = l10n_util::GetStringUTF16(id);
-  base::Erase(str, '&');
-  source->AddString(message, str);
-}
-}  // namespace
 
 ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
     : ui::MojoBubbleWebUIController(web_ui),
@@ -73,7 +61,7 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
       {"unreadHeader", IDS_READ_LATER_MENU_UNREAD_HEADER},
   };
   for (const auto& str : kLocalizedStrings)
-    AddLocalizedString(source, str.name, str.id);
+    webui::AddLocalizedString(source, str.name, str.id);
 
   const bool show_side_panel =
       base::FeatureList::IsEnabled(features::kSidePanel);

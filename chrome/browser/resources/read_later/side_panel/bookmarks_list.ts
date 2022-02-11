@@ -7,8 +7,6 @@ import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_man
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from '../read_later_api_proxy.js';
-
 import {BookmarkFolderElement, FOLDER_OPEN_CHANGED_EVENT, getBookmarkFromElement, isBookmarkFolderElement} from './bookmark_folder.js';
 import {BookmarksApiProxy, BookmarksApiProxyImpl} from './bookmarks_api_proxy.js';
 import {BookmarksDragManager} from './bookmarks_drag_manager.js';
@@ -53,8 +51,6 @@ export class BookmarksListElement extends PolymerElement {
   private bookmarksDragManager_: BookmarksDragManager =
       new BookmarksDragManager(this);
   private focusOutlineManager_: FocusOutlineManager;
-  private readLaterApi_: ReadLaterApiProxy =
-      ReadLaterApiProxyImpl.getInstance();
   private listeners_ = new Map<string, Function>();
   private folders_: chrome.bookmarks.BookmarkTreeNode[];
   hoverVisible: boolean;
@@ -107,10 +103,6 @@ export class BookmarksListElement extends PolymerElement {
 
       this.bookmarksDragManager_.startObserving();
     });
-    if (loadTimeData.getBoolean('unifiedSidePanel')) {
-      // Show the UI as soon as the app is connected.
-      this.readLaterApi_.showUI();
-    }
   }
 
   disconnectedCallback() {

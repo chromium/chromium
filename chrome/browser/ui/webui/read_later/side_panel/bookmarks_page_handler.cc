@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/webui/read_later/read_later_ui.h"
+#include "chrome/browser/ui/webui/read_later/side_panel/bookmarks_side_panel_ui.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -109,6 +110,14 @@ class BookmarkContextMenu : public ui::SimpleMenuModel,
 
 BookmarksPageHandler::BookmarksPageHandler(
     mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver,
+    BookmarksSidePanelUI* bookmarks_ui)
+    : receiver_(this, std::move(receiver)), bookmarks_ui_(bookmarks_ui) {
+  if (auto embedder = bookmarks_ui_->embedder())
+    embedder->ShowUI();
+}
+
+BookmarksPageHandler::BookmarksPageHandler(
+    mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver,
     ReadLaterUI* read_later_ui)
     : receiver_(this, std::move(receiver)), read_later_ui_(read_later_ui) {}
 
@@ -153,7 +162,8 @@ void BookmarksPageHandler::ShowContextMenu(const std::string& id_string,
   if (!bookmark)
     return;
 
-  auto embedder = read_later_ui_->embedder();
+  auto embedder =
+      bookmarks_ui_ ? bookmarks_ui_->embedder() : read_later_ui_->embedder();
   if (embedder) {
     embedder->ShowContextMenu(point, std::make_unique<BookmarkContextMenu>(
                                          browser, embedder, bookmark));

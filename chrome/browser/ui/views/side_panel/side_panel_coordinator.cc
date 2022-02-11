@@ -7,13 +7,22 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
+#include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_later_side_panel_web_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/webui/read_later/side_panel/bookmarks_side_panel_ui.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/combobox_model.h"
@@ -64,19 +73,11 @@ SidePanelCoordinator::SidePanelCoordinator(BrowserView* browser_view)
                                              base::Unretained(coordinator)));
           },
           this, browser_view->browser())));
-  // TODO(corising): Replace ReadLaterSidePanelWebView with a new WebView for
-  // the bookmarks entry.
   window_registry_.Register(std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kBookmarks,
       l10n_util::GetStringUTF16(IDS_BOOKMARK_MANAGER_TITLE),
-      base::BindRepeating(
-          [](SidePanelCoordinator* coordinator,
-             Browser* browser) -> std::unique_ptr<views::View> {
-            return std::make_unique<ReadLaterSidePanelWebView>(
-                browser, base::BindRepeating(&SidePanelCoordinator::Close,
-                                             base::Unretained(coordinator)));
-          },
-          this, browser_view->browser())));
+      base::BindRepeating(&SidePanelCoordinator::CreateBookmarksWebView,
+                          base::Unretained(this), browser_view->browser())));
 }
 
 SidePanelCoordinator::~SidePanelCoordinator() = default;
@@ -92,8 +93,18 @@ void SidePanelCoordinator::Show(absl::optional<SidePanelEntry::Id> entry_id) {
   if (!entry)
     return;
 
-  if (GetContentView() == nullptr)
+  if (GetContentView() == nullptr) {
     InitializeSidePanel();
+    base::RecordAction(base::UserMetricsAction("SidePanel.Show"));
+    // Record usage for side panel promo.
+    feature_engagement::TrackerFactory::GetForBrowserContext(
+        browser_view_->GetProfile())
+        ->NotifyEvent("side_panel_shown");
+
+    // Close IPH for side panel if shown.
+    browser_view_->browser()->window()->CloseFeaturePromo(
+        feature_engagement::kIPHReadingListInSidePanelFeature);
+  }
 
   PopulateSidePanel(entry);
 }
@@ -108,6 +119,7 @@ void SidePanelCoordinator::Close() {
       l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_SHOW));
 
   browser_view_->right_aligned_side_panel()->RemoveChildViewT(content_view);
+  base::RecordAction(base::UserMetricsAction("SidePanel.Hide"));
 }
 
 void SidePanelCoordinator::Toggle() {
@@ -259,4 +271,23 @@ void SidePanelCoordinator::OnComboboxChanged() {
     if (entry.get()->name() == entry_name)
       Show(entry.get()->id());
   }
+}
+
+std::unique_ptr<views::View> SidePanelCoordinator::CreateBookmarksWebView(
+    Browser* browser) {
+  auto bookmarks_web_view =
+      std::make_unique<SidePanelWebUIViewT<BookmarksSidePanelUI>>(
+          browser, base::RepeatingClosure(),
+          base::BindRepeating(&SidePanelCoordinator::Close,
+                              base::Unretained(this)),
+          std::make_unique<BubbleContentsWrapperT<BookmarksSidePanelUI>>(
+              GURL(chrome::kChromeUIBookmarksSidePanelURL), browser->profile(),
+              IDS_BOOKMARK_MANAGER_TITLE,
+              /*webui_resizes_host=*/false,
+              /*esc_closes_ui=*/false));
+  if (base::FeatureList::IsEnabled(features::kSidePanelDragAndDrop)) {
+    extensions::BookmarkManagerPrivateDragEventRouter::CreateForWebContents(
+        bookmarks_web_view.get()->contents_wrapper()->web_contents());
+  }
+  return bookmarks_web_view;
 }

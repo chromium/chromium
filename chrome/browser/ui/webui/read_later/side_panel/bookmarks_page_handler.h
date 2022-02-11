@@ -11,10 +11,14 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 
 class GURL;
+class BookmarksSidePanelUI;
 class ReadLaterUI;
 
 class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler {
  public:
+  explicit BookmarksPageHandler(
+      mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver,
+      BookmarksSidePanelUI* bookmarks_ui);
   explicit BookmarksPageHandler(
       mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver,
       ReadLaterUI* read_later_ui);
@@ -30,7 +34,10 @@ class BookmarksPageHandler : public side_panel::mojom::BookmarksPageHandler {
 
  private:
   mojo::Receiver<side_panel::mojom::BookmarksPageHandler> receiver_;
-  const raw_ptr<ReadLaterUI> read_later_ui_;
+  raw_ptr<BookmarksSidePanelUI> bookmarks_ui_;
+  // TODO(corising): Remove use of ReadLaterUI which is only needed prior to
+  // kUnifiedSidePanel.
+  raw_ptr<ReadLaterUI> read_later_ui_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_READ_LATER_SIDE_PANEL_BOOKMARKS_PAGE_HANDLER_H_
