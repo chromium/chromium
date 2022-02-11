@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://github.com/whatwg/html/pull/7465">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<label id=buttonlabel for=disabledbutton>label for disabled button</label>
+<button id=disabledbutton disabled>disabled</button>
+
+<button id=buttonparent disabled>
+  <div id=buttonchild>child of disabled</div>
+</button>
+
+<input id=disabledinput disabled>
+
+<textarea id=disabledtextarea disabled>disabled textarea</textarea>
+
+<script>
+promise_test(async () => {
+  await (new test_driver.Actions()
+    .pointerMove(2, 2, {origin: disabledbutton})
+    .pointerDown())
+    .send();
+
+  assert_true(disabledbutton.matches(':active'));
+
+  await (new test_driver.Actions()
+    .pointerUp())
+    .send();
+}, 'Clicking on a disabled button should make it get the :active selector.');
+
+promise_test(async () => {
+  await (new test_driver.Actions()
+    .pointerMove(2, 2, {origin: buttonlabel})
+    .pointerDown())
+    .send();
+
+  assert_true(disabledbutton.matches(':active'));
+
+  await (new test_driver.Actions()
+    .pointerUp())
+    .send();
+}, 'Clicking the label for a disabled button should make the button get the :active selector.');
+
+promise_test(async () => {
+  await (new test_driver.Actions()
+    .pointerMove(2, 2, {origin: buttonchild})
+    .pointerDown())
+    .send();
+
+  assert_true(buttonparent.matches(':active'));
+
+  await (new test_driver.Actions()
+    .pointerUp())
+    .send();
+}, 'Clicking on a child of a disabled button should make the button get the :active selector.');
+
+promise_test(async () => {
+  await (new test_driver.Actions()
+    .pointerMove(2, 2, {origin: disabledinput})
+    .pointerDown())
+    .send();
+
+  assert_true(disabledinput.matches(':active'));
+
+  await (new test_driver.Actions()
+    .pointerUp())
+    .send();
+}, 'Clicking on a disabled input should make it get the :active selector.');
+
+promise_test(async () => {
+  await (new test_driver.Actions()
+    .pointerMove(2, 2, {origin: disabledtextarea})
+    .pointerDown())
+    .send();
+
+  assert_true(disabledtextarea.matches(':active'));
+
+  await (new test_driver.Actions()
+    .pointerUp())
+    .send();
+}, 'Clicking on a disabled textarea should make it get the :active selector.');
+</script>

@@ -7283,8 +7283,7 @@ void Document::UpdateActiveState(bool is_active,
     SetActiveElement(nullptr);
   } else {
     Element* new_active_element = inner_element_in_document;
-    if (!old_active_element && new_active_element &&
-        !new_active_element->IsDisabledFormControl() && is_active) {
+    if (!old_active_element && new_active_element && is_active) {
       // We are setting the :active chain and freezing it. If future moves
       // happen, they will need to reference this chain.
       for (Element* element = new_active_element; element;
