@@ -52,8 +52,8 @@ src/demo/a/b/c.spec.ts
 src/demo/a/b/d.spec.ts
 src/demo/file_depth_2/in_single_child_dir/r.spec.ts
 src/stress/listing.ts
-src/stress/adapter/device_allocation.ts
 src/webgpu/constants.ts
+src/stress/adapter/device_allocation.spec.ts
 src/webgpu/util/conversion.ts
 src/webgpu/shader/execution/builtin/builtin.ts
 src/webgpu/util/math.ts
@@ -139,8 +139,8 @@ src/webgpu/api/operation/device/lost.spec.ts
 src/webgpu/api/operation/memory_sync/buffer/buffer_sync_test.ts
 src/webgpu/api/operation/memory_sync/buffer/rw_and_wr.spec.ts
 src/webgpu/api/operation/memory_sync/buffer/ww.spec.ts
-src/webgpu/api/operation/memory_sync/texture/rw_and_wr.spec.ts
-src/webgpu/api/operation/memory_sync/texture/ww.spec.ts
+src/webgpu/api/operation/memory_sync/texture/texture_sync_test.ts
+src/webgpu/api/operation/memory_sync/texture/same_subresource.spec.ts
 src/webgpu/api/operation/pipeline/default_layout.spec.ts
 src/webgpu/api/operation/queue/writeBuffer.spec.ts
 src/webgpu/api/operation/render_pass/clear_value.spec.ts
@@ -257,6 +257,7 @@ src/webgpu/shader/execution/builtin/all.spec.ts
 src/webgpu/shader/execution/builtin/any.spec.ts
 src/webgpu/shader/execution/builtin/atan.spec.ts
 src/webgpu/shader/execution/builtin/ceil.spec.ts
+src/webgpu/shader/execution/builtin/clamp.spec.ts
 src/webgpu/shader/execution/builtin/cos.spec.ts
 src/webgpu/shader/execution/builtin/float_built_functions.spec.ts
 src/webgpu/shader/execution/builtin/floor.spec.ts
@@ -268,6 +269,10 @@ src/webgpu/shader/execution/builtin/max.spec.ts
 src/webgpu/shader/execution/builtin/min.spec.ts
 src/webgpu/shader/execution/builtin/select.spec.ts
 src/webgpu/shader/execution/builtin/value_testing_built_in_functions.spec.ts
+src/webgpu/shader/execution/memory_model/atomicity.spec.ts
+src/webgpu/shader/execution/memory_model/barrier.spec.ts
+src/webgpu/shader/execution/memory_model/coherence.spec.ts
+src/webgpu/shader/execution/memory_model/weak.spec.ts
 src/webgpu/shader/execution/sampling/gradients_in_varying_loop.spec.ts
 src/webgpu/shader/execution/shader_io/compute_builtins.spec.ts
 src/webgpu/shader/execution/shader_io/shared_structs.spec.ts
