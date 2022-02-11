@@ -4111,23 +4111,23 @@
   </message>
 
   <!-- Smart privacy protection OOBE screen -->
-  <message name="IDS_SMART_PRIVACY_PROTECTION_TITLE" desc="Title of the smart privacy protection screen.">
-    Guard your privacy with Smart Privacy Protection
+  <message name="IDS_SMART_PRIVACY_PROTECTION_TITLE" desc="Title of the screen, which introduces privacy protection features.">
+    Keep your screen private
   </message>
-  <message name="IDS_SMART_PRIVACY_PROTECTION_SCREEN_LOCK" desc="Title of the screen lock section.">
-    Smart screen lock
+  <message name="IDS_SMART_PRIVACY_PROTECTION_SCREEN_LOCK" desc="Title of the lock-on-leave section.">
+    Lock-on-leave
   </message>
-  <message name="IDS_SMART_PRIVACY_PROTECTION_SCREEN_LOCK_DESCRIPTION" desc="Description of the lock screen feature.">
-    When you leave your computer, the screen is automatically locked to protect your privacy.
+  <message name="IDS_SMART_PRIVACY_PROTECTION_SCREEN_LOCK_DESCRIPTION" desc="Description of the lock-on-leave feature.">
+    If you move away from your device, your screen will lock automatically. When you're in front of your device, your screen will stay awake.
   </message>
-  <message name="IDS_SMART_PRIVACY_PROTECTION_SNOOPING_DETECTION" desc="Title of the snooping detection section.">
-    Snooping detection
+  <message name="IDS_SMART_PRIVACY_PROTECTION_SNOOPING_DETECTION" desc="Title of the viewing protection section.">
+    Viewing protection
   </message>
-  <message name="IDS_SMART_PRIVACY_PROTECTION_SNOOPING_DETECTION_DESCRIPTION" desc="Description of the snooping detection feature.">
-    Detect when someone is snooping your screen from behind, and protect privacy by masking notifications.
+  <message name="IDS_SMART_PRIVACY_PROTECTION_SNOOPING_DETECTION_DESCRIPTION" desc="Description of the viewing protection feature.">
+    When someone else looks at your screen, you'll get an alert and notification content will be hidden.
   </message>
-  <message name="IDS_SMART_PRIVACY_PROTECTION_CONTENT" desc="Description of the privacy protection feature.">
-    Smart Privacy Protection uses built-in sensor to detect human presence. The data is encrypted and securely processed, then completely deleted after used. Google doesn’t access this data.
+  <message name="IDS_SMART_PRIVACY_PROTECTION_CONTENT" desc="Description of the privacy protection features implementation. This message is followed by a 'Learn more' link.">
+    Your Chromebook uses a built-in sensor to detect people in front of your device. All data is processed on your device immediately and then deleted. Sensor data is never sent to Google.
   </message>
   <message name="IDS_SMART_PRIVACY_PROTECTION_TURN_ON_BUTTON" desc="Label on a button to turn on the smart privacy protection feature and continue.">
     Turn on
