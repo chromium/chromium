@@ -238,6 +238,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/assistant/buildflags.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "components/app_restore/features.h"
 #include "components/metrics/structured/structured_metrics_features.h"  // nogncheck
@@ -2552,7 +2553,9 @@ constexpr FeatureEntry::FeatureVariation
          base::size(kPlatformProvidedTrustTokenIssuance), nullptr}};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(HAS_ASH_AMBIENT_ANIMATION_RESOURCES)
 constexpr char kAmbientModeAnimationInternalName[] = "ambient-mode-animation";
+#endif  // BUILDFLAG(HAS_ASH_AMBIENT_ANIMATION_RESOURCES)
 constexpr char kPersonalizationHubInternalName[] = "personalization-hub";
 constexpr char kWallpaperFullScreenPreviewInternalName[] =
     "wallpaper-fullscreen-preview";
@@ -7872,11 +7875,13 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillEnableUpdateVirtualCardEnrollment)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(HAS_ASH_AMBIENT_ANIMATION_RESOURCES)
     {kAmbientModeAnimationInternalName,
      flag_descriptions::kAmbientModeAnimationName,
      flag_descriptions::kAmbientModeAnimationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kAmbientModeAnimationFeature)},
-#endif
+#endif  // BUILDFLAG(HAS_ASH_AMBIENT_ANIMATION_RESOURCES)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     {"lacros-non-syncing-profiles",
@@ -8077,8 +8082,13 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
     return !ash::features::IsWallpaperWebUIEnabled();
 
   // Features that are only available for Unknown/Canary/Dev channels.
+  bool is_ambient_mode_animation_feature = false;
+#if BUILDFLAG(HAS_ASH_AMBIENT_ANIMATION_RESOURCES)
+  is_ambient_mode_animation_feature =
+      !strcmp(kAmbientModeAnimationInternalName, entry.internal_name);
+#endif  // BUILDFLAG(HAS_ASH_AMBIENT_ANIMATION_RESOURCES)
   if ((!strcmp(kPersonalizationHubInternalName, entry.internal_name) ||
-       !strcmp(kAmbientModeAnimationInternalName, entry.internal_name)) &&
+       is_ambient_mode_animation_feature) &&
       channel != version_info::Channel::DEV &&
       channel != version_info::Channel::CANARY &&
       channel != version_info::Channel::UNKNOWN) {
