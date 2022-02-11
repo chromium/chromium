@@ -20,3 +20,6 @@ template("swift_source_set") {
     }
   }
 }
+set_defaults("swift_source_set") {
+  configs = default_compiler_configs
+}
