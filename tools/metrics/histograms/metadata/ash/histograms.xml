@@ -2153,6 +2153,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Ash.NotificationView.ExpandButton.BoundsChange.AnimationSmoothness"
+    units="%" expires_after="2023-02-09">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Relative smoothness of the bounds change animation of the expand button
+    inside a notification view. 100% represents ideally smooth 60 frames per
+    second. Emitted when the animation is completed.
+  </summary>
+</histogram>
+
 <histogram name="Ash.NotificationView.{ChildView}.FadeIn.AnimationSmoothness"
     units="%" expires_after="2023-01-28">
   <owner>leandre@chromium.org</owner>
@@ -2175,6 +2187,22 @@ chromium-metrics-reviews@google.com.
     <variant name="MessageLabel"/>
     <variant name="TimestampInTitle"/>
     <variant name="TitleRowDivider"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Ash.NotificationView.{ChildView}.ScaleAndTranslate.AnimationSmoothness"
+    units="%" expires_after="2023-02-09">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Relative smoothness of the scale and translate animation of {ChildView}
+    inside a notification view. 100% represents ideally smooth 60 frames per
+    second. Emitted when the animation is completed.
+  </summary>
+  <token key="ChildView">
+    <variant name="IconView"/>
+    <variant name="ImageContainerView"/>
   </token>
 </histogram>
 

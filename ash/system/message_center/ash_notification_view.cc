@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -27,9 +28,11 @@
 #include "ash/wm/work_area_insets.h"
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/tween.h"
@@ -177,10 +180,19 @@ void ScaleAndTranslateView(views::View* view,
                            SkScalar scale_value_x,
                            SkScalar scale_value_y,
                            SkScalar translate_value_x,
-                           SkScalar translate_value_y) {
+                           SkScalar translate_value_y,
+                           const std::string& animation_histogram_name) {
   gfx::Transform transform;
   transform.Translate(translate_value_x, translate_value_y);
   transform.Scale(scale_value_x, scale_value_y);
+
+  ui::AnimationThroughputReporter reporter(
+      view->layer()->GetAnimator(),
+      ash::metrics_util::ForSmoothness(base::BindRepeating(
+          [](const std::string& animation_histogram_name, int smoothness) {
+            base::UmaHistogramPercentage(animation_histogram_name, smoothness);
+          },
+          animation_histogram_name)));
 
   views::AnimationBuilder()
       .SetPreemptionStrategy(
@@ -1212,9 +1224,11 @@ void AshNotificationView::PerformLargeImageAnimation() {
                           static_cast<double>(icon_view()->height()) /
                               image_container_view()->height(),
                           icon_view_bounds.x() - large_image_bounds.x(),
-                          icon_view_bounds.y() - large_image_bounds.y());
+                          icon_view_bounds.y() - large_image_bounds.y(),
+                          "Ash.NotificationView.ImageContainerView."
+                          "ScaleAndTranslate.AnimationSmoothness");
 
-    // If we a different image for `icon_view()` and `image_container_view()`
+    // If we use different images for `icon_view()` and `image_container_view()`
     // (a.k.a hide_icon_on_expanded() is false), fade in
     // `image_container_view()`.
     if (!hide_icon_on_expanded()) {
@@ -1237,7 +1251,8 @@ void AshNotificationView::PerformLargeImageAnimation() {
         static_cast<double>(image_container_view()->height()) /
             icon_view()->height(),
         large_image_bounds.x() - icon_view_bounds.x(),
-        large_image_bounds.y() - icon_view_bounds.y());
+        large_image_bounds.y() - icon_view_bounds.y(),
+        "Ash.NotificationView.IconView.ScaleAndTranslate.AnimationSmoothness");
     return;
   }
 

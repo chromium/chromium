@@ -4,14 +4,17 @@
 
 #include "ash/system/message_center/ash_notification_expand_button.h"
 
+#include "ash/public/cpp/metrics_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/message_center/message_center_utils.h"
 #include "ash/system/tray/tray_popup_utils.h"
+#include "base/metrics/histogram_functions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/rect.h"
@@ -150,6 +153,7 @@ void AshNotificationExpandButton::PerformExpandCollapseAnimation() {
     // In this case, `total_grouped_notifications_` is not zero and label is not
     // visible. This means the label switch from visible to invisible and we
     // should do fade out animation.
+    label_fading_out_ = true;
     message_center_utils::FadeOutView(
         label_,
         base::BindRepeating(
@@ -158,6 +162,7 @@ void AshNotificationExpandButton::PerformExpandCollapseAnimation() {
               if (parent) {
                 label->layer()->SetOpacity(1.0f);
                 label->SetVisible(false);
+                parent->set_label_fading_out(false);
               }
             },
             weak_factory_.GetWeakPtr(), label_),
@@ -175,6 +180,15 @@ void AshNotificationExpandButton::PerformExpandCollapseAnimation() {
   const gfx::Rect image_target_bounds = image_->layer()->GetTargetBounds();
 
   extra_width = previous_bounds_.width() - target_bounds.width();
+
+  ui::AnimationThroughputReporter reporter(
+      layer()->GetAnimator(),
+      metrics_util::ForSmoothness(base::BindRepeating([](int value) {
+        base::UmaHistogramPercentage(
+            "Ash.NotificationView.ExpandButton.BoundsChange."
+            "AnimationSmoothness",
+            value);
+      })));
 
   layer()->SetBounds(
       gfx::Rect(target_bounds.x() - extra_width, target_bounds.y(),
@@ -203,6 +217,21 @@ void AshNotificationExpandButton::OnThemeChanged() {
   SkColor background_color = AshColorProvider::Get()->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
   layer()->SetColor(background_color);
+}
+
+gfx::Size AshNotificationExpandButton::CalculatePreferredSize() const {
+  gfx::Size size = Button::CalculatePreferredSize();
+
+  // When label is fading out, it is still visible but we should not consider
+  // its size in our calculation here, so that size change animation can be
+  // performed correctly.
+  if (label_fading_out_) {
+    return gfx::Size(size.width() - label_->GetPreferredSize().width() -
+                         kNotificationExpandButtonLabelInsets.width(),
+                     size.height());
+  }
+
+  return size;
 }
 
 }  // namespace ash

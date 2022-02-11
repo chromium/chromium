@@ -30,6 +30,7 @@
 #include "ui/message_center/views/message_view.h"
 #include "ui/message_center/views/notification_header_view.h"
 #include "ui/message_center/views/notification_view.h"
+#include "ui/message_center/views/proportional_image_view.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -228,6 +229,10 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
   }
   views::Label* GetMessageLabelInExpandedState(AshNotificationView* view) {
     return view->message_label_in_expanded_state_;
+  }
+  message_center::ProportionalImageView* GetIconView(
+      AshNotificationView* view) const {
+    return view->icon_view();
   }
   AshNotificationExpandButton* GetExpandButton(AshNotificationView* view) {
     return view->expand_button_;
@@ -654,6 +659,61 @@ TEST_F(AshNotificationViewTest, ExpandCollapseAnimationsRecordSmoothness) {
       "Ash.NotificationView.ActionsRow.FadeIn.AnimationSmoothness");
 }
 
+TEST_F(AshNotificationViewTest, ImageExpandCollapseAnimationsRecordSmoothness) {
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  message_center::MessageCenter::Get()->RemoveAllNotifications(
+      /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
+  auto notification = CreateTestNotification(/*has_image=*/true,
+                                             /*show_snooze_button=*/true);
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  auto* notification_view =
+      GetNotificationViewFromMessageCenter(notification->id());
+  notification_view->SetExpanded(false);
+
+  base::HistogramTester histograms;
+  notification_view->ToggleExpand();
+  EXPECT_TRUE(notification_view->IsExpanded());
+
+  // When we use different images for icon view and image container view, we
+  // will fade in, scale and translate image container view when changing to
+  // expand state.
+  CheckSmoothnessRecorded(
+      histograms, GetImageContainerView(notification_view),
+      "Ash.NotificationView.ImageContainerView.FadeIn.AnimationSmoothness");
+  CheckSmoothnessRecorded(histograms, GetImageContainerView(notification_view),
+                          "Ash.NotificationView.ImageContainerView."
+                          "ScaleAndTranslate.AnimationSmoothness");
+
+  // Clear icon so that icon view and image container view use the same image.
+  notification->set_icon(gfx::Image());
+  message_center::MessageCenter::Get()->UpdateNotification(
+      notification->id(), std::move(notification));
+
+  EXPECT_TRUE(notification_view->IsExpanded());
+
+  base::HistogramTester histograms_collapsed;
+  notification_view->ToggleExpand();
+  EXPECT_FALSE(notification_view->IsExpanded());
+
+  // We scale and translate icon view to collapsed state.
+  CheckSmoothnessRecorded(
+      histograms_collapsed, GetIconView(notification_view),
+      "Ash.NotificationView.IconView.ScaleAndTranslate.AnimationSmoothness");
+
+  base::HistogramTester histograms_expanded;
+  notification_view->ToggleExpand();
+  EXPECT_TRUE(notification_view->IsExpanded());
+
+  // We scale and translate image container view to expanded state.
+  CheckSmoothnessRecorded(histograms_expanded,
+                          GetImageContainerView(notification_view),
+                          "Ash.NotificationView.ImageContainerView."
+                          "ScaleAndTranslate.AnimationSmoothness");
+}
+
 TEST_F(AshNotificationViewTest, GroupExpandCollapseAnimationsRecordSmoothness) {
   base::HistogramTester histograms;
 
@@ -676,19 +736,22 @@ TEST_F(AshNotificationViewTest, GroupExpandCollapseAnimationsRecordSmoothness) {
   notification_view->ToggleExpand();
   EXPECT_TRUE(notification_view->IsExpanded());
 
-  // All the fade in animations of views in expanded state should be performed
-  // and recorded here.
+  // All the animations of views in expanded state should be performed and
+  // recorded here.
   CheckSmoothnessRecorded(
       histograms_expanded,
       GetMainView(GetFirstGroupedChildNotificationView(notification_view)),
       "Ash.NotificationView.MainView.FadeIn.AnimationSmoothness");
+  CheckSmoothnessRecorded(
+      histograms_expanded, GetExpandButton(notification_view),
+      "Ash.NotificationView.ExpandButton.BoundsChange.AnimationSmoothness");
 
   base::HistogramTester histograms_collapsed;
   notification_view->ToggleExpand();
   EXPECT_FALSE(notification_view->IsExpanded());
 
-  // All the fade in animations of views in collapsed state should be performed
-  // and recorded here.
+  // All the animations of views in collapsed state should be performed and
+  // recorded here.
   CheckSmoothnessRecorded(
       histograms_collapsed,
       GetCollapsedSummaryView(
@@ -698,6 +761,10 @@ TEST_F(AshNotificationViewTest, GroupExpandCollapseAnimationsRecordSmoothness) {
       histograms_collapsed,
       GetExpandButton(notification_view)->label_for_test(),
       "Ash.NotificationView.ExpandButtonLabel.FadeIn.AnimationSmoothness");
+  CheckSmoothnessRecorded(
+      histograms_collapsed,
+      GetExpandButton(notification_view)->label_for_test(),
+      "Ash.NotificationView.ExpandButton.BoundsChange.AnimationSmoothness");
 }
 
 TEST_F(AshNotificationViewTest, InlineReplyAnimationsRecordSmoothness) {
