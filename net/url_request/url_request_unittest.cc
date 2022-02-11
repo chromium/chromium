@@ -97,6 +97,7 @@
 #include "net/cookies/cookie_store_test_helpers.h"
 #include "net/cookies/test_cookie_access_delegate.h"
 #include "net/disk_cache/disk_cache.h"
+#include "net/dns/host_resolver_results.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_byte_range.h"
@@ -132,6 +133,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/gtest_util.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
+#include "net/test/ssl_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/test/url_request/url_request_failed_job.h"
@@ -9669,6 +9671,68 @@ TEST_F(HTTPSRequestTest, HTTPSExpiredTest) {
       } else {
         EXPECT_EQ(0, d.bytes_received());
       }
+    }
+  }
+}
+
+TEST_F(HTTPSRequestTest, EncryptedClientHello) {
+  // Configure a test server that speaks ECH.
+  static constexpr char kRealName[] = "secret.example";
+  static constexpr char kPublicName[] = "public.example";
+  EmbeddedTestServer::ServerCertificateConfig server_cert_config;
+  server_cert_config.dns_names = {kRealName};
+
+  SSLServerConfig ssl_server_config;
+  std::vector<uint8_t> ech_config_list;
+  ssl_server_config.ech_keys =
+      MakeTestEchKeys(kPublicName, /*max_name_len=*/128, &ech_config_list);
+  ASSERT_TRUE(ssl_server_config.ech_keys);
+
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+  test_server.SetSSLConfig(server_cert_config, ssl_server_config);
+  RegisterDefaultHandlers(&test_server);
+  ASSERT_TRUE(test_server.Start());
+
+  AddressList addr;
+  ASSERT_TRUE(test_server.GetAddressList(&addr));
+
+  for (bool ech_enabled : {true, false}) {
+    SCOPED_TRACE(ech_enabled);
+    base::test::ScopedFeatureList features;
+    if (ech_enabled) {
+      features.InitAndEnableFeature(features::kEncryptedClientHello);
+    } else {
+      features.InitAndDisableFeature(features::kEncryptedClientHello);
+    }
+
+    // Configure `MockHostResolver` to return `ech_config_list`.
+    //
+    // TODO(https://crbug.com/1264933): Replace this with an end-to-end test
+    // when the `HostResolver` portion is implemented.
+    auto host_resolver = std::make_unique<MockHostResolver>();
+    HostResolverEndpointResult endpoint;
+    endpoint.ip_endpoints = addr.endpoints();
+    endpoint.metadata.supported_protocol_alpns = {"http/1.1"};
+    endpoint.metadata.ech_config_list = ech_config_list;
+    host_resolver->rules()->AddRule(kRealName, std::vector{endpoint});
+    auto context_builder = CreateTestURLRequestContextBuilder();
+    context_builder->set_host_resolver(std::move(host_resolver));
+    auto context = context_builder->Build();
+
+    TestDelegate d;
+    {
+      std::unique_ptr<URLRequest> r = context->CreateRequest(
+          test_server.GetURL(kRealName, "/defaultresponse"), DEFAULT_PRIORITY,
+          &d, TRAFFIC_ANNOTATION_FOR_TESTS);
+      r->Start();
+      EXPECT_TRUE(r->is_pending());
+
+      d.RunUntilComplete();
+
+      EXPECT_EQ(1, d.response_started_count());
+      EXPECT_FALSE(d.received_data_before_response());
+      EXPECT_NE(0, d.bytes_received());
+      EXPECT_EQ(ech_enabled, r->ssl_info().encrypted_client_hello);
     }
   }
 }

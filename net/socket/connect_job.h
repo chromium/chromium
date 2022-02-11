@@ -30,6 +30,7 @@
 namespace net {
 
 class ClientSocketFactory;
+struct ConnectionEndpointMetadata;
 class HostPortPair;
 class HostResolver;
 class HttpAuthCache;
@@ -41,13 +42,13 @@ class NetLog;
 class NetLogWithSource;
 class NetworkQualityEstimator;
 class ProxyDelegate;
-class SocketPerformanceWatcherFactory;
-class StreamSocket;
-class WebSocketEndpointLockManager;
 class QuicStreamFactory;
+class SocketPerformanceWatcherFactory;
 class SocketTag;
 class SpdySessionPool;
 class SSLCertRequestInfo;
+class StreamSocket;
+class WebSocketEndpointLockManager;
 
 // Immutable socket parameters intended for shared use by all ConnectJob types.
 // Excludes priority because it can be modified over the lifetime of a
@@ -231,6 +232,10 @@ class NET_EXPORT_PRIVATE ConnectJob {
   // If the ConnectJob failed with ERR_SSL_CLIENT_AUTH_CERT_NEEDED, returns the
   // SSLCertRequestInfo received. Otherwise, returns nullptr.
   virtual scoped_refptr<SSLCertRequestInfo> GetCertRequestInfo();
+
+  // Returns the `ConnectionEndpointMetadata` structure corresponding to the
+  // chosen route. Should only be called on a successful connect.
+  virtual const ConnectionEndpointMetadata& GetEndpointMetadata() const;
 
   const LoadTimingInfo::ConnectTiming& connect_timing() const {
     return connect_timing_;

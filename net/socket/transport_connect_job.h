@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -153,6 +154,7 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   bool HasEstablishedConnection() const override;
   ConnectionAttempts GetConnectionAttempts() const override;
   ResolveErrorInfo GetResolveErrorInfo() const override;
+  const ConnectionEndpointMetadata& GetEndpointMetadata() const override;
 
   // Rolls |addrlist| forward until the first IPv4 address, if any.
   // WARNING: this method should only be used to implement the prefer-IPv4 hack.
@@ -199,8 +201,15 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   // resolver request.
   void ChangePriorityInternal(RequestPriority priority) override;
 
-  // Returns whether `result` is usable for this connection.
-  bool IsEndpointResultUsable(const HostResolverEndpointResult& result) const;
+  // Returns whether the client should be SVCB-optional when connecting to
+  // `results`.
+  bool IsSvcbOptional(
+      base::span<const HostResolverEndpointResult> results) const;
+
+  // Returns whether `result` is usable for this connection. If `svcb_optional`
+  // is true, the non-HTTPS/SVCB fallback is allowed.
+  bool IsEndpointResultUsable(const HostResolverEndpointResult& result,
+                              bool svcb_optional) const;
 
   // Returns an `AddressList` containing the IP endpoints for the current route.
   // May only be called if the current route is usable for this connection.

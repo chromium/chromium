@@ -7,7 +7,9 @@
 #include <set>
 #include <utility>
 
+#include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
+#include "net/base/connection_endpoint_metadata.h"
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -132,6 +134,11 @@ bool ConnectJob::IsSSLError() const {
 
 scoped_refptr<SSLCertRequestInfo> ConnectJob::GetCertRequestInfo() {
   return nullptr;
+}
+
+const ConnectionEndpointMetadata& ConnectJob::GetEndpointMetadata() const {
+  static const base::NoDestructor<ConnectionEndpointMetadata> empty_metadata;
+  return *empty_metadata;
 }
 
 void ConnectJob::SetSocket(std::unique_ptr<StreamSocket> socket,

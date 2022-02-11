@@ -2146,6 +2146,8 @@ static_library("test_support") {
     "test/revocation_builder.h",
     "test/scoped_disable_exit_on_dfatal.cc",
     "test/scoped_disable_exit_on_dfatal.h",
+    "test/ssl_test_util.cc",
+    "test/ssl_test_util.h",
     "test/test_certificate_data.h",
     "test/test_data_directory.cc",
     "test/test_data_directory.h",

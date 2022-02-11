@@ -18,6 +18,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
+#include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -214,6 +215,12 @@ ResolveErrorInfo TransportConnectJob::GetResolveErrorInfo() const {
   return resolve_error_info_;
 }
 
+const ConnectionEndpointMetadata& TransportConnectJob::GetEndpointMetadata()
+    const {
+  CHECK_LT(current_endpoint_result_, endpoint_results_.size());
+  return endpoint_results_[current_endpoint_result_].metadata;
+}
+
 // static
 void TransportConnectJob::MakeAddressListStartWithIPv4(AddressList* list) {
   for (auto i = list->begin(); i != list->end(); ++i) {
@@ -380,8 +387,10 @@ int TransportConnectJob::DoResolveHostComplete(int result) {
 }
 
 int TransportConnectJob::DoResolveHostCallbackComplete() {
-  for (const auto& result : *request_->GetEndpointResults()) {
-    if (IsEndpointResultUsable(result)) {
+  const auto& unfiltered_results = *request_->GetEndpointResults();
+  bool svcb_optional = IsSvcbOptional(unfiltered_results);
+  for (const auto& result : unfiltered_results) {
+    if (IsEndpointResultUsable(result, svcb_optional)) {
       endpoint_results_.push_back(result);
     }
   }
@@ -550,15 +559,41 @@ void TransportConnectJob::ChangePriorityInternal(RequestPriority priority) {
   }
 }
 
+bool TransportConnectJob::IsSvcbOptional(
+    base::span<const HostResolverEndpointResult> results) const {
+  // If SVCB/HTTPS resolution succeeded, the client supports ECH, and all routes
+  // support ECH, disable the A/AAAA fallback. See Section 10.1 of
+  // draft-ietf-dnsop-svcb-https-08.
+  auto* scheme_host_port =
+      absl::get_if<url::SchemeHostPort>(&params_->destination());
+  if (!base::FeatureList::IsEnabled(features::kEncryptedClientHello) ||
+      !scheme_host_port || scheme_host_port->scheme() != url::kHttpsScheme) {
+    return true;  // ECH is not supported for this request.
+  }
+
+  bool has_svcb = false;
+  for (const auto& result : results) {
+    if (!result.metadata.supported_protocol_alpns.empty()) {
+      has_svcb = true;
+      if (result.metadata.ech_config_list.empty()) {
+        return true;  // There is a non-ECH SVCB/HTTPS route.
+      }
+    }
+  }
+  // Either there were no SVCB/HTTPS records (should be SVCB-optional), or there
+  // were and all supported ECH (should be SVCB-reliant).
+  return !has_svcb;
+}
+
 bool TransportConnectJob::IsEndpointResultUsable(
-    const HostResolverEndpointResult& result) const {
+    const HostResolverEndpointResult& result,
+    bool svcb_optional) const {
   // A `HostResolverEndpointResult` with no ALPN protocols is the fallback
   // A/AAAA route. This is always compatible. We assume the ALPN-less option is
   // TCP-based.
   if (result.metadata.supported_protocol_alpns.empty()) {
-    // TODO(https://crbug.com/1091403): Reject fallback routes when ECH triggers
-    // SVCB-reliant mode.
-    return true;
+    // See draft-ietf-dnsop-svcb-https-08, Section 3.
+    return svcb_optional;
   }
 
   // See draft-ietf-dnsop-svcb-https-08, Section 7.1.2. Routes are usable if
@@ -579,8 +614,6 @@ AddressList TransportConnectJob::GetCurrentAddressList() const {
   CHECK_LT(current_endpoint_result_, endpoint_results_.size());
   const HostResolverEndpointResult& endpoint_result =
       endpoint_results_[current_endpoint_result_];
-  DCHECK(IsEndpointResultUsable(endpoint_result));
-
   // TODO(crbug.com/126134): `HostResolverEndpointResult` has a
   // `vector<IPEndPoint>`, while all these classes expect an `AddressList`.
   // Align these after DNS aliases are fully moved out of `AddressList`.

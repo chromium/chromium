@@ -9,9 +9,11 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "net/base/address_family.h"
 #include "net/base/address_list.h"
+#include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -811,6 +813,172 @@ TEST_F(TransportConnectJobTest, LastRouteUnusable) {
   EXPECT_EQ(attempts[0].endpoint, IPEndPoint(ParseIP("1::"), 8441));
   EXPECT_THAT(attempts[1].result, test::IsError(ERR_CONNECTION_FAILED));
   EXPECT_EQ(attempts[1].endpoint, IPEndPoint(ParseIP("1.1.1.1"), 8441));
+}
+
+// `GetEndpointMetadata` should surface information about the endpoint that was
+// actually used.
+TEST_F(TransportConnectJobTest, GetEndpointMetadata) {
+  std::vector<HostResolverEndpointResult> endpoints(4);
+  // `endpoints[0]` will be skipped due to ALPN mismatch.
+  endpoints[0].ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
+  endpoints[0].metadata.supported_protocol_alpns = {"h3"};
+  endpoints[0].metadata.ech_config_list = {1, 2, 3, 4};
+  // `endpoints[1]` will be skipped due to connection failure.
+  endpoints[1].ip_endpoints = {IPEndPoint(ParseIP("2::"), 8442)};
+  endpoints[1].metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoints[1].metadata.ech_config_list = {5, 6, 7, 8};
+  // `endpoints[2]` will succeed.
+  endpoints[2].ip_endpoints = {IPEndPoint(ParseIP("3::"), 8443)};
+  endpoints[2].metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoints[2].metadata.ech_config_list = {9, 10, 11, 12};
+  // `endpoints[3]` will be not be tried because `endpoints[2]` will already
+  // have succeeded.
+  endpoints[3].ip_endpoints = {IPEndPoint(ParseIP("4::"), 8444)};
+  endpoints[3].metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoints[3].metadata.ech_config_list = {13, 14, 15, 16};
+  host_resolver_.rules()->AddRule(kHostName, endpoints);
+
+  MockTransportClientSocketFactory::Rule rules[] = {
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing,
+          std::vector{IPEndPoint(ParseIP("2::"), 8442)}),
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kSynchronous,
+          std::vector{IPEndPoint(ParseIP("3::"), 8443)}),
+  };
+  client_socket_factory_.SetRules(rules);
+
+  TestConnectJobDelegate test_delegate;
+  TransportConnectJob transport_connect_job(
+      DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
+      DefaultHttpsParams(), &test_delegate, /*net_log=*/nullptr);
+  test_delegate.StartJobExpectingResult(&transport_connect_job, OK,
+                                        /*expect_sync_result=*/false);
+
+  EXPECT_EQ(transport_connect_job.GetEndpointMetadata(), endpoints[2].metadata);
+}
+
+// If the server supports ECH, TransportConnectJob should switch to SVCB-reliant
+// mode and disable the A/AAAA fallback.
+TEST_F(TransportConnectJobTest, SvcbReliantIfEch) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
+
+  HostResolverEndpointResult endpoint1, endpoint2, endpoint3;
+  endpoint1.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
+  endpoint1.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint1.metadata.ech_config_list = {1, 2, 3, 4};
+  endpoint2.ip_endpoints = {IPEndPoint(ParseIP("2::"), 8442)};
+  endpoint2.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint2.metadata.ech_config_list = {1, 2, 3, 4};
+  endpoint3.ip_endpoints = {IPEndPoint(ParseIP("3::"), 443)};
+  // `endpoint3` has no `supported_protocol_alpns` and is thus a fallback route.
+  host_resolver_.rules()->AddRule(kHostName,
+                                  std::vector{endpoint1, endpoint2, endpoint3});
+
+  // `TransportConnectJob` should not try `endpoint3`.
+  MockTransportClientSocketFactory::Rule rules[] = {
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing,
+          std::vector{IPEndPoint(ParseIP("1::"), 8441)}),
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing,
+          std::vector{IPEndPoint(ParseIP("2::"), 8442)}),
+  };
+  client_socket_factory_.SetRules(rules);
+
+  TestConnectJobDelegate test_delegate;
+  TransportConnectJob transport_connect_job(
+      DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
+      DefaultHttpsParams(), &test_delegate, /*net_log=*/nullptr);
+  test_delegate.StartJobExpectingResult(&transport_connect_job,
+                                        ERR_CONNECTION_FAILED,
+                                        /*expect_sync_result=*/false);
+
+  ConnectionAttempts attempts = transport_connect_job.GetConnectionAttempts();
+  ASSERT_EQ(2u, attempts.size());
+  EXPECT_THAT(attempts[0].result, test::IsError(ERR_CONNECTION_FAILED));
+  EXPECT_EQ(attempts[0].endpoint, IPEndPoint(ParseIP("1::"), 8441));
+  EXPECT_THAT(attempts[1].result, test::IsError(ERR_CONNECTION_FAILED));
+  EXPECT_EQ(attempts[1].endpoint, IPEndPoint(ParseIP("2::"), 8442));
+}
+
+// SVCB-reliant mode should only be enabled for ECH servers when ECH is enabled.
+TEST_F(TransportConnectJobTest, SvcbOptionalIfEchDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kEncryptedClientHello);
+
+  HostResolverEndpointResult endpoint1, endpoint2, endpoint3;
+  endpoint1.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
+  endpoint1.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint1.metadata.ech_config_list = {1, 2, 3, 4};
+  endpoint2.ip_endpoints = {IPEndPoint(ParseIP("2::"), 8442)};
+  endpoint2.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint2.metadata.ech_config_list = {1, 2, 3, 4};
+  endpoint3.ip_endpoints = {IPEndPoint(ParseIP("3::"), 443)};
+  // `endpoint3` has no `supported_protocol_alpns` and is thus a fallback route.
+  host_resolver_.rules()->AddRule(kHostName,
+                                  std::vector{endpoint1, endpoint2, endpoint3});
+
+  // `TransportConnectJob` should not try `endpoint3`.
+  MockTransportClientSocketFactory::Rule rules[] = {
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing,
+          std::vector{IPEndPoint(ParseIP("1::"), 8441)}),
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing,
+          std::vector{IPEndPoint(ParseIP("2::"), 8442)}),
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kSynchronous,
+          std::vector{IPEndPoint(ParseIP("3::"), 443)}),
+  };
+  client_socket_factory_.SetRules(rules);
+
+  TestConnectJobDelegate test_delegate;
+  TransportConnectJob transport_connect_job(
+      DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
+      DefaultHttpsParams(), &test_delegate, /*net_log=*/nullptr);
+  test_delegate.StartJobExpectingResult(&transport_connect_job, OK,
+                                        /*expect_sync_result=*/false);
+}
+
+// SVCB-reliant mode is not enabled for servers with inconsistent SVCB records.
+TEST_F(TransportConnectJobTest, SvcbReliantIfEchInconsistent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEncryptedClientHello);
+
+  HostResolverEndpointResult endpoint1, endpoint2, endpoint3;
+  endpoint1.ip_endpoints = {IPEndPoint(ParseIP("1::"), 8441)};
+  endpoint1.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint1.metadata.ech_config_list = {1, 2, 3, 4};
+  endpoint2.ip_endpoints = {IPEndPoint(ParseIP("2::"), 8442)};
+  endpoint2.metadata.supported_protocol_alpns = {"http/1.1"};
+  endpoint2.metadata.ech_config_list = {};
+  endpoint3.ip_endpoints = {IPEndPoint(ParseIP("3::"), 443)};
+  // `endpoint3` has no `supported_protocol_alpns` and is thus a fallback route.
+  host_resolver_.rules()->AddRule(kHostName,
+                                  std::vector{endpoint1, endpoint2, endpoint3});
+
+  // `TransportConnectJob` should not try `endpoint3`.
+  MockTransportClientSocketFactory::Rule rules[] = {
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing,
+          std::vector{IPEndPoint(ParseIP("1::"), 8441)}),
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kFailing,
+          std::vector{IPEndPoint(ParseIP("2::"), 8442)}),
+      MockTransportClientSocketFactory::Rule(
+          MockTransportClientSocketFactory::Type::kSynchronous,
+          std::vector{IPEndPoint(ParseIP("3::"), 443)}),
+  };
+  client_socket_factory_.SetRules(rules);
+
+  TestConnectJobDelegate test_delegate;
+  TransportConnectJob transport_connect_job(
+      DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
+      DefaultHttpsParams(), &test_delegate, /*net_log=*/nullptr);
+  test_delegate.StartJobExpectingResult(&transport_connect_job, OK,
+                                        /*expect_sync_result=*/false);
 }
 
 }  // namespace
