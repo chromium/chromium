@@ -78,7 +78,7 @@ class WebApps : public apps::PublisherBase,
   Profile* profile() const { return profile_; }
   WebAppProvider* provider() const { return provider_; }
 
-  apps::mojom::AppType app_type() { return app_type_; }
+  apps::AppType app_type() { return app_type_; }
 
   WebAppPublisherHelper& publisher_helper() { return publisher_helper_; }
 
@@ -182,7 +182,7 @@ class WebApps : public apps::PublisherBase,
 
   // The app type of the publisher. The app type is kSystemWeb if the web apps
   // are serving from Lacros, and the app type is kWeb for all other cases.
-  const apps::mojom::AppType app_type_;
+  const apps::AppType app_type_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   apps::InstanceRegistry* const instance_registry_;

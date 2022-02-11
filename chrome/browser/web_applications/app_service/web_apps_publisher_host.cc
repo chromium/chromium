@@ -41,7 +41,7 @@ WebAppsPublisherHost::WebAppsPublisherHost(Profile* profile)
       provider_(WebAppProvider::GetForWebApps(profile)),
       publisher_helper_(profile,
                         provider_,
-                        apps::mojom::AppType::kWeb,
+                        apps::AppType::kWeb,
                         this,
                         /*observe_media_requests=*/true) {
   DCHECK(provider_);

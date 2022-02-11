@@ -270,8 +270,7 @@ void WebAppPublisherHelper::BadgeManagerDelegate::OnAppBadgeUpdated(
   }
   apps::AppPtr app =
       publisher_helper_->app_notifications_.CreateAppWithHasBadgeStatus(
-          apps::ConvertMojomAppTypToAppType(publisher_helper_->app_type()),
-          app_id);
+          publisher_helper_->app_type(), app_id);
   DCHECK(app->has_badge.has_value());
   app->has_badge =
       publisher_helper_->ShouldShowBadge(app_id, app->has_badge.value());
@@ -281,7 +280,7 @@ void WebAppPublisherHelper::BadgeManagerDelegate::OnAppBadgeUpdated(
 
 WebAppPublisherHelper::WebAppPublisherHelper(Profile* profile,
                                              WebAppProvider* provider,
-                                             apps::mojom::AppType app_type,
+                                             apps::AppType app_type,
                                              Delegate* delegate,
                                              bool observe_media_requests)
     : profile_(profile),
@@ -501,8 +500,7 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
 #endif
 
   auto app = apps::AppPublisher::MakeApp(
-      apps::ConvertMojomAppTypToAppType(app_type()), web_app->app_id(),
-      readiness, web_app->name(),
+      app_type(), web_app->app_id(), readiness, web_app->name(),
       apps::ConvertMojomInstallReasonToInstallReason(
           GetHighestPriorityInstallReason(web_app)),
       apps::ConvertMojomInstallSourceToInstallSource(
@@ -597,9 +595,9 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
 #endif
 
   auto install_reason = GetHighestPriorityInstallReason(web_app);
-  apps::mojom::AppPtr app =
-      apps::PublisherBase::MakeApp(app_type(), web_app->app_id(), readiness,
-                                   web_app->name(), install_reason);
+  apps::mojom::AppPtr app = apps::PublisherBase::MakeApp(
+      apps::ConvertAppTypeToMojomAppType(app_type()), web_app->app_id(),
+      readiness, web_app->name(), install_reason);
 
   app->install_source = ConvertInstallSourceToMojom(
       provider_->registrar().GetAppInstallSourceForMetrics(web_app->app_id()));
@@ -690,8 +688,7 @@ apps::mojom::AppPtr WebAppPublisherHelper::ConvertWebApp(
 
 apps::AppPtr WebAppPublisherHelper::ConvertUninstalledWebApp(
     const WebApp* web_app) {
-  auto app = std::make_unique<apps::App>(
-      apps::ConvertMojomAppTypToAppType(app_type()), web_app->app_id());
+  auto app = std::make_unique<apps::App>(app_type(), web_app->app_id());
   // TODO(loyso): Plumb uninstall source (reason) here.
   app->readiness = apps::Readiness::kUninstalledByUser;
 
@@ -701,8 +698,7 @@ apps::AppPtr WebAppPublisherHelper::ConvertUninstalledWebApp(
 
 apps::AppPtr WebAppPublisherHelper::ConvertLaunchedWebApp(
     const WebApp* web_app) {
-  auto app = std::make_unique<apps::App>(
-      apps::ConvertMojomAppTypToAppType(app_type()), web_app->app_id());
+  auto app = std::make_unique<apps::App>(app_type(), web_app->app_id());
   app->last_launch_time = web_app->last_launch_time();
   return app;
 }
@@ -759,8 +755,7 @@ void WebAppPublisherHelper::SetIconEffect(const std::string& app_id) {
     return;
   }
 
-  auto app = std::make_unique<apps::App>(
-      apps::ConvertMojomAppTypToAppType(app_type()), app_id);
+  auto app = std::make_unique<apps::App>(app_type(), app_id);
   app->icon_key =
       std::move(*icon_key_factory_.CreateIconKey(GetIconEffects(web_app)));
   delegate_->PublishWebApp(std::move(app));
@@ -772,8 +767,8 @@ void WebAppPublisherHelper::PauseApp(const std::string& app_id) {
   }
 
   constexpr bool kPaused = true;
-  delegate_->PublishWebApp(paused_apps_.CreateAppWithPauseStatus(
-      apps::ConvertMojomAppTypToAppType(app_type()), app_id, kPaused));
+  delegate_->PublishWebApp(
+      paused_apps_.CreateAppWithPauseStatus(app_type(), app_id, kPaused));
 
   for (auto* browser : *BrowserList::GetInstance()) {
     if (!browser->is_type_app()) {
@@ -791,8 +786,8 @@ void WebAppPublisherHelper::UnpauseApp(const std::string& app_id) {
   }
 
   constexpr bool kPaused = false;
-  delegate_->PublishWebApp(paused_apps_.CreateAppWithPauseStatus(
-      apps::ConvertMojomAppTypToAppType(app_type()), app_id, kPaused));
+  delegate_->PublishWebApp(
+      paused_apps_.CreateAppWithPauseStatus(app_type(), app_id, kPaused));
 }
 
 bool WebAppPublisherHelper::IsPaused(const std::string& app_id) {
@@ -1221,8 +1216,7 @@ void WebAppPublisherHelper::PublishWindowModeUpdate(
     return;
   }
 
-  auto app = std::make_unique<apps::App>(
-      apps::ConvertMojomAppTypToAppType(app_type()), app_id);
+  auto app = std::make_unique<apps::App>(app_type(), app_id);
   app->window_mode = GetDisplayMode(display_mode);
   delegate_->PublishWebApp(std::move(app));
 }
@@ -1235,8 +1229,7 @@ void WebAppPublisherHelper::PublishRunOnOsLoginModeUpdate(
     return;
   }
 
-  auto app = std::make_unique<apps::App>(
-      apps::ConvertMojomAppTypToAppType(app_type()), app_id);
+  auto app = std::make_unique<apps::App>(app_type(), app_id);
   bool is_managed = provider_->policy_manager().GetUrlRunOnOsLoginPolicy(
                         app_id) != web_app::RunOnOsLoginPolicy::kAllowed;
   app->run_on_os_login =
@@ -1412,8 +1405,7 @@ void WebAppPublisherHelper::OnWebAppsDisabledModeChanged() {
       if (!web_app || !Accepts(id)) {
         continue;
       }
-      auto app = std::make_unique<apps::App>(
-          apps::ConvertMojomAppTypToAppType(app_type()), web_app->app_id());
+      auto app = std::make_unique<apps::App>(app_type(), web_app->app_id());
       UpdateAppDisabledMode(*app);
       apps.push_back(std::move(app));
     }
@@ -1443,8 +1435,8 @@ void WebAppPublisherHelper::OnNotificationClosed(
   app_notifications_.RemoveNotification(notification_id);
 
   for (const auto& app_id : app_ids) {
-    auto app = app_notifications_.CreateAppWithHasBadgeStatus(
-        apps::ConvertMojomAppTypToAppType(app_type()), app_id);
+    auto app =
+        app_notifications_.CreateAppWithHasBadgeStatus(app_type(), app_id);
     DCHECK(app->has_badge.has_value());
     app->has_badge = ShouldShowBadge(app_id, app->has_badge.value());
     delegate_->PublishWebApp(std::move(app));
@@ -1530,8 +1522,7 @@ void WebAppPublisherHelper::OnContentSettingChanged(
   for (const WebApp& web_app : registrar().GetApps()) {
     if (primary_pattern.Matches(web_app.start_url()) &&
         Accepts(web_app.app_id())) {
-      auto app = std::make_unique<apps::App>(
-          apps::ConvertMojomAppTypToAppType(app_type()), web_app.app_id());
+      auto app = std::make_unique<apps::App>(app_type(), web_app.app_id());
       app->permissions = CreatePermissions(&web_app);
       delegate_->PublishWebApp(std::move(app));
     }
@@ -1708,8 +1699,7 @@ bool WebAppPublisherHelper::MaybeAddNotification(
   }
 
   app_notifications_.AddNotification(app_id, notification_id);
-  auto app = app_notifications_.CreateAppWithHasBadgeStatus(
-      apps::ConvertMojomAppTypToAppType(app_type()), app_id);
+  auto app = app_notifications_.CreateAppWithHasBadgeStatus(app_type(), app_id);
   DCHECK(app->has_badge.has_value());
   app->has_badge = ShouldShowBadge(app_id, app->has_badge.value());
   delegate_->PublishWebApp(std::move(app));

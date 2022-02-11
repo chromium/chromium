@@ -52,18 +52,18 @@ namespace web_app {
 
 namespace {
 
-apps::mojom::AppType GetWebAppType() {
+apps::AppType GetWebAppType() {
 // After moving the ordinary Web Apps to Lacros chrome, the remaining web
 // apps in ash Chrome will be only System Web Apps. Change the app type
 // to kSystemWeb for this case and the kWeb app type will be published from
 // the publisher for Lacros web apps.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (crosapi::browser_util::IsLacrosEnabled() && IsWebAppsCrosapiEnabled()) {
-    return apps::mojom::AppType::kSystemWeb;
+    return apps::AppType::kSystemWeb;
   }
 #endif
 
-  return apps::mojom::AppType::kWeb;
+  return apps::AppType::kWeb;
 }
 
 bool ShouldObserveMediaRequests() {
@@ -78,9 +78,10 @@ void AddDefaultPreferredApp(const std::string& app_id,
                             const GURL& url,
                             apps::mojom::AppService* app_service) {
   auto intent_filter = apps_util::CreateIntentFilterForUrlScope(url);
-  app_service->AddPreferredApp(GetWebAppType(), app_id,
-                               std::move(intent_filter),
-                               /*intent=*/nullptr, /*from_publisher=*/true);
+  app_service->AddPreferredApp(
+      apps::ConvertAppTypeToMojomAppType(GetWebAppType()), app_id,
+      std::move(intent_filter),
+      /*intent=*/nullptr, /*from_publisher=*/true);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -129,7 +130,8 @@ void WebApps::Initialize(
 
   DCHECK(provider_);
 
-  PublisherBase::Initialize(app_service, app_type_);
+  PublisherBase::Initialize(app_service,
+                            apps::ConvertAppTypeToMojomAppType(app_type_));
 
   provider_->on_registry_ready().Post(
       FROM_HERE, base::BindOnce(&WebApps::InitWebApps, AsWeakPtr()));
@@ -252,7 +254,8 @@ void WebApps::PublishWebApps(std::vector<apps::AppPtr> apps) {
   const bool should_notify_initialized = false;
   if (subscribers_.size() == 1) {
     auto& subscriber = *subscribers_.begin();
-    subscriber->OnApps(std::move(mojom_apps), app_type(),
+    subscriber->OnApps(std::move(mojom_apps),
+                       apps::ConvertAppTypeToMojomAppType(app_type()),
                        should_notify_initialized);
     return;
   }
@@ -260,7 +263,8 @@ void WebApps::PublishWebApps(std::vector<apps::AppPtr> apps) {
     std::vector<apps::mojom::AppPtr> cloned_apps;
     for (const auto& app : mojom_apps)
       cloned_apps.push_back(app.Clone());
-    subscriber->OnApps(std::move(cloned_apps), app_type(),
+    subscriber->OnApps(std::move(cloned_apps),
+                       apps::ConvertAppTypeToMojomAppType(app_type()),
                        should_notify_initialized);
   }
 }
@@ -317,7 +321,7 @@ void WebApps::ConvertWebApps(std::vector<apps::mojom::AppPtr>* apps_out) {
 }
 
 void WebApps::InitWebApps() {
-  RegisterPublisher(apps::ConvertMojomAppTypToAppType(app_type_));
+  RegisterPublisher(app_type_);
 
   std::vector<apps::AppPtr> apps = CreateWebApps();
   if (apps.empty()) {
@@ -333,7 +337,8 @@ void WebApps::StartPublishingWebApps(
 
   mojo::Remote<apps::mojom::Subscriber> subscriber(
       std::move(subscriber_remote));
-  subscriber->OnApps(std::move(apps), app_type_,
+  subscriber->OnApps(std::move(apps),
+                     apps::ConvertAppTypeToMojomAppType(app_type_),
                      true /* should_notify_initialized */);
 
   subscribers_.Add(std::move(subscriber));

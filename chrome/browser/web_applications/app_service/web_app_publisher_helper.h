@@ -95,7 +95,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   WebAppPublisherHelper(Profile* profile,
                         WebAppProvider* provider,
-                        apps::mojom::AppType app_type,
+                        apps::AppType app_type,
                         Delegate* delegate,
                         bool observe_media_requests);
   WebAppPublisherHelper(const WebAppPublisherHelper&) = delete;
@@ -263,7 +263,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   Profile* profile() { return profile_; }
 
-  apps::mojom::AppType app_type() const { return app_type_; }
+  apps::AppType app_type() const { return app_type_; }
 
   WebAppRegistrar& registrar() const;
 
@@ -382,7 +382,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   // The app type of the publisher. The app type is kSystemWeb if the web apps
   // are serving from Lacros, and the app type is kWeb for all other cases.
-  const apps::mojom::AppType app_type_;
+  const apps::AppType app_type_;
 
   const raw_ptr<Delegate> delegate_;
 

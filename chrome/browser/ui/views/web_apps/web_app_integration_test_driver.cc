@@ -63,6 +63,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -1473,7 +1474,7 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
     auto app_ids = registrar.GetAppIds();
     base::flat_map<AppId, AppState> app_state;
     WebAppPublisherHelper web_app_publisher_helper(profile, provider(),
-                                                   apps::mojom::AppType::kWeb,
+                                                   apps::AppType::kWeb,
                                                    /*delegate=*/nullptr, true);
     for (const auto& app_id : app_ids) {
       app_state.emplace(
