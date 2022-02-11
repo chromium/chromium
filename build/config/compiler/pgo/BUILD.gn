@@ -72,7 +72,7 @@ config("pgo_optimization_flags") {
     assert(pgo_data_path != "",
            "Please set pgo_data_path to point at the profile data")
     cflags = [
-      "-fprofile-instr-use=" + rebase_path(pgo_data_path, root_build_dir),
+      "-fprofile-use=" + rebase_path(pgo_data_path, root_build_dir),
 
       # It's possible to have some profile data legitimately missing,
       # and at least some profile data always ends up being considered
