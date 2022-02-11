@@ -887,46 +887,49 @@ bool CSSMathExpressionOperation::operator==(
 
 CSSPrimitiveValue::UnitType CSSMathExpressionOperation::ResolvedUnitType()
     const {
-  // TODO(pjh0718): Merge this if statement into switch-case below.
-  if (IsMinOrMax() || IsClamp()) {
-    if (category_ == kCalcNumber)
-      return CSSPrimitiveValue::UnitType::kNumber;
-
-    CSSPrimitiveValue::UnitType result = operands_.front()->ResolvedUnitType();
-    if (result == CSSPrimitiveValue::UnitType::kUnknown)
-      return CSSPrimitiveValue::UnitType::kUnknown;
-    for (const auto& operand : SecondToLastOperands()) {
-      CSSPrimitiveValue::UnitType next = operand->ResolvedUnitType();
-      if (next == CSSPrimitiveValue::UnitType::kUnknown || next != result)
-        return CSSPrimitiveValue::UnitType::kUnknown;
-    }
-    return result;
-  }
-
-  DCHECK_EQ(operands_.size(), 2u);
-
   switch (category_) {
     case kCalcNumber:
-      DCHECK_EQ(operands_[0]->Category(), kCalcNumber);
-      DCHECK_EQ(operands_[1]->Category(), kCalcNumber);
       return CSSPrimitiveValue::UnitType::kNumber;
-    case kCalcLength:
-    case kCalcPercent: {
-      if (operands_[0]->Category() == kCalcNumber)
-        return operands_[1]->ResolvedUnitType();
-      if (operands_[1]->Category() == kCalcNumber)
-        return operands_[0]->ResolvedUnitType();
-      CSSPrimitiveValue::UnitType left_type = operands_[0]->ResolvedUnitType();
-      if (left_type == operands_[1]->ResolvedUnitType())
-        return left_type;
-      return CSSPrimitiveValue::UnitType::kUnknown;
-    }
     case kCalcAngle:
       return CSSPrimitiveValue::UnitType::kDegrees;
     case kCalcTime:
       return CSSPrimitiveValue::UnitType::kMilliseconds;
     case kCalcFrequency:
       return CSSPrimitiveValue::UnitType::kHertz;
+    case kCalcLength:
+    case kCalcPercent:
+      switch (operator_) {
+        case CSSMathOperator::kMultiply:
+        case CSSMathOperator::kDivide: {
+          DCHECK_EQ(operands_.size(), 2u);
+          if (operands_[0]->Category() == kCalcNumber)
+            return operands_[1]->ResolvedUnitType();
+          if (operands_[1]->Category() == kCalcNumber)
+            return operands_[0]->ResolvedUnitType();
+          NOTREACHED();
+          return CSSPrimitiveValue::UnitType::kUnknown;
+        }
+        case CSSMathOperator::kAdd:
+        case CSSMathOperator::kSubtract:
+        case CSSMathOperator::kMin:
+        case CSSMathOperator::kMax:
+        case CSSMathOperator::kClamp: {
+          CSSPrimitiveValue::UnitType first_type =
+              operands_.front()->ResolvedUnitType();
+          if (first_type == CSSPrimitiveValue::UnitType::kUnknown)
+            return CSSPrimitiveValue::UnitType::kUnknown;
+          for (const CSSMathExpressionNode* operand : SecondToLastOperands()) {
+            CSSPrimitiveValue::UnitType next = operand->ResolvedUnitType();
+            if (next == CSSPrimitiveValue::UnitType::kUnknown ||
+                next != first_type)
+              return CSSPrimitiveValue::UnitType::kUnknown;
+          }
+          return first_type;
+        }
+        case CSSMathOperator::kInvalid:
+          NOTREACHED();
+          return CSSPrimitiveValue::UnitType::kUnknown;
+      }
     case kCalcPercentLength:
     case kCalcOther:
       return CSSPrimitiveValue::UnitType::kUnknown;
