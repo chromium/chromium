@@ -27,8 +27,11 @@ bool IsTheSameDay(absl::optional<base::Time> date_a,
                   absl::optional<base::Time> date_b) {
   if (!date_a.has_value() || !date_b.has_value())
     return false;
-  return base::TimeFormatWithPattern(date_a.value(), "dd MMM YYYY") ==
-         base::TimeFormatWithPattern(date_b.value(), "dd MMM YYYY");
+  base::Time::Exploded exploded_a = GetExplodedUTC(date_a.value());
+  base::Time::Exploded exploded_b = GetExplodedUTC(date_b.value());
+  return exploded_a.year == exploded_b.year &&
+         exploded_a.month == exploded_b.month &&
+         exploded_a.day_of_month == exploded_b.day_of_month;
 }
 
 base::Time::Exploded GetExplodedLocal(const base::Time& date) {

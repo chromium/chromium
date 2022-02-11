@@ -58,14 +58,9 @@ void MoveToNextDay(int& column,
   // are daylight saving days which have more than 24 hours in a day.
   // `base::Days(1)` cannot be used, because it is 24 hours.
   //
-  // Also using the local time format to calculate the local midnight, since the
-  // LocalExplode doesn't use the manually set timezone.
-  std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
-  int hours;
-  bool result = base::StringToInt(
-      converter.to_bytes(base::TimeFormatWithPattern(current_date, "H")),
-      &hours);
-  DCHECK(result);
+  // Also using the `current_date_exploded` hours to calculate the local
+  // midnight.
+  int hours = current_date_exploded.hour;
   current_date += base::Hours(30 - hours);
   local_current_date += base::Hours(30 - hours);
   local_current_date.UTCExplode(&current_date_exploded);
@@ -144,8 +139,10 @@ void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
   // Sets accessible label. E.g. Calendar, week of July 16th 2021, [selected
   // date] is currently selected.
   if (is_selected_) {
+    base::Time local_date =
+        date_ + base::Hours(calendar_view_controller_->time_difference_hours());
     base::Time::Exploded date_exploded =
-        calendar_utils::GetExplodedLocal(date_);
+        calendar_utils::GetExplodedUTC(local_date);
     base::Time first_day_of_week =
         date_ - base::Days(date_exploded.day_of_week);
 
@@ -296,19 +293,11 @@ CalendarMonthView::CalendarMonthView(
 
   std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
 
-  // Using the local time format to get the local `base::Time`, which is used to
-  // generate the exploded, since the LocalExplode doesn't use the manually set
-  // timezone.
-  base::Time first_day_of_month_local;
-  bool result = base::Time::FromString(
-      converter
-          .to_bytes(base::TimeFormatWithPattern(first_day_of_month,
-                                                "MMMMdyyyy HH:mm") +
-                    u" GMT")
-          .c_str(),
-      &first_day_of_month_local);
-
-  DCHECK(result);
+  // Using the time difference to get the local `base::Time`, which is used to
+  // generate the exploded.
+  base::Time first_day_of_month_local =
+      first_day_of_month +
+      base::Hours(calendar_view_controller_->time_difference_hours());
   base::Time::Exploded first_day_of_month_exploded =
       calendar_utils::GetExplodedUTC(first_day_of_month_local);
 
