@@ -229,13 +229,9 @@ void FastPairRepositoryImpl::OnAddToFootprintsComplete(
 
 bool FastPairRepositoryImpl::DeleteAssociatedDevice(
     const device::BluetoothDevice* device) {
-  QP_LOG(INFO) << __func__;
   absl::optional<const std::vector<uint8_t>> account_key =
       saved_device_registry_->GetAccountKey(device->GetAddress());
   if (!account_key) {
-    QP_LOG(VERBOSE)
-        << __func__
-        << ": Cannot find matching account key for unpaired device.";
     return false;
   }
 
