@@ -585,23 +585,36 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Toolbar, /* toolbar.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("toolbarDeleteWithMenuItemNoEntrySelected"),
-                      TestCase("toolbarDeleteButtonOpensDeleteConfirmDialog"),
-                      TestCase("toolbarDeleteButtonKeepFocus"),
-                      TestCase("toolbarDeleteEntry").InGuestMode(),
-                      TestCase("toolbarDeleteEntry").InGuestMode().FilesSwa(),
-                      TestCase("toolbarDeleteEntry"),
-                      TestCase("toolbarDeleteEntry").FilesSwa(),
-                      TestCase("toolbarDeleteEntry").EnableTrash(),
-                      TestCase("toolbarDeleteEntry").EnableTrash().FilesSwa(),
-                      TestCase("toolbarRefreshButtonWithSelection")
-                          .EnableGenericDocumentsProvider(),
-                      TestCase("toolbarAltACommand"),
-                      TestCase("toolbarRefreshButtonHiddenInRecents"),
-                      TestCase("toolbarMultiMenuFollowsButton"),
-                      TestCase("toolbarSharesheetButtonWithSelection"),
-                      TestCase("toolbarSharesheetContextMenuWithSelection"),
-                      TestCase("toolbarSharesheetNoEntrySelected")));
+    ::testing::Values(
+        TestCase("toolbarDeleteWithMenuItemNoEntrySelected"),
+        TestCase("toolbarDeleteWithMenuItemNoEntrySelected").FilesSwa(),
+        TestCase("toolbarDeleteButtonOpensDeleteConfirmDialog"),
+        TestCase("toolbarDeleteButtonOpensDeleteConfirmDialog").FilesSwa(),
+        TestCase("toolbarDeleteButtonKeepFocus"),
+        TestCase("toolbarDeleteButtonKeepFocus").FilesSwa(),
+        TestCase("toolbarDeleteEntry"),
+        TestCase("toolbarDeleteEntry").FilesSwa(),
+        TestCase("toolbarDeleteEntry").InGuestMode(),
+        TestCase("toolbarDeleteEntry").InGuestMode().FilesSwa(),
+        TestCase("toolbarDeleteEntry").EnableTrash(),
+        TestCase("toolbarDeleteEntry").EnableTrash().FilesSwa(),
+        TestCase("toolbarRefreshButtonWithSelection")
+            .EnableGenericDocumentsProvider(),
+        TestCase("toolbarRefreshButtonWithSelection")
+            .EnableGenericDocumentsProvider()
+            .FilesSwa(),
+        TestCase("toolbarAltACommand"),
+        TestCase("toolbarAltACommand").FilesSwa(),
+        TestCase("toolbarRefreshButtonHiddenInRecents"),
+        TestCase("toolbarRefreshButtonHiddenInRecents").FilesSwa(),
+        TestCase("toolbarMultiMenuFollowsButton"),
+        TestCase("toolbarMultiMenuFollowsButton").FilesSwa(),
+        TestCase("toolbarSharesheetButtonWithSelection"),
+        TestCase("toolbarSharesheetButtonWithSelection").FilesSwa(),
+        TestCase("toolbarSharesheetContextMenuWithSelection"),
+        TestCase("toolbarSharesheetContextMenuWithSelection").FilesSwa(),
+        TestCase("toolbarSharesheetNoEntrySelected"),
+        TestCase("toolbarSharesheetNoEntrySelected").FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     QuickView, /* quick_view.js */
