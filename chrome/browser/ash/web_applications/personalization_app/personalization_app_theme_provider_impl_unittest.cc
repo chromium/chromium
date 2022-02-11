@@ -58,7 +58,11 @@ class PersonalizationAppThemeProviderImplTest : public ChromeAshTestBase {
  public:
   PersonalizationAppThemeProviderImplTest()
       : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
-        profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+        profile_manager_(TestingBrowserProcess::GetGlobal()) {
+    scoped_feature_list_.InitWithFeatures({ash::features::kPersonalizationHub,
+                                           chromeos::features::kDarkLightMode},
+                                          {});
+  }
   PersonalizationAppThemeProviderImplTest(
       const PersonalizationAppThemeProviderImplTest&) = delete;
   PersonalizationAppThemeProviderImplTest& operator=(
@@ -69,9 +73,6 @@ class PersonalizationAppThemeProviderImplTest : public ChromeAshTestBase {
   // testing::Test:
   void SetUp() override {
     ChromeAshTestBase::SetUp();
-    scoped_feature_list_.InitWithFeatures({ash::features::kPersonalizationHub,
-                                           chromeos::features::kDarkLightMode},
-                                          {});
     ash::AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
         ash::Shell::Get()->session_controller()->GetActivePrefService());
 
@@ -115,6 +116,7 @@ class PersonalizationAppThemeProviderImplTest : public ChromeAshTestBase {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   user_manager::ScopedUserManager scoped_user_manager_;
   TestingProfileManager profile_manager_;
   content::TestWebUI web_ui_;
@@ -124,7 +126,6 @@ class PersonalizationAppThemeProviderImplTest : public ChromeAshTestBase {
       theme_provider_remote_;
   TestThemeObserver test_theme_observer_;
   std::unique_ptr<PersonalizationAppThemeProviderImpl> theme_provider_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(PersonalizationAppThemeProviderImplTest, SetColorModePref) {

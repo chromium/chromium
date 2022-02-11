@@ -108,7 +108,10 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
  public:
   PersonalizationAppUserProviderImplTest()
       : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
-        profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+        profile_manager_(TestingBrowserProcess::GetGlobal()) {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kPersonalizationHub);
+  }
   PersonalizationAppUserProviderImplTest(
       const PersonalizationAppUserProviderImplTest&) = delete;
   PersonalizationAppUserProviderImplTest& operator=(
@@ -118,8 +121,6 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
  protected:
   // testing::Test:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kPersonalizationHub);
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile(kFakeTestEmail);
 
@@ -181,6 +182,7 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   user_manager::ScopedUserManager scoped_user_manager_;
   TestingProfileManager profile_manager_;
@@ -191,7 +193,6 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
   mojo::Remote<ash::personalization_app::mojom::UserProvider>
       user_provider_remote_;
   std::unique_ptr<PersonalizationAppUserProviderImpl> user_provider_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(PersonalizationAppUserProviderImplTest, GetsUserInfo) {

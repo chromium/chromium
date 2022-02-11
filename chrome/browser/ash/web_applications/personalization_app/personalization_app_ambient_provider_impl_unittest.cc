@@ -35,7 +35,10 @@ constexpr char kFakeTestEmail[] = "fakeemail@example.com";
 class PersonalizationAppAmbientProviderImplTest : public testing::Test {
  public:
   PersonalizationAppAmbientProviderImplTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kPersonalizationHub);
+  }
   PersonalizationAppAmbientProviderImplTest(
       const PersonalizationAppAmbientProviderImplTest&) = delete;
   PersonalizationAppAmbientProviderImplTest& operator=(
@@ -45,8 +48,6 @@ class PersonalizationAppAmbientProviderImplTest : public testing::Test {
  protected:
   // testing::Test:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kPersonalizationHub);
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile(kFakeTestEmail);
 
@@ -152,6 +153,7 @@ class PersonalizationAppAmbientProviderImplTest : public testing::Test {
   }
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfileManager profile_manager_;
@@ -161,7 +163,6 @@ class PersonalizationAppAmbientProviderImplTest : public testing::Test {
   mojo::Remote<ash::personalization_app::mojom::AmbientProvider>
       ambient_provider_remote_;
   std::unique_ptr<PersonalizationAppAmbientProviderImpl> ambient_provider_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   std::unique_ptr<ash::AmbientAshTestHelper> ambient_ash_test_helper_;
   std::unique_ptr<ash::FakeAmbientBackendControllerImpl>
