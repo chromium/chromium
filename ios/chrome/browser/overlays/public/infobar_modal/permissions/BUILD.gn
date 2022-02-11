@@ -13,6 +13,7 @@ source_set("permissions") {
   deps = [
     "//base",
     "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars/overlays:infobar_delegates",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common/infobars",
   ]
