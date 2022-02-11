@@ -110,6 +110,8 @@ bool CapturerRestrictedToSameOrigin(GlobalRenderFrameHostId capturer_id) {
 
 }  // namespace
 
+uint32_t TabSharingUIViews::next_capture_session_id_ = 0;
+
 // static
 std::unique_ptr<TabSharingUI> TabSharingUI::Create(
     GlobalRenderFrameHostId capturer,
@@ -125,7 +127,8 @@ TabSharingUIViews::TabSharingUIViews(
     const content::DesktopMediaID& media_id,
     std::u16string app_name,
     bool favicons_used_for_switch_to_tab_button)
-    : capturer_(capturer),
+    : capture_session_id_(next_capture_session_id_++),
+      capturer_(capturer),
       capturer_origin_(GetOriginFromId(capturer)),
       can_focus_capturer_(GetOriginFromId(capturer).scheme() !=
                           extensions::kExtensionScheme),
@@ -138,6 +141,8 @@ TabSharingUIViews::TabSharingUIViews(
           media_id.web_contents_id.main_render_frame_id))),
       favicons_used_for_switch_to_tab_button_(
           favicons_used_for_switch_to_tab_button) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   Observe(shared_tab_);
   shared_tab_name_ = GetTabName(shared_tab_);
   profile_ = ProfileManager::GetLastUsedProfileAllowedByPolicy();
@@ -296,8 +301,18 @@ void TabSharingUIViews::WebContentsDestroyed() {
 void TabSharingUIViews::OnRegionCaptureRectChanged(
     const absl::optional<gfx::Rect>& region_capture_rect) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  // TODO(crbug.com/1276822): Consume this signal by forwarding it to
-  // TabCaptureContentsBorderHelper and handling it there.
+
+  if (!shared_tab_) {
+    return;
+  }
+
+  auto* const helper =
+      TabCaptureContentsBorderHelper::FromWebContents(shared_tab_);
+  if (!helper) {
+    return;
+  }
+
+  helper->OnRegionCaptureRectChanged(capture_session_id_, region_capture_rect);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -555,10 +570,10 @@ void TabSharingUIViews::UpdateTabCaptureData(WebContents* contents,
 
   switch (update) {
     case TabCaptureUpdate::kCaptureAdded:
-      helper->IncrementCapturerCount();
+      helper->OnCapturerAdded(capture_session_id_);
       break;
     case TabCaptureUpdate::kCaptureRemoved:
-      helper->DecrementCapturerCount();
+      helper->OnCapturerRemoved(capture_session_id_);
       break;
     case TabCaptureUpdate::kCapturedVisibilityUpdated:
       helper->VisibilityUpdated();

@@ -222,6 +222,10 @@ class BrowserView : public BrowserWindow,
   views::Widget* contents_border_widget() {
     return GetBrowserViewLayout()->contents_border_widget();
   }
+  void SetContentBorderBounds(
+      const absl::optional<gfx::Rect>& region_capture_rect) {
+    GetBrowserViewLayout()->SetContentBorderBounds(region_capture_rect);
+  }
 
   TabStripRegionView* tab_strip_region_view() const {
     return tab_strip_region_view_;

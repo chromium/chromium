@@ -230,6 +230,12 @@ gfx::Size BrowserViewLayout::GetMinimumSize(const views::View* host) const {
   return gfx::Size(min_width, min_height);
 }
 
+void BrowserViewLayout::SetContentBorderBounds(
+    const absl::optional<gfx::Rect>& region_capture_rect) {
+  dynamic_content_border_bounds_ = region_capture_rect;
+  LayoutContentBorder();
+}
+
 gfx::NativeView BrowserViewLayout::GetHostView() {
   return delegate_->GetHostView();
 }
@@ -370,13 +376,7 @@ void BrowserViewLayout::Layout(views::View* browser_view) {
   // Layout the contents container in the remaining space.
   LayoutContentsContainerView(top, bottom);
 
-  if (contents_border_widget_ && contents_border_widget_->IsVisible()) {
-    gfx::Point contents_top_left;
-    views::View::ConvertPointToScreen(contents_container_, &contents_top_left);
-    contents_border_widget_->SetBounds(
-        gfx::Rect(contents_top_left.x(), contents_top_left.y(),
-                  contents_container_->width(), contents_container_->height()));
-  }
+  LayoutContentBorder();
 
   // This must be done _after_ we lay out the WebContents since this
   // code calls back into us to find the bounding box the find bar
@@ -684,6 +684,30 @@ int BrowserViewLayout::LayoutDownloadShelf(int bottom) {
     bottom -= height;
   }
   return bottom;
+}
+
+void BrowserViewLayout::LayoutContentBorder() {
+  if (!contents_border_widget_ || !contents_border_widget_->IsVisible()) {
+    return;
+  }
+
+  gfx::Point contents_top_left;
+  views::View::ConvertPointToScreen(contents_container_, &contents_top_left);
+
+  gfx::Rect rect;
+  if (dynamic_content_border_bounds_) {
+    rect =
+        gfx::Rect(contents_top_left.x() + dynamic_content_border_bounds_->x(),
+                  contents_top_left.y() + dynamic_content_border_bounds_->y(),
+                  dynamic_content_border_bounds_->width(),
+                  dynamic_content_border_bounds_->height());
+  } else {
+    rect =
+        gfx::Rect(contents_top_left.x(), contents_top_left.y(),
+                  contents_container_->width(), contents_container_->height());
+  }
+
+  contents_border_widget_->SetBounds(rect);
 }
 
 int BrowserViewLayout::GetClientAreaTop() {

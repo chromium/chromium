@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/tab_sharing/tab_sharing_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/views/tab_sharing/tab_capture_contents_border_helper.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -107,17 +108,22 @@ class TabSharingUIViews : public TabSharingUI,
  private:
   friend class TabSharingUIViewsBrowserTest;
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // Allows to test the DLP functionality of TabSharingUIViews even if the user
-  // is not managed and without the need to initialize DlpRulesManager in tests.
-  static void ApplyDlpForAllUsersForTesting();
-#endif
+  // Used to identify |TabSharingUIViews| instances to
+  // |TabCaptureContentsBorderHelper|, without passing pointers,
+  // which is less robust lifetime-wise.
+  using CaptureSessionId = TabCaptureContentsBorderHelper::CaptureSessionId;
 
   enum class TabCaptureUpdate {
     kCaptureAdded,
     kCaptureRemoved,
     kCapturedVisibilityUpdated
   };
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Allows to test the DLP functionality of TabSharingUIViews even if the user
+  // is not managed and without the need to initialize DlpRulesManager in tests.
+  static void ApplyDlpForAllUsersForTesting();
+#endif
 
   void CreateInfobarsForAllTabs();
   void CreateInfobarForWebContents(content::WebContents* contents);
@@ -146,6 +152,14 @@ class TabSharingUIViews : public TabSharingUI,
 
   void UpdateTabCaptureData(content::WebContents* contents,
                             TabCaptureUpdate update);
+
+  // As for the purpose of this identification:
+  // Assume a tab is captured twice, and both sessions use Region Capture.
+  // The blue border falls back on its viewport-encompassing form. But when
+  // one of these captures terminates, the blue border should track the
+  // remaining session's crop-target.
+  static CaptureSessionId next_capture_session_id_;
+  const CaptureSessionId capture_session_id_;
 
   std::map<content::WebContents*, infobars::InfoBar*> infobars_;
   std::map<content::WebContents*, std::unique_ptr<SameOriginObserver>>

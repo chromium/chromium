@@ -4,8 +4,7 @@
 
 #include "chrome/browser/ui/views/tab_sharing/tab_capture_contents_border_helper.h"
 
-#include <limits>
-
+#include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
@@ -25,7 +24,7 @@ const float kContentsBorderOpacity = 0.50;
 const SkColor kContentsBorderColor = gfx::kGoogleBlue500;
 #endif
 
-// TODO(https://crbug.com/1030925) fix contents border on ChromeOS.
+// TODO(https://crbug.com/1030925): Fix contents border on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 void InitContentsBorderWidget(content::WebContents* web_contents) {
   Browser* const browser = chrome::FindBrowserWithWebContents(web_contents);
@@ -65,26 +64,44 @@ void InitContentsBorderWidget(content::WebContents* web_contents) {
   widget->SetVisibilityChangedAnimationsEnabled(false);
   widget->SetOpacity(kContentsBorderOpacity);
 
+  // TODO(crbug.com/1276822): Associate each captured tab with its own widget.
+  // Otherwise, if tab A captures B, and tab C captures D, and all are in
+  // the same browser window, then either the A<-B or C<-D sessions ending,
+  // hides the widget, and there's no good way of avoiding it (other than
+  // associating distinct captured tabs with their own border).
+  // After this fix, capturing a given tab X twice will still yield one widget.
   browser_view->set_contents_border_widget(widget);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
-void TabCaptureContentsBorderHelper::IncrementCapturerCount() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_LT(capturer_count_, std::numeric_limits<int>::max());
+TabCaptureContentsBorderHelper::TabCaptureContentsBorderHelper(
+    content::WebContents* web_contents)
+    : content::WebContentsUserData<TabCaptureContentsBorderHelper>(
+          *web_contents) {}
 
-  ++capturer_count_;
+TabCaptureContentsBorderHelper::~TabCaptureContentsBorderHelper() = default;
+
+void TabCaptureContentsBorderHelper::OnCapturerAdded(
+    CaptureSessionId capture_session_id) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(!base::Contains(session_to_bounds_, capture_session_id));
+
+  session_to_bounds_[capture_session_id] = absl::nullopt;
+
   Update();
 }
 
-void TabCaptureContentsBorderHelper::DecrementCapturerCount() {
+void TabCaptureContentsBorderHelper::OnCapturerRemoved(
+    CaptureSessionId capture_session_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_GT(capturer_count_, 0);
 
-  // TODO(crbug.com/1294187): Destroy widget when `capturer_count_` hits 0.
-  --capturer_count_;
+  // TODO(crbug.com/1294187): Destroy widget when the size of
+  // `session_to_bounds_` hits 0. Same for `this`.
+  const size_t erased_count = session_to_bounds_.erase(capture_session_id);
+  DCHECK_EQ(erased_count, 1u);
+
   Update();
 }
 
@@ -94,10 +111,22 @@ void TabCaptureContentsBorderHelper::VisibilityUpdated() {
   Update();
 }
 
-void TabCaptureContentsBorderHelper::Update() {
-// TODO(https://crbug.com/1030925) fix contents border on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+void TabCaptureContentsBorderHelper::OnRegionCaptureRectChanged(
+    CaptureSessionId capture_session_id,
+    const absl::optional<gfx::Rect>& region_capture_rect) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(base::Contains(session_to_bounds_, capture_session_id));
 
+  // TODO(crbug.com/1276822): If the bounds are smaller than a certain size,
+  // fall back on drawing the contents around the entire content-area.
+  session_to_bounds_[capture_session_id] = region_capture_rect;
+
+  UpdateBlueBorderLocation();
+}
+
+void TabCaptureContentsBorderHelper::Update() {
+// TODO(https://crbug.com/1030925): Fix contents border on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   content::WebContents* const web_contents = &GetWebContents();
@@ -115,7 +144,8 @@ void TabCaptureContentsBorderHelper::Update() {
 
   const bool tab_visible =
       (web_contents == browser->tab_strip_model()->GetActiveWebContents());
-  const bool contents_border_needed = tab_visible && capturer_count_ > 0;
+  const bool contents_border_needed =
+      tab_visible && !session_to_bounds_.empty();
 
   if (!browser_view->contents_border_widget()) {
     if (!contents_border_needed) {
@@ -128,11 +158,44 @@ void TabCaptureContentsBorderHelper::Update() {
       browser_view->contents_border_widget();
 
   if (contents_border_needed) {
+    UpdateBlueBorderLocation();
     contents_border_widget->Show();
   } else {
     contents_border_widget->Hide();
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+void TabCaptureContentsBorderHelper::UpdateBlueBorderLocation() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(!session_to_bounds_.empty()) << "No blue border should be shown.";
+
+  content::WebContents* const web_contents = &GetWebContents();
+
+  Browser* const browser = chrome::FindBrowserWithWebContents(web_contents);
+  if (!browser) {
+    return;
+  }
+
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view || !browser_view->contents_border_widget()) {
+    return;
+  }
+
+  browser_view->SetContentBorderBounds(GetBlueBorderLocation());
+}
+
+absl::optional<gfx::Rect>
+TabCaptureContentsBorderHelper::GetBlueBorderLocation() const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(!session_to_bounds_.empty()) << "No blue border should be shown.";
+
+  // The border should only track the cropped-to contents when there is exactly
+  // one capture session. If there are more, fall back on drawing the border
+  // around the entire tab.
+  return (session_to_bounds_.size() == 1u) ? session_to_bounds_.begin()->second
+                                           : absl::nullopt;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(TabCaptureContentsBorderHelper);
