@@ -1324,6 +1324,9 @@ bool WorkspaceWindowResizer::UpdateMagnetismWindow(
       continue;
 
     WindowState* other_state = WindowState::Get(*i);
+    if (!other_state)
+      continue;
+
     if (other_state->window() == GetTarget() ||
         !other_state->window()->IsVisible() ||
         !other_state->IsNormalOrSnapped() || !other_state->CanResize()) {
