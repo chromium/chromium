@@ -369,17 +369,22 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, ContextMenuSortItemsInTopLevel) {
       ash::TOGGLE_APP_LIST_FULLSCREEN, {});
   app_list_test_api_.WaitForBubbleWindow(/*wait_for_opening_animation=*/true);
 
+  base::HistogramTester histograms;
   ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kNameAlphabetical,
                                    MenuType::kAppListPageMenu,
                                    AnimationTargetStatus::kCompleted);
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
+  histograms.ExpectBucketCount(ash::kClamshellReorderActionHistogram,
+                               ash::AppListSortOrder::kNameAlphabetical, 1);
 
   ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kColor,
                                    MenuType::kAppListPageMenu,
                                    AnimationTargetStatus::kCompleted);
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app2_id_, app3_id_, app1_id_}));
+  histograms.ExpectBucketCount(ash::kClamshellReorderActionHistogram,
+                               ash::AppListSortOrder::kColor, 1);
 }
 
 // Verifies that the apps in a folder can be arranged in the alphabetical order
@@ -646,6 +651,8 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, UndoTemporarySortingTablet) {
                                    AnimationTargetStatus::kCompleted);
   EXPECT_EQ(GetAppIdsInOrdinalOrder(),
             std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
+  histograms.ExpectBucketCount(ash::kTabletReorderActionHistogram,
+                               ash::AppListSortOrder::kNameAlphabetical, 1);
 
   // The toast should be visible.
   EXPECT_TRUE(app_list_test_api_.GetFullscreenReorderUndoToastVisibility());
@@ -839,9 +846,12 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest,
             std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
 
   // Verify that reordering in tablet mode works.
+  base::HistogramTester histograms;
   ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kColor,
                                    MenuType::kAppListNonFolderItemMenu,
                                    AnimationTargetStatus::kCompleted);
+  histograms.ExpectBucketCount(ash::kTabletReorderActionHistogram,
+                               ash::AppListSortOrder::kColor, 1);
 
   // TODO(https://crbug.com/1288880): verify the app order after the color
   // sorting result becomes consistent.

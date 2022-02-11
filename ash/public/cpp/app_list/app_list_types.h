@@ -144,6 +144,7 @@ struct ASH_PUBLIC_EXPORT AppListItemMetadata {
 };
 
 // All possible orders to sort app list items.
+// Note: Do not change the order of these as they are used for metrics.
 enum class AppListSortOrder {
   // The sort order is not set.
   kCustom = 0,
@@ -159,7 +160,9 @@ enum class AppListSortOrder {
   // Items are sorted in order of color in rainbow order from red to purple.
   // Items are first sorted by the color of the icon background, then sorted
   // by the light vibrant color extracted from the icon.
-  kColor
+  kColor,
+
+  kMaxValue = kColor,
 };
 
 // Lists the reasons that ash requests for item position update.

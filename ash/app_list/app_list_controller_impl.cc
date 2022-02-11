@@ -532,6 +532,9 @@ void AppListControllerImpl::UpdateAppListWithNewSortingOrder(
   DCHECK(features::IsProductivityLauncherEnabled());
   DCHECK(features::IsLauncherAppSortEnabled());
 
+  if (new_order)
+    RecordAppListSortAction(*new_order, IsInTabletMode());
+
   // Adapt the bubble app list to the new sorting order. NOTE: the bubble app
   // list is visible only in clamshell mode. Therefore do not animate in tablet
   // mode.

@@ -3520,6 +3520,13 @@ Unknown properties are collapsed to zero. -->
   <int value="7" label="Scroll from the shelf"/>
 </enum>
 
+<enum name="AppListSortOrder">
+  <int value="0" label="Custom order"/>
+  <int value="1" label="Alphabetical order"/>
+  <int value="2" label="Reverse alphabetical order"/>
+  <int value="3" label="Color order"/>
+</enum>
+
 <enum name="AppListStateTransitionSource">
   <int value="0" label="Fullscreen All Apps To Closed"/>
   <int value="1" label="Fullscreen All Apps To Fullscreen Search"/>
