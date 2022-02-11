@@ -82,52 +82,51 @@ SyncCycleSnapshot::~SyncCycleSnapshot() = default;
 
 std::unique_ptr<base::DictionaryValue> SyncCycleSnapshot::ToValue() const {
   std::unique_ptr<base::DictionaryValue> value(new base::DictionaryValue());
-  value->SetString("birthday", birthday_);
+  value->SetStringKey("birthday", birthday_);
   std::string encoded_bag_of_chips;
   base::Base64Encode(bag_of_chips_, &encoded_bag_of_chips);
-  value->SetString("bagOfChips", encoded_bag_of_chips);
-  value->SetInteger("numSuccessfulCommits",
-                    model_neutral_state_.num_successful_commits);
-  value->SetInteger("numSuccessfulBookmarkCommits",
-                    model_neutral_state_.num_successful_bookmark_commits);
-  value->SetInteger("numUpdatesDownloadedTotal",
-                    model_neutral_state_.num_updates_downloaded_total);
-  value->SetInteger(
-      "numTombstoneUpdatesDownloadedTotal",
-      model_neutral_state_.num_tombstone_updates_downloaded_total);
-  value->SetInteger(
-      "numReflectedUpdatesDownloadedTotal",
-      model_neutral_state_.num_reflected_updates_downloaded_total);
-  value->SetInteger("numLocalOverwrites",
-                    model_neutral_state_.num_local_overwrites);
-  value->SetInteger("numServerOverwrites",
-                    model_neutral_state_.num_server_overwrites);
+  value->SetStringKey("bagOfChips", encoded_bag_of_chips);
+  value->SetIntKey("numSuccessfulCommits",
+                   model_neutral_state_.num_successful_commits);
+  value->SetIntKey("numSuccessfulBookmarkCommits",
+                   model_neutral_state_.num_successful_bookmark_commits);
+  value->SetIntKey("numUpdatesDownloadedTotal",
+                   model_neutral_state_.num_updates_downloaded_total);
+  value->SetIntKey("numTombstoneUpdatesDownloadedTotal",
+                   model_neutral_state_.num_tombstone_updates_downloaded_total);
+  value->SetIntKey("numReflectedUpdatesDownloadedTotal",
+                   model_neutral_state_.num_reflected_updates_downloaded_total);
+  value->SetIntKey("numLocalOverwrites",
+                   model_neutral_state_.num_local_overwrites);
+  value->SetIntKey("numServerOverwrites",
+                   model_neutral_state_.num_server_overwrites);
   value->SetKey("downloadProgressMarkers",
                 base::Value::FromUniquePtrValue(
                     ProgressMarkerMapToValue(download_progress_markers_)));
-  value->SetBoolean("isSilenced", is_silenced_);
+  value->SetBoolKey("isSilenced", is_silenced_);
   // We don't care too much if we lose precision here, also.
-  value->SetInteger("numEncryptionConflicts", num_encryption_conflicts_);
-  value->SetInteger("numHierarchyConflicts", num_hierarchy_conflicts_);
-  value->SetInteger("numServerConflicts", num_server_conflicts_);
-  value->SetInteger("numEntries", num_entries_);
-  value->SetString("getUpdatesOrigin", ProtoEnumToString(get_updates_origin_));
-  value->SetBoolean("notificationsEnabled", notifications_enabled_);
+  value->SetIntKey("numEncryptionConflicts", num_encryption_conflicts_);
+  value->SetIntKey("numHierarchyConflicts", num_hierarchy_conflicts_);
+  value->SetIntKey("numServerConflicts", num_server_conflicts_);
+  value->SetIntKey("numEntries", num_entries_);
+  value->SetStringKey("getUpdatesOrigin",
+                      ProtoEnumToString(get_updates_origin_));
+  value->SetBoolKey("notificationsEnabled", notifications_enabled_);
 
   base::DictionaryValue counter_entries;
   for (ModelType type : ModelTypeSet::All()) {
     base::DictionaryValue type_entries;
-    type_entries.SetInteger("numEntries", num_entries_by_type_[type]);
-    type_entries.SetInteger("numToDeleteEntries",
-                            num_to_delete_entries_by_type_[type]);
+    type_entries.SetIntKey("numEntries", num_entries_by_type_[type]);
+    type_entries.SetIntKey("numToDeleteEntries",
+                           num_to_delete_entries_by_type_[type]);
 
     counter_entries.SetKey(ModelTypeToDebugString(type),
                            std::move(type_entries));
   }
   value->SetKey("counter_entries", std::move(counter_entries));
-  value->SetBoolean("hasRemainingLocalChanges", has_remaining_local_changes_);
-  value->SetString("poll_interval", FormatTimeDelta(poll_interval_));
-  value->SetString(
+  value->SetBoolKey("hasRemainingLocalChanges", has_remaining_local_changes_);
+  value->SetStringKey("poll_interval", FormatTimeDelta(poll_interval_));
+  value->SetStringKey(
       "poll_finish_time",
       base::TimeFormatShortDateAndTimeWithTimeZone(poll_finish_time_));
   return value;

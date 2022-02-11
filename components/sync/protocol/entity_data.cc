@@ -32,19 +32,19 @@ std::unique_ptr<base::DictionaryValue> EntityData::ToDictionaryValue() {
       std::make_unique<base::DictionaryValue>();
   dict->SetKey("SPECIFICS", base::Value::FromUniquePtrValue(
                                 EntitySpecificsToValue(specifics)));
-  dict->SetString("ID", id);
-  dict->SetString("CLIENT_TAG_HASH", client_tag_hash.value());
-  dict->SetString("ORIGINATOR_CACHE_GUID", originator_cache_guid);
-  dict->SetString("ORIGINATOR_CLIENT_ITEM_ID", originator_client_item_id);
-  dict->SetString("SERVER_DEFINED_UNIQUE_TAG", server_defined_unique_tag);
+  dict->SetStringKey("ID", id);
+  dict->SetStringKey("CLIENT_TAG_HASH", client_tag_hash.value());
+  dict->SetStringKey("ORIGINATOR_CACHE_GUID", originator_cache_guid);
+  dict->SetStringKey("ORIGINATOR_CLIENT_ITEM_ID", originator_client_item_id);
+  dict->SetStringKey("SERVER_DEFINED_UNIQUE_TAG", server_defined_unique_tag);
   // The string "NON_UNIQUE_NAME" is used in sync-internals to identify the node
   // title.
-  dict->SetString("NON_UNIQUE_NAME", name);
-  dict->SetString("NAME", name);
+  dict->SetStringKey("NON_UNIQUE_NAME", name);
+  dict->SetStringKey("NAME", name);
   // The string "PARENT_ID" is used in sync-internals to build the node tree.
-  dict->SetString("PARENT_ID", legacy_parent_id);
-  dict->SetString("CTIME", GetTimeDebugString(creation_time));
-  dict->SetString("MTIME", GetTimeDebugString(modification_time));
+  dict->SetStringKey("PARENT_ID", legacy_parent_id);
+  dict->SetStringKey("CTIME", GetTimeDebugString(creation_time));
+  dict->SetStringKey("MTIME", GetTimeDebugString(modification_time));
   return dict;
 }
 

@@ -55,9 +55,9 @@ SyncProtocolError::~SyncProtocolError() = default;
 
 std::unique_ptr<base::DictionaryValue> SyncProtocolError::ToValue() const {
   auto value = std::make_unique<base::DictionaryValue>();
-  value->SetString("ErrorType", GetSyncErrorTypeString(error_type));
-  value->SetString("ErrorDescription", error_description);
-  value->SetString("action", GetClientActionString(action));
+  value->SetStringKey("ErrorType", GetSyncErrorTypeString(error_type));
+  value->SetStringKey("ErrorDescription", error_description);
+  value->SetStringKey("action", GetClientActionString(action));
   return value;
 }
 

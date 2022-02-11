@@ -263,9 +263,9 @@ void NigoriModelTypeProcessor::GetAllNodesForDebugging(
   // UNIQUE_SERVER_TAG to check if the node is root node. isChildOf in
   // sync_node_browser.js uses modelType to check if root node is parent of real
   // data node.
-  root_node->SetString("PARENT_ID", "r");
-  root_node->SetString("UNIQUE_SERVER_TAG", "Nigori");
-  root_node->SetString("modelType", ModelTypeToDebugString(NIGORI));
+  root_node->SetStringKey("PARENT_ID", "r");
+  root_node->SetStringKey("UNIQUE_SERVER_TAG", "Nigori");
+  root_node->SetStringKey("modelType", ModelTypeToDebugString(NIGORI));
 
   auto all_nodes = std::make_unique<base::ListValue>();
   all_nodes->Append(std::move(root_node));

@@ -51,7 +51,7 @@ void UpdateInvalidationVersions(
     PrefService* pref_service) {
   auto invalidation_dictionary = std::make_unique<base::DictionaryValue>();
   for (const auto& [type, version] : invalidation_versions) {
-    invalidation_dictionary->SetString(
+    invalidation_dictionary->SetStringKey(
         base::NumberToString(GetSpecificsFieldNumberFromModelType(type)),
         base::NumberToString(version));
   }

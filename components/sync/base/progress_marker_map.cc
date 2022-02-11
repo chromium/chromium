@@ -19,7 +19,7 @@ std::unique_ptr<base::DictionaryValue> ProgressMarkerMapToValue(
     base::EscapeJSONString(progress_marker, false /* put_in_quotes */,
                            &printable_payload);
     base::Base64Encode(printable_payload, &printable_payload);
-    value->SetString(ModelTypeToDebugString(model_type), printable_payload);
+    value->SetStringPath(ModelTypeToDebugString(model_type), printable_payload);
   }
   return value;
 }

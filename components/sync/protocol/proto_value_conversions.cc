@@ -110,7 +110,7 @@ namespace {
 //    std::unique_ptr<base::DictionaryValue> ToValue(
 //        const sync_pb::GreenProto& proto) const {
 //      std::unique_ptr<base::DictionaryValue> value = ToValueImpl(proto);
-//      value->SetString("secret", "<clobbered>");
+//      value->SetStringKey("secret", "<clobbered>");
 //      return value;
 //    }
 //
