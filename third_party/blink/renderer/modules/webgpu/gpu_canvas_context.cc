@@ -173,6 +173,9 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
       AsDawnEnum<WGPUTextureFormat>(descriptor->format());
   switch (format) {
     case WGPUTextureFormat_BGRA8Unorm:
+#if !BUILDFLAG(IS_MAC)
+    case WGPUTextureFormat_RGBA8Unorm:
+#endif
       break;
     case WGPUTextureFormat_RGBA16Float:
       configured_device_->InjectError(

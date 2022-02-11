@@ -14,14 +14,17 @@ namespace blink {
 
 namespace {
 viz::ResourceFormat WGPUFormatToViz(WGPUTextureFormat format) {
-  if (format == WGPUTextureFormat_BGRA8Unorm) {
-    return viz::BGRA_8888;
+  switch (format) {
+    case WGPUTextureFormat_BGRA8Unorm:
+      return viz::BGRA_8888;
+    case WGPUTextureFormat_RGBA8Unorm:
+      return viz::RGBA_8888;
+    case WGPUTextureFormat_RGBA16Float:
+      return viz::RGBA_F16;
+    default:
+      NOTREACHED();
+      return viz::RGBA_8888;
   }
-  if (format == WGPUTextureFormat_RGBA8Unorm) {
-    return viz::RGBA_8888;
-  }
-  NOTREACHED();
-  return viz::RGBA_8888;
 }
 }  // namespace
 
