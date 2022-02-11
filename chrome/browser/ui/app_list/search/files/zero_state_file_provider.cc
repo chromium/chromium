@@ -11,6 +11,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -21,6 +22,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
@@ -42,22 +44,34 @@ constexpr base::TimeDelta kSaveDelay = base::Seconds(3);
 
 constexpr size_t kMaxLocalFiles = 10u;
 
-// Given the output of MrfuCache::GetAll, partition files by whether or not they
-// exist on disk. Returns a pair of vectors: <valid, invalid>.
+// A file needs to have been modified more recently than this to be returned.
+constexpr base::TimeDelta kMaxLastModifiedTime = base::Days(7);
+
+// Given the output of MrfuCache::GetAll, partition files into:
+// - valid files that exist on-disk and have been modified in the last 7 days
+// - invalid files, otherwise.
 internal::ValidAndInvalidResults ValidateFiles(
     const std::vector<std::pair<std::string, float>>& ranker_results) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
   internal::ScoredResults valid;
   internal::Results invalid;
+  const base::Time now = base::Time::Now();
   for (const auto& path_score : ranker_results) {
     // We use FilePath::FromUTF8Unsafe to decode the filepath string. As per its
     // documentation, this is a safe use of the function because
     // ZeroStateFileProvider is only used on ChromeOS, for which
     // filepaths are UTF8.
     const auto& path = base::FilePath::FromUTF8Unsafe(path_score.first);
-    if (base::PathExists(path))
+
+    base::File::Info info;
+    if (base::PathExists(path) && base::GetFileInfo(path, &info) &&
+        (now - info.last_modified <= kMaxLastModifiedTime)) {
       valid.emplace_back(path, path_score.second);
-    else
+    } else {
       invalid.emplace_back(path);
+    }
   }
   return {valid, invalid};
 }
@@ -140,7 +154,9 @@ void ZeroStateFileProvider::StartZeroState() {
 
 void ZeroStateFileProvider::SetSearchResults(
     internal::ValidAndInvalidResults results) {
-  // TODO(crbug.com/1258415): Re-add deletion of invalid results from the model.
+  // Delete invalid results from the ranker.
+  for (const base::FilePath& path : results.second)
+    files_ranker_->Delete(path.value());
 
   // Sort valid results high-to-low by score.
   auto& valid_results = results.first;

@@ -109,6 +109,10 @@ class MrfuCache {
   // all scores.
   Items GetAllNormalized();
 
+  // Removes |item| from the cache. This is best-effort: if the proto is not
+  // initialized then |item| is not deleted.
+  void Delete(const std::string& item);
+
   // Clears the current content of the cache and replaces it with the given
   // items and scores. It is invalid to call this before the cache is
   // initialized.

@@ -166,6 +166,14 @@ MrfuCache::Items MrfuCache::GetAllNormalized() {
   return results;
 }
 
+void MrfuCache::Delete(const std::string& item) {
+  if (!proto_.initialized())
+    return;
+  proto_->set_total_score(proto_->total_score() - Get(item));
+  proto_->mutable_items()->erase(item);
+  proto_.QueueWrite();
+}
+
 void MrfuCache::ResetWithItems(const Items& items) {
   DCHECK(proto_.initialized());
   proto_->Clear();

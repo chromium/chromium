@@ -313,4 +313,22 @@ TEST_F(MrfuCacheTest, ResetWithItems) {
   EXPECT_FLOAT_EQ(proto.total_score(), 1.1f);
 }
 
+TEST_F(MrfuCacheTest, Delete) {
+  {
+    MrfuCache cache(GetProto(), TestingParams());
+    Wait();
+    cache.ResetWithItems({{"A", 0.1f}, {"B", 0.2f}});
+
+    cache.Delete("A");
+    EXPECT_THAT(cache.GetAll(), UnorderedElementsAre(Pair("B", 0.2f)));
+    Wait();
+  }
+
+  // Check that the cache wrote to disk after the reset, and correctly set the
+  // update count and total score.
+  MrfuCacheProto proto = ReadFromDisk();
+  EXPECT_EQ(proto.items_size(), 1);
+  EXPECT_FLOAT_EQ(proto.total_score(), 0.2f);
+}
+
 }  // namespace app_list

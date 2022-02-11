@@ -101,4 +101,22 @@ TEST_F(ZeroStateFileProviderTest, ResultsProvided) {
       UnorderedElementsAre(Title("exists_1.txt"), Title("exists_2.png")));
 }
 
+TEST_F(ZeroStateFileProviderTest, OldFilesNotReturned) {
+  // Disable flag.
+  scoped_feature_list_.InitWithFeatures(
+      {}, {app_list_features::kEnableSuggestedLocalFiles});
+
+  WriteFile("new.txt");
+  WriteFile("old.png");
+  auto now = base::Time::Now();
+  base::TouchFile(Path("old.png"), now, now - base::Days(8));
+
+  provider_->OnFilesOpened({OpenEvent("new.txt"), OpenEvent("old.png")});
+
+  provider_->StartZeroState();
+  Wait();
+
+  EXPECT_THAT(provider_->results(), UnorderedElementsAre(Title("new.txt")));
+}
+
 }  // namespace app_list
