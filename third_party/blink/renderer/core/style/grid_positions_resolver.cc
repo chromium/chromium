@@ -33,18 +33,18 @@ NamedLineCollection::NamedLineCollection(
     : last_line_(last_line),
       auto_repeat_total_tracks_(auto_repeat_tracks_count) {
   const bool is_for_columns = track_direction == kForColumns;
-  bool are_named_lines_valid = true;
-  if (RuntimeEnabledFeatures::LayoutNGSubgridEnabled()) {
-    const GridAxisType grid_axis_type =
-        is_for_columns ? grid_container_style.GridColumnsAxisType()
-                       : grid_container_style.GridRowsAxisType();
+  const auto& grid_axis_type = is_for_columns
+                                   ? grid_container_style.GridColumnsAxisType()
+                                   : grid_container_style.GridRowsAxisType();
+  is_standalone_grid_ = grid_axis_type == GridAxisType::kStandaloneAxis;
 
-    // Line names from the container style are valid when the grid axis type is
-    // a standalone grid or the axis is a subgrid and the parent is a grid.
-    // See: https://www.w3.org/TR/css-grid-2/#subgrid-listing
-    are_named_lines_valid = is_parent_grid_container ||
-                            grid_axis_type == GridAxisType::kStandaloneAxis;
-  }
+  // Line names from the container style are valid when the grid axis type is a
+  // standalone grid or the axis is a subgrid and the parent is a grid. See:
+  // https://www.w3.org/TR/css-grid-2/#subgrid-listing
+  bool are_named_lines_valid = true;
+  if (RuntimeEnabledFeatures::LayoutNGSubgridEnabled())
+    are_named_lines_valid = is_parent_grid_container || is_standalone_grid_;
+
   const NamedGridLinesMap& grid_line_names =
       is_for_columns ? grid_container_style.NamedGridColumnLines()
                      : grid_container_style.NamedGridRowLines();
@@ -137,9 +137,10 @@ wtf_size_t NamedLineCollection::FirstExplicitPosition() {
 
   wtf_size_t first_line = 0;
 
-  // If there is no auto repeat(), there must be some named line outside, return
-  // the 1st one. Also return it if it precedes the auto-repeat().
-  if (auto_repeat_track_list_length_ == 0 ||
+  // If it is an standalone grid and there is no auto repeat(), there must be
+  // some named line outside, return the 1st one. Also return it if it precedes
+  // the auto-repeat().
+  if ((is_standalone_grid_ && auto_repeat_track_list_length_ == 0) ||
       (named_lines_indexes_ &&
        named_lines_indexes_->at(first_line) <= insertion_point_)) {
     return named_lines_indexes_->at(first_line);
@@ -156,11 +157,10 @@ wtf_size_t NamedLineCollection::FirstExplicitPosition() {
 wtf_size_t NamedLineCollection::FirstPosition() {
   CHECK(HasNamedLines());
 
-  wtf_size_t first_line = 0;
-
   if (!implicit_named_lines_indexes_)
     return FirstExplicitPosition();
 
+  wtf_size_t first_line = 0;
   if (!HasExplicitNamedLines())
     return implicit_named_lines_indexes_->at(first_line);
 

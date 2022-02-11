@@ -44,6 +44,7 @@ class NamedLineCollection {
   const Vector<wtf_size_t>* auto_repeat_named_lines_indexes_ = nullptr;
   const Vector<wtf_size_t>* implicit_named_lines_indexes_ = nullptr;
 
+  bool is_standalone_grid_;
   wtf_size_t insertion_point_;
   wtf_size_t last_line_;
   wtf_size_t auto_repeat_total_tracks_;
