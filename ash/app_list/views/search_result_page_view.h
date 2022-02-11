@@ -74,6 +74,9 @@ class ASH_EXPORT SearchResultPageView
   void UpdatePageOpacityForState(AppListState state,
                                  float search_box_opacity,
                                  bool restore_opacity) override;
+  void UpdatePageBoundsForState(AppListState state,
+                                const gfx::Rect& contents_bounds,
+                                const gfx::Rect& search_box_bounds) override;
   gfx::Rect GetPageBoundsForState(
       AppListState state,
       const gfx::Rect& contents_bounds,

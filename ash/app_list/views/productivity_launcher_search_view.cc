@@ -166,6 +166,7 @@ void ProductivityLauncherSearchView::OnSearchResultContainerResultsChanged() {
           container_animation_info->animating_views;
     }
   }
+  Layout();
 
   last_search_result_count_ = result_count;
 

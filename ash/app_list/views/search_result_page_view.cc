@@ -89,6 +89,11 @@ constexpr base::TimeDelta kExpandingSearchResultDuration =
 constexpr base::TimeDelta kClosingSearchResultDuration =
     base::Milliseconds(100);
 
+// The duration of the search result page view decreasing height animation
+// within the kExpanded state.
+constexpr base::TimeDelta kDecreasingHeightSearchResultsDuration =
+    base::Milliseconds(200);
+
 // A container view that ensures the card background and the shadow are painted
 // in the correct order.
 class SearchCardView : public views::View {
@@ -475,6 +480,41 @@ void SearchResultPageView::NotifySelectedResultChanged() {
       selected_view->GetViewAccessibility().GetUniqueId().Get());
 }
 
+void SearchResultPageView::UpdatePageBoundsForState(
+    AppListState state,
+    const gfx::Rect& contents_bounds,
+    const gfx::Rect& search_box_bounds) {
+  if (!features::IsProductivityLauncherEnabled()) {
+    AppListPage::UpdatePageBoundsForState(state, contents_bounds,
+                                          search_box_bounds);
+    return;
+  }
+
+  if (state != AppListState::kStateSearchResults)
+    return;
+
+  const gfx::Rect to_bounds =
+      GetPageBoundsForResultState(current_search_results_state_);
+
+  if (layer()->GetAnimator()->is_animating()) {
+    DCHECK(!layer()->clip_rect().IsEmpty());
+    // When already animating, for an increasing target height, set the bounds
+    // before animating to keep the animation visible.
+    if (to_bounds.height() > layer()->clip_rect().height())
+      SetBoundsRect(to_bounds);
+    AnimateBetweenBounds(layer()->clip_rect(), gfx::Rect(to_bounds.size()));
+  } else {
+    // When no animation is in progress, we only animate when the target
+    // height is decreasing, otherwise set bounds immediately.
+    if (to_bounds.height() < bounds().height()) {
+      AnimateBetweenBounds(gfx::Rect(bounds().size()),
+                           gfx::Rect(to_bounds.size()));
+    } else {
+      SetBoundsRect(to_bounds);
+    }
+  }
+}
+
 void SearchResultPageView::AnimateToSearchResultsState(
     SearchResultsState to_state) {
   // The search results page is only visible in expanded state. Exit early when
@@ -488,9 +528,19 @@ void SearchResultPageView::AnimateToSearchResultsState(
 
   gfx::Rect from_rect =
       GetPageBoundsForResultState(current_search_results_state_);
-  gfx::Rect to_rect = GetPageBoundsForResultState(to_state);
+  const gfx::Rect to_rect = GetPageBoundsForResultState(to_state);
 
-  if (to_state == SearchResultsState::kExpanded) {
+  if (current_search_results_state_ == SearchResultsState::kExpanded &&
+      to_state == SearchResultsState::kExpanded) {
+    // Use current bounds when animating within the expanded state.
+    from_rect = bounds();
+
+    // Only set bounds when the height is increasing so that the entire
+    // animation between |to_rect| and |from_rect| is visible.
+    if (to_rect.height() > from_rect.height())
+      SetBoundsRect(to_rect);
+
+  } else if (to_state == SearchResultsState::kExpanded) {
     // Set bounds here because this is a result opening transition. We avoid
     // setting bounds for closing transitions because then the animation would
     // be hidden, instead set the bounds for closing transitions once the
@@ -510,10 +560,25 @@ void SearchResultPageView::AnimateBetweenBounds(const gfx::Rect& from_rect,
   if (from_rect == to_rect)
     return;
 
+  // Return if already animating to the correct target size.
+  if (layer()->GetAnimator()->is_animating() &&
+      to_rect.size() == layer()->GetTargetClipRect().size()) {
+    return;
+  }
+
   gfx::Rect clip_rect = from_rect;
   clip_rect -= to_rect.OffsetFromOrigin();
   layer()->SetClipRect(clip_rect);
   view_shadow_.reset();
+
+  base::TimeDelta duration;
+  if (from_rect.height() < to_rect.height()) {
+    duration = kExpandingSearchResultDuration;
+  } else {
+    duration = (current_search_results_state_ == SearchResultsState::kExpanded)
+                   ? kDecreasingHeightSearchResultsDuration
+                   : kClosingSearchResultDuration;
+  }
 
   views::AnimationBuilder()
       .SetPreemptionStrategy(
@@ -522,9 +587,7 @@ void SearchResultPageView::AnimateBetweenBounds(const gfx::Rect& from_rect,
           base::BindOnce(&SearchResultPageView::OnAnimationBetweenBoundsEnded,
                          base::Unretained(this)))
       .Once()
-      .SetDuration((from_rect.height() < to_rect.height())
-                       ? kExpandingSearchResultDuration
-                       : kClosingSearchResultDuration)
+      .SetDuration(duration)
       .SetClipRect(layer(), gfx::Rect(to_rect.size()),
                    gfx::Tween::FAST_OUT_SLOW_IN)
       .SetRoundedCorners(
