@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/synchronization/lock.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -21,8 +20,6 @@ namespace blink {
 
 const base::Feature kWebRtcMetronomeTaskQueue{
     "WebRtcMetronomeTaskQueue", base::FEATURE_DISABLED_BY_DEFAULT};
-
-namespace {
 
 class WebRtcMetronomeTaskQueue : public webrtc::TaskQueueBase {
  public:
@@ -38,68 +35,23 @@ class WebRtcMetronomeTaskQueue : public webrtc::TaskQueueBase {
                                     uint32_t milliseconds) override;
 
  private:
-  struct DelayedTaskInfo {
-    DelayedTaskInfo(base::TimeTicks ready_time, uint64_t task_id);
-
-    // Used for std::map<> ordering.
-    bool operator<(const DelayedTaskInfo& other) const;
-
-    base::TimeTicks ready_time;
-    uint64_t task_id;
-  };
-
   // Runs a single PostTask-task.
   static void MaybeRunTask(WebRtcMetronomeTaskQueue* metronome_task_queue,
                            scoped_refptr<base::RefCountedData<bool>> is_active,
                            std::unique_ptr<webrtc::QueuedTask> task);
   void RunTask(std::unique_ptr<webrtc::QueuedTask> task);
 
-  void UpdateWakeupTime() EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  // Run all delayed tasks, in order, that are ready (target time <= now).
-  void OnMetronomeTick();
-
   const scoped_refptr<MetronomeSource> metronome_source_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   // Value of |is_active_| is checked and set on |task_runner_|.
   const scoped_refptr<base::RefCountedData<bool>> is_active_;
-  scoped_refptr<MetronomeSource::ListenerHandle> listener_handle_;
-  base::Lock lock_;
-  // The next delayed task gets assigned this ID which then increments. Used for
-  // task execution ordering, see |delayed_tasks_| comment.
-  uint64_t next_task_id_ GUARDED_BY(lock_) = 0;
-  // The map's order ensures tasks are ordered by desired execution time. If two
-  // tasks have the same |ready_time| then they are ordered by the ID, i.e. the
-  // order they were posted.
-  std::map<DelayedTaskInfo, std::unique_ptr<webrtc::QueuedTask>> delayed_tasks_
-      GUARDED_BY(lock_);
 };
-
-WebRtcMetronomeTaskQueue::DelayedTaskInfo::DelayedTaskInfo(
-    base::TimeTicks ready_time,
-    uint64_t task_id)
-    : ready_time(std::move(ready_time)), task_id(task_id) {}
-
-bool WebRtcMetronomeTaskQueue::DelayedTaskInfo::operator<(
-    const DelayedTaskInfo& other) const {
-  if (ready_time < other.ready_time)
-    return true;
-  if (ready_time == other.ready_time)
-    return task_id < other.task_id;
-  return false;
-}
 
 WebRtcMetronomeTaskQueue::WebRtcMetronomeTaskQueue(
     scoped_refptr<MetronomeSource> metronome_source)
     : metronome_source_(std::move(metronome_source)),
       task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})),
-      is_active_(new base::RefCountedData<bool>(true)) {
-  listener_handle_ = metronome_source_->AddListener(
-      task_runner_,
-      base::BindRepeating(&WebRtcMetronomeTaskQueue::OnMetronomeTick,
-                          base::Unretained(this)),
-      base::TimeTicks::Max());
-  DCHECK(listener_handle_);
-}
+      is_active_(new base::RefCountedData<bool>(true)) {}
 
 void Deactivate(scoped_refptr<base::RefCountedData<bool>> is_active,
                 base::WaitableEvent* event) {
@@ -108,8 +60,6 @@ void Deactivate(scoped_refptr<base::RefCountedData<bool>> is_active,
 }
 
 void WebRtcMetronomeTaskQueue::Delete() {
-  // Ensure OnMetronomeTick() will not be invoked again.
-  metronome_source_->RemoveListener(listener_handle_);
   // Ensure there are no in-flight PostTask-tasks when deleting.
   base::WaitableEvent event;
   task_runner_->PostTask(FROM_HERE,
@@ -147,62 +97,33 @@ void WebRtcMetronomeTaskQueue::RunTask(
 void WebRtcMetronomeTaskQueue::PostDelayedTask(
     std::unique_ptr<webrtc::QueuedTask> task,
     uint32_t milliseconds) {
-  base::AutoLock auto_lock(lock_);
-  delayed_tasks_.insert(std::make_pair(
-      DelayedTaskInfo(base::TimeTicks::Now() + base::Milliseconds(milliseconds),
-                      next_task_id_++),
-      std::move(task)));
-  UpdateWakeupTime();
+  base::TimeTicks snapped_target_time =
+      metronome_source_->GetTimeSnappedToNextMetronomeTick(
+          base::TimeTicks::Now() + base::Milliseconds(milliseconds));
+  // The posted task might outlive |this|, but access to |this| is guarded by
+  // the ref-counted |is_active_| flag.
+  task_runner_->PostDelayedTaskAt(
+      base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
+      base::BindOnce(&WebRtcMetronomeTaskQueue::MaybeRunTask,
+                     base::Unretained(this), is_active_, std::move(task)),
+      snapped_target_time, base::subtle::DelayPolicy::kPrecise);
 }
 
 void WebRtcMetronomeTaskQueue::PostDelayedHighPrecisionTask(
     std::unique_ptr<webrtc::QueuedTask> task,
     uint32_t milliseconds) {
+  base::TimeTicks target_time =
+      base::TimeTicks::Now() + base::Milliseconds(milliseconds);
   // The posted task might outlive |this|, but access to |this| is guarded by
   // the ref-counted |is_active_| flag.
-  task_runner_->PostDelayedTask(
-      FROM_HERE,
+  task_runner_->PostDelayedTaskAt(
+      base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
       base::BindOnce(&WebRtcMetronomeTaskQueue::MaybeRunTask,
                      base::Unretained(this), is_active_, std::move(task)),
-      base::Milliseconds(milliseconds));
+      target_time, base::subtle::DelayPolicy::kPrecise);
 }
 
-// EXCLUSIVE_LOCKS_REQUIRED(lock_)
-void WebRtcMetronomeTaskQueue::UpdateWakeupTime() {
-  listener_handle_->SetWakeupTime(!delayed_tasks_.empty()
-                                      ? delayed_tasks_.begin()->first.ready_time
-                                      : base::TimeTicks::Max());
-}
-
-void WebRtcMetronomeTaskQueue::OnMetronomeTick() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  CurrentTaskQueueSetter set_current(this);
-  while (true) {
-    std::unique_ptr<webrtc::QueuedTask> task;
-    {
-      base::AutoLock auto_lock(lock_);
-      if (delayed_tasks_.empty()) {
-        // No more delayed tasks to run.
-        UpdateWakeupTime();
-        break;
-      }
-      auto it = delayed_tasks_.begin();
-      if (it->first.ready_time > base::TimeTicks::Now()) {
-        // The next delayed task is in the future.
-        UpdateWakeupTime();
-        break;
-      }
-      // Transfer ownership of the task and remove it from the queue.
-      task = std::move(it->second);
-      delayed_tasks_.erase(it);
-    }
-    // Run the task while not holding the lock. The task may manipulate the task
-    // queue.
-    if (!task->Run()) {
-      task.release();
-    }
-  }
-}
+namespace {
 
 class WebrtcMetronomeTaskQueueFactory final : public webrtc::TaskQueueFactory {
  public:
