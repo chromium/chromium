@@ -2129,7 +2129,7 @@ Polymer({
     for (let i = 0; i < fields.length; ++i) {
       const key = OncMojo.getManagedPropertyKey(fields[i]);
       const value = this.get(key, this.managedProperties_);
-      if (value !== undefined && value !== '') {
+      if (value !== undefined && value !== null && value !== '') {
         return true;
       }
     }
