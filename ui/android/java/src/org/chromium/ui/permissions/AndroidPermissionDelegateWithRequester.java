@@ -4,20 +4,18 @@
 
 package org.chromium.ui.permissions;
 
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.pm.PermissionInfo;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Process;
-import android.text.TextUtils;
 import android.util.SparseArray;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,19 +31,6 @@ public abstract class AndroidPermissionDelegateWithRequester implements AndroidP
     private static final int REQUEST_CODE_PREFIX = 1000;
     private static final int REQUEST_CODE_RANGE_SIZE = 100;
 
-    /**
-     * Shared preference key prefix for remembering Android permissions denied by the user.
-     * <p>
-     * <b>NOTE:</b> As of M86 the semantics of shared prefs using this key prefix has changed:
-     * <ul>
-     *   <li>Previously: {@code true} if the user was ever asked for a permission, otherwise absent.
-     *   <li>M86+: {@code true} if the user most recently has denied permission access,
-     *     otherwise absent.
-     * </ul>
-     */
-    private static final String PERMISSION_WAS_DENIED_KEY_PREFIX =
-            "HasRequestedAndroidPermission::";
-
     public AndroidPermissionDelegateWithRequester() {
         mHandler = new Handler();
         mOutstandingPermissionRequests = new SparseArray<PermissionRequestInfo>();
@@ -58,22 +43,9 @@ public abstract class AndroidPermissionDelegateWithRequester implements AndroidP
                         permission, Process.myPid(), Process.myUid())
                 == PackageManager.PERMISSION_GRANTED;
         if (isGranted) {
-            clearPermissionWasDenied(permission);
+            PermissionPrefs.clearPermissionWasDenied(permission);
         }
         return isGranted;
-    }
-
-    /**
-     * Clear the shared pref indicating that {@code permission} was denied by the user.
-     */
-    private void clearPermissionWasDenied(String permission) {
-        String key = getPermissionWasDeniedKey(permission);
-        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
-        if (!prefs.contains(key)) return;
-
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.remove(key);
-        editor.apply();
     }
 
     /** @see Activity.shouldShowRequestPermissionRationale */
@@ -96,14 +68,14 @@ public abstract class AndroidPermissionDelegateWithRequester implements AndroidP
         if (shouldShowRequestPermissionRationale(permission)) {
             // This information from Android suggests we should not assume the user will always deny
             // the permission.
-            clearPermissionWasDenied(permission);
+            PermissionPrefs.clearPermissionWasDenied(permission);
             return true;
         }
 
         // Check whether we have been denied this permission by checking whether we saved
-        // a preference associated with it before.
-        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
-        return !prefs.getBoolean(getPermissionWasDeniedKey(permission), false);
+        // a preference associated with it before. This is to identify the cases where the app never
+        // requested for the permission before.
+        return !PermissionPrefs.wasPermissionDenied(permission);
     }
 
     /** @see PackageManager#isPermissionRevokedByPolicy(String, String) */
@@ -143,16 +115,16 @@ public abstract class AndroidPermissionDelegateWithRequester implements AndroidP
         PermissionRequestInfo requestInfo = mOutstandingPermissionRequests.get(requestCode);
         mOutstandingPermissionRequests.delete(requestCode);
 
-        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
-        SharedPreferences.Editor editor = prefs.edit();
+        List<String> permissionsGranted = new ArrayList<>();
+        List<String> permissionsDenied = new ArrayList<>();
         for (int i = 0; i < permissions.length; i++) {
             if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                editor.remove(getPermissionWasDeniedKey(permissions[i]));
+                permissionsGranted.add(permissions[i]);
             } else if (shouldPersistDenial(requestInfo, permissions[i])) {
-                editor.putBoolean(getPermissionWasDeniedKey(permissions[i]), true);
+                permissionsDenied.add(permissions[i]);
             }
         }
-        editor.apply();
+        PermissionPrefs.editPermissionsPref(permissionsGranted, permissionsDenied);
 
         if (requestInfo == null || requestInfo.callback == null) return false;
         requestInfo.callback.onRequestPermissionsResult(permissions, grantResults);
@@ -200,41 +172,6 @@ public abstract class AndroidPermissionDelegateWithRequester implements AndroidP
             return false;
         }
         return true;
-    }
-
-    private String normalizePermissionName(String permission) {
-        // Prior to O, permissions were granted at the group level.  Post O, each permission is
-        // granted individually.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            try {
-                // Runtime permissions are controlled at the group level.  So when determining
-                // whether we have requested a particular permission before, we should check whether
-                // we have requested any permission in that group as that mimics the logic in the
-                // Android framework.
-                //
-                // e.g. Requesting first the permission ACCESS_FINE_LOCATION will result in Chrome
-                //      treating ACCESS_COARSE_LOCATION as if it had already been requested as well.
-                PermissionInfo permissionInfo =
-                        ContextUtils.getApplicationContext().getPackageManager().getPermissionInfo(
-                                permission, PackageManager.GET_META_DATA);
-
-                if (!TextUtils.isEmpty(permissionInfo.group)) {
-                    return permissionInfo.group;
-                }
-            } catch (NameNotFoundException e) {
-                // Unknown permission.  Default back to the permission name instead of the group.
-            }
-        }
-
-        return permission;
-    }
-
-    /**
-     * Returns the name of a shared preferences key used to store whether Chrome was denied
-     * {@code permission}.
-     */
-    private String getPermissionWasDeniedKey(String permission) {
-        return PERMISSION_WAS_DENIED_KEY_PREFIX + normalizePermissionName(permission);
     }
 
     /** Wrapper holding information relevant to a permission request. */
