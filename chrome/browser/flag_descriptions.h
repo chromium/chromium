@@ -1020,6 +1020,9 @@ extern const char kOmniboxOnFocusSuggestionsContextualWebAllowSRPDescription[];
 extern const char kOmniboxOnFocusSuggestionsContextualWebName[];
 extern const char kOmniboxOnFocusSuggestionsContextualWebDescription[];
 
+extern const char kOmniboxPedalsBatch3NonEnglishName[];
+extern const char kOmniboxPedalsBatch3NonEnglishDescription[];
+
 extern const char kOmniboxShortBookmarkSuggestionsName[];
 extern const char kOmniboxShortBookmarkSuggestionsDescription[];
 
@@ -2181,9 +2184,6 @@ extern const char kOmniboxPedalsBatch2NonEnglishDescription[];
 
 extern const char kOmniboxPedalsBatch3Name[];
 extern const char kOmniboxPedalsBatch3Description[];
-
-extern const char kOmniboxPedalsBatch3NonEnglishName[];
-extern const char kOmniboxPedalsBatch3NonEnglishDescription[];
 
 extern const char kOmniboxPedalsTranslationConsoleName[];
 extern const char kOmniboxPedalsTranslationConsoleDescription[];
