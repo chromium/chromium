@@ -217,6 +217,7 @@ def main(args):
                       action='append',
                       help='add dir to framework search path')
   parser.add_argument('-Fsystem',
+                      '-iframework',
                       dest='system_framework_dirs',
                       action='append',
                       help='add dir to system framework search path')
