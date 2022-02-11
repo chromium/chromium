@@ -5,15 +5,19 @@
 #include "chrome/browser/enterprise/reporting/report_scheduler_android.h"
 
 #include "chrome/browser/browser_process.h"
+#include "components/prefs/pref_service.h"
 
 namespace enterprise_reporting {
 
-ReportSchedulerAndroid::ReportSchedulerAndroid() = default;
+ReportSchedulerAndroid::ReportSchedulerAndroid()
+    : ReportSchedulerAndroid(g_browser_process->local_state()) {}
+ReportSchedulerAndroid::ReportSchedulerAndroid(raw_ptr<PrefService> prefs)
+    : prefs_(prefs) {}
 
 ReportSchedulerAndroid::~ReportSchedulerAndroid() = default;
 
-PrefService* ReportSchedulerAndroid::GetLocalState() {
-  return g_browser_process->local_state();
+PrefService* ReportSchedulerAndroid::GetPrefService() {
+  return prefs_;
 }
 
 void ReportSchedulerAndroid::StartWatchingUpdatesIfNeeded(

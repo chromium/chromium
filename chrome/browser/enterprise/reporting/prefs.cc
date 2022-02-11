@@ -31,6 +31,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kCloudProfileReportingEnabled, false);
+  registry->RegisterTimePref(kLastUploadTimestamp, base::Time());
+  registry->RegisterTimePref(kLastUploadSucceededTimestamp, base::Time());
+  registry->RegisterStringPref(kLastUploadVersion, std::string());
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kCloudExtensionRequestEnabled, false);
   registry->RegisterDictionaryPref(prefs::kCloudExtensionRequestIds);

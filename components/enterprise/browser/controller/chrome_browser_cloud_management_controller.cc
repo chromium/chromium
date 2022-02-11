@@ -364,7 +364,7 @@ void ChromeBrowserCloudManagementController::NotifyBrowserUnenrolled(
 
 void ChromeBrowserCloudManagementController::NotifyCloudReportingLaunched() {
   for (auto& observer : observers_) {
-    observer.OnCloudReportingLaunched();
+    observer.OnCloudReportingLaunched(report_scheduler_.get());
   }
 }
 
@@ -444,14 +444,17 @@ void ChromeBrowserCloudManagementController::CreateReportScheduler() {
   cloud_policy_client_->AddObserver(this);
   auto reporting_delegate_factory = delegate_->GetReportingDelegateFactory();
 
-  auto generator = std::make_unique<enterprise_reporting::ReportGenerator>(
-      reporting_delegate_factory.get());
-  auto real_time_generator =
+  enterprise_reporting::ReportScheduler::CreateParams params;
+  params.client = cloud_policy_client_.get();
+  params.delegate = reporting_delegate_factory->GetReportSchedulerDelegate();
+  params.report_generator =
+      std::make_unique<enterprise_reporting::ReportGenerator>(
+          reporting_delegate_factory.get());
+  params.real_time_report_generator =
       std::make_unique<enterprise_reporting::RealTimeReportGenerator>(
           reporting_delegate_factory.get());
   report_scheduler_ = std::make_unique<enterprise_reporting::ReportScheduler>(
-      cloud_policy_client_.get(), std::move(generator),
-      std::move(real_time_generator), reporting_delegate_factory.get());
+      std::move(params));
 
   NotifyCloudReportingLaunched();
 }

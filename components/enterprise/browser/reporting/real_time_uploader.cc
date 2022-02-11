@@ -11,7 +11,6 @@
 #include "base/task/bind_post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/prefs/pref_service.h"
 
 namespace enterprise_reporting {

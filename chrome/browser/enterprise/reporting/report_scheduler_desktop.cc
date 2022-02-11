@@ -37,10 +37,21 @@ constexpr bool ShouldReportUpdates() {
 #endif
 }
 
+PrefService* LocalState() {
+  return g_browser_process->local_state();
+}
+
 }  // namespace
 
-ReportSchedulerDesktop::ReportSchedulerDesktop(Profile* profile)
-    : extension_request_observer_factory_(profile) {}
+ReportSchedulerDesktop::ReportSchedulerDesktop()
+    : ReportSchedulerDesktop(nullptr, LocalState()) {}
+
+ReportSchedulerDesktop::ReportSchedulerDesktop(raw_ptr<Profile> profile)
+    : ReportSchedulerDesktop(profile, LocalState()) {}
+
+ReportSchedulerDesktop::ReportSchedulerDesktop(raw_ptr<Profile> profile,
+                                               raw_ptr<PrefService> prefs)
+    : prefs_(prefs), extension_request_observer_factory_(profile) {}
 
 ReportSchedulerDesktop::~ReportSchedulerDesktop() {
   // If new profiles have been added since the last report was sent, they won't
@@ -52,8 +63,8 @@ ReportSchedulerDesktop::~ReportSchedulerDesktop() {
     g_browser_process->GetBuildState()->RemoveObserver(this);
 }
 
-PrefService* ReportSchedulerDesktop::GetLocalState() {
-  return g_browser_process->local_state();
+PrefService* ReportSchedulerDesktop::GetPrefService() {
+  return prefs_;
 }
 
 void ReportSchedulerDesktop::StartWatchingUpdatesIfNeeded(
@@ -72,7 +83,7 @@ void ReportSchedulerDesktop::StartWatchingUpdatesIfNeeded(
   // Generate and upload a basic report immediately if the version has
   // changed since the last upload and the last upload was less than 24h
   // ago.
-  if (GetLocalState()->GetString(kLastUploadVersion) !=
+  if (GetPrefService()->GetString(kLastUploadVersion) !=
           chrome::kChromeVersion &&
       last_upload + upload_interval > base::Time::Now() &&
       !trigger_report_callback_.is_null()) {
@@ -90,7 +101,7 @@ void ReportSchedulerDesktop::StopWatchingUpdates() {
 void ReportSchedulerDesktop::OnBrowserVersionUploaded() {
   if (ShouldReportUpdates()) {
     // Remember what browser version made this upload.
-    GetLocalState()->SetString(kLastUploadVersion, chrome::kChromeVersion);
+    GetPrefService()->SetString(kLastUploadVersion, chrome::kChromeVersion);
   }
 }
 

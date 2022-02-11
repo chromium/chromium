@@ -175,7 +175,8 @@ class ChromeBrowserCloudManagementController
     virtual void OnBrowserUnenrolled(bool succeeded) {}
 
     // Called when the cloud reporting is launched.
-    virtual void OnCloudReportingLaunched() {}
+    virtual void OnCloudReportingLaunched(
+        enterprise_reporting::ReportScheduler* report_scheduler) {}
 
     // Called when enrollment result is recorded.
     virtual void OnEnrollmentResultRecorded() {}

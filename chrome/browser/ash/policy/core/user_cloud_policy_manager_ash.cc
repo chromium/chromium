@@ -787,13 +787,19 @@ void UserCloudPolicyManagerAsh::StartReportSchedulerIfReady(
   // TODO(crbug.com/1102047): Split up Chrome OS reporting code into its own
   // delegates, then use the Chrome OS delegate factory here.
   enterprise_reporting::ReportingDelegateFactoryDesktop delegate_factory;
-  report_scheduler_ = std::make_unique<enterprise_reporting::ReportScheduler>(
-      client(),
+  enterprise_reporting::ReportScheduler::CreateParams params;
+  params.client = client();
+  params.delegate =
+      std::make_unique<enterprise_reporting::ReportSchedulerDesktop>(profile_);
+  params.report_generator =
       std::make_unique<enterprise_reporting::ReportGenerator>(
-          &delegate_factory),
+          &delegate_factory);
+  params.real_time_report_generator =
       std::make_unique<enterprise_reporting::RealTimeReportGenerator>(
-          &delegate_factory),
-      std::make_unique<enterprise_reporting::ReportSchedulerDesktop>(profile_));
+          &delegate_factory);
+
+  report_scheduler_ = std::make_unique<enterprise_reporting::ReportScheduler>(
+      std::move(params));
 
   report_scheduler_->OnDMTokenUpdated();
 }

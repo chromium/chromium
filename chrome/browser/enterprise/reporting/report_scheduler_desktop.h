@@ -7,6 +7,7 @@
 
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_observer_factory.h"
 #include "chrome/browser/upgrade_detector/build_state_observer.h"
 
@@ -18,14 +19,18 @@ namespace enterprise_reporting {
 class ReportSchedulerDesktop : public ReportScheduler::Delegate,
                                public BuildStateObserver {
  public:
-  explicit ReportSchedulerDesktop(Profile* profile = nullptr);
+  ReportSchedulerDesktop();
+  // Chrome OS user session report
+  explicit ReportSchedulerDesktop(raw_ptr<Profile> profile);
+  // Profile reporting
+  ReportSchedulerDesktop(raw_ptr<Profile> profile, raw_ptr<PrefService> prefs);
   ReportSchedulerDesktop(const ReportSchedulerDesktop&) = delete;
   ReportSchedulerDesktop& operator=(const ReportSchedulerDesktop&) = delete;
 
   ~ReportSchedulerDesktop() override;
 
   // ReportScheduler::Delegate implementation.
-  PrefService* GetLocalState() override;
+  PrefService* GetPrefService() override;
   void StartWatchingUpdatesIfNeeded(base::Time last_upload,
                                     base::TimeDelta upload_interval) override;
   void StopWatchingUpdates() override;
@@ -41,6 +46,7 @@ class ReportSchedulerDesktop : public ReportScheduler::Delegate,
   void TriggerExtensionRequest(Profile* profile);
 
  private:
+  raw_ptr<PrefService> prefs_;
   ExtensionRequestObserverFactory extension_request_observer_factory_;
 };
 
