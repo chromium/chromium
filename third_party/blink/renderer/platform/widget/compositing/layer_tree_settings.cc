@@ -146,6 +146,13 @@ cc::ManagedMemoryPolicy GetGpuMemoryPolicy(
   if (display_width >= kLargeDisplayThreshold)
     actual.bytes_limit_when_visible *= 2;
 #endif
+
+  // If the feature `kScaleTileMemoryLimitFactor` is not enabled,
+  // `kScaleTileMemoryLimitFactor` will default to 1.
+  actual.bytes_limit_when_visible =
+      static_cast<size_t>(actual.bytes_limit_when_visible *
+                          features::kScaleTileMemoryLimitFactor.Get());
+
   return actual;
 }
 
