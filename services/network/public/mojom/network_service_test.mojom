@@ -7,6 +7,7 @@ module network.mojom;
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/memory_pressure_level.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/network_change_manager.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_types.mojom";
@@ -86,6 +87,16 @@ interface NetworkServiceTest {
   // can tolerate this, such as those run manually or on an FYI bot.
   [Sync]
   SetAllowNetworkAccessToHostResolutions() => ();
+
+  // Replace the system DNS configuration with a basic, single-server,
+  // localhost-only configuration and ignore any future changes to the real
+  // configuration.
+  [Sync]
+  ReplaceSystemDnsConfig() => ();
+
+  // Configure a DoH server to be used during tests.
+  [Sync]
+  SetTestDohServers(array<DnsOverHttpsServer> doh_servers) => ();
 
   // Causes the next host resolve to the given hostname to crash the process.
   CrashOnResolveHost(string host);

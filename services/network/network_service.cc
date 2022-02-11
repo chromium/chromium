@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
@@ -46,6 +48,9 @@
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/public/dns_config_overrides.h"
+#include "net/dns/public/dns_over_https_server_config.h"
+#include "net/dns/system_dns_config_change_notifier.h"
+#include "net/dns/test_dns_config_service.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/file_net_log_observer.h"
@@ -382,6 +387,41 @@ NetworkService::~NetworkService() {
     trace_net_log_observer_.StopWatchForTraceStart();
 }
 
+void NetworkService::ReplaceSystemDnsConfigForTesting() {
+  // Create a test `net::DnsConfigService` that will yield a dummy config once.
+  auto config_service = std::make_unique<net::TestDnsConfigService>();
+  config_service->SetConfigForRefresh(
+      net::DnsConfig({net::IPEndPoint(net::IPAddress::IPv4Localhost(), 1234)}));
+
+  // Replace the existing `net::DnsConfigService` and flush the lines once to
+  // replace the system DNS config, in case we already received it.
+  auto* notifier = net::NetworkChangeNotifier::GetSystemDnsConfigNotifier();
+  DCHECK(notifier);
+  notifier->SetDnsConfigServiceForTesting(  // IN-TEST
+      std::move(config_service));
+  notifier->RefreshConfig();
+
+  // Force-disable the system resolver so that HostResolverManager will actually
+  // use the replacement config.
+  host_resolver_manager_->DisableSystemResolverForTesting();  // IN-TEST
+}
+
+void NetworkService::SetTestDohServersForTesting(
+    const std::vector<net::DnsOverHttpsServerConfig>& doh_servers) {
+  DCHECK_EQ(dns_config_overrides_set_by_, FunctionTag::None);
+  dns_config_overrides_set_by_ = FunctionTag::SetTestDohServersForTesting;
+
+  // Overlay DoH settings on top of the system config, whenever it is received.
+  net::DnsConfigOverrides overrides;
+  overrides.secure_dns_mode = net::SecureDnsMode::kSecure;
+  overrides.dns_over_https_servers = doh_servers;
+  host_resolver_manager_->SetDnsConfigOverrides(std::move(overrides));
+
+  // Force-disable the system resolver so that HostResolverManager will actually
+  // query the test DoH server.
+  host_resolver_manager_->DisableSystemResolverForTesting();  // IN-TEST
+}
+
 std::unique_ptr<NetworkService> NetworkService::Create(
     mojo::PendingReceiver<mojom::NetworkService> receiver) {
   return std::make_unique<NetworkService>(nullptr, std::move(receiver));
@@ -494,6 +534,10 @@ void NetworkService::ConfigureStubHostResolver(
       insecure_dns_client_enabled, additional_dns_types_enabled);
 
   // Configure DNS over HTTPS.
+  DCHECK(dns_config_overrides_set_by_ == FunctionTag::None ||
+         dns_config_overrides_set_by_ ==
+             FunctionTag::ConfigureStubHostResolver);
+  dns_config_overrides_set_by_ = FunctionTag::ConfigureStubHostResolver;
   net::DnsConfigOverrides overrides;
   overrides.dns_over_https_servers = dns_over_https_servers;
   overrides.secure_dns_mode = secure_dns_mode;

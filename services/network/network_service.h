@@ -78,10 +78,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
  public:
   static const base::TimeDelta kInitialDohProbeTimeout;
 
-  NetworkService(std::unique_ptr<service_manager::BinderRegistry> registry,
-                 mojo::PendingReceiver<mojom::NetworkService> receiver =
-                     mojo::NullReceiver(),
-                 bool delay_initialization_until_set_client = false);
+  explicit NetworkService(
+      std::unique_ptr<service_manager::BinderRegistry> registry,
+      mojo::PendingReceiver<mojom::NetworkService> receiver =
+          mojo::NullReceiver(),
+      bool delay_initialization_until_set_client = false);
 
   NetworkService(const NetworkService&) = delete;
   NetworkService& operator=(const NetworkService&) = delete;
@@ -96,6 +97,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // TODO(jam): remove this once the old path is gone.
   void Initialize(mojom::NetworkServiceParamsPtr params,
                   bool mock_network_change_notifier = false);
+
+  // Pretends that the system DNS configuration just changed to a basic,
+  // single-server, localhost-only configuration. This method also effectively
+  // unsubscribes the singleton `net::SystemDnsConfigChangeNotifier` owned by
+  // `net::NetworkChangeNotifier` from future changes to the real configuration,
+  // ensuring that our fake configuration will not be clobbered by network
+  // changes that occur while tests run.
+  void ReplaceSystemDnsConfigForTesting();
+
+  void SetTestDohServersForTesting(
+      const std::vector<net::DnsOverHttpsServerConfig>& doh_servers);
 
   // Creates a NetworkService instance on the current thread.
   static std::unique_ptr<NetworkService> Create(
@@ -289,6 +301,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void OnReadFirstPartySetsFile(const std::string& raw_sets);
 
   bool initialized_ = false;
+
+  enum class FunctionTag : uint8_t {
+    None,
+    ConfigureStubHostResolver,
+    SetTestDohServersForTesting,
+  };
+
+  FunctionTag dns_config_overrides_set_by_ = FunctionTag::None;
 
   raw_ptr<net::NetLog> net_log_;
 

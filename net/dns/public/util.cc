@@ -6,9 +6,13 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "net/base/ip_address.h"
 #include "net/dns/public/dns_protocol.h"
+#include "url/scheme_host_port.h"
+#include "url/url_constants.h"
 
 namespace net {
 
@@ -66,6 +70,41 @@ IPEndPoint GetMdnsReceiveEndPoint(AddressFamily address_family) {
   // specific multicast group should bind to that group address.
   return GetMdnsGroupEndPoint(address_family);
 #endif  // !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)) || BUILDFLAG(IS_APPLE)
+}
+
+std::string GetNameForHttpsQuery(const url::SchemeHostPort& scheme_host_port) {
+  DCHECK(!scheme_host_port.host().empty() &&
+         scheme_host_port.host().front() != '.');
+
+  // Normalize ws/wss schemes to http/https. Note that this behavior is not
+  // indicated by the draft-ietf-dnsop-svcb-https-08 spec.
+  base::StringPiece normalized_scheme = scheme_host_port.scheme();
+  if (normalized_scheme == url::kWsScheme) {
+    normalized_scheme = url::kHttpScheme;
+  } else if (normalized_scheme == url::kWssScheme) {
+    normalized_scheme = url::kHttpsScheme;
+  }
+
+  // For http-schemed hosts, request the corresponding upgraded https host
+  // per the rules in draft-ietf-dnsop-svcb-https-08, Section 9.5.
+  uint16_t port = scheme_host_port.port();
+  if (normalized_scheme == url::kHttpScheme) {
+    normalized_scheme = url::kHttpsScheme;
+    if (port == 80)
+      port = 443;
+  }
+
+  // Scheme should always end up normalized to "https" to create HTTPS
+  // transactions.
+  DCHECK_EQ(normalized_scheme, url::kHttpsScheme);
+
+  // Per the rules in draft-ietf-dnsop-svcb-https-08, Section 9.1 and 2.3,
+  // encode scheme and port in the transaction hostname, unless the port is
+  // the default 443.
+  if (port == 443)
+    return scheme_host_port.host();
+  return base::StrCat({"_", base::NumberToString(scheme_host_port.port()),
+                       "._https.", scheme_host_port.host()});
 }
 
 }  // namespace dns_util

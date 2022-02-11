@@ -202,7 +202,7 @@ static const uint16_t kFlagTC = 0x200;  // Truncated - server flag.
 
 // SVCB/HTTPS ServiceParamKey
 //
-// IANA registration pending. Values from draft-ietf-dnsop-svcb-https-02.
+// IANA registration pending. Values from draft-ietf-dnsop-svcb-https-08.
 static constexpr uint16_t kHttpsServiceParamKeyMandatory = 0;
 static constexpr uint16_t kHttpsServiceParamKeyAlpn = 1;
 static constexpr uint16_t kHttpsServiceParamKeyNoDefaultAlpn = 2;

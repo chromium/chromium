@@ -81,6 +81,8 @@ source_set("dns") {
     "serial_worker.h",
     "system_dns_config_change_notifier.cc",
     "system_dns_config_change_notifier.h",
+    "test_dns_config_service.cc",
+    "test_dns_config_service.h",
   ]
 
   if (is_win) {
@@ -454,14 +456,12 @@ source_set("test_support") {
     "dns_test_util.cc",
     "host_resolver_results_test_util.cc",
     "mock_host_resolver.cc",
-    "test_dns_config_service.cc",
   ]
   public = [
     "address_info_test_util.h",
     "dns_test_util.h",
     "host_resolver_results_test_util.h",
     "mock_host_resolver.h",
-    "test_dns_config_service.h",
   ]
 
   if (enable_mdns) {

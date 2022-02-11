@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -77,6 +78,7 @@
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/dns_over_https_server_config.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
@@ -911,6 +913,15 @@ void BrowserTestBase::SetAllowNetworkAccessToHostResolutions() {
   allow_network_access_to_host_resolutions_ = true;
 }
 
+void BrowserTestBase::SetReplaceSystemDnsConfig() {
+  replace_system_dns_config_ = true;
+}
+
+void BrowserTestBase::SetTestDohConfig(net::DnsOverHttpsConfig config) {
+  DCHECK(!test_doh_config_.has_value());
+  test_doh_config_ = std::move(config);
+}
+
 void BrowserTestBase::CreateTestServer(const base::FilePath& test_server_base) {
   embedded_test_server()->AddDefaultHandlers(test_server_base);
 }
@@ -951,15 +962,21 @@ void BrowserTestBase::InitializeNetworkProcess() {
 
   initialized_network_process_ = true;
 
-  // Test host resolver may not be initiatized if host resolutions are allowed
+  // Test host resolver may not be initialized if host resolutions are allowed
   // to reach the network.
   if (host_resolver()) {
     host_resolver()->DisableModifications();
   }
 
-  // Send the host resolver rules to the network service if it's in use. No need
-  // to do this if it's running in the browser process though.
-  if (!IsOutOfProcessNetworkService()) {
+  // Send the host resolver rules and other DNS settings to the network service.
+  // If the network service is in the browser process, it will automatically
+  // pick up the host resolver rules, but it will not automatically see
+  // `replace_system_dns_config_` and `test_doh_config_`.
+  //
+  // TODO(https://crbug.com/1295732) Always send `replace_system_dns_config_`
+  // and `test_doh_config_` to the network process, regardless of where it's
+  // running.
+  if (IsInProcessNetworkService()) {
     return;
   }
 
@@ -973,6 +990,16 @@ void BrowserTestBase::InitializeNetworkProcess() {
     mojo::ScopedAllowSyncCallForTesting allow_sync_call;
     network_service_test->SetAllowNetworkAccessToHostResolutions();
     return;
+  }
+
+  if (replace_system_dns_config_) {
+    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+    network_service_test->ReplaceSystemDnsConfig();
+  }
+
+  if (test_doh_config_.has_value()) {
+    mojo::ScopedAllowSyncCallForTesting allow_sync_call;
+    network_service_test->SetTestDohServers(test_doh_config_->servers());
   }
 
   std::vector<network::mojom::RulePtr> mojo_rules;

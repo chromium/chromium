@@ -92,8 +92,10 @@
 #include "net/dns/public/resolve_error_info.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/dns/public/util.h"
 #include "net/dns/record_parsed.h"
 #include "net/dns/resolve_context.h"
+#include "net/dns/test_dns_config_service.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
@@ -1482,38 +1484,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     if (dns_query_type == DnsQueryType::HTTPS &&
         absl::holds_alternative<url::SchemeHostPort>(host_)) {
       const auto& scheme_host_port = absl::get<url::SchemeHostPort>(host_);
-
-      DCHECK(!scheme_host_port.host().empty() &&
-             scheme_host_port.host().front() != '.');
-
-      // Normalize ws/wss schemes to http/https.
-      base::StringPiece normalized_scheme = scheme_host_port.scheme();
-      if (normalized_scheme == url::kWsScheme) {
-        normalized_scheme = url::kHttpScheme;
-      } else if (normalized_scheme == url::kWssScheme) {
-        normalized_scheme = url::kHttpsScheme;
-      }
-
-      // For http-schemed hosts, request the corresponding upgraded https host
-      // per the rules in draft-ietf-dnsop-svcb-https-06, Section 8.5.
-      uint16_t port = scheme_host_port.port();
-      if (normalized_scheme == url::kHttpScheme) {
-        normalized_scheme = url::kHttpsScheme;
-        if (port == 80)
-          port = 443;
-      }
-
-      // Scheme should always end up normalized to "https" to create HTTPS
-      // transactions.
-      DCHECK_EQ(normalized_scheme, url::kHttpsScheme);
-
-      // Per the rules in draft-ietf-dnsop-svcb-https-06, Section 8.1 and 2.3,
-      // encode scheme and port in the transaction hostname, unless the port is
-      // the default 443.
-      if (port != 443) {
-        transaction_hostname = base::StrCat({"_", base::NumberToString(port),
-                                             "._https.", transaction_hostname});
-      }
+      transaction_hostname = dns_util::GetNameForHttpsQuery(scheme_host_port);
     }
 
     std::unique_ptr<DnsTransaction> trans =
@@ -2590,7 +2561,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   void StartDnsTask(bool secure) {
     DCHECK_EQ(secure, !dispatched_);
     DCHECK_EQ(dispatched_ ? 1 : 0, num_occupied_job_slots_);
-    DCHECK(!resolver_->HaveTestProcOverride());
+    DCHECK(!resolver_->ShouldForceSystemResolverDueToTestOverride());
     // Need to create the task even if we're going to post a failure instead of
     // running it, as a "started" job needs a task to be properly cleaned up.
     dns_task_ = std::make_unique<DnsTask>(
@@ -3699,8 +3670,19 @@ SecureDnsMode HostResolverManager::GetEffectiveSecureDnsMode(
   return secure_dns_mode;
 }
 
-bool HostResolverManager::HaveTestProcOverride() {
-  return !proc_params_.resolver_proc && HostResolverProc::GetDefault();
+bool HostResolverManager::ShouldForceSystemResolverDueToTestOverride() const {
+  // If tests have provided a catch-all DNS block and then disabled it, check
+  // that we are not at risk of sending queries beyond the local network.
+  if (HostResolverProc::GetDefault() && system_resolver_disabled_for_testing_) {
+    DCHECK(dns_client_);
+    DCHECK(dns_client_->GetEffectiveConfig());
+    DCHECK(base::ranges::none_of(dns_client_->GetEffectiveConfig()->nameservers,
+                                 &IPAddress::IsPubliclyRoutable,
+                                 &IPEndPoint::address))
+        << "Test could query a publicly-routable address.";
+  }
+  return !proc_params_.resolver_proc && HostResolverProc::GetDefault() &&
+         !system_resolver_disabled_for_testing_;
 }
 
 void HostResolverManager::PushDnsTasks(bool proc_task_allowed,
@@ -3716,7 +3698,7 @@ void HostResolverManager::PushDnsTasks(bool proc_task_allowed,
   // If a catch-all DNS block has been set for unit tests, we shouldn't send
   // DnsTasks. It is still necessary to call this method, however, so that the
   // correct cache tasks for the secure dns mode are added.
-  bool dns_tasks_allowed = !HaveTestProcOverride();
+  const bool dns_tasks_allowed = !ShouldForceSystemResolverDueToTestOverride();
   // Upgrade the insecure DnsTask depending on the secure dns mode.
   switch (secure_dns_mode) {
     case SecureDnsMode::kSecure:
@@ -4124,6 +4106,16 @@ void HostResolverManager::OnConnectionTypeChanged(
 
 void HostResolverManager::OnSystemDnsConfigChanged(
     absl::optional<DnsConfig> config) {
+  // If tests have provided a catch-all DNS block and then disabled it, check
+  // that we are not at risk of sending queries beyond the local network.
+  if (HostResolverProc::GetDefault() && system_resolver_disabled_for_testing_ &&
+      config.has_value()) {
+    DCHECK(base::ranges::none_of(config->nameservers,
+                                 &IPAddress::IsPubliclyRoutable,
+                                 &IPEndPoint::address))
+        << "Test could query a publicly-routable address.";
+  }
+
   bool changed = false;
   bool transactions_allowed_before = false;
   if (dns_client_) {

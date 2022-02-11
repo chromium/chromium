@@ -26,6 +26,7 @@
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "net/dns/public/util.h"
 #include "net/http/http_stream_factory_test_util.h"
 #include "net/log/net_log.h"
 #include "net/socket/transport_client_socket_pool.h"
@@ -285,16 +286,6 @@ TEST_F(HttpWithDnsOverHttpsTest, EndToEndFail) {
   EXPECT_EQ(resolve_error_info.error, net::ERR_DNS_MALFORMED_RESPONSE);
 }
 
-std::string MakeHttpsRecordQname(const GURL& url) {
-  DCHECK(url.SchemeIs(url::kHttpsScheme));
-  int port = url.EffectiveIntPort();
-  if (port == 443) {
-    return url.host();
-  }
-  return base::StrCat(
-      {"_", base::NumberToString(port), "._https.", url.host_piece()});
-}
-
 // An end-to-end test of the HTTPS upgrade behavior.
 TEST_F(HttpWithDnsOverHttpsTest, HttpsUpgrade) {
   base::test::ScopedFeatureList features;
@@ -308,7 +299,7 @@ TEST_F(HttpWithDnsOverHttpsTest, HttpsUpgrade) {
   GURL http_url = https_url.ReplaceComponents(replacements);
 
   doh_server_.AddRecord(BuildTestHttpsServiceRecord(
-      MakeHttpsRecordQname(https_url),
+      dns_util::GetNameForHttpsQuery(url::SchemeHostPort(https_url)),
       /*priority=*/1, /*service_name=*/".", /*params=*/{}));
 
   // Fetch the http URL.

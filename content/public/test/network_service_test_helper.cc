@@ -25,6 +25,7 @@
 #include "net/cert/ev_root_ca_metadata.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/dns_over_https_server_config.h"
 #include "net/http/transport_security_state.h"
 #include "net/http/transport_security_state_test_util.h"
 #include "net/nqe/network_quality_estimator.h"
@@ -210,7 +211,27 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
 
   void SetAllowNetworkAccessToHostResolutions(
       SetAllowNetworkAccessToHostResolutionsCallback callback) override {
+    DCHECK(!have_test_doh_servers_)
+        << "Cannot allow network access when test DoH servers have been set.";
     test_host_resolver_.reset();
+    std::move(callback).Run();
+  }
+
+  void ReplaceSystemDnsConfig(
+      ReplaceSystemDnsConfigCallback callback) override {
+    network::NetworkService::GetNetworkServiceForTesting()
+        ->ReplaceSystemDnsConfigForTesting();
+    std::move(callback).Run();
+  }
+
+  void SetTestDohServers(
+      const std::vector<net::DnsOverHttpsServerConfig>& doh_servers,
+      SetTestDohServersCallback callback) override {
+    DCHECK(test_host_resolver_)
+        << "Network access for host resolutions must be disabled.";
+    have_test_doh_servers_ = true;
+    network::NetworkService::GetNetworkServiceForTesting()
+        ->SetTestDohServersForTesting(doh_servers);
     std::move(callback).Run();
   }
 
@@ -297,6 +318,7 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
   }
 
   bool registered_as_destruction_observer_ = false;
+  bool have_test_doh_servers_ = false;
   mojo::ReceiverSet<network::mojom::NetworkServiceTest> receivers_;
   std::unique_ptr<TestHostResolver> test_host_resolver_;
   std::unique_ptr<net::MockCertVerifier> mock_cert_verifier_;

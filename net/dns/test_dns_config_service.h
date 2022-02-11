@@ -20,7 +20,7 @@ class DnsHostsParser;
 
 // Simple test implementation of DnsConfigService that will trigger
 // notifications only on explicitly calling On...() methods.
-class TestDnsConfigService : public DnsConfigService {
+class NET_EXPORT_PRIVATE TestDnsConfigService : public DnsConfigService {
  public:
   TestDnsConfigService();
   ~TestDnsConfigService() override;
@@ -56,7 +56,8 @@ class TestDnsConfigService : public DnsConfigService {
 // Test implementation of `DnsConfigService` that exercises the
 // `DnsConfigService::HostsReader`. Uses an injected `DnsHostsParser`. `Watcher`
 // change notifications are simulated using `TriggerHostsChangeNotification()`.
-class HostsReadingTestDnsConfigService : public TestDnsConfigService {
+class NET_EXPORT_PRIVATE HostsReadingTestDnsConfigService
+    : public TestDnsConfigService {
  public:
   using HostsParserFactory =
       base::RepeatingCallback<std::unique_ptr<DnsHostsParser>(void)>;
@@ -88,7 +89,7 @@ class HostsReadingTestDnsConfigService : public TestDnsConfigService {
     HostsParserFactory hosts_parser_factory_;
   };
 
-  class Watcher : public DnsConfigService::Watcher {
+  class NET_EXPORT_PRIVATE Watcher : public DnsConfigService::Watcher {
    public:
     explicit Watcher(DnsConfigService& service);
     ~Watcher() override;

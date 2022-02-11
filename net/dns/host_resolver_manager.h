@@ -203,6 +203,12 @@ class NET_EXPORT HostResolverManager
   // setting DnsConfig.
   void SetDnsClientForTesting(std::unique_ptr<DnsClient> dns_client);
 
+  // Explicitly disable the system resolver even if tests have set a catch-all
+  // DNS block. See `ForceSystemResolverDueToTestOverride`.
+  void DisableSystemResolverForTesting() {
+    system_resolver_disabled_for_testing_ = true;
+  }
+
   // Sets the last IPv6 probe result for testing. Uses the standard timeout
   // duration, so it's up to the test fixture to ensure it doesn't expire by
   // mocking time, if expiration would pose a problem.
@@ -343,9 +349,10 @@ class NET_EXPORT HostResolverManager
   // global DnsConfig mode and any per-request policy.
   SecureDnsMode GetEffectiveSecureDnsMode(SecureDnsPolicy secure_dns_policy);
 
-  // Returns true if a catch-all DNS block has been set for unit tests. No
-  // DnsTasks should be issued in this case.
-  bool HaveTestProcOverride();
+  // Returns true when a catch-all DNS block has been set for tests, unless
+  // `SetDisableSystemResolverForTesting` has been called to explicitly disable
+  // that safety net. DnsTasks should never be issued when this returns true.
+  bool ShouldForceSystemResolverDueToTestOverride() const;
 
   // Helper method to add DnsTasks and related tasks based on the SecureDnsMode
   // and fallback parameters. If |prioritize_local_lookups| is true, then we
@@ -493,6 +500,9 @@ class NET_EXPORT HostResolverManager
 
   // Shared tick clock, overridden for testing.
   raw_ptr<const base::TickClock> tick_clock_;
+
+  // When true, ignore the catch-all DNS block if it exists.
+  bool system_resolver_disabled_for_testing_ = false;
 
   // For per-context cache invalidation notifications.
   base::ObserverList<ResolveContext,

@@ -3,4 +3,7 @@ specific_include_rules = {
     "+services/network/test",
     "+services/network/trust_tokens/test",
   ],
+  "dns_https_protocol_upgrade_browsertest.cc": [
+    "+services/network",
+  ],
 }
