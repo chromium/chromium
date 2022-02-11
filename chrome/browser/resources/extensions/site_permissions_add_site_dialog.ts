@@ -11,9 +11,10 @@ import './strings.m.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SitePermissionsDelegate} from './site_permissions.js';
+import {getTemplate} from './site_permissions_add_site_dialog.html.js';
 
 // A RegExp to roughly match acceptable patterns entered by the user.
 // exec'ing() this RegExp will match the following groups:
@@ -54,7 +55,7 @@ export class SitePermissionsAddSiteDialogElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

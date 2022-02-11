@@ -8,9 +8,10 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {DragWrapper} from 'chrome://resources/js/cr/ui/drag_wrapper.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DragAndDropHandler} from './drag_and_drop_handler.js';
+import {getTemplate} from './drop_overlay.html.js';
 
 class ExtensionsDropOverlayElement extends PolymerElement {
   static get is() {
@@ -18,7 +19,7 @@ class ExtensionsDropOverlayElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

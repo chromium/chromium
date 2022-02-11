@@ -9,7 +9,8 @@ import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 import './code_section.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './install_warnings_dialog.html.js';
 
 interface ExtensionsInstallWarningsDialogElement {
   $: {
@@ -23,7 +24,7 @@ class ExtensionsInstallWarningsDialogElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

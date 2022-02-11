@@ -8,6 +8,7 @@ import("//extensions/buildflags/buildflags.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../tools/optimize_webui.gni")
@@ -54,18 +55,25 @@ generate_grd("build_grd") {
 preprocess_if_expr("preprocess") {
   in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = non_web_component_files
+  in_files = ts_files
 }
 
 preprocess_if_expr("preprocess_generated") {
-  public_deps = [ ":web_components" ]
+  public_deps = [
+    ":css_wrapper_files",
+    ":html_wrapper_files",
+  ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = web_component_files
+  in_files = html_wrapper_files + css_wrapper_files
 }
 
-html_to_js("web_components") {
-  js_files = web_component_files
+html_to_js("css_wrapper_files") {
+  js_files = css_wrapper_files
+}
+
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files
 }
 
 grit("resources") {
@@ -90,7 +98,7 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   composite = true
   tsconfig_base = "tsconfig_base.json"
-  in_files = web_component_files + non_web_component_files
+  in_files = ts_files + css_wrapper_files + html_wrapper_files
   definitions = [
     "//tools/typescript/definitions/activity_log_private.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",

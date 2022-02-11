@@ -19,7 +19,8 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {afterNextRender, DomRepeatEvent, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './error_page.html.js';
 
 import {navigation, Page} from './navigation_helper.js';
 
@@ -78,6 +79,10 @@ const ExtensionsErrorPageElementBase = CrContainerShadowMixin(PolymerElement);
 export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
   static get is() {
     return 'extensions-error-page';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -370,10 +375,6 @@ export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
     this.selectedEntry_ = this.selectedEntry_ === repeaterEvent.model.index ?
         -1 :
         repeaterEvent.model.index;
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 
