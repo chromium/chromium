@@ -4,29 +4,10 @@
 
 GEN_INCLUDE(['node_util.js']);
 
-/**
- * Test fixture for node_util.js.
- *
- * The test fixture needs to be accessible as a property of the global "this"
- * element (which can be accomplished either by setting it explicitly like
- * below, or using the keyword "var").
- */
-this.NodeUtilUnitTest = class extends testing.Test {
-  /** @override */
-  testGenCppIncludes() {
-    GEN(`
-#include "content/public/test/browser_test.h"
-        `);
-  }
-  /** @override */
-  get accessibilityChecks() {
-    return false;
-  }
-  /** @override */
-  get browsePreload() {
-    return DUMMY_URL;
-  }
-}
+GEN_INCLUDE(['../testing/webstore_extension_test_base.js']);
+
+/** Test fixture for node_util.js. */
+NodeUtilUnitTest = class extends WebstoreExtensionTest {};
 
 TEST_F('NodeUtilUnitTest', 'IsFocusable', function() {
   assertFalse(NodeUtil.isFocusable(null));

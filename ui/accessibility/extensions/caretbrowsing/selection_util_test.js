@@ -4,29 +4,10 @@
 
 GEN_INCLUDE(['selection_util.js', 'traverse_util.js']);
 
-/**
- * Test fixture for selection_util.js.
- *
- * The test fixture needs to be accessible as a property of the global "this"
- * element (which can be accomplished either by setting it explicitly like
- * below, or using the keyword "var").
- */
-this.SelectionUtilUnitTest = class extends testing.Test {
-  /** @override */
-  testGenCppIncludes() {
-    GEN(`
-#include "content/public/test/browser_test.h"
-        `);
-  }
-  /** @override */
-  get accessibilityChecks() {
-    return false;
-  }
-  /** @override */
-  get browsePreload() {
-    return DUMMY_URL;
-  }
-}
+GEN_INCLUDE(['../testing/webstore_extension_test_base.js']);
+
+/** Test fixture for selection_util.js. */
+SelectionUtilUnitTest = class extends WebstoreExtensionTest {};
 
 /**
  * @param {chrome.automation.Rect} expected

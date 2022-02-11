@@ -212,6 +212,7 @@ js2gtest("caretbrowsing_webui_js_tests") {
     "caretbrowsing/node_util.js",
     "caretbrowsing/selection_util.js",
     "caretbrowsing/traverse_util.js",
+    "testing/webstore_extension_test_base.js",
   ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
