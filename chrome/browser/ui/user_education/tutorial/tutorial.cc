@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/user_education/tutorial/tutorial.h"
 
 #include "base/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/user_education/help_bubble.h"
 #include "chrome/browser/ui/user_education/help_bubble_factory.h"
@@ -241,19 +242,27 @@ std::unique_ptr<Tutorial> Tutorial::Builder::BuildFromDescription(
   DCHECK_EQ(current_step, max_progress);
 
   builder.SetAbortedCallback(base::BindOnce(
-      [](TutorialService* tutorial_service, ui::TrackedElement* last_element,
-         ui::ElementIdentifier last_id,
+      [](TutorialService* tutorial_service, TutorialHistograms* histograms,
+         ui::TrackedElement* last_element, ui::ElementIdentifier last_id,
          ui::InteractionSequence::StepType last_step_type,
          ui::InteractionSequence::AbortedReason aborted_reason) {
         tutorial_service->AbortTutorial();
+        // TODO:(crbug.com/1295165) provide step number information from the
+        // interaction sequence into the abort callback.
+        if (histograms)
+          histograms->RecordComplete(false);
+        UMA_HISTOGRAM_BOOLEAN("Tutorial.Completion", false);
       },
-      tutorial_service));
+      tutorial_service, description.histograms.get()));
 
   builder.SetCompletedCallback(base::BindOnce(
-      [](TutorialService* tutorial_service) {
+      [](TutorialService* tutorial_service, TutorialHistograms* histograms) {
         tutorial_service->CompleteTutorial();
+        if (histograms)
+          histograms->RecordComplete(true);
+        UMA_HISTOGRAM_BOOLEAN("Tutorial.Completion", true);
       },
-      tutorial_service));
+      tutorial_service, description.histograms.get()));
 
   return builder.Build();
 }

@@ -54,7 +54,7 @@ class TutorialHistogramsImpl : public TutorialHistograms {
         aborted_name_(kTutorialHistogramPrefix + histogram_name_ +
                       ".AbortStep"),
         link_clicked_name_(kTutorialHistogramPrefix + histogram_name_ +
-                           ".IPHLinkClickedWhenShown"),
+                           ".IPHLinkClicked"),
         max_steps_(max_steps) {}
   ~TutorialHistogramsImpl() override = default;
 

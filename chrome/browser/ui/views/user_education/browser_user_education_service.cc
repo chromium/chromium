@@ -23,6 +23,7 @@
 #include "ui/views/interaction/element_tracker_views.h"
 
 namespace {
+const char kTabGroupTutorialMetricPrefix[] = "TabGroup";
 
 // kIPHDesktopTabGroupsNewGroupFeature:
 ui::TrackedElement* GetTabGroupsAnchorView(
@@ -209,6 +210,9 @@ void MaybeRegisterChromeTutorials(TutorialRegistry& tutorial_registry) {
         std::string(), HelpBubbleArrow::kTopCenter);
     description.steps.emplace_back(std::move(step4));
 
+    description.histograms =
+        MakeTutorialHistograms<kTabGroupTutorialMetricPrefix>(
+            description.steps.size());
     tutorial_registry.AddTutorial(kTabGroupTutorialId, std::move(description));
   }
 }

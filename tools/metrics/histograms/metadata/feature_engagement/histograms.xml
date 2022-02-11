@@ -225,6 +225,11 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_WebUITabStrip" summary="opening the WebUI tab strip"/>
 </variants>
 
+<variants name="TutorialID">
+  <variant name="" summary="any tutorial"/>
+  <variant name=".TabGroup" summary="the tutorial for tab groups"/>
+</variants>
+
 <histogram name="InProductHelp.Config.ParsingEvent" enum="ConfigParsingEvent"
     expires_after="2022-07-03">
   <owner>nyquist@chromium.org</owner>
@@ -385,6 +390,37 @@ chromium-metrics-reviews@google.com.
   <owner>shaktisahu@chromium.org</owner>
   <summary>
     Records if the snooze button was shown on an in-product help bubble.
+  </summary>
+</histogram>
+
+<histogram name="Tutorial{TutorialID}.AbortStep" units="int"
+    expires_after="2022-12-31">
+  <owner>dpenning@chromium.org</owner>
+  <owner>dfried@chromium.org</owner>
+  <summary>
+    When {TutorialId} is aborted, the step at which the tutorial was aborted.
+    Only logged on desktop platforms. Logged each time a tutorial is aborted.
+  </summary>
+</histogram>
+
+<histogram name="Tutorial{TutorialID}.Completion" enum="BooleanSuccess"
+    expires_after="2022-12-31">
+  <owner>dpenning@chromium.org</owner>
+  <owner>dfried@chromium.org</owner>
+  <summary>
+    When {TutorialId} is ended, whether the tutorial was completed or aborted.
+    Only logged on desktop platforms. Logged each time a tutorial is ended.
+  </summary>
+</histogram>
+
+<histogram name="Tutorial{TutorialID}.IPHLinkClicked" enum="BooleanSuccess"
+    expires_after="2022-12-31">
+  <owner>dpenning@chromium.org</owner>
+  <owner>dfried@chromium.org</owner>
+  <summary>
+    When {TutorialId} button is shown from an IPHLink, whether the user clicks
+    to start the tutorial. Only logged on desktop platforms when the user either
+    clicks or dismisses the FeaturePromo.
   </summary>
 </histogram>
 
