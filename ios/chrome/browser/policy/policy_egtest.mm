@@ -564,7 +564,7 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
     NSError* error = nil;
     [[EarlGrey
         selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
-                                     IDS_IOS_SYNC_SYNC_DISABLED))]
+                                     IDS_IOS_ENTERPRISE_SYNC_DISABLED_TITLE))]
         assertWithMatcher:grey_sufficientlyVisible()
                     error:&error];
     return error == nil;

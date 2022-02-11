@@ -80,14 +80,15 @@
 - (void)setupForForceSignOut {
   self.titleString = l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT);
   self.subtitleString =
-      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_SUBTEXT);
+      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SIGNED_OUT_MESSAGE);
 }
 
 // Updates the view with sync disabled informations.
 - (void)setupForSyncDisabled {
-  self.titleString = l10n_util::GetNSString(IDS_IOS_SYNC_SYNC_DISABLED);
+  self.titleString =
+      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SYNC_DISABLED_TITLE);
   self.subtitleString =
-      l10n_util::GetNSString(IDS_IOS_SYNC_SYNC_DISABLED_DESCRIPTION);
+      l10n_util::GetNSString(IDS_IOS_ENTERPRISE_SYNC_DISABLED_MESSAGE);
 }
 
 @end
