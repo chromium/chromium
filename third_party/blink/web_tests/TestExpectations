@@ -7539,6 +7539,7 @@ crbug.com/1038139 [ Linux ] virtual/gpu-rasterization/images/2-comp.html [ Failu
 crbug.com/1038139 [ Mac ] virtual/gpu-rasterization/images/2-comp.html [ Failure Pass ]
 
 # Need implementation of blocking=render attribute
+crbug.com/1271296 virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/blocking-idl-attr.tentative.html [ Skip ]
 crbug.com/1271296 virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/parser-inserted-preload-link.tentative.html [ Skip ]
 crbug.com/1271296 virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/render-blocked-apis-by-preload-link.tentative.html [ Skip ]
 crbug.com/1271296 virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/script-inserted-preload-link.tentative.html [ Skip ]
