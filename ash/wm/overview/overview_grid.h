@@ -209,6 +209,10 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
                          const gfx::PointF& location_in_screen,
                          bool should_drop_window_into_overview,
                          bool snap);
+
+  // Called when a WebUI Tab Strip thumbnail is dropped into overview grid.
+  void MergeWindowIntoOverviewForWebUITabStrip(aura::Window* dragged_window);
+
   // Shows/Hides windows during window dragging. Used when swiping up a window
   // from shelf.
   void SetVisibleDuringWindowDragging(bool visible, bool animate);

@@ -999,6 +999,14 @@ void OverviewGrid::OnWindowDragEnded(aura::Window* dragged_window,
                               /*animate=*/true);
 }
 
+void OverviewGrid::MergeWindowIntoOverviewForWebUITabStrip(
+    aura::Window* dragged_window) {
+  AddDraggedWindowIntoOverviewOnDragEnd(dragged_window);
+  SetBoundsAndUpdatePositions(GetGridBoundsInScreen(root_window_),
+                              /*ignored_items=*/{},
+                              /*animate=*/true);
+}
+
 void OverviewGrid::SetVisibleDuringWindowDragging(bool visible, bool animate) {
   for (const auto& window_item : window_list_)
     window_item->SetVisibleDuringWindowDragging(visible, animate);

@@ -683,6 +683,15 @@ void OverviewSession::OnWindowDragEnded(aura::Window* dragged_window,
                                  should_drop_window_into_overview, snap);
 }
 
+void OverviewSession::MergeWindowIntoOverviewForWebUITabStrip(
+    aura::Window* dragged_window) {
+  OverviewGrid* target_grid =
+      GetGridWithRootWindow(dragged_window->GetRootWindow());
+  if (!target_grid)
+    return;
+  target_grid->MergeWindowIntoOverviewForWebUITabStrip(dragged_window);
+}
+
 void OverviewSession::SetVisibleDuringWindowDragging(bool visible,
                                                      bool animate) {
   for (auto& grid : grid_list_)

@@ -12,6 +12,8 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_session.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_drag_indicators.h"
@@ -64,6 +66,14 @@ bool IsLacrosWindow(const aura::Window* window) {
   auto app_type =
       static_cast<AppType>(window->GetProperty(aura::client::kAppType));
   return app_type == AppType::LACROS;
+}
+
+// Returns the overview session if overview mode is active, otherwise returns
+// nullptr.
+OverviewSession* GetOverviewSession() {
+  return Shell::Get()->overview_controller()->InOverviewSession()
+             ? Shell::Get()->overview_controller()->overview_session()
+             : nullptr;
 }
 
 }  // namespace
@@ -167,17 +177,20 @@ void TabDragDropDelegate::OnNewBrowserWindowCreated(
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
           root_window_);
 
-  SplitViewController::SnapPosition snap_position = ash::GetSnapPosition(
-      root_window_, new_window, location_in_screen, start_location_in_screen_,
-      /*snap_distance_from_edge=*/kDistanceFromEdgeDp,
-      /*minimum_drag_distance=*/kMinimumDragToSnapDistanceDp,
-      /*horizontal_edge_inset=*/area.width() *
-              kHighlightScreenPrimaryAxisRatio +
-          kHighlightScreenEdgePaddingDp,
-      /*vertical_edge_inset=*/area.height() * kHighlightScreenPrimaryAxisRatio +
-          kHighlightScreenEdgePaddingDp);
+  SplitViewController::SnapPosition snap_position_in_snapping_zone =
+      ash::GetSnapPosition(
+          root_window_, new_window, location_in_screen,
+          start_location_in_screen_,
+          /*snap_distance_from_edge=*/kDistanceFromEdgeDp,
+          /*minimum_drag_distance=*/kMinimumDragToSnapDistanceDp,
+          /*horizontal_edge_inset=*/area.width() *
+                  kHighlightScreenPrimaryAxisRatio +
+              kHighlightScreenEdgePaddingDp,
+          /*vertical_edge_inset=*/area.height() *
+                  kHighlightScreenPrimaryAxisRatio +
+              kHighlightScreenEdgePaddingDp);
 
-  if (snap_position == SplitViewController::SnapPosition::NONE)
+  if (snap_position_in_snapping_zone == SplitViewController::SnapPosition::NONE)
     RestoreSourceWindowBounds();
 
   // This must be done after restoring the source window's bounds since
@@ -190,6 +203,8 @@ void TabDragDropDelegate::OnNewBrowserWindowCreated(
   // If it's already in split view mode, either snap the new window
   // to the left or the right depending on the drop location.
   const bool in_split_view_mode = split_view_controller->InSplitViewMode();
+  SplitViewController::SnapPosition snap_position =
+      snap_position_in_snapping_zone;
   if (in_split_view_mode) {
     snap_position =
         split_view_controller->ComputeSnapPosition(location_in_screen);
@@ -198,8 +213,20 @@ void TabDragDropDelegate::OnNewBrowserWindowCreated(
   if (snap_position == SplitViewController::SnapPosition::NONE)
     return;
 
-  split_view_controller->SnapWindow(new_window, snap_position,
-                                    /*activate_window=*/true);
+  OverviewSession* overview_session = GetOverviewSession();
+  // If overview session is present on the other side and the new window is
+  // about to snap to that side but not in the snapping zone then drop the new
+  // window into overview.
+  if (overview_session &&
+      snap_position_in_snapping_zone ==
+          SplitViewController::SnapPosition::NONE &&
+      split_view_controller->GetPositionOfSnappedWindow(source_window_) !=
+          snap_position) {
+    overview_session->MergeWindowIntoOverviewForWebUITabStrip(new_window);
+  } else {
+    split_view_controller->SnapWindow(new_window, snap_position,
+                                      /*activate_window=*/true);
+  }
 
   // Do not snap the source window if already in split view mode.
   if (in_split_view_mode)

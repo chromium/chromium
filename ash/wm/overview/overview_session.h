@@ -185,6 +185,12 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // resumes dragging, hides overview windows.
   void SetVisibleDuringWindowDragging(bool visible, bool animate);
 
+  // This is called on drag end for WebUI Tab Strip similar to
+  // OnWindowDragEnded. Since WebUI tab strip tab dragging only creates new
+  // window on drag end, both OnWindowDragStarted and OnWindowDragContinued are
+  // not being called.
+  void MergeWindowIntoOverviewForWebUITabStrip(aura::Window* dragged_window);
+
   // Positions all overview items except those in |ignored_items|.
   void PositionWindows(bool animate,
                        const base::flat_set<OverviewItem*>& ignored_items = {});
