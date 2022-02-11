@@ -50,6 +50,7 @@ web_component_files = [
   "shortcut_input.ts",
   "sidebar.ts",
   "site_permissions.ts",
+  "site_permissions_add_site_dialog.ts",
   "site_permissions_list.ts",
   "toggle_row.ts",
   "toolbar.ts",

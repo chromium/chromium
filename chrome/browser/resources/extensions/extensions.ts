@@ -39,6 +39,8 @@ export {ExtensionsShortcutInputElement} from './shortcut_input.js';
 export {isValidKeyCode, Key, keystrokeToString} from './shortcut_util.js';
 export {ExtensionsSidebarElement} from './sidebar.js';
 export {ExtensionsSitePermissionsElement} from './site_permissions.js';
+export {getSitePermissionsPatternFromSite, SitePermissionsAddSiteDialogElement} from './site_permissions_add_site_dialog.js';
+export {ExtensionsSitePermissionsListElement} from './site_permissions_list.js';
 export {ExtensionsToggleRowElement} from './toggle_row.js';
 export {ExtensionsToolbarElement} from './toolbar.js';
 export {getFaviconUrl} from './url_util.js';

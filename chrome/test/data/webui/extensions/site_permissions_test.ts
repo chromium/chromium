@@ -5,7 +5,7 @@
 /** @fileoverview Suite of tests for extension-site-permissions. */
 import 'chrome://extensions/extensions.js';
 
-import {ExtensionsSitePermissionsElement} from 'chrome://extensions/extensions.js';
+import {ExtensionsSitePermissionsElement, Service} from 'chrome://extensions/extensions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
@@ -24,6 +24,7 @@ suite('SitePermissions', function() {
   setup(function() {
     delegate = new TestService();
     delegate.userSiteSettings = userSiteSettings;
+    Service.setInstance(delegate);
 
     document.body.innerHTML = '';
     element = document.createElement('extensions-site-permissions');
@@ -52,5 +53,33 @@ suite('SitePermissions', function() {
     testVisible(restrictedSites!, '#no-sites', true);
     assertEquals(
         0, restrictedSites!.shadowRoot!.querySelectorAll('.site-row').length);
+  });
+
+  test('user site settings update when event is fired', async function() {
+    await delegate.whenCalled('getUserSiteSettings');
+    flush();
+
+    // Send an event which updates the list of permitted and restricted sites.
+    delegate.userSiteSettingsChangedTarget.callListeners(
+        {permittedSites: [], restrictedSites: ['http://example.com']});
+    flush();
+
+    const sitePermissionLists =
+        element!.shadowRoot!.querySelectorAll<HTMLElement>(
+            'site-permissions-list');
+    assertEquals(2, sitePermissionLists.length);
+    const permittedSites = sitePermissionLists[0]!;
+    const restrictedSites = sitePermissionLists[1]!;
+
+    // Test that the '#no-sites' message is visible for permitted sites.
+    testVisible(permittedSites, '#no-sites', true);
+    assertEquals(
+        0, permittedSites.shadowRoot!.querySelectorAll('.site-row').length);
+
+    // Test that there is one site visible for restricted sites, and the
+    // '#no-sites' messages is not visible.
+    testVisible(restrictedSites!, '#no-sites', false);
+    assertEquals(
+        1, restrictedSites!.shadowRoot!.querySelectorAll('.site-row').length);
   });
 });

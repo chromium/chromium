@@ -11,6 +11,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
   itemStateChangedTarget: FakeChromeEvent = new FakeChromeEvent();
   profileStateChangedTarget: FakeChromeEvent = new FakeChromeEvent();
   extensionActivityTarget: FakeChromeEvent = new FakeChromeEvent();
+  userSiteSettingsChangedTarget: FakeChromeEvent = new FakeChromeEvent();
   acceptRuntimeHostPermission: boolean = true;
   testActivities?: chrome.activityLogPrivate.ActivityResultSet;
   userSiteSettings?: chrome.developerPrivate.UserSiteSettings;
@@ -22,6 +23,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
   constructor() {
     super([
       'addRuntimeHostPermission',
+      'addUserSpecifiedSite',
       'choosePackRootDirectory',
       'choosePrivateKeyPath',
       'deleteActivitiesById',
@@ -109,6 +111,10 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
 
   getProfileStateChangedTarget() {
     return this.profileStateChangedTarget;
+  }
+
+  getUserSiteSettingsChangedTarget() {
+    return this.userSiteSettingsChangedTarget;
   }
 
   getExtensionsInfo() {
@@ -316,5 +322,11 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
   getUserSiteSettings() {
     this.methodCalled('getUserSiteSettings');
     return Promise.resolve(this.userSiteSettings!);
+  }
+
+  addUserSpecifiedSite(
+      siteSet: chrome.developerPrivate.UserSiteSet, host: string) {
+    this.methodCalled('addUserSpecifiedSite', [siteSet, host]);
+    return Promise.resolve();
   }
 }

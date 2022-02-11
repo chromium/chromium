@@ -391,6 +391,15 @@
   <message name="IDS_EXTENSIONS_NO_SITES_ADDED" desc="The text displayed when a list of sites in the site permissions page is empty.">
     No sites added
   </message>
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_ADD_SITE_DIALOG_TITLE" desc="The title of the dialog used to allow a user to add a new site. Used for the permitted and restricted site lists.">
+    Add site
+  </message>
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_DIALOG_INPUT_ERROR" desc="The error message shown to the user when they entered an invalid site address into the input field.">
+    Not a valid web address
+  </message>
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_DIALOG_INPUT_LABEL" desc="The label for the input field where a user enters a new site. Used for the permitted and restricted site lists.">
+    Site URL
+  </message>
   <message name="IDS_EXTENSIONS_EDIT_SHORTCUT" desc="The label for a button to edit the shortcut.">
     Edit shortcut
   </message>

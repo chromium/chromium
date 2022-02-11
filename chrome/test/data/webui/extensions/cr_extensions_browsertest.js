@@ -880,6 +880,36 @@ TEST_F('CrExtensionsSitePermissionsTest', 'All', () => {
 });
 
 ////////////////////////////////////////////////////////////////////////////////
+// SitePermissionsAddSiteDialog tests
+
+var CrExtensionsSitePermissionsAddSiteDialogTest =
+    class extends CrExtensionsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://extensions/test_loader.html?module=extensions/site_permissions_add_site_dialog_test.js&host=webui-test';
+  }
+};
+
+TEST_F('CrExtensionsSitePermissionsAddSiteDialogTest', 'All', () => {
+  mocha.run();
+});
+
+////////////////////////////////////////////////////////////////////////////////
+// SitePermissionsList tests
+
+var CrExtensionsSitePermissionsListTest =
+    class extends CrExtensionsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://extensions/test_loader.html?module=extensions/site_permissions_list_test.js&host=webui-test';
+  }
+};
+
+TEST_F('CrExtensionsSitePermissionsListTest', 'All', () => {
+  mocha.run();
+});
+
+////////////////////////////////////////////////////////////////////////////////
 // UrlUtil tests
 
 var CrUrlUtilTest = class extends CrExtensionsBrowserTest {

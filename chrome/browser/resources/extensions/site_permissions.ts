@@ -11,8 +11,13 @@ import './site_permissions_list.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Service} from './service.js';
+
 export interface SitePermissionsDelegate {
   getUserSiteSettings(): Promise<chrome.developerPrivate.UserSiteSettings>;
+  addUserSpecifiedSite(
+      siteSet: chrome.developerPrivate.UserSiteSet,
+      host: string): Promise<void>;
 }
 
 export class ExtensionsSitePermissionsElement extends PolymerElement {
@@ -27,14 +32,28 @@ export class ExtensionsSitePermissionsElement extends PolymerElement {
   static get properties() {
     return {
       delegate: Object,
+
       permittedSites_: Array,
+
       restrictedSites_: Array,
+
+      userSiteSetEnum_: {
+        type: Object,
+        value: chrome.developerPrivate.UserSiteSet,
+      },
     };
   }
 
   delegate: SitePermissionsDelegate;
   private permittedSites_: string[];
   private restrictedSites_: string[];
+
+  ready() {
+    super.ready();
+    const service = Service.getInstance();
+    service.getUserSiteSettingsChangedTarget().addListener(
+        this.onUserSiteSettingsChanged_.bind(this));
+  }
 
   connectedCallback() {
     super.connectedCallback();
@@ -43,6 +62,12 @@ export class ExtensionsSitePermissionsElement extends PolymerElement {
           this.permittedSites_ = permittedSites;
           this.restrictedSites_ = restrictedSites;
         });
+  }
+
+  private onUserSiteSettingsChanged_({permittedSites, restrictedSites}: chrome
+                                         .developerPrivate.UserSiteSettings) {
+    this.permittedSites_ = permittedSites;
+    this.restrictedSites_ = restrictedSites;
   }
 }
 

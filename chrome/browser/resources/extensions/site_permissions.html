@@ -24,10 +24,14 @@
   <div id="header">$i18n{sitePermissionsPageTitle}</div>
   <div id="site-permissions-container">
     <site-permissions-list
+        delegate="[[delegate]]"
         header="$i18n{permittedSites}"
+        site-set="[[userSiteSetEnum_.PERMITTED]]"
         sites="[[permittedSites_]]"></site-permissions-list>
     <site-permissions-list
+        delegate="[[delegate]]"
         header="$i18n{restrictedSites}"
+        site-set="[[userSiteSetEnum_.RESTRICTED]]"
         sites="[[restrictedSites_]]"></site-permissions-list>
   </div>
 </div>

@@ -33,6 +33,8 @@ export interface ServiceInterface extends ActivityLogDelegate,
   getProfileConfiguration(): Promise<chrome.developerPrivate.ProfileInfo>;
   getExtensionsInfo(): Promise<Array<chrome.developerPrivate.ExtensionInfo>>;
   getExtensionSize(id: string): Promise<string>;
+  getUserSiteSettingsChangedTarget():
+      ChromeEvent<(settings: chrome.developerPrivate.UserSiteSettings) => void>;
 }
 
 export class Service implements ServiceInterface {
@@ -476,6 +478,19 @@ export class Service implements ServiceInterface {
     return new Promise(function(resolve) {
       chrome.developerPrivate.getUserSiteSettings(resolve);
     });
+  }
+
+  addUserSpecifiedSite(
+      siteSet: chrome.developerPrivate.UserSiteSet,
+      host: string): Promise<void> {
+    return new Promise(function(resolve) {
+      chrome.developerPrivate.addUserSpecifiedSite(
+          {siteList: siteSet, host}, resolve);
+    });
+  }
+
+  getUserSiteSettingsChangedTarget() {
+    return chrome.developerPrivate.onUserSiteSettingsChanged;
   }
 
   static getInstance(): ServiceInterface {

@@ -43,6 +43,8 @@ non_preprocessed_files = [
   "runtime_hosts_dialog_test.ts",
   "shortcut_input_test.ts",
   "sidebar_test.ts",
+  "site_permissions_add_site_dialog_test.ts",
+  "site_permissions_list_test.ts",
   "site_permissions_test.ts",
   "test_service.ts",
   "test_util.ts",

@@ -39,7 +39,7 @@
 </style>
 <div id="site-list-header-container">
   <span>[[header]]</span>
-  <cr-button>$i18n{add}</cr-button>
+  <cr-button id="addSite" on-click="onAddSiteClick_">$i18n{add}</cr-button>
 </div>
 <div id="no-sites" hidden$="[[hasSites_(sites)]]">$i18n{noSitesAdded}</div>
 <div id="sites-list">
@@ -54,3 +54,11 @@
     </div>
   </template>
 </div>
+<template is="dom-if" if="[[showAddSiteDialog_]]" restamp>
+  <site-permissions-add-site-dialog
+      delegate="[[delegate]]"
+      site-set="[[siteSet]]"
+      on-close="onAddSiteDialogClose_"
+      on-cancel="onAddSiteDialogClose_">
+  </site-permissions-add-site-dialog>
+</template>
