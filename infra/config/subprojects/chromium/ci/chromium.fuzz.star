@@ -356,7 +356,7 @@ ci.builder(
         short_name = "linux-ubsan",
     ),
     executable = "recipe:chromium_libfuzzer",
-    execution_timeout = 4 * time.hour,
+    execution_timeout = 5 * time.hour,
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
     ),
