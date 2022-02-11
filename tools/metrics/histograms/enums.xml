@@ -68788,6 +68788,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Edit password"/>
   <int value="5" label="Remove password"/>
   <int value="6" label="Show password"/>
+  <int value="7" label="Mute password"/>
+  <int value="8" label="Unmute password"/>
 </enum>
 
 <enum name="PasswordCheckReferrer">

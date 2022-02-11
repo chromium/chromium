@@ -718,6 +718,9 @@ suite('PasswordsCheckSection', function() {
         .querySelector('#menuMuteCompromisedPassword')
         .click();
 
+    const interaction =
+        await passwordManager.whenCalled('recordPasswordCheckInteraction');
+    assertEquals(PasswordCheckInteraction.MUTE_PASSWORD, interaction);
     assertEquals(1, passwordManager.getCallCount('muteInsecureCredential'));
   });
 
@@ -743,6 +746,9 @@ suite('PasswordsCheckSection', function() {
         .querySelector('#menuUnmuteMutedCompromisedPassword')
         .click();
 
+    const interaction =
+        await passwordManager.whenCalled('recordPasswordCheckInteraction');
+    assertEquals(PasswordCheckInteraction.UNMUTE_PASSWORD, interaction);
     assertEquals(1, passwordManager.getCallCount('unmuteInsecureCredential'));
   });
 

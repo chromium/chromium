@@ -437,12 +437,16 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
   }
 
   private onMenuMuteCompromisedPasswordClick_() {
+    this.passwordManager!.recordPasswordCheckInteraction(
+        PasswordCheckInteraction.MUTE_PASSWORD);
     this.$.moreActionsMenu.close();
     this.passwordManager!.muteInsecureCredential(
         assert(this.activeListItem_!.item));
   }
 
   private onMenuUnmuteMutedCompromisedPasswordClick_() {
+    this.passwordManager!.recordPasswordCheckInteraction(
+        PasswordCheckInteraction.UNMUTE_PASSWORD);
     this.$.moreActionsMenu.close();
     this.passwordManager!.unmuteInsecureCredential(
         assert(this.activeListItem_!.item));
