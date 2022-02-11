@@ -86,7 +86,6 @@ struct WebAppInstallParams {
   bool add_to_applications_menu = true;
   bool add_to_desktop = true;
   bool add_to_quick_launch_bar = true;
-  bool run_on_os_login = false;
 
   // These have no effect outside of Chrome OS.
   bool add_to_search = true;

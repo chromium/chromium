@@ -887,8 +887,7 @@ void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
     DCHECK(background_installation_);
     DCHECK(!(install_params_->add_to_applications_menu ||
              install_params_->add_to_desktop ||
-             install_params_->add_to_quick_launch_bar ||
-             install_params_->run_on_os_login))
+             install_params_->add_to_quick_launch_bar))
         << "Cannot create os hooks for a non-locally installed ";
     CallInstallCallback(app_id, InstallResultCode::kSuccessNewInstall);
     return;
@@ -908,13 +907,10 @@ void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
   options.os_hooks[OsHookType::kFileHandlers] = true;
   options.os_hooks[OsHookType::kProtocolHandlers] = true;
 
-  // TODO(crbug.com/1280773): Determine if |web_app_info->run_on_os_login| is
-  // needed after WebAppSettings work is completed.
   {
     web_app::RunOnOsLoginMode current_mode =
         registrar_->GetAppRunOnOsLoginMode(app_id).value;
     options.os_hooks[OsHookType::kRunOnOsLogin] =
-        web_app_info->run_on_os_login ||
         current_mode == RunOnOsLoginMode::kWindowed;
   }
 
@@ -943,8 +939,6 @@ void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
         install_params_->add_to_applications_menu;
     options.os_hooks[OsHookType::kShortcutsMenu] =
         install_params_->add_to_applications_menu;
-    options.os_hooks[OsHookType::kRunOnOsLogin] =
-        install_params_->run_on_os_login;
     options.add_to_desktop = install_params_->add_to_desktop;
     options.add_to_quick_launch_bar = install_params_->add_to_quick_launch_bar;
   }

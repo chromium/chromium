@@ -130,11 +130,6 @@ void WebAppPolicyManager::ReinstallPlaceholderAppIfNecessary(const GURL& url) {
   install_options.wait_for_windows_closed = true;
   install_options.reinstall_placeholder = true;
 
-  // TODO(crbug.com/1280773): Reevaluate if this is needed.
-  install_options.run_on_os_login = (GetUrlRunOnOsLoginPolicyByUnhashedAppId(
-                                         install_options.install_url.spec()) ==
-                                     RunOnOsLoginPolicy::kRunWindowed);
-
   // If the app is not a placeholder app, ExternallyManagedAppManager will
   // ignore the request.
   externally_managed_app_manager_->InstallNow(std::move(install_options),
@@ -235,12 +230,6 @@ void WebAppPolicyManager::RefreshPolicyInstalledApps() {
     // apps but only if they are not being used.
     install_options.wait_for_windows_closed = true;
     install_options.reinstall_placeholder = true;
-
-    // TODO(crbug.com/1280773): Reevaluate if this is needed.
-    install_options.run_on_os_login =
-        (GetUrlRunOnOsLoginPolicyByUnhashedAppId(
-             install_options.install_url.spec()) ==
-         RunOnOsLoginPolicy::kRunWindowed);
 
     absl::optional<AppId> app_id = externally_installed_app_prefs_.LookupAppId(
         install_options.install_url);

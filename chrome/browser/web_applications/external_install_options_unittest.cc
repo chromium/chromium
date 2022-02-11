@@ -33,7 +33,6 @@ ExternalInstallOptions ConvertParamsToExternalInstallOptions(
   install_options.add_to_desktop = install_params.add_to_desktop;
   install_options.add_to_quick_launch_bar =
       install_params.add_to_quick_launch_bar;
-  install_options.run_on_os_login = install_params.run_on_os_login;
   install_options.add_to_search = install_params.add_to_search;
   install_options.add_to_management = install_params.add_to_management;
   install_options.is_disabled = install_params.is_disabled;
@@ -89,7 +88,6 @@ TEST(WebAppExternalInstallOptions,
   install_options.add_to_applications_menu = false;
   install_options.add_to_desktop = false;
   install_options.add_to_quick_launch_bar = false;
-  install_options.run_on_os_login = true;
   install_options.add_to_search = false;
   install_options.add_to_management = false;
   install_options.is_disabled = true;

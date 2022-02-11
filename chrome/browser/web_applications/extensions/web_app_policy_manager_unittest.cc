@@ -1231,9 +1231,7 @@ TEST_P(WebAppPolicyManagerTest, WebAppSettingsForceInstallNewApps) {
 
   std::vector<ExternalInstallOptions> expected_install_options_list;
   expected_install_options_list.push_back(GetWindowedInstallOptions());
-  expected_install_options_list[0].run_on_os_login = true;
   expected_install_options_list.push_back(GetTabbedInstallOptions());
-  expected_install_options_list[1].run_on_os_login = false;
 
   EXPECT_EQ(install_requests, expected_install_options_list);
   EXPECT_EQ(2, mock_observer.GetOnPolicyChangedCalledCount());

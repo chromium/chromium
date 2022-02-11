@@ -78,12 +78,6 @@ struct ExternalInstallOptions {
   // other platforms.
   bool add_to_management = true;
 
-  // Whether the app should be registered to run on OS login.
-  // Currently this only works on Windows by adding a shortcut to the
-  // Startup Folder.
-  // TODO(crbug.com/897302): Enable for other platforms.
-  bool run_on_os_login = false;
-
   // If true, the app icon is displayed on Chrome OS with a blocked logo on
   // top, and the user cannot launch the app. Has no effect on other platforms.
   bool is_disabled = false;

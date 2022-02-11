@@ -132,13 +132,6 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   web_app.SetUrlHandlers(web_app_info.url_handlers);
   web_app.SetNoteTakingNewNoteUrl(web_app_info.note_taking_new_note_url);
 
-  if (base::FeatureList::IsEnabled(features::kDesktopPWAsRunOnOsLogin) &&
-      web_app_info.run_on_os_login) {
-    // TODO(crbug.com/1091964): Obtain actual mode, currently set to the
-    // default (windowed).
-    web_app.SetRunOnOsLoginMode(RunOnOsLoginMode::kWindowed);
-  }
-
   web_app.SetCaptureLinks(web_app_info.capture_links);
 
   web_app.SetHandleLinks(web_app_info.handle_links);

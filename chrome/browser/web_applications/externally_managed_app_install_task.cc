@@ -352,8 +352,7 @@ void ExternallyManagedAppInstallTask::OnWebAppInstalled(
       install_options_.add_to_applications_menu;
   options.add_to_desktop = install_options_.add_to_desktop;
   options.add_to_quick_launch_bar = install_options_.add_to_quick_launch_bar;
-  options.os_hooks[OsHookType::kRunOnOsLogin] =
-      install_options_.run_on_os_login;
+  options.os_hooks[OsHookType::kRunOnOsLogin] = false;
 
   // TODO(crbug.com/1087219): Determine if |register_file_handlers| should be
   // configured from somewhere else rather than always true.

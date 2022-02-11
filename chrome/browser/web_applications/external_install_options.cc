@@ -51,7 +51,6 @@ bool ExternalInstallOptions::operator==(
         options.add_to_quick_launch_bar,
         options.add_to_search,
         options.add_to_management,
-        options.run_on_os_login,
         options.is_disabled,
         options.override_previous_user_uninstall,
         options.only_for_new_users,
@@ -143,7 +142,6 @@ base::Value ExternalInstallOptions::AsDebugValue() const {
                   override_previous_user_uninstall);
   root.SetBoolKey("reinstall_placeholder", reinstall_placeholder);
   root.SetBoolKey("require_manifest", require_manifest);
-  root.SetBoolKey("run_on_os_login", run_on_os_login);
   root.SetKey("service_worker_registration_url",
               service_worker_registration_url
                   ? base::Value(service_worker_registration_url->spec())
@@ -179,7 +177,6 @@ WebAppInstallParams ConvertExternalInstallOptionsToParams(
   params.add_to_applications_menu = install_options.add_to_applications_menu;
   params.add_to_desktop = install_options.add_to_desktop;
   params.add_to_quick_launch_bar = install_options.add_to_quick_launch_bar;
-  params.run_on_os_login = install_options.run_on_os_login;
   params.add_to_search = install_options.add_to_search;
   params.add_to_management = install_options.add_to_management;
   params.is_disabled = install_options.is_disabled;
