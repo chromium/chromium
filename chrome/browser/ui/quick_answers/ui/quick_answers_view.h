@@ -41,6 +41,7 @@ class QuickAnswersView : public views::View {
   // views::View:
   const char* GetClassName() const override;
   void OnFocus() override;
+  void OnThemeChanged() override;
   views::FocusTraversable* GetPaneFocusTraversable() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
