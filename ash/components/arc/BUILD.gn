@@ -284,8 +284,6 @@ static_library("arc_test_support") {
     "test/fake_backup_settings_instance.h",
     "test/fake_bluetooth_instance.cc",
     "test/fake_bluetooth_instance.h",
-    "test/fake_cast_receiver_instance.cc",
-    "test/fake_cast_receiver_instance.h",
     "test/fake_clipboard_instance.cc",
     "test/fake_clipboard_instance.h",
     "test/fake_dark_theme_instance.cc",
