@@ -334,7 +334,14 @@ class ReceiverSetBase {
   // to modify behavior.
   //
   // Returns the existing interface implementation to the caller.
-  ImplPointerType SwapImplForTesting(ReceiverId id, ImplPointerType new_impl) {
+  //
+  // The caller needs to guarantee that `new_impl` will live longer than
+  // `this` ReceiverSet.  One way to achieve this is to store the returned
+  // `old_impl` and swap it back in when `new_impl` is getting destroyed.
+  // Test code should prefer using `mojo::test::ScopedSwapImplForTesting` if
+  // possible.
+  [[nodiscard]] ImplPointerType SwapImplForTesting(ReceiverId id,
+                                                   ImplPointerType new_impl) {
     auto it = state_.entries().find(id);
     if (it == state_.entries().end())
       return nullptr;

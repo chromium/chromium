@@ -85,6 +85,7 @@
 #include "content/test/mock_client_hints_controller_delegate.h"
 #include "content/test/resource_load_observer.h"
 #include "content/test/test_content_browser_client.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/features.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/network_isolation_key.h"
@@ -4849,14 +4850,15 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_FALSE(web_contents->ShouldIgnoreUnresponsiveRenderer());
 }
 
-// Intercept calls to RenderFramHostImpl's DidStopLoading mojo method.
+// Intercept calls to RenderFramHostImpl's DidStopLoading mojo method. The
+// caller has to guarantee that `render_frame_host` lives at least as long as
+// DidStopLoadingInterceptor.
 class DidStopLoadingInterceptor : public mojom::FrameHostInterceptorForTesting {
  public:
   explicit DidStopLoadingInterceptor(RenderFrameHostImpl* render_frame_host)
-      : render_frame_host_(render_frame_host) {
-    render_frame_host_->frame_host_receiver_for_testing().SwapImplForTesting(
-        this);
-  }
+      : render_frame_host_(render_frame_host),
+        swapped_impl_(render_frame_host_->frame_host_receiver_for_testing(),
+                      this) {}
 
   ~DidStopLoadingInterceptor() override = default;
 
@@ -4876,6 +4878,9 @@ class DidStopLoadingInterceptor : public mojom::FrameHostInterceptorForTesting {
 
  private:
   raw_ptr<RenderFrameHostImpl> render_frame_host_;
+  mojo::test::ScopedSwapImplForTesting<
+      mojo::AssociatedReceiver<mojom::FrameHost>>
+      swapped_impl_;
 };
 
 // Test that get_process_idle_time() returns reasonable values when compared

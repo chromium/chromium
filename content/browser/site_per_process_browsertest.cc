@@ -123,6 +123,7 @@
 #include "ipc/ipc_security_test_util.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/mock_http_cache.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -6005,14 +6006,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 class ShowCreatedWindowInterceptor
     : public blink::mojom::LocalMainFrameHostInterceptorForTesting {
  public:
+  // The caller has to guarantee that `render_frame_host` lives at least as long
+  // as ShowCreatedWindowInterceptor.
   ShowCreatedWindowInterceptor(
       RenderFrameHostImpl* render_frame_host,
       base::OnceCallback<void(int32_t pending_widget_routing_id)> test_callback)
       : render_frame_host_(render_frame_host),
-        test_callback_(std::move(test_callback)) {
-    render_frame_host_->local_main_frame_host_receiver_for_testing()
-        .SwapImplForTesting(this);
-  }
+        test_callback_(std::move(test_callback)),
+        swapped_impl_(
+            render_frame_host_->local_main_frame_host_receiver_for_testing(),
+            this) {}
 
   ~ShowCreatedWindowInterceptor() override = default;
 
@@ -6048,6 +6051,9 @@ class ShowCreatedWindowInterceptor
   gfx::Rect initial_rect_;
   bool user_gesture_ = false;
   WindowOpenDisposition disposition_;
+  mojo::test::ScopedSwapImplForTesting<
+      mojo::AssociatedReceiver<blink::mojom::LocalMainFrameHost>>
+      swapped_impl_;
 };
 
 // Listens for the source WebContents opening the new WebContents then attaches
@@ -6156,16 +6162,17 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 }
 
 // Intercepts calls to PopupWidgetHost's RequestClosePopup mojo method, and
-// discards it.
+// discards it. The caller has to guarantee that `render_widget_host` lives at
+// least as long as RequestCloseWidgetInterceptor.
 class RequestCloseWidgetInterceptor
     : public blink::mojom::PopupWidgetHostInterceptorForTesting {
  public:
   explicit RequestCloseWidgetInterceptor(
       RenderWidgetHostImpl* render_widget_host)
-      : render_widget_host_(render_widget_host) {
-    render_widget_host_->popup_widget_host_receiver_for_testing()
-        .SwapImplForTesting(this);
-  }
+      : render_widget_host_(render_widget_host),
+        swapped_impl_(
+            render_widget_host_->popup_widget_host_receiver_for_testing(),
+            this) {}
 
   ~RequestCloseWidgetInterceptor() override = default;
 
@@ -6177,10 +6184,15 @@ class RequestCloseWidgetInterceptor
 
  private:
   raw_ptr<RenderWidgetHostImpl> render_widget_host_;
+  mojo::test::ScopedSwapImplForTesting<
+      mojo::AssociatedReceiver<blink::mojom::PopupWidgetHost>>
+      swapped_impl_;
 };
 
 // Intercepts calls to PopupWidgetHost's ShowPopup mojo method, and
-// invokes the provided callback.
+// invokes the provided callback. The caller has to guarantee that
+// `render_widget_host` lives at least as long as
+// ShowCreatedPopupWidgetInterceptor.
 class ShowCreatedPopupWidgetInterceptor
     : public blink::mojom::PopupWidgetHostInterceptorForTesting {
  public:
@@ -6188,10 +6200,10 @@ class ShowCreatedPopupWidgetInterceptor
       RenderWidgetHostImpl* render_widget_host,
       base::OnceCallback<void(int32_t pending_widget_routing_id)> test_callback)
       : render_widget_host_(render_widget_host),
-        test_callback_(std::move(test_callback)) {
-    render_widget_host_->popup_widget_host_receiver_for_testing()
-        .SwapImplForTesting(this);
-  }
+        test_callback_(std::move(test_callback)),
+        swapped_impl_(
+            render_widget_host_->popup_widget_host_receiver_for_testing(),
+            this) {}
 
   ~ShowCreatedPopupWidgetInterceptor() override = default;
 
@@ -6223,6 +6235,9 @@ class ShowCreatedPopupWidgetInterceptor
   base::OnceCallback<void(int32_t pending_widget_routing_id)> test_callback_;
   ShowPopupCallback show_callback_;
   gfx::Rect initial_rect_;
+  mojo::test::ScopedSwapImplForTesting<
+      mojo::AssociatedReceiver<blink::mojom::PopupWidgetHost>>
+      swapped_impl_;
 };
 
 // Listens for the source RenderFrameHost opening the new popup widget then
@@ -6633,10 +6648,10 @@ class DispatchLoadInterceptor
     : public blink::mojom::LocalFrameHostInterceptorForTesting {
  public:
   explicit DispatchLoadInterceptor(RenderFrameHostImpl* render_frame_host)
-      : render_frame_host_(render_frame_host) {
-    render_frame_host_->local_frame_host_receiver_for_testing()
-        .SwapImplForTesting(this);
-  }
+      : render_frame_host_(render_frame_host),
+        swapped_impl_(
+            render_frame_host_->local_frame_host_receiver_for_testing(),
+            this) {}
 
   ~DispatchLoadInterceptor() override = default;
 
@@ -6649,6 +6664,9 @@ class DispatchLoadInterceptor
 
  private:
   raw_ptr<RenderFrameHostImpl> render_frame_host_;
+  mojo::test::ScopedSwapImplForTesting<
+      mojo::AssociatedReceiver<blink::mojom::LocalFrameHost>>
+      swapped_impl_;
 };
 
 // Test that the renderer isn't killed when a frame generates a load event just
@@ -6680,24 +6698,26 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // SiteInstance, a.com.
   EXPECT_TRUE(child->render_manager()->GetProxyToParent());
 
-  // Intercept calls to the LocalFrameHost::DispatchLoad() method.
-  DispatchLoadInterceptor interceptor(child_rfh);
-
-  // Now, go back to a.com in the subframe and wait for commit.
   {
-    TestFrameNavigationObserver commit_observer(child);
-    web_contents()->GetController().GoBack();
-    commit_observer.WaitForCommit();
+    // Intercept calls to the LocalFrameHost::DispatchLoad() method.
+    DispatchLoadInterceptor interceptor(child_rfh);
+
+    // Now, go back to a.com in the subframe and wait for commit.
+    {
+      TestFrameNavigationObserver commit_observer(child);
+      web_contents()->GetController().GoBack();
+      commit_observer.WaitForCommit();
+    }
+
+    // At this point, the subframe's old RFH for b.com should be pending
+    // deletion, and the subframe's proxy in a.com should've been cleared.
+    EXPECT_TRUE(child_rfh->IsPendingDeletion());
+    EXPECT_FALSE(child->render_manager()->GetProxyToParent());
+
+    // Simulate that the load event is dispatched from |child_rfh| just after
+    // it's become pending deletion.
+    child_rfh->DispatchLoad();
   }
-
-  // At this point, the subframe's old RFH for b.com should be pending
-  // deletion, and the subframe's proxy in a.com should've been cleared.
-  EXPECT_TRUE(child_rfh->IsPendingDeletion());
-  EXPECT_FALSE(child->render_manager()->GetProxyToParent());
-
-  // Simulate that the load event is dispatched from |child_rfh| just after
-  // it's become pending deletion.
-  child_rfh->DispatchLoad();
 
   // In the bug, DispatchLoad killed the b.com renderer.  Ensure that this is
   // not the case. Note that the process kill doesn't happen immediately, so

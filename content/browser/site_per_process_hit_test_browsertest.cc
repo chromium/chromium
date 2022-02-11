@@ -45,6 +45,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/common/shell_switches.h"
 #include "content/test/mock_overscroll_observer.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
@@ -699,7 +700,8 @@ class SetMouseCaptureInterceptor
       : msg_received_(false),
         capturing_(false),
         host_(host),
-        impl_(receiver().internal_state()->SwapImplForTesting(this)) {}
+        impl_(receiver().internal_state()->impl()),
+        swapped_impl_(receiver(), this) {}
 
   SetMouseCaptureInterceptor(const SetMouseCaptureInterceptor&) = delete;
   SetMouseCaptureInterceptor& operator=(const SetMouseCaptureInterceptor&) =
@@ -724,6 +726,7 @@ class SetMouseCaptureInterceptor
   blink::mojom::WidgetInputHandlerHost* GetForwardingInterface() override {
     return impl_;
   }
+
   void SetMouseCapture(bool capturing) override {
     capturing_ = capturing;
     msg_received_ = true;
@@ -735,9 +738,7 @@ class SetMouseCaptureInterceptor
  private:
   friend class base::RefCountedThreadSafe<SetMouseCaptureInterceptor>;
 
-  ~SetMouseCaptureInterceptor() override {
-    receiver().internal_state()->SwapImplForTesting(impl_);
-  }
+  ~SetMouseCaptureInterceptor() override = default;
 
   mojo::Receiver<blink::mojom::WidgetInputHandlerHost>& receiver() {
     return static_cast<InputRouterImpl*>(host_->input_router())
@@ -749,6 +750,9 @@ class SetMouseCaptureInterceptor
   bool capturing_;
   raw_ptr<RenderWidgetHostImpl> host_;
   raw_ptr<blink::mojom::WidgetInputHandlerHost> impl_;
+  mojo::test::ScopedSwapImplForTesting<
+      mojo::Receiver<blink::mojom::WidgetInputHandlerHost>>
+      swapped_impl_;
 };
 
 #if defined(USE_AURA)
@@ -4346,14 +4350,16 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 #if !BUILDFLAG(IS_ANDROID)
 namespace {
 
+// Intercepts SetCursor calls. The caller has to guarantee that
+// `render_widget_host` lives at least as long as SetCursorInterceptor.
 class SetCursorInterceptor
     : public blink::mojom::WidgetHostInterceptorForTesting {
  public:
   explicit SetCursorInterceptor(RenderWidgetHostImpl* render_widget_host)
-      : render_widget_host_(render_widget_host) {
-    render_widget_host_->widget_host_receiver_for_testing().SwapImplForTesting(
-        this);
-  }
+      : render_widget_host_(render_widget_host),
+        swapped_impl_(render_widget_host_->widget_host_receiver_for_testing(),
+                      this) {}
+
   ~SetCursorInterceptor() override = default;
 
   WidgetHost* GetForwardingInterface() override { return render_widget_host_; }
@@ -4372,6 +4378,9 @@ class SetCursorInterceptor
   base::RunLoop run_loop_;
   raw_ptr<RenderWidgetHostImpl> render_widget_host_;
   absl::optional<ui::Cursor> cursor_;
+  mojo::test::ScopedSwapImplForTesting<
+      mojo::AssociatedReceiver<blink::mojom::WidgetHost>>
+      swapped_impl_;
 };
 
 // Verify that we receive a mouse cursor update message when we mouse over

@@ -19,6 +19,7 @@
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/test/render_document_feature.h"
 #include "content/test/render_widget_host_visibility_observer.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/window_tree_host.h"
@@ -84,17 +85,21 @@ void SimulateMouseClick(RenderWidgetHost* rwh, int x, int y) {
 
 }  // namespace
 
-// Class to monitor incoming UpdateViewportIntersection messages.
+// Class to monitor incoming UpdateViewportIntersection messages. The caller has
+// to guarantee that `rfph` lives at least as long as
+// UpdateViewportIntersectionMessageFilter.
 class UpdateViewportIntersectionMessageFilter
     : public blink::mojom::RemoteFrameHostInterceptorForTesting {
  public:
   explicit UpdateViewportIntersectionMessageFilter(
       content::RenderFrameProxyHost* rfph)
       : intersection_state_(blink::mojom::ViewportIntersectionState::New()),
-        render_frame_proxy_host_(rfph) {
-    render_frame_proxy_host_->frame_host_receiver_for_testing()
-        .SwapImplForTesting(this);
-  }
+        render_frame_proxy_host_(rfph),
+        swapped_impl_(
+            render_frame_proxy_host_->frame_host_receiver_for_testing(),
+            this) {}
+
+  ~UpdateViewportIntersectionMessageFilter() override = default;
 
   const blink::mojom::ViewportIntersectionStatePtr& GetIntersectionState()
       const {
@@ -142,6 +147,9 @@ class UpdateViewportIntersectionMessageFilter
   bool msg_received_;
   blink::mojom::ViewportIntersectionStatePtr intersection_state_;
   raw_ptr<content::RenderFrameProxyHost> render_frame_proxy_host_;
+  mojo::test::ScopedSwapImplForTesting<
+      mojo::AssociatedReceiver<blink::mojom::RemoteFrameHost>>
+      swapped_impl_;
 };
 
 // TODO(tonikitoo): Move to fake_remote_frame.h|cc in case it is useful
@@ -207,15 +215,18 @@ class UpdateTextAutosizerInfoProxyObserver
   std::map<RenderFrameProxyHost*, std::unique_ptr<Remote>> remote_frames_;
 };
 
+// Class to intercept incoming TextAutosizerPageInfoChanged messages. The caller
+// has to guarantee that `render_frame_host` lives at least as long as
+// TextAutosizerPageInfoInterceptor.
 class TextAutosizerPageInfoInterceptor
     : public blink::mojom::LocalMainFrameHostInterceptorForTesting {
  public:
   explicit TextAutosizerPageInfoInterceptor(
       RenderFrameHostImpl* render_frame_host)
-      : render_frame_host_(render_frame_host) {
-    render_frame_host_->local_main_frame_host_receiver_for_testing()
-        .SwapImplForTesting(this);
-  }
+      : render_frame_host_(render_frame_host),
+        swapped_impl_(
+            render_frame_host_->local_main_frame_host_receiver_for_testing(),
+            this) {}
 
   ~TextAutosizerPageInfoInterceptor() override = default;
 
@@ -265,6 +276,9 @@ class TextAutosizerPageInfoInterceptor
   std::unique_ptr<base::RunLoop> run_loop_;
   absl::optional<int> target_main_frame_width_;
   absl::optional<float> target_device_scale_adjustment_;
+  mojo::test::ScopedSwapImplForTesting<
+      mojo::AssociatedReceiver<blink::mojom::LocalMainFrameHost>>
+      swapped_impl_;
 };
 
 class SitePerProcessHighDPIBrowserTest : public SitePerProcessBrowserTest {

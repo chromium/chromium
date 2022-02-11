@@ -13655,8 +13655,8 @@ class AllowDialogInterceptor
 
   void Init(RenderFrameHostImpl* render_frame_host) {
     render_frame_host_ = render_frame_host;
-    render_frame_host_->local_frame_host_receiver_for_testing()
-        .SwapImplForTesting(this);
+    std::ignore = render_frame_host_->local_frame_host_receiver_for_testing()
+                      .SwapImplForTesting(this);
   }
 
   blink::mojom::LocalFrameHost* GetForwardingInterface() override {

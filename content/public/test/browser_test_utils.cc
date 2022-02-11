@@ -3471,17 +3471,14 @@ ContextMenuInterceptor::ContextMenuInterceptor(
     ShowBehavior behavior)
     : render_frame_host_impl_(
           static_cast<RenderFrameHostImpl*>(render_frame_host)),
+      swapped_impl_(
+          render_frame_host_impl_->local_frame_host_receiver_for_testing(),
+          this),
       run_loop_(std::make_unique<base::RunLoop>()),
       quit_closure_(run_loop_->QuitClosure()),
-      show_behavior_(behavior) {
-  impl_ = render_frame_host_impl_->local_frame_host_receiver_for_testing()
-              .SwapImplForTesting(this);
-}
+      show_behavior_(behavior) {}
 
-ContextMenuInterceptor::~ContextMenuInterceptor() {
-  render_frame_host_impl_->local_frame_host_receiver_for_testing()
-      .SwapImplForTesting(impl_);
-}
+ContextMenuInterceptor::~ContextMenuInterceptor() = default;
 
 void ContextMenuInterceptor::Wait() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -3496,7 +3493,7 @@ void ContextMenuInterceptor::Reset() {
 }
 
 blink::mojom::LocalFrameHost* ContextMenuInterceptor::GetForwardingInterface() {
-  return impl_;
+  return render_frame_host_impl_;
 }
 
 void ContextMenuInterceptor::ShowContextMenu(
@@ -3517,15 +3514,13 @@ void ContextMenuInterceptor::ShowContextMenu(
 UpdateUserActivationStateInterceptor::UpdateUserActivationStateInterceptor(
     content::RenderFrameHost* render_frame_host)
     : render_frame_host_impl_(
-          static_cast<RenderFrameHostImpl*>(render_frame_host)) {
-  impl_ = render_frame_host_impl_->local_frame_host_receiver_for_testing()
-              .SwapImplForTesting(this);
-}
+          static_cast<RenderFrameHostImpl*>(render_frame_host)),
+      swapped_impl_(
+          render_frame_host_impl_->local_frame_host_receiver_for_testing(),
+          this) {}
 
-UpdateUserActivationStateInterceptor::~UpdateUserActivationStateInterceptor() {
-  render_frame_host_impl_->local_frame_host_receiver_for_testing()
-      .SwapImplForTesting(impl_);
-}
+UpdateUserActivationStateInterceptor::~UpdateUserActivationStateInterceptor() =
+    default;
 
 void UpdateUserActivationStateInterceptor::set_quit_handler(
     base::OnceClosure handler) {
@@ -3534,7 +3529,7 @@ void UpdateUserActivationStateInterceptor::set_quit_handler(
 
 blink::mojom::LocalFrameHost*
 UpdateUserActivationStateInterceptor::GetForwardingInterface() {
-  return impl_;
+  return render_frame_host_impl_;
 }
 
 void UpdateUserActivationStateInterceptor::UpdateUserActivationState(
@@ -3678,16 +3673,12 @@ bool TestGuestAutoresize(WebContents* embedder_web_contents,
 SynchronizeVisualPropertiesInterceptor::SynchronizeVisualPropertiesInterceptor(
     RenderFrameProxyHost* render_frame_proxy_host)
     : render_frame_proxy_host_(render_frame_proxy_host),
-      screen_space_rect_run_loop_(std::make_unique<base::RunLoop>()) {
-  impl_ = render_frame_proxy_host_->frame_host_receiver_for_testing()
-              .SwapImplForTesting(this);
-}
+      screen_space_rect_run_loop_(std::make_unique<base::RunLoop>()),
+      swapped_impl_(render_frame_proxy_host_->frame_host_receiver_for_testing(),
+                    this) {}
 
 SynchronizeVisualPropertiesInterceptor::
-    ~SynchronizeVisualPropertiesInterceptor() {
-  render_frame_proxy_host_->frame_host_receiver_for_testing()
-      .SwapImplForTesting(impl_);
-}
+    ~SynchronizeVisualPropertiesInterceptor() = default;
 
 blink::mojom::RemoteFrameHost*
 SynchronizeVisualPropertiesInterceptor::GetForwardingInterface() {

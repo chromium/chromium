@@ -469,6 +469,7 @@ static_library("test_support") {
     "//media/capture",
     "//media/capture/mojom:image_capture",
     "//mojo/core/embedder",
+    "//mojo/public/cpp/test_support:test_utils",
     "//net:quic_test_tools",
     "//net:simple_quic_tools",
     "//net:test_support",

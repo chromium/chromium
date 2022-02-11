@@ -120,6 +120,31 @@ class BadMessageObserver {
   base::RunLoop run_loop_;
 };
 
+// Creates a scoped swapped implementation of a mojo Receiver. Callers should
+// ensure that `new_impl` lives for longer than the lifetime of the `receiver`.
+// See also `SwapImplForTesting` implementations for each receiver type.
+template <typename T>
+class ScopedSwapImplForTesting {
+ public:
+  using ImplPointerType = typename T::ImplPointerType;
+
+  ScopedSwapImplForTesting(T& receiver, ImplPointerType new_impl)
+      : receiver_(receiver) {
+    old_impl_ = receiver_.SwapImplForTesting(new_impl);
+  }
+
+  ~ScopedSwapImplForTesting() {
+    std::ignore = receiver_.SwapImplForTesting(old_impl_);
+  }
+
+  ScopedSwapImplForTesting(const ScopedSwapImplForTesting&) = delete;
+  ScopedSwapImplForTesting& operator=(const ScopedSwapImplForTesting&) = delete;
+
+ private:
+  T& receiver_;
+  ImplPointerType old_impl_;
+};
+
 }  // namespace test
 }  // namespace mojo
 

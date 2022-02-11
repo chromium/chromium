@@ -8,8 +8,10 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "content/common/frame.mojom-test-utils.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-forward.h"
 
 namespace base {
@@ -55,7 +57,9 @@ class PortalCreatedObserver : public mojom::FrameHostInterceptorForTesting {
   void DidCreatePortal();
 
   raw_ptr<RenderFrameHostImpl> render_frame_host_impl_;
-  raw_ptr<mojom::FrameHost> old_impl_;
+  mojo::test::ScopedSwapImplForTesting<
+      mojo::AssociatedReceiver<mojom::FrameHost>>
+      swapped_impl_;
   base::OnceCallback<void(Portal*)> created_cb_;
   raw_ptr<base::RunLoop> run_loop_ = nullptr;
   raw_ptr<Portal> portal_ = nullptr;

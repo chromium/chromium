@@ -270,7 +270,15 @@ class Receiver {
   void EnableTestingMode() { internal_state_.EnableTestingMode(); }
 
   // Allows test code to swap the interface implementation.
-  ImplPointerType SwapImplForTesting(ImplPointerType new_impl) {
+  //
+  // Returns the existing interface implementation to the caller.
+  //
+  // The caller needs to guarantee that `new_impl` will live longer than
+  // `this` Receiver.  One way to achieve this is to store the returned
+  // `old_impl` and swap it back in when `new_impl` is getting destroyed.
+  // Test code should prefer using `mojo::test::ScopedSwapImplForTesting` if
+  // possible.
+  [[nodiscard]] ImplPointerType SwapImplForTesting(ImplPointerType new_impl) {
     return internal_state_.SwapImplForTesting(std::move(new_impl));
   }
 

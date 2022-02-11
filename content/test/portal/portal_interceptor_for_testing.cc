@@ -31,7 +31,8 @@ PortalInterceptorForTesting* PortalInterceptorForTesting::Create(
   auto interceptor = base::WrapUnique(
       new PortalInterceptorForTesting(render_frame_host_impl, portal));
   auto* raw_interceptor = interceptor.get();
-  portal->SetInterceptorForTesting(std::move(interceptor));
+  // TODO(wfh): determine how to handle this for portal interceptors.
+  std::ignore = portal->SetInterceptorForTesting(std::move(interceptor));
   return raw_interceptor;
 }
 

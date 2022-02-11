@@ -127,10 +127,11 @@ class CONTENT_EXPORT Portal : public blink::mojom::Portal,
   blink::mojom::Portal* GetInterceptorForTesting() const {
     return interceptor_.get();
   }
-  void SetInterceptorForTesting(
+
+  [[nodiscard]] blink::mojom::Portal* SetInterceptorForTesting(
       std::unique_ptr<blink::mojom::Portal> interceptor) {
     interceptor_ = std::move(interceptor);
-    receiver_.SwapImplForTesting(interceptor_.get());
+    return receiver_.SwapImplForTesting(interceptor_.get());
   }
 
   blink::mojom::PortalClient& client() { return *(client_.get()); }

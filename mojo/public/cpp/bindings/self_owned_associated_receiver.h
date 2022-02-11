@@ -76,9 +76,19 @@ class SelfOwnedAssociatedReceiver {
   void FlushForTesting() { receiver_.FlushForTesting(); }
 
   // Allows test code to swap the interface implementation.
-  std::unique_ptr<Interface> SwapImplForTesting(
+  //
+  // Returns the existing interface implementation to the caller.
+  //
+  // The caller needs to guarantee that `new_impl` will live longer than `this`
+  // SelfOwnedAssociatedReceiver.  One way to achieve this is to store the
+  // returned old impl and swap it back in when `new_impl` is getting destroyed.
+  // Test code should prefer using `mojo::test::ScopedSwapImplForTesting` if
+  // possible.
+  [[nodiscard]] std::unique_ptr<Interface> SwapImplForTesting(
       std::unique_ptr<Interface> new_impl) {
-    receiver_.SwapImplForTesting(new_impl.get());
+    // impl_ and receiver_ point to the same thing so the return value can
+    // safely be discarded here as it's returned below.
+    std::ignore = receiver_.SwapImplForTesting(new_impl.get());
     impl_.swap(new_impl);
     return new_impl;
   }

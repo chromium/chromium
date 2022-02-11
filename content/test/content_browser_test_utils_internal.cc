@@ -532,7 +532,8 @@ ShowPopupWidgetWaiter::ShowPopupWidgetWaiter(WebContentsImpl* web_contents,
 
 ShowPopupWidgetWaiter::~ShowPopupWidgetWaiter() {
   if (auto* rwhi = RenderWidgetHostImpl::FromID(process_id_, routing_id_)) {
-    rwhi->popup_widget_host_receiver_for_testing().SwapImplForTesting(rwhi);
+    std::ignore =
+        rwhi->popup_widget_host_receiver_for_testing().SwapImplForTesting(rwhi);
   }
   if (frame_host_)
     frame_host_->SetCreateNewPopupCallbackForTesting(base::NullCallback());
@@ -568,8 +569,9 @@ void ShowPopupWidgetWaiter::DidCreatePopupWidget(
     RenderWidgetHostImpl* render_widget_host) {
   process_id_ = render_widget_host->GetProcess()->GetID();
   routing_id_ = render_widget_host->GetRoutingID();
-  render_widget_host->popup_widget_host_receiver_for_testing()
-      .SwapImplForTesting(this);
+  // Swapped back in destructor from process_id_ and routing_id_ lookup.
+  std::ignore = render_widget_host->popup_widget_host_receiver_for_testing()
+                    .SwapImplForTesting(this);
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
