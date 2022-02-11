@@ -2158,6 +2158,9 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_DEFAULT_PAGE_MODE_TIP" desc="The text of the tip explaining to the user how to change the mode (desktop/mobile) in which the websites will be requested">
         You can change the default site view to desktop in Settings > Content Settings
       </message>
+      <message name="IDS_IOS_DEFAULT_PAGE_MODE_TIP_VOICE_OVER" desc="The text of the tip explaining to the user how to change the mode (desktop/mobile) in which the websites will be requested. [Read by Text-to-Speech]">
+        You can change the default site view to desktop in Settings then Content Settings
+      </message>
       <message name="IDS_IOS_SEARCH_ENGINE_SETTING_CUSTOM_SECTION_HEADER" desc="The header for custom search engines section in Search Engine selection setting [iOS only]">
         Recently Visited
       </message>

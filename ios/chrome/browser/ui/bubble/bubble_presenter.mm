@@ -238,7 +238,7 @@ const CGFloat kBubblePresentationDelay = 1;
                     alignment:BubbleAlignmentTrailing
                          text:text
         voiceOverAnnouncement:l10n_util::GetNSString(
-                                  IDS_IOS_DEFAULT_PAGE_MODE_TIP)
+                                  IDS_IOS_DEFAULT_PAGE_MODE_TIP_VOICE_OVER)
                   anchorPoint:toolsMenuAnchor];
   if (!presenter)
     return;
