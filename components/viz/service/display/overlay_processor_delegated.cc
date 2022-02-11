@@ -104,7 +104,7 @@ bool OverlayProcessorDelegated::DisableSplittingQuads() const {
   return true;
 }
 
-constexpr size_t kTooManyQuads = 128;
+constexpr size_t kTooManyQuads = 64;
 
 DBG_FLAG_FBOOL("delegated.enable.dup_id", enable_dup_id)
 DBG_FLAG_FBOOL("delegated.disable.delegation", disable_delegation)
