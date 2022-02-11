@@ -652,6 +652,7 @@ def main(args):
 
   if options.desugar_jdk_libs_json:
     dex_cmd += ['--desugared-lib', options.desugar_jdk_libs_json]
+    input_paths += [options.desugar_jdk_libs_json]
   if options.force_enable_assertions:
     dex_cmd += ['--force-enable-assertions']
 
