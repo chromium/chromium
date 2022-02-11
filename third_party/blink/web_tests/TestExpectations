@@ -7546,6 +7546,9 @@ crbug.com/1271296 virtual/no-forced-frame-updates/external/wpt/html/dom/render-b
 crbug.com/1271296 virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/script-inserted-module-script.tentative.html [ Skip ]
 crbug.com/1271296 virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/script-inserted-script.html [ Skip ]
 
+# Need to unblock scripts on style elements when media doesn't match
+crbug.com/1296736 external/wpt/html/semantics/document-metadata/interactions-of-styling-and-scripting/style-element-media-not-match-does-not-block-script.html [ Failure ]
+
 # Sheriff 2022-02-07
 crbug.com/1289759 [ Linux ] http/tests/loading/slow-parsing-subframe.html [ Failure Pass ]
 
