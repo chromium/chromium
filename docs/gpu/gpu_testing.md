@@ -341,7 +341,6 @@ of all suites and resulting step names as of April 15th 2021:
   * `webgl_conformance_gles_passthrough_tests`
   * `webgl_conformance_metal_passthrough_tests`
   * `webgl_conformance_swangle_passthrough_tests`
-  * `webgl_conformance_swiftshader_validating_tests`
   * `webgl_conformance_tests`
   * `webgl_conformance_validating_tests`
   * `webgl_conformance_vulkan_passthrough_tests`
