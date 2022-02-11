@@ -291,6 +291,38 @@ TEST_F(UrlParamFiltererTest, FilterUrlWithNestedUrlNotNeedingFiltering) {
   ASSERT_EQ(result.filtered_url, expected);
   ASSERT_EQ(result.filtered_param_count, 1);
 }
+TEST_F(UrlParamFiltererTest, FilterUrlWithNestedUrlAndDuplicates) {
+  GURL source = GURL{"https://source.xyz"};
+  GURL destination = GURL{
+      "https://"
+      "subdomain.source.xyz?destination=https%3A%2F%2Fdestination.xyz%2F%"
+      "3Fplzblock1%"
+      "3D123%26nochange%3Dasdf%26plzblock1%3D123&PLZBLOCK1=321&nochange=asdf&"
+      "PLZBLOCK1=321"};
+  url_param_filter::ClassificationMap source_classification_map =
+      url_param_filter::CreateClassificationMapForTesting(
+          {{"source.xyz", {"plzblock"}}},
+          url_param_filter::FilterClassification_SiteRole::
+              FilterClassification_SiteRole_SOURCE);
+  url_param_filter::ClassificationMap destination_classification_map =
+      url_param_filter::CreateClassificationMapForTesting(
+          {{"destination.xyz", {"plzblock1"}}, {"source.xyz", {"plzblock1"}}},
+          url_param_filter::FilterClassification_SiteRole::
+              FilterClassification_SiteRole_DESTINATION);
+
+  // The nested URL pattern is commonly observed; we do not want the parameter
+  // to leak.
+  GURL expected = GURL{
+      "https://"
+      "subdomain.source.xyz?destination=https%3A%2F%2Fdestination.xyz%2F%"
+      "3Fnochange%"
+      "3Dasdf&nochange=asdf"};
+  url_param_filter::FilterResult result = url_param_filter::FilterUrl(
+      source, destination, source_classification_map,
+      destination_classification_map);
+  ASSERT_EQ(result.filtered_url, expected);
+  ASSERT_EQ(result.filtered_param_count, 4);
+}
 
 TEST_F(UrlParamFiltererTest, FeatureDeactivated) {
   GURL source = GURL{"http://source.xyz"};
