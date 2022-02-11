@@ -418,7 +418,7 @@ class FrameImpl : public fuchsia::web::Frame,
 
   // TODO(crbug.com/1291330): Remove.
   // Used to control which accessibility bridge version is live.
-  bool use_v2_accessibility_bridge_ = false;
+  bool use_v2_accessibility_bridge_ = true;
 
   base::WeakPtrFactory<FrameImpl> weak_factory_{this};
 };
