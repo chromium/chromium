@@ -22,7 +22,7 @@ namespace eche_app {
 class EcheConnectorImpl : public EcheConnector,
                           public FeatureStatusProvider::Observer {
  public:
-  EcheConnectorImpl(EcheFeatureStatusProvider* eche_feature_status_provider,
+  EcheConnectorImpl(FeatureStatusProvider* eche_feature_status_provider,
                     secure_channel::ConnectionManager* connection_manager);
   ~EcheConnectorImpl() override;
 
@@ -31,6 +31,7 @@ class EcheConnectorImpl : public EcheConnector,
   void SendAppsSetupRequest() override;
   void GetAppsAccessStateRequest() override;
   void AttemptNearbyConnection() override;
+  int GetMessageCount();
 
  private:
   // FeatureStatusProvider::Observer:
@@ -38,7 +39,7 @@ class EcheConnectorImpl : public EcheConnector,
 
   void FlushQueue();
 
-  EcheFeatureStatusProvider* eche_feature_status_provider_;
+  FeatureStatusProvider* eche_feature_status_provider_;
   secure_channel::ConnectionManager* connection_manager_;
   base::queue<std::string> message_queue_;
 };

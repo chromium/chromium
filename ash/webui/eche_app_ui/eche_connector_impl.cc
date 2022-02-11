@@ -16,7 +16,7 @@ namespace ash {
 namespace eche_app {
 
 EcheConnectorImpl::EcheConnectorImpl(
-    EcheFeatureStatusProvider* eche_feature_status_provider,
+    FeatureStatusProvider* eche_feature_status_provider,
     secure_channel::ConnectionManager* connection_manager)
     : eche_feature_status_provider_(eche_feature_status_provider),
       connection_manager_(connection_manager) {
@@ -95,11 +95,15 @@ void EcheConnectorImpl::OnFeatureStatusChanged() {
 }
 
 void EcheConnectorImpl::FlushQueue() {
-  const int size = message_queue_.size();
+  const int size = GetMessageCount();
   for (int i = 0; i < size; i++) {
     connection_manager_->SendMessage(message_queue_.front());
     message_queue_.pop();
   }
+}
+
+int EcheConnectorImpl::GetMessageCount() {
+  return message_queue_.size();
 }
 
 }  // namespace eche_app
