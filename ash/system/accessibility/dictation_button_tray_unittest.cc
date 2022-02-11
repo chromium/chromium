@@ -219,10 +219,9 @@ class DictationButtonTraySodaTest
     return GetTray()->progress_indicator_.get();
   }
 
-  float GetProgressIndicatorProgress() {
+  float GetProgressIndicatorProgress() const {
     DCHECK(GetTray()->progress_indicator_);
-    absl::optional<float> progress =
-        GetTray()->progress_indicator_->CalculateProgress();
+    absl::optional<float> progress = GetTray()->progress_indicator_->progress();
     DCHECK(progress.has_value());
     return progress.value();
   }
@@ -238,9 +237,9 @@ class DictationButtonTraySodaTest
            layer->GetTargetTransform() == gfx::Transform();
   }
 
-  bool IsProgressIndicatorVisible() {
-    DCHECK(GetTray()->progress_indicator_);
-    return GetTray()->progress_indicator_->IsVisible();
+  bool IsProgressIndicatorVisible() const {
+    const float progress = GetProgressIndicatorProgress();
+    return progress > 0.f && progress < 1.f;
   }
 
  private:
@@ -266,12 +265,12 @@ TEST_P(DictationButtonTraySodaTest, UpdateOnSpeechRecognitionDownloadChanged) {
   EXPECT_EQ(0, tray->download_progress());
   EXPECT_TRUE(tray->GetEnabled());
   EXPECT_EQ(base::UTF8ToUTF16(kEnabledTooltip), image->GetTooltipText());
-  EXPECT_FALSE(IsProgressIndicatorVisible());
 
   // The tray icon should be visible when the download is not in-progress.
   HoldingSpaceProgressIndicator* progress_indicator = GetProgressIndicator();
   ProgressIndicatorWaiter().WaitForProgress(
       progress_indicator, HoldingSpaceProgressIndicator::kProgressComplete);
+  EXPECT_FALSE(IsProgressIndicatorVisible());
   EXPECT_TRUE(IsImageVisible());
 
   // Any number 0 < number < 100 means that download is in-progress.
@@ -279,24 +278,22 @@ TEST_P(DictationButtonTraySodaTest, UpdateOnSpeechRecognitionDownloadChanged) {
   EXPECT_EQ(50, tray->download_progress());
   EXPECT_FALSE(tray->GetEnabled());
   EXPECT_EQ(base::UTF8ToUTF16(kDisabledTooltip), image->GetTooltipText());
-  EXPECT_TRUE(IsProgressIndicatorVisible());
-  EXPECT_EQ(0.5f, GetProgressIndicatorProgress());
 
   // If in-progress animation v2 is enabled, the tray icon should *not* be
   // visible when the download is in progress.
   ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.5f);
+  EXPECT_TRUE(IsProgressIndicatorVisible());
   EXPECT_NE(IsImageVisible(), IsInProgressAnimationV2Enabled());
 
   tray->UpdateOnSpeechRecognitionDownloadChanged(/*download_progress=*/70);
   EXPECT_EQ(70, tray->download_progress());
   EXPECT_FALSE(tray->GetEnabled());
   EXPECT_EQ(base::UTF8ToUTF16(kDisabledTooltip), image->GetTooltipText());
-  EXPECT_TRUE(IsProgressIndicatorVisible());
-  EXPECT_EQ(0.7f, GetProgressIndicatorProgress());
 
   // If in-progress animation v2 is enabled, the tray icon should *not* be
   // visible when the download is in progress.
   ProgressIndicatorWaiter().WaitForProgress(progress_indicator, 0.7f);
+  EXPECT_TRUE(IsProgressIndicatorVisible());
   EXPECT_NE(IsImageVisible(), IsInProgressAnimationV2Enabled());
 
   // Similar to 0, a value of 100 means that download is not in-progress.
@@ -304,11 +301,11 @@ TEST_P(DictationButtonTraySodaTest, UpdateOnSpeechRecognitionDownloadChanged) {
   EXPECT_EQ(100, tray->download_progress());
   EXPECT_TRUE(tray->GetEnabled());
   EXPECT_EQ(base::UTF8ToUTF16(kEnabledTooltip), image->GetTooltipText());
-  EXPECT_FALSE(IsProgressIndicatorVisible());
 
   // The tray icon should be visible when the download is not in-progress.
   ProgressIndicatorWaiter().WaitForProgress(
       progress_indicator, HoldingSpaceProgressIndicator::kProgressComplete);
+  EXPECT_FALSE(IsProgressIndicatorVisible());
   EXPECT_TRUE(IsImageVisible());
 }
 

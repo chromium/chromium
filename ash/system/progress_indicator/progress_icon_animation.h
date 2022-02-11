@@ -31,8 +31,8 @@ class ASH_EXPORT ProgressIconAnimation : public ProgressIndicatorAnimation {
   void UpdateAnimatableProperties(double fraction) override;
 
   // Animatable properties.
-  float inner_icon_translate_y_scale_factor_ = 0.f;
-  float inner_ring_stroke_width_scale_factor_ = 1.f;
+  float inner_icon_translate_y_scale_factor_ = -0.5f;
+  float inner_ring_stroke_width_scale_factor_ = 0.f;
 };
 
 }  // namespace ash

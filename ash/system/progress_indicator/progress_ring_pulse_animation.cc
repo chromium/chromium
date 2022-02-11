@@ -72,6 +72,8 @@ void ProgressRingPulseAnimation::UpdateAnimatableProperties(
     float* start_position,
     float* end_position,
     float* opacity) {
+  *end_position = 1.f;
+
   // Loop over all animation key frames until the correct key frames for the
   // current animation `fraction` are found.
   for (size_t i = 1u; i < base::size(kAnimationKeyFrames); ++i) {

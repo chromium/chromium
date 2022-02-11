@@ -55,7 +55,7 @@ class ASH_EXPORT ProgressRingAnimation : public ProgressIndicatorAnimation {
 
   // Animatable properties.
   float start_position_ = 0.f;
-  float end_position_ = 1.f;
+  float end_position_ = 0.f;
   float opacity_ = 1.f;
 };
 

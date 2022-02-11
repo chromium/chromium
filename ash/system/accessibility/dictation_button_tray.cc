@@ -49,33 +49,6 @@ gfx::ImageSkia GetIconImage(bool enabled) {
 
 }  // namespace
 
-DictationProgressIndicator::DictationProgressIndicator(
-    const DictationButtonTray* tray)
-    : HoldingSpaceProgressIndicator(/*animation_registry=*/nullptr,
-                                    /*animation_key=*/tray),
-      tray_(tray) {}
-
-bool DictationProgressIndicator::IsVisible() {
-  absl::optional<float> progress = CalculateProgress();
-  if (!progress.has_value())
-    return false;
-
-  if (progress.value() == 0.f || progress.value() == 1.f)
-    return false;
-
-  return true;
-}
-
-absl::optional<float> DictationProgressIndicator::CalculateProgress() const {
-  int progress = tray_->download_progress();
-  bool download_in_progress = progress > 0 && progress < 100;
-  // If download is in-progress, return the progress as a decimal. Otherwise,
-  // the progress indicator shouldn't be painted.
-  return (download_in_progress)
-             ? static_cast<double>(progress) / static_cast<double>(100)
-             : HoldingSpaceProgressIndicator::kProgressComplete;
-}
-
 DictationButtonTray::DictationButtonTray(Shelf* shelf)
     : TrayBackgroundView(shelf),
       icon_(new views::ImageView()),
@@ -270,7 +243,17 @@ void DictationButtonTray::UpdateOnSpeechRecognitionDownloadChanged(
     // A progress indicator that is only visible when a SODA download is
     // in-progress and a subscription to receive notification of progress
     // changed events.
-    progress_indicator_ = std::make_unique<DictationProgressIndicator>(this);
+    progress_indicator_ = HoldingSpaceProgressIndicator::CreateDefaultInstance(
+        base::BindRepeating(
+            [](DictationButtonTray* tray) -> absl::optional<float> {
+              // If download is in-progress, return the progress as a decimal.
+              // Otherwise, the progress indicator shouldn't be painted.
+              const int progress = tray->download_progress();
+              return (progress > 0 && progress < 100)
+                         ? progress / 100.f
+                         : HoldingSpaceProgressIndicator::kProgressComplete;
+            },
+            base::Unretained(this)));
     progress_changed_subscription_ =
         progress_indicator_->AddProgressChangedCallback(base::BindRepeating(
             &DictationButtonTray::UpdateIconOpacityAndTransform,
