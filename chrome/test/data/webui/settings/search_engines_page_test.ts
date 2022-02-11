@@ -157,6 +157,7 @@ suite('SearchEngineEntryTests', function() {
     document.body.innerHTML = '';
     entry = document.createElement('settings-search-engine-entry');
     entry.set('engine', searchEngine);
+    entry.set('isActiveSearchEnginesFlagEnabled', false);
     document.body.appendChild(entry);
   });
 
@@ -446,6 +447,7 @@ suite('SearchEnginePageTests', function() {
       others: searchEnginesInfo.others.slice(),
       extensions: searchEnginesInfo.extensions.slice(),
     });
+    loadTimeData.overrideValues({'isActiveSearchEnginesFlagEnabled': false});
     SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = '';
     page = document.createElement('settings-search-engines-page');
