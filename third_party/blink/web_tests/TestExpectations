@@ -7234,9 +7234,6 @@ crbug.com/1263732 http/tests/devtools/tracing/timeline-paint/timeline-paint-imag
 # Sheriff 2021-10-29
 crbug.com/1264670 [ Linux ] http/tests/devtools/resource-tree/resource-tree-frame-add.js [ Failure Pass ]
 crbug.com/1264775 [ Mac11-arm64 ] external/wpt/webrtc-stats/supported-stats.html [ Failure ]
-crbug.com/1264802 [ Win7 ] fast/forms/suggestion-picker/date-suggestion-picker-appearance.html [ Failure Pass ]
-crbug.com/1264802 [ Win7 ] fast/forms/suggestion-picker/month-suggestion-picker-appearance.html [ Failure Pass ]
-crbug.com/1264802 [ Win7 ] fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance.html [ Failure Pass ]
 crbug.com/1264775 [ Mac10.14 ] external/wpt/webrtc-stats/supported-stats.html [ Failure ]
 
 # Sheriff 2021-11-02
@@ -7256,7 +7253,6 @@ crbug.com/1267736 [ Win ] http/tests/devtools/bindings/jssourcemap-bindings-over
 
 # Sheriff 2021-11-09
 crbug.com/1269535 http/tests/misc/resource-timing-sizes-multipart.html [ Failure Pass Timeout ]
-crbug.com/1267734 [ Win7 ] fast/forms/suggestion-picker/week-suggestion-picker-appearance.html [ Failure Pass ]
 
 # This test is flaky on all platforms
 crbug.com/1191846 [ Fuchsia ] virtual/prerender/external/wpt/speculation-rules/prerender/local-storage.html [ Failure Pass ]
@@ -7426,8 +7422,19 @@ crbug.com/1229095 [ Linux ] virtual/gpu/fast/canvas/canvas-getImageData.html [ F
 crbug.com/1280736 [ Win10.20h2 ] http/tests/inspector-protocol/network/blocked-setcookie-same-site-strict.js [ Pass Timeout ]
 crbug.com/1280736 [ Win10.20h2 ] http/tests/inspector-protocol/network/blocked-setcookie-same-site-lax.js [ Pass Timeout ]
 
-# crbug.com/1285304 issues (Note - because color-scheme is in SlowTests, this must be Skip):
+# crbug.com/1270510 Picker appearance tests that are flaky
+# Note - because some of these are in SlowTests, they need to be Skipped.
 crbug.com/1285304 fast/forms/color-scheme/suggestion-picker/time-suggestion-picker-appearance.html [ Failure Pass Skip Timeout ]
+crbug.com/1293965 virtual/scroll-unification/fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance-with-scroll-bar.html [ Skip ]
+crbug.com/1293878 [ Mac ] virtual/controls-refresh-hc/fast/forms/color-scheme/datetimelocal-picker/datetimelocal-picker-appearance.html [ Failure Pass ]
+crbug.com/1293965 [ Mac ] fast/forms/month/month-picker-appearance-step.html [ Skip ]
+crbug.com/1293965 [ Mac ] fast/forms/color-scheme/week-picker/week-picker-appearance-highlight-es.html [ Skip ]
+crbug.com/1295712 [ Mac10.13 ] fast/forms/color-scheme/datetimelocal-picker/datetimelocal-picker-appearance.html [ Failure ]
+crbug.com/1295733 [ Mac11-arm64 ] fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance-with-scroll-bar.html [ Failure ]
+crbug.com/1264802 [ Win7 ] fast/forms/suggestion-picker/date-suggestion-picker-appearance.html [ Failure Pass ]
+crbug.com/1264802 [ Win7 ] fast/forms/suggestion-picker/month-suggestion-picker-appearance.html [ Failure Pass ]
+crbug.com/1264802 [ Win7 ] fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance.html [ Failure Pass ]
+crbug.com/1293965 [ Win7 ] fast/forms/suggestion-picker/week-suggestion-picker-appearance.html [ Failure Pass ]
 
 # Sheriff 2022-01-04
 crbug.com/1283865 external/wpt/webmessaging/without-ports/020.html [ Failure Pass ]
@@ -7549,12 +7556,6 @@ crbug.com/1271296 virtual/no-forced-frame-updates/external/wpt/html/dom/render-b
 crbug.com/1271296 virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/script-inserted-module-script.tentative.html [ Skip ]
 crbug.com/1271296 virtual/no-forced-frame-updates/external/wpt/html/dom/render-blocking/script-inserted-script.html [ Skip ]
 
-# Sheriff 2022-02-03
-crbug.com/1293878 [ Mac ] virtual/controls-refresh-hc/fast/forms/color-scheme/datetimelocal-picker/datetimelocal-picker-appearance.html [ Failure Pass ]
-crbug.com/1293965 virtual/scroll-unification/fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance-with-scroll-bar.html [ Skip ]
-crbug.com/1293965 [ Mac ] fast/forms/month/month-picker-appearance-step.html [ Skip ]
-crbug.com/1293965 [ Mac ] fast/forms/color-scheme/week-picker/week-picker-appearance-highlight-es.html [ Skip ]
-
 # Sheriff 2022-02-07
 crbug.com/1289759 [ Linux ] http/tests/loading/slow-parsing-subframe.html [ Failure Pass ]
 
@@ -7601,8 +7602,6 @@ crbug.com/1295317 [ Mac11-arm64 ] virtual/scalefactor200/css3/filters/effect-ref
 # Sheriff 2022-02-09
 crbug.com/1295711 [ Win7 ] virtual/prerender/external/wpt/speculation-rules/prerender/restriction-window-resize.html [ Failure Pass ]
 crbug.com/1295707 [ Mac11 ] virtual/shared_array_buffer_on_desktop/http/tests/devtools/elements/elements-treeoutline-copy.js [ Failure Pass ]
-crbug.com/1295712 [ Mac10.13 ] fast/forms/color-scheme/datetimelocal-picker/datetimelocal-picker-appearance.html [ Failure ]
-crbug.com/1295733 [ Mac11-arm64 ] fast/forms/suggestion-picker/datetimelocal-suggestion-picker-appearance-with-scroll-bar.html [ Failure ]
 
 # Disable to skip performance test caused by potential O(n^2) problem in AXObjectCacheImpl::ChildrenChanged
 crbug.com/1293714 external/wpt/css/selectors/invalidation/has-complexity.html [ Skip ]
