@@ -59,7 +59,7 @@ namespace media {
 
 // Mac specific limits for minimum and maximum frame rate.
 const float kMinFrameRate = 1.0f;
-const float kMaxFrameRate = 30.0f;
+const float kMaxFrameRate = 60.0f;
 
 // In device identifiers, the USB VID and PID are stored in 4 bytes each.
 const size_t kVidPidSize = 4;
