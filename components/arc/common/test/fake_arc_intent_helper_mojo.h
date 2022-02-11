@@ -23,6 +23,7 @@ class FakeArcIntentHelperMojo : public ArcIntentHelperMojoDelegate {
   // ArcIntentHelperMojoDelegate:
   bool IsArcAvailable() override;
   bool IsRequestUrlHandlerListAvailable() override;
+  bool IsRequestTextSelectionActionsAvailable() override;
   bool RequestUrlHandlerList(const std::string& url,
                              RequestUrlHandlerListCallback callback) override;
   bool RequestTextSelectionActions(

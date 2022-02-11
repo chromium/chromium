@@ -76,6 +76,29 @@ void StartSmartSelectionActionMenu::InitMenu(
     return;
 
   DCHECK(delegate_);
+  if (!delegate_->IsRequestTextSelectionActionsAvailable()) {
+    // RequestTextSelectionActions is either not supported or not yet ready.
+    // In this case, immediately stop menu initialization instead of calling
+    // callback HandleTextSelectionActions with empty result.
+    //
+    // This conditions is required to avoid accessing to null menu due to the
+    // timing issue.
+    //
+    // In Lacros, RequestTextSelectionActions API will return false
+    // synchronously when mojo API is not supported in Lacros-side. In this
+    // case, the context menu is not initialized yet, so Lacros tries to access
+    // to null menu in HandleTextSelectionActions. To avoid this, we skip the
+    // following operation when RequestTextSelectionActions API is not supported
+    // in Lacros-side. Note that we can ignore the case where
+    // RequestTextSelectionActions API fails remotely since it runs
+    // asynchronously anyway.
+    //
+    // In Ash, it will always return false synchronously when mojo API is not
+    // supported in Ash-side or ARC-side. In both cases, we need to skip the
+    // following operation with the same reason above.
+    return;
+  }
+
   if (!delegate_->RequestTextSelectionActions(
           converted_text, ui::GetSupportedResourceScaleFactors().back(),
           base::BindOnce(
@@ -132,16 +155,6 @@ void StartSmartSelectionActionMenu::ExecuteCommand(int command_id) {
 void StartSmartSelectionActionMenu::HandleTextSelectionActions(
     std::vector<ArcIntentHelperMojoDelegate::TextSelectionAction> actions) {
   actions_ = std::move(actions);
-
-  // If there is no item to add to menu, the following steps can be skipped.
-  //
-  // This condition is for avoiding accessing to null menu.
-  // Menu might be null when RequestTextSelectionActions runs synchronously and
-  // menu is not yet created. This might happen when RequestTextSelectionActions
-  // API is not sent via mojo, and it can be detected by checking if the result
-  // given by RequestTextSelectionActions is empty.
-  if (actions_.empty())
-    return;
 
   for (size_t i = 0; i < actions_.size(); ++i) {
     proxy_->UpdateMenuItem(

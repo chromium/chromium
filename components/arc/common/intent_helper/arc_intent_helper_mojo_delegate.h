@@ -119,6 +119,9 @@ class ArcIntentHelperMojoDelegate {
   // Returns true if RequestUrlHandlerList is available.
   virtual bool IsRequestUrlHandlerListAvailable() = 0;
 
+  // Returns true if RequestTextSelectionActions is available.
+  virtual bool IsRequestTextSelectionActionsAvailable() = 0;
+
   // Calls RequestUrlHandlerList mojo API.
   virtual bool RequestUrlHandlerList(
       const std::string& url,

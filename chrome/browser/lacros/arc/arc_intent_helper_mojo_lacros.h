@@ -27,6 +27,7 @@ class ArcIntentHelperMojoLacros : public ArcIntentHelperMojoDelegate {
   // Returns true if ARC is available.
   bool IsArcAvailable() override;
   bool IsRequestUrlHandlerListAvailable() override;
+  bool IsRequestTextSelectionActionsAvailable() override;
 
   // Calls RequestUrlHandlerList mojo API.
   bool RequestUrlHandlerList(const std::string& url,

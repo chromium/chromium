@@ -46,6 +46,18 @@ bool ArcIntentHelperMojoAsh::IsRequestUrlHandlerListAvailable() {
   return instance;
 }
 
+bool ArcIntentHelperMojoAsh::IsRequestTextSelectionActionsAvailable() {
+  auto* arc_service_manager = ArcServiceManager::Get();
+  arc::mojom::IntentHelperInstance* instance = nullptr;
+
+  if (arc_service_manager) {
+    instance = ARC_GET_INSTANCE_FOR_METHOD(
+        arc_service_manager->arc_bridge_service()->intent_helper(),
+        RequestTextSelectionActions);
+  }
+  return instance;
+}
+
 bool ArcIntentHelperMojoAsh::RequestUrlHandlerList(
     const std::string& url,
     RequestUrlHandlerListCallback callback) {

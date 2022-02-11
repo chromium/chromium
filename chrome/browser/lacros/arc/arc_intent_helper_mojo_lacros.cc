@@ -31,6 +31,14 @@ bool ArcIntentHelperMojoLacros::IsRequestUrlHandlerListAvailable() {
                      kRequestUrlHandlerListMinVersion};
 }
 
+bool ArcIntentHelperMojoLacros::IsRequestTextSelectionActionsAvailable() {
+  auto* service = chromeos::LacrosService::Get();
+  return service && service->IsAvailable<crosapi::mojom::Arc>() &&
+         service->GetInterfaceVersion(crosapi::mojom::Arc::Uuid_) >=
+             int{crosapi::mojom::Arc::MethodMinVersions::
+                     kRequestTextSelectionActionsMinVersion};
+}
+
 bool ArcIntentHelperMojoLacros::RequestUrlHandlerList(
     const std::string& url,
     RequestUrlHandlerListCallback callback) {

@@ -27,6 +27,7 @@ class ArcIntentHelperMojoAsh : public ArcIntentHelperMojoDelegate {
   // Returns true if ARC is available.
   bool IsArcAvailable() override;
   bool IsRequestUrlHandlerListAvailable() override;
+  bool IsRequestTextSelectionActionsAvailable() override;
 
   bool RequestUrlHandlerList(const std::string& url,
                              RequestUrlHandlerListCallback callback) override;

@@ -17,6 +17,10 @@ bool FakeArcIntentHelperMojo::IsRequestUrlHandlerListAvailable() {
   return true;
 }
 
+bool FakeArcIntentHelperMojo::IsRequestTextSelectionActionsAvailable() {
+  return true;
+}
+
 bool FakeArcIntentHelperMojo::RequestUrlHandlerList(
     const std::string& url,
     RequestUrlHandlerListCallback callback) {
