@@ -413,6 +413,7 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
         await selectDevice(device.deviceProperties);
         const deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();
         deviceHandler.completePairDevice(/*success=*/ false);
+        await flushTasks();
 
         // Simulate pairing cancelation.
         await simulateCancelation();

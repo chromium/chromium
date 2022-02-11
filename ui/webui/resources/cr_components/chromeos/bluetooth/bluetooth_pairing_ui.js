@@ -422,10 +422,7 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     this.pairingDelegateReceiver_ = null;
 
     if (result === chromeos.bluetoothConfig.mojom.PairingResult.kSuccess) {
-      this.dispatchEvent(new CustomEvent('finished', {
-        bubbles: true,
-        composed: true,
-      }));
+      this.closeDialog_();
       return;
     }
 
@@ -592,23 +589,22 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     this.devicePendingPairing_ = null;
     if (this.pairingDelegateReceiver_) {
       this.pairingDelegateReceiver_.$.close();
-    }
-
-    // Canceling from any page other than |DEVICE_SELECTION_PAGE| should
-    // return back to |DEVICE_SELECTION_PAGE|. This case is handled when
-    // pairDevice promise is returned in handlePairDeviceResult_().
-    // pairDevice promise is returned when close() is called above. If we are
-    // on |DEVICE_SELECTION_PAGE|, canceling closes the pairing dialog.
-    if (this.selectedPageId_ ===
-        BluetoothPairingSubpageId.DEVICE_SELECTION_PAGE) {
-      this.dispatchEvent(new CustomEvent('finished', {
-        bubbles: true,
-        composed: true,
-      }));
+      this.finishPendingCallbacksForTest_();
       return;
     }
 
-    this.finishPendingCallbacksForTest_();
+    // If there is no receiver, this means pairing was not initiated and we
+    // we are currently in DEVICE_SELECTION_PAGE or something went wrong and
+    // |pairingDelegateReceiver_| was not instantiated. (b/218368694)
+    this.closeDialog_();
+  }
+
+  /** @private */
+  closeDialog_() {
+    this.dispatchEvent(new CustomEvent('finished', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   /** @private */
