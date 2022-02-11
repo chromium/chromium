@@ -518,10 +518,10 @@ void WebViewGuest::GuestReady() {
 void WebViewGuest::GuestSizeChangedDueToAutoSize(const gfx::Size& old_size,
                                                  const gfx::Size& new_size) {
   auto args = std::make_unique<base::DictionaryValue>();
-  args->SetInteger(webview::kOldHeight, old_size.height());
-  args->SetInteger(webview::kOldWidth, old_size.width());
-  args->SetInteger(webview::kNewHeight, new_size.height());
-  args->SetInteger(webview::kNewWidth, new_size.width());
+  args->SetIntKey(webview::kOldHeight, old_size.height());
+  args->SetIntKey(webview::kOldWidth, old_size.width());
+  args->SetIntKey(webview::kNewHeight, new_size.height());
+  args->SetIntKey(webview::kNewWidth, new_size.width());
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventSizeChanged, std::move(args)));
 }
@@ -600,10 +600,10 @@ void WebViewGuest::LoadAbort(bool is_top_level,
                              const GURL& url,
                              int error_code) {
   auto args = std::make_unique<base::DictionaryValue>();
-  args->SetBoolean(guest_view::kIsTopLevel, is_top_level);
-  args->SetString(guest_view::kUrl, url.possibly_invalid_spec());
-  args->SetInteger(guest_view::kCode, error_code);
-  args->SetString(guest_view::kReason, net::ErrorToShortString(error_code));
+  args->SetBoolKey(guest_view::kIsTopLevel, is_top_level);
+  args->SetStringKey(guest_view::kUrl, url.possibly_invalid_spec());
+  args->SetIntKey(guest_view::kCode, error_code);
+  args->SetStringKey(guest_view::kReason, net::ErrorToShortString(error_code));
   DispatchEventToView(std::make_unique<GuestViewEvent>(webview::kEventLoadAbort,
                                                        std::move(args)));
 }
@@ -618,7 +618,8 @@ void WebViewGuest::CreateNewGuestWebViewWindow(
   const std::string storage_partition_id =
       GetStoragePartitionIdFromPartitionConfig(storage_partition_config);
   base::DictionaryValue create_params;
-  create_params.SetString(webview::kStoragePartitionId, storage_partition_id);
+  create_params.SetStringKey(webview::kStoragePartitionId,
+                             storage_partition_id);
 
   guest_manager->CreateGuest(
       WebViewGuest::Type, embedder_web_contents(), create_params,
@@ -647,8 +648,8 @@ void WebViewGuest::RendererResponsive(
     WebContents* source,
     content::RenderWidgetHost* render_widget_host) {
   auto args = std::make_unique<base::DictionaryValue>();
-  args->SetInteger(webview::kProcessId,
-                   render_widget_host->GetProcess()->GetID());
+  args->SetIntKey(webview::kProcessId,
+                  render_widget_host->GetProcess()->GetID());
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventResponsive, std::move(args)));
 }
@@ -658,8 +659,8 @@ void WebViewGuest::RendererUnresponsive(
     content::RenderWidgetHost* render_widget_host,
     base::RepeatingClosure hang_monitor_restarter) {
   auto args = std::make_unique<base::DictionaryValue>();
-  args->SetInteger(webview::kProcessId,
-                   render_widget_host->GetProcess()->GetID());
+  args->SetIntKey(webview::kProcessId,
+                  render_widget_host->GetProcess()->GetID());
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventUnresponsive, std::move(args)));
 }
@@ -807,23 +808,23 @@ void WebViewGuest::DidFinishNavigation(
   }
 
   auto args = std::make_unique<base::DictionaryValue>();
-  args->SetString(guest_view::kUrl, navigation_handle->GetURL().spec());
-  args->SetString(webview::kInternalVisibleUrl,
-                  web_contents()->GetVisibleURL().spec());
-  args->SetBoolean(guest_view::kIsTopLevel,
+  args->SetStringKey(guest_view::kUrl, navigation_handle->GetURL().spec());
+  args->SetStringKey(webview::kInternalVisibleUrl,
+                     web_contents()->GetVisibleURL().spec());
+  args->SetBoolKey(guest_view::kIsTopLevel,
                    IsInWebViewMainFrame(navigation_handle));
-  args->SetString(webview::kInternalBaseURLForDataURL,
-                  web_contents()
-                      ->GetController()
-                      .GetLastCommittedEntry()
-                      ->GetBaseURLForDataURL()
-                      .spec());
-  args->SetInteger(webview::kInternalCurrentEntryIndex,
-                   web_contents()->GetController().GetCurrentEntryIndex());
-  args->SetInteger(webview::kInternalEntryCount,
-                   web_contents()->GetController().GetEntryCount());
-  args->SetInteger(webview::kInternalProcessId,
-                   web_contents()->GetMainFrame()->GetProcess()->GetID());
+  args->SetStringKey(webview::kInternalBaseURLForDataURL,
+                     web_contents()
+                         ->GetController()
+                         .GetLastCommittedEntry()
+                         ->GetBaseURLForDataURL()
+                         .spec());
+  args->SetIntKey(webview::kInternalCurrentEntryIndex,
+                  web_contents()->GetController().GetCurrentEntryIndex());
+  args->SetIntKey(webview::kInternalEntryCount,
+                  web_contents()->GetController().GetEntryCount());
+  args->SetIntKey(webview::kInternalProcessId,
+                  web_contents()->GetMainFrame()->GetProcess()->GetID());
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventLoadCommit, std::move(args)));
 
@@ -832,8 +833,8 @@ void WebViewGuest::DidFinishNavigation(
 
 void WebViewGuest::LoadProgressChanged(double progress) {
   auto args = std::make_unique<base::DictionaryValue>();
-  args->SetString(guest_view::kUrl,
-                  web_contents()->GetLastCommittedURL().spec());
+  args->SetStringKey(guest_view::kUrl,
+                     web_contents()->GetLastCommittedURL().spec());
   args->SetDoubleKey(webview::kProgress, progress);
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventLoadProgress, std::move(args)));
@@ -861,8 +862,8 @@ void WebViewGuest::DidStartNavigation(
     return;
 
   auto args = std::make_unique<base::DictionaryValue>();
-  args->SetString(guest_view::kUrl, navigation_handle->GetURL().spec());
-  args->SetBoolean(guest_view::kIsTopLevel,
+  args->SetStringKey(guest_view::kUrl, navigation_handle->GetURL().spec());
+  args->SetBoolKey(guest_view::kIsTopLevel,
                    IsInWebViewMainFrame(navigation_handle));
   DispatchEventToView(std::make_unique<GuestViewEvent>(webview::kEventLoadStart,
                                                        std::move(args)));
@@ -871,13 +872,13 @@ void WebViewGuest::DidStartNavigation(
 void WebViewGuest::DidRedirectNavigation(
     content::NavigationHandle* navigation_handle) {
   auto args = std::make_unique<base::DictionaryValue>();
-  args->SetBoolean(guest_view::kIsTopLevel,
+  args->SetBoolKey(guest_view::kIsTopLevel,
                    IsInWebViewMainFrame(navigation_handle));
-  args->SetString(webview::kNewURL, navigation_handle->GetURL().spec());
+  args->SetStringKey(webview::kNewURL, navigation_handle->GetURL().spec());
   auto redirect_chain = navigation_handle->GetRedirectChain();
   DCHECK_GE(redirect_chain.size(), 2u);
   auto old_url = redirect_chain[redirect_chain.size() - 2];
-  args->SetString(webview::kOldURL, old_url.spec());
+  args->SetStringKey(webview::kOldURL, old_url.spec());
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventLoadRedirect, std::move(args)));
 }
@@ -888,9 +889,9 @@ void WebViewGuest::PrimaryMainFrameRenderProcessGone(
   find_helper_.CancelAllFindSessions();
 
   auto args = std::make_unique<base::DictionaryValue>();
-  args->SetInteger(webview::kProcessId,
-                   web_contents()->GetMainFrame()->GetProcess()->GetID());
-  args->SetString(webview::kReason, TerminationStatusToString(status));
+  args->SetIntKey(webview::kProcessId,
+                  web_contents()->GetMainFrame()->GetProcess()->GetID());
+  args->SetStringKey(webview::kReason, TerminationStatusToString(status));
   DispatchEventToView(
       std::make_unique<GuestViewEvent>(webview::kEventExit, std::move(args)));
 }
@@ -939,11 +940,11 @@ void WebViewGuest::OnDidAddMessageToConsole(
     const absl::optional<std::u16string>& untrusted_stack_trace) {
   auto args = std::make_unique<base::DictionaryValue>();
   // Log levels are from base/logging.h: LogSeverity.
-  args->SetInteger(webview::kLevel,
-                   blink::ConsoleMessageLevelToLogSeverity(log_level));
-  args->SetString(webview::kMessage, message);
-  args->SetInteger(webview::kLine, line_no);
-  args->SetString(webview::kSourceId, source_id);
+  args->SetIntKey(webview::kLevel,
+                  blink::ConsoleMessageLevelToLogSeverity(log_level));
+  args->SetStringKey(webview::kMessage, message);
+  args->SetIntKey(webview::kLine, line_no);
+  args->SetStringKey(webview::kSourceId, source_id);
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventConsoleMessage, std::move(args)));
 }
@@ -951,7 +952,7 @@ void WebViewGuest::OnDidAddMessageToConsole(
 void WebViewGuest::ReportFrameNameChange(const std::string& name) {
   name_ = name;
   auto args = std::make_unique<base::DictionaryValue>();
-  args->SetString(webview::kName, name);
+  args->SetStringKey(webview::kName, name);
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventFrameNameChanged, std::move(args)));
 }
@@ -1384,7 +1385,7 @@ void WebViewGuest::EnterFullscreenModeForTab(
   base::DictionaryValue request_info;
   const GURL& origin =
       requesting_frame->GetLastCommittedURL().DeprecatedGetOriginAsURL();
-  request_info.SetString(webview::kOrigin, origin.spec());
+  request_info.SetStringKey(webview::kOrigin, origin.spec());
   web_view_permission_helper_->RequestPermission(
       WEB_VIEW_PERMISSION_TYPE_FULLSCREEN, request_info,
       base::BindOnce(&WebViewGuest::OnFullscreenPermissionDecided,
@@ -1489,16 +1490,16 @@ void WebViewGuest::RequestNewWindowPermission(WindowOpenDisposition disposition,
       GetStoragePartitionIdFromPartitionConfig(storage_partition_config);
 
   base::DictionaryValue request_info;
-  request_info.SetInteger(webview::kInitialHeight, initial_bounds.height());
-  request_info.SetInteger(webview::kInitialWidth, initial_bounds.width());
-  request_info.SetString(webview::kTargetURL, new_window_info.url.spec());
-  request_info.SetString(webview::kName, new_window_info.name);
-  request_info.SetInteger(webview::kWindowID, guest->guest_instance_id());
+  request_info.SetIntKey(webview::kInitialHeight, initial_bounds.height());
+  request_info.SetIntKey(webview::kInitialWidth, initial_bounds.width());
+  request_info.SetStringKey(webview::kTargetURL, new_window_info.url.spec());
+  request_info.SetStringKey(webview::kName, new_window_info.name);
+  request_info.SetIntKey(webview::kWindowID, guest->guest_instance_id());
   // We pass in partition info so that window-s created through newwindow
   // API can use it to set their partition attribute.
-  request_info.SetString(webview::kStoragePartitionId, storage_partition_id);
-  request_info.SetString(webview::kWindowOpenDisposition,
-                         WindowOpenDispositionToString(disposition));
+  request_info.SetStringKey(webview::kStoragePartitionId, storage_partition_id);
+  request_info.SetStringKey(webview::kWindowOpenDisposition,
+                            WindowOpenDispositionToString(disposition));
 
   web_view_permission_helper_->RequestPermission(
       WEB_VIEW_PERMISSION_TYPE_NEW_WINDOW, request_info,

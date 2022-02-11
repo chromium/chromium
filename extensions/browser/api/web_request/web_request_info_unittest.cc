@@ -41,8 +41,8 @@ TEST(WebRequestInfoTest, CreateRequestBodyDataFromFile) {
 
   base::ListValue expected_value;
   auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetString(extension_web_request_api_constants::kRequestBodyRawFileKey,
-                  kFilePath);
+  dict->SetStringKey(
+      extension_web_request_api_constants::kRequestBodyRawFileKey, kFilePath);
   expected_value.Append(std::move(dict));
   EXPECT_EQ(*value, expected_value);
 }

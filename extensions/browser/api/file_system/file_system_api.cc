@@ -346,7 +346,7 @@ void FileSystemEntryFunction::RegisterFileSystemsAndSendResponse(
 std::unique_ptr<base::DictionaryValue> FileSystemEntryFunction::CreateResult() {
   std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
   result->Set("entries", std::make_unique<base::ListValue>());
-  result->SetBoolean("multiple", multiple_);
+  result->SetBoolKey("multiple", multiple_);
   return result;
 }
 
@@ -360,13 +360,13 @@ void FileSystemEntryFunction::AddEntryToResult(const base::FilePath& path,
   DCHECK(success);
 
   std::unique_ptr<base::DictionaryValue> entry(new base::DictionaryValue());
-  entry->SetString("fileSystemId", file_entry.filesystem_id);
-  entry->SetString("baseName", file_entry.registered_name);
+  entry->SetStringKey("fileSystemId", file_entry.filesystem_id);
+  entry->SetStringKey("baseName", file_entry.registered_name);
   if (id_override.empty())
-    entry->SetString("id", file_entry.id);
+    entry->SetStringKey("id", file_entry.id);
   else
-    entry->SetString("id", id_override);
-  entry->SetBoolean("isDirectory", is_directory_);
+    entry->SetStringKey("id", id_override);
+  entry->SetBoolKey("isDirectory", is_directory_);
   entries->Append(std::move(entry));
 }
 
@@ -1096,8 +1096,8 @@ void FileSystemRequestFileSystemFunction::OnGotFileSystem(
     const std::string& id,
     const std::string& path) {
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetString("file_system_id", id);
-  dict->SetString("file_system_path", path);
+  dict->SetStringKey("file_system_id", id);
+  dict->SetStringKey("file_system_path", path);
   Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
 }
 

@@ -75,7 +75,7 @@ scoped_refptr<const BaseClass> CreateFoo(const std::string& /*instance_type*/,
 
 std::unique_ptr<base::DictionaryValue> CreateDictWithParameter(int parameter) {
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
-  dict->SetInteger("parameter", parameter);
+  dict->SetIntKey("parameter", parameter);
   return dict;
 }
 

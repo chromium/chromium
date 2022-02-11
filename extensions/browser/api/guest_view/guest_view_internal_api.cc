@@ -72,7 +72,7 @@ void GuestViewInternalCreateGuestFunction::CreateGuestCallback(
     guest_instance_id = guest->guest_instance_id();
   }
   auto return_params = std::make_unique<base::DictionaryValue>();
-  return_params->SetInteger(guest_view::kID, guest_instance_id);
+  return_params->SetIntKey(guest_view::kID, guest_instance_id);
 
   Respond(
       OneArgument(base::Value::FromUniquePtrValue(std::move(return_params))));

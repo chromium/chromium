@@ -276,7 +276,7 @@ std::unique_ptr<base::DictionaryValue> GetDictionaryFromArray(
           return nullptr;
       }
     } else {
-      dictionary->SetString(*name, *value);
+      dictionary->SetStringPath(*name, *value);
     }
   }
   return dictionary;

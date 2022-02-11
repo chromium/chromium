@@ -144,8 +144,10 @@ std::unique_ptr<base::DictionaryValue> CreateRequestBodyData(
     }
   }
 
-  if (!some_succeeded)
-    request_body_data->SetString(keys::kRequestBodyErrorKey, "Unknown error.");
+  if (!some_succeeded) {
+    request_body_data->SetStringKey(keys::kRequestBodyErrorKey,
+                                    "Unknown error.");
+  }
 
   return request_body_data;
 }

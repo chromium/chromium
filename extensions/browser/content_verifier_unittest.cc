@@ -206,9 +206,9 @@ class ContentVerifierTest : public ExtensionsTest {
   // page or background script.
   scoped_refptr<Extension> CreateTestExtension() {
     base::DictionaryValue manifest;
-    manifest.SetString("name", "Dummy Extension");
-    manifest.SetString("version", "1");
-    manifest.SetInteger("manifest_version", 2);
+    manifest.SetStringKey("name", "Dummy Extension");
+    manifest.SetStringKey("version", "1");
+    manifest.SetIntKey("manifest_version", 2);
 
     if (background_manifest_type_ ==
         BackgroundManifestType::kBackgroundScript) {
@@ -219,7 +219,7 @@ class ContentVerifierTest : public ExtensionsTest {
           base::Value::ToUniquePtrValue(std::move(background_scripts)));
     } else if (background_manifest_type_ ==
                BackgroundManifestType::kBackgroundPage) {
-      manifest.SetString(manifest_keys::kBackgroundPage, "foo/page.txt");
+      manifest.SetStringPath(manifest_keys::kBackgroundPage, "foo/page.txt");
     }
 
     base::Value content_scripts(base::Value::Type::LIST);

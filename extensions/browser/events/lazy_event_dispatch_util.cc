@@ -109,10 +109,10 @@ void LazyEventDispatchUtil::StorePendingOnInstallInfoToPref(
   auto pending_on_install_info = std::make_unique<base::DictionaryValue>();
   base::Version previous_version = ExtensionRegistry::Get(browser_context_)
                                        ->GetStoredVersion(extension->id());
-  pending_on_install_info->SetString(kPrefPreviousVersion,
-                                     previous_version.IsValid()
-                                         ? previous_version.GetString()
-                                         : std::string());
+  pending_on_install_info->SetStringKey(kPrefPreviousVersion,
+                                        previous_version.IsValid()
+                                            ? previous_version.GetString()
+                                            : std::string());
   prefs->UpdateExtensionPref(extension->id(),
                              kPrefPendingOnInstalledEventDispatchInfo,
                              std::move(pending_on_install_info));

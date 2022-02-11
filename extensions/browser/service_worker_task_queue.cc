@@ -545,7 +545,7 @@ void ServiceWorkerTaskQueue::SetRegisteredServiceWorkerInfo(
     off_the_record_registrations_[extension_id] = version;
   } else {
     auto info = std::make_unique<base::DictionaryValue>();
-    info->SetString(kServiceWorkerVersion, version.GetString());
+    info->SetStringKey(kServiceWorkerVersion, version.GetString());
     ExtensionPrefs::Get(browser_context_)
         ->UpdateExtensionPref(extension_id, kPrefServiceWorkerRegistrationInfo,
                               std::move(info));

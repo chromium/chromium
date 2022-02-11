@@ -2131,36 +2131,36 @@ std::unique_ptr<base::ListValue> SummarizeCookieModifications(
     auto summary = std::make_unique<base::DictionaryValue>();
     switch (mod.type) {
       case helpers::ADD:
-        summary->SetString(activity_log::kCookieModificationTypeKey,
-                           activity_log::kCookieModificationAdd);
+        summary->SetStringKey(activity_log::kCookieModificationTypeKey,
+                              activity_log::kCookieModificationAdd);
         break;
       case helpers::EDIT:
-        summary->SetString(activity_log::kCookieModificationTypeKey,
-                           activity_log::kCookieModificationEdit);
+        summary->SetStringKey(activity_log::kCookieModificationTypeKey,
+                              activity_log::kCookieModificationEdit);
         break;
       case helpers::REMOVE:
-        summary->SetString(activity_log::kCookieModificationTypeKey,
-                           activity_log::kCookieModificationRemove);
+        summary->SetStringKey(activity_log::kCookieModificationTypeKey,
+                              activity_log::kCookieModificationRemove);
         break;
     }
     if (mod.filter) {
       if (mod.filter->name) {
-        summary->SetString(activity_log::kCookieFilterNameKey,
-                           *mod.modification->name);
+        summary->SetStringKey(activity_log::kCookieFilterNameKey,
+                              *mod.modification->name);
       }
       if (mod.filter->domain) {
-        summary->SetString(activity_log::kCookieFilterDomainKey,
-                           *mod.modification->name);
+        summary->SetStringKey(activity_log::kCookieFilterDomainKey,
+                              *mod.modification->name);
       }
     }
     if (mod.modification) {
       if (mod.modification->name) {
-        summary->SetString(activity_log::kCookieModDomainKey,
-                           *mod.modification->name);
+        summary->SetStringKey(activity_log::kCookieModDomainKey,
+                              *mod.modification->name);
       }
       if (mod.modification->domain) {
-        summary->SetString(activity_log::kCookieModDomainKey,
-                           *mod.modification->name);
+        summary->SetStringKey(activity_log::kCookieModDomainKey,
+                              *mod.modification->name);
       }
     }
     cookie_modifications->Append(std::move(summary));
@@ -2175,9 +2175,9 @@ std::unique_ptr<base::DictionaryValue> SummarizeResponseDelta(
     const helpers::EventResponseDelta& delta) {
   std::unique_ptr<base::DictionaryValue> details(new base::DictionaryValue());
   if (delta.cancel)
-    details->SetBoolean(activity_log::kCancelKey, true);
+    details->SetBoolKey(activity_log::kCancelKey, true);
   if (!delta.new_url.is_empty())
-    details->SetString(activity_log::kNewUrlKey, delta.new_url.spec());
+    details->SetStringKey(activity_log::kNewUrlKey, delta.new_url.spec());
 
   std::unique_ptr<base::ListValue> modified_headers(new base::ListValue());
   net::HttpRequestHeaders::Iterator iter(delta.modified_request_headers);
@@ -2208,7 +2208,7 @@ std::unique_ptr<base::DictionaryValue> SummarizeResponseDelta(
                  SerializeResponseHeaders(delta.deleted_response_headers));
   }
   if (delta.auth_credentials.has_value()) {
-    details->SetString(
+    details->SetStringKey(
         activity_log::kAuthCredentialsKey,
         base::UTF16ToUTF8(delta.auth_credentials->username()) + ":*");
   }

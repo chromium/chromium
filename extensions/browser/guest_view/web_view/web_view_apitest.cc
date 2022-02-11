@@ -222,7 +222,7 @@ void WebViewAPITest::StartTestServer(const std::string& app_location) {
     return;
   }
 
-  test_config_.SetInteger(kTestServerPort, embedded_test_server()->port());
+  test_config_.SetIntPath(kTestServerPort, embedded_test_server()->port());
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath test_data_dir;

@@ -283,8 +283,8 @@ void AppViewGuest::LaunchAppAndFireEvent(
 
   std::unique_ptr<base::DictionaryValue> embed_request(
       new base::DictionaryValue());
-  embed_request->SetInteger(appview::kGuestInstanceID, guest_instance_id());
-  embed_request->SetString(appview::kEmbedderID, owner_host());
+  embed_request->SetIntKey(appview::kGuestInstanceID, guest_instance_id());
+  embed_request->SetStringKey(appview::kEmbedderID, owner_host());
   embed_request->SetKey(appview::kData,
                         base::Value::FromUniquePtrValue(std::move(data)));
   AppRuntimeEventRouter::DispatchOnEmbedRequestedEvent(

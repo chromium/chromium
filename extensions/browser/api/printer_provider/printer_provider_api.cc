@@ -72,16 +72,16 @@ void UpdatePrinterWithExtensionInfo(base::DictionaryValue* printer,
                                     const Extension* extension) {
   std::string* internal_printer_id = printer->FindStringKey("id");
   CHECK(internal_printer_id);
-  printer->SetString("id",
-                     GeneratePrinterId(extension->id(), *internal_printer_id));
-  printer->SetString("extensionId", extension->id());
-  printer->SetString("extensionName", extension->name());
+  printer->SetStringKey(
+      "id", GeneratePrinterId(extension->id(), *internal_printer_id));
+  printer->SetStringKey("extensionId", extension->id());
+  printer->SetStringKey("extensionName", extension->name());
 
   std::string* printer_name = printer->FindStringKey("name");
   if (printer_name) {
     std::u16string u16_printer_name = base::UTF8ToUTF16(*printer_name);
     if (base::i18n::AdjustStringForLocaleDirection(&u16_printer_name))
-      printer->SetString("name", u16_printer_name);
+      printer->SetStringKey("name", u16_printer_name);
   }
 
   std::string* printer_description = printer->FindStringKey("description");
@@ -89,7 +89,7 @@ void UpdatePrinterWithExtensionInfo(base::DictionaryValue* printer,
     std::u16string u16_printer_description =
         base::UTF8ToUTF16(*printer_description);
     if (base::i18n::AdjustStringForLocaleDirection(&u16_printer_description))
-      printer->SetString("description", u16_printer_description);
+      printer->SetStringKey("description", u16_printer_description);
   }
 }
 

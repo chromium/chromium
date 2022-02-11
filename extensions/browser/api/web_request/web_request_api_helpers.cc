@@ -1720,9 +1720,9 @@ std::unique_ptr<base::DictionaryValue> CreateHeaderDictionary(
     const std::string& name,
     const std::string& value) {
   auto header = std::make_unique<base::DictionaryValue>();
-  header->SetString(keys::kHeaderNameKey, name);
+  header->SetStringKey(keys::kHeaderNameKey, name);
   if (base::IsStringUTF8(value)) {
-    header->SetString(keys::kHeaderValueKey, value);
+    header->SetStringKey(keys::kHeaderValueKey, value);
   } else {
     header->Set(keys::kHeaderBinaryValueKey,
                 std::make_unique<base::Value>(StringToCharList(value)));
