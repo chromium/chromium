@@ -63,6 +63,7 @@ TEST(KSAdminTest, ParseCommandLine) {
   std::map<std::string, std::string> arg_map =
       ParseCommandLine(std::size(argv), argv);
   EXPECT_EQ(arg_map.size(), size_t{5});
+  EXPECT_EQ(arg_map.count("register"), size_t{1});
   EXPECT_EQ(arg_map["register"], "");
   EXPECT_EQ(arg_map["P"], "com.google.kipple");
   EXPECT_EQ(arg_map["v"], "1.2.3.4");
@@ -76,6 +77,7 @@ TEST(KSAdminTest, ParseCommandLine_DiffByCase) {
   std::map<std::string, std::string> arg_map =
       ParseCommandLine(std::size(argv), argv);
   EXPECT_EQ(arg_map.size(), size_t{2});
+  EXPECT_EQ(arg_map.count("k"), size_t{1});
   EXPECT_EQ(arg_map["k"], "");
   EXPECT_EQ(arg_map["K"], "Tag");
 }
@@ -86,6 +88,7 @@ TEST(KSAdminTest, ParseCommandLine_CombinedShortOptions) {
   std::map<std::string, std::string> arg_map =
       ParseCommandLine(std::size(argv), argv);
   EXPECT_EQ(arg_map.size(), size_t{2});
+  EXPECT_EQ(arg_map.count("p"), size_t{1});
   EXPECT_EQ(arg_map["p"], "");
   EXPECT_EQ(arg_map["P"], "com.google.Chrome");
 }
