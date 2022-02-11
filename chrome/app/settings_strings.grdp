@@ -1536,7 +1536,7 @@
     The URLs you visit are saved to your Google Account
   </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_COOKIES_CARD_HEADER" desc="Header of the cookies card in the privacy review.">
-    Choose when to block third-party cookies
+    Choose your third-party cookie preferences
   </message>
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_COOKIES_CARD_BLOCK_TPC_INCOGNITO_SUBHEADER" desc="A subheader for the cookies card of the privacy review, for blocking third party cookies in incognito.">
     Block third-party cookies in Incognito
