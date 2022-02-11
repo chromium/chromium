@@ -18,7 +18,7 @@ namespace quick_pair {
 class FastPairPresenter;
 struct Device;
 
-class COMPONENT_EXPORT(QUICK_PAIR_UI) UIBrokerImpl final : public UIBroker {
+class UIBrokerImpl final : public UIBroker {
  public:
   UIBrokerImpl();
   UIBrokerImpl(const UIBrokerImpl&) = delete;

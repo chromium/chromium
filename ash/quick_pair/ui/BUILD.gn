@@ -10,8 +10,6 @@ assert(is_chromeos_ash,
 source_set("ui") {
   output_name = "quick_pair_ui"
 
-  defines = [ "IS_QUICK_PAIR_UI_IMPL" ]
-
   sources = [
     "actions.cc",
     "actions.h",

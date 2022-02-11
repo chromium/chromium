@@ -7,8 +7,6 @@
 
 #include <vector>
 
-#include "base/component_export.h"
-
 namespace ash {
 namespace quick_pair {
 
@@ -16,7 +14,7 @@ class DeviceMetadata;
 
 // Thin wrapper around Account Key + decoded metadata for a Fast Pair device
 // which has already been paired.
-struct COMPONENT_EXPORT(QUICK_PAIR_REPOSITORY) PairingMetadata {
+struct PairingMetadata {
   explicit PairingMetadata(DeviceMetadata* device_metadata,
                            std::vector<uint8_t> account_key);
   PairingMetadata(const PairingMetadata&);

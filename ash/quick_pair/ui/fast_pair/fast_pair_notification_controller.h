@@ -6,7 +6,6 @@
 #define ASH_QUICK_PAIR_UI_FAST_PAIR_FAST_PAIR_NOTIFICATION_CONTROLLER_H_
 
 #include "base/callback.h"
-#include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/image/image.h"
@@ -16,7 +15,7 @@ namespace quick_pair {
 
 // This controller creates and manages a message_center::Notification for each
 // FastPair corresponding notification event.
-class COMPONENT_EXPORT(QUICK_PAIR_UI) FastPairNotificationController {
+class FastPairNotificationController {
  public:
   FastPairNotificationController();
   ~FastPairNotificationController();
