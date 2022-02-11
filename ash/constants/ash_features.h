@@ -292,6 +292,8 @@ extern const base::Feature
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kVirtualKeyboardDarkMode;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kVirtualKeyboardNewHeader;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kImeOptionsInSettings;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kImeRuleConfig;
 COMPONENT_EXPORT(ASH_CONSTANTS)

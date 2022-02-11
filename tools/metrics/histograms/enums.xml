@@ -52696,6 +52696,7 @@ from previous Chrome versions.
   <int value="-1108636917" label="DetectedSourceLanguageOption:enabled"/>
   <int value="-1107762575" label="enable-data-reduction-proxy-config-client"/>
   <int value="-1107103335" label="FsNosymfollow:enabled"/>
+  <int value="-1106191827" label="VirtualKeyboardNewHeader:enabled"/>
   <int value="-1105686819" label="ShareUsageRanking:enabled"/>
   <int value="-1105637876" label="FilteringScrollPrediction:enabled"/>
   <int value="-1104914981" label="frame-throttle-fps"/>
@@ -55126,6 +55127,7 @@ from previous Chrome versions.
   <int value="646269021" label="UnifiedSidePanel:disabled"/>
   <int value="646738320" label="disable-gesture-editing"/>
   <int value="647662142" label="use-angle"/>
+  <int value="648697679" label="VirtualKeyboardNewHeader:disabled"/>
   <int value="649111851" label="MidiManagerCros:enabled"/>
   <int value="649508040" label="AutofillEnableCompanyName:enabled"/>
   <int value="650013099" label="PrivacySandboxSettings2:disabled"/>

@@ -559,6 +559,9 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   features.Append(GenerateFeatureFlag(
       "darkmode", base::FeatureList::IsEnabled(
                       chromeos::features::kVirtualKeyboardDarkMode)));
+  features.Append(GenerateFeatureFlag(
+      "newheader", base::FeatureList::IsEnabled(
+                       chromeos::features::kVirtualKeyboardNewHeader)));
 
   // Flag used to enable system built-in IME decoder instead of NaCl.
   features.Append(GenerateFeatureFlag("usemojodecoder", true));

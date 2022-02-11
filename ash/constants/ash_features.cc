@@ -762,7 +762,11 @@ const base::Feature kSnoopingProtection{"SnoopingProtection",
 
 // Enable or disable dark mode support for the Chrome OS virtual keyboard.
 const base::Feature kVirtualKeyboardDarkMode{"VirtualKeyboardDarkMode",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enable or disable a new header bar for the Chrome OS virtual keyboard.
+const base::Feature kVirtualKeyboardNewHeader{
+    "VirtualKeyboardNewHeader", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If enabled, used to configure the heuristic rules for some advanced IME
 // features (e.g. auto-correct).

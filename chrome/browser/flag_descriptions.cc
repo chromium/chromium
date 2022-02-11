@@ -4893,6 +4893,11 @@ const char kVirtualKeyboardDarkModeDescription[] =
     "Enable dark mode colors for the virtual keyboard when dark mode is "
     "active.";
 
+const char kVirtualKeyboardNewHeaderName[] =
+    "Enable new header for virtual keyboard";
+const char kVirtualKeyboardNewHeaderDescription[] =
+    "Enable new header for virtual keyboard to improve navigation.";
+
 const char kImeSystemEmojiPickerName[] = "System emoji picker";
 const char kImeSystemEmojiPickerDescription[] =
     "Controls whether a System emoji picker, or the virtual keyboard is used "

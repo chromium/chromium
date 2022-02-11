@@ -2820,6 +2820,9 @@ extern const char kImeAssistPersonalInfoDescription[];
 extern const char kVirtualKeyboardDarkModeName[];
 extern const char kVirtualKeyboardDarkModeDescription[];
 
+extern const char kVirtualKeyboardNewHeaderName[];
+extern const char kVirtualKeyboardNewHeaderDescription[];
+
 extern const char kCrosLanguageSettingsImeOptionsInSettingsName[];
 extern const char kCrosLanguageSettingsImeOptionsInSettingsDescription[];
 
