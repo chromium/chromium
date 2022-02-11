@@ -195,6 +195,7 @@ void Install(UpdaterScope scope) {
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
   command_line.AppendSwitch(kInstallSwitch);
+  command_line.AppendSwitchASCII(kTagSwitch, "usagestats=1");
   int exit_code = -1;
   ASSERT_TRUE(Run(scope, command_line, &exit_code));
   EXPECT_EQ(exit_code, 0);

@@ -138,6 +138,8 @@ if (is_win || is_mac || is_linux) {
       "update_service_internal_impl_inactive.h",
       "update_service_internal_impl_qualifying.cc",
       "update_service_internal_impl_qualifying.h",
+      "update_usage_stats_task.cc",
+      "update_usage_stats_task.h",
       "updater.cc",
       "updater.h",
       "updater_scope.cc",
@@ -213,6 +215,7 @@ if (is_win || is_mac || is_linux) {
         "policy/mac/managed_preference_policy_manager_impl.mm",
         "prefs_mac.mm",
         "setup_mac.mm",
+        "update_usage_stats_task_mac.mm",
         "util_mac.mm",
       ]
 
@@ -251,6 +254,7 @@ if (is_win || is_mac || is_linux) {
         "prefs_win.cc",
         "setup_win.cc",
         "update_block_check_win.cc",
+        "update_usage_stats_task_win.cc",
         "util_win.cc",
         "win/action_handler.cc",
         "win/app_install_controller.cc",
@@ -340,6 +344,7 @@ if (is_win || is_mac || is_linux) {
         "linux/update_service_proxy.cc",
         "prefs_linux.cc",
         "setup_linux.cc",
+        "update_usage_stats_task_linux.cc",
       ]
     }
   }

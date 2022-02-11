@@ -31,9 +31,6 @@ class CrashClient {
   // if no guid is associated.
   static std::string GetClientId();
 
-  // Returns true if the upload of crashes is enabled.
-  static bool IsUploadEnabled();
-
   // Initializes collection and upload of crash reports.
   bool InitializeCrashReporting(UpdaterScope updater_scope);
 

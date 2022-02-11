@@ -14,6 +14,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "chrome/updater/tag.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -120,10 +121,13 @@ bool CrashClient::InitializeCrashReporting(UpdaterScope updater_scope) {
     LOG(ERROR) << "Failed to fetch pending crash reports: " << status_pending;
   }
 
-  // TODO(sorin): fix before shipping to users, crbug.com/940098.
-  crashpad::Settings* crashpad_settings = database_->GetSettings();
-  DCHECK(crashpad_settings);
-  crashpad_settings->SetUploadsEnabled(true);
+  absl::optional<tagging::TagArgs> tag_args = GetTagArgs();
+  if (tag_args && tag_args->usage_stats_enable &&
+      *tag_args->usage_stats_enable) {
+    crashpad::Settings* crashpad_settings = database_->GetSettings();
+    DCHECK(crashpad_settings);
+    crashpad_settings->SetUploadsEnabled(true);
+  }
 
   return true;
 }
