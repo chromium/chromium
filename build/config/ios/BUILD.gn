@@ -252,6 +252,7 @@ config("xctest_config") {
   ]
   cflags = common_flags
   ldflags = common_flags
+  swiftflags = common_flags
 
   frameworks = [
     "Foundation.framework",
