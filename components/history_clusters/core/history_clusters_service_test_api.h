@@ -72,6 +72,9 @@ class HistoryClustersServiceTestApi {
 // Fetches two hardcoded test visits.
 std::vector<history::AnnotatedVisit> GetHardcodedTestVisits();
 
+// Fetches the hardcoded `ClusterVisit` with ID `visit_id`.
+history::ClusterVisit GetHardcodedClusterVisit(history::VisitID visit_id);
+
 }  // namespace history_clusters
 
 #endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_HISTORY_CLUSTERS_SERVICE_TEST_API_H_

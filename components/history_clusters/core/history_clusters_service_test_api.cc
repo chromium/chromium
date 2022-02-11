@@ -82,4 +82,21 @@ std::vector<history::AnnotatedVisit> GetHardcodedTestVisits() {
   return visits;
 }
 
+history::ClusterVisit GetHardcodedClusterVisit(history::VisitID visit_id) {
+  const auto& visits = GetHardcodedTestVisits();
+  for (const auto& visit : visits) {
+    if (visit.visit_row.visit_id != visit_id)
+      continue;
+
+    history::ClusterVisit cluster_visit;
+    cluster_visit.annotated_visit = visit;
+    cluster_visit.normalized_url = visit.url_row.url();
+    cluster_visit.score = 0.5;
+    return cluster_visit;
+  }
+
+  NOTREACHED();
+  return history::ClusterVisit();
+}
+
 }  // namespace history_clusters

@@ -340,6 +340,8 @@ TEST_F(HistoryClustersServiceTest, QueryClustersIncompleteAndPersistedVisits) {
   EXPECT_EQ(visits[3].visit_row.visit_id, 5);
 }
 
+// TODO(tommycli): Dramatically simplify this integration test now that we have
+// a unit test for the filtering logic in HistoryClustersUtil.
 TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
   base::HistogramTester histogram_tester;
   AddHardcodedTestDataToHistoryService();
