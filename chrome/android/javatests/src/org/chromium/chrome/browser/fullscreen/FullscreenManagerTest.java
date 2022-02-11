@@ -38,9 +38,11 @@ import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeController;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate;
@@ -672,11 +674,9 @@ public class FullscreenManagerTest {
      * @param inSwitcher Whether to enter or exit the tab switcher.
      */
     private void setTabSwitcherModeAndWait(boolean inSwitcher) {
-        OverviewModeController controller = mActivityTestRule.getActivity().getLayoutManager();
-        if (inSwitcher) {
-            TestThreadUtils.runOnUiThreadBlocking(() -> controller.showOverview(false));
-        } else {
-            TestThreadUtils.runOnUiThreadBlocking(() -> controller.hideOverview(false));
-        }
+        LayoutManager layoutManager = mActivityTestRule.getActivity().getLayoutManager();
+        @LayoutType
+        int layout = inSwitcher ? LayoutType.TAB_SWITCHER : LayoutType.BROWSING;
+        LayoutTestUtils.startShowingAndWaitForLayout(layoutManager, layout, false);
     }
 }

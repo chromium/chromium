@@ -124,6 +124,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     // Current Layout State
     private Layout mActiveLayout;
     private Layout mNextActiveLayout;
+    private boolean mAnimateNextLayout;
 
     // Current Event Fitler State
     private EventFilter mActiveEventFilter;
@@ -469,7 +470,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
                 selector, mTabContentManagerSupplier.get(), mBrowserControlsStateProvider,
                 mTopUiThemeColorProvider);
 
-        setNextLayout(null);
+        setNextLayout(null, true);
 
         // Set the dynamic resource loader for all overlay panels.
         mOverlayPanelManager.setDynamicResourceLoader(dynamicResourceLoader);
@@ -828,6 +829,11 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         return mNextActiveLayout != null ? mNextActiveLayout : getDefaultLayout();
     }
 
+    /** @return Whether a next layout has been explicitly specified. */
+    protected boolean hasExplicitNextLayout() {
+        return mNextActiveLayout != null;
+    }
+
     @Override
     public Layout getActiveLayout() {
         return mActiveLayout;
@@ -910,7 +916,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
                 observer.onFinishedHiding(getActiveLayout().getLayoutType());
             }
 
-            startShowing(mNextActiveLayout, true);
+            startShowing(mNextActiveLayout, mAnimateNextLayout);
         }
     }
 
@@ -920,6 +926,33 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         for (LayoutStateObserver observer : mLayoutObservers) {
             observer.onFinishedShowing(getActiveLayout().getLayoutType());
         }
+    }
+
+    @Override
+    public void showLayout(int layoutType, boolean animate) {
+        Layout activeLayout = getActiveLayout();
+        if (activeLayout != null && !activeLayout.isStartingToHide()) {
+            setNextLayout(getLayoutForType(layoutType), animate);
+            activeLayout.startHiding(Tab.INVALID_TAB_ID, animate);
+        } else {
+            startShowing(getLayoutForType(layoutType), animate);
+        }
+    }
+
+    /**
+     * @param layoutType A layout type to get the implementation for.
+     * @return The layout implementation for the provided type.
+     */
+    protected Layout getLayoutForType(@LayoutType int layoutType) {
+        // TODO(1248073): Register these types and look them up in a map rather than overriding this
+        //                method in multiple places.
+        // Use the static layout by default or if explicitly specified.
+        if (layoutType == LayoutType.NONE || layoutType == LayoutType.BROWSING) {
+            return mStaticLayout;
+        }
+
+        assert false : "Unsupported layout type: " + layoutType;
+        return null;
     }
 
     /**
@@ -935,7 +968,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         assert layout != null : "Can't show a null layout.";
 
         // Set the new layout
-        setNextLayout(null);
+        setNextLayout(null, true);
         Layout oldLayout = getActiveLayout();
         if (oldLayout != layout) {
             if (oldLayout != null) {
@@ -988,9 +1021,16 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
      * Sets the next {@link Layout} to show after the current {@link Layout} is finished and is done
      * hiding.
      * @param layout The new {@link Layout} to show.
+     * @param animate Whether the next layout should be animated.
      */
-    public void setNextLayout(Layout layout) {
+    protected void setNextLayout(Layout layout, boolean animate) {
         mNextActiveLayout = (layout == null) ? getDefaultLayout() : layout;
+        mAnimateNextLayout = animate;
+    }
+
+    /** @return The ID of the next layout to show or {@code LayoutType.NONE} if one isn't set. */
+    public int getNextLayoutType() {
+        return mNextActiveLayout != null ? mNextActiveLayout.getLayoutType() : LayoutType.NONE;
     }
 
     @Override

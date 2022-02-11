@@ -33,6 +33,8 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -47,6 +49,8 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.test.util.ViewUtils;
+
+import java.util.concurrent.TimeoutException;
 
 /** Tests {@link ShareButtonController}. */
 
@@ -131,7 +135,7 @@ public final class ShareButtonControllerTest {
     @Restriction(
             {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     public void
-    testShareButtonInToolbarNotAffectedByOverview() {
+    testShareButtonInToolbarNotAffectedByOverview() throws TimeoutException {
         // Sign in.
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
 
@@ -141,8 +145,8 @@ public final class ShareButtonControllerTest {
                                    .getStartSurface()
                                    .getController()
                                    .setOverviewState(StartSurfaceState.SHOWING_START));
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> mActivityTestRule.getActivity().getLayoutManager().showOverview(false));
+        LayoutTestUtils.startShowingAndWaitForLayout(
+                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER, false);
 
         View optionalButton = mActivityTestRule.getActivity()
                                       .getToolbarManager()

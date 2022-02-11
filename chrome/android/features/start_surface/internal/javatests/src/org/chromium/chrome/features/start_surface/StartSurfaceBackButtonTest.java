@@ -488,6 +488,7 @@ public class StartSurfaceBackButtonTest {
         // Taps on the "Recent tabs" menu item.
         MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(), cta,
                 org.chromium.chrome.R.id.recent_tabs_menu_id);
+        CriteriaHelper.pollUiThread(() -> cta.getActivityTabProvider().get() != null);
         Assert.assertEquals("The launched tab should have the launch type FROM_START_SURFACE",
                 TabLaunchType.FROM_START_SURFACE,
                 cta.getActivityTabProvider().get().getLaunchType());
