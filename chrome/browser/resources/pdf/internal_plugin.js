@@ -17,8 +17,6 @@ export class UnseasonedPdfPluginElement extends HTMLEmbedElement {
   /**
    * @param {*} message
    * @param {!Array<!Transferable>=} transfer
-   *
-   * @override
    */
   postMessage(message, transfer) {}
 }
