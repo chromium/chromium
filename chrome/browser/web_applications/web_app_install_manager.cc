@@ -58,7 +58,9 @@ WebAppInstallManager::WebAppInstallManager(Profile* profile)
   }
 }
 
-WebAppInstallManager::~WebAppInstallManager() = default;
+WebAppInstallManager::~WebAppInstallManager() {
+  NotifyWebAppInstallManagerDestroyed();
+}
 
 void WebAppInstallManager::Start() {
   DCHECK(!started_);

@@ -268,7 +268,8 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
   }
 
   auto icon_manager = std::make_unique<WebAppIconManager>(
-      profile, *registrar, base::MakeRefCounted<FileUtilsWrapper>());
+      profile, *registrar, *install_manager_,
+      base::MakeRefCounted<FileUtilsWrapper>());
   auto translation_manager = std::make_unique<WebAppTranslationManager>(
       profile, registrar.get(), base::MakeRefCounted<FileUtilsWrapper>());
   install_finalizer_ = std::make_unique<WebAppInstallFinalizer>(profile);

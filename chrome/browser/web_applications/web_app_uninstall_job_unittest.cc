@@ -49,7 +49,8 @@ class WebAppUninstallJobTest : public WebAppTest {
     file_utils_wrapper_ =
         base::MakeRefCounted<testing::StrictMock<MockFileUtilsWrapper>>();
     icon_manager_ = std::make_unique<WebAppIconManager>(
-        profile(), controller().registrar(), file_utils_wrapper_);
+        profile(), controller().registrar(), install_manager(),
+        file_utils_wrapper_);
   }
 
   void TearDown() override {

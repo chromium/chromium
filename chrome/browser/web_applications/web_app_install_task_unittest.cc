@@ -100,8 +100,8 @@ class WebAppInstallTaskTest : public WebAppTest {
     install_manager_ = std::make_unique<WebAppInstallManager>(profile());
 
     file_utils_ = base::MakeRefCounted<TestFileUtils>();
-    icon_manager_ = std::make_unique<WebAppIconManager>(profile(), registrar(),
-                                                        file_utils_);
+    icon_manager_ = std::make_unique<WebAppIconManager>(
+        profile(), registrar(), install_manager(), file_utils_);
 
     policy_manager_ = std::make_unique<WebAppPolicyManager>(profile());
 

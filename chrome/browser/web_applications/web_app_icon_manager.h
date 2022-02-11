@@ -17,6 +17,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -32,7 +34,7 @@ class WebAppRegistrar;
 using SquareSizeDip = int;
 
 // Exclusively used from the UI thread.
-class WebAppIconManager : public AppRegistrarObserver {
+class WebAppIconManager : public WebAppInstallManagerObserver {
  public:
   using FaviconReadCallback =
       base::RepeatingCallback<void(const AppId& app_id)>;
@@ -41,6 +43,7 @@ class WebAppIconManager : public AppRegistrarObserver {
 
   WebAppIconManager(Profile* profile,
                     WebAppRegistrar& registrar,
+                    WebAppInstallManager& install_manager,
                     scoped_refptr<FileUtilsWrapper> utils);
   WebAppIconManager(const WebAppIconManager&) = delete;
   WebAppIconManager& operator=(const WebAppIconManager&) = delete;
@@ -148,9 +151,9 @@ class WebAppIconManager : public AppRegistrarObserver {
   gfx::ImageSkia GetFaviconImageSkia(const AppId& app_id) const;
   gfx::ImageSkia GetMonochromeFavicon(const AppId& app_id) const;
 
-  // AppRegistrarObserver:
+  // WebAppInstallManagerObserver:
   void OnWebAppInstalled(const AppId& app_id) override;
-  void OnAppRegistrarDestroyed() override;
+  void OnWebAppInstallManagerDestroyed() override;
 
   // Calls back with an icon of the |desired_icon_size| and |purpose|, resizing
   // an icon of a different size if necessary. If no icons were available, calls
@@ -203,12 +206,13 @@ class WebAppIconManager : public AppRegistrarObserver {
                                  gfx::ImageSkia converted_image);
 
   WebAppRegistrar& registrar_;
+  WebAppInstallManager& install_manager_;
   base::FilePath web_apps_directory_;
   scoped_refptr<FileUtilsWrapper> utils_;
   scoped_refptr<base::SequencedTaskRunner> icon_task_runner_;
 
-  base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
-      registrar_observation_{this};
+  base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
+      install_manager_observation_{this};
 
   // We cache different densities for high-DPI displays per each app.
   std::map<AppId, gfx::ImageSkia> favicon_cache_;

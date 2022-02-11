@@ -692,8 +692,10 @@ class WriteIconsJob {
 
 WebAppIconManager::WebAppIconManager(Profile* profile,
                                      WebAppRegistrar& registrar,
+                                     WebAppInstallManager& install_manager,
                                      scoped_refptr<FileUtilsWrapper> utils)
     : registrar_(registrar),
+      install_manager_(install_manager),
       utils_(std::move(utils)),
       icon_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -742,7 +744,7 @@ void WebAppIconManager::Start() {
       ReadMonochromeFavicon(app_id);
     }
   }
-  registrar_observation_.Observe(&registrar_);
+  install_manager_observation_.Observe(&install_manager_);
 }
 
 void WebAppIconManager::Shutdown() {}
@@ -945,8 +947,8 @@ void WebAppIconManager::OnWebAppInstalled(const AppId& app_id) {
   }
 }
 
-void WebAppIconManager::OnAppRegistrarDestroyed() {
-  registrar_observation_.Reset();
+void WebAppIconManager::OnWebAppInstallManagerDestroyed() {
+  install_manager_observation_.Reset();
 }
 
 void WebAppIconManager::ReadIconAndResize(const AppId& app_id,
