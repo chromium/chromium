@@ -109,6 +109,10 @@ class StandaloneBrowserExtensionApps : public KeyedService,
                     int64_t display_id,
                     GetMenuModelCallback callback) override;
   void StopApp(const std::string& app_id) override;
+  void Uninstall(const std::string& app_id,
+                 apps::mojom::UninstallSource uninstall_source,
+                 bool clear_site_data,
+                 bool report_abuse) override;
 
   // crosapi::mojom::AppPublisher overrides.
   void OnApps(std::vector<apps::mojom::AppPtr> deltas) override;

@@ -245,6 +245,19 @@ void StandaloneBrowserExtensionApps::StopApp(const std::string& app_id) {
 
   controller_->StopApp(app_id);
 }
+void StandaloneBrowserExtensionApps::Uninstall(
+    const std::string& app_id,
+    apps::mojom::UninstallSource uninstall_source,
+    bool clear_site_data,
+    bool report_abuse) {
+  // It is possible that Lacros is briefly unavailable, for example if it shuts
+  // down for an update.
+  if (!controller_.is_bound())
+    return;
+
+  controller_->Uninstall(app_id, uninstall_source, clear_site_data,
+                         report_abuse);
+}
 
 void StandaloneBrowserExtensionApps::OnApps(
     std::vector<apps::mojom::AppPtr> deltas) {
