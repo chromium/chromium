@@ -22,6 +22,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
@@ -56,7 +57,7 @@ constexpr char kProjectorCreationFlowHistogramName[] =
 constexpr char kProjectorTranscriptsCountHistogramName[] =
     "Ash.Projector.TranscriptsCount.ClamshellMode";
 
-constexpr char kFilePath[] = "random/file/path";
+constexpr char kProjectorExtension[] = "projector";
 
 void NotifyControllerForFinalSpeechResult(ProjectorControllerImpl* controller) {
   media::SpeechRecognitionResult result;
@@ -117,8 +118,7 @@ class ProjectorMetadataControllerForTest : public ProjectorMetadataController {
 class ProjectorControllerTest : public AshTestBase {
  public:
   ProjectorControllerTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        file_path_(kFilePath) {
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitWithFeatures(
         {features::kProjector, features::kProjectorAnnotator}, {});
   }
@@ -165,7 +165,7 @@ class ProjectorControllerTest : public AshTestBase {
   ProjectorControllerImpl* controller_;
   MockProjectorClient mock_client_;
   base::HistogramTester histogram_tester_;
-  base::FilePath file_path_;
+  base::ScopedTempDir temp_dir_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -331,11 +331,19 @@ TEST_F(ProjectorControllerTest, NoTranscriptsTest) {
   metadata_controller_->SetRunLoopQuitClosure(run_loop.QuitClosure());
 
   // Simulate ending the recording and saving the metadata file.
-  metadata_controller_->SaveMetadata(file_path_);
+  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+  metadata_controller_->SaveMetadata(temp_dir_.GetPath());
   run_loop.Run();
 
   histogram_tester_.ExpectUniqueSample(kProjectorTranscriptsCountHistogramName,
                                        /*sample=*/0, /*count=*/1);
+
+  // Verify the written metadata file size is between 0-100 bytes. Change this
+  // limit as needed if you make significant changes to the metadata file.
+  base::File file(temp_dir_.GetPath().AddExtension(kProjectorExtension),
+                  base::File::FLAG_OPEN | base::File::FLAG_READ);
+  EXPECT_GT(file.GetLength(), 0);
+  EXPECT_LT(file.GetLength(), 100);
 }
 
 TEST_F(ProjectorControllerTest, TranscriptsTest) {
@@ -350,11 +358,20 @@ TEST_F(ProjectorControllerTest, TranscriptsTest) {
   NotifyControllerForFinalSpeechResult(controller_);
 
   // Simulate ending the recording and saving the metadata file.
-  metadata_controller_->SaveMetadata(file_path_);
+  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+  metadata_controller_->SaveMetadata(temp_dir_.GetPath());
   run_loop.Run();
 
   histogram_tester_.ExpectUniqueSample(kProjectorTranscriptsCountHistogramName,
                                        /*sample=*/2, /*count=*/1);
+
+  // Verify the written metadata file size is between 400-500 bytes. This file
+  // should be larger than the one in the NoTranscriptsTest above. Change this
+  // limit as needed if you make significant changes to the metadata file.
+  base::File file(temp_dir_.GetPath().AddExtension(kProjectorExtension),
+                  base::File::FLAG_OPEN | base::File::FLAG_READ);
+  EXPECT_GT(file.GetLength(), 400);
+  EXPECT_LT(file.GetLength(), 500);
 }
 
 }  // namespace ash
