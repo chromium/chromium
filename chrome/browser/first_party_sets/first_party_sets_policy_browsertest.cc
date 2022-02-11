@@ -21,6 +21,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/frame_test_utils.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -112,7 +113,6 @@ class FirstPartySetsPolicyBrowsertest
     return chrome_test_utils::GetActiveWebContents(this);
   }
 
-  // Below adapted from http_cookie_browsertests.cc
   void SetSamePartyCookies(const std::string& host) {
     content::BrowserContext* context = web_contents()->GetBrowserContext();
     ASSERT_TRUE(content::SetCookie(
@@ -139,33 +139,6 @@ class FirstPartySetsPolicyBrowsertest
 
   std::string ExtractFrameContent(content::RenderFrameHost* frame) const {
     return content::EvalJs(frame, "document.body.textContent").ExtractString();
-  }
-
-  // Returns the text contents of the Cookie header from the leaf frame.
-  // `frame_tree_pattern` contains a format template for the query string to be
-  // passed to cross_site_iframe_factory, where the URL of the desired leaf
-  // frame is `leaf_url`, e.g. some URL that ends up at `/echoheader?Cookie`.
-  std::string ArrangeFramesAndGetContentFromLeaf(
-      const std::string& frame_tree_pattern,
-      const std::vector<int>& leaf_path,
-      const GURL& leaf_url) {
-    std::string frame_tree =
-        base::StringPrintf(frame_tree_pattern.c_str(), leaf_url.spec().c_str());
-    ArrangeFrames(frame_tree);
-    content::RenderFrameHost* leaf = SelectDescendentFrame(leaf_path);
-    return ExtractFrameContent(leaf);
-  }
-
-  // Returns the cookies for the leaf's origin.
-  // `frame_tree_pattern` contains a format template for the query string to be
-  // passed to cross_site_iframe_factory, where the URL of the desired leaf
-  // frame is `leaf_url`, e.g. some URL that ends up at `/set-cookie`.
-  std::vector<net::CanonicalCookie> ArrangeFramesAndGetCanonicalCookiesForLeaf(
-      const std::string& frame_tree_pattern,
-      const GURL& leaf_url) {
-    GURL leaf_origin_url = url::Origin::Create(leaf_url).GetURL();
-    return ArrangeFramesAndGetCanonicalCookiesForLeaf(
-        frame_tree_pattern, leaf_url, leaf_origin_url);
   }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
@@ -200,35 +173,6 @@ class FirstPartySetsPolicyBrowsertest
     return IsFeatureEnabled() && IsPrefEnabled();
   }
 
-  content::RenderFrameHost* SelectDescendentFrame(
-      const std::vector<int>& indices) {
-    content::RenderFrameHost* selected_frame =
-        static_cast<content::RenderFrameHost*>(web_contents()->GetMainFrame());
-    for (int index : indices) {
-      selected_frame = content::ChildFrameAt(selected_frame, index);
-    }
-    return selected_frame;
-  }
-
-  void ArrangeFrames(const std::string& frame_tree) {
-    ASSERT_TRUE(content::NavigateToURL(
-        web_contents(),
-        https_server()->GetURL(
-            frame_tree.substr(0, frame_tree.find("(")),
-            base::StrCat({"/cross_site_iframe_factory.html?", frame_tree}))));
-  }
-
-  std::vector<net::CanonicalCookie> ArrangeFramesAndGetCanonicalCookiesForLeaf(
-      const std::string& frame_tree_pattern,
-      const GURL& leaf_url,
-      const GURL& cookie_url) {
-    std::string frame_tree =
-        base::StringPrintf(frame_tree_pattern.c_str(), leaf_url.spec().c_str());
-    ArrangeFrames(frame_tree);
-    return content::GetCanonicalCookies(web_contents()->GetBrowserContext(),
-                                        cookie_url);
-  }
-
   net::test_server::EmbeddedTestServer https_server_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -246,16 +190,18 @@ IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
 IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
                        SetSameSiteFpsMemberEmbed) {
   // Same-site FPS-member iframe (A embedded in A).
-  EXPECT_THAT(ArrangeFramesAndGetCanonicalCookiesForLeaf(
-                  "a.test(%s)", SetSamePartyCookiesUrl(kHostA)),
+  EXPECT_THAT(content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
+                  web_contents(), https_server(), "a.test(%s)",
+                  SetSamePartyCookiesUrl(kHostA)),
               UnorderedPointwise(net::CanonicalCookieNameIs(), kAllCookies));
 }
 
 IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
                        SetCrossSiteSamePartyEmbedWithFpsOwnerTopLevel) {
   // Cross-site, same-party iframe (B embedded in A).
-  EXPECT_THAT(ArrangeFramesAndGetCanonicalCookiesForLeaf(
-                  "a.test(%s)", SetSamePartyCookiesUrl(kHostB)),
+  EXPECT_THAT(content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
+                  web_contents(), https_server(), "a.test(%s)",
+                  SetSamePartyCookiesUrl(kHostB)),
               UnorderedPointwise(net::CanonicalCookieNameIs(),
                                  ExpectedCrossSiteCookiesInSamePartyContext()));
 }
@@ -263,8 +209,9 @@ IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
 IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
                        SetCrossSiteSamePartyEmbedWithFpsOwnerLeaf) {
   // Cross-site, same-party iframe (A embedded in B).
-  EXPECT_THAT(ArrangeFramesAndGetCanonicalCookiesForLeaf(
-                  "b.test(%s)", SetSamePartyCookiesUrl(kHostA)),
+  EXPECT_THAT(content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
+                  web_contents(), https_server(), "b.test(%s)",
+                  SetSamePartyCookiesUrl(kHostA)),
               UnorderedPointwise(net::CanonicalCookieNameIs(),
                                  ExpectedCrossSiteCookiesInSamePartyContext()));
 }
@@ -273,8 +220,9 @@ IN_PROC_BROWSER_TEST_P(
     FirstPartySetsPolicyBrowsertest,
     SetCrossSiteSamePartyWithTwoNestedSamePartyContextFrames) {
   // Cross-site, same-party nested iframe (A embedded in B embedded in A).
-  EXPECT_THAT(ArrangeFramesAndGetCanonicalCookiesForLeaf(
-                  "a.test(b.test(%s))", SetSamePartyCookiesUrl(kHostA)),
+  EXPECT_THAT(content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
+                  web_contents(), https_server(), "a.test(b.test(%s))",
+                  SetSamePartyCookiesUrl(kHostA)),
               UnorderedPointwise(net::CanonicalCookieNameIs(),
                                  ExpectedCrossSiteCookiesInSamePartyContext()));
 }
@@ -284,8 +232,9 @@ IN_PROC_BROWSER_TEST_P(
     SetCrossSiteSamePartyWithThreeNestedSamePartyContextFrames) {
   // Cross-site, same-party nested iframe (A embedded in B embedded in C
   // embedded in A).
-  EXPECT_THAT(ArrangeFramesAndGetCanonicalCookiesForLeaf(
-                  "a.test(c.test(b.test(%s)))", SetSamePartyCookiesUrl(kHostA)),
+  EXPECT_THAT(content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
+                  web_contents(), https_server(), "a.test(c.test(b.test(%s)))",
+                  SetSamePartyCookiesUrl(kHostA)),
               UnorderedPointwise(net::CanonicalCookieNameIs(),
                                  ExpectedCrossSiteCookiesInSamePartyContext()));
 }
@@ -294,8 +243,9 @@ IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
                        SetCrossSiteCrossPartyEmbedWithFpsTopLevel) {
   // Cross-site, cross-party iframe (D embedded in A).
   EXPECT_THAT(
-      ArrangeFramesAndGetCanonicalCookiesForLeaf(
-          "a.test(%s)", SetSamePartyCookiesUrl(kHostD)),
+      content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
+          web_contents(), https_server(), "a.test(%s)",
+          SetSamePartyCookiesUrl(kHostD)),
       UnorderedPointwise(net::CanonicalCookieNameIs(), kSameSiteNoneCookies));
 }
 
@@ -303,8 +253,9 @@ IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
                        SetCrossSiteCrossPartyEmbedWithFpsLeaf) {
   // Cross-site, cross-party iframe (A embedded in D).
   EXPECT_THAT(
-      ArrangeFramesAndGetCanonicalCookiesForLeaf(
-          "d.test(%s)", SetSamePartyCookiesUrl(kHostA)),
+      content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
+          web_contents(), https_server(), "d.test(%s)",
+          SetSamePartyCookiesUrl(kHostA)),
       UnorderedPointwise(net::CanonicalCookieNameIs(),
                          ExpectedCrossSiteCookiesInCrossPartyContext()));
 }
@@ -314,8 +265,9 @@ IN_PROC_BROWSER_TEST_P(
     SetCrossSiteCrossPartyWithTwoNestedCrossPartyContextFrames) {
   // Cross-site, cross-party nested iframe (A embedded in B embedded in D).
   EXPECT_THAT(
-      ArrangeFramesAndGetCanonicalCookiesForLeaf(
-          "d.test(b.test(%s))", SetSamePartyCookiesUrl(kHostA)),
+      content::ArrangeFramesAndGetCanonicalCookiesForLeaf(
+          web_contents(), https_server(), "d.test(b.test(%s))",
+          SetSamePartyCookiesUrl(kHostA)),
       UnorderedPointwise(net::CanonicalCookieNameIs(),
                          ExpectedCrossSiteCookiesInCrossPartyContext()));
 }
@@ -346,8 +298,9 @@ IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
   ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostA));
   // Same-site FPS-member iframe (A embedded in A).
   EXPECT_THAT(
-      ArrangeFramesAndGetContentFromLeaf("a.test(%s)", {0},
-                                         EchoCookiesUrl(kHostA)),
+      content::ArrangeFramesAndGetContentFromLeaf(web_contents(),
+                                                  https_server(), "a.test(%s)",
+                                                  {0}, EchoCookiesUrl(kHostA)),
       net::CookieStringIs(UnorderedPointwise(net::NameIs(), kAllCookies)));
 }
 
@@ -356,8 +309,9 @@ IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
   ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostB));
   // Cross-site, same-party iframe (B embedded in A).
   EXPECT_THAT(
-      ArrangeFramesAndGetContentFromLeaf("a.test(%s)", {0},
-                                         EchoCookiesUrl(kHostB)),
+      content::ArrangeFramesAndGetContentFromLeaf(web_contents(),
+                                                  https_server(), "a.test(%s)",
+                                                  {0}, EchoCookiesUrl(kHostB)),
       net::CookieStringIs(UnorderedPointwise(
           net::NameIs(), ExpectedCrossSiteCookiesInSamePartyContext())));
 }
@@ -367,8 +321,9 @@ IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
   ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostA));
   // Cross-site, same-party iframe (A embedded in B).
   EXPECT_THAT(
-      ArrangeFramesAndGetContentFromLeaf("b.test(%s)", {0},
-                                         EchoCookiesUrl(kHostA)),
+      content::ArrangeFramesAndGetContentFromLeaf(web_contents(),
+                                                  https_server(), "b.test(%s)",
+                                                  {0}, EchoCookiesUrl(kHostA)),
       net::CookieStringIs(UnorderedPointwise(
           net::NameIs(), ExpectedCrossSiteCookiesInSamePartyContext())));
 }
@@ -379,8 +334,9 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostA));
   // Cross-site, same-party nested iframe (A embedded in B embedded in A).
   EXPECT_THAT(
-      ArrangeFramesAndGetContentFromLeaf("a.test(b.test(%s))", {0, 0},
-                                         EchoCookiesUrl(kHostA)),
+      content::ArrangeFramesAndGetContentFromLeaf(
+          web_contents(), https_server(), "a.test(b.test(%s))", {0, 0},
+          EchoCookiesUrl(kHostA)),
       net::CookieStringIs(UnorderedPointwise(
           net::NameIs(), ExpectedCrossSiteCookiesInSamePartyContext())));
 }
@@ -392,8 +348,9 @@ IN_PROC_BROWSER_TEST_P(
   // Cross-site, same-party nested iframe (A embedded in B embedded in C
   // embedded in A).
   EXPECT_THAT(
-      ArrangeFramesAndGetContentFromLeaf("a.test(c.test(b.test(%s)))",
-                                         {0, 0, 0}, EchoCookiesUrl(kHostA)),
+      content::ArrangeFramesAndGetContentFromLeaf(
+          web_contents(), https_server(), "a.test(c.test(b.test(%s)))",
+          {0, 0, 0}, EchoCookiesUrl(kHostA)),
       net::CookieStringIs(UnorderedPointwise(
           net::NameIs(), ExpectedCrossSiteCookiesInSamePartyContext())));
 }
@@ -402,8 +359,9 @@ IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
                        SendCrossSiteCrossPartyEmbedWithFpsTopLevel) {
   ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostD));
   // Cross-site, cross-party iframe (D embedded in A).
-  EXPECT_THAT(ArrangeFramesAndGetContentFromLeaf("a.test(%s)", {0},
-                                                 EchoCookiesUrl(kHostD)),
+  EXPECT_THAT(content::ArrangeFramesAndGetContentFromLeaf(
+                  web_contents(), https_server(), "a.test(%s)", {0},
+                  EchoCookiesUrl(kHostD)),
               net::CookieStringIs(
                   UnorderedPointwise(net::NameIs(), kSameSiteNoneCookies)));
 }
@@ -413,8 +371,9 @@ IN_PROC_BROWSER_TEST_P(FirstPartySetsPolicyBrowsertest,
   ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostA));
   // Cross-site, cross-party iframe (A embedded in D).
   EXPECT_THAT(
-      ArrangeFramesAndGetContentFromLeaf("d.test(%s)", {0},
-                                         EchoCookiesUrl(kHostA)),
+      content::ArrangeFramesAndGetContentFromLeaf(web_contents(),
+                                                  https_server(), "d.test(%s)",
+                                                  {0}, EchoCookiesUrl(kHostA)),
       net::CookieStringIs(UnorderedPointwise(
           net::NameIs(), ExpectedCrossSiteCookiesInCrossPartyContext())));
 }
@@ -425,8 +384,9 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_NO_FATAL_FAILURE(SetSamePartyCookies(kHostA));
   // Cross-site, cross-party nested iframe (A embedded in B embedded in D).
   EXPECT_THAT(
-      ArrangeFramesAndGetContentFromLeaf("d.test(b.test(%s))", {0, 0},
-                                         EchoCookiesUrl(kHostA)),
+      content::ArrangeFramesAndGetContentFromLeaf(
+          web_contents(), https_server(), "d.test(b.test(%s))", {0, 0},
+          EchoCookiesUrl(kHostA)),
       net::CookieStringIs(UnorderedPointwise(
           net::NameIs(), ExpectedCrossSiteCookiesInCrossPartyContext())));
 }

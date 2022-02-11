@@ -160,6 +160,8 @@ static_library("test_support") {
     "../public/test/focus_changed_observer.h",
     "../public/test/frame_load_waiter.cc",
     "../public/test/frame_load_waiter.h",
+    "../public/test/frame_test_utils.cc",
+    "../public/test/frame_test_utils.h",
     "../public/test/hit_test_region_observer.cc",
     "../public/test/hit_test_region_observer.h",
     "../public/test/idle_test_utils.cc",
