@@ -17,7 +17,7 @@ namespace device {
 /******** PowerSaveBlocker::Delegate ********/
 
 // Lacros-chrome PowerSaveBlocker uses ash-chrome ProwerSaveBlocker via either
-// Wayland (the default) or crosapi (if the idle inhibitor feature is disabled).
+// crosapi (the default) or Wayland (if the idle inhibitor feature is enabled).
 // RAII style is maintained by keeping a crosapi::mojom::PowerWakeLock Mojo
 // connection, whose disconnection triggers resource release in ash-chrome.
 // TODO(b/193670013): Cleanup logic after Wayland idle inhibitor replaces

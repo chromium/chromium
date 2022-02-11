@@ -496,7 +496,7 @@ const base::Feature kEnableHostnameSetting{"EnableHostnameSetting",
 // Wayland server. On Lacros, it determines whether the power save blocker is
 // invoked via Ozone Wayland (if enabled) or via crosapi (if disabled).
 const base::Feature kEnableIdleInhibit{"EnableIdleInhibit",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If enabled, the input device cards will be shown in the diagnostics app.
 const base::Feature kEnableInputInDiagnosticsApp{
