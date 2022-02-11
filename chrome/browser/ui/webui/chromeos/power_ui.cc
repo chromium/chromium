@@ -96,7 +96,7 @@ void PowerMessageHandler::OnGetBatteryChargeData(const base::ListValue* args) {
     element->SetDoubleKey("batteryPercent", sample.battery_percent);
     element->SetDoubleKey("batteryDischargeRate",
                           sample.battery_discharge_rate);
-    element->SetBoolean("externalPower", sample.external_power);
+    element->SetBoolKey("externalPower", sample.external_power);
     element->SetDoubleKey("time", sample.time.ToJsTime());
 
     js_power_supply_data.Append(std::move(element));
@@ -212,7 +212,7 @@ void PowerMessageHandler::GetJsStateOccupancyData(
       std::unique_ptr<base::DictionaryValue> js_sample(
           new base::DictionaryValue);
       js_sample->SetDoubleKey("time", sample.time.ToJsTime());
-      js_sample->SetBoolean("cpuOnline", sample.cpu_online);
+      js_sample->SetBoolKey("cpuOnline", sample.cpu_online);
 
       base::DictionaryValue state_dict;
       for (size_t index = 0; index < sample.time_in_state.size(); ++index) {

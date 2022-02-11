@@ -51,7 +51,7 @@ void NetworkScreenHandler::Show() {
   }
 
   base::DictionaryValue data;
-  data.SetBoolean("isDemoModeSetup",
+  data.SetBoolKey("isDemoModeSetup",
                   DemoSetupController::IsOobeDemoSetupFlowInProgress());
   ShowScreenWithData(kScreenId, &data);
 }

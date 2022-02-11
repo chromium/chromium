@@ -90,7 +90,7 @@ void WelcomeScreenHandler::Show() {
   }
 
   base::DictionaryValue welcome_screen_params;
-  welcome_screen_params.SetBoolean(
+  welcome_screen_params.SetBoolKey(
       "isDeveloperMode", base::CommandLine::ForCurrentProcess()->HasSwitch(
                              chromeos::switches::kSystemDevMode));
   ShowScreenWithData(kScreenId, &welcome_screen_params);
@@ -364,20 +364,20 @@ void WelcomeScreenHandler::OnAccessibilityStatusChanged(
 
 void WelcomeScreenHandler::UpdateA11yState() {
   base::DictionaryValue a11y_info;
-  a11y_info.SetBoolean("highContrastEnabled",
+  a11y_info.SetBoolKey("highContrastEnabled",
                        AccessibilityManager::Get()->IsHighContrastEnabled());
-  a11y_info.SetBoolean("largeCursorEnabled",
+  a11y_info.SetBoolKey("largeCursorEnabled",
                        AccessibilityManager::Get()->IsLargeCursorEnabled());
-  a11y_info.SetBoolean("spokenFeedbackEnabled",
+  a11y_info.SetBoolKey("spokenFeedbackEnabled",
                        AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
-  a11y_info.SetBoolean("selectToSpeakEnabled",
+  a11y_info.SetBoolKey("selectToSpeakEnabled",
                        AccessibilityManager::Get()->IsSelectToSpeakEnabled());
   DCHECK(MagnificationManager::Get());
-  a11y_info.SetBoolean("screenMagnifierEnabled",
+  a11y_info.SetBoolKey("screenMagnifierEnabled",
                        MagnificationManager::Get()->IsMagnifierEnabled());
-  a11y_info.SetBoolean("dockedMagnifierEnabled",
+  a11y_info.SetBoolKey("dockedMagnifierEnabled",
                        MagnificationManager::Get()->IsDockedMagnifierEnabled());
-  a11y_info.SetBoolean("virtualKeyboardEnabled",
+  a11y_info.SetBoolKey("virtualKeyboardEnabled",
                        AccessibilityManager::Get()->IsVirtualKeyboardEnabled());
   if (screen_ && AccessibilityManager::Get()->IsSpokenFeedbackEnabled())
     CancelChromeVoxHintIdleDetection();

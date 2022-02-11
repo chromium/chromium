@@ -47,14 +47,14 @@ DictionaryValue CreateOsSyncPrefs(SyncAllConfig sync_all,
                                   UserSelectableOsTypeSet types,
                                   bool wallpaper_enabled) {
   DictionaryValue result;
-  result.SetBoolean("syncAllOsTypes", sync_all == SYNC_ALL_OS_TYPES);
+  result.SetBoolKey("syncAllOsTypes", sync_all == SYNC_ALL_OS_TYPES);
   // Add all of our data types.
-  result.SetBoolean("osAppsSynced", types.Has(UserSelectableOsType::kOsApps));
-  result.SetBoolean("osPreferencesSynced",
+  result.SetBoolKey("osAppsSynced", types.Has(UserSelectableOsType::kOsApps));
+  result.SetBoolKey("osPreferencesSynced",
                     types.Has(UserSelectableOsType::kOsPreferences));
-  result.SetBoolean("osWifiConfigurationsSynced",
+  result.SetBoolKey("osWifiConfigurationsSynced",
                     types.Has(UserSelectableOsType::kOsWifiConfigurations));
-  result.SetBoolean("wallpaperEnabled",
+  result.SetBoolKey("wallpaperEnabled",
                     sync_all == SYNC_ALL_OS_TYPES || wallpaper_enabled);
   return result;
 }

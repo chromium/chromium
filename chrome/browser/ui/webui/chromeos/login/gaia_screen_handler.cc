@@ -1165,7 +1165,7 @@ void GaiaScreenHandler::SetSAMLPrincipalsAPIUsed(bool is_third_party_idp,
 
 void GaiaScreenHandler::Show() {
   base::DictionaryValue data;
-  data.SetBoolean("hasUserPods",
+  data.SetBoolKey("hasUserPods",
                   LoginDisplayHost::default_host()->HasUserPods());
   ShowScreenWithData(GaiaView::kScreenId, &data);
   elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
@@ -1350,14 +1350,14 @@ void GaiaScreenHandler::ShowGaiaScreenIfReady() {
 
 void GaiaScreenHandler::ShowAllowlistCheckFailedError() {
   base::DictionaryValue params;
-  params.SetBoolean("enterpriseManaged", g_browser_process->platform_part()
+  params.SetBoolKey("enterpriseManaged", g_browser_process->platform_part()
                                              ->browser_policy_connector_ash()
                                              ->IsDeviceEnterpriseManaged());
 
   bool family_link_allowed = false;
   CrosSettings::Get()->GetBoolean(kAccountsPrefFamilyLinkAccountsAllowed,
                                   &family_link_allowed);
-  params.SetBoolean("familyLinkAllowed", family_link_allowed);
+  params.SetBoolKey("familyLinkAllowed", family_link_allowed);
 
   CallJS("login.GaiaSigninScreen.showAllowlistCheckFailedError", true, params);
 }
