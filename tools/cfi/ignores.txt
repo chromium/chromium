@@ -156,8 +156,8 @@ fun:*FunctorTraits*
 
 # PipeWire due to https://crbug.com/926115
 src:*/include/spa/*
-src:*third_party/webrtc/modules/desktop_capture/linux/pipewire_stubs.cc
-src:*third_party/webrtc/modules/desktop_capture/linux/base_capturer_pipewire.cc
+src:*third_party/webrtc/modules/desktop_capture/linux/wayland/pipewire_stubs.cc
+src:*third_party/webrtc/modules/desktop_capture/linux/wayland/base_capturer_pipewire.cc
 
 # Calls to auto-generated stubs by generate_stubs.py
 src:*audio/pulse/pulse_stubs.cc
