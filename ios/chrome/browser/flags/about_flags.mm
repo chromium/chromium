@@ -785,6 +785,13 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          web::features::kWebViewNativeContextMenuPhase2Screenshot)},
+    {"autofill-enable-unmask-card-request-set-instrument-id",
+     flag_descriptions::kAutofillEnableUnmaskCardRequestSetInstrumentIdName,
+     flag_descriptions::
+         kAutofillEnableUnmaskCardRequestSetInstrumentIdDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableUnmaskCardRequestSetInstrumentId)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

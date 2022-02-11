@@ -422,7 +422,11 @@
   },
   {
     "name": "autofill-enable-sending-bcn-in-get-upload-details",
-    "owners": [ "chashivani", "jsaul", "payments-autofill-team@google.com" ],
+    "owners": [
+      "chashivani@google.com",
+      "jsaul@google.com",
+      "payments-autofill-team@google.com"
+    ],
     "expiry_milestone": 105
   },
   {
@@ -434,6 +438,11 @@
     "name": "autofill-enable-toolbar-status-chip",
     "owners": [ "siyua" ],
     "expiry_milestone": 102
+  },
+  {
+    "name": "autofill-enable-unmask-card-request-set-instrument-id",
+    "owners": ["chashivani@google.com", "jsaul@google.com"],
+    "expiry_milestone": 105
   },
   {
     "name": "autofill-enable-update-virtual-card-enrollment",

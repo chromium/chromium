@@ -351,6 +351,12 @@ const char kAutofillEnableToolbarStatusChipDescription[] =
     "When enabled, Autofill data related icon will be shown in the status "
     "chip next to the profile avatar icon in the toolbar.";
 
+const char kAutofillEnableUnmaskCardRequestSetInstrumentIdName[] =
+    "When enabled, sets non-legacy instrument ID in UnmaskCardRequest";
+const char kAutofillEnableUnmaskCardRequestSetInstrumentIdDescription[] =
+    "When enabled, UnmaskCardRequest will set the card's non-legacy ID when "
+    "available.";
+
 const char kAutofillEnableUpdateVirtualCardEnrollmentName[] =
     "Enable Update Virtual Card Enrollment";
 const char kAutofillEnableUpdateVirtualCardEnrollmentDescription[] =

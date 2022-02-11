@@ -7955,6 +7955,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(commerce::kDiscountConsentV2)},
 #endif
 
+    {"autofill-enable-unmask-card-request-set-instrument-id",
+     flag_descriptions::kAutofillEnableUnmaskCardRequestSetInstrumentIdName,
+     flag_descriptions::
+         kAutofillEnableUnmaskCardRequestSetInstrumentIdDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableUnmaskCardRequestSetInstrumentId)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

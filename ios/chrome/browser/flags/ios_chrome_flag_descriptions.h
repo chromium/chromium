@@ -25,6 +25,11 @@ extern const char kAutofillCreditCardUploadDescription[];
 extern const char kAutofillEnableSendingBcnInGetUploadDetailsName[];
 extern const char kAutofillEnableSendingBcnInGetUploadDetailsDescription[];
 
+// Title and description for flag to enable sending non-legacy instrument ID in
+// UnmaskCardRequest.
+extern const char kAutofillEnableUnmaskCardRequestSetInstrumentIdName[];
+extern const char kAutofillEnableUnmaskCardRequestSetInstrumentIdDescription[];
+
 // Title and description for the flag to fill promo code fields with Autofill.
 extern const char kAutofillFillMerchantPromoCodeFieldsName[];
 extern const char kAutofillFillMerchantPromoCodeFieldsDescription[];

@@ -27,6 +27,12 @@ const char kAutofillEnableSendingBcnInGetUploadDetailsDescription[] =
     "When enabled the billing customer number will be sent in the "
     "GetUploadDetails preflight calls.";
 
+const char kAutofillEnableUnmaskCardRequestSetInstrumentIdName[] =
+    "When enabled, sets non-legacy instrument ID in UnmaskCardRequest";
+const char kAutofillEnableUnmaskCardRequestSetInstrumentIdDescription[] =
+    "When enabled, UnmaskCardRequest will set the card's non-legacy ID when "
+    "available.";
+
 const char kAutofillFillMerchantPromoCodeFieldsName[] =
     "Enable Autofill of promo code fields in forms";
 const char kAutofillFillMerchantPromoCodeFieldsDescription[] =
