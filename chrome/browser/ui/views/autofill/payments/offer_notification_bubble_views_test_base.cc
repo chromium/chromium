@@ -46,7 +46,11 @@ OfferNotificationBubbleViewsTestBase::~OfferNotificationBubbleViewsTestBase() =
 
 void OfferNotificationBubbleViewsTestBase::SetUpOnMainThread() {
   // Set up this class as the ObserverForTest implementation.
-  AddEventObserverToController();
+  OfferNotificationBubbleControllerImpl* controller =
+      static_cast<OfferNotificationBubbleControllerImpl*>(
+          OfferNotificationBubbleController::GetOrCreate(
+              GetActiveWebContents()));
+  AddEventObserverToController(controller);
 
   personal_data_ =
       PersonalDataManagerFactory::GetForProfile(browser()->profile());
@@ -201,11 +205,8 @@ OfferNotificationBubbleViewsTestBase::GetActiveWebContents() {
   return browser()->tab_strip_model()->GetActiveWebContents();
 }
 
-void OfferNotificationBubbleViewsTestBase::AddEventObserverToController() {
-  OfferNotificationBubbleControllerImpl* controller =
-      static_cast<OfferNotificationBubbleControllerImpl*>(
-          OfferNotificationBubbleController::GetOrCreate(
-              GetActiveWebContents()));
+void OfferNotificationBubbleViewsTestBase::AddEventObserverToController(
+    OfferNotificationBubbleControllerImpl* controller) {
   DCHECK(controller);
   controller->SetEventObserverForTesting(this);
 }
@@ -224,6 +225,13 @@ void OfferNotificationBubbleViewsTestBase::UpdateFreeListingCouponDisplayTime(
 std::string OfferNotificationBubbleViewsTestBase::GetDefaultTestPromoCode()
     const {
   return kDefaultTestPromoCode;
+}
+
+AutofillOfferManager* OfferNotificationBubbleViewsTestBase::GetOfferManager() {
+  return ContentAutofillDriver::GetForRenderFrameHost(
+             GetActiveWebContents()->GetMainFrame())
+      ->browser_autofill_manager()
+      ->offer_manager();
 }
 
 }  // namespace autofill

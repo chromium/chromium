@@ -4,23 +4,17 @@
 
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 
-#include <map>
-
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/ranges/ranges.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
 
 namespace autofill {
 
@@ -39,6 +33,10 @@ AutofillOfferManager::~AutofillOfferManager() {
 
 void AutofillOfferManager::OnPersonalDataChanged() {
   UpdateEligibleMerchantDomains();
+}
+
+void AutofillOfferManager::OnDidNavigateFrame(AutofillClient* client) {
+  notification_handler_.UpdateOfferNotificationVisibility(client);
 }
 
 void AutofillOfferManager::UpdateSuggestionsWithOffers(

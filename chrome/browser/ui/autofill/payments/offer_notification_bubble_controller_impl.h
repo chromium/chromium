@@ -36,6 +36,16 @@ class OfferNotificationBubbleControllerImpl
     virtual void OnBubbleShown() {}
   };
 
+  // Enum for the current showing state of the bubble.
+  enum class BubbleState {
+    // The bubble and the omnibox icon should be hidden.
+    kHidden = 0,
+    // Only the omnibox icon should be visible.
+    kShowingIcon = 1,
+    // The bubble and the omnibox icon should be both visible.
+    kShowingIconAndBubble = 2,
+  };
+
   ~OfferNotificationBubbleControllerImpl() override;
   OfferNotificationBubbleControllerImpl(
       const OfferNotificationBubbleControllerImpl&) = delete;
@@ -55,12 +65,18 @@ class OfferNotificationBubbleControllerImpl
 
   // Displays an offer notification for the given |offer| on the current page.
   // The information of the |card|, if present, will be displayed in the bubble
-  // for a card-linked offer.
+  // for a card-linked offer. |should_show_icon_only| indicates whether client
+  // should just show the offer omnibox icon instead of the icon and the bubble
+  // on this merchant website.
   void ShowOfferNotificationIfApplicable(const AutofillOfferData* offer,
-                                         const CreditCard* card);
+                                         const CreditCard* card,
+                                         bool should_show_icon_only);
 
   // Called when user clicks on omnibox icon.
   void ReshowBubble();
+
+  // Removes any visible bubble and the omnibox icon.
+  void DismissNotification();
 
   // CouponService::CouponServiceObserver:
   void OnCouponInvalidated(
@@ -71,9 +87,12 @@ class OfferNotificationBubbleControllerImpl
       content::WebContents* web_contents);
 
   // AutofillBubbleControllerBase:
-  void PrimaryPageChanged(content::Page& page) override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
   PageActionIconType GetPageActionIconType() override;
   void DoShowBubble() override;
+
+  // Returns whether the web content associated with this controller is active.
+  virtual bool IsWebContentsActive();
 
  private:
   friend class content::WebContentsUserData<
@@ -81,25 +100,23 @@ class OfferNotificationBubbleControllerImpl
   friend class OfferNotificationBubbleControllerImplTest;
   friend class OfferNotificationBubbleViewsTestBase;
 
-  // Returns whether the web content associated with this controller is active.
-  bool IsWebContentsActive();
+  // Hides the bubble if it is visible and resets the bubble shown timestamp.
+  // |should_show_icon| decides whether the icon should be visible after the
+  // bubble is dismissed.
+  void HideBubbleAndClearTimestamp(bool should_show_icon);
 
   // For testing.
   void SetEventObserverForTesting(ObserverForTest* observer) {
     observer_for_testing_ = observer;
   }
 
-  // Reset offer-related variables and hide all offer-related UIs.
-  void ClearCurrentOffer();
-
   // The timestamp that the bubble has been shown. Used to check if the bubble
-  // has been shown for longer than
-  // kAutofillBubbleSurviveNavigationTime (5 seconds).
-  base::Time bubble_shown_timestamp_;
+  // has been shown for longer than kAutofillBubbleSurviveNavigationTime.
+  absl::optional<base::Time> bubble_shown_timestamp_;
 
   // The Autofill offer being displayed as a bubble. Set when the bubble is
   // requested to be shown via ShowOfferNotificationIfApplicable(~).
-  raw_ptr<const AutofillOfferData> offer_;
+  raw_ptr<const AutofillOfferData> offer_ = nullptr;
 
   // Denotes whether the bubble is shown due to user gesture. If this is true,
   // it means the bubble is a reshown bubble.
@@ -113,14 +130,11 @@ class OfferNotificationBubbleControllerImpl
   // Determines the appropriate hover tooltip for the button.
   bool promo_code_button_clicked_ = false;
 
-  // The bubble and icon are sticky over a given set of origins. This is
-  // populated when ShowOfferNotificationIfApplicable() is called and is cleared
-  // when navigating to a origins outside of this set, or when the corresponding
-  // offer is no longer valid.
-  std::vector<GURL> origins_to_display_bubble_;
-
   // Used to update coupon last display timestamp.
   raw_ptr<CouponService> coupon_service_;
+
+  // Records the current state of the bubble.
+  BubbleState bubble_state_ = BubbleState::kHidden;
 
   raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
 

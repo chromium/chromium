@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/autofill/payments/offer_notification_infobar_controller_impl.h"
 
 #include "chrome/browser/ui/android/infobars/autofill_offer_notification_infobar.h"
-#include "chrome/browser/ui/autofill/payments/offer_notification_helper.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/payments/autofill_offer_notification_infobar_delegate_mobile.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -22,21 +21,29 @@ void OfferNotificationInfoBarControllerImpl::ShowIfNecessary(
     const AutofillOfferData* offer,
     const CreditCard* card) {
   DCHECK(offer);
-
-  OfferNotificationHelper::CreateForWebContents(web_contents_);
-  OfferNotificationHelper* offer_notification_helper =
-      OfferNotificationHelper::FromWebContents(web_contents_);
-  if (offer_notification_helper->OfferNotificationHasAlreadyBeenShown())
+  if (!card)
     return;
 
-  std::vector<GURL> origins_to_display_infobar = offer->merchant_origins;
-  if (card) {
-    infobars::ContentInfoBarManager::FromWebContents(web_contents_)
-        ->AddInfoBar(std::make_unique<AutofillOfferNotificationInfoBar>(
-            std::make_unique<AutofillOfferNotificationInfoBarDelegateMobile>(
-                offer->offer_details_url, *card)));
-    offer_notification_helper->OnDisplayOfferNotification(
-        origins_to_display_infobar);
+  infobars::ContentInfoBarManager::FromWebContents(web_contents_)
+      ->AddInfoBar(std::make_unique<AutofillOfferNotificationInfoBar>(
+          std::make_unique<AutofillOfferNotificationInfoBarDelegateMobile>(
+              offer->offer_details_url, *card)));
+}
+
+void OfferNotificationInfoBarControllerImpl::Dismiss() {
+  infobars::ContentInfoBarManager* content_infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents_);
+  if (!content_infobar_manager)
+    return;
+
+  for (size_t i = 0; i < content_infobar_manager->infobar_count(); ++i) {
+    infobars::InfoBar* infobar = content_infobar_manager->infobar_at(i);
+    if (infobar->delegate()->GetIdentifier() ==
+        infobars::InfoBarDelegate::
+            AUTOFILL_OFFER_NOTIFICATION_INFOBAR_DELEGATE) {
+      content_infobar_manager->RemoveInfoBar(infobar);
+      return;
+    }
   }
 }
 
