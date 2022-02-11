@@ -37,6 +37,7 @@ using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
 using ::testing::Return;
+using ::testing::SizeIs;
 
 namespace {
 
@@ -118,18 +119,22 @@ bool ExtractCurrentEntryToFilePath(zip::ZipReader* reader,
                                      std::numeric_limits<uint64_t>::max());
 }
 
-bool LocateAndOpenEntry(zip::ZipReader* reader,
-                        const base::FilePath& path_in_zip) {
+const zip::ZipReader::Entry* LocateAndOpenEntry(
+    zip::ZipReader* const reader,
+    const base::FilePath& path_in_zip) {
+  DCHECK(reader);
+  EXPECT_TRUE(reader->ok());
+
   // The underlying library can do O(1) access, but ZipReader does not expose
   // that. O(N) access is acceptable for these tests.
-  while (reader->HasMore()) {
-    if (!reader->OpenCurrentEntryInZip())
-      return false;
-    if (reader->current_entry_info()->file_path() == path_in_zip)
-      return true;
-    reader->AdvanceToNextEntry();
+  while (const zip::ZipReader::Entry* const entry = reader->Next()) {
+    EXPECT_TRUE(reader->ok());
+    if (entry->path == path_in_zip)
+      return entry;
   }
-  return false;
+
+  EXPECT_TRUE(reader->ok());
+  return nullptr;
 }
 
 using Paths = std::vector<base::FilePath>;
@@ -166,11 +171,12 @@ class ZipReaderTest : public PlatformTest {
       if (!encoding.empty())
         reader.SetEncoding(std::string(encoding));
 
-      while (reader.HasMore()) {
-        if (reader.OpenCurrentEntryInZip())
-          paths.push_back(reader.current_entry_info()->file_path());
-        reader.AdvanceToNextEntry();
+      while (const ZipReader::Entry* const entry = reader.Next()) {
+        EXPECT_TRUE(reader.ok());
+        paths.push_back(entry->path);
       }
+
+      EXPECT_TRUE(reader.ok());
     }
 
     return paths;
@@ -197,28 +203,37 @@ class ZipReaderTest : public PlatformTest {
 
 TEST_F(ZipReaderTest, Open_ValidZipFile) {
   ZipReader reader;
-  ASSERT_TRUE(reader.Open(test_zip_file_));
+  EXPECT_TRUE(reader.Open(test_zip_file_));
+  EXPECT_TRUE(reader.ok());
 }
 
 TEST_F(ZipReaderTest, Open_ValidZipPlatformFile) {
   ZipReader reader;
+  EXPECT_FALSE(reader.ok());
   FileWrapper zip_fd_wrapper(test_zip_file_, FileWrapper::READ_ONLY);
-  ASSERT_TRUE(reader.OpenFromPlatformFile(zip_fd_wrapper.platform_file()));
+  EXPECT_TRUE(reader.OpenFromPlatformFile(zip_fd_wrapper.platform_file()));
+  EXPECT_TRUE(reader.ok());
 }
 
 TEST_F(ZipReaderTest, Open_NonExistentFile) {
   ZipReader reader;
-  ASSERT_FALSE(reader.Open(data_dir_.AppendASCII("nonexistent.zip")));
+  EXPECT_FALSE(reader.ok());
+  EXPECT_FALSE(reader.Open(data_dir_.AppendASCII("nonexistent.zip")));
+  EXPECT_FALSE(reader.ok());
 }
 
 TEST_F(ZipReaderTest, Open_ExistentButNonZipFile) {
   ZipReader reader;
-  ASSERT_FALSE(reader.Open(data_dir_.AppendASCII("create_test_zip.sh")));
+  EXPECT_FALSE(reader.ok());
+  EXPECT_FALSE(reader.Open(data_dir_.AppendASCII("create_test_zip.sh")));
+  EXPECT_FALSE(reader.ok());
 }
 
 TEST_F(ZipReaderTest, Open_EmptyFile) {
   ZipReader reader;
+  EXPECT_FALSE(reader.ok());
   EXPECT_FALSE(reader.Open(data_dir_.AppendASCII("empty.zip")));
+  EXPECT_FALSE(reader.ok());
 }
 
 // Iterate through the contents in the test ZIP archive, and compare that the
@@ -226,15 +241,19 @@ TEST_F(ZipReaderTest, Open_EmptyFile) {
 TEST_F(ZipReaderTest, Iteration) {
   Paths actual_contents;
   ZipReader reader;
-  ASSERT_TRUE(reader.Open(test_zip_file_));
-  while (reader.HasMore()) {
-    ASSERT_TRUE(reader.OpenCurrentEntryInZip());
-    actual_contents.push_back(reader.current_entry_info()->file_path());
-    ASSERT_TRUE(reader.AdvanceToNextEntry());
+  EXPECT_FALSE(reader.ok());
+  EXPECT_TRUE(reader.Open(test_zip_file_));
+  EXPECT_TRUE(reader.ok());
+  while (const ZipReader::Entry* const entry = reader.Next()) {
+    EXPECT_TRUE(reader.ok());
+    actual_contents.push_back(entry->path);
   }
-  EXPECT_FALSE(reader.AdvanceToNextEntry());  // Shouldn't go further.
-  EXPECT_EQ(test_zip_contents_.size(),
-            static_cast<size_t>(reader.num_entries()));
+
+  EXPECT_TRUE(reader.ok());
+  EXPECT_FALSE(reader.Next());  // Shouldn't go further.
+  EXPECT_TRUE(reader.ok());
+
+  EXPECT_THAT(actual_contents, SizeIs(reader.num_entries()));
   EXPECT_THAT(actual_contents, ElementsAreArray(test_zip_contents_));
 }
 
@@ -244,31 +263,35 @@ TEST_F(ZipReaderTest, PlatformFileIteration) {
   Paths actual_contents;
   ZipReader reader;
   FileWrapper zip_fd_wrapper(test_zip_file_, FileWrapper::READ_ONLY);
-  ASSERT_TRUE(reader.OpenFromPlatformFile(zip_fd_wrapper.platform_file()));
-  while (reader.HasMore()) {
-    ASSERT_TRUE(reader.OpenCurrentEntryInZip());
-    actual_contents.push_back(reader.current_entry_info()->file_path());
-    ASSERT_TRUE(reader.AdvanceToNextEntry());
+  EXPECT_TRUE(reader.OpenFromPlatformFile(zip_fd_wrapper.platform_file()));
+  EXPECT_TRUE(reader.ok());
+  while (const ZipReader::Entry* const entry = reader.Next()) {
+    EXPECT_TRUE(reader.ok());
+    actual_contents.push_back(entry->path);
   }
-  EXPECT_FALSE(reader.AdvanceToNextEntry());  // Shouldn't go further.
-  EXPECT_EQ(test_zip_contents_.size(),
-            static_cast<size_t>(reader.num_entries()));
+
+  EXPECT_TRUE(reader.ok());
+  EXPECT_FALSE(reader.Next());  // Shouldn't go further.
+  EXPECT_TRUE(reader.ok());
+
+  EXPECT_THAT(actual_contents, SizeIs(reader.num_entries()));
   EXPECT_THAT(actual_contents, ElementsAreArray(test_zip_contents_));
 }
 
-TEST_F(ZipReaderTest, current_entry_info_RegularFile) {
+TEST_F(ZipReaderTest, RegularFile) {
   ZipReader reader;
   ASSERT_TRUE(reader.Open(test_zip_file_));
   base::FilePath target_path(FILE_PATH_LITERAL("foo/bar/quux.txt"));
-  ASSERT_TRUE(LocateAndOpenEntry(&reader, target_path));
-  ZipReader::EntryInfo* current_entry_info = reader.current_entry_info();
 
-  EXPECT_EQ(target_path, current_entry_info->file_path());
-  EXPECT_EQ(13527, current_entry_info->original_size());
+  const ZipReader::Entry* entry = LocateAndOpenEntry(&reader, target_path);
+  ASSERT_TRUE(entry);
+
+  EXPECT_EQ(target_path, entry->path);
+  EXPECT_EQ(13527, entry->original_size);
 
   // The expected time stamp: 2009-05-29 06:22:20
   base::Time::Exploded exploded = {};  // Zero-clear.
-  current_entry_info->last_modified().UTCExplode(&exploded);
+  entry->last_modified.UTCExplode(&exploded);
   EXPECT_EQ(2009, exploded.year);
   EXPECT_EQ(5, exploded.month);
   EXPECT_EQ(29, exploded.day_of_month);
@@ -277,39 +300,32 @@ TEST_F(ZipReaderTest, current_entry_info_RegularFile) {
   EXPECT_EQ(20, exploded.second);
   EXPECT_EQ(0, exploded.millisecond);
 
-  EXPECT_FALSE(current_entry_info->is_unsafe());
-  EXPECT_FALSE(current_entry_info->is_directory());
+  EXPECT_FALSE(entry->is_unsafe);
+  EXPECT_FALSE(entry->is_directory);
 }
 
-TEST_F(ZipReaderTest, current_entry_info_DotDotFile) {
+TEST_F(ZipReaderTest, DotDotFile) {
   ZipReader reader;
   ASSERT_TRUE(reader.Open(data_dir_.AppendASCII("evil.zip")));
   base::FilePath target_path(FILE_PATH_LITERAL(
       "../levilevilevilevilevilevilevilevilevilevilevilevil"));
-  ASSERT_TRUE(LocateAndOpenEntry(&reader, target_path));
-  ZipReader::EntryInfo* current_entry_info = reader.current_entry_info();
-  EXPECT_EQ(target_path, current_entry_info->file_path());
-
+  const ZipReader::Entry* entry = LocateAndOpenEntry(&reader, target_path);
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(target_path, entry->path);
   // This file is unsafe because of ".." in the file name.
-  EXPECT_TRUE(current_entry_info->is_unsafe());
-  EXPECT_FALSE(current_entry_info->is_directory());
+  EXPECT_TRUE(entry->is_unsafe);
+  EXPECT_FALSE(entry->is_directory);
 }
 
-TEST_F(ZipReaderTest, current_entry_info_InvalidUTF8File) {
+TEST_F(ZipReaderTest, InvalidUTF8File) {
   ZipReader reader;
   ASSERT_TRUE(reader.Open(data_dir_.AppendASCII("evil_via_invalid_utf8.zip")));
-  // The evil file is the 2nd file in the ZIP archive.
-  // We cannot locate by the file name ".\x80.\\evil.txt",
-  // as FilePath may internally convert the string.
-  ASSERT_TRUE(reader.AdvanceToNextEntry());
-  ASSERT_TRUE(reader.OpenCurrentEntryInZip());
-  const ZipReader::EntryInfo* const entry = reader.current_entry_info();
-
+  base::FilePath target_path = base::FilePath::FromUTF8Unsafe(".�.\\evil.txt");
+  const ZipReader::Entry* entry = LocateAndOpenEntry(&reader, target_path);
   ASSERT_TRUE(entry);
-  EXPECT_FALSE(entry->is_unsafe());
-  EXPECT_FALSE(entry->is_directory());
-  EXPECT_EQ(entry->file_path(),
-            base::FilePath::FromUTF8Unsafe(".�.\\evil.txt"));
+  EXPECT_EQ(target_path, entry->path);
+  EXPECT_FALSE(entry->is_unsafe);
+  EXPECT_FALSE(entry->is_directory);
 }
 
 // By default, file paths in ZIPs are interpreted as UTF-8. But in this test,
@@ -360,35 +376,32 @@ TEST_F(ZipReaderTest, EncodingSjis) {
               "新しいフォルダ/新しいテキスト ドキュメント.txt")));
 }
 
-TEST_F(ZipReaderTest, current_entry_info_AbsoluteFile) {
+TEST_F(ZipReaderTest, AbsoluteFile) {
   ZipReader reader;
   ASSERT_TRUE(
       reader.Open(data_dir_.AppendASCII("evil_via_absolute_file_name.zip")));
   base::FilePath target_path(FILE_PATH_LITERAL("/evil.txt"));
-  ASSERT_TRUE(LocateAndOpenEntry(&reader, target_path));
-  ZipReader::EntryInfo* current_entry_info = reader.current_entry_info();
-  EXPECT_EQ(target_path, current_entry_info->file_path());
-
+  const ZipReader::Entry* entry = LocateAndOpenEntry(&reader, target_path);
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(target_path, entry->path);
   // This file is unsafe because of the absolute file name.
-  EXPECT_TRUE(current_entry_info->is_unsafe());
-  EXPECT_FALSE(current_entry_info->is_directory());
+  EXPECT_TRUE(entry->is_unsafe);
+  EXPECT_FALSE(entry->is_directory);
 }
 
-TEST_F(ZipReaderTest, current_entry_info_Directory) {
+TEST_F(ZipReaderTest, Directory) {
   ZipReader reader;
   ASSERT_TRUE(reader.Open(test_zip_file_));
   base::FilePath target_path(FILE_PATH_LITERAL("foo/bar/"));
-  ASSERT_TRUE(LocateAndOpenEntry(&reader, target_path));
-  ZipReader::EntryInfo* current_entry_info = reader.current_entry_info();
-
-  EXPECT_EQ(base::FilePath(FILE_PATH_LITERAL("foo/bar/")),
-            current_entry_info->file_path());
+  const ZipReader::Entry* entry = LocateAndOpenEntry(&reader, target_path);
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(target_path, entry->path);
   // The directory size should be zero.
-  EXPECT_EQ(0, current_entry_info->original_size());
+  EXPECT_EQ(0, entry->original_size);
 
   // The expected time stamp: 2009-05-31 15:49:52
   base::Time::Exploded exploded = {};  // Zero-clear.
-  current_entry_info->last_modified().UTCExplode(&exploded);
+  entry->last_modified.UTCExplode(&exploded);
   EXPECT_EQ(2009, exploded.year);
   EXPECT_EQ(5, exploded.month);
   EXPECT_EQ(31, exploded.day_of_month);
@@ -397,22 +410,26 @@ TEST_F(ZipReaderTest, current_entry_info_Directory) {
   EXPECT_EQ(52, exploded.second);
   EXPECT_EQ(0, exploded.millisecond);
 
-  EXPECT_FALSE(current_entry_info->is_unsafe());
-  EXPECT_TRUE(current_entry_info->is_directory());
+  EXPECT_FALSE(entry->is_unsafe);
+  EXPECT_TRUE(entry->is_directory);
 }
 
-TEST_F(ZipReaderTest, current_entry_info_EncryptedFile) {
+TEST_F(ZipReaderTest, EncryptedFile) {
   ZipReader reader;
   base::FilePath target_path(FILE_PATH_LITERAL("foo/bar/quux.txt"));
 
   ASSERT_TRUE(reader.Open(data_dir_.AppendASCII("test_encrypted.zip")));
-  ASSERT_TRUE(LocateAndOpenEntry(&reader, target_path));
-  EXPECT_TRUE(reader.current_entry_info()->is_encrypted());
+  const ZipReader::Entry* entry = LocateAndOpenEntry(&reader, target_path);
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(target_path, entry->path);
+  EXPECT_TRUE(entry->is_encrypted);
   reader.Close();
 
   ASSERT_TRUE(reader.Open(test_zip_file_));
-  ASSERT_TRUE(LocateAndOpenEntry(&reader, target_path));
-  EXPECT_FALSE(reader.current_entry_info()->is_encrypted());
+  entry = LocateAndOpenEntry(&reader, target_path);
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(target_path, entry->path);
+  EXPECT_FALSE(entry->is_encrypted);
 }
 
 // Verifies that the ZipReader class can extract a file from a zip archive

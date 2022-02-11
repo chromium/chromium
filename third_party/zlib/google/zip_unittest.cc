@@ -212,7 +212,7 @@ class ZipTest : public PlatformTest {
   }
 
   void TestUnzipFile(const base::FilePath& path, bool expect_hidden_files) {
-    ASSERT_TRUE(base::PathExists(path)) << "no file " << path.value();
+    ASSERT_TRUE(base::PathExists(path)) << "no file " << path;
     ASSERT_TRUE(zip::Unzip(path, test_dir_));
 
     base::FilePath original_dir;
@@ -226,7 +226,7 @@ class ZipTest : public PlatformTest {
     size_t count = 0;
     while (!unzipped_entry_path.empty()) {
       EXPECT_EQ(zip_contents_.count(unzipped_entry_path), 1U)
-          << "Couldn't find " << unzipped_entry_path.value();
+          << "Couldn't find " << unzipped_entry_path;
       count++;
 
       if (base::PathExists(unzipped_entry_path) &&
@@ -511,11 +511,9 @@ TEST_F(ZipTest, ZipFiles) {
   EXPECT_TRUE(reader.Open(zip_name));
   EXPECT_EQ(zip_file_list_.size(), static_cast<size_t>(reader.num_entries()));
   for (size_t i = 0; i < zip_file_list_.size(); ++i) {
-    EXPECT_TRUE(reader.HasMore());
-    EXPECT_TRUE(reader.OpenCurrentEntryInZip());
-    const zip::ZipReader::EntryInfo* entry_info = reader.current_entry_info();
-    EXPECT_EQ(entry_info->file_path(), zip_file_list_[i]);
-    reader.AdvanceToNextEntry();
+    const zip::ZipReader::Entry* const entry = reader.Next();
+    ASSERT_TRUE(entry);
+    EXPECT_EQ(entry->path, zip_file_list_[i]);
   }
 }
 #endif  // defined(OS_POSIX)
