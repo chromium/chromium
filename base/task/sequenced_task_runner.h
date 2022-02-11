@@ -16,6 +16,7 @@
 #include "base/types/pass_key.h"
 
 namespace blink {
+class MetronomeSource;
 class TimerBase;
 }
 namespace webrtc {
@@ -45,6 +46,7 @@ class PostDelayedTaskPassKey {
   friend class base::internal::DelayTimerBase;
   friend class base::internal::DelayedTaskManager;
   friend class base::DeadlineTimer;
+  friend class blink::MetronomeSource;
   friend class blink::TimerBase;
   friend class PostDelayedTaskPassKeyForTesting;
   friend class webrtc::ThreadWrapper;

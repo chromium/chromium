@@ -515,7 +515,10 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
         ExecutionContextMetronomeProvider::From(*GetExecutionContext())
             .metronome_provider();
     DCHECK(metronome_provider_);
-    metronome_source_ = base::MakeRefCounted<MetronomeSource>(kMetronomeTick);
+    metronome_source_ = base::MakeRefCounted<MetronomeSource>(
+        // By using a constant metronome phase (zero), MetronomeSources will be
+        // synchronized across process boundaries.
+        base::TimeTicks(), kMetronomeTick);
   }
 
   base::WaitableEvent start_signaling_event(

@@ -30,7 +30,8 @@ class TestMetronomeTaskQueueFactory final : public webrtc::TaskQueueFactory {
  public:
   TestMetronomeTaskQueueFactory()
       : metronome_source_(
-            base::MakeRefCounted<blink::MetronomeSource>(kMetronomeTick)),
+            base::MakeRefCounted<blink::MetronomeSource>(base::TimeTicks::Now(),
+                                                         kMetronomeTick)),
         factory_(CreateWebRtcMetronomeTaskQueueFactory(metronome_source_)) {}
 
   std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>
@@ -56,7 +57,8 @@ class MetronomeTaskQueueProvider : public MetronomeLikeTaskQueueProvider {
  public:
   void Initialize() override {
     scoped_refptr<blink::MetronomeSource> metronome_source =
-        base::MakeRefCounted<blink::MetronomeSource>(kMetronomeTick);
+        base::MakeRefCounted<blink::MetronomeSource>(base::TimeTicks::Now(),
+                                                     kMetronomeTick);
     task_queue_ =
         CreateWebRtcMetronomeTaskQueueFactory(metronome_source)
             ->CreateTaskQueue("MetronomeTestTaskQueue",

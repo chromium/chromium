@@ -25,7 +25,8 @@ class WebRtcTimerTest : public ::testing::Test {
             base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
             base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         metronome_source_(
-            base::MakeRefCounted<MetronomeSource>(kMetronomeTick)),
+            base::MakeRefCounted<MetronomeSource>(base::TimeTicks::Now(),
+                                                  kMetronomeTick)),
         metronome_provider_(base::MakeRefCounted<MetronomeProvider>()) {
     scoped_feature_list_.InitAndEnableFeature(kWebRtcTimerUsesMetronome);
   }
@@ -484,7 +485,8 @@ TEST(WebRtcTimerRealThreadsTest, StopTimerWithRaceCondition) {
       base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
       base::test::TaskEnvironment::TimeSource::SYSTEM_TIME);
   scoped_refptr<MetronomeSource> metronome_source(
-      base::MakeRefCounted<MetronomeSource>(kMetronomeTick));
+      base::MakeRefCounted<MetronomeSource>(base::TimeTicks::Now(),
+                                            kMetronomeTick));
   scoped_refptr<MetronomeProvider> metronome_provider(
       base::MakeRefCounted<MetronomeProvider>());
 

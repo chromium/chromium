@@ -312,7 +312,7 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
     frame_monitoring_stopped.Wait();
   }
 
-  bool IsMetronomeSourceActive(
+  bool MetronomeSourceHasListeners(
       scoped_refptr<MetronomeSource> metronome_source) {
     bool is_active;
     base::WaitableEvent event;
@@ -324,7 +324,8 @@ class VideoTrackAdapterFixtureTest : public ::testing::Test {
         FROM_HERE, base::BindOnce(
                        [](scoped_refptr<MetronomeSource> metronome_source,
                           bool* is_active, base::WaitableEvent* event) {
-                         *is_active = metronome_source->IsActive();
+                         *is_active =
+                             metronome_source->HasListenersForTesting();
                          event->Signal();
                        },
                        metronome_source, base::Unretained(&is_active),
@@ -395,18 +396,19 @@ TEST_F(VideoTrackAdapterFixtureTest, MetronomeIsUsedWhileFrameMonitoring) {
   scoped_feature_list.InitAndEnableFeature(kWebRtcTimerUsesMetronome);
 
   scoped_refptr<MetronomeSource> metronome_source =
-      base::MakeRefCounted<MetronomeSource>(base::Hertz(64));
+      base::MakeRefCounted<MetronomeSource>(base::TimeTicks::Now(),
+                                            base::Hertz(64));
   metronome_provider_->OnStartUsingMetronome(metronome_source);
 
   const media::VideoCaptureFormat stream_format(gfx::Size(1280, 960), 30.0,
                                                 media::PIXEL_FORMAT_NV12);
   CreateAdapter(stream_format);
 
-  EXPECT_FALSE(IsMetronomeSourceActive(metronome_source));
+  EXPECT_FALSE(MetronomeSourceHasListeners(metronome_source));
   StartFrameMonitoring();
-  EXPECT_TRUE(IsMetronomeSourceActive(metronome_source));
+  EXPECT_TRUE(MetronomeSourceHasListeners(metronome_source));
   StopFrameMonitoring();
-  EXPECT_FALSE(IsMetronomeSourceActive(metronome_source));
+  EXPECT_FALSE(MetronomeSourceHasListeners(metronome_source));
 }
 
 TEST_F(VideoTrackAdapterFixtureTest, DeliverFrame_GpuMemoryBuffer) {
