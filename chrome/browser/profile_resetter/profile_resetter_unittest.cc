@@ -351,19 +351,19 @@ scoped_refptr<Extension> CreateExtension(const std::u16string& name,
                                          extensions::Manifest::Type type,
                                          bool installed_by_default) {
   base::DictionaryValue manifest;
-  manifest.SetString(extensions::manifest_keys::kVersion, "1.0.0.0");
-  manifest.SetString(extensions::manifest_keys::kName, name);
-  manifest.SetInteger(extensions::manifest_keys::kManifestVersion, 2);
+  manifest.SetStringPath(extensions::manifest_keys::kVersion, "1.0.0.0");
+  manifest.SetStringPath(extensions::manifest_keys::kName, name);
+  manifest.SetIntPath(extensions::manifest_keys::kManifestVersion, 2);
   switch (type) {
     case extensions::Manifest::TYPE_THEME:
       manifest.SetKey(extensions::manifest_keys::kTheme,
                       base::DictionaryValue());
       break;
     case extensions::Manifest::TYPE_HOSTED_APP:
-      manifest.SetString(extensions::manifest_keys::kLaunchWebURL,
-                         "http://www.google.com");
-      manifest.SetString(extensions::manifest_keys::kUpdateURL,
-                         "http://clients2.google.com/service/update2/crx");
+      manifest.SetStringPath(extensions::manifest_keys::kLaunchWebURL,
+                             "http://www.google.com");
+      manifest.SetStringPath(extensions::manifest_keys::kUpdateURL,
+                             "http://clients2.google.com/service/update2/crx");
       break;
     case extensions::Manifest::TYPE_EXTENSION:
       // do nothing
@@ -371,7 +371,7 @@ scoped_refptr<Extension> CreateExtension(const std::u16string& name,
     default:
       NOTREACHED();
   }
-  manifest.SetString(extensions::manifest_keys::kOmniboxKeyword, name);
+  manifest.SetStringPath(extensions::manifest_keys::kOmniboxKeyword, name);
   std::string error;
   scoped_refptr<Extension> extension = Extension::Create(
       path,
