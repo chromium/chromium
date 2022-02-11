@@ -142,6 +142,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillServiceClient
   void SetCellularActivated(const dbus::ObjectPath& service_path,
                             ErrorCallback error_callback);
   void ContinueConnect(const std::string& service_path);
+  void SetDefaultFakeTrafficCounters();
 
   base::Value stub_services_{base::Value::Type::DICTIONARY};
 

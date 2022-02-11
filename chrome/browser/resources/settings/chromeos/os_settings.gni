@@ -377,6 +377,7 @@ os_settings_migrated_imports = cr_components_migrated_imports + [
                                  "chrome/browser/resources/settings/chromeos/internet_page/network_proxy_section.html",
                                  "chrome/browser/resources/settings/chromeos/internet_page/network_summary.html",
                                  "chrome/browser/resources/settings/chromeos/internet_page/network_summary_item.html",
+                                 "chrome/browser/resources/settings/chromeos/internet_page/settings_traffic_counters.html",
                                  "chrome/browser/resources/settings/chromeos/internet_page/tether_connection_dialog.html",
                                  "chrome/browser/resources/settings/chromeos/on_startup_page/on_startup_page.html",
                                  "chrome/browser/resources/settings/chromeos/os_a11y_page/change_dictation_locale_dialog.html",

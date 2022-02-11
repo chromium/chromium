@@ -4,6 +4,7 @@
 
 #include "ash/webui/network_ui/traffic_counters_resource_provider.h"
 
+#include "ash/constants/ash_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -32,12 +33,30 @@ constexpr webui::LocalizedString kLocalizedStrings[] = {
     {"TrafficCountersResetTrafficCounters",
      IDS_TRAFFIC_COUNTERS_RESET_TRAFFIC_COUNTERS},
     {"TrafficCountersLastResetTime", IDS_TRAFFIC_COUNTERS_LAST_RESET_TIME},
+    // Settings UI
+    {"TrafficCountersDataUsageLabel", IDS_TRAFFIC_COUNTERS_DATA_USAGE_LABEL},
+    {"TrafficCountersDataUsageSinceLabel",
+     IDS_TRAFFIC_COUNTERS_DATA_USAGE_SINCE_LABEL},
+    {"TrafficCountersDataUsageResetButtonLabel",
+     IDS_TRAFFIC_COUNTERS_DATA_USAGE_RESET_BUTTON_LABEL},
+    {"TrafficCountersDataUsageResetLabel",
+     IDS_TRAFFIC_COUNTERS_DATA_USAGE_RESET_LABEL},
+    {"TrafficCountersDataUsageEnableAutoResetLabel",
+     IDS_TRAFFIC_COUNTERS_DATA_USAGE_ENABLE_AUTO_RESET_LABEL},
+    {"TrafficCountersDataUsageLastResetDateUnavailableLabel",
+     IDS_TRAFFIC_COUNTERS_DATA_USAGE_LAST_RESET_DATE_UNAVAILABLE_LABEL},
+    {"TrafficCountersDataUsageEnableAutoResetSublabel",
+     IDS_TRAFFIC_COUNTERS_DATA_USAGE_ENABLE_AUTO_RESET_SUBLABEL},
+    {"TrafficCountersDataUsageAutoResetDayOfMonthLabel",
+     IDS_TRAFFIC_COUNTERS_DATA_USAGE_AUTO_RESET_DAY_OF_MONTH_LABEL},
 };
 
 }  // namespace
 
 void AddResources(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
+  html_source->AddBoolean("trafficCountersHandlerEnabled",
+                          ash::features::IsTrafficCountersHandlerEnabled());
 }
 
 }  // namespace traffic_counters

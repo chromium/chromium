@@ -32,6 +32,7 @@ import '../../prefs/prefs.js';
 import './cellular_roaming_toggle_button.js';
 import './internet_shared_css.js';
 import './network_proxy_section.js';
+import './settings_traffic_counters.js';
 import './tether_connection_dialog.js';
 
 import {getSimSlotCount, hasActiveCellularNetwork, isActiveSim, isConnectedToNonCellularNetwork} from '//resources/cr_components/chromeos/network/cellular_utils.m.js';
@@ -295,6 +296,15 @@ Polymer({
       }
     },
 
+    /** @private {boolean} */
+    isTrafficCountersHandlerEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('trafficCountersHandlerEnabled') &&
+            loadTimeData.getBoolean('trafficCountersHandlerEnabled');
+      }
+    },
+
     /**
      * When true, all inputs that allow state to be changed (e.g., toggles,
      * inputs) are disabled.
@@ -313,6 +323,9 @@ Polymer({
 
     /** @private */
     proxyExpanded_: Boolean,
+
+    /** @private */
+    dataUsageExpanded_: Boolean,
 
     /**
      * Used by DeepLinkingBehavior to focus this page's deep links.
@@ -2288,6 +2301,19 @@ Polymer({
         'cellular.min');
 
     return fields;
+  },
+
+  /**
+   * @return {boolean} Whether data usage should be displayed.
+   * @private
+   */
+  showDataUsage_(managedProperties) {
+    if (!this.isTrafficCountersHandlerEnabled_) {
+      return false;
+    }
+    return managedProperties && this.guid !== '' &&
+        this.isCellular_(managedProperties) &&
+        this.isConnectedState_(managedProperties);
   },
 
   /**

@@ -31,6 +31,7 @@ import './internet_page/network_always_on_vpn.js';
 import './internet_page/network_proxy_section.js';
 import './internet_page/network_summary.js';
 import './internet_page/network_summary_item.js';
+import './internet_page/settings_traffic_counters.js';
 import './internet_page/tether_connection_dialog.js';
 import './kerberos_page/kerberos_accounts.js';
 import './kerberos_page/kerberos_page.js';

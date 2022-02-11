@@ -156,6 +156,7 @@ js_modulizer("modulize") {
     "search_subpage_test.js",
     "search_engine_test.js",
     "settings_scheduler_slider_test.js",
+    "settings_traffic_counters_test.js",
     "smart_inputs_page_test.js",
     "smart_privacy_subpage_tests.js",
     "smb_shares_page_tests.js",

@@ -42,6 +42,7 @@ source_set("traffic_counters_resource_provider") {
   ]
 
   deps = [
+    "//ash/constants",
     "//chromeos/strings/",
     "//content/public/browser",
     "//ui/base",

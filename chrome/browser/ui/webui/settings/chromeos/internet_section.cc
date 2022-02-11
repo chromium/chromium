@@ -6,6 +6,8 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
+#include "ash/webui/network_ui/network_health_resource_provider.h"
+#include "ash/webui/network_ui/traffic_counters_resource_provider.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
@@ -838,6 +840,8 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   ui::network_element::AddErrorLocalizedStrings(html_source);
   cellular_setup::AddNonStringLoadTimeData(html_source);
   cellular_setup::AddLocalizedStrings(html_source);
+  chromeos::network_health::AddResources(html_source);
+  chromeos::traffic_counters::AddResources(html_source);
 
   html_source->AddBoolean(
       "bypassConnectivityCheck",

@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/guid.h"
+#include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -1778,8 +1779,12 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
     traffic_counter_properties->last_reset_time =
         base::Time::FromDeltaSinceWindowsEpoch(
             base::Milliseconds(last_reset_time->GetDouble()));
+    traffic_counter_properties->friendly_date =
+        base::UTF16ToUTF8(base::TimeFormatFriendlyDate(
+            traffic_counter_properties->last_reset_time.value()));
   } else {
     traffic_counter_properties->last_reset_time = absl::nullopt;
+    traffic_counter_properties->friendly_date = absl::nullopt;
   }
 
   const base::Value* auto_reset =

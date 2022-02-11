@@ -78,6 +78,9 @@
     /** @private {!Map<string, !Array<!Object>>} */
     this.trafficCountersMap_ = new Map();
 
+    /** @private {!Map<string, !Array<!Object>>} */
+    this.autoResetValuesMap_ = new Map();
+
     this.resetForTest();
   }
 
@@ -145,6 +148,7 @@
      'getSupportedVpnTypes',
      'requestTrafficCounters',
      'resetTrafficCounters',
+     'setTrafficCountersAutoReset',
     ].forEach((methodName) => {
       this.resolverMap_.set(methodName, new PromiseResolver());
     });
@@ -265,6 +269,27 @@
           !!managed.trafficCounterProperties,
           'Missing traffic counter properties for network: ' + guid);
       managed.trafficCounterProperties.lastResetTime = lastResetTime;
+    }
+    this.onActiveNetworksChanged();
+  }
+
+  /**
+   * @param {string} guid
+   * @param {string} friendlyDate a human readable date representing
+   * the last reset time
+   *
+   */
+  setFriendlyDateForTest(guid, friendlyDate) {
+    const network = this.networkStates_.find(state => {
+      return state.guid === guid;
+    });
+    assert(!!network, 'Network not found: ' + guid);
+    const managed = this.managedProperties_.get(guid);
+    if (managed) {
+      assert(
+          !!managed.trafficCounterProperties,
+          'Missing traffic counter properties for network: ' + guid);
+      managed.trafficCounterProperties.friendlyDate = friendlyDate;
     }
     this.onActiveNetworksChanged();
   }
@@ -654,5 +679,37 @@
       counter.txBytes = 0;
     });
     this.methodCalled('resetTrafficCounters');
+  }
+
+  /**
+   * @param {string} guid
+   * @param {boolean} autoReset
+   * @param {?chromeos.networkConfig.mojom.UInt32Value} resetDay
+   */
+  setAutoResetValues_(guid, autoReset, resetDay) {
+    const network = this.networkStates_.find(state => {
+      return state.guid === guid;
+    });
+    assert(!!network, 'Network not found: ' + guid);
+    const managed = this.managedProperties_.get(guid);
+    if (managed) {
+      managed.trafficCounterProperties.autoReset = autoReset;
+      managed.trafficCounterProperties.userSpecifiedResetDay =
+          resetDay ? resetDay.value : 1;
+    }
+    this.onActiveNetworksChanged();
+  }
+
+  /**
+   * @param {string} guid
+   * @param {boolean} autoReset
+   * @param {?chromeos.networkConfig.mojom.UInt32Value} resetDay
+   */
+  setTrafficCountersAutoReset(guid, autoReset, resetDay) {
+    return new Promise(resolve => {
+      this.methodCalled('setTrafficCountersAutoReset');
+      this.setAutoResetValues_(guid, autoReset, resetDay);
+      resolve(true);
+    });
   }
 }

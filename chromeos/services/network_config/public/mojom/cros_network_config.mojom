@@ -695,6 +695,9 @@ struct UInt32Value {
 struct TrafficCounterProperties {
   // Time when the traffic counters for a Service were last reset.
   mojo_base.mojom.Time? last_reset_time;
+  // A friendly formatted sentence representing the |last_reset_time| as a
+  // date, e.g., Monday, March 6, 2008. This value takes locale into account.
+  string? friendly_date;
   // Whether traffic counters are reset automatically.
   bool auto_reset;
   // User selected day of month when traffic counters are reset.

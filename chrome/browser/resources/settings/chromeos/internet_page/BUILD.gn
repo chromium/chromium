@@ -8,7 +8,7 @@ import("//tools/polymer/html_to_js.gni")
 import("../os_settings.gni")
 
 js_type_check("closure_compile_module") {
-  closure_flags = os_settings_closure_flags
+  closure_flags = os_settings_closure_flags + mojom_js_args
   is_polymer3 = true
   deps = [
     ":cellular_networks_list",
@@ -30,6 +30,7 @@ js_type_check("closure_compile_module") {
     ":network_proxy_section",
     ":network_summary",
     ":network_summary_item",
+    ":settings_traffic_counters",
     ":tether_connection_dialog",
   ]
 }
@@ -82,6 +83,7 @@ js_library("internet_detail_page") {
     ":internet_page_browser_proxy",
     ":internet_shared_css",
     ":network_proxy_section",
+    ":settings_traffic_counters",
     ":tether_connection_dialog",
     "//chrome/browser/resources/settings:router",
     "//chrome/browser/resources/settings/chromeos:deep_linking_behavior.m",
@@ -106,6 +108,8 @@ js_library("internet_detail_page") {
     "//ui/webui/resources/cr_components/chromeos/network:network_property_list_mojo.m",
     "//ui/webui/resources/cr_components/chromeos/network:network_siminfo.m",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
+    "//ui/webui/resources/cr_components/chromeos/network_health:network_health_container.m",
+    "//ui/webui/resources/cr_components/chromeos/traffic_counters:traffic_counters",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_expand_button:cr_expand_button.m",
     "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
@@ -260,6 +264,7 @@ js_library("network_summary_item") {
     "//ui/webui/resources/cr_components/chromeos/network:network_icon.m",
     "//ui/webui/resources/cr_components/chromeos/network:network_siminfo.m",
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
+    "//ui/webui/resources/cr_components/chromeos/traffic_counters:traffic_counters",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
     "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
     "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior.m",
@@ -351,6 +356,20 @@ js_library("esim_remove_profile_dialog") {
   ]
 }
 
+js_library("settings_traffic_counters") {
+  deps = [
+    ":internet_shared_css",
+    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
+    "//chromeos/services/network_config/public/mojom:network_types_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
+    "//ui/webui/resources/cr_components/chromeos/traffic_counters:traffic_counters",
+    "//ui/webui/resources/cr_components/chromeos/traffic_counters:traffic_counters_adapter",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+}
+
 html_to_js("web_components") {
   js_files = [
     "cellular_networks_list.js",
@@ -370,6 +389,7 @@ html_to_js("web_components") {
     "network_proxy_section.js",
     "network_summary_item.js",
     "network_summary.js",
+    "settings_traffic_counters.js",
     "tether_connection_dialog.js",
   ]
 }

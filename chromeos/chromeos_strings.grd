@@ -2086,6 +2086,32 @@ Try tapping the mic to ask me anything.
         Traffic Counters
       </message>
 
+      <!-- Traffic Counters in Settings UI -->
+      <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_LABEL" desc="Settings > Network > Mobile data > SIM > Data usage, label to display data usage section">
+        Data usage
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_SINCE_LABEL" desc="Settings > Network > Mobile data > SIM > Data usage, text to display currenet data usage">
+          Data usage since <ph name="FRIENDLY_DATE">$1<ex>Wednesday, February 9, 2022</ex></ph>
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_RESET_BUTTON_LABEL" desc="Settings > Network > Mobile data > SIM > Data usage, label to reset data usage">
+        Reset
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_RESET_LABEL" desc="Settings > Network > Mobile data > SIM > Data usage, text to reset data usage">
+        Manually reset data usage
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_LAST_RESET_DATE_UNAVAILABLE_LABEL" desc="Settings > Network > Mobile data > SIM > Data usage, text to show missing last reset information">
+        Date of last data reset is unavailable
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_ENABLE_AUTO_RESET_LABEL" desc="Settings > Network > Mobile data > SIM > Data usage, text to reset data usage">
+        Enable automatic monthly reset
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_ENABLE_AUTO_RESET_SUBLABEL" desc="Settings > Network > Mobile data > SIM > Data usage, text to reset data usage">
+        Automatically resets data usage every month on a selected day
+      </message>
+      <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_AUTO_RESET_DAY_OF_MONTH_LABEL" desc="Settings > Network > Mobile data > SIM > Data usage, text to reset data usage">
+        Day of month for reset
+      </message>
+
       <!-- Bluetooth -->
       <message name="IDS_BLUETOOTH_DEVICE_LIST_CURRENTLY_CONNECTED" desc="Title for list displaying paired Bluetooth devices that are currently connected.">
         Currently connected

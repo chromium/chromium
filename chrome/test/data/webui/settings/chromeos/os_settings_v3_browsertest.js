@@ -409,6 +409,7 @@ TEST_F('OSSettingsSearchEngineV3Test', 'AllJsTests', () => {
  ['ResetPage', 'os_reset_page_test.m.js'],
  ['SettingsSchedulerSlider', 'settings_scheduler_slider_test.m.js'],
  ['SearchSubpage', 'search_subpage_test.m.js'],
+ ['SettingsTrafficCounters', 'settings_traffic_counters_test.m.js'],
  ['SmartInputsPage', 'smart_inputs_page_test.m.js'],
  ['SmbPage', 'smb_shares_page_tests.m.js'],
  ['SmartPrivacySubpage', 'smart_privacy_subpage_tests.m.js'],
