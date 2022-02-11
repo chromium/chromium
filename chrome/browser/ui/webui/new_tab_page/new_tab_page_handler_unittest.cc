@@ -21,6 +21,7 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/theme_resources.h"
@@ -167,12 +168,12 @@ class NewTabPageHandlerTest : public testing::Test {
     EXPECT_CALL(mock_page_, SetTheme).Times(1);
     EXPECT_CALL(mock_ntp_custom_background_service_, RefreshBackgroundIfNeeded)
         .Times(1);
+    webui::SetThemeProviderForTesting(&mock_theme_provider_);
     handler_ = std::make_unique<NewTabPageHandler>(
         mojo::PendingReceiver<new_tab_page::mojom::PageHandler>(),
         mock_page_.BindAndGetRemote(), profile_.get(),
         &mock_ntp_custom_background_service_, &mock_theme_service_,
-        &mock_logo_service_, &mock_theme_provider_, web_contents_,
-        base::Time::Now());
+        &mock_logo_service_, web_contents_, base::Time::Now());
     mock_page_.FlushForTesting();
     EXPECT_EQ(handler_.get(), theme_service_observer_);
     EXPECT_EQ(handler_.get(), ntp_custom_background_service_observer_);

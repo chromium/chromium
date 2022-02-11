@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "chrome/browser/ui/webui/realbox/realbox.mojom.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -354,14 +355,13 @@ NewTabPageHandler::NewTabPageHandler(
     NtpCustomBackgroundService* ntp_custom_background_service,
     ThemeService* theme_service,
     search_provider_logos::LogoService* logo_service,
-    const ui::ThemeProvider* theme_provider,
     content::WebContents* web_contents,
     const base::Time& ntp_navigation_start_time)
     : ntp_background_service_(
           NtpBackgroundServiceFactory::GetForProfile(profile)),
       ntp_custom_background_service_(ntp_custom_background_service),
       logo_service_(logo_service),
-      theme_provider_(theme_provider),
+      theme_provider_(webui::GetThemeProvider(web_contents)),
       theme_service_(theme_service),
       profile_(profile),
       web_contents_(web_contents),
@@ -375,7 +375,6 @@ NewTabPageHandler::NewTabPageHandler(
   CHECK(ntp_background_service_);
   CHECK(ntp_custom_background_service_);
   CHECK(logo_service_);
-  CHECK(theme_provider_);
   CHECK(theme_service_);
   CHECK(promo_service_);
   CHECK(web_contents_);

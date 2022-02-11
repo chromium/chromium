@@ -65,7 +65,6 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                     NtpCustomBackgroundService* ntp_custom_background_service,
                     ThemeService* theme_service,
                     search_provider_logos::LogoService* logo_service,
-                    const ui::ThemeProvider* theme_provider,
                     content::WebContents* web_contents,
                     const base::Time& ntp_navigation_start_time);
 

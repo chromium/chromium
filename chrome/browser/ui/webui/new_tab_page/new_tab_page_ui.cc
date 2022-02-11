@@ -24,6 +24,8 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/webui/browser_command/browser_command_handler.h"
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
 #include "chrome/browser/ui/webui/customize_themes/chrome_customize_themes_handler.h"
@@ -555,8 +557,7 @@ void NewTabPageUI::CreatePageHandler(
   page_handler_ = std::make_unique<NewTabPageHandler>(
       std::move(pending_page_handler), std::move(pending_page), profile_,
       ntp_custom_background_service_, theme_service_,
-      LogoServiceFactory::GetForProfile(profile_),
-      &ThemeService::GetThemeProviderForProfile(profile_), web_contents_,
+      LogoServiceFactory::GetForProfile(profile_), web_contents_,
       navigation_start_time_);
 }
 
@@ -601,13 +602,21 @@ void NewTabPageUI::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 
 void NewTabPageUI::OnThemeChanged() {
   std::unique_ptr<base::DictionaryValue> update(new base::DictionaryValue);
-  auto background_color =
-      ThemeService::GetThemeProviderForProfile(profile_).GetColor(
-          ThemeProperties::COLOR_NTP_BACKGROUND);
-  update->SetString("backgroundColor",
-                    skia::SkColorToHexString(background_color));
-  content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
-                                   std::move(update));
+  const Browser* browser = chrome::FindBrowserWithProfile(profile_);
+  DCHECK(browser);
+  const ui::ThemeProvider* theme_provider =
+      browser->window()->GetThemeProvider();
+
+  // `theme_provider` will be nullptr in unit tests. If you want to test NTP
+  // color, use webui::SetThemeProviderForTesting().
+  if (theme_provider) {
+    auto background_color =
+        theme_provider->GetColor(ThemeProperties::COLOR_NTP_BACKGROUND);
+    update->SetString("backgroundColor",
+                      skia::SkColorToHexString(background_color));
+    content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
+                                     std::move(update));
+  }
 }
 
 void NewTabPageUI::OnCustomBackgroundImageUpdated() {
