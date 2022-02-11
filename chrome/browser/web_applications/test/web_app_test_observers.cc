@@ -31,6 +31,11 @@ WebAppInstallManagerObserverAdapter::WebAppInstallManagerObserverAdapter(
   observation_.Observe(install_manager);
 }
 
+WebAppInstallManagerObserverAdapter::WebAppInstallManagerObserverAdapter(
+    Profile* profile)
+    : WebAppInstallManagerObserverAdapter(
+          &WebAppProvider::GetForTest(profile)->install_manager()) {}
+
 WebAppInstallManagerObserverAdapter::~WebAppInstallManagerObserverAdapter() =
     default;
 
@@ -88,6 +93,19 @@ void WebAppInstallManagerObserverAdapter::OnWebAppUninstalled(
     const AppId& app_id) {
   if (app_uninstalled_delegate_)
     app_uninstalled_delegate_.Run(app_id);
+}
+
+void WebAppInstallManagerObserverAdapter::SignalRunLoopAndStoreAppId(
+    const AppId& app_id) {
+  if (!is_listening_)
+    return;
+  optional_app_ids_.erase(app_id);
+  if (!optional_app_ids_.empty())
+    return;
+  last_app_id_ = app_id;
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   wait_loop_.QuitClosure());
+  is_listening_ = false;
 }
 
 WebAppTestRegistryObserverAdapter::WebAppTestRegistryObserverAdapter(
@@ -246,7 +264,7 @@ AppId WebAppTestInstallObserver::BeginListeningAndWait(
 
 WebAppTestInstallWithOsHooksObserver::WebAppTestInstallWithOsHooksObserver(
     Profile* profile)
-    : WebAppTestRegistryObserverAdapter(profile) {}
+    : WebAppInstallManagerObserverAdapter(profile) {}
 WebAppTestInstallWithOsHooksObserver::~WebAppTestInstallWithOsHooksObserver() =
     default;
 

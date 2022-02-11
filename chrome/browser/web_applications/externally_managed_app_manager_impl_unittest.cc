@@ -33,6 +33,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/test/base/testing_profile.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -408,6 +409,8 @@ class ExternallyManagedAppManagerImplTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
+    install_manager_ = std::make_unique<WebAppInstallManager>(profile());
+
     fake_registry_controller_ =
         std::make_unique<FakeWebAppRegistryController>();
     fake_registry_controller_->SetUp(profile());
@@ -422,7 +425,7 @@ class ExternallyManagedAppManagerImplTest : public WebAppTest {
 
     externally_managed_app_manager_impl().SetSubsystems(
         &registrar(), &controller().os_integration_manager(), &ui_manager(),
-        &install_finalizer(), nullptr);
+        &install_finalizer(), &install_manager());
 
     controller().Init();
   }
@@ -546,7 +549,10 @@ class ExternallyManagedAppManagerImplTest : public WebAppTest {
 
   FakeInstallFinalizer& install_finalizer() { return *install_finalizer_; }
 
+  WebAppInstallManager& install_manager() { return *install_manager_; }
+
  private:
+  std::unique_ptr<WebAppInstallManager> install_manager_;
   std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
   std::unique_ptr<FakeExternallyManagedAppManager>
       externally_managed_app_manager_impl_;

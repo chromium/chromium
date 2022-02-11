@@ -342,7 +342,7 @@ void ExternallyManagedAppInstallTask::OnWebAppInstalled(
                          code, app_id, uninstall_and_replace_triggered)));
 
   if (!is_placeholder) {
-    registrar_->NotifyWebAppInstalledWithOsHooks(app_id);
+    install_manager_->NotifyWebAppInstalledWithOsHooks(app_id);
     return;
   }
   InstallOsHooksOptions options;
@@ -384,7 +384,7 @@ void ExternallyManagedAppInstallTask::OnOsHooksCreated(
     const AppId& app_id,
     base::ScopedClosureRunner scoped_closure,
     const OsHooksErrors os_hooks_errors) {
-  registrar_->NotifyWebAppInstalledWithOsHooks(app_id);
+  install_manager_->NotifyWebAppInstalledWithOsHooks(app_id);
   scoped_closure.RunAndReset();
 }
 

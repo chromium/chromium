@@ -444,7 +444,7 @@ void WebAppIntegrationTestDriver::SetUpOnMainThread() {
   // Only support manifest updates on non-sync tests, as the current
   // infrastructure here only supports listening on one profile.
   if (!delegate_->IsSyncTest()) {
-    observation_.Observe(&provider()->registrar());
+    observation_.Observe(&provider()->install_manager());
   }
   web_app::test::WaitUntilReady(
       web_app::WebAppProvider::GetForTest(browser()->profile()));

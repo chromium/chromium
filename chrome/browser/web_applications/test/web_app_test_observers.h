@@ -26,6 +26,7 @@ class WebAppInstallManagerObserverAdapter
  public:
   explicit WebAppInstallManagerObserverAdapter(
       WebAppInstallManager* install_manager);
+  explicit WebAppInstallManagerObserverAdapter(Profile* profile);
   ~WebAppInstallManagerObserverAdapter() override;
 
   using WebAppInstalledDelegate =
@@ -58,14 +59,29 @@ class WebAppInstallManagerObserverAdapter
   void OnWebAppWillBeUninstalled(const AppId& app_id) override;
   void OnWebAppUninstalled(const AppId& app_id) override;
 
- private:
+ protected:
+  // Helper method for subclasses to allow easy waiting on `wait_loop_`.
+  // Expects that the users set `is_listening_` to `true` and
+  // optionally set `optional_app_ids_`.
+  void SignalRunLoopAndStoreAppId(const AppId& app_id);
+
+  bool is_listening_ = false;
+  std::set<AppId> optional_app_ids_;
+  base::RunLoop wait_loop_;
+  AppId last_app_id_;
+
   WebAppInstalledDelegate app_installed_delegate_;
   WebAppInstalledWithOsHooksDelegate app_installed_with_os_hooks_delegate_;
   WebAppManifestUpdateDelegate app_manifest_updated_delegate_;
   WebAppUninstalledDelegate app_uninstalled_delegate_;
+
+ private:
   WebAppWillBeUninstalledDelegate app_will_be_uninstalled_delegate_;
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       observation_{this};
+
+ protected:
+  base::WeakPtrFactory<WebAppInstallManagerObserverAdapter> weak_factory_{this};
 };
 
 // This is an adapter for the AppRegistrarObserver. This class registers
@@ -189,7 +205,7 @@ class WebAppTestInstallObserver final
 };
 
 class WebAppTestInstallWithOsHooksObserver final
-    : public WebAppTestRegistryObserverAdapter {
+    : public WebAppInstallManagerObserverAdapter {
  public:
   explicit WebAppTestInstallWithOsHooksObserver(Profile* profile);
   ~WebAppTestInstallWithOsHooksObserver() final;

@@ -113,7 +113,7 @@ struct StateSnapshot {
 };
 std::ostream& operator<<(std::ostream& out, const StateSnapshot& snapshot);
 
-class WebAppIntegrationTestDriver : AppRegistrarObserver {
+class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
  public:
   struct TestDelegate {
     // Exposing normal functionality of testing::InProcBrowserTest:
@@ -206,7 +206,7 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   void CheckWindowDisplayStandalone();
 
  protected:
-  // AppRegistrarObserver:
+  // WebAppInstallManagerObserver:
   void OnWebAppManifestUpdated(const AppId& app_id,
                                base::StringPiece old_name) override;
 
@@ -304,8 +304,8 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   AppId active_app_id_;
   raw_ptr<Browser> app_browser_ = nullptr;
 
-  base::ScopedObservation<web_app::WebAppRegistrar,
-                          web_app::AppRegistrarObserver>
+  base::ScopedObservation<web_app::WebAppInstallManager,
+                          web_app::WebAppInstallManagerObserver>
       observation_{this};
   std::unique_ptr<ScopedShortcutOverrideForTesting> shortcut_override_;
 };

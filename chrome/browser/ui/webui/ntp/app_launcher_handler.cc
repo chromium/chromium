@@ -1263,7 +1263,9 @@ void AppLauncherHandler::OnOsHooksInstalled(
   base::UmaHistogramBoolean("Apps.Launcher.InstallLocallyShortcutsCreated",
                             !error);
 
+  // TODO(crbug/1275945): remove in phase 3 of resolving crbug/1275945.
   web_app_provider_->registrar().NotifyWebAppInstalledWithOsHooks(app_id);
+  web_app_provider_->install_manager().NotifyWebAppInstalledWithOsHooks(app_id);
 }
 
 void AppLauncherHandler::OnExtensionUninstallDialogClosed(
