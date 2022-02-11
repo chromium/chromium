@@ -65,6 +65,16 @@ export class RealboxIconElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
+      /**
+       * Whether icon belongs to an answer or not. Used to prevent
+       * the match image from taking size of container.
+       */
+      isAnswer: {
+        type: Boolean,
+        computed: `computeIsAnswer_(match)`,
+        reflectToAttribute: true,
+      },
+
       /** Used as a mask image on #icon if |backgroundImage| is empty. */
       maskImage: {
         type: String,
@@ -95,6 +105,7 @@ export class RealboxIconElement extends PolymerElement {
   backgroundImage: string;
   defaultIcon: string;
   inSearchbox: boolean;
+  isAnswer: boolean;
   maskImage: string;
   match: AutocompleteMatch;
   private iconStyle_: string;
@@ -124,6 +135,10 @@ export class RealboxIconElement extends PolymerElement {
     } else {
       return '';
     }
+  }
+
+  private computeIsAnswer_(): boolean {
+    return this.match && !!this.match.answer;
   }
 
   private computeMaskImage_(): string {
