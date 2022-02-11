@@ -2945,6 +2945,28 @@ void MediaStreamManager::OnStreamStarted(const std::string& label) {
   }
 }
 
+void MediaStreamManager::OnRegionCaptureRectChanged(
+    const base::UnguessableToken& session_id,
+    const absl::optional<gfx::Rect>& region_capture_rect) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  for (const LabeledDeviceRequest& labeled_device_request : requests_) {
+    DeviceRequest* const device_request = labeled_device_request.second.get();
+    if (!device_request || !device_request->ui_proxy) {
+      continue;
+    }
+
+    for (const MediaStreamDevice& device : device_request->devices) {
+      if (blink::IsVideoInputMediaType(device.type) &&
+          session_id == device.session_id()) {
+        // Note: |device_request->ui_proxy != nullptr| tested in external loop.
+        device_request->ui_proxy->OnRegionCaptureRectChanged(
+            region_capture_rect);
+      }
+    }
+  }
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void MediaStreamManager::SetCapturedDisplaySurfaceFocus(
     const std::string& label,

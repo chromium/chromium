@@ -160,6 +160,12 @@ void VideoCaptureHost::OnBufferReady(
   if (!base::Contains(device_id_to_observer_map_, controller_id))
     return;
 
+  if (region_capture_rect_ != buffer.frame_info->metadata.region_capture_rect) {
+    region_capture_rect_ = buffer.frame_info->metadata.region_capture_rect;
+    media_stream_manager_->OnRegionCaptureRectChanged(controller_id,
+                                                      region_capture_rect_);
+  }
+
   // TODO(crbug.com/1276822): When Region Capture is used, use the information
   // in |buffer.frame_info->metadata.region_capture_rect| to dynamically update
   // the tab-capture-indicating blue border.

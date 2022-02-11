@@ -92,6 +92,9 @@ class TabSharingUIViews : public TabSharingUI,
   // toggle its favicon back and forth at an arbitrary rate, but we implicitly
   // rate-limit our response.
 
+  void OnRegionCaptureRectChanged(
+      const absl::optional<gfx::Rect>& region_capture_rect) override;
+
  protected:
 #if BUILDFLAG(IS_CHROMEOS)
   // DlpContentManagerObserver:

@@ -15,6 +15,7 @@
 #include "content/public/browser/media_stream_request.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace content {
@@ -72,6 +73,9 @@ class CONTENT_EXPORT MediaStreamUIProxy {
 
   virtual void OnDeviceStopped(const std::string& label,
                                const DesktopMediaID& media_id);
+
+  virtual void OnRegionCaptureRectChanged(
+      const absl::optional<gfx::Rect>& region_capture_rect);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Determines whether the captured display surface represented by |media_id|

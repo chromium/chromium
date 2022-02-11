@@ -43,6 +43,10 @@ class MediaStreamUI {
       base::OnceClosure stop_callback,
       content::MediaStreamUI::SourceCallback source_callback,
       const std::vector<content::DesktopMediaID>& media_ids) = 0;
+
+  // Called when Region Capture starts/stops, or when the cropped area changes.
+  virtual void OnRegionCaptureRectChanged(
+      const absl::optional<gfx::Rect>& region_capture_rect) {}
 };
 
 // Keeps track of which WebContents are capturing media streams. Used to display

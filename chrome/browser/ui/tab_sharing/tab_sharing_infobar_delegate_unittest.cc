@@ -39,6 +39,9 @@ class MockTabSharingUIViews : public TabSharingUI {
       const std::vector<content::DesktopMediaID>& media_ids) override {
     return 0;
   }
+
+  void OnRegionCaptureRectChanged(
+      const absl::optional<gfx::Rect>& region_capture_rect) override {}
 };
 
 }  // namespace

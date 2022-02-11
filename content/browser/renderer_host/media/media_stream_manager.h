@@ -384,6 +384,10 @@ class CONTENT_EXPORT MediaStreamManager
   // This method is called when all tracks are started.
   void OnStreamStarted(const std::string& label);
 
+  void OnRegionCaptureRectChanged(
+      const base::UnguessableToken& session_id,
+      const absl::optional<gfx::Rect>& region_capture_rect);
+
 #if !BUILDFLAG(IS_ANDROID)
   // Determines whether the captured surface (tab/window) should be focused.
   // This can be called at most once, and only within the first 1s of the

@@ -262,6 +262,14 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
 #endif
   }
 
+  void OnRegionCaptureRectChanged(
+      const absl::optional<gfx::Rect>& region_capture_rect) override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    if (ui_) {
+      ui_->OnRegionCaptureRectChanged(region_capture_rect);
+    }
+  }
+
 #if !BUILDFLAG(IS_ANDROID)
   void SetFocus(const content::DesktopMediaID& media_id,
                 bool focus,

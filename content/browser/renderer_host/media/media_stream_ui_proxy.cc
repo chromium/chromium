@@ -56,6 +56,9 @@ class MediaStreamUIProxy::Core {
   void OnDeviceStopped(const std::string& label,
                        const DesktopMediaID& media_id);
 
+  void OnRegionCaptureRectChanged(
+      const absl::optional<gfx::Rect>& region_capture_rect);
+
 #if !BUILDFLAG(IS_ANDROID)
   void SetFocus(const DesktopMediaID& media_id,
                 bool focus,
@@ -170,6 +173,14 @@ void MediaStreamUIProxy::Core::OnDeviceStopped(const std::string& label,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (ui_) {
     ui_->OnDeviceStopped(label, media_id);
+  }
+}
+
+void MediaStreamUIProxy::Core::OnRegionCaptureRectChanged(
+    const absl::optional<gfx::Rect>& region_capture_rec) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (ui_) {
+    ui_->OnRegionCaptureRectChanged(region_capture_rec);
   }
 }
 
@@ -337,6 +348,15 @@ void MediaStreamUIProxy::OnDeviceStopped(const std::string& label,
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&Core::OnDeviceStopped, core_->GetWeakPtr(),
                                 label, media_id));
+}
+
+void MediaStreamUIProxy::OnRegionCaptureRectChanged(
+    const absl::optional<gfx::Rect>& region_capture_rec) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&Core::OnRegionCaptureRectChanged,
+                                core_->GetWeakPtr(), region_capture_rec));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

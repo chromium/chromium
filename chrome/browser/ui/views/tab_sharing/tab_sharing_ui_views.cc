@@ -287,9 +287,17 @@ void TabSharingUIViews::PrimaryPageChanged(content::Page& page) {
 }
 
 void TabSharingUIViews::WebContentsDestroyed() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // TODO(crbug.com/1276816): Prevent StopSharing() from interacting with
   // |shared_tab_| while it is being destroyed.
   StopSharing();
+}
+
+void TabSharingUIViews::OnRegionCaptureRectChanged(
+    const absl::optional<gfx::Rect>& region_capture_rect) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // TODO(crbug.com/1276822): Consume this signal by forwarding it to
+  // TabCaptureContentsBorderHelper and handling it there.
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
