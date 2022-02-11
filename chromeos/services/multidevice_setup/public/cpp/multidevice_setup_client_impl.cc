@@ -9,8 +9,38 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+
+namespace {
+
+constexpr base::TimeDelta kInitialFeatureStateLoggingDelay = base::Seconds(15);
+constexpr base::TimeDelta kRepeatingFeatureStateLoggingPeriod =
+    base::Minutes(30);
+
+// Log the feature states in |feature_states_map|. Called 1) on
+// sign-in, 2) when at least one feature state changes, and 3) every 30
+// minutes. The latter is necessary to capture users who stay logged in longer
+// than UMA aggregation periods and don't change feature state.
+void LogFeatureStates(
+    const chromeos::multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
+        feature_states_map) {
+  // There is a duplicate metric of
+  // "MultiDevice.BetterTogetherSuite.MultiDeviceFeatureState" on different
+  // ends of the mojo pipe to help us understand how frequent we get stuck
+  // on this end of the pipe waiting for the client to be ready. See b/215469053
+  // for more context.
+  base::UmaHistogramEnumeration(
+      "MultiDevice.BetterTogetherSuite.MultiDeviceFeatureState.MojoClient",
+      feature_states_map
+          .find(
+              chromeos::multidevice_setup::mojom::Feature::kBetterTogetherSuite)
+          ->second);
+}
+
+}  // namespace
 
 namespace chromeos {
 
@@ -56,9 +86,36 @@ MultiDeviceSetupClientImpl::MultiDeviceSetupClientImpl(
   multidevice_setup_remote_->GetFeatureStates(
       base::BindOnce(&MultiDeviceSetupClientImpl::OnFeatureStatesChanged,
                      base::Unretained(this)));
+
+  // Delay the initial feature metric state logger in order to allow for
+  // the client to become ready on initialization before we log, otherwise the
+  // |kUnavailableNoVerifiedHost_ClientNotReady| will always be logged, which
+  // does not help us understand the frequency of getting "stuck" waiting for
+  // the client. The timer ends sooner than |kInitialFeatureStateLoggingDelay|
+  // when |OnFeatureStatesChanged| is called (which signals the client is
+  // ready and is logged).
+  initial_feature_state_metric_logging_timer_.Start(
+      FROM_HERE, kInitialFeatureStateLoggingDelay,
+      base::BindRepeating(
+          &MultiDeviceSetupClientImpl::OnFeatureStateMetricTimerFired,
+          base::Unretained(this)));
+
+  // Log the feature states every |kRepeatingFeatureStateLoggingPeriod| to
+  // capture users who stay logged in longer than UMA aggregation periods and
+  // don't change feature state. For more information on the frequency of
+  // logging, see comments above `LogFeatureStates()`.
+  feature_state_metric_timer_.Start(
+      FROM_HERE, kRepeatingFeatureStateLoggingPeriod,
+      base::BindRepeating(
+          &MultiDeviceSetupClientImpl::OnFeatureStateMetricTimerFired,
+          base::Unretained(this)));
 }
 
 MultiDeviceSetupClientImpl::~MultiDeviceSetupClientImpl() = default;
+
+void MultiDeviceSetupClientImpl::OnFeatureStateMetricTimerFired() {
+  LogFeatureStates(feature_states_map_);
+}
 
 void MultiDeviceSetupClientImpl::GetEligibleHostDevices(
     GetEligibleHostDevicesCallback callback) {
@@ -131,10 +188,12 @@ void MultiDeviceSetupClientImpl::OnHostStatusChanged(
 
 void MultiDeviceSetupClientImpl::OnFeatureStatesChanged(
     const FeatureStatesMap& feature_states_map) {
+  initial_feature_state_metric_logging_timer_.Stop();
   PA_LOG(INFO) << "Feature states have changed. New feature map: "
                << FeatureStatesMapToString(feature_states_map);
   feature_states_map_ = feature_states_map;
   NotifyFeatureStateChanged(feature_states_map_);
+  LogFeatureStates(feature_states_map_);
 }
 
 void MultiDeviceSetupClientImpl::OnGetEligibleHostDevicesCompleted(

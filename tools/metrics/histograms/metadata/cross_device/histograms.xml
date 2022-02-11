@@ -1571,6 +1571,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="MultiDevice.BetterTogetherSuite.MultiDeviceFeatureState.MojoClient"
+    enum="MultiDevice_FeatureState" expires_after="2023-02-01">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Indicates the feature state of the Better Together Suite feature. This
+    metric is emitted to at the creation of the user session (when the user logs
+    in) with a 15-second delay to allow for the mojo client to be ready, and
+    when any multi-device feature state changes, and every 30 minutes.
+  </summary>
+</histogram>
+
 <histogram name="MultiDevice.DeviceSyncService.FindEligibleDevices.Result"
     enum="BooleanSuccess" expires_after="2023-02-01">
   <owner>danlee@google.com</owner>

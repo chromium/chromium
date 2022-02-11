@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/timer/timer.h"
 #include "chromeos/components/multidevice/remote_device.h"
 #include "chromeos/components/multidevice/remote_device_cache.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
@@ -90,6 +91,8 @@ class MultiDeviceSetupClientImpl : public MultiDeviceSetupClient,
       GetEligibleHostDevicesCallback callback,
       const multidevice::RemoteDeviceList& eligible_host_devices);
 
+  void OnFeatureStateMetricTimerFired();
+
   mojo::PendingRemote<mojom::HostStatusObserver>
   GenerateHostStatusObserverRemote();
   mojo::PendingRemote<mojom::FeatureStateObserver>
@@ -103,6 +106,12 @@ class MultiDeviceSetupClientImpl : public MultiDeviceSetupClient,
   mojo::Receiver<mojom::FeatureStateObserver> feature_state_observer_receiver_{
       this};
   std::unique_ptr<multidevice::RemoteDeviceCache> remote_device_cache_;
+
+  // We want to delay the initial logging of the feature states map to better
+  // understand the frequency of when the client is not ready, and we are stuck
+  // waiting for the device sync.
+  base::OneShotTimer initial_feature_state_metric_logging_timer_;
+  base::RepeatingTimer feature_state_metric_timer_;
 
   HostStatusWithDevice host_status_with_device_;
   FeatureStatesMap feature_states_map_;

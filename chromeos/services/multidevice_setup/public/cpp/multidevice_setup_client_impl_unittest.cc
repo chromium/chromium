@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_initializer.h"
@@ -30,6 +31,8 @@ namespace multidevice_setup {
 namespace {
 
 const size_t kNumTestDevices = 5u;
+constexpr char kMultideviceBetterTogetherMetric[] =
+    "MultiDevice.BetterTogetherSuite.MultiDeviceFeatureState.MojoClient";
 
 class FakeMultiDeviceSetupInitializerFactory
     : public MultiDeviceSetupInitializer::Factory {
@@ -343,6 +346,7 @@ class MultiDeviceSetupClientImplTest : public testing::Test {
 
   MultiDeviceSetupClient* client() { return client_.get(); }
 
+  base::HistogramTester histogram_tester_;
   multidevice::RemoteDeviceList test_remote_device_list_;
   const multidevice::RemoteDeviceRefList test_remote_device_ref_list_;
   std::unique_ptr<TestMultiDeviceSetupClientObserver> test_observer_;
@@ -471,6 +475,7 @@ TEST_F(MultiDeviceSetupClientImplTest, TestRemoveHostDevice) {
 }
 
 TEST_F(MultiDeviceSetupClientImplTest, InitializeWithValues) {
+  histogram_tester_.ExpectTotalCount(kMultideviceBetterTogetherMetric, 0);
   MultiDeviceSetupClient::HostStatusWithDevice initial_host_status_with_device =
       std::make_pair(mojom::HostStatus::kHostVerified,
                      test_remote_device_ref_list_[0]);
@@ -480,11 +485,24 @@ TEST_F(MultiDeviceSetupClientImplTest, InitializeWithValues) {
        mojom::FeatureState::kEnabledByUser},
       {mojom::Feature::kInstantTethering, mojom::FeatureState::kEnabledByUser},
       {mojom::Feature::kMessages, mojom::FeatureState::kEnabledByUser},
-      {mojom::Feature::kSmartLock, mojom::FeatureState::kEnabledByUser}};
+      {mojom::Feature::kSmartLock, mojom::FeatureState::kEnabledByUser},
+      {mojom::Feature::kPhoneHub,
+       mojom::FeatureState::kUnavailableNoVerifiedHost_ClientNotReady},
+      {mojom::Feature::kPhoneHubNotifications,
+       mojom::FeatureState::kUnavailableNoVerifiedHost_ClientNotReady},
+      {mojom::Feature::kPhoneHubTaskContinuation,
+       mojom::FeatureState::kUnavailableNoVerifiedHost_ClientNotReady},
+      {mojom::Feature::kWifiSync,
+       mojom::FeatureState::kUnavailableNoVerifiedHost_ClientNotReady},
+      {mojom::Feature::kEche,
+       mojom::FeatureState::kUnavailableNoVerifiedHost_ClientNotReady},
+      {mojom::Feature::kPhoneHubCameraRoll,
+       mojom::FeatureState::kUnavailableNoVerifiedHost_ClientNotReady}};
 
   InitializeClient(initial_host_status_with_device, initial_feature_states_map);
   EXPECT_EQ(initial_host_status_with_device, client()->GetHostStatus());
   EXPECT_EQ(initial_feature_states_map, client()->GetFeatureStates());
+  histogram_tester_.ExpectTotalCount(kMultideviceBetterTogetherMetric, 1);
 }
 
 TEST_F(MultiDeviceSetupClientImplTest, SetFeatureEnabledState) {
@@ -501,16 +519,50 @@ TEST_F(MultiDeviceSetupClientImplTest, SetFeatureEnabledState) {
 }
 
 TEST_F(MultiDeviceSetupClientImplTest, GetFeatureState) {
+  histogram_tester_.ExpectTotalCount(kMultideviceBetterTogetherMetric, 0);
   InitializeClient();
+  histogram_tester_.ExpectTotalCount(kMultideviceBetterTogetherMetric, 1);
 
-  MultiDeviceSetupClient::FeatureStatesMap feature_states_map{
+  MultiDeviceSetupClient::FeatureStatesMap update_feature_states_map{
       {mojom::Feature::kBetterTogetherSuite,
        mojom::FeatureState::kEnabledByUser},
       {mojom::Feature::kInstantTethering, mojom::FeatureState::kEnabledByUser},
       {mojom::Feature::kMessages, mojom::FeatureState::kEnabledByUser},
-      {mojom::Feature::kSmartLock, mojom::FeatureState::kEnabledByUser}};
-  SimulateFeatureStatesChange(feature_states_map);
-  EXPECT_EQ(feature_states_map, client()->GetFeatureStates());
+      {mojom::Feature::kSmartLock, mojom::FeatureState::kEnabledByUser},
+      {mojom::Feature::kPhoneHub,
+       mojom::FeatureState::kUnavailableNoVerifiedHost_ClientNotReady},
+      {mojom::Feature::kPhoneHubNotifications,
+       mojom::FeatureState::kUnavailableNoVerifiedHost_ClientNotReady},
+      {mojom::Feature::kPhoneHubTaskContinuation,
+       mojom::FeatureState::kUnavailableNoVerifiedHost_ClientNotReady},
+      {mojom::Feature::kWifiSync,
+       mojom::FeatureState::kUnavailableNoVerifiedHost_ClientNotReady},
+      {mojom::Feature::kEche,
+       mojom::FeatureState::kUnavailableNoVerifiedHost_ClientNotReady},
+      {mojom::Feature::kPhoneHubCameraRoll,
+       mojom::FeatureState::kUnavailableNoVerifiedHost_ClientNotReady}};
+  SimulateFeatureStatesChange(update_feature_states_map);
+
+  MultiDeviceSetupClient::FeatureStatesMap expected_feature_states_map{
+      {mojom::Feature::kBetterTogetherSuite,
+       mojom::FeatureState::kEnabledByUser},
+      {mojom::Feature::kInstantTethering, mojom::FeatureState::kEnabledByUser},
+      {mojom::Feature::kMessages, mojom::FeatureState::kEnabledByUser},
+      {mojom::Feature::kSmartLock, mojom::FeatureState::kEnabledByUser},
+      {mojom::Feature::kPhoneHub,
+       mojom::FeatureState::kUnavailableNoVerifiedHost_ClientNotReady},
+      {mojom::Feature::kPhoneHubNotifications,
+       mojom::FeatureState::kUnavailableNoVerifiedHost_ClientNotReady},
+      {mojom::Feature::kPhoneHubTaskContinuation,
+       mojom::FeatureState::kUnavailableNoVerifiedHost_ClientNotReady},
+      {mojom::Feature::kWifiSync,
+       mojom::FeatureState::kUnavailableNoVerifiedHost_ClientNotReady},
+      {mojom::Feature::kEche,
+       mojom::FeatureState::kUnavailableNoVerifiedHost_ClientNotReady},
+      {mojom::Feature::kPhoneHubCameraRoll,
+       mojom::FeatureState::kUnavailableNoVerifiedHost_ClientNotReady}};
+  EXPECT_EQ(expected_feature_states_map, client()->GetFeatureStates());
+  histogram_tester_.ExpectTotalCount(kMultideviceBetterTogetherMetric, 2);
 }
 
 TEST_F(MultiDeviceSetupClientImplTest, TestRetrySetHostNow_Success) {
