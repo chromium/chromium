@@ -216,7 +216,7 @@ void CaptureModeCameraController::OnDevicesChanged(
 
 void CaptureModeCameraController::ReconnectToVideoSourceProvider() {
   video_source_provider_remote_.reset();
-  waiting_for_camera_devices_ = false;
+  most_recent_request_id_ = 0;
   delegate_->ConnectToVideoSourceProvider(
       video_source_provider_remote_.BindNewPipeAndPassReceiver());
   video_source_provider_remote_.set_disconnect_handler(base::BindOnce(
@@ -228,26 +228,28 @@ void CaptureModeCameraController::ReconnectToVideoSourceProvider() {
 void CaptureModeCameraController::GetCameraDevices() {
   DCHECK(video_source_provider_remote_);
 
-  if (waiting_for_camera_devices_)
-    return;
-
-  waiting_for_camera_devices_ = true;
-  video_source_provider_remote_->GetSourceInfos(
-      base::BindOnce(&CaptureModeCameraController::OnCameraDevicesReceived,
-                     weak_ptr_factory_.GetWeakPtr()));
+  video_source_provider_remote_->GetSourceInfos(base::BindOnce(
+      &CaptureModeCameraController::OnCameraDevicesReceived,
+      weak_ptr_factory_.GetWeakPtr(), ++most_recent_request_id_));
 }
 
 void CaptureModeCameraController::OnCameraDevicesReceived(
+    RequestId request_id,
     const std::vector<media::VideoCaptureDeviceInfo>& devices) {
+  if (request_id < most_recent_request_id_) {
+    // Ignore any out-dated requests replies, since a reply from a more recent
+    // request is pending.
+    return;
+  }
+
+  DCHECK_EQ(request_id, most_recent_request_id_);
+
   // Run the optional for-test closure at the exit of this function's scope.
   base::ScopedClosureRunner deferred_runner;
   if (on_camera_list_received_for_test_) {
     deferred_runner.ReplaceClosure(
         std::move(on_camera_list_received_for_test_));
   }
-
-  DCHECK(waiting_for_camera_devices_);
-  waiting_for_camera_devices_ = false;
 
   if (!DidDevicesChange(devices, available_cameras_))
     return;

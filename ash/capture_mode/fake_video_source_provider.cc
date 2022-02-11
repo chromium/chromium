@@ -8,6 +8,7 @@
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/ranges/algorithm.h"
 #include "base/system/system_monitor.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
 
 namespace ash {
@@ -63,7 +64,14 @@ void FakeVideoSourceProvider::RemoveFakeCamera(const std::string& device_id) {
 
 void FakeVideoSourceProvider::GetSourceInfos(GetSourceInfosCallback callback) {
   DCHECK(callback);
-  std::move(callback).Run(devices_);
+
+  // Simulate the asynchronously behavior of the actual VideoSourceProvider
+  // which does a lot of asynchronous and mojo calls.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), devices_));
+
+  if (on_replied_with_source_infos_)
+    std::move(on_replied_with_source_infos_).Run();
 }
 
 }  // namespace ash

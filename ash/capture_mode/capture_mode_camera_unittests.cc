@@ -20,6 +20,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/system_monitor.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/views/widget/widget.h"
 
@@ -135,17 +136,11 @@ class CaptureModeCameraTest : public AshTestBase {
   }
 
   void AddDefaultCamera() {
-    CameraDevicesChangeWaiter waiter;
     AddFakeCamera(kDefaultCameraDeviceId, kDefaultCameraDisplayName,
                   kDefaultCameraModelId);
-    waiter.Wait();
   }
 
-  void RemoveDefaultCamera() {
-    CameraDevicesChangeWaiter waiter;
-    RemoveFakeCamera(kDefaultCameraDeviceId);
-    waiter.Wait();
-  }
+  void RemoveDefaultCamera() { RemoveFakeCamera(kDefaultCameraDeviceId); }
 
   // Adds the default camera, sets it as the selected camera, then removes it,
   // which triggers the camera disconnection grace period. Returns a pointer to
@@ -203,6 +198,29 @@ TEST_F(CaptureModeCameraTest, CameraDevicesChanges) {
   EXPECT_TRUE(camera_controller->available_cameras().empty());
   EXPECT_FALSE(camera_controller->should_show_preview());
   EXPECT_FALSE(camera_controller->camera_preview_widget());
+}
+
+TEST_F(CaptureModeCameraTest, CameraRemovedWhileWaitingForCameraDevices) {
+  auto* camera_controller = GetCameraController();
+  AddDefaultCamera();
+  EXPECT_EQ(1u, camera_controller->available_cameras().size());
+
+  // The system monitor can trigger several notifications about devices changes
+  // for the same camera addition event. We will simulate a camera getting
+  // removed right while we're still waiting for the video source provider to
+  // send us the list. https://crbug.com/1295377.
+  auto* video_source_provider = GetTestDelegate()->video_source_provider();
+  {
+    base::RunLoop loop;
+    video_source_provider->set_on_replied_with_source_infos(
+        base::BindLambdaForTesting([&]() { loop.Quit(); }));
+    base::SystemMonitor::Get()->ProcessDevicesChanged(
+        base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+    loop.Run();
+  }
+
+  RemoveDefaultCamera();
+  EXPECT_TRUE(camera_controller->available_cameras().empty());
 }
 
 TEST_F(CaptureModeCameraTest, SelectingUnavailableCamera) {

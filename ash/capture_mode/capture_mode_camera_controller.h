@@ -168,8 +168,12 @@ class ASH_EXPORT CaptureModeCameraController
   void GetCameraDevices();
 
   // Called back asynchronously by the video source provider to give us the list
-  // of currently available camera `devices`.
+  // of currently available camera `devices`. The ID used to make the request to
+  // which this reply belongs is `request_id`. We will ignore any replies for
+  // any older requests than the `most_recent_request_id_`.
+  using RequestId = size_t;
   void OnCameraDevicesReceived(
+      RequestId request_id,
       const std::vector<media::VideoCaptureDeviceInfo>& devices);
 
   // Shows or hides a preview of the currently selected camera depending on
@@ -226,9 +230,10 @@ class ASH_EXPORT CaptureModeCameraController
   // - The capture mode session is switched to an image capture mode.
   bool should_show_preview_ = false;
 
-  // True if GetCameraDevices() was called and we're currently waiting for the
-  // video source provider to give us the list.
-  bool waiting_for_camera_devices_ = false;
+  // The ID used for the most recent request made to the video source provider
+  // to get the list of cameras in GetCameraDevices(). More recent requests will
+  // have a larger value IDs than older requests.
+  RequestId most_recent_request_id_ = 0;
 
   base::WeakPtrFactory<CaptureModeCameraController> weak_ptr_factory_{this};
 };
