@@ -2063,6 +2063,7 @@ component("ash") {
     "//ash/quick_pair/keyed_service",
     "//ash/quick_pair/pairing",
     "//ash/quick_pair/repository",
+    "//ash/quick_pair/scanning",
     "//ash/quick_pair/ui",
     "//ash/services/nearby/public/cpp",
     "//ash/services/quick_pair",
@@ -2228,6 +2229,7 @@ component("ash") {
     "//ash/quick_pair/pairing",
     "//ash/quick_pair/repository",
     "//ash/quick_pair/ui",
+    "//ash/quick_pair/scanning",
   ]
 
   if (enable_cros_ambient_mode_backend) {

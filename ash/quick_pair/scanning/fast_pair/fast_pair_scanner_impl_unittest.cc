@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/quick_pair/scanning/fast_pair/fast_pair_scanner_impl.h"
+
 #include <memory>
 
 #include "ash/constants/ash_features.h"
@@ -13,7 +15,6 @@
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
-#include "ash/quick_pair/scanning/fast_pair/fast_pair_scanner_impl.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -98,13 +99,13 @@ class FastPairScannerObserver
 namespace ash {
 namespace quick_pair {
 
-class FastPairScannerTest : public testing::Test {
+class FastPairScannerImplTest : public testing::Test {
  public:
   void SetUp() override {
     adapter_ = base::MakeRefCounted<FakeBluetoothAdapter>();
     ON_CALL(*adapter_, StartLowEnergyScanSession(testing::_, testing::_))
         .WillByDefault(
-            Invoke(this, &FastPairScannerTest::StartLowEnergyScanSession));
+            Invoke(this, &FastPairScannerImplTest::StartLowEnergyScanSession));
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
     EXPECT_CALL(adapter(), AddObserver);
     scanner_ = base::MakeRefCounted<FastPairScannerImpl>();
@@ -126,7 +127,7 @@ class FastPairScannerTest : public testing::Test {
       base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate) {
     auto mock_scan_session =
         std::make_unique<device::MockBluetoothLowEnergyScanSession>(
-            base::BindOnce(&FastPairScannerTest::OnScanSessionDestroyed,
+            base::BindOnce(&FastPairScannerImplTest::OnScanSessionDestroyed,
                            weak_ptr_factory_.GetWeakPtr()));
     mock_scan_session_ = mock_scan_session.get();
     delegate_ = delegate;
@@ -168,7 +169,7 @@ class FastPairScannerTest : public testing::Test {
 
   void AddConnectedHandshake(const std::string& address) {
     FastPairHandshakeLookup::SetCreateFunctionForTesting(
-        base::BindRepeating(&FastPairScannerTest::CreateConnectedHandshake,
+        base::BindRepeating(&FastPairScannerImplTest::CreateConnectedHandshake,
                             base::Unretained(this)));
 
     FastPairHandshakeLookup::GetInstance()->Create(
@@ -195,16 +196,16 @@ class FastPairScannerTest : public testing::Test {
   device::MockBluetoothLowEnergyScanSession* mock_scan_session_ = nullptr;
   std::unique_ptr<FastPairScannerObserver> scanner_observer_;
   base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate_;
-  base::WeakPtrFactory<FastPairScannerTest> weak_ptr_factory_{this};
+  base::WeakPtrFactory<FastPairScannerImplTest> weak_ptr_factory_{this};
 };
 
-TEST_F(FastPairScannerTest, DeviceAddedNotifiesObservers) {
+TEST_F(FastPairScannerImplTest, DeviceAddedNotifiesObservers) {
   TriggerOnDeviceFound(kTestBleDeviceAddress1);
   EXPECT_TRUE(scanner_observer().DoesDeviceListContainTestDevice(
       kTestBleDeviceAddress1));
 }
 
-TEST_F(FastPairScannerTest, DeviceLostNotifiesObservers) {
+TEST_F(FastPairScannerImplTest, DeviceLostNotifiesObservers) {
   TriggerOnDeviceFound(kTestBleDeviceAddress1);
   EXPECT_TRUE(scanner_observer().DoesDeviceListContainTestDevice(
       kTestBleDeviceAddress1));
@@ -213,14 +214,14 @@ TEST_F(FastPairScannerTest, DeviceLostNotifiesObservers) {
       kTestBleDeviceAddress1));
 }
 
-TEST_F(FastPairScannerTest, DeviceChangedNotifiesObservors) {
+TEST_F(FastPairScannerImplTest, DeviceChangedNotifiesObservors) {
   TriggerOnDeviceFound(kTestBleDeviceAddress1);
   EXPECT_EQ(scanner_observer().on_device_found_count(), 1);
   adapter().ChangeDevice(kTestBleDeviceAddress1);
   EXPECT_EQ(scanner_observer().on_device_found_count(), 2);
 }
 
-TEST_F(FastPairScannerTest, IgnoresEventDuringActiveHandshake) {
+TEST_F(FastPairScannerImplTest, IgnoresEventDuringActiveHandshake) {
   TriggerOnDeviceFound(kTestBleDeviceAddress1);
   EXPECT_TRUE(scanner_observer().DoesDeviceListContainTestDevice(
       kTestBleDeviceAddress1));
@@ -232,7 +233,7 @@ TEST_F(FastPairScannerTest, IgnoresEventDuringActiveHandshake) {
   EXPECT_EQ(scanner_observer().on_device_found_count(), 1);
 }
 
-TEST_F(FastPairScannerTest, LowPowerMode) {
+TEST_F(FastPairScannerImplTest, LowPowerMode) {
   base::test::ScopedFeatureList feature_list{ash::features::kFastPairLowPower};
   SetUp();
 

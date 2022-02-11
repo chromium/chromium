@@ -41,6 +41,27 @@ std::ostream& operator<<(
   return out;
 }
 
+// static
+FastPairScannerImpl::Factory* FastPairScannerImpl::Factory::g_test_factory_ =
+    nullptr;
+
+// static
+scoped_refptr<FastPairScanner> FastPairScannerImpl::Factory::Create() {
+  if (g_test_factory_) {
+    return g_test_factory_->CreateInstance();
+  }
+
+  return base::MakeRefCounted<FastPairScannerImpl>();
+}
+
+// static
+void FastPairScannerImpl::Factory::SetFactoryForTesting(
+    Factory* g_test_factory) {
+  g_test_factory_ = g_test_factory;
+}
+
+FastPairScannerImpl::Factory::~Factory() = default;
+
 FastPairScannerImpl::FastPairScannerImpl()
     : task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
@@ -135,6 +156,7 @@ void FastPairScannerImpl::OnDeviceFound(
     device::BluetoothDevice* device) {
   const std::vector<uint8_t>* service_data =
       device->GetServiceDataForUUID(kFastPairBluetoothUuid);
+
   if (!service_data) {
     QP_LOG(WARNING) << "No Fast Pair service data found on device";
     return;

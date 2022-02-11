@@ -1,33 +1,17 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_QUICK_PAIR_SCANNING_FAST_PAIR_FAST_PAIR_DISCOVERABLE_SCANNER_H_
 #define ASH_QUICK_PAIR_SCANNING_FAST_PAIR_FAST_PAIR_DISCOVERABLE_SCANNER_H_
 
-#include <string>
-
-#include "ash/quick_pair/scanning/fast_pair/fast_pair_scanner.h"
-#include "ash/services/quick_pair/quick_pair_process_manager.h"
 #include "base/callback_forward.h"
-#include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
-#include "chromeos/network/network_state_handler_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace device {
-class BluetoothAdapter;
-class BluetoothDevice;
-}  // namespace device
 
 namespace ash {
 namespace quick_pair {
 
 struct Device;
-class DeviceMetadata;
-enum class PairFailure;
 
 using DeviceCallback = base::RepeatingCallback<void(scoped_refptr<Device>)>;
 
@@ -36,50 +20,9 @@ using DeviceCallback = base::RepeatingCallback<void(scoped_refptr<Device>)>;
 // and invokes the |found_callback| when it finds a device within the
 // appropriate range.  |lost_callback| will be invoked when that device is lost
 // to the bluetooth adapter.
-class FastPairDiscoverableScanner final
-    : public FastPairScanner::Observer,
-      public chromeos::NetworkStateHandlerObserver {
+class FastPairDiscoverableScanner {
  public:
-  FastPairDiscoverableScanner(scoped_refptr<FastPairScanner> scanner,
-                              scoped_refptr<device::BluetoothAdapter> adapter,
-                              DeviceCallback found_callback,
-                              DeviceCallback lost_callback);
-  FastPairDiscoverableScanner(const FastPairDiscoverableScanner&) = delete;
-  FastPairDiscoverableScanner& operator=(const FastPairDiscoverableScanner&) =
-      delete;
-  ~FastPairDiscoverableScanner() override;
-
-  // FastPairScanner::Observer
-  void OnDeviceFound(device::BluetoothDevice* device) override;
-  void OnDeviceLost(device::BluetoothDevice* device) override;
-
-  // chromeos::NetworkStateHandlerObserver:
-  void DefaultNetworkChanged(const chromeos::NetworkState* network) override;
-
- private:
-  void OnModelIdRetrieved(const std::string& address,
-                          const absl::optional<std::string>& model_id);
-  void OnDeviceMetadataRetrieved(const std::string& address,
-                                 const std::string model_id,
-                                 DeviceMetadata* device_metadata,
-                                 bool has_retryable_error);
-  void OnHandshakeComplete(scoped_refptr<Device> device,
-                           absl::optional<PairFailure> failure);
-  void NotifyDeviceFound(scoped_refptr<Device> device);
-  void OnUtilityProcessStopped(
-      const std::string& address,
-      QuickPairProcessManager::ShutdownReason shutdown_reason);
-
-  scoped_refptr<FastPairScanner> scanner_;
-  scoped_refptr<device::BluetoothAdapter> adapter_;
-  DeviceCallback found_callback_;
-  DeviceCallback lost_callback_;
-  base::flat_map<std::string, std::string> pending_devices_address_to_model_id_;
-  base::flat_map<std::string, scoped_refptr<Device>> notified_devices_;
-  base::flat_map<std::string, int> model_id_parse_attempts_;
-  base::ScopedObservation<FastPairScanner, FastPairScanner::Observer>
-      observation_{this};
-  base::WeakPtrFactory<FastPairDiscoverableScanner> weak_pointer_factory_{this};
+  virtual ~FastPairDiscoverableScanner() = default;
 };
 
 }  // namespace quick_pair

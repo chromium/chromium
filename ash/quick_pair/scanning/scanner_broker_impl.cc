@@ -10,15 +10,35 @@
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_discoverable_scanner.h"
+#include "ash/quick_pair/scanning/fast_pair/fast_pair_discoverable_scanner_impl.h"
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_not_discoverable_scanner.h"
-#include "ash/quick_pair/scanning/fast_pair/fast_pair_scanner.h"
-#include "ash/quick_pair/scanning/fast_pair/fast_pair_scanner_impl.h"
+#include "ash/quick_pair/scanning/fast_pair/fast_pair_not_discoverable_scanner_impl.h"
 #include "ash/services/quick_pair/quick_pair_process_manager.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
-#include "base/memory/scoped_refptr.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
+
+namespace {
+
+bool ShouldNotDiscoverableScanningBeEnabled(ash::LoginStatus status) {
+  switch (status) {
+    case ash::LoginStatus::NOT_LOGGED_IN:
+    case ash::LoginStatus::LOCKED:
+    case ash::LoginStatus::KIOSK_APP:
+    case ash::LoginStatus::GUEST:
+    case ash::LoginStatus::PUBLIC:
+      return false;
+    case ash::LoginStatus::USER:
+    case ash::LoginStatus::CHILD:
+    default:
+      return true;
+  }
+}
+
+}  // namespace
 
 namespace ash {
 namespace quick_pair {
@@ -98,20 +118,53 @@ void ScannerBrokerImpl::StartFastPairScanning() {
 
   QP_LOG(VERBOSE) << "Starting Fast Pair Scanning.";
 
-  scoped_refptr<FastPairScanner> fast_pair_scanner =
-      base::MakeRefCounted<FastPairScannerImpl>();
+  fast_pair_scanner_ = base::MakeRefCounted<FastPairScannerImpl>();
 
   fast_pair_discoverable_scanner_ =
-      std::make_unique<FastPairDiscoverableScanner>(
-          fast_pair_scanner, adapter_,
+      FastPairDiscoverableScannerImpl::Factory::Create(
+          fast_pair_scanner_, adapter_,
           base::BindRepeating(&ScannerBrokerImpl::NotifyDeviceFound,
                               weak_pointer_factory_.GetWeakPtr()),
           base::BindRepeating(&ScannerBrokerImpl::NotifyDeviceLost,
                               weak_pointer_factory_.GetWeakPtr()));
 
+  // If there is no signed in user, don't instantiate the not discoverable
+  // scanner, but observe login events in case that we get logged in later on.
+  if (!ShouldNotDiscoverableScanningBeEnabled(
+          Shell::Get()->session_controller()->login_status())) {
+    QP_LOG(VERBOSE) << __func__
+                    << ": No logged in user to enable not discoverable scanner";
+
+    // Observe log in events in the case the login was delayed if we aren't
+    // observing already.
+    if (!shell_observation_.IsObserving())
+      shell_observation_.Observe(Shell::Get()->session_controller());
+
+    return;
+  }
+
   fast_pair_not_discoverable_scanner_ =
-      std::make_unique<FastPairNotDiscoverableScanner>(
-          fast_pair_scanner, adapter_,
+      FastPairNotDiscoverableScannerImpl::Factory::Create(
+          fast_pair_scanner_, adapter_,
+          base::BindRepeating(&ScannerBrokerImpl::NotifyDeviceFound,
+                              weak_pointer_factory_.GetWeakPtr()),
+          base::BindRepeating(&ScannerBrokerImpl::NotifyDeviceLost,
+                              weak_pointer_factory_.GetWeakPtr()));
+}
+
+void ScannerBrokerImpl::OnLoginStatusChanged(LoginStatus login_status) {
+  if (!ShouldNotDiscoverableScanningBeEnabled(login_status) ||
+      !fast_pair_scanner_ || !adapter_ ||
+      fast_pair_not_discoverable_scanner_.get()) {
+    return;
+  }
+
+  QP_LOG(VERBOSE) << __func__
+                  << ": Logged in user, instantiate not discoverable scanner";
+
+  fast_pair_not_discoverable_scanner_ =
+      FastPairNotDiscoverableScannerImpl::Factory::Create(
+          fast_pair_scanner_, adapter_,
           base::BindRepeating(&ScannerBrokerImpl::NotifyDeviceFound,
                               weak_pointer_factory_.GetWeakPtr()),
           base::BindRepeating(&ScannerBrokerImpl::NotifyDeviceLost,
@@ -121,6 +174,8 @@ void ScannerBrokerImpl::StartFastPairScanning() {
 void ScannerBrokerImpl::StopFastPairScanning() {
   fast_pair_discoverable_scanner_.reset();
   fast_pair_not_discoverable_scanner_.reset();
+  fast_pair_scanner_.reset();
+  shell_observation_.Reset();
   QP_LOG(VERBOSE) << "Stopping Fast Pair Scanning.";
 }
 

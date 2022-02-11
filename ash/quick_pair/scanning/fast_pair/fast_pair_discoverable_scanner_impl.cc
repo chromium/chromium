@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/quick_pair/scanning/fast_pair/fast_pair_discoverable_scanner.h"
+#include "ash/quick_pair/scanning/fast_pair/fast_pair_discoverable_scanner_impl.h"
 
 #include <cstdint>
 #include <memory>
@@ -41,7 +41,37 @@ constexpr int kMaxParseModelIdRetryCount = 5;
 namespace ash {
 namespace quick_pair {
 
-FastPairDiscoverableScanner::FastPairDiscoverableScanner(
+// static
+FastPairDiscoverableScannerImpl::Factory*
+    FastPairDiscoverableScannerImpl::Factory::g_test_factory_ = nullptr;
+
+// static
+std::unique_ptr<FastPairDiscoverableScanner>
+FastPairDiscoverableScannerImpl::Factory::Create(
+    scoped_refptr<FastPairScanner> scanner,
+    scoped_refptr<device::BluetoothAdapter> adapter,
+    DeviceCallback found_callback,
+    DeviceCallback lost_callback) {
+  if (g_test_factory_) {
+    return g_test_factory_->CreateInstance(
+        std::move(scanner), std::move(adapter), std::move(found_callback),
+        std::move(lost_callback));
+  }
+
+  return base::WrapUnique(new FastPairDiscoverableScannerImpl(
+      std::move(scanner), std::move(adapter), std::move(found_callback),
+      std::move(lost_callback)));
+}
+
+// static
+void FastPairDiscoverableScannerImpl::Factory::SetFactoryForTesting(
+    Factory* g_test_factory) {
+  g_test_factory_ = g_test_factory;
+}
+
+FastPairDiscoverableScannerImpl::Factory::~Factory() = default;
+
+FastPairDiscoverableScannerImpl::FastPairDiscoverableScannerImpl(
     scoped_refptr<FastPairScanner> scanner,
     scoped_refptr<device::BluetoothAdapter> adapter,
     DeviceCallback found_callback,
@@ -55,12 +85,12 @@ FastPairDiscoverableScanner::FastPairDiscoverableScanner(
       this, FROM_HERE);
 }
 
-FastPairDiscoverableScanner::~FastPairDiscoverableScanner() {
+FastPairDiscoverableScannerImpl::~FastPairDiscoverableScannerImpl() {
   chromeos::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
       this, FROM_HERE);
 }
 
-void FastPairDiscoverableScanner::OnDeviceFound(
+void FastPairDiscoverableScannerImpl::OnDeviceFound(
     device::BluetoothDevice* device) {
   QP_LOG(VERBOSE) << __func__ << ": " << device->GetNameForDisplay();
 
@@ -77,13 +107,13 @@ void FastPairDiscoverableScanner::OnDeviceFound(
 
   quick_pair_process::GetHexModelIdFromServiceData(
       *fast_pair_service_data,
-      base::BindOnce(&FastPairDiscoverableScanner::OnModelIdRetrieved,
+      base::BindOnce(&FastPairDiscoverableScannerImpl::OnModelIdRetrieved,
                      weak_pointer_factory_.GetWeakPtr(), device->GetAddress()),
-      base::BindOnce(&FastPairDiscoverableScanner::OnUtilityProcessStopped,
+      base::BindOnce(&FastPairDiscoverableScannerImpl::OnUtilityProcessStopped,
                      weak_pointer_factory_.GetWeakPtr(), device->GetAddress()));
 }
 
-void FastPairDiscoverableScanner::OnModelIdRetrieved(
+void FastPairDiscoverableScannerImpl::OnModelIdRetrieved(
     const std::string& address,
     const absl::optional<std::string>& model_id) {
   auto it = model_id_parse_attempts_.find(address);
@@ -113,12 +143,12 @@ void FastPairDiscoverableScanner::OnModelIdRetrieved(
 
   FastPairRepository::Get()->GetDeviceMetadata(
       *model_id,
-      base::BindOnce(&FastPairDiscoverableScanner::OnDeviceMetadataRetrieved,
-                     weak_pointer_factory_.GetWeakPtr(), address,
-                     model_id.value()));
+      base::BindOnce(
+          &FastPairDiscoverableScannerImpl::OnDeviceMetadataRetrieved,
+          weak_pointer_factory_.GetWeakPtr(), address, model_id.value()));
 }
 
-void FastPairDiscoverableScanner::OnDeviceMetadataRetrieved(
+void FastPairDiscoverableScannerImpl::OnDeviceMetadataRetrieved(
     const std::string& address,
     const std::string model_id,
     DeviceMetadata* device_metadata,
@@ -155,11 +185,11 @@ void FastPairDiscoverableScanner::OnDeviceMetadataRetrieved(
 
   FastPairHandshakeLookup::GetInstance()->Create(
       adapter_, device,
-      base::BindOnce(&FastPairDiscoverableScanner::OnHandshakeComplete,
+      base::BindOnce(&FastPairDiscoverableScannerImpl::OnHandshakeComplete,
                      weak_pointer_factory_.GetWeakPtr()));
 }
 
-void FastPairDiscoverableScanner::OnHandshakeComplete(
+void FastPairDiscoverableScannerImpl::OnHandshakeComplete(
     scoped_refptr<Device> device,
     absl::optional<PairFailure> failure) {
   if (failure) {
@@ -171,7 +201,7 @@ void FastPairDiscoverableScanner::OnHandshakeComplete(
   NotifyDeviceFound(std::move(device));
 }
 
-void FastPairDiscoverableScanner::NotifyDeviceFound(
+void FastPairDiscoverableScannerImpl::NotifyDeviceFound(
     scoped_refptr<Device> device) {
   device::BluetoothDevice* classic_device =
       device->classic_address()
@@ -193,7 +223,7 @@ void FastPairDiscoverableScanner::NotifyDeviceFound(
   found_callback_.Run(device);
 }
 
-void FastPairDiscoverableScanner::OnDeviceLost(
+void FastPairDiscoverableScannerImpl::OnDeviceLost(
     device::BluetoothDevice* device) {
   QP_LOG(VERBOSE) << __func__ << ": " << device->GetNameForDisplay();
 
@@ -215,7 +245,7 @@ void FastPairDiscoverableScanner::OnDeviceLost(
   lost_callback_.Run(std::move(notified_device));
 }
 
-void FastPairDiscoverableScanner::OnUtilityProcessStopped(
+void FastPairDiscoverableScannerImpl::OnUtilityProcessStopped(
     const std::string& address,
     QuickPairProcessManager::ShutdownReason shutdown_reason) {
   int current_retry_count = model_id_parse_attempts_[address];
@@ -243,13 +273,13 @@ void FastPairDiscoverableScanner::OnUtilityProcessStopped(
 
   quick_pair_process::GetHexModelIdFromServiceData(
       *fast_pair_service_data,
-      base::BindOnce(&FastPairDiscoverableScanner::OnModelIdRetrieved,
+      base::BindOnce(&FastPairDiscoverableScannerImpl::OnModelIdRetrieved,
                      weak_pointer_factory_.GetWeakPtr(), address),
-      base::BindOnce(&FastPairDiscoverableScanner::OnUtilityProcessStopped,
+      base::BindOnce(&FastPairDiscoverableScannerImpl::OnUtilityProcessStopped,
                      weak_pointer_factory_.GetWeakPtr(), address));
 }
 
-void FastPairDiscoverableScanner::DefaultNetworkChanged(
+void FastPairDiscoverableScannerImpl::DefaultNetworkChanged(
     const chromeos::NetworkState* network) {
   // Only retry when we have an active connected network.
   if (!network || !network->IsConnectedState()) {
@@ -260,10 +290,11 @@ void FastPairDiscoverableScanner::DefaultNetworkChanged(
   while (it != pending_devices_address_to_model_id_.end()) {
     FastPairRepository::Get()->GetDeviceMetadata(
         /*model_id=*/it->second,
-        base::BindOnce(&FastPairDiscoverableScanner::OnDeviceMetadataRetrieved,
-                       weak_pointer_factory_.GetWeakPtr(),
-                       /*address=*/it->first,
-                       /*model_id=*/it->second));
+        base::BindOnce(
+            &FastPairDiscoverableScannerImpl::OnDeviceMetadataRetrieved,
+            weak_pointer_factory_.GetWeakPtr(),
+            /*address=*/it->first,
+            /*model_id=*/it->second));
 
     pending_devices_address_to_model_id_.erase(it);
   }

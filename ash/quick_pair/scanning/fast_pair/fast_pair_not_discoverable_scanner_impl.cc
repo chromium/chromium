@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/quick_pair/scanning/fast_pair/fast_pair_not_discoverable_scanner.h"
+#include "ash/quick_pair/scanning/fast_pair/fast_pair_not_discoverable_scanner_impl.h"
 
 #include <cstdint>
 #include <iomanip>
@@ -76,7 +76,37 @@ void SetBatteryInfo(
 namespace ash {
 namespace quick_pair {
 
-FastPairNotDiscoverableScanner::FastPairNotDiscoverableScanner(
+// static
+FastPairNotDiscoverableScannerImpl::Factory*
+    FastPairNotDiscoverableScannerImpl::Factory::g_test_factory_ = nullptr;
+
+// static
+std::unique_ptr<FastPairNotDiscoverableScanner>
+FastPairNotDiscoverableScannerImpl::Factory::Create(
+    scoped_refptr<FastPairScanner> scanner,
+    scoped_refptr<device::BluetoothAdapter> adapter,
+    DeviceCallback found_callback,
+    DeviceCallback lost_callback) {
+  if (g_test_factory_) {
+    return g_test_factory_->CreateInstance(
+        std::move(scanner), std::move(adapter), std::move(found_callback),
+        std::move(lost_callback));
+  }
+
+  return base::WrapUnique(new FastPairNotDiscoverableScannerImpl(
+      std::move(scanner), std::move(adapter), std::move(found_callback),
+      std::move(lost_callback)));
+}
+
+// static
+void FastPairNotDiscoverableScannerImpl::Factory::SetFactoryForTesting(
+    Factory* g_test_factory) {
+  g_test_factory_ = g_test_factory;
+}
+
+FastPairNotDiscoverableScannerImpl::Factory::~Factory() = default;
+
+FastPairNotDiscoverableScannerImpl::FastPairNotDiscoverableScannerImpl(
     scoped_refptr<FastPairScanner> scanner,
     scoped_refptr<device::BluetoothAdapter> adapter,
     DeviceCallback found_callback,
@@ -88,11 +118,12 @@ FastPairNotDiscoverableScanner::FastPairNotDiscoverableScanner(
   observation_.Observe(scanner.get());
 }
 
-FastPairNotDiscoverableScanner::~FastPairNotDiscoverableScanner() = default;
+FastPairNotDiscoverableScannerImpl::~FastPairNotDiscoverableScannerImpl() =
+    default;
 
-void FastPairNotDiscoverableScanner::OnDeviceFound(
+void FastPairNotDiscoverableScannerImpl::OnDeviceFound(
     device::BluetoothDevice* device) {
-  QP_LOG(VERBOSE) << __func__ << ": " << device->GetNameForDisplay();
+  QP_LOG(ERROR) << __func__ << ": " << device->GetNameForDisplay();
 
   const std::vector<uint8_t>* fast_pair_service_data =
       device->GetServiceDataForUUID(kFastPairBluetoothUuid);
@@ -107,13 +138,14 @@ void FastPairNotDiscoverableScanner::OnDeviceFound(
 
   quick_pair_process::ParseNotDiscoverableAdvertisement(
       *fast_pair_service_data,
-      base::BindOnce(&FastPairNotDiscoverableScanner::OnAdvertisementParsed,
+      base::BindOnce(&FastPairNotDiscoverableScannerImpl::OnAdvertisementParsed,
                      weak_pointer_factory_.GetWeakPtr(), device->GetAddress()),
-      base::BindOnce(&FastPairNotDiscoverableScanner::OnUtilityProcessStopped,
-                     weak_pointer_factory_.GetWeakPtr(), device->GetAddress()));
+      base::BindOnce(
+          &FastPairNotDiscoverableScannerImpl::OnUtilityProcessStopped,
+          weak_pointer_factory_.GetWeakPtr(), device->GetAddress()));
 }
 
-void FastPairNotDiscoverableScanner::OnDeviceLost(
+void FastPairNotDiscoverableScannerImpl::OnDeviceLost(
     device::BluetoothDevice* device) {
   QP_LOG(VERBOSE) << __func__ << ": " << device->GetNameForDisplay();
 
@@ -132,7 +164,7 @@ void FastPairNotDiscoverableScanner::OnDeviceLost(
   lost_callback_.Run(std::move(notified_device));
 }
 
-void FastPairNotDiscoverableScanner::OnAdvertisementParsed(
+void FastPairNotDiscoverableScannerImpl::OnAdvertisementParsed(
     const std::string& address,
     const absl::optional<NotDiscoverableAdvertisement>& advertisement) {
   auto it = advertisement_parse_attempts_.find(address);
@@ -169,11 +201,11 @@ void FastPairNotDiscoverableScanner::OnAdvertisementParsed(
   FastPairRepository::Get()->CheckAccountKeys(
       filter_iterator->second,
       base::BindOnce(
-          &FastPairNotDiscoverableScanner::OnAccountKeyFilterCheckResult,
+          &FastPairNotDiscoverableScannerImpl::OnAccountKeyFilterCheckResult,
           weak_pointer_factory_.GetWeakPtr(), address));
 }
 
-void FastPairNotDiscoverableScanner::OnAccountKeyFilterCheckResult(
+void FastPairNotDiscoverableScannerImpl::OnAccountKeyFilterCheckResult(
     const std::string& address,
     absl::optional<PairingMetadata> metadata) {
   account_key_filters_.erase(address);
@@ -198,11 +230,11 @@ void FastPairNotDiscoverableScanner::OnAccountKeyFilterCheckResult(
 
   FastPairHandshakeLookup::GetInstance()->Create(
       adapter_, std::move(device),
-      base::BindOnce(&FastPairNotDiscoverableScanner::OnHandshakeComplete,
+      base::BindOnce(&FastPairNotDiscoverableScannerImpl::OnHandshakeComplete,
                      weak_pointer_factory_.GetWeakPtr()));
 }
 
-void FastPairNotDiscoverableScanner::OnHandshakeComplete(
+void FastPairNotDiscoverableScannerImpl::OnHandshakeComplete(
     scoped_refptr<Device> device,
     absl::optional<PairFailure> failure) {
   if (failure) {
@@ -231,7 +263,7 @@ void FastPairNotDiscoverableScanner::OnHandshakeComplete(
   found_callback_.Run(device);
 }
 
-void FastPairNotDiscoverableScanner::OnUtilityProcessStopped(
+void FastPairNotDiscoverableScannerImpl::OnUtilityProcessStopped(
     const std::string& address,
     QuickPairProcessManager::ShutdownReason shutdown_reason) {
   int current_retry_count = advertisement_parse_attempts_[address];
@@ -266,10 +298,11 @@ void FastPairNotDiscoverableScanner::OnUtilityProcessStopped(
 
   quick_pair_process::ParseNotDiscoverableAdvertisement(
       *fast_pair_service_data,
-      base::BindOnce(&FastPairNotDiscoverableScanner::OnAdvertisementParsed,
+      base::BindOnce(&FastPairNotDiscoverableScannerImpl::OnAdvertisementParsed,
                      weak_pointer_factory_.GetWeakPtr(), address),
-      base::BindOnce(&FastPairNotDiscoverableScanner::OnUtilityProcessStopped,
-                     weak_pointer_factory_.GetWeakPtr(), address));
+      base::BindOnce(
+          &FastPairNotDiscoverableScannerImpl::OnUtilityProcessStopped,
+          weak_pointer_factory_.GetWeakPtr(), address));
 }
 
 }  // namespace quick_pair

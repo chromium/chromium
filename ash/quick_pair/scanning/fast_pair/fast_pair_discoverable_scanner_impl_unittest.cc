@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/quick_pair/scanning/fast_pair/fast_pair_discoverable_scanner.h"
+#include "ash/quick_pair/scanning/fast_pair/fast_pair_discoverable_scanner_impl.h"
+
 #include <memory>
 #include <vector>
+
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/pair_failure.h"
@@ -14,6 +16,7 @@
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "ash/quick_pair/repository/fake_fast_pair_repository.h"
 #include "ash/quick_pair/scanning/fast_pair/fake_fast_pair_scanner.h"
+#include "ash/quick_pair/scanning/fast_pair/fast_pair_discoverable_scanner.h"
 #include "ash/services/quick_pair/fast_pair_data_parser.h"
 #include "ash/services/quick_pair/mock_quick_pair_process_manager.h"
 #include "ash/services/quick_pair/quick_pair_process.h"
@@ -45,7 +48,7 @@ const std::string kAddress = "test_address";
 namespace ash {
 namespace quick_pair {
 
-class FastPairDiscoverableScannerTest : public testing::Test {
+class FastPairDiscoverableScannerImplTest : public testing::Test {
  public:
   void SetUp() override {
     chromeos::NetworkHandler::Initialize();
@@ -76,11 +79,11 @@ class FastPairDiscoverableScannerTest : public testing::Test {
               data_parser_remote_, base::DoNothing());
         });
 
-    FastPairHandshakeLookup::SetCreateFunctionForTesting(
-        base::BindRepeating(&FastPairDiscoverableScannerTest::CreateHandshake,
-                            base::Unretained(this)));
+    FastPairHandshakeLookup::SetCreateFunctionForTesting(base::BindRepeating(
+        &FastPairDiscoverableScannerImplTest::CreateHandshake,
+        base::Unretained(this)));
 
-    discoverable_scanner_ = std::make_unique<FastPairDiscoverableScanner>(
+    discoverable_scanner_ = std::make_unique<FastPairDiscoverableScannerImpl>(
         scanner_, adapter_, found_device_callback_.Get(),
         lost_device_callback_.Get());
   }
@@ -132,7 +135,7 @@ class FastPairDiscoverableScannerTest : public testing::Test {
   chromeos::NetworkStateTestHelper helper_{/*use_defaults=*/true};
   scoped_refptr<FakeFastPairScanner> scanner_;
   std::unique_ptr<FakeFastPairRepository> repository_;
-  std::unique_ptr<FastPairDiscoverableScanner> discoverable_scanner_;
+  std::unique_ptr<FastPairDiscoverableScannerImpl> discoverable_scanner_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> adapter_;
   std::unique_ptr<QuickPairProcessManager> process_manager_;
   mojo::SharedRemote<mojom::FastPairDataParser> data_parser_remote_;
@@ -143,7 +146,7 @@ class FastPairDiscoverableScannerTest : public testing::Test {
   FakeFastPairHandshake* fake_fast_pair_handshake_ = nullptr;
 };
 
-TEST_F(FastPairDiscoverableScannerTest, NoServiceData) {
+TEST_F(FastPairDiscoverableScannerImplTest, NoServiceData) {
   EXPECT_CALL(found_device_callback_, Run).Times(0);
   std::unique_ptr<device::BluetoothDevice> device =
       base::WrapUnique(static_cast<device::BluetoothDevice*>(
@@ -156,28 +159,28 @@ TEST_F(FastPairDiscoverableScannerTest, NoServiceData) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(FastPairDiscoverableScannerTest, NoModelId) {
+TEST_F(FastPairDiscoverableScannerImplTest, NoModelId) {
   EXPECT_CALL(found_device_callback_, Run).Times(0);
   device::BluetoothDevice* device = GetDevice("");
   scanner_->NotifyDeviceFound(device);
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(FastPairDiscoverableScannerTest, ValidModelId) {
+TEST_F(FastPairDiscoverableScannerImplTest, ValidModelId) {
   EXPECT_CALL(found_device_callback_, Run).Times(1);
   device::BluetoothDevice* device = GetDevice(kValidModelId);
   scanner_->NotifyDeviceFound(device);
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(FastPairDiscoverableScannerTest, NearbyShareModelId) {
+TEST_F(FastPairDiscoverableScannerImplTest, NearbyShareModelId) {
   EXPECT_CALL(found_device_callback_, Run).Times(0);
   device::BluetoothDevice* device = GetDevice("fc128e");
   scanner_->NotifyDeviceFound(device);
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(FastPairDiscoverableScannerTest, InvokesLostCallbackAfterFound_v1) {
+TEST_F(FastPairDiscoverableScannerImplTest, InvokesLostCallbackAfterFound_v1) {
   device::BluetoothDevice* device = GetDevice(kValidModelId);
 
   EXPECT_CALL(found_device_callback_, Run).Times(1);
@@ -190,7 +193,7 @@ TEST_F(FastPairDiscoverableScannerTest, InvokesLostCallbackAfterFound_v1) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(FastPairDiscoverableScannerTest,
+TEST_F(FastPairDiscoverableScannerImplTest,
        InvokesFoundCallback_AfterNetworkAvailable) {
   device::BluetoothDevice* device = GetDevice(kValidModelId);
   repository_->set_is_network_connected(false);
@@ -206,7 +209,7 @@ TEST_F(FastPairDiscoverableScannerTest,
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(FastPairDiscoverableScannerTest,
+TEST_F(FastPairDiscoverableScannerImplTest,
        NoFoundCallback_AfterDeviceLostAndNetworkAvailable) {
   device::BluetoothDevice* device = GetDevice(kValidModelId);
   repository_->set_is_network_connected(false);
@@ -222,7 +225,7 @@ TEST_F(FastPairDiscoverableScannerTest,
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(FastPairDiscoverableScannerTest, InvokesLostCallbackAfterFound_v2) {
+TEST_F(FastPairDiscoverableScannerImplTest, InvokesLostCallbackAfterFound_v2) {
   nearby::fastpair::Device metadata;
   metadata.set_trigger_distance(2);
   auto* key_pair = new ::nearby::fastpair::AntiSpoofingKeyPair();
@@ -246,7 +249,7 @@ TEST_F(FastPairDiscoverableScannerTest, InvokesLostCallbackAfterFound_v2) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(FastPairDiscoverableScannerTest, AlreadyPaired_v1) {
+TEST_F(FastPairDiscoverableScannerImplTest, AlreadyPaired_v1) {
   device::BluetoothDevice* device =
       GetDevice(kValidModelId, /*is_paired=*/true);
 
@@ -260,7 +263,7 @@ TEST_F(FastPairDiscoverableScannerTest, AlreadyPaired_v1) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(FastPairDiscoverableScannerTest, AlreadyPaired_v2) {
+TEST_F(FastPairDiscoverableScannerImplTest, AlreadyPaired_v2) {
   nearby::fastpair::Device metadata;
   metadata.set_trigger_distance(2);
   auto* key_pair = new ::nearby::fastpair::AntiSpoofingKeyPair();
@@ -285,7 +288,7 @@ TEST_F(FastPairDiscoverableScannerTest, AlreadyPaired_v2) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(FastPairDiscoverableScannerTest, HandshakeFailed) {
+TEST_F(FastPairDiscoverableScannerImplTest, HandshakeFailed) {
   nearby::fastpair::Device metadata;
   metadata.set_trigger_distance(2);
   auto* key_pair = new ::nearby::fastpair::AntiSpoofingKeyPair();
@@ -309,7 +312,7 @@ TEST_F(FastPairDiscoverableScannerTest, HandshakeFailed) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(FastPairDiscoverableScannerTest,
+TEST_F(FastPairDiscoverableScannerImplTest,
        DoesntInvokeLostCallbackIfDidntInvokeFound) {
   EXPECT_CALL(found_device_callback_, Run).Times(0);
   EXPECT_CALL(lost_device_callback_, Run).Times(0);

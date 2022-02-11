@@ -32,13 +32,27 @@ class FastPairScannerImpl
       public device::BluetoothAdapter::Observer,
       public device::BluetoothLowEnergyScanSession::Delegate {
  public:
-  FastPairScannerImpl();
-  FastPairScannerImpl(const FastPairScannerImpl&) = delete;
-  FastPairScannerImpl& operator=(const FastPairScannerImpl&) = delete;
+  class Factory {
+   public:
+    static scoped_refptr<FastPairScanner> Create();
+
+    static void SetFactoryForTesting(Factory* g_test_factory);
+
+   protected:
+    virtual ~Factory();
+    virtual scoped_refptr<FastPairScanner> CreateInstance() = 0;
+
+   private:
+    static Factory* g_test_factory_;
+  };
 
   // FastPairScanner::Observer
   void AddObserver(FastPairScanner::Observer* observer) override;
   void RemoveObserver(FastPairScanner::Observer* observer) override;
+
+  FastPairScannerImpl();
+  FastPairScannerImpl(const FastPairScannerImpl&) = delete;
+  FastPairScannerImpl& operator=(const FastPairScannerImpl&) = delete;
 
  private:
   ~FastPairScannerImpl() override;
