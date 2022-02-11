@@ -12,6 +12,7 @@
 #include "ui/views/view.h"
 
 namespace views {
+class Label;
 class LabelButton;
 }  // namespace views
 
@@ -39,6 +40,7 @@ class UserConsentView : public views::View {
   const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   void OnFocus() override;
+  void OnThemeChanged() override;
   views::FocusTraversable* GetPaneFocusTraversable() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
@@ -58,7 +60,7 @@ class UserConsentView : public views::View {
   // Cached bounds of the anchor this view is tied to.
   gfx::Rect anchor_view_bounds_;
   // Cached title text.
-  std::u16string title_;
+  std::u16string title_text_;
 
   QuickAnswersPreTargetHandler event_handler_;
   QuickAnswersUiController* const ui_controller_;
@@ -67,6 +69,8 @@ class UserConsentView : public views::View {
   // Owned by view hierarchy.
   views::View* main_view_ = nullptr;
   views::View* content_ = nullptr;
+  views::Label* title_ = nullptr;
+  views::Label* desc_ = nullptr;
   views::LabelButton* no_thanks_button_ = nullptr;
   views::LabelButton* allow_button_ = nullptr;
 };
