@@ -60,6 +60,7 @@ class TestOptions(object):
     self.enable_tracing = False
     self.use_proxy_hash = False
     self.always_mangle = False
+    self.unchecked_exceptions = False
     self.split_name = None
 
 

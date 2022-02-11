@@ -788,7 +788,7 @@ class JNIFromJavaP(object):
       self.called_by_natives += [
           CalledByNative(
               system_class=True,
-              unchecked=False,
+              unchecked=options.unchecked_exceptions,
               static='static' in match.group('prefix'),
               java_class_name='',
               return_type=match.group('return_type').replace('.', '/'),
@@ -805,7 +805,7 @@ class JNIFromJavaP(object):
         continue
       self.called_by_natives += [
           CalledByNative(system_class=True,
-                         unchecked=False,
+                         unchecked=options.unchecked_exceptions,
                          static=False,
                          java_class_name='',
                          return_type=self.fully_qualified_class,
@@ -1596,6 +1596,9 @@ See SampleForTests.java for more details.
       help='Add TRACE_EVENTs to generated functions.')
   parser.add_argument(
       '--always_mangle', action='store_true', help='Mangle all function names')
+  parser.add_argument('--unchecked_exceptions',
+                      action='store_true',
+                      help='Do not check that no exceptions were thrown.')
   parser.add_argument(
       '--use_proxy_hash',
       action='store_true',
