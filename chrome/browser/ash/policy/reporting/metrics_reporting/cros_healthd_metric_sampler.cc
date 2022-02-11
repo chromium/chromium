@@ -95,7 +95,7 @@ void HandleBusResult(MetricCallback callback,
                      CrosHealthdMetricSampler::MetricType::kTelemetry) {
             if (bus_info->is_usb_bus_info()) {
               auto* const usb_telemetry_out =
-                  metric_data.mutable_telemetry_data()->mutable_usb_telemetry();
+                  metric_data.mutable_telemetry_data()->add_usb_telemetry();
               anything_reported = true;
               usb_telemetry_out->set_vid(
                   bus_info->get_usb_bus_info()->vendor_id);

@@ -293,7 +293,7 @@ message TelemetryData {
   // Audio telemetry data.
   optional AudioTelemetry audio_telemetry = 2;
   // Usb telemetry data
-  optional UsbTelemetry usb_telemetry = 3;
+  repeated UsbTelemetry usb_telemetry = 3;
   // Boot Performance telemetry data.
   optional BootPerformanceTelemetry boot_performance_telemetry = 4;
 }

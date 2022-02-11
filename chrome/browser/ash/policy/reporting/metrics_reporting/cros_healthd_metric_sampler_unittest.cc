@@ -66,29 +66,11 @@ cros_healthd::TelemetryInfoPtr CreateCpuResult(
   return telemetry_info;
 }
 
-cros_healthd::TelemetryInfoPtr CreateUsbBusResult(uint8_t class_id,
-                                                  uint8_t subclass_id,
-                                                  uint16_t vendor_id,
-                                                  uint16_t product_id,
-                                                  const char* vendor_name,
-                                                  const char* product_name) {
+cros_healthd::TelemetryInfoPtr CreateUsbBusResult(
+    std::vector<cros_healthd::BusDevicePtr> usb_devices) {
   auto telemetry_info = cros_healthd::TelemetryInfo::New();
-
-  std::vector<cros_healthd::BusDevicePtr> bus_devices;
-
-  auto usb_device = cros_healthd::BusDevice::New();
-  usb_device->vendor_name = vendor_name;
-  usb_device->product_name = product_name;
-  usb_device->bus_info =
-      cros_healthd::BusInfo::NewUsbBusInfo(cros_healthd::UsbBusInfo::New(
-          class_id, subclass_id, /*protocol_id=*/0, vendor_id, product_id,
-          /*interfaces = */
-          std::vector<cros_healthd::UsbBusInterfaceInfoPtr>()));
-
-  bus_devices.push_back(std::move(usb_device));
-
   telemetry_info->bus_result =
-      cros_healthd::BusResult::NewBusDevices(std::move(bus_devices));
+      cros_healthd::BusResult::NewBusDevices(std::move(usb_devices));
   return telemetry_info;
 }
 
@@ -218,7 +200,7 @@ class CrosHealthdMetricSamplerMemoryEncryptionTest
     : public CrosHealthdMetricSamplerTest,
       public testing::WithParamInterface<MemoryEncryptionTestCase> {};
 
-TEST_F(CrosHealthdMetricSamplerTest, TestUsbTelemetry) {
+TEST_F(CrosHealthdMetricSamplerTest, TestUsbTelemetryMultipleEntries) {
   // Max value for 8-bit unsigned integer
   constexpr uint8_t kClassId = 255;
   constexpr uint8_t kSubclassId = 1;
@@ -228,20 +210,110 @@ TEST_F(CrosHealthdMetricSamplerTest, TestUsbTelemetry) {
   constexpr char kVendorName[] = "VendorName";
   constexpr char kProductName[] = "ProductName";
 
+  constexpr uint8_t kClassIdSecond = 1;
+  constexpr uint8_t kSubclassIdSecond = 255;
+  constexpr uint16_t kVendorIdSecond = 1;
+  constexpr uint16_t kProductIdSecond = 65535;
+  constexpr char kVendorNameSecond[] = "VendorNameSecond";
+  constexpr char kProductNameSecond[] = "ProductNameSecond";
+  constexpr int kExpectedUsbTelemetrySize = 2;
+  constexpr int kIndexOfFirstUsbTelemetry = 0;
+  constexpr int kIndexOfSecondUsbTelemetry = 1;
+
+  cros_healthd::BusDevicePtr usb_device_first = cros_healthd::BusDevice::New();
+  usb_device_first->vendor_name = kVendorName;
+  usb_device_first->product_name = kProductName;
+  usb_device_first->bus_info =
+      cros_healthd::BusInfo::NewUsbBusInfo(cros_healthd::UsbBusInfo::New(
+          kClassId, kSubclassId, /*protocol_id=*/0, kVendorId, kProductId,
+          /*interfaces = */
+          std::vector<cros_healthd::UsbBusInterfaceInfoPtr>()));
+
+  cros_healthd::BusDevicePtr usb_device_second = cros_healthd::BusDevice::New();
+  usb_device_second->vendor_name = kVendorNameSecond;
+  usb_device_second->product_name = kProductNameSecond;
+  usb_device_second->bus_info =
+      cros_healthd::BusInfo::NewUsbBusInfo(cros_healthd::UsbBusInfo::New(
+          kClassIdSecond, kSubclassIdSecond, /*protocol_id=*/0, kVendorIdSecond,
+          kProductIdSecond,
+          /*interfaces = */
+          std::vector<cros_healthd::UsbBusInterfaceInfoPtr>()));
+
+  std::vector<cros_healthd::BusDevicePtr> usb_devices;
+  usb_devices.push_back(std::move(usb_device_first));
+  usb_devices.push_back(std::move(usb_device_second));
+
   MetricData result =
-      CollectData(CreateUsbBusResult(kClassId, kSubclassId, kVendorId,
-                                     kProductId, kVendorName, kProductName),
+      CollectData(CreateUsbBusResult(std::move(usb_devices)),
                   cros_healthd::ProbeCategoryEnum::kBus,
                   CrosHealthdMetricSampler::MetricType::kTelemetry);
 
   ASSERT_TRUE(result.has_telemetry_data());
-  ASSERT_TRUE(result.telemetry_data().has_usb_telemetry());
-  EXPECT_EQ(result.telemetry_data().usb_telemetry().class_id(), kClassId);
-  EXPECT_EQ(result.telemetry_data().usb_telemetry().subclass_id(), kSubclassId);
-  EXPECT_EQ(result.telemetry_data().usb_telemetry().vid(), kVendorId);
-  EXPECT_EQ(result.telemetry_data().usb_telemetry().pid(), kProductId);
-  EXPECT_EQ(result.telemetry_data().usb_telemetry().name(), kProductName);
-  EXPECT_EQ(result.telemetry_data().usb_telemetry().vendor(), kVendorName);
+  ASSERT_EQ(result.telemetry_data().usb_telemetry_size(),
+            kExpectedUsbTelemetrySize);
+
+  UsbTelemetry usb_telemetry_first =
+      result.telemetry_data().usb_telemetry(kIndexOfFirstUsbTelemetry);
+  UsbTelemetry usb_telemetry_second =
+      result.telemetry_data().usb_telemetry(kIndexOfSecondUsbTelemetry);
+
+  EXPECT_EQ(usb_telemetry_first.class_id(), kClassId);
+  EXPECT_EQ(usb_telemetry_first.subclass_id(), kSubclassId);
+  EXPECT_EQ(usb_telemetry_first.vid(), kVendorId);
+  EXPECT_EQ(usb_telemetry_first.pid(), kProductId);
+  EXPECT_EQ(usb_telemetry_first.name(), kProductName);
+  EXPECT_EQ(usb_telemetry_first.vendor(), kVendorName);
+
+  EXPECT_EQ(usb_telemetry_second.class_id(), kClassIdSecond);
+  EXPECT_EQ(usb_telemetry_second.subclass_id(), kSubclassIdSecond);
+  EXPECT_EQ(usb_telemetry_second.vid(), kVendorIdSecond);
+  EXPECT_EQ(usb_telemetry_second.pid(), kProductIdSecond);
+  EXPECT_EQ(usb_telemetry_second.name(), kProductNameSecond);
+  EXPECT_EQ(usb_telemetry_second.vendor(), kVendorNameSecond);
+}
+
+TEST_F(CrosHealthdMetricSamplerTest, TestUsbTelemetry) {
+  // Max value for 8-bit unsigned integer
+  constexpr uint8_t kClassId = 255;
+  constexpr uint8_t kSubclassId = 1;
+  // Max value for 16-bit unsigned integer
+  constexpr uint16_t kVendorId = 65535;
+  constexpr uint16_t kProductId = 1;
+  constexpr char kVendorName[] = "VendorName";
+  constexpr char kProductName[] = "ProductName";
+  constexpr int kExpectedUsbTelemetrySize = 1;
+  constexpr int kIndexOfUsbTelemetry = 0;
+
+  cros_healthd::BusDevicePtr usb_device = cros_healthd::BusDevice::New();
+  usb_device->vendor_name = kVendorName;
+  usb_device->product_name = kProductName;
+  usb_device->bus_info =
+      cros_healthd::BusInfo::NewUsbBusInfo(cros_healthd::UsbBusInfo::New(
+          kClassId, kSubclassId, /*protocol_id=*/0, kVendorId, kProductId,
+          /*interfaces = */
+          std::vector<cros_healthd::UsbBusInterfaceInfoPtr>()));
+
+  std::vector<cros_healthd::BusDevicePtr> usb_devices;
+  usb_devices.push_back(std::move(usb_device));
+
+  MetricData result =
+      CollectData(CreateUsbBusResult(std::move(usb_devices)),
+                  cros_healthd::ProbeCategoryEnum::kBus,
+                  CrosHealthdMetricSampler::MetricType::kTelemetry);
+
+  ASSERT_TRUE(result.has_telemetry_data());
+  ASSERT_EQ(result.telemetry_data().usb_telemetry_size(),
+            kExpectedUsbTelemetrySize);
+
+  UsbTelemetry usb_telemetry =
+      result.telemetry_data().usb_telemetry(kIndexOfUsbTelemetry);
+
+  EXPECT_EQ(usb_telemetry.class_id(), kClassId);
+  EXPECT_EQ(usb_telemetry.subclass_id(), kSubclassId);
+  EXPECT_EQ(usb_telemetry.vid(), kVendorId);
+  EXPECT_EQ(usb_telemetry.pid(), kProductId);
+  EXPECT_EQ(usb_telemetry.name(), kProductName);
+  EXPECT_EQ(usb_telemetry.vendor(), kVendorName);
 }
 
 TEST_P(CrosHealthdMetricSamplerMemoryEncryptionTest,
