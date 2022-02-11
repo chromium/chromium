@@ -104,9 +104,17 @@
         flex-basis: var(--cr-toolbar-center-basis, 0);
       }
 
+      :host(:not([narrow])[disable-right-content-grow]) #centeredContent {
+        justify-content: left;
+      }
+
       :host(:not([narrow])) #rightContent {
         flex: 1 1 0;
         text-align: end;
+      }
+
+      :host(:not([narrow])[disable-right-content-grow]) #rightContent {
+        flex: 0 1 0;
       }
 
       picture {
