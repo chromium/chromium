@@ -31,6 +31,11 @@ public interface AssistantStaticDependencies {
 
     AccessibilityUtil getAccessibilityUtil();
 
+    @CalledByNative
+    default boolean isAccessibilityEnabled() {
+        return getAccessibilityUtil().isAccessibilityEnabled();
+    }
+
     /**
      * Returns a utility for obscuring all tabs. NOTE: Each call returns a new instance that can
      * only unobscure what it obscured!

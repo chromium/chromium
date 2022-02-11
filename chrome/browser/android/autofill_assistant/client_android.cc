@@ -581,8 +581,7 @@ DeviceContext ClientAndroid::GetDeviceContext() const {
 }
 
 bool ClientAndroid::IsAccessibilityEnabled() const {
-  return Java_AutofillAssistantClient_isAccessibilityEnabled(
-      AttachCurrentThread(), jdependencies_);
+  return dependencies_->IsAccessibilityEnabled();
 }
 
 bool ClientAndroid::IsSpokenFeedbackAccessibilityServiceEnabled() const {

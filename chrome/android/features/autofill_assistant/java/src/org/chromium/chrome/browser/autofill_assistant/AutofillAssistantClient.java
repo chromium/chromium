@@ -371,12 +371,6 @@ public class AutofillAssistantClient {
         return Build.MODEL;
     }
 
-    /** Returns whether a11y is enabled or not. */
-    @CalledByNative
-    private static boolean isAccessibilityEnabled(AssistantStaticDependencies staticDependencies) {
-        return staticDependencies.getAccessibilityUtil().isAccessibilityEnabled();
-    }
-
     /**
      * Returns whether an accessibility service with "FEEDBACK_SPOKEN" feedback type is enabled
      * or not.

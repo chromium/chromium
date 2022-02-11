@@ -29,6 +29,7 @@ class Dependencies {
   base::android::ScopedJavaGlobalRef<jobject> GetJavaStaticDependencies() const;
   base::android::ScopedJavaGlobalRef<jobject> CreateInfoPageUtil() const;
   base::android::ScopedJavaGlobalRef<jobject> CreateAccessTokenUtil() const;
+  bool IsAccessibilityEnabled() const;
 
   virtual ~Dependencies();
 

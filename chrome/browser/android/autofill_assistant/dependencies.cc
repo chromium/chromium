@@ -53,6 +53,11 @@ ScopedJavaGlobalRef<jobject> Dependencies::CreateAccessTokenUtil() const {
           AttachCurrentThread(), jstatic_dependencies_));
 }
 
+bool Dependencies::IsAccessibilityEnabled() const {
+  return Java_AssistantStaticDependencies_isAccessibilityEnabled(
+      AttachCurrentThread(), jstatic_dependencies_);
+}
+
 Dependencies::~Dependencies() = default;
 
 }  // namespace autofill_assistant
