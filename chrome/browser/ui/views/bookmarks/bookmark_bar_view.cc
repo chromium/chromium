@@ -1798,8 +1798,12 @@ void BookmarkBarView::ConfigureButton(const BookmarkNode* node,
     }
 
     if (themify_icon && tp) {
-      favicon = gfx::ImageSkiaOperations::CreateColorMask(
-          favicon, tp->GetColor(ThemeProperties::COLOR_BOOKMARK_FAVICON));
+      SkColor favicon_color =
+          tp->GetColor(ThemeProperties::COLOR_BOOKMARK_FAVICON);
+      if (favicon_color != SK_ColorTRANSPARENT) {
+        favicon =
+            gfx::ImageSkiaOperations::CreateColorMask(favicon, favicon_color);
+      }
     }
 
     button->SetImageModel(views::Button::STATE_NORMAL,
