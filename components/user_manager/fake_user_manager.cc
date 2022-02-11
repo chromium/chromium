@@ -283,7 +283,8 @@ bool FakeUserManager::IsLoggedInAsPublicAccount() const {
 }
 
 bool FakeUserManager::IsLoggedInAsGuest() const {
-  return false;
+  const User* active_user = GetActiveUser();
+  return active_user && active_user->GetType() == USER_TYPE_GUEST;
 }
 
 bool FakeUserManager::IsLoggedInAsKioskApp() const {
