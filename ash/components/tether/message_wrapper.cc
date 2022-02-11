@@ -165,8 +165,8 @@ std::string MessageWrapper::ToRawMessage() const {
                         &encoded_message);
 
   base::DictionaryValue json_dictionary;
-  json_dictionary.SetInteger(kJsonTypeKey, static_cast<int>(type_));
-  json_dictionary.SetString(kJsonDataKey, encoded_message);
+  json_dictionary.SetIntKey(kJsonTypeKey, static_cast<int>(type_));
+  json_dictionary.SetStringKey(kJsonDataKey, encoded_message);
 
   std::string raw_message;
   base::JSONWriter::Write(json_dictionary, &raw_message);

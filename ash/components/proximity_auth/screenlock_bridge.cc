@@ -70,7 +70,7 @@ ScreenlockBridge::UserPodCustomIconInfo::ToDictionaryValue() const {
   }
 
   if (!aria_label_.empty())
-    result->SetString("ariaLabel", aria_label_);
+    result->SetStringKey("ariaLabel", aria_label_);
 
   if (hardlock_on_click_)
     result->SetBoolKey("hardlockOnClick", true);

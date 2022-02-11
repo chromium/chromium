@@ -36,7 +36,7 @@ std::unique_ptr<base::DictionaryValue> HostScanCacheEntryToDictionary(
   dictionary->SetStringKey(kCarrierKey, entry.carrier);
   dictionary->SetIntKey(kBatteryPercentageKey, entry.battery_percentage);
   dictionary->SetIntKey(kSignalStrengthKey, entry.signal_strength);
-  dictionary->SetBoolean(kSetupRequiredKey, entry.setup_required);
+  dictionary->SetBoolKey(kSetupRequiredKey, entry.setup_required);
 
   return dictionary;
 }
