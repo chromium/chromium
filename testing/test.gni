@@ -11,6 +11,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/devtools.gni")
 import("//build/config/gclient_args.gni")
 import("//build/config/rts.gni")
+import("//build/rust/mixed_executable.gni")
 import("//build_overrides/build.gni")
 
 declare_args() {
@@ -49,7 +50,8 @@ if (is_android) {
 # set.
 # Variable:
 #   use_xvfb: (optional) whether to run the executable under Xvfb.
-#   use_raw_android_executable: Use executable() rather than android_apk().
+#   use_raw_android_executable: Use mixed_executable() rather than
+#      android_apk().
 #   use_native_activity: Test implements ANativeActivity_onCreate().
 #   use_cfv2: (Fuchsia, optional): build the test as a framework v2 component;
 #      see https://fuchsia.dev/fuchsia-src/concepts/components/v2 for details.
@@ -123,7 +125,7 @@ template("test") {
       _exec_output =
           "$target_out_dir/${invoker.target_name}/${invoker.target_name}"
 
-      executable(_exec_target) {
+      mixed_executable(_exec_target) {
         # Configs will always be defined since we set_defaults in BUILDCONFIG.gn.
         configs = []
         forward_variables_from(
@@ -216,6 +218,8 @@ template("test") {
         }
       }
 
+      # TODO(crbug.com/1296718): Need a mixed_shared_library for rust tests on
+      # Android (or can it be a mixed_component?).
       shared_library(_library_target) {
         # Configs will always be defined since we set_defaults in BUILDCONFIG.gn.
         configs = []  # Prevent list overwriting warning.
@@ -489,7 +493,7 @@ template("test") {
       }
     }
 
-    executable(_exec_target) {
+    mixed_executable(_exec_target) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       output_name = _exec_target
     }
@@ -640,7 +644,7 @@ template("test") {
       }
     }
 
-    executable(target_name) {
+    mixed_executable(target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, [ "visibility" ])
       if (!defined(deps)) {
@@ -734,7 +738,7 @@ template("test") {
       }
     }
 
-    executable(target_name) {
+    mixed_executable(target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, [ "visibility" ])
       if (!defined(deps)) {
@@ -809,7 +813,7 @@ template("test") {
       }
     }
 
-    executable(target_name) {
+    mixed_executable(target_name) {
       forward_variables_from(invoker,
                              "*",
                              TESTONLY_AND_VISIBILITY + [ "use_xvfb" ])
@@ -839,7 +843,7 @@ template("test") {
     # will just define the underlying executables.
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb,
            "use_xvfb should not be defined for a non-linux configuration")
-    executable(target_name) {
+    mixed_executable(target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, [ "visibility" ])
       if (!defined(deps)) {
