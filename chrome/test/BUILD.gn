@@ -6425,6 +6425,7 @@ test("unit_tests") {
       "//chrome/browser/ui/color:mixers",
       "//chrome/browser/ui/webui/discards:mojo_bindings",
       "//chrome/browser/web_applications:web_applications_test_support",
+      "//chrome/browser/web_applications:web_applications_test_support_minimal",
       "//components/chrome_cleaner/test:test_name_helper",
       "//components/enterprise",
       "//components/enterprise:test_support",

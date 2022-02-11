@@ -73,6 +73,9 @@ class FakeWebAppProvider : public WebAppProvider {
   void SetWebAppPolicyManager(
       std::unique_ptr<WebAppPolicyManager> web_app_policy_manager);
   void SkipAwaitingExtensionSystem();
+  // Starts this WebAppProvider and its subsystems. It does not wait for systems
+  // to be ready.
+  void StartWithSubsystems();
 
   // These getters can be called at any time: no
   // WebAppProvider::CheckIsConnected() check performed. See

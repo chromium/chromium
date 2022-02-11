@@ -9,7 +9,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -47,12 +46,7 @@ void AwaitStartWebAppProviderAndSubsystems(Profile* profile) {
       switches::kDisablePreinstalledApps);
   FakeWebAppProvider* provider = FakeWebAppProvider::Get(profile);
   DCHECK(provider);
-  provider->SetRunSubsystemStartupTasks(true);
-  // Use a TestSystemWebAppManager to skip system web apps being auto-installed
-  // on |Start|.
-  provider->SetSystemWebAppManager(
-      std::make_unique<web_app::TestSystemWebAppManager>(profile));
-  provider->Start();
+  provider->StartWithSubsystems();
   WaitUntilReady(provider);
 }
 

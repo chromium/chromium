@@ -220,6 +220,7 @@ void WebAppProvider::Shutdown() {
   icon_manager_->Shutdown();
   install_finalizer_->Shutdown();
   registrar_->Shutdown();
+  is_registry_ready_ = false;
 }
 
 void WebAppProvider::StartImpl() {
@@ -360,6 +361,7 @@ void WebAppProvider::OnSyncBridgeReady() {
   ui_manager_->Start();
 
   on_registry_ready_.Signal();
+  is_registry_ready_ = true;
 }
 
 void WebAppProvider::CheckIsConnected() const {

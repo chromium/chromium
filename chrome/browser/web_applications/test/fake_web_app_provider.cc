@@ -123,6 +123,16 @@ void FakeWebAppProvider::SkipAwaitingExtensionSystem() {
   skip_awaiting_extension_system_ = true;
 }
 
+void FakeWebAppProvider::StartWithSubsystems() {
+  CheckNotStarted();
+  SetRunSubsystemStartupTasks(true);
+  // Use a TestSystemWebAppManager to skip system web apps being
+  // auto-installed on |Start|.
+  SetSystemWebAppManager(
+      std::make_unique<web_app::TestSystemWebAppManager>(profile_.get()));
+  Start();
+}
+
 WebAppRegistrarMutable& FakeWebAppProvider::GetRegistrarMutable() const {
   DCHECK(registrar_);
   return *static_cast<WebAppRegistrarMutable*>(registrar_.get());

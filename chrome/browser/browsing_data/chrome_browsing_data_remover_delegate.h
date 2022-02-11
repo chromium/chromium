@@ -137,7 +137,8 @@ class ChromeBrowsingDataRemoverDelegate
     kAccountCompromisedCredentials = 39,
     kFaviconCacheExpiration = 40,
     kSecurePaymentConfirmationCredentials = 41,
-    kMaxValue = kSecurePaymentConfirmationCredentials,
+    kWebAppHistory = 42,
+    kMaxValue = kWebAppHistory,
   };
 
   // Called by CreateTaskCompletionClosure().

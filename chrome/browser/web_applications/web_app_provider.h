@@ -147,6 +147,9 @@ class WebAppProvider : public KeyedService {
     return on_registry_ready_;
   }
 
+  // Returns whether the app registry is ready.
+  bool is_registry_ready() { return is_registry_ready_; }
+
   PreinstalledWebAppManager& preinstalled_web_app_manager() {
     return *preinstalled_web_app_manager_;
   }
@@ -192,6 +195,7 @@ class WebAppProvider : public KeyedService {
   // Ensures that ConnectSubsystems() is not called after Start().
   bool started_ = false;
   bool connected_ = false;
+  bool is_registry_ready_ = false;
 
   bool skip_awaiting_extension_system_ = false;
 

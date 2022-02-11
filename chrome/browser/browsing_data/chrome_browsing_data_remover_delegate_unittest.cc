@@ -63,6 +63,9 @@
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -157,6 +160,7 @@
 #include "chrome/browser/android/webapps/webapp_registry.h"
 #include "components/feed/buildflags.h"
 #else
+#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "content/public/browser/host_zoom_map.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -1158,6 +1162,12 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
         base::BindRepeating(&signin::BuildTestSigninClient));
     profile_ = profile_builder.Build();
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+    web_app_provider_ = web_app::FakeWebAppProvider::Get(profile_.get());
+    web_app_provider_->SkipAwaitingExtensionSystem();
+    web_app_provider_->StartWithSubsystems();
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+
     remover_ = profile_->GetBrowsingDataRemover();
 
     auto network_context_params = network::mojom::NetworkContextParams::New();
@@ -1289,6 +1299,10 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
     return &task_environment_;
   }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+  web_app::FakeWebAppProvider* web_app_provider() { return web_app_provider_; }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+
  protected:
   // |feature_list_| needs to be destroyed after |task_environment_|, to avoid
   // tsan flakes caused by other tasks running while |feature_list_| is
@@ -1303,6 +1317,9 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<network::NetworkContext> network_context_;
   std::unique_ptr<TestingProfile> profile_;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+  web_app::FakeWebAppProvider* web_app_provider_;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 // TODO(crbug.com/812589): Disabled due to flakiness in cookie store
@@ -1375,6 +1392,38 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
                               std::move(filter2));
   EXPECT_FALSE(tester.ContainsCookie());
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearWebAppData) {
+  auto* provider = web_app_provider();
+  ASSERT_TRUE(provider);
+
+  // Make sure WebAppProvider's subsystems are ready.
+  base::RunLoop run_loop;
+  provider->on_registry_ready().Post(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Set-up: add a web app to the registry. Currently, only last_launch_time
+  // field is being cleared by ClearBrowsingDataCommand. So, we will check if
+  // that field is cleared as a heuristic to ClearBrowsingDataCommand being
+  // called.
+  auto web_app_id = web_app::test::InstallDummyWebApp(GetProfile(), "Web App",
+                                                      GURL("http://some.url"));
+  auto last_launch_time = base::Time() + base::Seconds(10);
+  provider->sync_bridge().SetAppLastLaunchTime(web_app_id, last_launch_time);
+  EXPECT_EQ(provider->registrar().GetAppById(web_app_id)->last_launch_time(),
+            last_launch_time);
+
+  // Run RemoveEmbedderData, and wait for it to complete.
+  BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
+                                constants::DATA_TYPE_HISTORY, false);
+
+  // Verify that web app's last launch time is cleared.
+  EXPECT_EQ(provider->registrar().GetAppById(web_app_id)->last_launch_time(),
+            base::Time());
+  EXPECT_EQ(constants::DATA_TYPE_HISTORY, GetRemovalMask());
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveHistoryForever) {
   RemoveHistoryTester tester;

@@ -72,6 +72,9 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
+#include "chrome/browser/web_applications/commands/clear_browsing_data_command.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/common/buildflags.h"
@@ -1161,6 +1164,19 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   if (remove_mask & constants::DATA_TYPE_WEB_APP_DATA)
     webapp_registry_->UnregisterWebappsForUrls(filter);
 #endif
+
+//////////////////////////////////////////////////////////////////////////////
+// Remove web app history.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (remove_mask & constants::DATA_TYPE_HISTORY &&
+      web_app::AreWebAppsEnabled(profile_)) {
+    auto callback =
+        CreateTaskCompletionClosure(TracingDataType::kWebAppHistory);
+    auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(profile_);
+    web_app::ClearWebAppBrowsingData(delete_begin, delete_end, web_app_provider,
+                                     std::move(callback));
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
   //////////////////////////////////////////////////////////////////////////////
   // Remove external protocol data.
