@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/projector_app/annotator_tool.h"
+#include "ash/public/cpp/projector/annotator_tool.h"
 
 #include <string>
 

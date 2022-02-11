@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_PROJECTOR_APP_ANNOTATOR_TOOL_H_
-#define ASH_WEBUI_PROJECTOR_APP_ANNOTATOR_TOOL_H_
+#ifndef ASH_PUBLIC_CPP_PROJECTOR_ANNOTATOR_TOOL_H_
+#define ASH_PUBLIC_CPP_PROJECTOR_ANNOTATOR_TOOL_H_
 
-#include "base/component_export.h"
+#include "ash/public/cpp/ash_public_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace base {
@@ -15,7 +15,7 @@ class Value;
 namespace ash {
 
 // The annotator tool type.
-enum class COMPONENT_EXPORT(PROJECTOR) AnnotatorToolType {
+enum class ASH_PUBLIC_EXPORT AnnotatorToolType {
   kMarker = 0,
   kPen,
   kHighlighter,
@@ -25,7 +25,7 @@ enum class COMPONENT_EXPORT(PROJECTOR) AnnotatorToolType {
 };
 
 // The tool that the annotator will use.
-struct COMPONENT_EXPORT(PROJECTOR) AnnotatorTool {
+struct ASH_PUBLIC_EXPORT AnnotatorTool {
   static AnnotatorTool FromValue(const base::Value& value);
   base::Value ToValue() const;
 
@@ -43,4 +43,4 @@ struct COMPONENT_EXPORT(PROJECTOR) AnnotatorTool {
 
 }  // namespace ash
 
-#endif  // ASH_WEBUI_PROJECTOR_APP_ANNOTATOR_TOOL_H_
+#endif  // ASH_PUBLIC_CPP_PROJECTOR_ANNOTATOR_TOOL_H_

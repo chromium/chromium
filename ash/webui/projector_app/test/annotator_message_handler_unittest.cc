@@ -4,8 +4,8 @@
 
 #include "ash/webui/projector_app/annotator_message_handler.h"
 
+#include "ash/public/cpp/projector/annotator_tool.h"
 #include "ash/public/cpp/test/mock_projector_controller.h"
-#include "ash/webui/projector_app/annotator_tool.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "content/public/test/test_web_ui.h"
