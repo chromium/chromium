@@ -158,8 +158,8 @@ int main(int argc, char** argv) {
 
     base::FilePath filename(
         base::StringPrintf("%s%.6d.yuv", output_file_prefix.c_str(), i));
-    base::File output_file(filename,
-                           base::File::FLAG_OPEN | base::File::FLAG_WRITE);
+    base::File output_file(
+        filename, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
     output_file.WriteAtCurrentPos(y_plane.data(), size.GetArea());
     output_file.WriteAtCurrentPos(u_plane.data(), size.GetArea() / 4);
     output_file.WriteAtCurrentPos(v_plane.data(), size.GetArea() / 4);
