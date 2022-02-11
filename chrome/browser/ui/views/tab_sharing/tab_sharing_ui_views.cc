@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/tab_sharing/tab_sharing_ui_views.h"
 
-#include <limits>
 #include <string>
 #include <utility>
 
@@ -19,11 +18,10 @@
 #include "chrome/browser/media/webrtc/same_origin_observer.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tab_sharing/tab_capture_contents_border_helper.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/url_formatter/elide_url.h"
@@ -32,11 +30,9 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "extensions/common/constants.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/views/border.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -57,79 +53,6 @@ using content::WebContents;
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool g_apply_dlp_for_all_users_for_testing_ = false;
-#endif
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-const int kContentsBorderThickness = 5;
-const float kContentsBorderOpacity = 0.50;
-const SkColor kContentsBorderColor = gfx::kGoogleBlue500;
-
-// Helps track whether the contents-border should be drawn.
-class TabCaptureHelper : public content::WebContentsUserData<TabCaptureHelper> {
- public:
-  ~TabCaptureHelper() override = default;
-
-  void IncrementCapturerCount() {
-    DCHECK_LT(capturer_count_, std::numeric_limits<int>::max());
-    ++capturer_count_;
-  }
-
-  void DecrementCapturerCount() {
-    DCHECK_GT(capturer_count_, 0);
-    --capturer_count_;
-  }
-
-  int capturer_count() const { return capturer_count_; }
-
- private:
-  friend WebContentsUserData;
-
-  explicit TabCaptureHelper(WebContents* contents)
-      : content::WebContentsUserData<TabCaptureHelper>(*contents) {}
-
-  int capturer_count_ = 0;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-};
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TabCaptureHelper);
-
-void InitContentsBorderWidget(WebContents* contents) {
-  Browser* browser = chrome::FindBrowserWithWebContents(contents);
-  if (!browser)
-    return;
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (browser_view->contents_border_widget())
-    return;
-
-  views::Widget* widget = new views::Widget;
-  views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  views::Widget* frame = browser_view->contents_web_view()->GetWidget();
-  params.parent = frame->GetNativeView();
-  params.context = frame->GetNativeWindow();
-  // Make the widget non-top level.
-  params.child = true;
-  params.name = "TabSharingContentsBorder";
-  params.remove_standard_frame = true;
-  // Let events go through to underlying view.
-  params.accept_events = false;
-  params.activatable = views::Widget::InitParams::Activatable::kNo;
-#if BUILDFLAG(IS_WIN)
-  params.native_widget = new views::NativeWidgetAura(widget);
-#endif
-
-  widget->Init(std::move(params));
-  auto border_view = std::make_unique<views::View>();
-  border_view->SetBorder(
-      views::CreateSolidBorder(kContentsBorderThickness, kContentsBorderColor));
-  widget->SetContentsView(std::move(border_view));
-  widget->SetVisibilityChangedAnimationsEnabled(false);
-  widget->SetOpacity(kContentsBorderOpacity);
-
-  browser_view->set_contents_border_widget(widget);
-}
 #endif
 
 std::u16string GetTabName(WebContents* tab) {
@@ -218,10 +141,6 @@ TabSharingUIViews::TabSharingUIViews(
   Observe(shared_tab_);
   shared_tab_name_ = GetTabName(shared_tab_);
   profile_ = ProfileManager::GetLastUsedProfileAllowedByPolicy();
-  // TODO(https://crbug.com/1030925) fix contents border on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  InitContentsBorderWidget(shared_tab_);
-#endif
 
   if (capturer_restricted_to_same_origin_) {
     // base::Unretained is safe here because we own the origin observer, so it
@@ -618,14 +537,13 @@ void TabSharingUIViews::StopCaptureDueToPolicy(content::WebContents* contents) {
 
 void TabSharingUIViews::UpdateTabCaptureData(WebContents* contents,
                                              TabCaptureUpdate update) {
-  // TODO(https://crbug.com/1030925) fix contents border on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (!contents) {
     return;
   }
 
-  TabCaptureHelper::CreateForWebContents(contents);  // No-op if pre-existing.
-  auto* const helper = TabCaptureHelper::FromWebContents(contents);
+  TabCaptureContentsBorderHelper::CreateForWebContents(contents);
+  auto* const helper =
+      TabCaptureContentsBorderHelper::FromWebContents(contents);
 
   switch (update) {
     case TabCaptureUpdate::kCaptureAdded:
@@ -635,38 +553,7 @@ void TabSharingUIViews::UpdateTabCaptureData(WebContents* contents,
       helper->DecrementCapturerCount();
       break;
     case TabCaptureUpdate::kCapturedVisibilityUpdated:
+      helper->VisibilityUpdated();
       break;
   }
-
-  Browser* const browser = chrome::FindBrowserWithWebContents(contents);
-  if (!browser) {
-    return;
-  }
-  BrowserView* const browser_view =
-      BrowserView::GetBrowserViewForBrowser(browser);
-  if (!browser_view) {
-    return;
-  }
-
-  const bool tab_visible =
-      (contents == browser->tab_strip_model()->GetActiveWebContents());
-  const bool contents_border_needed =
-      tab_visible && helper->capturer_count() > 0;
-
-  if (!browser_view->contents_border_widget()) {
-    if (!contents_border_needed) {
-      return;
-    }
-    InitContentsBorderWidget(contents);
-  }
-
-  views::Widget* const contents_border_widget =
-      browser_view->contents_border_widget();
-
-  if (contents_border_needed) {
-    contents_border_widget->Show();
-  } else {
-    contents_border_widget->Hide();
-  }
-#endif
 }
