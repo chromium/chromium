@@ -156,6 +156,8 @@ std::string MakeBidScript(const url::Origin& seller,
         forDebuggingOnly.reportAdAuctionLoss(debugLossReportUrl);
       if (debugWinReportUrl)
         forDebuggingOnly.reportAdAuctionWin(debugWinReportUrl);
+      if (browserSignals.dataVersion !== undefined)
+        throw new Error(`wrong dataVersion (${browserSignals.dataVersion})`);
       return result;
     }
 
@@ -196,6 +198,8 @@ std::string MakeBidScript(const url::Origin& seller,
         throw new Error("wrong browserSignals.bid");
       if (browserSignals.seller != seller)
          throw new Error("wrong seller");
+      if (browserSignals.dataVersion !== undefined)
+        throw new Error(`wrong dataVersion (${browserSignals.dataVersion})`);
 
       sendReportTo("https://buyer-reporting.example.com/" + bid);
     }
@@ -274,6 +278,8 @@ std::string MakeDecisionScript(
         throw new Error("biddingDurationMsec is not a number. huh");
       if (browserSignals.biddingDurationMsec < 0)
         throw new Error("biddingDurationMsec should be non-negative.");
+      if (browserSignals.dataVersion !== undefined)
+        throw new Error(`wrong dataVersion (${browserSignals.dataVersion})`);
       if (debugLossReportUrl)
         forDebuggingOnly.reportAdAuctionLoss(debugLossReportUrl + bid);
       if (debugWinReportUrl)
@@ -292,7 +298,7 @@ std::string MakeDecisionScript(
       if (browserSignals.topWindowHostname !== 'publisher1.com')
         throw new Error("wrong topWindowHostname in browserSignals");
       if (browserSignals.dataVersion !== undefined)
-        throw new Error("wrong dataVersion in browserSignals");
+        throw new Error(`wrong dataVersion (${browserSignals.dataVersion})`);
       if (sendReportUrl)
         sendReportTo(sendReportUrl + browserSignals.bid);
       return browserSignals;
@@ -438,6 +444,8 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
                  const GURL& browser_signal_render_url,
                  double browser_signal_bid,
                  const url::Origin& browser_signal_seller_origin,
+                 uint32_t bidding_signals_data_version,
+                 bool has_bidding_signals_data_version,
                  ReportWinCallback report_win_callback) override {
     // While the real BidderWorklet implementation supports multiple pending
     // callbacks, this class does not.
@@ -470,13 +478,18 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
       const GURL& render_url = GURL(),
       absl::optional<std::vector<GURL>> ad_component_urls = absl::nullopt,
       base::TimeDelta duration = base::TimeDelta(),
+      const absl::optional<uint32_t>& bidding_signals_data_version =
+          absl::nullopt,
       const absl::optional<GURL>& debug_loss_report_url = absl::nullopt,
       const absl::optional<GURL>& debug_win_report_url = absl::nullopt) {
     WaitForGenerateBid();
 
     if (!bid.has_value()) {
       std::move(generate_bid_callback_)
-          .Run(/*bid=*/nullptr, debug_loss_report_url,
+          .Run(/*bid=*/nullptr,
+               /*bidding_signals_data_version=*/0,
+               /*has_bidding_signals_data_version=*/false,
+               debug_loss_report_url,
                /*debug_win_report_url=*/absl::nullopt,
                /*errors=*/std::vector<std::string>());
       return;
@@ -485,7 +498,9 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
     std::move(generate_bid_callback_)
         .Run(auction_worklet::mojom::BidderWorkletBid::New(
                  "ad", *bid, render_url, ad_component_urls, duration),
-             debug_loss_report_url, debug_win_report_url,
+             bidding_signals_data_version.value_or(0),
+             bidding_signals_data_version.has_value(), debug_loss_report_url,
+             debug_win_report_url,
              /*errors=*/std::vector<std::string>());
   }
 
@@ -2469,6 +2484,9 @@ TEST_F(AuctionRunnerTest, TrustedScoringSignals) {
 function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
                  browserSignals) {
   let signal = trustedScoringSignals.renderUrl[browserSignals.renderUrl];
+  if (browserSignals.dataVersion !== 2) {
+    throw new Error(`wrong dataVersion (${browserSignals.dataVersion})`);
+  }
   // 2 * bid is expected by the BidderWorklet ReportWin() script.
   if (signal == "accept")
     return 2 * bid;
@@ -2480,7 +2498,7 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
 function reportResult(auctionConfig, browserSignals) {
   sendReportTo("https://reporting.example.com/" + browserSignals.bid);
   if (browserSignals.dataVersion !== 2) {
-    throw new Error("wrong dataVersion in browserSignals");
+    throw new Error(`wrong dataVersion (${browserSignals.dataVersion})`);
   }
   return browserSignals;
 }
@@ -2723,6 +2741,9 @@ TEST_F(AuctionRunnerTest, ReusedBidderWorkletBatchesSignalsRequests) {
   const char kBidderScript[] = R"(
     function generateBid(interestGroup, auctionSignals, perBuyerSignals,
                          trustedBiddingSignals, browserSignals) {
+      if (browserSignals.dataVersion !== 4) {
+       throw new Error(`wrong dataVersion (${browserSignals.dataVersion})`);
+      }
       return {
         ad: 0,
         bid: trustedBiddingSignals[interestGroup.name],
@@ -2731,7 +2752,12 @@ TEST_F(AuctionRunnerTest, ReusedBidderWorkletBatchesSignalsRequests) {
     }
 
     // Prevent an error about this method not existing.
-    function reportWin() {}
+    function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
+                     browserSignals) {
+      if (browserSignals.dataVersion !== 4) {
+        throw new Error(`wrong dataVersion (${browserSignals.dataVersion})`);
+      }
+    }
   )";
 
   // Need to use a different seller script as well, due to the validation logic
@@ -2762,10 +2788,11 @@ TEST_F(AuctionRunnerTest, ReusedBidderWorkletBatchesSignalsRequests) {
 
   // Trusted signals response for the single expected request. Interest group
   // "0" bids 2, interest group "1" bids 1.
-  auction_worklet::AddJsonResponse(&url_loader_factory_,
-                                   GURL(kBidder1TrustedSignalsUrl.spec() +
-                                        "?hostname=publisher1.com&keys=0,1"),
-                                   R"({"0":2, "1": 1})");
+  auction_worklet::AddVersionedJsonResponse(
+      &url_loader_factory_,
+      GURL(kBidder1TrustedSignalsUrl.spec() +
+           "?hostname=publisher1.com&keys=0,1"),
+      R"({"0":2, "1": 1})", 4);
 
   auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
                                          kSellerScript);
@@ -3977,6 +4004,7 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
     bidder1_worklet->InvokeGenerateBidCallback(
         /*bid=*/5, GURL("https://ad1.com/"),
         /*ad_component_urls=*/absl::nullopt, base::TimeDelta(),
+        /*bidding_signals_data_version=*/absl::nullopt,
         test_case.bidder_debug_loss_report_url,
         test_case.bidder_debug_win_report_url);
     bidder2_worklet->InvokeGenerateBidCallback(/*bid=*/absl::nullopt);
@@ -4039,6 +4067,7 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
     bidder1_worklet->InvokeGenerateBidCallback(
         /*bid=*/5, GURL("https://ad1.com/"),
         /*ad_component_urls=*/absl::nullopt, base::TimeDelta(),
+        /*bidding_signals_data_version=*/absl::nullopt,
         GURL("https://bidder-debug-loss-report.com/"),
         GURL("https://bidder-debug-win-report.com/"));
     bidder2_worklet->InvokeGenerateBidCallback(/*bid=*/absl::nullopt);
@@ -4079,6 +4108,7 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
   bidder1_worklet->InvokeGenerateBidCallback(
       /*bid=*/5, GURL("https://ad1.com/"),
       /*ad_component_urls=*/absl::nullopt, base::TimeDelta(),
+      /*bidding_signals_data_version=*/absl::nullopt,
       GURL(kBidder1DebugLossReportUrl), GURL(kBidder1DebugWinReportUrl));
   // The bidder pipe should be closed after it bids.
   EXPECT_TRUE(bidder1_worklet->PipeIsClosed());
@@ -4091,6 +4121,7 @@ TEST_F(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
   bidder2_worklet->InvokeGenerateBidCallback(
       /*bid=*/10, GURL("https://ad2.com/"),
       /*ad_component_urls=*/absl::nullopt, base::TimeDelta(),
+      /*bidding_signals_data_version=*/absl::nullopt,
       GURL("http://not-https.com/"), GURL(kBidder2DebugWinReportUrl));
   // The bidder pipe should be closed after it bids.
   EXPECT_TRUE(bidder2_worklet->PipeIsClosed());

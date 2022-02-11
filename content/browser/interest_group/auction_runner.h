@@ -192,6 +192,7 @@ class CONTENT_EXPORT AuctionRunner {
         GURL render_url,
         absl::optional<std::vector<GURL>> ad_components,
         base::TimeDelta bid_duration,
+        absl::optional<uint32_t> bidding_signals_data_version,
         const blink::InterestGroup::Ad* bid_ad,
         BidState* bid_state);
 
@@ -204,6 +205,7 @@ class CONTENT_EXPORT AuctionRunner {
     const GURL render_url;
     const absl::optional<std::vector<GURL>> ad_components;
     const base::TimeDelta bid_duration;
+    const absl::optional<uint32_t> bidding_signals_data_version;
 
     // InterestGroup that made the bid. Owned by the BidState of that
     // InterestGroup.
@@ -213,7 +215,7 @@ class CONTENT_EXPORT AuctionRunner {
     const raw_ptr<const blink::InterestGroup::Ad> bid_ad;
 
     // `bid_state` of the InterestGroup that made the bid. This should not be
-    // writted to, except for adding seller debug reporting URLs.
+    // written to, except for adding seller debug reporting URLs.
     const raw_ptr<BidState> bid_state;
   };
 
@@ -221,12 +223,12 @@ class CONTENT_EXPORT AuctionRunner {
   // ReportResult() method.
   struct ScoredBid {
     ScoredBid(double score,
-              absl::optional<uint32_t> data_version,
+              absl::optional<uint32_t> scoring_signals_data_version,
               std::unique_ptr<Bid> bid);
     ~ScoredBid();
 
     const double score;
-    const absl::optional<uint32_t> data_version;
+    const absl::optional<uint32_t> scoring_signals_data_version;
 
     const std::unique_ptr<Bid> bid;
   };
@@ -394,6 +396,8 @@ class CONTENT_EXPORT AuctionRunner {
     void OnGenerateBidComplete(
         BidState* state,
         auction_worklet::mojom::BidderWorkletBidPtr bid,
+        uint32_t bidding_signals_data_version,
+        bool has_bidding_signals_data_version,
         const absl::optional<GURL>& debug_loss_report_url,
         const absl::optional<GURL>& debug_win_report_url,
         const std::vector<std::string>& errors);
@@ -407,8 +411,8 @@ class CONTENT_EXPORT AuctionRunner {
     // Callback from ScoreBid().
     void OnBidScored(std::unique_ptr<Bid> bid,
                      double score,
-                     uint32_t data_version,
-                     bool has_data_version,
+                     uint32_t scoring_signals_data_version,
+                     bool has_scoring_signals_data_version,
                      const absl::optional<GURL>& debug_loss_report_url,
                      const absl::optional<GURL>& debug_win_report_url,
                      const std::vector<std::string>& errors);
@@ -563,6 +567,7 @@ class CONTENT_EXPORT AuctionRunner {
   static std::unique_ptr<Bid> TryToCreateBid(
       auction_worklet::mojom::BidderWorkletBidPtr mojo_bid,
       BidState& bid_state,
+      const absl::optional<uint32_t>& bidding_signals_data_version,
       const absl::optional<GURL>& debug_loss_report_url,
       const absl::optional<GURL>& debug_win_report_url);
 

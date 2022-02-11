@@ -107,6 +107,8 @@ class BidderWorklet : public mojom::BidderWorklet {
                  const GURL& browser_signal_render_url,
                  double browser_signal_bid,
                  const url::Origin& browser_signal_seller_origin,
+                 uint32_t bidding_signals_data_version,
+                 bool has_bidding_signals_data_version,
                  ReportWinCallback report_win_callback) override;
   void ConnectDevToolsAgent(
       mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent)
@@ -150,6 +152,7 @@ class BidderWorklet : public mojom::BidderWorklet {
     GURL browser_signal_render_url;
     double browser_signal_bid;
     url::Origin browser_signal_seller_origin;
+    absl::optional<uint32_t> bidding_signals_data_version;
 
     ReportWinCallback callback;
   };
@@ -172,11 +175,12 @@ class BidderWorklet : public mojom::BidderWorklet {
     // These match the mojom GenerateBidCallback / ReportWinCallback functions,
     // except the errors vectors are passed by value. They're callbacks that
     // must be invoked on the main sequence, and passed to the V8State.
-    using GenerateBidCallbackInternal =
-        base::OnceCallback<void(mojom::BidderWorkletBidPtr bid,
-                                absl::optional<GURL> debug_loss_report_url,
-                                absl::optional<GURL> debug_win_report_url,
-                                std::vector<std::string> error_msgs)>;
+    using GenerateBidCallbackInternal = base::OnceCallback<void(
+        mojom::BidderWorkletBidPtr bid,
+        absl::optional<uint32_t> bidding_signals_data_version,
+        absl::optional<GURL> debug_loss_report_url,
+        absl::optional<GURL> debug_win_report_url,
+        std::vector<std::string> error_msgs)>;
     using ReportWinCallbackInternal =
         base::OnceCallback<void(absl::optional<GURL> report_url,
                                 std::vector<std::string> errors)>;
@@ -188,6 +192,7 @@ class BidderWorklet : public mojom::BidderWorklet {
                    const GURL& browser_signal_render_url,
                    double browser_signal_bid,
                    const url::Origin& browser_signal_seller_origin,
+                   const absl::optional<uint32_t>& bidding_signals_data_version,
                    ReportWinCallbackInternal callback);
 
     void GenerateBid(
@@ -271,6 +276,7 @@ class BidderWorklet : public mojom::BidderWorklet {
   void DeliverBidCallbackOnUserThread(
       GenerateBidTaskList::iterator task,
       mojom::BidderWorkletBidPtr bid,
+      absl::optional<uint32_t> bidding_signals_data_version,
       absl::optional<GURL> debug_loss_report_url,
       absl::optional<GURL> debug_win_report_url,
       std::vector<std::string> error_msgs);

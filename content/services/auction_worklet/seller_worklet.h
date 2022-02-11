@@ -90,7 +90,7 @@ class SellerWorklet : public mojom::SellerWorklet {
                     const GURL& browser_signal_render_url,
                     double browser_signal_bid,
                     double browser_signal_desirability,
-                    uint32_t browser_signal_data_version,
+                    uint32_t scoring_signals_data_version,
                     bool browser_signal_has_data_version,
                     ReportResultCallback callback) override;
   void ConnectDevToolsAgent(
@@ -147,7 +147,7 @@ class SellerWorklet : public mojom::SellerWorklet {
     GURL browser_signal_render_url;
     double browser_signal_bid;
     double browser_signal_desirability;
-    absl::optional<uint32_t> browser_signal_data_version;
+    absl::optional<uint32_t> scoring_signals_data_version;
 
     ReportResultCallback callback;
   };
@@ -162,12 +162,12 @@ class SellerWorklet : public mojom::SellerWorklet {
     // except arguments are passed by value. Must be invoked on the user thread.
     // Different signatures protect against passing the wrong callback to
     // V8State, and avoids having to make a copy of the errors vector.
-    using ScoreAdCallbackInternal =
-        base::OnceCallback<void(double score,
-                                absl::optional<uint32_t> data_version,
-                                absl::optional<GURL> debug_loss_report_url,
-                                absl::optional<GURL> debug_win_report_url,
-                                std::vector<std::string> errors)>;
+    using ScoreAdCallbackInternal = base::OnceCallback<void(
+        double score,
+        absl::optional<uint32_t> scoring_signals_data_version,
+        absl::optional<GURL> debug_loss_report_url,
+        absl::optional<GURL> debug_win_report_url,
+        std::vector<std::string> errors)>;
     using ReportResultCallbackInternal =
         base::OnceCallback<void(absl::optional<std::string> signals_for_winner,
                                 absl::optional<GURL> report_url,
@@ -198,7 +198,7 @@ class SellerWorklet : public mojom::SellerWorklet {
                       const GURL& browser_signal_render_url,
                       double browser_signal_bid,
                       double browser_signal_desirability,
-                      absl::optional<uint32_t> browser_signal_data_version,
+                      absl::optional<uint32_t> scoring_signals_data_version,
                       ReportResultCallbackInternal callback);
 
     void ConnectDevToolsAgent(
@@ -213,7 +213,7 @@ class SellerWorklet : public mojom::SellerWorklet {
     void PostScoreAdCallbackToUserThread(
         ScoreAdCallbackInternal callback,
         double score,
-        absl::optional<uint32_t> data_version,
+        absl::optional<uint32_t> scoring_signals_data_version,
         absl::optional<GURL> debug_loss_report_url,
         absl::optional<GURL> debug_win_report_url,
         std::vector<std::string> errors);
@@ -265,7 +265,7 @@ class SellerWorklet : public mojom::SellerWorklet {
   void DeliverScoreAdCallbackOnUserThread(
       ScoreAdTaskList::iterator task,
       double score,
-      absl::optional<uint32_t> data_version,
+      absl::optional<uint32_t> scoring_signals_data_version,
       absl::optional<GURL> debug_loss_report_url,
       absl::optional<GURL> debug_win_report_url,
       std::vector<std::string> errors);

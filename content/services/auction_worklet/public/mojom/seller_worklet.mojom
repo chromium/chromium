@@ -55,11 +55,11 @@ interface SellerWorklet {
   //  of 0 indicates either an error running the script, or that the script
   //  indicated the bid should not be used.
   //
-  // `data_version` The value of the Data-Version header served with the
-  //  trusted scoring signals.
+  // `scoring_signals_data_version` The value of the Data-Version header served
+  //  with the trusted scoring signals.
   //
-  // `has_data_version` True to indicate the Data-Version header was present in
-  //  the HTTP response for the trusted scoring signals, false otherwise.
+  // `has_scoring_signals_data_version` True to indicate Data-Version header
+  //  was present in the HTTP response for the trusted scoring signals.
   //  TODO(https://crbug.com/657632): Update when optional integers supported.
   //
   // `debug_loss_report_url` The URL to request if this bid does not win the
@@ -87,8 +87,8 @@ interface SellerWorklet {
           array<url.mojom.Url> browser_signal_ad_component_render_urls,
           uint32 browser_signal_bidding_duration_msecs) =>
               (double score,
-              uint32 data_version,
-              bool has_data_version,
+              uint32 scoring_signals_data_version,
+              bool has_scoring_signals_data_version,
               url.mojom.Url? debug_loss_report_url,
               url.mojom.Url? debug_win_report_url,
               array<string> errors);
@@ -124,11 +124,11 @@ interface SellerWorklet {
   // `browser_signal_desirability` The score returned by ScoreAd for the
   //  the winning bid.
   //
-  // `browser_signal_data_version` The value of the Data-Version header served
+  // `scoring_signals_data_version` The value of the Data-Version header served
   //  with the trusted scoring signals.
   //
-  // `browser_signal_has_data_version` True to indicate Data-Version header was
-  //  present in the HTTP response for the trusted scoring signals.
+  // `has_scoring_signals_data_version` True to indicate Data-Version header
+  //  was present in the HTTP response for the trusted scoring signals.
   //  TODO(https://crbug.com/657632): Update when optional integers supported.
   //
   // Returns:
@@ -149,8 +149,8 @@ interface SellerWorklet {
       url.mojom.Url browser_signal_render_url,
       double browser_signal_bid,
       double browser_signal_desirability,
-      uint32 browser_signal_data_version,
-      bool browser_signal_has_data_version) =>
+      uint32 scoring_signals_data_version,
+      bool has_scoring_signals_data_version) =>
           (string? signals_for_winner,
            url.mojom.Url? report_url,
            array<string> error_msgs);

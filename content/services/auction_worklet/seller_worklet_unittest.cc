@@ -746,6 +746,23 @@ TEST_F(SellerWorkletTest, ScoreAdTrustedScoringSignals) {
       /*expected_data_version=*/5);
 }
 
+TEST_F(SellerWorkletTest, ScoreAdDataVersion) {
+  trusted_scoring_signals_url_ =
+      GURL("https://url.test/trusted_scoring_signals");
+  // Trusted scoring signals URL without any component ads.
+  const GURL kNoComponentSignalsUrl = GURL(
+      "https://url.test/trusted_scoring_signals?hostname=window.test"
+      "&renderUrls=https%3A%2F%2Frender.url.test%2F");
+
+  // Successful download case.
+  AddVersionedJsonResponse(&url_loader_factory_, kNoComponentSignalsUrl,
+                           kTrustedScoringSignalsResponse,
+                           /*data_version=*/100);
+  RunScoreAdWithReturnValueExpectingResult("browserSignals.dataVersion", 100,
+                                           /*expected_errors=*/{},
+                                           /*expected_data_version=*/100);
+}
+
 // Test the case of a bunch of ScoreAd() calls in parallel, all started before
 // the worklet script has loaded.
 TEST_F(SellerWorkletTest, ScoreAdParallelBeforeLoadComplete) {
@@ -1349,6 +1366,14 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
       R"("https://b.com":{"signals_b":"B"}}})";
   RunReportResultCreatedScriptExpectingResult(
       "auctionConfig", std::string() /* extra_code */, kExpectedJson,
+      absl::nullopt /* expected_report_url */);
+}
+
+TEST_F(SellerWorkletTest, ReportResultDataVersion) {
+  browser_signal_data_version_ = 20;
+  RunReportResultCreatedScriptExpectingResult(
+      "browserSignals.dataVersion", std::string() /* extra_code */,
+      "20" /* expected_signals_for_winner */,
       absl::nullopt /* expected_report_url */);
 }
 
