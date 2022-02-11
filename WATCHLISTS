@@ -2775,7 +2775,7 @@
                 'mvanouwerkerk+watch-sharing@chromium.org'],
     'shimless_rma': ['zentaro+watch-shimless@chromium.org',
                      'jimmyxgong+watch-shimless@chromium.org',
-                     'gavindodd+watch-shimless@chromium.org'],
+                     'michaelcheco+watch-shimless@google.com'],
     'site_engagement': ['dominickn+watch-engagement@chromium.org'],
     'site_instance': ['ajwong+watch@chromium.org',
                       'alexmos+watch@chromium.org',
