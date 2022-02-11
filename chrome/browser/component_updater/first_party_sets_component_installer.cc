@@ -91,6 +91,12 @@ std::string BoolToString(bool b) {
   return b ? "true" : "false";
 }
 
+base::TaskPriority GetTaskPriority() {
+  return FirstPartySetsUtil::GetInstance()->IsFirstPartySetsEnabled()
+             ? base::TaskPriority::USER_BLOCKING
+             : base::TaskPriority::BEST_EFFORT;
+}
+
 }  // namespace
 
 namespace component_updater {
@@ -224,11 +230,13 @@ void RegisterFirstPartySetsComponent(ComponentUpdateService* cus) {
   // same lifetime). Therefore if/when the closure is invoked, `policy` is still
   // alive.
   base::MakeRefCounted<ComponentInstaller>(std::move(policy))
-      ->Register(cus, base::BindOnce(
-                          [](FirstPartySetsComponentInstallerPolicy* policy) {
-                            policy->OnRegistrationComplete();
-                          },
-                          raw_policy));
+      ->Register(cus,
+                 base::BindOnce(
+                     [](FirstPartySetsComponentInstallerPolicy* policy) {
+                       policy->OnRegistrationComplete();
+                     },
+                     raw_policy),
+                 GetTaskPriority());
 }
 
 // static

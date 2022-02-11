@@ -75,21 +75,22 @@ ComponentInstaller::ComponentInstaller(
 ComponentInstaller::~ComponentInstaller() = default;
 
 void ComponentInstaller::Register(ComponentUpdateService* cus,
-                                  base::OnceClosure callback) {
+                                  base::OnceClosure callback,
+                                  base::TaskPriority task_priority) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(cus);
   Register(base::BindOnce(&ComponentUpdateService::RegisterComponent,
                           base::Unretained(cus)),
-           std::move(callback));
+           std::move(callback), task_priority);
 }
 
 void ComponentInstaller::Register(RegisterCallback register_callback,
-                                  base::OnceClosure callback) {
+                                  base::OnceClosure callback,
+                                  base::TaskPriority task_priority) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  // Some components may affect user visible features, hence USER_VISIBLE.
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+      {base::MayBlock(), task_priority,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
   if (!installer_policy_) {
