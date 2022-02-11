@@ -70,6 +70,7 @@
         android:layout_marginBottom="4dp"/>
 
     <LinearLayout
+        android:id="@+id/tab_switcher_switches_and_menu"
         android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
