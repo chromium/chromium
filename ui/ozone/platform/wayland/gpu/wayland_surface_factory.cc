@@ -230,12 +230,16 @@ WaylandSurfaceFactory::CreateNativePixmapFromHandle(
 #endif
 }
 
-bool WaylandSurfaceFactory::IsGmbDeviceAvailable() {
+bool WaylandSurfaceFactory::SupportsNativePixmaps() const {
+  bool supports_native_pixmaps = false;
 #if defined(WAYLAND_GBM)
-  return buffer_manager_->GetGbmDevice() != nullptr;
-#else
-  return false;
+  supports_native_pixmaps = buffer_manager_->GetGbmDevice() != nullptr;
 #endif
+  // Native pixmaps are not supported with swiftshader.
+  if (gl::IsSoftwareGLImplementation(gl::GetGLImplementationParts())) {
+    supports_native_pixmaps = false;
+  }
+  return supports_native_pixmaps;
 }
 
 }  // namespace ui

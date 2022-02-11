@@ -53,8 +53,14 @@ const base::Feature kUseMultipleOverlays{"UseMultipleOverlays",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 const char kMaxOverlaysParam[] = "max_overlays";
 
-const base::Feature kDelegatedCompositing{"DelegatedCompositing",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kDelegatedCompositing {
+  "DelegatedCompositing",
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 const base::Feature kSimpleFrameRateThrottling{
     "SimpleFrameRateThrottling", base::FEATURE_DISABLED_BY_DEFAULT};

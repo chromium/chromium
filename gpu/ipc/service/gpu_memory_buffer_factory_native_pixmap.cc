@@ -176,7 +176,10 @@ GpuMemoryBufferFactoryNativePixmap::CreateImageForGpuMemoryBuffer(
 }
 
 bool GpuMemoryBufferFactoryNativePixmap::SupportsCreateAnonymousImage() const {
-  return true;
+  // Platforms may not support native pixmaps.
+  return ui::OzonePlatform::GetInstance()
+      ->GetPlatformRuntimeProperties()
+      .supports_native_pixmaps;
 }
 
 scoped_refptr<gl::GLImage>

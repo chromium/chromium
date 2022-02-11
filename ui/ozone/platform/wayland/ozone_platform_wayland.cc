@@ -335,8 +335,8 @@ class OzonePlatformWayland : public OzonePlatform,
       properties.needs_background_image =
           ui::IsWaylandOverlayDelegationEnabled() &&
           buffer_manager_->supports_viewporter();
-      if (surface_factory_->IsGmbDeviceAvailable())
-        properties.supports_native_pixmaps = true;
+      properties.supports_native_pixmaps =
+          surface_factory_->SupportsNativePixmaps();
     }
     return properties;
   }
