@@ -1316,7 +1316,7 @@ const base::Feature kWallpaperWebUI{"WallpaperWebUI",
 // Enable full screen wallpaper preview in new wallpaper experience. Requires
 // |kWallpaperWebUI| to also be enabled.
 const base::Feature kWallpaperFullScreenPreview{
-    "WallpaperFullScreenPreview", base::FEATURE_DISABLED_BY_DEFAULT};
+    "WallpaperFullScreenPreview", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable Google Photos integration in the new wallpaper experience. Note that
 // this feature flag does not have any effect if `kWallpaperWebUI` is disabled.
