@@ -108,7 +108,7 @@
   data: [
     {
       name: "AbortSignalThrowIfAborted",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "AbortSignalTimeout",
