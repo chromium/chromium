@@ -405,7 +405,7 @@
 // Returns matcher for the Copy item on the old-style context menu.
 + (id<GREYMatcher>)contextMenuCopyButton;
 
-// Returns matcher for defoucesed omnibox on a new tab.
+// Returns matcher for defocused omnibox on a new tab.
 + (id<GREYMatcher>)NTPOmnibox;
 
 // Returns matcher for a fake omnibox on a new tab page.
