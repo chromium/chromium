@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chromeos/services/bluetooth_config/adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -58,6 +59,9 @@ class DevicePairingHandler : public mojom::DevicePairingHandler,
  private:
   friend class DevicePairingHandlerImplTest;
 
+  // The delay between when a pairing has failed and the failure is processed.
+  static const base::TimeDelta kPairingFailureDelay;
+
   // mojom::DevicePairingHandler:
   void PairDevice(const std::string& device_id,
                   mojo::PendingRemote<mojom::DevicePairingDelegate> delegate,
@@ -81,6 +85,8 @@ class DevicePairingHandler : public mojom::DevicePairingHandler,
   // device::BluetoothDevice::Connect() callback.
   void OnDeviceConnect(
       absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
+  void HandlePairingFailed(
+      device::BluetoothDevice::ConnectErrorCode error_code);
 
   // mojom::DevicePairingHandler method callbacks.
   void OnRequestPinCode(const std::string& pin_code);
@@ -98,6 +104,9 @@ class DevicePairingHandler : public mojom::DevicePairingHandler,
 
   // Flushes queued Mojo messages in unit tests.
   void FlushForTesting();
+
+  // If true, indicates CancelPairing() was called.
+  bool is_canceling_pairing_ = false;
 
   base::Time pairing_start_timestamp_;
 

@@ -6,6 +6,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_common.h"
@@ -75,6 +76,10 @@ mojom::PairingResult GetPairingResult(
 
 }  // namespace
 
+// static
+const base::TimeDelta DevicePairingHandler::kPairingFailureDelay =
+    base::Milliseconds(500);
+
 DevicePairingHandler::DevicePairingHandler(
     mojo::PendingReceiver<mojom::DevicePairingHandler> pending_receiver,
     AdapterStateController* adapter_state_controller,
@@ -88,6 +93,7 @@ DevicePairingHandler::DevicePairingHandler(
 DevicePairingHandler::~DevicePairingHandler() = default;
 
 void DevicePairingHandler::CancelPairing() {
+  is_canceling_pairing_ = true;
   device::BluetoothDevice* device = FindDevice(current_pairing_device_id_);
   if (!device) {
     BLUETOOTH_LOG(ERROR)
@@ -239,10 +245,57 @@ void DevicePairingHandler::OnDeviceConnect(
     return;
   }
 
-  BLUETOOTH_LOG(ERROR) << "Pairing failed with error code: "
-                       << error_code.value();
+  // In some cases, device->Connect() will return a failure if the pairing
+  // succeeded but the subsequent connection request returns with a failure.
+  // Empirically, it's found that the device actually does connect, and
+  // device->IsConnected() returns true. Wait |kPairingFailureDelay| to check if
+  // the device is connected. Only do this if the failure is not due to a
+  // pairing cancellation. If the pairing is canceled, we know for sure that the
+  // device is not actually paired.
+  // TODO(b/209531279): Remove this delay and |is_canceling_pairing| when the
+  // root cause of issue is fixed.
+  if (!is_canceling_pairing_) {
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&DevicePairingHandler::HandlePairingFailed,
+                       weak_ptr_factory_.GetWeakPtr(), error_code.value()),
+        kPairingFailureDelay);
+    return;
+  }
+
+  // Immediately handle pairing failures if pairing is being canceled, because
+  // we know for sure that the device is not actually paired, and because if
+  // the pairing is being canceled due to the handler being destroyed, if there
+  // is a delay the failure will never be handled.
+  HandlePairingFailed(error_code.value());
+}
+
+void DevicePairingHandler::HandlePairingFailed(
+    device::BluetoothDevice::ConnectErrorCode error_code) {
+  device::BluetoothDevice* device = FindDevice(current_pairing_device_id_);
+
+  // In some cases, device->Connect() will return a failure if the pairing
+  // succeeded but the subsequent connection request returns with a failure.
+  // Empirically, it's found that the device actually does connect, and
+  // device->IsConnected() returns true. Handle this case the
+  // same as pairing succeeding if this wasn't a pairing cancellation.
+  // TODO(b/209531279): Remove this when the root cause of issue is fixed.
+  if (device && device->IsConnected() && !is_canceling_pairing_) {
+    BLUETOOTH_LOG(EVENT)
+        << device->GetAddress()
+        << ": Pairing finished with an error code, but device "
+        << "is connected. Handling like pairing succeeded. Error code: "
+        << error_code;
+    FinishCurrentPairingRequest(absl::nullopt);
+    NotifyFinished();
+    return;
+  }
+
+  BLUETOOTH_LOG(ERROR) << device->GetAddress()
+                       << ": Pairing failed with error code: " << error_code;
+
   using ErrorCode = device::BluetoothDevice::ConnectErrorCode;
-  switch (error_code.value()) {
+  switch (error_code) {
     case ErrorCode::ERROR_AUTH_CANCELED:
       [[fallthrough]];
     case ErrorCode::ERROR_AUTH_FAILED:
@@ -338,6 +391,8 @@ void DevicePairingHandler::OnConfirmPairing(bool confirmed) {
 
 void DevicePairingHandler::FinishCurrentPairingRequest(
     absl::optional<device::ConnectionFailureReason> failure_reason) {
+  // Reset state.
+  is_canceling_pairing_ = false;
   device::BluetoothDevice* device = FindDevice(current_pairing_device_id_);
   current_pairing_device_id_.clear();
 
