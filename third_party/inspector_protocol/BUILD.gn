@@ -57,6 +57,7 @@ source_set("crdtp_test") {
   testonly = true
   sources = [
     "crdtp/cbor_test.cc",
+    "crdtp/chromium/protocol_traits_test.cc",
     "crdtp/dispatch_test.cc",
     "crdtp/error_support_test.cc",
     "crdtp/find_by_first_test.cc",
@@ -69,7 +70,10 @@ source_set("crdtp_test") {
     "crdtp/status_test_support.cc",
     "crdtp/status_test_support.h",
   ]
-  deps = [ ":crdtp_test_platform" ]
+  deps = [
+    ":crdtp_test_platform",
+    "//base/test:test_support",
+  ]
 }
 
 # A small adapter library which only :crdtp_test may depend on.
