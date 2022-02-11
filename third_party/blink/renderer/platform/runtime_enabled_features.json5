@@ -1554,6 +1554,10 @@
       status: "stable",
     },
     {
+      name: "NavigationCounter",
+      status: "experimental",
+    },
+    {
       name: "NavigatorContentUtils",
       // Android does not yet support NavigatorContentUtils.
       status: {"Android": "", "default": "stable"},
