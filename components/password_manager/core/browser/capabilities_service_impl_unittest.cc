@@ -85,6 +85,16 @@ TEST_F(CapabilitiesServiceImplTest, FetchCapabilitiesEmptyResponse) {
                                                   mock_response_callback.Get());
 }
 
+TEST_F(CapabilitiesServiceImplTest, FetchCapabilitiesEmptyRequest) {
+  EXPECT_CALL(*mock_autofill_assistant_, GetCapabilitiesByHashPrefix).Times(0);
+  base::MockCallback<password_manager::CapabilitiesService::ResponseCallback>
+      mock_response_callback;
+  EXPECT_CALL(mock_response_callback, Run(std::set<url::Origin>()));
+
+  service_->QueryPasswordChangeScriptAvailability({},
+                                                  mock_response_callback.Get());
+}
+
 TEST_F(CapabilitiesServiceImplTest, BackendRequestFailed) {
   EXPECT_CALL(*mock_autofill_assistant_, GetCapabilitiesByHashPrefix)
       .WillOnce(RunOnceCallback<3>(net::HTTP_FORBIDDEN,

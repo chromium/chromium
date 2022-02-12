@@ -65,6 +65,11 @@ CapabilitiesServiceImpl::~CapabilitiesServiceImpl() = default;
 void CapabilitiesServiceImpl::QueryPasswordChangeScriptAvailability(
     const std::vector<url::Origin>& origins,
     ResponseCallback callback) {
+  if (origins.empty()) {
+    std::move(callback).Run(std::set<url::Origin>());
+    return;
+  }
+
   std::vector<uint64_t> hash_prefixes;
   base::ranges::transform(origins, std::back_inserter(hash_prefixes),
                           GetHashPrefix);
