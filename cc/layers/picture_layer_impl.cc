@@ -765,10 +765,10 @@ void PictureLayerImpl::UpdateRasterSource(
             layer_tree_impl()->GetMSAASampleCountForRaster(
                 new_display_item_list);
         needs_full_invalidation |=
-            layer_tree_impl()->GetRasterColorSpace(
+            layer_tree_impl()->GetTargetColorParams(
                 current_display_item_list->discardable_image_map()
                     .content_color_usage()) !=
-            layer_tree_impl()->GetRasterColorSpace(
+            layer_tree_impl()->GetTargetColorParams(
                 new_display_item_list->discardable_image_map()
                     .content_color_usage());
         if (needs_full_invalidation)

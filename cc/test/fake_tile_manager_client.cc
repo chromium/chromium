@@ -28,13 +28,13 @@ FakeTileManagerClient::CreateOccludedTileIterator() {
   return nullptr;
 }
 
-gfx::ColorSpace FakeTileManagerClient::GetRasterColorSpace(
+TargetColorParams FakeTileManagerClient::GetTargetColorParams(
     gfx::ContentColorUsage /*content_color_usage*/) const {
-  return color_space_;
-}
-
-float FakeTileManagerClient::GetSDRWhiteLevel() const {
-  return gfx::ColorSpace::kDefaultSDRWhiteLevel;
+  TargetColorParams result;
+  result.color_space = color_space_;
+  result.sdr_max_luminance_nits = gfx::ColorSpace::kDefaultSDRWhiteLevel;
+  result.hdr_max_luminance_relative = 1.f;
+  return result;
 }
 
 size_t FakeTileManagerClient::GetFrameIndexForImage(

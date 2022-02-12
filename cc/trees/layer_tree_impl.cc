@@ -2842,9 +2842,9 @@ int LayerTreeImpl::GetMSAASampleCountForRaster(
   return host_impl_->GetMSAASampleCountForRaster(display_list);
 }
 
-gfx::ColorSpace LayerTreeImpl::GetRasterColorSpace(
+TargetColorParams LayerTreeImpl::GetTargetColorParams(
     gfx::ContentColorUsage content_color_usage) const {
-  return host_impl_->GetRasterColorSpace(content_color_usage);
+  return host_impl_->GetTargetColorParams(content_color_usage);
 }
 
 void LayerTreeImpl::SetPendingPageScaleAnimation(

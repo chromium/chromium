@@ -16206,34 +16206,38 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, CheckerImagingTileInvalidation) {
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, RasterColorSpace) {
   LayerTreeSettings settings = DefaultSettings();
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
+
   // The default raster color space should be sRGB.
-  EXPECT_EQ(
-      host_impl_->GetRasterColorSpace(gfx::ContentColorUsage::kWideColorGamut),
-      gfx::ColorSpace::CreateSRGB());
+  auto wcg_params =
+      host_impl_->GetTargetColorParams(gfx::ContentColorUsage::kWideColorGamut);
+  EXPECT_EQ(wcg_params.color_space, gfx::ColorSpace::CreateSRGB());
+
   // The raster color space should update with tree activation.
   host_impl_->active_tree()->SetDisplayColorSpaces(
       gfx::DisplayColorSpaces(gfx::ColorSpace::CreateDisplayP3D65()));
-  EXPECT_EQ(
-      host_impl_->GetRasterColorSpace(gfx::ContentColorUsage::kWideColorGamut),
-      gfx::ColorSpace::CreateDisplayP3D65());
-  EXPECT_EQ(gfx::ColorSpace::kDefaultSDRWhiteLevel,
-            host_impl_->GetSDRWhiteLevel());
+  wcg_params =
+      host_impl_->GetTargetColorParams(gfx::ContentColorUsage::kWideColorGamut);
+  EXPECT_EQ(wcg_params.color_space, gfx::ColorSpace::CreateDisplayP3D65());
+  EXPECT_EQ(wcg_params.sdr_max_luminance_nits,
+            gfx::ColorSpace::kDefaultSDRWhiteLevel);
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, RasterColorSpaceSoftware) {
   LayerTreeSettings settings = DefaultSettings();
   CreateHostImpl(settings, FakeLayerTreeFrameSink::CreateSoftware());
+
   // Software composited resources should always use sRGB as their color space.
-  EXPECT_EQ(
-      host_impl_->GetRasterColorSpace(gfx::ContentColorUsage::kWideColorGamut),
-      gfx::ColorSpace::CreateSRGB());
+  auto wcg_params =
+      host_impl_->GetTargetColorParams(gfx::ContentColorUsage::kWideColorGamut);
+  EXPECT_EQ(wcg_params.color_space, gfx::ColorSpace::CreateSRGB());
+
   host_impl_->active_tree()->SetDisplayColorSpaces(
       gfx::DisplayColorSpaces(gfx::ColorSpace::CreateDisplayP3D65()));
-  EXPECT_EQ(
-      host_impl_->GetRasterColorSpace(gfx::ContentColorUsage::kWideColorGamut),
-      gfx::ColorSpace::CreateSRGB());
-  EXPECT_EQ(gfx::ColorSpace::kDefaultSDRWhiteLevel,
-            host_impl_->GetSDRWhiteLevel());
+  wcg_params =
+      host_impl_->GetTargetColorParams(gfx::ContentColorUsage::kWideColorGamut);
+  EXPECT_EQ(wcg_params.color_space, gfx::ColorSpace::CreateSRGB());
+  EXPECT_EQ(wcg_params.sdr_max_luminance_nits,
+            gfx::ColorSpace::kDefaultSDRWhiteLevel);
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, RasterColorPrefersSRGB) {
@@ -16243,50 +16247,50 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, RasterColorPrefersSRGB) {
   settings.prefer_raster_in_srgb = true;
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
   host_impl_->active_tree()->SetDisplayColorSpaces(gfx::DisplayColorSpaces(p3));
-  EXPECT_EQ(host_impl_->GetRasterColorSpace(gfx::ContentColorUsage::kSRGB),
-            gfx::ColorSpace::CreateSRGB());
+
+  auto srgb_params =
+      host_impl_->GetTargetColorParams(gfx::ContentColorUsage::kSRGB);
+  EXPECT_EQ(srgb_params.color_space, gfx::ColorSpace::CreateSRGB());
 
   settings.prefer_raster_in_srgb = false;
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
   host_impl_->active_tree()->SetDisplayColorSpaces(gfx::DisplayColorSpaces(p3));
-  EXPECT_EQ(host_impl_->GetRasterColorSpace(gfx::ContentColorUsage::kSRGB), p3);
-  EXPECT_EQ(gfx::ColorSpace::kDefaultSDRWhiteLevel,
-            host_impl_->GetSDRWhiteLevel());
+  srgb_params = host_impl_->GetTargetColorParams(gfx::ContentColorUsage::kSRGB);
+  EXPECT_EQ(srgb_params.color_space, p3);
+  EXPECT_EQ(srgb_params.sdr_max_luminance_nits,
+            gfx::ColorSpace::kDefaultSDRWhiteLevel);
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, RasterColorSpaceHDR) {
-  auto hdr = gfx::ColorSpace::CreateHDR10();
-
-  LayerTreeSettings settings = DefaultSettings();
-  CreateHostImpl(settings, CreateLayerTreeFrameSink());
-  host_impl_->active_tree()->SetDisplayColorSpaces(
-      gfx::DisplayColorSpaces(hdr));
-
-  // Non-HDR content should be rasterized in P3.
-  EXPECT_EQ(host_impl_->GetRasterColorSpace(gfx::ContentColorUsage::kSRGB),
-            gfx::ColorSpace::CreateDisplayP3D65());
-  EXPECT_EQ(
-      host_impl_->GetRasterColorSpace(gfx::ContentColorUsage::kWideColorGamut),
-      gfx::ColorSpace::CreateDisplayP3D65());
-
-  EXPECT_EQ(host_impl_->GetRasterColorSpace(gfx::ContentColorUsage::kHDR), hdr);
-  EXPECT_EQ(gfx::ColorSpace::kDefaultSDRWhiteLevel,
-            host_impl_->GetSDRWhiteLevel());
-}
-
-TEST_P(ScrollUnifiedLayerTreeHostImplTest, SDRWhiteLevel) {
   constexpr float kCustomWhiteLevel = 200.f;
+  constexpr float kHDRMaxLuminanceRelative = 2.f;
   auto hdr = gfx::ColorSpace::CreateHDR10();
-  auto display_cs = gfx::DisplayColorSpaces(hdr);
+  gfx::DisplayColorSpaces display_cs(hdr);
   display_cs.SetSDRMaxLuminanceNits(kCustomWhiteLevel);
+  display_cs.SetHDRMaxLuminanceRelative(kHDRMaxLuminanceRelative);
 
   LayerTreeSettings settings = DefaultSettings();
   CreateHostImpl(settings, CreateLayerTreeFrameSink());
   host_impl_->active_tree()->SetDisplayColorSpaces(display_cs);
 
+  const auto srgb_params =
+      host_impl_->GetTargetColorParams(gfx::ContentColorUsage::kSRGB);
+  const auto wcg_params =
+      host_impl_->GetTargetColorParams(gfx::ContentColorUsage::kWideColorGamut);
+  const auto hdr_params =
+      host_impl_->GetTargetColorParams(gfx::ContentColorUsage::kHDR);
+
   // Non-HDR content should be rasterized in P3.
-  EXPECT_EQ(host_impl_->GetRasterColorSpace(gfx::ContentColorUsage::kHDR), hdr);
-  EXPECT_EQ(kCustomWhiteLevel, host_impl_->GetSDRWhiteLevel());
+  EXPECT_EQ(srgb_params.color_space, gfx::ColorSpace::CreateDisplayP3D65());
+  EXPECT_EQ(srgb_params.sdr_max_luminance_nits, kCustomWhiteLevel);
+  EXPECT_EQ(srgb_params.hdr_max_luminance_relative, 1.f);
+  EXPECT_EQ(wcg_params.color_space, gfx::ColorSpace::CreateDisplayP3D65());
+  EXPECT_EQ(wcg_params.sdr_max_luminance_nits, kCustomWhiteLevel);
+  EXPECT_EQ(wcg_params.hdr_max_luminance_relative, 1.f);
+
+  EXPECT_EQ(hdr_params.color_space, hdr);
+  EXPECT_EQ(hdr_params.sdr_max_luminance_nits, kCustomWhiteLevel);
+  EXPECT_EQ(hdr_params.hdr_max_luminance_relative, kHDRMaxLuminanceRelative);
 }
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, UpdatedTilingsForNonDrawingLayers) {

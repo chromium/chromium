@@ -1880,19 +1880,14 @@ void LayerTreeHostImpl::SetIsLikelyToRequireADraw(
   is_likely_to_require_a_draw_ = is_likely_to_require_a_draw;
 }
 
-gfx::ColorSpace LayerTreeHostImpl::GetRasterColorSpace(
+TargetColorParams LayerTreeHostImpl::GetTargetColorParams(
     gfx::ContentColorUsage content_color_usage) const {
-  constexpr gfx::ColorSpace srgb = gfx::ColorSpace::CreateSRGB();
+  TargetColorParams params;
 
   // If we are likely to software composite the resource, we use sRGB because
   // software compositing is unable to perform color conversion.
   if (!layer_tree_frame_sink_ || !layer_tree_frame_sink_->context_provider())
-    return srgb;
-
-  if (settings_.prefer_raster_in_srgb &&
-      content_color_usage == gfx::ContentColorUsage::kSRGB) {
-    return srgb;
-  }
+    return params;
 
   // The pending tree will has the most recently updated color space, so use it.
   gfx::DisplayColorSpaces display_cs;
@@ -1900,27 +1895,42 @@ gfx::ColorSpace LayerTreeHostImpl::GetRasterColorSpace(
     display_cs = pending_tree_->display_color_spaces();
   else if (active_tree_)
     display_cs = active_tree_->display_color_spaces();
+  params.sdr_max_luminance_nits = display_cs.GetSDRMaxLuminanceNits();
 
-  auto result = display_cs.GetOutputColorSpace(gfx::ContentColorUsage::kHDR,
-                                               /*needs_alpha=*/false);
+  if (settings_.prefer_raster_in_srgb &&
+      content_color_usage == gfx::ContentColorUsage::kSRGB) {
+    return params;
+  }
+
+  auto hdr_color_space =
+      display_cs.GetOutputColorSpace(gfx::ContentColorUsage::kHDR,
+                                     /*needs_alpha=*/false);
 
   // Always specify a color space if color correct rasterization is requested
   // (not specifying a color space indicates that no color conversion is
   // required).
-  if (!result.IsValid())
-    return srgb;
+  if (!hdr_color_space.IsValid())
+    return params;
 
   // It's expensive to rasterize in HDR, so we only want to do so when we know
   // we have HDR content to rasterize.
-  if (result.IsHDR() && content_color_usage != gfx::ContentColorUsage::kHDR)
-    return gfx::ColorSpace::CreateDisplayP3D65();
+  if (hdr_color_space.IsHDR() &&
+      content_color_usage != gfx::ContentColorUsage::kHDR) {
+    params.color_space = gfx::ColorSpace::CreateDisplayP3D65();
+    return params;
+  }
 
   // The raster color space should contain sRGB to avoid artifacts during
   // rasterization.
-  if (!CheckColorSpaceContainsSrgb(result))
-    return srgb;
+  if (CheckColorSpaceContainsSrgb(hdr_color_space)) {
+    params.color_space = hdr_color_space;
+  }
 
-  return result;
+  // Only report the HDR capabilities if they are requested.
+  if (content_color_usage == gfx::ContentColorUsage::kHDR)
+    params.hdr_max_luminance_relative = display_cs.GetHDRMaxLuminanceRelative();
+
+  return params;
 }
 
 bool LayerTreeHostImpl::CheckColorSpaceContainsSrgb(
@@ -1939,20 +1949,6 @@ bool LayerTreeHostImpl::CheckColorSpaceContainsSrgb(
   bool result = color_space.Contains(srgb);
   contains_srgb_cache_.Put(color_space, result);
   return result;
-}
-
-float LayerTreeHostImpl::GetSDRWhiteLevel() const {
-  // If we are likely to software composite the resource, we use sRGB because
-  // software compositing is unable to perform color conversion.
-  if (!layer_tree_frame_sink_ || !layer_tree_frame_sink_->context_provider())
-    return gfx::ColorSpace::kDefaultSDRWhiteLevel;
-
-  // The pending tree will has the most recently updated color space, so use it.
-  if (pending_tree_)
-    return pending_tree_->display_color_spaces().GetSDRMaxLuminanceNits();
-  if (active_tree_)
-    return active_tree_->display_color_spaces().GetSDRMaxLuminanceNits();
-  return gfx::ColorSpace::kDefaultSDRWhiteLevel;
 }
 
 void LayerTreeHostImpl::RequestImplSideInvalidationForCheckerImagedTiles() {
@@ -3683,7 +3679,7 @@ void LayerTreeHostImpl::QueueImageDecode(int request_id,
   // it won't change.
   auto content_color_usage = image.GetContentColorUsage();
   tile_manager_.decoded_image_tracker().QueueImageDecode(
-      image, GetRasterColorSpace(content_color_usage),
+      image, GetTargetColorParams(content_color_usage).color_space,
       base::BindOnce(&LayerTreeHostImpl::ImageDecodeFinished,
                      weak_factory_.GetWeakPtr(), request_id));
   tile_manager_.checker_image_tracker().DisallowCheckeringForImage(image);
