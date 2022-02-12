@@ -36,6 +36,18 @@ public class EmptyByteBufferPersistedTabDataStorage implements PersistedTabDataS
         return ByteBuffer.allocateDirect(0);
     }
 
+    @Override
+    public <U extends PersistedTabDataResult> U restore(
+            int tabId, String dataId, PersistedTabDataMapper<U> mapper) {
+        return mapper.map(ByteBuffer.allocateDirect(0));
+    }
+
+    @Override
+    public <U extends PersistedTabDataResult> void restore(
+            int tabId, String dataId, Callback<U> callback, PersistedTabDataMapper<U> mapper) {
+        callback.onResult(mapper.map(ByteBuffer.allocateDirect(0)));
+    }
+
     // Unused
     @Override
     public void delete(int tabId, String tabDataId) {

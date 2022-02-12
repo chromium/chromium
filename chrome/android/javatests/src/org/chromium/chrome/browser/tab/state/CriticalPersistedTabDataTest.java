@@ -341,8 +341,8 @@ public class CriticalPersistedTabDataTest {
 
                 SerializedCriticalPersistedTabData serialized =
                         CriticalPersistedTabData.restore(tab.getId(), tab.isIncognito());
-                CriticalPersistedTabData deserialized = new CriticalPersistedTabData(
-                        tab, serialized.getByteBuffer(), config.getStorage(), config.getId());
+                CriticalPersistedTabData deserialized =
+                        new CriticalPersistedTabData(tab, serialized);
                 Assert.assertEquals(EXPECTED_TITLE,
                         deserialized.getWebContentsState().getDisplayTitleFromState());
                 Assert.assertEquals(

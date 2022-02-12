@@ -67,11 +67,7 @@ public class MockTabCreator extends TabCreator {
         tab.getUserDataHost().setUserData(MockTabAttributes.class, new MockTabAttributes(true));
         if (state != null) TabTestUtils.restoreFieldsFromState(tab, state);
         if (!CriticalPersistedTabData.isEmptySerialization(serializedCriticalPersistedTabData)) {
-            CriticalPersistedTabData criticalPersistedTabData = new CriticalPersistedTabData(tab);
-            criticalPersistedTabData.deserializeAndLog(
-                    serializedCriticalPersistedTabData.getByteBuffer());
-            tab.getUserDataHost().setUserData(
-                    CriticalPersistedTabData.class, criticalPersistedTabData);
+            CriticalPersistedTabData.build(tab, serializedCriticalPersistedTabData);
         }
         mSelector.getModel(mIsIncognito)
                 .addTab(tab, index, TabLaunchType.FROM_RESTORE, TabCreationState.FROZEN_ON_RESTORE);

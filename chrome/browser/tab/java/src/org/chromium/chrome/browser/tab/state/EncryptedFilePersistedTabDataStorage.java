@@ -76,6 +76,22 @@ public class EncryptedFilePersistedTabDataStorage extends FilePersistedTabDataSt
         return new EncryptedFileRestoreRequest(tabId, dataId, null).executeSyncTask();
     }
 
+    @MainThread
+    @Override
+    public <U extends PersistedTabDataResult> U restore(
+            int tabId, String dataId, PersistedTabDataMapper<U> mapper) {
+        return new EncryptedFileRestoreAndMapRequest<U>(tabId, dataId, null, mapper)
+                .executeSyncTask();
+    }
+
+    @MainThread
+    @Override
+    public <U extends PersistedTabDataResult> void restore(
+            int tabId, String dataId, Callback<U> callback, PersistedTabDataMapper<U> mapper) {
+        addStorageRequestAndProcessNext(
+                new EncryptedFileRestoreAndMapRequest<U>(tabId, dataId, callback, mapper));
+    }
+
     /**
      * Request to save encrypted file based {@link PersistedTabData}
      */
@@ -221,6 +237,26 @@ public class EncryptedFilePersistedTabDataStorage extends FilePersistedTabDataSt
             RecordHistogram.recordBooleanHistogram(
                     "Tabs.PersistedTabData.Storage.Restore." + getUmaTag(), success);
             return res == null ? null : ByteBuffer.wrap(res);
+        }
+    }
+
+    private class EncryptedFileRestoreAndMapRequest<U extends PersistedTabDataResult>
+            extends FileRestoreAndMapRequest<U> {
+        /**
+         * @param tabId identifier for the {@link Tab}
+         * @param dataId identifier for the {@link PersistedTabData}
+         * @param callback - callback to return the retrieved serialized
+         * {@link PersistedTabData} in
+         */
+        EncryptedFileRestoreAndMapRequest(
+                int tabId, String dataId, Callback<U> callback, PersistedTabDataMapper<U> mapper) {
+            super(tabId, dataId, callback, mapper);
+        }
+
+        @Override
+        public U executeSyncTask() {
+            return mMapper.map(
+                    new EncryptedFileRestoreRequest(mTabId, mDataId, null).executeSyncTask());
         }
     }
 }

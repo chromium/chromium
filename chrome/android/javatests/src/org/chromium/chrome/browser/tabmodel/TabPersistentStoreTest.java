@@ -57,8 +57,8 @@ import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
-import org.chromium.chrome.browser.tab.state.LoadCallbackHelper;
 import org.chromium.chrome.browser.tab.state.PersistedTabDataConfiguration;
+import org.chromium.chrome.browser.tab.state.SerializedCriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
@@ -481,17 +481,34 @@ public class TabPersistentStoreTest {
 
     public void verifyIfTabIsSaved(int tabId, boolean isIncognito, boolean isNull)
             throws TimeoutException {
-        LoadCallbackHelper callbackHelper = new LoadCallbackHelper();
+        CPTDCallbackHelper callbackHelper = new CPTDCallbackHelper();
         int chCount = callbackHelper.getCallCount();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            CriticalPersistedTabData.restore(tabId, isIncognito,
-                    (res) -> { callbackHelper.notifyCalled(res.getByteBuffer()); });
+            CriticalPersistedTabData.restore(
+                    tabId, isIncognito, (res) -> { callbackHelper.notifyCalled(res); });
         });
         callbackHelper.waitForCallback(chCount);
-        if (isNull) {
-            Assert.assertNull(callbackHelper.getRes());
-        } else {
-            Assert.assertNotNull(callbackHelper.getRes());
+        Assert.assertEquals(isNull, callbackHelper.getRes().isEmpty());
+    }
+
+    private static class CPTDCallbackHelper extends CallbackHelper {
+        private SerializedCriticalPersistedTabData mSerializedCriticalPersistedTabData;
+
+        /**
+         * Called when {@link SerializedCriticalPersistedTabData} is acquired
+         * @param res {@link SerializedCriticalPersistedTabData} acquired
+         */
+        public void notifyCalled(
+                SerializedCriticalPersistedTabData serializedCriticalPersistedTabData) {
+            mSerializedCriticalPersistedTabData = serializedCriticalPersistedTabData;
+            notifyCalled();
+        }
+
+        /**
+         * @return ByteBuffer acquired during callback
+         */
+        public SerializedCriticalPersistedTabData getRes() {
+            return mSerializedCriticalPersistedTabData;
         }
     }
 

@@ -114,6 +114,21 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
 
     @MainThread
     @Override
+    public <U extends PersistedTabDataResult> U restore(
+            int tabId, String dataId, PersistedTabDataMapper<U> mapper) {
+        return new FileRestoreAndMapRequest<U>(tabId, dataId, null, mapper).executeSyncTask();
+    }
+
+    @MainThread
+    @Override
+    public <U extends PersistedTabDataResult> void restore(
+            int tabId, String dataId, Callback<U> callback, PersistedTabDataMapper<U> mapper) {
+        addStorageRequestAndProcessNext(
+                new FileRestoreAndMapRequest<U>(tabId, dataId, callback, mapper));
+    }
+
+    @MainThread
+    @Override
     public void delete(int tabId, String dataId) {
         delete(tabId, dataId, NO_OP_CALLBACK);
     }
@@ -425,6 +440,58 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
         @Override
         public boolean equals(Object other) {
             if (!(other instanceof FileRestoreRequest)) return false;
+            return super.equals(other);
+        }
+
+        @Override
+        @StorageRequestType
+        int getStorageRequestType() {
+            return StorageRequestType.RESTORE;
+        }
+    }
+
+    protected class FileRestoreAndMapRequest<U extends PersistedTabDataResult>
+            extends StorageRequest<U> {
+        protected Callback<U> mCallback;
+        protected PersistedTabDataMapper<U> mMapper;
+
+        /**
+         * @param tabId identifier for the {@link Tab}
+         * @param dataId identifier for the {@link PersistedTabData}
+         * @param callback - callback to return the retrieved serialized
+         * {@link PersistedTabData} in
+         */
+        FileRestoreAndMapRequest(
+                int tabId, String dataId, Callback<U> callback, PersistedTabDataMapper<U> mapper) {
+            super(tabId, dataId);
+            mCallback = callback;
+            mMapper = mapper;
+        }
+
+        @Override
+        public U executeSyncTask() {
+            return mMapper.map(new FileRestoreRequest(mTabId, mDataId, null).executeSyncTask());
+        }
+
+        @Override
+        public AsyncTask getAsyncTask() {
+            return new AsyncTask<U>() {
+                @Override
+                protected U doInBackground() {
+                    return executeSyncTask();
+                }
+
+                @Override
+                protected void onPostExecute(U res) {
+                    PostTask.runOrPostTask(
+                            UiThreadTaskTraits.DEFAULT, () -> { mCallback.onResult(res); });
+                    processNextItemOnQueue();
+                }
+            };
+        }
+        @Override
+        public boolean equals(Object other) {
+            if (!(other instanceof FileRestoreAndMapRequest)) return false;
             return super.equals(other);
         }
 
