@@ -141,8 +141,6 @@ class ScenicSurface : public PlatformWindowSurface {
   void OnPresentComplete(fuchsia::images::PresentationInfo presentation_info);
   void UpdateViewHolderScene();
 
-  void PresentEmptyImage();
-
   scenic::Session scenic_session_;
   std::unique_ptr<scenic::View> parent_;
 
@@ -176,6 +174,7 @@ class ScenicSurface : public PlatformWindowSurface {
   std::vector<zx::event> release_fences_from_last_present_;
 
   // Scenic resources used for the primary plane, that is not an overlay.
+  scenic::EntityNode root_node_;
   scenic::ShapeNode main_shape_;
   scenic::Material main_material_;
   gfx::SizeF main_shape_size_;
@@ -183,6 +182,8 @@ class ScenicSurface : public PlatformWindowSurface {
   ScenicSurfaceFactory* const scenic_surface_factory_;
   SysmemBufferManager* const sysmem_buffer_manager_;
   const gfx::AcceleratedWidget window_;
+
+  bool attach_root_on_present_ = false;
 
   struct OverlayViewInfo {
     OverlayViewInfo(scenic::ViewHolder holder, scenic::EntityNode node);
