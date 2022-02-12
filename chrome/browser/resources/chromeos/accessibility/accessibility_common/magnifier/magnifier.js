@@ -43,6 +43,12 @@ export class Magnifier {
      */
     this.mouseLocation_;
 
+    /**
+     * Last time mouse has moved (from last onMouseMovedOrDragged).
+     * @private {Date}
+     */
+    this.lastMouseMovedTime_;
+
     /** @private {!EventHandler} */
     this.focusHandler_ = new EventHandler(
         [], EventType.FOCUS, event => this.onFocusOrSelectionChanged_(event));
@@ -209,6 +215,11 @@ export class Magnifier {
       return;
     }
 
+    if (new Date() - this.lastMouseMovedTime_ <
+        Magnifier.IGNORE_FOCUS_UPDATES_AFTER_MOUSE_MOVE_MS) {
+      return;
+    }
+
     // Skip trying to move magnifier to encompass whole webpage or pdf. It's too
     // big, and magnifier usually ends up in middle at left edge of page.
     if (node.isRootNode || node.role === RoleType.WEB_VIEW ||
@@ -251,6 +262,11 @@ export class Magnifier {
       return;
     }
 
+    if (new Date() - this.lastMouseMovedTime_ <
+        Magnifier.IGNORE_FOCUS_UPDATES_AFTER_MOUSE_MOVE_MS) {
+      return;
+    }
+
     // Note: onCaretBoundsChanged can get called when TextInputType is changed,
     // during which the caret bounds are set to an empty rect (0x0), and we
     // don't need to adjust the viewport position based on this bogus caret
@@ -270,6 +286,7 @@ export class Magnifier {
    * @private
    */
   onMouseMovedOrDragged_(event) {
+    this.lastMouseMovedTime_ = new Date();
     this.mouseLocation_ = {x: event.mouseX, y: event.mouseY};
   }
 }
@@ -300,3 +317,10 @@ Magnifier.Prefs = {
  * @const {number}
  */
 Magnifier.IGNORE_FOCUS_UPDATES_INITIALIZATION_MS = 500;
+
+/**
+ * Duration of time directly after a mouse move or drag to ignore focus updates,
+ * to prevent the magnified region from jumping.
+ * @const {number}
+ */
+Magnifier.IGNORE_FOCUS_UPDATES_AFTER_MOUSE_MOVE_MS = 250;
