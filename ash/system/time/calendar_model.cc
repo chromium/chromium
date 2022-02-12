@@ -51,7 +51,9 @@ constexpr int kMaxNumberOfMonthsCached =
 namespace ash {
 
 CalendarModel::CalendarModel(const std::set<base::Time> non_prunable_months)
-    : non_prunable_months_(non_prunable_months) {}
+    : non_prunable_months_(non_prunable_months) {
+  FetchEventsForBaseMonths();
+}
 
 CalendarModel::~CalendarModel() {}
 
@@ -80,6 +82,12 @@ bool CalendarModel::IsMonthAlreadyFetched(base::Time start_of_month) const {
 }
 
 void CalendarModel::MaybeFetchMonth(base::Time start_of_month) {
+  // Bail out early if we have no CalendarClient.  This will be the case in most
+  // unit tests.
+  CalendarClient* client = Shell::Get()->calendar_controller()->GetClient();
+  if (!client)
+    return;
+
   // TODO https://crbug.com/1258002 Don't do any of this if the user is guest,
   // the screen is locked, or we're in OOBE or any other non-logged-in mode.
   if (!IsMonthAlreadyFetched(start_of_month)) {
@@ -88,10 +96,6 @@ void CalendarModel::MaybeFetchMonth(base::Time start_of_month) {
     // response (no events for that month), so the month is declared "fetched"
     // when we make the request for its events.
     MarkMonthAsFetched(start_of_month);
-
-    CalendarClient* client = Shell::Get()->calendar_controller()->GetClient();
-    if (!client)
-      return;
 
     // TODO https://crbug.com/1258179 the params passed to GetEventList() need
     // to be stored until the fetch request is complete in case of a failure, so
@@ -135,6 +139,11 @@ void CalendarModel::QueuePrunableMonth(base::Time start_of_month) {
 
 void CalendarModel::FetchEvents(const std::set<base::Time> months) {
   for (auto& month : months)
+    MaybeFetchMonth(month.UTCMidnight());
+}
+
+void CalendarModel::FetchEventsForBaseMonths() {
+  for (auto& month : non_prunable_months_)
     MaybeFetchMonth(month.UTCMidnight());
 }
 

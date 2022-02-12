@@ -53,6 +53,9 @@ class ASH_EXPORT CalendarModel {
   // Requests events that fall in |months|.
   void FetchEvents(const std::set<base::Time> months);
 
+  // Requests events that fall in the set of non-prunable "base" months.
+  void FetchEventsForBaseMonths();
+
   // Same as `FindEvents`, except that return of any events on `day` constitutes
   // "use" in the most-recently-used sense, so the month that includes day will
   // then be promoted to most-recently-used status.  Use this to get events if
