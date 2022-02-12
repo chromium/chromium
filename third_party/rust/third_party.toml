@@ -56,3 +56,4 @@ build_script_outputs = [ "common.rs", "dynamic.rs" ]
 # tests, but not used from production.
 [dev-dependencies]
 rstest = "0.12"
+small_ctor = "0.1"

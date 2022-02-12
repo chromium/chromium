@@ -1,0 +1,16 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("test_support") {
+  crate_name = "small_ctor"
+  epoch = "0.1"
+  crate_type = "proc-macro"
+  testonly = "true"
+  crate_root = "crate/src/lib.rs"
+  skip_unit_tests = true
+  sources = [ "crate/src/lib.rs" ]
+  edition = "2018"
+}
