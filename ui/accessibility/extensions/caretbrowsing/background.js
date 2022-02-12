@@ -80,7 +80,7 @@ CaretBkgnd.toggle = function() {
 CaretBkgnd.init = function() {
   CaretBkgnd.setIcon();
   chrome.action.onClicked.addListener(CaretBkgnd.toggle);
-  chrome.storage.onChanged.addListener(CaretBkgnd.setIcon);
+  Storage.ENABLED.listeners.push(CaretBkgnd.setIcon);
 };
 
 CaretBkgnd.init();

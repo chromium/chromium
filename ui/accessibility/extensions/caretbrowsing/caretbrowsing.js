@@ -1069,7 +1069,10 @@ window.setTimeout(() => {
       caretBrowsing.updateIsCaretVisible();
     }
 
-    chrome.storage.onChanged.addListener(() => caretBrowsing.onPrefsUpdated());
+    Storage.ENABLED.listeners.push(() => caretBrowsing.onPrefsUpdated());
+    Storage.ON_ENABLE.listeners.push(() => caretBrowsing.onPrefsUpdated());
+    Storage.ON_JUMP.listeners.push(() => caretBrowsing.onPrefsUpdated());
+
     caretBrowsing.onPrefsUpdated();
   }
 

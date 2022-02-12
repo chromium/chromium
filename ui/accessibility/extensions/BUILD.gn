@@ -208,12 +208,16 @@ js2gtest("caretbrowsing_webui_js_tests") {
   sources = [
     "caretbrowsing/node_util_test.js",
     "caretbrowsing/selection_util_test.js",
+    "caretbrowsing/storage_test.js",
   ]
   gen_include_files = [
     "caretbrowsing/node_util.js",
     "caretbrowsing/selection_util.js",
+    "caretbrowsing/storage.js",
     "caretbrowsing/traverse_util.js",
     "testing/webstore_extension_test_base.js",
+    "//chrome/browser/resources/chromeos/accessibility/common/testing/callback_helper.js",
+    "//chrome/browser/resources/chromeos/accessibility/common/testing/mock_storage.js",
   ]
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]

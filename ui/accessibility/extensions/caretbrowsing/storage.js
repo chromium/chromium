@@ -10,12 +10,15 @@ const FlourishType = {
 };
 
 /**
- * Class to handle both storing values using the chrome.storage API, and
- * fetching/caching values that have been stored that way.
+ * Class to handle interactions with the chrome.storage API and values that are
+ * stored that way.
  */
 class Storage {
-  /** @private */
-  constructor() {
+  /**
+   * @param {function()=} opt_callbackForTesting
+   * @private
+   */
+  constructor(opt_callbackForTesting) {
     /** @private {boolean} */
     this.enabled_ = Storage.ENABLED.defaultValue;
     /** @private {!FlourishType} */
@@ -23,7 +26,7 @@ class Storage {
     /** @private {!FlourishType} */
     this.onJump_ = Storage.ON_JUMP.defaultValue;
 
-    this.init_();
+    this.init_(opt_callbackForTesting);
   }
 
   // ======= Public Methods =======
@@ -41,57 +44,57 @@ class Storage {
   /** @return {!FlourishType} */
   static get onJump() { return Storage.instance.onJump_; }
 
-  /** @param {boolean} enabled */
-  static set enabled(enabled) {
-    Storage.instance.setValue_(Storage.ENABLED, enabled);
+  /** @param {boolean} newValue */
+  static set enabled(newValue) {
+    Storage.instance.setOrResetValue_(Storage.ENABLED, newValue);
+    Storage.instance.store_(Storage.ENABLED);
   }
 
-  /** @param {!FlourishType} onEnable */
-  static set onEnable(onEnable) {
-    Storage.instance.setValue_(Storage.ON_ENABLE, onEnable);
+  /** @param {!FlourishType} newBehavior */
+  static set onEnable(newBehavior) {
+    Storage.instance.setOrResetValue_(Storage.ON_ENABLE, newBehavior);
+    Storage.instance.store_(Storage.ON_ENABLE);
   }
 
-  /** @param {!FlourishType} onJump */
-  static set onJump(onJump) {
-    Storage.instance.setValue_(Storage.ON_JUMP, onJump);
-  }
-
-  /**
-   * @param {!Storage.Value} storage
-   * @param {*} newValue
-   * @private
-   */
-  setValue_(storage, newValue) {
-    if (newValue === storage.get()) {
-      return;
-    }
-
-    if (storage.validate(newValue)) {
-      storage.set(newValue);
-    } else {
-      storage.reset();
-    }
-    this.store_(storage);
+  /** @param {!FlourishType} newBehavior */
+  static set onJump(newBehavior) {
+    Storage.instance.setOrResetValue_(Storage.ON_JUMP, newBehavior);
+    Storage.instance.store_(Storage.ON_JUMP);
   }
 
   // ======= Private Methods =======
 
-  /** @private */
-  init_() {
+  /**
+   * @param {!Storage.Value} container
+   * @param {*} newValue
+   * @private
+   */
+  setOrResetValue_(container, newValue) {
+    if (newValue === container.get()) {
+      return;
+    }
+
+    if (container.validate(newValue)) {
+      container.set(newValue);
+    } else {
+      container.reset();
+    }
+
+    container.listeners.forEach(listener => listener(newValue));
+  }
+
+  /**
+   * @param {function()=} opt_callback
+   * @private
+   */
+  init_(opt_callback) {
     chrome.storage.onChanged.addListener(this.onChange_);
     chrome.storage.local.get(null /* all values */, (results) => {
-      for (const value of Storage.ALL_VALUES) {
-        const newValue = results[value.key];
-        if (!newValue) {
-          continue;
-        }
-
-        if (value.validate(newValue)) {
-          value.set(newValue);
-        } else {
-          value.reset();
-        }
+      const storedValues = Storage.ALL_VALUES.filter(v => results[v.key]);
+      for (const value of storedValues) {
+        this.setOrResetValue_(value, results[value.key]);
       }
+      opt_callback ? opt_callback() : undefined;
     });
   }
 
@@ -100,17 +103,9 @@ class Storage {
    * @private
    */
   onChange_(changes) {
-    for (const value of Storage.ALL_VALUES) {
-      if (!changes[value.key]) {
-        continue;
-      }
-
-      const newValue = changes[value.key].newValue;
-      if (value.validate(newValue)) {
-        value.set(newValue);
-      } else {
-        value.reset();
-      }
+    const changedValues = Storage.ALL_VALUES.filter(v => changes[v.key]);
+    for (const value of changedValues) {
+      Storage.instance.setOrResetValue_(value, changes[value.key].newValue);
     }
   }
 
@@ -119,9 +114,7 @@ class Storage {
    * @private
    */
   store_(value) {
-    const update = {};
-    update[value.key] = value.get();
-    chrome.storage.local.set(update);
+    chrome.storage.local.set({ [value.key]: value.get() });
   }
 
   // ======= Stored Values =======
@@ -133,7 +126,8 @@ class Storage {
    *     validate: function(*): boolean,
    *     get: function: *,
    *     set: function(*),
-   *     reset: function()
+   *     reset: function(),
+   *     listeners: !Array<function(*)>
    * }}
    */
   static Value;
@@ -145,7 +139,8 @@ class Storage {
     validate: (enabled) => enabled === true || enabled === false,
     get: () => Storage.instance.enabled_,
     set: (enabled) => Storage.instance.enabled_ = enabled,
-    reset: () => Storage.instance.setEnabled(Storage.ENABLED.defaultValue),
+    reset: () => Storage.instance.enabled_ = Storage.ENABLED.defaultValue,
+    listeners: [],
   };
 
   /** @const {!Storage.Value} */
@@ -155,7 +150,8 @@ class Storage {
     validate: (onEnable) => Object.values(FlourishType).includes(onEnable),
     get: () => Storage.instance.onEnable_,
     set: (onEnable) => Storage.instance.onEnable_ = onEnable,
-    reset: () => Storage.instance.setKeyAction(Storage.ON_ENABLE.defaultValue),
+    reset: () => Storage.instance.onEnable_ = Storage.ON_ENABLE.defaultValue,
+    listeners: [],
   };
 
   /** @const {!Storage.Value} */
@@ -165,7 +161,8 @@ class Storage {
     validate: (onJump) => Object.values(FlourishType).includes(onJump),
     get: () => Storage.instance.onJump_,
     set: (onJump) => Storage.instance.onJump_ = onJump,
-    reset: () => Storage.instance.setKeyAction(Storage.ON_JUMP.defaultValue),
+    reset: () => Storage.instance.onJump_ = Storage.ON_JUMP.defaultValue,
+    listeners: [],
   };
 
   /** @const {!Array<!Storage.Value>} */
