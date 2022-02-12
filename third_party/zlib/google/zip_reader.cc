@@ -54,6 +54,15 @@ std::ostream& operator<<(std::ostream& out, UnzipError error) {
 #undef SWITCH_ERR
 }
 
+struct Redact {
+  explicit Redact(const base::FilePath& path) : path(path) {}
+  const base::FilePath& path;
+};
+
+std::ostream& operator<<(std::ostream& out, Redact r) {
+  return LOG_IS_ON(INFO) ? out << "'" << r.path << "'" : out << "(redacted)";
+}
+
 // StringWriterDelegate --------------------------------------------------------
 
 // A writer delegate that writes no more than |max_read_bytes| to a given
@@ -150,10 +159,7 @@ bool ZipReader::Open(const base::FilePath& zip_path) {
   // this safely on Linux. See file_util.h for details.
   zip_file_ = internal::OpenForUnzipping(zip_path.AsUTF8Unsafe());
   if (!zip_file_) {
-    LOG(ERROR) << "Cannot open ZIP archive "
-               << (LOG_IS_ON(INFO)
-                       ? base::StrCat({"'", zip_path.AsUTF8Unsafe(), "'"})
-                       : "(redacted)");
+    LOG(ERROR) << "Cannot open ZIP archive " << Redact(zip_path);
     return false;
   }
 
@@ -308,7 +314,8 @@ bool ZipReader::ExtractCurrentEntry(WriterDelegate* delegate,
   DCHECK(zip_file_);
 
   if (const int err = unzOpenCurrentFile(zip_file_); err != UNZ_OK) {
-    LOG(ERROR) << "Cannot open file from ZIP entry: " << UnzipError(err);
+    LOG(ERROR) << "Cannot open file " << Redact(entry_.path)
+               << " from ZIP: " << UnzipError(err);
     return false;
   }
 
@@ -329,8 +336,8 @@ bool ZipReader::ExtractCurrentEntry(WriterDelegate* delegate,
     }
 
     if (num_bytes_read < 0) {
-      LOG(ERROR) << "Error " << UnzipError(num_bytes_read)
-                 << " while reading data from file in ZIP";
+      LOG(ERROR) << "Cannot read file " << Redact(entry_.path)
+                 << " from ZIP: " << UnzipError(num_bytes_read);
       break;
     }
 
@@ -344,8 +351,12 @@ bool ZipReader::ExtractCurrentEntry(WriterDelegate* delegate,
 
     if (remaining_capacity == base::checked_cast<uint64_t>(num_bytes_read)) {
       // Ensures function returns true if the entire file has been read.
-      entire_file_extracted = (unzReadCurrentFile(zip_file_, buf, 1) == 0);
+      const int n = unzReadCurrentFile(zip_file_, buf, 1);
+      entire_file_extracted = (n == 0);
+      LOG_IF(ERROR, n < 0) << "Cannot read file " << Redact(entry_.path)
+                           << " from ZIP: " << UnzipError(n);
     }
+
     CHECK_GE(remaining_capacity, num_bytes_to_write);
     remaining_capacity -= num_bytes_to_write;
   }
@@ -376,7 +387,7 @@ void ZipReader::ExtractCurrentEntryToFilePathAsync(
       base::SequencedTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, std::move(success_callback));
     } else {
-      DVLOG(1) << "Unzip failed: unable to create directory.";
+      LOG(ERROR) << "Cannot create directory " << Redact(output_file_path);
       base::SequencedTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, std::move(failure_callback));
     }
@@ -384,7 +395,8 @@ void ZipReader::ExtractCurrentEntryToFilePathAsync(
   }
 
   if (const int err = unzOpenCurrentFile(zip_file_); err != UNZ_OK) {
-    LOG(ERROR) << "Cannot open file from ZIP entry: " << UnzipError(err);
+    LOG(ERROR) << "Cannot open file " << Redact(entry_.path)
+               << " from ZIP: " << UnzipError(err);
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, std::move(failure_callback));
     return;
@@ -392,7 +404,7 @@ void ZipReader::ExtractCurrentEntryToFilePathAsync(
 
   base::FilePath output_dir_path = output_file_path.DirName();
   if (!base::CreateDirectory(output_dir_path)) {
-    DVLOG(1) << "Unzip failed: unable to create containing directory.";
+    LOG(ERROR) << "Cannot create directory " << Redact(output_dir_path);
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, std::move(failure_callback));
     return;
@@ -402,8 +414,7 @@ void ZipReader::ExtractCurrentEntryToFilePathAsync(
   base::File output_file(output_file_path, flags);
 
   if (!output_file.IsValid()) {
-    DVLOG(1) << "Unzip failed: unable to create platform file at "
-             << output_file_path.value();
+    LOG(ERROR) << "Cannot create file " << Redact(output_file_path);
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, std::move(failure_callback));
     return;
@@ -498,12 +509,13 @@ void ZipReader::ExtractChunk(base::File output_file,
     unzCloseCurrentFile(zip_file_);
     std::move(success_callback).Run();
   } else if (num_bytes_read < 0) {
-    DVLOG(1) << "Unzip failed: error while reading zipfile "
-             << "(" << num_bytes_read << ")";
+    LOG(ERROR) << "Cannot read file " << Redact(entry_.path)
+               << " from ZIP: " << UnzipError(num_bytes_read);
     std::move(failure_callback).Run();
   } else {
     if (num_bytes_read != output_file.Write(offset, buffer, num_bytes_read)) {
-      DVLOG(1) << "Unzip failed: unable to write all bytes to target.";
+      LOG(ERROR) << "Cannot write " << num_bytes_read
+                 << " bytes to file at offset " << offset;
       std::move(failure_callback).Run();
       return;
     }
