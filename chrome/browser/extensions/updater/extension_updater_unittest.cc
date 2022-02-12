@@ -165,36 +165,23 @@ const ManifestFetchData::PingData kNeverPingedData(
     true,
     0);
 
-const int kNotificationsObserved[] = {
-    extensions::NOTIFICATION_EXTENSION_UPDATING_STARTED,
-    extensions::NOTIFICATION_EXTENSION_UPDATE_FOUND,
-};
-
 // A class that observes the notifications sent by the ExtensionUpdater and
 // the ExtensionDownloader.
 class NotificationsObserver : public content::NotificationObserver {
  public:
   NotificationsObserver() {
-    for (size_t i = 0; i < base::size(kNotificationsObserved); ++i) {
-      count_[i] = 0;
-      registrar_.Add(this,
-                     kNotificationsObserved[i],
-                     content::NotificationService::AllSources());
-    }
+    registrar_.Add(this, extensions::NOTIFICATION_EXTENSION_UPDATE_FOUND,
+                   content::NotificationService::AllSources());
   }
   NotificationsObserver(const NotificationsObserver&) = delete;
   NotificationsObserver& operator=(const NotificationsObserver&) = delete;
 
   ~NotificationsObserver() override {
-    for (size_t i = 0; i < base::size(kNotificationsObserved); ++i) {
-      registrar_.Remove(this,
-                        kNotificationsObserved[i],
-                        content::NotificationService::AllSources());
-    }
+    registrar_.Remove(this, extensions::NOTIFICATION_EXTENSION_UPDATE_FOUND,
+                      content::NotificationService::AllSources());
   }
 
-  size_t StartedCount() { return count_[0]; }
-  size_t UpdatedCount() { return count_[1]; }
+  size_t UpdatedCount() { return updated_count_; }
 
   bool Updated(const std::string& id) {
     return updated_.find(id) != updated_.end();
@@ -213,21 +200,13 @@ class NotificationsObserver : public content::NotificationObserver {
                const content::NotificationDetails& details) override {
     if (!quit_closure_.is_null())
       std::move(quit_closure_).Run();
-    for (size_t i = 0; i < base::size(kNotificationsObserved); ++i) {
-      if (kNotificationsObserved[i] == type) {
-        count_[i]++;
-        if (type == extensions::NOTIFICATION_EXTENSION_UPDATE_FOUND) {
-          updated_.insert(
-              content::Details<UpdateDetails>(details)->id);
-        }
-        return;
-      }
-    }
-    NOTREACHED();
+    DCHECK_EQ(extensions::NOTIFICATION_EXTENSION_UPDATE_FOUND, type);
+    ++updated_count_;
+    updated_.insert(content::Details<UpdateDetails>(details)->id);
   }
 
   content::NotificationRegistrar registrar_;
-  size_t count_[base::size(kNotificationsObserved)];
+  size_t updated_count_ = 0;
   std::set<std::string> updated_;
   base::OnceClosure quit_closure_;
 };
@@ -717,9 +696,7 @@ class ExtensionUpdaterTest : public testing::Test {
     updater.Start();
 
     // Tell the update that it's time to do update checks.
-    EXPECT_EQ(0u, observer.StartedCount());
     SimulateTimerFired(&updater);
-    EXPECT_EQ(1u, observer.StartedCount());
 
     // Get the url our loader was asked to fetch.
     const ManifestFetchData& fetch =
@@ -1347,7 +1324,6 @@ class ExtensionUpdaterTest : public testing::Test {
   }
 
   void TestManifestRetryDownloading() {
-    NotificationsObserver observer;
     ExtensionDownloaderTestHelper helper;
     MockExtensionDownloaderDelegate& delegate = helper.delegate();
     helper.downloader().manifests_queue_.set_backoff_policy(&kNoBackoffPolicy);
@@ -1428,7 +1404,6 @@ class ExtensionUpdaterTest : public testing::Test {
   }
 
   void TestManifestCredentialsNonWebstore() {
-    NotificationsObserver observer;
     ExtensionDownloaderTestHelper helper;
     helper.downloader().manifests_queue_.set_backoff_policy(&kNoBackoffPolicy);
 
@@ -1457,7 +1432,6 @@ class ExtensionUpdaterTest : public testing::Test {
   }
 
   void TestManifestCredentialsWebstore() {
-    NotificationsObserver observer;
     ExtensionDownloaderTestHelper helper;
     helper.downloader().manifests_queue_.set_backoff_policy(&kNoBackoffPolicy);
 

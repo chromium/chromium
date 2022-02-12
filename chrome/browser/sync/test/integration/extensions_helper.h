@@ -9,15 +9,13 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension.h"
 
 class Profile;
-class SyncedExtensionInstaller;
 
 namespace extensions_helper {
 
@@ -87,8 +85,7 @@ bool AwaitAllProfilesHaveSameExtensions();
 // against local server because in such tests extensions are not installed and
 // ExtensionRegistryObserver methods are not called.
 class ExtensionsMatchChecker : public StatusChangeChecker,
-                               public extensions::ExtensionRegistryObserver,
-                               public content::NotificationObserver {
+                               public extensions::ExtensionRegistryObserver {
  public:
   ExtensionsMatchChecker();
 
@@ -113,16 +110,13 @@ class ExtensionsMatchChecker : public StatusChangeChecker,
                               const extensions::Extension* extension,
                               extensions::UninstallReason reason) override;
 
-  // content::NotificationObserver implementation.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
  private:
+  void OnExtensionUpdatingStarted(Profile* profile);
+
   std::vector<Profile*> profiles_;
-  std::vector<std::unique_ptr<SyncedExtensionInstaller>>
-      synced_extension_installers_;
   content::NotificationRegistrar registrar_;
+
+  base::WeakPtrFactory<ExtensionsMatchChecker> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_EXTENSIONS_HELPER_H_

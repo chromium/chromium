@@ -4,16 +4,18 @@
 
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/sync_app_helper.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_extension_helper.h"
-#include "chrome/browser/sync/test/integration/sync_extension_installer.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -21,6 +23,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/common/manifest.h"
 
 using sync_datatype_helper::test;
@@ -257,9 +260,22 @@ AppsStatusChangeChecker::AppsStatusChangeChecker()
   DCHECK_GE(profiles_.size(), 2U);
 
   for (Profile* profile : profiles_) {
-    // Begin mocking the installation of synced extensions from the web store.
-    synced_extension_installers_.push_back(
-        std::make_unique<SyncedExtensionInstaller>(profile));
+    InstallSyncedApps(profile);
+
+    // Fake the installation of synced apps from the web store.
+    CHECK(extensions::ExtensionSystem::Get(profile)
+              ->extension_service()
+              ->updater());
+    extensions::ExtensionSystem::Get(profile)
+        ->extension_service()
+        ->updater()
+        ->SetUpdatingStartedCallbackForTesting(base::BindLambdaForTesting(
+            [self = weak_ptr_factory_.GetWeakPtr(), profile]() {
+              base::ThreadTaskRunnerHandle::Get()->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(&AppsStatusChangeChecker::InstallSyncedApps,
+                                 self, base::Unretained(profile)));
+            }));
 
     // Register as an observer of ExtensionsRegistry to receive notifications of
     // big events, like installs and uninstalls.
@@ -350,6 +366,11 @@ void AppsStatusChangeChecker::OnExtensionStateChanged(
 void AppsStatusChangeChecker::OnAppsReordered(
     const absl::optional<std::string>& extension_id) {
   CheckExitCondition();
+}
+
+void AppsStatusChangeChecker::InstallSyncedApps(Profile* profile) {
+  // Installs apps too.
+  SyncExtensionHelper::GetInstance()->InstallExtensionsPendingForSync(profile);
 }
 
 AppsMatchChecker::AppsMatchChecker() = default;

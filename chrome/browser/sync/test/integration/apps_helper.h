@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/extensions/install_observer.h"
 #include "chrome/browser/extensions/install_tracker.h"
@@ -21,7 +22,6 @@
 #include "extensions/browser/extension_registry_observer.h"
 
 class Profile;
-class SyncedExtensionInstaller;
 
 namespace apps_helper {
 
@@ -162,15 +162,15 @@ class AppsStatusChangeChecker : public StatusChangeChecker,
   std::vector<Profile*> profiles_;
 
  private:
-  content::NotificationRegistrar registrar_;
+  void InstallSyncedApps(Profile* profile);
 
-  // This installs apps, too.
-  std::vector<std::unique_ptr<SyncedExtensionInstaller>>
-      synced_extension_installers_;
+  content::NotificationRegistrar registrar_;
 
   base::ScopedMultiSourceObservation<extensions::InstallTracker,
                                      extensions::InstallObserver>
       install_tracker_observation_{this};
+
+  base::WeakPtrFactory<AppsStatusChangeChecker> weak_ptr_factory_{this};
 };
 
 // Checker to block for a set of profiles to have matching extensions lists. If

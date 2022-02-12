@@ -5,9 +5,12 @@
 #include "chrome/browser/sync/test/integration/themes_helper.h"
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_extension_helper.h"
 #include "chrome/browser/themes/theme_helper.h"
@@ -15,6 +18,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/notification_source.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/common/manifest.h"
 
 using sync_datatype_helper::test;
@@ -87,10 +91,15 @@ bool UsingDefaultThemeFunc(ThemeService* theme_service) {
 ThemePendingInstallChecker::ThemePendingInstallChecker(Profile* profile,
                                                        const std::string& theme)
     : profile_(profile), theme_(theme) {
-  // We'll check to see if the condition is met whenever the extension system
-  // tries to contact the web store.
-  registrar_.Add(this, extensions::NOTIFICATION_EXTENSION_UPDATING_STARTED,
-                 content::Source<Profile>(profile_.get()));
+  CHECK(extensions::ExtensionSystem::Get(profile)
+            ->extension_service()
+            ->updater());
+  extensions::ExtensionSystem::Get(profile)
+      ->extension_service()
+      ->updater()
+      ->SetUpdatingStartedCallbackForTesting(
+          base::BindRepeating(&ThemePendingInstallChecker::CheckExitCondition,
+                              weak_ptr_factory_.GetWeakPtr()));
 }
 
 ThemePendingInstallChecker::~ThemePendingInstallChecker() {}
@@ -98,14 +107,6 @@ ThemePendingInstallChecker::~ThemePendingInstallChecker() {}
 bool ThemePendingInstallChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for pending theme to be '" << theme_ << "'";
   return themes_helper::ThemeIsPendingInstall(profile_, theme_);
-}
-
-void ThemePendingInstallChecker::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(extensions::NOTIFICATION_EXTENSION_UPDATING_STARTED, type);
-  CheckExitCondition();
 }
 
 ThemeConditionChecker::ThemeConditionChecker(

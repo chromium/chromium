@@ -287,6 +287,11 @@ base::AutoReset<bool> ExtensionUpdater::GetScopedUseUpdateServiceForTesting() {
   return base::AutoReset<bool>(&g_force_use_update_service_for_tests, true);
 }
 
+void ExtensionUpdater::SetUpdatingStartedCallbackForTesting(
+    base::RepeatingClosure callback) {
+  updating_started_callback_ = callback;
+}
+
 void ExtensionUpdater::DoCheckSoon() {
   if (!will_check_soon_) {
     // Another caller called CheckNow() between CheckSoon() and now. Skip this
@@ -821,10 +826,8 @@ void ExtensionUpdater::Observe(int type,
 }
 
 void ExtensionUpdater::NotifyStarted() {
-  content::NotificationService::current()->Notify(
-      NOTIFICATION_EXTENSION_UPDATING_STARTED,
-      content::Source<Profile>(profile_.get()),
-      content::NotificationService::NoDetails());
+  if (updating_started_callback_)
+    updating_started_callback_.Run();
 }
 
 void ExtensionUpdater::OnUpdateServiceFinished(int request_id) {
