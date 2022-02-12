@@ -3436,11 +3436,11 @@ This file contains the strings for ash.
         Today <ph name="today_date">$1<ex>August 31, 2021</ex></ph>
       </message>
 
-      <message name="IDS_ASH_CALENDA_INFO_BUTTON" desc="The text for the calendar info button.">
+      <message name="IDS_ASH_CALENDAR_INFO_BUTTON" desc="The text for the calendar info button.">
         Today
       </message>
 
-      <message name="IDS_ASH_CALENDA_TODAY_BUTTON_TOOLTIP" desc="The tooltip label for the calendar info button.">
+      <message name="IDS_ASH_CALENDAR_TODAY_BUTTON_TOOLTIP" desc="The tooltip label for the calendar info button.">
         Go back to today
       </message>
 

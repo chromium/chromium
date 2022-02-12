@@ -376,7 +376,7 @@ void CalendarView::CreateExtraTitleRowButtons() {
       base::BindRepeating(&CalendarView::ResetToToday, base::Unretained(this)),
       IDS_ASH_CALENDAR_INFO_BUTTON_ACCESSIBLE_DESCRIPTION);
   reset_to_today_button_->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_ASH_CALENDA_TODAY_BUTTON_TOOLTIP));
+      l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_TODAY_BUTTON_TOOLTIP));
   tri_view()->AddView(TriView::Container::END, reset_to_today_button_);
 
   DCHECK(!settings_button_);
@@ -395,7 +395,7 @@ views::Button* CalendarView::CreateInfoButton(
     int info_accessible_name_id) {
   auto* button =
       new PillButton(std::move(callback),
-                     l10n_util::GetStringUTF16(IDS_ASH_CALENDA_INFO_BUTTON),
+                     l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_INFO_BUTTON),
                      PillButton::Type::kIconless, /*icon=*/nullptr);
   button->SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_INFO_BUTTON_ACCESSIBLE_DESCRIPTION,
