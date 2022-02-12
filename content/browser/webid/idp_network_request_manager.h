@@ -104,7 +104,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     std::string terms_of_service_url;
   };
 
-  static constexpr char kManifestFilePath[] = "fedcm";
+  static constexpr char kManifestFilePath[] = "fedcm.json";
 
   using AccountList = std::vector<content::IdentityRequestAccount>;
   using BrandIconDownloader =

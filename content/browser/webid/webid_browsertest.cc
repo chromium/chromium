@@ -46,7 +46,7 @@ namespace {
 
 constexpr char kRpHostName[] = "rp.example";
 constexpr char kIdpOrigin[] = "https://idp.example.org";
-constexpr char kExpectedManifestPath[] = "/fedcm";
+constexpr char kExpectedManifestPath[] = "/fedcm.json";
 constexpr char kIdpEndpointRelativeValue[] = "/fedcm/sign-in";
 constexpr char kTestManifestResponseBody[] =
     "{\"idp_endpoint\": \"/fedcm/sign-in\"}";
