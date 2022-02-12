@@ -56,7 +56,7 @@ MessageCenterScrollBar::~MessageCenterScrollBar() = default;
 bool MessageCenterScrollBar::OnKeyPressed(const ui::KeyEvent& event) {
   if (!stats_recorded_ &&
       (event.key_code() == ui::VKEY_UP || event.key_code() == ui::VKEY_DOWN)) {
-    CollectScrollActionReason(ScrollActionReason::kByMouseWheel);
+    CollectScrollActionReason(ScrollActionReason::kByArrowKey);
     stats_recorded_ = true;
   }
   return views::OverlayScrollBar::OnKeyPressed(event);
@@ -138,7 +138,7 @@ RoundedMessageCenterScrollBar::~RoundedMessageCenterScrollBar() = default;
 bool RoundedMessageCenterScrollBar::OnKeyPressed(const ui::KeyEvent& event) {
   if (!stats_recorded_ &&
       (event.key_code() == ui::VKEY_UP || event.key_code() == ui::VKEY_DOWN)) {
-    CollectScrollActionReason(ScrollActionReason::kByMouseWheel);
+    CollectScrollActionReason(ScrollActionReason::kByArrowKey);
     stats_recorded_ = true;
   }
   return RoundedScrollBar::OnKeyPressed(event);
