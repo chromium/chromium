@@ -11,6 +11,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "chrome/updater/tag.h"
 #include "chrome/updater/updater_scope.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -100,6 +101,13 @@ base::FilePath GetExecutableRelativePath();
 // implementation uses lazy initialization and caching to avoid reparsing
 // the tag.
 absl::optional<tagging::TagArgs> GetTagArgs();
+
+// Returns the arguments corresponding to `app_id` from the command line tag.
+absl::optional<tagging::AppArgs> GetAppArgs(const std::string& app_id);
+
+// Returns the "ap" corresponding to `app_id` from the command line tag, or an
+// empty string if no tag or "ap" is specified.
+std::string GetAPFromAppArgs(const std::string& app_id);
 
 // Returns true if the user running the updater also owns the `path`.
 bool PathOwnedByUser(const base::FilePath& path);

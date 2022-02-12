@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cctype>
 #include <string>
+#include <vector>
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -183,6 +184,26 @@ absl::optional<tagging::TagArgs> GetTagArgs() {
   }();
 
   return tag_args;
+}
+
+absl::optional<tagging::AppArgs> GetAppArgs(const std::string& app_id) {
+  const absl::optional<tagging::TagArgs> tag_args = GetTagArgs();
+  if (!tag_args || tag_args->apps.empty())
+    return absl::nullopt;
+
+  const std::vector<tagging::AppArgs>& apps_args = tag_args->apps;
+  std::vector<tagging::AppArgs>::const_iterator it = std::find_if(
+      std::begin(apps_args), std::end(apps_args),
+      [&app_id](const tagging::AppArgs& app_args) {
+        return base::EqualsCaseInsensitiveASCII(app_args.app_id, app_id);
+      });
+  return it != std::end(apps_args) ? absl::optional<tagging::AppArgs>(*it)
+                                   : absl::nullopt;
+}
+
+std::string GetAPFromAppArgs(const std::string& app_id) {
+  const absl::optional<tagging::AppArgs> app_args = GetAppArgs(app_id);
+  return app_args ? app_args->ap : std::string();
 }
 
 base::CommandLine MakeElevated(base::CommandLine command_line) {
