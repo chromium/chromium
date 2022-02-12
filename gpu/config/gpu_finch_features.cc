@@ -239,6 +239,9 @@ const base::FeatureParam<std::string> kVulkanBlockListByBoard{
 const base::FeatureParam<std::string> kVulkanBlockListByAndroidBuildFP{
     &kVulkan, "BlockListByAndroidBuildFP", ""};
 
+// crbug.com/1294648
+const base::FeatureParam<std::string> kDrDcBlockListByDevice{
+    &kEnableDrDc, "BlockListByDevice", "LF9810_2GB"};
 #endif
 
 // Enable SkiaRenderer Dawn graphics backend. On Windows this will use D3D12,
@@ -327,6 +330,11 @@ bool IsDrDcEnabled() {
   // DrDc is supported on android MediaPlayer and MCVD path only when
   // AImageReader is enabled.
   if (!IsAImageReaderEnabled())
+    return false;
+
+  // Check block list against build info.
+  const auto* build_info = base::android::BuildInfo::GetInstance();
+  if (IsDeviceBlocked(build_info->device(), kDrDcBlockListByDevice.Get()))
     return false;
 
   return base::FeatureList::IsEnabled(kEnableDrDc);
