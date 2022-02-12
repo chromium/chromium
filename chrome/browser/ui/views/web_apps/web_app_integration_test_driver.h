@@ -164,6 +164,7 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void InstallPolicyAppOsLoginModeBlocked(const std::string& site_mode);
   void LaunchFromChromeApps(const std::string& site_mode);
   void LaunchFromLaunchIcon(const std::string& site_mode);
+  void LaunchFromShortcut(const std::string& site_mode);
   void NavigateBrowser(const std::string& site_mode);
   void NavigatePwaSiteATo(const std::string& site_mode);
   void NavigateNotfoundUrl();

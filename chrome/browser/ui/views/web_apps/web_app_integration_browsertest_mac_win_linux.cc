@@ -76,6 +76,15 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
   helper_.CheckPlatformShortcutNotExists("SiteA");
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTestMacWinLinux,
+                       CheckLaunchFromShortcut) {
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckWindowCreated();
+  helper_.ClosePwa();
+  helper_.LaunchFromShortcut("SiteA");
+  helper_.CheckWindowCreated();
+}
+
 // Generated tests:
 
 IN_PROC_BROWSER_TEST_F(

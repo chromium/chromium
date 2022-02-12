@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/web_apps/web_app_integration_test_driver.h"
 
+#include <codecvt>
 #include <ostream>
 
 #include "base/bind.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
+#include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
@@ -59,6 +61,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -106,11 +109,8 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include <codecvt>
 #include "base/win/shortcut.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/startup/startup_browser_creator.h"
-#include "chrome/common/chrome_switches.h"
 #endif
 
 namespace web_app {
@@ -746,6 +746,47 @@ void WebAppIntegrationTestDriver::LaunchFromLaunchIcon(
   browser_added_waiter.Wait();
   app_browser_ = browser_added_waiter.browser_added();
   active_app_id_ = app_browser()->app_controller()->app_id();
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::LaunchFromShortcut(
+    const std::string& site_mode) {
+  BeforeStateChangeAction();
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      before_state_change_action_state_.get(), profile(), site_mode);
+  auto app_id = app_state->id;
+  content::WindowedNotificationObserver app_loaded_observer(
+      content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
+      content::NotificationService::AllSources());
+  std::vector<Browser*> app_browsers;
+
+#if BUILDFLAG(IS_MAC)
+  auto* provider = GetProviderForProfile(profile());
+  std::string shortcut_filename =
+      provider->registrar().GetAppShortName(app_id) + ".app";
+  base::FilePath app_shortcut_path =
+      shortcut_override_->chrome_apps_folder.GetPath().Append(
+          shortcut_filename);
+  base::CommandLine cmd_line =
+      base::CommandLine({"open", app_shortcut_path.value()});
+  ASSERT_TRUE(base::LaunchProcess(cmd_line, base::LaunchOptions()).IsValid());
+#else
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII(switches::kAppId, app_id);
+  ASSERT_TRUE(StartupBrowserCreator().ProcessCmdLineImpl(
+      command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
+      {profile(), StartupProfileMode::kBrowserWindow}, {}));
+#endif
+  app_loaded_observer.Wait();
+  content::RunAllTasksUntilIdle();
+  app_browsers.push_back(BrowserList::GetInstance()->GetLastActive());
+
+  for (auto* app_browser : app_browsers) {
+    std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
+    const std::string window_title =
+        convert.to_bytes(app_browser->GetWindowTitleForCurrentTab(false));
+    ASSERT_EQ(window_title, g_site_mode_to_app_name.find(site_mode)->second);
+  }
   AfterStateChangeAction();
 }
 

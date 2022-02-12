@@ -26,6 +26,7 @@ class CommandLine;
 }
 
 namespace web_app {
+class WebAppIntegrationTestDriver;
 FORWARD_DECLARE_TEST(WebAppEngagementBrowserTest, CommandLineTab);
 FORWARD_DECLARE_TEST(WebAppEngagementBrowserTest, CommandLineWindowByUrl);
 FORWARD_DECLARE_TEST(WebAppEngagementBrowserTest, CommandLineWindowByAppId);
@@ -185,6 +186,7 @@ class StartupBrowserCreator {
   friend class StartupBrowserCreatorInfobarsWithoutStartupWindowTest;
   // TODO(crbug.com/642442): Remove this when first_run_tabs gets refactored.
   friend class StartupTabProviderImpl;
+  friend class web_app::WebAppIntegrationTestDriver;
   FRIEND_TEST_ALL_PREFIXES(BrowserTest, AppIdSwitch);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorTest,
                            ReadingWasRestartedAfterNormalStart);
