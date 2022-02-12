@@ -7,10 +7,12 @@
 SidePanelEntry::SidePanelEntry(
     Id id,
     std::u16string name,
+    const ui::ImageModel icon,
     base::RepeatingCallback<std::unique_ptr<views::View>()>
         create_content_callback)
     : id_(id),
       name_(std::move(name)),
+      icon_(std::move(icon)),
       create_content_callback_(std::move(create_content_callback)) {
   DCHECK(create_content_callback_);
 }

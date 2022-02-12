@@ -9,17 +9,20 @@
 #include <string>
 
 #include "base/callback.h"
+#include "ui/base/models/image_model.h"
 #include "ui/views/view.h"
 
 // This class represents an entry inside the side panel. These are owned by a
 // SidePanelRegistry (either a per-tab or a per-window registry).
 class SidePanelEntry final {
  public:
+  // Note this order matches that of the combobox options in the side panel.
   enum class Id { kReadingList, kBookmarks };
 
   // TODO(pbos): Add an icon ImageModel here.
   SidePanelEntry(Id id,
                  std::u16string name,
+                 const ui::ImageModel icon,
                  base::RepeatingCallback<std::unique_ptr<views::View>()>
                      create_content_callback);
   SidePanelEntry(const SidePanelEntry&) = delete;
@@ -32,10 +35,12 @@ class SidePanelEntry final {
 
   Id id() const { return id_; }
   const std::u16string& name() const { return name_; }
+  const ui::ImageModel& icon() const { return icon_; }
 
  private:
   const Id id_;
   const std::u16string name_;
+  const ui::ImageModel icon_;
 
   base::RepeatingCallback<std::unique_ptr<views::View>()>
       create_content_callback_;
