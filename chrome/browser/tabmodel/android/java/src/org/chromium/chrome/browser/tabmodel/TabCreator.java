@@ -11,12 +11,11 @@ import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.state.SerializedCriticalPersistedTabData;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
-
-import java.nio.ByteBuffer;
 
 /**
  * Creates Tabs.  If the TabCreator creates Tabs asynchronously, null pointers will be returned
@@ -45,13 +44,14 @@ public abstract class TabCreator {
      * On restore, allows us to create a frozen version of a tab using saved tab state we read
      * from disk.
      * @param state    The tab state that the tab can be restored from.
-     * @param criticalPersistedTabData serialized {@link CriticalPersistedTabData}
+     * @param serializedCriticalPersistedTabData serialized {@link CriticalPersistedTabData}
      * @param id       The id to give the new tab.
      * @param isIncognito if the {@link Tab} is incognito or not
      * @param index    The index for where to place the tab.
      */
     public abstract Tab createFrozenTab(TabState state,
-            ByteBuffer serializedCriticalPersistedTabData, int id, boolean isIncognito, int index);
+            SerializedCriticalPersistedTabData serializedCriticalPersistedTabData, int id,
+            boolean isIncognito, int index);
 
     /**
      * Creates a new tab and loads the specified URL in it. This is a convenience method for

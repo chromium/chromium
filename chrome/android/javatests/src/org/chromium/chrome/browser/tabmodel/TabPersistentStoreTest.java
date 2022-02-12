@@ -484,8 +484,8 @@ public class TabPersistentStoreTest {
         LoadCallbackHelper callbackHelper = new LoadCallbackHelper();
         int chCount = callbackHelper.getCallCount();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            CriticalPersistedTabData.restore(
-                    tabId, isIncognito, (res) -> { callbackHelper.notifyCalled(res); });
+            CriticalPersistedTabData.restore(tabId, isIncognito,
+                    (res) -> { callbackHelper.notifyCalled(res.getByteBuffer()); });
         });
         callbackHelper.waitForCallback(chCount);
         if (isNull) {

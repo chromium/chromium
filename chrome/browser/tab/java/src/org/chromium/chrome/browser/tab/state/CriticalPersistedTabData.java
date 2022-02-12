@@ -173,10 +173,11 @@ public class CriticalPersistedTabData extends PersistedTabData {
      * @return serialized {@link CriticalPersistedTabData}
      * TODO(crbug.com/1119452) rethink CriticalPersistedTabData contract
      */
-    public static ByteBuffer restore(int tabId, boolean isIncognito) {
+    public static SerializedCriticalPersistedTabData restore(int tabId, boolean isIncognito) {
         PersistedTabDataConfiguration config =
                 PersistedTabDataConfiguration.get(CriticalPersistedTabData.class, isIncognito);
-        return config.getStorage().restore(tabId, config.getId());
+        return new SerializedCriticalPersistedTabData(
+                config.getStorage().restore(tabId, config.getId()));
     }
 
     /**
@@ -185,10 +186,12 @@ public class CriticalPersistedTabData extends PersistedTabData {
      * @param isIncognito true if the {@link Tab} is incognito
      * @param callback the serialized {@link CriticalPersistedTabData} is passed back in
      */
-    public static void restore(int tabId, boolean isIncognito, Callback<ByteBuffer> callback) {
+    public static void restore(
+            int tabId, boolean isIncognito, Callback<SerializedCriticalPersistedTabData> callback) {
         PersistedTabDataConfiguration config =
                 PersistedTabDataConfiguration.get(CriticalPersistedTabData.class, isIncognito);
-        config.getStorage().restore(tabId, config.getId(), callback);
+        config.getStorage().restore(tabId, config.getId(),
+                (res) -> { callback.onResult(new SerializedCriticalPersistedTabData(res)); });
     }
 
     /**
@@ -197,10 +200,11 @@ public class CriticalPersistedTabData extends PersistedTabData {
      * @param isCriticalPersistedTabDataEnabled true if CriticalPersistedData is enabled
      * as the storage/retrieval method
      */
-    public static void build(Tab tab, ByteBuffer serialized, boolean isStorageRetrievalEnabled) {
+    public static void build(Tab tab, SerializedCriticalPersistedTabData serialized,
+            boolean isStorageRetrievalEnabled) {
         PersistedTabData.build(tab, (data, storage, id, callback) -> {
             callback.onResult(new CriticalPersistedTabData(tab, data, storage, id));
-        }, serialized, CriticalPersistedTabData.class, (res) -> {});
+        }, serialized.getByteBuffer(), CriticalPersistedTabData.class, (res) -> {});
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -716,7 +720,9 @@ public class CriticalPersistedTabData extends PersistedTabData {
     /**
      * @return true if the serialized {@link CriticalPersistedTabData} is empty.
      */
-    public static boolean isEmptySerialization(ByteBuffer byteBuffer) {
-        return byteBuffer == null || byteBuffer.limit() == 0;
+    public static boolean isEmptySerialization(
+            SerializedCriticalPersistedTabData serializedCriticalPersistedTabData) {
+        return serializedCriticalPersistedTabData == null
+                || serializedCriticalPersistedTabData.isEmpty();
     }
 }
