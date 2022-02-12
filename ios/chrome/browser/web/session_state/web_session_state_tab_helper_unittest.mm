@@ -77,7 +77,7 @@ TEST_F(WebSessionStateTabHelperTest, DisableFeature) {
   GURL url(kChromeUIAboutNewTabURL);
   web::NavigationManager::WebLoadParams params(url);
   web_state()->GetNavigationManager()->LoadURLWithParams(params);
-  DCHECK(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
     return !web_state()->IsLoading();
   }));
   helper->SaveSessionState();
@@ -101,7 +101,7 @@ TEST_F(WebSessionStateTabHelperTest, SessionStateRestore) {
   GURL url(kChromeUIAboutNewTabURL);
   web::NavigationManager::WebLoadParams params(url);
   web_state()->GetNavigationManager()->LoadURLWithParams(params);
-  DCHECK(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
     return !web_state()->IsLoading();
   }));
   // As well as waiting for the page to finish loading, it seems an extra wait

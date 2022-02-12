@@ -147,7 +147,7 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
     web_state->GetView();
     web_state->GetNavigationManager()->LoadURLWithParams(load_params);
     web::WebState* web_state_ptr = web_state.get();
-    DCHECK(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
       return !web_state_ptr->IsLoading();
     }));
 
@@ -272,13 +272,7 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveAndRestoreEmptySession) {
 
 // Tests that saving a session with web states, then clearing the WebStatelist
 // and then restoring the session will restore the web states correctly.
-// TODO(crbug.com/1296739): Fix on devices.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_SaveAndRestoreSession SaveAndRestoreSession
-#else
-#define MAYBE_SaveAndRestoreSession DISABLED_SaveAndRestoreSession
-#endif
-TEST_F(SessionRestorationBrowserAgentTest, MAYBE_SaveAndRestoreSession) {
+TEST_F(SessionRestorationBrowserAgentTest, SaveAndRestoreSession) {
   web::WebState* web_state = InsertNewWebState(
       GURL(kURL1), /*parent=*/nullptr, /*index=*/0, /*background=*/false);
   InsertNewWebState(GURL(kURL1), web_state, /*index=*/1, /*background=*/false);
