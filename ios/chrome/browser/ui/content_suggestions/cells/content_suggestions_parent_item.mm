@@ -94,6 +94,7 @@
       [whatsNewView.heightAnchor constraintEqualToConstant:size.height]
     ]];
   }
+  NSUInteger index = 0;
   if (self.mostVisitedItems) {
     UIStackView* stackView = [[UIStackView alloc] init];
     stackView.axis = UILayoutConstraintAxisHorizontal;
@@ -104,6 +105,11 @@
       ContentSuggestionsMostVisitedTileView* view =
           [[ContentSuggestionsMostVisitedTileView alloc]
               initWithConfiguration:item];
+      view.accessibilityIdentifier = [NSString
+          stringWithFormat:
+              @"%@%li",
+              kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
+              index];
       view.menuProvider = self.menuProvider;
       UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
           initWithTarget:self.tapTarget
@@ -111,6 +117,7 @@
       [view addGestureRecognizer:tapRecognizer];
       [self.mostVisitedTapRecognizers addObject:tapRecognizer];
       [stackView addArrangedSubview:view];
+      index++;
     }
     [cell addUIElement:stackView
         withCustomBottomSpacing:kMostVisitedBottomMargin];
@@ -133,12 +140,18 @@
       ContentSuggestionsShortcutTileView* view =
           [[ContentSuggestionsShortcutTileView alloc]
               initWithConfiguration:item];
+      view.accessibilityIdentifier = [NSString
+          stringWithFormat:
+              @"%@%li",
+              kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
+              index];
       UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
           initWithTarget:self.tapTarget
                   action:@selector(contentSuggestionsElementTapped:)];
       [view addGestureRecognizer:tapRecognizer];
       [self.mostVisitedTapRecognizers addObject:tapRecognizer];
       [stackView addArrangedSubview:view];
+      index++;
     }
 
     [cell addUIElement:stackView

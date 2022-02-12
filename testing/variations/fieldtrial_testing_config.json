@@ -5830,6 +5830,21 @@
             ]
         }
     ],
+    "SingleCellContentSuggestions": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "SingleCellContentSuggestions",
+                    "enable_features": [
+                        "SingleCellContentSuggestions"
+                    ]
+                }
+            ]
+        }
+    ],
     "SnoozeIPH": [
         {
             "platforms": [
