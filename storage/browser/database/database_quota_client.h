@@ -14,19 +14,16 @@
 #include "storage/browser/quota/quota_client_type.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
-namespace blink {
-class StorageKey;
-}  // namespace blink
-
 namespace storage {
 
 class DatabaseTracker;
+struct BucketLocator;
 
 // Integrates WebSQL databases with the quota management system.
 //
 // This interface is used on the IO thread by the quota manager.
 class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseQuotaClient
-    : public storage::mojom::QuotaClient {
+    : public mojom::QuotaClient {
  public:
   explicit DatabaseQuotaClient(DatabaseTracker& tracker);
 
@@ -35,15 +32,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabaseQuotaClient
 
   ~DatabaseQuotaClient() override;
 
-  // storage::mojom::QuotaClient method overrides.
-  void GetStorageKeyUsage(const blink::StorageKey& storage_key,
-                          blink::mojom::StorageType type,
-                          GetStorageKeyUsageCallback callback) override;
+  // mojom::QuotaClient method overrides.
+  void GetBucketUsage(const BucketLocator& bucket,
+                      GetBucketUsageCallback callback) override;
   void GetStorageKeysForType(blink::mojom::StorageType type,
                              GetStorageKeysForTypeCallback callback) override;
-  void DeleteStorageKeyData(const blink::StorageKey& storage_key,
-                            blink::mojom::StorageType type,
-                            DeleteStorageKeyDataCallback callback) override;
+  void DeleteBucketData(const BucketLocator& bucket,
+                        DeleteBucketDataCallback callback) override;
   void PerformStorageCleanup(blink::mojom::StorageType type,
                              PerformStorageCleanupCallback callback) override;
 

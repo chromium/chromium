@@ -58,8 +58,7 @@ void NativeIOContextImpl::BindReceiver(
 
 void NativeIOContextImpl::DeleteStorageKeyData(
     const blink::StorageKey& storage_key,
-    storage::mojom::QuotaClient::DeleteStorageKeyDataCallback
-        success_callback) {
+    storage::mojom::QuotaClient::DeleteBucketDataCallback success_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if DCHECK_IS_ON()
   DCHECK(initialize_called_) << __func__ << " called before Initialize()";
@@ -71,8 +70,7 @@ void NativeIOContextImpl::DeleteStorageKeyData(
           scoped_refptr<NativeIOContextImpl>(this), std::move(storage_key),
           base::BindOnce(
               [](scoped_refptr<base::SequencedTaskRunner> task_runner,
-                 storage::mojom::QuotaClient::DeleteStorageKeyDataCallback
-                     callback,
+                 storage::mojom::QuotaClient::DeleteBucketDataCallback callback,
                  blink::mojom::QuotaStatusCode result) {
                 task_runner->PostTask(
                     FROM_HERE, base::BindOnce(std::move(callback), result));
@@ -132,7 +130,7 @@ void NativeIOContextImpl::BindReceiverOnIOThread(
 
 void NativeIOContextImpl::DeleteStorageKeyDataOnIOThread(
     const blink::StorageKey& storage_key,
-    storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback) {
+    storage::mojom::QuotaClient::DeleteBucketDataCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   native_io_manager_->DeleteStorageKeyData(storage_key, std::move(callback));

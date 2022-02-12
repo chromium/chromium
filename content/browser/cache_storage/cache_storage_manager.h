@@ -37,14 +37,14 @@ class CONTENT_EXPORT CacheStorageManager
   virtual void GetStorageKeyUsage(
       const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner,
-      storage::mojom::QuotaClient::GetStorageKeyUsageCallback callback) = 0;
+      storage::mojom::QuotaClient::GetBucketUsageCallback callback) = 0;
   virtual void GetStorageKeys(
       storage::mojom::CacheStorageOwner owner,
       storage::mojom::QuotaClient::GetStorageKeysForTypeCallback callback) = 0;
   virtual void DeleteStorageKeyData(
       const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner,
-      storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback) = 0;
+      storage::mojom::QuotaClient::DeleteBucketDataCallback callback) = 0;
   virtual void DeleteStorageKeyData(
       const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner) = 0;

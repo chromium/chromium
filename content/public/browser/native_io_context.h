@@ -32,7 +32,7 @@ class CONTENT_EXPORT NativeIOContext
   // the UI thread.
   virtual void DeleteStorageKeyData(
       const blink::StorageKey& storage_key,
-      storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback) = 0;
+      storage::mojom::QuotaClient::DeleteBucketDataCallback callback) = 0;
 
   // Returns the usage in bytes for all storage keys. Must be called on the
   // UI thread.

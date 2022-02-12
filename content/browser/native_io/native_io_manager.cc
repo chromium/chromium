@@ -228,7 +228,7 @@ void NativeIOManager::MaybeDeleteHost(NativeIOHost* host) {
 
 void NativeIOManager::DeleteStorageKeyData(
     const blink::StorageKey& storage_key,
-    storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback) {
+    storage::mojom::QuotaClient::DeleteBucketDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
 
@@ -267,7 +267,7 @@ void NativeIOManager::DeleteStorageKeyData(
   // DeleteAllData() will call DidDeleteHostData() asynchronously, which may
   // delete this entry from `hosts_`.
   it->second->DeleteAllData(base::BindOnce(
-      [](storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback,
+      [](storage::mojom::QuotaClient::DeleteBucketDataCallback callback,
          base::File::Error error) {
         std::move(callback).Run((error == base::File::FILE_OK)
                                     ? blink::mojom::QuotaStatusCode::kOk
@@ -303,7 +303,7 @@ void NativeIOManager::GetStorageKeysForType(
 void NativeIOManager::GetStorageKeyUsage(
     const blink::StorageKey& storage_key,
     blink::mojom::StorageType type,
-    storage::mojom::QuotaClient::GetStorageKeyUsageCallback callback) {
+    storage::mojom::QuotaClient::GetBucketUsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
   DCHECK(callback);

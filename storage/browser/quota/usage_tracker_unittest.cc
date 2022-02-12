@@ -44,11 +44,10 @@ class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
   UsageTrackerTestQuotaClient& operator=(const UsageTrackerTestQuotaClient&) =
       delete;
 
-  void GetStorageKeyUsage(const StorageKey& storage_key,
-                          StorageType type,
-                          GetStorageKeyUsageCallback callback) override {
-    EXPECT_EQ(StorageType::kTemporary, type);
-    int64_t usage = GetUsage(storage_key);
+  void GetBucketUsage(const BucketLocator& bucket,
+                      GetBucketUsageCallback callback) override {
+    EXPECT_EQ(StorageType::kTemporary, bucket.type);
+    int64_t usage = GetUsage(bucket);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), usage));
   }
@@ -56,19 +55,19 @@ class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
   void GetStorageKeysForType(StorageType type,
                              GetStorageKeysForTypeCallback callback) override {
     EXPECT_EQ(StorageType::kTemporary, type);
-    std::vector<StorageKey> storage_keys;
-    for (const auto& storage_key_usage_pair : storage_key_usage_map_)
-      storage_keys.push_back(storage_key_usage_pair.first);
+    std::set<StorageKey> storage_keys;
+    for (const auto& bucket_usage_pair : bucket_usage_map_)
+      storage_keys.emplace(bucket_usage_pair.first.storage_key);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), std::move(storage_keys)));
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  std::vector<StorageKey>(storage_keys.begin(),
+                                                          storage_keys.end())));
   }
 
-  void DeleteStorageKeyData(const StorageKey& storage_key,
-                            StorageType type,
-                            DeleteStorageKeyDataCallback callback) override {
-    EXPECT_EQ(StorageType::kTemporary, type);
-    storage_key_usage_map_.erase(storage_key);
+  void DeleteBucketData(const BucketLocator& bucket,
+                        DeleteBucketDataCallback callback) override {
+    EXPECT_EQ(StorageType::kTemporary, bucket.type);
+    bucket_usage_map_.erase(bucket);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), QuotaStatusCode::kOk));
   }
@@ -78,23 +77,19 @@ class UsageTrackerTestQuotaClient : public mojom::QuotaClient {
     std::move(callback).Run();
   }
 
-  int64_t GetUsage(const StorageKey& storage_key) {
-    auto it = storage_key_usage_map_.find(storage_key);
-    if (it == storage_key_usage_map_.end())
+  int64_t GetUsage(const BucketLocator& bucket) {
+    auto it = bucket_usage_map_.find(bucket);
+    if (it == bucket_usage_map_.end())
       return 0;
     return it->second;
   }
 
-  void SetUsage(const StorageKey& storage_key, int64_t usage) {
-    storage_key_usage_map_[storage_key] = usage;
-  }
-
-  int64_t UpdateUsage(const StorageKey& storage_key, int64_t delta) {
-    return storage_key_usage_map_[storage_key] += delta;
+  int64_t UpdateUsage(const BucketLocator& bucket, int64_t delta) {
+    return bucket_usage_map_[bucket] += delta;
   }
 
  private:
-  std::map<StorageKey, int64_t> storage_key_usage_map_;
+  std::map<BucketLocator, int64_t> bucket_usage_map_;
 };
 
 }  // namespace
@@ -121,16 +116,14 @@ class UsageTrackerTest : public testing::Test {
   ~UsageTrackerTest() override = default;
 
   void UpdateUsage(const BucketInfo& bucket, int64_t delta) {
-    quota_client_->UpdateUsage(bucket.storage_key, delta);
+    quota_client_->UpdateUsage(bucket.ToBucketLocator(), delta);
     usage_tracker_->UpdateBucketUsageCache(QuotaClientType::kFileSystem,
                                            bucket.ToBucketLocator(), delta);
     base::RunLoop().RunUntilIdle();
   }
 
   void UpdateUsageWithoutNotification(const BucketInfo& bucket, int64_t delta) {
-    // TODO(crbug.com/1199417): Update QuotaClient to take in buckets once
-    // QuotaClient is migrated to operate StorageBucket.
-    quota_client_->UpdateUsage(bucket.storage_key, delta);
+    quota_client_->UpdateUsage(bucket.ToBucketLocator(), delta);
   }
 
   void GetGlobalUsage(int64_t* usage, int64_t* unlimited_usage) {

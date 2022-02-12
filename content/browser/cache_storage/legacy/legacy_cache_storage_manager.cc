@@ -46,7 +46,7 @@ bool DeleteDir(const base::FilePath& path) {
 }
 
 void DeleteStorageKeyDidDeleteDir(
-    storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback,
+    storage::mojom::QuotaClient::DeleteBucketDataCallback callback,
     bool rv) {
   // On scheduler sequence.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -392,7 +392,7 @@ void LegacyCacheStorageManager::GetAllStorageKeysUsageGetSizes(
 void LegacyCacheStorageManager::GetStorageKeyUsage(
     const blink::StorageKey& storage_key,
     storage::mojom::CacheStorageOwner owner,
-    storage::mojom::QuotaClient::GetStorageKeyUsageCallback callback) {
+    storage::mojom::QuotaClient::GetBucketUsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (IsMemoryBacked()) {
@@ -419,7 +419,7 @@ void LegacyCacheStorageManager::GetStorageKeyUsage(
 void LegacyCacheStorageManager::GetStorageKeyUsageDidGetExists(
     const blink::StorageKey& storage_key,
     storage::mojom::CacheStorageOwner owner,
-    storage::mojom::QuotaClient::GetStorageKeyUsageCallback callback,
+    storage::mojom::QuotaClient::GetBucketUsageCallback callback,
     bool exists) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!exists) {
@@ -457,7 +457,7 @@ void LegacyCacheStorageManager::GetStorageKeys(
 void LegacyCacheStorageManager::DeleteStorageKeyData(
     const blink::StorageKey& storage_key,
     storage::mojom::CacheStorageOwner owner,
-    storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback) {
+    storage::mojom::QuotaClient::DeleteBucketDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (IsMemoryBacked()) {
@@ -485,7 +485,7 @@ void LegacyCacheStorageManager::DeleteStorageKeyData(
 void LegacyCacheStorageManager::DeleteStorageKeyDataDidGetExists(
     const blink::StorageKey& storage_key,
     storage::mojom::CacheStorageOwner owner,
-    storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback,
+    storage::mojom::QuotaClient::DeleteBucketDataCallback callback,
     bool exists) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -526,7 +526,7 @@ void LegacyCacheStorageManager::AddObserver(
 void LegacyCacheStorageManager::DeleteStorageKeyDidClose(
     const blink::StorageKey& storage_key,
     storage::mojom::CacheStorageOwner owner,
-    storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback,
+    storage::mojom::QuotaClient::DeleteBucketDataCallback callback,
     std::unique_ptr<LegacyCacheStorage> cache_storage,
     int64_t origin_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

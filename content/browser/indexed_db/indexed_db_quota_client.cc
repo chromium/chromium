@@ -14,6 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "storage/browser/database/database_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -38,15 +39,20 @@ IndexedDBQuotaClient::~IndexedDBQuotaClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void IndexedDBQuotaClient::GetStorageKeyUsage(
-    const StorageKey& storage_key,
-    StorageType type,
-    GetStorageKeyUsageCallback callback) {
+void IndexedDBQuotaClient::GetBucketUsage(const storage::BucketLocator& bucket,
+                                          GetBucketUsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(type, StorageType::kTemporary);
+  DCHECK_EQ(bucket.type, StorageType::kTemporary);
+
+  // Skip non-default buckets until Storage Buckets are supported for IndexedDB.
+  // TODO(crbug.com/1218100): Integrate IndexedDB with StorageBuckets.
+  if (!bucket.is_default) {
+    std::move(callback).Run(0);
+    return;
+  }
 
   std::move(callback).Run(
-      indexed_db_context_.GetStorageKeyDiskUsage(storage_key));
+      indexed_db_context_.GetStorageKeyDiskUsage(bucket.storage_key));
 }
 
 void IndexedDBQuotaClient::GetStorageKeysForType(
@@ -59,18 +65,24 @@ void IndexedDBQuotaClient::GetStorageKeysForType(
   std::move(callback).Run(std::move(storage_keys));
 }
 
-void IndexedDBQuotaClient::DeleteStorageKeyData(
-    const StorageKey& storage_key,
-    StorageType type,
-    DeleteStorageKeyDataCallback callback) {
+void IndexedDBQuotaClient::DeleteBucketData(
+    const storage::BucketLocator& bucket,
+    DeleteBucketDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(type, StorageType::kTemporary);
+  DCHECK_EQ(bucket.type, StorageType::kTemporary);
   DCHECK(!callback.is_null());
 
+  // Skip non-default buckets until Storage Buckets are supported for IndexedDB.
+  // TODO(crbug.com/1218100): Integrate IndexedDB with StorageBuckets.
+  if (!bucket.is_default) {
+    std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
+    return;
+  }
+
   indexed_db_context_.DeleteForStorageKey(
-      storage_key,
+      bucket.storage_key,
       base::BindOnce(
-          [](DeleteStorageKeyDataCallback callback, bool success) {
+          [](DeleteBucketDataCallback callback, bool success) {
             blink::mojom::QuotaStatusCode status =
                 success ? blink::mojom::QuotaStatusCode::kOk
                         : blink::mojom::QuotaStatusCode::kUnknown;

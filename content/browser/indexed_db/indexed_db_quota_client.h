@@ -15,6 +15,10 @@
 #include "storage/browser/quota/quota_task.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
+namespace storage {
+struct BucketLocator;
+}
+
 namespace content {
 class IndexedDBContextImpl;
 
@@ -32,14 +36,12 @@ class IndexedDBQuotaClient : public storage::mojom::QuotaClient {
   CONTENT_EXPORT ~IndexedDBQuotaClient() override;
 
   // storage::mojom::QuotaClient implementation:
-  void GetStorageKeyUsage(const blink::StorageKey& storage_key,
-                          blink::mojom::StorageType type,
-                          GetStorageKeyUsageCallback callback) override;
+  void GetBucketUsage(const storage::BucketLocator& bucket,
+                      GetBucketUsageCallback callback) override;
   void GetStorageKeysForType(blink::mojom::StorageType type,
                              GetStorageKeysForTypeCallback callback) override;
-  void DeleteStorageKeyData(const blink::StorageKey& storage_key,
-                            blink::mojom::StorageType type,
-                            DeleteStorageKeyDataCallback callback) override;
+  void DeleteBucketData(const storage::BucketLocator& bucket,
+                        DeleteBucketDataCallback callback) override;
   void PerformStorageCleanup(blink::mojom::StorageType type,
                              PerformStorageCleanupCallback callback) override;
 

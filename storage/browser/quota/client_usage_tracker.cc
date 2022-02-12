@@ -78,15 +78,6 @@ void ClientUsageTracker::GetBucketsUsage(const std::set<BucketLocator>& buckets,
       continue;
     }
 
-    // Retrieves only for default buckets since QuotaClient does not yet support
-    // buckets.
-    // TODO(crbug.com/1199417): Remove to allow for all buckets once QuotaClient
-    // is migrated to operate on buckets.
-    if (!bucket.is_default) {
-      barrier.Run();
-      continue;
-    }
-
     // Use a cached usage value, if we have one.
     int64_t cached_usage = GetCachedBucketUsage(bucket);
     if (cached_usage != -1) {
@@ -94,8 +85,8 @@ void ClientUsageTracker::GetBucketsUsage(const std::set<BucketLocator>& buckets,
       continue;
     }
 
-    client_->GetStorageKeyUsage(
-        bucket.storage_key, type_,
+    client_->GetBucketUsage(
+        bucket,
         // base::Unretained usage is safe here because barrier holds the
         // std::unque_ptr that keeps AccumulateInfo alive, and the barrier
         // will outlive all the AccumulateClientGlobalUsage closures.
@@ -252,18 +243,8 @@ int64_t ClientUsageTracker::GetCachedBucketUsage(
 void ClientUsageTracker::GetBucketUsage(const BucketLocator& bucket,
                                         UsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Usage is not yet tracked for non-default bucket usage.
-  // Only retrieves usage for default buckets since QuotaClient does not yet
-  // support buckets.
-  // TODO(crbug.com/1199417): Remove to allow for all buckets once QuotaClient
-  // is migrated to operate on buckets.
-  if (!bucket.is_default) {
-    std::move(callback).Run(0, 0);
-    return;
-  }
-
-  client_->GetStorageKeyUsage(
-      bucket.storage_key, type_,
+  client_->GetBucketUsage(
+      bucket,
       base::BindOnce(&ClientUsageTracker::DidGetBucketUsage,
                      weak_factory_.GetWeakPtr(), bucket, std::move(callback)));
   return;

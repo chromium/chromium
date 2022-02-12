@@ -87,6 +87,13 @@ struct StorageCapacityResult {
   int64_t available_space;
 };
 
+struct ClientBucketData {
+  const char* origin;
+  std::string name;
+  StorageType type;
+  int64_t usage;
+};
+
 // Returns a deterministic value for the amount of available disk space.
 int64_t GetAvailableDiskSpaceForTest() {
   return kAvailableSpaceForApp + kMustRemainAvailableForSystem;
@@ -112,11 +119,7 @@ MATCHER_P3(MatchesBucketTableEntry, storage_key, type, use_count, "") {
 
 bool ContainsBucket(const std::set<BucketLocator>& buckets,
                     const BucketInfo& target_bucket) {
-  BucketLocator target_bucket_locator(
-      target_bucket.id, target_bucket.storage_key, target_bucket.type,
-      target_bucket.name == kDefaultBucketName);
-  auto it = buckets.find(target_bucket_locator);
-  return it != buckets.end();
+  return base::Contains(buckets, target_bucket.ToBucketLocator());
 }
 
 }  // namespace
@@ -164,11 +167,12 @@ class QuotaManagerImplTest : public testing::Test {
   }
 
   MockQuotaClient* CreateAndRegisterClient(
-      base::span<const MockStorageKeyData> mock_data,
       QuotaClientType client_type,
-      const std::vector<blink::mojom::StorageType> storage_types) {
+      const std::vector<blink::mojom::StorageType> storage_types,
+      base::span<const UnmigratedStorageKeyData> unmigrated_data =
+          base::span<const UnmigratedStorageKeyData>()) {
     auto mock_quota_client = std::make_unique<storage::MockQuotaClient>(
-        quota_manager_impl_->proxy(), mock_data, client_type);
+        quota_manager_impl_->proxy(), client_type, unmigrated_data);
     MockQuotaClient* mock_quota_client_ptr = mock_quota_client.get();
 
     mojo::PendingRemote<storage::mojom::QuotaClient> quota_client;
@@ -177,6 +181,24 @@ class QuotaManagerImplTest : public testing::Test {
     quota_manager_impl_->proxy()->RegisterClient(std::move(quota_client),
                                                  client_type, storage_types);
     return mock_quota_client_ptr;
+  }
+
+  // Creates buckets in QuotaDatabase if they don't exist yet, and sets usage
+  // to the `client`.
+  void RegisterClientBucketData(MockQuotaClient* client,
+                                base::span<const ClientBucketData> mock_data) {
+    std::map<BucketLocator, int64_t> buckets_data;
+    for (const ClientBucketData& data : mock_data) {
+      base::test::TestFuture<QuotaErrorOr<BucketInfo>> future;
+      quota_manager_impl_->GetOrCreateBucketDeprecated(
+          ToStorageKey(data.origin), data.name, data.type,
+          future.GetCallback());
+      auto bucket = future.Take();
+      EXPECT_TRUE(bucket.ok());
+      buckets_data.insert(std::pair<BucketLocator, int64_t>(
+          bucket->ToBucketLocator(), data.usage));
+    }
+    client->AddBucketsData(buckets_data);
   }
 
   void OpenDatabase() { quota_manager_impl_->EnsureDatabaseOpened(); }
@@ -566,22 +588,18 @@ class QuotaManagerImplTest : public testing::Test {
 };
 
 TEST_F(QuotaManagerImplTest, QuotaDatabaseBootstrap) {
-  static const MockStorageKeyData kData1[] = {
+  static const UnmigratedStorageKeyData kData1[] = {
       {"http://foo.com/", kTemp, 10},
       {"http://foo.com:8080/", kTemp, 15},
       {"http://bar.com/", kPerm, 50},
   };
-  static const MockStorageKeyData kData2[] = {
+  static const UnmigratedStorageKeyData kData2[] = {
       {"https://foo.com/", kTemp, 30},
       {"https://foo.com:8081/", kTemp, 35},
       {"http://example.com/", kPerm, 40},
   };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
-  CreateAndRegisterClient(kData2, QuotaClientType::kDatabase,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm}, kData1);
+  CreateAndRegisterClient(QuotaClientType::kDatabase, {kTemp, kPerm}, kData2);
 
   // OpenDatabase should trigger database bootstrapping.
   OpenDatabase();
@@ -613,24 +631,24 @@ TEST_F(QuotaManagerImplTest, QuotaDatabaseBootstrap) {
 }
 
 TEST_F(QuotaManagerImplTest, GetUsageInfo) {
-  static const MockStorageKeyData kData1[] = {
-      {"http://foo.com/", kTemp, 10},
-      {"http://foo.com:8080/", kTemp, 15},
-      {"http://bar.com/", kTemp, 20},
-      {"http://bar.com/", kPerm, 50},
+  static const ClientBucketData kData1[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 10},
+      {"http://foo.com:8080/", kDefaultBucketName, kTemp, 15},
+      {"http://bar.com/", "logs", kTemp, 20},
+      {"http://bar.com/", kDefaultBucketName, kPerm, 50},
   };
-  static const MockStorageKeyData kData2[] = {
-      {"https://foo.com/", kTemp, 30},
-      {"https://foo.com:8081/", kTemp, 35},
-      {"http://bar.com/", kPerm, 40},
-      {"http://example.com/", kPerm, 40},
+  static const ClientBucketData kData2[] = {
+      {"https://foo.com/", kDefaultBucketName, kTemp, 30},
+      {"https://foo.com:8081/", kDefaultBucketName, kTemp, 35},
+      {"http://bar.com/", kDefaultBucketName, kPerm, 40},
+      {"http://example.com/", kDefaultBucketName, kPerm, 40},
   };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
-  CreateAndRegisterClient(kData2, QuotaClientType::kDatabase,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  MockQuotaClient* database_client =
+      CreateAndRegisterClient(QuotaClientType::kDatabase, {kTemp, kPerm});
+  RegisterClientBucketData(fs_client, kData1);
+  RegisterClientBucketData(database_client, kData2);
 
   base::test::TestFuture<UsageInfoEntries> future;
   quota_manager_impl()->GetUsageInfo(future.GetCallback());
@@ -752,7 +770,7 @@ TEST_F(QuotaManagerImplTest, GetBucketsForType) {
   EXPECT_TRUE(bucket.ok());
   BucketInfo bucket_b = bucket.value();
 
-  bucket = CreateBucketForTesting(storage_key_c, "bucket_c", kPerm);
+  bucket = CreateBucketForTesting(storage_key_c, kDefaultBucketName, kPerm);
   EXPECT_TRUE(bucket.ok());
   BucketInfo bucket_c = bucket.value();
 
@@ -821,7 +839,7 @@ TEST_F(QuotaManagerImplTest, GetBucketsForStorageKey) {
   EXPECT_TRUE(bucket.ok());
   BucketInfo bucket_b = bucket.value();
 
-  bucket = CreateBucketForTesting(storage_key_c, "bucket_c", kPerm);
+  bucket = CreateBucketForTesting(storage_key_c, kDefaultBucketName, kPerm);
   EXPECT_TRUE(bucket.ok());
   BucketInfo bucket_c = bucket.value();
 
@@ -847,13 +865,13 @@ TEST_F(QuotaManagerImplTest, GetBucketsForStorageKey) {
 }
 
 TEST_F(QuotaManagerImplTest, GetUsageAndQuota_Simple) {
-  static const MockStorageKeyData kData[] = {
-      {"http://foo.com/", kTemp, 10},
-      {"http://foo.com/", kPerm, 80},
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", "logs", kTemp, 10},
+      {"http://foo.com/", kDefaultBucketName, kPerm, 80},
   };
-  CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  RegisterClientBucketData(fs_client, kData);
 
   auto result =
       GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kPerm);
@@ -899,10 +917,7 @@ TEST_F(QuotaManagerImplTest, GetUsage_NoClient) {
 }
 
 TEST_F(QuotaManagerImplTest, GetUsage_EmptyClient) {
-  CreateAndRegisterClient(base::span<MockStorageKeyData>(),
-                          QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
 
   auto result =
       GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kTemp);
@@ -929,14 +944,17 @@ TEST_F(QuotaManagerImplTest, GetUsage_EmptyClient) {
 }
 
 TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_MultiStorageKeys) {
-  static const MockStorageKeyData kData[] = {
-      {"http://foo.com/", kTemp, 10}, {"http://foo.com:8080/", kTemp, 20},
-      {"http://bar.com/", kTemp, 5},  {"https://bar.com/", kTemp, 7},
-      {"http://baz.com/", kTemp, 30}, {"http://foo.com/", kPerm, 40},
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 10},
+      {"http://foo.com:8080/", kDefaultBucketName, kTemp, 20},
+      {"http://bar.com/", "logs", kTemp, 5},
+      {"https://bar.com/", "notes", kTemp, 7},
+      {"http://baz.com/", "songs", kTemp, 30},
+      {"http://foo.com/", kDefaultBucketName, kPerm, 40},
   };
-  CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  RegisterClientBucketData(fs_client, kData);
 
   // This time explicitly sets a temporary global quota.
   const int kPoolSize = 100;
@@ -959,25 +977,26 @@ TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_MultiStorageKeys) {
 }
 
 TEST_F(QuotaManagerImplTest, GetUsage_MultipleClients) {
-  static const MockStorageKeyData kData1[] = {
-      {"http://foo.com/", kTemp, 1},
-      {"http://bar.com/", kTemp, 2},
-      {"http://bar.com/", kPerm, 4},
-      {"http://unlimited/", kPerm, 8},
+  static const ClientBucketData kData1[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 1},
+      {"http://bar.com/", kDefaultBucketName, kTemp, 2},
+      {"http://bar.com/", kDefaultBucketName, kPerm, 4},
+      {"http://unlimited/", kDefaultBucketName, kPerm, 8},
   };
-  static const MockStorageKeyData kData2[] = {
-      {"https://foo.com/", kTemp, 128},
-      {"http://example.com/", kPerm, 256},
-      {"http://unlimited/", kTemp, 512},
+  static const ClientBucketData kData2[] = {
+      {"https://foo.com/", kDefaultBucketName, kTemp, 128},
+      {"http://example.com/", kDefaultBucketName, kPerm, 256},
+      {"http://unlimited/", "logs", kTemp, 512},
   };
   mock_special_storage_policy()->AddUnlimited(GURL("http://unlimited/"));
   auto storage_capacity = GetStorageCapacity();
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
-  CreateAndRegisterClient(kData2, QuotaClientType::kDatabase,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  MockQuotaClient* database_client =
+      CreateAndRegisterClient(QuotaClientType::kDatabase, {kTemp, kPerm});
+  RegisterClientBucketData(fs_client, kData1);
+  RegisterClientBucketData(database_client, kData2);
 
   const int64_t kPoolSize = GetAvailableDiskSpaceForTest();
   const int64_t kPerHostQuota = kPoolSize / 5;
@@ -1014,26 +1033,28 @@ TEST_F(QuotaManagerImplTest, GetUsage_MultipleClients) {
 }
 
 TEST_F(QuotaManagerImplTest, GetUsageWithBreakdown_Simple) {
+  static const ClientBucketData kData1[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 1},
+      {"http://foo.com/", kDefaultBucketName, kPerm, 80},
+  };
+  static const ClientBucketData kData2[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 4},
+  };
+  static const ClientBucketData kData3[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 8},
+  };
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  MockQuotaClient* db_client =
+      CreateAndRegisterClient(QuotaClientType::kDatabase, {kTemp});
+  MockQuotaClient* sw_client =
+      CreateAndRegisterClient(QuotaClientType::kServiceWorkerCache, {kTemp});
+  RegisterClientBucketData(fs_client, kData1);
+  RegisterClientBucketData(db_client, kData2);
+  RegisterClientBucketData(sw_client, kData3);
+
   blink::mojom::UsageBreakdown usage_breakdown_expected =
       blink::mojom::UsageBreakdown();
-  static const MockStorageKeyData kData1[] = {
-      {"http://foo.com/", kTemp, 1},
-      {"http://foo.com/", kPerm, 80},
-  };
-  static const MockStorageKeyData kData2[] = {
-      {"http://foo.com/", kTemp, 4},
-  };
-  static const MockStorageKeyData kData3[] = {
-      {"http://foo.com/", kTemp, 8},
-  };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
-  CreateAndRegisterClient(kData2, QuotaClientType::kDatabase,
-                          {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData3, QuotaClientType::kServiceWorkerCache,
-                          {blink::mojom::StorageType::kTemporary});
-
   GetUsageAndQuotaWithBreakdown(ToStorageKey("http://foo.com/"), kPerm);
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(80, usage());
@@ -1083,17 +1104,20 @@ TEST_F(QuotaManagerImplTest, GetUsageWithBreakdown_NoClient) {
 }
 
 TEST_F(QuotaManagerImplTest, GetUsageWithBreakdown_MultiStorageKeys) {
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 10},
+      {"http://foo.com:8080/", "logs", kTemp, 20},
+      {"http://bar.com/", kDefaultBucketName, kTemp, 5},
+      {"https://bar.com/", kDefaultBucketName, kTemp, 7},
+      {"http://baz.com/", "logs", kTemp, 30},
+      {"http://foo.com/", kDefaultBucketName, kPerm, 40},
+  };
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  RegisterClientBucketData(fs_client, kData);
+
   blink::mojom::UsageBreakdown usage_breakdown_expected =
       blink::mojom::UsageBreakdown();
-  static const MockStorageKeyData kData[] = {
-      {"http://foo.com/", kTemp, 10}, {"http://foo.com:8080/", kTemp, 20},
-      {"http://bar.com/", kTemp, 5},  {"https://bar.com/", kTemp, 7},
-      {"http://baz.com/", kTemp, 30}, {"http://foo.com/", kPerm, 40},
-  };
-  CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
-
   GetUsageAndQuotaWithBreakdown(ToStorageKey("http://foo.com/"), kTemp);
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(10 + 20, usage());
@@ -1108,27 +1132,27 @@ TEST_F(QuotaManagerImplTest, GetUsageWithBreakdown_MultiStorageKeys) {
 }
 
 TEST_F(QuotaManagerImplTest, GetUsageWithBreakdown_MultipleClients) {
-  blink::mojom::UsageBreakdown usage_breakdown_expected =
-      blink::mojom::UsageBreakdown();
-  static const MockStorageKeyData kData1[] = {
-      {"http://foo.com/", kTemp, 1},
-      {"http://bar.com/", kTemp, 2},
-      {"http://bar.com/", kPerm, 4},
-      {"http://unlimited/", kPerm, 8},
+  static const ClientBucketData kData1[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 1},
+      {"http://bar.com/", kDefaultBucketName, kTemp, 2},
+      {"http://bar.com/", kDefaultBucketName, kPerm, 4},
+      {"http://unlimited/", kDefaultBucketName, kPerm, 8},
   };
-  static const MockStorageKeyData kData2[] = {
-      {"https://foo.com/", kTemp, 128},
-      {"http://example.com/", kPerm, 256},
-      {"http://unlimited/", kTemp, 512},
+  static const ClientBucketData kData2[] = {
+      {"https://foo.com/", kDefaultBucketName, kTemp, 128},
+      {"http://example.com/", kDefaultBucketName, kPerm, 256},
+      {"http://unlimited/", "logs", kTemp, 512},
   };
   mock_special_storage_policy()->AddUnlimited(GURL("http://unlimited/"));
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
-  CreateAndRegisterClient(kData2, QuotaClientType::kDatabase,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  MockQuotaClient* db_client =
+      CreateAndRegisterClient(QuotaClientType::kDatabase, {kTemp, kPerm});
+  RegisterClientBucketData(fs_client, kData1);
+  RegisterClientBucketData(db_client, kData2);
 
+  blink::mojom::UsageBreakdown usage_breakdown_expected =
+      blink::mojom::UsageBreakdown();
   GetUsageAndQuotaWithBreakdown(ToStorageKey("http://foo.com/"), kTemp);
   EXPECT_EQ(QuotaStatusCode::kOk, status());
   EXPECT_EQ(1 + 128, usage());
@@ -1159,14 +1183,15 @@ TEST_F(QuotaManagerImplTest, GetUsageWithBreakdown_MultipleClients) {
 }
 
 void QuotaManagerImplTest::GetUsage_WithModifyTestBody(const StorageType type) {
-  const MockStorageKeyData data[] = {
-      {"http://foo.com/", type, 10},
-      {"http://bar.com/", type, 0},
-      {"http://foo.com:1/", type, 20},
-      {"https://foo.com/", type, 0},
+  const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, type, 10},
+      {"http://bar.com/", kDefaultBucketName, type, 0},
+      {"http://foo.com:1/", kDefaultBucketName, type, 20},
+      {"https://foo.com/", kDefaultBucketName, type, 0},
   };
   MockQuotaClient* client =
-      CreateAndRegisterClient(data, QuotaClientType::kFileSystem, {type});
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {type});
+  RegisterClientBucketData(client, kData);
 
   auto result =
       GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), type);
@@ -1205,15 +1230,15 @@ TEST_F(QuotaManagerImplTest, GetTemporaryUsage_WithModify) {
 }
 
 TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_WithAdditionalTasks) {
-  static const MockStorageKeyData kData[] = {
-      {"http://foo.com/", kTemp, 10},
-      {"http://foo.com:8080/", kTemp, 20},
-      {"http://bar.com/", kTemp, 13},
-      {"http://foo.com/", kPerm, 40},
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 10},
+      {"http://foo.com:8080/", kDefaultBucketName, kTemp, 20},
+      {"http://bar.com/", "logs", kTemp, 13},
+      {"http://foo.com/", "inbox", kPerm, 40},
   };
-  CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  RegisterClientBucketData(fs_client, kData);
 
   const int kPoolSize = 100;
   const int kPerHostQuota = 20;
@@ -1239,15 +1264,16 @@ TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_WithAdditionalTasks) {
 }
 
 TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_NukeManager) {
-  static const MockStorageKeyData kData[] = {
-      {"http://foo.com/", kTemp, 10},
-      {"http://foo.com:8080/", kTemp, 20},
-      {"http://bar.com/", kTemp, 13},
-      {"http://foo.com/", kPerm, 40},
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 10},
+      {"http://foo.com:8080/", kDefaultBucketName, kTemp, 20},
+      {"http://bar.com/", kDefaultBucketName, kTemp, 13},
+      {"http://foo.com/", kDefaultBucketName, kPerm, 40},
   };
-  CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  RegisterClientBucketData(fs_client, kData);
+
   const int kPoolSize = 100;
   const int kPerHostQuota = 20;
   SetQuotaSettings(kPoolSize, kPerHostQuota, kMustRemainAvailableForSystem);
@@ -1273,13 +1299,15 @@ TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_NukeManager) {
 }
 
 TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_Overbudget) {
-  static const MockStorageKeyData kData[] = {
-      {"http://usage1/", kTemp, 1},
-      {"http://usage10/", kTemp, 10},
-      {"http://usage200/", kTemp, 200},
+  static const ClientBucketData kData[] = {
+      {"http://usage1/", kDefaultBucketName, kTemp, 1},
+      {"http://usage10/", kDefaultBucketName, kTemp, 10},
+      {"http://usage200/", kDefaultBucketName, kTemp, 200},
   };
-  CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary});
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp});
+  RegisterClientBucketData(fs_client, kData);
+
   const int kPoolSize = 100;
   const int kPerHostQuota = 20;
   SetQuotaSettings(kPoolSize, kPerHostQuota, kMustRemainAvailableForSystem);
@@ -1309,15 +1337,16 @@ TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_Overbudget) {
 }
 
 TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_Unlimited) {
-  static const MockStorageKeyData kData[] = {
-      {"http://usage10/", kTemp, 10},
-      {"http://usage50/", kTemp, 50},
-      {"http://unlimited/", kTemp, 4000},
+  static const ClientBucketData kData[] = {
+      {"http://usage10/", kDefaultBucketName, kTemp, 10},
+      {"http://usage50/", kDefaultBucketName, kTemp, 50},
+      {"http://unlimited/", "inbox", kTemp, 4000},
   };
   mock_special_storage_policy()->AddUnlimited(GURL("http://unlimited/"));
   auto storage_capacity = GetStorageCapacity();
-  CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary});
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp});
+  RegisterClientBucketData(fs_client, kData);
 
   // Test when not overbugdet.
   const int kPerHostQuotaFor1000 = 200;
@@ -1404,10 +1433,7 @@ TEST_F(QuotaManagerImplTest, GetTemporaryUsageAndQuota_Unlimited) {
 }
 
 TEST_F(QuotaManagerImplTest, GetAndSetPerststentHostQuota) {
-  CreateAndRegisterClient(base::span<MockStorageKeyData>(),
-                          QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
 
   EXPECT_EQ(GetPersistentHostQuota("foo.com"), 0);
   EXPECT_EQ(SetPersistentHostQuota("foo.com", 100), 100);
@@ -1435,10 +1461,7 @@ TEST_F(QuotaManagerImplTest, GetAndSetPerststentHostQuota) {
 
 TEST_F(QuotaManagerImplTest, GetAndSetPersistentUsageAndQuota) {
   auto storage_capacity = GetStorageCapacity();
-  CreateAndRegisterClient(base::span<MockStorageKeyData>(),
-                          QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
 
   auto result =
       GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kPerm);
@@ -1465,13 +1488,14 @@ TEST_F(QuotaManagerImplTest, GetAndSetPersistentUsageAndQuota) {
 }
 
 TEST_F(QuotaManagerImplTest, GetQuotaLowAvailableDiskSpace) {
-  static const MockStorageKeyData kData[] = {
-      {"http://foo.com/", kTemp, 100000},
-      {"http://unlimited/", kTemp, 4000000},
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 100000},
+      {"http://unlimited/", kDefaultBucketName, kTemp, 4000000},
   };
 
-  CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary});
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp});
+  RegisterClientBucketData(fs_client, kData);
 
   const int kPoolSize = 10000000;
   const int kPerHostQuota = kPoolSize / 5;
@@ -1492,10 +1516,7 @@ TEST_F(QuotaManagerImplTest, GetQuotaLowAvailableDiskSpace) {
 }
 
 TEST_F(QuotaManagerImplTest, GetSyncableQuota) {
-  CreateAndRegisterClient(base::span<MockStorageKeyData>(),
-                          QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kSyncable});
+  CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kSync});
 
   // Pre-condition check: available disk space (for testing) is less than
   // the default quota for syncable storage.
@@ -1517,15 +1538,19 @@ TEST_F(QuotaManagerImplTest, GetSyncableQuota) {
 }
 
 TEST_F(QuotaManagerImplTest, GetPersistentUsageAndQuota_MultiStorageKeys) {
-  static const MockStorageKeyData kData[] = {
-      {"http://foo.com/", kPerm, 10},  {"http://foo.com:8080/", kPerm, 20},
-      {"https://foo.com/", kPerm, 13}, {"https://foo.com:8081/", kPerm, 19},
-      {"http://bar.com/", kPerm, 5},   {"https://bar.com/", kPerm, 7},
-      {"http://baz.com/", kPerm, 30},  {"http://foo.com/", kTemp, 40},
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, kPerm, 10},
+      {"http://foo.com:8080/", kDefaultBucketName, kPerm, 20},
+      {"https://foo.com/", kDefaultBucketName, kPerm, 13},
+      {"https://foo.com:8081/", kDefaultBucketName, kPerm, 19},
+      {"http://bar.com/", kDefaultBucketName, kPerm, 5},
+      {"https://bar.com/", kDefaultBucketName, kPerm, 7},
+      {"http://baz.com/", kDefaultBucketName, kPerm, 30},
+      {"http://foo.com/", kDefaultBucketName, kTemp, 40},
   };
-  CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  RegisterClientBucketData(fs_client, kData);
 
   SetPersistentHostQuota("foo.com", 100);
   auto result =
@@ -1540,15 +1565,15 @@ TEST_F(QuotaManagerImplTest, GetPersistentUsage_WithModify) {
 }
 
 TEST_F(QuotaManagerImplTest, GetPersistentUsageAndQuota_WithAdditionalTasks) {
-  static const MockStorageKeyData kData[] = {
-      {"http://foo.com/", kPerm, 10},
-      {"http://foo.com:8080/", kPerm, 20},
-      {"http://bar.com/", kPerm, 13},
-      {"http://foo.com/", kTemp, 40},
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, kPerm, 10},
+      {"http://foo.com:8080/", kDefaultBucketName, kPerm, 20},
+      {"http://bar.com/", kDefaultBucketName, kPerm, 13},
+      {"http://foo.com/", kDefaultBucketName, kTemp, 40},
   };
-  CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  RegisterClientBucketData(fs_client, kData);
   SetPersistentHostQuota("foo.com", 100);
 
   GetUsageAndQuotaForWebApps(ToStorageKey("http://foo.com/"), kPerm);
@@ -1570,15 +1595,15 @@ TEST_F(QuotaManagerImplTest, GetPersistentUsageAndQuota_WithAdditionalTasks) {
 }
 
 TEST_F(QuotaManagerImplTest, GetPersistentUsageAndQuota_NukeManager) {
-  static const MockStorageKeyData kData[] = {
-      {"http://foo.com/", kPerm, 10},
-      {"http://foo.com:8080/", kPerm, 20},
-      {"http://bar.com/", kPerm, 13},
-      {"http://foo.com/", kTemp, 40},
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, kPerm, 10},
+      {"http://foo.com:8080/", kDefaultBucketName, kPerm, 20},
+      {"http://bar.com/", kDefaultBucketName, kPerm, 13},
+      {"http://foo.com/", kDefaultBucketName, kTemp, 40},
   };
-  CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  RegisterClientBucketData(fs_client, kData);
   SetPersistentHostQuota("foo.com", 100);
 
   set_additional_callback_count(0);
@@ -1601,15 +1626,18 @@ TEST_F(QuotaManagerImplTest, GetPersistentUsageAndQuota_NukeManager) {
 }
 
 TEST_F(QuotaManagerImplTest, GetUsage_Simple) {
-  static const MockStorageKeyData kData[] = {
-      {"http://foo.com/", kPerm, 1},       {"http://foo.com:1/", kPerm, 20},
-      {"http://bar.com/", kTemp, 300},     {"https://buz.com/", kTemp, 4000},
-      {"http://buz.com/", kTemp, 50000},   {"http://bar.com:1/", kPerm, 600000},
-      {"http://foo.com/", kTemp, 7000000},
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, kPerm, 1},
+      {"http://foo.com:1/", kDefaultBucketName, kPerm, 20},
+      {"http://bar.com/", kDefaultBucketName, kTemp, 300},
+      {"https://buz.com/", kDefaultBucketName, kTemp, 4000},
+      {"http://buz.com/", kDefaultBucketName, kTemp, 50000},
+      {"http://bar.com:1/", kDefaultBucketName, kPerm, 600000},
+      {"http://foo.com/", kDefaultBucketName, kTemp, 7000000},
   };
-  CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  RegisterClientBucketData(fs_client, kData);
 
   auto global_usage_result = GetGlobalUsage(kPerm);
   EXPECT_EQ(global_usage_result.usage, 1 + 20 + 600000);
@@ -1627,17 +1655,19 @@ TEST_F(QuotaManagerImplTest, GetUsage_Simple) {
 }
 
 TEST_F(QuotaManagerImplTest, GetUsage_WithModification) {
-  static const MockStorageKeyData kData[] = {
-      {"http://foo.com/", kPerm, 1},       {"http://foo.com:1/", kPerm, 20},
-      {"http://bar.com/", kTemp, 300},     {"https://buz.com/", kTemp, 4000},
-      {"http://buz.com/", kTemp, 50000},   {"http://bar.com:1/", kPerm, 600000},
-      {"http://foo.com/", kTemp, 7000000},
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, kPerm, 1},
+      {"http://foo.com:1/", kDefaultBucketName, kPerm, 20},
+      {"http://bar.com/", kDefaultBucketName, kTemp, 300},
+      {"https://buz.com/", kDefaultBucketName, kTemp, 4000},
+      {"http://buz.com/", kDefaultBucketName, kTemp, 50000},
+      {"http://bar.com:1/", kDefaultBucketName, kPerm, 600000},
+      {"http://foo.com/", kDefaultBucketName, kTemp, 7000000},
   };
 
   MockQuotaClient* client =
-      CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
-                              {blink::mojom::StorageType::kTemporary,
-                               blink::mojom::StorageType::kPersistent});
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  RegisterClientBucketData(client, kData);
 
   auto global_usage_result = GetGlobalUsage(kPerm);
   EXPECT_EQ(global_usage_result.usage, 1 + 20 + 600000);
@@ -1670,17 +1700,16 @@ TEST_F(QuotaManagerImplTest, GetUsage_WithModification) {
   EXPECT_EQ(usage(), 4000 + 50000 + 900000000);
 }
 
-TEST_F(QuotaManagerImplTest, GetUsage_WithDeleteStorageKey) {
-  static const MockStorageKeyData kData[] = {
-      {"http://foo.com/", kTemp, 1},
-      {"http://foo.com:1/", kTemp, 20},
-      {"http://foo.com/", kPerm, 300},
-      {"http://bar.com/", kTemp, 4000},
+TEST_F(QuotaManagerImplTest, GetUsage_WithDeleteBucket) {
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 1},
+      {"http://foo.com:1/", kDefaultBucketName, kTemp, 20},
+      {"http://foo.com/", kDefaultBucketName, kPerm, 300},
+      {"http://bar.com/", kDefaultBucketName, kTemp, 4000},
   };
   MockQuotaClient* client =
-      CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
-                              {blink::mojom::StorageType::kTemporary,
-                               blink::mojom::StorageType::kPersistent});
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  RegisterClientBucketData(client, kData);
 
   auto global_usage_result = GetGlobalUsage(kTemp);
   int64_t predelete_global_tmp = global_usage_result.usage;
@@ -1691,10 +1720,13 @@ TEST_F(QuotaManagerImplTest, GetUsage_WithDeleteStorageKey) {
   GetHostUsageWithBreakdown("foo.com", kPerm);
   int64_t predelete_host_pers = usage();
 
-  base::test::TestFuture<QuotaStatusCode> future;
-  client->DeleteStorageKeyData(ToStorageKey("http://foo.com/"), kTemp,
-                               future.GetCallback());
-  EXPECT_EQ(future.Get(), QuotaStatusCode::kOk);
+  auto bucket =
+      GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
+  EXPECT_TRUE(bucket.ok());
+
+  auto status = DeleteBucketData(bucket->ToBucketLocator(),
+                                 {QuotaClientType::kFileSystem});
+  EXPECT_EQ(status, QuotaStatusCode::kOk);
 
   global_usage_result = GetGlobalUsage(kTemp);
   EXPECT_EQ(global_usage_result.usage, predelete_global_tmp - 1);
@@ -1713,23 +1745,25 @@ TEST_F(QuotaManagerImplTest, GetStorageCapacity) {
 }
 
 TEST_F(QuotaManagerImplTest, EvictBucketData) {
-  static const MockStorageKeyData kData1[] = {
-      {"http://foo.com/", kTemp, 1},
-      {"http://foo.com:1/", kTemp, 20},
-      {"http://foo.com/", kPerm, 300},
-      {"http://bar.com/", kTemp, 4000},
+  static const ClientBucketData kData1[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 1},
+      {"http://foo.com:1/", kDefaultBucketName, kTemp, 20},
+      {"http://foo.com/", kDefaultBucketName, kPerm, 300},
+      {"http://bar.com/", kDefaultBucketName, kTemp, 4000},
   };
-  static const MockStorageKeyData kData2[] = {
-      {"http://foo.com/", kTemp, 50000}, {"http://foo.com:1/", kTemp, 6000},
-      {"http://foo.com/", kPerm, 700},   {"https://foo.com/", kTemp, 80},
-      {"http://bar.com/", kTemp, 9},
+  static const ClientBucketData kData2[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 50000},
+      {"http://foo.com:1/", kDefaultBucketName, kTemp, 6000},
+      {"http://foo.com/", kDefaultBucketName, kPerm, 700},
+      {"https://foo.com/", kDefaultBucketName, kTemp, 80},
+      {"http://bar.com/", kDefaultBucketName, kTemp, 9},
   };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
-  CreateAndRegisterClient(kData2, QuotaClientType::kDatabase,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  MockQuotaClient* db_client =
+      CreateAndRegisterClient(QuotaClientType::kDatabase, {kTemp, kPerm});
+  RegisterClientBucketData(fs_client, kData1);
+  RegisterClientBucketData(db_client, kData2);
 
   auto global_usage_result = GetGlobalUsage(kTemp);
   int64_t predelete_global_tmp = global_usage_result.usage;
@@ -1740,11 +1774,11 @@ TEST_F(QuotaManagerImplTest, EvictBucketData) {
   GetHostUsageWithBreakdown("foo.com", kPerm);
   int64_t predelete_host_pers = usage();
 
-  for (const MockStorageKeyData& data : kData1) {
+  for (const ClientBucketData& data : kData1) {
     quota_manager_impl()->NotifyStorageAccessed(ToStorageKey(data.origin),
                                                 data.type, base::Time::Now());
   }
-  for (const MockStorageKeyData& data : kData2) {
+  for (const ClientBucketData& data : kData2) {
     quota_manager_impl()->NotifyStorageAccessed(ToStorageKey(data.origin),
                                                 data.type, base::Time::Now());
   }
@@ -1775,8 +1809,11 @@ TEST_F(QuotaManagerImplTest, EvictBucketData) {
 }
 
 TEST_F(QuotaManagerImplTest, EvictNonDefaultBucketData) {
-  static const MockStorageKeyData kData[] = {{"http://foo.com/", kTemp, 100}};
-  CreateAndRegisterClient(kData, QuotaClientType::kFileSystem, {kTemp});
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 100}};
+  MockQuotaClient* client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp});
+  RegisterClientBucketData(client, kData);
 
   auto global_usage_result = GetGlobalUsage(kTemp);
   int64_t predelete_global_tmp = global_usage_result.usage;
@@ -1822,14 +1859,14 @@ TEST_F(QuotaManagerImplTest, EvictNonDefaultBucketData) {
 }
 
 TEST_F(QuotaManagerImplTest, EvictBucketDataHistogram) {
-  static const MockStorageKeyData kData[] = {
-      {"http://foo.com/", kTemp, 1},
-      {"http://bar.com/", kTemp, 1},
-  };
-
   base::HistogramTester histograms;
-  CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary});
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 1},
+      {"http://bar.com/", kDefaultBucketName, kTemp, 1},
+  };
+  MockQuotaClient* client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp});
+  RegisterClientBucketData(client, kData);
 
   GetGlobalUsage(kTemp);
 
@@ -1869,17 +1906,16 @@ TEST_F(QuotaManagerImplTest, EvictBucketDataHistogram) {
 }
 
 TEST_F(QuotaManagerImplTest, EvictBucketDataWithDeletionError) {
-  static const MockStorageKeyData kData[] = {
-      {"http://foo.com/", kTemp, 1},
-      {"http://foo.com:1/", kTemp, 20},
-      {"http://foo.com/", kPerm, 300},
-      {"http://bar.com/", kTemp, 4000},
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 1},
+      {"http://foo.com:1/", kDefaultBucketName, kTemp, 20},
+      {"http://foo.com/", kDefaultBucketName, kPerm, 300},
+      {"http://bar.com/", kDefaultBucketName, kTemp, 4000},
   };
   static const int kNumberOfTemporaryBuckets = 3;
   MockQuotaClient* client =
-      CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
-                              {blink::mojom::StorageType::kTemporary,
-                               blink::mojom::StorageType::kPersistent});
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  RegisterClientBucketData(client, kData);
 
   auto global_usage_result = GetGlobalUsage(kTemp);
   EXPECT_EQ(global_usage_result.usage, (1 + 20 + 4000));
@@ -1890,15 +1926,14 @@ TEST_F(QuotaManagerImplTest, EvictBucketDataWithDeletionError) {
   GetHostUsageWithBreakdown("foo.com", kPerm);
   EXPECT_EQ(300, usage());
 
-  for (const MockStorageKeyData& data : kData)
+  for (const ClientBucketData& data : kData)
     NotifyStorageAccessed(ToStorageKey(data.origin), data.type);
   task_environment_.RunUntilIdle();
-
-  client->AddStorageKeyToErrorSet(ToStorageKey("http://foo.com/"), kTemp);
 
   auto bucket =
       GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
   ASSERT_TRUE(bucket.ok());
+  client->AddBucketToErrorSet(bucket->ToBucketLocator());
 
   for (int i = 0; i < QuotaManagerImpl::kThresholdOfErrorsToBeDenylisted + 1;
        ++i) {
@@ -1944,17 +1979,17 @@ TEST_F(QuotaManagerImplTest, EvictBucketDataWithDeletionError) {
 }
 
 TEST_F(QuotaManagerImplTest, GetEvictionRoundInfo) {
-  static const MockStorageKeyData kData[] = {
-      {"http://foo.com/", kTemp, 1},
-      {"http://foo.com:1/", kTemp, 20},
-      {"http://foo.com/", kPerm, 300},
-      {"http://unlimited/", kTemp, 4000},
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 1},
+      {"http://foo.com:1/", kDefaultBucketName, kTemp, 20},
+      {"http://foo.com/", kDefaultBucketName, kPerm, 300},
+      {"http://unlimited/", kDefaultBucketName, kTemp, 4000},
   };
 
   mock_special_storage_policy()->AddUnlimited(GURL("http://unlimited/"));
-  CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  MockQuotaClient* client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  RegisterClientBucketData(client, kData);
 
   const int kPoolSize = 10000000;
   const int kPerHostQuota = kPoolSize / 5;
@@ -1973,12 +2008,12 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataNoClients) {
 }
 
 TEST_F(QuotaManagerImplTest, DeleteHostDataSimple) {
-  static const MockStorageKeyData kData[] = {
-      {"http://foo.com/", kTemp, 1},
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 1},
   };
-  CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  MockQuotaClient* client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  RegisterClientBucketData(client, kData);
 
   auto global_usage_result = GetGlobalUsage(kTemp);
   const int64_t predelete_global_tmp = global_usage_result.usage;
@@ -2013,23 +2048,25 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataSimple) {
 }
 
 TEST_F(QuotaManagerImplTest, DeleteHostDataMultiple) {
-  static const MockStorageKeyData kData1[] = {
-      {"http://foo.com/", kTemp, 1},
-      {"http://foo.com:1/", kTemp, 20},
-      {"http://foo.com/", kPerm, 300},
-      {"http://bar.com/", kTemp, 4000},
+  static const ClientBucketData kData1[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 1},
+      {"http://foo.com:1/", kDefaultBucketName, kTemp, 20},
+      {"http://foo.com/", kDefaultBucketName, kPerm, 300},
+      {"http://bar.com/", kDefaultBucketName, kTemp, 4000},
   };
-  static const MockStorageKeyData kData2[] = {
-      {"http://foo.com/", kTemp, 50000}, {"http://foo.com:1/", kTemp, 6000},
-      {"http://foo.com/", kPerm, 700},   {"https://foo.com/", kTemp, 80},
-      {"http://bar.com/", kTemp, 9},
+  static const ClientBucketData kData2[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 50000},
+      {"http://foo.com:1/", kDefaultBucketName, kTemp, 6000},
+      {"http://foo.com/", kDefaultBucketName, kPerm, 700},
+      {"https://foo.com/", kDefaultBucketName, kTemp, 80},
+      {"http://bar.com/", kDefaultBucketName, kTemp, 9},
   };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
-  CreateAndRegisterClient(kData2, QuotaClientType::kDatabase,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  MockQuotaClient* db_client =
+      CreateAndRegisterClient(QuotaClientType::kDatabase, {kTemp, kPerm});
+  RegisterClientBucketData(fs_client, kData1);
+  RegisterClientBucketData(db_client, kData2);
 
   auto global_usage_result = GetGlobalUsage(kTemp);
   const int64_t predelete_global_tmp = global_usage_result.usage;
@@ -2083,23 +2120,24 @@ TEST_F(QuotaManagerImplTest, DeleteHostDataMultiple) {
 }
 
 TEST_F(QuotaManagerImplTest, DeleteHostDataMultipleClientsDifferentTypes) {
-  static const MockStorageKeyData kData1[] = {
-      {"http://foo.com/", kPerm, 1},
-      {"http://foo.com:1/", kPerm, 10},
-      {"http://foo.com/", kTemp, 100},
-      {"http://bar.com/", kPerm, 1000},
+  static const ClientBucketData kData1[] = {
+      {"http://foo.com/", kDefaultBucketName, kPerm, 1},
+      {"http://foo.com:1/", kDefaultBucketName, kPerm, 10},
+      {"http://foo.com/", kDefaultBucketName, kTemp, 100},
+      {"http://bar.com/", kDefaultBucketName, kPerm, 1000},
   };
-  static const MockStorageKeyData kData2[] = {
-      {"http://foo.com/", kTemp, 10000},
-      {"http://foo.com:1/", kTemp, 100000},
-      {"https://foo.com/", kTemp, 1000000},
-      {"http://bar.com/", kTemp, 10000000},
+  static const ClientBucketData kData2[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 10000},
+      {"http://foo.com:1/", kDefaultBucketName, kTemp, 100000},
+      {"https://foo.com/", kDefaultBucketName, kTemp, 1000000},
+      {"http://bar.com/", kDefaultBucketName, kTemp, 10000000},
   };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
-  CreateAndRegisterClient(kData2, QuotaClientType::kDatabase,
-                          {blink::mojom::StorageType::kTemporary});
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  MockQuotaClient* db_client =
+      CreateAndRegisterClient(QuotaClientType::kDatabase, {kTemp});
+  RegisterClientBucketData(fs_client, kData1);
+  RegisterClientBucketData(db_client, kData2);
 
   auto global_usage_result = GetGlobalUsage(kTemp);
   const int64_t predelete_global_tmp = global_usage_result.usage;
@@ -2166,23 +2204,25 @@ TEST_F(QuotaManagerImplTest, DeleteBucketNoClients) {
 }
 
 TEST_F(QuotaManagerImplTest, DeleteBucketDataMultiple) {
-  static const MockStorageKeyData kData1[] = {
-      {"http://foo.com/", kTemp, 1},
-      {"http://foo.com:1/", kTemp, 20},
-      {"http://foo.com/", kPerm, 300},
-      {"http://bar.com/", kTemp, 4000},
+  static const ClientBucketData kData1[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 1},
+      {"http://foo.com:1/", kDefaultBucketName, kTemp, 20},
+      {"http://foo.com/", kDefaultBucketName, kPerm, 300},
+      {"http://bar.com/", kDefaultBucketName, kTemp, 4000},
   };
-  static const MockStorageKeyData kData2[] = {
-      {"http://foo.com/", kTemp, 50000}, {"http://foo.com:1/", kTemp, 6000},
-      {"http://foo.com/", kPerm, 700},   {"https://foo.com/", kTemp, 80},
-      {"http://bar.com/", kTemp, 9},
+  static const ClientBucketData kData2[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 50000},
+      {"http://foo.com:1/", kDefaultBucketName, kTemp, 6000},
+      {"http://foo.com/", kDefaultBucketName, kPerm, 700},
+      {"https://foo.com/", kDefaultBucketName, kTemp, 80},
+      {"http://bar.com/", kDefaultBucketName, kTemp, 9},
   };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
-  CreateAndRegisterClient(kData2, QuotaClientType::kDatabase,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  MockQuotaClient* db_client =
+      CreateAndRegisterClient(QuotaClientType::kDatabase, {kTemp, kPerm});
+  RegisterClientBucketData(fs_client, kData1);
+  RegisterClientBucketData(db_client, kData2);
 
   auto foo_temp_bucket =
       GetBucket(ToStorageKey("http://foo.com"), kDefaultBucketName, kTemp);
@@ -2207,11 +2247,11 @@ TEST_F(QuotaManagerImplTest, DeleteBucketDataMultiple) {
   GetHostUsageWithBreakdown("bar.com", kPerm);
   const int64_t predelete_bar_pers = usage();
 
-  for (const MockStorageKeyData& data : kData1) {
+  for (const ClientBucketData& data : kData1) {
     quota_manager_impl()->NotifyStorageAccessed(ToStorageKey(data.origin),
                                                 data.type, base::Time::Now());
   }
-  for (const MockStorageKeyData& data : kData2) {
+  for (const ClientBucketData& data : kData2) {
     quota_manager_impl()->NotifyStorageAccessed(ToStorageKey(data.origin),
                                                 data.type, base::Time::Now());
   }
@@ -2256,23 +2296,24 @@ TEST_F(QuotaManagerImplTest, DeleteBucketDataMultiple) {
 }
 
 TEST_F(QuotaManagerImplTest, DeleteBucketDataMultipleClientsDifferentTypes) {
-  static const MockStorageKeyData kData1[] = {
-      {"http://foo.com/", kPerm, 1},
-      {"http://foo.com:1/", kPerm, 10},
-      {"http://foo.com/", kTemp, 100},
-      {"http://bar.com/", kPerm, 1000},
+  static const ClientBucketData kData1[] = {
+      {"http://foo.com/", kDefaultBucketName, kPerm, 1},
+      {"http://foo.com:1/", kDefaultBucketName, kPerm, 10},
+      {"http://foo.com/", kDefaultBucketName, kTemp, 100},
+      {"http://bar.com/", kDefaultBucketName, kPerm, 1000},
   };
-  static const MockStorageKeyData kData2[] = {
-      {"http://foo.com/", kTemp, 10000},
-      {"http://foo.com:1/", kTemp, 100000},
-      {"https://foo.com/", kTemp, 1000000},
-      {"http://bar.com/", kTemp, 10000000},
+  static const ClientBucketData kData2[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 10000},
+      {"http://foo.com:1/", kDefaultBucketName, kTemp, 100000},
+      {"https://foo.com/", kDefaultBucketName, kTemp, 1000000},
+      {"http://bar.com/", kDefaultBucketName, kTemp, 10000000},
   };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
-  CreateAndRegisterClient(kData2, QuotaClientType::kDatabase,
-                          {blink::mojom::StorageType::kTemporary});
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  MockQuotaClient* db_client =
+      CreateAndRegisterClient(QuotaClientType::kDatabase, {kTemp});
+  RegisterClientBucketData(fs_client, kData1);
+  RegisterClientBucketData(db_client, kData2);
 
   auto foo_perm_bucket =
       GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kPerm);
@@ -2300,11 +2341,11 @@ TEST_F(QuotaManagerImplTest, DeleteBucketDataMultipleClientsDifferentTypes) {
   GetHostUsageWithBreakdown("bar.com", kPerm);
   const int64_t predelete_bar_pers = usage();
 
-  for (const MockStorageKeyData& data : kData1) {
+  for (const ClientBucketData& data : kData1) {
     quota_manager_impl()->NotifyStorageAccessed(ToStorageKey(data.origin),
                                                 data.type, base::Time::Now());
   }
-  for (const MockStorageKeyData& data : kData2) {
+  for (const ClientBucketData& data : kData2) {
     quota_manager_impl()->NotifyStorageAccessed(ToStorageKey(data.origin),
                                                 data.type, base::Time::Now());
   }
@@ -2348,20 +2389,20 @@ TEST_F(QuotaManagerImplTest, DeleteBucketDataMultipleClientsDifferentTypes) {
 }
 
 TEST_F(QuotaManagerImplTest, FindAndDeleteBucketData) {
-  static const MockStorageKeyData kData1[] = {
-      {"http://foo.com/", kTemp, 1},
-      {"http://bar.com/", kTemp, 4000},
+  static const ClientBucketData kData1[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 1},
+      {"http://bar.com/", kDefaultBucketName, kTemp, 4000},
   };
-  static const MockStorageKeyData kData2[] = {
-      {"http://foo.com/", kTemp, 50000},
-      {"http://bar.com/", kTemp, 9},
+  static const ClientBucketData kData2[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 50000},
+      {"http://bar.com/", kDefaultBucketName, kTemp, 9},
   };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
-  CreateAndRegisterClient(kData2, QuotaClientType::kDatabase,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  MockQuotaClient* db_client =
+      CreateAndRegisterClient(QuotaClientType::kDatabase, {kTemp, kPerm});
+  RegisterClientBucketData(fs_client, kData1);
+  RegisterClientBucketData(db_client, kData2);
 
   auto foo_bucket =
       GetBucket(ToStorageKey("http://foo.com"), kDefaultBucketName, kTemp);
@@ -2414,22 +2455,18 @@ TEST_F(QuotaManagerImplTest, FindAndDeleteBucketData) {
 }
 
 TEST_F(QuotaManagerImplTest, FindAndDeleteBucketDataWithDBError) {
-  static const MockStorageKeyData kData[] = {
-      {"http://foo.com/", kTemp, 123},
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 123},
   };
-  CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
 
   auto quota_db = std::make_unique<MockQuotaDatabase>(
       data_dir_.GetPath().AppendASCII("QuotaManager"));
   MockQuotaDatabase* mock_database = quota_db.get();
   SetQuotaDatabase(std::move(quota_db));
 
-  auto bucket = CreateBucketForTesting(ToStorageKey("http://foo.com"),
-                                       kDefaultBucketName, kTemp);
-  ASSERT_TRUE(bucket.ok());
-  BucketInfo foo_bucket = bucket.value();
+  RegisterClientBucketData(fs_client, kData);
 
   // Check usage data before deletion.
   GetHostUsageWithBreakdown("foo.com", kTemp);
@@ -2440,7 +2477,8 @@ TEST_F(QuotaManagerImplTest, FindAndDeleteBucketDataWithDBError) {
       .WillOnce(testing::Return(QuotaError::kDatabaseError));
 
   // Trying to delete bucket for "http://foo.com/" should return error.
-  EXPECT_EQ(FindAndDeleteBucketData(foo_bucket.storage_key, foo_bucket.name),
+  EXPECT_EQ(FindAndDeleteBucketData(ToStorageKey("http://foo.com"),
+                                    kDefaultBucketName),
             QuotaStatusCode::kErrorInvalidModification);
 
   auto global_usage_result = GetGlobalUsage(kTemp);
@@ -2451,19 +2489,22 @@ TEST_F(QuotaManagerImplTest, FindAndDeleteBucketDataWithDBError) {
 }
 
 TEST_F(QuotaManagerImplTest, NotifyAndLRUBucket) {
-  static const MockStorageKeyData kData[] = {
-      {"http://a.com/", kTemp, 0},
-      {"http://a.com:1/", kTemp, 0},
-      {"http://b.com/", kPerm, 0},  // persistent
-      {"http://c.com/", kTemp, 0},
+  static const ClientBucketData kData[] = {
+      {"http://a.com/", kDefaultBucketName, kTemp, 0},
+      {"http://a.com:1/", kDefaultBucketName, kTemp, 0},
+      {"http://b.com/", kDefaultBucketName, kPerm, 0},
+      {"http://c.com/", kDefaultBucketName, kTemp, 0},
   };
-  CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  RegisterClientBucketData(fs_client, kData);
 
-  NotifyStorageAccessed(ToStorageKey("http://b.com/"), kPerm);
-  NotifyStorageAccessed(ToStorageKey("http://a.com/"), kTemp);
-  NotifyStorageAccessed(ToStorageKey("http://c.com/"), kTemp);
+  quota_manager_impl()->NotifyStorageAccessed(ToStorageKey("http://b.com/"),
+                                              kPerm, base::Time::Now());
+  quota_manager_impl()->NotifyStorageAccessed(ToStorageKey("http://a.com/"),
+                                              kTemp, base::Time::Now());
+  quota_manager_impl()->NotifyStorageAccessed(ToStorageKey("http://c.com/"),
+                                              kTemp, base::Time::Now());
   task_environment_.RunUntilIdle();
 
   GetEvictionBucket(kTemp);
@@ -2527,15 +2568,16 @@ TEST_F(QuotaManagerImplTest, GetLRUBucket) {
 }
 
 TEST_F(QuotaManagerImplTest, GetBucketsModifiedBetween) {
-  static const MockStorageKeyData kData[] = {
-      {"http://a.com/", kTemp, 0},  {"http://a.com:1/", kTemp, 0},
-      {"https://a.com/", kTemp, 0}, {"http://b.com/", kPerm, 0},  // persistent
-      {"http://c.com/", kTemp, 0},
+  static const ClientBucketData kData[] = {
+      {"http://a.com/", kDefaultBucketName, kTemp, 0},
+      {"http://a.com:1/", kDefaultBucketName, kTemp, 0},
+      {"https://a.com/", kDefaultBucketName, kTemp, 0},
+      {"http://b.com/", kDefaultBucketName, kPerm, 0},  // persistent
+      {"http://c.com/", kDefaultBucketName, kTemp, 0},
   };
   MockQuotaClient* client =
-      CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
-                              {blink::mojom::StorageType::kTemporary,
-                               blink::mojom::StorageType::kPersistent});
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  RegisterClientBucketData(client, kData);
 
   auto buckets =
       GetBucketsModifiedBetween(kTemp, base::Time(), base::Time::Max());
@@ -2640,26 +2682,30 @@ TEST_F(QuotaManagerImplTest, QuotaForEmptyHost) {
 }
 
 TEST_F(QuotaManagerImplTest, DeleteSpecificClientTypeSingleBucket) {
-  static const MockStorageKeyData kData1[] = {
-      {"http://foo.com/", kTemp, 1},
+  static const ClientBucketData kData1[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 1},
   };
-  static const MockStorageKeyData kData2[] = {
-      {"http://foo.com/", kTemp, 2},
+  static const ClientBucketData kData2[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 2},
   };
-  static const MockStorageKeyData kData3[] = {
-      {"http://foo.com/", kTemp, 4},
+  static const ClientBucketData kData3[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 4},
   };
-  static const MockStorageKeyData kData4[] = {
-      {"http://foo.com/", kTemp, 8},
+  static const ClientBucketData kData4[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 8},
   };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData2, QuotaClientType::kServiceWorkerCache,
-                          {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData3, QuotaClientType::kDatabase,
-                          {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData4, QuotaClientType::kIndexedDatabase,
-                          {blink::mojom::StorageType::kTemporary});
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp});
+  MockQuotaClient* sw_client =
+      CreateAndRegisterClient(QuotaClientType::kServiceWorkerCache, {kTemp});
+  MockQuotaClient* db_client =
+      CreateAndRegisterClient(QuotaClientType::kDatabase, {kTemp});
+  MockQuotaClient* idb_client =
+      CreateAndRegisterClient(QuotaClientType::kIndexedDatabase, {kTemp});
+  RegisterClientBucketData(fs_client, kData1);
+  RegisterClientBucketData(sw_client, kData2);
+  RegisterClientBucketData(db_client, kData3);
+  RegisterClientBucketData(idb_client, kData4);
 
   auto foo_bucket =
       GetBucket(ToStorageKey("http://foo.com"), kDefaultBucketName, kTemp);
@@ -2689,26 +2735,30 @@ TEST_F(QuotaManagerImplTest, DeleteSpecificClientTypeSingleBucket) {
 }
 
 TEST_F(QuotaManagerImplTest, DeleteMultipleClientTypesSingleBucket) {
-  static const MockStorageKeyData kData1[] = {
-      {"http://foo.com/", kTemp, 1},
+  static const ClientBucketData kData1[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 1},
   };
-  static const MockStorageKeyData kData2[] = {
-      {"http://foo.com/", kTemp, 2},
+  static const ClientBucketData kData2[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 2},
   };
-  static const MockStorageKeyData kData3[] = {
-      {"http://foo.com/", kTemp, 4},
+  static const ClientBucketData kData3[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 4},
   };
-  static const MockStorageKeyData kData4[] = {
-      {"http://foo.com/", kTemp, 8},
+  static const ClientBucketData kData4[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 8},
   };
-  CreateAndRegisterClient(kData1, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData2, QuotaClientType::kServiceWorkerCache,
-                          {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData3, QuotaClientType::kDatabase,
-                          {blink::mojom::StorageType::kTemporary});
-  CreateAndRegisterClient(kData4, QuotaClientType::kIndexedDatabase,
-                          {blink::mojom::StorageType::kTemporary});
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp});
+  MockQuotaClient* sw_client =
+      CreateAndRegisterClient(QuotaClientType::kServiceWorkerCache, {kTemp});
+  MockQuotaClient* db_client =
+      CreateAndRegisterClient(QuotaClientType::kDatabase, {kTemp});
+  MockQuotaClient* idb_client =
+      CreateAndRegisterClient(QuotaClientType::kIndexedDatabase, {kTemp});
+  RegisterClientBucketData(fs_client, kData1);
+  RegisterClientBucketData(sw_client, kData2);
+  RegisterClientBucketData(db_client, kData3);
+  RegisterClientBucketData(idb_client, kData4);
 
   auto foo_bucket =
       GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
@@ -2732,13 +2782,13 @@ TEST_F(QuotaManagerImplTest, DeleteMultipleClientTypesSingleBucket) {
 TEST_F(QuotaManagerImplTest, GetUsageAndQuota_Incognito) {
   ResetQuotaManagerImpl(true);
 
-  static const MockStorageKeyData kData[] = {
-      {"http://foo.com/", kTemp, 10},
-      {"http://foo.com/", kPerm, 80},
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 10},
+      {"http://foo.com/", kDefaultBucketName, kPerm, 80},
   };
-  CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
-                          {blink::mojom::StorageType::kTemporary,
-                           blink::mojom::StorageType::kPersistent});
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+  RegisterClientBucketData(fs_client, kData);
 
   // Query global usage to warmup the usage tracker caching.
   GetGlobalUsage(kTemp);

@@ -19,6 +19,7 @@
 #include "base/location.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
@@ -129,15 +130,21 @@ FileSystemQuotaClient::~FileSystemQuotaClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void FileSystemQuotaClient::GetStorageKeyUsage(
-    const blink::StorageKey& storage_key,
-    blink::mojom::StorageType storage_type,
-    GetStorageKeyUsageCallback callback) {
+void FileSystemQuotaClient::GetBucketUsage(const BucketLocator& bucket,
+                                           GetBucketUsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
 
+  // Skip non-default buckets until Storage Buckets are supported for
+  // FileSystem.
+  // TODO(crbug.com/1218100): Integrate with StorageBuckets.
+  if (!bucket.is_default) {
+    std::move(callback).Run(0);
+    return;
+  }
+
   base::span<const FileSystemType> types =
-      QuotaStorageTypeToFileSystemTypes(storage_type);
+      QuotaStorageTypeToFileSystemTypes(bucket.type);
 
   base::RepeatingCallback<void(int64_t)> barrier =
       base::BarrierCallback<int64_t>(
@@ -155,7 +162,8 @@ void FileSystemQuotaClient::GetStorageKeyUsage(
           base::BindOnce(
               &FileSystemQuotaUtil::GetStorageKeyUsageOnFileTaskRunner,
               base::Unretained(quota_util),
-              base::RetainedRef(file_system_context_.get()), storage_key, type),
+              base::RetainedRef(file_system_context_.get()), bucket.storage_key,
+              type),
           barrier);
     } else {
       barrier.Run(0);
@@ -187,15 +195,22 @@ void FileSystemQuotaClient::GetStorageKeysForType(
   }
 }
 
-void FileSystemQuotaClient::DeleteStorageKeyData(
-    const blink::StorageKey& storage_key,
-    blink::mojom::StorageType type,
-    DeleteStorageKeyDataCallback callback) {
+void FileSystemQuotaClient::DeleteBucketData(
+    const BucketLocator& bucket,
+    DeleteBucketDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
 
+  // Skip non-default buckets until Storage Buckets are supported for
+  // FileSystem.
+  // TODO(crbug.com/1218100): Integrate with StorageBuckets.
+  if (!bucket.is_default) {
+    std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
+    return;
+  }
+
   base::span<const FileSystemType> fs_types =
-      QuotaStorageTypeToFileSystemTypes(type);
+      QuotaStorageTypeToFileSystemTypes(bucket.type);
 
   base::RepeatingCallback<void(blink::mojom::QuotaStatusCode)> barrier =
       base::BarrierCallback<blink::mojom::QuotaStatusCode>(
@@ -214,7 +229,7 @@ void FileSystemQuotaClient::DeleteStorageKeyData(
         FROM_HERE,
         base::BindOnce(&DeleteStorageKeyOnFileTaskRunner,
                        base::RetainedRef(file_system_context_.get()),
-                       storage_key, fs_type),
+                       bucket.storage_key, fs_type),
         barrier);
   }
 }

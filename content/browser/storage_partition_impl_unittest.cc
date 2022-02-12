@@ -929,9 +929,7 @@ class StoragePartitionImplTest : public testing::Test {
       mojo::PendingRemote<storage::mojom::QuotaClient> quota_client;
       mojo::MakeSelfOwnedReceiver(
           std::make_unique<storage::MockQuotaClient>(
-              quota_manager_->proxy(),
-              base::span<const storage::MockStorageKeyData>(),
-              storage::QuotaClientType::kFileSystem),
+              quota_manager_->proxy(), storage::QuotaClientType::kFileSystem),
           quota_client.InitWithNewPipeAndPassReceiver());
       quota_manager_->proxy()->RegisterClient(
           std::move(quota_client), storage::QuotaClientType::kFileSystem,

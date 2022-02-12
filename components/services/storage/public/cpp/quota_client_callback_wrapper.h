@@ -10,11 +10,9 @@
 #include "base/thread_annotations.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 
-namespace blink {
-class StorageKey;
-}  // namespace blink
-
 namespace storage {
+
+struct BucketLocator;
 
 // Stopgap for QuotaClients in systems with an unclear ownership graph.
 //
@@ -54,14 +52,12 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC) QuotaClientCallbackWrapper
   ~QuotaClientCallbackWrapper() override;
 
   // mojom::QuotaClient.
-  void GetStorageKeyUsage(const blink::StorageKey& storage_key,
-                          blink::mojom::StorageType type,
-                          GetStorageKeyUsageCallback callback) override;
+  void GetBucketUsage(const BucketLocator& bucket,
+                      GetBucketUsageCallback callback) override;
   void GetStorageKeysForType(blink::mojom::StorageType type,
                              GetStorageKeysForTypeCallback callback) override;
-  void DeleteStorageKeyData(const blink::StorageKey& storage_key,
-                            blink::mojom::StorageType type,
-                            DeleteStorageKeyDataCallback callback) override;
+  void DeleteBucketData(const BucketLocator& bucket,
+                        DeleteBucketDataCallback callback) override;
   void PerformStorageCleanup(blink::mojom::StorageType type,
                              PerformStorageCleanupCallback callback) override;
 

@@ -55,8 +55,7 @@ class NativeIOContextImpl : public NativeIOContext {
   // Must be called on the UI thread.
   void DeleteStorageKeyData(
       const blink::StorageKey& storage_key,
-      storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback)
-      override;
+      storage::mojom::QuotaClient::DeleteBucketDataCallback callback) override;
 
   // Returns the usage in bytes for all storage keys.
   //
@@ -81,7 +80,7 @@ class NativeIOContextImpl : public NativeIOContext {
 
   void DeleteStorageKeyDataOnIOThread(
       const blink::StorageKey& storage_key,
-      storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback);
+      storage::mojom::QuotaClient::DeleteBucketDataCallback callback);
 
   void GetStorageKeyUsageMapOnIOThread(
       base::OnceCallback<void(const std::map<blink::StorageKey, int64_t>&)>

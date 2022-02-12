@@ -705,8 +705,6 @@ class QuotaManagerImpl::StorageKeyGathererTask {
 // This is currently only for the default bucket. If a non-default bucket is to
 // be deleted, it will immediately complete the task since non-default bucket
 // usage is not being tracked by QuotaClients yet.
-// TODO(crbug.com/1199417): Update to call QuotaClients to clear data for
-// non-default buckets when QuotaClient is migrated to operate on buckets.
 //
 // `callback` will run to return the status of the deletion on task completion,
 // followed by `completion_closure` which will be called to destroy itself by
@@ -748,15 +746,6 @@ class QuotaManagerImpl::BucketDataDeleter {
 
     DCHECK(manager_->client_types_.contains(bucket_.type));
 
-    // If bucket is not the default bucket, skip calls to the registered
-    // QuotaClient instances since they are not being tracked yet.
-    // TODO(crbug.com/1199417): Update to call for all buckets once QuotaClient
-    // is migrated to operate on buckets.
-    if (!bucket_.is_default) {
-      FinishDeletion();
-      return;
-    }
-
     remaining_clients_ = manager_->client_types_[bucket_.type].size();
     UsageTracker* usage_tracker = manager_->GetUsageTracker(bucket_.type);
 
@@ -775,10 +764,9 @@ class QuotaManagerImpl::BucketDataDeleter {
         TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
             "browsing_data", "QuotaManagerImpl::BucketDataDeleter",
             ++tracing_id, "client_type", client_type, "bucket", bucket_params);
-        client->DeleteStorageKeyData(
-            bucket_.storage_key, bucket_.type,
-            base::BindOnce(&BucketDataDeleter::DidDeleteBucketData,
-                           weak_factory_.GetWeakPtr(), tracing_id));
+        client->DeleteBucketData(
+            bucket_, base::BindOnce(&BucketDataDeleter::DidDeleteBucketData,
+                                    weak_factory_.GetWeakPtr(), tracing_id));
       } else {
         ++skipped_clients_;
         --remaining_clients_;

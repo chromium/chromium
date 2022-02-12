@@ -20,18 +20,15 @@ namespace base {
 class SequencedTaskRunner;
 }
 
-namespace blink {
-class StorageKey;
-}  // namespace blink
-
 namespace storage {
 
 class FileSystemContext;
+struct BucketLocator;
 
 // All of the public methods of this class are called by the quota manager
 // (except for the constructor/destructor).
 class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemQuotaClient
-    : public storage::mojom::QuotaClient {
+    : public mojom::QuotaClient {
  public:
   explicit FileSystemQuotaClient(FileSystemContext* file_system_context);
   ~FileSystemQuotaClient() override;
@@ -39,15 +36,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemQuotaClient
   FileSystemQuotaClient(const FileSystemQuotaClient&) = delete;
   FileSystemQuotaClient& operator=(const FileSystemQuotaClient&) = delete;
 
-  // storage::mojom::QuotaClient methods.
-  void GetStorageKeyUsage(const blink::StorageKey& storage_key,
-                          blink::mojom::StorageType type,
-                          GetStorageKeyUsageCallback callback) override;
+  // mojom::QuotaClient methods.
+  void GetBucketUsage(const BucketLocator& bucket,
+                      GetBucketUsageCallback callback) override;
   void GetStorageKeysForType(blink::mojom::StorageType type,
                              GetStorageKeysForTypeCallback callback) override;
-  void DeleteStorageKeyData(const blink::StorageKey& storage_key,
-                            blink::mojom::StorageType type,
-                            DeleteStorageKeyDataCallback callback) override;
+  void DeleteBucketData(const BucketLocator& bucket,
+                        DeleteBucketDataCallback callback) override;
   void PerformStorageCleanup(blink::mojom::StorageType type,
                              PerformStorageCleanupCallback callback) override;
 
