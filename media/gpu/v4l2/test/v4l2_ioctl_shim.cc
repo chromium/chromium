@@ -432,23 +432,8 @@ bool V4L2IoctlShim::DQBuf(const std::unique_ptr<V4L2Queue>& queue,
 
     // Frame number was used to setup |v4l2_buffer.timestamp.tv_usec| field of
     // the OUTPUT queue for VIDIOC_QBUF ioctl call. Then, |tv_usec| is copied to
-    // |index| in the CAPTURE queue during VIDIOC_DQBUF ioctl call. Then, buffer
-    // ID (|index| in the CAPTURE queue) needs to be converted to reference ID.
-    // Reference ID of a frame can be specified by converting its timestamp
-    // (microseconds) into nanoseconds. This is required because |ref| field of
-    // |v4l2_ctrl_vp9_frame_decode_params| for VIDIOC_S_EXT_CTRLS ioctl call is
-    // expected to be in nanoseconds. Thus, |kTimestampToNanoSecs| is multiplied
-    // to the timestamp to get a reference ID.
-    // Technically, v4l2_timeval_to_ns() is suggested to be used to convert
-    // timestamp to nanoseconds, but multiplying the microseconds part of
-    // timestamp |tv_usec| by kTimestampToNanoSecs (1000) to make it nanoseconds
-    // is also known to work. This is how it is implemented in v4l2 video decode
-    // accelerator tests as well as in gstreamer.
-    // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/dev-stateless-decoder.html#buffer-management-while-decoding
-    constexpr size_t kTimestampToNanoSecs = 1000;
-
-    queue->GetBuffer(v4l2_buffer.index)
-        ->set_reference_id(v4l2_buffer.index * kTimestampToNanoSecs);
+    // |tv_usec| in the CAPTURE queue during VIDIOC_DQBUF ioctl call.
+    queue->GetBuffer(v4l2_buffer.index)->set_buffer_id(v4l2_buffer.index);
 
     *index = v4l2_buffer.index;
 

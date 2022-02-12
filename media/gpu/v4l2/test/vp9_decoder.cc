@@ -19,6 +19,12 @@ namespace media {
 
 namespace v4l2_test {
 
+constexpr uint32_t kNumberOfBuffersInCaptureQueue = 10;
+
+static_assert(kNumberOfBuffersInCaptureQueue <= 16,
+              "Too many CAPTURE buffers are used. The number of CAPTURE "
+              "buffers is currently assumed to be no larger than 16.");
+
 #define SET_IF(bit_field, cond, mask) (bit_field) |= ((cond) ? (mask) : 0)
 
 inline void conditionally_set_flag(
@@ -274,7 +280,7 @@ std::unique_ptr<Vp9Decoder> Vp9Decoder::Create(
   auto CAPTURE_queue = std::make_unique<V4L2Queue>(
       V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE, kUncompressedFourcc,
       gfx::Size(file_header.width, file_header.height), /*num_planes=*/2,
-      V4L2_MEMORY_MMAP, /*num_buffers=*/8);
+      V4L2_MEMORY_MMAP, /*num_buffers=*/kNumberOfBuffersInCaptureQueue);
 
   return base::WrapUnique(
       new Vp9Decoder(std::move(ivf_parser), std::move(v4l2_ioctl),
@@ -341,18 +347,65 @@ bool Vp9Decoder::Initialize() {
   return true;
 }
 
-void Vp9Decoder::RefreshReferenceSlots(const uint8_t refresh_frame_flags,
-                                       scoped_refptr<MmapedBuffer> buffer) {
-  const std::bitset<kVp9NumRefFrames> slots(refresh_frame_flags);
+std::set<int> Vp9Decoder::RefreshReferenceSlots(
+    const uint8_t refresh_frame_flags,
+    scoped_refptr<MmapedBuffer> buffer) {
+  const std::bitset<kVp9NumRefFrames> refresh_frame_slots(refresh_frame_flags);
+
+  std::set<int> reusable_buffer_slots;
 
   static_assert(kVp9NumRefFrames == sizeof(refresh_frame_flags) * CHAR_BIT,
                 "|refresh_frame_flags| size should not be larger than "
                 "|kVp9NumRefFrames|");
 
-  for (size_t i = 0; i < kVp9NumRefFrames; i++) {
-    if (slots[i])
-      ref_frames_[i] = buffer;
+  constexpr uint8_t kRefreshFrameFlagsNone = 0;
+  if (refresh_frame_flags == kRefreshFrameFlagsNone) {
+    // Indicates to reuse currently decoded CAPTURE buffer.
+    reusable_buffer_slots.insert(buffer->buffer_id());
+
+    return reusable_buffer_slots;
   }
+
+  constexpr uint8_t kRefreshFrameFlagsAll = 0xFF;
+  if (refresh_frame_flags == kRefreshFrameFlagsAll) {
+    // After decoding a key frame, all CAPTURE buffers can be reused except the
+    // CAPTURE buffer corresponding to the key frame.
+    for (size_t i = 0; i < kNumberOfBuffersInCaptureQueue; i++)
+      reusable_buffer_slots.insert(i);
+
+    reusable_buffer_slots.erase(buffer->buffer_id());
+
+    // Updates to assign current key frame as a reference frame for all
+    // reference frame slots in the reference frames list.
+    ref_frames_.fill(buffer);
+
+    return reusable_buffer_slots;
+  }
+
+  // More than one reference frame slots can be true.
+  uint16_t reusable_candidate_buffer_id;
+  for (size_t i = 0; i < kVp9NumRefFrames; i++) {
+    if (!refresh_frame_slots[i])
+      continue;
+    // It is not required to check whether existing reference frame slot is
+    // already pointing to a reference frame. This is because reference
+    // frame slots are empty only after the first key frame decoding.
+    reusable_candidate_buffer_id = ref_frames_[i]->buffer_id();
+    reusable_buffer_slots.insert(reusable_candidate_buffer_id);
+    // Checks to make sure |reusable_candidate_buffer_id| is not used in
+    // different reference frame slots in the reference frames list.
+    for (size_t j = 0; j < kVp9NumRefFrames; j++) {
+      if (refresh_frame_slots[j] == false) {
+        if (ref_frames_[j]->buffer_id() == reusable_candidate_buffer_id) {
+          reusable_buffer_slots.erase(reusable_candidate_buffer_id);
+          break;
+        }
+      }
+    }
+    ref_frames_[i] = buffer;
+  }
+
+  return reusable_buffer_slots;
 }
 
 Vp9Parser::Result Vp9Decoder::ReadNextFrame(Vp9FrameHeader& vp9_frame_header,
@@ -462,8 +515,23 @@ void Vp9Decoder::SetupFrameParams(
         "The number of reference frames in |Vp9FrameHeader| does not match "
         "|v4l2_ctrl_vp9_frame_decode_params|. Fix |Vp9FrameHeader|.");
 
+    // Buffer ID (|v4l2_buffer.index| in the CAPTURE queue) needs to be
+    // converted to reference ID. Reference ID of a frame can be specified by
+    // converting its buffer ID (microseconds) into nanoseconds. This is
+    // required because |ref| field of |v4l2_ctrl_vp9_frame_decode_params| for
+    // VIDIOC_S_EXT_CTRLS ioctl call is expected to be in nanoseconds. Thus,
+    // |kTimestampToNanoSecs| is multiplied to the buffer ID to get a reference
+    // ID. Technically, v4l2_timeval_to_ns() is suggested to be used to convert
+    // timestamp to nanoseconds, but multiplying the microseconds part of
+    // timestamp |tv_usec| by |kTimestampToNanoSecs| to make it nanoseconds
+    // is also known to work. This is how it is implemented in v4l2 video decode
+    // accelerator tests as well as in gstreamer.
+    // https://www.kernel.org/doc/html/v5.10/userspace-api/media/v4l/dev-stateless-decoder.html#buffer-management-while-decoding
+    constexpr size_t kTimestampToNanoSecs = 1000;
+
     v4l2_frame_params->refs[i] =
-        ref_frames_[idx] ? ref_frames_[idx]->reference_id() : kInvalidSurface;
+        ref_frames_[idx] ? ref_frames_[idx]->buffer_id() * kTimestampToNanoSecs
+                         : kInvalidSurface;
   }
   // TODO(stevecho): fill in the rest of |v4l2_frame_params| fields.
   FillV4L2VP9QuantizationParams(frame_hdr.quant_params,
@@ -552,8 +620,15 @@ Vp9Decoder::Result Vp9Decoder::DecodeNextFrame(std::vector<char>& y_plane,
                    static_cast<char*>(buffer->mmaped_planes()[1].start_addr),
                    size);
 
-  RefreshReferenceSlots(frame_hdr.refresh_frame_flags,
-                        CAPTURE_queue_->GetBuffer(index));
+  CHECK_LE(kNumberOfBuffersInCaptureQueue, 16u);
+
+  const std::set<int> reusable_buffer_slots = RefreshReferenceSlots(
+      frame_hdr.refresh_frame_flags, CAPTURE_queue_->GetBuffer(index));
+
+  for (const auto reusable_buffer_slot : reusable_buffer_slots) {
+    if (!v4l2_ioctl_->QBuf(CAPTURE_queue_, reusable_buffer_slot))
+      LOG(ERROR) << "VIDIOC_QBUF failed for CAPTURE queue.";
+  }
 
   if (!v4l2_ioctl_->DQBuf(OUTPUT_queue_, &index))
     LOG(ERROR) << "VIDIOC_DQBUF failed for OUTPUT queue.";
