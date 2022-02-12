@@ -1631,6 +1631,9 @@ extern const char kShareContextMenuDescription[];
 extern const char kForceMajorVersionInMinorPositionInUserAgentName[];
 extern const char kForceMajorVersionInMinorPositionInUserAgentDescription[];
 
+extern const char kDurableClientHintsCacheName[];
+extern const char kDurableClientHintsCacheDescription[];
+
 // Android --------------------------------------------------------------------
 
 #if BUILDFLAG(IS_ANDROID)

@@ -1392,6 +1392,11 @@
     "expiry_milestone": 104
   },
   {
+    "name": "durable-client-hints-cache",
+    "owners": [ "abeyad", "aarontag"],
+    "expiry_milestone": 110
+  },
+  {
       "name": "dynamic-color-android",
       "owners": [ "skym", "clank-sbui-team@google.com" ],
       "expiry_milestone": 100

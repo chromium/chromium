@@ -2849,6 +2849,10 @@ const char kForceMajorVersionInMinorPositionInUserAgentDescription[] =
     "flag is a backup plan for unexpected site-compatibility breakage with "
     "a three digit major version.";
 
+const char kDurableClientHintsCacheName[] = "Persistent client hints";
+const char kDurableClientHintsCacheDescription[] =
+    "Persist the client hints cache beyond browser restarts.";
+
 // Android ---------------------------------------------------------------------
 
 #if BUILDFLAG(IS_ANDROID)

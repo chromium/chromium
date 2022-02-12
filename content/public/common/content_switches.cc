@@ -88,6 +88,10 @@ const char kEnableCanvas2DLayers[] = "canvas-2d-layers";
 // Enable in-progress canvas 2d API features.
 const char kEnableNewCanvas2DAPI[] = "new-canvas-2d-api";
 
+// Disables hardware acceleration of video decode, where available.
+const char kDisableAcceleratedVideoDecode[] =
+    "disable-accelerated-video-decode";
+
 // Disables hardware acceleration of video encode, where available.
 const char kDisableAcceleratedVideoEncode[] =
     "disable-accelerated-video-encode";
@@ -312,6 +316,10 @@ const char kDisable2dCanvasClipAntialiasing[] = "disable-2d-canvas-clip-aa";
 // Disable YUV image decoding for those formats and cases where it's supported.
 // Has no effect unless GPU rasterization is enabled.
 const char kDisableYUVImageDecoding[] = "disable-yuv-image-decoding";
+
+// Enables the Accept-CH cache for client hints to be durable past browser
+// restarts.
+const char kDurableClientHintsCache[] = "durable-client-hints-cache";
 
 // Enables LCD text.
 const char kEnableLCDText[]                 = "enable-lcd-text";
@@ -924,10 +932,6 @@ const char kWebXrRuntimeOrientationSensors[] = "orientation-sensors";
 // The following are the runtimes that WebXr supports.
 const char kWebXrRuntimeOpenXr[] = "openxr";
 const char kWebXrRuntimeWMR[] = "windows-mixed-reality";
-
-// Disables hardware acceleration of video decode, where available.
-const char kDisableAcceleratedVideoDecode[] =
-    "disable-accelerated-video-decode";
 
 #if BUILDFLAG(IS_ANDROID)
 // Disable Media Session API

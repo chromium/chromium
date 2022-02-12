@@ -133,6 +133,10 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
      std::cref(blink::features::kForceMajorVersionInMinorPositionInUserAgent),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 
+    // Override for --durable-client-hints-cache.
+    {switches::kDurableClientHintsCache,
+     std::cref(blink::features::kDurableClientHintsCache),
+     base::FeatureList::OVERRIDE_ENABLE_FEATURE},
   };
 
   std::vector<base::FeatureList::FeatureOverrideInfo> overrides;

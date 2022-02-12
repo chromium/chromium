@@ -637,6 +637,9 @@ BLINK_COMMON_EXPORT extern const base::Feature kScaleTileMemoryLimit;
 BLINK_COMMON_EXPORT
 extern const base::FeatureParam<double> kScaleTileMemoryLimitFactor;
 
+// If enabled, the client hints cache will be loaded on browser restarts.
+BLINK_COMMON_EXPORT extern const base::Feature kDurableClientHintsCache;
+
 }  // namespace features
 }  // namespace blink
 

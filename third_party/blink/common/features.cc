@@ -1240,5 +1240,8 @@ const base::Feature kScaleTileMemoryLimit{"ScaleTileMemoryLimit",
 const base::FeatureParam<double> kScaleTileMemoryLimitFactor{
     &kScaleTileMemoryLimit, "Factor", 1.0};
 
+const base::Feature kDurableClientHintsCache{"DurableClientHintsCache",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink
