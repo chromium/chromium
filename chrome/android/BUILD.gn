@@ -910,7 +910,7 @@ junit_binary("chrome_junit_tests") {
   ]
 
   # Needed by androidx.test.core.app.ActivityScenario
-  android_manifest = chrome_public_android_manifest
+  android_manifest = "//chrome/android/junit/AndroidManifest.xml"
 
   deps = [
     ":base_module_java",

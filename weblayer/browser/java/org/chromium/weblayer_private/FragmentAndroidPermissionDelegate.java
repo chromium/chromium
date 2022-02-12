@@ -18,7 +18,7 @@ public class FragmentAndroidPermissionDelegate extends AndroidPermissionDelegate
     }
 
     @Override
-    protected final boolean shouldShowRequestPermissionRationale(String permission) {
+    public final boolean shouldShowRequestPermissionRationale(String permission) {
         if (mFragment.getActivity() == null) return false;
         return mFragment.shouldShowRequestPermissionRationale(permission);
     }

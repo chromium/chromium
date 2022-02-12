@@ -57,4 +57,12 @@ public interface AndroidPermissionDelegate {
      * @return True if the result was handled.
      */
     boolean handlePermissionResult(int requestCode, String[] permissions, int[] grantResults);
+
+    /**
+     * Called to determine whether android suggests showing a promo rationale.
+     * @see {@link Activity#shouldShowRequestPermissionRationale(String)}.
+     */
+    default boolean shouldShowRequestPermissionRationale(String permission) {
+        return false;
+    }
 }

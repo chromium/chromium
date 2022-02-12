@@ -58,6 +58,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/notifications/channels/ChromeChannelDefinitions.java",
       "android/java/src/org/chromium/chrome/browser/notifications/channels/LocaleChangedBroadcastReceiver.java",
       "android/java/src/org/chromium/chrome/browser/notifications/channels/SiteChannelsManager.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/permissions/NotificationPermissionController.java",
     ]
 
     deps = [
@@ -106,6 +107,8 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/notifications/PendingIntentProviderTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/ThrottlingNotificationSchedulerTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/channels/ChromeChannelDefinitionsTest.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/permissions/NotificationPermissionControllerTest.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/permissions/TestRationaleDelegate.java",
     ]
 
     deps = [
@@ -113,14 +116,19 @@ if (is_android) {
       "//base:base_java",
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
+      "//chrome/browser/preferences:java",
       "//chrome/test/android:chrome_java_test_support",
       "//components/browser_ui/notifications/android:java",
       "//third_party/android_deps:robolectric_all_java",
       "//third_party/androidx:androidx_test_core_java",
+      "//third_party/androidx:androidx_test_core_java",
+      "//third_party/androidx:androidx_test_ext_junit_java",
       "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/hamcrest:hamcrest_library_java",
       "//third_party/junit",
       "//third_party/mockito:mockito_java",
+      "//ui/android:ui_java_test_support",
+      "//ui/android:ui_no_recycler_view_java",
     ]
   }
 

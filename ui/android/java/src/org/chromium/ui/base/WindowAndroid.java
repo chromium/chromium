@@ -480,6 +480,12 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
         return false;
     }
 
+    @Override
+    public boolean shouldShowRequestPermissionRationale(String permission) {
+        return mPermissionDelegate != null
+                && mPermissionDelegate.shouldShowRequestPermissionRationale(permission);
+    }
+
     /**
      * Displays an error message with a provided error message string.
      * @param error The error message string to be displayed.

@@ -21,7 +21,7 @@ public class ActivityAndroidPermissionDelegate extends AndroidPermissionDelegate
     }
 
     @Override
-    protected final boolean shouldShowRequestPermissionRationale(String permission) {
+    public final boolean shouldShowRequestPermissionRationale(String permission) {
         Activity activity = mActivity.get();
         if (activity == null) return false;
         return ApiHelperForM.shouldShowRequestPermissionRationale(activity, permission);

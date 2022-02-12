@@ -48,9 +48,6 @@ public abstract class AndroidPermissionDelegateWithRequester implements AndroidP
         return isGranted;
     }
 
-    /** @see Activity.shouldShowRequestPermissionRationale */
-    protected abstract boolean shouldShowRequestPermissionRationale(String permission);
-
     @Override
     public final boolean canRequestPermission(String permission) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return false;
@@ -90,7 +87,10 @@ public abstract class AndroidPermissionDelegateWithRequester implements AndroidP
     @Override
     public final void requestPermissions(
             final String[] permissions, final PermissionCallback callback) {
-        if (requestPermissionsInternal(permissions, callback)) return;
+        if (requestPermissionsInternal(permissions, callback)) {
+            PermissionPrefs.onAndroidPermissionRequestUiShown(permissions);
+            return;
+        }
 
         // If the permission request was not sent successfully, just post a response to the
         // callback with whatever the current permission state is for all the requested

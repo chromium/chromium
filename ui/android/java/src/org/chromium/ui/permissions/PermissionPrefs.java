@@ -32,7 +32,22 @@ public class PermissionPrefs {
     private static final String PERMISSION_WAS_DENIED_KEY_PREFIX =
             "HasRequestedAndroidPermission::";
 
-    private static String normalizePermissionName(String permission) {
+    /**
+     * Shared preference key prefix for storing the timestamp of when the permission request was
+     * shown. Only used for notification permission currently.
+     */
+    private static final String ANDROID_PERMISSION_REQUEST_TIMESTAMP_KEY_PREFIX =
+            "AndroidPermissionRequestTimestamp::";
+
+    /** The permission string for notification permission. */
+    private static final String PERMISSION_NOTIFICATION = "android.permission.POST_NOTIFICATION";
+
+    /**
+     * Returns normalized permission name for the given permission considering OS versions.
+     * @param permission The permission name.
+     * @return Normalized permission name.
+     */
+    public static String normalizePermissionName(String permission) {
         // Prior to O, permissions were granted at the group level.  Post O, each permission is
         // granted individually.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
@@ -96,6 +111,35 @@ public class PermissionPrefs {
             editor.putBoolean(getPermissionWasDeniedKey(permission), true);
         }
         editor.apply();
+    }
+
+    /**
+     * @return The timestamp when the notification permission request was shown last.
+     */
+    public static long getAndroidNotificationPermissionRequestTimestamp() {
+        String prefName = ANDROID_PERMISSION_REQUEST_TIMESTAMP_KEY_PREFIX
+                + PermissionPrefs.normalizePermissionName(PERMISSION_NOTIFICATION);
+        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
+        return prefs.getLong(prefName, 0);
+    }
+
+    /**
+     * Called when the android permission prompt was shown.
+     */
+    static void onAndroidPermissionRequestUiShown(String[] permissions) {
+        boolean isNotification = false;
+        for (String permission : permissions) {
+            if (TextUtils.equals(permission, PERMISSION_NOTIFICATION)) {
+                isNotification = true;
+                break;
+            }
+        }
+        if (!isNotification) return;
+
+        String prefName = ANDROID_PERMISSION_REQUEST_TIMESTAMP_KEY_PREFIX
+                + PermissionPrefs.normalizePermissionName(PERMISSION_NOTIFICATION);
+        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
+        prefs.edit().putLong(prefName, System.currentTimeMillis()).apply();
     }
 
     /**
