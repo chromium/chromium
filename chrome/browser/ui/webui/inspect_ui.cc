@@ -31,6 +31,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -87,57 +88,56 @@ base::Value GetUiDevToolsTargets() {
 
 // DevToolsFrontEndObserver ----------------------------------------
 
-class DevToolsFrontEndObserver : public content::WebContentsObserver {
+class DevToolsFrontEndObserver
+    : public content::WebContentsUserData<DevToolsFrontEndObserver>,
+      public content::WebContentsObserver {
  public:
-  DevToolsFrontEndObserver(WebContents* web_contents, const GURL& url);
+  ~DevToolsFrontEndObserver() override;
+
   DevToolsFrontEndObserver(const DevToolsFrontEndObserver&) = delete;
   DevToolsFrontEndObserver& operator=(const DevToolsFrontEndObserver&) = delete;
-  ~DevToolsFrontEndObserver() override = default;
-
-  void SetOnFrontEndFinished(base::OnceClosure callback);
 
  protected:
-  // contents::WebContentsObserver
-  void WebContentsDestroyed() override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  DevToolsFrontEndObserver(WebContents* web_contents,
+                           base::OnceClosure closure);
 
  private:
-  GURL url_;
+  friend class content::WebContentsUserData<DevToolsFrontEndObserver>;
+
+  // contents::WebContentsObserver
+  void PrimaryPageChanged(content::Page& page) override;
+
+  bool front_end_page_committed_ = false;
+
   // Callback function executed when the front end is finished.
   base::OnceClosure on_front_end_finished_;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 DevToolsFrontEndObserver::DevToolsFrontEndObserver(WebContents* web_contents,
-                                                   const GURL& url)
-    : WebContentsObserver(web_contents), url_(url) {}
+                                                   base::OnceClosure closure)
+    : content::WebContentsUserData<DevToolsFrontEndObserver>(*web_contents),
+      WebContentsObserver(web_contents),
+      on_front_end_finished_(std::move(closure)) {}
 
-void DevToolsFrontEndObserver::SetOnFrontEndFinished(
-    base::OnceClosure callback) {
-  on_front_end_finished_ = std::move(callback);
-}
-
-void DevToolsFrontEndObserver::WebContentsDestroyed() {
-  if (on_front_end_finished_)
+DevToolsFrontEndObserver::~DevToolsFrontEndObserver() {
+  if (!on_front_end_finished_.is_null()) {
     std::move(on_front_end_finished_).Run();
-  delete this;
-}
-
-void DevToolsFrontEndObserver::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted())
-    return;
-
-  if (url_ != navigation_handle->GetURL()) {
-    if (on_front_end_finished_)
-      std::move(on_front_end_finished_).Run();
-    delete this;
   }
 }
+
+void DevToolsFrontEndObserver::PrimaryPageChanged(content::Page& page) {
+  if (!front_end_page_committed_ && !page.GetMainDocument().IsErrorDocument()) {
+    front_end_page_committed_ = true;
+    return;
+  }
+
+  // Delete this.
+  web_contents()->RemoveUserData(UserDataKey());
+}
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(DevToolsFrontEndObserver);
 
 // DevToolsUIBindingsEnabler ----------------------------------------
 
@@ -157,7 +157,8 @@ class DevToolsUIBindingsEnabler : public DevToolsFrontEndObserver {
 
 DevToolsUIBindingsEnabler::DevToolsUIBindingsEnabler(WebContents* web_contents,
                                                      const GURL& url)
-    : DevToolsFrontEndObserver(web_contents, url), bindings_(web_contents) {}
+    : DevToolsFrontEndObserver(web_contents, base::NullCallback()),
+      bindings_(web_contents) {}
 
 DevToolsUIBindings* DevToolsUIBindingsEnabler::GetBindings() {
   return &bindings_;
@@ -448,10 +449,9 @@ void InspectMessageHandler::CreateNativeUIInspectionSession(
   inspect_ui_->ShowNativeUILaunchButton(/* enabled = */ false);
 
   // The observer will delete itself when the front-end finishes.
-  DevToolsFrontEndObserver* front_end_observer =
-      new DevToolsFrontEndObserver(front_end, gurl);
-  front_end_observer->SetOnFrontEndFinished(base::BindOnce(
-      &InspectMessageHandler::OnFrontEndFinished, weak_factory_.GetWeakPtr()));
+  DevToolsFrontEndObserver::CreateForWebContents(
+      front_end, base::BindOnce(&InspectMessageHandler::OnFrontEndFinished,
+                                weak_factory_.GetWeakPtr()));
 }
 
 void InspectMessageHandler::OnFrontEndFinished() {
