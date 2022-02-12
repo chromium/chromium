@@ -237,7 +237,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Consultar o que podes sincronizar<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Bloquear todas</translation>
 <translation id="313283613037595347">Crear nova pestana do modo de incógnito.</translation>
-<translation id="3150887674190166798">Selecciona como queres que Chrome solicite o sitio cada vez</translation>
 <translation id="3153862085237805241">Gardar tarxeta</translation>
 <translation id="3157387275655328056">Engadir á lista de lectura</translation>
 <translation id="3157684681743766797">Marcar todo como...</translation>
@@ -506,8 +505,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5737974891429562743">Os detalles de inicio de sesión da conta están caducados. Actualízaos para iniciar a sincronización.</translation>
 <translation id="5738887413654608789">Así poderás descubrir páxinas web relevantes en función do que te rodea.</translation>
 <translation id="5758631781033351321">Aquí atoparás a túa lista de lecturas</translation>
-<translation id="575902488528307720">Buscar imaxe</translation>
-<translation id="5781453543752460388">Engadir a Fotos</translation>
 <translation id="5782227691023083829">Traducindo…</translation>
 <translation id="5791632441210678828">Botón Ordenar do feed Seguindo.</translation>
 <translation id="5802829331520313983">Configurar…</translation>
@@ -766,7 +763,6 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7911190106180361398">A túa organización non che permite sincronizalo todo.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportar contrasinais...</translation>
-<translation id="793971554166979165">Modo predeterminado do sitio</translation>
 <translation id="794799177247607889">Deter rexistro</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Ningún contrasinal vulnerado}=1{{COUNT} contrasinal vulnerado}other{{COUNT} contrasinais vulnerados}}</translation>
 <translation id="7961015016161918242">Nunca</translation>

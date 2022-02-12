@@ -237,7 +237,6 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Вижте какво можете да синхронизирате<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Блокиране на всички</translation>
 <translation id="313283613037595347">Създаване на нов раздел в режим „инкогнито“.</translation>
-<translation id="3150887674190166798">Изберете коя версия на сайта да се отваря в Chrome по подразбиране</translation>
 <translation id="3153862085237805241">Запазване на картата</translation>
 <translation id="3157387275655328056">Добавяне към списъка за четене</translation>
 <translation id="3157684681743766797">Означаване на всички…</translation>
@@ -506,8 +505,6 @@
 <translation id="5737974891429562743">Данните за вход в профила не са актуални. Актуализирайте ги, за да започне синхронизирането.</translation>
 <translation id="5738887413654608789">Това ви позволява да откривате подходящи уеб страници въз основа на заобикалящата ви среда.</translation>
 <translation id="5758631781033351321">Тук ще се показва списъкът ви за четене</translation>
-<translation id="575902488528307720">Търсене на изображението</translation>
-<translation id="5781453543752460388">Добавяне към Photos</translation>
 <translation id="5782227691023083829">Превежда се...</translation>
 <translation id="5791632441210678828">Бутон за сортиране на емисията „Следено“.</translation>
 <translation id="5802829331520313983">Настройване…</translation>
@@ -766,7 +763,6 @@
 <translation id="7911190106180361398">Организацията ви не разрешава синхронизирането на всичко.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Експортиране на паролите...</translation>
-<translation id="793971554166979165">Стандартен режим за сайтовете</translation>
 <translation id="794799177247607889">Спиране на регистрирането</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Няма компрометирани пароли}=1{{COUNT} компрометирана парола}other{{COUNT} компрометирани пароли}}</translation>
 <translation id="7961015016161918242">Никога</translation>

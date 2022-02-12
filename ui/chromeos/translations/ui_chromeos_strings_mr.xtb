@@ -21,6 +21,7 @@
 <translation id="115443833402798225">हँगल Ahnmatae</translation>
 <translation id="1155759005174418845">कॅटलान</translation>
 <translation id="1168100932582989117">Google नाव सर्व्हर</translation>
+<translation id="1171082344678443012">XZ काँप्रेस केलेले संग्रहण</translation>
 <translation id="1172970565351728681">सुमारे <ph name="REMAINING_TIME" /> शिल्लक आहे/आहेत</translation>
 <translation id="1173894706177603556">नाव बदला</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, फोन बॅटरी <ph name="BATTERY_STATUS" />%, तपशील</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">ड्राइव्ह फॉरमॅट त्यावर स्टोअर केलेला डेटा हटवेल. ही क्रिया पहिल्यासारखी केली जाऊ शकत नाही.</translation>
 <translation id="2025955442973426285">टिग्रीन्या</translation>
 <translation id="2028997212275086731">RAR संग्रहण</translation>
+<translation id="2036414735548252477">LZMA काँप्रेस केलेले tar संग्रहण</translation>
 <translation id="2037845485764049925">रशियन</translation>
 <translation id="2044023416777079300">मोडेमची नोंदणी केलेली नाही</translation>
 <translation id="2046702855113914483">रामेन</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> बाइट</translation>
 <translation id="4880214202172289027">व्हॉल्यूम स्लायडर</translation>
 <translation id="4881695831933465202">उघडा</translation>
+<translation id="4886199584824489598">Bzip2 काँप्रेस केलेले संग्रहण</translation>
 <translation id="4900532980794411603">Parallels Desktop सोबत शेअर करा</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, कनेक्ट करा</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> चा बॅकअप घेण्यास तयार</translation>
@@ -586,6 +589,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> नेटवर्क, कनेक्ट केलेले नाही</translation>
 <translation id="6074825444536523002">Google Forms</translation>
 <translation id="6079871810119356840">क्वर्टी कीबोर्डसह हंगेरीयन</translation>
+<translation id="6082256976217156453">LZMA काँप्रेस केलेले संग्रहण</translation>
 <translation id="6096979789310008754">शोध मजकूर साफ केला, सर्व फाइल आणि फोल्डर दाखवत आहे.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> वर हलवत आहे</translation>
 <translation id="6129953537138746214">जागा</translation>
@@ -842,6 +846,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8297012244086013755">हानगुल 3 संच (Shift नाही)</translation>
 <translation id="8299269255470343364">जपानी</translation>
 <translation id="8300849813060516376">OTASP बिघडले</translation>
+<translation id="8308481408797647857">XZ काँप्रेस केलेले tar संग्रहण</translation>
 <translation id="8312871300878166382">फोल्डरमध्ये पेस्ट करा</translation>
 <translation id="8329978297633540474">साधा मजकूर</translation>
 <translation id="8335587457941836791">शेल्फपासून अनपिन करा</translation>
@@ -950,6 +955,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="943972244133411984">ने सुधारित केली</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> ते <ph name="TO_ENTRY_NAME" /> मधील <ph name="ENTRY_COUNT" /> नोंदींची रेंज निवडली आहे.</translation>
+<translation id="961973045258256291">Gzip काँप्रेस केलेले संग्रहण</translation>
 <translation id="965477715979482472">इंग्रजी (दक्षिण आफ्रिका)</translation>
 <translation id="981121421437150478">ऑफलाइन</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" नावाची फाइल आधीच अस्तित्वात आहे. तुम्हाला ती बदलायची आहे का?</translation>

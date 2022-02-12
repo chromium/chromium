@@ -388,18 +388,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
       Nota: Esta política también se aplica en las extensiones de componentes, como la extensión de Servicios de Hangout.</translation>
 <translation id="148194404518916594">Permite que los usuarios utilicen Tocar para buscar</translation>
-<translation id="1485570394283692769">Controla si los sitios web pueden enviar solicitudes a extremos de red más privados de una forma no segura.
-
-          Esta política está relacionada con la especificación Acceso a redes privadas. Para obtener más información, consulta https://wicg.github.io/private-network-access/.
-
-          Un extremo de red es más privado que otro en los siguientes casos:
-          1) Si su dirección IP es localhost y la otra no lo es.
-          2) Si su dirección IP es privada y la otra es pública.
-          En el futuro, en función de la evolución de las especificaciones, es posible que se aplique esta política a todas las solicitudes de origen cruzado dirigidas a IP privadas o localhost.
-
-          Si se establece esta política como falsa o no se establece, el comportamiento predeterminado para las solicitudes a extremos de red más privados dependerá de la configuración personal del usuario con respecto a las marcas de función <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />, <ph name="PRIVATE_NETWORK_ACCESS_SEND_PREFLIGHTS_FEATURE_NAME" /> y <ph name="PRIVATE_NETWORK_ACCESS_RESPECT_PREFLIGHT_RESULTS_FEATURE_NAME" />, las cuales se pueden establecer en una prueba de campo o en la línea de comandos.
-
-          Si estableces esta política como verdadera, los sitios web podrán enviar solicitudes a cualquier extremo de red, sujeto a otras verificaciones de origen cruzado.</translation>
 <translation id="1486021504508098388">Enviar información sobre la luz de fondo</translation>
 <translation id="1487916040416013623">Si estableces la política, se especificarán los servidores que deben habilitarse para la autenticación integrada, la cual solo está activa cuando <ph name="PRODUCT_NAME" /> recibe un desafío de autenticación de un proxy o de un servidor que se encuentra en la lista autorizada.
 
@@ -4460,13 +4448,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Si no la estableces, los usuarios podrán activar o desactivar esta función.</translation>
 <translation id="6174065452773547810">Si habilitas la política o no la estableces, los dispositivos tendrán controles de informes detallados.
       Si inhabilitas la política, los dispositivos inscritos no tendrán controles de informes detallados.</translation>
-<translation id="6174187836314350835">Lista de patrones de URL. Las solicitudes iniciadas en sitios web entregados por orígenes coincidentes no están sujetas a verificaciones del Acceso de red privada.
-
-          Si no estableces esta política, se comportará como si se hubiera establecido con una lista vacía.
-
-          En el caso de orígenes no contemplados en los patrones especificados en la política, se utilizará el valor predeterminado global ya sea de la política <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> (si se establece) o de la configuración personal del usuario.
-
-          Para obtener información detallada sobre los patrones de URL válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="6178075938488052838">Esta política controla quién puede iniciar una sesión en <ph name="PRODUCT_OS_NAME" />, pero no impide que los usuarios accedan a otras cuentas de Google en Android. Si quieres impedirlo, configura la política <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME" /> específica de Android como parte de la política <ph name="ARC_POLICY_POLICY_NAME" />.</translation>
 <translation id="6181304954168534748">Hash SHA-256 de la plantilla de escritorio.</translation>
 <translation id="6181618732396778048">No permite que ningún sitio solicite acceso de escritura a archivos ni directorios</translation>

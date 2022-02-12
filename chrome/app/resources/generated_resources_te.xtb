@@ -2422,7 +2422,6 @@
 <translation id="3420501302812554910">అంతర్గత సెక్యూరిటీ కీని రీసెట్ చేయడం అవసరం</translation>
 <translation id="3421387094817716717">దీర్ఘవృత్తాకార వక్రరేఖ పబ్లిక్ కీ</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />గమనిక:<ph name="END_BOLD" /> ఒకే రీతిలో ఉండే వాయిస్ లేదా రికార్డింగ్ సైతం మీ వ్యక్తిగత ఫలితాలను లేదా మీ Assistantను యాక్సెస్ చేయగలిగే అవకాశం ఉంది.</translation>
-<translation id="3421726884497337397">థర్డ్-పార్టీ కుక్కీలను ఎప్పుడు బ్లాక్ చేయాలో ఎంచుకోండి</translation>
 <translation id="3422291238483866753">ఒక సైట్ మీ పరిసరాల 3D మ్యాప్‌ను రూపొందించాలన్నప్పుడు లేదా కెమెరా పొజిషన్‌ను ట్రాక్ చేయాలన్నప్పుడు అనుమతి అడగాలి (సిఫార్సు చేయడమైనది)</translation>
 <translation id="3423463006624419153">మీ '<ph name="PHONE_NAME_1" />' మరియు '<ph name="PHONE_NAME_2" />'లో:</translation>
 <translation id="3423858849633684918">దయచేసి  <ph name="PRODUCT_NAME" />ని తిరిగి ప్రారంభించండి</translation>
@@ -4258,6 +4257,7 @@
 <translation id="5310281978693206542">లింక్‌ను మీ పరికరాలకు పంపండి</translation>
 <translation id="5311304534597152726">ఇలా సైన్ ఇన్ చేస్తున్నారు</translation>
 <translation id="5311565231560644461">మీ వర్చువల్ రియాలిటీ పరికరాలను, డేటాను ఉపయోగించడానికి సైట్‌లను అనుమతించవద్దు</translation>
+<translation id="5313967007315987356">సైట్‌ను జోడించు</translation>
 <translation id="5315738755890845852">అదనపు వంకర కలుపు: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">సేవ్ చేయండి</translation>
 <translation id="5319359161174645648">Chromeను Google సిఫార్సు చేస్తోంది</translation>

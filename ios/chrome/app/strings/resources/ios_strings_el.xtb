@@ -237,7 +237,6 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Δείτε τι μπορείτε να συγχρονίσετε<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Αποκλεισμός όλων</translation>
 <translation id="313283613037595347">Δημιουργία νέας καρτέλας ανώνυμης περιήγησης.</translation>
-<translation id="3150887674190166798">Επιλέξτε πώς θα θέλατε το Chrome να ζητά τον ιστότοπο κάθε φορά</translation>
 <translation id="3153862085237805241">Αποθήκευση κάρτας</translation>
 <translation id="3157387275655328056">Προσθήκη στη λίστα ανάγνωσης</translation>
 <translation id="3157684681743766797">Επισήμανση όλων…</translation>
@@ -506,8 +505,6 @@
 <translation id="5737974891429562743">Τα στοιχεία σύνδεσης λογαριασμού δεν είναι ενημερωμένα. Ενημερώστε τα για να ξεκινήσει ο συγχρονισμός.</translation>
 <translation id="5738887413654608789">Αυτό σας επιτρέπει να ανακαλύψετε σχετικές ιστοσελίδες βάσει του περιβάλλοντός σας.</translation>
 <translation id="5758631781033351321">Εδώ θα βρείτε τη λίστα ανάγνωσής σας</translation>
-<translation id="575902488528307720">Αναζήτηση για εικόνα</translation>
-<translation id="5781453543752460388">Προσθήκη στις Φωτογραφίες</translation>
 <translation id="5782227691023083829">Μετάφραση...</translation>
 <translation id="5791632441210678828">Κουμπί ταξινόμησης για τη ροή Ακολουθείτε.</translation>
 <translation id="5802829331520313983">Ρύθμιση…</translation>
@@ -767,7 +764,6 @@
 <translation id="7911190106180361398">Ο οργανισμός σας δεν σας επιτρέπει τον συγχρονισμό όλων των δεδομένων.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Εξαγωγή κωδικών πρόσβασης…</translation>
-<translation id="793971554166979165">Προεπιλεγμένη λειτουργία ιστοτόπου</translation>
 <translation id="794799177247607889">Διακοπή καταγραφής</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Δεν υπάρχουν παραβιασμένοι κωδικοί πρόσβασης}=1{{COUNT} παραβιασμένος κωδικός πρόσβασης}other{{COUNT} παραβιασμένοι κωδικοί πρόσβασης}}</translation>
 <translation id="7961015016161918242">Ποτέ</translation>

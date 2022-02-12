@@ -237,7 +237,6 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Consulta lo que puedes sincronizar<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Bloquear todas</translation>
 <translation id="313283613037595347">Crear una pestaña de incógnito nueva.</translation>
-<translation id="3150887674190166798">Selecciona cómo quieres que Chrome solicite el sitio cada vez</translation>
 <translation id="3153862085237805241">Guardar tarjeta</translation>
 <translation id="3157387275655328056">Agregar a la lista de lectura</translation>
 <translation id="3157684681743766797">Marcar todas…</translation>
@@ -506,8 +505,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5737974891429562743">Los detalles de acceso de la cuenta están desactualizados. Actualízalos para comenzar la sincronización.</translation>
 <translation id="5738887413654608789">Esta capacidad te permite descubrir páginas web relevantes en función de tu entorno.</translation>
 <translation id="5758631781033351321">Aquí encontrarás tu lista de lectura</translation>
-<translation id="575902488528307720">Buscar imagen</translation>
-<translation id="5781453543752460388">Agregar a fotos</translation>
 <translation id="5782227691023083829">Traduciendo...</translation>
 <translation id="5791632441210678828">Botón para ordenar el feed de Siguiendo.</translation>
 <translation id="5802829331520313983">Configuración…</translation>
@@ -766,7 +763,6 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7911190106180361398">Tu organización no te permite sincronizar todo el contenido.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exportar contraseñas…</translation>
-<translation id="793971554166979165">Modo predeterminado de los sitios</translation>
 <translation id="794799177247607889">Detener registro</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{No tienes contraseñas hackeadas}=1{{COUNT} contraseña hackeada}other{{COUNT} contraseñas hackeadas}}</translation>
 <translation id="7961015016161918242">Nunca</translation>

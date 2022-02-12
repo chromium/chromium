@@ -1981,6 +1981,7 @@
 <translation id="2933632078076743449">ಕೊನೆಯ ಅಪ್‌ಡೇಟ್‌</translation>
 <translation id="2934999512438267372">MIDI ಸಾಧನಗಳ ಸಂಪೂರ್ಣ ನಿಯಂತ್ರಣವನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="2935225303485967257">ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="2935314715123552088">ಸಕ್ರಿಯ eSIM ಪ್ರೊಫೈಲ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="2935654492420446828">ನಂತರ ಶಾಲೆಯ ಖಾತೆಯೊಂದನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="2936851848721175671">ಬ್ಯಾಕಪ್ ಮಾಡಿ &amp; ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="2939908794993783865">ಹೆಚ್ಚುವರಿ ನಿಷ್ಕ್ರಿಯ ಸೈಟ್‌ಗಳು</translation>
@@ -2414,7 +2415,6 @@
 <translation id="3420501302812554910">ಆಂತರಿಕ ಭದ್ರತೆ ಕೀಯನ್ನು ಮರುಹೊಂದಿಸುವ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="3421387094817716717">ಎಲಿಪ್ಟಿಕ್ ಕರ್ವ್ ಸಾರ್ವಜನಿಕ ಕೀಲಿ</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />ಗಮನಿಸಿ<ph name="END_BOLD" />: ಇದೇ ರೀತಿಯ ಧ್ವನಿ ಅಥವಾ ರೆಕಾರ್ಡಿಂಗ್ ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಫಲಿತಾಂಶಗಳನ್ನು ಅಥವಾ ನಿಮ್ಮ Assistant ಅನ್ನು ಪ್ರವೇಶಿಸಲು ಸಾಧ್ಯವಾಗಬಹುದು.</translation>
-<translation id="3421726884497337397">ಥರ್ಡ್-ಕುಕೀಗಳನ್ನು ಯಾವಾಗ ನಿರ್ಬಂಧಿಸಬೇಕು ಎಂಬುದನ್ನು ಆರಿಸಿ</translation>
 <translation id="3422291238483866753">ಸೈಟ್, ನಿಮ್ಮ ಸುತ್ತಮುತ್ತಲಿನ 3D ನಕ್ಷೆಗಳನ್ನು ರಚಿಸಲು ಅಥವಾ ಕ್ಯಾಮರಾ ಸ್ಥಿತಿಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲು ಬಯಸಿದಾಗ ಕೇಳಿ (ಶಿಫಾರಸು ಮಾಡಲಾಗಿರುವುದು)</translation>
 <translation id="3423463006624419153">ನಿಮ್ಮ '<ph name="PHONE_NAME_1" />' ಮತ್ತು '<ph name="PHONE_NAME_2" />' ನಲ್ಲಿ:</translation>
 <translation id="3423858849633684918">ದಯವಿಟ್ಟು <ph name="PRODUCT_NAME" /> ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
@@ -3132,6 +3132,7 @@
 <translation id="4104163789986725820">ರ&amp;ಫ್ತು...</translation>
 <translation id="4107048419833779140">ಸಂಗ್ರಹಣೆ ಸಾಧನಗಳನ್ನು ಗುರುತಿಸಿ ಮತ್ತು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="4109135793348361820">ವಿಂಡೋವನ್ನು <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) ಗೆ ಸರಿಸಿ</translation>
+<translation id="4110485659976215879">ಎಚ್ಚರಿಕೆಯನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</translation>
 <translation id="4110490973560452005">ಡೌನ್‌ಲೋಡ್‌‌ ಪೂರ್ಣಗೊಂಡಿದೆ: <ph name="FILE_NAME" />. ಡೌನ್‌ಲೋಡ್‌ ಪಟ್ಟಿಯ ಜಾಗಕ್ಕೆ ಹೋಗಲು Shift+F6 ಅನ್ನು ಒತ್ತಿ.</translation>
 <translation id="4110686435123617899">ಆಲ್ಬಮ್ ಆಯ್ಕೆ ಮಾಡಿ <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ಆಫ್‌ಲೈನ್)</translation>
@@ -3255,6 +3256,7 @@
 <translation id="4259388776256904261">ಇದು ಸ್ವಲ್ಪ ಸಮಯ ತೆಗೆದುಕೊಳ್ಳಬಹುದು</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" />, ಅಪಾಯಕಾರಿ ಫೈಲ್ ಆಗಿರಬಹುದು. ಸ್ಕ್ಯಾನಿಂಗ್‌ಗಾಗಿ, Google ಸುಧಾರಿತ ರಕ್ಷಣೆಗೆ ಕಳುಹಿಸಬೇಕೆ? ಡೌನ್‌ಲೋಡ್ ಪಟ್ಟಿಯ ಪ್ರದೇಶಕ್ಕೆ ಹೋಗಲು Shift+F6 ಒತ್ತಿ.</translation>
 <translation id="4261429981378979799">ವಿಸ್ತರಣೆ ಅನುಮತಿಗಳು</translation>
+<translation id="4262004481148703251">ಎಚ್ಚರಿಕೆಯನ್ನು ವಜಾಗೊಳಿಸಿ</translation>
 <translation id="4263223596040212967">ನಿಮ್ಮ ಕೀಬೋರ್ಡ್ ವಿನ್ಯಾಸವನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="426564820080660648">ನವೀಕರಣಗಳಿಗಾಗಿ ಪರಿಶೀಲಿಸಲು, ದಯವಿಟ್ಟು ಇಥರ್ನೆಟ್, ವೈ-ಫೈ ಅಥವಾ ಮೊಬೈಲ್ ಡೇಟಾವನ್ನು ಬಳಸಿ.</translation>
 <translation id="4266679478228765574">ಫೋಲ್ಡರ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿದರೆ, ಹಂಚಿಕೊಳ್ಳುವುದನ್ನು ನಿಲ್ಲಿಸಲಾಗುತ್ತದೆ ಆದರೆ ಫೈಲ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
@@ -3660,6 +3662,7 @@
 <translation id="4681453295291708042">Nearby ಶೇರ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4681930562518940301">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಮೂಲ &amp;ಚಿತ್ರವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="4682551433947286597">ಸೈನ್-ಇನ್ ಪರದೆಯ ಮೇಲೆ ವಾಲ್‌ಪೇಪರ್‌ಗಳು ಗೋಚರಿಸುತ್ತವೆ.</translation>
+<translation id="4682830185876172415">ಇತ್ತೀಚಿನ ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>
 <translation id="4683629100208651599">ಲೋವರ್‌ಕೇಸ್ ಮಾಡಿ</translation>
 <translation id="4683947955326903992">ಶೇಕಡಾ <ph name="PERCENTAGE" /> (ಡೀಫಾಲ್ಟ್)</translation>
 <translation id="4684427112815847243">ಪ್ರತಿಯೊಂದನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
@@ -3926,6 +3929,7 @@
 <translation id="496446150016900060">ನಿಮ್ಮ ಫೋನ್ ಮೂಲಕ ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="4965808351167763748">Hangouts ಸಭೆಯನ್ನು ಚಾಲನೆ ಮಾಡಲು ಈ ಸಾಧನವನ್ನು ಸೆಟಪ್‌ ಮಾಡಲು ನೀವು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ?</translation>
 <translation id="4966972803217407697">ನೀವು ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿರುವಿರಿ</translation>
+<translation id="496742804571665842">eSIM ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="496888482094675990">Google ಡ್ರೈವ್‌, ಬಾಹ್ಯ ಸಂಗ್ರಹಣೆ, ಅಥವಾ ನಿಮ್ಮ Chrome OS ಸಾಧನದಲ್ಲಿ ನೀವು ಉಳಿಸಲಾದ ಫೈಲ್‌ಗಳಿಗೆ ಫೈಲ್‌ಗಳ ಅಪ್ಲಿಕೇಶನ್‌ ತ್ವರಿತ ಪ್ರವೇಶವನ್ನು ಒದಗಿಸುತ್ತದೆ.</translation>
 <translation id="4971412780836297815">ಮುಗಿಸಿದಾಗ ತೆರೆಯಿರಿ</translation>
 <translation id="4971735654804503942">ಅಪಾಯಕಾರಿ ವೆಬ್‌ಸೈಟ್‌ಗಳು, ಡೌನ್‌ಲೋಡ್‌ಗಳು ಮತ್ತು ವಿಸ್ತರಣೆಗಳ ವಿರುದ್ಧ ವೇಗವಾದ, ಪೂರ್ವಭಾವಿ ಸುರಕ್ಷತೆ. ಪಾಸ್‌ವರ್ಡ್ ಉಲ್ಲಂಘನೆಗಳ ಕುರಿತು ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ. Google ಗೆ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಕಳುಹಿಸುವ ಅಗತ್ಯವಿರುತ್ತದೆ.</translation>
@@ -4247,6 +4251,7 @@
 <translation id="5310281978693206542">ನಿಮ್ಮ ಸಾಧನಗಳಿಗೆ ಲಿಂಕ್ ಕಳುಹಿಸಿ</translation>
 <translation id="5311304534597152726">ಇದರಂತೆ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="5311565231560644461">ನಿಮ್ಮ ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ ಸಾಧನಗಳು ಮತ್ತು ಡೇಟಾವನ್ನು ಬಳಸಲು ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಬೇಡಿ</translation>
+<translation id="5313967007315987356">ಸೈಟ್ ಸೇರಿಸಿ</translation>
 <translation id="5315738755890845852">ಹೆಚ್ಚುವರಿ ಕರ್ಲಿ ಬ್ರಾಕೆಟ್: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">ಉಳಿಸು</translation>
 <translation id="5319359161174645648">Chrome ಅನ್ನು Google ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ</translation>
@@ -6282,6 +6287,7 @@
 <translation id="7448430327655618736">ಆ್ಯಪ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ</translation>
 <translation id="7449752890690775568">ಪಾಸ್‌ವರ್ಡ್‌ ತೆಗೆದುಹಾಕಬೇಕೇ?</translation>
 <translation id="7450761244949417357">ಇದೀಗ <ph name="ALTERNATIVE_BROWSER_NAME" /> ನಲ್ಲಿ ತೆರೆಯಲಾಗುತ್ತಿದೆ</translation>
+<translation id="7452166281927983300">ವಜಾಗೊಳಿಸಿದ ಎಚ್ಚರಿಕೆಗಳು (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">ಈ ಪ್ರಿಂಟರ್‌ ಆಯ್ಕೆ ಮಾಡುವ ಮೂಲಕ ನಿಮ್ಮ ಪ್ರಿಂಟರ್‌ ಪ್ರವೇಶಕ್ಕೆ ನೀವು ಈ ಮುಂದಿನ ವಿಸ್ತರಣೆ ಅನುಮತಿಯನ್ನು ನೀಡುತ್ತಿರುವಿರಿ:</translation>
 <translation id="7454548535253569100">ಪೋರ್ಟಲ್: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">ಹೆಚ್ಚುವರಿ ಕಂಟೇನರ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>

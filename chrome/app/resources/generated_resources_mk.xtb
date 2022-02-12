@@ -1990,6 +1990,7 @@
 <translation id="2933632078076743449">Последно ажурирање</translation>
 <translation id="2934999512438267372">Дозволена е целосна контрола врз MIDI-уредите</translation>
 <translation id="2935225303485967257">Управувајте со профилите</translation>
+<translation id="2935314715123552088">Оневозможи го активниот профил на eSIM</translation>
 <translation id="2935654492420446828">Додајте училишна сметка подоцна</translation>
 <translation id="2936851848721175671">Бекап и обнова</translation>
 <translation id="2939908794993783865">Дополнителни неактивни сајтови</translation>
@@ -2423,7 +2424,6 @@
 <translation id="3420501302812554910">Потребно е ресетирање на внатрешен безбедносен клуч</translation>
 <translation id="3421387094817716717">Јавен клуч на елиптична крива</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Напомена:<ph name="END_BOLD" /> некој со сличен глас или снимка ќе може да пристапи до вашите лични резултати или до вашиот „Помошник“.</translation>
-<translation id="3421726884497337397">Изберете кога да се блокираат колачињата од трети страни</translation>
 <translation id="3422291238483866753">Прашувај кога некој сајт сака да создаде 3D-карта на опкружувањето или да ја следи позицијата на камерата (препорачано)</translation>
 <translation id="3423463006624419153">На <ph name="PHONE_NAME_1" /> и <ph name="PHONE_NAME_2" />:</translation>
 <translation id="3423858849633684918">Повторно стартувајте <ph name="PRODUCT_NAME" /></translation>
@@ -3140,6 +3140,7 @@
 <translation id="4104163789986725820">Из&amp;вези...</translation>
 <translation id="4107048419833779140">Идентификувај и отстранувај надворешни мемории</translation>
 <translation id="4109135793348361820">Помести прозорец кај <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="4110485659976215879">Врати ја опомената</translation>
 <translation id="4110490973560452005">Преземањето е завршено: <ph name="FILE_NAME" />. Притиснете Shift+F6 за да одите до областа на лентата за преземања.</translation>
 <translation id="4110686435123617899">Изберете го албумот <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлајн)</translation>
@@ -3263,6 +3264,7 @@
 <translation id="4259388776256904261">Ова може да потрае</translation>
 <translation id="4260182282978351200">Датотеката <ph name="FILE_NAME" /> можеби е опасна. Да се испрати во „Напредна заштита на Google“ за скенирање? Притиснете Shift + F6 за да одите до областа на лентата за преземања.</translation>
 <translation id="4261429981378979799">Дозволи за екстензии</translation>
+<translation id="4262004481148703251">Отфрли предупредување</translation>
 <translation id="4263223596040212967">Проверете го распоредот на тастатурата и обидете се повторно.</translation>
 <translation id="426564820080660648">За да се проверат ажурирања, користете етернет, Wi-Fi или мобилен интернет.</translation>
 <translation id="4266679478228765574">Ако ги отстраните папките, тоа ќе го сопре споделувањето, но нема да ги избрише датотеките.</translation>
@@ -3669,6 +3671,7 @@
 <translation id="4681453295291708042">Оневозможете „Споделување во близина“</translation>
 <translation id="4681930562518940301">Отвори оригинална &amp;слика во нова картичка</translation>
 <translation id="4682551433947286597">На екранот за пријавување се појавуваат тапети.</translation>
+<translation id="4682830185876172415">Неодамнешни преземања</translation>
 <translation id="4683629100208651599">Сите мали букви</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (стандардно)</translation>
 <translation id="4684427112815847243">Синхронизирај сѐ</translation>
@@ -3934,6 +3937,7 @@
 <translation id="496446150016900060">да ги синхронизира Wi-Fi мрежите со телефонот</translation>
 <translation id="4965808351167763748">Дали сигурно сакате да поставите уредов да извршува Hangouts Meet?</translation>
 <translation id="4966972803217407697">Во „Инкогнито“ сте</translation>
+<translation id="496742804571665842">Оневозможете ги профилите на eSIM</translation>
 <translation id="496888482094675990">Апликацијата Датотеки овозможува брз пристап до датотеки што сте ги зачувале на Google Drive, надворешен склад или уред со Chrome OS.</translation>
 <translation id="4971412780836297815">Отвори кога ќе заврши</translation>
 <translation id="4971735654804503942">Побрза и проактивна заштита од опасни веб-сајтови, преземања и екстензии. Ве предупредува за упади во лозинките. Бара да се испраќаат податоци од прелистувањето до Google.</translation>
@@ -4255,6 +4259,7 @@
 <translation id="5310281978693206542">Испратете линк до вашите уреди</translation>
 <translation id="5311304534597152726">Се најавувате како</translation>
 <translation id="5311565231560644461">Не дозволувај сајтовите да ги користат уредите и податоците за виртуелна реалност</translation>
+<translation id="5313967007315987356">Додај локација</translation>
 <translation id="5315738755890845852">Вишок голема заграда: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Зачувај</translation>
 <translation id="5319359161174645648">Google го препорачува Chrome</translation>
@@ -6288,6 +6293,7 @@
 <translation id="7448430327655618736">Инсталирајте ги апликациите автоматски</translation>
 <translation id="7449752890690775568">Да се отстрани лозинката?</translation>
 <translation id="7450761244949417357">Се отвора во <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
+<translation id="7452166281927983300">Отфрлени опомени (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">Со избирање на печатачов, давате дозвола следната екстензија да пристапува до него:</translation>
 <translation id="7454548535253569100">Портал: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">Управувајте со дополнителните контејнери</translation>

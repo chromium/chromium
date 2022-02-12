@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Catalan</translation>
 <translation id="1168100932582989117">Mga server ng pangalan ng Google</translation>
+<translation id="1171082344678443012">XZ compressed archive</translation>
 <translation id="1172970565351728681">Humigit-kumulang <ph name="REMAINING_TIME" /> ang natitira</translation>
 <translation id="1173894706177603556">Pangalanang muli</translation>
 <translation id="1173916544412572294">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Baterya ng Telepono <ph name="BATTERY_STATUS" />%, Mga Detalye</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">Kapag nag-format ng drive, made-delete ang lahat ng data na naka-store doon. Hindi puwedeng i-undo ang pagkilos na ito.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2028997212275086731">Archive na RAR</translation>
+<translation id="2036414735548252477">LZMA compressed tar archive</translation>
 <translation id="2037845485764049925">Russian</translation>
 <translation id="2044023416777079300">Hindi nakarehistro ang modem</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bytes</translation>
 <translation id="4880214202172289027">Slider ng volume</translation>
 <translation id="4881695831933465202">Buksan</translation>
+<translation id="4886199584824489598">Bzip2 compressed archive</translation>
 <translation id="4900532980794411603">Ibahagi sa Parallels Desktop</translation>
 <translation id="4902546322522096650">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Kumonekta</translation>
 <translation id="4905417359854579806">Handa nang i-back up ang <ph name="FILE_COUNT" /></translation>
@@ -586,6 +589,7 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> network, hindi nakakonekta</translation>
 <translation id="6074825444536523002">Form ng Google</translation>
 <translation id="6079871810119356840">Hungarian na may Qwerty keyboard</translation>
+<translation id="6082256976217156453">LZMA compressed archive</translation>
 <translation id="6096979789310008754">Na-clear ang text para sa paghahanap, ipinapakita ang lahat ng file at folder.</translation>
 <translation id="610101264611565198">Inililipat ang <ph name="FILE_NAME" /> sa <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">Puwang</translation>
@@ -842,6 +846,7 @@
 <translation id="8297012244086013755">Hangul 3 Set (Walang Shift)</translation>
 <translation id="8299269255470343364">Japanese</translation>
 <translation id="8300849813060516376">Nabigo ang OTASP</translation>
+<translation id="8308481408797647857">XZ compressed tar archive</translation>
 <translation id="8312871300878166382">I-paste sa loob ng folder</translation>
 <translation id="8329978297633540474">Plain text</translation>
 <translation id="8335587457941836791">I-unpin mula sa shelf</translation>
@@ -950,6 +955,7 @@
 <translation id="943972244133411984">Binago ni</translation>
 <translation id="945522503751344254">Magpadala ng feedback</translation>
 <translation id="947144732524271678">Pumili ng hanay ng <ph name="ENTRY_COUNT" /> (na) entry mula sa <ph name="FROM_ENTRY_NAME" /> hanggang <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="961973045258256291">Gzip compressed archive</translation>
 <translation id="965477715979482472">English (South Africa)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Mayroon nang file na may pangalang "<ph name="FILE_NAME" />." Gusto mo ba itong palitan?</translation>

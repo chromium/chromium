@@ -237,7 +237,6 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />See what you can sync<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Block all</translation>
 <translation id="313283613037595347">Create new Incognito tab.</translation>
-<translation id="3150887674190166798">Select how you would like Chrome to request the site every time</translation>
 <translation id="3153862085237805241">Save Card</translation>
 <translation id="3157387275655328056">Add to Reading List</translation>
 <translation id="3157684681743766797">Mark All…</translation>
@@ -506,8 +505,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5737974891429562743">Account sign-in details are out of date. Update to start sync.</translation>
 <translation id="5738887413654608789">This lets you discover relevant web pages based on your surroundings.</translation>
 <translation id="5758631781033351321">You'll find your reading list here</translation>
-<translation id="575902488528307720">Search for image</translation>
-<translation id="5781453543752460388">Add to Photos</translation>
 <translation id="5782227691023083829">Translating...</translation>
 <translation id="5791632441210678828">Sort button for Following feed.</translation>
 <translation id="5802829331520313983">Set up…</translation>
@@ -766,7 +763,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="7911190106180361398">Your organisation doesn't allow for you to sync everything.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Export Passwords…</translation>
-<translation id="793971554166979165">Default site mode</translation>
 <translation id="794799177247607889">Stop logging</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{No compromised passwords}=1{{COUNT} compromised password}other{{COUNT} compromised passwords}}</translation>
 <translation id="7961015016161918242">Never</translation>

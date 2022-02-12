@@ -600,6 +600,7 @@
 <translation id="1604432177629086300">無法列印。請檢查印表機，然後再試一次。</translation>
 <translation id="1605744057217831567">查看所有網站資料和權限</translation>
 <translation id="1606077700029460857">變更滑鼠設定</translation>
+<translation id="1606566847233779212">要移除你新增的特定網站嗎？</translation>
 <translation id="1607139524282324606">清除項目</translation>
 <translation id="1607499585984539560">使用者並未與網域建立關聯</translation>
 <translation id="1608668830839595724">更多可對所選項目執行的動作</translation>
@@ -864,6 +865,7 @@
 <translation id="1845727111305721124">可以播放音效</translation>
 <translation id="1846308012215045257">按下 Ctrl 鍵並點選即可執行「<ph name="PLUGIN_NAME" />」</translation>
 <translation id="184862733444771842">功能要求</translation>
+<translation id="1849016657376805933">任何 HID 裝置</translation>
 <translation id="1849186935225320012">這個網頁可完整控制 MIDI 裝置。</translation>
 <translation id="1850145825777333687">裝置憑證</translation>
 <translation id="1850508293116537636">順時針旋轉(&amp;C)</translation>
@@ -997,6 +999,7 @@
 <translation id="1988259784461813694">規定</translation>
 <translation id="1989112275319619282">瀏覽</translation>
 <translation id="1989113344093894667">無法擷取內容</translation>
+<translation id="1989744123191450103">備份失敗</translation>
 <translation id="1989903373608997757">一律使用</translation>
 <translation id="1990046457226896323">已下載即時字幕檔案</translation>
 <translation id="1990512225220753005">不要在這個頁面顯示捷徑</translation>
@@ -1006,6 +1009,7 @@
 <translation id="1994173015038366702">網站網址</translation>
 <translation id="1995916364271252349">控管網站可以使用和顯示的資訊 (位置資訊、攝影機和彈出式視窗等等)</translation>
 <translation id="1997616988432401742">您的憑證</translation>
+<translation id="1997645434968427303">還原 Linux 備份內容失敗，原因可能是 Linux 磁碟空間不足。你可以變更 Linux 的磁碟空間大小，並再次嘗試在 OS 設定中還原備份內容。</translation>
 <translation id="1999115740519098545">起始畫面</translation>
 <translation id="2000419248597011803">將網址列和搜尋框中的部分 Cookie 和搜尋字詞傳送給你的預設搜尋引擎</translation>
 <translation id="2002109485265116295">即時</translation>
@@ -2080,6 +2084,7 @@
 <translation id="3046178388369461825">Linux 磁碟空間嚴重不足</translation>
 <translation id="3046910703532196514">完整的網頁</translation>
 <translation id="304747341537320566">語音引擎</translation>
+<translation id="3048336643003835855">來自供應商 <ph name="VENDOR_ID" /> 的 HID 裝置</translation>
 <translation id="3048917188684939573">投放與裝置記錄</translation>
 <translation id="3051250416341590778">顯示大小</translation>
 <translation id="3053013834507634016">憑證金鑰用途</translation>
@@ -2401,7 +2406,6 @@
 <translation id="3420501302812554910">必須重設內部安全金鑰</translation>
 <translation id="3421387094817716717">橢圓曲線公開金鑰</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />如果有人聲音與你相似或擁有你的聲音錄音檔，或許也能存取你的個人化搜尋結果或 Google 助理。</translation>
-<translation id="3421726884497337397">選擇要在何時封鎖第三方 Cookie</translation>
 <translation id="3422291238483866753">網站必須先詢問你，才能根據你的周遭環境建立 3D 地圖或追蹤攝影機位置 (建議)</translation>
 <translation id="3423463006624419153">在你的「<ph name="PHONE_NAME_1" />」和「<ph name="PHONE_NAME_2" />」上：</translation>
 <translation id="3423858849633684918">請重新啟動 <ph name="PRODUCT_NAME" /></translation>
@@ -2508,6 +2512,7 @@
 <translation id="3511307672085573050">複製連結網址(&amp;E)</translation>
 <translation id="351152300840026870">固定寬度字型</translation>
 <translation id="3511528412952710609">短</translation>
+<translation id="3514011352559420398">還原失敗</translation>
 <translation id="3514335087372914653">遊戲控制項</translation>
 <translation id="3514373592552233661">如有多個可用網路，慣用網路的優先使用順序高於其他已知網路</translation>
 <translation id="3515983984924808886">請再次輕觸安全金鑰以確認重設。這個安全金鑰上儲存的所有資訊 (包括 PIN 碼) 都將遭到刪除。</translation>
@@ -3173,6 +3178,7 @@
 <translation id="4180788401304023883">刪除憑證授權單位(CA) 的「<ph name="CERTIFICATE_NAME" />」憑證？</translation>
 <translation id="4181602000363099176">20 倍</translation>
 <translation id="4181841719683918333">語言</translation>
+<translation id="4184803915913850597">HID 裝置 (<ph name="VENDOR_ID" />：<ph name="PRODUCT_ID" />)</translation>
 <translation id="4184885522552335684">拖曳即可移動顯示畫面</translation>
 <translation id="4187424053537113647">正在設定「<ph name="APP_NAME" />」...</translation>
 <translation id="4190828427319282529">醒目顯示鍵盤焦點</translation>
@@ -3664,6 +3670,7 @@
 <translation id="4699357559218762027">(自動啟動)</translation>
 <translation id="4701025263201366865">家長登入</translation>
 <translation id="4701335814944566468">昨天看過</translation>
+<translation id="4707337002099455863">一律在所有網站上執行</translation>
 <translation id="4708794300267213770">從休眠狀態喚醒時顯示螢幕鎖定</translation>
 <translation id="4708849949179781599">離開 <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">還原設定</translation>
@@ -4127,6 +4134,7 @@
 <translation id="5208548918290612795">儲存「<ph name="WEB_DRIVE" />」驗證權杖</translation>
 <translation id="520902706163766447">在 Chrome 頂層 UI 中啟用彈出式方塊，以便在目前開啟的分頁中執行搜尋。</translation>
 <translation id="5209320130288484488">找不到裝置</translation>
+<translation id="5209513429611499188">已有使用量 (數據來自 <ph name="USAGE_PAGE" /> 使用量頁面) 的 HID 裝置</translation>
 <translation id="5210365745912300556">關閉分頁</translation>
 <translation id="5213114823401215820">重新開啟先前關閉的群組</translation>
 <translation id="5213481667492808996">現在可以使用「<ph name="NAME" />」的數據服務了</translation>
@@ -4226,6 +4234,7 @@
 <translation id="5310281978693206542">將連結傳送至裝置</translation>
 <translation id="5311304534597152726">使用以下身分登入：</translation>
 <translation id="5311565231560644461">不允許網站使用你的虛擬實境裝置和資料</translation>
+<translation id="5313967007315987356">新增網站</translation>
 <translation id="5315738755890845852">多餘的大括弧：<ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5319359161174645648">Google 推薦使用 Chrome</translation>
@@ -4532,6 +4541,7 @@
 <translation id="5627086634964711283">這個擴充功能也會控管你點選 [首頁] 按鈕時所顯示的網頁。</translation>
 <translation id="5627676517703583263">使用 Chrome 享有智慧瀏覽體驗</translation>
 <translation id="5627832140542566187">螢幕方向</translation>
+<translation id="5628393161682339323">點選擴充功能時</translation>
 <translation id="562935524653278697">你的管理員停用了書籤、歷史記錄、密碼和其他設定的同步功能。</translation>
 <translation id="5631017369956619646">CPU 使用率</translation>
 <translation id="5632059346822207074">已要求權限，按下 Ctrl + Forward 鍵即可回覆</translation>
@@ -4666,6 +4676,7 @@
 <translation id="5781092003150880845">和 <ph name="ACCOUNT_FULL_NAME" /> 同步</translation>
 <translation id="5781865261247219930">傳送指令給「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="5782227691023083829">正在翻譯...</translation>
+<translation id="5783304934509327739">網站存取選項</translation>
 <translation id="57838592816432529">靜音</translation>
 <translation id="5785583009707899920">Chrome 檔案公用程式</translation>
 <translation id="5787146423283493983">金鑰協議</translation>
@@ -4716,6 +4727,7 @@
 <translation id="5834581999798853053">剩下 <ph name="TIME" /> 分鐘</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - 攝影機或麥克風錄影/錄音中</translation>
 <translation id="583673505367439042">網站可以要求編輯裝置上的檔案和資料夾</translation>
+<translation id="583756221537636748">充電盒</translation>
 <translation id="5840680448799937675">一律在離線時分享檔案</translation>
 <translation id="5841270259333717135">設定乙太網路</translation>
 <translation id="5842497610951477805">啟用藍牙</translation>
@@ -5352,6 +5364,7 @@
 <translation id="6499143127267478107">正在解析 Proxy 指令碼主機...</translation>
 <translation id="6499764981457476645">找不到附近的裝置</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> 想要開啟這個檔案：</translation>
+<translation id="65017764184991091">備份 Linux 應用程式和檔案失敗。裝置免費儲存空間不足時，就會發生這種情況。請試著釋出一些裝置儲存空間，或選擇備份至另一個位置。</translation>
 <translation id="6501957628055559556">所有容器</translation>
 <translation id="650266656685499220">如要建立相簿，請前往 Google 相簿</translation>
 <translation id="6503077044568424649">最常造訪</translation>
@@ -7380,6 +7393,7 @@
 <translation id="8581809080475256101">按下即可繼續，內容選單會顯示歷史記錄</translation>
 <translation id="8584280235376696778">在新分頁中開啟影片(&amp;O)</translation>
 <translation id="8584427708066927472">已從這部裝置中刪除密碼</translation>
+<translation id="8584843865238667486">使用量為 <ph name="USAGE" /> (數據來自 <ph name="USAGE_PAGE" /> 使用量頁面) 的 HID 裝置</translation>
 <translation id="8585480574870650651">移除 Crostini</translation>
 <translation id="8585841788766257444">下列網站採用自訂設定，而非預設設定</translation>
 <translation id="8588866096426746242">顯示設定檔統計資料</translation>

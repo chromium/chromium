@@ -107,7 +107,7 @@
 <translation id="1516740043221086139">「請勿騷擾」模式已開啟。</translation>
 <translation id="1520303207432623762">{NUM_APPS,plural, =1{顯示通知設定。已關閉 1 個應用程式的通知}other{顯示通知設定。已關閉 # 個應用程式的通知}}</translation>
 <translation id="1525508553941733066">關閉</translation>
-<translation id="1528259147807435347">過去一週編輯過</translation>
+<translation id="1528259147807435347">上星期編輯過</translation>
 <translation id="1536604384701784949">您需要先登出所有帳戶，才能使用 <ph name="USER_EMAIL_ADDRESS" />。如要登出，請選取 [取消] 以返回。然後選取時間以開啟狀態區，並選取 [登出]。然後，再次登入 <ph name="USER_EMAIL_ADDRESS_2" />。</translation>
 <translation id="15373452373711364">大型滑鼠游標</translation>
 <translation id="1546492247443594934">桌面 2</translation>
@@ -543,7 +543,7 @@
 <translation id="4421231901400348175">透過「遠端協助」與 <ph name="HELPER_NAME" /> 共用螢幕控制權。</translation>
 <translation id="4424159417645388645">桌面 5</translation>
 <translation id="4430019312045809116">音量</translation>
-<translation id="4441283832827406317">依名稱將應用程式排序</translation>
+<translation id="4441283832827406317">應用程式已按名稱排序</translation>
 <translation id="4445159312344259901">登入即可解鎖</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 則重要通知}other{# 則重要通知}}</translation>
 <translation id="4450893287417543264">不要再顯示</translation>
@@ -687,7 +687,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (右邊)</translation>
 <translation id="5352250171825660495">深色主題背景已開啟</translation>
 <translation id="5379115545237091094">嘗試次數過多</translation>
-<translation id="5393156353051693207">按住任一處即可將應用程式重新排序</translation>
+<translation id="5393156353051693207">輕觸並按住任何位置即可將應用程式重新排序</translation>
 <translation id="5395308026110844773">「<ph name="DRAGGED_APP_NAME" />」宜家拉咗去「<ph name="IN_PLACE_APP" />」上面，放開滑鼠就可以建立資料夾。</translation>
 <translation id="5397578532367286026">管理員 (<ph name="MANAGER_EMAIL" />) 可以在 chrome.com 瞭解這位使用者的使用情況和記錄。</translation>
 <translation id="5400461572260843123">快速設定，㩒一下搜尋鍵 + 向左鍵就可以存取通知中心。</translation>
@@ -792,7 +792,7 @@
 <translation id="6059276912018042191">最近開啟的 Chrome 分頁</translation>
 <translation id="6062360702481658777">您將於 <ph name="LOGOUT_TIME_LEFT" />後自動登出。</translation>
 <translation id="6073451960410192870">停止錄影</translation>
-<translation id="6099678161144790572">過去一個月內編輯過</translation>
+<translation id="6099678161144790572">上個月編輯過</translation>
 <translation id="6114505516289286752">已下載<ph name="LANGUAGE" />語音檔案</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />。<ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6121838516699723042">確認下載 <ph name="FILENAME" /></translation>
@@ -907,7 +907,7 @@
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{淨返 1 個數字}other{淨返 # 個數字}}</translation>
 <translation id="6867938213751067702">暫停咗下載 <ph name="FILENAME" /></translation>
 <translation id="6878400149835617132">已關閉快速鍵功能</translation>
-<translation id="6880133753431418782">你過去曾搜尋這個查詢項目。如果將這項搜尋從記錄中刪除，該項目將從你所有裝置上的 Google 帳戶記錄中永久移除。</translation>
+<translation id="6880133753431418782">您之前曾搜尋此查詢項目。如果從記錄中刪除此搜尋項目，該項目將從您所有裝置上的 Google 帳戶中永久移除。</translation>
 <translation id="6884665277231944629">返回今天</translation>
 <translation id="6886172995547742638">您的 <ph name="DEVICE_TYPE" /> 效能或會降低。請使用 <ph name="PREFERRED_MINIMUM_POWER" />W 或以上且符合標準的 USB-C 電源適配器。</translation>
 <translation id="688631446150864480">㩒向下箭咀掣就可以轉換視窗</translation>
@@ -946,7 +946,7 @@
 <translation id="7098389117866926363">USB-C 裝置 (後方左側連接埠)</translation>
 <translation id="7106330611027933926">顯示桌面列</translation>
 <translation id="7118268675952955085">螢幕截圖</translation>
-<translation id="7126996685418858413">過去一週開啟過</translation>
+<translation id="7126996685418858413">上星期開啟過</translation>
 <translation id="7130207228079676353">最常用到的應用程式</translation>
 <translation id="7131634465328662194">您將會自動登出。</translation>
 <translation id="7143207342074048698">正在連接</translation>
@@ -978,7 +978,7 @@
 <translation id="7378203170292176219">拖曳以選取要錄影的範圍</translation>
 <translation id="7378594059915113390">媒體控制項</translation>
 <translation id="7378889811480108604">「省電模式」已關閉</translation>
-<translation id="7384028040782072252">在任一處按一下滑鼠右鍵，即可將應用程式重新排序</translation>
+<translation id="7384028040782072252">在任何地方按一下右鍵，即可將應用程式重新排序</translation>
 <translation id="7392563512730092880">您稍後可隨時前往「設定」頁面進行設定。</translation>
 <translation id="7405710164030118432">如要解鎖裝置，請輸入您的 Family Link 家長存取碼</translation>
 <translation id="7406608787870898861">完成流動網絡設定</translation>
@@ -997,7 +997,7 @@
 <translation id="7483025031359818980">揀咗全螢幕作為來源</translation>
 <translation id="7486227320194954040">收合標記工具</translation>
 <translation id="7497767806359279797">選擇語言和鍵盤配置</translation>
-<translation id="7508690557411636492">過去一個月開啟過</translation>
+<translation id="7508690557411636492">上個月開啟過</translation>
 <translation id="7509246181739783082">驗證您的身分</translation>
 <translation id="7513622367902644023">揀咗螢幕截圖模式</translation>
 <translation id="7513922695575567867">日曆，<ph name="DATE" />嗰個星期，目前揀咗 <ph name="SELECTED_DATE" /> 日。</translation>
@@ -1031,7 +1031,7 @@
 <translation id="7654687942625752712">同時按住兩個音量鍵五秒，即可停用朗讀功能。</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7662283695561029522">輕觸即可設定</translation>
-<translation id="7671610481353807627">依顏色將應用程式排序</translation>
+<translation id="7671610481353807627">應用程式已按顏色排序</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7714767791242455379">新增流動網絡</translation>
 <translation id="7720410380936703141">再試一次</translation>
@@ -1170,7 +1170,7 @@
 <translation id="8563862697512465947">通知設定</translation>
 <translation id="857201607579416096">已經將選單移去螢幕右下角。</translation>
 <translation id="8594115950068821369">-<ph name="FORMATTED_TIME" /></translation>
-<translation id="8598235756057743477">依名稱或顏色將應用程式排序</translation>
+<translation id="8598235756057743477">按名稱或顏色將應用程式排序</translation>
 <translation id="8614517853887502247">檢視保護功能已開啟，因此系統已隱藏 <ph name="APP_1_TITLE" /> 和 <ph name="APP_2_TITLE" /> 的通知</translation>
 <translation id="8627191004499078455">已連接<ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">無障礙功能設定</translation>

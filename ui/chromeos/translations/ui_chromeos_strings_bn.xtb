@@ -21,6 +21,7 @@
 <translation id="115443833402798225">হাঙ্গুল আনমাটে</translation>
 <translation id="1155759005174418845">ক্যাটালান</translation>
 <translation id="1168100932582989117">Google নাম সার্ভার</translation>
+<translation id="1171082344678443012">XZ কম্প্রেস করা আর্কাইভ</translation>
 <translation id="1172970565351728681">আরও প্রায় <ph name="REMAINING_TIME" /> সময় লাগবে</translation>
 <translation id="1173894706177603556">পুনঃনামকরণ</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, ফোনের ব্যাটারি <ph name="BATTERY_STATUS" />%, বিবরণ</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">ড্রাইভ ফরম্যাট করা হলে, সেটিতে সেভ করা সব ডেটা মুছে যাবে। সেটিকে আর আগের অবস্থায় ফেরানো যাবে না।</translation>
 <translation id="2025955442973426285">টাইগ্রিনা</translation>
 <translation id="2028997212275086731">RAR আর্কাইভ</translation>
+<translation id="2036414735548252477">LZMA কম্প্রেসযুক্ত টার আর্কাইভ</translation>
 <translation id="2037845485764049925">রুশ</translation>
 <translation id="2044023416777079300">মোডেম রেজিস্টার করা নেই</translation>
 <translation id="2046702855113914483">রামেন</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> বাইট</translation>
 <translation id="4880214202172289027">ভলিউম স্লাইডার</translation>
 <translation id="4881695831933465202">খুলুন</translation>
+<translation id="4886199584824489598">Bzip2 কম্প্রেস করা আর্কাইভ</translation>
 <translation id="4900532980794411603">Parallels Desktop-এর সাথে শেয়ার করুন</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, কানেক্ট করুন</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" />টির ব্যাকআপ নিতে প্রস্তুত</translation>
@@ -585,6 +588,7 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> নেটওয়ার্ক, কানেক্ট করা নেই</translation>
 <translation id="6074825444536523002">Google ফর্ম</translation>
 <translation id="6079871810119356840">হাঙ্গেরিয়ান ভাষায় কোয়ের্টি কীবোর্ড</translation>
+<translation id="6082256976217156453">LZMA কম্প্রেস করা আর্কাইভ</translation>
 <translation id="6096979789310008754">সার্চ টেক্সট মুছে দেওয়া হয়েছে, সব ফাইল এবং ফোল্ডার দেখা যাচ্ছে।</translation>
 <translation id="610101264611565198"><ph name="FOLDER_NAME" /> ফোল্ডারে <ph name="FILE_NAME" /> ফাইল সরানো হচ্ছে</translation>
 <translation id="6129953537138746214">ব্যবধান</translation>
@@ -841,6 +845,7 @@
 <translation id="8297012244086013755">হাঙ্গুল ৩ সেট (Shift ছাড়া)</translation>
 <translation id="8299269255470343364">জাপানী</translation>
 <translation id="8300849813060516376">OTASP ব্যর্থ</translation>
+<translation id="8308481408797647857">XZ কম্প্রেসযুক্ত টার আর্কাইভ</translation>
 <translation id="8312871300878166382">ফোল্ডারের মধ্যে পেস্ট করুন</translation>
 <translation id="8329978297633540474">সাধারণ টেক্সট</translation>
 <translation id="8335587457941836791">তাক থেকে আনপিন করুন</translation>
@@ -949,6 +954,7 @@
 <translation id="943972244133411984">পরিবর্তন করেছেন</translation>
 <translation id="945522503751344254">মতামত জানান</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> থেকে <ph name="TO_ENTRY_NAME" />-এর মধ্যে <ph name="ENTRY_COUNT" />টি এন্ট্রি বেছে নেওয়া হয়েছে।</translation>
+<translation id="961973045258256291">Gzip কম্প্রেস করা আর্কাইভ</translation>
 <translation id="965477715979482472">ইংরাজি (দক্ষিণ আফ্রিকা)</translation>
 <translation id="981121421437150478">অফলাইন</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" নামের ফাইল আগে থেকেই আছে। আপনি কি সেটি প্রতিস্থাপিত করতে চান?</translation>

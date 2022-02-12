@@ -237,7 +237,6 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />იხილეთ, რისი სინქრონიზაცია შეგიძლიათ<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">ყველას დაბლოკვა</translation>
 <translation id="313283613037595347">ახალი ინკოგნიტო ჩანართის შექმნა.</translation>
-<translation id="3150887674190166798">აირჩიეთ, როგორ გსურთ, Chrome-მა მოითხოვოს საიტი ყოველ ჯერზე</translation>
 <translation id="3153862085237805241">ბარათის შენახვა</translation>
 <translation id="3157387275655328056">საკითხავ სიაში დამატება</translation>
 <translation id="3157684681743766797">ყველას მონიშვნა…</translation>
@@ -506,8 +505,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="5737974891429562743">ანგარიშში შესვლის დეტალები მოძველდა. სინქრონიზაციის დასაწყებად, განაახლეთ ისინი.</translation>
 <translation id="5738887413654608789">საშუალებას გაძლევთ, აღმოაჩინოთ თქვენს გარშემო არსებულ ობიექტებთან დაკავშირებული ვებგვერდები.</translation>
 <translation id="5758631781033351321">აქ თქვენს საკითხავ სიას იპოვით</translation>
-<translation id="575902488528307720">სურათის ძიება</translation>
-<translation id="5781453543752460388">ფოტოებში დამატება</translation>
 <translation id="5782227691023083829">მიმდინარეობს თარგმნა...</translation>
 <translation id="5791632441210678828">დალაგების ღილაკი თვალმიდევნებულთა არხისთვის.</translation>
 <translation id="5802829331520313983">დაყენება…</translation>
@@ -766,7 +763,6 @@ Handoff ასევე უნდა იყოს ჩართული პა�
 <translation id="7911190106180361398">თქვენი ორგანიზაცია ყველაფრის სინქრონიზაციის უფლებას არ გაძლევთ.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">პაროლების ექსპორტი...</translation>
-<translation id="793971554166979165">საიტის ნაგულისხმევი რეჟიმი</translation>
 <translation id="794799177247607889">ჟურნალირების შეწყვეტა</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{გატეხილი პაროლები არ არის}=1{{COUNT} გატეხილი პაროლი}other{{COUNT} გატეხილი პაროლი}}</translation>
 <translation id="7961015016161918242">არასოდეს</translation>

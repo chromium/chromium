@@ -237,7 +237,6 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Видете што може да синхронизирате<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Се блокираат сите</translation>
 <translation id="313283613037595347">Создајте нова картичка „Инкогнито“.</translation>
-<translation id="3150887674190166798">Изберете како би сакале Chrome да го бара сајтот секојпат</translation>
 <translation id="3153862085237805241">Зачувај ја картичката</translation>
 <translation id="3157387275655328056">Додај во „Списокот за читање“</translation>
 <translation id="3157684681743766797">Означи ги сите…</translation>
@@ -506,8 +505,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="5737974891429562743">Деталите за најавување на сметката се застарени. Ажурирајте ги за да започне синхронизацијата.</translation>
 <translation id="5738887413654608789">Ова ви овозможува да откриете релевантни веб-страници врз основа на вашата околина.</translation>
 <translation id="5758631781033351321">Списокот за читање ќе го најдете тука</translation>
-<translation id="575902488528307720">Пребарај слика</translation>
-<translation id="5781453543752460388">Додај во „Фотографии“</translation>
 <translation id="5782227691023083829">Се преведува…</translation>
 <translation id="5791632441210678828">Копче за подредување активност со следење.</translation>
 <translation id="5802829331520313983">Поставете…</translation>
@@ -766,7 +763,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7911190106180361398">Вашата организација не дозволува да синхронизирате сѐ.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Извезување лозинки…</translation>
-<translation id="793971554166979165">Стандарден режим за сајт</translation>
 <translation id="794799177247607889">Запри со собирање евиденција</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Нема компромитирани лозинки}=1{{COUNT} компромитирана лозинка}one{{COUNT} компромитирана лозинка}other{{COUNT} компромитирани лозинки}}</translation>
 <translation id="7961015016161918242">Никогаш</translation>

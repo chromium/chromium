@@ -237,7 +237,6 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Паказаць, якія тыпы даных можна сінхранізаваць<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Блакіруюцца ўсе</translation>
 <translation id="313283613037595347">Стварыць новую ўкладку ў рэжыме інкогніта.</translation>
-<translation id="3150887674190166798">Выберыце рэжым, у якім Chrome павінен кожны раз адкрываць гэты сайт</translation>
 <translation id="3153862085237805241">Захаваць картку</translation>
 <translation id="3157387275655328056">Дадаць у спіс чытання</translation>
 <translation id="3157684681743766797">Пазначыць усе…</translation>
@@ -506,8 +505,6 @@
 <translation id="5737974891429562743">Даныя ўліковага запісу для ўваходу састарэлі. Каб запусціць сінхранізацыю, абнавіце іх.</translation>
 <translation id="5738887413654608789">Гэта дазваляе на аснове даных пра наваколле знаходзіць адпаведныя вэб-старонкі.</translation>
 <translation id="5758631781033351321">Ваш спіс чытання знаходзіцца тут</translation>
-<translation id="575902488528307720">Шукаць відарыс</translation>
-<translation id="5781453543752460388">Дадаць у Фота</translation>
 <translation id="5782227691023083829">Ідзе пераклад...</translation>
 <translation id="5791632441210678828">Кнопка для сартавання стужкі "Вы падпісаны".</translation>
 <translation id="5802829331520313983">Наладзіць…</translation>
@@ -766,7 +763,6 @@
 <translation id="7911190106180361398">Ваша арганізацыя не дазваляе сінхранізаваць усё.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Экспарт пароляў...</translation>
-<translation id="793971554166979165">Стандартны рэжым сайта</translation>
 <translation id="794799177247607889">Спыніць вядзенне журнала</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Раскрытых пароляў няма}=1{{COUNT} раскрыты пароль}one{{COUNT} раскрыты пароль}few{{COUNT} раскрытыя паролі}many{{COUNT} раскрытых пароляў}other{{COUNT} раскрытага пароля}}</translation>
 <translation id="7961015016161918242">Ніколі</translation>

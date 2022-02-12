@@ -2418,7 +2418,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3420501302812554910">Internal security key requires reset</translation>
 <translation id="3421387094817716717">Elliptic Curve Public Key</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Note:<ph name="END_BOLD" /> A similar voice or recording might be able to access your personal results or your Assistant.</translation>
-<translation id="3421726884497337397">Choose when to block third-party cookies</translation>
 <translation id="3422291238483866753">Ask when a site wants to create a 3D map of your surroundings or track camera position (recommended)</translation>
 <translation id="3423463006624419153">On your '<ph name="PHONE_NAME_1" />' and '<ph name="PHONE_NAME_2" />':</translation>
 <translation id="3423858849633684918">Please Relaunch <ph name="PRODUCT_NAME" /></translation>
@@ -4250,6 +4249,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5310281978693206542">Send link to your devices</translation>
 <translation id="5311304534597152726">Signing in as</translation>
 <translation id="5311565231560644461">Do not allow sites to use your virtual reality devices and data</translation>
+<translation id="5313967007315987356">Add site</translation>
 <translation id="5315738755890845852">Extra curly bracket: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Save</translation>
 <translation id="5319359161174645648">Google recommends Chrome</translation>

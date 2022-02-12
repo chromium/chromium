@@ -21,6 +21,7 @@
 <translation id="115443833402798225">हंगुल Ahnmatae</translation>
 <translation id="1155759005174418845">क्याटालान</translation>
 <translation id="1168100932582989117">Google का नामसम्बन्धी सर्भरहरू</translation>
+<translation id="1171082344678443012">XZ compressed archive</translation>
 <translation id="1172970565351728681">लगभग <ph name="REMAINING_TIME" /> बाँकी</translation>
 <translation id="1173894706177603556">पुन: नामाकरण गर्नुहोस्</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" /> सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, फोनको ब्याट्री <ph name="BATTERY_STATUS" />%, विवरणहरू</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">ड्राइभ फर्म्याट गर्नुले यसमा भण्डार गरिएका सम्पूर्ण डेटा मेट्ने छ। यो कार्य उल्टाउन सकिँदैन।</translation>
 <translation id="2025955442973426285">टिग्रिन्या</translation>
 <translation id="2028997212275086731">RAR सङ्ग्रह</translation>
+<translation id="2036414735548252477">LZMA compressed tar archive</translation>
 <translation id="2037845485764049925">रुसी</translation>
 <translation id="2044023416777079300">मोडेम दर्ता गरिएको छैन</translation>
 <translation id="2046702855113914483">रामेन</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> बाइट</translation>
 <translation id="4880214202172289027">आवाज मात्रा स्लाइडर</translation>
 <translation id="4881695831933465202">खोल्नुहोस्</translation>
+<translation id="4886199584824489598">Bzip2 compressed archive</translation>
 <translation id="4900532980794411603">Parallels Desktop सँग सेयर गर्नुहोस्</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, जोड्नुहोस्</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> ब्याकअपको लागि तयार छ</translation>
@@ -585,6 +588,7 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> नेटवर्क, जोडिएको छैन</translation>
 <translation id="6074825444536523002">Google फारम</translation>
 <translation id="6079871810119356840">हङ्गेरियाली Qwerty किबोर्ड</translation>
+<translation id="6082256976217156453">LZMA compressed archive</translation>
 <translation id="6096979789310008754">खोज पाठ मेटाइयो, सबै फाइल र फोल्डरहरू देखाउँदै।</translation>
 <translation id="610101264611565198"><ph name="FOLDER_NAME" /> मा <ph name="FILE_NAME" /> सारिँदै छ</translation>
 <translation id="6129953537138746214">क्षेत्र</translation>
@@ -841,6 +845,7 @@
 <translation id="8297012244086013755">हंगुल 3 सेट (सिफ्ट छैन)</translation>
 <translation id="8299269255470343364">जापानिज</translation>
 <translation id="8300849813060516376">OTASP असफल</translation>
+<translation id="8308481408797647857">XZ compressed tar archive</translation>
 <translation id="8312871300878166382">फोल्डरमा टाँस्नुहोस्</translation>
 <translation id="8329978297633540474">सादा पाठ</translation>
 <translation id="8335587457941836791">शेल्फबाट अनपिन गर्नुहोस्</translation>
@@ -949,6 +954,7 @@
 <translation id="943972244133411984">निम्नद्वारा परिमार्जित</translation>
 <translation id="945522503751344254">पृष्ठपोषण पठाउनुहोस्</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> देखि <ph name="TO_ENTRY_NAME" /> सम्मका <ph name="ENTRY_COUNT" /> प्रविष्टिहरू चयन गरिए।</translation>
+<translation id="961973045258256291">Gzip compressed archive</translation>
 <translation id="965477715979482472">अङ्ग्रेजी (दक्षिण अफ्रिका)</translation>
 <translation id="981121421437150478">अफलाइन</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" नाम गरेको फाइल पहिलेदेखि नै अवस्थित छ। तपाईं यसलाई प्रतिस्थापन गर्न चाहनुहुन्छ?</translation>

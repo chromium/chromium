@@ -388,18 +388,6 @@ Si inhabilitas esta política, se inhabilitará el desplazamiento de una página
 
       Nota: Esta política también se aplica a las extensiones de componentes, como la extensión Hangout Services.</translation>
 <translation id="148194404518916594">Permitir que los usuarios utilicen la función Tocar para buscar</translation>
-<translation id="1485570394283692769">Controla si se permite que los sitios web envíen solicitudes a puntos finales de red más privados de una manera no segura.
-
-          Esta política está relacionada con la especificación Private Network Access. Consulta https://wicg.github.io/private-network-access/ para obtener más información.
-
-          Un punto final de red es más privado que otro si:
-          1) Su dirección IP es localhost y la del otro no lo es.
-          2) Su dirección IP es privada y la del otro es pública.
-          En el futuro, en función de la evolución de las especificaciones, esta política podría aplicarse a todas las solicitudes de orígenes cruzados dirigidas a IPs privadas o localhost.
-
-          Si esta política no se establece o se le asigna el valor false, el comportamiento predeterminado de las solicitudes enviadas a puntos finales de red más privados dependerá de la configuración personal que el usuario aplique a las marcas de funciones <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />, <ph name="PRIVATE_NETWORK_ACCESS_SEND_PREFLIGHTS_FEATURE_NAME" /> y <ph name="PRIVATE_NETWORK_ACCESS_RESPECT_PREFLIGHT_RESULTS_FEATURE_NAME" />, que pueden definirse mediante pruebas o en la línea de comandos.
-
-          Si se le asigna el valor true, los sitios web podrán enviar solicitudes a cualquier punto final de red, sujetas a otras comprobaciones de orígenes cruzados.</translation>
 <translation id="1486021504508098388">Enviar información sobre la retroiluminación</translation>
 <translation id="1487916040416013623">Si se define esta política, especificará qué servidores deberían tener permiso para la autenticación integrada. La autenticación integrada solo se activará cuando <ph name="PRODUCT_NAME" /> reciba una solicitud de autenticación de un proxy o un servidor que esté incluido en la lista de permitidos.
 
@@ -4472,13 +4460,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si no se le asigna ningún valor, los usuarios podrán decidir si quieren activar esta función o no.</translation>
 <translation id="6174065452773547810">Si se habilita esta política o no se establece, el dispositivo podrá recibir controles de informes granulares.
       Si se inhabilita esta política, los dispositivos registrados no recibirán controles de informes granulares.</translation>
-<translation id="6174187836314350835">Lista de patrones de URL. Las solicitudes iniciadas desde sitios web servidos por orígenes coincidentes no están sujetas a comprobaciones de Private Network Access.
-
-          Si no se establece, esta política se comporta como si su valor fuera una lista vacía.
-
-          En el caso de los orígenes no incluidos en los patrones indicados, se usará el valor predeterminado global de la política <ph name="INSECURE_PRIVATE_NETWORK_REQUESTS_ALLOWED_POLICY_NAME" /> si esta se ha establecido. Si no, se empleará la configuración personal del usuario.
-
-          Para consultar información detallada sobre los patrones de URL válidos, visita https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="6178075938488052838">Esta política permite controlar quién puede iniciar una sesión de <ph name="PRODUCT_OS_NAME" />. No impide que los usuarios inicien sesión en cuentas de Google adicionales en Android. Si quieres impedir que esto ocurra, configura la política <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME" /> específica de Android como parte de <ph name="ARC_POLICY_POLICY_NAME" />.</translation>
 <translation id="6181304954168534748">El hash SHA-256 de la plantilla de escritorio.</translation>
 <translation id="6181618732396778048">No permitir que ningún sitio web solicite acceso de escritura a archivos y directorios</translation>

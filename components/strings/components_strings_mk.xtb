@@ -220,6 +220,7 @@
 <translation id="1559572115229829303">&lt;p&gt;Не може да се воспостави приватна врска со <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> бидејќи датумот и времето на вашиот уред (<ph name="DATE_AND_TIME" />) се погрешни.&lt;/p&gt;
 
           &lt;p&gt;Приспособете ги датумот и времето во делот &lt;strong&gt;Општо&lt;/strong&gt; на апликацијата &lt;strong&gt;Поставки&lt;/strong&gt;.&lt;/p&gt;</translation>
+<translation id="1559839503761818503">Вашиот администратор ќе го рестартира вашиот уред во <ph name="TIME" /> на <ph name="DATE" /></translation>
 <translation id="156703335097561114">Мрежните податоци, како што се адресите, конфигурацијата на интерфејсот и квалитетот на врската</translation>
 <translation id="1567040042588613346">Правилово работи како што е предвидено, но истата вредност е поставена некаде на друго место и е заменета од правилово.</translation>
 <translation id="1569487616857761740">Внесете датум на истекување</translation>
@@ -1976,6 +1977,7 @@
 <translation id="7304562222803846232">Управувајте со поставките за приватност на вашата сметка на Google</translation>
 <translation id="7305756307268530424">Стартувај побавно</translation>
 <translation id="7308436126008021607">синхронизација во заднина</translation>
+<translation id="7310392214323165548">Уредот ќе се рестартира наскоро</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Помош за поврзување</translation>
 <translation id="7323804146520582233">Сокриј го делот „<ph name="SECTION" />“</translation>

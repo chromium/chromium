@@ -116,7 +116,7 @@
 <translation id="196896377990863006">顯示連結預覽</translation>
 <translation id="1973912524893600642">保留資料</translation>
 <translation id="1974060860693918893">進階選項</translation>
-<translation id="1981118202195772574">行動模式</translation>
+<translation id="1981118202195772574">流動模式</translation>
 <translation id="1989112275319619282">瀏覽</translation>
 <translation id="199425419756152024">查看密碼</translation>
 <translation id="2015722694326466240">如要查看密碼，您必須先在裝置上設定密碼。</translation>
@@ -237,7 +237,6 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />查看您可同步處理的內容<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">全部封鎖</translation>
 <translation id="313283613037595347">新增無痕式分頁。</translation>
-<translation id="3150887674190166798">選取你想要 Chrome 每次載入網站的模式</translation>
 <translation id="3153862085237805241">儲存付款卡</translation>
 <translation id="3157387275655328056">新增至閱讀清單</translation>
 <translation id="3157684681743766797">標示全部…</translation>
@@ -506,8 +505,6 @@
 <translation id="5737974891429562743">帳戶登入資料已過時。請先更新，然後開始同步資料。</translation>
 <translation id="5738887413654608789">這樣您便可根據周圍環境探索相關網頁。</translation>
 <translation id="5758631781033351321">您可在此查看閱讀清單</translation>
-<translation id="575902488528307720">搜尋圖片</translation>
-<translation id="5781453543752460388">加入至相片</translation>
 <translation id="5782227691023083829">正在翻譯...</translation>
 <translation id="5791632441210678828">將追蹤緊嘅動態消息排次序嘅掣。</translation>
 <translation id="5802829331520313983">設定…</translation>
@@ -764,7 +761,6 @@
 <translation id="7911190106180361398">您的機構不允許同步處理所有資料。</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">匯出密碼…</translation>
-<translation id="793971554166979165">預設的網站模式</translation>
 <translation id="794799177247607889">停止記錄</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{沒有密碼被盜用}=1{{COUNT} 個密碼被盜用}other{{COUNT} 個密碼被盜用}}</translation>
 <translation id="7961015016161918242">從來沒有</translation>
@@ -870,7 +866,7 @@
 <translation id="8881801611828450202">在 <ph name="SEARCH_ENGINE" /> 中搜尋此圖片</translation>
 <translation id="8909135823018751308">共用…</translation>
 <translation id="8917490105272468696">係，我同意</translation>
-<translation id="8928133177108699615">電腦模式</translation>
+<translation id="8928133177108699615">桌面模式</translation>
 <translation id="8952559610785099500">新增密碼</translation>
 <translation id="895541991026785598">回報問題</translation>
 <translation id="8974714402877957201">1. 開啟 iPad 的「設定」</translation>

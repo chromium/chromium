@@ -237,7 +237,6 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Afficher ce que vous pouvez synchroniser<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Tout bloquer</translation>
 <translation id="313283613037595347">Ouvrir un nouvel onglet de navigation privée.</translation>
-<translation id="3150887674190166798">Sélectionnez le mode avec lequel vous souhaitez que Chrome accède chaque fois au site</translation>
 <translation id="3153862085237805241">Enregistrer la carte</translation>
 <translation id="3157387275655328056">Ajouter à la liste de lecture</translation>
 <translation id="3157684681743766797">Tout marquer…</translation>
@@ -506,8 +505,6 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5737974891429562743">Les renseignements de connexion au compte ne sont plus à jour. Mettez-les à jour pour commencer la synchronisation.</translation>
 <translation id="5738887413654608789">Cela vous permet de découvrir des pages Web pertinentes en fonction de votre environnement.</translation>
 <translation id="5758631781033351321">Vous trouverez votre liste de lecture ici</translation>
-<translation id="575902488528307720">Rechercher des images</translation>
-<translation id="5781453543752460388">Ajouter à Photos</translation>
 <translation id="5782227691023083829">Traduction en cours…</translation>
 <translation id="5791632441210678828">Bouton Trier pour le flux Suivis.</translation>
 <translation id="5802829331520313983">Configurer…</translation>
@@ -766,7 +763,6 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7911190106180361398">Votre organisation ne vous autorise pas à tout synchroniser.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Exporter les mots de passe…</translation>
-<translation id="793971554166979165">Mode par défaut du site</translation>
 <translation id="794799177247607889">Arrêter la journalisation</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Aucun mot de passe compromis}=1{{COUNT} mot de passe compromis}one{{COUNT} mot de passe compromis}other{{COUNT} mots de passe compromis}}</translation>
 <translation id="7961015016161918242">Jamais</translation>

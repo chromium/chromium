@@ -237,7 +237,6 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Погледајте шта можете да синхронизујете<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Све је блокирано</translation>
 <translation id="313283613037595347">Направи нову картицу без архивирања.</translation>
-<translation id="3150887674190166798">Изаберите како желите да Chrome сваки пут захтева сајт</translation>
 <translation id="3153862085237805241">Сачувај картицу</translation>
 <translation id="3157387275655328056">Додај на листу за читање</translation>
 <translation id="3157684681743766797">Означи све…</translation>
@@ -506,8 +505,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="5737974891429562743">Подаци за пријављивање на налог су застарели. Ажурирајте их да бисте започели синхронизацију.</translation>
 <translation id="5738887413654608789">Ово вам омогућава да откријете релевантне веб-странице на основу окружења.</translation>
 <translation id="5758631781033351321">Овде ћете пронаћи листу за читање</translation>
-<translation id="575902488528307720">Потражите слику</translation>
-<translation id="5781453543752460388">Додај у слике</translation>
 <translation id="5782227691023083829">Превођење је у току...</translation>
 <translation id="5791632441210678828">Дугме Сортирај за фид Пратите.</translation>
 <translation id="5802829331520313983">Подесите…</translation>
@@ -766,7 +763,6 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7911190106180361398">Организација не дозвољава да синхронизујете све.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Извези лозинке…</translation>
-<translation id="793971554166979165">Подразумевани режим сајта</translation>
 <translation id="794799177247607889">Заустави евидентирање</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Нема угрожених лозинки}=1{{COUNT} угрожена лозинка}one{{COUNT} угрожена лозинка}few{{COUNT} угрожене лозинке}other{{COUNT} угрожених лозинки}}</translation>
 <translation id="7961015016161918242">Никад</translation>

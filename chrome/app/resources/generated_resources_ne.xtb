@@ -598,6 +598,7 @@
 <translation id="1604432177629086300">प्रिन्ट गर्न सकिएन। प्रिन्टरको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1605744057217831567">सबै साइट डेटा र साइटलाई दिइएका अनुमति हेर्नुहोस्</translation>
 <translation id="1606077700029460857">माउससम्बन्धी सेटिङ मिलाउनुहोस्</translation>
+<translation id="1606566847233779212">तपाईंले सेभ गरेका विशेष साइटहरू हटाउने हो?</translation>
 <translation id="1607139524282324606">प्रविष्टि खाली गर्नुहोस्</translation>
 <translation id="1607499585984539560">यी प्रयोगकर्ता यो डोमेनमा आबद्ध हुनुहुन्न</translation>
 <translation id="1608668830839595724">चयन गरिएका वस्तुमा गर्न सकिने थप कारबाहीहरू</translation>
@@ -862,6 +863,7 @@
 <translation id="1845727111305721124">ध्वनि प्ले गर्ने अनुमति दिइएका साइटहरू</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> चालु गर्न कन्ट्रोल-क्लिक गर्नुहोस्</translation>
 <translation id="184862733444771842">सुविधासम्बन्धी अनुरोध</translation>
+<translation id="1849016657376805933">कुनै पनि HID डिभाइस</translation>
 <translation id="1849186935225320012">यस पृष्ठसँग MIDI  डिभाइसहरूको पूर्ण नियन्त्रण छ।</translation>
 <translation id="1850145825777333687">डिभाइसको युजरनेम र पासकी</translation>
 <translation id="1850508293116537636">&amp;घडीको दिशामा घुमाउनुहोस्</translation>
@@ -995,6 +997,7 @@
 <translation id="1988259784461813694">VM चलाउन पूरा गर्नु पर्ने मापदण्डहरू</translation>
 <translation id="1989112275319619282">ब्राउज गर्नुहोस्</translation>
 <translation id="1989113344093894667">सामग्री क्याप्चर गर्न मिल्दैन</translation>
+<translation id="1989744123191450103">ब्याकअप गर्ने कार्य पूरा गर्न सकिएन</translation>
 <translation id="1989903373608997757">सधैँ प्रयोग गरियोस्</translation>
 <translation id="1990046457226896323">बोलीसम्बन्धी फाइलहरू डाउनलोड गरिए</translation>
 <translation id="1990512225220753005">यस पृष्ठमा सर्टकटहरू नदेखाउनुहोस्</translation>
@@ -1004,6 +1007,7 @@
 <translation id="1994173015038366702">साइट URL</translation>
 <translation id="1995916364271252349">साइटहरूले के कस्ता जानकारी (स्थान, क्यामेरा, पप-अप र अन्य कुरा) प्रयोग गर्न र देखाउन पाउँछन् भन्ने कुरा नियन्त्रण गर्छ</translation>
 <translation id="1997616988432401742">तपाईंका प्रमाणपत्रहरू</translation>
+<translation id="1997645434968427303">Linux को ब्याकअप रिस्टोर गर्ने कार्य पूरा गर्न सकिएन। Linux को डिस्कमा पर्याप्त खाली ठाउँ नभएकाले यसो भएको हुन सक्छ। तपाईं Linux को डिस्कको खाली ठाउँ बढाएर OS सम्बन्धी सेटिङमा गई उक्त ब्याकअप फेरि रिस्टोर गर्ने प्रयास गर्न सक्नुहुन्छ।</translation>
 <translation id="1999115740519098545">सुरूवातमा</translation>
 <translation id="2000419248597011803">यसले ठेगाना पट्टी र खोज बाकसका केही कुकी र खोजहरूलाई तपाईंको डिफल्ट खोज इन्जिनमा पठाउँछ</translation>
 <translation id="2002109485265116295">वास्तविक समय</translation>
@@ -1968,6 +1972,7 @@
 <translation id="2933632078076743449">पछिल्लो पटक अपडेट गरिएको समय</translation>
 <translation id="2934999512438267372">यो साइटलाई MIDI यन्त्रहरू पूर्ण रूपमा नियन्त्रण गर्ने अनुमति दिइयो</translation>
 <translation id="2935225303485967257">प्रोफाइलहरू व्यवस्थापन गर्नुहोस्</translation>
+<translation id="2935314715123552088">सक्रिय eSIM प्रोफाइल असक्षम पार्नुहोस्</translation>
 <translation id="2935654492420446828">पछि विद्यालयको खाता हाल्नुहोस्</translation>
 <translation id="2936851848721175671">ब्याकअप तथा पुनर्स्थापना</translation>
 <translation id="2939908794993783865">थप निष्क्रिय साइटहरू</translation>
@@ -2079,6 +2084,7 @@
 <translation id="3046178388369461825">Linux डिस्कमा खाली ठाउँ अत्यन्त कम छ</translation>
 <translation id="3046910703532196514">वेबपेज, पूरा</translation>
 <translation id="304747341537320566">बोलीका इन्जिनहरू</translation>
+<translation id="3048336643003835855"><ph name="VENDOR_ID" /> विक्रेताका HID डिभाइसहरू</translation>
 <translation id="3048917188684939573">कास्ट तथा डिभाइससम्बन्धी लगहरू</translation>
 <translation id="3051250416341590778">डिस्प्लेको आकार</translation>
 <translation id="3053013834507634016">प्रमाणपत्र कुञ्जी प्रयोग</translation>
@@ -2400,7 +2406,6 @@
 <translation id="3420501302812554910">आन्तरिक सुरक्षा साँचो रिसेट गर्नु आवश्यक छ</translation>
 <translation id="3421387094817716717">अण्डाकार कर्भको सार्वजनिक कुञ्जी</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />ख्याल गर्नुहोस्:<ph name="END_BOLD" /> तपाईंको आवाजसँग मिल्दोजुल्दो आवाज वा रेकर्डिङ प्रयोग गरेर पनि तपाईंको व्यक्तिगत परिणाम हेर्न वा तपाईंको सहायकको प्रयोग गर्न सकिने सम्भावना हुन्छ।</translation>
-<translation id="3421726884497337397">कस्तो अवस्थामा तेस्रो पक्षीय कुकीहरू ब्लक गर्ने भन्ने कुरा छान्नुहोस्</translation>
 <translation id="3422291238483866753">कुनै साइटले तपाईं वरपरको ठाउँको 3D नक्सा बनाउन वा क्यामेराको अवस्था पत्ता लगाउन खोज्दा मलाई सोधियोस् (सिफारिस गरिएको)</translation>
 <translation id="3423463006624419153">तपाईंको '<ph name="PHONE_NAME_1" />' र '<ph name="PHONE_NAME_2" />' मा:</translation>
 <translation id="3423858849633684918">कृपया <ph name="PRODUCT_NAME" /> लाई पुन: लन्च गर्नुहोस्</translation>
@@ -2507,6 +2512,7 @@
 <translation id="3511307672085573050">लिङ्क ठेगा&amp;नाको कपी गर्नुहोस्</translation>
 <translation id="351152300840026870">निश्चित-चौडाइ फन्ट</translation>
 <translation id="3511528412952710609">छोटो</translation>
+<translation id="3514011352559420398">रिस्टोर गर्न सकिएन</translation>
 <translation id="3514335087372914653">गेम कन्ट्रोल</translation>
 <translation id="3514373592552233661">एक भन्दा बढी नेटवर्कहरू उपलब्ध भएमा रुचाइएको नेटवर्कलाई अन्य ज्ञात नेटवर्कहरूलाई भन्दा बढी प्राथमिकता दिइनेछ</translation>
 <translation id="3515983984924808886">रिसेट गर्ने कार्य पुष्टि गर्न आफ्नो सुरक्षा साँचो फेरि छुनुहोस्। सुरक्षा साँचोको PIN लगायत यस साँचोमा भण्डार गरिएका सबै जानकारी मेटाइने छन्।</translation>
@@ -3115,6 +3121,7 @@
 <translation id="4104163789986725820">नि&amp;र्यात...</translation>
 <translation id="4107048419833779140">भण्डारण यन्त्रहरू पहिचान गर्नुहोस् तथा निकाल्नुहोस्‌</translation>
 <translation id="4109135793348361820">विण्डोलाई <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) मा सार्नुहोस्</translation>
+<translation id="4110485659976215879">चेतावनी रिस्टोर गर्नुहोस्</translation>
 <translation id="4110490973560452005">डाउनलोड सम्पन्न भयो: <ph name="FILE_NAME" />। डाउनलोडहरूको पट्टीमा जान Shift+F6 थिच्नुहोस्।</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> एल्बम चयन गर्नुहोस्</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (अफलाइन)</translation>
@@ -3173,6 +3180,7 @@
 <translation id="4180788401304023883">CA सर्टिफिकेट "<ph name="CERTIFICATE_NAME" />" हटाउने?</translation>
 <translation id="4181602000363099176">२० गुणा</translation>
 <translation id="4181841719683918333">भाषाहरू</translation>
+<translation id="4184803915913850597">HID डिभाइस (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4184885522552335684">कुनै प्रदर्शनलाई सार्न तान्नुहोस्</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> सेटअप गर्दै...</translation>
 <translation id="4190828427319282529">किबोर्डको फोकस हाइलाइट गरियोस्</translation>
@@ -3237,6 +3245,7 @@
 <translation id="4259388776256904261">यो कार्य गर्न केही बेर लाग्न सक्छ</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> हानिकारक हुन सक्छ। यो फाइल सुरक्षित छ कि छैन भनी स्क्यान गर्न यसलाई Google को सुरक्षासम्बन्धी उन्नत सुविधामा पठाउने हो? डाउनलोड बारमा जान Shift+F6 थिच्नुहोस्।</translation>
 <translation id="4261429981378979799">एक्स्टेन्सनसम्बन्धी अनुमति</translation>
+<translation id="4262004481148703251">चेतावनी खारेज गर्नुहोस्</translation>
 <translation id="4263223596040212967">आफ्नो किबोर्डको लेआउटको जाँच गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="426564820080660648">अद्यावधिकहरू जाँच्नको लागि, कृपया इथर्नेट, Wi-Fi वा मोबाइल लगत प्रयोग गर्नुहोस्।</translation>
 <translation id="4266679478228765574">फोल्डरहरू हटाउनुले ती फोल्डर सेयर हुन छाड्ने छन् तर ती फोल्डरभित्र रहेका फाइलहरू भने मेटाइने छैनन्।</translation>
@@ -3642,6 +3651,7 @@
 <translation id="4681453295291708042">नजिकैका डिभाइससँग सेयर गर्ने सुविधा असक्षम पार्नुहोस्</translation>
 <translation id="4681930562518940301">नयाँ ट्याबमा मूल छविलाई खोल्नुहोस्</translation>
 <translation id="4682551433947286597">वालपेपरहरू साइन-इन स्क्रिनमा देखा पर्छन्।</translation>
+<translation id="4682830185876172415">हालसालै डाउनलोड गरिएका सामग्री</translation>
 <translation id="4683629100208651599">ठुलो अक्षरमा बदल्नुहोस्</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (डिफल्ट)</translation>
 <translation id="4684427112815847243">सबै सिंक गर्नुहोस्</translation>
@@ -3664,6 +3674,7 @@
 <translation id="4699357559218762027">(स्वत: सुरुवात गरिएको)</translation>
 <translation id="4701025263201366865">अभिभावकको साइन इन</translation>
 <translation id="4701335814944566468">हिजो हेरिएको</translation>
+<translation id="4707337002099455863">सधैँ सबै साइटमा</translation>
 <translation id="4708794300267213770">शयन अवस्थाबाट सक्रिय पार्दा लक स्क्रिन देखाउनुहोस्</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> छोड्नुहोस्</translation>
 <translation id="4711638718396952945">सेटिङहरू पुनर्स्थापित गर्नुहोस्</translation>
@@ -3906,6 +3917,7 @@
 <translation id="496446150016900060">आफ्नो फोनमा Wi-Fi नेटवर्कहरू सिंक गर्नुहोस्</translation>
 <translation id="4965808351167763748">तपाईं Hangouts Meet चलाउन निश्चित रूपमा यो डिभाइस सेटअप गर्न चाहनुहुन्छ?</translation>
 <translation id="4966972803217407697">तपाईं इन्कोग्निटो मोडमा हुनुहुन्छ</translation>
+<translation id="496742804571665842">eSIM प्रोफाइलहरू असक्षम पार्नुहोस्</translation>
 <translation id="496888482094675990">फाइल एपले तपाईंले Google ड्राइभ, बाह्य भण्डारण, वा तपाईंको Chrome OS यन्त्रमा बचत गर्नुभएको फाइलहरूको द्रुत पहुँच प्रदान गर्छ।</translation>
 <translation id="4971412780836297815">सकेपछि खोल्नुहोस्</translation>
 <translation id="4971735654804503942">खतरनाक वेबसाइट, डाउनलोड र एक्स्टेन्सनहरूबाट अझ छिटो र सक्रिय सुरक्षा। तपाईंलाई पासवर्डहरूको चोरी हुन सक्ने सम्भावनाबारे चेतावनी दिन्छ। ब्राउजिङ डेटा Google लाई पठाउनु पर्ने हुन्छ।</translation>
@@ -4127,6 +4139,7 @@
 <translation id="5208548918290612795"><ph name="WEB_DRIVE" /> को प्रमाणीकरण टोकन भण्डारण गरिने तरिका</translation>
 <translation id="520902706163766447">हाल खोलिएका ट्याबहरूमा कुनै कुरा खोज्न Chrome UI को सिरानमा पपअप बबल सक्षम पार्नुहोस्।</translation>
 <translation id="5209320130288484488">कुनैपनि यन्त्रहरू फेला परेनन्</translation>
+<translation id="5209513429611499188">प्रयोगसम्बन्धी जानकारी भएको पेज <ph name="USAGE_PAGE" /> अनुसार HID डिभाइसहरू र ती डिभाइसको प्रयोगसम्बन्धी जानकारी</translation>
 <translation id="5210365745912300556">ट्याब बन्द गर्नुहोस्</translation>
 <translation id="5213114823401215820">बन्द गरिएको समूह फेरि खोल्नुहोस्</translation>
 <translation id="5213481667492808996">तपाईंको '<ph name="NAME" />' नामक मोबाइल डेटा सेवा प्रयोग गर्नका लागि तयार छ</translation>
@@ -4226,6 +4239,7 @@
 <translation id="5310281978693206542">आफ्ना यन्त्रहरूमा लिंक पठाउनुहोस्</translation>
 <translation id="5311304534597152726">यस रूपमा साइन इन गर्दै</translation>
 <translation id="5311565231560644461">साइटहरूलाई भर्चुअल रियालिटी चल्ने तपाईंका डिभाइसहरू र तिनमा भएका डेटा प्रयोग गर्न नदिनुहोस्</translation>
+<translation id="5313967007315987356">साइट थप्नुहोस्</translation>
 <translation id="5315738755890845852">अतिरिक्त मझौला कोष्ठक: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
 <translation id="5319359161174645648">Google ले Chrome प्रयोग गर्ने सुझाव दिन्छ</translation>
@@ -4532,6 +4546,7 @@
 <translation id="5627086634964711283">यसले तपाईंले होम बटनमा क्लिक गर्दा कुन पाना देखाउने भनी नियन्त्रण गर्छ ।</translation>
 <translation id="5627676517703583263">Chrome मार्फत स्मार्ट तरिकाले ब्राउज गर्नुहोस्</translation>
 <translation id="5627832140542566187">डिस्प्लेको झुकाव</translation>
+<translation id="5628393161682339323">मैले एक्स्टेन्सनमा क्लिक गर्दा</translation>
 <translation id="562935524653278697">तपाईंको प्रशासकले तपाईंका पुस्तक चिन्ह, इतिहास, पासवर्ड र अन्य सेटिङहरूको सिंक गर्ने सेवालाई असक्षम पार्नुभएको छ।</translation>
 <translation id="5631017369956619646">CPU प्रयोग</translation>
 <translation id="5632059346822207074">अनुमति मागियो, यस सम्बन्धमा कारबाही गर्न Ctrl + Forward थिच्नुहोस्</translation>
@@ -4666,6 +4681,7 @@
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> का रूपमा सिंक गर्नुहोस्</translation>
 <translation id="5781865261247219930"><ph name="EXTENSION_NAME" /> लाई आदेशहरू पठाउनुहोस्‌</translation>
 <translation id="5782227691023083829">अनुवाद गर्दै...</translation>
+<translation id="5783304934509327739">साइट खोल्ने विकल्प</translation>
 <translation id="57838592816432529">म्यूट गर्नुहोस्</translation>
 <translation id="5785583009707899920">Chrome को फाइलका उपयोगिताहरू</translation>
 <translation id="5787146423283493983">प्रमुख सम्झौता</translation>
@@ -4716,6 +4732,7 @@
 <translation id="5834581999798853053">करीव <ph name="TIME" /> मिनेट बाँकी</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - क्यामेरा वा माइक्रोफोन मार्फत रेकर्डिङ</translation>
 <translation id="583673505367439042">साइटहरूले तपाईंको डिभाइसमा भएका फाइल तथा फोल्डरहरू सम्पादन गर्ने अनुमति माग्न सक्छन्</translation>
+<translation id="583756221537636748">केस</translation>
 <translation id="5840680448799937675">फाइलहरू सधैँ अफलाइन सेयर गरिने छ</translation>
 <translation id="5841270259333717135">इथरनेट कन्फिगर गर्नुहोस्</translation>
 <translation id="5842497610951477805">ब्लुटुथ सक्षम</translation>
@@ -5352,6 +5369,7 @@
 <translation id="6499143127267478107">प्रोक्सी स्क्रिप्टमा होस्ट विघटन गर्दै...</translation>
 <translation id="6499764981457476645">वरपर कुनै पनि डिभाइस भेटिएन</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> ले यो फाइल खोल्ने अनुमति माग्दै छ:</translation>
+<translation id="65017764184991091">Linux एप तथा फाइलहरू ब्याकअप गर्ने कार्य पूरा गर्न सकिएन। तपाईंको डिभाइसको भण्डारणमा पर्याप्त खाली ठाउँ नभएकाले यसो भएको हुन सक्छ। आफ्नो डिभाइसको भण्डारणको केही ठाउँ खाली गरी हेर्नुहोस् वा ब्याकअप गर्ने अर्को लोकेसन रोजी हेर्नुहोस्।</translation>
 <translation id="6501957628055559556">सबै कन्टेनरहरू</translation>
 <translation id="650266656685499220">एल्बम सिर्जना गर्न Google Photos मा जानुहोस्</translation>
 <translation id="6503077044568424649">सबैभन्दा धेरै भ्रमण गरिएको</translation>
@@ -6254,6 +6272,7 @@
 <translation id="7448430327655618736">एपहरू स्वतः स्थापना गर्नुहोस्</translation>
 <translation id="7449752890690775568">पासवर्ड हटाउने हो?</translation>
 <translation id="7450761244949417357">अहिले <ph name="ALTERNATIVE_BROWSER_NAME" /> मा खोलिँदै</translation>
+<translation id="7452166281927983300">खारेज गरिएका चेतावनी (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">यस प्रिन्टरको चयन गरेर तपाईँले निम्न विस्तारलाई तपाईँको प्रिन्टरमा पहुँचको अनुमति दिँदै हुनुहुन्छ:</translation>
 <translation id="7454548535253569100">पोर्टलः <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">अतिरिक्त कन्टेनरहरू व्यवस्थापन गर्नुहोस्</translation>
@@ -7379,6 +7398,7 @@
 <translation id="8581809080475256101">इतिहास हेर्न सन्दर्भ मेनु, अगाडि जान प्रेस गर्नुहोस्</translation>
 <translation id="8584280235376696778">&amp;भिडियोलाई नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="8584427708066927472">यस डिभाइसबाट पासवर्ड मेटाइयो</translation>
+<translation id="8584843865238667486">प्रयोगसम्बन्धी जानकारी भएको पेज <ph name="USAGE_PAGE" /> अनुसार HID डिभाइसहरू र ती डिभाइसको प्रयोग <ph name="USAGE" /> सम्बन्धी जानकारी</translation>
 <translation id="8585480574870650651">Crostini हटाउनुहोस्</translation>
 <translation id="8585841788766257444">तल सूचीबद्ध गरिएका साइटका हकमा डिफल्ट सेटिङका साटो तपाईंका रोजाइअनुसारका सेटिङ लागू हुन्छन्</translation>
 <translation id="8588866096426746242">प्रोफाइलको तथ्याङ्क देखाउनुहोस्</translation>

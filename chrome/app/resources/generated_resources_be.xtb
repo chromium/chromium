@@ -2403,7 +2403,6 @@
 <translation id="3420501302812554910">Неабходна скінуць унутраны ключ бяспекі</translation>
 <translation id="3421387094817716717">Эліптычны адкрыты ключ</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Заўвага.<ph name="END_BOLD" /> Чалавек з падобным да вашага голасам або запісам вашага голасу зможа атрымаць доступ да вашых персанальных вынікаў ці да Памочніка.</translation>
-<translation id="3421726884497337397">Выберыце, калі блакіраваць староннія файлы cookie</translation>
 <translation id="3422291238483866753">Пытацца, калі сайт запытвае дазвол стварыць 3D-карту вашага асяроддзя і адсочваць становішча камеры (рэкамендуецца)</translation>
 <translation id="3423463006624419153">На тэлефонах "<ph name="PHONE_NAME_1" />" і "<ph name="PHONE_NAME_2" />":</translation>
 <translation id="3423858849633684918">Перазапусціце <ph name="PRODUCT_NAME" /></translation>
@@ -4228,6 +4227,7 @@
 <translation id="5310281978693206542">Адправіць спасылку на вашы прылады</translation>
 <translation id="5311304534597152726">Уваход з уліковага запісу</translation>
 <translation id="5311565231560644461">Не дазваляць сайтам выкарыстоўваць даныя і прылады віртуальнай рэальнасці</translation>
+<translation id="5313967007315987356">Дадаванне сайта</translation>
 <translation id="5315738755890845852">Лішняя фігурная дужка: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Захаваць</translation>
 <translation id="5319359161174645648">Google рэкамендуе браўзер Chrome</translation>

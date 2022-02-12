@@ -237,7 +237,6 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />查看你可以同步處理的內容<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">全部封鎖</translation>
 <translation id="313283613037595347">新增無痕分頁。</translation>
-<translation id="3150887674190166798">選取你想要 Chrome 每次載入網站的模式</translation>
 <translation id="3153862085237805241">儲存卡片</translation>
 <translation id="3157387275655328056">加入閱讀清單</translation>
 <translation id="3157684681743766797">全部標示…</translation>
@@ -506,8 +505,6 @@
 <translation id="5737974891429562743">帳戶登入詳細資訊過舊。請先更新，再開始進行同步處理。</translation>
 <translation id="5738887413654608789">可讓你找到與目前周遭環境相關的網頁。</translation>
 <translation id="5758631781033351321">這裡會顯示你的閱讀清單</translation>
-<translation id="575902488528307720">搜尋圖片</translation>
-<translation id="5781453543752460388">新增到相簿</translation>
 <translation id="5782227691023083829">正在翻譯...</translation>
 <translation id="5791632441210678828">用於排序已追蹤動態消息的按鈕。</translation>
 <translation id="5802829331520313983">設定…</translation>
@@ -766,7 +763,6 @@
 <translation id="7911190106180361398">貴機構不允許你同步處理任何內容。</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">匯出密碼...</translation>
-<translation id="793971554166979165">預設的網站模式</translation>
 <translation id="794799177247607889">停止記錄</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{沒有任何密碼遭外洩}=1{有 {COUNT} 組密碼遭外洩}other{有 {COUNT} 組密碼遭外洩}}</translation>
 <translation id="7961015016161918242">一律不要</translation>

@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Хангул ахнмате</translation>
 <translation id="1155759005174418845">каталонски</translation>
 <translation id="1168100932582989117">Google сервери назива</translation>
+<translation id="1171082344678443012">XZ компримована архива</translation>
 <translation id="1172970565351728681">Преостало је око <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Преименуј</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, батерија телефона <ph name="BATTERY_STATUS" />%, детаљи</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">Форматирањем диска избрисаће се сви подаци сачувани на њему. Ова радња не може да се опозове.</translation>
 <translation id="2025955442973426285">тигриња</translation>
 <translation id="2028997212275086731">RAR архива</translation>
+<translation id="2036414735548252477">LZMA компримована tar архива</translation>
 <translation id="2037845485764049925">руски</translation>
 <translation id="2044023416777079300">Модем није регистрован</translation>
 <translation id="2046702855113914483">Рамен</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> бајт(ов)а</translation>
 <translation id="4880214202172289027">Клизач за јачину звука</translation>
 <translation id="4881695831933465202">Отвори</translation>
+<translation id="4886199584824489598">Bzip2 компримована архива</translation>
 <translation id="4900532980794411603">Дели са Parallels Desktop-ом</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, повежи</translation>
 <translation id="4905417359854579806">Све је спремно за прављење резервних копија (<ph name="FILE_COUNT" />)</translation>
@@ -586,6 +589,7 @@
 <translation id="6055907707645252013">Мрежа <ph name="NETWORK_TYPE" />, није повезана</translation>
 <translation id="6074825444536523002">Google образац</translation>
 <translation id="6079871810119356840">мађарски са Qwerty тастатуром</translation>
+<translation id="6082256976217156453">LZMA компримована архива</translation>
 <translation id="6096979789310008754">Текст претраге је обрисан, приказују се све датотеке и директоријуми.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> се премешта у директоријум <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">Размак</translation>
@@ -842,6 +846,7 @@
 <translation id="8297012244086013755">Хангул, 3 реда (No Shift)</translation>
 <translation id="8299269255470343364">јапански</translation>
 <translation id="8300849813060516376">OTASP није успео</translation>
+<translation id="8308481408797647857">XZ компримована tar архива</translation>
 <translation id="8312871300878166382">Налепи у директоријум</translation>
 <translation id="8329978297633540474">Чисти текст</translation>
 <translation id="8335587457941836791">Откачи са полице</translation>
@@ -950,6 +955,7 @@
 <translation id="943972244133411984">Изменио/ла</translation>
 <translation id="945522503751344254">Пошаљи повратне информације</translation>
 <translation id="947144732524271678">Изабрали сте низ ставки (<ph name="ENTRY_COUNT" />) од ставке <ph name="FROM_ENTRY_NAME" /> до ставке <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="961973045258256291">Gzip компримована архива</translation>
 <translation id="965477715979482472">енглески (Јужноафричка Република)</translation>
 <translation id="981121421437150478">Офлајн</translation>
 <translation id="988685240266037636">Датотека „<ph name="FILE_NAME" />“ већ постоји. Да ли желите да је замените?</translation>

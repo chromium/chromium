@@ -1990,6 +1990,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="2933632078076743449">Última atualização</translation>
 <translation id="2934999512438267372">Controle total de dispositivos MIDI permitido</translation>
 <translation id="2935225303485967257">Gerenciar perfis</translation>
+<translation id="2935314715123552088">Desativar perfil de eSIM ativo</translation>
 <translation id="2935654492420446828">Adicionar uma conta escolar mais tarde</translation>
 <translation id="2936851848721175671">Backup e restauração</translation>
 <translation id="2939908794993783865">Outros sites inativos</translation>
@@ -2424,7 +2425,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3420501302812554910">A chave de segurança interna precisa ser redefinida</translation>
 <translation id="3421387094817716717">Chave pública de curva elíptica</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Observação<ph name="END_BOLD" />: uma voz parecida ou uma gravação pode conseguir acessar seus resultados personalizados ou o Google Assistente.</translation>
-<translation id="3421726884497337397">Defina quando bloquear cookies de terceiros</translation>
 <translation id="3422291238483866753">Perguntar quando um site quiser criar um mapa 3D do ambiente a sua volta ou acompanhar a posição da câmera (recomendado)</translation>
 <translation id="3423463006624419153">No seu "<ph name="PHONE_NAME_1" />" e "<ph name="PHONE_NAME_2" />":</translation>
 <translation id="3423858849633684918">Reinicie <ph name="PRODUCT_NAME" /></translation>
@@ -3141,6 +3141,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4104163789986725820">E&amp;xportar...</translation>
 <translation id="4107048419833779140">Identificar e ejetar dispositivos de armazenamento</translation>
 <translation id="4109135793348361820">Mover janela para <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="4110485659976215879">Restaurar aviso</translation>
 <translation id="4110490973560452005">Download concluído: <ph name="FILE_NAME" />. Pressione Shift+F6 para voltar à área da barra de downloads.</translation>
 <translation id="4110686435123617899">Selecionar álbum <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (off-line)</translation>
@@ -3264,6 +3265,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4259388776256904261">Isso pode demorar um pouco</translation>
 <translation id="4260182282978351200">O arquivo <ph name="FILE_NAME" /> pode ser perigoso. Enviar para verificação no Proteção Avançada do Google? Pressione Shift+F6 para voltar à área da barra de downloads.</translation>
 <translation id="4261429981378979799">Permissões das extensões</translation>
+<translation id="4262004481148703251">Dispensar aviso</translation>
 <translation id="4263223596040212967">Verifique o layout do seu teclado e tente novamente.</translation>
 <translation id="426564820080660648">Para verificar se há atualizações, utilize Ethernet, Wi-Fi ou a rede de dados móveis.</translation>
 <translation id="4266679478228765574">A remoção de pastas interromperá o compartilhamento, mas não excluirá os arquivos.</translation>
@@ -3670,6 +3672,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4681453295291708042">Desativar o "Compartilhar por proximidade"</translation>
 <translation id="4681930562518940301">Abrir &amp;imagem original em uma nova guia</translation>
 <translation id="4682551433947286597">Os planos de fundo aparecem na tela de login.</translation>
+<translation id="4682830185876172415">Downloads recentes</translation>
 <translation id="4683629100208651599">Letra minúscula</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (padrão)</translation>
 <translation id="4684427112815847243">Sincronizar tudo</translation>
@@ -3935,6 +3938,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="496446150016900060">Sincronizar redes Wi-Fi com seu smartphone</translation>
 <translation id="4965808351167763748">Você quer mesmo configurar este dispositivo para executar o Google Meet?</translation>
 <translation id="4966972803217407697">Você está no modo de navegação anônima</translation>
+<translation id="496742804571665842">Desativar perfis de eSIM</translation>
 <translation id="496888482094675990">O aplicativo Arquivos fornece acesso rápido a arquivos que foram salvos no Google Drive, em armazenamento externo ou no seu dispositivo Chrome OS.</translation>
 <translation id="4971412780836297815">Abrir quando estiver concluído</translation>
 <translation id="4971735654804503942">Proteção mais rápida e proativa contra sites, downloads e extensões perigosos. Envia um alerta de violação de senha. Requer que dados de navegação sejam enviados ao Google.</translation>
@@ -4256,6 +4260,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="5310281978693206542">Enviar link para seus dispositivos</translation>
 <translation id="5311304534597152726">Login como</translation>
 <translation id="5311565231560644461">Não permitir que os sites usem seus dispositivos e dados de realidade virtual</translation>
+<translation id="5313967007315987356">Adicionar site</translation>
 <translation id="5315738755890845852">Chave extra: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Salvar</translation>
 <translation id="5319359161174645648">O Google recomenda o Chrome</translation>
@@ -6290,6 +6295,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7448430327655618736">Instalar apps automaticamente</translation>
 <translation id="7449752890690775568">Remover a senha?</translation>
 <translation id="7450761244949417357">Abrindo no <ph name="ALTERNATIVE_BROWSER_NAME" /> agora</translation>
+<translation id="7452166281927983300">Avisos dispensados (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">Ao selecionar esta impressora, você concede permissão para acessar sua impressora à seguinte extensão:</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">Gerenciar contêineres extras</translation>

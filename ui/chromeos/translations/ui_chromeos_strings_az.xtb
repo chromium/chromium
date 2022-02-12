@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Katalan</translation>
 <translation id="1168100932582989117">Google ad serverləri</translation>
+<translation id="1171082344678443012">XZ sıxılmış arxivi</translation>
 <translation id="1172970565351728681">Təxminən <ph name="REMAINING_TIME" /> qalıb</translation>
 <translation id="1173894706177603556">Adını dəyişin</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü<ph name="SIGNAL_STRENGTH" />%, Telefonun Batareyası <ph name="BATTERY_STATUS" />%, Detallar</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">Formatdan sonra diskdə saxlanılan bütün data silinəcək. Bu əməliyyat geri qaytarıla bilməz.</translation>
 <translation id="2025955442973426285">Tiqrin</translation>
 <translation id="2028997212275086731">RAR arxivi</translation>
+<translation id="2036414735548252477">LZMA sıxılmış tar arxivi</translation>
 <translation id="2037845485764049925">Rus</translation>
 <translation id="2044023416777079300">Modem qeydiyyatdan keçirilməyib</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bayt</translation>
 <translation id="4880214202172289027">Səs slayderi</translation>
 <translation id="4881695831933465202">Açın</translation>
+<translation id="4886199584824489598">Bzip2 sıxılmış arxivi</translation>
 <translation id="4900532980794411603">Parallels Desktop ilə paylaşın</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Qoşulun</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> yedəklənmə üçün hazırdır</translation>
@@ -585,6 +588,7 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> şəbəkəsi, qoşulu deyil</translation>
 <translation id="6074825444536523002">Google forma</translation>
 <translation id="6079871810119356840">Qwerty klaviaturası ilə Macar dili</translation>
+<translation id="6082256976217156453">LZMA sıxılmış arxivi</translation>
 <translation id="6096979789310008754">Bütün fayl və qovluqları göstərən axtarış mətni silindi.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> faylı <ph name="FOLDER_NAME" /> qovluğuna köçürülür</translation>
 <translation id="6129953537138746214">Boşluq</translation>
@@ -839,6 +843,7 @@
 <translation id="8297012244086013755">Hangul 3 Set (Sürüşdürmə yoxdur)</translation>
 <translation id="8299269255470343364">Yapon</translation>
 <translation id="8300849813060516376">OTASP uğursuz oldu</translation>
+<translation id="8308481408797647857">XZ sıxılmış tar arxivi</translation>
 <translation id="8312871300878166382">Qovluğa yerləşdirin</translation>
 <translation id="8329978297633540474">Tam mətn</translation>
 <translation id="8335587457941836791">Buferdən çıxarın</translation>
@@ -947,6 +952,7 @@
 <translation id="943972244133411984">Düzəliş edib:</translation>
 <translation id="945522503751344254">Geri əlaqə göndərin</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> - <ph name="TO_ENTRY_NAME" /> aralığında <ph name="ENTRY_COUNT" /> fayl seçildi.</translation>
+<translation id="961973045258256291">Gzip sıxılmış arxivi</translation>
 <translation id="965477715979482472">İngilis (Cənubi Afrika)</translation>
 <translation id="981121421437150478">Oflayn</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" adlı qovluq artıq mövcuddur. Onu əvəz etmək istəyirsiniz?</translation>

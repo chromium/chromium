@@ -237,7 +237,6 @@
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Які дані можна синхронізувати<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Заблокувати всі</translation>
 <translation id="313283613037595347">Створити нову анонімну вкладку.</translation>
-<translation id="3150887674190166798">Ви можете щоразу вибирати, у якому режимі відображатиметься сайт у Chrome</translation>
 <translation id="3153862085237805241">Зберегти картку</translation>
 <translation id="3157387275655328056">Додати в список читання</translation>
 <translation id="3157684681743766797">Позначити всі…</translation>
@@ -506,8 +505,6 @@
 <translation id="5737974891429562743">Дані для входу в обліковий запис застаріли. Оновіть їх, щоб почати синхронізацію.</translation>
 <translation id="5738887413654608789">Ви зможете знаходити відповідні веб-сторінки на основі об’єктів поблизу.</translation>
 <translation id="5758631781033351321">Тут відображатиметься ваш список читання</translation>
-<translation id="575902488528307720">Шукати зображення</translation>
-<translation id="5781453543752460388">Додати у Фото</translation>
 <translation id="5782227691023083829">Виконується переклад сторінки...</translation>
 <translation id="5791632441210678828">Кнопка сортування для фіду підписок.</translation>
 <translation id="5802829331520313983">Налаштування…</translation>
@@ -766,7 +763,6 @@
 <translation id="7911190106180361398">Адміністратор вашої організації не дозволяє синхронізувати всі дані.</translation>
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939128259257418052">Експортувати паролі…</translation>
-<translation id="793971554166979165">Режим за умовчанням для сайту</translation>
 <translation id="794799177247607889">Припинити запис у журналі</translation>
 <translation id="7953440832920792856">{COUNT,plural, =0{Немає зламаних паролів}=1{{COUNT} зламаний пароль}one{{COUNT} зламаний пароль}few{{COUNT} зламані паролі}many{{COUNT} зламаних паролів}other{{COUNT} зламаного пароля}}</translation>
 <translation id="7961015016161918242">Ніколи</translation>

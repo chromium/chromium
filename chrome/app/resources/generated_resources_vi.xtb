@@ -604,6 +604,7 @@
 <translation id="1604432177629086300">Không in được. Vui lòng kiểm tra máy in rồi thử lại.</translation>
 <translation id="1605744057217831567">Xem tất cả dữ liệu và quyền của trang web</translation>
 <translation id="1606077700029460857">Thay đổi chế độ cài đặt chuột</translation>
+<translation id="1606566847233779212">Xoá những trang web mà bạn đã thêm?</translation>
 <translation id="1607139524282324606">Xóa mục nhập</translation>
 <translation id="1607499585984539560">Người dùng không được liên kết với miền</translation>
 <translation id="1608668830839595724">Thao tác khác cho những mục đã chọn</translation>
@@ -876,6 +877,7 @@
 <translation id="1845727111305721124">Được phép phát âm thanh</translation>
 <translation id="1846308012215045257">Giữ Control khi nhấp để chạy <ph name="PLUGIN_NAME" /></translation>
 <translation id="184862733444771842">Yêu cầu về tính năng</translation>
+<translation id="1849016657376805933">Thiết bị HID bất kỳ</translation>
 <translation id="1849186935225320012">Trang này có quyền kiểm soát toàn bộ thiết bị MIDI.</translation>
 <translation id="1850145825777333687">Thông tin xác thực thiết bị</translation>
 <translation id="1850508293116537636">Xoay &amp;theo chiều kim đồng hồ</translation>
@@ -1010,6 +1012,7 @@
 <translation id="1988259784461813694">Yêu cầu</translation>
 <translation id="1989112275319619282">Duyệt qua</translation>
 <translation id="1989113344093894667">Không thể chụp nội dung</translation>
+<translation id="1989744123191450103">Không sao lưu được</translation>
 <translation id="1989903373608997757">Luôn sử dụng</translation>
 <translation id="1990046457226896323">Đã tải tệp mã chuyển lời nói thành văn bản xuống</translation>
 <translation id="1990512225220753005">Không hiển thị lối tắt trên trang này</translation>
@@ -1019,6 +1022,7 @@
 <translation id="1994173015038366702">URL trang web</translation>
 <translation id="1995916364271252349">Kiểm soát thông tin mà các trang web có thể dùng và hiển thị (vị trí, máy ảnh, cửa sổ bật lên và thông tin khác)</translation>
 <translation id="1997616988432401742">Chứng chỉ của bạn</translation>
+<translation id="1997645434968427303">Không khôi phục được bản sao lưu Linux. Lý do có thể là Linux không có đủ dung lượng ổ đĩa. Bạn có thể thay đổi dung lượng ổ đĩa dành cho Linux rồi thử khôi phục lại bản sao lưu trong phần Cài đặt của hệ điều hành.</translation>
 <translation id="1999115740519098545">Khi khởi động</translation>
 <translation id="2000419248597011803">Gửi một số cookie và nội dung tìm kiếm từ thanh địa chỉ cũng như hộp tìm kiếm tới công cụ tìm kiếm mặc định</translation>
 <translation id="2002109485265116295">Thời gian thực</translation>
@@ -2096,6 +2100,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3046178388369461825">Dung lượng ổ đĩa Linux còn rất ít</translation>
 <translation id="3046910703532196514">Trang web, toàn bộ</translation>
 <translation id="304747341537320566">Công cụ chuyển văn bản sang lời nói</translation>
+<translation id="3048336643003835855">Thiết bị HID của nhà cung cấp <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">Nhật ký về thiết bị và hoạt động truyền</translation>
 <translation id="3051250416341590778">Kích thước hiển thị</translation>
 <translation id="3053013834507634016">Sử dụng Khoá Chứng chỉ</translation>
@@ -2417,7 +2422,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3420501302812554910">Cần phải đặt lại khóa bảo mật nội bộ</translation>
 <translation id="3421387094817716717">Khóa công khai đường cong elip</translation>
 <translation id="3421672904902642628"><ph name="BEGIN_BOLD" />Lưu ý:<ph name="END_BOLD" /> Một giọng nói hoặc bản ghi âm giọng nói giống với giọng nói của bạn có thể truy cập vào các kết quả cá nhân hoặc sử dụng Trợ lý của bạn.</translation>
-<translation id="3421726884497337397">Chọn thời điểm chặn cookie của bên thứ ba</translation>
 <translation id="3422291238483866753">Hỏi khi một trang web muốn tạo bản đồ 3D về các khu vực xung quanh bạn hoặc theo dõi thông tin vị trí của máy ảnh (khuyên dùng)</translation>
 <translation id="3423463006624419153">Trên '<ph name="PHONE_NAME_1" />' và '<ph name="PHONE_NAME_2" />' của bạn:</translation>
 <translation id="3423858849633684918">Vui lòng chạy lại <ph name="PRODUCT_NAME" /></translation>
@@ -2524,6 +2528,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3511307672085573050">S&amp;ao chép Địa chỉ Liên kết</translation>
 <translation id="351152300840026870">Phông chữ có chiều rộng cố định</translation>
 <translation id="3511528412952710609">Độ trễ ngắn</translation>
+<translation id="3514011352559420398">Không khôi phục được</translation>
 <translation id="3514335087372914653">Kiểm soát trò chơi</translation>
 <translation id="3514373592552233661">Mạng ưa thích sẽ được ưu tiên hơn so với các mạng đã biết khác nếu có nhiều mạng</translation>
 <translation id="3515983984924808886">Chạm lại vào khóa bảo mật để xác nhận đặt lại. Thao tác này sẽ xóa toàn bộ thông tin lưu trữ trên khóa bảo mật, bao gồm cả mã PIN của khóa.</translation>
@@ -3191,6 +3196,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4180788401304023883">Xóa chứng chỉ CA "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Ngôn ngữ</translation>
+<translation id="4184803915913850597">Thiết bị HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4184885522552335684">Kéo để di chuyển màn hình</translation>
 <translation id="4187424053537113647">Đang thiết lập <ph name="APP_NAME" />...</translation>
 <translation id="4190828427319282529">Làm nổi tâm điểm trên bàn phím</translation>
@@ -3683,6 +3689,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="4699357559218762027">(tự động chạy)</translation>
 <translation id="4701025263201366865">Hoạt động đăng nhập của cha mẹ</translation>
 <translation id="4701335814944566468">Vừa xem hôm qua</translation>
+<translation id="4707337002099455863">Luôn cho phép trên mọi trang web</translation>
 <translation id="4708794300267213770">Hiển thị màn hình khóa khi đánh thức từ chế độ ngủ</translation>
 <translation id="4708849949179781599">Thoát <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Khôi phục cài đặt</translation>
@@ -4146,6 +4153,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5208548918290612795">Lưu trữ Mã xác thực của <ph name="WEB_DRIVE" /></translation>
 <translation id="520902706163766447">Bật bong bóng cửa sổ bật lên trong giao diện người dùng hàng đầu của Chrome để tìm một thẻ trong các thẻ hiện đang mở.</translation>
 <translation id="5209320130288484488">Không tìm thấy thiết bị nào</translation>
+<translation id="5209513429611499188">Thiết bị HID với giá trị sử dụng từ trang sử dụng <ph name="USAGE_PAGE" /></translation>
 <translation id="5210365745912300556">Đóng thẻ</translation>
 <translation id="5213114823401215820">Mở lại nhóm đã đóng</translation>
 <translation id="5213481667492808996">Dịch vụ dữ liệu '<ph name="NAME" />' đã sẵn sàng cho bạn sử dụng</translation>
@@ -4245,6 +4253,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5310281978693206542">Gửi đường liên kết tới thiết bị của bạn</translation>
 <translation id="5311304534597152726">Đăng nhập bằng</translation>
 <translation id="5311565231560644461">Không cho phép các trang web sử dụng dữ liệu và thiết bị thực tế ảo của bạn</translation>
+<translation id="5313967007315987356">Thêm trang web</translation>
 <translation id="5315738755890845852">Thừa dấu ngoặc nhọn: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Lưu</translation>
 <translation id="5319359161174645648">Google đề xuất Chrome</translation>
@@ -4551,6 +4560,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5627086634964711283">Tiện ích cũng điều khiển trang nào sẽ hiển thị khi bạn nhấp vào nút Trang chủ.</translation>
 <translation id="5627676517703583263">Duyệt web thông minh bằng Chrome</translation>
 <translation id="5627832140542566187">Hướng màn hình</translation>
+<translation id="5628393161682339323">Khi tôi nhấp vào tiện ích</translation>
 <translation id="562935524653278697">Quản trị viên của bạn đã tắt đồng bộ hóa dấu trang, lịch sử, mật khẩu và các cài đặt khác của bạn.</translation>
 <translation id="5631017369956619646">Mức sử dụng CPU</translation>
 <translation id="5632059346822207074">Đã yêu cầu quyền. Hãy nhấn tổ hợp phím Ctrl + Mũi tên tiến để phản hồi</translation>
@@ -4685,6 +4695,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5781092003150880845">Đồng bộ hóa dưới tên là <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781865261247219930">Gửi lệnh đến <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">Đang dịch...</translation>
+<translation id="5783304934509327739">Tuỳ chọn truy cập trang web</translation>
 <translation id="57838592816432529">Tắt tiếng</translation>
 <translation id="5785583009707899920">Tiện ích tệp của Chrome</translation>
 <translation id="5787146423283493983">Thoả thuận về Khoá</translation>
@@ -4735,6 +4746,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5834581999798853053">Còn khoảng <ph name="TIME" /> phút</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Đang ghi âm hoặc quay phim</translation>
 <translation id="583673505367439042">Các trang web có thể yêu cầu chỉnh sửa tệp và thư mục trên thiết bị của bạn</translation>
+<translation id="583756221537636748">Hộp đựng</translation>
 <translation id="5840680448799937675">Tệp sẽ luôn được chia sẻ mà không dùng Internet</translation>
 <translation id="5841270259333717135">Định cấu hình Ethernet</translation>
 <translation id="5842497610951477805">Bật Bluetooth</translation>
@@ -5372,6 +5384,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="6499143127267478107">Đang khắc phục máy chủ trong tập lệnh proxy...</translation>
 <translation id="6499764981457476645">Không tìm thấy thiết bị nào ở gần</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> muốn mở tệp này:</translation>
+<translation id="65017764184991091">Không sao lưu được tệp và ứng dụng Linux. Tình trạng này có thể xảy ra khi thiết bị của bạn không còn đủ không gian lưu trữ trống. Hãy thử giải phóng dung lượng trên thiết bị hoặc chọn một nơi khác để sao lưu.</translation>
 <translation id="6501957628055559556">Tất cả vùng chứa</translation>
 <translation id="650266656685499220">Để tạo album, hãy chuyển đến Google Photos</translation>
 <translation id="6503077044568424649">Truy cập nhiều nhất</translation>
@@ -7400,6 +7413,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8581809080475256101">Nhấn để tiếp tục, nhấn menu ngữ cảnh để xem lịch sử</translation>
 <translation id="8584280235376696778">&amp;Mở video trong thẻ mới</translation>
 <translation id="8584427708066927472">Đã xóa mật khẩu khỏi thiết bị này</translation>
+<translation id="8584843865238667486">Thiết bị HID với giá trị sử dụng <ph name="USAGE" /> từ trang sử dụng <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Xóa Crostini</translation>
 <translation id="8585841788766257444">Các trang web trong danh sách bên dưới tuân theo một tùy chọn cài đặt tùy chỉnh thay vì mặc định</translation>
 <translation id="8588866096426746242">Hiển thị số liệu thống kê hồ sơ</translation>
