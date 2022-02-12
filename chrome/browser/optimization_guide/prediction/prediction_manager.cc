@@ -176,6 +176,27 @@ BuildPredictionModelFromCommandLineForOptimizationTarget(
   return prediction_model;
 }
 
+// Returns whether the model metadata proto is on the server allowlist.
+bool IsModelMetadataTypeOnServerAllowlist(
+    const optimization_guide::proto::Any& model_metadata) {
+  return model_metadata.type_url() ==
+             "type.googleapis.com/"
+             "google.internal.chrome.optimizationguide.v1."
+             "PageEntitiesModelMetadata" ||
+         model_metadata.type_url() ==
+             "type.googleapis.com/"
+             "google.internal.chrome.optimizationguide.v1."
+             "PageTopicsModelMetadata" ||
+         model_metadata.type_url() ==
+             "type.googleapis.com/"
+             "google.internal.chrome.optimizationguide.v1."
+             "SegmentationModelMetadata" ||
+         model_metadata.type_url() ==
+             "type.googleapis.com/"
+             "google.privacy.webpermissionpredictions.v1."
+             "WebPermissionPredictionsModelMetadata";
+}
+
 }  // namespace
 
 namespace optimization_guide {
@@ -260,6 +281,9 @@ void PredictionManager::AddObserverForOptimizationTargetModel(
   if (registered_optimization_targets_and_metadata_.contains(
           optimization_target))
     return;
+
+  DCHECK(!model_metadata ||
+         IsModelMetadataTypeOnServerAllowlist(*model_metadata));
 
   registered_optimization_targets_and_metadata_.emplace(optimization_target,
                                                         model_metadata);

@@ -530,7 +530,9 @@ TEST_F(PredictionManagerTest, AddObserverForOptimizationTargetModel) {
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchSuccessWithEmptyResponse));
   proto::Any model_metadata;
-  model_metadata.set_type_url("whatever");
+  model_metadata.set_type_url(
+      "type.googleapis.com/"
+      "google.internal.chrome.optimizationguide.v1.PageEntitiesModelMetadata");
   prediction_model_fetcher()->SetExpectedModelMetadataForOptimizationTarget(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, model_metadata);
 
@@ -676,7 +678,9 @@ TEST_F(PredictionManagerTest,
 TEST_F(PredictionManagerTest,
        AddObserverForOptimizationTargetModelCommandLineOverride) {
   optimization_guide::proto::Any metadata;
-  metadata.set_type_url("sometypeurl");
+  metadata.set_type_url(
+      "type.googleapis.com/"
+      "google.internal.chrome.optimizationguide.v1.PageEntitiesModelMetadata");
   std::string encoded_metadata;
   metadata.SerializeToString(&encoded_metadata);
   base::Base64Encode(encoded_metadata, &encoded_metadata);
@@ -691,7 +695,9 @@ TEST_F(PredictionManagerTest,
       BuildTestPredictionModelFetcher(
           PredictionModelFetcherEndState::kFetchSuccessWithEmptyResponse));
   proto::Any model_metadata;
-  model_metadata.set_type_url("whatever");
+  model_metadata.set_type_url(
+      "type.googleapis.com/"
+      "google.internal.chrome.optimizationguide.v1.PageEntitiesModelMetadata");
   prediction_model_fetcher()->SetExpectedModelMetadataForOptimizationTarget(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, model_metadata);
 
@@ -706,12 +712,14 @@ TEST_F(PredictionManagerTest,
 
   EXPECT_TRUE(prediction_manager()->GetRegisteredOptimizationTargets().contains(
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD));
-  EXPECT_EQ(observer
-                .last_received_model_for_target(
-                    proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
-                ->GetModelMetadata()
-                ->type_url(),
-            "sometypeurl");
+  EXPECT_EQ(
+      observer
+          .last_received_model_for_target(
+              proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
+          ->GetModelMetadata()
+          ->type_url(),
+      "type.googleapis.com/"
+      "google.internal.chrome.optimizationguide.v1.PageEntitiesModelMetadata");
   EXPECT_EQ(observer
                 .last_received_model_for_target(
                     proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
