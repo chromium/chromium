@@ -14,6 +14,7 @@
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
@@ -74,7 +75,7 @@ class ProgressIndicatorWaiter {
 
   // Waits for `progress_indicator` to reach the specified `progress`. If the
   // `progress_indicator` is already at `progress`, this method no-ops.
-  void WaitForProgress(HoldingSpaceProgressIndicator* progress_indicator,
+  void WaitForProgress(ProgressIndicator* progress_indicator,
                        const absl::optional<float>& progress) {
     if (progress_indicator->progress() == progress)
       return;
@@ -215,7 +216,7 @@ class DictationButtonTraySodaTest
     AshTestBase::TearDown();
   }
 
-  HoldingSpaceProgressIndicator* GetProgressIndicator() {
+  ProgressIndicator* GetProgressIndicator() {
     return GetTray()->progress_indicator_.get();
   }
 
@@ -267,9 +268,9 @@ TEST_P(DictationButtonTraySodaTest, UpdateOnSpeechRecognitionDownloadChanged) {
   EXPECT_EQ(base::UTF8ToUTF16(kEnabledTooltip), image->GetTooltipText());
 
   // The tray icon should be visible when the download is not in-progress.
-  HoldingSpaceProgressIndicator* progress_indicator = GetProgressIndicator();
+  ProgressIndicator* progress_indicator = GetProgressIndicator();
   ProgressIndicatorWaiter().WaitForProgress(
-      progress_indicator, HoldingSpaceProgressIndicator::kProgressComplete);
+      progress_indicator, ProgressIndicator::kProgressComplete);
   EXPECT_FALSE(IsProgressIndicatorVisible());
   EXPECT_TRUE(IsImageVisible());
 
@@ -304,7 +305,7 @@ TEST_P(DictationButtonTraySodaTest, UpdateOnSpeechRecognitionDownloadChanged) {
 
   // The tray icon should be visible when the download is not in-progress.
   ProgressIndicatorWaiter().WaitForProgress(
-      progress_indicator, HoldingSpaceProgressIndicator::kProgressComplete);
+      progress_indicator, ProgressIndicator::kProgressComplete);
   EXPECT_FALSE(IsProgressIndicatorVisible());
   EXPECT_TRUE(IsImageVisible());
 }

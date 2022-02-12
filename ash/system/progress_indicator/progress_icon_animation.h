@@ -10,7 +10,7 @@
 
 namespace ash {
 
-// An animation for a `HoldingSpaceProgressIndicator`'s icon.
+// An animation for a `ProgressIndicator`'s icon.
 class ASH_EXPORT ProgressIconAnimation : public ProgressIndicatorAnimation {
  public:
   ProgressIconAnimation();

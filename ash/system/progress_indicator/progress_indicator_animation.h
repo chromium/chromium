@@ -18,7 +18,7 @@ class SlideAnimation;
 
 namespace ash {
 
-// An animation for a `HoldingSpaceProgressIndicator`.
+// An animation for a `ProgressIndicator`.
 class ASH_EXPORT ProgressIndicatorAnimation : public gfx::AnimationDelegate {
  public:
   ProgressIndicatorAnimation(const ProgressIndicatorAnimation&) = delete;

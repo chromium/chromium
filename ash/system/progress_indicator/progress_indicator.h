@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_PROGRESS_INDICATOR_H_
-#define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_PROGRESS_INDICATOR_H_
+#ifndef ASH_SYSTEM_PROGRESS_INDICATOR_PROGRESS_INDICATOR_H_
+#define ASH_SYSTEM_PROGRESS_INDICATOR_PROGRESS_INDICATOR_H_
 
 #include <memory>
 #include <vector>
@@ -22,21 +22,20 @@ class ProgressRingAnimation;
 
 // A class owning a `ui::Layer` which paints indication of progress.
 // NOTE: The owned `layer()` is not painted if progress == `1.f`.
-class ASH_EXPORT HoldingSpaceProgressIndicator : public ui::LayerOwner,
-                                                 public ui::LayerDelegate {
+class ASH_EXPORT ProgressIndicator : public ui::LayerOwner,
+                                     public ui::LayerDelegate {
  public:
-  static constexpr char kClassName[] = "HoldingSpaceProgressIndicator";
+  static constexpr char kClassName[] = "ProgressIndicator";
   static constexpr float kProgressComplete = 1.f;
 
-  HoldingSpaceProgressIndicator(const HoldingSpaceProgressIndicator&) = delete;
-  HoldingSpaceProgressIndicator& operator=(
-      const HoldingSpaceProgressIndicator&) = delete;
-  ~HoldingSpaceProgressIndicator() override;
+  ProgressIndicator(const ProgressIndicator&) = delete;
+  ProgressIndicator& operator=(const ProgressIndicator&) = delete;
+  ~ProgressIndicator() override;
 
   // Returns an instance which paints indication of progress returned by the
   // specified `progress_callback`. NOTE: This instance comes pre-wired with an
   // `animation_registry_` that will manage progress animations as needed.
-  static std::unique_ptr<HoldingSpaceProgressIndicator> CreateDefaultInstance(
+  static std::unique_ptr<ProgressIndicator> CreateDefaultInstance(
       base::RepeatingCallback<absl::optional<float>()> progress_callback);
 
   // Adds the specified `callback` to be notified of `progress_` changes. The
@@ -79,9 +78,8 @@ class ASH_EXPORT HoldingSpaceProgressIndicator : public ui::LayerOwner,
   // animation exists, it will be painted in lieu of the determinate progress
   // indication that would otherwise be painted for the cached `progress_`.
   // NOTE: `animation_registry` may be `nullptr` if animations are not needed.
-  HoldingSpaceProgressIndicator(
-      ProgressIndicatorAnimationRegistry* animation_registry,
-      const void* animation_key);
+  ProgressIndicator(ProgressIndicatorAnimationRegistry* animation_registry,
+                    const void* animation_key);
 
   // Returns the calculated progress to paint to the owned `layer()`. This is
   // invoked during `UpdateVisualState()` just prior to painting.
@@ -158,4 +156,4 @@ class ASH_EXPORT HoldingSpaceProgressIndicator : public ui::LayerOwner,
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_PROGRESS_INDICATOR_H_
+#endif  // ASH_SYSTEM_PROGRESS_INDICATOR_PROGRESS_INDICATOR_H_

@@ -11,19 +11,19 @@ namespace ash {
 
 class HoldingSpaceController;
 class HoldingSpaceItem;
-class HoldingSpaceProgressIndicator;
+class ProgressIndicator;
 
 namespace holding_space_util {
 
-// Returns a `HoldingSpaceProgressIndicator` instance which paints indication
-// of progress for all holding space items in the model attached to the
-// specified `controller`.
-std::unique_ptr<HoldingSpaceProgressIndicator>
-CreateProgressIndicatorForController(HoldingSpaceController* controller);
+// Returns a `ProgressIndicator` instance which paints indication of progress
+// for all holding space items in the model attached to the specified
+// `controller`.
+std::unique_ptr<ProgressIndicator> CreateProgressIndicatorForController(
+    HoldingSpaceController* controller);
 
-// Returns a `HoldingSpaceProgressIndicator` instance which paints indication
-// of progress for the specified holding space `item`.
-std::unique_ptr<HoldingSpaceProgressIndicator> CreateProgressIndicatorForItem(
+// Returns a `ProgressIndicator` instance which paints indication of progress
+// for the specified holding space `item`.
+std::unique_ptr<ProgressIndicator> CreateProgressIndicatorForItem(
     const HoldingSpaceItem* item);
 
 }  // namespace holding_space_util

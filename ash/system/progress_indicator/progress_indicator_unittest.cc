@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/holding_space/holding_space_progress_indicator.h"
+#include "ash/system/progress_indicator/progress_indicator.h"
 
 #include "ash/system/progress_indicator/progress_indicator_animation_registry.h"
 #include "ash/test/ash_test_base.h"
@@ -12,13 +12,13 @@
 namespace ash {
 namespace {
 
-// TestHoldingSpaceProgressIndicator -------------------------------------------
+// TestProgressIndicator -------------------------------------------------------
 
-class TestHoldingSpaceProgressIndicator : public HoldingSpaceProgressIndicator {
+class TestProgressIndicator : public ProgressIndicator {
  public:
-  TestHoldingSpaceProgressIndicator()
-      : HoldingSpaceProgressIndicator(/*animation_registry=*/nullptr,
-                                      /*animation_key=*/this) {}
+  TestProgressIndicator()
+      : ProgressIndicator(/*animation_registry=*/nullptr,
+                          /*animation_key=*/this) {}
 
   void SetProgress(const absl::optional<float>& progress) {
     progress_ = progress;
@@ -26,28 +26,27 @@ class TestHoldingSpaceProgressIndicator : public HoldingSpaceProgressIndicator {
   }
 
  private:
-  // HoldingSpaceProgressIndicator:
+  // ProgressIndicator:
   absl::optional<float> CalculateProgress() const override { return progress_; }
   absl::optional<float> progress_;
 };
 
 }  // namespace
 
-// HoldingSpaceProgressIndicatorTest -------------------------------------------
+// ProgressIndicatorTest -------------------------------------------------------
 
-using HoldingSpaceProgressIndicatorTest = AshTestBase;
+using ProgressIndicatorTest = AshTestBase;
 
-// Verifies that `HoldingSpaceProgressIndicator::CreateDefaultInstance()` works
-// as intended. It should delegate progress calculation to a constructor
-// provided callback and manage progress animations as needed.
-TEST_F(HoldingSpaceProgressIndicatorTest, CreateDefaultInstance) {
+// Verifies that `ProgressIndicator::CreateDefaultInstance()` works as intended.
+// It should delegate progress calculation to a constructor provided callback
+// and manage progress animations as needed.
+TEST_F(ProgressIndicatorTest, CreateDefaultInstance) {
   absl::optional<float> progress;
 
-  // Create a default instance of `HoldingSpaceProgressIndicator` that paints
-  // `progress` whenever visual state is updated.
-  auto progress_indicator =
-      HoldingSpaceProgressIndicator::CreateDefaultInstance(
-          base::BindLambdaForTesting([&]() { return progress; }));
+  // Create a default instance of `ProgressIndicator` that paints `progress`
+  // whenever visual state is updated.
+  auto progress_indicator = ProgressIndicator::CreateDefaultInstance(
+      base::BindLambdaForTesting([&]() { return progress; }));
 
   // Cache `layer_delegate` associate with `progress_indicator` to manually
   // trigger update of visual state.
@@ -94,7 +93,7 @@ TEST_F(HoldingSpaceProgressIndicatorTest, CreateDefaultInstance) {
   EXPECT_FALSE(registry->GetProgressRingAnimationForKey(key));
 
   // Update `progress` to 100%. Verify progress an animation states.
-  progress = HoldingSpaceProgressIndicator::kProgressComplete;
+  progress = ProgressIndicator::kProgressComplete;
   layer_delegate->UpdateVisualState();
   EXPECT_EQ(progress_indicator->progress(), progress);
   EXPECT_FALSE(registry->GetProgressIconAnimationForKey(key));
@@ -110,11 +109,11 @@ TEST_F(HoldingSpaceProgressIndicatorTest, CreateDefaultInstance) {
   EXPECT_EQ(future.Take(), nullptr);
 }
 
-// Verifies that `HoldingSpaceProgressIndicator::AddProgressChangedCallback()`
-// works as intended.
-TEST_F(HoldingSpaceProgressIndicatorTest, AddProgressChangedCallback) {
+// Verifies that `ProgressIndicator::AddProgressChangedCallback()` works as
+// intended.
+TEST_F(ProgressIndicatorTest, AddProgressChangedCallback) {
   // Create a test `progress_indicator`.
-  TestHoldingSpaceProgressIndicator progress_indicator;
+  TestProgressIndicator progress_indicator;
   progress_indicator.SetProgress(0.5f);
 
   // Add a callback to be notified of progress changed events. The callback

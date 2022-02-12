@@ -20,8 +20,8 @@ class Label;
 namespace ash {
 
 class HoldingSpaceItem;
-class HoldingSpaceProgressIndicator;
 class HoldingSpaceViewDelegate;
+class ProgressIndicator;
 class RoundedImageView;
 
 // A button with an image derived from a file's thumbnail and file's name as the
@@ -69,7 +69,7 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
   views::View* secondary_action_container_ = nullptr;
   views::ImageButton* secondary_action_pause_ = nullptr;
   views::ImageButton* secondary_action_resume_ = nullptr;
-  HoldingSpaceProgressIndicator* progress_indicator_ = nullptr;
+  ProgressIndicator* progress_indicator_ = nullptr;
 
   base::CallbackListSubscription image_skia_changed_subscription_;
   base::CallbackListSubscription progress_ring_animation_changed_subscription_;

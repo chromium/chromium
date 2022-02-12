@@ -20,11 +20,11 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_animation_registry.h"
-#include "ash/system/holding_space/holding_space_progress_indicator.h"
 #include "ash/system/holding_space/holding_space_progress_indicator_util.h"
 #include "ash/system/holding_space/holding_space_tray_bubble.h"
 #include "ash/system/holding_space/holding_space_tray_icon.h"
 #include "ash/system/holding_space/pinned_files_section.h"
+#include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_container.h"
 #include "base/bind.h"
@@ -751,7 +751,7 @@ void HoldingSpaceTray::UpdateDefaultTrayIcon() {
   // If `progress` is not `complete`, there is potential for overlap between the
   // `default_tray_icon_` and the `progress_indicator_`'s inner icon. To address
   // this, hide the `default_tray_icon_` when `progress` is being indicated.
-  bool complete = progress == HoldingSpaceProgressIndicator::kProgressComplete;
+  bool complete = progress == ProgressIndicator::kProgressComplete;
   float target_opacity = complete ? 1.f : 0.f;
 
   // If `target_opacity` is already set there's nothing to do.

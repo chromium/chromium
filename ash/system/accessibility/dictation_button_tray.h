@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/shell_observer.h"
-#include "ash/system/holding_space/holding_space_progress_indicator.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ui/events/event_constants.h"
 
@@ -19,6 +18,8 @@ class ImageView;
 }  // namespace views
 
 namespace ash {
+
+class ProgressIndicator;
 
 // Status area tray for showing a toggle for Dictation. Dictation allows
 // users to have their speech transcribed into a text area. This tray will
@@ -97,7 +98,7 @@ class ASH_EXPORT DictationButtonTray : public TrayBackgroundView,
 
   // A progress indicator to indicate SODA download progress and a subscription
   // to be notified of progress changed events.
-  std::unique_ptr<HoldingSpaceProgressIndicator> progress_indicator_;
+  std::unique_ptr<ProgressIndicator> progress_indicator_;
   base::CallbackListSubscription progress_changed_subscription_;
 };
 

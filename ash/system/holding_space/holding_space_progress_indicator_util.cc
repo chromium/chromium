@@ -11,7 +11,7 @@
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/system/holding_space/holding_space_animation_registry.h"
-#include "ash/system/holding_space/holding_space_progress_indicator.h"
+#include "ash/system/progress_indicator/progress_indicator.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
 namespace ash {
@@ -24,13 +24,13 @@ namespace {
 // items in the model attached to its associated holding space `controller_`.
 // NOTE: The owned `layer()` is not painted if there are no items in progress.
 class HoldingSpaceControllerProgressIndicator
-    : public HoldingSpaceProgressIndicator,
+    : public ProgressIndicator,
       public HoldingSpaceControllerObserver,
       public HoldingSpaceModelObserver {
  public:
   explicit HoldingSpaceControllerProgressIndicator(
       HoldingSpaceController* controller)
-      : HoldingSpaceProgressIndicator(
+      : ProgressIndicator(
             /*animation_registry=*/HoldingSpaceAnimationRegistry::GetInstance(),
             /*animation_key=*/controller),
         controller_(controller) {
@@ -40,7 +40,7 @@ class HoldingSpaceControllerProgressIndicator
   }
 
  private:
-  // HoldingSpaceProgressIndicator:
+  // ProgressIndicator:
   absl::optional<float> CalculateProgress() const override {
     // If there is no `model` attached, then there are no in-progress holding
     // space items. Do not paint the progress indication.
@@ -124,11 +124,11 @@ class HoldingSpaceControllerProgressIndicator
 // A class owning a `ui::Layer` which paints indication of progress for its
 // associated holding space `item_`. NOTE: The owned `layer()` is not painted if
 // the associated `item_` is not in progress.
-class HoldingSpaceItemProgressIndicator : public HoldingSpaceProgressIndicator,
+class HoldingSpaceItemProgressIndicator : public ProgressIndicator,
                                           public HoldingSpaceModelObserver {
  public:
   explicit HoldingSpaceItemProgressIndicator(const HoldingSpaceItem* item)
-      : HoldingSpaceProgressIndicator(
+      : ProgressIndicator(
             /*animation_registry=*/HoldingSpaceAnimationRegistry::GetInstance(),
             /*animation_key=*/item),
         item_(item) {
@@ -136,7 +136,7 @@ class HoldingSpaceItemProgressIndicator : public HoldingSpaceProgressIndicator,
   }
 
  private:
-  // HoldingSpaceProgressIndicator:
+  // ProgressIndicator:
   absl::optional<float> CalculateProgress() const override {
     // If `item_` is `nullptr` it is being destroyed. Ensure the progress
     // indication is not painted in this case. Similarly, ensure the progress
@@ -174,12 +174,12 @@ class HoldingSpaceItemProgressIndicator : public HoldingSpaceProgressIndicator,
 
 // Utilities -------------------------------------------------------------------
 
-std::unique_ptr<HoldingSpaceProgressIndicator>
-CreateProgressIndicatorForController(HoldingSpaceController* controller) {
+std::unique_ptr<ProgressIndicator> CreateProgressIndicatorForController(
+    HoldingSpaceController* controller) {
   return std::make_unique<HoldingSpaceControllerProgressIndicator>(controller);
 }
 
-std::unique_ptr<HoldingSpaceProgressIndicator> CreateProgressIndicatorForItem(
+std::unique_ptr<ProgressIndicator> CreateProgressIndicatorForItem(
     const HoldingSpaceItem* item) {
   return std::make_unique<HoldingSpaceItemProgressIndicator>(item);
 }

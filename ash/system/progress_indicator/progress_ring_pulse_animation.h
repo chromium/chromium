@@ -9,9 +9,8 @@
 
 namespace ash {
 
-// An animation for a `HoldingSpaceProgressIndicator` to paint a pulsing
-// progress ring in lieu of the determinate progress ring that would otherwise
-// be painted.
+// An animation for a `ProgressIndicator` to paint a pulsing progress ring in
+// lieu of the determinate progress ring that would otherwise be painted.
 class ProgressRingPulseAnimation : public ProgressRingAnimation {
  public:
   ProgressRingPulseAnimation();

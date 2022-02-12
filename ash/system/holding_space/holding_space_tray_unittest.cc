@@ -25,8 +25,8 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
-#include "ash/system/holding_space/holding_space_progress_indicator.h"
 #include "ash/system/holding_space/holding_space_tray_icon_preview.h"
+#include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
@@ -1259,18 +1259,15 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
   ASSERT_TRUE(default_tray_icon);
 
   // Cache `progress_indicator`.
-  HoldingSpaceProgressIndicator* const progress_indicator =
-      static_cast<HoldingSpaceProgressIndicator*>(
-          FindLayerWithName(GetTray(),
-                            HoldingSpaceProgressIndicator::kClassName)
-              ->owner());
+  ProgressIndicator* const progress_indicator = static_cast<ProgressIndicator*>(
+      FindLayerWithName(GetTray(), ProgressIndicator::kClassName)->owner());
   ASSERT_TRUE(progress_indicator);
 
   // Wait until the `progress_indicator` is synced with the model, which happens
   // asynchronously in response to compositor scheduling.
   PredicateWaiter().WaitUntil(base::BindLambdaForTesting([&]() {
     return progress_indicator->progress() ==
-           HoldingSpaceProgressIndicator::kProgressComplete;
+           ProgressIndicator::kProgressComplete;
   }));
 
   // Verify initial opacity/transform.
@@ -1302,7 +1299,7 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
   // asynchronously in response to compositor scheduling.
   PredicateWaiter().WaitUntil(base::BindLambdaForTesting([&]() {
     return progress_indicator->progress() ==
-           HoldingSpaceProgressIndicator::kProgressComplete;
+           ProgressIndicator::kProgressComplete;
   }));
 
   // Verify target opacity/transform.
@@ -1335,10 +1332,8 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
   ASSERT_TRUE(image);
 
   // Cache `progress_indicator`.
-  HoldingSpaceProgressIndicator* const progress_indicator =
-      static_cast<HoldingSpaceProgressIndicator*>(
-          FindLayerWithName(preview, HoldingSpaceProgressIndicator::kClassName)
-              ->owner());
+  ProgressIndicator* const progress_indicator = static_cast<ProgressIndicator*>(
+      FindLayerWithName(preview, ProgressIndicator::kClassName)->owner());
   ASSERT_TRUE(progress_indicator);
 
   // Wait until the `progress_indicator` is synced with the model, which happens
@@ -1364,7 +1359,7 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
   // asynchronously in response to compositor scheduling.
   PredicateWaiter().WaitUntil(base::BindLambdaForTesting([&]() {
     return progress_indicator->progress() ==
-           HoldingSpaceProgressIndicator::kProgressComplete;
+           ProgressIndicator::kProgressComplete;
   }));
 
   // Verify image opacity.
@@ -2987,9 +2982,9 @@ class HoldingSpaceTrayPrimaryAndSecondaryActionsTest
   // Returns whether the progress indicator inner icon is visible.
   bool IsProgressIndicatorInnerIconVisible(views::View* view) const {
     ui::Layer* progress_indicator_layer =
-        FindLayerWithName(view, HoldingSpaceProgressIndicator::kClassName);
-    auto* progress_indicator = static_cast<HoldingSpaceProgressIndicator*>(
-        progress_indicator_layer->owner());
+        FindLayerWithName(view, ProgressIndicator::kClassName);
+    auto* progress_indicator =
+        static_cast<ProgressIndicator*>(progress_indicator_layer->owner());
     return progress_indicator->inner_icon_visible();
   }
 

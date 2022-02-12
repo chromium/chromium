@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/system/holding_space/holding_space_progress_indicator.h"
+#include "ash/system/progress_indicator/progress_indicator.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -115,7 +115,7 @@ float GetInnerRingStrokeWidth(const ui::Layer* layer) {
 // Returns the opacity for the outer ring given the current `progress`.
 float GetOuterRingOpacity(const absl::optional<float>& progress) {
   return features::IsHoldingSpaceInProgressAnimationV2Enabled() &&
-                 progress != HoldingSpaceProgressIndicator::kProgressComplete
+                 progress != ProgressIndicator::kProgressComplete
              ? kOuterRingOpacity
              : 1.f;
 }
@@ -125,7 +125,7 @@ float GetOuterRingOpacity(const absl::optional<float>& progress) {
 float GetOuterRingStrokeWidth(const ui::Layer* layer,
                               const absl::optional<float>& progress) {
   if (features::IsHoldingSpaceInProgressAnimationV2Enabled() &&
-      progress != HoldingSpaceProgressIndicator::kProgressComplete) {
+      progress != ProgressIndicator::kProgressComplete) {
     const gfx::Size& size = layer->size();
     return kOuterRingStrokeWidthScaleFactor *
            std::min(size.width(), size.height());
@@ -143,8 +143,8 @@ cc::PaintFlags::Cap GetStrokeCap() {
 // DefaultProgressIndicatorAnimationRegistry -----------------------------------
 
 // A default implementation of `ProgressIndicatorAnimationRegistry` which is
-// associated with a single `HoldingSpaceProgressIndicator` and manage progress
-// animations as needed.
+// associated with a single `ProgressIndicator` and manage progress animations
+// as needed.
 class DefaultProgressIndicatorAnimationRegistry
     : public ProgressIndicatorAnimationRegistry {
  public:
@@ -157,7 +157,7 @@ class DefaultProgressIndicatorAnimationRegistry
 
   // Sets the `progress_indicator` for which this registry manages animations.
   // NOTE: This method may be called only once.
-  void SetProgressIndicator(HoldingSpaceProgressIndicator* progress_indicator) {
+  void SetProgressIndicator(ProgressIndicator* progress_indicator) {
     DCHECK(progress_indicator);
     DCHECK(!progress_indicator_);
     progress_indicator_ = progress_indicator;
@@ -176,12 +176,11 @@ class DefaultProgressIndicatorAnimationRegistry
       EnsureProgressIconAnimation();
       EnsureProgressRingAnimationOfType(
           ProgressRingAnimation::Type::kIndeterminate);
-    } else if (progress != HoldingSpaceProgressIndicator::kProgressComplete) {
+    } else if (progress != ProgressIndicator::kProgressComplete) {
       // Progress is determinate.
       EnsureProgressIconAnimation();
       EraseProgressRingAnimation();
-    } else if (previous_progress_ !=
-               HoldingSpaceProgressIndicator::kProgressComplete) {
+    } else if (previous_progress_ != ProgressIndicator::kProgressComplete) {
       // Progress is complete.
       EraseProgressIconAnimation();
       EnsureProgressRingAnimationOfType(ProgressRingAnimation::Type::kPulse);
@@ -258,13 +257,13 @@ class DefaultProgressIndicatorAnimationRegistry
 
   // The progress indicator for which to manage animations and a subscription
   // to receive notification of progress change events.
-  HoldingSpaceProgressIndicator* progress_indicator_ = nullptr;
+  ProgressIndicator* progress_indicator_ = nullptr;
   base::CallbackListSubscription progress_changed_subscription_;
 
   // Instantiate `previous_progress_` to completion to avoid starting a pulse
   // animation on first progress update.
   absl::optional<float> previous_progress_ =
-      HoldingSpaceProgressIndicator::kProgressComplete;
+      ProgressIndicator::kProgressComplete;
 
   base::WeakPtrFactory<DefaultProgressIndicatorAnimationRegistry>
       weak_ptr_factory_{this};
@@ -272,17 +271,17 @@ class DefaultProgressIndicatorAnimationRegistry
 
 // DefaultProgressIndicator ----------------------------------------------------
 
-// A default implementation of `HoldingSpaceProgressIndicator` which paints
-// indication of progress returned by the specified `progress_callback_`.
-// NOTE: This instance comes pre-wired with an animation `registry_` that will
-// manage progress animations as needed.
-class DefaultProgressIndicator : public HoldingSpaceProgressIndicator {
+// A default implementation of `ProgressIndicator` which paints indication of
+// progress returned by the specified `progress_callback_`. NOTE: This instance
+// comes pre-wired with an animation `registry_` that will manage progress
+// animations as needed.
+class DefaultProgressIndicator : public ProgressIndicator {
  public:
   DefaultProgressIndicator(
       std::unique_ptr<DefaultProgressIndicatorAnimationRegistry> registry,
       base::RepeatingCallback<absl::optional<float>()> progress_callback)
-      : HoldingSpaceProgressIndicator(/*registry=*/registry.get(),
-                                      /*animation_key=*/this),
+      : ProgressIndicator(/*registry=*/registry.get(),
+                          /*animation_key=*/this),
         registry_(std::move(registry)),
         progress_callback_(std::move(progress_callback)) {
     registry_->SetProgressIndicator(this);
@@ -293,7 +292,7 @@ class DefaultProgressIndicator : public HoldingSpaceProgressIndicator {
   ~DefaultProgressIndicator() override = default;
 
  private:
-  // HoldingSpaceProgressIndicator:
+  // ProgressIndicator:
   absl::optional<float> CalculateProgress() const override {
     return progress_callback_.Run();
   }
@@ -304,13 +303,13 @@ class DefaultProgressIndicator : public HoldingSpaceProgressIndicator {
 
 }  // namespace
 
-// HoldingSpaceProgressIndicator -----------------------------------------------
+// ProgressIndicator -----------------------------------------------------------
 
 // static
-constexpr char HoldingSpaceProgressIndicator::kClassName[];
-constexpr float HoldingSpaceProgressIndicator::kProgressComplete;
+constexpr char ProgressIndicator::kClassName[];
+constexpr float ProgressIndicator::kProgressComplete;
 
-HoldingSpaceProgressIndicator::HoldingSpaceProgressIndicator(
+ProgressIndicator::ProgressIndicator(
     ProgressIndicatorAnimationRegistry* animation_registry,
     const void* animation_key)
     : animation_registry_(animation_registry), animation_key_(animation_key) {
@@ -324,7 +323,7 @@ HoldingSpaceProgressIndicator::HoldingSpaceProgressIndicator(
       animation_registry_->AddProgressIconAnimationChangedCallbackForKey(
           animation_key_,
           base::BindRepeating(
-              &HoldingSpaceProgressIndicator::OnProgressIconAnimationChanged,
+              &ProgressIndicator::OnProgressIconAnimationChanged,
               base::Unretained(this)));
 
   // If an `icon_animation` is already registered, perform additional
@@ -341,7 +340,7 @@ HoldingSpaceProgressIndicator::HoldingSpaceProgressIndicator(
       animation_registry_->AddProgressRingAnimationChangedCallbackForKey(
           animation_key_,
           base::BindRepeating(
-              &HoldingSpaceProgressIndicator::OnProgressRingAnimationChanged,
+              &ProgressIndicator::OnProgressRingAnimationChanged,
               base::Unretained(this)));
 
   // If `ring_animation` is already registered, perform additional
@@ -352,24 +351,22 @@ HoldingSpaceProgressIndicator::HoldingSpaceProgressIndicator(
     OnProgressRingAnimationChanged(ring_animation);
 }
 
-HoldingSpaceProgressIndicator::~HoldingSpaceProgressIndicator() = default;
+ProgressIndicator::~ProgressIndicator() = default;
 
 // static
-std::unique_ptr<HoldingSpaceProgressIndicator>
-HoldingSpaceProgressIndicator::CreateDefaultInstance(
+std::unique_ptr<ProgressIndicator> ProgressIndicator::CreateDefaultInstance(
     base::RepeatingCallback<absl::optional<float>()> progress_callback) {
   return std::make_unique<DefaultProgressIndicator>(
       std::make_unique<DefaultProgressIndicatorAnimationRegistry>(),
       std::move(progress_callback));
 }
 
-base::CallbackListSubscription
-HoldingSpaceProgressIndicator::AddProgressChangedCallback(
+base::CallbackListSubscription ProgressIndicator::AddProgressChangedCallback(
     base::RepeatingClosureList::CallbackType callback) {
   return progress_changed_callback_list_.Add(std::move(callback));
 }
 
-ui::Layer* HoldingSpaceProgressIndicator::CreateLayer() {
+ui::Layer* ProgressIndicator::CreateLayer() {
   DCHECK(!layer());
 
   auto layer = std::make_unique<ui::Layer>(ui::LAYER_TEXTURED);
@@ -381,17 +378,17 @@ ui::Layer* HoldingSpaceProgressIndicator::CreateLayer() {
   return this->layer();
 }
 
-void HoldingSpaceProgressIndicator::DestroyLayer() {
+void ProgressIndicator::DestroyLayer() {
   if (layer())
     ReleaseLayer();
 }
 
-void HoldingSpaceProgressIndicator::InvalidateLayer() {
+void ProgressIndicator::InvalidateLayer() {
   if (layer())
     layer()->SchedulePaint(gfx::Rect(layer()->size()));
 }
 
-void HoldingSpaceProgressIndicator::SetInnerIconVisible(bool visible) {
+void ProgressIndicator::SetInnerIconVisible(bool visible) {
   if (inner_icon_visible_ == visible)
     return;
 
@@ -403,14 +400,12 @@ void HoldingSpaceProgressIndicator::SetInnerIconVisible(bool visible) {
     InvalidateLayer();
 }
 
-void HoldingSpaceProgressIndicator::OnDeviceScaleFactorChanged(
-    float old_scale,
-    float new_scale) {
+void ProgressIndicator::OnDeviceScaleFactorChanged(float old_scale,
+                                                   float new_scale) {
   InvalidateLayer();
 }
 
-void HoldingSpaceProgressIndicator::OnPaintLayer(
-    const ui::PaintContext& context) {
+void ProgressIndicator::OnPaintLayer(const ui::PaintContext& context) {
   // Look up the associated `ring_animation` (if one exists).
   ProgressRingAnimation* ring_animation =
       animation_registry_
@@ -535,7 +530,7 @@ void HoldingSpaceProgressIndicator::OnPaintLayer(
   }
 }
 
-void HoldingSpaceProgressIndicator::UpdateVisualState() {
+void ProgressIndicator::UpdateVisualState() {
   const auto previous_progress = progress_;
 
   // Cache `progress_`.
@@ -550,30 +545,28 @@ void HoldingSpaceProgressIndicator::UpdateVisualState() {
     progress_changed_callback_list_.Notify();
 }
 
-void HoldingSpaceProgressIndicator::OnProgressIconAnimationChanged(
+void ProgressIndicator::OnProgressIconAnimationChanged(
     ProgressIconAnimation* animation) {
   // Trigger repaint of this progress indicator on `animation` updates. Note
   // that it is safe to use a raw pointer here since `this` owns the
   // subscription.
   if (animation) {
     icon_animation_updated_subscription_ =
-        animation->AddAnimationUpdatedCallback(
-            base::BindRepeating(&HoldingSpaceProgressIndicator::InvalidateLayer,
-                                base::Unretained(this)));
+        animation->AddAnimationUpdatedCallback(base::BindRepeating(
+            &ProgressIndicator::InvalidateLayer, base::Unretained(this)));
   }
   InvalidateLayer();
 }
 
-void HoldingSpaceProgressIndicator::OnProgressRingAnimationChanged(
+void ProgressIndicator::OnProgressRingAnimationChanged(
     ProgressRingAnimation* animation) {
   // Trigger repaint of this progress indicator on `animation` updates. Note
   // that it is safe to use a raw pointer here since `this` owns the
   // subscription.
   if (animation) {
     ring_animation_updated_subscription_ =
-        animation->AddAnimationUpdatedCallback(
-            base::BindRepeating(&HoldingSpaceProgressIndicator::InvalidateLayer,
-                                base::Unretained(this)));
+        animation->AddAnimationUpdatedCallback(base::BindRepeating(
+            &ProgressIndicator::InvalidateLayer, base::Unretained(this)));
   }
   InvalidateLayer();
 }

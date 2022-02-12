@@ -18,9 +18,9 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
-#include "ash/system/holding_space/holding_space_progress_indicator.h"
 #include "ash/system/holding_space/holding_space_progress_indicator_util.h"
 #include "ash/system/holding_space/holding_space_view_delegate.h"
+#include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/system/progress_indicator/progress_ring_animation.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
@@ -155,7 +155,7 @@ class ProgressIndicatorView : public views::View {
 
   // Copies the address of `progress_indicator_` to the specified `ptr`.
   // NOTE: This method should only be invoked after `SetHoldingSpaceItem()`.
-  void CopyProgressIndicatorAddressTo(HoldingSpaceProgressIndicator** ptr) {
+  void CopyProgressIndicatorAddressTo(ProgressIndicator** ptr) {
     DCHECK(progress_indicator_);
     *ptr = progress_indicator_.get();
   }
@@ -185,12 +185,11 @@ class ProgressIndicatorView : public views::View {
       progress_indicator_->InvalidateLayer();
   }
 
-  std::unique_ptr<HoldingSpaceProgressIndicator> progress_indicator_;
+  std::unique_ptr<ProgressIndicator> progress_indicator_;
 };
 
 BEGIN_VIEW_BUILDER(/*no export*/, ProgressIndicatorView, views::View)
-VIEW_BUILDER_METHOD(CopyProgressIndicatorAddressTo,
-                    HoldingSpaceProgressIndicator**)
+VIEW_BUILDER_METHOD(CopyProgressIndicatorAddressTo, ProgressIndicator**)
 VIEW_BUILDER_PROPERTY(const HoldingSpaceItem*, HoldingSpaceItem)
 END_VIEW_BUILDER
 

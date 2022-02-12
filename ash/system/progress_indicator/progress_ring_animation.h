@@ -12,8 +12,8 @@
 
 namespace ash {
 
-// An animation for a `HoldingSpaceProgressIndicator` to be painted in lieu of
-// the determinate progress ring that would otherwise be painted.
+// An animation for a `ProgressIndicator` to be painted in lieu of the
+// determinate progress ring that would otherwise be painted.
 class ASH_EXPORT ProgressRingAnimation : public ProgressIndicatorAnimation {
  public:
   enum class Type {
