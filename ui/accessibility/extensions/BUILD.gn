@@ -88,13 +88,6 @@ locale_files = [
   "_locales/en_XA/messages.json",
 ]
 
-unittest_sources = [
-  "//chrome/test/base/v8_unit_test.cc",
-  "//chrome/test/base/v8_unit_test.h",
-]
-
-unittest_deps = [ "//chrome/test:test_support_unit" ]
-
 webui_test_deps = [ "//chrome/test:browser_tests_runner" ]
 
 #
@@ -120,6 +113,7 @@ colorenhancer_files = [
   "colorenhancer/src/background.js",
   "colorenhancer/src/common.js",
   "colorenhancer/src/cvd.js",
+  "colorenhancer/src/cvd_type.js",
   "colorenhancer/src/matrix.js",
   "colorenhancer/src/popup.html",
   "colorenhancer/src/popup.js",
@@ -138,18 +132,25 @@ copy("colorenhancer_copy") {
 }
 
 test("colorenhancer_tests") {
-  sources = unittest_sources
-
-  deps = [ ":colorenhancer_js_tests" ]
-  deps += unittest_deps
-
+  deps = [ ":colorenhancer_js_webui_tests" ]
+  deps += webui_test_deps
   data = js2gtest_js_libraries
 }
 
-js2gtest("colorenhancer_js_tests") {
-  test_type = "unit"
-  sources = [ "colorenhancer/src/matrix_test.js" ]
-  extra_js_files = [ "colorenhancer/src/matrix.js" ]
+js2gtest("colorenhancer_js_webui_tests") {
+  test_type = "webui"
+  sources = [
+    "colorenhancer/src/matrix_test.js",
+    "colorenhancer/src/storage_test.js",
+  ]
+  gen_include_files = [
+    "colorenhancer/src/cvd_type.js",
+    "colorenhancer/src/matrix.js",
+    "colorenhancer/src/storage.js",
+    "webstore_extension_test_base.js",
+    "//chrome/browser/resources/chromeos/accessibility/common/testing/mock_storage.js",
+  ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 }
 
 #

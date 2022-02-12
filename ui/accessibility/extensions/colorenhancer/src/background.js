@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-importScripts('./common.js', './storage.js');
+importScripts('./common.js', './cvd_type.js', './storage.js');
+Storage.initialize();
 
 class Background {
   constructor() {
-    /** @private {Storage} */
-    this.storage_ = new Storage();
-
     this.init_();
   }
 
@@ -38,7 +36,8 @@ class Background {
   injectContentScripts() {
     this.forEachTab_(tab => chrome.scripting.executeScript({
       target: {tabId: tab.id},
-      files: ['src/common.js', 'src/matrix.js', 'src/cvd.js'],
+      files: [
+          'src/common.js', 'src/matrix.js', 'src/cvd_type.js', 'src/cvd.js'],
     }));
   }
 
@@ -49,11 +48,11 @@ class Background {
   updateTabs_() {
     this.forEachTab_((tab) => {
       const msg = {
-        'delta': this.storage_.getSiteDelta(Common.siteFromUrl(tab.url)),
-        'severity': this.storage_.getDefaultSeverity(),
-        'type': this.storage_.getDefaultType(),
-        'simulate': this.storage_.getDefaultSimulate(),
-        'enable': this.storage_.getDefaultEnable()
+        'delta': Storage.getSiteDelta(Common.siteFromUrl(tab.url)),
+        'severity': Storage.severity,
+        'type': Storage.type,
+        'simulate': Storage.simulate,
+        'enable': Storage.enable
       };
       Common.debugPrint(
           'updateTabs: sending ' + JSON.stringify(msg) + ' to ' +
@@ -66,17 +65,17 @@ class Background {
   onInitReceived_(sender) {
     let delta;
     if (sender.tab) {
-      delta = this.storage_.getSiteDelta(Common.siteFromUrl(sender.tab.url));
+      delta = Storage.getSiteDelta(Common.siteFromUrl(sender.tab.url));
     } else {
-      delta = this.storage_.getDefaultDelta();
+      delta = Storage.baseDelta;
     }
 
     return {
       'delta': delta,
-      'severity': this.storage_.getDefaultSeverity(),
-      'type': this.storage_.getDefaultType(),
-      'simulate': this.storage_.getDefaultSimulate(),
-      'enable': this.storage_.getDefaultEnable()
+      'severity': Storage.severity,
+      'type': Storage.type,
+      'simulate': Storage.simulate,
+      'enable': Storage.enable
     };
   }
 
@@ -85,6 +84,13 @@ class Background {
    * @private
    */
   init_() {
+    Storage.DELTA.listeners.push(this.updateTabs_.bind(this));
+    Storage.SITE_DELTAS.listeners.push(this.updateTabs_.bind(this));
+    Storage.SEVERITY.listeners.push(this.updateTabs_.bind(this));
+    Storage.TYPE.listeners.push(this.updateTabs_.bind(this));
+    Storage.SIMULATE.listeners.push(this.updateTabs_.bind(this));
+    Storage.ENABLE.listeners.push(this.updateTabs_.bind(this));
+
     this.updateTabs_();
 
     chrome.runtime.onMessage.addListener(
@@ -92,12 +98,8 @@ class Background {
           if (message === 'init') {
             this.onInitReceived_(sender);
             sendResponse();
-            return true;  // Keep message context open for async response.
-          } else if (message === 'updateTabs') {
-            this.updateTabs_();
           }
         });
-    chrome.storage.onChanged.addListener(this.updateTabs_.bind(this));
     //TODO(mustaq): Handle uninstall
   }
 }

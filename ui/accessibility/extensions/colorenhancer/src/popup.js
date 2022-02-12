@@ -126,34 +126,25 @@ class Popup {
    * @return {boolean} True if settings are valid and update performed.
    */
   update() {
-    const type = storage.getDefaultType();
-    let validType = false;
-    Object.values(CvdType).forEach((cvdType) => {
-      if (cvdType == type) {
-        validType = true;
-        return;
-      }
-    });
-
-    if (!validType)
+    if (!Object.values(CvdType).includes(Storage.type))
       return false;
 
     if (this.site) {
-      Common.$('delta').value = storage.getSiteDelta(this.site);
+      Common.$('delta').value = Storage.getSiteDelta(this.site);
     } else {
-      Common.$('delta').value = storage.getDefaultDelta();
+      Common.$('delta').value = Storage.baseDelta;
     }
 
-    Common.$('severity').value = storage.getDefaultSeverity();
+    Common.$('severity').value = Storage.severity;
 
     if (!Common.$('setup-panel').classList.contains('collapsed'))
-      this.setCvdTypeSelection(storage.getDefaultType());
-    Common.$('enable').checked = storage.getDefaultEnable();
+      this.setCvdTypeSelection(Storage.type);
+    Common.$('enable').checked = Storage.enable;
 
     Common.debugPrint(
         'update: ' +
         ' del=' + Common.$('delta').value + ' sev=' +
-        Common.$('severity').value + ' typ=' + storage.getDefaultType() +
+        Common.$('severity').value + ' typ=' + Storage.type +
         ' enb=' + Common.$('enable').checked + ' for ' + this.site);
     chrome.runtime.sendMessage('updateTabs');
     return true;
@@ -167,21 +158,20 @@ class Popup {
   onDeltaChange(value) {
     Common.debugPrint('onDeltaChange: ' + value + ' for ' + this.site);
     if (this.site) {
-      storage.setSiteDelta(this.site, value);
+      Storage.setSiteDelta(this.site, value);
       this.update();
     }
-    storage.setDefaultDelta(value);
+    Storage.baseDelta = value;
     this.update();
   }
 
   /**
    * Callback for severity slider.
-   *
    * @param {number} value Parsed value of slider element.
    */
   onSeverityChange(value) {
     Common.debugPrint('onSeverityChange: ' + value + ' for ' + this.site);
-    storage.setDefaultSeverity(value);
+    Storage.severity = value;
     this.update();
     // Apply filter to popup swatches.
     const filter =
@@ -193,12 +183,11 @@ class Popup {
 
   /**
    * Callback for changing color deficiency type.
-   *
    * @param {string} value Value of dropdown element.
    */
   onTypeChange(value) {
     Common.debugPrint('onTypeChange: ' + value + ' for ' + this.site);
-    storage.setDefaultType(value);
+    Storage.type = value;
     this.update();
     Common.$('severity').value = 0;
     this.updateControls();
@@ -211,7 +200,7 @@ class Popup {
   */
   onEnableChange(value) {
     Common.debugPrint('onEnableChange: ' + value + ' for ' + this.site);
-    storage.setDefaultEnable(value);
+    Storage.enable = value;
     if (!this.update()) {
       // Settings are not valid for a reconfiguration.
       Common.$('setup').onclick();
@@ -234,8 +223,8 @@ class Popup {
       Common.$('setup-panel').classList.remove('collapsed');
       // Store current settings in the event of a canceled setup.
       this.restoreSettings = {
-        type: storage.getDefaultType(),
-        severity: storage.getDefaultSeverity()
+        type: Storage.type,
+        severity: Storage.severity
       };
       // Initialize controls based on current settings.
       this.setCvdTypeSelection(this.restoreSettings.type);
@@ -254,9 +243,9 @@ class Popup {
     });
 
     Common.$('reset').onclick = () => {
-      storage.setDefaultSeverity(0);
-      storage.setDefaultType('');
-      storage.setDefaultEnable(false);
+      Storage.severity = 0;
+      Storage.type = Storage.INVALID_TYPE_PLACEHOLDER;
+      Storage.enable = false;
       Common.$('severity').value = 0;
       Common.$('enable').checked = false;
       this.setCvdTypeSelection('');
@@ -281,8 +270,8 @@ class Popup {
             'restore previous settings: ' +
             'type = ' + this.restoreSettings.type +
             ', severity = ' + this.restoreSettings.severity);
-        storage.setDefaultType(this.restoreSettings.type);
-        storage.setDefaultSeverity(this.restoreSettings.severity);
+        Storage.type = this.restoreSettings.type;
+        Storage.severity = this.restoreSettings.severity;
       }
     };
 
@@ -370,5 +359,5 @@ Popup.SWATCH_COLORS = [
 
 window.addEventListener('DOMContentLoaded', () => {
   window.popup = new Popup();
-  window.storage = new Storage();
 });
+Storage.initialize();

@@ -96,7 +96,7 @@ const MockStorage = {
     MockStorage.callbacks_.forEach((callback) => {
       const baseObject = opt_values || MockStorage.sync_;
       const result = {};
-      for (key in baseObject) {
+      for (const key in baseObject) {
         result[key] = {newValue: baseObject[key]};
       }
       callback(result);

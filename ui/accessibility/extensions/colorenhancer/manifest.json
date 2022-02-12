@@ -35,6 +35,7 @@
       "js": [
         "src/common.js",
 	"src/matrix.js",
+	"src/cvd_type.js",
         "src/cvd.js"
       ]
     }
