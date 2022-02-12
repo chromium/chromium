@@ -461,8 +461,7 @@ LayoutUnit NGTableLayoutAlgorithm::ComputeTableInlineSize(
 
   const Vector<LayoutUnit> column_sizes =
       NGTableAlgorithmHelpers::SynchronizeAssignableTableInlineSizeAndColumns(
-          assignable_table_inline_size, border_spacing.inline_size,
-          is_fixed_layout, *column_constraints);
+          assignable_table_inline_size, is_fixed_layout, *column_constraints);
 
   // Final inline size must depend on column locations, because columns can be
   // hidden.
@@ -522,8 +521,7 @@ scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::Layout() {
   // Distribute assignable table width.
   const Vector<LayoutUnit> column_sizes =
       NGTableAlgorithmHelpers::SynchronizeAssignableTableInlineSizeAndColumns(
-          assignable_table_inline_size, border_spacing.inline_size,
-          is_fixed_layout, *column_constraints);
+          assignable_table_inline_size, is_fixed_layout, *column_constraints);
 
   NGTableTypes::ColumnLocations column_locations;
   bool has_collapsed_columns;

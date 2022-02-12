@@ -43,7 +43,6 @@ class CORE_EXPORT NGTableAlgorithmHelpers {
 
   static Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumns(
       LayoutUnit assignable_table_inline_size,
-      LayoutUnit inline_border_spacing,
       bool is_fixed_layout,
       const NGTableTypes::Columns& column_constraints);
 

@@ -172,8 +172,7 @@ TEST_F(NGTableAlgorithmHelpersTest, DistributeColspanAutoExactMaxSize) {
       column_widths[0] + column_widths[1] + column_widths[2] + column_widths[3];
   Vector<LayoutUnit> column_sizes =
       NGTableAlgorithmHelpers::SynchronizeAssignableTableInlineSizeAndColumns(
-          assignable_table_inline_size, LayoutUnit(), false,
-          *column_constraints);
+          assignable_table_inline_size, false, *column_constraints);
   EXPECT_EQ(column_sizes[0], column_widths[0]);
   EXPECT_EQ(column_sizes[1], column_widths[1]);
   EXPECT_EQ(column_sizes[2], column_widths[2]);

@@ -18,7 +18,6 @@ namespace {
 // specified size.
 Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
     LayoutUnit target_inline_size,
-    LayoutUnit inline_border_spacing,
     const NGTableTypes::Column* start_column,
     const NGTableTypes::Column* end_column,
     const bool treat_target_size_as_constrained) {
@@ -327,7 +326,6 @@ Vector<LayoutUnit> DistributeInlineSizeToComputedInlineSizeAuto(
 
 Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumnsFixed(
     LayoutUnit target_inline_size,
-    LayoutUnit inline_border_spacing,
     const NGTableTypes::Columns& column_constraints) {
   unsigned all_columns_count = 0;
   unsigned percent_columns_count = 0;
@@ -654,8 +652,7 @@ void DistributeColspanCellToColumnsAuto(
   }
   Vector<LayoutUnit> computed_sizes =
       DistributeInlineSizeToComputedInlineSizeAuto(
-          colspan_cell_min_inline_size, inline_border_spacing, start_column,
-          end_column, true);
+          colspan_cell_min_inline_size, start_column, end_column, true);
   LayoutUnit* computed_size = computed_sizes.begin();
   for (NGTableTypes::Column* column = start_column; column != end_column;
        ++column, ++computed_size) {
@@ -663,7 +660,7 @@ void DistributeColspanCellToColumnsAuto(
         std::max(*column->min_inline_size, *computed_size);
   }
   computed_sizes = DistributeInlineSizeToComputedInlineSizeAuto(
-      colspan_cell_max_inline_size, inline_border_spacing, start_column,
+      colspan_cell_max_inline_size, start_column,
       end_column, /* treat_target_size_as_constrained */
       colspan_cell.cell_inline_constraint.is_constrained);
   computed_size = computed_sizes.begin();
@@ -987,22 +984,20 @@ void NGTableAlgorithmHelpers::DistributeColspanCellsToColumns(
 Vector<LayoutUnit>
 NGTableAlgorithmHelpers::SynchronizeAssignableTableInlineSizeAndColumns(
     LayoutUnit assignable_table_inline_size,
-    LayoutUnit inline_border_spacing,
     bool is_fixed_layout,
     const NGTableTypes::Columns& column_constraints) {
   if (column_constraints.data.IsEmpty())
     return Vector<LayoutUnit>();
   if (is_fixed_layout) {
     return SynchronizeAssignableTableInlineSizeAndColumnsFixed(
-        assignable_table_inline_size, inline_border_spacing,
-        column_constraints);
+        assignable_table_inline_size, column_constraints);
   } else {
     const NGTableTypes::Column* start_column = &column_constraints.data[0];
     const NGTableTypes::Column* end_column =
         start_column + column_constraints.data.size();
     return DistributeInlineSizeToComputedInlineSizeAuto(
-        assignable_table_inline_size, inline_border_spacing, start_column,
-        end_column, /* treat_target_size_as_constrained */ true);
+        assignable_table_inline_size, start_column, end_column,
+        /* treat_target_size_as_constrained */ true);
   }
 }
 
