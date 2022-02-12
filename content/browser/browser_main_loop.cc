@@ -1318,12 +1318,9 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
 #elif (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV)
   device_monitor_linux_ = std::make_unique<media::DeviceMonitorLinux>();
 #elif BUILDFLAG(IS_MAC)
-  // On Mac, the audio task runner must belong to the main thread.
-  // See audio_thread_impl.cc and https://crbug.com/158170.
-  DCHECK(!audio_manager_ ||
-         audio_manager_->GetTaskRunner()->BelongsToCurrentThread());
   device_monitor_mac_ = std::make_unique<media::DeviceMonitorMac>(
-      base::ThreadTaskRunnerHandle::Get());
+      base::ThreadPool::CreateSingleThreadTaskRunner(
+          {base::TaskPriority::USER_VISIBLE}));
 #endif
 
   // Instantiated once using CreateSingletonInstance(), and accessed only using
