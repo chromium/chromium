@@ -33,7 +33,7 @@
 <translation id="1198865190323699001">Gestos táctiles</translation>
 <translation id="1201402288615127009">Siguiente</translation>
 <translation id="1206619573307042055">marquee</translation>
-<translation id="1207086294218137981">No hay ningún título de nivel 4 posterior</translation>
+<translation id="1207086294218137981">No hay ningún encabezado de nivel 4 posterior</translation>
 <translation id="1212770441379271564">Aunque las siguientes combinaciones de teclas no son comandos de ChromeVox, siguen resultando muy útiles para sacar el máximo partido a Chrome.
     Para desplazarte hacia adelante por los elementos accionables, como botones y enlaces, pulsa el tabulador. Para retroceder, pulsa Mayús + Tabulador.
     Para acceder a la barra de direcciones del navegador Chrome, también denominada omnibox, pulsa Control + L.
@@ -156,7 +156,7 @@
 <translation id="2007545860310005685">{COUNT,plural, =1{corchete de apertura}other{# corchetes de apertura}}</translation>
 <translation id="2009187674653301682">Sin superíndice</translation>
 <translation id="2010555995361223825">Menús de ChromeVox</translation>
-<translation id="203030071582665758">No hay ningún título de nivel 4 anterior</translation>
+<translation id="203030071582665758">No hay ningún encabezado de nivel 4 anterior</translation>
 <translation id="2045055672832940894">No hay ningún control anterior</translation>
 <translation id="2045606329038304310">Control de campo de formulario</translation>
 <translation id="2063539687800151747">Epígrafe</translation>
@@ -191,7 +191,7 @@
 <translation id="2267945578749931355">Carácter siguiente</translation>
 <translation id="2278490101488436824">Desliza tres dedos hacia la izquierda</translation>
 <translation id="2303873575703885770">Activar un elemento</translation>
-<translation id="2305942658236913680">No hay ningún título posterior</translation>
+<translation id="2305942658236913680">No hay ningún encabezado posterior</translation>
 <translation id="2311237334957139798">Cambiar a granularidad anterior</translation>
 <translation id="2314393392395134769">Sin subíndice</translation>
 <translation id="2318372665160196757">Principal</translation>
@@ -216,7 +216,7 @@
 <translation id="2461822463642141190">Actual</translation>
 <translation id="2462626033734746142">Grupo de botones de opción</translation>
 <translation id="2467741090055146971">deseleccionar</translation>
-<translation id="2471138580042810658">Título 6</translation>
+<translation id="2471138580042810658">Encabezado 6</translation>
 <translation id="248982282205370495">{COUNT,plural, =1{asterisco}other{# asteriscos}}</translation>
 <translation id="2490721194269245365">Marrón rosáceo</translation>
 <translation id="249330843868392562">Abrir configuración de la conversión de texto a voz</translation>
@@ -286,7 +286,7 @@
 <translation id="2909584066358367921">No hay ningún botón posterior</translation>
 <translation id="2911433807131383493">Abrir el tutorial de ChromeVox</translation>
 <translation id="2912405967290226587">Desliza tres dedos hacia la derecha</translation>
-<translation id="2937799153569150791">No hay ningún título de nivel 3 posterior</translation>
+<translation id="2937799153569150791">No hay ningún encabezado de nivel 3 posterior</translation>
 <translation id="2942710183375260152">Violeta azulado oscuro</translation>
 <translation id="2943596527105977722">Amarillo dorado oscuro</translation>
 <translation id="2964026537669811554">Etiqueta de grupo de encabezados</translation>
@@ -438,7 +438,7 @@
 <translation id="385383972552776628">Abre página de opciones</translation>
 <translation id="3856075812838139784">Solo lectura</translation>
 <translation id="3857141338659865495">Turquesa medio</translation>
-<translation id="3870295413168340326">No hay ningún título de nivel 3 anterior</translation>
+<translation id="3870295413168340326">No hay ningún encabezado de nivel 3 anterior</translation>
 <translation id="3887399638190992181">Teclas imprescindibles</translation>
 <translation id="3887576927692165210">ed</translation>
 <translation id="3897092660631435901">Menú</translation>
@@ -525,7 +525,7 @@
 <translation id="4482330759234983253">Tabla anterior</translation>
 <translation id="4491109536499578614">Imagen</translation>
 <translation id="4511186779140817916">Blanco almendra</translation>
-<translation id="451510441928265982">No hay ningún título de nivel 2 anterior</translation>
+<translation id="451510441928265982">No hay ningún encabezado de nivel 2 anterior</translation>
 <translation id="4515799157838123044">Sombrear contenido en segundo plano</translation>
 <translation id="4517854969512651305">Aumentar el valor</translation>
 <translation id="4532633738839459153">{COUNT,plural, =1{barra}other{# barras}}</translation>
@@ -553,7 +553,7 @@
 <translation id="4772771694153161212">Sin subrayado</translation>
 <translation id="4780458943471935919">Desplazarse a la página siguiente</translation>
 <translation id="4784215347943747396">Controla el dispositivo con solo 1 o 2 interruptores</translation>
-<translation id="4786285211967466855">No hay ningún título de nivel 1 anterior</translation>
+<translation id="4786285211967466855">No hay ningún encabezado de nivel 1 anterior</translation>
 <translation id="4787577491510559358">Indica el formato del elemento actual</translation>
 <translation id="479989351350248267">buscar</translation>
 <translation id="4804818685124855865">Desconectar</translation>
@@ -654,7 +654,7 @@
 <translation id="5436105723448703439">{COUNT,plural, =1{menor que}other{# signos menor que}}</translation>
 <translation id="5444587279251314700">(activa)</translation>
 <translation id="5451268436205074266">puntos <ph name="DOT" /></translation>
-<translation id="5452267669091857717">No hay ningún título de nivel 1 posterior</translation>
+<translation id="5452267669091857717">No hay ningún encabezado de nivel 1 posterior</translation>
 <translation id="5455441614648621694">Complementario</translation>
 <translation id="5462510922370980473">Lista de páginas</translation>
 <translation id="5471768120198416576">¡Hola! Soy tu voz de la conversión de texto a voz.</translation>
@@ -756,7 +756,7 @@
 <translation id="611827076493383239">vtd</translation>
 <translation id="6122013438240733403">btn</translation>
 <translation id="6132506484792346370">Un cuadro de lista o cuadro combinado</translation>
-<translation id="6142308968191113180">Título 4</translation>
+<translation id="6142308968191113180">Encabezado 4</translation>
 <translation id="6150023170003443621">Verde amarillento</translation>
 <translation id="6158882249329863701">fila <ph name="TABLECELLROWINDEX" /> columna <ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="6164829606128959761">medidor</translation>
@@ -853,7 +853,7 @@
 <translation id="692135145298539227">eliminar</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6949846980769640811">Aguamarina medio</translation>
-<translation id="6951482098621102657">No hay ningún título de nivel 5 posterior</translation>
+<translation id="6951482098621102657">No hay ningún encabezado de nivel 5 posterior</translation>
 <translation id="6955705049214951590">Rosa pálido</translation>
 <translation id="696356426651109308">Saltar al principio</translation>
 <translation id="6994042831499278539">Referencia de glosario</translation>
@@ -893,7 +893,7 @@
 <translation id="7218782500591078391">Amarillo dorado</translation>
 <translation id="7226216518520804442">lst</translation>
 <translation id="7229749224609077523">Selecciona una tabla braille de 6 puntos:</translation>
-<translation id="72393384879519786">Título</translation>
+<translation id="72393384879519786">Encabezado</translation>
 <translation id="7240858705033280249">Ir a Detalles</translation>
 <translation id="7241683698754534149">Abre descripción larga en una pestaña nueva</translation>
 <translation id="7244947685630430863">No hay ningún elemento gráfico anterior</translation>
@@ -906,7 +906,7 @@
 <translation id="7274770952766771364">Referencia de nota</translation>
 <translation id="7275004401821193978">No hay ningún cuadro combinado anterior</translation>
 <translation id="7285387653379749618">Tablas</translation>
-<translation id="7289186959554153431">Título 3</translation>
+<translation id="7289186959554153431">Encabezado 3</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
 <translation id="7308519659008003150">No hay ningún campo de formulario anterior</translation>
 <translation id="731121099745151312">tritm</translation>
@@ -953,7 +953,7 @@
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), grado <ph name="GRADE" /></translation>
 <translation id="7637342083105831460">Pulsa la tecla de búsqueda + flecha hacia la derecha para ir a la zona de práctica o al botón Siguiente lección. A continuación, pulsa la tecla de búsqueda + barra espaciadora para activar el elemento.</translation>
 <translation id="7639968568612851608">Gris oscuro</translation>
-<translation id="7663318257180412551">Título 2</translation>
+<translation id="7663318257180412551">Encabezado 2</translation>
 <translation id="7668307052366682650">{COUNT,plural, =1{hora}other{horas}}</translation>
 <translation id="7674576868851035240">Siguiente enlace</translation>
 <translation id="7674768236845044097">etiqueta de marcado</translation>
@@ -987,7 +987,7 @@
 <translation id="7871691770940645922">Pantalla braille virtual</translation>
 <translation id="7882421473871500483">Marrón</translation>
 <translation id="78826985582142166">sldr</translation>
-<translation id="7913106023953875143">No hay ningún título de nivel 2 posterior</translation>
+<translation id="7913106023953875143">No hay ningún encabezado de nivel 2 posterior</translation>
 <translation id="7914870167134465181">Destacar</translation>
 <translation id="7927711904086083099">No esta seleccionado</translation>
 <translation id="7935627501098484003">Control de hora</translation>
@@ -1024,7 +1024,7 @@
 <translation id="8098587210054821856">Gris pizarra</translation>
 <translation id="8121539003537428024">Habilitar todos los filtros de eventos</translation>
 <translation id="8123975449645947908">Desplazar atrás</translation>
-<translation id="8126386426083591964">No hay ningún título de nivel 5 anterior</translation>
+<translation id="8126386426083591964">No hay ningún encabezado de nivel 5 anterior</translation>
 <translation id="812886159861361726">Se ha parado la descarga de <ph name="FILE_NAME" /></translation>
 <translation id="8129445297241948503">No hay ninguna celda arriba</translation>
 <translation id="8132248161074464367">Elemento no válido anterior</translation>
@@ -1085,12 +1085,12 @@
 <translation id="858006550102277544">Comentario</translation>
 <translation id="8584721346566392021">h5</translation>
 <translation id="8587549812518406253">Siguiente elemento de la lista</translation>
-<translation id="8591343418134616947">No hay ningún título de nivel 6 anterior</translation>
+<translation id="8591343418134616947">No hay ningún encabezado de nivel 6 anterior</translation>
 <translation id="8603071050456974042">Panel de ChromeVox</translation>
 <translation id="8606621670302093223">Control de fecha</translation>
 <translation id="8613709718990529335">Bizcocho</translation>
 <translation id="8614129468475308349">¡Muy bien! Has aprendido los conceptos básicos de ChromeVox. Puedes volver a ver el tutorial o salir de él haciendo clic en el botón correspondiente que encontrarás más abajo.</translation>
-<translation id="8625173877182443267">No hay ningún título de nivel 6 posterior</translation>
+<translation id="8625173877182443267">No hay ningún encabezado de nivel 6 posterior</translation>
 <translation id="8628186274519446680">Tomate</translation>
 <translation id="8638532244051952400">Indica las coordenadas actuales de la celda</translation>
 <translation id="8640369214276455272">Blanco humo</translation>
@@ -1099,7 +1099,7 @@
 <translation id="8656888282555543604">Habilitar registro de braille</translation>
 <translation id="8659501358298941449">Listas desplegables</translation>
 <translation id="8666733765751421568">Fin de <ph name="TYPE" /></translation>
-<translation id="867187640362843212">Título 5</translation>
+<translation id="867187640362843212">Encabezado 5</translation>
 <translation id="8690400660839620419">{COUNT,plural, =1{}other{nivel anidado #}}</translation>
 <translation id="8693391540059827073">Mi estación favorita</translation>
 <translation id="8696284982970258155">Verde claro</translation>
@@ -1137,13 +1137,13 @@
 <translation id="8989104346085848538">Para detener un mensaje de voz de ChromeVox, pulsa la tecla Ctrl.</translation>
 <translation id="8993737615451556423">Te permite acelerar, ralentizar y pausar la voz de lectura</translation>
 <translation id="9014206344398081366">Tutorial de ChromeVox</translation>
-<translation id="9040132695316389094">Título 1</translation>
+<translation id="9040132695316389094">Encabezado 1</translation>
 <translation id="9061884144798498064">Selecciona una tabla braille de 8 puntos:</translation>
 <translation id="9063946545000394379">ir al carácter anterior</translation>
 <translation id="9065283790526219006">más componente emergente</translation>
 <translation id="9065912140022662363">No hay ningún botón de selección posterior</translation>
 <translation id="9067522039955793016">Salto de página</translation>
-<translation id="9073511731393676210">No hay ningún título anterior</translation>
+<translation id="9073511731393676210">No hay ningún encabezado anterior</translation>
 <translation id="9077213568694924680">eliminado de la selección</translation>
 <translation id="9077305471618729969">Verde mar claro</translation>
 <translation id="9080299285199342830">Saltar al final</translation>
