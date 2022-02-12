@@ -135,6 +135,7 @@ void RenderViewImpl::Initialize(
 
   bool local_main_frame = params->main_frame->is_local_params();
 
+  webview_->SetRendererPreferences(params->renderer_preferences);
   webview_->SetWebPreferences(params->web_preferences);
 
   if (local_main_frame) {
@@ -157,8 +158,6 @@ void RenderViewImpl::Initialize(
   // TODO(davidben): Move this state from Blink into content.
   if (params->window_was_opened_by_another_window)
     GetWebView()->SetOpenedByDOM();
-
-  webview_->SetRendererPreferences(params->renderer_preferences);
 
   GetContentClient()->renderer()->WebViewCreated(webview_);
 

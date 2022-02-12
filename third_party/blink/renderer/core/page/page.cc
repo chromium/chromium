@@ -229,13 +229,6 @@ Page::Page(base::PassKey<Page>,
   DCHECK(!AllPages().Contains(this));
   AllPages().insert(this);
 
-  // Try to dereference the scrollbar theme. This is here to ensure tests are
-  // correctly setting up their platform theme or mocking scrollbars. On
-  // Android, unit tests run without a ThemeEngine and thus must set a mock
-  // ScrollbarTheme, if they don't this call will crash. To set a mock theme,
-  // see ScopedMockOverlayScrollbars or WebScopedMockScrollbars.
-  DCHECK(&GetScrollbarTheme());
-
   page_scheduler_ =
       agent_group_scheduler.AsAgentGroupScheduler().CreatePageScheduler(this);
   // The scheduler should be set before the main frame.
@@ -1018,6 +1011,9 @@ void Page::RegisterPluginsChangedObserver(PluginsChangedObserver* observer) {
 ScrollbarTheme& Page::GetScrollbarTheme() const {
   if (settings_->GetForceAndroidOverlayScrollbar())
     return ScrollbarThemeOverlayMobile::GetInstance();
+
+  // Ensures that renderer preferences are set.
+  DCHECK(main_frame_);
   return ScrollbarTheme::GetTheme();
 }
 
