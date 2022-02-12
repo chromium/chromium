@@ -2008,8 +2008,8 @@ std::vector<uint32_t> V4L2Device::EnumerateSupportedPixelformats(
   fmtdesc.type = buf_type;
 
   for (; Ioctl(VIDIOC_ENUM_FMT, &fmtdesc) == 0; ++fmtdesc.index) {
-    DVLOGF(3) << "Found " << fmtdesc.description << std::hex << " (0x"
-              << fmtdesc.pixelformat << ")";
+    DVLOGF(3) << "Found " << FourccToString(fmtdesc.pixelformat) << " ("
+              << fmtdesc.description << ")";
     pixelformats.push_back(fmtdesc.pixelformat);
   }
 

@@ -50,6 +50,8 @@ constexpr size_t kNumFramesForImageProcessor = limits::kMaxVideoFrames + 1;
 constexpr Fourcc kPreferredRenderableFourccs[] = {
     Fourcc(Fourcc::NV12),
     Fourcc(Fourcc::P010),
+    // Only used for Hana (MT8173). Remove when that device reaches EOL.
+    Fourcc(Fourcc::YV12),
 };
 
 // Picks the preferred compositor renderable format from |candidates|, if any.

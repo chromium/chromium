@@ -104,8 +104,17 @@ std::unique_ptr<ImageProcessor> CreateV4L2ImageProcessorWithInputCandidates(
 
   const auto output_fourcc = out_format_picker.Run(
       /*candidates=*/supported_fourccs, /*preferred_fourcc=*/absl::nullopt);
-  if (!output_fourcc)
+  if (!output_fourcc) {
+#if DCHECK_IS_ON()
+    std::string output_fourccs_string;
+    for (const auto fourcc : supported_fourccs) {
+      output_fourccs_string += fourcc.ToString();
+      output_fourccs_string += " ";
+    }
+    DVLOGF(1) << "None of " << output_fourccs_string << "formats is supported.";
+#endif
     return nullptr;
+  }
 
   const auto supported_input_pixfmts =
       V4L2ImageProcessorBackend::GetSupportedInputFormats();

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/post_task.h"
@@ -352,35 +353,36 @@ V4L2Status V4L2VideoDecoder::InitializeBackend() {
   return V4L2Status::Codes::kOk;
 }
 
-bool V4L2VideoDecoder::SetupInputFormat(uint32_t input_format_fourcc) {
+bool V4L2VideoDecoder::SetupInputFormat(uint32_t fourcc) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DCHECK_EQ(state_, State::kInitialized);
 
   // Check if the format is supported.
   std::vector<uint32_t> formats = device_->EnumerateSupportedPixelformats(
       V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
-  if (std::find(formats.begin(), formats.end(), input_format_fourcc) ==
-      formats.end()) {
-    DVLOGF(3) << "Input fourcc " << input_format_fourcc
-              << " not supported by device.";
+  if (!base::Contains(formats, fourcc)) {
+    DVLOGF(1) << FourccToString(fourcc) << " not recognised, skipping...";
     return false;
   }
+  VLOGF(1) << "Input (OUTPUT queue) Fourcc: " << FourccToString(fourcc);
 
   // Determine the input buffer size.
   gfx::Size max_size, min_size;
-  device_->GetSupportedResolution(input_format_fourcc, &min_size, &max_size);
+  device_->GetSupportedResolution(fourcc, &min_size, &max_size);
   size_t input_size = max_size.GetArea() > k1080pArea
                           ? kInputBufferMaxSizeFor4k
                           : kInputBufferMaxSizeFor1080p;
 
   // Setup the input format.
-  auto format =
-      input_queue_->SetFormat(input_format_fourcc, gfx::Size(), input_size);
+  auto format = input_queue_->SetFormat(fourcc, gfx::Size(), input_size);
   if (!format) {
     VPLOGF(1) << "Failed to call IOCTL to set input format.";
     return false;
   }
-  DCHECK_EQ(format->fmt.pix_mp.pixelformat, input_format_fourcc);
+  DCHECK_EQ(format->fmt.pix_mp.pixelformat, fourcc)
+      << "The input (OUTPUT) queue must accept the requested pixel format "
+      << FourccToString(fourcc) << ", but it returned instead: "
+      << FourccToString(format->fmt.pix_mp.pixelformat);
 
   return true;
 }
@@ -397,10 +399,11 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
            V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE)) {
     const auto candidate = Fourcc::FromV4L2PixFmt(pixfmt);
     if (!candidate) {
-      DVLOGF(1) << "Pixel format " << FourccToString(pixfmt)
-                << " is not supported, skipping...";
+      DVLOGF(1) << FourccToString(pixfmt) << " (" << candidate->ToString()
+                << ") is not recognised, skipping...";
       continue;
     }
+    VLOGF(1) << "Output (CAPTURE queue) candidate: " << candidate->ToString();
 
     absl::optional<struct v4l2_format> format =
         output_queue_->TryFormat(pixfmt, size, 0);
