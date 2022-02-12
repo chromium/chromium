@@ -444,7 +444,7 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateComparisonFunction(
   DCHECK(operands.size());
   bool is_first = true;
   CalculationCategory category;
-  for (const auto& operand : operands) {
+  for (const CSSMathExpressionNode* operand : operands) {
     if (is_first)
       category = operand->Category();
     else
@@ -561,7 +561,7 @@ CSSMathExpressionOperation::CSSMathExpressionOperation(
 
 static bool AnyOperandHasComparisons(
     CSSMathExpressionOperation::Operands& operands) {
-  for (const auto& operand : operands) {
+  for (const CSSMathExpressionNode* operand : operands) {
     if (operand->HasComparisons())
       return true;
   }
@@ -683,7 +683,7 @@ CSSMathExpressionOperation::ToCalculationExpression(
     case CSSMathOperator::kMax: {
       Vector<scoped_refptr<const CalculationExpressionNode>> operands;
       operands.ReserveCapacity(operands_.size());
-      for (const auto& operand : operands_)
+      for (const CSSMathExpressionNode* operand : operands_)
         operands.push_back(operand->ToCalculationExpression(conversion_data));
       auto expression_operator = operator_ == CSSMathOperator::kMin
                                      ? CalculationOperator::kMin
@@ -694,7 +694,7 @@ CSSMathExpressionOperation::ToCalculationExpression(
     case CSSMathOperator::kClamp: {
       Vector<scoped_refptr<const CalculationExpressionNode>> operands;
       operands.ReserveCapacity(operands_.size());
-      for (const auto& operand : operands_)
+      for (const CSSMathExpressionNode* operand : operands_)
         operands.push_back(operand->ToCalculationExpression(conversion_data));
       return CalculationExpressionOperationNode::CreateSimplified(
           std::move(operands), CalculationOperator::kClamp);
@@ -709,7 +709,7 @@ double CSSMathExpressionOperation::DoubleValue() const {
   DCHECK(HasDoubleValue(ResolvedUnitType())) << CustomCSSText();
   Vector<double> double_values;
   double_values.ReserveCapacity(operands_.size());
-  for (auto& operand : operands_)
+  for (const CSSMathExpressionNode* operand : operands_)
     double_values.push_back(operand->DoubleValue());
   return Evaluate(double_values);
 }
@@ -727,7 +727,7 @@ absl::optional<double> CSSMathExpressionOperation::ComputeValueInCanonicalUnit()
 
   Vector<double> double_values;
   double_values.ReserveCapacity(operands_.size());
-  for (auto& operand : operands_) {
+  for (const CSSMathExpressionNode* operand : operands_) {
     absl::optional<double> maybe_value = operand->ComputeValueInCanonicalUnit();
     if (!maybe_value)
       return absl::nullopt;
@@ -741,7 +741,7 @@ double CSSMathExpressionOperation::ComputeLengthPx(
   DCHECK_EQ(kCalcLength, Category());
   Vector<double> double_values;
   double_values.ReserveCapacity(operands_.size());
-  for (const auto& operand : operands_) {
+  for (const CSSMathExpressionNode* operand : operands_) {
     if (operand->Category() == kCalcLength) {
       double_values.push_back(operand->ComputeLengthPx(data));
     } else {
@@ -800,14 +800,14 @@ bool CSSMathExpressionOperation::AccumulateLengthArray(
 
 void CSSMathExpressionOperation::AccumulateLengthUnitTypes(
     CSSPrimitiveValue::LengthTypeFlags& types) const {
-  for (const auto& operand : operands_)
+  for (const CSSMathExpressionNode* operand : operands_)
     operand->AccumulateLengthUnitTypes(types);
 }
 
 bool CSSMathExpressionOperation::IsComputationallyIndependent() const {
   if (Category() != kCalcLength && Category() != kCalcPercentLength)
     return true;
-  for (const auto& operand : operands_) {
+  for (const CSSMathExpressionNode* operand : operands_) {
     if (!operand->IsComputationallyIndependent())
       return false;
   }
@@ -854,7 +854,7 @@ String CSSMathExpressionOperation::CustomCSSText() const {
       result.Append(ToString(operator_));
       result.Append('(');
       result.Append(operands_.front()->CustomCSSText());
-      for (const auto& operand : SecondToLastOperands()) {
+      for (const CSSMathExpressionNode* operand : SecondToLastOperands()) {
         result.Append(", ");
         result.Append(operand->CustomCSSText());
       }
@@ -987,7 +987,7 @@ double CSSMathExpressionOperation::EvaluateOperator(
       if (operands.IsEmpty())
         return std::numeric_limits<double>::quiet_NaN();
       double minimum = operands[0];
-      for (auto operand : operands)
+      for (double operand : operands)
         minimum = std::min(minimum, operand);
       return minimum;
     }
@@ -995,7 +995,7 @@ double CSSMathExpressionOperation::EvaluateOperator(
       if (operands.IsEmpty())
         return std::numeric_limits<double>::quiet_NaN();
       double maximum = operands[0];
-      for (auto operand : operands)
+      for (double operand : operands)
         maximum = std::max(maximum, operand);
       return maximum;
     }
@@ -1020,7 +1020,7 @@ double CSSMathExpressionOperation::EvaluateOperator(
 bool CSSMathExpressionOperation::InvolvesPercentageComparisons() const {
   if (IsMinOrMax() && Category() == kCalcPercent && operands_.size() > 1u)
     return true;
-  for (const auto& operand : operands_) {
+  for (const CSSMathExpressionNode* operand : operands_) {
     if (operand->InvolvesPercentageComparisons())
       return true;
   }
