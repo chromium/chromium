@@ -6,12 +6,16 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 namespace tray {
@@ -24,12 +28,18 @@ class TimeViewTest : public AshTestBase {
   TimeViewTest& operator=(const TimeViewTest&) = delete;
   ~TimeViewTest() override = default;
 
+  void SetUp() override {
+    AshTestBase::SetUp();
+    widget_ = CreateFramelessTestWidget();
+    widget_->SetFullscreen(true);
+  }
+
   void TearDown() override {
-    time_view_.reset();
+    widget_.reset();
     AshTestBase::TearDown();
   }
 
-  TimeView* time_view() { return time_view_.get(); }
+  TimeView* time_view() { return time_view_; }
 
   // Access to private fields of |time_view_|.
   views::View* horizontal_view() { return time_view_->horizontal_view_.get(); }
@@ -45,14 +55,28 @@ class TimeViewTest : public AshTestBase {
     return time_view_->vertical_date_view_;
   }
 
+  void reset_callback() { is_callback_called_ = false; }
+  bool is_callback_called() { return is_callback_called_; }
+
+  // Method to test if the on tap callback is called when there's a tap gesture.
+  void OnTimeViewActionPerformed(const ui::Event& event) {
+    is_callback_called_ = true;
+  }
+
   // Creates a time view with horizontal or vertical |clock_layout|.
   void CreateTimeView(TimeView::ClockLayout clock_layout) {
-    time_view_ = std::make_unique<TimeView>(
-        clock_layout, Shell::Get()->system_tray_model()->clock());
+    time_view_ = widget_->SetContentsView(std::make_unique<TimeView>(
+        clock_layout, Shell::Get()->system_tray_model()->clock(),
+        base::BindRepeating(&TimeViewTest::OnTimeViewActionPerformed,
+                            weak_factory_.GetWeakPtr())));
   }
 
  private:
-  std::unique_ptr<TimeView> time_view_;
+  std::unique_ptr<views::Widget> widget_;
+  // Owned by `widget_`.
+  TimeView* time_view_;
+  bool is_callback_called_ = false;
+  base::WeakPtrFactory<TimeViewTest> weak_factory_{this};
 };
 
 class TimeViewObserver : public views::ViewObserver {
@@ -158,6 +182,26 @@ TEST_F(TimeViewTest, UpdateSize) {
   // Move to 10:00AM. There should be a layout change of the `time_view()`.
   task_environment()->FastForwardBy(base::Seconds(61));
   EXPECT_TRUE(test_observer.preferred_size_changed_called());
+}
+
+// Test on tap gesture action.
+TEST_F(TimeViewTest, OnTap) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kCalendarView);
+
+  EXPECT_FALSE(is_callback_called());
+
+  // A newly created horizontal clock only has the horizontal label.
+  CreateTimeView(TimeView::ClockLayout::HORIZONTAL_CLOCK);
+
+  GestureTapOn(time_view());
+  EXPECT_TRUE(is_callback_called());
+
+  reset_callback();
+  EXPECT_FALSE(is_callback_called());
+
+  GestureTapOn(time_view());
+  EXPECT_TRUE(is_callback_called());
 }
 
 }  // namespace tray
