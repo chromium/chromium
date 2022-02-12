@@ -16,6 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "base/types/pass_key.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
+#include "content/browser/font_access/font_enumeration_data_source.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -74,7 +75,6 @@ void FontAccessManagerImpl::EnumerateLocalFonts(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-#if defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
   if (skip_privacy_checks_for_testing_) {
     DidRequestPermission(std::move(callback),
                          blink::mojom::PermissionStatus::GRANTED);
@@ -92,16 +92,19 @@ void FontAccessManagerImpl::EnumerateLocalFonts(
   }
 
   // Page Visibility is required for the API to function at all.
-  if (rfh->visibility() == blink::mojom::FrameVisibility::kNotRendered) {
+  if (rfh->GetVisibilityState() !=
+      blink::mojom::PageVisibilityState::kVisible) {
     std::move(callback).Run(blink::mojom::FontEnumerationStatus::kNotVisible,
                             base::ReadOnlySharedMemoryRegion());
     return;
   }
 
-  auto status = PermissionControllerImpl::FromBrowserContext(
-                    rfh->GetProcess()->GetBrowserContext())
-                    ->GetPermissionStatusForFrame(PermissionType::FONT_ACCESS,
-                                                  rfh, context.origin.GetURL());
+  PermissionControllerImpl* permission_controller =
+      PermissionControllerImpl::FromBrowserContext(rfh->GetBrowserContext());
+  DCHECK(permission_controller);
+
+  auto status = permission_controller->GetPermissionStatusForFrame(
+      PermissionType::FONT_ACCESS, rfh, context.origin.GetURL());
 
   if (status != blink::mojom::PermissionStatus::ASK) {
     // Permission has been requested before.
@@ -121,17 +124,11 @@ void FontAccessManagerImpl::EnumerateLocalFonts(
       blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
       blink::mojom::UserActivationNotificationType::kNone);
 
-  PermissionControllerImpl::FromBrowserContext(
-      rfh->GetProcess()->GetBrowserContext())
-      ->RequestPermission(
-          PermissionType::FONT_ACCESS, rfh, context.origin.GetURL(),
-          /*user_gesture=*/true,
-          base::BindOnce(&FontAccessManagerImpl::DidRequestPermission,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-#else
-  std::move(callback).Run(blink::mojom::FontEnumerationStatus::kUnimplemented,
-                          base::ReadOnlySharedMemoryRegion());
-#endif
+  permission_controller->RequestPermission(
+      PermissionType::FONT_ACCESS, rfh, context.origin.GetURL(),
+      /*user_gesture=*/true,
+      base::BindOnce(&FontAccessManagerImpl::DidRequestPermission,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void FontAccessManagerImpl::DidRequestPermission(
@@ -139,11 +136,6 @@ void FontAccessManagerImpl::DidRequestPermission(
     blink::mojom::PermissionStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-#if !defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
-  std::move(callback).Run(blink::mojom::FontEnumerationStatus::kUnimplemented,
-                          base::ReadOnlySharedMemoryRegion());
-  return;
-#else
   if (status != blink::mojom::PermissionStatus::GRANTED) {
     std::move(callback).Run(
         blink::mojom::FontEnumerationStatus::kPermissionDenied,
@@ -160,7 +152,6 @@ void FontAccessManagerImpl::DidRequestPermission(
             std::move(callback).Run(data.status, std::move(data.font_data));
           },
           std::move(callback)));
-#endif
 }
 
 }  // namespace content

@@ -2,26 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/font_access/font_enumeration_cache_fontconfig.h"
+#include "content/browser/font_access/font_enumeration_data_source_linux.h"
 
 #include <fontconfig/fontconfig.h>
 
 #include <memory>
 
-#include "base/feature_list.h"
+#include "base/check_op.h"
 #include "base/location.h"
-#include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/sequence_bound.h"
-#include "base/time/time.h"
-#include "base/types/pass_key.h"
-#include "content/browser/font_access/font_enumeration_cache.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 
 namespace content {
@@ -63,27 +57,15 @@ FcFontSet* ListFonts(FcObjectSet* object_set) {
 
 }  // namespace
 
-// static
-base::SequenceBound<FontEnumerationCache>
-FontEnumerationCache::CreateForTesting(
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    absl::optional<std::string> locale_override) {
-  return base::SequenceBound<FontEnumerationCacheFontconfig>(
-      std::move(task_runner), std::move(locale_override),
-      base::PassKey<FontEnumerationCache>());
+FontEnumerationDataSourceLinux::FontEnumerationDataSourceLinux() {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-FontEnumerationCacheFontconfig::FontEnumerationCacheFontconfig(
-    absl::optional<std::string> locale_override,
-    base::PassKey<FontEnumerationCache>)
-    : FontEnumerationCache(std::move(locale_override)) {}
-
-FontEnumerationCacheFontconfig::~FontEnumerationCacheFontconfig() {
+FontEnumerationDataSourceLinux::~FontEnumerationDataSourceLinux() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-blink::FontEnumerationTable
-FontEnumerationCacheFontconfig::ComputeFontEnumerationData(
+blink::FontEnumerationTable FontEnumerationDataSourceLinux::GetFonts(
     const std::string& locale) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

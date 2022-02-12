@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "content/browser/font_access/font_access_test_utils.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
+#include "content/browser/font_access/font_enumeration_data_source.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/storage_partition.h"
@@ -67,7 +68,7 @@ class FontAccessManagerImplBrowserBase : public ContentBrowserTest {
         FontEnumerationCache::CreateForTesting(
             base::ThreadPool::CreateSequencedTaskRunner(
                 {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
-            std::move(locale));
+            FontEnumerationDataSource::Create(), std::move(locale));
 
     auto* storage_partition =
         static_cast<StoragePartitionImpl*>(main_rfh()->GetStoragePartition());
@@ -93,8 +94,6 @@ class FontAccessManagerImplBrowserTest
   }
 };
 
-#if defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
-
 // Disabled test: https://crbug.com/1224238
 IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserBase,
                        DISABLED_RendererInterfaceIsBound) {
@@ -119,18 +118,25 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest, EnumerationTest) {
   ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "simple_page.html")));
   font_access_manager()->SkipPrivacyChecksForTesting(true);
 
-  int result = EvalJs(shell(),
-                      "(async () => {"
-                      "  let count = 0;"
-                      "  const fonts = await "
-                      "navigator.fonts.query({persistentAccess: true});"
-                      "  for (const item of fonts) {"
-                      "    count++;"
-                      "  }"
-                      "  return count;"
-                      "})()")
-                   .ExtractInt();
-  EXPECT_GT(result, 0) << "Expected at least one font. Got: " << result;
+  EvalJsResult result =
+      EvalJs(shell(),
+             "(async () => {"
+             "  let count = 0;"
+             "  const fonts = await "
+             "navigator.fonts.query({persistentAccess: true});"
+             "  for (const item of fonts) {"
+             "    count++;"
+             "  }"
+             "  return count;"
+             "})()");
+
+  if (FontEnumerationDataSource::IsOsSupportedForTesting()) {
+    EXPECT_LT(0, result.ExtractInt())
+        << "Enumeration should return at least one font on supported OS.";
+  } else {
+    // TODO(crbug.com/1296792): Figure out Android situation.
+    EXPECT_TRUE(!result.error.empty());
+  }
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -139,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest, LocaleTest) {
   OverrideFontAccessLocale("zh-cn");
   font_access_manager()->SkipPrivacyChecksForTesting(true);
 
-  std::string result =
+  EvalJsResult result =
       EvalJs(shell(),
              "(async () => {"
              "  let fullName = '';"
@@ -151,10 +157,9 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest, LocaleTest) {
              "    }"
              "  }"
              "  return fullName;"
-             "})()")
-          .ExtractString();
+             "})()");
   std::string ms_yahei_utf8 = "微软雅黑";
-  EXPECT_EQ(result, ms_yahei_utf8);
+  EXPECT_EQ(ms_yahei_utf8, result);
 }
 
 IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest,
@@ -163,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest,
   OverrideFontAccessLocale("zh-cn");
   font_access_manager()->SkipPrivacyChecksForTesting(true);
 
-  std::string result =
+  EvalJsResult result =
       EvalJs(shell(),
              "(async () => {"
              "  let family = '';"
@@ -175,13 +180,10 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest,
              "    }"
              "  }"
              "  return family;"
-             "})()")
-          .ExtractString();
+             "})()");
   std::string unlocalized_family = "Microsoft YaHei";
-  EXPECT_EQ(result, unlocalized_family);
+  EXPECT_EQ(unlocalized_family, result);
 }
-#endif
-
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/font_access/font_enumeration_cache_fuchsia.h"
+#include "content/browser/font_access/font_enumeration_data_source_fuchsia.h"
 
 #include "base/notreached.h"
+#include "base/sequence_checker.h"
+#include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 
 namespace content {
 namespace {
@@ -29,26 +31,15 @@ constexpr struct RobotoFontsInfo {
 
 }  // namespace
 
-base::SequenceBound<FontEnumerationCache>
-FontEnumerationCache::CreateForTesting(
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    absl::optional<std::string> locale_override) {
-  return base::SequenceBound<FontEnumerationCacheFuchsia>(
-      std::move(task_runner), std::move(locale_override),
-      base::PassKey<FontEnumerationCache>());
+FontEnumerationDataSourceFuchsia::FontEnumerationDataSourceFuchsia() {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-FontEnumerationCacheFuchsia::FontEnumerationCacheFuchsia(
-    absl::optional<std::string> locale_override,
-    base::PassKey<FontEnumerationCache>)
-    : FontEnumerationCache(std::move(locale_override)) {}
-
-FontEnumerationCacheFuchsia::~FontEnumerationCacheFuchsia() {
+FontEnumerationDataSourceFuchsia::~FontEnumerationDataSourceFuchsia() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-blink::FontEnumerationTable
-FontEnumerationCacheFuchsia::ComputeFontEnumerationData(
+blink::FontEnumerationTable FontEnumerationDataSourceFuchsia::GetFonts(
     const std::string& locale) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

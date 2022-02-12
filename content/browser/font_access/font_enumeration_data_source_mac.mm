@@ -2,26 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/font_access/font_enumeration_cache_mac.h"
+#include "content/browser/font_access/font_enumeration_data_source_mac.h"
 
-#import <AppKit/AppKit.h>
+#import <CoreFoundation/CoreFoundation.h>
 #import <CoreText/CoreText.h>
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
 
-#include <memory>
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/mac/foundation_util.h"
-#include "base/metrics/histogram_functions.h"
+#include "base/mac/scoped_cftyperef.h"
+#include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
-#include "base/time/time.h"
-#include "base/types/pass_key.h"
-#include "content/browser/font_access/font_enumeration_cache.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -41,24 +34,15 @@ base::ScopedCFTypeRef<CFStringRef> GetString(CTFontDescriptorRef fd,
 
 }  // namespace
 
-// static
-base::SequenceBound<FontEnumerationCache>
-FontEnumerationCache::CreateForTesting(
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    absl::optional<std::string> locale_override) {
-  return base::SequenceBound<FontEnumerationCacheMac>(
-      std::move(task_runner), std::move(locale_override),
-      base::PassKey<FontEnumerationCache>());
+FontEnumerationDataSourceMac::FontEnumerationDataSourceMac() {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-FontEnumerationCacheMac::FontEnumerationCacheMac(
-    absl::optional<std::string> locale_override,
-    base::PassKey<FontEnumerationCache>)
-    : FontEnumerationCache(std::move(locale_override)) {}
+FontEnumerationDataSourceMac::~FontEnumerationDataSourceMac() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
-FontEnumerationCacheMac::~FontEnumerationCacheMac() = default;
-
-blink::FontEnumerationTable FontEnumerationCacheMac::ComputeFontEnumerationData(
+blink::FontEnumerationTable FontEnumerationDataSourceMac::GetFonts(
     const std::string& locale) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

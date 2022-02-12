@@ -18,6 +18,7 @@
 #include "base/threading/sequence_bound.h"
 #include "content/browser/font_access/font_access_test_utils.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
+#include "content/browser/font_access/font_enumeration_data_source.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -81,17 +82,17 @@ class FontAccessManagerImplTest : public RenderViewHostImplTestHarness {
 
     const int process_id = main_rfh()->GetProcess()->GetID();
     const int routing_id = main_rfh()->GetRoutingID();
-    const GlobalRenderFrameHostId frame_id =
-        GlobalRenderFrameHostId{process_id, routing_id};
+    const GlobalRenderFrameHostId main_frame_id(process_id, routing_id);
 
     cache_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
     base::SequenceBound<FontEnumerationCache> font_enumeration_cache =
-        FontEnumerationCache::CreateForTesting(cache_task_runner_,
-                                               absl::nullopt);
+        FontEnumerationCache::CreateForTesting(
+            cache_task_runner_, FontEnumerationDataSource::Create(),
+            /* locale_override= */ absl::nullopt);
     manager_impl_ = FontAccessManagerImpl::CreateForTesting(
         std::move(font_enumeration_cache));
-    manager_impl_->BindReceiver(kTestOrigin, frame_id,
+    manager_impl_->BindReceiver(kTestOrigin, main_frame_id,
                                 manager_.BindNewPipeAndPassReceiver());
     manager_sync_ = std::make_unique<FontAccessManagerSync>(manager_.get());
 
@@ -158,17 +159,9 @@ class FontAccessManagerImplTest : public RenderViewHostImplTestHarness {
         }));
   }
 
-  void SetFrameHidden() {
-    static_cast<RenderFrameHostImpl*>(main_rfh())
-        ->VisibilityChanged(blink::mojom::FrameVisibility::kNotRendered);
-  }
+  void SetFrameHidden() { test_rvh()->SimulateWasHidden(); }
 
-  void SimulateUserActivation() {
-    static_cast<RenderFrameHostImpl*>(main_rfh())
-        ->UpdateUserActivationState(
-            blink::mojom::UserActivationUpdateType::kNotifyActivation,
-            blink::mojom::UserActivationNotificationType::kTest);
-  }
+  void SimulateUserActivation() { main_test_rfh()->SimulateUserActivation(); }
 
  protected:
   const GURL kTestUrl = GURL("https://example.com/font_access");
@@ -183,7 +176,6 @@ class FontAccessManagerImplTest : public RenderViewHostImplTestHarness {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
 namespace {
 
 void ValidateFontEnumerationBasic(FontEnumerationStatus status,
@@ -227,8 +219,13 @@ TEST_F(FontAccessManagerImplTest, EnumerationConsumesUserActivation) {
 
   {
     const auto [status, region] = manager_sync_->EnumerateLocalFonts();
-    EXPECT_EQ(status, FontEnumerationStatus::kOk)
-        << "Font Enumeration was successful.";
+    if (FontEnumerationDataSource::IsOsSupportedForTesting()) {
+      EXPECT_EQ(status, FontEnumerationStatus::kOk)
+          << "Font Enumeration was successful.";
+    } else {
+      // TODO(crbug.com/1296792): Figure out Android situation.
+      EXPECT_EQ(status, FontEnumerationStatus::kUnexpectedError);
+    }
   }
 
   AskGrantPermission();
@@ -244,8 +241,13 @@ TEST_F(FontAccessManagerImplTest, PreviouslyGrantedValidateEnumerationBasic) {
   SimulateUserActivation();
 
   auto [status, region] = manager_sync_->EnumerateLocalFonts();
-  EXPECT_EQ(status, FontEnumerationStatus::kOk);
-  ValidateFontEnumerationBasic(std::move(status), std::move(region));
+  if (FontEnumerationDataSource::IsOsSupportedForTesting()) {
+    EXPECT_EQ(status, FontEnumerationStatus::kOk);
+    ValidateFontEnumerationBasic(std::move(status), std::move(region));
+  } else {
+    // TODO(crbug.com/1296792): Figure out Android situation.
+    EXPECT_EQ(status, FontEnumerationStatus::kUnexpectedError);
+  }
 }
 
 TEST_F(FontAccessManagerImplTest, UserActivationRequiredBeforeGrant) {
@@ -253,7 +255,12 @@ TEST_F(FontAccessManagerImplTest, UserActivationRequiredBeforeGrant) {
   SimulateUserActivation();
 
   const auto [status, region] = manager_sync_->EnumerateLocalFonts();
-  EXPECT_EQ(status, FontEnumerationStatus::kOk);
+  if (FontEnumerationDataSource::IsOsSupportedForTesting()) {
+    EXPECT_EQ(status, FontEnumerationStatus::kOk);
+  } else {
+    // TODO(crbug.com/1296792): Figure out Android situation.
+    EXPECT_EQ(status, FontEnumerationStatus::kUnexpectedError);
+  }
 }
 
 TEST_F(FontAccessManagerImplTest, EnumerationFailsIfNoActivation) {
@@ -278,8 +285,6 @@ TEST_F(FontAccessManagerImplTest, PermissionPreviouslyDeniedErrors) {
   const auto [status, region] = manager_sync_->EnumerateLocalFonts();
   EXPECT_EQ(status, FontEnumerationStatus::kPermissionDenied);
 }
-
-#endif
 
 }  // namespace
 

@@ -2,22 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/font_access/font_enumeration_cache_win.h"
+#include "content/browser/font_access/font_enumeration_data_source_win.h"
 
 #include <dwrite.h>
+#include <stdint.h>
 #include <wrl/client.h>
 
-#include <limits>
 #include <string>
-#include <vector>
 
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/location.h"
+#include "base/notreached.h"
 #include "base/sequence_checker.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/thread_checker.h"
 #include "content/browser/font_access/font_enumeration_cache.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
@@ -174,27 +170,15 @@ absl::optional<std::string> GetFontStyleName(IDWriteFont* font) {
 
 }  // namespace
 
-// static
-base::SequenceBound<FontEnumerationCache>
-FontEnumerationCache::CreateForTesting(
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    absl::optional<std::string> locale_override) {
-  return base::SequenceBound<FontEnumerationCacheWin>(
-      std::move(task_runner), std::move(locale_override),
-      base::PassKey<FontEnumerationCache>());
+FontEnumerationDataSourceWin::FontEnumerationDataSourceWin() {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-FontEnumerationCacheWin::FontEnumerationCacheWin(
-    absl::optional<std::string> locale_override,
-    base::PassKey<FontEnumerationCache>)
-    : FontEnumerationCache(std::move(locale_override)) {}
+FontEnumerationDataSourceWin::~FontEnumerationDataSourceWin() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
-FontEnumerationCacheWin::~FontEnumerationCacheWin() = default;
-
-FontEnumerationCacheWin::FamilyDataResult::~FamilyDataResult() = default;
-FontEnumerationCacheWin::FamilyDataResult::FamilyDataResult() = default;
-
-blink::FontEnumerationTable FontEnumerationCacheWin::ComputeFontEnumerationData(
+blink::FontEnumerationTable FontEnumerationDataSourceWin::GetFonts(
     const std::string& locale) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

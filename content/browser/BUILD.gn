@@ -899,6 +899,8 @@ source_set("browser") {
     "font_access/font_access_manager_impl.h",
     "font_access/font_enumeration_cache.cc",
     "font_access/font_enumeration_cache.h",
+    "font_access/font_enumeration_data_source.cc",
+    "font_access/font_enumeration_data_source.h",
     "font_list_async.cc",
     "generic_sensor/sensor_provider_proxy_impl.cc",
     "generic_sensor/sensor_provider_proxy_impl.h",
@@ -2303,8 +2305,8 @@ source_set("browser") {
       "compute_pressure/procfs_stat_cpu_parser.h",
       "compute_pressure/sysfs_cpufreq_core_parser.cc",
       "compute_pressure/sysfs_cpufreq_core_parser.h",
-      "font_access/font_enumeration_cache_fontconfig.cc",
-      "font_access/font_enumeration_cache_fontconfig.h",
+      "font_access/font_enumeration_data_source_linux.cc",
+      "font_access/font_enumeration_data_source_linux.h",
       "font_service.cc",
       "font_service.h",
       "memory/swap_metrics_driver_impl_linux.cc",
@@ -2389,8 +2391,8 @@ source_set("browser") {
       "accessibility/browser_accessibility_manager_fuchsia.cc",
       "accessibility/browser_accessibility_manager_fuchsia.h",
       "child_process_launcher_helper_fuchsia.cc",
-      "font_access/font_enumeration_cache_fuchsia.cc",
-      "font_access/font_enumeration_cache_fuchsia.h",
+      "font_access/font_enumeration_data_source_fuchsia.cc",
+      "font_access/font_enumeration_data_source_fuchsia.h",
       "memory/swap_metrics_driver_impl_fuchsia.cc",
       "speech/tts_fuchsia.cc",
     ]
@@ -2425,8 +2427,8 @@ source_set("browser") {
     sources += [
       "../app_shim_remote_cocoa/web_contents_ns_view_bridge.h",
       "../app_shim_remote_cocoa/web_contents_ns_view_bridge.mm",
-      "font_access/font_enumeration_cache_mac.h",
-      "font_access/font_enumeration_cache_mac.mm",
+      "font_access/font_enumeration_data_source_mac.h",
+      "font_access/font_enumeration_data_source_mac.mm",
       "gpu/ca_transaction_gpu_coordinator.cc",
       "gpu/ca_transaction_gpu_coordinator.h",
       "sandbox_support_mac_impl.h",
@@ -2523,8 +2525,8 @@ source_set("browser") {
 
   if (is_win) {
     sources += [
-      "font_access/font_enumeration_cache_win.cc",
-      "font_access/font_enumeration_cache_win.h",
+      "font_access/font_enumeration_data_source_win.cc",
+      "font_access/font_enumeration_data_source_win.h",
       "installedapp/installed_app_provider_impl_win.cc",
       "installedapp/installed_app_provider_impl_win.h",
       "renderer_host/virtual_keyboard_controller_win.cc",

@@ -30,7 +30,8 @@ class NullCpuProbe : public CpuProbe {
   void Update() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    // Checks that
+    // Ensure that this method is called on a sequence that is allowed to do
+    // IO, even on OSes that don't have a CpuProbe implementation yet.
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
   }
