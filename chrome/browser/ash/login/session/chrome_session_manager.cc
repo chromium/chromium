@@ -290,7 +290,6 @@ void ChromeSessionManager::Initialize(
     return;
   }
 
-  DemoSession::PreloadOfflineResourcesIfInDemoMode();
   if (parsed_command_line.HasSwitch(switches::kLoginManager) &&
       (!is_running_test || force_login_screen_in_test)) {
     VLOG(1) << "Starting Chrome with login/oobe screen.";

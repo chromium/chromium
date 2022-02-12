@@ -109,10 +109,6 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // Creates global DemoSession instance if required.
   static DemoSession* StartIfInDemoMode();
 
-  // Requests load of demo session resources, without marking the demo session
-  // as started. Creates global DemoSession instance if required.
-  static void PreloadOfflineResourcesIfInDemoMode();
-
   // Deletes the global DemoSession instance if it was previously created.
   static void ShutDownIfInitialized();
 

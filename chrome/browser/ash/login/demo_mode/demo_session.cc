@@ -286,16 +286,6 @@ void DemoSession::ResetDemoConfigForTesting() {
 }
 
 // static
-void DemoSession::PreloadOfflineResourcesIfInDemoMode() {
-  if (!IsDeviceInDemoMode())
-    return;
-
-  if (!g_demo_session)
-    g_demo_session = new DemoSession();
-  g_demo_session->EnsureOfflineResourcesLoaded(base::OnceClosure());
-}
-
-// static
 DemoSession* DemoSession::StartIfInDemoMode() {
   if (!IsDeviceInDemoMode())
     return nullptr;
@@ -307,7 +297,6 @@ DemoSession* DemoSession::StartIfInDemoMode() {
     g_demo_session = new DemoSession();
 
   g_demo_session->started_ = true;
-  g_demo_session->EnsureOfflineResourcesLoaded(base::OnceClosure());
   return g_demo_session;
 }
 
