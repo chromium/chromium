@@ -110,7 +110,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          PlatformVideoFramePoolTest,
                          testing::Values(PIXEL_FORMAT_YV12,
                                          PIXEL_FORMAT_NV12,
-                                         PIXEL_FORMAT_ARGB,
                                          PIXEL_FORMAT_P016LE));
 
 TEST_P(PlatformVideoFramePoolTest, SingleFrameReuse) {
@@ -174,8 +173,8 @@ TEST_P(PlatformVideoFramePoolTest, InitializeWithDifferentFourcc) {
 
   // Verify that requesting a frame with a different format causes the pool
   // to get drained.
-  const Fourcc different_fourcc(Fourcc::XR24);
-  ASSERT_NE(fourcc, different_fourcc);
+  const Fourcc different_fourcc(*fourcc != Fourcc(Fourcc::NV12) ? Fourcc::NV12
+                                                                : Fourcc::P010);
   ASSERT_TRUE(Initialize(different_fourcc));
   scoped_refptr<VideoFrame> new_frame = GetFrame(10);
   EXPECT_EQ(0u, pool_->GetPoolSizeForTesting());
