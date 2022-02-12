@@ -112,6 +112,9 @@ public class MediaNotificationController {
     @VisibleForTesting
     public Throttler mThrottler;
 
+    /**
+     * Helper class to prevent spamming notification updates.
+     */
     @VisibleForTesting
     public static class Throttler {
         @VisibleForTesting
@@ -599,9 +602,19 @@ public class MediaNotificationController {
             NotificationManagerProxy manager = new NotificationManagerProxyImpl(getContext());
             manager.notify(notification);
         } else if (!finishedForegroundingService) {
-            ForegroundServiceUtils.getInstance().startForeground(mService,
-                    mMediaNotificationInfo.id, notification.getNotification(),
-                    0 /*foregroundServiceType*/);
+            // We did not foreground the service and update the notification above, so we should do
+            // so here.  On S and later, we cannot foreground the service if we're not currently
+            // in the foreground, and on Q and later the background activity start restrictions
+            // prevent us from launching a trampoline to fix it.  Try it, and see if it works.  If
+            // not, then update the notification and leave the service in the background.
+            try {
+                ForegroundServiceUtils.getInstance().startForeground(mService,
+                        mMediaNotificationInfo.id, notification.getNotification(),
+                        0 /*foregroundServiceType*/);
+            } catch (RuntimeException e) {
+                NotificationManagerProxy manager = new NotificationManagerProxyImpl(getContext());
+                manager.notify(notification);
+            }
         }
         if (shouldLogNotification) {
             mDelegate.logNotificationShown(notification);
