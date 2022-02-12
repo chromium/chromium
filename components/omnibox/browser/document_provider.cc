@@ -804,10 +804,10 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
       }
       auto owners = ExtractResultList(&result, "metadata.owner.personNames",
                                       "displayName");
-      if (!owners.empty())
-        match.RecordAdditionalInfo("document owner", *owners[0]);
-      match.description = GetMatchDescription(
-          update_time, mimetype, !owners.empty() ? *owners[0] : "");
+      const std::string owner = !owners.empty() && owners[0] ? *owners[0] : "";
+      if (!owner.empty())
+        match.RecordAdditionalInfo("document owner", owner);
+      match.description = GetMatchDescription(update_time, mimetype, owner);
       AutocompleteMatch::AddLastClassificationIfNecessary(
           &match.description_class, 0, ACMatchClassification::DIM);
       // Exclude date & owner from description_for_shortcut to avoid showing
