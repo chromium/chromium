@@ -629,6 +629,10 @@ void BrowserAutofillManager::OnVirtualCardCandidateSelected(
 bool BrowserAutofillManager::ShouldParseForms(
     const std::vector<FormData>& forms) {
   bool autofill_enabled = IsAutofillEnabled();
+  // If autofill is disabled but the password manager is enabled, we still
+  // need to parse the forms and query the server as the password manager
+  // depends on server classifications.
+  bool password_manager_enabled = client()->IsPasswordManagerEnabled();
   sync_state_ = personal_data_ ? personal_data_->GetSyncSigninState()
                                : AutofillSyncSigninState::kNumSyncStates;
   if (!has_logged_autofill_enabled_) {
@@ -641,7 +645,14 @@ bool BrowserAutofillManager::ShouldParseForms(
     has_logged_autofill_enabled_ = true;
   }
 
-  return autofill_enabled;
+  // TODO(crbug.com/1293341): Enable the experiment by default.
+  // The placement of the IsEnabled() call is chosen very intentionally.
+  // Only users with disabled autofill will go into the control or experiment
+  // group.
+  return autofill_enabled ||
+         (base::FeatureList::IsEnabled(
+              features::kAutofillFixServerQueriesIfPasswordManagerIsEnabled) &&
+          password_manager_enabled);
 }
 
 void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,

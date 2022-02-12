@@ -184,6 +184,7 @@ class ChromeAutofillClient
       bool show_confirmation_before_closing) override;
   bool IsAutofillAssistantShowing() override;
   bool IsAutocompleteEnabled() override;
+  bool IsPasswordManagerEnabled() override;
   void PropagateAutofillPredictions(
       content::RenderFrameHost* rfh,
       const std::vector<FormStructure*>& forms) override;

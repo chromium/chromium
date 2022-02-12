@@ -88,6 +88,8 @@ extern const base::Feature kAutofillTypeSpecificPopupWidth;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillFixFillableFieldTypes;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillFixServerQueriesIfPasswordManagerIsEnabled;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillIgnoreAutocompleteForImport;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillIgnoreEarlyClicksOnPopup;

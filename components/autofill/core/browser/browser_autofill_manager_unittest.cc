@@ -118,6 +118,7 @@ class MockAutofillClient : public TestAutofillClient {
   MockAutofillClient() {
     ON_CALL(*this, GetChannel())
         .WillByDefault(Return(version_info::Channel::UNKNOWN));
+    ON_CALL(*this, IsPasswordManagerEnabled()).WillByDefault(Return(true));
   }
   MockAutofillClient(const MockAutofillClient&) = delete;
   MockAutofillClient& operator=(const MockAutofillClient&) = delete;
@@ -136,6 +137,7 @@ class MockAutofillClient : public TestAutofillClient {
               GetProfileType,
               (),
               (const override));
+  MOCK_METHOD(bool, IsPasswordManagerEnabled, (), (override));
 };
 
 class MockAutofillDownloadManager : public TestAutofillDownloadManager {
@@ -3019,6 +3021,60 @@ TEST_F(BrowserAutofillManagerTest, DetermineStateFieldTypeForUpload) {
   browser_autofill_manager_->PreProcessStateMatchingTypesForTest(
       {profile}, &form_structure);
   EXPECT_TRUE(form_structure.field(1)->state_is_a_matching_type());
+}
+
+// Test fixture which enables
+// features::kAutofillFixServerQueriesIfPasswordManagerIsEnabled.
+// TODO(crbug.com/1293341) Once enabled by default, delete this test
+// fixture and use BrowserAutofillManagerTest in the test below.
+class BrowserAutofillManagerTestWithFixForQueries
+    : public BrowserAutofillManagerTest {
+ public:
+  BrowserAutofillManagerTestWithFixForQueries() {
+    features_.InitAndEnableFeature(
+        features::kAutofillFixServerQueriesIfPasswordManagerIsEnabled);
+  }
+  ~BrowserAutofillManagerTestWithFixForQueries() override = default;
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+// Ensures that if autofill is disabled but the password manager is enabled,
+// Autofill still performs a lookup to the server.
+TEST_F(BrowserAutofillManagerTestWithFixForQueries,
+       OnFormsSeen_AutofillDisabledPasswordManagerEnabled) {
+  // Set up our form data.
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+  std::vector<FormData> forms(1, form);
+
+  // Disable autofill and the password manager.
+  browser_autofill_manager_->SetAutofillCreditCardEnabled(false);
+  browser_autofill_manager_->SetAutofillProfileEnabled(false);
+  ON_CALL(autofill_client_, IsPasswordManagerEnabled())
+      .WillByDefault(Return(false));
+
+  // As neither autofill nor password manager are enabled, the form should
+  // not be parsed.
+  {
+    base::HistogramTester histogram_tester;
+    FormsSeen(forms);
+    EXPECT_EQ(0, histogram_tester.GetBucketCount("Autofill.UserHappiness",
+                                                 0 /* FORMS_LOADED */));
+  }
+
+  // Now enable the password manager.
+  ON_CALL(autofill_client_, IsPasswordManagerEnabled())
+      .WillByDefault(Return(true));
+  // If the password manager is enabled, that's enough to parse the form.
+  {
+    base::HistogramTester histogram_tester;
+    FormsSeen(forms);
+    histogram_tester.ExpectUniqueSample("Autofill.UserHappiness",
+                                        0 /* FORMS_LOADED */, 1);
+    download_manager_->VerifyLastQueriedForms(forms);
+  }
 }
 
 // Test that we return normal Autofill suggestions when trying to autofill

@@ -11,6 +11,7 @@
 #include "android_webview/browser/aw_contents.h"
 #include "android_webview/browser/aw_form_database_service.h"
 #include "android_webview/browser_jni_headers/AwAutofillClient_jni.h"
+#include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
@@ -245,6 +246,21 @@ void AwAutofillClient::HideAutofillPopup(autofill::PopupHidingReason reason) {
 
 bool AwAutofillClient::IsAutocompleteEnabled() {
   return GetSaveFormData();
+}
+
+bool AwAutofillClient::IsPasswordManagerEnabled() {
+  // Android O+ relies on the AndroidAutofillManager, which does not call this
+  // function. If it ever does, the function needs to be implemented in a
+  // meaningful way.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+      base::android::SDK_VERSION_OREO) {
+    NOTREACHED();
+  }
+  // This is behavior preserving: For pre-O versions, AwAutofill did rely on a
+  // BrowserAutofillManager, which now calls the function. But pre-O only
+  // offered an autocomplete feature that restored values of specific input
+  // elements. It did not support password management.
+  return false;
 }
 
 void AwAutofillClient::PropagateAutofillPredictions(

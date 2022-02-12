@@ -20,7 +20,6 @@ static_library("common") {
 
   deps = [
     "//base",
-    "//components/autofill/core/common",
     "//sql",
     "//url",
   ]

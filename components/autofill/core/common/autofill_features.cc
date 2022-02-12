@@ -220,6 +220,17 @@ const base::Feature kAutofillTypeSpecificPopupWidth{
 const base::Feature kAutofillFixFillableFieldTypes{
     "AutofillFixFillableFieldTypes", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Lookups for field classifications are gated on either Autofill for addresses
+// or payments being enabled. As a consequence, if both are disabled, the
+// password manager does not get server-side field classifications anymore
+// and its performance is reduced. When this feature is enabled, Autofill parse
+// forms and perform server lookups even if only the password manager is
+// enabled.
+// TODO(crbug.com/1293341): Remove once launched.
+const base::Feature kAutofillFixServerQueriesIfPasswordManagerIsEnabled{
+    "AutofillFixServerQueriesIfPasswordManagerIsEnabled",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // The autocomplete attribute may prevent Autofill import, crbug/1213301. This
 // feature addresses the issue. For now, the fix only concerns fields with the
 // signature 2281611779.

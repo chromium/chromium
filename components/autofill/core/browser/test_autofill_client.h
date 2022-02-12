@@ -148,6 +148,7 @@ class TestAutofillClient : public AutofillClient {
   void HideAutofillPopup(PopupHidingReason reason) override;
   void ShowVirtualCardErrorDialog(bool is_permanent_error) override;
   bool IsAutocompleteEnabled() override;
+  bool IsPasswordManagerEnabled() override;
   void PropagateAutofillPredictions(
       content::RenderFrameHost* rfh,
       const std::vector<FormStructure*>& forms) override;

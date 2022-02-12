@@ -284,6 +284,13 @@ bool AutofillClientImpl::IsAutocompleteEnabled() {
   return false;
 }
 
+bool AutofillClientImpl::IsPasswordManagerEnabled() {
+  // This function is currently only used by the BrowserAutofillManager,
+  // but not by the AndroidAutofillManager. See crbug.com/1293341 for context.
+  NOTREACHED();
+  return false;
+}
+
 void AutofillClientImpl::PropagateAutofillPredictions(
     content::RenderFrameHost* rfh,
     const std::vector<autofill::FormStructure*>& forms) {

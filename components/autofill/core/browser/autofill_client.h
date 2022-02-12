@@ -639,6 +639,9 @@ class AutofillClient : public RiskDataLoader {
   // Whether the Autocomplete feature of Autofill should be enabled.
   virtual bool IsAutocompleteEnabled() = 0;
 
+  // Returns whether password management is enabled as per the user preferences.
+  virtual bool IsPasswordManagerEnabled() = 0;
+
   // Pass the form structures to the password manager to choose correct username
   // and to the password generation manager to detect account creation forms.
   virtual void PropagateAutofillPredictions(

@@ -270,6 +270,10 @@ bool TestAutofillClient::IsAutocompleteEnabled() {
   return true;
 }
 
+bool TestAutofillClient::IsPasswordManagerEnabled() {
+  return true;
+}
+
 void TestAutofillClient::PropagateAutofillPredictions(
     content::RenderFrameHost* rfh,
     const std::vector<FormStructure*>& forms) {}
