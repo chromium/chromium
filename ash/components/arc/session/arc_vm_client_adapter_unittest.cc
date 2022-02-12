@@ -297,7 +297,7 @@ class FakeDemoModeDelegate : public ArcClientAdapter::DemoModeDelegate {
   FakeDemoModeDelegate(const FakeDemoModeDelegate&) = delete;
   FakeDemoModeDelegate& operator=(const FakeDemoModeDelegate&) = delete;
 
-  void EnsureOfflineResourcesLoaded(base::OnceClosure callback) override {
+  void EnsureResourcesLoaded(base::OnceClosure callback) override {
     std::move(callback).Run();
   }
 
@@ -1312,7 +1312,7 @@ TEST_F(ArcVmClientAdapterTest, StartUpgradeArc_DemoMode) {
         : apps_path_(apps_path) {}
     ~TestDemoDelegate() override = default;
 
-    void EnsureOfflineResourcesLoaded(base::OnceClosure callback) override {
+    void EnsureResourcesLoaded(base::OnceClosure callback) override {
       std::move(callback).Run();
     }
 

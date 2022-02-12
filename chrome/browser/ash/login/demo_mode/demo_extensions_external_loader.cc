@@ -108,7 +108,7 @@ void DemoExtensionsExternalLoader::LoadApp(const std::string& app_id) {
 }
 
 void DemoExtensionsExternalLoader::StartLoading() {
-  DemoSession::Get()->EnsureOfflineResourcesLoaded(base::BindOnce(
+  DemoSession::Get()->EnsureResourcesLoaded(base::BindOnce(
       &DemoExtensionsExternalLoader::StartLoadingFromOfflineDemoResources,
       weak_ptr_factory_.GetWeakPtr()));
 }

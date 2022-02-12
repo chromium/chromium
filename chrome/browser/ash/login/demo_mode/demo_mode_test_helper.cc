@@ -103,7 +103,7 @@ void DemoModeTestHelper::InitializeCrosComponentManager() {
 
 void DemoModeTestHelper::FinishLoadingComponent() {
   base::RunLoop run_loop;
-  DemoSession::Get()->EnsureOfflineResourcesLoaded(run_loop.QuitClosure());
+  DemoSession::Get()->EnsureResourcesLoaded(run_loop.QuitClosure());
 
   // TODO(michaelpg): Update once offline Demo Mode also uses a CrOS component.
   if (DemoSession::GetDemoConfig() == DemoSession::DemoModeConfig::kOnline) {
@@ -122,7 +122,7 @@ void DemoModeTestHelper::FinishLoadingComponent() {
 
 void DemoModeTestHelper::FailLoadingComponent() {
   base::RunLoop run_loop;
-  DemoSession::Get()->EnsureOfflineResourcesLoaded(run_loop.QuitClosure());
+  DemoSession::Get()->EnsureResourcesLoaded(run_loop.QuitClosure());
 
   // TODO(michaelpg): Update once offline Demo Mode also uses a CrOS component.
   if (DemoSession::GetDemoConfig() == DemoSession::DemoModeConfig::kOnline) {

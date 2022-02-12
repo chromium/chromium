@@ -144,9 +144,9 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // Records the launch of an app in Demo mode from the specified source.
   static void RecordAppLaunchSourceIfInDemoMode(AppLaunchSource source);
 
-  // Ensures that the load of offline demo session resources is requested.
-  // `load_callback` will be run once the offline resource load finishes.
-  void EnsureOfflineResourcesLoaded(base::OnceClosure load_callback);
+  // Ensures that the load of demo session resources is requested.
+  // `load_callback` will be run once the resource load finishes.
+  void EnsureResourcesLoaded(base::OnceClosure load_callback);
 
   // Returns false if the Chrome app or ARC++ package, which is normally pinned
   // by policy, should actually not be force-pinned because the device is

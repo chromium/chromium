@@ -19,7 +19,7 @@ class ArcDemoModeDelegateImpl : public ArcClientAdapter::DemoModeDelegate {
   ArcDemoModeDelegateImpl& operator=(const ArcDemoModeDelegateImpl&) = delete;
 
   // ArcClientAdapter::DemoModeDelegate overrides:
-  void EnsureOfflineResourcesLoaded(base::OnceClosure callback) override;
+  void EnsureResourcesLoaded(base::OnceClosure callback) override;
   base::FilePath GetDemoAppsPath() override;
 };
 

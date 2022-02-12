@@ -37,9 +37,9 @@ class ArcClientAdapter {
    public:
     virtual ~DemoModeDelegate() = default;
 
-    // Ensures that the demo session offline resources are loaded, if demo mode
+    // Ensures that the demo session resources are loaded, if demo mode
     // is enabled. This must be called before GetDemoAppsPath().
-    virtual void EnsureOfflineResourcesLoaded(base::OnceClosure callback) = 0;
+    virtual void EnsureResourcesLoaded(base::OnceClosure callback) = 0;
 
     // Gets the path of the image containing demo session Android apps. Returns
     // an empty path if demo mode is not enabled.

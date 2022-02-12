@@ -1241,7 +1241,7 @@ void UserSessionManager::InitDemoSessionIfNeeded(base::OnceClosure callback) {
     return;
   }
   should_launch_browser_ = false;
-  demo_session->EnsureOfflineResourcesLoaded(std::move(callback));
+  demo_session->EnsureResourcesLoaded(std::move(callback));
 }
 
 void UserSessionManager::UpdateArcFileSystemCompatibilityAndPrepareProfile() {

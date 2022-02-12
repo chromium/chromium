@@ -941,7 +941,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
                          FileSystemStatus file_system_status) {
     VLOG(2) << "Retrieving demo session apps path";
     DCHECK(demo_mode_delegate_);
-    demo_mode_delegate_->EnsureOfflineResourcesLoaded(base::BindOnce(
+    demo_mode_delegate_->EnsureResourcesLoaded(base::BindOnce(
         &ArcVmClientAdapter::OnDemoResourcesLoaded, weak_factory_.GetWeakPtr(),
         std::move(callback), std::move(file_system_status)));
   }
