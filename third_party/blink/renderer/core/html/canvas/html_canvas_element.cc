@@ -731,7 +731,7 @@ void HTMLCanvasElement::NotifyListenersCanvasChanged() {
     // First attempt to copy directly from the rendering context to a video
     // frame. Not all rendering contexts need to support this (for contexts
     // where GetSourceImageForCanvasInternal is zero-copy, this is superfluous).
-    if (can_discard_alpha &&
+    if (context_ && can_discard_alpha &&
         base::FeatureList::IsEnabled(kOneCopyCanvasCapture)) {
       context_->CopyRenderingResultsToVideoFrame(
           copier_->GetAcceleratedVideoFramePool(
