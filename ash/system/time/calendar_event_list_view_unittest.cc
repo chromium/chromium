@@ -4,11 +4,14 @@
 
 #include "ash/system/time/calendar_event_list_view.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/time/calendar_event_list_item_view.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/time/time.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 
 namespace ash {
@@ -69,6 +72,7 @@ class CalendarViewEventListViewTest : public AshTestBase {
     controller_->unified_system_tray_controller()
         ->calendar_model()
         ->InsertEvents(CreateMockEventList());
+    controller_->selected_date_ = date;
     event_list_view_ =
         std::make_unique<CalendarEventListView>(controller_.get());
   }
@@ -89,6 +93,13 @@ class CalendarViewEventListViewTest : public AshTestBase {
             ->summary_);
   }
 
+  std::u16string GetEmptyLabel() {
+    return static_cast<views::LabelButton*>(
+               static_cast<views::View*>(content_view()->children()[0])
+                   ->children()[0])
+        ->GetText();
+  }
+
  private:
   std::unique_ptr<CalendarEventListView> event_list_view_;
   std::unique_ptr<CalendarViewController> controller_;
@@ -100,11 +111,12 @@ TEST_F(CalendarViewEventListViewTest, ShowEvents) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
 
-  CreateEventListView(date);
+  CreateEventListView(date - base::Days(1));
 
-  // No events, so we see the empty list default.
+  // No events on 17 Nov 2021, so we see the empty list default.
   EXPECT_EQ(1u, content_view()->children().size());
-  EXPECT_EQ(u"Open in Google calendar", GetSummary(0)->GetText());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_EVENTS),
+            GetEmptyLabel());
 
   SetSelectedDate(date);
 
@@ -124,7 +136,8 @@ TEST_F(CalendarViewEventListViewTest, ShowEvents) {
 
   // 0 event on 20 Nov 2021.
   EXPECT_EQ(1u, content_view()->children().size());
-  EXPECT_EQ(u"Open in Google calendar", GetSummary(0)->GetText());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_EVENTS),
+            GetEmptyLabel());
 
   SetSelectedDate(date + base::Days(3));
 

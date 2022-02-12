@@ -4,15 +4,18 @@
 
 #include "ash/system/time/calendar_event_list_view.h"
 
+#include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/highlight_border.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
+#include "base/i18n/time_formatting.h"
 #include "calendar_event_list_item_view.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -33,6 +36,12 @@ namespace {
 // The paddings in `CalendarEventListView`.
 constexpr gfx::Insets kContentInsets{20, 20, 0, 20};
 
+// The insets for `CalendarEmptyEventListView` label.
+constexpr gfx::Insets kOpenGoogleCalendarInsets{6, 16};
+
+// The insets for `CalendarEmptyEventListView`.
+constexpr gfx::Insets kOpenGoogleCalendarContainerInsets{20, 60};
+
 }  // namespace
 
 // A view that's displayed when the user selects a day cell from the calendar
@@ -46,6 +55,14 @@ class CalendarEmptyEventListView : public views::LabelButton {
                 base::Unretained(this))),
             l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_EVENTS)) {
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
+    label()->SetBorder(views::CreateEmptyBorder(kOpenGoogleCalendarInsets));
+    label()->SetTextContext(CONTEXT_CALENDAR_DATE);
+    SetBorder(std::make_unique<HighlightBorder>(
+        GetPreferredSize().height() / 2,
+        HighlightBorder::Type::kHighlightBorder1,
+        /*use_light_colors=*/true));
+    SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_EVENT_BUTTON_TOOL_TIP));
   }
   CalendarEmptyEventListView(const CalendarEmptyEventListView& other) = delete;
   CalendarEmptyEventListView& operator=(
@@ -155,8 +172,22 @@ void CalendarEventListView::UpdateListItems() {
   }
 
   // Show "Open in Google calendar"
-  CalendarEmptyEventListView* empty_list_view = content_view_->AddChildView(
-      std::make_unique<CalendarEmptyEventListView>());
+  auto empty_list_view_container = std::make_unique<views::View>();
+  empty_list_view_container->SetLayoutManager(
+      std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical));
+  CalendarEmptyEventListView* empty_button =
+      empty_list_view_container->AddChildView(
+          std::make_unique<CalendarEmptyEventListView>());
+  DCHECK(calendar_view_controller_->selected_date().has_value());
+  empty_button->SetAccessibleName(l10n_util::GetStringFUTF16(
+      IDS_ASH_CALENDAR_NO_EVENT_BUTTON_ACCESSIBLE_DESCRIPTION,
+      base::TimeFormatWithPattern(
+          calendar_view_controller_->selected_date().value(), "MMMMd")));
+  empty_list_view_container->SetBorder(
+      views::CreateEmptyBorder(kOpenGoogleCalendarContainerInsets));
+  views::View* empty_list_view =
+      content_view_->AddChildView(std::move(empty_list_view_container));
 
   // Needs to repaint the `content_view_`'s children.
   empty_list_view->InvalidateLayout();

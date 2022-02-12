@@ -3488,6 +3488,14 @@ This file contains the strings for ash.
         <ph name="time_range">$2<ex> 1:00 - 1:30 PM</ex></ph>
       </message>
 
+      <message name="IDS_ASH_CALENDAR_NO_EVENT_BUTTON_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the calendar `Open in Google Calendar` button.">
+        There is no event on <ph name="current_month_day">$1<ex>August 20</ex></ph>. Hit enter to open Google calendar in the browser.
+      </message>
+
+      <message name="IDS_ASH_CALENDAR_NO_EVENT_BUTTON_TOOL_TIP" desc="The tooltip of the calendar `Open in Google Calendar` button.">
+        Open this date in Google Calendar
+      </message>
+
       <message name="IDS_ASH_CALENDAR_MON" desc="The single character designator for Monday, which is used in the calendar weekday label.">
         M
       </message>
