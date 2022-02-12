@@ -2940,7 +2940,8 @@
                         "segment_selection_ttl_days": "28"
                     },
                     "enable_features": [
-                        "FeatureNotificationGuide"
+                        "FeatureNotificationGuide",
+                        "SegmentationModelLowEngagedUsers"
                     ]
                 }
             ]
