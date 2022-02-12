@@ -205,6 +205,56 @@ copy("copy_checked_in_dts_files") {
   outputs = [ "$preprocessed_folder/{{source_target_relative}}" ]
 }
 
+# Files for which .d.ts files will be auto-generated with ts_definitions().
+generate_definitions_js_files = [
+  "cr_elements/action_link_css.m.js",
+  "cr_elements/cr_fingerprint/cr_fingerprint_icon.m.js",
+  "cr_elements/cr_actionable_row_style.m.js",
+  "cr_elements/cr_icons_css.m.js",
+  "cr_elements/cr_auto_img/cr_auto_img.js",
+  "cr_elements/cr_input/cr_input_style_css.m.js",
+  "cr_elements/cr_menu_selector/cr_menu_selector.js",
+  "cr_elements/cr_page_host_style_css.js",
+  "cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector_grid.js",
+  "cr_elements/cr_radio_button/cr_radio_button_style_css.m.js",
+  "cr_elements/cr_splitter/cr_splitter.js",
+  "cr_elements/hidden_style_css.m.js",
+  "cr_elements/icons.m.js",
+  "cr_elements/md_select_css.m.js",
+  "cr_elements/shared_style_css.m.js",
+  "cr_elements/shared_vars_css.m.js",
+  "js/action_link.js",
+  "js/assert.m.js",
+  "js/color_utils.js",
+  "js/cr/event_target.m.js",
+  "js/cr.m.js",
+  "js/cr/ui/drag_wrapper.js",
+  "js/cr/ui/focus_grid.js",
+  "js/cr/ui/focus_outline_manager.m.js",
+  "js/cr/ui/focus_row.m.js",
+  "js/cr/ui/keyboard_shortcut_list.m.js",
+  "js/cr/ui/store.js",
+  "js/event_tracker.m.js",
+  "js/load_time_data.m.js",
+  "js/plural_string_proxy.js",
+  "js/search_highlight_utils.js",
+  "js/icon.js",
+  "js/util.m.js",
+]
+
+if (is_chromeos_ash) {
+  generate_definitions_js_files += [
+    "cr_elements/chromeos/cros_color_overrides.m.js",
+    "cr_elements/chromeos/cr_picture/png.js",
+    "cr_elements/chromeos/cr_picture/webcam_utils.js",
+    "js/cr/ui/store_client.js",
+  ]
+}
+
+if (!is_android) {
+  generate_definitions_js_files += [ "js/cr/ui/focus_without_ink.m.js" ]
+}
+
 ts_library("library") {
   root_dir = preprocessed_folder
   out_dir = preprocessed_folder
@@ -237,54 +287,9 @@ ts_library("library") {
     definitions += [ "$root_dir/$_file" ]
   }
 
-  definitions += [
-    # Auto-generated .d.ts files.
-    "$root_dir/cr_components/managed_dialog/managed_dialog.d.ts",
-    "$root_dir/cr_elements/action_link_css.m.d.ts",
-    "$root_dir/cr_elements/cr_fingerprint/cr_fingerprint_icon.m.d.ts",
-    "$root_dir/cr_elements/cr_fingerprint/cr_fingerprint_progress_arc.m.d.ts",
-    "$root_dir/cr_elements/cr_actionable_row_style.m.d.ts",
-    "$root_dir/cr_elements/cr_icons_css.m.d.ts",
-    "$root_dir/cr_elements/cr_auto_img/cr_auto_img.d.ts",
-    "$root_dir/cr_elements/cr_input/cr_input_style_css.m.d.ts",
-    "$root_dir/cr_elements/cr_menu_selector/cr_menu_selector.d.ts",
-    "$root_dir/cr_elements/cr_page_host_style_css.d.ts",
-    "$root_dir/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector_grid.d.ts",
-    "$root_dir/cr_elements/cr_radio_button/cr_radio_button_style_css.m.d.ts",
-    "$root_dir/cr_elements/cr_splitter/cr_splitter.d.ts",
-    "$root_dir/cr_elements/hidden_style_css.m.d.ts",
-    "$root_dir/cr_elements/icons.m.d.ts",
-    "$root_dir/cr_elements/md_select_css.m.d.ts",
-    "$root_dir/cr_elements/shared_style_css.m.d.ts",
-    "$root_dir/cr_elements/shared_vars_css.m.d.ts",
-    "$root_dir/js/action_link.d.ts",
-    "$root_dir/js/assert.m.d.ts",
-    "$root_dir/js/color_utils.d.ts",
-    "$root_dir/js/cr/event_target.m.d.ts",
-    "$root_dir/js/cr.m.d.ts",
-    "$root_dir/js/cr/ui/drag_wrapper.d.ts",
-    "$root_dir/js/cr/ui/focus_grid.d.ts",
-    "$root_dir/js/cr/ui/focus_outline_manager.m.d.ts",
-    "$root_dir/js/cr/ui/focus_row.m.d.ts",
-    "$root_dir/js/cr/ui/keyboard_shortcut_list.m.d.ts",
-    "$root_dir/js/event_tracker.m.d.ts",
-    "$root_dir/js/load_time_data.m.d.ts",
-    "$root_dir/js/plural_string_proxy.d.ts",
-    "$root_dir/js/search_highlight_utils.d.ts",
-    "$root_dir/js/icon.d.ts",
-    "$root_dir/js/util.m.d.ts",
-  ]
-
-  if (is_chromeos_ash) {
-    definitions += [
-      "$root_dir/cr_elements/chromeos/cros_color_overrides.m.d.ts",
-      "$root_dir/cr_elements/chromeos/cr_picture/png.d.ts",
-      "$root_dir/js/cr/ui/store_client.d.ts",
-    ]
-  }
-
-  if (!is_android) {
-    definitions += [ "$root_dir/js/cr/ui/focus_without_ink.m.d.ts" ]
+  # Auto-generated .d.ts files.
+  foreach(_file, generate_definitions_js_files) {
+    definitions += [ "$root_dir/" + string_replace(_file, ".js", ".d.ts") ]
   }
 
   deps = [ "//third_party/polymer/v3_0:library" ]
@@ -298,55 +303,7 @@ ts_library("library") {
 ts_definitions("generate_definitions") {
   root_dir = preprocessed_folder
   out_dir = preprocessed_folder
-  js_files = [
-    "cr_elements/action_link_css.m.js",
-    "cr_elements/cr_actionable_row_style.m.js",
-    "cr_elements/cr_fingerprint/cr_fingerprint_icon.m.js",
-    "cr_elements/cr_icons_css.m.js",
-    "cr_elements/cr_auto_img/cr_auto_img.js",
-    "cr_elements/cr_input/cr_input_style_css.m.js",
-    "cr_elements/cr_menu_selector/cr_menu_selector.js",
-    "cr_elements/cr_page_host_style_css.js",
-    "cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector_grid.js",
-    "cr_elements/cr_radio_button/cr_radio_button_style_css.m.js",
-    "cr_elements/cr_splitter/cr_splitter.js",
-    "cr_elements/hidden_style_css.m.js",
-    "cr_elements/icons.m.js",
-    "cr_elements/md_select_css.m.js",
-    "cr_elements/shared_style_css.m.js",
-    "cr_elements/shared_vars_css.m.js",
-    "js/action_link.js",
-    "js/assert.m.js",
-    "js/color_utils.js",
-    "js/cr/event_target.m.js",
-    "js/cr.m.js",
-    "js/cr/ui/drag_wrapper.js",
-    "js/cr/ui/focus_grid.js",
-    "js/cr/ui/focus_outline_manager.m.js",
-    "js/cr/ui/focus_row.m.js",
-    "js/cr/ui/keyboard_shortcut_list.m.js",
-    "js/cr/ui/store.js",
-    "js/event_tracker.m.js",
-    "js/icon.js",
-    "js/load_time_data.m.js",
-    "js/plural_string_proxy.js",
-    "js/search_highlight_utils.js",
-    "js/util.m.js",
-  ]
-
-  if (is_chromeos_ash) {
-    js_files += [
-      "cr_elements/chromeos/cros_color_overrides.m.js",
-      "cr_elements/chromeos/cr_picture/png.js",
-      "cr_elements/chromeos/cr_picture/webcam_utils.js",
-      "js/cr/ui/store_client.js",
-    ]
-  }
-
-  if (!is_android) {
-    js_files += [ "js/cr/ui/focus_without_ink.m.js" ]
-  }
-
+  js_files = generate_definitions_js_files
   extra_deps = [
     # Copy checked-in d.ts files first, so that |generate_definitions| leverages
     # these files, instead of accidentally auto-generating them.
