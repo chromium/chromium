@@ -1713,7 +1713,7 @@
         'swarming': {
           'dimension_sets': [
             {
-              'gpu': '10de:1cb3',
+              'gpu': '10de:2184',
               'os': 'Ubuntu',
               'pool': 'chromium.tests.gpu',
             },
@@ -1728,7 +1728,7 @@
         'swarming': {
           'dimension_sets': [
             {
-              'gpu': '10de:1cb3',
+              'gpu': '10de:2184',
               'os': 'Ubuntu',
               'pool': 'chromium.tests.gpu',
             },
@@ -1743,7 +1743,7 @@
         'swarming': {
           'dimension_sets': [
             {
-              'gpu': '10de:1cb3',
+              'gpu': '10de:2184',
               'os': 'Ubuntu',
               'pool': 'chromium.tests.gpu',
             },
@@ -1758,7 +1758,7 @@
         'swarming': {
           'dimension_sets': [
             {
-              'gpu': '10de:1cb3',
+              'gpu': '10de:2184',
               'os': 'Ubuntu',
               'pool': 'chromium.tests.gpu',
             },

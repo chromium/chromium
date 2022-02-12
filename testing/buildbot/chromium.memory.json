@@ -790,7 +790,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3",
+              "gpu": "10de:2184",
               "os": "Ubuntu",
               "pool": "chromium.tests.gpu"
             }
@@ -2550,7 +2550,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3",
+              "gpu": "10de:2184",
               "os": "Ubuntu",
               "pool": "chromium.tests.gpu"
             }
@@ -9829,7 +9829,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3",
+              "gpu": "10de:2184",
               "os": "Ubuntu",
               "pool": "chromium.tests.gpu"
             }
