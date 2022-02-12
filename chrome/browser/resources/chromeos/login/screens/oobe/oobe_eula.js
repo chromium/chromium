@@ -320,7 +320,7 @@ class EulaScreen extends EulaScreenBase {
   /** Called just before the dialog is shown */
   onBeforeShow() {
     window.setTimeout(this.initializeScreen_.bind(this), 0);
-    this.updateLocalizedContent();
+    this.loadEula();
   }
 
   ready() {
@@ -411,6 +411,10 @@ class EulaScreen extends EulaScreenBase {
    * This is called when strings are updated.
    */
   updateLocalizedContent() {
+    this.i18nUpdateLocale();
+  }
+
+  loadEula() {
     // This forces frame to reload.
     const onlineEulaUrl = loadTimeData.getString('eulaOnlineUrl');
 
@@ -423,7 +427,6 @@ class EulaScreen extends EulaScreenBase {
     this.loadEulaToWebview_(
         this.$.additionalChromeToSFrame, additionalToSUrl,
         true /* clear_anchors */);
-    this.i18nUpdateLocale();
   }
 
   /**
