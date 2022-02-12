@@ -118,17 +118,17 @@ void OpenXrRenderLoop::StartRuntime(
   DCHECK(instance_ != XR_NULL_HANDLE);
   DCHECK(!openxr_);
 
-  // The new wrapper object is stored in a temporary variable instead of
-  // openxr_ so that the local unique_ptr cleans up the object if starting
-  // a session fails. openxr_ is set later in this method once we know
-  // starting the session succeeds.
   openxr_ = OpenXrApiWrapper::Create(instance_);
   if (!openxr_)
     return std::move(start_runtime_callback).Run(false);
 
+  std::pair<StartRuntimeCallback, StartRuntimeCallback>
+      start_runtime_split_callback =
+          base::SplitOnceCallback(std::move(start_runtime_callback));
+
   SessionStartedCallback on_session_started_callback = base::BindOnce(
       &OpenXrRenderLoop::OnOpenXrSessionStarted, weak_ptr_factory_.GetWeakPtr(),
-      std::move(start_runtime_callback));
+      std::move(start_runtime_split_callback.first));
   SessionEndedCallback on_session_ended_callback = base::BindRepeating(
       &OpenXrRenderLoop::ExitPresent, weak_ptr_factory_.GetWeakPtr());
   VisibilityChangedCallback on_visibility_state_changed = base::BindRepeating(
@@ -145,7 +145,7 @@ void OpenXrRenderLoop::StartRuntime(
           std::move(on_session_ended_callback),
           std::move(on_visibility_state_changed)))) {
     StopRuntime();
-    std::move(start_runtime_callback).Run(false);
+    std::move(start_runtime_split_callback.second).Run(false);
   }
 }
 
@@ -155,6 +155,7 @@ void OpenXrRenderLoop::OnOpenXrSessionStarted(
   if (XR_FAILED(result)) {
     StopRuntime();
     std::move(start_runtime_callback).Run(false);
+    return;
   }
 
   SendInitialDisplayInfo();
