@@ -216,6 +216,7 @@
     });
     if (idx >= 0) {
       this.networkStates_[idx] = networkState;
+      this.onNetworkStateChanged(networkState);
     } else {
       this.networkStates_.push(networkState);
     }
@@ -383,6 +384,15 @@
 
   onNetworkStateListChanged() {
     this.observers_.forEach(o => o.onNetworkStateListChanged());
+  }
+
+  onNetworkStateChanged(networkState) {
+    // Calling onActiveNetworksChanged will trigger mojo checks on all
+    // NetworkStateProperties. Ensure the networkState has name and guid field.
+    if (networkState.name === undefined || networkState.guid === undefined) {
+      return;
+    }
+    this.observers_.forEach(o => o.onNetworkStateChanged(networkState));
   }
 
   onDeviceStateListChanged() {
@@ -601,6 +611,11 @@
       this.methodCalled('getGlobalPolicy');
       resolve({result: this.globalPolicy_});
     });
+  }
+
+  /** @param {!chromeos.networkConfig.mojom.GlobalPolicy} globalPolicy */
+  setGlobalPolicy(globalPolicy) {
+    this.globalPolicy_ = globalPolicy;
   }
 
   /**

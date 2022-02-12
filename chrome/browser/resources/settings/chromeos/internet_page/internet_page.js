@@ -421,6 +421,26 @@ Polymer({
     this.updateIsConnectedToNonCellularNetwork_();
   },
 
+  /** NetworkListenerBehavior override */
+  onNetworkStateChanged(network) {
+    if (!network) {
+      return;
+    }
+    // Only WiFi or Cellular network state can be changed by global policy
+    // update.
+    const mojom = chromeos.networkConfig.mojom;
+    if (network.type !== mojom.NetworkType.kWiFi &&
+        network.type !== mojom.NetworkType.kCellular) {
+      return;
+    }
+
+    // TODO(b/218871322): we should refresh the global policy once the
+    // OnPolicyChanged() is added to CrosNetworkConfigObserver
+    this.networkConfig_.getGlobalPolicy().then(response => {
+      this.globalPolicy_ = response.result;
+    });
+  },
+
   onVpnProvidersChanged() {
     this.networkConfig_.getVpnProviders().then(response => {
       const providers = response.providers;
