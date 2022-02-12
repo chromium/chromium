@@ -194,21 +194,6 @@ class DemoSetupTestBase : public OobeBaseTest {
     test::ExecuteOobeJS(query);
   }
 
-  // Returns whether a custom offline item is shown as a first element on the
-  // network list.
-  static bool IsOfflineNetworkListElementShown() {
-    const char kOfflineNetworkElement[] = "offlineDemoSetupListItemName";
-
-    const std::string element_selector = base::StrCat(
-        {test::GetOobeElementPath(kNetworkScreen),
-         ".getNetworkListItemWithQueryForTest('network-list-item')"});
-    const std::string query =
-        base::StrCat({"!!", element_selector, " && ", element_selector,
-                      ".item.customItemName == '", kOfflineNetworkElement,
-                      "' && !", element_selector, ".hidden"});
-    return test::OobeJS().GetBool(query);
-  }
-
   // Simulates click on the network list item. `element` should specify
   // the aria-label of the desired network-list-item.
   void ClickNetworkListElement(const std::string& name) {
@@ -225,37 +210,11 @@ class DemoSetupTestBase : public OobeBaseTest {
     test::ExecuteOobeJS(query);
   }
 
-  void UseOfflineModeOnNetworkScreen() {
-    test::WaitForNetworkSelectionScreen();
-    test::OobeJS().ExpectDisabledPath(kNetworkNextButton);
-
-    const std::string offline_setup_item_name =
-        l10n_util::GetStringUTF8(IDS_NETWORK_OFFLINE_DEMO_SETUP_LIST_ITEM_NAME);
-    ClickNetworkListElement(offline_setup_item_name);
-  }
-
   void UseOnlineModeOnNetworkScreen() {
     test::WaitForNetworkSelectionScreen();
     // Wait until default network is connected.
     test::OobeJS().CreateEnabledWaiter(true, kNetworkNextButton)->Wait();
     test::OobeJS().ClickOnPath(kNetworkNextButton);
-  }
-
-  void SimulateOfflineEnvironment() {
-    DemoSetupController* controller =
-        WizardController::default_controller()->demo_setup_controller();
-
-    // Simulate offline data directory.
-    ASSERT_TRUE(SetupDummyOfflinePolicyDir("test", &fake_demo_resources_dir_));
-    controller->SetPreinstalledOfflineResourcesPathForTesting(
-        fake_demo_resources_dir_.GetPath());
-
-    // Simulate policy store.
-    EXPECT_CALL(mock_policy_store_, Store(testing::_))
-        .WillRepeatedly(testing::InvokeWithoutArgs(
-            &mock_policy_store_,
-            &policy::MockCloudPolicyStore::NotifyStoreLoaded));
-    controller->SetDeviceLocalAccountPolicyStoreForTest(&mock_policy_store_);
   }
 
   // Simulates device being connected to the network.
@@ -708,39 +667,6 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   test::WaitForNetworkSelectionScreen();
 
   test::OobeJS().ExpectDisabledPath(kNetworkNextButton);
-
-  // Offline Demo Mode is not available when there are no preinstalled demo
-  // resources.
-  EXPECT_FALSE(IsOfflineNetworkListElementShown());
-}
-
-// Flake on ASAN: crbug.com/1234593
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_OfflineSetupFlowSuccess DISABLED_OfflineSetupFlowSuccess
-#else
-#define MAYBE_OfflineSetupFlowSuccess OfflineSetupFlowSuccess
-#endif
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       MAYBE_OfflineSetupFlowSuccess) {
-  // Simulate offline setup success.
-  enrollment_helper_.ExpectOfflineEnrollmentSuccess();
-  SimulateNetworkDisconnected();
-
-  TriggerDemoModeOnWelcomeScreen();
-
-  // It needs to be done after demo setup controller was created (demo setup
-  // flow was started).
-  SimulateOfflineEnvironment();
-  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
-
-  UseOfflineModeOnNetworkScreen();
-
-  AcceptTermsAndExpectDemoSetupProgress();
-
-  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
-
-  EXPECT_TRUE(StartupUtils::IsOobeCompleted());
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
 class OfflineDemoSetupTest : public DemoSetupArcSupportedTest {
@@ -759,72 +685,6 @@ class OfflineDemoSetupTest : public DemoSetupArcSupportedTest {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-// TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_OfflineSetupFlowErrorDefault DISABLED_OfflineSetupFlowErrorDefault
-#else
-#define MAYBE_OfflineSetupFlowErrorDefault OfflineSetupFlowErrorDefault
-#endif
-IN_PROC_BROWSER_TEST_F(OfflineDemoSetupTest,
-                       MAYBE_OfflineSetupFlowErrorDefault) {
-  // Simulate offline setup failure.
-  enrollment_helper_.ExpectOfflineEnrollmentError(
-      policy::EnrollmentStatus::ForStatus(
-          policy::EnrollmentStatus::OFFLINE_POLICY_DECODING_FAILED));
-  SimulateNetworkDisconnected();
-
-  TriggerDemoModeOnWelcomeScreen();
-
-  // It needs to be done after demo setup controller was created (demo setup
-  // flow was started).
-  SimulateOfflineEnvironment();
-  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
-
-  UseOfflineModeOnNetworkScreen();
-
-  AcceptTermsAndExpectDemoSetupFailure();
-
-  ExpectErrorMessage(IDS_DEMO_SETUP_OFFLINE_POLICY_ERROR,
-                     IDS_DEMO_SETUP_RECOVERY_OFFLINE_FATAL);
-
-  test::OobeJS().ExpectVisiblePath(kDemoSetupErrorDialogRetry);
-  test::OobeJS().ExpectHiddenPath(kDemoSetupErrorDialogPowerwash);
-  test::OobeJS().ExpectEnabledPath(kDemoSetupErrorDialogBack);
-
-  EXPECT_FALSE(StartupUtils::IsOobeCompleted());
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
-}
-
-IN_PROC_BROWSER_TEST_F(OfflineDemoSetupTest,
-                       OfflineSetupFlowErrorPowerwashRequired) {
-  // Simulate offline setup failure.
-  enrollment_helper_.ExpectOfflineEnrollmentError(
-      policy::EnrollmentStatus::ForLockError(
-          chromeos::InstallAttributes::LOCK_READBACK_ERROR));
-  SimulateNetworkDisconnected();
-
-  TriggerDemoModeOnWelcomeScreen();
-
-  // It needs to be done after demo setup controller was created (demo setup
-  // flow was started).
-  SimulateOfflineEnvironment();
-  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
-
-  UseOfflineModeOnNetworkScreen();
-
-  AcceptTermsAndExpectDemoSetupFailure();
-
-  ExpectErrorMessage(IDS_DEMO_SETUP_LOCK_ERROR,
-                     IDS_DEMO_SETUP_RECOVERY_POWERWASH);
-
-  test::OobeJS().ExpectHiddenPath(kDemoSetupErrorDialogRetry);
-  test::OobeJS().ExpectVisiblePath(kDemoSetupErrorDialogPowerwash);
-  test::OobeJS().ExpectDisabledPath(kDemoSetupErrorDialogBack);
-
-  EXPECT_FALSE(StartupUtils::IsOobeCompleted());
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
-}
 
 // TODO(crbug.com/1150349): Flaky on ChromeOS ASAN.
 #if defined(ADDRESS_SANITIZER)
@@ -1003,25 +863,10 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, MAYBE_RetryOnErrorScreen) {
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
-                       ShowOfflineSetupOptionOnNetworkList) {
-  TriggerDemoModeOnWelcomeScreen();
-
-  SimulateOfflineEnvironment();
-  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
-
-  test::WaitForNetworkSelectionScreen();
-
-  test::TestPredicateWaiter waiter(
-      base::BindRepeating([]() { return IsOfflineNetworkListElementShown(); }));
-  waiter.Wait();
-}
-
-IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
                        NoOfflineSetupOptionOnNetworkList) {
   test::WaitForWelcomeScreen();
   test::TapWelcomeNext();
   test::WaitForNetworkSelectionScreen();
-  EXPECT_FALSE(IsOfflineNetworkListElementShown());
 }
 
 class DemoSetupProgressStepsTest : public DemoSetupArcSupportedTest {
@@ -1120,145 +965,6 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcUnsupportedTest, DoNotInvokeWithTaps) {
   InvokeDemoModeWithTaps();
 
   IsConfirmationDialogHidden();
-}
-
-// Demo setup tests related to Force Re-Enrollment.
-class DemoSetupFRETest : public DemoSetupArcSupportedTest {
- public:
-  DemoSetupFRETest(const DemoSetupFRETest&) = delete;
-  DemoSetupFRETest& operator=(const DemoSetupFRETest&) = delete;
-
- protected:
-  DemoSetupFRETest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kOobeConsolidatedConsent);
-    statistics_provider_.SetMachineStatistic(system::kSerialNumberKeyForTest,
-                                             "testserialnumber");
-  }
-  ~DemoSetupFRETest() override = default;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    DemoSetupArcSupportedTest::SetUpCommandLine(command_line);
-
-    command_line->AppendSwitchASCII(
-        switches::kEnterpriseEnableForcedReEnrollment,
-        AutoEnrollmentController::kForcedReEnrollmentAlways);
-  }
-
-  system::ScopedFakeStatisticsProvider statistics_provider_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, DeviceFromFactory) {
-  // Simulating brand new device - "active_date", "check_enrollment",
-  // "block_devmode" flags do not exist in VPD.
-
-  // Simulate offline setup success.
-  enrollment_helper_.ExpectOfflineEnrollmentSuccess();
-  SimulateNetworkDisconnected();
-
-  TriggerDemoModeOnWelcomeScreen();
-
-  SimulateOfflineEnvironment();
-  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
-
-  UseOfflineModeOnNetworkScreen();
-
-  // We accept success during demo setup, but "network not connected" error
-  // afterwards.
-  AcceptTermsAndExpectDemoSetupProgress();
-  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
-
-  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
-  EXPECT_TRUE(StartupUtils::IsOobeCompleted());
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
-}
-
-IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, NonEnterpriseDevice) {
-  // Simulating device that was never set for enterprise:
-  // * "active_date" is set
-  // * "check_enrollment" and "block_devmode" flags are set to false.
-  statistics_provider_.SetMachineStatistic(system::kActivateDateKey, "2018-01");
-  statistics_provider_.SetMachineStatistic(system::kCheckEnrollmentKey, "0");
-  statistics_provider_.SetMachineStatistic(system::kBlockDevModeKey, "0");
-
-  // Simulate offline setup success.
-  enrollment_helper_.ExpectOfflineEnrollmentSuccess();
-  SimulateNetworkDisconnected();
-
-  TriggerDemoModeOnWelcomeScreen();
-
-  SimulateOfflineEnvironment();
-  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
-
-  UseOfflineModeOnNetworkScreen();
-
-  // We accept success during demo setup, but "network not connected" error
-  // afterwards.
-  AcceptTermsAndExpectDemoSetupProgress();
-  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
-
-  EXPECT_TRUE(StartupUtils::IsOobeCompleted());
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
-}
-
-// Flake on ASAN: crbug.com/1234593
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_LegacyDemoModeDevice DISABLED_LegacyDemoModeDevice
-#else
-#define MAYBE_LegacyDemoModeDevice LegacyDemoModeDevice
-#endif
-IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, MAYBE_LegacyDemoModeDevice) {
-  // Simulating device enrolled into legacy demo mode:
-  // * "active_date" and "check_enrollment" are set
-  // * "block_devmode" is set to false, because legacy demo mode does not have
-  // FRE.
-  statistics_provider_.SetMachineStatistic(system::kActivateDateKey, "2018-01");
-  statistics_provider_.SetMachineStatistic(system::kCheckEnrollmentKey, "1");
-  statistics_provider_.SetMachineStatistic(system::kBlockDevModeKey, "0");
-
-  // Simulate offline setup success.
-  enrollment_helper_.ExpectOfflineEnrollmentSuccess();
-  SimulateNetworkDisconnected();
-
-  TriggerDemoModeOnWelcomeScreen();
-
-  SimulateOfflineEnvironment();
-  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
-
-  UseOfflineModeOnNetworkScreen();
-
-  // We accept success during demo setup, but "network not connected" error
-  // afterwards.
-  AcceptTermsAndExpectDemoSetupProgress();
-  OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
-
-  EXPECT_TRUE(StartupUtils::IsOobeCompleted());
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
-}
-
-IN_PROC_BROWSER_TEST_F(DemoSetupFRETest, DeviceWithFRE) {
-  // Simulating device that requires FRE. "check_enrollment", "block_devmode"
-  // and "ActivateDate" flags are set.
-  statistics_provider_.SetMachineStatistic(system::kActivateDateKey, "2018-01");
-  statistics_provider_.SetMachineStatistic(system::kCheckEnrollmentKey, "1");
-  statistics_provider_.SetMachineStatistic(system::kBlockDevModeKey, "1");
-
-  // Expect no enrollment to take place due to error.
-  enrollment_helper_.ExpectNoEnrollment();
-  SimulateNetworkDisconnected();
-
-  TriggerDemoModeOnWelcomeScreen();
-
-  SimulateOfflineEnvironment();
-  test::OobeJS().ClickOnPath(kDemoPreferencesNext);
-
-  UseOfflineModeOnNetworkScreen();
-
-  AcceptTermsAndExpectDemoSetupFailure();
-
-  EXPECT_FALSE(StartupUtils::IsOobeCompleted());
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 }
 
 /**

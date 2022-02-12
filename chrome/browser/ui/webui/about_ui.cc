@@ -165,16 +165,6 @@ std::string ReadDeviceRegionFromVpd() {
   return base::ToLowerASCII(region);
 }
 
-// Returns an absolute path under the preinstalled demo resources directory.
-base::FilePath CreateDemoResourcesTermsPath(const base::FilePath& file_path) {
-  // Offline ARC TOS are only available during demo mode setup.
-  auto* wizard_controller = ash::WizardController::default_controller();
-  if (!wizard_controller || !wizard_controller->demo_setup_controller())
-    return base::FilePath();
-  return wizard_controller->demo_setup_controller()
-      ->GetPreinstalledDemoResourcesPath(file_path);
-}
-
 // Loads bundled terms of service contents (Eula, OEM Eula, Play Store Terms).
 // The online version of terms is fetched in OOBE screen javascript. This is
 // intentional because chrome://terms runs in a privileged webui context and
@@ -213,18 +203,9 @@ class ChromeOSTermsHandler
           base::BindOnce(&ChromeOSTermsHandler::LoadOemEulaFileAsync, this),
           base::BindOnce(&ChromeOSTermsHandler::ResponseOnUIThread, this));
     } else if (path_ == chrome::kArcTermsURLPath) {
-      // Load ARC++ terms from the file.
-      base::ThreadPool::PostTaskAndReply(
-          FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-          base::BindOnce(&ChromeOSTermsHandler::LoadArcTermsFileAsync, this),
-          base::BindOnce(&ChromeOSTermsHandler::ResponseOnUIThread, this));
+      LOG(WARNING) << "Could not load offline Play Store ToS.";
     } else if (path_ == chrome::kArcPrivacyPolicyURLPath) {
-      // Load ARC++ privacy policy from the file.
-      base::ThreadPool::PostTaskAndReply(
-          FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-          base::BindOnce(&ChromeOSTermsHandler::LoadArcPrivacyPolicyFileAsync,
-                         this),
-          base::BindOnce(&ChromeOSTermsHandler::ResponseOnUIThread, this));
+      LOG(WARNING) << "Could not load offline Play Store privacy policy.";
     } else {
       NOTREACHED();
       ResponseOnUIThread();
@@ -247,47 +228,6 @@ class ChromeOSTermsHandler
         contents_.clear();
       }
     }
-  }
-
-  void LoadArcPrivacyPolicyFileAsync() {
-    base::ScopedBlockingCall scoped_blocking_call(
-        FROM_HERE, base::BlockingType::MAY_BLOCK);
-
-    for (const auto& locale : CreateArcLocaleLookupArray()) {
-      // Offline ARC privacy policies are only available during demo mode setup.
-      auto path =
-          CreateDemoResourcesTermsPath(base::FilePath(base::StringPrintf(
-              chrome::kArcPrivacyPolicyPathFormat, locale.c_str())));
-      std::string contents;
-      if (base::ReadFileToString(path, &contents)) {
-        base::Base64Encode(contents, &contents_);
-        VLOG(1) << "Read offline Play Store privacy policy for: " << locale;
-        return;
-      }
-      LOG(WARNING) << "Could not find offline Play Store privacy policy for: "
-                   << locale;
-    }
-    LOG(ERROR) << "Failed to load offline Play Store privacy policy";
-    contents_.clear();
-  }
-
-  void LoadArcTermsFileAsync() {
-    base::ScopedBlockingCall scoped_blocking_call(
-        FROM_HERE, base::BlockingType::MAY_BLOCK);
-
-    for (const auto& locale : CreateArcLocaleLookupArray()) {
-      // Offline ARC TOS are only available during demo mode setup.
-      auto path = CreateDemoResourcesTermsPath(base::FilePath(
-          base::StringPrintf(chrome::kArcTermsPathFormat, locale.c_str())));
-      std::string contents;
-      if (base::ReadFileToString(path, &contents_)) {
-        VLOG(1) << "Read offline Play Store terms for: " << locale;
-        return;
-      }
-      LOG(WARNING) << "Could not find offline Play Store terms for: " << locale;
-    }
-    LOG(ERROR) << "Failed to load offline Play Store ToS";
-    contents_.clear();
   }
 
   std::vector<std::string> CreateArcLocaleLookupArray() {

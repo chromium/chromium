@@ -582,23 +582,6 @@ void DemoSetupController::Enroll(
   }
 }
 
-void DemoSetupController::TryMountPreinstalledDemoResources(
-    HasPreinstalledDemoResourcesCallback callback) {
-  if (!preinstalled_demo_resources_) {
-    preinstalled_demo_resources_ =
-        std::make_unique<DemoResources>(DemoSession::DemoModeConfig::kOffline);
-  }
-
-  if (DBusThreadManager::Get()->IsUsingFakes()) {
-    preinstalled_demo_resources_
-        ->SetPreinstalledOfflineResourcesLoadedForTesting(
-            preinstalled_offline_resources_path_for_tests_);
-  }
-  preinstalled_demo_resources_->EnsureLoaded(
-      base::BindOnce(&DemoSetupController::OnPreinstalledDemoResourcesLoaded,
-                     base::Unretained(this), std::move(callback)));
-}
-
 base::FilePath DemoSetupController::GetPreinstalledDemoResourcesPath(
     const base::FilePath& relative_path) {
   if (preinstalled_demo_resources_)

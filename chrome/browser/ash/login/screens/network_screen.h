@@ -118,12 +118,6 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
   // Called when continue button is clicked.
   void OnContinueButtonClicked();
 
-  // Called when the preinstalled demo resources check has completed.
-  void OnHasPreinstalledDemoResources(bool has_preinstalled_demo_resources);
-
-  // Called when offline demo mode setup was selected.
-  void OnOfflineDemoModeSetupSelected();
-
   // True if subscribed to network change notification.
   bool is_network_subscribed_ = false;
 

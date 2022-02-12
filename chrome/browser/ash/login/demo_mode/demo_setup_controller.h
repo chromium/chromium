@@ -214,11 +214,6 @@ class DemoSetupController
               OnSetupError on_setup_error,
               const OnSetCurrentSetupStep& set_current_setup_step);
 
-  // Tries to mount the preinstalled offline resources necessary for offline
-  // Demo Mode.
-  void TryMountPreinstalledDemoResources(
-      HasPreinstalledDemoResourcesCallback callback);
-
   // Converts a relative path to an absolute path under the preinstalled demo
   // resources mount. Returns an empty string if the preinstalled demo resources
   // are not mounted.
