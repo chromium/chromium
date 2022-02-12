@@ -51,18 +51,9 @@ void AnalyzeZipFile(base::File zip_file,
   }
 
   bool timeout = false;
-  bool advanced = true;
   results->file_count = 0;
   results->directory_count = 0;
-  for (; reader.HasMore(); advanced = reader.AdvanceToNextEntry()) {
-    if (!advanced) {
-      DVLOG(1) << "Could not advance to next entry, aborting zip scan.";
-      return;
-    }
-    if (!reader.OpenCurrentEntryInZip()) {
-      DVLOG(1) << "Failed to open current entry in zip file";
-      continue;
-    }
+  while (const zip::ZipReader::Entry* const entry = reader.Next()) {
     if (base::Time::Now() - start_time >
         base::Milliseconds(kZipAnalysisTimeoutMs)) {
       timeout = true;
@@ -74,18 +65,17 @@ void AnalyzeZipFile(base::File zip_file,
     temp_file.SetLength(0);
     zip::FileWriterDelegate writer(&temp_file);
     reader.ExtractCurrentEntry(&writer, std::numeric_limits<uint64_t>::max());
-    UpdateArchiveAnalyzerResultsWithFile(
-        reader.current_entry_info()->file_path(), &temp_file,
-        writer.file_length(), reader.current_entry_info()->is_encrypted(),
-        results);
+    UpdateArchiveAnalyzerResultsWithFile(entry->path, &temp_file,
+                                         writer.file_length(),
+                                         entry->is_encrypted, results);
 
-    if (reader.current_entry_info()->is_directory())
+    if (entry->is_directory)
       results->directory_count++;
     else
       results->file_count++;
   }
 
-  results->success = !timeout;
+  results->success = reader.ok() && !timeout;
 }
 
 }  // namespace zip_analyzer
