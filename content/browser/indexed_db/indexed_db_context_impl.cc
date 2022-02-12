@@ -24,6 +24,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "base/trace_event/base_tracing.h"
 #include "base/values.h"
 #include "components/services/storage/filesystem_proxy_factory.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
@@ -44,7 +45,6 @@
 #include "content/browser/indexed_db/indexed_db_quota_client.h"
 #include "content/browser/indexed_db/indexed_db_storage_key_state.h"
 #include "content/browser/indexed_db/indexed_db_storage_key_state_handle.h"
-#include "content/browser/indexed_db/indexed_db_tracing.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "content/browser/indexed_db/mock_browsertest_indexed_db_class_factory.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -156,7 +156,7 @@ IndexedDBContextImpl::IndexedDBContextImpl(
               quota_client_.get())),
       quota_client_receiver_(quota_client_wrapper_.get()),
       filesystem_proxy_(storage::CreateFilesystemProxy()) {
-  IDB_TRACE("init");
+  TRACE_EVENT0("IndexedDB", "init");
 
   // QuotaManagerProxy::RegisterClient() must be called during construction
   // until crbug.com/1182630 is fixed.

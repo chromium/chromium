@@ -17,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 #include "components/services/storage/filesystem_proxy_factory.h"
 #include "content/browser/indexed_db/cursor_impl.h"
@@ -28,7 +29,6 @@
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_factory_impl.h"
 #include "content/browser/indexed_db/indexed_db_pending_connection.h"
-#include "content/browser/indexed_db/indexed_db_tracing.h"
 #include "content/browser/indexed_db/transaction_impl.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/base/net_errors.h"
@@ -453,7 +453,8 @@ void IndexedDBDispatcherHost::CreateAllExternalObjects(
     std::vector<blink::mojom::IDBExternalObjectPtr>* mojo_objects) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  IDB_TRACE("IndexedDBDispatcherHost::CreateAllExternalObjects");
+  TRACE_EVENT0("IndexedDB",
+               "IndexedDBDispatcherHost::CreateAllExternalObjects");
 
   DCHECK_EQ(objects.size(), mojo_objects->size());
   if (objects.empty())

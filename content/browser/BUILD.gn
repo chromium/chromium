@@ -1026,7 +1026,6 @@ source_set("browser") {
     "indexed_db/indexed_db_task_helper.h",
     "indexed_db/indexed_db_tombstone_sweeper.cc",
     "indexed_db/indexed_db_tombstone_sweeper.h",
-    "indexed_db/indexed_db_tracing.h",
     "indexed_db/indexed_db_transaction.cc",
     "indexed_db/indexed_db_transaction.h",
     "indexed_db/indexed_db_value.cc",
