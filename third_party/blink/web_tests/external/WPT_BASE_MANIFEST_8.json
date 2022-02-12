@@ -1675,6 +1675,13 @@
         {}
        ]
       ],
+      "large-col-widths.html": [
+       "666750c005f06ed343a3fca2a27d8f017acfe435",
+       [
+        null,
+        {}
+       ]
+      ],
       "legacy_ng_mix_crash.html": [
        "7e7377ef7ebe6332824c7503ee2fa56ebea67aac",
        [
@@ -3253,7 +3260,7 @@
    },
    "portals": {
     "portals-no-frame-crash.html": [
-     "c87afa38c29bf98344c9d01039ed6bf9af1d5d96",
+     "cc94a772c3405dc06f2d4e3d0b5f4fd55baac8f1",
      [
       null,
       {}
@@ -78566,6 +78573,58 @@
        [
         [
          "/css/css-break/borders-007-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-decoration-break-clone-001.html": [
+      "c247c9dbe09918fbf4e0f096687456fe859c1eb3",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-decoration-break-clone-002.html": [
+      "8aff0d4a9472fe70df97f8c39a16700766db3e4d",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-decoration-break-clone-003.html": [
+      "702f01b4cb31975ca270ff99df09a8422630ee59",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "box-decoration-break-clone-004.html": [
+      "d1840bfe96203496b1e31edf40c1b21f9d057636",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
          "=="
         ]
        ],
@@ -451532,6 +451591,20 @@
       "interactions-of-styling-and-scripting": {
        "conditionally-block-rendering-on-link-media-attr.html": [
         "33049822c467fece36af30fcc5023d80660123a7",
+        [
+         null,
+         {}
+        ]
+       ],
+       "style-element-media-match-block-script.html": [
+        "46d26f675bf614f0ffbe1211719bbc130d916c7d",
+        [
+         null,
+         {}
+        ]
+       ],
+       "style-element-media-not-match-does-not-block-script.html": [
+        "71b5388ddb932a4e3aea88f086a2a483bddd384d",
         [
          null,
          {}
