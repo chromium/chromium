@@ -4,16 +4,11 @@
 
 package org.chromium.chrome.browser.notifications.permissions;
 
-import android.content.pm.PackageManager;
-import android.os.Process;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
@@ -151,20 +146,5 @@ public class NotificationPermissionController {
 
         long elapsedTime = System.currentTimeMillis() - lastRequestTimestamp;
         return elapsedTime > PERMISSION_REQUEST_RETRIGGER_INTERVAL;
-    }
-
-    /**
-     * Utility method to determine whether chrome has ever requested notification permission and
-     * shown the android prompt to the user. Required to start FGS.
-     * @return Whether notification permission was requested before.
-     */
-    public static boolean hasEverRequestedNotificationPermission() {
-        boolean hasPermission =
-                ApiCompatibilityUtils.checkPermission(ContextUtils.getApplicationContext(),
-                        NOTIFICATION_PERMISSION, Process.myPid(), Process.myUid())
-                == PackageManager.PERMISSION_GRANTED;
-        if (hasPermission) return true;
-
-        return PermissionPrefs.getAndroidNotificationPermissionRequestTimestamp() != 0;
     }
 }

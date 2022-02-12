@@ -5,8 +5,7 @@
 package org.chromium.chrome.browser.notifications.permissions;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotEquals;
 
 import android.app.Activity;
 
@@ -29,6 +28,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.permissions.ActivityAndroidPermissionDelegate;
+import org.chromium.ui.permissions.PermissionPrefs;
 
 import java.lang.ref.WeakReference;
 
@@ -89,7 +89,7 @@ public class NotificationPermissionControllerTest {
             Shadows.shadowOf(activity).denyPermissions(NOTIFICATION_PERMISSION);
             assertEquals(PermissionRequestMode.REQUEST_ANDROID_PERMISSION,
                     notificationPermissionController.shouldRequestPermission());
-            assertFalse(NotificationPermissionController.hasEverRequestedNotificationPermission());
+            assertEquals(0, PermissionPrefs.getAndroidNotificationPermissionRequestTimestamp());
         });
     }
 
@@ -109,7 +109,7 @@ public class NotificationPermissionControllerTest {
             Shadows.shadowOf(activity.getPackageManager())
                     .setShouldShowRequestPermissionRationale(NOTIFICATION_PERMISSION, false);
             notificationPermissionController.requestPermissionIfNeeded();
-            assertTrue(NotificationPermissionController.hasEverRequestedNotificationPermission());
+            assertNotEquals(0, PermissionPrefs.getAndroidNotificationPermissionRequestTimestamp());
 
             // Try showing it for the second time before sufficient time has elapsed assuming user
             // dismissed the OS prompt by touching outside.
