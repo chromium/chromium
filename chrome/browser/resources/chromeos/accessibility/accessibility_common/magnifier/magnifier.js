@@ -37,6 +37,12 @@ export class Magnifier {
      */
     this.magnifierDebugDrawRect_ = false;
 
+    /**
+     * Last seen mouse location (cached from event in onMouseMovedOrDragged).
+     * @private {{x: number, y: number}}
+     */
+    this.mouseLocation_;
+
     /** @private {!EventHandler} */
     this.focusHandler_ = new EventHandler(
         [], EventType.FOCUS, event => this.onFocusOrSelectionChanged_(event));
@@ -66,6 +72,16 @@ export class Magnifier {
         chrome.settingsPrivate.onPrefsChanged,
         prefs => this.updateFromPrefs_(prefs));
 
+    /** @private {!EventHandler} */
+    this.onMouseMovedHandler_ = new EventHandler(
+        [], chrome.automation.EventType.MOUSE_MOVED,
+        event => this.onMouseMovedOrDragged_(event));
+
+    /** @private {!EventHandler} */
+    this.onMouseDraggedHandler_ = new EventHandler(
+        [], chrome.automation.EventType.MOUSE_DRAGGED,
+        event => this.onMouseMovedOrDragged_(event));
+
     this.init_();
   }
 
@@ -77,6 +93,8 @@ export class Magnifier {
     this.onCaretBoundsChangedHandler.stop();
     this.onMagnifierBoundsChangedHandler_.stop();
     this.updateFromPrefsHandler_.stop();
+    this.onMouseMovedHandler_.stop();
+    this.onMouseDraggedHandler_.stop();
   }
 
   /**
@@ -96,9 +114,15 @@ export class Magnifier {
       this.selectionHandler_.start();
       this.onCaretBoundsChangedHandler.setNodes(desktop);
       this.onCaretBoundsChangedHandler.start();
+      this.onMouseMovedHandler_.setNodes(desktop);
+      this.onMouseMovedHandler_.start();
+      this.onMouseDraggedHandler_.setNodes(desktop);
+      this.onMouseDraggedHandler_.start();
     });
 
     this.onMagnifierBoundsChangedHandler_.start();
+
+    chrome.accessibilityPrivate.enableMouseEvents(true);
 
     this.isInitializing_ = true;
 
@@ -238,6 +262,15 @@ export class Magnifier {
 
     const caretBoundsCenter = RectUtil.center(target.caretBounds);
     chrome.accessibilityPrivate.magnifierCenterOnPoint(caretBoundsCenter);
+  }
+
+  /**
+   * Listener for when mouse moves or drags.
+   * @param {!chrome.automation.AutomationEvent} event
+   * @private
+   */
+  onMouseMovedOrDragged_(event) {
+    this.mouseLocation_ = {x: event.mouseX, y: event.mouseY};
   }
 }
 

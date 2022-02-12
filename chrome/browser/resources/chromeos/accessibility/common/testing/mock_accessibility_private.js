@@ -151,6 +151,12 @@ var MockAccessibilityPrivate = {
   },
 
   /**
+   * Called when AccessibilityCommon wants to enable mouse events.
+   * @param {boolean} enabled
+   */
+  enableMouseEvents: (enabled) => {},
+
+  /**
    * Called when AccessibilityCommon finds scrollable bounds at a point.
    * @param {!chrome.accessibilityPrivate.ScreenRect} bounds
    */

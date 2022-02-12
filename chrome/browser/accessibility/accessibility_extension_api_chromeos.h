@@ -84,7 +84,7 @@ class AccessibilityPrivateSendSyntheticKeyEventFunction
                              ACCESSIBILITY_PRIVATE_SENDSYNTHETICKEYEVENT)
 };
 
-// API function that enables or disables mouse events in ChromeVox.
+// API function that enables or disables mouse events in ChromeVox / Magnifier.
 class AccessibilityPrivateEnableMouseEventsFunction : public ExtensionFunction {
   ~AccessibilityPrivateEnableMouseEventsFunction() override {}
   ResponseAction Run() override;
