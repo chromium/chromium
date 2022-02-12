@@ -27,4 +27,8 @@ PlatformVideoFramePool* DmabufVideoFramePool::AsPlatformVideoFramePool() {
   return nullptr;
 }
 
+bool DmabufVideoFramePool::IsFakeVideoFramePool() {
+  return false;
+}
+
 }  // namespace media

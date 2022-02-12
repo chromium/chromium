@@ -96,6 +96,9 @@ class MEDIA_GPU_EXPORT DmabufVideoFramePool {
   // |parent_task_runner_| because it may invalidate weak ptrs.
   virtual void ReleaseAllFrames() = 0;
 
+  // Returns true if and only if the pool is a mock pool used for testing.
+  virtual bool IsFakeVideoFramePool();
+
  protected:
   scoped_refptr<base::SequencedTaskRunner> parent_task_runner_;
 };

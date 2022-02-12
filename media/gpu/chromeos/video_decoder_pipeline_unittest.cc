@@ -66,6 +66,8 @@ class MockVideoFramePool : public DmabufVideoFramePool {
   MOCK_METHOD0(IsExhausted, bool());
   MOCK_METHOD1(NotifyWhenFrameAvailable, void(base::OnceClosure));
   MOCK_METHOD0(ReleaseAllFrames, void());
+
+  bool IsFakeVideoFramePool() override { return true; }
 };
 
 constexpr gfx::Size kCodedSize(48, 36);
@@ -370,6 +372,7 @@ const struct DecoderPipelineTestParams kDecoderPipelineTestParams[] = {
     {base::BindRepeating(&VideoDecoderPipelineTest::CreateGoodMockDecoder),
      DecoderStatus::Codes::kOk},
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // A CreateDecoderFunctionCB for transcryption, where Create() is ok, and
     // the decoder will Initialize OK, but then the pipeline will not create the
     // transcryptor due to a missing CdmContext. This will succeed if called
@@ -377,6 +380,7 @@ const struct DecoderPipelineTestParams kDecoderPipelineTestParams[] = {
     {base::BindRepeating(
          &VideoDecoderPipelineTest::CreateGoodMockTranscryptDecoder),
      DecoderStatus::Codes::kUnsupportedEncryptionMode},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     // A CreateDecoderFunctionCB that Create()s ok but fails to Initialize()
     // correctly.
@@ -685,9 +689,10 @@ TEST_F(VideoDecoderPipelineTest, PickDecoderOutputFormat) {
   DetachDecoderSequenceChecker();
 }
 
-// These tests only work on non-linux vaapi systems, since on linux, there is no
-// support for different modifiers.
-#if BUILDFLAG(USE_VAAPI) && !BUILDFLAG(IS_LINUX)
+// These tests only work on non-linux and non-lacros vaapi systems, since on
+// linux and lacros there is no support for different modifiers.
+#if BUILDFLAG(USE_VAAPI) && !BUILDFLAG(IS_LINUX) && \
+    !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Verifies the algorithm for choosing formats in PickDecoderOutputFormat works
 // as expected when the pool returns linear buffers. It should allocate an image
@@ -768,7 +773,8 @@ TEST_F(VideoDecoderPipelineTest, PickDecoderOutputFormatUnsupportedModifier) {
   DetachDecoderSequenceChecker();
 }
 
-#endif  // BUILDFLAG(USE_VAAPI) && !BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(USE_VAAPI) && !BUILDFLAG(IS_LINUX) &&
+        // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Verifies that ReleaseAllFrames is called on the frame pool when we receive
 // the kDecoderStateLost event through the waiting callback. This can occur
