@@ -45,7 +45,8 @@ SystemInfoProvider::SystemInfoProvider(
   // ScreenBacklight object to remove null check.
   if (ScreenBacklight::Get())
     ScreenBacklight::Get()->AddObserver(this);
-  TabletMode::Get()->AddObserver(this);
+  if (TabletMode::Get())
+    TabletMode::Get()->AddObserver(this);
   cros_network_config_->AddObserver(
       cros_network_config_receiver_.BindNewPipeAndPassRemote());
   FetchWifiNetworkList();
