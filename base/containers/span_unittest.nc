@@ -267,6 +267,20 @@ void WontCompile() {
   static_assert(EXTENT(vector) == 0, "Should not compile");
 }
 
+#elif defined(NCTEST_DANGLING_STD_ARRAY)  // [r"object backing the pointer will be destroyed at the end of the full-expression"]
+
+void WontCompile() {
+  span<const int, 3> s{std::array<int, 3>()};
+  (void)s;
+}
+
+#elif defined(NCTEST_DANGLING_CONTAINER)  // [r"object backing the pointer will be destroyed at the end of the full-expression"]
+
+void WontCompile() {
+  span<const int> s{std::vector<int>({1, 2, 3})};
+  (void)s;
+}
+
 #endif
 
 }  // namespace base

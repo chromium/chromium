@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/checked_iterators.h"
 #include "base/containers/contiguous_iterator.h"
 #include "base/cxx17_backports.h"
@@ -233,7 +234,7 @@ constexpr size_t must_not_be_dynamic_extent() {
 
 // [span], class template span
 template <typename T, size_t Extent>
-class span : public internal::ExtentStorage<Extent> {
+class GSL_POINTER span : public internal::ExtentStorage<Extent> {
  private:
   using ExtentStorage = internal::ExtentStorage<Extent>;
 
