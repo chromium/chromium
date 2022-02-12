@@ -45,7 +45,8 @@ SearchControllerImpl::SearchControllerImpl(
     Profile* profile)
     : profile_(profile),
       mixer_(std::make_unique<Mixer>(model_updater, this)),
-      metrics_observer_(std::make_unique<SearchMetricsObserver>(notifier)),
+      metrics_observer_(
+          std::make_unique<SearchMetricsObserver>(profile, notifier)),
       list_controller_(list_controller) {
   DCHECK(!app_list_features::IsCategoricalSearchEnabled());
 }

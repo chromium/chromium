@@ -347,6 +347,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Apps.AppList.ContinueIsDriveEnabled" enum="BooleanEnabled"
+    expires_after="2023-02-09">
+  <owner>tby@chromium.org</owner>
+  <owner>gzadina@chromium.org</owner>
+  <summary>
+    Recorded once upon login, records the state of the Disconnect Google Drive
+    Account setting.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.ContinueResultCount.{Type}" units="count"
     expires_after="2023-02-09">
   <owner>amandadeacon@chromium.org</owner>

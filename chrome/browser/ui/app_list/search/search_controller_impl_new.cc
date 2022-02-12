@@ -64,7 +64,8 @@ SearchControllerImplNew::SearchControllerImplNew(
     : profile_(profile),
       ranker_(std::make_unique<RankerDelegate>(profile, this)),
       burnin_period_(::search_features::QuerySearchBurnInPeriodDuration()),
-      metrics_observer_(std::make_unique<SearchMetricsObserver>(notifier)),
+      metrics_observer_(
+          std::make_unique<SearchMetricsObserver>(profile, notifier)),
       model_updater_(model_updater),
       list_controller_(list_controller) {
   DCHECK(app_list_features::IsCategoricalSearchEnabled());

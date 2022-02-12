@@ -9,9 +9,12 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/ranking/types.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "components/drive/drive_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_list {
@@ -100,14 +103,26 @@ void LogViewAction(Location location,
   base::UmaHistogramEnumeration(histogram_name, action);
 }
 
+void LogIsDriveEnabled(Profile* profile) {
+  // Logs false for disabled and true for enabled, corresponding to the
+  // BooleanEnabled enum.
+  base::UmaHistogramBoolean(
+      "Apps.AppList.ContinueIsDriveEnabled",
+      !profile->GetPrefs()->GetBoolean(drive::prefs::kDisableDrive));
+}
+
 }  // namespace
 
-SearchMetricsObserver::SearchMetricsObserver(ash::AppListNotifier* notifier) {
+SearchMetricsObserver::SearchMetricsObserver(Profile* profile,
+                                             ash::AppListNotifier* notifier) {
   if (notifier) {
     observation_.Observe(notifier);
   } else {
     LogError(Error::kMissingNotifier);
   }
+
+  if (profile)
+    LogIsDriveEnabled(profile);
 }
 
 SearchMetricsObserver::~SearchMetricsObserver() = default;
