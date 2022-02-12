@@ -8,8 +8,10 @@
 #include <memory>
 
 #include "ash/ambient/model/ambient_animation_photo_provider.h"
+#include "ash/ambient/ui/jitter_calculator.h"
 #include "ash/ash_export.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/throughput_tracker.h"
@@ -64,6 +66,9 @@ class ASH_EXPORT AmbientAnimationView : public views::View,
 
   absl::optional<ui::ThroughputTracker> throughput_tracker_;
   base::RepeatingTimer throughput_tracker_restart_timer_;
+
+  JitterCalculator animation_jitter_calculator_;
+  base::TimeTicks last_jitter_timestamp_;
 };
 
 }  // namespace ash

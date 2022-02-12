@@ -4,7 +4,9 @@
 
 #include "ash/ambient/ui/ambient_animation_view.h"
 
+#include <algorithm>
 #include <cstdint>
+#include <cstdlib>
 #include <utility>
 #include <vector>
 
@@ -25,6 +27,7 @@
 #include "cc/paint/skottie_wrapper.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/lottie/animation.h"
 #include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/image_view.h"
@@ -33,6 +36,16 @@
 
 namespace ash {
 namespace {
+
+// How often to shift the animation slightly to prevent screen burn.
+constexpr base::TimeDelta kAnimationJitterPeriod = base::Minutes(2);
+
+constexpr JitterCalculator::Config kAnimationJitterConfig = {
+    /*step_size=*/2,
+    /*x_min_translation=*/-10,
+    /*x_max_translation=*/10,
+    /*y_min_translation=*/-10,
+    /*y_max_translation=*/10};
 
 constexpr base::TimeDelta kThroughputTrackerRestartPeriod = base::Seconds(30);
 
@@ -55,6 +68,15 @@ void LogCompositorThroughput(
           << " duration=" << duration;
 }
 
+// Returns the maximum possible displacement in either dimension from the
+// original unshifted position when jitter is applied.
+int GetPaddingForAnimationJitter() {
+  return std::max({abs(kAnimationJitterConfig.x_min_translation),
+                   abs(kAnimationJitterConfig.x_max_translation),
+                   abs(kAnimationJitterConfig.y_min_translation),
+                   abs(kAnimationJitterConfig.y_max_translation)});
+}
+
 }  // namespace
 
 AmbientAnimationView::AmbientAnimationView(
@@ -63,7 +85,8 @@ AmbientAnimationView::AmbientAnimationView(
     std::unique_ptr<const AmbientAnimationStaticResources> static_resources)
     : event_handler_(event_handler),
       static_resources_(std::move(static_resources)),
-      animation_photo_provider_(static_resources_.get(), model) {
+      animation_photo_provider_(static_resources_.get(), model),
+      animation_jitter_calculator_(kAnimationJitterConfig) {
   SetID(AmbientViewID::kAmbientAnimationView);
   Init();
 }
@@ -92,11 +115,19 @@ void AmbientAnimationView::Init() {
 void AmbientAnimationView::AnimationWillStartPlaying(
     const lottie::Animation* animation) {
   event_handler_->OnMarkerHit(AmbientPhotoConfig::Marker::kUiStartRendering);
+  last_jitter_timestamp_ = base::TimeTicks::Now();
 }
 
 void AmbientAnimationView::AnimationCycleEnded(
     const lottie::Animation* animation) {
   event_handler_->OnMarkerHit(AmbientPhotoConfig::Marker::kUiCycleEnded);
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (now - last_jitter_timestamp_ >= kAnimationJitterPeriod) {
+    gfx::Vector2d jitter = animation_jitter_calculator_.Calculate();
+    DVLOG(4) << "Applying jitter to animation: " << jitter.ToString();
+    animated_image_view_->SetAdditionalTranslation(std::move(jitter));
+    last_jitter_timestamp_ = now;
+  }
 }
 
 void AmbientAnimationView::OnViewBoundsChanged(View* observed_view) {
@@ -112,7 +143,8 @@ void AmbientAnimationView::OnViewBoundsChanged(View* observed_view) {
   // so that its proper bounds become available (they are 0x0 initially) before
   // starting the animation playback.
   gfx::Rect previous_animation_bounds = animated_image_view_->GetImageBounds();
-  AmbientAnimationResizer::Resize(*animated_image_view_);
+  AmbientAnimationResizer::Resize(*animated_image_view_,
+                                  GetPaddingForAnimationJitter());
   DVLOG(4)
       << "View bounds available. Resized animation with native size "
       << animated_image_view_->animated_image()->GetOriginalSize().ToString()
