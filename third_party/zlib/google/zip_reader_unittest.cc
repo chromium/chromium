@@ -504,6 +504,41 @@ TEST_F(ZipReaderTest, ExtractToFileAsync_RegularFile) {
   EXPECT_EQ(file_size, listener.current_progress());
 }
 
+TEST_F(ZipReaderTest, ExtractToFileAsync_WrongCrc) {
+  MockUnzipListener listener;
+
+  ZipReader reader;
+  ASSERT_TRUE(reader.Open(data_dir_.AppendASCII("Wrong CRC.zip")));
+  ASSERT_TRUE(
+      LocateAndOpenEntry(&reader, base::FilePath::FromASCII("Corrupted.txt")));
+  const base::FilePath target_path = test_dir_.AppendASCII("extracted");
+  reader.ExtractCurrentEntryToFilePathAsync(
+      target_path,
+      base::BindOnce(&MockUnzipListener::OnUnzipSuccess, listener.AsWeakPtr()),
+      base::BindOnce(&MockUnzipListener::OnUnzipFailure, listener.AsWeakPtr()),
+      base::BindRepeating(&MockUnzipListener::OnUnzipProgress,
+                          listener.AsWeakPtr()));
+
+  EXPECT_EQ(0, listener.success_calls());
+  EXPECT_EQ(0, listener.failure_calls());
+  EXPECT_EQ(0, listener.progress_calls());
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(0, listener.success_calls());
+  EXPECT_EQ(1, listener.failure_calls());
+  EXPECT_LE(1, listener.progress_calls());
+
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(target_path, &contents));
+  EXPECT_EQ("This file has been changed after its CRC was computed.\n",
+            contents);
+
+  int64_t file_size = 0;
+  ASSERT_TRUE(base::GetFileSize(target_path, &file_size));
+  EXPECT_EQ(file_size, listener.current_progress());
+}
+
 // Verifies that the asynchronous extraction to a file works.
 TEST_F(ZipReaderTest, ExtractToFileAsync_Directory) {
   MockUnzipListener listener;
@@ -701,6 +736,18 @@ TEST_F(ZipReaderTest, ExtractCurrentEntrySuccess) {
   ASSERT_TRUE(LocateAndOpenEntry(&reader, target_path));
   ASSERT_TRUE(reader.ExtractCurrentEntry(&mock_writer,
                                          std::numeric_limits<uint64_t>::max()));
+}
+
+TEST_F(ZipReaderTest, WrongCrc) {
+  ZipReader reader;
+  ASSERT_TRUE(reader.Open(data_dir_.AppendASCII("Wrong CRC.zip")));
+
+  const ZipReader::Entry* const entry =
+      LocateAndOpenEntry(&reader, base::FilePath::FromASCII("Corrupted.txt"));
+  ASSERT_TRUE(entry);
+  std::string contents = "dummy";
+  EXPECT_FALSE(reader.ExtractCurrentEntryToString(1000, &contents));
+  EXPECT_EQ("", contents);
 }
 
 class FileWriterDelegateTest : public ::testing::Test {
