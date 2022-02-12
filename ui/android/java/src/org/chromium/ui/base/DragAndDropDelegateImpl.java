@@ -6,6 +6,7 @@ package org.chromium.ui.base;
 
 import android.content.ClipData;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
 import android.widget.ImageView;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.compat.ApiHelperForN;
 
 /**
@@ -33,11 +35,37 @@ class DragAndDropDelegateImpl implements ViewAndroidDelegate.DragAndDropDelegate
         imageView.setImageBitmap(shadowImage);
         imageView.layout(0, 0, shadowImage.getWidth(), shadowImage.getHeight());
 
-        return ApiHelperForN.startDragAndDrop(view, buildClipData(dropData),
-                new View.DragShadowBuilder(imageView), null, View.DRAG_FLAG_GLOBAL);
+        ClipData clipdata = buildClipData(dropData);
+        if (clipdata == null) {
+            return false;
+        }
+        return ApiHelperForN.startDragAndDrop(
+                view, clipdata, new View.DragShadowBuilder(imageView), null, buildFlags(dropData));
     }
 
     protected ClipData buildClipData(DropDataAndroid dropData) {
-        return ClipData.newPlainText(null, dropData.text);
+        if (dropData.isPlainText()) {
+            return ClipData.newPlainText(null, dropData.text);
+        } else if (dropData.hasImage()) {
+            Uri uri = DropDataContentProvider.cache(
+                    dropData.imageContent, dropData.imageContentExtension);
+            return ClipData.newUri(
+                    ContextUtils.getApplicationContext().getContentResolver(), null, uri);
+            // TODO: ensure MIME type of ClipData is correct
+        } else {
+            // TODO(crbug.com/1289393): handle link dragging
+            return null;
+        }
+    }
+
+    @RequiresApi(api = VERSION_CODES.N)
+    protected int buildFlags(DropDataAndroid dropData) {
+        if (dropData.isPlainText()) {
+            return View.DRAG_FLAG_GLOBAL;
+        } else if (dropData.hasImage()) {
+            return View.DRAG_FLAG_GLOBAL | View.DRAG_FLAG_GLOBAL_URI_READ;
+        } else {
+            return 0;
+        }
     }
 }

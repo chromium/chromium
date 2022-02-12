@@ -333,9 +333,14 @@ public class EventForwarder {
         // text/* will match text/uri-list, text/html, text/plain.
         String[] mimeTypes =
                 clipDescription == null ? new String[0] : clipDescription.filterMimeTypes("text/*");
+        // mimeTypes is null iff there is no matching text MIME type.
+        // Try if there is any matching image MIME type.
+        if (mimeTypes == null) {
+            mimeTypes = clipDescription.filterMimeTypes("image/*");
+        }
 
         if (event.getAction() == DragEvent.ACTION_DRAG_STARTED) {
-            // TODO(hush): support dragging more than just text.
+            // TODO(crbug.com/1289393): support dragging more than text and image.
             return mimeTypes != null && mimeTypes.length > 0 && mIsDragDropEnabled;
         }
 

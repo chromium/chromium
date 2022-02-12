@@ -1303,6 +1303,13 @@ by a child template that "extends" this file.
               android:resource="@xml/file_paths" />
       </provider>
 
+      <!-- Provider for image data from Drag and Drop. -->
+      <provider android:name="org.chromium.ui.base.DropDataContentProvider"
+          android:authorities="{{ manifest_package }}.DropDataProvider"
+          android:exported="false"
+          android:grantUriPermissions="true">
+      </provider>
+
       <!-- Disables at startup init of Emoji2. See http://crbug.com/1205141 -->
       <provider
           android:authorities="{{ manifest_package }}.androidx-startup"

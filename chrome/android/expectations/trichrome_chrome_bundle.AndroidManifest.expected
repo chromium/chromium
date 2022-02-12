@@ -879,6 +879,12 @@
         android:grantUriPermissions="true">
       <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths"/>
     </provider>  # DIFF-ANCHOR: 67014fab
+    <provider  # DIFF-ANCHOR: c2f7da34
+        android:name="org.chromium.ui.base.DropDataContentProvider"
+        android:authorities="$PACKAGE.DropDataProvider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+    </provider>  # DIFF-ANCHOR: c2f7da34
     <receiver  # DIFF-ANCHOR: 58d39a0f
         android:name="com.google.android.apps.chrome.appwidget.bookmarks.BookmarkThumbnailWidgetProvider"
         android:exported="true"
