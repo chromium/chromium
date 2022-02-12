@@ -20,13 +20,13 @@ import androidx.test.filters.SmallTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.ProgressBarObserver;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
@@ -67,8 +67,8 @@ public class ToolbarProgressBarTest extends BlankUiTestActivityTestCase {
         isVisibleSupplier.set(true);
         mProgressBar =
                 new ToolbarProgressBar(getActivity(), heightPx, anchor, false, isVisibleSupplier);
-        @ColorInt
-        int toolbarColor = ApiCompatibilityUtils.getColor(res, R.color.toolbar_background_primary);
+        final @ColorInt int toolbarColor =
+                SemanticColorUtils.getToolbarBackgroundPrimary(getActivity());
         mProgressBar.setThemeColor(toolbarColor, false);
         mProgressBar.setProgressBarObserver(new ProgressBarObserver() {
             @Override

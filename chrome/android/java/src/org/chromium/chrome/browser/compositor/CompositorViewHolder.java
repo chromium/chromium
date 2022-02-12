@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.compositor;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -33,7 +32,6 @@ import androidx.core.view.accessibility.AccessibilityEventCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.SysUtils;
@@ -1238,13 +1236,6 @@ public class CompositorViewHolder extends FrameLayout
         mBrowserControlsManager = manager;
         mBrowserControlsManager.addObserver(this);
         onViewportChanged();
-    }
-
-    @Override
-    public int getBrowserControlsBackgroundColor(Resources res) {
-        return mTabVisible == null
-                ? ApiCompatibilityUtils.getColor(res, R.color.toolbar_background_primary)
-                : mTopUiThemeColorProvider.getSceneLayerBackground(mTabVisible);
     }
 
     @Override

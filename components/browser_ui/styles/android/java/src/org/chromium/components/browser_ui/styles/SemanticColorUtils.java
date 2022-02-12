@@ -108,6 +108,11 @@ public class SemanticColorUtils {
         return getDefaultControlColorActive(context);
     }
 
+    /** Returns the surface color value of the conceptual toolbar_background_primary. */
+    public static @ColorInt int getToolbarBackgroundPrimary(Context context) {
+        return getDefaultBgColor(context);
+    }
+
     /** Returns the semantic color value that corresponds to default_bg_color_elev_2. */
     public static @ColorInt int getDefaultBgColorElev2(Context context) {
         return resolveSurfaceColorElev(

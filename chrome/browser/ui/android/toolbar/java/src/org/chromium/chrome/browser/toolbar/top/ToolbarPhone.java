@@ -72,6 +72,7 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.UrlExpansionObserver;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -761,7 +762,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                 return getToolbarDataProvider().getPrimaryColor();
             default:
                 assert false;
-                return ApiCompatibilityUtils.getColor(res, R.color.toolbar_background_primary);
+                return SemanticColorUtils.getToolbarBackgroundPrimary(getContext());
         }
     }
 
