@@ -318,6 +318,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &language::kTranslateIntent,
     &messages::kMessagesForAndroidChromeSurvey,
     &messages::kMessagesForAndroidInfrastructure,
+    &messages::kMessagesForAndroidInstantApps,
     &messages::kMessagesForAndroidReaderMode,
     &messages::kMessagesForAndroidReduceLayoutChanges,
     &messages::kMessagesForAndroidSyncError,

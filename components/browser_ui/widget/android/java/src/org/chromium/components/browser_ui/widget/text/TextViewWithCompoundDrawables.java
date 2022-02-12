@@ -51,6 +51,24 @@ public class TextViewWithCompoundDrawables extends AppCompatTextView {
         setDrawableTint(getCompoundDrawablesRelative());
     }
 
+    /**
+     * Set the width of the compound drawables.
+     * @param width The drawable width.
+     */
+    public void setDrawableWidth(int width) {
+        mDrawableWidth = width;
+        setDrawableBounds(getCompoundDrawables());
+    }
+
+    /**
+     * Set the height of the compound drawables.
+     * @param height The drawable height.
+     */
+    public void setDrawableHeight(int height) {
+        mDrawableHeight = height;
+        setDrawableBounds(getCompoundDrawables());
+    }
+
     @Override
     protected void drawableStateChanged() {
         super.drawableStateChanged();

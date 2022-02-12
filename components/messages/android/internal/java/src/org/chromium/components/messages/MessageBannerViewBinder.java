@@ -6,6 +6,7 @@ package org.chromium.components.messages;
 
 import static org.chromium.components.messages.MessageBannerProperties.ALPHA;
 import static org.chromium.components.messages.MessageBannerProperties.DESCRIPTION;
+import static org.chromium.components.messages.MessageBannerProperties.DESCRIPTION_ICON;
 import static org.chromium.components.messages.MessageBannerProperties.DESCRIPTION_MAX_LINES;
 import static org.chromium.components.messages.MessageBannerProperties.ICON;
 import static org.chromium.components.messages.MessageBannerProperties.ICON_RESOURCE_ID;
@@ -16,11 +17,13 @@ import static org.chromium.components.messages.MessageBannerProperties.ON_SECOND
 import static org.chromium.components.messages.MessageBannerProperties.ON_TOUCH_RUNNABLE;
 import static org.chromium.components.messages.MessageBannerProperties.PRIMARY_BUTTON_CLICK_LISTENER;
 import static org.chromium.components.messages.MessageBannerProperties.PRIMARY_BUTTON_TEXT;
+import static org.chromium.components.messages.MessageBannerProperties.RESIZE_DESCRIPTION_ICON;
 import static org.chromium.components.messages.MessageBannerProperties.SECONDARY_BUTTON_MENU_TEXT;
 import static org.chromium.components.messages.MessageBannerProperties.SECONDARY_ICON;
 import static org.chromium.components.messages.MessageBannerProperties.SECONDARY_ICON_CONTENT_DESCRIPTION;
 import static org.chromium.components.messages.MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID;
 import static org.chromium.components.messages.MessageBannerProperties.TITLE;
+import static org.chromium.components.messages.MessageBannerProperties.TITLE_CONTENT_DESCRIPTION;
 import static org.chromium.components.messages.MessageBannerProperties.TRANSLATION_X;
 import static org.chromium.components.messages.MessageBannerProperties.TRANSLATION_Y;
 
@@ -43,8 +46,15 @@ public class MessageBannerViewBinder {
             view.setPrimaryButtonClickListener(model.get(PRIMARY_BUTTON_CLICK_LISTENER));
         } else if (propertyKey == TITLE) {
             view.setTitle(model.get(TITLE));
+        } else if (propertyKey == TITLE_CONTENT_DESCRIPTION) {
+            view.setTitleContentDescription(model.get(TITLE_CONTENT_DESCRIPTION));
         } else if (propertyKey == DESCRIPTION) {
-            view.setDescription(model.get(DESCRIPTION));
+            view.setDescriptionText(model.get(DESCRIPTION));
+        } else if (propertyKey == DESCRIPTION_ICON) {
+            view.setDescriptionIcon(model.get(DESCRIPTION_ICON));
+            view.enableDescriptionIconIntrinsicDimensions(model.get(RESIZE_DESCRIPTION_ICON));
+        } else if (propertyKey == RESIZE_DESCRIPTION_ICON) {
+            view.enableDescriptionIconIntrinsicDimensions(model.get(RESIZE_DESCRIPTION_ICON));
         } else if (propertyKey == DESCRIPTION_MAX_LINES) {
             view.setDescriptionMaxLines(model.get(DESCRIPTION_MAX_LINES));
         } else if (propertyKey == ICON) {

@@ -728,6 +728,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/instantapps/AuthenticatedProxyActivity.java",
   "java/src/org/chromium/chrome/browser/instantapps/InstantAppsBannerData.java",
   "java/src/org/chromium/chrome/browser/instantapps/InstantAppsHandler.java",
+  "java/src/org/chromium/chrome/browser/instantapps/InstantAppsMessageDelegate.java",
   "java/src/org/chromium/chrome/browser/instantapps/InstantAppsSettings.java",
   "java/src/org/chromium/chrome/browser/invalidation/ResumableDelayedTaskRunner.java",
   "java/src/org/chromium/chrome/browser/invalidation/SessionsInvalidationManager.java",

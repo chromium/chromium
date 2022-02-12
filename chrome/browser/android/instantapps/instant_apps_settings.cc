@@ -41,9 +41,8 @@ void RecordShouldShowBannerMetric(AiaBannerReason reason) {
 
 }  // namespace
 
-void InstantAppsSettings::RecordInfoBarShowEvent(
-    content::WebContents* web_contents,
-    const std::string& url) {
+void InstantAppsSettings::RecordShowEvent(content::WebContents* web_contents,
+                                          const std::string& url) {
   webapps::AppBannerSettingsHelper::RecordBannerEvent(
       web_contents, GURL(url),
       webapps::AppBannerSettingsHelper::kInstantAppsKey,
@@ -51,9 +50,8 @@ void InstantAppsSettings::RecordInfoBarShowEvent(
       base::Time::Now());
 }
 
-void InstantAppsSettings::RecordInfoBarDismissEvent(
-    content::WebContents* web_contents,
-    const std::string& url) {
+void InstantAppsSettings::RecordDismissEvent(content::WebContents* web_contents,
+                                             const std::string& url) {
   webapps::AppBannerSettingsHelper::RecordBannerEvent(
       web_contents, GURL(url),
       webapps::AppBannerSettingsHelper::kInstantAppsKey,

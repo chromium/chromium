@@ -2811,6 +2811,8 @@ static_library("browser") {
       "android/hung_renderer_infobar_delegate.h",
       "android/instantapps/instant_apps_infobar_delegate.cc",
       "android/instantapps/instant_apps_infobar_delegate.h",
+      "android/instantapps/instant_apps_message_delegate.cc",
+      "android/instantapps/instant_apps_message_delegate.h",
       "android/instantapps/instant_apps_settings.cc",
       "android/instantapps/instant_apps_settings.h",
       "android/intent_handler.cc",

@@ -95,7 +95,7 @@ bool InstantAppsInfoBarDelegate::EqualsDelegate(
 void InstantAppsInfoBarDelegate::InfoBarDismissed() {
   content::WebContents* web_contents =
       infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar());
-  InstantAppsSettings::RecordInfoBarDismissEvent(web_contents, url_);
+  InstantAppsSettings::RecordDismissEvent(web_contents, url_);
   if (instant_app_is_default_) {
     base::RecordAction(base::UserMetricsAction(
         "Android.InstantApps.BannerDismissedAppIsDefault"));
@@ -139,7 +139,7 @@ void JNI_InstantAppsInfoBarDelegate_Launch(
 
   InstantAppsInfoBarDelegate::Create(web_contents, jdata, url,
                                      instant_app_is_default);
-  InstantAppsSettings::RecordInfoBarShowEvent(web_contents, url);
+  InstantAppsSettings::RecordShowEvent(web_contents, url);
 
   if (instant_app_is_default) {
     base::RecordAction(
