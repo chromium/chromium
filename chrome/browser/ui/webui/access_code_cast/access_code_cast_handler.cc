@@ -22,6 +22,7 @@
 #include "components/media_router/common/discovery/media_sink_service_base.h"
 #include "components/media_router/common/mojom/media_router_mojom_traits.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 
 using ::media_router::CreateAccessCodeMediaSink;
 using media_router::mojom::RouteRequestResultCode;
@@ -135,7 +136,8 @@ void AccessCodeCastHandler::AddSink(
   auto* ptr = AccessCodeCastSinkServiceFactory::GetForProfile(profile_);
   DCHECK(ptr) << "AccessCodeSinkService was not properly created!";
 
-  add_sink_callback_ = std::move(callback);
+  add_sink_callback_ = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), AddSinkResultCode::UNKNOWN_ERROR);
 
   discovery_server_interface_ =
       std::make_unique<AccessCodeCastDiscoveryInterface>(profile_, access_code);
