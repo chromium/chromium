@@ -116,6 +116,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeOnDeviceEncryptionOptInDescription,
   ItemTypeOnDeviceEncryptionSetUp,
   ItemTypeOnDeviceEncryptionOptedInDescription,
+  ItemTypeOnDeviceEncryptionOptedInLearnMore,
 };
 
 // State of on-device encryption used for
@@ -250,11 +251,13 @@ void RemoveFormsToBeDeleted(
   TableViewTextItem* _checkForProblemsItem;
   // The item related to the button for exporting passwords.
   TableViewTextItem* _exportPasswordsItem;
+  // The text explaining why the user should opt-in on device encryption.
+  TableViewImageItem* _onDeviceEncryptionOptInDescriptionItem;
   // The text explaining on-device encryption was opted-in and offering to know
   // more.
-  TableViewImageItem* _onDeviceEncryptionOptInDescriptionItem;
-  // The text explaining why the user should opt-in on device encryption.
   TableViewImageItem* _onDeviceEncryptionOptedInDescription;
+  // Learn-more button, to know more about trusted vault.
+  TableViewTextItem* _onDeviceEncryptionOptedInLearnMore;
   // The link to set up on device encryption.
   TableViewTextItem* _setUpOnDeviceEncryptionItem;
   // The list of the user's saved passwords.
@@ -593,7 +596,13 @@ void RemoveFormsToBeDeleted(
         _onDeviceEncryptionOptedInDescription =
             [self onDeviceEncryptionOptedInDescription];
       }
+      if (!_onDeviceEncryptionOptedInLearnMore) {
+        _onDeviceEncryptionOptedInLearnMore =
+            [self onDeviceEncryptionOptedInLearnMore];
+      }
       [model addItem:_onDeviceEncryptionOptedInDescription
+          toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
+      [model addItem:_onDeviceEncryptionOptedInLearnMore
           toSectionWithIdentifier:SectionIdentifierOnDeviceEncryption];
       break;
     case OnDeviceEncryptionStateNotShown:
@@ -839,6 +848,17 @@ void RemoveFormsToBeDeleted(
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION);
   item.detailText = l10n_util::GetNSString(
       IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_LEARN_MORE);
+  item.enabled = NO;
+  return item;
+}
+
+- (TableViewTextItem*)onDeviceEncryptionOptedInLearnMore {
+  TableViewTextItem* item = [[TableViewTextItem alloc]
+      initWithType:ItemTypeOnDeviceEncryptionOptedInLearnMore];
+  item.text = l10n_util::GetNSString(
+      IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_OPTED_IN_LEARN_MORE);
+  item.textColor = [UIColor colorNamed:kBlueColor];
+  item.accessibilityTraits = UIAccessibilityTraitButton;
   return item;
 }
 
@@ -1777,11 +1797,12 @@ void RemoveFormsToBeDeleted(
       BlockToOpenURL(self, self.dispatcher)(url);
       break;
     }
-    case ItemTypeOnDeviceEncryptionOptedInDescription: {
+    case ItemTypeOnDeviceEncryptionOptedInLearnMore: {
       GURL url = GURL(kOnDeviceEncryptionLearnMoreURL);
       BlockToOpenURL(self, self.dispatcher)(url);
       break;
     }
+    case ItemTypeOnDeviceEncryptionOptedInDescription:
     case ItemTypeLastCheckTimestampFooter:
     case ItemTypeOnDeviceEncryptionOptInDescription:
     case ItemTypeLinkHeader:
