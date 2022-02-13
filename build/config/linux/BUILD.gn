@@ -69,12 +69,3 @@ if (use_glib) {
     ]
   }
 }
-
-# Ensures all exported symbols are added to the dynamic symbol table.  This is
-# necessary to expose Chrome's custom operator new() and operator delete() (and
-# other memory-related symbols) to libraries.  Otherwise, they might
-# (de)allocate memory on a different heap, which would spell trouble if pointers
-# to heap-allocated memory are passed over shared library boundaries.
-config("export_dynamic") {
-  ldflags = [ "-rdynamic" ]
-}
