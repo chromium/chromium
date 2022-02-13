@@ -220,6 +220,7 @@
 <translation id="1559572115229829303">&lt;p&gt;<ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> құпия байланысын орнату мүмкін емес, себебі құрылғыларыңыздағы күн мен уақыт (<ph name="DATE_AND_TIME" />) дұрыс емес.&lt;/p&gt;
 
       &lt;p&gt;&lt;strong&gt;Параметрлер&lt;/strong&gt; қолданбасының &lt;strong&gt;Жалпы&lt;/strong&gt; бөліміндегі күн мен уақытты реттеңіз.&lt;/p&gt;</translation>
+<translation id="1559839503761818503">Әкімші құрылғыңызды өшіріп қосатын уақыт: <ph name="DATE" /> <ph name="TIME" /></translation>
 <translation id="156703335097561114">Мекенжайлар, интерфейс конфигурациясы және байланыс сапасы сияқты желі ақпараты</translation>
 <translation id="1567040042588613346">Бұл саясат ойдағыдай жұмыс істеуде, бірақ басқа жерде осы саясат бойынша ауыстырылатын тап осындай мән орнатылған.</translation>
 <translation id="1569487616857761740">Жарамдылық мерзімін енгізіңіз.</translation>
@@ -1975,6 +1976,7 @@
 <translation id="7304562222803846232">Google аккаунтының құпиялылық параметрлерін басқару</translation>
 <translation id="7305756307268530424">Баяуырақ жылдамдықпен бастау</translation>
 <translation id="7308436126008021607">фондық синхрондау</translation>
+<translation id="7310392214323165548">Құрылғы сәлден соң өшіп, қайта қосылады.</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Байланыс анықтамасы</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" бөлімін жасыру</translation>

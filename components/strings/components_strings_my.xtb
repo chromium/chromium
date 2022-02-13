@@ -220,6 +220,7 @@
 <translation id="1559572115229829303">&lt;p&gt;သင့်ကိရိယာ၏ ရက်စွဲ နှင့် အချိန် (<ph name="DATE_AND_TIME" />)မှာ မမှန်ကန်သောကြောင့် <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> သို့ ကိုယ်ပိုင် ချိတ်ဆက်မှုကို ပြုလုပ်မရနိုင်ပါ။&lt;/p&gt;
 
       &lt;p&gt;ကျေးဇူးပြုပြီး ရက်စွဲ နှင့် အချိန်ကို &lt;strong&gt;ဆက်တင်များ&lt;/strong&gt; အက်ပ်၏ &lt;strong&gt;အထွေထွေ&lt;/strong&gt; ကဏ္ဍထဲတွင် ညှိပါ။&lt;/p&gt;</translation>
+<translation id="1559839503761818503">သင့်စီမံခန့်ခွဲသူက စက်ကို <ph name="DATE" />၊ <ph name="TIME" /> တွင် ပြန်စပါမည်</translation>
 <translation id="156703335097561114">ဝဘ်လိပ်စာများ၊ အင်တာဖေ့စ် စီစဉ်သတ်မှတ်ချက်နှင့် ချိတ်ဆက်မှု အရည်အသွေးကဲ့သို့ ကွန်ရက်အချက်အလက်များ</translation>
 <translation id="1567040042588613346">ဤမူဝါဒသည် သတ်မှတ်ထားသည့်အတိုင်း အလုပ်လုပ်နေသော်လည်း တူညီသောတန်ဖိုးကို တစ်နေရာတွင် သတ်မှတ်ထားပြီး ဤမူဝါဒက အစားထိုးထားသည်။</translation>
 <translation id="1569487616857761740">သက်တမ်းကုန်ဆုံးရက် ထည့်ပါ</translation>
@@ -1977,6 +1978,7 @@
 <translation id="7304562222803846232">Google Account ကိုယ်ရေးအချက်အလက်လုံခြုံမှု ဆက်တင်များကို စီမံရန်</translation>
 <translation id="7305756307268530424">ဂိမ်းအနှေး စတင်ရန်</translation>
 <translation id="7308436126008021607">နောက်ခံတွင်စင့်ခ်လုပ်ခြင်း</translation>
+<translation id="7310392214323165548">များမကြာမီ စက် ပြန်စပါမည်</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">ချိတ်ဆက်မှု အကူအညီ</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" ကဏ္ဍကို ဝှက်ရန်</translation>

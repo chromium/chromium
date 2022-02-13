@@ -604,7 +604,7 @@
 <translation id="1604432177629086300">無法列印。請檢查打印機，然後再試一次</translation>
 <translation id="1605744057217831567">查看所有網站資料和權限</translation>
 <translation id="1606077700029460857">變更滑鼠設定</translation>
-<translation id="1606566847233779212">要移除你新增的特定網站嗎？</translation>
+<translation id="1606566847233779212">要移除您新增的特定網站嗎？</translation>
 <translation id="1607139524282324606">清除項目</translation>
 <translation id="1607499585984539560">使用者並未與網域建立關聯</translation>
 <translation id="1608668830839595724">更多可對所選項目執行的動作</translation>
@@ -1011,7 +1011,7 @@
 <translation id="1988259784461813694">要求</translation>
 <translation id="1989112275319619282">瀏覽</translation>
 <translation id="1989113344093894667">無法擷取內容</translation>
-<translation id="1989744123191450103">備份失敗</translation>
+<translation id="1989744123191450103">無法備份</translation>
 <translation id="1989903373608997757">一律使用</translation>
 <translation id="1990046457226896323">已下載即時字幕檔案</translation>
 <translation id="1990512225220753005">不要在此頁面顯示捷徑</translation>
@@ -1021,7 +1021,7 @@
 <translation id="1994173015038366702">網站網址</translation>
 <translation id="1995916364271252349">控制網站可使用和顯示的資料 (位置、攝錄機和彈出式視窗等等)</translation>
 <translation id="1997616988432401742">您的憑證</translation>
-<translation id="1997645434968427303">還原 Linux 備份內容失敗，原因可能是 Linux 磁碟空間不足。你可以變更 Linux 的磁碟空間大小，並再次嘗試在 OS 設定中還原備份內容。</translation>
+<translation id="1997645434968427303">無法還原 Linux 備份內容，可能是因為 Linux 的磁碟空間不足。您可變更 Linux 的磁碟空間大小，並再次嘗試在 OS 設定中還原備份內容。</translation>
 <translation id="1999115740519098545">起始螢幕</translation>
 <translation id="2000419248597011803">將部分 Cookie，以及網址列和搜尋框中的搜尋內容傳送至預設搜尋引擎</translation>
 <translation id="2002109485265116295">即時</translation>
@@ -2527,7 +2527,7 @@
 <translation id="3511307672085573050">複製連結網址(&amp;E)</translation>
 <translation id="351152300840026870">固定寬度字型</translation>
 <translation id="3511528412952710609">短</translation>
-<translation id="3514011352559420398">還原失敗</translation>
+<translation id="3514011352559420398">無法還原</translation>
 <translation id="3514335087372914653">遊戲控制項</translation>
 <translation id="3514373592552233661">如有多個已知網絡可供使用，系統會優先使用慣用網絡</translation>
 <translation id="3515983984924808886">再次輕觸安全密鑰即可確認重設。此安全密鑰上儲存的所有資料 (包括 PIN) 將被刪除。</translation>
@@ -4560,7 +4560,7 @@
 <translation id="5627086634964711283">這個擴充功能也會管制您按一下 [主頁] 按鈕時所顯示的網頁。</translation>
 <translation id="5627676517703583263">使用 Chrome 享受智能瀏覽體驗</translation>
 <translation id="5627832140542566187">顯示方向</translation>
-<translation id="5628393161682339323">點選擴充功能時</translation>
+<translation id="5628393161682339323">當我點擊擴充程式時</translation>
 <translation id="562935524653278697">您的管理員已停用書籤、記錄、密碼和其他設定的同步處理功能。</translation>
 <translation id="5631017369956619646">CPU 使用率</translation>
 <translation id="5632059346822207074">要求咗權限，㩒 Ctrl + Forward 就可以回覆</translation>
@@ -5384,7 +5384,7 @@
 <translation id="6499143127267478107">正在解析 Proxy 指令碼主機…</translation>
 <translation id="6499764981457476645">找不到附近的裝置</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> 要求開啟以下檔案：</translation>
-<translation id="65017764184991091">備份 Linux 應用程式和檔案失敗。裝置免費儲存空間不足時，就會發生這種情況。請試著釋出一些裝置儲存空間，或選擇備份至另一個位置。</translation>
+<translation id="65017764184991091">無法備份 Linux 應用程式和檔案。如果裝置的可用儲存空間不足，便可能會無法備份。請嘗試在裝置上騰出儲存空間，或選擇備份至另一個位置。</translation>
 <translation id="6501957628055559556">所有容器</translation>
 <translation id="650266656685499220">如要建立相簿，請前往「Google 相片」</translation>
 <translation id="6503077044568424649">最常瀏覽</translation>

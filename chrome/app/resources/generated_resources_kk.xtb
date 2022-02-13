@@ -1970,6 +1970,7 @@
 <translation id="2933632078076743449">Соңғы жаңартылған уақыт:</translation>
 <translation id="2934999512438267372">MIDI құрылғыларын толық басқаруға рұқсат берілді</translation>
 <translation id="2935225303485967257">Профильдерді басқару</translation>
+<translation id="2935314715123552088">Белсенді eSIM профилін өшіру</translation>
 <translation id="2935654492420446828">Мектеп аккаунтын кейін енгізу</translation>
 <translation id="2936851848721175671">Сақтық көшірме жасау және қалпына келтіру</translation>
 <translation id="2939908794993783865">Қосымша өшірулі сайттар</translation>
@@ -3119,6 +3120,7 @@
 <translation id="4104163789986725820">Э&amp;кспорттау…</translation>
 <translation id="4107048419833779140">Жад құрылғыларын анықтау және шығару</translation>
 <translation id="4109135793348361820">Терезені <ph name="USER_NAME" /> пайдаланушысына (<ph name="USER_EMAIL" />) жылжыту</translation>
+<translation id="4110485659976215879">Ескертуді қалпына келтіру</translation>
 <translation id="4110490973560452005">Жүктеп алу аяқталды: <ph name="FILE_NAME" />. Жүктеп алынғандар жолағы аумағына оралу үшін Shift+F6 пернелерін басыңыз.</translation>
 <translation id="4110686435123617899">"<ph name="TITLE" />" альбомын таңдаңыз (<ph name="DESC" />).</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
@@ -3242,6 +3244,7 @@
 <translation id="4259388776256904261">Бұған біраз уақыт қажет болуы мүмкін.</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> қауіпті болуы мүмкін. Сканерлеу үшін Google Күшейтілген қорғаныс қызметіне жіберілсін бе? Жүктеп алынғандар жолағына оралу үшін Shift+F6 пернелерін басыңыз.</translation>
 <translation id="4261429981378979799">Кеңейтім рұқсаттары</translation>
+<translation id="4262004481148703251">Ескертуді жабу</translation>
 <translation id="4263223596040212967">Пернетақта форматын тексеріңіз және қайталап көріңіз.</translation>
 <translation id="426564820080660648">Жаңартуларды тексеру үшін Ethernet, Wi-Fi немесе ұялы деректерді пайдаланыңыз.</translation>
 <translation id="4266679478228765574">Қалталарды өшірсеңіз, бөлісу тоқтайды, бірақ файлдар жойылмайды.</translation>
@@ -3647,6 +3650,7 @@
 <translation id="4681453295291708042">Nearby Share функциясын өшіру</translation>
 <translation id="4681930562518940301">Түпнұсқа &amp;кескінді жаңа қойындыда ашу</translation>
 <translation id="4682551433947286597">Тұсқағаздар кіру экранында пайда болады.</translation>
+<translation id="4682830185876172415">Соңғы жүктеп алынғандар</translation>
 <translation id="4683629100208651599">Кіші әріппен жазу</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (әдепкі)</translation>
 <translation id="4684427112815847243">Барлығын синхрондау</translation>
@@ -3912,6 +3916,7 @@
 <translation id="496446150016900060">Wi-Fi желілерін телефонмен синхрондау</translation>
 <translation id="4965808351167763748">Шынымен бұл құрылғыны Hangouts Meet қызметін іске қосу үшін реттегіңіз келе ме?</translation>
 <translation id="4966972803217407697">Инкогнито режиміндесіз.</translation>
+<translation id="496742804571665842">eSIM профильдерін өшіру</translation>
 <translation id="496888482094675990">Файлдар қолданбасы Google Drive қызметінде, сыртқы жадта немесе Chrome OS құрылғысында сақталған файлдарыңызға жылдам кіру мүмкіндігін береді.</translation>
 <translation id="4971412780836297815">Аяқталғанда ашу</translation>
 <translation id="4971735654804503942">Қауіпті веб-сайттардан, жүктеп алынған файлдардан және кеңейтімдерден жылдам әрі белсенді қорғау. Құпия сөздің қолды болғанын хабарлайды. Браузерді пайдалану деректерінің Google-ға жіберілуін талап етеді.</translation>
@@ -6267,6 +6272,7 @@
 <translation id="7448430327655618736">Қолданбаларды автоматты түрде орнатыңыз</translation>
 <translation id="7449752890690775568">Құпия сөз өшірілсін бе?</translation>
 <translation id="7450761244949417357"><ph name="ALTERNATIVE_BROWSER_NAME" /> браузерінде ашылады.</translation>
+<translation id="7452166281927983300">Жабылған ескертулер (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">Бұл принтерді таңдау арқылы келесі кеңейтімге принтеріңізге кіру рұқсатын бересіз:</translation>
 <translation id="7454548535253569100">Портал: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">Қосымша контейнерлерді басқару</translation>
