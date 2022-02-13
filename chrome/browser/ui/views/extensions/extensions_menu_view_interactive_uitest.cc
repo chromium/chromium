@@ -111,7 +111,7 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
 
     // Wait for any pending animations to finish so that correct pinned
     // extensions and dialogs are actually showing.
-    views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarContainer());
+    WaitForAnimation();
   }
 
   bool VerifyUi() override {
@@ -217,16 +217,9 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
         });
     ASSERT_TRUE(iter != menu_items.end());
 
-    ui::MouseEvent click_event(ui::ET_MOUSE_RELEASED, gfx::Point(),
-                               gfx::Point(), base::TimeTicks(),
-                               ui::EF_LEFT_MOUSE_BUTTON, 0);
-    (*iter)
-        ->primary_action_button_for_testing()
-        ->button_controller()
-        ->OnMouseReleased(click_event);
+    ClickButton((*iter)->primary_action_button_for_testing());
 
-    // Wait for animations to finish.
-    views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarContainer());
+    WaitForAnimation();
   }
 
   void RightClickExtensionInToolbar(ToolbarActionView* extension) {
@@ -241,12 +234,9 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
   }
 
   void ClickExtensionsMenuButton(Browser* browser) {
-    ui::MouseEvent click_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                               base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, 0);
-    BrowserView::GetBrowserViewForBrowser(browser)
-        ->toolbar()
-        ->GetExtensionsButton()
-        ->OnMousePressed(click_event);
+    ClickButton(BrowserView::GetBrowserViewForBrowser(browser)
+                    ->toolbar()
+                    ->GetExtensionsButton());
   }
 
   void ClickExtensionsMenuButton() { ClickExtensionsMenuButton(browser()); }
@@ -545,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
 
   // Wait for any pending animations to finish so that correct pinned
   // extensions and dialogs are actually showing.
-  views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarContainer());
+  WaitForAnimation();
 
   // Verify extension is pinned but not stored as the popped out action.
   auto visible_icons = GetVisibleToolbarActionViews();
@@ -561,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
 
   // Wait for any pending animations to finish so that correct pinned
   // extensions and dialogs are actually showing.
-  views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarContainer());
+  WaitForAnimation();
 
   EXPECT_NE(nullptr, extensions_container->GetPoppedOutAction());
 
@@ -590,7 +580,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
 
   // Wait for any pending animations to finish so that correct pinned
   // extensions and dialogs are actually showing.
-  views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarContainer());
+  WaitForAnimation();
 
   // Verify extension is visible and tbere is a popped out action.
   auto visible_icons = GetVisibleToolbarActionViews();

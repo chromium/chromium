@@ -7,13 +7,16 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/path_service.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_paths.h"
+#include "extensions/browser/extension_system.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/view_utils.h"
 
@@ -47,6 +50,14 @@ ExtensionsToolbarUITest::LoadTestExtension(const std::string& path,
 void ExtensionsToolbarUITest::AppendExtension(
     scoped_refptr<const extensions::Extension> extension) {
   extensions_.push_back(std::move(extension));
+}
+
+void ExtensionsToolbarUITest::DisableExtension(
+    const extensions::ExtensionId& extension_id) {
+  extensions::ExtensionSystem::Get(browser()->profile())
+      ->extension_service()
+      ->DisableExtension(extension_id,
+                         extensions::disable_reason::DISABLE_USER_ACTION);
 }
 
 void ExtensionsToolbarUITest::SetUpIncognitoBrowser() {
@@ -94,4 +105,18 @@ ExtensionsToolbarUITest::GetVisibleToolbarActionViews() const {
   auto views = GetToolbarActionViews();
   base::EraseIf(views, [](views::View* view) { return !view->GetVisible(); });
   return views;
+}
+
+void ExtensionsToolbarUITest::ClickButton(views::Button* button) const {
+  ui::MouseEvent press_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, 0);
+  button->OnMousePressed(press_event);
+  ui::MouseEvent release_event(ui::ET_MOUSE_RELEASED, gfx::Point(),
+                               gfx::Point(), base::TimeTicks(),
+                               ui::EF_LEFT_MOUSE_BUTTON, 0);
+  button->OnMouseReleased(release_event);
+}
+
+void ExtensionsToolbarUITest::WaitForAnimation() {
+  views::test::WaitForAnimatingLayoutManager(GetExtensionsToolbarContainer());
 }

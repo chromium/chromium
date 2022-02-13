@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_button.h"
 #include "extensions/common/extension.h"
 
 class ExtensionsToolbarContainer;
@@ -17,6 +18,10 @@ class ToolbarActionView;
 
 namespace extensions {
 class Extension;
+}
+
+namespace views {
+class Button;
 }
 
 // Base class for interactive ui tests that use the toolbar area. This is used
@@ -53,6 +58,9 @@ class ExtensionsToolbarUITest : public DialogBrowserTest {
   // Adds |extension| to the back of |extensions_|.
   void AppendExtension(scoped_refptr<const extensions::Extension> extension);
 
+  // Disables the extension of the given `extension_id`.
+  void DisableExtension(const extensions::ExtensionId& extension_id);
+
   // Sets up |incognito_browser_|.
   void SetUpIncognitoBrowser();
 
@@ -73,6 +81,13 @@ class ExtensionsToolbarUITest : public DialogBrowserTest {
   // Gets only the visible ToolbarActionView instances from
   // GetToolbarActionViews().
   std::vector<ToolbarActionView*> GetVisibleToolbarActionViews() const;
+
+  // Triggers the press and release event of the given `button`.
+  void ClickButton(views::Button* button) const;
+
+  // Waits for the extensions container to animate (on pin, unpin, pop-out,
+  // etc.)
+  void WaitForAnimation();
 
  private:
   raw_ptr<Browser> incognito_browser_ = nullptr;
