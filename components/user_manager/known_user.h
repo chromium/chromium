@@ -356,20 +356,6 @@ void USER_MANAGER_EXPORT SetGAPSCookie(const AccountId& account_id,
 // instead.
 std::string USER_MANAGER_EXPORT GetGAPSCookie(const AccountId& account_id);
 
-// Saves whether the user authenticates using SAML.
-// TODO(https://crbug.com/1150434): Deprecated, use KnownUser::UpdateUsingSAML
-// instead.
-void USER_MANAGER_EXPORT UpdateUsingSAML(const AccountId& account_id,
-                                         const bool using_saml);
-
-// Returns if SAML needs to be used for authentication of the user with
-// |account_id|, if it is known (was set by a |UpdateUsingSaml| call).
-// Otherwise
-// returns false.
-// TODO(https://crbug.com/1150434): Deprecated, use KnownUser::IsUsingSAML
-// instead.
-bool USER_MANAGER_EXPORT IsUsingSAML(const AccountId& account_id);
-
 // Setter and getter for the known user preference that stores whether the user
 // authenticated via SAML using the principals API.
 // TODO(https://crbug.com/1150434): Deprecated, use

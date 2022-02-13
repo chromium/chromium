@@ -836,7 +836,8 @@ void UserManagerBase::EnsureUsersLoaded() {
         User::CreateRegularUser(*it, GetStoredUserType(prefs_user_types, *it));
     user->set_oauth_token_status(LoadUserOAuthStatus(*it));
     user->set_force_online_signin(LoadForceOnlineSignin(*it));
-    user->set_using_saml(known_user::IsUsingSAML(*it));
+    KnownUser known_user(GetLocalState());
+    user->set_using_saml(known_user.IsUsingSAML(*it));
     users_.push_back(user);
   }
 

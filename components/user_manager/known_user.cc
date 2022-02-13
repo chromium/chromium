@@ -950,22 +950,6 @@ std::string GetGAPSCookie(const AccountId& account_id) {
   return KnownUser(local_state).GetGAPSCookie(account_id);
 }
 
-void UpdateUsingSAML(const AccountId& account_id, const bool using_saml) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return;
-  return KnownUser(local_state).UpdateUsingSAML(account_id, using_saml);
-}
-
-bool IsUsingSAML(const AccountId& account_id) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return false;
-  return KnownUser(local_state).IsUsingSAML(account_id);
-}
-
 void USER_MANAGER_EXPORT
 UpdateIsUsingSAMLPrincipalsAPI(const AccountId& account_id,
                                bool is_using_saml_principals_api) {
