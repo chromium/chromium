@@ -221,8 +221,9 @@ export class PluginController {
   }
 
   /**
+   * override
+   * Note: Not using @override because it breaks TypeScript.
    * @return {boolean}
-   * @override
    */
   get isActive() {
     // Check whether `plugin_` is defined as a signal that `init()` was called.
@@ -230,8 +231,8 @@ export class PluginController {
   }
 
   /**
+   * override
    * @param {boolean} isActive
-   * @override
    */
   set isActive(isActive) {
     const wasActive = this.isActive;
@@ -253,8 +254,8 @@ export class PluginController {
   }
 
   /**
+   * override
    * @return {!EventTarget}
-   * @override
    */
   getEventTarget() {
     return this.eventTarget_;
@@ -283,7 +284,8 @@ export class PluginController {
   /**
    * Notify the plugin to stop reacting to scroll events while zoom is taking
    * place to avoid flickering.
-   * @override
+   *
+   * override
    */
   beforeZoom() {
     this.postMessage_({type: 'stopScrolling'});
@@ -308,7 +310,8 @@ export class PluginController {
   /**
    * Notify the plugin of the zoom change and to continue reacting to scroll
    * events.
-   * @override
+   *
+   * override
    */
   afterZoom() {
     const position = this.viewport_.position;
@@ -359,17 +362,17 @@ export class PluginController {
   }
 
 
-  /** @override */
+  // override
   rotateClockwise() {
     this.postMessage_({type: 'rotateClockwise'});
   }
 
-  /** @override */
+  // override
   rotateCounterclockwise() {
     this.postMessage_({type: 'rotateCounterclockwise'});
   }
 
-  /** @override */
+  // override
   setDisplayAnnotations(displayAnnotations) {
     this.postMessage_({
       type: 'displayAnnotations',
@@ -377,7 +380,7 @@ export class PluginController {
     });
   }
 
-  /** @override */
+  // override
   setTwoUpView(enableTwoUpView) {
     this.postMessage_({
       type: 'setTwoUpView',
@@ -385,7 +388,7 @@ export class PluginController {
     });
   }
 
-  /** @override */
+  // override
   print() {
     this.postMessage_({type: 'print'});
   }
@@ -471,7 +474,7 @@ export class PluginController {
     });
   }
 
-  /** @override */
+  // override
   save(requestType) {
     const resolver = new PromiseResolver();
     const newToken = createToken();
@@ -484,7 +487,7 @@ export class PluginController {
     return resolver.promise;
   }
 
-  /** @override */
+  // override
   saveAttachment(index) {
     return this.postMessageWithReply_({
       type: 'saveAttachment',
@@ -492,7 +495,7 @@ export class PluginController {
     });
   }
 
-  /** @override */
+  // override
   async load(fileName, data) {
     // Load `data` into the PDF plugin. The unseasoned plugin transfers the data
     // to be loaded within the inner frame, while the Pepper plugin updates
@@ -521,7 +524,7 @@ export class PluginController {
     }
   }
 
-  /** @override */
+  // override
   unload() {
     this.plugin_.style.display = 'none';
     this.isActive = false;
