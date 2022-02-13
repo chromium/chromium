@@ -153,6 +153,9 @@ void ImeService::RunInMainSequence(ImeSequencedTask task, int task_id) {
   main_task_runner_->PostTask(FROM_HERE, base::BindOnce(task, task_id));
 }
 
+// TODO(b/218815885): Use consistent feature flag names as in CrOS
+// base::Feature::name (instead of slightly-different bespoke names), and always
+// wire 1:1 to CrOS feature flags (instead of having any extra logic).
 bool ImeService::IsFeatureEnabled(const char* feature_name) {
   if (strcmp(feature_name, "AssistiveEmojiEnhanced") == 0) {
     return base::FeatureList::IsEnabled(
@@ -174,9 +177,6 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
   }
   if (strcmp(feature_name, "SystemJapanesePhysicalTyping") == 0) {
     return features::IsSystemJapanesePhysicalTypingEnabled();
-  }
-  if (strcmp(feature_name, "SystemLatinPhysicalTyping") == 0) {
-    return true;
   }
   if (strcmp(feature_name, "SystemTransliterationPhysicalTyping") == 0) {
     return base::FeatureList::IsEnabled(
