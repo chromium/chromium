@@ -3,9 +3,43 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/app_list/search/app_list_search_test_helper.h"
+
+#include "base/run_loop.h"
+#include "chrome/browser/ui/app_list/search/search_controller.h"
 #include "chrome/browser/ui/browser.h"
 
 namespace app_list {
+
+namespace {
+
+// Waiter to ensure results for a query have been published by the search
+// controller.
+class ResultsWaiter : public SearchController::Observer {
+ public:
+  explicit ResultsWaiter(const std::u16string& query) : query_(query) {
+    observer_.Observe(::test::GetAppListClient()->search_controller());
+  }
+  ~ResultsWaiter() override = default;
+
+  void OnResultsAdded(
+      const std::u16string& query,
+      const std::vector<const ChromeSearchResult*>& results) override {
+    if (query != query_)
+      return;
+    observer_.Reset();
+    run_loop_.Quit();
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+ private:
+  const std::u16string query_;
+  base::RunLoop run_loop_;
+  base::ScopedObservation<SearchController, SearchController::Observer>
+      observer_{this};
+};
+
+}  // namespace
 
 AppListSearchBrowserTest::AppListSearchBrowserTest() {
   scoped_feature_list_.InitWithFeatures(
@@ -55,12 +89,16 @@ void AppListSearchBrowserTest::SearchAndWaitForProviders(
   // run loop timing out.
   GetClient()->search_controller()->set_results_changed_callback_for_test(
       std::move(callback));
+  ResultsWaiter results_waiter(base::ASCIIToUTF16(query));
   GetClient()->StartSearch(base::ASCIIToUTF16(query));
   run_loop.Run();
   // Once the run loop is finished, we have to remove the callback because the
   // referenced variables are about to go out of scope.
   GetClient()->search_controller()->set_results_changed_callback_for_test(
       base::DoNothing());
+  // Wait for some results to get published for the query - result publishing
+  // may get delayed due to a burn in period.
+  results_waiter.Wait();
 }
 
 std::vector<ChromeSearchResult*> AppListSearchBrowserTest::PublishedResults() {

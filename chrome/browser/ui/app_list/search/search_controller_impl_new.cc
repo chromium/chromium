@@ -257,6 +257,9 @@ void SearchControllerImplNew::SetResults(const SearchProvider* provider,
   } else {
     SetSearchResults(provider);
   }
+
+  if (results_changed_callback_)
+    results_changed_callback_.Run(provider->ResultType());
 }
 
 void SearchControllerImplNew::SetSearchResults(const SearchProvider* provider) {
@@ -571,7 +574,7 @@ base::Time SearchControllerImplNew::session_start() {
 
 void SearchControllerImplNew::set_results_changed_callback_for_test(
     ResultsChangedCallback callback) {
-  // Unused.
+  results_changed_callback_ = std::move(callback);
 }
 
 void SearchControllerImplNew::disable_ranking_for_test() {

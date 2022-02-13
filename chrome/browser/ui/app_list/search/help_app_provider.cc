@@ -241,7 +241,8 @@ void HelpAppProvider::Start(const std::u16string& query) {
     LogListSearchResultState(ListSearchResultState::kNoHelpAppIcon);
     // This prevents a timeout in the test, but it does not change the user
     // experience because the results were already cleared at the start.
-    ClearResults();
+    SearchProvider::Results search_results;
+    SwapResults(&search_results);
     return;
   }
 

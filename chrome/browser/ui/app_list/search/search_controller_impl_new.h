@@ -177,6 +177,9 @@ class SearchControllerImplNew : public SearchController {
   // must therefore be stored separately.
   base::flat_map<std::string, int> ids_to_burnin_iteration_;
 
+  // If set, called when results set by a provider change.
+  ResultsChangedCallback results_changed_callback_;
+
   std::unique_ptr<SearchMetricsObserver> metrics_observer_;
   using Providers = std::vector<std::unique_ptr<SearchProvider>>;
   Providers providers_;
