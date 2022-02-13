@@ -22,6 +22,30 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="FileBrowser.ArchiveSize.{Extension}" units="100MiB"
+    expires_after="2022-12-01">
+  <owner>msalomao@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: The size in units of 100MiB of archives users
+    attempt to open. Units are rounded up (e.g., 40MiB gets reported as 100MiB).
+  </summary>
+  <token key="Extension">
+    <variant name="7z"/>
+    <variant name="bz2"/>
+    <variant name="crx"/>
+    <variant name="gz"/>
+    <variant name="iso"/>
+    <variant name="rar"/>
+    <variant name="tar"/>
+    <variant name="tbz"/>
+    <variant name="tbz2"/>
+    <variant name="tgz"/>
+    <variant name="xz"/>
+    <variant name="zip"/>
+  </token>
+</histogram>
+
 <histogram name="FileBrowser.ChangeDirectory.RootType"
     enum="FileManagerRootType" expires_after="2022-04-10">
   <owner>simmonsjosh@google.com</owner>

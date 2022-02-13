@@ -923,6 +923,12 @@ export class FileTasks {
     const tracker = this.directoryModel_.createDirectoryChangeTracker();
     tracker.start();
     try {
+      this.entries_.forEach(entry => entry.getMetadata(metadata => {
+        const extension = entry.name.split('.').pop().toLowerCase();
+        metrics.recordSmallCount(
+            `ArchiveSize.${extension}`,
+            Math.ceil(metadata.size / 104857600));  // Each unit = 100MiB
+      }));
       // TODO(mtomasz): Move conversion from entry to url to custom bindings.
       // crbug.com/345527.
       const urls = util.entriesToURLs(this.entries_);
