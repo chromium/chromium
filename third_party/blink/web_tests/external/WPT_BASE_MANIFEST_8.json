@@ -109668,32 +109668,6 @@
        {}
       ]
      ],
-     "font-palette-35.html": [
-      "fcd7e29dd97a242690b396998ede820a0d6b9c7d",
-      [
-       null,
-       [
-        [
-         "/css/css-fonts/font-palette-35-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "font-palette-36.html": [
-      "d84a9aa12396ad121a61c3168c1392f79474c27e",
-      [
-       null,
-       [
-        [
-         "/css/css-fonts/font-palette-35-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
      "font-palette-4.html": [
       "540ba2542190205fbebc43b3b90381ab19a07b5e",
       [
@@ -249957,10 +249931,6 @@
      ],
      "font-palette-34-ref.html": [
       "4fe9d815f8c5faf3c3f5027f22e50ea10ae8e5aa",
-      []
-     ],
-     "font-palette-35-ref.html": [
-      "5a8078d913a8733053fbef02b6257fbdc40f7824",
       []
      ],
      "font-palette-4-notref.html": [
