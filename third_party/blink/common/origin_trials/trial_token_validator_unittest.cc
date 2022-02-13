@@ -23,8 +23,7 @@
 #include "third_party/blink/public/common/origin_trials/trial_token_result.h"
 #include "url/gurl.h"
 
-namespace blink {
-namespace trial_token_validator_unittest {
+namespace blink::trial_token_validator_unittest {
 
 // These are sample public keys for testing the API.
 
@@ -293,8 +292,21 @@ TEST_F(TrialTokenValidatorTest, ValidateValidToken) {
 }
 
 TEST_F(TrialTokenValidatorTest, ValidateThirdPartyTokenFromExternalScript) {
+  url::Origin third_party_origins[] = {appropriate_origin_};
   TrialTokenResult result = validator_.ValidateToken(
-      kThirdPartyToken, inappropriate_origin_, &appropriate_origin_, Now());
+      kThirdPartyToken, inappropriate_origin_, third_party_origins, Now());
+  EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result.Status());
+  EXPECT_EQ(kAppropriateFeatureName, result.ParsedToken()->feature_name());
+  EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
+  EXPECT_EQ(true, result.ParsedToken()->is_third_party());
+}
+
+TEST_F(TrialTokenValidatorTest,
+       ValidateThirdPartyTokenFromMultipleExternalScripts) {
+  url::Origin third_party_origins[] = {inappropriate_origin_,
+                                       appropriate_origin_};
+  TrialTokenResult result = validator_.ValidateToken(
+      kThirdPartyToken, inappropriate_origin_, third_party_origins, Now());
   EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result.Status());
   EXPECT_EQ(kAppropriateFeatureName, result.ParsedToken()->feature_name());
   EXPECT_EQ(kSampleTokenExpiryTime, result.ParsedToken()->expiry_time());
@@ -303,19 +315,36 @@ TEST_F(TrialTokenValidatorTest, ValidateThirdPartyTokenFromExternalScript) {
 
 TEST_F(TrialTokenValidatorTest,
        ValidateThirdPartyTokenFromInappropriateScriptOrigin) {
+  url::Origin third_party_origins[] = {inappropriate_origin_};
   EXPECT_EQ(blink::OriginTrialTokenStatus::kWrongOrigin,
             validator_
                 .ValidateToken(kThirdPartyToken, appropriate_origin_,
-                               &inappropriate_origin_, Now())
+                               third_party_origins, Now())
+                .Status());
+}
+
+TEST_F(TrialTokenValidatorTest,
+       ValidateThirdPartyTokenFromMultipleInappropriateScriptOrigins) {
+  url::Origin third_party_origins[] = {inappropriate_origin_, insecure_origin_};
+  EXPECT_EQ(blink::OriginTrialTokenStatus::kWrongOrigin,
+            validator_
+                .ValidateToken(kThirdPartyToken, appropriate_origin_,
+                               third_party_origins, Now())
                 .Status());
 }
 
 TEST_F(TrialTokenValidatorTest, ValidateThirdPartyTokenNotFromExternalScript) {
-  EXPECT_EQ(
-      blink::OriginTrialTokenStatus::kWrongOrigin,
-      validator_
-          .ValidateToken(kThirdPartyToken, appropriate_origin_, nullptr, Now())
-          .Status());
+  EXPECT_EQ(blink::OriginTrialTokenStatus::kWrongOrigin,
+            validator_
+                .ValidateToken(kThirdPartyToken, appropriate_origin_,
+                               base::span<const url::Origin>{}, Now())
+                .Status());
+  std::vector<url::Origin> empty_origin_list;
+  EXPECT_EQ(blink::OriginTrialTokenStatus::kWrongOrigin,
+            validator_
+                .ValidateToken(kThirdPartyToken, appropriate_origin_,
+                               empty_origin_list, Now())
+                .Status());
 }
 
 TEST_F(TrialTokenValidatorTest, ValidateInappropriateOrigin) {
@@ -403,8 +432,9 @@ TEST_F(TrialTokenValidatorTest,
 TEST_F(TrialTokenValidatorTest,
        ValidatorRespectsDisabledFeaturesForUserWithThirdPartyToken) {
   // Token should be valid if the feature is not disabled for user.
+  url::Origin third_party_origins[] = {appropriate_origin_};
   TrialTokenResult result = validator_.ValidateToken(
-      kThirdPartyUsageSubsetToken, inappropriate_origin_, &appropriate_origin_,
+      kThirdPartyUsageSubsetToken, inappropriate_origin_, third_party_origins,
       Now());
   EXPECT_EQ(blink::OriginTrialTokenStatus::kSuccess, result.Status());
   EXPECT_EQ(kAppropriateThirdPartyFeatureName,
@@ -416,7 +446,7 @@ TEST_F(TrialTokenValidatorTest,
       blink::OriginTrialTokenStatus::kFeatureDisabledForUser,
       validator_
           .ValidateToken(kThirdPartyUsageSubsetToken, inappropriate_origin_,
-                         &appropriate_origin_, Now())
+                         third_party_origins, Now())
           .Status());
 }
 
@@ -504,5 +534,4 @@ TEST_F(TrialTokenValidatorTest, ValidateRequestMultipleHeaderValues) {
       kAppropriateFeatureName, Now()));
 }
 
-}  // namespace trial_token_validator_unittest
-}  // namespace blink
+}  // namespace blink::trial_token_validator_unittest

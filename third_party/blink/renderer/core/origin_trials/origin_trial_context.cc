@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 
 #include <ostream>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
@@ -307,32 +308,31 @@ OriginTrialContext::GetEnabledNavigationFeatures() const {
 }
 
 void OriginTrialContext::AddToken(const String& token) {
-  AddTokenInternal(token, GetSecurityOrigin(), IsSecureContext(), nullptr,
-                   false);
+  AddTokenInternal(token, GetCurrentOriginInfo(), nullptr);
 }
 
 void OriginTrialContext::AddTokenFromExternalScript(
     const String& token,
-    const SecurityOrigin* origin) {
-  bool is_script_origin_secure = false;
-  if (origin) {
-    DVLOG(1) << "AddTokenFromExternalScript: " << origin->ToString();
-    is_script_origin_secure = origin->IsPotentiallyTrustworthy();
+    const Vector<scoped_refptr<SecurityOrigin>>& external_origins) {
+  Vector<OriginInfo> script_origins;
+  for (const scoped_refptr<SecurityOrigin>& origin : external_origins) {
+    OriginInfo origin_info = {.origin = origin,
+                              .is_secure = origin->IsPotentiallyTrustworthy()};
+    DVLOG(1) << "AddTokenFromExternalScript: " << origin->ToString()
+             << ", secure = " << origin_info.is_secure;
+    script_origins.push_back(origin_info);
   }
-  AddTokenInternal(token, GetSecurityOrigin(), IsSecureContext(), origin,
-                   is_script_origin_secure);
+  AddTokenInternal(token, GetCurrentOriginInfo(), &script_origins);
 }
 
-void OriginTrialContext::AddTokenInternal(const String& token,
-                                          const SecurityOrigin* origin,
-                                          bool is_origin_secure,
-                                          const SecurityOrigin* script_origin,
-                                          bool is_script_origin_secure) {
+void OriginTrialContext::AddTokenInternal(
+    const String& token,
+    const OriginInfo origin,
+    const Vector<OriginInfo>* script_origins) {
   if (token.IsEmpty())
     return;
 
-  bool enabled = EnableTrialFromToken(origin, is_origin_secure, script_origin,
-                                      is_script_origin_secure, token);
+  bool enabled = EnableTrialFromToken(token, origin, script_origins);
   if (enabled) {
     // Only install pending features if the provided token is valid.
     // Otherwise, there was no change to the list of enabled features.
@@ -344,9 +344,10 @@ void OriginTrialContext::AddTokens(const Vector<String>& tokens) {
   if (tokens.IsEmpty())
     return;
   bool found_valid = false;
+  OriginInfo origin_info = GetCurrentOriginInfo();
   for (const String& token : tokens) {
     if (!token.IsEmpty()) {
-      if (EnableTrialFromToken(GetSecurityOrigin(), IsSecureContext(), token))
+      if (EnableTrialFromToken(token, origin_info))
         found_valid = true;
     }
   }
@@ -555,9 +556,10 @@ OriginTrialStatus OriginTrialContext::EnableTrialFromName(
                             : OriginTrialStatus::kOSNotSupported;
 }
 
-void OriginTrialContext::ValidateTokenResult(bool is_origin_secure,
-                                             bool is_script_origin_secure,
-                                             TrialTokenResult& token_result) {
+void OriginTrialContext::ValidateTokenResult(
+    bool is_origin_secure,
+    const Vector<OriginInfo>* script_origins,
+    TrialTokenResult& token_result) {
   DCHECK_EQ(token_result.Status(), OriginTrialTokenStatus::kSuccess);
 
   const TrialToken& parsed_token = *token_result.ParsedToken();
@@ -567,55 +569,91 @@ void OriginTrialContext::ValidateTokenResult(bool is_origin_secure,
     return;
   }
 
-  bool is_secure = is_origin_secure;
-  if (parsed_token.is_third_party()) {
-    if (!origin_trials::IsTrialEnabledForThirdPartyOrigins(
-            parsed_token.feature_name())) {
-      DVLOG(1) << "ValidateTokenResult: feature disabled for third party trial";
-      token_result.SetStatus(OriginTrialTokenStatus::kFeatureDisabled);
-      return;
-    }
-    // For third-party tokens, both the current origin and the the script origin
-    // must be secure.
-    is_secure &= is_script_origin_secure;
+  if (parsed_token.is_third_party() &&
+      !origin_trials::IsTrialEnabledForThirdPartyOrigins(
+          parsed_token.feature_name())) {
+    DVLOG(1) << "ValidateTokenResult: feature disabled for third party trial";
+    token_result.SetStatus(OriginTrialTokenStatus::kFeatureDisabled);
+    return;
   }
 
   // Origin trials are only enabled for secure origins. The only exception
-  // is for deprecation trials.
-  if (!is_secure && !origin_trials::IsTrialEnabledForInsecureContext(
-                        parsed_token.feature_name())) {
+  // is for deprecation trials. For those, the secure origin check can be
+  // skipped.
+  if (origin_trials::IsTrialEnabledForInsecureContext(
+          parsed_token.feature_name())) {
+    return;
+  }
+
+  bool is_secure = is_origin_secure;
+  if (parsed_token.is_third_party()) {
+    // For third-party tokens, both the current origin and the script origin
+    // must be secure. Due to subdomain matching, the token origin might not
+    // be an exact match for one of the provided script origins, and the result
+    // doesn't indicate which specific origin was matched. This means it's not
+    // a direct lookup to find the appropriate script origin. To avoid re-doing
+    // all the origin comparisons, there are short cuts that depend on how many
+    // script origins were provided. There must be at least one, or the third
+    // party token would not be validated successfully.
+    DCHECK(script_origins);
+    if (script_origins->size() == 1) {
+      // Only one script origin, it must be the origin used for validation.
+      is_secure &= script_origins->at(0).is_secure;
+    } else {
+      // Match the origin in the token to one of the multiple script origins, if
+      // necessary. If all the provided origins are secure, then it doesn't
+      // matter which one matched. Only insecure origins need to be matched.
+      bool is_script_origin_secure = true;
+      for (const OriginInfo& script_origin_info : *script_origins) {
+        if (script_origin_info.is_secure) {
+          continue;
+        }
+        // Re-use the IsValid() check, as it contains the subdomain matching
+        // logic. The token validation takes the first valid match, so can
+        // assume that success means it was the origin used.
+        if (parsed_token.IsValid(script_origin_info.origin->ToUrlOrigin(),
+                                 base::Time::Now()) ==
+            OriginTrialTokenStatus::kSuccess) {
+          is_script_origin_secure = false;
+          break;
+        }
+      }
+      is_secure &= is_script_origin_secure;
+    }
+  }
+
+  if (!is_secure) {
     DVLOG(1) << "ValidateTokenResult: not secure";
     token_result.SetStatus(OriginTrialTokenStatus::kInsecure);
   }
 }
 
-bool OriginTrialContext::EnableTrialFromToken(const SecurityOrigin* origin,
-                                              bool is_secure,
-                                              const String& token) {
-  return EnableTrialFromToken(origin, is_secure, nullptr, false, token);
+bool OriginTrialContext::EnableTrialFromToken(const String& token,
+                                              const OriginInfo origin_info) {
+  return EnableTrialFromToken(token, origin_info, nullptr);
 }
 
 bool OriginTrialContext::EnableTrialFromToken(
-    const SecurityOrigin* origin,
-    bool is_origin_secure,
-    const SecurityOrigin* script_origin,
-    bool is_script_origin_secure,
-    const String& token) {
+    const String& token,
+    const OriginInfo origin_info,
+    const Vector<OriginInfo>* script_origins) {
   DCHECK(!token.IsEmpty());
   OriginTrialStatus trial_status = OriginTrialStatus::kValidTokenNotProvided;
   StringUTF8Adaptor token_string(token);
-  url::Origin script_url_origin;
-  if (script_origin)
-    script_url_origin = script_origin->ToUrlOrigin();
+  std::vector<url::Origin> script_url_origins;
+  if (script_origins) {
+    for (const OriginInfo& script_origin_info : *script_origins) {
+      script_url_origins.push_back(script_origin_info.origin->ToUrlOrigin());
+    }
+  }
   TrialTokenResult token_result = trial_token_validator_->ValidateToken(
-      token_string.AsStringPiece(), origin->ToUrlOrigin(),
-      script_origin ? &script_url_origin : nullptr, base::Time::Now());
+      token_string.AsStringPiece(), origin_info.origin->ToUrlOrigin(),
+      script_url_origins, base::Time::Now());
   DVLOG(1) << "EnableTrialFromToken: token_result = " << token_result.Status()
            << ", token = " << token;
 
   if (token_result.Status() == OriginTrialTokenStatus::kSuccess) {
-    ValidateTokenResult(is_origin_secure, is_script_origin_secure,
-                        token_result);
+    ValidateTokenResult(origin_info.is_secure, script_origins, token_result);
 
     if (token_result.Status() == OriginTrialTokenStatus::kSuccess) {
       String trial_name =
@@ -695,6 +733,10 @@ bool OriginTrialContext::IsSecureContext() {
     is_secure = context_->IsSecureContext();
   }
   return is_secure;
+}
+
+OriginTrialContext::OriginInfo OriginTrialContext::GetCurrentOriginInfo() {
+  return {.origin = GetSecurityOrigin(), .is_secure = IsSecureContext()};
 }
 
 }  // namespace blink

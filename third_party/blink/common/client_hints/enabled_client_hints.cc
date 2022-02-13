@@ -110,12 +110,12 @@ bool IsUserAgentOriginTrialEnabled(
   // them are valid third-party OT tokens for the feature_name trial.
   if (validator.IsTrialPossibleOnOrigin(*third_party_url)) {
     url::Origin origin = url::Origin::Create(url);
-    url::Origin third_party_origin = url::Origin::Create(*third_party_url);
+    url::Origin third_party_origins[] = {url::Origin::Create(*third_party_url)};
     size_t iter = 0;
     std::string token;
     while (response_headers->EnumerateHeader(&iter, "Origin-Trial", &token)) {
       blink::TrialTokenResult result =
-          validator.ValidateToken(token, origin, &third_party_origin, now);
+          validator.ValidateToken(token, origin, third_party_origins, now);
       if (result.Status() == blink::OriginTrialTokenStatus::kSuccess) {
         if (result.ParsedToken()->feature_name() == feature_name) {
           enabled = true;

@@ -111,10 +111,12 @@ class CORE_EXPORT OriginTrialContext final
 
   void AddToken(const String& token);
   // Add a token injected from external script. The token may be a third-party
-  // token, which will be validated against the given origin of the injecting
-  // script.
-  void AddTokenFromExternalScript(const String& token,
-                                  const SecurityOrigin* origin);
+  // token, which will be validated against the given origin(s) of the injecting
+  // script. This should only be called with at least one valid external origin,
+  // otherwise use AddToken().
+  void AddTokenFromExternalScript(
+      const String& token,
+      const Vector<scoped_refptr<SecurityOrigin>>& external_origins);
   void AddTokens(const Vector<String>& tokens);
 
   void ActivateWorkerInheritedFeatures(
@@ -175,13 +177,16 @@ class CORE_EXPORT OriginTrialContext final
   }
 
  private:
+  struct OriginInfo {
+    const scoped_refptr<const SecurityOrigin> origin;
+    bool is_secure;
+  };
+
   // Handle token from document origin or third party origins, initialize
   // features if the token is valid.
   void AddTokenInternal(const String& token,
-                        const SecurityOrigin* origin,
-                        bool is_origin_secure,
-                        const SecurityOrigin* script_origin,
-                        bool is_script_origin_secure);
+                        const OriginInfo origin_info,
+                        const Vector<OriginInfo>* script_origins);
 
   // If this returns false, the trial cannot be enabled (e.g. due to it is
   // invalid in the browser's present configuration).
@@ -195,24 +200,20 @@ class CORE_EXPORT OriginTrialContext final
   // Validate the trial token. If valid, the trial named in the token is
   // added to the list of enabled trials. Returns true or false to indicate if
   // the token is valid.
-  bool EnableTrialFromToken(const SecurityOrigin* origin,
-                            bool is_secure,
-                            const String& token);
+  bool EnableTrialFromToken(const String& token, const OriginInfo origin_info);
 
-  // Validate the trial token injected by external script from script_origin.
-  // If is_third_party flag is set on the token, script_origin will be used for
+  // Validate the trial token injected by external script from script_origins.
+  // If is_third_party flag is set on the token, script_origins will be used for
   // validation. Otherwise it's the same as above.
-  bool EnableTrialFromToken(const SecurityOrigin* origin,
-                            bool is_origin_secure,
-                            const SecurityOrigin* script_origin,
-                            bool is_script_origin_secure,
-                            const String& token);
+  bool EnableTrialFromToken(const String& token,
+                            const OriginInfo origin_info,
+                            const Vector<OriginInfo>* script_origins);
 
   // Validate the token result returned from token validator.
   // `token_result` is modified in place to reflect the `OriginTrialTokenStatus`
   // change.
   void ValidateTokenResult(bool is_secure,
-                           bool is_secure_script_origin,
+                           const Vector<OriginInfo>* script_origins,
                            TrialTokenResult& token_result);
 
   // Installs a series of OriginTrialFeatures listed in a HashSet. The return
@@ -234,6 +235,7 @@ class CORE_EXPORT OriginTrialContext final
 
   const SecurityOrigin* GetSecurityOrigin();
   bool IsSecureContext();
+  OriginInfo GetCurrentOriginInfo();
 
   HashSet<OriginTrialFeature> enabled_features_;
   HashSet<OriginTrialFeature> installed_features_;

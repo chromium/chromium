@@ -107,17 +107,26 @@ void HttpEquiv::ProcessHttpEquivOriginTrial(LocalDOMWindow* window,
   if (!window)
     return;
   // For meta tags injected by script, process the token with the origin of the
-  // external script, if available.
+  // external script, if available. Get the top 3 script urls from the stack, as
+  // the script that injected the meta tag might not be topmost. For example,
+  // due to a script that overrides builtin functions, like Node.appendChild().
+  // See crbug.com/1193888.
   // NOTE: The external script origin is not considered security-critical. See
   // the comment thread in the design doc for details:
   // https://docs.google.com/document/d/1xALH9W7rWmX0FpjudhDeS2TNTEOXuPn4Tlc9VmuPdHA/edit?disco=AAAAJyG8StI
-  KURL external_script_url(GetCurrentScriptUrl());
+  Vector<String> candidate_scripts =
+      GetScriptUrlsFromCurrentStack(/*unique_url_count=*/3);
+  Vector<scoped_refptr<SecurityOrigin>> external_origins;
+  for (const String& external_script : candidate_scripts) {
+    KURL external_script_url(external_script);
+    if (!external_script_url.IsValid())
+      continue;
+    external_origins.push_back(SecurityOrigin::Create(external_script_url));
+  }
 
-  if (external_script_url.IsValid()) {
-    scoped_refptr<SecurityOrigin> external_origin =
-        SecurityOrigin::Create(external_script_url);
+  if (external_origins.size() > 0) {
     window->GetOriginTrialContext()->AddTokenFromExternalScript(
-        content, external_origin.get());
+        content, external_origins);
     return;
   }
 

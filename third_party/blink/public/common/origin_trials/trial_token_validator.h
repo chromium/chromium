@@ -10,6 +10,7 @@
 #include <vector>
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -48,14 +49,15 @@ class BLINK_COMMON_EXPORT TrialTokenValidator {
                                          const url::Origin& origin,
                                          base::Time current_time) const;
   // Validates a token for the given |origin|. If identified as a third-party
-  // token, instead validate for the given |third_party_origin|. Validation of a
-  // third-party token will fail if |third_party-origin| is not given. Returns
-  // the same result as ValidateToken() above.
+  // token, instead validate for the given list in |third_party_origins|.
+  // Validation of a third-party token will fail if |third_party_origins| is
+  // empty. Returns the same result as ValidateToken() above.
   // This method is thread-safe.
-  virtual TrialTokenResult ValidateToken(base::StringPiece token,
-                                         const url::Origin& origin,
-                                         const url::Origin* third_party_origin,
-                                         base::Time current_time) const;
+  virtual TrialTokenResult ValidateToken(
+      base::StringPiece token,
+      const url::Origin& origin,
+      base::span<const url::Origin> third_party_origins,
+      base::Time current_time) const;
 
   // |request| must not be nullptr.
   // NOTE: This is not currently used, but remains here for future trials.
