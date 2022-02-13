@@ -35,15 +35,26 @@ std::unique_ptr<apps::IconKey> CreateIconKey(bool is_browser_load_success) {
   // Use Chrome or Chromium icon by default.
   int32_t resource_id = IDR_PRODUCT_LOGO_256;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Canary icon only exists in branded builds. Fallback to Canary icon
-  // if ash-chrome web browser is still enabled.
-  if (crosapi::browser_util::IsAshWebBrowserEnabled())
+  if (crosapi::browser_util::IsAshWebBrowserEnabled()) {
+    // Canary icon only exists in branded builds. Fallback to Canary icon
+    // if ash-chrome web browser is still enabled.
     resource_id = IDR_PRODUCT_LOGO_256_CANARY;
+  } else {
+    // Otherwise use the product icon. This is consistent with the one
+    // in chrome/browser/resources/chrome_app/manifest.json.
+    resource_id = IDR_CHROME_APP_ICON_192;
+  }
 #endif
 
   auto icon_key = std::make_unique<apps::IconKey>(
       apps::IconKey::kDoesNotChangeOverTime, resource_id, icon_effects);
   return icon_key;
+}
+
+std::string GetStandaloneBrowserName() {
+  // "Chrome" is hard-coded to be consistent with
+  // chrome/browser/resources/chrome_app/manifest.json.
+  return crosapi::browser_util::IsAshWebBrowserEnabled() ? "Lacros" : "Chrome";
 }
 
 }  // namespace
@@ -62,10 +73,12 @@ StandaloneBrowserApps::~StandaloneBrowserApps() = default;
 AppPtr StandaloneBrowserApps::CreateStandaloneBrowserApp() {
   auto app = AppPublisher::MakeApp(
       AppType::kStandaloneBrowser, app_constants::kLacrosAppId,
-      Readiness::kReady, "Lacros" /* TODO(crbug.com/1267752): Localized name.*/,
-      InstallReason::kSystem, InstallSource::kSystem);
+      Readiness::kReady, GetStandaloneBrowserName(), InstallReason::kSystem,
+      InstallSource::kSystem);
 
-  app->additional_search_terms.push_back("chrome");
+  if (crosapi::browser_util::IsAshWebBrowserEnabled())
+    app->additional_search_terms.push_back("chrome");
+
   app->icon_key = std::move(*CreateIconKey(/*is_browser_load_success=*/true));
   app->searchable = true;
   app->show_in_launcher = true;
@@ -80,12 +93,13 @@ AppPtr StandaloneBrowserApps::CreateStandaloneBrowserApp() {
 apps::mojom::AppPtr StandaloneBrowserApps::GetStandaloneBrowserApp() {
   apps::mojom::AppPtr app = apps::PublisherBase::MakeApp(
       apps::mojom::AppType::kStandaloneBrowser, app_constants::kLacrosAppId,
-      apps::mojom::Readiness::kReady,
-      "Lacros",  // TODO(jamescook): Localized name.
+      apps::mojom::Readiness::kReady, GetStandaloneBrowserName(),
       apps::mojom::InstallReason::kSystem);
   app->install_source = apps::mojom::InstallSource::kSystem;
-  // Make Lacros searchable with the term "chrome", too.
-  app->additional_search_terms.push_back("chrome");
+  // Make Lacros searchable with the term "chrome", too, if the app name
+  // is lacros.
+  if (crosapi::browser_util::IsAshWebBrowserEnabled())
+    app->additional_search_terms.push_back("chrome");
   app->icon_key = NewIconKey();
   app->searchable = apps::mojom::OptionalBool::kTrue;
   app->show_in_launcher = apps::mojom::OptionalBool::kTrue;
