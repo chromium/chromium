@@ -17,7 +17,7 @@
 // that symbol to be in the dynamic symbol table.
 
 #include "util/misc/elf_note_types.h"
-#include "util/misc/arm64_bti_note.S"
+#include "util/misc/arm64_pac_bti.S"
 
 // namespace crashpad {
 // CrashpadInfo g_test_crashpad_info;

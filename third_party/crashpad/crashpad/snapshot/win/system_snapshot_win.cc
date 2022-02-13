@@ -33,6 +33,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "util/stdlib/string_number_conversion.h"
 #include "util/win/module_version.h"
 #include "util/win/scoped_registry_key.h"
 
@@ -70,6 +71,50 @@ std::string GetStringForFileOS(uint32_t file_os) {
     return "Unknown";
 }
 
+//! \brief Reads a DWORD from the registry and returns it as an int.
+bool ReadRegistryDWORD(HKEY key, const wchar_t* name, int* out_value) {
+  DWORD type;
+  DWORD local_value;
+  DWORD size = sizeof(local_value);
+  if (RegQueryValueEx(key,
+                      name,
+                      nullptr,
+                      &type,
+                      reinterpret_cast<BYTE*>(&local_value),
+                      &size) == ERROR_SUCCESS &&
+      type == REG_DWORD) {
+    *out_value = static_cast<int>(local_value);
+    return true;
+  }
+  return false;
+}
+
+//! \brief Reads a string from the registry and returns it as an int.
+bool ReadRegistryDWORDFromSZ(HKEY key, const char* name, int* out_value) {
+  char string_value[11];
+  DWORD type;
+  // Leave space for a terminating zero.
+  DWORD size = sizeof(string_value) - sizeof(string_value[0]);
+  // Use the 'A' version of this function so that we can use
+  // StringToNumber.
+  if (RegQueryValueExA(key,
+                       name,
+                       nullptr,
+                       &type,
+                       reinterpret_cast<BYTE*>(&string_value),
+                       &size) == ERROR_SUCCESS &&
+      type == REG_SZ) {
+    // Make sure the string is null-terminated.
+    string_value[size / sizeof(string_value[0])] = '\0';
+    unsigned local_value;
+    if (StringToNumber(string_value, &local_value)) {
+      *out_value = local_value;
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 namespace internal {
@@ -97,18 +142,61 @@ void SystemSnapshotWin::Initialize(ProcessReaderWin* process_reader) {
   // VerifyVersionInfo() is not trustworthy after Windows 8 (depending on the
   // application manifest) so its data is used only to fill the os_server_
   // field, and the rest comes from the version information stamped on
-  // kernel32.dll.
+  // kernel32.dll and from the registry.
   os_server_ = IsWindowsServer();
+
+  // kernel32.dll used to be a good way to get a non-lying version number, but
+  // kernel32.dll has been refactored into multiple DLLs so it sometimes does
+  // not get updated when a new version of Windows ships, especially on
+  // Windows 11. Additionally, pairs of releases such as 19041/19042
+  // (20H1/20H2) actually have identical code and have their differences
+  // enabled by a configuration setting. Therefore the recommended way to get
+  // OS version information on recent versions of Windows is to read it from the
+  // registry. If any of the version-number components are missing from the
+  // registry (on Windows 7, for instance) then kernel32.dll is used as a
+  // fallback.
+  bool version_data_found = false;
+  int os_version_build = 0;
+  HKEY key;
+  if (RegOpenKeyEx(HKEY_LOCAL_MACHINE,
+                   L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
+                   0,
+                   KEY_QUERY_VALUE,
+                   &key) == ERROR_SUCCESS) {
+    ScopedRegistryKey scoped_key(key);
+
+    // Read the four components of the version from the registry.
+    // UBR apparently stands for Update Build Revision and it goes up every
+    // month when patches are installed. The full version is stored in the
+    // registry as:
+    // CurrentMajorVersionNumber.CurrentMinorVersionNumber.CurrentBuildNumber.UBR
+    if (ReadRegistryDWORD(
+            key, L"CurrentMajorVersionNumber", &os_version_major_) &&
+        ReadRegistryDWORD(
+            key, L"CurrentMinorVersionNumber", &os_version_minor_) &&
+        ReadRegistryDWORDFromSZ(
+            key, "CurrentBuildNumber", &os_version_bugfix_) &&
+        ReadRegistryDWORD(key, L"UBR", &os_version_build)) {
+      // Since we found all four components in the registry we don't need
+      // to read them from kernel32.dll.
+      version_data_found = true;
+    }
+  }
 
   static constexpr wchar_t kSystemDll[] = L"kernel32.dll";
   VS_FIXEDFILEINFO ffi;
   if (GetModuleVersionAndType(base::FilePath(kSystemDll), &ffi)) {
     std::string flags_string = GetStringForFileFlags(ffi.dwFileFlags);
     std::string os_name = GetStringForFileOS(ffi.dwFileOS);
-    os_version_major_ = ffi.dwFileVersionMS >> 16;
-    os_version_minor_ = ffi.dwFileVersionMS & 0xffff;
-    os_version_bugfix_ = ffi.dwFileVersionLS >> 16;
-    os_version_build_ = base::StringPrintf("%lu", ffi.dwFileVersionLS & 0xffff);
+    if (!version_data_found) {
+      os_version_major_ = ffi.dwFileVersionMS >> 16;
+      os_version_minor_ = ffi.dwFileVersionMS & 0xffff;
+      os_version_bugfix_ = ffi.dwFileVersionLS >> 16;
+      os_version_build = static_cast<int>(ffi.dwFileVersionLS & 0xffff);
+    }
+
+    os_version_build_ = base::StringPrintf("%u", os_version_build);
+
     os_version_full_ = base::StringPrintf(
         "%s %u.%u.%u.%s%s",
         os_name.c_str(),

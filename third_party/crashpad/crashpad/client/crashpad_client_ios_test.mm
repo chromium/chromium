@@ -30,45 +30,61 @@ namespace crashpad {
 namespace test {
 namespace {
 
-using CrashpadIOSClient = PlatformTest;
+class CrashpadIOSClient : public PlatformTest {
+ protected:
+  // testing::Test:
+
+  void SetUp() override {
+    ASSERT_TRUE(client_.StartCrashpadInProcessHandler(
+        base::FilePath(database_dir.path()), "", {}));
+    database_ = CrashReportDatabase::Initialize(database_dir.path());
+  }
+
+  void TearDown() override { client_.ResetForTesting(); }
+
+  auto& Client() { return client_; }
+  auto& Database() { return database_; }
+
+ private:
+  std::unique_ptr<CrashReportDatabase> database_;
+  CrashpadClient client_;
+  ScopedTempDir database_dir;
+};
 
 TEST_F(CrashpadIOSClient, DumpWithoutCrash) {
-  CrashpadClient client;
-  ScopedTempDir database_dir;
-  ASSERT_TRUE(client.StartCrashpadInProcessHandler(
-      base::FilePath(database_dir.path()), "", {}));
-  std::unique_ptr<CrashReportDatabase> database =
-      CrashReportDatabase::Initialize(database_dir.path());
   std::vector<CrashReportDatabase::Report> reports;
-  EXPECT_EQ(database->GetPendingReports(&reports),
+  EXPECT_EQ(Database()->GetPendingReports(&reports),
             CrashReportDatabase::kNoError);
   ASSERT_EQ(reports.size(), 0u);
   CRASHPAD_SIMULATE_CRASH();
-  reports.clear();
-  EXPECT_EQ(database->GetPendingReports(&reports),
+
+  EXPECT_EQ(Database()->GetPendingReports(&reports),
             CrashReportDatabase::kNoError);
   ASSERT_EQ(reports.size(), 1u);
+}
 
+TEST_F(CrashpadIOSClient, DumpWithoutCrashAndDefer) {
+  std::vector<CrashReportDatabase::Report> reports;
   CRASHPAD_SIMULATE_CRASH_AND_DEFER_PROCESSING();
-  reports.clear();
-  EXPECT_EQ(database->GetPendingReports(&reports),
+  EXPECT_EQ(Database()->GetPendingReports(&reports),
+            CrashReportDatabase::kNoError);
+  ASSERT_EQ(reports.size(), 0u);
+  Client().ProcessIntermediateDumps();
+  EXPECT_EQ(Database()->GetPendingReports(&reports),
             CrashReportDatabase::kNoError);
   ASSERT_EQ(reports.size(), 1u);
-  client.ProcessIntermediateDumps();
-  reports.clear();
-  EXPECT_EQ(database->GetPendingReports(&reports),
-            CrashReportDatabase::kNoError);
-  ASSERT_EQ(reports.size(), 2u);
+}
 
+TEST_F(CrashpadIOSClient, DumpWithoutCrashAndDeferAtPath) {
+  std::vector<CrashReportDatabase::Report> reports;
   ScopedTempDir crash_dir;
   UUID uuid;
   uuid.InitializeWithNew();
   CRASHPAD_SIMULATE_CRASH_AND_DEFER_PROCESSING_AT_PATH(
       crash_dir.path().Append(uuid.ToString()));
-  reports.clear();
-  EXPECT_EQ(database->GetPendingReports(&reports),
+  EXPECT_EQ(Database()->GetPendingReports(&reports),
             CrashReportDatabase::kNoError);
-  ASSERT_EQ(reports.size(), 2u);
+  ASSERT_EQ(reports.size(), 0u);
 
   NSError* error = nil;
   NSArray* paths = [[NSFileManager defaultManager]
@@ -76,12 +92,12 @@ TEST_F(CrashpadIOSClient, DumpWithoutCrash) {
                                     crash_dir.path().value())
                           error:&error];
   ASSERT_EQ([paths count], 1u);
-  client.ProcessIntermediateDump(
+  Client().ProcessIntermediateDump(
       crash_dir.path().Append([paths[0] fileSystemRepresentation]));
   reports.clear();
-  EXPECT_EQ(database->GetPendingReports(&reports),
+  EXPECT_EQ(Database()->GetPendingReports(&reports),
             CrashReportDatabase::kNoError);
-  ASSERT_EQ(reports.size(), 3u);
+  ASSERT_EQ(reports.size(), 1u);
 }
 
 // This test is covered by a similar XCUITest, but for development purposes it's
@@ -89,10 +105,6 @@ TEST_F(CrashpadIOSClient, DumpWithoutCrash) {
 // to correctly run this in Google Test. Leave the test here, disabled, for use
 // during development only.
 TEST_F(CrashpadIOSClient, DISABLED_ThrowNSException) {
-  CrashpadClient client;
-  ScopedTempDir database_dir;
-  ASSERT_TRUE(client.StartCrashpadInProcessHandler(
-      base::FilePath(database_dir.path()), "", {}));
   [NSException raise:@"GoogleTestNSException" format:@"ThrowException"];
 }
 
@@ -101,10 +113,6 @@ TEST_F(CrashpadIOSClient, DISABLED_ThrowNSException) {
 // to correctly run this in Google Test. Leave the test here, disabled, for use
 // during development only.
 TEST_F(CrashpadIOSClient, DISABLED_ThrowException) {
-  CrashpadClient client;
-  ScopedTempDir database_dir;
-  ASSERT_TRUE(client.StartCrashpadInProcessHandler(
-      base::FilePath(database_dir.path()), "", {}));
   std::vector<int> empty_vector;
   empty_vector.at(42);
 }

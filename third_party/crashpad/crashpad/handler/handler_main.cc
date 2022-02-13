@@ -21,6 +21,7 @@
 #include <sys/types.h>
 
 #include <algorithm>
+#include <atomic>
 #include <map>
 #include <memory>
 #include <string>
@@ -286,10 +287,10 @@ bool AddKeyValueToMap(std::map<std::string, std::string>* map,
 // a normal exit, or if a CallMetricsRecordNormalExit object is destroyed after
 // something else logs an exit event.
 void MetricsRecordExit(Metrics::LifetimeMilestone milestone) {
-  [[maybe_unused]] static bool once = [](Metrics::LifetimeMilestone milestone) {
+  static std::atomic_flag metrics_exit_recorded = ATOMIC_FLAG_INIT;
+  if (!metrics_exit_recorded.test_and_set()) {
     Metrics::HandlerLifetimeMilestone(milestone);
-    return true;
-  }(milestone);
+  }
 }
 
 // Calls MetricsRecordExit() to record a failure, and returns EXIT_FAILURE for

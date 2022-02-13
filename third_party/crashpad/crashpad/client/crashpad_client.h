@@ -558,6 +558,11 @@ class CrashpadClient {
   static void DumpWithoutCrashAndDeferProcessingAtPath(
       NativeCPUContext* context,
       const base::FilePath path);
+
+  //! \brief Unregister the Crashpad client. Intended to be used by tests so
+  //!     multiple Crashpad clients can be started and stopped. Not expected to
+  //!     be used in a shipping application.
+  static void ResetForTesting();
 #endif
 
 #if BUILDFLAG(IS_APPLE) || DOXYGEN
