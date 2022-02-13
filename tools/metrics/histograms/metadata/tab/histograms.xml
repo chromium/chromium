@@ -1651,6 +1651,19 @@ chromium-metrics-reviews@google.com.
   <token key="BatteryState" variants="BatteryState"/>
 </histogram>
 
+<histogram name="Tabs.PersistedTabData.Critical.Map.Success"
+    enum="BooleanSuccess" expires_after="2023-02-08">
+  <owner>davidjm@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    CriticalPersistedTabData persists core Tab metadata (tab id, web contents
+    etc.) across restarts. This metric records if the Tab metadata is
+    successfully mapped from raw storage into an object which can be consumed in
+    Tab restoration.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.PersistedTabData.Deserialize.Critical"
     enum="BooleanSuccess" expires_after="2022-07-03">
   <owner>yusufo@chromium.org</owner>
@@ -1718,6 +1731,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.PersistedTabData.Storage.LoadAndMapTime.File" units="ms"
+    expires_after="2023-02-07">
+  <owner>davidjm@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    PersistedTabData stores Tab related data across restarts in a number of
+    storage options. This metric stores the time to load Tab data from file
+    storage and map it into an object available for consumption on Tab
+    restoration. The only client currently using File storage is
+    CriticalPersistedTabData which persists core Tab metadata (tab id, web
+    contents etc.) across restarts.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.PersistedTabData.Storage.LoadTime.File" units="ms"
     expires_after="2022-03-20">
   <owner>yusufo@chromium.org</owner>
@@ -1727,7 +1755,21 @@ chromium-metrics-reviews@google.com.
   <summary>
     FilePersistedTabData storage stores serialized PersistedTabData (metadata
     persisted across restarts) in a file. This metric records how long it took
-    to load the file in the event the file exists.
+    to load the file in the event the file exists. .
+  </summary>
+</histogram>
+
+<histogram name="Tabs.PersistedTabData.Storage.MapTime.File" units="ms"
+    expires_after="2023-02-07">
+  <owner>davidjm@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    PersistedTabData stores Tab related data across restarts in a number of
+    storage options. This metric stores the time to map data acquired from raw
+    file storage into an object which can be consumed on Tab restoration. The
+    only client currently using File storage is CriticalPersistedTabData which
+    persists core Tab metadata (tab id, web contents etc.) across restarts.
   </summary>
 </histogram>
 

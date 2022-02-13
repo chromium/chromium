@@ -470,7 +470,22 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
 
         @Override
         public U executeSyncTask() {
-            return mMapper.map(new FileRestoreRequest(mTabId, mDataId, null).executeSyncTask());
+            long startTime = SystemClock.elapsedRealtime();
+            ByteBuffer restoredData =
+                    new FileRestoreRequest(mTabId, mDataId, null).executeSyncTask();
+            long mapStartTime = SystemClock.elapsedRealtime();
+            U mappedResult = mMapper.map(restoredData);
+            long finishTime = SystemClock.elapsedRealtime();
+            // Only loading and mapping a non-empty ByteBuffer should be recorded in
+            // the metrics. Adding in a empty ByteBuffer will skew the metrics.
+            if (restoredData != null && restoredData.limit() > 0) {
+                RecordHistogram.recordTimesHistogram(
+                        "Tabs.PersistedTabData.Storage.LoadAndMapTime.File",
+                        finishTime - startTime);
+                RecordHistogram.recordTimesHistogram(
+                        "Tabs.PersistedTabData.Storage.MapTime.File", finishTime - mapStartTime);
+            }
+            return mappedResult;
         }
 
         @Override
