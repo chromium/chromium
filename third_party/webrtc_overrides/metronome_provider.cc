@@ -32,6 +32,11 @@ void MetronomeProvider::RemoveListener(MetronomeProviderListener* listener) {
   listeners_.erase(it);
 }
 
+bool MetronomeProvider::HasListeners() {
+  base::AutoLock auto_lock(lock_);
+  return !listeners_.empty();
+}
+
 void MetronomeProvider::OnStartUsingMetronome(
     scoped_refptr<MetronomeSource> metronome) {
   base::AutoLock auto_lock(lock_);

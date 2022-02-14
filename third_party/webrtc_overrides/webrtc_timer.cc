@@ -20,16 +20,6 @@ WebRtcTimer::SchedulableCallback::SchedulableCallback(
     : task_runner_(std::move(task_runner)),
       callback_(std::move(callback)),
       metronome_(std::move(metronome)),
-      metronome_listener_(
-          metronome_ ? metronome_->AddListener(
-                           task_runner_,
-                           // Unretained is safe because SchedulableCallback is
-                           // inactivated before destruction.
-                           base::BindRepeating(
-                               &WebRtcTimer::SchedulableCallback::MaybeRun,
-                               base::Unretained(this)),
-                           base::TimeTicks::Max())
-                     : nullptr),
       repeated_delay_(std::move(repeated_delay)) {}
 
 WebRtcTimer::SchedulableCallback::~SchedulableCallback() {
@@ -42,20 +32,15 @@ void WebRtcTimer::SchedulableCallback::Schedule(
   DCHECK_EQ(scheduled_time_, base::TimeTicks::Max())
       << "The callback has already been scheduled.";
   scheduled_time_ = scheduled_time;
-  if (!metronome_listener_) {
-    base::TimeDelta delay = scheduled_time_ - base::TimeTicks::Now();
-    if (delay < base::TimeDelta()) {
-      delay = base::TimeDelta();
-    }
-    // Schedule on the task runner.
-    task_runner_->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&WebRtcTimer::SchedulableCallback::MaybeRun, this),
-        delay);
-  } else {
-    // Schedule on the metronome.
-    metronome_listener_->SetWakeupTime(scheduled_time_);
+  base::TimeTicks target_time = scheduled_time_;
+  if (metronome_) {
+    // Snap target time to metronome tick!
+    target_time = metronome_->GetTimeSnappedToNextMetronomeTick(target_time);
   }
+  task_runner_->PostDelayedTaskAt(
+      base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
+      base::BindOnce(&WebRtcTimer::SchedulableCallback::MaybeRun, this),
+      target_time, base::subtle::DelayPolicy::kPrecise);
 }
 
 bool WebRtcTimer::SchedulableCallback::IsScheduled() {
@@ -76,21 +61,8 @@ base::TimeTicks WebRtcTimer::SchedulableCallback::Inactivate() {
   }
   is_active_ = false;
   repeated_delay_ = base::TimeDelta();  // Prevent automatic re-schedule.
-  if (metronome_listener_) {
-    // Remove the listener asynchronously to avoid a possible deadlock, see
-    // https://crbug.com/1281399.
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &WebRtcTimer::SchedulableCallback::RemoveMetronomeListener, this));
-  }
   base::AutoLock auto_scheduled_time_lock(scheduled_time_lock_);
   return scheduled_time_;
-}
-
-void WebRtcTimer::SchedulableCallback::RemoveMetronomeListener() {
-  DCHECK(metronome_listener_);
-  metronome_->RemoveListener(metronome_listener_);
 }
 
 void WebRtcTimer::SchedulableCallback::MaybeRun() {

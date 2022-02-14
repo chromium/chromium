@@ -25,10 +25,10 @@ RTC_EXPORT extern const base::Feature kWebRtcTimerUsesMetronome;
 // Implements a timer that is NOT guaranteed to have high precision.
 //
 // When a metronome source is available and kWebRtcTimerUsesMetronome is
-// enabled, the timer will fire on a metronome tick. This allows running the
+// enabled, the timer will fire on metronome ticks. This allows running the
 // timer without increasing Idle Wake Ups at the cost of reducing the timer
 // precision to the metronome tick frequency. When a metronome source isn't
-// available, the timer uses PostDelayedTask.
+// available, the timer has high precision.
 //
 // Prefer this timer for WebRTC use cases that does not require high precision.
 class RTC_EXPORT WebRtcTimer : public MetronomeProviderListener {
@@ -83,10 +83,8 @@ class RTC_EXPORT WebRtcTimer : public MetronomeProviderListener {
 
     const scoped_refptr<base::SequencedTaskRunner> task_runner_;
     const base::RepeatingCallback<void()> callback_;
-    // If set, schedules on the metronome, otherwise schedules directly on the
-    // task runner.
+    // If set, aligns the scheduling to metronome ticks.
     const scoped_refptr<MetronomeSource> metronome_;
-    const scoped_refptr<MetronomeSource::ListenerHandle> metronome_listener_;
 
     // Only accessed on |task_runner_|.
     bool is_currently_running_ = false;
