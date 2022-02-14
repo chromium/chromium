@@ -5,7 +5,6 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Payments UI colors -->
-    <color name="payment_request_bg">@color/sheet_bg_color</color>
     <color name="payments_section_edit_background">@color/default_bg_color_secondary</color>
     <color name="payments_section_chevron">@color/black_alpha_30</color>
 </resources>

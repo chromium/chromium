@@ -133,7 +133,7 @@ public class SemanticColorUtils {
     /** Returns the surface color value of the conceptual sheet_bg_color. */
     public static @ColorInt int getSheetBgColor(Context context) {
         return resolveSurfaceColorElev(
-                R.dimen.sheet_bg_color_elev, R.color.sheet_bg_color, context);
+                R.dimen.sheet_bg_color_elev, R.color.sheet_bg_color_baseline, context);
     }
 
     /** Returns the surface color value of the conceptual snackbar_background_color_baseline. */

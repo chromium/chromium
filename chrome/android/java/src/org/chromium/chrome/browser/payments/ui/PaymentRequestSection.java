@@ -36,6 +36,7 @@ import androidx.gridlayout.widget.GridLayout;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeSemanticColorUtils;
 import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.DualControlLayout;
@@ -168,8 +169,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
         setGravity(Gravity.CENTER_VERTICAL);
 
         // Set the styling of the view.
-        mUnfocusedBackgroundColor =
-                ApiCompatibilityUtils.getColor(getResources(), R.color.payment_request_bg);
+        mUnfocusedBackgroundColor = ChromeSemanticColorUtils.getPaymentRequestBg(context);
         mFocusedBackgroundColor = ApiCompatibilityUtils.getColor(
                 getResources(), R.color.payments_section_edit_background);
         mLargeSpacing =

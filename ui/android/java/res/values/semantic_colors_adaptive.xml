@@ -63,7 +63,7 @@
     <color name="infobar_background_color" tools:ignore="UnusedResources">@color/snackbar_background_color_baseline</color>
 
     <!-- Bottom sheet colors -->
-    <color name="sheet_bg_color" tools:ignore="UnusedResources">@color/default_bg_color_baseline</color>
+    <color name="sheet_bg_color_baseline" tools:ignore="UnusedResources">@color/default_bg_color_baseline</color>
 
     <!-- Ripple colors for clickable widgets -->
     <color name="ripple_color_blue">@color/ripple_color_blue_dark</color>
