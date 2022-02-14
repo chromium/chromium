@@ -176,6 +176,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Webapp.AppIdentityDialog.AlreadyApproved"
+    enum="AppIdentityDisplayMetric" expires_after="2023-01-15">
+  <owner>finnur@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Whenever PWAs change their manifest, this may result in a change to their
+    identity (icon and/or name). This metric is intended to keep track of the
+    combinations of App Identity changes that were requested (changes to the
+    icons and/or app name -- plus icon masks and/or shortname on Android). This
+    metric is logged once each time Chrome determines that a PWA is in need of
+    an update, but ONLY if the change should be auto-approved. On Android that
+    happens when the user has approved the App Identity dialog with identical
+    data before (and another update request comes in), and on Desktop platforms
+    that happens when Default apps/Policy apps are pre-approved for updating --
+    or when changes happening to icons are for sizes not deemed important to
+    monitor. See also complementary metric Webapp.AppIdentityDialog.NotShowing.
+  </summary>
+</histogram>
+
 <histogram name="Webapp.AppIdentityDialog.NotShowing"
     enum="AppIdentityDisplayMetric" expires_after="2023-01-15">
   <owner>finnur@chromium.org</owner>
@@ -184,11 +203,11 @@ chromium-metrics-reviews@google.com.
     Whenever PWAs change their manifest, this may result in a change to their
     identity (icon and/or name). This metric is intended to keep track of the
     combinations of App Identity changes that were requested (changes to the
-    icons, icon masks, app name, and/or shortname). This metric is logged once
-    each time Chrome determines that a PWA is in need of an update, but ONLY if
-    there is no App Identity change involved (or the App Identity dialog is
-    disabled by a feature switch). See also complementary metric
-    Webapp.AppIdentityDialog.Showing.
+    icons and/or app name -- plus icon masks and/or shortname on Android). This
+    metric is logged once each time Chrome determines that a PWA is in need of
+    an update, but ONLY if there is no App Identity change involved (or the App
+    Identity dialog is disabled by a feature switch). See also complementary
+    metric Webapp.AppIdentityDialog.Showing.
   </summary>
 </histogram>
 
@@ -200,11 +219,12 @@ chromium-metrics-reviews@google.com.
     Whenever PWAs change their manifest, this may result in a change to their
     identity (icon and/or name). This metric is intended to keep track of the
     combinations of App Identity changes that were requested (changes to the
-    icons, icon masks, app name, and/or shortname). This metric is logged once
-    each time Chrome determines that a PWA is in need of an update, but ONLY if
-    there is an App Identity change involved (the App Identity dialog is enabled
-    by a feature switch and the dialog was shown to the user). See also
-    complementary metric Webapp.AppIdentityDialog.NotShowing.
+    icons and/or app name -- plus icon masks and/or shortname on Android). This
+    metric is logged once each time Chrome determines that a PWA is in need of
+    an update, but ONLY if there is an App Identity change involved (the App
+    Identity dialog is enabled by a feature switch and the dialog was shown to
+    the user). See also complementary metric
+    Webapp.AppIdentityDialog.NotShowing.
   </summary>
 </histogram>
 

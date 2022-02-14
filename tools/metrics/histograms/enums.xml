@@ -3031,7 +3031,7 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="AppIdentityDisplayMetric">
-  <int value="0" label="Nothing changing."/>
+  <int value="0" label="No App Identity Change."/>
   <int value="1" label="Icon changing."/>
   <int value="2" label="Mask changing."/>
   <int value="3" label="Mask and Icon changing."/>

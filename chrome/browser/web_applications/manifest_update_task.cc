@@ -43,6 +43,22 @@ namespace web_app {
 
 namespace {
 
+// This is used for metrics, so do not remove or reorder existing entries.
+enum class AppIdentityDisplayMetric {
+  kNoAppIdentityChange = 0,
+  kIconChanging = 1,
+  // Values 2 and 3 are reserved for Android (icon mask).
+  kAppNameChanging = 4,
+  kAppNameAndIconChanging = 5,
+  // Values 6 through 15 (inclusive) are reserved for Android (icon mask/app
+  // short name).
+  kLastAndroidSpecificValue = 15,
+
+  // Add any new values above this one, and update kMaxValue to the highest
+  // enumerator value.
+  kMaxValue = 15
+};
+
 // Returns a shared instance of UpdatePendingCallback.
 ManifestUpdateTask::UpdatePendingCallback* GetUpdatePendingCallbackMutable() {
   static base::NoDestructor<ManifestUpdateTask::UpdatePendingCallback>
@@ -504,8 +520,19 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
   bool icon_change = icon_diff.mismatch();
 
   if (!title_change && !icon_change) {
+    UMA_HISTOGRAM_ENUMERATION("Webapp.AppIdentityDialog.NotShowing",
+                              AppIdentityDisplayMetric::kNoAppIdentityChange);
     OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kSkipped);
     return;
+  }
+
+  AppIdentityDisplayMetric app_id_changes =
+      AppIdentityDisplayMetric::kNoAppIdentityChange;
+  if (title_change && icon_change) {
+    app_id_changes = AppIdentityDisplayMetric::kAppNameAndIconChanging;
+  } else {
+    app_id_changes = title_change ? AppIdentityDisplayMetric::kAppNameChanging
+                                  : AppIdentityDisplayMetric::kIconChanging;
   }
 
   if (!NeedsAppIdentityUpdateDialog(title_change, icon_change, app_id_,
@@ -515,6 +542,8 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
     // running IsUpdateNeededForManifest. It doesn't matter a great deal whether
     // kSkipped or kAllowed is used here, except that updating should also work
     // without approval here. So to be safe we return kSkipped.
+    UMA_HISTOGRAM_ENUMERATION("Webapp.AppIdentityDialog.AlreadyApproved",
+                              app_id_changes);
     OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kSkipped);
     return;
   }
@@ -525,11 +554,15 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
     web_application_info_->icon_bitmaps = std::move(disk_icon_bitmaps);
     web_application_info_->manifest_icons =
         registrar_.GetAppById(app_id_)->manifest_icons();
+    UMA_HISTOGRAM_ENUMERATION("Webapp.AppIdentityDialog.NotShowing",
+                              app_id_changes);
     OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kSkipped);
     return;
   }
 
   if (!title_change && !icon_diff.requires_app_identity_check()) {
+    UMA_HISTOGRAM_ENUMERATION("Webapp.AppIdentityDialog.AlreadyApproved",
+                              app_id_changes);
     OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kAllowed);
     return;
   }
@@ -552,9 +585,13 @@ void ManifestUpdateTask::OnAllIconsRead(IconsMap downloaded_icons_map,
 
   if (before_icon == nullptr || after_icon == nullptr ||
       before_icon->drawsNothing() || after_icon->drawsNothing()) {
+    UMA_HISTOGRAM_ENUMERATION("Webapp.AppIdentityDialog.NotShowing",
+                              app_id_changes);
     OnPostAppIdentityUpdateCheck(AppIdentityUpdate::kSkipped);
     return;
   }
+
+  UMA_HISTOGRAM_ENUMERATION("Webapp.AppIdentityDialog.Showing", app_id_changes);
 
   ui_manager_.ShowWebAppIdentityUpdateDialog(
       app_id_, title_change, icon_diff.mismatch(), old_title, new_title,
