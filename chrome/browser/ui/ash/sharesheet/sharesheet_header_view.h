@@ -15,6 +15,7 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 
 class Profile;
@@ -49,13 +50,11 @@ class SharesheetHeaderView : public views::View {
   // Adds the view for text preview.
   void ShowTextPreview();
 
-  // Creates a new Label view and adds styling.
-  void AddTextLine(const std::u16string& text,
-                   const std::u16string& tooltip_text = u"");
-
   // Parses the share_text attribute for each individual url and text
   // from the intent struct and returns the result in a vector.
-  std::vector<std::u16string> ExtractShareText();
+  std::vector<std::unique_ptr<views::Label>> ExtractShareText();
+  // Creates a new Label view and adds styling.
+  std::unique_ptr<views::Label> CreatePreviewLabel(const std::u16string& text);
   const gfx::VectorIcon& GetTextVectorIcon();
 
   // TODO(crbug.com/1233830): Move business logic out of UI code.

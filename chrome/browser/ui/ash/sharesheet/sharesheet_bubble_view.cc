@@ -69,7 +69,6 @@ namespace {
 constexpr int kButtonWidth = 92;
 constexpr int kCornerRadius = 12;
 constexpr int kBubbleTopPaddingFromWindow = 28;
-constexpr int kDefaultBubbleWidth = 416;
 
 constexpr int kMaxTargetsPerRow = 4;
 constexpr int kMaxRowsForDefaultView = 2;

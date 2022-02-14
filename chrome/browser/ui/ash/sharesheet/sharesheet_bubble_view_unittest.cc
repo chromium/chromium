@@ -257,5 +257,107 @@ TEST_F(SharesheetBubbleViewTest, ClickCopyToClipboard) {
   EXPECT_EQ(::sharesheet::kTestText, base::UTF16ToUTF8(clipboard_text));
 }
 
+TEST_F(SharesheetBubbleViewTest, URLPreviewAverage) {
+  auto* kTitleText = "URLTitle";
+  auto* kURLText = "https://fake-url.com/fake";
+  ShowAndVerifyBubble(
+      apps_util::CreateShareIntentFromText(kURLText, kTitleText),
+      ::sharesheet::LaunchSource::kUnknown);
+  views::View* text_views = sharesheet_bubble_view()->GetViewByID(
+      SharesheetViewID::HEADER_VIEW_TEXT_PREVIEW_ID);
+  // There should be 3 children, the 'Share' title, the URL title, and the URL.
+  ASSERT_EQ(text_views->children().size(), 3u);
+
+  auto* title_text = static_cast<views::Label*>(text_views->children()[1]);
+  ASSERT_EQ(title_text->GetText(), base::UTF8ToUTF16(kTitleText));
+  auto* url_text = static_cast<views::Label*>(text_views->children()[2]);
+  ASSERT_EQ(url_text->GetText(), base::UTF8ToUTF16(kURLText));
+  CloseBubble();
+}
+
+TEST_F(SharesheetBubbleViewTest, URLPreviewLongSubDomain) {
+  auto* kURLText =
+      "https://very-very-very-very-very-very-very-very-long-fake-url.com/fake";
+  ShowAndVerifyBubble(apps_util::CreateShareIntentFromText(kURLText, ""),
+                      ::sharesheet::LaunchSource::kUnknown);
+  views::View* text_views = sharesheet_bubble_view()->GetViewByID(
+      SharesheetViewID::HEADER_VIEW_TEXT_PREVIEW_ID);
+  // There should be 2 children, the 'Share' title, and the URL.
+  ASSERT_EQ(text_views->children().size(), 2u);
+
+  auto* url_text = static_cast<views::Label*>(text_views->children()[1]);
+  ASSERT_EQ(url_text->GetText(),
+            u"very-very-very-very-very-very-very-very-long-fake-…");
+  ASSERT_EQ(url_text->GetTooltipText(), base::UTF8ToUTF16(kURLText));
+  CloseBubble();
+}
+
+TEST_F(SharesheetBubbleViewTest, URLPreviewLongSubDirectory) {
+  auto* kURLText =
+      "https://fake-url.com/very-very-very-very-very-very-very-very-long-fake";
+  ShowAndVerifyBubble(apps_util::CreateShareIntentFromText(kURLText, ""),
+                      ::sharesheet::LaunchSource::kUnknown);
+  views::View* text_views = sharesheet_bubble_view()->GetViewByID(
+      SharesheetViewID::HEADER_VIEW_TEXT_PREVIEW_ID);
+  // There should be 2 children, the 'Share' title, and the URL.
+  ASSERT_EQ(text_views->children().size(), 2u);
+
+  auto* url_text = static_cast<views::Label*>(text_views->children()[1]);
+  ASSERT_EQ(url_text->GetText(),
+            u"fake-url.com/very-very-very-very-very-very-very-v…");
+  ASSERT_EQ(url_text->GetTooltipText(), base::UTF8ToUTF16(kURLText));
+  CloseBubble();
+}
+
+TEST_F(SharesheetBubbleViewTest,
+       URLPreviewLongSecondLevelDomainAndLongSubDirectory) {
+  auto* kURLText =
+      "https://very-very-very-very-very-very-very-very-long.fake-url.com/"
+      "very-very-very-very-very-very-very-very-long-fake";
+  ShowAndVerifyBubble(apps_util::CreateShareIntentFromText(kURLText, ""),
+                      ::sharesheet::LaunchSource::kUnknown);
+  views::View* text_views = sharesheet_bubble_view()->GetViewByID(
+      SharesheetViewID::HEADER_VIEW_TEXT_PREVIEW_ID);
+  // There should be 2 children, the 'Share' title, and the URL.
+  ASSERT_EQ(text_views->children().size(), 2u);
+
+  auto* url_text = static_cast<views::Label*>(text_views->children()[1]);
+  ASSERT_EQ(url_text->GetText(),
+            u"…fake-url.com/very-very-very-very-very-very-very…");
+  ASSERT_EQ(url_text->GetTooltipText(), base::UTF8ToUTF16(kURLText));
+  CloseBubble();
+}
+
+TEST_F(SharesheetBubbleViewTest, URLPreviewInternationalCharacters) {
+  auto* kURLText = "https://xn--p8j9a0d9c9a.xn--q9jyb4c/";
+  ShowAndVerifyBubble(apps_util::CreateShareIntentFromText(kURLText, ""),
+                      ::sharesheet::LaunchSource::kUnknown);
+  views::View* text_views = sharesheet_bubble_view()->GetViewByID(
+      SharesheetViewID::HEADER_VIEW_TEXT_PREVIEW_ID);
+  // There should be 2 children, the 'Share' title, and the URL.
+  ASSERT_EQ(text_views->children().size(), 2u);
+
+  auto* url_text = static_cast<views::Label*>(text_views->children()[1]);
+  ASSERT_EQ(url_text->GetText(), u"https://はじめよう.みんな");
+  ASSERT_EQ(url_text->GetTooltipText(), u"https://はじめよう.みんな");
+  CloseBubble();
+}
+
+TEST_F(SharesheetBubbleViewTest, URLPreviewEmojis) {
+  // Text is encoded in IDN.
+  auto* kURLText = "https://hello.com/\xF0\x9F\x98\x81/";
+  ShowAndVerifyBubble(apps_util::CreateShareIntentFromText(kURLText, ""),
+                      ::sharesheet::LaunchSource::kUnknown);
+  views::View* text_views = sharesheet_bubble_view()->GetViewByID(
+      SharesheetViewID::HEADER_VIEW_TEXT_PREVIEW_ID);
+  // There should be 2 children, the 'Share' title, and the URL.
+  ASSERT_EQ(text_views->children().size(), 2u);
+
+  auto* url_text = static_cast<views::Label*>(text_views->children()[1]);
+  ASSERT_EQ(url_text->GetText(), u"https://hello.com/😁/");
+  ASSERT_EQ(url_text->GetTooltipText(), u"https://hello.com/😁/");
+  CloseBubble();
+}
+
 }  // namespace sharesheet
 }  // namespace ash

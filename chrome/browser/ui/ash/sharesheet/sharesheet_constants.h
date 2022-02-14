@@ -16,6 +16,7 @@ namespace sharesheet {
 // LayoutProvider.
 
 // Sizes are in px.
+constexpr int kDefaultBubbleWidth = 416;
 constexpr int kSpacing = 24;
 
 constexpr int kFooterDefaultVerticalPadding = 20;

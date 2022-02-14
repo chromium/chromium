@@ -30,6 +30,7 @@ enum SharesheetViewID {
   // ID for the view populated with targets that shows in the expanded
   // sharesheet.
   TARGETS_EXPANDED_VIEW_ID,
+  HEADER_VIEW_TEXT_PREVIEW_ID,
 };
 
 std::unique_ptr<views::Label> CreateShareLabel(

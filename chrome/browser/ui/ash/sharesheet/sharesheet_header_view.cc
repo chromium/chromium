@@ -31,6 +31,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_formatter.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -49,7 +50,6 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"
@@ -280,6 +280,7 @@ SharesheetHeaderView::SharesheetHeaderView(apps::mojom::IntentPtr intent,
   }
   // A separate view is created for the share title and preview string views.
   text_view_ = AddChildView(std::make_unique<views::View>());
+  text_view_->SetID(HEADER_VIEW_TEXT_PREVIEW_ID);
   text_view_->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       /* inside_border_insets */ gfx::Insets(),
@@ -317,7 +318,8 @@ void SharesheetHeaderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 }
 
 void SharesheetHeaderView::ShowTextPreview() {
-  std::vector<std::u16string> text_fields = ExtractShareText();
+  std::vector<std::unique_ptr<views::Label>> preview_labels =
+      ExtractShareText();
 
   std::u16string filenames_tooltip_text = u"";
   if (intent_->files.has_value() && !intent_->files.value().empty()) {
@@ -339,22 +341,21 @@ void SharesheetHeaderView::ShowTextPreview() {
           l10n_util::GetPluralStringFUTF16(IDS_SHARESHEET_FILES_LABEL, size);
       filenames_tooltip_text = ConcatenateFileNames(file_names);
     }
-    text_fields.push_back(file_text);
+    auto file_label = CreatePreviewLabel(file_text);
+    file_label->SetTooltipText(filenames_tooltip_text);
+    file_label->SetAccessibleName(
+        base::StrCat({file_text, u" ", filenames_tooltip_text}));
+    preview_labels.push_back(std::move(file_label));
   }
 
-  if (text_fields.size() == 0)
+  if (preview_labels.size() == 0)
     return;
 
   int index = 0;
-  int max_lines = std::min(text_fields.size(), kTextPreviewMaximumLines);
-  for (; index < max_lines - 1; ++index) {
-    AddTextLine(text_fields[index]);
+  int max_lines = std::min(preview_labels.size(), kTextPreviewMaximumLines);
+  for (; index < max_lines; ++index) {
+    text_view_->AddChildView(std::move(preview_labels[index]));
   }
-  // File names must always be on the last line, so |filenames_tooltip_text| is
-  // only passed in on the last line of text. If there are no files, it will be
-  // empty and the tooltip will instead be set to what the text says.
-  DCHECK_LT(index, text_fields.size());
-  AddTextLine(text_fields[index], filenames_tooltip_text);
 
   // If we have 2 or more lines of text, shorten the vertical insets.
   if (index >= 1) {
@@ -365,33 +366,14 @@ void SharesheetHeaderView::ShowTextPreview() {
   }
 }
 
-void SharesheetHeaderView::AddTextLine(const std::u16string& text,
-                                       const std::u16string& tooltip_text) {
-  ScopedLightModeAsDefault scoped_light_mode_as_default;
-  auto* new_line = text_view_->AddChildView(CreateShareLabel(
-      text, CONTEXT_SHARESHEET_BUBBLE_BODY, kPrimaryTextLineHeight,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorPrimary),
-      gfx::ALIGN_LEFT, views::style::STYLE_PRIMARY));
-  new_line->SetHandlesTooltips(true);
-  if (tooltip_text.empty()) {
-    return;
-  }
-  new_line->SetTooltipText(tooltip_text);
-  // We only get to here if this line is showing the number of files.
-  // By default the accessible name is set to the label text. We set it here
-  // so that it is also gives the list of file names.
-  new_line->SetAccessibleName(
-      base::StrCat({new_line->GetText(), u" ", tooltip_text}));
-}
-
-std::vector<std::u16string> SharesheetHeaderView::ExtractShareText() {
-  std::vector<std::u16string> text_fields;
+std::vector<std::unique_ptr<views::Label>>
+SharesheetHeaderView::ExtractShareText() {
+  std::vector<std::unique_ptr<views::Label>> preview_labels;
 
   if (intent_->share_title.has_value() &&
       !(intent_->share_title.value().empty())) {
     std::string title_text = intent_->share_title.value();
-    text_fields.push_back(base::UTF8ToUTF16(title_text));
+    preview_labels.push_back(CreatePreviewLabel(base::UTF8ToUTF16(title_text)));
   }
 
   if (intent_->share_text.has_value()) {
@@ -399,10 +381,26 @@ std::vector<std::u16string> SharesheetHeaderView::ExtractShareText() {
         apps_util::ExtractSharedText(intent_->share_text.value());
 
     if (!extracted_text.text.empty()) {
-      text_fields.push_back(base::UTF8ToUTF16(extracted_text.text));
+      preview_labels.push_back(
+          CreatePreviewLabel(base::UTF8ToUTF16(extracted_text.text)));
     }
 
     if (!extracted_text.url.is_empty()) {
+      // The remaining width available for the text_view is : Full bubble width
+      // - 2x margins - between_child_spacing - width of image preview.
+      float available_width = kDefaultBubbleWidth - 2 * kSpacing -
+                              kHeaderViewBetweenChildSpacing -
+                              kImagePreviewFullIconSize;
+      // Format URL to be elided correctly to prevent origin spoofing.
+      auto elided_url = url_formatter::ElideUrl(
+          extracted_text.url,
+          views::style::GetFont(CONTEXT_SHARESHEET_BUBBLE_BODY,
+                                views::style::STYLE_PRIMARY),
+          available_width);
+      auto url_label = CreatePreviewLabel(elided_url);
+
+      // This formats the URL the same as ElideUrl does, but without elision.
+      //
       // We format the URL to match the location bar so the user is not
       // surprised by what is being shared. This means:
       // - International characters are unescaped (human readable) where safe.
@@ -417,12 +415,25 @@ std::vector<std::u16string> SharesheetHeaderView::ExtractShareText() {
           extracted_text.url, format_types, net::UnescapeRule::NORMAL,
           /*new_parsed=*/nullptr,
           /*prefix_end=*/nullptr, /*offset_for_adjustment=*/nullptr);
-      text_fields.push_back(formatted_text);
+      url_label->SetTooltipText(formatted_text);
+      url_label->SetAccessibleName(formatted_text);
+      preview_labels.push_back(std::move(url_label));
       text_icon_ = TextPlaceholderIcon::kLink;
     }
   }
 
-  return text_fields;
+  return preview_labels;
+}
+
+std::unique_ptr<views::Label> SharesheetHeaderView::CreatePreviewLabel(
+    const std::u16string& text) {
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
+  auto label = CreateShareLabel(
+      text, CONTEXT_SHARESHEET_BUBBLE_BODY, kPrimaryTextLineHeight,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorPrimary),
+      gfx::ALIGN_LEFT, views::style::STYLE_PRIMARY);
+  return label;
 }
 
 const gfx::VectorIcon& SharesheetHeaderView::GetTextVectorIcon() {
