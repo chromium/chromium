@@ -14,6 +14,7 @@
 #include "base/path_service.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "content/public/browser/attribution_reporting.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -56,6 +57,22 @@ base::FilePath OutputPath(const base::FilePath& input_path) {
   return RemoveInputPathExtension(input_path).AddExtensionASCII("output.json");
 }
 
+base::FilePath OptionsPath(const base::FilePath& input_path) {
+  return RemoveInputPathExtension(input_path).AddExtensionASCII("options.json");
+}
+
+void ParseOptions(const base::Value& dict,
+                  AttributionSimulationOptions& options) {
+  const std::string* delay_mode = dict.FindStringKey("delay_mode");
+  ASSERT_TRUE(delay_mode) << "missing key: delay_mode";
+
+  if (*delay_mode == "none") {
+    options.delay_mode = AttributionDelayMode::kNone;
+  } else {
+    ASSERT_EQ(*delay_mode, "default") << "unknown delay mode: " << *delay_mode;
+  }
+}
+
 class AttributionSimulatorImplTest
     : public ::testing::TestWithParam<base::FilePath> {};
 
@@ -63,14 +80,21 @@ TEST_P(AttributionSimulatorImplTest, HasExpectedOutput) {
   const base::FilePath input_path = GetParam();
   base::Value input = ReadJsonFromFile(input_path);
 
+  // Tests are nondeterministic if noise is used or report IDs are present.
+  AttributionSimulationOptions options{
+      .noise_mode = AttributionNoiseMode::kNone,
+      .delay_mode = AttributionDelayMode::kDefault,
+      .remove_report_ids = true,
+  };
+
+  const base::FilePath options_path = OptionsPath(input_path);
+  if (base::PathExists(options_path))
+    ParseOptions(ReadJsonFromFile(options_path), options);
+
   const base::Value expected_output = ReadJsonFromFile(OutputPath(input_path));
 
-  base::Value output = RunAttributionSimulationOrExit(
-      std::move(input), AttributionSimulationOptions{
-                            .noise_mode = AttributionNoiseMode::kNone,
-                            .delay_mode = AttributionDelayMode::kDefault,
-                            .remove_report_ids = true,
-                        });
+  base::Value output =
+      RunAttributionSimulationOrExit(std::move(input), options);
 
   EXPECT_THAT(output, base::test::IsJson(expected_output));
 }
