@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.firstrun;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.method.LinkMovementMethod;
@@ -34,6 +33,9 @@ import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * The First Run Experience fragment that allows the user to accept Terms of Service ("ToS") and
  * Privacy Notice, and to opt-in to the usage statistics and crash reports collection ("UMA",
@@ -45,6 +47,8 @@ public class ToSAndUMAFirstRunFragment
     public interface Observer {
         /** See {@link #onNativeInitialized}. */
         public void onNativeInitialized();
+        public void onPolicyServiceInitialized();
+        public void onHideLoadingUIComplete();
     }
 
     private static boolean sShowUmaCheckBoxForTesting;
@@ -53,6 +57,7 @@ public class ToSAndUMAFirstRunFragment
     private static ToSAndUMAFirstRunFragment.Observer sObserver;
 
     private boolean mNativeInitialized;
+    private boolean mPolicyServiceInitialized;
     private boolean mTosButtonClicked;
     // TODO(https://crbug.com/1274145): Rename mAllowCrashUpload field.
     private boolean mAllowCrashUpload;
@@ -74,14 +79,12 @@ public class ToSAndUMAFirstRunFragment
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        getPageDelegate().getPolicyLoadListener().onAvailable(
-                (ignored) -> tryMarkTermsAccepted(false));
+        getPageDelegate().getPolicyLoadListener().onAvailable(this::onPolicyServiceInitialized);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mAllowCrashUpload = getUmaCheckBoxInitialState();
 
         mTitle = view.findViewById(R.id.title);
         mProgressSpinner = view.findViewById(R.id.progress_spinner);
@@ -90,73 +93,15 @@ public class ToSAndUMAFirstRunFragment
         mSendReportCheckBox = (CheckBox) view.findViewById(R.id.send_report_checkbox);
         mTosAndPrivacy = (TextView) view.findViewById(R.id.tos_and_privacy);
 
+        // Register event listeners.
         mAcceptButton.setOnClickListener((v) -> onTosButtonClicked());
-
-        mSendReportCheckBox.setChecked(mAllowCrashUpload);
         mSendReportCheckBox.setOnCheckedChangeListener(
                 ((compoundButton, isChecked) -> mAllowCrashUpload = isChecked));
-        if (!canShowUmaCheckBox()) {
-            if (!FREMobileIdentityConsistencyFieldTrial.shouldShowOldFreWithUmaDialog()) {
-                mAllowCrashUpload = sShowUmaCheckBoxForTesting || VersionInfo.isOfficialBuild();
-            }
-            mSendReportCheckBox.setVisibility(View.GONE);
-        }
 
+        // Make TextView links clickable.
         mTosAndPrivacy.setMovementMethod(LinkMovementMethod.getInstance());
 
-        Resources resources = getResources();
-        final boolean showUmaDialog =
-                FREMobileIdentityConsistencyFieldTrial.shouldShowOldFreWithUmaDialog();
-        NoUnderlineClickableSpan clickableGoogleTermsSpan =
-                new NoUnderlineClickableSpan(resources, (view1) -> {
-                    if (!isAdded()) return;
-                    getPageDelegate().showInfoPage(R.string.google_terms_of_service_url);
-                });
-        NoUnderlineClickableSpan clickableChromeAdditionalTermsSpan =
-                new NoUnderlineClickableSpan(resources, (view1) -> {
-                    if (!isAdded()) return;
-                    getPageDelegate().showInfoPage(R.string.chrome_additional_terms_of_service_url);
-                });
-        NoUnderlineClickableSpan clickableGooglePrivacySpan =
-                new NoUnderlineClickableSpan(resources, (view1) -> {
-                    if (!isAdded()) return;
-                    getPageDelegate().showInfoPage(R.string.google_privacy_policy_url);
-                });
-
-        final CharSequence tosText;
-        Bundle freProperties = getPageDelegate().getProperties();
-        @ChildAccountStatus.Status
-        int childAccountStatus = freProperties.getInt(
-                SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
-        if (showUmaDialog) {
-            final NoUnderlineClickableSpan clickableUMADialogSpan =
-                    new NoUnderlineClickableSpan(resources, (view1) -> openUmaDialog());
-            if (ChildAccountStatus.isChild(childAccountStatus)) {
-                tosText = SpanApplier.applySpans(
-                        getString(R.string.signin_fre_footer_supervised_user),
-                        new SpanInfo("<TOS_LINK>", "</TOS_LINK>", clickableGoogleTermsSpan),
-                        new SpanInfo(
-                                "<PRIVACY_LINK>", "</PRIVACY_LINK>", clickableGooglePrivacySpan),
-                        new SpanInfo("<UMA_LINK>", "</UMA_LINK>", clickableUMADialogSpan));
-            } else {
-                tosText = SpanApplier.applySpans(getString(R.string.signin_fre_footer),
-                        new SpanInfo("<TOS_LINK>", "</TOS_LINK>", clickableGoogleTermsSpan),
-                        new SpanInfo("<UMA_LINK>", "</UMA_LINK>", clickableUMADialogSpan));
-            }
-        } else {
-            if (ChildAccountStatus.isChild(childAccountStatus)) {
-                tosText = SpanApplier.applySpans(
-                        getString(R.string.fre_tos_and_privacy_child_account),
-                        new SpanInfo("<LINK1>", "</LINK1>", clickableGoogleTermsSpan),
-                        new SpanInfo("<LINK2>", "</LINK2>", clickableChromeAdditionalTermsSpan),
-                        new SpanInfo("<LINK3>", "</LINK3>", clickableGooglePrivacySpan));
-            } else {
-                tosText = SpanApplier.applySpans(getString(R.string.fre_tos),
-                        new SpanInfo("<LINK1>", "</LINK1>", clickableGoogleTermsSpan),
-                        new SpanInfo("<LINK2>", "</LINK2>", clickableChromeAdditionalTermsSpan));
-            }
-        }
-        mTosAndPrivacy.setText(tosText);
+        updateView();
 
         // If this page should be skipped, it can be one of the following cases:
         //   1. Native hasn't been initialized yet and this page will be skipped once that happens.
@@ -204,6 +149,10 @@ public class ToSAndUMAFirstRunFragment
         mNativeInitialized = true;
         tryMarkTermsAccepted(false);
 
+        if (mPolicyServiceInitialized) {
+            onNativeAndPolicyServiceInitialized();
+        }
+
         if (sObserver != null) {
             sObserver.onNativeInitialized();
         }
@@ -225,10 +174,138 @@ public class ToSAndUMAFirstRunFragment
         mAllowCrashUpload = allowCrashUpload;
     }
 
+    private void updateView() {
+        // Avoid early calls.
+        if (getPageDelegate() == null) {
+            return;
+        }
+
+        final boolean umaDialogMayBeShown =
+                FREMobileIdentityConsistencyFieldTrial.shouldShowOldFreWithUmaDialog();
+        final boolean hasChildAccount = getPageDelegate().getProperties().getInt(
+                                                SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS,
+                                                ChildAccountStatus.NOT_CHILD)
+                == ChildAccountStatus.REGULAR_CHILD;
+        final boolean isMetricsReportingDisabledByPolicy = !isWaitingForNativeAndPolicyInit()
+                && PrivacyPreferencesManagerImpl.getInstance().isMetricsReportingDisabledByPolicy();
+
+        updateTosText(umaDialogMayBeShown, hasChildAccount, isMetricsReportingDisabledByPolicy);
+
+        updateReportCheckbox(umaDialogMayBeShown, isMetricsReportingDisabledByPolicy);
+    }
+
+    private SpanInfo buildTermsOfServiceLink() {
+        NoUnderlineClickableSpan clickableGoogleTermsSpan =
+                new NoUnderlineClickableSpan(getResources(), (view1) -> {
+                    if (!isAdded()) return;
+                    getPageDelegate().showInfoPage(R.string.google_terms_of_service_url);
+                });
+        return new SpanInfo("<TOS_LINK>", "</TOS_LINK>", clickableGoogleTermsSpan);
+    }
+
+    private SpanInfo buildAdditionalTermsOfServiceLink() {
+        NoUnderlineClickableSpan clickableChromeAdditionalTermsSpan =
+                new NoUnderlineClickableSpan(getResources(), (view1) -> {
+                    if (!isAdded()) return;
+                    getPageDelegate().showInfoPage(R.string.chrome_additional_terms_of_service_url);
+                });
+        return new SpanInfo("<ATOS_LINK>", "</ATOS_LINK>", clickableChromeAdditionalTermsSpan);
+    }
+
+    private SpanInfo buildPrivacyPolicyLink() {
+        NoUnderlineClickableSpan clickableFamilyLinkPrivacySpan =
+                new NoUnderlineClickableSpan(getResources(), (view1) -> {
+                    if (!isAdded()) return;
+                    getPageDelegate().showInfoPage(R.string.google_privacy_policy_url);
+                });
+
+        return new SpanInfo("<PRIVACY_LINK>", "</PRIVACY_LINK>", clickableFamilyLinkPrivacySpan);
+    }
+
+    private SpanInfo buildMetricsAndCrashReportingLink() {
+        NoUnderlineClickableSpan clickableUMADialogSpan =
+                new NoUnderlineClickableSpan(getResources(), (view1) -> openUmaDialog());
+        return new SpanInfo("<UMA_LINK>", "</UMA_LINK>", clickableUMADialogSpan);
+    }
+
+    private void updateTosText(boolean umaDialogMayBeShown, boolean hasChildAccount,
+            boolean isMetricsReportingDisabledByPolicy) {
+        List<SpanInfo> spans = new LinkedList<SpanInfo>();
+
+        // Description always has a Terms of Service link.
+        spans.add(buildTermsOfServiceLink());
+
+        // Additional terms of service link.
+        if (!umaDialogMayBeShown) {
+            spans.add(buildAdditionalTermsOfServiceLink());
+        }
+
+        // Privacy policy link.
+        if (hasChildAccount) {
+            spans.add(buildPrivacyPolicyLink());
+        }
+
+        // Metrics and crash reporting link.
+        if (umaDialogMayBeShown && !isMetricsReportingDisabledByPolicy) {
+            spans.add(buildMetricsAndCrashReportingLink());
+        }
+
+        String tosString;
+        if (umaDialogMayBeShown) {
+            tosString =
+                    getString(hasChildAccount ? R.string.signin_fre_footer_tos_with_supervised_user
+                                              : R.string.signin_fre_footer_tos);
+
+            if (!isMetricsReportingDisabledByPolicy) {
+                tosString += "\n" + getString(R.string.signin_fre_footer_metrics_reporting);
+            }
+        } else {
+            tosString = getString(hasChildAccount ? R.string.fre_tos_and_privacy_child_account
+                                                  : R.string.fre_tos);
+        }
+
+        mTosAndPrivacy.setText(SpanApplier.applySpans(tosString, spans.toArray(new SpanInfo[0])));
+    }
+
+    private void updateReportCheckbox(
+            boolean umaDialogMayBeShown, boolean isMetricsReportingDisabledByPolicy) {
+        mAllowCrashUpload = getUmaCheckBoxInitialState();
+        mSendReportCheckBox.setChecked(mAllowCrashUpload);
+
+        if (!canShowUmaCheckBox()) {
+            if (!umaDialogMayBeShown) {
+                mAllowCrashUpload = (sShowUmaCheckBoxForTesting || VersionInfo.isOfficialBuild())
+                        && !isMetricsReportingDisabledByPolicy;
+            }
+            mSendReportCheckBox.setVisibility(View.GONE);
+        }
+    }
+
     private void openUmaDialog() {
         new FreUMADialogCoordinator(requireContext(),
                 ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(), this,
                 mAllowCrashUpload);
+    }
+
+    private void onPolicyServiceInitialized(boolean onDevicePolicyFound) {
+        assert !mPolicyServiceInitialized;
+
+        mPolicyServiceInitialized = true;
+        tryMarkTermsAccepted(false);
+
+        if (mNativeInitialized) {
+            onNativeAndPolicyServiceInitialized();
+        }
+
+        if (sObserver != null) {
+            sObserver.onPolicyServiceInitialized();
+        }
+    }
+
+    private void onNativeAndPolicyServiceInitialized() {
+        // Once we have native & policies, Check whether metrics reporting are permitted by policy
+        // and update interface accordingly.
+        updateView();
     }
 
     private void onTosButtonClicked() {
@@ -269,16 +346,25 @@ public class ToSAndUMAFirstRunFragment
     }
 
     private boolean isWaitingForNativeAndPolicyInit() {
-        return !mNativeInitialized || getPageDelegate().getPolicyLoadListener().get() == null;
+        return !mNativeInitialized || !mPolicyServiceInitialized;
     }
 
     private boolean getUmaCheckBoxInitialState() {
-        // The shared preference behind PrivacyPreferencesManagerImpl#isMetricsUploadPermitted is
-        // set after ToS is accepted. If ToS is not accepted yet, use the default value.
-        return FirstRunUtils.didAcceptTermsOfService()
-                ? PrivacyPreferencesManagerImpl.getInstance()
-                          .isUsageAndCrashReportingPermittedByUser()
-                : FirstRunActivity.DEFAULT_METRICS_AND_CRASH_REPORTING;
+        // Metrics and crash reporting could not be permitted by policy.
+        if (!isWaitingForNativeAndPolicyInit()
+                && PrivacyPreferencesManagerImpl.getInstance()
+                           .isMetricsReportingDisabledByPolicy()) {
+            return false;
+        }
+
+        // A user could start FRE and accept terms of service, then close the browser and start
+        // again. In this case we rely on whatever state the user has already set.
+        if (FirstRunUtils.didAcceptTermsOfService()) {
+            return PrivacyPreferencesManagerImpl.getInstance()
+                    .isUsageAndCrashReportingPermittedByUser();
+        }
+
+        return FirstRunActivity.DEFAULT_METRICS_AND_CRASH_REPORTING;
     }
 
     // Exposed methods for ToSAndUMACCTFirstRunFragment
@@ -298,13 +384,22 @@ public class ToSAndUMAFirstRunFragment
         return mTosAndPrivacy;
     }
 
+    protected void onHideLoadingUIComplete() {
+        if (sObserver != null) {
+            sObserver.onHideLoadingUIComplete();
+        }
+    }
+
     /**
      * @return Whether the check box for Uma metrics can be shown. It should be used in conjunction
      *         with whether other non-spinner elements can generally be shown.
      */
     protected boolean canShowUmaCheckBox() {
         return !FREMobileIdentityConsistencyFieldTrial.shouldShowOldFreWithUmaDialog()
-                && (sShowUmaCheckBoxForTesting || VersionInfo.isOfficialBuild());
+                && (sShowUmaCheckBoxForTesting || VersionInfo.isOfficialBuild())
+                && (isWaitingForNativeAndPolicyInit()
+                        || !PrivacyPreferencesManagerImpl.getInstance()
+                                    .isMetricsReportingDisabledByPolicy());
     }
 
     @VisibleForTesting

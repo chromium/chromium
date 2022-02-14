@@ -43,6 +43,11 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
         return sInstance;
     }
 
+    @VisibleForTesting
+    public static void setInstanceForTesting(PrivacyPreferencesManagerImpl instance) {
+        sInstance = instance;
+    }
+
     protected boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager =
                 (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -125,10 +130,6 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
     @Override
     public boolean isMetricsReportingDisabledByPolicy() {
         return PrivacyPreferencesManagerImplJni.get().isMetricsReportingDisabledByPolicy();
-    }
-
-    public static void setInstanceForTesting(PrivacyPreferencesManagerImpl instance) {
-        sInstance = instance;
     }
 
     @NativeMethods
