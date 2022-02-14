@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_DEFERRED_SHAPING_H_
 
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
 
 namespace blink {
 
@@ -31,6 +32,56 @@ class DeferredShapingViewportScope {
 
  private:
   LocalFrameView& view_;
+  const LayoutUnit previous_value_;
+};
+
+// --------------------------------------------------------------------------
+
+// Register the "minimum top" position of the box which is being laid out.
+// A DeferredShapingMinimumTopScope instance is movable, and not copyable.
+class DeferredShapingMinimumTopScope {
+  STACK_ALLOCATED();
+  using PassKey = base::PassKey<DeferredShapingMinimumTopScope>;
+
+ public:
+  // |input_node| - Source of LocalFrameView. It's ok to specify any layout
+  //                input node if it is associated to the same LocalFrameView.
+  // |minimum_top| - The value to be set to CurrentMinimumTop().
+  DeferredShapingMinimumTopScope(const NGLayoutInputNode input_node,
+                                 LayoutUnit minimum_top)
+      : view_(input_node.GetLayoutBox()->GetFrameView()),
+        previous_value_(view_->CurrentMinimumTop()) {
+    view_->SetCurrentMinimumTop(PassKey(), minimum_top);
+  }
+
+  // |input_node| - Source of LocalFrameView. It's ok to specify any layout
+  //                input node if it is associated to the same LocalFrameView.
+  // |delta| - The value to be added to CurrentMinimumTop().
+  [[nodiscard]] static DeferredShapingMinimumTopScope CreateDelta(
+      const NGLayoutInputNode input_node,
+      LayoutUnit delta) {
+    auto& view = *input_node.GetLayoutBox()->GetFrameView();
+    return DeferredShapingMinimumTopScope(input_node,
+                                          view.CurrentMinimumTop() + delta);
+  }
+
+  DeferredShapingMinimumTopScope(DeferredShapingMinimumTopScope&& other)
+      : view_(other.view_), previous_value_(other.previous_value_) {
+    other.view_ = nullptr;
+  }
+
+  ~DeferredShapingMinimumTopScope() {
+    if (view_)
+      view_->SetCurrentMinimumTop(PassKey(), previous_value_);
+  }
+
+  DeferredShapingMinimumTopScope(const DeferredShapingMinimumTopScope&) =
+      delete;
+  DeferredShapingMinimumTopScope& operator=(
+      const DeferredShapingMinimumTopScope&) = delete;
+
+ private:
+  LocalFrameView* view_;
   const LayoutUnit previous_value_;
 };
 

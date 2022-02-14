@@ -7,6 +7,7 @@
 #include <memory>
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/layout/deferred_shaping.h"
 #include "third_party/blink/renderer/core/layout/flexible_box_algorithm.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -977,6 +978,8 @@ void NGFlexLayoutAlgorithm::PlaceFlexItems(
 
       NGConstraintSpace child_space = BuildSpaceForLayout(
           flex_item.ng_input_node_, flex_item.FlexedBorderBoxSize());
+      auto minimum_top = DeferredShapingMinimumTopScope::CreateDelta(
+          Node(), cross_axis_offset);
 
       // We need to get the item's cross axis size given its new main size. If
       // the new main size is the item's inline size, then we have to do a
@@ -1110,6 +1113,8 @@ NGLayoutResult::EStatus NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
         NGConstraintSpace child_space = BuildSpaceForLayout(
             flex_item.ng_input_node, flex_item.main_axis_final_size,
             line_output.line_cross_size);
+        auto minimum_top = DeferredShapingMinimumTopScope::CreateDelta(
+            Node(), offset.block_offset);
         layout_result =
             flex_item.ng_input_node.Layout(child_space,
                                            /* break_token */ nullptr);
@@ -1242,6 +1247,8 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
         flex_item->ng_input_node, flex_item->main_axis_final_size,
         line_cross_size_for_stretch, offset.block_offset,
         min_block_size_should_encompass_intrinsic_size);
+    auto minimum_top = DeferredShapingMinimumTopScope::CreateDelta(
+        Node(), offset.block_offset);
     scoped_refptr<const NGLayoutResult> layout_result =
         flex_item->ng_input_node.Layout(child_space, item_break_token,
                                         early_break_in_child);

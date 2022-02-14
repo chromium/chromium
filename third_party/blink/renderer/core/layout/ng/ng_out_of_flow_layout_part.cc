@@ -6,6 +6,7 @@
 
 #include <math.h>
 
+#include "third_party/blink/renderer/core/layout/deferred_shaping.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
@@ -1532,6 +1533,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::GenerateFragment(
         /* is_new_fc */ true,
         /* requires_content_before_breaking */ false);
   }
+  DeferredShapingMinimumTopScope minimum_top_scope(node, block_offset);
   NGConstraintSpace space = builder.ToConstraintSpace();
 
   return node.Layout(space, break_token);

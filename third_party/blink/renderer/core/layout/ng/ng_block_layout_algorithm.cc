@@ -11,6 +11,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/layout/deferred_shaping.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
@@ -1536,6 +1537,7 @@ NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
     // exclusion space.
     DCHECK(child_space.ExclusionSpace().IsEmpty());
 
+    auto minimum_top = CreateMinimumTopScopeForChild(child, child_data);
     scoped_refptr<const NGLayoutResult> layout_result = LayoutBlockChild(
         child_space, child_break_token, early_break_, &To<NGBlockNode>(child));
 
@@ -1661,6 +1663,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleInflow(
       child, child_data, ChildAvailableSize(), /* is_new_fc */ false,
       forced_bfc_block_offset, has_clearance_past_adjoining_floats,
       previous_inflow_position->block_end_annotation_space);
+  auto minimum_top = CreateMinimumTopScopeForChild(child, child_data);
   scoped_refptr<const NGLayoutResult> layout_result =
       LayoutInflow(child_space, child_break_token, early_break_, &child,
                    inline_child_layout_context);
@@ -1840,6 +1843,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
     NGConstraintSpace new_child_space = CreateConstraintSpaceForChild(
         child, *child_data, ChildAvailableSize(), /* is_new_fc */ false,
         child_bfc_block_offset);
+    auto minimum_top = CreateMinimumTopScopeForChild(child, *child_data);
     layout_result =
         LayoutInflow(new_child_space, child_break_token, early_break_, &child,
                      inline_child_layout_context);
@@ -1855,6 +1859,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
       new_child_space = CreateConstraintSpaceForChild(
           child, *child_data, ChildAvailableSize(), /* is_new_fc */ false,
           child_bfc_block_offset);
+      auto minimum_top = CreateMinimumTopScopeForChild(child, *child_data);
       layout_result =
           LayoutInflow(new_child_space, child_break_token, early_break_, &child,
                        inline_child_layout_context);
@@ -2723,6 +2728,21 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
   return builder.ToConstraintSpace();
 }
 
+DeferredShapingMinimumTopScope
+NGBlockLayoutAlgorithm::CreateMinimumTopScopeForChild(
+    const NGLayoutInputNode child,
+    const NGInflowChildData& child_data) const {
+  LayoutUnit minimum_top =
+      Node().GetLayoutBox()->GetFrameView()->CurrentMinimumTop();
+  if (Node().CreatesNewFormattingContext()) {
+    minimum_top += child_data.bfc_offset_estimate.block_offset;
+  } else {
+    minimum_top = minimum_top - ConstraintSpace().BfcOffset().block_offset +
+                  child_data.bfc_offset_estimate.block_offset;
+  }
+  return DeferredShapingMinimumTopScope(child, minimum_top);
+}
+
 void NGBlockLayoutAlgorithm::PropagateBaselineFromChild(
     const NGPhysicalFragment& child,
     LayoutUnit block_offset) {
@@ -3092,12 +3112,13 @@ void NGBlockLayoutAlgorithm::HandleTextControlPlaceholder(
   }
 
   const bool is_new_fc = placeholder.CreatesNewFormattingContext();
-  const NGConstraintSpace space = CreateConstraintSpaceForChild(
-      placeholder,
+  const NGInflowChildData child_data =
       ComputeChildData(previous_inflow_position, placeholder,
-                       /* child_break_token */ nullptr, is_new_fc),
-      available_size, is_new_fc);
+                       /* child_break_token */ nullptr, is_new_fc);
+  const NGConstraintSpace space = CreateConstraintSpaceForChild(
+      placeholder, child_data, available_size, is_new_fc);
 
+  auto minimum_top = CreateMinimumTopScopeForChild(placeholder, child_data);
   scoped_refptr<const NGLayoutResult> result = placeholder.Layout(space);
   LogicalOffset offset = BorderScrollbarPadding().StartOffset();
   if (Node().IsTextArea()) {

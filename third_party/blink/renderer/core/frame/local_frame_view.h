@@ -79,6 +79,7 @@ class AXObjectCache;
 class ChromeClient;
 class CompositorAnimationTimeline;
 class DeferredShapingDisallowScope;
+class DeferredShapingMinimumTopScope;
 class DeferredShapingViewportScope;
 class DarkModeFilter;
 class DocumentLifecycle;
@@ -479,6 +480,12 @@ class CORE_EXPORT LocalFrameView final
   void SetCurrentViewportBottom(base::PassKey<DeferredShapingViewportScope>,
                                 LayoutUnit value) {
     current_viewport_bottom_ = value;
+  }
+  // The "minimum top" position of the box which is being laid out.
+  LayoutUnit CurrentMinimumTop() const { return current_minimum_top_; }
+  void SetCurrentMinimumTop(base::PassKey<DeferredShapingMinimumTopScope>,
+                            LayoutUnit value) {
+    current_minimum_top_ = value;
   }
   // A flag indicating whether the current layout container supports
   // deferred shaping.
@@ -1023,6 +1030,7 @@ class CORE_EXPORT LocalFrameView final
   Member<LocalFrame> frame_;
 
   LayoutUnit current_viewport_bottom_ = kIndefiniteSize;
+  LayoutUnit current_minimum_top_;
   bool allow_deferred_shaping_ = false;
 
   bool can_have_scrollbars_;
