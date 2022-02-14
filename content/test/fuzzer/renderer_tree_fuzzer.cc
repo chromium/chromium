@@ -262,9 +262,8 @@ class Element : public Node {
     if (dict.GetDictionary("a", &attrsDict)) {
       for (base::DictionaryValue::Iterator it(*attrsDict); !it.IsAtEnd();
            it.Advance()) {
-        std::string value;
-        if (it.value().GetAsString(&value))
-          attrs_[it.key()] = value;
+        if (it.value().is_string())
+          attrs_[it.key()] = it.value().GetString();
       }
     }
   }
