@@ -9,11 +9,30 @@
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/core/editing/visible_position.h"
+#include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 
 namespace blink {
 
 class InsertListCommandTest : public EditingTestBase {};
+
+class ParameterizedInsertListCommandTest
+    : public testing::WithParamInterface<bool>,
+      private ScopedLayoutNGForTest,
+      public InsertListCommandTest {
+ public:
+  ParameterizedInsertListCommandTest() : ScopedLayoutNGForTest(GetParam()) {}
+
+ protected:
+  bool LayoutNGEnabled() const {
+    return RuntimeEnabledFeatures::LayoutNGEnabled();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ParameterizedInsertListCommandTest,
+                         testing::Bool());
 
 TEST_F(InsertListCommandTest, ShouldCleanlyRemoveSpuriousTextNode) {
   GetDocument().SetCompatibilityMode(Document::kQuirksMode);
@@ -217,6 +236,43 @@ TEST_F(InsertListCommandTest, ListifyInputInTableCell1) {
       "<div contenteditable=\"true\">^<br><ol><li><ruby><rb><ol><li><br></li>"
       "<li><ruby><rb><input></rb></ruby></li><li><br></li><li><br></li></ol>"
       "</rb></ruby></li></ol>|XXX<br><div></div></div>",
+      GetSelectionTextFromBody());
+}
+
+// Refer https://crbug.com/1295037
+TEST_P(ParameterizedInsertListCommandTest, NonCanonicalVisiblePosition) {
+  Document& document = GetDocument();
+  document.setDesignMode("on");
+  InsertStyleElement("select { width: 100vw; }");
+  SetBodyInnerHTML(
+      "<textarea></textarea><svg></svg><select></select><div><input></div>");
+  const Position& base =
+      Position::BeforeNode(*document.QuerySelector("select"));
+  const Position& extent =
+      Position::AfterNode(*document.QuerySelector("input"));
+  Selection().SetSelection(
+      SelectionInDOMTree::Builder().Collapse(base).Extend(extent).Build(),
+      SetSelectionOptions());
+
+  // |base| and |extent| are 'canonical' with regard to VisiblePosition.
+  ASSERT_EQ(CreateVisiblePosition(base).DeepEquivalent(), base);
+  ASSERT_EQ(CreateVisiblePosition(extent).DeepEquivalent(), extent);
+
+  // But |base| is not canonical with regard to CanonicalPositionOf.
+  ASSERT_NE(CanonicalPositionOf(base), base);
+  ASSERT_EQ(CanonicalPositionOf(extent), extent);
+
+  auto* command = MakeGarbageCollected<InsertListCommand>(
+      document, InsertListCommand::kUnorderedList);
+
+  // Crash happens here.
+  EXPECT_TRUE(command->Apply());
+  EXPECT_EQ(
+      LayoutNGEnabled()
+          ? "<ul><li><textarea></textarea>^<svg></svg><select></select></li>"
+            "<li><input>|</li></ul>"
+          : "<ul><li><textarea></textarea><svg></svg>^<select></select></li>"
+            "<li><input>|</li></ul>",
       GetSelectionTextFromBody());
 }
 }

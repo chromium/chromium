@@ -132,9 +132,11 @@ InsertListCommand::InsertListCommand(Document& document, Type type)
 static bool InSameTreeAndOrdered(const Position& should_be_former,
                                  const Position& should_be_later) {
   // Input positions must be canonical positions.
-  DCHECK_EQ(should_be_former, CanonicalPositionOf(should_be_former))
+  DCHECK_EQ(should_be_former,
+            CreateVisiblePosition(should_be_former).DeepEquivalent())
       << should_be_former;
-  DCHECK_EQ(should_be_later, CanonicalPositionOf(should_be_later))
+  DCHECK_EQ(should_be_later,
+            CreateVisiblePosition(should_be_later).DeepEquivalent())
       << should_be_later;
   return Position::CommonAncestorTreeScope(should_be_former, should_be_later) &&
          ComparePositions(should_be_former, should_be_later) <= 0;
