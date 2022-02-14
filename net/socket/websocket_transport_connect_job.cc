@@ -76,10 +76,7 @@ WebSocketTransportConnectJob::WebSocketTransportConnectJob(
                  NetLogSourceType::WEB_SOCKET_TRANSPORT_CONNECT_JOB,
                  NetLogEventType::WEB_SOCKET_TRANSPORT_CONNECT_JOB_CONNECT),
       params_(params),
-      next_state_(STATE_NONE),
-      race_result_(TransportConnectJob::RACE_UNKNOWN),
-      had_ipv4_(false),
-      had_ipv6_(false) {
+      next_state_(STATE_NONE) {
   DCHECK(common_connect_job_params->websocket_endpoint_lock_manager);
 }
 
@@ -225,13 +222,11 @@ int WebSocketTransportConnectJob::DoTransportConnect() {
   }
 
   if (!ipv4_addresses.empty()) {
-    had_ipv4_ = true;
     ipv4_job_ = std::make_unique<WebSocketTransportConnectSubJob>(
         ipv4_addresses, this, SUB_JOB_IPV4, websocket_endpoint_lock_manager());
   }
 
   if (!ipv6_addresses.empty()) {
-    had_ipv6_ = true;
     ipv6_job_ = std::make_unique<WebSocketTransportConnectSubJob>(
         ipv6_addresses, this, SUB_JOB_IPV6, websocket_endpoint_lock_manager());
     result = ipv6_job_->Start();
@@ -240,8 +235,6 @@ int WebSocketTransportConnectJob::DoTransportConnect() {
         DCHECK(request_);
         SetSocket(ipv6_job_->PassSocket(),
                   base::OptionalFromPtr(request_->GetDnsAliasResults()));
-        race_result_ = had_ipv4_ ? TransportConnectJob::RACE_IPV6_WINS
-                                 : TransportConnectJob::RACE_IPV6_SOLO;
         return result;
 
       case ERR_IO_PENDING:
@@ -268,8 +261,6 @@ int WebSocketTransportConnectJob::DoTransportConnect() {
       DCHECK(request_);
       SetSocket(ipv4_job_->PassSocket(),
                 base::OptionalFromPtr(request_->GetDnsAliasResults()));
-      race_result_ = had_ipv6_ ? TransportConnectJob::RACE_IPV4_WINS
-                               : TransportConnectJob::RACE_IPV4_SOLO;
     }
   }
 
@@ -278,7 +269,7 @@ int WebSocketTransportConnectJob::DoTransportConnect() {
 
 int WebSocketTransportConnectJob::DoTransportConnectComplete(int result) {
   if (result == OK)
-    TransportConnectJob::HistogramDuration(connect_timing_, race_result_);
+    TransportConnectJob::HistogramDuration(connect_timing_);
   return result;
 }
 
@@ -286,17 +277,6 @@ void WebSocketTransportConnectJob::OnSubJobComplete(
     int result,
     WebSocketTransportConnectSubJob* job) {
   if (result == OK) {
-    switch (job->type()) {
-      case SUB_JOB_IPV4:
-        race_result_ = had_ipv6_ ? TransportConnectJob::RACE_IPV4_WINS
-                                 : TransportConnectJob::RACE_IPV4_SOLO;
-        break;
-
-      case SUB_JOB_IPV6:
-        race_result_ = had_ipv4_ ? TransportConnectJob::RACE_IPV6_WINS
-                                 : TransportConnectJob::RACE_IPV6_SOLO;
-        break;
-    }
     DCHECK(request_);
     SetSocket(job->PassSocket(),
               base::OptionalFromPtr(request_->GetDnsAliasResults()));

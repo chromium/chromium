@@ -4818,6 +4818,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.TCP_Connection_Latency_IPv4_No_Race" units="ms"
     expires_after="M85">
+  <obsolete>
+    Removed 2022-02.
+  </obsolete>
   <owner>mgersh@chromium.org</owner>
   <summary>
     Time from when the Connect() starts until it completes when the network
@@ -4828,6 +4831,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.TCP_Connection_Latency_IPv4_Wins_Race" units="ms"
     expires_after="M85">
+  <obsolete>
+    Removed 2022-02.
+  </obsolete>
   <owner>mgersh@chromium.org</owner>
   <summary>
     Time from when the Connect() starts until it completes when the IPv4
@@ -4838,6 +4844,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.TCP_Connection_Latency_IPv6_Raceable" units="ms"
     expires_after="M85">
+  <obsolete>
+    Removed 2022-02.
+  </obsolete>
   <owner>mgersh@chromium.org</owner>
   <summary>
     Time from when the Connect() starts until it completes when we race an IPv6
@@ -4848,6 +4857,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.TCP_Connection_Latency_IPv6_Solo" units="ms"
     expires_after="M85">
+  <obsolete>
+    Removed 2022-02.
+  </obsolete>
   <owner>mgersh@chromium.org</owner>
   <summary>
     Time from when the Connect() starts until it completes when the network

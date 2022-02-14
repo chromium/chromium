@@ -233,8 +233,7 @@ void TransportConnectJob::MakeAddressListStartWithIPv4(AddressList* list) {
 
 // static
 void TransportConnectJob::HistogramDuration(
-    const LoadTimingInfo::ConnectTiming& connect_timing,
-    RaceResult race_result) {
+    const LoadTimingInfo::ConnectTiming& connect_timing) {
   DCHECK(!connect_timing.connect_start.is_null());
   DCHECK(!connect_timing.dns_start.is_null());
   base::TimeTicks now = base::TimeTicks::Now();
@@ -246,36 +245,6 @@ void TransportConnectJob::HistogramDuration(
   base::TimeDelta connect_duration = now - connect_timing.connect_start;
   UMA_HISTOGRAM_CUSTOM_TIMES("Net.TCP_Connection_Latency", connect_duration,
                              base::Milliseconds(1), base::Minutes(10), 100);
-
-  switch (race_result) {
-    case RACE_IPV4_WINS:
-      UMA_HISTOGRAM_CUSTOM_TIMES("Net.TCP_Connection_Latency_IPv4_Wins_Race",
-                                 connect_duration, base::Milliseconds(1),
-                                 base::Minutes(10), 100);
-      break;
-
-    case RACE_IPV4_SOLO:
-      UMA_HISTOGRAM_CUSTOM_TIMES("Net.TCP_Connection_Latency_IPv4_No_Race",
-                                 connect_duration, base::Milliseconds(1),
-                                 base::Minutes(10), 100);
-      break;
-
-    case RACE_IPV6_WINS:
-      UMA_HISTOGRAM_CUSTOM_TIMES("Net.TCP_Connection_Latency_IPv6_Raceable",
-                                 connect_duration, base::Milliseconds(1),
-                                 base::Minutes(10), 100);
-      break;
-
-    case RACE_IPV6_SOLO:
-      UMA_HISTOGRAM_CUSTOM_TIMES("Net.TCP_Connection_Latency_IPv6_Solo",
-                                 connect_duration, base::Milliseconds(1),
-                                 base::Minutes(10), 100);
-      break;
-
-    default:
-      NOTREACHED();
-      break;
-  }
 }
 
 // static
@@ -468,19 +437,7 @@ int TransportConnectJob::DoTransportConnectComplete(bool is_fallback,
   other_socket.reset();
 
   if (result == OK) {
-    AddressList addresses = GetCurrentAddressList();
-    bool is_ipv4 = addresses.front().GetFamily() == ADDRESS_FAMILY_IPV4;
-    RaceResult race_result = RACE_UNKNOWN;
-    if (is_fallback) {
-      race_result = RACE_IPV4_WINS;
-    } else if (is_ipv4) {
-      race_result = RACE_IPV4_SOLO;
-    } else if (AddressListOnlyContainsIPv6(addresses)) {
-      race_result = RACE_IPV6_SOLO;
-    } else {
-      race_result = RACE_IPV6_WINS;
-    }
-    HistogramDuration(connect_timing_, race_result);
+    HistogramDuration(connect_timing_);
 
     // Add connection attempts from previous routes.
     completed_socket->AddConnectionAttempts(connection_attempts_);

@@ -93,15 +93,6 @@ class NET_EXPORT_PRIVATE TransportSocketParams
 // a headstart) and return the one that completes first to the socket pool.
 class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
  public:
-  // For recording the connection time in the appropriate bucket.
-  enum RaceResult {
-    RACE_UNKNOWN,
-    RACE_IPV4_WINS,
-    RACE_IPV4_SOLO,
-    RACE_IPV6_WINS,
-    RACE_IPV6_SOLO,
-  };
-
   class NET_EXPORT_PRIVATE Factory {
    public:
     Factory() = default;
@@ -163,8 +154,7 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   // Record the histograms Net.DNS_Resolution_And_TCP_Connection_Latency2 and
   // Net.TCP_Connection_Latency and return the connect duration.
   static void HistogramDuration(
-      const LoadTimingInfo::ConnectTiming& connect_timing,
-      RaceResult race_result);
+      const LoadTimingInfo::ConnectTiming& connect_timing);
 
   static base::TimeDelta ConnectionTimeout();
 

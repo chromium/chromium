@@ -119,10 +119,6 @@ class NET_EXPORT_PRIVATE WebSocketTransportConnectJob : public ConnectJob {
   std::unique_ptr<WebSocketTransportConnectSubJob> ipv6_job_;
 
   base::OneShotTimer fallback_timer_;
-  TransportConnectJob::RaceResult race_result_;
-
-  bool had_ipv4_;
-  bool had_ipv6_;
 
   ResolveErrorInfo resolve_error_info_;
 
