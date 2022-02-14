@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/customization/customization_document.h"
+#include "chrome/browser/ash/login/active_directory_migration_utils.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
@@ -186,6 +187,10 @@ WelcomeScreen::WelcomeScreen(WelcomeView* view,
     view_->Bind(this);
 
   input_method::InputMethodManager::Get()->AddObserver(this);
+
+  ad_migration_utils::CheckChromadMigrationOobeFlow(
+      base::BindOnce(&WelcomeScreen::UpdateChromadMigrationOobeFlow,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 WelcomeScreen::~WelcomeScreen() {
@@ -206,7 +211,7 @@ void WelcomeScreen::OnViewDestroyed(WelcomeView* view) {
 
 void WelcomeScreen::UpdateLanguageList() {
   // Bail if there is already pending request.
-  if (weak_factory_.HasWeakPtrs())
+  if (language_weak_ptr_factory_.HasWeakPtrs())
     return;
 
   ScheduleResolveLanguageList(
@@ -224,13 +229,14 @@ void WelcomeScreen::SetApplicationLocaleAndInputMethod(
   }
 
   // Cancel pending requests.
-  weak_factory_.InvalidateWeakPtrs();
+  language_weak_ptr_factory_.InvalidateWeakPtrs();
 
   // Block UI while resource bundle is being reloaded.
   // (InputEventsBlocker will live until callback is finished.)
-  locale_util::SwitchLanguageCallback callback(base::BindOnce(
-      &WelcomeScreen::OnLanguageChangedCallback, weak_factory_.GetWeakPtr(),
-      base::Owned(new InputEventsBlocker), input_method));
+  locale_util::SwitchLanguageCallback callback(
+      base::BindOnce(&WelcomeScreen::OnLanguageChangedCallback,
+                     language_weak_ptr_factory_.GetWeakPtr(),
+                     base::Owned(new InputEventsBlocker), input_method));
   locale_util::SwitchLanguage(locale, true /* enableLocaleKeyboardLayouts */,
                               true /* login_layouts_only */,
                               std::move(callback),
@@ -254,13 +260,14 @@ void WelcomeScreen::SetApplicationLocale(const std::string& locale) {
   }
 
   // Cancel pending requests.
-  weak_factory_.InvalidateWeakPtrs();
+  language_weak_ptr_factory_.InvalidateWeakPtrs();
 
   // Block UI while resource bundle is being reloaded.
   // (InputEventsBlocker will live until callback is finished.)
-  locale_util::SwitchLanguageCallback callback(base::BindOnce(
-      &WelcomeScreen::OnLanguageChangedCallback, weak_factory_.GetWeakPtr(),
-      base::Owned(new InputEventsBlocker), std::string()));
+  locale_util::SwitchLanguageCallback callback(
+      base::BindOnce(&WelcomeScreen::OnLanguageChangedCallback,
+                     language_weak_ptr_factory_.GetWeakPtr(),
+                     base::Owned(new InputEventsBlocker), std::string()));
   locale_util::SwitchLanguage(locale, true /* enableLocaleKeyboardLayouts */,
                               true /* login_layouts_only */,
                               std::move(callback),
@@ -349,10 +356,12 @@ void WelcomeScreen::ShowImpl() {
     SetApplicationLocale(startup_manifest->initial_locale_default());
   }
 
-  // Automatically continue if we are using zero-touch hands-off enrollment.
+  // Skip this screen if this is an automatic enrollment as part of Zero-Touch
+  // hands off flow or Chromad Migration flow.
   // TODO(crbug.com/1295708): Move this check to an implementation of
   // BaseScreen:MaybeSkip().
-  if (WizardController::IsZeroTouchHandsOffOobeFlow()) {
+  if (is_chromad_migration_oobe_flow_ ||
+      WizardController::IsZeroTouchHandsOffOobeFlow()) {
     OnUserAction(kUserActionContinueButtonClicked);
     return;
   }
@@ -560,12 +569,13 @@ void WelcomeScreen::OnLanguageChangedCallback(
 void WelcomeScreen::ScheduleResolveLanguageList(
     std::unique_ptr<locale_util::LanguageSwitchResult> language_switch_result) {
   // Cancel pending requests.
-  weak_factory_.InvalidateWeakPtrs();
+  language_weak_ptr_factory_.InvalidateWeakPtrs();
 
-  ResolveUILanguageList(std::move(language_switch_result),
-                        input_method::InputMethodManager::Get(),
-                        base::BindOnce(&WelcomeScreen::OnLanguageListResolved,
-                                       weak_factory_.GetWeakPtr()));
+  ResolveUILanguageList(
+      std::move(language_switch_result),
+      input_method::InputMethodManager::Get(),
+      base::BindOnce(&WelcomeScreen::OnLanguageListResolved,
+                     language_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WelcomeScreen::OnLanguageListResolved(
@@ -605,6 +615,17 @@ void WelcomeScreen::OnShouldGiveChromeVoxHint() {
 
 ChromeVoxHintDetector* WelcomeScreen::GetChromeVoxHintDetectorForTesting() {
   return chromevox_hint_detector_.get();
+}
+
+void WelcomeScreen::UpdateChromadMigrationOobeFlow(bool exists) {
+  is_chromad_migration_oobe_flow_ = exists;
+
+  if (is_hidden() || !is_chromad_migration_oobe_flow_)
+    return;
+
+  // Simulates a user action, in case this screen is already shown and this OOBE
+  // flow is part of Chromad to cloud migration.
+  OnUserAction(kUserActionContinueButtonClicked);
 }
 
 }  // namespace ash

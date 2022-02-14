@@ -172,6 +172,11 @@ class WelcomeScreen : public BaseScreen,
   void NotifyLocaleChange();
   void OnLocaleChangeResult(LocaleNotificationResult result);
 
+  // Updates the local variable according to the existence of the Chromad
+  // migration flag file. Then, simulates a user action, if the flag is set and
+  // the screen is not hidden.
+  void UpdateChromadMigrationOobeFlow(bool exists);
+
   WelcomeView* view_ = nullptr;
   ScreenExitCallback exit_callback_;
 
@@ -192,7 +197,16 @@ class WelcomeScreen : public BaseScreen,
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  base::WeakPtrFactory<WelcomeScreen> weak_factory_{this};
+  // This local flag should be true if the OOBE flow is operating as part of the
+  // Chromad to cloud device migration. If so, this screen should be skipped.
+  bool is_chromad_migration_oobe_flow_ = false;
+
+  // WeakPtrFactory used to schedule and cancel tasks related to language update
+  // in this object.
+  base::WeakPtrFactory<WelcomeScreen> language_weak_ptr_factory_{this};
+
+  // WeakPtrFactory used to schedule other tasks in this object.
+  base::WeakPtrFactory<WelcomeScreen> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

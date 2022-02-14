@@ -10,7 +10,9 @@
 #include "ash/public/cpp/system_tray_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/bind.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
@@ -116,12 +118,20 @@ class WelcomeScreenBrowserTest : public OobeBaseTest {
   bool SetUpUserDataDirectory() override {
     if (!OobeBaseTest::SetUpUserDataDirectory())
       return false;
+
     EXPECT_TRUE(data_dir_.CreateUniqueTempDir());
     const base::FilePath startup_manifest =
         data_dir_.GetPath().AppendASCII("startup_manifest.json");
     EXPECT_TRUE(base::WriteFile(startup_manifest, kStartupManifestEnglish));
     path_override_ = std::make_unique<base::ScopedPathOverride>(
         FILE_STARTUP_CUSTOMIZATION_MANIFEST, startup_manifest);
+
+    // Make sure chrome paths are overridden before proceeding - this is usually
+    // done in chrome main, which has not happened yet.
+    base::FilePath user_data_dir;
+    EXPECT_TRUE(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
+    ash::RegisterStubPathOverrides(user_data_dir);
+
     return true;
   }
 
@@ -488,6 +498,35 @@ class WelcomeScreenHandsOffBrowserTest : public WelcomeScreenBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(WelcomeScreenHandsOffBrowserTest, SkipScreen) {
+  WaitForScreenExit();
+}
+
+class WelcomeScreenChromadMigrationBrowserTest
+    : public WelcomeScreenBrowserTest {
+ public:
+  WelcomeScreenChromadMigrationBrowserTest() = default;
+  ~WelcomeScreenChromadMigrationBrowserTest() override = default;
+
+  // WelcomeScreenBrowserTest:
+  bool SetUpUserDataDirectory() override {
+    if (!WelcomeScreenBrowserTest::SetUpUserDataDirectory())
+      return false;
+
+    base::FilePath preinstalled_components_dir;
+    EXPECT_TRUE(base::PathService::Get(ash::DIR_PREINSTALLED_COMPONENTS,
+                                       &preinstalled_components_dir));
+
+    base::FilePath preserve_dir =
+        preinstalled_components_dir.AppendASCII("preserve/");
+    EXPECT_TRUE(base::CreateDirectory(preserve_dir));
+    EXPECT_TRUE(base::WriteFile(
+        preserve_dir.AppendASCII("chromad_migration_skip_oobe"), "1"));
+
+    return true;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WelcomeScreenChromadMigrationBrowserTest, SkipScreen) {
   WaitForScreenExit();
 }
 

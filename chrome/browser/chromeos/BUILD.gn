@@ -1793,6 +1793,8 @@ source_set("chromeos") {
     "../ash/lock_screen_apps/toast_dialog_view.h",
     "../ash/logging.cc",
     "../ash/logging.h",
+    "../ash/login/active_directory_migration_utils.cc",
+    "../ash/login/active_directory_migration_utils.h",
     "../ash/login/app_mode/kiosk_launch_controller.cc",
     "../ash/login/app_mode/kiosk_launch_controller.h",
     "../ash/login/auth/chrome_cryptohome_authenticator.cc",
