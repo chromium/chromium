@@ -101,7 +101,9 @@ TEST_P(MetronomeLikeTaskQueueTest,
   EXPECT_TRUE(callback.was_called());
 }
 
-TEST_P(MetronomeLikeTaskQueueTest, DelayedTasksRunInOrder) {
+// TODO(https://crbug.com/1297095): Implement guaranteed order of execution and
+// re-enable this test. It was flaking on bots: https://crbug.com/1296657.
+TEST_P(MetronomeLikeTaskQueueTest, DISABLED_DelayedTasksRunInOrder) {
   auto* task_queue = provider_->TaskQueue();
 
   constexpr uint32_t kTime0Ms = 0;
