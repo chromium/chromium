@@ -6,7 +6,7 @@
         media="(prefers-color-scheme: dark)">
     <img alt="" src="./images/privacy_guide/cookies_graphic.svg">
   </picture>
-  <h2 class="header-label">$i18n{privacyReviewCookiesCardHeader}</h2>
+  <h2 class="header-label">$i18n{privacyGuideCookiesCardHeader}</h2>
 </div>
 <settings-radio-group id="cookiesRadioGroup"
     pref="{{prefs.generated.cookie_primary_setting}}"
@@ -14,35 +14,35 @@
   <settings-collapse-radio-button id="block3PIncognito"
       pref="[[prefs.generated.cookie_primary_setting]]"
       name="[[cookiePrimarySettingEnum_.BLOCK_THIRD_PARTY_INCOGNITO]]"
-      label="$i18n{privacyReviewCookiesCardBlockTpcIncognitoSubheader}"
+      label="$i18n{privacyGuideCookiesCardBlockTpcIncognitoSubheader}"
       expand-aria-label=
           "$i18n{cookiePageBlockThirdIncognitoExpandA11yLabel}"
       on-click="onCookies3PIncognitoClick_">
     <div slot="collapse" class="description-wrapper-radio two-column">
       <div class="description-column description-column-first">
         <div class=description-header>
-          $i18n{privacyReviewFeatureDescriptionHeader}
+          $i18n{privacyGuideFeatureDescriptionHeader}
         </div>
         <privacy-guide-description-item
             icon="settings20:shoppingcart"
-            label="$i18n{privacyReviewCookiesCardBlockTpcIncognitoFeatureDescription1}">
+            label="$i18n{privacyGuideCookiesCardBlockTpcIncognitoFeatureDescription1}">
         </privacy-guide-description-item>
         <privacy-guide-description-item
             icon="settings20:broken"
-            label="$i18n{privacyReviewCookiesCardBlockTpcIncognitoFeatureDescription2}">
+            label="$i18n{privacyGuideCookiesCardBlockTpcIncognitoFeatureDescription2}">
         </privacy-guide-description-item>
       </div>
       <div class="description-column">
         <div class=description-header>
-          $i18n{privacyReviewThingsToConsider}
+          $i18n{privacyGuideThingsToConsider}
         </div>
         <privacy-guide-description-item
             icon="settings20:block"
-            label="$i18n{privacyReviewCookiesCardBlockTpcIncognitoPrivacyDescription1}">
+            label="$i18n{privacyGuideCookiesCardBlockTpcIncognitoPrivacyDescription1}">
         </privacy-guide-description-item>
         <privacy-guide-description-item
             icon="settings20:incognito-unfilled"
-            label="$i18n{privacyReviewCookiesCardBlockTpcIncognitoPrivacyDescription2}">
+            label="$i18n{privacyGuideCookiesCardBlockTpcIncognitoPrivacyDescription2}">
         </privacy-guide-description-item>
       </div>
     </div>
@@ -50,30 +50,30 @@
   <settings-collapse-radio-button id="block3P"
       pref="[[prefs.generated.cookie_primary_setting]]"
       name="[[cookiePrimarySettingEnum_.BLOCK_THIRD_PARTY]]"
-      label="$i18n{privacyReviewCookiesCardBlockTpcSubheader}"
+      label="$i18n{privacyGuideCookiesCardBlockTpcSubheader}"
       expand-aria-label="$i18n{cookiePageBlockThirdExpandA11yLabel}"
       on-click="onCookies3PClick_">
     <div slot="collapse" class="description-wrapper-radio two-column">
       <div class="description-column description-column-first">
         <div class=description-header>
-          $i18n{privacyReviewFeatureDescriptionHeader}
+          $i18n{privacyGuideFeatureDescriptionHeader}
         </div>
         <privacy-guide-description-item
             icon="settings20:shoppingcart"
-            label="$i18n{privacyReviewCookiesCardBlockTpcFeatureDescription1}">
+            label="$i18n{privacyGuideCookiesCardBlockTpcFeatureDescription1}">
         </privacy-guide-description-item>
         <privacy-guide-description-item
             icon="settings20:broken"
-            label="$i18n{privacyReviewCookiesCardBlockTpcFeatureDescription2}">
+            label="$i18n{privacyGuideCookiesCardBlockTpcFeatureDescription2}">
         </privacy-guide-description-item>
       </div>
       <div class="description-column">
         <div class=description-header>
-          $i18n{privacyReviewThingsToConsider}
+          $i18n{privacyGuideThingsToConsider}
         </div>
         <privacy-guide-description-item
             icon="settings20:block"
-            label="$i18n{privacyReviewCookiesCardBlockTpcPrivacyDescription1}">
+            label="$i18n{privacyGuideCookiesCardBlockTpcPrivacyDescription1}">
         </privacy-guide-description-item>
       </div>
     </div>

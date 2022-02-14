@@ -54,8 +54,8 @@
         <template is="dom-if" if="[[enablePrivacyGuide_]]">
           <cr-link-row id="privacyGuideLinkRow" class="hr"
               start-icon="settings20:wind-rose"
-              label="$i18n{privacyReviewLabel}"
-              sub-label="$i18n{privacyReviewSublabel}"
+              label="$i18n{privacyGuideLabel}"
+              sub-label="$i18n{privacyGuideSublabel}"
               on-click="onPrivacyGuideClick_"
               role-description="$i18n{subpageArrowRoleDescription}">
           </cr-link-row>
@@ -235,7 +235,7 @@
         <template is="dom-if" route-path="/privacy/guide">
           <settings-subpage id="privacy-guide"
               class="multi-card"
-              page-title="$i18n{privacyReviewLabel}"
+              page-title="$i18n{privacyGuideLabel}"
               associated-control="[[$$('#privacyGuideLinkRow')]]">
             <settings-privacy-guide-page prefs="{{prefs}}"
                 focus-config="[[focusConfig_]]">

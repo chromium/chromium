@@ -28,14 +28,14 @@
         media="(prefers-color-scheme: dark)">
     <img alt="" src="./images/privacy_guide/completion_banner.svg">
   </picture>
-  <div class="headline">$i18n{privacyReviewCompletionCardHeader}</div>
+  <div class="headline">$i18n{privacyGuideCompletionCardHeader}</div>
   <div class="cr-secondary-text">
-    $i18n{privacyReviewCompletionCardSubHeader}
+    $i18n{privacyGuideCompletionCardSubHeader}
   </div>
 </div>
 <privacy-guide-completion-link-row id="privacySandboxRow"
-    label="$i18n{privacyReviewCompletionCardPrivacySandboxLabel}"
-    sub-label="$i18n{privacyReviewCompletionCardPrivacySandboxSubLabel}"
+    label="$i18n{privacyGuideCompletionCardPrivacySandboxLabel}"
+    sub-label="$i18n{privacyGuideCompletionCardPrivacySandboxSubLabel}"
     light-img-src="./images/privacy_guide/privacy_sandbox_graphic.svg"
     dark-img-src="./images/privacy_guide/privacy_sandbox_graphic_dark.svg"
     on-click="onPrivacySandboxClick_">
@@ -47,8 +47,8 @@
 </div>
 <template is="dom-if" if="[[shouldShowWaa_]]">
   <privacy-guide-completion-link-row id="waaRow"
-      label="$i18n{privacyReviewCompletionCardWaaLabel}"
-      sub-label="$i18n{privacyReviewCompletionCardWaaSubLabel}"
+      label="$i18n{privacyGuideCompletionCardWaaLabel}"
+      sub-label="$i18n{privacyGuideCompletionCardWaaSubLabel}"
       light-img-src="./images/privacy_guide/waa_graphic.svg"
       dark-img-src="./images/privacy_guide/waa_graphic_dark.svg"
       on-click="onWaaClick_">
@@ -56,10 +56,10 @@
 </template>
 <div class="footer">
   <cr-button id="backButton" role="button" on-click="onBackButtonClick_">
-    $i18n{privacyReviewBackButton}
+    $i18n{privacyGuideBackButton}
   </cr-button>
   <cr-button class="action-button" id="leaveButton"
       on-click="onLeaveButtonClick_">
-    $i18n{privacyReviewCompletionCardLeaveButton}
+    $i18n{privacyGuideCompletionCardLeaveButton}
   </cr-button>
 </div>

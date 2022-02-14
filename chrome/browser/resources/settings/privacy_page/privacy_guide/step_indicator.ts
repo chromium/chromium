@@ -50,7 +50,7 @@ export class StepIndicator extends StepIndicatorBase {
    */
   private computeA11yLabel_(): string {
     return this.i18n(
-        'privacyReviewSteps', this.model.active + 1, this.model.total);
+        'privacyGuideSteps', this.model.active + 1, this.model.total);
   }
 
   private computeDots_(): Array<void> {

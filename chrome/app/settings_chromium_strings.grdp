@@ -127,32 +127,32 @@
     Open PDFs in Chromium
   </message>
 
-  <!-- Privacy Review -->
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_PROMO_BODY" desc="Body text of a card in the settings page that explains what the privacy review feature is.">
+  <!-- Privacy Guide -->
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_PROMO_BODY" desc="Body text of a card in the settings page that explains what the privacy guide feature is.">
     Review key privacy and security controls in Chromium
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_CLEAR_ON_EXIT_FEATURE_DESCRIPTION1" desc="A part of the feature description of 'clear cookies on exit' card in the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_CLEAR_ON_EXIT_FEATURE_DESCRIPTION1" desc="A part of the feature description of 'clear cookies on exit' card in the privacy guide.">
     When you close all Chromium windows, cookies and site data are automatically cleared
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_CLEAR_ON_EXIT_FEATURE_DESCRIPTION2" desc="A part of the feature description of 'clear cookies on exit' card in the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_CLEAR_ON_EXIT_FEATURE_DESCRIPTION2" desc="A part of the feature description of 'clear cookies on exit' card in the privacy guide.">
     You will be <ph name="BEGIN_BOLD">&lt;b&gt;</ph>signed out of most sites<ph name="END_BOLD">&lt;/b&gt;</ph> when you close Chromium. If sync is off, you will also be <ph name="BEGIN_BOLD">&lt;b&gt;</ph>signed out of Google services and Chromium<ph name="END_BOLD">&lt;/b&gt;</ph>.
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_CLEAR_ON_EXIT_FEATURE_DESCRIPTION3" desc="A part of the feature description of 'clear cookies on exit' card in the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_CLEAR_ON_EXIT_FEATURE_DESCRIPTION3" desc="A part of the feature description of 'clear cookies on exit' card in the privacy guide.">
     Sites you visit remember your information until you close Chromium
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_STANDARD_PROTECTION_FEATURE_DESCRIPTION2" desc="A part of the feature description of the standard protection section of the safe browsing card in the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_SAFE_BROWSING_CARD_STANDARD_PROTECTION_FEATURE_DESCRIPTION2" desc="A part of the feature description of the standard protection section of the safe browsing card in the privacy guide.">
     Checks URLs with a list of unsafe sites stored in Chromium
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_STANDARD_PROTECTION_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of the standard protection section of the safe browsing card in the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_SAFE_BROWSING_CARD_STANDARD_PROTECTION_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of the standard protection section of the safe browsing card in the privacy guide.">
     If a site tries to steal your password, or when you download a harmful file, Chromium may also send URLs, including bits of page content, to Safe Browsing
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_PRIVACY_SANDBOX_SUB_LABEL" desc="Text of the Privacy Sandbox sublabel in the completion card of the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_PRIVACY_SANDBOX_SUB_LABEL" desc="Text of the Privacy Sandbox sublabel in the completion card of the privacy guide.">
     Chromium is exploring new features that allow sites to deliver the same browsing experience using less of your data
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_WAA_SUB_LABEL" desc="Text of the Web and App Activity sublabel in the completion card of the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_WAA_SUB_LABEL" desc="Text of the Web and App Activity sublabel in the completion card of the privacy guide.">
     Choose whether to include Chromium history for more personalized experiences in Google services
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_MSBB_PRIVACY_DESCRIPTION2" desc="A part of the privacy description of 'make searches and browsing better' in the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_MSBB_PRIVACY_DESCRIPTION2" desc="A part of the privacy description of 'make searches and browsing better' in the privacy guide.">
     If you also share Chromium usage reports, those reports include the URLs you visit
   </message>
 
