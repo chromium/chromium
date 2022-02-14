@@ -33,6 +33,12 @@ const utils = goog.require('googleChromeLabs.textFragmentPolyfill.textFragmentUt
    */
   __gCrWeb.textFragments.handleTextFragments =
       function(fragments, scroll, backgroundColor, foregroundColor) {
+    // If |marks| already exists, it's because we've already highlighted
+    // fragments on this page. This might happen if the user got here by
+    // navigating back. Stop now to avoid creating nested <mark> elements.
+    if (marks?.length)
+      return;
+
     const markDefaultStyle = backgroundColor && foregroundColor ? {
       backgroundColor: `#${backgroundColor}`,
       color: `#${foregroundColor}`
@@ -50,6 +56,7 @@ const utils = goog.require('googleChromeLabs.textFragmentPolyfill.textFragmentUt
 
   __gCrWeb.textFragments.removeHighlights = function(new_url) {
     utils.removeMarks(marks);
+    marks = null;
     document.removeEventListener("click", handleClick,
                                  /*useCapture=*/true);
     if (new_url) {
@@ -110,7 +117,6 @@ const utils = goog.require('googleChromeLabs.textFragmentPolyfill.textFragmentUt
     for (var mark of marks) {
       mark.addEventListener("click", handleClickWithSender.bind(mark), true);
     }
-
 
     __gCrWeb.common.sendWebKitMessage('textFragments', {
       command: 'textFragments.processingComplete',
