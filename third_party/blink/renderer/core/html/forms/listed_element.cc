@@ -524,23 +524,7 @@ bool ListedElement::reportValidity() {
     return is_valid;
   DCHECK_EQ(unhandled_invalid_controls.size(), 1u);
   DCHECK_EQ(unhandled_invalid_controls[0].Get(), this);
-  // Update layout now before calling IsFocusable(), which has
-  // !LayoutObject()->NeedsLayout() assertion.
-  HTMLElement& element = ToHTMLElement();
-  element.GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kForm);
-  if (element.IsFocusable()) {
-    ShowValidationMessage();
-    return false;
-  }
-  if (element.GetDocument().GetFrame()) {
-    String message(
-        "An invalid form control with name='%name' is not focusable.");
-    message.Replace("%name", GetName());
-    element.GetDocument().AddConsoleMessage(
-        MakeGarbageCollected<ConsoleMessage>(
-            mojom::ConsoleMessageSource::kRendering,
-            mojom::ConsoleMessageLevel::kError, message));
-  }
+  ShowValidationMessage();
   return false;
 }
 
