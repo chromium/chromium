@@ -7,7 +7,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/test/test_timeouts.h"
 #include "base/values.h"
@@ -208,15 +208,16 @@ void PrintHelp() {
 int ProcessJsonString(const std::string& json_input,
                       const content::AttributionSimulationOptions& options,
                       int json_write_options) {
-  std::string error_msg;
-  std::unique_ptr<base::Value> input =
-      JSONStringValueDeserializer(json_input).Deserialize(nullptr, &error_msg);
-  if (!input) {
-    std::cerr << "failed to deserialize input: " << error_msg << std::endl;
+  base::JSONReader::ValueWithError result =
+      base::JSONReader::ReadAndReturnValueWithError(
+          json_input, base::JSONParserOptions::JSON_PARSE_RFC);
+  if (!result.value) {
+    std::cerr << "failed to deserialize input: " << result.error_message
+              << std::endl;
     return 1;
   }
-  base::Value output =
-      content::RunAttributionSimulationOrExit(std::move(*input), options);
+  base::Value output = content::RunAttributionSimulationOrExit(
+      std::move(*result.value), options);
   std::string output_json;
   bool success = base::JSONWriter::WriteWithOptions(output, json_write_options,
                                                     &output_json);
