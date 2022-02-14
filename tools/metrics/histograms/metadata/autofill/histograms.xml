@@ -801,7 +801,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.CreditCardMessage.{SaveDestination}{SaveSituation}"
-    enum="AutofillCreditCardMessage" expires_after="M99">
+    enum="AutofillCreditCardMessage" expires_after="M110">
   <owner>lazzzis@google.com</owner>
   <owner>jsaul@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
