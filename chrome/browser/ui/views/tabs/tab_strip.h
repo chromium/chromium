@@ -477,13 +477,6 @@ class TabStrip : public views::View,
   // the actual last tab unless the strip is in the overflow node_data.
   const Tab* GetLastVisibleTab() const;
 
-  // Returns the view index (the order of ChildViews of the TabStrip) of the
-  // given |tab| based on its model index when it moves. Used to reorder the
-  // child views of the tabstrip so that focus order stays consistent.
-  int GetViewInsertionIndex(Tab* tab,
-                            absl::optional<int> from_model_index,
-                            int to_model_index) const;
-
   // Closes the tab at |model_index|.
   void CloseTabInternal(int model_index, CloseTabSource source);
 
