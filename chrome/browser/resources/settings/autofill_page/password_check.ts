@@ -24,6 +24,7 @@ import '../controls/password_prompt_dialog.js';
 // </if>
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
@@ -54,9 +55,24 @@ import {PasswordCheckInteraction, SavedPasswordListChangedListener} from './pass
 
 const CheckState = chrome.passwordsPrivate.PasswordCheckState;
 
-interface SettingsPasswordCheckElement {
+export interface SettingsPasswordCheckElement {
   $: {
+    compromisedCredentialsBody: HTMLElement,
+    compromisedPasswordsDescription: HTMLElement,
+    controlPasswordCheckButton: CrButtonElement,
+    leakedPasswordList: HTMLElement,
+    menuEditPassword: HTMLButtonElement,
+    menuShowPassword: HTMLButtonElement,
     moreActionsMenu: CrActionMenuElement,
+    mutedPasswordList: HTMLElement,
+    noCompromisedCredentials: HTMLElement,
+    signedOutUserLabel: HTMLElement,
+    subtitle: HTMLElement,
+    title: HTMLElement,
+    titleRow: HTMLElement,
+    weakCredentialsBody: HTMLElement,
+    weakPasswordsDescription: HTMLElement,
+    weakPasswordList: HTMLElement,
   };
 }
 
@@ -68,7 +84,8 @@ const SettingsPasswordCheckElementBase =
       PasswordCheckMixinInterface & RouteObserverMixinInterface
     };
 
-class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
+export class SettingsPasswordCheckElement extends
+    SettingsPasswordCheckElementBase {
   static get is() {
     return 'settings-password-check';
   }
@@ -859,6 +876,12 @@ class SettingsPasswordCheckElement extends SettingsPasswordCheckElementBase {
     this.showPasswordPromptDialog_ = true;
   }
   // </if>
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-password-check': SettingsPasswordCheckElement,
+  }
 }
 
 customElements.define(

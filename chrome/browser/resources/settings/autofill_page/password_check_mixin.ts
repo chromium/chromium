@@ -197,7 +197,7 @@ export const PasswordCheckMixin = dedupingMixin(
          * Function to update compromised credentials in a proper way. New
          * entities should appear in the bottom.
          */
-        private updateCompromisedPasswordList(
+        updateCompromisedPasswordList(
             newList: Array<chrome.passwordsPrivate.InsecureCredential>) {
           if (this.isMutedPasswordsEnabled) {
             this.updateLeakedAndMutedPasswordLists(newList);
@@ -280,4 +280,6 @@ export interface PasswordCheckMixinInterface {
   status: chrome.passwordsPrivate.PasswordCheckStatus;
   isInitialStatus: boolean;
   isMutedPasswordsEnabled: boolean;
+  updateCompromisedPasswordList(
+      newList: Array<chrome.passwordsPrivate.InsecureCredential>): void;
 }

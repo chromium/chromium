@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import '../i18n_setup.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
@@ -14,16 +15,19 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {PasswordCheckInteraction, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 import {getTemplate} from './password_remove_confirmation_dialog.html.js';
 
-interface SettingsPasswordRemoveConfirmationDialogElement {
+export interface SettingsPasswordRemoveConfirmationDialogElement {
   $: {
     dialog: CrDialogElement,
+    remove: CrButtonElement,
+    text: HTMLElement,
+    link: HTMLElement,
   };
 }
 
 const SettingsPasswordRemoveConfirmationDialogElementBase =
     I18nMixin(PolymerElement);
 
-class SettingsPasswordRemoveConfirmationDialogElement extends
+export class SettingsPasswordRemoveConfirmationDialogElement extends
     SettingsPasswordRemoveConfirmationDialogElementBase {
   static get is() {
     return 'settings-password-remove-confirmation-dialog';
@@ -97,6 +101,12 @@ class SettingsPasswordRemoveConfirmationDialogElement extends
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-password-remove-confirmation-dialog':
+        SettingsPasswordRemoveConfirmationDialogElement,
+  }
+}
 customElements.define(
     SettingsPasswordRemoveConfirmationDialogElement.is,
     SettingsPasswordRemoveConfirmationDialogElement);

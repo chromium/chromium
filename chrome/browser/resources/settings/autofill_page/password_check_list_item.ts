@@ -14,6 +14,7 @@ import '../settings_shared_css.js';
 import '../site_favicon.js';
 import './passwords_shared_css.js';
 
+import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -27,6 +28,14 @@ import {BlockingRequestManager} from './blocking_request_manager.js';
 import {getTemplate} from './password_check_list_item.html.js';
 import {PasswordCheckInteraction, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 
+export interface PasswordCheckListItemElement {
+  $: {
+    insecureOrigin: HTMLElement,
+    insecureUsername: HTMLElement,
+    insecurePassword: HTMLInputElement,
+    more: CrIconButtonElement,
+  };
+}
 
 export class PasswordCheckListItemElement extends PolymerElement {
   static get is() {
@@ -73,7 +82,7 @@ export class PasswordCheckListItemElement extends PolymerElement {
         computed: 'computeIconClass_(item.compromisedInfo)',
       },
 
-      mutingEnabled_: {
+      mutingEnabled: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean(
@@ -93,7 +102,7 @@ export class PasswordCheckListItemElement extends PolymerElement {
   clickedChangePassword: boolean;
   private buttonClass_: string;
   private iconClass_: string;
-  private mutingEnabled_: boolean;
+  mutingEnabled: boolean;
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
 
@@ -110,8 +119,8 @@ export class PasswordCheckListItemElement extends PolymerElement {
    */
   private isNonMutedCompromisedItem_(): boolean {
     return this.isCompromisedItem_() &&
-        (!this.mutingEnabled_ ||
-         (this.mutingEnabled_ && !this.item.compromisedInfo!.isMuted));
+        (!this.mutingEnabled ||
+         (this.mutingEnabled && !this.item.compromisedInfo!.isMuted));
   }
 
   private getCompromiseType_(): string {
@@ -212,6 +221,12 @@ export class PasswordCheckListItemElement extends PolymerElement {
   private onAlreadyChangedClick_(event: Event) {
     event.preventDefault();
     this.fire_('already-changed-password-click', event.target);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'password-check-list-item': PasswordCheckListItemElement,
   }
 }
 

@@ -79,10 +79,15 @@ export {SettingsAutofillSectionElement} from './autofill_page/autofill_section.j
 export {BlockingRequestManager} from './autofill_page/blocking_request_manager.js';
 // </if>
 export {SettingsCreditCardEditDialogElement} from './autofill_page/credit_card_edit_dialog.js';
+export {SettingsPasswordCheckElement} from './autofill_page/password_check.js';
+export {SettingsPasswordCheckEditDialogElement} from './autofill_page/password_check_edit_dialog.js';
+export {SettingsPasswordEditDisclaimerDialogElement} from './autofill_page/password_check_edit_disclaimer_dialog.js';
+export {PasswordCheckListItemElement} from './autofill_page/password_check_list_item.js';
 export {PasswordEditDialogElement} from './autofill_page/password_edit_dialog.js';
 export {PasswordListItemElement} from './autofill_page/password_list_item.js';
 export {PasswordMoveMultiplePasswordsToAccountDialogElement} from './autofill_page/password_move_multiple_passwords_to_account_dialog.js';
 export {PasswordMoveToAccountDialogElement} from './autofill_page/password_move_to_account_dialog.js';
+export {SettingsPasswordRemoveConfirmationDialogElement} from './autofill_page/password_remove_confirmation_dialog.js';
 export {PasswordsDeviceSectionElement} from './autofill_page/passwords_device_section.js';
 export {PasswordsExportDialogElement} from './autofill_page/passwords_export_dialog.js';
 export {PasswordsSectionElement} from './autofill_page/passwords_section.js';
