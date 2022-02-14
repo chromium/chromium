@@ -3528,8 +3528,11 @@ void RenderFrameHostManager::CommitPending(
     std::vector<RenderFrameProxyHost*> removed_proxies;
     for (auto& it : browsing_context_state_->proxy_hosts()) {
       const auto& proxy = it.second;
+      // The outer delegate proxy is *always* cross-browsing context group, but
+      // it is the only proxy we must preserve.
       if (!render_frame_host_->GetSiteInstance()->IsRelatedSiteInstance(
-              proxy->GetSiteInstance())) {
+              proxy->GetSiteInstance()) &&
+          proxy.get() != GetProxyToOuterDelegate()) {
         removed_proxies.push_back(proxy.get());
       }
     }
