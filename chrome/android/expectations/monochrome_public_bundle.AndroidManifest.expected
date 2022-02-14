@@ -184,6 +184,13 @@
         android:taskAffinity=""
         android:theme="@style/Theme.BrowserUI.NoDisplay">
     </activity>  # DIFF-ANCHOR: 76686af9
+    <activity  # DIFF-ANCHOR: 8f3f76d9
+        android:name="org.chromium.chrome.browser.app.download.home.DownloadActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:theme="@style/Theme.Chromium.Activity.Fullscreen"
+        android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
+    </activity>  # DIFF-ANCHOR: 8f3f76d9
     <activity  # DIFF-ANCHOR: 3d32d400
         android:name="org.chromium.chrome.browser.app.feed.feedmanagement.FeedManagementActivity"
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
@@ -320,13 +327,6 @@
         android:taskAffinity=""
         android:theme="@style/LauncherTheme">
     </activity>  # DIFF-ANCHOR: 1acdfd19
-    <activity  # DIFF-ANCHOR: 5c83a464
-        android:name="org.chromium.chrome.browser.download.DownloadActivity"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
-        android:exported="false"
-        android:theme="@style/Theme.Chromium.Activity.Fullscreen"
-        android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
-    </activity>  # DIFF-ANCHOR: 5c83a464
     <activity  # DIFF-ANCHOR: 2121eb0d
         android:name="org.chromium.chrome.browser.firstrun.FirstRunActivity"
         android:autoRemoveFromRecents="true"
@@ -864,6 +864,14 @@
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>  # DIFF-ANCHOR: a5330430
     </activity-alias>  # DIFF-ANCHOR: 32e34aba
+    <activity-alias  # DIFF-ANCHOR: 5c83a464
+        android:name="org.chromium.chrome.browser.download.DownloadActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:targetActivity="org.chromium.chrome.browser.app.download.home.DownloadActivity"
+        android:theme="@style/Theme.Chromium.Activity.Fullscreen"
+        android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
+    </activity-alias>  # DIFF-ANCHOR: 5c83a464
     <activity-alias  # DIFF-ANCHOR: b4a6221b
         android:name="org.chromium.chrome.browser.media.AudioLauncherActivity"
         android:enabled="false"

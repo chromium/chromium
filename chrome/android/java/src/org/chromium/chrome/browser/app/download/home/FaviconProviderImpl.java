@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.download.home;
+package org.chromium.chrome.browser.app.download.home;
 
 import android.graphics.Bitmap;
 import android.util.LruCache;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.download.home.FaviconProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 
 /** Implementation for {@link FaviconHelper}. */
-public class FaviconProviderImpl implements FaviconProvider {
+class FaviconProviderImpl implements FaviconProvider {
     private static final int MAX_NUM_FAVICONS_TO_CACHE = 128;
 
     private final Profile mProfile;

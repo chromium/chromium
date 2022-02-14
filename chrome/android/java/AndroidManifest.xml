@@ -634,7 +634,14 @@ by a child template that "extends" this file.
         </activity>
 
         <!-- Activities for downloads. -->
-        <activity android:name="org.chromium.chrome.browser.download.DownloadActivity"
+        <activity-alias android:name="org.chromium.chrome.browser.download.DownloadActivity"
+            android:targetActivity="org.chromium.chrome.browser.app.download.home.DownloadActivity"
+            android:theme="@style/Theme.Chromium.Activity.Fullscreen"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
+            android:exported="false"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize">
+        </activity-alias>
+        <activity android:name="org.chromium.chrome.browser.app.download.home.DownloadActivity"
             android:theme="@style/Theme.Chromium.Activity.Fullscreen"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
             android:exported="false"

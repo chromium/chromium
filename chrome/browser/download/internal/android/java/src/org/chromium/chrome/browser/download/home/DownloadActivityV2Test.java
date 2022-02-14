@@ -85,7 +85,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Tests the DownloadActivity home V2. */
+/** Tests the download home V2. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {

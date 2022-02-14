@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.download.home;
+package org.chromium.chrome.browser.app.download.home;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.download.OfflineContentAvailabilityStatusProvider;

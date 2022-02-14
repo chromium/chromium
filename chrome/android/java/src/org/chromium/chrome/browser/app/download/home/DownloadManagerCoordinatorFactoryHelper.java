@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.download.home;
+package org.chromium.chrome.browser.app.download.home;
 
 import android.app.Activity;
 import android.content.Context;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.download.home.DownloadManagerCoordinator;
+import org.chromium.chrome.browser.download.home.DownloadManagerCoordinatorFactory;
+import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.download.settings.DownloadSettings;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -21,7 +24,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** A helper class to build and return an {@link DownloadManagerCoordinator}. */
-public class DownloadManagerCoordinatorFactoryHelper {
+class DownloadManagerCoordinatorFactoryHelper {
     /**
      * Returns an instance of a {@link DownloadManagerCoordinator} to be used in the UI.
      * @param activity           The parent {@link Activity}.
