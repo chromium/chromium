@@ -44,6 +44,7 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -120,6 +121,8 @@ TabGroupHeader::TabGroupHeader(TabStrip* tab_strip,
   SetProperty(views::kElementIdentifierKey, kTabGroupHeaderElementId);
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
+
+  is_collapsed_ = tab_strip_->controller()->IsGroupCollapsed(group);
 
   last_modified_expansion_ = base::TimeTicks::Now();
 }
@@ -481,6 +484,18 @@ void TabGroupHeader::VisualsChanged() {
 
   if (views::FocusRing::Get(this))
     views::FocusRing::Get(this)->Layout();
+
+  const bool collapsed_state =
+      tab_strip_->controller()->IsGroupCollapsed(group().value());
+  if (is_collapsed_ != collapsed_state) {
+    const ui::ElementIdentifier element_id =
+        GetProperty(views::kElementIdentifierKey);
+    if (element_id) {
+      views::ElementTrackerViews::GetInstance()->NotifyViewActivated(element_id,
+                                                                     this);
+      is_collapsed_ = collapsed_state;
+    }
+  }
 }
 
 void TabGroupHeader::RemoveObserverFromWidget(views::Widget* widget) {

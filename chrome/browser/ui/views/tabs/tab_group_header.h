@@ -85,6 +85,9 @@ class TabGroupHeader : public TabSlotView,
   // Time used for logging the last time the group was collapsed or expanded.
   base::TimeTicks last_modified_expansion_;
 
+  // Saved collapsed state for usage with activation of element tracker system.
+  bool is_collapsed_;
+
   // Tracks whether our editor bubble is open. At most one can be open
   // at once.
   class EditorBubbleTracker : public views::WidgetObserver {

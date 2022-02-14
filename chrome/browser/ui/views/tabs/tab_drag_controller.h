@@ -557,6 +557,10 @@ class TabDragController : public views::WidgetObserver {
   // |kVerticalDetachMagnetism| in mind.
   int GetOutOfBoundsYCoordinate() const;
 
+  // Helper method to ElementTracker events when a tab has been added to a group
+  // as a result of a drag finishing.
+  void NotifyEventIfTabAddedToGroup();
+
   EventSource event_source_ = EVENT_SOURCE_MOUSE;
 
   // The TabDragContext the drag originated from. This is set to null

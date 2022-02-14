@@ -26,6 +26,7 @@
 #include "cc/paint/paint_shader.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
@@ -245,6 +246,8 @@ Tab::Tab(TabController* controller)
   views::FocusRing::Install(this);
   views::HighlightPathGenerator::Install(
       this, std::make_unique<TabStyleHighlightPathGenerator>(tab_style_.get()));
+
+  SetProperty(views::kElementIdentifierKey, kTabElementId);
 }
 
 Tab::~Tab() {

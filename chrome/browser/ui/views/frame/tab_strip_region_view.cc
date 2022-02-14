@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/frame/window_frame_util.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -147,6 +148,8 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
     tab_search_button_ = AddChildView(std::move(tab_search_button));
     tab_search_button_->SetProperty(views::kMarginsKey, control_padding);
   }
+
+  SetProperty(views::kElementIdentifierKey, kTabStripRegionElementId);
 }
 
 TabStripRegionView::~TabStripRegionView() = default;

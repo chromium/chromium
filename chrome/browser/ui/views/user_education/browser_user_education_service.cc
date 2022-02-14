@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/user_education/feature_promo_registry.h"
 #include "chrome/browser/ui/user_education/feature_promo_specification.h"
@@ -19,6 +20,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -88,10 +90,12 @@ void MaybeRegisterChromeFeaturePromos(FeaturePromoRegistry& registry) {
 
   // kIPHDesktopTabGroupsNewGroupFeature:
   registry.RegisterFeature(
-      std::move(FeaturePromoSpecification::CreateForSnoozePromo(
+      std::move(FeaturePromoSpecification::CreateForTutorialPromo(
                     feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
-                    kTabStripElementId, IDS_TAB_GROUPS_NEW_GROUP_PROMO)
+                    kTabStripElementId, IDS_TAB_GROUPS_NEW_GROUP_PROMO,
+                    kTabGroupTutorialId)
                     .SetBubbleArrow(HelpBubbleArrow::kTopCenter)
+                    .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)
                     .SetAnchorElementFilter(
                         base::BindRepeating(&GetTabGroupsAnchorView))));
 
@@ -190,33 +194,61 @@ void MaybeRegisterChromeTutorials(TutorialRegistry& tutorial_registry) {
 
   {  // Tab Group Tutorial
     TutorialDescription description;
-    TutorialDescription::Step step1(
-        absl::nullopt,
-        u"Right Click on a Tab and select \"Add Tab To new Group\".",
-        ui::InteractionSequence::StepType::kShown, kTabStripElementId,
-        std::string(), HelpBubbleArrow::kTopCenter);
-    description.steps.emplace_back(step1);
 
-    TutorialDescription::Step step2(
-        absl::nullopt, u"Select \"Enter a name for your Tab Group\".",
+    // The initial step.
+    TutorialDescription::Step create_tabgroup_step(
+        absl::nullopt,
+        u"Right-Click on a Tab and select \"Add Tab To New Group\"",
+        ui::InteractionSequence::StepType::kShown, kTabStripRegionElementId,
+        std::string(), HelpBubbleArrow::kTopCenter);
+    description.steps.emplace_back(create_tabgroup_step);
+
+    // The menu step.
+    TutorialDescription::Step bubble_menu_edit_step(
+        absl::nullopt, u"Name your group and choose a color",
         ui::InteractionSequence::StepType::kShown, kTabGroupEditorBubbleId,
         std::string(), HelpBubbleArrow::kLeftCenter,
         ui::CustomElementEventType(),
         /*must_remain_visible =*/false);
-    description.steps.emplace_back(std::move(step2));
+    description.steps.emplace_back(std::move(bubble_menu_edit_step));
 
-    TutorialDescription::Step step3(
+    TutorialDescription::Step bubble_menu_edit_ended_step(
         absl::nullopt, std::u16string(),
         ui::InteractionSequence::StepType::kHidden, kTabGroupEditorBubbleId,
         std::string(), HelpBubbleArrow::kNone, ui::CustomElementEventType(),
         /*must_remain_visible =*/false);
-    description.steps.emplace_back(std::move(step3));
+    description.steps.emplace_back(std::move(bubble_menu_edit_ended_step));
 
-    TutorialDescription::Step step4(
-        absl::nullopt, u"Congratulations, you've made your first tab group.",
+    // Drag tab into the group.
+    TutorialDescription::Step drag_tab_into_group_step(
+        absl::nullopt, u"Try dragging other open tabs into your group",
+        ui::InteractionSequence::StepType::kShown, kTabStripRegionElementId,
+        std::string(), HelpBubbleArrow::kTopCenter);
+    description.steps.emplace_back(std::move(drag_tab_into_group_step));
+
+    TutorialDescription::Step successfully_drag_tab_into_group_step(
+        absl::nullopt, std::u16string(),
+        ui::InteractionSequence::StepType::kCustomEvent,
+        ui::ElementIdentifier(), std::string(), HelpBubbleArrow::kTopCenter,
+        kTabGroupedCustomEventId, /*must_remain_visible =*/true);
+    description.steps.emplace_back(
+        std::move(successfully_drag_tab_into_group_step));
+
+    // Click to collapse the tab group.
+    TutorialDescription::Step collapse_step(
+        absl::nullopt, u"Click the group name to expand or collapse it",
         ui::InteractionSequence::StepType::kShown, kTabGroupHeaderElementId,
         std::string(), HelpBubbleArrow::kTopCenter);
-    description.steps.emplace_back(std::move(step4));
+    description.steps.emplace_back(std::move(collapse_step));
+
+    // Completion of the tutorial.
+    TutorialDescription::Step success_step(
+        u"Nicely done!",
+        u"Try using tab groups to organize tasks, for online shopping, and "
+        u"more",
+        ui::InteractionSequence::StepType::kActivated, kTabGroupHeaderElementId,
+        std::string(), HelpBubbleArrow::kTopCenter);
+    description.steps.emplace_back(std::move(success_step));
 
     description.histograms =
         MakeTutorialHistograms<kTabGroupTutorialMetricPrefix>(

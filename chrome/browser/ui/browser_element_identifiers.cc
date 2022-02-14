@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAppMenuButtonElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAutofillCreditCardSuggestionEntryElementId);
@@ -22,5 +23,9 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kTabCounterButtonElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kTabGroupEditorBubbleId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kTabGroupHeaderElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kTabSearchButtonElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kTabElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kTabStripElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kTabStripRegionElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kTopContainerElementId);
+
+DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kTabGroupedCustomEventId);

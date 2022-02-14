@@ -23,6 +23,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -54,6 +55,7 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/event_monitor.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/root_view.h"
 
@@ -1658,6 +1660,10 @@ void TabDragController::EndDragImpl(EndDragType type) {
 
   bring_to_front_timer_.Stop();
 
+  // Before clearing the tab drag data check to see if there was a tab that was
+  // dragged from out of a tab group into a tab group.
+  NotifyEventIfTabAddedToGroup();
+
   if (type != TAB_DESTROYED) {
     // We only finish up the drag if we were actually dragging. If start_drag_
     // is false, the user just clicked and released and didn't move the mouse
@@ -2549,4 +2555,36 @@ int TabDragController::GetOutOfBoundsYCoordinate() const {
   DCHECK(attached_context_);
   return attached_context_->AsView()->GetBoundsInScreen().y() -
          kVerticalDetachMagnetism - 1;
+}
+
+void TabDragController::NotifyEventIfTabAddedToGroup() {
+  if (!source_context_ || source_context_->GetTabStripModel() == nullptr)
+    return;
+
+  const TabStripModel* source_model = source_context_->GetTabStripModel();
+  for (size_t i = first_tab_index(); i < drag_data_.size(); ++i) {
+    // If the tab already had a group, skip it.
+    if (drag_data_[i].tab_group_data.has_value())
+      continue;
+
+    // Get the tab group from the source model.
+    absl::optional<tab_groups::TabGroupId> group_id =
+        source_model->GetTabGroupForTab(
+            source_model->GetIndexOfWebContents(drag_data_[i].contents));
+
+    // If there was a tab group for that tab, then send the custom event for
+    // adding a tab to a group.
+    if (!group_id.has_value())
+      continue;
+
+    ui::TrackedElement* element =
+        views::ElementTrackerViews::GetInstance()->GetElementForView(
+            drag_data_[i].attached_view);
+    if (!element)
+      continue;
+
+    ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+        element, kTabGroupedCustomEventId);
+    break;
+  }
 }
