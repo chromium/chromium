@@ -1169,6 +1169,11 @@ const char kMemlogStackModeDescription[] =
 const char kMemlogStackModeNative[] = "Native";
 const char kMemlogStackModeNativeWithThreadNames[] = "Native with thread names";
 
+const char kEditContextName[] = "EditContext API";
+const char kEditContextDescription[] =
+    "Allows web pages to use the experimental EditContext API to better "
+    "control text input.";
+
 const char kEnableAutomaticSnoozeName[] = "Enable Automatic Snooze";
 const char kEnableAutomaticSnoozeDescription[] =
     "Enables automatic snoozing on In-Product Help with no snooze button.";

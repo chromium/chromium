@@ -640,6 +640,10 @@ extern const base::FeatureParam<double> kScaleTileMemoryLimitFactor;
 // If enabled, the client hints cache will be loaded on browser restarts.
 BLINK_COMMON_EXPORT extern const base::Feature kDurableClientHintsCache;
 
+// If enabled, allows web pages to use the experimental EditContext API to
+// better control text input. See crbug.com/999184.
+BLINK_COMMON_EXPORT extern const base::Feature kEditContext;
+
 }  // namespace features
 }  // namespace blink
 

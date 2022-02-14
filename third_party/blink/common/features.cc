@@ -1243,5 +1243,10 @@ const base::FeatureParam<double> kScaleTileMemoryLimitFactor{
 const base::Feature kDurableClientHintsCache{"DurableClientHintsCache",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, allows web pages to use the experimental EditContext API to
+// better control text input. See crbug.com/999184.
+const base::Feature kEditContext{"EditContext",
+                                 base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink
