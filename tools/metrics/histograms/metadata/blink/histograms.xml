@@ -1110,6 +1110,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Frame.GetCanonicalUrlRendererTime" units="microseconds"
+    expires_after="2023-03-01">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Android only: The time spent by the renderer main thread to collect and send
+    back to the browser process a web page's canonical link. This is recorded
+    every time the renderer fulfills a request for this information. This
+    histogram is only logged in platforms with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Blink.HandleInputEvents.UpdateTime"
     units="microseconds" expires_after="2022-08-07">
 <!-- Name completed by histogram_suffixes name="BlinkUpdateTimePreFCPSuffixes" -->

@@ -6,7 +6,9 @@
 
 #include <string>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "components/feed/mojom/rss_link_reader.mojom.h"
 #include "content/public/renderer/render_frame.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
@@ -93,9 +95,13 @@ RssLinkReader::RssLinkReader(content::RenderFrame* render_frame,
 RssLinkReader::~RssLinkReader() = default;
 
 void RssLinkReader::GetRssLinks(GetRssLinksCallback callback) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   blink::WebDocument document = render_frame()->GetWebFrame()->GetDocument();
   std::move(callback).Run(
       mojom::RssLinks::New(document.Url(), GetRssLinksFromDocument(document)));
+  base::UmaHistogramMicrosecondsTimes(
+      "ContentSuggestions.Feed.WebFeed.GetRssLinksRendererTime",
+      base::TimeTicks::Now() - start_time);
 }
 
 void RssLinkReader::OnDestruct() {

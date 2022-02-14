@@ -4,6 +4,7 @@
 
 #include "chrome/browser/feed/android/rss_links_fetcher.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
@@ -13,6 +14,7 @@
 #include "components/feed/core/v2/test/callback_receiver.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/feed/mojom/rss_link_reader.mojom.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/sync_sessions/session_sync_service_impl.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 #include "components/sync_sessions/synced_tab_delegate.h"
@@ -42,6 +44,7 @@ IN_PROC_BROWSER_TEST_F(RssLinksFetcherTest, FetchSuccessfulFromHead) {
       embedded_test_server()->GetURL("localhost", "/page_with_rss.html");
   ASSERT_TRUE(content::NavigateToURL(tab->web_contents(), url));
 
+  base::HistogramTester histogram_tester;
   CallbackReceiver<std::vector<GURL>> rss_links;
   FetchRssLinks(url, tab, rss_links.Bind());
   std::vector<GURL> result = rss_links.RunAndGetResult();
@@ -52,6 +55,14 @@ IN_PROC_BROWSER_TEST_F(RssLinksFetcherTest, FetchSuccessfulFromHead) {
   EXPECT_EQ("/rss.xml", result[0].path());
   EXPECT_EQ("/atom.xml", result[1].path());
   EXPECT_EQ(GURL("https://some/path.xml"), result[2]);
+
+  ASSERT_TRUE(base::TimeTicks::IsHighResolution())
+      << "The ContentSuggestions.Feed.WebFeed.GetRssLinksRendererTime "
+         "histogram has microseconds precision and requires a high-resolution "
+         "clock";
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histogram_tester.ExpectTotalCount(
+      "ContentSuggestions.Feed.WebFeed.GetRssLinksRendererTime", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(RssLinksFetcherTest, FetchSuccessfulFromBody) {
@@ -61,6 +72,7 @@ IN_PROC_BROWSER_TEST_F(RssLinksFetcherTest, FetchSuccessfulFromBody) {
       "localhost", "/page_with_rss_in_body.html");
   ASSERT_TRUE(content::NavigateToURL(tab->web_contents(), url));
 
+  base::HistogramTester histogram_tester;
   CallbackReceiver<std::vector<GURL>> rss_links;
   FetchRssLinks(url, tab, rss_links.Bind());
   std::vector<GURL> result = rss_links.RunAndGetResult();
@@ -72,6 +84,14 @@ IN_PROC_BROWSER_TEST_F(RssLinksFetcherTest, FetchSuccessfulFromBody) {
   EXPECT_EQ("/rss-in-body.xml", result[0].path());
   EXPECT_EQ("/atom-in-body.xml", result[1].path());
   EXPECT_EQ(GURL("https://some/path-in-body.xml"), result[2]);
+
+  ASSERT_TRUE(base::TimeTicks::IsHighResolution())
+      << "The ContentSuggestions.Feed.WebFeed.GetRssLinksRendererTime "
+         "histogram has microseconds precision and requires a high-resolution "
+         "clock";
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  histogram_tester.ExpectTotalCount(
+      "ContentSuggestions.Feed.WebFeed.GetRssLinksRendererTime", 1);
 }
 
 }  // namespace

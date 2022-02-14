@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/frame/local_frame_mojo_handler.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/power_scheduler/power_mode.h"
 #include "components/power_scheduler/power_mode_arbiter.h"
@@ -1123,6 +1125,9 @@ void LocalFrameMojoHandler::HandleRendererDebugURL(const KURL& url) {
 
 void LocalFrameMojoHandler::GetCanonicalUrlForSharing(
     GetCanonicalUrlForSharingCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  base::TimeTicks start_time = base::TimeTicks::Now();
+#endif
   KURL canon_url;
   HTMLLinkElement* link_element = GetDocument()->LinkCanonical();
   if (link_element) {
@@ -1137,6 +1142,10 @@ void LocalFrameMojoHandler::GetCanonicalUrlForSharing(
   }
   std::move(callback).Run(canon_url.IsNull() ? absl::nullopt
                                              : absl::make_optional(canon_url));
+#if BUILDFLAG(IS_ANDROID)
+  base::UmaHistogramMicrosecondsTimes("Blink.Frame.GetCanonicalUrlRendererTime",
+                                      base::TimeTicks::Now() - start_time);
+#endif
 }
 
 void LocalFrameMojoHandler::AnimateDoubleTapZoom(const gfx::Point& point,
