@@ -57,6 +57,14 @@ web_app::WebAppRegistrar* MaybeGetWebAppRegistrar(
   return provider ? &provider->registrar() : nullptr;
 }
 
+web_app::WebAppInstallManager* MaybeGetWebAppInstallManager(
+    content::WebContents* web_contents) {
+  // Profile for web contents might not contain a web app provider. eg. kiosk
+  // profile in Chrome OS.
+  auto* provider = web_app::WebAppProvider::GetForWebContents(web_contents);
+  return provider ? &provider->install_manager() : nullptr;
+}
+
 }  // namespace
 
 IntentPickerTabHelper::~IntentPickerTabHelper() = default;
@@ -89,9 +97,10 @@ void IntentPickerTabHelper::SetShouldShowIcon(
 IntentPickerTabHelper::IntentPickerTabHelper(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<IntentPickerTabHelper>(*web_contents),
-      registrar_(MaybeGetWebAppRegistrar(web_contents)) {
-  if (registrar_)
-    registrar_observation_.Observe(registrar_.get());
+      registrar_(MaybeGetWebAppRegistrar(web_contents)),
+      install_manager_(MaybeGetWebAppInstallManager(web_contents)) {
+  if (install_manager_)
+    install_manager_observation_.Observe(install_manager_.get());
 }
 
 // static
@@ -190,8 +199,8 @@ void IntentPickerTabHelper::OnWebAppWillBeUninstalled(
     SetShouldShowIcon(web_contents(), false);
 }
 
-void IntentPickerTabHelper::OnAppRegistrarDestroyed() {
-  registrar_observation_.Reset();
+void IntentPickerTabHelper::OnWebAppInstallManagerDestroyed() {
+  install_manager_observation_.Reset();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(IntentPickerTabHelper);

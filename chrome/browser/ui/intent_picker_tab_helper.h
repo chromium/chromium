@@ -12,7 +12,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
-#include "chrome/browser/web_applications/app_registrar_observer.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
@@ -24,7 +25,7 @@
 class IntentPickerTabHelper
     : public content::WebContentsObserver,
       public content::WebContentsUserData<IntentPickerTabHelper>,
-      public web_app::AppRegistrarObserver {
+      public web_app::WebAppInstallManagerObserver {
  public:
   IntentPickerTabHelper(const IntentPickerTabHelper&) = delete;
   IntentPickerTabHelper& operator=(const IntentPickerTabHelper&) = delete;
@@ -62,17 +63,18 @@ class IntentPickerTabHelper
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  // web_app::AppRegistrarObserver:
+  // web_app::WebAppInstallManagerObserver:
   void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
-  void OnAppRegistrarDestroyed() override;
+  void OnWebAppInstallManagerDestroyed() override;
 
   const raw_ptr<web_app::WebAppRegistrar> registrar_;
+  const raw_ptr<web_app::WebAppInstallManager> install_manager_;
 
   bool should_show_icon_ = false;
 
-  base::ScopedObservation<web_app::WebAppRegistrar,
-                          web_app::AppRegistrarObserver>
-      registrar_observation_{this};
+  base::ScopedObservation<web_app::WebAppInstallManager,
+                          web_app::WebAppInstallManagerObserver>
+      install_manager_observation_{this};
 
   base::WeakPtrFactory<IntentPickerTabHelper> weak_factory_{this};
 };
