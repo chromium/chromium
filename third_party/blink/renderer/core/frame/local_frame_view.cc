@@ -98,6 +98,7 @@
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observation.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
+#include "third_party/blink/renderer/core/layout/deferred_shaping.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
@@ -836,6 +837,12 @@ void LocalFrameView::PerformLayout() {
     } else {
       if (HasOrthogonalWritingModeRoots())
         LayoutOrthogonalWritingModeRoots();
+      base::AutoReset<bool> deferred_shaping(
+          &allow_deferred_shaping_,
+          RuntimeEnabledFeatures::DeferredShapingEnabled() &&
+              !frame_->PagePopupOwner() &&
+              !FirstMeaningfulPaintDetector::From(*frame_->GetDocument())
+                   .SeenFirstMeaningfulPaint());
       GetLayoutView()->UpdateLayout();
     }
   }

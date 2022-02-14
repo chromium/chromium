@@ -11,6 +11,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/layout/deferred_shaping.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -520,8 +521,10 @@ void NGInlineNode::ShapeTextOrDefer(const NGConstraintSpace& space) const {
   if (Data().shaping_state_ != NGInlineNodeData::kShapingNone)
     return;
 
-  // TODO(crbug.com/1259085): Check if this IFC is deferrable.
-
+  const auto& view = *GetLayoutBox()->GetFrameView();
+  if (view.AllowDeferredShaping()) {
+    // TODO(crbug.com/1259085): Check if this IFC is deferrable.
+  }
   ShapeTextIncludingFirstLine(MutableData(), nullptr, nullptr);
 }
 

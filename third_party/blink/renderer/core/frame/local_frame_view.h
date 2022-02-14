@@ -78,6 +78,7 @@ namespace blink {
 class AXObjectCache;
 class ChromeClient;
 class CompositorAnimationTimeline;
+class DeferredShapingDisallowScope;
 class DarkModeFilter;
 class DocumentLifecycle;
 class FragmentAnchor;
@@ -470,6 +471,14 @@ class CORE_EXPORT LocalFrameView final
   // passed around the LocalFrameView layout methods can be true while this
   // returns false.
   bool IsSubtreeLayout() const { return !layout_subtree_root_list_.IsEmpty(); }
+
+  // A flag indicating whether the current layout container supports
+  // deferred shaping.
+  bool AllowDeferredShaping() const { return allow_deferred_shaping_; }
+  void SetAllowDeferredShaping(base::PassKey<DeferredShapingDisallowScope>,
+                               bool value) {
+    allow_deferred_shaping_ = value;
+  }
 
   // The window that hosts the LocalFrameView. The LocalFrameView will
   // communicate scrolls and repaints to the host window in the window's
@@ -1004,6 +1013,8 @@ class CORE_EXPORT LocalFrameView final
   EmbeddedObjectSet part_update_set_;
 
   Member<LocalFrame> frame_;
+
+  bool allow_deferred_shaping_ = false;
 
   bool can_have_scrollbars_;
 

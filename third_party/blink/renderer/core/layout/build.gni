@@ -40,6 +40,7 @@ blink_core_sources_layout = [
   "custom_scrollbar.h",
   "depth_ordered_layout_object_list.cc",
   "depth_ordered_layout_object_list.h",
+  "deferred_shaping.h",
   "flexible_box_algorithm.cc",
   "flexible_box_algorithm.h",
   "floating_objects.cc",
