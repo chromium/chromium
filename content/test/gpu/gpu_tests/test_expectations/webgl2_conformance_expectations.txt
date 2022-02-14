@@ -276,6 +276,8 @@ crbug.com/828984 [ angle-d3d11 win amd ] conformance/renderbuffers/depth-renderb
 crbug.com/828984 [ angle-d3d11 win amd ] conformance2/textures/canvas_sub_rectangle/tex-2d-rgb9_e5-rgb-half_float.html [ RetryOnFailure ]
 crbug.com/828984 [ angle-d3d11 win amd ] conformance2/textures/canvas_sub_rectangle/tex-2d-rgb9_e5-rgb-float.html [ RetryOnFailure ]
 crbug.com/844483 [ angle-d3d11 win amd ] conformance2/textures/canvas_sub_rectangle/tex-2d-srgb8_alpha8-rgba-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/1297265 [ win7 passthrough amd-0x6613 angle-d3d11 ] conformance2/renderbuffers/multisampled-stencil-renderbuffer-initialization.html [ RetryOnFailure ]
+
 
 # Recent AMD drivers seem to have a regression with 3D textures.
 # (Some of these tests seem to occasionally pass unexpectedly.)
