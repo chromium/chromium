@@ -139,6 +139,41 @@ TEST_F(SafeBrowsingTokenFetcherImplTest, SuccessfulTokenFetch) {
   EXPECT_EQ(kTokenFromResponse, access_token);
 }
 
+// Verifies that destruction of a SafeBrowsingTokenFetcherImpl instance from
+// within the client callback that the token was fetched doesn't cause a crash.
+TEST_F(SafeBrowsingTokenFetcherImplTest,
+       FetcherDestroyedFromWithinOnTokenFetchedCallback) {
+  TestAccessTokenFetchDelegate delegate;
+  base::RunLoop run_loop;
+  std::string access_token = "";
+  std::string kTokenFromResponse = "token";
+
+  // Destroyed in the token fetch callback.
+  auto* fetcher = new SafeBrowsingTokenFetcherImpl(base::BindRepeating(
+      [](TestAccessTokenFetchDelegate* delegate)
+          -> GoogleAccountAccessTokenFetchDelegate* { return delegate; },
+      &delegate));
+
+  fetcher->Start(base::BindOnce(
+      [](base::OnceClosure quit_closure, std::string* target_token,
+         SafeBrowsingTokenFetcherImpl* fetcher, const std::string& token) {
+        *target_token = token;
+        delete fetcher;
+
+        std::move(quit_closure).Run();
+      },
+      run_loop.QuitClosure(), &access_token, fetcher));
+
+  EXPECT_EQ(1, delegate.get_num_outstanding_requests());
+  EXPECT_EQ("", access_token);
+
+  delegate.RespondWithTokenForRequest(delegate.get_most_recent_request_id(),
+                                      kTokenFromResponse);
+
+  run_loop.Run();
+  EXPECT_EQ(kTokenFromResponse, access_token);
+}
+
 // Tests correct operation in the case of concurrent requests to
 // SafeBrowsingTokenFetcherImpl.
 TEST_F(SafeBrowsingTokenFetcherImplTest, ConcurrentRequests) {
@@ -217,6 +252,38 @@ TEST_F(SafeBrowsingTokenFetcherImplTest, TokenFetchTimeout) {
                                       kTokenFromResponse);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ("", access_token);
+}
+
+// Verifies that destruction of a SafeBrowsingTokenFetcherImpl instance from
+// within the client callback that the token was fetched doesn't cause a crash
+// when invoked due to the token fetch timing out.
+TEST_F(SafeBrowsingTokenFetcherImplTest,
+       FetcherDestroyedFromWithinOnTokenFetchedCallbackInvokedOnTimeout) {
+  TestAccessTokenFetchDelegate delegate;
+  std::string access_token;
+  bool callback_invoked = false;
+
+  // Destroyed in the token fetch callback, which is invoked on timeout.
+  auto* fetcher = new SafeBrowsingTokenFetcherImpl(base::BindRepeating(
+      [](TestAccessTokenFetchDelegate* delegate)
+          -> GoogleAccountAccessTokenFetchDelegate* { return delegate; },
+      &delegate));
+
+  fetcher->Start(base::BindOnce(
+      [](bool* on_invoked_flag, std::string* target_token,
+         SafeBrowsingTokenFetcherImpl* fetcher, const std::string& token) {
+        *on_invoked_flag = true;
+        *target_token = token;
+        delete fetcher;
+      },
+      &callback_invoked, &access_token, fetcher));
+
+  // Trigger a timeout of the fetch, which will invoke the client callback
+  // passed to the fetcher.
+  task_environment()->FastForwardBy(base::Milliseconds(
+      safe_browsing::kTokenFetchTimeoutDelayFromMilliseconds));
+  ASSERT_TRUE(callback_invoked);
+  ASSERT_TRUE(access_token.empty());
 }
 
 TEST_F(SafeBrowsingTokenFetcherImplTest, FetcherDestroyedBeforeFetchReturns) {
