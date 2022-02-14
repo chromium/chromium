@@ -1587,6 +1587,20 @@ const std::vector<ash::KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
       item_list->emplace_back(toggle_all_desks_shortcut);
     }
 
+    if (ash::features::IsCalendarViewEnabled()) {
+      const ash::KeyboardShortcutItem toggle_calendar = {
+          // |categories|
+          {ShortcutCategory::kSystemAndDisplay},
+          IDS_KSV_DESCRIPTION_TOGGLE_CALENDAR,
+          {},
+          // |accelerator_ids|
+          {},
+          // |shortcut_key_codes|
+          {{ui::VKEY_COMMAND, ui::VKEY_UNKNOWN, ui::VKEY_C}}};
+
+      item_list->emplace_back(toggle_calendar);
+    }
+
     for (auto& item : *item_list) {
       if (item.shortcut_key_codes.empty() && !item.accelerator_ids.empty()) {
         // Only use the first |accelerator_id| because the modifiers are the

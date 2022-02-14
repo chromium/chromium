@@ -467,8 +467,10 @@ void UnifiedSystemTray::OnTimeViewActionPerformed(const ui::Event& event) {
     CloseBubble();
   } else {
     ShowBubble();
+
     bubble_->ShowCalendarView(
-        calendar_metrics::CalendarViewShowSource::kTimeView, event);
+        calendar_metrics::CalendarViewShowSource::kTimeView,
+        calendar_metrics::GetEventType(event));
   }
 }
 

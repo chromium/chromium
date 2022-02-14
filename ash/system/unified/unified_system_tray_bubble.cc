@@ -158,13 +158,13 @@ void UnifiedSystemTrayBubble::ShowAudioDetailedView() {
 
 void UnifiedSystemTrayBubble::ShowCalendarView(
     calendar_metrics::CalendarViewShowSource show_source,
-    const ui::Event& event) {
+    calendar_metrics::CalendarEventSource event_source) {
   if (!bubble_widget_)
     return;
 
   DCHECK(unified_view_);
   DCHECK(controller_);
-  controller_->ShowCalendarView(show_source, event);
+  controller_->ShowCalendarView(show_source, event_source);
 }
 
 void UnifiedSystemTrayBubble::ShowNetworkDetailedView(bool force) {

@@ -1922,6 +1922,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
       return CanHandleToggleAppList(
           accelerator, previous_accelerator,
           accelerator_history_->currently_pressed_keys());
+    case TOGGLE_CALENDAR:
+      return features::IsCalendarViewEnabled();
     case TOGGLE_CAPS_LOCK:
       return CanHandleToggleCapsLock(
           accelerator, previous_accelerator,
@@ -2388,6 +2390,9 @@ void AcceleratorControllerImpl::PerformAction(
       break;
     case TOGGLE_APP_LIST_FULLSCREEN:
       HandleToggleAppList(accelerator, kSearchKeyFullscreen);
+      break;
+    case TOGGLE_CALENDAR:
+      accelerators::ToggleCalendar();
       break;
     case TOGGLE_CAPS_LOCK:
       HandleToggleCapsLock();

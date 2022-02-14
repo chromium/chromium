@@ -373,6 +373,9 @@
   <message name="IDS_KSV_DESCRIPTION_TOGGLE_SYSTEM_TRAY_BUBBLE" desc="Description of the command in keyboard shortcut viewer.">
     Open the status area (where your account picture appears)
   </message>
+  <message name="IDS_KSV_DESCRIPTION_TOGGLE_CALENDAR" desc="Toggle to show/hide calendar widget.">
+    Open or close the calendar widget.
+  </message>
   <message name="IDS_KSV_DESCRIPTION_LAUNCH_LAST_APP" desc="Description of the command in keyboard shortcut viewer.">
     Click the last icon on your shelf
   </message>

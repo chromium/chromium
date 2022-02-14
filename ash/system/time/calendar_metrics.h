@@ -11,6 +11,20 @@ class Event;
 
 namespace ash {
 namespace calendar_metrics {
+
+// The event types CalendarView is interested in. These are used in histograms,
+// do not remove/renumber entries. If you're adding to this enum with the
+// intention that it will be logged, update the CalendarEventSource listing in
+// enums.xml.
+enum class CalendarEventSource {
+  kInvalid = 0,
+  kTap = 1,
+  kClick = 2,
+  kKeyboard = 3,
+  kStylus = 4,
+  kMaxValue = kStylus
+};
+
 // The different hosts which hold components allowing a user to open the
 // calendar. These are used in histograms, do not remove/renumber entries. If
 // you're adding to this enum with the intention that it will be logged, update
@@ -23,9 +37,13 @@ enum class CalendarViewShowSource {
   kMaxValue = kAccelerator
 };
 
+// Converts the given event into an appropriate CalendarEventSource.
+CalendarEventSource GetEventType(const ui::Event& event);
+
 // Records calendar show metrics for a given CalendarViewShowSource
-void RecordCalendarShowMetrics(CalendarViewShowSource show_source,
-                               const ui::Event& event);
+void RecordCalendarShowMetrics(
+    CalendarViewShowSource show_source,
+    calendar_metrics::CalendarEventSource event_source);
 
 void RecordCalendarDateCellActivated(const ui::Event& event);
 

@@ -24,10 +24,6 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace ui {
-class Event;
-}  // namespace ui
-
 namespace gfx {
 class SlideAnimation;
 }  // namespace gfx
@@ -118,7 +114,7 @@ class ASH_EXPORT UnifiedSystemTrayController
   void ShowMediaControlsDetailedView();
   // Show the detailed view of Calendar. Called from the view.
   void ShowCalendarView(calendar_metrics::CalendarViewShowSource show_source,
-                        const ui::Event& event);
+                        calendar_metrics::CalendarEventSource event_source);
 
   // If you want to add a new detailed view, add here.
 

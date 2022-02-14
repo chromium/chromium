@@ -127,7 +127,8 @@ void DateView::OnThemeChanged() {
 void DateView::OnButtonPressed(const ui::Event& event) {
   if (features::IsCalendarViewEnabled() && controller_->IsExpanded()) {
     controller_->ShowCalendarView(
-        calendar_metrics::CalendarViewShowSource::kDateView, event);
+        calendar_metrics::CalendarViewShowSource::kDateView,
+        calendar_metrics::GetEventType(event));
     return;
   }
 

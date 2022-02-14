@@ -407,11 +407,11 @@ void UnifiedSystemTrayController::ShowNotifierSettingsView() {
 
 void UnifiedSystemTrayController::ShowCalendarView(
     calendar_metrics::CalendarViewShowSource show_source,
-    const ui::Event& event) {
+    calendar_metrics::CalendarEventSource event_source) {
   if (!features::IsCalendarViewEnabled())
     return;
 
-  calendar_metrics::RecordCalendarShowMetrics(show_source, event);
+  calendar_metrics::RecordCalendarShowMetrics(show_source, event_source);
   ShowDetailedView(std::make_unique<UnifiedCalendarViewController>(this));
 }
 
