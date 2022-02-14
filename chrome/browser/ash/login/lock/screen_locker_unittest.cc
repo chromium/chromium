@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/accessibility/fake_accessibility_controller.h"
 #include "chrome/browser/ui/ash/assistant/assistant_browser_delegate_impl.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/ui/ash/test_session_controller.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/audio/cras_audio_client.h"
 #include "chromeos/dbus/biod/biod_client.h"
@@ -57,6 +59,8 @@
 
 namespace ash {
 namespace {
+
+constexpr char kFakeUsername[] = "testemail@example.com";
 
 std::unique_ptr<KeyedService> CreateCertificateProviderService(
     content::BrowserContext* context) {
@@ -86,12 +90,22 @@ class ScreenLockerUnitTest : public testing::Test {
 
     // Initialize SessionControllerClientImpl and dependencies:
     LoginState::Initialize();
-    CHECK(testing_profile_manager_.SetUp());
+
+    fake_user_manager_ = new ash::FakeChromeUserManager;
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        base::WrapUnique(fake_user_manager_));
+
+    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(testing_profile_manager_->SetUp());
 
     // Set up certificate provider service for the signin profile.
     CertificateProviderServiceFactory::GetInstance()->SetTestingFactory(
-        testing_profile_manager_.CreateTestingProfile(chrome::kInitialProfile),
+        testing_profile_manager_->CreateTestingProfile(chrome::kInitialProfile),
         base::BindRepeating(&CreateCertificateProviderService));
+
+    user_profile_ = testing_profile_manager_->CreateTestingProfile(
+        test_account_id_.GetUserEmail());
 
     session_controller_client_ =
         std::make_unique<SessionControllerClientImpl>();
@@ -112,22 +126,21 @@ class ScreenLockerUnitTest : public testing::Test {
     AccessibilityManager::Initialize();
 
     // Initialize ScreenLocker dependencies:
-    ProfileHelper::GetSigninProfile();
     SystemSaltGetter::Initialize();
   }
 
   void CreateSessionForUser(bool is_public_account) {
-    const AccountId account_id =
-        AccountId::FromUserEmail("testemail@example.com");
     if (is_public_account) {
-      fake_user_manager_->AddPublicAccountUser(account_id);
+      fake_user_manager_->AddPublicAccountUser(test_account_id_);
     } else {
-      fake_user_manager_->AddUser(account_id);
+      fake_user_manager_->AddUser(test_account_id_);
     }
-    fake_user_manager_->LoginUser(account_id);
-    CHECK(user_manager::UserManager::Get()->GetPrimaryUser());
+    fake_user_manager_->LoginUser(test_account_id_);
+
+    ASSERT_TRUE(user_manager::UserManager::Get()->GetPrimaryUser());
+    ASSERT_TRUE(ProfileManager::GetActiveUserProfile() == user_profile_);
     session_manager::SessionManager::Get()->CreateSession(
-        account_id, account_id.GetUserEmail(), false);
+        test_account_id_, test_account_id_.GetUserEmail(), false);
   }
 
   void TearDown() override {
@@ -139,7 +152,13 @@ class ScreenLockerUnitTest : public testing::Test {
     audio::AudioStreamHandler::SetObserverForTesting(nullptr);
     observer_.reset();
     assistant_delegate_.reset();
+
     session_controller_client_.reset();
+
+    testing_profile_manager_.reset();
+    scoped_user_manager_.reset();
+    base::RunLoop().RunUntilIdle();
+
     LoginState::Shutdown();
     bluez::BluezDBusManager::Shutdown();
     UserDataAuthClient::Shutdown();
@@ -152,6 +171,8 @@ class ScreenLockerUnitTest : public testing::Test {
   }
 
  protected:
+  const AccountId test_account_id_ = AccountId::FromUserEmail(kFakeUsername);
+
   // Needed for main loop and posting async tasks.
   content::BrowserTaskEnvironment task_environment_;
 
@@ -170,12 +191,13 @@ class ScreenLockerUnitTest : public testing::Test {
   session_manager::SessionManager session_manager_;
   TestLoginScreen test_login_screen_;
   LoginScreenClientImpl login_screen_client_;
+
   // * SessionControllerClientImpl dependencies:
-  FakeChromeUserManager* fake_user_manager_{new FakeChromeUserManager()};
-  user_manager::ScopedUserManager scoped_user_manager_{
-      base::WrapUnique(fake_user_manager_)};
-  TestingProfileManager testing_profile_manager_{
-      TestingBrowserProcess::GetGlobal()};
+  ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
+  Profile* user_profile_ = nullptr;
+
   ScopedDeviceSettingsTestHelper device_settings_test_helper_;
   TestSessionController test_session_controller_;
   std::unique_ptr<SessionControllerClientImpl> session_controller_client_;

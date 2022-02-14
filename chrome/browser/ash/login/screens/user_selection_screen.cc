@@ -887,15 +887,10 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
     user_info.fingerprint_state =
         quick_unlock::GetFingerprintStateForUser(user);
 
-    // TODO(b/214104455): If this kSmartLockUIRevamp flag is enabled, tests such
-    // as ScreenLockerUnitTest.VerifyAshIsNotifiedOfScreenLocked fail, because
-    // they do not correctly initialize an associated Profile with |account_id|.
-    if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
-      auto* easy_unlock_service = GetEasyUnlockServiceForUser(account_id);
-      if (easy_unlock_service) {
-        user_info.smart_lock_state =
-            easy_unlock_service->GetInitialSmartLockState();
-      }
+    auto* easy_unlock_service = GetEasyUnlockServiceForUser(account_id);
+    if (easy_unlock_service) {
+      user_info.smart_lock_state =
+          easy_unlock_service->GetInitialSmartLockState();
     }
 
     user_info.show_pin_pad_for_password = false;
@@ -993,8 +988,13 @@ EasyUnlockService* UserSelectionScreen::GetEasyUnlockServiceForUser(
   ProfileHelper* profile_helper = ProfileHelper::Get();
   Profile* profile = profile_helper->GetProfileByUser(unlock_user);
 
-  // The user profile should exist if and only if this is the lock screen.
-  DCHECK_EQ(!!profile, GetScreenType() == LOCK_SCREEN);
+  // If the active screen is the lock screen, a Profile must exist that is
+  // associated with |unlock_user|. This does not apply vice-versa: there are
+  // some valid scenarios where |profile| exists but the active screen is not
+  // the lock screen.
+  if (GetScreenType() == LOCK_SCREEN) {
+    DCHECK(profile);
+  }
 
   if (!profile)
     profile = profile_helper->GetSigninProfile();
