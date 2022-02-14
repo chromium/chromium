@@ -21868,6 +21868,9 @@ Called by update_debug_scenarios.py.-->
   <int value="51" label="groupAndHideIssuesByKind"/>
   <int value="52" label="cssTypeComponentLength"/>
   <int value="53" label="preciseChanges"/>
+  <int value="54" label="bfcacheDisplayTree"/>
+  <int value="55" label="stylesPaneCSSChanges"/>
+  <int value="56" label="headerOverrides"/>
 </enum>
 
 <enum name="DevToolsGridOverlayOpenedFrom">
