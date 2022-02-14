@@ -2492,6 +2492,7 @@ if (!is_android) {
 
     if (enable_plugins) {
       sources += [
+        "../browser/chrome_plugin_browsertest.cc",
         "../browser/plugins/plugin_response_interceptor_url_loader_throttle_browsertest.cc",
         "ppapi/ppapi_browsertest.cc",
         "ppapi/ppapi_filechooser_browsertest.cc",
@@ -3151,9 +3152,9 @@ if (!is_android) {
     }
 
     if (is_chrome_branded) {
+      # Test data used by the end-to-end LiveSignInTest.
       data +=
           [ "//chrome/browser/internal/resources/signin/test_accounts.json" ]
-      sources += [ "../browser/chrome_plugin_browsertest.cc" ]
     }
 
     # Browser tests for functionality that is only intended to be present in
