@@ -86,6 +86,9 @@ class OverlayWindowViews : public views::Widget {
   // Updates the controls view::Views to reflect |is_visible|.
   void UpdateControlsVisibility(bool is_visible);
 
+  // DocumentOverlayWindowViews currently always forces the controls
+  // to be visible. VideoOverlayWindowViews does so for testing.
+  void ForceControlsVisible(bool visible);
   void ForceControlsVisibleForTesting(bool visible);
 
   // Determines whether a layout of the window controls has been scheduled but

@@ -17,7 +17,9 @@
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
@@ -33,6 +35,21 @@ constexpr gfx::Size kMinWindowSize(200, 100);
 
 }  // namespace
 
+class FakeOverlayLocationBarView : public OverlayLocationBarViewProxy {
+ public:
+  FakeOverlayLocationBarView() {
+    view_holder_ = std::make_unique<views::View>();
+  }
+  ~FakeOverlayLocationBarView() override = default;
+  void Init() override {}
+  std::unique_ptr<views::View> ReleaseView() override {
+    return std::move(view_holder_);
+  }
+
+ private:
+  std::unique_ptr<views::View> view_holder_;
+};
+
 class TestDocumentPictureInPictureWindowController
     : public content::DocumentPictureInPictureWindowController {
  public:
@@ -47,15 +64,23 @@ class TestDocumentPictureInPictureWindowController
   content::WebContents* GetWebContents() override { return web_contents_; }
 
   // DocumentPictureInPictureWindowController
-  void SetChildWebContents(std::unique_ptr<content::WebContents>) override {}
-  content::WebContents* GetChildWebContents() override { return nullptr; }
+  void SetChildWebContents(
+      std::unique_ptr<content::WebContents> child) override {
+    child_web_contents_ = std::move(child);
+  }
+  content::WebContents* GetChildWebContents() override {
+    return child_web_contents_.get();
+  }
 
   void set_web_contents(content::WebContents* web_contents) {
     web_contents_ = web_contents;
   }
 
+  void destroy() { child_web_contents_ = nullptr; }
+
  private:
   raw_ptr<content::WebContents> web_contents_;
+  std::unique_ptr<content::WebContents> child_web_contents_;
 };
 
 class DocumentOverlayWindowViewsTest : public ChromeViewsTestBase {
@@ -72,6 +97,14 @@ class DocumentOverlayWindowViewsTest : public ChromeViewsTestBase {
     web_contents_ = web_contents_factory_.CreateWebContents(&profile_);
     pip_window_controller_.set_web_contents(web_contents_);
 
+    // The child web contents will be owned by the WebView, so create them
+    // separately. (WebContentsFactory owns its created WebContents which isn't
+    // compatible with this usage.)
+    auto child =
+        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+
+    pip_window_controller_.SetChildWebContents(std::move(child));
+
 #if BUILDFLAG(IS_CHROMEOS)
     test_views_delegate()->set_context(GetContext());
 #endif
@@ -81,12 +114,16 @@ class DocumentOverlayWindowViewsTest : public ChromeViewsTestBase {
     // DocumentOverlayWindowViews size.
     SetDisplayWorkArea({0, 0, 1000, 1000});
 
-    overlay_window_ =
-        DocumentOverlayWindowViews::Create(&pip_window_controller_);
+    auto fake_location_bar = std::make_unique<FakeOverlayLocationBarView>();
+    overlay_window_ = DocumentOverlayWindowViews::Create(
+        &pip_window_controller_, std::move(fake_location_bar));
     overlay_window_->set_minimum_size_for_testing(kMinWindowSize);
   }
 
   void TearDown() override {
+    // AutocompleteClassifierFactory::GetInstance()->Disassociate(&profile_);
+    base::RunLoop().RunUntilIdle();
+    pip_window_controller_.destroy();
     overlay_window_.reset();
     ViewsTestBase::TearDown();
   }
@@ -122,7 +159,7 @@ TEST_F(DocumentOverlayWindowViewsTest, InitialWindowSize_Square) {
   // starting size, and applying the size and aspect ratio constraints.
   overlay_window().UpdateNaturalSize({400, 400});
   EXPECT_EQ(gfx::Size(200, 200), overlay_window().GetBounds().size());
-  EXPECT_EQ(gfx::Size(200, 200),
+  EXPECT_EQ(gfx::Size(200, 170),
             overlay_window().document_layer_for_testing()->size());
 }
 
@@ -139,7 +176,7 @@ TEST_F(DocumentOverlayWindowViewsTest, InitialWindowSize_Horizontal) {
   // starting size, and applying the size and aspect ratio constraints.
   overlay_window().UpdateNaturalSize({400, 200});
   EXPECT_EQ(gfx::Size(400, 200), overlay_window().GetBounds().size());
-  EXPECT_EQ(gfx::Size(400, 200),
+  EXPECT_EQ(gfx::Size(400, 170),
             overlay_window().document_layer_for_testing()->size());
 }
 
@@ -148,7 +185,7 @@ TEST_F(DocumentOverlayWindowViewsTest, InitialWindowSize_Vertical) {
   // starting size, and applying the size and aspect ratio constraints.
   overlay_window().UpdateNaturalSize({400, 500});
   EXPECT_EQ(gfx::Size(200, 250), overlay_window().GetBounds().size());
-  EXPECT_EQ(gfx::Size(200, 250),
+  EXPECT_EQ(gfx::Size(200, 220),
             overlay_window().document_layer_for_testing()->size());
 }
 
@@ -159,7 +196,7 @@ TEST_F(DocumentOverlayWindowViewsTest, Letterboxing) {
   // 40:1 the width gets exceedingly big and must be limited to the maximum of
   // 500. Thus, letterboxing is unavoidable.
   EXPECT_EQ(gfx::Size(500, 100), overlay_window().GetBounds().size());
-  EXPECT_EQ(gfx::Size(500, 13),
+  EXPECT_EQ(gfx::Size(500, 0),
             overlay_window().document_layer_for_testing()->size());
 }
 
@@ -170,7 +207,7 @@ TEST_F(DocumentOverlayWindowViewsTest, Pillarboxing) {
   // 1:40 the height gets exceedingly big and must be limited to the maximum of
   // 500. Thus, pillarboxing is unavoidable.
   EXPECT_EQ(gfx::Size(200, 500), overlay_window().GetBounds().size());
-  EXPECT_EQ(gfx::Size(13, 500),
+  EXPECT_EQ(gfx::Size(13, 470),
             overlay_window().document_layer_for_testing()->size());
 }
 
@@ -181,7 +218,7 @@ TEST_F(DocumentOverlayWindowViewsTest, Pillarboxing_Square) {
   // because the user is allowed to size the window to the rectangular minimum
   // size.
   overlay_window().SetSize({200, 100});
-  EXPECT_EQ(gfx::Size(100, 100),
+  EXPECT_EQ(gfx::Size(100, 70),
             overlay_window().document_layer_for_testing()->size());
 }
 
@@ -193,33 +230,33 @@ TEST_F(DocumentOverlayWindowViewsTest, ApproximateAspectRatio_Horizontal) {
   // dimensions can't reproduce the video aspect ratio exactly. The video
   // should still fill the entire window area.
   overlay_window().SetSize({320, 240});
-  EXPECT_EQ(gfx::Size(320, 240),
+  EXPECT_EQ(gfx::Size(320, 210),
             overlay_window().document_layer_for_testing()->size());
 
   overlay_window().SetSize({321, 241});
-  EXPECT_EQ(gfx::Size(321, 241),
+  EXPECT_EQ(gfx::Size(321, 211),
             overlay_window().document_layer_for_testing()->size());
 
   // Wide video.
   overlay_window().UpdateNaturalSize({1600, 900});
 
   overlay_window().SetSize({444, 250});
-  EXPECT_EQ(gfx::Size(444, 250),
+  EXPECT_EQ(gfx::Size(444, 220),
             overlay_window().document_layer_for_testing()->size());
 
   overlay_window().SetSize({445, 250});
-  EXPECT_EQ(gfx::Size(445, 250),
+  EXPECT_EQ(gfx::Size(445, 220),
             overlay_window().document_layer_for_testing()->size());
 
   // Very wide video.
   overlay_window().UpdateNaturalSize({400, 100});
 
   overlay_window().SetSize({478, 120});
-  EXPECT_EQ(gfx::Size(478, 120),
+  EXPECT_EQ(gfx::Size(478, 90),
             overlay_window().document_layer_for_testing()->size());
 
   overlay_window().SetSize({481, 120});
-  EXPECT_EQ(gfx::Size(481, 120),
+  EXPECT_EQ(gfx::Size(481, 90),
             overlay_window().document_layer_for_testing()->size());
 }
 
@@ -231,22 +268,22 @@ TEST_F(DocumentOverlayWindowViewsTest, ApproximateAspectRatio_Vertical) {
   // dimensions can't reproduce the video aspect ratio exactly. The video
   // should still fill the entire window area.
   overlay_window().SetSize({240, 320});
-  EXPECT_EQ(gfx::Size(240, 320),
+  EXPECT_EQ(gfx::Size(240, 290),
             overlay_window().document_layer_for_testing()->size());
 
   overlay_window().SetSize({239, 319});
-  EXPECT_EQ(gfx::Size(239, 319),
+  EXPECT_EQ(gfx::Size(239, 289),
             overlay_window().document_layer_for_testing()->size());
 
   // Narrow video.
   overlay_window().UpdateNaturalSize({900, 1600});
 
   overlay_window().SetSize({250, 444});
-  EXPECT_EQ(gfx::Size(250, 444),
+  EXPECT_EQ(gfx::Size(250, 414),
             overlay_window().document_layer_for_testing()->size());
 
   overlay_window().SetSize({250, 445});
-  EXPECT_EQ(gfx::Size(250, 445),
+  EXPECT_EQ(gfx::Size(250, 415),
             overlay_window().document_layer_for_testing()->size());
 
   // Very narrow video.
@@ -254,11 +291,11 @@ TEST_F(DocumentOverlayWindowViewsTest, ApproximateAspectRatio_Vertical) {
   overlay_window().UpdateNaturalSize({100, 400});
 
   overlay_window().SetSize({200, 478});
-  EXPECT_EQ(gfx::Size(120, 478),
+  EXPECT_EQ(gfx::Size(120, 448),
             overlay_window().document_layer_for_testing()->size());
 
   overlay_window().SetSize({200, 481});
-  EXPECT_EQ(gfx::Size(120, 481),
+  EXPECT_EQ(gfx::Size(120, 451),
             overlay_window().document_layer_for_testing()->size());
 }
 
@@ -327,6 +364,33 @@ TEST_F(DocumentOverlayWindowViewsTest, HitTestFrameView) {
   EXPECT_EQ(non_client_view->HitTestPoint(point), true);
 }
 
+// Tests that hit tests on various areas of the window have the expected
+// hit test type.
+TEST_F(DocumentOverlayWindowViewsTest, HitTestTypesByLocation) {
+  views::NonClientView* view = overlay_window().non_client_view();
+
+  overlay_window().UpdateNaturalSize({200, 200});
+
+  // The corners and edges of the frame support resizing.
+  EXPECT_EQ(view->NonClientHitTest({1, 1}), HTTOPLEFT);
+  EXPECT_EQ(view->NonClientHitTest({198, 1}), HTTOPRIGHT);
+  EXPECT_EQ(view->NonClientHitTest({1, 100}), HTLEFT);
+  EXPECT_EQ(view->NonClientHitTest({198, 100}), HTRIGHT);
+  EXPECT_EQ(view->NonClientHitTest({1, 198}), HTBOTTOMLEFT);
+  EXPECT_EQ(view->NonClientHitTest({198, 198}), HTBOTTOMRIGHT);
+
+  // The middle of the controls bar allows dragging the window.
+  EXPECT_EQ(view->NonClientHitTest({100, 15}), HTCAPTION);
+
+  // The right side of the control bar contains the close button
+  // which is interactive.
+  EXPECT_EQ(view->NonClientHitTest({185, 15}), HTNOWHERE);
+
+  // Clicks on the web content area must not be intercepted so that
+  // interactions remain possible.
+  EXPECT_EQ(view->NonClientHitTest({100, 100}), HTNOWHERE);
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // With pillarboxing, the close button doesn't cover the video area. Make sure
 // hovering the button doesn't get handled like normal mouse exit events
@@ -354,12 +418,6 @@ TEST_F(DocumentOverlayWindowViewsTest, NoMouseExitWithinWindowBounds) {
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
-
-TEST_F(DocumentOverlayWindowViewsTest, ShowControlsOnFocus) {
-  EXPECT_FALSE(overlay_window().AreControlsVisible());
-  overlay_window().OnNativeFocus();
-  EXPECT_TRUE(overlay_window().AreControlsVisible());
-}
 
 TEST_F(DocumentOverlayWindowViewsTest, PauseOnCloseButton) {
   views::test::ButtonTestApi close_button_clicker(
@@ -390,6 +448,6 @@ TEST_F(DocumentOverlayWindowViewsTest, SmallDisplayWorkAreaDoesNotCrash) {
   EXPECT_EQ(kMinWindowSize, overlay_window().GetMaximumSize());
 
   // The video should still be letterboxed to the correct aspect ratio.
-  EXPECT_EQ(gfx::Size(133, 100),
+  EXPECT_EQ(gfx::Size(133, 70),
             overlay_window().document_layer_for_testing()->size());
 }

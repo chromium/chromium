@@ -8,15 +8,31 @@
 #include "chrome/browser/ui/views/overlay/overlay_window_views.h"
 
 class BackToTabImageButton;
-class BackToTabLabelButton;
 class CloseImageButton;
+class Profile;
 class ResizeHandleButton;
+
+class OverlayLocationBarViewProxy {
+ public:
+  OverlayLocationBarViewProxy() = default;
+  OverlayLocationBarViewProxy(const OverlayLocationBarViewProxy&) = delete;
+  OverlayLocationBarViewProxy& operator=(const OverlayLocationBarViewProxy&) =
+      delete;
+  virtual ~OverlayLocationBarViewProxy();
+  virtual void Init() = 0;
+  virtual std::unique_ptr<views::View> ReleaseView() = 0;
+};
 
 class DocumentOverlayWindowViews : public OverlayWindowViews,
                                    public content::DocumentOverlayWindow {
  public:
+  // Constructs and initializes an instance. Since it includes a location bar
+  // view which is rather testing hostile due to its many dependencies, the
+  // optional argument supports supplying a fake implementation.
   static std::unique_ptr<DocumentOverlayWindowViews> Create(
-      content::DocumentPictureInPictureWindowController* controller);
+      content::DocumentPictureInPictureWindowController* controller,
+      std::unique_ptr<OverlayLocationBarViewProxy>
+          location_bar_view_proxy_for_testing = nullptr);
 
   DocumentOverlayWindowViews(const DocumentOverlayWindowViews&) = delete;
   DocumentOverlayWindowViews& operator=(const DocumentOverlayWindowViews&) =
@@ -39,6 +55,7 @@ class DocumentOverlayWindowViews : public OverlayWindowViews,
   bool IsVisible() const override;
   void OnNativeWidgetMove() override;
   void OnNativeWidgetDestroyed() override;
+  const ui::ThemeProvider* GetThemeProvider() const override;
 
   // OverlayWindowViews
   bool ControlsHitTestContainsPoint(const gfx::Point& point) override;
@@ -64,6 +81,9 @@ class DocumentOverlayWindowViews : public OverlayWindowViews,
   CloseImageButton* close_button_for_testing() const;
   ui::Layer* document_layer_for_testing() const;
 
+  void set_location_bar_view_proxy(
+      std::unique_ptr<OverlayLocationBarViewProxy> proxy);
+
  private:
   explicit DocumentOverlayWindowViews(
       content::DocumentPictureInPictureWindowController* controller);
@@ -72,7 +92,12 @@ class DocumentOverlayWindowViews : public OverlayWindowViews,
   gfx::Rect CalculateControlsBounds(int x, const gfx::Size& size);
 
   // Not owned; |controller_| owns |this|.
-  raw_ptr<content::DocumentPictureInPictureWindowController> controller_;
+  raw_ptr<content::DocumentPictureInPictureWindowController> controller_ =
+      nullptr;
+
+  std::unique_ptr<OverlayLocationBarViewProxy> location_bar_view_proxy_;
+
+  raw_ptr<Profile> profile_for_theme_ = nullptr;
 
   // Temporary storage for child Views. Used during the time between
   // construction and initialization, when the views::View pointer members must
@@ -83,11 +108,10 @@ class DocumentOverlayWindowViews : public OverlayWindowViews,
   // then passed to this widget's ContentsView which takes ownership.
   raw_ptr<views::View> window_background_view_ = nullptr;
   raw_ptr<views::View> web_view_ = nullptr;
-  raw_ptr<views::View> controls_scrim_view_ = nullptr;
   raw_ptr<views::View> controls_container_view_ = nullptr;
+  raw_ptr<views::View> location_bar_view_ = nullptr;
   raw_ptr<CloseImageButton> close_controls_view_ = nullptr;
   raw_ptr<BackToTabImageButton> back_to_tab_image_button_ = nullptr;
-  raw_ptr<BackToTabLabelButton> back_to_tab_label_button_ = nullptr;
   raw_ptr<ResizeHandleButton> resize_handle_view_ = nullptr;
 };
 

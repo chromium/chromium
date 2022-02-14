@@ -22,10 +22,9 @@ class ResizeHandleButton : public views::ImageButton {
   void SetPosition(const gfx::Size& size,
                    OverlayWindowViews::WindowQuadrant quadrant);
   int GetHTComponent() const;
-
- private:
   void SetImageForQuadrant(OverlayWindowViews::WindowQuadrant quadrant);
 
+ private:
   absl::optional<OverlayWindowViews::WindowQuadrant> current_quadrant_;
 };
 
