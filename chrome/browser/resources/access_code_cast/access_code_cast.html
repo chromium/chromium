@@ -1,4 +1,9 @@
 <style include="cr-shared-style">
+  #codeInput {
+    font-size: 24px;
+    width: 200px;
+  }
+  
   .body-1 {
     font-size: 14px;
   }
@@ -12,6 +17,8 @@
   }
 
   .center-content {
+    display: flex;
+    justify-content: center;
     text-align: center;
     width: 100%;
   }
@@ -46,8 +53,8 @@
       <div class="body-1">$i18n{accessCodeMessage}</div>
       <div class="space"></div>
       <div class="center-content">
-        <c2c-code-input length="6" value="" id="codeInput" 
-          disabled="[[!canCast]]"></c2c-code-input>
+        <cr-input maxlength="6" id="codeInput" spellcheck="false"
+          disabled="[[!canCast]]" autofocus></cr-input>
       </div>
       <template is="dom-if" if="[[qrScannerEnabled]]" class="center-content">
         <div class="center-content">

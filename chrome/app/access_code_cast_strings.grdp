@@ -31,6 +31,9 @@
   <message name="IDS_ACCESS_CODE_CAST_ERROR_UNKNOWN" desc="Error message for an unknown casting error">
     Something went wrong. Try again later
   </message>
+  <message name="IDS_ACCESS_CODE_CAST_INPUT_ARIA_LABEL" is_accessibility_with_no_ui="true" desc="Label for the text box where users type the access code to start casting to a Chromecast device">
+    Type the access code to start casting
+  </message>
   <message name="IDS_ACCESS_CODE_CAST_SUBMIT" desc="Text for the button that when pressed submits an access code to attempt to start casting">
     Submit
   </message>

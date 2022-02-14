@@ -4,7 +4,7 @@
     text-align: center;
   }
 </style>
-<div class="error">
+<div class="error" aria-live="assertive">
   <template is="dom-if"
     if="[[isNotEqual(messageCode, errorMessageEnum.NO_ERROR)]]"
   >

@@ -204,6 +204,7 @@ AccessCodeCastUI::AccessCodeCastUI(content::WebUI* web_ui)
       {"errorPermission", IDS_ACCESS_CODE_CAST_ERROR_PERMISSION},
       {"errorTooManyRequests", IDS_ACCESS_CODE_CAST_ERROR_TOO_MANY_REQUESTS},
       {"errorUnknown", IDS_ACCESS_CODE_CAST_ERROR_UNKNOWN},
+      {"inputLabel", IDS_ACCESS_CODE_CAST_INPUT_ARIA_LABEL},
       {"submit", IDS_ACCESS_CODE_CAST_SUBMIT},
       {"useCamera", IDS_ACCESS_CODE_CAST_USE_CAMERA},
   };
