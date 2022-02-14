@@ -8,6 +8,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
@@ -20,6 +21,7 @@
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "content/public/browser/disallow_activation_reason.h"
+#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -1504,6 +1506,62 @@ class PermissionRequestFromExtension : public extensions::ExtensionApiTest {
     return url;
   }
 
+  void EnsurePopupActive() {
+    auto test_util = ExtensionActionTestHelper::Create(browser());
+    EXPECT_TRUE(test_util->HasPopup());
+    EXPECT_TRUE(test_util->WaitForPopup());
+    EXPECT_TRUE(test_util->HasPopup());
+  }
+
+  // Open an extension popup by clicking the browser action button associated
+  // with `id`.
+  content::WebContents* OpenPopupViaToolbar(const std::string& id) {
+    EXPECT_FALSE(id.empty());
+    content::WindowedNotificationObserver popup_observer(
+        content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
+        content::NotificationService::AllSources());
+    ExtensionActionTestHelper::Create(browser())->Press(id);
+    popup_observer.Wait();
+    EnsurePopupActive();
+    const auto& source =
+        static_cast<const content::Source<content::WebContents>&>(
+            popup_observer.source());
+    return source.ptr();
+  }
+
+  void VerifyExtensionsPopupPage(std::string extension_path) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+
+    permissions::PermissionRequestManager* manager =
+        permissions::PermissionRequestManager::FromWebContents(web_contents);
+    std::unique_ptr<permissions::MockPermissionPromptFactory> bubble_factory =
+        std::make_unique<permissions::MockPermissionPromptFactory>(manager);
+
+    // Enable auto-accept of a permission request.
+    bubble_factory->set_response_type(
+        permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+    extensions::ResultCatcher catcher;
+    const extensions::Extension* extension =
+        LoadExtension(test_data_dir_.AppendASCII(extension_path));
+
+    ASSERT_TRUE(extension);
+
+    // Open a popup with the extension.
+    content::WebContents* extension_popup =
+        OpenPopupViaToolbar(extension->id());
+    ASSERT_TRUE(extension_popup);
+
+    // Wait for all JS tests to resolve their promises.
+    base::RunLoop().RunUntilIdle();
+
+    EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+    // Showing permission prompts is not allowed on the extension's popup page.
+    EXPECT_EQ(0, bubble_factory->TotalRequestCount());
+  }
+
  private:
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
 };
@@ -1874,6 +1932,30 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   // No permission prompt has been shown.
   EXPECT_EQ(0, bubble_factory->TotalRequestCount());
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
+                       PopupPageNoPermissonsV2Test) {
+  VerifyExtensionsPopupPage(
+      "permissions_test/request_from_popup_v2/no_permissions");
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
+                       PopupPageHasPermissonsV2Test) {
+  VerifyExtensionsPopupPage(
+      "permissions_test/request_from_popup_v2/has_permissions");
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
+                       PopupPageNoPermissonsV3Test) {
+  VerifyExtensionsPopupPage(
+      "permissions_test/request_from_popup_v3/no_permissions");
+}
+
+IN_PROC_BROWSER_TEST_F(PermissionRequestFromExtension,
+                       PopupPageHasPermissonsV3Test) {
+  VerifyExtensionsPopupPage(
+      "permissions_test/request_from_popup_v3/has_permissions");
 }
 
 }  // anonymous namespace
