@@ -281,7 +281,11 @@ void URLRequestHttpJob::Start() {
   request_info_.reporting_upload_depth = request_->reporting_upload_depth();
 #endif
 
-  if (!ShouldAddCookieHeader()) {
+  bool should_add_cookie_header = ShouldAddCookieHeader();
+  UMA_HISTOGRAM_BOOLEAN("Net.HttpJob.CanIncludeCookies",
+                        should_add_cookie_header);
+
+  if (!should_add_cookie_header) {
     OnGotFirstPartySetMetadata(FirstPartySetMetadata());
     return;
   }

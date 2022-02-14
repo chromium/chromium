@@ -1623,6 +1623,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="net.HttpJob.CanIncludeCookies" enum="Boolean"
+    expires_after="2023-02-14">
+  <owner>cfredric@chromium.org</owner>
+  <owner>kaustubhag@chromium.org</owner>
+  <summary>
+    Counts the HTTP requests which involve reading from the cookie jar to
+    construct a Cookie header vs. the HTTP requests which are disallowed from
+    including a Cookie header.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpJob.PrefilterBytesRead" units="bytes"
     expires_after="2022-07-03">
   <owner>jkarlin@chromium.org</owner>
