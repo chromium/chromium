@@ -164,7 +164,8 @@ rejected for merge.
 Select the "..." button in the Gerrit UI, then choose "Cherry Pick". When
 prompted for a branch, enter *refs/branch-heads/####*, where #### corresponds
 to the release branch you are merging to (available on
-[Chromium Dash](https://chromiumdash.appspot.com/branches)).
+[Chromium Dash](https://chromiumdash.appspot.com/branches) in the "Chromium"
+column).
 
 Once the cherry-pick CL is prepared, you can have it approved and landed by
 adding Rubber Stamper (rubber-stamper@appspot.gserviceaccount.com) as a
@@ -181,7 +182,8 @@ within 7 days of the original change; Googlers can learn more
 The commands below should set up your environment to be able to successfully
 upload a cherry-pick to a release branch, where *####* corresponds to the
 release branch you are merging to (available on
-[Chromium Dash](https://chromiumdash.appspot.com/branches)):
+[Chromium Dash](https://chromiumdash.appspot.com/branches) in the "Chromium"
+column):
 
 ```
 $ gclient sync --with_branch_heads
