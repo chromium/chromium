@@ -710,6 +710,7 @@ void RemoveFormsToBeDeleted(
   if (self.navigationItem.searchController.active == YES) {
     self.navigationItem.searchController.active = NO;
   }
+  _accountManagerServiceObserver.reset();
 }
 
 #pragma mark - Items
