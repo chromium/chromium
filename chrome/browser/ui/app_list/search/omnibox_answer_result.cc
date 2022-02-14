@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
@@ -105,8 +106,8 @@ TextItem CreateTextItem(const std::u16string& text) {
   return text_item;
 }
 
-// TODO(crbug.com/1250154): Remove this when the migration to TextVectors is
-// completed, since naive concatenation of user-visible strings is discouraged.
+// TODO(crbug.com/1250154): Remove non-a11y references to this once the
+// productivity launcher is enabled.
 std::u16string TextVectorToString(const std::vector<TextItem>& text_vector) {
   std::vector<std::u16string> text;
   for (const auto& text_item : text_vector) {
@@ -115,6 +116,17 @@ std::u16string TextVectorToString(const std::vector<TextItem>& text_vector) {
     }
   }
   return base::JoinString(text, u" ");
+}
+
+std::u16string ComputeAccessibleName(
+    const std::vector<std::vector<TextItem>>& text_vectors) {
+  std::vector<std::u16string> text;
+  for (const auto& text_vector : text_vectors) {
+    if (!text_vector.empty()) {
+      text.push_back(TextVectorToString(text_vector));
+    }
+  }
+  return base::JoinString(text, u", ");
 }
 
 }  // namespace
@@ -214,6 +226,10 @@ void OmniboxAnswerResult::UpdateTitleAndDetails() {
 
   // Bold the title field.
   SetTitleTextVector(AddBoldTags(title_text_vector()));
+
+  std::u16string accessible_name = ComputeAccessibleName(
+      {big_title_text_vector(), title_text_vector(), details_text_vector()});
+  SetAccessibleName(accessible_name);
 
   // TODO(crbug.com/1250154): Remove these once the migration to TextVectors
   // is completed.
