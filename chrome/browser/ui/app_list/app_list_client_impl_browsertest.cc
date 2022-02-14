@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
@@ -451,6 +452,38 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, OpenSearchResult) {
   // the bound WeakPtr to fail sequence check on a worker thread.
   // TODO(crbug.com/965065): Remove after fixing AppLaunchEventLogger.
   content::RunAllTasksUntilIdle();
+}
+
+class AppListClientImplLacrosOnlyBrowserTest
+    : public AppListClientImplBrowserTest {
+ public:
+  AppListClientImplLacrosOnlyBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+         ash::features::kLacrosOnly},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AppListClientImplLacrosOnlyBrowserTest, ChromeApp) {
+  AppListControllerDelegate* delegate = AppListClientImpl::GetInstance();
+  ASSERT_TRUE(delegate);
+  ASSERT_TRUE(profile());
+  EXPECT_EQ(
+      extensions::LAUNCH_TYPE_INVALID,
+      delegate->GetExtensionLaunchType(profile(), app_constants::kChromeAppId));
+}
+
+IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, ChromeApp) {
+  AppListControllerDelegate* delegate = AppListClientImpl::GetInstance();
+  ASSERT_TRUE(delegate);
+  ASSERT_TRUE(profile());
+  EXPECT_EQ(
+      extensions::LAUNCH_TYPE_REGULAR,
+      delegate->GetExtensionLaunchType(profile(), app_constants::kChromeAppId));
 }
 
 // Test that browser launch time is recorded is recorded in preferences.

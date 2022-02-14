@@ -32,6 +32,8 @@ const char kPrefLaunchType[] = "launchType";
 
 LaunchType GetLaunchType(const ExtensionPrefs* prefs,
                          const Extension* extension) {
+  if (!extension)
+    return LAUNCH_TYPE_INVALID;
   LaunchType result = LAUNCH_TYPE_DEFAULT;
 
   int value = GetLaunchTypePrefValue(prefs, extension->id());
