@@ -1256,13 +1256,12 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     } else if (willShowActivityIndicator) {
       // Show activity overlay so users know that clear browsing data is in
       // progress.
-      // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
-      // clean up.
       if (sceneInterface.mainInterface.browser) {
         didShowActivityIndicator = YES;
-        id<BrowserCommands> handler = static_cast<id<BrowserCommands>>(
-            sceneInterface.mainInterface.browser->GetCommandDispatcher());
-        [handler showActivityOverlay:YES];
+        id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
+            sceneInterface.mainInterface.browser->GetCommandDispatcher(),
+            BrowserCoordinatorCommands);
+        [handler showActivityOverlay];
       }
     }
   }
@@ -1282,12 +1281,11 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
         sceneInterface.mainInterface.userInteractionEnabled = NO;
         sceneInterface.incognitoInterface.userInteractionEnabled = NO;
 
-        // TODO(crbug.com/1045047): Use HandlerForProtocol after commands
-        // protocol clean up.
         if (didShowActivityIndicator && sceneInterface.mainInterface.browser) {
-          id<BrowserCommands> handler = static_cast<id<BrowserCommands>>(
-              sceneInterface.mainInterface.browser->GetCommandDispatcher());
-          [handler showActivityOverlay:NO];
+          id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
+              sceneInterface.mainInterface.browser->GetCommandDispatcher(),
+              BrowserCoordinatorCommands);
+          [handler hideActivityOverlay];
         }
       }
       sceneInterface.mainInterface.userInteractionEnabled = YES;

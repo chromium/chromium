@@ -75,7 +75,6 @@
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h"
 #import "ios/chrome/browser/ui/default_promo/default_promo_non_modal_presentation_delegate.h"
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
-#import "ios/chrome/browser/ui/elements/activity_overlay_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/first_run_util.h"
 #import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
@@ -425,11 +424,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // Whether the BVC is positioned at the bottom of the window, for example after
 // switching from thumb strip to tab grid.
 @property(nonatomic, assign) BOOL bottomPosition;
-// Coordinator for displaying a modal overlay with activity indicator to prevent
-// the user from interacting with the browser view.
-// TODO(crbug.com/1272550): Move this coordinator to BrowserCoordinator.
-@property(nonatomic, strong)
-    ActivityOverlayCoordinator* activityOverlayCoordinator;
 // A block to be run when the |tabWasAdded:| method completes the animation
 // for the presentation of a new tab. Can be used to record performance metrics.
 @property(nonatomic, strong, nullable)
@@ -1043,14 +1037,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     return;
   }
   _active = active;
-
-  // If not active, display an activity indicator overlay over the view to
-  // prevent interaction with the web page.
-  // TODO(crbug.com/637093): This coordinator should be managed by the
-  // coordinator used to present BrowserViewController, when implemented.
-  if (!_isShutdown) {
-    [self showActivityOverlay:!active];
-  }
 
   // TODO(crbug.com/1272524): Move these updates to BrowserCoordinator.
   if (self.browserState) {
@@ -3985,20 +3971,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)focusFakebox {
   if (self.isNTPActiveForCurrentWebState) {
     [[self ntpCoordinatorForWebState:self.currentWebState] focusFakebox];
-  }
-}
-
-// TODO(crbug.com/1272550): Move this command implementation to
-// BrowserCoordinator.
-- (void)showActivityOverlay:(BOOL)show {
-  if (!show) {
-    [self.activityOverlayCoordinator stop];
-    self.activityOverlayCoordinator = nil;
-  } else if (!self.activityOverlayCoordinator) {
-    self.activityOverlayCoordinator = [[ActivityOverlayCoordinator alloc]
-        initWithBaseViewController:self
-                           browser:self.browser];
-    [self.activityOverlayCoordinator start];
   }
 }
 

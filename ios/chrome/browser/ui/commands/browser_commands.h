@@ -92,10 +92,6 @@ class GURL;
 // Search for an image with Lens, using |command| parameters.
 - (void)searchImageWithLens:(SearchImageWithLensCommand*)command;
 
-// Shows/Hides the activity indicator overlay that appears over the view to
-// prevent interaction with the web page.
-- (void)showActivityOverlay:(BOOL)show;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_COMMANDS_BROWSER_COMMANDS_H_

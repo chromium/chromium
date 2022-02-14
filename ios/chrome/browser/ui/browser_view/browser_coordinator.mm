@@ -66,6 +66,7 @@
 #import "ios/chrome/browser/ui/download/mobileconfig_coordinator.h"
 #import "ios/chrome/browser/ui/download/pass_kit_coordinator.h"
 #import "ios/chrome/browser/ui/download/vcard_coordinator.h"
+#import "ios/chrome/browser/ui/elements/activity_overlay_coordinator.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_controller_ios.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
@@ -152,6 +153,11 @@
 // =================================================
 // Child Coordinators, listed in alphabetical order.
 // =================================================
+
+// Coordinator for displaying a modal overlay with activity indicator to prevent
+// the user from interacting with the browser view.
+@property(nonatomic, strong)
+    ActivityOverlayCoordinator* activityOverlayCoordinator;
 
 // Presents a QLPreviewController in order to display USDZ format 3D models.
 @property(nonatomic, strong) ARQuickLookCoordinator* ARQuickLookCoordinator;
@@ -341,6 +347,14 @@
   }
   _active = active;
 
+  // If not active, display an activity indicator overlay over the view to
+  // prevent interaction with the web page.
+  if (active) {
+    [self hideActivityOverlay];
+  } else if (!self.activityOverlayCoordinator) {
+    [self showActivityOverlay];
+  }
+
   // TODO(crbug.com/1272516): Update the WebUsageEnablerBrowserAgent as part of
   // setting active/inactive.
   self.viewController.active = active;
@@ -388,6 +402,20 @@
 }
 
 #pragma mark - Private
+
+// Displays activity overlay.
+- (void)showActivityOverlay {
+  self.activityOverlayCoordinator = [[ActivityOverlayCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser];
+  [self.activityOverlayCoordinator start];
+}
+
+// Hides activity overlay.
+- (void)hideActivityOverlay {
+  [self.activityOverlayCoordinator stop];
+  self.activityOverlayCoordinator = nil;
+}
 
 // Shows a default promo with the passed type or nothing if a tailored promo is
 // already present.

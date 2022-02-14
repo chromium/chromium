@@ -42,6 +42,13 @@
 // Dismisses the Badge popup menu.
 - (void)dismissPopupMenu;
 
+// Shows the activity indicator overlay that appears over the view to prevent
+// interaction with the web page.
+- (void)showActivityOverlay;
+
+// Hides the activity indicator overlay.
+- (void)hideActivityOverlay;
+
 #if !defined(NDEBUG)
 // Inserts a new tab showing the HTML source of the current page.
 - (void)viewSource;
