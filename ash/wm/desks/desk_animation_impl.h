@@ -11,10 +11,13 @@
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "base/memory/weak_ptr.h"
 
+namespace ui {
+class PresentationTimeRecorder;
+}
+
 namespace ash {
 
 class DesksController;
-class PresentationTimeRecorder;
 
 class ASH_EXPORT DeskActivationAnimation : public DeskAnimationBase {
  public:
@@ -60,7 +63,7 @@ class ASH_EXPORT DeskActivationAnimation : public DeskAnimationBase {
   base::TimeTicks last_start_or_replace_time_;
 
   // Used to measure the presentation time of a continuous gesture swipe.
-  std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
+  std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
 
   base::WeakPtrFactory<DeskActivationAnimation> weak_ptr_factory_{this};
 };

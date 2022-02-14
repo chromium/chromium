@@ -6,7 +6,6 @@
 
 #include <tuple>
 
-#include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/test/test_desks_templates_delegate.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
@@ -24,6 +23,7 @@
 #include "ash/wm/window_preview_view.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -184,12 +184,14 @@ void OverviewTestBase::SetUp() {
   ScopedOverviewTransformWindow::SetImmediateCloseForTests(
       /*immediate=*/true);
   OverviewWallpaperController::SetDisableChangeWallpaperForTest(true);
-  PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(true);
+  ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
+      true);
 }
 
 void OverviewTestBase::TearDown() {
   OverviewWallpaperController::SetDisableChangeWallpaperForTest(false);
-  PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(false);
+  ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
+      false);
   trace_names_.clear();
   AshTestBase::TearDown();
 }

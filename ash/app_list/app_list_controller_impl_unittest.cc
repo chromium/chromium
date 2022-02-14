@@ -33,7 +33,6 @@
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
-#include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -65,6 +64,7 @@
 #include "base/test/with_feature_override.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/message_center/message_center.h"
@@ -1124,11 +1124,12 @@ class AppListControllerImplMetricsTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
     controller_ = Shell::Get()->app_list_controller();
-    PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(true);
+    ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
+        true);
   }
 
   void TearDown() override {
-    PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
+    ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         false);
     AshTestBase::TearDown();
   }

@@ -20,7 +20,6 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
 #include "ash/public/cpp/fps_counter.h"
-#include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_properties.h"
@@ -69,6 +68,7 @@
 #include "ui/aura/test/test_windows.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ime/dummy_text_input_client.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/compositor_extra/shadow.h"
@@ -209,10 +209,11 @@ class SplitViewControllerTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
     Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
     FpsCounter::SetForceReportZeroAnimationForTest(true);
-    PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(true);
+    ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
+        true);
   }
   void TearDown() override {
-    PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
+    ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         false);
     FpsCounter::SetForceReportZeroAnimationForTest(false);
     trace_names_.clear();

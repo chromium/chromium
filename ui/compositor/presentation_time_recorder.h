@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_PUBLIC_CPP_PRESENTATION_TIME_RECORDER_H_
-#define ASH_PUBLIC_CPP_PRESENTATION_TIME_RECORDER_H_
+#ifndef UI_COMPOSITOR_PRESENTATION_TIME_RECORDER_H_
+#define UI_COMPOSITOR_PRESENTATION_TIME_RECORDER_H_
 
-#include "ash/public/cpp/ash_public_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "ui/compositor/compositor.h"
-#include "ui/display/display.h"
 
-namespace ash {
+namespace ui {
 
 // PresentationTimeRecorder records the time between when an UI update is
 // requested, and the requested UI change has been presented to the user
@@ -22,11 +20,10 @@ namespace ash {
 // you want to measure the drawing performance in continuous operation that
 // doesn't involve animations (such as window dragging). Call |RequestNext()|
 // when you made modification to UI that should expect it will be presented.
-// TODO(oshima): Move this to ash/metrics after crbug.com/942564 is resolved.
-class ASH_PUBLIC_EXPORT PresentationTimeRecorder {
+class COMPOSITOR_EXPORT PresentationTimeRecorder {
  public:
   class PresentationTimeRecorderInternal;
-  class TestApi {
+  class COMPOSITOR_EXPORT TestApi {
    public:
     explicit TestApi(PresentationTimeRecorder* recorder);
 
@@ -69,12 +66,12 @@ class ASH_PUBLIC_EXPORT PresentationTimeRecorder {
 // Creates a PresentationTimeRecorder that records timing histograms of
 // presentation time and (if given) max latency. The time range is 1 to 200 ms,
 // with 50 buckets.
-ASH_PUBLIC_EXPORT std::unique_ptr<PresentationTimeRecorder>
+COMPOSITOR_EXPORT std::unique_ptr<PresentationTimeRecorder>
 CreatePresentationTimeHistogramRecorder(
     ui::Compositor* compositor,
     const char* presentation_time_histogram_name,
     const char* max_latency_histogram_name = "");
 
-}  // namespace ash
+}  // namespace ui
 
-#endif  // ASH_PUBLIC_CPP_PRESENTATION_TIME_RECORDER_H_
+#endif  // UI_COMPOSITOR_PRESENTATION_TIME_RECORDER_H_

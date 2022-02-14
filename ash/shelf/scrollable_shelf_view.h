@@ -32,8 +32,11 @@ namespace views {
 class FocusSearch;
 }
 
-namespace ash {
+namespace ui {
 class PresentationTimeRecorder;
+}
+
+namespace ash {
 
 class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
                                        public ShelfView::Delegate,
@@ -543,7 +546,7 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   bool layer_clip_in_non_overflow_ = false;
 
   // Records the presentation time for the scrollable shelf dragging.
-  std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
+  std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
 
   base::ScopedClosureRunner force_show_hotseat_resetter_;
 };

@@ -45,6 +45,7 @@ class EventHandler;
 class LocatedEvent;
 class MouseEvent;
 class MouseWheelEvent;
+class PresentationTimeRecorder;
 }  // namespace ui
 
 namespace ash {
@@ -54,7 +55,6 @@ class DragWindowFromShelfController;
 class HomeToOverviewNudgeController;
 class InAppToHomeNudgeController;
 class PanelLayoutManagerTest;
-class PresentationTimeRecorder;
 class ScopedDragDropObserver;
 class Shelf;
 class ShelfLayoutManagerObserver;
@@ -730,7 +730,8 @@ class ASH_EXPORT ShelfLayoutManager
   base::CancelableOnceClosure visibility_update_for_tray_callback_;
 
   // Records the presentation time for hotseat dragging.
-  std::unique_ptr<PresentationTimeRecorder> hotseat_presentation_time_recorder_;
+  std::unique_ptr<ui::PresentationTimeRecorder>
+      hotseat_presentation_time_recorder_;
 
   base::WeakPtrFactory<ShelfLayoutManager> weak_factory_{this};
 };

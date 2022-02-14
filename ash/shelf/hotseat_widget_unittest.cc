@@ -13,7 +13,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/focus_cycler.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
-#include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/test/assistant_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shelf/drag_window_from_shelf_controller_test_api.h"
@@ -50,6 +49,7 @@
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
@@ -113,7 +113,7 @@ class HotseatWidgetTest
 
   void TearDown() override {
     // Some tests may override this value, make sure it's reset.
-    PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
+    ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         false);
     ShelfLayoutManagerTestBase::TearDown();
   }
@@ -2387,7 +2387,8 @@ TEST_P(HotseatWidgetTest,
 }
 
 TEST_P(HotseatWidgetTest, PresentationTimeMetricDuringDrag) {
-  PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(true);
+  ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
+      true);
 
   std::unique_ptr<aura::Window> window =
       AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));

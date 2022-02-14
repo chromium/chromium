@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/presentation_time_recorder.h"
+#include "ui/compositor/presentation_time_recorder.h"
 
 #include <ostream>
 
@@ -12,7 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "ui/gfx/presentation_feedback.h"
 
-namespace ash {
+namespace ui {
 
 namespace {
 
@@ -234,7 +234,7 @@ base::HistogramBase* CreateTimesHistogram(const char* name) {
 
 // PresentationTimeHistogramRecorder ------------------------------------------
 
-class ASH_PUBLIC_EXPORT PresentationTimeHistogramRecorder
+class PresentationTimeHistogramRecorder
     : public PresentationTimeRecorder::PresentationTimeRecorderInternal {
  public:
   // |presentation_time_histogram_name| records latency reported on
@@ -315,4 +315,4 @@ int PresentationTimeRecorder::TestApi::GetFailureRatio() const {
   return recorder_->recorder_internal_->failure_ratio();
 }
 
-}  // namespace ash
+}  // namespace ui

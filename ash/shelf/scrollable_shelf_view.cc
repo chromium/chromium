@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/screen_util.h"
 #include "ash/shelf/scrollable_shelf_constants.h"
@@ -26,6 +25,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/animation_throughput_reporter.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_f.h"

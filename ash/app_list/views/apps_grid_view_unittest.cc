@@ -44,7 +44,6 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
-#include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/test/test_shelf_item_delegate.h"
@@ -64,6 +63,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -332,12 +332,13 @@ class AppsGridViewTest : public AshTestBase {
     }
 
     test_api_ = std::make_unique<AppsGridViewTestApi>(apps_grid_view_);
-    PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(true);
+    ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
+        true);
   }
 
   void TearDown() override {
     page_flip_waiter_.reset();
-    PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
+    ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         false);
     AshTestBase::TearDown();
   }

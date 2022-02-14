@@ -4,7 +4,6 @@
 
 #include "ash/wm/desks/desk_animation_impl.h"
 
-#include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/utility/haptics_util.h"
@@ -17,6 +16,7 @@
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
 
 namespace ash {

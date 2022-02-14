@@ -47,7 +47,6 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
-#include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "ash/search_box/search_box_constants.h"
 #include "ash/style/ash_color_provider.h"
@@ -63,6 +62,7 @@
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -210,12 +210,12 @@ class AppListViewTest : public views::ViewsTestBase {
     zero_duration_mode_ =
         std::make_unique<ui::ScopedAnimationDurationScaleMode>(
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-    ash::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
+    ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         true);
   }
 
   void TearDown() override {
-    ash::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
+    ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         false);
     view_->GetWidget()->Close();
     zero_duration_mode_.reset();

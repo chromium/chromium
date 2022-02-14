@@ -6,13 +6,15 @@
 #define ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_CENTER_SCROLL_BAR_H_
 
 #include "ash/controls/rounded_scroll_bar.h"
-#include "ash/public/cpp/presentation_time_recorder.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/scrollbar/overlay_scroll_bar.h"
 
-namespace ash {
-
+namespace ui {
 class PresentationTimeRecorder;
+}
+
+namespace ash {
 
 // The scroll bar for message center. This is basically views::OverlayScrollBar
 // but also records the metrics for the type of scrolling (only the first event
@@ -52,7 +54,7 @@ class MessageCenterScrollBar : public views::OverlayScrollBar {
   Observer* const observer_;
 
   // Presentation time recorder for scrolling through notification list.
-  std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
+  std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
 };
 
 // The new scroll bar for message center. This class will replace
@@ -89,7 +91,7 @@ class RoundedMessageCenterScrollBar : public RoundedScrollBar {
   MessageCenterScrollBar::Observer* const observer_;
 
   // Presentation time recorder for scrolling through notification list.
-  std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
+  std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
 };
 
 }  // namespace ash

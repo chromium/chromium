@@ -29,10 +29,10 @@
 
 namespace ui {
 class Layer;
+class PresentationTimeRecorder;
 }  // namespace ui
 
 namespace ash {
-class PresentationTimeRecorder;
 class OverviewSession;
 class SplitViewControllerTest;
 class SplitViewDivider;
@@ -609,7 +609,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   base::ObserverList<SplitViewObserver>::Unchecked observers_;
 
   // Records the presentation time of resize operation in split view mode.
-  std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
+  std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
 
   // Observes windows and performs auto snapping if needed.
   std::unique_ptr<AutoSnapController> auto_snap_controller_;

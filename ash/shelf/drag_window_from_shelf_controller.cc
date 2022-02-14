@@ -6,7 +6,6 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_properties.h"
@@ -40,6 +39,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point_f.h"

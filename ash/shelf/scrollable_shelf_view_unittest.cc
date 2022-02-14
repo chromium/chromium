@@ -1217,7 +1217,8 @@ TEST_P(ScrollableShelfViewRTLTest, ClickAtLastIcon) {
 // Verifies that presentation time for shelf gesture scroll is recorded as
 // expected (https://crbug.com/1095259).
 TEST_F(ScrollableShelfViewTest, PresentationTimeMetricsForGestureScroll) {
-  PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(true);
+  ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
+      true);
 
   AddAppShortcutsUntilOverflow();
   ASSERT_EQ(ScrollableShelfView::kShowRightArrowButton,

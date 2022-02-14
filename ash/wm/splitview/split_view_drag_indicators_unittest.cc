@@ -6,7 +6,6 @@
 
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
-#include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -24,6 +23,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
@@ -49,10 +49,11 @@ class SplitViewDragIndicatorsTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
     Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
     base::RunLoop().RunUntilIdle();
-    PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(true);
+    ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
+        true);
   }
   void TearDown() override {
-    PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
+    ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         false);
     AshTestBase::TearDown();
   }

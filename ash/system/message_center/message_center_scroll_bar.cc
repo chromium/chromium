@@ -6,10 +6,10 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/controls/rounded_scroll_bar.h"
-#include "ash/public/cpp/presentation_time_recorder.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/views/widget/widget.h"
 
 namespace {

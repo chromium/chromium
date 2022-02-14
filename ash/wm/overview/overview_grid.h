@@ -27,13 +27,16 @@ namespace views {
 class Widget;
 }
 
+namespace ui {
+class PresentationTimeRecorder;
+}
+
 namespace ash {
 
 class DesksBarView;
 class DesksTemplatesGridView;
 class OverviewGridEventHandler;
 class OverviewItem;
-class PresentationTimeRecorder;
 class SaveDeskTemplateButton;
 
 // Represents a grid of windows in the Overview Mode in a particular root
@@ -589,7 +592,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   std::unique_ptr<OverviewGridEventHandler> grid_event_handler_;
 
   // Records the presentation time of scrolling the grid in overview mode.
-  std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
+  std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
 
   // Weak pointer to the window that is being dragged from the top, if there is
   // one.

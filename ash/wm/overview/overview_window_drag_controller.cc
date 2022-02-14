@@ -10,7 +10,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/display/mouse_cursor_event_filter.h"
-#include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/utility/haptics_util.h"
@@ -37,6 +36,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/display/display.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/wm/core/coordinate_conversion.h"
