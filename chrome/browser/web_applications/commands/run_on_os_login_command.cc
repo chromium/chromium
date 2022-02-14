@@ -7,6 +7,7 @@
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 
 namespace web_app {
@@ -43,17 +44,20 @@ void UpdateRunOnOsLoginOsIntegration(
 
 }  // namespace
 
-void PersistRunOnOsLoginUserChoice(WebAppProvider* provider,
+void PersistRunOnOsLoginUserChoice(WebAppRegistrar* registrar,
+                                   OsIntegrationManager* os_integration_manager,
+                                   WebAppSyncBridge* sync_bridge,
                                    const AppId& app_id,
                                    RunOnOsLoginMode new_user_mode) {
-  DCHECK(provider);
+  DCHECK(registrar);
+  DCHECK(os_integration_manager);
+  DCHECK(sync_bridge);
 
-  if (!provider->registrar().IsInstalled(app_id)) {
+  if (!registrar->IsInstalled(app_id)) {
     return;
   }
 
-  const auto current_mode =
-      provider->registrar().GetAppRunOnOsLoginMode(app_id);
+  const auto current_mode = registrar->GetAppRunOnOsLoginMode(app_id);
 
   // Early return if policy does not allow the user to change value, or if the
   // new value is the same as the old value.
@@ -61,9 +65,13 @@ void PersistRunOnOsLoginUserChoice(WebAppProvider* provider,
     return;
   }
 
-  provider->sync_bridge().SetAppRunOnOsLoginMode(app_id, new_user_mode);
-  UpdateRunOnOsLoginOsIntegration(&provider->registrar(),
-                                  &provider->os_integration_manager(), app_id,
+  {
+    ScopedRegistryUpdate update(sync_bridge);
+    update->UpdateApp(app_id)->SetRunOnOsLoginMode(new_user_mode);
+  }
+  registrar->NotifyWebAppRunOnOsLoginModeChanged(app_id, new_user_mode);
+
+  UpdateRunOnOsLoginOsIntegration(registrar, os_integration_manager, app_id,
                                   new_user_mode);
 }
 

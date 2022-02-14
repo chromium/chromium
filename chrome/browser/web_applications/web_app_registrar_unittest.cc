@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_database_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_registry_controller.h"
@@ -901,11 +902,15 @@ TEST_F(WebAppRegistrarTest, RunOnOsLoginModes) {
   EXPECT_EQ(RunOnOsLoginMode::kNotRun,
             registrar().GetAppRunOnOsLoginMode(app_id).value);
 
-  sync_bridge().SetAppRunOnOsLoginMode(app_id, RunOnOsLoginMode::kWindowed);
+  PersistRunOnOsLoginUserChoice(
+      &registrar(), &controller().os_integration_manager(), &sync_bridge(),
+      app_id, RunOnOsLoginMode::kWindowed);
   EXPECT_EQ(RunOnOsLoginMode::kWindowed,
             registrar().GetAppRunOnOsLoginMode(app_id).value);
 
-  sync_bridge().SetAppRunOnOsLoginMode(app_id, RunOnOsLoginMode::kMinimized);
+  PersistRunOnOsLoginUserChoice(
+      &registrar(), &controller().os_integration_manager(), &sync_bridge(),
+      app_id, RunOnOsLoginMode::kMinimized);
   EXPECT_EQ(RunOnOsLoginMode::kMinimized,
             registrar().GetAppRunOnOsLoginMode(app_id).value);
 }
@@ -927,10 +932,12 @@ TEST_F(WebAppRegistrarTest, RunOnOsLoginModesWithPolicy) {
   RegisterApp(std::move(web_app_windowed));
   RegisterApp(std::move(web_app_allowed));
 
-  sync_bridge().SetAppRunOnOsLoginMode(app_id_default2,
-                                       RunOnOsLoginMode::kWindowed);
-  sync_bridge().SetAppRunOnOsLoginMode(app_id_allowed,
-                                       RunOnOsLoginMode::kWindowed);
+  PersistRunOnOsLoginUserChoice(
+      &registrar(), &controller().os_integration_manager(), &sync_bridge(),
+      app_id_default2, RunOnOsLoginMode::kWindowed);
+  PersistRunOnOsLoginUserChoice(
+      &registrar(), &controller().os_integration_manager(), &sync_bridge(),
+      app_id_allowed, RunOnOsLoginMode::kWindowed);
 
   EXPECT_EQ(RunOnOsLoginMode::kNotRun,
             registrar().GetAppRunOnOsLoginMode(app_id_default).value);

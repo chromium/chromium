@@ -1161,7 +1161,10 @@ void AppLauncherHandler::HandleRunOnOsLogin(const base::ListValue* args) {
     return;
   }
 
-  web_app::PersistRunOnOsLoginUserChoice(web_app_provider_, app_id, mode);
+  web_app::PersistRunOnOsLoginUserChoice(
+      &web_app_provider_->registrar(),
+      &web_app_provider_->os_integration_manager(),
+      &web_app_provider_->sync_bridge(), app_id, mode);
 }
 
 void AppLauncherHandler::OnFaviconForAppInstallFromLink(

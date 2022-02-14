@@ -1129,7 +1129,8 @@ void WebAppPublisherHelper::SetRunOnOsLoginMode(
     const std::string& app_id,
     apps::mojom::RunOnOsLoginMode run_on_os_login_mode) {
   PersistRunOnOsLoginUserChoice(
-      provider_, app_id,
+      &provider_->registrar(), &provider_->os_integration_manager(),
+      &provider_->sync_bridge(), app_id,
       ConvertOsLoginModeToWebAppConstants(run_on_os_login_mode));
 }
 

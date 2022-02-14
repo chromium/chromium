@@ -97,8 +97,6 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
 
   void SetAppManifestUpdateTime(const AppId& app_id, const base::Time& time);
 
-  void SetAppRunOnOsLoginMode(const AppId& app_id, RunOnOsLoginMode mode);
-
   void SetAppWindowControlsOverlayEnabled(const AppId& app_id, bool enabled);
 
   // These methods are used by extensions::AppSorting, which manages the sorting

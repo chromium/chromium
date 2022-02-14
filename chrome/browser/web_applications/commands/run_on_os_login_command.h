@@ -10,14 +10,16 @@
 
 namespace web_app {
 
-class WebAppProvider;
 class WebAppRegistrar;
 class OsIntegrationManager;
+class WebAppSyncBridge;
 
 // Updates the Run On OS state for the given app. If necessary, it also updates
 // the registration with the OS. This will take into account the enterprise
 // policy for the given app.
-void PersistRunOnOsLoginUserChoice(WebAppProvider* provider,
+void PersistRunOnOsLoginUserChoice(WebAppRegistrar* registrar,
+                                   OsIntegrationManager* os_integration_manager,
+                                   WebAppSyncBridge* sync_bridge,
                                    const AppId& app_id,
                                    RunOnOsLoginMode new_user_mode);
 

@@ -125,8 +125,9 @@ TEST_F(RunOnOsLoginCommandUnitTest, PersistRunOnOsLoginUserChoice) {
 
   // If an app is not installed, validate we don't attempt to register with the
   // OS.
-  PersistRunOnOsLoginUserChoice(provider(), "FakeAppId",
-                                RunOnOsLoginMode::kWindowed);
+  PersistRunOnOsLoginUserChoice(
+      &provider()->registrar(), &provider()->os_integration_manager(),
+      &provider()->sync_bridge(), "FakeAppId", RunOnOsLoginMode::kWindowed);
   EXPECT_EQ(0u,
             fake_os_integration_manager().num_register_run_on_os_login_calls());
   EXPECT_EQ(
@@ -134,7 +135,9 @@ TEST_F(RunOnOsLoginCommandUnitTest, PersistRunOnOsLoginUserChoice) {
 
   // RunOnOsLoginMode::kNotRun should be the default, validate we don't attempt
   // to register with the OS.
-  PersistRunOnOsLoginUserChoice(provider(), app_id, RunOnOsLoginMode::kNotRun);
+  PersistRunOnOsLoginUserChoice(
+      &provider()->registrar(), &provider()->os_integration_manager(),
+      &provider()->sync_bridge(), app_id, RunOnOsLoginMode::kNotRun);
   EXPECT_EQ(0u,
             fake_os_integration_manager().num_register_run_on_os_login_calls());
   EXPECT_EQ(
@@ -142,18 +145,22 @@ TEST_F(RunOnOsLoginCommandUnitTest, PersistRunOnOsLoginUserChoice) {
 
   // Validate that toggling to kWindowed invokes the OsIntegrationManager, and
   // that repeated calls do not.
-  PersistRunOnOsLoginUserChoice(provider(), app_id,
-                                RunOnOsLoginMode::kWindowed);
+  PersistRunOnOsLoginUserChoice(
+      &provider()->registrar(), &provider()->os_integration_manager(),
+      &provider()->sync_bridge(), app_id, RunOnOsLoginMode::kWindowed);
   EXPECT_EQ(1u,
             fake_os_integration_manager().num_register_run_on_os_login_calls());
 
-  PersistRunOnOsLoginUserChoice(provider(), app_id,
-                                RunOnOsLoginMode::kWindowed);
+  PersistRunOnOsLoginUserChoice(
+      &provider()->registrar(), &provider()->os_integration_manager(),
+      &provider()->sync_bridge(), app_id, RunOnOsLoginMode::kWindowed);
   EXPECT_EQ(1u,
             fake_os_integration_manager().num_register_run_on_os_login_calls());
 
   // Validate that toggling back to kNotRun invokes the OsIntegrationManager.
-  PersistRunOnOsLoginUserChoice(provider(), app_id, RunOnOsLoginMode::kNotRun);
+  PersistRunOnOsLoginUserChoice(
+      &provider()->registrar(), &provider()->os_integration_manager(),
+      &provider()->sync_bridge(), app_id, RunOnOsLoginMode::kNotRun);
   EXPECT_EQ(1u,
             fake_os_integration_manager().num_register_run_on_os_login_calls());
   EXPECT_EQ(
@@ -180,8 +187,9 @@ TEST_F(RunOnOsLoginCommandUnitTest,
     }
 
     // Validate we don't attempt to register with the OS.
-    PersistRunOnOsLoginUserChoice(provider(), app_id,
-                                  RunOnOsLoginMode::kWindowed);
+    PersistRunOnOsLoginUserChoice(
+        &provider()->registrar(), &provider()->os_integration_manager(),
+        &provider()->sync_bridge(), app_id, RunOnOsLoginMode::kWindowed);
     EXPECT_EQ(
         0u, fake_os_integration_manager().num_register_run_on_os_login_calls());
     EXPECT_EQ(
@@ -189,8 +197,9 @@ TEST_F(RunOnOsLoginCommandUnitTest,
         fake_os_integration_manager().num_unregister_run_on_os_login_calls());
 
     // Validate we do attempt to unregister with the OS.
-    PersistRunOnOsLoginUserChoice(provider(), app_id,
-                                  RunOnOsLoginMode::kNotRun);
+    PersistRunOnOsLoginUserChoice(
+        &provider()->registrar(), &provider()->os_integration_manager(),
+        &provider()->sync_bridge(), app_id, RunOnOsLoginMode::kNotRun);
     EXPECT_EQ(
         0u, fake_os_integration_manager().num_register_run_on_os_login_calls());
     EXPECT_EQ(
@@ -210,8 +219,9 @@ TEST_F(RunOnOsLoginCommandUnitTest,
     }
 
     // Validate we don't attempt to unregister with the OS.
-    PersistRunOnOsLoginUserChoice(provider(), app_id,
-                                  RunOnOsLoginMode::kNotRun);
+    PersistRunOnOsLoginUserChoice(
+        &provider()->registrar(), &provider()->os_integration_manager(),
+        &provider()->sync_bridge(), app_id, RunOnOsLoginMode::kNotRun);
     EXPECT_EQ(
         0u, fake_os_integration_manager().num_register_run_on_os_login_calls());
     EXPECT_EQ(
@@ -219,8 +229,9 @@ TEST_F(RunOnOsLoginCommandUnitTest,
         fake_os_integration_manager().num_unregister_run_on_os_login_calls());
 
     // Validate we do attempt to register with the OS.
-    PersistRunOnOsLoginUserChoice(provider(), app_id,
-                                  RunOnOsLoginMode::kWindowed);
+    PersistRunOnOsLoginUserChoice(
+        &provider()->registrar(), &provider()->os_integration_manager(),
+        &provider()->sync_bridge(), app_id, RunOnOsLoginMode::kWindowed);
     EXPECT_EQ(
         1u, fake_os_integration_manager().num_register_run_on_os_login_calls());
     EXPECT_EQ(
@@ -310,16 +321,18 @@ TEST_F(RunOnOsLoginCommandUnitTest, SyncRunOnOsLoginOsIntegrationState) {
     EXPECT_EQ(RunOnOsLoginMode::kNotRun,
               provider()->registrar().GetAppRunOnOsLoginMode(app_id).value);
 
-    PersistRunOnOsLoginUserChoice(provider(), app_id,
-                                  RunOnOsLoginMode::kWindowed);
+    PersistRunOnOsLoginUserChoice(
+        &provider()->registrar(), &provider()->os_integration_manager(),
+        &provider()->sync_bridge(), app_id, RunOnOsLoginMode::kWindowed);
     EXPECT_EQ(
         2u, fake_os_integration_manager().num_register_run_on_os_login_calls());
     EXPECT_EQ(
         1u,
         fake_os_integration_manager().num_unregister_run_on_os_login_calls());
 
-    PersistRunOnOsLoginUserChoice(provider(), app_id,
-                                  RunOnOsLoginMode::kNotRun);
+    PersistRunOnOsLoginUserChoice(
+        &provider()->registrar(), &provider()->os_integration_manager(),
+        &provider()->sync_bridge(), app_id, RunOnOsLoginMode::kNotRun);
     EXPECT_EQ(
         2u, fake_os_integration_manager().num_register_run_on_os_login_calls());
     EXPECT_EQ(
