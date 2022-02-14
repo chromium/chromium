@@ -719,6 +719,9 @@ AST_MATCHER(clang::FieldDecl, overlapsOtherDeclsWithinRecordDecl) {
       Finder->getASTContext().getSourceManager();
 
   const clang::RecordDecl* record_decl = self.getParent();
+  if (!record_decl)
+    return false;
+
   clang::SourceRange self_range(self.getBeginLoc(), self.getEndLoc());
 
   auto is_overlapping_sibling = [&](const clang::Decl* other_decl) {
@@ -790,8 +793,8 @@ AST_MATCHER_P2(clang::InitListExpr,
 
   bool is_matching = false;
   clang::ast_matchers::internal::BoundNodesTreeBuilder result;
-  const std::vector<const clang::FieldDecl*> field_decls(
-      record_decl->field_begin(), record_decl->field_end());
+  const llvm::SmallVector<const clang::FieldDecl*> field_decls(
+      record_decl->fields());
   for (unsigned i = 0; i < init_list_expr.getNumInits(); i++) {
     const clang::Expr* expr = init_list_expr.getInit(i);
 
