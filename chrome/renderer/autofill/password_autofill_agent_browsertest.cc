@@ -1789,42 +1789,6 @@ TEST_F(PasswordAutofillAgentTest, TouchToFillSuppressesPopups) {
   EXPECT_CALL(fake_driver_, ShowPasswordSuggestions).Times(0);
   base::RunLoop().RunUntilIdle();
 }
-#endif
-
-TEST_F(PasswordAutofillAgentTest, DontTryToShowTouchToFillReadonlyPassword) {
-  SetElementReadOnly(password_element_, true);
-  SimulateOnFillPasswordForm(fill_data_);
-
-  EXPECT_FALSE(
-      password_autofill_agent_->TryToShowTouchToFill(password_element_));
-}
-
-// Credentials are sent to the renderer even for sign-up forms as these may be
-// eligible for filling via manual fall back. In this case, the username_field
-// and password_field are not set. This test verifies that no failures are
-// recorded in PasswordManager.FirstRendererFillingResult.
-TEST_F(PasswordAutofillAgentTest, DontTryToShowTouchToFillSignUpForm) {
-  LoadHTML(kSignupFormHTML);
-
-  WebDocument document = GetMainFrame()->GetDocument();
-  WebElement element =
-      document.GetElementById(WebString::FromUTF8("random_info"));
-  ASSERT_FALSE(element.IsNull());
-  username_element_ = element.To<WebInputElement>();
-
-  fill_data_.username_field.unique_renderer_id = autofill::FieldRendererId();
-  fill_data_.password_field.unique_renderer_id = autofill::FieldRendererId();
-
-  WebFormElement form_element =
-      document.GetElementById("LoginTestForm").To<WebFormElement>();
-  fill_data_.form_renderer_id =
-      FormRendererId(form_element.UniqueRendererFormId());
-
-  SimulateOnFillPasswordForm(fill_data_);
-
-  EXPECT_FALSE(
-      password_autofill_agent_->TryToShowTouchToFill(password_element_));
-}
 
 TEST_F(PasswordAutofillAgentTest, TouchToFillClosed) {
   SimulateOnFillPasswordForm(fill_data_);
@@ -1861,6 +1825,42 @@ TEST_F(PasswordAutofillAgentTest, TouchToFillClosed) {
 
   EXPECT_CALL(fake_driver_, ShowTouchToFill);
   base::RunLoop().RunUntilIdle();
+}
+#endif
+
+TEST_F(PasswordAutofillAgentTest, DontTryToShowTouchToFillReadonlyPassword) {
+  SetElementReadOnly(password_element_, true);
+  SimulateOnFillPasswordForm(fill_data_);
+
+  EXPECT_FALSE(
+      password_autofill_agent_->TryToShowTouchToFill(password_element_));
+}
+
+// Credentials are sent to the renderer even for sign-up forms as these may be
+// eligible for filling via manual fall back. In this case, the username_field
+// and password_field are not set. This test verifies that no failures are
+// recorded in PasswordManager.FirstRendererFillingResult.
+TEST_F(PasswordAutofillAgentTest, DontTryToShowTouchToFillSignUpForm) {
+  LoadHTML(kSignupFormHTML);
+
+  WebDocument document = GetMainFrame()->GetDocument();
+  WebElement element =
+      document.GetElementById(WebString::FromUTF8("random_info"));
+  ASSERT_FALSE(element.IsNull());
+  username_element_ = element.To<WebInputElement>();
+
+  fill_data_.username_field.unique_renderer_id = autofill::FieldRendererId();
+  fill_data_.password_field.unique_renderer_id = autofill::FieldRendererId();
+
+  WebFormElement form_element =
+      document.GetElementById("LoginTestForm").To<WebFormElement>();
+  fill_data_.form_renderer_id =
+      FormRendererId(form_element.UniqueRendererFormId());
+
+  SimulateOnFillPasswordForm(fill_data_);
+
+  EXPECT_FALSE(
+      password_autofill_agent_->TryToShowTouchToFill(password_element_));
 }
 
 // Tests that |FillIntoFocusedField| doesn't fill read-only text fields.

@@ -160,11 +160,6 @@ void ContentPasswordManagerDriver::GeneratedPasswordAccepted(
       generation_element_id, password);
 }
 
-void ContentPasswordManagerDriver::TouchToFillClosed(
-    ShowVirtualKeyboard show_virtual_keyboard) {
-  GetPasswordAutofillAgent()->TouchToFillClosed(show_virtual_keyboard.value());
-}
-
 void ContentPasswordManagerDriver::FillSuggestion(
     const std::u16string& username,
     const std::u16string& password) {
@@ -178,6 +173,11 @@ void ContentPasswordManagerDriver::FillIntoFocusedField(
 }
 
 #if BUILDFLAG(IS_ANDROID)
+void ContentPasswordManagerDriver::TouchToFillClosed(
+    ShowVirtualKeyboard show_virtual_keyboard) {
+  GetPasswordAutofillAgent()->TouchToFillClosed(show_virtual_keyboard.value());
+}
+
 void ContentPasswordManagerDriver::TriggerFormSubmission() {
   GetPasswordAutofillAgent()->TriggerFormSubmission();
 }

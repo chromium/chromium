@@ -136,10 +136,10 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   void FillIntoFocusedField(bool is_password,
                             const std::u16string& credential) override;
   void SetLoggingState(bool active) override;
-  void TouchToFillClosed(bool show_virtual_keyboard) override;
   void AnnotateFieldsWithParsingResult(
       const ParsingResult& parsing_result) override;
 #if BUILDFLAG(IS_ANDROID)
+  void TouchToFillClosed(bool show_virtual_keyboard) override;
   void TriggerFormSubmission() override;
 #endif
 
