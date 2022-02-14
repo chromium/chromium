@@ -2840,24 +2840,6 @@ EVENT_TYPE(AUTH_LIBRARY_INIT_SEC_CTX)
 EVENT_TYPE(AUTH_CHANNEL_BINDINGS)
 
 // ------------------------------------------------------------------------
-// HTML5 Application Cache
-// ------------------------------------------------------------------------
-
-// This event is emitted whenever a request is satisfied directly from
-// the appcache.
-EVENT_TYPE(APPCACHE_DELIVERING_CACHED_RESPONSE)
-
-// This event is emitted whenever the appcache uses a fallback response.
-EVENT_TYPE(APPCACHE_DELIVERING_FALLBACK_RESPONSE)
-
-// This event is emitted whenever the appcache generates an error response.
-EVENT_TYPE(APPCACHE_DELIVERING_ERROR_RESPONSE)
-
-// This event is emitted whenever the appcache executes script to compute
-// a response.
-EVENT_TYPE(APPCACHE_DELIVERING_EXECUTABLE_RESPONSE)
-
-// ------------------------------------------------------------------------
 // Global events
 // ------------------------------------------------------------------------
 // These are events which are not grouped by source id, as they have no
