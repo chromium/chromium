@@ -82,8 +82,8 @@ void ChromeWebViewPermissionHelperDelegate::BlockedUnauthorizedPlugin(
   const char kPluginIdentifier[] = "identifier";
 
   base::DictionaryValue info;
-  info.SetString(std::string(kPluginName), name);
-  info.SetString(std::string(kPluginIdentifier), identifier);
+  info.SetStringKey(kPluginName, name);
+  info.SetStringKey(kPluginIdentifier, identifier);
   web_view_permission_helper()->RequestPermission(
       WEB_VIEW_PERMISSION_TYPE_LOAD_PLUGIN, info,
       base::BindOnce(
@@ -112,7 +112,7 @@ void ChromeWebViewPermissionHelperDelegate::CanDownload(
     const std::string& request_method,
     base::OnceCallback<void(bool)> callback) {
   base::DictionaryValue request_info;
-  request_info.SetString(guest_view::kUrl, url.spec());
+  request_info.SetStringKey(guest_view::kUrl, url.spec());
   web_view_permission_helper()->RequestPermission(
       WEB_VIEW_PERMISSION_TYPE_DOWNLOAD, request_info,
       base::BindOnce(
@@ -133,14 +133,14 @@ void ChromeWebViewPermissionHelperDelegate::RequestPointerLockPermission(
     bool last_unlocked_by_target,
     base::OnceCallback<void(bool)> callback) {
   base::DictionaryValue request_info;
-  request_info.SetBoolean(guest_view::kUserGesture, user_gesture);
-  request_info.SetBoolean(webview::kLastUnlockedBySelf,
+  request_info.SetBoolKey(guest_view::kUserGesture, user_gesture);
+  request_info.SetBoolKey(webview::kLastUnlockedBySelf,
                           last_unlocked_by_target);
-  request_info.SetString(guest_view::kUrl, web_view_permission_helper()
-                                               ->web_view_guest()
-                                               ->web_contents()
-                                               ->GetLastCommittedURL()
-                                               .spec());
+  request_info.SetStringKey(guest_view::kUrl, web_view_permission_helper()
+                                                  ->web_view_guest()
+                                                  ->web_contents()
+                                                  ->GetLastCommittedURL()
+                                                  .spec());
 
   web_view_permission_helper()->RequestPermission(
       WEB_VIEW_PERMISSION_TYPE_POINTER_LOCK, request_info,
@@ -162,8 +162,8 @@ void ChromeWebViewPermissionHelperDelegate::RequestGeolocationPermission(
     bool user_gesture,
     base::OnceCallback<void(bool)> callback) {
   base::DictionaryValue request_info;
-  request_info.SetString(guest_view::kUrl, requesting_frame.spec());
-  request_info.SetBoolean(guest_view::kUserGesture, user_gesture);
+  request_info.SetStringKey(guest_view::kUrl, requesting_frame.spec());
+  request_info.SetBoolKey(guest_view::kUserGesture, user_gesture);
 
   // It is safe to hold an unretained pointer to
   // ChromeWebViewPermissionHelperDelegate because this callback is called from
@@ -204,7 +204,7 @@ void ChromeWebViewPermissionHelperDelegate::RequestFileSystemPermission(
     bool allowed_by_default,
     base::OnceCallback<void(bool)> callback) {
   base::DictionaryValue request_info;
-  request_info.SetString(guest_view::kUrl, url.spec());
+  request_info.SetStringKey(guest_view::kUrl, url.spec());
   web_view_permission_helper()->RequestPermission(
       WEB_VIEW_PERMISSION_TYPE_FILESYSTEM, request_info,
       base::BindOnce(&ChromeWebViewPermissionHelperDelegate::
