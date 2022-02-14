@@ -38,9 +38,8 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromStringWKResult) {
   std::unique_ptr<base::Value> value(web::ValueResultFromWKResult(@"test"));
   EXPECT_TRUE(value);
   EXPECT_EQ(base::Value::Type::STRING, value->type());
-  std::string converted_result;
-  value->GetAsString(&converted_result);
-  EXPECT_EQ("test", converted_result);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ("test", value->GetString());
 }
 
 // Tests that ValueResultFromWKResult converts inetger to Value::Type::DOUBLE.
