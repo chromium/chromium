@@ -290,6 +290,13 @@ bool AshColorProvider::IsDarkModeEnabled() const {
   return active_user_pref_service_->GetBoolean(prefs::kDarkModeEnabled);
 }
 
+void AshColorProvider::SetDarkModeEnabledForTest(bool enabled) {
+  DCHECK(features::IsDarkLightModeEnabled());
+  if (IsDarkModeEnabled() != enabled) {
+    ToggleColorMode();
+  }
+}
+
 bool AshColorProvider::IsThemed() const {
   if (!active_user_pref_service_)
     return kDefaultColorModeThemed;

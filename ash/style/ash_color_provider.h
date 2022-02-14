@@ -66,6 +66,7 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
   void RemoveObserver(ColorModeObserver* observer) override;
   // TODO(minch): Rename to ShouldUseDarkColors.
   bool IsDarkModeEnabled() const override;
+  void SetDarkModeEnabledForTest(bool enabled) override;
 
   // Gets the color of |type| of the corresponding layer based on the current
   // inverted color mode. For views that need LIGHT colors while DARK mode is

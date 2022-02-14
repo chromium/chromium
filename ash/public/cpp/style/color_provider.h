@@ -170,6 +170,10 @@ class ASH_PUBLIC_EXPORT ColorProvider {
   // details.
   virtual bool IsDarkModeEnabled() const = 0;
 
+  // Enable or disable dark mode for testing. Only works when the DarkLightMode
+  // feature is enabled.
+  virtual void SetDarkModeEnabledForTest(bool enabled) = 0;
+
  protected:
   ColorProvider();
   virtual ~ColorProvider();
