@@ -539,7 +539,14 @@ class SharedImageVideoImageReader::SharedImageRepresentationOverlayVideo
   }
 
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override {
-    base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
+    // Note that we dont need to hold onto DrDc lock here. If we add DrDc lock
+    // here then there could be a situation where
+    // FrameInfoHelper::GetFrameInfo() can hold DrDc lock from gpu main thread
+    // while waiting for the buffer to be available and EndReadAccess could
+    // wait on the same lock here from drdc thread, resulting in buffer not
+    // being released and hence deadlock.
+    // crbug.com/1262990 for more details.
+
     DCHECK(release_fence.is_null());
     if (gl_image_) {
       if (scoped_hardware_buffer_) {

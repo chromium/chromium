@@ -4,6 +4,7 @@
 
 #include "media/gpu/android/frame_info_helper.h"
 
+#include "base/debug/crash_logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "gpu/command_buffer/service/shared_image_video.h"
@@ -76,7 +77,8 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
         std::unique_ptr<CodecOutputBufferRenderer> buffer_renderer,
         base::OnceCallback<void(std::unique_ptr<CodecOutputBufferRenderer>,
                                 absl::optional<FrameInfo>)> cb,
-        std::unique_ptr<base::AutoLockMaybe> scoped_drdc_lock) {
+        std::unique_ptr<base::AutoLockMaybe> scoped_drdc_lock,
+        std::unique_ptr<base::debug::ScopedCrashKeyString> scoped_crash_key) {
       DCHECK(buffer_renderer);
 
       auto texture_owner = buffer_renderer->texture_owner();
@@ -98,6 +100,7 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
       }
       // Release the lock here since we already got the frame info.
       scoped_drdc_lock.reset();
+      scoped_crash_key.reset();
       std::move(cb).Run(std::move(buffer_renderer), info);
     }
 
@@ -112,15 +115,26 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
       // GetFrameInfoImpl() ends.
       auto scoped_drdc_lock = std::make_unique<base::AutoLockMaybe>(
           drdc_lock ? drdc_lock->GetDrDcLockPtr() : nullptr);
+
+      // Adding a ScopedCrashKeyString here which will be released when
+      // scoped_drdc_lock is released. Since this is the only place we hold onto
+      // the drdc_lock for longer time than the current call duration,
+      // ScopedCrashKeyString will help to identify if there are any
+      // issues/deadlocks due to this somewhere and if this lock was still held.
+      static auto* kCrashKey = base::debug::AllocateCrashKeyString(
+          "GetFrameInfo_holding_drdc_lock", base::debug::CrashKeySize::Size32);
+      auto scoped_crash_key =
+          std::make_unique<base::debug::ScopedCrashKeyString>(kCrashKey, "1");
+
       DCHECK(buffer_renderer);
 
       auto texture_owner = buffer_renderer->texture_owner();
       DCHECK(texture_owner);
 
-      auto buffer_available_cb =
-          base::BindOnce(&OnGpu::GetFrameInfoImpl, weak_factory_.GetWeakPtr(),
-                         std::move(buffer_renderer), std::move(cb),
-                         std::move(scoped_drdc_lock));
+      auto buffer_available_cb = base::BindOnce(
+          &OnGpu::GetFrameInfoImpl, weak_factory_.GetWeakPtr(),
+          std::move(buffer_renderer), std::move(cb),
+          std::move(scoped_drdc_lock), std::move(scoped_crash_key));
       texture_owner->RunWhenBufferIsAvailable(std::move(buffer_available_cb));
     }
 
