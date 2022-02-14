@@ -339,7 +339,7 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
              kDefaultLaunchContainerTabValue);
 
   if (!install_gurl.is_valid()) {
-    LOG(WARNING) << "Policy-installed web app has invalid URL " << install_url;
+    LOG(WARNING) << "Policy-installed web app has invalid URL " << *install_url;
   }
 
   DisplayMode user_display_mode;
