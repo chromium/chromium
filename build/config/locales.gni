@@ -252,6 +252,3 @@ if (is_ios) {
   ios_packed_locales_as_mac_outputs =
       locales_as_mac_outputs - ios_unsupported_locales
 }
-
-# Remove once downstream builds use |platform_pak_locales| (https://crbug.com/1293908)
-locales = platform_pak_locales
