@@ -3024,7 +3024,7 @@
           'mac_11_x64',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_12e262',
+          'xcode_13_main',
           'xctest',
         ],
         'test_suites': {
@@ -3042,7 +3042,7 @@
           'mac_11_arm64',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_12e262',
+          'xcode_13_main',
           'xctest',
         ],
         'test_suites': {

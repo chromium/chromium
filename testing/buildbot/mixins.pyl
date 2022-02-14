@@ -1242,23 +1242,6 @@
 
     },
   },
-  # Xcode 12.5 RC
-  'xcode_12e262': {
-    '$mixin_append': {
-      'args': [
-        '--xcode-build-version',
-        '12e262'
-      ],
-      'swarming': {
-        'named_caches': [
-          {
-            'name': 'xcode_ios_12e262',
-            'path': 'Xcode.app',
-          },
-        ],
-      },
-    },
-  },
   # Xcode 13 used on beta bots.
   'xcode_13_beta_bots': {
     '$mixin_append': {
@@ -1276,18 +1259,18 @@
       ],
     },
   },
-  # Default Xcode 13 on main (Xcode 13.0 release candidate).
+  # Default Xcode 13 on main.
   'xcode_13_main': {
     '$mixin_append': {
       'args': [
         '--xcode-build-version',
-        '13a233'
+        '13c100'
       ],
     },
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_13a233',
+          'name': 'xcode_ios_13c100',
           'path': 'Xcode.app',
         },
       ],

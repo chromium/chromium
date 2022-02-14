@@ -710,7 +710,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a233",
+          "13c100",
           "--xctest"
         ],
         "isolate_name": "ios_remoting_unittests",
@@ -740,7 +740,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a233",
+              "name": "xcode_ios_13c100",
               "path": "Xcode.app"
             },
             {
@@ -761,7 +761,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "13a233",
+          "13c100",
           "--xctest"
         ],
         "isolate_name": "ios_remoting_unittests",
@@ -791,7 +791,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_13a233",
+              "name": "xcode_ios_13c100",
               "path": "Xcode.app"
             },
             {
