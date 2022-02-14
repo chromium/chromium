@@ -28,7 +28,9 @@ bool XboxHidController::IsXboxHid(GamepadId gamepad_id) {
   return gamepad_id == GamepadId::kMicrosoftProduct02e0 ||
          gamepad_id == GamepadId::kMicrosoftProduct02fd ||
          gamepad_id == GamepadId::kMicrosoftProduct0b05 ||
-         gamepad_id == GamepadId::kMicrosoftProduct0b13;
+         gamepad_id == GamepadId::kMicrosoftProduct0b13 ||
+         gamepad_id == GamepadId::kMicrosoftProduct0b20 ||
+         gamepad_id == GamepadId::kMicrosoftProduct0b22;
 }
 
 void XboxHidController::DoShutdown() {

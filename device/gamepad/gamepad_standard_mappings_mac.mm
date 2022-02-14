@@ -101,7 +101,7 @@ void MapperXboxOneS2016Firmware(const Gamepad& input, Gamepad* mapped) {
   mapped->axes_length = AXIS_INDEX_COUNT;
 }
 
-void MapperXboxSeriesX(const Gamepad& input, Gamepad* mapped) {
+void MapperXboxBluetooth(const Gamepad& input, Gamepad* mapped) {
   *mapped = input;
   mapped->buttons[BUTTON_INDEX_PRIMARY] = input.buttons[0];
   mapped->buttons[BUTTON_INDEX_SECONDARY] = input.buttons[1];
@@ -116,11 +116,19 @@ void MapperXboxSeriesX(const Gamepad& input, Gamepad* mapped) {
   mapped->buttons[BUTTON_INDEX_LEFT_THUMBSTICK] = input.buttons[13];
   mapped->buttons[BUTTON_INDEX_RIGHT_THUMBSTICK] = input.buttons[14];
   mapped->buttons[BUTTON_INDEX_META] = input.buttons[12];
-  mapped->buttons[XBOX_SERIES_X_BUTTON_SHARE] = input.buttons[15];
   mapped->axes[AXIS_INDEX_RIGHT_STICK_X] = input.axes[2];
   mapped->axes[AXIS_INDEX_RIGHT_STICK_Y] = input.axes[5];
   DpadFromAxis(mapped, input.axes[9]);
 
+  mapped->buttons_length = BUTTON_INDEX_COUNT;
+  mapped->axes_length = AXIS_INDEX_COUNT;
+}
+
+void MapperXboxSeriesXBluetooth(const Gamepad& input, Gamepad* mapped) {
+  MapperXboxBluetooth(input, mapped);
+  // Xbox Wireless Controller Model 1914 has an extra Share button not present
+  // on other Xbox controllers. Map Share to the next button index after Meta.
+  mapped->buttons[XBOX_SERIES_X_BUTTON_SHARE] = input.buttons[15];
   mapped->buttons_length = XBOX_SERIES_X_BUTTON_COUNT;
   mapped->axes_length = AXIS_INDEX_COUNT;
 }
@@ -739,8 +747,6 @@ constexpr struct MappingData {
     {GamepadId::kMicrosoftProduct02ea, MapperXbox360Gamepad},
     // Xbox One S (Bluetooth)
     {GamepadId::kMicrosoftProduct02fd, MapperXboxOneS2016Firmware},
-    // Xbox Series X (Bluetooth)
-    {GamepadId::kMicrosoftProduct0b13, MapperXboxSeriesX},
     // Xbox 360 Wireless
     {GamepadId::kMicrosoftProduct0719, MapperXbox360Gamepad},
     // Xbox One Elite 2 (USB)
@@ -751,6 +757,14 @@ constexpr struct MappingData {
     {GamepadId::kMicrosoftProduct0b0a, MapperXbox360Gamepad},
     // Xbox Adaptive Controller (Bluetooth)
     {GamepadId::kMicrosoftProduct0b0c, MapperXboxOneBluetooth},
+    // Xbox Series X (Bluetooth)
+    {GamepadId::kMicrosoftProduct0b13, MapperXboxSeriesXBluetooth},
+    // Xbox One S (Bluetooth)
+    {GamepadId::kMicrosoftProduct0b20, MapperXboxBluetooth},
+    // Xbox Adaptive (Bluetooth)
+    {GamepadId::kMicrosoftProduct0b21, MapperXboxBluetooth},
+    // Xbox Elite Series 2 (Bluetooth)
+    {GamepadId::kMicrosoftProduct0b22, MapperXboxBluetooth},
     // Logitech F310, D mode
     {GamepadId::kLogitechProductc216, MapperDirectInputStyle},
     // Logitech F510, D mode

@@ -60,7 +60,7 @@ void MapperXInputStyleGamepad(const Gamepad& input, Gamepad* mapped) {
   mapped->axes_length = AXIS_INDEX_COUNT;
 }
 
-void MapperXboxSeriesXBluetooth(const Gamepad& input, Gamepad* mapped) {
+void MapperXboxBluetooth(const Gamepad& input, Gamepad* mapped) {
   *mapped = input;
   mapped->buttons[BUTTON_INDEX_TERTIARY] = input.buttons[3];
   mapped->buttons[BUTTON_INDEX_QUATERNARY] = input.buttons[4];
@@ -78,9 +78,16 @@ void MapperXboxSeriesXBluetooth(const Gamepad& input, Gamepad* mapped) {
   mapped->buttons[BUTTON_INDEX_DPAD_RIGHT] =
       AxisPositiveAsButton(input.axes[6]);
   mapped->buttons[BUTTON_INDEX_META] = input.buttons[12];
+  mapped->buttons_length = BUTTON_INDEX_COUNT;
+  mapped->axes_length = AXIS_INDEX_COUNT;
+}
+
+void MapperXboxSeriesXBluetooth(const Gamepad& input, Gamepad* mapped) {
+  MapperXboxBluetooth(input, mapped);
+  // Xbox Wireless Controller Model 1914 has an extra Share button not present
+  // on other Xbox controllers. Map Share to the next button index after Meta.
   mapped->buttons[kSeriesXGamepadButtonShare] = input.buttons[15];
   mapped->buttons_length = kSeriesXGamepadButtonCount;
-  mapped->axes_length = AXIS_INDEX_COUNT;
 }
 
 void MapperXboxOneS(const Gamepad& input, Gamepad* mapped) {
@@ -899,6 +906,12 @@ constexpr struct MappingData {
     {GamepadId::kMicrosoftProduct0b05, MapperXboxElite2Bluetooth},
     // Xbox Series X (Bluetooth)
     {GamepadId::kMicrosoftProduct0b13, MapperXboxSeriesXBluetooth},
+    // Xbox One S (Bluetooth)
+    {GamepadId::kMicrosoftProduct0b20, MapperXboxBluetooth},
+    // Xbox Adaptive (Bluetooth)
+    {GamepadId::kMicrosoftProduct0b21, MapperXboxBluetooth},
+    // Xbox Elite Series 2 (Bluetooth)
+    {GamepadId::kMicrosoftProduct0b22, MapperXboxBluetooth},
     // Logitech F310 D-mode
     {GamepadId::kLogitechProductc216, MapperLogitechDInput},
     // Logitech F510 D-mode

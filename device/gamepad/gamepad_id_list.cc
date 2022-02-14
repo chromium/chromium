@@ -94,6 +94,9 @@ constexpr struct GamepadInfo {
     {0x045e, 0x0b0c, kXInputTypeNone},
     {0x045e, 0x0b12, kXInputTypeXboxOne},
     {0x045e, 0x0b13, kXInputTypeNone},
+    {0x045e, 0x0b20, kXInputTypeNone},
+    {0x045e, 0x0b21, kXInputTypeNone},
+    {0x045e, 0x0b22, kXInputTypeNone},
     // Logitech, Inc.
     {0x046d, 0xc208, kXInputTypeNone},
     {0x046d, 0xc209, kXInputTypeNone},
