@@ -705,7 +705,7 @@ void GooglePhotosPhotosFetcher::AddRequestAndStartIfNecessary(
                                             "item_id", item_id.value());
   } else if (album_id.has_value()) {
     service_url = net::AppendQueryParameter(GURL(kGooglePhotosAlbumUrl),
-                                            "album_id", album_id.value());
+                                            "collection_id", album_id.value());
   } else {
     service_url = GURL(kGooglePhotosPhotosUrl);
   }
