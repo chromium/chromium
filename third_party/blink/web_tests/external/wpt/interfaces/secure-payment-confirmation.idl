@@ -42,6 +42,7 @@ dictionary CollectedClientAdditionalPaymentData {
 dictionary PaymentCredentialInstrument {
     required DOMString displayName;
     required USVString icon;
+    boolean iconMustBeShown = true;
 };
 
 enum TransactionAutomationMode {

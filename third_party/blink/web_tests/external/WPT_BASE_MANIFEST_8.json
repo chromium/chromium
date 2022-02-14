@@ -303815,7 +303815,7 @@
      []
     ],
     "dom.idl": [
-     "af75088c46ff63b4b2491646290caa7ee408852e",
+     "f1b58fe150c28ba339b738c33a1a73a8b8d4e084",
      []
     ],
     "edit-context.idl": [
@@ -304183,7 +304183,7 @@
      []
     ],
     "scheduling-apis.idl": [
-     "8722ebab1571c4d7abe4b0a2762bc8d3fb2d3b0f",
+     "9ed49cfb689eb353156dac0e38025f4ab17186ca",
      []
     ],
     "screen-capture.idl": [
@@ -304207,7 +304207,7 @@
      []
     ],
     "secure-payment-confirmation.idl": [
-     "1522bff76eac485d8046cbad2634fdfd9fda5e06",
+     "8d16ed7244432ac0e0865a2ef11a0079e7eb015d",
      []
     ],
     "selection-api.idl": [
@@ -304363,7 +304363,7 @@
      []
     ],
     "webcodecs.idl": [
-     "506ee096e1ba7988b25a0c980d0c81a93507e3a1",
+     "64829752f2c46cc631a096c25272a49b31edaedf",
      []
     ],
     "webdriver.idl": [
@@ -304379,7 +304379,7 @@
      []
     ],
     "webgpu.idl": [
-     "0a6ba7f55acc7962de460a0400f436072c0d36e3",
+     "905aa3de5ba895f8c6cde4b988f1163e1eeaae12",
      []
     ],
     "webhid.idl": [
