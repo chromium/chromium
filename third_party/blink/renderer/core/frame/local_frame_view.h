@@ -79,6 +79,7 @@ class AXObjectCache;
 class ChromeClient;
 class CompositorAnimationTimeline;
 class DeferredShapingDisallowScope;
+class DeferredShapingViewportScope;
 class DarkModeFilter;
 class DocumentLifecycle;
 class FragmentAnchor;
@@ -472,6 +473,13 @@ class CORE_EXPORT LocalFrameView final
   // returns false.
   bool IsSubtreeLayout() const { return !layout_subtree_root_list_.IsEmpty(); }
 
+  // The bottom position of the nearest scrollable ancestor.
+  // This returns kIndefiniteSize if the viewport bottom is not registered.
+  LayoutUnit CurrentViewportBottom() const { return current_viewport_bottom_; }
+  void SetCurrentViewportBottom(base::PassKey<DeferredShapingViewportScope>,
+                                LayoutUnit value) {
+    current_viewport_bottom_ = value;
+  }
   // A flag indicating whether the current layout container supports
   // deferred shaping.
   bool AllowDeferredShaping() const { return allow_deferred_shaping_; }
@@ -1014,6 +1022,7 @@ class CORE_EXPORT LocalFrameView final
 
   Member<LocalFrame> frame_;
 
+  LayoutUnit current_viewport_bottom_ = kIndefiniteSize;
   bool allow_deferred_shaping_ = false;
 
   bool can_have_scrollbars_;

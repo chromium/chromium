@@ -523,6 +523,9 @@ void NGInlineNode::ShapeTextOrDefer(const NGConstraintSpace& space) const {
 
   const auto& view = *GetLayoutBox()->GetFrameView();
   if (view.AllowDeferredShaping()) {
+    const LayoutUnit viewport_bottom = view.CurrentViewportBottom();
+    DCHECK_NE(viewport_bottom, kIndefiniteSize) << GetLayoutBox();
+
     // TODO(crbug.com/1259085): Check if this IFC is deferrable.
   }
   ShapeTextIncludingFirstLine(MutableData(), nullptr, nullptr);
