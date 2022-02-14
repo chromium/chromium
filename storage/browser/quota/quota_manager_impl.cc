@@ -856,32 +856,30 @@ class QuotaManagerImpl::BucketDataDeleter {
 
 // Retrieves all buckets for `host` from QuotaDatabase and calls
 // BucketDataDeleter for all registered QuotaClientTypes.
-// `callback` will run to return the status of the deletion on task completion,
-// followed by `completion_closure` which will be called to destroy itself by
-// its owner. Neither will callbacks will outlive the deleter.
 class QuotaManagerImpl::HostDataDeleter {
  public:
-  HostDataDeleter(QuotaManagerImpl* manager,
-                  const std::string& host,
-                  StorageType type,
-                  StatusCallback callback,
-                  base::OnceCallback<void(HostDataDeleter*)> completion_closure)
+  // `callback` will be run to report the status of the deletion on task
+  // completion. `callback` will only be called while this HostDataDeleter
+  // instance is alive. `callback` may destroy this HostDataDeleter instance.
+  HostDataDeleter(
+      QuotaManagerImpl* manager,
+      const std::string& host,
+      StorageType type,
+      base::OnceCallback<void(HostDataDeleter*, blink::mojom::QuotaStatusCode)>
+          callback)
       : manager_(manager),
         host_(host),
         type_(type),
-        callback_(std::move(callback)),
-        completion_closure_(std::move(completion_closure)) {
+        callback_(std::move(callback)) {
     DCHECK(manager_);
     DCHECK(callback_);
-    DCHECK(completion_closure_);
   }
 
   ~HostDataDeleter() {
-    if (callback_)
-      std::move(callback_).Run(blink::mojom::QuotaStatusCode::kErrorAbort);
-
-    if (completion_closure_)
-      std::move(completion_closure_).Run(this);
+    if (callback_) {
+      std::move(callback_).Run(this,
+                               blink::mojom::QuotaStatusCode::kErrorAbort);
+    }
   }
 
   void Run() {
@@ -896,7 +894,10 @@ class QuotaManagerImpl::HostDataDeleter {
                        weak_factory_.GetWeakPtr()));
   }
 
-  bool completed() { return !callback_; }
+  bool completed() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return !callback_;
+  }
 
  private:
   void DidGetBucketsForHost(QuotaErrorOr<std::set<BucketLocator>> result) {
@@ -949,14 +950,12 @@ class QuotaManagerImpl::HostDataDeleter {
   void Complete(bool success) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(callback_);
-    DCHECK(completion_closure_);
 
+    // May delete `this`.
     std::move(callback_).Run(
-        success ? blink::mojom::QuotaStatusCode::kOk
-                : blink::mojom::QuotaStatusCode::kErrorInvalidModification);
-
-    // Deletes `this`.
-    std::move(completion_closure_).Run(this);
+        this, success
+                  ? blink::mojom::QuotaStatusCode::kOk
+                  : blink::mojom::QuotaStatusCode::kErrorInvalidModification);
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -965,10 +964,10 @@ class QuotaManagerImpl::HostDataDeleter {
   const StorageType type_;
   std::map<BucketDataDeleter*, std::unique_ptr<BucketDataDeleter>>
       bucket_deleters_;
-  std::set<BucketLocator> buckets_;
+  std::set<BucketLocator> buckets_ GUARDED_BY_CONTEXT(sequence_checker_);
   int error_count_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
-  StatusCallback callback_;
-  base::OnceCallback<void(HostDataDeleter*)> completion_closure_;
+  base::OnceCallback<void(HostDataDeleter*, blink::mojom::QuotaStatusCode)>
+      callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 
 #if DCHECK_IS_ON()
   bool run_called_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
@@ -1455,17 +1454,30 @@ void QuotaManagerImpl::DeleteHostData(const std::string& host,
     return;
   }
   auto host_deleter = std::make_unique<HostDataDeleter>(
-      this, host, type, std::move(callback),
+      this, host, type,
       base::BindOnce(&QuotaManagerImpl::DidDeleteHostData,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
   auto* host_deleter_ptr = host_deleter.get();
   host_data_deleters_[host_deleter_ptr] = std::move(host_deleter);
   host_deleter_ptr->Run();
 }
 
-void QuotaManagerImpl::DidDeleteHostData(HostDataDeleter* deleter) {
+// static
+void QuotaManagerImpl::DidDeleteHostData(
+    base::WeakPtr<QuotaManagerImpl> quota_manager,
+    StatusCallback delete_host_data_callback,
+    HostDataDeleter* deleter,
+    blink::mojom::QuotaStatusCode status_code) {
+  DCHECK(deleter);
   DCHECK(deleter->completed());
-  host_data_deleters_.erase(deleter);
+
+  if (quota_manager)
+    quota_manager->host_data_deleters_.erase(deleter);
+
+  // TODO(crbug.com/1296951): Unconditionally call the callback after the
+  //                          QuotaManager API is tightened.
+  if (delete_host_data_callback)
+    std::move(delete_host_data_callback).Run(status_code);
 }
 
 void QuotaManagerImpl::BindInternalsHandler(

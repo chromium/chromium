@@ -3042,4 +3042,34 @@ TEST_F(QuotaManagerImplTest, DeleteBucketData_CallbackDeletesQuotaManager) {
   EXPECT_EQ(QuotaStatusCode::kOk, delete_bucket_data_result);
 }
 
+TEST_F(QuotaManagerImplTest, DeleteHostData_CallbackDeletesQuotaManager) {
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 1},
+  };
+  MockQuotaClient* client =
+      CreateAndRegisterClient(QuotaClientType::kIndexedDatabase, {kTemp});
+  RegisterClientBucketData(client, kData);
+
+  QuotaErrorOr<BucketInfo> bucket =
+      GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
+  ASSERT_TRUE(bucket.ok());
+
+  auto status = DeleteBucketData(bucket->ToBucketLocator(),
+                                 {QuotaClientType::kFileSystem});
+  EXPECT_EQ(status, QuotaStatusCode::kOk);
+
+  base::RunLoop run_loop;
+  QuotaStatusCode delete_host_data_result = QuotaStatusCode::kUnknown;
+  quota_manager_impl_->DeleteHostData(
+      "foo.com", kTemp,
+      base::BindLambdaForTesting([&](QuotaStatusCode status_code) {
+        quota_manager_impl_.reset();
+        delete_host_data_result = status_code;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  EXPECT_EQ(QuotaStatusCode::kOk, delete_host_data_result);
+}
+
 }  // namespace storage
