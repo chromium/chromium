@@ -6,7 +6,9 @@
 
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "ui/events/event.h"
 
 namespace ash {
@@ -23,6 +25,7 @@ constexpr char kCalendarMonthDownArrowButtonActivated[] =
     "Ash.Calendar.MonthDownArrowButton.Activated";
 constexpr char kCalendarMonthUpArrowButtonActivated[] =
     "Ash.Calendar.MonthUpArrowButton.Activated";
+constexpr char kCalendarMonthDwellTime[] = "Ash.Calendar.MonthDwellTime";
 
 }  // namespace
 
@@ -76,6 +79,10 @@ void RecordMonthArrowButtonActivated(bool up, const ui::Event& event) {
 void RecordEventListItemActivated(const ui::Event& event) {
   base::UmaHistogramEnumeration(kCalendarEventListItemActivated,
                                 GetEventType(event));
+}
+
+void RecordMonthDwellTime(const base::TimeDelta& dwell_time) {
+  UMA_HISTOGRAM_TIMES(kCalendarMonthDwellTime, dwell_time);
 }
 
 }  // namespace calendar_metrics

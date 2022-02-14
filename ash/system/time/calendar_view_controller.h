@@ -155,13 +155,20 @@ class ASH_EXPORT CalendarViewController {
   // For unit tests.
   friend class CalendarMonthViewTest;
   friend class CalendarViewEventListViewTest;
+  friend class CalendarViewTest;
 
   // Find the event list of the given day.
   SingleDayEventList FindEvents(base::Time day) const;
 
+  // Records the time a user spends in a calendar month.
+  void RecordMonthDwellTimeMetric();
+
   // The current date, which can be today or the first day of the current month
   // if current month is not today's month.
   base::Time current_date_;
+
+  // The time the user spends in a month before navigating to another one.
+  base::TimeTicks month_dwell_time_;
 
   // The today's date cell row number (which is index +1) in its
   // `CalendarMonthView`.
