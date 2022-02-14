@@ -100,6 +100,12 @@ public class TabUiFeatureUtilities {
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
                     TAB_GROUP_SHARING_PARAM, false);
 
+    // Field trial parameter for enabling launch polish for the grid tab switcher for tablets.
+    private static final String GRID_TAB_SWITCHER_FOR_TABLETS_POLISH_PARAM = "enable_launch_polish";
+    public static final BooleanCachedFieldTrialParameter GRID_TAB_SWITCHER_FOR_TABLETS_POLISH =
+            new BooleanCachedFieldTrialParameter(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS,
+                    GRID_TAB_SWITCHER_FOR_TABLETS_POLISH_PARAM, false);
+
     private static Boolean sTabManagementModuleSupportedForTesting;
 
     /**

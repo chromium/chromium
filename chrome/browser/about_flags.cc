@@ -2730,6 +2730,16 @@ const FeatureEntry::FeatureVariation kUseMultipleOverlaysVariations[] = {
     {"5", &kMaxOverlays5, 1, nullptr}, {"6", &kMaxOverlays6, 1, nullptr}};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kGridTabSwitcherForTabletsPolished[] = {
+    {"enable_launch_polish", "true"}};
+
+const FeatureEntry::FeatureVariation kGridTabSwitcherForTabletsVariations[] = {
+    {"(Polished)", kGridTabSwitcherForTabletsPolished,
+     base::size(kGridTabSwitcherForTabletsPolished), nullptr},
+};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -7757,7 +7767,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"grid-tab-switcher-for-tablets",
      flag_descriptions::kGridTabSwitcherForTabletsName,
      flag_descriptions::kGridTabSwitcherForTabletsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kGridTabSwitcherForTablets)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kGridTabSwitcherForTablets,
+                                    kGridTabSwitcherForTabletsVariations,
+                                    "GridTabSwitcherForTablets")},
 
     {"enable-tab-groups-for-tablets",
      flag_descriptions::kTabGroupsForTabletsName,
