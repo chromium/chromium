@@ -146,6 +146,11 @@ DocumentPictureInPictureWindowControllerImpl::GetWebContentsImpl() {
   return static_cast<WebContentsImpl*>(web_contents());
 }
 
+DocumentOverlayWindow*
+DocumentPictureInPictureWindowControllerImpl::GetWindowForTesting() {
+  return static_cast<DocumentOverlayWindow*>(window_.get());
+}
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(DocumentPictureInPictureWindowControllerImpl);
 
 }  // namespace content

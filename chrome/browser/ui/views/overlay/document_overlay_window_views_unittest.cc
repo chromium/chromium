@@ -71,6 +71,9 @@ class TestDocumentPictureInPictureWindowController
   content::WebContents* GetChildWebContents() override {
     return child_web_contents_.get();
   }
+  content::DocumentOverlayWindow* GetWindowForTesting() override {
+    return nullptr;
+  }
 
   void set_web_contents(content::WebContents* web_contents) {
     web_contents_ = web_contents;

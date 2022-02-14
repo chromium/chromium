@@ -54,6 +54,13 @@ void PictureInPictureWindowManager::EnterPictureInPictureWithController(
 void PictureInPictureWindowManager::EnterDocumentPictureInPicture(
     content::WebContents* parent_web_contents,
     std::unique_ptr<content::WebContents> child_web_contents) {
+  // If there was already a controller, close the existing window before
+  // creating the next one. This needs to happen before creating the new
+  // controller so that its precondition (no child_web_contents_) remains
+  // valid.
+  if (pip_window_controller_)
+    CloseWindowInternal();
+
   auto* controller = content::PictureInPictureWindowController::
       GetOrCreateDocumentPictureInPictureController(parent_web_contents);
 

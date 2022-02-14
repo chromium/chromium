@@ -17,6 +17,7 @@
 
 namespace content {
 
+class DocumentOverlayWindow;
 class OverlayWindow;
 class WebContents;
 class WebContentsImpl;
@@ -52,9 +53,12 @@ class CONTENT_EXPORT DocumentPictureInPictureWindowControllerImpl
   void CloseAndFocusInitiator() override;
   void OnWindowDestroyed(bool should_pause_video) override;
   WebContents* GetWebContents() override;
+
+  // DocumentPictureInPictureWindowController:
   void SetChildWebContents(
       std::unique_ptr<WebContents> child_contents) override;
   WebContents* GetChildWebContents() override;
+  DocumentOverlayWindow* GetWindowForTesting() override;
 
   // WebContentsObserver:
   void WebContentsDestroyed() override;
