@@ -15,6 +15,16 @@ extern NSString* const kDataFromChromeSyncAccessibilityIdentifier;
 // Accessibility identifier for Manage Sync table view.
 extern NSString* const kManageSyncTableViewAccessibilityIdentifier;
 
+// Accessibility identifiers for sync switch items.
+extern NSString* const kSyncEverythingItemAccessibilityIdentifier;
+extern NSString* const kSyncBookmarksIdentifier;
+extern NSString* const kSyncOmniboxHistoryIdentifier;
+extern NSString* const kSyncPasswordsIdentifier;
+extern NSString* const kSyncOpenTabsIdentifier;
+extern NSString* const kSyncAutofillIdentifier;
+extern NSString* const kSyncPreferencesIdentifier;
+extern NSString* const kSyncReadingListIdentifier;
+
 // Sections used in Sync Settings page.
 typedef NS_ENUM(NSInteger, SyncSettingsSectionIdentifier) {
   // Section for all the sync settings.

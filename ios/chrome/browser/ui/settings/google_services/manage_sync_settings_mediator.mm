@@ -145,6 +145,8 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
     button.statusText = GetNSString(IDS_IOS_SETTING_OFF);
     self.syncEverythingItem = button;
   }
+  self.syncEverythingItem.accessibilityIdentifier =
+      kSyncEverythingItemAccessibilityIdentifier;
   [model addItem:self.syncEverythingItem
       toSectionWithIdentifier:SyncDataTypeSectionIdentifier];
   NSMutableArray* syncSwitchItems = [[NSMutableArray alloc] init];
@@ -399,34 +401,42 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
     (SyncSetupService::SyncableDatatype)dataType {
   NSInteger itemType = 0;
   int textStringID = 0;
+  NSString* accessibilityIdentifier = nil;
   switch (dataType) {
     case SyncSetupService::kSyncBookmarks:
       itemType = BookmarksDataTypeItemType;
       textStringID = IDS_SYNC_DATATYPE_BOOKMARKS;
+      accessibilityIdentifier = kSyncBookmarksIdentifier;
       break;
     case SyncSetupService::kSyncOmniboxHistory:
       itemType = HistoryDataTypeItemType;
       textStringID = IDS_SYNC_DATATYPE_TYPED_URLS;
+      accessibilityIdentifier = kSyncOmniboxHistoryIdentifier;
       break;
     case SyncSetupService::kSyncPasswords:
       itemType = PasswordsDataTypeItemType;
       textStringID = IDS_SYNC_DATATYPE_PASSWORDS;
+      accessibilityIdentifier = kSyncPasswordsIdentifier;
       break;
     case SyncSetupService::kSyncOpenTabs:
       itemType = OpenTabsDataTypeItemType;
       textStringID = IDS_SYNC_DATATYPE_TABS;
+      accessibilityIdentifier = kSyncOpenTabsIdentifier;
       break;
     case SyncSetupService::kSyncAutofill:
       itemType = AutofillDataTypeItemType;
       textStringID = IDS_SYNC_DATATYPE_AUTOFILL;
+      accessibilityIdentifier = kSyncAutofillIdentifier;
       break;
     case SyncSetupService::kSyncPreferences:
       itemType = SettingsDataTypeItemType;
       textStringID = IDS_SYNC_DATATYPE_PREFERENCES;
+      accessibilityIdentifier = kSyncPreferencesIdentifier;
       break;
     case SyncSetupService::kSyncReadingList:
       itemType = ReadingListDataTypeItemType;
       textStringID = IDS_SYNC_DATATYPE_READING_LIST;
+      accessibilityIdentifier = kSyncReadingListIdentifier;
       break;
     case SyncSetupService::kNumberOfSyncableDatatypes:
       NOTREACHED();
@@ -434,16 +444,19 @@ const std::map<SyncSetupService::SyncableDatatype, const char*>
   }
   DCHECK_NE(itemType, 0);
   DCHECK_NE(textStringID, 0);
+  DCHECK(accessibilityIdentifier);
   if (![self isManagedSyncSettingsDataType:dataType]) {
     SyncSwitchItem* switchItem = [[SyncSwitchItem alloc] initWithType:itemType];
     switchItem.text = GetNSString(textStringID);
     switchItem.dataType = dataType;
+    switchItem.accessibilityIdentifier = accessibilityIdentifier;
     return switchItem;
   } else {
     TableViewInfoButtonItem* button =
         [[TableViewInfoButtonItem alloc] initWithType:itemType];
     button.text = GetNSString(textStringID);
     button.statusText = GetNSString(IDS_IOS_SETTING_OFF);
+    button.accessibilityIdentifier = accessibilityIdentifier;
     return button;
   }
 }
