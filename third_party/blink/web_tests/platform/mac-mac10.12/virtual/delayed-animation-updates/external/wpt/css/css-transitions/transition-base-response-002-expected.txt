@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS Transitioning font-size on root affects rem units
-Harness: the test ran to completion.
-
