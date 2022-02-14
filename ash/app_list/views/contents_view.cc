@@ -438,6 +438,15 @@ void ContentsView::UpdateSearchBoxAnimation(double progress,
         static_cast<float>(current_bounds.height()) / target_bounds.height());
   }
   search_box->GetWidget()->GetLayer()->SetTransform(transform);
+
+  // Update search box view layer.
+  const float current_radius =
+      search_box->GetSearchBoxBorderCornerRadiusForState(current_state);
+  const float target_radius =
+      search_box->GetSearchBoxBorderCornerRadiusForState(target_state);
+  search_box->layer()->SetClipRect(search_box->GetContentsBounds());
+  search_box->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(
+      gfx::Tween::FloatValueBetween(progress, current_radius, target_radius)));
 }
 
 void ContentsView::UpdateExpandArrowBehavior(AppListViewState target_state) {
