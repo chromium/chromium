@@ -49,10 +49,6 @@ class SingleThreadTaskRunner;
 class TaskRunner;
 }  // namespace base
 
-namespace quota_internals {
-class QuotaInternalsProxy;
-}  // namespace quota_internals
-
 namespace storage {
 
 class QuotaManagerProxy;
@@ -442,7 +438,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
  private:
   friend class base::DeleteHelper<QuotaManagerImpl>;
   friend class base::RefCountedDeleteOnSequence<QuotaManagerImpl>;
-  friend class quota_internals::QuotaInternalsProxy;
   friend class MockQuotaManager;
   friend class MockQuotaClient;
   friend class QuotaManagerProxy;
