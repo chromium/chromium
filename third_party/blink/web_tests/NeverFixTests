@@ -1751,9 +1751,6 @@ external/wpt/web-share/share-files-manual.https.html [ Skip ]
 external/wpt/web-share/share-image-manual.tentative.https.html [ Skip ]
 external/wpt/html/webappapis/user-prompts/print-manual.html [ Skip ]
 
-# Windows doesn't have native overlay scrollbar
-[ Win ] virtual/overlay-scrollbar/* [ Skip ]
-
 crbug.com/626703 [ Linux ] external/wpt/payment-method-basic-card/billing-address-is-null-manual.https.html [ Skip ]
 crbug.com/626703 [ Mac ] external/wpt/payment-method-basic-card/billing-address-is-null-manual.https.html [ Skip ]
 crbug.com/626703 [ Win ] external/wpt/payment-method-basic-card/billing-address-is-null-manual.https.html [ Skip ]

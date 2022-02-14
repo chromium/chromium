@@ -4150,6 +4150,12 @@ crbug.com/994315 virtual/json-modules/external/wpt/html/semantics/scripting-1/th
 crbug.com/1051773 external/wpt/css/CSS2/floats/float-nowrap-3-ref.html [ Crash ]
 crbug.com/1051773 external/wpt/css/CSS2/floats/float-nowrap-4.html [ Crash Timeout ]
 
+# Moved from NeverFixTests. These may be relevant again now that
+# overlay scrollbars have been fixed (crrev.com/c/3455024).
+crbug.com/1296816 [ Win ] virtual/overlay-scrollbar/body-quirk-client-size.html [ Failure ]
+crbug.com/1296816 [ Win ] virtual/overlay-scrollbar/plugin-overlay-scrollbar-mouse-capture.html [ Failure ]
+crbug.com/1296816 [ Win ] virtual/overlay-scrollbar/root-client-size.html [ Failure ]
+
 crbug.com/964181 external/wpt/css/css-text/overflow-wrap/overflow-wrap-anywhere-inline-002.html [ Failure ]
 crbug.com/964181 external/wpt/css/css-text/overflow-wrap/overflow-wrap-anywhere-inline-003.html [ Failure ]
 crbug.com/964181 external/wpt/css/css-text/word-break/word-break-break-all-inline-004.html [ Failure ]
