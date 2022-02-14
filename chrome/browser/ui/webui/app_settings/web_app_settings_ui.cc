@@ -85,7 +85,7 @@ WebAppSettingsUI::WebAppSettingsUI(content::WebUI* web_ui)
   content::WebUIDataSource::Add(profile, html_source);
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
-  registrar_observation_.Observe(&provider->registrar());
+  install_manager_observation_.Observe(&provider->install_manager());
 }
 
 void WebAppSettingsUI::BindInterface(
@@ -108,6 +108,10 @@ void WebAppSettingsUI::OnWebAppUninstalled(const web_app::AppId& app_id) {
 
   if (app_id == current_app_id)
     web_contents->ClosePage();
+}
+
+void WebAppSettingsUI::OnWebAppInstallManagerDestroyed() {
+  install_manager_observation_.Reset();
 }
 
 WebAppSettingsUI::~WebAppSettingsUI() = default;

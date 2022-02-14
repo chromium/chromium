@@ -10,13 +10,14 @@
 #include "chrome/browser/ui/webui/app_management/app_management_page_handler_factory.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom-forward.h"
 
 // The WebUI for chrome://app-settings
 class WebAppSettingsUI : public ui::MojoWebUIController,
-                         public web_app::AppRegistrarObserver {
+                         public web_app::WebAppInstallManagerObserver {
  public:
   explicit WebAppSettingsUI(content::WebUI* web_ui);
 
@@ -34,15 +35,16 @@ class WebAppSettingsUI : public ui::MojoWebUIController,
       mojo::PendingReceiver<app_management::mojom::PageHandlerFactory>
           receiver);
 
-  // AppRegistrarObserver:
+  // WebAppInstallManagerObserver:
   void OnWebAppUninstalled(const web_app::AppId& app_id) override;
+  void OnWebAppInstallManagerDestroyed() override;
 
  private:
   std::unique_ptr<AppManagementPageHandlerFactory>
       app_management_page_handler_factory_;
-  base::ScopedObservation<web_app::WebAppRegistrar,
-                          web_app::AppRegistrarObserver>
-      registrar_observation_{this};
+  base::ScopedObservation<web_app::WebAppInstallManager,
+                          web_app::WebAppInstallManagerObserver>
+      install_manager_observation_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
