@@ -2391,6 +2391,9 @@ extern const char kAudioUrlDescription[];
 extern const char kAutoFramingOverrideName[];
 extern const char kAutoFramingOverrideDescription[];
 
+extern const char kAutocorrectParamsTuningName[];
+extern const char kAutocorrectParamsTuningDescription[];
+
 extern const char kBluetoothFixA2dpPacketSizeName[];
 extern const char kBluetoothFixA2dpPacketSizeDescription[];
 

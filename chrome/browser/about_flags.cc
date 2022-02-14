@@ -4215,6 +4215,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAriaElementReflectionDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kEnableAriaElementReflection)},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-cros-autocorrect-params-tuning",
+     flag_descriptions::kAutocorrectParamsTuningName,
+     flag_descriptions::kAutocorrectParamsTuningDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kAutocorrectParamsTuning)},
     {"enable-cros-ime-assist-emoji-enhanced",
      flag_descriptions::kImeAssistEmojiEnhancedName,
      flag_descriptions::kImeAssistEmojiEnhancedDescription, kOsCrOS,

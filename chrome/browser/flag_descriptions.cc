@@ -4160,6 +4160,10 @@ const char kAutoFramingOverrideDescription[] =
     "Overrides the default to forcibly enable or disable the auto-framing "
     "feature";
 
+const char kAutocorrectParamsTuningName[] = "CrOS autocorrect params tuning";
+const char kAutocorrectParamsTuningDescription[] =
+    "Enables params tuning experiment for autocorrect on Chrome OS.";
+
 const char kBluetoothFixA2dpPacketSizeName[] = "Bluetooth fix A2DP packet size";
 const char kBluetoothFixA2dpPacketSizeDescription[] =
     "Fixes Bluetooth A2DP packet size to a smaller default value to improve "
