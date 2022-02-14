@@ -261,12 +261,12 @@ int CreateFirstRunSecondTrial(
       new_fre_default_percent = 0;
       break;
     case version_info::Channel::STABLE:
-      new_fre_with_top_position_old_strings_set_percent = 0;
-      new_fre_with_top_position_new_strings_set_percent = 0;
-      new_fre_with_bottom_position_old_strings_set_percent = 0;
-      new_fre_with_bottom_position_new_strings_set_percent = 0;
-      new_fre_disabled_percent = 0;
-      new_fre_default_percent = 100;
+      new_fre_with_top_position_old_strings_set_percent = 7;
+      new_fre_with_top_position_new_strings_set_percent = 7;
+      new_fre_with_bottom_position_old_strings_set_percent = 7;
+      new_fre_with_bottom_position_new_strings_set_percent = 7;
+      new_fre_disabled_percent = 7;
+      new_fre_default_percent = 65;
       break;
   }
 
