@@ -2222,7 +2222,7 @@ bool NavigationControllerImpl::RendererDidNavigateAutoSubframe(
           dest_top_url.SchemeIsHTTPOrHTTPS() &&
           current_top_url.DeprecatedGetOriginAsURL() !=
               dest_top_url.DeprecatedGetOriginAsURL()) {
-        bad_message::ReceivedBadMessage(rfh->GetProcess(),
+        bad_message::ReceivedBadMessage(rfh->GetMainFrame()->GetProcess(),
                                         bad_message::NC_AUTO_SUBFRAME);
       }
 
