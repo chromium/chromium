@@ -9,7 +9,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/single_tab_view"
     android:layout_width="match_parent"
-    android:layout_height="56dp"
+    android:layout_height="wrap_content"
     android:layout_marginTop="24dp"
     android:layout_marginStart="16dp"
     android:layout_marginEnd="16dp"
@@ -41,7 +41,7 @@
         <TextView
             android:id="@+id/tab_switcher_title_description"
             android:layout_width="wrap_content"
-            android:layout_height="16dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1.0"
             android:layout_marginTop="10dp"
             android:layout_gravity="center_vertical"
@@ -53,7 +53,7 @@
         <TextView
             android:id="@+id/tab_title_view"
             android:layout_width="wrap_content"
-            android:layout_height="20dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1.0"
             android:layout_marginBottom="10dp"
             android:layout_gravity="center_vertical"
