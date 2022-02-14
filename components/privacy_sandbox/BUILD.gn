@@ -33,7 +33,9 @@ source_set("privacy_sandbox") {
     "//components/keyed_service/core:core",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
+    "//components/strings:components_strings_grit",
     "//net:net",
+    "//ui/base:base",
     "//url:url",
   ]
 
@@ -42,7 +44,10 @@ source_set("privacy_sandbox") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "privacy_sandbox_settings_unittest.cc" ]
+  sources = [
+    "canonical_topic_unittest.cc",
+    "privacy_sandbox_settings_unittest.cc",
+  ]
 
   deps = [
     ":privacy_sandbox",
@@ -51,6 +56,7 @@ source_set("unit_tests") {
     "//components/content_settings/core/browser:browser",
     "//components/content_settings/core/test:test_support",
     "//components/prefs:test_support",
+    "//components/strings:components_strings_grit",
     "//components/sync_preferences:test_support",
     "//content/test:test_support",
     "//net",

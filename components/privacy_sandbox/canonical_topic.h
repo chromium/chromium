@@ -15,7 +15,9 @@ namespace privacy_sandbox {
 // Contains a topic and a name in the current locale.
 class CanonicalTopic {
  public:
-  static const int TEST_TAXONOMY = -1;
+  // TODO(crbug.com/1286276): Correctly retrieve the set of available
+  // taxononmies.
+  static const int AVAILABLE_TAXONOMY = 1;
 
   CanonicalTopic(browsing_topics::Topic topic_id, int taxonomy_version);
 

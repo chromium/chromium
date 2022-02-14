@@ -247,6 +247,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.PrivacySandbox.InvalidTopicIdLocalized" units="units"
+    expires_after="M110">
+  <owner>sauski@google.com</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <summary>
+    Records the Topic ID which was provided for attempted localization, but
+    failed because the ID was outside the supported range.
+
+    Any entry in this histogram is unexpected, and indicates that the model
+    generating Topic IDs is generating IDs which cannot be handled by Chrome UI.
+  </summary>
+</histogram>
+
 <histogram name="Settings.PrivacySandbox.PrivacySandboxReferrer"
     enum="PrivacySandboxReferrer" expires_after="M104">
   <owner>andzaytsev@google.com</owner>
