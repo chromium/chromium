@@ -588,6 +588,32 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     await finishedPromise;
   });
 
+  test(
+      'Close dialog after attempting to pair to a device address',
+      async function() {
+        // Try to pair with a device not in discovered devices list
+        await init(/*pairingDeviceAddress=*/ '123456');
+
+        // We should immediately be in the spinner page, not the device
+        // selection page.
+        assertTrue(!!getSpinnerPage());
+        assertFalse(!!getDeviceSelectionPage());
+
+        // Pairing is not initialized since device does not exit in discoverable
+        // devices list.
+        const deviceHandler = bluetoothConfig.getLastCreatedPairingHandler();
+        assertFalse(!!deviceHandler.getLastPairingDelegate());
+
+        let finishedPromise = eventToPromise('finished', bluetoothPairingUi);
+
+        // Simulate clicking 'Cancel'.
+        const event = new CustomEvent('cancel');
+        const ironPages =
+            bluetoothPairingUi.shadowRoot.querySelector('iron-pages');
+        ironPages.dispatchEvent(event);
+        await finishedPromise;
+      });
+
   test('Pair with a specific device by address, failure', async function() {
     const deviceId1 = '123456';
     await pairByDeviceAddress(/*address=*/ deviceId1);

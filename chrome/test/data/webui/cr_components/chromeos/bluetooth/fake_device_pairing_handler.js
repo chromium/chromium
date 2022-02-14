@@ -217,4 +217,11 @@ export class FakeDevicePairingHandler {
   getConfirmPasskeyResult() {
     return this.confirmPasskeyResult_;
   }
+
+  /**
+   * @return {?chromeos.bluetoothConfig.mojom.DevicePairingDelegateInterface}
+   */
+  getLastPairingDelegate() {
+    return this.devicePairingDelegate_;
+  }
 }

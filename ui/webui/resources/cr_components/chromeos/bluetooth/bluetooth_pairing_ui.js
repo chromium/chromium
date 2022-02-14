@@ -366,7 +366,7 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     const device = this.discoveredDevices_.find(
         d => d.address === this.pairingDeviceAddress);
     if (!device) {
-      console.error('Attempted pairing with a device that was not found.');
+      console.warn('Attempted pairing with a device that was not found.');
       return;
     }
 
