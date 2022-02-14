@@ -16,9 +16,9 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.tab.TabTestUtils;
-import org.chromium.chrome.browser.tab.state.FilePersistedTabDataStorage.FileSaveRequest;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 
 import java.io.File;
@@ -135,6 +135,7 @@ public class FilePersistedTabDataStorageTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/1297091")
     public void testOutOfMemoryError() throws InterruptedException {
         FilePersistedTabDataStorage storage = new FilePersistedTabDataStorage();
         final Semaphore semaphore = new Semaphore(0);
