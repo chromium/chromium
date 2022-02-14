@@ -426,7 +426,7 @@ crbug.com/1230743 [ linux skia-renderer-vulkan ] Pixel_* [ RetryOnFailure ]
 crbug.com/1295079 [ linux skia-renderer-vulkan intel-0x5912 ] Pixel_CanvasDisplaySRGBAccelerated2D [ Failure ]
 
 # WebGPU pixel tests flakily hang in the metal shader compiler on Mac.
-crbug.com/1268120 [ mac asan ] Pixel_WebGPUToDataURL [ Failure ]
+crbug.com/1268120 [ mac ] Pixel_WebGPUToDataURL [ Failure ]
 
 # Failures on Sherlock
 # These two tests causes a crash on Swarming. Skipping so that we have a signal for other tests.
