@@ -483,15 +483,16 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   app->SetInstallSourceForMetrics(
       static_cast<webapps::WebappInstallSource>(install_source));
 
-  // `random` should not be used after the chromeos block if the result
-  // is expected to be deterministic across cros and non-cros builds.
   if (IsChromeOsDataMandatory()) {
+    // Use a separate random generator for CrOS so the result is deterministic
+    // across cros and non-cros builds.
+    RandomHelper cros_random(seed);
     auto chromeos_data = absl::make_optional<WebAppChromeOsData>();
-    chromeos_data->show_in_launcher = random.next_bool();
-    chromeos_data->show_in_search = random.next_bool();
-    chromeos_data->show_in_management = random.next_bool();
-    chromeos_data->is_disabled = random.next_bool();
-    chromeos_data->oem_installed = random.next_bool();
+    chromeos_data->show_in_launcher = cros_random.next_bool();
+    chromeos_data->show_in_search = cros_random.next_bool();
+    chromeos_data->show_in_management = cros_random.next_bool();
+    chromeos_data->is_disabled = cros_random.next_bool();
+    chromeos_data->oem_installed = cros_random.next_bool();
     app->SetWebAppChromeOsData(std::move(chromeos_data));
   }
 
