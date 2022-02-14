@@ -462,6 +462,37 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, DetachPortal) {
   fdo2.Wait();
 }
 
+// Test that FrameTree::CollectNodesForIsLoading doesn't include inner
+// WebContents nodes like portals.
+//
+// TODO(crbug.com/1254770): Modify this test accordingly once portals are
+// migrated to MPArch.
+IN_PROC_BROWSER_TEST_F(PortalBrowserTest, NodesForIsLoading) {
+  // 1. Navigate to an initial primary page.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
+  WebContentsImpl* web_contents_impl =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* primary_rfh = web_contents_impl->GetMainFrame();
+
+  // 2. Create a portal.
+  GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
+  RenderFrameHostImpl* portal_rfh = portal->GetPortalContents()->GetMainFrame();
+  EXPECT_TRUE(portal_rfh);
+
+  // 3. FrameTree::CollectNodesForIsLoading should only include primary_rfh but
+  // not portal_rfh.
+  std::vector<RenderFrameHostImpl*> outer_web_contents_frames;
+  for (auto* ftn :
+       web_contents_impl->GetPrimaryFrameTree().CollectNodesForIsLoading()) {
+    outer_web_contents_frames.push_back(ftn->current_frame_host());
+  }
+  EXPECT_EQ(outer_web_contents_frames.size(), 1u);
+  EXPECT_THAT(outer_web_contents_frames,
+              testing::UnorderedElementsAre(primary_rfh));
+}
+
 // This is for testing how portals interact with input hit testing. It is
 // parameterized on the kind of viz hit testing used.
 class PortalHitTestBrowserTest : public PortalBrowserTest {

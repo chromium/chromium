@@ -140,6 +140,16 @@ class CONTENT_EXPORT FrameTree {
     // The load progress was changed.
     virtual void DidChangeLoadProgress() = 0;
 
+    // Returns the delegate's top loading tree, which should be used to infer
+    // the values of loading-related states. The state of IsLoading() is a
+    // WebContents level concept and LoadingTree would return the frame tree to
+    // which loading events should be directed.
+    //
+    // TODO(crbug.com/1261928): Remove this method and directly rely on
+    // GetOutermostMainFrame() once portals and guest views are migrated to
+    // MPArch.
+    virtual FrameTree* LoadingTree() = 0;
+
     // Returns true when the active RenderWidgetHostView should be hidden.
     virtual bool IsHidden() = 0;
 
@@ -449,6 +459,14 @@ class CONTENT_EXPORT FrameTree {
 
   bool IsHidden() const { return delegate_->IsHidden(); }
 
+  // LoadingTree returns the following for different frame trees to direct
+  // loading related events. Please see FrameTree::Delegate::LoadingTree for
+  // more comments.
+  // - For prerender frame tree -> returns the frame tree itself.
+  // - For fenced frame and primary frame tree (including portal) -> returns
+  // the delegate's primary frame tree.
+  FrameTree* LoadingTree();
+
   // Stops all ongoing navigations in each of the nodes of this FrameTree.
   void StopLoading();
 
@@ -468,11 +486,23 @@ class CONTENT_EXPORT FrameTree {
  private:
   friend class FrameTreeTest;
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest, RemoveFocusedFrame);
+  FRIEND_TEST_ALL_PREFIXES(PortalBrowserTest, NodesForIsLoading);
+  FRIEND_TEST_ALL_PREFIXES(FencedFrameBrowserTest, NodesForIsLoading);
 
   // Returns a range to iterate over all FrameTreeNodes in the frame tree in
   // breadth-first traversal order, skipping the subtree rooted at
   // |node|, but including |node| itself.
   NodeRange NodesExceptSubtree(FrameTreeNode* node);
+
+  // Returns all FrameTreeNodes in this frame tree, as well as any
+  // FrameTreeNodes of inner frame trees. Note that this doesn't include inner
+  // frame trees of inner delegates. This is used to find the aggregate
+  // IsLoading value for a frame tree.
+  //
+  // TODO(crbug.com/1261928, crbug.com/1261928): Remove this method and directly
+  // rely on GetOutermostMainFrame() and NodesIncludingInnerTreeNodes() once
+  // portals and guest views are migrated to MPArch.
+  std::vector<FrameTreeNode*> CollectNodesForIsLoading();
 
   const raw_ptr<Delegate> delegate_;
 

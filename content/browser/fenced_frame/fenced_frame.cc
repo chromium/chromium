@@ -128,6 +128,12 @@ bool FencedFrame::IsPortal() {
   return false;
 }
 
+FrameTree* FencedFrame::LoadingTree() {
+  // TODO(crbug.com/1232528): Consider and fix the case when fenced frames are
+  // being prerendered.
+  return web_contents_->LoadingTree();
+}
+
 RenderFrameProxyHost* FencedFrame::GetProxyToInnerMainFrame() {
   DCHECK(proxy_to_inner_main_frame_);
   return proxy_to_inner_main_frame_;

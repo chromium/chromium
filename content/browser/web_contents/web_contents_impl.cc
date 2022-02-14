@@ -8871,6 +8871,10 @@ bool WebContentsImpl::IsBackForwardCacheSupported() {
   return GetDelegate()->IsBackForwardCacheSupported();
 }
 
+FrameTree* WebContentsImpl::LoadingTree() {
+  return &GetPrimaryFrameTree();
+}
+
 void WebContentsImpl::DidChangeScreenOrientation() {
   last_screen_orientation_change_time_ = ui::EventTimeForNow();
 }

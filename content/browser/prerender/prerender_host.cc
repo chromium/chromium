@@ -137,6 +137,12 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
 
   void DidChangeLoadProgress() override {}
   bool IsHidden() override { return true; }
+  FrameTree* LoadingTree() override {
+    // For prerendering loading tree is the same as its frame tree as loading is
+    // done at a frame tree level in the background, unlike the loading visible
+    // to the user where we account for nested frame tree loading state.
+    return frame_tree_.get();
+  }
   void NotifyPageChanged(PageImpl& page) override {}
   int GetOuterDelegateFrameTreeNodeId() override {
     // A prerendered FrameTree is not "inner to" or "nested inside" another

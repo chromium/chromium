@@ -1026,6 +1026,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool IsHidden() override;
   void NotifyPageChanged(PageImpl& page) override;
   int GetOuterDelegateFrameTreeNodeId() override;
+  FrameTree* LoadingTree() override;
 
   // NavigationControllerDelegate ----------------------------------------------
 

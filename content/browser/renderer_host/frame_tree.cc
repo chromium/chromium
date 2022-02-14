@@ -350,6 +350,26 @@ FrameTree::NodeRange FrameTree::NodesIncludingInnerTreeNodes() {
                    /* should_descend_into_inner_trees */ true);
 }
 
+std::vector<FrameTreeNode*> FrameTree::CollectNodesForIsLoading() {
+  FrameTree::NodeRange node_range = NodesIncludingInnerTreeNodes();
+  FrameTree::NodeIterator node_iter = node_range.begin();
+  std::vector<FrameTreeNode*> nodes;
+
+  DCHECK(node_iter != node_range.end());
+  FrameTree* root_loading_tree = root_->frame_tree()->LoadingTree();
+  while (node_iter != node_range.end()) {
+    // Skip over frame trees and children which belong to inner web contents
+    // i.e., when nodes doesn't point to the same loading frame tree.
+    if ((*node_iter)->frame_tree()->LoadingTree() != root_loading_tree) {
+      node_iter.AdvanceSkippingChildren();
+    } else {
+      nodes.push_back(*node_iter);
+      ++node_iter;
+    }
+  }
+  return nodes;
+}
+
 FrameTree::NodeRange FrameTree::SubtreeAndInnerTreeNodes(
     RenderFrameHostImpl* parent) {
   std::vector<FrameTreeNode*> starting_nodes;
@@ -369,6 +389,12 @@ FrameTree::NodeRange FrameTree::SubtreeAndInnerTreeNodes(
 
 FrameTree::NodeRange FrameTree::NodesExceptSubtree(FrameTreeNode* node) {
   return NodeRange({root_}, node, /* should_descend_into_inner_trees */ false);
+}
+
+FrameTree* FrameTree::LoadingTree() {
+  // We return the delegate's loading frame tree to infer loading related
+  // states.
+  return delegate_->LoadingTree();
 }
 
 FrameTreeNode* FrameTree::AddFrame(

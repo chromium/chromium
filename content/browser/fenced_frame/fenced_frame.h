@@ -55,6 +55,7 @@ class CONTENT_EXPORT FencedFrame : public blink::mojom::FencedFrameOwnerHost,
   void NotifyPageChanged(PageImpl& page) override {}
   int GetOuterDelegateFrameTreeNodeId() override;
   bool IsPortal() override;
+  FrameTree* LoadingTree() override;
 
   RenderFrameProxyHost* GetProxyToInnerMainFrame();
 

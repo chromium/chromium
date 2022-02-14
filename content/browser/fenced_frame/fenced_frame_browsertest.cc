@@ -367,6 +367,76 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, ViewportSettings) {
             1.0);
 }
 
+// Test that FrameTree::CollectNodesForIsLoading doesn't include inner
+// WebContents nodes.
+IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, NodesForIsLoading) {
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL fenced_frame_url(embedded_test_server()->GetURL(
+      "fencedframe.test", "/fenced_frames/title1.html"));
+
+  // 1. Navigate to an initial primary page.
+  EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         "a.com", "/page_with_iframe.html")));
+  RenderFrameHostImplWrapper primary_rfh(primary_main_frame_host());
+  FrameTree& primary_frame_tree = web_contents()->GetPrimaryFrameTree();
+
+  // 2. Create a fenced frame embedded inside primary page.
+  RenderFrameHostImplWrapper outer_fenced_frame_rfh(
+      fenced_frame_test_helper().CreateFencedFrame(primary_rfh.get(),
+                                                   fenced_frame_url));
+
+  // 3. Create a inner WebContents and attach it to the main contents. Navigate
+  // the inner web contents to an initial page.
+  WebContentsImpl* inner_contents =
+      static_cast<WebContentsImpl*>(CreateAndAttachInnerContents(
+          primary_rfh.get()->child_at(0)->current_frame_host()));
+  ASSERT_TRUE(NavigateToURLFromRenderer(inner_contents, url_b));
+
+  RenderFrameHostImpl* inner_contents_rfh = inner_contents->GetMainFrame();
+  FrameTree& inner_contents_primary_frame_tree =
+      inner_contents->GetPrimaryFrameTree();
+  ASSERT_TRUE(inner_contents_rfh);
+
+  // 4. Create a fenced frame embedded inside inner WebContents.
+  RenderFrameHostImplWrapper inner_fenced_frame_rfh(
+      fenced_frame_test_helper().CreateFencedFrame(inner_contents_rfh,
+                                                   fenced_frame_url));
+
+  // 5. FrameTree::CollectNodesForIsLoading should only include primary_rfh and
+  // outer_fenced_frame_rfh when checked against outer delegate FrameTree.
+  std::vector<RenderFrameHostImpl*> outer_web_contents_frames;
+  for (auto* ftn :
+       web_contents()->GetPrimaryFrameTree().CollectNodesForIsLoading()) {
+    outer_web_contents_frames.push_back(ftn->current_frame_host());
+  }
+  EXPECT_EQ(outer_web_contents_frames.size(), 2u);
+  EXPECT_THAT(outer_web_contents_frames,
+              testing::UnorderedElementsAre(primary_rfh.get(),
+                                            outer_fenced_frame_rfh.get()));
+
+  // 6. FrameTree::CollectNodesForIsLoading should only include
+  // inner_contents_rfh and inner_fenced_frame_rfh when checked against inner
+  // delegate FrameTree.
+  std::vector<RenderFrameHostImpl*> inner_web_contents_frames;
+  for (auto* ftn :
+       inner_contents->GetPrimaryFrameTree().CollectNodesForIsLoading()) {
+    inner_web_contents_frames.push_back(ftn->current_frame_host());
+  }
+  EXPECT_EQ(inner_web_contents_frames.size(), 2u);
+  EXPECT_THAT(inner_web_contents_frames,
+              testing::UnorderedElementsAre(inner_contents_rfh,
+                                            inner_fenced_frame_rfh.get()));
+
+  // 7. Check that FrameTree::LoadingTree returns the correct FrameTree for both
+  // outer and inner WebContents frame trees.
+  EXPECT_NE(primary_frame_tree.LoadingTree(),
+            inner_contents_primary_frame_tree.LoadingTree());
+  EXPECT_EQ(primary_frame_tree.LoadingTree(), &primary_frame_tree);
+  EXPECT_EQ(inner_contents_primary_frame_tree.LoadingTree(),
+            &inner_contents_primary_frame_tree);
+}
+
 namespace {
 
 enum class FrameTypeWithOrigin {
