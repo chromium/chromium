@@ -2086,19 +2086,6 @@ const MediaQueryEvaluator& StyleEngine::EnsureMediaQueryEvaluator() {
   return *media_query_evaluator_;
 }
 
-bool StyleEngine::MediaQueryAffectedByViewportChange() {
-  DCHECK(global_rule_set_);
-  return EnsureMediaQueryEvaluator().DidResultsChange(
-      global_rule_set_->GetRuleFeatureSet()
-          .ViewportDependentMediaQueryResults());
-}
-
-bool StyleEngine::MediaQueryAffectedByDeviceChange() {
-  DCHECK(global_rule_set_);
-  return EnsureMediaQueryEvaluator().DidResultsChange(
-      global_rule_set_->GetRuleFeatureSet().DeviceDependentMediaQueryResults());
-}
-
 bool StyleEngine::UpdateRemUnits(const ComputedStyle* old_root_style,
                                  const ComputedStyle* new_root_style) {
   if (!new_root_style || !UsesRemUnits())

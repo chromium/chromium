@@ -212,15 +212,6 @@ KleeneValue MediaQueryEvaluator::EvalFeature(const MediaQueryExp& expr,
 }
 
 bool MediaQueryEvaluator::DidResultsChange(
-    const MediaQueryResultList& results) const {
-  for (auto& result : results) {
-    if (Eval(result.Expression()) != result.Result())
-      return true;
-  }
-  return false;
-}
-
-bool MediaQueryEvaluator::DidResultsChange(
     const Vector<MediaQuerySetResult>& results) const {
   for (const auto& result : results) {
     if (result.Result() != Eval(result.MediaQueries()))

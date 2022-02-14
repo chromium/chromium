@@ -296,8 +296,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   }
   // Push all pending invalidations on the document.
   void InvalidateStyle();
-  bool MediaQueryAffectedByViewportChange();
-  bool MediaQueryAffectedByDeviceChange();
   bool HasViewportDependentMediaQueries() {
     DCHECK(global_rule_set_);
     UpdateActiveStyle();

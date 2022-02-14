@@ -3153,12 +3153,6 @@ TEST_F(StyleEngineTest, AtScrollTimelineUseCount) {
   EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kCSSAtRuleScrollTimeline));
 }
 
-TEST_F(StyleEngineTest, MediaQueryAffectedByViewportSanityCheck) {
-  GetDocument().body()->setInnerHTML("<audio controls>");
-  UpdateAllLifecyclePhases();
-  EXPECT_FALSE(GetStyleEngine().MediaQueryAffectedByViewportChange());
-}
-
 TEST_F(StyleEngineTest, CSSMatchMediaUnknownUseCounter) {
   ScopedCSSMediaQueries4ForTest media_queries_4_flag(false);
 
