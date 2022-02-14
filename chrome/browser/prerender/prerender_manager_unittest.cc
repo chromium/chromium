@@ -37,6 +37,7 @@ class PrerenderManagerTest : public ChromeRenderViewHostTestHarness {
     PrerenderManager::CreateForWebContents(GetActiveWebContents());
     prerender_manager_ = PrerenderManager::FromWebContents(web_contents());
     ASSERT_TRUE(prerender_manager_);
+    prerender_manager_->set_skip_template_url_service_for_testing();
   }
 
   content::WebContents* GetActiveWebContents() { return web_contents(); }

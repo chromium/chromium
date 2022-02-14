@@ -52,6 +52,10 @@ class PrerenderManager : public content::WebContentsObserver,
     return search_prerender_handle_.get();
   }
 
+  void set_skip_template_url_service_for_testing() {
+    skip_template_url_service_for_testing_ = true;
+  }
+
  private:
   explicit PrerenderManager(content::WebContents* web_contents);
   friend class content::WebContentsUserData<PrerenderManager>;
@@ -60,6 +64,7 @@ class PrerenderManager : public content::WebContentsObserver,
   std::unique_ptr<content::PrerenderHandle> direct_url_input_prerender_handle_;
   // Stores the search terms that `search_prerender_handle_` is prerendering.
   std::u16string prerendered_search_terms_;
+  bool skip_template_url_service_for_testing_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

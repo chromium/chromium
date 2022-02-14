@@ -357,11 +357,12 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
     TemplateURLData data;
     data.SetShortName(kSearchDomain16);
     data.SetKeyword(data.short_name());
-    data.SetURL(search_engine_server_
-                    .GetURL(kSearchDomain,
-                            "/search_page.html?q={searchTerms}&{google:"
-                            "originalQueryForSuggestion}")
-                    .spec());
+    data.SetURL(
+        search_engine_server_
+            .GetURL(kSearchDomain,
+                    "/search_page.html?q={searchTerms}&{google:prefetchSource}"
+                    "{google:originalQueryForSuggestion}")
+            .spec());
     data.suggestions_url =
         search_suggest_server_.GetURL(kSuggestDomain, "/?q={searchTerms}")
             .spec();
@@ -435,10 +436,13 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
     return resp;
   }
 
-  GURL GetSearchUrl(const std::string& query, std::string search_terms) {
+  GURL GetSearchUrl(const std::string& query,
+                    std::string search_terms,
+                    bool is_prerender = true) {
     return search_engine_server_.GetURL(
-        kSearchDomain,
-        "/search_page.html?q=" + search_terms + "&oq=" + query + "&");
+        kSearchDomain, "/search_page.html?q=" + search_terms +
+                           (is_prerender ? "&pf=cs" : "") + "&oq=" + query +
+                           "&");
   }
 
   AutocompleteController* GetAutocompleteController() {
@@ -569,6 +573,24 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   SelectAutocompleteMatchAndWaitForActivation(*prerender_match, host_id);
   EXPECT_TRUE(IsPrerenderingNavigation());
   EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(), prerender_url);
+}
+
+// Tests whether prerendering a search suggestion will have pf=cs parameter
+// attached correctly.
+IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
+                       SearchPrerenderParameterVerification) {
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(GetActiveWebContents());
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
+  Observe(GetActiveWebContents());
+  std::string search_query = "prerender2";
+
+  GURL expected_prerender_url =
+      GetSearchUrl(search_query, "prerender222", /*is_prerender=*/true);
+  ASSERT_TRUE(base::Contains(expected_prerender_url.spec(), "pf=cs"));
+  int host_id =
+      InputSearchQueryAndWaitForTrigger(search_query, expected_prerender_url);
+  EXPECT_NE(host_id, content::RenderFrameHost::kNoFrameTreeNodeId);
 }
 
 }  // namespace

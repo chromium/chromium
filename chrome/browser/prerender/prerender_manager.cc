@@ -94,10 +94,34 @@ void PrerenderManager::StartPrerenderAutocompleteMatch(
                           std::ref(prerendered_search_terms_),
                           std::ref(*web_contents()));
 
-  // TODO(https://crbug.com/1278634): Make up a destination url based on
-  // DefaultSearchProvider. This can differ from `match.destination_url`.
+  GURL prerender_url = match.destination_url;
+  // Skip changing the prerender URL in tests as they may not have Profile or
+  // TemplateURLServiceFactory. In that case, the callers of
+  // StartPrerenderAutocompleteMatch() should ensure the prerender URL is valid
+  // instead.
+  if (!skip_template_url_service_for_testing_) {
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+    if (!profile)
+      return;
+    TemplateURLService* template_url_service =
+        TemplateURLServiceFactory::GetForProfile(profile);
+    if (!template_url_service)
+      return;
+
+    TemplateURLRef::SearchTermsArgs search_terms_args_copied =
+        *(match.search_terms_args);
+    search_terms_args_copied.is_prefetch = true;
+    prerender_url =
+        GURL(template_url_service->GetDefaultSearchProvider()
+                 ->url_ref()
+                 .ReplaceSearchTerms(search_terms_args_copied,
+                                     template_url_service->search_terms_data(),
+                                     /*post_content=*/nullptr));
+  }
+
   search_prerender_handle_ = web_contents()->StartPrerendering(
-      match.destination_url, content::PrerenderTriggerType::kEmbedder,
+      prerender_url, content::PrerenderTriggerType::kEmbedder,
       prerender_utils::kDefaultSearchEngineMetricSuffix,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
