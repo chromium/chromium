@@ -8,7 +8,7 @@ import './settings_select.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MediaSizeCapability, SelectOption} from '../data/cdd.js';
+import {MediaSizeCapability} from '../data/cdd.js';
 
 import {SettingsMixin} from './settings_mixin.js';
 

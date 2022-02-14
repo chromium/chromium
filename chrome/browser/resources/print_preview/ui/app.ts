@@ -19,7 +19,10 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {CloudPrintInterface, CloudPrintInterfaceErrorEventDetail, CloudPrintInterfaceEventType} from '../cloud_print_interface.js';
 import {CloudPrintInterfaceImpl} from '../cloud_print_interface_impl.js';
-import {Destination, DestinationOrigin} from '../data/destination.js';
+import {Destination} from '../data/destination.js';
+// <if expr="chromeos_ash or chromeos_lacros">
+import {DestinationOrigin} from '../data/destination.js';
+// </if>
 import {getPrinterTypeForDestination, PrinterType} from '../data/destination_match.js';
 import {DocumentSettings, PrintPreviewDocumentInfoElement} from '../data/document_info.js';
 import {Margins} from '../data/margins.js';

@@ -14,8 +14,7 @@ import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_c
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {LocalizedString, VendorCapability, VendorCapabilitySelectOption} from '../data/cdd.js';
-import {Destination} from '../data/destination.js';
+import {VendorCapability, VendorCapabilitySelectOption} from '../data/cdd.js';
 import {getStringForCurrentLocale} from '../print_preview_utils.js';
 
 import {updateHighlights} from './highlight_utils.js';

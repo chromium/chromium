@@ -10,7 +10,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {CloudPrintInterface, CloudPrintInterfaceErrorEventDetail, CloudPrintInterfaceEventType} from '../cloud_print_interface.js';
 import {CloudPrintInterfaceImpl} from '../cloud_print_interface_impl.js';
 
-import {Destination, DestinationOrigin} from './destination.js';
+import {DestinationOrigin} from './destination.js';
 import {DestinationStore} from './destination_store.js';
 
 type UpdateUsersPayload = {

@@ -13,14 +13,17 @@ import './icons.js';
 import './print_preview_vars_css.js';
 import '../strings.m.js';
 
+// <if expr="chromeos_ash or chromeos_lacros">
 import {assert} from 'chrome://resources/js/assert_ts.js';
+// </if>
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {removeHighlights} from 'chrome://resources/js/search_highlight_utils.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Destination, DestinationOrigin} from '../data/destination.js';
+import {Destination} from '../data/destination.js';
 // <if expr="chromeos_ash or chromeos_lacros">
+import {DestinationOrigin} from '../data/destination.js';
 import {ERROR_STRING_KEY_MAP, getPrinterStatusIcon, PrinterStatusReason} from '../data/printer_status_cros.js';
 // </if>
 

@@ -15,9 +15,15 @@ import {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse} from '../nat
 
 // </if>
 import {Cdd, MediaSizeOption} from './cdd.js';
-import {CloudOrigins, createDestinationKey, createRecentDestinationKey, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationProvisionalType, DestinationType, GooglePromotedDestinationId, RecentDestination} from './destination.js';
+import {createDestinationKey, createRecentDestinationKey, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, GooglePromotedDestinationId, RecentDestination} from './destination.js';
+// <if expr="chromeos_ash or chromeos_lacros">
+import {DestinationProvisionalType} from './destination.js';
+// </if>
 import {DestinationMatch, getPrinterTypeForDestination, originToType, PrinterType} from './destination_match.js';
-import {LocalDestinationInfo, parseDestination, parseExtensionDestination, ProvisionalDestinationInfo} from './local_parsers.js';
+import {LocalDestinationInfo, parseDestination, ProvisionalDestinationInfo} from './local_parsers.js';
+// <if expr="chromeos_ash or chromeos_lacros">
+import {parseExtensionDestination} from './local_parsers.js';
+// </if>
 
 /**
  * Printer search statuses used by the destination store.

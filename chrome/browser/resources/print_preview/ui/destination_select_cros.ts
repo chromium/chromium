@@ -15,7 +15,6 @@ import './print_preview_shared_css.js';
 import './throbber_css.js';
 import '../strings.m.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

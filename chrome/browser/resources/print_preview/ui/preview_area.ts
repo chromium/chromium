@@ -7,8 +7,6 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import './print_preview_vars_css.js';
 import '../strings.m.js';
 
-import {assert} from 'chrome://resources/js/assert_ts.js';
-import {isMac} from 'chrome://resources/js/cr.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {hasKeyModifiers} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
@@ -21,7 +19,6 @@ import {getPrinterTypeForDestination} from '../data/destination_match.js';
 import {CustomMarginsOrientation, Margins, MarginsSetting, MarginsType} from '../data/margins.js';
 import {MeasurementSystem} from '../data/measurement_system.js';
 import {DuplexMode, MediaSizeValue, Ticket} from '../data/model.js';
-import {PrintableArea} from '../data/printable_area.js';
 import {ScalingType} from '../data/scaling.js';
 import {Size} from '../data/size.js';
 import {Error, State} from '../data/state.js';
@@ -307,7 +304,6 @@ export class PrintPreviewPreviewAreaElement extends
   // <if expr="is_macosx">
   /** Set the preview state to display the "opening in preview" message. */
   setOpeningPdfInPreview() {
-    assert(isMac);
     this.previewState = this.previewState === PreviewAreaState.LOADING ?
         PreviewAreaState.OPEN_IN_PREVIEW_LOADING :
         PreviewAreaState.OPEN_IN_PREVIEW_LOADED;

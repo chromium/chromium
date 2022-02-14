@@ -39,8 +39,7 @@ export type ProvisionalDestinationInfo = {
  */
 export function parseDestination(
     type: PrinterType,
-    printer: (LocalDestinationInfo|ProvisionalDestinationInfo)): (Destination|
-                                                                  null) {
+    printer: (LocalDestinationInfo|ProvisionalDestinationInfo)): Destination {
   if (type === PrinterType.LOCAL_PRINTER) {
     return parseLocalDestination(printer as LocalDestinationInfo);
   }
