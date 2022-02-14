@@ -25,13 +25,15 @@ class WebAppTranslationManagerTest : public WebAppTest {
         std::make_unique<FakeWebAppRegistryController>();
     fake_registry_controller_->SetUp(profile());
 
+    install_manager_ = std::make_unique<WebAppInstallManager>(profile());
+
     file_utils_ = base::MakeRefCounted<TestFileUtils>();
 
     controller().Init();
     InitWebAppProvider();
 
     translation_manager_ = std::make_unique<WebAppTranslationManager>(
-        profile(), registrar(), file_utils_);
+        profile(), &install_manager(), file_utils_);
   }
 
  protected:
@@ -85,9 +87,10 @@ class WebAppTranslationManagerTest : public WebAppTest {
     return *fake_registry_controller_;
   }
 
+  WebAppInstallManager& install_manager() { return *install_manager_; }
+
   FakeWebAppProvider& provider() { return *provider_; }
 
-  WebAppRegistrar* registrar() { return &provider().registrar(); }
   WebAppTranslationManager& translation_manager() {
     return *translation_manager_;
   }
@@ -98,6 +101,7 @@ class WebAppTranslationManagerTest : public WebAppTest {
 
  private:
   std::unique_ptr<FakeWebAppRegistryController> fake_registry_controller_;
+  std::unique_ptr<WebAppInstallManager> install_manager_;
   std::unique_ptr<WebAppTranslationManager> translation_manager_;
   scoped_refptr<TestFileUtils> file_utils_;
   web_app::FakeWebAppProvider* provider_;

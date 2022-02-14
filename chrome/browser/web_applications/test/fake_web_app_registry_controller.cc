@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
@@ -43,7 +44,8 @@ void FakeWebAppRegistryController::SetUp(base::raw_ptr<Profile> profile) {
                                          /*ui_manager=*/nullptr,
                                          /*icon_manager=*/nullptr);
   translation_manager_ = std::make_unique<WebAppTranslationManager>(
-      profile, mutable_registrar_.get(), base::MakeRefCounted<TestFileUtils>());
+      profile, /*install_manager=*/nullptr,
+      base::MakeRefCounted<TestFileUtils>());
 
   fake_externally_managed_app_manager_ =
       std::make_unique<FakeExternallyManagedAppManager>(profile);

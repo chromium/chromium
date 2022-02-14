@@ -126,9 +126,9 @@ bool WriteTranslationsBlocking(
 
 WebAppTranslationManager::WebAppTranslationManager(
     Profile* profile,
-    WebAppRegistrar* registrar,
+    base::raw_ptr<WebAppInstallManager> install_manager,
     scoped_refptr<FileUtilsWrapper> utils)
-    : registrar_(registrar), utils_(std::move(utils)) {
+    : install_manager_(install_manager), utils_(std::move(utils)) {
   web_apps_directory_ = GetWebAppsRootDirectory(profile);
 }
 
@@ -138,7 +138,7 @@ void WebAppTranslationManager::Start() {
   if (base::FeatureList::IsEnabled(
           blink::features::kWebAppEnableTranslations)) {
     ReadTranslations(base::DoNothing());
-    registrar_observation_.Observe(registrar_.get());
+    install_manager_observation_.Observe(install_manager_.get());
   }
 }
 
@@ -152,8 +152,8 @@ void WebAppTranslationManager::OnWebAppUninstalled(const AppId& app_id) {
   DeleteTranslations(app_id, base::DoNothing());
 }
 
-void WebAppTranslationManager::OnAppRegistrarDestroyed() {
-  registrar_observation_.Reset();
+void WebAppTranslationManager::OnWebAppInstallManagerDestroyed() {
+  install_manager_observation_.Reset();
 }
 
 void WebAppTranslationManager::WriteTranslations(
