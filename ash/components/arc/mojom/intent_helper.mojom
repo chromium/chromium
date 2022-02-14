@@ -212,8 +212,8 @@ struct LaunchFileInfo {
   // specific type can be determined.
   string type;
 
-  // TODO(crbug.com/1238215): Remove references and rename.
-  string deprecated_name;
+  // Unused, replaced by |name|.
+  string removed_name;
 
   // Size of the file in bytes.
   uint64 size;

@@ -155,11 +155,6 @@ apps::mojom::IntentPtr ConvertLaunchIntent(
       file->url = arc::ArcUrlToExternalFileUrl(file_info->content_uri);
       file->mime_type = file_info->type;
       file->file_name = file_info->name;
-      if (!file->file_name.has_value()) {
-        // TODO(crbug.com/1238215): Remove fallback to deprecated field.
-        file->file_name =
-            base::SafeBaseName::Create(file_info->deprecated_name);
-      }
       file->file_size = file_info->size;
       intent->files->push_back(std::move(file));
       mime_types.push_back(file_info->type);
