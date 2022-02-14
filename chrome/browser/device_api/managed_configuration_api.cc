@@ -325,7 +325,7 @@ void ManagedConfigurationAPI::ProcessDecodedConfiguration(
     std::string result;
     JSONStringValueSerializer serializer(&result);
     serializer.Serialize(item.second);
-    result_dict.SetString(item.first, result);
+    result_dict.SetStringPath(item.first, result);
   }
 
   PostStoreConfiguration(origin, std::move(result_dict));

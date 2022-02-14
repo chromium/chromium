@@ -114,11 +114,11 @@ class ManagedConfigurationAPITest : public InProcessBrowserTest,
                         const std::string& conf_hash) {
     auto trusted_apps = std::make_unique<base::ListValue>();
     auto entry = std::make_unique<base::DictionaryValue>();
-    entry->SetString(ManagedConfigurationAPI::kOriginKey, kOrigin);
-    entry->SetString(ManagedConfigurationAPI::kManagedConfigurationUrlKey,
-                     embedded_test_server()->GetURL(conf_url).spec());
-    entry->SetString(ManagedConfigurationAPI::kManagedConfigurationHashKey,
-                     conf_hash);
+    entry->SetStringKey(ManagedConfigurationAPI::kOriginKey, kOrigin);
+    entry->SetStringKey(ManagedConfigurationAPI::kManagedConfigurationUrlKey,
+                        embedded_test_server()->GetURL(conf_url).spec());
+    entry->SetStringKey(ManagedConfigurationAPI::kManagedConfigurationHashKey,
+                        conf_hash);
     trusted_apps->Append(std::move(entry));
     profile()->GetPrefs()->Set(prefs::kManagedConfigurationPerOrigin,
                                *trusted_apps);
