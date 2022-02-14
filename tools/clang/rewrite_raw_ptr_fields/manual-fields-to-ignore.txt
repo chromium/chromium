@@ -98,7 +98,7 @@ x11::Connection::display_
 # Populated manually - static_cast not related by inheritance.
 gtk::GtkKeyBindingsHandler::fake_window_
 gtk::GtkKeyBindingsHandler::handler_
-gtk::SelectFileDialogImplGTK::preview_
+gtk::SelectFileDialogLinuxGtk::preview_
 remoting::(anonymous namespace)::DisconnectWindowGtk::disconnect_window_
 remoting::(anonymous namespace)::DisconnectWindowGtk::message_
 remoting::(anonymous namespace)::GtkFileChooserOnUiThread::file_dialog_

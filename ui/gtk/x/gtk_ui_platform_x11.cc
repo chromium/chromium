@@ -72,13 +72,6 @@ GdkWindow* GtkUiPlatformX11::GetGdkWindow(gfx::AcceleratedWidget window_id) {
   return gdk_window;
 }
 
-bool GtkUiPlatformX11::ExportWindowHandle(
-    gfx::AcceleratedWidget window_id,
-    base::OnceCallback<void(std::string)> callback) {
-  std::move(callback).Run(base::StringPrintf("x11:%#x", window_id));
-  return true;
-}
-
 bool GtkUiPlatformX11::SetGtkWidgetTransientFor(GtkWidget* widget,
                                                 gfx::AcceleratedWidget parent) {
   auto x11_window = static_cast<x11::Window>(

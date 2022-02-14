@@ -19,6 +19,9 @@ class COMPONENT_EXPORT(UI_BASE) LinuxUiDelegateStub
 
   // LinuxUiDelegate:
   LinuxUiBackend GetBackend() const override;
+  bool ExportWindowHandle(
+      gfx::AcceleratedWidget window_id,
+      base::OnceCallback<void(std::string)> callback) override;
 };
 
 }  // namespace ui

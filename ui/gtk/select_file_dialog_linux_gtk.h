@@ -2,30 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GTK_SELECT_FILE_DIALOG_IMPL_GTK_H_
-#define UI_GTK_SELECT_FILE_DIALOG_IMPL_GTK_H_
+#ifndef UI_GTK_SELECT_FILE_DIALOG_LINUX_GTK_H_
+#define UI_GTK_SELECT_FILE_DIALOG_LINUX_GTK_H_
 
 #include <map>
 
 #include "ui/base/glib/glib_signal.h"
 #include "ui/gtk/gtk_util.h"
-#include "ui/gtk/select_file_dialog_impl.h"
+#include "ui/shell_dialogs/select_file_dialog_linux.h"
 
 namespace gtk {
 
 // Implementation of SelectFileDialog that shows a Gtk common dialog for
 // choosing a file or folder. This acts as a modal dialog.
-class SelectFileDialogImplGTK : public SelectFileDialogImpl,
-                                public aura::WindowObserver {
+class SelectFileDialogLinuxGtk : public ui::SelectFileDialogLinux,
+                                 public aura::WindowObserver {
  public:
-  SelectFileDialogImplGTK(Listener* listener,
-                          std::unique_ptr<ui::SelectFilePolicy> policy);
+  SelectFileDialogLinuxGtk(Listener* listener,
+                           std::unique_ptr<ui::SelectFilePolicy> policy);
 
-  SelectFileDialogImplGTK(const SelectFileDialogImplGTK&) = delete;
-  SelectFileDialogImplGTK& operator=(const SelectFileDialogImplGTK&) = delete;
+  SelectFileDialogLinuxGtk(const SelectFileDialogLinuxGtk&) = delete;
+  SelectFileDialogLinuxGtk& operator=(const SelectFileDialogLinuxGtk&) = delete;
 
  protected:
-  ~SelectFileDialogImplGTK() override;
+  ~SelectFileDialogLinuxGtk() override;
 
   // BaseShellDialog implementation:
   bool IsRunning(gfx::NativeWindow parent_window) const override;
@@ -100,35 +100,35 @@ class SelectFileDialogImplGTK : public SelectFileDialogImpl,
                                   gfx::NativeWindow parent);
 
   // Callback for when the user responds to a Save As or Open File dialog.
-  CHROMEG_CALLBACK_1(SelectFileDialogImplGTK,
+  CHROMEG_CALLBACK_1(SelectFileDialogLinuxGtk,
                      void,
                      OnSelectSingleFileDialogResponse,
                      GtkWidget*,
                      int);
 
   // Callback for when the user responds to a Select Folder dialog.
-  CHROMEG_CALLBACK_1(SelectFileDialogImplGTK,
+  CHROMEG_CALLBACK_1(SelectFileDialogLinuxGtk,
                      void,
                      OnSelectSingleFolderDialogResponse,
                      GtkWidget*,
                      int);
 
   // Callback for when the user responds to a Open Multiple Files dialog.
-  CHROMEG_CALLBACK_1(SelectFileDialogImplGTK,
+  CHROMEG_CALLBACK_1(SelectFileDialogLinuxGtk,
                      void,
                      OnSelectMultiFileDialogResponse,
                      GtkWidget*,
                      int);
 
   // Callback for when the file chooser gets destroyed.
-  CHROMEG_CALLBACK_0(SelectFileDialogImplGTK,
+  CHROMEG_CALLBACK_0(SelectFileDialogLinuxGtk,
                      void,
                      OnFileChooserDestroy,
                      GtkWidget*);
 
   // Callback for when we update the preview for the selection. Only used on
   // GTK3.
-  CHROMEG_CALLBACK_0(SelectFileDialogImplGTK,
+  CHROMEG_CALLBACK_0(SelectFileDialogLinuxGtk,
                      void,
                      OnUpdatePreview,
                      GtkWidget*);
@@ -149,4 +149,4 @@ class SelectFileDialogImplGTK : public SelectFileDialogImpl,
 
 }  // namespace gtk
 
-#endif  // UI_GTK_SELECT_FILE_DIALOG_IMPL_GTK_H_
+#endif  // UI_GTK_SELECT_FILE_DIALOG_LINUX_GTK_H_

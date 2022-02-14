@@ -103,22 +103,6 @@ GdkWindow* GtkUiPlatformWayland::GetGdkWindow(
   return nullptr;
 }
 
-bool GtkUiPlatformWayland::ExportWindowHandle(
-    gfx::AcceleratedWidget window_id,
-    base::OnceCallback<void(std::string)> callback) {
-  if (!gtk::GtkCheckVersion(3, 22)) {
-    LOG(WARNING) << "set_transient_for_exported not supported in GTK version "
-                 << gtk_get_major_version() << '.' << gtk_get_minor_version()
-                 << '.' << gtk_get_micro_version();
-    return false;
-  }
-
-  return ui::LinuxUiDelegate::GetInstance()->ExportWindowHandle(
-      window_id,
-      base::BindOnce(&GtkUiPlatformWayland::OnHandleForward,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
 bool GtkUiPlatformWayland::SetGtkWidgetTransientFor(
     GtkWidget* widget,
     gfx::AcceleratedWidget parent) {
@@ -151,16 +135,14 @@ void GtkUiPlatformWayland::OnHandleSetTransient(GtkWidget* widget,
         gtk_native_get_surface(gtk_widget_get_native(widget)),
         gdk_toplevel_get_type());
     gdk_wayland_toplevel_set_transient_for_exported(toplevel, parent);
-  } else {
+  } else if (gtk::GtkCheckVersion(3, 22)) {
     gdk_wayland_window_set_transient_for_exported(gtk_widget_get_window(widget),
                                                   parent);
+  } else {
+    LOG(WARNING) << "set_transient_for_exported not supported in GTK version "
+                 << gtk_get_major_version() << '.' << gtk_get_minor_version()
+                 << '.' << gtk_get_micro_version();
   }
-}
-
-void GtkUiPlatformWayland::OnHandleForward(
-    base::OnceCallback<void(std::string)> callback,
-    const std::string& handle) {
-  std::move(callback).Run("wayland:" + handle);
 }
 
 bool GtkUiPlatformWayland::PreferGtkIme() {

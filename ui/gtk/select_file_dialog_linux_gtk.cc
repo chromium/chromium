@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gtk/select_file_dialog_impl_gtk.h"
+#include "ui/gtk/select_file_dialog_linux_gtk.h"
 
 #include <glib/gi18n.h>
 #include <sys/stat.h>
@@ -31,8 +31,8 @@
 #include "ui/gtk/gtk_ui.h"
 #include "ui/gtk/gtk_ui_platform.h"
 #include "ui/gtk/gtk_util.h"
-#include "ui/gtk/select_file_dialog_impl.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
+#include "ui/shell_dialogs/select_file_dialog_linux.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
 
@@ -157,24 +157,18 @@ std::vector<base::FilePath> GtkFileChooserGetFilenames(GtkWidget* dialog) {
 
 // The size of the preview we display for selected image files. We set height
 // larger than width because generally there is more free space vertically
-// than horiztonally (setting the preview image will always expand the width of
+// than horizontally (setting the preview image will always expand the width of
 // the dialog, but usually not the height). The image's aspect ratio will always
 // be preserved.  Only used on GTK3.
 static const int kPreviewWidth = 256;
 static const int kPreviewHeight = 512;
 
-SelectFileDialogImpl* SelectFileDialogImpl::NewSelectFileDialogImplGTK(
-    Listener* listener,
-    std::unique_ptr<ui::SelectFilePolicy> policy) {
-  return new SelectFileDialogImplGTK(listener, std::move(policy));
-}
-
-SelectFileDialogImplGTK::SelectFileDialogImplGTK(
+SelectFileDialogLinuxGtk::SelectFileDialogLinuxGtk(
     Listener* listener,
     std::unique_ptr<ui::SelectFilePolicy> policy)
-    : SelectFileDialogImpl(listener, std::move(policy)) {}
+    : SelectFileDialogLinux(listener, std::move(policy)) {}
 
-SelectFileDialogImplGTK::~SelectFileDialogImplGTK() {
+SelectFileDialogLinuxGtk::~SelectFileDialogLinuxGtk() {
   for (auto* window : parents_)
     window->RemoveObserver(this);
   auto dialogs = dialogs_;
@@ -187,15 +181,16 @@ SelectFileDialogImplGTK::~SelectFileDialogImplGTK() {
   }
 }
 
-bool SelectFileDialogImplGTK::IsRunning(gfx::NativeWindow parent_window) const {
+bool SelectFileDialogLinuxGtk::IsRunning(
+    gfx::NativeWindow parent_window) const {
   return parents_.find(parent_window) != parents_.end();
 }
 
-bool SelectFileDialogImplGTK::HasMultipleFileTypeChoicesImpl() {
-  return file_types_.extensions.size() > 1;
+bool SelectFileDialogLinuxGtk::HasMultipleFileTypeChoicesImpl() {
+  return file_types().extensions.size() > 1;
 }
 
-void SelectFileDialogImplGTK::OnWindowDestroying(aura::Window* window) {
+void SelectFileDialogLinuxGtk::OnWindowDestroying(aura::Window* window) {
   // Remove the |parent| property associated with the |dialog|.
   for (auto dialog_signal : dialogs_) {
     auto* dialog = dialog_signal.first;
@@ -212,7 +207,7 @@ void SelectFileDialogImplGTK::OnWindowDestroying(aura::Window* window) {
 }
 
 // We ignore |default_extension|.
-void SelectFileDialogImplGTK::SelectFileImpl(
+void SelectFileDialogLinuxGtk::SelectFileImpl(
     Type type,
     const std::u16string& title,
     const base::FilePath& default_path,
@@ -221,7 +216,7 @@ void SelectFileDialogImplGTK::SelectFileImpl(
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow owning_window,
     void* params) {
-  type_ = type;
+  set_type(type);
   if (owning_window) {
     owning_window->AddObserver(this);
     parents_.insert(owning_window);
@@ -229,9 +224,9 @@ void SelectFileDialogImplGTK::SelectFileImpl(
 
   std::string title_string = base::UTF16ToUTF8(title);
 
-  file_type_index_ = file_type_index;
+  set_file_type_index(file_type_index);
   if (file_types)
-    file_types_ = *file_types;
+    set_file_types(*file_types);
 
   GtkWidget* dialog = nullptr;
   switch (type) {
@@ -301,12 +296,12 @@ void SelectFileDialogImplGTK::SelectFileImpl(
   gtk::GtkUi::GetPlatform()->ShowGtkWindow(GTK_WINDOW(dialog));
 }
 
-void SelectFileDialogImplGTK::AddFilters(GtkFileChooser* chooser) {
-  for (size_t i = 0; i < file_types_.extensions.size(); ++i) {
+void SelectFileDialogLinuxGtk::AddFilters(GtkFileChooser* chooser) {
+  for (size_t i = 0; i < file_types().extensions.size(); ++i) {
     GtkFileFilter* filter = nullptr;
     std::set<std::string> fallback_labels;
 
-    for (const auto& current_extension : file_types_.extensions[i]) {
+    for (const auto& current_extension : file_types().extensions[i]) {
       if (!current_extension.empty()) {
         if (!filter)
           filter = gtk_file_filter_new();
@@ -324,10 +319,10 @@ void SelectFileDialogImplGTK::AddFilters(GtkFileChooser* chooser) {
 
     // The description vector may be blank, in which case we are supposed to
     // use some sort of default description based on the filter.
-    if (i < file_types_.extension_description_overrides.size()) {
+    if (i < file_types().extension_description_overrides.size()) {
       gtk_file_filter_set_name(
           filter,
-          base::UTF16ToUTF8(file_types_.extension_description_overrides[i])
+          base::UTF16ToUTF8(file_types().extension_description_overrides[i])
               .c_str());
     } else {
       // There is no system default filter description so we use
@@ -340,13 +335,13 @@ void SelectFileDialogImplGTK::AddFilters(GtkFileChooser* chooser) {
     }
 
     gtk_file_chooser_add_filter(chooser, filter);
-    if (i == file_type_index_ - 1)
+    if (i == file_type_index() - 1)
       gtk_file_chooser_set_filter(chooser, filter);
   }
 
   // Add the *.* filter, but only if we have added other filters (otherwise it
   // is implied).
-  if (file_types_.include_all_files && !file_types_.extensions.empty()) {
+  if (file_types().include_all_files && !file_types().extensions.empty()) {
     GtkFileFilter* filter = gtk_file_filter_new();
     gtk_file_filter_add_pattern(filter, "*");
     gtk_file_filter_set_name(
@@ -355,13 +350,14 @@ void SelectFileDialogImplGTK::AddFilters(GtkFileChooser* chooser) {
   }
 }
 
-void SelectFileDialogImplGTK::FileSelected(GtkWidget* dialog,
-                                           const base::FilePath& path) {
-  if (type_ == SELECT_SAVEAS_FILE) {
-    *last_saved_path_ = path.DirName();
-  } else if (type_ == SELECT_OPEN_FILE || type_ == SELECT_FOLDER ||
-             type_ == SELECT_UPLOAD_FOLDER || type_ == SELECT_EXISTING_FOLDER) {
-    *last_opened_path_ = path.DirName();
+void SelectFileDialogLinuxGtk::FileSelected(GtkWidget* dialog,
+                                            const base::FilePath& path) {
+  if (type() == SELECT_SAVEAS_FILE) {
+    set_last_saved_path(path.DirName());
+  } else if (type() == SELECT_OPEN_FILE || type() == SELECT_FOLDER ||
+             type() == SELECT_UPLOAD_FOLDER ||
+             type() == SELECT_EXISTING_FOLDER) {
+    set_last_opened_path(path.DirName());
   } else {
     NOTREACHED();
   }
@@ -373,24 +369,24 @@ void SelectFileDialogImplGTK::FileSelected(GtkWidget* dialog,
   GtkWindowDestroy(dialog);
 }
 
-void SelectFileDialogImplGTK::MultiFilesSelected(
+void SelectFileDialogLinuxGtk::MultiFilesSelected(
     GtkWidget* dialog,
     const std::vector<base::FilePath>& files) {
-  *last_opened_path_ = files[0].DirName();
+  set_last_opened_path(files[0].DirName());
 
   if (listener_)
     listener_->MultiFilesSelected(files, PopParamsForDialog(dialog));
   GtkWindowDestroy(dialog);
 }
 
-void SelectFileDialogImplGTK::FileNotSelected(GtkWidget* dialog) {
+void SelectFileDialogLinuxGtk::FileNotSelected(GtkWidget* dialog) {
   void* params = PopParamsForDialog(dialog);
   if (listener_)
     listener_->FileSelectionCanceled(params);
   GtkWindowDestroy(dialog);
 }
 
-GtkWidget* SelectFileDialogImplGTK::CreateFileOpenHelper(
+GtkWidget* SelectFileDialogLinuxGtk::CreateFileOpenHelper(
     const std::string& title,
     const base::FilePath& default_path,
     gfx::NativeWindow parent) {
@@ -408,14 +404,14 @@ GtkWidget* SelectFileDialogImplGTK::CreateFileOpenHelper(
       // directory. That's good enough.
       GtkFileChooserSetFilename(GTK_FILE_CHOOSER(dialog), default_path);
     }
-  } else if (!last_opened_path_->empty()) {
+  } else if (!last_opened_path()->empty()) {
     GtkFileChooserSetCurrentFolder(GTK_FILE_CHOOSER(dialog),
-                                   *last_opened_path_);
+                                   *last_opened_path());
   }
   return dialog;
 }
 
-GtkWidget* SelectFileDialogImplGTK::CreateSelectFolderDialog(
+GtkWidget* SelectFileDialogLinuxGtk::CreateSelectFolderDialog(
     Type type,
     const std::string& title,
     const base::FilePath& default_path,
@@ -443,8 +439,8 @@ GtkWidget* SelectFileDialogImplGTK::CreateSelectFolderDialog(
     gtk_file_chooser_set_create_folders(chooser, FALSE);
   if (!default_path.empty())
     GtkFileChooserSetCurrentFolder(chooser, default_path);
-  else if (!last_opened_path_->empty())
-    GtkFileChooserSetCurrentFolder(chooser, *last_opened_path_);
+  else if (!last_opened_path()->empty())
+    GtkFileChooserSetCurrentFolder(chooser, *last_opened_path());
   GtkFileFilter* only_folders = gtk_file_filter_new();
   gtk_file_filter_set_name(
       only_folders,
@@ -459,7 +455,7 @@ GtkWidget* SelectFileDialogImplGTK::CreateSelectFolderDialog(
   return dialog;
 }
 
-GtkWidget* SelectFileDialogImplGTK::CreateFileOpenDialog(
+GtkWidget* SelectFileDialogLinuxGtk::CreateFileOpenDialog(
     const std::string& title,
     const base::FilePath& default_path,
     gfx::NativeWindow parent) {
@@ -474,7 +470,7 @@ GtkWidget* SelectFileDialogImplGTK::CreateFileOpenDialog(
   return dialog;
 }
 
-GtkWidget* SelectFileDialogImplGTK::CreateMultiFileOpenDialog(
+GtkWidget* SelectFileDialogLinuxGtk::CreateMultiFileOpenDialog(
     const std::string& title,
     const base::FilePath& default_path,
     gfx::NativeWindow parent) {
@@ -489,7 +485,7 @@ GtkWidget* SelectFileDialogImplGTK::CreateMultiFileOpenDialog(
   return dialog;
 }
 
-GtkWidget* SelectFileDialogImplGTK::CreateSaveAsDialog(
+GtkWidget* SelectFileDialogLinuxGtk::CreateSaveAsDialog(
     const std::string& title,
     const base::FilePath& default_path,
     gfx::NativeWindow parent) {
@@ -518,8 +514,9 @@ GtkWidget* SelectFileDialogImplGTK::CreateSaveAsDialog(
       gtk_file_chooser_set_current_name(
           GTK_FILE_CHOOSER(dialog), default_path.BaseName().value().c_str());
     }
-  } else if (!last_saved_path_->empty()) {
-    GtkFileChooserSetCurrentFolder(GTK_FILE_CHOOSER(dialog), *last_saved_path_);
+  } else if (!last_saved_path()->empty()) {
+    GtkFileChooserSetCurrentFolder(GTK_FILE_CHOOSER(dialog),
+                                   *last_saved_path());
   }
   gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(dialog), FALSE);
   // Overwrite confirmation is always enabled in GTK4.
@@ -532,7 +529,7 @@ GtkWidget* SelectFileDialogImplGTK::CreateSaveAsDialog(
   return dialog;
 }
 
-void* SelectFileDialogImplGTK::PopParamsForDialog(GtkWidget* dialog) {
+void* SelectFileDialogLinuxGtk::PopParamsForDialog(GtkWidget* dialog) {
   std::map<GtkWidget*, void*>::iterator iter = params_map_.find(dialog);
   DCHECK(iter != params_map_.end());
   void* params = iter->second;
@@ -540,7 +537,7 @@ void* SelectFileDialogImplGTK::PopParamsForDialog(GtkWidget* dialog) {
   return params;
 }
 
-bool SelectFileDialogImplGTK::IsCancelResponse(gint response_id) {
+bool SelectFileDialogLinuxGtk::IsCancelResponse(gint response_id) {
   bool is_cancel = response_id == GTK_RESPONSE_CANCEL ||
                    response_id == GTK_RESPONSE_DELETE_EVENT;
   if (is_cancel)
@@ -550,9 +547,9 @@ bool SelectFileDialogImplGTK::IsCancelResponse(gint response_id) {
   return false;
 }
 
-void SelectFileDialogImplGTK::SelectSingleFileHelper(GtkWidget* dialog,
-                                                     gint response_id,
-                                                     bool allow_folder) {
+void SelectFileDialogLinuxGtk::SelectSingleFileHelper(GtkWidget* dialog,
+                                                      gint response_id,
+                                                      bool allow_folder) {
   if (IsCancelResponse(response_id)) {
     FileNotSelected(dialog);
     return;
@@ -576,20 +573,21 @@ void SelectFileDialogImplGTK::SelectSingleFileHelper(GtkWidget* dialog,
     FileSelected(dialog, path);
 }
 
-void SelectFileDialogImplGTK::OnSelectSingleFileDialogResponse(
+void SelectFileDialogLinuxGtk::OnSelectSingleFileDialogResponse(
     GtkWidget* dialog,
     int response_id) {
   SelectSingleFileHelper(dialog, response_id, false);
 }
 
-void SelectFileDialogImplGTK::OnSelectSingleFolderDialogResponse(
+void SelectFileDialogLinuxGtk::OnSelectSingleFolderDialogResponse(
     GtkWidget* dialog,
     int response_id) {
   SelectSingleFileHelper(dialog, response_id, true);
 }
 
-void SelectFileDialogImplGTK::OnSelectMultiFileDialogResponse(GtkWidget* dialog,
-                                                              int response_id) {
+void SelectFileDialogLinuxGtk::OnSelectMultiFileDialogResponse(
+    GtkWidget* dialog,
+    int response_id) {
   if (IsCancelResponse(response_id)) {
     FileNotSelected(dialog);
     return;
@@ -608,7 +606,7 @@ void SelectFileDialogImplGTK::OnSelectMultiFileDialogResponse(GtkWidget* dialog,
   MultiFilesSelected(dialog, filenames);
 }
 
-void SelectFileDialogImplGTK::OnFileChooserDestroy(GtkWidget* dialog) {
+void SelectFileDialogLinuxGtk::OnFileChooserDestroy(GtkWidget* dialog) {
   dialogs_.erase(dialog);
 
   // |parent| can be nullptr when closing the host window
@@ -626,7 +624,7 @@ void SelectFileDialogImplGTK::OnFileChooserDestroy(GtkWidget* dialog) {
   }
 }
 
-void SelectFileDialogImplGTK::OnUpdatePreview(GtkWidget* chooser) {
+void SelectFileDialogLinuxGtk::OnUpdatePreview(GtkWidget* chooser) {
   DCHECK(!GtkCheckVersion(4));
   gchar* filename =
       gtk_file_chooser_get_preview_filename(GTK_FILE_CHOOSER(chooser));
