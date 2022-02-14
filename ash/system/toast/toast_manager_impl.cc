@@ -30,23 +30,23 @@ void ToastManagerImpl::Show(const ToastData& data) {
   const std::string& id = data.id;
   DCHECK(!id.empty());
 
-  if (current_toast_data_ && current_toast_data_->id == id) {
-    // Replace the visible toast by adding the new toast data to the front of
-    // the queue and hiding the visible toast. Once the visible toast finishes
-    // hiding, the new toast will be displayed.
-    queue_.emplace_front(data);
-    overlay_->Show(false);
-    return;
-  }
-
   auto existing_toast =
       std::find_if(queue_.begin(), queue_.end(),
                    [&id](const ToastData& data) { return data.id == id; });
 
-  if (existing_toast == queue_.end()) {
-    queue_.emplace_back(data);
-  } else {
+  if (existing_toast != queue_.end()) {
     *existing_toast = data;
+  } else {
+    if (current_toast_data_ && current_toast_data_->id == id) {
+      // Replace the visible toast by adding the new toast data to the front of
+      // the queue and hiding the visible toast. Once the visible toast finishes
+      // hiding, the new toast will be displayed.
+      queue_.emplace_front(data);
+      overlay_->Show(false);
+      return;
+    }
+
+    queue_.emplace_back(data);
   }
 
   if (queue_.size() == 1 && overlay_ == nullptr)
