@@ -657,6 +657,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.AffiliationFetcher.FetchTime" units="ms"
+    expires_after="2022-07-03">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The time elapsed between sending a request to AffiliationService and
+    receiving a response.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.AffiliationService.GetChangePasswordUsage"
     enum="GetChangePasswordUrlMetric" expires_after="2022-08-07">
   <owner>vsemeniuk@google.com</owner>
