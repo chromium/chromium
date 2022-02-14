@@ -52,7 +52,8 @@ class BatchElementChecker {
   // BatchElementChecker.
   using ElementConditionCheckCallback = base::OnceCallback<void(
       const ClientStatus&,
-      const std::vector<std::string>&,
+      const std::vector<std::string>& payloads,
+      const std::vector<std::string>& tags,
       const base::flat_map<std::string, DomObjectFrameStack>&)>;
 
   // Returns true if element condition is empty.
@@ -171,7 +172,8 @@ class BatchElementChecker {
   MatchResult EvaluateElementPrecondition(const ElementConditionProto& proto,
                                           const std::vector<Result>& results,
                                           size_t* results_iter,
-                                          std::vector<std::string>* payloads);
+                                          std::vector<std::string>* payloads,
+                                          std::vector<std::string>* tags);
   void CheckElementConditions();
   void OnResultsUpdated(const ClientStatus& status,
                         const std::vector<SelectorObserver::Update>& updates,

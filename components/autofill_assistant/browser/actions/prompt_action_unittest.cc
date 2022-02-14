@@ -163,6 +163,7 @@ TEST_F(PromptActionTest, SelectButtons) {
   chip->set_text("Ok");
   chip->set_type(HIGHLIGHTED_ACTION);
   ok_proto->set_server_payload("ok");
+  ok_proto->set_tag("oktag");
 
   auto* cancel_proto = prompt_proto_->add_choices();
   cancel_proto->mutable_chip()->set_text("Cancel");
@@ -187,7 +188,9 @@ TEST_F(PromptActionTest, SelectButtons) {
           Property(&ProcessedActionProto::prompt_choice,
                    Property(&PromptProto::Result::navigation_ended, false)),
           Property(&ProcessedActionProto::prompt_choice,
-                   Property(&PromptProto::Result::server_payload, "ok"))))));
+                   Property(&PromptProto::Result::server_payload, "ok")),
+          Property(&ProcessedActionProto::prompt_choice,
+                   Property(&PromptProto::Result::choice_tag, "oktag"))))));
   EXPECT_TRUE((*user_actions_)[0].HasCallback());
   (*user_actions_)[0].RunCallback();
 }

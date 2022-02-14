@@ -169,6 +169,7 @@ void ShowGenericUiAction::OnPreconditionResult(
     size_t precondition_index,
     const ClientStatus& status,
     const std::vector<std::string>& ignored_payloads,
+    const std::vector<std::string>& ignored_tags,
     const base::flat_map<std::string, DomObjectFrameStack>& ignored_elements) {
   if (should_end_action_) {
     return;

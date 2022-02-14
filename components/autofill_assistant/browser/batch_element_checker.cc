@@ -42,7 +42,7 @@ void BatchElementChecker::AddElementConditionCheck(
     ElementConditionCheckCallback callback) {
   DCHECK(!started_);
   if (IsElementConditionEmpty(condition)) {
-    std::move(callback).Run(ClientStatus(ACTION_APPLIED), {}, {});
+    std::move(callback).Run(ClientStatus(ACTION_APPLIED), {}, {}, {});
     return;
   }
 
@@ -205,7 +205,7 @@ void BatchElementChecker::OnResultsUpdated(
     auto& condition = element_condition_checks_[condition_index];
     size_t index = 0;
     if (EvaluateElementPrecondition(condition.proto, condition.results, &index,
-                                    nullptr)
+                                    nullptr, nullptr)
             .matches()) {
       any_match = true;
       break;
@@ -267,7 +267,7 @@ void BatchElementChecker::CallAllCallbacksWithError(
     const ClientStatus& status) {
   DCHECK(!status.ok());
   for (auto& entry : element_condition_checks_) {
-    std::move(entry.callback).Run(status, {}, {});
+    std::move(entry.callback).Run(status, {}, {}, {});
   }
   FinishedCallbacks();
 }
@@ -326,14 +326,15 @@ void BatchElementChecker::FinishedCallbacks() {
 void BatchElementChecker::CheckElementConditions() {
   for (auto& check : element_condition_checks_) {
     std::vector<std::string> payloads;
+    std::vector<std::string> tags;
     size_t index = 0;
     bool match = EvaluateElementPrecondition(check.proto, check.results, &index,
-                                             &payloads)
+                                             &payloads, &tags)
                      .matches();
     std::move(check.callback)
         .Run(match ? ClientStatus(ACTION_APPLIED)
                    : ClientStatus(ELEMENT_RESOLUTION_FAILED),
-             payloads, check.elements);
+             payloads, tags, check.elements);
   }
 }
 
@@ -342,7 +343,8 @@ BatchElementChecker::EvaluateElementPrecondition(
     const ElementConditionProto& proto,
     const std::vector<Result>& results,
     size_t* next_result_index,
-    std::vector<std::string>* payloads) {
+    std::vector<std::string>* payloads,
+    std::vector<std::string>* tags) {
   MatchResult match{/* checked = */ true, /* match_result= */ false};
   switch (proto.type_case()) {
     case ElementConditionProto::kAllOf: {
@@ -350,7 +352,7 @@ BatchElementChecker::EvaluateElementPrecondition(
       for (const ElementConditionProto& condition :
            proto.all_of().conditions()) {
         MatchResult result = EvaluateElementPrecondition(
-            condition, results, next_result_index, payloads);
+            condition, results, next_result_index, payloads, tags);
         if (match.checked && result.checked) {
           match.match_result = match.match_result && result.match_result;
         } else {
@@ -363,7 +365,7 @@ BatchElementChecker::EvaluateElementPrecondition(
       for (const ElementConditionProto& condition :
            proto.any_of().conditions()) {
         if (EvaluateElementPrecondition(condition, results, next_result_index,
-                                        payloads)
+                                        payloads, tags)
                 .matches()) {
           match.match_result = true;
         }
@@ -376,7 +378,7 @@ BatchElementChecker::EvaluateElementPrecondition(
       for (const ElementConditionProto& condition :
            proto.none_of().conditions()) {
         MatchResult result = EvaluateElementPrecondition(
-            condition, results, next_result_index, payloads);
+            condition, results, next_result_index, payloads, tags);
         if (match.checked && result.checked) {
           match.match_result = match.match_result && !result.match_result;
         } else {
@@ -404,6 +406,9 @@ BatchElementChecker::EvaluateElementPrecondition(
   }
   if (payloads && match.matches() && !proto.payload().empty()) {
     payloads->emplace_back(proto.payload());
+  }
+  if (tags && match.matches() && !proto.tag().empty()) {
+    tags->emplace_back(proto.tag());
   }
   return match;
 }

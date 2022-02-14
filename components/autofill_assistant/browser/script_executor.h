@@ -418,6 +418,7 @@ class ScriptExecutor : public ActionDelegate,
       base::OnceCallback<void(const ClientStatus&)> callback,
       const ClientStatus& status,
       const std::vector<std::string>& ignored_payloads,
+      const std::vector<std::string>& ignored_tags,
       const base::flat_map<std::string, DomObjectFrameStack>& ignored_elements);
   void OnShortWaitForElement(
       base::OnceCallback<void(const ClientStatus&, base::TimeDelta)> callback,

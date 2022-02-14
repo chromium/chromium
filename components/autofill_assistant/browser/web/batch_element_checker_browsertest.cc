@@ -131,6 +131,7 @@ class BatchElementCheckerBrowserTest
       size_t i,
       const ClientStatus& status,
       const std::vector<std::string>& payloads,
+      const std::vector<std::string>& tags,
       const base::flat_map<std::string, DomObjectFrameStack>& elms) {
     (*res)[i] = status.ok();
   }

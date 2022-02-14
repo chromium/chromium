@@ -94,6 +94,7 @@ void WaitForDomAction::OnWaitConditionDone(
     base::OnceCallback<void(const ClientStatus&)> callback,
     const ClientStatus& status,
     const std::vector<std::string>& payloads,
+    const std::vector<std::string>& tags,
     const base::flat_map<std::string, DomObjectFrameStack>& elements) {
   // Results are first cleared, as OnWaitConditionDone can be called more
   // than once. Yet, we want report only the payloads sent with the final call
@@ -103,6 +104,9 @@ void WaitForDomAction::OnWaitConditionDone(
   result->clear_matching_condition_payloads();
   for (const std::string& payload : payloads) {
     result->add_matching_condition_payloads(payload);
+  }
+  for (const std::string& tag : tags) {
+    result->add_matching_condition_tags(tag);
   }
 
   elements_ = elements;

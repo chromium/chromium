@@ -121,7 +121,7 @@ void PromptAction::SetupConditions() {
     if (choice_proto.has_auto_select_when()) {
       ElementConditionProto* condition = auto_select_any_of->add_conditions();
       *condition = choice_proto.auto_select_when();
-      condition->set_payload(base::NumberToString(i));
+      condition->set_tag(base::NumberToString(i));
     }
   }
   if (!auto_select_any_of->conditions().empty()) {
@@ -141,6 +141,7 @@ void PromptAction::OnPreconditionResult(
     size_t choice_index,
     const ClientStatus& status,
     const std::vector<std::string>& ignored_payloads,
+    const std::vector<std::string>& ignored_tags,
     const base::flat_map<std::string, DomObjectFrameStack>& ignored_elements) {
   bool precondition_is_met = status.ok();
   if (precondition_results_[choice_index] == precondition_is_met)
@@ -204,13 +205,14 @@ void PromptAction::UpdateTimings() {
 void PromptAction::OnAutoSelectCondition(
     const ClientStatus& status,
     const std::vector<std::string>& payloads,
+    const std::vector<std::string>& tags,
     const base::flat_map<std::string, DomObjectFrameStack>& ignored_elements) {
-  if (payloads.empty())
+  if (tags.empty())
     return;
 
   // We want to select the first matching choice, so only the first entry of
   // payloads matter.
-  base::StringToInt(payloads[0], &auto_select_choice_index_);
+  base::StringToInt(tags[0], &auto_select_choice_index_);
 
   // Calling OnSuggestionChosen() is delayed until try_done, as it indirectly
   // deletes the batch element checker, which isn't supported from an element
@@ -273,6 +275,8 @@ void PromptAction::OnSuggestionChosen(int choice_index) {
 
   processed_action_proto_->mutable_prompt_choice()->set_server_payload(
       proto_.prompt().choices(choice_index).server_payload());
+  processed_action_proto_->mutable_prompt_choice()->set_choice_tag(
+      proto_.prompt().choices(choice_index).tag());
   EndAction(ClientStatus(ACTION_APPLIED));
 }
 

@@ -43,6 +43,7 @@ class ShowGenericUiAction : public Action, public WaitForDomObserver {
       size_t choice_index,
       const ClientStatus& status,
       const std::vector<std::string>& ignored_payloads,
+      const std::vector<std::string>& ignored_tags,
       const base::flat_map<std::string, DomObjectFrameStack>& ignored_elements);
   void OnElementChecksDone(
       base::OnceCallback<void(const ClientStatus&)> wait_for_dom_callback);

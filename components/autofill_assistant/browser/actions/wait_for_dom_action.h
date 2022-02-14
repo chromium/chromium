@@ -41,6 +41,7 @@ class WaitForDomAction : public Action {
       base::OnceCallback<void(const ClientStatus&)> callback,
       const ClientStatus& status,
       const std::vector<std::string>& payloads,
+      const std::vector<std::string>& tags,
       const base::flat_map<std::string, DomObjectFrameStack>& elements);
   void ReportActionResult(ProcessActionCallback callback,
                           const ClientStatus& status);

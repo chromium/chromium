@@ -1028,6 +1028,7 @@ void ScriptExecutor::CheckElementMatchesCallback(
     base::OnceCallback<void(const ClientStatus&)> callback,
     const ClientStatus& status,
     const std::vector<std::string>& ignored_payloads,
+    const std::vector<std::string>& ignored_tags,
     const base::flat_map<std::string, DomObjectFrameStack>& ignored_elements) {
   std::move(callback).Run(status);
 }
