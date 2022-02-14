@@ -43,7 +43,7 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
                                   -> new AssistantBrowserControlsChrome(browserControls),
                           rootView, staticDependencies.getAccessibilityUtil(),
                           staticDependencies.createInfoPageUtil()),
-                    webContentsSupplier, staticDependencies, bottomSheetController);
+                    webContentsSupplier, staticDependencies);
         }
 
         @Override
