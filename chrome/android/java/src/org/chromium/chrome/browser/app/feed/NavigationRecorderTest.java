@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -102,6 +103,7 @@ public class NavigationRecorderTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/1297086")
     public void testRecordVisitInCurrentTabEndsWhenURLTyped() throws TimeoutException {
         final CallbackHelper callback = new CallbackHelper();
         loadUrlAndRecordVisit(mNavUrl, new Callback<NavigationRecorder.VisitData>() {
