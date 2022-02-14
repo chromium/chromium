@@ -343,8 +343,6 @@ void DesksTemplatesPresenter::OnAddOrUpdateEntry(
   DCHECK(!grid_list.empty());
   overview_session_->ShowDesksTemplatesGrids(
       grid_list.front()->desks_bar_view()->IsZeroState());
-  for (auto& overview_grid : grid_list)
-    overview_grid->UpdateSaveDeskAsTemplateButton();
 
   if (!was_update) {
     RecordNewTemplateHistogram();
