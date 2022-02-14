@@ -598,7 +598,8 @@ void CalendarView::OnViewFocused(View* observed_view) {
   // At least one row of the current month is visible on the screen. The
   // to-be-focused cell should be the first non-grayed date cell that is
   // visible, or today's cell if today is in the current month and visible.
-  if (position < (next_label_->y() - row_height)) {
+  if (position < (next_label_->y() - row_height - kMonthVerticalPadding -
+                  kLabelVerticalPadding)) {
     int row_index = 0;
     const int today_index = calendar_view_controller_->today_row() - 1;
     while (position > (PositionOfCurrentMonth() + row_index * row_height))

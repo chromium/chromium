@@ -25,7 +25,6 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
-#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/table_layout.h"
 
 namespace ash {
@@ -44,9 +43,6 @@ constexpr float kEventsPresentRoundedRadius = 2.f;
 
 // The gap padding between the date and the indicator.
 constexpr int kGapBetweenDateAndIndicator = 1;
-
-// The padding of the focus circle.
-constexpr int kFocusCirclePadding = 4;
 
 // Move to the next day. Both the column and the current date are moved to the
 // next one.
@@ -90,12 +86,7 @@ CalendarDateCellView::CalendarDateCellView(
   label()->SetElideBehavior(gfx::NO_ELIDE);
   label()->SetSubpixelRenderingEnabled(false);
 
-  auto* focus_ring = views::FocusRing::Get(this);
-  focus_ring->SetColor(ColorProvider::Get()->GetControlsLayerColor(
-      ColorProvider::ControlsLayerType::kFocusRingColor));
-  views::HighlightPathGenerator::Install(
-      this, std::make_unique<views::CircleHighlightPathGenerator>(
-                gfx::Insets(kFocusCirclePadding)));
+  views::FocusRing::Remove(this);
 
   DisableFocus();
   if (!grayed_out_) {
@@ -152,7 +143,7 @@ void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
         base::TimeFormatWithPattern(date_, "d")));
   }
 
-  if (views::View::HasFocus() || is_selected_) {
+  if (is_selected_) {
     // Change text color to the background color.
     const SkColor text_color = color_provider->GetBaseLayerColor(
         AshColorProvider::BaseLayerType::kTransparent90);
@@ -170,7 +161,7 @@ void CalendarDateCellView::OnPaintBackground(gfx::Canvas* canvas) {
   SetEnabledTextColors(grayed_out_ ? calendar_utils::GetSecondaryTextColor()
                                    : calendar_utils::GetPrimaryTextColor());
 
-  if (!calendar_utils::IsToday(date_))
+  if (!calendar_utils::IsToday(date_) && !views::View::HasFocus())
     return;
 
   cc::PaintFlags highlight_background;
