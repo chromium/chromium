@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.autofill.settings;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.isNotChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -102,7 +100,8 @@ public class AutofillServerCardEditorTest {
                 fragmentArgs(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD.getGUID()));
 
         onView(withId(R.id.virtual_card_ui)).check(matches(isDisplayed()));
-        onView(withId(R.id.virtual_card_enrollment_switch)).check(matches(isChecked()));
+        onView(withId(R.id.virtual_card_enrollment_button))
+                .check(matches(withText(R.string.remove)));
     }
 
     @Test
@@ -115,7 +114,7 @@ public class AutofillServerCardEditorTest {
                 fragmentArgs(SAMPLE_VIRTUAL_CARD_UNENROLLED_AND_ELIGIBLE_CARD.getGUID()));
 
         onView(withId(R.id.virtual_card_ui)).check(matches(isDisplayed()));
-        onView(withId(R.id.virtual_card_enrollment_switch)).check(matches(isNotChecked()));
+        onView(withId(R.id.virtual_card_enrollment_button)).check(matches(withText(R.string.add)));
     }
 
     @Test
@@ -155,9 +154,10 @@ public class AutofillServerCardEditorTest {
                 fragmentArgs(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD.getGUID()));
 
         onView(withId(R.id.virtual_card_ui)).check(matches(isDisplayed()));
-        onView(withId(R.id.virtual_card_enrollment_switch)).check(matches(isChecked()));
+        onView(withId(R.id.virtual_card_enrollment_button))
+                .check(matches(withText(R.string.remove)));
 
-        onView(withId(R.id.virtual_card_enrollment_switch)).perform(click());
+        onView(withId(R.id.virtual_card_enrollment_button)).perform(click());
         onView(withText(R.string.autofill_credit_card_editor_virtual_card_unenroll_dialog_title))
                 .check(matches(isDisplayed()));
     }
@@ -172,14 +172,16 @@ public class AutofillServerCardEditorTest {
                 fragmentArgs(SAMPLE_VIRTUAL_CARD_ENROLLED_CARD.getGUID()));
 
         onView(withId(R.id.virtual_card_ui)).check(matches(isDisplayed()));
-        onView(withId(R.id.virtual_card_enrollment_switch)).check(matches(isChecked()));
+        onView(withId(R.id.virtual_card_enrollment_button))
+                .check(matches(withText(R.string.remove)));
 
-        onView(withId(R.id.virtual_card_enrollment_switch)).perform(click());
+        onView(withId(R.id.virtual_card_enrollment_button)).perform(click());
         onView(withText(R.string.autofill_credit_card_editor_virtual_card_unenroll_dialog_title))
                 .check(matches(isDisplayed()));
 
         onView(withText(android.R.string.cancel)).perform(click());
-        onView(withId(R.id.virtual_card_enrollment_switch)).check(matches(isChecked()));
+        onView(withId(R.id.virtual_card_enrollment_button))
+                .check(matches(withText(R.string.remove)));
     }
 
     private Bundle fragmentArgs(String guid) {
