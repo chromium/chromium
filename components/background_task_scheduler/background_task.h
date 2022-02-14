@@ -15,6 +15,7 @@ class BrowserContext;
 
 namespace background_task {
 
+// Boolean parameter indicates whether the task needs to be rescheduled.
 using TaskFinishedCallback = base::OnceCallback<void(bool)>;
 
 // Entry point for callbacks from BackgroundTaskScheduler. Any classes
@@ -25,7 +26,8 @@ class BackgroundTask {
   // The following two methods represent the callback from
   // BackgroundTaskScheduler when your task should start processing. It is
   // invoked on the main thread, and after your task finishes, you should
-  // run the |callback|. While this method is running the system holds a
+  // run the |callback|, with a boolean parameter indicating whether the task
+  // needs to be rescheduled. While this method is running the system holds a
   // wakelock and the wakelock is not released until either the |callback| is
   // invoked, or the system calls onStopTask. Depending on whether Chrome is
   // running in service manager only mode or full browser mode, one or both of
