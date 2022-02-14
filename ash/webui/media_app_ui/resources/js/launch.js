@@ -163,6 +163,8 @@ guestMessagePipe.registerHandler(Message.NOTIFY_CURRENT_FILE, message => {
   let genericType = notifyMsg.type ? notifyMsg.type.split('/')[0] : 'file';
   if (title.text === appTitle) {
     genericType = 'app';
+  } else if (notifyMsg.type === 'application/pdf') {
+    genericType = 'pdf';
   } else if (!['audio', 'image', 'video', 'file'].includes(genericType)) {
     genericType = 'file';
   }

@@ -16,6 +16,7 @@
       <include name="IDR_MEDIA_APP_IMAGE_ICON_SVG" file="assets/image_icon.svg" type="BINDATA" />
       <include name="IDR_MEDIA_APP_AUDIO_ICON_SVG" file="assets/audio_icon.svg" type="BINDATA" />
       <include name="IDR_MEDIA_APP_VIDEO_ICON_SVG" file="assets/video_icon.svg" type="BINDATA" />
+      <include name="IDR_MEDIA_APP_PDF_ICON_SVG" file="assets/pdf_icon.svg" type="BINDATA" />
       <include name="IDR_MEDIA_APP_FILE_ICON_SVG" file="assets/file_icon.svg" type="BINDATA" />
 
       <!-- TODO(b/141588875): Switch these to IDR_MEDIA_APP_APP_ICON_*_PNG in the internal media_app_bundle_resources.grd file (and add more icon resolutions) when the final icon is ready. -->

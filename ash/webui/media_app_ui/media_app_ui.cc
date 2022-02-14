@@ -69,6 +69,8 @@ content::WebUIDataSource* CreateHostDataSource() {
   source->AddResourcePath("system_assets/app_icon_256.png",
                           IDR_MEDIA_APP_GALLERY_ICON_256_PNG);
   // Favicons.
+  source->AddResourcePath("system_assets/pdf_icon.svg",
+                          IDR_MEDIA_APP_PDF_ICON_SVG);
   source->AddResourcePath("system_assets/video_icon.svg",
                           IDR_MEDIA_APP_VIDEO_ICON_SVG);
   source->AddResourcePath("system_assets/image_icon.svg",
