@@ -822,16 +822,19 @@ struct ClusterVisit {
   // visits are now contained here.
   std::vector<ClusterVisit> duplicate_visits;
 
+  // The site engagement score of the URL associated with this visit. This
+  // should not be used by the UI.
+  float engagement_score = 0.0;
+
+  // TODO(crbug/1296394): Remove the below fields once most clients have
+  // persisted search metadata.
+
   // The normalized URL for the visit (i.e. a SRP URL normalized based on the
   // user's default search provider).
   GURL normalized_url;
 
-  // Whether this visit contained a user-input search or query.
-  bool is_search_visit = false;
-
-  // The site engagement score of the URL associated with this visit. This
-  // should not be used by the UI.
-  float engagement_score = 0.0;
+  // The user-input search query if this visit is a search visit.
+  std::u16string search_terms;
 };
 
 // A cluster of `ClusterVisit`s with associated metadata (i.e. `keywords` and

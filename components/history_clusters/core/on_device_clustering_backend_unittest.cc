@@ -566,9 +566,12 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
 
   history::AnnotatedVisit visit3 = testing::CreateDefaultAnnotatedVisit(
       3, GURL("http://non-default-engine.com/?q=nometadata#whatever"));
-  visit2.content_annotations.model_annotations.entities = {
+  visit3.content_annotations.model_annotations.entities = {
       history::VisitContentModelAnnotations::Category("nometadata", 30),
   };
+  visit3.content_annotations.search_terms = u"nometadata";
+  visit3.content_annotations.search_normalized_url =
+      GURL("http://non-default-engine.com/?q=nometadata");
   visit3.content_annotations.model_annotations.page_topics_model_version = 127;
   visit3.content_annotations.model_annotations.visibility_score = 0.5;
   visits.push_back(visit3);
@@ -578,9 +581,10 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
   ASSERT_EQ(result_clusters.size(), 2u);
   EXPECT_THAT(
       testing::ToVisitResults(result_clusters),
-      ElementsAre(ElementsAre(testing::VisitResult(
-                      2, 1.0, {testing::VisitResult(1, 0.0, {}, true)}, true)),
-                  ElementsAre(testing::VisitResult(3, 1.0, {}, true))));
+      ElementsAre(
+          ElementsAre(testing::VisitResult(
+              2, 1.0, {testing::VisitResult(1, 0.0, {}, u"foo")}, u"foo")),
+          ElementsAre(testing::VisitResult(3, 1.0, {}, u"nometadata"))));
   // Make sure visits are normalized.
   history::Cluster cluster = result_clusters.at(0);
   ASSERT_EQ(cluster.visits.size(), 1u);

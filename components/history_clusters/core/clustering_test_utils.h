@@ -21,7 +21,7 @@ class VisitResult {
   VisitResult(int visit_id,
               float score,
               const std::vector<VisitResult>& duplicate_visits = {},
-              bool is_search_visit = false);
+              std::u16string search_terms = u"");
   explicit VisitResult(const history::ClusterVisit& visit);
   VisitResult(const VisitResult& other);
   ~VisitResult();
@@ -36,7 +36,7 @@ class VisitResult {
   const int visit_id_;
   const float score_;
   std::vector<VisitResult> duplicate_visits_;
-  const bool is_search_visit_;
+  const std::u16string search_terms_;
 };
 
 std::ostream& operator<<(std::ostream& os, const VisitResult& dt);

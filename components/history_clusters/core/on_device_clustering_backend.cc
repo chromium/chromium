@@ -37,9 +37,9 @@ namespace history_clusters {
 
 namespace {
 
-// Returns the normalized URL for the search provider if the URL for the visit
-// is a Search URL. Otherwise, returns nullopt.
-absl::optional<GURL> GetNormalizedURLForSearchVisit(
+// Returns the normalized URL and the search terms for the search provider if
+// the URL for the visit is a Search URL. Otherwise, returns nullopt.
+absl::optional<std::pair<GURL, std::u16string>> GetSearchMetadataForVisit(
     const history::AnnotatedVisit& visit,
     const TemplateURLService* template_url_service) {
   if (!template_url_service)
@@ -66,8 +66,10 @@ absl::optional<GURL> GetNormalizedURLForSearchVisit(
   if (!search_url_ref.SupportsReplacement(search_terms_data))
     return absl::nullopt;
 
-  return GURL(
-      search_url_ref.ReplaceSearchTerms(search_terms_args, search_terms_data));
+  return std::make_pair(
+      GURL(search_url_ref.ReplaceSearchTerms(search_terms_args,
+                                             search_terms_data)),
+      base::i18n::ToLower(base::CollapseWhitespace(search_terms, false)));
 }
 
 }  // namespace
@@ -226,11 +228,21 @@ void OnDeviceClusteringBackend::ProcessBatchOfVisits(
     cluster_visit.annotated_visit = visit;
     const std::string& visit_host = visit.url_row.url().host();
 
-    absl::optional<GURL> maybe_normalized_url =
-        GetNormalizedURLForSearchVisit(visit, template_url_service_);
-    cluster_visit.is_search_visit = maybe_normalized_url.has_value();
-    cluster_visit.normalized_url =
-        maybe_normalized_url.value_or(visit.url_row.url());
+    if (visit.content_annotations.search_normalized_url.is_empty()) {
+      // TODO(crbug/1296394): Remove this logic once most clients have a Stable
+      // release of persisted search metadata.
+      absl::optional<std::pair<GURL, std::u16string>> maybe_search_metadata =
+          GetSearchMetadataForVisit(visit, template_url_service_);
+      cluster_visit.normalized_url = maybe_search_metadata
+                                         ? maybe_search_metadata->first
+                                         : visit.url_row.url();
+      cluster_visit.search_terms =
+          maybe_search_metadata ? maybe_search_metadata->second : u"";
+    } else {
+      cluster_visit.normalized_url =
+          visit.content_annotations.search_normalized_url;
+      cluster_visit.search_terms = visit.content_annotations.search_terms;
+    }
 
     if (engagement_score_provider_) {
       if (base::FeatureList::IsEnabled(features::kUseEngagementScoreCache)) {

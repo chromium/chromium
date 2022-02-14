@@ -111,7 +111,7 @@ void SortClusters(std::vector<history::Cluster>* clusters) {
 bool IsNoisyVisit(const history::ClusterVisit& visit) {
   return visit.engagement_score >
              features::NoisyClusterVisitEngagementThreshold() &&
-         !visit.is_search_visit;
+         visit.search_terms.empty();
 }
 
 }  // namespace history_clusters

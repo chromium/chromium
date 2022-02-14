@@ -14,15 +14,15 @@ namespace testing {
 VisitResult::VisitResult(int visit_id,
                          float score,
                          const std::vector<VisitResult>& duplicate_visits,
-                         bool is_search_visit)
+                         std::u16string search_terms)
     : visit_id_(visit_id),
       score_(score),
       duplicate_visits_(duplicate_visits),
-      is_search_visit_(is_search_visit) {}
+      search_terms_(search_terms) {}
 VisitResult::VisitResult(const history::ClusterVisit& visit)
     : visit_id_(visit.annotated_visit.visit_row.visit_id),
       score_(visit.score),
-      is_search_visit_(visit.is_search_visit) {
+      search_terms_(visit.search_terms) {
   for (const auto& duplicate : visit.duplicate_visits) {
     duplicate_visits_.emplace_back(duplicate);
   }
@@ -47,9 +47,9 @@ std::string VisitResult::ToString() const {
   }
   return base::StringPrintf(
       "VisitResult(visit_id=%d, score=%f, duplicate_visits=%s, "
-      "is_search_visit=%s)",
+      "search_terms=%s)",
       visit_id_, score_, duplicate_visits_string.c_str(),
-      (is_search_visit_ ? "true" : "false"));
+      base::UTF16ToUTF8(search_terms_).c_str());
 }
 
 std::ostream& operator<<(std::ostream& os, const VisitResult& vr) {
@@ -62,7 +62,7 @@ bool VisitResult::operator==(const VisitResult& rhs) const {
   return visit_id_ == rhs.visit_id_ &&
          abs(score_ - rhs.score_) <= kScoreTolerance &&
          duplicate_visits_ == rhs.duplicate_visits_ &&
-         is_search_visit_ == rhs.is_search_visit_;
+         search_terms_ == rhs.search_terms_;
 }
 
 history::AnnotatedVisit CreateDefaultAnnotatedVisit(int visit_id,

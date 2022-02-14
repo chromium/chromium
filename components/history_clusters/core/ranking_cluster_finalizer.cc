@@ -61,7 +61,7 @@ void RankingClusterFinalizer::CalculateVisitAttributeScoring(
     }
 
     // Check if the visit contained a search query.
-    if (visit.is_search_visit) {
+    if (!visit.search_terms.empty()) {
       it->second.set_is_srp();
     }
 

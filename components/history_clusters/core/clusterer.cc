@@ -20,10 +20,12 @@ bool ShouldAddVisitToCluster(const history::ClusterVisit& visit,
       features::ClusterNavigationTimeCutoff()) {
     return false;
   }
-  if (features::ShouldSplitClustersAtSearchVisits()) {
-    // TODO(crbug/1295759): Do not split if last visit is also a search and it
-    // has the same search terms.
-    return !visit.is_search_visit;
+  if (features::ShouldSplitClustersAtSearchVisits() &&
+      !visit.search_terms.empty()) {
+    // If we want to split the clusters at search visits and we are at a search
+    // visit, only add the visit to the cluster if the last visit was also a
+    // search visit with the same terms.
+    return visit.search_terms == last_visit.search_terms;
   }
   return true;
 }
