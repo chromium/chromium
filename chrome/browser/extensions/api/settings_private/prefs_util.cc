@@ -849,8 +849,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_DICTIONARY;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  (*s_allowlist)[media_router::prefs::kMediaRouterEnableCloudServices] =
-      settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[::prefs::kUserFeedbackAllowed] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

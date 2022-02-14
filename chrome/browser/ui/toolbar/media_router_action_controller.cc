@@ -171,9 +171,6 @@ MediaRouterActionController::MediaRouterActionController(
   if (!profile_->IsOffTheRecord()) {
     media_router::MediaRouterMetrics::RecordIconStateAtInit(
         MediaRouterActionController::GetAlwaysShowActionPref(profile_));
-    media_router::MediaRouterMetrics::RecordCloudPrefAtInit(
-        profile_->GetPrefs()->GetBoolean(
-            media_router::prefs::kMediaRouterEnableCloudServices));
   }
 }
 

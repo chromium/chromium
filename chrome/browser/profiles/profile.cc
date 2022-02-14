@@ -349,12 +349,6 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(
-      media_router::prefs::kMediaRouterCloudServicesPrefSet, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(
-      media_router::prefs::kMediaRouterEnableCloudServices, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(
       media_router::prefs::kMediaRouterMediaRemotingEnabled, true);
   registry->RegisterListPref(
       media_router::prefs::kMediaRouterTabMirroringSources);

@@ -713,6 +713,12 @@ const char kDataReductionProxyLastEnabledTime[] =
 // Deprecated 02/2022.
 const char kStabilityChildProcessCrashCount[] =
     "user_experience_metrics.stability.child_process_crash_count";
+#if !BUILDFLAG(IS_ANDROID)
+const char kMediaRouterCloudServicesPrefSet[] =
+    "media_router.cloudservices.prefset";
+const char kMediaRouterEnableCloudServices[] =
+    "media_router.cloudservices.enabled";
+#endif
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -761,6 +767,8 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kLiteModeUserNeedsNotification, true);
 
 #if !BUILDFLAG(IS_ANDROID)
+  registry->RegisterBooleanPref(kMediaRouterCloudServicesPrefSet, false);
+  registry->RegisterBooleanPref(kMediaRouterEnableCloudServices, false);
   registry->RegisterStringPref(
       enterprise_connectors::kDeviceTrustPrivateKeyPref, std::string());
   registry->RegisterStringPref(enterprise_connectors::kDeviceTrustPublicKeyPref,
@@ -1817,6 +1825,12 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kFlocIdFinchConfigVersionPrefKey);
   profile_prefs->ClearPref(kFlocIdSortingLshVersionPrefKey);
   profile_prefs->ClearPref(kFlocIdComputeTimePrefKey);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Added 02/2022
+  profile_prefs->ClearPref(kMediaRouterCloudServicesPrefSet);
+  profile_prefs->ClearPref(kMediaRouterEnableCloudServices);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

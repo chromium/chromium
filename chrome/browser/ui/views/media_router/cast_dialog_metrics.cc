@@ -103,8 +103,6 @@ CastDialogMetrics::CastDialogMetrics(
       is_icon_pinned_(
           profile->GetPrefs()->GetBoolean(::prefs::kShowCastIconInToolbar)) {
   MediaRouterMetrics::RecordIconStateAtDialogOpen(is_icon_pinned_);
-  MediaRouterMetrics::RecordCloudPrefAtDialogOpen(
-      profile->GetPrefs()->GetBoolean(prefs::kMediaRouterEnableCloudServices));
 }
 
 CastDialogMetrics::~CastDialogMetrics() = default;

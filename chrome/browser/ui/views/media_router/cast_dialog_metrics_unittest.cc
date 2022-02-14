@@ -122,16 +122,6 @@ TEST_F(CastDialogMetricsTest, RecordIconState) {
       /* is_pinned */ true, 1);
 }
 
-TEST_F(CastDialogMetricsTest, RecordCloudPref) {
-  // When a dialog is opened after enabling the cloud services, that should be
-  // recorded.
-  profile_.GetPrefs()->SetBoolean(prefs::kMediaRouterEnableCloudServices, true);
-  CastDialogMetrics metrics_with_cloud_pref_enabled{
-      init_time, MediaRouterDialogOpenOrigin::PAGE, &profile_};
-  tester_.ExpectBucketCount(MediaRouterMetrics::kHistogramCloudPrefAtDialogOpen,
-                            /* enabled */ true, 1);
-}
-
 TEST_F(CastDialogMetricsTest, RecordDialogActivationLocationAndCastMode) {
   constexpr int kSinkIndex = 4;
   metrics_.OnSinksLoaded(sink_load_time);

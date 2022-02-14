@@ -8,8 +8,6 @@
 namespace media_router {
 namespace prefs {
 
-extern const char kMediaRouterCloudServicesPrefSet[];
-extern const char kMediaRouterEnableCloudServices[];
 extern const char kMediaRouterMediaRemotingEnabled[];
 extern const char kMediaRouterTabMirroringSources[];
 
