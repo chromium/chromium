@@ -245,6 +245,12 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
     return consentDescription;
   }
 
+  getReviewSettingText_(locale, isArcRestricted) {
+    if (isArcRestricted)
+      return this.i18n('syncConsentReviewSyncOptionsWithArcRestrictedText');
+    return this.i18n('syncConsentReviewSyncOptionsText');
+  }
+
   /**
    * @param {boolean} isMinorMode
    * @return {string} The text key of the accept button.

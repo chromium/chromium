@@ -105,9 +105,9 @@
       <img slot="subtitle" src="images/sync-consent.svg"
           class="oobe-illustration" aria-hidden="true">
       </div>
-      <div slot="content" class="landscape-header-aligned"
-          hidden="[[isArcRestricted_]]">
-        <div class="overview-list-item layout horizontal">
+      <div slot="content" class="landscape-header-aligned">
+        <div class="overview-list-item layout horizontal"
+            hidden="[[isArcRestricted_]]">
           <img class="overview-list-item-icon" src="images/settings_gear.svg"
               width="24" height="24" aria-hidden="true">
           <div class="flex layout vertical center-justified">
@@ -117,7 +117,8 @@
             </div>
           </div>
         </div>
-        <div class="overview-list-item layout horizontal">
+        <div class="overview-list-item layout horizontal"
+            hidden="[[isArcRestricted_]]">
           <img class="overview-list-item-icon" src="images/browser_sync.svg"
               width="24" height="24" aria-hidden="true">
           <div class="flex layout vertical center-justified">
@@ -131,21 +132,14 @@
             </div>
           </div>
         </div>
-        <cr-checkbox id="reviewSettingsBox" hidden="[[isMinorMode_]]"
-            consent-description>
-          [[i18nDynamic(locale, 'syncConsentReviewSyncOptionsText')]]
-        </cr-checkbox>
-      </div>
-      <div slot="content" class="landscape-header-aligned"
-          hidden="[[!isArcRestricted_]]">
-        <div consent-description>
+        <div hidden="[[!isArcRestricted_]]" consent-description>
           [[i18nDynamic(locale,
               'syncConsentScreenOsSyncDescriptionArcRestrictions')]]
         </div>
-        <cr-checkbox id="reviewSettingsBoxArcRestricted" consent-description
-            hidden="[[isMinorMode_]]">
-          [[i18nDynamic(locale,
-              'syncConsentReviewSyncOptionsWithArcRestrictedText')]]
+
+        <cr-checkbox id="reviewSettingsBox" hidden="[[isMinorMode_]]"
+            consent-description>
+          [[getReviewSettingText_(locale, isArcRestricted_)]]
         </cr-checkbox>
       </div>
       <div slot="bottom-buttons">

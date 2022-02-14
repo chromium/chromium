@@ -7,13 +7,13 @@
 #include <string>
 
 #include "ash/components/settings/cros_settings_names.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/account_manager/account_apps_availability.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
@@ -21,6 +21,8 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -107,17 +109,27 @@ void SyncConsentScreen::MaybeLaunchSyncConsentSettings(Profile* profile) {
     // TODO (alemate): In a very special case when chrome is exiting at the very
     // moment we show Settings, it might crash here because profile could be
     // already destroyed. This needs to be fixed.
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](Profile* profile) {
-              profile->GetPrefs()->ClearPref(
-                  ::prefs::kShowSyncSettingsOnSessionStart);
-              chrome::ShowSettingsSubPageForProfile(profile,
-                                                    chrome::kSyncSetupSubPage);
-            },
-            base::Unretained(profile)),
-        kSyncConsentSettingsShowDelay);
+    if (crosapi::browser_util::IsLacrosEnabled()) {
+      profile->GetPrefs()->ClearPref(::prefs::kShowArcSettingsOnSessionStart);
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kSyncSetupSubpagePath);
+    } else {
+      // SyncSetupSubPage here is shown in the browser instead of the OS
+      // Settings. We delay showing chrome sync settings by
+      // kSyncConsentSettingsShowDelay to make the settings tab shows on top of
+      // the restored tabs and windows.
+      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](Profile* profile) {
+                profile->GetPrefs()->ClearPref(
+                    ::prefs::kShowSyncSettingsOnSessionStart);
+                chrome::ShowSettingsSubPageForProfile(
+                    profile, chrome::kSyncSetupSubPage);
+              },
+              base::Unretained(profile)),
+          kSyncConsentSettingsShowDelay);
+    }
   }
 }
 

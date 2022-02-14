@@ -474,6 +474,55 @@ INSTANTIATE_TEST_SUITE_P(All,
                          SyncConsentTestWithModesParams,
                          testing::Combine(testing::Bool(), testing::Bool()));
 
+// Tests the different combinations of LacrosSupport state and the selection of
+// the `Review later` checkbox.
+class SyncConsentTestWithReviewParams
+    : public SyncConsentTest,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  SyncConsentTestWithReviewParams() {
+    std::tie(is_lacros_supported_, is_review_settings_checked_) = GetParam();
+    if (is_lacros_supported_) {
+      scoped_feature_list_.InitAndEnableFeature(features::kLacrosSupport);
+    }
+  }
+
+  SyncConsentTestWithReviewParams(const SyncConsentTestWithReviewParams&) =
+      delete;
+  SyncConsentTestWithReviewParams& operator=(
+      const SyncConsentTestWithReviewParams&) = delete;
+
+  ~SyncConsentTestWithReviewParams() override = default;
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  bool is_lacros_supported_;
+  bool is_review_settings_checked_;
+};
+
+IN_PROC_BROWSER_TEST_P(SyncConsentTestWithReviewParams, Accept) {
+  LoginAndShowSyncConsentScreenWithCapability();
+  WaitForScreenShown();
+
+  test::OobeJS().CreateVisibilityWaiter(true, {kSyncConsent})->Wait();
+  test::OobeJS().ExpectVisiblePath(kOverviewDialog);
+  if (is_review_settings_checked_)
+    test::OobeJS().TapOnPath(kReviewSettingsCheckBox);
+  test::OobeJS().TapOnPath(kNonSplitSettingsAcceptButton);
+
+  WaitForScreenExit();
+  EXPECT_EQ(screen_result_.value(), SyncConsentScreen::Result::NEXT);
+  histogram_tester_.ExpectUniqueSample(
+      "OOBE.SyncConsentScreen.ReviewFollowingSetup",
+      is_review_settings_checked_, 1);
+  histogram_tester_.ExpectTotalCount(
+      "OOBE.StepCompletionTimeByExitReason.Sync-consent.Next", 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SyncConsentTestWithReviewParams,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
 class SyncConsentTestWithParams
     : public SyncConsentRecorderTest,
       public ::testing::WithParamInterface<std::string> {
