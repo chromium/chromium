@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_MAC_DEVELOPER_ID_CERTIFICATE_REAUTHORIZE_H_
 #define CHROME_BROWSER_MAC_DEVELOPER_ID_CERTIFICATE_REAUTHORIZE_H_
 
-#if defined(__cplusplus)
-
 namespace chrome {
 
 // Performs Developer ID certificate reauthorization. In branded builds, this
@@ -23,19 +21,5 @@ namespace chrome {
 void DeveloperIDCertificateReauthorizeInApp();
 
 }  // namespace chrome
-
-extern "C" {
-
-#endif  // defined(__cplusplus)
-
-// The developer_id_certificate_reauthorize stub executable's entry point. This
-// is nearly identical to DeveloperIDCertificateReauthorizeInApp above, except
-// no limitation is placed on the maximum number of times it may be attempted.
-__attribute__((visibility("default"))) int
-DeveloperIDCertificateReauthorizeFromStub(int argc, const char* const* argv);
-
-#if defined(__cplusplus)
-}  // extern "C"
-#endif  // defined(__cplusplus)
 
 #endif  // CHROME_BROWSER_MAC_DEVELOPER_ID_CERTIFICATE_REAUTHORIZE_H_
