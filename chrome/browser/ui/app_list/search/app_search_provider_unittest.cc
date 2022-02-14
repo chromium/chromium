@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_search_result_ranker.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
+#include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ui/app_list/test/fake_app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -161,8 +162,10 @@ class AppSearchProviderTest : public AppListTestBase {
 
   void CreateSearch() {
     clock_.SetNow(kTestCurrentTime);
+    search_controller_ = std::make_unique<TestSearchController>();
     app_search_ = std::make_unique<AppSearchProvider>(
         profile_.get(), nullptr, &clock_, model_updater_.get());
+    app_search_->set_controller(search_controller_.get());
   }
 
   void CreateSearchWithContinueReading() {
@@ -183,13 +186,15 @@ class AppSearchProviderTest : public AppListTestBase {
 
     // Sort results by relevance.
     std::vector<ChromeSearchResult*> sorted_results;
-    for (const auto& result : app_search_->results())
+    for (const auto& result : results())
       sorted_results.emplace_back(result.get());
     std::sort(sorted_results.begin(), sorted_results.end(), &MoreRelevant);
 
-    // If the query is empty, every other result is a chip result identical to
-    // the tile result. Skip these.
-    const int increment = query.empty() ? 2 : 1;
+    // If the query is empty and we're in the non-productivity launcher, every
+    // other result is a chip result identical to the tile result. Skip these.
+    const int increment =
+        (!app_list_features::IsCategoricalSearchEnabled() && query.empty()) ? 2
+                                                                            : 1;
     std::string result_str;
     for (size_t i = 0; i < sorted_results.size(); i += increment) {
       if (!result_str.empty())
@@ -208,7 +213,7 @@ class AppSearchProviderTest : public AppListTestBase {
 
     std::vector<ChromeSearchResult*> non_relevance_results;
     std::vector<ChromeSearchResult*> priority_results;
-    for (const auto& result : app_search_->results()) {
+    for (const auto& result : results()) {
       if (result->display_index() == ash::kFirstIndex &&
           (result->display_type() == ash::kChip ||
            result->display_type() == ash::kTile)) {
@@ -290,7 +295,13 @@ class AppSearchProviderTest : public AppListTestBase {
                                     extensions::kInstallFlagNone);
   }
 
-  const SearchProvider::Results& results() { return app_search_->results(); }
+  const SearchProvider::Results& results() {
+    if (app_list_features::IsCategoricalSearchEnabled()) {
+      return search_controller_->last_results();
+    } else {
+      return app_search_->results();
+    }
+  }
   ArcAppTest& arc_test() { return arc_test_; }
 
   void CallViewClosing() { app_search_->ViewClosing(); }
@@ -304,6 +315,7 @@ class AppSearchProviderTest : public AppListTestBase {
   base::ScopedTempDir temp_dir_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<FakeAppListModelUpdater> model_updater_;
+  std::unique_ptr<TestSearchController> search_controller_;
   std::unique_ptr<AppSearchProvider> app_search_;
   std::unique_ptr<::test::TestAppListControllerDelegate> controller_;
   ArcAppTest arc_test_;
@@ -450,222 +462,6 @@ TEST_F(AppSearchProviderTest, FetchRecommendations) {
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ("Hosted App,Packaged App 1,Packaged App 2", RunQuery(""));
-}
-
-// Continue reading suggestions have been disabled, and should not appear as
-// suggestions.
-TEST_F(AppSearchProviderTest, FetchRecommendationsWithContinueReading) {
-  constexpr char kLocalSessionTag[] = "local";
-  constexpr char kLocalSessionName[] = "LocalSessionName";
-  constexpr char kForeignSessionTag1[] = "foreign1";
-  constexpr char kForeignSessionTag2[] = "foreign2";
-  constexpr char kForeignSessionTag3[] = "foreign3";
-  constexpr SessionID kWindowId1 = SessionID::FromSerializedValue(1);
-  constexpr SessionID kWindowId2 = SessionID::FromSerializedValue(2);
-  constexpr SessionID kWindowId3 = SessionID::FromSerializedValue(3);
-  constexpr SessionID kTabId1 = SessionID::FromSerializedValue(111);
-  constexpr SessionID kTabId2 = SessionID::FromSerializedValue(222);
-  constexpr SessionID kTabId3 = SessionID::FromSerializedValue(333);
-
-  const base::Time now = base::Time::Now();
-
-  // Case 1: test that ContinueReading is not recommended for foreign tabs.
-  {
-    CreateSearchWithContinueReading();
-    session_tracker()->InitLocalSession(kLocalSessionTag, kLocalSessionName,
-                                        sync_pb::SyncEnums::TYPE_CROS);
-    const base::Time kTimestamp1 = now - base::Minutes(2);
-    const base::Time kTimestamp2 = now - base::Minutes(1);
-    const base::Time kTimestamp3 = now - base::Minutes(3);
-
-    session_tracker()->PutWindowInSession(kForeignSessionTag1, kWindowId1);
-    session_tracker()->PutTabInWindow(kForeignSessionTag1, kWindowId1, kTabId1);
-    session_tracker()
-        ->GetTab(kForeignSessionTag1, kTabId1)
-        ->navigations.push_back(sessions::ContentTestHelper::CreateNavigation(
-            "http://url1", "title1"));
-    session_tracker()->GetTab(kForeignSessionTag1, kTabId1)->timestamp =
-        kTimestamp1;
-    session_tracker()->GetSession(kForeignSessionTag1)->modified_time =
-        kTimestamp1;
-    session_tracker()->GetSession(kForeignSessionTag1)->device_type =
-        sync_pb::SyncEnums::TYPE_PHONE;
-
-    session_tracker()->PutWindowInSession(kForeignSessionTag2, kWindowId2);
-    session_tracker()->PutTabInWindow(kForeignSessionTag2, kWindowId2, kTabId2);
-    session_tracker()
-        ->GetTab(kForeignSessionTag2, kTabId2)
-        ->navigations.push_back(sessions::ContentTestHelper::CreateNavigation(
-            "http://url2", "title2"));
-    session_tracker()->GetTab(kForeignSessionTag2, kTabId2)->timestamp =
-        kTimestamp2;
-    session_tracker()->GetSession(kForeignSessionTag2)->modified_time =
-        kTimestamp2;
-    session_tracker()->GetSession(kForeignSessionTag2)->device_type =
-        sync_pb::SyncEnums::TYPE_PHONE;
-
-    session_tracker()->PutWindowInSession(kForeignSessionTag3, kWindowId3);
-    session_tracker()->PutTabInWindow(kForeignSessionTag3, kWindowId3, kTabId3);
-    session_tracker()
-        ->GetTab(kForeignSessionTag3, kTabId3)
-        ->navigations.push_back(sessions::ContentTestHelper::CreateNavigation(
-            "http://url3", "title3"));
-    session_tracker()->GetTab(kForeignSessionTag3, kTabId3)->timestamp =
-        kTimestamp3;
-    session_tracker()->GetSession(kForeignSessionTag3)->modified_time =
-        kTimestamp3;
-    session_tracker()->GetSession(kForeignSessionTag3)->device_type =
-        sync_pb::SyncEnums::TYPE_PHONE;
-
-    EXPECT_EQ("Hosted App,Packaged App 1,Packaged App 2",
-              RunQueryNotSortingByRelevance(""));
-  }
-
-  // Case 2: test that ContinueReading is not recommended for local session.
-  {
-    CreateSearchWithContinueReading();
-    session_tracker()->InitLocalSession(kLocalSessionTag, kLocalSessionName,
-                                        sync_pb::SyncEnums::TYPE_CROS);
-    const base::Time kTimestamp1 = now - base::Minutes(1);
-
-    session_tracker()->PutWindowInSession(kLocalSessionTag, kWindowId1);
-    session_tracker()->PutTabInWindow(kLocalSessionTag, kWindowId1, kTabId1);
-    session_tracker()
-        ->GetTab(kLocalSessionTag, kTabId1)
-        ->navigations.push_back(sessions::ContentTestHelper::CreateNavigation(
-            "http://url1", "title1"));
-    session_tracker()->GetTab(kLocalSessionTag, kTabId1)->timestamp =
-        kTimestamp1;
-    session_tracker()->GetSession(kLocalSessionTag)->modified_time =
-        kTimestamp1;
-    session_tracker()->GetSession(kLocalSessionTag)->device_type =
-        sync_pb::SyncEnums::TYPE_PHONE;
-
-    EXPECT_EQ("Hosted App,Packaged App 1,Packaged App 2",
-              RunQueryNotSortingByRelevance(""));
-  }
-
-  // Case 3: test that ContinueReading is not recommended for foreign tab more
-  // than 120 minutes ago.
-  {
-    CreateSearchWithContinueReading();
-    session_tracker()->InitLocalSession(kLocalSessionTag, kLocalSessionName,
-                                        sync_pb::SyncEnums::TYPE_CROS);
-    const base::Time kTimestamp1 = now - base::Minutes(121);
-
-    session_tracker()->PutWindowInSession(kForeignSessionTag1, kWindowId1);
-    session_tracker()->PutTabInWindow(kForeignSessionTag1, kWindowId1, kTabId1);
-    session_tracker()
-        ->GetTab(kForeignSessionTag1, kTabId1)
-        ->navigations.push_back(sessions::ContentTestHelper::CreateNavigation(
-            "http://url1", "title1"));
-    session_tracker()->GetTab(kForeignSessionTag1, kTabId1)->timestamp =
-        kTimestamp1;
-    session_tracker()->GetSession(kForeignSessionTag1)->modified_time =
-        kTimestamp1;
-    session_tracker()->GetSession(kForeignSessionTag1)->device_type =
-        sync_pb::SyncEnums::TYPE_PHONE;
-
-    EXPECT_EQ("Hosted App,Packaged App 1,Packaged App 2",
-              RunQueryNotSortingByRelevance(""));
-  }
-
-  // Case 4: test that ContinueReading is not recommended for foreign tab with
-  // TYPE_TABLET.
-  {
-    CreateSearchWithContinueReading();
-    session_tracker()->InitLocalSession(kLocalSessionTag, kLocalSessionName,
-                                        sync_pb::SyncEnums::TYPE_CROS);
-    const base::Time kTimestamp1 = now - base::Minutes(1);
-
-    session_tracker()->PutWindowInSession(kForeignSessionTag1, kWindowId1);
-    session_tracker()->PutTabInWindow(kForeignSessionTag1, kWindowId1, kTabId1);
-    session_tracker()
-        ->GetTab(kForeignSessionTag1, kTabId1)
-        ->navigations.push_back(sessions::ContentTestHelper::CreateNavigation(
-            "http://url1", "title1"));
-    session_tracker()->GetTab(kForeignSessionTag1, kTabId1)->timestamp =
-        kTimestamp1;
-    session_tracker()->GetSession(kForeignSessionTag1)->modified_time =
-        kTimestamp1;
-    session_tracker()->GetSession(kForeignSessionTag1)->device_type =
-        sync_pb::SyncEnums::TYPE_TABLET;
-
-    EXPECT_EQ("Hosted App,Packaged App 1,Packaged App 2",
-              RunQueryNotSortingByRelevance(""));
-  }
-
-  // Case 5: test that ContinueReading is not recommended for foreign tab with
-  // TYPE_CROS.
-  {
-    CreateSearchWithContinueReading();
-    session_tracker()->InitLocalSession(kLocalSessionTag, kLocalSessionName,
-                                        sync_pb::SyncEnums::TYPE_CROS);
-    const base::Time kTimestamp1 = now - base::Minutes(1);
-
-    session_tracker()->PutWindowInSession(kForeignSessionTag1, kWindowId1);
-    session_tracker()->PutTabInWindow(kForeignSessionTag1, kWindowId1, kTabId1);
-    session_tracker()
-        ->GetTab(kForeignSessionTag1, kTabId1)
-        ->navigations.push_back(sessions::ContentTestHelper::CreateNavigation(
-            "http://url1", "title1"));
-    session_tracker()->GetTab(kForeignSessionTag1, kTabId1)->timestamp =
-        kTimestamp1;
-    session_tracker()->GetSession(kForeignSessionTag1)->modified_time =
-        kTimestamp1;
-    session_tracker()->GetSession(kForeignSessionTag1)->device_type =
-        sync_pb::SyncEnums::TYPE_CROS;
-
-    EXPECT_EQ("Hosted App,Packaged App 1,Packaged App 2",
-              RunQueryNotSortingByRelevance(""));
-  }
-
-  // Case 6: test that ContinueReading is not recommended for foreign tab which
-  // is not SchemeIsHTTPOrHTTPS.
-  {
-    CreateSearchWithContinueReading();
-    session_tracker()->InitLocalSession(kLocalSessionTag, kLocalSessionName,
-                                        sync_pb::SyncEnums::TYPE_CROS);
-    const base::Time kTimestamp1 = now - base::Minutes(1);
-
-    session_tracker()->PutWindowInSession(kForeignSessionTag1, kWindowId1);
-    session_tracker()->PutTabInWindow(kForeignSessionTag1, kWindowId1, kTabId1);
-    session_tracker()
-        ->GetTab(kForeignSessionTag1, kTabId1)
-        ->navigations.push_back(sessions::ContentTestHelper::CreateNavigation(
-            "data://url1", "title1"));
-    session_tracker()->GetTab(kForeignSessionTag1, kTabId1)->timestamp =
-        kTimestamp1;
-    session_tracker()->GetSession(kForeignSessionTag1)->modified_time =
-        kTimestamp1;
-    session_tracker()->GetSession(kForeignSessionTag1)->device_type =
-        sync_pb::SyncEnums::TYPE_CROS;
-
-    EXPECT_EQ("Hosted App,Packaged App 1,Packaged App 2",
-              RunQueryNotSortingByRelevance(""));
-  }
-
-  // Case 7: test that ContinueReading is not recommended when searching.
-  {
-    CreateSearchWithContinueReading();
-    session_tracker()->InitLocalSession(kLocalSessionTag, kLocalSessionName,
-                                        sync_pb::SyncEnums::TYPE_CROS);
-    const base::Time kTimestamp1 = now - base::Minutes(1);
-
-    session_tracker()->PutWindowInSession(kForeignSessionTag1, kWindowId1);
-    session_tracker()->PutTabInWindow(kForeignSessionTag1, kWindowId1, kTabId1);
-    session_tracker()
-        ->GetTab(kForeignSessionTag1, kTabId1)
-        ->navigations.push_back(sessions::ContentTestHelper::CreateNavigation(
-            "http://url1", "title1"));
-    session_tracker()->GetTab(kForeignSessionTag1, kTabId1)->timestamp =
-        kTimestamp1;
-    session_tracker()->GetSession(kForeignSessionTag1)->modified_time =
-        kTimestamp1;
-    session_tracker()->GetSession(kForeignSessionTag1)->device_type =
-        sync_pb::SyncEnums::TYPE_PHONE;
-    EXPECT_EQ("", RunQueryNotSortingByRelevance("ti"));
-  }
 }
 
 TEST_F(AppSearchProviderTest, FetchUnlaunchedRecommendations) {

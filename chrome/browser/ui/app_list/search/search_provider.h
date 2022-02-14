@@ -82,7 +82,7 @@ class SearchProvider {
   void FireResultChanged();
 
   ResultChangedCallback result_changed_callback_;
-  SearchController* search_controller_;
+  SearchController* search_controller_ = nullptr;
   Results results_;
 };
 
