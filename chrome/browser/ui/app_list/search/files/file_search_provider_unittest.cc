@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/app_list/search/files/file_search_provider.h"
 
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
+#include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -37,7 +39,10 @@ class FileSearchProviderTest : public testing::Test {
     profile_ = std::make_unique<TestingProfile>();
     app_list_color_provider_ =
         std::make_unique<ash::TestAppListColorProvider>();
+    search_controller_ = std::make_unique<TestSearchController>();
     provider_ = std::make_unique<FileSearchProvider>(profile_.get());
+
+    provider_->set_controller(search_controller_.get());
 
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
     provider_->SetRootPathForTesting(scoped_temp_dir_.GetPath());
@@ -61,12 +66,21 @@ class FileSearchProviderTest : public testing::Test {
     Wait();
   }
 
+  const SearchProvider::Results& LastResults() {
+    if (app_list_features::IsCategoricalSearchEnabled()) {
+      return search_controller_->last_results();
+    } else {
+      return provider_->results();
+    }
+  }
+
   void Wait() { task_environment_.RunUntilIdle(); }
 
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<Profile> profile_;
   std::unique_ptr<ash::TestAppListColorProvider> app_list_color_provider_;
+  std::unique_ptr<TestSearchController> search_controller_;
   std::unique_ptr<FileSearchProvider> provider_;
   base::ScopedTempDir scoped_temp_dir_;
 };
@@ -79,9 +93,8 @@ TEST_F(FileSearchProviderTest, SearchResultsMatchQuery) {
   provider_->Start(u"file");
   Wait();
 
-  EXPECT_THAT(
-      provider_->results(),
-      UnorderedElementsAre(Title("file_1.txt"), Title("my_file_2.png")));
+  EXPECT_THAT(LastResults(), UnorderedElementsAre(Title("file_1.txt"),
+                                                  Title("my_file_2.png")));
 }
 
 TEST_F(FileSearchProviderTest, SearchIsCaseInsensitive) {
@@ -91,7 +104,7 @@ TEST_F(FileSearchProviderTest, SearchIsCaseInsensitive) {
   provider_->Start(u"fIle");
   Wait();
 
-  EXPECT_THAT(provider_->results(),
+  EXPECT_THAT(LastResults(),
               UnorderedElementsAre(Title("FILE_1.png"), Title("FiLe_2.Png")));
 }
 
@@ -101,7 +114,7 @@ TEST_F(FileSearchProviderTest, SearchDirectories) {
   provider_->Start(u"my_folder");
   Wait();
 
-  EXPECT_THAT(provider_->results(), UnorderedElementsAre(Title("my_folder")));
+  EXPECT_THAT(LastResults(), UnorderedElementsAre(Title("my_folder")));
 }
 
 TEST_F(FileSearchProviderTest, ResultMetadataTest) {
@@ -110,8 +123,8 @@ TEST_F(FileSearchProviderTest, ResultMetadataTest) {
   provider_->Start(u"file");
   Wait();
 
-  ASSERT_TRUE(provider_->results().size() == 1u);
-  const auto& result = provider_->results()[0];
+  ASSERT_TRUE(LastResults().size() == 1u);
+  const auto& result = LastResults()[0];
   EXPECT_EQ(result->result_type(), ash::AppListSearchResultType::kFileSearch);
   EXPECT_EQ(result->display_type(), ash::SearchResultDisplayType::kList);
 }
@@ -132,11 +145,11 @@ TEST_F(FileSearchProviderTest, RecentlyAccessedFilesHaveHigherRelevance) {
   provider_->Start(u"file");
   Wait();
 
-  ASSERT_TRUE(provider_->results().size() == 3u);
+  ASSERT_TRUE(LastResults().size() == 3u);
 
   // Sort the results by descending relevance.
   std::vector<ChromeSearchResult*> results;
-  for (const auto& result : provider_->results()) {
+  for (const auto& result : LastResults()) {
     results.push_back(result.get());
   }
   std::sort(results.begin(), results.end(),
@@ -165,11 +178,11 @@ TEST_F(FileSearchProviderTest, HighScoringFilesHaveScoreInRightRange) {
   provider_->Start(u"file");
   Wait();
 
-  ASSERT_EQ(provider_->results().size(), 2u);
+  ASSERT_EQ(LastResults().size(), 2u);
 
   // Sort the results by descending relevance.
   std::vector<ChromeSearchResult*> results;
-  for (const auto& result : provider_->results()) {
+  for (const auto& result : LastResults()) {
     results.push_back(result.get());
   }
   std::sort(results.begin(), results.end(),
