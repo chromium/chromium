@@ -3419,6 +3419,7 @@ if (!is_android) {
         "../browser/ash/login/ui/login_web_dialog_browsertest.cc",
         "../browser/ash/login/ui/simple_web_view_dialog_browsertest.cc",
         "../browser/ash/login/ui/user_adding_screen_browsertest.cc",
+        "../browser/ash/login/user_allowlist_policy_browsertest.cc",
         "../browser/ash/login/user_flags_login_browsertest.cc",
         "../browser/ash/login/users/avatar/user_image_manager_browsertest.cc",
         "../browser/ash/login/users/avatar/user_image_manager_test_util.cc",
