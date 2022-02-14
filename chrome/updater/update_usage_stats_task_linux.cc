@@ -10,7 +10,7 @@
 namespace updater {
 
 bool UpdateUsageStatsTask::UsageStatsAllowed(
-    const std::vector<std::string>& app_ids) {
+    const std::vector<std::string>& app_ids) const {
   // TODO(crbug.com/1296311): Implement.
   return false;
 }

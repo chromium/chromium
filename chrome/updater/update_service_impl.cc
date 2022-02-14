@@ -35,6 +35,7 @@
 #include "chrome/updater/update_block_check.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_usage_stats_task.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/crx_update_item.h"
@@ -294,9 +295,9 @@ void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
   new_tasks.push_back(
       base::BindOnce(&RemoveUninstalledAppsTask::Run,
                      base::MakeRefCounted<RemoveUninstalledAppsTask>(config_)));
-  new_tasks.push_back(base::BindOnce(
-      &UpdateUsageStatsTask::Run,
-      base::MakeRefCounted<UpdateUsageStatsTask>(persisted_data_)));
+  new_tasks.push_back(base::BindOnce(&UpdateUsageStatsTask::Run,
+                                     base::MakeRefCounted<UpdateUsageStatsTask>(
+                                         GetUpdaterScope(), persisted_data_)));
   new_tasks.push_back(
       base::BindOnce(&CheckForUpdatesTask::Run,
                      base::MakeRefCounted<CheckForUpdatesTask>(

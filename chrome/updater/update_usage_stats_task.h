@@ -9,8 +9,10 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace updater {
 
@@ -19,16 +21,21 @@ class PersistedData;
 class UpdateUsageStatsTask
     : public base::RefCountedThreadSafe<UpdateUsageStatsTask> {
  public:
-  explicit UpdateUsageStatsTask(scoped_refptr<PersistedData> persisted_data);
+  UpdateUsageStatsTask(UpdaterScope scope,
+                       scoped_refptr<PersistedData> persisted_data);
   void Run(base::OnceClosure callback);
 
  private:
   friend class base::RefCountedThreadSafe<UpdateUsageStatsTask>;
+  FRIEND_TEST_ALL_PREFIXES(UpdateUsageStatsTaskTest, NoApps);
+  FRIEND_TEST_ALL_PREFIXES(UpdateUsageStatsTaskTest, OneAppEnabled);
+  FRIEND_TEST_ALL_PREFIXES(UpdateUsageStatsTaskTest, ZeroAppsEnabled);
   virtual ~UpdateUsageStatsTask();
 
-  bool UsageStatsAllowed(const std::vector<std::string>& app_ids);
+  bool UsageStatsAllowed(const std::vector<std::string>& app_ids) const;
 
   SEQUENCE_CHECKER(sequence_checker_);
+  const UpdaterScope scope_;
   scoped_refptr<PersistedData> persisted_data_;
 };
 

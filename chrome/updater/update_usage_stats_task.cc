@@ -15,6 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/updater/crash_client.h"
 #include "chrome/updater/persisted_data.h"
+#include "chrome/updater/updater_scope.h"
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"
 #include "third_party/crashpad/crashpad/client/settings.h"
 
@@ -29,8 +30,9 @@ void SetCrashUploadEnabled(bool enabled) {
 }  // namespace
 
 UpdateUsageStatsTask::UpdateUsageStatsTask(
+    UpdaterScope scope,
     scoped_refptr<PersistedData> persisted_data)
-    : persisted_data_(persisted_data) {}
+    : scope_(scope), persisted_data_(persisted_data) {}
 
 UpdateUsageStatsTask::~UpdateUsageStatsTask() = default;
 
