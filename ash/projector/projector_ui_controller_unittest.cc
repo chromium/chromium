@@ -120,7 +120,7 @@ TEST_F(ProjectorUiControllerTest, ShowFailureNotification) {
                   message_center::DisplaySource::DISPLAY_SOURCE_POPUP));
 
   ProjectorUiController::ShowFailureNotification(
-      IDS_ASH_PROJECTOR_FAILURE_MESSAGE_SAVE_SCREENCAST);
+      IDS_ASH_PROJECTOR_SAVE_FAILURE_TEXT);
 
   EXPECT_CALL(
       mock_message_center_observer,
@@ -128,15 +128,47 @@ TEST_F(ProjectorUiControllerTest, ShowFailureNotification) {
                             /*by_user=*/false));
 
   ProjectorUiController::ShowFailureNotification(
-      IDS_ASH_PROJECTOR_FAILURE_MESSAGE_DRIVEFS);
+      IDS_ASH_PROJECTOR_FAILURE_MESSAGE_TRANSCRIPTION);
 
   const message_center::NotificationList::Notifications& notifications =
       message_center::MessageCenter::Get()->GetVisibleNotifications();
   EXPECT_EQ(notifications.size(), 1u);
   EXPECT_EQ((*notifications.begin())->id(), "projector_error_notification");
-  EXPECT_EQ(
-      (*notifications.begin())->message(),
-      l10n_util::GetStringUTF16(IDS_ASH_PROJECTOR_FAILURE_MESSAGE_DRIVEFS));
+  EXPECT_EQ((*notifications.begin())->message(),
+            l10n_util::GetStringUTF16(
+                IDS_ASH_PROJECTOR_FAILURE_MESSAGE_TRANSCRIPTION));
+}
+
+TEST_F(ProjectorUiControllerTest, ShowSaveFailureNotification) {
+  MockMessageCenterObserver mock_message_center_observer;
+  message_center::MessageCenter::Get()->AddObserver(
+      &mock_message_center_observer);
+
+  EXPECT_CALL(mock_message_center_observer,
+              OnNotificationAdded(
+                  /*notification_id=*/"projector_save_error_notification"))
+      .Times(2);
+  EXPECT_CALL(mock_message_center_observer,
+              OnNotificationDisplayed(
+                  /*notification_id=*/"projector_save_error_notification",
+                  message_center::DisplaySource::DISPLAY_SOURCE_POPUP));
+
+  ProjectorUiController::ShowSaveFailureNotification();
+
+  EXPECT_CALL(mock_message_center_observer,
+              OnNotificationRemoved(
+                  /*notification_id=*/"projector_save_error_notification",
+                  /*by_user=*/false));
+
+  ProjectorUiController::ShowSaveFailureNotification();
+
+  const message_center::NotificationList::Notifications& notifications =
+      message_center::MessageCenter::Get()->GetVisibleNotifications();
+  EXPECT_EQ(notifications.size(), 1u);
+  EXPECT_EQ((*notifications.begin())->id(),
+            "projector_save_error_notification");
+  EXPECT_EQ((*notifications.begin())->message(),
+            l10n_util::GetStringUTF16(IDS_ASH_PROJECTOR_SAVE_FAILURE_TEXT));
 }
 
 }  // namespace ash

@@ -41,8 +41,12 @@ namespace {
 // A unique id to identify system notifications coming from this file.
 constexpr char kProjectorNotifierId[] = "ash.projector_ui_controller";
 
-// A unique id for system notifications reporting a failure.
+// A unique id for system notifications reporting a generic failure.
 constexpr char kProjectorErrorNotificationId[] = "projector_error_notification";
+
+// A unique id for system notifications reporting a save failure.
+constexpr char kProjectorSaveErrorNotificationId[] =
+    "projector_save_error_notification";
 
 void EnableLaserPointer(bool enabled) {
   auto* laser_pointer_controller = Shell::Get()->laser_pointer_controller();
@@ -97,9 +101,19 @@ void ShowNotification(
 
 // static
 void ProjectorUiController::ShowFailureNotification(int message_id) {
+  // TODO(b/219101553): Record error metric.
   ShowNotification(
       kProjectorErrorNotificationId, IDS_ASH_PROJECTOR_FAILURE_TITLE,
       message_id,
+      message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
+}
+
+// static
+void ProjectorUiController::ShowSaveFailureNotification() {
+  // TODO(b/219101553): Record error metric.
+  ShowNotification(
+      kProjectorSaveErrorNotificationId, IDS_ASH_PROJECTOR_SAVE_FAILURE_TITLE,
+      IDS_ASH_PROJECTOR_SAVE_FAILURE_TEXT,
       message_center::SystemNotificationWarningLevel::CRITICAL_WARNING);
 }
 

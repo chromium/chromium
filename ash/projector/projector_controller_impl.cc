@@ -106,8 +106,7 @@ void ProjectorControllerImpl::CreateScreencastContainerFolder(
   base::FilePath mounted_path;
   if (!client_->GetDriveFsMountPointPath(&mounted_path)) {
     LOG(ERROR) << "Failed to get DriveFs mounted point path.";
-    ProjectorUiController::ShowFailureNotification(
-        IDS_ASH_PROJECTOR_FAILURE_MESSAGE_DRIVEFS);
+    ProjectorUiController::ShowSaveFailureNotification();
     std::move(callback).Run(base::FilePath());
     return;
   }
@@ -401,8 +400,7 @@ void ProjectorControllerImpl::OnContainerFolderCreated(
   if (!success) {
     LOG(ERROR) << "Failed to create screencast container path: "
                << path.DirName();
-    ProjectorUiController::ShowFailureNotification(
-        IDS_ASH_PROJECTOR_FAILURE_MESSAGE_SAVE_SCREENCAST);
+    ProjectorUiController::ShowSaveFailureNotification();
     std::move(callback).Run(base::FilePath());
     return;
   }

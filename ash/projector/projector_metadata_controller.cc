@@ -91,8 +91,7 @@ void ProjectorMetadataController::OnSaveFileResult(const base::FilePath& path,
                                                    bool success) {
   if (!success) {
     LOG(ERROR) << "Failed to save the metadata file: " << path;
-    ProjectorUiController::ShowFailureNotification(
-        IDS_ASH_PROJECTOR_FAILURE_MESSAGE_SAVE_SCREENCAST);
+    ProjectorUiController::ShowSaveFailureNotification();
     return;
   }
   RecordTranscriptsCount(transcripts_count);

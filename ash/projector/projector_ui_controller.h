@@ -23,6 +23,10 @@ class ASH_EXPORT ProjectorUiController : public ProjectorSessionObserver,
   // occurred.
   static void ShowFailureNotification(int message_id);
 
+  // Shows a notification informing the user that a Projector save error has
+  // occurred.
+  static void ShowSaveFailureNotification();
+
   explicit ProjectorUiController(ProjectorControllerImpl* projector_controller);
   ProjectorUiController(const ProjectorUiController&) = delete;
   ProjectorUiController& operator=(const ProjectorUiController&) = delete;

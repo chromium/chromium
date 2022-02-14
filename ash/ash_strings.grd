@@ -4361,12 +4361,12 @@ Here are some things you can try to get started.
         An error occurred
       </message>
 
-      <message name="IDS_ASH_PROJECTOR_FAILURE_MESSAGE_DRIVEFS" desc="The text of the notification when Projector recording fails due to DriveFS.">
-        Google Drive for desktop is unavailable
+      <message name="IDS_ASH_PROJECTOR_SAVE_FAILURE_TITLE" desc="The title of the notification when saving Projector recording fails.">
+        Can’t save recording
       </message>
 
-      <message name="IDS_ASH_PROJECTOR_FAILURE_MESSAGE_SAVE_SCREENCAST" desc="The text of the notification when Projector recording fails to save the screencast file.">
-        Failed to save screencast
+      <message name="IDS_ASH_PROJECTOR_SAVE_FAILURE_TEXT" desc="The text of the notification when saving Projector recording fails.">
+        Something went wrong. Try again.
       </message>
 
       <message name="IDS_ASH_PROJECTOR_FAILURE_MESSAGE_TRANSCRIPTION" desc="The test of the notification when Projector transcription fails.">
