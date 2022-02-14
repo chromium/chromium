@@ -168,9 +168,9 @@ void WriteImageToDisk(UIImage* image, const base::FilePath& file_path) {
 
   // Encrypt the snapshot file (mostly for Incognito, but can't hurt to
   // always do it).
-  NSDictionary* attribute_dict =
-      [NSDictionary dictionaryWithObject:NSFileProtectionComplete
-                                  forKey:NSFileProtectionKey];
+  NSDictionary* attribute_dict = [NSDictionary
+      dictionaryWithObject:NSFileProtectionCompleteUntilFirstUserAuthentication
+                    forKey:NSFileProtectionKey];
   NSError* error = nil;
   BOOL success = [[NSFileManager defaultManager] setAttributes:attribute_dict
                                                   ofItemAtPath:path

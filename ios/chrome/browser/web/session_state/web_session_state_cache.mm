@@ -60,7 +60,8 @@ void WriteSessionData(NSData* sessionData,
   }
 
   NSDataWritingOptions options =
-      NSDataWritingAtomic | NSDataWritingFileProtectionComplete;
+      NSDataWritingAtomic |
+      NSDataWritingFileProtectionCompleteUntilFirstUserAuthentication;
 
   base::FilePath filePath =
       cacheDirectory.Append(base::SysNSStringToUTF8(sessionID));

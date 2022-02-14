@@ -371,7 +371,8 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
   }
 
   NSDataWritingOptions options =
-      NSDataWritingAtomic | NSDataWritingFileProtectionComplete;
+      NSDataWritingAtomic |
+      NSDataWritingFileProtectionCompleteUntilFirstUserAuthentication;
 
   NSMutableArray* filesToKeep =
       [NSMutableArray arrayWithArray:@[ sessionFilename ]];
