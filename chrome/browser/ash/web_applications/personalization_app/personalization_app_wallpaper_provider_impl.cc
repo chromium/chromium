@@ -325,9 +325,15 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperChanged() {
 
       return;
     }
+    case ash::WallpaperType::kGooglePhotos:
+      NotifyWallpaperChanged(
+          ash::personalization_app::mojom::CurrentWallpaper::New(
+              wallpaper_data_url, /*attribution=*/std::vector<std::string>(),
+              info.layout, info.type,
+              /*key=*/info.location));
+      return;
     case ash::WallpaperType::kDefault:
     case ash::WallpaperType::kDevice:
-    case ash::WallpaperType::kGooglePhotos:
     case ash::WallpaperType::kOneShot:
     case ash::WallpaperType::kPolicy:
     case ash::WallpaperType::kThirdParty:

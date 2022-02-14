@@ -11,12 +11,14 @@ import './styles.js';
 import '../../common/styles.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getNumberOfGridItemsPerRow, isNonEmptyArray, isSelectionEvent, normalizeKeyForRTL} from '../../common/utils.js';
-import {GooglePhotosPhoto, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
+import {CurrentWallpaper, GooglePhotosPhoto, WallpaperImage, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
+import {isGooglePhotosPhoto} from '../utils.js';
 
 import {selectWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
@@ -43,11 +45,14 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
         observer: 'onHiddenChanged_',
       },
 
+      currentSelected_: Object,
+
       focusedColIndex_: {
         type: Number,
         value: 0,
       },
 
+      pendingSelected_: Object,
       photos_: Array,
 
       photosByRow_: {
@@ -69,8 +74,14 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
   /** Whether or not this element is currently hidden. */
   hidden: boolean;
 
+  /** The currently selected wallpaper. */
+  private currentSelected_: CurrentWallpaper|null;
+
   /** The index of the currently focused column. */
   private focusedColIndex_: number;
+
+  /** The pending selected wallpaper. */
+  private pendingSelected_: FilePath|GooglePhotosPhoto|WallpaperImage|null;
 
   /** The list of photos. */
   private photos_: GooglePhotosPhoto[]|null|undefined;
@@ -96,6 +107,10 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
 
     this.addEventListener('iron-resize', this.onResized_.bind(this));
 
+    this.watch<GooglePhotosPhotos['currentSelected_']>(
+        'currentSelected_', state => state.wallpaper.currentSelected);
+    this.watch<GooglePhotosPhotos['pendingSelected_']>(
+        'pendingSelected_', state => state.wallpaper.pendingSelected);
     this.watch<GooglePhotosPhotos['photos_']>(
         'photos_', state => state.wallpaper.googlePhotos.photos);
     this.watch<GooglePhotosPhotos['photosLoading_']>(
@@ -193,6 +208,26 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
           i *= this.photosPerRow_;
           return this.photos_!.slice(i, i + this.photosPerRow_);
         });
+  }
+
+  // Returns whether the specified |photo| is currently selected.
+  private isPhotoSelected_(
+      photo: GooglePhotosPhoto,
+      currentSelected: GooglePhotosPhotos['currentSelected_'],
+      pendingSelected: GooglePhotosPhotos['pendingSelected_']): boolean {
+    if (!currentSelected && !pendingSelected) {
+      return false;
+    }
+    if (isGooglePhotosPhoto(pendingSelected) &&
+        pendingSelected!.id === photo.id) {
+      return true;
+    }
+    if (!pendingSelected &&
+        currentSelected?.type === WallpaperType.kGooglePhotos &&
+        currentSelected!.key === photo.id) {
+      return true;
+    }
+    return false;
   }
 }
 
