@@ -27,6 +27,9 @@ namespace {
 constexpr base::TimeDelta kTaskLatencySampleDuration = base::Seconds(3);
 }
 
+const base::Feature kThreadWrapperUsesMetronome{
+    "ThreadWrapperUsesMetronome", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Class intended to conditionally live for the duration of ThreadWrapper
 // that periodically captures task latencies (definition in docs for
 // SetLatencyAndTaskDurationCallbacks).
@@ -97,22 +100,26 @@ base::LazyInstance<base::ThreadLocalPointer<ThreadWrapper>>::DestructorAtExit
     g_jingle_thread_wrapper = LAZY_INSTANCE_INITIALIZER;
 
 // static
-void ThreadWrapper::EnsureForCurrentMessageLoop() {
+void ThreadWrapper::EnsureForCurrentMessageLoop(
+    scoped_refptr<blink::MetronomeSource> metronome_source) {
   if (ThreadWrapper::current() == nullptr) {
-    std::unique_ptr<ThreadWrapper> wrapper =
-        ThreadWrapper::WrapTaskRunner(base::ThreadTaskRunnerHandle::Get());
+    std::unique_ptr<ThreadWrapper> wrapper = ThreadWrapper::WrapTaskRunner(
+        metronome_source, base::ThreadTaskRunnerHandle::Get());
     base::CurrentThread::Get()->AddDestructionObserver(wrapper.release());
   }
 
   DCHECK_EQ(rtc::Thread::Current(), current());
+  DCHECK_EQ(current()->metronome_source_, metronome_source);
 }
 
 std::unique_ptr<ThreadWrapper> ThreadWrapper::WrapTaskRunner(
+    scoped_refptr<blink::MetronomeSource> metronome_source,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK(!ThreadWrapper::current());
   DCHECK(task_runner->BelongsToCurrentThread());
 
-  std::unique_ptr<ThreadWrapper> result(new ThreadWrapper(task_runner));
+  std::unique_ptr<ThreadWrapper> result(
+      new ThreadWrapper(std::move(metronome_source), task_runner));
   g_jingle_thread_wrapper.Get().Set(result.get());
   return result;
 }
@@ -130,8 +137,10 @@ void ThreadWrapper::SetLatencyAndTaskDurationCallbacks(
 }
 
 ThreadWrapper::ThreadWrapper(
+    scoped_refptr<blink::MetronomeSource> metronome_source,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : Thread(std::make_unique<rtc::PhysicalSocketServer>()),
+      metronome_source_(std::move(metronome_source)),
       task_runner_(task_runner),
       send_allowed_(false),
       last_task_id_(0),
@@ -332,12 +341,30 @@ void ThreadWrapper::PostTask(std::unique_ptr<webrtc::QueuedTask> task) {
 
 void ThreadWrapper::PostDelayedTask(std::unique_ptr<webrtc::QueuedTask> task,
                                     uint32_t milliseconds) {
+  base::TimeTicks target_time =
+      base::TimeTicks::Now() + base::Milliseconds(milliseconds);
+  if (metronome_source_) {
+    // Snap the target time to allow coalescing multiple tasks.
+    target_time =
+        metronome_source_->GetTimeSnappedToNextMetronomeTick(target_time);
+  }
   task_runner_->PostDelayedTaskAt(
       base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
       base::BindOnce(&ThreadWrapper::RunTaskQueueTask, weak_ptr_,
                      std::move(task)),
-      base::TimeTicks::Now() + base::Milliseconds(milliseconds),
-      base::subtle::DelayPolicy::kPrecise);
+      target_time, base::subtle::DelayPolicy::kPrecise);
+}
+
+void ThreadWrapper::PostDelayedHighPrecisionTask(
+    std::unique_ptr<webrtc::QueuedTask> task,
+    uint32_t milliseconds) {
+  base::TimeTicks target_time =
+      base::TimeTicks::Now() + base::Milliseconds(milliseconds);
+  task_runner_->PostDelayedTaskAt(
+      base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
+      base::BindOnce(&ThreadWrapper::RunTaskQueueTask, weak_ptr_,
+                     std::move(task)),
+      target_time, base::subtle::DelayPolicy::kPrecise);
 }
 
 absl::optional<base::TimeTicks> ThreadWrapper::PrepareRunTask() {

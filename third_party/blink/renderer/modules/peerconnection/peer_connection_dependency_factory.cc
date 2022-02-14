@@ -158,7 +158,8 @@ class PeerConnectionStaticDeps {
     webrtc::ThreadWrapper::current()->set_send_allowed(true);
   }
 
-  base::WaitableEvent& InitializeWorkerThread() {
+  base::WaitableEvent& InitializeWorkerThread(
+      scoped_refptr<blink::MetronomeSource> metronome_source) {
     if (!worker_thread_) {
       PostCrossThreadTask(
           *chrome_worker_thread_.task_runner(), FROM_HERE,
@@ -169,12 +170,14 @@ class PeerConnectionStaticDeps {
               ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
                   PeerConnectionStaticDeps::LogTaskLatencyWorker)),
               ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-                  PeerConnectionStaticDeps::LogTaskDurationWorker))));
+                  PeerConnectionStaticDeps::LogTaskDurationWorker)),
+              metronome_source));
     }
     return init_worker_event;
   }
 
-  base::WaitableEvent& InitializeNetworkThread() {
+  base::WaitableEvent& InitializeNetworkThread(
+      scoped_refptr<blink::MetronomeSource> metronome_source) {
     if (!network_thread_) {
       PostCrossThreadTask(
           *chrome_network_thread_.task_runner(), FROM_HERE,
@@ -185,12 +188,14 @@ class PeerConnectionStaticDeps {
               ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
                   PeerConnectionStaticDeps::LogTaskLatencyNetwork)),
               ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-                  PeerConnectionStaticDeps::LogTaskDurationNetwork))));
+                  PeerConnectionStaticDeps::LogTaskDurationNetwork)),
+              metronome_source));
     }
     return init_network_event;
   }
 
-  base::WaitableEvent& InitializeSignalingThread() {
+  base::WaitableEvent& InitializeSignalingThread(
+      scoped_refptr<blink::MetronomeSource> metronome_source) {
     if (!signaling_thread_) {
       PostCrossThreadTask(
           *chrome_signaling_thread_.task_runner(), FROM_HERE,
@@ -201,7 +206,8 @@ class PeerConnectionStaticDeps {
               ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
                   PeerConnectionStaticDeps::LogTaskLatencySignaling)),
               ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-                  PeerConnectionStaticDeps::LogTaskDurationSignaling))));
+                  PeerConnectionStaticDeps::LogTaskDurationSignaling)),
+              metronome_source));
     }
     return init_signaling_event;
   }
@@ -248,8 +254,9 @@ class PeerConnectionStaticDeps {
       rtc::Thread** thread,
       base::WaitableEvent* event,
       base::RepeatingCallback<void(base::TimeDelta)> latency_callback,
-      base::RepeatingCallback<void(base::TimeDelta)> duration_callback) {
-    webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
+      base::RepeatingCallback<void(base::TimeDelta)> duration_callback,
+      scoped_refptr<blink::MetronomeSource> metronome_source) {
+    webrtc::ThreadWrapper::EnsureForCurrentMessageLoop(metronome_source);
     webrtc::ThreadWrapper::current()->set_send_allowed(true);
     webrtc::ThreadWrapper::current()->SetLatencyAndTaskDurationCallbacks(
         std::move(latency_callback), std::move(duration_callback));
@@ -452,11 +459,31 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
 
   DVLOG(1) << "PeerConnectionDependencyFactory::CreatePeerConnectionFactory()";
 
+  if (!metronome_source_) {
+    // Store a reference to the context's metronome provider so that it can be
+    // used when cleaning up peer connections, even while the context is being
+    // destroyed.
+    metronome_provider_ =
+        ExecutionContextMetronomeProvider::From(*GetExecutionContext())
+            .metronome_provider();
+    DCHECK(metronome_provider_);
+    metronome_source_ = base::MakeRefCounted<MetronomeSource>(
+        // By using a constant metronome phase (zero), MetronomeSources will be
+        // synchronized across process boundaries.
+        base::TimeTicks(), kMetronomeTick);
+  }
+
+  bool threads_uses_metronome =
+      base::FeatureList::IsEnabled(webrtc::kThreadWrapperUsesMetronome);
+  DCHECK(metronome_source_);
   StaticDeps().EnsureChromeThreadsStarted();
   base::WaitableEvent& worker_thread_started_event =
-      StaticDeps().InitializeWorkerThread();
-  StaticDeps().InitializeNetworkThread();
-  StaticDeps().InitializeSignalingThread();
+      StaticDeps().InitializeWorkerThread(
+          threads_uses_metronome ? metronome_source_ : nullptr);
+  StaticDeps().InitializeNetworkThread(
+      threads_uses_metronome ? metronome_source_ : nullptr);
+  StaticDeps().InitializeSignalingThread(
+      threads_uses_metronome ? metronome_source_ : nullptr);
 
 #if BUILDFLAG(RTC_USE_H264) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
   // Building /w |rtc_use_h264|, is the corresponding run-time feature enabled?
@@ -506,20 +533,6 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
   // refer to `worker_thread_`.
   worker_thread_started_event.Wait();
   CHECK(GetWorkerThread());
-
-  if (!metronome_source_) {
-    // Store a reference to the context's metronome provider so that it can be
-    // used when cleaning up peer connections, even while the context is being
-    // destroyed.
-    metronome_provider_ =
-        ExecutionContextMetronomeProvider::From(*GetExecutionContext())
-            .metronome_provider();
-    DCHECK(metronome_provider_);
-    metronome_source_ = base::MakeRefCounted<MetronomeSource>(
-        // By using a constant metronome phase (zero), MetronomeSources will be
-        // synchronized across process boundaries.
-        base::TimeTicks(), kMetronomeTick);
-  }
 
   base::WaitableEvent start_signaling_event(
       base::WaitableEvent::ResetPolicy::MANUAL,

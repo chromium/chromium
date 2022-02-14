@@ -13,6 +13,7 @@
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
@@ -21,8 +22,13 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/rtc_base/thread.h"
+#include "third_party/webrtc_overrides/metronome_source.h"
 
 namespace webrtc {
+
+// Whether ThreadWrapper should schedule low-precision tasks on the metronome.
+// Default: disabled.
+extern const base::Feature kThreadWrapperUsesMetronome;
 
 // ThreadWrapper implements rtc::Thread interface on top of
 // Chromium's SingleThreadTaskRunner interface. Currently only the bare minimum
@@ -46,11 +52,13 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   // Create ThreadWrapper for the current thread if it hasn't been created
   // yet. The thread wrapper is destroyed automatically when the current
   // MessageLoop is destroyed.
-  static void EnsureForCurrentMessageLoop();
+  static void EnsureForCurrentMessageLoop(
+      scoped_refptr<blink::MetronomeSource> metronome_source = nullptr);
 
   // Creates ThreadWrapper for |task_runner| that runs tasks on the
   // current thread.
   static std::unique_ptr<ThreadWrapper> WrapTaskRunner(
+      scoped_refptr<blink::MetronomeSource> metronome_source,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // Returns thread wrapper for the current thread or nullptr if it doesn't
@@ -132,8 +140,8 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   struct PendingSend;
   class PostTaskLatencySampler;
 
-  explicit ThreadWrapper(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  ThreadWrapper(scoped_refptr<blink::MetronomeSource> metronome_source,
+                scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   void PostTaskInternal(const rtc::Location& posted_from,
                         int delay_ms,
@@ -148,6 +156,8 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   void PostTask(std::unique_ptr<webrtc::QueuedTask> task) override;
   void PostDelayedTask(std::unique_ptr<webrtc::QueuedTask> task,
                        uint32_t milliseconds) override;
+  void PostDelayedHighPrecisionTask(std::unique_ptr<webrtc::QueuedTask> task,
+                                    uint32_t milliseconds) override;
 
   // Executes WebRTC queued tasks from TaskQueueBase overrides on
   // |task_runner_|.
@@ -160,6 +170,10 @@ class ThreadWrapper : public base::CurrentThread::DestructionObserver,
   // |task_start_timestamp|.
   void FinalizeRunTask(absl::optional<base::TimeTicks> task_start_timestamp);
 
+  // TODO(https://crbug.com/1296138): When MetronomeSource is simplified,
+  // snapping to metronome ticks will be a static function, and we can remove
+  // this object reference.
+  const scoped_refptr<blink::MetronomeSource> metronome_source_;
   // Task runner used to execute messages posted on this thread.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

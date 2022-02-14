@@ -10,12 +10,17 @@
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/webrtc_overrides/metronome_source.h"
+#include "third_party/webrtc_overrides/test/metronome_like_task_queue_test.h"
 
+using ::blink::MetronomeLikeTaskQueueTest;
 using ::testing::DoAll;
 using ::testing::InSequence;
 using ::testing::InvokeWithoutArgs;
@@ -59,8 +64,6 @@ class DeletableObject {
   raw_ptr<bool> deleted_;
 };
 
-}  // namespace
-
 class ThreadWrapperTest : public testing::Test {
  public:
   // This method is used by the SendDuringSend test. It sends message to the
@@ -82,7 +85,7 @@ class ThreadWrapperTest : public testing::Test {
     thread_ = rtc::Thread::Current();
   }
 
-  // ThreadWrapper destroyes itself when |message_loop_| is destroyed.
+  // ThreadWrapper destroys itself when |message_loop_| is destroyed.
   base::test::SingleThreadTaskEnvironment task_environment_;
   raw_ptr<rtc::Thread> thread_;
   MockMessageHandler handler1_;
@@ -310,5 +313,35 @@ TEST_F(ThreadWrapperTest, Dispose) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(deleted_);
 }
+
+// Provider needed for the MetronomeLikeTaskQueueTest suite.
+class ThreadWrapperProvider : public blink::MetronomeLikeTaskQueueProvider {
+ public:
+  static constexpr base::TimeDelta kMetronomeTick = base::Hertz(64);
+
+  void Initialize() override {
+    scoped_refptr<blink::MetronomeSource> metronome_source =
+        base::MakeRefCounted<blink::MetronomeSource>(base::TimeTicks::Now(),
+                                                     kMetronomeTick);
+    ThreadWrapper::EnsureForCurrentMessageLoop(std::move(metronome_source));
+    thread_ = rtc::Thread::Current();
+  }
+
+  base::TimeDelta MetronomeTick() const override { return kMetronomeTick; }
+  webrtc::TaskQueueBase* TaskQueue() const override { return thread_; }
+
+ private:
+  // ThreadWrapper destroys itself when |message_loop_| is destroyed.
+  raw_ptr<rtc::Thread> thread_;
+};
+
+// Instantiate suite to run all tests defined in
+// third_party/webrtc_overrides/test/metronome_like_task_queue_test.h
+INSTANTIATE_TEST_SUITE_P(
+    ThreadWrapper,
+    MetronomeLikeTaskQueueTest,
+    ::testing::Values(std::make_unique<ThreadWrapperProvider>));
+
+}  // namespace
 
 }  // namespace webrtc

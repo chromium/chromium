@@ -92,5 +92,6 @@ source_set("unit_tests") {
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/webrtc_overrides:metronome_like_task_queue_test",
   ]
 }
