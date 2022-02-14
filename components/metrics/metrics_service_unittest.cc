@@ -292,6 +292,16 @@ class ExperimentTestMetricsProvider : public TestMetricsProvider {
   raw_ptr<base::FieldTrial> session_data_trial_;
 };
 
+bool HistogramExists(base::StringPiece name) {
+  return base::StatisticsRecorder::FindHistogram(name) != nullptr;
+}
+
+base::HistogramBase::Count GetHistogramDeltaTotalCount(base::StringPiece name) {
+  return base::StatisticsRecorder::FindHistogram(name)
+      ->SnapshotDelta()
+      ->TotalCount();
+}
+
 }  // namespace
 
 TEST_F(MetricsServiceTest, InitialStabilityLogAfterCleanShutDown) {
@@ -533,30 +543,25 @@ TEST_F(MetricsServiceTest, MarkCurrentHistogramsAsReported) {
                              GetLocalState());
 
   // Emit to histogram |Test.Before.Histogram|.
-  ASSERT_FALSE(
-      base::StatisticsRecorder::FindHistogram("Test.Before.Histogram"));
+  ASSERT_FALSE(HistogramExists("Test.Before.Histogram"));
   base::UmaHistogramBoolean("Test.Before.Histogram", true);
-  ASSERT_TRUE(base::StatisticsRecorder::FindHistogram("Test.Before.Histogram"));
+  ASSERT_TRUE(HistogramExists("Test.Before.Histogram"));
 
   // Mark histogram data that has been collected until now (in particular, the
   // |Test.Before.Histogram| sample) as reported.
   service.MarkCurrentHistogramsAsReported();
 
   // Emit to histogram |Test.After.Histogram|.
-  ASSERT_FALSE(base::StatisticsRecorder::FindHistogram("Test.After.Histogram"));
+  ASSERT_FALSE(HistogramExists("Test.After.Histogram"));
   base::UmaHistogramBoolean("Test.After.Histogram", true);
-  ASSERT_TRUE(base::StatisticsRecorder::FindHistogram("Test.After.Histogram"));
+  ASSERT_TRUE(HistogramExists("Test.After.Histogram"));
 
   // Verify that the |Test.Before.Histogram| sample was marked as reported, and
   // is not included in the next snapshot.
-  EXPECT_EQ(0, base::StatisticsRecorder::FindHistogram("Test.Before.Histogram")
-                   ->SnapshotDelta()
-                   ->TotalCount());
+  EXPECT_EQ(0, GetHistogramDeltaTotalCount("Test.Before.Histogram"));
   // Verify that the |Test.After.Histogram| sample was not marked as reported,
   // and is included in the next snapshot.
-  EXPECT_EQ(1, base::StatisticsRecorder::FindHistogram("Test.After.Histogram")
-                   ->SnapshotDelta()
-                   ->TotalCount());
+  EXPECT_EQ(1, GetHistogramDeltaTotalCount("Test.After.Histogram"));
 
   // Clean up histograms.
   base::StatisticsRecorder::ForgetHistogramForTesting("Test.Before.Histogram");

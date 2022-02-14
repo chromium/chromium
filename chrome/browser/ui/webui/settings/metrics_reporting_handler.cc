@@ -97,7 +97,8 @@ void MetricsReportingHandler::HandleSetMetricsReportingEnabled(
   }
 
   bool enabled = args[0].GetBool();
-  ChangeMetricsReportingState(enabled);
+  ChangeMetricsReportingState(
+      enabled, ChangeMetricsReportingStateCalledFrom::kUiSettings);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // To match the pre-Lacros settings UX, the metrics reporting toggle in Lacros

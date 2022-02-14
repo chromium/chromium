@@ -63,12 +63,14 @@ bool SetGoogleUpdateSettings(bool enabled) {
 // to be done in the main thread.
 // As arguments this function gets:
 //  |to_update_pref| which indicates what the desired update should be,
-//  |callback_fn| is the callback function to be called in the end
+//  |callback_fn| is the callback function to be called in the end,
+//  |called_from| is from where the call was made,
 //  |updated_pref| is the result of attempted update.
 // Update considers to be successful if |to_update_pref| and |updated_pref| are
 // the same.
 void SetMetricsReporting(bool to_update_pref,
                          OnMetricsReportingCallbackType callback_fn,
+                         ChangeMetricsReportingStateCalledFrom called_from,
                          bool updated_pref) {
   g_browser_process->local_state()->SetBoolean(
       metrics::prefs::kMetricsReportingEnabled, updated_pref);
@@ -79,7 +81,7 @@ void SetMetricsReporting(bool to_update_pref,
           metrics::prefs::kMetricsClientID),
       metrics::structured::NeutrinoDevicesLocation::kSetMetricsReporting);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  UpdateMetricsPrefsOnPermissionChange(updated_pref);
+  UpdateMetricsPrefsOnPermissionChange(updated_pref, called_from);
 
   // Uses the current state of whether reporting is enabled to enable services.
   g_browser_process->GetMetricsServicesManager()->UpdateUploadPermissions(true);
@@ -96,16 +98,19 @@ void SetMetricsReporting(bool to_update_pref,
 
 }  // namespace
 
-void ChangeMetricsReportingState(bool enabled) {
-  ChangeMetricsReportingStateWithReply(enabled,
-                                       OnMetricsReportingCallbackType());
+void ChangeMetricsReportingState(
+    bool enabled,
+    ChangeMetricsReportingStateCalledFrom called_from) {
+  ChangeMetricsReportingStateWithReply(
+      enabled, OnMetricsReportingCallbackType(), called_from);
 }
 
 // TODO(gayane): Instead of checking policy before setting the metrics pref set
 // the pref and register for notifications for the rest of the changes.
 void ChangeMetricsReportingStateWithReply(
     bool enabled,
-    OnMetricsReportingCallbackType callback_fn) {
+    OnMetricsReportingCallbackType callback_fn,
+    ChangeMetricsReportingStateCalledFrom called_from) {
 #if !BUILDFLAG(IS_ANDROID)
   if (IsMetricsReportingPolicyManaged()) {
     if (!callback_fn.is_null()) {
@@ -126,15 +131,21 @@ void ChangeMetricsReportingStateWithReply(
   base::PostTaskAndReplyWithResult(
       GoogleUpdateSettings::CollectStatsConsentTaskRunner(), FROM_HERE,
       base::BindOnce(&SetGoogleUpdateSettings, enabled),
-      base::BindOnce(&SetMetricsReporting, enabled, std::move(callback_fn)));
+      base::BindOnce(&SetMetricsReporting, enabled, std::move(callback_fn),
+                     called_from));
 }
 
-void UpdateMetricsPrefsOnPermissionChange(bool metrics_enabled) {
+void UpdateMetricsPrefsOnPermissionChange(
+    bool metrics_enabled,
+    ChangeMetricsReportingStateCalledFrom called_from) {
   if (metrics_enabled) {
     // When a user opts in to the metrics reporting service, the previously
     // collected data should be cleared to ensure that nothing is reported
     // before a user opts in and all reported data is accurate.
     g_browser_process->metrics_service()->ClearSavedStabilityMetrics();
+    if (called_from == ChangeMetricsReportingStateCalledFrom::kUiSettings) {
+      ClearPreviouslyCollectedMetricsData();
+    }
     return;
   }
   // Clear the client id and low entropy sources pref when opting out.

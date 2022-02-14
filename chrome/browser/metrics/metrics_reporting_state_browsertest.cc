@@ -150,10 +150,14 @@ class MetricsReportingStateTestParameterized
   }
 };
 
-// Used to verify that collected histograms during a session are discarded upon
-// enabling metrics, so that only data collected after enabling metrics are
-// collected.
-class MetricsReportingStateClearDataTest : public MetricsReportingStateTest {
+// Used to verify that metrics collected during a session are discarded upon
+// enabling metrics reporting, so that only data collected after enabling
+// metrics are collected. Histogram data should only be cleared if metrics
+// reporting was enabled from a settings page.
+class MetricsReportingStateClearDataTest
+    : public MetricsReportingStateTest,
+      public testing::WithParamInterface<
+          ChangeMetricsReportingStateCalledFrom> {
  public:
   // Set metrics reporting to false initially.
   bool is_metrics_reporting_enabled_initial_value() const override {
@@ -200,10 +204,14 @@ IN_PROC_BROWSER_TEST_P(MetricsReportingStateTestParameterized,
   EXPECT_EQ(is_metrics_reporting_enabled_final_value(), value_after_change);
 }
 
-// Verifies that collected data is cleared after calling
-// |ClearCollectedDataSoFar|.
-IN_PROC_BROWSER_TEST_F(MetricsReportingStateClearDataTest,
+// Verifies that collected data is cleared after enabling metrics reporting.
+// Histogram data should only be cleared (marked as reported) when enabling
+// metrics reporting from a settings page.
+IN_PROC_BROWSER_TEST_P(MetricsReportingStateClearDataTest,
                        ClearPreviouslyCollectedMetricsData) {
+  // Set Stablity Crash Count metric to 1.
+  g_browser_process->local_state()->SetInteger(
+      metrics::prefs::kStabilityCrashCount, 1);
   // Emit to two histograms.
   ASSERT_FALSE(HistogramExists("Test.Before.Histogram"));
   ASSERT_FALSE(HistogramExists("Test.Before.StabilityHistogram"));
@@ -212,18 +220,34 @@ IN_PROC_BROWSER_TEST_F(MetricsReportingStateClearDataTest,
   ASSERT_TRUE(HistogramExists("Test.Before.Histogram"));
   ASSERT_TRUE(HistogramExists("Test.Before.StabilityHistogram"));
 
-  // Clear metrics data.
-  ClearPreviouslyCollectedMetricsData();
+  // Simulate enabling metrics reporting.
+  ChangeMetricsReportingStateCalledFrom called_from = GetParam();
+  base::RunLoop run_loop;
+  bool value_after_change = false;
+  ChangeMetricsReportingStateWithReply(
+      true,
+      base::BindOnce(&OnMetricsReportingStateChanged, &value_after_change,
+                     run_loop.QuitClosure()),
+      called_from);
+  run_loop.Run();
+  ASSERT_TRUE(value_after_change);
 
-  // Emit to one histogram after clearing metrics data.
+  // Emit to one histogram after enabling metrics reporting.
   ASSERT_FALSE(HistogramExists("Test.After.Histogram"));
   base::UmaHistogramBoolean("Test.After.Histogram", true);
   ASSERT_TRUE(HistogramExists("Test.After.Histogram"));
 
+  // Verify that stability metrics were cleared.
+  EXPECT_EQ(0, g_browser_process->local_state()->GetInteger(
+                   metrics::prefs::kStabilityCrashCount));
   // Verify that histogram data that came before clearing data are not included
-  // in the next snapshot.
-  EXPECT_EQ(0, GetHistogramDeltaTotalCount("Test.Before.Histogram"));
-  EXPECT_EQ(0, GetHistogramDeltaTotalCount("Test.Before.StabilityHistogram"));
+  // in the next snapshot if metrics reporting was enabled from a settings page.
+  bool called_from_settings_page =
+      (called_from == ChangeMetricsReportingStateCalledFrom::kUiSettings);
+  EXPECT_EQ(called_from_settings_page ? 0 : 1,
+            GetHistogramDeltaTotalCount("Test.Before.Histogram"));
+  EXPECT_EQ(called_from_settings_page ? 0 : 1,
+            GetHistogramDeltaTotalCount("Test.Before.StabilityHistogram"));
   // Verify that histogram data that came after clearing data is included in the
   // next snapshot.
   EXPECT_EQ(1, GetHistogramDeltaTotalCount("Test.After.Histogram"));
@@ -243,3 +267,10 @@ INSTANTIATE_TEST_SUITE_P(
         // reporting at the beginning of the test. The second param determines
         // what the metrics reporting state should change to during the test.
         {{false, false}, {false, true}, {true, false}, {true, true}}));
+
+INSTANTIATE_TEST_SUITE_P(
+    MetricsReportingStateTests,
+    MetricsReportingStateClearDataTest,
+    testing::ValuesIn<ChangeMetricsReportingStateCalledFrom>(
+        {ChangeMetricsReportingStateCalledFrom::kUnknown,
+         ChangeMetricsReportingStateCalledFrom::kUiSettings}));
