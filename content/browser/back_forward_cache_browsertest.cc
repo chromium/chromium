@@ -103,10 +103,11 @@ class DOMContentLoadedObserver : public WebContentsObserver {
       run_loop_.Quit();
   }
 
-  void Wait() {
+  [[nodiscard]] bool Wait() {
     if (render_frame_host_->IsDOMContentLoaded())
       run_loop_.Quit();
     run_loop_.Run();
+    return render_frame_host_->IsDOMContentLoaded();
   }
 
  private:
@@ -116,9 +117,9 @@ class DOMContentLoadedObserver : public WebContentsObserver {
 
 }  // namespace
 
-void WaitForDOMContentLoaded(RenderFrameHostImpl* rfh) {
+bool WaitForDOMContentLoaded(RenderFrameHostImpl* rfh) {
   DOMContentLoadedObserver observer(rfh);
-  observer.Wait();
+  return observer.Wait();
 }
 
 EvalJsResult GetLocalStorage(RenderFrameHostImpl* rfh, std::string key) {
@@ -448,7 +449,7 @@ RenderFrameHostImpl* BackForwardCacheBrowserTest::NavigateToPageWithImage(
   RenderFrameHostImpl* rfh = current_frame_host();
   // Wait for the document to load DOM to ensure that kLoading is not
   // one of the reasons why the document wasn't cached.
-  WaitForDOMContentLoaded(rfh);
+  EXPECT_TRUE(WaitForDOMContentLoaded(rfh));
 
   EXPECT_TRUE(ExecJs(rfh, R"(
       var image = document.createElement("img");

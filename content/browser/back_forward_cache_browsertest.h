@@ -246,7 +246,7 @@ class BackForwardCacheBrowserTest : public ContentBrowserTest,
   bool fail_for_unexpected_messages_while_cached_ = true;
 };
 
-void WaitForDOMContentLoaded(RenderFrameHostImpl* rfh);
+[[nodiscard]] bool WaitForDOMContentLoaded(RenderFrameHostImpl* rfh);
 
 class HighCacheSizeBackForwardCacheBrowserTest
     : public BackForwardCacheBrowserTest {
