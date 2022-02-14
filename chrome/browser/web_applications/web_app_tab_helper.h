@@ -10,6 +10,8 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -25,7 +27,7 @@ class WebAppProvider;
 // Per-tab web app helper. Allows to associate a tab (web page) with a web app.
 class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
                         public content::WebContentsObserver,
-                        public AppRegistrarObserver {
+                        public WebAppInstallManagerObserver {
  public:
   static void CreateForWebContents(content::WebContents* contents);
 
@@ -58,10 +60,10 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   // Returns whether the associated web contents belongs to an app window.
   bool IsInAppWindow() const;
 
-  // AppRegistrarObserver:
+  // WebAppInstallManagerObserver:
   void OnWebAppInstalled(const AppId& installed_app_id) override;
   void OnWebAppWillBeUninstalled(const AppId& uninstalled_app_id) override;
-  void OnAppRegistrarDestroyed() override;
+  void OnWebAppInstallManagerDestroyed() override;
 
   void ResetAppId();
 
@@ -98,8 +100,8 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
 
   bool has_loaded_non_about_blank_page_ = false;
 
-  base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver> observation_{
-      this};
+  base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
+      observation_{this};
   raw_ptr<WebAppProvider> provider_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

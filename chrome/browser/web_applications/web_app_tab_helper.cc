@@ -36,7 +36,7 @@ WebAppTabHelper::WebAppTabHelper(content::WebContents* web_contents)
       provider_(WebAppProvider::GetForLocalAppsUnchecked(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
   DCHECK(provider_);
-  observation_.Observe(&provider_->registrar());
+  observation_.Observe(&provider_->install_manager());
   SetAppId(
       FindAppIdWithUrlInScope(web_contents->GetSiteInstance()->GetSiteURL()));
 }
@@ -138,7 +138,7 @@ void WebAppTabHelper::OnWebAppWillBeUninstalled(
     ResetAppId();
 }
 
-void WebAppTabHelper::OnAppRegistrarDestroyed() {
+void WebAppTabHelper::OnWebAppInstallManagerDestroyed() {
   observation_.Reset();
   ResetAppId();
 }
