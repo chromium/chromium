@@ -11,3 +11,9 @@ void TabMatcher::FindMatchingTabs(GURLToTabInfoMap* map,
         IsTabOpenWithURL(gurl_to_tab_info.first, input);
   }
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+std::vector<content::WebContents*> TabMatcher::GetOpenTabs() const {
+  return std::vector<content::WebContents*>();
+}
+#endif

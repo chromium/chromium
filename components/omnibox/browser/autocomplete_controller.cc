@@ -374,7 +374,7 @@ AutocompleteController::AutocompleteController(
     providers_.push_back(new HistoryFuzzyProvider(provider_client_.get()));
   }
   if (provider_types & AutocompleteProvider::TYPE_OPEN_TAB) {
-    providers_.push_back(new OpenTabProvider());
+    providers_.push_back(new OpenTabProvider(provider_client_.get()));
   }
 
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(

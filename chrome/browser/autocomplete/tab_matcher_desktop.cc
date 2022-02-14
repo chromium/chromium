@@ -64,20 +64,27 @@ bool TabMatcherDesktop::IsTabOpenWithURL(const GURL& url,
   content::WebContents* active_tab = nullptr;
   if (active_browser)
     active_tab = active_browser->tab_strip_model()->GetActiveWebContents();
-  for (auto* browser : *BrowserList::GetInstance()) {
-    // Only look at same profile (and anonymity level).
-    if (profile_ == browser->profile()) {
-      for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
-        content::WebContents* web_contents =
-            browser->tab_strip_model()->GetWebContentsAt(i);
-        if (web_contents != active_tab &&
-            IsStrippedURLEqualToWebContentsURL(stripped_url, web_contents))
-          return true;
-      }
+  for (auto* web_contents : GetOpenTabs()) {
+    if (web_contents != active_tab &&
+        IsStrippedURLEqualToWebContentsURL(stripped_url, web_contents)) {
+      return true;
     }
   }
-
   return false;
+}
+
+std::vector<content::WebContents*> TabMatcherDesktop::GetOpenTabs() const {
+  std::vector<content::WebContents*> all_tabs;
+  for (auto* browser : *BrowserList::GetInstance()) {
+    if (profile_ != browser->profile()) {
+      // Only look at the same profile (and anonymity level).
+      continue;
+    }
+    for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
+      all_tabs.push_back(browser->tab_strip_model()->GetWebContentsAt(i));
+    }
+  }
+  return all_tabs;
 }
 
 bool TabMatcherDesktop::IsStrippedURLEqualToWebContentsURL(
