@@ -151,7 +151,7 @@ void GetUserAffiliationStatus(base::DictionaryValue* dict, Profile* profile) {
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user)
     return;
-  dict->SetBoolean("isAffiliated", user->IsAffiliated());
+  dict->SetBoolKey("isAffiliated", user->IsAffiliated());
 #else
   // Don't show affiliation status if the browser isn't enrolled in CBCM.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -161,7 +161,7 @@ void GetUserAffiliationStatus(base::DictionaryValue* dict, Profile* profile) {
     if (!policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid())
       return;
   }
-  dict->SetBoolean("isAffiliated",
+  dict->SetBoolKey("isAffiliated",
                    chrome::enterprise_util::IsProfileAffiliated(profile));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
@@ -171,7 +171,7 @@ void GetOffHoursStatus(base::DictionaryValue* dict) {
   policy::off_hours::DeviceOffHoursController* off_hours_controller =
       ash::DeviceSettingsService::Get()->device_off_hours_controller();
   if (off_hours_controller) {
-    dict->SetBoolean("isOffHoursActive",
+    dict->SetBoolKey("isOffHoursActive",
                      off_hours_controller->is_off_hours_mode());
   }
 }
@@ -185,7 +185,7 @@ void GetUserManager(base::DictionaryValue* dict, Profile* profile) {
   absl::optional<std::string> account_manager =
       chrome::GetAccountManagerIdentity(profile);
   if (account_manager) {
-    dict->SetString("enterpriseDomainManager", *account_manager);
+    dict->SetStringKey("enterpriseDomainManager", *account_manager);
   }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -193,7 +193,7 @@ void GetUserManager(base::DictionaryValue* dict, Profile* profile) {
 void ExtractDomainFromUsername(base::DictionaryValue* dict) {
   const std::string* username = dict->FindStringKey("username");
   if (username && !username->empty())
-    dict->SetString("domain", gaia::ExtractDomainName(*username));
+    dict->SetStringKey("domain", gaia::ExtractDomainName(*username));
 }
 
 // MachineStatus box labels itself as `machine policies` on desktop. In the
@@ -484,16 +484,16 @@ void UserPolicyStatusProviderLacros::GetStatus(base::DictionaryValue* dict) {
       policy && policy->has_timestamp()
           ? base::Time::FromJavaTime(policy->timestamp())
           : base::Time();
-  dict->SetString("timeSinceLastRefresh",
-                  GetTimeSinceLastRefreshString(last_refresh_time));
+  dict->SetStringKey("timeSinceLastRefresh",
+                     GetTimeSinceLastRefreshString(last_refresh_time));
 
   // TODO(https://crbug.com/1243869): Pass this information from Ash through
   // Mojo. Assume no error for now.
-  dict->SetBoolean("error", false);
-  dict->SetString("status",
-                  FormatStoreStatus(
-                      policy::CloudPolicyStore::STATUS_OK,
-                      policy::CloudPolicyValidatorBase::Status::VALIDATION_OK));
+  dict->SetBoolKey("error", false);
+  dict->SetStringKey(
+      "status", FormatStoreStatus(
+                    policy::CloudPolicyStore::STATUS_OK,
+                    policy::CloudPolicyValidatorBase::Status::VALIDATION_OK));
 }
 #endif
 
@@ -533,7 +533,7 @@ DeviceCloudPolicyStatusProviderChromeOS::
 void DeviceCloudPolicyStatusProviderChromeOS::GetStatus(
     base::DictionaryValue* dict) {
   policy::PolicyStatusProvider::GetStatusFromCore(core_, dict);
-  dict->SetString("enterpriseDomainManager", enterprise_domain_manager_);
+  dict->SetStringKey("enterpriseDomainManager", enterprise_domain_manager_);
   GetOffHoursStatus(dict);
 }
 
@@ -556,15 +556,15 @@ void DeviceLocalAccountPolicyStatusProvider::GetStatus(
   if (broker) {
     policy::PolicyStatusProvider::GetStatusFromCore(broker->core(), dict);
   } else {
-    dict->SetBoolean("error", true);
-    dict->SetString("status",
-                    policy::FormatStoreStatus(
-                        policy::CloudPolicyStore::STATUS_BAD_STATE,
-                        policy::CloudPolicyValidatorBase::VALIDATION_OK));
-    dict->SetString("username", std::string());
+    dict->SetBoolKey("error", true);
+    dict->SetStringKey("status",
+                       policy::FormatStoreStatus(
+                           policy::CloudPolicyStore::STATUS_BAD_STATE,
+                           policy::CloudPolicyValidatorBase::VALIDATION_OK));
+    dict->SetStringKey("username", std::string());
   }
   ExtractDomainFromUsername(dict);
-  dict->SetBoolean("publicAccount", true);
+  dict->SetBoolKey("publicAccount", true);
 }
 
 void DeviceLocalAccountPolicyStatusProvider::OnPolicyUpdated(
@@ -603,19 +603,19 @@ void UserActiveDirectoryPolicyStatusProvider::GetStatus(
   const std::u16string status =
       policy::FormatStoreStatus(policy_manager_->store()->status(),
                                 policy_manager_->store()->validation_status());
-  dict->SetString("status", status);
-  dict->SetString("username", username);
-  dict->SetString("clientId", client_id);
+  dict->SetStringKey("status", status);
+  dict->SetStringKey("username", username);
+  dict->SetStringKey("clientId", client_id);
 
   const base::TimeDelta refresh_interval =
       policy_manager_->scheduler()->interval();
-  dict->SetString(
+  dict->SetStringKey(
       "refreshInterval",
       ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
                              ui::TimeFormat::LENGTH_SHORT, refresh_interval));
 
-  dict->SetString("timeSinceLastRefresh",
-                  GetTimeSinceLastRefreshString(last_refresh_time));
+  dict->SetStringKey("timeSinceLastRefresh",
+                     GetTimeSinceLastRefreshString(last_refresh_time));
 
   // Check if profile is present. Note that profile is not present if object is
   // an instance of DeviceActiveDirectoryPolicyStatusProvider that inherits from
@@ -647,7 +647,7 @@ DeviceActiveDirectoryPolicyStatusProvider::
 void DeviceActiveDirectoryPolicyStatusProvider::GetStatus(
     base::DictionaryValue* dict) {
   UserActiveDirectoryPolicyStatusProvider::GetStatus(dict);
-  dict->SetString("enterpriseDomainManager", enterprise_domain_manager_);
+  dict->SetStringKey("enterpriseDomainManager", enterprise_domain_manager_);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1102,13 +1102,13 @@ base::DictionaryValue PolicyUIHandler::GetStatusValue(bool for_webui) const {
       new base::DictionaryValue);
   device_status_provider_->GetStatus(device_status.get());
   if (!device_domain_.empty())
-    device_status->SetString("domain", device_domain_);
+    device_status->SetStringKey("domain", device_domain_);
   std::string domain = device_domain_;
   std::unique_ptr<base::DictionaryValue> user_status(new base::DictionaryValue);
   user_status_provider_->GetStatus(user_status.get());
   const std::string* username = user_status->FindStringKey("username");
   if (username && username->empty())
-    user_status->SetString("domain", gaia::ExtractDomainName(*username));
+    user_status->SetStringKey("domain", gaia::ExtractDomainName(*username));
 
   std::unique_ptr<base::DictionaryValue> machine_status(
       new base::DictionaryValue);
@@ -1121,26 +1121,26 @@ base::DictionaryValue PolicyUIHandler::GetStatusValue(bool for_webui) const {
   base::DictionaryValue status;
   if (!device_status->DictEmpty()) {
     if (for_webui)
-      device_status->SetString("boxLegendKey", "statusDevice");
+      device_status->SetStringKey("boxLegendKey", "statusDevice");
     status.Set("device", std::move(device_status));
   }
 
   if (!machine_status->DictEmpty()) {
     if (for_webui)
-      machine_status->SetString("boxLegendKey", GetMachineStatusLegendKey());
+      machine_status->SetStringKey("boxLegendKey", GetMachineStatusLegendKey());
 
     status.Set("machine", std::move(machine_status));
   }
 
   if (!user_status->DictEmpty()) {
     if (for_webui)
-      user_status->SetString("boxLegendKey", "statusUser");
+      user_status->SetStringKey("boxLegendKey", "statusUser");
     status.Set("user", std::move(user_status));
   }
 
   if (!updater_status->DictEmpty()) {
     if (for_webui)
-      updater_status->SetString("boxLegendKey", "statusUpdater");
+      updater_status->SetStringKey("boxLegendKey", "statusUpdater");
     status.Set("updater", std::move(updater_status));
   }
   return status;
