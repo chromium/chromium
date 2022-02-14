@@ -10,8 +10,6 @@
 #include "base/time/time.h"
 #include "ui/views/window/dialog_delegate.h"
 
-class GURL;
-
 namespace aura {
 class Window;
 }
@@ -22,18 +20,19 @@ class MessageBoxView;
 
 namespace ash {
 
-// The external protocol dialog for Chrome OS shown when there are no handlers.
-class ExternalProtocolNoHandlersDialog : public views::DialogDelegate {
+// The external protocol dialog for Chrome OS shown when we have a URL with a
+// Tel scheme but there are no handlers.
+class ExternalProtocolNoHandlersTelSchemeDialog : public views::DialogDelegate {
  public:
-  ExternalProtocolNoHandlersDialog(aura::Window* parent_window,
-                                   const GURL& url);
+  explicit ExternalProtocolNoHandlersTelSchemeDialog(
+      aura::Window* parent_window);
 
-  ExternalProtocolNoHandlersDialog(const ExternalProtocolNoHandlersDialog&) =
-      delete;
-  ExternalProtocolNoHandlersDialog& operator=(
-      const ExternalProtocolNoHandlersDialog&) = delete;
+  ExternalProtocolNoHandlersTelSchemeDialog(
+      const ExternalProtocolNoHandlersTelSchemeDialog&) = delete;
+  ExternalProtocolNoHandlersTelSchemeDialog& operator=(
+      const ExternalProtocolNoHandlersTelSchemeDialog&) = delete;
 
-  ~ExternalProtocolNoHandlersDialog() override;
+  ~ExternalProtocolNoHandlersTelSchemeDialog() override;
 
   // views::DialogDelegate:
   std::u16string GetWindowTitle() const override;
@@ -47,9 +46,6 @@ class ExternalProtocolNoHandlersDialog : public views::DialogDelegate {
 
   // The time at which this dialog was created.
   base::TimeTicks creation_time_;
-
-  // The scheme of the url.
-  std::string scheme_;
 };
 
 }  // namespace ash

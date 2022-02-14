@@ -53,6 +53,8 @@ void OnArcHandled(const GURL& url,
     return;
 
   // Display the standard ExternalProtocolDialog if Guest OS has a handler.
+  // Otherwise, if there is no handler and the URL is a Tel-link, show the No
+  // Handler Tel Scheme dialog
   absl::optional<guest_os::GuestOsRegistryService::Registration> registration =
       guest_os::GetHandler(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()), url);
@@ -60,8 +62,8 @@ void OnArcHandled(const GURL& url,
     new ExternalProtocolDialog(web_contents, url,
                                base::UTF8ToUTF16(registration->Name()),
                                initiating_origin, initiator_document);
-  } else {
-    new ash::ExternalProtocolNoHandlersDialog(parent_window, url);
+  } else if (url.scheme() == url::kTelScheme) {
+    new ash::ExternalProtocolNoHandlersTelSchemeDialog(parent_window);
   }
 }
 
@@ -98,15 +100,13 @@ void ExternalProtocolHandler::RunExternalProtocolDialog(
 namespace ash {
 
 ///////////////////////////////////////////////////////////////////////////////
-// ExternalProtocolNoHandlersDialog
+// ExternalProtocolNoHandlersTelSchemeDialog
 
-ExternalProtocolNoHandlersDialog::ExternalProtocolNoHandlersDialog(
-    aura::Window* parent_window,
-    const GURL& url)
-    : creation_time_(base::TimeTicks::Now()), scheme_(url.scheme()) {
+ExternalProtocolNoHandlersTelSchemeDialog::
+    ExternalProtocolNoHandlersTelSchemeDialog(aura::Window* parent_window)
+    : creation_time_(base::TimeTicks::Now()) {
   DCHECK(parent_window);
   SetOwnedByWidget(true);
-
   views::DialogDelegate::SetButtons(ui::DIALOG_BUTTON_OK);
   views::DialogDelegate::SetButtonLabel(
       ui::DIALOG_BUTTON_OK,
@@ -121,27 +121,26 @@ ExternalProtocolNoHandlersDialog::ExternalProtocolNoHandlersDialog(
       chrome::DialogIdentifier::EXTERNAL_PROTOCOL_CHROMEOS);
 }
 
-ExternalProtocolNoHandlersDialog::~ExternalProtocolNoHandlersDialog() = default;
+ExternalProtocolNoHandlersTelSchemeDialog::
+    ~ExternalProtocolNoHandlersTelSchemeDialog() = default;
 
-std::u16string ExternalProtocolNoHandlersDialog::GetWindowTitle() const {
-  // If this dialog is shown for a tel link, we display a message to the user on
-  // how to use the Click to Call feature.
-  if (scheme_ == url::kTelScheme) {
-    return l10n_util::GetStringUTF16(
-        IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_HELP_TEXT_NO_DEVICES);
-  }
-  return l10n_util::GetStringUTF16(IDS_EXTERNAL_PROTOCOL_NO_HANDLER_TITLE);
+std::u16string ExternalProtocolNoHandlersTelSchemeDialog::GetWindowTitle()
+    const {
+  // We display a message to the user on how to use the Click to Call feature.
+  return l10n_util::GetStringUTF16(
+      IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_HELP_TEXT_NO_DEVICES);
 }
 
-views::View* ExternalProtocolNoHandlersDialog::GetContentsView() {
+views::View* ExternalProtocolNoHandlersTelSchemeDialog::GetContentsView() {
   return message_box_view_;
 }
 
-const views::Widget* ExternalProtocolNoHandlersDialog::GetWidget() const {
+const views::Widget* ExternalProtocolNoHandlersTelSchemeDialog::GetWidget()
+    const {
   return message_box_view_->GetWidget();
 }
 
-views::Widget* ExternalProtocolNoHandlersDialog::GetWidget() {
+views::Widget* ExternalProtocolNoHandlersTelSchemeDialog::GetWidget() {
   return message_box_view_->GetWidget();
 }
 
