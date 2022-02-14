@@ -289,34 +289,26 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
   if (CollectGraphicsDeviceInfoFromCommandLine(command_line, gpu_info))
     return true;
 
-  std::string use_gl = command_line->GetSwitchValueASCII(switches::kUseGL);
-  std::string use_angle =
-      command_line->GetSwitchValueASCII(switches::kUseANGLE);
   gpu_info->passthrough_cmd_decoder =
       gl::UsePassthroughCommandDecoder(command_line) &&
       gl::PassthroughCommandDecoderSupported();
 
+  bool fallback_to_software = false;
+  std::optional<gl::GLImplementationParts> implementation =
+      gl::GetRequestedGLImplementationFromCommandLine(command_line,
+                                                      &fallback_to_software);
+
   // If GL is disabled then we don't need GPUInfo.
-  if (use_gl == gl::kGLImplementationDisabledName) {
+  if (implementation && *implementation == gl::kGLImplementationDisabled) {
     gpu_info->gl_vendor = "Disabled";
     gpu_info->gl_renderer = "Disabled";
     gpu_info->gl_version = "Disabled";
-
     return true;
   }
 
-  gl::GLImplementationParts implementation =
-      gl::GetNamedGLImplementation(use_gl, use_angle);
-
-  bool useSoftwareGLForTests =
-      command_line->HasSwitch(switches::kOverrideUseSoftwareGLForTests);
-  gl::GLImplementationParts legacyImpl =
+  gl::GLImplementationParts legacy_impl =
       gl::GetLegacySoftwareGLImplementation();
-  gl::GLImplementationParts swangleImpl = gl::GetSoftwareGLImplementation();
-
-  if (implementation == legacyImpl ||
-      (useSoftwareGLForTests &&
-       legacyImpl == gl::init::GetSoftwareGLImplementationForPlatform())) {
+  if (implementation && *implementation == legacy_impl) {
     // If using the software GL implementation, use fake vendor and
     // device ids to make sure it never gets blocklisted. It allows us
     // to proceed with loading the blocklist which may have non-device
@@ -328,14 +320,13 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
     // Also declare the driver_vendor to be <software GL> to be able to
     // specify exceptions based on driver_vendor==<software GL> for some
     // blocklist rules.
-    gpu_info->gpu.driver_vendor =
-        std::string(gl::GetGLImplementationGLName(legacyImpl));
+    gpu_info->gpu.driver_vendor = gl::GetGLImplementationGLName(legacy_impl);
 
     return true;
-  } else if (implementation == swangleImpl ||
-             (useSoftwareGLForTests &&
-              swangleImpl ==
-                  gl::init::GetSoftwareGLImplementationForPlatform())) {
+  }
+
+  if (implementation &&
+      *implementation == gl::ANGLEImplementation::kSwiftShader) {
     // Similarly to the above, use fake vendor and device ids
     // to make sure they never gets blocklisted for SwANGLE as well.
     gpu_info->gpu.vendor_id = 0xffff;

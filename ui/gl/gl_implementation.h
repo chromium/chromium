@@ -6,6 +6,7 @@
 #define UI_GL_GL_IMPLEMENTATION_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -66,6 +67,14 @@ struct GL_EXPORT GLImplementationParts {
 
   constexpr bool operator==(const GLImplementationParts& other) const {
     return (gl == other.gl && angle == other.angle);
+  }
+
+  constexpr bool operator==(const ANGLEImplementation angle_impl) const {
+    return operator==(GLImplementationParts(angle_impl));
+  }
+
+  constexpr bool operator==(const GLImplementation gl_impl) const {
+    return operator==(GLImplementationParts(gl_impl));
   }
 
   bool IsValid() const;
@@ -137,6 +146,10 @@ GL_EXPORT ANGLEImplementation GetANGLEImplementation();
 GL_EXPORT GLImplementationParts GetLegacySoftwareGLImplementation();
 GL_EXPORT GLImplementationParts GetSoftwareGLImplementation();
 
+// Returns the software GL implementation used by default on the current
+// platform
+GL_EXPORT GLImplementationParts GetSoftwareGLImplementationForPlatform();
+
 // Set the software GL implementation on the provided command line
 GL_EXPORT void SetSoftwareGLCommandLineSwitches(
     base::CommandLine* command_line);
@@ -144,6 +157,13 @@ GL_EXPORT void SetSoftwareGLCommandLineSwitches(
 // Set the software WebGL implementation on the provided command line
 GL_EXPORT void SetSoftwareWebGLCommandLineSwitches(
     base::CommandLine* command_line);
+
+// Return requested GL implementation by checking commandline. If there isn't
+// gl related argument, std::nullopt is returned.
+GL_EXPORT std::optional<GLImplementationParts>
+GetRequestedGLImplementationFromCommandLine(
+    const base::CommandLine* command_line,
+    bool* fallback_to_software_gl);
 
 // Whether the implementation is one of the software GL implementations
 GL_EXPORT bool IsSoftwareGLImplementation(GLImplementationParts implementation);

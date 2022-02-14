@@ -250,23 +250,21 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       InitializeSwitchableGPUs(
           gpu_feature_info_.enabled_gpu_driver_bug_workarounds);
     }
+  } else {
     // If SwiftShader/SwANGLE is in use, set the flag gl_use_swiftshader_ so GPU
     // initialization will take a software rendering path. Do not do this if
     // SwiftShader/SwANGLE are explicitly requested via flags, because the flags
     // are meant to specify running SwiftShader/SwANGLE on the hardware GPU
     // path.
-  } else if (gl::GetGLImplementationParts() ==
-                 gl::GetLegacySoftwareGLImplementation() &&
-             command_line->GetSwitchValueASCII(switches::kUseGL) !=
-                 gl::kGLImplementationSwiftShaderName) {
-    gl_use_swiftshader_ = true;
-  } else if (gl::GetGLImplementationParts() ==
-                 gl::GetSoftwareGLImplementation() &&
-             (command_line->GetSwitchValueASCII(switches::kUseGL) !=
-                  gl::kGLImplementationANGLEName ||
-              command_line->GetSwitchValueASCII(switches::kUseANGLE) !=
-                  gl::kANGLEImplementationSwiftShaderName)) {
-    gl_use_swiftshader_ = true;
+    gl::GLImplementationParts impl = gl::GetGLImplementationParts();
+    bool fallback_to_software_gl = false;
+    std::optional<gl::GLImplementationParts> requested_impl =
+        gl::GetRequestedGLImplementationFromCommandLine(
+            command_line, &fallback_to_software_gl);
+    if (gl::IsSoftwareGLImplementation(impl) &&
+        !(requested_impl && gl::IsSoftwareGLImplementation(*requested_impl))) {
+      gl_use_swiftshader_ = true;
+    }
   }
 
   bool enable_watchdog = !gpu_preferences_.disable_gpu_watchdog &&
@@ -394,7 +392,6 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     if (watchdog_thread_)
       watchdog_thread_->PauseWatchdog();
     gl_initialized = gl::init::InitializeStaticGLBindingsOneOff();
-
     if (!gl_initialized) {
       VLOG(1) << "gl::init::InitializeStaticGLBindingsOneOff failed";
       return false;
@@ -431,10 +428,9 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   }
 #endif
 
-  bool gl_disabled = gl::GetGLImplementation() == gl::kGLImplementationDisabled;
-  bool is_swangle =
-      gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
-      gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader;
+  auto impl = gl::GetGLImplementationParts();
+  bool gl_disabled = impl == gl::kGLImplementationDisabled;
+  bool is_swangle = impl == gl::ANGLEImplementation::kSwiftShader;
 
   // Compute passthrough decoder status before ComputeGpuFeatureInfo below.
   // Do this after GL is initialized so extensions can be queried.
@@ -461,8 +457,9 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   // We need to collect GL strings (VENDOR, RENDERER) for blocklisting purposes.
   if (!gl_disabled) {
     if (!gl_use_swiftshader_) {
-      if (!CollectGraphicsInfo(&gpu_info_))
+      if (!CollectGraphicsInfo(&gpu_info_)) {
         return false;
+      }
 
       SetKeysForCrashLogging(gpu_info_);
       gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,

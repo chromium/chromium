@@ -58,7 +58,7 @@ void InitializeOneOffHelper(bool init_extensions) {
 
   GLImplementationParts impl = allowed_impls[0];
   if (use_software_gl) {
-    impl = gl::init::GetSoftwareGLImplementationForPlatform();
+    impl = gl::GetSoftwareGLImplementationForPlatform();
   }
 
   DCHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kUseGL))

@@ -322,6 +322,9 @@ bool SkiaOutputDeviceVulkan::Initialize() {
       sk_color_type;
   capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::BGRA_8888)] =
       sk_color_type;
+  // BGRX_8888 is used on Windows.
+  capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::BGRX_8888)] =
+      sk_color_type;
   return true;
 }
 

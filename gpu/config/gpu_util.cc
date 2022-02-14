@@ -167,13 +167,16 @@ GpuFeatureStatus GetVulkanFeatureStatus(
 
 GpuFeatureStatus GetGpuRasterizationFeatureStatus(
     const std::set<int>& blocklisted_features,
-    const base::CommandLine& command_line) {
+    const base::CommandLine& command_line,
+    bool use_swift_shader) {
   if (command_line.HasSwitch(switches::kDisableGpuRasterization))
     return kGpuFeatureStatusDisabled;
   else if (command_line.HasSwitch(switches::kEnableGpuRasterization))
     return kGpuFeatureStatusEnabled;
 
-  if (blocklisted_features.count(GPU_FEATURE_TYPE_GPU_RASTERIZATION))
+  // If swiftshader is being used, the blocklist should be ignored.
+  if (!use_swift_shader &&
+      blocklisted_features.count(GPU_FEATURE_TYPE_GPU_RASTERIZATION))
     return kGpuFeatureStatusBlocklisted;
 
   // Enable gpu rasterization for vulkan, unless it is overridden by
@@ -229,9 +232,11 @@ GpuFeatureStatus Get2DCanvasFeatureStatus(
 GpuFeatureStatus GetCanvasOopRasterizationFeatureStatus(
     const std::set<int>& blocklisted_features,
     const base::CommandLine& command_line,
-    const GpuPreferences& gpu_preferences) {
+    const GpuPreferences& gpu_preferences,
+    bool use_swift_shader) {
   // Requires GPU rasterization
-  if (GetGpuRasterizationFeatureStatus(blocklisted_features, command_line) !=
+  if (GetGpuRasterizationFeatureStatus(blocklisted_features, command_line,
+                                       use_swift_shader) !=
       kGpuFeatureStatusEnabled) {
     return kGpuFeatureStatusDisabled;
   }
@@ -501,24 +506,27 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
                                      bool* needs_more_info) {
   DCHECK(!needs_more_info || !(*needs_more_info));
   bool use_swift_shader = false;
-  if (command_line->HasSwitch(switches::kUseGL)) {
-    std::string use_gl = command_line->GetSwitchValueASCII(switches::kUseGL);
-    if (use_gl == gl::kGLImplementationSwiftShaderName)
-      use_swift_shader = true;
-    else if (use_gl == gl::kGLImplementationANGLEName) {
-      if (command_line->HasSwitch(switches::kUseANGLE)) {
-        std::string use_angle =
-            command_line->GetSwitchValueASCII(switches::kUseANGLE);
-        if (use_angle == gl::kANGLEImplementationSwiftShaderName)
-          use_swift_shader = true;
-        else if (use_angle == gl::kANGLEImplementationSwiftShaderForWebGLName)
-          return ComputeGpuFeatureInfoForSwiftShader();
-      }
-    } else if (use_gl == gl::kGLImplementationSwiftShaderForWebGLName)
-      return ComputeGpuFeatureInfoForSwiftShader();
-    else if (use_gl == gl::kGLImplementationDisabledName)
+
+  bool fallback_to_software_gl = false;
+  std::optional<gl::GLImplementationParts> requested_impl =
+      gl::GetRequestedGLImplementationFromCommandLine(command_line,
+                                                      &fallback_to_software_gl);
+  if (requested_impl) {
+    if (*requested_impl == gl::kGLImplementationNone)
       return ComputeGpuFeatureInfoWithNoGpu();
+
+    use_swift_shader = gl::IsSoftwareGLImplementation(*requested_impl);
+    if (use_swift_shader) {
+      std::string use_gl = command_line->GetSwitchValueASCII(switches::kUseGL);
+      std::string use_angle =
+          command_line->GetSwitchValueASCII(switches::kUseANGLE);
+      if (use_gl == gl::kGLImplementationSwiftShaderForWebGLName ||
+          use_angle == gl::kANGLEImplementationSwiftShaderForWebGLName) {
+        return ComputeGpuFeatureInfoForSwiftShader();
+      }
+    }
   }
+
   if (gpu_preferences.use_vulkan ==
       gpu::VulkanImplementationName::kSwiftshader) {
     use_swift_shader = true;
@@ -546,17 +554,23 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
     }
   }
 
+  // TODO(penghuang): call GetGpuRasterizationFeatureStatus() with
+  // |use_swift_shader|.
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
-      GetGpuRasterizationFeatureStatus(blocklisted_features, *command_line);
+      GetGpuRasterizationFeatureStatus(blocklisted_features, *command_line,
+                                       /*use_swift_shader=*/false);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL] =
       GetWebGLFeatureStatus(blocklisted_features, use_swift_shader);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_WEBGL2] =
       GetWebGL2FeatureStatus(blocklisted_features, use_swift_shader);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS] =
       Get2DCanvasFeatureStatus(blocklisted_features, use_swift_shader);
+  // TODO(penghuang): call GetCanvasOopRasterizationFeatureStatus with
+  // |use_swift_shader|.
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION] =
       GetCanvasOopRasterizationFeatureStatus(blocklisted_features,
-                                             *command_line, gpu_preferences);
+                                             *command_line, gpu_preferences,
+                                             /*use_swift_shader=*/false);
   gpu_feature_info.status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE] =
       GetAcceleratedVideoDecodeFeatureStatus(blocklisted_features,
                                              use_swift_shader);
