@@ -8,11 +8,11 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
-#include "base/memory/weak_ptr.h"
+#include "base/memory/scoped_refptr.h"
 
 namespace printing {
 class MetafileSkia;
+class PrintJob;
 class PrintSettings;
 }  // namespace printing
 
@@ -23,29 +23,20 @@ namespace extensions {
 // pipeline.
 class PrintJobController {
  public:
-  using StartPrintJobCallback =
-      base::OnceCallback<void(std::unique_ptr<std::string> job_id)>;
-
   static std::unique_ptr<PrintJobController> Create();
 
   PrintJobController() = default;
-  virtual ~PrintJobController() = default;
   PrintJobController(const PrintJobController&) = delete;
   PrintJobController& operator=(const PrintJobController&) = delete;
+  virtual ~PrintJobController() = default;
 
-  // Creates, initializes and adds print job to the queue of pending print jobs.
-  virtual void StartPrintJob(const std::string& extension_id,
-                             std::unique_ptr<printing::MetafileSkia> metafile,
-                             std::unique_ptr<printing::PrintSettings> settings,
-                             StartPrintJobCallback callback) = 0;
-
-  // This should be called when CupsPrintJobManager created CupsPrintJob.
-  virtual void OnPrintJobCreated(const std::string& extension_id,
-                                 const std::string& job_id) = 0;
-
-  // This should be called when CupsPrintJob is finished (it could be either
-  // completed, failed or cancelled).
-  virtual void OnPrintJobFinished(const std::string& job_id) = 0;
+  // Returns an uninitialized print job and starts printing.
+  // Do not call Initialize() on the returned print job. StartPrintJob() will
+  // initialize it internally.
+  virtual scoped_refptr<printing::PrintJob> StartPrintJob(
+      const std::string& extension_id,
+      std::unique_ptr<printing::MetafileSkia> metafile,
+      std::unique_ptr<printing::PrintSettings> settings) = 0;
 };
 
 }  // namespace extensions

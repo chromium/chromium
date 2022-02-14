@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/printing/test_cups_printers_manager.h"
 #include "chrome/browser/ash/printing/test_printer_configurer.h"
 #include "chrome/browser/extensions/api/printing/fake_print_job_controller_ash.h"
+#include "chrome/browser/extensions/api/printing/print_job_submitter.h"
 #include "chrome/browser/extensions/api/printing/printing_api.h"
 #include "chrome/browser/extensions/api/printing/printing_api_handler.h"
 #include "chrome/browser/extensions/extension_apitest.h"

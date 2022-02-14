@@ -148,6 +148,10 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
   // Posts the given task to be run.
   bool PostTask(const base::Location& from_here, base::OnceClosure task);
 
+  const base::ObserverList<Observer>& GetObserversForTesting() {
+    return observers_;
+  }
+
   // Adds and removes observers for `PrintJob` events. The order in
   // which notifications are sent to observers is undefined. Observers must be
   // sure to remove the observer before they go away.

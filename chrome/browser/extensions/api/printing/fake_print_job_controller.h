@@ -5,13 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_PRINTING_FAKE_PRINT_JOB_CONTROLLER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_PRINTING_FAKE_PRINT_JOB_CONTROLLER_H_
 
-#include "base/containers/flat_set.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/api/printing/print_job_controller.h"
-#include "chromeos/crosapi/mojom/local_printer.mojom.h"
 
 namespace extensions {
-
-class PrintingAPIHandler;
 
 // Fake print job controller which doesn't send print jobs to actual printing
 // pipeline.
@@ -21,32 +18,25 @@ class FakePrintJobController : public PrintJobController {
   FakePrintJobController();
   ~FakePrintJobController() override;
 
-  void set_handler(PrintingAPIHandler* handler) { handler_ = handler; }
-
-  const base::flat_set<std::string>& print_jobs() const { return print_jobs_; }
-
-  void CreatePrintJob(const std::string& printer_id,
-                      int job_id,
-                      const std::string& extension_id,
-                      crosapi::mojom::PrintJob::Source source) const;
+  // If `fail_` is set, call OnFailed() instead of OnDocDone().
+  void set_fail(bool fail) { fail_ = fail; }
 
   // PrintJobController:
-  void StartPrintJob(const std::string& extension_id,
-                     std::unique_ptr<printing::MetafileSkia> metafile,
-                     std::unique_ptr<printing::PrintSettings> settings,
-                     StartPrintJobCallback callback) override;
-  void OnPrintJobCreated(const std::string& extension_id,
-                         const std::string& job_id) override;
-  void OnPrintJobFinished(const std::string& job_id) override;
+  scoped_refptr<printing::PrintJob> StartPrintJob(
+      const std::string& extension_id,
+      std::unique_ptr<printing::MetafileSkia> metafile,
+      std::unique_ptr<printing::PrintSettings> settings) override;
 
  private:
-  PrintingAPIHandler* handler_ = nullptr;
+  void StartPrinting(scoped_refptr<printing::PrintJob> job,
+                     const std::string& extension_id,
+                     std::unique_ptr<printing::PrintSettings> settings);
 
-  // Stores ids for ongoing print jobs.
-  base::flat_set<std::string> print_jobs_;
-
+  bool fail_ = false;
   // Current job id.
   int job_id_ = 0;
+
+  base::WeakPtrFactory<FakePrintJobController> weak_ptr_factory_{this};
 };
 
 }  // namespace extensions
