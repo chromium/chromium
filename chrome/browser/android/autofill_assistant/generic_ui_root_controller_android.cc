@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/autofill_assistant/generic_ui_root_controller_android.h"
 
+#include "chrome/browser/android/autofill_assistant/dependencies.h"
 #include "chrome/browser/android/autofill_assistant/generic_ui_nested_controller_android.h"
 #include "components/autofill_assistant/browser/radio_button_controller.h"
 
@@ -28,6 +29,7 @@ GenericUiRootControllerAndroid::CreateFromProto(
     const GenericUserInterfaceProto& proto,
     base::android::ScopedJavaGlobalRef<jobject> jcontext,
     base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util,
+    const Dependencies& dependencies,
     base::android::ScopedJavaGlobalRef<jobject> jdelegate,
     EventHandler* event_handler,
     UserModel* user_model,
@@ -35,8 +37,8 @@ GenericUiRootControllerAndroid::CreateFromProto(
   auto radio_button_controller =
       std::make_unique<RadioButtonController>(user_model);
   auto controller = GenericUiNestedControllerAndroid::CreateFromProto(
-      proto, jcontext, jinfo_page_util, jdelegate, event_handler, user_model,
-      basic_interactions, radio_button_controller.get());
+      proto, jcontext, jinfo_page_util, dependencies, jdelegate, event_handler,
+      user_model, basic_interactions, radio_button_controller.get());
 
   if (controller == nullptr) {
     return nullptr;

@@ -40,8 +40,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.components.image_fetcher.ImageFetcherConfig;
-import org.chromium.components.image_fetcher.ImageFetcherFactory;
+import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
@@ -101,7 +100,7 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
             @Nullable AssistantTabObscuringUtil tabObscuringUtil,
             @NonNull AssistantBrowserControlsFactory browserControlsFactory,
             AccessibilityUtil accessibilityUtil, AssistantInfoPageUtil infoPageUtil,
-            @Nullable AssistantProfileImageUtil profileImageUtil,
+            @Nullable AssistantProfileImageUtil profileImageUtil, ImageFetcher imageFetcher,
             AssistantEditorFactory editorFactory) {
         mAccessibilityUtil = accessibilityUtil;
         mModel = model;
@@ -141,11 +140,10 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
         // Instantiate child components.
         mHeaderCoordinator = new AssistantHeaderCoordinator(
                 activity, model.getHeaderModel(), accessibilityUtil, profileImageUtil);
-        mInfoBoxCoordinator = new AssistantInfoBoxCoordinator(activity, model.getInfoBoxModel());
-        AssistantDetailsCoordinator detailsCoordinator =
-                new AssistantDetailsCoordinator(activity, infoPageUtil, model.getDetailsModel(),
-                        ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.DISK_CACHE_ONLY,
-                                AutofillAssistantUiController.getProfile().getProfileKey()));
+        mInfoBoxCoordinator =
+                new AssistantInfoBoxCoordinator(activity, model.getInfoBoxModel(), imageFetcher);
+        AssistantDetailsCoordinator detailsCoordinator = new AssistantDetailsCoordinator(
+                activity, infoPageUtil, model.getDetailsModel(), imageFetcher);
         mCollectUserDataCoordinator = new AssistantCollectUserDataCoordinator(
                 activity, model.getCollectUserDataModel(), editorFactory);
         AssistantFormCoordinator formCoordinator =

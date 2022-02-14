@@ -55,11 +55,10 @@ void ToggleUserAction(base::WeakPtr<BasicInteractions> basic_interactions,
   basic_interactions->ToggleUserAction(proto);
 }
 
-void ShowInfoPopup(
-    const InfoPopupProto& proto,
-    base::android::ScopedJavaGlobalRef<jobject> jcontext,
-    const base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util,
-    const std::string& close_display_str) {
+void ShowInfoPopup(const InfoPopupProto& proto,
+                   base::android::ScopedJavaGlobalRef<jobject> jcontext,
+                   base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util,
+                   const std::string& close_display_str) {
   JNIEnv* env = base::android::AttachCurrentThread();
   auto jcontext_local = base::android::ScopedJavaLocalRef<jobject>(jcontext);
   ui_controller_android_utils::ShowJavaInfoPopup(

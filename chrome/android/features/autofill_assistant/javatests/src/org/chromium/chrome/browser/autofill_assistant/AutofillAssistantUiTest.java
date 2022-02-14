@@ -121,6 +121,7 @@ public class AutofillAssistantUiTest {
                     staticDependencies.createInfoPageUtil(),
                     staticDependencies.createProfileImageUtilOrNull(
                             getActivity(), R.dimen.autofill_assistant_profile_size),
+                    staticDependencies.createImageFetcher(),
                     staticDependencies.createEditorFactory());
             coordinator.show();
             return coordinator;

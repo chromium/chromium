@@ -10,6 +10,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/containers/flat_map.h"
+#include "chrome/browser/android/autofill_assistant/dependencies.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
@@ -40,29 +41,29 @@ base::android::ScopedJavaLocalRef<jobject> GetJavaColor(
 // |proto| is invalid.
 base::android::ScopedJavaLocalRef<jobject> GetJavaColor(
     JNIEnv* env,
-    const base::android::ScopedJavaLocalRef<jobject>& jcontext,
+    const base::android::JavaRef<jobject>& jcontext,
     const ColorProto& proto);
 
 // Returns the pixelsize of |proto| in |jcontext|, or |nullopt| if |proto| is
 // invalid.
 absl::optional<int> GetPixelSize(
     JNIEnv* env,
-    const base::android::ScopedJavaLocalRef<jobject>& jcontext,
+    const base::android::JavaRef<jobject>& jcontext,
     const ClientDimensionProto& proto);
 
 // Returns the pixelsize of |proto| in |jcontext|, or |default_value| if |proto|
 // is invalid.
-int GetPixelSizeOrDefault(
-    JNIEnv* env,
-    const base::android::ScopedJavaLocalRef<jobject>& jcontext,
-    const ClientDimensionProto& proto,
-    int default_value);
+int GetPixelSizeOrDefault(JNIEnv* env,
+                          const base::android::JavaRef<jobject>& jcontext,
+                          const ClientDimensionProto& proto,
+                          int default_value);
 
 // Returns an instance of an |AssistantDrawable| or nullptr if it could not
 // be created.
 base::android::ScopedJavaLocalRef<jobject> CreateJavaDrawable(
     JNIEnv* env,
-    const base::android::ScopedJavaLocalRef<jobject>& jcontext,
+    const base::android::JavaRef<jobject>& jcontext,
+    const Dependencies& dependencies,
     const DrawableProto& proto,
     const UserModel* user_model = nullptr);
 
@@ -81,13 +82,13 @@ ValueProto ToNativeValue(JNIEnv* env,
 base::android::ScopedJavaLocalRef<jobject> CreateJavaInfoPopup(
     JNIEnv* env,
     const InfoPopupProto& proto,
-    const base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util,
+    const base::android::JavaRef<jobject>& jinfo_page_util,
     const std::string& close_display_str);
 
 // Shows an instance of |AssistantInfoPopup| on the screen.
 void ShowJavaInfoPopup(JNIEnv* env,
-                       base::android::ScopedJavaLocalRef<jobject> jinfo_popup,
-                       base::android::ScopedJavaLocalRef<jobject> jcontext);
+                       const base::android::JavaRef<jobject>& jinfo_popup,
+                       const base::android::JavaRef<jobject>& jcontext);
 
 // Converts a java string to native. Returns an empty string if input is null.
 std::string SafeConvertJavaStringToNative(

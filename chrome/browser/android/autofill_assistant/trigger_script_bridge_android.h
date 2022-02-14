@@ -7,6 +7,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/android/autofill_assistant/dependencies.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
@@ -60,6 +61,10 @@ class TriggerScriptBridgeAndroid : public TriggerScriptCoordinator::UiDelegate {
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
   // Pointer to the native coordinator. Only set while attached.
   raw_ptr<TriggerScriptCoordinator> trigger_script_coordinator_ = nullptr;
+
+  // Java-side AssistantStaticDependencies object. This never changes during the
+  // life of the application.
+  const std::unique_ptr<const Dependencies> dependencies_;
 };
 
 }  // namespace autofill_assistant

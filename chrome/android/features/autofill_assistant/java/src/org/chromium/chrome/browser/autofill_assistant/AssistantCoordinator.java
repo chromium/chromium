@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.util.AccessibilityUtil;
@@ -35,7 +36,7 @@ public class AssistantCoordinator {
             @NonNull AssistantBrowserControlsFactory browserControlsFactory,
             @NonNull ApplicationViewportInsetSupplier applicationBottomInsetProvider,
             AccessibilityUtil accessibilityUtil, AssistantInfoPageUtil infoPageUtil,
-            @Nullable AssistantProfileImageUtil profileImageUtil,
+            @Nullable AssistantProfileImageUtil profileImageUtil, ImageFetcher imageFetcher,
             AssistantEditorFactory editorFactory) {
         if (overlayCoordinator != null) {
             mModel = new AssistantModel(overlayCoordinator.getModel());
@@ -47,10 +48,10 @@ public class AssistantCoordinator {
                     accessibilityUtil);
         }
 
-        mBottomBarCoordinator =
-                new AssistantBottomBarCoordinator(activity, mModel, mOverlayCoordinator, controller,
-                        applicationBottomInsetProvider, tabObscuringUtil, browserControlsFactory,
-                        accessibilityUtil, infoPageUtil, profileImageUtil, editorFactory);
+        mBottomBarCoordinator = new AssistantBottomBarCoordinator(activity, mModel,
+                mOverlayCoordinator, controller, applicationBottomInsetProvider, tabObscuringUtil,
+                browserControlsFactory, accessibilityUtil, infoPageUtil, profileImageUtil,
+                imageFetcher, editorFactory);
         mKeyboardCoordinator = new AssistantKeyboardCoordinator(activity, keyboardDelegate,
                 rootView, mModel, keyboardCoordinatorDelegate, controller);
     }

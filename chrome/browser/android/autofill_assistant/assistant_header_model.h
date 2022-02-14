@@ -10,6 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/android/autofill_assistant/assistant_header_delegate.h"
+#include "chrome/browser/android/autofill_assistant/dependencies.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/tts_button_state.h"
 
@@ -36,7 +37,8 @@ class AssistantHeaderModel {
   void SetProgressBarErrorState(bool error);
   void SetStepProgressBarConfiguration(
       const ShowProgressBarProto::StepProgressBarConfiguration& configuration,
-      const base::android::ScopedJavaLocalRef<jobject>& jcontext);
+      const base::android::JavaRef<jobject>& jcontext,
+      const Dependencies& dependencies);
   void SetSpinPoodle(bool enabled);
   void SetChips(const base::android::ScopedJavaLocalRef<jobject>& jchips);
   void SetTtsButtonVisible(bool visible);

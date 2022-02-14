@@ -26,8 +26,6 @@ import org.chromium.chrome.browser.autofill_assistant.drawable.AssistantDrawable
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcher;
-import org.chromium.components.image_fetcher.ImageFetcherConfig;
-import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.url.GURL;
 
@@ -49,8 +47,8 @@ public abstract class AssistantDrawable {
 
     @CalledByNative
     public static AssistantDrawable createFromUrl(
-            String url, int widthInPixels, int heightInPixels) {
-        return new AssistantBitmapDrawable(url, widthInPixels, heightInPixels);
+            ImageFetcher imageFetcher, String url, int widthInPixels, int heightInPixels) {
+        return new AssistantBitmapDrawable(imageFetcher, url, widthInPixels, heightInPixels);
     }
 
     /** Returns whether {@code resourceId} is a valid resource identifier. */
@@ -116,14 +114,13 @@ public abstract class AssistantDrawable {
     }
 
     private static class AssistantBitmapDrawable extends AssistantDrawable {
-        private final ImageFetcher mImageFetcher =
-                ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.DISK_CACHE_ONLY,
-                        AutofillAssistantUiController.getProfile().getProfileKey());
+        private final ImageFetcher mImageFetcher;
         private final String mUrl;
         private final int mWidthInPixels;
         private final int mHeightInPixels;
 
-        AssistantBitmapDrawable(String url, int width, int height) {
+        AssistantBitmapDrawable(ImageFetcher imageFetcher, String url, int width, int height) {
+            mImageFetcher = imageFetcher;
             mUrl = url;
             mWidthInPixels = width;
             mHeightInPixels = height;

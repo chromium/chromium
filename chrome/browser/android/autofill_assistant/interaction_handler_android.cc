@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/android/autofill_assistant/dependencies.h"
 #include "chrome/browser/android/autofill_assistant/generic_ui_interactions_android.h"
 #include "chrome/browser/android/autofill_assistant/generic_ui_nested_controller_android.h"
 #include "chrome/browser/android/autofill_assistant/view_handler_android.h"
@@ -89,6 +90,7 @@ InteractionHandlerAndroid::InteractionHandlerAndroid(
     BasicInteractions* basic_interactions,
     ViewHandlerAndroid* view_handler,
     RadioButtonController* radio_button_controller,
+    const Dependencies* dependencies,
     base::android::ScopedJavaGlobalRef<jobject> jcontext,
     base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util,
     base::android::ScopedJavaGlobalRef<jobject> jdelegate)
@@ -97,6 +99,7 @@ InteractionHandlerAndroid::InteractionHandlerAndroid(
       basic_interactions_(basic_interactions),
       view_handler_(view_handler),
       radio_button_controller_(radio_button_controller),
+      dependencies_(dependencies),
       jcontext_(jcontext),
       jinfo_page_util_(jinfo_page_util),
       jdelegate_(jdelegate) {}
@@ -386,8 +389,9 @@ InteractionHandlerAndroid::CreateNestedUi(
     return nullptr;
   }
   auto nested_ui = GenericUiNestedControllerAndroid::CreateFromProto(
-      proto, jcontext_, jinfo_page_util_, jdelegate_, event_handler_,
-      user_model_, basic_interactions_, radio_button_controller_);
+      proto, jcontext_, jinfo_page_util_, *dependencies_, jdelegate_,
+      event_handler_, user_model_, basic_interactions_,
+      radio_button_controller_);
   const auto* nested_ui_ptr = nested_ui.get();
   if (nested_ui) {
     nested_ui_controllers_.emplace(identifier, std::move(nested_ui));

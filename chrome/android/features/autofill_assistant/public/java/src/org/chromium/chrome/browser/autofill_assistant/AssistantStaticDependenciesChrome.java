@@ -17,6 +17,9 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.TabObscuringHandlerSupplier;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.image_fetcher.ImageFetcherConfig;
+import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -79,11 +82,31 @@ public class AssistantStaticDependenciesChrome implements AssistantStaticDepende
         return new AssistantAccessTokenUtilChrome();
     }
 
+    /**
+     * Getter for the current profile while assistant is running. Since autofill assistant is only
+     * available in regular mode and there is only one regular profile in android, this method
+     * returns {@link Profile#getLastUsedRegularProfile()}.
+     *
+     * TODO(b/161519639): Return current profile to support multi profiles, instead of returning
+     * always regular profile. This could be achieve by retrieving profile from native and using it
+     * where the profile is needed on Java side.
+     * @return The current regular profile.
+     */
+    private Profile getProfile() {
+        return Profile.getLastUsedRegularProfile();
+    }
+
+    @Override
+    public ImageFetcher createImageFetcher() {
+        return ImageFetcherFactory.createImageFetcher(
+                ImageFetcherConfig.DISK_CACHE_ONLY, getProfile().getProfileKey());
+    }
+
     @Override
     @Nullable
     public String getSignedInAccountEmailOrNull() {
-        IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
-                Profile.getLastUsedRegularProfile());
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(getProfile());
         return CoreAccountInfo.getEmailFrom(
                 identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC));
     }

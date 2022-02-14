@@ -484,8 +484,10 @@ void UiControllerAndroid::OnProgressBarErrorStateChanged(bool error) {
 void UiControllerAndroid::OnStepProgressBarConfigurationChanged(
     const ShowProgressBarProto::StepProgressBarConfiguration& configuration) {
   header_model_->SetStepProgressBarConfiguration(
-      configuration, Java_AutofillAssistantUiController_getContext(
-                         AttachCurrentThread(), java_object_));
+      configuration,
+      Java_AutofillAssistantUiController_getContext(AttachCurrentThread(),
+                                                    java_object_),
+      *dependencies_);
 }
 
 void UiControllerAndroid::OnViewportModeChanged(ViewportMode mode) {
@@ -1692,7 +1694,7 @@ void UiControllerAndroid::OnClientSettingsChanged(
     Java_AssistantOverlayModel_setOverlayImage(
         env, GetOverlayModel(), jcontext,
         ui_controller_android_utils::CreateJavaDrawable(
-            env, jcontext, image.image_drawable(),
+            env, jcontext, *dependencies_, image.image_drawable(),
             execution_delegate_->GetUserModel()),
         image_size, top_margin, bottom_margin,
         ConvertUTF8ToJavaString(env, image.text()),
@@ -1891,7 +1893,7 @@ UiControllerAndroid::CreateGenericUiControllerForProto(
       Java_AutofillAssistantUiController_getContext(env, java_object_);
   return GenericUiRootControllerAndroid::CreateFromProto(
       proto, base::android::ScopedJavaGlobalRef<jobject>(jcontext),
-      GetInfoPageUtil(), generic_ui_delegate_.GetJavaObject(),
+      GetInfoPageUtil(), *dependencies_, generic_ui_delegate_.GetJavaObject(),
       ui_delegate_->GetEventHandler(), execution_delegate_->GetUserModel(),
       ui_delegate_->GetBasicInteractions());
 }

@@ -62,6 +62,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptConditi
 import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptConditionsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.TriggerScriptProto;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -131,7 +132,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
-                                AutofillAssistantUiController.getProfile(), true));
+                                Profile.getLastUsedRegularProfile(), true));
     }
 
     @Test
@@ -352,7 +353,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
-                                AutofillAssistantUiController.getProfile(), false));
+                                Profile.getLastUsedRegularProfile(), false));
         AutofillAssistantPreferencesUtil.setInitialPreferences(true);
 
         TriggerScriptProto.Builder triggerScript =

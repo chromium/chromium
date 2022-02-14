@@ -23,6 +23,7 @@
 #include "chrome/android/features/autofill_assistant/jni_headers_public/AssistantAutofillCreditCard_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers_public/AssistantAutofillProfile_jni.h"
 #include "chrome/browser/android/autofill_assistant/client_android.h"
+#include "chrome/browser/android/autofill_assistant/dependencies.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill_assistant/browser/generic_ui_java_generated_enums.h"
 #include "components/autofill_assistant/browser/service/service.h"
@@ -39,6 +40,7 @@ using ::base::android::ConvertJavaStringToUTF16;
 using ::base::android::ConvertJavaStringToUTF8;
 using ::base::android::ConvertUTF16ToJavaString;
 using ::base::android::ConvertUTF8ToJavaString;
+using ::base::android::JavaRef;
 
 DrawableIcon MapDrawableIcon(DrawableProto::Icon icon) {
   switch (icon) {
@@ -79,7 +81,7 @@ DrawableIcon MapDrawableIcon(DrawableProto::Icon icon) {
 
 void MaybeSetInfo(autofill::AutofillProfile* profile,
                   autofill::ServerFieldType type,
-                  const base::android::JavaRef<jstring>& value,
+                  const JavaRef<jstring>& value,
                   const std::string& locale) {
   if (value) {
     profile->SetInfo(type, ConvertJavaStringToUTF16(value), locale);
@@ -88,7 +90,7 @@ void MaybeSetInfo(autofill::AutofillProfile* profile,
 
 void MaybeSetRawInfo(autofill::AutofillProfile* profile,
                      autofill::ServerFieldType type,
-                     const base::android::JavaRef<jstring>& value) {
+                     const JavaRef<jstring>& value) {
   if (value) {
     profile->SetRawInfo(type, ConvertJavaStringToUTF16(value));
   }
@@ -113,7 +115,7 @@ base::android::ScopedJavaLocalRef<jobject> GetJavaColor(
 
 base::android::ScopedJavaLocalRef<jobject> GetJavaColor(
     JNIEnv* env,
-    const base::android::ScopedJavaLocalRef<jobject>& jcontext,
+    const JavaRef<jobject>& jcontext,
     const ColorProto& proto) {
   switch (proto.color_case()) {
     case ColorProto::kResourceIdentifier:
@@ -136,10 +138,9 @@ base::android::ScopedJavaLocalRef<jobject> GetJavaColor(
   }
 }
 
-absl::optional<int> GetPixelSize(
-    JNIEnv* env,
-    const base::android::ScopedJavaLocalRef<jobject>& jcontext,
-    const ClientDimensionProto& proto) {
+absl::optional<int> GetPixelSize(JNIEnv* env,
+                                 const JavaRef<jobject>& jcontext,
+                                 const ClientDimensionProto& proto) {
   switch (proto.size_case()) {
     case ClientDimensionProto::kDp:
       return Java_AssistantDimension_getPixelSizeDp(env, jcontext, proto.dp());
@@ -156,11 +157,10 @@ absl::optional<int> GetPixelSize(
   }
 }
 
-int GetPixelSizeOrDefault(
-    JNIEnv* env,
-    const base::android::ScopedJavaLocalRef<jobject>& jcontext,
-    const ClientDimensionProto& proto,
-    int default_value) {
+int GetPixelSizeOrDefault(JNIEnv* env,
+                          const JavaRef<jobject>& jcontext,
+                          const ClientDimensionProto& proto,
+                          int default_value) {
   auto size = GetPixelSize(env, jcontext, proto);
   if (size) {
     return *size;
@@ -170,7 +170,8 @@ int GetPixelSizeOrDefault(
 
 base::android::ScopedJavaLocalRef<jobject> CreateJavaDrawable(
     JNIEnv* env,
-    const base::android::ScopedJavaLocalRef<jobject>& jcontext,
+    const JavaRef<jobject>& jcontext,
+    const Dependencies& dependencies,
     const DrawableProto& proto,
     const UserModel* user_model) {
   switch (proto.drawable_case()) {
@@ -192,7 +193,7 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaDrawable(
       int height_pixels = ui_controller_android_utils::GetPixelSizeOrDefault(
           env, jcontext, proto.bitmap().height(), 0);
       return Java_AssistantDrawable_createFromUrl(
-          env,
+          env, dependencies.CreateImageFetcher(),
           base::android::ConvertUTF8ToJavaString(env, proto.bitmap().url()),
           width_pixels, height_pixels);
     }
@@ -360,7 +361,7 @@ ValueProto ToNativeValue(JNIEnv* env,
 base::android::ScopedJavaLocalRef<jobject> CreateJavaDialogButton(
     JNIEnv* env,
     const InfoPopupProto_DialogButton& button_proto,
-    const base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util) {
+    const JavaRef<jobject>& jinfo_page_util) {
   base::android::ScopedJavaLocalRef<jstring> jurl = nullptr;
 
   switch (button_proto.click_action_case()) {
@@ -382,7 +383,7 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaDialogButton(
 base::android::ScopedJavaLocalRef<jobject> CreateJavaInfoPopup(
     JNIEnv* env,
     const InfoPopupProto& info_popup_proto,
-    const base::android::ScopedJavaGlobalRef<jobject> jinfo_page_util,
+    const JavaRef<jobject>& jinfo_page_util,
     const std::string& close_display_str) {
   base::android::ScopedJavaLocalRef<jobject> jpositive_button = nullptr;
   base::android::ScopedJavaLocalRef<jobject> jnegative_button = nullptr;
@@ -419,8 +420,8 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaInfoPopup(
 }
 
 void ShowJavaInfoPopup(JNIEnv* env,
-                       base::android::ScopedJavaLocalRef<jobject> jinfo_popup,
-                       base::android::ScopedJavaLocalRef<jobject> jcontext) {
+                       const JavaRef<jobject>& jinfo_popup,
+                       const JavaRef<jobject>& jcontext) {
   Java_AssistantInfoPopup_show(env, jinfo_popup, jcontext);
 }
 
@@ -518,8 +519,8 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaAssistantChipList(
 
 base::flat_map<std::string, std::string> CreateStringMapFromJava(
     JNIEnv* env,
-    const base::android::JavaRef<jobjectArray>& names,
-    const base::android::JavaRef<jobjectArray>& values) {
+    const JavaRef<jobjectArray>& names,
+    const JavaRef<jobjectArray>& values) {
   std::vector<std::string> names_vector;
   base::android::AppendJavaStringArrayToStringVector(env, names, &names_vector);
   std::vector<std::string> values_vector;
@@ -536,14 +537,14 @@ base::flat_map<std::string, std::string> CreateStringMapFromJava(
 std::unique_ptr<TriggerContext> CreateTriggerContext(
     JNIEnv* env,
     content::WebContents* web_contents,
-    const base::android::JavaRef<jstring>& jexperiment_ids,
-    const base::android::JavaRef<jobjectArray>& jparameter_names,
-    const base::android::JavaRef<jobjectArray>& jparameter_values,
-    const base::android::JavaRef<jobjectArray>& jdevice_only_parameter_names,
-    const base::android::JavaRef<jobjectArray>& jdevice_only_parameter_values,
+    const JavaRef<jstring>& jexperiment_ids,
+    const JavaRef<jobjectArray>& jparameter_names,
+    const JavaRef<jobjectArray>& jparameter_values,
+    const JavaRef<jobjectArray>& jdevice_only_parameter_names,
+    const JavaRef<jobjectArray>& jdevice_only_parameter_values,
     jboolean onboarding_shown,
     jboolean is_direct_action,
-    const base::android::JavaRef<jstring>& jinitial_url,
+    const JavaRef<jstring>& jinitial_url,
     const bool is_custom_tab) {
   auto script_parameters = std::make_unique<ScriptParameters>(
       CreateStringMapFromJava(env, jparameter_names, jparameter_values));
