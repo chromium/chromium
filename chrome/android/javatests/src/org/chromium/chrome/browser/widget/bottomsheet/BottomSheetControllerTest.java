@@ -597,6 +597,33 @@ public class BottomSheetControllerTest {
                 mSheetController.getCurrentSheetContent());
     }
 
+    @Test
+    @MediumTest
+    public void testOpenTwiceWhileInQueue() {
+        requestContentInSheet(mHighPriorityContent, true);
+        expandSheet();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // While high priority content is visible, request new content to be shown twice.
+            mSheetController.requestShowContent(mLowPriorityContent, false);
+            mSheetController.requestShowContent(mLowPriorityContent, false);
+
+            // Now hide high priority content, this should cause low priority content to be shown.
+            mSheetController.hideContent(mHighPriorityContent, false);
+        });
+        BottomSheetTestSupport.waitForState(mSheetController, SheetState.PEEK);
+        assertEquals("The low priority content should be shown.", mLowPriorityContent,
+                mSheetController.getCurrentSheetContent());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mSheetController.hideContent(mLowPriorityContent, false);
+            mTestSupport.endAllAnimations();
+        });
+        assertEquals("The bottom sheet should be hidden.", SheetState.HIDDEN,
+                mSheetController.getSheetState());
+        assertEquals("The bottom sheet is showing incorrect content.", null,
+                mSheetController.getCurrentSheetContent());
+    }
+
     /**
      * Request content be shown in the bottom sheet and end animations.
      * @param content The content to show.
