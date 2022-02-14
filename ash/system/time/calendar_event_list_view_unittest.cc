@@ -29,7 +29,7 @@ std::unique_ptr<google_apis::calendar::EventList> CreateMockEventList() {
   event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
       "id_2", "summary_2", "18 Nov 2021 11:30 GMT", "18 Nov 2021 12:30 GMT"));
   event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
-      "id_3", "summary_3", "19 Nov 2021 8:30 GMT", "19 Nov 2021 10:30 GMT"));
+      "id_3", "", "19 Nov 2021 8:30 GMT", "19 Nov 2021 10:30 GMT"));
   event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
       "id_4", "summary_4", "21 Nov 2021 8:30 GMT", "21 Nov 2021 9:30 GMT"));
   event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
@@ -128,9 +128,11 @@ TEST_F(CalendarViewEventListViewTest, ShowEvents) {
 
   SetSelectedDate(date + base::Days(1));
 
-  // 1 event on 19 Nov 2021.
+  // 1 event on 19 Nov 2021. For no title mettings, shows "No title" as the
+  // meeting summary.
   EXPECT_EQ(1u, content_view()->children().size());
-  EXPECT_EQ(u"summary_3", GetSummary(0)->GetText());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_TITLE),
+            GetSummary(0)->GetText());
 
   SetSelectedDate(date + base::Days(2));
 

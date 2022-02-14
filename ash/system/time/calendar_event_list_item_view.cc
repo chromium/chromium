@@ -115,8 +115,9 @@ CalendarEventListItemView::CalendarEventListItemView(
       end_time_string, base::TimeFormatWithPattern(start_time, "zzzz"),
       base::UTF8ToUTF16(event.summary())));
   SetFocusBehavior(FocusBehavior::ALWAYS);
-
-  summary_->SetText(base::UTF8ToUTF16(event.summary()));
+  summary_->SetText(event.summary().empty()
+                        ? l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_TITLE)
+                        : base::UTF8ToUTF16(event.summary()));
   SetUpLabel(summary_);
   summary_->SetTruncateLength(kTruncatedTitleLength);
   summary_->SetBorder(

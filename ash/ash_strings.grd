@@ -3496,6 +3496,10 @@ This file contains the strings for ash.
         Open this date in Google Calendar
       </message>
 
+      <message name="IDS_ASH_CALENDAR_NO_TITLE" desc="The default title for those no title meetings.">
+        (No title)
+      </message>
+
       <message name="IDS_ASH_CALENDAR_MON" desc="The single character designator for Monday, which is used in the calendar weekday label.">
         M
       </message>
