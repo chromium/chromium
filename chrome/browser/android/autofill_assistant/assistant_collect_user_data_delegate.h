@@ -22,6 +22,12 @@ class AssistantCollectUserDataDelegate {
       const base::android::JavaParamRef<jobject>& jcontact_profile,
       jint event_type);
 
+  void OnPhoneNumberChanged(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jcaller,
+      const base::android::JavaParamRef<jobject>& jphone_number,
+      jint event_type);
+
   void OnShippingAddressChanged(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller,

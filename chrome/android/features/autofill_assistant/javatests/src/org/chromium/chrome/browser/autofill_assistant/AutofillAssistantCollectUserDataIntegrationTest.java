@@ -83,6 +83,7 @@ import org.chromium.chrome.browser.autofill_assistant.proto.KeyboardValueFillStr
 import org.chromium.chrome.browser.autofill_assistant.proto.LoginDetailsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ModelProto.ModelValue;
 import org.chromium.chrome.browser.autofill_assistant.proto.PaymentInstrumentProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.PhoneNumberProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PopupListSectionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ProcessedActionStatusProto;
@@ -1044,5 +1045,162 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
                                               isDescendantOfA(withId(R.id.payment_method_summary))),
                 allOf(withText(containsString("1111")), isDisplayed()));
         waitUntilViewMatchesCondition(withContentDescription("Continue"), isEnabled());
+    }
+
+    /**
+     * Fill a form with a phone number from backend without the contact being requested.
+     */
+    @Test
+    @MediumTest
+    public void testEnterBackendPhoneNumber() throws Exception {
+        UserDataProto.Builder data =
+                UserDataProto.newBuilder().setLocale("en-US").addAvailablePhoneNumbers(
+                        PhoneNumberProto.newBuilder().setValue(
+                                AutofillEntryProto.newBuilder().setValue("+41234567890").build()));
+
+        ArrayList<ActionProto> list = new ArrayList<>();
+        list.add(
+                ActionProto.newBuilder()
+                        .setCollectUserData(
+                                CollectUserDataProto.newBuilder()
+                                        .setUserData(data)
+                                        .setContactDetails(
+                                                ContactDetailsProto.newBuilder()
+                                                        .setContactDetailsName("contact")
+                                                        .setRequestPayerName(false)
+                                                        .setRequestPayerEmail(false)
+                                                        .setRequestPayerPhone(false)
+                                                        .setSeparatePhoneNumberSection(true)
+                                                        .setPhoneNumberSectionTitle("Phone number"))
+                                        .setRequestTermsAndConditions(false))
+                        .build());
+        list.add(ActionProto.newBuilder()
+                         .setUseAddress(UseAddressProto.newBuilder()
+                                                .setName("contact")
+                                                .setFormFieldElement(toCssSelector("#profile_name"))
+                                                .addRequiredFields(
+                                                        RequiredFieldProto.newBuilder()
+                                                                .setValueExpression(
+                                                                        buildValueExpression(14))
+                                                                .setElement(toCssSelector("#tel"))
+                                                                .setForced(true)))
+                         .build());
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
+                                 PromptProto.Choice.newBuilder()))
+                         .build());
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                SupportedScriptProto.newBuilder()
+                        .setPath("form_target_website.html")
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
+                        .build(),
+                list);
+
+        AutofillAssistantTestService testService =
+                new AutofillAssistantTestService(Collections.singletonList(script));
+        startAutofillAssistant(mTestRule.getActivity(), testService);
+
+        waitUntilViewMatchesCondition(
+                withContentDescription("Continue"), allOf(isEnabled(), isCompletelyDisplayed()));
+        onView(withText("Phone number")).perform(click());
+        waitUntilViewMatchesCondition(
+                allOf(withId(R.id.contact_full), withText(containsString("+41 23 456 78 90"))),
+                isDisplayed());
+        onView(withTagValue(is(AssistantTagsForTesting.CHOICE_LIST_EDIT_ICON)))
+                .check(doesNotExist());
+        onView(withText("Continue")).perform(click());
+        waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
+        assertThat(getElementValue(getWebContents(), "tel"), is("+41234567890"));
+    }
+
+    /**
+     * Fill a form with a phone number from backend merged with a contact.
+     */
+    @Test
+    @MediumTest
+    public void testMergeBackendPhoneNumberIntoContact() throws Exception {
+        UserDataProto.Builder data =
+                UserDataProto.newBuilder()
+                        .setLocale("en-US")
+                        .addAvailableContacts(
+                                ProfileProto.newBuilder()
+                                        .putValues(7,
+                                                AutofillEntryProto.newBuilder()
+                                                        .setValue("John Doe")
+                                                        .build())
+                                        .putValues(9,
+                                                AutofillEntryProto.newBuilder()
+                                                        .setValue("johndoe@google.com")
+                                                        .build()))
+                        .addAvailablePhoneNumbers(PhoneNumberProto.newBuilder().setValue(
+                                AutofillEntryProto.newBuilder().setValue("+41234567890").build()));
+
+        ArrayList<ActionProto> list = new ArrayList<>();
+        list.add(
+                ActionProto.newBuilder()
+                        .setCollectUserData(
+                                CollectUserDataProto.newBuilder()
+                                        .setUserData(data)
+                                        .setContactDetails(
+                                                ContactDetailsProto.newBuilder()
+                                                        .setContactDetailsName("contact")
+                                                        .setRequestPayerName(true)
+                                                        .setRequestPayerEmail(true)
+                                                        .setRequestPayerPhone(false)
+                                                        .setSeparatePhoneNumberSection(true)
+                                                        .setPhoneNumberSectionTitle("Phone number"))
+                                        .setRequestTermsAndConditions(false))
+                        .build());
+        list.add(
+                ActionProto.newBuilder()
+                        .setUseAddress(
+                                UseAddressProto.newBuilder()
+                                        .setName("contact")
+                                        .setFormFieldElement(toCssSelector("#profile_name"))
+                                        .addRequiredFields(
+                                                RequiredFieldProto.newBuilder()
+                                                        .setValueExpression(buildValueExpression(7))
+                                                        .setElement(toCssSelector("#profile_name"))
+                                                        .setForced(true))
+                                        .addRequiredFields(
+                                                RequiredFieldProto.newBuilder()
+                                                        .setValueExpression(buildValueExpression(9))
+                                                        .setElement(toCssSelector("#email"))
+                                                        .setForced(true))
+                                        .addRequiredFields(
+                                                RequiredFieldProto.newBuilder()
+                                                        .setValueExpression(
+                                                                buildValueExpression(14))
+                                                        .setElement(toCssSelector("#tel"))
+                                                        .setForced(true)))
+                        .build());
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
+                                 PromptProto.Choice.newBuilder()))
+                         .build());
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                SupportedScriptProto.newBuilder()
+                        .setPath("form_target_website.html")
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
+                        .build(),
+                list);
+
+        AutofillAssistantTestService testService =
+                new AutofillAssistantTestService(Collections.singletonList(script));
+        startAutofillAssistant(mTestRule.getActivity(), testService);
+
+        waitUntilViewMatchesCondition(
+                withContentDescription("Continue"), allOf(isEnabled(), isCompletelyDisplayed()));
+        onView(withText("Phone number")).perform(click());
+        waitUntilViewMatchesCondition(
+                allOf(withId(R.id.contact_full), withText(containsString("+41 23 456 78 90"))),
+                isDisplayed());
+        onView(withTagValue(is(AssistantTagsForTesting.CHOICE_LIST_EDIT_ICON)))
+                .check(doesNotExist());
+        onView(withText("Continue")).perform(click());
+        waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
+        assertThat(getElementValue(getWebContents(), "profile_name"), is("John Doe"));
+        assertThat(getElementValue(getWebContents(), "email"), is("johndoe@google.com"));
+        assertThat(getElementValue(getWebContents(), "tel"), is("+41234567890"));
     }
 }

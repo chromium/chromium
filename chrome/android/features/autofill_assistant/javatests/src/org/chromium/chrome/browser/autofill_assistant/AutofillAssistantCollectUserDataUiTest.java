@@ -522,6 +522,7 @@ public class AutofillAssistantCollectUserDataUiTest {
             model.set(AssistantCollectUserDataModel.REQUEST_NAME, true);
             model.set(AssistantCollectUserDataModel.REQUEST_PHONE, true);
             model.set(AssistantCollectUserDataModel.REQUEST_EMAIL, true);
+            model.set(AssistantCollectUserDataModel.REQUEST_PHONE_NUMBER_SEPARATELY, true);
             model.set(AssistantCollectUserDataModel.CONTACT_SUMMARY_DESCRIPTION_OPTIONS,
                     mDefaultContactSummaryOptions);
             model.set(AssistantCollectUserDataModel.CONTACT_FULL_DESCRIPTION_OPTIONS,
@@ -533,6 +534,11 @@ public class AutofillAssistantCollectUserDataUiTest {
                     Collections.singletonList(new ContactModel(contact)));
             model.set(AssistantCollectUserDataModel.SELECTED_CONTACT_DETAILS,
                     new ContactModel(contact));
+            AssistantAutofillProfile phone_number = createDummyContact(profile);
+            model.set(AssistantCollectUserDataModel.AVAILABLE_PHONE_NUMBERS,
+                    Collections.singletonList(new ContactModel(contact)));
+            model.set(
+                    AssistantCollectUserDataModel.SELECTED_PHONE_NUMBER, new ContactModel(contact));
             AssistantAutofillProfile address = createDummyAddress(profile);
             model.set(AssistantCollectUserDataModel.AVAILABLE_SHIPPING_ADDRESSES,
                     Collections.singletonList(new AddressModel(address)));
@@ -587,6 +593,7 @@ public class AutofillAssistantCollectUserDataUiTest {
 
         // Check contents of sections.
         assertThat(viewHolder.mContactList.getItemCount(), is(1));
+        assertThat(viewHolder.mPhoneNumberList.getItemCount(), is(1));
         assertThat(viewHolder.mPaymentMethodList.getItemCount(), is(1));
         assertThat(viewHolder.mShippingAddressList.getItemCount(), is(1));
         assertThat(viewHolder.mLoginList.getItemCount(), is(1));

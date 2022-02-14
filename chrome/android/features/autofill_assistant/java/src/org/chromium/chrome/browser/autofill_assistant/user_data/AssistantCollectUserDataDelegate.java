@@ -20,6 +20,10 @@ public interface AssistantCollectUserDataDelegate {
     void onContactInfoChanged(@Nullable AssistantOptionModel.ContactModel contactModel,
             @AssistantUserDataEventType int eventType);
 
+    /** The currently selected phone number has changed. */
+    void onPhoneNumberChanged(@Nullable AssistantOptionModel.ContactModel phoneNumberModel,
+            @AssistantUserDataEventType int eventType);
+
     /** The currently selected shipping address has changed. */
     void onShippingAddressChanged(@Nullable AssistantOptionModel.AddressModel addressModel,
             @AssistantUserDataEventType int eventType);

@@ -52,6 +52,26 @@ void AssistantCollectUserDataDelegate::OnContactInfoChanged(
       std::move(contact_profile), static_cast<UserDataEventType>(event_type));
 }
 
+void AssistantCollectUserDataDelegate::OnPhoneNumberChanged(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller,
+    const base::android::JavaParamRef<jobject>& jphone_number,
+    jint event_type) {
+  if (!jphone_number) {
+    NOTREACHED() << "Selected phone number is null";
+    return;
+  }
+
+  auto phone_number_profile = std::make_unique<autofill::AutofillProfile>();
+  ui_controller_android_utils::PopulateAutofillProfileFromJava(
+      jphone_number, env, phone_number_profile.get(),
+      base::android::GetDefaultLocaleString());
+
+  ui_controller_->OnPhoneNumberChanged(
+      std::move(phone_number_profile),
+      static_cast<UserDataEventType>(event_type));
+}
+
 void AssistantCollectUserDataDelegate::OnShippingAddressChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,

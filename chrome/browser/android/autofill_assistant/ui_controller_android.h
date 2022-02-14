@@ -164,6 +164,8 @@ class UiControllerAndroid : public ControllerObserver, UiControllerObserver {
       UserDataEventType event_type);
   void OnContactInfoChanged(std::unique_ptr<autofill::AutofillProfile> profile,
                             UserDataEventType event_type);
+  void OnPhoneNumberChanged(std::unique_ptr<autofill::AutofillProfile> profile,
+                            UserDataEventType event_type);
   void OnCreditCardChanged(
       std::unique_ptr<autofill::CreditCard> card,
       std::unique_ptr<autofill::AutofillProfile> billing_profile,

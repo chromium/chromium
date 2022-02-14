@@ -14,6 +14,7 @@ public class AssistantTagsForTesting {
     public static final String COLLECT_USER_DATA_ACCORDION_TAG = "accordion";
     public static final String COLLECT_USER_DATA_LOGIN_SECTION_TAG = "login";
     public static final String COLLECT_USER_DATA_CONTACT_DETAILS_SECTION_TAG = "contact";
+    public static final String COLLECT_USER_DATA_PHONE_NUMBER_SECTION_TAG = "phone_number";
     public static final String COLLECT_USER_DATA_PAYMENT_METHOD_SECTION_TAG = "payment";
     public static final String COLLECT_USER_DATA_SHIPPING_ADDRESS_SECTION_TAG = "shipping";
     public static final String COLLECT_USER_DATA_RADIO_TERMS_SECTION_TAG = "radio_terms";

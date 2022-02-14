@@ -43,6 +43,7 @@ class AssistantCollectUserDataBinder
         private final int mSectionToSectionPadding;
         private final AssistantLoginSection mLoginSection;
         private final AssistantContactDetailsSection mContactDetailsSection;
+        private final AssistantPhoneNumberSection mPhoneNumberSection;
         private final AssistantPaymentMethodSection mPaymentMethodSection;
         private final AssistantShippingAddressSection mShippingAddressSection;
         private final AssistantTermsSection mTermsSection;
@@ -59,6 +60,7 @@ class AssistantCollectUserDataBinder
         public ViewHolder(View rootView, AssistantVerticalExpanderAccordion accordion,
                 int sectionPadding, AssistantLoginSection loginSection,
                 AssistantContactDetailsSection contactDetailsSection,
+                AssistantPhoneNumberSection phoneNumberSection,
                 AssistantPaymentMethodSection paymentMethodSection,
                 AssistantShippingAddressSection shippingAddressSection,
                 AssistantTermsSection termsSection, AssistantTermsSection termsAsCheckboxSection,
@@ -73,6 +75,7 @@ class AssistantCollectUserDataBinder
             mSectionToSectionPadding = sectionPadding;
             mLoginSection = loginSection;
             mContactDetailsSection = contactDetailsSection;
+            mPhoneNumberSection = phoneNumberSection;
             mPaymentMethodSection = paymentMethodSection;
             mShippingAddressSection = shippingAddressSection;
             mTermsSection = termsSection;
@@ -131,6 +134,9 @@ class AssistantCollectUserDataBinder
             view.mContactDetailsSection.setDelegate(collectUserDataDelegate == null
                             ? null
                             : collectUserDataDelegate::onContactInfoChanged);
+            view.mPhoneNumberSection.setDelegate(collectUserDataDelegate == null
+                            ? null
+                            : collectUserDataDelegate::onPhoneNumberChanged);
             view.mPaymentMethodSection.setDelegate(collectUserDataDelegate == null
                             ? null
                             : collectUserDataDelegate::onPaymentMethodChanged);
@@ -172,11 +178,19 @@ class AssistantCollectUserDataBinder
                 || model.get(AssistantCollectUserDataModel.REQUEST_EMAIL);
     }
 
+    private boolean shouldShowPhoneNumberSection(AssistantCollectUserDataModel model) {
+        return model.get(AssistantCollectUserDataModel.REQUEST_PHONE_NUMBER_SEPARATELY);
+    }
+
     private boolean updateSectionTitles(
             AssistantCollectUserDataModel model, PropertyKey propertyKey, ViewHolder view) {
         if (propertyKey == AssistantCollectUserDataModel.CONTACT_SECTION_TITLE) {
             view.mContactDetailsSection.setTitle(
                     model.get(AssistantCollectUserDataModel.CONTACT_SECTION_TITLE));
+            return true;
+        } else if (propertyKey == AssistantCollectUserDataModel.PHONE_NUMBER_SECTION_TITLE) {
+            view.mPhoneNumberSection.setTitle(
+                    model.get(AssistantCollectUserDataModel.PHONE_NUMBER_SECTION_TITLE));
             return true;
         } else if (propertyKey == AssistantCollectUserDataModel.LOGIN_SECTION_TITLE) {
             view.mLoginSection.setTitle(
@@ -206,6 +220,12 @@ class AssistantCollectUserDataBinder
             if (shouldShowContactDetails(model)) {
                 view.mContactDetailsSection.onContactsChanged(
                         model.get(AssistantCollectUserDataModel.AVAILABLE_CONTACTS));
+            }
+            return true;
+        } else if (propertyKey == AssistantCollectUserDataModel.AVAILABLE_PHONE_NUMBERS) {
+            if (shouldShowPhoneNumberSection(model)) {
+                view.mPhoneNumberSection.onPhoneNumbersChanged(
+                        model.get(AssistantCollectUserDataModel.AVAILABLE_PHONE_NUMBERS));
             }
             return true;
         } else if (propertyKey == AssistantCollectUserDataModel.AVAILABLE_SHIPPING_ADDRESSES) {
@@ -305,6 +325,10 @@ class AssistantCollectUserDataBinder
                 || (propertyKey == AssistantCollectUserDataModel.REQUEST_PHONE)) {
             view.mContactDetailsSection.setVisible(shouldShowContactDetails(model));
             return true;
+        } else if (propertyKey == AssistantCollectUserDataModel.REQUEST_PHONE_NUMBER_SEPARATELY) {
+            view.mPhoneNumberSection.setVisible(
+                    model.get(AssistantCollectUserDataModel.REQUEST_PHONE_NUMBER_SEPARATELY));
+            return true;
         } else if (propertyKey == AssistantCollectUserDataModel.REQUEST_SHIPPING_ADDRESS) {
             view.mShippingAddressSection.setVisible(
                     model.get(AssistantCollectUserDataModel.REQUEST_SHIPPING_ADDRESS));
@@ -391,6 +415,18 @@ class AssistantCollectUserDataBinder
             }
             // No need to reset selection if null, this will be handled by setItems().
             return true;
+        } else if (propertyKey == AssistantCollectUserDataModel.SELECTED_PHONE_NUMBER) {
+            if (!model.get(AssistantCollectUserDataModel.REQUEST_PHONE_NUMBER_SEPARATELY)) {
+                return true;
+            }
+            ContactModel phone_number =
+                    model.get(AssistantCollectUserDataModel.SELECTED_PHONE_NUMBER);
+            if (phone_number != null) {
+                view.mPhoneNumberSection.addOrUpdateItem(
+                        phone_number, /* select= */ true, /* notify= */ false);
+            }
+            // No need to reset selection if null, this will be handled by setItems().
+            return true;
         } else if (propertyKey == AssistantCollectUserDataModel.TERMS_STATUS) {
             int termsStatus = model.get(AssistantCollectUserDataModel.TERMS_STATUS);
             view.mTermsSection.setTermsStatus(termsStatus);
@@ -422,6 +458,7 @@ class AssistantCollectUserDataBinder
                 && (propertyKey != AssistantCollectUserDataModel.REQUEST_NAME)
                 && (propertyKey != AssistantCollectUserDataModel.REQUEST_EMAIL)
                 && (propertyKey != AssistantCollectUserDataModel.REQUEST_PHONE)
+                && (propertyKey != AssistantCollectUserDataModel.REQUEST_PHONE_NUMBER_SEPARATELY)
                 && (propertyKey != AssistantCollectUserDataModel.REQUEST_PAYMENT)
                 && (propertyKey != AssistantCollectUserDataModel.REQUEST_LOGIN_CHOICE)
                 && (propertyKey != AssistantCollectUserDataModel.EXPANDED_SECTION)
@@ -440,6 +477,8 @@ class AssistantCollectUserDataBinder
                     view.mSectionToSectionPadding, view.mSectionToSectionPadding);
             view.mContactDetailsSection.setPaddings(
                     view.mSectionToSectionPadding, view.mSectionToSectionPadding);
+            view.mPhoneNumberSection.setPaddings(
+                    view.mSectionToSectionPadding, view.mSectionToSectionPadding);
             view.mPaymentMethodSection.setPaddings(
                     view.mSectionToSectionPadding, view.mSectionToSectionPadding);
             view.mShippingAddressSection.setPaddings(
@@ -450,6 +489,8 @@ class AssistantCollectUserDataBinder
             view.mLoginSection.setPaddings(0, view.mSectionToSectionPadding);
             view.mContactDetailsSection.setPaddings(
                     view.mSectionToSectionPadding, view.mSectionToSectionPadding);
+            view.mPhoneNumberSection.setPaddings(
+                    view.mSectionToSectionPadding, view.mSectionToSectionPadding);
             view.mPaymentMethodSection.setPaddings(
                     view.mSectionToSectionPadding, view.mSectionToSectionPadding);
             view.mShippingAddressSection.setPaddings(
@@ -458,6 +499,16 @@ class AssistantCollectUserDataBinder
                     view.mSectionToSectionPadding, view.mSectionToSectionPadding);
         } else if (shouldShowContactDetails(model)) {
             view.mContactDetailsSection.setPaddings(0, view.mSectionToSectionPadding);
+            view.mPhoneNumberSection.setPaddings(
+                    view.mSectionToSectionPadding, view.mSectionToSectionPadding);
+            view.mPaymentMethodSection.setPaddings(
+                    view.mSectionToSectionPadding, view.mSectionToSectionPadding);
+            view.mShippingAddressSection.setPaddings(
+                    view.mSectionToSectionPadding, view.mSectionToSectionPadding);
+            view.mAppendedSections.setPaddings(view.mSectionToSectionPadding,
+                    view.mSectionToSectionPadding, view.mSectionToSectionPadding);
+        } else if (model.get(AssistantCollectUserDataModel.REQUEST_PHONE_NUMBER_SEPARATELY)) {
+            view.mPhoneNumberSection.setPaddings(0, view.mSectionToSectionPadding);
             view.mPaymentMethodSection.setPaddings(
                     view.mSectionToSectionPadding, view.mSectionToSectionPadding);
             view.mShippingAddressSection.setPaddings(

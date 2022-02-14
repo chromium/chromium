@@ -79,8 +79,16 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     public static final WritableObjectPropertyKey<ContactModel> SELECTED_CONTACT_DETAILS =
             new WritableObjectPropertyKey<>();
 
+    /** The chosen phone number. */
+    public static final WritableObjectPropertyKey<ContactModel> SELECTED_PHONE_NUMBER =
+            new WritableObjectPropertyKey<>();
+
     /** The contact details section title. */
     public static final WritableObjectPropertyKey<String> CONTACT_SECTION_TITLE =
+            new WritableObjectPropertyKey<>();
+
+    /** The phone number section title. */
+    public static final WritableObjectPropertyKey<String> PHONE_NUMBER_SECTION_TITLE =
             new WritableObjectPropertyKey<>();
 
     /** The login section title. */
@@ -101,6 +109,8 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     public static final WritableBooleanPropertyKey REQUEST_NAME = new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey REQUEST_EMAIL = new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey REQUEST_PHONE = new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey REQUEST_PHONE_NUMBER_SEPARATELY =
+            new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey REQUEST_SHIPPING_ADDRESS =
             new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey REQUEST_PAYMENT =
@@ -116,6 +126,9 @@ public class AssistantCollectUserDataModel extends PropertyModel {
             AVAILABLE_BILLING_ADDRESSES = new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<List<ContactModel>> AVAILABLE_CONTACTS =
+            new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<List<ContactModel>> AVAILABLE_PHONE_NUMBERS =
             new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<List<AddressModel>> AVAILABLE_SHIPPING_ADDRESSES =
@@ -169,14 +182,15 @@ public class AssistantCollectUserDataModel extends PropertyModel {
 
     public AssistantCollectUserDataModel() {
         super(DELEGATE, WEB_CONTENTS, VISIBLE, SELECTED_SHIPPING_ADDRESS,
-                SELECTED_PAYMENT_INSTRUMENT, SELECTED_CONTACT_DETAILS, CONTACT_SECTION_TITLE,
-                LOGIN_SECTION_TITLE, SELECTED_LOGIN, SHIPPING_SECTION_TITLE, TERMS_STATUS,
-                REQUEST_NAME, REQUEST_EMAIL, REQUEST_PHONE, REQUEST_SHIPPING_ADDRESS,
+                SELECTED_PAYMENT_INSTRUMENT, SELECTED_CONTACT_DETAILS, SELECTED_PHONE_NUMBER,
+                CONTACT_SECTION_TITLE, PHONE_NUMBER_SECTION_TITLE, LOGIN_SECTION_TITLE,
+                SELECTED_LOGIN, SHIPPING_SECTION_TITLE, TERMS_STATUS, REQUEST_NAME, REQUEST_EMAIL,
+                REQUEST_PHONE, REQUEST_PHONE_NUMBER_SEPARATELY, REQUEST_SHIPPING_ADDRESS,
                 REQUEST_PAYMENT, ACCEPT_TERMS_AND_CONDITIONS_TEXT, SHOW_TERMS_AS_CHECKBOX,
                 REQUEST_LOGIN_CHOICE, AVAILABLE_BILLING_ADDRESSES, AVAILABLE_CONTACTS,
-                AVAILABLE_SHIPPING_ADDRESSES, AVAILABLE_PAYMENT_INSTRUMENTS,
-                SUPPORTED_BASIC_CARD_NETWORKS, AVAILABLE_LOGINS, EXPANDED_SECTION,
-                PREPENDED_SECTIONS, APPENDED_SECTIONS, TERMS_REQUIRE_REVIEW_TEXT,
+                AVAILABLE_PHONE_NUMBERS, AVAILABLE_SHIPPING_ADDRESSES,
+                AVAILABLE_PAYMENT_INSTRUMENTS, SUPPORTED_BASIC_CARD_NETWORKS, AVAILABLE_LOGINS,
+                EXPANDED_SECTION, PREPENDED_SECTIONS, APPENDED_SECTIONS, TERMS_REQUIRE_REVIEW_TEXT,
                 PRIVACY_NOTICE_TEXT, INFO_SECTION_TEXT, INFO_SECTION_TEXT_CENTER,
                 GENERIC_USER_INTERFACE_PREPENDED, GENERIC_USER_INTERFACE_APPENDED,
                 CONTACT_SUMMARY_DESCRIPTION_OPTIONS, CONTACT_FULL_DESCRIPTION_OPTIONS,
@@ -193,6 +207,7 @@ public class AssistantCollectUserDataModel extends PropertyModel {
         set(REQUEST_EMAIL, false);
         set(REQUEST_PHONE, false);
         set(REQUEST_PAYMENT, false);
+        set(REQUEST_PHONE_NUMBER_SEPARATELY, false);
         set(REQUEST_SHIPPING_ADDRESS, false);
         set(REQUEST_LOGIN_CHOICE, false);
         set(PREPENDED_SECTIONS, Collections.emptyList());
@@ -226,6 +241,11 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     }
 
     @CalledByNative
+    private void setRequestPhoneNumberSeparately(boolean requestPhoneNumberSeparately) {
+        set(REQUEST_PHONE_NUMBER_SEPARATELY, requestPhoneNumberSeparately);
+    }
+
+    @CalledByNative
     private void setRequestShippingAddress(boolean requestShippingAddress) {
         set(REQUEST_SHIPPING_ADDRESS, requestShippingAddress);
     }
@@ -248,6 +268,11 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     @CalledByNative
     private void setContactSectionTitle(String text) {
         set(CONTACT_SECTION_TITLE, text);
+    }
+
+    @CalledByNative
+    private void setPhoneNumberSectionTitle(String text) {
+        set(PHONE_NUMBER_SECTION_TITLE, text);
     }
 
     @CalledByNative
@@ -295,6 +320,15 @@ public class AssistantCollectUserDataModel extends PropertyModel {
             @Nullable AssistantAutofillProfile contact, String[] errors, boolean canEdit) {
         set(SELECTED_CONTACT_DETAILS,
                 contact == null ? null : new ContactModel(contact, Arrays.asList(errors), canEdit));
+    }
+
+    @CalledByNative
+    private void setSelectedPhoneNumber(
+            @Nullable AssistantAutofillProfile phoneNumber, String[] errors, boolean canEdit) {
+        set(SELECTED_PHONE_NUMBER,
+                phoneNumber == null
+                        ? null
+                        : new ContactModel(phoneNumber, Arrays.asList(errors), canEdit));
     }
 
     @CalledByNative
@@ -430,6 +464,11 @@ public class AssistantCollectUserDataModel extends PropertyModel {
     @CalledByNative
     private void setAvailableContacts(List<ContactModel> contacts) {
         set(AVAILABLE_CONTACTS, contacts);
+    }
+
+    @CalledByNative
+    private void setAvailablePhoneNumbers(List<ContactModel> phoneNumbers) {
+        set(AVAILABLE_PHONE_NUMBERS, phoneNumbers);
     }
 
     @CalledByNative

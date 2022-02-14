@@ -41,6 +41,17 @@ public class AssistantCollectUserDataNativeDelegate implements AssistantCollectU
     }
 
     @Override
+    public void onPhoneNumberChanged(@Nullable AssistantOptionModel.ContactModel contactModel,
+            @AssistantUserDataEventType int eventType) {
+        if (mNativeAssistantCollectUserDataDelegate != 0) {
+            AssistantCollectUserDataNativeDelegateJni.get().onPhoneNumberChanged(
+                    mNativeAssistantCollectUserDataDelegate,
+                    AssistantCollectUserDataNativeDelegate.this,
+                    contactModel == null ? null : contactModel.mOption, eventType);
+        }
+    }
+
+    @Override
     public void onShippingAddressChanged(@Nullable AssistantOptionModel.AddressModel addressModel,
             @AssistantUserDataEventType int eventType) {
         if (mNativeAssistantCollectUserDataDelegate != 0) {
@@ -127,6 +138,9 @@ public class AssistantCollectUserDataNativeDelegate implements AssistantCollectU
         void onContactInfoChanged(long nativeAssistantCollectUserDataDelegate,
                 AssistantCollectUserDataNativeDelegate caller,
                 @Nullable AssistantAutofillProfile contactProfile, int eventType);
+        void onPhoneNumberChanged(long nativeAssistantCollectUserDataDelegate,
+                AssistantCollectUserDataNativeDelegate caller,
+                @Nullable AssistantAutofillProfile phoneNumber, int eventType);
         void onShippingAddressChanged(long nativeAssistantCollectUserDataDelegate,
                 AssistantCollectUserDataNativeDelegate caller,
                 @Nullable AssistantAutofillProfile address, int eventType);

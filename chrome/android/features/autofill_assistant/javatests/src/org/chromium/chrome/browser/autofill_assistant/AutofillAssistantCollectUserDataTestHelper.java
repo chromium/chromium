@@ -46,12 +46,14 @@ public class AutofillAssistantCollectUserDataTestHelper {
     static class ViewHolder {
         final AssistantVerticalExpanderAccordion mAccordion;
         final AssistantVerticalExpander mContactSection;
+        final AssistantVerticalExpander mPhoneNumberSection;
         final AssistantVerticalExpander mPaymentSection;
         final AssistantVerticalExpander mShippingSection;
         final AssistantVerticalExpander mLoginsSection;
         final LinearLayout mTermsSection;
         final TextView mInfoSection;
         final AssistantChoiceList mContactList;
+        final AssistantChoiceList mPhoneNumberList;
         final AssistantChoiceList mPaymentMethodList;
         final AssistantChoiceList mShippingAddressList;
         final AssistantChoiceList mLoginList;
@@ -62,6 +64,8 @@ public class AutofillAssistantCollectUserDataTestHelper {
                     AssistantTagsForTesting.COLLECT_USER_DATA_ACCORDION_TAG);
             mContactSection = coordinator.getView().findViewWithTag(
                     AssistantTagsForTesting.COLLECT_USER_DATA_CONTACT_DETAILS_SECTION_TAG);
+            mPhoneNumberSection = coordinator.getView().findViewWithTag(
+                    AssistantTagsForTesting.COLLECT_USER_DATA_PHONE_NUMBER_SECTION_TAG);
             mPaymentSection = coordinator.getView().findViewWithTag(
                     AssistantTagsForTesting.COLLECT_USER_DATA_PAYMENT_METHOD_SECTION_TAG);
             mShippingSection = coordinator.getView().findViewWithTag(
@@ -76,6 +80,9 @@ public class AutofillAssistantCollectUserDataTestHelper {
             mContactList = (AssistantChoiceList) (findViewsWithTag(
                     mContactSection, COLLECT_USER_DATA_CHOICE_LIST)
                                                           .get(0));
+            mPhoneNumberList = (AssistantChoiceList) (findViewsWithTag(
+                    mPhoneNumberSection, COLLECT_USER_DATA_CHOICE_LIST)
+                                                              .get(0));
             mPaymentMethodList = (AssistantChoiceList) (findViewsWithTag(
                     mPaymentSection, COLLECT_USER_DATA_CHOICE_LIST)
                                                                 .get(0));
@@ -95,6 +102,7 @@ public class AutofillAssistantCollectUserDataTestHelper {
      */
     static class MockDelegate implements AssistantCollectUserDataDelegate {
         AssistantAutofillProfile mContact;
+        AssistantAutofillProfile mPhoneNumber;
         AssistantAutofillProfile mShippingAddress;
         AssistantPaymentInstrument mPaymentInstrument;
         AssistantLoginChoice mLoginChoice;
@@ -109,6 +117,12 @@ public class AutofillAssistantCollectUserDataTestHelper {
         public void onContactInfoChanged(@Nullable AssistantOptionModel.ContactModel contactModel,
                 @AssistantUserDataEventType int eventType) {
             mContact = contactModel == null ? null : contactModel.mOption;
+        }
+
+        @Override
+        public void onPhoneNumberChanged(@Nullable AssistantOptionModel.ContactModel contactModel,
+                @AssistantUserDataEventType int eventType) {
+            mPhoneNumber = contactModel == null ? null : contactModel.mOption;
         }
 
         @Override

@@ -188,16 +188,14 @@ public class AutofillAssistantPersonalDataManagerTest {
         // First round: Missing name piece.
         waitUntilViewMatchesCondition(
                 withContentDescription("Continue"), allOf(isDisplayed(), not(isEnabled())));
-        onView(allOf(hasSibling(withId(R.id.contact_summary)), withId(R.id.incomplete_error)))
-                .check(matches(
-                        allOf(withText(mTestRule.getActivity().getString(
-                                      R.string.autofill_assistant_payment_information_missing)),
-                                isDisplayed())));
+        onView(allOf(isDisplayed(), hasSibling(withId(R.id.contact_summary)),
+                       withId(R.id.incomplete_error)))
+                .check(matches(withText(mTestRule.getActivity().getString(
+                        R.string.autofill_assistant_payment_information_missing))));
         onView(withText("Contact info")).perform(click());
-        waitUntilViewMatchesCondition(
-                allOf(hasSibling(withId(R.id.contact_full)), withId(R.id.incomplete_error)),
-                allOf(anyOf(withText("Requires first name"), withText("Requires last name")),
-                        isDisplayed()));
+        waitUntilViewMatchesCondition(allOf(isDisplayed(), hasSibling(withId(R.id.contact_full)),
+                                              withId(R.id.incomplete_error)),
+                anyOf(withText("Requires first name"), withText("Requires last name")));
         onView(withContentDescription("Edit contact info")).perform(scrollTo(), click());
         waitUntilViewMatchesCondition(
                 withContentDescription("Name*"), allOf(isDisplayed(), isEnabled()));
@@ -208,9 +206,9 @@ public class AutofillAssistantPersonalDataManagerTest {
         // Second round: Complete.
         waitUntilViewMatchesCondition(
                 withContentDescription("Continue"), allOf(isDisplayed(), isEnabled()));
-        waitUntilViewMatchesCondition(withId(R.id.contact_full),
+        waitUntilViewMatchesCondition(allOf(isDisplayed(), withId(R.id.contact_full)),
                 allOf(withText(containsString("John Doe")),
-                        withText(containsString("johndoe@google.com")), isDisplayed()));
+                        withText(containsString("johndoe@google.com"))));
         waitUntilViewMatchesCondition(
                 allOf(hasSibling(withId(R.id.contact_full)), withId(R.id.incomplete_error)),
                 not(isDisplayed()));
@@ -341,7 +339,7 @@ public class AutofillAssistantPersonalDataManagerTest {
                 isCompletelyDisplayed());
         mHelper.addDummyProfile("John Doe", "johndoe@google.com");
         waitUntilViewMatchesCondition(
-                withId(R.id.contact_summary), allOf(withText("johndoe@google.com"), isDisplayed()));
+                allOf(isDisplayed(), withId(R.id.contact_summary)), withText("johndoe@google.com"));
         waitUntilViewMatchesCondition(withContentDescription("Continue"), isEnabled());
         onView(withContentDescription("Continue")).perform(click());
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
@@ -389,7 +387,7 @@ public class AutofillAssistantPersonalDataManagerTest {
         runScript(script);
 
         waitUntilViewMatchesCondition(
-                withId(R.id.contact_summary), allOf(withText("johndoe@google.com"), isDisplayed()));
+                allOf(isDisplayed(), withId(R.id.contact_summary)), withText("johndoe@google.com"));
         onView(withContentDescription("Continue")).check(matches(isEnabled()));
         // Add new entry that is not supposed to be selected.
         mHelper.addDummyProfile("Adam West", "adamwest@google.com");
@@ -397,7 +395,7 @@ public class AutofillAssistantPersonalDataManagerTest {
         waitUntilViewMatchesCondition(withText(containsString("Adam West")), isDisplayed());
         onView(withText("Contact info")).perform(click());
         waitUntilViewMatchesCondition(
-                withId(R.id.contact_summary), allOf(withText("johndoe@google.com"), isDisplayed()));
+                allOf(isDisplayed(), withId(R.id.contact_summary)), withText("johndoe@google.com"));
         waitUntilViewMatchesCondition(withText("Continue"), isEnabled());
         onView(withText("Continue")).perform(click());
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
@@ -439,11 +437,11 @@ public class AutofillAssistantPersonalDataManagerTest {
         runScript(script);
 
         waitUntilViewMatchesCondition(
-                withId(R.id.contact_summary), allOf(withText("adamdoe@google.com"), isDisplayed()));
+                allOf(isDisplayed(), withId(R.id.contact_summary)), withText("adamdoe@google.com"));
         // Delete first profile, expect second to be selected.
         mHelper.deleteProfile(profileIdA);
-        waitUntilViewMatchesCondition(withId(R.id.contact_summary),
-                allOf(withText("bertadoe@google.com"), isDisplayed()));
+        waitUntilViewMatchesCondition(allOf(isDisplayed(), withId(R.id.contact_summary)),
+                withText("bertadoe@google.com"));
         // Delete second profile, expect nothing to be selected.
         mHelper.deleteProfile(profileIdB);
         waitUntilViewMatchesCondition(
@@ -492,8 +490,8 @@ public class AutofillAssistantPersonalDataManagerTest {
                 list);
         runScript(script);
 
-        waitUntilViewMatchesCondition(withId(R.id.contact_summary),
-                allOf(withText("adamwest@google.com"), isDisplayed()));
+        waitUntilViewMatchesCondition(allOf(isDisplayed(), withId(R.id.contact_summary)),
+                withText("adamwest@google.com"));
         onView(withContentDescription("Continue")).check(matches(isEnabled()));
         // Select John Doe.
         onView(withText("Contact info")).perform(click());
@@ -501,7 +499,7 @@ public class AutofillAssistantPersonalDataManagerTest {
                 withText(containsString("John Doe")), isDisplayingAtLeast(90));
         onView(withText(containsString("John Doe"))).perform(click());
         waitUntilViewMatchesCondition(
-                withId(R.id.contact_summary), allOf(withText("johndoe@google.com"), isDisplayed()));
+                allOf(isDisplayed(), withId(R.id.contact_summary)), withText("johndoe@google.com"));
         // Edit John Doe to Jane Doe (does not collapse the list after editing).
         onView(withText("Contact info")).perform(click());
         waitUntilViewMatchesCondition(

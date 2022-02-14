@@ -69,7 +69,9 @@ public class AssistantCollectUserDataCoordinator {
         AssistantContactDetailsSection contactDetailsSection =
                 new AssistantContactDetailsSection(mActivity, paymentRequestExpanderAccordion);
         createSeparator(paymentRequestExpanderAccordion);
-
+        AssistantPhoneNumberSection phoneNumberSection =
+                new AssistantPhoneNumberSection(mActivity, paymentRequestExpanderAccordion);
+        createSeparator(paymentRequestExpanderAccordion);
         AssistantPaymentMethodSection paymentMethodSection =
                 new AssistantPaymentMethodSection(mActivity, paymentRequestExpanderAccordion);
         createSeparator(paymentRequestExpanderAccordion);
@@ -100,6 +102,8 @@ public class AssistantCollectUserDataCoordinator {
         loginSection.getView().setTag(AssistantTagsForTesting.COLLECT_USER_DATA_LOGIN_SECTION_TAG);
         contactDetailsSection.getView().setTag(
                 AssistantTagsForTesting.COLLECT_USER_DATA_CONTACT_DETAILS_SECTION_TAG);
+        phoneNumberSection.getView().setTag(
+                AssistantTagsForTesting.COLLECT_USER_DATA_PHONE_NUMBER_SECTION_TAG);
         paymentMethodSection.getView().setTag(
                 AssistantTagsForTesting.COLLECT_USER_DATA_PAYMENT_METHOD_SECTION_TAG);
         shippingAddressSection.getView().setTag(
@@ -113,10 +117,10 @@ public class AssistantCollectUserDataCoordinator {
         // Bind view and mediator through the model.
         mViewHolder = new AssistantCollectUserDataBinder.ViewHolder(mPaymentRequestUI,
                 paymentRequestExpanderAccordion, sectionToSectionPadding, loginSection,
-                contactDetailsSection, paymentMethodSection, shippingAddressSection, termsSection,
-                termsAsCheckboxSection, infoSection, prependedSections, appendedSections,
-                genericUserInterfaceContainerPrepended, genericUserInterfaceContainerAppended,
-                DIVIDER_TAG, mActivity, editorFactory);
+                contactDetailsSection, phoneNumberSection, paymentMethodSection,
+                shippingAddressSection, termsSection, termsAsCheckboxSection, infoSection,
+                prependedSections, appendedSections, genericUserInterfaceContainerPrepended,
+                genericUserInterfaceContainerAppended, DIVIDER_TAG, mActivity, editorFactory);
         AssistantCollectUserDataBinder binder = new AssistantCollectUserDataBinder();
         PropertyModelChangeProcessor.create(model, mViewHolder, binder);
 
