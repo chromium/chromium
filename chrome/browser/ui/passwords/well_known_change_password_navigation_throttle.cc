@@ -63,7 +63,9 @@ bool IsTriggeredByGoogleOwnedUI(NavigationHandle* handle) {
 std::unique_ptr<WellKnownChangePasswordNavigationThrottle>
 WellKnownChangePasswordNavigationThrottle::MaybeCreateThrottleFor(
     NavigationHandle* handle) {
-  if (handle->IsInMainFrame() &&
+  // Don't handle navigations in subframes or main frames that are in a nested
+  // frame tree (e.g. portals, fenced frames)
+  if (!handle->GetParentFrameOrOuterDocument() &&
       IsWellKnownChangePasswordUrl(handle->GetURL()) &&
       IsTriggeredByGoogleOwnedUI(handle)) {
     return std::make_unique<WellKnownChangePasswordNavigationThrottle>(handle);
@@ -78,9 +80,9 @@ WellKnownChangePasswordNavigationThrottle::
       request_url_(handle->GetURL()),
       source_id_(
           ukm::GetSourceIdForWebContentsDocument(handle->GetWebContents())) {
-  // If we're in a non-primary frame tree (e.g. prerendering) we're only
-  // constructing the throttle so it can cancel the prerender.
-  if (!handle->IsInPrimaryMainFrame())
+  // If this is a prerender navigation, we're only constructing the throttle
+  // so it can cancel the prerender.
+  if (handle->IsInPrerenderedMainFrame())
     return;
 
   affiliation_service_ =
@@ -100,7 +102,7 @@ WellKnownChangePasswordNavigationThrottle::WillStartRequest() {
   // The logic in Redirect will navigate the primary FrameTree if we're in a
   // prerender. We don't have a way to navigate the prerendered page so just
   // cancel the prerender.
-  if (!navigation_handle()->IsInPrimaryMainFrame()) {
+  if (navigation_handle()->IsInPrerenderedMainFrame()) {
     return NavigationThrottle::CANCEL;
   }
 

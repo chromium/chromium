@@ -4,6 +4,7 @@
 #include "chrome/browser/ui/passwords/well_known_change_password_navigation_throttle.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -13,6 +14,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -128,4 +130,29 @@ TEST_F(WellKnownChangePasswordNavigationThrottleTest,
   // change-password url with trailing slash
   url = GURL("https://google.com/.well-known/change-password/");
   EXPECT_FALSE(CreateNavigationThrottle({url, subframe()}));
+}
+
+class WellKnownChangePasswordNavigationThrottleFencedFramesTest
+    : public WellKnownChangePasswordNavigationThrottleTest {
+ public:
+  WellKnownChangePasswordNavigationThrottleFencedFramesTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+  ~WellKnownChangePasswordNavigationThrottleFencedFramesTest() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// A WellKnownChangePasswordNavigationThrottle should never be created for a
+// navigation initiated by a fenced frame.
+TEST_F(WellKnownChangePasswordNavigationThrottleFencedFramesTest,
+       NeverCreateNavigationThrottle_FencedFrame) {
+  content::RenderFrameHost* fenced_frame =
+      content::RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
+
+  GURL url("https://google.com/.well-known/change-password");
+  EXPECT_FALSE(CreateNavigationThrottle({url, fenced_frame}));
 }
