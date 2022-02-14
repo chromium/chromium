@@ -14,6 +14,7 @@ import androidx.core.util.ObjectsCompat;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
+import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.url.GURL;
@@ -244,7 +245,7 @@ public class AutocompleteMatch {
         mHasTabMatch = hasTabMatch;
     }
 
-    public int getType() {
+    public @OmniboxSuggestionType int getType() {
         return mType;
     }
 
