@@ -32,7 +32,29 @@ class KeyboardShortcutResult : public ChromeSearchResult {
       const chromeos::string_matching::TokenizedString& query_tokenized,
       const std::u16string& target);
 
+ private:
+  // ui::KeyboardCode represents icon codes in the backend.
+  // ash::SearchResultTextItem::IconCode represents icon codes in the frontend.
+  // The supported front-end icon codes are a small subset of the existing
+  // backend icon codes. Returns nullopt for unsupported codes.
+  static absl::optional<ash::SearchResultTextItem::IconCode>
+      GetIconCodeFromKeyboardCode(ui::KeyboardCode);
+
+  // Parse a |template_string| (containing placeholders of the form $i). The
+  // output is a TextVector where the TextItem elements can be of three
+  // different types:
+  //   1. kString: For plain-text portions of the template string.
+  //   2. kIconCode: For where a placeholder is replaced with an icon.
+  //   3. kIconifiedText: For where a placeholder is replaced with a string
+  //      representation of a shortcut key, where an icon for that key is not
+  //      supported.
+  static ChromeSearchResult::TextVector CreateTextVectorFromTemplateString(
+      const std::u16string& template_string,
+      const std::vector<std::u16string>& replacement_strings,
+      const std::vector<ui::KeyboardCode>& shortcut_key_codes);
+
   Profile* profile_;
+  friend class KeyboardShortcutResultTest;
 };
 
 }  // namespace app_list

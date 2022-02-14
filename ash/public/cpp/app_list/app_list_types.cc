@@ -243,28 +243,33 @@ SearchResultTextItemType SearchResultTextItem::GetType() const {
 }
 
 const std::u16string& SearchResultTextItem::GetText() const {
-  DCHECK_EQ(item_type, SearchResultTextItemType::kString);
+  DCHECK(item_type == SearchResultTextItemType::kString ||
+         item_type == SearchResultTextItemType::kIconifiedText);
   return raw_text.value();
 }
 
 SearchResultTextItem& SearchResultTextItem::SetText(std::u16string text) {
-  DCHECK_EQ(item_type, SearchResultTextItemType::kString);
+  DCHECK(item_type == SearchResultTextItemType::kString ||
+         item_type == SearchResultTextItemType::kIconifiedText);
   raw_text = text;
   return *this;
 }
 
 const SearchResultTags& SearchResultTextItem::GetTextTags() const {
-  DCHECK_EQ(item_type, SearchResultTextItemType::kString);
+  DCHECK(item_type == SearchResultTextItemType::kString ||
+         item_type == SearchResultTextItemType::kIconifiedText);
   return text_tags.value();
 }
 
 SearchResultTags& SearchResultTextItem::GetTextTags() {
-  DCHECK_EQ(item_type, SearchResultTextItemType::kString);
+  DCHECK(item_type == SearchResultTextItemType::kString ||
+         item_type == SearchResultTextItemType::kIconifiedText);
   return text_tags.value();
 }
 
 SearchResultTextItem& SearchResultTextItem::SetTextTags(SearchResultTags tags) {
-  DCHECK_EQ(item_type, SearchResultTextItemType::kString);
+  DCHECK(item_type == SearchResultTextItemType::kString ||
+         item_type == SearchResultTextItemType::kIconifiedText);
   text_tags = tags;
   return *this;
 }
