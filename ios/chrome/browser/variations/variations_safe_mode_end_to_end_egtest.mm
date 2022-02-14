@@ -137,6 +137,12 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
 // Corresponds to FieldTrialTest.SafeModeEndToEndTest in
 // variations_safe_mode_browsertest.cc.
 - (void)testVariationsSafeModeEndToEnd {
+#if !TARGET_OS_SIMULATOR
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // TODO(crbug.com/1297123): Disabled on iPad device
+    EARL_GREY_TEST_SKIPPED(@"Test is failing on iPad devices");
+  }
+#endif
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
 
   // Set the safe seed value. Then restart and validate that the safe seed is
