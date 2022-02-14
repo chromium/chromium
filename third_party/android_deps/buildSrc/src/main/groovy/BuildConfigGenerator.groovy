@@ -13,6 +13,8 @@ import org.gradle.api.tasks.TaskAction
 
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentMap
 import java.util.concurrent.Executors
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
@@ -98,6 +100,9 @@ class BuildConfigGenerator extends DefaultTask {
         # Use of this source code is governed by a BSD-style license that can be
         # found in the LICENSE file.
     '''.stripIndent()
+
+    // This cache allows us to download license files from the same URL at most once.
+    static final ConcurrentMap<String, String> URL_TO_STRING_CACHE = new ConcurrentHashMap<>()
 
     /**
      * Directory where the artifacts will be downloaded and where files will be generated.
@@ -331,7 +336,9 @@ class BuildConfigGenerator extends DefaultTask {
     static void downloadFile(String id, String sourceUrl, File destinationFile) {
         destinationFile.withOutputStream { out ->
             try {
-                out << connectAndFollowRedirects(id, sourceUrl).inputStream
+                out << URL_TO_STRING_CACHE.computeIfAbsent(sourceUrl) { k ->
+                    connectAndFollowRedirects(id, k).inputStream.text
+                }
             } catch (Exception e) {
                 throw new RuntimeException("Failed to fetch license for $id url: $sourceUrl", e)
             }
@@ -689,20 +696,22 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  ignore_proguard_configs = true\n')
                 break
             case 'com_google_android_material_material':
-                sb.append('\n')
-                sb.append('  # Reduce binary size. https:crbug.com/954584\n')
-                sb.append('  ignore_proguard_configs = true\n')
-                sb.append('  proguard_configs = ["material_design.flags"]\n')
-                sb.append('\n')
-                sb.append('  # Ensure ConstraintsLayout is not included by unused layouts:\n')
-                sb.append('  # https://crbug.com/1292510\n')
-                sb.append('  resource_exclusion_globs = [\n')
-                sb.append('      "res/layout*/*calendar*",\n')
-                sb.append('      "res/layout*/*chip_input*",\n')
-                sb.append('      "res/layout*/*clock*",\n')
-                sb.append('      "res/layout*/*picker*",\n')
-                sb.append('      "res/layout*/*time*",\n')
-                sb.append('  ]\n')
+                sb.with {
+                    append('\n')
+                    append('  # Reduce binary size. https:crbug.com/954584\n')
+                    append('  ignore_proguard_configs = true\n')
+                    append('  proguard_configs = ["material_design.flags"]\n')
+                    append('\n')
+                    append('  # Ensure ConstraintsLayout is not included by unused layouts:\n')
+                    append('  # https://crbug.com/1292510\n')
+                    append('  resource_exclusion_globs = [\n')
+                    append('      "res/layout*/*calendar*",\n')
+                    append('      "res/layout*/*chip_input*",\n')
+                    append('      "res/layout*/*clock*",\n')
+                    append('      "res/layout*/*picker*",\n')
+                    append('      "res/layout*/*time*",\n')
+                    append('  ]\n')
+                }
                 break
             case 'com_android_support_support_annotations':
                 sb.append('  # https://crbug.com/989505\n')
