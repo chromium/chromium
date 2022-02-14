@@ -130,10 +130,6 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   // Element overrides:
   bool IsAdRelated() const override;
 
-  // If the iframe is lazy-loaded, initiate its load, and return true if such
-  // a load was initiated.
-  bool LoadImmediatelyIfLazy();
-
   void Trace(Visitor*) const override;
 
  protected:
