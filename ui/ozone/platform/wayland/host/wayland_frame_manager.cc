@@ -60,7 +60,7 @@ WaylandFrameManager::WaylandFrameManager(WaylandWindow* window,
     : window_(window), connection_(connection), weak_factory_(this) {}
 
 WaylandFrameManager::~WaylandFrameManager() {
-  ClearStates();
+  ClearStates(true /* closing */);
 }
 
 void WaylandFrameManager::RecordFrame(std::unique_ptr<WaylandFrame> frame) {
@@ -608,11 +608,12 @@ void WaylandFrameManager::Hide() {
   MaybeProcessSubmittedFrames();
 }
 
-void WaylandFrameManager::ClearStates() {
+void WaylandFrameManager::ClearStates(bool closing) {
   for (auto& frame : submitted_frames_) {
     frame->wl_frame_callback.reset();
     for (auto& submitted : frame->submitted_buffers)
       submitted.second->OnExplicitRelease();
+    frame->submission_acked = true;
     frame->submitted_buffers.clear();
     if (!frame->feedback.has_value())
       frame->feedback = gfx::PresentationFeedback::Failure();
@@ -625,6 +626,9 @@ void WaylandFrameManager::ClearStates() {
     submitted_frames_.push_back(std::move(frame));
   }
   pending_frames_.clear();
+
+  if (closing)
+    return;
 
   MaybeProcessSubmittedFrames();
 

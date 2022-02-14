@@ -110,7 +110,8 @@ class WaylandFrameManager {
   void MaybeProcessPendingFrame();
 
   // Clears the state of the |frame_manager_| when the GPU channel is destroyed.
-  void ClearStates();
+  // If |closing| is true, pending frames won't be processed.
+  void ClearStates(bool closing = false);
 
   // Similar to ClearStates(), but does not clear submitted frames.
   void Hide();
