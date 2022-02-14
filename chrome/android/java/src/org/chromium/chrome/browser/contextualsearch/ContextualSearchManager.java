@@ -1234,8 +1234,8 @@ public class ContextualSearchManager
             assert mSearchPanel != null;
             mRedirectHandler.updateNewUrlLoading(navigationParams.pageTransitionType,
                     navigationParams.isRedirect, navigationParams.hasUserGesture,
-                    mLastUserInteractionTimeSupplier.get(), RedirectHandler.INVALID_ENTRY_INDEX,
-                    true /* isInitialNavigation */);
+                    mLastUserInteractionTimeSupplier.get(),
+                    RedirectHandler.NO_COMMITTED_ENTRY_INDEX, true /* isInitialNavigation */);
             ExternalNavigationParams params =
                     new ExternalNavigationParams
                             .Builder(navigationParams.url, false, navigationParams.referrer,
