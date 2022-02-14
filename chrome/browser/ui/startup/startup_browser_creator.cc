@@ -414,6 +414,36 @@ Profile* GetPrivateProfileIfRequested(const base::CommandLine& command_line,
   return profile;
 }
 
+StartupProfilePathInfo GetProfilePickerStartupProfilePathInfo() {
+  // To indicate that we want to show the profile picker, return the guest
+  // profile.
+  // TODO(https://crbug.com/1150326): Return an empty path instead of a guest
+  // profile path.
+  return {ProfileManager::GetGuestProfilePath(),
+          StartupProfileMode::kProfilePicker};
+}
+
+StartupProfileInfo GetProfilePickerStartupProfileInfo() {
+  auto path_info = GetProfilePickerStartupProfilePathInfo();
+  DCHECK_EQ(path_info.mode, StartupProfileMode::kProfilePicker);
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+
+  // We can only show the profile picker this if the system profile
+  // (where the profile picker lives) also exists (or is creatable).
+  // TODO(crbug.com/1271859): Remove unnecessary system profile check here.
+  if (!profile_manager->GetProfile(ProfileManager::GetSystemProfilePath()))
+    return {nullptr, StartupProfileMode::kError};
+
+  Profile* guest_profile = profile_manager->GetProfile(path_info.path);
+  if (guest_profile) {
+    DCHECK(guest_profile->IsGuestSession());
+    return {guest_profile, path_info.mode};
+  }
+
+  return {nullptr, StartupProfileMode::kError};
+}
+
 void ShowProfilePicker(chrome::startup::IsProcessStartup process_startup) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   ProfilePicker::Show(
@@ -1427,16 +1457,10 @@ StartupProfilePathInfo GetStartupProfilePath(
     // to resolve a query into a URL), open them in the last profile, instead.
     auto has_tabs =
         StartupTabProviderImpl().HasCommandLineTabs(command_line, cur_dir);
-    if (has_tabs == CommandLineTabsPresent::kNo &&
-        profile_manager->GetProfile(ProfileManager::GetSystemProfilePath())) {
-      // To indicate that we want to show the profile picker, return the guest
-      // profile. However, we can only do this if the system profile (where the
-      // profile picker lives) also exists (or is creatable).
-      // TODO(crbug.com/1271859): Remove unnecessary system profile check here.
-      // TODO(https://crbug.com/1150326): Return an empty path instead of a
-      // guest profile path.
-      return {ProfileManager::GetGuestProfilePath(),
-              StartupProfileMode::kProfilePicker};
+    if (has_tabs == CommandLineTabsPresent::kNo) {
+      StartupProfilePathInfo info = GetProfilePickerStartupProfilePathInfo();
+      DCHECK_EQ(info.mode, StartupProfileMode::kProfilePicker);
+      return info;
     }
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1453,16 +1477,8 @@ StartupProfileInfo GetStartupProfile(const base::FilePath& cur_dir,
       cur_dir, command_line, /*ignore_profile_picker=*/false);
 
   switch (path_info.mode) {
-    case StartupProfileMode::kProfilePicker: {
-      // TODO(https://crbug.com/1150326): Return nullptr instead of a guest
-      // profile.
-      Profile* guest_profile =
-          profile_manager->GetProfile(ProfileManager::GetGuestProfilePath());
-      if (guest_profile)
-        return {guest_profile, StartupProfileMode::kProfilePicker};
-      else
-        return {nullptr, StartupProfileMode::kError};
-    }
+    case StartupProfileMode::kProfilePicker:
+      return GetProfilePickerStartupProfileInfo();
     case StartupProfileMode::kError:
       // No more info to add.
       return {nullptr, StartupProfileMode::kError};
@@ -1487,18 +1503,7 @@ StartupProfileInfo GetStartupProfile(const base::FilePath& cur_dir,
     return {profile, StartupProfileMode::kBrowserWindow};
   }
 
-  // We want to show the profile picker. To indicate this, return the guest
-  // profile. However, we can only do this if the system profile (where the
-  // profile picker lives) also exists (or is creatable).
-  // TODO(https://crbug.com/1150326): Return nullptr instead of a guest profile.
-  Profile* guest_profile =
-      profile_manager->GetProfile(ProfileManager::GetGuestProfilePath());
-  if (profile_manager->GetProfile(ProfileManager::GetSystemProfilePath()) &&
-      guest_profile) {
-    return {guest_profile, StartupProfileMode::kProfilePicker};
-  }
-
-  return {nullptr, StartupProfileMode::kError};
+  return GetProfilePickerStartupProfileInfo();
 }
 
 StartupProfileInfo GetFallbackStartupProfile() {
@@ -1521,14 +1526,10 @@ StartupProfileInfo GetFallbackStartupProfile() {
   }
 
   // Couldn't initialize any last opened profiles. Try to show the profile
-  // picker, which requires successful initialization of the guest and system
-  // profiles.
-  Profile* guest_profile =
-      profile_manager->GetProfile(ProfileManager::GetGuestProfilePath());
-  Profile* system_profile =
-      profile_manager->GetProfile(ProfileManager::GetSystemProfilePath());
-  if (guest_profile && system_profile)
-    return {guest_profile, StartupProfileMode::kProfilePicker};
+  // picker.
+  StartupProfileInfo profile_picker_info = GetProfilePickerStartupProfileInfo();
+  if (profile_picker_info.mode != StartupProfileMode::kError)
+    return profile_picker_info;
 
   // Couldn't show the profile picker either. Try to open any profile that is
   // not locked.
