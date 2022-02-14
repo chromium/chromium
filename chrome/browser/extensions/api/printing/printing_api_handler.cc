@@ -203,14 +203,14 @@ void PrintingAPIHandler::OnPrintJobSubmitted(
       base::BindOnce(std::move(callback), api::printing::SUBMIT_JOB_STATUS_OK,
                      std::make_unique<std::string>(cups_id), absl::nullopt));
 
+  DCHECK(!base::Contains(print_jobs_, cups_id));
+  print_jobs_[cups_id] =
+      PrintJobInfo{printer_id, *job_id, print_job->source_id()};
+
   if (!extension_registry_->enabled_extensions().Contains(
           print_job->source_id())) {
     return;
   }
-
-  DCHECK(!base::Contains(print_jobs_, cups_id));
-  print_jobs_[cups_id] =
-      PrintJobInfo{printer_id, *job_id, print_job->source_id()};
 
   auto event =
       std::make_unique<Event>(events::PRINTING_ON_JOB_STATUS_CHANGED,
