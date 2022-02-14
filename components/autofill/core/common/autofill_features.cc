@@ -84,6 +84,13 @@ const base::Feature kAutofillAllowDuplicateFormSubmissions{
 const base::Feature kAutofillAllowNonHttpActivation{
     "AutofillAllowNonHttpActivation", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, the variation country code is used as the phone number's region,
+// instead of defaulting to app locale.
+// TODO(crbug.com/1295721): Cleanup when launched.
+const base::Feature kAutofillConsiderVariationCountryCodeForPhoneNumbers{
+    "AutofillConsiderVariationCountryCodeForPhoneNumbers",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, three address profiles are created for testing.
 const base::Feature kAutofillCreateDataForTest{
     "AutofillCreateDataForTest", base::FEATURE_DISABLED_BY_DEFAULT};

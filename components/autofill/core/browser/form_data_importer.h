@@ -70,9 +70,22 @@ class FormDataImporter {
   // duplicated field types in the form.
   CreditCard ExtractCreditCardFromForm(const FormStructure& form);
 
+  // Tries to infer the country |profile| is from, which can be useful to
+  // verify whether the data is sensible. Returns a two-letter ISO country code
+  // by considering, in decreasing order of priority:
+  // - The country specified in |profile|
+  // - The country determined by the variation service stored in
+  //   |variation_country_code|
+  // - The country code corresponding to |app_locale|
+  static std::string GetPredictedCountryCode(
+      const AutofillProfile& profile,
+      const std::string& variation_country_code,
+      const std::string& app_locale,
+      LogBuffer* import_log_buffer);
+
   // Checks suitability of |profile| for adding to the user's set of profiles.
   static bool IsValidLearnableProfile(const AutofillProfile& profile,
-                                      const std::string& finch_country_code,
+                                      const std::string& predicted_country_code,
                                       const std::string& app_locale,
                                       LogBuffer* import_log_buffer);
 

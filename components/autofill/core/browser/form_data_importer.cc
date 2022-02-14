@@ -105,39 +105,10 @@ bool IsValidFieldTypeAndValue(const ServerFieldTypeSet types_seen,
 // No verification of validity of the contents is performed. This is an
 // existence check only.
 bool IsMinimumAddress(const AutofillProfile& profile,
-                      const std::string& variation_country_code,
+                      const std::string& predicted_country_code,
                       const std::string& app_locale,
                       LogBuffer* import_log_buffer) {
-  // Try to acquire the country code form the filled form.
-  std::string country_code =
-      base::UTF16ToASCII(profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
-
-  if (import_log_buffer && !country_code.empty()) {
-    *import_log_buffer << LogMessage::kImportAddressProfileFromFormCountrySource
-                       << "Country entry in form." << CTag{};
-  }
-
-  // As a fallback, use the finch state to get a country code.
-  if (country_code.empty() && !variation_country_code.empty()) {
-    country_code = variation_country_code;
-    if (import_log_buffer && !country_code.empty()) {
-      *import_log_buffer
-          << LogMessage::kImportAddressProfileFromFormCountrySource
-          << "Variations service." << CTag{};
-    }
-  }
-
-  // As the last resort, derive the country code from the app_locale.
-  if (country_code.empty()) {
-    country_code = AutofillCountry::CountryCodeForLocale(app_locale);
-    if (import_log_buffer && !country_code.empty()) {
-      *import_log_buffer
-          << LogMessage::kImportAddressProfileFromFormCountrySource
-          << "App locale." << CTag{};
-    }
-  }
-
-  AutofillCountry country(country_code, app_locale);
+  AutofillCountry country(predicted_country_code, app_locale);
 
   // Include the details of the country to the log.
   if (import_log_buffer)
@@ -323,14 +294,52 @@ CreditCard FormDataImporter::ExtractCreditCardFromForm(
 }
 
 // static
-bool FormDataImporter::IsValidLearnableProfile(
+std::string FormDataImporter::GetPredictedCountryCode(
     const AutofillProfile& profile,
     const std::string& variation_country_code,
     const std::string& app_locale,
     LogBuffer* import_log_buffer) {
+  // Try to acquire the country code form the filled form.
+  std::string country_code =
+      base::UTF16ToASCII(profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
+
+  if (import_log_buffer && !country_code.empty()) {
+    *import_log_buffer << LogMessage::kImportAddressProfileFromFormCountrySource
+                       << "Country entry in form." << CTag{};
+  }
+
+  // As a fallback, use the variation service state to get a country code.
+  if (country_code.empty() && !variation_country_code.empty()) {
+    country_code = variation_country_code;
+    if (import_log_buffer) {
+      *import_log_buffer
+          << LogMessage::kImportAddressProfileFromFormCountrySource
+          << "Variations service." << CTag{};
+    }
+  }
+
+  // As the last resort, derive the country code from the app_locale.
+  if (country_code.empty()) {
+    country_code = AutofillCountry::CountryCodeForLocale(app_locale);
+    if (import_log_buffer && !country_code.empty()) {
+      *import_log_buffer
+          << LogMessage::kImportAddressProfileFromFormCountrySource
+          << "App locale." << CTag{};
+    }
+  }
+
+  return country_code;
+}
+
+// static
+bool FormDataImporter::IsValidLearnableProfile(
+    const AutofillProfile& profile,
+    const std::string& predicted_country_code,
+    const std::string& app_locale,
+    LogBuffer* import_log_buffer) {
   // Check if the imported address qualifies as a minimum address.
   bool is_not_minimum_address = false;
-  if (!IsMinimumAddress(profile, variation_country_code, app_locale,
+  if (!IsMinimumAddress(profile, predicted_country_code, app_locale,
                         import_log_buffer)) {
     is_not_minimum_address = true;
   }
@@ -663,15 +672,37 @@ bool FormDataImporter::ImportAddressProfileForSection(
     }
   }
 
+  const std::string predicted_country_code = GetPredictedCountryCode(
+      candidate_profile, client_->GetVariationConfigCountryCode(), app_locale_,
+      import_log_buffer);
+
   // Construct the phone number. Reject the whole profile if the number is
   // invalid.
   if (!combined_phone.IsEmpty()) {
+    const std::string predicted_country_code_without_variation =
+        GetPredictedCountryCode(candidate_profile, "", app_locale_, nullptr);
+    // If kAutofillConsiderVariationCountryCodeForPhoneNumbers is enabled,
+    // a consistent country code prediction for addresses and phone numbers is
+    // used. Otherwise the variation service state is not considered for phone
+    // numbers. This makes a difference, if the country code cannot be found
+    // in the profile.
+    // ParseNumber() implicity accepts both a country code and a locale. This
+    // will be refactored with crbug/1296077. The parameter for
+    // SetInfoWithVerificationStatus() has to be consistent with ParseNumber().
+    // TODO(crbug.com/1295721): Cleanup when launched.
+    const std::string& phone_number_region =
+        predicted_country_code != predicted_country_code_without_variation &&
+                base::FeatureList::IsEnabled(
+                    features::
+                        kAutofillConsiderVariationCountryCodeForPhoneNumbers)
+            ? predicted_country_code
+            : app_locale_;
     std::u16string constructed_number;
-    if (!combined_phone.ParseNumber(candidate_profile, app_locale_,
+    if (!combined_phone.ParseNumber(candidate_profile, phone_number_region,
                                     &constructed_number) ||
         !candidate_profile.SetInfoWithVerificationStatus(
             AutofillType(PHONE_HOME_WHOLE_NUMBER), constructed_number,
-            app_locale_, VerificationStatus::kObserved)) {
+            phone_number_region, VerificationStatus::kObserved)) {
       if (import_log_buffer) {
         *import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
                            << "Invalid phone number." << CTag{};
@@ -682,10 +713,8 @@ bool FormDataImporter::ImportAddressProfileForSection(
 
   // Reject the profile if minimum address and validation requirements are not
   // met.
-  const std::string variation_country_code =
-      client_->GetVariationConfigCountryCode();
   bool is_invalid_learnable_profile =
-      !IsValidLearnableProfile(candidate_profile, variation_country_code,
+      !IsValidLearnableProfile(candidate_profile, predicted_country_code,
                                app_locale_, import_log_buffer);
 
   // Do not import a profile if any of the requirements is violated.

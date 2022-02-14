@@ -553,7 +553,7 @@ class FormDataImporterTestBase {
 class FormDataImporterTest
     : public FormDataImporterTestBase,
       public testing::Test,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
  protected:
   bool StructuredNames() const { return structured_names_enabled_; }
   bool StructuredAddresses() const { return structured_addresses_enabled_; }
@@ -603,6 +603,8 @@ class FormDataImporterTest
     structured_names_enabled_ = std::get<0>(GetParam());
     structured_addresses_enabled_ = std::get<1>(GetParam());
     support_for_apartment_numbers_ = std::get<2>(GetParam());
+    consider_variation_country_code_for_phone_numbers_ =
+        std::get<3>(GetParam());
 
     std::vector<base::Feature> enabled_features;
     std::vector<base::Feature> disabled_features;
@@ -630,13 +632,41 @@ class FormDataImporterTest
       disabled_features.push_back(
           features::kAutofillEnableSupportForApartmentNumbers);
     }
+
+    if (consider_variation_country_code_for_phone_numbers_) {
+      enabled_features.push_back(
+          features::kAutofillConsiderVariationCountryCodeForPhoneNumbers);
+    } else {
+      disabled_features.push_back(
+          features::kAutofillConsiderVariationCountryCodeForPhoneNumbers);
+    }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   bool structured_names_enabled_;
   bool structured_addresses_enabled_;
   bool support_for_apartment_numbers_;
+  bool consider_variation_country_code_for_phone_numbers_;
 };
+
+TEST_P(FormDataImporterTest, GetPredictedCountryCode) {
+  const AutofillProfile us_profile =
+      ConstructProfileFromTypeValuePairs({{ADDRESS_HOME_COUNTRY, "US"}});
+  const AutofillProfile empty_profile;
+  // Test prioritization: profile > variation service state > app locale
+  EXPECT_EQ(FormDataImporter::GetPredictedCountryCode(us_profile, "DE", "de-AT",
+                                                      nullptr),
+            "US");
+  EXPECT_EQ(FormDataImporter::GetPredictedCountryCode(us_profile, "", "de-AT",
+                                                      nullptr),
+            "US");
+  EXPECT_EQ(FormDataImporter::GetPredictedCountryCode(empty_profile, "DE",
+                                                      "de-AT", nullptr),
+            "DE");
+  EXPECT_EQ(FormDataImporter::GetPredictedCountryCode(empty_profile, "",
+                                                      "de-AT", nullptr),
+            "AT");
+}
 
 // ImportAddressProfiles tests.
 TEST_P(FormDataImporterTest, ImportStructuredNameProfile) {
@@ -4126,11 +4156,15 @@ TEST_P(FormDataImporterTest, UnusableIncompleteProfile) {
 }
 
 // Runs the suite with the feature |kAutofillSupportForMoreStructuredNames|,
-// |kAutofillSupportForMoreStructuredAddresses| and
-// |kAutofillEnableSupportForApartmentNumbers| enabled and disabled.
+// |kAutofillSupportForMoreStructuredAddresses|,
+// |kAutofillEnableSupportForApartmentNumbers| and
+// |kAutofillConsiderVariationCountryCodeForPhoneNumbers| enabled and disabled.
+// TODO(crbug.com/1295721): Remove
+// kAutofillConsiderVariationCountryCodeForPhoneNumbers when launched.
 INSTANTIATE_TEST_SUITE_P(,
                          FormDataImporterTest,
                          testing::Combine(testing::Bool(),
+                                          testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));
 

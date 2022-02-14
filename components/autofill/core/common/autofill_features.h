@@ -45,6 +45,8 @@ extern const base::Feature kAutofillAllowDuplicateFormSubmissions;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillAllowNonHttpActivation;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillConsiderVariationCountryCodeForPhoneNumbers;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillCreateDataForTest;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillDelayPopupControllerDeletion;
