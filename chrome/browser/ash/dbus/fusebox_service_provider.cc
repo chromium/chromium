@@ -12,19 +12,85 @@
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/files/file.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/bind_post_task.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "dbus/message.h"
+#include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash {
 
 namespace {
+
+// ParseResult is the type returned by ParseCommonDBusMethodArguments. It is
+// a result type (see https://en.wikipedia.org/wiki/Result_type), being
+// either an error or a value. In this case, the error type is a
+// base::File::Error (a numeric code) and the value type is a pair of
+// storage::FileSystemContext and storage::FileSystemURL.
+struct ParseResult {
+  explicit ParseResult(base::File::Error error_code_arg);
+  ParseResult(scoped_refptr<storage::FileSystemContext> fs_context_arg,
+              storage::FileSystemURL fs_url_arg);
+  ~ParseResult();
+
+  base::File::Error error_code;
+  scoped_refptr<storage::FileSystemContext> fs_context;
+  storage::FileSystemURL fs_url;
+};
+
+ParseResult::ParseResult(base::File::Error error_code_arg)
+    : error_code(error_code_arg), fs_context(), fs_url() {}
+
+ParseResult::ParseResult(
+    scoped_refptr<storage::FileSystemContext> fs_context_arg,
+    storage::FileSystemURL fs_url_arg)
+    : error_code(base::File::Error::FILE_OK),
+      fs_context(std::move(fs_context_arg)),
+      fs_url(std::move(fs_url_arg)) {}
+
+ParseResult::~ParseResult() = default;
+
+// All of the FuseBoxServiceProvider D-Bus methods' arguments start with a
+// FileSystemURL (as a string). This function consumes and parses that first
+// argument, as well as finding the FileSystemContext we will need to serve
+// those methods.
+ParseResult ParseCommonDBusMethodArguments(dbus::MessageReader* reader) {
+  scoped_refptr<storage::FileSystemContext> fs_context =
+      file_manager::util::GetFileManagerFileSystemContext(
+          ProfileManager::GetActiveUserProfile());
+  if (!fs_context) {
+    LOG(ERROR) << "No FileSystemContext";
+    return ParseResult(base::File::Error::FILE_ERROR_FAILED);
+  }
+
+  std::string fs_url_as_string;
+  if (!reader->PopString(&fs_url_as_string)) {
+    LOG(ERROR) << "No FileSystemURL";
+    return ParseResult(base::File::Error::FILE_ERROR_INVALID_URL);
+  }
+
+  storage::FileSystemURL fs_url =
+      fs_context->CrackURLInFirstPartyContext(GURL(fs_url_as_string));
+  if (!fs_url.is_valid()) {
+    LOG(ERROR) << "Invalid FileSystemURL";
+    return ParseResult(base::File::Error::FILE_ERROR_INVALID_URL);
+  } else if (!fs_context->external_backend()->CanHandleType(fs_url.type())) {
+    LOG(ERROR) << "Backend cannot handle "
+               << storage::GetFileSystemTypeString(fs_url.type());
+    return ParseResult(base::File::Error::FILE_ERROR_INVALID_URL);
+  }
+
+  return ParseResult(std::move(fs_context), std::move(fs_url));
+}
 
 // The fs_context argument may look unused, but we need the BindOnce below to
 // keep the reference alive until at least this function gets called back.
@@ -52,25 +118,16 @@ void ReplyToStat(scoped_refptr<storage::FileSystemContext> fs_context,
 
 }  // namespace
 
-FuseBoxServiceProvider::ParseResult::ParseResult(
-    base::File::Error error_code_arg)
-    : error_code(error_code_arg), fs_context(), fs_url() {}
-
-FuseBoxServiceProvider::ParseResult::ParseResult(
-    scoped_refptr<storage::FileSystemContext> fs_context_arg,
-    storage::FileSystemURL fs_url_arg)
-    : error_code(base::File::Error::FILE_OK),
-      fs_context(std::move(fs_context_arg)),
-      fs_url(std::move(fs_url_arg)) {}
-
-FuseBoxServiceProvider::ParseResult::~ParseResult() = default;
-
-FuseBoxServiceProvider::FuseBoxServiceProvider()
-    : enabled_(ash::features::IsFileManagerFuseBoxEnabled()) {}
+FuseBoxServiceProvider::FuseBoxServiceProvider() = default;
 
 FuseBoxServiceProvider::~FuseBoxServiceProvider() = default;
 
 void FuseBoxServiceProvider::Start(scoped_refptr<dbus::ExportedObject> object) {
+  if (!ash::features::IsFileManagerFuseBoxEnabled()) {
+    LOG(ERROR) << "Not enabled";
+    return;
+  }
+
   object->ExportMethod(
       fusebox::kFuseBoxServiceInterface, fusebox::kStatMethod,
       base::BindRepeating(&FuseBoxServiceProvider::Stat,
@@ -82,46 +139,9 @@ void FuseBoxServiceProvider::Start(scoped_refptr<dbus::ExportedObject> object) {
       }));
 }
 
-FuseBoxServiceProvider::ParseResult
-FuseBoxServiceProvider::ParseCommonDBusMethodArguments(
-    dbus::MessageReader* reader) {
-  if (!enabled_) {
-    LOG(ERROR) << "Not enabled";
-    return ParseResult(base::File::Error::FILE_ERROR_FAILED);
-  }
-
-  scoped_refptr<storage::FileSystemContext> fs_context =
-      file_manager::util::GetFileManagerFileSystemContext(
-          ProfileManager::GetActiveUserProfile());
-  if (!fs_context) {
-    LOG(ERROR) << "No FileSystemContext";
-    return ParseResult(base::File::Error::FILE_ERROR_FAILED);
-  }
-
-  std::string fs_url_as_string;
-  if (!reader->PopString(&fs_url_as_string)) {
-    LOG(ERROR) << "No FileSystemURL";
-    return ParseResult(base::File::Error::FILE_ERROR_INVALID_URL);
-  }
-
-  storage::FileSystemURL fs_url =
-      fs_context->CrackURLInFirstPartyContext(GURL(fs_url_as_string));
-  if (!fs_url.is_valid()) {
-    LOG(ERROR) << "Invalid FileSystemURL " << fs_url_as_string;
-    return ParseResult(base::File::Error::FILE_ERROR_INVALID_URL);
-  } else if (!fs_context->external_backend()->CanHandleType(fs_url.type())) {
-    LOG(ERROR) << "Backend cannot handle "
-               << storage::GetFileSystemTypeString(fs_url.type());
-    return ParseResult(base::File::Error::FILE_ERROR_INVALID_URL);
-  }
-
-  return ParseResult(std::move(fs_context), std::move(fs_url));
-}
-
 void FuseBoxServiceProvider::Stat(dbus::MethodCall* method,
                                   dbus::ExportedObject::ResponseSender sender) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
 
   dbus::MessageReader reader(method);
   auto common = ParseCommonDBusMethodArguments(&reader);
