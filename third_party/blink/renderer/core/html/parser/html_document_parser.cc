@@ -630,8 +630,16 @@ bool HTMLDocumentParser::PumpTokenizer() {
   bool should_run_until_completion = task_runner_state_->ShouldComplete() ||
                                      task_runner_state_->IsSynchronous() ||
                                      task_runner_state_->InNestedPumpSession();
-  TRACE_EVENT2("blink", "HTMLDocumentParser::PumpTokenizer", "should_complete",
-               should_run_until_completion, "parser", (void*)this);
+
+  bool is_tracing;
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED("blink", &is_tracing);
+  unsigned starting_bytes;
+  if (is_tracing) {
+    starting_bytes = input_.length();
+    TRACE_EVENT_BEGIN2("blink", "HTMLDocumentParser::PumpTokenizer",
+                       "should_complete", should_run_until_completion,
+                       "bytes_queued", starting_bytes);
+  }
 
   // We tell the InspectorInstrumentation about every pump, even if we end up
   // pumping nothing.  It can filter out empty pumps itself.
@@ -684,6 +692,11 @@ bool HTMLDocumentParser::PumpTokenizer() {
     DCHECK(IsStopped() || Token().IsUninitialized());
   }
 
+  if (is_tracing) {
+    TRACE_EVENT_END2("blink", "HTMLDocumentParser::PumpTokenizer",
+                     "parsed_tokens", tokens_parsed, "parsed_bytes",
+                     starting_bytes - input_.length());
+  }
 
   if (IsStopped() || IsParsingFragment()) {
     if (metrics_reporter_ && tokens_parsed) {
