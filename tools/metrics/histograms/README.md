@@ -645,9 +645,13 @@ developers.
 If you do not want to add an obsoletion message, you can simply delete the
 entry in the histograms.xml file.
 
-* In some cases there may be artifacts that remain, for example empty `<token>`
-  blocks or suffix entries in histogram_suffixes_list.xml. Please remove these
-  as well if you find them.
+* In some cases there may be artifacts that remain, with some examples being:
+  * Empty `<token>` blocks.
+  * `<enum>` blocks from enums.xml that are no longer used.
+  * Suffix entries in histogram_suffixes_list.xml.
+* Please remove these artifacts if you find them.
+  * **Exception**: please mark `<int value=...>` blocks as obsolete rather than
+    deleting them.
 * A histogram entry can be removed after an obsoletion message was added, but
   please check that at least a day has passed since the change landed. This
   ensures that the message will be recorded by internal tools.
