@@ -208,8 +208,7 @@ class NativeInputMethodEngine
     bool ShouldRouteToRuleBasedEngine(const std::string& engine_id) const;
     bool ShouldRouteToNativeMojoEngine(const std::string& engine_id) const;
 
-    void BindInputMethod(const std::string& engine_id,
-                         bool connection_factory_bound);
+    void OnConnectionFactoryBound(bool bound);
     void ConnectToImeService(
         chromeos::ime::mojom::ConnectionTarget connection_target,
         const std::string& engine_id);

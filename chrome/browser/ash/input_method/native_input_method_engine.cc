@@ -639,21 +639,13 @@ bool NativeInputMethodEngine::ImeObserver::ShouldRouteToNativeMojoEngine(
   return use_ime_service_ && CanRouteToNativeMojoEngine(engine_id);
 }
 
-void NativeInputMethodEngine::ImeObserver::BindInputMethod(
-    const std::string& engine_id,
-    bool connection_factory_bound) {
-  if (!connection_factory_bound) {
-    LOG(ERROR) << "ConnectionFactory not bound, abort.";
+void NativeInputMethodEngine::ImeObserver::OnConnectionFactoryBound(
+    bool bound) {
+  if (bound)
     return;
-  }
 
-  mojo::PendingAssociatedRemote<chromeos::ime::mojom::InputMethodHost>
-      input_method_host;
-  host_receiver_.Bind(input_method_host.InitWithNewEndpointAndPassReceiver());
-
-  connection_factory_->ConnectToInputMethod(
-      engine_id, input_method_.BindNewEndpointAndPassReceiver(),
-      std::move(input_method_host), base::BindOnce(&OnConnected));
+  LOG(ERROR) << "ConnectionFactory failed to bind, abort.";
+  connection_factory_.reset();
 }
 
 void NativeInputMethodEngine::ImeObserver::ConnectToImeService(
@@ -675,8 +667,17 @@ void NativeInputMethodEngine::ImeObserver::ConnectToImeService(
 
   remote_manager_->InitializeConnectionFactory(
       connection_factory_.BindNewPipeAndPassReceiver(), connection_target,
-      base::BindOnce(&NativeInputMethodEngine::ImeObserver::BindInputMethod,
-                     weak_ptr_factory_.GetWeakPtr(), engine_id));
+      base::BindOnce(
+          &NativeInputMethodEngine::ImeObserver::OnConnectionFactoryBound,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  mojo::PendingAssociatedRemote<chromeos::ime::mojom::InputMethodHost>
+      input_method_host;
+  host_receiver_.Bind(input_method_host.InitWithNewEndpointAndPassReceiver());
+
+  connection_factory_->ConnectToInputMethod(
+      engine_id, input_method_.BindNewEndpointAndPassReceiver(),
+      std::move(input_method_host), base::BindOnce(&OnConnected));
 }
 
 void NativeInputMethodEngine::ImeObserver::OnActivate(
