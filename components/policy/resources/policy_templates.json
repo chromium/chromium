@@ -7331,7 +7331,7 @@
           'caption': '''Allow sites to ask the user to grant access to a HID device''',
         },
       ],
-      'future_on': ['chrome_os', 'chrome.*'],
+      'supported_on': ['chrome_os:100-', 'chrome.*:100-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -7355,7 +7355,7 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'future_on': ['chrome_os', 'chrome.*'],
+      'supported_on': ['chrome_os:100-', 'chrome.*:100-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -7388,7 +7388,7 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'future_on': ['chrome_os', 'chrome.*'],
+      'supported_on': ['chrome_os:100-', 'chrome.*:100-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -7421,7 +7421,7 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'future_on': ['chrome_os', 'chrome.*'],
+      'supported_on': ['chrome_os:100-', 'chrome.*:100-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -7474,7 +7474,7 @@
           'required': ['devices', 'urls']
         }
       },
-      'future_on': ['chrome_os', 'chrome.*'],
+      'supported_on': ['chrome_os:100-', 'chrome.*:100-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -7528,7 +7528,7 @@
           'required': ['usages', 'urls']
         }
       },
-      'future_on': ['chrome_os', 'chrome.*'],
+      'supported_on': ['chrome_os:100-', 'chrome.*:100-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
