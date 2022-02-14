@@ -262,7 +262,9 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kRelatedSearchesSimplifiedUx,
     &kRelatedSearchesUi,
     &kSearchEnginePromoExistingDevice,
+    &kSearchEnginePromoExistingDeviceV2,
     &kSearchEnginePromoNewDevice,
+    &kSearchEnginePromoNewDeviceV2,
     &kServiceManagerForBackgroundPrefetch,
     &kServiceManagerForDownload,
     &kShareButtonInTopToolbar,
@@ -680,8 +682,14 @@ const base::Feature kKitKatSupported{"KitKatSupported",
 const base::Feature kSearchEnginePromoExistingDevice{
     "SearchEnginePromo.ExistingDevice", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kSearchEnginePromoExistingDeviceV2{
+    "SearchEnginePromo.ExistingDeviceVer2", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kSearchEnginePromoNewDevice{
     "SearchEnginePromo.NewDevice", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kSearchEnginePromoNewDeviceV2{
+    "SearchEnginePromo.NewDeviceVer2", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kNewWindowAppMenu{"NewWindowAppMenu",
                                       base::FEATURE_ENABLED_BY_DEFAULT};

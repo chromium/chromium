@@ -466,7 +466,11 @@ public abstract class ChromeFeatureList {
     public static final String SAFE_BROWSING_DELAYED_WARNINGS = "SafeBrowsingDelayedWarnings";
     public static final String SEARCH_ENGINE_PROMO_EXISTING_DEVICE =
             "SearchEnginePromo.ExistingDevice";
+    public static final String SEARCH_ENGINE_PROMO_EXISTING_DEVICE_V2 =
+            "SearchEnginePromo.ExistingDeviceVer2";
     public static final String SEARCH_ENGINE_PROMO_NEW_DEVICE = "SearchEnginePromo.NewDevice";
+    public static final String SEARCH_ENGINE_PROMO_NEW_DEVICE_V2 =
+            "SearchEnginePromo.NewDeviceVer2";
     public static final String SEARCH_HISTORY_LINK = "SearchHistoryLink";
     public static final String SEND_TAB_TO_SELF_V2 = "SendTabToSelfV2";
     public static final String SEND_TAB_TO_SELF_MANAGE_DEVICES_LINK =

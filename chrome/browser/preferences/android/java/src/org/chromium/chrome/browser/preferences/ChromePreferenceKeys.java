@@ -496,6 +496,8 @@ public final class ChromePreferenceKeys {
     public static final String LOCALE_MANAGER_PARTNER_PROMO_KEYWORD_SELECTED =
             "LocaleManager_PARTNER_PROMO_SELECTED_KEYWORD";
     public static final String LOCALE_MANAGER_PROMO_SHOWN = "LocaleManager_PREF_PROMO_SHOWN";
+    public static final String LOCALE_MANAGER_PROMO_V2_CHECKED =
+            "LocaleManager_PREF_PROMO_VER2_CHECKED";
     public static final String LOCALE_MANAGER_SEARCH_ENGINE_PROMO_SHOW_STATE =
             "com.android.chrome.SEARCH_ENGINE_PROMO_SHOWN";
     public static final String LOCALE_MANAGER_SEARCH_WIDGET_PRESENT_FIRST_START =
