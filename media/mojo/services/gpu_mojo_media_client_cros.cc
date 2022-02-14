@@ -19,10 +19,88 @@
 
 namespace media {
 
+namespace {
+
+#if BUILDFLAG(IS_CHROMEOS)
+
+VideoDecoderType GetPreferredCrosDecoderImplementation(
+    gpu::GpuPreferences gpu_preferences) {
+  if (gpu_preferences.enable_chromeos_direct_video_decoder) {
+#if BUILDFLAG(USE_VAAPI)
+    return VideoDecoderType::kVaapi;
+#elif BUILDFLAG(USE_V4L2_CODEC)
+    return VideoDecoderType::kV4L2;
+#endif
+  }
+  return VideoDecoderType::kVda;
+}
+
+#else
+
+VideoDecoderType GetPreferredLinuxDecoderImplementation(
+    gpu::GpuPreferences gpu_preferences,
+    const gpu::GPUInfo& gpu_info) {
+  // VaapiVideoDecoder flag is required for both VDA and VaapiVideoDecoder.
+  if (!base::FeatureList::IsEnabled(kVaapiVideoDecodeLinux))
+    return VideoDecoderType::kUnknown;
+
+  // Regardless of vulkan support, if direct video decoder is disabled, revert
+  // to using the VDA implementation.
+  if (!base::FeatureList::IsEnabled(kUseChromeOSDirectVideoDecoder))
+    return VideoDecoderType::kVda;
+  return VideoDecoderType::kVaapi;
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+VideoDecoderType GetActualPlatformDecoderImplementation(
+    gpu::GpuPreferences gpu_preferences,
+    const gpu::GPUInfo& gpu_info) {
+#if BUILDFLAG(IS_CHROMEOS)
+  return GetPreferredCrosDecoderImplementation(gpu_preferences);
+#else
+  // On linux, VDA and Vaapi have GL restrictions.
+  switch (GetPreferredLinuxDecoderImplementation(gpu_preferences, gpu_info)) {
+    case VideoDecoderType::kUnknown:
+      return VideoDecoderType::kUnknown;
+    case VideoDecoderType::kVda: {
+      return gpu_preferences.gr_context_type == gpu::GrContextType::kGL
+                 ? VideoDecoderType::kVda
+                 : VideoDecoderType::kUnknown;
+    }
+    case VideoDecoderType::kVaapi: {
+      if (gpu_preferences.gr_context_type != gpu::GrContextType::kVulkan)
+        return VideoDecoderType::kUnknown;
+      if (gpu_info.vulkan_info->physical_devices.empty())
+        return VideoDecoderType::kUnknown;
+      constexpr int kIntel = 0x8086;
+      const auto& device = gpu_info.vulkan_info->physical_devices[0];
+      switch (device.properties.vendorID) {
+        case kIntel: {
+          if (device.properties.driverVersion < VK_MAKE_VERSION(21, 1, 5))
+            return VideoDecoderType::kUnknown;
+          return VideoDecoderType::kVaapi;
+        }
+        default: {
+          // NVIDIA drivers have a broken implementation of most va_* methods,
+          // ARM & AMD aren't tested yet, and ImgTec/Qualcomm don't have a vaapi
+          // driver.
+          return VideoDecoderType::kUnknown;
+        }
+      }
+    }
+    default:
+      return VideoDecoderType::kUnknown;
+  }
+#endif
+}
+
+}  // namespace
+
 std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
     const VideoDecoderTraits& traits) {
-  switch (GetPlatformDecoderImplementationType(
-      *traits.gpu_workarounds, traits.gpu_preferences, traits.gpu_info)) {
+  switch (GetActualPlatformDecoderImplementation(traits.gpu_preferences,
+                                                 traits.gpu_info)) {
     case VideoDecoderType::kVaapi:
     case VideoDecoderType::kV4L2: {
       auto frame_pool = std::make_unique<PlatformVideoFramePool>(
@@ -54,8 +132,7 @@ GetPlatformSupportedVideoDecoderConfigs(
     const gpu::GPUInfo& gpu_info,
     base::OnceCallback<SupportedVideoDecoderConfigs()> get_vda_configs) {
   VideoDecoderType decoder_implementation =
-      GetPlatformDecoderImplementationType(gpu_workarounds, gpu_preferences,
-                                           gpu_info);
+      GetActualPlatformDecoderImplementation(gpu_preferences, gpu_info);
 #if BUILDFLAG(IS_LINUX)
   base::UmaHistogramEnumeration("Media.VaapiLinux.SupportedVideoDecoder",
                                 decoder_implementation);
@@ -75,45 +152,13 @@ VideoDecoderType GetPlatformDecoderImplementationType(
     gpu::GpuDriverBugWorkarounds gpu_workarounds,
     gpu::GpuPreferences gpu_preferences,
     const gpu::GPUInfo& gpu_info) {
+  // Determine the preferred decoder based purely on compile-time and run-time
+  // flags. This is not intended to determine whether the selected decoder can
+  // be successfully initialized or used to decode.
 #if BUILDFLAG(IS_CHROMEOS)
-  if (gpu_preferences.enable_chromeos_direct_video_decoder) {
-#if BUILDFLAG(USE_VAAPI)
-    return VideoDecoderType::kVaapi;
-#elif BUILDFLAG(USE_V4L2_CODEC)
-    return VideoDecoderType::kV4L2;
-#endif
-  }
-  return VideoDecoderType::kVda;
-#elif BUILDFLAG(ENABLE_VULKAN)
-  if (!base::FeatureList::IsEnabled(kVaapiVideoDecodeLinux))
-    return VideoDecoderType::kUnknown;
-  if (!base::FeatureList::IsEnabled(kUseChromeOSDirectVideoDecoder)) {
-    return gpu_preferences.gr_context_type == gpu::GrContextType::kGL
-               ? VideoDecoderType::kVda
-               : VideoDecoderType::kUnknown;
-  }
-  if (gpu_preferences.gr_context_type != gpu::GrContextType::kVulkan)
-    return VideoDecoderType::kUnknown;
-  if (gpu_info.vulkan_info->physical_devices.empty())
-    return VideoDecoderType::kUnknown;
-  constexpr int kIntel = 0x8086;
-  const auto& device = gpu_info.vulkan_info->physical_devices[0];
-  switch (device.properties.vendorID) {
-    case kIntel: {
-      if (device.properties.driverVersion < VK_MAKE_VERSION(21, 1, 5))
-        return VideoDecoderType::kUnknown;
-      return VideoDecoderType::kVaapi;
-    }
-    default: {
-      // NVIDIA drivers have a broken implementation of most va_* methods,
-      // ARM & AMD aren't tested yet, and ImgTec/Qualcomm don't have a vaapi
-      // driver.
-      return VideoDecoderType::kUnknown;
-    }
-  }
+  return GetPreferredCrosDecoderImplementation(gpu_preferences);
 #else
-  NOTREACHED();
-  return VideoDecoderType::kUnknown;
+  return GetPreferredLinuxDecoderImplementation(gpu_preferences, gpu_info);
 #endif
 }
 
