@@ -28,6 +28,8 @@ class AppListRemoveSpaceSyncCompatibilityTest
     // Enable the feature flag to remove extra spaces if the pre count is one.
     if (GetTestPreCount() == 1) {
       feature_list_.InitAndEnableFeature(ash::features::kProductivityLauncher);
+    } else {
+      feature_list_.InitAndDisableFeature(ash::features::kProductivityLauncher);
     }
     extensions::ExtensionBrowserTest::SetUp();
   }

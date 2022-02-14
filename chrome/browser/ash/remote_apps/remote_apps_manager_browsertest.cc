@@ -14,6 +14,7 @@
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/shell.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
@@ -281,6 +282,10 @@ class RemoteAppsManagerBrowsertest
     EXPECT_FALSE(client->GetAppListWindow());
     ash::AcceleratorController::Get()->PerformActionIfEnabled(
         ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+    if (ash::features::IsProductivityLauncherEnabled()) {
+      ash::AppListTestApi().WaitForBubbleWindow(
+          /*wait_for_opening_animation=*/false);
+    }
     EXPECT_TRUE(client->GetAppListWindow());
   }
 

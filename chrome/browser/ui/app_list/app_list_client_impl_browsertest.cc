@@ -11,6 +11,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
+#include "ash/public/cpp/test/app_list_test_api.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/path_service.h"
@@ -154,6 +155,10 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, UninstallApp) {
   // Bring up the app list.
   EXPECT_FALSE(client->GetAppListWindow());
   client->ShowAppList();
+  if (ash::features::IsProductivityLauncherEnabled()) {
+    ash::AppListTestApi().WaitForBubbleWindow(
+        /*wait_for_opening_animation=*/false);
+  }
   EXPECT_TRUE(client->GetAppListWindow());
 
   EXPECT_TRUE(wm::GetTransientChildren(client->GetAppListWindow()).empty());
@@ -288,8 +293,10 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
   // Add an app item.
   AppListModelUpdater* model_updater = test::GetModelUpdater(client);
   const std::string app_id("fake_id");
-  model_updater->AddItem(std::make_unique<ChromeAppListItem>(
-      browser()->profile(), app_id, model_updater));
+  auto new_item = std::make_unique<ChromeAppListItem>(browser()->profile(),
+                                                      app_id, model_updater);
+  new_item->SetChromeName("Fake app");
+  model_updater->AddItem(std::move(new_item));
 
   // Verify that the app addition from the app list client side should not
   // trigger the update recursively, i.e. the client side observers the update
@@ -578,6 +585,10 @@ IN_PROC_BROWSER_TEST_F(AppListClientSearchResultsBrowserTest,
 
   // Show the app list first, otherwise we won't have a search box to update.
   client->ShowAppList();
+  if (ash::features::IsProductivityLauncherEnabled()) {
+    ash::AppListTestApi().WaitForBubbleWindow(
+        /*wait_for_opening_animation=*/false);
+  }
 
   // Currently the search box is empty, so we have no result.
   EXPECT_FALSE(search_controller->GetResultByTitleForTest(title));
@@ -585,7 +596,6 @@ IN_PROC_BROWSER_TEST_F(AppListClientSearchResultsBrowserTest,
   // Now a search finds the extension.
   model_updater->UpdateSearchBox(base::ASCIIToUTF16(title),
                                  true /* initiated_by_user */);
-
   EXPECT_TRUE(search_controller->GetResultByTitleForTest(title));
 
   // Uninstall the extension.
@@ -711,6 +721,10 @@ class DurationBetweenSeesionActivationAndFirstLauncherShowingBrowserTest
   void ShowAppListAndVerify() {
     auto* client = AppListClientImpl::GetInstance();
     client->ShowAppList();
+    if (ash::features::IsProductivityLauncherEnabled()) {
+      ash::AppListTestApi().WaitForBubbleWindow(
+          /*wait_for_opening_animation=*/false);
+    }
     ASSERT_TRUE(client->app_list_visible());
   }
 

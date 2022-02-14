@@ -6,7 +6,9 @@
 
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
+#include "ash/public/cpp/test/app_list_test_api.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
@@ -63,6 +65,10 @@ class ChromeAppListItemTest : public InProcessBrowserTest {
     EXPECT_FALSE(client_->GetAppListWindow());
     ash::AcceleratorController::Get()->PerformActionIfEnabled(
         ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+    if (ash::features::IsProductivityLauncherEnabled()) {
+      ash::AppListTestApi().WaitForBubbleWindow(
+          /*wait_for_opening_animation=*/false);
+    }
     EXPECT_TRUE(client_->GetAppListWindow());
   }
 
