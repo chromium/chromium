@@ -110,6 +110,13 @@ class FeaturePromoController {
   virtual bool IsPromoActive(const base::Feature& iph_feature,
                              bool include_continued_promos) const = 0;
 
+  // Starts a promo with the settings for skipping any logging or filtering
+  // provided by the implementation for MaybeShowPromo.
+  virtual bool MaybeShowPromoForDemoPage(
+      const base::Feature* iph_feature,
+      FeaturePromoSpecification::StringReplacements body_text_replacements = {},
+      BubbleCloseCallback close_callback = BubbleCloseCallback()) = 0;
+
   // If a bubble is showing for |iph_feature| close it and end the
   // promo. Does nothing otherwise. Returns true if a bubble was closed
   // and false otherwise.
@@ -179,6 +186,10 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
       BubbleCloseCallback close_callback = BubbleCloseCallback()) override;
   bool IsPromoActive(const base::Feature& iph_feature,
                      bool include_continued_promos = false) const override;
+  bool MaybeShowPromoForDemoPage(
+      const base::Feature* iph_feature,
+      FeaturePromoSpecification::StringReplacements body_text_replacements = {},
+      BubbleCloseCallback close_callback = BubbleCloseCallback()) override;
   bool CloseBubble(const base::Feature& iph_feature) override;
   PromoHandle CloseBubbleAndContinuePromo(
       const base::Feature& iph_feature) override;
@@ -336,6 +347,12 @@ class FeaturePromoControllerCommon : public FeaturePromoController {
 
   // When set to true, promos will never be shown.
   bool promos_blocked_for_testing_ = false;
+
+  // In the case where the user education demo page wants to bypass the feature
+  // engagement tracker, the current iph feature will be set and then checked
+  // against to verify the right feature is bypassing. this page is located at
+  // internals/user-education.
+  const base::Feature* iph_feature_bypassing_tracker_ = nullptr;
 
   base::WeakPtrFactory<FeaturePromoControllerCommon> weak_ptr_factory_{this};
 

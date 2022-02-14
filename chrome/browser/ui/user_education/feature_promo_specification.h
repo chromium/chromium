@@ -83,6 +83,20 @@ class FeaturePromoSpecification {
     ValueType value_;
   };
 
+  struct DemoPageInfo {
+    std::string display_title;
+    std::string display_description;
+    base::RepeatingClosure setup_for_feature_promo_callback;
+
+    explicit DemoPageInfo(
+        std::string display_title_ = std::string(),
+        std::string display_description_ = std::string(),
+        base::RepeatingClosure setup_for_feature_promo_callback_ =
+            base::DoNothing());
+    ~DemoPageInfo();
+    DemoPageInfo(const DemoPageInfo& other);
+  };
+
   FeaturePromoSpecification();
   FeaturePromoSpecification(FeaturePromoSpecification&& other);
   ~FeaturePromoSpecification();
@@ -153,6 +167,8 @@ class FeaturePromoSpecification {
   const AcceleratorInfo& screen_reader_accelerator() const {
     return screen_reader_accelerator_;
   }
+  const DemoPageInfo& demo_page_info() const { return demo_page_info_; }
+  FeaturePromoSpecification& SetDemoPageInfo(DemoPageInfo demo_page_info);
   const TutorialIdentifier& tutorial_id() const { return tutorial_id_; }
 
  private:
@@ -199,6 +215,9 @@ class FeaturePromoSpecification {
   // Accelerator that is used to fill in a parametric field in
   // screen_reader_string_id_.
   AcceleratorInfo screen_reader_accelerator_;
+
+  // Information to be displayed on the demo page
+  DemoPageInfo demo_page_info_;
 
   // Tutorial identifier if the user decides to view a tutorial.
   TutorialIdentifier tutorial_id_;

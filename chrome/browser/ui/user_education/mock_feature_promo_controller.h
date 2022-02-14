@@ -24,6 +24,12 @@ class MockFeaturePromoController : public FeaturePromoController {
                BubbleCloseCallback),
               (override));
   MOCK_METHOD(bool,
+              MaybeShowPromoForDemoPage,
+              (const base::Feature*,
+               FeaturePromoSpecification::StringReplacements,
+               BubbleCloseCallback),
+              (override));
+  MOCK_METHOD(bool,
               IsPromoActive,
               (const base::Feature&, bool),
               (const, override));

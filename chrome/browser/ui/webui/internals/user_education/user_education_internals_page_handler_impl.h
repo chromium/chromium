@@ -11,11 +11,22 @@
 #include "chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom.h"
 #include "content/public/browser/web_ui_data_source.h"
 
+namespace base {
+struct Feature;
+}  // namespace base
+
+namespace content {
+class WebUI;
+}  // namespace content
+
+class FeaturePromoSpecification;
+
 class UserEducationInternalsPageHandlerImpl
     : public mojom::user_education_internals::
           UserEducationInternalsPageHandler {
  public:
-  explicit UserEducationInternalsPageHandlerImpl(Profile* profile);
+  explicit UserEducationInternalsPageHandlerImpl(content::WebUI* web_ui,
+                                                 Profile* profile);
   ~UserEducationInternalsPageHandlerImpl() override;
 
   UserEducationInternalsPageHandlerImpl(
@@ -27,8 +38,17 @@ class UserEducationInternalsPageHandlerImpl
   void GetTutorials(GetTutorialsCallback callback) override;
   void StartTutorial(const std::string& tutorial_id) override;
 
+  void GetFeaturePromos(GetFeaturePromosCallback callback) override;
+  void ShowFeaturePromo(const std::string& title,
+                        ShowFeaturePromoCallback callback) override;
+
  private:
+  const std::string GetTitleFromFeaturePromoData(
+      const base::Feature* feature,
+      const FeaturePromoSpecification& spec);
+
   raw_ptr<TutorialService> tutorial_service_ = nullptr;
+  raw_ptr<content::WebUI> web_ui_ = nullptr;
   raw_ptr<Profile> profile_ = nullptr;
 };
 

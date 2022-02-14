@@ -6,6 +6,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback_list.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "chrome/browser/ui/user_education/feature_promo_registry.h"
@@ -103,6 +104,22 @@ bool FeaturePromoControllerCommon::MaybeShowPromo(
                                          std::move(close_callback));
 }
 
+bool FeaturePromoControllerCommon::MaybeShowPromoForDemoPage(
+    const base::Feature* iph_feature,
+    FeaturePromoSpecification::StringReplacements body_text_replacements,
+    BubbleCloseCallback close_callback) {
+  if (current_iph_feature_ && promo_bubble_)
+    CloseBubble(*current_iph_feature_);
+  iph_feature_bypassing_tracker_ = iph_feature;
+
+  bool showed_promo = MaybeShowPromo(*iph_feature);
+
+  if (!showed_promo && iph_feature_bypassing_tracker_)
+    iph_feature_bypassing_tracker_ = nullptr;
+
+  return showed_promo;
+}
+
 bool FeaturePromoControllerCommon::MaybeShowPromoFromSpecification(
     const FeaturePromoSpecification& spec,
     ui::TrackedElement* anchor_element,
@@ -125,11 +142,12 @@ bool FeaturePromoControllerCommon::MaybeShowPromoFromSpecification(
   // Some checks should not be done in demo mode, because we absolutely want to
   // trigger the bubble if possible. Put any checks that should be bypassed in
   // demo mode in this block.
-  const base::Feature& feature = *spec.feature();
-  if (!base::FeatureList::IsEnabled(feature_engagement::kIPHDemoMode)) {
-    if (snooze_service_->IsBlocked(feature))
-      return false;
-  }
+  const base::Feature* feature = spec.feature();
+  bool feature_is_bypassing_tracker = feature == iph_feature_bypassing_tracker_;
+  if (!(base::FeatureList::IsEnabled(feature_engagement::kIPHDemoMode) ||
+        feature_is_bypassing_tracker) &&
+      snooze_service_->IsBlocked(*feature))
+    return false;
 
   // Can't show a standard promo if another help bubble is visible.
   if (bubble_factory_registry_->is_any_bubble_showing())
@@ -139,13 +157,14 @@ bool FeaturePromoControllerCommon::MaybeShowPromoFromSpecification(
   // ShouldTriggerHelpUI() below. See bug for details.
   const bool screen_reader_available = CheckScreenReaderPromptAvailable();
 
-  if (!feature_engagement_tracker_->ShouldTriggerHelpUI(feature))
+  if (!feature_is_bypassing_tracker &&
+      !feature_engagement_tracker_->ShouldTriggerHelpUI(*feature))
     return false;
 
   // If the tracker says we should trigger, but we have a promo
   // currently showing, there is a bug somewhere in here.
   DCHECK(!current_iph_feature_);
-  current_iph_feature_ = &feature;
+  current_iph_feature_ = feature;
 
   // Try to show the bubble and bail out if we cannot.
   promo_bubble_ = ShowPromoBubbleImpl(
@@ -153,19 +172,22 @@ bool FeaturePromoControllerCommon::MaybeShowPromoFromSpecification(
       screen_reader_available, /* is_critical_promo =*/false);
   if (!promo_bubble_) {
     current_iph_feature_ = nullptr;
-    feature_engagement_tracker_->Dismissed(feature);
+    if (!feature_is_bypassing_tracker)
+      feature_engagement_tracker_->Dismissed(*feature);
     return false;
   }
 
   bubble_closed_callback_ = std::move(close_callback);
 
   // Record count of previous snoozes when an IPH triggers.
-  int snooze_count = snooze_service_->GetSnoozeCount(feature);
-  base::UmaHistogramExactLinear(
-      "InProductHelp.Promos.SnoozeCountAtTrigger." + std::string(feature.name),
-      snooze_count, FeaturePromoSnoozeService::kUmaMaxSnoozeCount);
-  snooze_service_->OnPromoShown(feature);
-
+  if (!feature_is_bypassing_tracker) {
+    int snooze_count = snooze_service_->GetSnoozeCount(*feature);
+    base::UmaHistogramExactLinear(
+        "InProductHelp.Promos.SnoozeCountAtTrigger." +
+            std::string(feature->name),
+        snooze_count, FeaturePromoSnoozeService::kUmaMaxSnoozeCount);
+    snooze_service_->OnPromoShown(*feature);
+  }
   return true;
 }
 
@@ -213,6 +235,8 @@ bool FeaturePromoControllerCommon::CloseBubble(
   const bool was_open = promo_bubble_ && promo_bubble_->is_open();
   if (promo_bubble_)
     promo_bubble_->Close();
+  if (iph_feature_bypassing_tracker_ == &iph_feature)
+    iph_feature_bypassing_tracker_ = nullptr;
   return was_open;
 }
 
@@ -260,7 +284,8 @@ bool FeaturePromoControllerCommon::CheckScreenReaderPromptAvailable() const {
   // without querying the FE backend, since the backend will return false for
   // all promos other than the one that's being demoed. If we didn't have this
   // code the screen reader prompt would never play.
-  if (base::FeatureList::IsEnabled(feature_engagement::kIPHDemoMode))
+  if (base::FeatureList::IsEnabled(feature_engagement::kIPHDemoMode) ||
+      iph_feature_bypassing_tracker_)
     return true;
 
   if (!feature_engagement_tracker_->ShouldTriggerHelpUI(
@@ -355,7 +380,10 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
 void FeaturePromoControllerCommon::FinishContinuedPromo(
     const base::Feature* iph_feature) {
   DCHECK(continuing_after_bubble_closed_);
-  feature_engagement_tracker_->Dismissed(*iph_feature);
+  if (iph_feature_bypassing_tracker_ != iph_feature)
+    feature_engagement_tracker_->Dismissed(*iph_feature);
+  else
+    iph_feature_bypassing_tracker_ = nullptr;
   if (current_iph_feature_ == iph_feature) {
     current_iph_feature_ = nullptr;
     continuing_after_bubble_closed_ = false;
@@ -371,7 +399,10 @@ void FeaturePromoControllerCommon::OnHelpBubbleClosed(HelpBubble* bubble) {
     critical_promo_bubble_ = nullptr;
   } else if (bubble == promo_bubble_.get()) {
     if (!continuing_after_bubble_closed_) {
-      feature_engagement_tracker_->Dismissed(*current_iph_feature_);
+      if (iph_feature_bypassing_tracker_ != current_iph_feature_)
+        feature_engagement_tracker_->Dismissed(*current_iph_feature_);
+      else
+        iph_feature_bypassing_tracker_ = nullptr;
       current_iph_feature_ = nullptr;
     }
     promo_bubble_.reset();
@@ -385,12 +416,13 @@ void FeaturePromoControllerCommon::OnHelpBubbleClosed(HelpBubble* bubble) {
 
 void FeaturePromoControllerCommon::OnHelpBubbleSnoozed(
     const base::Feature* feature) {
-  snooze_service_->OnUserSnooze(*feature);
+  if (iph_feature_bypassing_tracker_ != feature)
+    snooze_service_->OnUserSnooze(*feature);
 }
 
 void FeaturePromoControllerCommon::OnHelpBubbleDismissed(
     const base::Feature* feature) {
-  if (snooze_service_)
+  if (snooze_service_ && iph_feature_bypassing_tracker_ != feature)
     snooze_service_->OnUserDismiss(*feature);
 }
 

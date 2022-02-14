@@ -18,11 +18,13 @@ class UserEducationInternalsElement extends PolymerElement {
   static get properties() {
     return {
       /**
-       * List of tutorials that can be started. Each tutorial has a string
-       * identifier.
+       * List of tutorials and feature_promos that can be started.
+       * Each tutorial has a string identifier.
        * @private {!Array<string>}
        */
       tutorials_: Array,
+      feature_promos_: Array,
+      feature_promo_error_message_: String,
     };
   }
 
@@ -35,8 +37,13 @@ class UserEducationInternalsElement extends PolymerElement {
   /** @override */
   ready() {
     super.ready();
+
     this.handler_.getTutorials().then(({tutorialIds}) => {
       this.tutorials_ = tutorialIds;
+    });
+
+    this.handler_.getFeaturePromos().then(({featurePromos}) => {
+      this.feature_promos_ = featurePromos;
     });
   }
 
@@ -47,6 +54,19 @@ class UserEducationInternalsElement extends PolymerElement {
   startTutorial_(e) {
     const id = /** @type {string} */ (e.model.item);
     this.handler_.startTutorial(id);
+  }
+
+  /**
+   * @param {!Object} e
+   * @private
+   */
+  ShowFeaturePromo_(e) {
+    const id = /** @type {string} */ (e.model.item.displayTitle);
+    this.feature_promo_error_message_ = '';
+
+    this.handler_.showFeaturePromo(id).then(({errorMessage}) => {
+      this.feature_promo_error_message_ = errorMessage;
+    });
   }
 }
 
