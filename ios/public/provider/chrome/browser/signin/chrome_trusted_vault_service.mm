@@ -39,4 +39,10 @@ void ChromeTrustedVaultService::NotifyRecoverabilityChanged() {
   }
 }
 
+void ChromeTrustedVaultService::ClearLocalDataForIdentity(
+    ChromeIdentity* chrome_identity,
+    void (^callback)(BOOL success, NSError* error)) {
+  // Will eventually be declared virtual, when subclasses all defines it.
+}
+
 }  // namespace ios
