@@ -150,6 +150,10 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.GMS_CORE_EMOJI,
                     "Enables retrieval of the emoji font through GMS Core "
                             + "improving emoji glyph coverage."),
+            Flag.baseFeature(
+                    AutofillFeatures.AUTOFILL_FIX_SERVER_QUERIES_IF_PASSWORD_MANAGER_IS_ENABLED,
+                    "Enables a autofill server queries if the password manager is enabled but "
+                            + "autofill for addresses and credit cards are disabled."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_ACROSS_IFRAMES,
                     "Enable Autofill for frame-transcending forms (forms whose fields live in "
                             + "different frames)."),
