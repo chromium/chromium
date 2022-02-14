@@ -384,6 +384,11 @@ void Clean(UpdaterScope scope) {
     EXPECT_TRUE(DeleteRegKeyCOM(root, GetComTypeLibRegistryPath(iid)));
   }
 
+  if (scope == UpdaterScope::kUser) {
+    base::win::RegKey(root, REGSTR_PATH_RUN, KEY_READ)
+        .DeleteValue(GetTaskNamePrefix(scope).c_str());
+  }
+
   if (scope == UpdaterScope::kSystem) {
     for (const bool is_internal_service : {true, false}) {
       EXPECT_TRUE(DeleteService(GetServiceName(is_internal_service)));
