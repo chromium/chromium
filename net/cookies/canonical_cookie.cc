@@ -485,6 +485,12 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
     return nullptr;
   }
 
+  // Record warning for non-ASCII octecs in the Domain attribute.
+  // This should lead to rejection of the cookie in the future.
+  UMA_HISTOGRAM_BOOLEAN("Cookie.DomainHasNonASCII",
+                        parsed_cookie.HasDomain() &&
+                            !base::IsStringASCII(parsed_cookie.Domain()));
+
   std::string cookie_domain;
   if (!GetCookieDomain(url, parsed_cookie, &cookie_domain)) {
     DVLOG(net::cookie_util::kVlogSetCookies)
