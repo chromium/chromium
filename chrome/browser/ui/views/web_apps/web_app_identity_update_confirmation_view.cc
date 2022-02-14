@@ -151,7 +151,7 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
   DCHECK(provider);
-  registrar_observation_.Observe(&provider->registrar());
+  install_manager_observation_.Observe(&provider->install_manager());
 
   chrome::RecordDialogCreation(
       chrome::DialogIdentifier::APP_IDENTITY_UPDATE_CONFIRMATION);
@@ -163,8 +163,8 @@ void WebAppIdentityUpdateConfirmationView::OnWebAppWillBeUninstalled(
     GetWidget()->Close();
 }
 
-void WebAppIdentityUpdateConfirmationView::OnAppRegistrarDestroyed() {
-  registrar_observation_.Reset();
+void WebAppIdentityUpdateConfirmationView::OnWebAppInstallManagerDestroyed() {
+  install_manager_observation_.Reset();
   GetWidget()->Close();
 }
 
