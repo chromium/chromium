@@ -1383,8 +1383,7 @@
       'owners': ['file://components/policy/resources/OWNERS', 'okalitova@chromium.org'],
       'type': 'string',
       'schema': { 'type': 'string' },
-      'supported_on': ['chrome.*:58-', 'chrome_os:58-'],
-      'future_on': ['ios'],
+      'supported_on': ['chrome.*:58-', 'chrome_os:58-', 'ios:99-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
