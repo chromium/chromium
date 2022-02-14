@@ -23,6 +23,7 @@ group("extension_tests") {
     deps = [
       ":caretbrowsing_tests",
       ":colorenhancer_tests",
+      ":highcontrast_tests",
       "chromevoxclassic:chromevox_tests",
     ]
   }
@@ -215,6 +216,26 @@ js2gtest("caretbrowsing_webui_js_tests") {
     "caretbrowsing/selection_util.js",
     "caretbrowsing/storage.js",
     "caretbrowsing/traverse_util.js",
+    "testing/webstore_extension_test_base.js",
+    "//chrome/browser/resources/chromeos/accessibility/common/testing/callback_helper.js",
+    "//chrome/browser/resources/chromeos/accessibility/common/testing/mock_storage.js",
+  ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+}
+
+test("highcontrast_tests") {
+  deps = [ ":highcontrast_webui_js_tests" ]
+  deps += webui_test_deps
+
+  data = js2gtest_js_libraries
+}
+
+js2gtest("highcontrast_webui_js_tests") {
+  test_type = "webui"
+  sources = [ "highcontrast/storage_test.js" ]
+  gen_include_files = [
+    "highcontrast/storage.js",
     "testing/webstore_extension_test_base.js",
     "//chrome/browser/resources/chromeos/accessibility/common/testing/callback_helper.js",
     "//chrome/browser/resources/chromeos/accessibility/common/testing/mock_storage.js",

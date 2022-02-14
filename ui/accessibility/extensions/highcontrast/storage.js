@@ -2,14 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/** @enum {number} */
+const SchemeType = {
+  NORMAL: 0,
+  INCREASED_CONTRAST: 1,
+  GRAYSCALE: 2,
+  INVERTED_COLOR: 3,
+  INVERTED_GRAYSCALE: 4,
+  YELLOW_ON_BLACK: 5,
+};
+
+/**
+ * Class to handle interactions with the chrome.storage API and values that are
+ * stored there.
+ */
 class Storage {
-  /** @private */
-  constructor() {
+  /**
+   * @param {function()=} opt_callbackForTesting
+   * @private
+   */
+  constructor(opt_callbackForTesting) {
     /** @private {boolean} */
     this.enabled_ = Storage.ENABLED.defaultValue;
-    /** @private {number} */
-    this.scheme_ = Storage.SCHEME.defaultValue;
-    /** @private {!Object<string, number>} */
+    /** @private {!SchemeType} */
+    this.baseScheme_ = Storage.SCHEME.defaultValue;
+    /** @private {!Object<string, !SchemeType>} */
     this.siteSchemes_ = Storage.SITE_SCHEMES.defaultValue;
 
     this.init_();
@@ -25,52 +42,42 @@ class Storage {
 
   /** @return {boolean} */
   static get enabled() { return Storage.instance.enabled_; }
-  /** @return {!KeyAction} */
-  static get keyAction() { return Storage.instance.keyAction_; }
-  /** @return {number} */
-  static get scheme() { return Storage.instance.scheme_; }
+  /** @return {!SchemeType} */
+  static get baseScheme() { return Storage.instance.baseScheme_; }
 
   /**
    * @param {string} site
-   * @return {number}
+   * @return {!SchemeType}
    */
   static getSiteScheme(site) {
     const scheme = Storage.instance.siteSchemes_[site];
     if (Storage.SCHEME.validate(scheme)) {
       return scheme;
     }
-    return Storage.instance.scheme;
+    return Storage.baseScheme;
   }
 
-  /** @param {boolean} enabled */
-  static set enabled(enabled) {
-    if (Storage.ENABLED.validate(enabled)) {
-      Storage.instance.enabled_ = enabled;
-    } else {
-      Storage.ENABLED.reset();
-    }
+  /** @param {boolean} newValue */
+  static set enabled(newValue) {
+    Storage.instance.setOrResetValue_(Storage.ENABLED, newValue);
     Storage.instance.store_(Storage.ENABLED);
   }
 
-  /** @param {number} scheme */
-  static set scheme(scheme) {
-    if (Storage.SCHEME.validate(scheme)) {
-      Storage.instance.scheme_ = scheme;
-    } else {
-      Storage.SCHEME.reset();
-    }
+  /** @param {!SchemeType} newScheme */
+  static set baseScheme(newScheme) {
+    Storage.instance.setOrResetValue_(Storage.SCHEME, newScheme);
     Storage.instance.store_(Storage.SCHEME);
   }
 
   /**
    * @param {string} site
-   * @param {number} scheme
+   * @param {!SchemeType} scheme
    */
   static setSiteScheme(site, scheme) {
     if (Storage.SCHEME.validate(scheme)) {
       Storage.instance.siteSchemes_[site] = scheme;
     } else {
-      Storage.instance.siteSchemes_[site] = Storage.instance.scheme;
+      Storage.instance.siteSchemes_[site] = Storage.baseScheme;
     }
     Storage.instance.store_(Storage.SITE_SCHEMES);
   }
@@ -82,22 +89,37 @@ class Storage {
 
   // ======= Private Methods =======
 
-  /** @private */
-  init_() {
+  /**
+   * @param {!Storage.Value} container
+   * @param {*} newValue
+   * @private
+   */
+  setOrResetValue_(container, newValue) {
+    if (newValue === container.get()) {
+      return;
+    }
+
+    if (container.validate(newValue)) {
+      container.set(newValue);
+    } else {
+      container.reset();
+    }
+
+    container.listeners.forEach(listener => listener(newValue));
+  }
+
+  /**
+   * @param {function()=} opt_callback
+   * @private
+   */
+  init_(opt_callback) {
     chrome.storage.onChanged.addListener(this.onChange_);
     chrome.storage.local.get(null /* all values */, (results) => {
-      for (const value of Storage.ALL_VALUES) {
-        const newValue = results[value.key];
-        if (!newValue) {
-          continue;
-        }
-
-        if (value.validate(newValue)) {
-          value.set(newValue);
-        } else {
-          value.reset();
-        }
+      const storedData = Storage.ALL_VALUES.filter(v => results[v.key]);
+      for (const data of storedData) {
+        this.setOrResetValue_(data, results[data.key]);
       }
+      opt_callback ? opt_callback() : undefined;
     });
   }
 
@@ -106,35 +128,19 @@ class Storage {
    * @private
    */
   onChange_(changes) {
-    for (const value of Storage.ALL_VALUES) {
-      if (!changes[value.key]) {
-        continue;
-      }
-      const {newValue} = changes[value.key];
-
-      if (value.validate(newValue)) {
-        value.set(newValue);
-      } else {
-        value.reset();
-      }
+    const changedData = Storage.ALL_VALUES.filter(v => changes[v.key]);
+    for (const data of changedData) {
+      Storage.instance.setOrResetValue_(data, changes[data.key].newValue);
     }
   }
 
   /**
    * @param {!Storage.Value} value
+   * @private
    */
   store_(value) {
-    const update = {};
-    update[value.key] = value.get();
-    chrome.storage.local.set(update);
+    chrome.storage.local.set({ [value.key]: value.get() });
   }
-
-  // ======= Constants =======
-
-  /** @const {number} */
-  static MAX_SCHEME = 5;
-  /** @constant {number} */
-  static MIN_SCHEME = 0;
 
   // ======= Stored Values =======
 
@@ -145,7 +151,8 @@ class Storage {
    *     validate: function(*): boolean,
    *     get: function: *,
    *     set: function(*),
-   *     reset: function()
+   *     reset: function(),
+   *     listeners: !Array<function(*)>
    * }}
    */
   static Value;
@@ -157,18 +164,19 @@ class Storage {
     validate: (enabled) => enabled === true || enabled === false,
     get: () => Storage.instance.enabled_,
     set: (enabled) => Storage.instance.enabled_ = enabled,
-    reset: () => Storage.instance.setEnabled(Storage.ENABLED.defaultValue),
+    reset: () => Storage.instance.enabled_ = Storage.ENABLED.defaultValue,
+    listeners: [],
   };
 
   /** @const {!Storage.Value} */
   static SCHEME = {
     key: 'scheme',
-    defaultValue: 3,
-    validate: (scheme) =>
-        scheme >= Storage.MIN_SCHEME && scheme <= Storage.MAX_SCHEME,
-    get: () => Storage.instance.scheme_,
-    set: (scheme) => Storage.instance.scheme_ = scheme,
-    reset: () => Storage.instance.setScheme(Storage.SCHEME.defaultValue),
+    defaultValue: SchemeType.INVERTED_COLOR,
+    validate: (scheme) => Object.values(SchemeType).includes(scheme),
+    get: () => Storage.instance.baseScheme_,
+    set: (scheme) => Storage.instance.baseScheme_ = scheme,
+    reset: () => Storage.instance.baseScheme_ = Storage.SCHEME.defaultValue,
+    listeners: [],
   };
 
   /** @const {!Storage.Value} */
@@ -185,6 +193,7 @@ class Storage {
       }
     },
     reset: () => {} /** Do nothing */,
+    listeners: [],
   };
 
   /** @const {!Array<!Storage.Value>} */
