@@ -219,6 +219,16 @@ static bool BorderOrPaddingLogicalDimensionChanged(
 void LayoutBlock::StyleDidChange(StyleDifference diff,
                                  const ComputedStyle* old_style) {
   NOT_DESTROYED();
+  // Computes old scaling factor before PaintLayer::UpdateTransform()
+  // updates Layer()->Transform().
+  double old_squared_scale = 1;
+  if (Layer() && diff.TransformChanged() && has_svg_text_descendants_) {
+    if (TransformationMatrix* old_transform = Layer()->Transform()) {
+      const auto transform = old_transform->ToAffineTransform();
+      old_squared_scale = transform.XScaleSquared() + transform.YScaleSquared();
+    }
+  }
+
   LayoutBox::StyleDidChange(diff, old_style);
 
   const ComputedStyle& new_style = StyleRef();
@@ -268,10 +278,19 @@ void LayoutBlock::StyleDidChange(StyleDifference diff,
                                              kLogicalHeight);
 
   if (diff.TransformChanged() && has_svg_text_descendants_) {
-    for (LayoutBox* box : *View()->SvgTextDescendantsMap().at(this)) {
-      box->SetNeedsLayout(layout_invalidation_reason::kStyleChange,
-                          kMarkContainerChain);
-      To<LayoutNGSVGText>(box)->SetNeedsTextMetricsUpdate();
+    const TransformationMatrix* new_transform =
+        Layer() ? Layer()->Transform() : nullptr;
+    const auto new_affine_transform =
+        new_transform ? new_transform->ToAffineTransform() : AffineTransform();
+    // Compare XScaleSquared()+YScaleSquared().
+    // See SVGLayoutSupport::CalculateScreenFontSizeScalingFactor().
+    if (old_squared_scale != new_affine_transform.XScaleSquared() +
+                                 new_affine_transform.YScaleSquared()) {
+      for (LayoutBox* box : *View()->SvgTextDescendantsMap().at(this)) {
+        box->SetNeedsLayout(layout_invalidation_reason::kStyleChange,
+                            kMarkContainerChain);
+        To<LayoutNGSVGText>(box)->SetNeedsTextMetricsUpdate();
+      }
     }
   }
 }
