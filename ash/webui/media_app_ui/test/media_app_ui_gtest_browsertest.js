@@ -188,11 +188,9 @@ TEST_F('MediaAppUIGtestBrowserTest', 'MultipleFilesHaveTokens', () => {
   runMediaAppTest('MultipleFilesHaveTokens');
 });
 
-// Flaky. See https://crbug.com/1292005
-TEST_F(
-    'MediaAppUIWithAudioGtestBrowserTest', 'DISABLED_SingleAudioLaunch', () => {
-      runMediaAppTest('SingleAudioLaunch');
-    });
+TEST_F('MediaAppUIWithAudioGtestBrowserTest', 'SingleAudioLaunch', () => {
+  runMediaAppTest('SingleAudioLaunch');
+});
 
 TEST_F('MediaAppUIGtestBrowserTest', 'MultipleSelectionLaunch', () => {
   runMediaAppTest('MultipleSelectionLaunch');
