@@ -8,12 +8,12 @@
 #include <map>
 #include <set>
 
-#include "ash/public/cpp/file_icon_util.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/image_util.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
+#include "chromeos/ui/base/file_icon_util.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -100,10 +100,10 @@ HoldingSpaceImage::CreateDefaultPlaceholderImageSkiaResolver(
 
         const gfx::ImageSkia file_type_icon =
             is_folder.value_or(false)
-                ? GetIconFromType(
-                      IconType::kFolder,
+                ? chromeos::GetIconFromType(
+                      chromeos::IconType::kFolder,
                       dark_background.value_or(!use_light_mode_as_default))
-                : GetIconForPath(
+                : chromeos::GetIconForPath(
                       backing_file_path,
                       dark_background.value_or(!use_light_mode_as_default));
 

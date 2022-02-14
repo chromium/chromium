@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/file_icon_util.h"
+#include "chromeos/ui/base/file_icon_util.h"
 
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -20,10 +19,10 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 
-namespace ash {
+namespace chromeos {
 namespace {
 
-constexpr int kIconDipSize = 20;
+constexpr int kIconDefaultDipSize = 20;
 
 enum class ColorId {
   kBlue,
@@ -69,66 +68,53 @@ const std::map<IconType, IconParams>& GetIconTypeToIconParamsMap() {
   static const base::NoDestructor<std::map<IconType, IconParams>>
       icon_type_to_icon_params(
           {{IconType::kArchive,
-            IconParams{chromeos::kFiletypeArchiveIcon, ColorId::kGrey}},
-           {IconType::kAudio,
-            IconParams{chromeos::kFiletypeAudioIcon, ColorId::kRed}},
-           {IconType::kChart,
-            IconParams{chromeos::kFiletypeChartIcon, ColorId::kGreen}},
+            IconParams{kFiletypeArchiveIcon, ColorId::kGrey}},
+           {IconType::kAudio, IconParams{kFiletypeAudioIcon, ColorId::kRed}},
+           {IconType::kChart, IconParams{kFiletypeChartIcon, ColorId::kGreen}},
            {IconType::kDrive,
-            IconParams{chromeos::kFiletypeTeamDriveIcon, ColorId::kGrey}},
-           {IconType::kExcel,
-            IconParams{chromeos::kFiletypeExcelIcon, ColorId::kGreen}},
-           {IconType::kFolder,
-            IconParams{chromeos::kFiletypeFolderIcon, ColorId::kGrey}},
+            IconParams{kFiletypeTeamDriveIcon, ColorId::kGrey}},
+           {IconType::kExcel, IconParams{kFiletypeExcelIcon, ColorId::kGreen}},
+           {IconType::kFolder, IconParams{kFiletypeFolderIcon, ColorId::kGrey}},
            {IconType::kFolderShared,
-            IconParams{chromeos::kFiletypeSharedIcon, ColorId::kGrey}},
-           {IconType::kGdoc,
-            IconParams{chromeos::kFiletypeGdocIcon, ColorId::kBlue}},
-           {IconType::kGdraw,
-            IconParams{chromeos::kFiletypeGdrawIcon, ColorId::kRed}},
+            IconParams{kFiletypeSharedIcon, ColorId::kGrey}},
+           {IconType::kGdoc, IconParams{kFiletypeGdocIcon, ColorId::kBlue}},
+           {IconType::kGdraw, IconParams{kFiletypeGdrawIcon, ColorId::kRed}},
            {IconType::kGeneric,
-            IconParams{chromeos::kFiletypeGenericIcon, ColorId::kGrey}},
-           {IconType::kGform,
-            IconParams{chromeos::kFiletypeGformIcon, ColorId::kGreen}},
-           {IconType::kGmap,
-            IconParams{chromeos::kFiletypeGmapIcon, ColorId::kRed}},
+            IconParams{kFiletypeGenericIcon, ColorId::kGrey}},
+           {IconType::kGform, IconParams{kFiletypeGformIcon, ColorId::kGreen}},
+           {IconType::kGmap, IconParams{kFiletypeGmapIcon, ColorId::kRed}},
            {IconType::kGsheet,
-            IconParams{chromeos::kFiletypeGsheetIcon, ColorId::kGreen}},
+            IconParams{kFiletypeGsheetIcon, ColorId::kGreen}},
            {IconType::kGsite,
-            IconParams{chromeos::kFiletypeGsiteIcon, ColorId::kFiletypeGsite}},
+            IconParams{kFiletypeGsiteIcon, ColorId::kFiletypeGsite}},
            {IconType::kGslide,
-            IconParams{chromeos::kFiletypeGslidesIcon, ColorId::kYellow}},
+            IconParams{kFiletypeGslidesIcon, ColorId::kYellow}},
            {IconType::kGtable,
-            IconParams{chromeos::kFiletypeGtableIcon, ColorId::kGreen}},
-           {IconType::kImage,
-            IconParams{chromeos::kFiletypeImageIcon, ColorId::kRed}},
-           {IconType::kLinux,
-            IconParams{chromeos::kFiletypeLinuxIcon, ColorId::kGrey}},
-           {IconType::kPdf,
-            IconParams{chromeos::kFiletypePdfIcon, ColorId::kRed}},
+            IconParams{kFiletypeGtableIcon, ColorId::kGreen}},
+           {IconType::kImage, IconParams{kFiletypeImageIcon, ColorId::kRed}},
+           {IconType::kLinux, IconParams{kFiletypeLinuxIcon, ColorId::kGrey}},
+           {IconType::kPdf, IconParams{kFiletypePdfIcon, ColorId::kRed}},
            {IconType::kPpt,
-            IconParams{chromeos::kFiletypePptIcon, ColorId::kFiletypePpt}},
-           {IconType::kScript,
-            IconParams{chromeos::kFiletypeScriptIcon, ColorId::kBlue}},
+            IconParams{kFiletypePptIcon, ColorId::kFiletypePpt}},
+           {IconType::kScript, IconParams{kFiletypeScriptIcon, ColorId::kBlue}},
            {IconType::kSites,
-            IconParams{chromeos::kFiletypeSitesIcon, ColorId::kFiletypeSites}},
-           {IconType::kTini,
-            IconParams{chromeos::kFiletypeTiniIcon, ColorId::kBlue}},
-           {IconType::kVideo,
-            IconParams{chromeos::kFiletypeVideoIcon, ColorId::kRed}},
-           {IconType::kWord,
-            IconParams{chromeos::kFiletypeWordIcon, ColorId::kBlue}}});
+            IconParams{kFiletypeSitesIcon, ColorId::kFiletypeSites}},
+           {IconType::kTini, IconParams{kFiletypeTiniIcon, ColorId::kBlue}},
+           {IconType::kVideo, IconParams{kFiletypeVideoIcon, ColorId::kRed}},
+           {IconType::kWord, IconParams{kFiletypeWordIcon, ColorId::kBlue}}});
   return *icon_type_to_icon_params;
 }
 
-gfx::ImageSkia GetVectorIconFromIconType(IconType icon, bool dark_background) {
+gfx::ImageSkia GetVectorIconFromIconType(IconType icon,
+                                         bool dark_background,
+                                         absl::optional<int> dip_size) {
   const auto& icon_type_to_icon_params = GetIconTypeToIconParamsMap();
   const auto& it = icon_type_to_icon_params.find(icon);
   DCHECK(it != icon_type_to_icon_params.end());
 
   const IconParams& params = it->second;
   const gfx::IconDescription description(
-      params.icon, kIconDipSize,
+      params.icon, dip_size.value_or(kIconDefaultDipSize),
       ResolveColor(params.color_id, dark_background));
 
   return gfx::CreateVectorIcon(description);
@@ -289,9 +275,10 @@ IconType GetIconTypeFromString(const std::string& icon_type_string) {
 }  // namespace internal
 
 gfx::ImageSkia GetIconForPath(const base::FilePath& filepath,
-                              bool dark_background) {
+                              bool dark_background,
+                              absl::optional<int> dip_size) {
   return GetVectorIconFromIconType(internal::GetIconTypeForPath(filepath),
-                                   dark_background);
+                                   dark_background, dip_size);
 }
 
 gfx::ImageSkia GetChipIconForPath(const base::FilePath& filepath,
@@ -300,10 +287,10 @@ gfx::ImageSkia GetChipIconForPath(const base::FilePath& filepath,
     // For a chip icon we need to draw 2 icons: a white circle background icon
     // (kFiletypeChipBackgroundIcon) and the icon of the file.
     return gfx::ImageSkiaOperations::CreateSuperimposedImage(
-        gfx::CreateVectorIcon(chromeos::kFiletypeChipBackgroundIcon,
-                              kIconDipSize, SK_ColorWHITE),
+        gfx::CreateVectorIcon(kFiletypeChipBackgroundIcon, kIconDefaultDipSize,
+                              SK_ColorWHITE),
         GetVectorIconFromIconType(internal::GetIconTypeForPath(filepath),
-                                  /*dark_background=*/false));
+                                  /*dark_background=*/false, absl::nullopt));
   }
 
   return GetIconForPath(filepath, dark_background);
@@ -312,11 +299,11 @@ gfx::ImageSkia GetChipIconForPath(const base::FilePath& filepath,
 gfx::ImageSkia GetIconFromType(const std::string& icon_type,
                                bool dark_background) {
   return GetVectorIconFromIconType(internal::GetIconTypeFromString(icon_type),
-                                   dark_background);
+                                   dark_background, absl::nullopt);
 }
 
 gfx::ImageSkia GetIconFromType(IconType icon_type, bool dark_background) {
-  return GetVectorIconFromIconType(icon_type, dark_background);
+  return GetVectorIconFromIconType(icon_type, dark_background, absl::nullopt);
 }
 
 SkColor GetIconColorForPath(const base::FilePath& filepath,
@@ -329,4 +316,4 @@ SkColor GetIconColorForPath(const base::FilePath& filepath,
   return ResolveColor(it->second.color_id, dark_background);
 }
 
-}  // namespace ash
+}  // namespace chromeos

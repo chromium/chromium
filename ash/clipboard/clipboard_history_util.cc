@@ -8,7 +8,6 @@
 
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/metrics/histogram_macros.h"
-#include "ash/public/cpp/file_icon_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -16,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ui/base/file_icon_util.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -198,8 +198,9 @@ gfx::ImageSkia GetIconForFileClipboardItem(const ClipboardHistoryItem& item,
   if (copied_files_count == 0)
     return gfx::ImageSkia();
   if (copied_files_count == 1) {
-    return GetIconForPath(base::FilePath(file_name),
-                          ash::AshColorProvider::Get()->IsDarkModeEnabled());
+    return chromeos::GetIconForPath(
+        base::FilePath(file_name),
+        ash::AshColorProvider::Get()->IsDarkModeEnabled());
   }
   constexpr std::array<const gfx::VectorIcon*, 9> icons = {
       &kTwoFilesIcon,   &kThreeFilesIcon, &kFourFilesIcon,

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/file_icon_util.h"
+#include "chromeos/ui/base/file_icon_util.h"
 
 #include <string>
 #include <utility>
@@ -14,7 +14,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
+namespace chromeos {
 
 TEST(FileIconUtilTest, GetIconTypeForPath) {
   const std::vector<std::pair<std::string, IconType>> file_path_to_icon_type = {
@@ -31,4 +31,4 @@ TEST(FileIconUtilTest, GetIconTypeForPath) {
   }
 }
 
-}  // namespace ash
+}  // namespace chromeos

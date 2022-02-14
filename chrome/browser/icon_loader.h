@@ -42,20 +42,16 @@ class IconLoader {
   using IconLoadedCallback =
       base::OnceCallback<void(gfx::Image, const IconGroup&)>;
 
-  // Creates an IconLoader, which owns itself. If the IconLoader might outlive
-  // the caller, be sure to use a weak pointer in the |callback|.
-  static IconLoader* Create(const base::FilePath& file_path,
-                            IconSize size,
-                            float scale,
-                            IconLoadedCallback callback);
-
-  IconLoader(const IconLoader&) = delete;
-  IconLoader& operator=(const IconLoader&) = delete;
-
   // Starts the process of reading the icon. When the reading of the icon is
   // complete, the IconLoadedCallback callback will be fulfilled, and the
   // IconLoader will delete itself.
-  void Start();
+  static void LoadIcon(const base::FilePath& file_path,
+                       IconSize size,
+                       float scale,
+                       IconLoadedCallback callback);
+
+  IconLoader(const IconLoader&) = delete;
+  IconLoader& operator=(const IconLoader&) = delete;
 
  private:
   IconLoader(const base::FilePath& file_path,
@@ -65,14 +61,18 @@ class IconLoader {
 
   ~IconLoader();
 
+  void Start();
+
   // Given a file path, get the group for the given file.
   static IconGroup GroupForFilepath(const base::FilePath& file_path);
 
   // The TaskRunner that ReadIcon() must be called on.
   static scoped_refptr<base::TaskRunner> GetReadIconTaskRunner();
 
+#if !BUILDFLAG(IS_CHROMEOS)
   void ReadGroup();
   void ReadIcon();
+#endif
 #if BUILDFLAG(IS_WIN)
   // Reads an icon in a sandboxed service. Use this when the file itself must
   // be parsed.

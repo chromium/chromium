@@ -15,6 +15,8 @@ component("base") {
     "chromeos_ui_constants.h",
     "display_util.cc",
     "display_util.h",
+    "file_icon_util.cc",
+    "file_icon_util.h",
     "tablet_state.cc",
     "tablet_state.h",
     "window_pin_type.cc",
@@ -30,9 +32,25 @@ component("base") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//chromeos/constants",
+    "//chromeos/ui/vector_icons",
     "//skia",
+    "//third_party/abseil-cpp:absl",
     "//ui/base",
     "//ui/display",
+    "//ui/gfx",
     "//ui/gfx/geometry",
   ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":base",
+    "//base",
+    "//base/test:test_support",
+    "//skia",
+    "//testing/gtest",
+  ]
+  sources = [ "file_icon_util_unittest.cc" ]
 }

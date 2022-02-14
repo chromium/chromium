@@ -15,19 +15,11 @@
 using content::BrowserThread;
 
 // static
-IconLoader* IconLoader::Create(const base::FilePath& file_path,
-                               IconSize size,
-                               float scale,
-                               IconLoadedCallback callback) {
-  return new IconLoader(file_path, size, scale, std::move(callback));
-}
-
-void IconLoader::Start() {
-  target_task_runner_ = base::ThreadTaskRunnerHandle::Get();
-
-  base::ThreadPool::PostTask(
-      FROM_HERE, traits(),
-      base::BindOnce(&IconLoader::ReadGroup, base::Unretained(this)));
+void IconLoader::LoadIcon(const base::FilePath& file_path,
+                          IconSize size,
+                          float scale,
+                          IconLoadedCallback callback) {
+  (new IconLoader(file_path, size, scale, std::move(callback)))->Start();
 }
 
 IconLoader::IconLoader(const base::FilePath& file_path,
@@ -42,7 +34,16 @@ IconLoader::IconLoader(const base::FilePath& file_path,
       callback_(std::move(callback)) {
 }
 
-IconLoader::~IconLoader() {}
+IconLoader::~IconLoader() = default;
+
+#if !BUILDFLAG(IS_CHROMEOS)
+void IconLoader::Start() {
+  target_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+
+  base::ThreadPool::PostTask(
+      FROM_HERE, traits(),
+      base::BindOnce(&IconLoader::ReadGroup, base::Unretained(this)));
+}
 
 #if !BUILDFLAG(IS_WIN)
 void IconLoader::ReadGroup() {
@@ -52,3 +53,4 @@ void IconLoader::ReadGroup() {
       FROM_HERE, base::BindOnce(&IconLoader::ReadIcon, base::Unretained(this)));
 }
 #endif  // !BUILDFLAG(IS_WIN)
+#endif  // !BUILDFLAG(IS_CHROMEOS)

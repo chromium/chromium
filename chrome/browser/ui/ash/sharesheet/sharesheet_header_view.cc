@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "ash/public/cpp/ash_typography.h"
-#include "ash/public/cpp/file_icon_util.h"
 #include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
@@ -29,6 +28,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ui/base/file_icon_util.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/url_formatter/elide_url.h"
@@ -467,7 +467,7 @@ void SharesheetHeaderView::ResolveImage(size_t index) {
   image_preview_->GetImageViewAt(index)->SetImage(image->GetImageSkia(size));
 
   ScopedLightModeAsDefault scoped_light_mode_as_default;
-  const auto icon_color = GetIconColorForPath(
+  const auto icon_color = chromeos::GetIconColorForPath(
       file_path, AshColorProvider::Get()->IsDarkModeEnabled());
   image_preview_->SetBackgroundColorForIndex(index, icon_color);
   image_subscription_.push_back(image->AddImageSkiaChangedCallback(

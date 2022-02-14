@@ -25,24 +25,26 @@ void RunCallbackIfNotCanceled(
 
 }  // namespace
 
-IconManager::IconManager() {}
+IconManager::IconManager() = default;
 
-IconManager::~IconManager() {
-}
+IconManager::~IconManager() = default;
 
 gfx::Image* IconManager::LookupIconFromFilepath(const base::FilePath& file_path,
                                                 IconLoader::IconSize size,
                                                 float scale) {
-  auto group_it = group_cache_.find(file_path);
-  if (group_it == group_cache_.end())
-    return nullptr;
+  // Since loading the icon is synchronous on Chrome OS (and doesn't require
+  // disk access), if it hasn't already been loaded, load immediately.
+#if BUILDFLAG(IS_CHROMEOS)
+  gfx::Image* image = DoLookupIconFromFilepath(file_path, size, scale);
+  if (image)
+    return image;
 
-  CacheKey key(group_it->second, size, scale);
-  auto icon_it = icon_cache_.find(key);
-  if (icon_it == icon_cache_.end())
-    return nullptr;
-
-  return &icon_it->second;
+  IconLoader::LoadIcon(
+      file_path, size, scale,
+      base::BindOnce(&IconManager::OnIconLoaded, weak_factory_.GetWeakPtr(),
+                     base::DoNothing(), file_path, size, scale));
+#endif
+  return DoLookupIconFromFilepath(file_path, size, scale);
 }
 
 base::CancelableTaskTracker::TaskId IconManager::LoadIcon(
@@ -57,13 +59,28 @@ base::CancelableTaskTracker::TaskId IconManager::LoadIcon(
   IconRequestCallback callback_runner = base::BindOnce(
       &RunCallbackIfNotCanceled, is_canceled, std::move(callback));
 
-  IconLoader* loader = IconLoader::Create(
+  IconLoader::LoadIcon(
       file_path, size, scale,
       base::BindOnce(&IconManager::OnIconLoaded, weak_factory_.GetWeakPtr(),
                      std::move(callback_runner), file_path, size, scale));
-  loader->Start();
 
   return id;
+}
+
+gfx::Image* IconManager::DoLookupIconFromFilepath(
+    const base::FilePath& file_path,
+    IconLoader::IconSize size,
+    float scale) {
+  auto group_it = group_cache_.find(file_path);
+  if (group_it == group_cache_.end())
+    return nullptr;
+
+  CacheKey key(group_it->second, size, scale);
+  auto icon_it = icon_cache_.find(key);
+  if (icon_it == icon_cache_.end())
+    return nullptr;
+
+  return &icon_it->second;
 }
 
 void IconManager::OnIconLoaded(IconRequestCallback callback,

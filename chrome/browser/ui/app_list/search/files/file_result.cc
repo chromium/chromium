@@ -11,7 +11,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
-#include "ash/public/cpp/file_icon_util.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "base/bind.h"
 #include "base/files/file.h"
@@ -27,6 +26,7 @@
 #include "chrome/browser/ui/app_list/search/search_tags_util.h"
 #include "chrome/browser/ui/ash/thumbnail_loader.h"
 #include "chromeos/components/string_matching/tokenized_string_match.h"
+#include "chromeos/ui/base/file_icon_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
@@ -136,27 +136,27 @@ FileResult::FileResult(const std::string& schema,
   const bool dark_background = ash::features::IsDarkLightModeEnabled() &&
                                ash::ColorProvider::Get()->IsDarkModeEnabled();
   if (display_type == DisplayType::kChip) {
-    SetChipIcon(ash::GetChipIconForPath(filepath, dark_background));
+    SetChipIcon(chromeos::GetChipIconForPath(filepath, dark_background));
   } else if (display_type == DisplayType::kContinue) {
     // For Continue Section, if dark/light mode is disabled, we should use the
     // icon and not the chip icon with a dark background as default.
     const gfx::ImageSkia chip_icon =
         ash::features::IsDarkLightModeEnabled()
-            ? ash::GetChipIconForPath(filepath, dark_background)
-            : ash::GetIconForPath(filepath, /*dark_background=*/true);
+            ? chromeos::GetChipIconForPath(filepath, dark_background)
+            : chromeos::GetIconForPath(filepath, /*dark_background=*/true);
     SetChipIcon(chip_icon);
   } else {
     switch (type) {
       case Type::kFile:
-        SetIcon(IconInfo(ash::GetIconForPath(filepath, dark_background),
+        SetIcon(IconInfo(chromeos::GetIconForPath(filepath, dark_background),
                          kSystemIconDimension));
         break;
       case Type::kDirectory:
-        SetIcon(IconInfo(ash::GetIconFromType("folder", dark_background),
+        SetIcon(IconInfo(chromeos::GetIconFromType("folder", dark_background),
                          kSystemIconDimension));
         break;
       case Type::kSharedDirectory:
-        SetIcon(IconInfo(ash::GetIconFromType("shared", dark_background),
+        SetIcon(IconInfo(chromeos::GetIconFromType("shared", dark_background),
                          kSystemIconDimension));
         break;
     }
