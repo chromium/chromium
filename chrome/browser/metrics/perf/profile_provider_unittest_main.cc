@@ -26,6 +26,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
+#include "ui/aura/env.h"
 
 namespace metrics {
 
@@ -162,6 +163,8 @@ class ProfileProviderRealCollectionTest : public testing::Test {
         "ChromeOSWideProfilingCollection", "group_name");
     ASSERT_TRUE(field_trial_.get());
 
+    // JankMonitor requires aura::Env to be initialized.
+    aura_env_ = aura::Env::CreateInstance();
     profile_provider_ = std::make_unique<TestProfileProvider>();
     profile_provider_->Init();
 
@@ -266,6 +269,7 @@ class ProfileProviderRealCollectionTest : public testing::Test {
   std::atomic_bool spin_cpu_{false};
   base::WaitableEvent spin_cpu_done_;
 
+  std::unique_ptr<aura::Env> aura_env_;
   std::unique_ptr<TestProfileProvider> profile_provider_;
 };
 
