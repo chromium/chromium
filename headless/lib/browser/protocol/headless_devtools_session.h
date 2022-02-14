@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/devtools_manager_delegate.h"
-#include "headless/lib/browser/protocol/forward.h"
 #include "headless/lib/browser/protocol/protocol.h"
 
 namespace headless {
