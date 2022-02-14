@@ -550,4 +550,38 @@ TEST_F(ProtocolUtilsTest, ValidateTriggerConditionsComplexConditions) {
   EXPECT_FALSE(ProtocolUtils::ValidateTriggerCondition(condition));
 }
 
+TEST_F(ProtocolUtilsTest, ParseFromString) {
+  TellProto tell;
+  tell.set_message("test");
+  std::string bytes;
+  tell.SerializeToString(&bytes);
+
+  ActionProto expected;
+  *expected.mutable_tell() = tell;
+
+  EXPECT_THAT(ProtocolUtils::ParseFromString(11, bytes, nullptr),
+              Optional(expected));
+}
+
+TEST_F(ProtocolUtilsTest, ParseFromStringUnknownAction) {
+  EXPECT_THAT(ProtocolUtils::ParseFromString(0, "ignored", nullptr),
+              Optional(ActionProto::default_instance()));
+}
+
+TEST_F(ProtocolUtilsTest, ParseFromStringUnsupportedActionId) {
+  // This case simulates getting an action id that the client doesn't yet
+  // understand.
+  EXPECT_THAT(ProtocolUtils::ParseFromString(9999, "", nullptr),
+              Optional(ActionProto::default_instance()));
+}
+
+TEST_F(ProtocolUtilsTest, ParseFromStringBadActionId) {
+  EXPECT_THAT(ProtocolUtils::ParseFromString(-1, "", nullptr),
+              Optional(ActionProto::default_instance()));
+}
+
+TEST_F(ProtocolUtilsTest, ParseFromStringCannotParse) {
+  ASSERT_FALSE(ProtocolUtils::ParseFromString(11, "\xff\xff\xff", nullptr));
+}
+
 }  // namespace autofill_assistant

@@ -76,6 +76,15 @@ class ProtocolUtils {
   static std::unique_ptr<Action> CreateAction(ActionDelegate* delegate,
                                               const ActionProto& action);
 
+  // Parses an individual action as ActionProto.
+  //
+  // If something goes wrong, returns nullopt. If error_message is non-null, it
+  // is filled with an error message suitable for logging.
+  static absl::optional<ActionProto> ParseFromString(
+      int32_t action_id,
+      const std::string& bytes,
+      std::string* error_message);
+
   // Parse actions from the given |response|, which can be an empty string.
   //
   // Pass in nullptr for |return_global_payload| or |return_script_payload| to
