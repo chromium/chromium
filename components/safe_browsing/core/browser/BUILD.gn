@@ -167,6 +167,7 @@ source_set("safe_browsing_metrics_collector_unittest") {
     "//base/test:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//testing/gtest",
   ]

@@ -70,6 +70,9 @@ extern const base::Feature kDelayedWarnings;
 // warnings feature is enabled.
 extern const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks;
 
+// Enables Enhanced Safe Browsing.
+extern const base::Feature kEnhancedProtection;
+
 // Enables collection of signals related to extension activity and uploads
 // of telemetry reports to SB servers.
 extern const base::Feature kExtensionTelemetry;

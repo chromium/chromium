@@ -47,6 +47,7 @@
 #include "components/payments/core/features.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #include "components/policy/policy_constants.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/security_state/core/features.h"
 #import "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/features.h"
@@ -779,6 +780,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"enable-fullscreen-api", flag_descriptions::kEnableFullscreenAPIName,
      flag_descriptions::kEnableFullscreenAPIDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::features::kEnableFullscreenAPI)},
+    {"enable-enhanced-safe-browsing",
+     flag_descriptions::kEnhancedProtectionName,
+     flag_descriptions::kEnhancedProtectionDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(safe_browsing::kEnhancedProtection)},
     {"context-menu-phase2-screenshot",
      flag_descriptions::kWebViewNativeContextMenuPhase2ScreenshotName,
      flag_descriptions::kWebViewNativeContextMenuPhase2ScreenshotDescription,

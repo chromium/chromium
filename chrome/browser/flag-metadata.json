@@ -1985,6 +1985,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "enable-enhanced-safe-browsing",
+    "owners": [ "ajuma", "joemerramos", "bling-flags@google.com"],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-ephemeral-guest-profiles-on-desktop",
     "owners": [ "rhalavati", "chrome-privacy-core@google.com" ],
     "expiry_milestone": 92

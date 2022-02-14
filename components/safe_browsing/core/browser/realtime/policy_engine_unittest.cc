@@ -4,7 +4,9 @@
 
 #include "components/safe_browsing/core/browser/realtime/policy_engine.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -86,12 +88,24 @@ TEST_F(RealTimePolicyEngineTest, TestCanPerformFullURLLookup_EnabledUserOptin) {
 
 TEST_F(RealTimePolicyEngineTest,
        TestCanPerformFullURLLookup_EnhancedProtection) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnhancedProtection);
   pref_service_.SetBoolean(prefs::kSafeBrowsingEnhanced, true);
   ASSERT_TRUE(CanPerformFullURLLookup(/* is_off_the_record */ false));
 }
 
 TEST_F(RealTimePolicyEngineTest,
+       TestCanPerformFullURLLookup_DisabledEnhancedProtection) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kEnhancedProtection);
+  pref_service_.SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+  ASSERT_FALSE(CanPerformFullURLLookup(/* is_off_the_record */ false));
+}
+
+TEST_F(RealTimePolicyEngineTest,
        TestCanPerformFullURLLookup_RTLookupForEpEnabled_WithTokenDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnhancedProtection);
   pref_service_.SetBoolean(prefs::kSafeBrowsingEnhanced, true);
   EXPECT_TRUE(CanPerformFullURLLookup(/* is_off_the_record */ false));
   EXPECT_TRUE(CanPerformFullURLLookupWithToken(
@@ -126,6 +140,8 @@ TEST_F(
 TEST_F(
     RealTimePolicyEngineTest,
     TestCanPerformFullURLLookupWithToken_ClientControlledWithEnhancedProtection) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnhancedProtection);
   // Enhanced protection is disabled: token fetches should be disallowed whether
   // or not they are configured in the client.
   EXPECT_FALSE(CanPerformFullURLLookupWithToken(

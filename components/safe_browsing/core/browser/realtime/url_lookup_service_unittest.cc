@@ -996,6 +996,8 @@ TEST_F(RealTimeUrlLookupServiceTest,
 TEST_F(RealTimeUrlLookupServiceTest,
        TestReferrerChain_NotSanitizedIfSubresourceAllowed) {
   EnableMbb();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kEnhancedProtection);
   // Subresource is allowed when enhanced protection is enabled.
   SetSafeBrowsingState(&test_pref_service_,
                        SafeBrowsingState::ENHANCED_PROTECTION);

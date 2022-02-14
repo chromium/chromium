@@ -242,6 +242,10 @@ const char kEnableWebChannelsDescription[] =
     "Enable folowing content from web and display Following feed on NTP based "
     "on web channels that users followed.";
 
+const char kEnhancedProtectionName[] = "Enable Enhanced Safe Browsing";
+const char kEnhancedProtectionDescription[] =
+    "Allows users to opt-in to Enhanced Safe Browsing";
+
 const char kExpandedTabStripName[] = "Enable expanded tabstrip";
 const char kExpandedTabStripDescription[] =
     "Enables the new expanded tabstrip. Activated by swiping down the tabstrip"

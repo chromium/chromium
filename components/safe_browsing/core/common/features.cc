@@ -75,6 +75,15 @@ const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks{
     &kDelayedWarnings, "mouse",
     /*default_value=*/false};
 
+const base::Feature kEnhancedProtection {
+  "SafeBrowsingEnhancedProtection",
+#if BUILDFLAG(IS_IOS)
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
+
 const base::Feature kExtensionTelemetry{"SafeBrowsingExtensionTelemetry",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -164,6 +173,7 @@ constexpr struct {
     {&kClientSideDetectionModelVersion, true},
     {&kClientSideDetectionReferrerChain, true},
     {&kDelayedWarnings, true},
+    {&kEnhancedProtection, true},
     {&kExtensionTelemetry, true},
     {&kFileTypePoliciesTag, true},
     {&kOmitNonUserGesturesFromReferrerChain, true},
