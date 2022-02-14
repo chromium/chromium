@@ -258,10 +258,8 @@ void ServiceWorkerContextWrapper::InitInternal(
       std::move(non_network_pending_loader_factory_bundle_for_update_check),
       core_observer_list_.get(), this);
 
-  if (storage_partition_) {
-    context()->registry()->GetRegisteredStorageKeys(base::BindOnce(
-        &ServiceWorkerContextWrapper::DidGetRegisteredStorageKeys, this));
-  }
+  context()->registry()->GetRegisteredStorageKeys(base::BindOnce(
+      &ServiceWorkerContextWrapper::DidGetRegisteredStorageKeys, this));
 }
 
 void ServiceWorkerContextWrapper::Shutdown() {
