@@ -1034,6 +1034,8 @@ TEST_F(FilePathTest, MatchesExtension) {
     {{FPL("foo.txt"), FPL(".txt")}, true},
     {{FPL("foo.txt.dll"), FPL(".txt")}, false},
     {{FPL("foo.txt.dll"), FPL(".dll")}, true},
+    {{FPL("foo.tar.gz"), FPL(".gz")}, false},
+    {{FPL("foo.tar.lzma"), FPL(".tar.lzma")}, true},
     {{FPL("foo.TXT"), FPL(".txt")}, true},
     {{FPL("foo.txt"), FPL(".TXT")}, true},
     {{FPL("foo.tXt"), FPL(".txt")}, true},
@@ -1066,6 +1068,55 @@ TEST_F(FilePathTest, MatchesExtension) {
 
     EXPECT_EQ(cases[i].expected, path.MatchesExtension(ext)) <<
         "i: " << i << ", path: " << path.value() << ", ext: " << ext;
+  }
+}
+
+TEST_F(FilePathTest, MatchesFinalExtension) {
+  const struct BinaryBooleanTestData cases[] = {
+    {{FPL("foo"), FPL("")}, true},
+    {{FPL("foo"), FPL(".")}, false},
+    {{FPL("foo."), FPL("")}, false},
+    {{FPL("foo."), FPL(".")}, true},
+    {{FPL("foo.txt"), FPL(".dll")}, false},
+    {{FPL("foo.txt"), FPL(".txt")}, true},
+    {{FPL("foo.txt.dll"), FPL(".txt")}, false},
+    {{FPL("foo.txt.dll"), FPL(".dll")}, true},
+    {{FPL("foo.tar.gz"), FPL(".gz")}, true},
+    {{FPL("foo.tar.lzma"), FPL(".lzma")}, true},
+    {{FPL("foo.tar.lzma"), FPL(".tar.lzma")}, false},
+    {{FPL("foo.tlzma"), FPL(".tlzma")}, true},
+    {{FPL("foo.TXT"), FPL(".txt")}, true},
+    {{FPL("foo.txt"), FPL(".TXT")}, true},
+    {{FPL("foo.tXt"), FPL(".txt")}, true},
+    {{FPL("foo.txt"), FPL(".tXt")}, true},
+    {{FPL("foo.tXt"), FPL(".TXT")}, true},
+    {{FPL("foo.tXt"), FPL(".tXt")}, true},
+#if defined(FILE_PATH_USES_DRIVE_LETTERS)
+    {{FPL("c:/foo.txt.dll"), FPL(".txt")}, false},
+    {{FPL("c:/foo.txt"), FPL(".txt")}, true},
+#endif  // FILE_PATH_USES_DRIVE_LETTERS
+#if defined(FILE_PATH_USES_WIN_SEPARATORS)
+    {{FPL("c:\\bar\\foo.txt.dll"), FPL(".txt")}, false},
+    {{FPL("c:\\bar\\foo.txt"), FPL(".txt")}, true},
+#endif  // FILE_PATH_USES_DRIVE_LETTERS
+    {{FPL("/bar/foo.txt.dll"), FPL(".txt")}, false},
+    {{FPL("/bar/foo.txt"), FPL(".txt")}, true},
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
+    // Umlauts A, O, U: direct comparison, and upper case vs. lower case
+    {{FPL("foo.\u00E4\u00F6\u00FC"), FPL(".\u00E4\u00F6\u00FC")}, true},
+    {{FPL("foo.\u00C4\u00D6\u00DC"), FPL(".\u00E4\u00F6\u00FC")}, true},
+    // C with circumflex: direct comparison, and upper case vs. lower case
+    {{FPL("foo.\u0109"), FPL(".\u0109")}, true},
+    {{FPL("foo.\u0108"), FPL(".\u0109")}, true},
+#endif
+  };
+
+  for (size_t i = 0; i < base::size(cases); ++i) {
+    FilePath path(cases[i].inputs[0]);
+    FilePath::StringType ext(cases[i].inputs[1]);
+
+    EXPECT_EQ(cases[i].expected, path.MatchesFinalExtension(ext))
+        << "i: " << i << ", path: " << path.value() << ", ext: " << ext;
   }
 }
 

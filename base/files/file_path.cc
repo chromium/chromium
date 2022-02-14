@@ -46,8 +46,8 @@ using StringPieceType = FilePath::StringPieceType;
 
 namespace {
 
-const char* const kCommonDoubleExtensionSuffixes[] = {"gz", "xz", "bz2", "z",
-                                                      "bz"};
+const char* const kCommonDoubleExtensionSuffixes[] = {"gz", "xz", "bz2",
+                                                      "z",  "bz", "lzma"};
 const char* const kCommonDoubleExtensions[] = { "user.js" };
 
 const FilePath::CharType kStringTerminator = FILE_PATH_LITERAL('\0');
@@ -499,6 +499,17 @@ bool FilePath::MatchesExtension(StringPieceType extension) const {
     return false;
 
   return FilePath::CompareEqualIgnoreCase(extension, current_extension);
+}
+
+bool FilePath::MatchesFinalExtension(StringPieceType extension) const {
+  DCHECK(extension.empty() || extension[0] == kExtensionSeparator);
+
+  StringType current_final_extension = FinalExtension();
+
+  if (current_final_extension.length() != extension.length())
+    return false;
+
+  return FilePath::CompareEqualIgnoreCase(extension, current_final_extension);
 }
 
 FilePath FilePath::Append(StringPieceType component) const {

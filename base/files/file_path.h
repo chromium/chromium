@@ -329,9 +329,13 @@ class BASE_EXPORT FilePath {
   // Returns "" if BaseName() == "." or "..".
   [[nodiscard]] FilePath ReplaceExtension(StringPieceType extension) const;
 
-  // Returns true if the file path matches the specified extension. The test is
+  // Returns true if file path's Extension() matches `extension`. The test is
   // case insensitive. Don't forget the leading period if appropriate.
   bool MatchesExtension(StringPieceType extension) const;
+
+  // Returns true if file path's FinalExtension() matches `extension`. The
+  // test is case insensitive. Don't forget the leading period if appropriate.
+  bool MatchesFinalExtension(StringPieceType extension) const;
 
   // Returns a FilePath by appending a separator and the supplied path
   // component to this object's path.  Append takes care to avoid adding

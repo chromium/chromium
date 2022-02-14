@@ -299,14 +299,15 @@ void PostProcessFoundTasks(
   //
   // If kFilesArchivemount is enabled but kFilesArchivemount2 is disabled then
   // more extensions are allowed, including ".7z" and uncompressed tar (".tar")
-  // but not compressed tar (".tar.bz2", ".tar.gz" and ".tar.xz") or compressed
-  // general files (".bz2", ".gz" and ".xz").
+  // but not compressed tar (".tar.bz", ".tar.bz2", ".tar.gz", ".tar.lzma",
+  // ".tar.xz", ".tbz", ".tbz2", ".tgz", ".tlzma", and ".txz") or compressed
+  // general files (".bz2", ".gz", ".lzma", and ".xz").
   //
   // If both are enabled then everything listed in manifest.json is allowed.
   //
-  // TODO(nigeltao): some time after M98, remove these feature flags (scheduled
-  // to expire in M112) by hard-coding them to true, so that these if-blocks
-  // are never taken and can be deleted.
+  // TODO(crbug.com/1295892): some time after M98, remove these feature flags
+  // (scheduled to expire in M112) by hard-coding them to true, so that these
+  // if-blocks are never taken and can be deleted.
   if (!base::FeatureList::IsEnabled(ash::features::kFilesArchivemount)) {
     for (const auto& entry : entries) {
       // Allow-list: .rar and .zip.
@@ -320,12 +321,16 @@ void PostProcessFoundTasks(
                  ash::features::kFilesArchivemount2)) {
     for (const auto& entry : entries) {
       // Deny-list: various compressed formats.
-      if (entry.path.MatchesExtension(".bz2") ||
-          entry.path.MatchesExtension(".gz") ||
-          entry.path.MatchesExtension(".xz") ||
-          entry.path.MatchesExtension(".tar.bz2") ||
-          entry.path.MatchesExtension(".tar.gz") ||
-          entry.path.MatchesExtension(".tar.xz")) {
+      if (entry.path.MatchesFinalExtension(".bz") ||
+          entry.path.MatchesFinalExtension(".bz2") ||
+          entry.path.MatchesFinalExtension(".gz") ||
+          entry.path.MatchesFinalExtension(".lzma") ||
+          entry.path.MatchesFinalExtension(".xz") ||
+          entry.path.MatchesFinalExtension(".tbz") ||
+          entry.path.MatchesFinalExtension(".tbz2") ||
+          entry.path.MatchesFinalExtension(".tgz") ||
+          entry.path.MatchesFinalExtension(".tlzma") ||
+          entry.path.MatchesFinalExtension(".txz")) {
         disabled_actions.emplace("mount-archive");
         break;
       }
