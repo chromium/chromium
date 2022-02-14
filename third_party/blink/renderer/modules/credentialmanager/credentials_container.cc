@@ -227,7 +227,8 @@ bool CheckSecurityRequirementsBeforeRequest(
             "document. Permissions Policy may be used to delegate Web "
             "Authentication capabilities to cross-origin child frames."));
         return false;
-      } else {
+      } else if (!IsSameOriginWithAncestors(
+                     resolver->DomWindow()->GetFrame())) {
         UseCounter::Count(
             resolver->GetExecutionContext(),
             WebFeature::kCredentialManagerCrossOriginPublicKeyGetRequest);
