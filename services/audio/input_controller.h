@@ -38,6 +38,7 @@ class UserInputMonitor;
 
 namespace audio {
 class AudioProcessorHandler;
+class AudioCallback;
 class OutputTapper;
 class DeviceOutputListener;
 class InputStreamActivityMonitor;
@@ -253,6 +254,11 @@ class InputController final : public StreamMonitor {
   // Called once at first audio callback.
   void ReportIsAlive();
 
+  // Receives new input data on the hw callback thread.
+  void DeliverDataToSyncWriter(const media::AudioBus* source,
+                               base::TimeTicks capture_time,
+                               double volume);
+
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   // Called from the constructor. Helper to isolate logic setting up audio
   // processing components.
@@ -263,8 +269,9 @@ class InputController final : public StreamMonitor {
 
   static StreamType ParamsToStreamType(const media::AudioParameters& params);
 
-  // This class must be used on the audio manager thread.
-  THREAD_CHECKER(owning_thread_);
+  // The task runner for the audio manager. All control methods should be called
+  // via tasks run by this TaskRunner.
+  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // Contains the InputController::EventHandler which receives state
   // notifications from this class.
@@ -320,7 +327,6 @@ class InputController final : public StreamMonitor {
   bool is_muted_ = false;
   base::RepeatingTimer check_muted_state_timer_;
 
-  class AudioCallback;
   // Holds a pointer to the callback object that receives audio data from
   // the lower audio layer. Valid only while 'recording' (between calls to
   // stream_->Start() and stream_->Stop()).
@@ -338,7 +344,8 @@ class InputController final : public StreamMonitor {
   // error notification to keep the InputController alive for as long as
   // the error notification is pending and then make a callback from an
   // InputController that has already been closed.
-  // All outstanding weak pointers, are invalidated at the end of DoClose.
+  // All outstanding weak pointers are invalidated at the end of Close().
+  base::WeakPtr<InputController> weak_this_;
   base::WeakPtrFactory<InputController> weak_ptr_factory_{this};
 };
 
