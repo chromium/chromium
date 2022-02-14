@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Hit-testing with inert iframe</title>
+<link rel="author" title="Oriol Brufau" href="mailto:obrufau@igalia.com">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#inert">
+<meta assert="assert" content="Contents of an inert iframe can't be reached by hit-testing">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+
+<div id="wrapper" style="width: min-content">
+  <iframe id="iframe" inert></iframe>
+</div>
+
+<script>
+const iframe = document.getElementById("iframe");
+let iframeDoc;
+let target;
+
+promise_setup(async () => {
+  await new Promise(resolve => {
+    iframe.addEventListener("load", resolve, {once: true});
+    iframe.srcdoc = `
+      <style>#target { position: fixed; inset: 0 }</style>
+      <a id="target" href="#">target</a>
+    `;
+  });
+  iframeDoc = iframe.contentDocument;
+  target = iframeDoc.getElementById("target");
+  target.addEventListener("click", e => {
+    e.preventDefault();
+  });
+});
+
+promise_test(async function() {
+  let reachedTarget = false;
+  target.addEventListener("mousedown", () => {
+    reachedTarget = true;
+  }, { once: true });
+
+  let reachedWrapper = false;
+  wrapper.addEventListener("mousedown", () => {
+    reachedWrapper = true;
+  }, { once: true });
+
+  await new test_driver.Actions()
+     .pointerMove(0, 0, { origin: wrapper })
+     .pointerDown()
+     .send();
+  this.add_cleanup(() => test_driver.click(document.body));
+
+  assert_false(target.matches(":focus"), "target is not focused");
+  assert_false(target.matches(":active"), "target is not active");
+  assert_false(target.matches(":hover"), "target is not hovered");
+  assert_false(reachedTarget, "target didn't get event");
+
+  assert_true(wrapper.matches(":hover"), "wrapper is hovered");
+  assert_true(reachedWrapper, "wrapper got event");
+}, "Hit-testing doesn't reach contents of an inert iframe");
+
+promise_test(async function() {
+  iframe.inert = false;
+
+  let reachedTarget = false;
+  target.addEventListener("mousedown", () => {
+    reachedTarget = true;
+  }, { once: true });
+
+  let reachedWrapper = false;
+  wrapper.addEventListener("mousedown", () => {
+    reachedWrapper = true;
+  }, { once: true });
+
+  await new test_driver.Actions()
+     .pointerMove(0, 0, { origin: wrapper })
+     .pointerDown()
+     .send();
+  this.add_cleanup(() => test_driver.click(document.body));
+
+  assert_true(target.matches(":focus"), "target is focused");
+  assert_true(target.matches(":active"), "target is active");
+  assert_true(target.matches(":hover"), "target is hovered");
+  assert_true(reachedTarget, "target got event");
+
+  assert_true(wrapper.matches(":hover"), "wrapper is hovered");
+  assert_false(reachedWrapper, "wrapper didn't get event");
+}, "Hit-testing can reach contents of a no longer inert iframe");
+</script>

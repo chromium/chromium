@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Tabbing with inert iframe</title>
+<link rel="author" title="Oriol Brufau" href="mailto:obrufau@igalia.com">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#inert">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#sequential-focus-navigation">
+<meta assert="assert" content="Contents of an inert iframe can't be focused by tabbing">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<div id="start" tabindex="0">start</div>
+<div id="inert" inert>
+  <iframe id="iframe"></iframe>
+</div>
+<div id="end" tabindex="0">start</a>
+
+<script>
+const tabKey = "\uE004";
+const start = document.getElementById("start");
+const inert = document.getElementById("inert");
+const end = document.getElementById("end");
+const iframe = document.getElementById("iframe");
+let iframeDoc;
+let target;
+
+promise_setup(async () => {
+  await new Promise(resolve => {
+    iframe.addEventListener("load", resolve, { once: true });
+    iframe.srcdoc = `<div id="target" tabindex="0">target</div>`;
+  });
+  iframeDoc = iframe.contentDocument;
+  target = iframeDoc.getElementById("target");
+});
+
+promise_test(async function() {
+  start.focus();
+  assert_equals(document.activeElement, start, "start got focus");
+  assert_false(iframeDoc.hasFocus(), "iframeDoc doesn't have focus");
+
+  await test_driver.send_keys(document.activeElement, tabKey);
+  assert_equals(document.activeElement, end, "end got focus");
+  assert_false(iframeDoc.hasFocus(), "iframeDoc still doesn't have focus");
+}, "Sequential navigation skips contents of inert iframe");
+
+promise_test(async function() {
+  start.focus();
+  assert_equals(document.activeElement, start, "start got focus");
+  assert_false(iframeDoc.hasFocus(), "iframeDoc doesn't have focus");
+
+  inert.inert = false;
+
+  await test_driver.send_keys(document.activeElement, tabKey);
+  assert_equals(document.activeElement, iframe, "iframe got focus");
+  assert_true(iframeDoc.hasFocus(), "iframeDoc has focus");
+
+  // The document element is also focusable in Firefox.
+  if (iframeDoc.activeElement === iframeDoc.documentElement) {
+    await test_driver.send_keys(document.activeElement, tabKey);
+    assert_equals(document.activeElement, iframe, "iframe got focus");
+    assert_true(iframeDoc.hasFocus(), "iframeDoc has focus");
+  }
+  assert_equals(iframeDoc.activeElement, target, "target got focus");
+}, "Sequential navigation can pick contents of a no longer inert iframe");
+</script>
