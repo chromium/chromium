@@ -877,7 +877,8 @@ public class MediaNotificationController {
     /**
      * Compute the actions to be shown in CompactView media notification.
      *
-     * The method assumes PLAY and PAUSE cannot coexist.
+     * The method assumes PLAY and PAUSE cannot coexist. This method also assumes that it is only
+     * called when at least play or pause is supported.
      *
      * Actions in pairs are preferred if there are more actions than |COMPACT_VIEW_ACTIONS_COUNT|.
      */
@@ -895,18 +896,14 @@ public class MediaNotificationController {
             return actionsArray;
         }
 
-        if (actions.contains(MediaSessionAction.STOP)) {
-            List<Integer> compactActions = new ArrayList<>();
-            if (actions.contains(MediaSessionAction.PLAY)) {
-                compactActions.add(actions.indexOf(MediaSessionAction.PLAY));
-            }
-            compactActions.add(actions.indexOf(MediaSessionAction.STOP));
-            return CollectionUtil.integerListToIntArray(compactActions);
-        }
+        // The rest of this method is broken if |COMPACT_VIEW_ACTIONS_COUNT| changes from 3.
+        assert COMPACT_VIEW_ACTIONS_COUNT == 3;
 
-        int[] actionsArray = new int[COMPACT_VIEW_ACTIONS_COUNT];
+        // If we have both PREVIOUS_TRACK and NEXT_TRACK, then show those with PLAY or PAUSE in the
+        // middle.
         if (actions.contains(MediaSessionAction.PREVIOUS_TRACK)
                 && actions.contains(MediaSessionAction.NEXT_TRACK)) {
+            int[] actionsArray = new int[COMPACT_VIEW_ACTIONS_COUNT];
             actionsArray[0] = actions.indexOf(MediaSessionAction.PREVIOUS_TRACK);
             if (actions.contains(MediaSessionAction.PLAY)) {
                 actionsArray[1] = actions.indexOf(MediaSessionAction.PLAY);
@@ -917,17 +914,33 @@ public class MediaNotificationController {
             return actionsArray;
         }
 
-        assert actions.contains(MediaSessionAction.SEEK_BACKWARD)
-                && actions.contains(MediaSessionAction.SEEK_FORWARD);
-        actionsArray[0] = actions.indexOf(MediaSessionAction.SEEK_BACKWARD);
-        if (actions.contains(MediaSessionAction.PLAY)) {
-            actionsArray[1] = actions.indexOf(MediaSessionAction.PLAY);
-        } else {
-            actionsArray[1] = actions.indexOf(MediaSessionAction.PAUSE);
+        // If we have both SEEK_FORWARD and SEEK_BACKWARD, then show those with PLAY or PAUSE in the
+        // middle.
+        if (actions.contains(MediaSessionAction.SEEK_BACKWARD)
+                && actions.contains(MediaSessionAction.SEEK_FORWARD)) {
+            int[] actionsArray = new int[COMPACT_VIEW_ACTIONS_COUNT];
+            actionsArray[0] = actions.indexOf(MediaSessionAction.SEEK_BACKWARD);
+            if (actions.contains(MediaSessionAction.PLAY)) {
+                actionsArray[1] = actions.indexOf(MediaSessionAction.PLAY);
+            } else {
+                actionsArray[1] = actions.indexOf(MediaSessionAction.PAUSE);
+            }
+            actionsArray[2] = actions.indexOf(MediaSessionAction.SEEK_FORWARD);
+            return actionsArray;
         }
-        actionsArray[2] = actions.indexOf(MediaSessionAction.SEEK_FORWARD);
 
-        return actionsArray;
+        // Only show STOP with PLAY and not with PAUSE.
+        List<Integer> compactActions = new ArrayList<>();
+        if (actions.contains(MediaSessionAction.PAUSE)) {
+            compactActions.add(actions.indexOf(MediaSessionAction.PAUSE));
+        } else {
+            compactActions.add(actions.indexOf(MediaSessionAction.PLAY));
+            if (actions.contains(MediaSessionAction.STOP)) {
+                compactActions.add(actions.indexOf(MediaSessionAction.STOP));
+            }
+        }
+
+        return CollectionUtil.integerListToIntArray(compactActions);
     }
 
     private static Context getContext() {
