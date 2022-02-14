@@ -73,5 +73,8 @@
 </div>
 <template is="dom-if"
     if="[[isFastPairToggleVisible_(isFastPairSupportedByDevice_)]]">
-  <settings-fast-pair-toggle prefs="{{prefs}}"></settings-fast-pair-toggle>
+  <settings-fast-pair-toggle prefs="{{prefs}}"
+      id="enableFastPairToggle"
+      deep-link-focus-id$="[[Setting.kFastPairOnOff]]">
+  </settings-fast-pair-toggle>
 </template>

@@ -75,7 +75,10 @@ class SettingsBluetoothDevicesSubpageElement extends
        */
       supportedSettingIds: {
         type: Object,
-        value: () => new Set([chromeos.settings.mojom.Setting.kBluetoothOnOff]),
+        value: () => new Set([
+          chromeos.settings.mojom.Setting.kBluetoothOnOff,
+          chromeos.settings.mojom.Setting.kFastPairOnOff
+        ]),
       },
 
       /**

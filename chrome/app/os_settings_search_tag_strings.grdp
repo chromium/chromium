@@ -217,6 +217,18 @@
   <message name="IDS_OS_SETTINGS_TAG_BLUETOOTH_TURN_ON_ALT1" desc="Text for search result item which, when clicked, navigates the user to Bluetooth settings, with a toggle to turn on Bluetooth. Alternate phrase for: 'Turn on Bluetooth'">
     Enable Bluetooth
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_FAST_PAIR_TURN_ON" desc="Text for search result item which, when clicked, navigates the user to Bluetooth settings, with a toggle to turn on Fast Pair. Alternate phrase for: 'Enable Fast Pair'">
+    Turn on Fast Pair
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_FAST_PAIR_TURN_ON_ALT1" desc="Text for search result item which, when clicked, navigates the user to Bluetooth settings, with a toggle to turn on Fast Pair. Alternate phrase for: 'Turn on Fast Pair'">
+    Enable Fast Pair
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_FAST_PAIR_TURN_OFF" desc="Text for search result item which, when clicked, navigates the user to Bluetooth settings, with a toggle to turn off Fast Pair. Alternate phrase for: 'Disable Fast Pair'">
+    Turn off Fast Pair
+  </message>
+ <message name="IDS_OS_SETTINGS_TAG_FAST_PAIR_TURN_OFF_ALT1" desc="Text for search result item which, when clicked, navigates the user to Bluetooth settings, with a toggle to turn off Fast Pair. Alternate phrase for: 'Turn off Fast Pair'">
+    Disable Fast Pair
+  </message>
 
   <!-- MultiDevice section. -->
   <message name="IDS_OS_SETTINGS_TAG_MULTIDEVICE" desc="Text for search result item which, when clicked, navigates the user to multi-device settings (connects Android phone to Chromebook). Alternate phrase for: 'Phone'">

@@ -189,8 +189,11 @@ var OSSettingsOsBluetoothDevicesSubpageV3Test =
   /** @override */
   get featureList() {
     return {
-      enabled:
-          super.featureList.enabled.concat(['ash::features::kBluetoothRevamp'])
+      enabled: super.featureList.enabled.concat([
+        'ash::features::kBluetoothRevamp',
+        'ash::features::kFastPair',
+        'ash::features::kFastPairSoftwareScanning',
+      ])
     };
   }
 };

@@ -304,4 +304,22 @@ suite('OsBluetoothDevicesSubpageTest', function() {
         deepLinkElement, getDeepActiveElement(),
         'On startup enable/disable Bluetooth toggle should be focused for settingId=100.');
   });
+
+  // TODO(b/215724676): Re-enable this test once the suite is migrated to
+  // interactive UI tests. Focus is currently flaky in browser tests.
+  test.skip('Deep link to enable/disable Fast pair toggle button', async () => {
+    Polymer.dom.flush();
+    const params = new URLSearchParams;
+    params.append('settingId', '105');
+    init(params);
+
+    const fastPairToggle = bluetoothDevicesSubpage.shadowRoot.querySelector(
+        '#enableFastPairToggle');
+    const innerToggle = fastPairToggle.shadowRoot.querySelector('#toggle');
+    const deepLinkElement = innerToggle.shadowRoot.querySelector('#control');
+    await test_util.waitAfterNextRender(bluetoothDevicesSubpage);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Enable Fast Pair toggle should be focused for settingId=105.');
+  });
 });

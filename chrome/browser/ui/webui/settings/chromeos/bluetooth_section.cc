@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/bluetooth_section.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -19,6 +20,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -122,11 +125,41 @@ const std::vector<SearchConcept>& GetBluetoothPairedSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetFastPairOffSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_FAST_PAIR_TURN_ON,
+       mojom::kBluetoothDevicesSubpagePath,
+       mojom::SearchResultIcon::kBluetooth,
+       mojom::SearchResultDefaultRank::kLow,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kFastPairOnOff},
+       {IDS_OS_SETTINGS_TAG_FAST_PAIR_TURN_ON_ALT1, SearchConcept::kAltTagEnd}},
+  });
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetFastPairOnSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_FAST_PAIR_TURN_OFF,
+       mojom::kBluetoothDevicesSubpagePath,
+       mojom::SearchResultIcon::kBluetooth,
+       mojom::SearchResultDefaultRank::kLow,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kFastPairOnOff},
+       {IDS_OS_SETTINGS_TAG_FAST_PAIR_TURN_OFF_ALT1,
+        SearchConcept::kAltTagEnd}},
+  });
+  return *tags;
+}
+
 }  // namespace
 
 BluetoothSection::BluetoothSection(Profile* profile,
-                                   SearchTagRegistry* search_tag_registry)
-    : OsSettingsSection(profile, search_tag_registry) {
+                                   SearchTagRegistry* search_tag_registry,
+                                   PrefService* pref_service)
+    : OsSettingsSection(profile, search_tag_registry),
+      pref_service_(pref_service),
+      pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
   bool is_initialized = false;
   if (base::FeatureList::IsEnabled(floss::features::kFlossEnabled)) {
     is_initialized = floss::FlossDBusManager::IsInitialized();
@@ -139,6 +172,15 @@ BluetoothSection::BluetoothSection(Profile* profile,
     device::BluetoothAdapterFactory::Get()->GetAdapter(
         base::BindOnce(&BluetoothSection::OnFetchBluetoothAdapter,
                        weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  if (chromeos::features::IsBluetoothRevampEnabled() &&
+      ash::features::IsFastPairEnabled()) {
+    pref_change_registrar_->Init(pref_service_);
+    pref_change_registrar_->Add(
+        ash::prefs::kFastPairEnabled,
+        base::BindRepeating(&BluetoothSection::OnFastPairEnabledChanged,
+                            base::Unretained(this)));
   }
 }
 
@@ -358,10 +400,8 @@ void BluetoothSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                                      mojom::SearchResultDefaultRank::kMedium,
                                      mojom::kBluetoothDevicesSubpagePath);
   static constexpr mojom::Setting kBluetoothDevicesSettings[] = {
-      mojom::Setting::kBluetoothOnOff,
-      mojom::Setting::kBluetoothPairDevice,
-      mojom::Setting::kBluetoothUnpairDevice,
-  };
+      mojom::Setting::kBluetoothOnOff, mojom::Setting::kBluetoothPairDevice,
+      mojom::Setting::kBluetoothUnpairDevice, mojom::Setting::kFastPairOnOff};
   static constexpr mojom::Setting kBluetoothDevicesSettingsLegacy[] = {
       mojom::Setting::kBluetoothConnectToDevice,
       mojom::Setting::kBluetoothDisconnectFromDevice,
@@ -413,6 +453,10 @@ void BluetoothSection::OnFetchBluetoothAdapter(
   UpdateSearchTags();
 }
 
+void BluetoothSection::OnFastPairEnabledChanged() {
+  UpdateSearchTags();
+}
+
 void BluetoothSection::UpdateSearchTags() {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
@@ -420,6 +464,8 @@ void BluetoothSection::UpdateSearchTags() {
   updater.RemoveSearchTags(GetBluetoothSearchConcepts());
   updater.RemoveSearchTags(GetBluetoothOnSearchConcepts());
   updater.RemoveSearchTags(GetBluetoothOffSearchConcepts());
+  updater.RemoveSearchTags(GetFastPairOnSearchConcepts());
+  updater.RemoveSearchTags(GetFastPairOffSearchConcepts());
   updater.RemoveSearchTags(GetBluetoothConnectableSearchConcepts());
   updater.RemoveSearchTags(GetBluetoothConnectedSearchConcepts());
   updater.RemoveSearchTags(GetBluetoothPairableSearchConcepts());
@@ -430,14 +476,21 @@ void BluetoothSection::UpdateSearchTags() {
 
   updater.AddSearchTags(GetBluetoothSearchConcepts());
 
+  if (ash::features::IsFastPairEnabled() &&
+      ash::features::IsBluetoothRevampEnabled()) {
+    if (pref_service_->GetBoolean(ash::prefs::kFastPairEnabled)) {
+      updater.AddSearchTags(GetFastPairOnSearchConcepts());
+    } else {
+      updater.AddSearchTags(GetFastPairOffSearchConcepts());
+    }
+  }
+
   if (!bluetooth_adapter_->IsPowered()) {
     updater.AddSearchTags(GetBluetoothOffSearchConcepts());
     return;
   }
 
   updater.AddSearchTags(GetBluetoothOnSearchConcepts());
-
-  // TODO(crbug/1257312): Add Fast Pair search concepts.
 
   // Always include the option to pair devices, but skip any device-specific
   // search options since we have no way to determine which device the user is

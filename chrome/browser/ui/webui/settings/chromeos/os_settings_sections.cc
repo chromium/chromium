@@ -53,8 +53,8 @@ OsSettingsSections::OsSettingsSections(
   sections_map_[mojom::Section::kNetwork] = internet_section.get();
   sections_.push_back(std::move(internet_section));
 
-  auto bluetooth_section =
-      std::make_unique<BluetoothSection>(profile, search_tag_registry);
+  auto bluetooth_section = std::make_unique<BluetoothSection>(
+      profile, search_tag_registry, profile->GetPrefs());
   sections_map_[mojom::Section::kBluetooth] = bluetooth_section.get();
   sections_.push_back(std::move(bluetooth_section));
 
