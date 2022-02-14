@@ -16,6 +16,7 @@
 #include "ash/components/login/auth/key.h"
 #include "ash/components/login/session/session_termination_manager.h"
 #include "ash/components/settings/cros_settings_names.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen.h"
@@ -920,16 +921,18 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
 
   // If the hibernate service is supported, call it to initiate resume.
 #if BUILDFLAG(ENABLE_HIBERNATE)
-  HibermanClient::Get()->WaitForServiceToBeAvailable(
-      base::BindOnce(&ExistingUserController::OnHibernateServiceAvailable,
-                     weak_factory_.GetWeakPtr(),
-                     user_context));
+  if (features::IsHibernateEnabled()) {
+    HibermanClient::Get()->WaitForServiceToBeAvailable(
+        base::BindOnce(&ExistingUserController::OnHibernateServiceAvailable,
+                       weak_factory_.GetWeakPtr(),
+                       user_context));
 
-#else
-  // The hibernate service is not supported, just continue directly.
-  ContinueAuthSuccessAfterResumeAttempt(user_context, true);
+    return;
+  }
 #endif
 
+  // The hibernate service is not supported, just continue directly.
+  ContinueAuthSuccessAfterResumeAttempt(user_context, true);
   return;
 }
 

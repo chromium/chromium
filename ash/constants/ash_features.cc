@@ -713,6 +713,9 @@ const base::Feature kHelpAppDiscoverTabNotificationAllChannels{
 const base::Feature kHelpAppLauncherSearch{"HelpAppLauncherSearch",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable Chrome OS hibernation features.
+const base::Feature kHibernate{"Hibernate", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables the flag to synchronize launcher item colors. It is
 // in effect only when kLauncherAppSort is enabled.
 const base::Feature kLauncherItemColorSync{"LauncherItemColorSync",
@@ -1608,6 +1611,10 @@ bool IsGaiaReauthEndpointEnabled() {
 
 bool IsGuestOsFilesEnabled() {
   return base::FeatureList::IsEnabled(kGuestOsFiles);
+}
+
+bool IsHibernateEnabled() {
+  return base::FeatureList::IsEnabled(kHibernate);
 }
 
 bool IsHideArcMediaNotificationsEnabled() {

@@ -279,6 +279,8 @@ extern const base::Feature kHelpAppLauncherSearch;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHelpAppSearchServiceIntegration;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kHibernate;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHiddenNetworkWarning;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kHideArcMediaNotifications;
@@ -582,6 +584,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFullscreenAfterUnlockAllowed();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFullscreenAlertBubbleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGaiaCloseViewMessageEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGaiaReauthEndpointEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHibernateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHideArcMediaNotificationsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHideShelfControlsInTabletModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
