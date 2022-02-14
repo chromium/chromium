@@ -63,6 +63,13 @@ try_.builder(
 )
 
 try_.builder(
+    name = "win11-blink-rel",
+    goma_backend = goma.backend.RBE_PROD,
+    os = os.WINDOWS_ANY,
+    builderless = True,
+)
+
+try_.builder(
     name = "win7-blink-rel",
     goma_backend = goma.backend.RBE_PROD,
     os = os.WINDOWS_ANY,
