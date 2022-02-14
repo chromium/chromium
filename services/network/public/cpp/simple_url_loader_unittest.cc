@@ -51,6 +51,7 @@
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
+#include "services/network/public/cpp/simple_url_loader_throttle.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -3763,6 +3764,101 @@ TEST_P(SimpleURLLoaderTest, DeleteInDownloadProgressCallback2) {
   test_helper->simple_url_loader()->SetOnDownloadProgressCallback(callback);
   test_helper->StartSimpleLoader(url_loader_factory_.get());
   run_loop.Run();
+}
+
+namespace {
+
+class FakeSimpleURLLoaderThrottleDelegate
+    : public SimpleURLLoaderThrottle::Delegate {
+ public:
+  FakeSimpleURLLoaderThrottleDelegate() = default;
+  ~FakeSimpleURLLoaderThrottleDelegate() override = default;
+
+  bool ShouldThrottle() override { return true; }
+};
+
+}  // namespace
+
+TEST_P(SimpleURLLoaderTest, BatchingSuccess) {
+  std::unique_ptr<network::ResourceRequest> resource_request =
+      std::make_unique<network::ResourceRequest>();
+  resource_request->url = test_server_.GetURL("/echoheader?foo");
+  resource_request->headers.SetHeader("foo", kExpectedResponse);
+  std::unique_ptr<SimpleLoaderTestHelper> test_helper =
+      CreateHelper(std::move(resource_request));
+
+  test_helper->simple_url_loader()->SetAllowBatching();
+  SimpleURLLoaderThrottle* throttle =
+      test_helper->simple_url_loader()->GetThrottleForTesting();
+  throttle->SetDelegateForTesting(
+      std::make_unique<FakeSimpleURLLoaderThrottleDelegate>());
+
+  test_helper->StartSimpleLoader(url_loader_factory_.get());
+
+  throttle->OnReadyToStart();
+  test_helper->Wait();
+
+  EXPECT_EQ(net::OK, test_helper->simple_url_loader()->NetError());
+  EXPECT_EQ(200, test_helper->GetResponseCode());
+  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+    EXPECT_TRUE(test_helper->simple_url_loader()->CompletionStatus());
+    EXPECT_EQ(kExpectedResponse, *test_helper->response_body());
+  }
+}
+
+TEST_P(SimpleURLLoaderTest, BatchingURLLoaderDisconnected) {
+  std::unique_ptr<network::ResourceRequest> resource_request =
+      std::make_unique<network::ResourceRequest>();
+  resource_request->url = test_server_.GetURL("/echoheader?foo");
+  resource_request->headers.SetHeader("foo", kExpectedResponse);
+  std::unique_ptr<SimpleLoaderTestHelper> test_helper =
+      CreateHelper(std::move(resource_request));
+
+  test_helper->simple_url_loader()->SetAllowBatching();
+  SimpleURLLoaderThrottle* throttle =
+      test_helper->simple_url_loader()->GetThrottleForTesting();
+  throttle->SetDelegateForTesting(
+      std::make_unique<FakeSimpleURLLoaderThrottleDelegate>());
+
+  test_helper->StartSimpleLoader(url_loader_factory_.get());
+
+  // Destroy the NetworkContext to disconnect the URLLoaderFactory.
+  network_context_.reset();
+  base::RunLoop().RunUntilIdle();
+
+  throttle->OnReadyToStart();
+  test_helper->Wait();
+
+  EXPECT_EQ(net::ERR_FAILED, test_helper->simple_url_loader()->NetError());
+  EXPECT_FALSE(test_helper->simple_url_loader()->CompletionStatus());
+  EXPECT_FALSE(test_helper->simple_url_loader()->ResponseInfo());
+}
+
+TEST_P(SimpleURLLoaderTest, BatchingTimeout) {
+  constexpr base::TimeDelta kTimeout = base::Microseconds(1);
+
+  std::unique_ptr<network::ResourceRequest> resource_request =
+      std::make_unique<network::ResourceRequest>();
+  resource_request->url = test_server_.GetURL("/echoheader?foo");
+  resource_request->headers.SetHeader("foo", kExpectedResponse);
+  std::unique_ptr<SimpleLoaderTestHelper> test_helper =
+      CreateHelper(std::move(resource_request));
+
+  test_helper->simple_url_loader()->SetAllowBatching();
+  SimpleURLLoaderThrottle* throttle =
+      test_helper->simple_url_loader()->GetThrottleForTesting();
+  throttle->SetDelegateForTesting(
+      std::make_unique<FakeSimpleURLLoaderThrottleDelegate>());
+  throttle->SetTimeoutForTesting(kTimeout);
+
+  test_helper->StartSimpleLoaderAndWait(url_loader_factory_.get());
+
+  EXPECT_EQ(net::OK, test_helper->simple_url_loader()->NetError());
+  EXPECT_EQ(200, test_helper->GetResponseCode());
+  if (GetParam() != SimpleLoaderTestHelper::DownloadType::HEADERS_ONLY) {
+    EXPECT_TRUE(test_helper->simple_url_loader()->CompletionStatus());
+    EXPECT_EQ(kExpectedResponse, *test_helper->response_body());
+  }
 }
 
 }  // namespace

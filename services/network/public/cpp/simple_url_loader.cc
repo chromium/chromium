@@ -40,6 +40,7 @@
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
+#include "services/network/public/cpp/simple_url_loader_throttle.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -240,6 +241,7 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
   void SetURLLoaderFactoryOptions(uint32_t options) override;
   void SetRequestID(int32_t request_id) override;
   void SetTimeoutDuration(base::TimeDelta timeout_duration) override;
+  void SetAllowBatching() override;
 
   int NetError() const override;
   const mojom::URLResponseHead* ResponseInfo() const override;
@@ -249,6 +251,7 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
   bool LoadedFromCache() const override;
   int64_t GetContentSize() const override;
   int GetNumRetries() const override;
+  SimpleURLLoaderThrottle* GetThrottleForTesting() override;  // IN-TEST
 
   // Called by BodyHandler when the BodyHandler body handler is done. If |error|
   // is not net::OK, some error occurred reading or consuming the body. If it is
@@ -301,6 +304,8 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
   // Prepares internal state to start a request, and then calls StartRequest().
   // Only used for the initial request (Not retries).
   void Start(mojom::URLLoaderFactory* url_loader_factory);
+
+  void OnReadyToStart();
 
   // Starts a request. Used for both the initial request and retries, if any.
   void StartRequest(mojom::URLLoaderFactory* url_loader_factory);
@@ -388,6 +393,8 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
   // How long |timeout_timer_| should wait before timing out a request. A value
   // of zero means do not set a timeout.
   base::TimeDelta timeout_duration_ = base::TimeDelta();
+
+  std::unique_ptr<SimpleURLLoaderThrottle> throttle_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -1404,6 +1411,12 @@ void SimpleURLLoaderImpl::SetTimeoutDuration(base::TimeDelta timeout_duration) {
   timeout_duration_ = timeout_duration;
 }
 
+void SimpleURLLoaderImpl::SetAllowBatching() {
+  // Check if a request has not yet been started.
+  DCHECK(!body_handler_);
+  throttle_ = std::make_unique<SimpleURLLoaderThrottle>();
+}
+
 int SimpleURLLoaderImpl::NetError() const {
   // Should only be called once the request is complete.
   DCHECK(request_state_->finished);
@@ -1431,6 +1444,10 @@ int64_t SimpleURLLoaderImpl::GetContentSize() const {
 
 int SimpleURLLoaderImpl::GetNumRetries() const {
   return num_retries_;
+}
+
+SimpleURLLoaderThrottle* SimpleURLLoaderImpl::GetThrottleForTesting() {
+  return throttle_.get();
 }
 
 const mojom::URLResponseHead* SimpleURLLoaderImpl::ResponseInfo() const {
@@ -1534,8 +1551,8 @@ void SimpleURLLoaderImpl::Start(mojom::URLLoaderFactory* url_loader_factory) {
   DCHECK(!url_loader_);
   DCHECK(!request_state_->body_started);
 
-  // If retries are enabled, stash the information needed to retry a request.
-  if (remaining_retries_ > 0) {
+  // Stash the information if retries are enabled or the request can be batched.
+  if (remaining_retries_ > 0 || throttle_) {
     // Clone the URLLoaderFactory, to avoid any dependencies on its lifetime.
     // Results in an easier to use API, with no shutdown ordering requirements,
     // at the cost of some resources.
@@ -1543,7 +1560,19 @@ void SimpleURLLoaderImpl::Start(mojom::URLLoaderFactory* url_loader_factory) {
         url_loader_factory_remote_.BindNewPipeAndPassReceiver());
   }
 
+  if (throttle_) {
+    throttle_->NotifyWhenReady(base::BindOnce(
+        &SimpleURLLoaderImpl::OnReadyToStart, weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
   StartRequest(url_loader_factory);
+}
+
+void SimpleURLLoaderImpl::OnReadyToStart() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(url_loader_factory_remote_);
+  StartRequest(url_loader_factory_remote_.get());
 }
 
 void SimpleURLLoaderImpl::StartRequest(
