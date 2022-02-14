@@ -724,24 +724,6 @@ static void AdjustEffectiveTouchAction(ComputedStyle& style,
   }
 }
 
-static void AdjustStateForContentVisibility(ComputedStyle& style,
-                                            Element* element) {
-  if (!element)
-    return;
-  auto* context = element->GetDisplayLockContext();
-  // The common case for most elements is that we don't have a context and have
-  // the default (visible) content-visibility value.
-  if (LIKELY(!context &&
-             style.ContentVisibility() == EContentVisibility::kVisible)) {
-    return;
-  }
-
-  if (!context)
-    context = &element->EnsureDisplayLockContext();
-  context->SetRequestedState(style.ContentVisibility());
-  context->AdjustElementStyle(&style);
-}
-
 static void AdjustStyleForInert(ComputedStyle& style, Element* element) {
   if (!element || style.IsForcedInert())
     return;
@@ -860,8 +842,6 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
   } else {
     AdjustStyleForFirstLetter(style);
   }
-
-  AdjustStateForContentVisibility(style, element);
 
   // Make sure our z-index value is only applied if the object is positioned.
   if (style.GetPosition() == EPosition::kStatic &&

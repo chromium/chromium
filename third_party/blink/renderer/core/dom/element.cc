@@ -2914,6 +2914,17 @@ scoped_refptr<ComputedStyle> Element::StyleForLayoutObject(
       this == GetDocument().documentElement(), IsInTopLayer(),
       IsA<SVGForeignObjectElement>(*this));
 
+  auto* context = GetDisplayLockContext();
+  // The common case for most elements is that we don't have a context and have
+  // the default (visible) content-visibility value.
+  if (UNLIKELY(context ||
+               style->ContentVisibility() != EContentVisibility::kVisible)) {
+    if (!context)
+      context = &EnsureDisplayLockContext();
+    context->SetRequestedState(style->ContentVisibility());
+    context->AdjustElementStyle(style.get());
+  }
+
   return style;
 }
 
