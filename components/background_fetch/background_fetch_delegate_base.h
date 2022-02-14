@@ -59,7 +59,7 @@ class BackgroundFetchDelegateBase : public content::BackgroundFetchDelegate {
 
   // Abort all ongoing downloads and fail the fetch. Currently only used when
   // the bytes downloaded exceed the total download size, if specified.
-  void FailFetch(const std::string& job_id);
+  void FailFetch(const std::string& job_id, const std::string& download_guid);
 
   void OnDownloadStarted(
       const std::string& guid,

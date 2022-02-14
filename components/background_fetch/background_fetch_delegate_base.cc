@@ -171,8 +171,11 @@ void BackgroundFetchDelegateBase::CancelDownload(std::string job_id) {
   Abort(job_id);
 
   if (auto client = GetClient(job_id)) {
+    // The |download_guid| is not releavnt here as the job has already
+    // been aborted and is assumed to have been removed.
     client->OnJobCancelled(
-        job_id, blink::mojom::BackgroundFetchFailureReason::CANCELLED_FROM_UI);
+        job_id, "" /* download_guid */,
+        blink::mojom::BackgroundFetchFailureReason::CANCELLED_FROM_UI);
   }
 }
 
@@ -242,14 +245,15 @@ void BackgroundFetchDelegateBase::MarkJobComplete(const std::string& job_id) {
   job_details->current_fetch_guids.clear();
 }
 
-void BackgroundFetchDelegateBase::FailFetch(const std::string& job_id) {
+void BackgroundFetchDelegateBase::FailFetch(const std::string& job_id,
+                                            const std::string& download_guid) {
   // Save a copy before Abort() deletes the reference.
   const std::string unique_id = job_id;
   Abort(job_id);
 
   if (auto client = GetClient(unique_id)) {
     client->OnJobCancelled(
-        unique_id,
+        download_guid, unique_id,
         blink::mojom::BackgroundFetchFailureReason::DOWNLOAD_TOTAL_EXCEEDED);
   }
 }
@@ -301,7 +305,7 @@ void BackgroundFetchDelegateBase::OnDownloadUpdated(
     // We only do this if total download size is specified. If not specified,
     // this check is skipped. This is to allow for situations when the
     // total download size cannot be known when invoking fetch.
-    FailFetch(job_id);
+    FailFetch(job_id, download_guid);
     return;
   }
   DoUpdateUi(job_id);
