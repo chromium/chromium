@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -48,6 +49,10 @@ bool ShouldAutoDisplayUi(
   }
 
   const GURL& url = navigation_handle->GetURL();
+
+  // Disable Auto-display when the Intent Chip is enabled.
+  if (base::FeatureList::IsEnabled(features::kLinkCapturingUiUpdate))
+    return false;
 
   if (apps_for_picker.empty())
     return false;

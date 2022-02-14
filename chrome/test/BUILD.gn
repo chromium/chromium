@@ -2157,9 +2157,9 @@ if (!is_android) {
       sources += [ "../browser/net/reporting_browsertest.cc" ]
     }
 
-    # crbug.com/1230268 These tests need to be fixed for Lacros.
     if (!is_chromeos_lacros) {
       sources += [
+        # crbug.com/1230268 These tests need to be fixed for Lacros.
         "../browser/enterprise/connectors/analysis/content_analysis_delegate_browsertest.cc",
         "../browser/enterprise/connectors/file_system/browsertest_helper.cc",
         "../browser/enterprise/connectors/file_system/browsertest_helper.h",
@@ -2173,6 +2173,9 @@ if (!is_android) {
 
         # Lacros does not seem to have any actual WebView-based UI to test.
         "../browser/ui/webui/webui_webview_browsertest.cc",
+
+        # This test is run as part of lacros_chrome_browsertests below.
+        "../browser/ui/views/location_bar/intent_chip_button_browsertest.cc",
       ]
     }
 
@@ -4107,7 +4110,6 @@ if (!is_android) {
 
     if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
       sources += [
-        "../browser/ui/views/location_bar/intent_chip_button_browsertest.cc",
         "../browser/ui/views/profiles/profile_picker_view_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest_mac_win_linux.cc",
         "../browser/ui/views/web_apps/web_app_url_handler_intent_picker_dialog_browsertest.cc",

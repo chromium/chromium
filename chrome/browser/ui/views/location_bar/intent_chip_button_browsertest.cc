@@ -161,8 +161,12 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ClickLinkAndWait(web_contents, in_scope_url, LinkTarget::SELF, "");
+  base::RunLoop().RunUntilIdle();
 
+  // The Intent Chip should appear, but the intent picker bubble should not
+  // appear automatically.
   EXPECT_TRUE(GetIntentChip()->GetVisible());
+  EXPECT_FALSE(IntentPickerBubbleView::intent_picker_bubble());
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "IntentPickerBubbleView");
