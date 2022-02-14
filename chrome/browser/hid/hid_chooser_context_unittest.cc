@@ -164,6 +164,13 @@ class HidChooserContextTestBase {
     return ConnectDeviceBlocking(CreateDevice(kTestSerialNumber));
   }
 
+  device::mojom::HidDeviceInfoPtr ConnectFidoDeviceBlocking() {
+    auto device = CreateDevice(/*serial_number=*/"");
+    device->collections[0]->usage->usage_page = device::mojom::kPageFido;
+    device->collections[0]->usage->usage = 1;
+    return ConnectDeviceBlocking(std::move(device));
+  }
+
   device::mojom::HidDeviceInfoPtr ConnectDeviceBlocking(
       device::mojom::HidDeviceInfoPtr device) {
     base::test::TestFuture<device::mojom::HidDeviceInfoPtr> future_device;
@@ -1140,6 +1147,73 @@ TEST_P(HidChooserContextAffiliatedTest, BlocklistOverridesPolicy) {
   EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
   EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
   EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+}
+
+TEST_F(HidChooserContextTest, FidoAllowlistOverridesBlocklistFidoRule) {
+  const auto kFidoAllowedOrigin = url::Origin::Create(
+      GURL("chrome-extension://ckcendljdlmgnhghiaomidhiiclmapok"));
+  const auto kOtherOrigin = url::Origin::Create(GURL("https://other.origin"));
+
+  // Connect a FIDO device. It should be blocked by the blocklist because it
+  // has a top-level collection with a usage from the FIDO usage page.
+  auto device = ConnectFidoDeviceBlocking();
+  EXPECT_FALSE(context()->HasDevicePermission(kFidoAllowedOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kOtherOrigin, *device));
+
+  // Granting permission to the privileged origin succeeds.
+  GrantDevicePermissionBlocking(kFidoAllowedOrigin, *device);
+  EXPECT_TRUE(context()->HasDevicePermission(kFidoAllowedOrigin, *device));
+
+  // Granting permission to the non-privileged origin fails.
+  GrantDevicePermissionBlocking(kOtherOrigin, *device);
+  EXPECT_FALSE(context()->HasDevicePermission(kOtherOrigin, *device));
+}
+
+TEST_F(HidChooserContextTest, FidoAllowlistOverridesBlocklistDeviceIdRule) {
+  const auto kFidoAllowedOrigin = url::Origin::Create(
+      GURL("chrome-extension://ckcendljdlmgnhghiaomidhiiclmapok"));
+  const auto kOtherOrigin = url::Origin::Create(GURL("https://other.origin"));
+
+  // Connect a FIDO device.
+  auto device = ConnectFidoDeviceBlocking();
+
+  // Configure the blocklist to deny access to devices with kTestVendorId and
+  // kTestProductId.
+  SetDynamicBlocklist("1234:abcd::::");
+
+  // Check that the FIDO device is still blocked. Now it is blocked both for
+  // being FIDO and also for matching the device ID rule.
+  EXPECT_FALSE(context()->HasDevicePermission(kFidoAllowedOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kOtherOrigin, *device));
+
+  // Granting permission to the privileged origin succeeds.
+  GrantDevicePermissionBlocking(kFidoAllowedOrigin, *device);
+  EXPECT_TRUE(context()->HasDevicePermission(kFidoAllowedOrigin, *device));
+
+  // Granting permission to the non-privileged origin fails.
+  GrantDevicePermissionBlocking(kOtherOrigin, *device);
+  EXPECT_FALSE(context()->HasDevicePermission(kOtherOrigin, *device));
+}
+
+TEST_P(HidChooserContextAffiliatedTest, FidoAllowlistAndPolicy) {
+  const auto kFidoAndPolicyAllowedOrigin = url::Origin::Create(
+      GURL("chrome-extension://ckcendljdlmgnhghiaomidhiiclmapok"));
+  const auto kOtherOrigin = url::Origin::Create(GURL("https://other.origin"));
+
+  SetAllowDevicesWithHidUsagesForUrlsPolicy(R"(
+      [
+        {
+          "usages": [{ "usage_page": 61904 }],
+          "urls": [ "chrome-extension://ckcendljdlmgnhghiaomidhiiclmapok" ]
+        }
+      ])");
+
+  // Connect a device matching the first policy rule. If the policy could be set
+  // then the policy-granted origin should already have permission.
+  auto device = ConnectFidoDeviceBlocking();
+  EXPECT_EQ(is_affiliated(), context()->HasDevicePermission(
+                                 kFidoAndPolicyAllowedOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kOtherOrigin, *device));
 }
 
 // Boolean parameter means if user is affiliated on the device. Affiliated

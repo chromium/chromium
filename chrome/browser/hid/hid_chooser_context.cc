@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
@@ -24,6 +25,7 @@
 #include "content/public/browser/device_service.h"
 #include "extensions/buildflags/buildflags.h"
 #include "services/device/public/cpp/hid/hid_blocklist.h"
+#include "services/device/public/cpp/hid/hid_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -451,8 +453,19 @@ void HidChooserContext::RevokeEphemeralDevicePermission(
 bool HidChooserContext::HasDevicePermission(
     const url::Origin& origin,
     const device::mojom::HidDeviceInfo& device) {
-  if (device::HidBlocklist::IsDeviceExcluded(device))
+  const bool has_fido_collection =
+      base::Contains(device.collections, device::mojom::kPageFido,
+                     [](const auto& c) { return c->usage->usage_page; });
+  if (has_fido_collection) {
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kDisableHidBlocklist) &&
+        !IsFidoAllowedForOrigin(origin)) {
+      // Exclude `device` if it is FIDO and FIDO is not allowed for `origin`.
+      return false;
+    }
+  } else if (device::HidBlocklist::IsDeviceExcluded(device)) {
     return false;
+  }
 
   if (CanApplyPolicy() &&
       g_browser_process->hid_policy_allowed_devices()->HasDevicePermission(
