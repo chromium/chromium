@@ -114,15 +114,11 @@ presubmit_builder(
     description_html = "checks that builder configs in properties files match the recipe-side configs",
     executable = "recipe:chromium/builder_config_verifier",
     properties = {
-        "properties_file_globs": [
-            "infra/config/generated/builders/*/*/properties.textpb",
-        ],
+        "builder_config_directory": "infra/config/generated/builders",
     },
-    # TODO(crbug.com/1288604) Add to the CQ once the recipe is ready
-    tryjob = None,
-    # tryjob = try_.job(
-    #     location_regexp = [r".+/[+]infra/config/generated/builders"],
-    # ),
+    tryjob = try_.job(
+        location_regexp = [r".+/[+]/infra/config/generated/builders"],
+    ),
 )
 
 presubmit_builder(
