@@ -119,7 +119,7 @@ TEST_F(WebCryptoAesCbcTest, KnownAnswerEncryptDecrypt) {
       continue;
 
     // Test encryption.
-    if (test->HasKey("plain_text")) {
+    if (test->FindKey("plain_text")) {
       std::vector<uint8_t> test_plain_text =
           GetBytesFromHexString(test, "plain_text");
 
@@ -142,7 +142,7 @@ TEST_F(WebCryptoAesCbcTest, KnownAnswerEncryptDecrypt) {
     }
 
     // Test decryption.
-    if (test->HasKey("cipher_text")) {
+    if (test->FindKey("cipher_text")) {
       std::vector<uint8_t> test_cipher_text =
           GetBytesFromHexString(test, "cipher_text");
 
