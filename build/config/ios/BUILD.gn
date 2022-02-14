@@ -243,17 +243,22 @@ config("disable_implicit_retain_self_warning") {
 }
 
 config("xctest_config") {
-  # Use -iframework for XCTest.framework so that the compiler will treat it as a
-  # system framework and ignore warnings in XCTest framework headers.
+  # Add some directories to the system framework search path to make
+  # them available to the compiler while silencing warnings in the
+  # framework headers. This is required for XCTest.
   common_flags = [
     "-iframework",
     rebase_path("$ios_sdk_platform_path/Developer/Library/Frameworks",
                 root_build_dir),
+    "-iframework",
+    rebase_path("$ios_sdk_path/Developer/Library/Frameworks", root_build_dir),
   ]
   cflags = common_flags
   ldflags = common_flags
   swiftflags = common_flags
 
+  include_dirs = [ "$ios_sdk_platform_path/Developer/usr/lib" ]
+  lib_dirs = [ "$ios_sdk_platform_path/Developer/usr/lib" ]
   frameworks = [
     "Foundation.framework",
     "XCTest.framework",
