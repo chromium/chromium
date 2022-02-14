@@ -34,6 +34,10 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/trace_util.h"
 
+#if BUILDFLAG(ENABLE_VULKAN)
+#include "gpu/command_buffer/service/shared_image_backing_factory_angle_vulkan.h"
+#endif
+
 #if BUILDFLAG(IS_LINUX) && defined(USE_OZONE) && BUILDFLAG(ENABLE_VULKAN)
 #include "ui/ozone/public/ozone_platform.h"
 #endif
@@ -41,7 +45,6 @@
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_WIN)) && \
     BUILDFLAG(ENABLE_VULKAN)
 #include "gpu/command_buffer/service/external_vk_image_factory.h"
-#include "gpu/command_buffer/service/shared_image_backing_factory_angle_vulkan.h"
 #elif BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_VULKAN)
 #include "gpu/command_buffer/service/external_vk_image_factory.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory_ahardwarebuffer.h"
@@ -200,25 +203,30 @@ SharedImageFactory::SharedImageFactory(
   // |gr_context_type|.
   if (gr_context_type_ == GrContextType::kVulkan) {
 #if BUILDFLAG(ENABLE_VULKAN)
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
-    !BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(IS_CHROMECAST)
-    // Desktop Linux, not ChromeOS.
-    if (base::FeatureList::IsEnabled(features::kVulkanFromANGLE)) {
+    bool is_vulkan_from_angle =
+        base::FeatureList::IsEnabled(features::kVulkanFromANGLE);
+    // If Chrome and ANGLE are sharing the same vulkan device queue, AngleVulkan
+    // backing will be used for interop.
+    if (is_vulkan_from_angle) {
       auto factory = std::make_unique<SharedImageBackingFactoryAngleVulkan>(
           gpu_preferences, workarounds, gpu_feature_info, context_state);
       factories_.push_back(std::move(factory));
-    } else if (ShouldUseExternalVulkanImageFactory()) {
-      auto external_vk_image_factory =
-          std::make_unique<ExternalVkImageFactory>(context_state);
-      factories_.push_back(std::move(external_vk_image_factory));
+    }
+
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMECAST)
+    // Desktop Linux, not ChromeOS.
+    if (ShouldUseExternalVulkanImageFactory()) {
+      auto factory = std::make_unique<ExternalVkImageFactory>(context_state);
+      factories_.push_back(std::move(factory));
     } else {
       LOG(ERROR) << "ERROR: gr_context_type_ is GrContextType::kVulkan and "
                     "interop_backing_factory_ is not set";
     }
 #elif BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_WIN)
-    auto external_vk_image_factory =
-        std::make_unique<ExternalVkImageFactory>(context_state);
-    factories_.push_back(std::move(external_vk_image_factory));
+    {
+      auto factory = std::make_unique<ExternalVkImageFactory>(context_state);
+      factories_.push_back(std::move(factory));
+    }
 #elif BUILDFLAG(IS_ANDROID)
     const auto& enabled_extensions = context_state->vk_context_provider()
                                          ->GetDeviceQueue()
@@ -230,11 +238,12 @@ SharedImageFactory::SharedImageFactory(
           workarounds, gpu_feature_info);
       factories_.push_back(std::move(ahb_factory));
     }
-    // For Android
-    auto external_vk_image_factory =
-        std::make_unique<ExternalVkImageFactory>(context_state);
-    factories_.push_back(std::move(external_vk_image_factory));
-#endif  // BUILDFLAG(IS_ANDROID)
+
+    if (!is_vulkan_from_angle) {
+      auto factory = std::make_unique<ExternalVkImageFactory>(context_state);
+      factories_.push_back(std::move(factory));
+    }
+#endif
 #else   // BUILDFLAG(ENABLE_VULKAN)
     // Others (ChromeOS is handled below for compat with WebGPU)
     LOG(ERROR) << "ERROR: gr_context_type_ is GrContextType::kVulkan and "
