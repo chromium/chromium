@@ -373,7 +373,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"OriginPolicy", features::kOriginPolicy},
           {"OriginIsolationHeader", features::kOriginIsolationHeader},
           {"Parakeet", blink::features::kParakeet},
-          {"PartitionedCookies", net::features::kPartitionedCookies},
           {"PrefersColorSchemeClientHintHeader",
            blink::features::kPrefersColorSchemeClientHintHeader},
           {"FirstPartySets", features::kFirstPartySets},

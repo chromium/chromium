@@ -1740,10 +1740,9 @@
     {
       name: "PartitionedCookies",
       origin_trial_feature_name: "PartitionedCookies",
-      // No status because this blink runtime feature doesn't work by itself.
-      // It's controlled by the corresponding Chromium feature,
-      // net::features::kPartitionedCookies, which needs to be enabled to make
-      // the whole feature work.
+      status: "experimental",
+      origin_trial_feature_name: "PartitionedCookies",
+      origin_trial_allows_third_party: true,
     },
     // This is to add an option to enable the Reveal button on password inputs while waiting ::reveal gets standardized.
     {
