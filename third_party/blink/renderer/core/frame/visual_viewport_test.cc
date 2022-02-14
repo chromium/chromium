@@ -2800,5 +2800,32 @@ TEST_P(VisualViewportTest, ScrollbarGeometryOnSizeChange) {
   EXPECT_EQ(gfx::Size(7, 113), vertical_scrollbar->bounds());
 }
 
+TEST_F(VisualViewportSimTest, PreferredOverlayScrollbarColorTheme) {
+  ColorSchemeHelper color_scheme_helper(*(WebView().GetPage()));
+  color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kDark);
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+          <!DOCTYPE html>
+          <meta name="color-scheme" content="light dark">
+          <style>
+            html { height: 2000px; }
+          </style>
+      )HTML");
+  Compositor().BeginFrame();
+
+  const VisualViewport& visual_viewport =
+      WebView().GetPage()->GetVisualViewport();
+  EXPECT_EQ(ScrollbarOverlayColorTheme::kScrollbarOverlayColorThemeLight,
+            visual_viewport.GetScrollbarOverlayColorTheme());
+
+  color_scheme_helper.SetPreferredColorScheme(
+      mojom::blink::PreferredColorScheme::kLight);
+  Compositor().BeginFrame();
+  EXPECT_EQ(ScrollbarOverlayColorTheme::kScrollbarOverlayColorThemeDark,
+            visual_viewport.GetScrollbarOverlayColorTheme());
+}
+
 }  // namespace
 }  // namespace blink

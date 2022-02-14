@@ -366,7 +366,7 @@ SpatialNavigationController& Page::GetSpatialNavigationController() {
 }
 
 void Page::PlatformColorsChanged() {
-  for (const Page* page : AllPages())
+  for (const Page* page : AllPages()) {
     for (Frame* frame = page->MainFrame(); frame;
          frame = frame->Tree().TraverseNext()) {
       if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
@@ -375,6 +375,7 @@ void Page::PlatformColorsChanged() {
           view->InvalidatePaintForViewAndDescendants();
       }
     }
+  }
 }
 
 void Page::ColorSchemeChanged() {

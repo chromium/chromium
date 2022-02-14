@@ -1163,4 +1163,9 @@ void VisualViewport::Paint(GraphicsContext& context) const {
   }
 }
 
+void VisualViewport::UsedColorSchemeChanged() {
+  // The scrollbar overlay color theme depends on the used color scheme.
+  RecalculateScrollbarOverlayColorTheme();
+}
+
 }  // namespace blink

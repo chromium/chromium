@@ -279,6 +279,8 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
 
   void Paint(GraphicsContext&) const;
 
+  void UsedColorSchemeChanged();
+
  private:
   bool DidSetScaleOrLocation(float scale,
                              bool is_pinch_gesture_active,

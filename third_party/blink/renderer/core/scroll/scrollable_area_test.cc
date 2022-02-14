@@ -155,23 +155,6 @@ TEST_P(ScrollableAreaTest, InvalidatesNonCompositedScrollbarsWhenThumbMoves) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 }
 
-TEST_P(ScrollableAreaTest, RecalculatesScrollbarOverlayIfBackgroundChanges) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
-
-  MockScrollableArea* scrollable_area =
-      MockScrollableArea::Create(ScrollOffset(0, 100));
-
-  EXPECT_EQ(kScrollbarOverlayColorThemeDark,
-            scrollable_area->GetScrollbarOverlayColorTheme());
-  scrollable_area->RecalculateScrollbarOverlayColorTheme(Color(34, 85, 51));
-  EXPECT_EQ(kScrollbarOverlayColorThemeLight,
-            scrollable_area->GetScrollbarOverlayColorTheme());
-  scrollable_area->RecalculateScrollbarOverlayColorTheme(Color(236, 143, 185));
-  EXPECT_EQ(kScrollbarOverlayColorThemeDark,
-            scrollable_area->GetScrollbarOverlayColorTheme());
-}
-
 TEST_P(ScrollableAreaTest, ScrollableAreaDidScroll) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform;

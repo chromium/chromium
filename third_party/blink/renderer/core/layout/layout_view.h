@@ -362,6 +362,9 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   TrackedDescendantsMap& SvgTextDescendantsMap();
 
+ protected:
+  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+
  private:
   bool CanHaveChildren() const override;
 

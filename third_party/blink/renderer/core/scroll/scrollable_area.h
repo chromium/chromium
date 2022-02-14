@@ -57,7 +57,6 @@ class Layer;
 
 namespace blink {
 class ChromeClient;
-class Color;
 class CompositorAnimationTimeline;
 class Document;
 class LayoutBox;
@@ -223,7 +222,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // overflow:overlay might be deprecated soon.
   bool HasOverlayScrollbars() const;
   void SetScrollbarOverlayColorTheme(ScrollbarOverlayColorTheme);
-  void RecalculateScrollbarOverlayColorTheme(const Color& background_color);
+  void RecalculateScrollbarOverlayColorTheme();
   ScrollbarOverlayColorTheme GetScrollbarOverlayColorTheme() const {
     return static_cast<ScrollbarOverlayColorTheme>(
         scrollbar_overlay_color_theme_);

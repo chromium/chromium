@@ -1223,21 +1223,9 @@ void PaintLayerScrollableArea::UpdateAfterStyleChange(
 
   UpdateResizerStyle(old_style);
 
-  // Whenever background changes on the scrollable element, the scroll bar
-  // overlay style might need to be changed to have contrast against the
-  // background.
-  // Skip the need scrollbar check, because we dont know do we need a scrollbar
-  // when this method get called.
-  Color old_background;
-  if (old_style) {
-    old_background =
-        old_style->VisitedDependentColor(GetCSSPropertyBackgroundColor());
-  }
-  Color new_background = GetLayoutBox()->StyleRef().VisitedDependentColor(
-      GetCSSPropertyBackgroundColor());
-
-  if (new_background != old_background)
-    RecalculateScrollbarOverlayColorTheme(new_background);
+  // The scrollbar overlay color theme depends on styles such as the background
+  // color and the used color scheme.
+  RecalculateScrollbarOverlayColorTheme();
 
   if (NeedsScrollbarReconstruction()) {
     RemoveScrollbarsForReconstruction();
