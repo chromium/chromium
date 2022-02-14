@@ -174,7 +174,7 @@ builder.
 * [builder-config-verifier](https://ci.chromium.org/p/chromium/builders/try/builder-config-verifier) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""builder-config-verifier"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""builder-config-verifier""))
 
   Path regular expressions:
-  * [`//infra/config/generated/builders`](https://cs.chromium.org/chromium/src/infra/config/generated/builders)
+  * [`//infra/config/generated/builders/.*`](https://cs.chromium.org/search?q=+file:infra/config/generated/builders/.*)
 
 * [cast_shell_linux_arm64](https://ci.chromium.org/p/chromium/builders/try/cast_shell_linux_arm64) ([definition](https://cs.chromium.org/search?q=+file:/try.star$+""cast_shell_linux_arm64"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""cast_shell_linux_arm64""))
 

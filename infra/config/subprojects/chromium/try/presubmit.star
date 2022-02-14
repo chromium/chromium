@@ -117,7 +117,7 @@ presubmit_builder(
         "builder_config_directory": "infra/config/generated/builders",
     },
     tryjob = try_.job(
-        location_regexp = [r".+/[+]/infra/config/generated/builders"],
+        location_regexp = [r".+/[+]/infra/config/generated/builders/.*"],
     ),
 )
 
