@@ -601,7 +601,8 @@ void AutofillPopupControllerImpl::HideViewAndDie() {
   if (view_) {
     // We need to fire the event while view is not deleted yet.
     FireControlsChangedEvent(false);
-    view_->Hide();
+    view_->Hide();  // Deletes |view_|.
+    view_ = nullptr;
   }
 
   if (!base::FeatureList::IsEnabled(
