@@ -91,11 +91,14 @@ bool IsJavaScriptExecutionProhibitedError(NSError* error) {
                  return;
                if (error) {
 #if DCHECK_IS_ON()
-                 DCHECK(error.code == WKErrorWebViewInvalidated ||
-                        error.code == WKErrorWebContentProcessTerminated ||
-                        IsJavaScriptExecutionProhibitedError(error))
-                     << scriptWithResult << " failed with error "
-                     << base::SysNSStringToUTF8(error.description);
+                 BOOL isExpectedError =
+                     error.code == WKErrorWebViewInvalidated ||
+                     error.code == WKErrorWebContentProcessTerminated ||
+                     IsJavaScriptExecutionProhibitedError(error);
+                 DCHECK(isExpectedError)
+                     << base::SysNSStringToUTF8(error.domain) << "-"
+                     << error.code << " "
+                     << base::SysNSStringToUTF16(scriptWithResult);
 #endif
                  return;
                }
