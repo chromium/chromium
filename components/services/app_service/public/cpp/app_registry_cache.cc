@@ -5,16 +5,11 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 
 #include "base/containers/contains.h"
+#include "components/services/app_service/public/cpp/features.h"
 
 #include <utility>
 
 namespace apps {
-
-namespace {
-
-constexpr uint32_t kUAFSentinelInitial = 0xabcd1234;
-
-}  // namespace
 
 AppRegistryCache::Observer::Observer(AppRegistryCache* cache) {
   Observe(cache);
@@ -42,15 +37,13 @@ void AppRegistryCache::Observer::Observe(AppRegistryCache* cache) {
   }
 }
 
-AppRegistryCache::AppRegistryCache()
-    : account_id_(EmptyAccountId()), uaf_sentinel_(kUAFSentinelInitial) {}
+AppRegistryCache::AppRegistryCache() : account_id_(EmptyAccountId()) {}
 
 AppRegistryCache::~AppRegistryCache() {
   for (auto& obs : observers_) {
     obs.OnAppRegistryCacheWillBeDestroyed(this);
   }
   DCHECK(observers_.empty());
-  uaf_sentinel_ = 0;
 }
 
 void AppRegistryCache::AddObserver(Observer* observer) {
@@ -69,8 +62,8 @@ void AppRegistryCache::OnApps(std::vector<apps::mojom::AppPtr> deltas,
 
   if (should_notify_initialized) {
     DCHECK_NE(apps::mojom::AppType::kUnknown, app_type);
-    if (initialized_app_types_.find(app_type) == initialized_app_types_.end()) {
-      in_progress_initialized_app_types_.insert(app_type);
+    if (!IsAppTypeInitialized(app_type)) {
+      in_progress_initialized_mojom_app_types_.insert(app_type);
     }
   }
 
@@ -95,10 +88,12 @@ void AppRegistryCache::OnApps(std::vector<AppPtr> deltas,
                               bool should_notify_initialized) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
-  // TODO(crbug.com/1253250): Modify in_progress_initialized_app_types_ based on
-  // the `App` struct when the `App` struct replaces the mojom `App` struct for
-  // all publishers, to prevent OnAppTypeInitialized to be called twice for both
-  // the mojom struct and non-mojom struct.
+  if (should_notify_initialized) {
+    DCHECK_NE(apps::AppType::kUnknown, app_type);
+    if (!IsAppTypeInitialized(app_type)) {
+      in_progress_initialized_app_types_.insert(app_type);
+    }
+  }
 
   if (!deltas_in_progress_.empty()) {
     std::move(deltas.begin(), deltas.end(),
@@ -113,10 +108,10 @@ void AppRegistryCache::OnApps(std::vector<AppPtr> deltas,
     DoOnApps(std::move(pending));
   }
 
-  // TODO(crbug.com/1253250): Modify and add OnAppTypeInitialized for the `App`
-  // struct when the `App` struct replaces the mojom `App` struct for all
-  // publishers, to prevent OnAppTypeInitialized to be called twice for both the
-  // mojom struct and non-mojom struct.
+  if (base::FeatureList::IsEnabled(
+          kAppServiceOnAppTypeInitializedWithoutMojom)) {
+    OnAppTypeInitialized();
+  }
 }
 
 void AppRegistryCache::DoOnApps(std::vector<apps::mojom::AppPtr> deltas) {
@@ -244,29 +239,78 @@ void AppRegistryCache::SetAccountId(const AccountId& account_id) {
 
 const std::set<apps::mojom::AppType>& AppRegistryCache::GetInitializedAppTypes()
     const {
+  return initialized_mojom_app_types_;
+}
+
+const std::set<AppType>& AppRegistryCache::InitializedAppTypes() const {
   return initialized_app_types_;
 }
 
 bool AppRegistryCache::IsAppTypeInitialized(
     apps::mojom::AppType app_type) const {
+  return base::Contains(initialized_mojom_app_types_, app_type);
+}
+
+bool AppRegistryCache::IsAppTypeInitialized(apps::AppType app_type) const {
   return base::Contains(initialized_app_types_, app_type);
 }
 
-void AppRegistryCache::OnAppTypeInitialized() {
-  CHECK_EQ(kUAFSentinelInitial, uaf_sentinel_);
-  if (in_progress_initialized_app_types_.empty()) {
+void AppRegistryCache::OnMojomAppTypeInitialized() {
+  if (in_progress_initialized_mojom_app_types_.empty()) {
     return;
   }
 
-  auto in_progress_initialized_app_types = in_progress_initialized_app_types_;
-  in_progress_initialized_app_types_.clear();
+  auto in_progress_initialized_app_types =
+      in_progress_initialized_mojom_app_types_;
+  in_progress_initialized_mojom_app_types_.clear();
 
   for (auto app_type : in_progress_initialized_app_types) {
     for (auto& obs : observers_) {
       obs.OnAppTypeInitialized(app_type);
     }
-    CHECK_EQ(kUAFSentinelInitial, uaf_sentinel_);
+    initialized_mojom_app_types_.insert(app_type);
+  }
+}
+
+void AppRegistryCache::OnAppTypeInitialized() {
+  if (!base::FeatureList::IsEnabled(
+          kAppServiceOnAppTypeInitializedWithoutMojom)) {
+    OnMojomAppTypeInitialized();
+    return;
+  }
+
+  // Check both the non mojom and mojom initialized status. Only when they are
+  // not initialized, call OnAppTypeInitialized to notify observers, because
+  // observers might use the non mojom or mojom App struct.
+  //
+  // TODO(crbug.com/1253250): Remove the mojom initialized checking when all
+  // observers use the non mojom App struct only.
+  if (in_progress_initialized_mojom_app_types_.empty() ||
+      in_progress_initialized_app_types_.empty()) {
+    return;
+  }
+
+  // In observer's OnAppTypeInitialized callback, `OnApp` might be call  to
+  // update the app, then this OnAppTypeInitialized might be called again. So we
+  // need to check the initialized `app_type` first, and remove it from
+  // `in_progress_initialized_app_types_` to prevent the dead loop.
+  std::set<AppType> in_progress_initialized_app_types;
+  for (auto app_type : in_progress_initialized_app_types_) {
+    if (base::Contains(in_progress_initialized_mojom_app_types_,
+                       ConvertAppTypeToMojomAppType(app_type))) {
+      in_progress_initialized_app_types.insert(app_type);
+    }
+  }
+
+  for (auto app_type : in_progress_initialized_app_types) {
+    auto mojom_app_type = ConvertAppTypeToMojomAppType(app_type);
+    in_progress_initialized_app_types_.erase(app_type);
+    in_progress_initialized_mojom_app_types_.erase(mojom_app_type);
+    for (auto& obs : observers_) {
+      obs.OnAppTypeInitialized(app_type);
+    }
     initialized_app_types_.insert(app_type);
+    initialized_mojom_app_types_.insert(mojom_app_type);
   }
 }
 
