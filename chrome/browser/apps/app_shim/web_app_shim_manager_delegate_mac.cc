@@ -133,16 +133,22 @@ bool WebAppShimManagerDelegate::AppCanCreateHost(Profile* profile,
                                                  const AppId& app_id) {
   if (UseFallback(profile, app_id))
     return fallback_delegate_->AppCanCreateHost(profile, app_id);
-  // All PWAs and bookmark apps can attach to a host.
-  return AppIsInstalled(profile, app_id);
+  // A host is only created for use with RemoteCocoa.
+  return AppUsesRemoteCocoa(profile, app_id);
 }
 
 bool WebAppShimManagerDelegate::AppUsesRemoteCocoa(Profile* profile,
                                                    const AppId& app_id) {
   if (UseFallback(profile, app_id))
     return fallback_delegate_->AppUsesRemoteCocoa(profile, app_id);
-  // All PWAs and bookmark apps use RemoteCocoa.
-  return AppIsInstalled(profile, app_id);
+  // All PWAs, and bookmark apps that open in their own window (not in a browser
+  // window) can attach to a host.
+  if (!profile)
+    return false;
+  auto& registrar = WebAppProvider::GetForWebApps(profile)->registrar();
+  return registrar.IsInstalled(app_id) &&
+         registrar.GetAppEffectiveDisplayMode(app_id) !=
+             web_app::DisplayMode::kBrowser;
 }
 
 bool WebAppShimManagerDelegate::AppIsMultiProfile(Profile* profile,
