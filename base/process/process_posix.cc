@@ -312,20 +312,18 @@ bool Process::Terminate(int exit_code, bool wait) const {
   DCHECK(IsValid());
   CHECK_GT(process_, 0);
 
-  bool did_terminate = kill(process_, SIGTERM) == 0;
-
-  if (wait && did_terminate) {
-    if (WaitForExitWithTimeout(Seconds(60), nullptr))
-      return true;
-    did_terminate = kill(process_, SIGKILL) == 0;
-    if (did_terminate)
-      return WaitForExit(nullptr);
-  }
-
-  if (!did_terminate)
+  if (kill(process_, SIGTERM) != 0) {
     DPLOG(ERROR) << "Unable to terminate process " << process_;
-
-  return did_terminate;
+    return false;
+  }
+  if (!wait || WaitForExitWithTimeout(Seconds(60), nullptr)) {
+    return true;
+  }
+  if (kill(process_, SIGKILL) != 0) {
+    DPLOG(ERROR) << "Unable to kill process " << process_;
+    return false;
+  }
+  return WaitForExit(nullptr);
 }
 
 bool Process::WaitForExit(int* exit_code) const {
