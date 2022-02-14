@@ -214,25 +214,6 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
       timestamp_aligner_.TranslateTimestamp(frame->timestamp().InMicroseconds(),
                                             now_us);
 
-  // Return |frame| directly if it is texture not backed up by GPU memory,
-  // because there is no cropping support for texture yet. See
-  // http://crbug/503653.
-  if (frame->HasTextures() &&
-      frame->storage_type() != media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    // The webrtc::VideoFrame::UpdateRect expected by WebRTC must
-    // be relative to the |visible_rect()|. We need to translate.
-    absl::optional<gfx::Rect> cropped_rect;
-    if (accumulated_update_rect_) {
-      cropped_rect =
-          CropRectangle(*accumulated_update_rect_, frame->visible_rect());
-    }
-
-    DeliverFrame(std::move(frame), std::move(scaled_frames),
-                 base::OptionalOrNullptr(cropped_rect),
-                 translated_camera_time_us);
-    return;
-  }
-
   // Translate the |crop_*| values output by AdaptFrame() from natural size to
   // visible size. This is needed to apply the new cropping on top of any
   // existing soft-applied cropping and scaling when using
