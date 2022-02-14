@@ -683,9 +683,6 @@ void ChromeBrowserMainPartsWin::PostProfileInit(Profile* profile,
 void ChromeBrowserMainPartsWin::PostBrowserStart() {
   ChromeBrowserMainParts::PostBrowserStart();
 
-  UMA_HISTOGRAM_BOOLEAN("Windows.Tablet",
-      base::win::IsTabletDevice(nullptr, ui::GetHiddenWindow()));
-
   InitializeChromeElf();
 
   // Reset settings for the current profile if it's tagged to be reset after a

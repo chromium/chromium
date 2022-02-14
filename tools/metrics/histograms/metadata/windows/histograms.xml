@@ -294,11 +294,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.Tablet" enum="BooleanTablet" expires_after="M77">
-  <owner>zturner@chromium.org</owner>
-  <summary>Count of browser launches from a Windows tablet pc.</summary>
-</histogram>
-
 <histogram name="Windows.TouchDrag.Success" units="BooleanSuccess"
     expires_after="2021-12-01">
   <owner>davidbienvenu@chromium.org</owner>
