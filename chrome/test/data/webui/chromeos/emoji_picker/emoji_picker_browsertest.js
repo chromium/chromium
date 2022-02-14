@@ -67,7 +67,6 @@ var EmojiPickerExtensionBrowserTest = class extends PolymerTest {
   }
 };
 
-// TODO(https://crbug.com/1179762): Re-enable once flakiness is fixed.
-TEST_F('EmojiPickerExtensionBrowserTest', 'DISABLED_All', function() {
+TEST_F('EmojiPickerExtensionBrowserTest', 'All', function() {
   mocha.run();
 });
