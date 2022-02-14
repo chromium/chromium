@@ -2119,6 +2119,13 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInPageLinks) {
   RunHtmlTest(FILE_PATH_LITERAL("in-page-links.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTestWithIgnoredNodes,
+                       InertAttribute) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kEnableBlinkFeatures, "InertAttribute");
+  RunHtmlTest(FILE_PATH_LITERAL("inert-attribute.html"));
+}
+
 // TODO(crbug.com/1193963): fails on Windows.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputButton) {
   RunHtmlTest(FILE_PATH_LITERAL("input-button.html"));
@@ -2550,7 +2557,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 */
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTestWithIgnoredNodes,
-                       AccessibilityModalDialogAndIframe) {
+                       AccessibilityModalDialogAndIframes) {
   RunHtmlTest(FILE_PATH_LITERAL("modal-dialog-and-iframes.html"));
 }
 
