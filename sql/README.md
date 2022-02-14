@@ -375,6 +375,11 @@ Format statements like so.
   such as `?NNN` or `:AAAA`, have few benefits in a codebase where the `Bind`
   statements are right next to the queries, and are less known to readers.
 
+* SQL statements should be embedded in C++ as string literals. The `char[]` type
+  makes it possible for us to compute query length at compile time in the
+  future. The `static` and `constexpr` qualifiers both ensure optimal code
+  generation.
+
 * Do not execute multiple SQL statements (e.g., by calling `Step()` or `Run()`
   on `sql::Statement`) on the same C++ line. It's difficult to get more than
   line numbers from crash reports' stack traces.
