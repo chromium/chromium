@@ -103,7 +103,7 @@ class SyncInternalsMessageHandlerTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-    about_information_.SetString("some_sync_state", "some_value");
+    about_information_.SetStringKey("some_sync_state", "some_value");
 
     web_ui_.set_web_contents(web_contents());
     test_sync_service_ = static_cast<TestSyncService*>(

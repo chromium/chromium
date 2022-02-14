@@ -196,7 +196,7 @@ void SyncInternalsMessageHandler::HandleRequestIncludeSpecificsInitialState(
   AllowJavascript();
 
   DictionaryValue value;
-  value.SetBoolean(syncer::sync_ui_util::kIncludeSpecifics,
+  value.SetBoolKey(syncer::sync_ui_util::kIncludeSpecifics,
                    GetIncludeSpecificsInitialState());
 
   FireWebUIListener(

@@ -64,9 +64,10 @@ void EnterpriseProfileWelcomeUI::Initialize(
       EnterpriseProfileWelcomeUI::ScreenType::kEnterpriseAccountCreation) {
     base::DictionaryValue update_data;
     update_data.SetBoolKey("isModalDialog", true);
-    update_data.SetString("enterpriseProfileWelcomeTitle",
-                          l10n_util::GetStringUTF16(
-                              IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE));
+    update_data.SetStringKey(
+        "enterpriseProfileWelcomeTitle",
+        l10n_util::GetStringUTF16(
+            IDS_ENTERPRISE_WELCOME_PROFILE_REQUIRED_TITLE));
     content::WebUIDataSource::Update(
         Profile::FromWebUI(web_ui()),
         chrome::kChromeUIEnterpriseProfileWelcomeHost,

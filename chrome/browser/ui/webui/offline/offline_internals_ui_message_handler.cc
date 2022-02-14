@@ -188,16 +188,19 @@ void OfflineInternalsUIMessageHandler::HandleRequestQueueCallback(
   base::ListValue save_page_requests;
   for (const auto& request : requests) {
     auto save_page_request = std::make_unique<base::DictionaryValue>();
-    save_page_request->SetString("onlineUrl", request->url().spec());
+    save_page_request->SetStringKey("onlineUrl", request->url().spec());
     save_page_request->SetDoubleKey("creationTime",
                                     request->creation_time().ToJsTime());
-    save_page_request->SetString("status", GetStringFromSavePageStatus());
-    save_page_request->SetString("namespace", request->client_id().name_space);
+    save_page_request->SetStringKey("status", GetStringFromSavePageStatus());
+    save_page_request->SetStringKey("namespace",
+                                    request->client_id().name_space);
     save_page_request->SetDoubleKey("lastAttemptTime",
                                     request->last_attempt_time().ToJsTime());
-    save_page_request->SetString("id", std::to_string(request->request_id()));
-    save_page_request->SetString("originalUrl", request->original_url().spec());
-    save_page_request->SetString("requestOrigin", request->request_origin());
+    save_page_request->SetStringKey("id",
+                                    std::to_string(request->request_id()));
+    save_page_request->SetStringKey("originalUrl",
+                                    request->original_url().spec());
+    save_page_request->SetStringKey("requestOrigin", request->request_origin());
     save_page_requests.Append(std::move(save_page_request));
   }
   ResolveJavascriptCallback(base::Value(callback_id), save_page_requests);
@@ -462,11 +465,11 @@ void OfflineInternalsUIMessageHandler::HandleGetLoggingState(
   const base::Value& callback_id = args->GetListDeprecated()[0];
 
   base::DictionaryValue result;
-  result.SetBoolean("modelIsLogging",
+  result.SetBoolKey("modelIsLogging",
                     offline_page_model_
                         ? offline_page_model_->GetLogger()->GetIsLogging()
                         : false);
-  result.SetBoolean("queueIsLogging",
+  result.SetBoolKey("queueIsLogging",
                     request_coordinator_
                         ? request_coordinator_->GetLogger()->GetIsLogging()
                         : false);
@@ -474,7 +477,7 @@ void OfflineInternalsUIMessageHandler::HandleGetLoggingState(
   if (prefetch_service_) {
     prefetch_logging = prefetch_service_->GetLogger()->GetIsLogging();
   }
-  result.SetBoolean("prefetchIsLogging", prefetch_logging);
+  result.SetBoolKey("prefetchIsLogging", prefetch_logging);
   ResolveJavascriptCallback(callback_id, result);
 }
 

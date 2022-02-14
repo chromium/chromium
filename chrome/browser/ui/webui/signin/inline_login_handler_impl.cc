@@ -491,22 +491,22 @@ InlineLoginHandlerImpl::~InlineLoginHandlerImpl() {}
 
 // static
 void InlineLoginHandlerImpl::SetExtraInitParams(base::DictionaryValue& params) {
-  params.SetString("service", "chromiumsync");
+  params.SetStringKey("service", "chromiumsync");
 
   // If this was called from the user manager to reauthenticate the profile,
   // make sure the webui is aware.
   Profile* profile = Profile::FromWebUI(web_ui());
   if (profile->IsSystemProfile())
-    params.SetBoolean("dontResizeNonEmbeddedPages", true);
+    params.SetBoolKey("dontResizeNonEmbeddedPages", true);
 
   content::WebContents* contents = web_ui()->GetWebContents();
   const GURL& current_url = contents->GetLastCommittedURL();
   HandlerSigninReason reason = GetHandlerSigninReason(current_url);
 
   const GURL& url = GaiaUrls::GetInstance()->embedded_signin_url();
-  params.SetString("clientId",
-                   GaiaUrls::GetInstance()->oauth2_chrome_client_id());
-  params.SetString("gaiaPath", url.path().substr(1));
+  params.SetStringKey("clientId",
+                      GaiaUrls::GetInstance()->oauth2_chrome_client_id());
+  params.SetStringKey("gaiaPath", url.path().substr(1));
 
 #if BUILDFLAG(IS_WIN)
   if (reason == HandlerSigninReason::kFetchLstOnly) {
@@ -517,23 +517,23 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::DictionaryValue& params) {
       std::vector<std::string> all_email_domains =
           GetEmailDomainsFromParameter(email_domains);
       if (all_email_domains.size() == 1)
-        params.SetString("emailDomain", all_email_domains[0]);
+        params.SetStringKey("emailDomain", all_email_domains[0]);
     }
 
     std::string show_tos;
     if (net::GetValueForKeyInQuery(
             current_url, credential_provider::kShowTosSwitch, &show_tos)) {
       if (!show_tos.empty())
-        params.SetString("showTos", show_tos);
+        params.SetStringKey("showTos", show_tos);
     }
 
     // Prevent opening a new window if the embedded page fails to load.
     // This will keep the user from being able to access a fully functional
     // Chrome window in incognito mode.
-    params.SetBoolean("dontResizeNonEmbeddedPages", true);
+    params.SetBoolKey("dontResizeNonEmbeddedPages", true);
 
     // Scrape the SAML password if possible.
-    params.SetBoolean("extractSamlPasswordAttributes", true);
+    params.SetBoolKey("extractSamlPasswordAttributes", true);
 
     GURL windows_url = GaiaUrls::GetInstance()->embedded_setup_windows_url();
     // Redirect to specified gaia endpoint path for GCPW:
@@ -545,7 +545,7 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::DictionaryValue& params) {
             &gcpw_endpoint_path)) {
       windows_endpoint_path = gcpw_endpoint_path;
     }
-    params.SetString("gaiaPath", windows_endpoint_path);
+    params.SetStringKey("gaiaPath", windows_endpoint_path);
   }
 #endif
 
@@ -576,7 +576,7 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::DictionaryValue& params) {
 #endif
     } break;
   }
-  params.SetString("flow", flow);
+  params.SetStringKey("flow", flow);
 
   LogHistogramValue(signin_metrics::HISTOGRAM_SHOWN);
 }

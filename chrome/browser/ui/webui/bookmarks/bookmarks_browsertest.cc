@@ -35,11 +35,11 @@ void BookmarksBrowserTest::SetupExtensionAPITest() {
 
   base::ListValue list;
   std::unique_ptr<base::DictionaryValue> node(new base::DictionaryValue());
-  node->SetString("name", "Managed Bookmark");
-  node->SetString("url", "http://www.chromium.org");
+  node->SetStringKey("name", "Managed Bookmark");
+  node->SetStringKey("url", "http://www.chromium.org");
   list.Append(std::move(node));
   node = std::make_unique<base::DictionaryValue>();
-  node->SetString("name", "Managed Folder");
+  node->SetStringKey("name", "Managed Folder");
   node->Set("children", std::make_unique<base::ListValue>());
   list.Append(std::move(node));
   profile->GetPrefs()->Set(bookmarks::prefs::kManagedBookmarks, list);

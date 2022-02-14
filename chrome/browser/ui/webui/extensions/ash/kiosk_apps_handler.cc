@@ -53,15 +53,15 @@ void PopulateAppDict(const KioskAppManager::App& app_data,
   // The items which are to be written into app_dict are also described in
   // chrome/browser/resources/extensions/chromeos/kiosk_app_list.js in @typedef
   // for AppDict. Please update it whenever you add or remove any keys here.
-  app_dict->SetString("id", app_data.app_id);
-  app_dict->SetString("name", app_data.name);
-  app_dict->SetString("iconURL", icon_url);
-  app_dict->SetBoolean(
+  app_dict->SetStringKey("id", app_data.app_id);
+  app_dict->SetStringKey("name", app_data.name);
+  app_dict->SetStringKey("iconURL", icon_url);
+  app_dict->SetBoolKey(
       "autoLaunch",
       KioskAppManager::Get()->GetAutoLaunchApp() == app_data.app_id &&
-      (KioskAppManager::Get()->IsAutoLaunchEnabled() ||
-          KioskAppManager::Get()->IsAutoLaunchRequested()));
-  app_dict->SetBoolean("isLoading", app_data.is_loading);
+          (KioskAppManager::Get()->IsAutoLaunchEnabled() ||
+           KioskAppManager::Get()->IsAutoLaunchRequested()));
+  app_dict->SetBoolKey("isLoading", app_data.is_loading);
 }
 
 // Sanitize app id input value and extracts app id out of it.
@@ -195,8 +195,8 @@ void KioskAppsHandler::OnGetConsumerKioskAutoLaunchStatus(
   }
 
   base::DictionaryValue kiosk_params;
-  kiosk_params.SetBoolean("kioskEnabled", is_kiosk_enabled_);
-  kiosk_params.SetBoolean("autoLaunchEnabled", is_auto_launch_enabled_);
+  kiosk_params.SetBoolKey("kioskEnabled", is_kiosk_enabled_);
+  kiosk_params.SetBoolKey("autoLaunchEnabled", is_auto_launch_enabled_);
   ResolveJavascriptCallback(base::Value(callback_id), kiosk_params);
 }
 
@@ -219,8 +219,8 @@ KioskAppsHandler::GetSettingsDictionary() {
     enable_bailout_shortcut = true;
   }
 
-  settings->SetBoolean("disableBailout", !enable_bailout_shortcut);
-  settings->SetBoolean("hasAutoLaunchApp",
+  settings->SetBoolKey("disableBailout", !enable_bailout_shortcut);
+  settings->SetBoolKey("hasAutoLaunchApp",
                        !kiosk_app_manager_->GetAutoLaunchApp().empty());
 
   KioskAppManager::AppList apps;

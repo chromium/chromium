@@ -410,8 +410,8 @@ void ExtensionsUI::RegisterProfilePrefs(
 // prevents flickering on a very prominent surface (top of the landing page).
 void ExtensionsUI::OnDevModeChanged() {
   auto update = std::make_unique<base::DictionaryValue>();
-  update->SetBoolean(kInDevModeKey, *in_dev_mode_);
-  update->SetString(kLoadTimeClassesKey, GetLoadTimeClasses(*in_dev_mode_));
+  update->SetBoolKey(kInDevModeKey, *in_dev_mode_);
+  update->SetStringKey(kLoadTimeClassesKey, GetLoadTimeClasses(*in_dev_mode_));
   content::WebUIDataSource::Update(Profile::FromWebUI(web_ui()),
                                    chrome::kChromeUIExtensionsHost,
                                    std::move(update));

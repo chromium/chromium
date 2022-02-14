@@ -215,14 +215,17 @@ IdentityInternalsUIMessageHandler::GetInfoForToken(
     const extensions::IdentityTokenCache::AccessTokensKey& access_tokens_key,
     const extensions::IdentityTokenCacheValue& token_cache_value) {
   auto token_data = std::make_unique<base::DictionaryValue>();
-  token_data->SetString("extensionId", access_tokens_key.extension_id);
-  token_data->SetString("accountId", access_tokens_key.account_id.ToString());
-  token_data->SetString("extensionName", GetExtensionName(access_tokens_key));
+  token_data->SetStringKey("extensionId", access_tokens_key.extension_id);
+  token_data->SetStringKey("accountId",
+                           access_tokens_key.account_id.ToString());
+  token_data->SetStringKey("extensionName",
+                           GetExtensionName(access_tokens_key));
   token_data->SetKey(
       "scopes", base::Value::FromUniquePtrValue(GetScopes(token_cache_value)));
-  token_data->SetString("status", GetStatus(token_cache_value));
-  token_data->SetString("accessToken", token_cache_value.token());
-  token_data->SetString("expirationTime", GetExpirationTime(token_cache_value));
+  token_data->SetStringKey("status", GetStatus(token_cache_value));
+  token_data->SetStringKey("accessToken", token_cache_value.token());
+  token_data->SetStringKey("expirationTime",
+                           GetExpirationTime(token_cache_value));
   return token_data;
 }
 

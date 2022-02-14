@@ -75,7 +75,7 @@ void ComponentsHandler::HandleRequestComponentsData(
 #else
   const bool showSystemFlagsLink = true;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  result.SetBoolean("showOsLink", showSystemFlagsLink);
+  result.SetBoolKey("showOsLink", showSystemFlagsLink);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   ResolveJavascriptCallback(callback_id, result);
@@ -102,14 +102,14 @@ void ComponentsHandler::HandleCheckUpdate(const base::ListValue* args) {
 
 void ComponentsHandler::OnEvent(Events event, const std::string& id) {
   base::DictionaryValue parameters;
-  parameters.SetString("event", ComponentEventToString(event));
+  parameters.SetStringKey("event", ComponentEventToString(event));
   if (!id.empty()) {
     if (event == Events::COMPONENT_UPDATED) {
       update_client::CrxUpdateItem item;
       if (component_updater_->GetComponentDetails(id, &item) && item.component)
-        parameters.SetString("version", item.component->version.GetString());
+        parameters.SetStringKey("version", item.component->version.GetString());
     }
-    parameters.SetString("id", id);
+    parameters.SetStringKey("id", id);
   }
   FireWebUIListener("component-event", parameters);
 }
@@ -202,12 +202,13 @@ std::unique_ptr<base::ListValue> ComponentsHandler::LoadComponents() {
     update_client::CrxUpdateItem item;
     if (component_updater_->GetComponentDetails(component_ids[j], &item)) {
       auto component_entry = std::make_unique<base::DictionaryValue>();
-      component_entry->SetString("id", component_ids[j]);
-      component_entry->SetString("status", ServiceStatusToString(item.state));
+      component_entry->SetStringKey("id", component_ids[j]);
+      component_entry->SetStringKey("status",
+                                    ServiceStatusToString(item.state));
       if (item.component) {
-        component_entry->SetString("name", item.component->name);
-        component_entry->SetString("version",
-                                   item.component->version.GetString());
+        component_entry->SetStringKey("name", item.component->name);
+        component_entry->SetStringKey("version",
+                                      item.component->version.GetString());
       }
       component_list->Append(std::move(component_entry));
     }

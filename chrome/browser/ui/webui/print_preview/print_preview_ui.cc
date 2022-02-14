@@ -870,12 +870,12 @@ void PrintPreviewUI::DidGetDefaultPageLayout(
                       page_layout_in_points->content_width);
   layout.SetDoubleKey(kSettingContentHeight,
                       page_layout_in_points->content_height);
-  layout.SetInteger(kSettingPrintableAreaX, printable_area_in_points.x());
-  layout.SetInteger(kSettingPrintableAreaY, printable_area_in_points.y());
-  layout.SetInteger(kSettingPrintableAreaWidth,
-                    printable_area_in_points.width());
-  layout.SetInteger(kSettingPrintableAreaHeight,
-                    printable_area_in_points.height());
+  layout.SetIntKey(kSettingPrintableAreaX, printable_area_in_points.x());
+  layout.SetIntKey(kSettingPrintableAreaY, printable_area_in_points.y());
+  layout.SetIntKey(kSettingPrintableAreaWidth,
+                   printable_area_in_points.width());
+  layout.SetIntKey(kSettingPrintableAreaHeight,
+                   printable_area_in_points.height());
   handler_->SendPageLayoutReady(layout, has_custom_page_size_style, request_id);
 }
 

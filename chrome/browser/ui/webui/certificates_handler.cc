@@ -439,13 +439,13 @@ void CertificatesHandler::HandleGetCATrust(base::Value::ConstListView args) {
                                                           net::CA_CERT);
   std::unique_ptr<base::DictionaryValue> ca_trust_info(
       new base::DictionaryValue);
-  ca_trust_info->SetBoolean(
+  ca_trust_info->SetBoolKey(
       kCertificatesHandlerSslField,
       static_cast<bool>(trust_bits & net::NSSCertDatabase::TRUSTED_SSL));
-  ca_trust_info->SetBoolean(
+  ca_trust_info->SetBoolKey(
       kCertificatesHandlerEmailField,
       static_cast<bool>(trust_bits & net::NSSCertDatabase::TRUSTED_EMAIL));
-  ca_trust_info->SetBoolean(
+  ca_trust_info->SetBoolKey(
       kCertificatesHandlerObjSignField,
       static_cast<bool>(trust_bits & net::NSSCertDatabase::TRUSTED_OBJ_SIGN));
   ResolveCallback(*ca_trust_info);
@@ -1095,8 +1095,8 @@ void CertificatesHandler::RejectCallback(const base::Value& response) {
 void CertificatesHandler::RejectCallbackWithError(const std::string& title,
                                                   const std::string& error) {
   std::unique_ptr<base::DictionaryValue> error_info(new base::DictionaryValue);
-  error_info->SetString(kCertificatesHandlerErrorTitle, title);
-  error_info->SetString(kCertificatesHandlerErrorDescription, error);
+  error_info->SetStringKey(kCertificatesHandlerErrorTitle, title);
+  error_info->SetStringKey(kCertificatesHandlerErrorDescription, error);
   RejectCallback(*error_info);
 }
 
@@ -1119,17 +1119,17 @@ void CertificatesHandler::RejectCallbackWithImportError(
   for (size_t i = 0; i < not_imported.size(); ++i) {
     const net::NSSCertDatabase::ImportCertFailure& failure = not_imported[i];
     std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
-    dict->SetString(kCertificatesHandlerNameField,
-                    x509_certificate_model::GetSubjectDisplayName(
-                        failure.certificate.get()));
-    dict->SetString(kCertificatesHandlerErrorField,
-                    NetErrorToString(failure.net_error));
+    dict->SetStringKey(kCertificatesHandlerNameField,
+                       x509_certificate_model::GetSubjectDisplayName(
+                           failure.certificate.get()));
+    dict->SetStringKey(kCertificatesHandlerErrorField,
+                       NetErrorToString(failure.net_error));
     cert_error_list->Append(std::move(dict));
   }
 
   std::unique_ptr<base::DictionaryValue> error_info(new base::DictionaryValue);
-  error_info->SetString(kCertificatesHandlerErrorTitle, title);
-  error_info->SetString(kCertificatesHandlerErrorDescription, error);
+  error_info->SetStringKey(kCertificatesHandlerErrorTitle, title);
+  error_info->SetStringKey(kCertificatesHandlerErrorDescription, error);
   error_info->Set(kCertificatesHandlerCertificateErrors,
                   std::move(cert_error_list));
   RejectCallback(*error_info);

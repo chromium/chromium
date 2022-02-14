@@ -612,8 +612,8 @@ void NewTabPageUI::OnThemeChanged() {
   if (theme_provider) {
     auto background_color =
         theme_provider->GetColor(ThemeProperties::COLOR_NTP_BACKGROUND);
-    update->SetString("backgroundColor",
-                      skia::SkColorToHexString(background_color));
+    update->SetStringKey("backgroundColor",
+                         skia::SkColorToHexString(background_color));
     content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
                                      std::move(update));
   }
@@ -630,7 +630,7 @@ void NewTabPageUI::OnCustomBackgroundImageUpdated() {
           .custom_background_url;
   url::EncodeURIComponent(custom_background_url.spec().c_str(),
                           custom_background_url.spec().size(), &encoded_url);
-  update->SetString(
+  update->SetStringKey(
       "backgroundImageUrl",
       encoded_url.length() > 0
           ? base::StrCat(

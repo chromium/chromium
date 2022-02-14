@@ -75,7 +75,7 @@ void PrivacySandboxDialogUI::Initialize(
     PrivacySandboxService::DialogType dialog_type) {
   std::unique_ptr<base::DictionaryValue> update =
       std::make_unique<base::DictionaryValue>();
-  update->SetBoolean(
+  update->SetBoolKey(
       "isConsent", dialog_type == PrivacySandboxService::DialogType::kConsent);
   content::WebUIDataSource::Update(
       profile, chrome::kChromeUIPrivacySandboxDialogHost, std::move(update));

@@ -111,10 +111,10 @@ void InlineLoginHandler::ContinueHandleInitializeMessage() {
   base::DictionaryValue params;
 
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
-  params.SetString("hl", app_locale);
+  params.SetStringKey("hl", app_locale);
   GaiaUrls* gaiaUrls = GaiaUrls::GetInstance();
-  params.SetString("gaiaUrl", gaiaUrls->gaia_url().spec());
-  params.SetInteger("authMode", InlineLoginHandler::kDesktopAuthMode);
+  params.SetStringKey("gaiaUrl", gaiaUrls->gaia_url().spec());
+  params.SetIntKey("authMode", InlineLoginHandler::kDesktopAuthMode);
 
   const GURL& current_url = web_ui()->GetWebContents()->GetLastCommittedURL();
   signin_metrics::AccessPoint access_point =
@@ -131,7 +131,7 @@ void InlineLoginHandler::ContinueHandleInitializeMessage() {
         access_point,
         signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
     base::RecordAction(base::UserMetricsAction("Signin_SigninPage_Loading"));
-    params.SetBoolean("isLoginPrimaryAccount", true);
+    params.SetBoolKey("isLoginPrimaryAccount", true);
   }
 
   Profile* profile = Profile::FromWebUI(web_ui());
@@ -145,17 +145,17 @@ void InlineLoginHandler::ContinueHandleInitializeMessage() {
       default_email.clear();
   }
   if (!default_email.empty())
-    params.SetString("email", default_email);
+    params.SetStringKey("email", default_email);
 
   // The legacy full-tab Chrome sign-in page is no longer used as it was relying
   // on exchanging cookies for refresh tokens and that endpoint is no longer
   // supported.
-  params.SetString("constrained", "1");
+  params.SetStringKey("constrained", "1");
 
   // TODO(rogerta): this needs to be passed on to gaia somehow.
   std::string read_only_email;
   net::GetValueForKeyInQuery(current_url, "readOnlyEmail", &read_only_email);
-  params.SetBoolean("readOnlyEmail", !read_only_email.empty());
+  params.SetBoolKey("readOnlyEmail", !read_only_email.empty());
 
   SetExtraInitParams(params);
   FireWebUIListener("load-auth-extension", params);

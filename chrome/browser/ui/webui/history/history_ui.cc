@@ -237,11 +237,11 @@ void HistoryUI::UpdateDataSource() {
 
   std::unique_ptr<base::DictionaryValue> update =
       std::make_unique<base::DictionaryValue>();
-  update->SetBoolean(kIsUserSignedInKey, IsUserSignedIn(profile));
-  update->SetBoolean(
+  update->SetBoolKey(kIsUserSignedInKey, IsUserSignedIn(profile));
+  update->SetBoolKey(
       kIsHistoryClustersVisibleKey,
       profile->GetPrefs()->GetBoolean(history_clusters::prefs::kVisible));
-  update->SetBoolean(kIsHistoryClustersVisibleManagedByPolicyKey,
+  update->SetBoolKey(kIsHistoryClustersVisibleManagedByPolicyKey,
                      profile->GetPrefs()->IsManagedPreference(
                          history_clusters::prefs::kVisible));
 

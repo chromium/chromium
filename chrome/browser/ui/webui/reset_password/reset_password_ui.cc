@@ -173,12 +173,13 @@ base::DictionaryValue ResetPasswordUI::PopulateStrings() const {
   }
 
   base::DictionaryValue load_time_data;
-  load_time_data.SetString("title",
-                           l10n_util::GetStringUTF16(IDS_RESET_PASSWORD_TITLE));
-  load_time_data.SetString("heading",
-                           l10n_util::GetStringUTF16(heading_string_id));
-  load_time_data.SetString("primaryParagraph", explanation_paragraph_string);
-  load_time_data.SetString("primaryButtonText", l10n_util::GetStringUTF16(
-                                                    IDS_RESET_PASSWORD_BUTTON));
+  load_time_data.SetStringKey(
+      "title", l10n_util::GetStringUTF16(IDS_RESET_PASSWORD_TITLE));
+  load_time_data.SetStringKey("heading",
+                              l10n_util::GetStringUTF16(heading_string_id));
+  load_time_data.SetStringKey("primaryParagraph", explanation_paragraph_string);
+  load_time_data.SetStringKey(
+      "primaryButtonText",
+      l10n_util::GetStringUTF16(IDS_RESET_PASSWORD_BUTTON));
   return load_time_data;
 }

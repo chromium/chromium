@@ -49,18 +49,18 @@ void PrintersToValues(const PrinterList& printer_list,
                       base::ListValue* printers) {
   for (const PrinterBasicInfo& printer : printer_list) {
     auto printer_info = std::make_unique<base::DictionaryValue>();
-    printer_info->SetString(kSettingDeviceName, printer.printer_name);
+    printer_info->SetStringKey(kSettingDeviceName, printer.printer_name);
 
-    printer_info->SetString(kSettingPrinterName, printer.display_name);
-    printer_info->SetString(kSettingPrinterDescription,
-                            printer.printer_description);
+    printer_info->SetStringKey(kSettingPrinterName, printer.display_name);
+    printer_info->SetStringKey(kSettingPrinterDescription,
+                               printer.printer_description);
 
     base::DictionaryValue options;
     for (const auto& opt_it : printer.options)
-      options.SetString(opt_it.first, opt_it.second);
+      options.SetStringPath(opt_it.first, opt_it.second);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    printer_info->SetBoolean(
+    printer_info->SetBoolKey(
         kCUPSEnterprisePrinter,
         base::Contains(printer.options, kCUPSEnterprisePrinter) &&
             printer.options.at(kCUPSEnterprisePrinter) == kValueTrue);

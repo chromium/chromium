@@ -102,9 +102,9 @@ void FlagsUIHandler::SendExperimentalFeatures() {
   results.SetKey(flags_ui::kSupportedFeatures, base::Value(supported_features));
   results.SetKey(flags_ui::kUnsupportedFeatures,
                  base::Value(unsupported_features));
-  results.SetBoolean(flags_ui::kNeedsRestart,
+  results.SetBoolKey(flags_ui::kNeedsRestart,
                      about_flags::IsRestartNeededToCommitChanges());
-  results.SetBoolean(flags_ui::kShowOwnerWarning,
+  results.SetBoolKey(flags_ui::kShowOwnerWarning,
                      access_ == flags_ui::kGeneralAccessFlagsOnly);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -112,19 +112,19 @@ void FlagsUIHandler::SendExperimentalFeatures() {
 #else
   const bool showSystemFlagsLink = true;
 #endif
-  results.SetBoolean(flags_ui::kShowSystemFlagsLink, showSystemFlagsLink);
+  results.SetBoolKey(flags_ui::kShowSystemFlagsLink, showSystemFlagsLink);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
   version_info::Channel channel = chrome::GetChannel();
-  results.SetBoolean(
+  results.SetBoolKey(
       flags_ui::kShowBetaChannelPromotion,
       channel == version_info::Channel::STABLE && !deprecated_features_only_);
-  results.SetBoolean(
+  results.SetBoolKey(
       flags_ui::kShowDevChannelPromotion,
       channel == version_info::Channel::BETA && !deprecated_features_only_);
 #else
-  results.SetBoolean(flags_ui::kShowBetaChannelPromotion, false);
-  results.SetBoolean(flags_ui::kShowDevChannelPromotion, false);
+  results.SetBoolKey(flags_ui::kShowBetaChannelPromotion, false);
+  results.SetBoolKey(flags_ui::kShowDevChannelPromotion, false);
 #endif
   ResolveJavascriptCallback(base::Value(experimental_features_callback_id_),
                             results);

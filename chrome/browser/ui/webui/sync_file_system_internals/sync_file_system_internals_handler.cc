@@ -107,9 +107,9 @@ void SyncFileSystemInternalsHandler::OnLogRecorded(
     const sync_file_system::TaskLogger::TaskLog& task_log) {
   base::DictionaryValue dict;
   int64_t duration = (task_log.end_time - task_log.start_time).InMilliseconds();
-  dict.SetInteger("duration", duration);
-  dict.SetString("task_description", task_log.task_description);
-  dict.SetString("result_description", task_log.result_description);
+  dict.SetIntKey("duration", duration);
+  dict.SetStringKey("task_description", task_log.task_description);
+  dict.SetStringKey("result_description", task_log.result_description);
 
   base::ListValue details;
   for (const std::string& detail : task_log.details) {

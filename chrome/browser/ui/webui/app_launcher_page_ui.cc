@@ -183,7 +183,7 @@ AppLauncherPageUI::~AppLauncherPageUI() {
 void AppLauncherPageUI::OnHideWebStoreIconChanged() {
   std::unique_ptr<base::DictionaryValue> update(new base::DictionaryValue);
   PrefService* prefs = GetProfile()->GetPrefs();
-  update->SetBoolean("showWebStoreIcon",
+  update->SetBoolKey("showWebStoreIcon",
                      !prefs->GetBoolean(prefs::kHideWebStoreIcon));
   content::WebUIDataSource::Update(
       GetProfile(), chrome::kChromeUIAppLauncherPageHost, std::move(update));
