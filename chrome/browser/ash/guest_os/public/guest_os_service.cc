@@ -11,7 +11,7 @@ GuestOsService::GuestOsService() = default;
 
 GuestOsService::~GuestOsService() = default;
 
-GuestOsService* GetForProfile(Profile* profile) {
+GuestOsService* GuestOsService::GetForProfile(Profile* profile) {
   return GuestOsServiceFactory::GetForProfile(profile);
 }
 
