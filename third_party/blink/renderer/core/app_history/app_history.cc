@@ -49,23 +49,26 @@ class NavigateReaction final : public ScriptFunction::Callable {
                     ScriptPromise promise,
                     AppHistoryApiNavigation* navigation,
                     AbortSignal* signal,
+                    bool should_reset_focus,
                     ReactType react_type) {
     promise.Then(MakeGarbageCollected<ScriptFunction>(
                      script_state, MakeGarbageCollected<NavigateReaction>(
-                                       navigation, signal,
+                                       navigation, signal, should_reset_focus,
                                        ResolveType::kFulfill, react_type)),
                  MakeGarbageCollected<ScriptFunction>(
                      script_state, MakeGarbageCollected<NavigateReaction>(
-                                       navigation, signal, ResolveType::kReject,
-                                       react_type)));
+                                       navigation, signal, should_reset_focus,
+                                       ResolveType::kReject, react_type)));
   }
 
   NavigateReaction(AppHistoryApiNavigation* navigation,
                    AbortSignal* signal,
+                   bool should_reset_focus,
                    ResolveType resolve_type,
                    ReactType react_type)
       : navigation_(navigation),
         signal_(signal),
+        should_reset_focus_(should_reset_focus),
         resolve_type_(resolve_type),
         react_type_(react_type) {}
 
@@ -91,6 +94,11 @@ class NavigateReaction final : public ScriptFunction::Callable {
       app_history->RejectPromisesAndFireNavigateErrorEvent(navigation_, value);
     }
 
+    if (should_reset_focus_) {
+      // TODO(domenic): use the autofocus delegate, if one exists.
+      app_history->GetSupplementable()->document()->ClearFocusedElement();
+    }
+
     if (react_type_ == ReactType::kTransitionWhile && window->GetFrame()) {
       window->GetFrame()->Loader().DidFinishNavigation(
           resolve_type_ == ResolveType::kFulfill
@@ -104,6 +112,7 @@ class NavigateReaction final : public ScriptFunction::Callable {
  private:
   Member<AppHistoryApiNavigation> navigation_;
   Member<AbortSignal> signal_;
+  bool should_reset_focus_;
   ResolveType resolve_type_;
   ReactType react_type_;
 };
@@ -707,7 +716,8 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
 
     NavigateReaction::React(
         script_state, ScriptPromise::All(script_state, tweaked_promise_list),
-        ongoing_navigation_, navigate_event->signal(), react_type);
+        ongoing_navigation_, navigate_event->signal(),
+        navigate_event->ShouldResetFocus(), react_type);
   } else if (ongoing_navigation_) {
     // The spec assumes it's ok to leave a promise permanently unresolved, but
     // ScriptPromiseResolver requires either resolution or explicit detach.

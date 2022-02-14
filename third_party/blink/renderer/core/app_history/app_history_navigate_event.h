@@ -5,9 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_APP_HISTORY_APP_HISTORY_NAVIGATE_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_APP_HISTORY_APP_HISTORY_NAVIGATE_EVENT_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_app_history_focus_reset.h"
 #include "third_party/blink/renderer/core/app_history/app_history.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -21,6 +23,7 @@ namespace blink {
 class AbortSignal;
 class AppHistoryDestination;
 class AppHistoryNavigateEventInit;
+class AppHistoryTransitionWhileOptions;
 class ExceptionState;
 class FormData;
 class ScriptPromise;
@@ -53,11 +56,13 @@ class AppHistoryNavigateEvent final : public Event,
 
   void transitionWhile(ScriptState*,
                        ScriptPromise newNavigationAction,
+                       AppHistoryTransitionWhileOptions*,
                        ExceptionState&);
 
   const HeapVector<ScriptPromise>& GetNavigationActionPromisesList() {
     return navigation_action_promises_list_;
   }
+  bool ShouldResetFocus() const;
 
   const AtomicString& InterfaceName() const final;
   void Trace(Visitor*) const final;
@@ -71,6 +76,7 @@ class AppHistoryNavigateEvent final : public Event,
   Member<AbortSignal> signal_;
   Member<FormData> form_data_;
   ScriptValue info_;
+  absl::optional<V8AppHistoryFocusReset> focus_reset_behavior_ = absl::nullopt;
 
   KURL url_;
   HeapVector<ScriptPromise> navigation_action_promises_list_;

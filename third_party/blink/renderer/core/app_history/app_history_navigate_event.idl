@@ -18,5 +18,5 @@
   readonly attribute FormData? formData;
   readonly attribute any info;
 
-  [CallWith=ScriptState, RaisesException] void transitionWhile(Promise<any> newNavigationAction);
+  [CallWith=ScriptState, RaisesException] void transitionWhile(Promise<void> newNavigationAction, optional AppHistoryTransitionWhileOptions options = {});
 };
