@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics;
+import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -97,6 +98,8 @@ public class PedalSuggestionProcessor extends BasicSuggestionProcessor {
             mOmniboxPedalDelegate.executeAction(pedalID);
             mAutocompleteDelegate.clearOmniboxFocus();
         });
+        model.set(
+                BaseSuggestionViewProperties.DENSITY, BaseSuggestionViewProperties.Density.COMPACT);
 
         mLastVisiblePedals.add(pedalID);
     }

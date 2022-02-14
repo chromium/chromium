@@ -250,4 +250,28 @@ public class BaseSuggestionViewBinderUnitTest {
         verify(mDecoratedView).setPaddingRelative(startSpace, 0, endSpace, 0);
         verify(mBaseView, never()).setPaddingRelative(anyInt(), anyInt(), anyInt(), anyInt());
     }
+
+    @Test
+    public void suggestionDensity_defaultMode() {
+        mModel.set(
+                BaseSuggestionViewProperties.DENSITY, BaseSuggestionViewProperties.Density.DEFAULT);
+        final int expectedPadding =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_semicompact_padding);
+        final int expectedHeight =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_semicompact_height);
+        verify(mContentView).setPaddingRelative(0, expectedPadding, 0, expectedPadding);
+        verify(mContentView).setMinimumHeight(expectedHeight);
+    }
+
+    @Test
+    public void suggestionDensity_compactMode() {
+        mModel.set(
+                BaseSuggestionViewProperties.DENSITY, BaseSuggestionViewProperties.Density.COMPACT);
+        final int expectedPadding =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_compact_padding);
+        final int expectedHeight =
+                mResources.getDimensionPixelSize(R.dimen.omnibox_suggestion_compact_height);
+        verify(mContentView).setPaddingRelative(0, expectedPadding, 0, expectedPadding);
+        verify(mContentView).setMinimumHeight(expectedHeight);
+    }
 }

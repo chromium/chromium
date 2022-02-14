@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.omnibox.R;
@@ -39,12 +40,19 @@ public class PedalSuggestionView<T extends View> extends SimpleVerticalLayoutVie
         addView(mBaseSuggestionView);
 
         mPedal = new PedalView(getContext());
-        int pedalStartPaddingPx =
+        final @Px int pedalSuggestionSizePx = context.getResources().getDimensionPixelSize(
+                R.dimen.omnibox_pedal_suggestion_pedal_height);
+        final @Px int pedalStartPaddingPx =
                 getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_icon_area_size);
-        int pedalEndPaddingPx =
+        final @Px int pedalEndPaddingPx =
                 getResources().getDimensionPixelSize(R.dimen.omnibox_suggestion_action_icon_width);
         mPedal.setPaddingRelative(pedalStartPaddingPx, 0, pedalEndPaddingPx, 0);
+        mPedal.getChipView().setMinimumHeight(pedalSuggestionSizePx);
         addView(mPedal);
+
+        final @Px int pedalBottomPaddingPx = getResources().getDimensionPixelSize(
+                R.dimen.omnibox_suggestion_semicompact_padding);
+        setPaddingRelative(0, 0, 0, pedalBottomPaddingPx);
     }
 
     /** @return base suggestion view. */
