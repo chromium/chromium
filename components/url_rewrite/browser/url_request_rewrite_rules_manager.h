@@ -62,6 +62,11 @@ class UrlRequestRewriteRulesManager {
         const scoped_refptr<UrlRequestRewriteRules>& cached_rules);
 
    private:
+    // Callback used to iterate over the initial set of RenderFrameHosts in the
+    // WebContents.
+    void MaybeRegisterExistingRenderFrame(
+        content::RenderFrameHost* render_frame_host);
+
     // content::WebContentsObserver implementation.
     void RenderFrameCreated(
         content::RenderFrameHost* render_frame_host) override;

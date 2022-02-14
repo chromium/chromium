@@ -125,4 +125,26 @@ IN_PROC_BROWSER_TEST_F(UrlRequestRewriteRulesManagerBrowserTest,
       mojom::UrlRequestRewriteRules::New()));
 }
 
+// Tests that adding a WebContents after a navigation has already occurred
+// does not trigger a DCHECK on destruction. This is a regression test for
+// https://crbug.com/1152930.
+IN_PROC_BROWSER_TEST_F(UrlRequestRewriteRulesManagerBrowserTest,
+                       WebContentsAddedAfterNavigation) {
+  // Load a simple HTML page.
+  GURL url = embedded_test_server()->GetURL("/single_web_contents.html");
+  content::TestNavigationObserver navigation_observer(shell()->web_contents());
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+  navigation_observer.Wait();
+
+  // Add the WebContents to the manager. At this point, an RFH has already been
+  // created. Eventually, it will be destroyed.
+  ASSERT_TRUE(url_request_rewrite_rules_manager_.AddWebContents(
+      shell()->web_contents()));
+
+  // Verify there were no inner WebContents created, and updaters size is 1.
+  ASSERT_THAT(shell()->web_contents()->GetInnerWebContents(), IsEmpty());
+  ASSERT_EQ(url_request_rewrite_rules_manager_.GetUpdatersSizeForTesting(), 1u);
+  ASSERT_TRUE(url_request_rewrite_rules_manager_.OnRulesUpdated(
+      mojom::UrlRequestRewriteRules::New()));
+}
 }  // namespace url_rewrite

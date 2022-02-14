@@ -5,6 +5,7 @@
 #include "components/url_rewrite/browser/url_request_rewrite_rules_manager.h"
 
 #include "components/url_rewrite/browser/url_request_rewrite_rules_validation.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace url_rewrite {
@@ -75,7 +76,11 @@ size_t UrlRequestRewriteRulesManager::GetUpdatersSizeForTesting() const {
 UrlRequestRewriteRulesManager::Updater::Updater(
     content::WebContents* web_contents,
     const scoped_refptr<UrlRequestRewriteRules>& cached_rules)
-    : content::WebContentsObserver(web_contents), cached_rules_(cached_rules) {}
+    : content::WebContentsObserver(web_contents), cached_rules_(cached_rules) {
+  web_contents->ForEachRenderFrameHost(base::BindRepeating(
+      &UrlRequestRewriteRulesManager::Updater::MaybeRegisterExistingRenderFrame,
+      base::Unretained(this)));
+}
 
 UrlRequestRewriteRulesManager::Updater::~Updater() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -91,6 +96,15 @@ void UrlRequestRewriteRulesManager::Updater::OnRulesUpdated(
   // Send the updated rules to the updaters.
   for (const auto& receiver_pair : active_remotes_) {
     receiver_pair.second->OnRulesUpdated(mojo::Clone(cached_rules_->data));
+  }
+}
+
+void UrlRequestRewriteRulesManager::Updater::MaybeRegisterExistingRenderFrame(
+    content::RenderFrameHost* render_frame_host) {
+  if (render_frame_host->IsRenderFrameCreated()) {
+    // Call RenderFrameCreated() for frames that were created before this
+    // observer started observing this WebContents.
+    RenderFrameCreated(render_frame_host);
   }
 }
 
