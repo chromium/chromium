@@ -82,17 +82,29 @@ def _normalize_branch_selector(branch_selector):
         branch_selectors = branch_selectors.union(s)
     return branch_selectors
 
-def _matches(branch_selector):
+def _matches(branch_selector, *, target = None):
     """Returns whether `branch_selector` matches the project settings.
 
     Args:
       branch_selector: A single branch selector value or a list of branch
         selector values.
+      target: A single branch selector value or a list of branch selector values
+        to match branch_selector against. The return value will indicate whether
+        there is an intersection between branch_selector and target instead of
+        matching against the project settings.
 
     Returns:
       True if any of the specified branch selectors matches, False otherwise.
     """
     branch_selectors = _normalize_branch_selector(branch_selector)
+
+    if target != None:
+        targets = _normalize_branch_selector(target)
+        for b in branch_selectors:
+            if b in targets:
+                return True
+        return False
+
     for b in branch_selectors:
         if b == MAIN:
             if settings.is_main:
