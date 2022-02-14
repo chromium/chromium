@@ -158,9 +158,12 @@ crbug.com/1143774 [ chromeos chromeos-board-kevin ] ContextLost_WebGLUnblockedAf
 # Flaky for LaCrOS
 crbug.com/1205899 [ linux display-server-wayland ] ContextLost_WebGLBlockedAfterJSNavigation [ RetryOnFailure ]
 
-# GpuCrash_Info* flakes on Mac Retina Debug (AMD)
+# GpuCrash_Info* flakes on Mac Debug (AMD, Intel)
 crbug.com/1276598 [ mac amd debug passthrough ] GpuCrash_InfoForHardwareGpu [ RetryOnFailure ]
 crbug.com/1276598 [ mac amd debug passthrough ] GpuCrash_InfoForDualHardwareGpus [ RetryOnFailure ]
+crbug.com/1297151 [ mac intel debug no-passthrough ] GpuCrash_InfoForHardwareGpu [ RetryOnFailure ]
+
+
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
