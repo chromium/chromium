@@ -37184,6 +37184,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4164" label="CSSAtRuleFontPaletteValues"/>
   <int value="4165" label="CSSAtRuleContainer"/>
   <int value="4166" label="FederatedCredentialManagement"/>
+  <int value="4167" label="FetchEventSourceLastEventIdCorsUnSafe"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
