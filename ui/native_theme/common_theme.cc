@@ -4,7 +4,6 @@
 
 #include "ui/native_theme/common_theme.h"
 
-#include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
@@ -19,18 +18,6 @@
 #include "ui/gfx/image/image_skia.h"
 
 namespace ui {
-
-SkColor GetAlertSeverityColor(ColorId color_id, bool dark) {
-  constexpr auto kColorIdMap =
-      base::MakeFixedFlatMap<ColorId, std::array<SkColor, 2>>({
-          {kColorAlertHighSeverity, {{gfx::kGoogleRed600, gfx::kGoogleRed300}}},
-          {kColorAlertLowSeverity,
-           {{gfx::kGoogleGreen700, gfx::kGoogleGreen300}}},
-          {kColorAlertMediumSeverity,
-           {{gfx::kGoogleYellow700, gfx::kGoogleYellow300}}},
-      });
-  return kColorIdMap.at(color_id)[dark];
-}
 
 void CommonThemePaintMenuItemBackground(
     const NativeTheme* theme,
