@@ -1261,16 +1261,6 @@ if (!limit_android_deps) {
     # Reduce binary size. https:crbug.com/954584
     ignore_proguard_configs = true
     proguard_configs = [ "material_design.flags" ]
-
-    # Ensure ConstraintsLayout is not included by unused layouts:
-    # https://crbug.com/1292510
-    resource_exclusion_globs = [
-      "res/layout*/*calendar*",
-      "res/layout*/*chip_input*",
-      "res/layout*/*clock*",
-      "res/layout*/*picker*",
-      "res/layout*/*time*",
-    ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.

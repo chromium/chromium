@@ -4214,6 +4214,9 @@ if (enable_java_templates) {
   #   ignore_native_libraries: Whether to ignore .so files found in the .aar.
   #       See also extract_native_libraries.
   #   ignore_proguard_configs: Whether to ignore proguard configs.
+  #   ignore_info_updates: Whether to ignore the info file when
+  #       update_android_aar_prebuilts gn arg is true. However, the info file
+  #       will still be verified regardless of the value of this flag.
   #   strip_resources: Whether to ignore android resources found in the .aar.
   #   custom_package: Java package for generated R.java files.
   #   extract_native_libraries: Whether to extract .so files found in the .aar.
@@ -4263,25 +4266,20 @@ if (enable_java_templates) {
     # to keep the logic for generated 'android_aar_prebuilt' rules simple.
     not_needed(invoker, [ "resource_overlay" ])
 
-    _aar_common_args = [ rebase_path(invoker.aar_path, root_build_dir) ]
-    if (_strip_resources) {
-      _aar_common_args += [ "--ignore-resources" ]
-    }
-    if (defined(invoker.resource_exclusion_globs)) {
-      _aar_common_args +=
-          [ "--resource-exclusion-globs=${invoker.resource_exclusion_globs}" ]
-    }
+    _ignore_info_updates =
+        defined(invoker.ignore_info_updates) && invoker.ignore_info_updates
 
     # Scan the AAR file and determine the resources and jar files.
     # Some libraries might not have resources; others might have two jars.
-    if (update_android_aar_prebuilts) {
+    if (!_ignore_info_updates && update_android_aar_prebuilts) {
       print("Writing " + rebase_path(_info_path, "//"))
       exec_script("//build/android/gyp/aar.py",
                   [
-                        "list",
-                        "--output",
-                        rebase_path(_info_path, root_build_dir),
-                      ] + _aar_common_args)
+                    "list",
+                    rebase_path(invoker.aar_path, root_build_dir),
+                    "--output",
+                    rebase_path(_info_path, root_build_dir),
+                  ])
     }
 
     # If "gn gen" is failing on the following line, you need to generate an
@@ -4291,7 +4289,6 @@ if (enable_java_templates) {
     _scanned_files = read_file(_info_path, "scope")
 
     _use_scanned_assets = !_ignore_assets && _scanned_files.assets != []
-    _has_resources = _scanned_files.resources != []
 
     assert(_ignore_aidl || _scanned_files.aidl == [],
            "android_aar_prebuilt() aidl not yet supported." +
@@ -4312,24 +4309,30 @@ if (enable_java_templates) {
     action_with_pydeps(_unpack_target_name) {
       script = "//build/android/gyp/aar.py"  # Unzips the AAR
       args = [
-               "extract",
-               "--output-dir",
-               rebase_path(_output_path, root_build_dir),
-               "--assert-info-file",
-               rebase_path(_info_path, root_build_dir),
-             ] + _aar_common_args
+        "extract",
+        rebase_path(invoker.aar_path, root_build_dir),
+        "--output-dir",
+        rebase_path(_output_path, root_build_dir),
+        "--assert-info-file",
+        rebase_path(_info_path, root_build_dir),
+      ]
+      if (_strip_resources) {
+        args += [ "--ignore-resources" ]
+      }
       inputs = [ invoker.aar_path ]
       outputs = [ "${_output_path}/AndroidManifest.xml" ]
-      outputs +=
-          get_path_info(rebase_path(_scanned_files.resources, "", _output_path),
-                        "abspath")
-      if (_scanned_files.has_r_text_file) {
+      if (!_strip_resources && _scanned_files.has_r_text_file) {
         # Certain packages, in particular Play Services have no R.txt even
         # though its presence is mandated by AAR spec. Such packages cause
         # spurious rebuilds if this output is specified unconditionally.
         outputs += [ "${_output_path}/R.txt" ]
       }
 
+      if (!_strip_resources && _scanned_files.resources != []) {
+        outputs += get_path_info(
+                rebase_path(_scanned_files.resources, "", _output_path),
+                "abspath")
+      }
       if (_scanned_files.has_classes_jar) {
         outputs += [ "${_output_path}/classes.jar" ]
       }
@@ -4354,11 +4357,15 @@ if (enable_java_templates) {
       }
     }
 
+    _has_unignored_resources =
+        !_strip_resources &&
+        (_scanned_files.resources != [] || _scanned_files.has_r_text_file)
+
     _should_process_manifest =
         !_ignore_manifest && !_scanned_files.is_manifest_empty
 
     # Create the android_resources target for resources.
-    if (_has_resources || _should_process_manifest) {
+    if (_has_unignored_resources || _should_process_manifest) {
       _res_target_name = "${target_name}__resources"
       android_resources(_res_target_name) {
         forward_variables_from(invoker,
@@ -4377,8 +4384,11 @@ if (enable_java_templates) {
           custom_package = _scanned_files.manifest_package
         }
 
-        sources = rebase_path(_scanned_files.resources, "", _output_path)
-        if (_scanned_files.has_r_text_file) {
+        sources = []
+        if (!_strip_resources) {
+          sources = rebase_path(_scanned_files.resources, "", _output_path)
+        }
+        if (!_strip_resources && _scanned_files.has_r_text_file) {
           r_text_file = "${_output_path}/R.txt"
         }
       }
