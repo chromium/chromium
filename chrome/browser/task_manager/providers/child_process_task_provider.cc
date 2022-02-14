@@ -56,8 +56,6 @@ void ChildProcessTaskProvider::StartUpdating() {
   DCHECK(tasks_by_child_id_.empty());
 
   // First, get the pre-existing child processes data.
-  std::unique_ptr<std::vector<ChildProcessData>> child_processes(
-      new std::vector<ChildProcessData>());
   for (BrowserChildProcessHostIterator itr; !itr.Done(); ++itr) {
     const ChildProcessData& process_data = itr.GetData();
 
@@ -65,11 +63,8 @@ void ChildProcessTaskProvider::StartUpdating() {
     if (!process_data.GetProcess().IsValid())
       continue;
 
-    child_processes->push_back(process_data.Duplicate());
-  }
-
-  for (const auto& process_data : *child_processes)
     CreateTask(process_data);
+  }
 
   // Now start observing.
   BrowserChildProcessObserver::Add(this);

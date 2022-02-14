@@ -192,9 +192,8 @@ BrowserChildProcessHostImpl::~BrowserChildProcessHostImpl() {
   if (!notify_child_connection_status_)
     return;
 
-  ChildProcessData data = data_.Duplicate();
   for (auto& observer : g_browser_child_process_observers.Get())
-    observer.BrowserChildProcessHostDisconnected(data);
+    observer.BrowserChildProcessHostDisconnected(data_);
 }
 
 // static
@@ -395,7 +394,7 @@ void BrowserChildProcessHostImpl::OnProcessConnected() {
 #endif
 
   if (IsProcessLaunched())
-    NotifyProcessLaunchedAndConnected(data_.Duplicate());
+    NotifyProcessLaunchedAndConnected(data_);
 }
 
 void BrowserChildProcessHostImpl::OnChannelError() {
@@ -452,15 +451,14 @@ void BrowserChildProcessHostImpl::OnChildDisconnected() {
     if (!info.clean_exit) {
       delegate_->OnProcessCrashed(info.exit_code);
     }
-    NotifyProcessKilled(data_.Duplicate(), info);
+    NotifyProcessKilled(data_, info);
 #else  // BUILDFLAG(IS_ANDROID)
     switch (info.status) {
       case base::TERMINATION_STATUS_PROCESS_CRASHED:
       case base::TERMINATION_STATUS_ABNORMAL_TERMINATION: {
         delegate_->OnProcessCrashed(info.exit_code);
-        ChildProcessData data = data_.Duplicate();
         for (auto& observer : g_browser_child_process_observers.Get())
-          observer.BrowserChildProcessCrashed(data, info);
+          observer.BrowserChildProcessCrashed(data_, info);
         UMA_HISTOGRAM_ENUMERATION("ChildProcess.Crashed2",
                                   static_cast<ProcessType>(data_.process_type),
                                   PROCESS_TYPE_MAX);
@@ -471,7 +469,7 @@ void BrowserChildProcessHostImpl::OnChildDisconnected() {
 #endif
       case base::TERMINATION_STATUS_PROCESS_WAS_KILLED: {
         delegate_->OnProcessCrashed(info.exit_code);
-        NotifyProcessKilled(data_.Duplicate(), info);
+        NotifyProcessKilled(data_, info);
         // Report that this child process was killed.
         UMA_HISTOGRAM_ENUMERATION("ChildProcess.Killed2",
                                   static_cast<ProcessType>(data_.process_type),
@@ -607,9 +605,8 @@ void BrowserChildProcessHostImpl::OnProcessLaunchFailed(int error_code) {
       child_process_->GetChildTerminationInfo(/*known_dead=*/true);
   DCHECK_EQ(info.status, base::TERMINATION_STATUS_LAUNCH_FAILED);
 
-  ChildProcessData data = data_.Duplicate();
   for (auto& observer : g_browser_child_process_observers.Get())
-    observer.BrowserChildProcessLaunchFailed(data, info);
+    observer.BrowserChildProcessLaunchFailed(data_, info);
   notify_child_connection_status_ = false;
   delete delegate_;  // Will delete us
 }
@@ -646,7 +643,7 @@ void BrowserChildProcessHostImpl::OnProcessLaunched() {
   delegate_->OnProcessLaunched();
 
   if (notify_child_connection_status_)
-    NotifyProcessLaunchedAndConnected(data_.Duplicate());
+    NotifyProcessLaunchedAndConnected(data_);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // In ChromeOS, there are still child processes of NaCl modules, and they
