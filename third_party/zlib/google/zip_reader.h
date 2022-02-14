@@ -173,6 +173,10 @@ class ZipReader {
   // By default, paths are assumed to be in UTF-8.
   void SetEncoding(std::string encoding) { encoding_ = std::move(encoding); }
 
+  // Sets the decryption password that will be used to decrypt encrypted file in
+  // the ZIP archive.
+  void SetPassword(std::string password) { password_ = std::move(password); }
+
   // Gets the next entry. Returns null if there is no more entry. The returned
   // Entry is owned by this ZipReader, and is valid until Next() is called
   // again or until this ZipReader is closed.
@@ -273,6 +277,7 @@ class ZipReader {
                     const int64_t offset);
 
   std::string encoding_;
+  std::string password_;
   unzFile zip_file_;
   int num_entries_;
   int next_index_;

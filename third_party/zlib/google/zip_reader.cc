@@ -313,7 +313,12 @@ bool ZipReader::ExtractCurrentEntry(WriterDelegate* delegate,
                                     uint64_t num_bytes_to_extract) const {
   DCHECK(zip_file_);
 
-  if (const int err = unzOpenCurrentFile(zip_file_); err != UNZ_OK) {
+  // Use password only for encrypted files. For non-encrypted files, no password
+  // is needed, and must be nullptr.
+  const char* const password =
+      entry_.is_encrypted() ? password_.c_str() : nullptr;
+  if (const int err = unzOpenCurrentFilePassword(zip_file_, password);
+      err != UNZ_OK) {
     LOG(ERROR) << "Cannot open file " << Redact(entry_.path)
                << " from ZIP: " << UnzipError(err);
     return false;
@@ -398,7 +403,12 @@ void ZipReader::ExtractCurrentEntryToFilePathAsync(
     return;
   }
 
-  if (const int err = unzOpenCurrentFile(zip_file_); err != UNZ_OK) {
+  // Use password only for encrypted files. For non-encrypted files, no password
+  // is needed, and must be nullptr.
+  const char* const password =
+      entry_.is_encrypted() ? password_.c_str() : nullptr;
+  if (const int err = unzOpenCurrentFilePassword(zip_file_, password);
+      err != UNZ_OK) {
     LOG(ERROR) << "Cannot open file " << Redact(entry_.path)
                << " from ZIP: " << UnzipError(err);
     base::SequencedTaskRunnerHandle::Get()->PostTask(

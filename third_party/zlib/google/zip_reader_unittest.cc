@@ -414,22 +414,88 @@ TEST_F(ZipReaderTest, Directory) {
   EXPECT_TRUE(entry->is_directory);
 }
 
-TEST_F(ZipReaderTest, EncryptedFile) {
+TEST_F(ZipReaderTest, EncryptedFile_WrongPassword) {
   ZipReader reader;
-  base::FilePath target_path(FILE_PATH_LITERAL("foo/bar/quux.txt"));
+  ASSERT_TRUE(reader.Open(data_dir_.AppendASCII("Different Encryptions.zip")));
+  reader.SetPassword("wrong password");
 
-  ASSERT_TRUE(reader.Open(data_dir_.AppendASCII("test_encrypted.zip")));
-  const ZipReader::Entry* entry = LocateAndOpenEntry(&reader, target_path);
-  ASSERT_TRUE(entry);
-  EXPECT_EQ(target_path, entry->path);
-  EXPECT_TRUE(entry->is_encrypted);
-  reader.Close();
+  {
+    const ZipReader::Entry* entry = reader.Next();
+    ASSERT_TRUE(entry);
+    EXPECT_EQ(base::FilePath::FromASCII("ClearText.txt"), entry->path);
+    EXPECT_FALSE(entry->is_directory);
+    EXPECT_FALSE(entry->is_encrypted);
+    std::string contents = "dummy";
+    EXPECT_TRUE(reader.ExtractCurrentEntryToString(1000, &contents));
+    EXPECT_EQ("This is not encrypted.\n", contents);
+  }
 
-  ASSERT_TRUE(reader.Open(test_zip_file_));
-  entry = LocateAndOpenEntry(&reader, target_path);
-  ASSERT_TRUE(entry);
-  EXPECT_EQ(target_path, entry->path);
-  EXPECT_FALSE(entry->is_encrypted);
+  for (const base::StringPiece path : {
+           "Encrypted AES-128.txt",
+           "Encrypted AES-192.txt",
+           "Encrypted AES-256.txt",
+           "Encrypted ZipCrypto.txt",
+       }) {
+    const ZipReader::Entry* entry = reader.Next();
+    ASSERT_TRUE(entry);
+    EXPECT_EQ(base::FilePath::FromASCII(path), entry->path);
+    EXPECT_FALSE(entry->is_directory);
+    EXPECT_TRUE(entry->is_encrypted);
+    std::string contents = "dummy";
+    EXPECT_FALSE(reader.ExtractCurrentEntryToString(1000, &contents));
+    EXPECT_EQ("", contents);
+  }
+
+  EXPECT_FALSE(reader.Next());
+  EXPECT_TRUE(reader.ok());
+}
+
+TEST_F(ZipReaderTest, EncryptedFile_RightPassword) {
+  ZipReader reader;
+  ASSERT_TRUE(reader.Open(data_dir_.AppendASCII("Different Encryptions.zip")));
+  reader.SetPassword("password");
+
+  {
+    const ZipReader::Entry* entry = reader.Next();
+    ASSERT_TRUE(entry);
+    EXPECT_EQ(base::FilePath::FromASCII("ClearText.txt"), entry->path);
+    EXPECT_FALSE(entry->is_directory);
+    EXPECT_FALSE(entry->is_encrypted);
+    std::string contents = "dummy";
+    EXPECT_TRUE(reader.ExtractCurrentEntryToString(1000, &contents));
+    EXPECT_EQ("This is not encrypted.\n", contents);
+  }
+
+  // TODO(crbug.com/1296838) Support AES encryption.
+  for (const base::StringPiece path : {
+           "Encrypted AES-128.txt",
+           "Encrypted AES-192.txt",
+           "Encrypted AES-256.txt",
+       }) {
+    const ZipReader::Entry* entry = reader.Next();
+    ASSERT_TRUE(entry);
+    EXPECT_EQ(base::FilePath::FromASCII(path), entry->path);
+    EXPECT_FALSE(entry->is_directory);
+    EXPECT_TRUE(entry->is_encrypted);
+    std::string contents = "dummy";
+    EXPECT_FALSE(reader.ExtractCurrentEntryToString(1000, &contents));
+    EXPECT_EQ("", contents);
+  }
+
+  {
+    const ZipReader::Entry* entry = reader.Next();
+    ASSERT_TRUE(entry);
+    EXPECT_EQ(base::FilePath::FromASCII("Encrypted ZipCrypto.txt"),
+              entry->path);
+    EXPECT_FALSE(entry->is_directory);
+    EXPECT_TRUE(entry->is_encrypted);
+    std::string contents = "dummy";
+    EXPECT_TRUE(reader.ExtractCurrentEntryToString(1000, &contents));
+    EXPECT_EQ("This is encrypted with ZipCrypto.\n", contents);
+  }
+
+  EXPECT_FALSE(reader.Next());
+  EXPECT_TRUE(reader.ok());
 }
 
 // Verifies that the ZipReader class can extract a file from a zip archive
@@ -502,6 +568,71 @@ TEST_F(ZipReaderTest, ExtractToFileAsync_RegularFile) {
   ASSERT_TRUE(base::GetFileSize(target_file, &file_size));
 
   EXPECT_EQ(file_size, listener.current_progress());
+}
+
+TEST_F(ZipReaderTest, ExtractToFileAsync_Encrypted_NoPassword) {
+  MockUnzipListener listener;
+
+  ZipReader reader;
+  ASSERT_TRUE(reader.Open(data_dir_.AppendASCII("Different Encryptions.zip")));
+  ASSERT_TRUE(LocateAndOpenEntry(
+      &reader, base::FilePath::FromASCII("Encrypted ZipCrypto.txt")));
+  const base::FilePath target_path = test_dir_.AppendASCII("extracted");
+  reader.ExtractCurrentEntryToFilePathAsync(
+      target_path,
+      base::BindOnce(&MockUnzipListener::OnUnzipSuccess, listener.AsWeakPtr()),
+      base::BindOnce(&MockUnzipListener::OnUnzipFailure, listener.AsWeakPtr()),
+      base::BindRepeating(&MockUnzipListener::OnUnzipProgress,
+                          listener.AsWeakPtr()));
+
+  EXPECT_EQ(0, listener.success_calls());
+  EXPECT_EQ(0, listener.failure_calls());
+  EXPECT_EQ(0, listener.progress_calls());
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(0, listener.success_calls());
+  EXPECT_EQ(1, listener.failure_calls());
+  EXPECT_LE(1, listener.progress_calls());
+
+  // The extracted file contains rubbish data.
+  // We probably shouldn't even look at it.
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(target_path, &contents));
+  EXPECT_NE("", contents);
+  EXPECT_EQ(contents.size(), listener.current_progress());
+}
+
+TEST_F(ZipReaderTest, ExtractToFileAsync_Encrypted_RightPassword) {
+  MockUnzipListener listener;
+
+  ZipReader reader;
+  reader.SetPassword("password");
+  ASSERT_TRUE(reader.Open(data_dir_.AppendASCII("Different Encryptions.zip")));
+  ASSERT_TRUE(LocateAndOpenEntry(
+      &reader, base::FilePath::FromASCII("Encrypted ZipCrypto.txt")));
+  const base::FilePath target_path = test_dir_.AppendASCII("extracted");
+  reader.ExtractCurrentEntryToFilePathAsync(
+      target_path,
+      base::BindOnce(&MockUnzipListener::OnUnzipSuccess, listener.AsWeakPtr()),
+      base::BindOnce(&MockUnzipListener::OnUnzipFailure, listener.AsWeakPtr()),
+      base::BindRepeating(&MockUnzipListener::OnUnzipProgress,
+                          listener.AsWeakPtr()));
+
+  EXPECT_EQ(0, listener.success_calls());
+  EXPECT_EQ(0, listener.failure_calls());
+  EXPECT_EQ(0, listener.progress_calls());
+
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1, listener.success_calls());
+  EXPECT_EQ(0, listener.failure_calls());
+  EXPECT_LE(1, listener.progress_calls());
+
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(target_path, &contents));
+  EXPECT_EQ("This is encrypted with ZipCrypto.\n", contents);
+  EXPECT_EQ(contents.size(), listener.current_progress());
 }
 
 TEST_F(ZipReaderTest, ExtractToFileAsync_WrongCrc) {
