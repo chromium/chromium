@@ -198,6 +198,9 @@ void PagedAppsGridView::OnTabletModeChanged(bool started) {
 
   // Prevent context menus from remaining open after a transition
   CancelContextMenusOnCurrentPage();
+
+  // Abort the running reorder animation when the tablet mode updates.
+  MaybeAbortReorderAnimation();
 }
 
 void PagedAppsGridView::HandleScrollFromParentView(const gfx::Vector2d& offset,

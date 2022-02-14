@@ -222,9 +222,8 @@ void AppListTestApi::WaitForAppListShowAnimation(bool is_bubble_window) {
   if (!controller->IsVisible()) {
     AppListVisibilityChangedWaiter waiter;
     waiter.Wait();
-    if (!controller->IsVisible()) {
+    if (!controller->IsVisible())
       ADD_FAILURE() << "Launcher is not visible.";
-    }
   }
 
   // Wait for the app list window animation.
@@ -423,9 +422,9 @@ void AppListTestApi::SetFolderViewAnimationCallback(
 }
 
 void AppListTestApi::AddReorderAnimationCallback(
-    AppsGridView::ReorderAnimationCallback callback) {
+    AppsGridView::TestReorderDoneCallbackType callback) {
   DCHECK(features::IsLauncherAppSortEnabled());
-  GetTopLevelAppsGridView()->AddReorderDoneCallbackForTest(std::move(callback));
+  GetTopLevelAppsGridView()->AddReorderCallbackForTest(std::move(callback));
 }
 
 bool AppListTestApi::HasAnyWaitingReorderDoneCallback() const {

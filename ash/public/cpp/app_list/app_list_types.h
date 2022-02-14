@@ -274,6 +274,21 @@ enum class AppListModelStatus {
   kStatusSyncing,  // Syncing apps or installing synced apps.
 };
 
+// Indicate the state of the apps grid reorder animation.
+enum class AppListReorderAnimationStatus {
+  // No reorder animation is active.
+  kEmpty,
+
+  // Run the animation that fades out the obsolete layout.
+  kFadeOutAnimation,
+
+  // After the fade out animation ends and before the fade in animation starts.
+  kIntermediaryState,
+
+  // Run the animation that fades in the new layout after reordering.
+  kFadeInAnimation
+};
+
 // The UI component the user launched the search result from. Must match
 // chrome/browser/ui/app_list/app_launch_event_logger.proto.
 // This enum is used in a histogram, do not remove/renumber entries. If you're

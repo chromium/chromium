@@ -27,8 +27,11 @@ namespace {
 
 class AppListBubbleAppsPageTest : public AshTestBase {
  public:
-  void OnReorderAnimationDone(base::OnceClosure closure, bool aborted) {
+  void OnReorderAnimationDone(base::OnceClosure closure,
+                              bool aborted,
+                              AppListReorderAnimationStatus status) {
     EXPECT_FALSE(aborted);
+    EXPECT_EQ(AppListReorderAnimationStatus::kFadeInAnimation, status);
     std::move(closure).Run();
   }
 
@@ -227,7 +230,7 @@ TEST_P(AppListBubbleAppsReorderTest, ScrollToShowUndoToastWhenSorting) {
         /*animate=*/true, /*update_position_closure=*/base::DoNothing());
 
     base::RunLoop run_loop;
-    apps_page->scrollable_apps_grid_view()->AddReorderDoneCallbackForTest(
+    apps_page->scrollable_apps_grid_view()->AddReorderCallbackForTest(
         base::BindRepeating(&AppListBubbleAppsPageTest::OnReorderAnimationDone,
                             base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
@@ -256,7 +259,7 @@ TEST_P(AppListBubbleAppsReorderTest, ScrollToShowUndoToastWhenSorting) {
         /*animate=*/true, /*update_position_closure=*/base::DoNothing());
 
     base::RunLoop run_loop;
-    apps_page->scrollable_apps_grid_view()->AddReorderDoneCallbackForTest(
+    apps_page->scrollable_apps_grid_view()->AddReorderCallbackForTest(
         base::BindRepeating(&AppListBubbleAppsPageTest::OnReorderAnimationDone,
                             base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();

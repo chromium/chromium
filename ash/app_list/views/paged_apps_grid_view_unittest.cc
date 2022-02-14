@@ -82,8 +82,11 @@ class PagedAppsGridViewTestBase : public AshTestBase {
         ->LayoutRootViewIfNecessary();
   }
 
-  void OnReorderAnimationDone(base::OnceClosure closure, bool aborted) {
+  void OnReorderAnimationDone(base::OnceClosure closure,
+                              bool aborted,
+                              AppListReorderAnimationStatus status) {
     EXPECT_FALSE(aborted);
+    EXPECT_EQ(AppListReorderAnimationStatus::kFadeInAnimation, status);
     std::move(closure).Run();
   }
 
@@ -360,7 +363,7 @@ TEST_F(PagedAppsGridViewTest, ScrollToShowUndoToastWhenSorting) {
         /*animate=*/true, /*update_position_closure=*/base::DoNothing());
 
     base::RunLoop run_loop;
-    container_view->apps_grid_view()->AddReorderDoneCallbackForTest(
+    container_view->apps_grid_view()->AddReorderCallbackForTest(
         base::BindRepeating(&PagedAppsGridViewTest::OnReorderAnimationDone,
                             base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
@@ -384,7 +387,7 @@ TEST_F(PagedAppsGridViewTest, ScrollToShowUndoToastWhenSorting) {
         /*animate=*/true, /*update_position_closure=*/base::DoNothing());
 
     base::RunLoop run_loop;
-    container_view->apps_grid_view()->AddReorderDoneCallbackForTest(
+    container_view->apps_grid_view()->AddReorderCallbackForTest(
         base::BindRepeating(&PagedAppsGridViewTest::OnReorderAnimationDone,
                             base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();

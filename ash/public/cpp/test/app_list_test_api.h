@@ -115,10 +115,14 @@ class ASH_EXPORT AppListTestApi {
   void SetFolderViewAnimationCallback(
       base::OnceClosure folder_animation_done_callback);
 
-  // Adds a callback that runs at the end of the reorder animation. The callback
-  // carries a boolean parameter that is true if the animation is aborted.
+  // Adds a callback that runs at the end of the app list reorder. The callback
+  // carries:
+  // (1) A boolean parameter that is true if the reorder is aborted.
+  // (2) An enum value that specifies the reorder animation status when the
+  // callback runs.
   void AddReorderAnimationCallback(
-      base::RepeatingCallback<void(bool)> callback);
+      base::RepeatingCallback<void(bool, AppListReorderAnimationStatus)>
+          callback);
 
   // Returns true if there is any waiting reorder animation test callback.
   bool HasAnyWaitingReorderDoneCallback() const;

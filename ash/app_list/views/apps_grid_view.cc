@@ -368,7 +368,7 @@ AppsGridView::~AppsGridView() {
   bounds_animator_->Cancel();
 
   // Abort reorder animation before `view_model_` is cleared.
-  MaybeAbortReorderingAnimation();
+  MaybeAbortReorderAnimation();
 
   view_model_.Clear();
   RemoveAllChildViews();
@@ -965,7 +965,7 @@ void AppsGridView::Update() {
   UpdateBorder();
 
   // Abort reorder animation before `view_model_` is cleared.
-  MaybeAbortReorderingAnimation();
+  MaybeAbortReorderAnimation();
 
   view_model_.Clear();
   pulsing_blocks_model_.Clear();
@@ -1886,12 +1886,12 @@ bool AppsGridView::IsTabletMode() const {
 void AppsGridView::FadeOutVisibleItemsForReorder(
     ReorderAnimationCallback done_callback) {
   // Abort the running reorder animation if any.
-  MaybeAbortReorderingAnimation();
+  MaybeAbortReorderAnimation();
 
   // Cancel the active bounds animations on item views if any.
   bounds_animator_->Cancel();
 
-  reorder_animation_status_ = ReorderAnimationStatus::kFadeOutAnimation;
+  reorder_animation_status_ = AppListReorderAnimationStatus::kFadeOutAnimation;
   reorder_animation_tracker_.emplace(
       layer()->GetCompositor()->RequestNewThroughputTracker());
   reorder_animation_tracker_->Start(metrics_util::ForSmoothness(
@@ -1930,11 +1930,11 @@ void AppsGridView::FadeOutVisibleItemsForReorder(
 
 void AppsGridView::FadeInVisibleItemsForReorder(
     ReorderAnimationCallback done_callback) {
-  DCHECK_EQ(ReorderAnimationStatus::kIntermediaryState,
+  DCHECK_EQ(AppListReorderAnimationStatus::kIntermediaryState,
             reorder_animation_status_);
   DCHECK(!bounds_animator_->IsAnimating());
 
-  reorder_animation_status_ = ReorderAnimationStatus::kFadeInAnimation;
+  reorder_animation_status_ = AppListReorderAnimationStatus::kFadeInAnimation;
   const absl::optional<VisibleItemIndexRange> range =
       GetVisibleItemIndexRange();
 
@@ -2016,11 +2016,19 @@ bool AppsGridView::FireDragToShelfTimerForTest() {
   return true;
 }
 
-void AppsGridView::AddReorderDoneCallbackForTest(
-    ReorderAnimationCallback done_callback) {
+void AppsGridView::AddReorderCallbackForTest(
+    TestReorderDoneCallbackType done_callback) {
   DCHECK(done_callback);
 
   reorder_animation_callback_queue_for_test_.push(std::move(done_callback));
+}
+
+void AppsGridView::AddFadeOutAnimationDoneClosureForTest(
+    base::OnceClosure done_closure) {
+  DCHECK(done_closure);
+  DCHECK(!fade_out_done_closure_for_test_);
+
+  fade_out_done_closure_for_test_ = std::move(done_closure);
 }
 
 bool AppsGridView::HasAnyWaitingReorderDoneCallbackForTest() const {
@@ -2235,6 +2243,20 @@ void AppsGridView::CancelContextMenusOnCurrentPage() {
     GetItemViewAt(i)->CancelContextMenu();
 }
 
+void AppsGridView::MaybeAbortReorderAnimation() {
+  switch (reorder_animation_status_) {
+    case AppListReorderAnimationStatus::kEmpty:
+    case AppListReorderAnimationStatus::kIntermediaryState:
+      // No active reorder animation so nothing to do.
+      break;
+    case AppListReorderAnimationStatus::kFadeOutAnimation:
+    case AppListReorderAnimationStatus::kFadeInAnimation:
+      DCHECK(reorder_animation_abort_handle_);
+      reorder_animation_abort_handle_.reset();
+      break;
+  }
+}
+
 void AppsGridView::DeleteItemViewAtIndex(int index) {
   AppListItemView* item_view = GetItemViewAt(index);
   view_model_.Remove(index);
@@ -2266,7 +2288,7 @@ void AppsGridView::OnListItemAdded(size_t index, AppListItem* item) {
     EndDrag(true);
 
   // Abort reorder animation before a view is added to `view_model_`.
-  MaybeAbortReorderingAnimation();
+  MaybeAbortReorderAnimation();
 
   if (!item->is_page_break()) {
     int model_index = GetTargetModelIndexFromItemIndex(index);
@@ -2302,7 +2324,7 @@ void AppsGridView::OnListItemRemoved(size_t index, AppListItem* item) {
     EndDrag(true);
 
   // Abort reorder animation before a view is deleted from `view_model_`.
-  MaybeAbortReorderingAnimation();
+  MaybeAbortReorderAnimation();
 
   if (!item->is_page_break())
     DeleteItemViewAtIndex(GetModelIndexOfItem(item));
@@ -2326,7 +2348,7 @@ void AppsGridView::OnListItemMoved(size_t from_index,
                                    AppListItem* item) {
   // Abort reorder animation if the apps grid is updated by the user.
   if (!updating_model_) {
-    MaybeAbortReorderingAnimation();
+    MaybeAbortReorderAnimation();
 
     EndDrag(true);
   }
@@ -2437,7 +2459,7 @@ bool AppsGridView::IsViewHiddenForDrag(const views::View* view) const {
 }
 
 bool AppsGridView::IsUnderReorderAnimation() const {
-  return reorder_animation_status_ != ReorderAnimationStatus::kEmpty;
+  return reorder_animation_status_ != AppListReorderAnimationStatus::kEmpty;
 }
 
 AppListItemView* AppsGridView::GetViewDisplayedAtSlotOnCurrentPage(
@@ -2862,7 +2884,7 @@ void AppsGridView::OnHostDragStartTimerFired() {
 
 void AppsGridView::OnFadeOutAnimationEnded(ReorderAnimationCallback callback,
                                            bool aborted) {
-  reorder_animation_status_ = ReorderAnimationStatus::kIntermediaryState;
+  reorder_animation_status_ = AppListReorderAnimationStatus::kIntermediaryState;
 
   // Reset with the identical transformation. Because the apps grid view is
   // translucent now, setting the layer transform does not bring noticeable
@@ -2887,12 +2909,16 @@ void AppsGridView::OnFadeOutAnimationEnded(ReorderAnimationCallback callback,
 
   callback.Run(aborted);
 
+  if (fade_out_done_closure_for_test_)
+    std::move(fade_out_done_closure_for_test_).Run();
+
   // When the fade out animation is abortted, the fade in animation should not
   // run. Hence, the reorder animation ends. The aborted animation's smoothness
   // is not reported.
   if (aborted) {
-    reorder_animation_status_ = ReorderAnimationStatus::kEmpty;
-    MaybeRunFrontReorderAnimationCallbackForTest(/*aborted=*/true);
+    reorder_animation_status_ = AppListReorderAnimationStatus::kEmpty;
+    MaybeRunNextReorderAnimationCallbackForTest(
+        /*aborted=*/true, AppListReorderAnimationStatus::kFadeOutAnimation);
 
     // Reset `reorder_animation_tracker_` without calling Stop() because the
     // aborted animation's smoothness is not reported.
@@ -2906,7 +2932,7 @@ void AppsGridView::OnFadeInAnimationEnded(ReorderAnimationCallback callback,
   if (aborted)
     layer()->SetOpacity(1.f);
 
-  reorder_animation_status_ = ReorderAnimationStatus::kEmpty;
+  reorder_animation_status_ = AppListReorderAnimationStatus::kEmpty;
 
   // Do not report the smoothness data for the aborted animation.
   if (!aborted)
@@ -2919,31 +2945,20 @@ void AppsGridView::OnFadeInAnimationEnded(ReorderAnimationCallback callback,
   if (!callback.is_null())
     callback.Run(aborted);
 
-  MaybeRunFrontReorderAnimationCallbackForTest(aborted);
+  MaybeRunNextReorderAnimationCallbackForTest(
+      aborted, AppListReorderAnimationStatus::kFadeInAnimation);
 }
 
-void AppsGridView::MaybeAbortReorderingAnimation() {
-  switch (reorder_animation_status_) {
-    case ReorderAnimationStatus::kEmpty:
-    case ReorderAnimationStatus::kIntermediaryState:
-      // No active reorder animation so nothing to do.
-      break;
-    case ReorderAnimationStatus::kFadeOutAnimation:
-    case ReorderAnimationStatus::kFadeInAnimation:
-      DCHECK(reorder_animation_abort_handle_);
-      reorder_animation_abort_handle_.reset();
-      break;
-  }
-}
-
-void AppsGridView::MaybeRunFrontReorderAnimationCallbackForTest(bool aborted) {
+void AppsGridView::MaybeRunNextReorderAnimationCallbackForTest(
+    bool aborted,
+    AppListReorderAnimationStatus animation_source) {
   if (reorder_animation_callback_queue_for_test_.empty())
     return;
 
-  ReorderAnimationCallback front_callback =
+  TestReorderDoneCallbackType front_callback =
       std::move(reorder_animation_callback_queue_for_test_.front());
   reorder_animation_callback_queue_for_test_.pop();
-  std::move(front_callback).Run(aborted);
+  std::move(front_callback).Run(aborted, animation_source);
 }
 
 BEGIN_METADATA(AppsGridView, views::View)

@@ -323,7 +323,19 @@ class ASH_EXPORT AppsGridView : public views::View,
   bool FireFolderItemReparentTimerForTest();
   bool FireDragToShelfTimerForTest();
 
-  void AddReorderDoneCallbackForTest(ReorderAnimationCallback done_callback);
+  // Carries two parameters:
+  // (1) A boolean value that is true if the reorder is aborted.
+  // (2) An enum that specifies the animation stage when the done callback runs.
+  using TestReorderDoneCallbackType =
+      base::RepeatingCallback<void(bool aborted,
+                                   AppListReorderAnimationStatus status)>;
+
+  // Add a callback that runs at the end of the app list reorder.
+  void AddReorderCallbackForTest(TestReorderDoneCallbackType done_callback);
+
+  // Add a callback that runs at the end of the fade out animation triggered
+  // by reorder.
+  void AddFadeOutAnimationDoneClosureForTest(base::OnceClosure done_closure);
 
   // Returns true if there is any waiting reorder animation test callback.
   bool HasAnyWaitingReorderDoneCallbackForTest() const;
@@ -348,6 +360,10 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   void set_enable_item_move_animation_for_test(bool enable) {
     enable_item_move_animation_ = enable;
+  }
+
+  AppListReorderAnimationStatus reorder_animation_status_for_test() const {
+    return reorder_animation_status_;
   }
 
  protected:
@@ -479,6 +495,9 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Cancels any context menus showing for app items on the current page.
   void CancelContextMenusOnCurrentPage();
 
+  // Aborts the active reorder animation if any.
+  void MaybeAbortReorderAnimation();
+
   // views::BoundsAnimatorObserver:
   void OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) override;
   void OnBoundsAnimatorDone(views::BoundsAnimator* animator) override;
@@ -567,22 +586,6 @@ class ASH_EXPORT AppsGridView : public views::View,
     ON_ITEM,
     NEAR_ITEM,
     BETWEEN_ITEMS,
-  };
-
-  // Indicate the type of the active reorder animation.
-  enum class ReorderAnimationStatus {
-    // No reorder animation is active.
-    kEmpty,
-
-    // The animation that fades out the obsolete layout is active.
-    kFadeOutAnimation,
-
-    // After the fade out animation ends and before the fade in animation
-    // starts.
-    kIntermediaryState,
-
-    // The animation that fades in the new layout after reordering is active.
-    kFadeInAnimation
   };
 
   class DragViewHider;
@@ -854,12 +857,12 @@ class ASH_EXPORT AppsGridView : public views::View,
   // in animation gets aborted.
   void OnFadeInAnimationEnded(ReorderAnimationCallback callback, bool aborted);
 
-  // Aborts the active reordering animation if any.
-  void MaybeAbortReorderingAnimation();
-
   // Runs the animation callback popped from the test callback queue if the
-  // queue is not empty.
-  void MaybeRunFrontReorderAnimationCallbackForTest(bool aborted);
+  // queue is not empty. The parameters indicate the animation running result
+  // and should be passed to the callback.
+  void MaybeRunNextReorderAnimationCallbackForTest(
+      bool aborted,
+      AppListReorderAnimationStatus animation_source);
 
   class ScopedModelUpdate;
 
@@ -997,8 +1000,8 @@ class ASH_EXPORT AppsGridView : public views::View,
   std::unique_ptr<AppsGridContextMenu> context_menu_;
 
   // Indicates the current reorder animation.
-  ReorderAnimationStatus reorder_animation_status_ =
-      ReorderAnimationStatus::kEmpty;
+  AppListReorderAnimationStatus reorder_animation_status_ =
+      AppListReorderAnimationStatus::kEmpty;
 
   // A handle that aborts the active reorder animation.
   std::unique_ptr<views::AnimationAbortHandle> reorder_animation_abort_handle_;
@@ -1011,11 +1014,15 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Tracks the reorder animation triggered by the sort order change.
   absl::optional<ui::ThroughputTracker> reorder_animation_tracker_;
 
-  // A queue of callbacks that run at the end of reordering animation (i.e. the
-  // end of the fade in animation). Each callback carries a boolean parameter to
-  // indicate whether the animation is aborted.
-  std::queue<ReorderAnimationCallback>
+  // A queue of callbacks that run at the end of app list reorder. A reorder
+  // ends if:
+  // (1) Fade out animation is aborted, or
+  // (2) Fade in animation is aborted or ends normally.
+  std::queue<TestReorderDoneCallbackType>
       reorder_animation_callback_queue_for_test_;
+
+  // A closure that runs at the end of the fade out animation.
+  base::OnceClosure fade_out_done_closure_for_test_;
 
   base::WeakPtrFactory<AppsGridView> weak_factory_{this};
 };
