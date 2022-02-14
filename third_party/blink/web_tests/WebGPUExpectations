@@ -148,6 +148,20 @@ crbug.com/dawn/1204 [ Linux ] wpt_internal/webgpu/cts.https.html?q=webgpu:api,op
 # Failures because readonly storage textures have been removed. https://crbug.com/dawn/1025
 crbug.com/dawn/1025 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,resource_usages,texture,in_pass_encoder:unused_bindings_in_pipeline:* [ Failure ]
 
+# Failures because of the changes on the validation rules on the texture format of multisampled
+# texture creation.
+crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="r32sint" [ Failure ]
+crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="r32uint" [ Failure ]
+crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="rg32float" [ Failure ]
+crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="rg32sint" [ Failure ]
+crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="rg32uint" [ Failure ]
+crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="rgba32float" [ Failure ]
+crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="rgba32sint" [ Failure ]
+crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";readMethod="Sample";format="rgba32uint" [ Failure ]
+crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:dimension="2d" [ Failure ]
+crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:dimension="undef" [ Failure ]
+crbug.com/dawn/1244 wpt_internal/webgpu/cts.https.html?q=webgpu:api,validation,createTexture:sampleCount,various_sampleCount_with_all_formats:* [ Failure ]
+
 ###
 ### Test bugs (fixed upstream)
 ###
