@@ -429,7 +429,8 @@ test.util.sync.taskWasExecuted = (contentWindow, descriptor) => {
     console.error('Please call overrideTasks() first.');
     return null;
   }
-  return !!test.util.executedTasks_.find(util.descriptorEqual.bind(descriptor));
+  return !!test.util.executedTasks_.find(
+      task => util.descriptorEqual(task.descriptor, descriptor));
 };
 
 /**

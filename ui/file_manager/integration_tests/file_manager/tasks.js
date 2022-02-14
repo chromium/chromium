@@ -107,9 +107,10 @@ async function setupTaskTest(rootPath, fakeTasks) {
  * Tests executing the default task when there is only one task.
  *
  * @param {string} appId Window ID.
- * @param {string} expectedTaskId Task ID expected to execute.
+ * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor Task
+ *     descriptor.
  */
-async function executeDefaultTask(appId, expectedTaskId) {
+async function executeDefaultTask(appId, descriptor) {
   // Select file.
   chrome.test.assertTrue(
       await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']));
@@ -120,19 +121,19 @@ async function executeDefaultTask(appId, expectedTaskId) {
       ['#file-list li.table-row[selected] .filename-label span']));
 
   // Wait until the task is executed.
-  await remoteCall.waitUntilTaskExecutes(appId, expectedTaskId);
+  await remoteCall.waitUntilTaskExecutes(appId, descriptor);
 }
 
 /**
  * Tests to specify default task via the default task dialog.
  *
  * @param {string} appId Window ID.
- * @param {string} expectedTaskId Task ID to be expected to newly specify as
- *     default.
+ * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor Task
+ *     descriptor of the task expected to be newly specified as default.
  * @return {Promise} Promise to be fulfilled/rejected depends on the test
  *     result.
  */
-async function defaultTaskDialog(appId, expectedTaskId) {
+async function defaultTaskDialog(appId, descriptor) {
   // Prepare expected labels.
   const expectedLabels = [
     'DummyTask1 (default)',
@@ -200,39 +201,37 @@ async function defaultTaskDialog(appId, expectedTaskId) {
       !!await remoteCall.waitForElement(appId, '#tasks-menu[hidden]'));
 
   // Check the executed tasks.
-  await remoteCall.waitUntilTaskExecutes(appId, expectedTaskId);
+  await remoteCall.waitUntilTaskExecutes(appId, descriptor);
 }
 
 testcase.executeDefaultTaskDrive = async () => {
   const appId = await setupTaskTest(RootPath.DRIVE, DRIVE_FAKE_TASKS);
-  await executeDefaultTask(appId, 'dummytaskid|drive|open-with');
+  await executeDefaultTask(appId, DRIVE_FAKE_TASKS[0].descriptor);
 };
 
 testcase.executeDefaultTaskDownloads = async () => {
   const appId = await setupTaskTest(RootPath.DOWNLOADS, DOWNLOADS_FAKE_TASKS);
-  await executeDefaultTask(appId, 'dummytaskid|fake-type|open-with');
+  await executeDefaultTask(appId, DOWNLOADS_FAKE_TASKS[0].descriptor);
 };
 
 testcase.defaultTaskForTextPlain = async () => {
   const appId = await setupTaskTest(RootPath.DOWNLOADS, DOWNLOADS_FAKE_TEXT);
-  await executeDefaultTask(
-      appId, FILE_MANAGER_EXTENSIONS_ID + '|file|view-in-browser');
+  await executeDefaultTask(appId, DOWNLOADS_FAKE_TEXT[0].descriptor);
 };
 
 testcase.defaultTaskForPdf = async () => {
   const appId = await setupTaskTest(RootPath.DOWNLOADS, DOWNLOADS_FAKE_PDF);
-  await executeDefaultTask(
-      appId, FILE_MANAGER_EXTENSIONS_ID + '|file|view-as-pdf');
+  await executeDefaultTask(appId, DOWNLOADS_FAKE_PDF[0].descriptor);
 };
 
 testcase.defaultTaskDialogDrive = async () => {
   const appId = await setupTaskTest(RootPath.DRIVE, DRIVE_FAKE_TASKS);
-  await defaultTaskDialog(appId, 'dummytaskid-2|drive|open-with');
+  await defaultTaskDialog(appId, DRIVE_FAKE_TASKS[1].descriptor);
 };
 
 testcase.defaultTaskDialogDownloads = async () => {
   const appId = await setupTaskTest(RootPath.DOWNLOADS, DOWNLOADS_FAKE_TASKS);
-  await defaultTaskDialog(appId, 'dummytaskid-2|fake-type|open-with');
+  await defaultTaskDialog(appId, DOWNLOADS_FAKE_TASKS[1].descriptor);
 };
 
 
@@ -312,8 +311,11 @@ testcase.genericTaskIsNotExecuted = async () => {
   //
   // See: src/ui/file_manager/file_manager/foreground/js/file_tasks.js&l=404
   const appId = await setupTaskTest(RootPath.DOWNLOADS, tasks);
-  await executeDefaultTask(
-      appId, FILE_MANAGER_EXTENSIONS_ID + '|file|view-in-browser');
+  await executeDefaultTask(appId, {
+    appId: FILE_MANAGER_EXTENSIONS_ID,
+    taskType: 'file',
+    actionId: 'view-in-browser'
+  });
 };
 
 testcase.genericTaskAndNonGenericTask = async () => {
@@ -333,7 +335,7 @@ testcase.genericTaskAndNonGenericTask = async () => {
   ];
 
   const appId = await setupTaskTest(RootPath.DOWNLOADS, tasks);
-  await executeDefaultTask(appId, 'dummytaskid-2|fake-type|open-with');
+  await executeDefaultTask(appId, tasks[1].descriptor);
 };
 
 testcase.noActionBarOpenForDirectories = async () => {
