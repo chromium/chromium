@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/translate/translate_bubble_model.h"
 #include "components/autofill_assistant/browser/public/runtime_observer.h"
 #include "components/language/core/browser/url_language_histogram.h"
 #include "components/translate/content/browser/content_translate_driver.h"
