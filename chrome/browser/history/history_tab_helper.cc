@@ -135,7 +135,7 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
   // that only the origin be sent as the referrer and it matches the previous
   // main frame URL.
   GURL referrer_url = navigation_handle->GetReferrer().url;
-  if (navigation_handle->IsInMainFrame() && !referrer_url.is_empty() &&
+  if (navigation_handle->IsInPrimaryMainFrame() && !referrer_url.is_empty() &&
       referrer_url == referrer_url.DeprecatedGetOriginAsURL() &&
       referrer_url.DeprecatedGetOriginAsURL() ==
           navigation_handle->GetPreviousMainFrameURL()
@@ -191,37 +191,14 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
 
 void HistoryTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1225143): Make sure prerender does not affect
-  // browsing history. We may have to filter out navigations only in the primary
-  // frame tree, which seems not to be happening here.
-  //
-  // Calling `navigation_handle->IsInMainFrame()` here seems to work
-  // accidentally because we are getting the navigation entry from the primary
-  // NavigationController [1] on prerendering navigation, which we will try to
-  // add, which will turn into a no-op.
-  //
-  // This is very fragile. There are a few options to address:
-  //
-  // 1. Add NavigationHandle::HasCommittedInPrimaryFrameTree and check it
-  //   instead of simple HasCommitted.
-  //
-  // 2. Always return false from NavigationHandle::ShouldUpdateHistory for
-  //   navigations in non-primary frame trees.
-  //
-  // 3. Use WebContentsObserver::NavigationEntryCommitted instead of
-  //    WebContentsObserver::DidFinishNavigation (which will get notifications
-  //    only about the new entry).
-  //
-  // [1]
-  // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/history/history_tab_helper.cc;l=194;drc=af4244de52d8521c34336470c9a4f634b1e9fd2e
-
   if (!navigation_handle->HasCommitted())
     return;
 
-  if (navigation_handle->IsInMainFrame()) {
+  if (navigation_handle->IsInPrimaryMainFrame()) {
     is_loading_ = true;
     num_title_changes_ = 0;
-  } else if (!navigation_handle->HasSubframeNavigationEntryCommitted()) {
+  } else if (!navigation_handle->IsInMainFrame() &&
+             !navigation_handle->HasSubframeNavigationEntryCommitted()) {
     // Filter out unwanted URLs. We don't add auto-subframe URLs that don't
     // change which NavigationEntry is current. They are a large part of history
     // (think iframes for ads) and we never display them in history UI. We will
@@ -233,11 +210,6 @@ void HistoryTabHelper::DidFinishNavigation(
   // Update history. Note that this needs to happen after the entry is complete,
   // which WillNavigate[Main,Sub]Frame will do before this function is called.
   if (!navigation_handle->ShouldUpdateHistory())
-    return;
-
-  // Navigations in portals don't appear in history until the portal is
-  // activated.
-  if (navigation_handle->GetWebContents()->IsPortal())
     return;
 
   // No-state prefetch should not update history. The prefetch will have its own

@@ -318,7 +318,8 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Returns true if the browser history should be updated. Otherwise only
   // the session history will be updated. E.g., on unreachable urls or other
   // navigations that the users may not think of as navigations (such as
-  // happens with 'history.replaceState()').
+  // happens with 'history.replaceState()'), or navigations in non-primary frame
+  // trees or portals that should not appear in history.
   virtual bool ShouldUpdateHistory() = 0;
 
   // The previous main frame URL that the user was on. This may be empty if

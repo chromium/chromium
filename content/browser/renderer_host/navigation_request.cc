@@ -5581,8 +5581,11 @@ void NavigationRequest::DidCommitNavigation(
   // and it doesn't make sense to log this in history. Logging this in history
   // would lead to lots of visits to a particular page, which impacts the
   // visit count.
-  if (should_update_history_ && IsSameDocument() && !HasUserGesture() &&
-      params.url == previous_main_frame_url) {
+  // Navigations in non-primary frame trees or portals don't appear in history.
+  if ((should_update_history_ && IsSameDocument() && !HasUserGesture() &&
+       params.url == previous_main_frame_url) ||
+      !render_frame_host_->GetPage().IsPrimary() ||
+      GetWebContents()->IsPortal()) {
     should_update_history_ = false;
   }
   previous_main_frame_url_ = previous_main_frame_url;
