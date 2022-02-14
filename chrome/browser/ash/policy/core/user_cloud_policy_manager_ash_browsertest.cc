@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -87,9 +88,10 @@ class UserCloudPolicyManagerTest
 };
 
 IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerTest, StartSession) {
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   // User hasn't signed in yet, so shouldn't know if the user requires policy.
   EXPECT_EQ(user_manager::ProfileRequiresPolicy::kUnknown,
-            user_manager::known_user::GetProfileRequiresPolicy(
+            known_user.GetProfileRequiresPolicy(
                 logged_in_user_mixin_.GetAccountId()));
 
   // Set up start-up URLs through a mandatory user policy.
@@ -127,7 +129,7 @@ IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerTest, StartSession) {
 
   // User should be marked as requiring policy.
   EXPECT_EQ(user_manager::ProfileRequiresPolicy::kPolicyRequired,
-            user_manager::known_user::GetProfileRequiresPolicy(
+            known_user.GetProfileRequiresPolicy(
                 logged_in_user_mixin_.GetAccountId()));
 
   // It is expected that if ArcEnabled policy is not set then it is managed
@@ -144,17 +146,20 @@ IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerTest, ErrorLoadingPolicy) {
   // Session should not have been started.
   EXPECT_FALSE(session_manager::SessionManager::Get()->IsSessionStarted());
 
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   // User should be marked as not knowing if policy is required yet.
   EXPECT_EQ(user_manager::ProfileRequiresPolicy::kUnknown,
-            user_manager::known_user::GetProfileRequiresPolicy(
+            known_user.GetProfileRequiresPolicy(
                 logged_in_user_mixin_.GetAccountId()));
 }
 
 IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerTest,
                        ErrorLoadingPolicyForUnmanagedUser) {
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  // User should be marked as not knowing if policy is required yet.
   // Mark user as not needing policy - errors loading policy should be
   // ignored (unlike previous ErrorLoadingPolicy test).
-  user_manager::known_user::SetProfileRequiresPolicy(
+  known_user.SetProfileRequiresPolicy(
       logged_in_user_mixin_.GetAccountId(),
       user_manager::ProfileRequiresPolicy::kNoPolicyRequired);
 
@@ -162,7 +167,7 @@ IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerTest,
 
   // User should still be marked as not needing policy
   EXPECT_EQ(user_manager::ProfileRequiresPolicy::kNoPolicyRequired,
-            user_manager::known_user::GetProfileRequiresPolicy(
+            known_user.GetProfileRequiresPolicy(
                 logged_in_user_mixin_.GetAccountId()));
 }
 
@@ -175,17 +180,18 @@ IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerTest,
       "example.com");
   EXPECT_TRUE(policy::BrowserPolicyConnector::IsNonEnterpriseUser(
       logged_in_user_mixin_.GetAccountId().GetUserEmail()));
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   // If a user signs in with a known non-enterprise account there should be no
   // policy.
   EXPECT_EQ(user_manager::ProfileRequiresPolicy::kUnknown,
-            user_manager::known_user::GetProfileRequiresPolicy(
+            known_user.GetProfileRequiresPolicy(
                 logged_in_user_mixin_.GetAccountId()));
 
   StartUserLogIn(true /*wait_for_active_session*/);
 
   // User should be marked as not requiring policy.
   EXPECT_EQ(user_manager::ProfileRequiresPolicy::kNoPolicyRequired,
-            user_manager::known_user::GetProfileRequiresPolicy(
+            known_user.GetProfileRequiresPolicy(
                 logged_in_user_mixin_.GetAccountId()));
 }
 
@@ -197,10 +203,11 @@ IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerChildTest, PolicyForChildUser) {
   EXPECT_TRUE(policy::BrowserPolicyConnector::IsNonEnterpriseUser(
       logged_in_user_mixin_.GetAccountId().GetUserEmail()));
 
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   // If a user signs in with a known non-enterprise account there should be no
   // policy in case user type is child.
   EXPECT_EQ(user_manager::ProfileRequiresPolicy::kUnknown,
-            user_manager::known_user::GetProfileRequiresPolicy(
+            known_user.GetProfileRequiresPolicy(
                 logged_in_user_mixin_.GetAccountId()));
 
   logged_in_user_mixin_.GetUserPolicyMixin()
@@ -211,7 +218,7 @@ IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerChildTest, PolicyForChildUser) {
 
   // User of CHILD type should be marked as requiring policy.
   EXPECT_EQ(user_manager::ProfileRequiresPolicy::kPolicyRequired,
-            user_manager::known_user::GetProfileRequiresPolicy(
+            known_user.GetProfileRequiresPolicy(
                 logged_in_user_mixin_.GetAccountId()));
 
   // It is expected that if ArcEnabled policy is not set then it is not managed
@@ -223,6 +230,7 @@ IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerChildTest, PolicyForChildUser) {
 
 IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerChildTest,
                        PolicyForChildUserMissing) {
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   policy::BrowserPolicyConnector::SetNonEnterpriseDomainForTesting(
       "example.com");
   EXPECT_TRUE(policy::BrowserPolicyConnector::IsNonEnterpriseUser(
@@ -231,7 +239,7 @@ IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerChildTest,
   // If a user signs in with a known non-enterprise account there should be no
   // policy in case user type is child.
   EXPECT_EQ(user_manager::ProfileRequiresPolicy::kUnknown,
-            user_manager::known_user::GetProfileRequiresPolicy(
+            known_user.GetProfileRequiresPolicy(
                 logged_in_user_mixin_.GetAccountId()));
 
   StartUserLogIn(false /*wait_for_active_session*/);
@@ -242,7 +250,7 @@ IN_PROC_BROWSER_TEST_P(UserCloudPolicyManagerChildTest,
 
   // User should be marked as not knowing if policy is required yet.
   EXPECT_EQ(user_manager::ProfileRequiresPolicy::kUnknown,
-            user_manager::known_user::GetProfileRequiresPolicy(
+            known_user.GetProfileRequiresPolicy(
                 logged_in_user_mixin_.GetAccountId()));
 }
 

@@ -288,9 +288,9 @@ absl::optional<EncryptionMigrationMode> GetEncryptionMigrationMode(
     return EncryptionMigrationMode::START_MIGRATION;
   }
 
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   const bool profile_has_policy =
-      user_manager::known_user::GetProfileRequiresPolicy(
-          user_context.GetAccountId()) ==
+      known_user.GetProfileRequiresPolicy(user_context.GetAccountId()) ==
           user_manager::ProfileRequiresPolicy::kPolicyRequired ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kProfileRequiresPolicy);

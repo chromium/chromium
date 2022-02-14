@@ -970,31 +970,6 @@ GetIsUsingSAMLPrincipalsAPI(const AccountId& account_id) {
   return KnownUser(local_state).GetIsUsingSAMLPrincipalsAPI(account_id);
 }
 
-void SetProfileRequiresPolicy(const AccountId& account_id,
-                              ProfileRequiresPolicy required) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return;
-  return KnownUser(local_state).SetProfileRequiresPolicy(account_id, required);
-}
-
-ProfileRequiresPolicy GetProfileRequiresPolicy(const AccountId& account_id) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return ProfileRequiresPolicy::kUnknown;
-  return KnownUser(local_state).GetProfileRequiresPolicy(account_id);
-}
-
-void ClearProfileRequiresPolicy(const AccountId& account_id) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return;
-  return KnownUser(local_state).ClearProfileRequiresPolicy(account_id);
-}
-
 void SetIsEnterpriseManaged(const AccountId& account_id,
                             bool is_enterprise_managed) {
   PrefService* local_state = GetLocalStateLegacy();
@@ -1011,15 +986,6 @@ bool GetIsEnterpriseManaged(const AccountId& account_id) {
   if (!local_state)
     return false;
   return KnownUser(local_state).GetIsEnterpriseManaged(account_id);
-}
-
-void SetAccountManager(const AccountId& account_id,
-                       const std::string& manager) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return;
-  return KnownUser(local_state).SetAccountManager(account_id, manager);
 }
 
 }  // namespace known_user

@@ -14,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/account_id/account_id.h"
-#include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
@@ -406,10 +405,6 @@ void RegularUser::UpdateType(UserType user_type) {
       return;
     const bool old_is_child = is_child_;
     is_child_ = user_type == user_manager::USER_TYPE_CHILD;
-
-    // Clear information about profile policy requirements to enforce setting it
-    // again for the new account type.
-    user_manager::known_user::ClearProfileRequiresPolicy(GetAccountId());
 
     LOG(WARNING) << "User type has changed: " << current_type
                  << " (is_child=" << old_is_child << ") => " << user_type

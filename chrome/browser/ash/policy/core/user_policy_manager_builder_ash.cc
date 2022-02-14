@@ -104,6 +104,7 @@ void CreateConfigurationPolicyProvider(
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   CHECK(user);
 
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   // User policy exists for enterprise accounts:
   // - For regular cloud-managed users (those who have a GAIA account), a
   //   |UserCloudPolicyManagerAsh| is created here.
@@ -119,7 +120,7 @@ void CreateConfigurationPolicyProvider(
       BrowserPolicyConnector::IsNonEnterpriseUser(account_id.GetUserEmail())) {
     DLOG(WARNING) << "No policy loaded for known non-enterprise user";
     // Mark this profile as not requiring policy.
-    user_manager::known_user::SetProfileRequiresPolicy(
+    known_user.SetProfileRequiresPolicy(
         account_id, ProfileRequiresPolicy::kNoPolicyRequired);
     return;
   }
@@ -147,7 +148,7 @@ void CreateConfigurationPolicyProvider(
   }
 
   const ProfileRequiresPolicy requires_policy_user_property =
-      user_manager::known_user::GetProfileRequiresPolicy(account_id);
+      known_user.GetProfileRequiresPolicy(account_id);
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
   const bool is_stub_user =
@@ -275,7 +276,7 @@ void CreateConfigurationPolicyProvider(
         std::make_unique<UserCloudPolicyManagerAsh>(
             profile, std::move(store), std::move(external_data_manager),
             component_policy_cache_dir, enforcement_type,
-            policy_refresh_timeout,
+            g_browser_process->local_state(), policy_refresh_timeout,
             base::BindOnce(&OnUserPolicyFatalError, account_id), account_id,
             base::ThreadTaskRunnerHandle::Get());
 
@@ -289,8 +290,7 @@ void CreateConfigurationPolicyProvider(
     }
 
     manager->Init(profile->GetPolicySchemaRegistryService()->registry());
-    manager->Connect(g_browser_process->local_state(),
-                     device_management_service,
+    manager->Connect(device_management_service,
                      g_browser_process->shared_url_loader_factory());
     *user_cloud_policy_manager_ash_out = std::move(manager);
   }

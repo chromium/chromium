@@ -21,12 +21,12 @@
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chromeos/dbus/cryptohome/account_identifier_operators.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
@@ -112,7 +112,8 @@ class EncryptionMigrationTestBase
   }
 
   void MarkUserHasEnterprisePolicy() {
-    user_manager::known_user::SetProfileRequiresPolicy(
+    user_manager::KnownUser known_user(g_browser_process->local_state());
+    known_user.SetProfileRequiresPolicy(
         test_user_.account_id,
         user_manager::ProfileRequiresPolicy::kPolicyRequired);
   }

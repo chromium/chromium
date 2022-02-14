@@ -146,6 +146,7 @@ UserCloudPolicyManagerAsh::UserCloudPolicyManagerAsh(
     std::unique_ptr<CloudExternalDataManager> external_data_manager,
     const base::FilePath& component_policy_cache_path,
     PolicyEnforcement enforcement_type,
+    PrefService* local_state,
     base::TimeDelta policy_refresh_timeout,
     base::OnceClosure fatal_error_callback,
     const AccountId& account_id,
@@ -164,9 +165,11 @@ UserCloudPolicyManagerAsh::UserCloudPolicyManagerAsh(
                                     PolicyEnforcement::kServerCheckRequired ||
                                 !policy_refresh_timeout.is_zero()),
       enforcement_type_(enforcement_type),
+      local_state_(local_state),
       account_id_(account_id),
       fatal_error_callback_(std::move(fatal_error_callback)) {
   DCHECK(profile_);
+  DCHECK(local_state_);
   time_init_started_ = base::Time::Now();
 
   // Some tests don't want to complete policy initialization until they have
@@ -216,15 +219,12 @@ void UserCloudPolicyManagerAsh::SetSystemURLLoaderFactoryForTests(
 UserCloudPolicyManagerAsh::~UserCloudPolicyManagerAsh() = default;
 
 void UserCloudPolicyManagerAsh::Connect(
-    PrefService* local_state,
     DeviceManagementService* device_management_service,
     scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory) {
   DCHECK(device_management_service);
-  DCHECK(local_state);
 
   CHECK(!core()->client());
 
-  local_state_ = local_state;
   // Note: |system_url_loader_factory| can be null for tests.
   // Use the system URL loader context here instead of a context derived
   // from the Profile because Connect() is called before the profile is
@@ -547,7 +547,8 @@ void UserCloudPolicyManagerAsh::OnStoreLoaded(
 
 void UserCloudPolicyManagerAsh::SetPolicyRequired(bool policy_required) {
   auto* user_manager = ash::ChromeUserManager::Get();
-  user_manager::known_user::SetProfileRequiresPolicy(
+  user_manager::KnownUser known_user(local_state_);
+  known_user.SetProfileRequiresPolicy(
       account_id_,
       policy_required ? user_manager::ProfileRequiresPolicy::kPolicyRequired
                       : user_manager::ProfileRequiresPolicy::kNoPolicyRequired);

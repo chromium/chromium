@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/chrome_new_window_client.h"
 
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -35,7 +36,8 @@ void CreateAndStartUserSession(const AccountId& account_id) {
   using ::ash::ProfileHelper;
   using session_manager::SessionManager;
 
-  user_manager::known_user::SetProfileRequiresPolicy(
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SetProfileRequiresPolicy(
       account_id, user_manager::ProfileRequiresPolicy::kNoPolicyRequired);
   const std::string user_id_hash =
       ProfileHelper::GetUserIdHashByUserIdForTesting(account_id.GetUserEmail());

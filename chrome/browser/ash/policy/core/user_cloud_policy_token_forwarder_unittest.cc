@@ -72,6 +72,7 @@ class MockUserCloudPolicyManagerAsh : public UserCloudPolicyManagerAsh {
             std::make_unique<MockCloudExternalDataManager>(),
             base::FilePath() /* component_policy_cache_path */,
             UserCloudPolicyManagerAsh::PolicyEnforcement::kPolicyRequired,
+            g_browser_process->local_state(),
             base::Minutes(1) /* policy_refresh_timeout */,
             base::BindOnce(&MockUserCloudPolicyManagerAsh::OnFatalError,
                            base::Unretained(this)),

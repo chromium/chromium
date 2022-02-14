@@ -917,9 +917,14 @@ void UserManagerBase::RegularUserLoggedIn(const AccountId& account_id,
   // Remove the user from the user list.
   active_user_ =
       RemoveRegularOrSupervisedUserFromList(account_id, false /* notify */);
+  KnownUser known_user(GetLocalState());
 
-  if (active_user_ && active_user_->GetType() != user_type)
+  if (active_user_ && active_user_->GetType() != user_type) {
     active_user_->UpdateType(user_type);
+    // Clear information about profile policy requirements to enforce setting it
+    // again for the new account type.
+    known_user.ClearProfileRequiresPolicy(account_id);
+  }
 
   // If the user was not found on the user list, create a new user.
   SetIsCurrentUserNew(!active_user_);
@@ -935,8 +940,7 @@ void UserManagerBase::RegularUserLoggedIn(const AccountId& account_id,
   }
 
   AddUserRecord(active_user_);
-  KnownUser(GetLocalState())
-      .SetIsEphemeralUser(active_user_->GetAccountId(), false);
+  known_user.SetIsEphemeralUser(active_user_->GetAccountId(), false);
 
   // Make sure that new data is persisted to Local State.
   GetLocalState()->CommitPendingWrite();

@@ -354,9 +354,10 @@ TEST_F(UserManagerTest, ProfileRequiresPolicyUnknown) {
   user_manager::UserManager::Get()->UserLoggedIn(
       owner_account_id_at_invalid_domain_,
       owner_account_id_at_invalid_domain_.GetUserEmail(), false, false);
-  EXPECT_EQ(user_manager::ProfileRequiresPolicy::kUnknown,
-            user_manager::known_user::GetProfileRequiresPolicy(
-                owner_account_id_at_invalid_domain_));
+  user_manager::KnownUser known_user(local_state_->Get());
+  EXPECT_EQ(
+      user_manager::ProfileRequiresPolicy::kUnknown,
+      known_user.GetProfileRequiresPolicy(owner_account_id_at_invalid_domain_));
   ResetUserManager();
 }
 

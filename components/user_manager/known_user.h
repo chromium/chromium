@@ -369,27 +369,6 @@ UpdateIsUsingSAMLPrincipalsAPI(const AccountId& account_id,
 bool USER_MANAGER_EXPORT
 GetIsUsingSAMLPrincipalsAPI(const AccountId& account_id);
 
-// Returns whether the current profile requires policy or not (returns UNKNOWN
-// if the profile has never been initialized and so the policy status is
-// not yet known).
-// TODO(https://crbug.com/1150434): Deprecated, use
-// KnownUser::GetProfileRequiresPolicy instead.
-ProfileRequiresPolicy USER_MANAGER_EXPORT
-GetProfileRequiresPolicy(const AccountId& account_id);
-
-// Sets whether the profile requires policy or not.
-// TODO(https://crbug.com/1150434): Deprecated, use
-// KnownUser::SetProfileRequiresPolicy instead.
-void USER_MANAGER_EXPORT
-SetProfileRequiresPolicy(const AccountId& account_id,
-                         ProfileRequiresPolicy policy_required);
-
-// Clears information whether profile requires policy.
-// TODO(https://crbug.com/1150434): Deprecated, use
-// KnownUser::ClearProfileRequiresPolicy instead.
-void USER_MANAGER_EXPORT
-ClearProfileRequiresPolicy(const AccountId& account_id);
-
 // TODO(https://crbug.com/1150434): Deprecated, use
 // KnownUser::SetIsEnterpriseManaged instead.
 void USER_MANAGER_EXPORT SetIsEnterpriseManaged(const AccountId& account_id,
