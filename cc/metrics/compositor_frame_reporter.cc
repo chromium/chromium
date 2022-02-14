@@ -290,9 +290,11 @@ static_assert(base::size(kReportTypeNames) == kFrameReportTypeCount,
 // This value should be recalculated in case of changes to the number of values
 // in CompositorFrameReporter::DroppedFrameReportType or in
 // CompositorFrameReporter::StageType
+constexpr int kStagesWithBreakdownCount = kStageTypeCount + kAllBreakdownCount;
 constexpr int kMaxCompositorLatencyHistogramIndex =
-    kFrameReportTypeCount * kFrameSequenceTrackerTypeCount *
-    (kStageTypeCount + kAllBreakdownCount);
+    kFrameReportTypeCount *
+    (kFrameSequenceTrackerTypeCount + kStagesWithBreakdownCount);
+
 constexpr base::TimeDelta kCompositorLatencyHistogramMin =
     base::Microseconds(1);
 constexpr base::TimeDelta kCompositorLatencyHistogramMax =
@@ -825,11 +827,14 @@ void CompositorFrameReporter::ReportCompositorLatencyHistograms() const {
     return;
   for (const StageData& stage : stage_history_) {
     ReportStageHistogramWithBreakdown(stage);
-    for (size_t type = 0; type < active_trackers_.size(); ++type) {
-      if (active_trackers_.test(type)) {
-        // Report stage breakdowns.
-        ReportStageHistogramWithBreakdown(
-            stage, static_cast<FrameSequenceTrackerType>(type));
+
+    if (stage.stage_type == StageType::kTotalLatency) {
+      for (size_t type = 0; type < active_trackers_.size(); ++type) {
+        if (active_trackers_.test(type)) {
+          // Report stage breakdowns.
+          ReportStageHistogramWithBreakdown(
+              stage, static_cast<FrameSequenceTrackerType>(type));
+        }
       }
     }
   }
@@ -964,13 +969,15 @@ void CompositorFrameReporter::ReportCompositorLatencyHistogram(
     const int report_type_index = static_cast<int>(report_type);
     const int frame_sequence_tracker_type_index =
         static_cast<int>(frame_sequence_tracker_type);
+
     const int histogram_index =
-        (stage_type_index * kFrameSequenceTrackerTypeCount +
-         frame_sequence_tracker_type_index) *
+        (stage_type_index == static_cast<int>(StageType::kTotalLatency)
+             ? kStagesWithBreakdownCount + frame_sequence_tracker_type_index
+             : stage_type_index) *
             kFrameReportTypeCount +
         report_type_index;
 
-    CHECK_LT(stage_type_index, kStageTypeCount + kAllBreakdownCount);
+    CHECK_LT(stage_type_index, kStagesWithBreakdownCount);
     CHECK_GE(stage_type_index, 0);
     CHECK_LT(report_type_index, kFrameReportTypeCount);
     CHECK_GE(report_type_index, 0);
