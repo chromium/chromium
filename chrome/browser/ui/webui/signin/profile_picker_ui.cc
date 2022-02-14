@@ -68,17 +68,25 @@ bool IsBrowserSigninAllowed() {
 }
 
 std::string GetManagedDeviceDisclaimer() {
-  absl::optional<std::string> device_manager =
-      chrome::GetDeviceManagerIdentity();
-  if (!device_manager)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  absl::optional<std::string> manager = chrome::GetSessionManagerIdentity();
+  int managed_id =
+      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SESSION_MANAGED_DESCRIPTION;
+  int managed_by_id =
+      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SESSION_MANAGED_BY_DESCRIPTION;
+#else
+  absl::optional<std::string> manager = chrome::GetDeviceManagerIdentity();
+  int managed_id =
+      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_DESCRIPTION;
+  int managed_by_id =
+      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_BY_DESCRIPTION;
+#endif
+  if (!manager)
     return std::string();
-  if (device_manager->empty()) {
-    return l10n_util::GetStringUTF8(
-        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_DESCRIPTION);
+  if (manager->empty()) {
+    return l10n_util::GetStringUTF8(managed_id);
   }
-  return l10n_util::GetStringFUTF8(
-      IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_DEVICE_MANAGED_BY_DESCRIPTION,
-      base::UTF8ToUTF16(*device_manager));
+  return l10n_util::GetStringFUTF8(managed_by_id, base::UTF8ToUTF16(*manager));
 }
 
 void AddStrings(content::WebUIDataSource* html_source) {

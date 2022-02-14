@@ -31,6 +31,10 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/policy/core/common/policy_loader_lacros.h"
+#endif
+
 namespace chrome {
 
 namespace {
@@ -142,6 +146,14 @@ absl::optional<std::string> GetDeviceManagerIdentity() {
                           ->machine_level_user_cloud_policy_manager());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+absl::optional<std::string> GetSessionManagerIdentity() {
+  if (!policy::PolicyLoaderLacros::IsMainUserManaged())
+    return absl::nullopt;
+  return policy::PolicyLoaderLacros::main_user_policy_data()->managed_by();
+}
+#endif
 
 absl::optional<std::string> GetAccountManagerIdentity(Profile* profile) {
   if (!policy::ManagementServiceFactory::GetForProfile(profile)->IsManaged())
