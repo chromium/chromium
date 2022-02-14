@@ -7,8 +7,8 @@
  * the ambient mode settings.
  */
 
-import 'chrome://personalization/trusted/ambient/toggle_row.js';
-import 'chrome://personalization/trusted/ambient/topic_source_list.js';
+import 'chrome://personalization/trusted/ambient/toggle_row_element.js';
+import 'chrome://personalization/trusted/ambient/topic_source_list_element.js';
 
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -19,8 +19,8 @@ import {WithPersonalizationStore} from '../personalization_store.js';
 import {setAmbientModeEnabled} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 import {AmbientObserver} from './ambient_observer.js';
-import {ToggleRowElement} from './toggle_row.js';
-import {TopicSourceListElement} from './topic_source_list.js';
+import {ToggleRow} from './toggle_row_element.js';
+import {TopicSourceList} from './topic_source_list_element.js';
 
 export class AmbientSubpage extends WithPersonalizationStore {
   static get is() {
@@ -59,7 +59,7 @@ export class AmbientSubpage extends WithPersonalizationStore {
   }
 
   private onToggleStateChanged_(event: Event) {
-    const toggleRow = event.currentTarget as ToggleRowElement;
+    const toggleRow = event.currentTarget as ToggleRow;
     const ambientModeEnabled = toggleRow!.checked;
     this.setAmbientModeEnabled_(ambientModeEnabled);
   }

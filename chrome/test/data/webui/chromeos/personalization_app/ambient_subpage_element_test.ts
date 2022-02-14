@@ -5,8 +5,8 @@
 import {AmbientActionName, SetAmbientModeEnabledAction, SetTopicSourceAction} from 'chrome://personalization/trusted/ambient/ambient_actions.js';
 import {AmbientObserver} from 'chrome://personalization/trusted/ambient/ambient_observer.js';
 import {AmbientSubpage} from 'chrome://personalization/trusted/ambient/ambient_subpage_element.js';
-import {ToggleRowElement} from 'chrome://personalization/trusted/ambient/toggle_row.js';
-import {TopicSourceItemElement} from 'chrome://personalization/trusted/ambient/topic_source_item.js';
+import {ToggleRow} from 'chrome://personalization/trusted/ambient/toggle_row_element.js';
+import {TopicSourceItem} from 'chrome://personalization/trusted/ambient/topic_source_item_element.js';
 import {TopicSource} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {emptyState} from 'chrome://personalization/trusted/personalization_state.js';
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
@@ -88,7 +88,7 @@ export function AmbientSubpageTest() {
     await waitAfterNextRender(ambientSubpageElement);
 
     const toggleRow = ambientSubpageElement.shadowRoot!.querySelector(
-                          'toggle-row') as ToggleRowElement;
+                          'toggle-row') as ToggleRow;
     assertTrue(!!toggleRow);
     let toggleButton =
         toggleRow!.shadowRoot!.querySelector('cr-toggle') as CrToggleElement;
@@ -124,7 +124,7 @@ export function AmbientSubpageTest() {
     await waitAfterNextRender(ambientSubpageElement);
 
     const toggleRow = ambientSubpageElement.shadowRoot!.querySelector(
-                          'toggle-row') as ToggleRowElement;
+                          'toggle-row') as ToggleRow;
     assertTrue(!!toggleRow);
     const toggleButton =
         toggleRow!.shadowRoot!.querySelector('cr-toggle') as CrToggleElement;
@@ -164,8 +164,8 @@ export function AmbientSubpageTest() {
     const topicSourceItems =
         topicSourceList!.shadowRoot!.querySelectorAll('topic-source-item');
     assertEquals(2, topicSourceItems!.length);
-    const googlePhotos = topicSourceItems[0] as TopicSourceItemElement;
-    const art = topicSourceItems[1] as TopicSourceItemElement;
+    const googlePhotos = topicSourceItems[0] as TopicSourceItem;
+    const art = topicSourceItems[1] as TopicSourceItem;
     assertEquals(TopicSource.kGooglePhotos, googlePhotos.topicSource);
     assertEquals(TopicSource.kArtGallery, art.topicSource);
 
@@ -184,8 +184,8 @@ export function AmbientSubpageTest() {
     assertTrue(!!topicSourceList);
     const topicSourceItems =
         topicSourceList!.shadowRoot!.querySelectorAll('topic-source-item');
-    const googlePhotos = topicSourceItems[0] as TopicSourceItemElement;
-    const art = topicSourceItems[1] as TopicSourceItemElement;
+    const googlePhotos = topicSourceItems[0] as TopicSourceItem;
+    const art = topicSourceItems[1] as TopicSourceItem;
 
     personalizationStore.expectAction(AmbientActionName.SET_TOPIC_SOURCE);
     googlePhotos!.click();

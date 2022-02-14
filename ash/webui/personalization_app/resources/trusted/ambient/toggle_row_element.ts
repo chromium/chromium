@@ -13,11 +13,11 @@ import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.
 
 import {WithPersonalizationStore} from '../personalization_store.js';
 
-export interface ToggleRowElement {
+export interface ToggleRow {
   $: {toggle: CrToggleElement}
 }
 
-export class ToggleRowElement extends WithPersonalizationStore {
+export class ToggleRow extends WithPersonalizationStore {
   static get is() {
     return 'toggle-row';
   }
@@ -41,4 +41,4 @@ export class ToggleRowElement extends WithPersonalizationStore {
   }
 }
 
-customElements.define(ToggleRowElement.is, ToggleRowElement);
+customElements.define(ToggleRow.is, ToggleRow);
