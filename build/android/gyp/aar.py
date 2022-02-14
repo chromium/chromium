@@ -193,7 +193,7 @@ def main():
     _PerformExtract(args.aar_file, args.output_dir, names)
 
   elif args.command == 'list':
-    aar_output_present = args.output != '-'
+    aar_output_present = args.output != '-' and os.path.isfile(args.output)
     if aar_output_present:
       # Some .info files are read-only, for examples the cipd-controlled ones
       # under third_party/android_deps/repository. To deal with these, first
