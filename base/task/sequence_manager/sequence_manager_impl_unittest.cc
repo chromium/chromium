@@ -14,6 +14,7 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/cancelable_callback.h"
 #include "base/location.h"
@@ -51,6 +52,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
+#include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -5539,6 +5541,32 @@ TEST_P(SequenceManagerTest, OnTaskPostedCallbacks) {
   queue->task_runner()->PostTask(FROM_HERE, BindOnce(NullTask));
   EXPECT_EQ(2, counter1);
   EXPECT_EQ(2, counter2);
+}
+
+TEST(SequenceManagerTest,
+     CanAccessThreadTaskRunnerHandleDuringSequenceLocalStorageSlotDestruction) {
+  auto sequence_manager =
+      sequence_manager::CreateSequenceManagerOnCurrentThreadWithPump(
+          MessagePump::Create(MessagePumpType::DEFAULT));
+  auto queue = sequence_manager->CreateTaskQueue(
+      sequence_manager::TaskQueue::Spec("default_tq"));
+  sequence_manager->SetDefaultTaskRunner(queue->task_runner());
+
+  scoped_refptr<SingleThreadTaskRunner> expected_task_runner =
+      ThreadTaskRunnerHandle::Get();
+
+  StrictMock<MockCallback<base::OnceCallback<void()>>> cb;
+  EXPECT_CALL(cb, Run).WillOnce(testing::Invoke([expected_task_runner]() {
+    EXPECT_EQ(ThreadTaskRunnerHandle::Get(), expected_task_runner);
+  }));
+
+  static base::SequenceLocalStorageSlot<std::unique_ptr<DestructionCallback>>
+      storage_slot;
+  storage_slot.GetOrCreateValue() =
+      std::make_unique<DestructionCallback>(cb.Get());
+
+  queue.reset();
+  sequence_manager.reset();
 }
 
 }  // namespace internal

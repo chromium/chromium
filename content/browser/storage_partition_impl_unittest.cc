@@ -27,6 +27,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -35,6 +36,10 @@
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/dom_storage/local_storage_database.pb.h"
 #include "components/services/storage/public/cpp/constants.h"
+#include "components/services/storage/public/mojom/local_storage_control.mojom.h"
+#include "components/services/storage/public/mojom/partition.mojom.h"
+#include "components/services/storage/public/mojom/storage_service.mojom.h"
+#include "components/services/storage/storage_service_impl.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
@@ -2377,6 +2382,47 @@ TEST_F(StoragePartitionImplTest, RemoveAggregationServiceData) {
       .WillOnce(testing::Invoke(invoke_callback));
   partition->ClearData(kTestClearMask, kTestQuotaClearMask, GURL(), kBeginTime,
                        kEndTime, base::DoNothing());
+}
+
+// https://crbug.com/1221382
+// Make sure StorageServiceImpl can be stored in a SequenceLocalStorageSlot and
+// that it can be safely destroyed when the thread terminates.
+TEST(StorageServiceImplOnSequenceLocalStorage, ThreadDestructionDoesNotFail) {
+  mojo::Remote<storage::mojom::StorageService> remote_service;
+  mojo::Remote<storage::mojom::Partition> persistent_partition;
+  mojo::Remote<storage::mojom::LocalStorageControl> storage_control;
+  // These remotes must outlive the thread, otherwise PartitionImpl cleanup will
+  // not happen in the ~StorageServiceImpl but on the mojo error handler.
+  {
+    // When this variable gets out of scope the IO thread will be destroyed
+    // along with all objects stored in a SequenceLocalStorageSlot.
+    content::BrowserTaskEnvironment task_environment(
+        content::BrowserTaskEnvironment::REAL_IO_THREAD);
+
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](mojo::PendingReceiver<storage::mojom::StorageService> receiver) {
+              DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+              static base::SequenceLocalStorageSlot<
+                  std::unique_ptr<storage::StorageServiceImpl>>
+                  service_storage_slot;
+              service_storage_slot.GetOrCreateValue() =
+                  std::make_unique<storage::StorageServiceImpl>(
+                      std::move(receiver),
+                      /*io_task_runner=*/nullptr);
+            },
+            remote_service.BindNewPipeAndPassReceiver()));
+
+    // Make sure PartitionImpl gets to destroy a LocalStorageImpl object.
+    base::ScopedTempDir temp_dir;
+    CHECK(temp_dir.CreateUniqueTempDir());
+    remote_service->BindPartition(
+        temp_dir.GetPath(), persistent_partition.BindNewPipeAndPassReceiver());
+    persistent_partition->BindLocalStorageControl(
+        storage_control.BindNewPipeAndPassReceiver());
+    storage_control.FlushForTesting();
+  }
 }
 
 }  // namespace content

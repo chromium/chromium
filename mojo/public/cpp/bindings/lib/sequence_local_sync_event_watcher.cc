@@ -110,10 +110,10 @@ class SequenceLocalSyncEventWatcher::SequenceLocalState {
     if (registered_watchers_.empty()) {
       // If no more watchers are registered, clear our sequence-local storage.
       // Deletes |this|.
-      // Check if the current task runner is valid before doing this to avoid
-      // races at shutdown when other objects use SequenceLocalStorageSlot and
-      // indirectly call to here.
-      if (base::SequencedTaskRunnerHandle::IsSet())
+      // Check if the SequenceLocalStorageMap is valid before doing this to
+      // avoid races at shutdown when other objects use SequenceLocalStorageSlot
+      // and indirectly call to here.
+      if (base::internal::SequenceLocalStorageMap::IsSetForCurrentThread())
         GetStorageSlot().reset();
     }
   }

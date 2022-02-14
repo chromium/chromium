@@ -72,8 +72,7 @@ ThreadControllerWithMessagePumpImpl::ThreadControllerWithMessagePumpImpl(
     const SequenceManager::Settings& settings)
     : associated_thread_(AssociatedThreadId::CreateUnbound()),
       work_deduplicator_(associated_thread_),
-      time_source_(settings.clock) {
-}
+      time_source_(settings.clock) {}
 
 ThreadControllerWithMessagePumpImpl::ThreadControllerWithMessagePumpImpl(
     std::unique_ptr<MessagePump> message_pump,
@@ -239,8 +238,7 @@ ThreadControllerWithMessagePumpImpl::GetDefaultTaskRunner() {
 }
 
 void ThreadControllerWithMessagePumpImpl::RestoreDefaultTaskRunner() {
-  // There's no default task runner unlike with the MessageLoop.
-  main_thread_only().thread_task_runner_handle.reset();
+  // There is no default task runner (as opposed to ThreadControllerImpl).
 }
 
 void ThreadControllerWithMessagePumpImpl::AddNestingObserver(

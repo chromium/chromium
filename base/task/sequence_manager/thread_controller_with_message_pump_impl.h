@@ -200,7 +200,9 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   // lookups on task execution.
   raw_ptr<WorkIdProvider> work_id_provider_ = nullptr;
 
-  // Required to register the current thread as a sequence.
+  // Required to register the current thread as a sequence. Must be declared
+  // after |main_thread_only_| so that the destructors of state stored in the
+  // map run while the main thread state is still valid (crbug.com/1221382)
   base::internal::SequenceLocalStorageMap sequence_local_storage_map_;
   std::unique_ptr<
       base::internal::ScopedSetSequenceLocalStorageMapForCurrentThread>
