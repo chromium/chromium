@@ -118,7 +118,7 @@ NativeThemeGtk::NativeThemeGtk()
   }
 
   ui::ColorProviderManager::Get().AppendColorProviderInitializer(
-      base::BindRepeating(AddGtkNativeCoreColorMixer));
+      base::BindRepeating(AddGtkNativeColorMixers));
 
   OnThemeChanged(gtk_settings_get_default(), nullptr);
 }
