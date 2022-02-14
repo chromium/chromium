@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,11 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
+#include "chrome/browser/ash/login/active_directory_migration_utils.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_uma.h"
 #include "chrome/browser/ash/login/screen_manager.h"
@@ -139,6 +141,10 @@ EnrollmentScreen::EnrollmentScreen(EnrollmentScreenView* view,
   retry_backoff_ = std::make_unique<net::BackoffEntry>(&retry_policy_);
   if (view_)
     view_->Bind(this);
+
+  ad_migration_utils::CheckChromadMigrationOobeFlow(
+      base::BindOnce(&EnrollmentScreen::UpdateChromadMigrationOobeFlow,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 EnrollmentScreen::~EnrollmentScreen() {
@@ -481,8 +487,8 @@ void EnrollmentScreen::OnCancel() {
   if (authpolicy_login_helper_)
     authpolicy_login_helper_->CancelRequestsAndRestart();
 
-  // The callback passed to ClearAuth is called either immediately or gets
-  // wrapped in a callback bound to a weak pointer from `weak_factory_` - in
+  // The callback passed to ClearAuth is either called immediately or gets
+  // wrapped in a callback bound to a weak pointer from `weak_ptr_factory_` - in
   // either case, passing exit_callback_ directly should be safe.
   ClearAuth(base::BindRepeating(exit_callback_,
                                 config_.is_forced()
@@ -494,8 +500,8 @@ void EnrollmentScreen::OnConfirmationClosed() {
   // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "Confirmation closed.";
-  // The callback passed to ClearAuth is called either immediately or gets
-  // wrapped in a callback bound to a weak pointer from `weak_factory_` - in
+  // The callback passed to ClearAuth is either called immediately or gets
+  // wrapped in a callback bound to a weak pointer from `weak_ptr_factory_` - in
   // either case, passing exit_callback_ directly should be safe.
   ClearAuth(base::BindRepeating(exit_callback_, Result::COMPLETED));
 
@@ -527,7 +533,7 @@ void EnrollmentScreen::OnEnrollmentError(policy::EnrollmentStatus status) {
 
   if (view_)
     view_->ShowEnrollmentStatus(status);
-  if (WizardController::IsZeroTouchHandsOffOobeFlow())
+  if (IsAutomaticEnrollmentFlow())
     AutomaticRetry();
 }
 
@@ -537,7 +543,7 @@ void EnrollmentScreen::OnOtherError(
   RecordEnrollmentErrorMetrics();
   if (view_)
     view_->ShowOtherError(error);
-  if (WizardController::IsZeroTouchHandsOffOobeFlow())
+  if (IsAutomaticEnrollmentFlow())
     AutomaticRetry();
 }
 
@@ -701,7 +707,7 @@ void EnrollmentScreen::ShowEnrollmentStatusOnSuccess() {
   retry_backoff_->InformOfRequest(true);
   if (elapsed_timer_)
     UMA_ENROLLMENT_TIME(kMetricEnrollmentTimeSuccess, elapsed_timer_);
-  if (WizardController::IsZeroTouchHandsOffOobeFlow() ||
+  if (IsAutomaticEnrollmentFlow() ||
       WizardController::skip_enrollment_prompts_for_testing()) {
     OnConfirmationClosed();
   } else if (view_) {
@@ -775,6 +781,15 @@ void EnrollmentScreen::OnUserAction(const std::string& action_id) {
   } else {
     BaseScreen::OnUserAction(action_id);
   }
+}
+
+void EnrollmentScreen::UpdateChromadMigrationOobeFlow(bool exists) {
+  is_chromad_migration_oobe_flow_ = exists;
+}
+
+bool EnrollmentScreen::IsAutomaticEnrollmentFlow() {
+  return is_chromad_migration_oobe_flow_ ||
+         WizardController::IsZeroTouchHandsOffOobeFlow();
 }
 
 }  // namespace ash

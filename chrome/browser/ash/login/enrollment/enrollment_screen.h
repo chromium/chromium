@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -231,6 +231,14 @@ class EnrollmentScreen
   // to reboot the device.
   void CheckInstallAttributesState();
 
+  // Updates the local variable, according to the existence of the Chromad
+  // migration flag file.
+  void UpdateChromadMigrationOobeFlow(bool exists);
+
+  // Indicates whether this is an automatic enrollment as part of Zero-Touch
+  // Hands Off flow or Chromad Migration.
+  bool IsAutomaticEnrollmentFlow();
+
   EnrollmentScreenView* view_;
   ScreenExitCallback exit_callback_;
   absl::optional<TpmStatusCallback> tpm_ownership_callback_for_testing_;
@@ -250,6 +258,11 @@ class EnrollmentScreen
   int install_state_retries_ = 0;
   // Timer for install attribute to resolve.
   base::OneShotTimer wait_state_timer_;
+
+  // This local flag should be true if the OOBE flow is operating as part of the
+  // Chromad to cloud device migration. If so, "Enterprise enrollment complete"
+  // screen should be skipped.
+  bool is_chromad_migration_oobe_flow_ = false;
 
   std::string enrolling_user_domain_;
   std::unique_ptr<base::ElapsedTimer> elapsed_timer_;
