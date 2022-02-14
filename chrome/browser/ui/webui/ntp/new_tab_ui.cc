@@ -138,8 +138,9 @@ void NewTabUI::SetUrlTitleAndDirection(base::Value* dictionary,
 // static
 void NewTabUI::SetFullNameAndDirection(const std::u16string& full_name,
                                        base::DictionaryValue* dictionary) {
-  dictionary->SetString("full_name", full_name);
-  dictionary->SetString("full_name_direction", GetHtmlTextDirection(full_name));
+  dictionary->SetStringKey("full_name", full_name);
+  dictionary->SetStringKey("full_name_direction",
+                           GetHtmlTextDirection(full_name));
 }
 
 Profile* NewTabUI::GetProfile() const {

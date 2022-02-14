@@ -92,6 +92,6 @@ void CookieControlsHandler::SendCookieControlsUIChanges() {
   dict.SetBoolKey("checked", service_->GetToggleCheckedValue());
   dict.SetStringKey(
       "icon", GetEnforcementIcon(service_->GetCookieControlsEnforcement()));
-  dict.SetString("cookieSettingsUrl", chrome::kChromeUICookieSettingsURL);
+  dict.SetStringKey("cookieSettingsUrl", chrome::kChromeUICookieSettingsURL);
   FireWebUIListener("cookie-controls-changed", dict);
 }

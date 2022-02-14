@@ -351,8 +351,8 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
 
 void NTPResourceCache::CreateNewTabGuestHTML() {
   base::DictionaryValue localized_strings;
-  localized_strings.SetString("title",
-                              l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE));
+  localized_strings.SetStringKey("title",
+                                 l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE));
   const char* guest_tab_link = kLearnMoreGuestSessionUrl;
   int guest_tab_idr = IDR_GUEST_TAB_HTML;
   int guest_tab_description_ids = IDS_NEW_TAB_GUEST_SESSION_DESCRIPTION;
@@ -366,11 +366,11 @@ void NTPResourceCache::CreateNewTabGuestHTML() {
       g_browser_process->platform_part()->browser_policy_connector_ash();
 
   if (connector->IsDeviceEnterpriseManaged()) {
-    localized_strings.SetString("enterpriseInfoVisible", "true");
-    localized_strings.SetString("enterpriseLearnMore",
-                                l10n_util::GetStringUTF16(IDS_LEARN_MORE));
-    localized_strings.SetString("enterpriseInfoHintLink",
-                                chrome::kLearnMoreEnterpriseURL);
+    localized_strings.SetStringKey("enterpriseInfoVisible", "true");
+    localized_strings.SetStringKey("enterpriseLearnMore",
+                                   l10n_util::GetStringUTF16(IDS_LEARN_MORE));
+    localized_strings.SetStringKey("enterpriseInfoHintLink",
+                                   chrome::kLearnMoreEnterpriseURL);
     std::u16string enterprise_info;
     if (connector->IsCloudManaged()) {
       const std::string enterprise_domain_manager =
@@ -384,23 +384,23 @@ void NTPResourceCache::CreateNewTabGuestHTML() {
     } else {
       NOTREACHED() << "Unknown management type";
     }
-    localized_strings.SetString("enterpriseInfoMessage", enterprise_info);
+    localized_strings.SetStringKey("enterpriseInfoMessage", enterprise_info);
   } else {
-    localized_strings.SetString("enterpriseInfoVisible", "false");
-    localized_strings.SetString("enterpriseInfoMessage", "");
-    localized_strings.SetString("enterpriseLearnMore", "");
-    localized_strings.SetString("enterpriseInfoHintLink", "");
+    localized_strings.SetStringKey("enterpriseInfoVisible", "false");
+    localized_strings.SetStringKey("enterpriseInfoMessage", "");
+    localized_strings.SetStringKey("enterpriseLearnMore", "");
+    localized_strings.SetStringKey("enterpriseInfoHintLink", "");
   }
 #endif
 
-  localized_strings.SetString(
+  localized_strings.SetStringKey(
       "guestTabDescription",
       l10n_util::GetStringUTF16(guest_tab_description_ids));
-  localized_strings.SetString("guestTabHeading",
-                              l10n_util::GetStringUTF16(guest_tab_heading_ids));
-  localized_strings.SetString("learnMore",
-                              l10n_util::GetStringUTF16(guest_tab_link_ids));
-  localized_strings.SetString("learnMoreLink", guest_tab_link);
+  localized_strings.SetStringKey(
+      "guestTabHeading", l10n_util::GetStringUTF16(guest_tab_heading_ids));
+  localized_strings.SetStringKey("learnMore",
+                                 l10n_util::GetStringUTF16(guest_tab_link_ids));
+  localized_strings.SetStringKey("learnMoreLink", guest_tab_link);
 
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &localized_strings);
