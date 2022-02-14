@@ -91,6 +91,10 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForFileManager() {
   AppendFileHandler(*info, "open-hosted-gsheet", {"gsheet"});
   AppendFileHandler(*info, "open-hosted-gslides", {"gslides"});
 
+  // Drive & Office Docs:
+  AppendFileHandler(*info, "open-web-drive-office",
+                    {"doc", "docx", "xls", "xlsx", "ppt", "pptx"});
+
   // View in the browser (with mime-type):
   AppendFileHandler(*info, "view-pdf", {"pdf"}, "application/pdf");
   AppendFileHandler(

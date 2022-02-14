@@ -36,6 +36,7 @@
 #include "chrome/browser/ash/file_manager/file_browser_handlers.h"
 #include "chrome/browser/ash/file_manager/file_tasks_notifier.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/guest_os_file_tasks.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
@@ -337,6 +338,18 @@ void PostProcessFoundTasks(
     }
   }
 
+  if (!base::FeatureList::IsEnabled(ash::features::kFilesWebDriveOffice)) {
+    disabled_actions.emplace("open-web-drive-office");
+  } else {
+    for (const auto& entry : entries) {
+      // Allow the Web Drive Office task only if the entries are on Drive.
+      if (!::file_manager::util::IsDriveLocalPath(profile, entry.path)) {
+        disabled_actions.emplace("open-web-drive-office");
+        break;
+      }
+    }
+  }
+
 #if !BUILDFLAG(ENABLE_PDF)
   disabled_actions.emplace("view-pdf");
 #endif  // !BUILDFLAG(ENABLE_PDF)
@@ -360,7 +373,8 @@ bool ShouldBeOpenedWithBrowser(const std::string& extension_id,
           action_id == "open-hosted-generic" ||
           action_id == "open-hosted-gdoc" ||
           action_id == "open-hosted-gsheet" ||
-          action_id == "open-hosted-gslides");
+          action_id == "open-hosted-gslides" ||
+          action_id == "open-web-drive-office");
 }
 
 // Opens the files specified by |file_urls| with the browser for |profile|.

@@ -106,6 +106,19 @@ void OpenHostedDriveFsFile(const base::FilePath& file_path,
   OpenNewTab(hosted_url);
 }
 
+// Open a hosted MS Office file e.g. .docx, from a path hosted in DriveFS.
+void OpenHostedOfficeFile(const base::FilePath& file_path,
+                          drive::FileError error,
+                          drivefs::mojom::FileMetadataPtr metadata) {
+  if (error != drive::FILE_ERROR_OK)
+    return;
+  GURL hosted_url(metadata->alternate_url);
+  if (!hosted_url.is_valid())
+    return;
+
+  OpenNewTab(hosted_url);
+}
+
 }  // namespace
 
 bool OpenFileWithBrowser(Profile* profile,
@@ -152,6 +165,20 @@ bool OpenFileWithBrowser(Profile* profile,
       OpenGDocUrlFromFile(file_path);
     }
     return true;
+  }
+
+  if (action_id == "open-web-drive-office") {
+    drive::DriveIntegrationService* integration_service =
+        drive::DriveIntegrationServiceFactory::FindForProfile(profile);
+    base::FilePath path;
+    if (integration_service && integration_service->IsMounted() &&
+        integration_service->GetDriveFsInterface() &&
+        integration_service->GetRelativeDrivePath(file_path, &path)) {
+      integration_service->GetDriveFsInterface()->GetMetadata(
+          path, base::BindOnce(&OpenHostedOfficeFile, file_path));
+      return true;
+    }
+    return false;
   }
 
   // Failed to open the file of unknown type.

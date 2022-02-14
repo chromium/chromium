@@ -159,6 +159,24 @@ bool IsUnderNonNativeLocalPath(Profile* profile,
   return IsNonNativeFileSystemType(filesystem_url.type());
 }
 
+bool IsDriveLocalPath(Profile* profile, const base::FilePath& path) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  GURL url;
+  if (!util::ConvertAbsoluteFilePathToFileSystemUrl(
+          profile, path, util::GetFileManagerURL(), &url)) {
+    return false;
+  }
+
+  storage::FileSystemURL filesystem_url =
+      GetFileSystemContextForSourceURL(profile, GetFileManagerURL())
+          ->CrackURLInFirstPartyContext(url);
+  if (!filesystem_url.is_valid())
+    return false;
+
+  return filesystem_url.type() == storage::kFileSystemTypeDriveFs;
+}
+
 bool HasNonNativeMimeTypeProvider(Profile* profile,
                                   const base::FilePath& path) {
   auto* drive_integration_service =
