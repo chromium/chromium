@@ -1757,12 +1757,10 @@
             ],
             "experiments": [
                 {
-                    "name": "NoPreload_1",
+                    "name": "NoPreloadOrPri_1",
                     "enable_features": [
-                        "ElideTabPreloadAtStartup"
-                    ],
-                    "disable_features": [
                         "ElidePrioritizationOfPreNativeBootstrapTasks",
+                        "ElideTabPreloadAtStartup",
                         "TreatBootstrapAsDefault"
                     ]
                 }
