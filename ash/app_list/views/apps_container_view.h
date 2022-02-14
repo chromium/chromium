@@ -339,6 +339,9 @@ class ASH_EXPORT AppsContainerView
 
   ShowState show_state_ = SHOW_NONE;
 
+  // Whether the apps container is the current active app list page.
+  bool is_active_page_ = false;
+
   // The distance between y position of suggestion chip container and apps grid
   // view. This is used in dragging to avoid duplicate calculation of apps grid
   // view's y position.

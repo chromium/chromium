@@ -506,7 +506,10 @@ void AppsContainerView::OnAppListVisibilityChanged(bool shown) {
 
   // Updates the visibility state in toast container.
   AppListToastContainerView::VisibilityState state =
-      shown ? AppListToastContainerView::VisibilityState::kShown
+      shown ? (is_active_page_
+                   ? AppListToastContainerView::VisibilityState::kShown
+                   : AppListToastContainerView::VisibilityState::
+                         kShownInBackground)
             : AppListToastContainerView::VisibilityState::kHidden;
   toast_container_->UpdateVisibilityState(state);
 
@@ -1000,11 +1003,12 @@ void AppsContainerView::OnShown() {
     keyboard::KeyboardUIController::Get()->HideKeyboardExplicitlyBySystem();
 
   GetViewAccessibility().OverrideIsLeaf(false);
-
+  is_active_page_ = true;
   // Updates the visibility state in toast container.
-  if (toast_container_)
+  if (toast_container_) {
     toast_container_->UpdateVisibilityState(
         AppListToastContainerView::VisibilityState::kShown);
+  }
 }
 
 void AppsContainerView::OnWillBeHidden() {
@@ -1020,6 +1024,8 @@ void AppsContainerView::OnHidden() {
   // contents from the screen reader as the apps grid is not normally
   // actionable in this state.
   GetViewAccessibility().OverrideIsLeaf(true);
+
+  is_active_page_ = false;
 
   // Updates the visibility state in toast container.
   if (toast_container_) {

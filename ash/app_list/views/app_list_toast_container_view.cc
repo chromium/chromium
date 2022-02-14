@@ -107,6 +107,12 @@ void AppListToastContainerView::RemoveCurrentView() {
 void AppListToastContainerView::UpdateVisibilityState(VisibilityState state) {
   visibility_state_ = state;
 
+  if (nudge_controller_->is_visible() &&
+      nudge_controller_->current_nudge() !=
+          AppListNudgeController::NudgeType::kReorderNudge) {
+    return;
+  }
+
   AppListNudgeController::NudgeType new_nudge =
       nudge_controller_->ShouldShowReorderNudge()
           ? AppListNudgeController::NudgeType::kReorderNudge
@@ -119,7 +125,8 @@ void AppListToastContainerView::UpdateVisibilityState(VisibilityState state) {
       break;
     case VisibilityState::kShownInBackground:
       // The nudge must be visible to change to inactive state.
-      DCHECK(nudge_controller_->is_visible());
+      if (!nudge_controller_->is_visible())
+        nudge_controller_->SetNudgeVisible(true, new_nudge);
       nudge_controller_->SetNudgeActive(false, new_nudge);
       break;
     case VisibilityState::kHidden:
