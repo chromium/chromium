@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BubbleProperties} from './constants.js';
-
 const AutomationNode = chrome.automation.AutomationNode;
 const AutomationEvent = chrome.automation.AutomationEvent;
 const EventType = chrome.automation.EventType;
@@ -129,7 +127,11 @@ export class InputController {
     return this.currentComposition_.length > 0;
   }
 
-  /** Displays current composition text for the current IME context. */
+  /**
+   * TODO(crbug.com/1247299): Remove this unused method once Dictation commands
+   * are successfully launched.
+   * Displays current composition text for the current IME context.
+   */
   displayCurrentComposition() {
     if (!this.isActive()) {
       return;
@@ -158,25 +160,6 @@ export class InputController {
     text = this.adjustCommitText_(text);
     chrome.input.ime.commitText({contextID: this.activeImeContextId_, text});
     this.setCurrentComposition('');
-  }
-
-  /**
-   * Shows the bubble UI with the given properties.
-   * @param {!BubbleProperties} props
-   */
-  showBubble(props) {
-    chrome.accessibilityPrivate.updateDictationBubble({
-      visible: true,
-      icon: props.icon,
-      text: props.text,
-      hints: props.hints
-    });
-  }
-
-  /** Hides the bubble UI. */
-  hideBubble() {
-    chrome.accessibilityPrivate.updateDictationBubble(
-        {visible: false, icon: IconType.HIDDEN});
   }
 
   /**

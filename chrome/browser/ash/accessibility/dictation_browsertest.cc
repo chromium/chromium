@@ -711,6 +711,14 @@ class DictationExtensionTest : public DictationBaseTest {
     WaitForTextAreaValue(value);
   }
 
+  void SendFinalFakeSpeechResultAndWaitForSelectionChange(
+      const std::string& result,
+      content::WebContents* web_contents) {
+    content::BoundingBoxUpdateWaiter waiter(web_contents);
+    SendFinalFakeSpeechResultAndWait(result);
+    waiter.Wait();
+  }
+
   std::string GetTextAreaValue() {
     std::string output;
     std::string script =
@@ -1044,25 +1052,11 @@ class DictationCommandsExtensionTest : public DictationExtensionTest {
     DictationExtensionTest::TearDownOnMainThread();
   }
 
-  void WaitForCaretBoundsChanged() {
-    CaretBoundsChangedWaiter waiter(
-        browser()->window()->GetNativeWindow()->GetHost()->GetInputMethod());
-    waiter.Wait();
-  }
-
   std::string GetClipboardText() {
     std::u16string text;
     ui::Clipboard::GetForCurrentThread()->ReadText(
         ui::ClipboardBuffer::kCopyPaste, /*data_dst=*/nullptr, &text);
     return base::UTF16ToUTF8(text);
-  }
-
-  void SendFinalFakeSpeechResultAndWaitForSelectionChange(
-      const std::string& result,
-      content::WebContents* web_contents) {
-    content::BoundingBoxUpdateWaiter waiter(web_contents);
-    SendFinalFakeSpeechResultAndWait(result);
-    waiter.Wait();
   }
 
   void WaitForHelpUrlVisible() {
@@ -1127,15 +1121,19 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, MoveByCharacter) {
   content::AccessibilityNotificationWaiter selection_waiter(
       browser()->tab_strip_model()->GetActiveWebContents(), ui::kAXModeComplete,
       ax::mojom::Event::kTextSelectionChanged);
+  CaretBoundsChangedWaiter caret_bounds_waiter_one(
+      browser()->window()->GetNativeWindow()->GetHost()->GetInputMethod());
   SendFinalFakeSpeechResultAndWait("Move to the Previous character");
   selection_waiter.WaitForNotification();
-  WaitForCaretBoundsChanged();
+  caret_bounds_waiter_one.Wait();
 
   // White space is added to the text on the left of the text caret, but not
   // to the right of the text caret.
   SendFinalSpeechResultAndWaitForTextAreaValue("inserted", "Lyr inserteda");
+  CaretBoundsChangedWaiter caret_bounds_waiter_two(
+      browser()->window()->GetNativeWindow()->GetHost()->GetInputMethod());
   SendFinalFakeSpeechResultAndWait("move TO the next character ");
-  WaitForCaretBoundsChanged();
+  caret_bounds_waiter_two.Wait();
   SendFinalSpeechResultAndWaitForTextAreaValue(
       "is a constellation", "Lyr inserteda is a constellation");
 }
@@ -1145,11 +1143,16 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, NewLineAndMoveByLine) {
   SendFinalSpeechResultAndWaitForTextAreaValue("new line", "Line 1\n");
   SendFinalSpeechResultAndWaitForTextAreaValue("Line 2", "Line 1\nLine 2");
 
+  CaretBoundsChangedWaiter caret_bounds_waiter_one(
+      browser()->window()->GetNativeWindow()->GetHost()->GetInputMethod());
   SendFinalFakeSpeechResultAndWait("Move to the previous line ");
-  WaitForCaretBoundsChanged();
+  caret_bounds_waiter_one.Wait();
   SendFinalSpeechResultAndWaitForTextAreaValue("up", "Line 1 up\nLine 2");
+
+  CaretBoundsChangedWaiter caret_bounds_waiter_two(
+      browser()->window()->GetNativeWindow()->GetHost()->GetInputMethod());
   SendFinalFakeSpeechResultAndWait("Move to the next line");
-  WaitForCaretBoundsChanged();
+  caret_bounds_waiter_two.Wait();
   SendFinalSpeechResultAndWaitForTextAreaValue("down",
                                                "Line 1 up\nLine 2 down");
 }
@@ -1386,7 +1389,7 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, HiddenWhenDictationDeactivates) {
   WaitForVisibility(false);
 }
 
-IN_PROC_BROWSER_TEST_P(DictationUITest, Hints) {
+IN_PROC_BROWSER_TEST_P(DictationUITest, StandbyHints) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
 
@@ -1424,6 +1427,69 @@ IN_PROC_BROWSER_TEST_P(DictationUITest, ChromeVoxAnnouncesHints) {
   // Assert speech from ChromeVox.
   sm.ExpectSpeechPattern("Try saying*Type*Help*");
   sm.Replay();
+}
+
+IN_PROC_BROWSER_TEST_P(DictationUITest, HintsShownWhenTextCommitted) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+
+  WaitForVisibility(true);
+  WaitForVisibleIcon(DictationBubbleIconType::kStandby);
+
+  // Send a final speech result. UI should return to standby mode.
+  SendFinalFakeSpeechResultAndWait("Testing");
+  WaitForVisibility(true);
+  WaitForVisibleIcon(DictationBubbleIconType::kStandby);
+  WaitForVisibleText(std::u16string());
+
+  // Hints should show up after a few seconds without speech.
+  WaitForVisibility(true);
+  WaitForVisibleIcon(DictationBubbleIconType::kStandby);
+  WaitForVisibleHints(
+      std::vector<std::u16string>{u"Try saying:", u"\"Undo\"", u"\"Delete\"",
+                                  u"\"Select all\"", u"\"Help\""});
+}
+
+IN_PROC_BROWSER_TEST_P(DictationUITest, HintsShownAfterTextSelected) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+
+  // Perform a select all command.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  SendFinalSpeechResultAndWaitForTextAreaValue(
+      "Vega is the brightest star in Lyra",
+      "Vega is the brightest star in Lyra");
+  SendFinalFakeSpeechResultAndWaitForSelectionChange("Select all",
+                                                     web_contents);
+  WaitForVisibility(true);
+  WaitForVisibleIcon(DictationBubbleIconType::kMacroSuccess);
+  WaitForVisibleText(u"Select all");
+
+  // UI should return to standby mode with hints after a few seconds without
+  // speech.
+  WaitForVisibility(true);
+  WaitForVisibleIcon(DictationBubbleIconType::kStandby);
+  WaitForVisibleHints(
+      std::vector<std::u16string>{u"Try saying:", u"\"Delete\"", u"\"Help\""});
+}
+
+IN_PROC_BROWSER_TEST_P(DictationUITest, HintsShownAfterCommandExecuted) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+
+  // Perform a command.
+  SendFinalFakeSpeechResultAndWait("Move to the previous character");
+  WaitForVisibility(true);
+  WaitForVisibleIcon(DictationBubbleIconType::kMacroSuccess);
+  WaitForVisibleText(u"Move to the previous character");
+
+  // UI should return to standby mode with hints after a few seconds without
+  // speech.
+  WaitForVisibility(true);
+  WaitForVisibleIcon(DictationBubbleIconType::kStandby);
+  WaitForVisibleHints(
+      std::vector<std::u16string>{u"Try saying:", u"\"Undo\"", u"\"Help\""});
 }
 
 // TODO(crbug.com/1264544): Test looking at gn args has pumpkin and does

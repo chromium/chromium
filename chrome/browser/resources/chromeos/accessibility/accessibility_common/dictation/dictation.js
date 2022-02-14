@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {BubbleProperties} from './constants.js';
 import {InputController} from './input_controller.js';
 import {Macro} from './macros/macro.js';
 import {MacroName} from './macros/macro_names.js';
 import {MetricsUtils} from './metrics_utils.js';
 import {SpeechParser} from './parse/speech_parser.js';
+import {HintContext, UIController, UIState} from './ui_controller.js';
 
 const ErrorEvent = chrome.speechRecognitionPrivate.SpeechRecognitionErrorEvent;
 const HintType = chrome.accessibilityPrivate.DictationBubbleHintType;
@@ -24,6 +24,9 @@ export class Dictation {
   constructor() {
     /** @private {InputController} */
     this.inputController_ = null;
+
+    /** @private {UIController} */
+    this.uiController_ = null;
 
     /** @private {SpeechParser} */
     this.speechParser_ = null;
@@ -55,12 +58,6 @@ export class Dictation {
     /** @private {?number} */
     this.stopTimeoutId_ = null;
 
-    /** @private {?number} */
-    this.clearUITextTimeoutId_ = null;
-
-    /** @private {?number} */
-    this.showHintsTimeoutId_ = null;
-
     /** @private {string} */
     this.interimText_ = '';
 
@@ -82,6 +79,7 @@ export class Dictation {
    */
   initialize_() {
     this.inputController_ = new InputController(() => this.stopDictation_());
+    this.uiController_ = new UIController();
     this.speechParser_ = new SpeechParser(this.inputController_);
 
     // Set default speech recognition properties. Locale will be updated when
@@ -108,20 +106,28 @@ export class Dictation {
     chrome.accessibilityPrivate.onToggleDictation.addListener(
         activated => this.onToggleDictation_(activated));
 
-    chrome.accessibilityPrivate.isFeatureEnabled(
-        chrome.accessibilityPrivate.AccessibilityFeature.DICTATION_COMMANDS,
-        (result) => {
-          this.commandsFeatureEnabled_ = result;
-          if (this.commandsFeatureEnabled_ && this.localePref_) {
-            this.speechParser_.setCommandsEnabled(this.localePref_);
-          }
-        });
+    this.checkEnabledFeatures_();
+  }
 
-    chrome.accessibilityPrivate.isFeatureEnabled(
-        chrome.accessibilityPrivate.AccessibilityFeature.DICTATION_HINTS,
-        (result) => {
+  /** @private */
+  checkEnabledFeatures_() {
+    const commandsFeature =
+        chrome.accessibilityPrivate.AccessibilityFeature.DICTATION_COMMANDS;
+    const hintsFeature =
+        chrome.accessibilityPrivate.AccessibilityFeature.DICTATION_HINTS;
+
+    chrome.accessibilityPrivate.isFeatureEnabled(commandsFeature, (result) => {
+      this.commandsFeatureEnabled_ = result;
+      if (this.commandsFeatureEnabled_ && this.localePref_) {
+        this.speechParser_.setCommandsEnabled(this.localePref_);
+      }
+      if (this.commandsFeatureEnabled_) {
+        chrome.accessibilityPrivate.isFeatureEnabled(hintsFeature, (result) => {
           this.hintsFeatureEnabled_ = result;
+          this.uiController_.setEnabled(this.hintsFeatureEnabled_);
         });
+      }
+    });
   }
 
   /**
@@ -150,23 +156,6 @@ export class Dictation {
       clearTimeout(this.stopTimeoutId_);
     }
     this.stopTimeoutId_ = setTimeout(() => this.stopDictation_(), durationMs);
-  }
-
-  /**
-   * Sets the timeout to show hints in the bubble UI.
-   * @param {!Array<string>} hints
-   * @private
-   */
-  setHintsTimeout_(hints) {
-    if (!this.hintsFeatureEnabled_ || !this.commandsFeatureEnabled_) {
-      return;
-    }
-
-    if (this.showHintsTimeoutId_ !== null) {
-      clearTimeout(this.showHintsTimeoutId_);
-    }
-    this.showHintsTimeoutId_ = setTimeout(
-        () => this.showHints_(hints), Dictation.Timeouts.SHOW_HINTS_MS);
   }
 
   /**
@@ -333,7 +322,8 @@ export class Dictation {
     this.metricsUtils_ = new MetricsUtils(type, this.localePref_);
     this.metricsUtils_.recordSpeechRecognitionStarted();
 
-    this.setHintsTimeout_([HintType.TRY_SAYING, HintType.TYPE, HintType.HELP]);
+    this.uiController_.setState(
+        UIState.STANDBY, {context: HintContext.STANDBY});
   }
 
   /**
@@ -408,14 +398,7 @@ export class Dictation {
     // although SODA does not seem to do that. The newline character looks wrong
     // here.
     this.interimText_ = text;
-    this.inputController_.showBubble({
-      icon: IconType.HIDDEN,
-      text: this.interimText_,
-    });
-    if (this.clearUITextTimeoutId_) {
-      clearTimeout(this.clearUITextTimeoutId_);
-      this.clearUITextTimeoutId_ = null;
-    }
+    this.uiController_.setState(UIState.RECOGNIZING_TEXT, {text});
   }
 
   /**
@@ -428,11 +411,7 @@ export class Dictation {
     }
 
     this.interimText_ = '';
-    this.inputController_.showBubble({icon: IconType.STANDBY});
-    if (this.clearUITextTimeoutId_) {
-      clearTimeout(this.clearUITextTimeoutId_);
-      this.clearUITextTimeoutId_ = null;
-    }
+    this.uiController_.setState(UIState.STANDBY);
   }
 
   /**
@@ -452,14 +431,16 @@ export class Dictation {
     if (macro.getMacroName() === MacroName.INPUT_TEXT_VIEW ||
         macro.getMacroName() === MacroName.NEW_LINE) {
       this.clearInterimText_();
+      this.uiController_.setState(
+          UIState.STANDBY, {context: HintContext.TEXT_COMMITTED});
       return;
     }
     this.interimText_ = '';
-    this.inputController_.showBubble(
-        {icon: IconType.MACRO_SUCCESS, text: transcript});
-    this.clearUITextTimeoutId_ = setTimeout(
-        () => this.clearInterimText_(),
-        Dictation.Timeouts.SHOW_COMMAND_MESSAGE_MS);
+    const context = macro.getMacroName() === MacroName.SELECT_ALL_TEXT ?
+        HintContext.TEXT_SELECTED :
+        HintContext.MACRO_SUCCESS;
+    this.uiController_.setState(
+        UIState.MACRO_SUCCESS, {text: transcript, context});
   }
 
   /**
@@ -481,26 +462,10 @@ export class Dictation {
 
     this.interimText_ = '';
     // TODO(crbug.com/1288964): Finalize string and internationalization.
-    this.inputController_.showBubble({
-      icon: IconType.MACRO_FAIL,
-      text: `Failed to run command: ${transcript}`
+    this.uiController_.setState(UIState.MACRO_FAIL, {
+      text: `Failed to run command: ${transcript}`,
+      context: HintContext.STANDBY
     });
-    this.clearUITextTimeoutId_ = setTimeout(
-        () => this.clearInterimText_(),
-        Dictation.Timeouts.SHOW_COMMAND_MESSAGE_MS);
-  }
-
-  /**
-   * Shows hints in the UI bubble.
-   * @param {!Array<string>} hints
-   * @private
-   */
-  showHints_(hints) {
-    if (!this.hintsFeatureEnabled_ || !this.commandsFeatureEnabled_) {
-      return;
-    }
-
-    this.inputController_.showBubble({icon: IconType.STANDBY, hints});
   }
 
   /**
@@ -513,11 +478,7 @@ export class Dictation {
     }
 
     this.interimText_ = '';
-    this.inputController_.hideBubble();
-    if (this.clearUITextTimeoutId_) {
-      clearTimeout(this.clearUITextTimeoutId_);
-      this.clearUITextTimeoutId_ = null;
-    }
+    this.uiController_.setState(UIState.HIDDEN);
   }
 
   /** @private */
@@ -525,14 +486,6 @@ export class Dictation {
     if (this.stopTimeoutId_ !== null) {
       clearTimeout(this.stopTimeoutId_);
       this.stopTimeoutId_ = null;
-    }
-    if (this.clearUITextTimeoutId_ !== null) {
-      clearTimeout(this.clearUITextTimeoutId_);
-      this.clearUITextTimeoutId_ = null;
-    }
-    if (this.showHintsTimeoutId_ !== null) {
-      clearTimeout(this.showHintsTimeoutId_);
-      this.showHintsTimeoutId_ = null;
     }
   }
 
@@ -579,6 +532,4 @@ Dictation.Timeouts = {
   NO_SPEECH_MS: 10 * 1000,
   NO_NEW_SPEECH_MS: 5 * 1000,
   NO_FOCUSED_IME_MS: 500,
-  SHOW_COMMAND_MESSAGE_MS: 2 * 1000,
-  SHOW_HINTS_MS: 2 * 1000,
 };

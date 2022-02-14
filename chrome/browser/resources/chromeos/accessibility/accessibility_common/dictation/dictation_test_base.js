@@ -91,6 +91,7 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
   get featureList() {
     return {
       enabled: [
+        'features::kExperimentalAccessibilityDictationHints',
         'features::kExperimentalAccessibilityDictationCommands',
         'features::kExperimentalAccessibilityDictationExtension'
       ]
