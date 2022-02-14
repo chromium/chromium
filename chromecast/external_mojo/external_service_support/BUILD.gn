@@ -103,9 +103,28 @@ source_set("tracing_client_impl") {
   ]
 }
 
+source_set("perfetto_tracing_client") {
+  sources = [ "perfetto_tracing_client.cc" ]
+  public = [ "perfetto_tracing_client.h" ]
+  deps = [
+    ":external_service",
+    ":tracing_client_hdr",
+    "//base",
+    "//chromecast:chromecast_buildflags",
+    "//mojo/public/cpp/bindings",
+    "//services/tracing:lib",
+    "//services/tracing/public/cpp",
+    "//services/tracing/public/cpp:traced_process",
+    "//services/tracing/public/mojom",
+    "//third_party/perfetto:libperfetto",
+  ]
+}
+
 group("tracing_client") {
   public_deps = [ ":tracing_client_hdr" ]
-  if (enable_external_mojo_tracing) {
+  if (enable_perfetto_tracing) {
+    public_deps += [ ":perfetto_tracing_client" ]
+  } else if (enable_external_mojo_tracing) {
     public_deps += [ ":tracing_client_impl" ]
   } else {
     public_deps += [ ":tracing_client_dummy" ]
