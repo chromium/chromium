@@ -21885,6 +21885,7 @@ Called by update_debug_scenarios.py.-->
   <int value="54" label="bfcacheDisplayTree"/>
   <int value="55" label="stylesPaneCSSChanges"/>
   <int value="56" label="headerOverrides"/>
+  <int value="57" label="lighthousePanelFR"/>
 </enum>
 
 <enum name="DevToolsGridOverlayOpenedFrom">
