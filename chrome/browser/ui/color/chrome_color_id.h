@@ -27,6 +27,10 @@
   E_CPONLY(kColorDownloadToolbarButtonRingBackground) \
   /* Google branding colors. */ \
   E_CPONLY(kColorGooglePayLogo) \
+  /* New Tab Page colors. */ \
+  E(kColorNewTabPageBackground, ThemeProperties::COLOR_NTP_BACKGROUND) \
+  E(kColorNewTabPageHeader, ThemeProperties::COLOR_NTP_HEADER) \
+  E(kColorNewTabPageText, ThemeProperties::COLOR_NTP_TEXT) \
   /* Omnibox output colors. */ \
   E(kColorOmniboxBackground, ThemeProperties::COLOR_OMNIBOX_BACKGROUND) \
   E(kColorOmniboxBackgroundHovered, \

@@ -191,6 +191,9 @@
   E_CPONLY(kColorNativeColor6) \
   E_CPONLY(kColorNativeBaseColor) \
   E_CPONLY(kColorNativeSecondaryColor)
+#elif BUILDFLAG(IS_LINUX)
+#define PLATFORM_SPECIFIC_COLOR_IDS \
+  E_CPONLY(kColorNativeButtonBorder)
 #elif BUILDFLAG(IS_WIN)
 #define PLATFORM_SPECIFIC_COLOR_IDS \
   E(kColorNative3dDkShadow, COLOR_3DDKSHADOW) \

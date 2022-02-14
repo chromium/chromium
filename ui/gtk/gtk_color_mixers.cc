@@ -14,10 +14,6 @@
 
 namespace gtk {
 
-// TODO(tluk): The current GTK color mixer lifts the existing color definitions
-// out of NativeThemeGtk. This mixer should leverage the hierarchical nature of
-// color pipeline to reduce duplication of color definitions in
-// `SkColorFromColorId()`.
 void AddGtkNativeCoreColorMixer(ui::ColorProvider* provider,
                                 const ui::ColorProviderManager::Key& key) {
   if (key.system_theme == ui::ColorProviderManager::SystemTheme::kDefault)
@@ -25,6 +21,10 @@ void AddGtkNativeCoreColorMixer(ui::ColorProvider* provider,
 
   ui::ColorMixer& mixer = provider->AddMixer();
 
+  // TODO(pkasting): These don't generally belong in kColorSetNative or in a
+  // "native core color mixer" as they're cross-platform UI color concepts.
+  // Furthermore, now that NativeThemeGtk doesn't need to define these colors,
+  // they should be moved into this file and systematized.
   ui::ColorSet::ColorMap color_map;
   for (ui::ColorId id = ui::kUiColorsStart; id < ui::kUiColorsEnd; ++id) {
     // Add GTK color definitions to the map if they exist.
@@ -38,6 +38,8 @@ void AddGtkNativeCoreColorMixer(ui::ColorProvider* provider,
       ui::GetColorWithMaxContrast(ui::kColorEndpointForeground);
   mixer[ui::kColorEndpointForeground] =
       ui::GetColorWithMaxContrast(ui::kColorWindowBackground);
+
+  mixer[ui::kColorNativeButtonBorder] = {GetBorderColor("GtkButton#button")};
 }
 
 }  // namespace gtk

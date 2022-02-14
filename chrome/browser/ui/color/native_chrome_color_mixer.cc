@@ -15,7 +15,7 @@
 #include "ui/color/color_transform.h"
 #include "ui/gfx/color_utils.h"
 
-#if !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN)
 void AddNativeChromeColorMixer(ui::ColorProvider* provider,
                                const ui::ColorProviderManager::Key& key) {
 #if !BUILDFLAG(IS_ANDROID)

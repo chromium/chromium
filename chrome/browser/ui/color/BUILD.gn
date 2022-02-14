@@ -34,6 +34,10 @@ source_set("mixers") {
     "//ui/color:mixers",
   ]
 
+  if (is_linux) {
+    sources += [ "linux/native_chrome_color_mixer_linux.cc" ]
+  }
+
   if (is_win) {
     sources += [ "win/native_chrome_color_mixer_win.cc" ]
     deps += [
