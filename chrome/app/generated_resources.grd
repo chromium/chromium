@@ -2547,7 +2547,6 @@ are declared in tools/grit/grit_rule.gni.
                desc="Footer link in the Download Bubble">
         Show all downloads
       </message>
-      
 
       <!-- Desktop omnibox PWA install icon -->
       <if expr="not is_android">
@@ -12351,7 +12350,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Vestibulum bibendum, nisi non facilisis euismod, dui urna viverra diam,
       euismod interdum ipsum nulla id felis. Cras suscipit dolor justo, id
       pellentesque ipsum finibus in. Ut accumsan
-      suscipit eros quis sodales.
+      suscipit.
     </message>
     <message name="IDS_PRIVACY_SANDBOX_DIALOG_LEARN_MORE_LABEL" translateable="false" desc="Learn more label of the collapsable section in the body of the Privacy Sandbox Dialog.">
       Learn more nisi non facilisis euismod
@@ -12363,12 +12362,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
       turpis egestas. Sed gravida vitae mauris non vulputate.
     </message>
     <message name="IDS_PRIVACY_SANDBOX_DIALOG_LEARN_MORE_SECTION_1_HEADER" translateable="false" desc="Header of the first section in the collapsable section of the Privacy Sandbox Dialog.">
-      Pellentesque habitant morbi tristique senectus
+      Pellentesque habitant morbi tr
     </message>
     <message name="IDS_PRIVACY_SANDBOX_DIALOG_LEARN_MORE_SECTION_1_BULLET_POINT_1" translateable="false" desc="First bullet point of the first section in the collapsable section of the Privacy Sandbox Dialog.">
       <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Maecenas tincidunt diam eros:<ph name="END_BOLD">&lt;/b&gt;</ph> A tempus lectus consequat ac.
-      Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac
-      turpis egestas.
+      Pellentesque habitant morbi tristique senectus et netus et.
     </message>
     <message name="IDS_PRIVACY_SANDBOX_DIALOG_LEARN_MORE_SECTION_1_BULLET_POINT_2" translateable="false" desc="Second bullet point of the first section in the collapsable section of the Privacy Sandbox Dialog.">
       <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Donec consectetur eros:<ph name="END_BOLD">&lt;/b&gt;</ph> A tempus lectus consequat ac.
@@ -12384,13 +12382,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </message>
     <message name="IDS_PRIVACY_SANDBOX_DIALOG_LEARN_MORE_SECTION_2_BULLET_POINT_1" translateable="false" desc="First bullet point of the second section in the collapsable section of the Privacy Sandbox Dialog.">
       <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Senectus et netus et malesuada:<ph name="END_BOLD">&lt;/b&gt;</ph> A tempus lectus consequat ac.
-      Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac
-      turpis egestas.
+      Pellentesque habitant morbi tristique senectus et netus et.
     </message>
     <message name="IDS_PRIVACY_SANDBOX_DIALOG_LEARN_MORE_SECTION_2_BULLET_POINT_2" translateable="false" desc="Second bullet point of the second section in the collapsable section of the Privacy Sandbox Dialog.">
       <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Pellentesque habitant morbi tristique:<ph name="END_BOLD">&lt;/b&gt;</ph> A tempus lectus consequat ac.
       Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac
-      turpis egestas. Sed gravida vitae mauris non vulputate. Pellentesque habitant morbi tristique senectus.
+      turpis egestas. Sed gravida vitae mauris non vulputate. Pellentesque habitant morbi tristique senectus. Acturpis egestas sed gravida Donec consectetur eros.
     </message>
     <message name="IDS_PRIVACY_SANDBOX_DIALOG_LEARN_MORE_SECTION_2_BULLET_POINT_3" translateable="false" desc="Third bullet point of the second section in the collapsable section of the Privacy Sandbox Dialog.">
       <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Morbi tristique senectus et netus:<ph name="END_BOLD">&lt;/b&gt;</ph> A tempus lectus consequat ac.

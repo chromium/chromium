@@ -1,30 +1,58 @@
 <style include="cr-shared-style">
-  cr-button+cr-button {
-    margin-inline-start: 8px;
+  .header {
+    padding-bottom: 10px;
+    text-align: center;
+  }
+
+  .header h2 {
+    font-weight: 500;
+    line-height: 22px;
+    margin: 0;
+  }
+
+  .header h3 {
+    font-weight: normal;
+    line-height: 22px;
+    margin: 3px 0;
+  }
+
+  .header img {
+    content: url(images/privacy_sandbox_confirmation_banner.svg);
+    height: 100px;
+    padding-bottom: 16px;
+    padding-top: 16px;
+    width: 100px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .header img {
+      content: url(images/privacy_sandbox_confirmation_banner_dark.svg);
+    }
+  }
+
+  .section {
+    line-height: 20px;
+    padding: 8px 0;
+  }
+
+  .section-header {
+    margin-bottom: 4px;
   }
 
   .expand-section {
     border-bottom: var(--cr-separator-line);
     border-top: var(--cr-separator-line);
+    line-height: 20px;
+    margin-bottom: 8px;
   }
 
-  .header {
-    text-align: center;
+  .expand-section ul {
+    padding-inline-start: 16px;
   }
 
-  .header h1 {
-    font-weight: 500;
-    margin: 10px 0;
-  }
-
-  .header h2 {
-    font-weight: normal;
-    margin: 0;
-  }
-
-  .header img {
-    height: 100px;
-    width: 100px;
+  .expand-section b {
+    color: initial;
+    font-weight: 400;
   }
 
   .buttons-container {
@@ -35,6 +63,10 @@
     padding-inline-end:
         var(--cr-dialog-button-container-padding-horizontal, 16px);
     width: 100%;
+  }
+
+  cr-button+cr-button {
+    margin-inline-start: 8px;
   }
 
   .content-area {
@@ -49,47 +81,40 @@
     height: 100vh;
   }
 
-  .wrapper.fit-into-size .buttons-container {
-    bottom: 0;
-    position: fixed;
-    right: 0;
-  }
-
   .wrapper.fit-into-size .content-area {
     bottom: 64px;
     position: absolute;
     top: 0;
   }
 
-  .content-area.can-scroll {
-    border-bottom-color: var(--scrollable-border-color);
+  .wrapper.fit-into-size .buttons-container {
+    bottom: 0;
+    position: fixed;
+    right: 0;
   }
 
-  .expand-section b {
-    color: initial;
-    font-weight: 400;
+  .content-area.can-scroll {
+    border-bottom-color: var(--scrollable-border-color);
   }
 </style>
 
 <div class$="wrapper [[fitIntoDialogClass_]]">
   <div class$="content-area [[canScrollClass_]]">
     <div class="header">
-      <img src="images/privacy_sandbox_confirmation_banner.svg">
-
+      <img>
       <template is="dom-if" if="[[isConsent_]]">
-        <h1>$i18n{title}</h1>
+        <h2>$i18n{title}</h2>
       </template>
-
-      <h2>$i18n{subtitle}</h2>
+      <h3>$i18n{subtitle}</h3>
     </div>
 
-    <div class="section cr-padded-text">
-      <div>$i18n{bodyHeader1}</div>
+    <div class="section">
+      <div class="section-header">$i18n{bodyHeader1}</div>
       <div class="cr-secondary-text">$i18n{bodyDescription1}</div>
     </div>
 
-    <div class="section cr-padded-text">
-      <div>$i18n{bodyHeader2}</div>
+    <div class="section">
+      <div class="section-header">$i18n{bodyHeader2}</div>
       <div class="cr-secondary-text">$i18n{bodyDescription2}</div>
     </div>
 
@@ -115,8 +140,7 @@
         </iron-collapse>
       </div>
     </template>
-
-    <div class="cr-secondary-text cr-padded-text">$i18n{bottomSummary}</div>
+    <div class="section cr-secondary-text">$i18n{bottomSummary}</div>
   </div>
 
   <div class="buttons-container">
@@ -128,7 +152,6 @@
         $i18n{consentAcceptButton}
       </cr-button>
     </template>
-
     <template is="dom-if" if="[[!isConsent_]]">
       <cr-button on-click="onNoticeOpenSettings_">
         $i18n{noticeOpenSettingsButton}
