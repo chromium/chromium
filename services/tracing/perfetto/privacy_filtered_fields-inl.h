@@ -322,13 +322,17 @@ constexpr MessageInfo kRendererMainThreadTaskExecution = {
 constexpr int kEventLatencyIndices[] = {1, -1};
 constexpr MessageInfo kEventLatency = {kEventLatencyIndices, nullptr};
 
+// Proto Message: ProcessSingleton
+constexpr int kProcessSingletonIndices[] = {1, 2, -1};
+constexpr MessageInfo kProcessSingleton = {kProcessSingletonIndices, nullptr};
+
 // Proto Message: TrackEvent
 constexpr int kTrackEventIndices[] = {
     1,    2,    3,    5,    6,    9,    10,   11,   12,   16,   17,   22,
     23,   24,   25,   26,   27,   28,   29,   30,   31,   32,   33,   34,
     35,   36,   38,   39,   40,   41,   42,   43,   1001, 1002, 1003, 1004,
     1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014, 1015, 1016,
-    1017, 1018, 1019, 1020, 1021, 1023, 1024, 1025, 1031, 1032, -1};
+    1017, 1018, 1019, 1020, 1021, 1023, 1024, 1025, 1031, 1032, 1033, -1};
 constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
@@ -387,7 +391,8 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     &kParkableStringUnpark,
     &kChromeSamplingProfilerSampleCollected,
     &kRendererMainThreadTaskExecution,
-    &kEventLatency};
+    &kEventLatency,
+    &kProcessSingleton};
 constexpr MessageInfo kTrackEvent = {kTrackEventIndices,
                                      kTrackEventComplexMessages};
 
