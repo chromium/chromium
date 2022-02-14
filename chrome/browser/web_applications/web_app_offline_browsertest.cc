@@ -295,14 +295,15 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
 // worker that does not handle offline error.
 // TODO(1295430): Flaky on both Linux and Windows CI bots
 IN_PROC_BROWSER_TEST_P(WebAppOfflineDarkModeTest,
-                       DISABLED_WebAppOfflineDarkModeEmptyServiceWorker) {
+                       WebAppOfflineDarkModeEmptyServiceWorker) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  StartWebAppAndDisconnect(web_contents,
-                           "/banners/manifest_test_page.html?manifest=../"
-                           "web_apps/color_scheme_dark.json");
+  StartPwaAndDisconnect(
+      web_contents,
+      "/banners/manifest_test_page_empty_fetch_handler.html?manifest=../"
+      "web_apps/color_scheme_dark.json");
   if (GetParam() == blink::mojom::PreferredColorScheme::kDark) {
     // Expect that the default offline page is showing with dark mode colors.
     EXPECT_TRUE(
