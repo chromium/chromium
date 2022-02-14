@@ -67,6 +67,113 @@ namespace blink {
 
 namespace {
 
+// Prepares the |paint_record_builder| for creating an image from |node| based
+// on |frame|. If |update_lifecycle| is set to false, life cycle phasses are
+// assumed correct and are not updated.
+bool CreatePaintArtifactsHelper(const LocalFrame* frame,
+                                const Node* node,
+                                bool update_lifecycle,
+                                PaintRecordBuilder*& paint_record_builder,
+                                gfx::Vector2dF& paint_offset,
+                                gfx::RectF& bounding_box,
+                                PropertyTreeState& property_tree_state) {
+  // Construct layout object for |node_| with pseudo class "-webkit-drag"
+  if (update_lifecycle) {
+    frame->View()->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kDragImage);
+  }
+  LayoutObject* const layout_object = node->GetLayoutObject();
+  if (!layout_object)
+    return false;
+
+  // Paint starting at the nearest stacking context, clipped to the object
+  // itself. This will also paint the contents behind the object if the
+  // object contains transparency and there are other elements in the same
+  // stacking context which stacked below.
+  PaintLayer* layer = layout_object->EnclosingLayer();
+  if (!layer->GetLayoutObject().IsStackingContext())
+    layer = layer->AncestorStackingContext();
+
+  gfx::Rect absolute_bounding_box =
+      layout_object->AbsoluteBoundingBoxRectIncludingDescendants();
+  // TODO(chrishtr): consider using the root frame's visible rect instead
+  // of the local frame, to avoid over-clipping.
+  gfx::Rect visible_rect(gfx::Point(),
+                         layer->GetLayoutObject().GetFrameView()->Size());
+  // If the absolute bounding box is large enough to be possibly a memory
+  // or IPC payload issue, clip it to the visible content rect.
+  if (absolute_bounding_box.size().Area64() > visible_rect.size().Area64()) {
+    absolute_bounding_box.Intersect(visible_rect);
+  }
+
+  bounding_box =
+      layer->GetLayoutObject()
+          .AbsoluteToLocalQuad(gfx::QuadF(gfx::RectF(absolute_bounding_box)))
+          .BoundingBox();
+  gfx::RectF cull_rect = bounding_box;
+  cull_rect.Offset(static_cast<gfx::Vector2dF>(
+      layer->GetLayoutObject().FirstFragment().PaintOffset()));
+  OverriddenCullRectScope cull_rect_scope(
+      *layer, CullRect(gfx::ToEnclosingRect(cull_rect)));
+  paint_record_builder = MakeGarbageCollected<PaintRecordBuilder>();
+
+  if (update_lifecycle) {
+    layout_object->GetDocument().Lifecycle().AdvanceTo(
+        DocumentLifecycle::kInPaint);
+  }
+  PaintLayerPainter(*layer).Paint(paint_record_builder->Context(),
+                                  PaintFlag::kOmitCompositingInfo);
+  if (update_lifecycle) {
+    layout_object->GetDocument().Lifecycle().AdvanceTo(
+        DocumentLifecycle::kPaintClean);
+  }
+
+  paint_offset = bounding_box.OffsetFromOrigin();
+  property_tree_state = layer->GetLayoutObject()
+                            .FirstFragment()
+                            .LocalBorderBoxProperties()
+                            .Unalias();
+  // We paint in the containing transform node's space. Add the offset from
+  // the layer to this transform space.
+  paint_offset += static_cast<gfx::Vector2dF>(
+      layer->GetLayoutObject().FirstFragment().PaintOffset());
+  return true;
+}
+
+// Creates an image from position |paint_offset| and |layout_size| using
+// |PaintRecordBuilder|.
+scoped_refptr<Image> CreateImageHelper(
+    const LocalFrame* frame,
+    const gfx::SizeF& layout_size,
+    const gfx::Vector2dF& paint_offset,
+    PaintRecordBuilder& builder,
+    const PropertyTreeState& property_tree_state) {
+  float layout_to_device_scale =
+      frame->GetPage()->GetVisualViewport().Scale() *
+      frame->GetPage()->DeviceScaleFactorDeprecated();
+
+  gfx::SizeF device_size = gfx::ScaleSize(layout_size, layout_to_device_scale);
+  AffineTransform transform;
+  gfx::Vector2dF device_paint_offset =
+      gfx::ScaleVector2d(paint_offset, layout_to_device_scale);
+  transform.Translate(-device_paint_offset.x(), -device_paint_offset.y());
+  transform.Scale(layout_to_device_scale);
+
+  // Rasterize upfront, since DragImage::create() is going to do it anyway
+  // (SkImage::asLegacyBitmap).
+  SkSurfaceProps surface_props(0, kUnknown_SkPixelGeometry);
+  sk_sp<SkSurface> surface = SkSurface::MakeRasterN32Premul(
+      device_size.width(), device_size.height(), &surface_props);
+  if (!surface)
+    return nullptr;
+
+  SkiaPaintCanvas skia_paint_canvas(surface->getCanvas());
+  skia_paint_canvas.concat(AffineTransformToSkMatrix(transform));
+  builder.EndRecording(skia_paint_canvas, property_tree_state);
+
+  return UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
+}
+
 class DraggedNodeImageBuilder {
   STACK_ALLOCATED();
 
@@ -95,63 +202,22 @@ class DraggedNodeImageBuilder {
 #if DCHECK_IS_ON()
     DCHECK_EQ(dom_tree_version_, node_->GetDocument().DomTreeVersion());
 #endif
-    // Construct layout object for |node_| with pseudo class "-webkit-drag"
-    local_frame_->View()->UpdateAllLifecyclePhasesExceptPaint(
-        DocumentUpdateReason::kDragImage);
-    LayoutObject* const dragged_layout_object = node_->GetLayoutObject();
-    if (!dragged_layout_object)
-      return nullptr;
-    // Paint starting at the nearest stacking context, clipped to the object
-    // itself. This will also paint the contents behind the object if the
-    // object contains transparency and there are other elements in the same
-    // stacking context which stacked below.
-    PaintLayer* layer = dragged_layout_object->EnclosingLayer();
-    if (!layer->GetLayoutObject().IsStackingContext())
-      layer = layer->AncestorStackingContext();
 
-    gfx::Rect absolute_bounding_box =
-        dragged_layout_object->AbsoluteBoundingBoxRectIncludingDescendants();
-    // TODO(chrishtr): consider using the root frame's visible rect instead
-    // of the local frame, to avoid over-clipping.
-    gfx::Rect visible_rect(gfx::Point(),
-                           layer->GetLayoutObject().GetFrameView()->Size());
-    // If the absolute bounding box is large enough to be possibly a memory
-    // or IPC payload issue, clip it to the visible content rect.
-    if (absolute_bounding_box.size().Area64() > visible_rect.size().Area64()) {
-      absolute_bounding_box.Intersect(visible_rect);
+    PaintRecordBuilder* paint_record_builder = nullptr;
+    gfx::Vector2dF paint_offset;
+    gfx::RectF bounding_box;
+    PropertyTreeState border_box_properties =
+        PropertyTreeState::Uninitialized();
+    if (!CreatePaintArtifactsHelper(local_frame_, node_,
+                                    /*update_lifecycle=*/true,
+                                    paint_record_builder, paint_offset,
+                                    bounding_box, border_box_properties)) {
+      return nullptr;
     }
 
-    gfx::RectF bounding_box =
-        layer->GetLayoutObject()
-            .AbsoluteToLocalQuad(gfx::QuadF(gfx::RectF(absolute_bounding_box)))
-            .BoundingBox();
-    gfx::RectF cull_rect = bounding_box;
-    cull_rect.Offset(
-        gfx::Vector2dF(layer->GetLayoutObject().FirstFragment().PaintOffset()));
-    OverriddenCullRectScope cull_rect_scope(
-        *layer, CullRect(gfx::ToEnclosingRect(cull_rect)));
-    auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
-
-    dragged_layout_object->GetDocument().Lifecycle().AdvanceTo(
-        DocumentLifecycle::kInPaint);
-    PaintLayerPainter(*layer).Paint(builder->Context(),
-                                    PaintFlag::kOmitCompositingInfo);
-    dragged_layout_object->GetDocument().Lifecycle().AdvanceTo(
-        DocumentLifecycle::kPaintClean);
-
-    gfx::Vector2dF paint_offset = bounding_box.OffsetFromOrigin();
-    PropertyTreeState border_box_properties = layer->GetLayoutObject()
-                                                  .FirstFragment()
-                                                  .LocalBorderBoxProperties()
-                                                  .Unalias();
-    // We paint in the containing transform node's space. Add the offset from
-    // the layer to this transform space.
-    paint_offset +=
-        gfx::Vector2dF(layer->GetLayoutObject().FirstFragment().PaintOffset());
-
     return DataTransfer::CreateDragImageForFrame(
-        *local_frame_, 1.0f, bounding_box.size(), paint_offset, *builder,
-        border_box_properties);
+        *local_frame_, 1.0f, bounding_box.size(), paint_offset,
+        *paint_record_builder, border_box_properties);
   }
 
  private:
@@ -380,6 +446,47 @@ gfx::RectF DataTransfer::ClipByVisualViewport(const gfx::RectF& absolute_rect,
 }
 
 // static
+bool DataTransfer::CreateBitmapFromNode(const LocalFrame* frame,
+                                        Node* node,
+                                        const gfx::Size& max_size,
+                                        SkBitmap& bitmap) {
+  PaintRecordBuilder* paint_record_builder = nullptr;
+  gfx::Vector2dF paint_offset;
+  gfx::RectF bounding_box;
+  PropertyTreeState border_box_properties = PropertyTreeState::Uninitialized();
+  if (!CreatePaintArtifactsHelper(frame, node, /*update_lifecycle=*/false,
+                                  paint_record_builder, paint_offset,
+                                  bounding_box, border_box_properties)) {
+    return false;
+  }
+
+  scoped_refptr<Image> image =
+      CreateImageHelper(frame, bounding_box.size(), paint_offset,
+                        *paint_record_builder, border_box_properties);
+
+  if (!image)
+    return false;
+
+  PaintImage paint_image = image->PaintImageForCurrentFrame();
+  if (!paint_image)
+    return false;
+
+  ImageOrientation orientation;
+  gfx::Vector2dF image_scale = gfx::Vector2dF(1, 1);
+  if (max_size.width() && paint_image.width())
+    image_scale.set_x((max_size.width() * 1.0) / paint_image.width());
+  if (max_size.height() && paint_image.height())
+    image_scale.set_y((max_size.height() * 1.0) / paint_image.height());
+  paint_image =
+      Image::ResizeAndOrientImage(paint_image, orientation, image_scale,
+                                  /* opacity= */ 1.0f, kInterpolationDefault);
+  if (!paint_image || !paint_image.GetSwSkImage()->asLegacyBitmap(&bitmap))
+    return false;
+
+  return true;
+}
+
+// static
 // Returns a DragImage whose bitmap contains |contents|, positioned and scaled
 // in device space.
 std::unique_ptr<DragImage> DataTransfer::CreateDragImageForFrame(
@@ -389,30 +496,8 @@ std::unique_ptr<DragImage> DataTransfer::CreateDragImageForFrame(
     const gfx::Vector2dF& paint_offset,
     PaintRecordBuilder& builder,
     const PropertyTreeState& property_tree_state) {
-  float layout_to_device_scale = frame.GetPage()->GetVisualViewport().Scale() *
-                                 frame.GetPage()->DeviceScaleFactorDeprecated();
-
-  gfx::SizeF device_size = gfx::ScaleSize(layout_size, layout_to_device_scale);
-  AffineTransform transform;
-  gfx::Vector2dF device_paint_offset =
-      gfx::ScaleVector2d(paint_offset, layout_to_device_scale);
-  transform.Translate(-device_paint_offset.x(), -device_paint_offset.y());
-  transform.Scale(layout_to_device_scale);
-
-  // Rasterize upfront, since DragImage::create() is going to do it anyway
-  // (SkImage::asLegacyBitmap).
-  SkSurfaceProps surface_props(0, kUnknown_SkPixelGeometry);
-  sk_sp<SkSurface> surface = SkSurface::MakeRasterN32Premul(
-      device_size.width(), device_size.height(), &surface_props);
-  if (!surface)
-    return nullptr;
-
-  SkiaPaintCanvas skia_paint_canvas(surface->getCanvas());
-  skia_paint_canvas.concat(AffineTransformToSkMatrix(transform));
-  builder.EndRecording(skia_paint_canvas, property_tree_state);
-
-  scoped_refptr<Image> image =
-      UnacceleratedStaticBitmapImage::Create(surface->makeImageSnapshot());
+  scoped_refptr<Image> image = CreateImageHelper(
+      &frame, layout_size, paint_offset, builder, property_tree_state);
   ChromeClient& chrome_client = frame.GetPage()->GetChromeClient();
   float screen_device_scale_factor =
       chrome_client.GetScreenInfo(frame).device_scale_factor;

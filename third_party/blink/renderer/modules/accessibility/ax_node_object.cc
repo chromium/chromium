@@ -40,6 +40,7 @@
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
+#include "third_party/blink/renderer/core/clipboard/data_transfer.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -2352,34 +2353,36 @@ float AXNodeObject::GetTextIndent() const {
   return text_indent / kCssPixelsPerMillimeter;
 }
 
-String AXNodeObject::ImageDataUrl(const gfx::Size& max_size) const {
-  Node* node = GetNode();
-  if (!node)
-    return String();
-
+// Tries to extract a bitmap from an Image, a Canvas, or a Video element.
+// If |max_size| is not empty, the bitmap's size is capped at |max_size|.
+// Returns a boolean indicating whether the operation has succeeded.
+bool GetBitmapFromMediaSource(Node& node,
+                              const gfx::Size& max_size,
+                              SkBitmap& out_bitmap) {
   ImageBitmapOptions* options = ImageBitmapOptions::Create();
   ImageBitmap* image_bitmap = nullptr;
-  if (auto* image = DynamicTo<HTMLImageElement>(node)) {
-    image_bitmap =
-        MakeGarbageCollected<ImageBitmap>(image, absl::nullopt, options);
-  } else if (auto* canvas = DynamicTo<HTMLCanvasElement>(node)) {
-    image_bitmap =
-        MakeGarbageCollected<ImageBitmap>(canvas, absl::nullopt, options);
-  } else if (auto* video = DynamicTo<HTMLVideoElement>(node)) {
-    image_bitmap =
-        MakeGarbageCollected<ImageBitmap>(video, absl::nullopt, options);
+  // TODO(https://crbug.com/1285202): Consider covering OffscreenCanvas.
+  if (auto* image = DynamicTo<HTMLImageElement>(&node)) {
+    image_bitmap = MakeGarbageCollected<ImageBitmap>(
+        image, /* crop_rect */ absl::nullopt, options);
+  } else if (auto* canvas = DynamicTo<HTMLCanvasElement>(&node)) {
+    image_bitmap = MakeGarbageCollected<ImageBitmap>(
+        canvas, /* crop_rect */ absl::nullopt, options);
+  } else if (auto* video = DynamicTo<HTMLVideoElement>(&node)) {
+    image_bitmap = MakeGarbageCollected<ImageBitmap>(
+        video, /*crop_rect=*/absl::nullopt, options);
   }
   if (!image_bitmap)
-    return String();
+    return false;
 
   scoped_refptr<StaticBitmapImage> bitmap_image = image_bitmap->BitmapImage();
   if (!bitmap_image)
-    return String();
+    return false;
 
   sk_sp<SkImage> image =
       bitmap_image->PaintImageForCurrentFrame().GetSwSkImage();
   if (!image || image->width() <= 0 || image->height() <= 0)
-    return String();
+    return false;
 
   // Determine the width and height of the output image, using a proportional
   // scale factor such that it's no larger than |maxSize|, if |maxSize| is not
@@ -2396,23 +2399,33 @@ String AXNodeObject::ImageDataUrl(const gfx::Size& max_size) const {
   int height = std::round(image->height() * scale);
 
   // Draw the image into a bitmap in native format.
+  out_bitmap.allocPixels(
+      SkImageInfo::MakeN32(width, height, kPremul_SkAlphaType));
+  SkCanvas canvas(out_bitmap, SkSurfaceProps{});
+  canvas.clear(SK_ColorTRANSPARENT);
+  canvas.drawImageRect(image, SkRect::MakeIWH(width, height),
+                       SkSamplingOptions());
+  return true;
+}
+
+String AXNodeObject::ImageDataUrl(const gfx::Size& max_size) const {
+  Node* node = GetNode();
+  if (!node)
+    return String();
+
   SkBitmap bitmap;
-  SkPixmap unscaled_pixmap;
-  if (scale == 1.0 && image->peekPixels(&unscaled_pixmap)) {
-    bitmap.installPixels(unscaled_pixmap);
-  } else {
-    bitmap.allocPixels(
-        SkImageInfo::MakeN32(width, height, kPremul_SkAlphaType));
-    SkCanvas canvas(bitmap, SkSurfaceProps{});
-    canvas.clear(SK_ColorTRANSPARENT);
-    canvas.drawImageRect(image, SkRect::MakeIWH(width, height),
-                         SkSamplingOptions());
+  if (!GetBitmapFromMediaSource(*node, max_size, bitmap) &&
+      !DataTransfer::CreateBitmapFromNode(&DocumentFrameView()->GetFrame(),
+                                          node, max_size, bitmap)) {
+    return String();
   }
 
   // Copy the bits into a buffer in RGBA_8888 unpremultiplied format
   // for encoding.
-  SkImageInfo info = SkImageInfo::Make(width, height, kRGBA_8888_SkColorType,
-                                       kUnpremul_SkAlphaType);
+  SkImageInfo info =
+      SkImageInfo::Make(bitmap.width(), bitmap.height(), kRGBA_8888_SkColorType,
+                        kUnpremul_SkAlphaType);
+
   size_t row_bytes = info.minRowBytes();
   Vector<char> pixel_storage(
       SafeCast<wtf_size_t>(info.computeByteSize(row_bytes)));
