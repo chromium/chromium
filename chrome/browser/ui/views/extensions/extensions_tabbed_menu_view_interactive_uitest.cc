@@ -364,9 +364,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(visibility_label, u"Pin");
 }
 
+// TODO(crbug.com/1296893): This test is flaky.
 IN_PROC_BROWSER_TEST_F(
     ExtensionsTabbedMenuViewInteractiveUITest,
-    SiteAccessTab_ExtensionInCorrectSectionAfterContextMenuChangesPermissions) {
+    DISABLED_SiteAccessTab_ExtensionInCorrectSectionAfterContextMenuChangesPermissions) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   extensions::TestExtensionDir test_dir;
