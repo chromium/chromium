@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="/css/new_feature_toast.css">
     <link rel="stylesheet" href="/css/ptz_panel.css">
     <link rel="stylesheet" href="/css/review.css">
+    <link rel="stylesheet" href="/css/views/settings.css">
     <script type="module" src="/js/init.js"></script>
   </head>
   <body class="sound mirror mic grid-3x3 view-splash">
@@ -347,8 +348,8 @@
           <button class="icon" tabindex="0" i18n-aria="back_button"></button>
           <div id="settings-header" i18n-text="settings_button"></div>
         </div>
-        <button id="settings-gridtype" class="menu-item inkdrop" tabindex="0"
-                aria-describedby="gridtype-desc">
+        <button id="settings-gridtype" class="menu-item inkdrop expandable"
+                tabindex="0" aria-describedby="gridtype-desc">
           <div class="icon"></div>
           <div>
             <div i18n-text="grid_type_button"></div>
@@ -358,10 +359,9 @@
               <span i18n-text="label_grid_golden"></span>
             </div>
           </div>
-          <div class="icon end"></div>
         </button>
-        <button id="settings-timerdur" class="menu-item inkdrop" tabindex="0"
-                aria-describedby="timerdur-desc">
+        <button id="settings-timerdur" class="menu-item inkdrop expandable"
+                tabindex="0" aria-describedby="timerdur-desc">
           <div class="icon"></div>
           <div>
             <div i18n-text="timer_duration_button"></div>
@@ -370,19 +370,18 @@
               <span i18n-text="label_timer_10s"></span>
             </div>
           </div>
-          <div class="icon end"></div>
         </button>
-        <button id="settings-resolution" class="menu-item inkdrop" tabindex="0">
+        <button id="settings-resolution" class="menu-item inkdrop expandable"
+                tabindex="0">
           <div class="icon"></div>
           <div i18n-text="camera_resolution_button">
           </div>
-          <div class="icon end"></div>
         </button>
-        <button id="settings-expert" class="menu-item inkdrop" tabindex="0">
+        <button id="settings-expert" class="menu-item inkdrop expandable"
+                tabindex="0">
           <div class="icon"></div>
           <div i18n-text="expert_mode_button">
           </div>
-          <div class="icon end"></div>
         </button>
         <button id="settings-feedback" class="menu-item inkdrop" tabindex="0">
           <div class="icon"></div>
@@ -446,8 +445,8 @@
         </div>
         <div id="builtin-photo-header" class="menu-item"
           i18n-text="label_switch_take_photo_button"></div>
-        <button id="settings-front-photores"
-                class="menu-item resol-item photo-item inkdrop" tabindex="0"
+        <button id="settings-front-photores" class="menu-item resol-item
+                photo-item inkdrop expandable" tabindex="0"
                 aria-describedby="front-photores-desc">
           <div>
             <div i18n-text="label_front_camera"></div>
@@ -456,24 +455,22 @@
               <span></span>
             </div>
           </div>
-          <div class="icon end"></div>
         </button>
         <button id="settings-back-photores"
-                class="menu-item resol-item photo-item inkdrop" tabindex="0"
-                aria-describedby="back-photores-desc">
+                class="menu-item resol-item photo-item inkdrop expandable"
+                tabindex="0" aria-describedby="back-photores-desc">
           <div>
             <div i18n-text="label_back_camera"></div>
             <div id="back-photores-desc" class="description" aria-hidden="true">
               <span></span>
             </div>
           </div>
-          <div class="icon end"></div>
         </button>
         <div id="builtin-video-header" class="menu-item"
           i18n-text="label_switch_record_video_button"></div>
         <button id="settings-front-videores"
-                class="menu-item resol-item video-item inkdrop" tabindex="0"
-                aria-describedby="front-videores-desc">
+                class="menu-item resol-item video-item inkdrop expandable"
+                tabindex="0" aria-describedby="front-videores-desc">
           <div>
             <div i18n-text="label_front_camera"></div>
             <div id="front-videores-desc" class="description"
@@ -481,18 +478,16 @@
               <span></span>
             </div>
           </div>
-          <div class="icon end"></div>
         </button>
         <button id="settings-back-videores"
-                class="menu-item resol-item video-item inkdrop" tabindex="0"
-                aria-describedby="back-videores-desc">
+                class="menu-item resol-item video-item inkdrop expandable"
+                tabindex="0" aria-describedby="back-videores-desc">
           <div>
             <div i18n-text="label_back_camera"></div>
             <div id="back-videores-desc" class="description" aria-hidden="true">
               <span></span>
             </div>
           </div>
-          <div class="icon end"></div>
         </button>
       </div>
     </div>
@@ -613,25 +608,23 @@
     <template id="extcam-resolution-item-template">
         <div class="menu-item external-camera title-item"
           i18n-text="label_external_camera"></div>
-        <button class="menu-item external-camera resol-item photo-item inkdrop"
-              tabindex="0">
+        <button class="menu-item external-camera resol-item photo-item inkdrop
+                expandable" tabindex="0">
           <div>
             <div i18n-text="photo_resolution_button"></div>
             <div class="description" aria-hidden="true">
               <span></span>
             </div>
           </div>
-          <div class="icon end"></div>
         </button>
-        <button class="menu-item external-camera resol-item video-item inkdrop"
-              tabindex="0">
+        <button class="menu-item external-camera resol-item video-item inkdrop
+                expandable" tabindex="0">
           <div>
             <div i18n-text="video_resolution_button"></div>
             <div class="description" aria-hidden="true">
               <span></span>
             </div>
           </div>
-          <div class="icon end"></div>
         </button>
     </template>
     <template id="video-profile-option-template">

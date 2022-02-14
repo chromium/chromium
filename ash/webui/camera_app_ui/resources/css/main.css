@@ -112,7 +112,8 @@ input[type=checkbox] {
 .buttons button,
 .buttons input,
 .menu-header .icon,
-.menu-item .icon {
+.menu-item .icon,
+.menu-item.expandable::after {
   background-position: center;
   background-repeat: no-repeat;
   flex-shrink: 0;
@@ -1198,11 +1199,6 @@ label.menu-item:hover {
   padding-inline-start: 64px;
 }
 
-.menu-item .icon.end {
-  margin-inline-end: 16px;
-  margin-inline-start: auto;
-}
-
 .menu-item .description {
   color: rgb(189, 193, 198);
   margin-top: 5px;
@@ -1301,18 +1297,6 @@ body.no-resolution-settings #settings-resolution {
 
 #settings-help .icon {
   background-image: url(/images/settings_help.svg);
-}
-
-#settings-gridtype .icon.end,
-#settings-timerdur .icon.end,
-#settings-resolution .icon.end,
-#settings-expert .icon.end,
-.resol-item.multi-option .icon.end {
-  background-image: url(/images/settings_button_expand.svg);
-}
-
-html[dir=rtl] .icon.end {
-  transform: scale(-1, 1);
 }
 
 #view-warning,

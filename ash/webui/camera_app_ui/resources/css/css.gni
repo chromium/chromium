@@ -15,4 +15,5 @@ css_files = [
   "new_feature_toast.css",
   "ptz_panel.css",
   "review.css",
+  "views/settings.css",
 ]
