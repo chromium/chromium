@@ -75,6 +75,17 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
                                 int32_t element_instance_id,
                                 bool is_full_page_plugin);
 
+  // When set, the next asynchronous guestview attachment operation will call
+  // `callback` when it reaches ResumeAttachOrDestroy() rather than continuing.
+  // The attachment must then be continued manually by the caller, by invoking
+  // the closure provided as an argument to `callback`, when desired.  Used
+  // only in tests to exercise races which depend on tasks running between
+  // AttachToOuterWebContents() and ResumeAttachOrDestroy().
+  void set_resume_attach_callback_for_testing(
+      base::OnceCallback<void(base::OnceClosure)> callback) {
+    resume_attach_callback_for_testing_ = std::move(callback);
+  }
+
  private:
   // Called after the content layer finishes preparing a frame for attaching to
   // the embedder WebContents. If |plugin_rfh| is nullptr then attaching is not
@@ -106,6 +117,10 @@ class MimeHandlerViewAttachHelper : content::RenderProcessHostObserver {
   base::flat_map<int32_t, base::WeakPtr<MimeHandlerViewGuest>> pending_guests_;
 
   const raw_ptr<content::RenderProcessHost> render_process_host_;
+
+  // Allows delaying ResumeAttachOrDestroy for testing.
+  base::OnceCallback<void(base::OnceClosure)>
+      resume_attach_callback_for_testing_;
 
   base::WeakPtrFactory<MimeHandlerViewAttachHelper> weak_factory_{this};
 };

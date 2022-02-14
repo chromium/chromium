@@ -94,6 +94,10 @@ bool RenderFrameHostDelegate::ShouldRouteMessageEvent(
   return false;
 }
 
+bool RenderFrameHostDelegate::IsInnerWebContentsForGuest() {
+  return false;
+}
+
 RenderFrameHostImpl*
 RenderFrameHostDelegate::GetFocusedFrameIncludingInnerWebContents() {
   return nullptr;

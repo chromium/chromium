@@ -108,6 +108,7 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_attach_helper.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "extensions/test/result_catcher.h"
@@ -559,6 +560,110 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithTestGuestViewManager,
       content::EvalJs(embedder_web_contents,
                       "document.body.firstChild.hasAttribute('internalid');")
           .ExtractBool());
+}
+
+// Helper class to allow pausing the asynchronous attachment of an inner
+// WebContents between MimeHandlerViewAttachHelper's AttachToOuterWebContents()
+// and ResumeAttachOrDestroy().  This corresponds to the point where the inner
+// WebContents has been created but not yet attached or navigated.
+class InnerWebContentsAttachDelayer {
+ public:
+  explicit InnerWebContentsAttachDelayer(
+      content::RenderFrameHost* outer_frame) {
+    auto* mime_handler_view_helper =
+        extensions::MimeHandlerViewAttachHelper::Get(
+            outer_frame->GetProcess()->GetID());
+    mime_handler_view_helper->set_resume_attach_callback_for_testing(
+        base::BindOnce(&InnerWebContentsAttachDelayer::ResumeAttachCallback,
+                       base::Unretained(this)));
+  }
+
+  void ResumeAttachCallback(base::OnceClosure resume_closure) {
+    // Called to continue in the test while the attachment is paused. The
+    // attachment will continue when the test calls ResumeAttach.
+    resume_closure_ = std::move(resume_closure);
+    run_loop_.Quit();
+  }
+
+  void WaitForAttachStart() { run_loop_.Run(); }
+
+  void ResumeAttach() {
+    ASSERT_TRUE(resume_closure_);
+    std::move(resume_closure_).Run();
+  }
+
+ private:
+  base::OnceClosure resume_closure_;
+  base::RunLoop run_loop_;
+};
+
+// Ensure that when the only other PDF instance closes in the middle of
+// attaching an inner WebContents for a PDF, the inner WebContents can still
+// successfully complete its attachment and subsequent navigation.  See
+// https://crbug.com/1295431.
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithTestGuestViewManager,
+                       PdfExtensionLoadedWhileOldPdfCloses) {
+  // Load test PDF in first tab.
+  const GURL main_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+  auto* embedder_web_contents = GetActiveWebContents();
+
+  // Verify the PDF has loaded.
+  auto* guest_web_contents = GetGuestViewManager()->WaitForSingleGuestCreated();
+  ASSERT_TRUE(guest_web_contents);
+  EXPECT_NE(embedder_web_contents, guest_web_contents);
+  WaitForLoadStart(guest_web_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(guest_web_contents));
+
+  // Verify we loaded the extension.
+  const GURL extension_url(
+      "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/index.html");
+  EXPECT_EQ(extension_url, guest_web_contents->GetLastCommittedURL());
+  EXPECT_EQ(main_url, embedder_web_contents->GetLastCommittedURL());
+
+  // Open another tab and navigate it to a same-site non-PDF URL.
+  ui_test_utils::TabAddedWaiter add_tab1(browser());
+  chrome::NewTab(browser());
+  add_tab1.Wait();
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  WebContents* new_web_contents =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
+  ASSERT_EQ(new_web_contents, GetActiveWebContents());
+  const GURL non_pdf_url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_pdf_url));
+
+  // Start loading another PDF in the new tab, but pause during guest attach.
+  // It is important that the PDF navigation uses the same RFH as `delayer`.
+  InnerWebContentsAttachDelayer delayer(new_web_contents->GetMainFrame());
+  content::TestNavigationObserver navigation_observer(new_web_contents);
+  new_web_contents->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(main_url));
+  delayer.WaitForAttachStart();
+
+  // Close the first tab, destroying the first PDF while the second PDF is in
+  // the middle of initialization. In https://crbug.com/1295431, the extension
+  // process exited here and caused a crash when the second PDF resumed.
+  EXPECT_EQ(2U, GetGuestViewManager()->GetNumGuestsActive());
+  content::WebContentsDestroyedWatcher destroyed_watcher(guest_web_contents);
+  ASSERT_TRUE(browser()->tab_strip_model()->CloseWebContentsAt(
+      0, TabStripModel::CLOSE_USER_GESTURE));
+  destroyed_watcher.Wait();
+  EXPECT_EQ(1U, GetGuestViewManager()->GetNumGuestsActive());
+
+  // Now resume the guest attachment and ensure the second PDF loads without
+  // crashing.
+  delayer.ResumeAttach();
+  navigation_observer.Wait();
+  auto* guest_web_contents2 =
+      GetGuestViewManager()->WaitForSingleGuestCreated();
+  ASSERT_TRUE(guest_web_contents2);
+  EXPECT_NE(embedder_web_contents, guest_web_contents2);
+  WaitForLoadStart(guest_web_contents2);
+  EXPECT_TRUE(content::WaitForLoadStop(guest_web_contents2));
+
+  // Verify we loaded the extension.
+  EXPECT_EQ(extension_url, guest_web_contents2->GetLastCommittedURL());
+  EXPECT_EQ(main_url, new_web_contents->GetLastCommittedURL());
 }
 
 // This test verifies that when a PDF is served with a restrictive
