@@ -8,6 +8,15 @@
  * visibility mode at any time.
  */
 
+import '//resources/cr_elements/cr_lottie/cr_lottie.m.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import '../../shared/nearby_page_template.m.js';
+import '../../shared/nearby_shared_icons.m.js';
+
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 /**
  * Represents the current error state, if one exists.
  * @enum {number}
@@ -32,6 +41,7 @@ const PULSE_ANIMATION_URL_LIGHT = 'nearby_share_pulse_animation_light.json';
 const PULSE_ANIMATION_URL_DARK = 'nearby_share_pulse_animation_dark.json';
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'nearby-share-high-visibility-page',
 
   behaviors: [I18nBehavior],

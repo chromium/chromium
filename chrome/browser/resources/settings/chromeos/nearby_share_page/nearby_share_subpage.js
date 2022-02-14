@@ -3,24 +3,52 @@
 // found in the LICENSE file.
 
 /**
+ * @fileoverview
+ * 'settings-nearby-share-subpage' is the settings subpage for managing the
+ * Nearby Share feature.
+ */
+
+import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/cr_elements/cr_link_row/cr_link_row.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '../../controls/settings_toggle_button.js';
+import '../../prefs/prefs.js';
+import '../../settings_shared_css.js';
+import './nearby_share_contact_visibility_dialog.js';
+import './nearby_share_device_name_dialog.js';
+import './nearby_share_data_usage_dialog.js';
+import './nearby_share_receive_dialog.js';
+
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {flush, html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Route, Router} from '../../router.js';
+import {getContactManager} from '../../shared/nearby_contact_manager.m.js';
+import {NearbySettings} from '../../shared/nearby_share_settings_behavior.m.js';
+import {DeepLinkingBehavior} from '../deep_linking_behavior.m.js';
+import {routes} from '../os_route.m.js';
+import {PrefsBehavior} from '../prefs_behavior.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
+import {NearbyAccountManagerBrowserProxyImpl} from './nearby_account_manager_browser_proxy.js';
+import {observeReceiveManager} from './nearby_share_receive_manager.js';
+import {dataUsageStringToEnum, NearbyShareDataUsage} from './types.js';
+
+/**
  * @type {!number}
  * @private
  */
 const DEFAULT_HIGH_VISIBILITY_TIMEOUT_S = 300;
 
-/**
- * @fileoverview
- * 'settings-nearby-share-subpage' is the settings subpage for managing the
- * Nearby Share feature.
- */
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-nearby-share-subpage',
 
   behaviors: [
     DeepLinkingBehavior,
     I18nBehavior,
     PrefsBehavior,
-    settings.RouteObserverBehavior,
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -40,7 +68,7 @@ Polymer({
       value: '',
     },
 
-    /** @type {nearby_share.NearbySettings} */
+    /** @type {NearbySettings} */
     settings: {
       type: Object,
       notify: true,
@@ -129,9 +157,8 @@ Polymer({
     // TODO(b/166779043): Check whether the Account Manager is enabled and fall
     // back to profile name, or just hide the row. This is not urgent because
     // the Account Manager should be available whenever Nearby Share is enabled.
-    nearby_share.NearbyAccountManagerBrowserProxyImpl.getInstance()
-        .getAccounts()
-        .then(accounts => {
+    NearbyAccountManagerBrowserProxyImpl.getInstance().getAccounts().then(
+        accounts => {
           if (accounts.length === 0) {
             return;
           }
@@ -139,7 +166,7 @@ Polymer({
           this.profileName_ = accounts[0].fullName;
           this.profileLabel_ = accounts[0].email;
         });
-    this.receiveObserver_ = nearby_share.observeReceiveManager(
+    this.receiveObserver_ = observeReceiveManager(
         /** @type {!nearbyShare.mojom.ReceiveObserverInterface} */ (this));
   },
 
@@ -150,7 +177,7 @@ Polymer({
       // nearby is enabled complete to improve consistency. This should help
       // avoid scenarios where a share is attempted and contacts are stale on
       // the receiver.
-      nearby_share.getContactManager().downloadContacts();
+      getContactManager().downloadContacts();
     }
   },
 
@@ -384,15 +411,15 @@ Polymer({
   },
 
   /**
-   * @param {!settings.Route} route
+   * @param {!Route} route
    */
   currentRouteChanged(route) {
     // Does not apply to this page.
-    if (route !== settings.routes.NEARBY_SHARE) {
+    if (route !== routes.NEARBY_SHARE) {
       return;
     }
 
-    const router = settings.Router.getInstance();
+    const router = Router.getInstance();
     const queryParams = router.getQueryParameters();
 
     if (queryParams.has('deviceName')) {
@@ -405,7 +432,7 @@ Polymer({
 
     if (queryParams.has('confirm')) {
       this.showReceiveDialog_ = true;
-      Polymer.dom.flush();
+      flush();
       this.$$('#receiveDialog').showConfirmPage();
     }
 
@@ -424,7 +451,7 @@ Polymer({
     const shutoffTimeoutInSeconds =
         timeoutInSeconds || DEFAULT_HIGH_VISIBILITY_TIMEOUT_S;
     this.showReceiveDialog_ = true;
-    Polymer.dom.flush();
+    flush();
     this.$$('#receiveDialog').showHighVisibilityPage(shutoffTimeoutInSeconds);
   },
 
@@ -449,7 +476,7 @@ Polymer({
   /** @private */
   onOnboardingCancelled_() {
     // Return to main settings page multidevice section
-    settings.Router.getInstance().navigateTo(settings.routes.MULTIDEVICE);
+    Router.getInstance().navigateTo(routes.MULTIDEVICE);
   },
 
   /** @private */
@@ -490,7 +517,7 @@ Polymer({
   /** @private */
   showOnboarding_() {
     this.showReceiveDialog_ = true;
-    Polymer.dom.flush();
+    flush();
     this.$$('#receiveDialog').showOnboarding();
   },
 

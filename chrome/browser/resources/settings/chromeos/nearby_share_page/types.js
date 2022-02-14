@@ -8,7 +8,7 @@
  * chrome/browser/nearby_sharing/nearby_constants.h
  * @enum {number}
  */
-/* #export */ const NearbyShareDataUsage = {
+export const NearbyShareDataUsage = {
   UNKNOWN: 0,
   OFFLINE: 1,
   ONLINE: 2,
@@ -20,7 +20,7 @@
  * @param {string} s string representation of the data usage value
  * @return {!NearbyShareDataUsage} enum value
  */
-/* #export */ function dataUsageStringToEnum(s) {
+export function dataUsageStringToEnum(s) {
   switch (/** @type {!NearbyShareDataUsage} */ (parseInt(s, 10))) {
     case NearbyShareDataUsage.OFFLINE:
       return NearbyShareDataUsage.OFFLINE;
