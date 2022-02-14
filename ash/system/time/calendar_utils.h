@@ -27,8 +27,8 @@ constexpr int kDateInOneWeek = 7;
 
 // The padding in each date cell view.
 constexpr int kDateVerticalPadding = 13;
-constexpr int kDateHorizontalPadding = 12;
-constexpr int kColumnSetPadding = 3;
+constexpr int kDateHorizontalPadding = 14;
+constexpr int kColumnSetPadding = 5;
 
 // The insets within a Date cell.
 constexpr gfx::Insets kDateCellInsets{kDateVerticalPadding,

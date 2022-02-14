@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/time/calendar_view.h"
+#include <memory>
 
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -115,7 +116,8 @@ class MonthHeaderView : public views::View {
           gfx::Insets(calendar_utils::kDateVerticalPadding, 0))));
       label->SetElideBehavior(gfx::NO_ELIDE);
       label->SetSubpixelRenderingEnabled(false);
-      label->SetTextContext(CONTEXT_CALENDAR_DATE);
+      label->SetFontList(
+          views::style::GetFont(CONTEXT_CALENDAR_DATE, STYLE_EMPHASIZED));
 
       AddChildView(std::move(label));
     }
@@ -162,9 +164,9 @@ class CalendarView::MonthHeaderLabelView : public views::View {
 
     month_label_->SetText(month_name_);
     SetupLabel(month_label_);
-    month_label_->SetBorder(views::CreateEmptyBorder(
-        kLabelVerticalPadding, calendar_utils::kDateHorizontalPadding,
-        kLabelVerticalPadding, 0));
+    month_label_->SetBorder(views::CreateEmptyBorder(kLabelVerticalPadding,
+                                                     kContentHorizontalPadding,
+                                                     kLabelVerticalPadding, 0));
   }
   MonthHeaderLabelView(const MonthHeaderLabelView&) = delete;
   MonthHeaderLabelView& operator=(const MonthHeaderLabelView&) = delete;
@@ -290,25 +292,35 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
                                   "YYYY"));
 
   TriView* tri_view = TrayPopupUtils::CreateDefaultRowView();
-  tri_view->SetBorder(views::CreateEmptyBorder(kLabelVerticalPadding,
-                                               kContentHorizontalPadding, 0,
-                                               kContentHorizontalPadding));
+  tri_view->SetBorder(views::CreateEmptyBorder(
+      kLabelVerticalPadding, kContentHorizontalPadding, 0,
+      kContentHorizontalPadding - calendar_utils::kColumnSetPadding));
   tri_view->AddView(TriView::Container::START, header_);
 
-  down_button_ = new IconButton(
+  auto* button_container = new views::View();
+  views::BoxLayout* button_container_layout =
+      button_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal));
+  button_container_layout->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kEnd);
+  // Aligns button with the calendar dates in the `TableLayout`.
+  button_container_layout->set_between_child_spacing(
+      calendar_utils::kDateHorizontalPadding +
+      calendar_utils::kColumnSetPadding);
+
+  down_button_ = button_container->AddChildView(std::make_unique<IconButton>(
       base::BindRepeating(&CalendarView::OnMonthArrowButtonActivated,
                           base::Unretained(this), /*up=*/false),
       IconButton::Type::kSmallFloating, &vector_icons::kCaretDownIcon,
-      IDS_ASH_CALENDAR_DOWN_BUTTON_ACCESSIBLE_DESCRIPTION);
-  up_button_ = new IconButton(
+      IDS_ASH_CALENDAR_DOWN_BUTTON_ACCESSIBLE_DESCRIPTION));
+
+  up_button_ = button_container->AddChildView(std::make_unique<IconButton>(
       base::BindRepeating(&CalendarView::OnMonthArrowButtonActivated,
                           base::Unretained(this), /*up=*/true),
       IconButton::Type::kSmallFloating, &vector_icons::kCaretUpIcon,
-      IDS_ASH_CALENDAR_UP_BUTTON_ACCESSIBLE_DESCRIPTION);
+      IDS_ASH_CALENDAR_UP_BUTTON_ACCESSIBLE_DESCRIPTION));
 
-  tri_view->AddView(TriView::Container::END, down_button_);
-  tri_view->AddView(TriView::Container::END, up_button_);
-
+  tri_view->AddView(TriView::Container::END, button_container);
   AddChildView(tri_view);
 
   // Add month header.
