@@ -39,34 +39,17 @@ using Attributability =
     ::content::mojom::WebUIAttributionSource::Attributability;
 
 mojom::WebUIAttributionSourcePtr WebUIAttributionSource(
-    const StoredSource& source,
-    absl::optional<DeactivatedSource::Reason> deactivation_reason) {
-  auto attributability = Attributability::kAttributable;
-  if (source.attribution_logic() == StoredSource::AttributionLogic::kNever) {
-    attributability = Attributability::kNoised;
-  } else if (deactivation_reason.has_value()) {
-    switch (*deactivation_reason) {
-      case DeactivatedSource::Reason::kReplacedByNewerSource:
-        attributability = Attributability::kReplacedByNewerSource;
-        break;
-      case DeactivatedSource::Reason::kReachedAttributionLimit:
-        attributability = Attributability::kReachedAttributionLimit;
-        break;
-    }
-  }
-
+    const CommonSourceInfo& source,
+    Attributability attributability,
+    const std::vector<int64_t>& dedup_keys) {
   return mojom::WebUIAttributionSource::New(
-      source.common_info().source_event_id(),
-      source.common_info().impression_origin(),
-      source.common_info().ConversionDestination().Serialize(),
-      source.common_info().reporting_origin(),
-      source.common_info().impression_time().ToJsTime(),
-      source.common_info().expiry_time().ToJsTime(),
-      source.common_info().source_type(), source.common_info().priority(),
-      source.common_info().debug_key()
-          ? mojom::AttributionDebugKey::New(*source.common_info().debug_key())
-          : nullptr,
-      source.dedup_keys(), attributability);
+      source.source_event_id(), source.impression_origin(),
+      source.ConversionDestination().Serialize(), source.reporting_origin(),
+      source.impression_time().ToJsTime(), source.expiry_time().ToJsTime(),
+      source.source_type(), source.priority(),
+      source.debug_key() ? mojom::AttributionDebugKey::New(*source.debug_key())
+                         : nullptr,
+      dedup_keys, attributability);
 }
 
 void ForwardSourcesToWebUI(
@@ -77,8 +60,13 @@ void ForwardSourcesToWebUI(
   web_ui_sources.reserve(active_sources.size());
 
   for (const StoredSource& source : active_sources) {
-    web_ui_sources.push_back(
-        WebUIAttributionSource(source, /*deactivation_reason=*/absl::nullopt));
+    auto attributability =
+        source.attribution_logic() == StoredSource::AttributionLogic::kNever
+            ? Attributability::kNoised
+            : Attributability::kAttributable;
+
+    web_ui_sources.push_back(WebUIAttributionSource(
+        source.common_info(), attributability, source.dedup_keys()));
   }
 
   std::move(web_ui_callback).Run(std::move(web_ui_sources));
@@ -217,11 +205,51 @@ void AttributionInternalsHandlerImpl::OnReportsChanged() {
 
 void AttributionInternalsHandlerImpl::OnSourceDeactivated(
     const AttributionStorage::DeactivatedSource& deactivated_source) {
-  auto source = WebUIAttributionSource(deactivated_source.source,
-                                       deactivated_source.reason);
+  Attributability attributability;
+  switch (deactivated_source.reason) {
+    case DeactivatedSource::Reason::kReplacedByNewerSource:
+      attributability = Attributability::kReplacedByNewerSource;
+      break;
+    case DeactivatedSource::Reason::kReachedAttributionLimit:
+      attributability = Attributability::kReachedAttributionLimit;
+      break;
+  }
+
+  auto source = WebUIAttributionSource(deactivated_source.source.common_info(),
+                                       attributability,
+                                       deactivated_source.source.dedup_keys());
 
   for (auto& observer : observers_) {
-    observer->OnSourceDeactivated(source.Clone());
+    observer->OnSourceRejectedOrDeactivated(source.Clone());
+  }
+}
+
+void AttributionInternalsHandlerImpl::OnSourceHandled(
+    const StorableSource& source,
+    StorableSource::Result result) {
+  Attributability attributability;
+  switch (result) {
+    case StorableSource::Result::kSuccess:
+      return;
+    case StorableSource::Result::kInternalError:
+      attributability = Attributability::kInternalError;
+      break;
+    case StorableSource::Result::kInsufficientSourceCapacity:
+      attributability = Attributability::kInsufficientSourceCapacity;
+      break;
+    case StorableSource::Result::kInsufficientUniqueDestinationCapacity:
+      attributability = Attributability::kInsufficientUniqueDestinationCapacity;
+      break;
+    case StorableSource::Result::kExcessiveReportingOrigins:
+      attributability = Attributability::kExcessiveReportingOrigins;
+      break;
+  }
+
+  auto web_ui_source = WebUIAttributionSource(
+      source.common_info(), attributability, /*dedup_keys=*/{});
+
+  for (auto& observer : observers_) {
+    observer->OnSourceRejectedOrDeactivated(web_ui_source.Clone());
   }
 }
 

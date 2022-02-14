@@ -19,6 +19,7 @@
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/send_result.h"
+#include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -242,10 +243,29 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
       DeactivatedSource(SourceBuilder(now + base::Hours(3)).BuildStored(),
                         DeactivatedSource::Reason::kReachedAttributionLimit));
 
+  // This shouldn't result in a row, as registration succeeded.
+  manager_.NotifySourceHandled(SourceBuilder(now).Build(),
+                               StorableSource::Result::kSuccess);
+
+  manager_.NotifySourceHandled(SourceBuilder(now + base::Hours(4)).Build(),
+                               StorableSource::Result::kInternalError);
+
+  manager_.NotifySourceHandled(
+      SourceBuilder(now + base::Hours(5)).Build(),
+      StorableSource::Result::kInsufficientSourceCapacity);
+
+  manager_.NotifySourceHandled(
+      SourceBuilder(now + base::Hours(6)).Build(),
+      StorableSource::Result::kInsufficientUniqueDestinationCapacity);
+
+  manager_.NotifySourceHandled(
+      SourceBuilder(now + base::Hours(7)).Build(),
+      StorableSource::Result::kExcessiveReportingOrigins);
+
   static constexpr char wait_script[] = R"(
     let table = document.querySelector("#source-table-wrapper tbody");
     let obs = new MutationObserver(() => {
-      if (table.children.length === 4 &&
+      if (table.children.length === 8 &&
           table.children[0].children[0].innerText === $1 &&
           table.children[0].children[6].innerText === "Navigation" &&
           table.children[1].children[6].innerText === "Event" &&
@@ -258,7 +278,11 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
           table.children[0].children[10].innerText === "Unattributable: noised" &&
           table.children[1].children[10].innerText === "Attributable" &&
           table.children[2].children[10].innerText === "Unattributable: replaced by newer source" &&
-          table.children[3].children[10].innerText === "Unattributable: reached attribution limit") {
+          table.children[3].children[10].innerText === "Unattributable: reached attribution limit" &&
+          table.children[4].children[10].innerText === "Rejected: internal error" &&
+          table.children[5].children[10].innerText === "Rejected: insufficient source capacity" &&
+          table.children[6].children[10].innerText === "Rejected: insufficient unique destination capacity" &&
+          table.children[7].children[10].innerText === "Rejected: excessive reporting origins") {
         document.title = $3;
       }
     });

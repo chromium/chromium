@@ -150,6 +150,13 @@ void MockAttributionManager::NotifySourceDeactivated(
     observer.OnSourceDeactivated(source);
 }
 
+void MockAttributionManager::NotifySourceHandled(
+    const StorableSource& source,
+    StorableSource::Result result) {
+  for (Observer& observer : observers_)
+    observer.OnSourceHandled(source, result);
+}
+
 void MockAttributionManager::NotifyReportSent(const AttributionReport& report,
                                               const SendResult& info) {
   for (Observer& observer : observers_)

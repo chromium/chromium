@@ -457,7 +457,7 @@ class SourceTableModel extends TableModel {
     this.sortIdx = 4;
 
     /** @type {!Array<!Source>} */
-    this.deactivatedSources = [];
+    this.unstoredSources = [];
 
     /** @type {!Array<!Source>} */
     this.storedSources = [];
@@ -465,7 +465,7 @@ class SourceTableModel extends TableModel {
 
   /** @override */
   getRows() {
-    return this.deactivatedSources.concat(this.storedSources);
+    return this.unstoredSources.concat(this.storedSources);
   }
 
   /** @param {!Array<!Source>} storedSources */
@@ -475,20 +475,20 @@ class SourceTableModel extends TableModel {
   }
 
   /** @param {!Source} source */
-  addDeactivatedSource(source) {
+  addUnstoredSource(source) {
     // Prevent the page from consuming ever more memory if the user leaves the
     // page open for a long time.
-    if (this.deactivatedSources.length >= 1000) {
-      this.deactivatedSources = [];
+    if (this.unstoredSources.length >= 1000) {
+      this.unstoredSources = [];
     }
 
-    this.deactivatedSources.push(source);
+    this.unstoredSources.push(source);
     this.notifyRowsChanged();
   }
 
   clear() {
     this.storedSources = [];
-    this.deactivatedSources = [];
+    this.unstoredSources = [];
     this.notifyRowsChanged();
   }
 }
@@ -678,6 +678,15 @@ function AttributabilityToText(attributability) {
       return 'Unattributable: replaced by newer source';
     case WebUIAttributionSource_Attributability.kReachedAttributionLimit:
       return 'Unattributable: reached attribution limit';
+    case WebUIAttributionSource_Attributability.kInternalError:
+      return 'Rejected: internal error';
+    case WebUIAttributionSource_Attributability.kInsufficientSourceCapacity:
+      return 'Rejected: insufficient source capacity';
+    case WebUIAttributionSource_Attributability
+        .kInsufficientUniqueDestinationCapacity:
+      return 'Rejected: insufficient unique destination capacity';
+    case WebUIAttributionSource_Attributability.kExcessiveReportingOrigins:
+      return 'Rejected: excessive reporting origins';
     default:
       return attributability.toString();
   }
@@ -776,8 +785,8 @@ class Observer {
   }
 
   /** @override */
-  onSourceDeactivated(mojo) {
-    sourceTableModel.addDeactivatedSource(new Source(mojo));
+  onSourceRejectedOrDeactivated(mojo) {
+    sourceTableModel.addUnstoredSource(new Source(mojo));
   }
 
   /** @override */

@@ -232,6 +232,8 @@ class MockAttributionManager : public AttributionManager {
   void NotifyReportsChanged();
   void NotifySourceDeactivated(
       const AttributionStorage::DeactivatedSource& source);
+  void NotifySourceHandled(const StorableSource& source,
+                           StorableSource::Result result);
   void NotifyReportSent(const AttributionReport& report,
                         const SendResult& info);
   void NotifyReportDropped(
