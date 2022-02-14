@@ -15,6 +15,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/files/file_result.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 
 namespace app_list {
 namespace {
@@ -143,8 +145,12 @@ std::unique_ptr<FileResult> DriveSearchProvider::MakeResult(
   const base::FilePath& reparented_path =
       drive_service_->GetMountPointPath().Append(relative_path.value());
 
+  // Add "Google Drive" as details.
+  std::u16string details =
+      l10n_util::GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
+
   return std::make_unique<FileResult>(
-      kDriveSearchSchema, reparented_path, absl::nullopt,
+      kDriveSearchSchema, reparented_path, details,
       ash::AppListSearchResultType::kDriveSearch,
       ash::SearchResultDisplayType::kList, relevance, last_query_, type,
       profile_);
