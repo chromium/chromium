@@ -616,19 +616,22 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (_tabGridMode == mode) {
     return;
   }
-
-  // Reset search state when leaving search mode.
-  if (IsTabsSearchEnabled() && _tabGridMode == TabGridModeSearch) {
-    self.remoteTabsViewController.searchTerms = nil;
-    [self hideScrim];
-  }
-
+  TabGridMode previousMode = _tabGridMode;
   _tabGridMode = mode;
-
   self.bottomToolbar.mode = self.tabGridMode;
   self.regularTabsViewController.mode = self.tabGridMode;
   self.incognitoTabsViewController.mode = self.tabGridMode;
   self.topToolbar.mode = self.tabGridMode;
+
+  // Reset search state when leaving search mode.
+  if (IsTabsSearchEnabled() && previousMode == TabGridModeSearch) {
+    self.remoteTabsViewController.searchTerms = nil;
+    [self.regularTabsDelegate resetToAllItems];
+    // TODO(crbug.com/1287190): Reset incognitoTabs items as well, once the
+    // search is implemented on them.
+    [self hideScrim];
+  }
+
   self.scrollView.scrollEnabled = (self.tabGridMode == TabGridModeNormal);
   if (mode == TabGridModeSelection)
     [self updateSelectionModeToolbars];
@@ -1859,8 +1862,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       // data.
       break;
     case TabGridPageRegularTabs:
-      // TODO(crbug.com/1287190): Use the search text for the search and reload
-      // data.
+      [self.regularTabsDelegate searchItemsWithText:searchText];
       break;
     case TabGridPageRemoteTabs:
       self.remoteTabsViewController.searchTerms = searchText;

@@ -21,6 +21,8 @@
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/commerce/shopping_persisted_data_tab_helper.h"
+#import "ios/chrome/browser/main/browser_list.h"
+#import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
@@ -298,10 +300,15 @@ class TabGridMediatorTest : public PlatformTest {
     SnapshotBrowserAgent::CreateForBrowser(browser_.get());
     SnapshotBrowserAgent::FromBrowser(browser_.get())
         ->SetSessionID([[NSUUID UUID] UUIDString]);
+    browser_list_ =
+        BrowserListFactory::GetForBrowserState(browser_state_.get());
+    browser_list_->AddBrowser(browser_.get());
 
     // Insert some web states.
+    std::vector<std::string> urls{"https://foo/bar", "https://car/tar",
+                                  "https://hello/world"};
     for (int i = 0; i < 3; i++) {
-      auto web_state = CreateFakeWebStateWithURL(GURL("https://foo/bar"));
+      auto web_state = CreateFakeWebStateWithURL(GURL(urls[i]));
       NSString* identifier = web_state.get()->GetStableIdentifier();
       // Tab IDs should be unique.
       ASSERT_FALSE([identifiers containsObject:identifier]);
@@ -384,6 +391,7 @@ class TabGridMediatorTest : public PlatformTest {
   NSSet<NSString*>* original_identifiers_;
   NSString* original_selected_identifier_;
   std::unique_ptr<Browser> browser_;
+  BrowserList* browser_list_;
   base::UserActionTester user_action_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
   FakeChromeIdentity* fake_identity_ = nullptr;
@@ -671,6 +679,62 @@ TEST_F(TabGridMediatorTest, MoveItemCommand) {
     EXPECT_NSEQ(identifier, consumer_.items[index]);
   }
   EXPECT_EQ(pre_move_selected_id, consumer_.selectedItemID);
+}
+
+// Tests that when |-searchItemsWithText:| is called, there is no change in the
+// items in WebStateList and the correct items are populated by the consumer.
+TEST_F(TabGridMediatorTest, SearchItemsWithTextCommand) {
+  // Capture ordered original IDs.
+  NSMutableArray<NSString*>* pre_search_ids = [[NSMutableArray alloc] init];
+  for (int i = 0; i < 3; i++) {
+    web::WebState* web_state = browser_->GetWebStateList()->GetWebStateAt(i);
+    [pre_search_ids addObject:web_state->GetStableIdentifier()];
+  }
+  NSString* expected_result_identifier =
+      browser_->GetWebStateList()->GetWebStateAt(2)->GetStableIdentifier();
+
+  [mediator_ searchItemsWithText:@"hello"];
+
+  // Web states count should not change.
+  EXPECT_EQ(3, browser_->GetWebStateList()->count());
+  // Active index should not change.
+  EXPECT_EQ(1, browser_->GetWebStateList()->active_index());
+  // The order of the items should be the same.
+  for (int i = 0; i < 3; i++) {
+    web::WebState* web_state = browser_->GetWebStateList()->GetWebStateAt(i);
+    ASSERT_TRUE(web_state);
+    NSString* identifier = web_state->GetStableIdentifier();
+    EXPECT_NSEQ(identifier, pre_search_ids[i]);
+  }
+  // Only one result should be found.
+  EXPECT_EQ(1UL, consumer_.items.count);
+  EXPECT_NSEQ(expected_result_identifier, consumer_.items[0]);
+}
+
+// Tests that when |-resetToAllItems:| is called, the consumer gets all the
+// items from items in WebStateList and correct item selected.
+TEST_F(TabGridMediatorTest, resetToAllItems) {
+  ASSERT_EQ(3, browser_->GetWebStateList()->count());
+  ASSERT_EQ(3UL, consumer_.items.count);
+
+  [mediator_ searchItemsWithText:@"hello"];
+  // Only 1 result is in the consumer after the search is done.
+  ASSERT_EQ(1UL, consumer_.items.count);
+
+  [mediator_ resetToAllItems];
+  // consumer should revert back to have the items from the webstate list.
+  EXPECT_EQ(3UL, consumer_.items.count);
+  // Active index should not change.
+  EXPECT_NSEQ(original_selected_identifier_, consumer_.selectedItemID);
+
+  // The order of the items on the consumer be the exact same order as the in
+  // WebStateList.
+  for (int i = 0; i < 3; i++) {
+    web::WebState* web_state = browser_->GetWebStateList()->GetWebStateAt(i);
+    ASSERT_TRUE(web_state);
+    NSString* identifier = web_state->GetStableIdentifier();
+    EXPECT_NSEQ(identifier, consumer_.items[i]);
+  }
 }
 
 TEST_F(TabGridMediatorTest, TestSelectItemWithNoPriceDrop) {

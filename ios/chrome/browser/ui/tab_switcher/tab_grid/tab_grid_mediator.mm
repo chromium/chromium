@@ -15,6 +15,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/sys_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/favicon/ios/web_favicon_driver.h"
@@ -36,6 +37,8 @@
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #include "ios/chrome/browser/system_flags.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
+#import "ios/chrome/browser/tabs_search/tabs_search_service.h"
+#import "ios/chrome/browser/tabs_search/tabs_search_service_factory.h"
 #import "ios/chrome/browser/ui/commands/bookmark_add_command.h"
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
@@ -523,6 +526,24 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
     }],
     bookmarkAction
   ];
+}
+
+- (void)searchItemsWithText:(NSString*)searchText {
+  TabsSearchService* searchService =
+      TabsSearchServiceFactory::GetForBrowserState(self.browserState);
+  const std::u16string& searchTerm = base::SysNSStringToUTF16(searchText);
+  searchService->Search(
+      searchTerm, base::BindOnce(^(std::vector<web::WebState*> results) {
+        NSMutableArray* items = [[NSMutableArray alloc] init];
+        for (web::WebState* webState : results) {
+          [items addObject:CreateItem(webState)];
+        }
+        [self.consumer populateItems:items selectedItemID:nil];
+      }));
+}
+
+- (void)resetToAllItems {
+  [self populateConsumerItems];
 }
 
 #pragma mark GridCommands helpers
