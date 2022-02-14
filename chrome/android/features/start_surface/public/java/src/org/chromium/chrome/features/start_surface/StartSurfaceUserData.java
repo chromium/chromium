@@ -161,21 +161,6 @@ public class StartSurfaceUserData implements UserData {
     }
 
     /**
-     * Sets the url of last visited tab at start up.
-     * @param lastVisitedTabAtStartupUrl The url of last visited tab at start up.
-     */
-    public void setLastVisitedTabAtStartupUrl(String lastVisitedTabAtStartupUrl) {
-        mLastVisitedTabAtStartupUrl = lastVisitedTabAtStartupUrl;
-    }
-
-    /**
-     * Returns the saved url of last visited tab at start up.
-     */
-    public String getLastVisitedTabAtStartupUrl() {
-        return mLastVisitedTabAtStartupUrl;
-    }
-
-    /**
      * Sets whether an unused Tab is restored at startup due to an overview page is showing at the
      * startup.
      */

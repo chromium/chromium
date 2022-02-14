@@ -60,6 +60,8 @@ import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageManager;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSitesMetadataUtils;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
@@ -485,7 +487,12 @@ public class InstantStartTest {
         // clang-format on
         Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
         Assert.assertEquals(-1, ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
-        testShowLastTabWhenHomepageDisabledNoImmediateReturnImpl();
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> HomepageManager.getInstance().setPrefHomepageEnabled(false));
+        Assert.assertFalse(HomepageManager.isHomepageEnabled());
+
+        testShowLastTabAtStartUp();
     }
 
     @Test
@@ -500,17 +507,33 @@ public class InstantStartTest {
         // clang-format on
         Assert.assertFalse(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
         Assert.assertEquals(-1, ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
-        testShowLastTabWhenHomepageDisabledNoImmediateReturnImpl();
-    }
-
-    private void testShowLastTabWhenHomepageDisabledNoImmediateReturnImpl() throws IOException {
-        StartSurfaceTestUtils.createTabStateFile(new int[] {0});
-        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0);
-        TabAttributeCache.setTitleForTesting(0, "Google");
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> HomepageManager.getInstance().setPrefHomepageEnabled(false));
         Assert.assertFalse(HomepageManager.isHomepageEnabled());
+
+        testShowLastTabAtStartUp();
+    }
+
+    @Test
+    @MediumTest
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @DisableFeatures(ChromeFeatureList.INSTANT_START)
+    @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS +
+        "/hide_start_when_last_visited_tab_is_srp/true"})
+    public void testShowLastTabWhenLastTabIsSRP_NoInstant() throws IOException {
+        // clang-format on
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.IS_LAST_VISITED_TAB_SRP, true);
+        testShowLastTabAtStartUp();
+    }
+
+    private void testShowLastTabAtStartUp() throws IOException {
+        StartSurfaceTestUtils.createTabStateFile(new int[] {0});
+        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0);
+        TabAttributeCache.setTitleForTesting(0, "Google");
 
         // Launches Chrome and verifies that the last visited Tab is showing.
         mActivityTestRule.startMainActivityFromLauncher();
