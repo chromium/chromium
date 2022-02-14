@@ -106,4 +106,3 @@ ci_builder(
     os = os.WINDOWS_11,
     goma_enable_ats = True,
 )
-
