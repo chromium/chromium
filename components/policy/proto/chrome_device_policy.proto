@@ -1686,6 +1686,14 @@ message DeviceLoginScreenWebUILazyLoadingProto {
   optional bool enabled = 1 [default = false];
 }
 
+// Setting that controls different configurations for the Encrypted Reporting
+// Pipeline.
+message EncryptedReportingPipelineConfigurationProto {
+  // Controls overall functioning of Encrypted Reporting Pipeline: setting it to
+  // false would disable the pipeline on a device
+  optional bool enabled = 1 [default = true];
+}
+
 message ChromeDeviceSettingsProto {
   reserved 61, 90;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
@@ -1860,4 +1868,6 @@ message ChromeDeviceSettingsProto {
   optional DeviceKeylockerForStorageEncryptionEnabledProto
       keylocker_for_storage_encryption_enabled = 132;
   optional BooleanPolicyProto device_run_automatic_cleanup_on_login = 133;
+  optional EncryptedReportingPipelineConfigurationProto
+      device_encrypted_reporting_pipeline_enabled = 134;
 }

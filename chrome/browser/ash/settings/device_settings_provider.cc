@@ -81,6 +81,7 @@ const char* const kKnownSettings[] = {
     kDeviceDisabledMessage,
     kDeviceDisplayResolution,
     kDeviceDockMacAddressSource,
+    kDeviceEncryptedReportingPipelineEnabled,
     kDeviceHostnameTemplate,
     kDeviceHostnameUserConfigurable,
     kDeviceLoginScreenInputMethods,
@@ -1268,6 +1269,15 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
       policy.hardware_data_usage_enabled().hardware_data_usage_enabled();
   new_values_cache->SetBoolean(kRevenEnableDeviceHWDataUsage,
                                reven_enable_device_hw_data_usage);
+
+  if (policy.has_device_encrypted_reporting_pipeline_enabled()) {
+    const em::EncryptedReportingPipelineConfigurationProto& container(
+        policy.device_encrypted_reporting_pipeline_enabled());
+    if (container.has_enabled()) {
+      new_values_cache->SetValue(kDeviceEncryptedReportingPipelineEnabled,
+                                 base::Value(container.enabled()));
+    }
+  }
 }
 
 void DecodeLogUploadPolicies(const em::ChromeDeviceSettingsProto& policy,

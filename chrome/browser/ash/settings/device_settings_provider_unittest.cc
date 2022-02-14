@@ -1378,4 +1378,22 @@ TEST_F(DeviceSettingsProviderTest, KioskCRXManigestUpdateURLIngoredDisabled) {
             *provider_->Get(kKioskCRXManifestUpdateURLIgnored));
 }
 
+TEST_F(DeviceSettingsProviderTest, DeviceEncryptedReportingPipelineEnabled) {
+  device_policy_->payload()
+      .mutable_device_encrypted_reporting_pipeline_enabled()
+      ->set_enabled(true);
+  BuildAndInstallDevicePolicy();
+  EXPECT_EQ(base::Value(true),
+            *provider_->Get(kDeviceEncryptedReportingPipelineEnabled));
+}
+
+TEST_F(DeviceSettingsProviderTest, DeviceEncryptedReportingPipelineDisabled) {
+  device_policy_->payload()
+      .mutable_device_encrypted_reporting_pipeline_enabled()
+      ->set_enabled(false);
+  BuildAndInstallDevicePolicy();
+  EXPECT_EQ(base::Value(false),
+            *provider_->Get(kDeviceEncryptedReportingPipelineEnabled));
+}
+
 }  // namespace ash

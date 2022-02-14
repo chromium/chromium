@@ -30000,6 +30000,36 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
 
                   The state of the First-Party Sets feature determines whether Chrome retrieves the list of First-Party Sets.
                   It also controls whether Chrome supports First-Party Sets related features (e.g. the SameParty cookie attribute).''',
+    },
+    {
+      'name': 'DeviceEncryptedReportingPipelineEnabled',
+      'owners': ['cros-reporting-team@google.com', 'albertojuarez@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:100-'],
+      'supported_chrome_os_management': ['google_cloud'],
+      'device_only': True,
+      'features': {
+        'dynamic_refresh': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable the Encrypted Reporting Pipeline',
+        },
+        {
+          'value': False,
+          'caption': 'Disable the Encrypted Reporting Pipeline',
+        },
+      ],
+      'example_value': True,
+      'default': True,
+      'id': 957,
+      'caption': '''Enable the Encrypted Reporting Pipeline''',
+      'tags': ['admin-sharing'],
+      'desc': '''Setting the policy to True or leaving it unset allows for events, telemetry and info to be
+      reported to the Encrypted Reporting Pipeline. Setting the policy to False disables the Encrypted Reporting Pipeline.''',
+      'arc_support': 'This policy has no effect on the logging done by Android.',
     }
   ],
   'messages': {
@@ -30474,6 +30504,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'DeviceLoginScreenWebUILazyLoading': 'login_web_ui_lazy_loading.enabled',
     'DeviceKeylockerForStorageEncryptionEnabled': 'keylocker_for_storage_encryption_enabled.enabled',
     'DeviceRunAutomaticCleanupOnLogin': 'device_run_automatic_cleanup_on_login.value',
+    'DeviceEncryptedReportingPipelineEnabled': 'device_reporting.encrypted_reporting_pipeline_enabled',
   },
   'policy_atomic_group_definitions': [
     {
@@ -30985,6 +31016,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 956,
+  'highest_id_currently_used': 957,
   'highest_atomic_group_id_currently_used': 41
 }

@@ -425,4 +425,19 @@ TEST_F(DevicePolicyDecoderTest,
       std::move(login_screen_prompt_value));
 }
 
+TEST_F(DevicePolicyDecoderTest, DecodeDeviceEncryptedReportingPipelineEnabled) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(
+      device_policy, key::kDeviceEncryptedReportingPipelineEnabled);
+
+  base::Value prompt_value(true);
+  device_policy.mutable_device_encrypted_reporting_pipeline_enabled()
+      ->set_enabled(prompt_value.GetBool());
+
+  DecodeDevicePolicyTestHelper(device_policy,
+                               key::kDeviceEncryptedReportingPipelineEnabled,
+                               std::move(prompt_value));
+}
+
 }  // namespace policy

@@ -585,4 +585,9 @@ const char kDeviceRestrictedManagedGuestSessionEnabled[] =
 // overall improvements. This setting is available only on reven boards.
 const char kRevenEnableDeviceHWDataUsage[] = "cros.reven.enable_hw_data_usage";
 
+// A boolean that indicates whether the encrypted reporting pipeline is
+// enabled or not.
+const char kDeviceEncryptedReportingPipelineEnabled[] =
+    "cros.device.encrypted_reporting_pipeline_enabled";
+
 }  // namespace ash
