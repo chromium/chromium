@@ -16,6 +16,8 @@ import org.chromium.chrome.browser.autofill_assistant.onboarding.AssistantOnboar
 import org.chromium.chrome.browser.autofill_assistant.onboarding.BaseOnboardingCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -31,13 +33,16 @@ class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandl
     private final OnboardingCoordinatorFactory mOnboardingCoordinatorFactory;
     private final AssistantStaticDependencies mStaticDependencies;
     private final Supplier<WebContents> mWebContentsSupplier;
+    private final BottomSheetController mBottomSheetController;
 
     AutofillAssistantActionHandlerImpl(OnboardingCoordinatorFactory onboardingCoordinatorFactory,
             Supplier<WebContents> webContentsSupplier,
-            AssistantStaticDependencies staticDependencies) {
+            AssistantStaticDependencies staticDependencies,
+            BottomSheetController bottomSheetController) {
         mOnboardingCoordinatorFactory = onboardingCoordinatorFactory;
         mWebContentsSupplier = webContentsSupplier;
         mStaticDependencies = staticDependencies;
+        mBottomSheetController = bottomSheetController;
     }
 
     @Override
@@ -94,6 +99,9 @@ class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandl
             callback.onResult(false);
             return;
         }
+        // Direct actions should not reuse the UI of existing flows, whether they are earlier direct
+        // actions or regular flows. See b/209399694.
+        preventContentReuse();
 
         Map<String, String> argumentMap = toArgumentMap(arguments);
         Callback<AssistantOverlayCoordinator> afterOnboarding = (overlayCoordinator) -> {
@@ -125,6 +133,16 @@ class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandl
             return;
         }
         client.showFatalError();
+    }
+
+    /**
+     * Marks the current bottom sheet content, if any, as not reusable.
+     */
+    private void preventContentReuse() {
+        BottomSheetContent currentContent = mBottomSheetController.getCurrentSheetContent();
+        if (currentContent instanceof AssistantBottomSheetContent) {
+            ((AssistantBottomSheetContent) currentContent).setDoNotReuse(true);
+        }
     }
 
     /**

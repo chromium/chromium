@@ -38,6 +38,6 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
                                 -> new AssistantBrowserControlsChrome(browserControls),
                         rootView, staticDependencies.getAccessibilityUtil(),
                         staticDependencies.createInfoPageUtil()),
-                webContentsSupplier, staticDependencies);
+                webContentsSupplier, staticDependencies, bottomSheetController);
     }
 }

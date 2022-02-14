@@ -70,6 +70,10 @@ class Starter : public content::WebContentsObserver {
   // When the activity is changed on Android.
   void OnDependenciesInvalidated();
 
+  // Called when a direct action is triggered. Cancels the pending startup and
+  // closes JITT UI.
+  void OnDirectActionTriggered();
+
  private:
   friend class StarterTest;
 

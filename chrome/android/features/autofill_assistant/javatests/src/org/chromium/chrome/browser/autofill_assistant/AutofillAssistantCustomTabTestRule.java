@@ -24,8 +24,11 @@ class AutofillAssistantCustomTabTestRule
     public void startActivity() {
         getTestRule().startCustomTabActivityWithIntent(
                 CustomTabsTestUtils.createMinimalCustomTabIntent(
-                        InstrumentationRegistry.getTargetContext(),
-                        getTestRule().getTestServer().getURL(HTML_DIRECTORY + mTestPage)));
+                        InstrumentationRegistry.getTargetContext(), getURL()));
+    }
+
+    public String getURL() {
+        return getTestRule().getTestServer().getURL(HTML_DIRECTORY + mTestPage);
     }
 
     @Override
