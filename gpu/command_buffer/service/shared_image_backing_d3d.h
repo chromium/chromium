@@ -26,7 +26,7 @@
 // Usage of BUILDFLAG(USE_DAWN) needs to be after the include for
 // ui/gl/buildflags.h
 #if BUILDFLAG(USE_DAWN)
-#include <dawn_native/D3D12Backend.h>
+#include <dawn/native/D3D12Backend.h>
 #endif  // BUILDFLAG(USE_DAWN)
 
 namespace gfx {

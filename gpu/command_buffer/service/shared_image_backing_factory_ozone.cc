@@ -5,7 +5,7 @@
 #include "gpu/command_buffer/service/shared_image_backing_factory_ozone.h"
 
 #include <dawn/dawn_proc_table.h>
-#include <dawn_native/DawnNative.h>
+#include <dawn/native/DawnNative.h>
 
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"

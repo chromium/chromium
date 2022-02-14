@@ -9,7 +9,7 @@
 #include "gpu/command_buffer/service/shared_image_backing_d3d.h"
 #endif
 
-#include <dawn_native/OpenGLBackend.h>
+#include <dawn/native/OpenGLBackend.h>
 
 namespace gpu {
 

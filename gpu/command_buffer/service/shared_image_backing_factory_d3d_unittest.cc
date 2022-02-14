@@ -38,8 +38,8 @@
 
 #if BUILDFLAG(USE_DAWN)
 #include <dawn/dawn_proc.h>
+#include <dawn/native/DawnNative.h>
 #include <dawn/webgpu_cpp.h>
-#include <dawn_native/DawnNative.h>
 #endif  // BUILDFLAG(USE_DAWN)
 
 #define SCOPED_GL_CLEANUP_VAR(api, func, var)            \

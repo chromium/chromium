@@ -4,8 +4,8 @@
 
 #include "gpu/command_buffer/service/webgpu_decoder_impl.h"
 
-#include <dawn_native/DawnNative.h>
-#include <dawn_native/OpenGLBackend.h>
+#include <dawn/native/DawnNative.h>
+#include <dawn/native/OpenGLBackend.h>
 #include <dawn_platform/DawnPlatform.h>
 #include <dawn_wire/WireServer.h>
 
@@ -42,8 +42,8 @@
 #include "ui/gl/gl_surface_egl.h"
 
 #if BUILDFLAG(IS_WIN)
-#include <dawn_native/D3D12Backend.h>
-#include <dawn_native/VulkanBackend.h>
+#include <dawn/native/D3D12Backend.h>
+#include <dawn/native/VulkanBackend.h>
 #include "ui/gl/gl_angle_util_win.h"
 #endif
 

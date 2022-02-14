@@ -51,10 +51,10 @@
 #endif
 
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
-#include "third_party/dawn/src/include/dawn/dawn_proc.h"          // nogncheck
-#include "third_party/dawn/src/include/dawn/webgpu.h"             // nogncheck
-#include "third_party/dawn/src/include/dawn/webgpu_cpp.h"         // nogncheck
-#include "third_party/dawn/src/include/dawn_native/DawnNative.h"  // nogncheck
+#include "third_party/dawn/include/dawn/dawn_proc.h"          // nogncheck
+#include "third_party/dawn/include/dawn/native/DawnNative.h"  // nogncheck
+#include "third_party/dawn/include/dawn/webgpu.h"             // nogncheck
+#include "third_party/dawn/include/dawn/webgpu_cpp.h"         // nogncheck
 #endif
 
 namespace {

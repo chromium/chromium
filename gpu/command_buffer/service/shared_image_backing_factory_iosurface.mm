@@ -28,7 +28,7 @@
 // Usage of BUILDFLAG(USE_DAWN) needs to be after the include for
 // ui/gl/buildflags.h
 #if BUILDFLAG(USE_DAWN)
-#include <dawn_native/MetalBackend.h>
+#include <dawn/native/MetalBackend.h>
 #endif  // BUILDFLAG(USE_DAWN)
 
 namespace gpu {

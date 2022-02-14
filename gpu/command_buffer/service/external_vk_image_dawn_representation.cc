@@ -4,7 +4,7 @@
 
 #include "gpu/command_buffer/service/external_vk_image_dawn_representation.h"
 
-#include <dawn_native/VulkanBackend.h>
+#include <dawn/native/VulkanBackend.h>
 
 #include <utility>
 #include <vector>

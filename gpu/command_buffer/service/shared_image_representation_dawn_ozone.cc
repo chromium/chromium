@@ -4,7 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_image_representation_dawn_ozone.h"
 
-#include <dawn_native/VulkanBackend.h>
+#include <dawn/native/VulkanBackend.h>
 
 #include <vulkan/vulkan.h>
 #include "base/logging.h"

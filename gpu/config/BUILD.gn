@@ -195,12 +195,12 @@ source_set("config_sources") {
   ]
 
   if (use_dawn || skia_use_dawn) {
-    public_deps += [ "//third_party/dawn/src/dawn:dawn_headers" ]
+    public_deps += [ "//third_party/dawn/include/dawn:headers" ]
 
     deps += [
-      "//third_party/dawn/src/dawn:dawn_proc",
-      "//third_party/dawn/src/dawn:dawncpp",
-      "//third_party/dawn/src/dawn_native",
+      "//third_party/dawn/src/dawn:cpp",
+      "//third_party/dawn/src/dawn:proc",
+      "//third_party/dawn/src/dawn/native",
     ]
   }
 

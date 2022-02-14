@@ -310,7 +310,7 @@ target(link_target_type, "gles2_sources") {
     "//gpu/command_buffer/common:raster_sources",
     "//gpu/command_buffer/common:webgpu_sources",
     "//skia",
-    "//third_party/dawn/src/dawn:dawn_headers",
+    "//third_party/dawn/include/dawn:headers",
   ]
   deps = [
     ":disk_cache_proto",
@@ -415,9 +415,9 @@ target(link_target_type, "gles2_sources") {
 
   if (use_dawn) {
     deps += [
-      "//third_party/dawn/src/dawn:dawn_proc",
-      "//third_party/dawn/src/dawn_native",
-      "//third_party/dawn/src/dawn_platform",
+      "//third_party/dawn/src/dawn:proc",
+      "//third_party/dawn/src/dawn/native",
+      "//third_party/dawn/src/dawn/platform",
     ]
     if (dawn_enable_opengles) {
       sources += [
@@ -446,8 +446,8 @@ target(link_target_type, "gles2_sources") {
   if (skia_use_dawn) {
     deps += [
       "//components/viz/common:dawn_context_provider",
-      "//third_party/dawn/src/dawn:dawn_proc",
-      "//third_party/dawn/src/dawn:dawncpp",
+      "//third_party/dawn/src/dawn:cpp",
+      "//third_party/dawn/src/dawn:proc",
     ]
   }
 
