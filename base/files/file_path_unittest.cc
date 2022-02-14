@@ -515,8 +515,7 @@ TEST_F(FilePathTest, PathComponentsTest) {
 
   for (size_t i = 0; i < base::size(cases); ++i) {
     FilePath input(cases[i].input);
-    std::vector<FilePath::StringType> comps;
-    input.GetComponents(&comps);
+    std::vector<FilePath::StringType> comps = input.GetComponents();
 
     FilePath::StringType observed;
     for (const auto& j : comps) {

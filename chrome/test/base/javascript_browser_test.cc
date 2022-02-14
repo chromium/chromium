@@ -86,8 +86,8 @@ void JavaScriptBrowserTest::BuildJavascriptLibraries(
        ++user_libraries_iterator) {
     std::string library_content;
     base::FilePath library_absolute_path;
-    std::vector<base::FilePath::StringType> components;
-    user_libraries_iterator->GetComponents(&components);
+    std::vector<base::FilePath::StringType> components =
+        user_libraries_iterator->GetComponents();
     if (components[0] == FILE_PATH_LITERAL("ROOT_GEN_DIR")) {
       base::FilePath exe_dir;
       base::PathService::Get(base::DIR_EXE, &exe_dir);

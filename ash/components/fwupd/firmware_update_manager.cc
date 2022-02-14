@@ -404,8 +404,7 @@ void FirmwareUpdateManager::MaybeDownloadFileToInternal(
     return;
   }
 
-  std::vector<base::FilePath::StringType> components;
-  filepath.GetComponents(&components);
+  std::vector<base::FilePath::StringType> components = filepath.GetComponents();
 
   if (components[0] == kHttpsComponent) {
     // Firmware patch is available for download.

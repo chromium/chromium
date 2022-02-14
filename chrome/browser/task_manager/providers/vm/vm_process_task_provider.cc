@@ -120,8 +120,7 @@ bool PluginVmExtractVmNameAndOwnerId(const std::string& arg,
   const base::FilePath vm_disk_path(
       base::MakeStringPiece(arg.begin(), arg.end() - strlen(kArgEnd)));
 
-  std::vector<std::string> components;
-  vm_disk_path.GetComponents(&components);
+  std::vector<std::string> components = vm_disk_path.GetComponents();
 
   // Expect /, run, daemon-store, pvm, <owner_id>, vm_name.pvm
   if (components.size() != 6)

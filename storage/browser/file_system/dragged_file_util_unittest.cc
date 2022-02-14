@@ -52,9 +52,7 @@ constexpr const base::FilePath::CharType* kRootPaths[] = {
 };
 
 base::FilePath GetTopLevelPath(const base::FilePath& path) {
-  std::vector<base::FilePath::StringType> components;
-  path.GetComponents(&components);
-  return base::FilePath(components[0]);
+  return base::FilePath(path.GetComponents()[0]);
 }
 
 bool IsDirectoryEmpty(FileSystemContext* context, const FileSystemURL& url) {

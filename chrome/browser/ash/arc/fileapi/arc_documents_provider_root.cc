@@ -872,9 +872,7 @@ void ArcDocumentsProviderRoot::ResolveToDocumentId(
     const base::FilePath& path,
     ResolveToDocumentIdCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::vector<base::FilePath::StringType> components;
-  path.GetComponents(&components);
-  ResolveToDocumentIdRecursively(root_document_id_, components,
+  ResolveToDocumentIdRecursively(root_document_id_, path.GetComponents(),
                                  std::move(callback));
 }
 

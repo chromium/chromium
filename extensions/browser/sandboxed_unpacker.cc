@@ -150,8 +150,8 @@ std::set<base::FilePath> GetMessageCatalogPathsToBeSanitized(
 // _metadata directory (e.g. computed_hashes.json itself).
 bool ShouldComputeHashesForResource(
     const base::FilePath& relative_resource_path) {
-  std::vector<base::FilePath::StringType> components;
-  relative_resource_path.GetComponents(&components);
+  std::vector<base::FilePath::StringType> components =
+      relative_resource_path.GetComponents();
   return !components.empty() && components[0] != kMetadataFolder;
 }
 

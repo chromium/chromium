@@ -197,8 +197,8 @@ bool MediaFileSystemBackend::AttemptAutoMountForURLRequest(
   const base::FilePath& virtual_path = filesystem_url.path();
   if (virtual_path.ReferencesParent())
     return false;
-  std::vector<base::FilePath::StringType> components;
-  virtual_path.GetComponents(&components);
+  std::vector<base::FilePath::StringType> components =
+      virtual_path.GetComponents();
   if (components.empty())
     return false;
   std::string mount_point = base::FilePath(components[0]).AsUTF8Unsafe();

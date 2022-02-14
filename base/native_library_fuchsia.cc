@@ -36,8 +36,8 @@ std::string NativeLibraryLoadError::ToString() const {
 NativeLibrary LoadNativeLibraryWithOptions(const FilePath& library_path,
                                            const NativeLibraryOptions& options,
                                            NativeLibraryLoadError* error) {
-  std::vector<base::FilePath::StringType> components;
-  library_path.GetComponents(&components);
+  std::vector<base::FilePath::StringType> components =
+      library_path.GetComponents();
   if (components.size() != 1u) {
     NOTREACHED() << "library_path is a path, should be a filename: "
                  << library_path.MaybeAsASCII();

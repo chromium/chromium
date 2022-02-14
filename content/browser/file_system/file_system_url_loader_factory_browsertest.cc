@@ -88,8 +88,8 @@ bool TestAutoMountForURLRequest(
   if (request_info.storage_domain != "automount")
     return false;
 
-  std::vector<base::FilePath::StringType> components;
-  filesystem_url.path().GetComponents(&components);
+  std::vector<base::FilePath::StringType> components =
+      filesystem_url.path().GetComponents();
   std::string mount_point = base::FilePath(components[0]).AsUTF8Unsafe();
 
   if (mount_point == kValidExternalMountPoint) {

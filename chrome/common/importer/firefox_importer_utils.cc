@@ -112,10 +112,8 @@ std::vector<FirefoxDetail> GetFirefoxDetailsFromDictionary(
 // our assumption about Firefox's root being in that path explicit.
 bool ComposeMacAppPath(const std::string& path_from_file,
                        base::FilePath* output) {
-  base::FilePath path(path_from_file);
-  typedef std::vector<base::FilePath::StringType> ComponentVector;
-  ComponentVector path_components;
-  path.GetComponents(&path_components);
+  std::vector<base::FilePath::StringType> path_components =
+      base::FilePath(path_from_file).GetComponents();
   if (path_components.empty())
     return false;
   // The first path component is special because it may be absolute. Calling

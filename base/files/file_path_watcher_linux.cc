@@ -566,8 +566,7 @@ bool FilePathWatcherImpl::Watch(const FilePath& path,
   target_ = path;
   type_ = type;
 
-  std::vector<FilePath::StringType> comps;
-  target_.GetComponents(&comps);
+  std::vector<FilePath::StringType> comps = target_.GetComponents();
   DCHECK(!comps.empty());
   for (size_t i = 1; i < comps.size(); ++i)
     watches_.emplace_back(comps[i]);

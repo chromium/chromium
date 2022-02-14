@@ -302,8 +302,8 @@ void FileSystemAccessDirectoryHandleImpl::ResolveImpl(
     return;
   }
 
-  std::vector<base::FilePath::StringType> components;
-  relative_path.GetComponents(&components);
+  std::vector<base::FilePath::StringType> components =
+      relative_path.GetComponents();
 #if BUILDFLAG(IS_WIN)
   std::vector<std::string> result;
   result.reserve(components.size());

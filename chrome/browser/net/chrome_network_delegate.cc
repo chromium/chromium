@@ -49,8 +49,7 @@ bool IsAccessAllowedChromeOS(const base::FilePath& path,
   base::FilePath path_within_gcache_v2;
   if (profile_path.Append("GCache/v2")
           .AppendRelativePath(path, &path_within_gcache_v2)) {
-    std::vector<std::string> components;
-    path_within_gcache_v2.GetComponents(&components);
+    std::vector<std::string> components = path_within_gcache_v2.GetComponents();
     if (components.size() > 1 && components[1] == "Logs") {
       return true;
     }

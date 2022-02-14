@@ -47,8 +47,7 @@ int FilePathWatcherKQueue::EventsForPath(FilePath path, EventVector* events) {
   // Make sure that we are working with a clean slate.
   DCHECK(events->empty());
 
-  std::vector<FilePath::StringType> components;
-  path.GetComponents(&components);
+  std::vector<FilePath::StringType> components = path.GetComponents();
 
   if (components.size() < 1) {
     return 0;

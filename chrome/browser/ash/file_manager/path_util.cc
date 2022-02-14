@@ -132,8 +132,7 @@ bool ShouldMountPrimaryUserDownloads(Profile* profile) {
 // Example: ExtractLegacyDrivePath("/special/drive-xxx/foo.txt") =>
 //   "drive/foo.txt"
 base::FilePath ExtractLegacyDrivePath(const base::FilePath& path) {
-  std::vector<base::FilePath::StringType> components;
-  path.GetComponents(&components);
+  std::vector<base::FilePath::StringType> components = path.GetComponents();
   if (components.size() < 3)
     return base::FilePath();
   if (components[0] != FILE_PATH_LITERAL("/"))
@@ -154,8 +153,8 @@ base::FilePath ExtractLegacyDrivePath(const base::FilePath& path) {
 // to be of the form <volume name>/..., which is relative to /media/removable.
 std::string ExtractVolumeNameFromRelativePathForRemovableMedia(
     const base::FilePath& relative_path) {
-  std::vector<base::FilePath::StringType> components;
-  relative_path.GetComponents(&components);
+  std::vector<base::FilePath::StringType> components =
+      relative_path.GetComponents();
   if (components.empty()) {
     LOG(WARNING) << "Failed to extract volume name from relative path: "
                  << relative_path;
@@ -398,8 +397,7 @@ bool ConvertFileSystemURLToPathInsideVM(
     *inside = vm_mount.Append(kFolderNameMyFiles);
   } else if (!mount_point_name_drive.empty() && id == mount_point_name_drive) {
     // DriveFS has some more complicated mappings.
-    std::vector<base::FilePath::StringType> components;
-    path.GetComponents(&components);
+    std::vector<base::FilePath::StringType> components = path.GetComponents();
     *inside = vm_mount.Append(kCrostiniMapGoogleDrive);
     if (components.size() >= 2 && components[1] == kDriveFsDirRoot) {
       // root -> MyDrive.
@@ -560,8 +558,8 @@ bool ConvertPathInsideVMToFileSystemURL(
   } else if (base::FilePath(kCrostiniMapSmbFs)
                  .AppendRelativePath(path, &relative_path)) {
     // SMB.
-    std::vector<base::FilePath::StringType> components;
-    relative_path.GetComponents(&components);
+    std::vector<base::FilePath::StringType> components =
+        relative_path.GetComponents();
     if (components.size() < 1) {
       return false;
     }

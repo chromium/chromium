@@ -351,8 +351,8 @@ bool IsolatedContext::CrackVirtualPath(
   *mount_option = FileSystemMountOption();
 
   // The virtual_path should comprise <id_or_name> and <relative_path> parts.
-  std::vector<base::FilePath::StringType> components;
-  virtual_path.GetComponents(&components);
+  std::vector<base::FilePath::StringType> components =
+      virtual_path.GetComponents();
   if (components.size() < 1)
     return false;
   auto component_iter = components.begin();

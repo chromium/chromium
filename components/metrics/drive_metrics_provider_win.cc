@@ -16,8 +16,7 @@ namespace metrics {
 // static
 bool DriveMetricsProvider::HasSeekPenalty(const base::FilePath& path,
                                           bool* has_seek_penalty) {
-  std::vector<base::FilePath::StringType> components;
-  path.GetComponents(&components);
+  std::vector<base::FilePath::StringType> components = path.GetComponents();
 
   base::File volume(base::FilePath(L"\\\\.\\" + components[0]),
                     base::File::FLAG_OPEN);

@@ -199,8 +199,7 @@ std::vector<std::string> GetBaseThemes(const base::FilePath& abspath) {
 }
 
 base::FilePath CanonicalizePath(base::FilePath path) {
-  std::vector<std::string> components;
-  path.GetComponents(&components);
+  std::vector<std::string> components = path.GetComponents();
   if (components[0] == "~") {
     path = base::GetHomeDir();
     for (size_t i = 1; i < components.size(); i++)

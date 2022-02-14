@@ -161,8 +161,7 @@ FilePath GetAppBundlePath(const FilePath& exec_name) {
   const size_t kExtLength = base::size(kExt) - 1;
 
   // Split the path into components.
-  std::vector<std::string> components;
-  exec_name.GetComponents(&components);
+  std::vector<std::string> components = exec_name.GetComponents();
 
   // It's an error if we don't get any components.
   if (components.empty())

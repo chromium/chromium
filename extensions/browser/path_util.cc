@@ -82,8 +82,8 @@ base::FilePath PrettifyPath(const base::FilePath& source_path) {
   // and localized subfolders of the user's home directory.
   // Don't grab the display name of the first component, i.e., "/", as it'll
   // show up as the HDD name.
-  std::vector<base::FilePath::StringType> components;
-  source_path.GetComponents(&components);
+  std::vector<base::FilePath::StringType> components =
+      source_path.GetComponents();
   display_path = base::FilePath(components[0]);
   base::FilePath actual_path = display_path;
   for (std::vector<base::FilePath::StringType>::iterator i =

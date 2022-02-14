@@ -124,12 +124,11 @@ void FilesystemImpl::GetEntries(const base::FilePath& path,
 
   // Fix up the absolute paths to be relative to |path|.
   std::vector<base::FilePath> entries;
-  std::vector<base::FilePath::StringType> root_components;
-  full_path.GetComponents(&root_components);
+  std::vector<base::FilePath::StringType> root_components =
+      full_path.GetComponents();
   const size_t num_components_to_strip = root_components.size();
   for (const auto& entry : result.value()) {
-    std::vector<base::FilePath::StringType> components;
-    entry.GetComponents(&components);
+    std::vector<base::FilePath::StringType> components = entry.GetComponents();
     base::FilePath relative_path;
     for (size_t i = num_components_to_strip; i < components.size(); ++i)
       relative_path = relative_path.Append(components[i]);

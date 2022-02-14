@@ -30,8 +30,7 @@ const CFAbsoluteTime kEventLatencySeconds = 0.3;
 FilePath ResolvePath(const FilePath& path) {
   const unsigned kMaxLinksToResolve = 255;
 
-  std::vector<FilePath::StringType> component_vector;
-  path.GetComponents(&component_vector);
+  std::vector<FilePath::StringType> component_vector = path.GetComponents();
   std::list<FilePath::StringType>
       components(component_vector.begin(), component_vector.end());
 
@@ -52,8 +51,8 @@ FilePath ResolvePath(const FilePath& path) {
     if (ReadSymbolicLink(current, &target)) {
       if (target.IsAbsolute())
         result.clear();
-      std::vector<FilePath::StringType> target_components;
-      target.GetComponents(&target_components);
+      std::vector<FilePath::StringType> target_components =
+          target.GetComponents();
       components.insert(components.begin(), target_components.begin(),
                         target_components.end());
       resolve_count++;

@@ -85,9 +85,9 @@ struct ObfuscatedFileUtilMemoryDelegate::DecomposedPath {
 
 ObfuscatedFileUtilMemoryDelegate::ObfuscatedFileUtilMemoryDelegate(
     const base::FilePath& file_system_directory)
-    : root_(std::make_unique<Entry>(Entry::kDirectory)) {
+    : root_(std::make_unique<Entry>(Entry::kDirectory)),
+      root_path_components_(file_system_directory.GetComponents()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  file_system_directory.GetComponents(&root_path_components_);
 }
 
 ObfuscatedFileUtilMemoryDelegate::~ObfuscatedFileUtilMemoryDelegate() {
@@ -98,8 +98,7 @@ absl::optional<ObfuscatedFileUtilMemoryDelegate::DecomposedPath>
 ObfuscatedFileUtilMemoryDelegate::ParsePath(const base::FilePath& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DecomposedPath dp;
-
-  path.GetComponents(&dp.components);
+  dp.components = path.GetComponents();
 
   // Ensure |path| is under |root_|.
   if (dp.components.size() < root_path_components_.size())

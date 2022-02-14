@@ -168,8 +168,7 @@ void FileSystemBackend::ResolveURL(const storage::FileSystemURL& url,
   // For removable and archives, the file system root is the external mount
   // point plus the inner mount point.
   if (id == "archive" || id == "removable") {
-    std::vector<std::string> components;
-    url.virtual_path().GetComponents(&components);
+    std::vector<std::string> components = url.virtual_path().GetComponents();
     DCHECK_EQ(id, components.at(0));
     if (components.size() < 2) {
       // Unable to access /archive and /removable directories directly. The

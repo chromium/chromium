@@ -50,8 +50,7 @@ base::FilePath NormalizeRelativePath(const base::FilePath& path) {
   if (path.ReferencesParent())
     return base::FilePath();
 
-  std::vector<base::FilePath::StringType> parts;
-  path.GetComponents(&parts);
+  std::vector<base::FilePath::StringType> parts = path.GetComponents();
   if (parts.empty())
     return base::FilePath();
 

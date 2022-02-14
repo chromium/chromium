@@ -155,10 +155,10 @@ bool MacSignatureEvaluator::GetRelativePathComponent(
   if (!parent.IsParent(child))
     return false;
 
-  std::vector<base::FilePath::StringType> parent_components;
-  std::vector<base::FilePath::StringType> child_components;
-  parent.GetComponents(&parent_components);
-  child.GetComponents(&child_components);
+  std::vector<base::FilePath::StringType> parent_components =
+      parent.GetComponents();
+  std::vector<base::FilePath::StringType> child_components =
+      child.GetComponents();
 
   size_t i = 0;
   while (i < parent_components.size() &&

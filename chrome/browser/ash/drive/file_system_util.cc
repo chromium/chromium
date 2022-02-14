@@ -44,8 +44,7 @@ DriveIntegrationService* GetIntegrationServiceByProfile(Profile* profile) {
 }
 
 bool IsUnderDriveMountPoint(const base::FilePath& path) {
-  std::vector<base::FilePath::StringType> components;
-  path.GetComponents(&components);
+  std::vector<base::FilePath::StringType> components = path.GetComponents();
   if (components.size() < 4)
     return false;
   if (components[0] != FILE_PATH_LITERAL("/"))

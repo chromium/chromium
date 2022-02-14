@@ -31,10 +31,7 @@ constexpr char kFallbackTouchDevicePhys[] = "fallback_touch_device_phys";
 
 // Returns true if |path| is likely a USB device.
 bool IsDeviceConnectedViaUsb(const base::FilePath& path) {
-  std::vector<base::FilePath::StringType> components;
-  path.GetComponents(&components);
-
-  for (const auto& component : components) {
+  for (const auto& component : path.GetComponents()) {
     if (base::StartsWith(component, "usb",
                          base::CompareCase::INSENSITIVE_ASCII)) {
       return true;
@@ -62,10 +59,10 @@ int GetUsbAssociationScore(const ManagedDisplayInfo* display,
 
   // The association score is simply the number of prefix path components that
   // sysfs paths have in common.
-  std::vector<base::FilePath::StringType> display_components;
-  std::vector<base::FilePath::StringType> device_components;
-  display->sys_path().GetComponents(&display_components);
-  device.sys_path.GetComponents(&device_components);
+  std::vector<base::FilePath::StringType> display_components =
+      display->sys_path().GetComponents();
+  std::vector<base::FilePath::StringType> device_components =
+      device.sys_path.GetComponents();
 
   std::size_t largest_idx = 0;
   while (largest_idx < display_components.size() &&

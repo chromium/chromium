@@ -677,8 +677,7 @@ std::string RedactionTool::RedactAndroidAppStoragePaths(
     //   one.
     // - If the original component has 2 or more bytes, add '_'.
     const base::FilePath path(app_specific.as_string());
-    std::vector<std::string> components;
-    path.GetComponents(&components);
+    std::vector<std::string> components = path.GetComponents();
     DCHECK(!components.empty());
 
     auto it = components.begin() + 1;  // ignore the leading slash

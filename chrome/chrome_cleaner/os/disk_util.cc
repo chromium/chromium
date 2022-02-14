@@ -296,10 +296,8 @@ void CollectMatchingPaths(const base::FilePath& root_path,
   DCHECK(matches);
 
   if (PathContainsWildcards(root_path)) {
-    std::vector<base::FilePath::StringType> components;
-    root_path.GetComponents(&components);
-    base::FilePath empty_path;
-    CollectMatchingPathsRecursive(empty_path, components, 0, matches);
+    CollectMatchingPathsRecursive(base::FilePath(), root_path.GetComponents(),
+                                  0, matches);
   } else if (base::PathExists(root_path)) {
     matches->push_back(root_path);
   }

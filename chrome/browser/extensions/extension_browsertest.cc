@@ -127,8 +127,8 @@ void ExtensionProtocolTestResourcesHandler(const base::FilePath& test_dir_root,
   }
 
   // Strip the '_test_resources/' prefix from |relative_path|.
-  std::vector<base::FilePath::StringType> components;
-  relative_path->GetComponents(&components);
+  std::vector<base::FilePath::StringType> components =
+      relative_path->GetComponents();
   DCHECK_GT(components.size(), 1u);
   base::FilePath new_relative_path;
   for (size_t i = 1u; i < components.size(); ++i)

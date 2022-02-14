@@ -101,8 +101,7 @@ bool ImageSource::IsAllowlisted(const std::string& path) const {
     return false;
 
   // Check if the path starts with a allowlisted directory.
-  std::vector<std::string> components;
-  file_path.GetComponents(&components);
+  std::vector<std::string> components = file_path.GetComponents();
   if (components.empty())
     return false;
 

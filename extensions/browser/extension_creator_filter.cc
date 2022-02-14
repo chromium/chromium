@@ -6,9 +6,9 @@
 
 #include <stddef.h>
 
-#include <set>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "extensions/common/constants.h"
@@ -39,16 +39,12 @@ bool ExtensionCreatorFilter::ShouldPackageFile(
 
   // The file path that contains one of following special components should be
   // excluded. See https://crbug.com/314360 and https://crbug.com/27840.
-  const base::FilePath::StringType names_to_exclude[] = {
+  static constexpr base::FilePath::StringPieceType kNamesToExclude[] = {
       FILE_PATH_LITERAL(".DS_Store"),   FILE_PATH_LITERAL(".git"),
       FILE_PATH_LITERAL(".svn"),        FILE_PATH_LITERAL("__MACOSX"),
       FILE_PATH_LITERAL("desktop.ini"), FILE_PATH_LITERAL("Thumbs.db")};
-  std::set<base::FilePath::StringType> names_to_exclude_set(
-      names_to_exclude, names_to_exclude + base::size(names_to_exclude));
-  std::vector<base::FilePath::StringType> components;
-  file_path.GetComponents(&components);
-  for (size_t i = 0; i < components.size(); i++) {
-    if (names_to_exclude_set.count(components[i]))
+  for (const auto& component : file_path.GetComponents()) {
+    if (base::Contains(kNamesToExclude, component))
       return false;
   }
 

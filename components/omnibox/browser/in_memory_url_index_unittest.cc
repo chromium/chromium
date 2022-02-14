@@ -1462,14 +1462,14 @@ bool InMemoryURLIndexCacheTest::GetCacheFilePath(
 }
 
 TEST_F(InMemoryURLIndexCacheTest, CacheFilePath) {
-  base::FilePath expectedPath =
+  base::FilePath expected_path =
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("History Provider Cache"));
-  std::vector<base::FilePath::StringType> expected_parts;
-  expectedPath.GetComponents(&expected_parts);
+  std::vector<base::FilePath::StringType> expected_parts =
+      expected_path.GetComponents();
   base::FilePath full_file_path;
   ASSERT_TRUE(GetCacheFilePath(&full_file_path));
-  std::vector<base::FilePath::StringType> actual_parts;
-  full_file_path.GetComponents(&actual_parts);
+  std::vector<base::FilePath::StringType> actual_parts =
+      full_file_path.GetComponents();
   ASSERT_EQ(expected_parts.size(), actual_parts.size());
   size_t count = expected_parts.size();
   for (size_t i = 0; i < count; ++i)

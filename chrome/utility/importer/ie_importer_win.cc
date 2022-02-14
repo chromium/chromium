@@ -705,8 +705,7 @@ void IEImporter::ParseFavoritesFolder(
     entry.url = url;
     entry.creation_time = GetFileCreationTime(shortcut);
     if (!relative_path.empty()) {
-      std::vector<std::wstring> wide_components;
-      relative_path.GetComponents(&wide_components);
+      std::vector<std::wstring> wide_components = relative_path.GetComponents();
       base::ranges::transform(wide_components, std::back_inserter(entry.path),
                               &base::AsString16);
     }

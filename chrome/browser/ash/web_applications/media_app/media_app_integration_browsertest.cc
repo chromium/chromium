@@ -201,8 +201,7 @@ std::string FindAnyTTF() {
       base::FileEnumerator::FolderSearchPolicy::ALL,
       base::FileEnumerator::ErrorPolicy::IGNORE_ERRORS);
   const base::FilePath candidate = enumerator.Next();
-  std::vector<std::string> components;
-  candidate.GetComponents(&components);
+  std::vector<std::string> components = candidate.GetComponents();
   if (components.size() < 5) {
     return {};
   }

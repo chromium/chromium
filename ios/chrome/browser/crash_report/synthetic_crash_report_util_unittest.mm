@@ -80,8 +80,8 @@ TEST_F(SyntheticCrashReportUtilTest, CreateSyntheticCrashReportForUte) {
   ASSERT_EQ("", traversal.Next().value());
 
   // Config file name is "Config-<6 random characters>" (f.e. Config-S0Zl1r).
-  std::vector<std::string> config_file_path_components;
-  config_file_path.GetComponents(&config_file_path_components);
+  std::vector<std::string> config_file_path_components =
+      config_file_path.GetComponents();
   ASSERT_FALSE(config_file_path_components.empty());
   std::string config_file_name = config_file_path_components.back();
   ASSERT_EQ(13U, config_file_name.size()) << config_file_name;
@@ -89,8 +89,8 @@ TEST_F(SyntheticCrashReportUtilTest, CreateSyntheticCrashReportForUte) {
 
   // Minidump file name is "<UUID>.dmp" (f.e.
   // f83dfc0a-771e-4a99-8540-e430ab995307.dmp).
-  std::vector<std::string> minidump_file_path_components;
-  minidump_file_path.GetComponents(&minidump_file_path_components);
+  std::vector<std::string> minidump_file_path_components =
+      minidump_file_path.GetComponents();
   ASSERT_FALSE(minidump_file_path_components.empty());
   std::string minidump_file_name = minidump_file_path_components.back();
   ASSERT_EQ(40U, minidump_file_name.size()) << minidump_file_name;

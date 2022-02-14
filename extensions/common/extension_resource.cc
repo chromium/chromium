@@ -64,8 +64,8 @@ base::FilePath ExtensionResource::GetFilePath(
   // If we are allowing the file to be a symlink outside of the root, then the
   // path before resolving the symlink must still be within it.
   if (symlink_policy == FOLLOW_SYMLINKS_ANYWHERE) {
-    std::vector<base::FilePath::StringType> components;
-    relative_path.GetComponents(&components);
+    std::vector<base::FilePath::StringType> components =
+        relative_path.GetComponents();
     int depth = 0;
 
     for (std::vector<base::FilePath::StringType>::const_iterator

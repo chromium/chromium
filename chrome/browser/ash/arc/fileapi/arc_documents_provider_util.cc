@@ -143,8 +143,7 @@ bool ParseDocumentsProviderPath(const base::FilePath& path,
 
   // Filesystem path format for documents provider is:
   // /special/arc-documents-provider/<authority>/<root_doc_id>/<relative_path>
-  std::vector<base::FilePath::StringType> components;
-  path.GetComponents(&components);
+  std::vector<base::FilePath::StringType> components = path.GetComponents();
   if (components.size() < 5)
     return false;
 

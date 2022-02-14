@@ -245,8 +245,7 @@ bool FakeFileSystemInstance::DocumentExists(const std::string& authority,
                                             const std::string& root_document_id,
                                             const base::FilePath& path) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  std::vector<std::string> path_components;
-  path.GetComponents(&path_components);
+  std::vector<std::string> path_components = path.GetComponents();
   std::string document_id =
       FindChildDocumentId(authority, root_document_id, path_components);
   return DocumentExists(authority, document_id);
@@ -274,8 +273,7 @@ FakeFileSystemInstance::Document FakeFileSystemInstance::GetDocument(
     const std::string& root_document_id,
     const base::FilePath& path) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  std::vector<std::string> path_components;
-  path.GetComponents(&path_components);
+  std::vector<std::string> path_components = path.GetComponents();
   std::string document_id =
       FindChildDocumentId(authority, root_document_id, path_components);
   return GetDocument(authority, document_id);

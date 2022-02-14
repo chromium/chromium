@@ -19,6 +19,7 @@
 #include "base/check_op.h"
 #include "base/files/safe_base_name.h"
 #include "base/pickle.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -229,15 +230,11 @@ bool FilePath::IsSeparator(CharType character) {
   return false;
 }
 
-void FilePath::GetComponents(std::vector<StringType>* components) const {
-  DCHECK(components);
-  if (!components)
-    return;
-  components->clear();
-  if (value().empty())
-    return;
-
+std::vector<FilePath::StringType> FilePath::GetComponents() const {
   std::vector<StringType> ret_val;
+  if (value().empty())
+    return ret_val;
+
   FilePath current = *this;
   FilePath base;
 
@@ -257,11 +254,11 @@ void FilePath::GetComponents(std::vector<StringType>* components) const {
   // Capture drive letter, if any.
   FilePath dir = current.DirName();
   StringType::size_type letter = FindDriveLetter(dir.value());
-  if (letter != StringType::npos) {
-    ret_val.push_back(StringType(dir.value(), 0, letter + 1));
-  }
+  if (letter != StringType::npos)
+    ret_val.emplace_back(dir.value(), 0, letter + 1);
 
-  *components = std::vector<StringType>(ret_val.rbegin(), ret_val.rend());
+  ranges::reverse(ret_val);
+  return ret_val;
 }
 
 bool FilePath::IsParent(const FilePath& child) const {
@@ -270,10 +267,8 @@ bool FilePath::IsParent(const FilePath& child) const {
 
 bool FilePath::AppendRelativePath(const FilePath& child,
                                   FilePath* path) const {
-  std::vector<StringType> parent_components;
-  std::vector<StringType> child_components;
-  GetComponents(&parent_components);
-  child.GetComponents(&child_components);
+  std::vector<StringType> parent_components = GetComponents();
+  std::vector<StringType> child_components = child.GetComponents();
 
   if (parent_components.empty() ||
       parent_components.size() >= child_components.size())
@@ -614,9 +609,7 @@ bool FilePath::ReferencesParent() const {
     return false;
   }
 
-  std::vector<StringType> components;
-  GetComponents(&components);
-
+  std::vector<StringType> components = GetComponents();
   std::vector<StringType>::const_iterator it = components.begin();
   for (; it != components.end(); ++it) {
     const StringType& component = *it;

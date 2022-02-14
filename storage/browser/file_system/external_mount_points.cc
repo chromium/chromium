@@ -160,8 +160,8 @@ bool ExternalMountPoints::CrackVirtualPath(
     return false;
 
   // The virtual_path should comprise of <mount_name> and <relative_path> parts.
-  std::vector<base::FilePath::StringType> components;
-  virtual_path.GetComponents(&components);
+  std::vector<base::FilePath::StringType> components =
+      virtual_path.GetComponents();
   if (components.size() < 1)
     return false;
 

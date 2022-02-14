@@ -290,8 +290,8 @@ void GuestOsSharePath::CallSeneschalSharePath(const std::string& vm_name,
 
       // TODO(crbug.com/917920): Do not allow Computers Grand Root, or single
       // Computer Root to be shared until DriveFS enforces allowed write paths.
-      std::vector<base::FilePath::StringType> components;
-      relative_path.GetComponents(&components);
+      std::vector<base::FilePath::StringType> components =
+          relative_path.GetComponents();
       if (components.size() < 2) {
         allowed_path = false;
       }

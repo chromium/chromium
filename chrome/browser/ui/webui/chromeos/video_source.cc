@@ -32,8 +32,7 @@ bool IsAllowlisted(const std::string& path) {
     return false;
 
   // Check if the path starts with a allowlisted directory.
-  std::vector<std::string> components;
-  file_path.GetComponents(&components);
+  std::vector<std::string> components = file_path.GetComponents();
   if (components.empty())
     return false;
   return components[0] == kAllowlistedDirectory;

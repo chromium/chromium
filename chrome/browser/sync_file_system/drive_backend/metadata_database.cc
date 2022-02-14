@@ -846,8 +846,8 @@ bool MetadataDatabase::FindNearestActiveAncestor(
     return false;
   }
 
-  std::vector<base::FilePath::StringType> components;
-  full_path.GetComponents(&components);
+  std::vector<base::FilePath::StringType> components =
+      full_path.GetComponents();
   path_out->clear();
 
   for (size_t i = 0; i < components.size(); ++i) {

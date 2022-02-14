@@ -55,11 +55,8 @@ base::FilePath MapDevPathToSysPath(const base::FilePath& device_path) {
   base::FilePath sys_path = base::MakeAbsoluteFilePath(
       base::FilePath("/sys/class/drm").Append(device_path.BaseName()));
 
-  std::vector<base::FilePath::StringType> components;
-  sys_path.GetComponents(&components);
   base::FilePath path_thus_far;
-
-  for (const auto& component : components) {
+  for (const auto& component : sys_path.GetComponents()) {
     if (path_thus_far.empty()) {
       path_thus_far = base::FilePath(component);
     } else {

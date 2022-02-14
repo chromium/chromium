@@ -1023,12 +1023,8 @@ bool VerifyPathControlledByUser(const FilePath& base,
      return false;
   }
 
-  std::vector<FilePath::StringType> base_components;
-  std::vector<FilePath::StringType> path_components;
-
-  base.GetComponents(&base_components);
-  path.GetComponents(&path_components);
-
+  std::vector<FilePath::StringType> base_components = base.GetComponents();
+  std::vector<FilePath::StringType> path_components = path.GetComponents();
   std::vector<FilePath::StringType>::const_iterator ib, ip;
   for (ib = base_components.begin(), ip = path_components.begin();
        ib != base_components.end(); ++ib, ++ip) {
