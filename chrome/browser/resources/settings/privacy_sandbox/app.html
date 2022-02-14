@@ -89,6 +89,14 @@
     cursor: pointer;
   }
 
+  .dialog-description {
+    color: var(--cr-primary-text-color);
+  }
+
+  cr-dialog [slot=body] .dialog-description:not(:last-of-type) {
+    margin-bottom: 8px;
+  }
+
   .learn-more-section-title {
     color: var(--cr-primary-text-color);
     font-size: 0.875rem; /* 14px */
@@ -98,12 +106,13 @@
     color: var(--cr-primary-text-color);
   }
 
-  .dialog-description {
-    color: var(--cr-primary-text-color);
+  .ad-personalization-section-title {
+    font-weight: 500;
+    padding: 8px 0;
   }
 
-  cr-dialog [slot=body] .dialog-description:not(:last-of-type) {
-    padding-bottom: 8px;
+  .ad-personalization-section {
+    padding: 0 0 16px 16px;
   }
 </style>
 
@@ -215,14 +224,29 @@
             </div>
           </div>
         </template>
-        <!-- TODO(crbug/1286276): Implement this section. -->
         <template id="adPersonalizationDialog" is="dom-if"
             if="[[showFragment_(
                     privacySandboxSettingsViewEnum_.AD_PERSONALIZATION_DIALOG,
                     privacySandboxSettingsView_)]]">
-          <div slot="title">This is the second page</div>
+          <div slot="title">
+            $i18n{privacySandboxAdPersonalizationDialogTitle}
+          </div>
           <div slot="body">
-            This is example text for the second page.
+            <div class="dialog-description">
+              $i18n{privacySandboxAdPersonalizationDialogDescription}
+            </div>
+            <div class="ad-personalization-section-title">
+              $i18n{privacySandboxAdPersonalizationDialogBrowserInterests}
+            </div>
+            <div class="ad-personalization-section">
+              $i18n{privacySandboxAdPersonalizationDialogBrowserInterestsEmpty}
+            </div>
+            <div class="ad-personalization-section-title">
+              $i18n{privacySandboxAdPersonalizationDialogWebsiteInterests}
+            </div>
+            <div class="ad-personalization-section">
+              $i18n{privacySandboxAdPersonalizationDialogWebsiteInterestsEmpty}
+            </div>
           </div>
         </template>
         <template id="adMeasurementDialog" is="dom-if"

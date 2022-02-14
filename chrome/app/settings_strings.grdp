@@ -1420,7 +1420,7 @@
     About Browser-based ad personalization
   </message>
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_BROWSER_INTERESTS" translateable="false" desc="Title of the browser-based interests section of the dialog to learn more about ad personalization.">
-    Your interests as estimated by the browser
+    Your interests as estimated by your browser
   </message>
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_WEBSITE_INTERESTS" translateable="false" desc="Title of the website-based interests section of the dialog to learn more about ad personalization.">
     Your interests as defined by sites you visit
@@ -1434,25 +1434,43 @@
   <message name="IDS_SETTINGS_PRIVACY_SANDBOX_LEARN_MORE_DIALOG_DATA_MANAGEMENT" translateable="false" desc="Title of the data management subsection of the dialog to learn more about ad personalization.">
     How you can manage your data:
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_TITLE" translateable="false" desc="Title of the dialog to learn more about ad measurement.">
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_TITLE" translateable="false" desc="Title of the 'ad personalization' dialog.">
+    Browser-based ad personalization
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_DESCRIPTION" translateable="false" desc="Description of the 'ad personalization' dialog.">
+    Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_BROWSER_INTERESTS" translateable="false" desc="Title of the browser-based interests section of the 'ad personalization' dialog.">
+    Your interests as estimated by your browser
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_BROWSER_INTERESTS_EMPTY" translateable="false" desc="Description of the empty state of the browser-based interests section of the 'ad personalization' dialog.">
+    A list of interests will appear here as you browse the web
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_WEBSITE_INTERESTS" translateable="false" desc="Title of the website-based interests section of the 'ad personalization' dialog.">
+    Sites you visit that define your interests
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_PERSONALIZATION_DIALOG_WEBSITE_INTERESTS_EMPTY" translateable="false" desc="Description of the empty state of the website-based interests section of the 'ad personalization' dialog.">
+    A list of sites you've visited will appear here as you browse the web
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_TITLE" translateable="false" desc="Title of the 'ad measurement' dialog.">
     Ad measurement
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_DESCRIPTION" translateable="false" desc="Main description of the dialog to learn more about ad measurement.">
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_DESCRIPTION" translateable="false" desc="Main description of the 'ad measurement' dialog.">
     Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_CONTROL_MEASUREMENT" translateable="false" desc="'Control measurement' description of the dialog to learn more about ad measurement.">
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_CONTROL_MEASUREMENT" translateable="false" desc="Control measurement description of the 'ad measurement' dialog.">
     Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua <ph name="BEGIN_LINK">&lt;a href="$1" target="_blank"&gt;</ph>browsing history<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_TITLE" translateable="false" desc="Title of the dialog to learn more about spam and fraud reduction.">
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_TITLE" translateable="false" desc="Title of the 'spam and fraud reduction' dialog.">
     Spam and fraud reduction
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_DESCRIPTION1" translateable="false" desc="First description of the dialog to learn more about spam and fraud reduction.">
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_DESCRIPTION1" translateable="false" desc="First description of the 'spam and fraud reduction' dialog.">
     Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_DESCRIPTION2" translateable="false" desc="Second description of the dialog to learn more about spam and fraud reduction.">
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_DESCRIPTION2" translateable="false" desc="Second description of the 'spam and fraud reduction' dialog.">
     Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_DESCRIPTION3" translateable="false" desc="Third description of the dialog to learn more about spam and fraud reduction.">
+  <message name="IDS_SETTINGS_PRIVACY_SANDBOX_SPAM_AND_FRAUD_DIALOG_DESCRIPTION3" translateable="false" desc="Third description of the 'spam and fraud reduction' dialog.">
     Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
   </message>
 
