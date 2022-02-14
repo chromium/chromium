@@ -444,6 +444,7 @@
       light:"$google_grey_100",
       dark:"$google_grey_900",
     },
+    tooltip_link_color: "$color_prominent_inverted",
 
     /* shortcut */
     shortcut_background_color: {
