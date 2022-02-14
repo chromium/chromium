@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_piece.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/address_list.h"
@@ -398,13 +399,12 @@ class EmbeddedTestServer {
   // Returns a URL to the server based on the given relative URL, which
   // should start with '/'. For example: GetURL("/path?query=foo") =>
   // http://127.0.0.1:<port>/path?query=foo.
-  GURL GetURL(const std::string& relative_url) const;
+  GURL GetURL(base::StringPiece relative_url) const;
 
   // Similar to the above method with the difference that it uses the supplied
   // |hostname| for the URL instead of 127.0.0.1. The hostname should be
   // resolved to 127.0.0.1.
-  GURL GetURL(const std::string& hostname,
-              const std::string& relative_url) const;
+  GURL GetURL(base::StringPiece hostname, base::StringPiece relative_url) const;
 
   // Convenience function equivalent to calling url::Origin::Create(base_url()).
   // Will use the GetURL() variant that takes a hostname as the base URL, if
@@ -448,7 +448,7 @@ class EmbeddedTestServer {
   void ServeFilesFromDirectory(const base::FilePath& directory);
 
   // Serves files relative to DIR_SOURCE_ROOT.
-  void ServeFilesFromSourceDirectory(const std::string& relative);
+  void ServeFilesFromSourceDirectory(base::StringPiece relative);
   void ServeFilesFromSourceDirectory(const base::FilePath& relative);
 
   // Registers the default handlers and serve additional files from the
@@ -495,8 +495,7 @@ class EmbeddedTestServer {
   // Only valid before Start() or ResetSSLServerConfig(). Only valid when
   // constructed with PROTOCOL_HTTP2. For the default host, use an empty
   // string.
-  void SetAlpsAcceptCH(const std::string& hostname,
-                       const std::string& accept_ch);
+  void SetAlpsAcceptCH(std::string hostname, std::string accept_ch);
 
  private:
   // Returns the file name of the certificate the server is using. The test

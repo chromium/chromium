@@ -20,6 +20,7 @@
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
@@ -56,8 +57,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
-namespace net {
-namespace test_server {
+namespace net::test_server {
 
 namespace {
 
@@ -544,11 +544,10 @@ bool EmbeddedTestServer::InitializeSSLServerContext() {
       size_t frame_size = spdy::kFrameHeaderSize;
       // Figure out size and generate origins
       for (const auto& pair : alps_accept_ch_) {
-        const std::string& hostname = pair.first;
+        base::StringPiece hostname = pair.first;
         std::string accept_ch = pair.second;
 
-        GURL url =
-            hostname.empty() ? GetURL("/") : GetURL(std::string(hostname), "/");
+        GURL url = hostname.empty() ? GetURL("/") : GetURL(hostname, "/");
         std::string origin = url::Origin::Create(url).Serialize();
 
         frame_size += accept_ch.size() + origin.size() +
@@ -560,8 +559,8 @@ bool EmbeddedTestServer::InitializeSSLServerContext() {
       spdy::SpdyFrameBuilder builder(frame_size);
       builder.BeginNewFrame(spdy::SpdyFrameType::ACCEPT_CH, 0, 0);
       for (const auto& pair : origin_accept_ch) {
-        const std::string& origin = pair.first;
-        const std::string& accept_ch = pair.second;
+        base::StringPiece origin = pair.first;
+        base::StringPiece accept_ch = pair.second;
 
         builder.WriteUInt16(origin.size());
         builder.WriteBytes(origin.data(), origin.size());
@@ -675,15 +674,15 @@ void EmbeddedTestServer::HandleRequest(
   response_ptr->SendResponse(delegate);
 }
 
-GURL EmbeddedTestServer::GetURL(const std::string& relative_url) const {
+GURL EmbeddedTestServer::GetURL(base::StringPiece relative_url) const {
   DCHECK(Started()) << "You must start the server first.";
   DCHECK(base::StartsWith(relative_url, "/", base::CompareCase::SENSITIVE))
       << relative_url;
   return base_url_.Resolve(relative_url);
 }
 
-GURL EmbeddedTestServer::GetURL(const std::string& hostname,
-                                const std::string& relative_url) const {
+GURL EmbeddedTestServer::GetURL(base::StringPiece hostname,
+                                base::StringPiece relative_url) const {
   GURL local_url = GetURL(relative_url);
   GURL::Replacements replace_host;
   replace_host.SetHostStr(hostname);
@@ -813,7 +812,7 @@ void EmbeddedTestServer::ServeFilesFromDirectory(
 }
 
 void EmbeddedTestServer::ServeFilesFromSourceDirectory(
-    const std::string& relative) {
+    base::StringPiece relative) {
   base::FilePath test_data_dir;
   CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
   ServeFilesFromDirectory(test_data_dir.AppendASCII(relative));
@@ -891,9 +890,9 @@ void EmbeddedTestServer::FlushAllSocketsAndConnections() {
   connections_.clear();
 }
 
-void EmbeddedTestServer::SetAlpsAcceptCH(const std::string& hostname,
-                                         const std::string& accept_ch) {
-  alps_accept_ch_[hostname] = accept_ch;
+void EmbeddedTestServer::SetAlpsAcceptCH(std::string hostname,
+                                         std::string accept_ch) {
+  alps_accept_ch_.insert_or_assign(std::move(hostname), std::move(accept_ch));
 }
 
 void EmbeddedTestServer::OnAcceptCompleted(int rv) {
@@ -1017,5 +1016,4 @@ bool EmbeddedTestServer::PostTaskToIOThreadAndWaitWithResult(
   return task_result;
 }
 
-}  // namespace test_server
-}  // namespace net
+}  // namespace net::test_server
