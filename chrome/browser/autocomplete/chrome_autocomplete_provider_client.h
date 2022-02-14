@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
@@ -100,6 +101,7 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   bool IsSharingHubAvailable() const override;
   void OnAutocompleteControllerResultReady(
       AutocompleteController* controller) override;
+  base::WeakPtr<AutocompleteProviderClient> GetWeakPtr() override;
 
   // OmniboxAction::Client:
   void OpenSharingHub() override;
@@ -143,6 +145,9 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
 
   std::unique_ptr<OmniboxTriggeredFeatureService>
       omnibox_triggered_feature_service_;
+
+  base::WeakPtrFactory<ChromeAutocompleteProviderClient> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_AUTOCOMPLETE_CHROME_AUTOCOMPLETE_PROVIDER_CLIENT_H_
