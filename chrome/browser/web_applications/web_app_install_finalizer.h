@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_system_web_app_data.h"
 #include "chrome/browser/web_applications/web_app_uninstall_job.h"
@@ -178,14 +179,13 @@ class WebAppInstallFinalizer {
       std::unique_ptr<WebApp> web_app,
       CommitCallback commit_callback);
 
-  void WriteTranslationsThenCommitToSyncBridge(
-      CommitCallback commit_callback,
-      std::unique_ptr<WebApp> web_app,
-      const WebAppInstallInfo& web_app_info,
-      bool success);
+  void WriteTranslations(const AppId& app_id,
+                         const WebAppInstallInfo& web_app_info,
+                         CommitCallback commit_callback,
+                         bool success);
 
-  void CommitToSyncBridge(CommitCallback commit_callback,
-                          std::unique_ptr<WebApp> web_app,
+  void CommitToSyncBridge(std::unique_ptr<WebApp> web_app,
+                          CommitCallback commit_callback,
                           bool success);
 
   void OnDatabaseCommitCompletedForInstall(InstallFinalizedCallback callback,

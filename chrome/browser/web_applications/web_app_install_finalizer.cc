@@ -232,7 +232,7 @@ void WebAppInstallFinalizer::FinalizeInstall(
                                         std::move(commit_callback));
   } else {
     // Updates the web app with an additional source.
-    CommitToSyncBridge(std::move(commit_callback), std::move(web_app),
+    CommitToSyncBridge(std::move(web_app), std::move(commit_callback),
                        /*success=*/true);
   }
 }
@@ -560,19 +560,28 @@ void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
       web_app_info.shortcuts_menu_icon_bitmaps;
   IconsMap other_icon_bitmaps = web_app_info.other_icon_bitmaps;
 
-  icon_manager_->WriteData(
-      std::move(app_id), std::move(icon_bitmaps),
-      std::move(shortcuts_menu_icon_bitmaps), std::move(other_icon_bitmaps),
-      base::BindOnce(
-          &WebAppInstallFinalizer::WriteTranslationsThenCommitToSyncBridge,
-          weak_ptr_factory_.GetWeakPtr(), std::move(commit_callback),
-          std::move(web_app), std::move(web_app_info)));
+  auto write_icons_callback = base::BindOnce(
+      &WebAppIconManager::WriteData, icon_manager_, app_id,
+      std::move(icon_bitmaps), std::move(shortcuts_menu_icon_bitmaps),
+      std::move(other_icon_bitmaps));
+  auto write_translations_callback = base::BindOnce(
+      &WebAppInstallFinalizer::WriteTranslations,
+      weak_ptr_factory_.GetWeakPtr(), app_id, std::move(web_app_info));
+  auto commit_to_sync_bridge_callback =
+      base::BindOnce(&WebAppInstallFinalizer::CommitToSyncBridge,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(web_app));
+
+  std::move(write_icons_callback)
+      .Run(base::BindOnce(
+          std::move(write_translations_callback),
+          base::BindOnce(std::move(commit_to_sync_bridge_callback),
+                         std::move(commit_callback))));
 }
 
-void WebAppInstallFinalizer::WriteTranslationsThenCommitToSyncBridge(
-    CommitCallback commit_callback,
-    std::unique_ptr<WebApp> web_app,
+void WebAppInstallFinalizer::WriteTranslations(
+    const AppId& app_id,
     const WebAppInstallInfo& web_app_info,
+    CommitCallback commit_callback,
     bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!success) {
@@ -580,17 +589,12 @@ void WebAppInstallFinalizer::WriteTranslationsThenCommitToSyncBridge(
     return;
   }
 
-  AppId app_id = web_app->app_id();
-
-  translation_manager_->WriteTranslations(
-      std::move(app_id), web_app_info.translations,
-      base::BindOnce(&WebAppInstallFinalizer::CommitToSyncBridge,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(commit_callback),
-                     std::move(web_app)));
+  translation_manager_->WriteTranslations(app_id, web_app_info.translations,
+                                          std::move(commit_callback));
 }
 
-void WebAppInstallFinalizer::CommitToSyncBridge(CommitCallback commit_callback,
-                                                std::unique_ptr<WebApp> web_app,
+void WebAppInstallFinalizer::CommitToSyncBridge(std::unique_ptr<WebApp> web_app,
+                                                CommitCallback commit_callback,
                                                 bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!success) {
