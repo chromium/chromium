@@ -6,6 +6,7 @@
 
 load("@stdlib//internal/graph.star", "graph")
 load("@stdlib//internal/luci/common.star", "kinds")
+load("./args.star", "args")
 load("//project.star", "settings")
 
 # TODO(gbeaty) Add support for PROVIDE_TEST_SPEC mirrors
@@ -48,7 +49,7 @@ def _gclient_config(*, config, apply_configs = None):
 
     Args:
         config: (str) The name of the recipe module config item to use.
-        apply_configs: (list[str]) Additional configs to apply.
+        apply_configs: (list[str]|str) Additional configs to apply.
 
     Returns:
         A struct that can be passed to the `gclient_config` argument of
@@ -58,7 +59,7 @@ def _gclient_config(*, config, apply_configs = None):
         fail("config must be provided")
     return _struct_with_non_none_values(
         config = config,
-        apply_configs = apply_configs,
+        apply_configs = args.listify(apply_configs) or None,
     )
 
 _build_config = _enum(
@@ -99,17 +100,18 @@ def _chromium_config(
 
     Args:
         config: (str) The name of the recipe module config item to use.
-        apply_configs: (list[str]) Additional configs to apply.
+        apply_configs: (list[str]|str) Additional configs to apply.
         build_config: (build_config) The build config value to use.
         target_arch: (target_arch) The target architecture to build for.
         target_bits: (int) The target bit count to build for.
         target_platform: (target_platform) The target platform to build for.
-        target_cros_boards: (list[str]) The CROS boards to target, SDKs will
+        target_cros_boards: (list[str]|str) The CROS boards to target, SDKs will
             be downloaded for each board. Can only be specified if
             `target_platform` is `target_platform.CHROMEOS`.
-        cros_boards_with_qemu_images: (list[str]) Same as `target_cros_boards`,
-            but a VM image for the board will be downloaded as well. Can only be
-            specified if `target_platform` is `target_platform.CHROMEOS`.
+        cros_boards_with_qemu_images: (list[str]|str) Same as
+            `target_cros_boards`, but a VM image for the board will be
+            downloaded as well. Can only be specified if `target_platform` is
+            `target_platform.CHROMEOS`.
 
     Returns:
         A struct that can be passed to the `chromium_config` argument of
@@ -132,13 +134,13 @@ def _chromium_config(
 
     return _struct_with_non_none_values(
         config = config,
-        apply_configs = apply_configs,
+        apply_configs = args.listify(apply_configs) or None,
         build_config = build_config,
         target_arch = target_arch,
         target_bits = target_bits,
         target_platform = target_platform,
-        target_cros_boards = target_cros_boards,
-        cros_boards_with_qemu_images = cros_boards_with_qemu_images,
+        target_cros_boards = args.listify(target_cros_boards) or None,
+        cros_boards_with_qemu_images = args.listify(cros_boards_with_qemu_images) or None,
     )
 
 def _android_config(*, config, apply_configs = None):
@@ -148,7 +150,7 @@ def _android_config(*, config, apply_configs = None):
 
     Args:
         config: (str) The name of the recipe module config item to use.
-        apply_configs: (list[str]) Additional configs to apply.
+        apply_configs: (list[str]|str) Additional configs to apply.
 
     Returns:
         A struct that can be passed to the `android_config` argument of
@@ -158,7 +160,7 @@ def _android_config(*, config, apply_configs = None):
         fail("config must be provided")
     return _struct_with_non_none_values(
         config = config,
-        apply_configs = apply_configs,
+        apply_configs = args.listify(apply_configs) or None,
     )
 
 def _test_results_config(*, config):
@@ -655,13 +657,10 @@ def _set_builder_config_property(ctx):
 
             mirroring_builders = _get_mirroring_builders(node)
             if mirroring_builders:
-                builder_config["mirroring_builders"] = sorted([
-                    dict(
-                        group = b.props.builder_group,
-                        builder = b.props.name,
-                    )
-                    for b in mirroring_builders
-                ])
+                builder_config["mirroring_builder_group_and_names"] = [
+                    dict(group = group, builder = builder)
+                    for group, builder in sorted([(b.props.builder_group, b.props.name) for b in mirroring_builders])
+                ]
 
             builder_properties = json.decode(builder.properties)
             builder_properties["$build/chromium_tests_builder_config"] = dict(
