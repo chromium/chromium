@@ -603,8 +603,10 @@ const char16_t kHiddenValueRe[] = u"^(\\W)\\1+$";
 /////////////////////////////////////////////////////////////////////////////
 // merchant_promo_code_field.cc
 /////////////////////////////////////////////////////////////////////////////
+// "promo code", "promotion code", "promotional code" are all acceptable
+// keywords.
 const char16_t kMerchantPromoCodeRe[] =
-    u"\\bpromo.*code\\b|\\bcoupon code\\b|\\bgift code\\b";
+    u"(promo(tion|tional)?|gift|discount|coupon)[-_. ]*code";
 
 /////////////////////////////////////////////////////////////////////////////
 // votes_uploader.cc

@@ -53,4 +53,4 @@ UNKNOWN_TYPE | aeEmail | AE | on | ccType_2-default
 UNKNOWN_TYPE | aerieEmail | aerie | on | ccType_2-default
 UNKNOWN_TYPE | kidsEmail | 77kids | on | ccType_2-default
 UNKNOWN_TYPE | loyaltyTerms | I accept the Terms & Conditions |  | ccType_2-default
-UNKNOWN_TYPE | CouponCode | Discount Code: CLOSEApplying DiscountsEnter your 8 or 20 digit code into the Discount Code field without any spaces, then click the Apply Discount button.Learn More about how to find and apply discounts |  | CouponCode_1-default
+MERCHANT_PROMO_CODE | CouponCode | Discount Code: CLOSEApplying DiscountsEnter your 8 or 20 digit code into the Discount Code field without any spaces, then click the Apply Discount button.Learn More about how to find and apply discounts |  | CouponCode_1-default

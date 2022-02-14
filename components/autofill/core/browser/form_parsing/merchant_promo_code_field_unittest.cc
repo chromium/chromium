@@ -19,7 +19,14 @@ class MerchantPromoCodeFieldTest : public FormFieldTest {
   MerchantPromoCodeFieldTest& operator=(const MerchantPromoCodeFieldTest&) =
       delete;
 
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAutofillParseMerchantPromoCodeFields);
+  }
+
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   std::unique_ptr<FormField> Parse(
       AutofillScanner* scanner,
       const LanguageCode& page_language = LanguageCode("en")) override {
@@ -27,50 +34,55 @@ class MerchantPromoCodeFieldTest : public FormFieldTest {
   }
 };
 
+// Match promo(tion|tional)?[-_. ]*code
 TEST_F(MerchantPromoCodeFieldTest, ParsePromoCode) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillParseMerchantPromoCodeFields);
   AddTextFormFieldData("Enter promo code here", "promoCodeField",
                        MERCHANT_PROMO_CODE);
 
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
+// Match promo(tion|tional)?[-_. ]*code
 TEST_F(MerchantPromoCodeFieldTest, ParsePromotionalCode) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillParseMerchantPromoCodeFields);
   AddTextFormFieldData("Use the promotional code here", "promoCodeField",
                        MERCHANT_PROMO_CODE);
 
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
-TEST_F(MerchantPromoCodeFieldTest, ParseCouponCode) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillParseMerchantPromoCodeFields);
-  AddTextFormFieldData("Enter coupon code", "couponCodeField",
+// Match promo(tion|tional)?[-_. ]*code
+TEST_F(MerchantPromoCodeFieldTest, ParsePromoCodeWithPrefixAndSuffix) {
+  AddTextFormFieldData("mypromocodefield", "promoCodeField",
                        MERCHANT_PROMO_CODE);
 
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
+// Match coupon[-_. ]*code
+TEST_F(MerchantPromoCodeFieldTest, ParseCouponCode) {
+  AddTextFormFieldData("Enter new coupon__code", "couponCodeField",
+                       MERCHANT_PROMO_CODE);
+
+  ClassifyAndVerify(ParseResult::PARSED);
+}
+
+// Match gift[-_. ]*code
 TEST_F(MerchantPromoCodeFieldTest, ParseGiftCode) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillParseMerchantPromoCodeFields);
-  AddTextFormFieldData("Check out with gift code", "giftCodeField",
+  AddTextFormFieldData("Check out with gift.codes", "giftCodeField",
+                       MERCHANT_PROMO_CODE);
+
+  ClassifyAndVerify(ParseResult::PARSED);
+}
+
+// Match discount[-_. ]*code
+TEST_F(MerchantPromoCodeFieldTest, ParseDiscountCode) {
+  AddTextFormFieldData("Check out with discount-code", "discountCodeField",
                        MERCHANT_PROMO_CODE);
 
   ClassifyAndVerify(ParseResult::PARSED);
 }
 
 TEST_F(MerchantPromoCodeFieldTest, ParseNonPromoCode) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAutofillParseMerchantPromoCodeFields);
   // Regex relies on "promo/coupon/gift" + "code" together.
   AddTextFormFieldData("Field for gift card or promo details", "otherField",
                        UNKNOWN_TYPE);

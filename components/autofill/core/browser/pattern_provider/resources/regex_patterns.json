@@ -3292,7 +3292,7 @@
     "en": [
       {
         "pattern_identifier": "en_merchant_promo_code_preserving",
-        "positive_pattern": "\\bpromo.*code\\b|\\bcoupon code\\b|\\bgift code\\b",
+        "positive_pattern": "(promo(tion|tional)?|gift|discount|coupon)[-_. ]*code",
         "positive_score": 0.85,
         "negative_pattern": null,
         "match_field_attributes": [0, 1],
