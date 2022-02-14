@@ -158,7 +158,9 @@ std::unique_ptr<SearchController> CreateSearchController(
                             std::make_unique<OsSettingsProvider>(profile));
   }
 
-  if (ash::features::IsProductivityLauncherEnabled()) {
+  if (ash::features::IsProductivityLauncherEnabled() &&
+      base::GetFieldTrialParamByFeatureAsBool(
+          ash::features::kProductivityLauncher, "enable_shortcuts", true)) {
     size_t shortcut_search_group_id = controller->AddGroup(kGenericMaxResults);
     controller->AddProvider(
         shortcut_search_group_id,
