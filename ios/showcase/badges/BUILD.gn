@@ -9,7 +9,7 @@ source_set("badges") {
   ]
   deps = [
     ":badges_constants",
-    "//ios/chrome/browser/infobars:badge_public",
+    "//ios/chrome/browser/infobars:badge_state_public",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/badges",
     "//ios/chrome/browser/ui/badges:badges_popup_menu",
@@ -38,7 +38,6 @@ source_set("eg2_tests") {
   sources = [ "sc_badge_egtest.mm" ]
   deps = [
     ":badges_constants",
-    "//ios/chrome/browser/infobars:badge_public",
     "//ios/chrome/browser/ui/badges:public",
     "//ios/showcase/test:eg2_test",
     "//ios/testing/earl_grey:eg_test_support+eg2",

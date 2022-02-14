@@ -40,7 +40,7 @@
 - (void)displayPopupMenuWithBadgeItems:(NSArray<id<BadgeItem>>*)badgeItems;
 
 // Dismisses the Badge popup menu.
-- (void)dismissPopupMenu;
+- (void)dismissBadgePopupMenu;
 
 // Shows the activity indicator overlay that appears over the view to prevent
 // interaction with the web page.

@@ -397,10 +397,6 @@
   [self.badgePopupMenuCoordinator start];
 }
 
-- (void)dismissPopupMenu {
-  [self.badgePopupMenuCoordinator stop];
-}
-
 #pragma mark - Private
 
 // Displays activity overlay.
@@ -791,6 +787,10 @@
 
 - (void)showAddCreditCard {
   [self.addCreditCardCoordinator start];
+}
+
+- (void)dismissBadgePopupMenu {
+  [self.badgePopupMenuCoordinator stop];
 }
 
 #if !defined(NDEBUG)

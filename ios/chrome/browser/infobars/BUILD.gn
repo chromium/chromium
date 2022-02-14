@@ -25,20 +25,6 @@ source_set("infobars") {
   ]
 }
 
-source_set("badge_public") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "infobar_badge_model.h",
-    "infobar_badge_model.mm",
-  ]
-  deps = [
-    ":public",
-    "//base",
-    "//ios/chrome/browser/ui/badges:public",
-    "//ios/chrome/browser/ui/badges:util",
-  ]
-}
-
 source_set("badge") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
@@ -47,17 +33,19 @@ source_set("badge") {
     "infobar_badge_tab_helper_delegate.h",
   ]
   deps = [
-    ":badge_public",
     ":infobars",
     ":public",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common/infobars",
-    "//ios/chrome/browser/ui/badges:public",
-    "//ios/chrome/browser/ui/badges:util",
     "//ios/chrome/browser/web_state_list",
     "//ios/web",
   ]
+}
+
+source_set("badge_state_public") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "badge_state.h" ]
 }
 
 source_set("public") {
@@ -74,6 +62,7 @@ source_set("public") {
     "//base",
     "//ios/chrome/browser/ui/default_promo:utils",
   ]
+  public_deps = [ ":badge_state_public" ]
 }
 
 source_set("unit_tests") {

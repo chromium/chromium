@@ -4,10 +4,12 @@
 
 #import "ios/chrome/browser/ui/badges/badge_mediator.h"
 
+#include <map>
+
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/infobars/infobar_badge_model.h"
+#include "ios/chrome/browser/infobars/badge_state.h"
 #include "ios/chrome/browser/infobars/infobar_badge_tab_helper.h"
 #include "ios/chrome/browser/infobars/infobar_badge_tab_helper_delegate.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
@@ -303,11 +305,13 @@ TEST_P(BadgeMediatorTest, InfobarBannerOverlayObserving) {
   InfobarBadgeTabHelper* tab_helper =
       InfobarBadgeTabHelper::FromWebState(web_state());
   InfoBarIOS* infobar = AddInfobar(kFirstInfobarType, kFirstInfobarMessageText);
-  NSArray<id<BadgeItem>>* items = tab_helper->GetInfobarBadgeItems();
-  ASSERT_EQ(1U, items.count);
-  id<BadgeItem> item = [items firstObject];
-  ASSERT_EQ(BadgeTypeForInfobarType(type), [item badgeType]);
-  ASSERT_FALSE(item.badgeState & BadgeStatePresented);
+
+  std::map<InfobarType, BadgeState> badge_states =
+      tab_helper->GetInfobarBadgeStates();
+  ASSERT_EQ(1U, badge_states.size());
+  ASSERT_NE(badge_states.find(type), badge_states.end());
+  BadgeState state = badge_states[type];
+  ASSERT_FALSE(state & BadgeStatePresented);
 
   // Simulate the presentation of the infobar banner via OverlayPresenter in the
   // fake presentation context, verifying that the badge state is updated
@@ -317,12 +321,14 @@ TEST_P(BadgeMediatorTest, InfobarBannerOverlayObserving) {
   queue->AddRequest(
       OverlayRequest::CreateWithConfig<InfobarOverlayRequestConfig>(
           infobar, InfobarOverlayType::kBanner, infobar->high_priority()));
-  EXPECT_TRUE(item.badgeState & BadgeStatePresented);
+  badge_states = tab_helper->GetInfobarBadgeStates();
+  EXPECT_TRUE(badge_states[type] & BadgeStatePresented);
 
   // Simulate dismissal of the banner and verify that the badge state is no
   // longer presented.
   queue->CancelAllRequests();
-  EXPECT_FALSE(item.badgeState & BadgeStatePresented);
+  badge_states = tab_helper->GetInfobarBadgeStates();
+  EXPECT_FALSE(badge_states[type] & BadgeStatePresented);
 }
 
 INSTANTIATE_TEST_SUITE_P(/* No InstantiationName */,
