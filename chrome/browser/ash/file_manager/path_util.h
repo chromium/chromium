@@ -95,7 +95,7 @@ bool MigrateToDriveFs(Profile* profile,
 std::string GetDownloadsMountPointName(Profile* profile);
 
 // The canonical mount point name for ARC "Play files" folder.
-const std::string GetAndroidFilesMountPointName();
+std::string GetAndroidFilesMountPointName();
 
 // The canonical mount point name for crostini "Linux files" folder.
 std::string GetCrostiniMountPointName(Profile* profile);
@@ -145,8 +145,10 @@ bool ConvertPathInsideVMToFileSystemURL(
 // and /special/drive, this CANNOT convert paths under ARC media directories
 // (/special/arc-documents-provider).
 // TODO(crbug.com/811679): Migrate all callers and remove this.
-// |requires_sharing_out| will be set to true if |path| needs to be made
+// |*requires_sharing_out| will be set to true if |path| needs to be made
 // available to ARCVM by sharing via Seneschal.
+// Precondition: arc_url_out != nullptr
+// Precondition: requires_sharing_out != nullptr
 bool ConvertPathToArcUrl(const base::FilePath& path,
                          GURL* arc_url_out,
                          bool* requires_sharing_out);

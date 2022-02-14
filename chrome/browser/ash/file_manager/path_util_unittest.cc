@@ -691,6 +691,24 @@ FileSystemURL CreateExternalURL(const base::FilePath& path) {
                                       storage::kFileSystemTypeExternal, path);
 }
 
+TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_Archive) {
+  base::CommandLine::ForCurrentProcess()->InitFromArgv({"", "--enable-arcvm"});
+  GURL url;
+  bool requires_sharing = false;
+  EXPECT_TRUE(ConvertPathToArcUrl(
+      base::FilePath::FromUTF8Unsafe("/media/archive/Smile 🙂.zip/"
+                                     "Folder ({[<!@#$%^&*_-+=`~;:'\"?>\\]})/"
+                                     ".File.txt"),
+      &url, &requires_sharing));
+  EXPECT_EQ(
+      GURL("content://org.chromium.arc.volumeprovider/archive/"
+           "Smile%20%F0%9F%99%82.zip/"
+           "Folder%20(%7B%5B%3C!@%23$%25%5E&*_-+=%60~;%3A'%22%3F%3E%5C%5D%7D)/"
+           ".File.txt"),
+      url);
+  EXPECT_TRUE(requires_sharing);
+}
+
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_Removable) {
   GURL url;
   bool requires_sharing = false;
