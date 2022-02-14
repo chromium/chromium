@@ -40,6 +40,10 @@
 #include "third_party/blink/renderer/core/css/css_supports_rule.h"
 #include "third_party/blink/renderer/core/css/parser/container_query_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
+#include "third_party/blink/renderer/core/css/parser/css_supports_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
@@ -573,6 +577,10 @@ StyleRuleMedia::StyleRuleMedia(const StyleRuleMedia& media_rule)
     media_queries_ = media_rule.media_queries_->Copy();
 }
 
+void StyleRuleMedia::TraceAfterDispatch(blink::Visitor* visitor) const {
+  StyleRuleCondition::TraceAfterDispatch(visitor);
+}
+
 StyleRuleSupports::StyleRuleSupports(
     const String& condition_text,
     bool condition_is_supported,
@@ -580,13 +588,23 @@ StyleRuleSupports::StyleRuleSupports(
     : StyleRuleCondition(kSupports, condition_text, adopt_rules),
       condition_is_supported_(condition_is_supported) {}
 
-void StyleRuleMedia::TraceAfterDispatch(blink::Visitor* visitor) const {
-  StyleRuleCondition::TraceAfterDispatch(visitor);
-}
-
 StyleRuleSupports::StyleRuleSupports(const StyleRuleSupports& supports_rule)
     : StyleRuleCondition(supports_rule),
       condition_is_supported_(supports_rule.condition_is_supported_) {}
+
+void StyleRuleSupports::SetConditionText(
+    const ExecutionContext* execution_context,
+    String value) {
+  CSSTokenizer tokenizer(value);
+  CSSParserTokenStream stream(tokenizer);
+  auto* context = MakeGarbageCollected<CSSParserContext>(*execution_context);
+  CSSParserImpl parser(context);
+
+  CSSSupportsParser::Result result =
+      CSSSupportsParser::ConsumeSupportsCondition(stream, parser);
+  condition_text_ = value;
+  condition_is_supported_ = result == CSSSupportsParser::Result::kSupported;
+}
 
 StyleRuleContainer::StyleRuleContainer(
     ContainerQuery& container_query,
