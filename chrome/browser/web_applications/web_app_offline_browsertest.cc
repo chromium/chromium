@@ -168,8 +168,15 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineWithServiceWorker) {
                   .ExtractBool());
 }
 
+// Flaky on mac: https://crbug.com/1296441.
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM_FAMILY)
+#define MAYBE_WebAppOfflinePageIconShowing DISABLED_WebAppOfflinePageIconShowing
+#else
+#define MAYBE_WebAppOfflinePageIconShowing WebAppOfflinePageIconShowing
+#endif
 // Default offline page icon test.
-IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflinePageIconShowing) {
+IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest,
+                       MAYBE_WebAppOfflinePageIconShowing) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
