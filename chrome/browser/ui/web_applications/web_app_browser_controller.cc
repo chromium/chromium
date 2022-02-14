@@ -86,7 +86,7 @@ WebAppBrowserController::WebAppBrowserController(
     : AppBrowserController(browser, std::move(app_id), has_tab_strip),
       provider_(provider),
       system_app_(system_app) {
-  registrar_observation_.Observe(&provider_.registrar());
+  install_manager_observation_.Observe(&provider.install_manager());
   PerformDigitalAssetLinkVerification(browser);
 }
 
@@ -181,8 +181,8 @@ void WebAppBrowserController::OnWebAppUninstalled(
     chrome::CloseWindow(browser());
 }
 
-void WebAppBrowserController::OnAppRegistrarDestroyed() {
-  registrar_observation_.Reset();
+void WebAppBrowserController::OnWebAppInstallManagerDestroyed() {
+  install_manager_observation_.Reset();
 }
 
 void WebAppBrowserController::SetReadIconCallbackForTesting(
@@ -355,6 +355,10 @@ void WebAppBrowserController::OnTabRemoved(content::WebContents* contents) {
 
 const WebAppRegistrar& WebAppBrowserController::registrar() const {
   return provider_.registrar();
+}
+
+const WebAppInstallManager& WebAppBrowserController::install_manager() const {
+  return provider_.install_manager();
 }
 
 void WebAppBrowserController::LoadAppIcon(bool allow_placeholder_icon) const {
