@@ -86,9 +86,6 @@ class ASH_PUBLIC_EXPORT AppListNotifier {
 
   // Called to indicate the user has updated the search query to |query|.
   virtual void NotifySearchQueryChanged(const std::u16string& query) = 0;
-
-  // Called to indicate the UI state is now |view|.
-  virtual void NotifyUIStateChanged(AppListViewState view) = 0;
 };
 
 }  // namespace ash

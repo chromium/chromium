@@ -1,9 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_APP_LIST_APP_LIST_NOTIFIER_IMPL_H_
-#define CHROME_BROWSER_UI_APP_LIST_APP_LIST_NOTIFIER_IMPL_H_
+#ifndef CHROME_BROWSER_UI_APP_LIST_APP_LIST_NOTIFIER_IMPL_OLD_H_
+#define CHROME_BROWSER_UI_APP_LIST_APP_LIST_NOTIFIER_IMPL_OLD_H_
 
 #include <memory>
 #include <string>
@@ -25,7 +25,7 @@ namespace ash {
 class AppListController;
 }
 
-// This AppListNotifier subclass is only used for the productivity launcher.
+// This AppListNotifier subclass is only used for the classic launcher.
 //
 // Chrome implementation of the AppListNotifier. This is mainly responsible for
 // translating notifications about launcher UI events - eg. launcher opened,
@@ -90,8 +90,10 @@ class AppListController;
 //                     |
 //  kShown -> kSeen    | Notify of an impression, as impression timer finished.
 //                     |
-//  kShown -> kShown   | Restart impression timer. Should only be triggered for
-//                     | the list view, when the displayed results change.
+//  kShown -> kShown   | Restart impression timer. Only possible for the app
+//                     | tiles or results list, when the search query is
+//                     | updated. This should not be triggered unless the
+//                     | displayed results change.
 //                     |
 //                     |
 //  kSeen -> kLaunch   | Notify of a launch and immediately set state to kNone,
@@ -110,7 +112,7 @@ class AppListController;
 //                     | launched a result in a different view.
 //                     |
 //                     |
-//  kSeen -> kNone     | Notify of an abandon, as user closed the launcher.
+//  kSeen -> kNone     | Notify of an abandon, as user closed launcher.
 //                     |
 //  kSeen -> kShown    | Notify of an abandon and restart timer, as user saw
 //                     | results but changed view or updated the search query.
@@ -125,14 +127,14 @@ class AppListController;
 // Warning: NotifyResultsUpdated cannot be used as a signal of user actions or
 // UI state. Results can be updated at any time for any UI view, regardless
 // of the state of the launcher or what the user is doing.
-class AppListNotifierImpl : public ash::AppListNotifier,
-                            public ash::AppListControllerObserver {
+class AppListNotifierImplOld : public ash::AppListNotifier,
+                               public ash::AppListControllerObserver {
  public:
-  explicit AppListNotifierImpl(ash::AppListController* app_list_controller);
-  ~AppListNotifierImpl() override;
+  explicit AppListNotifierImplOld(ash::AppListController* app_list_controller);
+  ~AppListNotifierImplOld() override;
 
-  AppListNotifierImpl(const AppListNotifierImpl&) = delete;
-  AppListNotifierImpl& operator=(const AppListNotifierImpl&) = delete;
+  AppListNotifierImplOld(const AppListNotifierImplOld&) = delete;
+  AppListNotifierImplOld& operator=(const AppListNotifierImplOld&) = delete;
 
   // AppListNotifier:
   void AddObserver(Observer* observer) override;
@@ -144,6 +146,7 @@ class AppListNotifierImpl : public ash::AppListNotifier,
 
   // AppListControllerObserver:
   void OnAppListVisibilityWillChange(bool shown, int64_t display_id) override;
+  void OnViewStateChanged(ash::AppListViewState view) override;
 
  private:
   // Possible states of the state machine.
@@ -178,6 +181,9 @@ class AppListNotifierImpl : public ash::AppListNotifier,
 
   // Whether or not the app list is shown.
   bool shown_ = false;
+  // The current UI view. Can have a non-kClosed value when the app list is not
+  // |shown_| due to tablet mode.
+  ash::AppListViewState view_ = ash::AppListViewState::kClosed;
   // The currently shown results for each UI view.
   base::flat_map<Location, std::vector<Result>> results_;
   // The current search query, may be empty.
@@ -185,7 +191,7 @@ class AppListNotifierImpl : public ash::AppListNotifier,
   // The most recently launched result.
   absl::optional<Result> launched_result_;
 
-  base::WeakPtrFactory<AppListNotifierImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AppListNotifierImplOld> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_APP_LIST_APP_LIST_NOTIFIER_IMPL_H_
+#endif  // CHROME_BROWSER_UI_APP_LIST_APP_LIST_NOTIFIER_IMPL_OLD_H_

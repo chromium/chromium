@@ -1177,20 +1177,15 @@ void AppListControllerImpl::StartSearch(const std::u16string& raw_query) {
     std::u16string query;
     base::TrimWhitespace(raw_query, base::TRIM_ALL, &query);
     client_->StartSearch(query);
-    auto* notifier = GetNotifier();
-    if (notifier)
-      notifier->NotifySearchQueryChanged(raw_query);
   }
 }
 
-void AppListControllerImpl::OpenSearchResult(
-    const std::string& result_id,
-    AppListSearchResultType result_type,
-    int event_flags,
-    AppListLaunchedFrom launched_from,
-    AppListLaunchType launch_type,
-    int suggestion_index,
-    bool launch_as_default) {
+void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
+                                             int event_flags,
+                                             AppListLaunchedFrom launched_from,
+                                             AppListLaunchType launch_type,
+                                             int suggestion_index,
+                                             bool launch_as_default) {
   SearchModel* search_model = GetSearchModel();
   SearchResult* result = search_model->FindSearchResult(result_id);
   if (!result)
@@ -1262,22 +1257,8 @@ void AppListControllerImpl::OpenSearchResult(
     }
   }
 
-  auto* notifier = GetNotifier();
-  if (notifier) {
-    // Special-case chip results, because the display type of app results
-    // doesn't account for whether it's being displayed in the suggestion chips
-    // or app tiles.
-    AppListNotifier::Result notifier_result(result->id(),
-                                            result->metrics_type());
-    if (launched_from == AppListLaunchedFrom::kLaunchedFromSuggestionChip) {
-      notifier->NotifyLaunched(SearchResultDisplayType::kChip, notifier_result);
-    } else {
-      notifier->NotifyLaunched(result->display_type(), notifier_result);
-    }
-  }
-
   if (client_) {
-    client_->OpenSearchResult(profile_id_, result_id, result_type, event_flags,
+    client_->OpenSearchResult(profile_id_, result_id, event_flags,
                               launched_from, launch_type, suggestion_index,
                               launch_as_default);
   }
@@ -1358,7 +1339,7 @@ void AppListControllerImpl::ActivateItem(const std::string& id,
   }
 
   if (client_)
-    client_->ActivateItem(profile_id_, id, event_flags);
+    client_->ActivateItem(profile_id_, id, event_flags, launched_from);
 
   ResetHomeLauncherIfShown();
 }
@@ -1514,10 +1495,6 @@ AppListViewState AppListControllerImpl::GetAppListViewState() const {
 void AppListControllerImpl::OnViewStateChanged(AppListViewState state) {
   DVLOG(1) << __PRETTY_FUNCTION__ << " " << state;
   app_list_view_state_ = state;
-
-  auto* notifier = GetNotifier();
-  if (notifier)
-    notifier->NotifyUIStateChanged(state);
 
   for (auto& observer : observers_)
     observer.OnViewStateChanged(state);

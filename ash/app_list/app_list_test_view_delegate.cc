@@ -32,7 +32,6 @@ bool AppListTestViewDelegate::KeyboardTraversalEngaged() {
 
 void AppListTestViewDelegate::OpenSearchResult(
     const std::string& result_id,
-    ash::AppListSearchResultType result_type,
     int event_flags,
     ash::AppListLaunchedFrom launched_from,
     ash::AppListLaunchType launch_type,

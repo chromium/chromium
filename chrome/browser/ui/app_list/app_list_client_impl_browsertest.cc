@@ -268,7 +268,8 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, ActivateSelfDestroyApp) {
   ASSERT_TRUE(item);
 
   // Activates |item|.
-  client->ActivateItem(/*profile_id=*/0, item->id(), /*event_flags=*/0);
+  client->ActivateItem(/*profile_id=*/0, item->id(), /*event_flags=*/0,
+                       ash::AppListLaunchedFrom::kLaunchedFromGrid);
 }
 
 // Verifies that the first app activation by a new user is recorded.
@@ -301,7 +302,8 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
   client->ShowAppList();
   ChromeAppListItem* item = model_updater->FindItem(app_id);
   ASSERT_TRUE(item);
-  client->ActivateItem(/*profile_id=*/0, item->id(), /*event_flags=*/0);
+  client->ActivateItem(/*profile_id=*/0, item->id(), /*event_flags=*/0,
+                       ash::AppListLaunchedFrom::kLaunchedFromGrid);
   histogram_tester.ExpectBucketCount(
       "Apps.FirstLauncherActionByNewUsers.ClamshellMode",
       static_cast<int>(ash::AppListLaunchedFrom::kLaunchedFromGrid),
@@ -312,7 +314,8 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
       /*expected_bucket_count=*/1);
 
   // Verify that only the first app activation is recorded.
-  client->ActivateItem(/*profile_id=*/0, item->id(), /*event_flags=*/0);
+  client->ActivateItem(/*profile_id=*/0, item->id(), /*event_flags=*/0,
+                       ash::AppListLaunchedFrom::kLaunchedFromGrid);
   histogram_tester.ExpectBucketCount(
       "Apps.FirstLauncherActionByNewUsers.ClamshellMode",
       static_cast<int>(ash::AppListLaunchedFrom::kLaunchedFromGrid),
@@ -404,7 +407,6 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, OpenSearchResult) {
   // Open the app result.
   base::HistogramTester histogram_tester;
   client->OpenSearchResult(model_updater->model_id(), app_result_id,
-                           ash::AppListSearchResultType::kInstalledApp,
                            ui::EF_NONE,
                            ash::AppListLaunchedFrom::kLaunchedFromSearchBox,
                            ash::AppListLaunchType::kAppSearchResult, 0,
@@ -434,7 +436,6 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, OpenSearchResult) {
   browser()->window()->Minimize();
   client->ShowAppList();
   client->OpenSearchResult(model_updater->model_id(), app_result_id,
-                           ash::AppListSearchResultType::kInstalledApp,
                            ui::EF_NONE,
                            ash::AppListLaunchedFrom::kLaunchedFromSearchBox,
                            ash::AppListLaunchType::kAppSearchResult, 0,

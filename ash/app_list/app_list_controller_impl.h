@@ -152,7 +152,6 @@ class ASH_EXPORT AppListControllerImpl : public AppListController,
   void StartAssistant() override;
   void StartSearch(const std::u16string& raw_query) override;
   void OpenSearchResult(const std::string& result_id,
-                        AppListSearchResultType result_type,
                         int event_flags,
                         AppListLaunchedFrom launched_from,
                         AppListLaunchType launch_type,

@@ -60,8 +60,14 @@ std::string GetViewString(Location location, const std::u16string& raw_query) {
       return query.empty() ? "ListZeroState" : "ListSearch";
     case Location::kTile:
       return query.empty() ? "AppsZeroState" : "AppsSearch";
+    case Location::kAnswerCard:
+      return "AnswerCard";
     case Location::kChip:
-      return "Chips";
+      return "Chip";
+    case Location::kRecentApps:
+      return "RecentApps";
+    case Location::kContinue:
+      return "Continue";
     default:
       LogError(Error::kUntrackedLocation);
       return "Untracked";

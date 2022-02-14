@@ -65,7 +65,6 @@ class ASH_PUBLIC_EXPORT AppListClient {
   // by user pressing ENTER key.
   virtual void OpenSearchResult(int profile_id,
                                 const std::string& result_id,
-                                AppListSearchResultType result_type,
                                 int event_flags,
                                 AppListLaunchedFrom launched_from,
                                 AppListLaunchType launch_type,
@@ -100,7 +99,8 @@ class ASH_PUBLIC_EXPORT AppListClient {
   // Activates (opens) the item with |id|.
   virtual void ActivateItem(int profile_id,
                             const std::string& id,
-                            int event_flags) = 0;
+                            int event_flags,
+                            ash::AppListLaunchedFrom launched_from) = 0;
   // Returns the context menu model for the item with |id|, or an empty array if
   // there is currently no menu for the item (e.g. during install). Requests
   // adding sort options that can sort the app list in the menu model if

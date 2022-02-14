@@ -259,7 +259,7 @@ void SearchResultSuggestionChipView::OnButtonPressed(const ui::Event& event) {
   RecordSearchResultOpenSource(result(), view_delegate_->GetAppListViewState(),
                                view_delegate_->IsInTabletMode());
   view_delegate_->OpenSearchResult(
-      result()->id(), result()->result_type(), event.flags(),
+      result()->id(), event.flags(),
       AppListLaunchedFrom::kLaunchedFromSuggestionChip,
       AppListLaunchType::kAppSearchResult, index_in_container(),
       false /* launch_as_default */);

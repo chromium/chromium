@@ -274,7 +274,7 @@ void ContinueTaskView::MenuClosed(ui::SimpleMenuModel* menu) {
 void ContinueTaskView::OpenResult(int event_flags) {
   DCHECK(result());
   view_delegate_->OpenSearchResult(
-      result()->id(), result()->result_type(), event_flags,
+      result()->id(), event_flags,
       AppListLaunchedFrom::kLaunchedFromContinueTask,
       AppListLaunchType::kSearchResult, index_in_container(),
       false /* launch_as_default */);

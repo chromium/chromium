@@ -38,7 +38,6 @@ void TestAppListClient::StartSearch(const std::u16string& trimmed_query) {
 
 void TestAppListClient::OpenSearchResult(int profile_id,
                                          const std::string& result_id,
-                                         AppListSearchResultType result_type,
                                          int event_flags,
                                          AppListLaunchedFrom launched_from,
                                          AppListLaunchType launch_type,
@@ -61,7 +60,8 @@ void TestAppListClient::GetSearchResultContextMenuModel(
 
 void TestAppListClient::ActivateItem(int profile_id,
                                      const std::string& id,
-                                     int event_flags) {
+                                     int event_flags,
+                                     ash::AppListLaunchedFrom launched_from) {
   activate_item_count_++;
   activate_item_last_id_ = id;
 }

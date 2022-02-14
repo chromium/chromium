@@ -78,7 +78,6 @@ IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
 
   GetClient()->OpenSearchResult(
       GetClient()->GetModelUpdaterForTest()->model_id(), result->id(),
-      ash::AppListSearchResultType::kHelpApp,
       /*event_flags=*/0, ash::AppListLaunchedFrom::kLaunchedFromSuggestionChip,
       ash::AppListLaunchType::kAppSearchResult, /*suggestion_index=*/0,
       /*launch_as_default=*/false);
@@ -160,7 +159,6 @@ IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
 
   GetClient()->OpenSearchResult(
       GetClient()->GetModelUpdaterForTest()->model_id(), result->id(),
-      ash::AppListSearchResultType::kHelpApp,
       /*event_flags=*/0, ash::AppListLaunchedFrom::kLaunchedFromSuggestionChip,
       ash::AppListLaunchType::kAppSearchResult, /*suggestion_index=*/0,
       /*launch_as_default=*/false);
@@ -236,7 +234,6 @@ IN_PROC_BROWSER_TEST_F(HelpAppSearchBrowserTest,
 
   GetClient()->OpenSearchResult(
       GetClient()->GetModelUpdaterForTest()->model_id(), result->id(),
-      ash::AppListSearchResultType::kHelpApp,
       /*event_flags=*/0, ash::AppListLaunchedFrom::kLaunchedFromSearchBox,
       ash::AppListLaunchType::kAppSearchResult, /*suggestion_index=*/0,
       /*launch_as_default=*/false);

@@ -1,8 +1,8 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/app_list/app_list_notifier_impl.h"
+#include "chrome/browser/ui/app_list/app_list_notifier_impl_old.h"
 
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "base/check.h"
@@ -18,7 +18,7 @@ constexpr base::TimeDelta kImpressionTimer = base::Seconds(1);
 
 }  // namespace
 
-AppListNotifierImpl::AppListNotifierImpl(
+AppListNotifierImplOld::AppListNotifierImplOld(
     ash::AppListController* app_list_controller)
     : app_list_controller_(app_list_controller) {
   DCHECK(app_list_controller_);
@@ -27,54 +27,47 @@ AppListNotifierImpl::AppListNotifierImpl(
                                 display::kInvalidDisplayId);
 }
 
-AppListNotifierImpl::~AppListNotifierImpl() {
+AppListNotifierImplOld::~AppListNotifierImplOld() {
   app_list_controller_->RemoveObserver(this);
 }
 
-void AppListNotifierImpl::AddObserver(Observer* observer) {
+void AppListNotifierImplOld::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void AppListNotifierImpl::RemoveObserver(Observer* observer) {
+void AppListNotifierImplOld::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void AppListNotifierImpl::NotifyLaunched(Location location,
-                                         const Result& result) {
+void AppListNotifierImplOld::NotifyLaunched(Location location,
+                                            const Result& result) {
   launched_result_ = result;
 
-  // The continue and recent apps appear at the same time. If a launch occurs in
-  // one, mark the other as 'ignored' rather than abandoned.
-  if (location == Location::kContinue) {
-    DoStateTransition(Location::kRecentApps, State::kIgnored);
-  } else if (location == Location::kRecentApps) {
-    DoStateTransition(Location::kContinue, State::kIgnored);
+  // Only two UI views appear at once: the app tiles and results list. If a
+  // launch occurs in one, mark the other as 'ignored' rather than abandoned.
+  if (location == Location::kList) {
+    DoStateTransition(Location::kTile, State::kIgnored);
+  } else if (location == Location::kTile) {
+    DoStateTransition(Location::kList, State::kIgnored);
   }
 
   DoStateTransition(location, State::kLaunched);
 }
 
-void AppListNotifierImpl::NotifyResultsUpdated(
+void AppListNotifierImplOld::NotifyResultsUpdated(
     Location location,
     const std::vector<Result>& results) {
   results_[location] = results;
 }
 
-void AppListNotifierImpl::NotifySearchQueryChanged(
+void AppListNotifierImplOld::NotifySearchQueryChanged(
     const std::u16string& query) {
   // In some cases the query can change after the launcher is closed, in
   // particular this happens when abandoning the launcher with a non-empty
   // query. Only do a state transition if the launcher is open.
-  if (shown_) {
-    if (query.empty()) {
-      DoStateTransition(Location::kList, State::kNone);
-      DoStateTransition(Location::kContinue, State::kShown);
-      DoStateTransition(Location::kRecentApps, State::kShown);
-    } else {
-      DoStateTransition(Location::kList, State::kShown);
-      DoStateTransition(Location::kContinue, State::kNone);
-      DoStateTransition(Location::kRecentApps, State::kNone);
-    }
+  if (view_ != ash::AppListViewState::kClosed) {
+    DoStateTransition(Location::kList, State::kShown);
+    DoStateTransition(Location::kTile, State::kShown);
   }
 
   // Update the stored |query_| after performing the state transitions, so that
@@ -87,24 +80,64 @@ void AppListNotifierImpl::NotifySearchQueryChanged(
   }
 }
 
-void AppListNotifierImpl::OnAppListVisibilityWillChange(bool shown,
-                                                        int64_t display_id) {
+void AppListNotifierImplOld::OnViewStateChanged(ash::AppListViewState view) {
+  // We should ignore certain view state changes entirely:
+  //
+  //  1. noop transitions from and to the same view. These are caused by some
+  //     UI actions (like dragging the launcher around) that end up back in
+  //     the same location.
+  //
+  //  2. kHalf to kFullscreenSearch. This doesn't change the displayed tile and
+  //     list results.
+  //
+  //  3. kPeeking to kFullscreenAllApps. This doesn't change the displayed
+  //     chip results.
+  //
+  //  We should also ignore this if the call comes while the launcher is not
+  //  shown at all. This happens, for example, in the transition between
+  //  clamshell and tablet modes.
+  if (!shown_ || view_ == view ||
+      (view_ == ash::AppListViewState::kHalf &&
+       view == ash::AppListViewState::kFullscreenSearch) ||
+      (view_ == ash::AppListViewState::kPeeking &&
+       view == ash::AppListViewState::kFullscreenAllApps)) {
+    return;
+  }
+  view_ = view;
+
+  if (view == ash::AppListViewState::kHalf ||
+      view == ash::AppListViewState::kFullscreenSearch) {
+    DoStateTransition(Location::kList, State::kShown);
+    DoStateTransition(Location::kTile, State::kShown);
+  } else {
+    DoStateTransition(Location::kList, State::kNone);
+    DoStateTransition(Location::kTile, State::kNone);
+  }
+
+  if (view == ash::AppListViewState::kPeeking ||
+      view == ash::AppListViewState::kFullscreenAllApps) {
+    DoStateTransition(Location::kChip, State::kShown);
+  } else {
+    DoStateTransition(Location::kChip, State::kNone);
+  }
+}
+
+void AppListNotifierImplOld::OnAppListVisibilityWillChange(bool shown,
+                                                           int64_t display_id) {
   if (shown_ == shown)
     return;
   shown_ = shown;
 
   if (shown) {
-    DoStateTransition(Location::kContinue, State::kShown);
-    DoStateTransition(Location::kRecentApps, State::kShown);
-    // kList is not shown until a search query is entered.
+    DoStateTransition(Location::kChip, State::kShown);
   } else {
+    DoStateTransition(Location::kChip, State::kNone);
     DoStateTransition(Location::kList, State::kNone);
-    DoStateTransition(Location::kContinue, State::kNone);
-    DoStateTransition(Location::kRecentApps, State::kNone);
+    DoStateTransition(Location::kTile, State::kNone);
   }
 }
 
-void AppListNotifierImpl::RestartTimer(Location location) {
+void AppListNotifierImplOld::RestartTimer(Location location) {
   if (timers_.find(location) == timers_.end()) {
     timers_[location] = std::make_unique<base::OneShotTimer>();
   }
@@ -116,23 +149,23 @@ void AppListNotifierImpl::RestartTimer(Location location) {
   // base::Unretained is safe here because the timer is a member of |this|, and
   // OneShotTimer cancels its timer on destruction.
   timer->Start(FROM_HERE, kImpressionTimer,
-               base::BindOnce(&AppListNotifierImpl::OnTimerFinished,
+               base::BindOnce(&AppListNotifierImplOld::OnTimerFinished,
                               base::Unretained(this), location));
 }
 
-void AppListNotifierImpl::StopTimer(Location location) {
+void AppListNotifierImplOld::StopTimer(Location location) {
   const auto it = timers_.find(location);
   if (it != timers_.end() && it->second->IsRunning()) {
     it->second->Stop();
   }
 }
 
-void AppListNotifierImpl::OnTimerFinished(Location location) {
+void AppListNotifierImplOld::OnTimerFinished(Location location) {
   DoStateTransition(location, State::kSeen);
 }
 
-void AppListNotifierImpl::DoStateTransition(Location location,
-                                            State new_state) {
+void AppListNotifierImplOld::DoStateTransition(Location location,
+                                               State new_state) {
   const State old_state = states_[location];
 
   // Update most recent state. We special-case kLaunched and kIgnored, which are

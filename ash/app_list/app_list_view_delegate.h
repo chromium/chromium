@@ -59,7 +59,6 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // |launch_as_default|: True if the result is launched as the default result
   // by user pressing ENTER key.
   virtual void OpenSearchResult(const std::string& result_id,
-                                AppListSearchResultType result_type,
                                 int event_flags,
                                 AppListLaunchedFrom launched_from,
                                 AppListLaunchType launch_type,

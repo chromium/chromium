@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/app_list_notifier_impl.h"
+#include "chrome/browser/ui/app_list/app_list_notifier_impl_old.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/app_list/app_sync_ui_state_watcher.h"
@@ -86,18 +87,40 @@ bool CanBeHandledAsSystemUrl(const GURL& sanitized_url,
       sanitized_url);
 }
 
+// IDs passed to ActivateItem are always of the form "<app id>". But app search
+// results can have IDs either like "<app id>" or "chrome-extension://<app
+// id>/". Since we cannot tell from the ID alone which is correct, try both and
+// return a result if either succeeds.
+ChromeSearchResult* FindAppResultByAppId(
+    app_list::SearchController* search_controller,
+    const std::string& app_id) {
+  auto* result = search_controller->FindSearchResult(app_id);
+  if (!result) {
+    // Convert <app id> to chrome-extension://<app id>.
+    result = search_controller->FindSearchResult(
+        base::StrCat({extensions::kExtensionScheme, "://", app_id, "/"}));
+  }
+  return result;
+}
+
 }  // namespace
 
 AppListClientImpl::AppListClientImpl()
-    : app_list_controller_(ash::AppListController::Get()),
-      app_list_notifier_(
-          std::make_unique<AppListNotifierImpl>(app_list_controller_)) {
+    : app_list_controller_(ash::AppListController::Get()) {
   app_list_controller_->SetClient(this);
   user_manager::UserManager::Get()->AddSessionStateObserver(this);
   session_manager::SessionManager::Get()->AddObserver(this);
 
   DCHECK(!g_app_list_client_instance);
   g_app_list_client_instance = this;
+
+  if (ash::features::IsProductivityLauncherEnabled()) {
+    app_list_notifier_ =
+        std::make_unique<AppListNotifierImpl>(app_list_controller_);
+  } else {
+    app_list_notifier_ =
+        std::make_unique<AppListNotifierImplOld>(app_list_controller_);
+  }
 }
 
 AppListClientImpl::~AppListClientImpl() {
@@ -163,6 +186,8 @@ void AppListClientImpl::StartSearch(const std::u16string& trimmed_query) {
     }
     OnSearchStarted();
   }
+
+  app_list_notifier_->NotifySearchQueryChanged(trimmed_query);
 }
 
 void AppListClientImpl::StartZeroStateSearch(base::OnceClosure on_done,
@@ -175,15 +200,13 @@ void AppListClientImpl::StartZeroStateSearch(base::OnceClosure on_done,
   }
 }
 
-void AppListClientImpl::OpenSearchResult(
-    int profile_id,
-    const std::string& result_id,
-    ash::AppListSearchResultType result_type,
-    int event_flags,
-    ash::AppListLaunchedFrom launched_from,
-    ash::AppListLaunchType launch_type,
-    int suggestion_index,
-    bool launch_as_default) {
+void AppListClientImpl::OpenSearchResult(int profile_id,
+                                         const std::string& result_id,
+                                         int event_flags,
+                                         ash::AppListLaunchedFrom launched_from,
+                                         ash::AppListLaunchType launch_type,
+                                         int suggestion_index,
+                                         bool launch_as_default) {
   if (!search_controller_)
     return;
 
@@ -197,7 +220,7 @@ void AppListClientImpl::OpenSearchResult(
 
   app_list::LaunchData launch_data;
   launch_data.id = result_id;
-  launch_data.result_type = result_type;
+  launch_data.result_type = result->result_type();
   launch_data.ranking_item_type =
       app_list::RankingItemTypeFromSearchResult(*result);
   launch_data.launch_type = launch_type;
@@ -215,6 +238,10 @@ void AppListClientImpl::OpenSearchResult(
 
   // Send training signal to search controller.
   search_controller_->Train(std::move(launch_data));
+
+  app_list_notifier_->NotifyLaunched(
+      result->display_type(),
+      ash::AppListNotifier::Result(result_id, result->metrics_type()));
 
   RecordSearchResultOpenTypeHistogram(launched_from, result->metrics_type(),
                                       IsTabletMode());
@@ -282,7 +309,8 @@ void AppListClientImpl::ViewShown(int64_t display_id) {
 
 void AppListClientImpl::ActivateItem(int profile_id,
                                      const std::string& id,
-                                     int event_flags) {
+                                     int event_flags,
+                                     ash::AppListLaunchedFrom launched_from) {
   auto* requested_model_updater = profile_model_mappings_[profile_id];
 
   // Pointless to notify the AppListModelUpdater of the activated item if the
@@ -294,6 +322,17 @@ void AppListClientImpl::ActivateItem(int profile_id,
     return;
   }
 
+  if (launched_from == ash::AppListLaunchedFrom::kLaunchedFromRecentApps) {
+    auto* result = FindAppResultByAppId(search_controller_.get(), id);
+    if (result) {
+      app_list_notifier_->NotifyLaunched(
+          result->display_type(),
+          ash::AppListNotifier::Result(result->id(), result->metrics_type()));
+    }
+  }
+
+  // TODO(crbug.com/1258415): All fields here except the ID are only relevant
+  // to the old launcher, and can be cleaned up.
   // Send a training signal to the search controller.
   const auto* item = current_model_updater_->FindItem(id);
   if (item) {

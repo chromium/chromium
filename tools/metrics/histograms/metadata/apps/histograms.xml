@@ -130,11 +130,14 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="SearchView">
+  <variant name="AnswerCard" summary="answer card"/>
   <variant name="AppsSearch" summary="app tiles search"/>
   <variant name="AppsZeroState" summary="app tiles zero-state"/>
   <variant name="Chip" summary="suggestion chips"/>
+  <variant name="Continue" summary="continue section"/>
   <variant name="ListSearch" summary="results list search"/>
   <variant name="ListZeroState" summary="results list zero-state"/>
+  <variant name="RecentApps" summary="recent apps row"/>
 </variants>
 
 <variants name="TabletOrClamshellMode">
