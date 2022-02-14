@@ -1359,6 +1359,22 @@ TEST_F(UserDataUtilTextValueTest, GetAddressFieldBitArray) {
           Metrics::AutofillAssistantProfileFields::PHONE_HOME_COUNTRY_CODE |
           Metrics::AutofillAssistantProfileFields::PHONE_HOME_WHOLE_NUMBER,
       GetFieldBitArrayForAddress(&full_profile));
+
+  autofill::AutofillProfile contact_profile;
+  autofill::test::SetProfileInfo(&contact_profile, "Adam", "", "West", "", "",
+                                 "", "", "", "", "", "", "");
+  autofill::AutofillProfile number_profile;
+  autofill::test::SetProfileInfo(&number_profile, "", "", "", "", "", "", "",
+                                 "", "", "", "", "+1 23 456 789 01");
+  EXPECT_EQ(
+      Metrics::AutofillAssistantProfileFields::NAME_FIRST |
+          Metrics::AutofillAssistantProfileFields::NAME_LAST |
+          Metrics::AutofillAssistantProfileFields::NAME_FULL |
+          Metrics::AutofillAssistantProfileFields::PHONE_HOME_NUMBER |
+          Metrics::AutofillAssistantProfileFields::PHONE_HOME_COUNTRY_CODE |
+          Metrics::AutofillAssistantProfileFields::PHONE_HOME_WHOLE_NUMBER,
+      GetFieldBitArrayForAddressAndPhoneNumber(&contact_profile,
+                                               &number_profile));
 }
 
 TEST_F(UserDataUtilTextValueTest, GetCreditCardFieldBitArray) {

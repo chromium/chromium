@@ -111,6 +111,7 @@ class CollectUserDataAction : public Action,
       UserData* user_data,
       UserData::FieldChange* field_change = nullptr);
   void UpdateSelectedContact(UserData* user_data);
+  void UpdateSelectedPhoneNumber(UserData* user_data);
   void UpdateSelectedShippingAddress(UserData* user_data);
   void UpdateSelectedCreditCard(UserData* user_data);
   void MaybeLogMetrics();

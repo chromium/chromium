@@ -45,6 +45,11 @@ Contact::Contact(std::unique_ptr<autofill::AutofillProfile> _profile)
     : profile(std::move(_profile)) {}
 Contact::~Contact() = default;
 
+PhoneNumber::PhoneNumber() = default;
+PhoneNumber::PhoneNumber(std::unique_ptr<autofill::AutofillProfile> _profile)
+    : profile(std::move(_profile)) {}
+PhoneNumber::~PhoneNumber() = default;
+
 Address::Address() = default;
 Address::Address(std::unique_ptr<autofill::AutofillProfile> _profile)
     : profile(std::move(_profile)) {}
@@ -73,6 +78,10 @@ const autofill::AutofillProfile* UserData::selected_address(
   }
 
   return it->second.get();
+}
+
+const autofill::AutofillProfile* UserData::selected_phone_number() const {
+  return selected_phone_number_.get();
 }
 
 const autofill::CreditCard* UserData::selected_card() const {
@@ -108,4 +117,10 @@ std::string UserData::GetAllAddressKeyNames() const {
   std::sort(entries.begin(), entries.end());
   return base::JoinString(entries, ",");
 }
+
+void UserData::SetSelectedPhoneNumber(
+    std::unique_ptr<autofill::AutofillProfile> profile) {
+  selected_phone_number_ = std::move(profile);
+}
+
 }  // namespace autofill_assistant

@@ -139,6 +139,14 @@ Metrics::UserDataSelectionState GetNewSelectionState(
 // missing).
 int GetFieldBitArrayForAddress(const autofill::AutofillProfile* profile);
 
+// Returns the bit array describing which fields are present in |profile|, using
+// Metrics::AutofillAssistantProfileFields as columns.
+// Phone number fields are checked on |phone_number_profile| instead of
+// |profile|.
+int GetFieldBitArrayForAddressAndPhoneNumber(
+    const autofill::AutofillProfile* profile,
+    const autofill::AutofillProfile* phone_number_profile);
+
 // Returns the bit array describing which fields are present in |card|, using
 // Metrics::AutofillAssistantCreditCardFields as columns.
 // If |card| is nullptr, returns zero (i.e. all fields are considered

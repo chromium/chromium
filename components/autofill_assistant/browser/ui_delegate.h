@@ -87,6 +87,12 @@ class UiDelegate {
       std::unique_ptr<autofill::AutofillProfile> profile,
       UserDataEventType event_type) = 0;
 
+  // Sets the phone number, in response to the current collect user data
+  // options.
+  virtual void SetPhoneNumber(
+      std::unique_ptr<autofill::AutofillProfile> profile,
+      UserDataEventType event_type) = 0;
+
   // Sets credit card and billing profile, in response to the current collect
   // user data options.
   virtual void SetCreditCard(

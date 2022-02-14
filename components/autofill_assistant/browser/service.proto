@@ -2258,6 +2258,14 @@ message ContactDetailsProto {
   optional string contact_details_section_title = 9;
   // Defines how to evaluate validity of this contact.
   repeated RequiredDataPiece required_data_piece = 10;
+
+  // If true, the phone number will be asked in a separate section from the
+  // rest of the contact info. If true, |request_payer_phone| must be false.
+  // Only supported for backend-provided data.
+  optional bool separate_phone_number_section = 11;
+  // The title of the separate phone number section.
+  // Required if |separate_phone_number_section| is true, ignored if false.
+  optional string phone_number_section_title = 12;
 }
 
 message LoginDetailsProto {
@@ -2398,6 +2406,14 @@ message ProfileProto {
   reserved 1;
 }
 
+message PhoneNumberProto {
+  // The identifier of this phone number.
+  optional string identifier = 1;
+  // The canonical value of the phone number, including country and area code
+  // without any separators.
+  optional AutofillEntryProto value = 2;
+}
+
 message PaymentInstrumentProto {
   // The values for the card, where the key is one of autofill::ServerFieldType.
   map<int32, AutofillEntryProto> card_values = 2;
@@ -2418,7 +2434,7 @@ message PaymentInstrumentProto {
 
 // Asks to provide the data used by UseAddressAction and
 // UseCreditCardAction.
-// Next: 38
+// Next: 40
 message CollectUserDataProto {
   enum TermsAndConditionsState {
     // No choice has been made yet.
@@ -2532,6 +2548,13 @@ message CollectUserDataProto {
     // the client will use its own heuristics to select a default payment
     // instrument.
     optional string selected_payment_instrument_identifier = 7;
+
+    // Available phone numbers to select.
+    repeated PhoneNumberProto available_phone_numbers = 10;
+    // The identifier of the phone number to select. If not specified,
+    // the client will use its own heuristics to select a default payment
+    // instrument.
+    optional string selected_phone_number_identifier = 11;
 
     // The locale to be used when creating this data. This can have influence
     // on the potential processing by Autofill.

@@ -124,6 +124,17 @@ struct Contact {
   std::unique_ptr<autofill::AutofillProfile> profile;
 };
 
+// Struct for holding a phone number. This is a wrapper around AutofillProfile
+// to easily extend it for the purposes of Autofill Assistant.
+struct PhoneNumber {
+  PhoneNumber();
+  PhoneNumber(std::unique_ptr<autofill::AutofillProfile> profile);
+  ~PhoneNumber();
+
+  absl::optional<std::string> identifier;
+  std::unique_ptr<autofill::AutofillProfile> profile;
+};
+
 // Struct for holding an address. This is a wrapper around AutofillProfile to
 // easily extend it for the purposes of Autofill Assistant.
 struct Address {
@@ -182,6 +193,7 @@ class UserData {
     NONE,
     ALL,
     CONTACT_PROFILE,
+    PHONE_NUMBER,
     CARD,
     SHIPPING_ADDRESS,
     BILLING_ADDRESS,
@@ -195,6 +207,7 @@ class UserData {
   TermsAndConditionsState terms_and_conditions_ = NOT_SELECTED;
 
   std::vector<std::unique_ptr<Contact>> available_contacts_;
+  std::vector<std::unique_ptr<PhoneNumber>> available_phone_numbers_;
   std::vector<std::unique_ptr<Address>> available_addresses_;
   std::vector<std::unique_ptr<PaymentInstrument>>
       available_payment_instruments_;
@@ -212,6 +225,9 @@ class UserData {
   // or if selected 'Fill manually'.
   const autofill::AutofillProfile* selected_address(
       const std::string& name) const;
+
+  // The selected phone number.
+  const autofill::AutofillProfile* selected_phone_number() const;
 
   // The selected card.
   const autofill::CreditCard* selected_card() const;
@@ -236,6 +252,9 @@ class UserData {
 
   std::string GetAllAddressKeyNames() const;
 
+  void SetSelectedPhoneNumber(
+      std::unique_ptr<autofill::AutofillProfile> profile);
+
  private:
   friend class UserModel;
   // The address key requested by the autofill action.
@@ -246,6 +265,9 @@ class UserData {
   // The selected credit card.
   // Written by |UserModel| to ensure that it stays in sync.
   std::unique_ptr<autofill::CreditCard> selected_card_;
+
+  // The selected phone number.
+  std::unique_ptr<autofill::AutofillProfile> selected_phone_number_;
 
   // The selected login choice.
   // Written by |UserModel| to ensure that it stays in sync.
@@ -266,6 +288,7 @@ struct CollectUserDataOptions {
   bool request_payer_name = false;
   bool request_payer_email = false;
   bool request_payer_phone = false;
+  bool request_phone_number_separately = false;
   bool request_shipping = false;
   bool request_payment_method = false;
   bool request_login_choice = false;
@@ -302,6 +325,7 @@ struct CollectUserDataOptions {
   std::vector<LoginChoice> login_choices;
   std::string default_email;
   std::string contact_details_section_title;
+  std::string phone_number_section_title;
   std::string login_section_title;
   std::string shipping_address_section_title;
   UserActionProto confirm_action;

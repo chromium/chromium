@@ -684,14 +684,12 @@ Metrics::UserDataSelectionState GetNewSelectionState(
 }
 
 int GetFieldBitArrayForAddress(const autofill::AutofillProfile* profile) {
-  // If the profile is nullptr, we consider all fields as missing.
-  if (!profile) {
-    return 0;
-  }
+  return GetFieldBitArrayForAddressAndPhoneNumber(profile, profile);
+}
 
-  auto mapping =
-      field_formatter::CreateAutofillMappings(*profile, kDefaultLocale);
-
+int GetFieldBitArrayForAddressAndPhoneNumber(
+    const autofill::AutofillProfile* profile,
+    const autofill::AutofillProfile* phone_number_profile) {
   // Maps from the autofill field type to the respective position in the metrics
   // bitarray.
   static const base::NoDestructor<std::vector<std::pair<
@@ -705,12 +703,6 @@ int GetFieldBitArrayForAddress(const autofill::AutofillProfile* profile) {
             Metrics::AutofillAssistantProfileFields::NAME_FULL},
            {autofill::EMAIL_ADDRESS,
             Metrics::AutofillAssistantProfileFields::EMAIL_ADDRESS},
-           {autofill::PHONE_HOME_NUMBER,
-            Metrics::AutofillAssistantProfileFields::PHONE_HOME_NUMBER},
-           {autofill::PHONE_HOME_COUNTRY_CODE,
-            Metrics::AutofillAssistantProfileFields::PHONE_HOME_COUNTRY_CODE},
-           {autofill::PHONE_HOME_WHOLE_NUMBER,
-            Metrics::AutofillAssistantProfileFields::PHONE_HOME_WHOLE_NUMBER},
            {autofill::ADDRESS_HOME_COUNTRY,
             Metrics::AutofillAssistantProfileFields::ADDRESS_HOME_COUNTRY},
            {autofill::ADDRESS_HOME_STATE,
@@ -722,10 +714,37 @@ int GetFieldBitArrayForAddress(const autofill::AutofillProfile* profile) {
            {autofill::ADDRESS_HOME_STREET_ADDRESS,
             Metrics::AutofillAssistantProfileFields::ADDRESS_HOME_LINE1}});
 
+  // Maps from the phone-related autofill field types to the respective position
+  // in the metrics bitarray.
+  static const base::NoDestructor<std::vector<std::pair<
+      autofill::ServerFieldType, Metrics::AutofillAssistantProfileFields>>>
+      phone_number_fields_to_log(
+          {{autofill::PHONE_HOME_NUMBER,
+            Metrics::AutofillAssistantProfileFields::PHONE_HOME_NUMBER},
+           {autofill::PHONE_HOME_COUNTRY_CODE,
+            Metrics::AutofillAssistantProfileFields::PHONE_HOME_COUNTRY_CODE},
+           {autofill::PHONE_HOME_WHOLE_NUMBER,
+            Metrics::AutofillAssistantProfileFields::PHONE_HOME_WHOLE_NUMBER}});
+
   int bit_array = 0;
-  for (auto fields_pair : *fields_to_log) {
-    if (EvaluateNotEmpty(mapping, fields_pair.first)) {
-      bit_array |= fields_pair.second;
+  // Check the non-phone fields.
+  if (profile) {
+    auto mapping =
+        field_formatter::CreateAutofillMappings(*profile, kDefaultLocale);
+    for (auto fields_pair : *fields_to_log) {
+      if (EvaluateNotEmpty(mapping, fields_pair.first)) {
+        bit_array |= fields_pair.second;
+      }
+    }
+  }
+  // Check the phone fields.
+  if (phone_number_profile) {
+    auto mapping = field_formatter::CreateAutofillMappings(
+        *phone_number_profile, kDefaultLocale);
+    for (auto fields_pair : *phone_number_fields_to_log) {
+      if (EvaluateNotEmpty(mapping, fields_pair.first)) {
+        bit_array |= fields_pair.second;
+      }
     }
   }
   return bit_array;

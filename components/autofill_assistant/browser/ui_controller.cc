@@ -839,6 +839,20 @@ void UiController::SetContactInfo(
              UserData::FieldChange::CONTACT_PROFILE, std::move(profile));
 }
 
+void UiController::SetPhoneNumber(
+    std::unique_ptr<autofill::AutofillProfile> profile,
+    UserDataEventType event_type) {
+  if (collect_user_data_options_ == nullptr) {
+    return;
+  }
+  // We don't notify the UserDataEvent in this case since we currently don't log
+  // metrics for the phone number.
+
+  GetUserData()->SetSelectedPhoneNumber(std::move(profile));
+  execution_delegate_->NotifyUserDataChange(
+      UserData::FieldChange::PHONE_NUMBER);
+}
+
 void UiController::SetCreditCard(
     std::unique_ptr<autofill::CreditCard> card,
     std::unique_ptr<autofill::AutofillProfile> billing_profile,

@@ -129,6 +129,8 @@ class UiController : public ScriptExecutorUiDelegate,
                           UserDataEventType event_type) override;
   void SetContactInfo(std::unique_ptr<autofill::AutofillProfile> profile,
                       UserDataEventType event_type) override;
+  void SetPhoneNumber(std::unique_ptr<autofill::AutofillProfile> profile,
+                      UserDataEventType event_type) override;
   void SetCreditCard(std::unique_ptr<autofill::CreditCard> card,
                      std::unique_ptr<autofill::AutofillProfile> billing_profile,
                      UserDataEventType event_type) override;
