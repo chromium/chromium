@@ -37,6 +37,9 @@ StandaloneBrowserExtensionApps::~StandaloneBrowserExtensionApps() = default;
 void StandaloneBrowserExtensionApps::RegisterChromeAppsCrosapiHost(
     mojo::PendingReceiver<crosapi::mojom::AppPublisher> receiver) {
   RegisterPublisher(AppType::kStandaloneBrowserChromeApp);
+  apps::AppPublisher::Publish(std::vector<AppPtr>{},
+                              AppType::kStandaloneBrowserChromeApp,
+                              /*should_notify_initialized=*/true);
 
   // At the moment the app service publisher will only accept one client
   // publishing apps to ash chrome. Any extra clients will be ignored.
@@ -109,9 +112,6 @@ void StandaloneBrowserExtensionApps::Connect(
       std::move(subscriber_remote));
 
   mojo::RemoteSetElementId id = subscribers_.Add(std::move(subscriber));
-
-  if (app_ptr_cache_.empty())
-    return;
 
   std::vector<apps::mojom::AppPtr> apps;
   for (auto& it : app_ptr_cache_) {
@@ -272,7 +272,9 @@ void StandaloneBrowserExtensionApps::OnApps(std::vector<AppPtr> deltas) {
     PublisherBase::Publish(ConvertAppToMojomApp(delta), subscribers_);
   }
 
-  apps::AppPublisher::Publish(std::move(deltas));
+  apps::AppPublisher::Publish(std::move(deltas),
+                              AppType::kStandaloneBrowserChromeApp,
+                              /*should_notify_initialized=*/false);
 }
 
 void StandaloneBrowserExtensionApps::RegisterAppController(

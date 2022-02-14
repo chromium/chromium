@@ -93,6 +93,8 @@ apps::mojom::AppPtr RemoteApps::Convert(
 
 void RemoteApps::Initialize() {
   RegisterPublisher(AppType::kRemote);
+  AppPublisher::Publish(std::vector<AppPtr>{}, AppType::kRemote,
+                        /*should_notify_initialized=*/true);
 }
 
 void RemoteApps::LoadIcon(const std::string& app_id,

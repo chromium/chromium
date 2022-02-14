@@ -88,10 +88,18 @@ class AppPublisher {
   void Publish(AppPtr app);
 
   // Publish multiple `apps` to AppServiceProxy. Should be called whenever the
-  // app represented by `app` undergoes some state change to inform
+  // apps represented by `apps` undergoes some state change to inform
   // AppServiceProxy of the change. Ensure that RegisterPublisher() has been
   // called before the first call to this method.
-  void Publish(std::vector<AppPtr> apps);
+  //
+  // `should_notify_initialized` is true, when the publisher for `app_type` has
+  // finished initiating apps - typically this is the very first time Publish()
+  // is called with the initial set of apps present at the time the publisher is
+  // first created. Otherwise `should_notify_initialized` is false. When
+  // `should_notify_initialized` is true, `app_type` should not be `kUnknown`.
+  void Publish(std::vector<AppPtr> apps,
+               AppType app_type,
+               bool should_notify_initialized);
 #endif
 
   AppServiceProxy* proxy() { return proxy_; }

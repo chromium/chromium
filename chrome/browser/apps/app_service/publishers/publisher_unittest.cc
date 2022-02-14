@@ -5,6 +5,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -23,6 +24,7 @@
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/features.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/permission.h"
@@ -179,7 +181,10 @@ namespace apps {
 
 class PublisherTest : public extensions::ExtensionServiceTestBase {
  public:
-  PublisherTest() = default;
+  PublisherTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        kAppServiceOnAppTypeInitializedWithoutMojom);
+  }
 
   PublisherTest(const PublisherTest&) = delete;
   PublisherTest& operator=(const PublisherTest&) = delete;
@@ -323,6 +328,20 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
     }
   }
 
+  void VerifyAppTypeIsInitialized(AppType app_type) {
+    // TODO(crbug.com/1253250): Remove FlushMojoCallsForTesting when
+    // OnAppTypeInitialized doesn't check the mojom App struct.
+    AppServiceProxyFactory::GetForProfile(profile())
+        ->FlushMojoCallsForTesting();
+    AppRegistryCache& cache =
+        AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache();
+    ASSERT_TRUE(cache.IsAppTypeInitialized(app_type));
+    ASSERT_TRUE(base::Contains(cache.InitializedAppTypes(), app_type));
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
  private:
   raw_ptr<web_app::TestWebAppUrlLoader> url_loader_ = nullptr;
 };
@@ -359,6 +378,7 @@ TEST_F(PublisherTest, ArcAppsOnApps) {
       VerifyAppIsRemoved(app_id);
     }
   }
+  VerifyAppTypeIsInitialized(AppType::kArc);
 
   // Verify the initialization process again with a new ArcApps object.
   std::unique_ptr<ArcApps> arc_apps = std::make_unique<ArcApps>(
@@ -422,14 +442,18 @@ TEST_F(PublisherTest, BuiltinAppsOnApps) {
               internal_app.searchable, /*show_in_management=*/false,
               internal_app.show_in_launcher, /*allow_uninstall=*/false);
   }
+  VerifyAppTypeIsInitialized(AppType::kBuiltIn);
 }
 
 class StandaloneBrowserPublisherTest : public PublisherTest {
  public:
-  StandaloneBrowserPublisherTest() {
+  StandaloneBrowserPublisherTest() : PublisherTest() {
     crosapi::browser_util::SetLacrosEnabledForTest(true);
+    scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
-        {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary}, {});
+        {features::kWebAppsCrosapi, chromeos::features::kLacrosPrimary,
+         kAppServiceOnAppTypeInitializedWithoutMojom},
+        {});
   }
 
   StandaloneBrowserPublisherTest(const StandaloneBrowserPublisherTest&) =
@@ -503,7 +527,6 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
@@ -516,6 +539,7 @@ TEST_F(StandaloneBrowserPublisherTest, StandaloneBrowserAppsOnApps) {
             /*show_in_launcher=*/true, /*show_in_shelf=*/true,
             /*show_in_search=*/true, /*show_in_management=*/true,
             /*handles_intents=*/true, /*allow_uninstall=*/false);
+  VerifyAppTypeIsInitialized(AppType::kStandaloneBrowser);
 }
 
 TEST_F(StandaloneBrowserPublisherTest, StandaloneBrowserExtensionAppsOnApps) {
@@ -565,6 +589,7 @@ TEST_F(PublisherTest, ExtensionAppsOnApps) {
             /*show_in_search=*/true, /*show_in_management=*/true,
             /*handles_intents=*/true, /*allow_uninstall=*/true,
             /*has_badge=*/false, /*paused=*/false);
+  VerifyAppTypeIsInitialized(AppType::kChromeApp);
 
   // Uninstall the Chrome app.
   service_->UninstallExtension(
@@ -617,6 +642,7 @@ TEST_F(PublisherTest, WebAppsOnApps) {
             /*handles_intents=*/true, /*allow_uninstall=*/true,
             /*has_badge=*/false, /*paused=*/false, WindowMode::kWindow);
   VerifyIntentFilters(app_id);
+  VerifyAppTypeIsInitialized(AppType::kWeb);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

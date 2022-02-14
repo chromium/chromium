@@ -245,7 +245,8 @@ void PluginVmApps::Initialize() {
         pair.second;
     apps.push_back(CreateApp(registration, /*generate_new_icon_key=*/true));
   }
-  AppPublisher::Publish(std::move(apps));
+  AppPublisher::Publish(std::move(apps), AppType::kPluginVm,
+                        /*should_notify_initialized=*/true);
 }
 
 void PluginVmApps::LoadIcon(const std::string& app_id,

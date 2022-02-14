@@ -124,7 +124,8 @@ void BuiltInChromeOsApps::Initialize() {
       apps.push_back(std::move(app));
     }
   }
-  AppPublisher::Publish(std::move(apps));
+  AppPublisher::Publish(std::move(apps), AppType::kBuiltIn,
+                        /*should_notify_initialized=*/true);
 }
 
 void BuiltInChromeOsApps::LoadIcon(const std::string& app_id,

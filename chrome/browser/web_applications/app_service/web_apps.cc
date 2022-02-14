@@ -249,7 +249,8 @@ void WebApps::PublishWebApps(std::vector<apps::AppPtr> apps) {
     mojom_apps.push_back(apps::ConvertAppToMojomApp(app));
   }
 
-  apps::AppPublisher::Publish(std::move(apps));
+  apps::AppPublisher::Publish(std::move(apps), app_type_,
+                              /*should_notify_initialized=*/false);
 
   const bool should_notify_initialized = false;
   if (subscribers_.size() == 1) {
@@ -327,7 +328,8 @@ void WebApps::InitWebApps() {
   if (apps.empty()) {
     return;
   }
-  apps::AppPublisher::Publish(std::move(apps));
+  apps::AppPublisher::Publish(std::move(apps), app_type_,
+                              /*should_notify_initialized=*/true);
 }
 
 void WebApps::StartPublishingWebApps(

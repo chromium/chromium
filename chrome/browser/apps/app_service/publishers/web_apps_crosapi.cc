@@ -371,7 +371,8 @@ void WebAppsCrosapi::OnApps(std::vector<AppPtr> deltas) {
   for (const AppPtr& delta : deltas) {
     mojom_apps.push_back(ConvertAppToMojomApp(delta));
   }
-  apps::AppPublisher::Publish(std::move(deltas));
+  apps::AppPublisher::Publish(std::move(deltas), AppType::kWeb,
+                              should_notify_initialized_);
 
   for (auto& subscriber : subscribers_) {
     subscriber->OnApps(apps_util::CloneStructPtrVector(mojom_apps),

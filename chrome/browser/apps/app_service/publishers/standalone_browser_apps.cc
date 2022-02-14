@@ -137,7 +137,11 @@ void StandaloneBrowserApps::Initialize() {
     observation_.Observe(browser_manager);
 
   RegisterPublisher(AppType::kStandaloneBrowser);
-  AppPublisher::Publish(CreateStandaloneBrowserApp());
+
+  std::vector<AppPtr> apps;
+  apps.push_back(CreateStandaloneBrowserApp());
+  AppPublisher::Publish(std::move(apps), AppType::kStandaloneBrowser,
+                        /*should_notify_initialized=*/true);
 }
 
 void StandaloneBrowserApps::LoadIcon(const std::string& app_id,

@@ -54,13 +54,14 @@ void AppPublisher::Publish(AppPtr app) {
                  false /* should_notify_initialized */);
 }
 
-void AppPublisher::Publish(std::vector<AppPtr> apps) {
+void AppPublisher::Publish(std::vector<AppPtr> apps,
+                           AppType app_type,
+                           bool should_notify_initialized) {
   if (!proxy_) {
     NOTREACHED();
     return;
   }
-  proxy_->OnApps(std::move(apps), AppType::kUnknown,
-                 false /* should_notify_initialized */);
+  proxy_->OnApps(std::move(apps), app_type, should_notify_initialized);
 }
 #endif
 

@@ -402,7 +402,8 @@ void ExtensionAppsBase::OnExtensionsReady() {
                   &apps);
   CreateAppVector(registry->terminated_extensions(), Readiness::kTerminated,
                   &apps);
-  AppPublisher::Publish(std::move(apps));
+  AppPublisher::Publish(std::move(apps), app_type(),
+                        /*should_notify_initialized=*/true);
 
   // blocklisted_extensions and blocked_extensions, corresponding to
   // kDisabledByBlocklist and kDisabledByPolicy, are deliberately ignored.

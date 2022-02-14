@@ -616,7 +616,8 @@ void ArcApps::Initialize() {
       apps.push_back(CreateApp(prefs, app_id, *app_info));
     }
   }
-  AppPublisher::Publish(std::move(apps));
+  AppPublisher::Publish(std::move(apps), AppType::kArc,
+                        /*should_notify_initialized=*/true);
 }
 
 void ArcApps::Shutdown() {
