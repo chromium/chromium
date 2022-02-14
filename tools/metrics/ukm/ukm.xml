@@ -14767,6 +14767,19 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="Duration.V8.Execute">
+    <summary>
+      The total time in microseconds that is V8 spent in main-thread V8,
+      including JS-time, but without time spent in callbacks to blink.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="Duration.V8.GC">
     <summary>
       The total time in microseconds that V8 spent collecting garbage within the

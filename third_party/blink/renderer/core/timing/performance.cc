@@ -118,6 +118,7 @@ void RecordLongTaskUkm(ExecutionContext* execution_context,
                        base::TimeDelta duration) {
   v8::metrics::LongTaskStats stats =
       v8::metrics::LongTaskStats::Get(execution_context->GetIsolate());
+  // TODO(cbruni, 1275056): Filter out stats without v8_execute_us.
   ukm::builders::PerformanceAPI_LongTask(execution_context->UkmSourceID())
       .SetStartTime(start_time.InMilliseconds())
       .SetDuration(duration.InMicroseconds())
@@ -129,6 +130,7 @@ void RecordLongTaskUkm(ExecutionContext* execution_context,
       .SetDuration_V8_GC_Full_Incremental(
           stats.gc_full_incremental_wall_clock_duration_us)
       .SetDuration_V8_GC_Young(stats.gc_young_wall_clock_duration_us)
+      .SetDuration_V8_Execute(stats.v8_execute_us)
       .Record(execution_context->UkmRecorder());
 }
 
