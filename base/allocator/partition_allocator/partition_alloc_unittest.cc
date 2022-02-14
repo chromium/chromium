@@ -18,6 +18,7 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_space_randomization.h"
+#include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
@@ -167,6 +168,39 @@ void AllocateRandomly(base::PartitionRoot<base::internal::ThreadSafe>* root,
 void HandleOOM(size_t unused_size) {
   LOG(FATAL) << "Out of memory";
 }
+
+int g_dangling_raw_ptr_detected_count = 0;
+int g_dangling_raw_ptr_released_count = 0;
+
+class CountDanglingRawPtr {
+ public:
+  CountDanglingRawPtr() {
+    g_dangling_raw_ptr_detected_count = 0;
+    g_dangling_raw_ptr_released_count = 0;
+    old_detected_fn_ = partition_alloc::GetDanglingRawPtrDetectedFn();
+    old_released_fn_ = partition_alloc::GetDanglingRawPtrReleasedFn();
+
+    partition_alloc::SetDanglingRawPtrDetectedFn(
+        CountDanglingRawPtr::DanglingRawPtrDetected);
+    partition_alloc::SetDanglingRawPtrReleasedFn(
+        CountDanglingRawPtr::DanglingRawPtrReleased);
+  }
+  ~CountDanglingRawPtr() {
+    partition_alloc::SetDanglingRawPtrDetectedFn(old_detected_fn_);
+    partition_alloc::SetDanglingRawPtrReleasedFn(old_released_fn_);
+  }
+
+ private:
+  static void DanglingRawPtrDetected(uintptr_t) {
+    g_dangling_raw_ptr_detected_count++;
+  }
+  static void DanglingRawPtrReleased(uintptr_t) {
+    g_dangling_raw_ptr_released_count++;
+  }
+
+  partition_alloc::DanglingRawPtrDetectedFn* old_detected_fn_;
+  partition_alloc::DanglingRawPtrReleasedFn* old_released_fn_;
+};
 
 }  // namespace
 
@@ -3434,6 +3468,48 @@ TEST_F(PartitionAllocTest, RefCountRealloc) {
 }
 
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
+
+#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+
+// Allocate memory, and reference it from 3 raw_ptr. Among them 2 will be
+// dangling.
+TEST_F(PartitionAllocTest, Dangling) {
+  CountDanglingRawPtr dangling_checks;
+
+  // Allocate memory, and reference it from 3 raw_ptr.
+  uint64_t* ptr = reinterpret_cast<uint64_t*>(
+      allocator.root()->Alloc(64 - kExtraAllocSize, type_name));
+  auto* ref_count = PartitionRefCountPointer(reinterpret_cast<uintptr_t>(ptr) -
+                                             kPointerOffset);
+  ref_count->Acquire();
+  ref_count->Acquire();
+  ref_count->Acquire();
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // The first raw_ptr stops referencing it, before the memory has been
+  // released.
+  EXPECT_FALSE(ref_count->Release());
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 0);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // Free it once. This creates two dangling pointer.
+  allocator.root()->Free(ptr);
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // The dangling raw_ptr stop referencing it.
+  EXPECT_FALSE(ref_count->Release());
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 0);
+
+  // The dangling raw_ptr stop referencing it again.
+  EXPECT_TRUE(ref_count->Release());
+  EXPECT_EQ(g_dangling_raw_ptr_detected_count, 1);
+  EXPECT_EQ(g_dangling_raw_ptr_released_count, 1);
+}
+
+#endif  // BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 
 TEST_F(PartitionAllocTest, ReservationOffset) {
   // For normal buckets, offset should be kOffsetTagNormalBuckets.

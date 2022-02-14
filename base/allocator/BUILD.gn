@@ -21,6 +21,8 @@ buildflag_header("buildflags") {
       never_remove_from_brp_pool_blocklist && _use_backup_ref_ptr
   _enable_backup_ref_ptr_slow_checks =
       enable_backup_ref_ptr_slow_checks && _use_backup_ref_ptr
+  _enable_dangling_raw_ptr_checks =
+      enable_dangling_raw_ptr_checks && _use_backup_ref_ptr
 
   _record_alloc_info = false
 
@@ -32,6 +34,7 @@ buildflag_header("buildflags") {
     "USE_BACKUP_REF_PTR=$_use_backup_ref_ptr",
     "USE_ASAN_BACKUP_REF_PTR=$use_asan_backup_ref_ptr",
     "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$_enable_backup_ref_ptr_slow_checks",
+    "ENABLE_DANGLING_RAW_PTR_CHECKS=$_enable_dangling_raw_ptr_checks",
     "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$_put_ref_count_in_previous_slot",
     "NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST=$_never_remove_from_brp_pool_from_blocklist",
 

@@ -1117,7 +1117,7 @@ TEST(BackupRefPtrImpl, QuarantinedBytes) {
             0U);
 }
 
-#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#if defined(PA_REF_COUNT_CHECK_COOKIE)
 TEST(BackupRefPtrImpl, ReinterpretCast) {
   // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
   // new/delete once PartitionAlloc Everywhere is fully enabled.

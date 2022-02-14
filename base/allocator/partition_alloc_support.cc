@@ -4,13 +4,19 @@
 
 #include "base/allocator/partition_alloc_support.h"
 
+#include <array>
+#include <cstdint>
 #include <map>
 #include <string>
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_alloc_features.h"
+#include "base/allocator/partition_allocator/allocation_guard.h"
+#include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
+#include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
+#include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/allocator/partition_allocator/starscan/stats_collector.h"
 #include "base/allocator/partition_allocator/starscan/stats_reporter.h"
@@ -18,15 +24,20 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
+#include "base/immediate_crash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/strings/stringprintf.h"
+#include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/base_tracing.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace allocator {
@@ -393,6 +404,98 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials(
 
   return trials;
 }
+
+#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+
+namespace {
+
+internal::PartitionLock g_stack_trace_buffer_lock;
+
+struct StackTraceWithID {
+  debug::StackTrace stack_trace;
+  uintptr_t id = 0;
+};
+using DanglingRawPtrBuffer = std::array<absl::optional<StackTraceWithID>, 32>;
+DanglingRawPtrBuffer g_stack_trace_buffer GUARDED_BY(g_stack_trace_buffer_lock);
+
+void DanglingRawPtrDetected(uintptr_t id) {
+  // This is called from inside the allocator. No allocation is allowed.
+  internal::PartitionAutoLock guard(g_stack_trace_buffer_lock);
+
+#if DCHECK_IS_ON()
+  for (absl::optional<StackTraceWithID>& entry : g_stack_trace_buffer)
+    PA_DCHECK(!entry || entry->id != id);
+#endif  // DCHECK_IS_ON()
+
+  for (absl::optional<StackTraceWithID>& entry : g_stack_trace_buffer) {
+    if (!entry) {
+      entry = {debug::StackTrace(), id};
+      return;
+    }
+  }
+
+  // The StackTrace hasn't been recorded, because the buffer isn't large
+  // enough.
+}
+
+void DanglingRawPtrReleased(uintptr_t id) {
+  // This is called from raw_ptr<>'s release operation. Making allocations is
+  // allowed. In particular, symbolizing and printing the StackTraces may
+  // allocate memory.
+
+  internal::PartitionAutoLock guard(g_stack_trace_buffer_lock);
+
+  absl::optional<std::string> stack_trace_free;
+  std::string stack_trace_release = base::debug::StackTrace().ToString();
+  for (absl::optional<StackTraceWithID>& entry : g_stack_trace_buffer) {
+    if (entry && entry->id == id) {
+      stack_trace_free = entry->stack_trace.ToString();
+      entry = absl::nullopt;
+      break;
+    }
+  }
+
+  if (stack_trace_free) {
+    LOG(ERROR) << base::StringPrintf(
+        "Detected dangling raw_ptr with id=0x%016" PRIxPTR
+        ":\n\n"
+        "The memory was freed at:\n%s\n"
+        "The dangling raw_ptr was released at:\n%s",
+        id, stack_trace_free->c_str(), stack_trace_release.c_str());
+  } else {
+    LOG(ERROR) << base::StringPrintf(
+        "Detected dangling raw_ptr with id=0x%016" PRIxPTR
+        ":\n\n"
+        "It was not recorded where the memory was freed.\n\n"
+        "The dangling raw_ptr was released at:\n%s",
+        id, stack_trace_release.c_str());
+  }
+  IMMEDIATE_CRASH();
+}
+
+void ClearDanglingRawPtrBuffer() {
+  internal::PartitionAutoLock guard(g_stack_trace_buffer_lock);
+  g_stack_trace_buffer = DanglingRawPtrBuffer();
+}
+
+}  // namespace
+
+void InstallDanglingRawPtrChecks() {
+  // Clearing storage is useful for running multiple unit tests without
+  // restarting the test executable.
+  ClearDanglingRawPtrBuffer();
+
+  partition_alloc::SetDanglingRawPtrDetectedFn(DanglingRawPtrDetected);
+  partition_alloc::SetDanglingRawPtrReleasedFn(DanglingRawPtrReleased);
+}
+
+// TODO(arthursonzogni): There might exist long lived dangling raw_ptr. If there
+// is a dangling pointer, we should crash at some point. Consider providing an
+// API to periodically check the buffer.
+
+#else   // BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
+void InstallDanglingRawPtrChecks() {}
+#endif  // BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
 
 }  // namespace allocator
 }  // namespace base

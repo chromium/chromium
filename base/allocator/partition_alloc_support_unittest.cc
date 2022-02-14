@@ -10,13 +10,19 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_alloc_features.h"
+#include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
 namespace allocator {
+
+using testing::AllOf;
+using testing::HasSubstr;
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
@@ -156,6 +162,66 @@ TEST(PartitionAllocSupportTest, ProposeSyntheticFinchTrials_BRPAndPCScan) {
   }
 }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+// - Death tests misbehave on Android, http://crbug.com/643760.
+#if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS) && !BUILDFLAG(IS_ANDROID) && \
+    defined(GTEST_HAS_DEATH_TEST)
+
+namespace {
+
+// Install dangling raw_ptr handler and restore them when going out of scope.
+class ScopedInstallDanglingRawPtrChecks {
+ public:
+  ScopedInstallDanglingRawPtrChecks() {
+    old_detected_fn_ = partition_alloc::GetDanglingRawPtrDetectedFn();
+    old_dereferenced_fn_ = partition_alloc::GetDanglingRawPtrReleasedFn();
+    InstallDanglingRawPtrChecks();
+  }
+  ~ScopedInstallDanglingRawPtrChecks() {
+    partition_alloc::SetDanglingRawPtrDetectedFn(old_detected_fn_);
+    partition_alloc::SetDanglingRawPtrReleasedFn(old_dereferenced_fn_);
+  }
+
+ private:
+  partition_alloc::DanglingRawPtrDetectedFn* old_detected_fn_;
+  partition_alloc::DanglingRawPtrReleasedFn* old_dereferenced_fn_;
+};
+
+}  // namespace
+
+TEST(PartitionAllocDanglingPtrChecks, Basic) {
+  ScopedInstallDanglingRawPtrChecks scoped_install_dangling_checks;
+  partition_alloc::GetDanglingRawPtrDetectedFn()(42);
+  EXPECT_DEATH(
+      partition_alloc::GetDanglingRawPtrReleasedFn()(42),
+      AllOf(HasSubstr("Detected dangling raw_ptr with id=0x000000000000002a:"),
+            HasSubstr("The memory was freed at:"),
+            HasSubstr("The dangling raw_ptr was released at:")));
+}
+
+// The StackTrace buffer might run out of storage and not record where the
+// memory was freed. Anyway, it must still report the error.
+TEST(PartitionAllocDanglingPtrChecks, FreeNotRecorded) {
+  ScopedInstallDanglingRawPtrChecks scoped_install_dangling_checks;
+  EXPECT_DEATH(
+      partition_alloc::GetDanglingRawPtrReleasedFn()(42),
+      AllOf(HasSubstr("Detected dangling raw_ptr with id=0x000000000000002a:"),
+            HasSubstr("It was not recorded where the memory was freed."),
+            HasSubstr("The dangling raw_ptr was released at:")));
+}
+
+TEST(PartitionAllocDanglingPtrChecks, DoubleDetection) {
+  ScopedInstallDanglingRawPtrChecks scoped_install_dangling_checks;
+  partition_alloc::GetDanglingRawPtrDetectedFn()(42);
+#if DCHECK_IS_ON()
+  EXPECT_DEATH(partition_alloc::GetDanglingRawPtrDetectedFn()(42),
+               AllOf(HasSubstr("Check failed: !entry || entry->id != id")));
+#else
+  partition_alloc::GetDanglingRawPtrDetectedFn()(42);
+#endif
+}
+
+#endif
 
 }  // namespace allocator
 }  // namespace base

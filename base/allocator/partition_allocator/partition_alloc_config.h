@@ -189,4 +189,13 @@ constexpr bool kUseLazyCommit = false;
 #define PA_USE_PARTITION_ROOT_ENUMERATOR
 #endif
 
+// Due to potential conflict with the free list pointer in the "previous slot"
+// mode in the smallest bucket, we can't check both the cookie and the dangling
+// raw_ptr at the same time.
+#if !(BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS) &&  \
+      BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)) && \
+    (DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS))
+#define PA_REF_COUNT_CHECK_COOKIE
+#endif
+
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONFIG_H_
