@@ -16,6 +16,7 @@
 #include "gpu/config/gpu_info.h"  // nogncheck
 #include "gpu/config/vulkan_info.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
+#include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
@@ -184,14 +185,18 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
   constexpr char kMemoryObjectExtension[] = "GL_EXT_memory_object_fd";
   constexpr char kSemaphoreExtension[] = "GL_EXT_semaphore_fd";
 #endif
-  // If both Vulkan and GL are using native GPU (non swiftshader), check
-  // necessary extensions for GL and Vulkan interop.
-  const auto extensions = gfx::MakeExtensionSet(gpu_info.gl_extensions);
-  if (!gfx::HasExtension(extensions, kMemoryObjectExtension) ||
-      !gfx::HasExtension(extensions, kSemaphoreExtension)) {
-    DLOG(ERROR) << kMemoryObjectExtension << " or " << kSemaphoreExtension
-                << " is not supported.";
-    return false;
+  // If Chrome and ANGLE share the same VkQueue, they can share vulkan
+  // resource without those extensions. 
+  if (!base::FeatureList::IsEnabled(features::kVulkanFromANGLE)) {
+    // If both Vulkan and GL are using native GPU (non swiftshader), check
+    // necessary extensions for GL and Vulkan interop.
+    const auto extensions = gfx::MakeExtensionSet(gpu_info.gl_extensions);
+    if (!gfx::HasExtension(extensions, kMemoryObjectExtension) ||
+        !gfx::HasExtension(extensions, kSemaphoreExtension)) {
+        DLOG(ERROR) << kMemoryObjectExtension << " or " << kSemaphoreExtension
+                    << " is not supported.";
+        return false;
+    }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
