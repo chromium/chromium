@@ -6,13 +6,22 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
+#include "third_party/skia/include/core/SkPaint.h"
+#include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/effects/SkRuntimeEffect.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "ui/gfx/color_transform.h"
 
 namespace gfx {
 
 namespace {
+
+const base::Feature kImageToneMapping{"ImageToneMapping",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Additional YUV information to skia renderer to draw 9- and 10- bits color.
 struct YUVInput {
@@ -104,6 +113,59 @@ half4 main(half4 color) {
   sk_sp<SkData> data = SkData::MakeWithCopy(&input, sizeof(input));
 
   return effect->makeColorFilter(std::move(data));
+}
+
+sk_sp<SkImage> ColorConversionSkFilterCache::ConvertImage(
+    sk_sp<SkImage> image,
+    sk_sp<SkColorSpace> target_color_space,
+    float sdr_max_luminance_nits,
+    float dst_max_luminance_relative,
+    GrDirectContext* context) {
+  static bool image_tone_mapping_enabled =
+      base::FeatureList::IsEnabled(kImageToneMapping);
+
+  SkColorSpace* image_sk_color_space = image->colorSpace();
+  if (!image_sk_color_space || !image_tone_mapping_enabled)
+    return image->makeColorSpace(target_color_space, context);
+
+  gfx::ColorSpace image_color_space(*image_sk_color_space);
+  switch (image_color_space.GetTransferID()) {
+    case ColorSpace::TransferID::PQ:
+    case ColorSpace::TransferID::HLG:
+      break;
+    default:
+      return image->makeColorSpace(target_color_space, context);
+  }
+
+  SkImageInfo image_info =
+      SkImageInfo::Make(image->dimensions(),
+                        SkColorInfo(kRGBA_F16_SkColorType, kPremul_SkAlphaType,
+                                    image->refColorSpace()));
+  sk_sp<SkSurface> surface;
+  if (context) {
+    // TODO(https://crbug.com/1286088): Consider adding mipmap support here.
+    surface =
+        SkSurface::MakeRenderTarget(context, SkBudgeted::kNo, image_info,
+                                    /*sampleCount=*/0, kTopLeft_GrSurfaceOrigin,
+                                    /*surfaceProps=*/nullptr,
+                                    /*shouldCreateWithMips=*/false);
+  } else {
+    surface = SkSurface::MakeRaster(image_info, image_info.minRowBytes(),
+                                    /*surfaceProps=*/nullptr);
+  }
+
+  sk_sp<SkColorFilter> filter =
+      Get(image_color_space, gfx::ColorSpace(*target_color_space),
+          /*resource_offset=*/0, /*resource_multiplier=*/1,
+          sdr_max_luminance_nits, dst_max_luminance_relative);
+  SkPaint paint;
+  paint.setBlendMode(SkBlendMode::kSrc);
+  paint.setColorFilter(filter);
+  SkSamplingOptions sampling_options(SkFilterMode::kNearest);
+  surface->getCanvas()->drawImage(
+      image->reinterpretColorSpace(target_color_space),
+      /*x=*/0, /*y=*/0, sampling_options, &paint);
+  return surface->makeImageSnapshot();
 }
 
 }  // namespace gfx

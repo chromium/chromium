@@ -21,9 +21,15 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
+#include "ui/gfx/color_conversion_sk_filter_cache.h"
 
 namespace cc {
 namespace {
+
+// TODO(https://crbug.com/1286076): Plumb the true parameters in here.
+constexpr float kTempMaxLuminanceNits = 100.f;
+constexpr float kTempHDRMaxLuminanceRelative = 1.f;
+
 struct Context {
   const std::vector<sk_sp<SkImage>> sk_planes_;
 };
@@ -105,8 +111,11 @@ sk_sp<SkImage> MakeTextureImage(GrDirectContext* context,
 
   // Step 2: Apply a color-space conversion if necessary.
   if (uploaded_image && target_color_space) {
-    uploaded_image =
-        uploaded_image->makeColorSpace(target_color_space, context);
+    // TODO(https://crbug.com/1286088): Pass a shared cache as a parameter.
+    gfx::ColorConversionSkFilterCache cache;
+    uploaded_image = cache.ConvertImage(uploaded_image, target_color_space,
+                                        kTempMaxLuminanceNits,
+                                        kTempHDRMaxLuminanceRelative, context);
   }
 
   // Step 3: If we had a colorspace conversion, we couldn't mipmap in step 1, so
@@ -561,7 +570,11 @@ sk_sp<SkImage> ServiceImageTransferCacheEntry::MakeSkImage(
     if (!original)
       return nullptr;
     if (target_color_space) {
-      image = original->makeColorSpace(target_color_space, nullptr);
+      // TODO(https://crbug.com/1286088): Pass a shared cache as a parameter.
+      gfx::ColorConversionSkFilterCache cache;
+      image = cache.ConvertImage(
+          original, target_color_space, kTempMaxLuminanceNits,
+          kTempHDRMaxLuminanceRelative, /*context=*/nullptr);
       // If color space conversion is a noop, use original data.
       if (image == original)
         image = SkImage::MakeRasterCopy(pixmap);

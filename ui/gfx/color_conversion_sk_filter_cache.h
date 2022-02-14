@@ -6,13 +6,19 @@
 #define UI_GFX_COLOR_CONVERSION_SK_FILTER_CACHE_H_
 
 #include "base/containers/flat_map.h"
-#include "third_party/skia/include/effects/SkRuntimeEffect.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/color_space_export.h"
 #include "ui/gfx/gfx_export.h"
+
+class GrDirectContext;
+class SkImage;
+class SkColorFilter;
+class SkRuntimeEffect;
 
 namespace gfx {
 
-class GFX_EXPORT ColorConversionSkFilterCache {
+class COLOR_SPACE_EXPORT ColorConversionSkFilterCache {
  public:
   ColorConversionSkFilterCache();
   ColorConversionSkFilterCache(const ColorConversionSkFilterCache&) = delete;
@@ -20,12 +26,31 @@ class GFX_EXPORT ColorConversionSkFilterCache {
       delete;
   ~ColorConversionSkFilterCache();
 
+  // Retrieve an SkColorFilter to transform `src` to `dst`. The filter also
+  // applies the offset `resource_offset` and then scales by
+  // `resource_multiplier`.
+  // TODO(https://crbug.com/1286076): Apply tone mapping using
+  // `sdr_max_luminance_nits` and `dst_max_luminance_relative`.
   sk_sp<SkColorFilter> Get(const gfx::ColorSpace& src,
                            const gfx::ColorSpace& dst,
                            float resource_offset,
                            float resource_multiplier,
                            float sdr_max_luminance_nits,
                            float dst_max_luminance_relative);
+
+  // Convert `image` to be in `target_color_space`, performing tone mapping as
+  // needed (using `sdr_max_luminance_nits` and `dst_max_luminance_relative`).
+  // If `image` is GPU backed then `context` should be its GrDirectContext,
+  // otherwise, `context` should be nullptr. The resulting image will not have
+  // mipmaps.
+  // If the feature ImageToneMapping is disabled, then this function is
+  // equivalent to calling `image->makeColorSpace(target_color_space, context)`,
+  // and no tone mapping is performed.
+  sk_sp<SkImage> ConvertImage(sk_sp<SkImage> image,
+                              sk_sp<SkColorSpace> target_color_space,
+                              float sdr_max_luminance_nits,
+                              float dst_max_luminance_relative,
+                              GrDirectContext* context);
 
  public:
   struct Key {

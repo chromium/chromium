@@ -9,12 +9,12 @@
 #include <string>
 
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/color_space_export.h"
 #include "ui/gfx/geometry/point3_f.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
-class GFX_EXPORT ColorTransform {
+class COLOR_SPACE_EXPORT ColorTransform {
  public:
   struct Options {
     // Used in testing to verify that optimizations have no effect.

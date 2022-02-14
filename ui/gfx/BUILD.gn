@@ -56,10 +56,6 @@ component("gfx") {
     "break_list.h",
     "color_analysis.cc",
     "color_analysis.h",
-    "color_conversion_sk_filter_cache.cc",
-    "color_conversion_sk_filter_cache.h",
-    "color_transform.cc",
-    "color_transform.h",
     "decorated_text.cc",
     "decorated_text.h",
     "delegated_ink_metadata.cc",
@@ -411,9 +407,13 @@ component("gfx") {
 
 component("color_space") {
   sources = [
+    "color_conversion_sk_filter_cache.cc",
+    "color_conversion_sk_filter_cache.h",
     "color_space.cc",
     "color_space.h",
     "color_space_export.h",
+    "color_transform.cc",
+    "color_transform.h",
     "display_color_spaces.cc",
     "display_color_spaces.h",
     "hdr_static_metadata.cc",
@@ -433,6 +433,7 @@ component("color_space") {
     "//build:chromeos_buildflags",
     "//skia:skcms",
     "//ui/gfx:buffer_types",
+    "//ui/gfx/geometry:geometry_skia",
   ]
   public_deps = [
     "//base",
