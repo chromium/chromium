@@ -38,6 +38,7 @@ class CrostiniUpgrader : public KeyedService,
   // CrostiniUpgraderUIDelegate:
   void AddObserver(CrostiniUpgraderUIObserver* observer) override;
   void RemoveObserver(CrostiniUpgraderUIObserver* observer) override;
+  void PageOpened() override;
   void Backup(const ContainerId& container_id,
               bool show_file_chooser,
               content::WebContents* web_contents) override;
@@ -61,6 +62,8 @@ class CrostiniUpgrader : public KeyedService,
   bool CanUpgrade();
 
  private:
+  void CreateNewLogFile();
+
   // Write a vector of log messages to `current_log_file_` on the
   // `log_sequence_`, which allows blocking operations.
   void WriteLogMessages(std::vector<std::string> messages);

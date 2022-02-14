@@ -31,6 +31,7 @@ CrostiniUpgraderPageHandler::CrostiniUpgraderPageHandler(
       on_page_closed_{std::move(on_page_closed)},
       launch_callback_{std::move(launch_callback)} {
   upgrader_ui_delegate_->AddObserver(this);
+  upgrader_ui_delegate_->PageOpened();
 }
 
 CrostiniUpgraderPageHandler::~CrostiniUpgraderPageHandler() {

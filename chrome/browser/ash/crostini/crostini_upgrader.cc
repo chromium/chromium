@@ -98,6 +98,50 @@ void CrostiniUpgrader::RemoveObserver(CrostiniUpgraderUIObserver* observer) {
   upgrader_observers_.RemoveObserver(observer);
 }
 
+void CrostiniUpgrader::PageOpened() {
+  // Clear log path so any log messages get buffered.
+  current_log_file_ = absl::nullopt;
+  // Clear the buffer, which may have been previously moved from.
+  log_buffer_ = std::vector<std::string>();
+}
+
+void CrostiniUpgrader::CreateNewLogFile() {
+  base::FilePath path =
+      file_manager::util::GetMyFilesFolderForProfile(profile_).Append(
+          kLogFileBasename);
+  // Create the new log file on the blocking threadpool.
+  log_sequence_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::FilePath path) -> absl::optional<base::FilePath> {
+            path = base::GetUniquePath(path);
+            base::File file(path,
+                            base::File::FLAG_READ | base::File::FLAG_CREATE);
+            if (!file.IsValid()) {
+              PLOG(ERROR) << "Failed to create log file!";
+              return absl::nullopt;
+            }
+            return path;
+          },
+          path),
+      // Once the file is created, write out the buffered log messages.
+      base::BindOnce(
+          [](base::WeakPtr<CrostiniUpgrader> weak_this,
+             absl::optional<base::FilePath> path) {
+            if (!weak_this)
+              return;
+
+            weak_this->current_log_file_ = path;
+            if (path) {
+              weak_this->WriteLogMessages(std::move(weak_this->log_buffer_));
+              for (auto& observer : weak_this->upgrader_observers_) {
+                observer.OnLogFileCreated(path->BaseName());
+              }
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
 CrostiniUpgrader::StatusTracker::StatusTracker(
     base::WeakPtr<CrostiniUpgrader> upgrader,
     ExportImportType type,
@@ -262,45 +306,12 @@ void CrostiniUpgrader::DoPrechecks() {
 void CrostiniUpgrader::Upgrade(const ContainerId& container_id) {
   container_id_ = container_id;
 
-  // Clear log path so any log messages get buffered.
-  current_log_file_ = absl::nullopt;
-  // Clear the buffer, which may have been previously moved from.
-  log_buffer_ = std::vector<std::string>();
-
-  base::FilePath path =
-      file_manager::util::GetMyFilesFolderForProfile(profile_).Append(
-          kLogFileBasename);
-  // Create the new log file on the blocking threadpool.
-  log_sequence_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::FilePath path) -> absl::optional<base::FilePath> {
-            path = base::GetUniquePath(path);
-            base::File file(path,
-                            base::File::FLAG_READ | base::File::FLAG_CREATE);
-            if (!file.IsValid()) {
-              PLOG(ERROR) << "Failed to create log file!";
-              return absl::nullopt;
-            }
-            return path;
-          },
-          path),
-      // Once the file is created, write out the buffered log messages.
-      base::BindOnce(
-          [](base::WeakPtr<CrostiniUpgrader> weak_this,
-             absl::optional<base::FilePath> path) {
-            if (!weak_this)
-              return;
-
-            weak_this->current_log_file_ = path;
-            if (path) {
-              weak_this->WriteLogMessages(std::move(weak_this->log_buffer_));
-              for (auto& observer : weak_this->upgrader_observers_) {
-                observer.OnLogFileCreated(path->BaseName());
-              }
-            }
-          },
-          weak_ptr_factory_.GetWeakPtr()));
+  if (!current_log_file_.has_value()) {
+    CreateNewLogFile();
+  }
+  OnUpgradeContainerProgress(container_id,
+                             UpgradeContainerProgressStatus::UPGRADING,
+                             {"---- START OF UPGRADE ----"});
 
   // Shut down the existing VM then upgrade. StopVm doesn't give an error if
   // the VM doesn't exist. That's fine.
