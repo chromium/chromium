@@ -715,9 +715,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   // DEPRECATED, use `Value::FindStringKey(key)` or
   // `Value::FindStringPath(path)` instead.
   bool GetString(StringPiece path, std::u16string* out_value) const;
-  // DEPRECATED, use `Value::FindString(path)` or `Value::FindStPath(path)`, and
-  // `IsAsciiString()` instead.
-  bool GetStringASCII(StringPiece path, std::string* out_value) const;
   // DEPRECATED, use `Value::FindDictKey(key)` or `Value::FindDictPah(path)`,
   // and Value's Dictionary API instead.
   bool GetDictionary(StringPiece path, const DictionaryValue** out_value) const;

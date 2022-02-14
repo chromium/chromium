@@ -1201,21 +1201,6 @@ bool DictionaryValue::GetString(StringPiece path,
   return is_string;
 }
 
-bool DictionaryValue::GetStringASCII(StringPiece path,
-                                     std::string* out_value) const {
-  std::string out;
-  if (!GetString(path, &out))
-    return false;
-
-  if (!IsStringASCII(out)) {
-    NOTREACHED();
-    return false;
-  }
-
-  out_value->assign(out);
-  return true;
-}
-
 bool DictionaryValue::GetDictionary(StringPiece path,
                                     const DictionaryValue** out_value) const {
   const Value* value;
