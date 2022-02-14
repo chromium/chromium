@@ -68,6 +68,10 @@ const CGPoint kPointOutsideShadowDomLink = {50.0, 75.0};
 // A point in the web view's coordinate space outside of the document bounds.
 const CGPoint kPointOutsideDocument = {150.0, 150.0};
 
+// A base64 encoded gif image of a single white pixel.
+const char kFallbackImageSource[] = "data:image/gif;base64,R0lGODlhAQABAIAAAP7/"
+                                    "/wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==";
+
 // A base64 encoded svg image of a 600x600 blue square.
 const char kImageSource[] =
     "data:image/"
@@ -336,6 +340,33 @@ TEST_F(ContextMenuJsFindElementAtPointTest, FindImageElementAtPoint) {
                               kImageNaturalHeight);
   expected_value.SetKey(kContextMenuElementBoundingBox,
                         GetExpectedBoundingBoxForTestImage());
+
+  CheckElementResult(kPointOnImage, expected_value);
+}
+
+// Tests that the correct src is found for picture elements.
+TEST_F(ContextMenuJsFindElementAtPointTest,
+       FindImageElementAtPointInPictureElement) {
+  NSString* backing_image_html = GetHtmlForImage(
+      kFallbackImageSource, kImageAlt, /*title=*/nullptr, /*style=*/nullptr);
+  NSString* html_for_picture = [NSString
+      stringWithFormat:@"<picture style='%s'><source media='(min-width:0px)' "
+                       @"srcset='%s'>%@</picture>",
+                       kImageSizeStyle, kImageSource, backing_image_html];
+  NSString* html = GetHtmlForPage(/*head=*/nil, html_for_picture);
+  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+
+  base::Value expected_value(base::Value::Type::DICTIONARY);
+  expected_value.SetStringKey(kContextMenuElementRequestId, kRequestId);
+  expected_value.SetStringKey(kContextMenuElementSource, kImageSource);
+  expected_value.SetStringKey(kContextMenuElementAlt, kImageAlt);
+  expected_value.SetStringKey(kContextMenuElementReferrerPolicy, "default");
+  expected_value.SetKey(kContextMenuElementBoundingBox,
+                        GetExpectedBoundingBoxForTestImage());
+  expected_value.SetDoubleKey(kContextMenuElementNaturalWidth,
+                              kImageNaturalWidth);
+  expected_value.SetDoubleKey(kContextMenuElementNaturalHeight,
+                              kImageNaturalHeight);
 
   CheckElementResult(kPointOnImage, expected_value);
 }

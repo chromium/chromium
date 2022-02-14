@@ -53,7 +53,7 @@ var getResponseForLinkElement = function(element) {
  */
 var getResponseForImageElement = function(element) {
   var result = {
-    src: element.src,
+    src: element.currentSrc,
     referrerPolicy: getReferrerPolicy_(),
     boundingBox: getElementBoundingBox_(element)
   };
@@ -161,7 +161,7 @@ __gCrWeb['findElementAtPointInPageCoordinates'] = function(requestId, x, y) {
           return;
         }
 
-        if (tagName === 'img' && element.src) {
+        if (tagName === 'img' && element.currentSrc) {
           sendFindElementAtPointResponse(requestId,
                                          getResponseForImageElement(element));
           return;
