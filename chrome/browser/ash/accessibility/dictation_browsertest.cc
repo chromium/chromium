@@ -1167,7 +1167,9 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, UndoAndRedo) {
                                                "The constellation Lyra");
 }
 
-IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, SelectAllAndUnselect) {
+// Flaky, https://crbug.com/1296811
+IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest,
+                       DISABLED_SelectAllAndUnselect) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   SendFinalSpeechResultAndWaitForTextAreaValue(
