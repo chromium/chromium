@@ -202,6 +202,16 @@ class NativeInputMethodEngine
       int offset_pos = 0;
     };
 
+    enum TextClientState {
+      kPending = 0,
+      kActive = 1,
+    };
+
+    struct TextClient {
+      int context_id;
+      TextClientState state;
+    };
+
     void SendSurroundingTextToNativeMojoEngine(
         const SurroundingText& surrounding_text);
 
@@ -212,6 +222,9 @@ class NativeInputMethodEngine
     void ConnectToImeService(
         chromeos::ime::mojom::ConnectionTarget connection_target,
         const std::string& engine_id);
+
+    bool IsTextClientActive();
+    void ActivateTextClient(int context_id, bool on_focus_success);
 
     PrefService* prefs_ = nullptr;
 
@@ -230,6 +243,8 @@ class NativeInputMethodEngine
     ui::CharacterComposer character_composer_;
 
     SurroundingText last_surrounding_text_;
+
+    std::optional<TextClient> text_client_;
 
     // |use_ime_service| should always be |true| in prod code, and may only be
     // |false| in browser tests that need to avoid connecting to the Mojo IME

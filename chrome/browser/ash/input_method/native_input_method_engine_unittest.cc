@@ -470,21 +470,22 @@ TEST_F(NativeInputMethodEngineTest, FocusCallsRightMojoFunctions) {
 
   {
     testing::InSequence seq;
-    EXPECT_CALL(
-        mock_input_method,
-        OnFocusDeprecated(MojoEq(ime::mojom::InputFieldInfo(
-                              ime::mojom::InputFieldType::kText,
-                              ime::mojom::AutocorrectMode::kEnabled,
-                              ime::mojom::PersonalizationMode::kEnabled)),
-                          _))
+    EXPECT_CALL(mock_input_method,
+                OnFocus(MojoEq(ime::mojom::InputFieldInfo(
+                            ime::mojom::InputFieldType::kText,
+                            ime::mojom::AutocorrectMode::kEnabled,
+                            ime::mojom::PersonalizationMode::kEnabled)),
+                        _, _))
         .WillOnce(
             ::testing::Invoke([](ime::mojom::InputFieldInfoPtr info,
-                                 ime::mojom::InputMethodSettingsPtr settings) {
+                                 ime::mojom::InputMethodSettingsPtr settings,
+                                 base::OnceCallback<void(bool)> callback) {
               EXPECT_EQ(*settings,
                         *ime::mojom::InputMethodSettings::NewLatinSettings(
                             ime::mojom::LatinSettings::New(
                                 /*autocorrect=*/true,
                                 /*predictive_writing=*/false)));
+              std::move(callback).Run(true);
             }));
     EXPECT_CALL(mock_input_method, OnSurroundingTextChanged(_, _, _));
   }
@@ -545,21 +546,22 @@ TEST_F(NativeInputMethodEngineTest,
 
   {
     testing::InSequence seq;
-    EXPECT_CALL(
-        mock_input_method,
-        OnFocusDeprecated(MojoEq(ime::mojom::InputFieldInfo(
-                              ime::mojom::InputFieldType::kText,
-                              ime::mojom::AutocorrectMode::kEnabled,
-                              ime::mojom::PersonalizationMode::kEnabled)),
-                          _))
+    EXPECT_CALL(mock_input_method,
+                OnFocus(MojoEq(ime::mojom::InputFieldInfo(
+                            ime::mojom::InputFieldType::kText,
+                            ime::mojom::AutocorrectMode::kEnabled,
+                            ime::mojom::PersonalizationMode::kEnabled)),
+                        _, _))
         .WillOnce(
             ::testing::Invoke([](ime::mojom::InputFieldInfoPtr info,
-                                 ime::mojom::InputMethodSettingsPtr settings) {
+                                 ime::mojom::InputMethodSettingsPtr settings,
+                                 base::OnceCallback<void(bool)> callback) {
               EXPECT_EQ(*settings,
                         *ime::mojom::InputMethodSettings::NewLatinSettings(
                             ime::mojom::LatinSettings::New(
                                 /*autocorrect=*/true,
                                 /*predictive_writing=*/true)));
+              std::move(callback).Run(true);
             }));
     EXPECT_CALL(mock_input_method, OnSurroundingTextChanged(_, _, _));
   }
@@ -582,6 +584,14 @@ TEST_F(NativeInputMethodEngineTest, HandleAutocorrectChangesAutocorrectRange) {
                         /*predictive_writing_enabled=*/false);
 
   testing::NiceMock<MockInputMethod> mock_input_method;
+  EXPECT_CALL(mock_input_method, OnFocus(_, _, _))
+      .WillOnce(
+          ::testing::Invoke([](ime::mojom::InputFieldInfoPtr info,
+                               ime::mojom::InputMethodSettingsPtr settings,
+                               base::OnceCallback<void(bool)> callback) {
+            std::move(callback).Run(true);
+          }));
+
   InputMethodManager::Initialize(
       new TestInputMethodManager(&mock_input_method));
   NativeInputMethodEngine engine;
@@ -624,7 +634,13 @@ TEST_F(NativeInputMethodEngineTest,
 
   {
     testing::InSequence seq;
-    EXPECT_CALL(mock_input_method, OnFocusDeprecated(_, _));
+    EXPECT_CALL(mock_input_method, OnFocus(_, _, _))
+        .WillOnce(
+            ::testing::Invoke([](ime::mojom::InputFieldInfoPtr info,
+                                 ime::mojom::InputMethodSettingsPtr settings,
+                                 base::OnceCallback<void(bool)> callback) {
+              std::move(callback).Run(true);
+            }));
     EXPECT_CALL(mock_input_method, OnSurroundingTextChanged("", _, _));
 
     // Each character in "你好" is three UTF-8 code units.
@@ -667,7 +683,14 @@ TEST_F(NativeInputMethodEngineTest, ProcessesDeadKeysCorrectly) {
 
   {
     testing::InSequence seq;
-    EXPECT_CALL(mock_input_method, OnFocusDeprecated(_, _));
+    EXPECT_CALL(mock_input_method, OnFocus(_, _, _))
+        .WillOnce(
+            ::testing::Invoke([](ime::mojom::InputFieldInfoPtr info,
+                                 ime::mojom::InputMethodSettingsPtr settings,
+                                 base::OnceCallback<void(bool)> callback) {
+              std::move(callback).Run(true);
+            }));
+
     EXPECT_CALL(mock_input_method, OnSurroundingTextChanged(_, _, _));
 
     // TODO(https://crbug.com/1187982): Expect the actual arguments to the call
@@ -724,7 +747,14 @@ TEST_F(NativeInputMethodEngineTest, ProcessesNamedKeysCorrectly) {
 
   {
     testing::InSequence seq;
-    EXPECT_CALL(mock_input_method, OnFocusDeprecated(_, _));
+    EXPECT_CALL(mock_input_method, OnFocus(_, _, _))
+        .WillOnce(
+            ::testing::Invoke([](ime::mojom::InputFieldInfoPtr info,
+                                 ime::mojom::InputMethodSettingsPtr settings,
+                                 base::OnceCallback<void(bool)> callback) {
+              std::move(callback).Run(true);
+            }));
+
     EXPECT_CALL(mock_input_method, OnSurroundingTextChanged(_, _, _));
 
     // TODO(https://crbug.com/1187982): Expect the actual arguments to the call
@@ -782,7 +812,13 @@ TEST_F(NativeInputMethodEngineTest, DoesNotSendUnhandledNamedKeys) {
 
   {
     testing::InSequence seq;
-    EXPECT_CALL(mock_input_method, OnFocusDeprecated(_, _));
+    EXPECT_CALL(mock_input_method, OnFocus(_, _, _))
+        .WillOnce(
+            ::testing::Invoke([](ime::mojom::InputFieldInfoPtr info,
+                                 ime::mojom::InputMethodSettingsPtr settings,
+                                 base::OnceCallback<void(bool)> callback) {
+              std::move(callback).Run(true);
+            }));
     EXPECT_CALL(mock_input_method, OnSurroundingTextChanged(_, _, _));
     EXPECT_CALL(mock_input_method, ProcessKeyEvent(_, _)).Times(0);
   }
