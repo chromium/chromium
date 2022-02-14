@@ -511,20 +511,21 @@ void ProgressIndicator::OnPaintLayer(const ui::PaintContext& context) {
 
   if (inner_icon_visible_) {
     float inner_icon_size = GetInnerIconSize(layer());
-    gfx::Rect inner_icon_bounds(layer()->size());
+    gfx::RectF inner_icon_bounds(gfx::SizeF(layer()->size()));
     inner_icon_bounds.ClampToCenteredSize(
-        gfx::Size(inner_icon_size, inner_icon_size));
+        gfx::SizeF(inner_icon_size, inner_icon_size));
 
     if (icon_animation) {
       inner_icon_bounds.Offset(
-          /*horizontal=*/0,
+          /*horizontal=*/0.f,
           /*vertical=*/icon_animation->inner_icon_translate_y_scale_factor() *
               inner_icon_size);
     }
 
     // Inner icon.
-    canvas->Translate(
-        gfx::Vector2d(inner_icon_bounds.x(), inner_icon_bounds.y()));
+    gfx::Transform transform;
+    transform.Translate(inner_icon_bounds.x(), inner_icon_bounds.y());
+    canvas->Transform(transform);
     gfx::PaintVectorIcon(canvas, kHoldingSpaceDownloadIcon, inner_icon_size,
                          color);
   }

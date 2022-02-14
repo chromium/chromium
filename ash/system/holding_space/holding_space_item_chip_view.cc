@@ -55,6 +55,7 @@ constexpr gfx::Insets kLabelMargins(/*top=*/4, 0, /*bottom=*/4, /*right=*/2);
 constexpr gfx::Insets kPadding(0, /*left=*/8, 0, /*right=*/10);
 constexpr int kPreferredHeight = 40;
 constexpr int kPreferredWidth = 160;
+constexpr int kProgressIndicatorSize = 26;
 constexpr int kSecondaryActionIconSize = 16;
 
 // Animation.
@@ -68,6 +69,11 @@ template <typename... T>
 base::RepeatingCallback<void(T...)> IgnoreArgs(
     base::RepeatingCallback<void()> callback) {
   return base::BindRepeating([](T...) {}).Then(std::move(callback));
+}
+
+void ToCenteredSize(gfx::Rect* rect, const gfx::Size& size) {
+  rect->Outset(size.width(), size.height());
+  rect->ClampToCenteredSize(size);
 }
 
 // ObservableRoundedImageView --------------------------------------------------
@@ -175,8 +181,11 @@ class ProgressIndicatorView : public views::View {
  private:
   // views::View:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override {
-    if (progress_indicator_)
-      progress_indicator_->layer()->SetBounds(GetLocalBounds());
+    if (progress_indicator_) {
+      gfx::Rect bounds(GetLocalBounds());
+      ToCenteredSize(&bounds, {kProgressIndicatorSize, kProgressIndicatorSize});
+      progress_indicator_->layer()->SetBounds(bounds);
+    }
   }
 
   void OnThemeChanged() override {
