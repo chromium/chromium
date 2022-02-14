@@ -131,10 +131,13 @@ class UserSigninMediatorTest : public PlatformTest {
         });
     OCMExpect([performer_mock_ signInIdentity:identity_
                              withHostedDomain:nil
-                               toBrowserState:browser_state_.get()])
-        .andDo(^(NSInvocation*) {
+                               toBrowserState:browser_state_.get()
+                                   completion:[OCMArg any]])
+        .andDo(^(NSInvocation* invocation) {
           NSLog(@" signInIdentity ");
-          authentication_service()->SignIn(identity_, nil);
+          signin_ui::CompletionCallback callback;
+          [invocation getArgument:&callback atIndex:5];
+          authentication_service()->SignIn(identity_, callback);
         });
     if (postSignInAction == POST_SIGNIN_ACTION_COMMIT_SYNC) {
       OCMExpect([performer_mock_

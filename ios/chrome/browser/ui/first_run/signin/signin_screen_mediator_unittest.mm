@@ -284,9 +284,12 @@ TEST_F(SigninScreenMediatorTest, TestSignIn) {
       });
   OCMExpect([performer_mock signInIdentity:identity_
                           withHostedDomain:nil
-                            toBrowserState:browser_state_.get()])
-      .andDo(^(NSInvocation*) {
-        auth_service->SignIn(identity_, nil);
+                            toBrowserState:browser_state_.get()
+                                completion:[OCMArg any]])
+      .andDo(^(NSInvocation* invocation) {
+        signin_ui::CompletionCallback callback;
+        [invocation getArgument:&callback atIndex:5];
+        auth_service->SignIn(identity_, callback);
       });
   OCMExpect([performer_mock
                 shouldHandleMergeCaseForIdentity:identity_

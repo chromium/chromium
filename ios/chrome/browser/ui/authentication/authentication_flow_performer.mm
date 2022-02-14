@@ -173,9 +173,10 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
 
 - (void)signInIdentity:(ChromeIdentity*)identity
       withHostedDomain:(NSString*)hostedDomain
-        toBrowserState:(ChromeBrowserState*)browserState {
+        toBrowserState:(ChromeBrowserState*)browserState
+            completion:(signin_ui::CompletionCallback)completion {
   AuthenticationServiceFactory::GetForBrowserState(browserState)
-      ->SignIn(identity, nil);
+      ->SignIn(identity, completion);
 }
 
 - (void)signOutBrowserState:(ChromeBrowserState*)browserState {

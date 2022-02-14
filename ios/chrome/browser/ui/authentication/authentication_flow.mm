@@ -69,6 +69,10 @@ enum AuthenticationState {
 // |completion_| when finished.
 - (void)continueSignin;
 
+// Handles authentication related errors or continues sign-in if the
+// authentication was successful.
+- (void)handlePostAuthenticationFlow:(BOOL)success;
+
 // Runs |completion_| asynchronously with |success| argument.
 - (void)completeSignInWithSuccess:(BOOL)success;
 
@@ -362,9 +366,20 @@ enum AuthenticationState {
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
 
   if (accountManagerService->IsValidIdentity(identity)) {
+    __weak AuthenticationFlow* weakSelf = self;
     [_performer signInIdentity:identity
               withHostedDomain:_identityToSignInHostedDomain
-                toBrowserState:browserState];
+                toBrowserState:browserState
+                    completion:^(BOOL success) {
+                      [weakSelf handlePostAuthenticationFlow:success];
+                    }];
+  } else {
+    [self handlePostAuthenticationFlow:NO];
+  }
+}
+
+- (void)handlePostAuthenticationFlow:(BOOL)success {
+  if (success) {
     _didSignIn = YES;
     [self continueSignin];
   } else {

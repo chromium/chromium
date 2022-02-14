@@ -117,6 +117,18 @@ class AuthenticationFlowTest : public PlatformTest {
     [performer_ verify];
   }
 
+  void SetSigninSuccessExpectations(ChromeIdentity* identity,
+                                    NSString* hosted_domain) {
+    [[[performer_ expect] andDo:^(NSInvocation* invocation) {
+      signin_ui::CompletionCallback callback;
+      [invocation getArgument:&callback atIndex:5];
+      callback(YES);
+    }] signInIdentity:identity
+        withHostedDomain:hosted_domain
+          toBrowserState:browser_state_.get()
+              completion:[OCMArg isNotNil]];
+  }
+
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   AuthenticationFlow* authentication_flow_ = nullptr;
@@ -150,9 +162,7 @@ TEST_F(AuthenticationFlowTest, TestSignInSimple) {
       shouldHandleMergeCaseForIdentity:identity1_
                           browserState:browser_state_.get()];
 
-  [[performer_ expect] signInIdentity:identity1_
-                     withHostedDomain:nil
-                       toBrowserState:browser_state_.get()];
+  SetSigninSuccessExpectations(identity1_, nil);
 
   [[performer_ expect] commitSyncForBrowserState:browser_state_.get()];
 
@@ -179,9 +189,7 @@ TEST_F(AuthenticationFlowTest, TestAlreadySignedIn) {
       shouldHandleMergeCaseForIdentity:identity1_
                           browserState:browser_state_.get()];
 
-  [[performer_ expect] signInIdentity:identity1_
-                     withHostedDomain:nil
-                       toBrowserState:browser_state_.get()];
+  SetSigninSuccessExpectations(identity1_, nil);
 
   [[performer_ expect] commitSyncForBrowserState:browser_state_.get()];
 
@@ -227,9 +235,7 @@ TEST_F(AuthenticationFlowTest, TestSignOutUserChoice) {
     [authentication_flow_ didClearData];
   }] clearDataFromBrowser:browser_.get() commandHandler:nil];
 
-  [[performer_ expect] signInIdentity:identity1_
-                     withHostedDomain:nil
-                       toBrowserState:browser_state_.get()];
+  SetSigninSuccessExpectations(identity1_, nil);
 
   [[performer_ expect] commitSyncForBrowserState:browser_state_.get()];
 
@@ -319,9 +325,7 @@ TEST_F(AuthenticationFlowTest, TestShowManagedConfirmation) {
                              viewController:view_controller_
                                     browser:browser_.get()];
 
-  [[performer_ expect] signInIdentity:managed_identity_
-                     withHostedDomain:@"foo.com"
-                       toBrowserState:browser_state_.get()];
+  SetSigninSuccessExpectations(managed_identity_, @"foo.com");
 
   [[performer_ expect] commitSyncForBrowserState:browser_state_.get()];
 
@@ -345,9 +349,7 @@ TEST_F(AuthenticationFlowTest, TestShowNoManagedConfirmationForSigninOnly) {
     [authentication_flow_ didFetchManagedStatus:@"foo.com"];
   }] fetchManagedStatus:browser_state_.get() forIdentity:managed_identity_];
 
-  [[performer_ expect] signInIdentity:managed_identity_
-                     withHostedDomain:@"foo.com"
-                       toBrowserState:browser_state_.get()];
+  SetSigninSuccessExpectations(managed_identity_, @"foo.com");
 
   [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
 
@@ -371,9 +373,8 @@ TEST_F(AuthenticationFlowTest, TestSyncAfterSigninAndSync) {
       shouldHandleMergeCaseForIdentity:managed_identity_
                           browserState:browser_state_.get()];
 
-  [[performer_ expect] signInIdentity:managed_identity_
-                     withHostedDomain:@"foo.com"
-                       toBrowserState:browser_state_.get()];
+  SetSigninSuccessExpectations(managed_identity_, @"foo.com");
+
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didAcceptManagedConfirmation];
   }] showManagedConfirmationForHostedDomain:@"foo.com"
