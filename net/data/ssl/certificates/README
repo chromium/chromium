@@ -64,6 +64,8 @@ unit tests.
 - lets-encrypt-isrg-x1-root.pem: A chain that ends in the Lets encrypt ISRG X1
   root (https://crt.sh/?id=9314791). Has the same leaf as
   lets-encrypt-dst-x3-root.pem.
+- vrk_gov_root.pem: A root certificate that is marked as a legacy CA in the
+  known roots list.
 
 ===== Manually generated certificates
 - client.p12 : A PKCS #12 file containing a client certificate and a private

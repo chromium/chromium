@@ -8,10 +8,12 @@
 
 #include <algorithm>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -29,6 +31,7 @@
 #include "net/cert/cert_verifier.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/crl_set.h"
+#include "net/cert/internal/extended_key_usage.h"
 #include "net/cert/internal/ocsp.h"
 #include "net/cert/internal/parse_certificate.h"
 #include "net/cert/internal/revocation_checker.h"
@@ -288,6 +291,85 @@ void RecordTrustAnchorHistogram(const HashValueVector& spki_hashes,
     UMA_HISTOGRAM_BOOLEAN("Net.Certificate.TrustAnchor.VerifyOutOfDate",
                           is_issued_by_known_root);
   }
+}
+
+// Parse |cert| and return the classification of the ExtendedKeyUsage, or
+// EKUStatus::kInvalid on error.
+CertVerifyProc::EKUStatus GetEkuStatus(CRYPTO_BUFFER* cert) {
+  ParseCertificateOptions options;
+  options.allow_invalid_serial_numbers = true;
+  der::Input tbs_certificate_tlv;
+  der::Input signature_algorithm_tlv;
+  der::BitString signature_value;
+  ParsedTbsCertificate tbs;
+  if (!ParseCertificate(
+          der::Input(CRYPTO_BUFFER_data(cert), CRYPTO_BUFFER_len(cert)),
+          &tbs_certificate_tlv, &signature_algorithm_tlv, &signature_value,
+          nullptr /* errors*/) ||
+      !ParseTbsCertificate(tbs_certificate_tlv, options, &tbs,
+                           nullptr /*errors*/)) {
+    return CertVerifyProc::EKUStatus::kInvalid;
+  }
+
+  if (!tbs.has_extensions)
+    return CertVerifyProc::EKUStatus::kNoEKU;
+
+  std::map<der::Input, ParsedExtension> extensions;
+  if (!ParseExtensions(tbs.extensions_tlv, &extensions))
+    return CertVerifyProc::EKUStatus::kInvalid;
+
+  auto it = extensions.find(der::Input(kExtKeyUsageOid));
+  if (it == extensions.end())
+    return CertVerifyProc::EKUStatus::kNoEKU;
+
+  std::vector<der::Input> extended_key_usage;
+  if (!ParseEKUExtension(it->second.value, &extended_key_usage))
+    return CertVerifyProc::EKUStatus::kInvalid;
+
+  base::flat_set<der::Input> eku_set(extended_key_usage.begin(),
+                                     extended_key_usage.end());
+  if (eku_set.contains(AnyEKU()))
+    return CertVerifyProc::EKUStatus::kAnyEKU;
+
+  if (eku_set.contains(ServerAuth())) {
+    if (eku_set.size() == 1)
+      return CertVerifyProc::EKUStatus::kServerAuthOnly;
+
+    if (eku_set.size() == 2 && eku_set.contains(ClientAuth())) {
+      return CertVerifyProc::EKUStatus::kServerAuthAndClientAuthOnly;
+    }
+
+    return CertVerifyProc::EKUStatus::kServerAuthAndOthers;
+  }
+
+  return CertVerifyProc::EKUStatus::kOther;
+}
+
+// Logs the LeafExtendedKeyUsage histogram. Should only be called on
+// successfully verified chains.
+void RecordEkuHistogram(const CertVerifyResult& verify_result) {
+  CRYPTO_BUFFER* leaf = verify_result.verified_cert->cert_buffer();
+  CRYPTO_BUFFER* root =
+      verify_result.verified_cert->intermediate_buffers().empty()
+          ? leaf
+          : verify_result.verified_cert->intermediate_buffers().back().get();
+
+  CertVerifyProc::EKUStatus eku_status = GetEkuStatus(leaf);
+  HashValue root_spki_hash;
+  if (!x509_util::CalculateSha256SpkiHash(root, &root_spki_hash))
+    return;
+
+  base::StringPiece histogram_suffix;
+  if (!verify_result.is_issued_by_known_root)
+    histogram_suffix = "PrivateRoot";
+  else if (IsLegacyPubliclyTrustedCA(root_spki_hash))
+    histogram_suffix = "LegacyKnownRoot";
+  else
+    histogram_suffix = "KnownRoot";
+
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Net.Certificate.LeafExtendedKeyUsage.", histogram_suffix}),
+      eku_status);
 }
 
 bool AreSHA1IntermediatesAllowed() {
@@ -663,6 +745,7 @@ int CertVerifyProc::Verify(X509Certificate* cert,
   if (rv == OK) {
     RecordTrustAnchorHistogram(verify_result->public_key_hashes,
                                verify_result->is_issued_by_known_root);
+    RecordEkuHistogram(*verify_result);
   }
 
   net_log.EndEvent(NetLogEventType::CERT_VERIFY_PROC,
