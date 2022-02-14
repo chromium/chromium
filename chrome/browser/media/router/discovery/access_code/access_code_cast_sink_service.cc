@@ -13,6 +13,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/router/discovery/mdns/media_sink_util.h"
+#include "chrome/browser/media/router/discovery/media_sink_discovery_metrics.h"
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
@@ -21,6 +22,8 @@
 #include "components/media_router/common/mojom/media_router.mojom.h"
 
 namespace media_router {
+using SinkSource = CastDeviceCountMetrics::SinkSource;
+using ChannelOpenedCallback = base::OnceCallback<void(bool)>;
 
 AccessCodeCastSinkService::AccessCodeMediaRoutesObserver::
     AccessCodeMediaRoutesObserver(
@@ -41,6 +44,34 @@ AccessCodeCastSinkService::AccessCodeCastSinkService(
           std::make_unique<AccessCodeMediaRoutesObserver>(media_router, this)),
       cast_media_sink_service_impl_(cast_media_sink_service_impl) {
   DCHECK(profile_);
+  backoff_policy_ = {
+      // Number of initial errors (in sequence) to ignore before going into
+      // exponential backoff.
+      0,
+
+      // Initial delay (in ms) once backoff starts.
+      1 * 1000,  // 1 second,
+
+      // Factor by which the delay will be multiplied on each subsequent
+      // failure. This must be >= 1.0.
+      1.0,
+
+      // Fuzzing percentage: 50% will spread delays randomly between 50%--100%
+      // of the nominal time.
+      0.5,  // 50%
+
+      // Maximum delay (in ms) during exponential backoff.
+      10 * 1000,  // 10 seconds
+
+      // Time to keep an entry from being discarded even when it has no
+      // significant state, -1 to never discard. (Not applicable.)
+      -1,
+
+      // False means that initial_delay_ms is the first delay once we start
+      // exponential backoff, i.e., there is no delay after subsequent
+      // successful requests.
+      false,
+  };
 }
 
 AccessCodeCastSinkService::AccessCodeCastSinkService(Profile* profile)
@@ -117,6 +148,36 @@ void AccessCodeCastSinkService::OnAccessCodeRouteRemoved(
       FROM_HERE,
       base::BindOnce(&CastMediaSinkServiceImpl::DisconnectAndRemoveSink,
                      base::Unretained(cast_media_sink_service_impl_), sink));
+}
+
+void AccessCodeCastSinkService::AddSinkToMediaRouter(
+    const MediaSinkInternal& sink,
+    ChannelOpenedCallback callback) {
+  // Check to see if the media sink already exists in the media router.
+  base::PostTaskAndReplyWithResult(
+      cast_media_sink_service_impl_->task_runner().get(), FROM_HERE,
+      base::BindOnce(&CastMediaSinkServiceImpl::HasSink,
+                     base::Unretained(cast_media_sink_service_impl_),
+                     sink.id()),
+      base::BindOnce(&AccessCodeCastSinkService::OpenChannelIfNecessary,
+                     weak_ptr_factory_.GetWeakPtr(), sink,
+                     std::move(callback)));
+}
+
+void AccessCodeCastSinkService::OpenChannelIfNecessary(
+    const MediaSinkInternal& sink,
+    ChannelOpenedCallback callback,
+    bool has_sink) {
+  if (has_sink) {
+    std::move(callback).Run(true);
+    return;
+  }
+  auto backoff_entry = std::make_unique<net::BackoffEntry>(&backoff_policy_);
+  cast_media_sink_service_impl_->task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&CastMediaSinkServiceImpl::OpenChannel,
+                                base::Unretained(cast_media_sink_service_impl_),
+                                sink, std::move(backoff_entry),
+                                SinkSource::kAccessCode, std::move(callback)));
 }
 
 void AccessCodeCastSinkService::Shutdown() {

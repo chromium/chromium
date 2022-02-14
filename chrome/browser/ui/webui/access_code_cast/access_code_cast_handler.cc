@@ -9,12 +9,10 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/task_runner_util.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service_factory.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_media_sink_util.h"
-#include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
-#include "chrome/browser/media/router/discovery/media_sink_discovery_metrics.h"
-#include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
@@ -26,7 +24,6 @@
 
 using ::media_router::CreateAccessCodeMediaSink;
 using media_router::mojom::RouteRequestResultCode;
-using SinkSource = ::media_router::CastDeviceCountMetrics::SinkSource;
 // TODO(b/213324920): Remove WebUI from the media_router namespace after
 // expiration module has been completed.
 namespace media_router {
@@ -59,15 +56,15 @@ AccessCodeCastHandler::AccessCodeCastHandler(
     const media_router::CastModeSet& cast_mode_set,
     content::WebContents* web_contents,
     std::unique_ptr<StartPresentationContext> start_presentation_context)
-    : AccessCodeCastHandler(std::move(page_handler),
-                            std::move(page),
-                            profile,
-                            media_router,
-                            cast_mode_set,
-                            web_contents,
-                            std::move(start_presentation_context),
-                            media_router::DualMediaSinkService::GetInstance()
-                                ->GetCastMediaSinkServiceImpl()) {}
+    : AccessCodeCastHandler(
+          std::move(page_handler),
+          std::move(page),
+          profile,
+          media_router,
+          cast_mode_set,
+          web_contents,
+          std::move(start_presentation_context),
+          AccessCodeCastSinkServiceFactory::GetForProfile(profile)) {}
 
 AccessCodeCastHandler::AccessCodeCastHandler(
     mojo::PendingReceiver<access_code_cast::mojom::PageHandler> page_handler,
@@ -77,7 +74,7 @@ AccessCodeCastHandler::AccessCodeCastHandler(
     const media_router::CastModeSet& cast_mode_set,
     content::WebContents* web_contents,
     std::unique_ptr<StartPresentationContext> start_presentation_context,
-    CastMediaSinkServiceImpl* cast_media_sink_service_impl)
+    AccessCodeCastSinkService* access_code_sink_service)
     : page_(std::move(page)),
       receiver_(this, std::move(page_handler)),
       profile_(profile),
@@ -88,8 +85,10 @@ AccessCodeCastHandler::AccessCodeCastHandler(
       presentation_manager_(
           web_contents ? WebContentsPresentationManager::Get(web_contents)
                        : nullptr),
-      cast_media_sink_service_impl_(cast_media_sink_service_impl) {
+      access_code_sink_service_(access_code_sink_service) {
   DCHECK(profile_) << "Must have profile!";
+  DCHECK(access_code_sink_service_)
+      << "AccessCodeSinkService was not properly created!";
 
   if (media_router_) {
     media_router_->OnUserGesture();
@@ -131,11 +130,6 @@ void AccessCodeCastHandler::AddSink(
     const std::string& access_code,
     access_code_cast::mojom::CastDiscoveryMethod discovery_method,
     AddSinkCallback callback) {
-  // Lazily init an AccessCodeCastService to ensure its creation if
-  // feature/policy was turned after profile was initialized.
-  auto* ptr = AccessCodeCastSinkServiceFactory::GetForProfile(profile_);
-  DCHECK(ptr) << "AccessCodeSinkService was not properly created!";
-
   add_sink_callback_ = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), AddSinkResultCode::UNKNOWN_ERROR);
 
@@ -218,44 +212,36 @@ void AccessCodeCastHandler::OnAccessCodeValidated(
     std::move(add_sink_callback_).Run(AddSinkResultCode::SINK_CREATION_ERROR);
     return;
   }
-  // Check to see if the media sink already exists in the media router.
-  base::PostTaskAndReplyWithResult(
-      cast_media_sink_service_impl_->task_runner().get(), FROM_HERE,
-      base::BindOnce(&CastMediaSinkServiceImpl::HasSink,
-                     base::Unretained(cast_media_sink_service_impl_),
-                     creation_result.first.value().id()),
-      base::BindOnce(&AccessCodeCastHandler::HandleSinkPresentInMediaRouter,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     creation_result.first.value()));
+  sink_id_ = creation_result.first.value().id();
+
+  // Task runner for the current thread.
+  scoped_refptr<base::SequencedTaskRunner> current_task_runner =
+      base::SequencedTaskRunnerHandle::Get();
+
+  // The OnChannelOpenedResult() callback needs to be be bound with
+  // BindPostTask() to ensure that the callback is invoked on this specific task
+  // runner.
+  auto channel_cb =
+      base::BindOnce(&AccessCodeCastHandler::OnChannelOpenedResult,
+                     weak_ptr_factory_.GetWeakPtr());
+  auto returned_channel_cb =
+      base::BindPostTask(current_task_runner, std::move(channel_cb));
+
+  access_code_sink_service_->AddSinkToMediaRouter(
+      creation_result.first.value(), std::move(returned_channel_cb));
+}
+
+void AccessCodeCastHandler::OnChannelOpenedResult(bool channel_opened) {
+  // Wait for OnResultsUpdated before triggering the |add_sink_callback_| since
+  // we are not entirely sure the sink is ready to be casted to yet.
+  if (!channel_opened && add_sink_callback_) {
+    std::move(add_sink_callback_).Run(AddSinkResultCode::CHANNEL_OPEN_ERROR);
+  }
 }
 
 void AccessCodeCastHandler::SetSinkCallbackForTesting(
     AddSinkCallback callback) {
   add_sink_callback_ = std::move(callback);
-}
-
-void AccessCodeCastHandler::HandleSinkPresentInMediaRouter(
-    MediaSinkInternal media_sink,
-    bool has_sink) {
-  sink_id_ = media_sink.sink().id();
-  if (has_sink) {
-    std::move(add_sink_callback_).Run(AddSinkResultCode::OK);
-    return;
-  }
-  AccessCodeCastHandler::AddSinkToMediaRouter(media_sink);
-}
-
-void AccessCodeCastHandler::AddSinkToMediaRouter(MediaSinkInternal media_sink) {
-  DCHECK(sink_id_) << "sink_id_ must be set!";
-  // TODO (b/201430609): Add an observer to the cast_media_sink_service_impl
-  // that waits for the actual channel to fail to open. The observer should call
-  // the add_sink_callback_ with an appropriate error code.
-  // Must also have a timeout in case no response is ever received.
-
-  cast_media_sink_service_impl_->task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&CastMediaSinkServiceImpl::OpenChannel,
-                                base::Unretained(cast_media_sink_service_impl_),
-                                media_sink, nullptr, SinkSource::kAccessCode));
 }
 
 // QueryManager observer that alerts the handler about the availability of

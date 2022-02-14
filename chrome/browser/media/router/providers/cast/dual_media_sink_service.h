@@ -100,18 +100,11 @@ class DualMediaSinkService {
 
  private:
   friend class DualMediaSinkServiceTest;
-  friend class AccessCodeCastHandlerTest;
 
   FRIEND_TEST_ALL_PREFIXES(DualMediaSinkServiceTest,
                            AddSinksDiscoveredCallback);
   FRIEND_TEST_ALL_PREFIXES(DualMediaSinkServiceTest,
                            AddSinksDiscoveredCallbackAfterDiscovery);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest,
-                           DiscoveryDeviceMissingWithOk);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest,
-                           ValidDiscoveryDeviceAndCode);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest, InvalidDiscoveryDevice);
-  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest, NonOKResultCode);
 
   friend struct std::default_delete<DualMediaSinkService>;
 

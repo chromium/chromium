@@ -10,6 +10,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_test_util.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_test_helpers.h"
@@ -68,6 +69,24 @@ class MockPage : public access_code_cast::mojom::Page {
 
 }  // namespace
 
+class MockAccessCodeCastSinkService : public AccessCodeCastSinkService {
+ public:
+  MockAccessCodeCastSinkService(
+      Profile* profile,
+      MediaRouter* media_router,
+      CastMediaSinkServiceImpl* cast_media_sink_service_impl)
+      : AccessCodeCastSinkService(profile,
+                                  media_router,
+                                  cast_media_sink_service_impl) {}
+  ~MockAccessCodeCastSinkService() override = default;
+
+  MOCK_METHOD(void,
+              AddSinkToMediaRouter,
+              (const MediaSinkInternal& sink,
+               base::OnceCallback<void(bool)> callback),
+              (override));
+};
+
 class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
  protected:
   AccessCodeCastHandlerTest()
@@ -108,6 +127,7 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override {
     clear_screen_capture_allowed_for_testing();
     handler_.reset();
+    access_code_cast_sink_service_.reset();
     page_.reset();
     profile_manager_->DeleteAllTestingProfiles();
     profile_manager_.reset();
@@ -121,11 +141,15 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
                          start_presentation_context = nullptr) {
     page_ = std::make_unique<StrictMock<MockPage>>();
 
+    access_code_cast_sink_service_ =
+        std::make_unique<MockAccessCodeCastSinkService>(
+            profile_, router_, mock_cast_media_sink_service_impl_.get());
+
     handler_ = std::make_unique<AccessCodeCastHandler>(
         mojo::PendingReceiver<access_code_cast::mojom::PageHandler>(),
         page_->BindAndGetRemote(), profile_, router_, cast_modes,
         web_contents(), std::move(start_presentation_context),
-        mock_cast_media_sink_service_impl_.get());
+        access_code_cast_sink_service_.get());
   }
 
   AccessCodeCastHandler* handler() { return handler_.get(); }
@@ -137,6 +161,10 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
   }
 
   MockMediaRouter* router() { return router_; }
+
+  MockAccessCodeCastSinkService* access_service() {
+    return access_code_cast_sink_service_.get();
+  }
 
   void set_expected_cast_result(RouteRequestResult::ResultCode code) {
     result_code_ = code;
@@ -279,6 +307,7 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
       DiscoveryNetworkMonitor::CreateInstanceForTest(&GetFakeNetworkInfo);
 
   std::unique_ptr<AccessCodeCastHandler> handler_;
+  std::unique_ptr<MockAccessCodeCastSinkService> access_code_cast_sink_service_;
 
   base::MockCallback<OnSinksDiscoveredCallback> mock_sink_discovered_cb_;
 
@@ -314,20 +343,34 @@ TEST_F(AccessCodeCastHandlerTest, DiscoveryDeviceMissingWithOk) {
 TEST_F(AccessCodeCastHandlerTest, ValidDiscoveryDeviceAndCode) {
   // If discovery device is present, formatted correctly, and code is OK, then
   // callback should be OK.
-  MockAddSinkCallback mock_callback;
   DiscoveryDevice discovery_device_proto =
       media_router::BuildDiscoveryDeviceProto();
+  discovery_device_proto.set_id("id1");
 
-  EXPECT_CALL(mock_callback, Run(AddSinkResultCode::OK));
-  handler()->SetSinkCallbackForTesting(mock_callback.Get());
+  EXPECT_CALL(*access_service(), AddSinkToMediaRouter(_, _));
   handler()->OnAccessCodeValidated(discovery_device_proto,
                                    AddSinkResultCode::OK);
-
-  handler()->HandleSinkPresentInMediaRouter(cast_sink_1(), true);
 
   // Validate that the sink id of the discovered device is stored for later
   // casting.
   EXPECT_EQ(cast_sink_1().sink().id(), handler()->sink_id_);
+}
+
+TEST_F(AccessCodeCastHandlerTest, OnChannelOpened) {
+  // OnChannelOpened should only trigger the callback if the channel opening
+  // failed.
+  MockAddSinkCallback mock_callback_true;
+  handler()->SetSinkCallbackForTesting(mock_callback_true.Get());
+
+  EXPECT_CALL(mock_callback_true, Run(AddSinkResultCode::CHANNEL_OPEN_ERROR))
+      .Times(0);
+  handler()->OnChannelOpenedResult(true);
+
+  MockAddSinkCallback mock_callback_false;
+  handler()->SetSinkCallbackForTesting(mock_callback_false.Get());
+
+  EXPECT_CALL(mock_callback_false, Run(AddSinkResultCode::CHANNEL_OPEN_ERROR));
+  handler()->OnChannelOpenedResult(false);
 }
 
 TEST_F(AccessCodeCastHandlerTest, InvalidDiscoveryDevice) {

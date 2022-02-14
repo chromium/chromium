@@ -39,6 +39,7 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
                                  public DiscoveryNetworkMonitor::Observer,
                                  public MediaSinkServiceBase::Observer {
  public:
+  using ChannelOpenedCallback = base::OnceCallback<void(bool)>;
   using SinkSource = CastDeviceCountMetrics::SinkSource;
 
   // The max number of cast channel open failure for a DIAL-discovered sink
@@ -105,9 +106,11 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   // already exists.
   // |cast_sink|: Cast sink created from mDNS service description or DIAL sink.
   // |backoff_entry|: backoff entry passed to |OnChannelOpened| callback.
-  void OpenChannel(const MediaSinkInternal& cast_sink,
-                   std::unique_ptr<net::BackoffEntry> backoff_entry,
-                   SinkSource sink_source);
+  // |callback|: Callback that keeps track of the channel opening status.
+  virtual void OpenChannel(const MediaSinkInternal& cast_sink,
+                           std::unique_ptr<net::BackoffEntry> backoff_entry,
+                           SinkSource sink_source,
+                           ChannelOpenedCallback callback);
 
   // Check to see if the given cast sink exists the sinks_.
   bool HasSink(const MediaSink::Id& sink_id);
@@ -252,10 +255,13 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   // |start_time|: time at which corresponding |OpenChannel| was called.
   // |socket|: raw pointer of newly created cast channel. Does not take
   // ownership of |socket|.
+  // |callback|: Callback passed from OpenChannel that keeps track of the
+  // channel opening status.
   void OnChannelOpened(const MediaSinkInternal& cast_sink,
                        std::unique_ptr<net::BackoffEntry> backoff_entry,
                        SinkSource sink_source,
                        base::Time start_time,
+                       ChannelOpenedCallback callback,
                        cast_channel::CastSocket* socket);
 
   // Invoked by |OnChannelOpened| if opening cast channel failed. It will retry
@@ -267,26 +273,35 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   // |backoff_entry|: backoff entry holds failure count and calculates back-off
   // for next retry.
   // |error_state|: error encountered when opending cast channel.
+  // |callback|: Callback passed from OpenChannel that keeps track of the
+  // channel opening status.
   void OnChannelErrorMayRetry(MediaSinkInternal cast_sink,
                               std::unique_ptr<net::BackoffEntry> backoff_entry,
                               cast_channel::ChannelError error_state,
-                              SinkSource sink_source);
+                              SinkSource sink_source,
+                              ChannelOpenedCallback callback);
 
   // Invoked when opening cast channel succeeds.
   // |cast_sink|: Cast sink created from mDNS service description, DIAL sink, or
   // access code sink.
   // |socket|: raw pointer of newly created cast channel. Does not take
   // ownership of |socket|.
+  // |callback|: Callback passed from OpenChannel that keeps track of the
+  // channel opening status.
   void OnChannelOpenSucceeded(MediaSinkInternal cast_sink,
                               cast_channel::CastSocket* socket,
-                              SinkSource sink_source);
+                              SinkSource sink_source,
+                              ChannelOpenedCallback callback);
 
   // Invoked when opening cast channel fails after all retry
   // attempts.
   // |ip_endpoint|: ip endpoint of cast channel failing to connect to.
   // |sink|: The sink for which channel open failed.
+  // |callback|: Callback passed from OpenChannel that keeps track of the
+  // channel opening status.
   void OnChannelOpenFailed(const net::IPEndPoint& ip_endpoint,
-                           const MediaSinkInternal& sink);
+                           const MediaSinkInternal& sink,
+                           ChannelOpenedCallback callback);
 
   // Returns whether the given DIAL-discovered |sink| is probably a non-Cast
   // device. This is heuristically determined by two things: |sink| has been

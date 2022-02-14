@@ -40,6 +40,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::_;
+
 namespace media_router {
 
 namespace {
@@ -53,6 +55,7 @@ MediaRoute CreateRouteForTesting(const MediaSinkInternal& sink) {
 }  // namespace
 
 using SinkSource = CastDeviceCountMetrics::SinkSource;
+using MockBoolCallback = base::MockCallback<base::OnceCallback<void(bool)>>;
 
 class AccessCodeCastSinkServiceTest : public testing::Test {
  public:
@@ -186,6 +189,35 @@ TEST_F(AccessCodeCastSinkServiceTest,
   EXPECT_CALL(*mock_cast_media_sink_service_impl(),
               DisconnectAndRemoveSink(access_code_sink2));
 
+  mock_time_task_runner()->FastForwardUntilNoTasksRemain();
+}
+
+TEST_F(AccessCodeCastSinkServiceTest, AddExistingSinkToMediaRouter) {
+  // Ensure that the call to OpenChannel is NOT made since the cast sink already
+  // exists in the media router.
+  MockBoolCallback mock_callback;
+  MediaSinkInternal cast_sink1 = CreateCastSink(1);
+
+  EXPECT_CALL(*mock_cast_media_sink_service_impl(),
+              OpenChannel(cast_sink1, _, SinkSource::kAccessCode, _))
+      .Times(0);
+  EXPECT_CALL(mock_callback, Run(true));
+  access_code_cast_sink_service_->OpenChannelIfNecessary(
+      cast_sink1, mock_callback.Get(), true);
+  mock_time_task_runner()->FastForwardUntilNoTasksRemain();
+}
+
+TEST_F(AccessCodeCastSinkServiceTest, AddNewSinkToMediaRouter) {
+  // Make sure that the sink is added to the media router if it does not already
+  // exist.
+  MockBoolCallback mock_callback;
+  MediaSinkInternal cast_sink1 = CreateCastSink(1);
+
+  EXPECT_CALL(*mock_cast_media_sink_service_impl(),
+              OpenChannel(cast_sink1, _, SinkSource::kAccessCode, _));
+  EXPECT_CALL(mock_callback, Run(true)).Times(0);
+  access_code_cast_sink_service_->OpenChannelIfNecessary(
+      cast_sink1, mock_callback.Get(), false);
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
 }
 

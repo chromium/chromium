@@ -24,8 +24,7 @@ suite('ErrorMessageElementTest', () => {
     const testValues = [
       {addResult: AddSinkResultCode.UNKNOWN_ERROR, expectedMessage: 1},
       {addResult: AddSinkResultCode.OK, expectedMessage: 0},
-      {addResult: AddSinkResultCode.AUTH_ERROR, expectedMessage: 4},
-      {
+      {addResult: AddSinkResultCode.AUTH_ERROR, expectedMessage: 4}, {
         addResult: AddSinkResultCode.HTTP_RESPONSE_CODE_ERROR,
         expectedMessage: 3
       },
@@ -37,6 +36,7 @@ suite('ErrorMessageElementTest', () => {
       {addResult: AddSinkResultCode.SERVICE_NOT_PRESENT, expectedMessage: 3},
       {addResult: AddSinkResultCode.SERVER_ERROR, expectedMessage: 3},
       {addResult: AddSinkResultCode.SINK_CREATION_ERROR, expectedMessage: 1},
+      {addResult: AddSinkResultCode.CHANNEL_OPEN_ERROR, expectedMessage: 1}
     ];
 
     for (let i = 0; i < testValues.length; i++) {

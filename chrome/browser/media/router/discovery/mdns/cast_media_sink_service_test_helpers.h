@@ -43,13 +43,22 @@ class MockCastMediaSinkServiceImpl : public CastMediaSinkServiceImpl {
   ~MockCastMediaSinkServiceImpl() override;
 
   void Start() override { DoStart(); }
-  MOCK_METHOD0(DoStart, void());
-  MOCK_METHOD2(OpenChannels,
-               void(const std::vector<MediaSinkInternal>& cast_sinks,
-                    CastMediaSinkServiceImpl::SinkSource sink_source));
+  MOCK_METHOD(void, DoStart, (), ());
+  MOCK_METHOD(void,
+              OpenChannels,
+              (const std::vector<MediaSinkInternal>& cast_sinks,
+               CastMediaSinkServiceImpl::SinkSource sink_source),
+              (override));
   MOCK_METHOD(void,
               DisconnectAndRemoveSink,
               (const MediaSinkInternal& sink),
+              (override));
+  MOCK_METHOD(void,
+              OpenChannel,
+              (const MediaSinkInternal& cast_sink,
+               std::unique_ptr<net::BackoffEntry> backoff_entry,
+               SinkSource sink_source,
+               base::OnceCallback<void(bool)> callback),
               (override));
 
   OnSinksDiscoveredCallback sinks_discovered_cb() {

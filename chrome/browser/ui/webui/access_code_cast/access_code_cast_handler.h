@@ -7,6 +7,7 @@
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_discovery_interface.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service.h"
 #include "chrome/browser/media/router/discovery/access_code/discovery_resources.pb.h"
 #include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 #include "chrome/browser/media/router/discovery/mdns/media_sink_util.h"
@@ -64,7 +65,7 @@ class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler,
       const media_router::CastModeSet& cast_mode_set,
       content::WebContents* web_contents,
       std::unique_ptr<StartPresentationContext> start_presentation_context,
-      CastMediaSinkServiceImpl* cast_media_sink_service_impl);
+      AccessCodeCastSinkService* access_code_sink_service);
 
   ~AccessCodeCastHandler() override;
 
@@ -88,11 +89,7 @@ class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler,
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest, OtherDevicesIgnored);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest, DesktopMirroring);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest, DesktopMirroringError);
-
-  void AddSinkToMediaRouter(MediaSinkInternal media_sink);
-
-  void HandleSinkPresentInMediaRouter(MediaSinkInternal media_sink,
-                                      bool has_sink);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest, OnChannelOpened);
 
   // Returns true if the specified cast mode is among the cast modes specified
   // for the dialog to use when it was initialized.
@@ -111,6 +108,8 @@ class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler,
   void OnAccessCodeValidated(
       absl::optional<DiscoveryDevice> discovery_device,
       access_code_cast::mojom::AddSinkResultCode result_code);
+
+  void OnChannelOpenedResult(bool channel_opened);
 
   // QueryResultManager::Observer:
   void OnResultsUpdated(
@@ -179,7 +178,7 @@ class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler,
   // This contains a value only when tracking a pending route request.
   absl::optional<MediaRouterUI::RouteRequest> current_route_request_;
 
-  raw_ptr<CastMediaSinkServiceImpl> const cast_media_sink_service_impl_;
+  raw_ptr<AccessCodeCastSinkService> const access_code_sink_service_;
 
   base::WeakPtrFactory<AccessCodeCastHandler> weak_ptr_factory_{this};
 };

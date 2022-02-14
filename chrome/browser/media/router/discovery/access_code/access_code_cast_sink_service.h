@@ -15,8 +15,11 @@
 #include "components/media_router/browser/media_routes_observer.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/discovery/media_sink_service_base.h"
+#include "net/base/backoff_entry.h"
 
 namespace media_router {
+
+using ChannelOpenedCallback = base::OnceCallback<void(bool)>;
 
 class AccessCodeCastSinkService : public KeyedService {
  public:
@@ -27,6 +30,13 @@ class AccessCodeCastSinkService : public KeyedService {
   ~AccessCodeCastSinkService() override;
 
   base::WeakPtr<AccessCodeCastSinkService> GetWeakPtr();
+
+  // Attempts to add a sink to the Media Router.
+  // |sink|: the sink that is added to the router.
+  // |callback|: a callback that tracks the status of opening a cast channel to
+  // the given media sink.
+  virtual void AddSinkToMediaRouter(const MediaSinkInternal& sink,
+                                    ChannelOpenedCallback callback);
 
  private:
   class AccessCodeMediaRoutesObserver : public MediaRoutesObserver {
@@ -57,8 +67,14 @@ class AccessCodeCastSinkService : public KeyedService {
   };
   friend class AccessCodeCastSinkServiceFactory;
   friend class AccessCodeCastSinkServiceTest;
+  friend class AccessCodeCastHandlerTest;
+  friend class MockAccessCodeCastSinkService;
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            AccessCodeCastDeviceRemovedAfterRouteEnds);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
+                           AddExistingSinkToMediaRouter);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
+                           AddNewSinkToMediaRouter);
 
   // Constructor used for testing.
   AccessCodeCastSinkService(
@@ -71,8 +87,10 @@ class AccessCodeCastSinkService : public KeyedService {
   explicit AccessCodeCastSinkService(Profile* profile);
 
   void HandleMediaRouteDiscoveredByAccessCode(const MediaSinkInternal* sink);
-
   void OnAccessCodeRouteRemoved(const MediaSinkInternal& sink);
+  void OpenChannelIfNecessary(const MediaSinkInternal& sink,
+                              ChannelOpenedCallback callback,
+                              bool has_sink);
 
   // KeyedService.
   void Shutdown() override;
@@ -89,6 +107,8 @@ class AccessCodeCastSinkService : public KeyedService {
   // AccessCodeCastSinkService.
   const raw_ptr<media_router::CastMediaSinkServiceImpl>
       cast_media_sink_service_impl_;
+
+  net::BackoffEntry::Policy backoff_policy_;
 
   base::WeakPtrFactory<AccessCodeCastSinkService> weak_ptr_factory_{this};
 };
