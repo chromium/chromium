@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "@{BLUEPRINT_IDENTIFIER}"
-               BuildableName = "@{PRODUCT_NAME}"
-               BlueprintName = "@{TARGET_NAME}"
-               ReferencedContainer = "container:all.xcodeproj">
+               BuildableName = "@{BUILDABLE_NAME}"
+               BlueprintName = "@{BLUEPRINT_NAME}"
+               ReferencedContainer = "container:@{PROJECT_NAME}">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -28,7 +28,7 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       customLLDBInitFile = "@{LLDBINIT_PATH}"
       shouldUseLaunchSchemeArgsEnv = "YES">
-      <Testables>
+      <Testables>@{TESTABLES}
       </Testables>
    </TestAction>
    <LaunchAction
@@ -47,9 +47,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "@{BLUEPRINT_IDENTIFIER}"
-            BuildableName = "@{PRODUCT_NAME}"
-            BlueprintName = "@{TARGET_NAME}"
-            ReferencedContainer = "container:all.xcodeproj">
+            BuildableName = "@{BUILDABLE_NAME}"
+            BlueprintName = "@{BLUEPRINT_NAME}"
+            ReferencedContainer = "container:@{PROJECT_NAME}">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -64,9 +64,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "@{BLUEPRINT_IDENTIFIER}"
-            BuildableName = "@{PRODUCT_NAME}"
-            BlueprintName = "@{TARGET_NAME}"
-            ReferencedContainer = "container:all.xcodeproj">
+            BuildableName = "@{BUILDABLE_NAME}"
+            BlueprintName = "@{BLUEPRINT_NAME}"
+            ReferencedContainer = "container:@{PROJECT_NAME}">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
