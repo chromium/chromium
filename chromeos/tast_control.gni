@@ -143,6 +143,10 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.VirtualKeyboardTypingOmnibox.guest",
   "inputs.PhysicalKeyboardAutocorrect.en_us_2",
   "inputs.VirtualKeyboardAutoShift",
+
+  # https://crbug.com/1297028
+  "arc.StandardizedKeyboardCopyPaste",
+  "arc.StandardizedKeyboardCopyPaste.tablet_mode",
 ]
 
 # To disable a specific test in lacros_all_tast_tests, add it the following
