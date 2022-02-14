@@ -11,6 +11,7 @@
 
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -48,7 +49,7 @@ namespace updater {
 namespace {
 
 // TODO(sorin): remove the hardcoding of the application name.
-// https://crbug.com/1065588
+// https://crbug.com/1296931
 constexpr char16_t kAppNameChrome[] = u"Google Chrome";
 
 // Implements a simple inter-thread communication protocol based on Windows
@@ -370,6 +371,8 @@ class AppInstallControllerImpl : public AppInstallController,
                                  public ui::ProgressWndEvents,
                                  public WTL::CMessageFilter {
  public:
+  explicit AppInstallControllerImpl(
+      scoped_refptr<UpdateService> update_service);
   AppInstallControllerImpl();
 
   AppInstallControllerImpl(const AppInstallControllerImpl&) = delete;
@@ -448,14 +451,16 @@ class AppInstallControllerImpl : public AppInstallController,
 };
 
 // TODO(sorin): fix the hardcoding of the application name.
-// https:crbug.com/1014298
-AppInstallControllerImpl::AppInstallControllerImpl()
+// https:crbug.com/1296931
+AppInstallControllerImpl::AppInstallControllerImpl(
+    scoped_refptr<UpdateService> update_service)
     : main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
       ui_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
           {base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
           base::SingleThreadTaskRunnerThreadMode::DEDICATED)),
-      app_name_(kAppNameChrome) {}
+      app_name_(kAppNameChrome),
+      update_service_(update_service) {}
 AppInstallControllerImpl::~AppInstallControllerImpl() = default;
 
 void AppInstallControllerImpl::InstallApp(
@@ -481,8 +486,6 @@ void AppInstallControllerImpl::DoInstallApp() {
   // a WM_QUIT message has been posted to it.
   ui_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&AppInstallControllerImpl::RunUI, this));
-
-  update_service_ = CreateUpdateServiceProxy(GetUpdaterScope());
 
   install_progress_observer_ipc_ =
       std::make_unique<InstallProgressObserverIPC>(progress_wnd_.get());
@@ -684,8 +687,9 @@ scoped_refptr<App> MakeAppInstall() {
       base::BindRepeating([]() -> std::unique_ptr<SplashScreen> {
         return std::make_unique<ui::SplashScreen>(kAppNameChrome);
       }),
-      base::BindRepeating([]() -> scoped_refptr<AppInstallController> {
-        return base::MakeRefCounted<AppInstallControllerImpl>();
+      base::BindRepeating([](scoped_refptr<UpdateService> update_service)
+                              -> scoped_refptr<AppInstallController> {
+        return base::MakeRefCounted<AppInstallControllerImpl>(update_service);
       }));
 }
 

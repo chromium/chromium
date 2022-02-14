@@ -232,8 +232,8 @@ void UpdateServiceProxy::RegisterApp(
 }
 
 void UpdateServiceProxy::GetAppStates(
-    base::OnceCallback<void(
-        const std::vector<updater::UpdateService::AppState>&)> callback) const {
+    base::OnceCallback<
+        void(const std::vector<updater::UpdateService::AppState>&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   __block base::OnceCallback<void(
       const std::vector<updater::UpdateService::AppState>&)>

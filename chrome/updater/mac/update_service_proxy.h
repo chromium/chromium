@@ -44,7 +44,7 @@ class UpdateServiceProxy : public UpdateService {
       base::OnceCallback<void(const RegistrationResponse&)> callback) override;
   void GetAppStates(
       base::OnceCallback<void(const std::vector<UpdateService::AppState>&)>)
-      const override;
+      override;
   void RunPeriodicTasks(base::OnceClosure callback) override;
   void UpdateAll(StateChangeCallback state_update, Callback callback) override;
   void Update(const std::string& app_id,

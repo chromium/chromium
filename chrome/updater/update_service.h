@@ -208,7 +208,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
 
   // Gets state of all registered apps.
   virtual void GetAppStates(
-      base::OnceCallback<void(const std::vector<AppState>&)>) const = 0;
+      base::OnceCallback<void(const std::vector<AppState>&)>) = 0;
 
   // Runs periodic tasks such as checking for uninstallation of registered
   // applications or doing background updates for registered applications.

@@ -51,6 +51,8 @@ class SplashScreenImpl : public SplashScreen {
 
 class AppInstallControllerImpl : public AppInstallController {
  public:
+  explicit AppInstallControllerImpl(
+      scoped_refptr<UpdateService> /*update_service*/) {}
   // Override for AppInstallController.
   void InstallApp(const std::string& app_id,
                   base::OnceCallback<void(int)> callback) override {
@@ -69,8 +71,9 @@ scoped_refptr<App> MakeAppInstall() {
       base::BindRepeating([]() -> std::unique_ptr<SplashScreen> {
         return std::make_unique<SplashScreenImpl>();
       }),
-      base::BindRepeating([]() -> scoped_refptr<AppInstallController> {
-        return base::MakeRefCounted<AppInstallControllerImpl>();
+      base::BindRepeating([](scoped_refptr<UpdateService> update_service)
+                              -> scoped_refptr<AppInstallController> {
+        return base::MakeRefCounted<AppInstallControllerImpl>(update_service);
       }));
 }
 #endif  // !BUILDFLAG(IS_WIN)
@@ -89,6 +92,12 @@ void AppInstall::Initialize() {
   base::i18n::InitializeICU();
 }
 
+void AppInstall::Uninitialize() {
+  if (update_service_) {
+    update_service_->Uninitialize();
+  }
+}
+
 void AppInstall::FirstTaskRun() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(base::ThreadTaskRunnerHandle::IsSet());
@@ -96,15 +105,15 @@ void AppInstall::FirstTaskRun() {
   splash_screen_ = splash_screen_maker_.Run();
   splash_screen_->Show();
 
-  // Capture `update_service` to manage the object lifetime.
-  scoped_refptr<UpdateService> update_service =
-      CreateUpdateServiceProxy(updater_scope());
-  update_service->GetVersion(
-      base::BindOnce(&AppInstall::GetVersionDone, this, update_service));
+  // Creating instances of `UpdateServiceProxy` is possible only after task
+  // scheduling has been initialized.
+  update_service_ = CreateUpdateServiceProxy(updater_scope());
+  update_service_->GetVersion(
+      base::BindOnce(&AppInstall::GetVersionDone, this));
 }
 
-void AppInstall::GetVersionDone(scoped_refptr<UpdateService>,
-                                const base::Version& version) {
+void AppInstall::GetVersionDone(const base::Version& version) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG_IF(1, (version.IsValid()))
       << "Found active version: " << version.GetString();
   if (version.IsValid() && version >= base::Version(kUpdaterVersion)) {
@@ -141,6 +150,8 @@ void AppInstall::InstallCandidateDone(bool valid_version, int result) {
 }
 
 void AppInstall::WakeCandidate() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Invoke UpdateServiceInternal::InitializeUpdateService to wake this version
   // of the updater, qualify, and possibly promote this version as a result. The
   // |UpdateServiceInternal| instance has sequence affinity. Bind it in the
@@ -163,18 +174,21 @@ void AppInstall::WakeCandidateDone() {
 #endif  // BUILDFLAG(IS_LINUX)
 
 void AppInstall::RegisterUpdater() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/1297163) - encapsulate the reinitialization of the
+  // proxy server instance to avoid this special case.
+  update_service_ = CreateUpdateServiceProxy(updater_scope());
+#endif
+
   RegistrationRequest request;
   request.app_id = kUpdaterAppId;
   request.version = base::Version(kUpdaterVersion);
-  // update_service is bound in the callback to ensure it is released in this
-  // sequence.
-  scoped_refptr<UpdateService> update_service =
-      CreateUpdateServiceProxy(updater_scope());
-  update_service->RegisterApp(
+  update_service_->RegisterApp(
       request,
       base::BindOnce(
-          [](scoped_refptr<UpdateService> /*update_service*/,
-             scoped_refptr<AppInstall> app_install,
+          [](scoped_refptr<AppInstall> app_install,
              const RegistrationResponse& registration_response) {
             if (registration_response.status_code != kRegistrationSuccess &&
                 registration_response.status_code !=
@@ -186,10 +200,12 @@ void AppInstall::RegisterUpdater() {
             }
             app_install->MaybeInstallApp();
           },
-          update_service, base::WrapRefCounted(this)));
+          base::WrapRefCounted(this)));
 }
 
 void AppInstall::MaybeInstallApp() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   const std::string app_id = []() {
     absl::optional<tagging::TagArgs> tag_args = GetTagArgs();
     if (tag_args && !tag_args->apps.empty()) {
@@ -208,7 +224,7 @@ void AppInstall::MaybeInstallApp() {
     Shutdown(0);
     return;
   }
-  app_install_controller_ = app_install_controller_maker_.Run();
+  app_install_controller_ = app_install_controller_maker_.Run(update_service_);
   app_install_controller_->InstallApp(
       app_id, base::BindOnce(&AppInstall::Shutdown, this));
 }

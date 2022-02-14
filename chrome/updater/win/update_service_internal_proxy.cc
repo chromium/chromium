@@ -96,7 +96,8 @@ scoped_refptr<UpdateServiceInternal> CreateUpdateServiceInternalProxy(
 
 UpdateServiceInternalProxy::UpdateServiceInternalProxy(UpdaterScope scope)
     : scope_(scope),
-      STA_task_runner_(
+      main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      com_task_runner_(
           base::ThreadPool::CreateCOMSTATaskRunner(kComClientTraits)) {
   WRLModuleInitializer::Get();
 }
@@ -110,11 +111,10 @@ void UpdateServiceInternalProxy::Uninitialize() {
 void UpdateServiceInternalProxy::Run(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
 
-  STA_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&UpdateServiceInternalProxy::RunOnSTA, this,
-                     base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
-                                        std::move(callback))));
+  com_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&UpdateServiceInternalProxy::RunOnSTA, this,
+                                base::BindPostTask(main_task_runner_,
+                                                   std::move(callback))));
 }
 
 CLSID UpdateServiceInternalProxy::GetInternalClass() const {
@@ -127,7 +127,7 @@ CLSID UpdateServiceInternalProxy::GetInternalClass() const {
 }
 
 void UpdateServiceInternalProxy::RunOnSTA(base::OnceClosure callback) {
-  DCHECK(STA_task_runner_->BelongsToCurrentThread());
+  DCHECK(com_task_runner_->BelongsToCurrentThread());
 
   ::Sleep(kCreateUpdaterInstanceDelayMs);
   Microsoft::WRL::ComPtr<IUnknown> server;
@@ -176,16 +176,16 @@ void UpdateServiceInternalProxy::InitializeUpdateService(
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_main_);
 
-  STA_task_runner_->PostTask(
+  com_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           &UpdateServiceInternalProxy::InitializeUpdateServiceOnSTA, this,
-          base::BindPostTask(STA_task_runner_, std::move(callback))));
+          base::BindPostTask(main_task_runner_, std::move(callback))));
 }
 
 void UpdateServiceInternalProxy::InitializeUpdateServiceOnSTA(
     base::OnceClosure callback) {
-  DCHECK(STA_task_runner_->BelongsToCurrentThread());
+  DCHECK(com_task_runner_->BelongsToCurrentThread());
 
   ::Sleep(kCreateUpdaterInstanceDelayMs);
   Microsoft::WRL::ComPtr<IUnknown> server;

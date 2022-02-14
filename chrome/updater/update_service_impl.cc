@@ -255,7 +255,7 @@ void UpdateServiceImpl::RegisterApp(
 }
 
 void UpdateServiceImpl::GetAppStates(
-    base::OnceCallback<void(const std::vector<AppState>&)> callback) const {
+    base::OnceCallback<void(const std::vector<AppState>&)> callback) {
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
