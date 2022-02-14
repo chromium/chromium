@@ -12,6 +12,7 @@
 
 // InfobarPermissionsTableViewController represents the content for the
 // Permissionss InfobarModal.
+API_AVAILABLE(ios(15.0))
 @interface InfobarPermissionsTableViewController
     : ChromeTableViewController <InfobarPermissionsModalConsumer>
 

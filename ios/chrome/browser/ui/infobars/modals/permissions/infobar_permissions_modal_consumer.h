@@ -7,10 +7,24 @@
 
 #import <Foundation/Foundation.h>
 
+@class PermissionInfo;
+
+namespace web {
+enum Permission : NSUInteger;
+enum PermissionState : NSUInteger;
+}  // namespace web
+
 // Consumer for model to push configurations to the permissions UI.
 @protocol InfobarPermissionsModalConsumer <NSObject>
 
-// TODO(crbug.com/1289645): Implement this.
+// The permissions description being displayed in the InfobarModal.
+- (void)setPermissionsDescription:(NSString*)permissionsDescription;
+
+// The list of permission being displayed in the InfobarModal.
+- (void)setPermissionsInfo:(NSArray<PermissionInfo*>*)permissionsInfo;
+
+// Called when the state of given permission changed.
+- (void)permissionStateChanged:(PermissionInfo*)info;
 
 @end
 

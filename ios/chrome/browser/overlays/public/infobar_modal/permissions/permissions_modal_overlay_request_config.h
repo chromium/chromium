@@ -18,7 +18,12 @@ class PermissionsInfobarModalOverlayRequestConfig
   ~PermissionsInfobarModalOverlayRequestConfig() override;
 
   // The associated web state.
-  web::WebState* GetWebState() const;
+  web::WebState* GetWebState() const { return web_state_; }
+
+  // The permissions description being displayed in the InfobarModal.
+  NSString* GetPermissionsDescription() const {
+    return permissions_description_;
+  }
 
  private:
   OVERLAY_USER_DATA_SETUP(PermissionsInfobarModalOverlayRequestConfig);
@@ -31,6 +36,8 @@ class PermissionsInfobarModalOverlayRequestConfig
   InfoBarIOS* infobar_ = nullptr;
 
   web::WebState* web_state_ = nullptr;
+
+  NSString* permissions_description_ = nil;
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_INFOBAR_MODAL_PERMISSIONS_PERMISSIONS_MODAL_OVERLAY_REQUEST_CONFIG_H_

@@ -11,6 +11,8 @@
 #import "ios/chrome/browser/ui/infobars/modals/permissions/infobar_permissions_table_view_controller.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/permissions/permissions_infobar_modal_overlay_mediator.h"
+#include "ios/chrome/grit/ios_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -19,7 +21,8 @@
 @interface PermissionsInfobarModalOverlayCoordinator ()
 
 // Redefine ModalConfiguration properties as readwrite.
-@property(nonatomic, strong, readwrite) OverlayRequestMediator* modalMediator;
+@property(nonatomic, strong, readwrite)
+    PermissionsInfobarModalOverlayMediator* modalMediator;
 @property(nonatomic, strong, readwrite) UIViewController* modalViewController;
 // The request's config.
 @property(nonatomic, assign, readonly)
@@ -58,8 +61,8 @@
       [[InfobarPermissionsTableViewController alloc]
           initWithDelegate:modalMediator];
 
-  // TODO(crbug.com/1289645): Update placeholder the string.
-  modalViewController.title = @"TEST Access";
+  modalViewController.title =
+      l10n_util::GetNSString(IDS_IOS_PERMISSIONS_INFOBAR_MODAL_TITLE);
   modalMediator.consumer = modalViewController;
   self.modalMediator = modalMediator;
   self.modalViewController = modalViewController;
@@ -69,6 +72,7 @@
   DCHECK(self.modalMediator);
   DCHECK(self.modalViewController);
 
+  [self.modalMediator disconnect];
   self.modalMediator = nil;
   self.modalViewController = nil;
 }

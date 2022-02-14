@@ -18,14 +18,19 @@
 namespace infobar_modal {
 
 NSArray<Class>* GetSupportedOverlayCoordinatorClasses() {
-  return @[
-    [PasswordInfobarModalOverlayCoordinator class],
-    [ReadingListInfobarModalOverlayCoordinator class],
-    [SaveAddressProfileInfobarModalOverlayCoordinator class],
-    [SaveCardInfobarModalOverlayCoordinator class],
-    [TranslateInfobarModalOverlayCoordinator class],
-    [PermissionsInfobarModalOverlayCoordinator class],
-  ];
+  NSMutableArray<Class>* coordinatorClasses =
+      [[NSMutableArray alloc] initWithArray:@[
+        [PasswordInfobarModalOverlayCoordinator class],
+        [ReadingListInfobarModalOverlayCoordinator class],
+        [SaveAddressProfileInfobarModalOverlayCoordinator class],
+        [SaveCardInfobarModalOverlayCoordinator class],
+        [TranslateInfobarModalOverlayCoordinator class],
+      ]];
+  if (@available(iOS 15.0, *)) {
+    [coordinatorClasses
+        addObject:[PermissionsInfobarModalOverlayCoordinator class]];
+  }
+  return [coordinatorClasses copy];
 }
 
 }  // infobar_modal

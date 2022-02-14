@@ -9,6 +9,7 @@
 
 // A coordinator that displays the permissions infobar modal UI using
 // OverlayPresenter.
+API_AVAILABLE(ios(15.0))
 @interface PermissionsInfobarModalOverlayCoordinator
     : InfobarModalOverlayCoordinator
 @end

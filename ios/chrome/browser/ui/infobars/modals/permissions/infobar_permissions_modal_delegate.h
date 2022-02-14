@@ -7,10 +7,14 @@
 
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_delegate.h"
 
+@class PermissionInfo;
+
 // Delegate to handle permissions modal actions.
+API_AVAILABLE(ios(15.0))
 @protocol InfobarPermissionsModalDelegate <InfobarModalDelegate>
 
-// TODO(crbug.com/1289645): Implement this.
+// Method invoked when the user taps a switch.
+- (void)updateStateForPermission:(PermissionInfo*)permissionDescription;
 
 @end
 

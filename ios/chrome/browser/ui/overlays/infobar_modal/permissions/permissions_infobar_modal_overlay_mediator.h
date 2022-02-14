@@ -11,11 +11,15 @@
 @protocol InfobarPermissionsModalConsumer;
 
 // Mediator that configures the modal UI for permissions infobar.
+API_AVAILABLE(ios(15.0))
 @interface PermissionsInfobarModalOverlayMediator
     : InfobarModalOverlayMediator <InfobarPermissionsModalDelegate>
 
+// Disconnects the mediator.
+- (void)disconnect;
+
 // Consumer that is configured by this mediator.
-@property(nonatomic) id<InfobarPermissionsModalConsumer> consumer;
+@property(nonatomic, weak) id<InfobarPermissionsModalConsumer> consumer;
 
 @end
 
