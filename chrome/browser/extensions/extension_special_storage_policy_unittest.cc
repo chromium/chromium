@@ -112,9 +112,10 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
     base::FilePath path(FILE_PATH_LITERAL("/foo"));
 #endif
     base::DictionaryValue manifest;
-    manifest.SetString(keys::kName, "Protected");
-    manifest.SetString(keys::kVersion, "1");
-    manifest.SetString(keys::kLaunchWebURL, "http://explicit/protected/start");
+    manifest.SetStringPath(keys::kName, "Protected");
+    manifest.SetStringPath(keys::kVersion, "1");
+    manifest.SetStringPath(keys::kLaunchWebURL,
+                           "http://explicit/protected/start");
     auto list = std::make_unique<base::ListValue>();
     list->Append("http://explicit/protected");
     list->Append("*://*.wildcards/protected");
@@ -134,9 +135,10 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
     base::FilePath path(FILE_PATH_LITERAL("/bar"));
 #endif
     base::DictionaryValue manifest;
-    manifest.SetString(keys::kName, "Unlimited");
-    manifest.SetString(keys::kVersion, "1");
-    manifest.SetString(keys::kLaunchWebURL, "http://explicit/unlimited/start");
+    manifest.SetStringPath(keys::kName, "Unlimited");
+    manifest.SetStringPath(keys::kVersion, "1");
+    manifest.SetStringPath(keys::kLaunchWebURL,
+                           "http://explicit/unlimited/start");
     auto list = std::make_unique<base::ListValue>();
     list->Append("unlimitedStorage");
     manifest.Set(keys::kPermissions, std::move(list));
@@ -159,9 +161,9 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
     base::FilePath path(FILE_PATH_LITERAL("/app"));
 #endif
     base::DictionaryValue manifest;
-    manifest.SetString(keys::kName, "App");
-    manifest.SetString(keys::kVersion, "1");
-    manifest.SetString(keys::kPlatformAppBackgroundPage, "background.html");
+    manifest.SetStringPath(keys::kName, "App");
+    manifest.SetStringPath(keys::kVersion, "1");
+    manifest.SetStringPath(keys::kPlatformAppBackgroundPage, "background.html");
     std::string error;
     scoped_refptr<Extension> app =
         Extension::Create(path, ManifestLocation::kInvalidLocation, manifest,

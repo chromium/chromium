@@ -492,10 +492,10 @@ class ExtensionPrefsDelayedInstallInfo : public ExtensionPrefsTest {
   // Sets idle install information for one test extension.
   void SetIdleInfo(const std::string& id, int num) {
     base::DictionaryValue manifest;
-    manifest.SetString(manifest_keys::kName, "test");
-    manifest.SetString(manifest_keys::kVersion,
-                       "1." + base::NumberToString(num));
-    manifest.SetInteger(manifest_keys::kManifestVersion, 2);
+    manifest.SetStringPath(manifest_keys::kName, "test");
+    manifest.SetStringPath(manifest_keys::kVersion,
+                           "1." + base::NumberToString(num));
+    manifest.SetIntPath(manifest_keys::kManifestVersion, 2);
     base::FilePath path =
         prefs_.extensions_dir().AppendASCII(base::NumberToString(num));
     std::string errors;
@@ -607,10 +607,10 @@ class ExtensionPrefsFinishDelayedInstallInfo : public ExtensionPrefsTest {
  public:
   void Initialize() override {
     base::DictionaryValue dictionary;
-    dictionary.SetString(manifest_keys::kName, "test");
-    dictionary.SetString(manifest_keys::kVersion, "0.1");
-    dictionary.SetInteger(manifest_keys::kManifestVersion, 2);
-    dictionary.SetString(manifest_keys::kBackgroundPage, "background.html");
+    dictionary.SetStringPath(manifest_keys::kName, "test");
+    dictionary.SetStringPath(manifest_keys::kVersion, "0.1");
+    dictionary.SetIntPath(manifest_keys::kManifestVersion, 2);
+    dictionary.SetStringPath(manifest_keys::kBackgroundPage, "background.html");
     scoped_refptr<Extension> extension = prefs_.AddExtensionWithManifest(
         dictionary, ManifestLocation::kInternal);
     id_ = extension->id();
@@ -618,9 +618,9 @@ class ExtensionPrefsFinishDelayedInstallInfo : public ExtensionPrefsTest {
 
     // Set idle info
     base::DictionaryValue manifest;
-    manifest.SetString(manifest_keys::kName, "test");
-    manifest.SetString(manifest_keys::kVersion, "0.2");
-    manifest.SetInteger(manifest_keys::kManifestVersion, 2);
+    manifest.SetStringPath(manifest_keys::kName, "test");
+    manifest.SetStringPath(manifest_keys::kVersion, "0.2");
+    manifest.SetIntPath(manifest_keys::kManifestVersion, 2);
     std::unique_ptr<base::ListValue> scripts(new base::ListValue);
     scripts->Append("test.js");
     manifest.Set(manifest_keys::kBackgroundScripts, std::move(scripts));
@@ -727,18 +727,19 @@ class ExtensionPrefsFlags : public ExtensionPrefsTest {
   void Initialize() override {
     {
       base::DictionaryValue dictionary;
-      dictionary.SetString(manifest_keys::kName, "from_webstore");
-      dictionary.SetString(manifest_keys::kVersion, "0.1");
-      dictionary.SetInteger(manifest_keys::kManifestVersion, 2);
+      dictionary.SetStringPath(manifest_keys::kName, "from_webstore");
+      dictionary.SetStringPath(manifest_keys::kVersion, "0.1");
+      dictionary.SetIntPath(manifest_keys::kManifestVersion, 2);
       webstore_extension_ = prefs_.AddExtensionWithManifestAndFlags(
           dictionary, ManifestLocation::kInternal, Extension::FROM_WEBSTORE);
     }
 
     {
       base::DictionaryValue dictionary;
-      dictionary.SetString(manifest_keys::kName, "was_installed_by_default");
-      dictionary.SetString(manifest_keys::kVersion, "0.1");
-      dictionary.SetInteger(manifest_keys::kManifestVersion, 2);
+      dictionary.SetStringPath(manifest_keys::kName,
+                               "was_installed_by_default");
+      dictionary.SetStringPath(manifest_keys::kVersion, "0.1");
+      dictionary.SetIntPath(manifest_keys::kManifestVersion, 2);
       default_extension_ = prefs_.AddExtensionWithManifestAndFlags(
           dictionary, ManifestLocation::kInternal,
           Extension::WAS_INSTALLED_BY_DEFAULT);
@@ -746,9 +747,9 @@ class ExtensionPrefsFlags : public ExtensionPrefsTest {
 
     {
       base::DictionaryValue dictionary;
-      dictionary.SetString(manifest_keys::kName, "was_installed_by_oem");
-      dictionary.SetString(manifest_keys::kVersion, "0.1");
-      dictionary.SetInteger(manifest_keys::kManifestVersion, 2);
+      dictionary.SetStringPath(manifest_keys::kName, "was_installed_by_oem");
+      dictionary.SetStringPath(manifest_keys::kVersion, "0.1");
+      dictionary.SetIntPath(manifest_keys::kManifestVersion, 2);
       oem_extension_ = prefs_.AddExtensionWithManifestAndFlags(
           dictionary, ManifestLocation::kInternal,
           Extension::WAS_INSTALLED_BY_OEM);
@@ -773,9 +774,9 @@ PrefsPrepopulatedTestBase::PrefsPrepopulatedTestBase()
   base::DictionaryValue simple_dict;
   std::string error;
 
-  simple_dict.SetString(manifest_keys::kVersion, "1.0.0.0");
-  simple_dict.SetInteger(manifest_keys::kManifestVersion, 2);
-  simple_dict.SetString(manifest_keys::kName, "unused");
+  simple_dict.SetStringPath(manifest_keys::kVersion, "1.0.0.0");
+  simple_dict.SetIntPath(manifest_keys::kManifestVersion, 2);
+  simple_dict.SetStringPath(manifest_keys::kName, "unused");
 
   extension1_ = Extension::Create(prefs_.temp_dir().AppendASCII("ext1_"),
                                   ManifestLocation::kExternalPref, simple_dict,
@@ -1404,7 +1405,7 @@ TEST_F(ExtensionPrefsSimpleTest, ProfileExtensionPrefsMapTest) {
   GURL url = GURL("https://example/com");
   prefs.prefs()->SetGURLPref(kTestGURLPref, url);
   auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetString("key", "val");
+  dict->SetStringKey("key", "val");
   prefs.prefs()->SetDictionaryPref(kTestDictPref, std::move(dict));
 
   EXPECT_TRUE(prefs.prefs()->GetPrefAsBoolean(kTestBooleanPref));
@@ -1441,7 +1442,7 @@ TEST_F(ExtensionPrefsSimpleTest, ExtensionSpecificPrefsMapTest) {
   prefs.prefs()->SetIntegerPref(extension_id, kTestIntegerPref, 1);
   prefs.prefs()->SetStringPref(extension_id, kTestStringPref, "foo");
   auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetString("key", "val");
+  dict->SetStringKey("key", "val");
   prefs.prefs()->SetDictionaryPref(extension_id, kTestDictPref,
                                    std::move(dict));
   auto list = base::ListValue();

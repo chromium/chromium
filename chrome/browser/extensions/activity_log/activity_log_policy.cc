@@ -109,7 +109,7 @@ void ActivityLogPolicy::Util::StripPrivacySensitiveFields(
     if (action->mutable_other()->GetDictionary(constants::kActionWebRequest,
                                                &details)) {
       for (auto detail : details->DictItems()) {
-        details->SetBoolean(detail.first, true);
+        details->SetBoolPath(detail.first, true);
       }
     }
   }

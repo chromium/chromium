@@ -541,7 +541,7 @@ TEST_F(ExtensionContextMenuModelTest, ComponentExtensionContextMenu) {
   {
     // Check that a component extension with an options page does have the
     // options menu item, and it is enabled.
-    manifest->SetString("options_page", "options_page.html");
+    manifest->SetStringKey("options_page", "options_page.html");
     scoped_refptr<const Extension> extension =
         ExtensionBuilder()
             .SetManifest(std::move(manifest))

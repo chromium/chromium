@@ -162,18 +162,19 @@ std::unique_ptr<base::DictionaryValue> DefaultsToValue(
   const int kDefaultTabId = ExtensionAction::kDefaultTabId;
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
 
-  dict->SetString(kPopupUrlStorageKey,
-                  action->GetPopupUrl(kDefaultTabId).spec());
-  dict->SetString(kTitleStorageKey, action->GetTitle(kDefaultTabId));
-  dict->SetString(kBadgeTextStorageKey,
-                  action->GetExplicitlySetBadgeText(kDefaultTabId));
-  dict->SetString(
+  dict->SetStringKey(kPopupUrlStorageKey,
+                     action->GetPopupUrl(kDefaultTabId).spec());
+  dict->SetStringKey(kTitleStorageKey, action->GetTitle(kDefaultTabId));
+  dict->SetStringKey(kBadgeTextStorageKey,
+                     action->GetExplicitlySetBadgeText(kDefaultTabId));
+  dict->SetStringKey(
       kBadgeBackgroundColorStorageKey,
       SkColorToRawString(action->GetBadgeBackgroundColor(kDefaultTabId)));
-  dict->SetString(kBadgeTextColorStorageKey,
-                  SkColorToRawString(action->GetBadgeTextColor(kDefaultTabId)));
-  dict->SetInteger(kAppearanceStorageKey,
-                   action->GetIsVisible(kDefaultTabId) ? ACTIVE : INVISIBLE);
+  dict->SetStringKey(
+      kBadgeTextColorStorageKey,
+      SkColorToRawString(action->GetBadgeTextColor(kDefaultTabId)));
+  dict->SetIntKey(kAppearanceStorageKey,
+                  action->GetIsVisible(kDefaultTabId) ? ACTIVE : INVISIBLE);
 
   gfx::ImageSkia icon =
       action->GetExplicitlySetIcon(kDefaultTabId).AsImageSkia();
@@ -184,7 +185,7 @@ std::unique_ptr<base::DictionaryValue> DefaultsToValue(
     for (const gfx::ImageSkiaRep& rep : image_reps) {
       int size = static_cast<int>(rep.scale() * icon.width());
       std::string size_string = base::NumberToString(size);
-      icon_value->SetString(size_string, BitmapToString(rep.GetBitmap()));
+      icon_value->SetStringKey(size_string, BitmapToString(rep.GetBitmap()));
     }
     dict->Set(kIconStorageKey, std::move(icon_value));
   }

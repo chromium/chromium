@@ -292,10 +292,10 @@ class ExtensionManagementServiceTest : public testing::Test {
       const std::string& id,
       const std::string& update_url) {
     base::DictionaryValue manifest_dict;
-    manifest_dict.SetString(manifest_keys::kName, "test");
-    manifest_dict.SetString(manifest_keys::kVersion, version);
-    manifest_dict.SetInteger(manifest_keys::kManifestVersion, 2);
-    manifest_dict.SetString(manifest_keys::kUpdateURL, update_url);
+    manifest_dict.SetStringPath(manifest_keys::kName, "test");
+    manifest_dict.SetStringPath(manifest_keys::kVersion, version);
+    manifest_dict.SetIntPath(manifest_keys::kManifestVersion, 2);
+    manifest_dict.SetStringPath(manifest_keys::kUpdateURL, update_url);
     std::string error;
     scoped_refptr<const Extension> extension =
         Extension::Create(base::FilePath(), location, manifest_dict,
@@ -332,16 +332,16 @@ class ExtensionAdminPolicyTest : public ExtensionManagementServiceTest {
   void CreateHostedApp(ManifestLocation location) {
     base::DictionaryValue values;
     values.SetPath(extensions::manifest_keys::kWebURLs, base::ListValue());
-    values.SetString(extensions::manifest_keys::kLaunchWebURL,
-                     "http://www.example.com");
+    values.SetStringPath(extensions::manifest_keys::kLaunchWebURL,
+                         "http://www.example.com");
     CreateExtensionFromValues(location, &values);
   }
 
   void CreateExtensionFromValues(ManifestLocation location,
                                  base::DictionaryValue* values) {
-    values->SetString(extensions::manifest_keys::kName, "test");
-    values->SetString(extensions::manifest_keys::kVersion, "0.1");
-    values->SetInteger(extensions::manifest_keys::kManifestVersion, 2);
+    values->SetStringPath(extensions::manifest_keys::kName, "test");
+    values->SetStringPath(extensions::manifest_keys::kVersion, "0.1");
+    values->SetIntPath(extensions::manifest_keys::kManifestVersion, 2);
     std::string error;
     extension_ = Extension::Create(base::FilePath(), location, *values,
                                    Extension::NO_FLAGS, &error);

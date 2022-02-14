@@ -87,10 +87,11 @@ scoped_refptr<Extension> CreateTestExtension(const std::string& name,
                                              bool incognito_split_mode,
                                              const ExtensionId& extension_id) {
   base::DictionaryValue manifest;
-  manifest.SetString("name", name);
-  manifest.SetString("version", "1");
-  manifest.SetInteger("manifest_version", 2);
-  manifest.SetString("incognito", incognito_split_mode ? "split" : "spanning");
+  manifest.SetStringKey("name", name);
+  manifest.SetStringKey("version", "1");
+  manifest.SetIntKey("manifest_version", 2);
+  manifest.SetStringKey("incognito",
+                        incognito_split_mode ? "split" : "spanning");
 
   base::FilePath path = GetTestPath("response_headers");
 

@@ -522,14 +522,14 @@ ExtensionTabUtil::CreateWindowValueForExtension(
     Feature::Context context) {
   auto result = std::make_unique<base::DictionaryValue>();
 
-  result->SetInteger(tabs_constants::kIdKey, browser.session_id().id());
-  result->SetString(tabs_constants::kWindowTypeKey,
-                    GetBrowserWindowTypeText(browser));
+  result->SetIntKey(tabs_constants::kIdKey, browser.session_id().id());
+  result->SetStringKey(tabs_constants::kWindowTypeKey,
+                       GetBrowserWindowTypeText(browser));
   ui::BaseWindow* window = browser.window();
-  result->SetBoolean(tabs_constants::kFocusedKey, window->IsActive());
+  result->SetBoolKey(tabs_constants::kFocusedKey, window->IsActive());
   const Profile* profile = browser.profile();
-  result->SetBoolean(tabs_constants::kIncognitoKey, profile->IsOffTheRecord());
-  result->SetBoolean(
+  result->SetBoolKey(tabs_constants::kIncognitoKey, profile->IsOffTheRecord());
+  result->SetBoolKey(
       tabs_constants::kAlwaysOnTopKey,
       window->GetZOrderLevel() == ui::ZOrderLevel::kFloatingWindow);
 
@@ -545,17 +545,17 @@ ExtensionTabUtil::CreateWindowValueForExtension(
   } else {
     window_state = tabs_constants::kShowStateValueNormal;
   }
-  result->SetString(tabs_constants::kShowStateKey, window_state);
+  result->SetStringKey(tabs_constants::kShowStateKey, window_state);
 
   gfx::Rect bounds;
   if (window->IsMinimized())
     bounds = window->GetRestoredBounds();
   else
     bounds = window->GetBounds();
-  result->SetInteger(tabs_constants::kLeftKey, bounds.x());
-  result->SetInteger(tabs_constants::kTopKey, bounds.y());
-  result->SetInteger(tabs_constants::kWidthKey, bounds.width());
-  result->SetInteger(tabs_constants::kHeightKey, bounds.height());
+  result->SetIntKey(tabs_constants::kLeftKey, bounds.x());
+  result->SetIntKey(tabs_constants::kTopKey, bounds.y());
+  result->SetIntKey(tabs_constants::kWidthKey, bounds.width());
+  result->SetIntKey(tabs_constants::kHeightKey, bounds.height());
 
   if (populate_tab_behavior == kPopulateTabs)
     result->SetKey(tabs_constants::kTabsKey,

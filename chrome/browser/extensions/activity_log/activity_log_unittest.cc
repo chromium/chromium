@@ -368,8 +368,8 @@ TEST_F(ActivityLogTest, ArgUrlExtraction) {
   action->set_page_url(GURL("http://www.google.com/"));
   action->mutable_args()->Append("POST");
   action->mutable_args()->Append("http://api.google.com/");
-  action->mutable_other()->SetInteger(activity_log_constants::kActionDomVerb,
-                                      DomActionType::METHOD);
+  action->mutable_other()->SetIntKey(activity_log_constants::kActionDomVerb,
+                                     DomActionType::METHOD);
   activity_log->LogAction(action);
 
   // Submit a DOM API call with a relative URL in the argument, which should be
@@ -379,8 +379,8 @@ TEST_F(ActivityLogTest, ArgUrlExtraction) {
   action->set_page_url(GURL("http://www.google.com/"));
   action->mutable_args()->Append("POST");
   action->mutable_args()->Append("/api/");
-  action->mutable_other()->SetInteger(activity_log_constants::kActionDomVerb,
-                                      DomActionType::METHOD);
+  action->mutable_other()->SetIntKey(activity_log_constants::kActionDomVerb,
+                                     DomActionType::METHOD);
   activity_log->LogAction(action);
 
   // Submit a DOM API call with a relative URL but no base page URL against
@@ -389,8 +389,8 @@ TEST_F(ActivityLogTest, ArgUrlExtraction) {
                       Action::ACTION_DOM_ACCESS, "XMLHttpRequest.open");
   action->mutable_args()->Append("POST");
   action->mutable_args()->Append("/api/");
-  action->mutable_other()->SetInteger(activity_log_constants::kActionDomVerb,
-                                      DomActionType::METHOD);
+  action->mutable_other()->SetIntKey(activity_log_constants::kActionDomVerb,
+                                     DomActionType::METHOD);
   activity_log->LogAction(action);
 
   // Submit an API call with an embedded URL.
@@ -450,8 +450,8 @@ TEST_F(ActivityLogTest, ArgUrlApiCalls) {
     action = new Action(kExtensionId, now - base::Seconds(i),
                         Action::ACTION_DOM_ACCESS, kUrlApiCalls[i]);
     action->mutable_args()->Append("http://www.google.co.uk");
-    action->mutable_other()->SetInteger(activity_log_constants::kActionDomVerb,
-                                        DomActionType::SETTER);
+    action->mutable_other()->SetIntKey(activity_log_constants::kActionDomVerb,
+                                       DomActionType::SETTER);
     activity_log->LogAction(action);
   }
 

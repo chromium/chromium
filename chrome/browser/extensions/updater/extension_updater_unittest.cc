@@ -317,13 +317,13 @@ class MockService : public TestExtensionService {
                             ManifestLocation location) {
     for (int i = 1; i <= count; i++) {
       base::DictionaryValue manifest;
-      manifest.SetString(manifest_keys::kVersion,
-                         base::StringPrintf("%d.0.0.0", i));
-      manifest.SetString(manifest_keys::kName,
-                         base::StringPrintf("Extension %d.%d", id, i));
-      manifest.SetInteger(manifest_keys::kManifestVersion, 2);
+      manifest.SetStringPath(manifest_keys::kVersion,
+                             base::StringPrintf("%d.0.0.0", i));
+      manifest.SetStringPath(manifest_keys::kName,
+                             base::StringPrintf("Extension %d.%d", id, i));
+      manifest.SetIntPath(manifest_keys::kManifestVersion, 2);
       if (update_url)
-        manifest.SetString(manifest_keys::kUpdateURL, *update_url);
+        manifest.SetStringPath(manifest_keys::kUpdateURL, *update_url);
       scoped_refptr<Extension> e =
           prefs_->AddExtensionWithManifest(manifest, location);
       ASSERT_TRUE(e.get() != NULL);

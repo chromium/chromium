@@ -53,8 +53,8 @@ void ExternalComponentLoader::AddExternalExtension(
   if (!IsComponentExtensionAllowlisted(extension_id))
     return;
 
-  prefs->SetString(extension_id + ".external_update_url",
-                   extension_urls::GetWebstoreUpdateUrl().spec());
+  prefs->SetStringPath(extension_id + ".external_update_url",
+                       extension_urls::GetWebstoreUpdateUrl().spec());
 }
 
 }  // namespace extensions

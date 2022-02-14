@@ -207,7 +207,7 @@ bool ModifyManifestForManifestVersion3(base::DictionaryValue& manifest_dict) {
     return false;
   }
 
-  manifest_dict.SetInteger(manifest_keys::kManifestVersion, 3);
+  manifest_dict.SetIntPath(manifest_keys::kManifestVersion, 3);
   return true;
 }
 

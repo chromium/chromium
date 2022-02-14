@@ -655,7 +655,7 @@ void ActivityLog::LogAction(scoped_refptr<Action> action) {
     base::DictionaryValue* other = action->mutable_other();
     absl::optional<int> dom_verb = other->FindIntKey(constants::kActionDomVerb);
     if (dom_verb == DomActionType::METHOD)
-      other->SetInteger(constants::kActionDomVerb, DomActionType::XHR);
+      other->SetIntKey(constants::kActionDomVerb, DomActionType::XHR);
   }
   if (IsDatabaseEnabled() && database_policy_)
     database_policy_->ProcessAction(action);
@@ -701,7 +701,7 @@ void ActivityLog::OnScriptsExecuted(content::WebContents* web_contents,
               profile_);
       if (no_state_prefetch_manager &&
           no_state_prefetch_manager->IsWebContentsPrefetching(web_contents))
-        action->mutable_other()->SetBoolean(constants::kActionPrerender, true);
+        action->mutable_other()->SetBoolKey(constants::kActionPrerender, true);
       for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
         action->mutable_args()->Append(*it2);
       }

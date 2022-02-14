@@ -345,8 +345,8 @@ void ComponentLoader::AddWithNameAndDescription(
       ParseManifest(manifest_contents);
 
   if (manifest) {
-    manifest->SetString(manifest_keys::kName, name_string);
-    manifest->SetString(manifest_keys::kDescription, description_string);
+    manifest->SetStringKey(manifest_keys::kName, name_string);
+    manifest->SetStringKey(manifest_keys::kDescription, description_string);
     Add(std::move(manifest), root_directory, true);
   }
 }
@@ -665,11 +665,11 @@ void ComponentLoader::FinishAddComponentFromDir(
     return;  // Error already logged.
 
   if (name_string)
-    manifest->SetString(manifest_keys::kName, name_string.value());
+    manifest->SetStringKey(manifest_keys::kName, name_string.value());
 
   if (description_string) {
-    manifest->SetString(manifest_keys::kDescription,
-                        description_string.value());
+    manifest->SetStringKey(manifest_keys::kDescription,
+                           description_string.value());
   }
 
   std::string actual_extension_id =

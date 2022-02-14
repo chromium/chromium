@@ -483,12 +483,12 @@ scoped_refptr<Extension>
   if (!localized_name.empty() || !localized_description.empty()) {
     localized_manifest.reset(manifest->DeepCopy());
     if (!localized_name.empty()) {
-      localized_manifest->SetString(extensions::manifest_keys::kName,
-                                    localized_name);
+      localized_manifest->SetStringKey(extensions::manifest_keys::kName,
+                                       localized_name);
     }
     if (!localized_description.empty()) {
-      localized_manifest->SetString(extensions::manifest_keys::kDescription,
-                                    localized_description);
+      localized_manifest->SetStringKey(extensions::manifest_keys::kDescription,
+                                       localized_description);
     }
   }
 

@@ -2567,9 +2567,9 @@ TEST_F(ExtensionServiceTest,
 
   // First create a correct manifest and Load the extension successfully.
   base::DictionaryValue manifest;
-  manifest.SetString("version", "1.0");
-  manifest.SetString("name", "malformed manifest reload test");
-  manifest.SetInteger("manifest_version", 2);
+  manifest.SetStringKey("version", "1.0");
+  manifest.SetStringKey("name", "malformed manifest reload test");
+  manifest.SetIntKey("manifest_version", 2);
 
   JSONFileValueSerializer serializer(manifest_dir);
   ASSERT_TRUE(serializer.Serialize(manifest));
@@ -2585,7 +2585,7 @@ TEST_F(ExtensionServiceTest,
   EXPECT_EQ("1.0", loaded_[0]->VersionString());
 
   // Change the version to a malformed version.
-  manifest.SetString("version", "2.0b");
+  manifest.SetStringKey("version", "2.0b");
   ASSERT_TRUE(serializer.Serialize(manifest));
 
   std::string extension_id = loaded_[0]->id();
@@ -2605,7 +2605,7 @@ TEST_F(ExtensionServiceTest,
   EXPECT_TRUE(registry()->disabled_extensions().Contains(extension_id));
 
   // Fix the version.
-  manifest.SetString("version", "2.0");
+  manifest.SetStringKey("version", "2.0");
   ASSERT_TRUE(serializer.Serialize(manifest));
 
   // Reload the extension.
@@ -3067,9 +3067,9 @@ TEST_F(ExtensionServiceTest, LoadExtensionsCanDowngrade) {
 
   // Start with version 2.0.
   base::DictionaryValue manifest;
-  manifest.SetString("version", "2.0");
-  manifest.SetString("name", "LOAD Downgrade Test");
-  manifest.SetInteger("manifest_version", 2);
+  manifest.SetStringKey("version", "2.0");
+  manifest.SetStringKey("name", "LOAD Downgrade Test");
+  manifest.SetIntKey("manifest_version", 2);
 
   JSONFileValueSerializer serializer(manifest_path);
   ASSERT_TRUE(serializer.Serialize(manifest));
@@ -3085,7 +3085,7 @@ TEST_F(ExtensionServiceTest, LoadExtensionsCanDowngrade) {
 
   // Now set the version number to 1.0, reload the extensions and verify that
   // the downgrade was accepted.
-  manifest.SetString("version", "1.0");
+  manifest.SetStringKey("version", "1.0");
   ASSERT_TRUE(serializer.Serialize(manifest));
 
   UnpackedInstaller::Create(service())->Load(extension_path);
@@ -4035,9 +4035,9 @@ TEST_F(ExtensionServiceTest, ManagementPolicyProhibitsLoadFromPrefs) {
   base::FilePath path =
       data_dir().AppendASCII("management").AppendASCII("simple_extension");
   base::DictionaryValue manifest;
-  manifest.SetString(keys::kName, "simple_extension");
-  manifest.SetString(keys::kVersion, "1");
-  manifest.SetInteger(keys::kManifestVersion, 2);
+  manifest.SetStringPath(keys::kName, "simple_extension");
+  manifest.SetStringPath(keys::kVersion, "1");
+  manifest.SetIntPath(keys::kManifestVersion, 2);
   // UNPACKED is for extensions loaded from a directory. We use it here, even
   // though we're testing loading from prefs, so that we don't need to provide
   // an extension key.
