@@ -93618,6 +93618,9 @@ others/histograms.xml -->
   <int value="21" label="The first transaction on a connection was completed"/>
   <int value="22"
       label="The contact ID was not ready in time for a QR transaction"/>
+  <int value="23" label="Permission to send a BLE advert was requested"/>
+  <int value="24" label="Permission to send a BLE advert was granted"/>
+  <int value="25" label="Permission to send a BLE advert was rejected"/>
 </enum>
 
 <enum name="WebAuthenticationCableV2MobileResult">

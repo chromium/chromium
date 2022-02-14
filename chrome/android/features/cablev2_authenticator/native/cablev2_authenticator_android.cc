@@ -185,8 +185,11 @@ enum class CableV2MobileEvent {
   kGetAssertionComplete = 20,
   kFirstTransactionDone = 21,
   kContactIDNotReady = 22,
+  kBluetoothAdvertisePermissionRequested = 23,
+  kBluetoothAdvertisePermissionGranted = 24,
+  kBluetoothAdvertisePermissionRejected = 25,
 
-  kMaxValue = 22,
+  kMaxValue = 25,
 };
 
 // CableV2MobileResult enumerates the outcome of a caBLEv2 transction. Do not
@@ -717,10 +720,11 @@ static jlong JNI_CableAuthenticator_StartQR(
   return ++global_data.instance_num;
 }
 
-static jlong JNI_CableAuthenticator_StartServerLink(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& cable_authenticator,
-    const JavaParamRef<jbyteArray>& server_link_data_java) {
+std::tuple<base::span<const uint8_t, device::kP256X962Length>,
+           base::span<const uint8_t, device::cablev2::kQRSecretSize>,
+           std::array<uint8_t, device::cablev2::kTunnelIdSize>>
+ParseServerLinkData(JNIEnv* env,
+                    const JavaParamRef<jbyteArray>& server_link_data_java) {
   constexpr size_t kDataSize =
       device::kP256X962Length + device::cablev2::kQRSecretSize;
   const absl::optional<base::span<const uint8_t, kDataSize>> server_link_data =
@@ -728,20 +732,36 @@ static jlong JNI_CableAuthenticator_StartServerLink(
   // validateServerLinkData should have been called to check this already.
   CHECK(server_link_data);
 
+  const base::span<const uint8_t, device::kP256X962Length> peer_identity =
+      server_link_data->subspan<0, device::kP256X962Length>();
+  const base::span<const uint8_t, device::cablev2::kQRSecretSize> qr_secret =
+      server_link_data
+          ->subspan<device::kP256X962Length, device::cablev2::kQRSecretSize>();
+  const std::array<uint8_t, device::cablev2::kTunnelIdSize> tunnel_id =
+      device::cablev2::Derive<device::cablev2::kTunnelIdSize>(
+          qr_secret, base::span<uint8_t>(),
+          device::cablev2::DerivedValueType::kTunnelID);
+
+  return std::make_tuple(peer_identity, qr_secret, tunnel_id);
+}
+
+static jlong JNI_CableAuthenticator_StartServerLink(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& cable_authenticator,
+    const JavaParamRef<jbyteArray>& server_link_data_java) {
+  GlobalData& global_data = GetGlobalData();
+
+  auto server_link_values = ParseServerLinkData(env, server_link_data_java);
+  auto peer_identity = std::get<0>(server_link_values);
+  auto qr_secret = std::get<1>(server_link_values);
+  global_data.server_link_tunnel_id = std::get<2>(server_link_values);
+
   // Sending pairing information is disabled when doing a server-linked
   // connection, thus the root secret and authenticator name will not be used.
   std::array<uint8_t, device::cablev2::kRootSecretSize> dummy_root_secret = {0};
   std::string dummy_authenticator_name = "";
-  GlobalData& global_data = GetGlobalData();
   global_data.event_to_record_if_stopped =
       CableV2MobileEvent::kStoppedWhileAwaitingTunnelServerConnection;
-  const base::span<const uint8_t, device::cablev2::kQRSecretSize> qr_secret =
-      server_link_data
-          ->subspan<device::kP256X962Length, device::cablev2::kQRSecretSize>();
-  global_data.server_link_tunnel_id =
-      device::cablev2::Derive<device::cablev2::kTunnelIdSize>(
-          qr_secret, base::span<uint8_t>(),
-          device::cablev2::DerivedValueType::kTunnelID);
   RecordEvent(&global_data, CableV2MobileEvent::kServerLink);
 
   global_data.current_transaction =
@@ -749,9 +769,7 @@ static jlong JNI_CableAuthenticator_StartServerLink(
           std::make_unique<AndroidPlatform>(env, cable_authenticator,
                                             /*is_usb=*/false),
           global_data.network_context, dummy_root_secret,
-          dummy_authenticator_name, qr_secret,
-          server_link_data->subspan<0, device::kP256X962Length>(),
-          absl::nullopt,
+          dummy_authenticator_name, qr_secret, peer_identity, absl::nullopt,
           /*use_new_crypter_construction=*/false);
 
   return ++global_data.instance_num;
@@ -906,6 +924,17 @@ static void JNI_CableAuthenticator_OnAuthenticatorAssertionResponse(
   }
 
   std::move(callback).Run(ctap_status, nullptr);
+}
+
+static void JNI_CableAuthenticator_RecordEvent(
+    JNIEnv* env,
+    jint event,
+    const JavaParamRef<jbyteArray>& server_link_data_java) {
+  auto server_link_values = ParseServerLinkData(env, server_link_data_java);
+  base::UmaHistogramEnumeration("WebAuthentication.CableV2.MobileEvent",
+                                static_cast<CableV2MobileEvent>(event));
+  protobuf::LogEvent(env, /*tunnel_id=*/std::get<2>(server_link_values),
+                     protobuf::Type::kEvent, event);
 }
 
 static void JNI_USBHandler_OnUSBData(JNIEnv* env,

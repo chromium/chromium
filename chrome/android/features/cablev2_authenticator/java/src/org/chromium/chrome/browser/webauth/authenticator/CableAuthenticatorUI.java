@@ -87,6 +87,13 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
     private static final int ERROR_AUTHENTICATOR_SELECTION_RECEIVED = 114;
     private static final int ERROR_DISCOVERABLE_CREDENTIALS_REQUEST = 115;
 
+    // These entries duplicate some of the enum values from
+    // `CableV2MobileEvent`. The C++ enum is the source of truth for these
+    // values.
+    private static final int EVENT_BLUETOOTH_ADVERTISE_PERMISSION_REQUESTED = 23;
+    private static final int EVENT_BLUETOOTH_ADVERTISE_PERMISSION_GRANTED = 24;
+    private static final int EVENT_BLUETOOTH_ADVERTISE_PERMISSION_REJECTED = 25;
+
     private enum Mode {
         QR, // QR code scanned by external app.
         FCM, // Triggered by user selecting notification; handshake already running.
@@ -349,6 +356,8 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
                     // permission.
                     if (BuildInfo.isAtLeastS() && requestBluetoothPermissions()) {
                         mState = State.BLUETOOTH_ADVERTISE_PERMISSION_REQUESTED;
+                        mAuthenticator.maybeRecordEvent(
+                                EVENT_BLUETOOTH_ADVERTISE_PERMISSION_REQUESTED);
                         return;
                     }
 
@@ -359,6 +368,7 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
                     if (event != Event.PERMISSIONS_GRANTED) {
                         return;
                     }
+                    mAuthenticator.maybeRecordEvent(EVENT_BLUETOOTH_ADVERTISE_PERMISSION_GRANTED);
                     mState = State.BLUETOOTH_READY;
                     break;
 
@@ -618,6 +628,9 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
             return;
         }
 
+        if (mState == State.BLUETOOTH_ADVERTISE_PERMISSION_REQUESTED) {
+            mAuthenticator.maybeRecordEvent(EVENT_BLUETOOTH_ADVERTISE_PERMISSION_REJECTED);
+        }
         mState = State.ERROR;
         mErrorCode = ERROR_NO_BLUETOOTH_PERMISSION;
         updateUiForState();

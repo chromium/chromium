@@ -322,6 +322,17 @@ class CableAuthenticator {
     }
 
     /**
+     * Records an event if this is a server-link transaction and if UMA has been opted into.
+     *
+     * @param event a value from `CableV2MobileEvent`
+     */
+    void maybeRecordEvent(int event) {
+        if (mServerLinkData != null) {
+            CableAuthenticatorJni.get().recordEvent(event, mServerLinkData);
+        }
+    }
+
+    /**
      * Called to indicate that either USB or Bluetooth transports are ready for processing.
      */
     void onTransportReady() {
@@ -441,5 +452,11 @@ class CableAuthenticator {
          * Called to alert native code of a response to a getAssertion request.
          */
         void onAuthenticatorAssertionResponse(int ctapStatus, byte[] responseBytes);
+
+        /**
+         * Called to perhaps record an event. The event must be a value from `CableV2MobileEvent`.
+         * It is recorded only if UMA has been opted into.
+         */
+        void recordEvent(int event, byte[] serverLinkData);
     }
 }
