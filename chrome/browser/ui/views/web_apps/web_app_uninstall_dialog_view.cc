@@ -238,7 +238,7 @@ void WebAppUninstallDialogViews::ConfirmUninstall(
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
   DCHECK(provider);
 
-  registrar_observation_.Observe(&provider->registrar());
+  install_manager_observation_.Observe(&provider->install_manager());
 
   provider->icon_manager().ReadIcons(
       app_id, IconPurpose::ANY,
@@ -282,8 +282,8 @@ void WebAppUninstallDialogViews::OnWebAppWillBeUninstalled(
     view_->CancelDialog();
 }
 
-void WebAppUninstallDialogViews::OnAppRegistrarDestroyed() {
-  registrar_observation_.Reset();
+void WebAppUninstallDialogViews::OnWebAppInstallManagerDestroyed() {
+  install_manager_observation_.Reset();
   if (view_)
     view_->CancelDialog();
 }
@@ -292,7 +292,7 @@ base::OnceCallback<void(bool uninstalled)>
 WebAppUninstallDialogViews::UninstallStarted() {
   DCHECK(closed_callback_);
   // Next OnWebAppWillBeUninstalled should be ignored. Unsubscribe:
-  registrar_observation_.Reset();
+  install_manager_observation_.Reset();
   // The view can now be destroyed without us knowing, so clear it to prevent
   // UAF in the destructor.
   view_ = nullptr;
