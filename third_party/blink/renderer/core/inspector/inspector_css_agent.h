@@ -100,7 +100,6 @@ class CORE_EXPORT InspectorCSSAgent final
   static CSSStyleRule* AsCSSStyleRule(CSSRule*);
   static CSSMediaRule* AsCSSMediaRule(CSSRule*);
   static CSSContainerRule* AsCSSContainerRule(CSSRule*);
-  static CSSSupportsRule* AsCSSSupportsRule(CSSRule*);
 
   static void CollectAllDocumentStyleSheets(Document*,
                                             HeapVector<Member<CSSStyleSheet>>&);
@@ -196,11 +195,6 @@ class CORE_EXPORT InspectorCSSAgent final
       std::unique_ptr<protocol::CSS::SourceRange>,
       const String& text,
       std::unique_ptr<protocol::CSS::CSSContainerQuery>*) override;
-  protocol::Response setSupportsText(
-      const String& style_sheet_id,
-      std::unique_ptr<protocol::CSS::SourceRange>,
-      const String& text,
-      std::unique_ptr<protocol::CSS::CSSSupports>*) override;
   protocol::Response createStyleSheet(const String& frame_id,
                                       String* style_sheet_id) override;
   protocol::Response addRule(const String& style_sheet_id,

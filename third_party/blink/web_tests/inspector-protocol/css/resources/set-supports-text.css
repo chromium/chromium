@@ -1,5 +1,0 @@
-@supports (display: grid) {
-  div {
-    display: grid;
-  }
-}

@@ -382,13 +382,12 @@ class StyleRuleSupports : public StyleRuleCondition {
     return MakeGarbageCollected<StyleRuleSupports>(*this);
   }
 
-  void SetConditionText(const ExecutionContext*, String);
-
   void TraceAfterDispatch(blink::Visitor* visitor) const {
     StyleRuleCondition::TraceAfterDispatch(visitor);
   }
 
  private:
+  String condition_text_;
   bool condition_is_supported_;
 };
 
