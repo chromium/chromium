@@ -735,11 +735,6 @@ const char kTouchVirtualKeyboardEnabled[] = "ui.touch_virtual_keyboard_enabled";
 const char kCaptivePortalAuthenticationIgnoresProxy[] =
     "proxy.captive_portal_ignores_proxy";
 
-// This boolean controls whether the first window shown on first run should be
-// unconditionally maximized, overriding the heuristic that normally chooses the
-// window size.
-const char kForceMaximizeOnFirstRun[] = "ui.force_maximize_on_first_run";
-
 // A dictionary pref mapping public keys that identify platform keys to its
 // properties like whether it's meant for corporate usage.
 const char kPlatformKeys[] = "platform_keys";
@@ -1139,6 +1134,11 @@ const char kExternalStorageDisabled[] = "hardware.external_storage_disabled";
 // A pref holding the value of the policy used to limit mounting of external
 // storage to read-only mode for the user.
 const char kExternalStorageReadOnly[] = "hardware.external_storage_read_only";
+
+// This boolean controls whether the first window shown on first run should be
+// unconditionally maximized, overriding the heuristic that normally chooses the
+// window size.
+const char kForceMaximizeOnFirstRun[] = "ui.force_maximize_on_first_run";
 
 // Boolean user profile pref that determines whether to show a banner in browser
 // settings that links to OS settings.

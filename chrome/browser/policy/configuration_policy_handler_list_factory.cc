@@ -1032,9 +1032,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kCaptivePortalAuthenticationIgnoresProxy,
     prefs::kCaptivePortalAuthenticationIgnoresProxy,
     base::Value::Type::BOOLEAN },
-  { key::kForceMaximizeOnFirstRun,
-    prefs::kForceMaximizeOnFirstRun,
-    base::Value::Type::BOOLEAN },
   { key::kUnifiedDesktopEnabledByDefault,
     prefs::kUnifiedDesktopEnabledByDefault,
     base::Value::Type::BOOLEAN },
@@ -1445,6 +1442,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kDataLeakPreventionClipboardCheckSizeLimit,
     policy_prefs::kDlpClipboardCheckSizeLimit,
     base::Value::Type::INTEGER },
+  { key::kForceMaximizeOnFirstRun,
+    prefs::kForceMaximizeOnFirstRun,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS)

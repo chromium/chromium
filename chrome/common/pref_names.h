@@ -272,7 +272,6 @@ extern const char kTimeOnOobe[];
 extern const char kFileSystemProviderMounted[];
 extern const char kTouchVirtualKeyboardEnabled[];
 extern const char kCaptivePortalAuthenticationIgnoresProxy[];
-extern const char kForceMaximizeOnFirstRun[];
 extern const char kPlatformKeys[];
 extern const char kKeyPermissionsOneTimeMigrationDone[];
 extern const char kUnifiedDesktopEnabledByDefault[];
@@ -360,6 +359,7 @@ extern const char kRestrictedManagedGuestSessionExtensionCleanupExemptList[];
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kExternalStorageDisabled[];
 extern const char kExternalStorageReadOnly[];
+extern const char kForceMaximizeOnFirstRun[];
 extern const char kSettingsShowOSBanner[];
 extern const char kUsedPolicyCertificates[];
 #endif  // BUILDFLAG(IS_CHROMEOS)
