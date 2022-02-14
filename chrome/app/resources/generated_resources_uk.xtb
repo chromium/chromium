@@ -607,6 +607,7 @@
 <translation id="1604432177629086300">Не вдається роздрукувати. Перевірте принтер і повторіть спробу.</translation>
 <translation id="1605744057217831567">Переглянути всі дані сайтів і дозволи</translation>
 <translation id="1606077700029460857">Змінити налаштування миші</translation>
+<translation id="1606566847233779212">Видалити конкретні сайти, які ви додали?</translation>
 <translation id="1607139524282324606">Очистити введені дані</translation>
 <translation id="1607499585984539560">Користувач не зв’язаний із цим доменом</translation>
 <translation id="1608668830839595724">Додаткові дії для вибраних елементів</translation>
@@ -879,6 +880,7 @@
 <translation id="1845727111305721124">Дозволено відтворювати звуки</translation>
 <translation id="1846308012215045257">Натисніть клавішу Control, щоб запустити плагін <ph name="PLUGIN_NAME" /></translation>
 <translation id="184862733444771842">Запит на додавання функції</translation>
+<translation id="1849016657376805933">Усі пристрої HID</translation>
 <translation id="1849186935225320012">Ця сторінка повністю контролює пристрої MIDI.</translation>
 <translation id="1850145825777333687">Облікові дані пристрою</translation>
 <translation id="1850508293116537636">Повернути &amp;за годинниковою стрілкою</translation>
@@ -1013,6 +1015,7 @@
 <translation id="1988259784461813694">Вимоги</translation>
 <translation id="1989112275319619282">Переглянути</translation>
 <translation id="1989113344093894667">Не вдається записати контент</translation>
+<translation id="1989744123191450103">Не вдалося створити резервні копії.</translation>
 <translation id="1989903373608997757">Завжди використовувати</translation>
 <translation id="1990046457226896323">Файли живих субтитрів завантажено</translation>
 <translation id="1990512225220753005">Не показувати ярлики на цій сторінці</translation>
@@ -1022,6 +1025,7 @@
 <translation id="1994173015038366702">URL-адреса сайту</translation>
 <translation id="1995916364271252349">Контролює, яку інформацію можуть використовувати й показувати сайти (місцезнаходження, камера, спливаючі вікна тощо)</translation>
 <translation id="1997616988432401742">Ваші сертифікати</translation>
+<translation id="1997645434968427303">Не вдалося відновити резервні копії додатків і файлів Linux. Можливо, це сталося через недостатній обсяг вільного місця на диску в Linux. Ви можете змінити обсяг місця на диску, який займає Linux, і повторити спробу відновлення в налаштуваннях ОС.</translation>
 <translation id="1999115740519098545">Після запуску</translation>
 <translation id="2000419248597011803">Надсилає деякі файли cookie й пошукові запити з адресного рядка та вікна пошуку в пошукову систему за умовчанням</translation>
 <translation id="2002109485265116295">У реальному часі</translation>
@@ -2098,6 +2102,7 @@
 <translation id="3046178388369461825">На диску Linux дуже мало вільного місця</translation>
 <translation id="3046910703532196514">Веб-сторінка, повністю</translation>
 <translation id="304747341537320566">Системи синтезу мовлення</translation>
+<translation id="3048336643003835855">Пристрої HID від постачальника <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">Журнали трансляції та пристрою</translation>
 <translation id="3051250416341590778">Розмір дисплея</translation>
 <translation id="3053013834507634016">Використання ключа сертифіката</translation>
@@ -2525,6 +2530,7 @@
 <translation id="3511307672085573050">Копіювати адр&amp;есу посилання</translation>
 <translation id="351152300840026870">Шрифт фіксованої ширини</translation>
 <translation id="3511528412952710609">коротка</translation>
+<translation id="3514011352559420398">Не вдалося відновити</translation>
 <translation id="3514335087372914653">Налаштування гри</translation>
 <translation id="3514373592552233661">Рекомендовані мережі мають перевагу над відомими (якщо їх кілька)</translation>
 <translation id="3515983984924808886">Натисніть ключ безпеки знову, щоб підтвердити скидання. Усі дані, збережені на ньому (зокрема, PIN-код), буде видалено.</translation>
@@ -3192,6 +3198,7 @@
 <translation id="4180788401304023883">Видалити сертифікат Центру сертифікації "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Мови</translation>
+<translation id="4184803915913850597">Пристрій HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4184885522552335684">Потягніть, щоб перемістити дисплей</translation>
 <translation id="4187424053537113647">Налаштування додатка <ph name="APP_NAME" />…</translation>
 <translation id="4190828427319282529">Виділяти фокус клавіатури</translation>
@@ -3684,6 +3691,7 @@
 <translation id="4699357559218762027">(автозапуск)</translation>
 <translation id="4701025263201366865">Вхід для батьків</translation>
 <translation id="4701335814944566468">Переглянуто вчора</translation>
+<translation id="4707337002099455863">Завжди на всіх сайтах</translation>
 <translation id="4708794300267213770">Показувати заблокований екран, коли пристрій виходить із режиму сну</translation>
 <translation id="4708849949179781599">Вийти з <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Відновити налаштування</translation>
@@ -4147,6 +4155,7 @@
 <translation id="5208548918290612795">Зберігання маркера автентифікації сервісу <ph name="WEB_DRIVE" /></translation>
 <translation id="520902706163766447">У головному інтерфейсі Chrome з'являється спливаюче вікно для пошуку серед відкритих вкладок.</translation>
 <translation id="5209320130288484488">Пристрої не знайдено.</translation>
+<translation id="5209513429611499188">Пристрої HID із використанням на сторінці <ph name="USAGE_PAGE" /></translation>
 <translation id="5210365745912300556">Закрити вкладку</translation>
 <translation id="5213114823401215820">Знову відкрити закриту групу</translation>
 <translation id="5213481667492808996">Службу передавання даних "<ph name="NAME" />" активовано</translation>
@@ -4553,6 +4562,7 @@
 <translation id="5627086634964711283">Розширення також змінило сторінку, яка відкривається під натискання кнопки "Домашня сторінка".</translation>
 <translation id="5627676517703583263">Розумний перегляд у Chrome</translation>
 <translation id="5627832140542566187">Орієнтація дисплея</translation>
+<translation id="5628393161682339323">Коли я натискаю розширення</translation>
 <translation id="562935524653278697">Адміністратор вимкнув синхронізацію закладок, історії, паролів та інших налаштувань.</translation>
 <translation id="5631017369956619646">Використання ЦП</translation>
 <translation id="5632059346822207074">Потрібен дозвіл. Натисніть Ctrl + стрілку вперед, щоб відповісти</translation>
@@ -4687,6 +4697,7 @@
 <translation id="5781092003150880845">Синхронізувати як <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781865261247219930">Надіслати команди в розширення "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="5782227691023083829">Виконується переклад сторінки...</translation>
+<translation id="5783304934509327739">Параметр доступу до сайту</translation>
 <translation id="57838592816432529">Вимкнути звук</translation>
 <translation id="5785583009707899920">Обробники файлів Chrome</translation>
 <translation id="5787146423283493983">Угода щодо ключів</translation>
@@ -4737,6 +4748,7 @@
 <translation id="5834581999798853053">Залишилося приблизно <ph name="TIME" /> хв.</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – запис на камері або мікрофоні ввімкнено</translation>
 <translation id="583673505367439042">Сайти можуть просити дозвіл змінювати файли та папки на пристрої</translation>
+<translation id="583756221537636748">Чохол</translation>
 <translation id="5840680448799937675">Завжди передавати файли офлайн</translation>
 <translation id="5841270259333717135">Налаштувати Ethernet</translation>
 <translation id="5842497610951477805">Увімкнути Bluetooth</translation>
@@ -5374,6 +5386,7 @@
 <translation id="6499143127267478107">Визначення хосту в сценарії проксі-сервера...</translation>
 <translation id="6499764981457476645">Пристроїв поблизу не знайдено</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> хоче відкрити цей файл:</translation>
+<translation id="65017764184991091">Не вдалося створити резервні копії додатків і файлів Linux. Можливо, це сталося через недостатній обсяг вільного місця. Спробуйте звільнити пам’ять або виберіть інше місце для резервних копій.</translation>
 <translation id="6501957628055559556">Усі контейнери</translation>
 <translation id="650266656685499220">Щоб створити альбоми, відкрийте Google Фото</translation>
 <translation id="6503077044568424649">Часто відвідувані</translation>
@@ -7401,6 +7414,7 @@
 <translation id="8581809080475256101">Натисніть, щоб перейти далі, або відкрийте контекстне меню, щоб переглянути історію</translation>
 <translation id="8584280235376696778">&amp;Відкрити відео в новій вкладці</translation>
 <translation id="8584427708066927472">Пароль видалено з цього пристрою</translation>
+<translation id="8584843865238667486">Пристрої HID з використанням <ph name="USAGE" /> на сторінці <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Видалити Crostini</translation>
 <translation id="8585841788766257444">Зазначені нижче сайти дотримуються спеціального налаштування (а не поведінки за умовчанням)</translation>
 <translation id="8588866096426746242">Показати статистику профілю</translation>

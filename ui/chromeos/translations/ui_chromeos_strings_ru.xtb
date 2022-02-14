@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Корейская раскладка (Ahnmatae)</translation>
 <translation id="1155759005174418845">Каталанский</translation>
 <translation id="1168100932582989117">Серверы имен Google</translation>
+<translation id="1171082344678443012">Сжатый архив XZ</translation>
 <translation id="1172970565351728681">Осталось около <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Переименовать</translation>
 <translation id="1173916544412572294">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, телефон – <ph name="PHONE_NAME" />, статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, заряд батареи – <ph name="BATTERY_STATUS" /> %, подробная информация</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">При форматировании диска все хранящиеся на нем данные будут удалены. Это действие нельзя отменить.</translation>
 <translation id="2025955442973426285">Тигринья</translation>
 <translation id="2028997212275086731">Архив RAR</translation>
+<translation id="2036414735548252477">Сжатый TAR-архив LZMA</translation>
 <translation id="2037845485764049925">Русский</translation>
 <translation id="2044023416777079300">Модем не зарегистрирован.</translation>
 <translation id="2046702855113914483">Рамен</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> Б</translation>
 <translation id="4880214202172289027">Ползунок громкости</translation>
 <translation id="4881695831933465202">Открыть</translation>
+<translation id="4886199584824489598">Сжатый архив bzip2</translation>
 <translation id="4900532980794411603">Предоставить доступ Parallels Desktop</translation>
 <translation id="4902546322522096650">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус защиты – "<ph name="SECURITY_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, подключение</translation>
 <translation id="4905417359854579806">Файлы (<ph name="FILE_COUNT" />) готовы к сохранению</translation>
@@ -586,6 +589,7 @@
 <translation id="6055907707645252013">Сеть <ph name="NETWORK_TYPE" />, нет подключения</translation>
 <translation id="6074825444536523002">Форма Google</translation>
 <translation id="6079871810119356840">Венгерский, раскладка QWERTY</translation>
+<translation id="6082256976217156453">Сжатый архив LZMA</translation>
 <translation id="6096979789310008754">Поисковый запрос удален. Показаны все файлы и папки.</translation>
 <translation id="610101264611565198">Перемещение файла "<ph name="FILE_NAME" />" в папку "<ph name="FOLDER_NAME" />"…</translation>
 <translation id="6129953537138746214">Пробел</translation>
@@ -842,6 +846,7 @@
 <translation id="8297012244086013755">Корейская раскладка (Sebeolsik без Shift)</translation>
 <translation id="8299269255470343364">Японский</translation>
 <translation id="8300849813060516376">Сбой OTASP</translation>
+<translation id="8308481408797647857">Сжатый TAR-архив XZ</translation>
 <translation id="8312871300878166382">Вставить в папку</translation>
 <translation id="8329978297633540474">Обычный текст</translation>
 <translation id="8335587457941836791">Открепить от панели запуска</translation>
@@ -950,6 +955,7 @@
 <translation id="943972244133411984">Кем изменено</translation>
 <translation id="945522503751344254">Отправить отзыв</translation>
 <translation id="947144732524271678">Выбраны объекты от "<ph name="FROM_ENTRY_NAME" />" до "<ph name="TO_ENTRY_NAME" />" (всего <ph name="ENTRY_COUNT" />).</translation>
+<translation id="961973045258256291">Сжатый архив gzip</translation>
 <translation id="965477715979482472">Английский (ЮАР)</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="988685240266037636">Файл "<ph name="FILE_NAME" />" уже существует. Заменить его?</translation>

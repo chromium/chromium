@@ -1985,6 +1985,7 @@
 <translation id="2933632078076743449">최종 업데이트</translation>
 <translation id="2934999512438267372">MIDI 기기 전체 제어 허용됨</translation>
 <translation id="2935225303485967257">프로필 관리</translation>
+<translation id="2935314715123552088">활성 eSIM 프로필 사용 중지</translation>
 <translation id="2935654492420446828">학교 계정 나중에 추가하기</translation>
 <translation id="2936851848721175671">백업 및 복원</translation>
 <translation id="2939908794993783865">추가 비활성 사이트</translation>
@@ -3130,6 +3131,7 @@
 <translation id="4104163789986725820">내보내기(&amp;X)...</translation>
 <translation id="4107048419833779140">외부 저장장치 식별 및 제거</translation>
 <translation id="4109135793348361820">창을 <ph name="USER_NAME" />(<ph name="USER_EMAIL" />)님에게로 이동</translation>
+<translation id="4110485659976215879">경고 다시 열기</translation>
 <translation id="4110490973560452005">다운로드 완료: <ph name="FILE_NAME" />. 다운로드바 영역으로 이동하려면 Shift+F6를 누르세요.</translation>
 <translation id="4110686435123617899">앨범 <ph name="TITLE" /> <ph name="DESC" /> 선택</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />(오프라인)</translation>
@@ -3252,6 +3254,7 @@
 <translation id="4259388776256904261">잠시만 기다려 주세요.</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> 파일은 위험할 수 있습니다. 검사를 위해 Google 고급 보호 프로그램에 전송할까요? 다운로드바 영역으로 이동하려면 Shift+F6을 누르세요.</translation>
 <translation id="4261429981378979799">확장 프로그램 권한</translation>
+<translation id="4262004481148703251">경고 닫기</translation>
 <translation id="4263223596040212967">키보드 레이아웃을 확인한 다음 다시 시도해 주세요.</translation>
 <translation id="426564820080660648">업데이트를 확인하려면 이더넷, Wi-Fi 또는 모바일 데이터를 사용하세요.</translation>
 <translation id="4266679478228765574">폴더를 삭제하면 공유가 중지되지만 파일이 삭제되지는 않습니다.</translation>
@@ -3657,6 +3660,7 @@
 <translation id="4681453295291708042">Nearby Share 사용 중지</translation>
 <translation id="4681930562518940301">새 탭에서 원본 이미지 열기</translation>
 <translation id="4682551433947286597">로그인 화면에 배경화면이 표시됩니다.</translation>
+<translation id="4682830185876172415">최근 다운로드</translation>
 <translation id="4683629100208651599">Make Lowercase(소문자로 표시)</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />%(기본)</translation>
 <translation id="4684427112815847243">모두 동기화</translation>
@@ -3921,6 +3925,7 @@
 <translation id="496446150016900060">휴대전화와 Wi-Fi 네트워크 동기화</translation>
 <translation id="4965808351167763748">이 기기를 설정하여 행아웃 Meet를 실행하시겠습니까?</translation>
 <translation id="4966972803217407697">시크릿 모드를 사용 중입니다.</translation>
+<translation id="496742804571665842">eSIM 프로필 사용 중지</translation>
 <translation id="496888482094675990">파일 앱을 사용하면 Google Drive, 외부 저장소, Chrome OS 기기에 저장한 파일에 신속하게 액세스할 수 있습니다.</translation>
 <translation id="4971412780836297815">완료되면 열기</translation>
 <translation id="4971735654804503942">위험한 웹사이트, 다운로드 항목 및 확장 프로그램에 더 빠르게 대응하여 선제적 보호 조치를 취합니다. 비밀번호 유출에 관해 알립니다. Google에 인터넷 사용 기록을 전송해야 합니다.</translation>
@@ -6271,6 +6276,7 @@
 <translation id="7448430327655618736">앱 자동 설치</translation>
 <translation id="7449752890690775568">비밀번호를 삭제할까요?</translation>
 <translation id="7450761244949417357">지금 <ph name="ALTERNATIVE_BROWSER_NAME" />에서 여는 중</translation>
+<translation id="7452166281927983300">닫은 경고(<ph name="MUTED_PASSWORDS" />개)</translation>
 <translation id="7453008956351770337">이 프린터를 선택하면 다음 확장 프로그램에 내 프린터에 액세스할 수 있는 권한을 부여하게 됩니다.</translation>
 <translation id="7454548535253569100">포털: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">추가 컨테이너 관리</translation>

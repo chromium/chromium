@@ -21,6 +21,7 @@
 <translation id="115443833402798225">한글 안마태 키보드</translation>
 <translation id="1155759005174418845">카탈로니아어</translation>
 <translation id="1168100932582989117">Google 네임서버</translation>
+<translation id="1171082344678443012">XZ 압축 보관 파일</translation>
 <translation id="1172970565351728681">약 <ph name="REMAINING_TIME" /> 남음</translation>
 <translation id="1173894706177603556">이름 바꾸기</translation>
 <translation id="1173916544412572294">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 휴대전화 배터리 <ph name="BATTERY_STATUS" />%, 세부정보</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">드라이브를 포맷하면 드라이브에 저장된 데이터가 모두 삭제됩니다. 이 작업은 취소할 수 없습니다.</translation>
 <translation id="2025955442973426285">티그리냐어</translation>
 <translation id="2028997212275086731">RAR 압축 파일</translation>
+<translation id="2036414735548252477">LZMA 압축 tar 보관 파일</translation>
 <translation id="2037845485764049925">러시아어</translation>
 <translation id="2044023416777079300">모뎀이 등록되지 않음</translation>
 <translation id="2046702855113914483">라면</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" />바이트</translation>
 <translation id="4880214202172289027">볼륨 슬라이더</translation>
 <translation id="4881695831933465202">열기</translation>
+<translation id="4886199584824489598">Bzip2 압축 보관 파일</translation>
 <translation id="4900532980794411603">Parallels Desktop과 공유</translation>
 <translation id="4902546322522096650">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 연결</translation>
 <translation id="4905417359854579806">파일 <ph name="FILE_COUNT" />개 백업 준비 완료</translation>
@@ -586,6 +589,7 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> 네트워크, 연결되지 않음</translation>
 <translation id="6074825444536523002">Google 양식</translation>
 <translation id="6079871810119356840">헝가리어(쿼티 키보드)</translation>
+<translation id="6082256976217156453">LZMA 압축 보관 파일</translation>
 <translation id="6096979789310008754">검색어가 삭제되었으며, 모든 파일과 폴더가 표시됩니다.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> 파일을 <ph name="FOLDER_NAME" /> 폴더로 이동 중</translation>
 <translation id="6129953537138746214">Space</translation>
@@ -842,6 +846,7 @@
 <translation id="8297012244086013755">한글 세벌식(Shift 없음)</translation>
 <translation id="8299269255470343364">일본어</translation>
 <translation id="8300849813060516376">OTASP 실패</translation>
+<translation id="8308481408797647857">XZ 압축 tar 보관 파일</translation>
 <translation id="8312871300878166382">폴더에 붙여넣기</translation>
 <translation id="8329978297633540474">일반 텍스트</translation>
 <translation id="8335587457941836791">실행기에서 고정 해제</translation>
@@ -950,6 +955,7 @@
 <translation id="943972244133411984">수정한 사용자</translation>
 <translation id="945522503751344254">의견 보내기</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" />부터 <ph name="TO_ENTRY_NAME" />까지 <ph name="ENTRY_COUNT" />개를 선택했습니다.</translation>
+<translation id="961973045258256291">Gzip 압축 보관 파일</translation>
 <translation id="965477715979482472">영어(남아프리카공화국)</translation>
 <translation id="981121421437150478">오프라인</translation>
 <translation id="988685240266037636">이름이 '<ph name="FILE_NAME" />'인 파일이 이미 존재합니다. 덮어쓰시겠습니까?</translation>

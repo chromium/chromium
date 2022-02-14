@@ -601,6 +601,7 @@
 <translation id="1604432177629086300">印刷できませんでした。プリンタを確認してもう一度お試しください。</translation>
 <translation id="1605744057217831567">すべてのサイトデータと権限を表示</translation>
 <translation id="1606077700029460857">マウスの設定を変更</translation>
+<translation id="1606566847233779212">追加したサイトを削除しますか？</translation>
 <translation id="1607139524282324606">エラー項目を消去</translation>
 <translation id="1607499585984539560">ユーザーはドメインに関連付けられていません</translation>
 <translation id="1608668830839595724">選択した項目のその他の操作</translation>
@@ -864,6 +865,7 @@
 <translation id="1845727111305721124">音声の再生を許可するサイト</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> を実行するには Control キーを押しながらクリックします</translation>
 <translation id="184862733444771842">機能リクエスト</translation>
+<translation id="1849016657376805933">すべての HID デバイス</translation>
 <translation id="1849186935225320012">このページは MIDI デバイスのフル コントロールが許可されています。</translation>
 <translation id="1850145825777333687">デバイスの認証情報</translation>
 <translation id="1850508293116537636">時計回りに回転(&amp;C)</translation>
@@ -997,6 +999,7 @@
 <translation id="1988259784461813694">要件</translation>
 <translation id="1989112275319619282">閲覧</translation>
 <translation id="1989113344093894667">コンテンツをキャプチャできません</translation>
+<translation id="1989744123191450103">バックアップできませんでした</translation>
 <translation id="1989903373608997757">常に使用</translation>
 <translation id="1990046457226896323">読み上げファイルをダウンロードしました</translation>
 <translation id="1990512225220753005">このページではショートカットを表示しません</translation>
@@ -1006,6 +1009,7 @@
 <translation id="1994173015038366702">サイトの URL</translation>
 <translation id="1995916364271252349">サイトが使用、表示できる情報（位置情報、カメラ、ポップアップなど）を制御します</translation>
 <translation id="1997616988432401742">ユーザーの証明書</translation>
+<translation id="1997645434968427303">Linux のバックアップを復元できませんでした。Linux のディスク空き容量が不足している可能性があります。OS の設定で、Linux 用のディスク容量を変更してから、もう一度バックアップの復元を試してみてください。</translation>
 <translation id="1999115740519098545">起動時</translation>
 <translation id="2000419248597011803">Cookie と、アドレスバーや検索ボックスに入力した検索語句を既定の検索エンジンに送信します</translation>
 <translation id="2002109485265116295">リアルタイム</translation>
@@ -2078,6 +2082,7 @@
 <translation id="3046178388369461825">Linux ディスクの空き容量が非常に少なくなっています</translation>
 <translation id="3046910703532196514">ウェブページ、完全</translation>
 <translation id="304747341537320566">読み上げエンジン</translation>
+<translation id="3048336643003835855">ベンダー <ph name="VENDOR_ID" /> の HID デバイス</translation>
 <translation id="3048917188684939573">キャストとデバイスのログ</translation>
 <translation id="3051250416341590778">表示サイズ</translation>
 <translation id="3053013834507634016">証明書キーの用途</translation>
@@ -2505,6 +2510,7 @@
 <translation id="3511307672085573050">リンクのアドレスをコピー(&amp;E)</translation>
 <translation id="351152300840026870">固定幅フォント</translation>
 <translation id="3511528412952710609">短い</translation>
+<translation id="3514011352559420398">復元できませんでした</translation>
 <translation id="3514335087372914653">ゲームの管理</translation>
 <translation id="3514373592552233661">複数のネットワークを利用できる場合に、優先ネットワークを他の既知のネットワークより優先します</translation>
 <translation id="3515983984924808886">リセットを確定するには、セキュリティ キーをもう一度タップしてください。セキュリティ キーに保存されているすべての情報（PIN を含む）が削除されます。</translation>
@@ -3170,6 +3176,7 @@
 <translation id="4180788401304023883">CA 証明書「<ph name="CERTIFICATE_NAME" />」を削除しますか？</translation>
 <translation id="4181602000363099176">20 倍</translation>
 <translation id="4181841719683918333">言語</translation>
+<translation id="4184803915913850597">HID デバイス（<ph name="VENDOR_ID" />: <ph name="PRODUCT_ID" />）</translation>
 <translation id="4184885522552335684">ディスプレイをドラッグして移動</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> をセットアップしています...</translation>
 <translation id="4190828427319282529">キーボード フォーカスをハイライト表示する</translation>
@@ -3659,6 +3666,7 @@
 <translation id="4699357559218762027">（自動起動済み）</translation>
 <translation id="4701025263201366865">保護者のログイン</translation>
 <translation id="4701335814944566468">昨日表示</translation>
+<translation id="4707337002099455863">すべてのサイトで常に許可</translation>
 <translation id="4708794300267213770">スリープから復帰するときにロック画面を表示する</translation>
 <translation id="4708849949179781599"><ph name="PRODUCT_NAME" /> を終了</translation>
 <translation id="4711638718396952945">設定を復元</translation>
@@ -4119,6 +4127,7 @@
 <translation id="5208548918290612795"><ph name="WEB_DRIVE" /> 認証トークンの保存</translation>
 <translation id="520902706163766447">Chrome UI 上部のポップアップ バブルで、現在開いているタブを検索できるようにします。</translation>
 <translation id="5209320130288484488">デバイスが見つかりませんでした</translation>
+<translation id="5209513429611499188">使用状況ページ <ph name="USAGE_PAGE" /> で使用状況が収集されている HID デバイス</translation>
 <translation id="5210365745912300556">タブを閉じる</translation>
 <translation id="5213114823401215820">閉じたグループを開く</translation>
 <translation id="5213481667492808996">「<ph name="NAME" />」データサービスを使用できるようになりました</translation>
@@ -4524,6 +4533,7 @@
 <translation id="5627086634964711283">この拡張機能では、ホーム ボタンのクリック時に表示されるページも制御されます。</translation>
 <translation id="5627676517703583263">Chrome で賢くブラウジング</translation>
 <translation id="5627832140542566187">ディスプレイの向き</translation>
+<translation id="5628393161682339323">拡張機能をクリックしたとき</translation>
 <translation id="562935524653278697">管理者がブックマーク、履歴、パスワードなどの設定の同期を無効にしました。</translation>
 <translation id="5631017369956619646">CPU 使用状況</translation>
 <translation id="5632059346822207074">権限がリクエストされました。対応するには、Ctrl+Forward キーを押してください</translation>
@@ -4658,6 +4668,7 @@
 <translation id="5781092003150880845"><ph name="ACCOUNT_FULL_NAME" /> として同期</translation>
 <translation id="5781865261247219930">コマンドを <ph name="EXTENSION_NAME" /> に送信します</translation>
 <translation id="5782227691023083829">翻訳しています...</translation>
+<translation id="5783304934509327739">サイトアクセスのオプション</translation>
 <translation id="57838592816432529">ミュート</translation>
 <translation id="5785583009707899920">Chrome ファイル ユーティリティ</translation>
 <translation id="5787146423283493983">キー合意</translation>
@@ -4708,6 +4719,7 @@
 <translation id="5834581999798853053">あと約 <ph name="TIME" /> 分</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - カメラまたはマイクで記録中です</translation>
 <translation id="583673505367439042">サイトがデバイスのファイルやフォルダの編集を要求できるようにする</translation>
+<translation id="583756221537636748">ケース</translation>
 <translation id="5840680448799937675">常にオフラインでファイルを共有します</translation>
 <translation id="5841270259333717135">イーサネットを設定する</translation>
 <translation id="5842497610951477805">Bluetooth 有効</translation>
@@ -5342,6 +5354,7 @@
 <translation id="6499143127267478107">プロキシ スクリプト内のホストを解決しています...</translation>
 <translation id="6499764981457476645">付近にデバイスは見つかりませんでした</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> が次のファイルを開く許可を求めています:</translation>
+<translation id="65017764184991091">Linux アプリとファイルをバックアップできませんでした。デバイスの空き容量が不足している可能性があります。デバイスの空き容量を確保するか、バックアップ先として別の場所を選択してください。</translation>
 <translation id="6501957628055559556">すべてのコンテナ</translation>
 <translation id="650266656685499220">アルバムを作成するには、Google フォトにアクセスします</translation>
 <translation id="6503077044568424649">よくアクセスするページ</translation>
@@ -7365,6 +7378,7 @@
 <translation id="8581809080475256101">ボタンを押して次に進みます。履歴を表示するにはコンテキスト メニューを選択します</translation>
 <translation id="8584280235376696778">動画を新しいタブで開く(&amp;O)</translation>
 <translation id="8584427708066927472">このデバイスからパスワードを削除しました</translation>
+<translation id="8584843865238667486">使用状況ページ <ph name="USAGE_PAGE" /> で使用状況 <ph name="USAGE" /> が収集されている HID デバイス</translation>
 <translation id="8585480574870650651">Crostini の削除</translation>
 <translation id="8585841788766257444">次のサイトでは、デフォルトではなくカスタムの設定が使用されます</translation>
 <translation id="8588866096426746242">プロフィール統計情報を表示</translation>

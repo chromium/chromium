@@ -21,6 +21,7 @@
 <translation id="115443833402798225">韓文 (安馬太正音)</translation>
 <translation id="1155759005174418845">嘉泰羅尼亞文</translation>
 <translation id="1168100932582989117">Google 名稱伺服器</translation>
+<translation id="1171082344678443012">XZ 壓縮檔</translation>
 <translation id="1172970565351728681">大約剩餘 <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">重新命名</translation>
 <translation id="1173916544412572294">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="PHONE_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，手機電量係 <ph name="BATTERY_STATUS" />%，詳情</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">格式化硬碟將刪除其中儲存的所有資料。此操作無法復原。</translation>
 <translation id="2025955442973426285">蒂格里亞文</translation>
 <translation id="2028997212275086731">RAR 封存檔案</translation>
+<translation id="2036414735548252477">LZMA 壓縮 tar 封存檔案</translation>
 <translation id="2037845485764049925">俄文</translation>
 <translation id="2044023416777079300">數據機未登記</translation>
 <translation id="2046702855113914483">拉麵</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> 個字節</translation>
 <translation id="4880214202172289027">音量滑桿</translation>
 <translation id="4881695831933465202">開啟</translation>
+<translation id="4886199584824489598">Bzip2 壓縮檔</translation>
 <translation id="4900532980794411603">與 Parallels Desktop 共用</translation>
 <translation id="4902546322522096650">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，連接</translation>
 <translation id="4905417359854579806">現在可以備份 <ph name="FILE_COUNT" /></translation>
@@ -586,6 +589,7 @@
 <translation id="6055907707645252013">「<ph name="NETWORK_TYPE" />」網絡尚未連線</translation>
 <translation id="6074825444536523002">Google 表格</translation>
 <translation id="6079871810119356840">匈牙利文，QWERTY 鍵盤</translation>
+<translation id="6082256976217156453">LZMA 壓縮檔</translation>
 <translation id="6096979789310008754">清除咗搜尋文字，宜家顯示緊所有檔案同埋資料夾。</translation>
 <translation id="610101264611565198">正在將 <ph name="FILE_NAME" /> 移動到「<ph name="FOLDER_NAME" />」</translation>
 <translation id="6129953537138746214">空格</translation>
@@ -842,6 +846,7 @@
 <translation id="8297012244086013755">韓文 3 Set (No Shift)</translation>
 <translation id="8299269255470343364">日文</translation>
 <translation id="8300849813060516376">OTASP 失敗</translation>
+<translation id="8308481408797647857">XZ 壓縮 tar 封存檔案</translation>
 <translation id="8312871300878166382">貼入資料夾</translation>
 <translation id="8329978297633540474">純文字</translation>
 <translation id="8335587457941836791">從捷徑列中取消固定</translation>
@@ -950,6 +955,7 @@
 <translation id="943972244133411984">修改者</translation>
 <translation id="945522503751344254">提供意見反映</translation>
 <translation id="947144732524271678">揀咗 <ph name="FROM_ENTRY_NAME" /> 至 <ph name="TO_ENTRY_NAME" /> 範圍入面嘅 <ph name="ENTRY_COUNT" /> 個項目。</translation>
+<translation id="961973045258256291">Gzip 壓縮檔</translation>
 <translation id="965477715979482472">英文 (南非)</translation>
 <translation id="981121421437150478">離線</translation>
 <translation id="988685240266037636">名稱為「<ph name="FILE_NAME" />」的檔案已經存在。您要取代此檔案嗎？</translation>

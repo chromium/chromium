@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">Оруулсан утга нь <ph name="MINIMUM" />-тай тэнцүү эсвэл илүү байх ёстой.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
+<translation id="5272594226096532950">Тэмдэглээгүй. Бүлэгт <ph name="COUNT" />-с <ph name="INDEX" />-р сонголт</translation>
 <translation id="5307600278924710095">'<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' нь бүрэн гүйцэд биш бөгөөд бүрэн хаягаа оруулна уу.</translation>
 <translation id="5334352251556557839">Медиа тоглуулах боломжгүй байна.</translation>
 <translation id="537648784377940524">Хамгийн бага огноо (<ph name="MIN_DATE_OR_TIME" />) нь хамгийн их огнооны (<ph name="MAX_DATE_OR_TIME" />) өмнө байх ёстой.</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">Бусад...</translation>
 <translation id="6709093583001123835">Утга нь <ph name="VALUE" /> байх ёстой.</translation>
 <translation id="6709570249143506788">Тоглуулагчийн чанар муу байна</translation>
+<translation id="6719914554879143100">Тэмдэглэсэн. Бүлэгт <ph name="COUNT" />-с <ph name="INDEX" />-р сонголт</translation>
 <translation id="6790428901817661496">Тоглуулах</translation>
 <translation id="6820355525329141109">Нэмэлт өгөгдлийг ачаалж чадсангүй.</translation>
 <translation id="6831465880655513317">Өнгө ялгалт болон цайвар байдлыг сонгоход зориулсан 2 хэмжээст тохируулагчтай өнгөний хүрд</translation>

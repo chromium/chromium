@@ -42,6 +42,7 @@
 <translation id="1413240736185167732">విఫలమైంది - ఫిల్టర్ విఫలమైంది</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="142228117786570094">నా దగ్గర కీపెయిర్ ఉంది</translation>
+<translation id="1442433966118452622">ఇమేజ్ సోర్స్</translation>
 <translation id="1451536289672181509">పరికర రకం కీబోర్డ్.</translation>
 <translation id="1468664791493211953">ఆఫర్‌లు</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" />, ఈ పరికరాన్ని మేనేజ్ చేస్తుంది, ఇంకా మీ యాక్టివిటీని మానిటర్ చేయగలదు.</translation>
@@ -131,6 +132,7 @@
 <translation id="2619761439309613843">రోజూ రిఫ్రెష్ అవుతుంది</translation>
 <translation id="2620436844016719705">సిస్టమ్</translation>
 <translation id="2695514675076754339">8-అక్షరాల అన్‌లాక్ కోడ్‌ను ఎంటర్ చేయండి</translation>
+<translation id="2712812801627182647">TLS ప్రామాణీకరణ కీ</translation>
 <translation id="2740531572673183784">సరే</translation>
 <translation id="2751739896257479635">EAP 2వ దశ ప్రమాణీకరణ</translation>
 <translation id="2783010256799387990">ఉత్తీర్ణత సాధించాయి</translation>
@@ -167,6 +169,7 @@
 <translation id="3268178239013324452">విఫలమైంది - తలుపు తెరుచుకుని ఉంది</translation>
 <translation id="3283504360622356314">{0,plural, =1{ఫైల్‌ను ఎడిట్ చేయండి}other{ఫైల్‌లను ఎడిట్ చేయండి}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
+<translation id="3291996639387199448">కీ దశ</translation>
 <translation id="3310640316857623290">DNS ప్రతిస్పందన సమయం అనుమతించదగిన పరిమితికి మించి ఉంది</translation>
 <translation id="3328783797891415197">పరీక్ష రన్ అవుతోంది</translation>
 <translation id="3340011300870565703">పరికరంలో కుడి వైపు బడ్ బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />% ఉంది.</translation>
@@ -279,6 +282,7 @@
 <translation id="475869545581454722">Chrome OS పాస్‌వర్డ్ అప్‌డేట్ చేయబడింది</translation>
 <translation id="4773299976671772492">ఆపివేయబడింది</translation>
 <translation id="4782311465517282004">మీరు టెక్స్ట్‌ను కుడి క్లిక్ చేసినప్పుడు లేదా తాకి, నొక్కి ఉంచినప్పుడు నిర్వచనాలు, అనువాదాలు, లేదా యూనిట్ మార్పిడులను పొందండి</translation>
+<translation id="4793756956024303490">కుదింపు అల్గారిథమ్</translation>
 <translation id="4794140124556169553">CPU టెస్ట్‌ను రన్ చేయడం మీ సిస్టమ్ పనితీరుని ప్రభావితం చేయవచ్చు</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> ప్రింట్ టాస్క్ రద్దు చేయబడింది</translation>
 <translation id="4813136279048157860">నా చిత్రాలు</translation>
@@ -291,6 +295,7 @@
 <translation id="484790837831576105">(Android) DNS రిజల్యూషన్</translation>
 <translation id="4848429997038228357">రన్ అవుతోంది</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> {0} ప్రయత్నం మిగిలి ఉంది}other{<ph name="ERROR_MESSAGE" /> {0} ప్రయత్నాలు మిగిలి ఉన్నాయి}}</translation>
+<translation id="4873827928179867585">ప్రామాణీకరణ అల్గారిథమ్</translation>
 <translation id="4880328057631981605">యాక్సెస్ స్థానం పేరు</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">వెంటనే ఒక కొత్త దానిని ఎంచుకోండి</translation>
@@ -308,6 +313,7 @@
 <translation id="4999333166442584738">రిపోర్ట్‌ను దాచు</translation>
 <translation id="500920857929044050">పరీక్షను ఆపండి</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">మీ స్క్రీన్ ఇన్‌యాక్టివ్‌గా ఉన్నప్పుడు, ఫోటోలు, సమయం, వాతావరణం, మీడియా సమాచారాన్ని చూపిస్తుంది.</translation>
 <translation id="5039804452771397117">అనుమతించు</translation>
 <translation id="5049856988445523908">SIM లాక్ చేయబడింది (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">సమూహం పేరు</translation>
@@ -435,6 +441,7 @@
 <translation id="6618744767048954150">రన్ అవుతున్నాయి</translation>
 <translation id="6620487321149975369">ప్రింట్ టాస్క్‌లను మాన్యువల్‌గా తీసివేసేంత వరకు అవి హిస్టరీలో అలాగే ఉంటాయి</translation>
 <translation id="6643016212128521049">క్లియర్ చేయి</translation>
+<translation id="6647510110698214773">ఎన్‌క్రిప్షన్ అల్గారిథమ్</translation>
 <translation id="6657585470893396449">పాస్‌వర్డ్</translation>
 <translation id="6692996468359469499">మీ ఎంచుకున్న దానికి సంబంధించిన సమాచారాన్ని పొందండి</translation>
 <translation id="6704062477274546131">DNS రిజల్యూషన్</translation>

@@ -21,7 +21,7 @@
 <translation id="115443833402798225">Hangul ahnmatae</translation>
 <translation id="1155759005174418845">Katalonska</translation>
 <translation id="1168100932582989117">Googleovi serveri naziva</translation>
-<translation id="1171082344678443012">XZ komprimirana arhiva</translation>
+<translation id="1171082344678443012">XZ kompresirana arhiva</translation>
 <translation id="1172970565351728681">Preostalo je oko <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Promijeni naziv</translation>
 <translation id="1173916544412572294">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, baterija telefona <ph name="BATTERY_STATUS" />%, detalji</translation>
@@ -120,7 +120,7 @@
 <translation id="2009067268969781306">Formatiranjem diska ćete izbrisati sve podatke koji su na njemu pohranjeni. Ova radnja se ne može poništiti.</translation>
 <translation id="2025955442973426285">tigrinja</translation>
 <translation id="2028997212275086731">RAR arhiva</translation>
-<translation id="2036414735548252477">LZMA komprimirana tar arhiva</translation>
+<translation id="2036414735548252477">LZMA kompresirana tar arhiva</translation>
 <translation id="2037845485764049925">ruski</translation>
 <translation id="2044023416777079300">Modem nije registriran</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -444,7 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> B</translation>
 <translation id="4880214202172289027">Klizač za jačinu zvuka</translation>
 <translation id="4881695831933465202">Otvori</translation>
-<translation id="4886199584824489598">Bzip2 komprimirana arhiva</translation>
+<translation id="4886199584824489598">Bzip2 kompresirana arhiva</translation>
 <translation id="4900532980794411603">Dijeli pomoću aplikacije Parallels Desktop</translation>
 <translation id="4902546322522096650">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, poveži</translation>
 <translation id="4905417359854579806">Broj fajlova spremnih za izradu sigurnosne kopije: <ph name="FILE_COUNT" /></translation>
@@ -589,7 +589,7 @@
 <translation id="6055907707645252013">Mreža <ph name="NETWORK_TYPE" />, nije povezana</translation>
 <translation id="6074825444536523002">Google obrazac</translation>
 <translation id="6079871810119356840">mađarski s Qwerty tastaturom</translation>
-<translation id="6082256976217156453">LZMA komprimirana arhiva</translation>
+<translation id="6082256976217156453">LZMA kompresirana arhiva</translation>
 <translation id="6096979789310008754">Pretraži obrisani tekst uz prikaz svih fajlova i foldera.</translation>
 <translation id="610101264611565198">Premještanje fajla <ph name="FILE_NAME" /> u folder <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">Razmaknica</translation>
@@ -846,7 +846,7 @@
 <translation id="8297012244086013755">Trodijelni hangul (bez tipke Shift)</translation>
 <translation id="8299269255470343364">japanski</translation>
 <translation id="8300849813060516376">Greška na OTASP-u</translation>
-<translation id="8308481408797647857">XZ komprimirana tar arhiva</translation>
+<translation id="8308481408797647857">XZ kompresirana tar arhiva</translation>
 <translation id="8312871300878166382">Zalijepi u folder</translation>
 <translation id="8329978297633540474">Obični tekst</translation>
 <translation id="8335587457941836791">Otkači s police</translation>
@@ -955,7 +955,7 @@
 <translation id="943972244133411984">Izmijenio/la</translation>
 <translation id="945522503751344254">Pošaljite povratne informacije</translation>
 <translation id="947144732524271678">Odabran je niz unosa (<ph name="ENTRY_COUNT" />) od stavke <ph name="FROM_ENTRY_NAME" /> do stavke <ph name="TO_ENTRY_NAME" />.</translation>
-<translation id="961973045258256291">Gzip komprimirana arhiva</translation>
+<translation id="961973045258256291">Gzip kompresirana arhiva</translation>
 <translation id="965477715979482472">engleski (Južnoafrička Republika)</translation>
 <translation id="981121421437150478">Van mreže</translation>
 <translation id="988685240266037636">Već postoji fajl s nazivom "<ph name="FILE_NAME" />". Želite li ga zamijeniti?</translation>

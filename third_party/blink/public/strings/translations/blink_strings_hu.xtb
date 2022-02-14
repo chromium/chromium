@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">Az érték legyen nagyobb vagy egyenlő, mint <ph name="MINIMUM" />.</translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">Nincs bejelölve. A csoportban, a(z) <ph name="COUNT" />., összesen: <ph name="INDEX" />.</translation>
 <translation id="5307600278924710095">Kérjük, adja meg a „<ph name="ATSIGN" />” előtti részt is. A „<ph name="INVALIDADDRESS" />” cím nem teljes.</translation>
 <translation id="5334352251556557839">Nem sikerült a médiafájl lejátszása.</translation>
 <translation id="537648784377940524">A minimális dátumnak (<ph name="MIN_DATE_OR_TIME" />) a maximális dátum (<ph name="MAX_DATE_OR_TIME" />) elé kell esnie.</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">Egyéb...</translation>
 <translation id="6709093583001123835">Ilyen érték szükséges: <ph name="VALUE" />.</translation>
 <translation id="6709570249143506788">Gyenge lejátszási minőség</translation>
+<translation id="6719914554879143100">Bejelölve. A csoportban, a(z) <ph name="COUNT" />., összesen: <ph name="INDEX" />.</translation>
 <translation id="6790428901817661496">Lejátszás</translation>
 <translation id="6820355525329141109">Nem sikerült betölteni a beépülő modult.</translation>
 <translation id="6831465880655513317">Színválasztó kétdimenziós csúszkával, amellyel a telítettséget és a világosságot lehet beállítani</translation>

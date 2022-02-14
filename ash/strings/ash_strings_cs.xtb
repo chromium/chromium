@@ -128,6 +128,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1698760176351776263">Adresa IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Plocha: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Nastavení sítě</translation>
+<translation id="1715293566947629045">Profil se deaktivuje. Několik minut počkejte.</translation>
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Živý přepis je zapnutý</translation>
 <translation id="1720011244392820496">Zapnutí Synchronizace Wi-Fi</translation>
@@ -273,6 +274,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2750932254614666392">„Smazat“</translation>
 <translation id="2778650143428714839">Zařízení <ph name="DEVICE_TYPE" /> spravované doménou <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Ukončit režim nahrávání</translation>
+<translation id="2791421900609674576">Budou se zobrazovat doporučení, abyste mohli pokračovat od místa, kde jste skončili. Doporučení můžete odstranit podržením.</translation>
 <translation id="2792498699870441125">Alt + Vyhledávání</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
 <translation id="2803313416453193357">Otevřít složku</translation>
@@ -396,6 +398,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
         <ph name="LOCALE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Do jedné minuty zařízení aktualizujte}few{Do # minut zařízení aktualizujte}many{Do # minuty zařízení aktualizujte}other{Do # minut zařízení aktualizujte}}</translation>
 <translation id="353086728817903341">Připojeno k několika zařízením (<ph name="NUM_DEVICES" />)</translation>
+<translation id="3542066395059568317">Budou se zobrazovat doporučení, abyste mohli pokračovat od místa, kde jste skončili. Doporučení můžete odstranit kliknutím pravým tlačítkem.</translation>
 <translation id="3552189655002856821">Wi-Fi je vypnuta</translation>
 <translation id="3554637740840164787">Položka <ph name="ITEM_TITLE" /> byla připnuta</translation>
 <translation id="3560866052109807830">Zvýrazňovací kreslicí nástroje</translation>

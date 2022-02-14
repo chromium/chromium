@@ -603,6 +603,7 @@
 <translation id="1604432177629086300">Ошибка печати. Проверьте принтер и повторите попытку.</translation>
 <translation id="1605744057217831567">Посмотреть все разрешения и данные сайтов</translation>
 <translation id="1606077700029460857">Изменить настройки мыши</translation>
+<translation id="1606566847233779212">Удалить отдельные сайты, которые вы добавили?</translation>
 <translation id="1607139524282324606">Очистить запись</translation>
 <translation id="1607499585984539560">Пользователь не связан с доменом.</translation>
 <translation id="1608668830839595724">Другие действия с выбранными закладками</translation>
@@ -867,6 +868,7 @@
 <translation id="1845727111305721124">Разрешить сайтам воспроизводить звук</translation>
 <translation id="1846308012215045257">Чтобы запустить плагин "<ph name="PLUGIN_NAME" />", нажмите кнопку мыши, удерживая Ctrl.</translation>
 <translation id="184862733444771842">Запрос на добавление функции</translation>
+<translation id="1849016657376805933">Любое HID-устройство</translation>
 <translation id="1849186935225320012">Эта страница имеет полный контроль над устройствами MIDI.</translation>
 <translation id="1850145825777333687">Учетные данные устройства</translation>
 <translation id="1850508293116537636">Повернуть &amp;по часовой стрелке</translation>
@@ -1000,6 +1002,7 @@
 <translation id="1988259784461813694">Требования</translation>
 <translation id="1989112275319619282">Выбрать</translation>
 <translation id="1989113344093894667">Не удается сделать снимок контента</translation>
+<translation id="1989744123191450103">Сбой резервного копирования</translation>
 <translation id="1989903373608997757">Использовать всегда</translation>
 <translation id="1990046457226896323">Файлы автоматических субтитров скачаны.</translation>
 <translation id="1990512225220753005">Не показывать ярлыки на этой странице</translation>
@@ -1009,6 +1012,7 @@
 <translation id="1994173015038366702">Адрес сайта</translation>
 <translation id="1995916364271252349">Определяет, какую информацию могут использовать и показывать сайты (например, есть ли у них доступ к местоположению и камере, а также разрешение на показ всплывающих окон и т. д.).</translation>
 <translation id="1997616988432401742">Ваши сертификаты</translation>
+<translation id="1997645434968427303">Не удалось восстановить данные из резервной копии Linux. Это могло произойти из-за того, что на диске с Linux недостаточно места. Измените объем диска и снова попробуйте восстановить резервную копию в настройках ОС.</translation>
 <translation id="1999115740519098545">Запуск Chrome</translation>
 <translation id="2000419248597011803">Отправлять некоторые файлы cookie и поисковые запросы из адресной строки в поисковую систему по умолчанию</translation>
 <translation id="2002109485265116295">В режиме реального времени</translation>
@@ -1971,6 +1975,7 @@
 <translation id="2933632078076743449">Последнее обновление</translation>
 <translation id="2934999512438267372">Предоставлен полный контроль над устройствами MIDI</translation>
 <translation id="2935225303485967257">Управление профилями</translation>
+<translation id="2935314715123552088">Отключить активный профиль eSIM</translation>
 <translation id="2935654492420446828">Добавьте учебный аккаунт позже</translation>
 <translation id="2936851848721175671">Резервное копирование и восстановление</translation>
 <translation id="2939908794993783865">Другие неактивные сайты</translation>
@@ -2082,6 +2087,7 @@
 <translation id="3046178388369461825">На диске Linux почти нет места</translation>
 <translation id="3046910703532196514">Веб-страница полностью</translation>
 <translation id="304747341537320566">Синтезаторы речи</translation>
+<translation id="3048336643003835855">HID-устройства от поставщика с идентификатором <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">Журналы трансляций и устройств</translation>
 <translation id="3051250416341590778">Масштаб изображения на дисплее</translation>
 <translation id="3053013834507634016">Использование ключа сертификата</translation>
@@ -2509,6 +2515,7 @@
 <translation id="3511307672085573050">Скопировать адрес ссылки</translation>
 <translation id="351152300840026870">Моноширинный шрифт</translation>
 <translation id="3511528412952710609">Короткая</translation>
+<translation id="3514011352559420398">Сбой восстановления</translation>
 <translation id="3514335087372914653">Управление игрой</translation>
 <translation id="3514373592552233661">Если доступно несколько сохраненных сетей, сначала будут выбраны предпочитаемые</translation>
 <translation id="3515983984924808886">Чтобы подтвердить сброс, нажмите кнопку на электронном ключе ещё раз. Все данные, сохраненные на нем, включая PIN-код, будут удалены.</translation>
@@ -3118,6 +3125,7 @@
 <translation id="4104163789986725820">Э&amp;кспорт...</translation>
 <translation id="4107048419833779140">Идентификация и извлечение запоминающих устройств</translation>
 <translation id="4109135793348361820">Перенести окно на рабочий стол пользователя <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="4110485659976215879">Восстановить предупреждение</translation>
 <translation id="4110490973560452005">Скачивание завершено: <ph name="FILE_NAME" />. Чтобы перейти к панели загрузок, нажмите Shift + F6.</translation>
 <translation id="4110686435123617899">Выбрать альбом "<ph name="TITLE" />" с описанием "<ph name="DESC" />"</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
@@ -3176,6 +3184,7 @@
 <translation id="4180788401304023883">Удалить сертификат "<ph name="CERTIFICATE_NAME" />" Центра сертификации?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Языки</translation>
+<translation id="4184803915913850597">HID-устройство (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4184885522552335684">Перетащите дисплей на новое место</translation>
 <translation id="4187424053537113647">Настройка <ph name="APP_NAME" />…</translation>
 <translation id="4190828427319282529">Выделение объектов, выбранных с помощью клавиатуры</translation>
@@ -3240,6 +3249,7 @@
 <translation id="4259388776256904261">Это может занять несколько минут…</translation>
 <translation id="4260182282978351200">Файл "<ph name="FILE_NAME" />" может представлять опасность. Отправить его в Google для проверки с помощью Дополнительной защиты? Чтобы перейти к панели скачанных файлов, нажмите Shift + F6.</translation>
 <translation id="4261429981378979799">Разрешения для расширений</translation>
+<translation id="4262004481148703251">Закрыть</translation>
 <translation id="4263223596040212967">Проверьте раскладку клавиатуры и повторите попытку.</translation>
 <translation id="426564820080660648">Чтобы проверить наличие обновлений, подключитесь через сеть Ethernet или Wi-Fi либо используйте мобильную передачу данных.</translation>
 <translation id="4266679478228765574">Удаление папок повлечет только прекращение доступа к ним, но не удаление самих файлов.</translation>
@@ -3645,6 +3655,7 @@
 <translation id="4681453295291708042">Отключить Обмен с окружением</translation>
 <translation id="4681930562518940301">Открыть оригинальное изображение в новой вкладке</translation>
 <translation id="4682551433947286597">Обои устанавливаются на экран входа.</translation>
+<translation id="4682830185876172415">Последние скачанные файлы</translation>
 <translation id="4683629100208651599">Заменить на строчные</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (по умолчанию)</translation>
 <translation id="4684427112815847243">Синхронизировать все</translation>
@@ -3667,6 +3678,7 @@
 <translation id="4699357559218762027">(автозапуск)</translation>
 <translation id="4701025263201366865">Вход для родителя</translation>
 <translation id="4701335814944566468">Просмотрено вчера</translation>
+<translation id="4707337002099455863">Разрешить на всех сайтах</translation>
 <translation id="4708794300267213770">Показывать заблокированный экран при выходе из спящего режима</translation>
 <translation id="4708849949179781599">Выйти из <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Восстановить исходные настройки</translation>
@@ -3909,6 +3921,7 @@
 <translation id="496446150016900060">Синхронизировать сети Wi-Fi с телефоном.</translation>
 <translation id="4965808351167763748">Использовать это устройство для запуска Hangouts Meet?</translation>
 <translation id="4966972803217407697">Режим инкогнито</translation>
+<translation id="496742804571665842">Отключение профилей eSIM</translation>
 <translation id="496888482094675990">С помощью приложения "Файлы" можно быстро открыть документы с Google Диска, устройства под управлением Chrome OS или из внешнего хранилища.</translation>
 <translation id="4971412780836297815">Открыть по завершении</translation>
 <translation id="4971735654804503942">Более быстрая и эффективная защита от опасных сайтов, расширений и скачанных файлов. Предупреждает об утечках паролей. Требуется отправка данных о работе в браузере в Google.</translation>
@@ -4130,6 +4143,7 @@
 <translation id="5208548918290612795">Сохранение токена аутентификации из сервиса "<ph name="WEB_DRIVE" />"</translation>
 <translation id="520902706163766447">Включает всплывающие подсказки в верхней части интерфейса Chrome для поиска по открытым вкладкам.</translation>
 <translation id="5209320130288484488">Устройства не найдены</translation>
+<translation id="5209513429611499188">HID-устройства с использованием на странице <ph name="USAGE_PAGE" /></translation>
 <translation id="5210365745912300556">Закрыть вкладку</translation>
 <translation id="5213114823401215820">Восстановить закрытую группу</translation>
 <translation id="5213481667492808996">Служба передачи данных "<ph name="NAME" />" готова к работе.</translation>
@@ -4536,6 +4550,7 @@
 <translation id="5627086634964711283">Кроме того, расширение изменило страницу, которая отображается при нажатии кнопки "Главная страница".</translation>
 <translation id="5627676517703583263">Умный браузер Chrome</translation>
 <translation id="5627832140542566187">Ориентация дисплея</translation>
+<translation id="5628393161682339323">При нажатии на расширение</translation>
 <translation id="562935524653278697">Ваш администратор отключил синхронизацию закладок, истории, паролей и настроек.</translation>
 <translation id="5631017369956619646">Использование процессора</translation>
 <translation id="5632059346822207074">Требуется разрешение. Нажмите Ctrl + Косая черта, чтобы ответить.</translation>
@@ -4670,6 +4685,7 @@
 <translation id="5781092003150880845">Синхронизировать с аккаунтом пользователя <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781865261247219930">Отправлять команды в <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">Перевод...</translation>
+<translation id="5783304934509327739">Параметр доступа к сайтам</translation>
 <translation id="57838592816432529">Отключить звук</translation>
 <translation id="5785583009707899920">Файловые утилиты Chrome</translation>
 <translation id="5787146423283493983">Согласование ключей</translation>
@@ -4720,6 +4736,7 @@
 <translation id="5834581999798853053">Осталось <ph name="TIME" /> мин.</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" />: идет запись с камеры или микрофона</translation>
 <translation id="583673505367439042">Разрешить сайтам отправлять запрос на редактирование файлов или папок на устройстве</translation>
+<translation id="583756221537636748">Чехол</translation>
 <translation id="5840680448799937675">Всегда передавать файлы в офлайн-режиме</translation>
 <translation id="5841270259333717135">Настроить Ethernet</translation>
 <translation id="5842497610951477805">Включение и отключение Bluetooth</translation>
@@ -5357,6 +5374,7 @@
 <translation id="6499143127267478107">Разрешение хоста в скрипте прокси-сервера...</translation>
 <translation id="6499764981457476645">Устройства не найдены</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> запрашивает разрешение на открытие следующего файла:</translation>
+<translation id="65017764184991091">Не удалось выполнить резервное копирование приложений и файлов Linux. Это могло произойти из-за того, что на устройстве недостаточно свободного места. Удалите ненужные файлы или сохраните резервные копии на другом устройстве.</translation>
 <translation id="6501957628055559556">Все контейнеры</translation>
 <translation id="650266656685499220">Чтобы создать альбомы, перейдите в Google Фото</translation>
 <translation id="6503077044568424649">Сайты</translation>
@@ -6259,6 +6277,7 @@
 <translation id="7448430327655618736">Устанавливайте приложения автоматически</translation>
 <translation id="7449752890690775568">Удалить пароль?</translation>
 <translation id="7450761244949417357">Открывается <ph name="ALTERNATIVE_BROWSER_NAME" />…</translation>
+<translation id="7452166281927983300">Закрытые предупреждения (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">Выбирая этот принтер, вы предоставляете к нему доступ следующему расширению:</translation>
 <translation id="7454548535253569100">Портал: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">Управление дополнительными контейнерами</translation>
@@ -7384,6 +7403,7 @@
 <translation id="8581809080475256101">Нажмите, чтобы перейти, используйте контекстное меню, чтобы открыть историю</translation>
 <translation id="8584280235376696778">&amp;Открыть видео на новой вкладке</translation>
 <translation id="8584427708066927472">Пароль удален с устройства.</translation>
+<translation id="8584843865238667486">HID-устройства с использованием <ph name="USAGE" /> на странице <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Удалить Crostini</translation>
 <translation id="8585841788766257444">Для указанных ниже сайтов действуют специальные настройки</translation>
 <translation id="8588866096426746242">Показать статистику профиля</translation>

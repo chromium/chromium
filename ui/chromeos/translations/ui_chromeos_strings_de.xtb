@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Katalanisch</translation>
 <translation id="1168100932582989117">Google-Nameserver</translation>
+<translation id="1171082344678443012">XZ-komprimiertes Archiv</translation>
 <translation id="1172970565351728681">Noch ungefähr <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Umbenennen</translation>
 <translation id="1173916544412572294">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Smartphone-Akku bei <ph name="BATTERY_STATUS" /> %, Details</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">Durch die Formatierung eines Laufwerks werden alle darauf gespeicherten Daten gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2028997212275086731">RAR-Archiv</translation>
+<translation id="2036414735548252477">LZMA-komprimiertes Tar-Archiv</translation>
 <translation id="2037845485764049925">Russisch</translation>
 <translation id="2044023416777079300">Modem nicht registriert</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> Byte</translation>
 <translation id="4880214202172289027">Schieberegler für die Lautstärke</translation>
 <translation id="4881695831933465202">Öffnen</translation>
+<translation id="4886199584824489598">Bzip2-komprimiertes Archiv</translation>
 <translation id="4900532980794411603">Für Parallels Desktop freigeben</translation>
 <translation id="4902546322522096650">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Verbinden</translation>
 <translation id="4905417359854579806">Bereit zum Sichern von <ph name="FILE_COUNT" /></translation>
@@ -586,6 +589,7 @@
 <translation id="6055907707645252013">Netzwerk: <ph name="NETWORK_TYPE" />, nicht verbunden</translation>
 <translation id="6074825444536523002">Google-Formular</translation>
 <translation id="6079871810119356840">Ungarisch mit Qwerty-Tastatur</translation>
+<translation id="6082256976217156453">LZMA-komprimiertes Archiv</translation>
 <translation id="6096979789310008754">Die Sucheingabe wurde gelöscht. Alle Dateien und Ordner werden angezeigt.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> wird in den Ordner "<ph name="FOLDER_NAME" />" verschoben</translation>
 <translation id="6129953537138746214">Leertaste</translation>
@@ -842,6 +846,7 @@
 <translation id="8297012244086013755">Hangul 3 Set (Kein Umschalttaste)</translation>
 <translation id="8299269255470343364">Japanisch</translation>
 <translation id="8300849813060516376">OTASP fehlgeschlagen</translation>
+<translation id="8308481408797647857">XZ-komprimiertes Tar-Archiv</translation>
 <translation id="8312871300878166382">In Ordner einfügen</translation>
 <translation id="8329978297633540474">Unformatierter Text</translation>
 <translation id="8335587457941836791">Von Ablage loslösen</translation>
@@ -950,6 +955,7 @@
 <translation id="943972244133411984">Geändert von</translation>
 <translation id="945522503751344254">Feedback geben</translation>
 <translation id="947144732524271678">Sie haben <ph name="ENTRY_COUNT" /> Einträge von <ph name="FROM_ENTRY_NAME" /> bis <ph name="TO_ENTRY_NAME" /> ausgewählt.</translation>
+<translation id="961973045258256291">Gzip-komprimiertes Archiv</translation>
 <translation id="965477715979482472">Englisch (Südafrika)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Eine Datei mit dem Namen "<ph name="FILE_NAME" />" existiert bereits. Möchten Sie sie ersetzen?</translation>

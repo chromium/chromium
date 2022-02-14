@@ -1988,6 +1988,7 @@
 <translation id="2933632078076743449">上次更新時間</translation>
 <translation id="2934999512438267372">已允許全權控制 MIDI 裝置</translation>
 <translation id="2935225303485967257">管理個人檔案</translation>
+<translation id="2935314715123552088">停用使用中的 eSIM 設定檔</translation>
 <translation id="2935654492420446828">稍後新增學校帳戶</translation>
 <translation id="2936851848721175671">備份與還原</translation>
 <translation id="2939908794993783865">其他無效網站</translation>
@@ -3137,6 +3138,7 @@
 <translation id="4104163789986725820">匯出(&amp;X)…</translation>
 <translation id="4107048419833779140">識別並退出儲存裝置</translation>
 <translation id="4109135793348361820">將視窗傳送給 <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="4110485659976215879">取消忽略警告</translation>
 <translation id="4110490973560452005">下載完成 ：<ph name="FILE_NAME" />。按住 Shift+F6 鍵即可切換至下載內容列的位置。</translation>
 <translation id="4110686435123617899">揀相簿 <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (離線)</translation>
@@ -3260,6 +3262,7 @@
 <translation id="4259388776256904261">請稍候片刻</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> 可能不安全。要傳送到「Google 進階保護」進行掃瞄嗎？按住 Shift+F6 鍵即可切換至下載內容列的位置。</translation>
 <translation id="4261429981378979799">擴充程式權限</translation>
+<translation id="4262004481148703251">關閉警告</translation>
 <translation id="4263223596040212967">請檢查您的鍵盤版面配置，然後再試一次。</translation>
 <translation id="426564820080660648">如要檢查更新，請使用乙太網絡、Wi-Fi 或流動數據。</translation>
 <translation id="4266679478228765574">移除資料夾會停止與他人共用檔案，但不會刪除檔案。</translation>
@@ -3666,6 +3669,7 @@
 <translation id="4681453295291708042">停用「咫尺共享」功能</translation>
 <translation id="4681930562518940301">在新分頁中開啟原始圖片(&amp;I)</translation>
 <translation id="4682551433947286597">登入螢幕上顯示的桌布。</translation>
+<translation id="4682830185876172415">最近的下載項目</translation>
 <translation id="4683629100208651599">設為小寫</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (預設)</translation>
 <translation id="4684427112815847243">同步處理所有資料</translation>
@@ -3932,6 +3936,7 @@
 <translation id="496446150016900060">將 Wi-Fi 網絡設定同步至您的手機</translation>
 <translation id="4965808351167763748">您確定要設定此裝置以執行 Hangouts Meet 嗎？</translation>
 <translation id="4966972803217407697">目前為無痕模式</translation>
+<translation id="496742804571665842">停用 eSIM 設定檔</translation>
 <translation id="496888482094675990">「檔案」應用程式可供快速存取您存放在「Google 雲端硬碟」、外部儲存空間或 Chrome 作業系統裝置中的檔案。</translation>
 <translation id="4971412780836297815">完成後開啟</translation>
 <translation id="4971735654804503942">對危險網站、下載檔案及擴充程式提供更快速的主動式保護功能。密碼外洩時系統會發出警告。需要將瀏覽資料傳送給 Google。</translation>
@@ -6287,6 +6292,7 @@
 <translation id="7448430327655618736">自動安裝應用程式</translation>
 <translation id="7449752890690775568">要移除密碼嗎？</translation>
 <translation id="7450761244949417357">正在 <ph name="ALTERNATIVE_BROWSER_NAME" /> 中開啟</translation>
+<translation id="7452166281927983300">已關閉的警告 (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">選取此打印機，即表示您授權下列擴充程式存取您的打印機：</translation>
 <translation id="7454548535253569100">入口網站：<ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">管理其他容器</translation>

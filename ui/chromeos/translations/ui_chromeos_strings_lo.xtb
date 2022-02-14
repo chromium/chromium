@@ -21,6 +21,7 @@
 <translation id="115443833402798225">ຮາງກຸລ ອັນມາແຕ</translation>
 <translation id="1155759005174418845">ພາສາຄາ​ຕາ​ລັນ</translation>
 <translation id="1168100932582989117">ເຊີບເວີຊື່ Google</translation>
+<translation id="1171082344678443012">ແຟ້ມຈັດເກັບ XZ ທີ່ບີບອັດໄວ້</translation>
 <translation id="1172970565351728681">ເວລາຍັງເຫຼືອປະມານ <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">ໃສ່ຊື່ໃໝ່</translation>
 <translation id="1173916544412572294">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, ສັນຍານຄວາມແຮງ <ph name="SIGNAL_STRENGTH" />%, ແບັດເຕີຣີໂທລະສັບ <ph name="BATTERY_STATUS" />%, ລາຍລະອຽດ</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">ການຟໍແມັດໄດຣຈະລຶບຂໍ້ມູນທັງໝົດທີ່ເກັບໄວ້ໃນມັນ ຄຳສັ່ງນີ້ບໍ່ສາມາດຍົກເລີກໄດ້.</translation>
 <translation id="2025955442973426285">ພາສາທິກຣິນຢາ</translation>
 <translation id="2028997212275086731">ເຄື່ອງເກັບມ້ຽນ RAR</translation>
+<translation id="2036414735548252477">ແຟ້ມຈັດເກັບ Tar LZMA ທີ່ບີບອັດໄວ້</translation>
 <translation id="2037845485764049925">ພາສາຣັດເຊຍ</translation>
 <translation id="2044023416777079300">ບໍ່ໄດ້ລົງທະບຽນໂມເດັມ</translation>
 <translation id="2046702855113914483">ຣາເມັງ</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> ໄບຕ໌</translation>
 <translation id="4880214202172289027">​ແຖບ​ເລື່ອນປັບ​ລະດັບ​ສຽງ</translation>
 <translation id="4881695831933465202">ເປີດ</translation>
+<translation id="4886199584824489598">ແຟ້ມຈັດເກັບ Bzip2 ທີ່ບີບອັດໄວ້</translation>
 <translation id="4900532980794411603">ແບ່ງປັນກັບ Parallels Desktop</translation>
 <translation id="4902546322522096650">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" />%, ເຊື່ອມຕໍ່</translation>
 <translation id="4905417359854579806">ພ້ອມສຳຮອງ <ph name="FILE_COUNT" /> ໄວ້ແລ້ວ</translation>
@@ -585,6 +588,7 @@
 <translation id="6055907707645252013">ເຄືອຂ່າຍ <ph name="NETWORK_TYPE" />, ບໍ່ໄດ້ເຊື່ອມຕໍ່</translation>
 <translation id="6074825444536523002">ຮູບແບບ Google</translation>
 <translation id="6079871810119356840">ພາສາຮັງກາຣີທີ່ໃຊ້ແປ້ນພິມ Qwerty</translation>
+<translation id="6082256976217156453">ແຟ້ມຈັດເກັບ LZMA ທີ່ບີບອັດໄວ້</translation>
 <translation id="6096979789310008754">ລຶບລ້າງຂໍ້ຄວາມຊອກຫາແລ້ວ, ເຊິ່ງສະແດງຊ່ອງໄຟລ໌ ແລະ ໂຟນເດີທັງໝົດ.</translation>
 <translation id="610101264611565198">ກຳລັງຍ້າຍ <ph name="FILE_NAME" /> ໄປຍັງ <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">ຍະຫວ່າງ</translation>
@@ -841,6 +845,7 @@
 <translation id="8297012244086013755">ຮາງກຸລ 3 ຊຸດ (​ບໍ່​ໃຊ້ປຸ່ມ  shift)</translation>
 <translation id="8299269255470343364">ພາສາຍີ່ປຸ່ນ</translation>
 <translation id="8300849813060516376">OTASP ລົ້ມເຫຼວ</translation>
+<translation id="8308481408797647857">ແຟ້ມຈັດເກັບ Tar XZ ທີ່ບີບອັດໄວ້</translation>
 <translation id="8312871300878166382">ແປະໃສ່ໃນໂຟລເດີ</translation>
 <translation id="8329978297633540474">ຂໍ້ຄວາມທໍາມະດາ</translation>
 <translation id="8335587457941836791">ຖອນປັກໝຸດຈາກຖ້ານ</translation>
@@ -949,6 +954,7 @@
 <translation id="943972244133411984">ແກ້ໄຂໂດຍ</translation>
 <translation id="945522503751344254">ສົ່ງ​ຄໍາ​ຄິດ​​ເຫັນ</translation>
 <translation id="947144732524271678">ເລືອກລາຍການທັງໝົດ <ph name="ENTRY_COUNT" /> ລາຍການ ຕັ້ງແຕ່ <ph name="FROM_ENTRY_NAME" /> ຈົນເຖິງ <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="961973045258256291">ແຟ້ມຈັດເກັບ Gzip ທີ່ບີບອັດໄວ້</translation>
 <translation id="965477715979482472">ອັງກິດ (ອາຟຣິກາໃຕ້)</translation>
 <translation id="981121421437150478">ອອຟລາຍນ໌</translation>
 <translation id="988685240266037636">ມີໄຟລ໌ຊື່ "<ph name="FILE_NAME" />" ຢູ່ແລ້ວ. ທ່ານຕ້ອງການປ່ຽນແທນມັນບໍ?</translation>

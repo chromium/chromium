@@ -128,7 +128,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1698760176351776263">IPv6 adresa: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Radna površina: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Postavke mreže</translation>
-<translation id="1715293566947629045">Profil se onemogućuje. Pričekajte nekoliko minuta.</translation>
+<translation id="1715293566947629045">Onemogućavanje profila. Pričekajte nekoliko minuta.</translation>
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Automatski titlovi su uključeni.</translation>
 <translation id="1720011244392820496">Uključite sinhronizaciju putem WiFi mreže</translation>
@@ -274,7 +274,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2750932254614666392">"Izbrišite"</translation>
 <translation id="2778650143428714839">Uređajem <ph name="DEVICE_TYPE" /> upravlja <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Izlaz iz načina rada za snimanje</translation>
-<translation id="2791421900609674576">Primat ćete preporuke kako biste mogli nastaviti tamo gdje ste stali. Preporuke možete ukloniti tako da ih dodirnete i zadržite.</translation>
+<translation id="2791421900609674576">Vidjet ćete preporuke da možete nastaviti gdje ste stali.  Možete dodirnuti i zadržati da uklonite preporuke.</translation>
 <translation id="2792498699870441125">Alt + tipka za pretraživanje</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
 <translation id="2803313416453193357">Otvori folder</translation>
@@ -398,7 +398,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
         <ph name="LOCALE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Ažurirajte uređaj u roku od 1 minute}one{Ažurirajte uređaj u roku od # minute}few{Ažurirajte uređaj u roku od # minute}other{Ažurirajte uređaj u roku od # minuta}}</translation>
 <translation id="353086728817903341">Povezano je sa sljedećim brojem uređaja: <ph name="NUM_DEVICES" /></translation>
-<translation id="3542066395059568317">Primat ćete preporuke kako biste mogli nastaviti tamo gdje ste stali. Preporuke možete ukloniti klikom desnom tipkom.</translation>
+<translation id="3542066395059568317">Vidjet ćete preporuke da možete nastavite gdje ste stali. Možete koristiti desni klik da uklonite preporuke.</translation>
 <translation id="3552189655002856821">WiFi je isključen</translation>
 <translation id="3554637740840164787">Stavka <ph name="ITEM_TITLE" /> je zakačena</translation>
 <translation id="3560866052109807830">Alati za crtanje označivača</translation>

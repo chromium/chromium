@@ -1494,6 +1494,7 @@
 <translation id="2650049181907741121">使用者蓋上螢幕時所採取的動作</translation>
 <translation id="2658653824183107970">使用舊版 <ph name="CORS" /> 模式，而不使用新版 <ph name="CORS" /></translation>
 <translation id="2660846099862559570">永不使用 Proxy</translation>
+<translation id="2661628029848851543">允許受管理帳戶的所有使用情況</translation>
 <translation id="2664391398878045611">即使中間版位公告可供存取，新分頁也不會顯示</translation>
 <translation id="2664682171745499686">禁止在網域上顯示相似網域的警告訊息</translation>
 <translation id="2665422249821137126">在登入畫面上啟用大型游標</translation>
@@ -3155,6 +3156,7 @@
 <translation id="4635284822166984665">裝置開始充電的時間 (根據裝置當地時區)。</translation>
 <translation id="4646739075621507361">回報列印工作</translation>
 <translation id="4649395978608361979">本機印表機目的地</translation>
+<translation id="4650581166828502203">針對 Chrome OS 中將受管理帳戶做為次要帳戶使用的情況設定限制</translation>
 <translation id="4650759511838826572">停用網址通訊協定機制</translation>
 <translation id="465099050592230505">企業線上應用程式商店網址 (已不適用)</translation>
 <translation id="4653465451589191309">如果將這項政策設為啟用或不設定，使用者將可管理 (中斷或修改) VPN 連線。如果是使用 VPN 應用程式建立的 VPN 連線，則應用程式內的使用者介面不會受到影響。因此使用者仍可使用應用程式修改 VPN 連線。這項政策可搭配「永久連線的 VPN」功能使用，該功能可讓管理員決定是否在裝置啟動時建立 VPN 連線。
@@ -3594,6 +3596,12 @@
 
       如果政策未設定或無效，則行為會等同於「等待目標版本跟上版本降級」。</translation>
 <translation id="5229339291699779956">為 Thunderbolt/USB4 周邊裝置啟用 PCIe 通道，讓周邊裝置執行完整功能</translation>
+<translation id="5233239004553860036">如果將這項政策設為 <ph name="POLICY_VALUE_ALL" /> 或不設定，系統會允許受管理帳戶的所有使用情況。這麼做可能導致受管理帳戶變更為次要帳戶，進而讓該帳戶只有在做為主要帳戶登入瀏覽器設定檔時才能接收政策。
+    在下列情況下，系統不會強制執行對該帳戶設定的政策：
+        -  在 OS 層級 (帳戶設定) 做為次要帳戶
+        -  在瀏覽器設定檔中做為次要帳戶
+
+      如果在某個帳戶中將這項政策設為 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" />，該帳戶只能做為主要帳戶登入，不能做為次要帳戶登入。</translation>
 <translation id="523505283826916779">無障礙設定</translation>
 <translation id="5238976843489093540">強制啟用快速配對功能 (快速藍牙配對)。</translation>
 <translation id="52393120393725840">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 就能幫使用者記住密碼，並在他們下次登入網站時提供。
@@ -4216,6 +4224,7 @@
 <translation id="5963752574792883406">通訊埠 990 (2022 年 2 月 1 日前可解除封鎖)</translation>
 <translation id="5966615072639944554">允許擴充功能使用 Remote Attestation API</translation>
 <translation id="596732417280023843">憑證設定檔的名稱。</translation>
+<translation id="5971999619173368706">禁止在 Chrome OS 中將受管理帳戶新增為次要帳戶 (在工作階段中)</translation>
 <translation id="5972538402066550344">允許使用精細回報控制項</translation>
 <translation id="5975765799383881158">如果將這項政策設為啟用或不設定，使用者可以將意見回饋傳送給 Google，方法是依序按一下「選單」圖示 &gt; [說明] &gt; [回報問題]，或是按下按鍵組合。
 

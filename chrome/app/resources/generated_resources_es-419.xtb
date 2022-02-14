@@ -1967,6 +1967,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="2933632078076743449">Última actualización</translation>
 <translation id="2934999512438267372">Se permitió el control total de los dispositivos MIDI</translation>
 <translation id="2935225303485967257">Administrar perfiles</translation>
+<translation id="2935314715123552088">Inhabilitar el perfil de eSIM activo</translation>
 <translation id="2935654492420446828">Agrega una cuenta de institución educativa más tarde</translation>
 <translation id="2936851848721175671">Crear copia de seguridad y restablecer</translation>
 <translation id="2939908794993783865">Sitios inactivos adicionales</translation>
@@ -3114,6 +3115,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4104163789986725820">E&amp;xportar...</translation>
 <translation id="4107048419833779140">Identificar y expulsar los dispositivos de almacenamiento</translation>
 <translation id="4109135793348361820">Mover ventana a <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
+<translation id="4110485659976215879">Restablecer advertencia</translation>
 <translation id="4110490973560452005">Se completó la descarga: <ph name="FILE_NAME" />. Presiona mayúscula + F6 para ir al área de la barra de descargas.</translation>
 <translation id="4110686435123617899">Seleccionar álbum <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (sin conexión)</translation>
@@ -3236,6 +3238,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4259388776256904261">Esta acción puede demorar unos minutos</translation>
 <translation id="4260182282978351200">Es posible que el archivo <ph name="FILE_NAME" /> sea peligroso. ¿Quieres enviarlo al Programa de Protección Avanzada de Google para que lo analicemos? Presiona mayúscula + F6 para ir al área de la barra de descargas.</translation>
 <translation id="4261429981378979799">Permisos de extensiones</translation>
+<translation id="4262004481148703251">Descartar advertencia</translation>
 <translation id="4263223596040212967">Comprueba el diseño de tu teclado y vuelve a intentarlo.</translation>
 <translation id="426564820080660648">Para comprobar si hay actualizaciones, utiliza una conexión Ethernet, Wi-Fi o de datos móviles.</translation>
 <translation id="4266679478228765574">Si quitas carpetas, se detendrá el uso compartido, pero no se borrarán los archivos.</translation>
@@ -3641,6 +3644,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4681453295291708042">Inhabilitar Compartir con Nearby</translation>
 <translation id="4681930562518940301">Abrir imagen original en una pestaña nueva</translation>
 <translation id="4682551433947286597">Los fondos de pantalla aparecen en la pantalla de acceso.</translation>
+<translation id="4682830185876172415">Descargas recientes</translation>
 <translation id="4683629100208651599">Convertir a minúsculas</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (predeterminado)</translation>
 <translation id="4684427112815847243">Sincronizar todo</translation>
@@ -3905,6 +3909,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="496446150016900060">Sincronizar las redes Wi-Fi con tu teléfono</translation>
 <translation id="4965808351167763748">¿Seguro que deseas configurar este dispositivo para ejecutar Meet de Hangouts?</translation>
 <translation id="4966972803217407697">Estás en modo Incógnito</translation>
+<translation id="496742804571665842">Inhabilitar perfiles de eSIM</translation>
 <translation id="496888482094675990">La aplicación Archivos brinda acceso rápido a los archivos que hayas guardado en Google Drive, el almacenamiento externo o el dispositivo del Chrome OS.</translation>
 <translation id="4971412780836297815">Abrir al finalizar</translation>
 <translation id="4971735654804503942">Protección más rápida y proactiva contra descargas, extensiones y sitios web peligrosos. Te advierte sobre violaciones de la seguridad de las contraseñas. Requiere que se envíen datos de navegación a Google.</translation>
@@ -6255,6 +6260,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="7448430327655618736">Instala apps automáticamente</translation>
 <translation id="7449752890690775568">¿Quieres quitar la contraseña?</translation>
 <translation id="7450761244949417357">Se está abriendo en <ph name="ALTERNATIVE_BROWSER_NAME" /> en este momento</translation>
+<translation id="7452166281927983300">Advertencias descartadas (<ph name="MUTED_PASSWORDS" />)</translation>
 <translation id="7453008956351770337">Al seleccionar esta impresora, concedes a la siguiente extensión permiso para acceder a tu impresora.</translation>
 <translation id="7454548535253569100">Portal: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="7455730275746867420">Administrar contenedores adicionales</translation>

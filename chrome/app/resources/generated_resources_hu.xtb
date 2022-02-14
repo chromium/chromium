@@ -2629,6 +2629,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="362266093274784978">{COUNT,plural, =1{egy alkalmazást}other{# alkalmazást}}</translation>
 <translation id="362333465072914957">Várakozás arra, hogy a tanúsítványkibocsátó kibocsássa a tanúsítványt</translation>
 <translation id="3624567683873126087">Eszköz feloldása, és bejelentkezés Google-fiókba</translation>
+<translation id="3624583033347146597">Harmadik féltől származó cookie-k beállítása</translation>
 <translation id="3625481642044239431">A kiválasztott fájl érvénytelen. Próbálja újra.</translation>
 <translation id="3626296069957678981">A Chromebook töltéséhez kompatibilis Dell akkumulátort használjon.</translation>
 <translation id="3627320433825461852">Kevesebb mint 1 perc van hátra</translation>

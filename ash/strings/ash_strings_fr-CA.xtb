@@ -128,6 +128,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1698760176351776263">Adresse IPv6 : <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Bureau : <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Paramètres réseau</translation>
+<translation id="1715293566947629045">Désactivation du profil en cours… Patientez quelques minutes.</translation>
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">La transcription instantanée est activée.</translation>
 <translation id="1720011244392820496">Activer la synchronisation Wi-Fi</translation>
@@ -273,6 +274,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2750932254614666392">« Supprimer »</translation>
 <translation id="2778650143428714839">Ce <ph name="DEVICE_TYPE" /> est géré par <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Quitter le mode de capture</translation>
+<translation id="2791421900609674576">Des recommandations s'afficheront pour vous permettre de reprendre le cours de vos activités. Vous pouvez maintenir le doigt pour retirer les recommandations.</translation>
 <translation id="2792498699870441125">Alt + Recherche</translation>
 <translation id="2797741504905337289">Mode Shelf Party</translation>
 <translation id="2803313416453193357">Ouvrir le dossier</translation>
@@ -396,6 +398,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
         <ph name="LOCALE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Mettez à jour l'appareil d'ici 1 minute}one{Mettez à jour l'appareil d'ici # minute}other{Mettez à jour l'appareil d'ici # minutes}}</translation>
 <translation id="353086728817903341">Connecté à <ph name="NUM_DEVICES" /> appareils</translation>
+<translation id="3542066395059568317">Des recommandations s'afficheront pour vous permettre de reprendre le cours de vos activités. Vous pouvez faire un clic droit pour retirer les recommandations.</translation>
 <translation id="3552189655002856821">Le Wi-Fi est désactivé</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> a été épinglé</translation>
 <translation id="3560866052109807830">Outils de dessin : marqueur</translation>

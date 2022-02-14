@@ -1487,6 +1487,7 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
 <translation id="2650049181907741121">Actie die wordt ondernomen wanneer de gebruiker de klep sluit</translation>
 <translation id="2658653824183107970">De verouderde <ph name="CORS" />-implementatie in plaats van de nieuwe <ph name="CORS" /> gebruiken</translation>
 <translation id="2660846099862559570">Nooit een proxy gebruiken</translation>
+<translation id="2661628029848851543">Alle typen gebruik van beheerde accounts zijn toegestaan</translation>
 <translation id="2664391398878045611">De pagina Nieuw tabblad toont de aankondiging in de middelste ruimte niet, ook niet als die beschikbaar is</translation>
 <translation id="2664682171745499686">Waarschuwingen voor nagebootste domeinen onderdrukken voor domeinen</translation>
 <translation id="2665422249821137126">Grote muisaanwijzer op het inlogscherm gebruiken</translation>
@@ -3157,6 +3158,7 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
 <translation id="4635284822166984665">Tijd wanneer het apparaat begint met opladen, geïnterpreteerd in de lokale tijdzone van het apparaat.</translation>
 <translation id="4646739075621507361">Afdruktaken rapporteren</translation>
 <translation id="4649395978608361979">Lokale printerbestemmingen</translation>
+<translation id="4650581166828502203">Beperkingen toevoegen voor het gebruik van een beheerd account als secundair account in Chrome OS</translation>
 <translation id="4650759511838826572">URL-protocolschema's uitzetten</translation>
 <translation id="465099050592230505">URL van zakelijke webwinkel (verouderd)</translation>
 <translation id="4653465451589191309">Als je het beleid toepast of niet instelt, kunnen gebruikers VPN-verbindingen beheren (verbinding verbreken of aanpassen). Als de VPN-verbinding is gemaakt via een VPN-app, heeft dit geen invloed op de UI in de app. Gebruikers kunnen de app misschien nog gewoon gebruiken om de VPN-verbinding aan te passen. Gebruik dit beleid met de VPN-functie Altijd aan, waarmee de beheerder een VPN-verbinding kan maken wanneer een apparaat wordt opgestart.
@@ -3596,6 +3598,12 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
 
       Als het beleid niet is ingesteld of ongeldig is, is het gedrag hetzelfde als voor 'Wachten tot het doelkanaal de kanaaldowngrade heeft verwerkt'.</translation>
 <translation id="5229339291699779956">Hiermee zet je PCIe-tunneling voor Thunderbolt/USB4-randapparaten aan, waardoor alle mogelijkheden van de randapparaten werken</translation>
+<translation id="5233239004553860036">Als je dit beleid instelt op <ph name="POLICY_VALUE_ALL" /> of niet instelt, zijn alle typen gebruik van beheerde accounts toegestaan. Dit kan ertoe leiden dat een beheerd account een secundair account is, waardoor het account alleen beleidsregels krijgt als het is ingelogd als primair account in een browserprofiel.
+      Beleidsregels die zijn ingesteld voor het account, worden in de volgende scenario's niet afgedwongen:
+- Het account is een secundair account op OS-niveau (accountinstellingen)
+- Het account is een secundair account in een browserprofiel
+
+Als je dit beleid instelt op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> voor een account, mag dit account alleen inloggen als primair account. Het mag niet inloggen als secundair account.</translation>
 <translation id="523505283826916779">Toegankelijkheidsinstellingen</translation>
 <translation id="5238976843489093540">Snel koppelen (snelle bluetooth-koppeling) geforceerd aanzetten.</translation>
 <translation id="52393120393725840">Als je het beleid toepast, kunnen gebruikers <ph name="PRODUCT_NAME" /> wachtwoorden opslaan en gebruiken als ze opnieuw inloggen op een site.
@@ -4232,6 +4240,7 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
 <translation id="5963752574792883406">poort 990 (blokkering kan worden opgeheven tot 01-02-2022)</translation>
 <translation id="5966615072639944554">Extensies die toestemming hebben de API voor externe bevestiging te gebruiken</translation>
 <translation id="596732417280023843">De naam van het certificaatprofiel.</translation>
+<translation id="5971999619173368706">Toevoeging blokkeren van een beheerd account als secundair account in Chrome OS (in sessie)</translation>
 <translation id="5972538402066550344">Opties voor gedetailleerde rapportage toestaan</translation>
 <translation id="5975765799383881158">Als je het beleid toepast of niet instelt, kunnen gebruikers feedback naar Google sturen via Menu &gt; Hulp &gt; Een probleem melden of via een toetscombinatie.
 

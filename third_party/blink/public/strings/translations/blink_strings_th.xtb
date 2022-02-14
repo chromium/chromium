@@ -84,6 +84,7 @@
 <translation id="5164977714490026579">ค่าต้องมากกว่าหรือเท่ากับ <ph name="MINIMUM" /></translation>
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
+<translation id="5272594226096532950">ไม่ได้เลือกไว้ ในกลุ่ม ตัวเลือก <ph name="INDEX" /> จาก <ph name="COUNT" /></translation>
 <translation id="5307600278924710095">โปรดป้อนส่วนหนึ่งโดยตามด้วย "<ph name="ATSIGN" />" "<ph name="INVALIDADDRESS" />" นั้นไม่สมบูรณ์</translation>
 <translation id="5334352251556557839">เล่นสื่อไม่ได้</translation>
 <translation id="537648784377940524">วันที่น้อยสุด (<ph name="MIN_DATE_OR_TIME" />) ต้องมาก่อนวันที่มากสุด (<ph name="MAX_DATE_OR_TIME" />)</translation>
@@ -123,6 +124,7 @@
 <translation id="668171684555832681">อื่นๆ...</translation>
 <translation id="6709093583001123835">ค่าต้องเป็น <ph name="VALUE" /></translation>
 <translation id="6709570249143506788">คุณภาพการเล่นต่ำ</translation>
+<translation id="6719914554879143100">เลือกไว้ ในกลุ่ม ตัวเลือก <ph name="INDEX" /> จาก <ph name="COUNT" /></translation>
 <translation id="6790428901817661496">เล่น</translation>
 <translation id="6820355525329141109">ไม่สามารถโหลดปลั๊กอิน</translation>
 <translation id="6831465880655513317">จานสีที่มีแถบเลื่อน 2 มิติสำหรับเลือกความอิ่มตัวและความสว่าง</translation>

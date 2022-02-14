@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Catalană</translation>
 <translation id="1168100932582989117">Servere de nume Google</translation>
+<translation id="1171082344678443012">Arhivă comprimată XZ</translation>
 <translation id="1172970565351728681">Au mai rămas aproximativ <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Redenumește</translation>
 <translation id="1173916544412572294">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, bateria telefonului: <ph name="BATTERY_STATUS" /> %, detalii</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">Formatarea unității va șterge toate datele stocate pe unitate. Această acțiune nu poate fi anulată.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2028997212275086731">Arhivă RAR</translation>
+<translation id="2036414735548252477">Arhivă .tar comprimată LZMA</translation>
 <translation id="2037845485764049925">Rusă</translation>
 <translation id="2044023416777079300">Modemul nu este înregistrat</translation>
 <translation id="2046702855113914483">Supă ramen</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> byți</translation>
 <translation id="4880214202172289027">Glisor de volum</translation>
 <translation id="4881695831933465202">Deschide</translation>
+<translation id="4886199584824489598">Arhivă comprimată Bzip2</translation>
 <translation id="4900532980794411603">Permite accesul Parallels Desktop</translation>
 <translation id="4902546322522096650">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, conectează-te</translation>
 <translation id="4905417359854579806">Gata de backup pentru <ph name="FILE_COUNT" /></translation>
@@ -586,6 +589,7 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> rețea, nu este conectată</translation>
 <translation id="6074825444536523002">Formular Google</translation>
 <translation id="6079871810119356840">Maghiară cu tastatură QWERTY</translation>
+<translation id="6082256976217156453">Arhivă comprimată LZMA</translation>
 <translation id="6096979789310008754">Textul căutării a fost șters; se afișează toate fișierele și dosarele.</translation>
 <translation id="610101264611565198">Se mută <ph name="FILE_NAME" /> în <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">Spațiu</translation>
@@ -842,6 +846,7 @@
 <translation id="8297012244086013755">Hangul setul 3 (Fără Shift)</translation>
 <translation id="8299269255470343364">Japoneză</translation>
 <translation id="8300849813060516376">OTASP nu a reușit</translation>
+<translation id="8308481408797647857">Arhivă .tar comprimată XZ</translation>
 <translation id="8312871300878166382">Inserați în dosar</translation>
 <translation id="8329978297633540474">Text simplu</translation>
 <translation id="8335587457941836791">Anulați fixarea din raft</translation>
@@ -950,6 +955,7 @@
 <translation id="943972244133411984">Modificat de</translation>
 <translation id="945522503751344254">Trimite feedback</translation>
 <translation id="947144732524271678">S-au selectat o serie de <ph name="ENTRY_COUNT" /> intrări, de la <ph name="FROM_ENTRY_NAME" /> la <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="961973045258256291">Arhivă comprimată Gzip</translation>
 <translation id="965477715979482472">Engleză (Africa de Sud)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Fișierul cu numele „<ph name="FILE_NAME" />” există deja. Vrei să îl înlocuiești?</translation>

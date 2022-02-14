@@ -21,6 +21,7 @@
 <translation id="115443833402798225">هانگول آهنماتائه</translation>
 <translation id="1155759005174418845">کاتالان</translation>
 <translation id="1168100932582989117">‏سرورهای نام Google</translation>
+<translation id="1171082344678443012">‏بایگانی فشرده XZ</translation>
 <translation id="1172970565351728681">تقریباً <ph name="REMAINING_TIME" /> باقی مانده است</translation>
 <translation id="1173894706177603556">تغییر نام</translation>
 <translation id="1173916544412572294">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="PHONE_NAME" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، باتری تلفن <ph name="BATTERY_STATUS" />٪، جزئیات</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">با قالب‌بندی درایو همه داده‌های ذخیره‌شده در آن حذف خواهد شد. این کنش واگردشدنی نیست.</translation>
 <translation id="2025955442973426285">تیگرینیا</translation>
 <translation id="2028997212275086731">‏بایگانی RAR</translation>
+<translation id="2036414735548252477">‏بایگانی نواری فشرده LZMA</translation>
 <translation id="2037845485764049925">روسی</translation>
 <translation id="2044023416777079300">مودم ثبت نشده است</translation>
 <translation id="2046702855113914483">رامن</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> بایت</translation>
 <translation id="4880214202172289027">اسلایدر میزان صدا</translation>
 <translation id="4881695831933465202">باز کردن</translation>
+<translation id="4886199584824489598">‏بایگانی فشرده Bzip2</translation>
 <translation id="4900532980794411603">‏هم‌رسانی با Parallels Desktop</translation>
 <translation id="4902546322522096650">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />, قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، اتصال</translation>
 <translation id="4905417359854579806">آماده پشتیبان گرفتن از <ph name="FILE_COUNT" /> مورد</translation>
@@ -586,6 +589,7 @@
 <translation id="6055907707645252013">شبکه <ph name="NETWORK_TYPE" />، متصل نیست</translation>
 <translation id="6074825444536523002">‏فرم Google</translation>
 <translation id="6079871810119356840">‏مجاری با صفحه‌کلید Qwerty</translation>
+<translation id="6082256976217156453">‏بایگانی فشرده LZMA</translation>
 <translation id="6096979789310008754">نوشتار جستجو پاک شد، همه فایل‌ها و پوشه‌ها نشان داده می‌شود.</translation>
 <translation id="610101264611565198">درحال انتقال <ph name="FILE_NAME" /> به <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">فاصله</translation>
@@ -842,6 +846,7 @@
 <translation id="8297012244086013755">‏مجموعه هانگول ۳ (بدون Shift)</translation>
 <translation id="8299269255470343364">ژاپنی</translation>
 <translation id="8300849813060516376">‏OTASP انجام نشد</translation>
+<translation id="8308481408797647857">‏بایگانی نواری فشرده XZ</translation>
 <translation id="8312871300878166382">جای‌گذاری در پوشه</translation>
 <translation id="8329978297633540474">نوشتار ساده</translation>
 <translation id="8335587457941836791">برداشتن سنجاق از راه‌انداز</translation>
@@ -950,6 +955,7 @@
 <translation id="943972244133411984">اصلاح‌شده توسط</translation>
 <translation id="945522503751344254">ارسال بازخورد</translation>
 <translation id="947144732524271678">مجموعه‌ای از <ph name="ENTRY_COUNT" /> ورودی، از <ph name="FROM_ENTRY_NAME" /> تا <ph name="TO_ENTRY_NAME" /> انتخاب شد.</translation>
+<translation id="961973045258256291">‏بایگانی فشرده Gzip</translation>
 <translation id="965477715979482472">انگلیسی (آفریقای جنوبی)</translation>
 <translation id="981121421437150478">آفلاین</translation>
 <translation id="988685240266037636">فایلی با نام «<ph name="FILE_NAME" />» ازقبل وجود دارد. می‌خواهید آن را جایگزین کنید؟</translation>

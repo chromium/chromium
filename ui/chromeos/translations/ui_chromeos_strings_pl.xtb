@@ -21,6 +21,7 @@
 <translation id="115443833402798225">hangul ahnmatae</translation>
 <translation id="1155759005174418845">Kataloński</translation>
 <translation id="1168100932582989117">Serwery nazw Google</translation>
+<translation id="1171082344678443012">Skompresowane archiwum XZ</translation>
 <translation id="1172970565351728681">Zostało około <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Zmień nazwę</translation>
 <translation id="1173916544412572294">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, bateria telefonu: <ph name="BATTERY_STATUS" />%, szczegóły</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">Sformatowanie dysku spowoduje usunięcie wszystkich zapisanych na nim danych. Nie można tego cofnąć.</translation>
 <translation id="2025955442973426285">Tigrinia</translation>
 <translation id="2028997212275086731">Archiwum RAR</translation>
+<translation id="2036414735548252477">Archiwum Tar po kompresji LZMA</translation>
 <translation id="2037845485764049925">Rosyjski</translation>
 <translation id="2044023416777079300">Niezarejestrowany modem</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> B</translation>
 <translation id="4880214202172289027">Suwak głośności</translation>
 <translation id="4881695831933465202">Otwórz</translation>
+<translation id="4886199584824489598">Skompresowane archiwum Bzip2</translation>
 <translation id="4900532980794411603">Udostępnij aplikacji Parallels Desktop</translation>
 <translation id="4902546322522096650">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, połącz</translation>
 <translation id="4905417359854579806">Wszystko gotowe do utworzenia kopii zapasowych: <ph name="FILE_COUNT" /></translation>
@@ -586,6 +589,7 @@
 <translation id="6055907707645252013">Sieć <ph name="NETWORK_TYPE" />, nie połączono</translation>
 <translation id="6074825444536523002">Formularz Google</translation>
 <translation id="6079871810119356840">Węgierski z klawiaturą QWERTY</translation>
+<translation id="6082256976217156453">Skompresowane archiwum LZMA</translation>
 <translation id="6096979789310008754">Wyszukiwany tekst został wyczyszczony. Wyświetlam wszystkie pliki i foldery.</translation>
 <translation id="610101264611565198">Przenoszę plik <ph name="FILE_NAME" /> do folderu <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">Spacja</translation>
@@ -842,6 +846,7 @@
 <translation id="8297012244086013755">zestaw Hangul 3 (bez Shiftu)</translation>
 <translation id="8299269255470343364">Japoński</translation>
 <translation id="8300849813060516376">Dostarczanie OTASP nie powiodło się</translation>
+<translation id="8308481408797647857">Skompresowane archiwum XZ</translation>
 <translation id="8312871300878166382">Wklej do folderu</translation>
 <translation id="8329978297633540474">Zwykły tekst</translation>
 <translation id="8335587457941836791">Odepnij z półki</translation>
@@ -950,6 +955,7 @@
 <translation id="943972244133411984">Zmodyfikowany przez:</translation>
 <translation id="945522503751344254">Prześlij opinię</translation>
 <translation id="947144732524271678">Wybrano zakres <ph name="ENTRY_COUNT" /> elementów. Od: <ph name="FROM_ENTRY_NAME" /> do: <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="961973045258256291">Skompresowane archiwum Gzip</translation>
 <translation id="965477715979482472">angielski (RPA)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Istnieje już plik „<ph name="FILE_NAME" />”. Czy chcesz go zastąpić?</translation>

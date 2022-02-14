@@ -601,6 +601,7 @@
 <translation id="1604432177629086300">พิมพ์ไม่สำเร็จ ตรวจสอบเครื่องพิมพ์แล้วลองอีกครั้ง</translation>
 <translation id="1605744057217831567">ดูข้อมูลและสิทธิ์ทั้งหมดของเว็บไซต์</translation>
 <translation id="1606077700029460857">เปลี่ยนการตั้งค่าเมาส์</translation>
+<translation id="1606566847233779212">นำเว็บไซต์ที่คุณเพิ่มออกใช่ไหม</translation>
 <translation id="1607139524282324606">ล้างรายการ</translation>
 <translation id="1607499585984539560">ผู้ใช้ไม่ได้เชื่อมโยงกับโดเมน</translation>
 <translation id="1608668830839595724">การดำเนินการอื่นๆ สำหรับรายการที่เลือก</translation>
@@ -865,6 +866,7 @@
 <translation id="1845727111305721124">ได้รับอนุญาตให้เล่นเสียง</translation>
 <translation id="1846308012215045257">กด Control และคลิกเพื่อเรียกใช้ <ph name="PLUGIN_NAME" /></translation>
 <translation id="184862733444771842">คำขอฟีเจอร์</translation>
+<translation id="1849016657376805933">อุปกรณ์ HID ทั้งหมด</translation>
 <translation id="1849186935225320012">หน้านี้มีสิทธิ์ควบคุมอุปกรณ์ MIDI เต็มรูปแบบ</translation>
 <translation id="1850145825777333687">ข้อมูลเข้าสู่ระบบอุปกรณ์</translation>
 <translation id="1850508293116537636">หมุน&amp;ตามเข็มนาฬิกา</translation>
@@ -998,6 +1000,7 @@
 <translation id="1988259784461813694">ข้อกำหนด</translation>
 <translation id="1989112275319619282">เปิดดู</translation>
 <translation id="1989113344093894667">จับภาพเนื้อหาไม่ได้</translation>
+<translation id="1989744123191450103">สำรองข้อมูลไม่สำเร็จ</translation>
 <translation id="1989903373608997757">ใช้เสมอ</translation>
 <translation id="1990046457226896323">ดาวน์โหลดไฟล์คำพูดแล้ว</translation>
 <translation id="1990512225220753005">ไม่แสดงทางลัดในหน้านี้</translation>
@@ -1007,6 +1010,7 @@
 <translation id="1994173015038366702">URL ของเว็บไซต์</translation>
 <translation id="1995916364271252349">กำหนดประเภทข้อมูลที่เว็บไซต์ต่างๆ จะใช้และแสดงได้ (เช่น ข้อมูลตำแหน่ง กล้อง ป๊อปอัป)</translation>
 <translation id="1997616988432401742">ใบรับรองของคุณ</translation>
+<translation id="1997645434968427303">กู้คืนข้อมูลสำรอง Linux ไม่สำเร็จ เนื่องจาก Linux อาจมีพื้นที่ในดิสก์ไม่เพียงพอ คุณสามารถเปลี่ยนความจุของพื้นที่ในดิสก์ที่ Linux มี แล้วลองกู้คืนข้อมูลสำรองอีกครั้งในการตั้งค่าระบบปฏิบัติการ</translation>
 <translation id="1999115740519098545">เมื่อเริ่มต้นใช้งาน</translation>
 <translation id="2000419248597011803">ส่งคุกกี้และการค้นหาบางรายการจากแถบที่อยู่และช่องค้นหาไปยังเครื่องมือค้นหาเริ่มต้น</translation>
 <translation id="2002109485265116295">เรียลไทม์</translation>
@@ -2081,6 +2085,7 @@
 <translation id="3046178388369461825">พื้นที่ดิสก์ Linux เกือบเต็มแล้ว</translation>
 <translation id="3046910703532196514">หน้าเว็บ ทั้งหมด</translation>
 <translation id="304747341537320566">เครื่องมืออ่านออกเสียง</translation>
+<translation id="3048336643003835855">อุปกรณ์ HID จากผู้ให้บริการ <ph name="VENDOR_ID" /></translation>
 <translation id="3048917188684939573">บันทึกการแคสต์และอุปกรณ์</translation>
 <translation id="3051250416341590778">ขนาดการแสดงผล</translation>
 <translation id="3053013834507634016">การใช้คีย์ใบรับรอง </translation>
@@ -2508,6 +2513,7 @@
 <translation id="3511307672085573050">คัดลอกที่อยู่&amp;ลิงก์</translation>
 <translation id="351152300840026870">แบบอักษรที่มีความกว้างคงที่</translation>
 <translation id="3511528412952710609">น้อย</translation>
+<translation id="3514011352559420398">กู้คืนไม่สำเร็จ</translation>
 <translation id="3514335087372914653">ตัวควบคุมเกม</translation>
 <translation id="3514373592552233661">ระบบจะเลือกเครือข่ายที่ต้องการแทนเครือข่ายที่รู้จักอื่นๆ หากมีเครือข่ายที่รู้จักมากกว่า 1 เครือข่าย</translation>
 <translation id="3515983984924808886">แตะคีย์ความปลอดภัยอีกครั้งเพื่อยืนยันการรีเซ็ต ระบบจะลบข้อมูลทั้งหมดที่เก็บไว้ในคีย์ความปลอดภัย รวมถึง PIN ของคีย์ด้วย</translation>
@@ -2609,6 +2615,7 @@
 <translation id="362266093274784978">{COUNT,plural, =1{1 แอป}other{# แอป}}</translation>
 <translation id="362333465072914957">กำลังรอให้ CA ออกใบรับรอง</translation>
 <translation id="3624567683873126087">ปลดล็อกอุปกรณ์และลงชื่อเข้าใช้บัญชี Google</translation>
+<translation id="3624583033347146597">เลือกค่ากำหนดคุกกี้ของบุคคลที่สาม</translation>
 <translation id="3625481642044239431">เลือกไฟล์ไม่ถูกต้อง โปรดลองอีกครั้ง</translation>
 <translation id="3626296069957678981">ใช้แบตเตอรี่ Dell ที่เข้ากันได้เพื่อชาร์จ Chromebook เครื่องนี้</translation>
 <translation id="3627320433825461852">เหลือเวลาน้อยกว่า 1 นาที</translation>
@@ -3176,6 +3183,7 @@
 <translation id="4180788401304023883">ลบใบรับรองของผู้ออกใบรับรอง "<ph name="CERTIFICATE_NAME" />" หรือไม่</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">ภาษา</translation>
+<translation id="4184803915913850597">อุปกรณ์ HID (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4184885522552335684">ลากเพื่อย้ายการแสดงผล</translation>
 <translation id="4187424053537113647">กำลังตั้งค่า <ph name="APP_NAME" />...</translation>
 <translation id="4190828427319282529">ไฮไลต์โฟกัสแป้นพิมพ์</translation>
@@ -3669,6 +3677,7 @@
 <translation id="4699357559218762027">(เรียกใช้อัตโนมัติ)</translation>
 <translation id="4701025263201366865">การลงชื่อเข้าใช้ของผู้ปกครอง</translation>
 <translation id="4701335814944566468">ดูเมื่อวานนี้</translation>
+<translation id="4707337002099455863">ตลอดเวลาในทุกเว็บไซต์</translation>
 <translation id="4708794300267213770">แสดงหน้าจอล็อกเมื่อปลุกให้ทำงานจากโหมดสลีป</translation>
 <translation id="4708849949179781599">ออกจาก <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">กู้คืนการตั้งค่า</translation>
@@ -4133,6 +4142,7 @@
 <translation id="5208548918290612795">กำลังจัดเก็บโทเค็นการตรวจสอบสิทธิ์ของ <ph name="WEB_DRIVE" /></translation>
 <translation id="520902706163766447">เปิดใช้ลูกโป่งป๊อปอัปใน UI ของ Top Chrome เพื่อค้นหาแท็บที่เปิดอยู่</translation>
 <translation id="5209320130288484488">ไม่พบอุปกรณ์</translation>
+<translation id="5209513429611499188">อุปกรณ์ HID ที่มีการใช้งานจากหน้าการใช้งาน <ph name="USAGE_PAGE" /></translation>
 <translation id="5210365745912300556">ปิดแท็บ</translation>
 <translation id="5213114823401215820">เปิดกลุ่มที่ปิดไปแล้วอีกครั้ง</translation>
 <translation id="5213481667492808996">บริการอินเทอร์เน็ต "<ph name="NAME" />" พร้อมใช้งานแล้ว</translation>
@@ -4539,6 +4549,7 @@
 <translation id="5627086634964711283">อีกทั้งยังควบคุมหน้าที่จะแสดงเมื่อคุณคลิกปุ่ม "หน้าแรก"</translation>
 <translation id="5627676517703583263">ท่องเว็บอย่างมีประสิทธิภาพด้วย Chrome</translation>
 <translation id="5627832140542566187">การวางแนวจอแสดงผล</translation>
+<translation id="5628393161682339323">เมื่อฉันคลิกส่วนขยาย</translation>
 <translation id="562935524653278697">ผู้ดูแลระบบของคุณได้ปิดใช้การซิงค์ของบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ</translation>
 <translation id="5631017369956619646">การใช้ CPU</translation>
 <translation id="5632059346822207074">ขอสิทธิ์ กด Ctrl + ไปข้างหน้าเพื่อตอบกลับ</translation>
@@ -4673,6 +4684,7 @@
 <translation id="5781092003150880845">ซิงค์จาก <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781865261247219930">ส่งคำสั่งไปที่ <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">กำลังแปล...</translation>
+<translation id="5783304934509327739">ตัวเลือกการเข้าถึงเว็บไซต์</translation>
 <translation id="57838592816432529">ปิดเสียง</translation>
 <translation id="5785583009707899920">ยูทิลิตีไฟล์ของ Chrome</translation>
 <translation id="5787146423283493983">ข้อตกลงเกี่ยวกับคีย์</translation>
@@ -4723,6 +4735,7 @@
 <translation id="5834581999798853053">เหลือเวลาอีกประมาณ <ph name="TIME" /> นาที</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - กำลังบันทึกด้วยกล้องหรือไมโครโฟน</translation>
 <translation id="583673505367439042">เว็บไซต์ขอแก้ไขไฟล์และโฟลเดอร์ในอุปกรณ์ของคุณได้</translation>
+<translation id="583756221537636748">เคส</translation>
 <translation id="5840680448799937675">ไฟล์จะแชร์แบบออฟไลน์เสมอ</translation>
 <translation id="5841270259333717135">กำหนดค่าอีเทอร์เน็ต</translation>
 <translation id="5842497610951477805">เปิดใช้บลูทูธ</translation>
@@ -5360,6 +5373,7 @@
 <translation id="6499143127267478107">กำลังแก้ไขปัญหาโฮสต์ในสคริปต์พร็อกซี...</translation>
 <translation id="6499764981457476645">ไม่พบอุปกรณ์ที่อยู่ใกล้เคียง</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> ต้องการเปิดไฟล์นี้</translation>
+<translation id="65017764184991091">สำรองข้อมูลแอปและไฟล์ Linux ไม่สำเร็จ ปัญหานี้อาจเกิดขึ้นเมื่ออุปกรณ์เหลือพื้นที่เก็บข้อมูลไม่เพียงพอ ลองลบข้อมูลบางส่วนในอุปกรณ์ หรือเลือกพื้นที่เก็บข้อมูลอื่นที่จะสำรองข้อมูล</translation>
 <translation id="6501957628055559556">คอนเทนเนอร์ทั้งหมด</translation>
 <translation id="650266656685499220">หากต้องการสร้างอัลบั้ม โปรดไปที่ Google Photos</translation>
 <translation id="6503077044568424649">เข้าชมบ่อยสุด</translation>
@@ -7387,6 +7401,7 @@
 <translation id="8581809080475256101">กดเพื่อไปต่อที่เมนูตามบริบทเพื่อดูประวัติ</translation>
 <translation id="8584280235376696778">เ&amp;ปิดวิดีโอในแท็บใหม่</translation>
 <translation id="8584427708066927472">ลบรหัสผ่านจากอุปกรณ์นี้แล้ว</translation>
+<translation id="8584843865238667486">อุปกรณ์ HID ที่มีการใช้งาน <ph name="USAGE" /> จากหน้าการใช้งาน <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">นำ Crostini ออก</translation>
 <translation id="8585841788766257444">เว็บไซต์ที่แสดงอยู่ด้านล่างใช้การตั้งค่าที่กำหนดเองแทนที่จะเป็นการตั้งค่าเริ่มต้น</translation>
 <translation id="8588866096426746242">แสดงสถิติของโปรไฟล์</translation>

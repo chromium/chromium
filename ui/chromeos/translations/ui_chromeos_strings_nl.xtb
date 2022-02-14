@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Catalaans</translation>
 <translation id="1168100932582989117">Google-naamservers</translation>
+<translation id="1171082344678443012">Archief gecomprimeerd met XZ</translation>
 <translation id="1172970565351728681">Ongeveer <ph name="REMAINING_TIME" /> resterend</translation>
 <translation id="1173894706177603556">Naam wijzigen</translation>
 <translation id="1173916544412572294">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, telefoonbatterij <ph name="BATTERY_STATUS" />%, details</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">Tijdens het formatteren van een schijf worden alle opgeslagen gegevens verwijderd. Deze actie kan niet ongedaan worden gemaakt.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
 <translation id="2028997212275086731">RAR-archief</translation>
+<translation id="2036414735548252477">Tar-archief gecomprimeerd met LZMA</translation>
 <translation id="2037845485764049925">Russisch</translation>
 <translation id="2044023416777079300">Modem niet geregistreerd</translation>
 <translation id="2046702855113914483">Noedelsoep</translation>
@@ -442,6 +444,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> bytes</translation>
 <translation id="4880214202172289027">Volumeregelaar</translation>
 <translation id="4881695831933465202">Openen</translation>
+<translation id="4886199584824489598">Archief gecomprimeerd met Bzip2</translation>
 <translation id="4900532980794411603">Delen met Parallels Desktop</translation>
 <translation id="4902546322522096650">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, verbinden</translation>
 <translation id="4905417359854579806">Klaar om back-up van <ph name="FILE_COUNT" /> te maken</translation>
@@ -587,6 +590,7 @@
 <translation id="6055907707645252013">Netwerk: <ph name="NETWORK_TYPE" />, niet verbonden</translation>
 <translation id="6074825444536523002">Google-formulier</translation>
 <translation id="6079871810119356840">Hongaars met Qwerty-toetsenbord</translation>
+<translation id="6082256976217156453">Archief gecomprimeerd met LZMA</translation>
 <translation id="6096979789310008754">Zoektekst is gewist. Alle bestanden en mappen worden getoond.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> verplaatsen naar <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">Spatie</translation>
@@ -843,6 +847,7 @@
 <translation id="8297012244086013755">Hangul 3 Set (No Shift)</translation>
 <translation id="8299269255470343364">Japans</translation>
 <translation id="8300849813060516376">OTASP mislukt</translation>
+<translation id="8308481408797647857">Tar-archief gecomprimeerd met XZ</translation>
 <translation id="8312871300878166382">Plakken in map</translation>
 <translation id="8329978297633540474">Platte tekst</translation>
 <translation id="8335587457941836791">Losmaken van plank</translation>
@@ -951,6 +956,7 @@
 <translation id="943972244133411984">Aangepast door</translation>
 <translation id="945522503751344254">Feedback sturen</translation>
 <translation id="947144732524271678">Een bereik van <ph name="ENTRY_COUNT" /> items van <ph name="FROM_ENTRY_NAME" /> tot <ph name="TO_ENTRY_NAME" /> is geselecteerd.</translation>
+<translation id="961973045258256291">Archief gecomprimeerd met Gzip</translation>
 <translation id="965477715979482472">Engels (Zuid-Afrika)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Er bestaat al een bestand met de naam '<ph name="FILE_NAME" />'. Wil je dit bestand vervangen?</translation>

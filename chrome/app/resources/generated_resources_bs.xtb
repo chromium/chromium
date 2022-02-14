@@ -606,7 +606,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1604432177629086300">Štampanje nije uspjelo. Provjerite štampač i pokušajte ponovo.</translation>
 <translation id="1605744057217831567">Pogledajte sve podatke web lokacije i odobrenja</translation>
 <translation id="1606077700029460857">Promijeni postavke miša</translation>
-<translation id="1606566847233779212">Želite li ukloniti određene web-lokacije koje ste dodali?</translation>
+<translation id="1606566847233779212">Ukloniti određene stranice koje ste dodali?</translation>
 <translation id="1607139524282324606">Brisanje unosa</translation>
 <translation id="1607499585984539560">Korisnik nije povezan s domenom</translation>
 <translation id="1608668830839595724">Više radnji za odabrane stavke</translation>
@@ -1011,7 +1011,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1988259784461813694">Uslov</translation>
 <translation id="1989112275319619282">Pregledaj</translation>
 <translation id="1989113344093894667">Nije moguće snimanje sadržaja</translation>
-<translation id="1989744123191450103">Sigurnosno kopiranje nije uspjelo</translation>
+<translation id="1989744123191450103">Izrada sigurnosne kopije nije uspjela</translation>
 <translation id="1989903373608997757">Uvijek koristi</translation>
 <translation id="1990046457226896323">Fajlovi govora su preuzeti</translation>
 <translation id="1990512225220753005">Ne prikazuj prečice na ovoj stranici</translation>
@@ -1021,7 +1021,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1994173015038366702">URL web lokacije</translation>
 <translation id="1995916364271252349">Kontrolira koje informacije web lokacije mogu koristiti i prikazivati (lokacija, kamera, skočni prozori i drugo)</translation>
 <translation id="1997616988432401742">Vaše potvrde</translation>
-<translation id="1997645434968427303">Vraćanje sigurnosne kopije Linuxa nije uspjelo. To može biti zato što na Linuxu nema dovoljno prostora na disku. Možete promijeniti količinu prostora na disku na Linuxu i pokušati vratiti sigurnosnu kopiju u postavkama OS-a.</translation>
+<translation id="1997645434968427303">Vraćanje sigurnosne kopije Linuxa nije uspjelo. Razlog tome može biti nedovoljan prostor na disku Linuxa. Možete promijeniti količinu prostora na disku za Linux i ponovo pokušati vratiti sigurnosnu kopiju u Postavkama OS-a.</translation>
 <translation id="1999115740519098545">Prilikom pokretanja</translation>
 <translation id="2000419248597011803">Šalje neke kolačiće i pretraživanja s trake za adresu i iz okvira za pretraživanje vašem zadanom pretraživaču</translation>
 <translation id="2002109485265116295">U stvarnom vremenu</translation>
@@ -3691,7 +3691,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4699357559218762027">(pokrenuto automatski)</translation>
 <translation id="4701025263201366865">Prijavljivanje roditelja</translation>
 <translation id="4701335814944566468">Pregledano jučer</translation>
-<translation id="4707337002099455863">Uvijek na svim web-lokacijama</translation>
+<translation id="4707337002099455863">Uvijek na svim web lokacijama</translation>
 <translation id="4708794300267213770">Prikaži zaključan zaslon prilikom vraćanja iz mirovanja</translation>
 <translation id="4708849949179781599">Napusti preglednik <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Vrati postavke</translation>
@@ -3934,7 +3934,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="496446150016900060">Sinhroniziranje WiFi mreža s telefonom</translation>
 <translation id="4965808351167763748">Jeste li sigurni da želite postaviti ovaj uređaj da pokreće Hangouts Meet?</translation>
 <translation id="4966972803217407697">Koristite anonimni način rada</translation>
-<translation id="496742804571665842">Onemogućivanje eSIM profila</translation>
+<translation id="496742804571665842">Onemogućite eSIM profile</translation>
 <translation id="496888482094675990">Aplikacija Files pruža brzi pristup fajlovima sačuvanim na Google Disku, vanjskoj pohrani ili na Chrome OS uređaju.</translation>
 <translation id="4971412780836297815">Otvori kada se završi preuzimanje</translation>
 <translation id="4971735654804503942">Brža, proaktivna zaštita od opasnih web lokacija, preuzimanja i ekstenzija. Upozorava vas na narušavanje lozinki. Zahtijeva da se podaci o pregledanju šalju Googleu.</translation>
@@ -4156,7 +4156,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5208548918290612795">Pohranjivanje tokena za autentifikaciju za <ph name="WEB_DRIVE" /></translation>
 <translation id="520902706163766447">Omogućite skočni oblačić u korisničkom interfejsu Top Chromea da pretražujete u trenutno otvorenim karticama.</translation>
 <translation id="5209320130288484488">Nije pronađen nijedan uređaj</translation>
-<translation id="5209513429611499188">HID uređaji s upotrebama od stranice upotrebe <ph name="USAGE_PAGE" /></translation>
+<translation id="5209513429611499188">HID uređaji s upotrebom sa stranice <ph name="USAGE_PAGE" /></translation>
 <translation id="5210365745912300556">Zatvorite karticu.</translation>
 <translation id="5213114823401215820">Ponovo otvori zatvorenu grupu</translation>
 <translation id="5213481667492808996">Vaša usluga za prijenos podataka "<ph name="NAME" />" je spremna za upotrebu</translation>
@@ -4563,7 +4563,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5627086634964711283">Također kontrolira koja stranica će se prikazati kada kliknete na dugme Početna stranica.</translation>
 <translation id="5627676517703583263">Pregledajte pametno pomoću Chromea</translation>
 <translation id="5627832140542566187">Orijentacija prikaza</translation>
-<translation id="5628393161682339323">Kad kliknem proširenje</translation>
+<translation id="5628393161682339323">Kada kliknem na ekstenziju</translation>
 <translation id="562935524653278697">Administrator je onemogućio sinkronizaciju vaših oznaka, povijesti, zaporki i ostalih postavki.</translation>
 <translation id="5631017369956619646">Iskorištenost procesora</translation>
 <translation id="5632059346822207074">Zatraženo je odobrenje. Pritisnite Ctrl + naprijed da odgovorite</translation>
@@ -4698,7 +4698,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5781092003150880845">Sinhroniziraj kao <ph name="ACCOUNT_FULL_NAME" /></translation>
 <translation id="5781865261247219930">Pošaljite komande ekstenziji <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">Prevođenje...</translation>
-<translation id="5783304934509327739">Opcija pristupa web-lokaciji</translation>
+<translation id="5783304934509327739">Opcija pristupa web lokaciji</translation>
 <translation id="57838592816432529">Isključi zvuk</translation>
 <translation id="5785583009707899920">Chrome alati za fajlove</translation>
 <translation id="5787146423283493983">Usaglašavanje ključeva</translation>
@@ -4749,7 +4749,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5834581999798853053">Preostalo otprilike <ph name="TIME" /> min</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – Snimanje kamerom ili mikrofonom</translation>
 <translation id="583673505367439042">Web lokacije mogu tražiti da uređuju fajlove i foldere na vašem uređaju</translation>
-<translation id="583756221537636748">Kutijica</translation>
+<translation id="583756221537636748">Maska</translation>
 <translation id="5840680448799937675">Fajlovi će se uvijek dijeliti van mreže</translation>
 <translation id="5841270259333717135">Konfigurirajte ethernet</translation>
 <translation id="5842497610951477805">Omogućavanje Bluetootha</translation>
@@ -5387,7 +5387,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6499143127267478107">Razrješavanje host računara u skripti proksi servera…</translation>
 <translation id="6499764981457476645">Nije pronađen nijedan uređaj u blizini</translation>
 <translation id="6501086852992132091"><ph name="APP_ORIGIN" /> želi otvoriti ovaj fajl:</translation>
-<translation id="65017764184991091">Sigurnosno kopiranje Linux aplikacija i datoteka nije uspjelo. To se može dogoditi ako na uređaju nema dovoljno slobodnog prostora za pohranu. Pokušajte osloboditi prostor na uređaju ili odaberite neku drugu lokaciju za sigurnosno kopiranje.</translation>
+<translation id="65017764184991091">Kreiranje sigurnosne kopije Linux aplikacija i fajlova nije uspjelo. Razlog tome može biti nedovoljan prostor za pohranu vašeg uređaja. Pokušajte osloboditi prostor na uređaju ili odabrati drugu lokaciju za izradu sigurnosne kopije.</translation>
 <translation id="6501957628055559556">Svi spremnici</translation>
 <translation id="650266656685499220">Da kreirate albume, idite u Google Fotografije</translation>
 <translation id="6503077044568424649">Najposjećenija</translation>
@@ -7417,7 +7417,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8581809080475256101">Pritisnite da idete naprijed i na kontekstni meni da vidite historiju</translation>
 <translation id="8584280235376696778">&amp;Otvori videozapis u novoj kartici</translation>
 <translation id="8584427708066927472">Lozinka je izbrisana s ovog uređaja</translation>
-<translation id="8584843865238667486">HID uređaji s upotrebom <ph name="USAGE" /> od stranice upotrebe <ph name="USAGE_PAGE" /></translation>
+<translation id="8584843865238667486">HID uređaji koji koriste <ph name="USAGE" /> sa stranice <ph name="USAGE_PAGE" /></translation>
 <translation id="8585480574870650651">Uklonite Crostini</translation>
 <translation id="8585841788766257444">Web lokacije koje su navedene u nastavku funkcioniraju prema prilagođenoj postavci, a ne prema zadanoj</translation>
 <translation id="8588866096426746242">Prikaži status profila</translation>
