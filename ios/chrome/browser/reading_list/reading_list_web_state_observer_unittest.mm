@@ -8,9 +8,9 @@
 
 #include "base/time/default_clock.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/reading_list/offline_url_utils.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
-#include "ios/chrome/browser/web/chrome_test.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #include "ios/web/public/navigation/reload_type.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
