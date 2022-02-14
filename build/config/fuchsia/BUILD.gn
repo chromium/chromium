@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromecast_build.gni")
+import("//build/config/clang/clang.gni")
 import("//build/config/fuchsia/generate_runner_scripts.gni")
 
 assert(is_fuchsia)
@@ -72,7 +73,7 @@ copy("sysroot_asan_libs") {
 
 # Copy the loader to place it at the expected path in the final package.
 copy("sysroot_asan_runtime_libs") {
-  sources = [ "//third_party/llvm-build/Release+Asserts/lib/clang/14.0.0/lib/x86_64-unknown-fuchsia/libclang_rt.asan.so" ]
+  sources = [ "$clang_base_path/lib/clang/$clang_version/lib/x86_64-unknown-fuchsia/libclang_rt.asan.so" ]
   outputs = [ "${root_out_dir}/lib/{{source_file_part}}" ]
 }
 
