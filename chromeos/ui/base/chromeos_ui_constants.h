@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_UI_BASE_CHROMEOS_UI_CONSTANTS_H_
 #define CHROMEOS_UI_BASE_CHROMEOS_UI_CONSTANTS_H_
 
+#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -28,6 +29,10 @@ constexpr int kResizeInsideBoundsSize = 1;
 
 // The default frame color.
 constexpr SkColor kDefaultFrameColor = SkColorSetRGB(0xFD, 0xFE, 0xFF);
+
+// The default duration for animating frame color changes.
+constexpr base::TimeDelta kDefaultFrameColorChangeAnimationDuration =
+    base::Milliseconds(240);
 
 }  // namespace chromeos
 

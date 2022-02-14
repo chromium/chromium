@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/cancelable_callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -230,6 +231,9 @@ class BrowserNonClientFrameViewChromeOS
   // Called any time the frame color may have changed.
   void OnUpdateFrameColor();
 
+  // Called any time the theme has changed and may need to be animated.
+  void MaybeAnimateThemeChanged();
+
   // Returns the top level aura::Window for this browser window.
   const aura::Window* GetFrameWindow() const;
   aura::Window* GetFrameWindow();
@@ -255,6 +259,10 @@ class BrowserNonClientFrameViewChromeOS
   absl::optional<display::ScopedDisplayObserver> display_observer_;
 
   gfx::Size last_minimum_size_;
+
+  // Callback to invoke to animate back in the layer associated with the
+  // `contents_web_view()` native view following a theme changed event.
+  base::CancelableOnceCallback<void(bool)> theme_changed_animation_callback_;
 
   base::WeakPtrFactory<BrowserNonClientFrameViewChromeOS> weak_ptr_factory_{
       this};

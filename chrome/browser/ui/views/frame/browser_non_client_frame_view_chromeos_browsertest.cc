@@ -45,6 +45,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/command_updater.h"
@@ -99,6 +100,8 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/test/background_color_change_waiter.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -140,41 +143,55 @@ using BrowserNonClientFrameViewChromeOSTouchTestWithWebUiTabStrip =
     WebUiTabStripOverrideTest<true, BrowserNonClientFrameViewChromeOSTouchTest>;
 
 // Enumeration of test modes for
-// `BrowserNonClientFrameViewChromeOSBackgroundColorChangeTest`s.
-enum class BackgroundColorChangeTestMode {
+// `BrowserNonClientFrameViewChromeOSThemeChangeTest`s.
+enum class ThemeChangeTestMode {
   kSWA,
-  kSWAPreferManifestBackgroundColor,
   kNonSWA,
 };
 
-// Base class for `BackgroundColorChange` tests, parameterized by test mode.
-class BrowserNonClientFrameViewChromeOSBackgroundColorChangeTest
+// Base class for `ThemeChange` tests, parameterized by test mode and:
+// * whether manifest background color is preferred,
+// * whether theme changes should be animated.
+class BrowserNonClientFrameViewChromeOSThemeChangeTest
     : public InProcessBrowserTest,
-      public testing::WithParamInterface<BackgroundColorChangeTestMode> {
+      public testing::WithParamInterface<
+          std::tuple<ThemeChangeTestMode,
+                     /*prefer_manifest_background_color=*/bool,
+                     /*should_animate_theme_changes=*/bool>> {
  public:
-  BrowserNonClientFrameViewChromeOSBackgroundColorChangeTest() {
-    switch (GetParam()) {
-      case BackgroundColorChangeTestMode::kSWA:
-      case BackgroundColorChangeTestMode::kSWAPreferManifestBackgroundColor:
+  BrowserNonClientFrameViewChromeOSThemeChangeTest() {
+    switch (GetThemeChangeTestMode()) {
+      case ThemeChangeTestMode::kSWA: {
         system_web_app_installation_ =
             web_app::TestSystemWebAppInstallation::SetUpAppWithColors(
                 /*theme_color=*/SK_ColorWHITE,
                 /*dark_mode_theme_color=*/SK_ColorBLACK,
                 /*background_color=*/SK_ColorWHITE,
-                /*dark_mode_background_color=*/SK_ColorBLACK,
-                PreferManifestBackgroundColor());
+                /*dark_mode_background_color=*/SK_ColorBLACK);
+        auto* delegate = static_cast<web_app::UnittestingSystemAppDelegate*>(
+            system_web_app_installation_->GetDelegate());
+        delegate->SetPreferManifestBackgroundColor(
+            PreferManifestBackgroundColor());
+        delegate->SetShouldAnimateThemeChanges(ShouldAnimateThemeChanges());
         break;
-      case BackgroundColorChangeTestMode::kNonSWA:
+      }
+      case ThemeChangeTestMode::kNonSWA:
         break;
     }
   }
 
+  // Returns test mode given test parameterization.
+  ThemeChangeTestMode GetThemeChangeTestMode() const {
+    return std::get<0>(GetParam());
+  }
+
   // Returns whether the web app under test prefers manifest background colors
   // over web contents background colors.
-  bool PreferManifestBackgroundColor() const {
-    return GetParam() ==
-           BackgroundColorChangeTestMode::kSWAPreferManifestBackgroundColor;
-  }
+  bool PreferManifestBackgroundColor() const { return std::get<1>(GetParam()); }
+
+  // Returns whether theme changes should be animated for the web app under test
+  // given test parameterization.
+  bool ShouldAnimateThemeChanges() const { return std::get<2>(GetParam()); }
 
   // Toggles the color mode, triggering propagation of theme change events.
   void ToggleColorMode() {
@@ -195,12 +212,11 @@ class BrowserNonClientFrameViewChromeOSBackgroundColorChangeTest
   // Installs the web app under test, blocking until installation is complete,
   // and returning the `web_app::AppId` for the installed web app.
   web_app::AppId WaitForAppInstall() {
-    switch (GetParam()) {
-      case BackgroundColorChangeTestMode::kSWA:
-      case BackgroundColorChangeTestMode::kSWAPreferManifestBackgroundColor:
+    switch (GetThemeChangeTestMode()) {
+      case ThemeChangeTestMode::kSWA:
         system_web_app_installation_->WaitForAppInstall();
         return system_web_app_installation_->GetAppId();
-      case BackgroundColorChangeTestMode::kNonSWA: {
+      case ThemeChangeTestMode::kNonSWA: {
         if (!test_server_) {
           test_server_ = std::make_unique<net::EmbeddedTestServer>(
               net::EmbeddedTestServer::TYPE_HTTPS);
@@ -232,25 +248,45 @@ class BrowserNonClientFrameViewChromeOSBackgroundColorChangeTest
 
 INSTANTIATE_TEST_SUITE_P(
     Mode,
-    BrowserNonClientFrameViewChromeOSBackgroundColorChangeTest,
-    testing::Values(
-        BackgroundColorChangeTestMode::kSWA,
-        BackgroundColorChangeTestMode::kSWAPreferManifestBackgroundColor,
-        BackgroundColorChangeTestMode::kNonSWA),
-    [](const testing::TestParamInfo<BackgroundColorChangeTestMode>& info) {
-      switch (info.param) {
-        case BackgroundColorChangeTestMode::kSWA:
-          return "kSWA";
-        case BackgroundColorChangeTestMode::kSWAPreferManifestBackgroundColor:
-          return "kSWAPreferManifestBackgroundColor";
-        case BackgroundColorChangeTestMode::kNonSWA:
-          return "kNonSWA";
+    BrowserNonClientFrameViewChromeOSThemeChangeTest,
+    testing::Combine(testing::Values(ThemeChangeTestMode::kSWA,
+                                     ThemeChangeTestMode::kNonSWA),
+                     /*prefer_manifest_background_color=*/testing::Bool(),
+                     /*should_animate_theme_changes=*/testing::Bool()),
+    [](const testing::TestParamInfo<
+        std::tuple<ThemeChangeTestMode,
+                   /*prefer_manifest_background_color=*/bool,
+                   /*should_animate_theme_changes=*/bool>>& info) {
+      ThemeChangeTestMode test_mode = std::get<0>(info.param);
+      bool prefer_manifest_background_color = std::get<1>(info.param);
+      bool should_animate_theme_changes = std::get<2>(info.param);
+
+      std::stringstream name;
+      switch (test_mode) {
+        case ThemeChangeTestMode::kSWA:
+          name << "kSWA";
+          break;
+        case ThemeChangeTestMode::kNonSWA:
+          name << "kNonSWA";
+          break;
       }
+
+      if (prefer_manifest_background_color)
+        name << "_PreferManifestBackgroundColor";
+      if (should_animate_theme_changes)
+        name << "_ShouldAnimateThemeChanges";
+
+      return name.str();
     });
 
-IN_PROC_BROWSER_TEST_P(
-    BrowserNonClientFrameViewChromeOSBackgroundColorChangeTest,
-    BackgroundColorChange) {
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSThemeChangeTest,
+                       ThemeChange) {
+  // Skip test parameterizations for non-system web apps that don't make sense.
+  if (GetThemeChangeTestMode() == ThemeChangeTestMode::kNonSWA &&
+      (PreferManifestBackgroundColor() || ShouldAnimateThemeChanges())) {
+    GTEST_SKIP();
+  }
+
   const web_app::AppId app_id = WaitForAppInstall();
   auto* browser = web_app::LaunchWebAppBrowser(profile(), app_id);
   auto* contents_web_view =
@@ -293,6 +329,15 @@ IN_PROC_BROWSER_TEST_P(
               web_contents->GetBackgroundColor().value());
   }
 
+  // If theme changes should be animated, the layer associated with the
+  // `contents_web_view` native view should be immediately hidden.
+  auto* layer = contents_web_view->holder()->native_view()->layer();
+  if (ShouldAnimateThemeChanges()) {
+    EXPECT_EQ(layer->GetTargetOpacity(), std::nextafter(0.f, 1.f));
+  } else {
+    EXPECT_EQ(layer->GetTargetOpacity(), 1.f);
+  }
+
   // Wait for the web contents background color to update and verify that the
   // background color still matches that resolved from the app controller.
   {
@@ -302,6 +347,18 @@ IN_PROC_BROWSER_TEST_P(
               browser->app_controller()->GetBackgroundColor().value());
     EXPECT_EQ(contents_web_view->GetBackground()->get_color(),
               web_contents->GetBackgroundColor().value());
+  }
+
+  // If theme changes should be animated, the layer associated with the
+  // `contents_web_view` native view should be animated back in only after a
+  // round trip through the renderer and compositor pipelines. This should
+  // ensure that the web contents has finished repainting theme changes.
+  if (ShouldAnimateThemeChanges()) {
+    base::test::TestFuture<bool> visual_state_change_future;
+    web_contents->GetRenderViewHost()->GetWidget()->InsertVisualStateCallback(
+        visual_state_change_future.GetCallback());
+    EXPECT_TRUE(visual_state_change_future.Wait());
+    EXPECT_EQ(layer->GetTargetOpacity(), 1.f);
   }
 }
 

@@ -141,4 +141,10 @@ bool SystemWebAppDelegate::PreferManifestBackgroundColor() const {
   return false;
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+bool SystemWebAppDelegate::ShouldAnimateThemeChanges() const {
+  return false;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace web_app

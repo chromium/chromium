@@ -79,3 +79,7 @@ OSSettingsSystemAppDelegate::GetAppIdsToUninstallAndReplace() const {
 bool OSSettingsSystemAppDelegate::PreferManifestBackgroundColor() const {
   return true;
 }
+
+bool OSSettingsSystemAppDelegate::ShouldAnimateThemeChanges() const {
+  return ash::features::IsDarkLightModeEnabled();
+}

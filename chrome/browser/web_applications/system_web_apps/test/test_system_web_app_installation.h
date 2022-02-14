@@ -52,6 +52,9 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   bool IsAppEnabled() const override;
   bool IsUrlInSystemAppScope(const GURL& url) const override;
   bool PreferManifestBackgroundColor() const override;
+#if BUILDFLAG(IS_CHROMEOS)
+  bool ShouldAnimateThemeChanges() const override;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void SetAppIdsToUninstallAndReplace(const std::vector<AppId>&);
   void SetMinimumWindowSize(const gfx::Size&);
@@ -73,6 +76,9 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   void SetDefaultBounds(base::RepeatingCallback<gfx::Rect(Browser*)>);
   void SetUrlInSystemAppScope(const GURL& url);
   void SetPreferManifestBackgroundColor(bool);
+#if BUILDFLAG(IS_CHROMEOS)
+  void SetShouldAnimateThemeChanges(bool);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   WebAppInstallInfoFactory info_factory_;
@@ -94,6 +100,9 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   bool allow_scripts_to_close_windows_ = false;
   GURL url_in_system_app_scope_;
   bool prefer_manifest_background_color_ = false;
+#if BUILDFLAG(IS_CHROMEOS)
+  bool should_animate_theme_changes_ = false;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::RepeatingCallback<gfx::Rect(Browser*)> get_default_bounds_ =
       base::NullCallback();
@@ -182,8 +191,7 @@ class TestSystemWebAppInstallation {
       absl::optional<SkColor> theme_color,
       absl::optional<SkColor> dark_mode_theme_color,
       absl::optional<SkColor> background_color,
-      absl::optional<SkColor> dark_mode_background_color,
-      bool prefer_manifest_background_color);
+      absl::optional<SkColor> dark_mode_background_color);
 
   ~TestSystemWebAppInstallation();
 
@@ -191,6 +199,7 @@ class TestSystemWebAppInstallation {
 
   AppId GetAppId();
   const GURL& GetAppUrl();
+  SystemWebAppDelegate* GetDelegate();
   SystemAppType GetType();
 
   void set_update_policy(SystemWebAppManager::UpdatePolicy update_policy) {

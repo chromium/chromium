@@ -335,48 +335,52 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ManifestWithColor) {
 // Enumeration of test modes for `BackgroundColorChangeWebAppBrowserTest`s.
 enum class BackgroundColorChangeTestMode {
   kSWA,
-  kSWAPreferManifestBackgroundColor,
   kNonSWA,
 };
 
-// Base class for `BackgroundColorChange` tests, parameterized by test mode.
+// Base class for `BackgroundColorChange` tests, parameterized by test mode and
+// whether to prefer manifest background color.
 class BackgroundColorChangeWebAppBrowserTest
     : public WebAppBrowserTest,
-      public testing::WithParamInterface<BackgroundColorChangeTestMode> {
+      public testing::WithParamInterface<
+          std::tuple<BackgroundColorChangeTestMode,
+                     /*prefer_manifest_background_color=*/bool>> {
  public:
   BackgroundColorChangeWebAppBrowserTest() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     web_app::EnableSystemWebAppsInLacrosForTesting();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    switch (GetParam()) {
+    switch (GetBackgroundColorChangeTestMode()) {
       case BackgroundColorChangeTestMode::kSWA:
-      case BackgroundColorChangeTestMode::kSWAPreferManifestBackgroundColor:
         system_web_app_installation_ =
             TestSystemWebAppInstallation::SetUpAppWithColors(
                 /*theme_color=*/SK_ColorWHITE,
                 /*dark_mode_theme_color=*/SK_ColorBLACK,
                 /*background_color=*/SK_ColorWHITE,
-                /*dark_mode_background_color=*/SK_ColorBLACK,
-                PreferManifestBackgroundColor());
+                /*dark_mode_background_color=*/SK_ColorBLACK);
+        static_cast<UnittestingSystemAppDelegate*>(
+            system_web_app_installation_->GetDelegate())
+            ->SetPreferManifestBackgroundColor(PreferManifestBackgroundColor());
         break;
       case BackgroundColorChangeTestMode::kNonSWA:
         break;
     }
   }
 
+  // Returns test mode given test parameterization.
+  BackgroundColorChangeTestMode GetBackgroundColorChangeTestMode() const {
+    return std::get<0>(GetParam());
+  }
+
   // Returns whether the web app under test prefers manifest background colors
   // over web contents background colors.
-  bool PreferManifestBackgroundColor() const {
-    return GetParam() ==
-           BackgroundColorChangeTestMode::kSWAPreferManifestBackgroundColor;
-  }
+  bool PreferManifestBackgroundColor() const { return std::get<1>(GetParam()); }
 
   // Installs the web app under test, blocking until installation is complete,
   // and returning the `AppId` for the installed web app.
   AppId WaitForAppInstall() {
-    switch (GetParam()) {
+    switch (GetBackgroundColorChangeTestMode()) {
       case BackgroundColorChangeTestMode::kSWA:
-      case BackgroundColorChangeTestMode::kSWAPreferManifestBackgroundColor:
         system_web_app_installation_->WaitForAppInstall();
         return system_web_app_installation_->GetAppId();
       case BackgroundColorChangeTestMode::kNonSWA: {
@@ -400,25 +404,41 @@ class BackgroundColorChangeWebAppBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     Mode,
     BackgroundColorChangeWebAppBrowserTest,
-    testing::Values(
-        BackgroundColorChangeTestMode::kSWA,
-        BackgroundColorChangeTestMode::kSWAPreferManifestBackgroundColor,
-        BackgroundColorChangeTestMode::kNonSWA),
-    [](const testing::TestParamInfo<BackgroundColorChangeTestMode>& info) {
-      switch (info.param) {
+    testing::Combine(testing::Values(BackgroundColorChangeTestMode::kSWA,
+                                     BackgroundColorChangeTestMode::kNonSWA),
+                     /*prefer_manifest_background_color=*/testing::Bool()),
+    [](const testing::TestParamInfo<
+        std::tuple<BackgroundColorChangeTestMode,
+                   /*prefer_manifest_background_color=*/bool>>& info) {
+      BackgroundColorChangeTestMode test_mode = std::get<0>(info.param);
+      bool prefer_manifest_background_color = std::get<1>(info.param);
+
+      std::stringstream name;
+      switch (test_mode) {
         case BackgroundColorChangeTestMode::kSWA:
-          return "kSWA";
-        case BackgroundColorChangeTestMode::kSWAPreferManifestBackgroundColor:
-          return "kSWAPreferManifestBackgroundColor";
+          name << "kSWA";
+          break;
         case BackgroundColorChangeTestMode::kNonSWA:
-          return "kNonSWA";
+          name << "kNonSWA";
+          break;
       }
+
+      if (prefer_manifest_background_color)
+        name << "_PreferManifestBackgroundColor";
+
+      return name.str();
     });
 
 IN_PROC_BROWSER_TEST_P(BackgroundColorChangeWebAppBrowserTest,
                        BackgroundColorChange) {
-  const AppId app_id = WaitForAppInstall();
+  // Skip test parameterizations for non-system web apps that don't make sense.
+  if (GetBackgroundColorChangeTestMode() ==
+          BackgroundColorChangeTestMode::kNonSWA &&
+      PreferManifestBackgroundColor()) {
+    GTEST_SKIP();
+  }
 
+  const AppId app_id = WaitForAppInstall();
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
   content::WebContents* const web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();

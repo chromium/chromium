@@ -184,6 +184,11 @@ class SystemWebAppDelegate {
   // as opposed to resolving background color from web contents.
   virtual bool PreferManifestBackgroundColor() const;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Returns whether theme changes should be animated.
+  virtual bool ShouldAnimateThemeChanges() const;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
  protected:
   Profile* profile() const { return profile_; }
 

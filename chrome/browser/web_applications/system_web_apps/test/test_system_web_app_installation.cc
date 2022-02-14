@@ -176,6 +176,11 @@ bool UnittestingSystemAppDelegate::IsUrlInSystemAppScope(
 bool UnittestingSystemAppDelegate::PreferManifestBackgroundColor() const {
   return prefer_manifest_background_color_;
 }
+#if BUILDFLAG(IS_CHROMEOS)
+bool UnittestingSystemAppDelegate::ShouldAnimateThemeChanges() const {
+  return should_animate_theme_changes_;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void UnittestingSystemAppDelegate::SetAppIdsToUninstallAndReplace(
     const std::vector<AppId>& ids) {
@@ -246,6 +251,11 @@ void UnittestingSystemAppDelegate::SetPreferManifestBackgroundColor(
     bool value) {
   prefer_manifest_background_color_ = value;
 }
+#if BUILDFLAG(IS_CHROMEOS)
+void UnittestingSystemAppDelegate::SetShouldAnimateThemeChanges(bool value) {
+  should_animate_theme_changes_ = value;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TestSystemWebAppInstallation::TestSystemWebAppInstallation(
     std::unique_ptr<UnittestingSystemAppDelegate> delegate)
@@ -701,8 +711,7 @@ TestSystemWebAppInstallation::SetUpAppWithColors(
     absl::optional<SkColor> theme_color,
     absl::optional<SkColor> dark_mode_theme_color,
     absl::optional<SkColor> background_color,
-    absl::optional<SkColor> dark_mode_background_color,
-    bool prefer_manifest_background_color) {
+    absl::optional<SkColor> dark_mode_background_color) {
   std::unique_ptr<UnittestingSystemAppDelegate> delegate =
       std::make_unique<UnittestingSystemAppDelegate>(
           SystemAppType::MEDIA, "Test",
@@ -715,7 +724,6 @@ TestSystemWebAppInstallation::SetUpAppWithColors(
             info->dark_mode_background_color = dark_mode_background_color;
             return info;
           }));
-  delegate->SetPreferManifestBackgroundColor(prefer_manifest_background_color);
   return base::WrapUnique(
       new TestSystemWebAppInstallation(std::move(delegate)));
 }
@@ -785,6 +793,11 @@ AppId TestSystemWebAppInstallation::GetAppId() {
 const GURL& TestSystemWebAppInstallation::GetAppUrl() {
   return WebAppProvider::GetForTest(profile_)->registrar().GetAppStartUrl(
       GetAppId());
+}
+
+SystemWebAppDelegate* TestSystemWebAppInstallation::GetDelegate() {
+  auto it = system_app_delegates_.find(GetType());
+  return it != system_app_delegates_.end() ? it->second.get() : nullptr;
 }
 
 SystemAppType TestSystemWebAppInstallation::GetType() {
