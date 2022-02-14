@@ -2,34 +2,25 @@
   #container {
     display: grid;
     grid-template-areas:
-      '. leftspacer userpreview userpreview userpreview rightspacer .'
-      '. leftspacer wallpaper   .           screensaver rightspacer .'
-      '. leftspacer .           .           .           rightspacer .';
-    grid-template-columns: 1fr minmax(24px, 72px) minmax(208px, 400px) 16px minmax(208px, 400px) minmax(24px, 72px) 1fr;
+      '. . userpreview . .'
+      '. . middle      . .'
+      '. . .           . .';
+    grid-template-columns: 1fr minmax(24px, 72px) minmax(480px, 960px) minmax(24px, 72px) 1fr;
     grid-template-rows: 108px 1fr 12px;
     height: 100%;
     position: relative;
     width: 100%;
   }
 
-  #leftspacer {
-    grid-area: leftspacer;
-  }
-
-  #rightspacer {
-    grid-area: rightspacer;
-  }
-
   user-preview {
     grid-area: userpreview;
   }
 
-  wallpaper-preview {
-    grid-area: wallpaper;
-  }
-
-  ambient-preview {
-    grid-area: screensaver;
+  #middle {
+    display: grid;
+    gap: 16px;
+    grid-area: middle;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   }
 
   #ambientSubpageLink {
@@ -45,21 +36,21 @@
   }
 </style>
 <div id="container">
-  <div id="leftspacer"></div>
   <user-preview clickable="[[clickable_]]">
     <cr-icon-button id="userSubpageLink" iron-icon="personalization:pencil"
         on-click="onClickUserSubpageLink_"></cr-icon-button>
   </user-preview>
-  <wallpaper-preview>
-    <template is="dom-if" if="[[isDarkLightModeEnabled_()]]">
-      <personalization-theme></personalization-theme>
-    </template>
-  </wallpaper-preview>
-  <ambient-preview>
-    <cr-button id="ambientSubpageLink" on-click="onClickAmbientSubpageLink_">
-      <div class="text">[[i18n('screensaverLabel')]]</div>
-      <iron-icon icon="cr:chevron-right" aria-hidden="true"></iron-icon>
-    </cr-button>
-  </ambient-preview>
-  <div id="rightspacer"></div>
+  <div id="middle">
+    <wallpaper-preview>
+      <template is="dom-if" if="[[isDarkLightModeEnabled_()]]">
+        <personalization-theme></personalization-theme>
+      </template>
+    </wallpaper-preview>
+    <ambient-preview>
+      <cr-button id="ambientSubpageLink" on-click="onClickAmbientSubpageLink_">
+        <div class="text">[[i18n('screensaverLabel')]]</div>
+        <iron-icon icon="cr:chevron-right" aria-hidden="true"></iron-icon>
+      </cr-button>
+    </ambient-preview>
+  </div>
 </div>
