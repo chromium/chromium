@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -781,8 +782,17 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     }
 
     @Override
-    public boolean showTabSwitcherTitle() {
-        return true;
+    public @TabSwitcherType int getTabSwitcherType() {
+        switch (mMode) {
+            case TabListMode.CAROUSEL:
+                return TabSwitcherType.CAROUSEL;
+            case TabListMode.GRID:
+                return TabSwitcherType.GRID;
+            case TabListMode.LIST:
+            case TabListMode.STRIP:
+            default:
+                return TabSwitcherType.NONE;
+        }
     }
 
     /**

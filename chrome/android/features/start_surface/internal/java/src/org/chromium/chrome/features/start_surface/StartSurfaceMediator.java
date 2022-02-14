@@ -61,8 +61,11 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
+import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.start_surface.R;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -876,11 +879,15 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
     }
 
     private void setTabCarouselVisibility(boolean isVisible) {
-        if (isVisible == mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE)) return;
+        // If the single tab switcher is shown and the current selected tab is a new tab page, we
+        // shouldn't show the tab switcher layout on Start.
+        boolean shouldShowTabCarousel =
+                isVisible && !(isSingleTabSwitcher() && isCurrentSelectedTabNTP());
+        if (shouldShowTabCarousel == mPropertyModel.get(IS_TAB_CAROUSEL_VISIBLE)) return;
 
-        mPropertyModel.set(IS_TAB_CAROUSEL_VISIBLE, isVisible);
+        mPropertyModel.set(IS_TAB_CAROUSEL_VISIBLE, shouldShowTabCarousel);
         mPropertyModel.set(
-                IS_TAB_CAROUSEL_TITLE_VISIBLE, isVisible && mController.showTabSwitcherTitle());
+                IS_TAB_CAROUSEL_TITLE_VISIBLE, shouldShowTabCarousel && showTabSwitcherTitle());
     }
 
     private void setMVTilesVisibility(boolean isVisible) {
@@ -977,6 +984,24 @@ class StartSurfaceMediator implements StartSurface.Controller, TabSwitcher.Overv
         } else {
             return mTabModelSelector.getModel(false).getCount();
         }
+    }
+
+    private boolean isCurrentSelectedTabNTP() {
+        Tab currentTab = mTabModelSelector.getCurrentTab();
+        return mTabModelSelector.isTabStateInitialized() && currentTab != null
+                        && currentTab.getUrl() != null
+                ? UrlUtilities.isNTPUrl(currentTab.getUrl())
+                : SharedPreferencesManager.getInstance().readInt(
+                          ChromePreferenceKeys.APP_LAUNCH_LAST_KNOWN_ACTIVE_TAB_STATE)
+                        == ActiveTabState.NTP;
+    }
+
+    private boolean isSingleTabSwitcher() {
+        return mController.getTabSwitcherType() == TabSwitcherType.SINGLE;
+    }
+
+    private boolean showTabSwitcherTitle() {
+        return !isSingleTabSwitcher();
     }
 
     TabSwitcher.Controller getSecondaryTasksSurfaceController() {
