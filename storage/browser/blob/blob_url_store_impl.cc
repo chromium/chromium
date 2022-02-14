@@ -12,6 +12,7 @@
 #include "storage/browser/blob/blob_url_loader_factory.h"
 #include "storage/browser/blob/blob_url_registry.h"
 #include "storage/browser/blob/blob_url_utils.h"
+#include "url/url_util.h"
 
 namespace storage {
 
@@ -157,11 +158,15 @@ bool BlobURLStoreImpl::BlobUrlIsValid(const GURL& url,
   // `origin_` will always be a non-opaque file: origin for pages loaded from
   // file:// URLs. To deal with this, we treat file:// origins and
   // opaque origins separately from non-opaque origins.
+  // URLs created by blink::BlobURL::CreateBlobURL() will always get "blank" as
+  // origin if the scheme is local, which usually includes the file scheme and
+  // on Android also the content scheme.
   bool valid_origin = true;
   if (url_origin.scheme() == url::kFileScheme) {
     valid_origin = origin_.scheme() == url::kFileScheme;
   } else if (url_origin.opaque()) {
-    valid_origin = origin_.opaque() || origin_.scheme() == url::kFileScheme;
+    valid_origin = origin_.opaque() ||
+                   base::Contains(url::GetLocalSchemes(), origin_.scheme());
   } else {
     valid_origin = origin_ == url_origin;
   }

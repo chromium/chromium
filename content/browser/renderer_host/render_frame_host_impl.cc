@@ -784,9 +784,13 @@ void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
   // - precursor origins
   // - TODO(https://crbug.com/1041376): mismatched nonces (even if precursor
   //   origins would have matched)
+  // - blob urls with content scheme are opaque on browser side
+  // (https://crbug.com/1295268)
   const url::Origin& renderer_side_origin = params.origin;
   url::Origin browser_side_origin = navigation_request->GetOriginToCommit();
-  if (renderer_side_origin.opaque() && browser_side_origin.opaque())
+  if ((renderer_side_origin.opaque() ||
+       renderer_side_origin.scheme() == url::kContentScheme) &&
+      browser_side_origin.opaque())
     return;
 
   DCHECK_EQ(browser_side_origin, renderer_side_origin)
