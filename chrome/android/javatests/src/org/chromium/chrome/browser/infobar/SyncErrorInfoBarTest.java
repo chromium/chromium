@@ -36,7 +36,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -92,9 +91,6 @@ public class SyncErrorInfoBarTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(2).build();
-
-    @Rule
-    public DisableAnimationsTestRule mDisableAnimationsTestRule = new DisableAnimationsTestRule();
 
     @Before
     public void setUp() {

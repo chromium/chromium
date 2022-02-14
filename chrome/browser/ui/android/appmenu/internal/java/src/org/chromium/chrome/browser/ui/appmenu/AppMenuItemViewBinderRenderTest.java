@@ -38,7 +38,6 @@ import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.NightModeTestUtils;
 
 import java.io.IOException;
@@ -58,8 +57,6 @@ public class AppMenuItemViewBinderRenderTest {
                     new ParameterSet().value(true, true).name("NightMode_MenuItemEnabled"),
                     new ParameterSet().value(true, false).name("NightMode_MenuItemDisabled"));
 
-    @ClassRule
-    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);

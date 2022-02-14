@@ -21,7 +21,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,7 +48,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiDisableIf;
 import org.chromium.url.GURL;
 
@@ -63,10 +61,6 @@ import java.util.List;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ExpandablePaymentHandlerTest {
-    // Disable animations to reduce flakiness.
-    @ClassRule
-    public static DisableAnimationsTestRule sNoAnimationsRule = new DisableAnimationsTestRule();
-
     // Open a tab on the blank page first to initiate the native bindings required by the test
     // server.
     @Rule

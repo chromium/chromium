@@ -29,7 +29,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /** Tests for AssistantVoiceSearchConsentDialog */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -40,9 +39,6 @@ public class AssistantVoiceSearchConsentModalTest {
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Rule
-    public DisableAnimationsTestRule mDisableAnimationsTestRule = new DisableAnimationsTestRule();
 
     @Mock
     AssistantVoiceSearchConsentUi.Observer mObserver;

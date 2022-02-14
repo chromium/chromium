@@ -28,7 +28,6 @@ import androidx.test.filters.MediumTest;
 import org.hamcrest.Matcher;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
@@ -53,7 +52,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /**
  * Integration tests for the first run experience with sign-in and sync decoupled.
@@ -63,11 +61,6 @@ import org.chromium.ui.test.util.DisableAnimationsTestRule;
 public class FirstRunActivitySigninAndSyncTest {
     private static final String TEST_EMAIL = "test.account@gmail.com";
     private static final String CHILD_EMAIL = "child.account@gmail.com";
-
-    // Disable animations to reduce flakiness.
-    @ClassRule
-    public static final DisableAnimationsTestRule sNoAnimationsRule =
-            new DisableAnimationsTestRule();
 
     @Rule
     public final TestRule mCommandLindFlagRule = CommandLineFlags.getTestRule();

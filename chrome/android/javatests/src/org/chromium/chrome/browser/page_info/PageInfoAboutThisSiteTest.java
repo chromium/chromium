@@ -64,7 +64,6 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServerRule;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -87,10 +86,6 @@ public class PageInfoAboutThisSiteTest {
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
-
-    @ClassRule
-    public static DisableAnimationsTestRule sDisableAnimationsTestRule =
-            new DisableAnimationsTestRule();
 
     @Rule
     public final BlankCTATabInitialStateRule mInitialStateRule =

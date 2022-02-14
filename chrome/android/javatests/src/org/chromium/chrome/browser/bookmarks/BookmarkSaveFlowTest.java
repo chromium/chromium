@@ -52,7 +52,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -64,8 +63,6 @@ import java.util.concurrent.ExecutionException;
 public class BookmarkSaveFlowTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-    @Rule
-    public DisableAnimationsTestRule mDisableAnimationsTestRule = new DisableAnimationsTestRule();
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().build();

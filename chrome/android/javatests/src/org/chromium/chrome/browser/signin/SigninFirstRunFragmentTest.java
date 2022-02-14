@@ -86,7 +86,6 @@ import org.chromium.components.policy.PolicyService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.ViewUtils;
 
 /** Tests for the class {@link SigninFirstRunFragment}. */
@@ -123,10 +122,6 @@ public class SigninFirstRunFragmentTest {
             mIsAcceptTermsOfServiceCalled = true;
         }
     }
-
-    // Disable animations to reduce flakiness.
-    @Rule
-    public final DisableAnimationsTestRule mNoAnimationsRule = new DisableAnimationsTestRule();
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();

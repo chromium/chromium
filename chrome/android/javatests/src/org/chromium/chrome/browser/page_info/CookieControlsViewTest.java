@@ -22,7 +22,6 @@ import androidx.test.filters.MediumTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,7 +40,6 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /**
  * Tests for CookieControlsView.
@@ -52,9 +50,6 @@ import org.chromium.ui.test.util.DisableAnimationsTestRule;
 public class CookieControlsViewTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
-    @ClassRule
-    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
 
     private final String mPath = "/chrome/test/data/android/simple.html";
     private EmbeddedTestServer mTestServer;

@@ -64,7 +64,6 @@ import org.chromium.components.optimization_guide.proto.CommonTypesProto.Any;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
 
@@ -83,10 +82,6 @@ public class PageInfoStoreInfoViewTest {
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
-
-    @ClassRule
-    public static DisableAnimationsTestRule sDisableAnimationsTestRule =
-            new DisableAnimationsTestRule();
 
     @Rule
     public final BlankCTATabInitialStateRule mInitialStateRule =

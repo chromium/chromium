@@ -12,7 +12,6 @@ import androidx.test.filters.MediumTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,17 +26,12 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /** An integration test for shipping address and payer's contact information delegation. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @MediumTest
 public class PaymentHandlerEnableDelegationsTest {
-    // Disable animations to reduce flakiness.
-    @ClassRule
-    public static DisableAnimationsTestRule sNoAnimationsRule = new DisableAnimationsTestRule();
-
     // Open a tab on the blank page first to initiate the native bindings required by the test
     // server.
     @Rule

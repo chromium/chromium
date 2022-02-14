@@ -12,7 +12,6 @@ import android.graphics.drawable.BitmapDrawable;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +32,6 @@ import org.chromium.components.payments.PaymentAppServiceBridge;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.SupportedDelegations;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.concurrent.TimeoutException;
 
@@ -45,10 +43,6 @@ import java.util.concurrent.TimeoutException;
         // Prevent crawling the web for real payment apps.
         "disable-features=" + PaymentFeatureList.SERVICE_WORKER_PAYMENT_APPS})
 public class PaymentRequestServiceWorkerPaymentAppTest {
-    // Disable animations to reduce flakiness.
-    @ClassRule
-    public static DisableAnimationsTestRule sNoAnimationsRule = new DisableAnimationsTestRule();
-
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule = new PaymentRequestTestRule(
             "payment_request_bobpay_and_basic_card_with_modifier_optional_data_test.html");

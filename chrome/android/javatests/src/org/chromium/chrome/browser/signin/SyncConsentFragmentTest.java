@@ -73,7 +73,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.io.IOException;
 import java.util.List;
@@ -112,9 +111,6 @@ public class SyncConsentFragmentTest {
 
     @Rule
     public final TestRule mCommandLindFlagRule = CommandLineFlags.getTestRule();
-
-    @Rule
-    public final DisableAnimationsTestRule mNoAnimationsRule = new DisableAnimationsTestRule();
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();

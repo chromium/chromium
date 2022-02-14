@@ -39,7 +39,6 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 /**
  * Class responsible for testing the OverlayPanelEventFilter.
  */
@@ -57,8 +56,6 @@ public class OverlayPanelEventFilterTest {
 
     private static final int MOCK_TOOLBAR_HEIGHT = 100;
 
-    @ClassRule
-    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);

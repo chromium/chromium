@@ -54,7 +54,6 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /**
  * Instrumentation tests for {@link ConfirmImportSyncDataDialogCoordinator}.
@@ -87,11 +86,6 @@ public class ConfirmImportSyncDataDialogTest {
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
-
-    // Disable animations to reduce flakiness.
-    @ClassRule
-    public static final DisableAnimationsTestRule sNoAnimationsRule =
-            new DisableAnimationsTestRule();
 
     @ClassRule
     public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =

@@ -18,7 +18,6 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +36,6 @@ import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServerRule;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
@@ -54,10 +52,6 @@ Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_STARTUP
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
 public class PageInfoViewDarkModeTest {
     private static final String sSimpleHtml = "/chrome/test/data/android/simple.html";
-
-    @ClassRule
-    public static DisableAnimationsTestRule sDisableAnimationsTestRule =
-            new DisableAnimationsTestRule();
 
     @Rule
     public final ChromeTabbedActivityTestRule mActivityTestRule =

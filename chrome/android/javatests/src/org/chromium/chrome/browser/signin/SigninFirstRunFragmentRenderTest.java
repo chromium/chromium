@@ -47,7 +47,6 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
@@ -83,10 +82,6 @@ public class SigninFirstRunFragmentRenderTest {
     private static final String TEST_EMAIL1 = "test.account1@gmail.com";
     private static final String CHILD_ACCOUNT_NAME =
             AccountManagerTestRule.generateChildEmail("account@gmail.com");
-
-    // Disable animations to reduce flakiness.
-    @Rule
-    public final DisableAnimationsTestRule mNoAnimationsRule = new DisableAnimationsTestRule();
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();

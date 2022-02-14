@@ -63,7 +63,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.policy.PolicyService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -101,8 +100,6 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
     private static final String RENDER_TEST_REVISION_DESCRIPTION =
             "Change the button padding and font family.";
 
-    @Rule
-    public DisableAnimationsTestRule mDisableAnimationsTestRule = new DisableAnimationsTestRule();
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()

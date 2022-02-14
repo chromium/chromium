@@ -74,7 +74,6 @@ import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.ViewUtils;
 
 /**
@@ -109,11 +108,6 @@ public class AccountPickerBottomSheetTest {
     private static final String FULL_NAME1 = "Test Account1";
     private static final String GIVEN_NAME1 = "Account1";
     private static final String TEST_EMAIL2 = "test.account2@gmail.com";
-
-    // Disable animations to reduce flakiness.
-    @ClassRule
-    public static final DisableAnimationsTestRule sNoAnimationsRule =
-            new DisableAnimationsTestRule();
 
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =

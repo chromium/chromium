@@ -16,7 +16,6 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +35,6 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.NightModeTestUtils;
 
 import java.io.IOException;
@@ -53,9 +51,6 @@ public class AdaptiveButtonActionMenuRenderTest {
     @ParameterAnnotations.ClassParameter
     public static List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
-
-    @ClassRule
-    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
 
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =

@@ -56,7 +56,6 @@ import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -80,9 +79,6 @@ public class MostVisitedTilesTest {
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
-
-    @ClassRule
-    public static DisableAnimationsTestRule sNoAnimationsRule = new DisableAnimationsTestRule();
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();

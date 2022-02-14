@@ -38,7 +38,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /**
  * Render tests for {@link SignOutDialogFragment}
@@ -48,9 +47,6 @@ import org.chromium.ui.test.util.DisableAnimationsTestRule;
 @Batch(Batch.PER_CLASS)
 public class SignOutDialogRenderTest extends BlankUiTestActivityTestCase {
     private static final String TEST_DOMAIN = "test.domain.example.com";
-
-    @Rule
-    public final DisableAnimationsTestRule mNoAnimationsRule = new DisableAnimationsTestRule();
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =

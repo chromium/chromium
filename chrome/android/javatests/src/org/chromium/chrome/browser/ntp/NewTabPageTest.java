@@ -80,7 +80,6 @@ import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.ui.base.PageTransition;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -114,8 +113,6 @@ public class NewTabPageTest {
     public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
     @Rule
     public AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
-    @Rule
-    public final DisableAnimationsTestRule mNoAnimationRule = new DisableAnimationsTestRule();
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule = ChromeRenderTestRule.Builder.withPublicCorpus()

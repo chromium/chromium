@@ -69,7 +69,6 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
 
 /**
@@ -101,10 +100,6 @@ public class ChromeTabModalPresenterTest {
             checkDialogDismissalCause(mExpectedDismissalCause, dismissalCause);
         }
     }
-
-    // Disable animations to reduce flakiness.
-    @ClassRule
-    public static DisableAnimationsTestRule sNoAnimationsRule = new DisableAnimationsTestRule();
 
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =

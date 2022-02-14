@@ -48,7 +48,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /** Tests for AssistantVoiceSearchConsentDialog */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -61,9 +60,6 @@ public class AssistantVoiceSearchConsentControllerTest {
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Rule
-    public DisableAnimationsTestRule mDisableAnimationsTestRule = new DisableAnimationsTestRule();
 
     final SharedPreferencesManager mSharedPreferencesManager =
             SharedPreferencesManager.getInstance();

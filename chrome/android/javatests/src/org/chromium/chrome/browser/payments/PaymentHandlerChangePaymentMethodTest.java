@@ -10,7 +10,6 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +21,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiDisableIf;
 
 /** An integration test for PaymentRequestEvent.changePaymentMethod(). */
@@ -31,9 +29,6 @@ import org.chromium.ui.test.util.UiDisableIf;
         "enable-blink-features=PaymentMethodChangeEvent,PaymentHandlerChangePaymentMethod"})
 @MediumTest
 public class PaymentHandlerChangePaymentMethodTest {
-    // Disable animations to reduce flakiness.
-    @ClassRule
-    public static DisableAnimationsTestRule sNoAnimationsRule = new DisableAnimationsTestRule();
 
     // Open a tab on the blank page first to initiate the native bindings required by the test
     // server.
