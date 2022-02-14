@@ -71,7 +71,6 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/report_unrecoverable_error.h"
@@ -448,39 +447,21 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
         syncer::PRINTERS,
         std::make_unique<ForwardingModelTypeControllerDelegate>(
             printers_delegate)));
-    if (base::FeatureList::IsEnabled(syncer::kSyncWifiConfigurations) &&
-        WifiConfigurationSyncServiceFactory::ShouldRunInProfile(profile_)) {
-      syncer::ModelTypeControllerDelegate* wifi_configurations_delegate =
-          GetControllerDelegateForModelType(syncer::WIFI_CONFIGURATIONS).get();
-      controllers.push_back(std::make_unique<syncer::ModelTypeController>(
-          syncer::WIFI_CONFIGURATIONS,
-          std::make_unique<ForwardingModelTypeControllerDelegate>(
-              wifi_configurations_delegate)));
-    }
-    syncer::ModelTypeControllerDelegate* workspace_desk_delegate =
-        GetControllerDelegateForModelType(syncer::WORKSPACE_DESK).get();
-    controllers.push_back(std::make_unique<syncer::ModelTypeController>(
-        syncer::WORKSPACE_DESK,
-        std::make_unique<ForwardingModelTypeControllerDelegate>(
-            workspace_desk_delegate)));
-  } else {
-    // SyncSettingsCategorization is disabled.
-    if (base::FeatureList::IsEnabled(syncer::kSyncWifiConfigurations) &&
-        WifiConfigurationSyncServiceFactory::ShouldRunInProfile(profile_)) {
-      syncer::ModelTypeControllerDelegate* wifi_configurations_delegate =
-          GetControllerDelegateForModelType(syncer::WIFI_CONFIGURATIONS).get();
-      controllers.push_back(std::make_unique<syncer::ModelTypeController>(
-          syncer::WIFI_CONFIGURATIONS,
-          std::make_unique<ForwardingModelTypeControllerDelegate>(
-              wifi_configurations_delegate)));
-    }
-    syncer::ModelTypeControllerDelegate* workspace_desk_delegate =
-        GetControllerDelegateForModelType(syncer::WORKSPACE_DESK).get();
-    controllers.push_back(std::make_unique<syncer::ModelTypeController>(
-        syncer::WORKSPACE_DESK,
-        std::make_unique<ForwardingModelTypeControllerDelegate>(
-            workspace_desk_delegate)));
   }
+  if (WifiConfigurationSyncServiceFactory::ShouldRunInProfile(profile_)) {
+    syncer::ModelTypeControllerDelegate* wifi_configurations_delegate =
+        GetControllerDelegateForModelType(syncer::WIFI_CONFIGURATIONS).get();
+    controllers.push_back(std::make_unique<syncer::ModelTypeController>(
+        syncer::WIFI_CONFIGURATIONS,
+        std::make_unique<ForwardingModelTypeControllerDelegate>(
+            wifi_configurations_delegate)));
+  }
+  syncer::ModelTypeControllerDelegate* workspace_desk_delegate =
+      GetControllerDelegateForModelType(syncer::WORKSPACE_DESK).get();
+  controllers.push_back(std::make_unique<syncer::ModelTypeController>(
+      syncer::WORKSPACE_DESK,
+      std::make_unique<ForwardingModelTypeControllerDelegate>(
+          workspace_desk_delegate)));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return controllers;

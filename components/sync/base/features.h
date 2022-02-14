@@ -34,10 +34,6 @@ inline constexpr base::Feature
         "SyncAllowAutofillWalletDataInTransportModeWithCustomPassphrase",
         base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Controls whether to enable syncing of Autofill Wallet offer data.
-inline constexpr base::Feature kSyncAutofillWalletOfferData{
-    "SyncAutofillWalletOfferData", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Causes the sync engine to count a quota for commits of data types that can
 // be committed by extension JS API. If the quota is depleted, an extra long
 // nudge delay is applied to that data type. As a result, more changes are
@@ -89,10 +85,6 @@ inline constexpr base::FeatureParam<base::TimeDelta>
     kTrustedVaultServiceThrottlingDuration{
         &kSyncTrustedVaultPassphraseRecovery,
         "TrustedVaultServiceThrottlingDuration", base::Days(1)};
-
-// Controls whether to enable syncing of Wi-Fi configurations.
-inline constexpr base::Feature kSyncWifiConfigurations{
-    "SyncWifiConfigurations", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If enabled, the device will register with FCM and listen to new
 // invalidations. Also, FCM token will be set in DeviceInfo, which signals to

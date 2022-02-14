@@ -6942,11 +6942,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPwaUpdateDialogForNameAndIconDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kPwaUpdateDialogForNameAndIcon)},
 
-    {"sync-autofill-wallet-offer-data",
-     flag_descriptions::kSyncAutofillWalletOfferDataName,
-     flag_descriptions::kSyncAutofillWalletOfferDataDescription, kOsAll,
-     FEATURE_VALUE_TYPE(syncer::kSyncAutofillWalletOfferData)},
-
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     {"enable-oop-print-drivers", flag_descriptions::kEnableOopPrintDriversName,
      flag_descriptions::kEnableOopPrintDriversDescription, kOsDesktop,

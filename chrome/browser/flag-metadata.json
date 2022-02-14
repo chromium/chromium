@@ -5469,11 +5469,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "sync-autofill-wallet-offer-data",
-    "owners": ["siyua", "treib"],
-    "expiry_milestone": 100
-  },
-  {
     "name": "sync-settings-categorization",
     "owners": [ "bsazonov", "rsorokin", "cros-oac@google.com" ],
     "expiry_milestone": 101

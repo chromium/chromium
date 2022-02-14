@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -19,7 +18,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/sync/base/command_line_switches.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/data_type_controller.h"
 #include "components/sync/driver/sync_service_impl.h"
@@ -126,9 +124,7 @@ class SyncServiceFactoryTest : public testing::Test {
       datatypes.Put(syncer::OS_PRIORITY_PREFERENCES);
     }
     datatypes.Put(syncer::PRINTERS);
-    if (base::FeatureList::IsEnabled(syncer::kSyncWifiConfigurations)) {
-      datatypes.Put(syncer::WIFI_CONFIGURATIONS);
-    }
+    datatypes.Put(syncer::WIFI_CONFIGURATIONS);
     datatypes.Put(syncer::WORKSPACE_DESK);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
@@ -511,8 +510,7 @@ void SyncAuthManager::AccessTokenFetched(
   // Retry without backoff when the request is canceled for the first time. For
   // more details, see inline comments of
   // PrimaryAccountAccessTokenFetcher::OnAccessTokenFetchComplete.
-  if (base::FeatureList::IsEnabled(kSyncRetryFirstCanceledTokenFetch) &&
-      error.state() == GoogleServiceAuthError::REQUEST_CANCELED &&
+  if (error.state() == GoogleServiceAuthError::REQUEST_CANCELED &&
       !access_token_retried_) {
     access_token_retried_ = true;
     RequestAccessToken();

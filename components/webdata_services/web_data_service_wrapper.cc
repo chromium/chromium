@@ -26,7 +26,6 @@
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/signin/public/webdata/token_service_table.h"
 #include "components/signin/public/webdata/token_web_data.h"
-#include "components/sync/base/features.h"
 #include "components/webdata/common/web_database_service.h"
 #include "components/webdata/common/webdata_constants.h"
 
@@ -135,11 +134,9 @@ WebDataServiceWrapper::WebDataServiceWrapper(
   profile_autofill_web_data_->GetAutofillBackend(
       base::BindOnce(&InitWalletSyncBridgesOnDBSequence, db_task_runner,
                      profile_autofill_web_data_, application_locale));
-  if (base::FeatureList::IsEnabled(syncer::kSyncAutofillWalletOfferData)) {
-    profile_autofill_web_data_->GetAutofillBackend(
-        base::BindOnce(&InitWalletOfferSyncBridgeOnDBSequence, db_task_runner,
-                       profile_autofill_web_data_));
-  }
+  profile_autofill_web_data_->GetAutofillBackend(
+      base::BindOnce(&InitWalletOfferSyncBridgeOnDBSequence, db_task_runner,
+                     profile_autofill_web_data_));
 
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillEnableAccountWalletStorage)) {
