@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 /**
- * Steps in the privacy review flow in their order of appearance. The page
+ * Steps in the privacy guide flow in their order of appearance. The page
  * updates from those steps to show the corresponding page content.
  */
-export enum PrivacyReviewStep {
+export enum PrivacyGuideStep {
   WELCOME = 'welcome',
   MSBB = 'msbb',
   CLEAR_ON_EXIT = 'clearOnExit',

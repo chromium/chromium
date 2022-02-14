@@ -4,13 +4,13 @@
 
 /**
  * @fileoverview
- * 'privacy-review-completion-fragment' is the fragment in a privacy review
+ * 'privacy-guide-completion-fragment' is the fragment in a privacy guide
  * card that contains the completion screen and its description.
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import './privacy_review_completion_link_row.js';
-import './privacy_review_fragment_shared_css.js';
+import './privacy_guide_completion_link_row.js';
+import './privacy_guide_fragment_shared_css.js';
 
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -21,15 +21,15 @@ import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideInteractions} 
 import {OpenWindowProxyImpl} from '../../open_window_proxy.js';
 import {SyncBrowserProxyImpl, SyncStatus} from '../../people_page/sync_browser_proxy.js';
 
-import {getTemplate} from './privacy_review_completion_fragment.html.js';
+import {getTemplate} from './privacy_guide_completion_fragment.html.js';
 
-const PrivacyReviewCompletionFragmentElementBase =
+const PrivacyGuideCompletionFragmentElementBase =
     WebUIListenerMixin(PolymerElement);
 
-export class PrivacyReviewCompletionFragmentElement extends
-    PrivacyReviewCompletionFragmentElementBase {
+export class PrivacyGuideCompletionFragmentElement extends
+    PrivacyGuideCompletionFragmentElementBase {
   static get is() {
-    return 'privacy-review-completion-fragment';
+    return 'privacy-guide-completion-fragment';
   }
 
   static get template() {
@@ -102,11 +102,10 @@ export class PrivacyReviewCompletionFragmentElement extends
 
 declare global {
   interface HTMLElementTagNameMap {
-    'privacy-review-completion-fragment':
-        PrivacyReviewCompletionFragmentElement;
+    'privacy-guide-completion-fragment': PrivacyGuideCompletionFragmentElement;
   }
 }
 
 customElements.define(
-    PrivacyReviewCompletionFragmentElement.is,
-    PrivacyReviewCompletionFragmentElement);
+    PrivacyGuideCompletionFragmentElement.is,
+    PrivacyGuideCompletionFragmentElement);

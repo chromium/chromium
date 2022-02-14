@@ -69,7 +69,7 @@ suite('PrivacyPage', function() {
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
-      privacyReviewEnabled: false,
+      privacyGuideEnabled: false,
     });
   });
 
@@ -139,8 +139,8 @@ suite('PrivacyPage', function() {
     assertEquals(page.$.cookiesLinkRow.subLabel, testLabels[1]);
   });
 
-  test('privacyReviewRowNotVisible', function() {
-    assertFalse(isChildVisible(page, '#privacyReviewLinkRow'));
+  test('privacyGuideRowNotVisible', function() {
+    assertFalse(isChildVisible(page, '#privacyGuideLinkRow'));
   });
 
   test('ContentSettingsVisibility', async function() {
@@ -203,7 +203,7 @@ suite('PrivacyPage', function() {
   });
 });
 
-suite('PrivacyReviewEnabled', function() {
+suite('PrivacyGuideEnabled', function() {
   let page: SettingsPrivacyPageElement;
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
@@ -238,49 +238,49 @@ suite('PrivacyReviewEnabled', function() {
     return flushTasks();
   });
 
-  test('privacyReviewRowVisibleChildAccount', function() {
-    assertTrue(isChildVisible(page, '#privacyReviewLinkRow'));
+  test('privacyGuideRowVisibleChildAccount', function() {
+    assertTrue(isChildVisible(page, '#privacyGuideLinkRow'));
 
-    // The user signs in to a child user account. This hides the privacy review
+    // The user signs in to a child user account. This hides the privacy guide
     // entry point.
     const syncStatus:
         SyncStatus = {childUser: true, statusAction: StatusAction.NO_ACTION};
     webUIListenerCallback('sync-status-changed', syncStatus);
     flush();
-    assertFalse(isChildVisible(page, '#privacyReviewLinkRow'));
+    assertFalse(isChildVisible(page, '#privacyGuideLinkRow'));
 
     // The user is no longer signed in to a child user account. This doesn't
     // show the entry point.
     syncStatus.childUser = false;
     webUIListenerCallback('sync-status-changed', syncStatus);
     flush();
-    assertFalse(isChildVisible(page, '#privacyReviewLinkRow'));
+    assertFalse(isChildVisible(page, '#privacyGuideLinkRow'));
   });
 
-  test('privacyReviewRowVisibleManaged', function() {
-    assertTrue(isChildVisible(page, '#privacyReviewLinkRow'));
+  test('privacyGuideRowVisibleManaged', function() {
+    assertTrue(isChildVisible(page, '#privacyGuideLinkRow'));
 
-    // The user becomes managed. This hides the privacy review entry point.
+    // The user becomes managed. This hides the privacy guide entry point.
     webUIListenerCallback('is-managed-changed', true);
     flush();
-    assertFalse(isChildVisible(page, '#privacyReviewLinkRow'));
+    assertFalse(isChildVisible(page, '#privacyGuideLinkRow'));
 
     // The user is no longer managed. This doesn't show the entry point.
     webUIListenerCallback('is-managed-changed', false);
     flush();
-    assertFalse(isChildVisible(page, '#privacyReviewLinkRow'));
+    assertFalse(isChildVisible(page, '#privacyGuideLinkRow'));
   });
 
-  test('privacyReviewRowClick', async function() {
+  test('privacyGuideRowClick', async function() {
     page.shadowRoot!.querySelector<HTMLElement>(
-                        '#privacyReviewLinkRow')!.click();
+                        '#privacyGuideLinkRow')!.click();
 
     const result = await metricsBrowserProxy.whenCalled(
         'recordPrivacyGuideEntryExitHistogram');
     assertEquals(PrivacyGuideInteractions.SETTINGS_LINK_ROW_ENTRY, result);
 
     // Ensure the correct Settings page is shown.
-    assertEquals(routes.PRIVACY_REVIEW, Router.getInstance().getCurrentRoute());
+    assertEquals(routes.PRIVACY_GUIDE, Router.getInstance().getCurrentRoute());
   });
 });
 

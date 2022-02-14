@@ -4,8 +4,8 @@
 
 /**
  * @fileoverview
- * 'privacy-review-completion-link-row' is the custom link row element for the
- * privacy review completion card.
+ * 'privacy-guide-completion-link-row' is the custom link row element for the
+ * privacy guide completion card.
  */
 import 'chrome://resources/cr_elements/cr_actionable_row_style.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
@@ -13,11 +13,11 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getTemplate} from './privacy_review_completion_link_row.html.js';
+import {getTemplate} from './privacy_guide_completion_link_row.html.js';
 
-export class PrivacyReviewCompletionLinkRowElement extends PolymerElement {
+export class PrivacyGuideCompletionLinkRowElement extends PolymerElement {
   static get is() {
-    return 'privacy-review-completion-link-row';
+    return 'privacy-guide-completion-link-row';
   }
 
   static get template() {
@@ -42,5 +42,5 @@ export class PrivacyReviewCompletionLinkRowElement extends PolymerElement {
 }
 
 customElements.define(
-    PrivacyReviewCompletionLinkRowElement.is,
-    PrivacyReviewCompletionLinkRowElement);
+    PrivacyGuideCompletionLinkRowElement.is,
+    PrivacyGuideCompletionLinkRowElement);

@@ -43,7 +43,7 @@
     visibility: hidden;
   }
 
-  .privacy-review-card {
+  .privacy-guide-card {
     background-color: var(--cr-card-background-color);
     border-radius: var(--cr-card-border-radius);
     box-shadow: var(--cr-card-shadow);
@@ -55,40 +55,40 @@
     position: relative;
   }
 </style>
-<div class="privacy-review-card">
+<div class="privacy-guide-card">
   <cr-view-manager id="viewManager" on-view-enter-start="onViewEnterStart_">
-    <privacy-review-welcome-fragment id="[[privacyReviewStepEnum_.WELCOME]]"
+    <privacy-guide-welcome-fragment id="[[privacyGuideStepEnum_.WELCOME]]"
         class="managed-fragment" on-start-button-click="onNextButtonClick_"
         slot="view">
-    </privacy-review-welcome-fragment>
-    <privacy-review-msbb-fragment id="[[privacyReviewStepEnum_.MSBB]]"
+    </privacy-guide-welcome-fragment>
+    <privacy-guide-msbb-fragment id="[[privacyGuideStepEnum_.MSBB]]"
         class="managed-fragment" prefs="{{prefs}}" slot="view">
-    </privacy-review-msbb-fragment>
-    <privacy-review-clear-on-exit-fragment
-        id="[[privacyReviewStepEnum_.CLEAR_ON_EXIT]]" class="managed-fragment"
+    </privacy-guide-msbb-fragment>
+    <privacy-guide-clear-on-exit-fragment
+        id="[[privacyGuideStepEnum_.CLEAR_ON_EXIT]]" class="managed-fragment"
         prefs="{{prefs}}" slot="view">
-    </privacy-review-clear-on-exit-fragment>
-    <privacy-review-history-sync-fragment
-        id="[[privacyReviewStepEnum_.HISTORY_SYNC]]" class="managed-fragment"
+    </privacy-guide-clear-on-exit-fragment>
+    <privacy-guide-history-sync-fragment
+        id="[[privacyGuideStepEnum_.HISTORY_SYNC]]" class="managed-fragment"
         prefs="{{prefs}}" slot="view">
-    </privacy-review-history-sync-fragment>
-    <privacy-review-safe-browsing-fragment
-        id="[[privacyReviewStepEnum_.SAFE_BROWSING]]" class="managed-fragment"
+    </privacy-guide-history-sync-fragment>
+    <privacy-guide-safe-browsing-fragment
+        id="[[privacyGuideStepEnum_.SAFE_BROWSING]]" class="managed-fragment"
         prefs="{{prefs}}" slot="view">
-    </privacy-review-safe-browsing-fragment>
-    <privacy-review-cookies-fragment id="[[privacyReviewStepEnum_.COOKIES]]"
+    </privacy-guide-safe-browsing-fragment>
+    <privacy-guide-cookies-fragment id="[[privacyGuideStepEnum_.COOKIES]]"
         class="managed-fragment" prefs="{{prefs}}" slot="view">
-    </privacy-review-cookies-fragment>
-    <privacy-review-completion-fragment
-        id="[[privacyReviewStepEnum_.COMPLETION]]" class="managed-fragment"
+    </privacy-guide-cookies-fragment>
+    <privacy-guide-completion-fragment
+        id="[[privacyGuideStepEnum_.COMPLETION]]" class="managed-fragment"
         on-leave-button-click="onNextButtonClick_"
         on-back-button-click="onBackButtonClick_" slot="view">
-    </privacy-review-completion-fragment>
+    </privacy-guide-completion-fragment>
   </cr-view-manager>
-  <template is="dom-if" if="[[showAnySettingFragment_(privacyReviewStep_)]]">
+  <template is="dom-if" if="[[showAnySettingFragment_(privacyGuideStep_)]]">
     <div id="settingFooter" class="footer hr">
       <cr-button id="backButton" role="button" on-click="onBackButtonClick_"
-          class$="[[computeBackButtonClass_(privacyReviewStep_)]]">
+          class$="[[computeBackButtonClass_(privacyGuideStep_)]]">
         $i18n{privacyReviewBackButton}
       </cr-button>
       <step-indicator model="[[stepIndicatorModel_]]"></step-indicator>

@@ -4,20 +4,20 @@
 
 /**
  * @fileoverview
- * 'privacy-review-clear-on-exit' is the fragment in a privacy review card
+ * 'privacy-guide-clear-on-exit' is the fragment in a privacy guide card
  * that contains the 'clear cookies on exit' setting and its description.
  */
 import '../../controls/settings_toggle_button.js';
 import '../../prefs/prefs.js';
-import './privacy_review_description_item.js';
-import './privacy_review_fragment_shared_css.js';
+import './privacy_guide_description_item.js';
+import './privacy_guide_fragment_shared_css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getTemplate} from './privacy_review_clear_on_exit_fragment.html.js';
+import {getTemplate} from './privacy_guide_clear_on_exit_fragment.html.js';
 
-export class PrivacyReviewClearOnExitFragmentElement extends PolymerElement {
+export class PrivacyGuideClearOnExitFragmentElement extends PolymerElement {
   static get is() {
-    return 'privacy-review-clear-on-exit-fragment';
+    return 'privacy-guide-clear-on-exit-fragment';
   }
 
   static get template() {
@@ -38,5 +38,5 @@ export class PrivacyReviewClearOnExitFragmentElement extends PolymerElement {
 }
 
 customElements.define(
-    PrivacyReviewClearOnExitFragmentElement.is,
-    PrivacyReviewClearOnExitFragmentElement);
+    PrivacyGuideClearOnExitFragmentElement.is,
+    PrivacyGuideClearOnExitFragmentElement);

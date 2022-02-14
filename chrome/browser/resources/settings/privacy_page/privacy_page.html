@@ -21,7 +21,7 @@
         --settings-collapse-separator-line: var(--cr-separator-line);
       }
 
-      settings-privacy-review-page {
+      settings-privacy-guide-page {
         background-color: var(--cr-card-background-color);
         border-radius: var(--cr-card-border-radius);
         box-shadow: var(--cr-card-shadow);
@@ -51,12 +51,12 @@
             sub-label="Experimental button, click to show a test IPH bubble"
             on-click="onShowIPHBubbleTap_">
         </cr-link-row>
-        <template is="dom-if" if="[[enablePrivacyReview_]]">
-          <cr-link-row id="privacyReviewLinkRow" class="hr"
+        <template is="dom-if" if="[[enablePrivacyGuide_]]">
+          <cr-link-row id="privacyGuideLinkRow" class="hr"
               start-icon="settings20:wind-rose"
               label="$i18n{privacyReviewLabel}"
               sub-label="$i18n{privacyReviewSublabel}"
-              on-click="onPrivacyReviewClick_"
+              on-click="onPrivacyGuideClick_"
               role-description="$i18n{subpageArrowRoleDescription}">
           </cr-link-row>
         </template>
@@ -231,15 +231,15 @@
           </category-setting-exceptions>
         </settings-subpage>
       </template>
-      <template is="dom-if" if="[[enablePrivacyReview_]]">
-        <template is="dom-if" route-path="/privacy/review">
-          <settings-subpage id="privacy-review"
+      <template is="dom-if" if="[[enablePrivacyGuide_]]">
+        <template is="dom-if" route-path="/privacy/guide">
+          <settings-subpage id="privacy-guide"
               class="multi-card"
               page-title="$i18n{privacyReviewLabel}"
-              associated-control="[[$$('#privacyReviewLinkRow')]]">
-            <settings-privacy-review-page prefs="{{prefs}}"
+              associated-control="[[$$('#privacyGuideLinkRow')]]">
+            <settings-privacy-guide-page prefs="{{prefs}}"
                 focus-config="[[focusConfig_]]">
-            </settings-privacy-review-page>
+            </settings-privacy-guide-page>
           </settings-subpage>
         </template>
       </template>

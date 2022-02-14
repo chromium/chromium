@@ -87,8 +87,8 @@ TEST_F('CrSettingsBasicPageTest', 'BasicPage', function() {
   runMochaSuite('SettingsBasicPage');
 });
 
-TEST_F('CrSettingsBasicPageTest', 'PrivacyReviewPromo', function() {
-  runMochaSuite('PrivacyReviewPromo');
+TEST_F('CrSettingsBasicPageTest', 'PrivacyGuidePromo', function() {
+  runMochaSuite('PrivacyGuidePromo');
 });
 
 GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH)');
@@ -456,8 +456,8 @@ TEST_F('CrSettingsPrivacyPageTest', 'PrivacyPageTests', function() {
   runMochaSuite('PrivacyPage');
 });
 
-TEST_F('CrSettingsPrivacyPageTest', 'PrivacyReviewEnabled', function() {
-  runMochaSuite('PrivacyReviewEnabled');
+TEST_F('CrSettingsPrivacyPageTest', 'PrivacyGuideEnabled', function() {
+  runMochaSuite('PrivacyGuideEnabled');
 });
 
 // TODO(crbug.com/1043665): flaky crash on Linux Tests (dbg).
@@ -482,10 +482,10 @@ TEST_F(
     });
 GEN('#endif');
 
-var CrSettingsPrivacyReviewPageTest = class extends CrSettingsBrowserTest {
+var CrSettingsPrivacyGuidePageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://settings/test_loader.html?module=settings/privacy_review_page_test.js&host=webui-test';
+    return 'chrome://settings/test_loader.html?module=settings/privacy_guide_page_test.js&host=webui-test';
   }
 
   /** @override */
@@ -494,25 +494,24 @@ var CrSettingsPrivacyReviewPageTest = class extends CrSettingsBrowserTest {
   }
 };
 
-TEST_F('CrSettingsPrivacyReviewPageTest', 'PrivacyReviewPageTests', function() {
-  runMochaSuite('PrivacyReviewPage');
+TEST_F('CrSettingsPrivacyGuidePageTest', 'PrivacyGuidePageTests', function() {
+  runMochaSuite('PrivacyGuidePage');
 });
 
 TEST_F(
-    'CrSettingsPrivacyReviewPageTest', 'PrivacyReviewFragmentMetricsTests',
+    'CrSettingsPrivacyGuidePageTest', 'PrivacyGuideFragmentMetricsTests',
     function() {
-      runMochaSuite('PrivacyReviewFragmentMetrics');
+      runMochaSuite('PrivacyGuideFragmentMetrics');
     });
 
 TEST_F(
-    'CrSettingsPrivacyReviewPageTest', 'HistorySyncFragmentTests', function() {
+    'CrSettingsPrivacyGuidePageTest', 'HistorySyncFragmentTests', function() {
       runMochaSuite('HistorySyncFragment');
     });
 
-TEST_F(
-    'CrSettingsPrivacyReviewPageTest', 'CompletionFragmentTests', function() {
-      runMochaSuite('CompletionFragment');
-    });
+TEST_F('CrSettingsPrivacyGuidePageTest', 'CompletionFragmentTests', function() {
+  runMochaSuite('CompletionFragment');
+});
 
 var CrSettingsRouteTest = class extends CrSettingsBrowserTest {
   /** @override */

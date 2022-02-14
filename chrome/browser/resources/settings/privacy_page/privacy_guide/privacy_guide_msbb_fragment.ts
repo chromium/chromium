@@ -4,27 +4,27 @@
 
 /**
  * @fileoverview
- * 'privacy-review-msbb-fragment' is the fragment in a privacy review card
+ * 'privacy-guide-msbb-fragment' is the fragment in a privacy guide card
  * that contains the MSBB setting with a two-column description.
  */
 import '../../controls/settings_toggle_button.js';
 import '../../prefs/prefs.js';
-import './privacy_review_description_item.js';
-import './privacy_review_fragment_shared_css.js';
+import './privacy_guide_description_item.js';
+import './privacy_guide_fragment_shared_css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates} from '../../metrics_browser_proxy.js';
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 
-import {getTemplate} from './privacy_review_msbb_fragment.html.js';
+import {getTemplate} from './privacy_guide_msbb_fragment.html.js';
 
-const PrivacyReviewMsbbFragmentBase = PrefsMixin(PolymerElement);
+const PrivacyGuideMsbbFragmentBase = PrefsMixin(PolymerElement);
 
-export class PrivacyReviewMsbbFragmentElement extends
-    PrivacyReviewMsbbFragmentBase {
+export class PrivacyGuideMsbbFragmentElement extends
+    PrivacyGuideMsbbFragmentBase {
   static get is() {
-    return 'privacy-review-msbb-fragment';
+    return 'privacy-guide-msbb-fragment';
   }
 
   static get template() {
@@ -85,4 +85,4 @@ export class PrivacyReviewMsbbFragmentElement extends
 }
 
 customElements.define(
-    PrivacyReviewMsbbFragmentElement.is, PrivacyReviewMsbbFragmentElement);
+    PrivacyGuideMsbbFragmentElement.is, PrivacyGuideMsbbFragmentElement);

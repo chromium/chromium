@@ -11,8 +11,8 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../appearance_page/appearance_page.js';
+import '../privacy_page/privacy_guide_promo.js';
 import '../privacy_page/privacy_page.js';
-import '../privacy_page/privacy_review_promo.js';
 import '../safety_check_page/safety_check_page.js';
 import '../autofill_page/autofill_page.js';
 import '../controls/settings_idle_load.js';
@@ -40,7 +40,7 @@ import {loadTimeData} from '../i18n_setup.js';
 import {PageVisibility} from '../page_visibility.js';
 import {SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
-import {MAX_PRIVACY_REVIEW_PROMO_IMPRESSION, PrivacyReviewBrowserProxy, PrivacyReviewBrowserProxyImpl} from '../privacy_page/privacy_review/privacy_review_browser_proxy.js';
+import {MAX_PRIVACY_GUIDE_PROMO_IMPRESSION, PrivacyGuideBrowserProxy, PrivacyGuideBrowserProxyImpl} from '../privacy_page/privacy_guide/privacy_guide_browser_proxy.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 import {getSearchManager, SearchResult} from '../search_settings.js';
@@ -142,10 +142,10 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
       },
 
       /**
-       * True if the basic page should currently display the privacy review
+       * True if the basic page should currently display the privacy guide
        * promo.
        */
-      showPrivacyReviewPromo_: {
+      showPrivacyGuidePromo_: {
         type: Boolean,
         value: false,
       },
@@ -183,7 +183,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
 
   static get observers() {
     return [
-      'updatePrivacyReviewPromoVisibility_(isManaged_, isChildUser_, prefs.privacy_guide.viewed.value)',
+      'updatePrivacyGuidePromoVisibility_(isManaged_, isChildUser_, prefs.privacy_guide.viewed.value)',
     ];
   }
 
@@ -201,12 +201,12 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   private currentRoute_: Route;
   private advancedTogglingInProgress_: boolean;
 
-  private showPrivacyReviewPromo_: boolean;
-  private privacyReviewPromoWasShown_: boolean;
+  private showPrivacyGuidePromo_: boolean;
+  private privacyGuidePromoWasShown_: boolean;
   private isManaged_: boolean;
   private isChildUser_: boolean;
-  private privacyReviewBrowserProxy_: PrivacyReviewBrowserProxy =
-      PrivacyReviewBrowserProxyImpl.getInstance();
+  private privacyGuideBrowserProxy_: PrivacyGuideBrowserProxy =
+      PrivacyGuideBrowserProxyImpl.getInstance();
 
   ready() {
     super.ready();
@@ -245,7 +245,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
 
     super.currentRouteChanged(newRoute, oldRoute);
     if (newRoute === routes.PRIVACY) {
-      this.updatePrivacyReviewPromoVisibility_();
+      this.updatePrivacyGuidePromoVisibility_();
     }
   }
 
@@ -267,38 +267,38 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         .get();
   }
 
-  private updatePrivacyReviewPromoVisibility_() {
+  private updatePrivacyGuidePromoVisibility_() {
     if (this.pageVisibility.privacy === false ||
-        !loadTimeData.getBoolean('privacyReviewEnabled') || this.isManaged_ ||
+        !loadTimeData.getBoolean('privacyGuideEnabled') || this.isManaged_ ||
         this.isChildUser_ || this.prefs === undefined ||
         this.getPref('privacy_guide.viewed').value ||
-        this.privacyReviewBrowserProxy_.getPromoImpressionCount() >=
-            MAX_PRIVACY_REVIEW_PROMO_IMPRESSION ||
+        this.privacyGuideBrowserProxy_.getPromoImpressionCount() >=
+            MAX_PRIVACY_GUIDE_PROMO_IMPRESSION ||
         this.currentRoute_ !== routes.PRIVACY) {
-      this.showPrivacyReviewPromo_ = false;
+      this.showPrivacyGuidePromo_ = false;
       return;
     }
-    this.showPrivacyReviewPromo_ = true;
-    if (!this.privacyReviewPromoWasShown_) {
-      this.privacyReviewBrowserProxy_.incrementPromoImpressionCount();
-      this.privacyReviewPromoWasShown_ = true;
+    this.showPrivacyGuidePromo_ = true;
+    if (!this.privacyGuidePromoWasShown_) {
+      this.privacyGuideBrowserProxy_.incrementPromoImpressionCount();
+      this.privacyGuidePromoWasShown_ = true;
     }
   }
 
   private onIsManagedChanged_(isManaged: boolean) {
     // If the user became managed, then update the variable to trigger a change
-    // to privacy review promo's visibility. However, if the user was managed
+    // to privacy guide promo's visibility. However, if the user was managed
     // before and is no longer now, then keep the managed state as true, because
-    // the Settings route for privacy review would still be unavailable until
+    // the Settings route for privacy guide would still be unavailable until
     // the page is reloaded.
     this.isManaged_ = this.isManaged_ || isManaged;
   }
 
   private onSyncStatusChanged_(syncStatus: SyncStatus) {
     // If the user signed in to a child user account, then update the variable
-    // to trigger a change to privacy review promo's visibility. However, if the
+    // to trigger a change to privacy guide promo's visibility. However, if the
     // user was a child user before and is no longer now then keep the childUser
-    // state as true, because the Settings route for privacy review would still
+    // state as true, because the Settings route for privacy guide would still
     // be unavailable until the page is reloaded.
     this.isChildUser_ = this.isChildUser_ || !!syncStatus.childUser;
   }

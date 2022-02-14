@@ -11,15 +11,16 @@ import 'chrome://settings/lazy_load.js';
 import {isChromeOS, isLacros, webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrSettingsPrefs, MetricsBrowserProxyImpl, pageVisibility, PrivacyGuideInteractions, PrivacyReviewBrowserProxy, PrivacyReviewBrowserProxyImpl, Router, routes, SettingsBasicPageElement, SettingsIdleLoadElement, SettingsPrefsElement, SettingsSectionElement, StatusAction, SyncStatus} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, MetricsBrowserProxyImpl, pageVisibility, PrivacyGuideBrowserProxy, PrivacyGuideBrowserProxyImpl, PrivacyGuideInteractions, Router, routes, SettingsBasicPageElement, SettingsIdleLoadElement, SettingsPrefsElement, SettingsSectionElement, StatusAction, SyncStatus} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise, flushTasks, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 // clang-format on
-class TestPrivacyReviewBrowserProxy extends TestBrowserProxy implements
-    PrivacyReviewBrowserProxy {
+class TestPrivacyGuideBrowserProxy extends TestBrowserProxy implements
+    PrivacyGuideBrowserProxy {
   constructor() {
     super([
       'getPromoImpressionCount',
@@ -42,7 +43,7 @@ suite('SettingsBasicPage', () => {
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
-      privacyReviewEnabled: false,
+      privacyGuideEnabled: false,
     });
   });
 
@@ -235,11 +236,11 @@ suite('SettingsBasicPage', () => {
         page.shadowRoot!.querySelectorAll<SettingsSectionElement>(
             'settings-section[active]');
     assertEquals(3, activeSections.length);
-    // Privacy review promo.
+    // Privacy guide promo.
     assertEquals(
         routes.PRIVACY.section,
         activeSections[0]!.getAttribute('nest-under-section'));
-    assertFalse(isChildVisible(page, '#privacyReviewPromo'));
+    assertFalse(isChildVisible(page, '#privacyGuidePromo'));
     // Safety check.
     assertEquals(routes.SAFETY_CHECK.section, activeSections[1]!.section);
     assertEquals(
@@ -261,11 +262,11 @@ suite('SettingsBasicPage', () => {
   });
 });
 
-suite('PrivacyReviewPromo', () => {
+suite('PrivacyGuidePromo', () => {
   let page: SettingsBasicPageElement;
   let settingsPrefs: SettingsPrefsElement;
   let testMetricsBrowserProxy: TestMetricsBrowserProxy;
-  let privacyReviewBrowserProxy: TestPrivacyReviewBrowserProxy;
+  let privacyGuideBrowserProxy: TestPrivacyGuideBrowserProxy;
 
   suiteSetup(function() {
     settingsPrefs = document.createElement('settings-prefs');
@@ -273,9 +274,9 @@ suite('PrivacyReviewPromo', () => {
   });
 
   setup(async function() {
-    assertTrue(loadTimeData.getBoolean('privacyReviewEnabled'));
-    privacyReviewBrowserProxy = new TestPrivacyReviewBrowserProxy();
-    PrivacyReviewBrowserProxyImpl.setInstance(privacyReviewBrowserProxy);
+    assertTrue(loadTimeData.getBoolean('privacyGuideEnabled'));
+    privacyGuideBrowserProxy = new TestPrivacyGuideBrowserProxy();
+    PrivacyGuideBrowserProxyImpl.setInstance(privacyGuideBrowserProxy);
     document.body.innerHTML = '';
     page = document.createElement('settings-basic-page');
     page.prefs = settingsPrefs.prefs!;
@@ -304,26 +305,26 @@ suite('PrivacyReviewPromo', () => {
   });
 
   // Same as the SometimesMoreSectionsShown test in the suite above, but
-  // including the privacy review.
+  // including the privacy guide.
   // TODO(crbug.com/1215630): Merge this test with the
-  // SometimesMoreSectionsShown test when the privacy review flag is removed.
-  test('SometimesMoreSectionsShownWithPrivacyReview', async () => {
+  // SometimesMoreSectionsShown test when the privacy guide flag is removed.
+  test('SometimesMoreSectionsShownWithPrivacyGuide', async () => {
     const whenDone = eventToPromise('show-container', page);
     Router.getInstance().navigateTo(routes.PRIVACY);
     await whenDone;
     await flushTasks();
-    await privacyReviewBrowserProxy.whenCalled('incrementPromoImpressionCount');
+    await privacyGuideBrowserProxy.whenCalled('incrementPromoImpressionCount');
 
 
     const activeSections =
         page.shadowRoot!.querySelectorAll<SettingsSectionElement>(
             'settings-section[active]');
     assertEquals(3, activeSections.length);
-    // Privacy review promo.
+    // Privacy guide promo.
     assertEquals(
         routes.PRIVACY.section,
         activeSections[0]!.getAttribute('nest-under-section'));
-    assertTrue(isChildVisible(page, '#privacyReviewPromo'));
+    assertTrue(isChildVisible(page, '#privacyGuidePromo'));
     // Safety check.
     assertEquals(routes.SAFETY_CHECK.section, activeSections[1]!.section);
     assertEquals(
@@ -333,65 +334,65 @@ suite('PrivacyReviewPromo', () => {
     assertEquals(routes.PRIVACY.section, activeSections[2]!.section);
   });
 
-  test('privacyReviewPromoVisibilityChildAccount', function() {
-    assertTrue(isChildVisible(page, '#privacyReviewPromo'));
+  test('privacyGuidePromoVisibilityChildAccount', function() {
+    assertTrue(isChildVisible(page, '#privacyGuidePromo'));
 
-    // The user signs in to a child user account. This hides the privacy review
+    // The user signs in to a child user account. This hides the privacy guide
     // promo.
     let syncStatus:
         SyncStatus = {childUser: true, statusAction: StatusAction.NO_ACTION};
     webUIListenerCallback('sync-status-changed', syncStatus);
     flush();
-    assertFalse(isChildVisible(page, '#privacyReviewPromo'));
+    assertFalse(isChildVisible(page, '#privacyGuidePromo'));
 
     // The user is no longer signed in to a child user account. This doesn't
     // show the promo.
     syncStatus = {childUser: false, statusAction: StatusAction.NO_ACTION};
     webUIListenerCallback('sync-status-changed', syncStatus);
     flush();
-    assertFalse(isChildVisible(page, '#privacyReviewPromo'));
+    assertFalse(isChildVisible(page, '#privacyGuidePromo'));
   });
 
-  test('privacyReviewPromoVisibilityManaged', function() {
-    assertTrue(isChildVisible(page, '#privacyReviewPromo'));
+  test('privacyGuidePromoVisibilityManaged', function() {
+    assertTrue(isChildVisible(page, '#privacyGuidePromo'));
 
-    // The user becomes managed. This hides the privacy review promo.
+    // The user becomes managed. This hides the privacy guide promo.
     webUIListenerCallback('is-managed-changed', true);
     flush();
-    assertFalse(isChildVisible(page, '#privacyReviewPromo'));
+    assertFalse(isChildVisible(page, '#privacyGuidePromo'));
 
     // The user is no longer managed. This doesn't show the promo.
     webUIListenerCallback('is-managed-changed', false);
     flush();
-    assertFalse(isChildVisible(page, '#privacyReviewPromo'));
+    assertFalse(isChildVisible(page, '#privacyGuidePromo'));
   });
 
-  test('privacyReviewPromoNoThanksTest', function() {
+  test('privacyGuidePromoNoThanksTest', function() {
     // Make sure the pref is set and that privacy guide has never been seen
     // before.
     page.prefs.privacy_guide.viewed.value = false;
     flush();
 
-    assertTrue(isChildVisible(page, '#privacyReviewPromo'));
+    assertTrue(isChildVisible(page, '#privacyGuidePromo'));
 
     // Click the no thanks button.
-    const privacyReviewPromo =
-        page.shadowRoot!.querySelector<HTMLElement>('#privacyReviewPromo')!;
-    privacyReviewPromo.shadowRoot!
-        .querySelector<HTMLElement>('#noThanksButton')!.click();
+    const privacyGuidePromo =
+        page.shadowRoot!.querySelector<HTMLElement>('#privacyGuidePromo')!;
+    privacyGuidePromo.shadowRoot!.querySelector<HTMLElement>(
+                                     '#noThanksButton')!.click();
     flush();
 
     // The privacy guide should be marked as seen and the promo no longer
     // visible.
-    assertFalse(isChildVisible(page, '#privacyReviewPromo'));
+    assertFalse(isChildVisible(page, '#privacyGuidePromo'));
   });
 
-  test('privacyReviewPromoStartMetrics', async function() {
+  test('privacyGuidePromoStartMetrics', async function() {
     // Click the start button.
-    const privacyReviewPromo =
-        page.shadowRoot!.querySelector<HTMLElement>('#privacyReviewPromo')!;
-    privacyReviewPromo.shadowRoot!.querySelector<HTMLElement>(
-                                      '#startButton')!.click();
+    const privacyGuidePromo =
+        page.shadowRoot!.querySelector<HTMLElement>('#privacyGuidePromo')!;
+    privacyGuidePromo.shadowRoot!.querySelector<HTMLElement>(
+                                     '#startButton')!.click();
     flush();
 
     const result = await testMetricsBrowserProxy.whenCalled(

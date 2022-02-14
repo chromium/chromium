@@ -4,8 +4,8 @@
 
 /**
  * @fileoverview
- * 'settings-privacy-review-promo' is an element representing a promo for the
- * privacy review feature.
+ * 'settings-privacy-guide-promo' is an element representing a promo for the
+ * privacy guide feature.
  */
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -14,13 +14,13 @@ import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
 
-import {getTemplate} from './privacy_review_promo.html.js';
+import {getTemplate} from './privacy_guide_promo.html.js';
 
-const PrivacyReviewPromoElementBase = PrefsMixin(PolymerElement);
+const PrivacyGuidePromoElementBase = PrefsMixin(PolymerElement);
 
-export class PrivacyReviewPromoElement extends PrivacyReviewPromoElementBase {
+export class PrivacyGuidePromoElement extends PrivacyGuidePromoElementBase {
   static get is() {
-    return 'settings-privacy-review-promo';
+    return 'settings-privacy-guide-promo';
   }
 
   static get template() {
@@ -42,11 +42,11 @@ export class PrivacyReviewPromoElement extends PrivacyReviewPromoElementBase {
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 
-  private onPrivacyReviewStartClick_() {
+  private onPrivacyGuideStartClick_() {
     this.metricsBrowserProxy_.recordAction('Settings.PrivacyGuide.StartPromo');
     this.metricsBrowserProxy_.recordPrivacyGuideEntryExitHistogram(
         PrivacyGuideInteractions.PROMO_ENTRY);
-    Router.getInstance().navigateTo(routes.PRIVACY_REVIEW);
+    Router.getInstance().navigateTo(routes.PRIVACY_GUIDE);
   }
 
   private onNoThanksButtonClick_() {
@@ -54,4 +54,4 @@ export class PrivacyReviewPromoElement extends PrivacyReviewPromoElementBase {
   }
 }
 
-customElements.define(PrivacyReviewPromoElement.is, PrivacyReviewPromoElement);
+customElements.define(PrivacyGuidePromoElement.is, PrivacyGuidePromoElement);

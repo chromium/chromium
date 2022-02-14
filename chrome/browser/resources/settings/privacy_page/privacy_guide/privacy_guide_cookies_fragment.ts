@@ -4,12 +4,12 @@
 
 /**
  * @fileoverview
- * 'privacy-review-cookies-fragment' is the fragment in a privacy
- * review card that contains the cookie settings and their descriptions.
+ * 'privacy-guide-cookies-fragment' is the fragment in a privacy
+ * guide card that contains the cookie settings and their descriptions.
  */
 import '../../prefs/prefs.js';
-import './privacy_review_description_item.js';
-import './privacy_review_fragment_shared_css.js';
+import './privacy_guide_description_item.js';
+import './privacy_guide_fragment_shared_css.js';
 import '../../controls/settings_radio_group.js';
 import '../../privacy_page/collapse_radio_button.js';
 
@@ -19,14 +19,14 @@ import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {CookiePrimarySetting} from '../../site_settings/site_settings_prefs_browser_proxy.js';
 
-import {getTemplate} from './privacy_review_cookies_fragment.html.js';
+import {getTemplate} from './privacy_guide_cookies_fragment.html.js';
 
-const PrivacyReviewCookiesFragmentBase = PrefsMixin(PolymerElement);
+const PrivacyGuideCookiesFragmentBase = PrefsMixin(PolymerElement);
 
-export class PrivacyReviewCookiesFragmentElement extends
-    PrivacyReviewCookiesFragmentBase {
+export class PrivacyGuideCookiesFragmentElement extends
+    PrivacyGuideCookiesFragmentBase {
   static get is() {
-    return 'privacy-review-cookies-fragment';
+    return 'privacy-guide-cookies-fragment';
   }
 
   static get template() {
@@ -99,5 +99,4 @@ export class PrivacyReviewCookiesFragmentElement extends
 }
 
 customElements.define(
-    PrivacyReviewCookiesFragmentElement.is,
-    PrivacyReviewCookiesFragmentElement);
+    PrivacyGuideCookiesFragmentElement.is, PrivacyGuideCookiesFragmentElement);

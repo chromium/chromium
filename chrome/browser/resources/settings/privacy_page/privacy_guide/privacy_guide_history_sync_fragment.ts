@@ -4,13 +4,13 @@
 
 /**
  * @fileoverview
- * 'privacy-review-history-sync-fragment' is the fragment in a privacy review
+ * 'privacy-guide-history-sync-fragment' is the fragment in a privacy guide
  * card that contains the history sync setting and its description.
  */
 import '../../prefs/prefs.js';
-import './privacy_review_description_item.js';
-import './privacy_review_fragment_shared_css.js';
-import './privacy_review_fragment_shared_css.js';
+import './privacy_guide_description_item.js';
+import './privacy_guide_fragment_shared_css.js';
+import './privacy_guide_fragment_shared_css.js';
 import '../../controls/settings_toggle_button.js';
 
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
@@ -23,25 +23,25 @@ import {SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDa
 import {routes} from '../../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
 
-import {PrivacyReviewStep} from './constants.js';
-import {getTemplate} from './privacy_review_history_sync_fragment.html.js';
+import {PrivacyGuideStep} from './constants.js';
+import {getTemplate} from './privacy_guide_history_sync_fragment.html.js';
 
-export interface PrivacyReviewHistorySyncFragmentElement {
+export interface PrivacyGuideHistorySyncFragmentElement {
   $: {
     historyToggle: SettingsToggleButtonElement,
   };
 }
 
-const PrivacyReviewHistorySyncFragmentElementBase =
+const PrivacyGuideHistorySyncFragmentElementBase =
     RouteObserverMixin(WebUIListenerMixin(BaseMixin(PolymerElement))) as {
   new (): PolymerElement&RouteObserverMixinInterface&
       WebUIListenerMixinInterface;
 };
 
-export class PrivacyReviewHistorySyncFragmentElement extends
-    PrivacyReviewHistorySyncFragmentElementBase {
+export class PrivacyGuideHistorySyncFragmentElement extends
+    PrivacyGuideHistorySyncFragmentElementBase {
   static get is() {
-    return 'privacy-review-history-sync-fragment';
+    return 'privacy-guide-history-sync-fragment';
   }
 
   static get template() {
@@ -119,9 +119,9 @@ export class PrivacyReviewHistorySyncFragmentElement extends
   }
 
   currentRouteChanged(newRoute: Route) {
-    if (newRoute === routes.PRIVACY_REVIEW &&
+    if (newRoute === routes.PRIVACY_GUIDE &&
         Router.getInstance().getQueryParameters().get('step') ===
-            PrivacyReviewStep.HISTORY_SYNC) {
+            PrivacyGuideStep.HISTORY_SYNC) {
       // Sync all should not be re-enabled via the history sync card if there
       // was a navigation since caching sync all.
       this.syncAllCache_ = null;
@@ -185,11 +185,11 @@ export class PrivacyReviewHistorySyncFragmentElement extends
 }
 declare global {
   interface HTMLElementTagNameMap {
-    'privacy-review-history-sync-fragment':
-        PrivacyReviewHistorySyncFragmentElement;
+    'privacy-guide-history-sync-fragment':
+        PrivacyGuideHistorySyncFragmentElement;
   }
 }
 
 customElements.define(
-    PrivacyReviewHistorySyncFragmentElement.is,
-    PrivacyReviewHistorySyncFragmentElement);
+    PrivacyGuideHistorySyncFragmentElement.is,
+    PrivacyGuideHistorySyncFragmentElement);

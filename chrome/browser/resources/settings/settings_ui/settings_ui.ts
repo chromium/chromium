@@ -205,8 +205,8 @@ export class SettingsUiElement extends SettingsUiElementBase {
 
   currentRouteChanged(route: Route) {
     if (document.documentElement.hasAttribute('enable-branding-update')) {
-      if (route === routes.PRIVACY_REVIEW) {
-        // Privacy Review has a multi-card layout, which only needs shadows to
+      if (route === routes.PRIVACY_GUIDE) {
+        // Privacy guide has a multi-card layout, which only needs shadows to
         // show when there is more content to scroll.
         this.enableShadowBehavior(true);
       } else if (route.depth <= 1) {

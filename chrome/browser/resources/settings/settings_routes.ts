@@ -36,7 +36,7 @@ export type SettingsRoutes = {
   PAYMENTS: Route,
   PEOPLE: Route,
   PRIVACY: Route,
-  PRIVACY_REVIEW: Route,
+  PRIVACY_GUIDE: Route,
   RESET: Route,
   RESET_DIALOG: Route,
   SAFETY_CHECK: Route,

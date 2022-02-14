@@ -4,7 +4,7 @@
 
 /**
  * @fileoverview
- * 'settings-privacy-review-page' is the settings page that helps users review
+ * 'settings-privacy-guide-page' is the settings page that helps users guide
  * various privacy settings.
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
@@ -12,13 +12,13 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import '../../prefs/prefs.js';
 import '../../settings_shared_css.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import './privacy_review_clear_on_exit_fragment.js';
-import './privacy_review_completion_fragment.js';
-import './privacy_review_cookies_fragment.js';
-import './privacy_review_history_sync_fragment.js';
-import './privacy_review_msbb_fragment.js';
-import './privacy_review_safe_browsing_fragment.js';
-import './privacy_review_welcome_fragment.js';
+import './privacy_guide_clear_on_exit_fragment.js';
+import './privacy_guide_completion_fragment.js';
+import './privacy_guide_cookies_fragment.js';
+import './privacy_guide_history_sync_fragment.js';
+import './privacy_guide_msbb_fragment.js';
+import './privacy_guide_safe_browsing_fragment.js';
+import './privacy_guide_welcome_fragment.js';
 import './step_indicator.js';
 
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
@@ -37,33 +37,33 @@ import {routes} from '../../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../../router.js';
 import {CookiePrimarySetting} from '../../site_settings/site_settings_prefs_browser_proxy.js';
 
-import {PrivacyReviewStep} from './constants.js';
-import {getTemplate} from './privacy_review_page.html.js';
+import {PrivacyGuideStep} from './constants.js';
+import {getTemplate} from './privacy_guide_page.html.js';
 import {StepIndicatorModel} from './step_indicator.js';
 
-interface PrivacyReviewStepComponents {
-  nextStep?: PrivacyReviewStep;
+interface PrivacyGuideStepComponents {
+  nextStep?: PrivacyGuideStep;
   onForwardNavigation?(): void;
-  previousStep?: PrivacyReviewStep;
+  previousStep?: PrivacyGuideStep;
   onBackwardNavigation?(): void;
   isAvailable(): boolean;
 }
 
-export interface SettingsPrivacyReviewPageElement {
+export interface SettingsPrivacyGuidePageElement {
   $: {
     viewManager: CrViewManagerElement,
   },
 }
 
-const PrivacyReviewBase = RouteObserverMixin(WebUIListenerMixin(
-                              I18nMixin(PrefsMixin(PolymerElement)))) as {
+const PrivacyGuideBase = RouteObserverMixin(WebUIListenerMixin(
+                             I18nMixin(PrefsMixin(PolymerElement)))) as {
   new (): PolymerElement & I18nMixinInterface & WebUIListenerMixinInterface &
   RouteObserverMixinInterface & PrefsMixinInterface
 };
 
-export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
+export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
   static get is() {
-    return 'settings-privacy-review-page';
+    return 'settings-privacy-guide-page';
   }
 
   static get template() {
@@ -81,18 +81,18 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
       },
 
       /**
-       * Valid privacy review states.
+       * Valid privacy guide states.
        */
-      privacyReviewStepEnum_: {
+      privacyGuideStepEnum_: {
         type: Object,
-        value: PrivacyReviewStep,
+        value: PrivacyGuideStep,
       },
 
       /**
-       * The current step in the privacy review flow, or `undefined` if the flow
+       * The current step in the privacy guide flow, or `undefined` if the flow
        * has not yet been initialized from query parameters.
        */
-      privacyReviewStep_: {
+      privacyGuideStep_: {
         type: String,
         value: undefined,
       },
@@ -103,7 +103,7 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
       stepIndicatorModel_: {
         type: Object,
         computed:
-            'computeStepIndicatorModel(privacyReviewStep_, prefs.generated.cookie_primary_setting, prefs.generated.safe_browsing)',
+            'computeStepIndicatorModel(privacyGuideStep_, prefs.generated.cookie_primary_setting, prefs.generated.safe_browsing)',
       },
 
       syncStatus_: Object,
@@ -122,15 +122,15 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
     ];
   }
 
-  private privacyReviewStep_: PrivacyReviewStep;
+  private privacyGuideStep_: PrivacyGuideStep;
   private stepIndicatorModel_: StepIndicatorModel;
-  private privacyReviewStepToComponentsMap_:
-      Map<PrivacyReviewStep, PrivacyReviewStepComponents>;
+  private privacyGuideStepToComponentsMap_:
+      Map<PrivacyGuideStep, PrivacyGuideStepComponents>;
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();
   private syncStatus_: SyncStatus;
   private animationsEnabled_: boolean = true;
-  // The privacy review flag is only enabled when the user was not managed at
+  // The privacy guide flag is only enabled when the user was not managed at
   // the time settings were loaded, so this is default false.
   private isManaged_: boolean = false;
   private metricsBrowserProxy_: MetricsBrowserProxy =
@@ -139,8 +139,8 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
   constructor() {
     super();
 
-    this.privacyReviewStepToComponentsMap_ =
-        this.computePrivacyReviewStepToComponentsMap_();
+    this.privacyGuideStepToComponentsMap_ =
+        this.computePrivacyGuideStepToComponentsMap_();
   }
 
   ready() {
@@ -161,7 +161,7 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
 
   /** RouteObserverBehavior */
   currentRouteChanged(newRoute: Route) {
-    if (newRoute !== routes.PRIVACY_REVIEW || this.exitIfNecessary()) {
+    if (newRoute !== routes.PRIVACY_GUIDE || this.exitIfNecessary()) {
       return;
     }
     // Set the pref that the user has viewed the Privacy guide.
@@ -170,15 +170,15 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
   }
 
   /**
-   * @return the map of privacy review steps to their components.
+   * @return the map of privacy guide steps to their components.
    */
-  private computePrivacyReviewStepToComponentsMap_():
-      Map<PrivacyReviewStep, PrivacyReviewStepComponents> {
+  private computePrivacyGuideStepToComponentsMap_():
+      Map<PrivacyGuideStep, PrivacyGuideStepComponents> {
     return new Map([
       [
-        PrivacyReviewStep.WELCOME,
+        PrivacyGuideStep.WELCOME,
         {
-          nextStep: PrivacyReviewStep.MSBB,
+          nextStep: PrivacyGuideStep.MSBB,
           isAvailable: () => true,
           onForwardNavigation: () => {
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
@@ -189,7 +189,7 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
         },
       ],
       [
-        PrivacyReviewStep.COMPLETION,
+        PrivacyGuideStep.COMPLETION,
         {
           onForwardNavigation: () => {
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
@@ -202,15 +202,15 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.BackClickCompletion');
           },
-          previousStep: PrivacyReviewStep.COOKIES,
+          previousStep: PrivacyGuideStep.COOKIES,
           isAvailable: () => true,
         },
       ],
       [
-        PrivacyReviewStep.MSBB,
+        PrivacyGuideStep.MSBB,
         {
-          nextStep: PrivacyReviewStep.CLEAR_ON_EXIT,
-          previousStep: PrivacyReviewStep.WELCOME,
+          nextStep: PrivacyGuideStep.CLEAR_ON_EXIT,
+          previousStep: PrivacyGuideStep.WELCOME,
           onForwardNavigation: () => {
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
                 PrivacyGuideInteractions.MSBB_NEXT_BUTTON);
@@ -225,19 +225,19 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
         },
       ],
       [
-        PrivacyReviewStep.CLEAR_ON_EXIT,
+        PrivacyGuideStep.CLEAR_ON_EXIT,
         {
-          nextStep: PrivacyReviewStep.HISTORY_SYNC,
-          previousStep: PrivacyReviewStep.MSBB,
+          nextStep: PrivacyGuideStep.HISTORY_SYNC,
+          previousStep: PrivacyGuideStep.MSBB,
           // TODO(crbug/1215630): Enable the CoE step when it's ready.
           isAvailable: () => false,
         },
       ],
       [
-        PrivacyReviewStep.HISTORY_SYNC,
+        PrivacyGuideStep.HISTORY_SYNC,
         {
-          nextStep: PrivacyReviewStep.SAFE_BROWSING,
-          previousStep: PrivacyReviewStep.CLEAR_ON_EXIT,
+          nextStep: PrivacyGuideStep.SAFE_BROWSING,
+          previousStep: PrivacyGuideStep.CLEAR_ON_EXIT,
           onForwardNavigation: () => {
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
                 PrivacyGuideInteractions.HISTORY_SYNC_NEXT_BUTTON);
@@ -256,10 +256,10 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
         },
       ],
       [
-        PrivacyReviewStep.SAFE_BROWSING,
+        PrivacyGuideStep.SAFE_BROWSING,
         {
-          nextStep: PrivacyReviewStep.COOKIES,
-          previousStep: PrivacyReviewStep.HISTORY_SYNC,
+          nextStep: PrivacyGuideStep.COOKIES,
+          previousStep: PrivacyGuideStep.HISTORY_SYNC,
           onForwardNavigation: () => {
             this.metricsBrowserProxy_.recordPrivacyGuideNextNavigationHistogram(
                 PrivacyGuideInteractions.SAFE_BROWSING_NEXT_BUTTON);
@@ -274,9 +274,9 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
         },
       ],
       [
-        PrivacyReviewStep.COOKIES,
+        PrivacyGuideStep.COOKIES,
         {
-          nextStep: PrivacyReviewStep.COMPLETION,
+          nextStep: PrivacyGuideStep.COMPLETION,
           onForwardNavigation: () => {
             HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
                 TrustSafetyInteraction.COMPLETED_PRIVACY_GUIDE);
@@ -289,7 +289,7 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
             this.metricsBrowserProxy_.recordAction(
                 'Settings.PrivacyGuide.BackClickCookies');
           },
-          previousStep: PrivacyReviewStep.SAFE_BROWSING,
+          previousStep: PrivacyGuideStep.SAFE_BROWSING,
           isAvailable: () => this.shouldShowCookiesCard_(),
         },
       ],
@@ -314,7 +314,7 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
     this.isManaged_ = isManaged;
   }
 
-  /** Update the privacy review state based on changed prefs. */
+  /** Update the privacy guide state based on changed prefs. */
   private onPrefsChanged_() {
     // If this change resulted in the user no longer being in one of the
     // available states for the given card, we need to skip it.
@@ -322,11 +322,11 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
   }
 
   private navigateForwardIfCurrentCardNoLongerAvailable() {
-    if (!this.privacyReviewStep_) {
+    if (!this.privacyGuideStep_) {
       // Not initialized.
       return;
     }
-    if (!this.privacyReviewStepToComponentsMap_.get(this.privacyReviewStep_)!
+    if (!this.privacyGuideStepToComponentsMap_.get(this.privacyGuideStep_)!
              .isAvailable()) {
       // This card is currently shown but is no longer available. Navigate to
       // the next card in the flow.
@@ -334,18 +334,18 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
     }
   }
 
-  /** Sets the privacy review step from the URL parameter. */
+  /** Sets the privacy guide step from the URL parameter. */
   private updateStateFromQueryParameters_() {
-    assert(Router.getInstance().getCurrentRoute() === routes.PRIVACY_REVIEW);
+    assert(Router.getInstance().getCurrentRoute() === routes.PRIVACY_GUIDE);
     const step = Router.getInstance().getQueryParameters().get('step');
     // TODO(crbug/1215630): If the parameter is welcome but the user has opted
     // to skip the welcome card in a previous flow, then navigate to the first
     // settings card instead
-    if (Object.values(PrivacyReviewStep).includes(step as PrivacyReviewStep)) {
-      this.navigateToCard_(step as PrivacyReviewStep, false, true);
+    if (Object.values(PrivacyGuideStep).includes(step as PrivacyGuideStep)) {
+      this.navigateToCard_(step as PrivacyGuideStep, false, true);
     } else {
       // If no step has been specified, then navigate to the welcome step.
-      this.navigateToCard_(PrivacyReviewStep.WELCOME, false, false);
+      this.navigateToCard_(PrivacyGuideStep.WELCOME, false, false);
     }
   }
 
@@ -355,7 +355,7 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
 
   private navigateForward_(playAnimation: boolean) {
     const components =
-        this.privacyReviewStepToComponentsMap_.get(this.privacyReviewStep_)!;
+        this.privacyGuideStepToComponentsMap_.get(this.privacyGuideStep_)!;
     assert(components.onForwardNavigation || components.nextStep);
     if (components.onForwardNavigation) {
       components.onForwardNavigation();
@@ -371,24 +371,24 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
 
   private navigateBackward_(playAnimation: boolean) {
     const components =
-        this.privacyReviewStepToComponentsMap_.get(this.privacyReviewStep_)!;
+        this.privacyGuideStepToComponentsMap_.get(this.privacyGuideStep_)!;
     if (components.onBackwardNavigation) {
       components.onBackwardNavigation();
     }
     this.navigateToCard_(
-        this.privacyReviewStepToComponentsMap_.get(this.privacyReviewStep_)!
+        this.privacyGuideStepToComponentsMap_.get(this.privacyGuideStep_)!
             .previousStep!,
         true, playAnimation);
   }
 
   private navigateToCard_(
-      step: PrivacyReviewStep, isBackwardNavigation: boolean,
+      step: PrivacyGuideStep, isBackwardNavigation: boolean,
       playAnimation: boolean) {
-    if (step === this.privacyReviewStep_) {
+    if (step === this.privacyGuideStep_) {
       return;
     }
-    this.privacyReviewStep_ = step;
-    if (!this.privacyReviewStepToComponentsMap_.get(step)!.isAvailable()) {
+    this.privacyGuideStep_ = step;
+    if (!this.privacyGuideStepToComponentsMap_.get(step)!.isAvailable()) {
       // This card is currently not available. Navigate to the next one, or
       // the previous one if this was a back navigation.
       if (isBackwardNavigation) {
@@ -404,12 +404,12 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
         const ltr = isBackwardNavigation ===
             (loadTimeData.getString('textdirection') === 'ltr');
         this.$.viewManager.switchView(
-            this.privacyReviewStep_,
+            this.privacyGuideStep_,
             ltr ? 'slide-in-fade-in-ltr' : 'slide-in-fade-in-rtl',
             'no-animation');
       } else {
         this.$.viewManager.switchView(
-            this.privacyReviewStep_, 'no-animation', 'no-animation');
+            this.privacyGuideStep_, 'no-animation', 'no-animation');
       }
       Router.getInstance().updateRouteParams(
           new URLSearchParams('step=' + step));
@@ -417,12 +417,12 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
   }
 
   private computeBackButtonClass_(): string {
-    if (!this.privacyReviewStep_) {
+    if (!this.privacyGuideStep_) {
       // Not initialized.
       return '';
     }
     const components =
-        this.privacyReviewStepToComponentsMap_.get(this.privacyReviewStep_)!;
+        this.privacyGuideStepToComponentsMap_.get(this.privacyGuideStep_)!;
     return (components.previousStep === undefined ? 'visibility-hidden' : '');
   }
 
@@ -431,14 +431,14 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
   computeStepIndicatorModel(): StepIndicatorModel {
     let stepCount = 0;
     let activeIndex = 0;
-    for (const step of Object.values(PrivacyReviewStep)) {
-      if (step === PrivacyReviewStep.WELCOME ||
-          step === PrivacyReviewStep.COMPLETION) {
+    for (const step of Object.values(PrivacyGuideStep)) {
+      if (step === PrivacyGuideStep.WELCOME ||
+          step === PrivacyGuideStep.COMPLETION) {
         // This card has no step in the step indicator.
         continue;
       }
-      if (this.privacyReviewStepToComponentsMap_.get(step)!.isAvailable()) {
-        if (step === this.privacyReviewStep_) {
+      if (this.privacyGuideStepToComponentsMap_.get(step)!.isAvailable()) {
+        if (step === this.privacyGuideStep_) {
           activeIndex = stepCount;
         }
         ++stepCount;
@@ -471,8 +471,8 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
   }
 
   private showAnySettingFragment_(): boolean {
-    return this.privacyReviewStep_ !== PrivacyReviewStep.WELCOME &&
-        this.privacyReviewStep_ !== PrivacyReviewStep.COMPLETION;
+    return this.privacyGuideStep_ !== PrivacyGuideStep.WELCOME &&
+        this.privacyGuideStep_ !== PrivacyGuideStep.COMPLETION;
   }
 
   private onViewEnterStart_(event: Event) {
@@ -488,9 +488,9 @@ export class SettingsPrivacyReviewPageElement extends PrivacyReviewBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'settings-privacy-review-page': SettingsPrivacyReviewPageElement;
+    'settings-privacy-guide-page': SettingsPrivacyGuidePageElement;
   }
 }
 
 customElements.define(
-    SettingsPrivacyReviewPageElement.is, SettingsPrivacyReviewPageElement);
+    SettingsPrivacyGuidePageElement.is, SettingsPrivacyGuidePageElement);

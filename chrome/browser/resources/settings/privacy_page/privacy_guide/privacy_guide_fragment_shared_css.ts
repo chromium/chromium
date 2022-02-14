@@ -4,6 +4,6 @@
 
 const template = document.createElement('template');
 template.innerHTML = `
-<dom-module id="privacy-review-fragment-shared">{__html_template__}</dom-module>
+<dom-module id="privacy-guide-fragment-shared">{__html_template__}</dom-module>
 `;
 document.body.appendChild(template.content.cloneNode(true));

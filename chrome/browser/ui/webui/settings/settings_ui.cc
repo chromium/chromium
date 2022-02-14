@@ -315,7 +315,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
   html_source->AddBoolean(
-      "privacyReviewEnabled",
+      "privacyGuideEnabled",
       !chrome::ShouldDisplayManagedUi(profile) &&
           base::FeatureList::IsEnabled(features::kPrivacyReview));
 

@@ -4,12 +4,12 @@
 
 /**
  * @fileoverview
- * 'privacy-review-safe-browsing-fragment' is the fragment in a privacy
- * review card that contains the safe browsing settings and their descriptions.
+ * 'privacy-guide-safe-browsing-fragment' is the fragment in a privacy
+ * guide card that contains the safe browsing settings and their descriptions.
  */
 import '../../prefs/prefs.js';
-import './privacy_review_description_item.js';
-import './privacy_review_fragment_shared_css.js';
+import './privacy_guide_description_item.js';
+import './privacy_guide_fragment_shared_css.js';
 import '../../controls/settings_radio_group.js';
 import '../../privacy_page/collapse_radio_button.js';
 
@@ -19,14 +19,14 @@ import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyGuideSettingsStates
 import {PrefsMixin} from '../../prefs/prefs_mixin.js';
 import {SafeBrowsingSetting} from '../../privacy_page/security_page.js';
 
-import {getTemplate} from './privacy_review_safe_browsing_fragment.html.js';
+import {getTemplate} from './privacy_guide_safe_browsing_fragment.html.js';
 
-const PrivacyReviewSafeBrowsingFragmentBase = PrefsMixin(PolymerElement);
+const PrivacyGuideSafeBrowsingFragmentBase = PrefsMixin(PolymerElement);
 
-export class PrivacyReviewSafeBrowsingFragmentElement extends
-    PrivacyReviewSafeBrowsingFragmentBase {
+export class PrivacyGuideSafeBrowsingFragmentElement extends
+    PrivacyGuideSafeBrowsingFragmentBase {
   static get is() {
-    return 'privacy-review-safe-browsing-fragment';
+    return 'privacy-guide-safe-browsing-fragment';
   }
 
   static get template() {
@@ -97,5 +97,5 @@ export class PrivacyReviewSafeBrowsingFragmentElement extends
 }
 
 customElements.define(
-    PrivacyReviewSafeBrowsingFragmentElement.is,
-    PrivacyReviewSafeBrowsingFragmentElement);
+    PrivacyGuideSafeBrowsingFragmentElement.is,
+    PrivacyGuideSafeBrowsingFragmentElement);
