@@ -4,6 +4,8 @@
 
 #include "base/allocator/partition_allocator/partition_stats.h"
 
+#include <cstring>
+
 namespace partition_alloc {
 
 SimplePartitionStatsDumper::SimplePartitionStatsDumper() {
