@@ -1109,7 +1109,9 @@ CanvasResourceProvider::CanvasImageProvider::CanvasImageProvider(
       cc::PlaybackImageProvider::Settings();
   settings->raster_mode = raster_mode_;
 
-  playback_image_provider_n32_.emplace(cache_n32, target_color_space,
+  cc::TargetColorParams target_color_params;
+  target_color_params.color_space = target_color_space;
+  playback_image_provider_n32_.emplace(cache_n32, target_color_params,
                                        std::move(settings));
   // If the image provider may require to decode to half float instead of
   // uint8, create a f16 PlaybackImageProvider with the passed cache.
@@ -1117,7 +1119,7 @@ CanvasResourceProvider::CanvasImageProvider::CanvasImageProvider(
     DCHECK(cache_f16);
     settings = cc::PlaybackImageProvider::Settings();
     settings->raster_mode = raster_mode_;
-    playback_image_provider_f16_.emplace(cache_f16, target_color_space,
+    playback_image_provider_f16_.emplace(cache_f16, target_color_params,
                                          std::move(settings));
   }
 }

@@ -5,6 +5,7 @@
 #ifndef CC_TILES_DECODED_IMAGE_TRACKER_H_
 #define CC_TILES_DECODED_IMAGE_TRACKER_H_
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -13,6 +14,7 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
+#include "cc/paint/target_color_params.h"
 #include "cc/tiles/image_controller.h"
 
 namespace cc {
@@ -39,7 +41,7 @@ class CC_EXPORT DecodedImageTracker {
   // completion. The callback takes a bool indicating whether the decode was
   // successful or not.
   void QueueImageDecode(const PaintImage& image,
-                        const gfx::ColorSpace& target_color_space,
+                        const TargetColorParams& target_color_params,
                         base::OnceCallback<void(bool)> callback);
 
   // Unlock all locked images - used to respond to memory pressure or

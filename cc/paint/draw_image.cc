@@ -64,8 +64,7 @@ DrawImage::DrawImage(PaintImage image,
 DrawImage::DrawImage(const DrawImage& other,
                      float scale_adjustment,
                      size_t frame_index,
-                     const gfx::ColorSpace& color_space,
-                     float sdr_white_level)
+                     const TargetColorParams& target_color_params)
     : paint_image_(other.paint_image_),
       use_dark_mode_(other.use_dark_mode_),
       src_rect_(other.src_rect_),
@@ -74,11 +73,8 @@ DrawImage::DrawImage(const DrawImage& other,
                           other.scale_.height() * scale_adjustment)),
       matrix_is_decomposable_(other.matrix_is_decomposable_),
       frame_index_(frame_index),
-      target_color_space_(color_space),
-      sdr_white_level_(sdr_white_level) {
-  if (sdr_white_level_ == gfx::ColorSpace::kDefaultSDRWhiteLevel)
-    sdr_white_level_ = other.sdr_white_level_;
-}
+      target_color_space_(target_color_params.color_space),
+      sdr_white_level_(target_color_params.sdr_max_luminance_nits) {}
 
 DrawImage::DrawImage(const DrawImage& other) = default;
 DrawImage::DrawImage(DrawImage&& other) = default;

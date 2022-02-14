@@ -4,6 +4,10 @@
 
 #include "cc/tiles/checker_image_tracker.h"
 
+#include <memory>
+#include <unordered_set>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -467,7 +471,7 @@ TEST_F(CheckerImageTrackerTest, ChoosesMaxScaleAndQuality) {
 
   DrawImage image = CreateImage(ImageType::CHECKERABLE);
   DrawImage scaled_image1(image, 0.5f, PaintImage::kDefaultFrameIndex,
-                          gfx::ColorSpace());
+                          TargetColorParams());
   DrawImage scaled_image2 =
       DrawImage(image.paint_image(), false, image.src_rect(),
                 PaintFlags::FilterQuality::kHigh, SkM44::Scale(1.8f, 1.8f),

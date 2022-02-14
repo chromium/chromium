@@ -1726,8 +1726,9 @@ TEST(SoftwareImageDecodeCacheTest, CacheDecodesExpectedFrames) {
   cache.DrawWithImageFinished(draw_image, decoded_image);
 
   // Scaled.
-  DrawImage scaled_draw_image(draw_image, 0.5f, 2u,
-                              draw_image.target_color_space());
+  TargetColorParams target_color_params;
+  target_color_params.color_space = draw_image.target_color_space();
+  DrawImage scaled_draw_image(draw_image, 0.5f, 2u, target_color_params);
   decoded_image = cache.GetDecodedImageForDraw(scaled_draw_image);
   ASSERT_TRUE(decoded_image.image());
   ASSERT_EQ(generator->frames_decoded().size(), 1u);

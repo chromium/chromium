@@ -8,6 +8,7 @@
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
+#include "cc/paint/target_color_params.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkM44.h"
@@ -34,13 +35,12 @@ class CC_PAINT_EXPORT DrawImage {
             absl::optional<size_t> frame_index = absl::nullopt,
             const absl::optional<gfx::ColorSpace>& color_space = absl::nullopt,
             float sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevel);
-  // Constructs a DrawImage from |other| by adjusting its scale and setting a
-  // new color_space.
+  // Constructs a DrawImage from |other| by adjusting its scale and setting new
+  // color params.
   DrawImage(const DrawImage& other,
             float scale_adjustment,
             size_t frame_index,
-            const gfx::ColorSpace& color_space,
-            float sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevel);
+            const TargetColorParams& target_color_params);
   DrawImage(const DrawImage& other);
   DrawImage(DrawImage&& other);
   ~DrawImage();

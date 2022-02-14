@@ -73,12 +73,13 @@ class DiscardableImageMapTest : public testing::Test {
     std::vector<const DrawImage*> draw_image_ptrs;
     // Choose a not-SRGB-and-not-invalid target color space to verify that it
     // is passed correctly to the resulting DrawImages.
-    gfx::ColorSpace target_color_space = gfx::ColorSpace::CreateXYZD50();
+    TargetColorParams target_color_params;
+    target_color_params.color_space = gfx::ColorSpace::CreateXYZD50();
     image_map.GetDiscardableImagesInRect(rect, &draw_image_ptrs);
     std::vector<DrawImage> draw_images;
     for (const auto* image : draw_image_ptrs)
       draw_images.push_back(DrawImage(
-          *image, 1.f, PaintImage::kDefaultFrameIndex, target_color_space));
+          *image, 1.f, PaintImage::kDefaultFrameIndex, target_color_params));
 
     std::vector<PositionScaleDrawImage> position_draw_images;
     std::vector<DrawImage> results;
@@ -95,7 +96,8 @@ class DiscardableImageMapTest : public testing::Test {
     for (size_t i = 0; i < draw_images.size(); ++i) {
       EXPECT_TRUE(draw_images[i].paint_image() ==
                   position_draw_images[i].image);
-      EXPECT_EQ(draw_images[i].target_color_space(), target_color_space);
+      EXPECT_EQ(draw_images[i].target_color_space(),
+                target_color_params.color_space);
     }
     return position_draw_images;
   }

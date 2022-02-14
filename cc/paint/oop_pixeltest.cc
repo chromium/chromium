@@ -170,7 +170,7 @@ class OopPixelTest : public testing::Test,
     gfx::Rect playback_rect;
     gfx::Vector2dF post_translate = {0.f, 0.f};
     float post_scale = 1.f;
-    gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
+    TargetColorParams target_color_params;
     bool requires_clear = false;
     bool preclear = false;
     SkColor preclear_color;
@@ -194,8 +194,9 @@ class OopPixelTest : public testing::Test,
     absl::optional<PlaybackImageProvider::Settings> settings;
     settings.emplace(PlaybackImageProvider::Settings());
     settings->raster_mode = options.image_provider_raster_mode;
-    PlaybackImageProvider image_provider(
-        oop_image_cache_.get(), options.color_space, std::move(settings));
+    PlaybackImageProvider image_provider(oop_image_cache_.get(),
+                                         options.target_color_params,
+                                         std::move(settings));
 
     int width = options.resource_size.width();
     int height = options.resource_size.height();
@@ -207,8 +208,8 @@ class OopPixelTest : public testing::Test,
                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
     gpu::Mailbox mailbox = sii->CreateSharedImage(
         viz::ResourceFormat::RGBA_8888, gfx::Size(width, height),
-        options.color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-        flags, gpu::kNullSurfaceHandle);
+        options.target_color_params.color_space, kTopLeft_GrSurfaceOrigin,
+        kPremul_SkAlphaType, flags, gpu::kNullSurfaceHandle);
     EXPECT_TRUE(mailbox.Verify());
     raster_implementation->WaitSyncTokenCHROMIUM(
         sii->GenUnverifiedSyncToken().GetConstData());
@@ -222,7 +223,7 @@ class OopPixelTest : public testing::Test,
       raster_implementation->BeginRasterCHROMIUM(
           options.preclear_color, /*needs_clear=*/options.preclear,
           options.msaa_sample_count, msaa_mode, options.use_lcd_text,
-          options.color_space, mailbox.name);
+          options.target_color_params.color_space, mailbox.name);
       raster_implementation->EndRasterCHROMIUM();
     }
 
@@ -233,7 +234,7 @@ class OopPixelTest : public testing::Test,
     raster_implementation->BeginRasterCHROMIUM(
         options.background_color, /*needs_clear=*/!options.preclear,
         options.msaa_sample_count, msaa_mode, options.use_lcd_text,
-        options.color_space, mailbox.name);
+        options.target_color_params.color_space, mailbox.name);
     size_t max_op_size_limit =
         gpu::raster::RasterInterface::kDefaultMaxOpSizeHint;
     raster_implementation->RasterCHROMIUM(
@@ -315,9 +316,9 @@ class OopPixelTest : public testing::Test,
     uint32_t flags = gpu::SHARED_IMAGE_USAGE_RASTER |
                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
     gpu::Mailbox mailbox = sii->CreateSharedImage(
-        image_format, options.resource_size, options.color_space,
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, flags,
-        gpu::kNullSurfaceHandle);
+        image_format, options.resource_size,
+        options.target_color_params.color_space, kTopLeft_GrSurfaceOrigin,
+        kPremul_SkAlphaType, flags, gpu::kNullSurfaceHandle);
     EXPECT_TRUE(mailbox.Verify());
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
@@ -362,7 +363,7 @@ class OopPixelTest : public testing::Test,
       options.shader_with_animated_images->set_has_animated_images(true);
 
     PlaybackImageProvider image_provider(gpu_image_cache_.get(),
-                                         options.color_space,
+                                         options.target_color_params,
                                          PlaybackImageProvider::Settings());
 
     auto raster_source = recording.CreateRasterSource();
@@ -377,7 +378,7 @@ class OopPixelTest : public testing::Test,
     }
     SkImageInfo image_info = SkImageInfo::MakeN32Premul(
         options.resource_size.width(), options.resource_size.height(),
-        options.color_space.ToSkColorSpace());
+        options.target_color_params.color_space.ToSkColorSpace());
     auto surface = SkSurface::MakeRenderTarget(
         gles2_context_provider_->GrContext(), SkBudgeted::kYes, image_info, 0,
         &surface_props);
@@ -478,7 +479,7 @@ TEST_F(OopPixelTest, DrawColorWithTargetColorSpace) {
   gfx::ColorSpace target_color_space = gfx::ColorSpace::CreateXYZD50();
 
   RasterOptions options(rect.size());
-  options.color_space = target_color_space;
+  options.target_color_params.color_space = target_color_space;
 
   SkBitmap expected =
       MakeSolidColorBitmap(rect.size(), SkColorSetARGB(255, 38, 15, 221));
@@ -738,7 +739,8 @@ TEST_F(OopPixelTest, DrawImageWithTargetColorSpace) {
   display_item_list->Finalize();
 
   RasterOptions options(rect.size());
-  options.color_space = gfx::ColorSpace::CreateDisplayP3D65();
+  options.target_color_params.color_space =
+      gfx::ColorSpace::CreateDisplayP3D65();
 
   auto actual = Raster(display_item_list, options);
 
@@ -821,7 +823,8 @@ TEST_F(OopPixelTest, DrawImageWithSourceAndTargetColorSpace) {
   display_item_list->Finalize();
 
   RasterOptions options(rect.size());
-  options.color_space = gfx::ColorSpace::CreateDisplayP3D65();
+  options.target_color_params.color_space =
+      gfx::ColorSpace::CreateDisplayP3D65();
 
   auto actual = Raster(display_item_list, options);
 
@@ -1575,7 +1578,8 @@ TEST_F(OopPixelTest, DrawRectColorSpace) {
   options.content_size = options.resource_size;
   options.full_raster_rect = gfx::Rect(options.content_size);
   options.playback_rect = options.full_raster_rect;
-  options.color_space = gfx::ColorSpace::CreateDisplayP3D65();
+  options.target_color_params.color_space =
+      gfx::ColorSpace::CreateDisplayP3D65();
 
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
@@ -1651,7 +1655,7 @@ class OopTextBlobPixelTest
     options.content_size = options.resource_size;
     options.full_raster_rect = gfx::Rect(options.content_size);
     options.playback_rect = options.full_raster_rect;
-    options.color_space = gfx::ColorSpace::CreateSRGB();
+    options.target_color_params.color_space = gfx::ColorSpace::CreateSRGB();
     options.use_lcd_text = UseLcdText();
 
     auto display_item_list = base::MakeRefCounted<DisplayItemList>();
@@ -1938,7 +1942,7 @@ TEST_F(OopPixelTest, DrawTextMultipleRasterCHROMIUM) {
   options.content_size = options.resource_size;
   options.full_raster_rect = gfx::Rect(options.content_size);
   options.playback_rect = options.full_raster_rect;
-  options.color_space = gfx::ColorSpace::CreateSRGB();
+  options.target_color_params.color_space = gfx::ColorSpace::CreateSRGB();
 
   auto sk_typeface_1 = SkTypeface::MakeFromName("monospace", SkFontStyle());
   auto sk_typeface_2 = SkTypeface::MakeFromName("roboto", SkFontStyle());
@@ -1982,7 +1986,7 @@ TEST_F(OopPixelTest, DrawTextBlobPersistentShaderCache) {
   options.content_size = options.resource_size;
   options.full_raster_rect = gfx::Rect(options.content_size);
   options.playback_rect = options.full_raster_rect;
-  options.color_space = gfx::ColorSpace::CreateSRGB();
+  options.target_color_params.color_space = gfx::ColorSpace::CreateSRGB();
 
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();
@@ -2263,7 +2267,7 @@ class OopPathPixelTest : public OopPixelTest,
     options.content_size = options.resource_size;
     options.full_raster_rect = gfx::Rect(options.content_size);
     options.playback_rect = options.full_raster_rect;
-    options.color_space = gfx::ColorSpace::CreateSRGB();
+    options.target_color_params.color_space = gfx::ColorSpace::CreateSRGB();
 
     auto display_item_list = base::MakeRefCounted<DisplayItemList>();
     display_item_list->StartPaint();
@@ -2316,7 +2320,7 @@ TEST_F(OopPixelTest, RecordShaderExceedsMaxTextureSize) {
   options.content_size = gfx::Size(rect.width(), rect.height());
   options.full_raster_rect = gfx::Rect(options.content_size);
   options.playback_rect = options.full_raster_rect;
-  options.color_space = gfx::ColorSpace::CreateSRGB();
+  options.target_color_params.color_space = gfx::ColorSpace::CreateSRGB();
 
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();

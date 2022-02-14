@@ -970,8 +970,7 @@ void TileManager::PartitionImagesForCheckering(
       (*image_to_frame_index)[image.stable_id()] = frame_index;
 
     DrawImage draw_image(*original_draw_image, tile->contents_scale_key(),
-                         frame_index, target_color_params.color_space,
-                         target_color_params.sdr_max_luminance_nits);
+                         frame_index, target_color_params);
     if (checker_image_tracker_.ShouldCheckerImage(draw_image, tree))
       checkered_images->push_back(draw_image.paint_image());
     else
@@ -993,8 +992,7 @@ void TileManager::AddCheckeredImagesToDecodeQueue(
     size_t frame_index = client_->GetFrameIndexForImage(
         original_draw_image->paint_image(), tree);
     DrawImage draw_image(*original_draw_image, tile->contents_scale_key(),
-                         frame_index, target_color_params.color_space,
-                         target_color_params.sdr_max_luminance_nits);
+                         frame_index, target_color_params);
     if (checker_image_tracker_.ShouldCheckerImage(draw_image, tree)) {
       image_decode_queue->emplace_back(draw_image.paint_image(), decode_type);
     }
@@ -1324,9 +1322,8 @@ scoped_refptr<TileTask> TileManager::CreateRasterTask(
     }
   }
 
-  PlaybackImageProvider image_provider(image_controller_.cache(),
-                                       target_color_params.color_space,
-                                       std::move(settings));
+  PlaybackImageProvider image_provider(
+      image_controller_.cache(), target_color_params, std::move(settings));
   // We make a deliberate copy of the PaintWorklet map here, as the
   // PictureLayerImpl's map could be mutated or destroyed whilst raster from an
   // earlier snapshot is still ongoing on the raster worker threads.

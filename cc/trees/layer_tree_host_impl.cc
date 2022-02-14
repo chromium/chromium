@@ -3679,7 +3679,7 @@ void LayerTreeHostImpl::QueueImageDecode(int request_id,
   // it won't change.
   auto content_color_usage = image.GetContentColorUsage();
   tile_manager_.decoded_image_tracker().QueueImageDecode(
-      image, GetTargetColorParams(content_color_usage).color_space,
+      image, GetTargetColorParams(content_color_usage),
       base::BindOnce(&LayerTreeHostImpl::ImageDecodeFinished,
                      weak_factory_.GetWeakPtr(), request_id));
   tile_manager_.checker_image_tracker().DisallowCheckeringForImage(image);
