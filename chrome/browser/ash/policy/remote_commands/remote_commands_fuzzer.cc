@@ -13,9 +13,13 @@
 
 #include "base/at_exit.h"
 #include "base/check.h"
+#include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
 #include "base/syslog_logging.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -58,12 +62,20 @@ struct Environment {
     logging::SetSyslogLoggingForTesting(/*logging_enabled=*/false);
     logging::SetLogMessageHandler(&VoidifyingLogHandler);
 
+    // Initialize the singletons used by the tested code.
+    base::CommandLine::Init(/*argc=*/0, /*argv=*/nullptr);
+    TestTimeouts::Initialize();
+    task_environment = std::make_unique<base::test::TaskEnvironment>(
+        base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+    at_exit_manager = std::make_unique<base::AtExitManager>();
+    profile_manager =
+        std::make_unique<ProfileManager>(/*user_data_dir=*/base::FilePath());
     CHECK(base::i18n::InitializeICU());
   }
 
-  // Initialize the "at exit manager" singleton used by the tested code.
-  base::AtExitManager at_exit_manager;
-  ProfileManager profile_manager{/*user_data_dir=*/{}};
+  std::unique_ptr<base::test::TaskEnvironment> task_environment;
+  std::unique_ptr<base::AtExitManager> at_exit_manager;
+  std::unique_ptr<ProfileManager> profile_manager;
 };
 
 class StubDeviceCommandScreenshotJobDelegate
