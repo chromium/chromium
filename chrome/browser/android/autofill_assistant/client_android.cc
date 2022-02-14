@@ -243,7 +243,7 @@ void ClientAndroid::FetchWebsiteActions(
     const base::android::JavaParamRef<jobject>& jcallback) {
   if (!controller_) {
     CreateController(ui_controller_android_utils::GetServiceToInject(env, this),
-                     absl::nullopt);
+                     /* trigger_script= */ absl::nullopt);
   }
 
   base::android::ScopedJavaGlobalRef<jobject> scoped_jcallback(env, jcallback);
@@ -465,7 +465,8 @@ void ClientAndroid::AttachUI(
       (controller_ != nullptr &&
        !ui_controller_android_->IsAttachedTo(controller_.get()))) {
     if (!controller_)
-      CreateController(nullptr, absl::nullopt);
+      CreateController(/* service= */ nullptr,
+                       /* trigger_script= */ absl::nullopt);
     ui_controller_android_->Attach(GetWebContents(), this, controller_.get(),
                                    ui_controller_.get());
   }
@@ -686,7 +687,7 @@ void ClientAndroid::CreateController(
       base::DefaultTickClock::GetInstance(),
       RuntimeManager::GetForWebContents(GetWebContents())->GetWeakPtr(),
       std::move(service), ukm::UkmRecorder::Get(),
-      dependencies_->GetAnnotateDomModelService(
+      dependencies_->GetOrCreateAnnotateDomModelService(
           GetWebContents()->GetBrowserContext()));
   ui_controller_ = std::make_unique<UiController>(
       /* client= */ this, controller_.get(), std::move(tts_controller));

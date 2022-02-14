@@ -50,7 +50,12 @@ StarterAndroid::StarterAndroid(content::WebContents* web_contents,
       dependencies_(std::move(dependencies)),
       website_login_manager_(std::make_unique<WebsiteLoginManagerImpl>(
           ChromePasswordManagerClient::FromWebContents(web_contents),
-          web_contents)) {}
+          web_contents)) {
+  // Create the AnnotateDomModelService when the browser starts, such that it
+  // starts listening to model changes early enough.
+  dependencies_->GetOrCreateAnnotateDomModelService(
+      web_contents->GetBrowserContext());
+}
 
 StarterAndroid::~StarterAndroid() = default;
 

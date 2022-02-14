@@ -70,10 +70,9 @@ std::string DependenciesChrome::GetChromeSignedInEmailAddress(
   return account_info.email;
 }
 
-AnnotateDomModelService* DependenciesChrome::GetAnnotateDomModelService(
+AnnotateDomModelService* DependenciesChrome::GetOrCreateAnnotateDomModelService(
     content::BrowserContext* browser_context) const {
-  return AnnotateDomModelServiceFactory::GetInstance()->GetForBrowserContext(
-      browser_context);
+  return AnnotateDomModelServiceFactory::GetForBrowserContext(browser_context);
 }
 
 bool DependenciesChrome::IsCustomTab(

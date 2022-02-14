@@ -41,7 +41,7 @@ class Dependencies {
   virtual std::string GetChromeSignedInEmailAddress(
       content::WebContents* web_contents) const = 0;
 
-  virtual AnnotateDomModelService* GetAnnotateDomModelService(
+  virtual AnnotateDomModelService* GetOrCreateAnnotateDomModelService(
       content::BrowserContext* browser_context) const = 0;
 
   virtual bool IsCustomTab(const content::WebContents& web_contents) const = 0;
