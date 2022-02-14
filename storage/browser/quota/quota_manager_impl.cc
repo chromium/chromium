@@ -15,11 +15,14 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -705,35 +708,32 @@ class QuotaManagerImpl::StorageKeyGathererTask {
 // This is currently only for the default bucket. If a non-default bucket is to
 // be deleted, it will immediately complete the task since non-default bucket
 // usage is not being tracked by QuotaClients yet.
-//
-// `callback` will run to return the status of the deletion on task completion,
-// followed by `completion_closure` which will be called to destroy itself by
-// its owner. Neither callback will outlive the BucketDataDeleter.
 class QuotaManagerImpl::BucketDataDeleter {
  public:
+  // `callback` will be run to report the status of the deletion on task
+  // completion. `callback` will only be called while this BucketDataDeleter
+  // instance is alive. `callback` may destroy this BucketDataDeleter instance.
   BucketDataDeleter(
       QuotaManagerImpl* manager,
       const BucketLocator& bucket,
       QuotaClientTypes quota_client_types,
-      StatusCallback callback,
-      base::OnceCallback<void(BucketDataDeleter*)> completion_closure)
+      base::OnceCallback<void(BucketDataDeleter*,
+                              blink::mojom::QuotaStatusCode)> callback)
       : manager_(manager),
         bucket_(bucket),
         quota_client_types_(std::move(quota_client_types)),
-        callback_(std::move(callback)),
-        completion_closure_(std::move(completion_closure)) {
+        callback_(std::move(callback)) {
     DCHECK(manager_);
     // TODO(crbug/1292216): Convert back into DCHECKs once issue is resolved.
     CHECK(callback_);
-    CHECK(completion_closure_);
   }
 
   ~BucketDataDeleter() {
-    if (callback_)
-      std::move(callback_).Run(blink::mojom::QuotaStatusCode::kErrorAbort);
-
-    if (completion_closure_)
-      std::move(completion_closure_).Run(this);
+    // `callback` is non-null if the deleter gets destroyed before completing.
+    if (callback_) {
+      std::move(callback_).Run(this,
+                               blink::mojom::QuotaStatusCode::kErrorAbort);
+    }
   }
 
   void Run() {
@@ -786,7 +786,7 @@ class QuotaManagerImpl::BucketDataDeleter {
   void DidDeleteBucketData(int tracing_id,
                            blink::mojom::QuotaStatusCode status) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK_GT(remaining_clients_, 0U);
+    DCHECK_GT(remaining_clients_, 0u);
     TRACE_EVENT_NESTABLE_ASYNC_END0(
         "browsing_data", "QuotaManagerImpl::BucketDataDeleter", tracing_id);
 
@@ -802,7 +802,6 @@ class QuotaManagerImpl::BucketDataDeleter {
     // TODO(crbug/1292216): Convert back into DCHECKs once issue is resolved.
     CHECK_EQ(remaining_clients_, 0u);
     CHECK(callback_) << __func__ << " called after Complete";
-    CHECK(completion_closure_) << __func__ << " called after Complete";
 
     // Only remove the bucket from the database if we didn't skip any client
     // types.
@@ -827,16 +826,12 @@ class QuotaManagerImpl::BucketDataDeleter {
     // TODO(crbug/1292216): Convert back into DCHECKs once issue is resolved.
     CHECK_EQ(remaining_clients_, 0u);
     CHECK(callback_);
-    CHECK(completion_closure_);
 
+    // May delete `this`.
     std::move(callback_).Run(
-        success ? blink::mojom::QuotaStatusCode::kOk
-                : blink::mojom::QuotaStatusCode::kErrorInvalidModification);
-
-    // Deletes `this`.
-    // TODO(crbug/1292216): Delete once issue is resolved.
-    CHECK(completion_closure_);
-    std::move(completion_closure_).Run(this);
+        this, success
+                  ? blink::mojom::QuotaStatusCode::kOk
+                  : blink::mojom::QuotaStatusCode::kErrorInvalidModification);
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -846,9 +841,10 @@ class QuotaManagerImpl::BucketDataDeleter {
   int error_count_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
   size_t remaining_clients_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
   int skipped_clients_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
-  StatusCallback callback_ GUARDED_BY_CONTEXT(sequence_checker_);
-  base::OnceCallback<void(BucketDataDeleter*)> completion_closure_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Running the callback may delete this instance.
+  base::OnceCallback<void(BucketDataDeleter*, blink::mojom::QuotaStatusCode)>
+      callback_ GUARDED_BY_CONTEXT(sequence_checker_);
 
 #if DCHECK_IS_ON()
   bool run_called_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
@@ -922,14 +918,12 @@ class QuotaManagerImpl::HostDataDeleter {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     for (const auto& bucket : buckets_) {
       // base::Unretained() is safe here because `this` is guaranteed to outlive
-      // the callbacks, thanks to an indirect ownership chain. `this` owns the
+      // the callback, thanks to an indirect ownership chain. `this` owns the
       // BucketDataDeleter created here, which guarantees it will only use the
-      // callbacks when it's alive.
+      // callback when it's alive.
       auto bucket_deleter = std::make_unique<BucketDataDeleter>(
           manager_, bucket, AllQuotaClientTypes(),
           base::BindOnce(&HostDataDeleter::DidDeleteBucketData,
-                         base::Unretained(this)),
-          base::BindOnce(&HostDataDeleter::FinishedBucketDeletion,
                          base::Unretained(this)));
       auto* bucket_deleter_ptr = bucket_deleter.get();
       bucket_deleters_[bucket_deleter_ptr] = std::move(bucket_deleter);
@@ -937,16 +931,16 @@ class QuotaManagerImpl::HostDataDeleter {
     }
   }
 
-  void DidDeleteBucketData(blink::mojom::QuotaStatusCode status) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (status != blink::mojom::QuotaStatusCode::kOk)
-      ++error_count_;
-  }
-
-  void FinishedBucketDeletion(BucketDataDeleter* deleter) {
+  void DidDeleteBucketData(BucketDataDeleter* deleter,
+                           blink::mojom::QuotaStatusCode status) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(deleter->completed());
+
+    DCHECK(base::Contains(bucket_deleters_, deleter));
     bucket_deleters_.erase(deleter);
+
+    if (status != blink::mojom::QuotaStatusCode::kOk)
+      ++error_count_;
 
     if (bucket_deleters_.empty())
       Complete(/*success=*/error_count_ == 0);
@@ -1962,17 +1956,30 @@ void QuotaManagerImpl::DeleteBucketDataInternal(
     return;
   }
   auto bucket_deleter = std::make_unique<BucketDataDeleter>(
-      this, bucket, std::move(quota_client_types), std::move(callback),
+      this, bucket, std::move(quota_client_types),
       base::BindOnce(&QuotaManagerImpl::DidDeleteBucketData,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
   auto* bucket_deleter_ptr = bucket_deleter.get();
   bucket_data_deleters_[bucket_deleter_ptr] = std::move(bucket_deleter);
   bucket_deleter_ptr->Run();
 }
 
-void QuotaManagerImpl::DidDeleteBucketData(BucketDataDeleter* deleter) {
+// static
+void QuotaManagerImpl::DidDeleteBucketData(
+    base::WeakPtr<QuotaManagerImpl> quota_manager,
+    StatusCallback delete_bucket_data_callback,
+    BucketDataDeleter* deleter,
+    blink::mojom::QuotaStatusCode status_code) {
+  DCHECK(deleter);
   DCHECK(deleter->completed());
-  bucket_data_deleters_.erase(deleter);
+
+  if (quota_manager)
+    quota_manager->bucket_data_deleters_.erase(deleter);
+
+  // TODO(crbug.com/1296951): Unconditionally call the callback after the
+  //                          QuotaManager API is tightened.
+  if (delete_bucket_data_callback)
+    std::move(delete_bucket_data_callback).Run(status_code);
 }
 
 void QuotaManagerImpl::MaybeRunStoragePressureCallback(

@@ -561,6 +561,7 @@ class QuotaManagerImplTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir data_dir_;
+  scoped_refptr<QuotaManagerImpl> quota_manager_impl_;
 
  private:
   base::Time IncrementMockTime() {
@@ -568,7 +569,6 @@ class QuotaManagerImplTest : public testing::Test {
     return base::Time::FromDoubleT(mock_time_counter_ * 10.0);
   }
 
-  scoped_refptr<QuotaManagerImpl> quota_manager_impl_;
   scoped_refptr<MockSpecialStoragePolicy> mock_special_storage_policy_;
 
   QuotaStatusCode quota_status_;
@@ -2994,6 +2994,52 @@ TEST_F(QuotaManagerImplTest, QuotaChangeEvent_SmallPartitionPressure) {
   });
   GetStorageCapacity();
   EXPECT_TRUE(quota_change_dispatched);
+}
+
+TEST_F(QuotaManagerImplTest, DeleteBucketData_QuotaManagerDeletedImmediately) {
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 1},
+  };
+  MockQuotaClient* client =
+      CreateAndRegisterClient(QuotaClientType::kIndexedDatabase, {kTemp});
+  RegisterClientBucketData(client, kData);
+
+  QuotaErrorOr<BucketInfo> bucket =
+      GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
+  ASSERT_TRUE(bucket.ok());
+
+  base::test::TestFuture<QuotaStatusCode> delete_bucket_data_future;
+  quota_manager_impl_->DeleteBucketData(
+      bucket->ToBucketLocator(), {QuotaClientType::kIndexedDatabase},
+      delete_bucket_data_future.GetCallback());
+  quota_manager_impl_.reset();
+  EXPECT_EQ(QuotaStatusCode::kErrorAbort, delete_bucket_data_future.Get());
+}
+
+TEST_F(QuotaManagerImplTest, DeleteBucketData_CallbackDeletesQuotaManager) {
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 1},
+  };
+  MockQuotaClient* client =
+      CreateAndRegisterClient(QuotaClientType::kIndexedDatabase, {kTemp});
+  RegisterClientBucketData(client, kData);
+
+  QuotaErrorOr<BucketInfo> bucket =
+      GetBucket(ToStorageKey("http://foo.com/"), kDefaultBucketName, kTemp);
+  ASSERT_TRUE(bucket.ok());
+
+  base::RunLoop run_loop;
+  QuotaStatusCode delete_bucket_data_result = QuotaStatusCode::kUnknown;
+  quota_manager_impl_->DeleteBucketData(
+      bucket->ToBucketLocator(), {QuotaClientType::kIndexedDatabase},
+      base::BindLambdaForTesting([&](QuotaStatusCode status_code) {
+        quota_manager_impl_.reset();
+        delete_bucket_data_result = status_code;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  EXPECT_EQ(QuotaStatusCode::kOk, delete_bucket_data_result);
 }
 
 }  // namespace storage

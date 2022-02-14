@@ -324,9 +324,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   // Deletes `bucket` data for the specified `quota_client_types`. Pass in
   // QuotaClientType::AllClients() to remove bucket data for all quota clients.
+  //
+  // `callback` is always called. If this QuotaManager gets destroyed during
+  // deletion, `callback` may be called with a kErrorAbort status.
   virtual void DeleteBucketData(const BucketLocator& bucket,
                                 QuotaClientTypes quota_client_types,
                                 StatusCallback callback);
+
   // Deletes buckets of a particular blink::mojom::StorageType with storage keys
   // that match the specified host.
   void DeleteHostData(const std::string& host,
@@ -529,7 +533,15 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                                 StatusCallback callback);
   // Cleans up deleter tasks that have completed.
   void DidDeleteHostData(HostDataDeleter* deleter);
-  void DidDeleteBucketData(BucketDataDeleter* deleter);
+
+  // Removes the BucketDataDeleter that completed its work.
+  //
+  // This method is static because it must call `delete_bucket_data_callback`
+  // even if the QuotaManagerImpl was destroyed.
+  static void DidDeleteBucketData(base::WeakPtr<QuotaManagerImpl> quota_manager,
+                                  StatusCallback delete_bucket_data_callback,
+                                  BucketDataDeleter* deleter,
+                                  blink::mojom::QuotaStatusCode status_code);
 
   // Methods for eviction logic.
   void StartEviction();
