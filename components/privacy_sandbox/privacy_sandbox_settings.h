@@ -42,7 +42,8 @@ class PrivacySandboxSettings : public KeyedService {
   PrivacySandboxSettings(
       HostContentSettingsMap* host_content_settings_map,
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
-      PrefService* pref_service);
+      PrefService* pref_service,
+      bool incognito_profile);
   ~PrivacySandboxSettings() override;
 
   // Returns whether FLoC is allowed at all. If false, FLoC calculations should
@@ -149,6 +150,7 @@ class PrivacySandboxSettings : public KeyedService {
   raw_ptr<HostContentSettingsMap> host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   raw_ptr<PrefService> pref_service_;
+  bool incognito_profile_;
 };
 
 #endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_

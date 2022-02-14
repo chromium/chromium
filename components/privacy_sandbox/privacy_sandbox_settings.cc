@@ -75,10 +75,12 @@ ContentSettingsPattern FledgeBlockToContentSettingsPattern(
 PrivacySandboxSettings::PrivacySandboxSettings(
     HostContentSettingsMap* host_content_settings_map,
     scoped_refptr<content_settings::CookieSettings> cookie_settings,
-    PrefService* pref_service)
+    PrefService* pref_service,
+    bool incognito_profile)
     : host_content_settings_map_(host_content_settings_map),
       cookie_settings_(cookie_settings),
-      pref_service_(pref_service) {
+      pref_service_(pref_service),
+      incognito_profile_(incognito_profile) {
   DCHECK(pref_service_);
   DCHECK(host_content_settings_map_);
   DCHECK(cookie_settings_);
@@ -266,11 +268,16 @@ std::vector<GURL> PrivacySandboxSettings::FilterFledgeAllowedParties(
 bool PrivacySandboxSettings::IsPrivacySandboxEnabled() const {
   // Which preference is consulted is dependent on whether release 3 of the
   // settings is available.
-  if (!base::FeatureList::IsEnabled(
-          privacy_sandbox::kPrivacySandboxSettings3)) {
-    return pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled);
+  if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings3)) {
+    // For Privacy Sandbox Settings 3, APIs are disabled in incognito.
+    if (incognito_profile_)
+      return false;
+
+    // The V2 pref was introduced with the 3rd Privacy Sandbox release.
+    return pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabledV2);
   }
-  return pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabledV2);
+
+  return pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabled);
 }
 
 void PrivacySandboxSettings::SetPrivacySandboxEnabled(bool enabled) {

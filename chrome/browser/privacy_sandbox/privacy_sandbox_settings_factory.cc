@@ -35,7 +35,8 @@ KeyedService* PrivacySandboxSettingsFactory::BuildServiceInstanceFor(
 
   return new PrivacySandboxSettings(
       HostContentSettingsMapFactory::GetForProfile(profile),
-      CookieSettingsFactory::GetForProfile(profile).get(), profile->GetPrefs());
+      CookieSettingsFactory::GetForProfile(profile).get(), profile->GetPrefs(),
+      profile->IsIncognitoProfile());
 }
 
 content::BrowserContext* PrivacySandboxSettingsFactory::GetBrowserContextToUse(

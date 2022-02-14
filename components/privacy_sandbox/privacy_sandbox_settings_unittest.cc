@@ -41,9 +41,11 @@ class PrivacySandboxSettingsTest : public testing::TestWithParam<bool> {
 
   void SetUp() override {
     InitializePrefsBeforeStart();
+    InitializeFeaturesBeforeStart();
 
     privacy_sandbox_settings_ = std::make_unique<PrivacySandboxSettings>(
-        host_content_settings_map(), cookie_settings_, prefs());
+        host_content_settings_map(), cookie_settings_, prefs(),
+        IsIncognitoProfile());
   }
 
   virtual void InitializePrefsBeforeStart() {}
@@ -57,6 +59,8 @@ class PrivacySandboxSettingsTest : public testing::TestWithParam<bool> {
           privacy_sandbox::kPrivacySandboxSettings3);
     }
   }
+
+  virtual bool IsIncognitoProfile() { return false; }
 
   sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
   HostContentSettingsMap* host_content_settings_map() {
@@ -708,3 +712,21 @@ INSTANTIATE_TEST_SUITE_P(
     PrivacySandboxSettingsTestCookiesClearOnExitTurnedOnInstance,
     PrivacySandboxSettingsTestCookiesClearOnExitTurnedOn,
     testing::Bool());
+
+class PrivacySandboxSettingsIncognitoTest : public PrivacySandboxSettingsTest {
+  bool IsIncognitoProfile() override { return true; }
+};
+
+TEST_P(PrivacySandboxSettingsIncognitoTest, DisabledInIncognito) {
+  // When the Release 3 flag is enabled, APIs should always be disabled in
+  // incognito. The Release 3 flag is set based on the test param.
+  privacy_sandbox_settings()->SetPrivacySandboxEnabled(true);
+  if (GetParam())
+    EXPECT_FALSE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
+  else
+    EXPECT_TRUE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
+}
+
+INSTANTIATE_TEST_SUITE_P(PrivacySandboxSettingsIncognitoTestInstance,
+                         PrivacySandboxSettingsIncognitoTest,
+                         testing::Bool());
