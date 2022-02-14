@@ -48,6 +48,11 @@ suite('SettingsBasicPage', () => {
 
   setup(async function() {
     document.body.innerHTML = '';
+
+    // Because some test() cases below call navigateTo(), need to ensure that
+    // the route is being reset before each test.
+    Router.getInstance().navigateTo(routes.BASIC);
+
     page = document.createElement('settings-basic-page');
     document.body.appendChild(page);
     page.scroller = document.body;
@@ -204,7 +209,8 @@ suite('SettingsBasicPage', () => {
     await flushTasks();
     assertActiveSubpage(routes.COOKIES.section);
 
-    // RouteState.SUBPAGE -> RoutState.DIALOG
+    // RouteState.SUBPAGE -> RoutState.DIALOG when both reside under the same
+    // SECTION.
     Router.getInstance().navigateTo(routes.CLEAR_BROWSER_DATA);
     await flushTasks();
 
@@ -214,17 +220,17 @@ suite('SettingsBasicPage', () => {
     await whenDone;
     await flushTasks();
     assertActiveSubpage(routes.SYNC.section);
-  });
 
-  // Test cases where a settings-section is appearing next to another section
-  // using the |nest-under-section| attribute. Only one such case currently
-  // exists.
-  test('SometimesMoreSectionsShown', async () => {
-    const whenDone = eventToPromise('show-container', page);
-    Router.getInstance().navigateTo(routes.PRIVACY);
+    // RouteState.SUBPAGE -> RoutState.DIALOG when they reside under different
+    // sections.
+    whenDone = eventToPromise('show-container', page);
+    Router.getInstance().navigateTo(routes.CLEAR_BROWSER_DATA);
     await whenDone;
     await flushTasks();
+    assertPriacyActiveSections();
+  });
 
+  function assertPriacyActiveSections() {
     const activeSections =
         page.shadowRoot!.querySelectorAll<SettingsSectionElement>(
             'settings-section[active]');
@@ -241,6 +247,17 @@ suite('SettingsBasicPage', () => {
         activeSections[1]!.getAttribute('nest-under-section'));
     // Privacy section.
     assertEquals(routes.PRIVACY.section, activeSections[2]!.section);
+  }
+
+  // Test cases where a settings-section is appearing next to another section
+  // using the |nest-under-section| attribute. Only one such case currently
+  // exists.
+  test('SometimesMoreSectionsShown', async () => {
+    const whenDone = eventToPromise('show-container', page);
+    Router.getInstance().navigateTo(routes.PRIVACY);
+    await whenDone;
+    await flushTasks();
+    assertPriacyActiveSections();
   });
 });
 
