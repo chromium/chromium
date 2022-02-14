@@ -7,12 +7,12 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/win/com_init_util.h"
-#include "content/browser/accessibility/accessibility_event_recorder_uia_win.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_uia_win.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_win.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder_win.h"
+#include "ui/accessibility/platform/inspect/ax_event_recorder_win_uia.h"
 
 namespace content {
 
@@ -83,7 +83,7 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
                   : ui::AXEventRecorderWin::kAsync);
     }
     case ui::AXApiType::kWinUIA:
-      return std::make_unique<AccessibilityEventRecorderUia>(selector);
+      return std::make_unique<ui::AXEventRecorderWinUia>(selector);
     default:
       NOTREACHED() << "Unsupported API type " << static_cast<std::string>(type);
   }

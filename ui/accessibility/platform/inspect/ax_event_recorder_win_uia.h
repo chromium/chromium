@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EVENT_RECORDER_UIA_WIN_H_
-#define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EVENT_RECORDER_UIA_WIN_H_
+#ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_EVENT_RECORDER_WIN_UIA_H_
+#define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_EVENT_RECORDER_WIN_UIA_H_
 
 #include <ole2.h>
 #include <stdint.h>
@@ -20,20 +20,20 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "base/win/atl.h"
+#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 
-namespace content {
+namespace ui {
 
-class AccessibilityEventRecorderUia : public ui::AXEventRecorder {
+class AX_EXPORT AXEventRecorderWinUia : public AXEventRecorder {
  public:
-  AccessibilityEventRecorderUia(const ui::AXTreeSelector& selector);
+  AXEventRecorderWinUia(const AXTreeSelector& selector);
 
-  AccessibilityEventRecorderUia(const AccessibilityEventRecorderUia&) = delete;
-  AccessibilityEventRecorderUia& operator=(
-      const AccessibilityEventRecorderUia&) = delete;
+  AXEventRecorderWinUia(const AXEventRecorderWinUia&) = delete;
+  AXEventRecorderWinUia& operator=(const AXEventRecorderWinUia&) = delete;
 
-  ~AccessibilityEventRecorderUia() override;
+  ~AXEventRecorderWinUia() override;
 
   // Called to ensure the event recorder has finished recording async events.
   void WaitForDoneRecording() override;
@@ -49,7 +49,7 @@ class AccessibilityEventRecorderUia : public ui::AXEventRecorder {
     Thread();
     ~Thread() override;
 
-    void Init(AccessibilityEventRecorderUia* owner,
+    void Init(AXEventRecorderWinUia* owner,
               HWND hwnd,
               base::RunLoop& initialization_loop,
               base::RunLoop& shutdown_loop);
@@ -59,7 +59,7 @@ class AccessibilityEventRecorderUia : public ui::AXEventRecorder {
     void ThreadMain() override;
 
    private:
-    raw_ptr<AccessibilityEventRecorderUia> owner_ = nullptr;
+    raw_ptr<AXEventRecorderWinUia> owner_ = nullptr;
     HWND hwnd_ = NULL;
     EVENTID shutdown_sentinel_ = 0;
 
@@ -89,7 +89,7 @@ class AccessibilityEventRecorderUia : public ui::AXEventRecorder {
 
       virtual ~EventHandler();
 
-      void Init(AccessibilityEventRecorderUia::Thread* owner,
+      void Init(AXEventRecorderWinUia::Thread* owner,
                 Microsoft::WRL::ComPtr<IUIAutomationElement> root);
       void CleanUp();
 
@@ -101,26 +101,26 @@ class AccessibilityEventRecorderUia : public ui::AXEventRecorder {
       END_COM_MAP()
 
       // IUIAutomationFocusChangedEventHandler interface.
-      STDMETHOD(HandleFocusChangedEvent)(IUIAutomationElement* sender) override;
+      IFACEMETHODIMP HandleFocusChangedEvent(
+          IUIAutomationElement* sender) override;
 
       // IUIAutomationPropertyChangedEventHandler interface.
-      STDMETHOD(HandlePropertyChangedEvent)
-      (IUIAutomationElement* sender,
-       PROPERTYID property_id,
-       VARIANT new_value) override;
+      IFACEMETHODIMP HandlePropertyChangedEvent(IUIAutomationElement* sender,
+                                                PROPERTYID property_id,
+                                                VARIANT new_value) override;
 
       // IUIAutomationStructureChangedEventHandler interface.
-      STDMETHOD(HandleStructureChangedEvent)
-      (IUIAutomationElement* sender,
-       StructureChangeType change_type,
-       SAFEARRAY* runtime_id) override;
+      IFACEMETHODIMP HandleStructureChangedEvent(
+          IUIAutomationElement* sender,
+          StructureChangeType change_type,
+          SAFEARRAY* runtime_id) override;
 
       // IUIAutomationEventHandler interface.
-      STDMETHOD(HandleAutomationEvent)
-      (IUIAutomationElement* sender, EVENTID event_id) override;
+      IFACEMETHODIMP HandleAutomationEvent(IUIAutomationElement* sender,
+                                           EVENTID event_id) override;
 
       // Points to the event recorder to receive notifications.
-      raw_ptr<AccessibilityEventRecorderUia::Thread> owner_ = nullptr;
+      raw_ptr<AXEventRecorderWinUia::Thread> owner_ = nullptr;
 
      private:
       std::pair<uintptr_t, uintptr_t> allowed_module_address_range_;
@@ -140,6 +140,6 @@ class AccessibilityEventRecorderUia : public ui::AXEventRecorder {
   base::PlatformThreadHandle thread_handle_;
 };
 
-}  // namespace content
+}  // namespace ui
 
-#endif  // CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EVENT_RECORDER_UIA_WIN_H_
+#endif  // UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_EVENT_RECORDER_WIN_UIA_H_

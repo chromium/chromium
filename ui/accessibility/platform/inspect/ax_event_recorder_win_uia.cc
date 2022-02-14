@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/accessibility_event_recorder_uia_win.h"
+#include "ui/accessibility/platform/inspect/ax_event_recorder_win_uia.h"
 
 #include <algorithm>
 #include <numeric>
@@ -23,10 +23,7 @@
 #include "ui/accessibility/platform/uia_registrar_win.h"
 #include "ui/base/win/atl_module.h"
 
-namespace content {
-
-using ui::BstrToUTF8;
-using ui::UiaIdentifierToString;
+namespace ui {
 
 namespace {
 
@@ -64,16 +61,14 @@ std::string UiaIdentifierToStringPretty(int32_t id) {
 }  // namespace
 
 // static
-volatile base::subtle::Atomic32 AccessibilityEventRecorderUia::instantiated_ =
-    0;
+volatile base::subtle::Atomic32 AXEventRecorderWinUia::instantiated_ = 0;
 
-AccessibilityEventRecorderUia::AccessibilityEventRecorderUia(
-    const ui::AXTreeSelector& selector) {
+AXEventRecorderWinUia::AXEventRecorderWinUia(const AXTreeSelector& selector) {
   CHECK(!base::subtle::NoBarrier_AtomicExchange(&instantiated_, 1))
       << "There can be only one instance at a time.";
 
   // Find the root content window
-  HWND hwnd = ui::GetHWNDBySelector(selector);
+  HWND hwnd = GetHWNDBySelector(selector);
   CHECK(hwnd);
 
   // Create the event thread, and pump messages via |initialization_loop| until
@@ -84,32 +79,31 @@ AccessibilityEventRecorderUia::AccessibilityEventRecorderUia(
   initialization_loop.Run();
 }
 
-AccessibilityEventRecorderUia::~AccessibilityEventRecorderUia() {
+AXEventRecorderWinUia::~AXEventRecorderWinUia() {
   base::subtle::NoBarrier_AtomicExchange(&instantiated_, 0);
 }
 
-void AccessibilityEventRecorderUia::WaitForDoneRecording() {
+void AXEventRecorderWinUia::WaitForDoneRecording() {
   // Pump messages via |shutdown_loop_| until the thread is complete.
   shutdown_loop_.Run();
   base::PlatformThread::Join(thread_handle_);
 }
 
-AccessibilityEventRecorderUia::Thread::Thread() {}
+AXEventRecorderWinUia::Thread::Thread() {}
 
-AccessibilityEventRecorderUia::Thread::~Thread() {}
+AXEventRecorderWinUia::Thread::~Thread() {}
 
-void AccessibilityEventRecorderUia::Thread::Init(
-    AccessibilityEventRecorderUia* owner,
-    HWND hwnd,
-    base::RunLoop& initialization,
-    base::RunLoop& shutdown) {
+void AXEventRecorderWinUia::Thread::Init(AXEventRecorderWinUia* owner,
+                                         HWND hwnd,
+                                         base::RunLoop& initialization,
+                                         base::RunLoop& shutdown) {
   owner_ = owner;
   hwnd_ = hwnd;
   initialization_complete_ = initialization.QuitClosure();
   shutdown_complete_ = shutdown.QuitClosure();
 }
 
-void AccessibilityEventRecorderUia::Thread::ThreadMain() {
+void AXEventRecorderWinUia::Thread::ThreadMain() {
   // UIA calls must be made on an MTA thread to prevent random timeouts.
   base::win::ScopedCOMInitializer com_init{
       base::win::ScopedCOMInitializer::kMTA};
@@ -120,15 +114,14 @@ void AccessibilityEventRecorderUia::Thread::ThreadMain() {
   CHECK(uia_.Get());
 
   // Register the custom event to mark the end of the test.
-  shutdown_sentinel_ =
-      ui::UiaRegistrarWin::GetInstance().GetTestCompleteEventId();
+  shutdown_sentinel_ = UiaRegistrarWin::GetInstance().GetTestCompleteEventId();
 
   // Find the IUIAutomationElement for the root content window
   uia_->ElementFromHandle(hwnd_, &root_);
   CHECK(root_.Get());
 
   // Create the event handler
-  ui::win::CreateATLModuleIfNeeded();
+  win::CreateATLModuleIfNeeded();
   CHECK(
       SUCCEEDED(CComObject<EventHandler>::CreateInstance(&uia_event_handler_)));
   uia_event_handler_->AddRef();
@@ -204,16 +197,16 @@ void AccessibilityEventRecorderUia::Thread::ThreadMain() {
   std::move(shutdown_complete_).Run();
 }
 
-void AccessibilityEventRecorderUia::Thread::SendShutdownSignal() {
+void AXEventRecorderWinUia::Thread::SendShutdownSignal() {
   shutdown_signal_.Signal();
 }
 
-void AccessibilityEventRecorderUia::Thread::OnEvent(const std::string& event) {
+void AXEventRecorderWinUia::Thread::OnEvent(const std::string& event) {
   // Pass the event to the thread-safe owner_.
   owner_->OnEvent(event);
 }
 
-AccessibilityEventRecorderUia::Thread::EventHandler::EventHandler() {
+AXEventRecorderWinUia::Thread::EventHandler::EventHandler() {
   // Some events are duplicated between UIAutomationCore.dll and RPCRT4.dll.
   // Before WIN10_19H1, events are mainly sent from RPCRT4.dll, with a few
   // duplicates sent from UIAutomationCore.dll.
@@ -225,22 +218,22 @@ AccessibilityEventRecorderUia::Thread::EventHandler::EventHandler() {
           : L"RPCRT4.dll");
 }
 
-AccessibilityEventRecorderUia::Thread::EventHandler::~EventHandler() {}
+AXEventRecorderWinUia::Thread::EventHandler::~EventHandler() {}
 
-void AccessibilityEventRecorderUia::Thread::EventHandler::Init(
-    AccessibilityEventRecorderUia::Thread* owner,
+void AXEventRecorderWinUia::Thread::EventHandler::Init(
+    AXEventRecorderWinUia::Thread* owner,
     Microsoft::WRL::ComPtr<IUIAutomationElement> root) {
   owner_ = owner;
   root_ = root;
 }
 
-void AccessibilityEventRecorderUia::Thread::EventHandler::CleanUp() {
+void AXEventRecorderWinUia::Thread::EventHandler::CleanUp() {
   owner_ = nullptr;
   root_.Reset();
 }
 
-STDMETHODIMP
-AccessibilityEventRecorderUia::Thread::EventHandler::HandleFocusChangedEvent(
+IFACEMETHODIMP
+AXEventRecorderWinUia::Thread::EventHandler::HandleFocusChangedEvent(
     IUIAutomationElement* sender) {
   if (!owner_ || !IsCallerFromAllowedModule(RETURN_ADDRESS()))
     return S_OK;
@@ -289,8 +282,8 @@ AccessibilityEventRecorderUia::Thread::EventHandler::HandleFocusChangedEvent(
   return S_OK;
 }
 
-STDMETHODIMP
-AccessibilityEventRecorderUia::Thread::EventHandler::HandlePropertyChangedEvent(
+IFACEMETHODIMP
+AXEventRecorderWinUia::Thread::EventHandler::HandlePropertyChangedEvent(
     IUIAutomationElement* sender,
     PROPERTYID property_id,
     VARIANT new_value) {
@@ -309,10 +302,11 @@ AccessibilityEventRecorderUia::Thread::EventHandler::HandlePropertyChangedEvent(
   return S_OK;
 }
 
-STDMETHODIMP AccessibilityEventRecorderUia::Thread::EventHandler::
-    HandleStructureChangedEvent(IUIAutomationElement* sender,
-                                StructureChangeType change_type,
-                                SAFEARRAY* runtime_id) {
+IFACEMETHODIMP
+AXEventRecorderWinUia::Thread::EventHandler::HandleStructureChangedEvent(
+    IUIAutomationElement* sender,
+    StructureChangeType change_type,
+    SAFEARRAY* runtime_id) {
   if (!owner_ || !IsCallerFromAllowedModule(RETURN_ADDRESS()))
     return S_OK;
 
@@ -345,8 +339,8 @@ STDMETHODIMP AccessibilityEventRecorderUia::Thread::EventHandler::
   return S_OK;
 }
 
-STDMETHODIMP
-AccessibilityEventRecorderUia::Thread::EventHandler::HandleAutomationEvent(
+IFACEMETHODIMP
+AXEventRecorderWinUia::Thread::EventHandler::HandleAutomationEvent(
     IUIAutomationElement* sender,
     EVENTID event_id) {
   if (!owner_ || !IsCallerFromAllowedModule(RETURN_ADDRESS()))
@@ -381,14 +375,14 @@ AccessibilityEventRecorderUia::Thread::EventHandler::HandleAutomationEvent(
 // events are raised exactly twice for any in-proc off-thread event listeners.
 // To avoid this, in UIA API methods we can pass the RETURN_ADDRESS() to this
 // method to determine whether the caller belongs to a specific platform module.
-bool AccessibilityEventRecorderUia::Thread::EventHandler::
-    IsCallerFromAllowedModule(void* return_address) {
+bool AXEventRecorderWinUia::Thread::EventHandler::IsCallerFromAllowedModule(
+    void* return_address) {
   const auto address = reinterpret_cast<uintptr_t>(return_address);
   return address >= allowed_module_address_range_.first &&
          address < allowed_module_address_range_.second;
 }
 
-std::string AccessibilityEventRecorderUia::Thread::EventHandler::GetSenderInfo(
+std::string AXEventRecorderWinUia::Thread::EventHandler::GetSenderInfo(
     IUIAutomationElement* sender) {
   std::string sender_info;
 
@@ -410,4 +404,4 @@ std::string AccessibilityEventRecorderUia::Thread::EventHandler::GetSenderInfo(
   return sender_info;
 }
 
-}  // namespace content
+}  // namespace ui
