@@ -26,8 +26,8 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/allow_service_worker_result.h"
-#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/navigation_handle_user_data.h"
+#include "content/public/browser/page_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -71,7 +71,7 @@ namespace content_settings {
 // loaded page once the navigation commits or discarded if it does not.
 class PageSpecificContentSettings
     : public content_settings::Observer,
-      public content::DocumentUserData<PageSpecificContentSettings> {
+      public content::PageUserData<PageSpecificContentSettings> {
  public:
   // Fields describing the current mic/camera state. If a page has attempted to
   // access a device, the XXX_ACCESSED bit will be set. If access was blocked,
@@ -407,7 +407,7 @@ class PageSpecificContentSettings
   bool HasJoinedUserToInterestGroup() const;
 
  private:
-  friend class content::DocumentUserData<PageSpecificContentSettings>;
+  friend class content::PageUserData<PageSpecificContentSettings>;
 
   // Keeps track of cookie and service worker access during a navigation.
   // These types of access can happen for the current page or for a new
@@ -510,7 +510,7 @@ class PageSpecificContentSettings
   };
 
   explicit PageSpecificContentSettings(
-      content::RenderFrameHost* rfh,
+      content::Page& page,
       PageSpecificContentSettings::WebContentsHandler& handler,
       Delegate* delegate);
 
@@ -604,7 +604,7 @@ class PageSpecificContentSettings
   // the page is prerendering. These calls are run when the page is activated.
   std::unique_ptr<PendingUpdates> updates_queued_during_prerender_;
 
-  DOCUMENT_USER_DATA_KEY_DECL();
+  PAGE_USER_DATA_KEY_DECL();
 
   base::WeakPtrFactory<PageSpecificContentSettings> weak_factory_{this};
 };

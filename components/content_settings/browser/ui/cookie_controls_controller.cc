@@ -117,9 +117,8 @@ bool CookieControlsController::FirstPartyCookiesBlocked() {
 }
 
 int CookieControlsController::GetAllowedCookieCount() {
-  auto* pscs =
-      content_settings::PageSpecificContentSettings::GetForCurrentDocument(
-          tab_observer_->web_contents()->GetMainFrame());
+  auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
+      tab_observer_->web_contents()->GetPrimaryPage());
   if (pscs) {
     return pscs->allowed_local_shared_objects().GetObjectCount();
   } else {
@@ -127,9 +126,8 @@ int CookieControlsController::GetAllowedCookieCount() {
   }
 }
 int CookieControlsController::GetBlockedCookieCount() {
-  auto* pscs =
-      content_settings::PageSpecificContentSettings::GetForCurrentDocument(
-          tab_observer_->web_contents()->GetMainFrame());
+  auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
+      tab_observer_->web_contents()->GetPrimaryPage());
   if (pscs) {
     return pscs->blocked_local_shared_objects().GetObjectCount();
   } else {
