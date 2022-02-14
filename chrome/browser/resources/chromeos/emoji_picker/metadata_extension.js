@@ -8,11 +8,7 @@ export const CATEGORY_METADATA = [
     icon: 'emoji_picker:insert_emoticon',
     active: true,
   },
-  {
-    name: 'symbol',
-    icon: 'emoji_picker_v2:symbol_omega',
-    active: false,
-  },
+  // TODO(b/213141035): insert symbols metadata back.
   {
     name: 'emoticon',
     icon: 'emoji_picker_v2:emoticon_gssmiley',

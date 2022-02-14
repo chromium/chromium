@@ -123,7 +123,11 @@
   #category-button-group {
     align-items: center;
     display: flex;
-    justify-content: space-between;
+    /* 
+     * TODO(b/213141035): Change to space-between when symbol category is
+     * re-introduced.
+     */
+    justify-content: space-evenly;
     margin-inline-start: 20px;
     width: 120px;
   }
