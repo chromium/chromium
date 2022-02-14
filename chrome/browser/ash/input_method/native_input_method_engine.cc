@@ -113,9 +113,11 @@ bool CanRouteToNativeMojoEngine(const std::string& engine_id) {
     return false;
   }
 
-  return (features::IsSystemChinesePhysicalTypingEnabled() &&
+  return (base::FeatureList::IsEnabled(
+              features::kSystemChinesePhysicalTyping) &&
           IsChineseEngine(engine_id)) ||
-         (features::IsSystemJapanesePhysicalTypingEnabled() &&
+         (base::FeatureList::IsEnabled(
+              features::kSystemJapanesePhysicalTyping) &&
           IsJapaneseEngine(engine_id)) ||
          (base::FeatureList::IsEnabled(
               features::kSystemTransliterationPhysicalTyping) &&

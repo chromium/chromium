@@ -577,10 +577,12 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
                          chromeos::features::kVirtualKeyboardBorderedKey)));
   features.Append(GenerateFeatureFlag(
       "systemchinesephysicaltyping",
-      chromeos::features::IsSystemChinesePhysicalTypingEnabled()));
+      base::FeatureList::IsEnabled(
+          chromeos::features::kSystemChinesePhysicalTyping)));
   features.Append(GenerateFeatureFlag(
       "systemjapanesephysicaltyping",
-      chromeos::features::IsSystemJapanesePhysicalTypingEnabled()));
+      base::FeatureList::IsEnabled(
+          chromeos::features::kSystemJapanesePhysicalTyping)));
   features.Append(GenerateFeatureFlag("systemlatinphysicaltyping", true));
   features.Append(GenerateFeatureFlag(
       "multilingualtyping",

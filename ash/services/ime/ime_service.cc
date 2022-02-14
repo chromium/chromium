@@ -173,10 +173,12 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
     return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
   }
   if (strcmp(feature_name, "SystemChinesePhysicalTyping") == 0) {
-    return features::IsSystemChinesePhysicalTypingEnabled();
+    return base::FeatureList::IsEnabled(
+        chromeos::features::kSystemChinesePhysicalTyping);
   }
   if (strcmp(feature_name, "SystemJapanesePhysicalTyping") == 0) {
-    return features::IsSystemJapanesePhysicalTypingEnabled();
+    return base::FeatureList::IsEnabled(
+        chromeos::features::kSystemJapanesePhysicalTyping);
   }
   if (strcmp(feature_name, "SystemTransliterationPhysicalTyping") == 0) {
     return base::FeatureList::IsEnabled(

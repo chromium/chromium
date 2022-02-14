@@ -667,8 +667,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMAFlowEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSnoopingProtectionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSyncSettingsCategorizationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsStylusBatteryStatusEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSystemChinesePhysicalTypingEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSystemJapanesePhysicalTypingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTabClusterUIEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTrafficCountersHandlerEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsTrilinearFilteringEnabled();

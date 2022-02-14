@@ -1910,14 +1910,6 @@ bool IsStylusBatteryStatusEnabled() {
   return base::FeatureList::IsEnabled(kStylusBatteryStatus);
 }
 
-bool IsSystemChinesePhysicalTypingEnabled() {
-  return base::FeatureList::IsEnabled(kSystemChinesePhysicalTyping);
-}
-
-bool IsSystemJapanesePhysicalTypingEnabled() {
-  return base::FeatureList::IsEnabled(kSystemJapanesePhysicalTyping);
-}
-
 bool IsTabClusterUIEnabled() {
   return base::FeatureList::IsEnabled(kTabClusterUI);
 }
