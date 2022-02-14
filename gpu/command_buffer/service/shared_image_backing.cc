@@ -56,6 +56,14 @@ bool SharedImageBacking::PresentSwapChain() {
   return false;
 }
 
+void SharedImageBacking::OnMemoryDump(
+    const std::string& dump_name,
+    base::trace_event::MemoryAllocatorDump* dump,
+    base::trace_event::ProcessMemoryDump* pmd,
+    uint64_t client_tracing_id) {
+  NOTIMPLEMENTED();
+}
+
 std::unique_ptr<SharedImageRepresentationGLTexture>
 SharedImageBacking::ProduceGLTexture(SharedImageManager* manager,
                                      MemoryTypeTracker* tracker) {

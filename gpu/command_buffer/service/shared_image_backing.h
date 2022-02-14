@@ -130,7 +130,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
   virtual void OnMemoryDump(const std::string& dump_name,
                             base::trace_event::MemoryAllocatorDump* dump,
                             base::trace_event::ProcessMemoryDump* pmd,
-                            uint64_t client_tracing_id) {}
+                            uint64_t client_tracing_id);
 
   // Prepares the backing for use with the legacy mailbox system.
   // TODO(ericrk): Remove this once the new codepath is complete.
