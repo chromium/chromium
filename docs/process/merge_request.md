@@ -106,6 +106,9 @@ following questions and answer them in a comment on the issue:
   experiments active in any release channels?
 5. [Chrome OS only]: Was the change reviewed and approved by the
   [Eng Prod Representative](https://goto.google.com/cros-engprodcomponents)?
+6. If this merge addresses a major issue in the stable channel, does it require
+   manual verification by the test team? If so, please describe required
+   testing.
 
 ## Monitoring merge requests
 
@@ -158,7 +161,7 @@ rejected for merge.
 
 ### Using Gerrit UI
 
-Select the "More" button in the Gerrit UI, then choose "Cherry Pick". When
+Select the "..." button in the Gerrit UI, then choose "Cherry Pick". When
 prompted for a branch, enter *refs/branch-heads/####*, where #### corresponds
 to the release branch you are merging to (available on
 [Chromium Dash](https://chromiumdash.appspot.com/branches)).
