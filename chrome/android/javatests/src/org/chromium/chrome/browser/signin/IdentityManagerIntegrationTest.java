@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -212,6 +213,7 @@ public class IdentityManagerIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1295158")
     public void testUpdateAccountListTwoAccountsThenRemoveAllSignOut() {
         // Add accounts.
         mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
