@@ -107,7 +107,7 @@ std::string ColorIdName(ColorId color_id) {
   base::StringPiece color_name;
   if (g_color_provider_utils_callbacks &&
       g_color_provider_utils_callbacks->ColorIdName(color_id, &color_name))
-    return {color_name};
+    return std::string(color_name.data(), color_name.length());
   return base::StringPrintf("ColorId(%d)", color_id);
 }
 
