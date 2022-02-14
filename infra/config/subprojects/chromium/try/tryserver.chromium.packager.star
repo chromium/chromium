@@ -39,8 +39,6 @@ try_.builder(
             "gclient_config": "chromium",
             "gclient_apply_config": ["android"],
         },
-        # TODO(crbug/1293206): Remove once py3 migration is complete.
-        "py3_scripts": True,
     },
     tryjob = try_.job(
         location_regexp = [
@@ -61,7 +59,5 @@ try_.builder(
             "package_prefix": "chromium_3pp",
             "gclient_config": "chromium",
         },
-        # TODO(crbug/1293206): Remove once py3 migration is complete.
-        "py3_scripts": True,
     },
 )
