@@ -2246,7 +2246,8 @@ crbug.com/1218715 wpt_internal/content-security-policy/reporting-api/reporting-a
 # Sheriff 2021-05-25
 crbug.com/1209900 fast/peerconnection/RTCPeerConnection-reload-sctptransport.html [ Failure Pass ]
 
-crbug.com/846981 fast/webgl/texImage-imageBitmap-from-imageData-resize.html [ Pass Skip Timeout ]
+# This test is currently failing everywhere
+crbug.com/846981 fast/webgl/texImage-imageBitmap-from-imageData-resize.html [ Skip ]
 
 # crbug.com/1095379: These fail with a timeout, even when they're given extra time (via SlowTests)
 crbug.com/846656 external/wpt/css/selectors/focus-visible-002.html [ Pass Skip Timeout ]
