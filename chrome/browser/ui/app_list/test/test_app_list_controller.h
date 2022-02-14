@@ -35,7 +35,7 @@ class TestAppListController : public ash::AppListController {
   aura::Window* GetWindow() override;
   bool IsVisible(const absl::optional<int64_t>& display_id) override;
   bool IsVisible() override;
-  void UpdateAppListWithNewSortingOrder(
+  void UpdateAppListWithNewTemporarySortOrder(
       const absl::optional<ash::AppListSortOrder>& new_order,
       bool animate,
       base::OnceClosure update_position_closure) override;

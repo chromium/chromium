@@ -124,7 +124,7 @@ class ASH_EXPORT AppListControllerImpl : public AppListController,
   void EndDragFromShelf(AppListViewState app_list_state);
   void ProcessMouseWheelEvent(const ui::MouseWheelEvent& event);
   void ProcessScrollEvent(const ui::ScrollEvent& event);
-  void UpdateAppListWithNewSortingOrder(
+  void UpdateAppListWithNewTemporarySortOrder(
       const absl::optional<AppListSortOrder>& new_order,
       bool animate,
       base::OnceClosure update_position_closure) override;

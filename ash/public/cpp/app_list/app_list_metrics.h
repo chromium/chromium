@@ -9,6 +9,11 @@
 
 namespace ash {
 enum class AppListLaunchedFrom;
+enum class AppListOrderUpdateEvent;
+
+// UMA histograms that record the actions that clear the pref sort order.
+ASH_PUBLIC_EXPORT extern const char kClamshellPrefOrderClearActionHistogram[];
+ASH_PUBLIC_EXPORT extern const char kTabletPrefOrderClearActionHistogram[];
 
 // The type of the ChromeSearchResult. This is used for logging so do not
 // change the order of this enum. If you add to this enum update
@@ -137,6 +142,10 @@ ASH_PUBLIC_EXPORT void RecordLauncherClickedSearchQueryLength(int query_length);
 ASH_PUBLIC_EXPORT void RecordSuccessfulAppLaunchUsingSearch(
     AppListLaunchedFrom launched_from,
     int query_length);
+
+ASH_PUBLIC_EXPORT void ReportPrefOrderClearAction(
+    AppListOrderUpdateEvent action,
+    bool in_tablet);
 
 }  // namespace ash
 

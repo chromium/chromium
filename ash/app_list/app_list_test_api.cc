@@ -24,6 +24,7 @@
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
+#include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
@@ -434,6 +435,12 @@ bool AppListTestApi::HasAnyWaitingReorderDoneCallback() const {
 
 void AppListTestApi::DisableAppListNudge(bool disable) {
   AppListNudgeController::SetNudgeDisabledForTest(disable);
+}
+
+void AppListTestApi::ReorderItemInRootByDragAndDrop(int source_index,
+                                                    int target_index) {
+  test::AppsGridViewTestApi(GetTopLevelAppsGridView())
+      .ReorderItemByDragAndDrop(source_index, target_index);
 }
 
 }  // namespace ash

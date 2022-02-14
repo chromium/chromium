@@ -165,6 +165,46 @@ enum class AppListSortOrder {
   kMaxValue = kColor,
 };
 
+// All the events that affect the app list sort order (including the pref order
+// and the temporary order).
+// NOTE: Do not change the order of these as they are used for metrics.
+enum class AppListOrderUpdateEvent {
+  // Add a new item.
+  kItemAdded = 0,
+
+  // Remove an item.
+  kItemRemoved = 1,
+
+  // An item is moved due to sync.
+  kItemSyncMove = 2,
+
+  // An item is moved to a folder.
+  kItemMovedToFolder = 3,
+
+  // An item is moved to the root apps grid.
+  kItemMovedToRoot = 4,
+
+  // Sort reversion is triggered.
+  kRevert = 5,
+
+  // An item is moved but its parent apps grid does not change.
+  kItemMoved = 6,
+
+  // A folder is created.
+  kFolderCreated = 7,
+
+  // A folder is renamed.
+  kFolderRenamed = 8,
+
+  // The app list is hidden.
+  kAppListHidden = 9,
+
+  // User requests to sort.
+  kSortRequested = 10,
+
+  kMaxValue = kSortRequested,
+};
+
 // Lists the reasons that ash requests for item position update.
 enum class RequestPositionUpdateReason {
   // Fix the position when multiple items share the same position.

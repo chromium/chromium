@@ -13,6 +13,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
+#include "ash/public/cpp/app_list/app_list_metrics.h"
+#include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
@@ -816,8 +818,8 @@ void ChromeAppListModelUpdater::RequestMoveItemToRoot(
   if (is_under_temporary_sort()) {
     EndTemporarySortAndTakeAction(EndAction::kCommitAndClearSort);
   } else {
-    if (order_delegate_)
-      order_delegate_->SetAppListPreferredOrder(ash::AppListSortOrder::kCustom);
+    ResetPrefSortOrderInNonTemporaryMode(
+        ash::AppListOrderUpdateEvent::kItemMovedToRoot);
     sync_model_sanitizer_->SanitizePageBreaksForProductivityLauncher(
         GetTopLevelItemIds(), /*reset_page_breaks=*/false);
   }
@@ -860,15 +862,16 @@ void ChromeAppListModelUpdater::RequestAppListSort(
   if (!reorder_params.size())
     return;
 
-  ash::AppListController::Get()->UpdateAppListWithNewSortingOrder(
-      order, /*animate=*/true,
+  ash::AppListController::Get()->UpdateAppListWithNewTemporarySortOrder(
+      order,
+      /*animate=*/true,
       base::BindOnce(
           &ChromeAppListModelUpdater::UpdateItemPositionWithReorderParam,
           weak_ptr_factory_.GetWeakPtr(), std::move(reorder_params)));
 }
 
 void ChromeAppListModelUpdater::RequestAppListSortRevert() {
-  if (!temporary_sort_manager_)
+  if (!is_under_temporary_sort())
     return;
 
   EndTemporarySortAndTakeAction(EndAction::kRevert);
@@ -883,13 +886,12 @@ void ChromeAppListModelUpdater::RequestPositionUpdate(
 
   // Commit positions and clear the sort order if a local item is moved.
   if (reason == ash::RequestPositionUpdateReason::kMoveItem) {
-    if (temporary_sort_manager_) {
+    if (is_under_temporary_sort()) {
       EndTemporarySortAndTakeAction(EndAction::kCommitAndClearSort);
     } else {
-      if (order_delegate_) {
-        order_delegate_->SetAppListPreferredOrder(
-            ash::AppListSortOrder::kCustom);
-      }
+      ResetPrefSortOrderInNonTemporaryMode(
+          ash::AppListOrderUpdateEvent::kItemMoved);
+
       // NOTE: Committing temporary sort will also reset page breaks, so they
       // don't have to be sanitized again in that case.
       sync_model_sanitizer_->SanitizePageBreaksForProductivityLauncher(
@@ -906,7 +908,8 @@ std::string ChromeAppListModelUpdater::RequestFolderCreation(
   // Folder creation is a user action, so temporary sort state should end.
   // If feature to position the folder to correct sorted position is disabled,
   // clear the sort.
-  if (is_under_temporary_sort()) {
+  const bool under_temporary_sort = is_under_temporary_sort();
+  if (under_temporary_sort) {
     EndTemporarySortAndTakeAction(sort_order_invalidated
                                       ? EndAction::kCommitAndClearSort
                                       : EndAction::kCommit);
@@ -923,8 +926,9 @@ std::string ChromeAppListModelUpdater::RequestFolderCreation(
 
   ash::AppListSortOrder current_sort_order = ash::AppListSortOrder::kCustom;
   if (ash::features::IsLauncherAppSortEnabled()) {
-    if (sort_order_invalidated) {
-      order_delegate_->SetAppListPreferredOrder(ash::AppListSortOrder::kCustom);
+    if (sort_order_invalidated && !under_temporary_sort) {
+      ResetPrefSortOrderInNonTemporaryMode(
+          ash::AppListOrderUpdateEvent::kFolderCreated);
     } else {
       current_sort_order = order_delegate_->GetPermanentSortingOrder();
     }
@@ -991,8 +995,9 @@ void ChromeAppListModelUpdater::RequestFolderRename(
     return;
 
   ash::AppListSortOrder current_sort_order = ash::AppListSortOrder::kCustom;
+  const bool under_temporary_sort = is_under_temporary_sort();
   if (ash::features::IsLauncherAppSortEnabled()) {
-    if (is_under_temporary_sort()) {
+    if (under_temporary_sort) {
       current_sort_order = temporary_sort_manager_->temporary_order();
     } else {
       current_sort_order = order_delegate_->GetPermanentSortingOrder();
@@ -1008,7 +1013,8 @@ void ChromeAppListModelUpdater::RequestFolderRename(
 
   // If user tries to take an action, and rename a folder - commit temporary
   // sort.
-  if (is_under_temporary_sort()) {
+
+  if (under_temporary_sort) {
     EndTemporarySortAndTakeAction(sort_order_invalidated
                                       ? EndAction::kCommitAndClearSort
                                       : EndAction::kCommit);
@@ -1029,8 +1035,11 @@ void ChromeAppListModelUpdater::RequestFolderRename(
 
   model_.SetItemMetadata(folder_id, folder_item->CloneMetadata());
 
-  if (sort_order_invalidated)
-    order_delegate_->SetAppListPreferredOrder(ash::AppListSortOrder::kCustom);
+  if (sort_order_invalidated && !under_temporary_sort) {
+    ResetPrefSortOrderInNonTemporaryMode(
+        ash::AppListOrderUpdateEvent::kFolderRenamed);
+  }
+
   if (position_changed) {
     sync_model_sanitizer_->SanitizePageBreaksForProductivityLauncher(
         GetTopLevelItemIds(), /*reset_page_breaks=*/false);
@@ -1102,7 +1111,7 @@ void ChromeAppListModelUpdater::EndTemporarySortAndTakeAction(
   temporary_sort_manager_.reset();
 
   const bool animate = !update_position_closure.is_null();
-  ash::AppListController::Get()->UpdateAppListWithNewSortingOrder(
+  ash::AppListController::Get()->UpdateAppListWithNewTemporarySortOrder(
       /*new_order=*/absl::nullopt, animate, std::move(update_position_closure));
 }
 
@@ -1198,4 +1207,18 @@ void ChromeAppListModelUpdater::UpdateItemPositionWithReorderParam(
     const std::vector<app_list::reorder::ReorderParam>& reorder_params) {
   for (const auto& reorder_param : reorder_params)
     SetItemPosition(reorder_param.sync_item_id, reorder_param.ordinal);
+}
+
+void ChromeAppListModelUpdater::ResetPrefSortOrderInNonTemporaryMode(
+    ash::AppListOrderUpdateEvent event) {
+  if (!order_delegate_ || order_delegate_->GetPermanentSortingOrder() ==
+                              ash::AppListSortOrder::kCustom) {
+    return;
+  }
+
+  order_delegate_->SetAppListPreferredOrder(ash::AppListSortOrder::kCustom);
+
+  // The tablet mode controller may not exist in tests.
+  if (ash::TabletMode::Get())
+    ReportPrefOrderClearAction(event, ash::TabletMode::Get()->IsInTabletMode());
 }

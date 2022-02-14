@@ -3385,6 +3385,20 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="ZERO_STATE_SUGEESTION"/>
 </enum>
 
+<enum name="AppListOrderUpdateEvent">
+  <int value="0" label="Add Item"/>
+  <int value="1" label="Remove Item"/>
+  <int value="2" label="Sync Move Item"/>
+  <int value="3" label="Move Item To Folder"/>
+  <int value="4" label="Move Item To Root"/>
+  <int value="5" label="Revert"/>
+  <int value="6" label="Move Item"/>
+  <int value="7" label="Create Folder"/>
+  <int value="8" label="Rename Folder"/>
+  <int value="9" label="Hide Applist"/>
+  <int value="10" label="Request Sort"/>
+</enum>
+
 <enum name="AppListPage">
   <int value="0" label="APPS"/>
   <int value="1" label="SEARCH_RESULTS"/>

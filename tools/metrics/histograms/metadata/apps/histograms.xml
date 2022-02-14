@@ -1852,6 +1852,17 @@ chromium-metrics-reviews@google.com.
   <summary>Records the app icon loading method when loading app icons.</summary>
 </histogram>
 
+<histogram name="Apps.Launcher.AppListSortClearAction.{TabletOrClamshell}"
+    enum="AppListOrderUpdateEvent" expires_after="2022-09-01">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The events that reset the app list pref sort order. Triggered when the pref
+    sort order is reset.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
 <histogram name="Apps.Launcher.InstallAppFromLinkResult"
     enum="WebAppInstallResultCode" expires_after="2022-07-17">
   <owner>dmurph@chromium.org</owner>

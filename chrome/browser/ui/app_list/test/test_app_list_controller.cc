@@ -32,7 +32,7 @@ bool TestAppListController::IsVisible() {
   return false;
 }
 
-void TestAppListController::UpdateAppListWithNewSortingOrder(
+void TestAppListController::UpdateAppListWithNewTemporarySortOrder(
     const absl::optional<ash::AppListSortOrder>& new_order,
     bool animate,
     base::OnceClosure update_position_closure) {

@@ -5,11 +5,12 @@
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 
 namespace {
 
-// The following constants affect logging, and  should not be changed without
+// The following constants affect logging, and should not be changed without
 // deprecating the related UMA histograms.
 
 const char kAppListSearchResultOpenTypeHistogram[] =
@@ -51,6 +52,11 @@ constexpr int kMaxLoggedUserQueryLength = 20;
 }  // namespace
 
 namespace ash {
+
+constexpr char kClamshellPrefOrderClearActionHistogram[] =
+    "Apps.Launcher.AppListSortClearAction.ClamshellMode";
+constexpr char kTabletPrefOrderClearActionHistogram[] =
+    "Apps.Launcher.AppListSortClearAction.TabletMode";
 
 void RecordSearchResultOpenTypeHistogram(AppListLaunchedFrom launch_location,
                                          SearchResultType type,
@@ -140,6 +146,16 @@ void RecordSuccessfulAppLaunchUsingSearch(AppListLaunchedFrom launched_from,
   if (query_length > 0) {
     UMA_HISTOGRAM_ENUMERATION(kSearchSuccessAppLaunch, launched_from);
     UMA_HISTOGRAM_COUNTS_100(kSearchQueryLengthAppLaunch, query_length);
+  }
+}
+
+void ReportPrefOrderClearAction(AppListOrderUpdateEvent action,
+                                bool in_tablet) {
+  if (in_tablet) {
+    base::UmaHistogramEnumeration(kTabletPrefOrderClearActionHistogram, action);
+  } else {
+    base::UmaHistogramEnumeration(kClamshellPrefOrderClearActionHistogram,
+                                  action);
   }
 }
 

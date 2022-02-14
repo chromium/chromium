@@ -133,7 +133,7 @@ TEST_F(AppListNudgeControllerTest, StopShowingNudgeAfterReordering) {
   EXPECT_EQ(AppListToastContainerView::ToastType::kReorderNudge,
             GetToastContainerView()->current_toast());
   // Simulate that the app list is reordered by name.
-  Shell::Get()->app_list_controller()->UpdateAppListWithNewSortingOrder(
+  Shell::Get()->app_list_controller()->UpdateAppListWithNewTemporarySortOrder(
       AppListSortOrder::kNameAlphabetical, /*animate=*/false,
       base::OnceClosure());
   EXPECT_TRUE(GetToastContainerView()->is_toast_visible());

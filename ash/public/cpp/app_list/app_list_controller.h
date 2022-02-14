@@ -82,14 +82,14 @@ class ASH_PUBLIC_EXPORT AppListController {
   // Returns whether the AppList is visible on any display.
   virtual bool IsVisible() = 0;
 
-  // Updates the app list with a new sorting order. When exiting the sorting
-  // state, `new_order` is empty.
+  // Updates the app list with a new temporary sorting order. When exiting the
+  // temporary sorting state, `new_order` is empty.
   // `animate`: if true, show a two-stage reorder animation that consists of a
   // fade out animation and a fade in animation.
   // `update_position_closure`: if set, the callback that should be called when
   // the animation to fade out the current grid completes. The closure is set
   // iff `animate` is true.
-  virtual void UpdateAppListWithNewSortingOrder(
+  virtual void UpdateAppListWithNewTemporarySortOrder(
       const absl::optional<AppListSortOrder>& new_order,
       bool animate,
       base::OnceClosure update_position_closure) = 0;

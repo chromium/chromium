@@ -82,6 +82,10 @@ class AppsGridViewTestApi {
   // Returns the layer used by the app drag icon proxy.
   ui::Layer* GetDragIconLayer();
 
+  // Moves the app list item at `source_index` to `target_index` by drag and
+  // drop. `source_index` and `target_index` are view indices in `view_`.
+  void ReorderItemByDragAndDrop(int source_index, int target_index);
+
   AppListItemList* GetItemList() { return view_->item_list_; }
 
   PagedViewStructure* GetPagedViewStructure() {

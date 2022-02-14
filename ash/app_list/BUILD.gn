@@ -247,6 +247,7 @@ source_set("test_support") {
     "//base",
     "//ui/base",
     "//ui/events",
+    "//ui/events:test_support",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/views",

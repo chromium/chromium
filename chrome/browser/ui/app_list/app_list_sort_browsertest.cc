@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/test/chrome_app_list_test_support.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/test/test_utils.h"
@@ -326,18 +328,27 @@ class AppListSortBrowserTest : public extensions::ExtensionBrowserTest {
     run_loop_->Run();
   }
 
-  // Returns a list of app ids (excluding the default installed apps) following
-  // the ordinal increasing order.
-  std::vector<std::string> GetAppIdsInOrdinalOrder() {
+  // Returns a list of app ids following the ordinal increasing order.
+  std::vector<std::string> GetAppIdsInOrdinalOrder(
+      const std::initializer_list<std::string>& ids) {
     AppListModelUpdater* model_updater =
         test::GetModelUpdater(AppListClientImpl::GetInstance());
-    std::vector<std::string> ids{app1_id_, app2_id_, app3_id_};
-    std::sort(ids.begin(), ids.end(),
+    std::vector<std::string> copy_ids(ids);
+    std::sort(copy_ids.begin(), copy_ids.end(),
               [model_updater](const std::string& id1, const std::string& id2) {
                 return model_updater->FindItem(id1)->position().LessThan(
                     model_updater->FindItem(id2)->position());
               });
-    return ids;
+    return copy_ids;
+  }
+
+  std::vector<std::string> GetAppIdsInOrdinalOrder() {
+    return GetAppIdsInOrdinalOrder({app1_id_, app2_id_, app3_id_});
+  }
+
+  ash::AppListSortOrder GetPermanentSortingOrder() {
+    return static_cast<ash::AppListSortOrder>(
+        profile()->GetPrefs()->GetInteger(prefs::kAppListPreferredOrder));
   }
 
   ash::AppListTestApi app_list_test_api_;
@@ -385,6 +396,36 @@ IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, ContextMenuSortItemsInTopLevel) {
             std::vector<std::string>({app2_id_, app3_id_, app1_id_}));
   histograms.ExpectBucketCount(ash::kClamshellReorderActionHistogram,
                                ash::AppListSortOrder::kColor, 1);
+}
+
+// Verifies that clearing pref order by moving an item works as expected.
+IN_PROC_BROWSER_TEST_F(AppListSortBrowserTest, ClearPrefOrderByItemMove) {
+  ash::ShellTestApi().SetTabletModeEnabledForTest(false);
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(
+      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+  app_list_test_api_.WaitForBubbleWindow(/*wait_for_opening_animation=*/true);
+  ReorderByMouseClickAtContextMenu(ash::AppListSortOrder::kNameAlphabetical,
+                                   MenuType::kAppListPageMenu,
+                                   AnimationTargetStatus::kCompleted);
+  EXPECT_EQ(GetAppIdsInOrdinalOrder(),
+            std::vector<std::string>({app1_id_, app2_id_, app3_id_}));
+  EXPECT_TRUE(app_list_test_api_.GetFullscreenReorderUndoToastVisibility());
+
+  std::string app4_id = LoadExtension(test_data_dir_.AppendASCII("app4"))->id();
+  ASSERT_FALSE(app4_id.empty());
+  EXPECT_EQ(GetAppIdsInOrdinalOrder({app1_id_, app2_id_, app3_id_, app4_id}),
+            std::vector<std::string>({app1_id_, app2_id_, app3_id_, app4_id}));
+
+  EXPECT_FALSE(app_list_test_api_.GetFullscreenReorderUndoToastVisibility());
+  EXPECT_EQ(ash::AppListSortOrder::kNameAlphabetical,
+            GetPermanentSortingOrder());
+
+  base::HistogramTester histograms;
+  app_list_test_api_.ReorderItemInRootByDragAndDrop(/*source_index=*/0,
+                                                    /*target_index=*/1);
+  EXPECT_EQ(ash::AppListSortOrder::kCustom, GetPermanentSortingOrder());
+  histograms.ExpectBucketCount(ash::kClamshellPrefOrderClearActionHistogram,
+                               ash::AppListOrderUpdateEvent::kItemMoved, 1);
 }
 
 // Verifies that the apps in a folder can be arranged in the alphabetical order

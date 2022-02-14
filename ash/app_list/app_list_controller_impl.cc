@@ -525,7 +525,7 @@ void AppListControllerImpl::ProcessScrollEvent(const ui::ScrollEvent& event) {
   fullscreen_presenter_->ProcessScrollOffset(event.location(), offset);
 }
 
-void AppListControllerImpl::UpdateAppListWithNewSortingOrder(
+void AppListControllerImpl::UpdateAppListWithNewTemporarySortOrder(
     const absl::optional<AppListSortOrder>& new_order,
     bool animate,
     base::OnceClosure update_position_closure) {
