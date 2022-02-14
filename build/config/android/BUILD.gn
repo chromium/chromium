@@ -140,6 +140,12 @@ if (current_toolchain == default_toolchain) {
     depth = 10000
   }
 
+  # nocompile tests share output directory to avoid them all needing to rebuild
+  # things. But this also means they can't run in parallel.
+  pool("nocompile_pool") {
+    depth = 1
+  }
+
   # When defined, this pool should be used instead of link_pool for command
   # that need 1-2GB of RAM. https://crbug.com/1078460
   if (defined(java_cmd_pool_size)) {

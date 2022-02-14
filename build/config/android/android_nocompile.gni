@@ -34,6 +34,7 @@ template("android_nocompile_test_suite") {
   action(target_name) {
     testonly = true
     script = "//build/android/gyp/nocompile_test.py"
+    pool = "//build/config/android:nocompile_pool"
 
     _tests = invoker.tests
     _test0 = _tests[0]
