@@ -139,6 +139,12 @@ class DWriteFontCollectionProxy
 
   void PrewarmFamilyOnWorker(const std::u16string family_name);
 
+  // Special values for |family_names_|.
+  enum FamilyIndex : UINT32 { kFamilyNotFound = UINT32_MAX };
+  static bool IsValidFamilyIndex(UINT32 index) {
+    return index != kFamilyNotFound;
+  }
+
   base::Lock families_lock_;
 
   // This is initialized in ctor (RuntimeClassInitialize) and will not change.

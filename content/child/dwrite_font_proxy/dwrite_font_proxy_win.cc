@@ -198,13 +198,13 @@ HRESULT DWriteFontCollectionProxy::FindFamilyName(
   HRESULT hr = S_OK;
   if (absl::optional<UINT32> family_index = FindFamilyIndex(family_name, &hr)) {
     DCHECK_EQ(hr, S_OK);
-    DCHECK_NE(*family_index, UINT32_MAX);
+    DCHECK(IsValidFamilyIndex(*family_index));
     *index = *family_index;
     *exists = TRUE;
   } else {
     // |hr| can be failures, or |S_OK| if the |family_name| is not found.
     *exists = FALSE;
-    *index = UINT32_MAX;
+    *index = kFamilyNotFound;
   }
   return hr;
 }
@@ -217,7 +217,7 @@ absl::optional<UINT32> DWriteFontCollectionProxy::FindFamilyIndex(
     base::AutoLock families_lock(families_lock_);
     auto iter = family_names_.find(family_name);
     if (iter != family_names_.end()) {
-      if (iter->second != UINT_MAX)
+      if (iter->second != kFamilyNotFound)
         return iter->second;
       return absl::nullopt;
     }
@@ -245,8 +245,9 @@ absl::optional<UINT32> DWriteFontCollectionProxy::FindFamilyIndex(
     DCHECK(family_names_.find(family_name) == family_names_.end() ||
            family_names_[family_name] == family_index);
     family_names_[family_name] = family_index;
-    if (UNLIKELY(family_index == UINT32_MAX))
+    if (UNLIKELY(family_index == kFamilyNotFound))
       return absl::nullopt;
+    DCHECK(IsValidFamilyIndex(family_index));
 
     if (DWriteFontFamilyProxy* family =
             GetOrCreateFamilyLockRequired(family_index)) {
@@ -528,6 +529,8 @@ bool DWriteFontCollectionProxy::LoadFamilyNames(
 
 DWriteFontFamilyProxy* DWriteFontCollectionProxy::GetOrCreateFamilyLockRequired(
     UINT32 family_index) {
+  DCHECK(IsValidFamilyIndex(family_index));
+
   if (family_index < families_.size()) {
     if (DWriteFontFamilyProxy* family = families_[family_index].Get())
       return family;
