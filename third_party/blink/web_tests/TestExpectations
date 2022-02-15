@@ -3250,9 +3250,6 @@ crbug.com/626703 virtual/system-color-compute/external/wpt/css/css-color/depreca
 crbug.com/626703 virtual/system-color-compute/external/wpt/css/css-color/deprecated-sameas-019.html [ Failure ]
 crbug.com/626703 virtual/system-color-compute/external/wpt/css/css-color/deprecated-sameas-020.html [ Failure ]
 crbug.com/626703 virtual/system-color-compute/external/wpt/css/css-color/deprecated-sameas-022.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-break/box-decoration-break-clone-001.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-break/box-decoration-break-clone-002.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-break/box-decoration-break-clone-004.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/fetch/private-network-access/service-worker-background-fetch.https.window.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/webmessaging/broadcastchannel/opaque-origin.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/layout_ng_table_frag/external/wpt/css/css-break/table/break-inside-cell-000.html [ Failure ]
@@ -4190,6 +4187,9 @@ crbug.com/1223979 external/wpt/css/css-text/word-spacing/word-spacing-001.html [
 
 crbug.com/1250666 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-pending-script.https.html [ Pass Timeout ]
 
+crbug.com/481431 external/wpt/css/css-break/box-decoration-break-clone-001.html [ Failure ]
+crbug.com/481431 external/wpt/css/css-break/box-decoration-break-clone-002.html [ Failure ]
+crbug.com/481431 external/wpt/css/css-break/box-decoration-break-clone-004.html [ Failure ]
 crbug.com/660611 external/wpt/css/css-break/flexbox/flex-container-fragmentation-003.html [ Failure ]
 crbug.com/660611 external/wpt/css/css-break/flexbox/flex-container-fragmentation-004.html [ Failure ]
 crbug.com/660611 external/wpt/css/css-break/flexbox/flex-container-fragmentation-007.tentative.html [ Failure ]
