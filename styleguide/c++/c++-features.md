@@ -501,6 +501,9 @@ The `[[nodiscard]]` attribute can be used to indicate that
 
 **Notes:**
 *** promo
+This replaces the previous `WARN_UNUSED_RESULT` macro, which was a wrapper
+around the compiler-specific `__attribute__((warn_unused_result))`.
+
 [Discussion thread](https://groups.google.com/a/chromium.org/g/cxx/c/nH7Ar8pZ1Dw/m/c90vGChvAAAJ)
 ***
 
