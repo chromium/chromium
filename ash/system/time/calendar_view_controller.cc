@@ -12,8 +12,6 @@
 #include "ash/calendar/calendar_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/model/system_tray_model.h"
-#include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_utils.h"
 #include "base/check.h"
 #include "base/i18n/time_formatting.h"
@@ -28,8 +26,7 @@ namespace ash {
 
 CalendarViewController::CalendarViewController()
     : currently_shown_date_(base::Time::Now()),
-      calendar_open_time_(base::TimeTicks::Now()),
-      month_dwell_time_(base::TimeTicks::Now()) {
+      calendar_open_time_(base::TimeTicks::Now()) {
   // Using the local time format to get the local `base::Time`, which is used to
   // generate the exploded everywhere, since the LocalExplode doesn't use the
   // manually set timezone.
@@ -50,9 +47,6 @@ CalendarViewController::CalendarViewController()
 }
 
 CalendarViewController::~CalendarViewController() {
-  calendar_metrics::RecordMonthDwellTime(base::TimeTicks::Now() -
-                                         month_dwell_time_);
-
   if (user_journey_time_recorded_)
     return;
 
@@ -82,10 +76,6 @@ void CalendarViewController::UpdateMonth(
           current_month_first_date_exploded.month) {
     return;
   }
-
-  calendar_metrics::RecordMonthDwellTime(base::TimeTicks::Now() -
-                                         month_dwell_time_);
-  month_dwell_time_ = base::TimeTicks::Now();
 
   currently_shown_date_ = current_month_first_date;
   for (auto& observer : observers_) {
