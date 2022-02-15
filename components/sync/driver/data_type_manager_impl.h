@@ -5,16 +5,15 @@
 #ifndef COMPONENTS_SYNC_DRIVER_DATA_TYPE_MANAGER_IMPL_H__
 #define COMPONENTS_SYNC_DRIVER_DATA_TYPE_MANAGER_IMPL_H__
 
-#include "base/memory/raw_ptr.h"
-#include "components/sync/driver/data_type_manager.h"
-
 #include <map>
 
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/sync/base/weak_handle.h"
 #include "components/sync/driver/configure_context.h"
+#include "components/sync/driver/data_type_manager.h"
 #include "components/sync/driver/model_load_manager.h"
 #include "components/sync/engine/model_type_configurer.h"
 
@@ -113,10 +112,6 @@ class DataTypeManagerImpl : public DataTypeManager,
   // Prepare the parameters for the configurer's configuration.
   ModelTypeConfigurer::ConfigureParams PrepareConfigureParams(
       const AssociationTypesInfo& association_types_info);
-
-  // Divide |types| into sets by their priorities and return the sets from
-  // high priority to low priority.
-  base::queue<ModelTypeSet> PrioritizeTypes(const ModelTypeSet& types);
 
   // Update precondition state of types in data_type_status_table_ to match
   // value of DataTypeController::GetPreconditionState().

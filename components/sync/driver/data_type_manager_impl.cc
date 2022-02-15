@@ -47,6 +47,40 @@ ConfigureReason GetReasonForProgrammaticReconfigure(
              : ConfigureReason::CONFIGURE_REASON_PROGRAMMATIC;
 }
 
+// Divides |types| into sets by their priorities and return the sets from
+// high priority to low priority.
+base::queue<ModelTypeSet> PrioritizeTypes(const ModelTypeSet& types) {
+  // Control types are usually configured before all other types during
+  // initialization of sync engine even before data type manager gets
+  // constructed. However, listing control types here with the highest priority
+  // makes the behavior consistent also for various flows for restarting sync
+  // such as migrating all data types or reconfiguring sync in ephemeral mode
+  // when all local data is wiped.
+  ModelTypeSet control_types = ControlTypes();
+  control_types.RetainAll(types);
+
+  ModelTypeSet priority_types = PriorityUserTypes();
+  priority_types.RetainAll(types);
+
+  ModelTypeSet regular_types =
+      Difference(types, Union(control_types, priority_types));
+
+  base::queue<ModelTypeSet> result;
+  if (!control_types.Empty())
+    result.push(control_types);
+  if (!priority_types.Empty())
+    result.push(priority_types);
+  if (!regular_types.Empty())
+    result.push(regular_types);
+
+  // Could be empty in case of purging for migration, sync nothing, etc.
+  // Configure empty set to purge data from backend.
+  if (result.empty())
+    result.push(ModelTypeSet());
+
+  return result;
+}
+
 }  // namespace
 
 DataTypeManagerImpl::AssociationTypesInfo::AssociationTypesInfo() = default;
@@ -317,7 +351,6 @@ void DataTypeManagerImpl::Restart() {
 
   UpdatePreconditionErrors(last_requested_types_);
 
-  last_enabled_types_ = GetEnabledTypes();
   last_restart_time_ = base::Time::Now();
   configuration_stats_.clear();
 
@@ -334,6 +367,11 @@ void DataTypeManagerImpl::Restart() {
   if (old_state == STOPPED || old_state == CONFIGURED)
     NotifyStart();
 
+  // Compute `last_enabled_types_` after NotifyStart() to be sure to provide
+  // consistent values to ModelLoadManager. (Namely, observers may trigger
+  // another reconfiguration which may change the value of
+  // `last_requested_types_`.)
+  last_enabled_types_ = GetEnabledTypes();
   configuration_types_queue_ = PrioritizeTypes(last_enabled_types_);
 
   model_load_manager_.Initialize(
@@ -362,39 +400,6 @@ void DataTypeManagerImpl::OnAllDataTypesReadyForConfigure() {
   }
 
   StartNextConfiguration(/*higher_priority_types_before=*/ModelTypeSet());
-}
-
-base::queue<ModelTypeSet> DataTypeManagerImpl::PrioritizeTypes(
-    const ModelTypeSet& types) {
-  // Control types are usually configured before all other types during
-  // initialization of sync engine even before data type manager gets
-  // constructed. However, listing control types here with the highest priority
-  // makes the behavior consistent also for various flows for restarting sync
-  // such as migrating all data types or reconfiguring sync in ephemeral mode
-  // when all local data is wiped.
-  ModelTypeSet control_types = ControlTypes();
-  control_types.RetainAll(types);
-
-  ModelTypeSet priority_types = PriorityUserTypes();
-  priority_types.RetainAll(types);
-
-  ModelTypeSet regular_types =
-      Difference(types, Union(control_types, priority_types));
-
-  base::queue<ModelTypeSet> result;
-  if (!control_types.Empty())
-    result.push(control_types);
-  if (!priority_types.Empty())
-    result.push(priority_types);
-  if (!regular_types.Empty())
-    result.push(regular_types);
-
-  // Could be empty in case of purging for migration, sync nothing, etc.
-  // Configure empty set to purge data from backend.
-  if (result.empty())
-    result.push(ModelTypeSet());
-
-  return result;
 }
 
 void DataTypeManagerImpl::UpdatePreconditionErrors(

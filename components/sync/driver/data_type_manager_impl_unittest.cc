@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/sync/base/model_type.h"
@@ -119,7 +120,10 @@ class FakeDataTypeManagerObserver : public DataTypeManagerObserver {
     EXPECT_EQ(done_expectation_.status, default_result.status);
   }
 
-  void ExpectStart() { start_expected_ = true; }
+  void ExpectStart(base::OnceClosure start_callback) {
+    start_expected_ = true;
+    start_callback_ = std::move(start_callback);
+  }
   void ExpectDone(const DataTypeManager::ConfigureResult& result) {
     done_expectation_ = result;
   }
@@ -146,10 +150,14 @@ class FakeDataTypeManagerObserver : public DataTypeManagerObserver {
   void OnConfigureStart() override {
     EXPECT_TRUE(start_expected_);
     start_expected_ = false;
+    if (start_callback_) {
+      std::move(start_callback_).Run();
+    }
   }
 
  private:
   bool start_expected_ = true;
+  base::OnceClosure start_callback_;
   DataTypeManager::ConfigureResult done_expectation_;
 };
 
@@ -221,7 +229,10 @@ class SyncDataTypeManagerImplTest : public testing::Test {
         &encryption_handler_, &configurer_, &observer_);
   }
 
-  void SetConfigureStartExpectation() { observer_.ExpectStart(); }
+  void SetConfigureStartExpectation(
+      base::OnceClosure start_callback = base::OnceClosure()) {
+    observer_.ExpectStart(std::move(start_callback));
+  }
 
   void SetConfigureDoneExpectation(DataTypeManager::ConfigureStatus status,
                                    const DataTypeStatusTable& status_table) {
@@ -1633,6 +1644,29 @@ TEST_F(SyncDataTypeManagerImplTest,
   FinishDownload(ModelTypeSet(BOOKMARKS), ModelTypeSet());
 
   histogram_tester.ExpectTotalCount("Sync.ConfigureTime_Subsequent.OK", 1);
+}
+
+// Regression test for crbug.com/1286204: Reentrant calls to Configure()
+// shouldn't crash (or trigger DCHECKs).
+TEST_F(SyncDataTypeManagerImplTest, ReentrantConfigure) {
+  AddController(PREFERENCES);
+  AddController(BOOKMARKS);
+
+  // The DataTypeManagerObserver::OnConfigureStart() call may, in some cases,
+  // result in a reentrant call to Configure().
+  SetConfigureStartExpectation(base::BindLambdaForTesting(
+      [&]() { Configure(ModelTypeSet(PREFERENCES)); }));
+
+  Configure(ModelTypeSet(PREFERENCES, BOOKMARKS));
+  // Implicit expectation: No crash here!
+
+  // Eventually, the second (reentrant) Configure() call should win, i.e. here
+  // only PREFERENCES gets configured.
+  SetConfigureDoneExpectation(DataTypeManager::OK, DataTypeStatusTable());
+  FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
+  FinishDownload(ModelTypeSet(PREFERENCES), ModelTypeSet());
+  EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+  EXPECT_EQ(1U, configurer_.connected_types().Size());
 }
 
 TEST_F(SyncDataTypeManagerImplTest, ProvideDebugInfo) {
