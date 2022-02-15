@@ -488,7 +488,7 @@ void StartupTracingController::SetDefaultBasename(
         basename += ".json";
         break;
       case tracing::TraceStartupConfig::OutputFormat::kProto:
-        basename += ".proto";
+        basename += ".pftrace";
         break;
     }
   }

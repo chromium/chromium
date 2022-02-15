@@ -157,6 +157,10 @@ bool TraceStartupConfig::AttemptAdoptBySessionOwner(SessionOwner owner) {
 bool TraceStartupConfig::EnableFromCommandLine() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
 
+  bool tracing_enabled_from_command_line =
+      command_line->HasSwitch(switches::kTraceStartup) ||
+      command_line->HasSwitch(switches::kEnableTracing);
+
   if (command_line->HasSwitch(switches::kTraceStartupDuration)) {
     std::string startup_duration_str =
         command_line->GetSwitchValueASCII(switches::kTraceStartupDuration);
@@ -173,19 +177,23 @@ bool TraceStartupConfig::EnableFromCommandLine() {
 
   if (command_line->HasSwitch(switches::kTraceStartupFormat)) {
     if (command_line->GetSwitchValueASCII(switches::kTraceStartupFormat) ==
-        "proto") {
-      // Default is "json".
-      output_format_ = OutputFormat::kProto;
+        "json") {
+      // Default is "proto", so switch to json only if the "json" string is
+      // provided.
+      output_format_ = OutputFormat::kLegacyJSON;
     }
-  } else if (command_line->GetSwitchValueASCII(
-                 switches::kEnableTracingFormat) == "proto") {
-    output_format_ = OutputFormat::kProto;
+  } else if (command_line->HasSwitch(switches::kEnableTracingFormat)) {
+    if (command_line->GetSwitchValueASCII(switches::kEnableTracingFormat) ==
+        "json") {
+      output_format_ = OutputFormat::kLegacyJSON;
+    }
   }
 
-  if (!command_line->HasSwitch(switches::kTraceStartup) &&
-      !command_line->HasSwitch(switches::kEnableTracing)) {
+  // This check is intentionally performed after setting duration and output
+  // format to ensure that setting them from the command-line takes effect for
+  // config file-based tracing as well.
+  if (!tracing_enabled_from_command_line)
     return false;
-  }
 
   std::string categories;
   if (command_line->HasSwitch(switches::kTraceStartup)) {

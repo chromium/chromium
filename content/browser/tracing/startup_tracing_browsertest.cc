@@ -236,7 +236,7 @@ class StartupTracingTest
       case OutputType::kJSON:
         return "json";
       case OutputType::kProto:
-        return "proto";
+        return "pftrace";
     }
   }
 

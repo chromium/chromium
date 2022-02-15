@@ -169,7 +169,7 @@ class TRACING_EXPORT TraceStartupConfig {
   base::FilePath result_file_;
   SessionOwner session_owner_ = SessionOwner::kTracingController;
   bool session_adopted_ = false;
-  OutputFormat output_format_ = OutputFormat::kLegacyJSON;
+  OutputFormat output_format_ = OutputFormat::kProto;
 };
 
 }  // namespace tracing
