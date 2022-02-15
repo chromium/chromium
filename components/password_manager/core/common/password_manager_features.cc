@@ -86,6 +86,10 @@ const base::Feature kIOSEnablePasswordManagerBrandingUpdate{
 const base::Feature kMuteCompromisedPasswords{
     "MuteCompromisedPasswords", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables adding, displaying and modifying extra notes to stored credentials.
+const base::Feature kPasswordNotes{"PasswordNotes",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables password leak detection for unauthenticated users.
 const base::Feature kLeakDetectionUnauthenticated = {
     "LeakDetectionUnauthenticated", base::FEATURE_DISABLED_BY_DEFAULT};
