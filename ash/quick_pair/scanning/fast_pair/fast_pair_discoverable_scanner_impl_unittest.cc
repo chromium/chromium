@@ -41,8 +41,55 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
 constexpr char kValidModelId[] = "718c17";
 const std::string kAddress = "test_address";
+
+class FakeQuickPairProcessManager
+    : public ash::quick_pair::QuickPairProcessManager {
+ public:
+  FakeQuickPairProcessManager(
+      base::test::SingleThreadTaskEnvironment* task_environment)
+      : task_enviornment_(task_environment) {
+    data_parser_ = std::make_unique<ash::quick_pair::FastPairDataParser>(
+        fast_pair_data_parser_.InitWithNewPipeAndPassReceiver());
+
+    data_parser_remote_.Bind(std::move(fast_pair_data_parser_),
+                             task_enviornment_->GetMainThreadTaskRunner());
+  }
+
+  ~FakeQuickPairProcessManager() override = default;
+
+  std::unique_ptr<ProcessReference> GetProcessReference(
+      ProcessStoppedCallback on_process_stopped_callback) override {
+    on_process_stopped_callback_ = std::move(on_process_stopped_callback);
+
+    if (process_stopped_) {
+      std::move(on_process_stopped_callback_)
+          .Run(
+              ash::quick_pair::QuickPairProcessManager::ShutdownReason::kCrash);
+    }
+
+    return std::make_unique<
+        ash::quick_pair::QuickPairProcessManagerImpl::ProcessReferenceImpl>(
+        data_parser_remote_, base::DoNothing());
+  }
+
+  void SetProcessStopped(bool process_stopped) {
+    process_stopped_ = process_stopped;
+  }
+
+ private:
+  bool process_stopped_ = false;
+  mojo::SharedRemote<ash::quick_pair::mojom::FastPairDataParser>
+      data_parser_remote_;
+  mojo::PendingRemote<ash::quick_pair::mojom::FastPairDataParser>
+      fast_pair_data_parser_;
+  std::unique_ptr<ash::quick_pair::FastPairDataParser> data_parser_;
+  base::test::SingleThreadTaskEnvironment* task_enviornment_;
+  ProcessStoppedCallback on_process_stopped_callback_;
+};
+
 }  // namespace
 
 namespace ash {
@@ -63,21 +110,11 @@ class FastPairDiscoverableScannerImplTest : public testing::Test {
     adapter_ =
         base::MakeRefCounted<testing::NiceMock<device::MockBluetoothAdapter>>();
 
-    process_manager_ = std::make_unique<MockQuickPairProcessManager>();
+    process_manager_ =
+        std::make_unique<FakeQuickPairProcessManager>(&task_enviornment_);
     quick_pair_process::SetProcessManager(process_manager_.get());
-
-    data_parser_ = std::make_unique<FastPairDataParser>(
-        fast_pair_data_parser_.InitWithNewPipeAndPassReceiver());
-
-    data_parser_remote_.Bind(std::move(fast_pair_data_parser_),
-                             task_enviornment_.GetMainThreadTaskRunner());
-
-    EXPECT_CALL(*mock_process_manager(), GetProcessReference)
-        .WillRepeatedly([&](QuickPairProcessManager::ProcessStoppedCallback) {
-          return std::make_unique<
-              QuickPairProcessManagerImpl::ProcessReferenceImpl>(
-              data_parser_remote_, base::DoNothing());
-        });
+    fake_process_manager_ =
+        static_cast<FakeQuickPairProcessManager*>(process_manager_.get());
 
     FastPairHandshakeLookup::SetCreateFunctionForTesting(base::BindRepeating(
         &FastPairDiscoverableScannerImplTest::CreateHandshake,
@@ -89,6 +126,7 @@ class FastPairDiscoverableScannerImplTest : public testing::Test {
   }
 
   void TearDown() override {
+    process_manager_.reset();
     testing::Test::TearDown();
     discoverable_scanner_.reset();
     chromeos::NetworkHandler::Shutdown();
@@ -131,20 +169,58 @@ class FastPairDiscoverableScannerImplTest : public testing::Test {
     return fake;
   }
 
+  FakeQuickPairProcessManager* fake_process_manager_;
   base::test::SingleThreadTaskEnvironment task_enviornment_;
   chromeos::NetworkStateTestHelper helper_{/*use_defaults=*/true};
   scoped_refptr<FakeFastPairScanner> scanner_;
   std::unique_ptr<FakeFastPairRepository> repository_;
   std::unique_ptr<FastPairDiscoverableScannerImpl> discoverable_scanner_;
+  std::unique_ptr<FastPairDiscoverableScanner> discoverable_scanner2_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> adapter_;
   std::unique_ptr<QuickPairProcessManager> process_manager_;
-  mojo::SharedRemote<mojom::FastPairDataParser> data_parser_remote_;
-  mojo::PendingRemote<mojom::FastPairDataParser> fast_pair_data_parser_;
-  std::unique_ptr<FastPairDataParser> data_parser_;
   base::MockCallback<DeviceCallback> found_device_callback_;
   base::MockCallback<DeviceCallback> lost_device_callback_;
   FakeFastPairHandshake* fake_fast_pair_handshake_ = nullptr;
 };
+
+TEST_F(FastPairDiscoverableScannerImplTest,
+       UtilityProcessStopped_FailedAllRetryAttempts) {
+  device::BluetoothDevice* device = GetDevice(kValidModelId);
+  EXPECT_CALL(found_device_callback_, Run).Times(0);
+  fake_process_manager_->SetProcessStopped(true);
+  scanner_->NotifyDeviceFound(device);
+}
+
+TEST_F(FastPairDiscoverableScannerImplTest, UtilityProcessStopped_DeviceLost) {
+  auto device = std::make_unique<device::MockBluetoothDevice>(
+      adapter_.get(), 0, "test_name", kAddress, /*paired=*/false,
+      /*connected=*/false);
+  device->SetServiceDataForUUID(kFastPairBluetoothUuid, {1, 2, 3});
+
+  device::BluetoothDevice* device_ptr = device.get();
+
+  adapter_->AddMockDevice(std::move(device));
+  ON_CALL(*adapter_, GetDevice(kAddress))
+      .WillByDefault(testing::Return(nullptr));
+
+  EXPECT_CALL(found_device_callback_, Run).Times(0);
+  fake_process_manager_->SetProcessStopped(true);
+  scanner_->NotifyDeviceFound(device_ptr);
+}
+
+TEST_F(FastPairDiscoverableScannerImplTest, ValidModelId_FactoryCreate) {
+  discoverable_scanner_.reset();
+  std::unique_ptr<FastPairDiscoverableScanner>
+      discoverable_scanner_from_factory =
+          FastPairDiscoverableScannerImpl::Factory::Create(
+              scanner_, adapter_, found_device_callback_.Get(),
+              lost_device_callback_.Get());
+
+  EXPECT_CALL(found_device_callback_, Run).Times(1);
+  device::BluetoothDevice* device = GetDevice(kValidModelId);
+  scanner_->NotifyDeviceFound(device);
+  base::RunLoop().RunUntilIdle();
+}
 
 TEST_F(FastPairDiscoverableScannerImplTest, NoServiceData) {
   EXPECT_CALL(found_device_callback_, Run).Times(0);
@@ -159,7 +235,23 @@ TEST_F(FastPairDiscoverableScannerImplTest, NoServiceData) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(FastPairDiscoverableScannerImplTest, NoModelId) {
+TEST_F(FastPairDiscoverableScannerImplTest, NoModelIdDataInRepository) {
+  EXPECT_CALL(found_device_callback_, Run).Times(0);
+  auto device = std::make_unique<device::MockBluetoothDevice>(
+      adapter_.get(), 0, "test_name", kAddress, /*paired=*/false,
+      /*connected=*/false);
+  device->SetServiceDataForUUID(kFastPairBluetoothUuid, {1, 2, 3});
+  device::BluetoothDevice* device_ptr = device.get();
+
+  adapter_->AddMockDevice(std::move(device));
+  ON_CALL(*adapter_, GetDevice(kAddress))
+      .WillByDefault(testing::Return(device_ptr));
+
+  scanner_->NotifyDeviceFound(device_ptr);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairDiscoverableScannerImplTest, NoMetadata) {
   EXPECT_CALL(found_device_callback_, Run).Times(0);
   device::BluetoothDevice* device = GetDevice("");
   scanner_->NotifyDeviceFound(device);
@@ -170,6 +262,14 @@ TEST_F(FastPairDiscoverableScannerImplTest, ValidModelId) {
   EXPECT_CALL(found_device_callback_, Run).Times(1);
   device::BluetoothDevice* device = GetDevice(kValidModelId);
   scanner_->NotifyDeviceFound(device);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairDiscoverableScannerImplTest, DeviceLost) {
+  EXPECT_CALL(found_device_callback_, Run).Times(0);
+  device::BluetoothDevice* device = GetDevice(kValidModelId);
+  scanner_->NotifyDeviceFound(device);
+  scanner_->NotifyDeviceLost(device);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -204,6 +304,22 @@ TEST_F(FastPairDiscoverableScannerImplTest,
 
   EXPECT_CALL(found_device_callback_, Run).Times(1);
   repository_->set_is_network_connected(true);
+  discoverable_scanner_->DefaultNetworkChanged(
+      helper_.network_state_handler()->DefaultNetwork());
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairDiscoverableScannerImplTest,
+       NoFoundCallback_AfterNetworkUnavailable) {
+  device::BluetoothDevice* device = GetDevice(kValidModelId);
+  repository_->set_is_network_connected(false);
+
+  EXPECT_CALL(found_device_callback_, Run).Times(0);
+  scanner_->NotifyDeviceFound(device);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_CALL(found_device_callback_, Run).Times(0);
+  repository_->set_is_network_connected(false);
   discoverable_scanner_->DefaultNetworkChanged(
       helper_.network_state_handler()->DefaultNetwork());
   base::RunLoop().RunUntilIdle();
