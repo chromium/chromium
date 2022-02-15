@@ -1795,18 +1795,6 @@
     'switch_access': {
       'filepath': 'switch_access',
     },
-    'sync': {
-      'filepath': '^chrome/browser/ui/sync/'\
-                  '|^chrome/browser/ui/views/sync/'\
-                  '|^chrome/test/android/javatests/src/org/chromium/chrome/test/util/browser/sync/'\
-                  '|^ios/chrome/browser/sync/'\
-                  '|^chrome/android/java/src/org/chromium/chrome/browser/sync/'\
-                  '|^chrome/browser/sync/'\
-                  '|^components/browser_sync/'\
-                  '|^components/sync/'\
-                  '|^components/sync_bookmarks/'\
-                  '|^components/sync_sessions/',
-    },
     'syncfs': {
       'filepath': 'sync_file_system',
     },
@@ -2811,7 +2799,6 @@
     'surface_layer_for_video': [ 'lethalantidote@chromium.org',
                                  'liberato@chromium.org'],
     'switch_access': ['anastasi+watch@google.com'],
-    'sync': ['sync-reviews@chromium.org'],
     'syncfs': ['kinuko+fileapi@chromium.org'],
     'system_web_apps': [ 'ortuno@chromium.org',
                          'dominicschulz@google.com'],
