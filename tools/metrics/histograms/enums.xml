@@ -90185,6 +90185,9 @@ Full version information for the fingerprint enum values:
 </enum>
 
 <enum name="URLHostEscapedChar">
+  <obsolete>
+    Removed in M100.
+  </obsolete>
   <int value="0" label="Unknown"/>
   <int value="1" label="Space"/>
   <int value="2" label="Bang"/>

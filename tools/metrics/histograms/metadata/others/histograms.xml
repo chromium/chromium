@@ -13883,6 +13883,9 @@ should be kept until we use this API.  -->
 
 <histogram name="URL.Host.DidEscape" enum="BooleanEscaped"
     expires_after="2022-09-09">
+  <obsolete>
+    Removed in M100.
+  </obsolete>
   <owner>wanderview@chromium.org</owner>
   <owner>dcheng@chromium.org</owner>
   <summary>
@@ -13894,6 +13897,9 @@ should be kept until we use this API.  -->
 
 <histogram name="URL.Host.EscapeChar" enum="URLHostEscapedChar"
     expires_after="2022-09-09">
+  <obsolete>
+    Removed in M100.
+  </obsolete>
   <owner>wanderview@chromium.org</owner>
   <owner>dcheng@chromium.org</owner>
   <summary>
