@@ -2072,6 +2072,14 @@ const FeatureEntry::FeatureVariation kLensContextMenuTranslateVariations[] = {
      base::size(kLensContextMenuTranslateHideRemoveIcon), nullptr},
 };
 
+const FeatureEntry::FeatureParam kLensContextMenuSearchOnTablet[] = {
+    {"enableContextMenuSearchOnTablet", "true"}};
+
+const FeatureEntry::FeatureVariation kLensContextMenuSearchVariations[] = {
+    {"(on Tablet)", kLensContextMenuSearchOnTablet,
+     base::size(kLensContextMenuSearchOnTablet), nullptr},
+};
+
 const FeatureEntry::FeatureParam kDynamicColorFull[] = {
     {"dynamic_color_full", "true"}};
 
@@ -6196,7 +6204,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"context-menu-search-with-google-lens",
      flag_descriptions::kContextMenuSearchWithGoogleLensName,
      flag_descriptions::kContextMenuSearchWithGoogleLensDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kContextMenuSearchWithGoogleLens)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kContextMenuSearchWithGoogleLens,
+         kLensContextMenuSearchVariations,
+         "ContextMenuSearchWithGoogleLens")},
 
     {"context-menu-shop-with-google-lens",
      flag_descriptions::kContextMenuShopWithGoogleLensName,
