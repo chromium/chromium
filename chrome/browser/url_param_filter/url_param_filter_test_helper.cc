@@ -6,6 +6,7 @@
 #include "chrome/browser/url_param_filter/url_param_filterer.h"
 
 #include "base/base64.h"
+#include "third_party/zlib/google/compression_utils.h"
 
 namespace url_param_filter {
 
@@ -40,9 +41,10 @@ std::string CreateBase64EncodedFilterParamClassificationForTesting(
                                    FilterClassification_SiteRole_DESTINATION)) {
     *classifications.add_classifications() = std::move(i.second);
   }
-
+  std::string compressed;
+  compression::GzipCompress(classifications.SerializeAsString(), &compressed);
   std::string out;
-  base::Base64Encode(classifications.SerializeAsString(), &out);
+  base::Base64Encode(compressed, &out);
   return out;
 }
 }  // namespace url_param_filter

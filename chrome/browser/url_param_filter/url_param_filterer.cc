@@ -17,6 +17,7 @@
 #include "net/base/escape.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
+#include "third_party/zlib/google/compression_utils.h"
 #include "url/gurl.h"
 
 namespace url_param_filter {
@@ -116,10 +117,13 @@ url_param_filter::ClassificationMap GetClassifications(
   if (classification_arg != params.end()) {
     std::string out;
     base::Base64Decode(classification_arg->second, &out);
-    if (classifications.ParseFromString(out)) {
-      for (auto i : classifications.classifications()) {
-        if (i.site_role() == role) {
-          map[i.site()] = i;
+    std::string uncompressed;
+    if (compression::GzipUncompress(out, &uncompressed)) {
+      if (classifications.ParseFromString(uncompressed)) {
+        for (auto i : classifications.classifications()) {
+          if (i.site_role() == role) {
+            map[i.site()] = i;
+          }
         }
       }
     }
