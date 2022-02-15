@@ -187,3 +187,10 @@ class ThroughputScrollingPassiveHandler(ThroughputScrolling):
 class ThroughputScrollingActiveHandler(ThroughputScrolling):
   BASE_NAME = 'throughput_scrolling_active_handler'
   SELECTOR = '#handler_active'
+
+
+class PaintWorkletAnimation(ThroughputMetricStory):
+  BASE_NAME = 'paint_worklet'
+  SUPPORTED_PLATFORMS = platforms.ALL_PLATFORMS
+  URL = ('file://../../../../chrome/test/data/perf/throughput_test_cases/'
+         'paint-worklet.html')
