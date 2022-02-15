@@ -12,6 +12,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
@@ -89,9 +91,11 @@ using testing::SizeIs;
 // SyncTest and using it in all single client tests.
 const int kSingleProfileIndex = 0;
 
+#if !BUILDFLAG(IS_ANDROID)
 // An arbitrary GUID, to be used for injecting the same bookmark entity to the
 // fake server across PRE_MyTest and MyTest.
 const char kBookmarkGuid[] = "e397ed62-9532-4dbf-ae55-200236eba15c";
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // A title and a URL which are used across PRE_MyTest and MyTest.
 const char kBookmarkTitle[] = "Title";
@@ -1020,6 +1024,8 @@ IN_PROC_BROWSER_TEST_F(
                                          /*LOCAL_DELETION=*/0));
 }
 
+// Android doesn't currently support PRE_ tests, see crbug.com/1117345.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
                        PRE_PersistProgressMarkerOnRestart) {
   const std::string title = "Seattle Sounders FC";
@@ -1065,6 +1071,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
       0, histogram_tester.GetBucketCount("Sync.ModelTypeEntityChange3.BOOKMARK",
                                          /*REMOTE_INITIAL_UPDATE=*/5));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
                        ApplyRemoteCreationWithValidGUID) {
@@ -1376,6 +1383,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   EXPECT_EQ(1u, GetBookmarkBarNode(kSingleProfileIndex)->children().size());
 }
 
+// Android doesn't currently support PRE_ tests, see crbug.com/1117345.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(
     SingleClientBookmarksSyncTestWithDisabledReuploadBookmarks,
     PRE_ShouldNotReploadUponFaviconLoad) {
@@ -1503,6 +1512,7 @@ IN_PROC_BROWSER_TEST_F(
       0, histogram_tester.GetBucketCount("Sync.ModelTypeEntityChange3.BOOKMARK",
                                          /*LOCAL_UPDATE=*/2));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(
     SingleClientBookmarksSyncTestWithEnabledReuploadBookmarks,
@@ -1529,6 +1539,8 @@ IN_PROC_BROWSER_TEST_F(
                   .Wait());
 }
 
+// Android doesn't currently support PRE_ tests, see crbug.com/1117345.
+#if !BUILDFLAG(IS_ANDROID)
 // Initiate reupload after restart when the feature toggle has been just enabled
 // (before restart the entity is in synced state).
 IN_PROC_BROWSER_TEST_F(
@@ -1597,6 +1609,7 @@ IN_PROC_BROWSER_TEST_F(
                   .bookmark()
                   .has_parent_guid());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(
     SingleClientBookmarksSyncTestWithEnabledReuploadBookmarks,

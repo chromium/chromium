@@ -937,8 +937,11 @@ if (is_android) {
       ":test_support_ui_android",
       "//chrome:chrome_android_core",
       "//chrome/android:delegate_public_impl_java",
+      "//components/bookmarks/browser",
       "//components/sync:test_support_nigori",
       "//components/sync/test/fake_server:fake_server",
+      "//components/sync_bookmarks",
+      "//components/undo",
       "//content/test:android_test_message_pump_support",
       "//testing/android/native_test:native_test_support",
     ]
@@ -947,6 +950,7 @@ if (is_android) {
               [ "android/browsertests_apk/android_browsertests_jni_onload.cc" ]
 
     data = [
+      "//chrome/test/data/sync/",
       "$root_gen_dir/chrome/android/chrome_apk_paks/chrome_100_percent.pak",
       "$root_gen_dir/chrome/android/chrome_apk_paks/locales/en-US.pak",
       "$root_gen_dir/chrome/android/chrome_apk_paks/resources.pak",
