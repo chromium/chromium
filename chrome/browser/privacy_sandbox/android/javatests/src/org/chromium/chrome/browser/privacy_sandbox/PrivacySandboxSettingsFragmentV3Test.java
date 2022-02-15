@@ -17,6 +17,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.not;
@@ -159,6 +160,16 @@ public final class PrivacySandboxSettingsFragmentV3Test {
         onView(withText(R.string.privacy_sandbox_remove_interest_title)).perform(click());
         mRenderTestRule.render(getRootView(R.string.privacy_sandbox_topic_interests_category),
                 "privacy_sandbox_removed_interests_view");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    public void testRenderLearnMoreView() throws IOException {
+        openPrivacySandboxSettings();
+        onView(withText(containsString("Learn more"))).perform(click());
+        mRenderTestRule.render(getRootView(R.string.privacy_sandbox_learn_more_title),
+                "privacy_sandbox_learn_more_view");
     }
 
     @Test

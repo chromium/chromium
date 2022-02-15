@@ -900,7 +900,7 @@ Privacy Sandbox trials are still in active development and are available in sele
         Ad measurement
       </message>
       <message name="IDS_PRIVACY_SANDBOX_AD_MEASUREMENT_SUMMARY" desc="Summary of the settings page to explain ad measurement." translateable="false">
-         Advertisers can understand how ads perform
+        Advertisers can understand how ads perform
      </message>
       <message name="IDS_PRIVACY_SANDBOX_SPAM_FRAUD_TITLE" desc="Title of the settings page to configure spam and fraud reduction." translateable="false">
         Spam &amp; fraud reduction
@@ -910,6 +910,12 @@ Privacy Sandbox trials are still in active development and are available in sele
       </message>
       <message name="IDS_PRIVACY_SANDBOX_LEARN_MORE_LINK" desc="Text of a link to explain ad personalization." translateable="false">
        <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more about browser-based ad personalization<ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_LEARN_MORE_TITLE_1" desc="Title of the page to learn more about the Topics API for the privacy sandbox." translateable="false">
+       Your interests as estimated by Chrome
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_LEARN_MORE_DESCRIPTION_1" desc="Description of the page to learn more about the Topics API for the privacy sandbox." translateable="false">
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Lorem ipsum dolor sit amet:<ph name="END_BOLD1">&lt;/b&gt;</ph> Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
       </message>
       <message name="IDS_PRIVACY_SANDBOX_LEARN_MORE_TITLE" desc="Title of the settings page to explain ad personalization." translateable="false">
         About personalized ads
