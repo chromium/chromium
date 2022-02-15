@@ -40,7 +40,8 @@ class WebAppOfflineTest : public InProcessBrowserTest {
                                 std::string relative_url) {
     GURL target_url(embedded_test_server()->GetURL(relative_url));
     web_app::NavigateToURLAndWait(browser(), target_url);
-    web_app::test::InstallPwaForCurrentUrl(browser());
+    web_app::AppId app_id = web_app::test::InstallPwaForCurrentUrl(browser());
+    WebAppIconWaiter(browser()->profile(), app_id).Wait();
     std::unique_ptr<content::URLLoaderInterceptor> interceptor =
         content::URLLoaderInterceptor::SetupRequestFailForURL(
             target_url, net::ERR_INTERNET_DISCONNECTED);
@@ -58,8 +59,8 @@ class WebAppOfflineTest : public InProcessBrowserTest {
         browser()->profile(), target_url);
     web_app::NavigateToURLAndWait(browser(), target_url);
     registration_waiter.AwaitRegistration();
-    web_app::test::InstallPwaForCurrentUrl(browser());
-
+    web_app::AppId app_id = web_app::test::InstallPwaForCurrentUrl(browser());
+    WebAppIconWaiter(browser()->profile(), app_id).Wait();
     std::unique_ptr<content::URLLoaderInterceptor> interceptor =
         content::URLLoaderInterceptor::SetupRequestFailForURL(
             target_url, net::ERR_INTERNET_DISCONNECTED);
@@ -168,15 +169,8 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflineWithServiceWorker) {
                   .ExtractBool());
 }
 
-// Flaky on mac: https://crbug.com/1296441.
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM_FAMILY)
-#define MAYBE_WebAppOfflinePageIconShowing DISABLED_WebAppOfflinePageIconShowing
-#else
-#define MAYBE_WebAppOfflinePageIconShowing WebAppOfflinePageIconShowing
-#endif
 // Default offline page icon test.
-IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest,
-                       MAYBE_WebAppOfflinePageIconShowing) {
+IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflinePageIconShowing) {
   ASSERT_TRUE(embedded_test_server()->Start());
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
