@@ -15,6 +15,10 @@ import {PrivacySandboxDialogAction, PrivacySandboxDialogBrowserProxy} from './pr
 
 const PrivacySandboxDialogAppElementBase = PolymerElement;
 
+export interface PrivacySandboxDialogAppElement {
+  $: {contentArea: HTMLElement; expandSection: HTMLElement;};
+}
+
 export class PrivacySandboxDialogAppElement extends
     PrivacySandboxDialogAppElementBase {
   static get is() {
@@ -91,6 +95,20 @@ export class PrivacySandboxDialogAppElement extends
     // TODO(crbug.com/1286276): Add showing the divider if the dialog starts
     // scrollable.
     this.canScrollClass_ = newVal ? 'can-scroll' : '';
+
+    // Wait for collapse section transition to complete 70%.
+    const collapseElement = this.$.expandSection.querySelector('iron-collapse');
+    if (collapseElement) {
+      const computedStyle = window.getComputedStyle(collapseElement);
+      const duration = parseFloat(computedStyle.getPropertyValue(
+          '--iron-collapse-transition-duration'));
+      setTimeout(() => {
+        // ...and scroll the content area up to make the section content
+        // visible.
+        const rect = this.$.expandSection.getBoundingClientRect();
+        this.$.contentArea.scrollTo({top: rect.top, behavior: 'smooth'});
+      }, duration * 0.7);
+    }
   }
 
   private dialogActionOccurred(action: PrivacySandboxDialogAction) {

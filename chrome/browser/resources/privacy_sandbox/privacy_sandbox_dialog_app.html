@@ -39,18 +39,18 @@
     margin-bottom: 4px;
   }
 
-  .expand-section {
+  #expandSection {
     border-bottom: var(--cr-separator-line);
     border-top: var(--cr-separator-line);
     line-height: 20px;
     margin-bottom: 8px;
   }
 
-  .expand-section ul {
+  #expandSection ul {
     padding-inline-start: 16px;
   }
 
-  .expand-section b {
+  #expandSection b {
     color: initial;
     font-weight: 400;
   }
@@ -69,7 +69,7 @@
     margin-inline-start: 8px;
   }
 
-  .content-area {
+  #contentArea {
     border-color: transparent;
     border-style: solid;
     border-width: 1px 0;
@@ -81,7 +81,7 @@
     height: 100vh;
   }
 
-  .wrapper.fit-into-size .content-area {
+  .wrapper.fit-into-size #contentArea {
     bottom: 64px;
     position: absolute;
     top: 0;
@@ -93,13 +93,17 @@
     right: 0;
   }
 
-  .content-area.can-scroll {
+  #contentArea.can-scroll {
     border-bottom-color: var(--scrollable-border-color);
+  }
+
+  iron-collapse {
+    --iron-collapse-transition-duration: 300ms;
   }
 </style>
 
 <div class$="wrapper [[fitIntoDialogClass_]]">
-  <div class$="content-area [[canScrollClass_]]">
+  <div id="contentArea" class$="[[canScrollClass_]]">
     <div class="header">
       <img>
       <template is="dom-if" if="[[isConsent_]]">
@@ -118,8 +122,8 @@
       <div class="cr-secondary-text">$i18n{bodyDescription2}</div>
     </div>
 
-    <template is="dom-if" if="[[isConsent_]]">
-      <div class="expand-section" >
+    <div id="expandSection">
+      <template is="dom-if" if="[[isConsent_]]">
         <cr-expand-button expanded="{{expanded_}}">
           <div class="cr-secondary-text">$i18n{learnMoreLabel}</div>
         </cr-expand-button>
@@ -138,8 +142,8 @@
             <li>$i18nRaw{learnMoreSection2BulletPoint3}</li>
           </ul>
         </iron-collapse>
-      </div>
-    </template>
+      </template>
+    </div>
     <div class="section cr-secondary-text">$i18n{bottomSummary}</div>
   </div>
 
