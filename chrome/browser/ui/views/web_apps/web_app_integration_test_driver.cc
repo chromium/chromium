@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -166,7 +167,8 @@ const base::flat_map<std::string, SkColor> g_app_name_icon_color = {
     {"Site B", SkColorSetARGB(0xFF, 0x00, 0x00, 0x00)},
     {"Site C", SkColorSetARGB(0x00, 0x00, 0x00, 0x00)},
     {"Site A Foo", SkColorSetARGB(0xFF, 0x00, 0x00, 0x00)},
-    {"Site A Bar", SkColorSetARGB(0xFF, 0x00, 0x00, 0x00)}};
+    {"Site A Bar", SkColorSetARGB(0xFF, 0x00, 0x00, 0x00)},
+    {"Site A - Updated name", SkColorSetARGB(0xFF, 0x00, 0x00, 0x00)}};
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -788,7 +790,7 @@ void WebAppIntegrationTestDriver::LaunchFromShortcut(
     std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> convert;
     const std::string window_title =
         convert.to_bytes(app_browser->GetWindowTitleForCurrentTab(false));
-    ASSERT_EQ(window_title, g_site_mode_to_app_name.find(site_mode)->second);
+    ASSERT_EQ(window_title, app_state->name);
   }
   AfterStateChangeAction();
 }
@@ -897,6 +899,7 @@ void WebAppIntegrationTestDriver::ManifestUpdateTitle(
     const std::string& site_mode) {
   BeforeStateChangeAction();
   ASSERT_EQ("SiteA", site_mode) << "Only site mode of 'SiteA' is supported";
+  ASSERT_TRUE(base::Contains(g_site_mode_to_relative_scope_url, site_mode));
   auto scope_url_path =
       g_site_mode_to_relative_scope_url.find(site_mode)->second;
   std::string str_template =
@@ -911,6 +914,7 @@ void WebAppIntegrationTestDriver::ManifestUpdateDisplayMinimal(
     const std::string& site_mode) {
   BeforeStateChangeAction();
   ASSERT_EQ("SiteA", site_mode) << "Only site mode of 'SiteA' is supported";
+  ASSERT_TRUE(base::Contains(g_site_mode_to_relative_scope_url, site_mode));
   auto scope_url_path =
       g_site_mode_to_relative_scope_url.find(site_mode)->second;
   std::string str_template =
@@ -928,6 +932,7 @@ void WebAppIntegrationTestDriver::ManifestUpdateScopeSiteAFooTo(
   // simplicity, right now only SiteA is supported, so that is just hardcoded in
   // manifest_scope_site_a.json, which is specified in the URL.
   ASSERT_EQ("SiteA", scope_mode) << "Only scope mode of 'SiteA' is supported";
+  ASSERT_TRUE(base::Contains(g_site_mode_to_relative_scope_url, "SiteAFoo"));
   auto scope_url_path =
       g_site_mode_to_relative_scope_url.find("SiteAFoo")->second;
   std::string str_template =
@@ -1275,6 +1280,7 @@ void WebAppIntegrationTestDriver::CheckPlatformShortcutNotExists(
   // If app_state is still nullptr, the site_mode is manually mapped to get an
   // app_name and app_id remains empty.
   if (!app_state) {
+    ASSERT_TRUE(base::Contains(g_site_mode_to_app_name, site_mode));
     app_name = g_site_mode_to_app_name.find(site_mode)->second;
   } else {
     app_name = app_state->name;
@@ -1854,14 +1860,17 @@ bool WebAppIntegrationTestDriver::IsShortcutAndIconCreated(
   bool shortcut_correct = false;
 
 #if BUILDFLAG(IS_WIN)
+  DCHECK(base::Contains(g_app_name_icon_color, name));
+  SkColor color = g_app_name_icon_color.find(name)->second;
   shortcut_correct =
       (IsShortcutAndIconFoundForProfile(
-           profile, name, shortcut_override_->desktop.GetPath(),
-           g_app_name_icon_color.find(name)->second) &&
+           profile, name, shortcut_override_->desktop.GetPath(), color) &&
        IsShortcutAndIconFoundForProfile(
            profile, name, shortcut_override_->application_menu.GetPath(),
-           g_app_name_icon_color.find(name)->second));
+           color));
 #elif BUILDFLAG(IS_MAC)
+  DCHECK(base::Contains(g_app_name_icon_color, name));
+  SkColor color = g_app_name_icon_color.find(name)->second;
   std::string shortcut_filename = name + ".app";
   base::FilePath app_shortcut_path =
       shortcut_override_->chrome_apps_folder.GetPath().Append(
@@ -1881,8 +1890,7 @@ bool WebAppIntegrationTestDriver::IsShortcutAndIconCreated(
       (base::PathExists(app_shortcut_path) && is_app_profile_found);
   if (shortcut_exists) {
     SkColor icon_pixel_color = GetIconTopLeftColor(app_shortcut_path);
-    shortcut_correct =
-        (icon_pixel_color == g_app_name_icon_color.find(name)->second);
+    shortcut_correct = (icon_pixel_color == color);
   }
 #elif BUILDFLAG(IS_LINUX)
   std::string shortcut_filename =
