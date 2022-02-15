@@ -10918,6 +10918,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_A11Y_ALERT_WINDOW_OVERVIEW_MODE_ENTERED" desc="The accessible text read when the user enters window overview mode in Ash.">
           Entered window overview mode. Swipe to navigate, or press tab if using a keyboard.
         </message>
+        <message name="IDS_A11Y_ALERT_DESK_TEMPLATES_MODE_ENTERED" desc="The accessible text read when the user enters desk templates mode in Ash.">
+          Viewing templates. Press tab to navigate.
+        </message>
         <message name="IDS_A11Y_ALERT_WORKSPACE_FULLSCREEN_STATE_ENTERED" desc="The accessible text read when the current workspace state changes to fullscreen, which means the window in current workspace is fullcreen.">
           Entered full screen
         </message>

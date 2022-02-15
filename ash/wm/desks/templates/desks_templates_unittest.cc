@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -463,6 +464,29 @@ TEST_F(DesksTemplatesTest, NoWindowsLabelOnTemplateGridShow) {
   ShowDesksTemplatesGrids();
   EXPECT_FALSE(grid_list[0]->no_windows_widget());
   EXPECT_FALSE(grid_list[1]->no_windows_widget());
+}
+
+// Tests when user enter desk templates, a11y alert being sent.
+TEST_F(DesksTemplatesTest, InvokeAccessibilityAlertOnEnterDeskTemplates) {
+  TestAccessibilityControllerClient client;
+
+  // At least one entry is required for the templates grid to be shown.
+  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now());
+
+  // Start overview mode.
+  ToggleOverview();
+  WaitForDesksTemplatesUI();
+
+  // Alert for entering overview mode should be sent.
+  EXPECT_EQ(AccessibilityAlert::WINDOW_OVERVIEW_MODE_ENTERED,
+            client.last_a11y_alert());
+
+  // Enter desks templates
+  ShowDesksTemplatesGrids();
+
+  // Alert for entering templates should be sent.
+  EXPECT_EQ(AccessibilityAlert::DESK_TEMPLATES_MODE_ENTERED,
+            client.last_a11y_alert());
 }
 
 // Tests that overview items are hidden when the desk templates grid is shown.

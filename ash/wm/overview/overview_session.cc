@@ -1019,6 +1019,10 @@ void OverviewSession::ShowDesksTemplatesGrids(bool was_zero_state) {
   if (IsShowingDesksTemplatesGrid())
     return;
 
+  // Send an a11y alert.
+  Shell::Get()->accessibility_controller()->TriggerAccessibilityAlert(
+      AccessibilityAlert::DESK_TEMPLATES_MODE_ENTERED);
+
   for (auto& grid : grid_list_)
     grid->ShowDesksTemplatesGrid(was_zero_state);
   desks_templates_presenter_->GetAllEntries();

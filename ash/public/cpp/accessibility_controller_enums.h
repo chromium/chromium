@@ -39,7 +39,11 @@ enum class AccessibilityAlert {
 
   // When workspace state just changed from WorkspaceWindowState::kFullscreen.
   // to others.
-  WORKSPACE_FULLSCREEN_STATE_EXITED
+  WORKSPACE_FULLSCREEN_STATE_EXITED,
+
+  // When the user enters desk templates mode.
+  DESK_TEMPLATES_MODE_ENTERED
+
 };
 
 enum class AccessibilityPanelState {
