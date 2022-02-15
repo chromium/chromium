@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/cancelable_callback.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -28,6 +29,7 @@
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "services/viz/privileged/mojom/compositing/begin_frame_observer.mojom.h"
 #include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "third_party/khronos/GLES2/gl2.h"
@@ -90,8 +92,17 @@ class CONTENT_EXPORT CompositorImpl
     swap_completed_with_size_for_testing_ = std::move(cb);
   }
 
+  class SimpleBeginFrameObserver {
+   public:
+    virtual ~SimpleBeginFrameObserver() = default;
+    virtual void OnBeginFrame(base::TimeTicks frame_begin_time) = 0;
+  };
+  void AddSimpleBeginFrameObserver(SimpleBeginFrameObserver* obs);
+  void RemoveSimpleBeginFrameObserver(SimpleBeginFrameObserver* obs);
+
  private:
   class AndroidHostDisplayClient;
+  class HostBeginFrameObserver;
   class ScopedCachedBackBuffer;
   class ReadbackRefImpl;
 
@@ -224,6 +235,8 @@ class CONTENT_EXPORT CompositorImpl
 
   void DecrementPendingReadbacks();
 
+  void MaybeUpdateObserveBeginFrame();
+
   viz::FrameSinkId frame_sink_id_;
 
   // root_layer_ is the persistent internal root layer, while subroot_layer_
@@ -289,6 +302,9 @@ class CONTENT_EXPORT CompositorImpl
   display::ScopedDisplayObserver display_observer_{this};
 
   ui::CompositorLockManager lock_manager_;
+
+  base::flat_set<SimpleBeginFrameObserver*> simple_begin_frame_observers_;
+  std::unique_ptr<HostBeginFrameObserver> host_begin_frame_observer_;
 
   base::WeakPtrFactory<CompositorImpl> weak_factory_{this};
 };

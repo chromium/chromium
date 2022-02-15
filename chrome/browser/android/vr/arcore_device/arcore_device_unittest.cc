@@ -184,6 +184,8 @@ class StubCompositorFrameSink
       mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer> receiver)
       override {}
   void SetSwapCompletionCallbackEnabled(bool enable) override {}
+  void SetStandaloneBeginFrameObserver(
+      mojo::PendingRemote<viz::mojom::BeginFrameObserver> observer) override {}
 
   // mojom::CompositorFrameSink:
   void SetNeedsBeginFrame(bool needs_begin_frame) override {}

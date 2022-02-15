@@ -7,6 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("compositing") {
   sources = [
+    "begin_frame_observer.mojom",
     "display_private.mojom",
     "external_begin_frame_controller.mojom",
     "frame_sink_manager.mojom",

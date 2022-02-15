@@ -192,10 +192,11 @@ class InProcessContextFactory::PerCompositorData
   void PreserveChildSurfaceControls() override {}
   void SetSwapCompletionCallbackEnabled(bool enabled) override {}
 #endif
-
   void SetDelegatedInkPointRenderer(
       mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer> receiver)
       override {}
+  void SetStandaloneBeginFrameObserver(
+      mojo::PendingRemote<viz::mojom::BeginFrameObserver> observer) override {}
 
   void SetSurfaceHandle(gpu::SurfaceHandle surface_handle) {
     surface_handle_ = surface_handle;
