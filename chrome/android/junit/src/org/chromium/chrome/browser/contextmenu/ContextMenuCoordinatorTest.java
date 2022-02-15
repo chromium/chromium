@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.contextmenu;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.MENU_ID;
 import static org.chromium.chrome.browser.contextmenu.ContextMenuItemProperties.TEXT;
 
 import android.app.Activity;
+import android.graphics.Rect;
 import android.util.Pair;
 import android.view.View;
 
@@ -31,6 +33,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.shadow.api.Shadow;
+import org.robolectric.shadows.ShadowDialog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -39,49 +42,83 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuItem.Item;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuGroup;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator.ListItemType;
-import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinatorTest.ShadowContextMenuDialog;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
+import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserverJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.widget.ContextMenuDialog;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.common.ContentFeatures;
+import org.chromium.ui.base.DragStateTracker;
+import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Unit tests for the context menu.
+ * Unit tests for the context menu. Use density=mdpi so the screen density is 1.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = ShadowContextMenuDialog.class)
 @Features.DisableFeatures(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE)
 public class ContextMenuCoordinatorTest {
+    private static final int TOP_CONTENT_OFFSET_PX = 17;
     /**
      * Shadow class used to capture the inputs for {@link
      * ContextMenuCoordinator#createContextMenuDialog}.
      */
     @Implements(ContextMenuDialog.class)
-    public static class ShadowContextMenuDialog {
+    public static class ShadowContextMenuDialog extends ShadowDialog {
         boolean mShouldRemoveScrim;
         @Nullable
         View mTouchEventDelegateView;
+        Rect mRect;
 
         public ShadowContextMenuDialog() {}
 
         @Implementation
-        public void __constructor__(Activity ownerActivity, int theme, float touchPointXPx,
-                float touchPointYPx, float topContentOffsetPx, int topMarginPx, int bottomMarginPx,
-                View layout, View contentView, boolean isPopup, boolean shouldRemoveScrim,
-                @Nullable Integer popupMargin, @Nullable Integer desiredPopupContentWidth,
-                @Nullable View touchEventDelegateView) {
+        public void __constructor__(Activity ownerActivity, int theme, int topMarginPx,
+                int bottomMarginPx, View layout, View contentView, boolean isPopup,
+                boolean shouldRemoveScrim, @Nullable Integer popupMargin,
+                @Nullable Integer desiredPopupContentWidth, @Nullable View touchEventDelegateView,
+                Rect rect) {
             mShouldRemoveScrim = shouldRemoveScrim;
             mTouchEventDelegateView = touchEventDelegateView;
+            mRect = rect;
+        }
+
+        @Override
+        @Implementation
+        public void show() {}
+    }
+
+    /** No-op constructor for test cases that does not care of creation of real object. */
+    @Implements(ContextMenuHeaderCoordinator.class)
+    public static class ShadowContextMenuHeaderCoordinator {
+        public ShadowContextMenuHeaderCoordinator() {}
+
+        @Implementation
+        public void __constructor__(Activity activity, @PerformanceClass int performanceClass,
+                ContextMenuParams params, Profile profile,
+                ContextMenuNativeDelegate nativeDelegate) {}
+    }
+
+    /** Helper shadow to set the results for {@link Profile#fromWebContents}. */
+    @Implements(Profile.class)
+    public static class ShadowProfile {
+        static Profile sProfileFromWebContents;
+
+        @Implementation
+        public static Profile fromWebContents(WebContents webContents) {
+            return sProfileFromWebContents;
         }
     }
 
@@ -94,6 +131,8 @@ public class ContextMenuCoordinatorTest {
     PerformanceHintsObserver.Natives mNativeMock;
     @Mock
     ContextMenuNativeDelegate mNativeDelegate;
+    @Mock
+    WebContents mWebContentsMock;
 
     private ContextMenuCoordinator mCoordinator;
     private Activity mActivity;
@@ -103,10 +142,11 @@ public class ContextMenuCoordinatorTest {
     public void setUpTest() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mCoordinator = new ContextMenuCoordinator(0, mNativeDelegate);
+        mCoordinator = new ContextMenuCoordinator(TOP_CONTENT_OFFSET_PX, mNativeDelegate);
         MockitoAnnotations.initMocks(this);
         mocker.mock(PerformanceHintsObserverJni.TEST_HOOKS, mNativeMock);
         when(mNativeMock.isContextMenuPerformanceInfoEnabled()).thenReturn(false);
+        ShadowProfile.sProfileFromWebContents = mProfile;
     }
 
     @Test
@@ -196,6 +236,7 @@ public class ContextMenuCoordinatorTest {
     }
 
     @Test
+    @Config(shadows = {ShadowContextMenuDialog.class}, qualifiers = "mdpi")
     public void testCreateContextMenuDialog() {
         ContextMenuDialog dialog = createContextMenuDialogForTest(/*isPopup=*/false);
         ShadowContextMenuDialog shadowDialog = (ShadowContextMenuDialog) Shadow.extract(dialog);
@@ -205,6 +246,7 @@ public class ContextMenuCoordinatorTest {
 
     @Test
     @Features.EnableFeatures(ChromeFeatureList.CONTEXT_MENU_POPUP_STYLE)
+    @Config(shadows = {ShadowContextMenuDialog.class}, qualifiers = "mdpi")
     public void testCreateContextMenuDialog_PopupStyle() {
         ContextMenuDialog dialog = createContextMenuDialogForTest(/*isPopup=*/true);
         ShadowContextMenuDialog shadowDialog = (ShadowContextMenuDialog) Shadow.extract(dialog);
@@ -212,6 +254,107 @@ public class ContextMenuCoordinatorTest {
         Assert.assertTrue("Dialog should remove scrim behind.", shadowDialog.mShouldRemoveScrim);
         Assert.assertNotNull("TouchEventDelegateView should not be null when drag drop is enabled.",
                 shadowDialog.mTouchEventDelegateView);
+    }
+
+    @Test
+    public void testGetContextMenuTriggerRectFromWeb() {
+        final int shadowImgWidth = 50;
+        final int shadowImgHeight = 40;
+        setupMocksForDragShadowImage(true, shadowImgWidth, shadowImgHeight);
+
+        final int centerX = 100;
+        final int centerY = 200;
+        Rect rect = ContextMenuCoordinator.getContextMenuTriggerRectFromWeb(
+                mWebContentsMock, centerX, centerY);
+
+        Assert.assertEquals("rect.left does not match.", /*100 - 50 / 2 =*/75, rect.left);
+        Assert.assertEquals("rect.right does not match.", /*100 + 50 / 2 =*/125, rect.right);
+        Assert.assertEquals("rect.top does not match.", /*200 - 40 / 2 =*/180, rect.top);
+        Assert.assertEquals("rect.bottom does not match.", /*200 + 40 / 2 =*/220, rect.bottom);
+    }
+
+    @Test
+    public void testGetContextMenuTriggerRectFromWeb_DragNotStarted() {
+        setupMocksForDragShadowImage(false, 50, 40);
+
+        final int centerX = 100;
+        final int centerY = 200;
+        Rect rect = ContextMenuCoordinator.getContextMenuTriggerRectFromWeb(
+                mWebContentsMock, centerX, centerY);
+
+        // Rect should be a point when drag not started.
+        Assert.assertEquals("rect.left does not match.", centerX, rect.left);
+        Assert.assertEquals("rect.right does not match.", centerX, rect.right);
+        Assert.assertEquals("rect.top does not match.", centerY, rect.top);
+        Assert.assertEquals("rect.bottom does not match.", centerY, rect.bottom);
+    }
+
+    @Test
+    public void testGetContextMenuTriggerRectFromWeb_NoViewAndroidDelegate() {
+        final int centerX = 100;
+        final int centerY = 200;
+        Rect rect = ContextMenuCoordinator.getContextMenuTriggerRectFromWeb(
+                mWebContentsMock, centerX, centerY);
+
+        // Rect should be a point when no ViewAndroidDelegate attached to web content.
+        Assert.assertEquals("rect.left does not match.", centerX, rect.left);
+        Assert.assertEquals("rect.right does not match.", centerX, rect.right);
+        Assert.assertEquals("rect.top does not match.", centerY, rect.top);
+        Assert.assertEquals("rect.bottom does not match.", centerY, rect.bottom);
+    }
+
+    // clang-format off
+    @Test
+    @Features.DisableFeatures(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
+    @Config(shadows = {ShadowContextMenuDialog.class, ShadowContextMenuHeaderCoordinator.class,
+                    ShadowProfile.class},
+            qualifiers = "mdpi")
+    public void testDisplayMenu() {
+        // clang-format on
+        final int triggeringTouchXDp = 100;
+        final int triggeringTouchYDp = 200;
+        ContextMenuDialog dialog =
+                displayContextMenuDialogAtLocation(triggeringTouchXDp, triggeringTouchYDp);
+        ShadowContextMenuDialog shadowDialog = Shadow.extract(dialog);
+
+        // Verify rect is calculated correctly. Note that the calculation done below assume the
+        // density is 1.0.
+        Rect rect = shadowDialog.mRect;
+        Assert.assertEquals("rect.left for ContextMenuDialog does not match.", 100, rect.left);
+        Assert.assertEquals("rect.right for ContextMenuDialog does not match.", 100, rect.right);
+        Assert.assertEquals("rect.top for ContextMenuDialog does not match.",
+                /*200 + 17 =*/217, rect.top);
+        Assert.assertEquals("rect.bottom for ContextMenuDialog does not match.",
+                /*200 + 17 =*/217, rect.bottom);
+    }
+
+    @Test
+    @Features.EnableFeatures(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
+    @Config(shadows = {ShadowContextMenuDialog.class, ShadowContextMenuHeaderCoordinator.class,
+                    ShadowProfile.class},
+            qualifiers = "mdpi")
+    public void
+    testDisplayMenu_DragEnabled() {
+        final int shadowImgWidth = 50;
+        final int shadowImgHeight = 40;
+        setupMocksForDragShadowImage(true, shadowImgWidth, shadowImgHeight);
+
+        final int triggeringTouchXDp = 100;
+        final int triggeringTouchYDp = 200;
+        ContextMenuDialog dialog =
+                displayContextMenuDialogAtLocation(triggeringTouchXDp, triggeringTouchYDp);
+        ShadowContextMenuDialog shadowDialog = Shadow.extract(dialog);
+
+        // Verify rect is calculated correctly.
+        Rect rect = shadowDialog.mRect;
+        Assert.assertEquals(
+                "rect.left for ContextMenuDialog does not match.", /*100 - 50 / 2 =*/75, rect.left);
+        Assert.assertEquals("rect.right for ContextMenuDialog does not match.",
+                /*100 + 50 / 2 =*/125, rect.right);
+        Assert.assertEquals("rect.top for ContextMenuDialog does not match.",
+                /*200 + 17 - 40 / 2 =*/197, rect.top);
+        Assert.assertEquals("rect.bottom for ContextMenuDialog does not match.",
+                /*200 + 17 + 40 / 2 =*/237, rect.bottom);
     }
 
     private ListItem createListItem(@Item int item) {
@@ -237,7 +380,38 @@ public class ContextMenuCoordinatorTest {
         View rootView = Mockito.mock(View.class);
         View webContentView = Mockito.mock(View.class);
 
-        return ContextMenuCoordinator.createContextMenuDialog(
-                mActivity, rootView, contentView, isPopup, 0, 0, 0, 0, 0, 0, 0, webContentView);
+        return ContextMenuCoordinator.createContextMenuDialog(mActivity, rootView, contentView,
+                isPopup, 0, 0, 0, 0, webContentView, new Rect(0, 0, 0, 0));
+    }
+
+    private ContextMenuDialog displayContextMenuDialogAtLocation(
+            int triggeringTouchXDp, int triggeringTouchYDp) {
+        final ContextMenuParams params = new ContextMenuParams(0, ContextMenuDataMediaType.IMAGE,
+                GURL.emptyGURL(), GURL.emptyGURL(), "", GURL.emptyGURL(), GURL.emptyGURL(), "",
+                null, false, triggeringTouchXDp, triggeringTouchYDp, 0, false);
+
+        final WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
+        doReturn(new WeakReference<Activity>(mActivity)).when(windowAndroid).getActivity();
+
+        List<Pair<Integer, ModelList>> rawItems = new ArrayList<>();
+
+        mCoordinator.displayMenu(
+                windowAndroid, mWebContentsMock, params, rawItems, null, null, null);
+
+        ContextMenuDialog dialog = mCoordinator.getDialogForTest();
+        Assert.assertNotNull("ContextMenuDialog is null", dialog);
+        return dialog;
+    }
+
+    private void setupMocksForDragShadowImage(
+            boolean isDragging, int dragShadowWidth, int dragShadowHeight) {
+        final ViewAndroidDelegate viewAndroidDelegate = Mockito.mock(ViewAndroidDelegate.class);
+        final DragStateTracker dragStateTracker = Mockito.mock(DragStateTracker.class);
+        doReturn(viewAndroidDelegate).when(mWebContentsMock).getViewAndroidDelegate();
+        doReturn(dragStateTracker).when(viewAndroidDelegate).getDragStateTracker();
+
+        doReturn(isDragging).when(dragStateTracker).isDragStarted();
+        doReturn(dragShadowWidth).when(dragStateTracker).getDragShadowWidth();
+        doReturn(dragShadowHeight).when(dragStateTracker).getDragShadowHeight();
     }
 }

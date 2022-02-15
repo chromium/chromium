@@ -15,6 +15,8 @@ import android.os.ParcelFileDescriptor;
 import android.provider.OpenableColumns;
 import android.webkit.MimeTypeMap;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
 
 import java.io.FileNotFoundException;
@@ -185,5 +187,10 @@ public class DropDataContentProvider extends ContentProvider {
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         throw new UnsupportedOperationException();
+    }
+
+    @VisibleForTesting
+    public static byte[] getImageBytesForTesting() {
+        return sImageBytes;
     }
 }

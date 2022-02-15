@@ -1590,6 +1590,10 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         updateInteractableState();
 
         WebContents contentsToDestroy = mWebContents;
+        if (contentsToDestroy.getViewAndroidDelegate() != null
+                && contentsToDestroy.getViewAndroidDelegate() instanceof TabViewAndroidDelegate) {
+            ((TabViewAndroidDelegate) contentsToDestroy.getViewAndroidDelegate()).destroy();
+        }
         mWebContents = null;
         mWebContentsDelegate = null;
 

@@ -45,9 +45,6 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
     private static final long EXIT_ANIMATION_DURATION_MS = 150;
     private final Activity mActivity;
     private final View mContentView;
-    private final float mTouchPointXPx;
-    private final float mTouchPointYPx;
-    private final float mTopContentOffsetPx;
     private final boolean mIsPopup;
     private final boolean mShouldRemoveScrim;
 
@@ -58,6 +55,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
     private View mLayout;
     private OnLayoutChangeListener mOnLayoutChangeListener;
     private OnDragListener mOnDragListener;
+    private Rect mRect;
 
     private int mTopMarginPx;
     private int mBottomMarginPx;
@@ -76,9 +74,6 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
      * @param ownerActivity The activity in which the dialog should run
      * @param theme A style resource describing the theme to use for the window, or {@code 0} to use
      *              the default dialog theme
-     * @param touchPointXPx The x-coordinate of the touch that triggered the context menu.
-     * @param touchPointYPx The y-coordinate of the touch that triggered the context menu.
-     * @param topContentOffsetPx The offset of the content from the top.
      * @param topMarginPx An explicit top margin for the dialog, or -1 to use default
      *                    defined in XML.
      * @param bottomMarginPx An explicit bottom margin for the dialog, or -1 to use default
@@ -93,17 +88,15 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
      * @param touchEventDelegateView View View that is showing behind the context menu. If menu is
      *         shown as a popup without scrim, and this view is provided, the context menu will
      *         dispatch touch events other than ACTION_DOWN.
+     * @param rect Rect location where context menu is triggered. If this menu is a popup, the
+     *         coordinates are expected to be screen coordinates.
      */
-    public ContextMenuDialog(Activity ownerActivity, int theme, float touchPointXPx,
-            float touchPointYPx, float topContentOffsetPx, int topMarginPx, int bottomMarginPx,
+    public ContextMenuDialog(Activity ownerActivity, int theme, int topMarginPx, int bottomMarginPx,
             View layout, View contentView, boolean isPopup, boolean shouldRemoveScrim,
             @Nullable Integer popupMargin, @Nullable Integer desiredPopupContentWidth,
-            @Nullable View touchEventDelegateView) {
+            @Nullable View touchEventDelegateView, Rect rect) {
         super(ownerActivity, theme);
         mActivity = ownerActivity;
-        mTouchPointXPx = touchPointXPx;
-        mTouchPointYPx = touchPointYPx;
-        mTopContentOffsetPx = topContentOffsetPx;
         mTopMarginPx = topMarginPx;
         mBottomMarginPx = bottomMarginPx;
         mContentView = contentView;
@@ -113,6 +106,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         mPopupMargin = popupMargin;
         mDesiredPopupContentWidth = desiredPopupContentWidth;
         mTouchEventDelegateView = touchEventDelegateView;
+        mRect = rect;
     }
 
     @Override
@@ -173,19 +167,16 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
                         dismiss();
                         return;
                     }
-
-                    final int posX = (int) mTouchPointXPx;
-                    final int posY = (int) (mTouchPointYPx + mTopContentOffsetPx);
-                    final Rect rect = new Rect(posX, posY, posX, posY);
                     mPopupWindow = new AnchoredPopupWindow(mActivity, mLayout,
                             new ColorDrawable(Color.TRANSPARENT), mContentView,
-                            new RectProvider(rect));
+                            new RectProvider(mRect));
                     if (mPopupMargin != null) {
                         mPopupWindow.setMargin(mPopupMargin);
                     }
                     if (mDesiredPopupContentWidth != null) {
                         mPopupWindow.setDesiredContentWidth(mDesiredPopupContentWidth);
                     }
+                    mPopupWindow.setVerticalOverlapAnchor(true);
                     mPopupWindow.setOutsideTouchable(false);
                     // Set popup focusable so the screen reader can announce the popup properly.
                     mPopupWindow.setFocusable(true);
@@ -219,21 +210,28 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         }
     }
 
+    /**
+     * Start the entering animation for context menu dialog. Only used when dialog is presenting
+     * as a full screen dialog.
+     */
     private void startEnterAnimation() {
-        Rect rectangle = new Rect();
+        Rect windowRect = new Rect();
         Window window = mActivity.getWindow();
-        window.getDecorView().getWindowVisibleDisplayFrame(rectangle);
+        window.getDecorView().getWindowVisibleDisplayFrame(windowRect);
 
-        float xOffsetPx = rectangle.left;
-        float yOffsetPx = rectangle.top + mTopContentOffsetPx;
+        float xOffsetPx = windowRect.left;
+        float yOffsetPx = windowRect.top;
 
         int[] currentLocationOnScreenPx = new int[2];
         mContentView.getLocationOnScreen(currentLocationOnScreenPx);
 
         mContextMenuFirstLocationYPx = currentLocationOnScreenPx[1];
 
-        mContextMenuSourceXPx = mTouchPointXPx - currentLocationOnScreenPx[0] + xOffsetPx;
-        mContextMenuSourceYPx = mTouchPointYPx - currentLocationOnScreenPx[1] + yOffsetPx;
+        // Start entering animation from the center of where ContextMenu is triggered on screen.
+        // Noting that the Rect already considered the top content offset of the content view that
+        // context menu is hosted.
+        mContextMenuSourceXPx = mRect.centerX() - currentLocationOnScreenPx[0] + xOffsetPx;
+        mContextMenuSourceYPx = mRect.centerY() - currentLocationOnScreenPx[1] + yOffsetPx;
 
         Animation animation = getScaleAnimation(true, mContextMenuSourceXPx, mContextMenuSourceYPx);
         mContentView.startAnimation(animation);
@@ -308,7 +306,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
      *               as an absolute number where 0 is the top edge.
      * @return Returns the scale animation for the context menu.
      */
-    public Animation getScaleAnimation(boolean isEnterAnimation, float pivotX, float pivotY) {
+    private Animation getScaleAnimation(boolean isEnterAnimation, float pivotX, float pivotY) {
         float fromX = isEnterAnimation ? 0f : 1f;
         float toX = isEnterAnimation ? 1f : 0f;
         float fromY = fromX;

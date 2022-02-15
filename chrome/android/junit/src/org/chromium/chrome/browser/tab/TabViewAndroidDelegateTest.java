@@ -8,8 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.view.ViewGroup;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +19,7 @@ import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.base.WindowAndroid;
@@ -42,7 +41,7 @@ public class TabViewAndroidDelegateTest {
     private WindowAndroid mWindowAndroid;
 
     @Mock
-    private ViewGroup mViewContainer;
+    private ContentView mContentView;
 
     private ApplicationViewportInsetSupplier mApplicationInsetSupplier;
     private ObservableSupplierImpl<Integer> mFeatureInsetSupplier;
@@ -62,7 +61,7 @@ public class TabViewAndroidDelegateTest {
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
         when(mTab.getWebContents()).thenReturn(mWebContents);
 
-        mViewAndroidDelegate = new TabViewAndroidDelegate(mTab, mViewContainer);
+        mViewAndroidDelegate = new TabViewAndroidDelegate(mTab, mContentView);
         verify(mTab).addObserver(mTabObserverCaptor.capture());
     }
 

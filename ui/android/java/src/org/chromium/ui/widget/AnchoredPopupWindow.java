@@ -172,7 +172,8 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      * @param background The background {@link Drawable} to use for the popup.
      * @param contentView The content view to set on the popup.
      * @param anchorRectProvider The {@link RectProvider} that will provide the {@link Rect} this
-     *                           popup attaches and orients to.
+     *                           popup attaches and orients to. The coordinates in the {@link Rect}
+     *                           are expected to be screen coordinates.
      */
     public AnchoredPopupWindow(Context context, View rootView, Drawable background,
             View contentView, RectProvider anchorRectProvider) {
