@@ -18,6 +18,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
 #include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -256,10 +257,10 @@ void AndroidTelemetryService::MaybeSendApkDownloadReport(
         ApkDownloadTelemetryOutcome::NOT_SENT_FAILED_TO_SERIALIZE);
     return;
   }
-  sb_service_->ping_manager()->ReportThreatDetails(
-      sb_service_->GetURLLoaderFactory(
-          Profile::FromBrowserContext(browser_context)),
-      serialized);
+  ChromePingManagerFactory::GetForBrowserContext(browser_context)
+      ->ReportThreatDetails(sb_service_->GetURLLoaderFactory(
+                                Profile::FromBrowserContext(browser_context)),
+                            serialized);
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,

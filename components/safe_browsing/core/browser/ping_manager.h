@@ -14,6 +14,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/db/util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -25,15 +26,15 @@ class SimpleURLLoader;
 
 namespace safe_browsing {
 
-class PingManager {
+class PingManager : public KeyedService {
  public:
   PingManager(const PingManager&) = delete;
   PingManager& operator=(const PingManager&) = delete;
 
-  virtual ~PingManager();
+  ~PingManager() override;
 
   // Create an instance of the safe browsing ping manager.
-  static std::unique_ptr<PingManager> Create(const V4ProtocolConfig& config);
+  static PingManager* Create(const V4ProtocolConfig& config);
 
   void OnURLLoaderComplete(network::SimpleURLLoader* source,
                            std::unique_ptr<std::string> response_body);

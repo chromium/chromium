@@ -170,6 +170,8 @@ source_set("browser") {
     "renderer_host/auto_login_parser.h",
     "renderer_host/aw_render_view_host_ext.cc",
     "renderer_host/aw_render_view_host_ext.h",
+    "safe_browsing/aw_ping_manager_factory.cc",
+    "safe_browsing/aw_ping_manager_factory.h",
     "safe_browsing/aw_safe_browsing_allowlist_manager.cc",
     "safe_browsing/aw_safe_browsing_allowlist_manager.h",
     "safe_browsing/aw_safe_browsing_blocking_page.cc",

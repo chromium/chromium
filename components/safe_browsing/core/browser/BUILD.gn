@@ -19,6 +19,7 @@ source_set("browser") {
 
   deps = [
     "//base",
+    "//components/keyed_service/core",
     "//components/prefs",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:hit_report",

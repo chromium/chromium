@@ -30,9 +30,11 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service_factory.h"
+#include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/chrome_ui_manager_delegate.h"
 #include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
+#include "chrome/browser/safe_browsing/chrome_v4_protocol_config_provider.h"
 #include "chrome/browser/safe_browsing/network_context_service.h"
 #include "chrome/browser/safe_browsing/network_context_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
@@ -240,11 +242,6 @@ SafeBrowsingService::GetReferringAppInfo(content::WebContents* web_contents) {
 }
 #endif
 
-PingManager* SafeBrowsingService::ping_manager() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return ping_manager_.get();
-}
-
 TriggerManager* SafeBrowsingService::trigger_manager() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return trigger_manager_.get();
@@ -287,34 +284,7 @@ void SafeBrowsingService::RegisterAllDelayedAnalysis() {
 }
 
 V4ProtocolConfig SafeBrowsingService::GetV4ProtocolConfig() const {
-  base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  return ::safe_browsing::GetV4ProtocolConfig(
-      GetProtocolConfigClientName(),
-      cmdline->HasSwitch(::switches::kDisableBackgroundNetworking));
-}
-
-std::string SafeBrowsingService::GetProtocolConfigClientName() const {
-  std::string client_name;
-  // On Windows, get the safe browsing client name from the browser
-  // distribution classes in installer util. These classes don't yet have
-  // an analog on non-Windows builds so just keep the name specified here.
-#if BUILDFLAG(IS_WIN)
-  client_name = install_static::GetSafeBrowsingName();
-#else
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  client_name = "googlechrome";
-#else
-  client_name = "chromium";
-#endif
-
-  // Mark client string to allow server to differentiate mobile.
-#if BUILDFLAG(IS_ANDROID)
-  client_name.append("-a");
-#endif
-
-#endif  // BUILDFLAG(IS_WIN)
-
-  return client_name;
+  return safe_browsing::GetV4ProtocolConfig();
 }
 
 void SafeBrowsingService::SetDatabaseManagerForTest(
@@ -350,10 +320,6 @@ void SafeBrowsingService::StopOnIOThread(bool shutdown) {
 void SafeBrowsingService::Start() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!ping_manager_) {
-    ping_manager_ = PingManager::Create(GetV4ProtocolConfig());
-  }
-
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -363,7 +329,6 @@ void SafeBrowsingService::Start() {
 }
 
 void SafeBrowsingService::Stop(bool shutdown) {
-  ping_manager_.reset();
   ui_manager_->Stop(shutdown);
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -485,8 +450,8 @@ void SafeBrowsingService::SendSerializedDownloadReport(
     Profile* profile,
     const std::string& report) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (ping_manager())
-    ping_manager()->ReportThreatDetails(GetURLLoaderFactory(profile), report);
+  ChromePingManagerFactory::GetForBrowserContext(profile)->ReportThreatDetails(
+      GetURLLoaderFactory(profile), report);
 }
 
 void SafeBrowsingService::CreateTriggerManager() {

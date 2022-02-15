@@ -67,9 +67,8 @@ namespace safe_browsing {
 // SafeBrowsingPingManager implementation ----------------------------------
 
 // static
-std::unique_ptr<PingManager> PingManager::Create(
-    const V4ProtocolConfig& config) {
-  return base::WrapUnique(new PingManager(config));
+PingManager* PingManager::Create(const V4ProtocolConfig& config) {
+  return new PingManager(config);
 }
 
 PingManager::PingManager(const V4ProtocolConfig& config) : config_(config) {}

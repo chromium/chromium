@@ -39,7 +39,8 @@ class WebLayerSafeBrowsingUIManagerDelegate
   PrefService* GetPrefs(content::BrowserContext* browser_context) override;
   history::HistoryService* GetHistoryService(
       content::BrowserContext* browser_context) override;
-  safe_browsing::PingManager* GetPingManagerIfExists() override;
+  safe_browsing::PingManager* GetPingManager(
+      content::BrowserContext* browser_context) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
       content::BrowserContext* browser_context) override;
   bool IsMetricsAndCrashReportingEnabled() override;

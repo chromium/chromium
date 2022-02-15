@@ -1,0 +1,36 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ANDROID_WEBVIEW_BROWSER_SAFE_BROWSING_AW_PING_MANAGER_FACTORY_H_
+#define ANDROID_WEBVIEW_BROWSER_SAFE_BROWSING_AW_PING_MANAGER_FACTORY_H_
+
+#include "base/no_destructor.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/safe_browsing/core/browser/ping_manager.h"
+
+namespace safe_browsing {
+
+// Factory for creating the KeyedService PingManager for Android WebView.
+class AwPingManagerFactory : public BrowserContextKeyedServiceFactory {
+ public:
+  static AwPingManagerFactory* GetInstance();
+  static PingManager* GetForBrowserContext(content::BrowserContext* context);
+
+ private:
+  friend class base::NoDestructor<AwPingManagerFactory>;
+
+  AwPingManagerFactory();
+  ~AwPingManagerFactory() override;
+
+  // BrowserContextKeyedServiceFactory overrides:
+  KeyedService* BuildServiceInstanceFor(
+      content::BrowserContext* context) const override;
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
+
+  std::string GetProtocolConfigClientName() const;
+};
+
+}  // namespace safe_browsing
+#endif  // ANDROID_WEBVIEW_BROWSER_SAFE_BROWSING_AW_PING_MANAGER_FACTORY_H_

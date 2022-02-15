@@ -12,6 +12,7 @@
 #include "weblayer/browser/i18n_util.h"
 #include "weblayer/browser/no_state_prefetch/no_state_prefetch_utils.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
+#include "weblayer/browser/safe_browsing/weblayer_ping_manager_factory.h"
 #include "weblayer/browser/weblayer_metrics_service_accessor.h"
 
 namespace weblayer {
@@ -62,10 +63,9 @@ WebLayerSafeBrowsingUIManagerDelegate::GetHistoryService(
 }
 
 safe_browsing::PingManager*
-WebLayerSafeBrowsingUIManagerDelegate::GetPingManagerIfExists() {
-  return BrowserProcess::GetInstance()
-      ->GetSafeBrowsingService()
-      ->GetPingManager();
+WebLayerSafeBrowsingUIManagerDelegate::GetPingManager(
+    content::BrowserContext* browser_context) {
+  return WebLayerPingManagerFactory::GetForBrowserContext(browser_context);
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

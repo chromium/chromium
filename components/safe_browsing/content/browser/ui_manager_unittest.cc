@@ -185,7 +185,10 @@ class TestSafeBrowsingUIManagerDelegate
       content::BrowserContext* browser_context) override {
     return nullptr;
   }
-  PingManager* GetPingManagerIfExists() override { return nullptr; }
+  PingManager* GetPingManager(
+      content::BrowserContext* browser_context) override {
+    return nullptr;
+  }
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
       content::BrowserContext* browser_context) override {
     return nullptr;
