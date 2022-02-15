@@ -297,6 +297,7 @@ class InspectorCSSAgent::ModifyRuleAction final
     kSetStyleText,
     kSetMediaRuleText,
     kSetContainerRuleText,
+    kSetSupportsRuleText,
     kSetKeyframeKey
   };
 
@@ -331,6 +332,9 @@ class InspectorCSSAgent::ModifyRuleAction final
       case kSetContainerRuleText:
         return style_sheet_->SetContainerRuleText(
             new_range_, old_text_, nullptr, nullptr, exception_state);
+      case kSetSupportsRuleText:
+        return style_sheet_->SetSupportsRuleText(new_range_, old_text_, nullptr,
+                                                 nullptr, exception_state);
       case kSetKeyframeKey:
         return style_sheet_->SetKeyframeKey(new_range_, old_text_, nullptr,
                                             nullptr, exception_state);
@@ -356,6 +360,10 @@ class InspectorCSSAgent::ModifyRuleAction final
         break;
       case kSetContainerRuleText:
         css_rule_ = style_sheet_->SetContainerRuleText(
+            old_range_, new_text_, &new_range_, &old_text_, exception_state);
+        break;
+      case kSetSupportsRuleText:
+        css_rule_ = style_sheet_->SetSupportsRuleText(
             old_range_, new_text_, &new_range_, &old_text_, exception_state);
         break;
       case kSetKeyframeKey:
@@ -533,6 +541,11 @@ CSSMediaRule* InspectorCSSAgent::AsCSSMediaRule(CSSRule* rule) {
 // static
 CSSContainerRule* InspectorCSSAgent::AsCSSContainerRule(CSSRule* rule) {
   return DynamicTo<CSSContainerRule>(rule);
+}
+
+// static
+CSSSupportsRule* InspectorCSSAgent::AsCSSSupportsRule(CSSRule* rule) {
+  return DynamicTo<CSSSupportsRule>(rule);
 }
 
 InspectorCSSAgent::InspectorCSSAgent(
@@ -1522,6 +1535,36 @@ Response InspectorCSSAgent::setContainerQueryText(
     CSSContainerRule* rule =
         InspectorCSSAgent::AsCSSContainerRule(action->TakeRule());
     *result = BuildContainerQueryObject(rule);
+  }
+  return InspectorDOMAgent::ToResponse(exception_state);
+}
+
+Response InspectorCSSAgent::setSupportsText(
+    const String& style_sheet_id,
+    std::unique_ptr<protocol::CSS::SourceRange> range,
+    const String& text,
+    std::unique_ptr<protocol::CSS::CSSSupports>* result) {
+  FrontendOperationScope scope;
+  InspectorStyleSheet* inspector_style_sheet = nullptr;
+  Response response =
+      AssertInspectorStyleSheetForId(style_sheet_id, inspector_style_sheet);
+  if (!response.IsSuccess())
+    return response;
+  SourceRange text_range;
+  response =
+      JsonRangeToSourceRange(inspector_style_sheet, range.get(), &text_range);
+  if (!response.IsSuccess())
+    return response;
+
+  DummyExceptionStateForTesting exception_state;
+  ModifyRuleAction* action = MakeGarbageCollected<ModifyRuleAction>(
+      ModifyRuleAction::kSetSupportsRuleText, inspector_style_sheet, text_range,
+      text);
+  bool success = dom_agent_->History()->Perform(action, exception_state);
+  if (success) {
+    CSSSupportsRule* rule =
+        InspectorCSSAgent::AsCSSSupportsRule(action->TakeRule());
+    *result = BuildSupportsObject(rule);
   }
   return InspectorDOMAgent::ToResponse(exception_state);
 }
