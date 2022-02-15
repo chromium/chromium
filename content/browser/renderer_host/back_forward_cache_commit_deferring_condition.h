@@ -37,8 +37,6 @@ class BackForwardCacheCommitDeferringCondition
  private:
   explicit BackForwardCacheCommitDeferringCondition(
       NavigationRequest& navigation_request);
-
-  NavigationRequest& navigation_request_;
 };
 
 }  // namespace content

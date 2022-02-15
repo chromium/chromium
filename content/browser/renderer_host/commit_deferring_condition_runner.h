@@ -88,7 +88,9 @@ class CONTENT_EXPORT CommitDeferringConditionRunner {
   // registered conditions. This is typically used for adding a condition before
   // NavigationRequest is created.
   using ConditionGenerator =
-      base::RepeatingCallback<std::unique_ptr<CommitDeferringCondition>()>;
+      base::RepeatingCallback<std::unique_ptr<CommitDeferringCondition>(
+          NavigationHandle&)>;
+
   // Returns a generator id that is used for uninstalling the generator.
   static int InstallConditionGeneratorForTesting(ConditionGenerator generator);
   // `generator_id` should be an identifier returned by

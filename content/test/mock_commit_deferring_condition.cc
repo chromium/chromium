@@ -63,7 +63,8 @@ void MockCommitDeferringConditionWrapper::WillCommitNavigationCalled(
 MockCommitDeferringCondition::MockCommitDeferringCondition(
     bool is_ready_to_commit,
     WillCommitCallback on_will_commit_navigation)
-    : is_ready_to_commit_(is_ready_to_commit),
+    : CommitDeferringCondition(mock_navigation_handle_),
+      is_ready_to_commit_(is_ready_to_commit),
       on_will_commit_navigation_(std::move(on_will_commit_navigation)) {}
 
 MockCommitDeferringCondition::~MockCommitDeferringCondition() = default;
@@ -96,7 +97,9 @@ MockCommitDeferringConditionInstaller::
 }
 
 std::unique_ptr<CommitDeferringCondition>
-MockCommitDeferringConditionInstaller::Install() {
+MockCommitDeferringConditionInstaller::Install(NavigationHandle& /*handle*/) {
+  // TODO(bokan): condition_.GetNavigationHandle() should match `handle`.
+  DCHECK(condition_);
   return std::move(condition_);
 }
 

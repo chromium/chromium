@@ -108,7 +108,7 @@ void CommitDeferringConditionRunner::RegisterDeferringConditions(
 
   // Run condition generators for testing.
   for (auto& iter : GetConditionGenerators())
-    AddCondition(iter.second.Run());
+    AddCondition(iter.second.Run(navigation_request));
 }
 
 // static

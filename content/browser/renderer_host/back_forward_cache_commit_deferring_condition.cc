@@ -30,7 +30,7 @@ BackForwardCacheCommitDeferringCondition::MaybeCreate(
 BackForwardCacheCommitDeferringCondition::
     BackForwardCacheCommitDeferringCondition(
         NavigationRequest& navigation_request)
-    : navigation_request_(navigation_request) {}
+    : CommitDeferringCondition(navigation_request) {}
 
 BackForwardCacheCommitDeferringCondition::
     ~BackForwardCacheCommitDeferringCondition() = default;
@@ -38,17 +38,19 @@ BackForwardCacheCommitDeferringCondition::
 CommitDeferringCondition::Result
 BackForwardCacheCommitDeferringCondition::WillCommitNavigation(
     base::OnceClosure resume) {
-  DCHECK(navigation_request_.IsServedFromBackForwardCache());
+  DCHECK(GetNavigationHandle().IsServedFromBackForwardCache());
 
-  BackForwardCacheImpl& bfcache = navigation_request_.frame_tree_node()
-                                      ->navigator()
-                                      .controller()
-                                      .GetBackForwardCache();
+  BackForwardCacheImpl& bfcache =
+      NavigationRequest::From(&GetNavigationHandle())
+          ->frame_tree_node()
+          ->navigator()
+          .controller()
+          .GetBackForwardCache();
 
   // If an entry doesn't exist (it was evicted?) there's no need to defer the
   // commit as we'll end up performing a new navigation.
-  BackForwardCacheImpl::Entry* bfcache_entry =
-      bfcache.GetEntry(navigation_request_.nav_entry_id());
+  BackForwardCacheImpl::Entry* bfcache_entry = bfcache.GetEntry(
+      NavigationRequest::From(&GetNavigationHandle())->nav_entry_id());
   if (!bfcache_entry)
     return Result::kProceed;
 

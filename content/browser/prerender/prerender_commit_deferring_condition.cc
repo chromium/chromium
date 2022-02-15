@@ -48,7 +48,8 @@ PrerenderCommitDeferringCondition::~PrerenderCommitDeferringCondition() =
 PrerenderCommitDeferringCondition::PrerenderCommitDeferringCondition(
     NavigationRequest& navigation_request,
     int candidate_prerender_frame_tree_node_id)
-    : WebContentsObserver(navigation_request.GetWebContents()),
+    : CommitDeferringCondition(navigation_request),
+      WebContentsObserver(navigation_request.GetWebContents()),
       candidate_prerender_frame_tree_node_id_(
           candidate_prerender_frame_tree_node_id) {
   DCHECK_NE(candidate_prerender_frame_tree_node_id_,

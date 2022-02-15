@@ -1383,6 +1383,7 @@ source_set("browser") {
     "renderer_host/close_listener_host.h",
     "renderer_host/code_cache_host_impl.cc",
     "renderer_host/code_cache_host_impl.h",
+    "renderer_host/commit_deferring_condition.cc",
     "renderer_host/commit_deferring_condition.h",
     "renderer_host/commit_deferring_condition_runner.cc",
     "renderer_host/commit_deferring_condition_runner.h",

@@ -7,11 +7,15 @@
 
 #include "base/callback.h"
 
+#include "content/common/content_export.h"
+
 namespace content {
+
+class NavigationHandle;
 
 // Base class allowing clients to defer an activation or a navigation that's
 // ready to commit. See commit_deferring_condition_runner.h for more details.
-class CommitDeferringCondition {
+class CONTENT_EXPORT CommitDeferringCondition {
  public:
   enum class NavigationType {
     kPrerenderedPageActivation,
@@ -33,8 +37,9 @@ class CommitDeferringCondition {
     kDefer
   };
 
-  CommitDeferringCondition() = default;
-  virtual ~CommitDeferringCondition() = default;
+  CommitDeferringCondition() = delete;
+  explicit CommitDeferringCondition(NavigationHandle& navigation_handle);
+  virtual ~CommitDeferringCondition();
 
   // Override to check if the navigation should be allowed to commit or it
   // should be deferred. If this method returns true, this condition is
@@ -42,6 +47,12 @@ class CommitDeferringCondition {
   // returns false, the condition will call |resume| asynchronously to
   // indicate completion.
   virtual Result WillCommitNavigation(base::OnceClosure resume) = 0;
+
+  NavigationHandle& GetNavigationHandle() const { return navigation_handle_; }
+
+ private:
+  // TODO(bokan): Make this a base::SafeRef.
+  NavigationHandle& navigation_handle_;
 };
 
 }  // namespace content

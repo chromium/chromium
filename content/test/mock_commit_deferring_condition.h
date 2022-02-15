@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "content/browser/renderer_host/commit_deferring_condition.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/test/mock_navigation_handle.h"
 
 namespace content {
 
@@ -61,6 +62,11 @@ class MockCommitDeferringCondition : public CommitDeferringCondition {
   MockCommitDeferringCondition(bool is_ready_to_commit,
                                WillCommitCallback on_will_commit_navigation);
   ~MockCommitDeferringCondition() override;
+
+  MockCommitDeferringCondition(const MockCommitDeferringCondition&) = delete;
+  MockCommitDeferringCondition& operator=(const MockCommitDeferringCondition&) =
+      delete;
+
   Result WillCommitNavigation(base::OnceClosure resume) override;
 
   base::WeakPtr<MockCommitDeferringCondition> AsWeakPtr();
@@ -69,12 +75,19 @@ class MockCommitDeferringCondition : public CommitDeferringCondition {
   const bool is_ready_to_commit_;
   WillCommitCallback on_will_commit_navigation_;
 
+  MockNavigationHandle mock_navigation_handle_;
   base::WeakPtrFactory<MockCommitDeferringCondition> weak_factory_{this};
 };
 
-// This class will register the given CommitDeferringCondition into any starting
-// navigation. The mock condition will be installed to run after real
-// conditions.
+// This class will register the given CommitDeferringCondition into the next
+// starting navigation. The mock condition will be installed to run after real
+// conditions. Note: the condition will get installed on the first started
+// navigation and then all following navigations will still invoke Install but
+// get a nullptr.
+// TODO(bokan): This is a bit brittle - we should at least DCHECK there isn't a
+// second navigation that's calling into Install and getting back nullptr. The
+// NavigationHandle in the condition also won't match the one it was installed
+// onto. This should create the condition itself.
 class MockCommitDeferringConditionInstaller {
  public:
   explicit MockCommitDeferringConditionInstaller(
@@ -82,7 +95,7 @@ class MockCommitDeferringConditionInstaller {
   ~MockCommitDeferringConditionInstaller();
 
  private:
-  std::unique_ptr<CommitDeferringCondition> Install();
+  std::unique_ptr<CommitDeferringCondition> Install(NavigationHandle& handle);
 
   const int generator_id_;
   std::unique_ptr<MockCommitDeferringCondition> condition_;

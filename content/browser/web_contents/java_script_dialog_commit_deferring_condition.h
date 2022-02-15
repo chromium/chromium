@@ -12,7 +12,6 @@
 
 namespace content {
 
-class WebContentsImpl;
 class NavigationRequest;
 
 // Defers a navigation from committing while a JavaScript dialog is showing.
@@ -32,12 +31,7 @@ class JavaScriptDialogCommitDeferringCondition
   Result WillCommitNavigation(base::OnceClosure resume) override;
 
  private:
-  JavaScriptDialogCommitDeferringCondition(NavigationRequest& request,
-                                           WebContentsImpl& web_contents);
-
-  // Bare reference is ok here because this class is indirectly owned by the
-  // NavigationRequest which will be destroyed before the WebContentsImpl.
-  WebContentsImpl& web_contents_;
+  explicit JavaScriptDialogCommitDeferringCondition(NavigationRequest& request);
 };
 
 }  // namespace content
