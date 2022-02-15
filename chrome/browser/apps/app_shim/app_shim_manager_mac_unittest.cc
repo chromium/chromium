@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -1484,6 +1485,56 @@ TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {
 
   manager_->OnBrowserSetLastActive(browser_profile_b.get());
   ValidateDockMenuItems(menu_items_profile_b, kNumMenuItemsForProfileB);
+}
+
+TEST_F(AppShimManagerTest,
+       BuildAppShimRequirementStringFromFrameworkRequirementStringTest) {
+  EXPECT_FALSE(
+      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
+          CFSTR("identifier \"com.google.Chrome.framework\" and certificate "
+                "leaf = H\"c9a99324ca3fcb23dbcc36bd5fd4f9753305130a\"")));
+  EXPECT_FALSE(
+      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
+          CFSTR(
+              "cdhash H\"daa66a31aeb85125bd2459bebf548b2dff5ee83b\" or cdhash "
+              "H\"a8e5300bf9223510fc5b107b23de0d12f419acac\"")));
+  EXPECT_FALSE(
+      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
+          CFSTR("identifier \"com.google.Chrome.framework\"")));
+  EXPECT_FALSE(
+      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
+          CFSTR("identifier")));
+  EXPECT_FALSE(
+      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
+          CFSTR("malformed")));
+  EXPECT_FALSE(
+      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
+          CFSTR("")));
+  EXPECT_FALSE(
+      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
+          CFSTR("\"\"\"")));
+  EXPECT_FALSE(
+      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
+          CFSTR("\"\"")));
+  EXPECT_FALSE(
+      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
+          CFSTR("\"")));
+  CFStringRef framework_req = CFSTR(
+      "identifier \"com.google.Chrome.framework\" and anchor "
+      "apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* "
+      "exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] "
+      "/* exists */ and certificate leaf[subject.OU] = EQHXZ8M8AV");
+  base::ScopedCFTypeRef<CFStringRef> got_req =
+      manager_->BuildAppShimRequirementStringFromFrameworkRequirementString(
+          framework_req);
+  ASSERT_TRUE(got_req);
+  CFStringRef want_req = CFSTR(
+      "identifier \"app_mode_loader\" and anchor "
+      "apple generic and certificate 1[field.1.2.840.113635.100.6.2.6] /* "
+      "exists */ and certificate leaf[field.1.2.840.113635.100.6.1.13] "
+      "/* exists */ and certificate leaf[subject.OU] = EQHXZ8M8AV");
+  EXPECT_EQ(base::SysCFStringRefToUTF8(got_req),
+            base::SysCFStringRefToUTF8(want_req));
 }
 
 }  // namespace apps
