@@ -1205,12 +1205,10 @@ void AccessibilityTreeFormatterUia::ProcessValueForOutput(
     std::string& line) const {
   switch (value->type()) {
     case base::Value::Type::STRING: {
-      std::string string_value;
-      value->GetAsString(&string_value);
-      WriteAttribute(
-          false,
-          base::StringPrintf("%s='%s'", name.c_str(), string_value.c_str()),
-          &line);
+      WriteAttribute(false,
+                     base::StringPrintf("%s='%s'", name.c_str(),
+                                        value->GetString().c_str()),
+                     &line);
       break;
     }
     case base::Value::Type::BOOLEAN: {
