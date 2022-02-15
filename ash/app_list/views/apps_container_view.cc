@@ -262,6 +262,8 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
   // |continue_container_| and |apps_grid_view_| layers.
   scrollable_container_->layer()->SetMasksToBounds(true);
 
+  AppListA11yAnnouncer* a11y_announcer =
+      contents_view->app_list_view()->a11y_announcer();
   if (features::IsProductivityLauncherEnabled()) {
     continue_container_ = scrollable_container_->AddChildView(
         std::make_unique<ContinueContainer>(this, view_delegate));
@@ -270,7 +272,8 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
     if (features::IsLauncherAppSortEnabled()) {
       toast_container_ = scrollable_container_->AddChildView(
           std::make_unique<AppListToastContainerView>(
-              app_list_nudge_controller_.get(), /*tablet_mode=*/true));
+              app_list_nudge_controller_.get(), a11y_announcer,
+              /*tablet_mode=*/true));
       toast_container_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
     }
   } else {
@@ -280,8 +283,6 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
         std::make_unique<SuggestionChipContainerView>(contents_view), 0);
   }
 
-  AppListA11yAnnouncer* a11y_announcer =
-      contents_view->app_list_view()->a11y_announcer();
   // Add `apps_grid_view_` at index 0 to put it at the back and ensure other
   // views in the `scrollable_container` get events first, since the grid
   // overlaps in bounds with these other views.
@@ -683,6 +684,9 @@ void AppsContainerView::UpdateForNewSortingOrder(
     base::OnceClosure update_position_closure) {
   DCHECK(features::IsLauncherAppSortEnabled());
   DCHECK_EQ(animate, !update_position_closure.is_null());
+
+  if (new_order)
+    toast_container_->AnnounceSortOrder(*new_order);
 
   if (!animate) {
     // Reordering is not required so update the undo toast and return early.

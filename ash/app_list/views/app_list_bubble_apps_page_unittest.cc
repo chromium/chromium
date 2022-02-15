@@ -7,11 +7,13 @@
 #include <utility>
 
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_bubble_search_page.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
 #include "ash/app_list/views/scrollable_apps_grid_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -20,6 +22,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/scroll_view.h"
 
 namespace ash {
@@ -184,6 +187,41 @@ TEST_F(AppListBubbleAppsPageTest, ScrollPositionResetOnShow) {
 
   // Scroll position is reset to top.
   EXPECT_EQ(apps_page->scroll_view()->vertical_scroll_bar()->GetPosition(), 0);
+}
+
+TEST_F(AppListBubbleAppsPageTest, SortAppsMakesA11yAnnouncement) {
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppItems(5);
+  helper->ShowAppList();
+
+  auto* apps_page = helper->GetBubbleAppsPage();
+  views::View* announcement_view = apps_page->toast_container_for_test()
+                                       ->a11y_announcer_for_test()
+                                       ->announcement_view_for_test();
+  ASSERT_TRUE(announcement_view);
+
+  // Add a callback to wait for an accessibility event.
+  ax::mojom::Event event = ax::mojom::Event::kNone;
+  base::RunLoop run_loop;
+  announcement_view->GetViewAccessibility().set_accessibility_events_callback(
+      base::BindLambdaForTesting([&](const ui::AXPlatformNodeDelegate* unused,
+                                     const ax::mojom::Event event_in) {
+        event = event_in;
+        run_loop.Quit();
+      }));
+
+  // Simulate sorting the apps.
+  apps_page->UpdateForNewSortingOrder(AppListSortOrder::kNameAlphabetical,
+                                      /*animate=*/false,
+                                      /*update_position_closure=*/{});
+  run_loop.Run();
+
+  // An alert fired with a message.
+  EXPECT_EQ(event, ax::mojom::Event::kAlert);
+  ui::AXNodeData node_data;
+  announcement_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kName),
+            "Apps are sorted by name");
 }
 
 class AppListBubbleAppsReorderTest

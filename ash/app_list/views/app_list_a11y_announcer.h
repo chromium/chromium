@@ -74,10 +74,12 @@ class AppListA11yAnnouncer {
   // apps container.
   void AnnounceFolderClosed();
 
- private:
   // Modifies the announcement view to verbalize the provided announcement.
   void Announce(const std::u16string& announcement);
 
+  views::View* announcement_view_for_test() { return announcement_view_; }
+
+ private:
   // The view used to send accessibility announcements. Owned by the parent's
   // views hierarchy.
   views::View* announcement_view_;

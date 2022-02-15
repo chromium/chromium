@@ -14,6 +14,7 @@ class LabelButton;
 
 namespace ash {
 
+class AppListA11yAnnouncer;
 class AppListNudgeController;
 class AppListToastView;
 enum class AppListSortOrder;
@@ -46,6 +47,7 @@ class AppListToastContainerView : public views::View {
   };
 
   AppListToastContainerView(AppListNudgeController* nudge_controller_,
+                            AppListA11yAnnouncer* a11y_announcer,
                             bool tablet_mode);
   AppListToastContainerView(const AppListToastContainerView&) = delete;
   AppListToastContainerView& operator=(const AppListToastContainerView&) =
@@ -72,11 +74,16 @@ class AppListToastContainerView : public views::View {
   void OnTemporarySortOrderChanged(
       const absl::optional<AppListSortOrder>& new_order);
 
+  // Fires an accessibility alert with the text of the sort order toast.
+  void AnnounceSortOrder(AppListSortOrder new_order);
+
   // This function expects that `toast_view_` exists.
   views::LabelButton* GetToastDismissButtonForTest();
 
   bool is_toast_visible() const { return toast_view_; }
   ToastType current_toast() const { return current_toast_; }
+
+  AppListA11yAnnouncer* a11y_announcer_for_test() { return a11y_announcer_; }
 
  private:
   // Called when the `toast_view_`'s dismiss button is clicked.
@@ -86,13 +93,14 @@ class AppListToastContainerView : public views::View {
   [[nodiscard]] std::u16string CalculateToastTextFromOrder(
       AppListSortOrder order) const;
 
+  AppListA11yAnnouncer* const a11y_announcer_;
+
   // Whether the toast container is part of the tablet mode app list UI.
   const bool tablet_mode_;
 
   AppListToastView* toast_view_ = nullptr;
 
-  // Not owned.
-  AppListNudgeController* nudge_controller_ = nullptr;
+  AppListNudgeController* const nudge_controller_;
 
   // Caches the current visibility state which is used to help tracking the
   // status of reorder nudge..

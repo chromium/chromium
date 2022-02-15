@@ -169,7 +169,7 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
   if (features::IsLauncherAppSortEnabled()) {
     toast_container_ = scroll_contents->AddChildView(
         std::make_unique<AppListToastContainerView>(
-            app_list_nudge_controller_.get(),
+            app_list_nudge_controller_.get(), a11y_announcer,
             /*tablet_mode=*/false));
   }
 
@@ -397,6 +397,11 @@ void AppListBubbleAppsPage::UpdateForNewSortingOrder(
     base::OnceClosure update_position_closure) {
   DCHECK(features::IsLauncherAppSortEnabled());
   DCHECK_EQ(animate, !update_position_closure.is_null());
+
+  // A11y announcements must happen before animations, otherwise "Search your
+  // apps..." is spoken first because focus moves immediately to the search box.
+  if (new_order)
+    toast_container_->AnnounceSortOrder(*new_order);
 
   if (!animate) {
     // Reordering is not required so update the undo toast and return early.

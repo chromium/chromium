@@ -11,6 +11,7 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_toast_container_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_container_view.h"
@@ -20,10 +21,12 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 namespace {
@@ -333,6 +336,41 @@ TEST_F(PagedAppsGridViewWithNudgeTest, GridDimensionsChangesWithDisplaySize) {
   EXPECT_EQ(5, GetPagedAppsGridView()->GetFirstPageRowsForTesting());
   EXPECT_EQ(7, GetPagedAppsGridView()->GetRowsForTesting());
   EXPECT_EQ(5, GetPagedAppsGridView()->cols());
+}
+
+TEST_F(PagedAppsGridViewTest, SortAppsMakesA11yAnnouncement) {
+  auto* helper = GetAppListTestHelper();
+  helper->AddAppItems(5);
+  helper->GetAppsContainerView()->ResetForShowApps();
+
+  AppsContainerView* container_view = helper->GetAppsContainerView();
+  views::View* announcement_view = container_view->toast_container_for_test()
+                                       ->a11y_announcer_for_test()
+                                       ->announcement_view_for_test();
+  ASSERT_TRUE(announcement_view);
+
+  // Add a callback to wait for an accessibility event.
+  ax::mojom::Event event = ax::mojom::Event::kNone;
+  base::RunLoop run_loop;
+  announcement_view->GetViewAccessibility().set_accessibility_events_callback(
+      base::BindLambdaForTesting([&](const ui::AXPlatformNodeDelegate* unused,
+                                     const ax::mojom::Event event_in) {
+        event = event_in;
+        run_loop.Quit();
+      }));
+
+  // Simulate sorting the apps.
+  container_view->UpdateForNewSortingOrder(AppListSortOrder::kNameAlphabetical,
+                                           /*animate=*/false,
+                                           /*update_position_closure=*/{});
+  run_loop.Run();
+
+  // An alert fired with a message.
+  EXPECT_EQ(event, ax::mojom::Event::kAlert);
+  ui::AXNodeData node_data;
+  announcement_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kName),
+            "Apps are sorted by name");
 }
 
 // Verify on the paged apps grid the undo toast should show after scrolling.
