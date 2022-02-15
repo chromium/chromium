@@ -43,8 +43,6 @@ template("inspector_protocol_generate") {
     }
     if (!use_embedder_types) {
       inputs += [
-        "$inspector_protocol_dir/lib/base_string_adapter_cc.template",
-        "$inspector_protocol_dir/lib/base_string_adapter_h.template",
         "$inspector_protocol_dir/lib/ValueConversions_cpp.template",
         "$inspector_protocol_dir/lib/ValueConversions_h.template",
         "$inspector_protocol_dir/lib/Values_cpp.template",

@@ -682,10 +682,6 @@ def main():
     if not config.use_embedder_types:
       generate_lib_file(os.path.join(config.lib.output, to_file_name(
           config, "Protocol.cpp")), protocol_cpp_templates)
-      generate_lib_file(os.path.join(config.lib.output, to_file_name(
-          config, "base_string_adapter.h")), ["base_string_adapter_h.template"])
-      generate_lib_file(os.path.join(config.lib.output, to_file_name(
-          config, "base_string_adapter.cc")), ["base_string_adapter_cc.template"])
 
   # Make gyp / make generatos happy, otherwise make rebuilds world.
   inputs_ts = max(map(os.path.getmtime, inputs))
