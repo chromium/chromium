@@ -796,14 +796,8 @@ class CalendarViewAnimationTest : public AshTestBase {
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
 };
 
-// Failing on chromeos, https://crbug.com/1296827
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_HeaderAnimation DISABLED_HeaderAnimation
-#else
-#define MAYBE_HeaderAnimation HeaderAnimation
-#endif
 // The header should show the new header with animation when there's an update.
-TEST_F(CalendarViewAnimationTest, MAYBE_HeaderAnimation) {
+TEST_F(CalendarViewAnimationTest, HeaderAnimation) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
@@ -856,14 +850,8 @@ TEST_F(CalendarViewAnimationTest, MAYBE_HeaderAnimation) {
   EXPECT_EQ(u"2021", header_year()->GetText());
 }
 
-// Failing on chromeos, https://crbug.com/1296827
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_MonthAndHeaderAnimation DISABLED_MonthAndHeaderAnimation
-#else
-#define MAYBE_MonthAndHeaderAnimation MonthAndHeaderAnimation
-#endif
 // The month views and header should animate when scrolling up or down.
-TEST_F(CalendarViewAnimationTest, MAYBE_MonthAndHeaderAnimation) {
+TEST_F(CalendarViewAnimationTest, MonthAndHeaderAnimation) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
