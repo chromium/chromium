@@ -1871,6 +1871,9 @@ This file contains the strings for ash.
       <message name="IDS_ASH_DESKS_TEMPLATES_UNAVAILABLE_APP_TOAST_MORE" desc="The text of the toast displayed when user tries to launch a template with more than two unavailable apps.">
         <ph name="UNAVAILABLE_APPS_ONE">$1<ex>unavailable app one</ex></ph>, <ph name="UNAVAILABLE_APPS_TWO">$2<ex>unavailable app two</ex></ph>, and <ph name="UNAVAILABLE_APPS_COUNT">$3<ex>unavailable app count</ex></ph> more aren't on this device.
       </message>
+      <message name="IDS_ASH_DESKS_TEMPLATES_TEMPLATE_TOO_LARGE_TOAST" desc="The text of the toast displayed when user tries to save a template whose metadata would exceed the threshold for Chrome Sync. The template is not saved and this toast shows up instead.">
+        Couldn’t save template. Too many windows or tabs.
+      </message>
       <message name="IDS_ASH_DESKS_TEMPLATES_MANAGEMENT_STATUS_DESCRIPTION" desc="The text of the description under template item if the desks templates is shared by the administrator.">
         Shared by your administrator
       </message>

@@ -33,9 +33,10 @@ namespace {
 
 DesksTemplatesPresenter* g_instance = nullptr;
 
-// Toast name.
+// Toast names.
 constexpr char kMaximumDeskLaunchTemplateToastName[] =
     "MaximumDeskLaunchTemplateToast";
+constexpr char kTemplateTooLargeToastName[] = "TemplateTooLargeToast";
 
 // Helper to get the desk model from the shell delegate. Should always return a
 // usable desk model, either from chrome sync, or a local storage.
@@ -325,9 +326,19 @@ void DesksTemplatesPresenter::OnAddOrUpdateEntry(
     bool was_update,
     const std::string& template_uuid,
     desks_storage::DeskModel::AddOrUpdateEntryStatus status) {
-  // TODO(crbug.com/1284449): Add visible cue when failing to save a desk
-  // template.
   RecordAddOrUpdateTemplateStatusHistogram(status);
+
+  if (status ==
+      desks_storage::DeskModel::AddOrUpdateEntryStatus::kEntryTooLarge) {
+    // Show a toast if the template we tried to save was too large to be
+    // transported through Chrome Sync.
+    ToastData toast_data(kTemplateTooLargeToastName,
+                         ToastCatalogName::kDeskTemplateTooLarge,
+                         l10n_util::GetStringUTF16(
+                             IDS_ASH_DESKS_TEMPLATES_TEMPLATE_TOO_LARGE_TOAST));
+    ToastManager::Get()->Show(toast_data);
+    return;
+  }
 
   if (status != desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk)
     return;

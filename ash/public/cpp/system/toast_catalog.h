@@ -47,6 +47,7 @@ enum class ToastCatalogName {
   kCameraPrivacySwitchOn,
   kExtensionInstallSuccess,
   kAccountRemoved,
+  kDeskTemplateTooLarge,
 };
 
 }  // namespace ash
