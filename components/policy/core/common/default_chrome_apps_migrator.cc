@@ -32,46 +32,12 @@ DefaultChromeAppsMigrator& DefaultChromeAppsMigrator::operator=(
 DefaultChromeAppsMigrator::~DefaultChromeAppsMigrator() = default;
 
 void DefaultChromeAppsMigrator::Migrate(PolicyMap* policies) const {
-  PolicyMap::Entry* forcelist_entry =
-      policies->GetMutable(key::kExtensionInstallForcelist);
-  if (!forcelist_entry)
-    return;
-
-  const base::Value* forcelist_value = forcelist_entry->value();
-  if (!forcelist_value || !forcelist_value->is_list())
-    return;
-
-  base::Value new_forcelist_value(base::Value::Type::LIST);
-  std::vector<std::string> chrome_app_ids;
-  std::vector<std::string> web_app_urls;
-  // Remove Chrome apps listed in `chrome_app_to_web_app_` from new
-  // ExtensionInstallForcelist value. Add the Chrome app ids that need to be
-  // blocked to 'chrome_app_ids'. Add the URLs of Web Apps that need to be
-  // installed to `web_app_urls`.
-  for (const auto& list_entry : forcelist_value->GetListDeprecated()) {
-    if (!list_entry.is_string()) {
-      new_forcelist_value.Append(list_entry.Clone());
-      continue;
-    }
-
-    const std::string entry = list_entry.GetString();
-    const size_t pos = entry.find(';');
-    const std::string extension_id = entry.substr(0, pos);
-
-    const auto iter = chrome_app_to_web_app_.find(extension_id);
-    if (iter != chrome_app_to_web_app_.end()) {
-      chrome_app_ids.push_back(iter->first);
-      web_app_urls.push_back(iter->second);
-    } else {
-      new_forcelist_value.Append(entry);
-    }
-  }
+  std::vector<std::string> chrome_app_ids =
+      RemoveChromeAppsFromExtensionForcelist(policies);
 
   // If no chrome apps need to be replaced, we have nothing to do.
   if (chrome_app_ids.empty())
     return;
-
-  forcelist_entry->set_value(std::move(new_forcelist_value));
 
   EnsurePolicyValueIsList(policies, key::kExtensionInstallBlocklist);
   base::Value* blocklist_value =
@@ -83,11 +49,47 @@ void DefaultChromeAppsMigrator::Migrate(PolicyMap* policies) const {
   EnsurePolicyValueIsList(policies, key::kWebAppInstallForceList);
   base::Value* web_app_policy_value =
       policies->GetMutableValue(key::kWebAppInstallForceList);
-  for (const std::string& web_app_url : web_app_urls) {
+  for (const std::string& chrome_app_id : chrome_app_ids) {
     base::Value web_app(base::Value::Type::DICTIONARY);
-    web_app.SetStringKey("url", web_app_url);
+    web_app.SetStringKey("url", chrome_app_to_web_app_.at(chrome_app_id));
     web_app_policy_value->Append(std::move(web_app));
   }
+
+  MigratePinningPolicy(policies);
+}
+
+std::vector<std::string>
+DefaultChromeAppsMigrator::RemoveChromeAppsFromExtensionForcelist(
+    PolicyMap* policies) const {
+  PolicyMap::Entry* forcelist_entry =
+      policies->GetMutable(key::kExtensionInstallForcelist);
+  if (!forcelist_entry)
+    return std::vector<std::string>();
+
+  const base::Value* forcelist_value = forcelist_entry->value();
+  if (!forcelist_value || !forcelist_value->is_list())
+    return std::vector<std::string>();
+
+  std::vector<std::string> chrome_app_ids;
+  base::Value new_forcelist_value(base::Value::Type::LIST);
+  for (const auto& list_entry : forcelist_value->GetListDeprecated()) {
+    if (!list_entry.is_string()) {
+      new_forcelist_value.Append(list_entry.Clone());
+      continue;
+    }
+
+    const std::string entry = list_entry.GetString();
+    const size_t pos = entry.find(';');
+    const std::string extension_id = entry.substr(0, pos);
+
+    if (chrome_app_to_web_app_.count(extension_id))
+      chrome_app_ids.push_back(extension_id);
+    else
+      new_forcelist_value.Append(entry);
+  }
+
+  forcelist_entry->set_value(std::move(new_forcelist_value));
+  return chrome_app_ids;
 }
 
 void DefaultChromeAppsMigrator::EnsurePolicyValueIsList(
@@ -106,6 +108,22 @@ void DefaultChromeAppsMigrator::EnsurePolicyValueIsList(
                               IDS_POLICY_TYPE_ERROR);
     }
     policies->Set(policy_name, std::move(policy_entry));
+  }
+}
+
+void DefaultChromeAppsMigrator::MigratePinningPolicy(
+    PolicyMap* policies) const {
+  base::Value* pinned_apps_value =
+      policies->GetMutableValue(key::kPinnedLauncherApps);
+  if (!pinned_apps_value || !pinned_apps_value->is_list())
+    return;
+  for (auto& list_entry : pinned_apps_value->GetListDeprecated()) {
+    if (!list_entry.is_string())
+      continue;
+    const std::string pinned_app = list_entry.GetString();
+    auto it = chrome_app_to_web_app_.find(pinned_app);
+    if (it != chrome_app_to_web_app_.end())
+      list_entry = base::Value(it->second);
   }
 }
 

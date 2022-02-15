@@ -45,6 +45,12 @@ class DefaultChromeAppsMigratorTest : public testing::Test {
     policy_map_.Set(key::kWebAppInstallForceList, POLICY_LEVEL_MANDATORY,
                     POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                     std::move(web_app_value), nullptr);
+
+    base::Value pinned_apps_value(base::Value::Type::LIST);
+    pinned_apps_value.Append("ffff");
+    policy_map_.Set(key::kPinnedLauncherApps, POLICY_LEVEL_MANDATORY,
+                    POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                    std::move(pinned_apps_value), nullptr);
   }
 
  protected:
@@ -190,6 +196,41 @@ TEST_F(DefaultChromeAppsMigratorTest, WebAppPolicyWrongType) {
   web_app_expected_entry->set_value(std::move(web_app_expected_value));
   web_app_expected_entry->AddMessage(PolicyMap::MessageType::kError,
                                      IDS_POLICY_TYPE_ERROR);
+
+  migrator_.Migrate(&policy_map_);
+
+  EXPECT_TRUE(policy_map_.Equals(expected_map));
+}
+
+TEST_F(DefaultChromeAppsMigratorTest, PinnedApp) {
+  PolicyMap expected_map(policy_map_.Clone());
+
+  // Add force installed chrome app that should be migrated.
+  base::Value* forcelist_value =
+      policy_map_.GetMutableValue(key::kExtensionInstallForcelist);
+  forcelist_value->Append(std::string(kAppId1));
+
+  // Make the chrome app pinned.
+  base::Value* pinned_apps_value =
+      policy_map_.GetMutableValue(key::kPinnedLauncherApps);
+  pinned_apps_value->Append(std::string(kAppId1));
+
+  // Chrome app should be blocked after migration.
+  base::Value* blocklist_value =
+      expected_map.GetMutableValue(key::kExtensionInstallBlocklist);
+  blocklist_value->Append(std::string(kAppId1));
+
+  // Corresponding web app should be force installed after migration.
+  base::Value first_app(base::Value::Type::DICTIONARY);
+  first_app.SetStringKey("url", kWebAppUrl1);
+  base::Value* web_app_value =
+      expected_map.GetMutableValue(key::kWebAppInstallForceList);
+  web_app_value->Append(std::move(first_app));
+
+  // The corresponding Web App should be pinned.
+  base::Value* pinned_expected_value =
+      expected_map.GetMutableValue(key::kPinnedLauncherApps);
+  pinned_expected_value->Append(std::string(kWebAppUrl1));
 
   migrator_.Migrate(&policy_map_);
 
