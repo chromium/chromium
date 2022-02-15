@@ -89,6 +89,10 @@ class XRSession final
       "Depth sensing feature is not supported by the session.";
   static constexpr char kRawCameraAccessFeatureNotSupported[] =
       "Raw camera access feature is not supported by the session.";
+  static constexpr char kCannotCancelHitTestSource[] =
+      "Hit test source could not be canceled! Ensure that it was not already "
+      "canceled.";
+
   // Runs all the video.requestVideoFrameCallback() callbacks associated with
   // one HTMLVideoElement. |double| is the |high_res_now_ms|, derived from
   // MonotonicTimeToZeroBasedDocumentTime(|current_frame_time|), to be passed as

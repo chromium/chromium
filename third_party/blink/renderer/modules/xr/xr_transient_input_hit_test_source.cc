@@ -11,12 +11,6 @@
 
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 
-namespace {
-const char* kCannotCancelHitTestSource =
-    "Hit test source could not be canceled. Ensure that it was not already "
-    "canceled.";
-}
-
 namespace blink {
 
 XRTransientInputHitTestSource::XRTransientInputHitTestSource(
@@ -35,7 +29,7 @@ void XRTransientInputHitTestSource::cancel(ExceptionState& exception_state) {
 
   if (!xr_session_->RemoveHitTestSource(this)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kCannotCancelHitTestSource);
+                                      XRSession::kCannotCancelHitTestSource);
   }
 }
 

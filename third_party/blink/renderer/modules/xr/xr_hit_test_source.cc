@@ -9,12 +9,6 @@
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
-namespace {
-const char kCannotCancelHitTestSource[] =
-    "Hit test source could not be canceled! Ensure that it was not already "
-    "canceled.";
-}
-
 namespace blink {
 
 XRHitTestSource::XRHitTestSource(uint64_t id, XRSession* xr_session)
@@ -29,7 +23,7 @@ void XRHitTestSource::cancel(ExceptionState& exception_state) {
 
   if (!xr_session_->RemoveHitTestSource(this)) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      kCannotCancelHitTestSource);
+                                      XRSession::kCannotCancelHitTestSource);
   }
 }
 
