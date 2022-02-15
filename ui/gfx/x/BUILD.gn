@@ -196,6 +196,8 @@ component("x") {
   sources = [
     "property_cache.cc",
     "property_cache.h",
+    "window_cache.cc",
+    "window_cache.h",
     "x11_atom_cache.cc",
     "x11_atom_cache.h",
     "x11_path.cc",
@@ -218,6 +220,7 @@ source_set("unit_test") {
   sources = [
     "connection_unittest.cc",
     "property_cache_unittest.cc",
+    "window_cache_unittest.cc",
   ]
   deps = [
     "//base",
