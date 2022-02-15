@@ -143,6 +143,7 @@ class StopColor;
 class Stroke;
 class TextDecorationColor;
 class TextEmphasisColor;
+class UserSelect;
 class WebkitTapHighlightColor;
 class WebkitTextFillColor;
 class WebkitTextStrokeColor;
@@ -257,6 +258,7 @@ class ComputedStyle : public ComputedStyleBase,
   friend class css_longhand::Stroke;
   friend class css_longhand::TextDecorationColor;
   friend class css_longhand::TextEmphasisColor;
+  friend class css_longhand::UserSelect;
   friend class css_longhand::WebkitTapHighlightColor;
   friend class css_longhand::WebkitTextFillColor;
   friend class css_longhand::WebkitTextStrokeColor;
@@ -2241,8 +2243,15 @@ class ComputedStyle : public ComputedStyleBase,
     return PointerEventsInternal();
   }
 
+  // User select utility functions.
+  EUserSelect UsedUserSelect() const {
+    if (IsInert())
+      return EUserSelect::kNone;
+    return UserSelectInternal();
+  }
+
   bool IsSelectable() const {
-    return !IsInert() && !(UserSelect() == EUserSelect::kNone &&
+    return !IsInert() && !(UserSelectInternal() == EUserSelect::kNone &&
                            UserModify() == EUserModify::kReadOnly);
   }
 
@@ -2785,6 +2794,7 @@ class ComputedStyle : public ComputedStyleBase,
   EFloat Floating() const { return FloatingInternal(); }
   EPointerEvents PointerEvents() const { return PointerEventsInternal(); }
   EResize Resize() const { return ResizeInternal(); }
+  EUserSelect UserSelect() const { return UserSelectInternal(); }
 
   bool IsInlineSizeContainer() const {
     return ContainerType() & kContainerTypeInlineSize;

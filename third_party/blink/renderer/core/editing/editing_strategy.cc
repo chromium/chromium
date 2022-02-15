@@ -22,7 +22,7 @@ blink::EUserSelect UsedValueOfUserSelect(const blink::Node& node) {
   if (style->UserModify() != blink::EUserModify::kReadOnly)
     return blink::EUserSelect::kText;
 
-  return style->UserSelect();
+  return style->UsedUserSelect();
 }
 
 }  // namespace

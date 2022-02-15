@@ -5137,6 +5137,7 @@
     {
       name: "user-select",
       property_methods: ["CSSValueFromComputedStyleInternal"],
+      computed_style_custom_functions: ["getter"],
       inherited: true,
       field_group: "*",
       field_template: "keyword",

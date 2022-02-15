@@ -377,7 +377,7 @@ bool AXLayoutObject::IsNotUserSelectable() const {
   if (!style)
     return false;
 
-  return (style->UserSelect() == EUserSelect::kNone);
+  return (style->UsedUserSelect() == EUserSelect::kNone);
 }
 
 //
