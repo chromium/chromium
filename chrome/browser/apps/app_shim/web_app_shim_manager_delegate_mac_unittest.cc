@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -89,6 +90,14 @@ class WebAppShimManagerDelegateTest : public WebAppTest {
     WebAppTest::SetUp();
 
     auto* provider = web_app::FakeWebAppProvider::Get(profile());
+
+    provider->SetOsIntegrationManager(
+        std::make_unique<FakeOsIntegrationManager>(
+            profile(),
+            /*app_shortcut_manager=*/nullptr,
+            /*file_handler_manager=*/nullptr,
+            /*protocol_handler_manager=*/nullptr,
+            /*url_handler_manager*/ nullptr));
 
     // FakeWebAppProvider should not wait for a test extension system, that is
     // never started, to be ready.

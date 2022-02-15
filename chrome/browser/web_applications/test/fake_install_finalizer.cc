@@ -149,11 +149,14 @@ void FakeInstallFinalizer::Finalize(const WebAppInstallInfo& web_app_info,
     next_result_code_.reset();
   }
 
+  OsHooksErrors os_hooks_errors;
+
   // Store input data copies for inspecting in tests.
   web_app_info_copy_ = std::make_unique<WebAppInstallInfo>(web_app_info);
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), app_id, code));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), app_id, code, os_hooks_errors));
 }
 
 }  // namespace web_app

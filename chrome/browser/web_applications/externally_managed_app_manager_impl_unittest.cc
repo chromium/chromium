@@ -276,7 +276,6 @@ class TestExternallyManagedAppManager : public ExternallyManagedAppManagerImpl {
               profile,
               test_url_loader,
               externally_managed_app_manager_impl->registrar(),
-              externally_managed_app_manager_impl->os_integration_manager(),
               externally_managed_app_manager_impl->ui_manager(),
               externally_managed_app_manager_impl->finalizer(),
               externally_managed_app_manager_impl->install_manager(),
@@ -424,8 +423,7 @@ class ExternallyManagedAppManagerImplTest : public WebAppTest {
     ui_manager_ = std::make_unique<FakeWebAppUiManager>();
 
     externally_managed_app_manager_impl().SetSubsystems(
-        &registrar(), &controller().os_integration_manager(), &ui_manager(),
-        &install_finalizer(), &install_manager());
+        &registrar(), &ui_manager(), &install_finalizer(), &install_manager());
 
     controller().Init();
   }

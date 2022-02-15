@@ -66,12 +66,10 @@ ExternallyManagedAppManager::~ExternallyManagedAppManager() {
 
 void ExternallyManagedAppManager::SetSubsystems(
     WebAppRegistrar* registrar,
-    OsIntegrationManager* os_integration_manager,
     WebAppUiManager* ui_manager,
     WebAppInstallFinalizer* finalizer,
     WebAppInstallManager* install_manager) {
   registrar_ = registrar;
-  os_integration_manager_ = os_integration_manager;
   ui_manager_ = ui_manager;
   finalizer_ = finalizer;
   install_manager_ = install_manager;

@@ -137,7 +137,6 @@ std::unique_ptr<WebAppInstallTask> CreateDummyTask() {
   return std::make_unique<WebAppInstallTask>(
       /*profile=*/nullptr,
       /*install_manager=*/nullptr,
-      /*os_integration_manager=*/nullptr,
       /*install_finalizer=*/nullptr,
       /*data_retriever=*/nullptr,
       /*registrar=*/nullptr);

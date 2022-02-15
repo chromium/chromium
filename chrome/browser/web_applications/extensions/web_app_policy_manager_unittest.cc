@@ -327,9 +327,8 @@ class WebAppPolicyManagerTest : public ChromeRenderViewHostTestHarness,
 
     controller().SetUp(profile());
 
-    externally_managed_app_manager().SetSubsystems(
-        &app_registrar(), &controller().os_integration_manager(), nullptr,
-        nullptr, nullptr);
+    externally_managed_app_manager().SetSubsystems(&app_registrar(), nullptr,
+                                                   nullptr, nullptr);
     externally_managed_app_manager().SetHandleInstallRequestCallback(
         base::BindLambdaForTesting(
             [this](const ExternalInstallOptions& install_options) {

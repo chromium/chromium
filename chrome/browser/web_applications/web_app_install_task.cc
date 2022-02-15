@@ -94,13 +94,11 @@ bool IsEmptyIconBitmapsForIconUrl(const IconsMap& icons_map,
 WebAppInstallTask::WebAppInstallTask(
     Profile* profile,
     WebAppInstallManager* install_manager,
-    OsIntegrationManager* os_integration_manager,
     WebAppInstallFinalizer* install_finalizer,
     std::unique_ptr<WebAppDataRetriever> data_retriever,
     WebAppRegistrar* registrar)
     : data_retriever_(std::move(data_retriever)),
       install_manager_(install_manager),
-      os_integration_manager_(os_integration_manager),
       install_finalizer_(install_finalizer),
       profile_(profile),
       registrar_(registrar) {
@@ -272,6 +270,10 @@ void UpdateFinalizerClientData(
       options->chromeos_data->handles_file_open_intents =
           params->handles_file_open_intents;
     }
+    options->bypass_os_hooks = params->bypass_os_hooks;
+    options->add_to_applications_menu = params->add_to_applications_menu;
+    options->add_to_desktop = params->add_to_desktop;
+    options->add_to_quick_launch_bar = params->add_to_quick_launch_bar;
     if (params->system_app_type.has_value()) {
       options->system_web_app_data.emplace();
       options->system_web_app_data->system_app_type =
@@ -297,6 +299,7 @@ void WebAppInstallTask::InstallWebAppFromInfo(
 
   install_source_ = install_source;
   background_installation_ = true;
+  install_callback_ = std::move(callback);
 
   RecordInstallEvent();
 
@@ -307,9 +310,13 @@ void WebAppInstallTask::InstallWebAppFromInfo(
       overwrite_existing_manifest_fields;
 
   UpdateFinalizerClientData(install_params_, &options);
+  if (!install_params_) {
+    options.bypass_os_hooks = true;
+  }
 
-  install_finalizer_->FinalizeInstall(*web_application_info, options,
-                                      std::move(callback));
+  install_finalizer_->FinalizeInstall(
+      *web_application_info, options,
+      base::BindOnce(&WebAppInstallTask::OnInstallFinalized, GetWeakPtr()));
 }
 
 void WebAppInstallTask::InstallWebAppWithParams(
@@ -835,8 +842,6 @@ void WebAppInstallTask::OnDialogCompleted(
 
   WebAppInstallFinalizer::FinalizeOptions finalize_options;
   finalize_options.install_source = install_source_;
-  finalize_options.locally_installed = true;
-  finalize_options.overwrite_existing_manifest_fields = true;
 
   if (install_params_) {
     finalize_options.locally_installed = install_params_->locally_installed;
@@ -848,30 +853,44 @@ void WebAppInstallTask::OnDialogCompleted(
 
     if (install_params_->user_display_mode != DisplayMode::kUndefined)
       web_app_info_copy.user_display_mode = install_params_->user_display_mode;
+
+    finalize_options.add_to_applications_menu =
+        install_params_->add_to_applications_menu;
+    finalize_options.add_to_desktop = install_params_->add_to_desktop;
+    finalize_options.add_to_quick_launch_bar =
+        install_params_->add_to_quick_launch_bar;
+  } else {
+    finalize_options.locally_installed = true;
+    finalize_options.overwrite_existing_manifest_fields = true;
+    finalize_options.add_to_applications_menu = true;
+    finalize_options.add_to_desktop = true;
+    finalize_options.add_to_quick_launch_bar =
+        install_source_ == webapps::WebappInstallSource::SYNC
+            ? false
+            : kAddAppsToQuickLaunchBarByDefault;
   }
 
   install_finalizer_->FinalizeInstall(
       web_app_info_copy, finalize_options,
-      base::BindOnce(&WebAppInstallTask::OnInstallFinalizedCreateShortcuts,
+      base::BindOnce(&WebAppInstallTask::OnInstallFinalizedMaybeReparentTab,
                      GetWeakPtr(), std::move(web_app_info)));
 
-  // Check that the finalizer hasn't called OnInstallFinalizedCreateShortcuts
+  // Check that the finalizer hasn't called OnInstallFinalizedMaybeReparentTab
   // synchronously:
   DCHECK(install_callback_);
 }
 
 void WebAppInstallTask::OnInstallFinalized(const AppId& app_id,
-                                           InstallResultCode code) {
-  if (ShouldStopInstall())
-    return;
-
+                                           InstallResultCode code,
+                                           OsHooksErrors os_hooks_errors) {
   CallInstallCallback(app_id, code);
 }
 
-void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
+void WebAppInstallTask::OnInstallFinalizedMaybeReparentTab(
     std::unique_ptr<WebAppInstallInfo> web_app_info,
     const AppId& app_id,
-    InstallResultCode code) {
+    InstallResultCode code,
+    OsHooksErrors os_hooks_errors) {
   if (ShouldStopInstall())
     return;
 
@@ -885,93 +904,21 @@ void WebAppInstallTask::OnInstallFinalizedCreateShortcuts(
 
   if (install_params_ && !install_params_->locally_installed) {
     DCHECK(background_installation_);
-    DCHECK(!(install_params_->add_to_applications_menu ||
-             install_params_->add_to_desktop ||
-             install_params_->add_to_quick_launch_bar))
-        << "Cannot create os hooks for a non-locally installed ";
-    CallInstallCallback(app_id, InstallResultCode::kSuccessNewInstall);
-    return;
   }
 
-  // Only record the AppBanner stats for locally installed apps.
-  RecordAppBanner(web_contents(), web_app_info->start_url);
-
-  InstallOsHooksOptions options;
-
-  options.os_hooks[OsHookType::kShortcuts] = true;
-  options.os_hooks[OsHookType::kShortcutsMenu] = true;
-  options.add_to_desktop = true;
-  options.add_to_quick_launch_bar = kAddAppsToQuickLaunchBarByDefault;
-  // TODO(crbug.com/1087219): Determine if file handlers should be
-  // configured from somewhere else rather than always true.
-  options.os_hooks[OsHookType::kFileHandlers] = true;
-  options.os_hooks[OsHookType::kProtocolHandlers] = true;
-
-  {
-    web_app::RunOnOsLoginMode current_mode =
-        registrar_->GetAppRunOnOsLoginMode(app_id).value;
-    options.os_hooks[OsHookType::kRunOnOsLogin] =
-        current_mode == RunOnOsLoginMode::kWindowed;
+  if (!install_params_ || install_params_->locally_installed) {
+    RecordAppBanner(web_contents(), web_app_info->start_url);
+  } else {
+    DCHECK(background_installation_);
   }
 
-  // Apps that can't be uninstalled from users shouldn't register to
-  // OS Settings.
-  const WebApp* web_app = registrar_->GetAppById(app_id);
-  if (web_app) {
-    // Certain unit tests could have nullptr web_app.
-    options.os_hooks[OsHookType::kUninstallationViaOsSettings] =
-        web_app->CanUserUninstallWebApp();
-  }
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
-  options.os_hooks[OsHookType::kUrlHandlers] = true;
-#else
-  options.os_hooks[OsHookType::kUrlHandlers] = false;
-#endif
-
-  if (install_source_ == webapps::WebappInstallSource::SYNC)
-    options.add_to_quick_launch_bar = false;
-
-  if (install_params_) {
-    DCHECK(install_params_->locally_installed);
-    options.os_hooks[OsHookType::kShortcuts] =
-        install_params_->add_to_applications_menu;
-    options.os_hooks[OsHookType::kShortcutsMenu] =
-        install_params_->add_to_applications_menu;
-    options.add_to_desktop = install_params_->add_to_desktop;
-    options.add_to_quick_launch_bar = install_params_->add_to_quick_launch_bar;
-  }
-
-  MaybeDisableOsIntegration(registrar_, app_id, &options);
-
-  auto hooks_created_callback =
-      base::BindOnce(&WebAppInstallTask::OnOsHooksCreated, GetWeakPtr(),
-                     web_app_info->user_display_mode, app_id);
-
-  os_integration_manager_->InstallOsHooks(app_id,
-                                          std::move(hooks_created_callback),
-                                          std::move(web_app_info), options);
-}
-
-void WebAppInstallTask::OnOsHooksCreated(DisplayMode user_display_mode,
-                                         const AppId& app_id,
-                                         const OsHooksErrors os_hook_errors) {
-  if (ShouldStopInstall())
-    return;
-
-  // TODO(crbug/1275945): remove in phase 3 of resolving crbug/1275945.
-  DCHECK(registrar_);
-  registrar_->NotifyWebAppInstalledWithOsHooks(app_id);
-
-  DCHECK(install_manager_);
-  install_manager_->NotifyWebAppInstalledWithOsHooks(app_id);
   if (!background_installation_) {
-    bool error = os_hook_errors[OsHookType::kShortcuts];
+    bool error = os_hooks_errors[OsHookType::kShortcuts];
     const bool can_reparent_tab =
         install_finalizer_->CanReparentTab(app_id, !error);
 
-    if (can_reparent_tab && (user_display_mode != DisplayMode::kBrowser)) {
+    if (can_reparent_tab &&
+        (web_app_info->user_display_mode != DisplayMode::kBrowser)) {
       install_finalizer_->ReparentTab(app_id, !error, web_contents());
     }
   }

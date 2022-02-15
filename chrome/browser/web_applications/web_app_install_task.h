@@ -35,7 +35,6 @@ class WebContents;
 
 namespace web_app {
 
-class OsIntegrationManager;
 class WebAppInstallManager;
 class WebAppDataRetriever;
 class WebAppUrlLoader;
@@ -52,7 +51,6 @@ class WebAppInstallTask : content::WebContentsObserver {
 
   WebAppInstallTask(Profile* profile,
                     WebAppInstallManager* install_manager,
-                    OsIntegrationManager* os_integration_manager,
                     WebAppInstallFinalizer* install_finalizer,
                     std::unique_ptr<WebAppDataRetriever> data_retriever,
                     WebAppRegistrar* registrar);
@@ -250,11 +248,14 @@ class WebAppInstallTask : content::WebContentsObserver {
   void OnDialogCompleted(ForInstallableSite for_installable_site,
                          bool user_accepted,
                          std::unique_ptr<WebAppInstallInfo> web_app_info);
-  void OnInstallFinalized(const AppId& app_id, InstallResultCode code);
-  void OnInstallFinalizedCreateShortcuts(
+  void OnInstallFinalized(const AppId& app_id,
+                          InstallResultCode code,
+                          OsHooksErrors os_hooks_errors);
+  void OnInstallFinalizedMaybeReparentTab(
       std::unique_ptr<WebAppInstallInfo> web_app_info,
       const AppId& app_id,
-      InstallResultCode code);
+      InstallResultCode code,
+      OsHooksErrors os_hooks_errors);
   void OnOsHooksCreated(DisplayMode user_display_mode,
                         const AppId& app_id,
                         const OsHooksErrors os_hook_errors);
@@ -307,7 +308,6 @@ class WebAppInstallTask : content::WebContentsObserver {
   content::WebContents* installing_web_contents_ = nullptr;
 
   raw_ptr<WebAppInstallManager> install_manager_;
-  raw_ptr<OsIntegrationManager> os_integration_manager_;
   raw_ptr<WebAppInstallFinalizer> install_finalizer_;
   const raw_ptr<Profile> profile_;
   raw_ptr<WebAppRegistrar> registrar_;

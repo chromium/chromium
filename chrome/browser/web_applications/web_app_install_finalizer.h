@@ -47,7 +47,9 @@ enum class WebAppUninstallJobResult;
 class WebAppInstallFinalizer {
  public:
   using InstallFinalizedCallback =
-      base::OnceCallback<void(const AppId& app_id, InstallResultCode code)>;
+      base::OnceCallback<void(const AppId& app_id,
+                              InstallResultCode code,
+                              OsHooksErrors os_hooks_errors)>;
   using UninstallWebAppCallback = base::OnceCallback<void(bool uninstalled)>;
   using RepeatingUninstallCallback =
       base::RepeatingCallback<void(const AppId& app_id, bool uninstalled)>;
@@ -65,6 +67,16 @@ class WebAppInstallFinalizer {
     absl::optional<WebAppChromeOsData> chromeos_data;
     absl::optional<WebAppSystemWebAppData> system_web_app_data;
     absl::optional<AppId> parent_app_id;
+
+    // If true, OsIntegrationManager::InstallOsHooks won't be called at all,
+    // meaning that all other OS Hooks related parameters below will be ignored.
+    bool bypass_os_hooks = false;
+
+    // These OS shortcut fields can't be true if |locally_installed| is false.
+    // They only have an effect when |bypass_os_hooks| is false.
+    bool add_to_applications_menu = true;
+    bool add_to_desktop = true;
+    bool add_to_quick_launch_bar = true;
   };
 
   explicit WebAppInstallFinalizer(Profile* profile);
@@ -190,7 +202,13 @@ class WebAppInstallFinalizer {
 
   void OnDatabaseCommitCompletedForInstall(InstallFinalizedCallback callback,
                                            AppId app_id,
+                                           FinalizeOptions finalize_options,
                                            bool success);
+
+  void OnInstallHooksFinished(InstallFinalizedCallback callback,
+                              AppId app_id,
+                              web_app::OsHooksErrors os_hooks_errors);
+  void NotifyWebAppInstalledWithOsHooks(AppId app_id);
 
   bool ShouldUpdateOsHooks(const AppId& app_id);
 

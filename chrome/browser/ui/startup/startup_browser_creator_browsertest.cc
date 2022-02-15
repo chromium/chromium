@@ -2131,6 +2131,7 @@ class StartupBrowserWithWebAppTest : public StartupBrowserCreatorTest {
   WebAppProvider& provider() { return *WebAppProvider::GetForTest(profile()); }
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_supress_;
 };
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
@@ -2211,12 +2212,14 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
     info.user_display_mode = blink::mojom::DisplayMode::kStandalone;
     web_app_finalizer.FinalizeInstall(
         info, options,
-        base::BindLambdaForTesting(
-            [&](const web_app::AppId& app_id, web_app::InstallResultCode code) {
-              EXPECT_EQ(app_id, kAppId);
-              EXPECT_EQ(code, web_app::InstallResultCode::kSuccessNewInstall);
-              run_loop.Quit();
-            }));
+        base::BindLambdaForTesting([&](const web_app::AppId& app_id,
+                                       web_app::InstallResultCode code,
+                                       web_app::OsHooksErrors os_hooks_errors) {
+          EXPECT_EQ(app_id, kAppId);
+          EXPECT_EQ(code, web_app::InstallResultCode::kSuccessNewInstall);
+          EXPECT_TRUE(os_hooks_errors.none());
+          run_loop.Quit();
+        }));
     run_loop.Run();
 
     EXPECT_EQ(provider->registrar().GetAppUserDisplayMode(kAppId),

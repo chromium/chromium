@@ -63,6 +63,7 @@ AppId InstallDummyWebApp(Profile* profile,
   web_app_info.user_display_mode = DisplayMode::kStandalone;
 
   WebAppInstallFinalizer::FinalizeOptions options;
+  options.bypass_os_hooks = true;
   options.install_source = webapps::WebappInstallSource::EXTERNAL_DEFAULT;
 
   // In unit tests, we do not have Browser or WebContents instances.
@@ -71,12 +72,13 @@ AppId InstallDummyWebApp(Profile* profile,
   base::RunLoop run_loop;
   WebAppProvider::GetForTest(profile)->install_finalizer().FinalizeInstall(
       web_app_info, options,
-      base::BindLambdaForTesting(
-          [&](const AppId& installed_app_id, InstallResultCode code) {
-            EXPECT_EQ(installed_app_id, app_id);
-            EXPECT_EQ(code, InstallResultCode::kSuccessNewInstall);
-            run_loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](const AppId& installed_app_id,
+                                     InstallResultCode code,
+                                     OsHooksErrors os_hooks_errors) {
+        EXPECT_EQ(installed_app_id, app_id);
+        EXPECT_EQ(code, InstallResultCode::kSuccessNewInstall);
+        run_loop.Quit();
+      }));
   run_loop.Run();
   // Allow updates to be published to App Service listeners.
   base::RunLoop().RunUntilIdle();

@@ -210,11 +210,19 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, PublishApps) {
   // OnWebAppLastLaunchTimeChanged() lead to updates.
   const auto& app_deltas = mock_app_publisher.get_deltas();
   EXPECT_EQ(app_deltas.size(), 5U);
-  EXPECT_EQ(app_deltas[app_deltas.size() - 2]->app_id, app_id);
-  EXPECT_EQ(app_deltas[app_deltas.size() - 2]->readiness,
-            apps::mojom::Readiness::kReady);
-  EXPECT_EQ(app_deltas[app_deltas.size() - 2]->icon_key->icon_effects,
-            IconEffects::kRoundCorners | IconEffects::kCrOsStandardIcon);
+  EXPECT_EQ(app_deltas.back()->app_id, app_id);
+  bool found_ready_with_icon = false;
+  // The order of those three updates is not important
+  for (std::vector<apps::mojom::AppPtr>::size_type i = 2; i < app_deltas.size();
+       i++) {
+    EXPECT_EQ(app_deltas[i]->app_id, app_id);
+    if (app_deltas[i]->readiness == apps::mojom::Readiness::kReady) {
+      EXPECT_EQ(app_deltas[i]->icon_key->icon_effects,
+                IconEffects::kRoundCorners | IconEffects::kCrOsStandardIcon);
+      found_ready_with_icon = true;
+    }
+  }
+  EXPECT_TRUE(found_ready_with_icon);
 
   {
     base::RunLoop run_loop;
@@ -292,10 +300,13 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, ManifestUpdate) {
     base::RunLoop run_loop;
     provider().install_finalizer().FinalizeUpdate(
         *web_app_info,
-        base::BindLambdaForTesting(
-            [&run_loop](const AppId& app_id, InstallResultCode code) {
-              run_loop.Quit();
-            }));
+        base::BindLambdaForTesting([&run_loop](const AppId& app_id,
+                                               InstallResultCode code,
+                                               OsHooksErrors os_hooks_errors) {
+          EXPECT_EQ(code, InstallResultCode::kSuccessAlreadyInstalled);
+          EXPECT_TRUE(os_hooks_errors.none());
+          run_loop.Quit();
+        }));
 
     run_loop.Run();
     mock_app_publisher.Wait();

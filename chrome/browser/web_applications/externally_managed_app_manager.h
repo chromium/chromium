@@ -23,7 +23,6 @@ namespace web_app {
 enum class InstallResultCode;
 
 class WebAppRegistrar;
-class OsIntegrationManager;
 class WebAppInstallFinalizer;
 class WebAppInstallManager;
 class WebAppUiManager;
@@ -87,7 +86,6 @@ class ExternallyManagedAppManager {
   virtual ~ExternallyManagedAppManager();
 
   void SetSubsystems(WebAppRegistrar* registrar,
-                     OsIntegrationManager* os_integration_manager,
                      WebAppUiManager* ui_manager,
                      WebAppInstallFinalizer* finalizer,
                      WebAppInstallManager* install_manager);
@@ -157,9 +155,6 @@ class ExternallyManagedAppManager {
 
  protected:
   WebAppRegistrar* registrar() { return registrar_; }
-  OsIntegrationManager* os_integration_manager() {
-    return os_integration_manager_;
-  }
   WebAppUiManager* ui_manager() { return ui_manager_; }
   WebAppInstallFinalizer* finalizer() { return finalizer_; }
   WebAppInstallManager* install_manager() { return install_manager_; }
@@ -199,7 +194,6 @@ class ExternallyManagedAppManager {
   void ContinueOrCompleteSynchronization(ExternalInstallSource source);
 
   raw_ptr<WebAppRegistrar> registrar_ = nullptr;
-  raw_ptr<OsIntegrationManager> os_integration_manager_ = nullptr;
   raw_ptr<WebAppUiManager> ui_manager_ = nullptr;
   raw_ptr<WebAppInstallFinalizer> finalizer_ = nullptr;
   raw_ptr<WebAppInstallManager> install_manager_ = nullptr;

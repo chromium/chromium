@@ -63,7 +63,6 @@ void WebKioskAppLauncher::ContinueWithNetworkReady() {
   install_task_ = std::make_unique<web_app::WebAppInstallTask>(
       profile_,
       /*install_manager=*/nullptr,
-      /*os_integration_manager=*/nullptr,
       /*install_finalizer=*/nullptr, data_retriever_factory_.Run(),
       /*registrar=*/nullptr);
   install_task_->LoadAndRetrieveWebAppInstallInfoWithIcons(

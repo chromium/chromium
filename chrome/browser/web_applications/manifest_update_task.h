@@ -227,9 +227,9 @@ class ManifestUpdateTask final
   void UpdateAfterWindowsClose();
   void OnAllAppWindowsClosed();
   void OnExistingIconsRead(IconBitmaps icon_bitmaps);
-  void OnInstallationComplete(
-      const AppId& app_id,
-      InstallResultCode code);
+  void OnInstallationComplete(const AppId& app_id,
+                              InstallResultCode code,
+                              OsHooksErrors os_hooks_errors);
   void DestroySelf(ManifestUpdateResult result);
 
   const WebAppRegistrar& registrar_;

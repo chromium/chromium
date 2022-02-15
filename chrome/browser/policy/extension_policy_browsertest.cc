@@ -2378,7 +2378,8 @@ IN_PROC_BROWSER_TEST_F(
     StartUpInstallationPlaceholderFallbackName) {
   const web_app::WebAppRegistrar& registrar =
       web_app::WebAppProvider::GetForTest(browser()->profile())->registrar();
-  web_app::WebAppTestInstallObserver install_observer(browser()->profile());
+  web_app::WebAppTestInstallWithOsHooksObserver install_observer(
+      browser()->profile());
   absl::optional<web_app::AppId> app_id =
       registrar.FindAppWithUrlInScope(policy_app_url_);
   if (!app_id)

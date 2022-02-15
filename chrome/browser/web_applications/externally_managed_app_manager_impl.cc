@@ -116,8 +116,8 @@ std::unique_ptr<ExternallyManagedAppInstallTask>
 ExternallyManagedAppManagerImpl::CreateInstallationTask(
     ExternalInstallOptions install_options) {
   return std::make_unique<ExternallyManagedAppInstallTask>(
-      profile_, url_loader_.get(), registrar(), os_integration_manager(),
-      ui_manager(), finalizer(), install_manager(), std::move(install_options));
+      profile_, url_loader_.get(), registrar(), ui_manager(), finalizer(),
+      install_manager(), std::move(install_options));
 }
 
 std::unique_ptr<ExternallyManagedAppRegistrationTaskBase>

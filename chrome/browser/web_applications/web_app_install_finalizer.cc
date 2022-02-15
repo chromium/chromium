@@ -132,8 +132,8 @@ void WebAppInstallFinalizer::FinalizeInstall(
   // WebAppInstallManager and replace this runtime error in
   // WebAppInstallFinalizer with DCHECK(started_).
   if (!started_) {
-    std::move(callback).Run(AppId(),
-                            InstallResultCode::kWebAppProviderNotReady);
+    std::move(callback).Run(AppId(), InstallResultCode::kWebAppProviderNotReady,
+                            OsHooksErrors());
     return;
   }
 
@@ -223,9 +223,15 @@ void WebAppInstallFinalizer::FinalizeInstall(
   web_app->SetParentAppId(options.parent_app_id);
   web_app->SetInstallSourceForMetrics(options.install_source);
 
+  if (!options.locally_installed) {
+    DCHECK(!(options.add_to_applications_menu || options.add_to_desktop ||
+             options.add_to_quick_launch_bar))
+        << "Cannot create os hooks for a non-locally installed ";
+  }
+
   CommitCallback commit_callback = base::BindOnce(
       &WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id);
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id, options);
 
   if (options.overwrite_existing_manifest_fields || !existing_web_app) {
     SetWebAppManifestFieldsAndWriteData(web_app_info, std::move(web_app),
@@ -415,8 +421,9 @@ void WebAppInstallFinalizer::FinalizeUpdate(
       existing_web_app->is_from_sync_and_pending_installation() ||
       app_id != existing_web_app->app_id()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), AppId(),
-                                  InstallResultCode::kWebAppDisabled));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), AppId(),
+                       InstallResultCode::kWebAppDisabled, OsHooksErrors()));
     return;
   }
 
@@ -623,10 +630,12 @@ void WebAppInstallFinalizer::CommitToSyncBridge(std::unique_ptr<WebApp> web_app,
 void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
     InstallFinalizedCallback callback,
     AppId app_id,
+    FinalizeOptions finalize_options,
     bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!success) {
-    std::move(callback).Run(AppId(), InstallResultCode::kWriteDataFailed);
+    std::move(callback).Run(AppId(), InstallResultCode::kWriteDataFailed,
+                            OsHooksErrors());
     return;
   }
 
@@ -634,7 +643,83 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
   registrar_->NotifyWebAppInstalled(app_id);
 
   install_manager_->NotifyWebAppInstalled(app_id);
-  std::move(callback).Run(app_id, InstallResultCode::kSuccessNewInstall);
+
+  const WebApp* web_app = GetWebAppRegistrar().GetAppById(app_id);
+  CHECK(web_app);
+
+#if BUILDFLAG(IS_CHROMEOS)  // Deeper OS integration is expected on ChromeOS.
+  const bool should_install_os_hooks = !finalize_options.bypass_os_hooks;
+#else
+  const bool should_install_os_hooks =
+      !finalize_options.bypass_os_hooks &&
+      !web_app->HasOnlySource(Source::Type::kDefault) &&
+      finalize_options.locally_installed;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  if (!should_install_os_hooks) {
+    std::move(callback).Run(app_id, InstallResultCode::kSuccessNewInstall,
+                            OsHooksErrors());
+    return;
+  }
+
+  InstallOsHooksOptions hooks_options;
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+  hooks_options.os_hooks[OsHookType::kUrlHandlers] = true;
+#else
+  hooks_options.os_hooks[OsHookType::kUrlHandlers] = false;
+#endif
+
+  hooks_options.os_hooks[OsHookType::kShortcuts] =
+      finalize_options.add_to_applications_menu;
+  hooks_options.os_hooks[OsHookType::kShortcutsMenu] =
+      finalize_options.add_to_applications_menu;
+
+  {
+    web_app::RunOnOsLoginMode current_mode =
+        registrar_->GetAppRunOnOsLoginMode(app_id).value;
+    hooks_options.os_hooks[OsHookType::kRunOnOsLogin] =
+        current_mode == RunOnOsLoginMode::kWindowed;
+  }
+
+  hooks_options.add_to_quick_launch_bar =
+      finalize_options.add_to_quick_launch_bar;
+  hooks_options.add_to_desktop = finalize_options.add_to_desktop;
+
+  // Apps that can't be uninstalled from users shouldn't register to
+  // OS Settings.
+  hooks_options.os_hooks[OsHookType::kUninstallationViaOsSettings] =
+      web_app->CanUserUninstallWebApp();
+
+  hooks_options.os_hooks[OsHookType::kFileHandlers] = true;
+  hooks_options.os_hooks[OsHookType::kProtocolHandlers] = true;
+
+  os_integration_manager_->InstallOsHooks(
+      app_id,
+      base::BindOnce(&WebAppInstallFinalizer::OnInstallHooksFinished,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     app_id),
+      /*web_app_info=*/nullptr, hooks_options);
+}
+
+void WebAppInstallFinalizer::OnInstallHooksFinished(
+    InstallFinalizedCallback callback,
+    AppId app_id,
+    web_app::OsHooksErrors os_hooks_errors) {
+  auto joined = std::move(callback).Then(
+      base::BindOnce(&WebAppInstallFinalizer::NotifyWebAppInstalledWithOsHooks,
+                     weak_ptr_factory_.GetWeakPtr(), app_id));
+
+  std::move(joined).Run(app_id, InstallResultCode::kSuccessNewInstall,
+                        os_hooks_errors);
+}
+
+void WebAppInstallFinalizer::NotifyWebAppInstalledWithOsHooks(AppId app_id) {
+  // TODO(crbug/1275945): remove in phase 3 of resolving crbug/1275945.
+  registrar_->NotifyWebAppInstalledWithOsHooks(app_id);
+
+  install_manager_->NotifyWebAppInstalledWithOsHooks(app_id);
 }
 
 bool WebAppInstallFinalizer::ShouldUpdateOsHooks(const AppId& app_id) {
@@ -657,7 +742,8 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
     bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!success) {
-    std::move(callback).Run(AppId(), InstallResultCode::kWriteDataFailed);
+    std::move(callback).Run(AppId(), InstallResultCode::kWriteDataFailed,
+                            OsHooksErrors());
     return;
   }
 
@@ -668,8 +754,8 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        app_id, old_name));
   } else {
-    std::move(callback).Run(app_id,
-                            InstallResultCode::kSuccessAlreadyInstalled);
+    std::move(callback).Run(app_id, InstallResultCode::kSuccessAlreadyInstalled,
+                            OsHooksErrors());
   }
 }
 
@@ -686,7 +772,8 @@ void WebAppInstallFinalizer::OnUpdateHooksFinished(
   std::move(callback).Run(app_id,
                           os_hooks_errors.any()
                               ? InstallResultCode::kUpdateTaskFailed
-                              : InstallResultCode::kSuccessAlreadyInstalled);
+                              : InstallResultCode::kSuccessAlreadyInstalled,
+                          os_hooks_errors);
 }
 
 const WebAppRegistrar& WebAppInstallFinalizer::GetWebAppRegistrar() const {

@@ -736,9 +736,9 @@ void ManifestUpdateTask::OnAllAppWindowsClosed() {
       base::BindOnce(&ManifestUpdateTask::OnInstallationComplete, AsWeakPtr()));
 }
 
-void ManifestUpdateTask::OnInstallationComplete(
-    const AppId& app_id,
-    InstallResultCode code) {
+void ManifestUpdateTask::OnInstallationComplete(const AppId& app_id,
+                                                InstallResultCode code,
+                                                OsHooksErrors os_hooks_errors) {
   DCHECK_EQ(stage_, Stage::kPendingInstallation);
 
   if (!IsSuccess(code)) {

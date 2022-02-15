@@ -110,8 +110,7 @@ void WebAppInstallManager::LoadWebAppAndCheckManifest(
     return;
 
   auto task = std::make_unique<WebAppInstallTask>(
-      profile_, this, os_integration_manager_, finalizer_,
-      data_retriever_factory_.Run(), registrar_);
+      profile_, this, finalizer_, data_retriever_factory_.Run(), registrar_);
 
   task->LoadWebAppAndCheckManifest(
       web_app_url, install_source, url_loader_.get(),
@@ -132,8 +131,7 @@ void WebAppInstallManager::InstallWebAppFromManifest(
     return;
 
   auto task = std::make_unique<WebAppInstallTask>(
-      profile_, this, os_integration_manager_, finalizer_,
-      data_retriever_factory_.Run(), registrar_);
+      profile_, this, finalizer_, data_retriever_factory_.Run(), registrar_);
   task->InstallWebAppFromManifest(
       contents, bypass_service_worker_check, install_source,
       std::move(dialog_callback),
@@ -153,8 +151,7 @@ void WebAppInstallManager::InstallWebAppFromManifestWithFallback(
     return;
 
   auto task = std::make_unique<WebAppInstallTask>(
-      profile_, this, os_integration_manager_, finalizer_,
-      data_retriever_factory_.Run(), registrar_);
+      profile_, this, finalizer_, data_retriever_factory_.Run(), registrar_);
   task->InstallWebAppFromManifestWithFallback(
       contents, force_shortcut_app, install_source, std::move(dialog_callback),
       base::BindOnce(&WebAppInstallManager::OnInstallTaskCompleted,
@@ -174,8 +171,7 @@ void WebAppInstallManager::InstallSubApp(const AppId& parent_app_id,
   // app_id is made available.
 
   auto task = std::make_unique<WebAppInstallTask>(
-      profile_, this, os_integration_manager_, finalizer_,
-      data_retriever_factory_.Run(), registrar_);
+      profile_, this, finalizer_, data_retriever_factory_.Run(), registrar_);
 
   WebAppInstallParams params;
   params.parent_app_id = parent_app_id;
@@ -220,8 +216,7 @@ void WebAppInstallManager::InstallWebAppFromInfo(
     return;
 
   auto task = std::make_unique<WebAppInstallTask>(
-      profile_, this, os_integration_manager_, finalizer_,
-      data_retriever_factory_.Run(), registrar_);
+      profile_, this, finalizer_, data_retriever_factory_.Run(), registrar_);
   if (install_params) {
     task->SetInstallParams(install_params.value());
   }
@@ -243,8 +238,7 @@ void WebAppInstallManager::InstallWebAppWithParams(
     return;
 
   auto task = std::make_unique<WebAppInstallTask>(
-      profile_, this, os_integration_manager_, finalizer_,
-      data_retriever_factory_.Run(), registrar_);
+      profile_, this, finalizer_, data_retriever_factory_.Run(), registrar_);
   task->InstallWebAppWithParams(
       web_contents, install_params, install_source,
       base::BindOnce(&WebAppInstallManager::OnInstallTaskCompleted,
@@ -281,8 +275,7 @@ void WebAppInstallManager::EnqueueInstallAppFromSync(
   GURL start_url = web_application_info->start_url;
 
   auto task = std::make_unique<WebAppInstallTask>(
-      profile_, this, os_integration_manager_, finalizer_,
-      data_retriever_factory_.Run(), registrar_);
+      profile_, this, finalizer_, data_retriever_factory_.Run(), registrar_);
 
   task->ExpectAppId(sync_app_id);
 
@@ -422,16 +415,20 @@ void WebAppInstallManager::
 
   // Install failed. Do the fallback install from info fetching just icon URLs.
   auto task = std::make_unique<WebAppInstallTask>(
-      profile_, this, os_integration_manager_, finalizer_,
-      data_retriever_factory_.Run(), registrar_);
+      profile_, this, finalizer_, data_retriever_factory_.Run(), registrar_);
   // Set the expect app id for fallback install too. This can avoid duplicate
   // installs.
   task->ExpectAppId(sync_app_id);
 
   WebAppInstallFinalizer::FinalizeOptions finalize_options;
   finalize_options.install_source = webapps::WebappInstallSource::SYNC;
-  finalize_options.locally_installed = AreAppsLocallyInstalledBySync();
   finalize_options.overwrite_existing_manifest_fields = true;
+  // If app is not locally installed then no OS integration like OS shortcuts.
+  finalize_options.locally_installed = AreAppsLocallyInstalledBySync();
+  finalize_options.add_to_applications_menu = AreAppsLocallyInstalledBySync();
+  finalize_options.add_to_desktop = AreAppsLocallyInstalledBySync();
+  // Never add the app to the quick launch bar after sync.
+  finalize_options.add_to_quick_launch_bar = false;
 
   base::OnceClosure start_task = base::BindOnce(
       &WebAppInstallTask::InstallWebAppFromInfoRetrieveIcons,

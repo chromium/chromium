@@ -82,7 +82,13 @@ struct WebAppInstallParams {
   absl::optional<std::u16string> fallback_app_name;
 
   bool locally_installed = true;
+
+  // If true, OsIntegrationManager::InstallOsHooks won't be called at all,
+  // meaning that all other OS Hooks related parameters will be ignored.
+  bool bypass_os_hooks = false;
+
   // These OS shortcut fields can't be true if |locally_installed| is false.
+  // They only have an effect when |bypass_os_hooks| is false.
   bool add_to_applications_menu = true;
   bool add_to_desktop = true;
   bool add_to_quick_launch_bar = true;
