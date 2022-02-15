@@ -113,6 +113,17 @@ TEST_F(WebUISourcesTest, ThemeSourceCSS) {
 #endif
 }
 
+TEST_F(WebUISourcesTest, ThemeSourceColorsCSS) {
+  // Check for a successful request and that the data is non-null. The actual
+  // conversion of color provider colors to css colors is tested in helper
+  // functions.
+  size_t empty_size = 0;
+
+  StartDataRequest("colors.css");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_NE(result_data_size_, empty_size);
+}
+
 TEST_F(WebUISourcesTest, ThemeAllowedOrigin) {
   EXPECT_EQ(
       theme_source()->GetAccessControlAllowOriginForOrigin("chrome://settings"),

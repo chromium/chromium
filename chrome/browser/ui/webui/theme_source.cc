@@ -6,8 +6,10 @@
 
 #include "base/bind.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resources_util.h"
@@ -16,6 +18,8 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache_factory.h"
 #include "chrome/common/channel_info.h"
@@ -25,11 +29,14 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/url_data_source.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/layout.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_provider_utils.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
@@ -94,6 +101,40 @@ void ThemeSource::StartDataRequest(
         NTPResourceCache::GetWindowType(profile_);
     NTPResourceCache* cache = NTPResourceCacheFactory::GetForProfile(profile_);
     std::move(callback).Run(cache->GetNewTabCSS(type, wc_getter));
+    return;
+  }
+
+  // kColorsCssPath should stay consistent with COLORS_CSS_SELECTOR in
+  // colors_css_updater.js.
+  constexpr char kColorsCssPath[] = "colors.css";
+  if (parsed_path == kColorsCssPath) {
+    const ui::ColorProvider& color_provider =
+        wc_getter.Run()->GetColorProvider();
+
+    auto generate_color_mapping = [](ui::ColorId start, ui::ColorId end,
+                                     std::string (*color_id_name)(ui::ColorId),
+                                     const ui::ColorProvider& color_provider) {
+      std::string css_string;
+      for (ui::ColorId id = start; id < end; ++id) {
+        const SkColor color = color_provider.GetColor(id);
+        std::string css_id_to_color_mapping = base::StringPrintf(
+            "%s: %s; ",
+            ui::ConvertColorProviderColorIdToCSSColorId(color_id_name(id))
+                .c_str(),
+            ui::ConvertSkColorToCSSColor(color).c_str());
+        base::StrAppend(&css_string, {css_id_to_color_mapping});
+      }
+      return css_string;
+    };
+
+    std::string css_string = base::StrCat(
+        {"html {",
+         generate_color_mapping(ui::kUiColorsStart, ui::kUiColorsEnd,
+                                &ui::ColorIdName, color_provider),
+         generate_color_mapping(kChromeColorsStart, kChromeColorsEnd,
+                                &ChromeColorIdName, color_provider),
+         "}"});
+    std::move(callback).Run(base::RefCountedString::TakeString(&css_string));
     return;
   }
 
