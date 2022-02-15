@@ -116,7 +116,7 @@ constexpr CGFloat kPaddingHeight = 50;
       UIContentSizeCategoryExtraExtraExtraLarge);
 
   self.loadingLabel.numberOfLines = 0;
-  self.loadingLabel.textColor = [UIColor colorNamed:kGrey600Color];
+  self.loadingLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   self.loadingLabel.textAlignment = NSTextAlignmentCenter;
 
   UIActivityIndicatorView* spinner = [[UIActivityIndicatorView alloc] init];
