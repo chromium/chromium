@@ -14,9 +14,10 @@
 #include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "ios/chrome/browser/infobars/confirm_infobar_metrics_recorder.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#import "ios/chrome/browser/web/chrome_web_test.h"
 #import "ios/web/public/test/fakes/fake_web_state_delegate.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/platform_test.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -26,11 +27,18 @@
 using web::WebState;
 
 // Test fixture for BlockedPopupTabHelper class.
-class BlockedPopupTabHelperTest : public ChromeWebTest {
+class BlockedPopupTabHelperTest : public PlatformTest {
  protected:
   void SetUp() override {
-    ChromeWebTest::SetUp();
-    web_state()->SetDelegate(&web_state_delegate_);
+    PlatformTest::SetUp();
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+
+    web::WebState::CreateParams params(browser_state_.get());
+    web_state_ = web::WebState::Create(params);
+    web_state_->GetView();
+    web_state_->SetKeepRenderProcessAlive(true);
+    web_state_->SetDelegate(&web_state_delegate_);
+
     BlockedPopupTabHelper::CreateForWebState(web_state());
     InfoBarManagerImpl::CreateForWebState(web_state());
   }
@@ -50,6 +58,11 @@ class BlockedPopupTabHelperTest : public ChromeWebTest {
     return InfoBarManagerImpl::FromWebState(web_state());
   }
 
+  web::WebState* web_state() { return web_state_.get(); }
+
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<web::WebState> web_state_;
   web::FakeWebStateDelegate web_state_delegate_;
 };
 
@@ -63,7 +76,7 @@ TEST_F(BlockedPopupTabHelperTest, ShouldBlockPopup) {
   // Allow popups for |source_url1|.
   scoped_refptr<HostContentSettingsMap> settings_map(
       ios::HostContentSettingsMapFactory::GetForBrowserState(
-          GetBrowserState()));
+          browser_state_.get()));
   settings_map->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURL(source_url1),
       ContentSettingsPattern::Wildcard(), ContentSettingsType::POPUPS,
@@ -128,7 +141,7 @@ TEST_F(BlockedPopupTabHelperTest, DestroyWebState) {
   GetBlockedPopupTabHelper()->HandlePopup(target_url, referrer);
 
   // Verify that destroying WebState does not crash.
-  DestroyWebState();
+  web_state_.reset();
 }
 
 // Tests that an infobar is added to the infobar manager when
