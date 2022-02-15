@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -31,6 +32,7 @@ public class CommerceSubscriptionsService {
     private final IdentityManager.Observer mIdentityManagerObserver;
     private final SharedPreferencesManager mSharedPreferencesManager;
     private final PriceDropNotificationManager mPriceDropNotificationManager;
+    private final CommerceSubscriptionsMetrics mMetrics;
     private ImplicitPriceDropSubscriptionsManager mImplicitPriceDropSubscriptionsManager;
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private PauseResumeWithNativeObserver mPauseResumeWithNativeObserver;
@@ -49,6 +51,7 @@ public class CommerceSubscriptionsService {
         mIdentityManager.addObserver(mIdentityManagerObserver);
         mSharedPreferencesManager = SharedPreferencesManager.getInstance();
         mPriceDropNotificationManager = new PriceDropNotificationManager();
+        mMetrics = new CommerceSubscriptionsMetrics();
     }
 
     /** Performs any deferred startup tasks required by {@link Subscriptions}. */
@@ -112,6 +115,9 @@ public class CommerceSubscriptionsService {
     private void recordMetrics() {
         // Record notification opt-in metrics.
         mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded();
+        mPriceDropNotificationManager.recordMetricsForNotificationCounts();
+        mSubscriptionManager.getSubscriptions(
+                CommerceSubscriptionType.PRICE_TRACK, false, mMetrics::recordSubscriptionCounts);
     }
 
     @VisibleForTesting

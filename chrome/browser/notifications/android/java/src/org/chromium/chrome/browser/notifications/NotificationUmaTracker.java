@@ -59,7 +59,9 @@ public class NotificationUmaTracker {
             SystemNotificationType.CHROME_REENGAGEMENT_2,
             SystemNotificationType.CHROME_REENGAGEMENT_3, SystemNotificationType.PRICE_DROP_ALERTS,
             SystemNotificationType.WEBAPK_INSTALL_IN_PROGRESS,
-            SystemNotificationType.WEBAPK_INSTALL_COMPLETE})
+            SystemNotificationType.WEBAPK_INSTALL_COMPLETE,
+            SystemNotificationType.PRICE_DROP_ALERTS_CHROME_MANAGED,
+            SystemNotificationType.PRICE_DROP_ALERTS_USER_MANAGED})
     @Retention(RetentionPolicy.SOURCE)
     public @interface SystemNotificationType {
         int UNKNOWN = -1;
@@ -95,8 +97,10 @@ public class NotificationUmaTracker {
         int SMS_FETCHER = 29;
         int WEBAPK_INSTALL_IN_PROGRESS = 30;
         int WEBAPK_INSTALL_COMPLETE = 31;
+        int PRICE_DROP_ALERTS_CHROME_MANAGED = 32;
+        int PRICE_DROP_ALERTS_USER_MANAGED = 33;
 
-        int NUM_ENTRIES = 32;
+        int NUM_ENTRIES = 34;
     }
 
     /*
@@ -240,9 +244,15 @@ public class NotificationUmaTracker {
                 recordNotificationAgeHistogram(
                         "Mobile.SystemNotification.Content.Click.Age.SmsFetcher", createTime);
                 break;
-            case SystemNotificationType.PRICE_DROP_ALERTS:
+            case SystemNotificationType.PRICE_DROP_ALERTS_CHROME_MANAGED:
                 recordNotificationAgeHistogram(
-                        "Mobile.SystemNotification.Content.Click.Age.PriceDrop", createTime);
+                        "Mobile.SystemNotification.Content.Click.Age.PriceDropChromeManaged",
+                        createTime);
+                break;
+            case SystemNotificationType.PRICE_DROP_ALERTS_USER_MANAGED:
+                recordNotificationAgeHistogram(
+                        "Mobile.SystemNotification.Content.Click.Age.PriceDropUserManaged",
+                        createTime);
                 break;
         }
     }
@@ -278,9 +288,13 @@ public class NotificationUmaTracker {
                 recordNotificationAgeHistogram(
                         "Mobile.SystemNotification.Dismiss.Age.SmsFetcher", createTime);
                 break;
-            case SystemNotificationType.PRICE_DROP_ALERTS:
+            case SystemNotificationType.PRICE_DROP_ALERTS_CHROME_MANAGED:
                 recordNotificationAgeHistogram(
-                        "Mobile.SystemNotification.Dismiss.Age.PriceDrop", createTime);
+                        "Mobile.SystemNotification.Dismiss.Age.PriceDropChromeManaged", createTime);
+                break;
+            case SystemNotificationType.PRICE_DROP_ALERTS_USER_MANAGED:
+                recordNotificationAgeHistogram(
+                        "Mobile.SystemNotification.Dismiss.Age.PriceDropUserManaged", createTime);
                 break;
         }
     }
@@ -318,9 +332,15 @@ public class NotificationUmaTracker {
                 recordNotificationAgeHistogram(
                         "Mobile.SystemNotification.Action.Click.Age.SmsFetcher", createTime);
                 break;
-            case SystemNotificationType.PRICE_DROP_ALERTS:
+            case SystemNotificationType.PRICE_DROP_ALERTS_CHROME_MANAGED:
                 recordNotificationAgeHistogram(
-                        "Mobile.SystemNotification.Action.Click.Age.PriceDrop", createTime);
+                        "Mobile.SystemNotification.Action.Click.Age.PriceDropChromeManaged",
+                        createTime);
+                break;
+            case SystemNotificationType.PRICE_DROP_ALERTS_USER_MANAGED:
+                recordNotificationAgeHistogram(
+                        "Mobile.SystemNotification.Action.Click.Age.PriceDropUserManaged",
+                        createTime);
                 break;
         }
     }

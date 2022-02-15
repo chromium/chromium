@@ -21,6 +21,9 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -32,7 +35,10 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.notifications.NotificationIntentInterceptor;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
+import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
@@ -47,6 +53,7 @@ import org.chromium.components.browser_ui.notifications.NotificationManagerProxy
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
 
 import java.util.Locale;
+
 /**
  * Manage price drop notifications.
  */
@@ -69,6 +76,21 @@ public class PriceDropNotificationManager {
             "org.chromium.chrome.browser.price_tracking.PRODUCT_CLUSTER_ID";
     static final String EXTRA_NOTIFICATION_ID =
             "org.chromium.chrome.browser.price_tracking.NOTIFICATION_ID";
+
+    static final String CHROME_MANAGED_TIMESTAMPS =
+            ChromePreferenceKeys.PRICE_TRACKING_CHROME_MANAGED_NOTIFICATIONS_TIMESTAMPS;
+    static final String USER_MANAGED_TIMESTAMPS =
+            ChromePreferenceKeys.PRICE_TRACKING_USER_MANAGED_NOTIFICATIONS_TIMESTAMPS;
+
+    @VisibleForTesting
+    public static final String NOTIFICATION_ENABLED_HISTOGRAM =
+            "Commerce.PriceDrop.SystemNotificationEnabled";
+    @VisibleForTesting
+    public static final String NOTIFICATION_CHROME_MANAGED_COUNT_HISTOGRAM =
+            "Commerce.PriceDrops.ChromeManaged.NotificationCount";
+    @VisibleForTesting
+    public static final String NOTIFICATION_USER_MANAGED_COUNT_HISTOGRAM =
+            "Commerce.PriceDrops.UserManaged.NotificationCount";
 
     private static NotificationManagerProxy sNotificationManagerForTesting;
     private static BookmarkBridge sBookmarkBridgeForTesting;
@@ -124,6 +146,7 @@ public class PriceDropNotificationManager {
 
     private final Context mContext;
     private final NotificationManagerProxy mNotificationManager;
+    private final SharedPreferencesManager mPreferencesManager;
 
     public PriceDropNotificationManager() {
         this(ContextUtils.getApplicationContext(),
@@ -134,6 +157,7 @@ public class PriceDropNotificationManager {
             Context context, NotificationManagerProxy notificationManagerProxy) {
         mContext = context;
         mNotificationManager = notificationManagerProxy;
+        mPreferencesManager = SharedPreferencesManager.getInstance();
     }
 
     /**
@@ -170,7 +194,7 @@ public class PriceDropNotificationManager {
         if (!PriceTrackingUtilities.isPriceDropNotificationEligible()) return false;
         boolean isSystemNotificationEnabled = areAppNotificationsEnabled();
         RecordHistogram.recordBooleanHistogram(
-                "Commerce.PriceDrop.SystemNotificationEnabled", isSystemNotificationEnabled);
+                NOTIFICATION_ENABLED_HISTOGRAM, isSystemNotificationEnabled);
         if (!isSystemNotificationEnabled) return false;
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return true;
@@ -465,6 +489,71 @@ public class PriceDropNotificationManager {
     public void deleteChannelForTesting() {
         mNotificationManager.deleteNotificationChannel(
                 ChromeChannelDefinitions.ChannelId.PRICE_DROP);
+    }
+
+    /**
+     * Record how many notifications are shown in the given window per management type.
+     */
+    public void recordMetricsForNotificationCounts() {
+        RecordHistogram.recordCount100Histogram(NOTIFICATION_CHROME_MANAGED_COUNT_HISTOGRAM,
+                updateNotificationTimestamps(
+                        SystemNotificationType.PRICE_DROP_ALERTS_CHROME_MANAGED, false));
+        RecordHistogram.recordCount100Histogram(NOTIFICATION_USER_MANAGED_COUNT_HISTOGRAM,
+                updateNotificationTimestamps(
+                        SystemNotificationType.PRICE_DROP_ALERTS_USER_MANAGED, false));
+    }
+
+    /**
+     * Update the stored notification timestamps. Outdated timestamps are removed and current
+     * timestamp could be attached.
+     *
+     * @param type The notification UMA type.
+     * @param attachCurrentTime Whether to store current timestamp.
+     * @return the number of stored timestamps after update.
+     */
+    int updateNotificationTimestamps(@SystemNotificationType int type, boolean attachCurrentTime) {
+        long currentTime = System.currentTimeMillis();
+        JSONArray newTimestamps = new JSONArray();
+        try {
+            String oldSerializedTimestamps = getStoredNotificationTimestamps(type);
+            JSONArray oldTimestamps = new JSONArray(oldSerializedTimestamps);
+            for (int i = 0; i < oldTimestamps.length(); i++) {
+                long timestamp = oldTimestamps.getLong(i);
+                if (currentTime - timestamp > PriceTrackingNotificationConfig
+                                                      .getNotificationTimestampsStoreWindowMs()) {
+                    continue;
+                }
+                newTimestamps.put(timestamp);
+            }
+        } catch (JSONException e) {
+            Log.e(TAG,
+                    String.format(Locale.US, "Failed to parse notification timestamps. Details: %s",
+                            e.getMessage()));
+            // If one parse fails, we discard all data and reset the stored timestamps.
+            newTimestamps = new JSONArray();
+        }
+        if (attachCurrentTime) newTimestamps.put(currentTime);
+        writeSerializedNotificationTimestamps(type, newTimestamps.toString());
+        return newTimestamps.length();
+    }
+
+    private String getStoredNotificationTimestamps(@SystemNotificationType int type) {
+        String serializedTimestamps = "";
+        if (type == SystemNotificationType.PRICE_DROP_ALERTS_CHROME_MANAGED) {
+            serializedTimestamps = mPreferencesManager.readString(CHROME_MANAGED_TIMESTAMPS, "");
+        } else if (type == SystemNotificationType.PRICE_DROP_ALERTS_USER_MANAGED) {
+            serializedTimestamps = mPreferencesManager.readString(USER_MANAGED_TIMESTAMPS, "");
+        }
+        return serializedTimestamps;
+    }
+
+    private void writeSerializedNotificationTimestamps(
+            @SystemNotificationType int type, String serializedTimestamps) {
+        if (type == SystemNotificationType.PRICE_DROP_ALERTS_CHROME_MANAGED) {
+            mPreferencesManager.writeString(CHROME_MANAGED_TIMESTAMPS, serializedTimestamps);
+        } else if (type == SystemNotificationType.PRICE_DROP_ALERTS_USER_MANAGED) {
+            mPreferencesManager.writeString(USER_MANAGED_TIMESTAMPS, serializedTimestamps);
+        }
     }
 
     private static void dismissNotification(int notificationId) {

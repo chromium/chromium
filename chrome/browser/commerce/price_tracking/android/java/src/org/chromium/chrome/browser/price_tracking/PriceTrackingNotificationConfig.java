@@ -12,6 +12,8 @@ import java.util.concurrent.TimeUnit;
 /** Flag configuration for Price Tracking Notification experience. */
 public class PriceTrackingNotificationConfig {
     private static final String NOTIFICATION_TIMEOUT_PARAM = "notification_timeout_ms";
+    private static final String NOTIFICATION_TIMESTAMPS_STORE_WINDOW_PARAM =
+            "notification_timestamps_store_window_ms";
 
     // Gets the timeout of the price drop notification.
     public static int getNotificationTimeoutMs() {
@@ -22,5 +24,16 @@ public class PriceTrackingNotificationConfig {
                     defaultTimeout);
         }
         return defaultTimeout;
+    }
+
+    // Gets the window within which we store the notification shown timestamps.
+    public static int getNotificationTimestampsStoreWindowMs() {
+        int defaultWindow = (int) TimeUnit.DAYS.toMillis(1);
+        if (FeatureList.isInitialized()) {
+            return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                    ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                    NOTIFICATION_TIMESTAMPS_STORE_WINDOW_PARAM, defaultWindow);
+        }
+        return defaultWindow;
     }
 }

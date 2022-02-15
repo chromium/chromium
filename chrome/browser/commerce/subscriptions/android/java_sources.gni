@@ -7,6 +7,7 @@
 commerce_subscriptions_java_sources = [
   "//chrome/browser/commerce/subscriptions/android/java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscription.java",
   "//chrome/browser/commerce/subscriptions/android/java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionJsonSerializer.java",
+  "//chrome/browser/commerce/subscriptions/android/java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsMetrics.java",
   "//chrome/browser/commerce/subscriptions/android/java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsService.java",
   "//chrome/browser/commerce/subscriptions/android/java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsServiceConfig.java",
   "//chrome/browser/commerce/subscriptions/android/java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsServiceFactory.java",
