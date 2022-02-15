@@ -22,11 +22,6 @@ namespace ash {
 namespace browser_data_migrator_util {
 namespace {
 
-// The size of disk space that should be kept free after migration. This is
-// important since crypotohome conducts an aggressive disk cleanup if free disk
-// space becomes less than 768MB. The buffer is rounded up to 1GB.
-const int64_t kBuffer = (int64_t)1024 * 1024 * 1024;
-
 struct PathNamePair {
   const char* key;
   const char* value;
@@ -230,16 +225,27 @@ TargetItems GetTargetItems(const base::FilePath& original_profile_dir,
 
 bool HasEnoughDiskSpace(const int64_t total_copy_size,
                         const base::FilePath& original_profile_dir) {
+  uint64_t extra_bytes_required_to_be_freed =
+      ExtraBytesRequiredToBeFreed(total_copy_size, original_profile_dir);
+
+  return extra_bytes_required_to_be_freed == 0;
+}
+
+uint64_t ExtraBytesRequiredToBeFreed(
+    const int64_t total_copy_size,
+    const base::FilePath& original_profile_dir) {
   const int64_t free_disk_space =
       base::SysInfo::AmountOfFreeDiskSpace(original_profile_dir);
+  const int64_t required_disk_space = total_copy_size + kBuffer;
 
-  if (free_disk_space < total_copy_size + kBuffer) {
-    LOG(ERROR) << "Aborting migration. Need " << total_copy_size + kBuffer
-               << " bytes but only have " << free_disk_space << " bytes left.";
-    return false;
+  if (required_disk_space > free_disk_space) {
+    LOG(WARNING) << required_disk_space
+                 << " bytes of disk space is required but only "
+                 << free_disk_space << " bytes are available.";
+    return required_disk_space - free_disk_space;
   }
 
-  return true;
+  return 0;
 }
 
 bool CopyDirectory(const base::FilePath& from_path,

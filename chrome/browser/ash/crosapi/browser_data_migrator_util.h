@@ -176,6 +176,11 @@ constexpr char kUnknownUMAName[] = "Unknown";
 
 constexpr int64_t kBytesInOneMB = 1024 * 1024;
 
+// The size of disk space that should be kept free after migration. This is
+// important since crypotohome conducts an aggressive disk cleanup if free disk
+// space becomes less than 768MB. The buffer is rounded up to 1GB.
+constexpr int64_t kBuffer = 1024LL * 1024 * 1024;
+
 // CancelFlag
 class CancelFlag : public base::RefCountedThreadSafe<CancelFlag> {
  public:
@@ -233,10 +238,16 @@ enum class ItemType {
 TargetItems GetTargetItems(const base::FilePath& original_profile_dir,
                            const ItemType type);
 
-// Compares space available for `original_profile_dir` against total byte size
-// that needs to be copied.
+// Checks if there is enough disk space to migration to be carried out safely.
 bool HasEnoughDiskSpace(const int64_t total_copy_size,
                         const base::FilePath& original_profile_dir);
+
+// Returns extra bytes that has to be freed for the migration to be carried out
+// if there are `total_copy_size` bytes of copying to be done. Returns 0 if no
+// extra space needs to be freed.
+uint64_t ExtraBytesRequiredToBeFreed(
+    const int64_t total_copy_size,
+    const base::FilePath& original_profile_dir);
 
 // Copies `items` to `to_dir`.
 bool CopyTargetItems(const base::FilePath& to_dir,

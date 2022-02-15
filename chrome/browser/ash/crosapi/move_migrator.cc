@@ -123,7 +123,7 @@ void MoveMigrator::SetResumeStep(PrefService* local_state,
 }
 
 // static
-bool MoveMigrator::PreMigrationCleanUp(
+MoveMigrator::PreMigrationCleanUpResult MoveMigrator::PreMigrationCleanUp(
     const base::FilePath& original_profile_dir) {
   LOG(WARNING) << "Running PreMigrationCleanUp()";
 
@@ -134,7 +134,7 @@ bool MoveMigrator::PreMigrationCleanUp(
     // Delete an existing lacros profile before the migration.
     if (!base::DeletePathRecursively(new_user_dir)) {
       PLOG(ERROR) << "Deleting " << new_user_dir.value() << " failed: ";
-      return false;
+      return {false};
     }
   }
 
@@ -148,7 +148,7 @@ bool MoveMigrator::PreMigrationCleanUp(
     // tmp_user_dir once we start deleting items from the Ash PDD.
     if (!base::DeletePathRecursively(tmp_user_dir)) {
       PLOG(ERROR) << "Deleting " << tmp_user_dir.value() << " failed: ";
-      return false;
+      return {false};
     }
   }
 
@@ -167,12 +167,35 @@ bool MoveMigrator::PreMigrationCleanUp(
     }
   }
 
-  return true;
+  // Now check if there is enough disk space for the migration to be carried
+  // out.
+  browser_data_migrator_util::TargetItems need_copy_items =
+      browser_data_migrator_util::GetTargetItems(
+          original_profile_dir,
+          browser_data_migrator_util::ItemType::kNeedCopy);
+
+  const int64_t extra_bytes_required_to_be_freed =
+      browser_data_migrator_util::ExtraBytesRequiredToBeFreed(
+          need_copy_items.total_size, original_profile_dir);
+
+  return {true, extra_bytes_required_to_be_freed};
 }
 
-void MoveMigrator::OnPreMigrationCleanUp(bool success) {
-  if (!success) {
+void MoveMigrator::OnPreMigrationCleanUp(
+    MoveMigrator::PreMigrationCleanUpResult result) {
+  if (!result.success) {
     LOG(ERROR) << "PreMigrationCleanup() failed.";
+    std::move(finished_callback_)
+        .Run({BrowserDataMigratorImpl::ResultValue::kFailed,
+              BrowserDataMigratorImpl::ResultValue::kFailed});
+    return;
+  }
+
+  if (result.extra_bytes_required_to_be_freed.value() > 0u) {
+    LOG(ERROR) << "Not enough disk space available to carry out the migration "
+                  "safely. Need to free up "
+               << result.extra_bytes_required_to_be_freed.value()
+               << " bytes from " << original_profile_dir_.value();
     std::move(finished_callback_)
         .Run({BrowserDataMigratorImpl::ResultValue::kFailed,
               BrowserDataMigratorImpl::ResultValue::kFailed});

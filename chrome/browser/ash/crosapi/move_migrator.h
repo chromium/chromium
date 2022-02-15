@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator_util.h"
 #include "chrome/browser/ash/crosapi/migration_progress_tracker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -55,6 +56,17 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
     kCompleted = 3,
   };
 
+  // Return value of `PreMigrationCleanUp()`.
+  struct PreMigrationCleanUpResult {
+    // Whether cleanup has succeeded or not.
+    bool success;
+
+    // Extra bytes required to be freed if the migrator requires more space to
+    // be carried out. Only set if `success` is true. This value is set to 0 if
+    // no freeing up of disk is required.
+    absl::optional<uint64_t> extra_bytes_required_to_be_freed;
+  };
+
   MoveMigrator(
       const base::FilePath& original_profile_dir,
       const std::string& user_id_hash,
@@ -91,16 +103,19 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
                             const std::string& user_id_hash,
                             const ResumeStep step);
 
-  // Deletes lacros user directory if it exist. Then it also deletes
-  // `ItemType::kDeletable` items.
-  static bool PreMigrationCleanUp(const base::FilePath& original_profile_dir);
+  // Deletes lacros user directory and `kMoveTmpDir` if they exist. Set
+  // `PreMigrationCleanUpResult::success` to true if the deletion of those
+  // directories are successful. If the deletion is successful then it also
+  // checks if there is enough disk space available and set
+  // `PreMigrationCleanUpResult::extra_bytes_required_to_be_freed`. It also
+  // deletes `ItemType::kDeletable` items to free up extra space but this does
+  // not affect `PreMigrationCleanUpResult::success`.
+  static PreMigrationCleanUpResult PreMigrationCleanUp(
+      const base::FilePath& original_profile_dir);
 
-  // Called as a reply to `PreMigrationCleanUp()`. Posts `SetupLacrosDir()` as
-  // the next step.
-  void OnPreMigrationCleanUp(bool success);
-
-  // TODO(ythjkt): Add a step to check if there is enough disk space before
-  // `SetupLacrosDir()`.
+  // Called as a reply to `PreMigrationCleanUp()`.  Posts
+  // `SetupLacrosRemoveHardLinksFromAshDir()` as the next step.
+  void OnPreMigrationCleanUp(PreMigrationCleanUpResult);
 
   // Set up lacros user directory by copying `ItemType::kNeedCopy` items and
   // creating hard links for `ItemType::kLacros` into it.

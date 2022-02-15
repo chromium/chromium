@@ -11,6 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/crosapi/fake_migration_progress_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -267,6 +268,33 @@ TEST(BrowserDataMigratorUtilTest, CopyDirectory) {
       copy_to_hard.Append(subdirectory)
           .Append(subdirectory)
           .Append(data_file)));
+}
+
+TEST(BrowserDataMigratorUtilTest, HasEnoughDiskSpace) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const int64_t free_disk_space =
+      base::SysInfo::AmountOfFreeDiskSpace(temp_dir.GetPath());
+  ASSERT_GE(free_disk_space, kBuffer);
+
+  // If total copy size is the same as `free_disk_space` then the disk is
+  // exactly `kBuffer` bytes short of free space.
+  EXPECT_EQ(ExtraBytesRequiredToBeFreed(free_disk_space, temp_dir.GetPath()),
+            kBuffer);
+  EXPECT_FALSE(HasEnoughDiskSpace(free_disk_space, temp_dir.GetPath()));
+
+  // If total copy size is the same as `free_disk_space - kBuffer` then the disk
+  // has just enough space for the migration.
+  EXPECT_EQ(ExtraBytesRequiredToBeFreed(free_disk_space - kBuffer,
+                                        temp_dir.GetPath()),
+            0);
+  EXPECT_TRUE(
+      HasEnoughDiskSpace(free_disk_space - kBuffer, temp_dir.GetPath()));
+
+  // If there is nothing to be copied then as long as `free_disk_space >=
+  // kBuffer`, there should be no extra space required to be freed.
+  EXPECT_EQ(ExtraBytesRequiredToBeFreed(0, temp_dir.GetPath()), 0);
+  EXPECT_TRUE(HasEnoughDiskSpace(0, temp_dir.GetPath()));
 }
 
 class BrowserDataMigratorUtilWithTargetsTest : public ::testing::Test {
