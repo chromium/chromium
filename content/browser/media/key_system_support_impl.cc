@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -189,17 +190,25 @@ absl::optional<media::CdmCapability> GetHardwareSecureCapability(
 }  // namespace
 
 // static
-void KeySystemSupportImpl::Create(
+KeySystemSupportImpl* KeySystemSupportImpl::GetInstance() {
+  static base::NoDestructor<KeySystemSupportImpl> impl;
+  return impl.get();
+}
+
+// static
+void KeySystemSupportImpl::BindReceiver(
     mojo::PendingReceiver<media::mojom::KeySystemSupport> receiver) {
-  DVLOG(3) << __func__;
-  // The created object is bound to (and owned by) |request|.
-  mojo::MakeSelfOwnedReceiver(std::make_unique<KeySystemSupportImpl>(),
-                              std::move(receiver));
+  KeySystemSupportImpl::GetInstance()->Bind(std::move(receiver));
 }
 
 KeySystemSupportImpl::KeySystemSupportImpl() = default;
 
 KeySystemSupportImpl::~KeySystemSupportImpl() = default;
+
+void KeySystemSupportImpl::Bind(
+    mojo::PendingReceiver<media::mojom::KeySystemSupport> receiver) {
+  key_system_support_receivers_.Add(this, std::move(receiver));
+}
 
 void KeySystemSupportImpl::IsKeySystemSupported(
     const std::string& key_system,

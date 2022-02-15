@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "content/browser/media/key_system_support_impl.h"
 #include "media/mojo/mojom/key_system_support.mojom-forward.h"
 
 namespace content {
@@ -32,7 +31,6 @@ class MediaInternalsCdmHelper {
                           media::mojom::KeySystemCapabilityPtr capability);
   void SendCdmUpdate();
 
-  KeySystemSupportImpl key_system_support_impl_;
   std::set<std::string> pending_key_systems_;
 
   base::WeakPtrFactory<MediaInternalsCdmHelper> weak_factory_{this};

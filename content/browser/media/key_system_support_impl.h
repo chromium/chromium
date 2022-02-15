@@ -9,33 +9,43 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "content/common/content_export.h"
 #include "content/public/common/cdm_info.h"
 #include "media/cdm/cdm_capability.h"
 #include "media/mojo/mojom/key_system_support.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
+// A singleton class living in the browser process handling all KeySystemSupport
+// requests.
 class CONTENT_EXPORT KeySystemSupportImpl final
     : public media::mojom::KeySystemSupport {
  public:
-  KeySystemSupportImpl();
+  static KeySystemSupportImpl* GetInstance();
+
+  static void BindReceiver(
+      mojo::PendingReceiver<media::mojom::KeySystemSupport> receiver);
+
   KeySystemSupportImpl(const KeySystemSupportImpl&) = delete;
   KeySystemSupportImpl& operator=(const KeySystemSupportImpl&) = delete;
-  ~KeySystemSupportImpl() final;
 
-  // Create a KeySystemSupportImpl object and bind it to `receiver`.
-  static void Create(
-      mojo::PendingReceiver<media::mojom::KeySystemSupport> receiver);
+  // Binds the `receiver` to `this`.
+  void Bind(mojo::PendingReceiver<media::mojom::KeySystemSupport> receiver);
 
   // media::mojom::KeySystemSupport implementation.
   void IsKeySystemSupported(const std::string& key_system,
                             IsKeySystemSupportedCallback callback) final;
 
  private:
+  friend class base::NoDestructor<KeySystemSupportImpl>;
   friend class KeySystemSupportImplTest;
+
+  KeySystemSupportImpl();
+  ~KeySystemSupportImpl() final;
 
   using CdmCapabilityCB =
       base::OnceCallback<void(absl::optional<media::CdmCapability>)>;
@@ -56,6 +66,9 @@ class CONTENT_EXPORT KeySystemSupportImpl final
       absl::optional<media::CdmCapability> hw_secure_capability);
 
   HardwareSecureCapabilityCB hw_secure_capability_cb_for_testing_;
+
+  mojo::ReceiverSet<media::mojom::KeySystemSupport>
+      key_system_support_receivers_;
 
   base::WeakPtrFactory<KeySystemSupportImpl> weak_ptr_factory_{this};
 };

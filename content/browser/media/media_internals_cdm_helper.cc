@@ -9,6 +9,7 @@
 
 #include "base/values.h"
 #include "content/browser/media/cdm_registry_impl.h"
+#include "content/browser/media/key_system_support_impl.h"
 #include "content/browser/media/media_internals.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/cdm_info.h"
@@ -128,7 +129,7 @@ void MediaInternalsCdmHelper::GetRegisteredCdms() {
     pending_key_systems_.insert(key_system);
 
     // BindToCurrentLoop() is needed in case the callback called synchronously.
-    key_system_support_impl_.IsKeySystemSupported(
+    KeySystemSupportImpl::GetInstance()->IsKeySystemSupported(
         key_system, media::BindToCurrentLoop(base::BindOnce(
                         &MediaInternalsCdmHelper::OnCdmInfoFinalized,
                         weak_factory_.GetWeakPtr(), key_system)));

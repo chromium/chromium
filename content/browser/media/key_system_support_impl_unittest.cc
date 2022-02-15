@@ -104,12 +104,11 @@ class KeySystemSupportImplTest : public testing::Test {
     // `CdmRegistryImpl` so each test starts with a clean state.
     CdmRegistryImpl::GetInstance()->ResetForTesting();
 
-    auto key_system_support_impl = std::make_unique<KeySystemSupportImpl>();
-    key_system_support_impl->SetHardwareSecureCapabilityCBForTesting(
-        hw_secure_capability_cb_.Get());
+    KeySystemSupportImpl::GetInstance()
+        ->SetHardwareSecureCapabilityCBForTesting(
+            hw_secure_capability_cb_.Get());
 
-    mojo::MakeSelfOwnedReceiver(
-        std::move(key_system_support_impl),
+    KeySystemSupportImpl::BindReceiver(
         key_system_support_.BindNewPipeAndPassReceiver());
   }
 
