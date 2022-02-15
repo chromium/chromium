@@ -16,6 +16,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/i18n/time_formatting.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
@@ -737,20 +738,22 @@ GooglePhotosPhotosCbkArgs GooglePhotosPhotosFetcher::ParseResponse(
       std::vector<ash::personalization_app::mojom::GooglePhotosPhotoPtr>();
   for (const auto& response_photo : response_photos->GetListDeprecated()) {
     const std::string* id = response_photo.FindStringPath("itemId.mediaKey");
+    const std::string* filename = response_photo.FindStringPath("filename");
     const std::string* timestamp_string =
         response_photo.FindStringPath("creationTimestamp");
     const std::string* url = response_photo.FindStringPath("photo.servingUrl");
 
     base::Time timestamp;
-    if (!id || !timestamp_string ||
+    if (!id || !filename || !timestamp_string ||
         !base::Time::FromUTCString(timestamp_string->c_str(), &timestamp) ||
         !url) {
       continue;
     }
 
+    std::string name = base::FilePath(*filename).RemoveExtension().value();
     std::u16string date = base::TimeFormatFriendlyDate(timestamp);
     parsed_response->photos->push_back(
-        ash::personalization_app::mojom::GooglePhotosPhoto::New(*id, date,
+        ash::personalization_app::mojom::GooglePhotosPhoto::New(*id, name, date,
                                                                 GURL(*url)));
   }
   return parsed_response;
