@@ -158,7 +158,6 @@ class WrappedSimpleIndexFile : public SimpleIndexFile {
 
   explicit WrappedSimpleIndexFile(const base::FilePath& index_file_directory)
       : SimpleIndexFile(base::ThreadTaskRunnerHandle::Get(),
-                        base::ThreadTaskRunnerHandle::Get(),
                         net::DISK_CACHE,
                         index_file_directory) {}
   ~WrappedSimpleIndexFile() override = default;

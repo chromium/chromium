@@ -20,7 +20,6 @@
 
 namespace base {
 class SequencedTaskRunner;
-class TaskRunner;
 }
 
 namespace disk_cache {
@@ -87,7 +86,6 @@ class NET_EXPORT_PRIVATE SimpleIndexFile {
   };
 
   SimpleIndexFile(scoped_refptr<base::SequencedTaskRunner> cache_runner,
-                  scoped_refptr<base::TaskRunner> worker_pool,
                   net::CacheType cache_type,
                   const base::FilePath& cache_directory);
 
@@ -194,7 +192,6 @@ class NET_EXPORT_PRIVATE SimpleIndexFile {
                                      const base::FilePath& index_file_path);
 
   const scoped_refptr<base::SequencedTaskRunner> cache_runner_;
-  const scoped_refptr<base::TaskRunner> worker_pool_;
   const net::CacheType cache_type_;
   const base::FilePath cache_directory_;
   const base::FilePath index_file_;

@@ -242,26 +242,24 @@ SimpleBackendImpl::~SimpleBackendImpl() {
 void SimpleBackendImpl::SetTaskRunnerForTesting(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   prioritized_task_runner_ =
-      base::MakeRefCounted<net::PrioritizedTaskRunner>(std::move(task_runner));
+      base::MakeRefCounted<net::PrioritizedTaskRunner>(kWorkerPoolTaskTraits);
+  prioritized_task_runner_->SetTaskRunnerForTesting(  // IN-TEST
+      std::move(task_runner));
 }
 
 net::Error SimpleBackendImpl::Init(CompletionOnceCallback completion_callback) {
   auto index_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
-  auto worker_pool = base::ThreadPool::CreateTaskRunner(
-      {base::MayBlock(), base::WithBaseSyncPrimitives(),
-       base::TaskPriority::USER_BLOCKING,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
 
   prioritized_task_runner_ =
-      base::MakeRefCounted<net::PrioritizedTaskRunner>(worker_pool);
+      base::MakeRefCounted<net::PrioritizedTaskRunner>(kWorkerPoolTaskTraits);
 
   index_ = std::make_unique<SimpleIndex>(
       base::SequencedTaskRunnerHandle::Get(), cleanup_tracker_.get(), this,
       GetCacheType(),
-      std::make_unique<SimpleIndexFile>(
-          index_task_runner, std::move(worker_pool), GetCacheType(), path_));
+      std::make_unique<SimpleIndexFile>(index_task_runner, GetCacheType(),
+                                        path_));
   index_->ExecuteWhenReady(
       base::BindOnce(&RecordIndexLoad, GetCacheType(), base::TimeTicks::Now()));
 
@@ -349,8 +347,13 @@ void SimpleBackendImpl::DoomEntries(std::vector<uint64_t>* entry_hashes,
   std::vector<uint64_t>* mass_doom_entry_hashes_ptr =
       mass_doom_entry_hashes.get();
 
-  PostTaskAndReplyWithResult(
-      prioritized_task_runner_->task_runner(), FROM_HERE,
+  // We don't use priorities (i.e., `prioritized_task_runner_`) here because
+  // we don't actually have them here (since this is for eviction based on
+  // index).
+  auto task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(kWorkerPoolTaskTraits);
+  task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&SimpleSynchronousEntry::DeleteEntrySetFiles,
                      mass_doom_entry_hashes_ptr, path_),
       base::BindOnce(&SimpleBackendImpl::DoomEntriesComplete, AsWeakPtr(),

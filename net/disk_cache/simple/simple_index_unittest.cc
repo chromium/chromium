@@ -63,7 +63,7 @@ class MockSimpleIndexFile : public SimpleIndexFile,
                             public base::SupportsWeakPtr<MockSimpleIndexFile> {
  public:
   explicit MockSimpleIndexFile(net::CacheType cache_type)
-      : SimpleIndexFile(nullptr, nullptr, cache_type, base::FilePath()) {}
+      : SimpleIndexFile(nullptr, cache_type, base::FilePath()) {}
 
   void LoadIndexEntries(base::Time cache_last_modified,
                         base::OnceClosure callback,

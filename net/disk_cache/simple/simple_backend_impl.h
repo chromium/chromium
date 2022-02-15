@@ -21,6 +21,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/cache_type.h"
@@ -131,6 +132,11 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
   net::PrioritizedTaskRunner* prioritized_task_runner() const {
     return prioritized_task_runner_.get();
   }
+
+  static constexpr base::TaskTraits kWorkerPoolTaskTraits = {
+      base::MayBlock(), base::WithBaseSyncPrimitives(),
+      base::TaskPriority::USER_BLOCKING,
+      base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
 
 #if BUILDFLAG(IS_ANDROID)
   void set_app_status_listener(

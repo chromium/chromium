@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_task_and_reply_with_result_internal.h"
+#include "base/task/task_traits.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/net_export.h"
 
@@ -48,7 +49,7 @@ class NET_EXPORT_PRIVATE PrioritizedTaskRunner
     : public base::RefCountedThreadSafe<PrioritizedTaskRunner> {
  public:
   enum class ReplyRunnerType { kStandard, kPrioritized };
-  explicit PrioritizedTaskRunner(scoped_refptr<base::TaskRunner> task_runner);
+  explicit PrioritizedTaskRunner(const base::TaskTraits& task_traits);
   PrioritizedTaskRunner(const PrioritizedTaskRunner&) = delete;
   PrioritizedTaskRunner& operator=(const PrioritizedTaskRunner&) = delete;
 
@@ -79,7 +80,9 @@ class NET_EXPORT_PRIVATE PrioritizedTaskRunner
         priority);
   }
 
-  base::TaskRunner* task_runner() { return task_runner_.get(); }
+  void SetTaskRunnerForTesting(scoped_refptr<base::TaskRunner> task_runner) {
+    task_runner_for_testing_ = std::move(task_runner);
+  }
 
  private:
   friend class base::RefCountedThreadSafe<PrioritizedTaskRunner>;
@@ -126,8 +129,8 @@ class NET_EXPORT_PRIVATE PrioritizedTaskRunner
   std::vector<Job> reply_job_heap_;
   base::Lock reply_job_heap_lock_;
 
-  // Accessed on the reply task runner.
-  scoped_refptr<base::TaskRunner> task_runner_;
+  const base::TaskTraits task_traits_;
+  scoped_refptr<base::TaskRunner> task_runner_for_testing_;
 
   // Used to preserve order of jobs of equal priority. This can overflow and
   // cause periodic priority inversion. This should be infrequent enough to be
