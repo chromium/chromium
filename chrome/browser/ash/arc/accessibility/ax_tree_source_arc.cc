@@ -247,21 +247,6 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
 
   update_ids.push_back(node_id_to_clear);
 
-  {
-    // TODO(crbug/1211039): This block is added temporary to debug
-    // http://crbug/1211039. Once the issue is resolved, this block should be
-    // removed.
-    std::string error_string;
-    ui::AXTreeSourceChecker<AccessibilityInfoDataWrapper*> checker(this);
-    if (!checker.CheckAndGetErrorString(&error_string)) {
-      LOG(ERROR) << "Failed to validate the tree source\n"
-                 << "Event: " << events[0].ToString() << "\n"
-                 << "window size: " << event_data.window_data->size() << ", "
-                 << "node size: " << event_data.node_data.size() << "\n"
-                 << "Error: " << error_string;
-    }
-  }
-
   for (const int32_t update_id : update_ids)
     current_tree_serializer_->InvalidateSubtree(GetFromId(update_id));
 
