@@ -108,6 +108,8 @@ std::string GetUserLastInputMethodId(const AccountId& account_id) {
     DVLOG(0) << "GetUserLastInputMethodId: no input method for this user";
     return std::string();
   }
+  // Migrate into the known_user system.
+  known_user.SetUserLastLoginInputMethodId(account_id, *input_method_str);
 
   return *input_method_str;
 }

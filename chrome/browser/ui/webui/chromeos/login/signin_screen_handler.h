@@ -118,8 +118,6 @@ class SigninScreenHandler
 
   ~SigninScreenHandler() override;
 
-  static std::string GetUserLastInputMethod(const std::string& username);
-
   // Shows the sign in screen.
   void Show(bool oobe_ui);
 

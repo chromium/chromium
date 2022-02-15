@@ -504,6 +504,7 @@ void SigninScreenHandler::Initialize() {
 }
 
 void SigninScreenHandler::RegisterPrefs(PrefRegistrySimple* registry) {
+  // The pref is deprecated. Remove around 09/2022 (https://crbug.com/1297407)
   registry->RegisterDictionaryPref(prefs::kUsersLastInputMethod);
 }
 
