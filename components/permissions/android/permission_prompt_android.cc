@@ -43,8 +43,6 @@ PermissionPromptAndroid::PermissionPromptAndroid(
         permissions::PermissionPromptDisposition::MODAL_DIALOG;
     PermissionDialogDelegate::Create(web_contents_, this);
   }
-
-  prompt_disposition_ = permissions::PermissionPromptDisposition::MINI_INFOBAR;
 }
 
 PermissionPromptAndroid::~PermissionPromptAndroid() {
