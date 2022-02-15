@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/files/file.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/logging.h"
@@ -324,6 +325,7 @@ bool ZipReader::ExtractCurrentEntry(WriterDelegate* delegate,
     return false;
   }
 
+  DCHECK(delegate);
   if (!delegate->PrepareOutput())
     return false;
 

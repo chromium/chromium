@@ -23,23 +23,6 @@ namespace unzip {
 
 namespace {
 
-// A writer delegate that reports errors instead of writing.
-class DudWriterDelegate : public zip::WriterDelegate {
- public:
-  DudWriterDelegate() {}
-
-  DudWriterDelegate(const DudWriterDelegate&) = delete;
-  DudWriterDelegate& operator=(const DudWriterDelegate&) = delete;
-
-  ~DudWriterDelegate() override {}
-
-  // WriterDelegate methods:
-  bool PrepareOutput() override { return false; }
-  bool WriteBytes(const char* data, int num_bytes) override { return false; }
-  void SetTimeModified(const base::Time& time) override {}
-  void SetPosixFilePermissions(int mode) override {}
-};
-
 std::string PathToMojoString(const base::FilePath& path) {
 #if BUILDFLAG(IS_WIN)
   return base::WideToUTF8(path.value());
@@ -68,7 +51,7 @@ std::unique_ptr<zip::WriterDelegate> MakeFileWriterDelegateNoParent(
                                       filesystem::mojom::kFlagWriteAttributes,
                                   &err, file.get()) ||
       err != base::File::Error::FILE_OK) {
-    return std::make_unique<DudWriterDelegate>();
+    return nullptr;
   }
   return std::make_unique<zip::FileWriterDelegate>(std::move(file));
 }
@@ -84,7 +67,7 @@ std::unique_ptr<zip::WriterDelegate> MakeFileWriterDelegate(
                                  parent.BindNewPipeAndPassReceiver(),
                                  filesystem::mojom::kFlagOpenAlways, &err) ||
       err != base::File::Error::FILE_OK) {
-    return std::make_unique<DudWriterDelegate>();
+    return nullptr;
   }
   return MakeFileWriterDelegateNoParent(parent.get(), path.BaseName());
 }
