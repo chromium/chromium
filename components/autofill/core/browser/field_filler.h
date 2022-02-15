@@ -26,6 +26,17 @@ class FieldFiller {
               AddressNormalizer* address_normalizer);
   ~FieldFiller();
 
+  // Based on |field.Type()|, returns value that is supposed to be filled in the
+  // |field_data|.
+  std::u16string GetValueForFilling(
+      const AutofillField& field,
+      absl::variant<const AutofillProfile*, const CreditCard*>
+          profile_or_credit_card,
+      FormFieldData* field_data,
+      const std::u16string& cvc,
+      mojom::RendererFormDataAction action,
+      std::string* failure_to_fill);
+
   // Set |field_data|'s value to the right value in |profile_or_credit_card|.
   // Uses |field| to determine which field type should be filled, and
   // |app_locale_| as hint when filling exceptional cases like phone number
