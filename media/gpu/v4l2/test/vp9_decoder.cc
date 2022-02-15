@@ -182,7 +182,6 @@ void DetilePlane(std::vector<char>& dest,
                     src + src_index + tile_size.width());
         src_index += tile_len;
       }
-
       // Finish last partial tile in the row.
       dest.insert(dest.end(), src + src_index,
                   src + src_index + size.width() - aligned_width);
@@ -201,8 +200,8 @@ void UnpackUVPlane(std::vector<char>& dest_u,
                    std::vector<char>& dest_v,
                    std::vector<char>& src_uv,
                    gfx::Size size) {
-  dest_u.resize(size.GetArea() / 4);
-  dest_v.resize(size.GetArea() / 4);
+  dest_u.reserve(size.GetArea() / 4);
+  dest_v.reserve(size.GetArea() / 4);
   for (int i = 0; i < size.GetArea() / 4; i++) {
     dest_u.push_back(src_uv[2 * i]);
     dest_v.push_back(src_uv[2 * i + 1]);
@@ -219,13 +218,14 @@ void ConvertMM21ToYUV(std::vector<char>& dest_y,
   constexpr int kMM21TileWidth = 16;
   constexpr int kMM21TileHeight = 32;
   constexpr gfx::Size kYTileSize(kMM21TileWidth, kMM21TileHeight);
-  dest_y.resize(size.GetArea());
+  dest_y.reserve(size.GetArea());
   DetilePlane(dest_y, src_y, size, kYTileSize);
 
   // Detile MM21's chroma plane in a temporary |detiled_uv|.
-  std::vector<char> detiled_uv(size.GetArea() / 2);
+  std::vector<char> detiled_uv;
   const gfx::Size uv_size(size.width(), size.height() / 2);
   constexpr gfx::Size kUVTileSize(kMM21TileWidth, kMM21TileHeight / 2);
+  detiled_uv.reserve(size.GetArea() / 2);
   DetilePlane(detiled_uv, src_uv, uv_size, kUVTileSize);
 
   // Unpack NV12's UV plane into separate U and V planes.
