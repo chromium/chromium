@@ -138,8 +138,6 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceSyncBrowserTest,
   ASSERT_EQ(2, GetBrowser(0)->tab_strip_model()->count());
   ASSERT_EQ(GURL(chrome::kChromeUIResetPasswordURL),
             interstitial_web_contents->GetVisibleURL());
-  EXPECT_THAT(histograms.GetAllSamples("PasswordProtection.InterstitialString"),
-              testing::ElementsAre(base::Bucket(3, 1)));
 
   // Clicks on "Reset Password" button.
   std::string script =

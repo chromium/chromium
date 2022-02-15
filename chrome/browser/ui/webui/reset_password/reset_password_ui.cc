@@ -34,8 +34,6 @@ using safe_browsing::RequestOutcome;
 
 namespace {
 
-constexpr char kStringTypeUMAName[] = "PasswordProtection.InterstitialString";
-
 // Used for UMA metric logging. Please don't reorder.
 // Indicates which type of strings are shown on this page.
 enum class StringType {
@@ -155,10 +153,6 @@ base::DictionaryValue ResetPasswordUI::PopulateStrings() const {
     explanation_paragraph_string = l10n_util::GetStringUTF16(
         known_password_type ? IDS_RESET_PASSWORD_WARNING_EXPLANATION_PARAGRAPH
                             : IDS_RESET_PASSWORD_EXPLANATION_PARAGRAPH);
-    UMA_HISTOGRAM_ENUMERATION(kStringTypeUMAName,
-                              known_password_type
-                                  ? StringType::WARNING_NO_ORG_NAME
-                                  : StringType::GENERIC_NO_ORG_NAME);
   } else {
     std::u16string formatted_org_name = GetFormattedHostName(org_name);
     explanation_paragraph_string = l10n_util::GetStringFUTF16(
@@ -166,10 +160,6 @@ base::DictionaryValue ResetPasswordUI::PopulateStrings() const {
             ? IDS_RESET_PASSWORD_WARNING_EXPLANATION_PARAGRAPH_WITH_ORG_NAME
             : IDS_RESET_PASSWORD_EXPLANATION_PARAGRAPH_WITH_ORG_NAME,
         formatted_org_name);
-    UMA_HISTOGRAM_ENUMERATION(kStringTypeUMAName,
-                              known_password_type
-                                  ? StringType::WARNING_WITH_ORG_NAME
-                                  : StringType::GENERIC_WITH_ORG_NAME);
   }
 
   base::DictionaryValue load_time_data;

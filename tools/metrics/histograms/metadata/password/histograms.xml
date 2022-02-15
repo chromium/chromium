@@ -2925,6 +2925,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordProtection.InterstitialString"
     enum="PasswordProtectionInterstitialStringType" expires_after="2021-12-26">
+  <obsolete>
+    Removed in M100. This histogram is no longer needed.
+  </obsolete>
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

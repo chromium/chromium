@@ -2062,7 +2062,12 @@ Safe Browsing lookup mechanism is working as expected -->
 </histogram>
 
 <histogram name="SafeBrowsing.V4ProcessFullUpdate.ApplyUpdate.Result"
-    enum="SafeBrowsingV4ApplyUpdateResult" expires_after="2021-09-05">
+    enum="SafeBrowsingV4ApplyUpdateResult" expires_after="never">
+<!-- expires-never: This reports the outcome of applying a full
+update for a store received from PVer4 Safe Browsing service. 
+It helps us determine which Safe Browsing list is failing to
+update (when that happens, no list gets updated). -->
+
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

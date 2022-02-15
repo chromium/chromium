@@ -680,9 +680,6 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
   content::TestNavigationObserver observer(new_web_contents,
                                            /*number_of_navigations=*/1);
   observer.Wait();
-  EXPECT_THAT(histograms.GetAllSamples("PasswordProtection.InterstitialString"),
-              testing::ElementsAre(base::Bucket(2, 1)));
-
   // Clicks on "Reset Password" button.
   std::string script =
       "var node = document.getElementById('reset-password-button'); \n"
