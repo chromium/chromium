@@ -1252,7 +1252,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnterCriticalPolicySectionDelay.Total" units="ms"
-    expires_after="2022-06-12">
+    expires_after="2022-08-14">
   <owner>zmin@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>
@@ -1283,7 +1283,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EnterCriticalPolicySectionError"
-    enum="WinGetLastError" expires_after="2022-06-12">
+    enum="WinGetLastError" expires_after="2022-08-14">
   <owner>zmin@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>
