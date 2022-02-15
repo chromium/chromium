@@ -2590,6 +2590,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.TimeBetweenAppInstallAndLaunch{TabletOrClamshell}"
+    units="ms" expires_after="2022-08-01">
+  <owner>jamescook@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Time between when an app is installed and when the user launches the app.
+    Recorded the first time the user launches the app. The clamshell or tablet
+    mode state is the state when the app is launched.
+  </summary>
+  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
+</histogram>
+
 <histogram
     name="Apps.TimeBetweenNewUserSessionActivationAndFirstLauncherAction{TabletOrClamshell}"
     units="ms" expires_after="2022-04-17">

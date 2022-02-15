@@ -10,12 +10,15 @@
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -30,6 +33,11 @@
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 
 namespace {
+
+// Parameters used by the time duration metrics.
+constexpr base::TimeDelta kTimeMetricsMin = base::Seconds(1);
+constexpr base::TimeDelta kTimeMetricsMax = base::Days(1);
+constexpr int kTimeMetricsBucketCount = 100;
 
 // Returns true if `app_update` should be considered a new app install.
 bool IsNewInstall(const apps::AppUpdate& app_update) {
@@ -72,7 +80,8 @@ AppServiceAppItem::AppServiceAppItem(
     const app_list::AppListSyncableService::SyncItem* sync_item,
     const apps::AppUpdate& app_update)
     : ChromeAppListItem(profile, app_update.AppId()),
-      app_type_(apps::ConvertMojomAppTypToAppType(app_update.AppType())) {
+      app_type_(apps::ConvertMojomAppTypToAppType(app_update.AppType())),
+      creation_time_(base::TimeTicks::Now()) {
   OnAppUpdate(app_update, /*in_constructor=*/true);
   if (sync_item && sync_item->item_ordinal.IsValid()) {
     InitFromSync(sync_item);
@@ -104,12 +113,10 @@ AppServiceAppItem::AppServiceAppItem(
     }
   }
 
-  if (ash::features::IsProductivityLauncherEnabled()) {
-    const bool is_new_install = !sync_item && IsNewInstall(app_update);
-    DVLOG(1) << "New AppServiceAppItem is_new_install " << is_new_install
-             << " from update " << app_update;
-    SetIsNewInstall(is_new_install);
-  }
+  const bool is_new_install = !sync_item && IsNewInstall(app_update);
+  DVLOG(1) << "New AppServiceAppItem is_new_install " << is_new_install
+           << " from update " << app_update;
+  SetIsNewInstall(is_new_install);
 
   // Set model updater last to avoid being called during construction.
   set_model_updater(model_updater);
@@ -180,6 +187,7 @@ void AppServiceAppItem::Activate(int event_flags) {
     ash::ShelfModel* model = ChromeShelfController::instance()->shelf_model();
     ash::ShelfItemDelegate* delegate = model->GetShelfItemDelegate(shelf_id);
     if (delegate) {
+      ResetIsNewInstall();
       delegate->ItemSelected(
           /*event=*/nullptr, GetController()->GetAppListDisplayId(),
           ash::LAUNCH_FROM_APP_LIST, /*callback=*/base::DoNothing(),
@@ -216,12 +224,28 @@ void AppServiceAppItem::ExecuteLaunchCommand(int event_flags) {
   }
 }
 
+void AppServiceAppItem::ResetIsNewInstall() {
+  if (!is_new_install())
+    return;
+  SetIsNewInstall(false);
+
+  // Record metric for approximate time from installation to launch.
+  base::TimeDelta time_since_install = base::TimeTicks::Now() - creation_time_;
+  // TabletMode may be null in unit tests.
+  if (ash::TabletMode::Get() && ash::TabletMode::Get()->InTabletMode()) {
+    base::UmaHistogramCustomTimes(
+        "Apps.TimeBetweenAppInstallAndLaunch.TabletMode", time_since_install,
+        kTimeMetricsMin, kTimeMetricsMax, kTimeMetricsBucketCount);
+  } else {
+    base::UmaHistogramCustomTimes(
+        "Apps.TimeBetweenAppInstallAndLaunch.ClamshellMode", time_since_install,
+        kTimeMetricsMin, kTimeMetricsMax, kTimeMetricsBucketCount);
+  }
+}
+
 void AppServiceAppItem::Launch(int event_flags,
                                apps::mojom::LaunchSource launch_source) {
-  if (ash::features::IsProductivityLauncherEnabled()) {
-    // Launching an app clears the "new install" badge.
-    SetIsNewInstall(false);
-  }
+  ResetIsNewInstall();
   apps::AppServiceProxyFactory::GetForProfile(profile())->Launch(
       id(), event_flags, launch_source,
       apps::MakeWindowInfo(GetController()->GetAppListDisplayId()));

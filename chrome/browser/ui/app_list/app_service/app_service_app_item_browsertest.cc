@@ -8,9 +8,11 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/shell.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -101,6 +103,18 @@ class AppServiceAppItemBrowserTest : public extensions::PlatformAppBrowserTest {
 
     // Associate |client| with the current profile.
     client->UpdateProfile();
+  }
+
+  std::unique_ptr<AppServiceAppItem> CreateUserInstalledChromeApp() {
+    apps::mojom::App app;
+    app.app_id = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+    app.app_type = apps::mojom::AppType::kChromeApp;
+    app.install_reason = apps::mojom::InstallReason::kUser;
+    apps::AppUpdate app_update(/*state=*/nullptr, /*delta=*/&app,
+                               EmptyAccountId());
+    return std::make_unique<AppServiceAppItem>(
+        profile(), /*model_updater=*/nullptr,
+        /*sync_item=*/nullptr, app_update);
   }
 };
 
@@ -203,6 +217,41 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppItemBrowserTest, UpdateAppNameInLauncher) {
 
   EXPECT_EQ(u"Updated Name",
             app_list_test_api.GetAppListItemViewName(extension_app->id()));
+}
+
+IN_PROC_BROWSER_TEST_F(AppServiceAppItemBrowserTest,
+                       ActivateAppRecordsNewInstallHistogram) {
+  base::HistogramTester histograms;
+  {
+    ASSERT_FALSE(ash::TabletMode::Get()->InTabletMode());
+
+    // Simulate a user-installed chrome app item.
+    std::unique_ptr<AppServiceAppItem> app_item =
+        CreateUserInstalledChromeApp();
+    ASSERT_TRUE(app_item->is_new_install());
+
+    // Activate (launch) the app, which marks it as not a new install and
+    // records metrics.
+    app_item->PerformActivate(ui::EF_NONE);
+    EXPECT_FALSE(app_item->is_new_install());
+    histograms.ExpectTotalCount(
+        "Apps.TimeBetweenAppInstallAndLaunch.ClamshellMode", 1);
+  }
+  {
+    ash::TabletMode::Get()->SetEnabledForTest(true);
+
+    // Simulate a user-installed chrome app item.
+    std::unique_ptr<AppServiceAppItem> app_item =
+        CreateUserInstalledChromeApp();
+    ASSERT_TRUE(app_item->is_new_install());
+
+    // Activate (launch) the app, which marks it as not a new install and
+    // records metrics.
+    app_item->PerformActivate(ui::EF_NONE);
+    EXPECT_FALSE(app_item->is_new_install());
+    histograms.ExpectTotalCount(
+        "Apps.TimeBetweenAppInstallAndLaunch.TabletMode", 1);
+  }
 }
 
 class AppServiceSystemWebAppItemBrowserTest

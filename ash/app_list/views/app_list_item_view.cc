@@ -360,7 +360,8 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
   title_ = AddChildView(std::move(title));
 
   new_install_dot_ = AddChildView(std::make_unique<DotView>());
-  new_install_dot_->SetVisible(item_weak_->is_new_install());
+  if (features::IsProductivityLauncherEnabled())
+    new_install_dot_->SetVisible(item_weak_->is_new_install());
 
   SetIcon(item_weak_->GetIcon(app_list_config_->type()));
   SetItemName(base::UTF8ToUTF16(item->GetDisplayName()),
@@ -1225,7 +1226,8 @@ void AppListItemView::ItemBadgeColorChanged() {
 
 void AppListItemView::ItemIsNewInstallChanged() {
   DCHECK(item_weak_);
-  new_install_dot_->SetVisible(item_weak_->is_new_install());
+  if (features::IsProductivityLauncherEnabled())
+    new_install_dot_->SetVisible(item_weak_->is_new_install());
 }
 
 void AppListItemView::ItemBeingDestroyed() {
