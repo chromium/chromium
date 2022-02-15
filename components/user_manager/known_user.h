@@ -369,15 +369,6 @@ UpdateIsUsingSAMLPrincipalsAPI(const AccountId& account_id,
 bool USER_MANAGER_EXPORT
 GetIsUsingSAMLPrincipalsAPI(const AccountId& account_id);
 
-// TODO(https://crbug.com/1150434): Deprecated, use
-// KnownUser::SetIsEnterpriseManaged instead.
-void USER_MANAGER_EXPORT SetIsEnterpriseManaged(const AccountId& account_id,
-                                                bool is_enterprise_managed);
-
-// TODO(https://crbug.com/1150434): Deprecated, use
-// KnownUser::GetIsEnterpriseManaged instead.
-bool USER_MANAGER_EXPORT GetIsEnterpriseManaged(const AccountId& account_id);
-
 }  // namespace known_user
 }  // namespace user_manager
 

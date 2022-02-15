@@ -1105,8 +1105,8 @@ void ExistingUserController::OnProfilePrepared(Profile* profile,
       user_context.GetUserType() != user_manager::USER_TYPE_CHILD;
 
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  user_manager::known_user::SetIsEnterpriseManaged(user_context.GetAccountId(),
-                                                   is_enterprise_managed);
+  known_user.SetIsEnterpriseManaged(user_context.GetAccountId(),
+                                    is_enterprise_managed);
 
   if (is_enterprise_managed) {
     absl::optional<std::string> manager =

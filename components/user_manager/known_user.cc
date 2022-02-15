@@ -970,23 +970,5 @@ GetIsUsingSAMLPrincipalsAPI(const AccountId& account_id) {
   return KnownUser(local_state).GetIsUsingSAMLPrincipalsAPI(account_id);
 }
 
-void SetIsEnterpriseManaged(const AccountId& account_id,
-                            bool is_enterprise_managed) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return;
-  return KnownUser(local_state)
-      .SetIsEnterpriseManaged(account_id, is_enterprise_managed);
-}
-
-bool GetIsEnterpriseManaged(const AccountId& account_id) {
-  PrefService* local_state = GetLocalStateLegacy();
-  // Local State may not be initialized in tests.
-  if (!local_state)
-    return false;
-  return KnownUser(local_state).GetIsEnterpriseManaged(account_id);
-}
-
 }  // namespace known_user
 }  // namespace user_manager

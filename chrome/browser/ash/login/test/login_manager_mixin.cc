@@ -154,7 +154,7 @@ void LoginManagerMixin::SetUpLocalState() {
 
     if (base::EndsWith(kManagedDomain, gaia::ExtractDomainName(
                                            user.account_id.GetUserEmail()))) {
-      user_manager::known_user::SetIsEnterpriseManaged(user.account_id, true);
+      known_user.SetIsEnterpriseManaged(user.account_id, true);
     }
   }
 
