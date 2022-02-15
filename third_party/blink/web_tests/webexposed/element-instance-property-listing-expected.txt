@@ -681,6 +681,7 @@ html element iframe
 html element img
     property align
     property alt
+    property attributionSrc
     property border
     property complete
     property crossOrigin

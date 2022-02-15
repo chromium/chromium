@@ -23,6 +23,7 @@
     "Access-Control-Request-Headers",
     "Access-Control-Request-Method",
     "Allow-CSP-From",
+    "Attribution-Reporting-Register-Source",
     "Cache-Control",
     "Content-DPR",
     "Content-Disposition",

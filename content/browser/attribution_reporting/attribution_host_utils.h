@@ -30,6 +30,9 @@ struct VerifyResult {
   bool stored;
 };
 
+// Checks if the origin is trustworthy or an android app origin.
+bool IsOriginTrustworthyForAttributions(const url::Origin& origin);
+
 // Performs required checks on an incoming impression's data (trustworthy
 // origins, etc), and if verified, generates a StorableImpression and persists
 // it.

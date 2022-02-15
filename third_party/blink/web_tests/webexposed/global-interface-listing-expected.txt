@@ -3674,6 +3674,7 @@ interface HTMLImageElement : HTMLElement
     attribute @@toStringTag
     getter align
     getter alt
+    getter attributionSrc
     getter border
     getter complete
     getter crossOrigin
@@ -3702,6 +3703,7 @@ interface HTMLImageElement : HTMLElement
     method decode
     setter align
     setter alt
+    setter attributionSrc
     setter border
     setter crossOrigin
     setter decoding
@@ -4794,6 +4796,7 @@ interface Image
     attribute @@toStringTag
     getter align
     getter alt
+    getter attributionSrc
     getter border
     getter complete
     getter crossOrigin
@@ -4822,6 +4825,7 @@ interface Image
     method decode
     setter align
     setter alt
+    setter attributionSrc
     setter border
     setter crossOrigin
     setter decoding

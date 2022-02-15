@@ -26,6 +26,7 @@ import "url/mojom/url.mojom";
 // than this one.
 enum RequestContextType {
   UNSPECIFIED,
+  ATTRIBUTION_SRC,
   AUDIO,
   BEACON,
   CSP_REPORT,

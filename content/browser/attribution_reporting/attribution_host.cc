@@ -382,6 +382,42 @@ void AttributionHost::RegisterImpression(const blink::Impression& impression) {
   }
 }
 
+void AttributionHost::RegisterDataHost(
+    mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host) {
+  // If there is no attribution manager available, ignore any registrations.
+  AttributionManager* attribution_manager =
+      attribution_manager_provider_->GetManager(web_contents());
+  if (!attribution_manager)
+    return;
+
+  content::RenderFrameHost* render_frame_host =
+      receivers_.GetCurrentTargetFrame();
+
+  const url::Origin& frame_origin = render_frame_host->GetLastCommittedOrigin();
+  const url::Origin& top_frame_origin =
+      render_frame_host->GetOutermostMainFrame()->GetLastCommittedOrigin();
+
+  if (!network::IsOriginPotentiallyTrustworthy(top_frame_origin)) {
+    mojo::ReportBadMessage(
+        "blink.mojom.ConversionHost can only be used with a secure top-level "
+        "frame.");
+    return;
+  }
+
+  if (render_frame_host != render_frame_host->GetOutermostMainFrame() &&
+      !network::IsOriginPotentiallyTrustworthy(frame_origin)) {
+    mojo::ReportBadMessage(
+        "blink.mojom.ConversionHost can only be used in secure contexts.");
+    return;
+  }
+
+  if (!attribution_manager->GetDataHostManager())
+    return;
+
+  attribution_manager->GetDataHostManager()->RegisterDataHost(
+      std::move(data_host), top_frame_origin);
+}
+
 void AttributionHost::ReportAttributionForCurrentNavigation(
     const url::Origin& impression_origin,
     const blink::Impression& impression) {

@@ -990,13 +990,6 @@ void ResourceLoader::DidReceiveResponseInternal(
                                resource_);
   }
 
-  if (fetcher_->GetProperties().IsDetached()) {
-    // If the fetch context is already detached, we don't need further signals,
-    // so let's cancel the request.
-    HandleError(ResourceError::CancelledError(response.CurrentRequestUrl()));
-    return;
-  }
-
   ResourceType resource_type = resource_->GetType();
 
   const ResourceRequestHead& initial_request = resource_->GetResourceRequest();
@@ -1124,6 +1117,13 @@ void ResourceLoader::DidReceiveResponseInternal(
   }
 
   resource_->ResponseReceived(response);
+
+  if (resource_->Loader() && fetcher_->GetProperties().IsDetached()) {
+    // If the fetch context is already detached, we don't need further signals,
+    // so let's cancel the request.
+    HandleError(ResourceError::CancelledError(response.CurrentRequestUrl()));
+    return;
+  }
 
   // Send the cached code after we notify that the response is received.
   // Resource expects that we receive the response first before the

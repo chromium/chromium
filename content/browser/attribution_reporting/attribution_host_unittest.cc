@@ -8,9 +8,11 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
@@ -19,6 +21,7 @@
 #include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_web_contents.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/schemeful_site.h"
@@ -88,6 +91,10 @@ class AttributionHostTest : public RenderViewHostTestHarness {
         web_contents(), std::make_unique<TestManagerProvider>(&mock_manager_));
     AttributionHost::SetReceiverImplForTesting(conversion_host_.get());
 
+    auto data_host_manager = std::make_unique<MockDataHostManager>();
+    mock_data_host_manager_ = data_host_manager.get();
+    mock_manager_.SetDataHostManager(std::move(data_host_manager));
+
     contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
   }
 
@@ -113,6 +120,7 @@ class AttributionHostTest : public RenderViewHostTestHarness {
 
  protected:
   MockAttributionManager mock_manager_;
+  MockDataHostManager* mock_data_host_manager_;
   std::unique_ptr<AttributionHost> conversion_host_;
 };
 
@@ -693,6 +701,98 @@ TEST_F(AttributionHostTest,
 
     Mock::VerifyAndClear(&mock_manager_);
   }
+}
+
+TEST_F(AttributionHostTest, DataHost_RegisteredWithContext) {
+  EXPECT_CALL(
+      *mock_data_host_manager_,
+      RegisterDataHost(_, url::Origin::Create(GURL("https://top.example"))));
+
+  contents()->NavigateAndCommit(GURL("https://top.example"));
+  SetCurrentTargetFrameForTesting(main_rfh());
+
+  // Create a fake dispatch context to trigger a bad message in.
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  conversion_host_mojom()->RegisterDataHost(
+      data_host_remote.BindNewPipeAndPassReceiver());
+
+  // Run loop to allow the bad message code to run if a bad message was
+  // triggered.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+}
+
+TEST_F(AttributionHostTest, DataHostOnInsecurePage_BadMessage) {
+  contents()->NavigateAndCommit(GURL("http://top.example"));
+  SetCurrentTargetFrameForTesting(main_rfh());
+
+  // Create a fake dispatch context to trigger a bad message in.
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  conversion_host_mojom()->RegisterDataHost(
+      data_host_remote.BindNewPipeAndPassReceiver());
+
+  EXPECT_EQ(
+      "blink.mojom.ConversionHost can only be used with a secure top-level "
+      "frame.",
+      bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(AttributionHostTest, DataHostInSubframe_ContextIsOutermostFrame) {
+  EXPECT_CALL(
+      *mock_data_host_manager_,
+      RegisterDataHost(_, url::Origin::Create(GURL("https://top.example"))));
+
+  contents()->NavigateAndCommit(GURL("https://top.example"));
+
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");
+  subframe = NavigationSimulatorImpl::NavigateAndCommitFromDocument(
+      GURL("https://subframe.example"), subframe);
+  SetCurrentTargetFrameForTesting(subframe);
+
+  // Create a fake dispatch context to trigger a bad message in.
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  conversion_host_mojom()->RegisterDataHost(
+      data_host_remote.BindNewPipeAndPassReceiver());
+
+  // Run loop to allow the bad message code to run if a bad message was
+  // triggered.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+}
+
+TEST_F(AttributionHostTest, DataHostInSubframeOnInsecurePage_BadMessage) {
+  contents()->NavigateAndCommit(GURL("http://top.example"));
+
+  content::RenderFrameHostTester* rfh_tester =
+      content::RenderFrameHostTester::For(main_rfh());
+  content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");
+  subframe = NavigationSimulatorImpl::NavigateAndCommitFromDocument(
+      GURL("https://subframe.example"), subframe);
+  SetCurrentTargetFrameForTesting(subframe);
+
+  // Create a fake dispatch context to trigger a bad message in.
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+  conversion_host_mojom()->RegisterDataHost(
+      data_host_remote.BindNewPipeAndPassReceiver());
+
+  EXPECT_EQ(
+      "blink.mojom.ConversionHost can only be used with a secure top-level "
+      "frame.",
+      bad_message_observer.WaitForBadMessage());
 }
 
 TEST_F(AttributionHostTest,

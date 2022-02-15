@@ -33,6 +33,7 @@
 #include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -79,6 +80,49 @@ class MockAttributionHost : public AttributionHost {
               RegisterConversion,
               (blink::mojom::ConversionPtr conversion),
               (override));
+
+  MOCK_METHOD(
+      void,
+      RegisterDataHost,
+      (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host),
+      (override));
+};
+
+class MockDataHost : public blink::mojom::AttributionDataHost {
+ public:
+  explicit MockDataHost(
+      mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host);
+  ~MockDataHost() override;
+
+  void WaitForSourceData(size_t num_source_data);
+
+  const std::vector<blink::mojom::AttributionSourceDataPtr>& source_data()
+      const {
+    return source_data_;
+  }
+
+ private:
+  // blink::mojom::AttributionDataHost:
+  void SourceDataAvailable(
+      blink::mojom::AttributionSourceDataPtr data) override;
+
+  size_t min_source_data_count_ = 0;
+  mojo::Receiver<blink::mojom::AttributionDataHost> receiver_{this};
+  base::RunLoop wait_loop_;
+  std::vector<blink::mojom::AttributionSourceDataPtr> source_data_;
+};
+
+class MockDataHostManager : public AttributionDataHostManager {
+ public:
+  MockDataHostManager();
+  ~MockDataHostManager() override;
+
+  MOCK_METHOD(
+      void,
+      RegisterDataHost,
+      (mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host,
+       url::Origin context_origin),
+      (override));
 };
 
 base::GUID DefaultExternalReportID();
@@ -227,6 +271,7 @@ class MockAttributionManager : public AttributionManager {
 
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+  AttributionDataHostManager* GetDataHostManager() override;
 
   void NotifySourcesChanged();
   void NotifyReportsChanged();
@@ -239,7 +284,10 @@ class MockAttributionManager : public AttributionManager {
   void NotifyReportDropped(
       const AttributionStorage::CreateReportResult& result);
 
+  void SetDataHostManager(std::unique_ptr<AttributionDataHostManager> manager);
+
  private:
+  std::unique_ptr<AttributionDataHostManager> data_host_manager_;
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
 };
 

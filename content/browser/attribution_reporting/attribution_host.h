@@ -42,7 +42,7 @@ class CONTENT_EXPORT AttributionHost
       mojo::PendingAssociatedReceiver<blink::mojom::ConversionHost> receiver,
       RenderFrameHost* rfh);
 
-  // Normally, Attributions should be reported at the start of a navigation.
+  // Normally, attributions should be reported at the start of a navigation.
   // However, in some cases, like with speculative navigation on Android, the
   // attribution parameters aren't available at the start of the navigation.
   //
@@ -79,6 +79,8 @@ class CONTENT_EXPORT AttributionHost
   // blink::mojom::ConversionHost:
   void RegisterConversion(blink::mojom::ConversionPtr conversion) override;
   void RegisterImpression(const blink::Impression& impression) override;
+  void RegisterDataHost(mojo::PendingReceiver<blink::mojom::AttributionDataHost>
+                            data_host) override;
 
   // WebContentsObserver:
   void DidStartNavigation(NavigationHandle* navigation_handle) override;

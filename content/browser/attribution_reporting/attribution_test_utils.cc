@@ -50,6 +50,34 @@ MockAttributionHost::~MockAttributionHost() {
   SetReceiverImplForTesting(nullptr);
 }
 
+MockDataHost::MockDataHost(
+    mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host) {
+  receiver_.Bind(std::move(data_host));
+}
+
+MockDataHost::~MockDataHost() = default;
+
+void MockDataHost::WaitForSourceData(size_t num_source_data) {
+  min_source_data_count_ = num_source_data;
+  if (source_data_.size() >= min_source_data_count_) {
+    return;
+  }
+  wait_loop_.Run();
+}
+
+void MockDataHost::SourceDataAvailable(
+    blink::mojom::AttributionSourceDataPtr data) {
+  source_data_.push_back(std::move(data));
+  if (source_data_.size() < min_source_data_count_) {
+    return;
+  }
+  wait_loop_.Quit();
+}
+
+MockDataHostManager::MockDataHostManager() = default;
+
+MockDataHostManager::~MockDataHostManager() = default;
+
 base::GUID DefaultExternalReportID() {
   return base::GUID::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e");
 }
@@ -134,6 +162,10 @@ void MockAttributionManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+AttributionDataHostManager* MockAttributionManager::GetDataHostManager() {
+  return data_host_manager_.get();
+}
+
 void MockAttributionManager::NotifySourcesChanged() {
   for (Observer& observer : observers_)
     observer.OnSourcesChanged();
@@ -167,6 +199,10 @@ void MockAttributionManager::NotifyReportDropped(
     const AttributionStorage::CreateReportResult& result) {
   for (Observer& observer : observers_)
     observer.OnReportDropped(result);
+}
+void MockAttributionManager::SetDataHostManager(
+    std::unique_ptr<AttributionDataHostManager> manager) {
+  data_host_manager_ = std::move(manager);
 }
 
 // Builds an impression with default values. This is done as a builder because

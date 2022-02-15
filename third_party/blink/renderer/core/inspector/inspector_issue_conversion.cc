@@ -182,6 +182,8 @@ protocol::String BuildMixedContentResolutionStatus(
 protocol::String BuildMixedContentResourceType(
     mojom::blink::RequestContextType request_context) {
   switch (request_context) {
+    case mojom::blink::RequestContextType::ATTRIBUTION_SRC:
+      return protocol::Audits::MixedContentResourceTypeEnum::AttributionSrc;
     case blink::mojom::blink::RequestContextType::AUDIO:
       return protocol::Audits::MixedContentResourceTypeEnum::Audio;
     case blink::mojom::blink::RequestContextType::BEACON:

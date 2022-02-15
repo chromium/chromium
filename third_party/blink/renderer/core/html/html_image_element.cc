@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/frame/attribution_src_loader.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
@@ -362,6 +363,14 @@ void HTMLImageElement::ParseAttribute(
       // Update the current state so we can detect future state changes.
       GetImageLoader().UpdateFromElement(
           ImageLoader::kUpdateIgnorePreviousError, referrer_policy_);
+    }
+  } else if (name == html_names::kAttributionsrcAttr) {
+    const AtomicString& attribution_src_value =
+        FastGetAttribute(html_names::kAttributionsrcAttr);
+    LocalDOMWindow* window = GetDocument().domWindow();
+    if (!attribution_src_value.IsNull() && window && window->GetFrame()) {
+      window->GetFrame()->GetAttributionSrcLoader()->Register(
+          GetDocument().CompleteURL(attribution_src_value), this);
     }
   } else {
     HTMLElement::ParseAttribute(params);

@@ -24,12 +24,10 @@ namespace content {
 
 namespace attribution_host_utils {
 
-namespace {
 bool IsOriginTrustworthyForAttributions(const url::Origin& origin) {
   return IsAndroidAppOrigin(origin) ||
          network::IsOriginPotentiallyTrustworthy(origin);
 }
-}  // namespace
 
 VerifyResult VerifyAndStoreImpression(CommonSourceInfo::SourceType source_type,
                                       const url::Origin& impression_origin,

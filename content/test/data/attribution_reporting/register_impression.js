@@ -70,3 +70,13 @@ function createAndClickImpressionTag(params) {
   simulateClick(anchor);
   return anchor;
 }
+
+function createAttributionSourceImg(src) {
+  const img = document.createElement('img');
+  img.setAttribute('target', "top");
+  img.width = 100;
+  img.height = 100;
+  img.setAttribute("attributionsrc", src);
+  document.body.appendChild(img);
+  return img;
+}

@@ -96,6 +96,7 @@ class SizeF;
 namespace blink {
 
 class AdTracker;
+class AttributionSrcLoader;
 class AssociatedInterfaceProvider;
 class BrowserInterfaceBrokerProxy;
 class Color;
@@ -430,6 +431,9 @@ class CORE_EXPORT LocalFrame final
   IdlenessDetector* GetIdlenessDetector() { return idleness_detector_; }
   AdTracker* GetAdTracker() { return ad_tracker_; }
   void SetAdTrackerForTesting(AdTracker* ad_tracker);
+  AttributionSrcLoader* GetAttributionSrcLoader() {
+    return attribution_src_loader_;
+  }
 
   enum class LazyLoadImageSetting { kDisabled, kEnabledExplicit };
   // Returns the enabled state of lazyloading of images.
@@ -861,6 +865,7 @@ class CORE_EXPORT LocalFrame final
   Member<PerformanceMonitor> performance_monitor_;
   Member<AdTracker> ad_tracker_;
   Member<IdlenessDetector> idleness_detector_;
+  Member<AttributionSrcLoader> attribution_src_loader_;
   Member<InspectorIssueReporter> inspector_issue_reporter_;
   Member<InspectorTraceEvents> inspector_trace_events_;
   // SmoothScrollSequencer is only populated for local roots; all local frames

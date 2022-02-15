@@ -23,6 +23,7 @@ class Origin;
 namespace content {
 
 class AttributionTrigger;
+class AttributionDataHostManager;
 class StorableSource;
 class StoredSource;
 class WebContents;
@@ -76,6 +77,9 @@ class AttributionManager {
   virtual void AddObserver(Observer* observer) = 0;
 
   virtual void RemoveObserver(Observer* observer) = 0;
+
+  // Gets manager responsible for tracking pending data hosts targeting `this`.
+  virtual AttributionDataHostManager* GetDataHostManager() = 0;
 
   // Persists the given |source| to storage. Called when a navigation
   // originating from a source tag finishes.

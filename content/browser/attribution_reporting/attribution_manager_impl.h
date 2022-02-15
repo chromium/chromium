@@ -18,6 +18,7 @@
 #include "base/observer_list.h"
 #include "base/threading/sequence_bound.h"
 #include "base/timer/wall_clock_timer.h"
+#include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
@@ -102,6 +103,7 @@ class CONTENT_EXPORT AttributionManagerImpl
   // AttributionManager:
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+  AttributionDataHostManager* GetDataHostManager() override;
   void HandleSource(StorableSource source) override;
   void HandleTrigger(AttributionTrigger trigger) override;
   void GetActiveSourcesForWebUI(
@@ -130,7 +132,8 @@ class CONTENT_EXPORT AttributionManagerImpl
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
       std::unique_ptr<AttributionStorageDelegate> storage_delegate,
       std::unique_ptr<AttributionCookieChecker> cookie_checker,
-      std::unique_ptr<AttributionNetworkSender> network_sender);
+      std::unique_ptr<AttributionNetworkSender> network_sender,
+      std::unique_ptr<AttributionDataHostManager> data_host_manager);
 
   // network::NetworkConnectionTracker::NetworkConnectionObserver:
   void OnConnectionChanged(
@@ -192,6 +195,8 @@ class CONTENT_EXPORT AttributionManagerImpl
   base::circular_deque<SourceOrTrigger> pending_events_;
 
   base::SequenceBound<AttributionStorage> attribution_storage_;
+
+  std::unique_ptr<AttributionDataHostManager> data_host_manager_;
 
   // Storage policy for the browser context |this| is in. May be nullptr.
   scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
