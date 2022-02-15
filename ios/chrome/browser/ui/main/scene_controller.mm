@@ -1574,6 +1574,12 @@ bool IsSigninForcedByPolicy() {
   // Do not display the web sign-in promo if there is any UI on the screen.
   if (self.signinCoordinator || self.settingsNavigationController)
     return;
+  if (self.sceneState.appState.initStage == InitStageFirstRun) {
+    // This case is possible when using force FRE flag and opening chrome
+    // with accounts.google.com in the background.
+    // crbug.com/1293305.
+    return;
+  }
   self.signinCoordinator = [SigninCoordinator
       consistencyPromoSigninCoordinatorWithBaseViewController:baseViewController
                                                       browser:self.mainInterface
