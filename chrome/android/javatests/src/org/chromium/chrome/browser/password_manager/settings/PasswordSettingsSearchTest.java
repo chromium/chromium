@@ -488,7 +488,7 @@ public class PasswordSettingsSearchTest {
         monitor.waitForActivityWithTimeout(UI_UPDATING_TIMEOUT_MS);
         Assert.assertEquals("Monitor for has not been called", 1, monitor.getHits());
         InstrumentationRegistry.getInstrumentation().removeMonitor(monitor);
-        onView(withContentDescription(R.string.password_entry_viewer_view_stored_password))
+        onView(withContentDescription(R.string.password_entry_viewer_show_stored_password))
                 .perform(click());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 

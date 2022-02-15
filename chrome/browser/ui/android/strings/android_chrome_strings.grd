@@ -654,9 +654,6 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PASSWORD_ENTRY_VIEWER_COPY_STORED_PASSWORD" desc='Content description for the button that copies the stored password.'>
         Copy password
       </message>
-      <message name="IDS_PASSWORD_ENTRY_VIEWER_VIEW_STORED_PASSWORD" desc='Content description for the button that allows users to view the stored password upon reauthentication.'>
-        Unmask password
-      </message>
       <message name="IDS_PASSWORD_ENTRY_VIEWER_SHOW_STORED_PASSWORD" desc='Content description for the button that allows users to view the stored password upon reauthentication.'>
         Show password
       </message>

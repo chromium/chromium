@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.password_check.helper;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.provider.Browser;
 
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -16,7 +15,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.password_check.CompromisedCredential;
 import org.chromium.chrome.browser.password_check.PasswordChangeType;
 import org.chromium.chrome.browser.password_check.PasswordCheckComponentUi;
-import org.chromium.chrome.browser.password_check.PasswordCheckEditFragmentView;
 import org.chromium.chrome.browser.password_check.PasswordCheckUkmRecorder;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
@@ -95,18 +93,6 @@ public class PasswordCheckChangePasswordHelper {
         Intent intent = buildIntent(origin, PasswordChangeType.AUTOMATED_CHANGE);
         populateAutofillAssistantExtras(intent, origin, credential.getUsername());
         IntentUtils.safeStartActivity(mContext, intent);
-    }
-
-    /**
-     * Launches a settings fragment to edit the given credential.
-     * @param credential A {@link CompromisedCredential} to change.
-     */
-    public void launchEditPage(CompromisedCredential credential) {
-        Bundle fragmentArgs = new Bundle();
-        fragmentArgs.putParcelable(
-                PasswordCheckEditFragmentView.EXTRA_COMPROMISED_CREDENTIAL, credential);
-        mSettingsLauncher.launchSettingsActivity(
-                mContext, PasswordCheckEditFragmentView.class, fragmentArgs);
     }
 
     private Intent getPackageLaunchIntent(String packageName) {
