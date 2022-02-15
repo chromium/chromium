@@ -5,21 +5,50 @@
 
 #include <tuple>
 
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/driver/sync_service_impl.h"
+#include "components/sync/driver/trusted_vault_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
 namespace {
+
+std::vector<std::vector<uint8_t>> FetchTrustedVaultKeysForProfile(
+    Profile* profile,
+    const AccountInfo& account_info) {
+  syncer::SyncServiceImpl* sync_service =
+      SyncServiceFactory::GetAsSyncServiceImplForProfile(profile);
+  syncer::TrustedVaultClient* trusted_vault_client =
+      sync_service->GetSyncClientForTest()->GetTrustedVaultClient();
+
+  // Waits until the sync trusted vault keys have been received and stored.
+  base::RunLoop loop;
+  std::vector<std::vector<uint8_t>> actual_keys;
+
+  trusted_vault_client->FetchKeys(
+      account_info, base::BindLambdaForTesting(
+                        [&](const std::vector<std::vector<uint8_t>>& keys) {
+                          actual_keys = keys;
+                          loop.Quit();
+                        }));
+  loop.Run();
+  return actual_keys;
+}
 
 class SyncEncryptionKeysTabHelperBrowserTest : public InProcessBrowserTest {
  public:
@@ -40,6 +69,10 @@ class SyncEncryptionKeysTabHelperBrowserTest : public InProcessBrowserTest {
 
   content::test::PrerenderTestHelper& prerender_helper() {
     return prerender_helper_;
+  }
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_test_helper_;
   }
 
   bool HasEncryptionKeysApi(content::RenderFrameHost* rfh) {
@@ -75,6 +108,7 @@ class SyncEncryptionKeysTabHelperBrowserTest : public InProcessBrowserTest {
   }
 
   net::EmbeddedTestServer https_server_;
+  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
@@ -133,6 +167,53 @@ IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
                               kSetEncryptionKeysScript));
   console_observer.Wait();
   EXPECT_EQ(1u, console_observer.messages().size());
+}
+
+// Tests that chrome.setSyncEncryptionKeys() works in a fenced frame.
+IN_PROC_BROWSER_TEST_F(SyncEncryptionKeysTabHelperBrowserTest,
+                       ShouldBindEncryptionKeysApiInFencedFrame) {
+  const GURL init_url =
+      https_server()->GetURL("accounts.google.com", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), init_url));
+  // EncryptionKeysApi is created for the primary page as the origin is allowed.
+  ASSERT_TRUE(HasEncryptionKeysApi(web_contents()->GetMainFrame()));
+
+  const GURL main_url = https_server()->GetURL("accounts.google.com",
+                                               "/fenced_frames/title1.html");
+  auto* fenced_frame_host = fenced_frame_test_helper().CreateFencedFrame(
+      web_contents()->GetMainFrame(), main_url);
+  // EncryptionKeysApi is also created for a fenced frame since it's a main
+  // frame as well.
+  EXPECT_TRUE(HasEncryptionKeysApi(fenced_frame_host));
+
+  const char kFakeGaiaId[] = "fake_gaia_id";
+  const std::vector<uint8_t> kExpectedEncryptionKey = {7};
+  DCHECK_EQ(kExpectedEncryptionKey.size(), 1u);
+  const std::string set_encryption_keys_script = base::StringPrintf(
+      R"(
+      let buffer = new ArrayBuffer(1);
+      let view = new Uint8Array(buffer);
+      view[0] = %d;
+      chrome.setSyncEncryptionKeys(
+          () => {console.log('setSyncEncryptionKeys:Done');},
+          "%s", [buffer], 0);
+    )",
+      kExpectedEncryptionKey[0], kFakeGaiaId);
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern("setSyncEncryptionKeys:Done");
+
+  // Calling setSyncEncryptionKeys() in the fenced frame works and it gets
+  // the callback by setSyncEncryptionKeys().
+  EXPECT_TRUE(content::ExecJs(fenced_frame_host, set_encryption_keys_script));
+  console_observer.Wait();
+  EXPECT_EQ(1u, console_observer.messages().size());
+
+  AccountInfo account;
+  account.gaia = kFakeGaiaId;
+  std::vector<std::vector<uint8_t>> actual_keys =
+      FetchTrustedVaultKeysForProfile(browser()->profile(), account);
+  EXPECT_THAT(actual_keys, testing::ElementsAre(kExpectedEncryptionKey));
 }
 
 }  // namespace
