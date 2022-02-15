@@ -53,6 +53,8 @@ class KeyboardShortcutResult : public ChromeSearchResult {
       const std::vector<std::u16string>& replacement_strings,
       const std::vector<ui::KeyboardCode>& shortcut_key_codes);
 
+  void UpdateIcon();
+
   Profile* profile_;
   friend class KeyboardShortcutResultTest;
 };

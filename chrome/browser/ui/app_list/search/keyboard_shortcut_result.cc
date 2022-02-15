@@ -13,10 +13,13 @@
 #include "base/strings/string_split.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ui/app_list/search/common/icon_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/components/string_matching/tokenized_string_match.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/gfx/paint_vector_icon.h"
 
 namespace app_list {
 
@@ -168,6 +171,7 @@ KeyboardShortcutResult::KeyboardShortcutResult(Profile* profile,
   SetMetricsType(ash::KEYBOARD_SHORTCUT);
   SetDisplayType(DisplayType::kList);
   SetCategory(Category::kHelp);
+  UpdateIcon();
 
   // Set the details to the display name of the Keyboard Shortcut Viewer app.
   std::u16string sanitized_name = base::CollapseWhitespace(
@@ -297,6 +301,15 @@ double KeyboardShortcutResult::CalculateRelevance(
   TokenizedStringMatch match;
   match.Calculate(query_tokenized, target_tokenized);
   return match.relevance();
+}
+
+void KeyboardShortcutResult::UpdateIcon() {
+  // TODO(crbug.com/1290682): Set the icon to a larger size when a
+  // KeyboardShortcutResult is promoted to an answer card.
+  gfx::ImageSkia icon =
+      gfx::CreateVectorIcon(chromeos::kKeyboardShortcutsIcon,
+                            kSystemIconDimension, SK_ColorTRANSPARENT);
+  SetIcon(IconInfo(icon, kSystemIconDimension));
 }
 
 }  // namespace app_list
