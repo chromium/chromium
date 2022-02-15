@@ -92,6 +92,7 @@ class ASH_EXPORT KeyboardControllerImpl
   void AddObserver(KeyboardControllerObserver* observer) override;
   void RemoveObserver(KeyboardControllerObserver* observer) override;
   KeyRepeatSettings GetKeyRepeatSettings() override;
+  bool AreTopRowKeysFunctionKeys() override;
 
   // keyboard::KeyboardLayoutDelegate:
   aura::Window* GetContainerForDefaultDisplay() override;

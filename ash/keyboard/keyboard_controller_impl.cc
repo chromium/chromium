@@ -278,6 +278,11 @@ KeyRepeatSettings KeyboardControllerImpl::GetKeyRepeatSettings() {
                            base::Milliseconds(interval_in_ms)};
 }
 
+bool KeyboardControllerImpl::AreTopRowKeysFunctionKeys() {
+  PrefService* prefs = pref_change_registrar_->prefs();
+  return prefs->GetBoolean(ash::prefs::kSendFunctionKeys);
+}
+
 // SessionObserver
 void KeyboardControllerImpl::OnSessionStateChanged(
     session_manager::SessionState state) {

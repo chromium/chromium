@@ -108,6 +108,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
     chromeos::assistant::prefs::RegisterProfilePrefs(registry);
     quick_answers::prefs::RegisterProfilePrefs(registry);
     registry->RegisterBooleanPref(prefs::kMouseReverseScroll, false);
+    registry->RegisterBooleanPref(prefs::kSendFunctionKeys, false);
     registry->RegisterBooleanPref(chromeos::prefs::kSuggestedContentEnabled,
                                   true);
     registry->RegisterBooleanPref(::prefs::kLiveCaptionEnabled, false);

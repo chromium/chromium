@@ -8,6 +8,7 @@
 
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_observer.h"
@@ -93,21 +94,27 @@ std::unique_ptr<views::View> CreateIconView(const gfx::VectorIcon& icon) {
 }
 
 // Create and position Esc notification.
-views::Widget* CreateEscNotification(aura::Window* parent,
-                                     int message_id,
-                                     int key_message_id) {
+views::Widget* CreateEscNotification(
+    aura::Window* parent,
+    int message_id,
+    std::initializer_list<int> key_message_ids) {
   auto content_view = std::make_unique<SubtleNotificationView>();
-  if (key_message_id == IDS_APP_OVERVIEW_KEY) {
-    std::vector<std::unique_ptr<views::View>> icons;
-    icons.push_back(CreateIconView(ash::kKsvOverviewIcon));
-    content_view->UpdateContent(
-        l10n_util::GetStringFUTF16(message_id,
-                                   l10n_util::GetStringUTF16(key_message_id)),
-        std::move(icons));
-  } else {
-    content_view->UpdateContent(l10n_util::GetStringFUTF16(
-        message_id, l10n_util::GetStringUTF16(key_message_id)));
+
+  std::vector<std::u16string> key_names;
+  std::vector<std::unique_ptr<views::View>> icons;
+  for (int key_message_id : key_message_ids) {
+    key_names.push_back(l10n_util::GetStringUTF16(key_message_id));
+
+    if (key_message_id == IDS_APP_OVERVIEW_KEY) {
+      icons.push_back(CreateIconView(ash::kKsvOverviewIcon));
+    } else {
+      icons.push_back(nullptr);
+    }
   }
+  content_view->UpdateContent(
+      l10n_util::GetStringFUTF16(message_id, key_names, nullptr),
+      std::move(icons));
+
   gfx::Size size = content_view->GetPreferredSize();
   views::Widget* popup = SubtleNotificationView::CreatePopupWidget(
       parent, std::move(content_view));
@@ -173,8 +180,16 @@ class ExitNotifier : public ui::EventHandler, public ash::WindowStateObserver {
       pointer_capture_notification_->CloseWithReason(
           views::Widget::ClosedReason::kUnspecified);
     }
-    pointer_capture_notification_ = CreateEscNotification(
-        window_, IDS_PRESS_TO_EXIT_MOUSELOCK, IDS_APP_OVERVIEW_KEY);
+
+    if (ash::KeyboardController::Get()->AreTopRowKeysFunctionKeys()) {
+      pointer_capture_notification_ =
+          CreateEscNotification(window_, IDS_PRESS_TO_EXIT_MOUSELOCK_TWO_KEYS,
+                                {IDS_APP_SEARCH_KEY, IDS_APP_OVERVIEW_KEY});
+    } else {
+      pointer_capture_notification_ = CreateEscNotification(
+          window_, IDS_PRESS_TO_EXIT_MOUSELOCK, {IDS_APP_OVERVIEW_KEY});
+    }
+
     pointer_capture_notification_->Show();
 
     // Close Esc notification after 4s.
@@ -260,16 +275,30 @@ class ExitNotifier : public ui::EventHandler, public ash::WindowStateObserver {
     // Fullscreen notifications override pointer capture notifications.
     ClosePointerCaptureNotification();
 
-    if (!fullscreen_esc_notification_) {
-      int message_id = window_->GetProperty(chromeos::kEscHoldToExitFullscreen)
-                           ? IDS_FULLSCREEN_HOLD_ESC_TO_EXIT_FULLSCREEN
-                           : IDS_FULLSCREEN_PRESS_ESC_TO_EXIT_FULLSCREEN;
-      fullscreen_esc_notification_ = CreateEscNotification(
-          window_, message_id,
-          window_->GetProperty(chromeos::kUseOverviewToExitFullscreen)
-              ? IDS_APP_OVERVIEW_KEY
-              : IDS_APP_ESC_KEY);
+    if (fullscreen_esc_notification_) {
+      fullscreen_esc_notification_->CloseWithReason(
+          views::Widget::ClosedReason::kUnspecified);
     }
+
+    if (window_->GetProperty(chromeos::kUseOverviewToExitFullscreen)) {
+      if (ash::KeyboardController::Get()->AreTopRowKeysFunctionKeys()) {
+        fullscreen_esc_notification_ = CreateEscNotification(
+            window_, IDS_FULLSCREEN_PRESS_TWO_KEYS_TO_EXIT_FULLSCREEN,
+            {IDS_APP_SEARCH_KEY, IDS_APP_OVERVIEW_KEY});
+      } else {
+        fullscreen_esc_notification_ = CreateEscNotification(
+            window_, IDS_FULLSCREEN_PRESS_ESC_TO_EXIT_FULLSCREEN,
+            {IDS_APP_OVERVIEW_KEY});
+      }
+    } else {
+      fullscreen_esc_notification_ = CreateEscNotification(
+          window_,
+          window_->GetProperty(chromeos::kEscHoldToExitFullscreen)
+              ? IDS_FULLSCREEN_HOLD_ESC_TO_EXIT_FULLSCREEN
+              : IDS_FULLSCREEN_PRESS_ESC_TO_EXIT_FULLSCREEN,
+          {IDS_APP_ESC_KEY});
+    }
+
     fullscreen_esc_notification_->Show();
 
     // Close Esc notification after 4s.
