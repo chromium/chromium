@@ -61,6 +61,11 @@ class ManagedSessionServiceTest
     return profile;
   }
 
+  void GuestLogin() {
+    user_manager::User* const user = user_manager_->AddGuestUser();
+    user_manager_->LoginUser(user->GetAccountId(), true);
+  }
+
   ManagedSessionService* managed_session_service() {
     return managed_session_service_.get();
   }
@@ -77,6 +82,8 @@ class ManagedSessionServiceTest
 
   int ObservedLoginCount() { return observed_login_count_; }
 
+  int ObservedGuestLoginCount() { return observed_guest_login_count_; }
+
   int ObservedSessionTerminationCount() {
     return observed_session_termination_count_;
   }
@@ -88,6 +95,7 @@ class ManagedSessionServiceTest
     logged_in_ = profile;
     ++observed_login_count_;
   }
+  void OnGuestLogin() override { ++observed_guest_login_count_; }
   void OnLogout(Profile* profile) override { logged_out_ = profile; }
   void OnSessionTerminationStarted(const user_manager::User*) override {
     ++observed_session_termination_count_;
@@ -121,6 +129,8 @@ class ManagedSessionServiceTest
   std::unique_ptr<ManagedSessionService> managed_session_service_;
 
   int observed_login_count_ = 0;
+
+  int observed_guest_login_count_ = 0;
 
   int observed_session_termination_count_ = 0;
 };
@@ -296,6 +306,21 @@ TEST_F(ManagedSessionServiceTest, LoginBeforeCreate) {
 
   EXPECT_TRUE(affiliated_profile->IsSameOrParent(logged_out_));
   ASSERT_EQ(ObservedSessionTerminationCount(), 0);
+
+  ::ash::SessionTerminationManager::Get()->StopSession(
+      login_manager::SessionStopReason::REQUEST_FROM_SESSION_MANAGER);
+
+  EXPECT_EQ(ObservedSessionTerminationCount(), 1);
+}
+
+TEST_F(ManagedSessionServiceTest, GuestLogin) {
+  GuestLogin();
+
+  ManagedSessionService managed_session_service;
+  managed_session_service.AddObserver(this);
+
+  EXPECT_EQ(ObservedLoginCount(), 0);
+  ASSERT_EQ(ObservedGuestLoginCount(), 1);
 
   ::ash::SessionTerminationManager::Get()->StopSession(
       login_manager::SessionStopReason::REQUEST_FROM_SESSION_MANAGER);

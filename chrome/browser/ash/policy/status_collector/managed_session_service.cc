@@ -49,9 +49,13 @@ void ManagedSessionService::AddObserver(
     ManagedSessionService::Observer* observer) {
   observers_.AddObserver(observer);
   if (is_logged_in_) {
-    auto* const profile = ash::ProfileHelper::Get()->GetProfileByUser(
-        user_manager::UserManager::Get()->GetPrimaryUser());
-    observer->OnLogin(profile);
+    if (user_manager::UserManager::Get()->IsLoggedInAsGuest()) {
+      observer->OnGuestLogin();
+    } else {
+      auto* const profile = ash::ProfileHelper::Get()->GetProfileByUser(
+          user_manager::UserManager::Get()->GetPrimaryUser());
+      observer->OnLogin(profile);
+    }
   }
 }
 
@@ -160,14 +164,15 @@ void ManagedSessionService::SetLoginStatus() {
 
   if (user_manager::UserManager::Get() &&
       user_manager::UserManager::Get()->IsUserLoggedIn() &&
-      !user_manager::UserManager::Get()->IsLoggedInAsGuest() &&
       user_manager::UserManager::Get()->GetPrimaryUser()) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     is_logged_in_ = true;
-    auto* const profile = ash::ProfileHelper::Get()->GetProfileByUser(
-        user_manager::UserManager::Get()->GetPrimaryUser());
-    profile_observations_.AddObservation(profile);
+    if (!user_manager::UserManager::Get()->IsLoggedInAsGuest()) {
+      auto* const profile = ash::ProfileHelper::Get()->GetProfileByUser(
+          user_manager::UserManager::Get()->GetPrimaryUser());
+      profile_observations_.AddObservation(profile);
+    }
     if (ash::SessionTerminationManager::Get()) {
       ash::SessionTerminationManager::Get()->AddObserver(this);
     }
