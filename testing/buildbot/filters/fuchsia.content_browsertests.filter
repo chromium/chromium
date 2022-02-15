@@ -1,5 +1,6 @@
 # Being ported, https://crbug.com/1071095.
 
+-All/DumpAccessibilityTreeTest.*
 -All/EmergencyStopTracingTest.StopOnUIThread/*
 -All/RenderFrameHostManagerTest.DontSelectInvalidFiles/*
 -All/RenderFrameHostManagerTest.IgnoreRendererDebugURLsWhenCrashed/*
@@ -18,6 +19,7 @@
 -MidiBrowserTest.RequestMIDIAccess
 -MidiBrowserTest.SubscribeAll
 -MojoSandboxTest.NotIsProcessSandboxed
+-NavigationBrowserTestWithPerformanceManager.BeginNewNavigationAfterCommitNavigationInMainFrame
 -NetworkServiceDataMigrationBrowserTest.LegacyDataDir
 -NetworkServiceDataMigrationBrowserTest.MigrateThenNoMigrate
 -NetworkServiceDataMigrationBrowserTest.MigratedPreviouslyAndMigrateAgain
@@ -40,24 +42,6 @@
 -WebContentsViewAuraTest.RepeatedQuickOverscrollGestures
 -WebRtcCaptureFromElementBrowserTest.VerifyCanvasCaptureWebGLFrames
 -WebRtcVideoCaptureServiceBrowserTest.FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage
-
-# crbug.com/1260245: Failing due to using jitless v8 out of renderer
--DataDecoderBrowserTest.DecodeImage
--DataDecoderBrowserTest.DecodeImageIsolated
--DataDecoderBrowserTest.LaunchIsolated
--InterestGroupBrowserTest*
--*/InterestGroupFencedFrameBrowserTest.*
--InterestGroupPrivateNetworkBrowserTest.*
--InterestGroupRestrictedPermissionsPolicyBrowserTest.*
--SavePackageWebBundleBrowserTest.OnePageSimple
--SavePageAsWebBundleBrowserTest.GenerateOnePageSimpleWebBundle
--WebBundleFileBrowserTest/WebBundleFileBrowserTest.*
--WebBundleNetworkBrowserTest.*
--WebBundleTrustableFileBrowserTest/WebBundleTrustableFileBrowserTest.*
--WebIdBrowserTest.AbsoluteURLs
--WebIdBrowserTest.FastLoginFlow
--WebIdBrowserTest.FullLoginFlow
--WebIdBrowserTest.TokenExchangePermissionDeclined
 
 # crbug.com/1212491: WebSQL is being deprecated, these are low priority
 -BackForwardCacheBrowserTest.DoesNotCacheIfWebDatabase
