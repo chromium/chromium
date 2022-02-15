@@ -485,6 +485,13 @@ struct IsSupportedType<T,
 // has limited impact on stability - dereferencing a dangling pointer remains
 // Undefined Behavior.  Note that the security protection is not yet enabled by
 // default.
+//
+// raw_ptr<T> is marked as [[gsl::Pointer]] which allows the compiler to catch
+// some bugs where the raw_ptr holds a dangling pointer to a temporary object.
+// However the [[gsl::Pointer]] analysis expects that such types do not have a
+// non-default move constructor/assignment. Thus, it's possible to get an error
+// where the pointer is not actually dangling, and have to work around the
+// compiler. We have not managed to construct such an example in Chromium yet.
 template <typename T,
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
           typename Impl = internal::BackupRefPtrImpl>
@@ -493,7 +500,7 @@ template <typename T,
 #else
           typename Impl = internal::RawPtrNoOpImpl>
 #endif
-class TRIVIAL_ABI raw_ptr {
+class TRIVIAL_ABI GSL_POINTER raw_ptr {
  public:
   static_assert(raw_ptr_traits::IsSupportedType<T>::value,
                 "raw_ptr<T> doesn't work with this kind of pointee type T");

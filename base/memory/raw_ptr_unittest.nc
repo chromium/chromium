@@ -5,6 +5,7 @@
 // This is a "No Compile Test" suite.
 // http://dev.chromium.org/developers/testing/no-compile-tests
 
+#include <memory>
 #include <tuple>  // for std::ignore
 #include <type_traits>  // for std::remove_pointer_t
 
@@ -101,6 +102,12 @@ void WontCompile() {
 
   raw_ptr<PmfTest> object_ptr = &object;
   std::ignore = object_ptr->*pmf_func;
+}
+
+#elif defined(NCTEST_DANGLING_GSL) // [r"object backing the pointer will be destroyed at the end of the full-expression"]
+
+void WontCompile() {
+  [[maybe_unused]] raw_ptr<int> ptr = std::make_unique<int>(2).get();
 }
 
 #endif
