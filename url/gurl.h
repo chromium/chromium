@@ -13,6 +13,7 @@
 
 #include "base/component_export.h"
 #include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
 #include "base/strings/string_piece.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "url/third_party/mozilla/url_parse.h"
@@ -519,5 +520,21 @@ bool operator!=(const base::StringPiece& spec, const GURL& x);
 // preserved in crash dumps.
 #define DEBUG_ALIAS_FOR_GURL(var_name, url) \
   DEBUG_ALIAS_FOR_CSTR(var_name, (url).possibly_invalid_spec().c_str(), 128)
+
+namespace url::debug {
+
+class COMPONENT_EXPORT(URL) ScopedUrlCrashKey {
+ public:
+  ScopedUrlCrashKey(base::debug::CrashKeyString* crash_key, const GURL& value);
+  ~ScopedUrlCrashKey();
+
+  ScopedUrlCrashKey(const ScopedUrlCrashKey&) = delete;
+  ScopedUrlCrashKey& operator=(const ScopedUrlCrashKey&) = delete;
+
+ private:
+  base::debug::ScopedCrashKeyString scoped_string_value_;
+};
+
+}  // namespace url::debug
 
 #endif  // URL_GURL_H_

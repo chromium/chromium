@@ -451,8 +451,7 @@ COMPONENT_EXPORT(URL) bool IsSameOriginWith(const GURL& a, const GURL& b);
 
 namespace debug {
 
-class COMPONENT_EXPORT(URL) ScopedOriginCrashKey
-    : public base::debug::ScopedCrashKeyString {
+class COMPONENT_EXPORT(URL) ScopedOriginCrashKey {
  public:
   ScopedOriginCrashKey(base::debug::CrashKeyString* crash_key,
                        const url::Origin* value);
@@ -460,6 +459,9 @@ class COMPONENT_EXPORT(URL) ScopedOriginCrashKey
 
   ScopedOriginCrashKey(const ScopedOriginCrashKey&) = delete;
   ScopedOriginCrashKey& operator=(const ScopedOriginCrashKey&) = delete;
+
+ private:
+  base::debug::ScopedCrashKeyString scoped_string_value_;
 };
 
 }  // namespace debug

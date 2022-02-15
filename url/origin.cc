@@ -470,7 +470,7 @@ namespace debug {
 ScopedOriginCrashKey::ScopedOriginCrashKey(
     base::debug::CrashKeyString* crash_key,
     const url::Origin* value)
-    : base::debug::ScopedCrashKeyString(
+    : scoped_string_value_(
           crash_key,
           value ? value->GetDebugString(false /* include_nonce */)
                 : "nullptr") {}

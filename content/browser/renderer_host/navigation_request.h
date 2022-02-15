@@ -64,6 +64,7 @@
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -894,9 +895,10 @@ class CONTENT_EXPORT NavigationRequest
   std::vector<blink::mojom::WebFeature> TakeWebFeaturesToLog();
 
   // Helper for logging crash keys related to a NavigationRequest (e.g.
-  // "navigation_request_url" and "navigation_request_initiator").  The crash
-  // keys will be logged if a ScopedCrashKeys instance exists when a crash or
-  // DumpWithoutCrashing happens.
+  // "navigation_request_url", "navigation_request_initiator", and
+  // "navigation_request_is_same_document").  The crash keys will be logged if a
+  // ScopedCrashKeys instance exists when a crash or DumpWithoutCrashing
+  // happens.
   class ScopedCrashKeys {
    public:
     explicit ScopedCrashKeys(NavigationRequest& navigation_request);
@@ -908,7 +910,8 @@ class CONTENT_EXPORT NavigationRequest
 
    private:
     url::debug::ScopedOriginCrashKey initiator_origin_;
-    base::debug::ScopedCrashKeyString url_;
+    url::debug::ScopedUrlCrashKey url_;
+    base::debug::ScopedCrashKeyString is_same_document_;
   };
 
   // Prerender2:

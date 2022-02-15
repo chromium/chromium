@@ -682,6 +682,12 @@ base::debug::CrashKeyString* GetNavigationRequestInitiatorCrashKey() {
   return crash_key;
 }
 
+base::debug::CrashKeyString* GetNavigationRequestIsSameDocumentCrashKey() {
+  static auto* crash_key = base::debug::AllocateCrashKeyString(
+      "navigation_request_is_same_document", base::debug::CrashKeySize::Size64);
+  return crash_key;
+}
+
 // Start a new nested async event with the given name.
 void EnterChildTraceEvent(const char* name, NavigationRequest* request) {
   // Tracing no longer outputs the end event name, so we can simply pass an
@@ -7425,8 +7431,10 @@ NavigationRequest::ScopedCrashKeys::ScopedCrashKeys(
     : initiator_origin_(
           GetNavigationRequestInitiatorCrashKey(),
           base::OptionalOrNullptr(navigation_request.GetInitiatorOrigin())),
-      url_(GetNavigationRequestUrlCrashKey(),
-           navigation_request.GetURL().possibly_invalid_spec()) {}
+      url_(GetNavigationRequestUrlCrashKey(), navigation_request.GetURL()),
+      is_same_document_(
+          GetNavigationRequestIsSameDocumentCrashKey(),
+          navigation_request.IsSameDocument() ? "same-doc" : "cross-doc") {}
 
 NavigationRequest::ScopedCrashKeys::~ScopedCrashKeys() = default;
 
