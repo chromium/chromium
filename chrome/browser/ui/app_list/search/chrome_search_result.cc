@@ -91,6 +91,12 @@ void ChromeSearchResult::SetBigTitleTextVector(const TextVector& text_vector) {
   SetSearchResultMetadata();
 }
 
+void ChromeSearchResult::SetKeyboardShortcutTextVector(
+    const TextVector& text_vector) {
+  metadata_->keyboard_shortcut_vector = text_vector;
+  SetSearchResultMetadata();
+}
+
 void ChromeSearchResult::SetAccessibleName(const std::u16string& name) {
   metadata_->accessible_name = name;
   SetSearchResultMetadata();

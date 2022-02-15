@@ -82,6 +82,12 @@ void SearchResult::SetBigTitleTextVector(const TextVector& vector) {
     observer.OnMetadataChanged();
 }
 
+void SearchResult::SetKeyboardShortcutTextVector(const TextVector& vector) {
+  metadata_->keyboard_shortcut_vector = vector;
+  for (auto& observer : observers_)
+    observer.OnMetadataChanged();
+}
+
 void SearchResult::SetAccessibleName(const std::u16string& name) {
   metadata_->accessible_name = name;
   for (auto& observer : observers_)

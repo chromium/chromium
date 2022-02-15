@@ -87,6 +87,11 @@ class APP_LIST_MODEL_EXPORT SearchResult {
   }
   void SetBigTitleTextVector(const TextVector& vector);
 
+  const TextVector& keyboard_shortcut_text_vector() const {
+    return metadata_->keyboard_shortcut_vector;
+  }
+  void SetKeyboardShortcutTextVector(const TextVector& vector);
+
   const std::u16string& accessible_name() const {
     return metadata_->accessible_name;
   }

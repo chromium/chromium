@@ -273,7 +273,7 @@ KeyboardShortcutResult::KeyboardShortcutResult(Profile* profile,
 
   SetAccessibleName(data.description + u", " + details() + u", " +
                     accessible_string);
-  SetDetailsTextVector(text_vector);
+  SetKeyboardShortcutTextVector(text_vector);
 }
 
 KeyboardShortcutResult::~KeyboardShortcutResult() = default;

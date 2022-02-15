@@ -69,6 +69,9 @@ class ChromeSearchResult {
   const TextVector& big_title_text_vector() const {
     return metadata_->big_title_vector;
   }
+  const TextVector& keyboard_shortcut_text_vector() const {
+    return metadata_->keyboard_shortcut_vector;
+  }
 
   const std::u16string& accessible_name() const {
     return metadata_->accessible_name;
@@ -109,6 +112,7 @@ class ChromeSearchResult {
   void SetTitleTextVector(const TextVector& text_vector);
   void SetDetailsTextVector(const TextVector& text_vector);
   void SetBigTitleTextVector(const TextVector& text_vector);
+  void SetKeyboardShortcutTextVector(const TextVector& text_vector);
   void SetAccessibleName(const std::u16string& name);
   void SetRating(float rating);
   void SetFormattedPrice(const std::u16string& formatted_price);
