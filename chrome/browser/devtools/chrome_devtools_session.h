@@ -10,7 +10,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/devtools/protocol/forward.h"
 #include "chrome/browser/devtools/protocol/protocol.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_DEVTOOLS_PROTOCOL_SECURITY_HANDLER_H_
 #define CHROME_BROWSER_DEVTOOLS_PROTOCOL_SECURITY_HANDLER_H_
 
-#include "chrome/browser/devtools/protocol/forward.h"
 #include "chrome/browser/devtools/protocol/security.h"
 #include "content/public/browser/web_contents_observer.h"
 

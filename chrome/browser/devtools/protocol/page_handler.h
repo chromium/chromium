@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/devtools/protocol/forward.h"
 #include "chrome/browser/devtools/protocol/page.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/browser/devtools_agent_host.h"
