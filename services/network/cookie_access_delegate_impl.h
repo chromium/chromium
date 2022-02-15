@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieAccessDelegateImpl
   // If non-null, |cookie_settings| is expected to outlive this class. If
   // non-null, `first_party_sets` must outlive `this`.
   CookieAccessDelegateImpl(mojom::CookieAccessDelegateType type,
-                           const FirstPartySets* first_party_sets,
+                           FirstPartySets* const first_party_sets,
                            const CookieSettings* cookie_settings = nullptr);
 
   ~CookieAccessDelegateImpl() override;
@@ -76,7 +76,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieAccessDelegateImpl
  private:
   const mojom::CookieAccessDelegateType type_;
   const raw_ptr<const CookieSettings> cookie_settings_;
-  const raw_ptr<const FirstPartySets> first_party_sets_;
+  const raw_ptr<FirstPartySets> first_party_sets_;
 };
 
 }  // namespace network

@@ -49,12 +49,11 @@ class FirstPartySetsTest : public ::testing::Test {
  public:
   explicit FirstPartySetsTest(bool enabled) : sets_(enabled) {}
 
-  void SetComponentSetsAndWait(base::StringPiece content) {
-    SetComponentSetsAndWait(sets_, content);
+  void SetComponentSets(base::StringPiece content) {
+    SetComponentSets(sets_, content);
   }
 
-  void SetComponentSetsAndWait(FirstPartySets& sets,
-                               base::StringPiece content) {
+  void SetComponentSets(FirstPartySets& sets, base::StringPiece content) const {
     base::ScopedTempDir temp_dir;
     CHECK(temp_dir.CreateUniqueTempDir());
     base::FilePath path =
@@ -63,10 +62,9 @@ class FirstPartySetsTest : public ::testing::Test {
 
     sets.ParseAndSet(
         base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ));
-    env_.RunUntilIdle();
   }
 
-  FirstPartySets::SetsByOwner SetsAndWait() const {
+  FirstPartySets::SetsByOwner SetsAndWait() {
     net::TestOptionalCompletionCallback<FirstPartySets::SetsByOwner> callback;
     return callback.GetResult(sets_.Sets(callback.callback())).value();
   }
@@ -74,7 +72,7 @@ class FirstPartySetsTest : public ::testing::Test {
   net::FirstPartySetMetadata ComputeMetadataAndWait(
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
-      const std::set<net::SchemefulSite>& party_context) const {
+      const std::set<net::SchemefulSite>& party_context) {
     net::TestOptionalCompletionCallback<net::FirstPartySetMetadata> callback;
     return callback
         .GetResult(sets_.ComputeMetadata(site, top_frame_site, party_context,
@@ -82,15 +80,14 @@ class FirstPartySetsTest : public ::testing::Test {
         .value();
   }
 
-  FirstPartySets::OwnerResult FindOwnerAndWait(
-      const net::SchemefulSite& site) const {
+  FirstPartySets::OwnerResult FindOwnerAndWait(const net::SchemefulSite& site) {
     net::TestOptionalCompletionCallback<FirstPartySets::OwnerResult> callback;
     return callback.GetResult(sets_.FindOwner(site, callback.callback()))
         .value();
   }
 
   FirstPartySets::OwnersResult FindOwnersAndWait(
-      const base::flat_set<net::SchemefulSite>& site) const {
+      const base::flat_set<net::SchemefulSite>& site) {
     net::TestOptionalCompletionCallback<FirstPartySets::OwnersResult> callback;
     return callback.GetResult(sets_.FindOwners(site, callback.callback()))
         .value();
@@ -119,10 +116,7 @@ TEST_F(FirstPartySetsDisabledTest, ParseAndSet_IgnoresValid) {
         }])";
   ASSERT_TRUE(base::JSONReader::Read(input));
 
-  SetComponentSetsAndWait(input);
-  // Set required input to be able to receive the merged sets from
-  // FirstPartySetsLoader.
-  sets().SetManuallySpecifiedSet("");
+  SetComponentSets(input);
 
   EXPECT_THAT(SetsAndWait(), IsEmpty());
 }
@@ -132,20 +126,21 @@ TEST_F(FirstPartySetsDisabledTest, ParseV2Format_IgnoresValid) {
       "{\"owner\": \"https://example.test\",\"members\": "
       "[\"https://aaaa.test\"]}";
 
-  SetComponentSetsAndWait(input);
-  // Set required input to be able to receive the merged sets from
-  // FirstPartySetsLoader.
-  sets().SetManuallySpecifiedSet("");
+  SetComponentSets(input);
 
   EXPECT_THAT(SetsAndWait(), IsEmpty());
 }
 
 TEST_F(FirstPartySetsDisabledTest, SetsManuallySpecified_IgnoresValid) {
   sets().SetManuallySpecifiedSet("https://example.test,https://member.test");
-  // Set required input to be able to receive the merged sets from
-  // FirstPartySetsLoader.
-  SetComponentSetsAndWait("[]");
   EXPECT_THAT(SetsAndWait(), IsEmpty());
+}
+
+TEST_F(FirstPartySetsDisabledTest, FindOwners) {
+  net::SchemefulSite kExample =
+      net::SchemefulSite(GURL("https://example.test"));
+
+  EXPECT_THAT(FindOwnersAndWait({kExample}), IsEmpty());
 }
 
 TEST_F(FirstPartySetsDisabledTest, ComputeMetadata_InfersSingletons) {
@@ -189,14 +184,15 @@ TEST_F(FirstPartySetsDisabledTest, ComputeMetadata_InfersSingletons) {
 
 TEST_F(FirstPartySetsDisabledTest, FindOwner) {
   sets().SetManuallySpecifiedSet("https://example.test,https://member.test");
-  // Set required input to be able to receive the merged sets from
-  // FirstPartySetsLoader.
-  SetComponentSetsAndWait("[]");
 
   EXPECT_FALSE(
       FindOwnerAndWait(net::SchemefulSite(GURL("https://example.test"))));
   EXPECT_FALSE(
       FindOwnerAndWait(net::SchemefulSite(GURL("https://member.test"))));
+}
+
+TEST_F(FirstPartySetsDisabledTest, Sets_IsEmpty) {
+  EXPECT_THAT(SetsAndWait(), IsEmpty());
 }
 
 class FirstPartySetsEnabledTest : public FirstPartySetsTest {
@@ -205,6 +201,8 @@ class FirstPartySetsEnabledTest : public FirstPartySetsTest {
 };
 
 TEST_F(FirstPartySetsEnabledTest, Sets_IsEmpty) {
+  SetComponentSets("[]");
+  sets().SetManuallySpecifiedSet("");
   EXPECT_THAT(SetsAndWait(), IsEmpty());
 }
 
@@ -228,7 +226,7 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_SitesJoined) {
   )"),
               old_sets);
 
-  SetComponentSetsAndWait(R"(
+  SetComponentSets(R"(
     [
       {
         "owner": "https://example.test",
@@ -243,6 +241,7 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_SitesJoined) {
   // Set required input to be able to receive the merged sets from
   // FirstPartySetsLoader.
   sets().SetManuallySpecifiedSet("");
+  env().RunUntilIdle();
 
   // "https://foo.test" and "https://member2.test" joined FPSs. We don't clear
   // site data upon joining, so the computed diff should be empty set.
@@ -277,7 +276,7 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_SitesLeft) {
   )"),
               old_sets);
 
-  SetComponentSetsAndWait(R"(
+  SetComponentSets(R"(
     [
       {
         "owner": "https://example.test",
@@ -288,7 +287,7 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_SitesLeft) {
   // Set required input to be able to receive the merged sets from
   // FirstPartySetsLoader.
   sets().SetManuallySpecifiedSet("");
-
+  env().RunUntilIdle();
   // Expected diff: "https://foo.test", "https://member2.test" and
   // "https://member3.test" left FPSs.
   EXPECT_THAT(sets().ComputeSetsDiff(old_sets),
@@ -325,7 +324,7 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_OwnerChanged) {
   )"),
               old_sets);
 
-  SetComponentSetsAndWait(R"(
+  SetComponentSets(R"(
     [
       {
         "owner": "https://example.test",
@@ -340,6 +339,7 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_OwnerChanged) {
   // Set required input to be able to receive the merged sets from
   // FirstPartySetsLoader.
   sets().SetManuallySpecifiedSet("");
+  env().RunUntilIdle();
   // Expected diff: "https://member3.test" changed owner.
   EXPECT_THAT(sets().ComputeSetsDiff(old_sets),
               UnorderedElementsAre(SerializesTo("https://member3.test")));
@@ -365,7 +365,7 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_OwnerLeft) {
   )"),
               old_sets);
 
-  SetComponentSetsAndWait(R"(
+  SetComponentSets(R"(
     [
       {
         "owner": "https://foo.test",
@@ -376,6 +376,7 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_OwnerLeft) {
   // Set required input to be able to receive the merged sets from
   // FirstPartySetsLoader.
   sets().SetManuallySpecifiedSet("");
+  env().RunUntilIdle();
   // Expected diff: "https://example.test" left FPSs, "https://foo.test" and
   // "https://bar.test" changed owner.
   // It would be valid to only have example.test in the diff, but our logic
@@ -405,7 +406,7 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_OwnerMemberRotate) {
   )"),
               old_sets);
 
-  SetComponentSetsAndWait(R"(
+  SetComponentSets(R"(
     [
       {
         "owner": "https://foo.test",
@@ -416,6 +417,7 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_OwnerMemberRotate) {
   // Set required input to be able to receive the merged sets from
   // FirstPartySetsLoader.
   sets().SetManuallySpecifiedSet("");
+  env().RunUntilIdle();
   // Expected diff: "https://example.test" and "https://foo.test" changed owner.
   // It would be valid to not include example.test and foo.test in the result,
   // but our logic isn't sophisticated enough yet to know that.ß
@@ -426,7 +428,7 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_OwnerMemberRotate) {
 
 TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_EmptySets) {
   // Empty old_sets.
-  SetComponentSetsAndWait(R"(
+  SetComponentSets(R"(
     [
       {
         "owner": "https://example.test",
@@ -437,6 +439,7 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_EmptySets) {
   // Set required input to be able to receive the merged sets from
   // FirstPartySetsLoader.
   sets().SetManuallySpecifiedSet("");
+  env().RunUntilIdle();
   EXPECT_THAT(sets().ComputeSetsDiff({}), IsEmpty());
 
   // Empty current sets.
@@ -455,7 +458,11 @@ TEST_F(FirstPartySetsEnabledTest, ComputeSetsDiff_EmptySets) {
     ]
   )"),
               old_sets);
-  EXPECT_THAT(FirstPartySets(true).ComputeSetsDiff(old_sets),
+  FirstPartySets first_party_sets(true);
+  first_party_sets.SetManuallySpecifiedSet("");
+  SetComponentSets(first_party_sets, "[]");
+  env().RunUntilIdle();
+  EXPECT_THAT(first_party_sets.ComputeSetsDiff(old_sets),
               UnorderedElementsAre(SerializesTo("https://example.test"),
                                    SerializesTo("https://member1.test")));
 }
@@ -477,27 +484,30 @@ TEST_F(FirstPartySetsEnabledTest, ClearSiteDataOnChangedSetsIfReady_NotReady) {
   {
     FirstPartySets sets(true);
     callback_calls = 0;
-    SetComponentSetsAndWait(sets, "[]");
+    SetComponentSets(sets, "[]");
     sets.SetPersistedSets("{}");
     sets.SetOnSiteDataCleared(callback);
+    env().RunUntilIdle();
     EXPECT_EQ(callback_calls, 0);
   }
   // persisted sets not ready.
   {
     FirstPartySets sets(true);
     callback_calls = 0;
-    SetComponentSetsAndWait(sets, "[]");
+    SetComponentSets(sets, "[]");
     sets.SetManuallySpecifiedSet("");
     sets.SetOnSiteDataCleared(callback);
+    env().RunUntilIdle();
     EXPECT_EQ(callback_calls, 0);
   }
   // callback not set.
   {
     FirstPartySets sets(true);
     callback_calls = 0;
-    SetComponentSetsAndWait(sets, "[]");
+    SetComponentSets(sets, "[]");
     sets.SetManuallySpecifiedSet("");
     sets.SetPersistedSets("{}");
+    env().RunUntilIdle();
     EXPECT_EQ(callback_calls, 0);
   }
 }
@@ -506,7 +516,7 @@ TEST_F(FirstPartySetsEnabledTest, ClearSiteDataOnChangedSetsIfReady_NotReady) {
 // inputs from Component Updater and command line flag.
 TEST_F(FirstPartySetsEnabledTest, ClearSiteDataOnChangedSetsIfReady_Ready) {
   int callback_calls = 0;
-  SetComponentSetsAndWait(R"([
+  SetComponentSets(R"([
        {
          "owner": "https://example.test",
          "members": ["https://member1.test"]
@@ -523,6 +533,7 @@ TEST_F(FirstPartySetsEnabledTest, ClearSiteDataOnChangedSetsIfReady_Ready) {
         R"({"https://member1.test":"https://example.test","https://member2.test":"https://example2.test"})");
     callback_calls++;
   }));
+  env().RunUntilIdle();
   EXPECT_EQ(callback_calls, 1);
 }
 
@@ -542,21 +553,13 @@ class PopulatedFirstPartySetsTest : public FirstPartySetsEnabledTest {
       ]
       )";
     CHECK(base::JSONReader::Read(input));
-    SetComponentSetsAndWait(input);
+    SetComponentSets(input);
     // Set required input to be able to receive the merged sets from
     // FirstPartySetsLoader.
     sets().SetManuallySpecifiedSet("");
 
-    CHECK(Value(
-        SetsAndWait(),
-        UnorderedElementsAre(
-            Pair(SerializesTo("https://example.test"),
-                 UnorderedElementsAre(SerializesTo("https://example.test"),
-                                      SerializesTo("https://member1.test"),
-                                      SerializesTo("https://member3.test"))),
-            Pair(SerializesTo("https://foo.test"),
-                 UnorderedElementsAre(SerializesTo("https://foo.test"),
-                                      SerializesTo("https://member2.test"))))));
+    // We don't wait for the sets to be loaded before running the tests, in
+    // order to let the tests provoke raciness if any exists.
   }
 };
 
@@ -1171,6 +1174,10 @@ TEST_F(PopulatedFirstPartySetsTest, Sets_NonEmpty) {
 }
 
 TEST_F(PopulatedFirstPartySetsTest, ComputeContextType) {
+  // ComputeContextType assumes that the instance is fully initialized, so we
+  // wait for that before proceeding.
+  SetsAndWait();
+
   net::SchemefulSite example(GURL("https://example.test"));
   net::SchemefulSite member1(GURL("https://member1.test"));
   net::SchemefulSite foo(GURL("https://foo.test"));

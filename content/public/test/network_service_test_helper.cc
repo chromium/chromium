@@ -258,14 +258,6 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     std::move(callback).Run(count);
   }
 
-  void GetFirstPartySetEntriesCount(
-      GetFirstPartySetEntriesCountCallback callback) override {
-    std::move(callback).Run(
-        network::NetworkService::GetNetworkServiceForTesting()
-            ->first_party_sets()
-            ->size());
-  }
-
   void SetSCTAuditingRetryDelay(
       absl::optional<base::TimeDelta> delay,
       SetSCTAuditingRetryDelayCallback callback) override {

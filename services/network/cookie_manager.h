@@ -41,7 +41,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieManager
   // `url_request_context->cookie_store()`.
   CookieManager(
       net::URLRequestContext* url_request_context,
-      const FirstPartySets* first_party_sets,
+      FirstPartySets* const first_party_sets,
       scoped_refptr<SessionCleanupCookieStore> session_cleanup_cookie_store,
       mojom::CookieManagerParamsPtr params);
 

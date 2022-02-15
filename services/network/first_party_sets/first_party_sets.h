@@ -10,6 +10,7 @@
 #include <set>
 
 #include "base/callback.h"
+#include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file.h"
@@ -76,12 +77,7 @@ class FirstPartySets {
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
       const std::set<net::SchemefulSite>& party_context,
-      base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const;
-
-  int64_t size() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return sets_.size();
-  }
+      base::OnceCallback<void(net::FirstPartySetMetadata)> callback);
 
   // Computes a mapping from owner to set members. For convenience of iteration,
   // the members of the set includes the owner.
@@ -91,7 +87,7 @@ class FirstPartySets {
   // nullopt; i.e. a result will be provided via return value or callback, but
   // not both, and not neither.
   [[nodiscard]] absl::optional<SetsByOwner> Sets(
-      base::OnceCallback<void(SetsByOwner)> callback) const;
+      base::OnceCallback<void(SetsByOwner)> callback);
 
   // Receives the completed First-Party Sets from `sets_loader_` and stores it
   // in the `sets_`.
@@ -117,7 +113,7 @@ class FirstPartySets {
   // not both, and not neither.
   [[nodiscard]] absl::optional<OwnerResult> FindOwner(
       const net::SchemefulSite& site,
-      base::OnceCallback<void(OwnerResult)> callback) const;
+      base::OnceCallback<void(OwnerResult)> callback);
 
   // Batched version of `FindOwner`. Returns the mapping of sites to owners for
   // the given input sites (if an owner exists).
@@ -133,9 +129,27 @@ class FirstPartySets {
   // not both, and not neither.
   [[nodiscard]] absl::optional<OwnersResult> FindOwners(
       const base::flat_set<net::SchemefulSite>& sites,
-      base::OnceCallback<void(OwnersResult)> callback) const;
+      base::OnceCallback<void(OwnersResult)> callback);
 
  private:
+  using SingleSet =
+      std::pair<net::SchemefulSite, base::flat_set<net::SchemefulSite>>;
+
+  // Same as `ComputeMetadata`, but plumbs the result into the callback. Must
+  // only be called once the instance is fully initialized.
+  void ComputeMetadataAndInvoke(
+      const net::SchemefulSite& site,
+      const net::SchemefulSite* top_frame_site,
+      const std::set<net::SchemefulSite>& party_context,
+      base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const;
+
+  // Synchronous version of `ComputeMetadata`, to be run only once the instance
+  // is fully initialized.
+  net::FirstPartySetMetadata ComputeMetadataInternal(
+      const net::SchemefulSite& site,
+      const net::SchemefulSite* top_frame_site,
+      const std::set<net::SchemefulSite>& party_context) const;
+
   // Returns whether the `site` is same-party with the `party_context`, and
   // `top_frame_site` (if it is not nullptr). That is, is the `site`'s owner the
   // same as the owners of every member of `party_context` and of
@@ -162,12 +176,41 @@ class FirstPartySets {
       const net::SchemefulSite* top_frame_site,
       const std::set<net::SchemefulSite>& party_context) const;
 
+  // Same as `FindOwner`, but plumbs the result into the callback. Must only be
+  // called once the instance is fully initialized.
+  void FindOwnerAndInvoke(
+      const net::SchemefulSite& site,
+      base::OnceCallback<void(FirstPartySets::OwnerResult)> callback) const;
+
   // Returns `site`'s owner (optionally inferring a singleton set if necessary),
   // or `nullopt` if `site` has no owner. Must not return `nullopt` if
   // `infer_singleton_sets` is true.
-  const absl::optional<net::SchemefulSite> FindOwner(
+  //
+  // This is synchronous, and must not be called
+  // until the instance is fully initialized.
+  const absl::optional<net::SchemefulSite> FindOwnerInternal(
       const net::SchemefulSite& site,
       bool infer_singleton_sets) const;
+
+  // Same as `FindOwners`, but plumbs the result into the callback. Must only be
+  // called once the instance is fully initialized.
+  void FindOwnersAndInvoke(
+      const base::flat_set<net::SchemefulSite>& sites,
+      base::OnceCallback<void(FirstPartySets::OwnersResult)> callback) const;
+
+  // Synchronous version of `FindOwners`, to be run only once the instance is
+  // initialized.
+  OwnersResult FindOwnersInternal(
+      const base::flat_set<net::SchemefulSite>& sites) const;
+
+  // Same as `Sets`, but plumbs the result into the callback. Must only be
+  // called once the instance is fully initialized.
+  void SetsAndInvoke(
+      base::OnceCallback<void(FirstPartySets::SetsByOwner)> callback) const;
+
+  // Synchronous version of `Sets`, to be run only once the instance is
+  // initialized.
+  SetsByOwner SetsInternal() const;
 
   // Compares the map `old_sets` to `sets_` and returns the set of sites that:
   // 1) were in `old_sets` but are no longer in `sets_`, i.e. leave the FPSs;
@@ -182,14 +225,25 @@ class FirstPartySets {
   // TODO(shuuran@chromium.org): Implement the code to clear site state.
   void ClearSiteDataOnChangedSetsIfReady();
 
+  // Enqueues a query to be answered once the instance is fully initialized.
+  void EnqueuePendingQuery(base::OnceClosure run_query);
+
+  // Runs all pending queries. Must not be called until the instance is fully
+  // initialized.
+  void InvokePendingQueries();
+
   // Represents the mapping of site -> site, where keys are members of sets, and
   // values are owners of the sets. Owners are explicitly represented as members
   // of the set.
-  FlattenedSets sets_ GUARDED_BY_CONTEXT(sequence_checker_);
-  bool sets_ready_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  //
+  // Optional because it is unset until all of the required inputs have been
+  // received.
+  absl::optional<FlattenedSets> sets_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  std::string raw_persisted_sets_ GUARDED_BY_CONTEXT(sequence_checker_);
-  bool persisted_sets_ready_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  // The sets that were persisted during the last run of Chrome. Initially unset
+  // (nullopt) until it has been read from disk.
+  absl::optional<std::string> raw_persisted_sets_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
@@ -197,7 +251,12 @@ class FirstPartySets {
   base::OnceCallback<void(const std::string&)> on_site_data_cleared_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  std::unique_ptr<FirstPartySetsLoader> sets_loader_;
+  std::unique_ptr<FirstPartySetsLoader> sets_loader_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The queue of queries that are waiting for the instance to be initialized.
+  std::unique_ptr<base::circular_deque<base::OnceClosure>> pending_queries_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

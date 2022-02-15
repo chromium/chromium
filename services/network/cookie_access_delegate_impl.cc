@@ -21,7 +21,7 @@ namespace network {
 
 CookieAccessDelegateImpl::CookieAccessDelegateImpl(
     mojom::CookieAccessDelegateType type,
-    const FirstPartySets* first_party_sets,
+    FirstPartySets* const first_party_sets,
     const CookieSettings* cookie_settings)
     : type_(type),
       cookie_settings_(cookie_settings),

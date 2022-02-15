@@ -130,11 +130,6 @@ interface NetworkServiceTest {
   // network service informs the main process when a field trial is activated.
   ActivateFieldTrial(string field_trial_name);
 
-  // Gets the current count of entries in the First-Party sets mapping. Note
-  // that each entry is a registered domain mapped to its owner.
-  [Sync]
-  GetFirstPartySetEntriesCount() => (int64 entries);
-
   // Set how long of an initial delay should be used for exponential backoff in
   // SCT auditing retries. Setting the delay to nullopt will reset to the
   // default.

@@ -7,6 +7,8 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -16,6 +18,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/first_party_sets_component_installer.h"
 #include "chrome/browser/net/stub_resolver_config_reader.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -29,7 +33,11 @@
 #include "content/public/common/network_service_util.h"
 #include "content/public/common/user_agent.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/frame_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "net/cookies/canonical_cookie_test_helpers.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/net_buildflags.h"
 #include "services/cert_verifier/test_cert_verifier_service_factory.h"
 #include "services/network/public/cpp/features.h"
@@ -50,39 +58,10 @@
 #include "net/base/features.h"
 #endif
 
-namespace {
-
-int64_t GetFirstPartySetEntriesCountFromNetworkService() {
-  // The test interface isn't supported in the in-process case.
-  DCHECK(!content::IsInProcessNetworkService());
-
-  mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-  content::GetNetworkService()->BindTestInterface(
-      network_service_test.BindNewPipeAndPassReceiver());
-
-  int64_t count = 0;
-  base::RunLoop run_loop;
-  network_service_test->GetFirstPartySetEntriesCount(
-      base::BindLambdaForTesting([&](int64_t count_from_network_service) {
-        count = count_from_network_service;
-        run_loop.Quit();
-      }));
-  run_loop.Run();
-
-  return count;
-}
-
-void PollForFirstPartySetEntryCount(int64_t expected_count) {
-  auto has_expected_count = base::BindLambdaForTesting([expected_count]() {
-    return GetFirstPartySetEntriesCountFromNetworkService() == expected_count;
-  });
-  while (!has_expected_count.Run()) {
-  }
-}
-
-}  // namespace
-
 using SystemNetworkContextManagerBrowsertest = InProcessBrowserTest;
+
+const char* kSamePartyCookieName = "SamePartyCookie";
+const char* kHostA = "a.test";
 
 IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest,
                        StaticAuthParams) {
@@ -244,7 +223,17 @@ class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
     : public SystemNetworkContextManagerBrowsertest,
       public testing::WithParamInterface<bool> {
  public:
-  SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest() = default;
+  SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+
+  void SetUpOnMainThread() override {
+    SystemNetworkContextManagerBrowsertest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server()->AddDefaultHandlers(
+        base::FilePath(FILE_PATH_LITERAL("content/test/data")));
+    ASSERT_TRUE(https_server()->Start());
+  }
 
   void SetUpInProcessBrowserTestFixture() override {
     SystemNetworkContextManagerBrowsertest::SetUpInProcessBrowserTestFixture();
@@ -266,36 +255,72 @@ class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
         default_command_line, switches::kDisableComponentUpdate, command_line);
   }
 
+  net::test_server::EmbeddedTestServer* https_server() {
+    return &https_server_;
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  GURL EchoCookiesUrl(const std::string& host) {
+    return https_server_.GetURL(host, "/echoheader?Cookie");
+  }
+
  private:
   bool UseV2Format() const { return GetParam(); }
 
   std::string GetComponentContents() const {
     if (UseV2Format()) {
       // Use the V2 format of the component.
-      return "{\"owner\": \"https://example.test\", \"members\": [ "
-             "\"https://member1.test\", \"https://member2.test\"]}\n"
-             "{\"owner\": \"https://example2.test\", \"members\": [ "
-             "\"https://member3.test\", \"https://member4.test\"]}";
+      return "{\"owner\": \"https://a.test\", \"members\": [ "
+             "\"https://b.test\", \"https://member1.test\"]}\n"
+             "{\"owner\": \"https://c.test\", \"members\": [ "
+             "\"https://d.test\", \"https://member2.test\"]}";
     }
     return R"([{
-          "owner": "https://example.test",
+          "owner": "https://a.test",
           "members": [
-            "https://member1.test",
-            "https://member2.test"
+            "https://b.test",
+            "https://member1.test"
             ]
           },
           {
-            "owner": "https://example2.test",
+            "owner": "https://c.test",
             "members": [
-              "https://member3.test",
-              "https://member4.test"
+              "https://d.test",
+              "https://member2.test"
               ]
           }])";
   }
 
   base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir component_dir_;
+  net::test_server::EmbeddedTestServer https_server_;
 };
+
+IN_PROC_BROWSER_TEST_P(
+    SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest,
+    PRE_ReloadsFirstPartySetsAfterCrash) {
+  // Network service is not running out of process, so cannot be crashed.
+  if (!content::IsOutOfProcessNetworkService())
+    return;
+
+  // Set a persistent cookie that will still be there after the network service
+  // is crashed. We don't use the system network context here (which wouldn't
+  // persist the cookie to disk), but that's ok - this test only cares that the
+  // NetworkService gets reconfigured after a crash, and that that
+  // reconfiguration includes setting up First-Party Sets.
+  const GURL host_root = https_server()->GetURL(kHostA, "/");
+  ASSERT_TRUE(content::SetCookie(
+      browser()->profile(), host_root,
+      base::StrCat(
+          {kSamePartyCookieName,
+           "=1; samesite=lax; secure; sameparty; max-age=2147483647"})));
+  ASSERT_THAT(content::GetCookies(browser()->profile(), host_root),
+              net::CookieStringIs(testing::UnorderedElementsAre(
+                  testing::Key(kSamePartyCookieName))));
+}
 
 IN_PROC_BROWSER_TEST_P(
     SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest,
@@ -304,11 +329,24 @@ IN_PROC_BROWSER_TEST_P(
   if (!content::IsOutOfProcessNetworkService())
     return;
 
-  PollForFirstPartySetEntryCount(/*expected_count=*/6);
+  const GURL host_root = https_server()->GetURL(kHostA, "/");
+  ASSERT_THAT(content::GetCookies(browser()->profile(), host_root),
+              net::CookieStringIs(testing::UnorderedElementsAre(
+                  testing::Key(kSamePartyCookieName))));
+
+  EXPECT_THAT(content::ArrangeFramesAndGetContentFromLeaf(
+                  web_contents(), https_server(), "b.test(%s)", {0},
+                  EchoCookiesUrl(kHostA)),
+              net::CookieStringIs(testing::UnorderedElementsAre(
+                  testing::Key(kSamePartyCookieName))));
 
   SimulateNetworkServiceCrash();
 
-  PollForFirstPartySetEntryCount(/*expected_count=*/6);
+  EXPECT_THAT(content::ArrangeFramesAndGetContentFromLeaf(
+                  web_contents(), https_server(), "b.test(%s)", {0},
+                  EchoCookiesUrl(kHostA)),
+              net::CookieStringIs(testing::UnorderedElementsAre(
+                  testing::Key(kSamePartyCookieName))));
 }
 
 INSTANTIATE_TEST_SUITE_P(
