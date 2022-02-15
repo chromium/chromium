@@ -36,7 +36,7 @@ export class FakeDevicePairingHandler {
     this.pairDeviceRejectCallback_ = null;
 
     /**
-     * @private {?function({result:
+     * @private {?function({device:
      *     ?chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties})}
      */
     this.fetchDeviceCallback_ = null;
@@ -55,6 +55,9 @@ export class FakeDevicePairingHandler {
 
     /** @private {?function()} */
     this.waitForPairDeviceCallback_ = null;
+
+    /** @private {?function()} */
+    this.waitForFetchDeviceCallback_ = null;
 
     /** @private {?function()} */
     this.finishRequestConfirmPasskeyCallback_ = null;
@@ -78,6 +81,10 @@ export class FakeDevicePairingHandler {
 
   /** @override */
   fetchDevice(deviceAddress) {
+    if (this.waitForFetchDeviceCallback_) {
+      this.waitForFetchDeviceCallback_();
+    }
+
     return new Promise((resolve, reject) => {
       this.fetchDeviceCallback_ = resolve;
     });
@@ -239,10 +246,21 @@ export class FakeDevicePairingHandler {
   }
 
   /**
+   * Returns a promise that will be resolved the next time
+   * fetchDevice() is called.
+   * @return {Promise}
+   */
+  waitForFetchDevice() {
+    return new Promise((resolve) => {
+      this.waitForFetchDeviceCallback_ = resolve;
+    });
+  }
+
+  /**
    * @param {?chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties} device
    */
   completeFetchDevice(device) {
     assert(this.fetchDeviceCallback_, 'fetchDevice() was never called');
-    this.fetchDeviceCallback_({result: device});
+    this.fetchDeviceCallback_({device: device});
   }
 }

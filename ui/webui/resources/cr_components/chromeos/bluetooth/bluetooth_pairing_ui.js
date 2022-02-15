@@ -363,14 +363,17 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
       return;
     }
 
-    const device = this.discoveredDevices_.find(
-        d => d.address === this.pairingDeviceAddress);
-    if (!device) {
-      console.warn('Attempted pairing with a device that was not found.');
-      return;
-    }
+    this.devicePairingHandler_.fetchDevice(this.pairingDeviceAddress)
+        .then(result => {
+          if (!result.device) {
+            console.warn(
+                'Attempted pairing with a device that was not found, address: ' +
+                this.pairingDeviceAddress);
+            return;
+          }
 
-    this.pairDevice_(device);
+          this.pairDevice_(result.device);
+        });
   }
 
   /**
