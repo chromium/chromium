@@ -18,6 +18,7 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 // <if expr="chromeos">
 import './arc_account_picker_app.js';
 import './gaia_action_buttons.js';
+import './signin_blocked_by_policy_page.js';
 import './welcome_page_app.js';
 import './strings.m.js';
 
@@ -35,6 +36,7 @@ import {Account, InlineLoginBrowserProxy, InlineLoginBrowserProxyImpl} from './i
 /** @enum {string} */
 const View = {
   addAccount: 'addAccount',
+  signinBlockedByPolicy: 'signinBlockedByPolicy',
   welcome: 'welcome',
   arcAccountPicker: 'arcAccountPicker',
 };
@@ -123,6 +125,18 @@ Polymer({
       type: Array,
       value: [],
     },
+
+    /**
+     * User's email used in the sign-in flow.
+     * @private {string}
+     */
+    email_: {type: String, value: ''},
+
+    /**
+     * Hosted domain of the user's email used in the sign-in flow.
+     * @private {string}
+     */
+    hostedDomain_: {type: String, value: ''},
     // </if>
 
     /**
@@ -170,6 +184,10 @@ Polymer({
     this.addWebUIListener(
         'send-lst-fetch-results', arg => this.sendLSTFetchResults_(arg));
     this.addWebUIListener('close-dialog', () => this.closeDialog_());
+
+    this.addWebUIListener(
+        'show-signin-blocked-by-policy-page',
+        data => this.signinBlockedByPolicyShowView_(data));
   },
 
   /** @private */
@@ -342,9 +360,10 @@ Polymer({
    * @private
    */
   getNextButtonLabel_() {
-    return this.isArcAccountRestrictionsEnabled_ ?
-        this.i18n('nextButtonLabel') :
-        this.i18n('ok');
+    return this.currentView_ === View.signinBlockedByPolicy ||
+            !this.isArcAccountRestrictionsEnabled_ ?
+        this.i18n('ok') :
+        this.i18n('nextButtonLabel');
   },
 
   /**
@@ -360,7 +379,8 @@ Polymer({
    * @private
    */
   shouldShowOkButton_() {
-    return this.currentView_ === View.welcome;
+    return this.currentView_ === View.welcome ||
+        this.currentView_ === View.signinBlockedByPolicy;
   },
 
   /**
@@ -422,7 +442,8 @@ Polymer({
         return View.arcAccountPicker;
       }
     }
-    return this.shouldSkipWelcomePage_ ? View.addAccount : View.welcome;
+    return this.shouldSkipWelcomePage_ ? View.addAccount :
+                                         View.welcome;
     // </if>
   },
 
@@ -447,14 +468,34 @@ Polymer({
   },
 
   // <if expr="chromeos">
+
+  /**
+   * Shows the sign-in blocked by policy screen.
+   * @param {{email:string, hostedDomain:string}} data parameters.
+   * @private
+   */
+  signinBlockedByPolicyShowView_(data) {
+    this.set('email_', data.email);
+    this.set('hostedDomain_', data.hostedDomain);
+    this.switchView_(View.signinBlockedByPolicy);
+    this.setFocusToWebview_();
+  },
+
   /** @private */
   onOkButtonClick_() {
-    this.switchView_(View.addAccount);
-    const skipChecked =
-        /** @type {WelcomePageAppElement} */ (this.$$('welcome-page-app'))
-            .isSkipCheckboxChecked();
-    this.browserProxy_.skipWelcomePage(skipChecked);
-    this.setFocusToWebview_();
+    switch (this.currentView_) {
+      case View.welcome:
+        this.switchView_(View.addAccount);
+        const skipChecked =
+            /** @type {WelcomePageAppElement} */ (this.$$('welcome-page-app'))
+                .isSkipCheckboxChecked();
+        this.browserProxy_.skipWelcomePage(skipChecked);
+        this.setFocusToWebview_();
+        break;
+      case View.signinBlockedByPolicy:
+        this.closeDialog_();
+        break;
+    }
   },
 
   /** @private */

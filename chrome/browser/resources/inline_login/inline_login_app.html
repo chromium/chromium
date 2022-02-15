@@ -31,7 +31,7 @@
     margin-bottom: calc(3 * 32px);
   }
   /* Make distance to the top 64px. */
-  #welcome, #arcAccountPicker {
+  #welcome, #arcAccountPicker, #signinBlockedByPolicy {
     margin-top: calc(64px - var(--dialog-top-border-size));
   }
 </if>
@@ -78,6 +78,10 @@
             on-add-account="goToWelcomeScreen_"
             accounts="[[arcPickerAccounts_]]">
         </arc-account-picker-app>
+      </div>
+      <div id="[[View.signinBlockedByPolicy]]" slot="view">
+        <signin-blocked-by-policy-page email="[[email_]]" hosted-domain="[[hostedDomain_]]">
+        </signin-blocked-by-policy-page>
       </div>
     </if>
 

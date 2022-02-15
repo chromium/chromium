@@ -178,7 +178,7 @@ TEST_F(
       this.runMochaTest(inline_login_welcome_page_test.TestNames.ToggleHidden);
     });
 
-  TEST_F(
+TEST_F(
     'InlineLoginWelcomePageBrowserTestWithArcAccountRestrictionsEnabled',
     'LinkClick', function() {
       this.runMochaTest(inline_login_welcome_page_test.TestNames.LinkClick);
@@ -234,5 +234,39 @@ TEST_F(
     'InlineLoginArcAccountPickerBrowserTest', 'MakeAvailableInArc', function() {
       this.runMochaTest(
           arc_account_picker_page_test.TestNames.MakeAvailableInArc);
+    });
+
+// eslint-disable-next-line no-var
+var InlineLoginSigninBlockedByPolicyPageBrowserTest =
+    class extends InlineLoginBrowserTest {
+  get browsePreload() {
+    // Reason 1: Add secondary account.
+    // See Reason enum in components/signin/public/base/signin_metrics.h.
+    return 'chrome://chrome-signin/test_loader.html?module=inline_login/inline_login_signin_blocked_by_policy_page_test.js&reason=1';
+  }
+
+  get suiteName() {
+    return inline_login_signin_blocked_by_policy_page_test.suiteName;
+  }
+};
+
+TEST_F(
+    'InlineLoginSigninBlockedByPolicyPageBrowserTest', 'BlockedSigninPage',
+    function() {
+      this.runMochaTest(inline_login_signin_blocked_by_policy_page_test
+                            .TestNames.BlockedSigninPage);
+    });
+
+TEST_F(
+    'InlineLoginSigninBlockedByPolicyPageBrowserTest', 'OkButton', function() {
+      this.runMochaTest(
+          inline_login_signin_blocked_by_policy_page_test.TestNames.OkButton);
+    });
+
+TEST_F(
+    'InlineLoginSigninBlockedByPolicyPageBrowserTest',
+    'FireWebUIListenerCallback', function() {
+      this.runMochaTest(inline_login_signin_blocked_by_policy_page_test
+                            .TestNames.FireWebUIListenerCallback);
     });
 GEN('#endif');

@@ -123,6 +123,8 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
     {"inline_login_util.js", IDR_INLINE_LOGIN_UTIL_JS},
     {"arc_account_picker_app.js", IDR_INLINE_LOGIN_ARC_ACCOUNT_PICKER_APP_JS},
     {"welcome_page_app.js", IDR_INLINE_LOGIN_WELCOME_PAGE_APP_JS},
+    {"signin_blocked_by_policy_page.js",
+     IDR_INLINE_LOGIN_SIGNIN_BLOCKED_BY_POLICY_PAGE_JS},
     {"account_manager_shared_css.js", IDR_ACCOUNT_MANAGER_SHARED_CSS_JS},
     {"gaia_action_buttons.js", IDR_GAIA_ACTION_BUTTONS_JS},
     {"error_screen.js", IDR_ACCOUNT_MANAGER_COMPONENTS_ERROR_SCREEN_JS},
@@ -144,6 +146,8 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
     {"edu_coexistence_css.js", IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_CSS_JS},
     {"an_error_occurred.svg", IDR_CHROME_OS_AN_ERROR_OCCURRED_SVG},
     {"no_network.svg", IDR_CHROME_OS_NO_NETWORK_SVG},
+    {"account_manager_signin_blocked_by_policy.svg",
+     IDS_ACCOUNT_MANAGER_SIGNIN_BLOCKED_BY_POLICY_SVG},
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {"account_manager_welcome_1x.png", IDR_ACCOUNT_MANAGER_WELCOME_1X_PNG},
@@ -178,6 +182,12 @@ content::WebUIDataSource* CreateWebUIDataSource(Profile* profile) {
      IDS_ACCOUNT_MANAGER_ERROR_CANNOT_ADD_ACCOUNT_TITLE},
     {"accountManagerErrorCannotAddAccountBody",
      IDS_ACCOUNT_MANAGER_ERROR_CANNOT_ADD_ACCOUNT_BODY},
+    {"accountManagerDialogSigninBlockedByPolicyTitle",
+     IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_TITLE},
+    {"accountManagerDialogSigninBlockedByPolicyBody",
+     IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_BODY},
+    {"accountManagerDialogSigninBlockedByPolicyImageAlt",
+     IDS_ACCOUNT_MANAGER_DIALOG_SIGNIN_BLOCKED_BY_POLICY_IMAGE_ALT},
 #else
     {"title", IDS_CHROME_SIGNIN_TITLE},
 #endif
