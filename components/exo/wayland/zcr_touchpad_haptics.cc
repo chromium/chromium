@@ -20,9 +20,8 @@ namespace {
 
 class WaylandTouchpadHapticsDelegate {
  public:
-  WaylandTouchpadHapticsDelegate(wl_resource* resource) : resource_{resource} {
-    zcr_touchpad_haptics_v1_send_activated(resource_);
-  }
+  explicit WaylandTouchpadHapticsDelegate(wl_resource* resource)
+      : resource_{resource} {}
   ~WaylandTouchpadHapticsDelegate() = default;
 
   void UpdateTouchpadHapticsState() {
