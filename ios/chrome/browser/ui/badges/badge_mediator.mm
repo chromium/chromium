@@ -33,6 +33,8 @@
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/web/public/permissions/permissions.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -48,11 +50,13 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 
 }  // namespace
 
-@interface BadgeMediator () <InfobarBadgeTabHelperDelegate,
+@interface BadgeMediator () <CRWWebStateObserver,
+                             InfobarBadgeTabHelperDelegate,
                              OverlayPresenterObserving,
                              WebStateListObserving> {
   std::unique_ptr<OverlayPresenterObserver> _overlayPresenterObserver;
   std::unique_ptr<WebStateListObserver> _webStateListObserver;
+  std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
 }
 
 // The WebStateList that this mediator listens for any changes on the active web
@@ -73,6 +77,10 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 
 // Array of all available badges.
 @property(nonatomic, strong, readonly) NSArray<id<BadgeItem>>* badges;
+
+// The correct badge type for permissions infobar.
+@property(nonatomic, assign, readonly)
+    BadgeType permissionsBadgeType API_AVAILABLE(ios(15.0));
 
 @end
 
@@ -96,11 +104,15 @@ const char kInfobarOverflowBadgeShownUserAction[] =
     // Set up the WebStateList and its observer.
     _webStateList = browser->GetWebStateList();
     _webState = _webStateList->GetActiveWebState();
-    if (_webState) {
-      InfobarBadgeTabHelper::FromWebState(_webState)->SetDelegate(self);
-    }
+
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
     _webStateList->AddObserver(_webStateListObserver.get());
+    _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
+
+    if (_webState) {
+      InfobarBadgeTabHelper::FromWebState(_webState)->SetDelegate(self);
+      _webState->AddObserver(_webStateObserver.get());
+    }
   }
   return self;
 }
@@ -111,15 +123,22 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 }
 
 - (void)disconnect {
+  [self disconnectWebState];
   [self disconnectWebStateList];
   [self disconnectOverlayPresenter];
 }
 
 #pragma mark - Disconnect helpers
 
+- (void)disconnectWebState {
+  if (self.webState) {
+    self.webState = nullptr;
+    _webStateObserver = nullptr;
+  }
+}
+
 - (void)disconnectWebStateList {
   if (_webStateList) {
-    self.webState = nullptr;
     _webStateList->RemoveObserver(_webStateListObserver.get());
     _webStateListObserver = nullptr;
     _webStateList = nullptr;
@@ -146,6 +165,14 @@ const char kInfobarOverflowBadgeShownUserAction[] =
   for (auto& infobarTypeBadgeStatePair : badgeStatesForInfobarType) {
     BadgeType badgeType =
         BadgeTypeForInfobarType(infobarTypeBadgeStatePair.first);
+    // Update BadgeType for permissions to align with current permission states
+    // of the web state.
+    if (@available(iOS 15.0, *)) {
+      if (infobarTypeBadgeStatePair.first ==
+          InfobarType::kInfobarTypePermissions) {
+        badgeType = self.permissionsBadgeType;
+      }
+    }
     BadgeTappableItem* item =
         [[BadgeTappableItem alloc] initWithBadgeType:badgeType];
     item.badgeState = infobarTypeBadgeStatePair.second;
@@ -164,17 +191,31 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 - (void)setWebState:(web::WebState*)webState {
   if (_webState == webState)
     return;
-  if (_webState)
+  if (_webState) {
     InfobarBadgeTabHelper::FromWebState(_webState)->SetDelegate(nil);
+    _webState->RemoveObserver(_webStateObserver.get());
+  }
   _webState = webState;
-  if (_webState)
+  if (_webState) {
     InfobarBadgeTabHelper::FromWebState(_webState)->SetDelegate(self);
+    _webState->AddObserver(_webStateObserver.get());
+  }
   [self updateConsumer];
 }
 
 - (InfobarBadgeTabHelper*)badgeTabHelper {
   return self.webState ? InfobarBadgeTabHelper::FromWebState(self.webState)
                        : nullptr;
+}
+
+- (BadgeType)permissionsBadgeType {
+  DCHECK(self.webState != nullptr);
+  NSDictionary<NSNumber*, NSNumber*>* permissionStates =
+      self.webState->GetStatesForAllPermissions();
+  return permissionStates[@(web::PermissionMicrophone)] >
+                 permissionStates[@(web::PermissionCamera)]
+             ? BadgeType::kBadgeTypePermissionsMicrophone
+             : BadgeType::kBadgeTypePermissionsCamera;
 }
 
 #pragma mark - Accessor helpers
@@ -232,6 +273,14 @@ const char kInfobarOverflowBadgeShownUserAction[] =
 - (void)translateBadgeButtonTapped:(id)sender {
   BadgeButton* badgeButton = base::mac::ObjCCastStrict<BadgeButton>(sender);
   DCHECK_EQ(badgeButton.badgeType, BadgeType::kBadgeTypeTranslate);
+
+  [self handleTappedBadgeButton:badgeButton];
+}
+
+- (void)permissionsBadgeButtonTapped:(id)sender {
+  BadgeButton* badgeButton = base::mac::ObjCCastStrict<BadgeButton>(sender);
+  DCHECK_EQ(InfobarTypeForBadgeType(badgeButton.badgeType),
+            InfobarType::kInfobarTypePermissions);
 
   [self handleTappedBadgeButton:badgeButton];
 }
@@ -359,6 +408,20 @@ const char kInfobarOverflowBadgeShownUserAction[] =
                      reason:(ActiveWebStateChangeReason)reason {
   DCHECK_EQ(self.webStateList, webStateList);
   self.webState = newWebState;
+}
+
+#pragma mark - CRWWebStateObserver
+
+- (void)webState:(web::WebState*)webState
+    didChangeStateForPermission:(web::Permission)permission
+    API_AVAILABLE(ios(15.0)) {
+  DCHECK_EQ(webState, self.webState);
+  [self updateBadgesShownForWebState:webState];
+}
+
+- (void)webStateDestroyed:(web::WebState*)webState {
+  DCHECK_EQ(webState, self.webState);
+  [self disconnectWebState];
 }
 
 #pragma mark - Private

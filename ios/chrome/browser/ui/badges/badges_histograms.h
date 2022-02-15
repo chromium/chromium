@@ -16,8 +16,9 @@ enum class MobileMessagesInfobarType {
   UpdatePassword = 2,
   SaveCard = 3,
   Translate = 4,
+  Permissions = 5,
   // Highest enumerator. Recommended by Histogram metrics best practices.
-  kMaxValue = Translate,
+  kMaxValue = Permissions,
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_BADGES_BADGES_HISTOGRAMS_H_

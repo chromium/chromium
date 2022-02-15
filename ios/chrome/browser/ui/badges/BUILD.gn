@@ -85,6 +85,7 @@ source_set("badges") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ios/web/public",
+    "//ios/web/public/permissions",
     "//ui/base",
   ]
 }

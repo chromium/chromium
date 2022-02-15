@@ -79,6 +79,13 @@ const CGFloat kBadgeCornerRadius = 5.0;
         _title =
             l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_MODAL_TITLE);
         break;
+      case BadgeType::kBadgeTypePermissionsCamera:
+        // Falls through.
+      case BadgeType::kBadgeTypePermissionsMicrophone:
+        _actionIdentifier = PopupMenuActionShowPermissionsOptions;
+        _title = l10n_util::GetNSString(
+            IDS_IOS_PERMISSIONS_INFOBAR_OVERFLOW_POPUP_TITLE);
+        break;
       case BadgeType::kBadgeTypeIncognito:
         NOTREACHED() << "A BadgePopupMenuItem should not be an Incognito badge";
         break;
@@ -124,6 +131,14 @@ const CGFloat kBadgeCornerRadius = 5.0;
       break;
     case BadgeType::kBadgeTypeAddToReadingList:
       badgeImage = [[UIImage imageNamed:@"infobar_reading_list"]
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      break;
+    case BadgeType::kBadgeTypePermissionsCamera:
+      badgeImage = [[UIImage imageNamed:@"infobar_permissions_camera"]
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      break;
+    case BadgeType::kBadgeTypePermissionsMicrophone:
+      badgeImage = [[UIImage systemImageNamed:@"mic.fill"]
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       break;
     case BadgeType::kBadgeTypeIncognito:
@@ -204,6 +219,8 @@ const CGFloat kBadgeCornerRadius = 5.0;
     [self.contentView addSubview:_badgeView];
     [self.contentView addSubview:_trailingImageView];
 
+    // TODO(crbug.com/1293060): Maintain image aspect ratio once we move icon
+    // image file format to SVG from PNG.
     ApplyVisualConstraintsWithMetrics(
         @[
           @"H:|-(margin)-[badge]-(margin)-[text]-(margin)-[gear]-(margin)-|",

@@ -151,6 +151,9 @@
 - (void)translateBadgeButtonTapped:(id)sender {
 }
 
+- (void)permissionsBadgeButtonTapped:(id)sender {
+}
+
 - (void)overflowBadgeButtonTapped:(id)sender {
   self.badgePopupMenuCoordinator = [[BadgePopupMenuCoordinator alloc]
       initWithBaseViewController:self.containerViewController

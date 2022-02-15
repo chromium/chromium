@@ -50,6 +50,19 @@ NSString* const kBadgeButtonTranslateAccessibilityIdentifier =
 NSString* const kBadgeButtonTranslateAcceptedAccessibilityIdentifier =
     @"badgeButtonTranslateAcceptedAXID";
 
+NSString* const kBadgeButtonPermissionsCameraAccessibilityIdentifier =
+    @"badgeButtonPermissionsCameraAXID";
+
+NSString* const kBadgeButtonPermissionsCameraAcceptedAccessibilityIdentifier =
+    @"badgeButtonPermissionsCameraAcceptedAXID";
+
+NSString* const kBadgeButtonPermissionsMicrophoneAccessibilityIdentifier =
+    @"badgeButtonPermissionsMicrophoneAXID";
+
+NSString* const
+    kBadgeButtonPermissionsMicrophoneAcceptedAccessibilityIdentifier =
+        @"badgeButtonPermissionsMicrophoneAcceptedAXID";
+
 NSString* const kBadgePopupMenuTableViewAccessibilityIdentifier =
     @"badgePopupMenuOverflowAXID";
 

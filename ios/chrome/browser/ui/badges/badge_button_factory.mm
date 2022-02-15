@@ -39,6 +39,10 @@
       return [self saveAddressProfileBadgeButton];
     case BadgeType::kBadgeTypeAddToReadingList:
       return [self readingListBadgeButton];
+    case BadgeType::kBadgeTypePermissionsCamera:
+      return [self permissionsCameraBadgeButton];
+    case BadgeType::kBadgeTypePermissionsMicrophone:
+      return [self permissionsMicrophoneBadgeButton];
     case BadgeType::kBadgeTypeNone:
       NOTREACHED() << "A badge should not have kBadgeTypeNone";
       return nil;
@@ -58,10 +62,11 @@
 }
 
 - (BadgeButton*)passwordsSaveBadgeButton {
-  BadgeButton* button =
-      [self createButtonForType:BadgeType::kBadgeTypePasswordSave
-                     imageNamed:[self passwordKeyAssetName]
-                  renderingMode:UIImageRenderingModeAlwaysTemplate];
+  BadgeButton* button = [self
+      createButtonForType:BadgeType::kBadgeTypePasswordSave
+                    image:[[UIImage imageNamed:[self passwordKeyAssetName]]
+                              imageWithRenderingMode:
+                                  UIImageRenderingModeAlwaysTemplate]];
   [button addTarget:self.delegate
                 action:@selector(passwordsBadgeButtonTapped:)
       forControlEvents:UIControlEventTouchUpInside];
@@ -73,10 +78,11 @@
 }
 
 - (BadgeButton*)passwordsUpdateBadgeButton {
-  BadgeButton* button =
-      [self createButtonForType:BadgeType::kBadgeTypePasswordUpdate
-                     imageNamed:[self passwordKeyAssetName]
-                  renderingMode:UIImageRenderingModeAlwaysTemplate];
+  BadgeButton* button = [self
+      createButtonForType:BadgeType::kBadgeTypePasswordUpdate
+                    image:[[UIImage imageNamed:[self passwordKeyAssetName]]
+                              imageWithRenderingMode:
+                                  UIImageRenderingModeAlwaysTemplate]];
   [button addTarget:self.delegate
                 action:@selector(passwordsBadgeButtonTapped:)
       forControlEvents:UIControlEventTouchUpInside];
@@ -90,8 +96,9 @@
 - (BadgeButton*)saveCardBadgeButton {
   BadgeButton* button =
       [self createButtonForType:BadgeType::kBadgeTypeSaveCard
-                     imageNamed:@"infobar_save_card_icon"
-                  renderingMode:UIImageRenderingModeAlwaysTemplate];
+                          image:[[UIImage imageNamed:@"infobar_save_card_icon"]
+                                    imageWithRenderingMode:
+                                        UIImageRenderingModeAlwaysTemplate]];
   [button addTarget:self.delegate
                 action:@selector(saveCardBadgeButtonTapped:)
       forControlEvents:UIControlEventTouchUpInside];
@@ -104,8 +111,9 @@
 - (BadgeButton*)translateBadgeButton {
   BadgeButton* button =
       [self createButtonForType:BadgeType::kBadgeTypeTranslate
-                     imageNamed:@"infobar_translate_icon"
-                  renderingMode:UIImageRenderingModeAlwaysTemplate];
+                          image:[[UIImage imageNamed:@"infobar_translate_icon"]
+                                    imageWithRenderingMode:
+                                        UIImageRenderingModeAlwaysTemplate]];
   [button addTarget:self.delegate
                 action:@selector(translateBadgeButtonTapped:)
       forControlEvents:UIControlEventTouchUpInside];
@@ -118,8 +126,9 @@
 - (BadgeButton*)incognitoBadgeButton {
   BadgeButton* button =
       [self createButtonForType:BadgeType::kBadgeTypeIncognito
-                     imageNamed:@"incognito_badge"
-                  renderingMode:UIImageRenderingModeAlwaysOriginal];
+                          image:[[UIImage imageNamed:@"incognito_badge"]
+                                    imageWithRenderingMode:
+                                        UIImageRenderingModeAlwaysOriginal]];
   button.fullScreenImage = [[UIImage imageNamed:@"incognito_small_badge"]
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
   button.tintColor = [UIColor colorNamed:kTextPrimaryColor];
@@ -134,8 +143,9 @@
 - (BadgeButton*)overflowBadgeButton {
   BadgeButton* button =
       [self createButtonForType:BadgeType::kBadgeTypeOverflow
-                     imageNamed:@"wrench_badge"
-                  renderingMode:UIImageRenderingModeAlwaysTemplate];
+                          image:[[UIImage imageNamed:@"wrench_badge"]
+                                    imageWithRenderingMode:
+                                        UIImageRenderingModeAlwaysTemplate]];
   [button addTarget:self.delegate
                 action:@selector(overflowBadgeButtonTapped:)
       forControlEvents:UIControlEventTouchUpInside];
@@ -148,8 +158,9 @@
 - (BadgeButton*)saveAddressProfileBadgeButton {
   BadgeButton* button =
       [self createButtonForType:BadgeType::kBadgeTypeSaveAddressProfile
-                     imageNamed:@"ic_place"
-                  renderingMode:UIImageRenderingModeAlwaysTemplate];
+                          image:[[UIImage imageNamed:@"ic_place"]
+                                    imageWithRenderingMode:
+                                        UIImageRenderingModeAlwaysTemplate]];
   [button addTarget:self.delegate
                 action:@selector(saveAddressProfileBadgeButtonTapped:)
       forControlEvents:UIControlEventTouchUpInside];
@@ -162,8 +173,9 @@
 - (BadgeButton*)readingListBadgeButton {
   BadgeButton* button =
       [self createButtonForType:BadgeType::kBadgeTypeAddToReadingList
-                     imageNamed:@"infobar_reading_list"
-                  renderingMode:UIImageRenderingModeAlwaysTemplate];
+                          image:[[UIImage imageNamed:@"infobar_reading_list"]
+                                    imageWithRenderingMode:
+                                        UIImageRenderingModeAlwaysTemplate]];
   [button addTarget:self.delegate
                 action:@selector(addToReadingListBadgeButtonTapped:)
       forControlEvents:UIControlEventTouchUpInside];
@@ -173,12 +185,40 @@
   return button;
 }
 
-- (BadgeButton*)createButtonForType:(BadgeType)badgeType
-                         imageNamed:(NSString*)imageName
-                      renderingMode:(UIImageRenderingMode)renderingMode {
+- (BadgeButton*)permissionsCameraBadgeButton {
+  BadgeButton* button = [self
+      createButtonForType:BadgeType::kBadgeTypePermissionsCamera
+                    image:[[UIImage imageNamed:@"infobar_permissions_camera"]
+                              imageWithRenderingMode:
+                                  UIImageRenderingModeAlwaysTemplate]];
+  [button addTarget:self.delegate
+                action:@selector(permissionsBadgeButtonTapped:)
+      forControlEvents:UIControlEventTouchUpInside];
+  button.accessibilityIdentifier =
+      kBadgeButtonPermissionsCameraAccessibilityIdentifier;
+  button.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_INFOBAR_BADGES_PERMISSIONS_HINT);
+  return button;
+}
+
+- (BadgeButton*)permissionsMicrophoneBadgeButton {
+  BadgeButton* button =
+      [self createButtonForType:BadgeType::kBadgeTypePermissionsMicrophone
+                          image:[[UIImage systemImageNamed:@"mic.fill"]
+                                    imageWithRenderingMode:
+                                        UIImageRenderingModeAlwaysTemplate]];
+  [button addTarget:self.delegate
+                action:@selector(permissionsBadgeButtonTapped:)
+      forControlEvents:UIControlEventTouchUpInside];
+  button.accessibilityIdentifier =
+      kBadgeButtonPermissionsMicrophoneAccessibilityIdentifier;
+  button.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_INFOBAR_BADGES_PERMISSIONS_HINT);
+  return button;
+}
+
+- (BadgeButton*)createButtonForType:(BadgeType)badgeType image:(UIImage*)image {
   BadgeButton* button = [BadgeButton badgeButtonWithType:badgeType];
-  UIImage* image =
-      [[UIImage imageNamed:imageName] imageWithRenderingMode:renderingMode];
   button.image = image;
   button.fullScreenOn = NO;
   button.imageView.contentMode = UIViewContentModeScaleAspectFit;

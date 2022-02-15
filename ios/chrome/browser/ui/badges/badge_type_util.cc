@@ -22,6 +22,11 @@ BadgeType BadgeTypeForInfobarType(InfobarType infobar_type) {
       return BadgeType::kBadgeTypeTranslate;
     case InfobarType::kInfobarTypeAddToReadingList:
       return BadgeType::kBadgeTypeAddToReadingList;
+    case InfobarType::kInfobarTypePermissions:
+      // Default value; actual value would depend on the value of
+      // GetStatesForAllPermissions() of the currently active WebState, and be
+      // overridden when used.
+      return BadgeType::kBadgeTypePermissionsCamera;
     default:
       return BadgeType::kBadgeTypeNone;
   }
@@ -41,6 +46,9 @@ InfobarType InfobarTypeForBadgeType(BadgeType badge_type) {
       return InfobarType::kInfobarTypeTranslate;
     case BadgeType::kBadgeTypeAddToReadingList:
       return InfobarType::kInfobarTypeAddToReadingList;
+    case BadgeType::kBadgeTypePermissionsCamera:
+    case BadgeType::kBadgeTypePermissionsMicrophone:
+      return InfobarType::kInfobarTypePermissions;
     default:
       NOTREACHED() << "Unsupported badge type.";
       return InfobarType::kInfobarTypeConfirm;

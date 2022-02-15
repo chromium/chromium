@@ -1110,6 +1110,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_INFOBAR_BADGES_PASSWORD_HINT" desc="The iOS infobar badge item for saving password credentials [Length:Unlimited]">
         Options to Save Password
       </message>
+      <message name="IDS_IOS_INFOBAR_BADGES_PERMISSIONS_HINT" desc="The iOS infobar badge item for permissions [Length:Unlimited]">
+        Options to Set Permissions
+      </message>
       <message name="IDS_IOS_INFOBAR_BADGES_TRANSLATE_HINT" desc="The iOS infobar badge item for translate [Length:Unlimited]">
         Options to Translate the page
       </message>
@@ -1636,6 +1639,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_PERMISSIONS_INFOBAR_MODAL_TITLE" desc="Title of the permissions infobar used to update site permissions.">
         Access
+      </message>
+      <message name="IDS_IOS_PERMISSIONS_INFOBAR_OVERFLOW_POPUP_TITLE" desc="Title of the infobar modal shown when the user taps Camera/Microphone access.">
+        Edit Access
       </message>
       <message name="IDS_IOS_PHOTO_LIBRARY_ADD_USAGE_DESCRIPTION" desc="Specifies the reason for writing to the user's photo library while the app is in use [Length: unlimited] [iOS only].">
         This lets you save photos to your photo library.

@@ -133,6 +133,12 @@
       [self addModalRequestForInfobarType:InfobarType::kInfobarTypeTranslate];
       break;
     }
+    case PopupMenuActionShowPermissionsOptions: {
+      UMA_HISTOGRAM_ENUMERATION(kInfobarOverflowMenuTappedHistogram,
+                                MobileMessagesInfobarType::Permissions);
+      [self addModalRequestForInfobarType:InfobarType::kInfobarTypePermissions];
+      break;
+    }
     default:
       NOTREACHED() << "Unexpected identifier";
       break;
