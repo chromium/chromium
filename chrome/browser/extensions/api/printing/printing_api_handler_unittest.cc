@@ -243,9 +243,15 @@ class TestLocalPrinter : public FakeLocalPrinter {
   TestLocalPrinter() = default;
   TestLocalPrinter(TestLocalPrinter&) = delete;
   TestLocalPrinter& operator=(const TestLocalPrinter&) = delete;
-  ~TestLocalPrinter() override = default;
+  ~TestLocalPrinter() override { EXPECT_TRUE(print_jobs_.empty()); }
 
   std::vector<JobInfo> jobs_cancelled() { return jobs_cancelled_; }
+
+  std::vector<crosapi::mojom::PrintJobPtr> TakePrintJobs() {
+    std::vector<crosapi::mojom::PrintJobPtr> print_jobs;
+    std::swap(print_jobs, print_jobs_);
+    return print_jobs;
+  }
 
   void AddPrinter(crosapi::mojom::LocalDestinationInfoPtr printer) {
     printers_.push_back(std::move(printer));
@@ -255,6 +261,12 @@ class TestLocalPrinter : public FakeLocalPrinter {
                crosapi::mojom::CapabilitiesResponsePtr caps) {
     DCHECK(caps);
     caps_map_[id] = std::move(caps);
+  }
+
+  void CreatePrintJob(crosapi::mojom::PrintJobPtr job,
+                      CreatePrintJobCallback cb) override {
+    print_jobs_.push_back(std::move(job));
+    std::move(cb).Run();
   }
 
   void GetPrinters(GetPrintersCallback cb) override {
@@ -281,6 +293,7 @@ class TestLocalPrinter : public FakeLocalPrinter {
   }
 
  private:
+  std::vector<crosapi::mojom::PrintJobPtr> print_jobs_;
   std::vector<JobInfo> jobs_cancelled_;
   std::map<std::string, crosapi::mojom::CapabilitiesResponsePtr> caps_map_;
   std::vector<crosapi::mojom::LocalDestinationInfoPtr> printers_;
@@ -295,6 +308,10 @@ class PrintingAPIHandlerUnittest : public testing::Test {
   PrintingAPIHandlerUnittest& operator=(const PrintingAPIHandlerUnittest&) =
       delete;
   ~PrintingAPIHandlerUnittest() override = default;
+
+  std::vector<crosapi::mojom::PrintJobPtr> TakePrintJobs() {
+    return local_printer_.TakePrintJobs();
+  }
 
   std::vector<TestLocalPrinter::JobInfo> GetJobsCancelled() {
     return local_printer_.jobs_cancelled();
@@ -334,6 +351,12 @@ class PrintingAPIHandlerUnittest : public testing::Test {
     EXPECT_TRUE(job_id_);
     ASSERT_TRUE(submit_job_status_.has_value());
     EXPECT_EQ(api::printing::SUBMIT_JOB_STATUS_OK, submit_job_status_.value());
+    // Only lacros needs to report the print job to ash chrome.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    EXPECT_EQ(1u, TakePrintJobs().size());
+#else
+    EXPECT_EQ(0u, TakePrintJobs().size());
+#endif
   }
 
   void SetUp() override {

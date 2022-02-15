@@ -48,6 +48,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/printing/print_job_utils_lacros.h"
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
@@ -206,6 +207,10 @@ void PrintingAPIHandler::OnPrintJobSubmitted(
   DCHECK(!base::Contains(print_jobs_, cups_id));
   print_jobs_[cups_id] =
       PrintJobInfo{printer_id, *job_id, print_job->source_id()};
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  NotifyAshJobCreated(*print_job, *job_id, *document, local_printer_);
+#endif
 
   if (!extension_registry_->enabled_extensions().Contains(
           print_job->source_id())) {
