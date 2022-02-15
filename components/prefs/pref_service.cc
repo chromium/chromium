@@ -129,6 +129,13 @@ PrefService::PrefService(
 PrefService::~PrefService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // Remove observers. This could be necessary if this service is destroyed
+  // before the prefs are fully loaded.
+  user_pref_store_->RemoveObserver(pref_store_observer_.get());
+  if (standalone_browser_pref_store_) {
+    standalone_browser_pref_store_->RemoveObserver(pref_store_observer_.get());
+  }
+
   // TODO(crbug.com/942491, 946668, 945772) The following code collects
   // augments stack dumps created by ~PrefNotifierImpl() with information
   // whether the profile owning the PrefService is an incognito profile.
