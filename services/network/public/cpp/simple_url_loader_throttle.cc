@@ -4,17 +4,56 @@
 
 #include "services/network/public/cpp/simple_url_loader_throttle.h"
 
+#include "base/memory/raw_ptr.h"
+#include "net/base/network_change_notifier.h"
+
 namespace network {
 
 namespace {
 
-// A SimpleURLLoaderBatcher::Delegate which always disallow batching.
-class NoBatchingDelegate : public SimpleURLLoaderThrottle::Delegate {
+// A SimpleURLLoaderBatcher::Delegate which tries to batch loaders when
+// the default network is inactive (e.g. in low power state).
+class BatchingDelegate
+    : public SimpleURLLoaderThrottle::Delegate,
+      public net::NetworkChangeNotifier::DefaultNetworkActiveObserver {
  public:
-  NoBatchingDelegate() = default;
-  ~NoBatchingDelegate() override = default;
+  explicit BatchingDelegate(SimpleURLLoaderThrottle* owner) : owner_(owner) {}
+  ~BatchingDelegate() override {
+    if (is_observing_default_network_)
+      net::NetworkChangeNotifier::RemoveDefaultNetworkActiveObserver(this);
+  }
 
-  bool ShouldThrottle() override { return false; }
+  bool ShouldThrottle() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (net::NetworkChangeNotifier::IsDefaultNetworkActive())
+      return false;
+
+    if (!is_observing_default_network_) {
+      net::NetworkChangeNotifier::AddDefaultNetworkActiveObserver(this);
+      is_observing_default_network_ = true;
+    }
+
+    return true;
+  }
+
+ private:
+  // net::NetworkChangeNotifier::DefaultNetworkActiveObserver method:
+  void OnDefaultNetworkActive() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DCHECK(is_observing_default_network_);
+
+    owner_->OnReadyToStart();
+
+    net::NetworkChangeNotifier::RemoveDefaultNetworkActiveObserver(this);
+    is_observing_default_network_ = false;
+  }
+
+  // Must outlive `this`.
+  raw_ptr<SimpleURLLoaderThrottle> const owner_;
+
+  bool is_observing_default_network_ = false;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace
@@ -22,10 +61,8 @@ class NoBatchingDelegate : public SimpleURLLoaderThrottle::Delegate {
 SimpleURLLoaderThrottle::Delegate::Delegate() = default;
 SimpleURLLoaderThrottle::Delegate::~Delegate() = default;
 
-// TODO(https://crbug.com/1293657): Create an appropriate delegate for each
-// platform.
 SimpleURLLoaderThrottle::SimpleURLLoaderThrottle()
-    : delegate_(std::make_unique<NoBatchingDelegate>()) {}
+    : delegate_(std::make_unique<BatchingDelegate>(this)) {}
 
 SimpleURLLoaderThrottle::~SimpleURLLoaderThrottle() = default;
 

@@ -445,8 +445,7 @@ class NET_EXPORT NetworkChangeNotifier {
   // state.
   // Only implemented for Android (Lollipop and newer). Always returns true
   // when unimplemented, required in order to avoid indefinitely batching
-  // packets sent lazily (currently only used by bidi streams connection status
-  // check).
+  // packets sent lazily.
   static bool IsDefaultNetworkActive();
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
