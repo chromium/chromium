@@ -3916,6 +3916,23 @@
       "features": [
         "rely_on_implicit_sync_for_swap_buffers"
       ]
+    },
+    {
+      "id": 390,
+      "description": "AVC/AV1 hardware encoder MFT output bitrate incorrect upon framerate update on Intel GPUs.",
+      "cr_bugs": [1295815],
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
+      "driver_version": {
+        "op": "<",
+        "value": "30.0.101.1340"
+      },
+      "features": [
+        "disable_dynamic_video_encode_framerate_update"
+      ]
     }
   ]
 }
