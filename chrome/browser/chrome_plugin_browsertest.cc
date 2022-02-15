@@ -51,12 +51,8 @@ std::vector<content::WebPluginInfo> GetPlugins() {
 using ChromePluginTest = InProcessBrowserTest;
 
 // Verify a known subset of plugins for the build configuration.
-#if BUILDFLAG(IS_CHROMEOS_ASH)  // http://crbug.com/1147726
-#define MAYBE_InstalledPlugins DISABLED_InstalledPlugins
-#else
-#define MAYBE_InstalledPlugins InstalledPlugins
-#endif
-IN_PROC_BROWSER_TEST_F(ChromePluginTest, MAYBE_InstalledPlugins) {
+// TODO(https://crbug.com/1297566): Fix and re-eanble test.
+IN_PROC_BROWSER_TEST_F(ChromePluginTest, DISABLED_InstalledPlugins) {
   base::flat_set<std::string> expected = {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     "Chrome PDF Plugin",
