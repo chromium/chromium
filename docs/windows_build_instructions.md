@@ -112,7 +112,7 @@ with the code, including msysgit and python.
   it may appear to run properly, but msysgit, python, and other tools
   may not get installed correctly.
 * If you see strange errors with the file system on the first run of gclient,
-  you may want to [disable Windows Indexing](http://tortoisesvn.tigris.org/faq.html#cantmove2).
+  you may want to [disable Windows Indexing](https://tortoisesvn.net/faq.html#cantmove2).
 
 ## Check python install
 
