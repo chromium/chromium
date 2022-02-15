@@ -185,6 +185,20 @@ void VideoCaptureHost::OnBufferReady(
       std::move(mojom_buffer), std::move(mojom_scaled_buffers));
 }
 
+void VideoCaptureHost::OnFrameWithEmptyRegionCapture(
+    const VideoCaptureControllerID& controller_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (controllers_.find(controller_id) == controllers_.end())
+    return;
+
+  if (region_capture_rect_ != absl::nullopt) {
+    region_capture_rect_ = absl::nullopt;
+    media_stream_manager_->OnRegionCaptureRectChanged(controller_id,
+                                                      region_capture_rect_);
+  }
+}
+
 void VideoCaptureHost::OnEnded(const VideoCaptureControllerID& controller_id) {
   DVLOG(1) << __func__;
   DCHECK_CURRENTLY_ON(BrowserThread::IO);

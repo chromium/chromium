@@ -65,6 +65,10 @@ void ReceiverMojoToMediaAdapter::OnFrameDropped(
   video_frame_handler_->OnFrameDropped(reason);
 }
 
+void ReceiverMojoToMediaAdapter::OnFrameWithEmptyRegionCapture() {
+  video_frame_handler_->OnFrameWithEmptyRegionCapture();
+}
+
 void ReceiverMojoToMediaAdapter::OnLog(const std::string& message) {
   video_frame_handler_->OnLog(message);
 }

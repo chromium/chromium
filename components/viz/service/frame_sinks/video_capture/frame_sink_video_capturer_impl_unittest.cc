@@ -201,6 +201,8 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
                        std::move(callbacks_remote)));
   }
 
+  void OnFrameWithEmptyRegionCapture() final {}
+
   mojo::Receiver<mojom::FrameSinkVideoConsumer> receiver_{this};
   std::vector<scoped_refptr<VideoFrame>> frames_;
   std::vector<base::OnceClosure> done_callbacks_;

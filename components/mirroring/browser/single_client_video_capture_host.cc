@@ -186,6 +186,11 @@ void SingleClientVideoCaptureHost::OnFrameDropped(
   // Ignore this call.
 }
 
+void SingleClientVideoCaptureHost::OnFrameWithEmptyRegionCapture() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Ignore this call.
+}
+
 void SingleClientVideoCaptureHost::OnLog(
     const base::UnguessableToken& device_id,
     const std::string& message) {

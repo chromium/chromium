@@ -196,6 +196,8 @@ void BackgroundThumbnailVideoCapturer::OnFrameCaptured(
   got_frame_callback_.Run(cropped_frame, frame_id);
 }
 
+void BackgroundThumbnailVideoCapturer::OnFrameWithEmptyRegionCapture() {}
+
 void BackgroundThumbnailVideoCapturer::OnStopped() {}
 
 void BackgroundThumbnailVideoCapturer::OnLog(const std::string& /*message*/) {}

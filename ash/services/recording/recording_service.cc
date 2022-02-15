@@ -366,6 +366,8 @@ void RecordingService::OnFrameCaptured(
   encoder_muxer_.AsyncCall(&RecordingEncoderMuxer::EncodeVideo).WithArgs(frame);
 }
 
+void RecordingService::OnFrameWithEmptyRegionCapture() {}
+
 void RecordingService::OnStopped() {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 

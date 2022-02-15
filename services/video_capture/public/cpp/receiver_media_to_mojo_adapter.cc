@@ -79,6 +79,10 @@ void ReceiverMediaToMojoAdapter::OnFrameDropped(
   receiver_->OnFrameDropped(reason);
 }
 
+void ReceiverMediaToMojoAdapter::OnFrameWithEmptyRegionCapture() {
+  receiver_->OnFrameWithEmptyRegionCapture();
+}
+
 void ReceiverMediaToMojoAdapter::OnLog(const std::string& message) {
   receiver_->OnLog(message);
 }

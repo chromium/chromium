@@ -185,6 +185,10 @@ void VideoFrameHandlerAsh::OnFrameDropped(
   proxy_->OnFrameDropped(reason);
 }
 
+void VideoFrameHandlerAsh::OnFrameWithEmptyRegionCapture() {
+  proxy_->OnFrameWithEmptyRegionCapture();
+}
+
 void VideoFrameHandlerAsh::OnLog(const std::string& message) {
   proxy_->OnLog(message);
 }

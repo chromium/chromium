@@ -63,6 +63,9 @@ class VideoCaptureControllerEventHandler {
       const ReadyBuffer& buffer,
       const std::vector<ReadyBuffer>& scaled_buffers) = 0;
 
+  virtual void OnFrameWithEmptyRegionCapture(
+      const VideoCaptureControllerID& id) = 0;
+
   // The capture session has ended and no more frames will be sent.
   virtual void OnEnded(const VideoCaptureControllerID& id) = 0;
 

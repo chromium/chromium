@@ -357,4 +357,6 @@ void DevToolsEyeDropper::OnFrameCaptured(
   UpdateCursor();
 }
 
+void DevToolsEyeDropper::OnFrameWithEmptyRegionCapture() {}
+
 void DevToolsEyeDropper::OnStopped() {}

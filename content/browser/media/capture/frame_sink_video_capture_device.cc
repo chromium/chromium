@@ -263,6 +263,16 @@ void FrameSinkVideoCaptureDevice::OnFrameCaptured(
       {});
 }
 
+void FrameSinkVideoCaptureDevice::OnFrameWithEmptyRegionCapture() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!receiver_) {
+    return;
+  }
+
+  receiver_->OnFrameWithEmptyRegionCapture();
+}
+
 void FrameSinkVideoCaptureDevice::OnStopped() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

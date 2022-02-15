@@ -219,6 +219,10 @@ void VideoFrameHandlerProxyLacros::OnFrameDropped(
   handler_->OnFrameDropped(reason);
 }
 
+void VideoFrameHandlerProxyLacros::OnFrameWithEmptyRegionCapture() {
+  handler_->OnFrameWithEmptyRegionCapture();
+}
+
 void VideoFrameHandlerProxyLacros::OnLog(const std::string& message) {
   handler_->OnLog(message);
 }

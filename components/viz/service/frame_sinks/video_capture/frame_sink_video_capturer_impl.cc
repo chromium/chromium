@@ -372,6 +372,7 @@ void FrameSinkVideoCapturerImpl::Stop() {
   if (consumer_) {
     consumer_->OnStopped();
     consumer_.reset();
+    consumer_informed_of_empty_region_ = false;
   }
 
   if (resolved_target_)
@@ -446,6 +447,7 @@ void FrameSinkVideoCapturerImpl::RefreshSoon() {
   const gfx::Rect capture_region =
       resolved_target_->GetCopyOutputRequestRegion(target_->sub_target);
   if (capture_region.IsEmpty()) {
+    MaybeInformConsumerOfEmptyRegion();
     // If the capture region is empty, it means one of two things: the first
     // frame has not been composited yet or the current region selected for
     // capture has a current size of zero. We schedule a frame refresh here,
@@ -485,6 +487,7 @@ void FrameSinkVideoCapturerImpl::OnFrameDamaged(
   const gfx::Rect capture_region =
       resolved_target_->GetCopyOutputRequestRegion(target_->sub_target);
   if (capture_region.IsEmpty()) {
+    MaybeInformConsumerOfEmptyRegion();
     return;
   }
 
@@ -1137,6 +1140,7 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(
   // Send the frame to the consumer.
   consumer_->OnFrameCaptured(std::move(handle), std::move(info), content_rect,
                              std::move(callbacks));
+  consumer_informed_of_empty_region_ = false;
 }
 
 gfx::Size FrameSinkVideoCapturerImpl::AdjustSizeForPixelFormat(
@@ -1209,6 +1213,19 @@ float FrameSinkVideoCapturerImpl::GetPipelineUtilization() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return static_cast<float>(num_frames_in_flight_) / kDesignLimitMaxFrames;
+}
+
+void FrameSinkVideoCapturerImpl::MaybeInformConsumerOfEmptyRegion() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!consumer_ || !target_ ||
+      !absl::holds_alternative<RegionCaptureCropId>(target_->sub_target) ||
+      consumer_informed_of_empty_region_) {
+    return;
+  }
+
+  consumer_->OnFrameWithEmptyRegionCapture();
+  consumer_informed_of_empty_region_ = true;
 }
 
 FrameSinkVideoCapturerImpl::CapturedFrame::CapturedFrame(

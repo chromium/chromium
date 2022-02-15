@@ -323,6 +323,12 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   // increasing pool utilization, but it would increase pipeline utilization.
   float GetPipelineUtilization() const;
 
+  // Informs the consumer that the frame was dropped due to being cropped
+  // to zero pixels. Only informs the consumer if this is the first such
+  // frame since the last actually-delivered frame, so as to avoid being
+  // overly chatty and waste CPU.
+  void MaybeInformConsumerOfEmptyRegion();
+
   // Owner/Manager of this instance.
   const raw_ptr<FrameSinkVideoCapturerManager> frame_sink_manager_;
 
@@ -450,6 +456,10 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
 
   // Enables debug log messages to be sent to webrtc native log.
   const bool log_to_webrtc_;
+
+  // Avoids being overly chatty and wasting CPU when informing the consumer
+  // of frames dropped due to being cropped to zero pixels.
+  bool consumer_informed_of_empty_region_ = false;
 
   // A weak pointer factory used for cancelling the results from any in-flight
   // copy output requests.

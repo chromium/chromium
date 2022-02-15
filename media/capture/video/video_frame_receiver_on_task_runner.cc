@@ -53,6 +53,13 @@ void VideoFrameReceiverOnTaskRunner::OnFrameDropped(
       base::BindOnce(&VideoFrameReceiver::OnFrameDropped, receiver_, reason));
 }
 
+void VideoFrameReceiverOnTaskRunner::OnFrameWithEmptyRegionCapture() {
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&VideoFrameReceiver::OnFrameWithEmptyRegionCapture,
+                     receiver_));
+}
+
 void VideoFrameReceiverOnTaskRunner::OnLog(const std::string& message) {
   task_runner_->PostTask(FROM_HERE, base::BindOnce(&VideoFrameReceiver::OnLog,
                                                    receiver_, message));

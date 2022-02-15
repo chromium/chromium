@@ -481,6 +481,13 @@ void BroadcastingReceiver::OnFrameDropped(
   }
 }
 
+void BroadcastingReceiver::OnFrameWithEmptyRegionCapture() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto& client : clients_) {
+    client.second.client()->OnFrameWithEmptyRegionCapture();
+  }
+}
+
 void BroadcastingReceiver::OnLog(const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& client : clients_) {

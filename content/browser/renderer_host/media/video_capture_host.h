@@ -73,6 +73,8 @@ class CONTENT_EXPORT VideoCaptureHost
   void OnBufferReady(const VideoCaptureControllerID& controller_id,
                      const ReadyBuffer& buffer,
                      const std::vector<ReadyBuffer>& scaled_buffers) override;
+  void OnFrameWithEmptyRegionCapture(
+      const VideoCaptureControllerID& controller_id) override;
   void OnEnded(const VideoCaptureControllerID& id) override;
   void OnStarted(const VideoCaptureControllerID& id) override;
   void OnStartedUsingGpuDecode(const VideoCaptureControllerID& id) override;
