@@ -72,6 +72,10 @@ class ContextualSearchFakeServer
 
     private boolean mDidEverCallWebContentsOnShow;
 
+    /**
+     * Provides access to the test host so this fake server can drive actions when simulating a
+     * search.
+     */
     interface ContextualSearchTestHost {
         /**
          * Simulates a non-resolve trigger on the given node and waits for the panel to peek.

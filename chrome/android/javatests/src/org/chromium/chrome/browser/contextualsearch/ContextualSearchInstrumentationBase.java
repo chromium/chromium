@@ -175,10 +175,10 @@ public class ContextualSearchInstrumentationBase {
     protected ContextualSearchFakeServer mFakeServer;
 
     protected String mTestPage;
+    protected EmbeddedTestServer mTestServer;
 
     private ActivityMonitor mActivityMonitor;
     private ContextualSearchSelectionController mSelectionController;
-    private EmbeddedTestServer mTestServer;
     private ContextualSearchInstrumentationTestHost mTestHost;
 
     private float mDpToPx;
@@ -298,6 +298,7 @@ public class ContextualSearchInstrumentationBase {
         mPolicy.overrideAllowSendingPageUrlForTesting(false);
     }
 
+    /** Allows the fake server to call into this host to drive actions when simulating a search. */
     private class ContextualSearchInstrumentationTestHost implements ContextualSearchTestHost {
         @Override
         public void triggerNonResolve(String nodeId) throws TimeoutException {
@@ -354,6 +355,12 @@ public class ContextualSearchInstrumentationBase {
     // Helper Functions and Methods.
     // TODO(donnd): Mark protected and use these in ContextualSearchManagerTest.
     //============================================================================================
+
+    /** Triggers the panel to show in the peeking state. */
+    void triggerPanelPeek() throws Exception {
+        // TODO(donnd): is it better to use the resolve or non-resolve implementation?
+        simulateResolveSearch(SEARCH_NODE);
+    }
 
     /**
      * Gets the name of the given outcome when it's expected to be logged.
@@ -461,17 +468,33 @@ public class ContextualSearchInstrumentationBase {
     }
 
     /**
+     * Simulates a resolving trigger on the given node but does not wait for the panel to peek.
+     * @param nodeId A string containing the node ID.
+     */
+    protected void triggerResolve(String nodeId) throws TimeoutException {
+        mTestHost.triggerResolve(nodeId);
+    }
+
+    /**
+     * Simulates a non-resolve trigger on the given node and waits for the panel to peek.
+     * @param nodeId A string containing the node ID.
+     */
+    protected void triggerNonResolve(String nodeId) throws TimeoutException {
+        mTestHost.triggerNonResolve(nodeId);
+    }
+
+    /**
      * Asserts that the action bar does or does not become visible in response to a selection.
      * @param visible Whether the Action Bar must become visible or not.
      */
-    private void assertWaitForSelectActionBarVisible(final boolean visible) {
+    protected void assertWaitForSelectActionBarVisible(final boolean visible) {
         CriteriaHelper.pollUiThread(() -> {
             Criteria.checkThat(
                     getSelectionPopupController().isSelectActionBarShowing(), Matchers.is(visible));
         });
     }
 
-    private SelectionPopupController getSelectionPopupController() {
+    protected SelectionPopupController getSelectionPopupController() {
         return SelectionPopupController.fromWebContents(sActivityTestRule.getWebContents());
     }
 
@@ -596,7 +619,7 @@ public class ContextualSearchInstrumentationBase {
      *
      * @param nodeId The id of the node to be triggered.
      */
-    private void simulateSlowResolveSearch(String nodeId)
+    protected void simulateSlowResolveSearch(String nodeId)
             throws InterruptedException, TimeoutException {
         mLatestSlowResolveSearch = mFakeServer.getFakeSlowResolveSearch(nodeId);
         assertNotNull("Could not find FakeSlowResolveSearch for node ID:" + nodeId,
@@ -609,7 +632,7 @@ public class ContextualSearchInstrumentationBase {
      * Simulates a slow response for the most recent {@link FakeSlowResolveSearch} set up by calling
      * simulateSlowResolveSearch.
      */
-    private void simulateSlowResolveFinished() throws InterruptedException, TimeoutException {
+    protected void simulateSlowResolveFinished() throws InterruptedException, TimeoutException {
         // Allow the slow Resolution to finish, waiting for it to complete.
         mLatestSlowResolveSearch.finishResolve();
         assertLoadedSearchTermMatches(mLatestSlowResolveSearch.getSearchTerm());
@@ -739,7 +762,7 @@ public class ContextualSearchInstrumentationBase {
      *
      * @param nodeId A string containing the node ID.
      */
-    private void clickWordNode(String nodeId) throws TimeoutException {
+    protected void clickWordNode(String nodeId) throws TimeoutException {
         retryPanelBarInteractions(() -> {
             clickNode(nodeId);
             waitForPanelToPeek();
@@ -773,7 +796,7 @@ public class ContextualSearchInstrumentationBase {
     /**
      * @return The selected text.
      */
-    private String getSelectedText() {
+    protected String getSelectedText() {
         return mSelectionController.getSelectedText();
     }
 
@@ -795,7 +818,7 @@ public class ContextualSearchInstrumentationBase {
     /**
      * Asserts that the given parameters are present in the most recently loaded URL.
      */
-    private void assertContainsParameters(String... terms) {
+    protected void assertContainsParameters(String... terms) {
         Assert.assertNotNull("Fake server didn't load a SERP URL", mFakeServer.getLoadedUrl());
         for (String term : terms) {
             Assert.assertTrue("Expected search term not found:" + term,
@@ -820,7 +843,7 @@ public class ContextualSearchInstrumentationBase {
     /**
      * Asserts that the panel is currently closed or in an undefined state.
      */
-    private void assertPanelClosedOrUndefined() {
+    void assertPanelClosedOrUndefined() {
         boolean success = false;
         if (mPanel == null) {
             success = true;
@@ -829,7 +852,9 @@ public class ContextualSearchInstrumentationBase {
             int panelState = mPanel.getPanelState();
             success = panelState == PanelState.CLOSED || panelState == PanelState.UNDEFINED;
         }
-        Assert.assertTrue(success);
+        Assert.assertTrue("Expected the panel to be closed or undefined but it was in state: "
+                        + mPanel.getPanelState(),
+                success);
     }
 
     /**
@@ -867,7 +892,7 @@ public class ContextualSearchInstrumentationBase {
      * Waits for the Search Panel (the Search Bar) to peek up from the bottom, and asserts that it
      * did peek.
      */
-    private void waitForPanelToPeek() {
+    protected void waitForPanelToPeek() {
         waitForPanelToEnterState(PanelState.PEEKED);
     }
 
@@ -881,14 +906,14 @@ public class ContextualSearchInstrumentationBase {
     /**
      * Waits for the Search Panel to maximize, and asserts that it did maximize.
      */
-    private void waitForPanelToMaximize() {
+    protected void waitForPanelToMaximize() {
         waitForPanelToEnterState(PanelState.MAXIMIZED);
     }
 
     /**
      * Waits for the Search Panel to close, and asserts that it did close.
      */
-    private void waitForPanelToClose() {
+    protected void waitForPanelToClose() {
         waitForPanelToEnterState(PanelState.CLOSED);
     }
 
@@ -981,6 +1006,24 @@ public class ContextualSearchInstrumentationBase {
      */
     private void scrollBasePage() {
         fling(0.f, 0.75f, 0.f, 0.7f, 100);
+    }
+
+    /**
+     * Taps the base page near the top.
+     */
+    protected void tapBasePageToClosePanel() {
+        // TODO(donnd): This is not reliable. Find a better approach.
+        // This taps on the panel in an area that will be selected if the "intelligence" node has
+        // been tap-selected, and that will cause it to be long-press selected.
+        // We use the far right side to prevent simulating a tap on top of an
+        // existing long-press selection (the pins are a tap target). This might not work on RTL.
+        // We are using y == 0.35f because otherwise it will fail for long press cases.
+        // It might be better to get the position of the Panel and tap just about outside
+        // the Panel. I suspect some Flaky tests are caused by this problem (ones involving
+        // long press and trying to close with the bar peeking, with a long press selection
+        // established).
+        tapBasePage(0.95f, 0.35f);
+        waitForPanelToClose();
     }
 
     /**
@@ -1083,7 +1126,7 @@ public class ContextualSearchInstrumentationBase {
     /**
      * Waits for the Action Bar to be visible in response to a selection.
      */
-    private void waitForSelectActionBarVisible() {
+    protected void waitForSelectActionBarVisible() {
         assertWaitForSelectActionBarVisible(true);
     }
 
