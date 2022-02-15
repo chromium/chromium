@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/user_manager/user.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -42,6 +43,7 @@ bool IsOsReauthAllowedAsh(Profile* profile,
                           base::TimeDelta auth_token_lifetime) {
   const bool user_cannot_manually_enter_password =
       !ash::password_visibility::AccountHasUserFacingPassword(
+          g_browser_process->local_state(),
           ash::ProfileHelper::Get()->GetUserByProfile(profile)->GetAccountId());
   if (user_cannot_manually_enter_password)
     return true;

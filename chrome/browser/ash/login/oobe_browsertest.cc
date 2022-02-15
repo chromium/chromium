@@ -120,8 +120,9 @@ IN_PROC_BROWSER_TEST_P(OobeTest, NewUser) {
 
   const AccountId account_id =
       user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
-  EXPECT_FALSE(
-      user_manager::known_user::GetIsUsingSAMLPrincipalsAPI(account_id));
+
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  EXPECT_FALSE(known_user.GetIsUsingSAMLPrincipalsAPI(account_id));
 
   // Verify the parameters that were passed to the latest
   // AuthenticateAuthSession or MountEx call.

@@ -8,18 +8,16 @@
 #include "base/component_export.h"
 
 class AccountId;
+class PrefService;
 
-namespace ash {
-
-namespace password_visibility {
+namespace ash::password_visibility {
 
 // Whether the account has a user facing password that the user can enter for
 // security checks.
 bool COMPONENT_EXPORT(ASH_LOGIN_AUTH)
-    AccountHasUserFacingPassword(const AccountId& account_id);
+    AccountHasUserFacingPassword(PrefService* local_state,
+                                 const AccountId& account_id);
 
-}  // namespace password_visibility
-
-}  // namespace ash
+}  // namespace ash::password_visibility
 
 #endif  // ASH_COMPONENTS_LOGIN_AUTH_PASSWORD_VISIBILITY_UTILS_H_

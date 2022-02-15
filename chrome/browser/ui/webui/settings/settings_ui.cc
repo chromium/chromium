@@ -298,9 +298,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "userCannotManuallyEnterPassword",
       !ash::password_visibility::AccountHasUserFacingPassword(
-          ash::ProfileHelper::Get()
-              ->GetUserByProfile(profile)
-              ->GetAccountId()));
+          g_browser_process->local_state(), ash::ProfileHelper::Get()
+                                                ->GetUserByProfile(profile)
+                                                ->GetAccountId()));
 
   // This is the browser settings page.
   html_source->AddBoolean("isOSSettings", false);
