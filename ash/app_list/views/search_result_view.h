@@ -33,7 +33,46 @@ class SearchResult;
 class SearchResultListView;
 class SearchResultPageDialogController;
 
-// SearchResultView displays a SearchResult.
+// Search result view uses `views::FlexLayout` to show results in different
+// configurations.
+// +---------------------------------------------------------------+
+// |`text_container_`                                              |
+// | +----------------------+ +----------------------------------+ |
+// | |`big_title_container_'| |`body_text_container_`            | |
+// | |                      | | +------------------------------+ | |
+// | |                      | | |`title_and_details_container_`| | |
+// | |                      | | +------------------------------+ | |
+// | |                      | | +------------------------------+ | |
+// | |                      | | |`keyboard_shortcut_container_`| | |
+// | |                      | | +------------------------------+ | |
+// | +----------------------+ +----------------------------------+ |
+// +---------------------------------------------------------------+
+//
+// The `title_and_details_container_` has two possible layouts depending on
+// `view_type_` and whether `keyboard_shortcut_container_` has results
+//
+// Layout used when the view_type_ == SearchResultViewType::kDefault OR
+// `keyboard_shortcut_layout_override_` is set
+//
+// +--------------------------------------------------------------------+
+// |`title_and_details_container_`                                      |
+// | +------------------+  +------------------+  +--------------------+ |
+// | |'title_container_'|  |`separator_label_`|  |`details_container_`| |
+// | +------------------+  +------------------+  +--------------------+ |
+// +--------------------------------------------------------------------+
+//
+// layout used when view type is SearchResultViewType::kAnswerCard or
+// SearchResultViewType::kClassic.
+// +-------------------------------+
+// |`title_and_details_container_` |
+// | +------------------+          |
+// | |'title_container_'|          |
+// | +------------------+          |
+// | +--------------------+        |
+// | |'details_container_'|        |
+// | +--------------------+        |
+// +-------------------------------+
+
 class ASH_EXPORT SearchResultView : public SearchResultBaseView,
                                     public SearchResultActionsViewDelegate {
  public:
@@ -95,9 +134,10 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
       const std::vector<SearchResult::TextItem>& text_vector,
       LabelType label_type);
   void UpdateBadgeIcon();
-  void UpdateBigTitleText();
-  void UpdateTitleText();
-  void UpdateDetailsText();
+  void UpdateBigTitleContainer();
+  void UpdateTitleContainer();
+  void UpdateDetailsContainer();
+  void UpdateKeyboardShortcutContainer();
   void UpdateRating();
 
   void StyleLabel(views::Label* label,
@@ -147,9 +187,12 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
 
   MaskedImageView* icon_ = nullptr;         // Owned by views hierarchy.
   views::ImageView* badge_icon_ = nullptr;  // Owned by views hierarchy.
+
   views::FlexLayoutView* text_container_ =
       nullptr;  // Owned by views hierarchy.
   views::FlexLayoutView* big_title_container_ =
+      nullptr;  // Owned by views hierarchy.
+  views::FlexLayoutView* body_text_container_ =
       nullptr;  // Owned by views hierarchy.
   views::FlexLayoutView* title_and_details_container_ =
       nullptr;  // Owned by views hierarchy.
@@ -157,9 +200,13 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
       nullptr;  // Owned by views hierarchy.
   views::FlexLayoutView* details_container_ =
       nullptr;  // Owned by views hierarchy.
+  views::FlexLayoutView* keyboard_shortcut_container_ =
+      nullptr;                                     // Owned by views hierarchy.
   std::vector<LabelAndTag> big_title_label_tags_;  // Owned by views hierarchy.
   std::vector<LabelAndTag> title_label_tags_;    // Owned by views hierarchy.
   std::vector<LabelAndTag> details_label_tags_;  // Owned by views hierarchy.
+  std::vector<LabelAndTag>
+      keyboard_shortcut_container_tags_;     // Owned by views hierarchy.
   views::Label* separator_label_ = nullptr;  // Owned by views hierarchy.
   views::Label* rating_ = nullptr;           // Owned by views hierarchy.
   views::ImageView* rating_star_ = nullptr;  // Owned by views hierarchy.
@@ -174,6 +221,10 @@ class ASH_EXPORT SearchResultView : public SearchResultBaseView,
 
   // Separator label is shown for `kDefault` when details text is not empty,
   bool should_show_separator_label_ = false;
+
+  // Used to override `title_and_details_container_` layout when
+  // `keyboard_shortcut_container_` is populated.
+  bool has_keyboard_shortcut_contents_ = false;
 
   SearchResultViewType view_type_;
 

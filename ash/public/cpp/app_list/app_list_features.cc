@@ -39,6 +39,8 @@ const base::Feature kCategoricalSearch{"CategoricalSearch",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kForceShowContinueSection{
     "ForceShowContinueSection", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSearchResultInlineIcon{"SearchResultInlineIcon",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsAppRankerEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppRanker);
@@ -100,6 +102,12 @@ bool IsCategoricalSearchEnabled() {
   // Force categorical search for the latest version of the launcher.
   return ash::features::IsProductivityLauncherEnabled() ||
          base::FeatureList::IsEnabled(kCategoricalSearch);
+}
+
+bool IsSearchResultInlineIconEnabled() {
+  // Inline Icons are only supported for categorical search.
+  return IsCategoricalSearchEnabled() &&
+         base::FeatureList::IsEnabled(kSearchResultInlineIcon);
 }
 
 std::string CategoricalSearchType() {

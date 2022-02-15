@@ -66,6 +66,9 @@ ASH_PUBLIC_EXPORT extern const base::Feature kCategoricalSearch;
 // suggestions.
 ASH_PUBLIC_EXPORT extern const base::Feature kForceShowContinueSection;
 
+// Enables iconified text and inline icons in launcher search.
+ASH_PUBLIC_EXPORT extern const base::Feature kSearchResultInlineIcon;
+
 ASH_PUBLIC_EXPORT bool IsAppRankerEnabled();
 ASH_PUBLIC_EXPORT bool IsZeroStateAppsRankerEnabled();
 ASH_PUBLIC_EXPORT bool IsQueryBasedMixedTypesRankerEnabled();
@@ -81,6 +84,7 @@ ASH_PUBLIC_EXPORT bool IsLauncherSettingsSearchEnabled();
 ASH_PUBLIC_EXPORT bool IsAggregatedMlSearchRankingEnabled();
 ASH_PUBLIC_EXPORT bool IsLauncherSearchNormalizationEnabled();
 ASH_PUBLIC_EXPORT bool IsCategoricalSearchEnabled();
+ASH_PUBLIC_EXPORT bool IsSearchResultInlineIconEnabled();
 
 ASH_PUBLIC_EXPORT std::string AnswerServerUrl();
 ASH_PUBLIC_EXPORT std::string AnswerServerQuerySuffix();

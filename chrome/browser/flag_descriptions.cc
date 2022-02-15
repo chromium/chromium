@@ -2225,6 +2225,11 @@ const char kSearchHistoryLinkDescription[] =
     "Changes the Clear Browsing Data UI to display a link to clear search "
     "history on My Google Activity.";
 
+extern const char kSearchResultInlineIconName[] = "Search Result Inline Icons";
+extern const char kSearchResultInlineIconDescription[] =
+    "Show iconified text and vector icons "
+    "in launcher search results.";
+
 const char kSecurePaymentConfirmationDebugName[] =
     "Secure Payment Confirmation Debug Mode";
 const char kSecurePaymentConfirmationDebugDescription[] =

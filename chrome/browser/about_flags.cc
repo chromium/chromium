@@ -6730,6 +6730,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kCategoricalSearchVariations,
                                     "LauncherCategoricalSearch")},
 
+    {"search-result-inline-icon",
+     flag_descriptions::kSearchResultInlineIconName,
+     flag_descriptions::kSearchResultInlineIconDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(app_list_features::kSearchResultInlineIcon)},
+
     {"query-search-burn-in-period",
      flag_descriptions::kQuerySearchBurnInPeriodName,
      flag_descriptions::kQuerySearchBurnInPeriodDescription, kOsCrOS,

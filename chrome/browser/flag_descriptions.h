@@ -1265,6 +1265,9 @@ extern const char kScrollUnificationDescription[];
 extern const char kSearchHistoryLinkName[];
 extern const char kSearchHistoryLinkDescription[];
 
+extern const char kSearchResultInlineIconName[];
+extern const char kSearchResultInlineIconDescription[];
+
 extern const char kSecurePaymentConfirmationDebugName[];
 extern const char kSecurePaymentConfirmationDebugDescription[];
 

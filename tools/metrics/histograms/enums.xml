@@ -51881,6 +51881,7 @@ from previous Chrome versions.
   <int value="-1674868343" label="DlcSettingsUi:enabled"/>
   <int value="-1672160462"
       label="SwapSideVolumeButtonsForOrientation:disabled"/>
+  <int value="-1672098165" label="SearchResultInlineIcon:enabled"/>
   <int value="-1671494049" label="TrimOnFreeze:disabled"/>
   <int value="-1670137340"
       label="OptimizeLoadingIPCForSmallResources:disabled"/>
@@ -54554,6 +54555,7 @@ from previous Chrome versions.
   <int value="218890378" label="ManualSaving:disabled"/>
   <int value="219117936" label="AllowReaderForAccessibility:enabled"/>
   <int value="219384037" label="ESimPolicy:disabled"/>
+  <int value="220654375" label="SearchResultInlineIcon:disabled"/>
   <int value="221212638" label="StartSurfaceAndroid:enabled"/>
   <int value="221363150" label="ForceEnableFaceAe:disabled"/>
   <int value="221707633" label="AutofillFixOfferInIncognito:disabled"/>

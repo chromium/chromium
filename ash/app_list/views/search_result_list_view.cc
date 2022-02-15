@@ -151,7 +151,7 @@ SearchResultListView::SearchResultListView(
 
   for (size_t i = 0; i < result_count; ++i) {
     search_result_views_.emplace_back(new SearchResultView(
-        this, view_delegate_, dialog_controller, search_result_view_type));
+        this, view_delegate_, dialog_controller, search_result_view_type_));
     search_result_views_.back()->set_index_in_container(i);
     search_result_views_.back()->SetPaintToLayer();
     search_result_views_.back()->layer()->SetFillsBoundsOpaquely(false);
