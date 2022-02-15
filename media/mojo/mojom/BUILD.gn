@@ -48,6 +48,7 @@ mojom("mojom") {
     "video_encode_accelerator.mojom",
     "video_encoder_info.mojom",
     "watch_time_recorder.mojom",
+    "webrtc_video_perf.mojom",
   ]
 
   if (enable_media_drm_storage) {

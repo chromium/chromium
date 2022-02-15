@@ -558,6 +558,7 @@ source_set("unit_tests") {
     "peerconnection/webrtc_media_stream_track_adapter_map_test.cc",
     "peerconnection/webrtc_media_stream_track_adapter_test.cc",
     "peerconnection/webrtc_set_description_observer_test.cc",
+    "peerconnection/webrtc_video_perf_reporter_test.cc",
     "picture_in_picture/picture_in_picture_controller_test.cc",
     "presentation/mock_presentation_service.h",
     "presentation/presentation_availability_state_test.cc",

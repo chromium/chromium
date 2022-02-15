@@ -18,6 +18,7 @@
 #include "content/browser/attribution_reporting/attribution_internals_ui.h"
 #include "content/browser/background_fetch/background_fetch_service_impl.h"
 #include "content/browser/bad_message.h"
+#include "content/browser/browser_context_impl.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/contacts/contacts_manager_impl.h"
 #include "content/browser/content_index/content_index_service_impl.h"
@@ -78,6 +79,8 @@
 #include "media/mojo/mojom/media_player.mojom.h"
 #include "media/mojo/mojom/remoting.mojom.h"
 #include "media/mojo/mojom/video_decode_perf_history.mojom.h"
+#include "media/mojo/mojom/webrtc_video_perf.mojom.h"
+#include "media/mojo/services/webrtc_video_perf_recorder.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
 #include "services/device/public/mojom/sensor_provider.mojom.h"
 #include "services/device/public/mojom/vibration_manager.mojom.h"
@@ -962,6 +965,18 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
 
   map->Add<media::mojom::MediaMetricsProvider>(base::BindRepeating(
       &RenderFrameHostImpl::BindMediaMetricsProviderReceiver,
+      base::Unretained(host)));
+
+  map->Add<media::mojom::WebrtcVideoPerfRecorder>(base::BindRepeating(
+      [](RenderFrameHostImpl* host,
+         mojo::PendingReceiver<media::mojom::WebrtcVideoPerfRecorder>
+             receiver) {
+        media::WebrtcVideoPerfRecorder::Create(
+            BrowserContextImpl::From(
+                host->GetSiteInstance()->GetBrowserContext())
+                ->GetWebrtcVideoPerfHistory(),
+            std::move(receiver));
+      },
       base::Unretained(host)));
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)

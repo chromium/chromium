@@ -17,6 +17,7 @@
 
 namespace media {
 class VideoDecodePerfHistory;
+class WebrtcVideoPerfHistory;
 namespace learning {
 class LearningSession;
 class LearningSessionImpl;
@@ -81,11 +82,23 @@ class BrowserContextImpl {
 
   media::VideoDecodePerfHistory* GetVideoDecodePerfHistory();
 
+  // Gets media service for storing/retrieving WebRTC encoding and decoding
+  // performance stats. Exposed here rather than StoragePartition because all
+  // SiteInstances should have similar performance and stats are not exposed to
+  // the web directly, so privacy is not compromised.
+  media::WebrtcVideoPerfHistory* GetWebrtcVideoPerfHistory();
+
   BackgroundSyncScheduler* background_sync_scheduler() {
     return background_sync_scheduler_.get();
   }
 
  private:
+  // Creates the media service for storing/retrieving WebRTC encoding and
+  // decoding performance stats.  Exposed here rather than StoragePartition
+  // because all SiteInstances should have similar performance and stats are not
+  // exposed to the web directly, so privacy is not compromised.
+  std::unique_ptr<media::WebrtcVideoPerfHistory> CreateWebrtcVideoPerfHistory();
+
   // TODO(https://crbug.com/1179776): Remove the `self_` field.  In the future
   // BrowserContext::BrowserContextImpl should become BrowserContextImpl that
   // inherits from BrowserContext, making the `self_` member obsolete.
@@ -104,6 +117,7 @@ class BrowserContextImpl {
 
   std::unique_ptr<media::learning::LearningSessionImpl> learning_session_;
   std::unique_ptr<media::VideoDecodePerfHistory> video_decode_perf_history_;
+  std::unique_ptr<media::WebrtcVideoPerfHistory> webrtc_video_perf_history_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   scoped_refptr<storage::ExternalMountPoints> external_mount_points_;

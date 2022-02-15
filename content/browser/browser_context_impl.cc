@@ -18,9 +18,11 @@
 #include "content/browser/storage_partition_impl_map.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "media/capabilities/webrtc_video_stats_db_impl.h"
 #include "media/learning/common/media_learning_tasks.h"
 #include "media/learning/impl/learning_session_impl.h"
 #include "media/mojo/services/video_decode_perf_history.h"
+#include "media/mojo/services/webrtc_video_perf_history.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "storage/browser/file_system/external_mount_points.h"
@@ -193,6 +195,32 @@ media::VideoDecodePerfHistory* BrowserContextImpl::GetVideoDecodePerfHistory() {
     video_decode_perf_history_ = self_->CreateVideoDecodePerfHistory();
 
   return video_decode_perf_history_.get();
+}
+
+std::unique_ptr<media::WebrtcVideoPerfHistory>
+BrowserContextImpl::CreateWebrtcVideoPerfHistory() {
+  // TODO(https://crbug.com/1187565): Implement in memory path in
+  // off_the_record_profile_impl.cc and web_engine_browser_context.cc
+
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto* db_provider =
+      self_->GetDefaultStoragePartition()->GetProtoDatabaseProvider();
+
+  std::unique_ptr<media::WebrtcVideoStatsDB> stats_db =
+      media::WebrtcVideoStatsDBImpl::Create(
+          self_->GetPath().Append(FILE_PATH_LITERAL("WebrtcVideoStats")),
+          db_provider);
+
+  return std::make_unique<media::WebrtcVideoPerfHistory>(std::move(stats_db));
+}
+
+media::WebrtcVideoPerfHistory* BrowserContextImpl::GetWebrtcVideoPerfHistory() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (!webrtc_video_perf_history_)
+    webrtc_video_perf_history_ = CreateWebrtcVideoPerfHistory();
+
+  return webrtc_video_perf_history_.get();
 }
 
 void BrowserContextImpl::ShutdownStoragePartitions() {

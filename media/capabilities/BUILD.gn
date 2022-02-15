@@ -36,6 +36,8 @@ source_set("capabilities") {
     "webrtc_video_stats_db.h",
     "webrtc_video_stats_db_impl.cc",
     "webrtc_video_stats_db_impl.h",
+    "webrtc_video_stats_db_provider.cc",
+    "webrtc_video_stats_db_provider.h",
   ]
 
   public_deps = [

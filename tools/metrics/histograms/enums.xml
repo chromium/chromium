@@ -83289,6 +83289,15 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="5" label="Authenticated channel dropped"/>
 </enum>
 
+<enum name="SmoothVolatility">
+  <int value="0" label="Prediction stays at NotSmooth after update"/>
+  <int value="1"
+      label="Prediction changes from Smooth to NotSmooth after update"/>
+  <int value="2"
+      label="Prediction changes from NotSmooth to Smooth after update"/>
+  <int value="3" label="Prediction stays at Smooth after update"/>
+</enum>
+
 <enum name="SmsParsingStatus">
   <int value="0" label="Parsed"/>
   <int value="1" label="OTP format regex not match"/>

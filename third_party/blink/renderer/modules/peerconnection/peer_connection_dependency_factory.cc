@@ -418,7 +418,17 @@ PeerConnectionDependencyFactory::PeerConnectionDependencyFactory(
     : Supplement(context),
       ExecutionContextLifecycleObserver(&context),
       network_manager_(nullptr),
-      p2p_socket_dispatcher_(P2PSocketDispatcher::From(context)) {}
+      p2p_socket_dispatcher_(P2PSocketDispatcher::From(context)) {
+  // Initialize mojo pipe for encode/decode performance stats data collection.
+  mojo::PendingRemote<media::mojom::blink::WebrtcVideoPerfRecorder>
+      perf_recorder;
+  context.GetBrowserInterfaceBroker().GetInterface(
+      perf_recorder.InitWithNewPipeAndPassReceiver());
+
+  webrtc_video_perf_reporter_.Initialize(
+      context.GetTaskRunner(TaskType::kInternalMedia),
+      std::move(perf_recorder));
+}
 
 PeerConnectionDependencyFactory::PeerConnectionDependencyFactory()
     : Supplement(nullptr), ExecutionContextLifecycleObserver(nullptr) {}
@@ -610,10 +620,19 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
   gpu_factories_ = gpu_factories;
   std::unique_ptr<webrtc::VideoEncoderFactory> webrtc_encoder_factory =
       blink::CreateWebrtcVideoEncoderFactory(gpu_factories);
+  // base::Unretained is safe below, because
+  // PeerConnectionDependencyFactory (that holds `webrtc_video_perf_reporter_`)
+  // outlives the decoders that are using the callback. The lifetime of
+  // PeerConnectionDependencyFactory is tied to the ExecutionContext and the
+  // destruction of the decoders is triggered by a call to
+  // RTCPeerConnection::ContextDestroyed() which happens just before the
+  // ExecutionContext is destroyed.
   std::unique_ptr<webrtc::VideoDecoderFactory> webrtc_decoder_factory =
       blink::CreateWebrtcVideoDecoderFactory(
           gpu_factories, media_decoder_factory, std::move(media_task_runner),
-          render_color_space, base::DoNothing());
+          render_color_space,
+          base::BindRepeating(&WebrtcVideoPerfReporter::StoreWebrtcVideoStats,
+                              base::Unretained(&webrtc_video_perf_reporter_)));
 
   if (!encode_decode_capabilities_reported_) {
     encode_decode_capabilities_reported_ = true;

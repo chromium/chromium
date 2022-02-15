@@ -5070,6 +5070,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Media.WebrtcVideoPerfHistory.SmoothVolatility.{Operation}.{Framerate}"
+    enum="SmoothVolatility" expires_after="2023-02-01">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    Tracks the volatilty of the smoothness predictions after updates to the
+    database, that is, if the smoothness prediction changes or stays at the same
+    value. Recorded after each update to the WebRTC MediaCapabilities database
+    if there was an existing record for the corresponding configuration.
+  </summary>
+  <token key="Operation">
+    <variant name="Decode"/>
+    <variant name="Encode"/>
+  </token>
+  <token key="Framerate">
+    <variant name="30fps"/>
+    <variant name="60fps"/>
+  </token>
+</histogram>
+
 <histogram name="Media.WebrtcVideoStatsDB.OpSuccess.{DbOperation}"
     enum="BooleanSuccess" expires_after="never">
 <!-- expires-never: WebRTC MediaCapabilities DB health metric. -->
